@@ -119,24 +119,37 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
 }
 
 #ifdef Q_WS_WIN
-// Removes file:/// or file:// or file:/ or / prefix assuming that str is (nonempty) Windows absolute path with a drive letter.
+
+// returns true if provided arguments desinate letter+colon or double slash
+#define IS_DRIVE_OR_DOUBLESLASH(isletter, char1, char2, colon, slash) \
+  ((isletter && char2 == colon) || (char1 == slash && char2 == slash))
+
+// Removes file:/// or file:// or file:/ or / prefix assuming that str 
+// is (nonempty) Windows absolute path with a drive letter or double slash.
 // If there was file protocol, the path is decoded from percent encoding
 static QString removeSlashOrFilePrefix(const QString& str)
 {
   // FIXME this should maybe be replaced with some (faster?)/nicer logic
   const int len = str.length();
   if (str[0]=='f') {
-    if ( len > 10 && str.startsWith( QLatin1String( "file:///" ) ) && str[8].isLetter() && str[9] == QLatin1Char(':') )
+    if ( len > 10 && str.startsWith( QLatin1String( "file:///" ) ) 
+         && IS_DRIVE_OR_DOUBLESLASH(str[8].isLetter(), str[8], str[9], QLatin1Char(':'), QLatin1Char('/')) )
       return QUrl::fromPercentEncoding( str.toLatin1() ).mid(8);
-    else if ( len > 9 && str.startsWith( QLatin1String( "file://" ) ) && str[7].isLetter() && str[8] == QLatin1Char(':') )
+    else if ( len > 9 && str.startsWith( QLatin1String( "file://" ) )
+              && IS_DRIVE_OR_DOUBLESLASH(str[7].isLetter(), str[7], str[8], QLatin1Char(':'), QLatin1Char('/')) )
       return QUrl::fromPercentEncoding( str.toLatin1() ).mid(7);
-    else if ( len > 8 && str.startsWith( QLatin1String( "file:/" ) ) && str[6].isLetter() && str[7] == QLatin1Char(':') )
+    else if ( len > 8 && str.startsWith( QLatin1String( "file:/" ) )
+              && IS_DRIVE_OR_DOUBLESLASH(str[6].isLetter(), str[6], str[7], QLatin1Char(':'), QLatin1Char('/')) )
       return QUrl::fromPercentEncoding( str.toLatin1() ).mid(6);
   }
-  /* no 'else' since there can be "f:/" path */
-  if ( len > 2 && str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
+  /* No 'else' here since there can be "f:/" path. */
+
+  /* '/' + drive letter or // */
+  if ( len > 2 && str[0] == QLatin1Char('/')
+       && IS_DRIVE_OR_DOUBLESLASH(str[1].isLetter(), str[1], str[2], QLatin1Char(':'), QLatin1Char('/')) )
     return str.mid(1);
-  else if ( len >= 2 && str[0].isLetter() && str[1] == QLatin1Char(':') )
+  /* drive letter or // */
+  else if ( len >= 2 && IS_DRIVE_OR_DOUBLESLASH(str[0].isLetter(), str[0], str[1], QLatin1Char(':'), QLatin1Char('/')) )
     return str;
   return QString();
 }
@@ -363,11 +376,25 @@ KUrl::KUrl( const char * str )
   : QUrl(), d(0)
 {
 #ifdef Q_WS_WIN
-    kDebug(126) << "KUrl::KUrl " << " " << str;
+  // true if @a c is letter
+  #define IS_LETTER(c) \
+    ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+
+  // like IS_DRIVE_OR_DOUBLESLASH, but slash is prepended
+  #define IS_SLASH_AND_DRIVE_OR_DOUBLESLASH_0 \
+    ( str[0] == '/' && IS_DRIVE_OR_DOUBLESLASH(IS_LETTER(str[1]), str[1], str[2], ':', '/') )
+
+  // like IS_DRIVE_OR_DOUBLESLASH, with characters == str[0] and str[1]
+  #define IS_DRIVE_OR_DOUBLESLASH_0 \
+    ( IS_DRIVE_OR_DOUBLESLASH(IS_LETTER(str[0]), str[0], str[1], ':', '/') )
+
+#if defined(DEBUG_KURL)
+  kDebug(126) << "KUrl::KUrl " << " " << str;
+#endif
   if ( str && str[0] && str[1] && str[2] ) {
-    if ( str[0] == '/' && (str[1] >= 'A' && str[1] <= 'Z' || str[1] >= 'a' && str[1] <= 'z') && str[2] == ':' )
-    	setPath( QString::fromUtf8( str+1 ) );
-    else if ( (str[0] >= 'A' && str[0] <= 'Z' || str[0] >= 'a' && str[0] <= 'z')  &&  str[1] == ':' )
+    if ( IS_SLASH_AND_DRIVE_OR_DOUBLESLASH_0 )
+      setPath( QString::fromUtf8( str+1 ) );
+    else if ( IS_DRIVE_OR_DOUBLESLASH_0 )
       setPath( QString::fromUtf8( str ) );
 #else
   if ( str && str[0] ) {
@@ -384,13 +411,13 @@ KUrl::KUrl( const QByteArray& str )
 {
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
-#if defined(DEBUG_KURL)
+#ifdef DEBUG_KURL
     kDebug(126) << "KUrl::KUrl " << " " << str.data();
 #endif
-    if ( str[0] == '/' && (str[1] >= 'A' && str[1] <= 'Z' || str[1] >= 'a' && str[1] <= 'z') && str[2] == ':' )
-    	  setPath( QString::fromUtf8( str.mid( 1 ) ) );
-    else if ( (str[0] >= 'A' && str[0] <= 'Z' || str[0] >= 'a' && str[0] <= 'z')  &&  str[1] == ':' )
-        setPath( QString::fromUtf8( str ) );
+    if ( IS_SLASH_AND_DRIVE_OR_DOUBLESLASH_0 )
+      setPath( QString::fromUtf8( str.mid( 1 ) ) );
+    else if ( IS_DRIVE_OR_DOUBLESLASH_0 )
+      setPath( QString::fromUtf8( str ) );
 #else
     if ( str[0] == '/' || str[0] == '~' )
       setPath( QString::fromUtf8( str ) );
