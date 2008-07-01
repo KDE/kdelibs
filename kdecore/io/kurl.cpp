@@ -576,10 +576,15 @@ bool KUrl::equals( const KUrl &_u, const EqualsOptions& options ) const
     QString path1 = path((options & CompareWithoutTrailingSlash) ? RemoveTrailingSlash : LeaveTrailingSlash);
     QString path2 = _u.path((options & CompareWithoutTrailingSlash) ? RemoveTrailingSlash : LeaveTrailingSlash);
 #ifdef Q_WS_WIN
-    if ( isLocalFile() && _u.isLocalFile() && 0 != QString::compare( path1, path2, Qt::CaseInsensitive ) )
-#else
-    if ( path1 != path2 )
+    const bool bLocal1 = isLocalFile();
+    const bool bLocal2 = _u.isLocalFile();
+    if ( !bLocal1 && bLocal2 || bLocal1 && !bLocal2 )
+      return false;
+    // local files are case insensitive
+    if ( bLocal1 && bLocal2 && 0 != QString::compare( path1, path2, Qt::CaseInsensitive ) )
+      return false;
 #endif
+    if ( path1 != path2 )
       return false;
 
     if ( scheme() == _u.scheme() &&
@@ -1668,13 +1673,13 @@ void KUrl::setPath( const QString& _path )
     kDebug(126) << "KUrl::setPath " << " " << _path.toAscii().data();
 #endif
     if ( scheme().isEmpty() )
-        setScheme( "file" );
+        setScheme( QLatin1String( "file" ) );
     QString path = KShell::tildeExpand( _path );
 #ifdef Q_WS_WIN
     //This is necessary because QUrl has the "path" part including the first slash
     //Without this QUrl doesn't understand that this is a path, and some operations fail
     //e.g. C:/blah needs to become /C:/blah
-    if( !path.isEmpty() && path[0] != QLatin1Char('/') )
+    if( !path.isEmpty() && path[0] != QLatin1Char('/') && scheme() == QLatin1String( "file" ) )
         path = QLatin1Char('/') + path;
 #endif
     QUrl::setPath( path );
