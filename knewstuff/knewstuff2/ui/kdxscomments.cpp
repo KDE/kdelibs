@@ -29,7 +29,7 @@
 #include <QtGui/QCursor>
 
 KDXSComments::KDXSComments(QWidget *parent)
-    : KDialog(parent)
+        : KDialog(parent)
 {
     setCaption(i18n("User comments"));
     setButtons(KDialog::Close);
@@ -37,14 +37,13 @@ KDXSComments::KDXSComments(QWidget *parent)
     m_log = new QTextBrowser(this);
     setMainWidget(m_log);
 
-    connect(m_log, SIGNAL(anchorClicked(const QUrl&)), 
+    connect(m_log, SIGNAL(anchorClicked(const QUrl&)),
             SLOT(slotUrl(const QUrl&)));
 }
 
 void KDXSComments::slotUrl(const QUrl& url)
 {
-    if(!url.isEmpty())
-    {
+    if (!url.isEmpty()) {
         qDebug("SHOW %s!", qPrintable(url.toString()));
     }
 }
@@ -59,21 +58,21 @@ void KDXSComments::addComment(const QString& username, const QString& comment)
     QString email = "spillner@kde.org";
 
     t += "<a href='" + email + "'>" + Qt::escape(username) + "</a>"
-      + "<table class='itemBox'>"
-      + "<tr>"
-      + "<td class='contentsColumn'>"
-      + "<table class='contentsHeader' cellspacing='2' cellpadding='0'><tr>"
-      + "<td>Comment!</td>"
-      + "</tr></table>"
-      + "<div class='contentsBody'>"
-      + Qt::escape(comment)
-      + "</div>"
-      + "<div class='contentsFooter'>"
-      + "<em>" + Qt::escape(username) + "</em>"
-      + "</div>"
-      + "</td>"
-      + "</tr>"
-      + "</table>";
+         + "<table class='itemBox'>"
+         + "<tr>"
+         + "<td class='contentsColumn'>"
+         + "<table class='contentsHeader' cellspacing='2' cellpadding='0'><tr>"
+         + "<td>Comment!</td>"
+         + "</tr></table>"
+         + "<div class='contentsBody'>"
+         + Qt::escape(comment)
+         + "</div>"
+         + "<div class='contentsFooter'>"
+         + "<em>" + Qt::escape(username) + "</em>"
+         + "</div>"
+         + "</td>"
+         + "</tr>"
+         + "</table>";
 
     m_log->setHtml(t);
 }

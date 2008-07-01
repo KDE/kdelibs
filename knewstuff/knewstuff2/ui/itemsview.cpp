@@ -92,9 +92,9 @@ static bool DownloadsSorter(const Entry* e1, const Entry* e2)
     return e1->downloads() > e2->downloads();
 }
 
-ItemsView::ItemsView(QWidget* _parent )
-    : QListView( _parent ),
-    m_currentProvider(0), m_currentFeed(0), m_root(0), m_sorting(0), m_engine(0)
+ItemsView::ItemsView(QWidget* _parent)
+        : QListView(_parent),
+        m_currentProvider(0), m_currentFeed(0), m_root(0), m_sorting(0), m_engine(0)
 {
     m_root = new QWidget(this);
     setFrameStyle(QFrame::Plain | QFrame::StyledPanel);
@@ -118,30 +118,30 @@ void ItemsView::setProvider(const Provider * provider, const Feed * feed)
     buildContents();
 }
 
-void ItemsView::setSorting( int sortType )
+void ItemsView::setSorting(int sortType)
 {
     m_sorting = sortType;
     buildContents();
 }
 
-void ItemsView::setFeed( const Feed * feed)
+void ItemsView::setFeed(const Feed * feed)
 {
     m_currentFeed = feed;
     buildContents();
 }
 
-void ItemsView::setSearchText( const QString & text )
+void ItemsView::setSearchText(const QString & text)
 {
     m_searchText = text;
     buildContents();
 }
 
-void ItemsView::updateItem( Entry *entry )
+void ItemsView::updateItem(Entry *entry)
 {
     // FIXME: change this to call updateEntry once it is complete
- //   if (m_views.contains(entry)) {
+//   if (m_views.contains(entry)) {
 //        m_views[entry]->setEntry(entry);
-  //  }
+    //  }
 }
 
 void ItemsView::buildContents()
@@ -150,7 +150,7 @@ void ItemsView::buildContents()
 
     m_root->setBackgroundRole(QPalette::Base);
     QVBoxLayout* _layout = new QVBoxLayout(m_root);
-    _layout->setSpacing (10);
+    _layout->setSpacing(10);
 
     if (m_currentFeed != NULL) {
         Entry::List entries = m_currentFeed->entries();
@@ -171,7 +171,7 @@ void ItemsView::buildContents()
         //}
 
         Entry::List::iterator it = entries.begin(), iEnd = entries.end();
-        for ( unsigned row = 0; it != iEnd; ++it) {
+        for (unsigned row = 0; it != iEnd; ++it) {
             Entry* entry = (*it);
 
             if (entry->name().representation().toLower().contains(m_searchText.toLower())) {
@@ -212,22 +212,22 @@ void ItemsView::buildContents()
     //setWidget(m_root);
 }
 
-EntryView::EntryView( QWidget * _parent )
-    : QLabel( _parent )
+EntryView::EntryView(QWidget * _parent)
+        : QLabel(_parent)
 {
     connect(this, SIGNAL(linkActivated(const QString&)), SLOT(urlSelected(const QString&)));
 }
 
-void EntryView::setEntry( Entry *entry )
+void EntryView::setEntry(Entry *entry)
 {
     m_entry = entry;
     buildContents();
 }
 
-void EntryView::updateEntry( Entry *entry )
+void EntryView::updateEntry(Entry *entry)
 {
     // get item id string and iformations
-    QString idString = QString::number( (unsigned long)entry );
+    QString idString = QString::number((unsigned long)entry);
     //            AvailableItem::State state = item->state();
     //            bool showProgress = state != AvailableItem::Normal;
     //            int pixelProgress = showProgress ? (int)(item->progress() * 80.0) : 0;
@@ -255,38 +255,37 @@ void EntryView::buildContents()
     QString statusIcon;
     KIconLoader *loader = KIconLoader::global();
 
-    switch (status)
-    {
-        case Entry::Invalid:
-            statusIcon = "<img src='" + loader->iconPath("dialog-error", -KIconLoader::SizeSmall) + "' />";
-            break;
-        case Entry::Downloadable:
-            // find a good icon to represent downloadable data
-            //statusIcon = "<img src='" + loader->iconPath("network-server", -KIconLoader::SizeSmall) + "' />";
-            break;
-        case Entry::Installed:
-            statusIcon = "<img src='" + loader->iconPath("dialog-ok", -KIconLoader::SizeSmall) + "' />";
-            break;
-        case Entry::Updateable:
-            statusIcon = "<img src='" + loader->iconPath("software-update-available", -KIconLoader::SizeSmall) + "' />";
-            break;
-        case Entry::Deleted:
-            statusIcon = "<img src='" + loader->iconPath("user-trash", -KIconLoader::SizeSmall) + "' />";
-            break;
+    switch (status) {
+    case Entry::Invalid:
+        statusIcon = "<img src='" + loader->iconPath("dialog-error", -KIconLoader::SizeSmall) + "' />";
+        break;
+    case Entry::Downloadable:
+        // find a good icon to represent downloadable data
+        //statusIcon = "<img src='" + loader->iconPath("network-server", -KIconLoader::SizeSmall) + "' />";
+        break;
+    case Entry::Installed:
+        statusIcon = "<img src='" + loader->iconPath("dialog-ok", -KIconLoader::SizeSmall) + "' />";
+        break;
+    case Entry::Updateable:
+        statusIcon = "<img src='" + loader->iconPath("software-update-available", -KIconLoader::SizeSmall) + "' />";
+        break;
+    case Entry::Deleted:
+        statusIcon = "<img src='" + loader->iconPath("user-trash", -KIconLoader::SizeSmall) + "' />";
+        break;
     }
 
     // precalc the title string
     QString titleString = m_entry->name().representation();
-    if ( !m_entry->version().isEmpty() ) titleString += " v." + Qt::escape(m_entry->version());
+    if (!m_entry->version().isEmpty()) titleString += " v." + Qt::escape(m_entry->version());
 
     // precalc the string for displaying stars (normal+grayed)
-    QString starIconPath = KStandardDirs::locate( "data", "knewstuff/pics/ghns_star.png" );
-    QString starBgIconPath = KStandardDirs::locate( "data", "knewstuff/pics/ghns_star_gray.png" );
+    QString starIconPath = KStandardDirs::locate("data", "knewstuff/pics/ghns_star.png");
+    QString starBgIconPath = KStandardDirs::locate("data", "knewstuff/pics/ghns_star_gray.png");
 
     int starPixels = 11 + 11 * (m_entry->rating() / 10);
-    QString starsString = "<div style='width: " + QString::number( starPixels ) + "px; background-image: url(" + starIconPath + "); background-repeat: repeat-x;'>&nbsp;</div>";
+    QString starsString = "<div style='width: " + QString::number(starPixels) + "px; background-image: url(" + starIconPath + "); background-repeat: repeat-x;'>&nbsp;</div>";
     int grayPixels = 22 + 22 * (m_entry->rating() / 20);
-    starsString = "<div style='width: " + QString::number( grayPixels ) + "px;background-image: url(" + starBgIconPath + "); background-repeat: repeat-x;'>" + starsString + "&nbsp;</div>";
+    starsString = "<div style='width: " + QString::number(grayPixels) + "px;background-image: url(" + starBgIconPath + "); background-repeat: repeat-x;'>" + starsString + "&nbsp;</div>";
 
     // precalc the string for displaying author (parsing email)
     KNS::Author author = m_entry->author();
@@ -294,31 +293,31 @@ void EntryView::buildContents()
 
     QString emailString = author.email();
     if (!emailString.isEmpty()) {
-        authorString = "<a href='mailto:" + Qt::escape( emailString) + "'>"
-            + Qt::escape(authorString) + "</a>";
+        authorString = "<a href='mailto:" + Qt::escape(emailString) + "'>"
+                       + Qt::escape(authorString) + "</a>";
     }
 
     // write the HTML code for the current item
     t += //QLatin1String("<table class='contentsHeader' cellspacing='2' cellpadding='0'>")
-         statusIcon + Qt::escape(titleString) + "<br />"
-         //+   "<span align='right'>" + starsString +  "</span><br />"
-         +      Qt::escape(m_entry->summary().representation())
-         +   "<br />";
+        statusIcon + Qt::escape(titleString) + "<br />"
+        //+   "<span align='right'>" + starsString +  "</span><br />"
+        +      Qt::escape(m_entry->summary().representation())
+        +   "<br />";
 
     if (m_entry->rating() > 0) {
         t += i18n("Rating: ") + QString::number(m_entry->rating())
-            +   "<br />";
+             +   "<br />";
     }
 
     if (m_entry->downloads() > 0) {
         t += i18n("Downloads: ") + QString::number(m_entry->downloads())
-            +   "<br />";
+             +   "<br />";
     }
 
     if (!authorString.isEmpty()) {
         t += "<em>" + authorString + "</em>, ";
     }
-    t += KGlobal::locale()->formatDate( m_entry->releaseDate(), KLocale::ShortDate )
+    t += KGlobal::locale()->formatDate(m_entry->releaseDate(), KLocale::ShortDate)
          + "<br />" + "</body></html>";
 
     setText(t);
@@ -328,8 +327,8 @@ void EntryView::setTheAaronnesqueStyle()
 {
     QString hoverColor = "#000000"; //QApplication::palette().active().highlightedText().name();
     QString hoverBackground = "#f8f8f8"; //QApplication::palette().active().highlight().name();
-    QString starIconPath = KStandardDirs::locate( "data", "knewstuff/pics/ghns_star.png" );
-    QString starBgIconPath = KStandardDirs::locate( "data", "knewstuff/pics/ghns_star_gray.png" );
+    QString starIconPath = KStandardDirs::locate("data", "knewstuff/pics/ghns_star.png");
+    QString starBgIconPath = KStandardDirs::locate("data", "knewstuff/pics/ghns_star_gray.png");
 
     // default elements style
     QString s;
@@ -356,11 +355,11 @@ void EntryView::setTheAaronnesqueStyle()
     setStyleSheet(s);
 }
 
-void EntryView::urlSelected( const QString &link)
+void EntryView::urlSelected(const QString &link)
 {
     //kDebug() << "Clicked on URL " << link;
 
-    KUrl url( link );
+    KUrl url(link);
     QString urlProtocol = url.protocol();
     QString urlPath = url.path();
 
@@ -368,20 +367,19 @@ void EntryView::urlSelected( const QString &link)
         // clicked over a mail address
         // FIXME: if clicked with MRB, show context menu with IM etc.
         // FIXME: but RMB never reaches this method?!
-        KToolInvocation::invokeMailer( url );
-    }
-    else if (urlProtocol == "item") {
+        KToolInvocation::invokeMailer(url);
+    } else if (urlProtocol == "item") {
         // clicked over an item
         bool ok;
-        unsigned long itemPointer = urlPath.toULong( &ok );
-        if ( !ok ) {
+        unsigned long itemPointer = urlPath.toULong(&ok);
+        if (!ok) {
             kWarning() << "ItemsView: error converting item pointer.";
             return;
         }
 
         // I love to cast pointers
         Entry *entry = (Entry*)itemPointer;
-        if ( entry != m_entry ) {
+        if (entry != m_entry) {
             kWarning() << "ItemsView: error retrieving item pointer.";
             return;
         }

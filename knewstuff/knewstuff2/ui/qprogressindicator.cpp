@@ -29,7 +29,7 @@
 #include <kiconloader.h>
 
 QProgressIndicator::QProgressIndicator(QWidget *parent)
-: QFrame(parent)
+        : QFrame(parent)
 {
     setFrameStyle(QFrame::NoFrame);
     m_pb = new QProgressBar();
@@ -60,7 +60,7 @@ void QProgressIndicator::slotClicked()
     QPoint indicatorpos = mapToGlobal(pos());
     m_details->move(indicatorpos.x(), indicatorpos.y());
 
-    if(m_details->isVisible())
+    if (m_details->isVisible())
         m_details->hide();
     else
         m_details->show();
@@ -72,8 +72,7 @@ void QProgressIndicator::addProgress(const QString & message, int percentage)
 
     m_progress[message] = percentage;
 
-    if(!m_progresswidgets.contains(message))
-    {
+    if (!m_progresswidgets.contains(message)) {
         QWidget *pbcontainer = new QWidget();
 
         // make a label to show the url
@@ -99,9 +98,7 @@ void QProgressIndicator::addProgress(const QString & message, int percentage)
         pbcontainer->show();
 
         m_detailsvbox->addWidget(pbcontainer);
-    }
-    else
-    {
+    } else {
         pb = m_progresswidgets[message];
     }
 
@@ -120,14 +117,12 @@ void QProgressIndicator::removeProgress(const QString & message)
 {
     m_progress.remove(message);
 
-    if (m_progresswidgets[message])
-    {
+    if (m_progresswidgets[message]) {
         delete m_progresswidgets[message]->parentWidget();
         m_progresswidgets.remove(message);
     }
 
-    if(m_progress.count() == 0)
-    {
+    if (m_progress.count() == 0) {
         m_pbdetails->setEnabled(false);
         m_details->hide();
     }
@@ -137,16 +132,14 @@ void QProgressIndicator::removeProgress(const QString & message)
 
 void QProgressIndicator::calculateAverage()
 {
-    if(m_progress.count() == 0)
-    {
+    if (m_progress.count() == 0) {
         m_pb->reset();
         return;
     }
 
     int average = 0;
     QHashIterator<QString, int> it(m_progress);
-    while(it.hasNext())
-    {
+    while (it.hasNext()) {
         it.next();
         average += it.value();
     }

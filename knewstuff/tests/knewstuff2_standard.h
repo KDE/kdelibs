@@ -7,17 +7,17 @@
 
 namespace KNS
 {
-	class Engine;
+class Engine;
 }
 
 class KNewStuff2Standard : public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-	KNewStuff2Standard();
-	void run(bool upload, bool modal, QString file);
+    KNewStuff2Standard();
+    void run(bool upload, bool modal, QString file);
 private:
-	KNS::Engine *m_engine;
+    KNS::Engine *m_engine;
 };
 
 #endif

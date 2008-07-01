@@ -37,14 +37,14 @@ class QTextBrowser;
  */
 class KDXSComments : public KDialog
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-	KDXSComments(QWidget *parent);
-	void addComment(const QString& username, const QString& comment);
+    KDXSComments(QWidget *parent);
+    void addComment(const QString& username, const QString& comment);
 private Q_SLOTS:
-	void slotUrl(const QUrl& url);
+    void slotUrl(const QUrl& url);
 private:
-	QTextBrowser *m_log;
+    QTextBrowser *m_log;
 };
 
 #endif

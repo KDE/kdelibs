@@ -26,8 +26,9 @@
 #include <QtCore/QByteArray>
 
 class KJob;
-namespace KIO {
-    class Job;
+namespace KIO
+{
+class Job;
 }
 
 /**
@@ -45,19 +46,19 @@ namespace KIO {
 class QAsyncPixmap : public QObject, public QPixmap
 {
     Q_OBJECT
-    public:
-        QAsyncPixmap(const QString& url, QObject* parent);
+public:
+    QAsyncPixmap(const QString& url, QObject* parent);
 
-    Q_SIGNALS:
-        void signalLoaded(const QString & url, const QPixmap& pix);
+Q_SIGNALS:
+    void signalLoaded(const QString & url, const QPixmap& pix);
 
-    private Q_SLOTS:
-        void slotDownload(KJob *job);
-        void slotData(KIO::Job* job, const QByteArray& buf);
+private Q_SLOTS:
+    void slotDownload(KJob *job);
+    void slotData(KIO::Job* job, const QByteArray& buf);
 
-    private:
-        QString m_url;
-        QByteArray m_buffer;
+private:
+    QString m_url;
+    QByteArray m_buffer;
 };
 
 #endif

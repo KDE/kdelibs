@@ -26,7 +26,8 @@
 
 class QTreeWidget;
 
-namespace KNS {
+namespace KNS
+{
 
 class Provider;
 //class Engine;
@@ -47,13 +48,13 @@ class Provider;
 class ProviderDialog : public KDialog
 {
     Q_OBJECT
-  public:
+public:
     /**
       Constructor.
 
       @param parent the parent window
     */
-    ProviderDialog( QWidget *parent );
+    ProviderDialog(QWidget *parent);
 
     /**
       Clears the list of providers.
@@ -63,14 +64,14 @@ class ProviderDialog : public KDialog
     /**
       Adds a Hotstuff provider to the list.
     */
-    void addProvider( Provider * );
+    void addProvider(Provider *);
 
     Provider *provider() const;
 
-  protected Q_SLOTS:
+protected Q_SLOTS:
     void slotOk();
 
-  private:
+private:
 //    Engine *mEngine;
 
     QTreeWidget *mListWidget;

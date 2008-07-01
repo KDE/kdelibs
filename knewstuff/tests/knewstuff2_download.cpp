@@ -24,8 +24,7 @@ class FeedWidget : public QTableWidget
 {
 public:
     FeedWidget()
-    : QTableWidget()
-    {
+            : QTableWidget() {
         m_entries = 0;
         m_previewentries = 0;
 
@@ -41,8 +40,7 @@ public:
         setHorizontalHeaderLabels(headers);
     }
 
-    void addEntry(KNS::Entry *entry)
-    {
+    void addEntry(KNS::Entry *entry) {
         QTableWidgetItem *nameitem = new QTableWidgetItem();
         nameitem->setText(entry->name().representation());
 
@@ -63,8 +61,7 @@ public:
         m_entries++;
     }
 
-    void addPreview(KUrl previewfile)
-    {
+    void addPreview(KUrl previewfile) {
         QTableWidgetItem *previewitem = new QTableWidgetItem();
         previewitem->setSizeHint(QSize(64, 64));
         previewitem->setIcon(QIcon(previewfile.path()));
@@ -80,7 +77,7 @@ private:
 };
 
 KNewStuff2Download::KNewStuff2Download()
-: QWidget()
+        : QWidget()
 {
     m_engine = NULL;
     m_activefeed = NULL;
@@ -164,7 +161,7 @@ void KNewStuff2Download::buttonToggled(bool checked)
         }
     } else {
         if (m_checkedButton == KNewStuff2Download::Recent && sender() == recentButton) {
-                recentButton->setChecked(true);
+            recentButton->setChecked(true);
         } else if (m_checkedButton == KNewStuff2Download::Estimated && sender() == estimatedButton) {
             estimatedButton->setChecked(true);
         } else if (m_checkedButton == KNewStuff2Download::Wanted && sender() == wantedButton) {
@@ -189,31 +186,31 @@ void KNewStuff2Download::run()
 
     kDebug() << "-- engine test result: " << success;
 
-    if(success) {
+    if (success) {
         connect(m_engine,
-            SIGNAL(signalProviderLoaded(KNS::Provider*)),
-            SLOT(slotProviderLoaded(KNS::Provider*)));
+                SIGNAL(signalProviderLoaded(KNS::Provider*)),
+                SLOT(slotProviderLoaded(KNS::Provider*)));
         connect(m_engine,
-            SIGNAL(signalProvidersFailed()),
-            SLOT(slotProvidersFailed()));
+                SIGNAL(signalProvidersFailed()),
+                SLOT(slotProvidersFailed()));
         connect(m_engine,
-            SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
-            SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
+                SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
+                SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
         connect(m_engine,
-            SIGNAL(signalEntriesFailed()),
-            SLOT(slotEntriesFailed()));
+                SIGNAL(signalEntriesFailed()),
+                SLOT(slotEntriesFailed()));
         connect(m_engine,
-            SIGNAL(signalPayloadLoaded(KUrl)),
-            SLOT(slotPayloadLoaded(KUrl)));
+                SIGNAL(signalPayloadLoaded(KUrl)),
+                SLOT(slotPayloadLoaded(KUrl)));
         connect(m_engine,
-            SIGNAL(signalPayloadFailed()),
-            SLOT(slotPayloadFailed()));
+                SIGNAL(signalPayloadFailed()),
+                SLOT(slotPayloadFailed()));
         connect(m_engine,
-            SIGNAL(signalPreviewLoaded(KUrl)),
-            SLOT(slotPreviewLoaded(KUrl)));
+                SIGNAL(signalPreviewLoaded(KUrl)),
+                SLOT(slotPreviewLoaded(KUrl)));
         connect(m_engine,
-            SIGNAL(signalPreviewFailed()),
-            SLOT(slotPreviewFailed()));
+                SIGNAL(signalPreviewFailed()),
+                SLOT(slotPreviewFailed()));
 
         m_engine->start();
     } else {
@@ -226,7 +223,7 @@ void KNewStuff2Download::slotInstall()
 {
     kDebug() << "Attempt to install entry...";
 
-    if(!m_activeentry) {
+    if (!m_activeentry) {
         kError() << "No entries loaded!" << endl;
         return;
     } else {
@@ -245,7 +242,7 @@ void KNewStuff2Download::slotProviderLoaded(KNS::Provider *provider)
     m_providerlist->addItem(item);
 
     QStringList feeds = provider->feeds();
-    for(QStringList::Iterator it = feeds.begin(); it != feeds.end(); ++it) {
+    for (QStringList::Iterator it = feeds.begin(); it != feeds.end(); ++it) {
         KNS::Feed *feed = provider->downloadUrlFeed((*it));
 
         FeedWidget *feedtab = new FeedWidget();
@@ -253,7 +250,7 @@ void KNewStuff2Download::slotProviderLoaded(KNS::Provider *provider)
         m_activefeed = feedtab;
     }
 
-    if(feeds.size() == 0) {
+    if (feeds.size() == 0) {
         FeedWidget *nofeedtab = new FeedWidget();
         m_feeds->addTab(nofeedtab, "Entries");
         m_activefeed = nofeedtab;
@@ -301,7 +298,7 @@ void KNewStuff2Download::slotPayloadLoaded(KUrl payload)
     kDebug() << "-- downloaded to " << payload.prettyUrl();
 
     bool success = m_engine->install(payload.path());
-    if(success) {
+    if (success) {
         kDebug() << "-- installation succeeded";
     } else {
         kError() << "-- installation failed" << endl;

@@ -28,7 +28,7 @@
 #include <QtGui/QApplication>
 
 KDXSChanges::KDXSChanges(QWidget *parent)
-    : KDialog(parent)
+        : KDialog(parent)
 {
     setCaption(i18n("Changelog"));
     setButtons(KDialog::Close);
@@ -49,14 +49,14 @@ void KDXSChanges::addChangelog(const QString& version, const QString& log)
     t += m_log->toHtml();
 
     t += QLatin1String("<table class='itemBox'>")
-      + "<tr>"
-      +   "<td class='contentsColumn'>"
-      +     "<table class='contentsHeader' cellspacing='2' cellpadding='0'><tr>"
-      +     "<td>" + i18n("Version %1", Qt::escape(version)) + "</td>"
-      + "</tr></table>"
-      + "<div class='contentsBody'>"
-      + Qt::escape(log)
-      + "</div>";
+         + "<tr>"
+         +   "<td class='contentsColumn'>"
+         +     "<table class='contentsHeader' cellspacing='2' cellpadding='0'><tr>"
+         +     "<td>" + i18n("Version %1", Qt::escape(version)) + "</td>"
+         + "</tr></table>"
+         + "<div class='contentsBody'>"
+         + Qt::escape(log)
+         + "</div>";
 
     m_log->setHtml(t);
 }

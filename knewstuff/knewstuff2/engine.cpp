@@ -1,7 +1,7 @@
 /*
     This file is part of KNewStuff2.
-    Copyright (c) 2007 Josef Spillner <spillner@kde.org>
     Copyright (c) 2008 Jeremy Whiting <jeremy@scitools.com>
+    Copyright (c) 2007 Josef Spillner <spillner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -40,8 +40,7 @@ class KNS::EnginePrivate : public DxsEngine
 
 public:
     EnginePrivate(QWidget* parent)
-        : DxsEngine(parent)
-    {
+            : DxsEngine(parent) {
         m_command = EnginePrivate::command_none;
         m_uploaddialog = NULL;
         m_downloaddialog = NULL;
@@ -51,8 +50,7 @@ public:
         m_loop = 0;
     }
 
-    enum Command
-    {
+    enum Command {
         command_none,
         command_upload,
         command_download
@@ -72,7 +70,7 @@ public:
     QSet<KNS::Entry*> m_changedEntries;
     QEventLoop* m_loop;
 
-  private Q_SLOTS:
+private Q_SLOTS:
     /** stop the event loop */
     void stopLoop();
 
@@ -90,7 +88,7 @@ public:
 
 
 Engine::Engine(QWidget* parent)
-    : d(new EnginePrivate(parent))
+        : d(new EnginePrivate(parent))
 {
 }
 
@@ -169,7 +167,7 @@ KNS::Entry::List Engine::download()
     KNS::Entry::List tempList = engine->downloadDialogModal(0);
 
     // copy the list since the entries will be deleted when we delete the engine
-    foreach (Entry * entry, tempList) {
+    foreach(Entry * entry, tempList) {
         entries << new Entry(*entry);
     }
     delete engine;
@@ -273,16 +271,14 @@ void EnginePrivate::slotProviderLoaded(KNS::Provider *provider)
 {
     if (m_command == command_download) {
         loadEntries(provider);
-    }
-    else if (m_command == command_upload) {
+    } else if (m_command == command_upload) {
         // FIXME: inject into upload dialog
         // FIXME: dialog could do this by itself!
 
         // FIXME: for the modal dialog, do nothing here
         // ... and wait for slotProvidersFinished()
-       m_providers.append(provider);
-    }
-    else {
+        m_providers.append(provider);
+    } else {
         kError() << "Engine: invalid command" << endl;
     }
 }
@@ -336,11 +332,11 @@ void EnginePrivate::slotProvidersFinished()
     //kDebug() << "Upload: " << QString(ar);
 
     connect(this,
-        SIGNAL(signalEntryUploaded()),
-        SLOT(stopLoop()));
+            SIGNAL(signalEntryUploaded()),
+            SLOT(stopLoop()));
     connect(this,
-        SIGNAL(signalEntryFailed()),
-        SLOT(stopLoop()));
+            SIGNAL(signalEntryFailed()),
+            SLOT(stopLoop()));
 
     uploadEntry(provider, entry);
 }

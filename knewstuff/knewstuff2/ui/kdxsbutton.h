@@ -50,7 +50,7 @@ class Feed;
  */
 class KDXSButton : public QToolButton
 {
-Q_OBJECT
+    Q_OBJECT
 public:
     KDXSButton(QWidget *parent);
     ~KDXSButton();
@@ -127,8 +127,7 @@ private:
     QAction *action_contactbymail;
     QAction *action_contactbyjabber;
 
-    enum States
-    {
+    enum States {
         historyinactive,
         historydisabled,
         historyslots
@@ -143,10 +142,10 @@ private:
 
     QString m_username;
     QString m_password;
-    
+
     class Private;
     Private * const d;
-    
+
     QWidget * m_parent;
 };
 

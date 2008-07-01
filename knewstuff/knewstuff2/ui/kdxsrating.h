@@ -39,16 +39,16 @@ class QStarFrame;
  */
 class KDXSRating : public KDialog
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-	KDXSRating(QWidget *parent);
-	int rating();
+    KDXSRating(QWidget *parent);
+    int rating();
 public Q_SLOTS:
-	void slotRating(int rating);
+    void slotRating(int rating);
 private:
-	QLabel *m_rating;
-	QStarFrame *m_starrating;
-	QSlider *m_slider;
+    QLabel *m_rating;
+    QStarFrame *m_starrating;
+    QSlider *m_slider;
 };
 
 #endif

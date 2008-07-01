@@ -7,24 +7,24 @@
 
 namespace KNS
 {
-	class CoreEngine;
-	class Feed;
-	class Provider;
+class CoreEngine;
+class Feed;
+class Provider;
 }
 
 class KNewStuff2Cache : public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-	KNewStuff2Cache();
-	void run();
+    KNewStuff2Cache();
+    void run();
 public slots:
-	void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
-	void slotEntriesFailed();
-	void slotEntriesFinished();
+    void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
+    void slotEntriesFailed();
+    void slotEntriesFinished();
 private:
-	void quitTest();
-	KNS::CoreEngine *m_engine;
+    void quitTest();
+    KNS::CoreEngine *m_engine;
 };
 
 #endif

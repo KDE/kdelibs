@@ -36,17 +36,17 @@
  */
 class QStarFrame: public QFrame
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-	QStarFrame(QWidget *parent);
+    QStarFrame(QWidget *parent);
 public Q_SLOTS:
-	void slotRating(int rating);
+    void slotRating(int rating);
 protected:
-	void paintEvent(QPaintEvent *e);
+    void paintEvent(QPaintEvent *e);
 private:
-	void drawstars();
+    void drawstars();
 
-	int m_rating;
+    int m_rating;
 };
 
 #endif

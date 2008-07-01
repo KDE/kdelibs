@@ -36,8 +36,8 @@
  */
 class QNowToolTip
 {
-	public:
-		static void display(QWidget *parent, const QRect& pos, const QString& text);
+public:
+    static void display(QWidget *parent, const QRect& pos, const QString& text);
 };
 
 #endif

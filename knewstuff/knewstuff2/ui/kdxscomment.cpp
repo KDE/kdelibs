@@ -26,25 +26,25 @@
 #include <klocale.h>
 
 KDXSComment::KDXSComment(QWidget *parent)
-: KDialog(parent)
+        : KDialog(parent)
 {
-	setCaption(i18n("Leave a comment"));
-	setButtons(KDialog::Ok | KDialog::Cancel);
+    setCaption(i18n("Leave a comment"));
+    setButtons(KDialog::Ok | KDialog::Cancel);
 
-	QVBoxLayout *vbox;
+    QVBoxLayout *vbox;
 
-	QWidget *root = new QWidget(this);
-	setMainWidget(root);
+    QWidget *root = new QWidget(this);
+    setMainWidget(root);
 
-	m_textbox = new QTextEdit(root);
+    m_textbox = new QTextEdit(root);
 
-	vbox = new QVBoxLayout(root);
-	vbox->addWidget(m_textbox);
+    vbox = new QVBoxLayout(root);
+    vbox->addWidget(m_textbox);
 }
 
 QString KDXSComment::comment()
 {
-	return m_textbox->toPlainText();
+    return m_textbox->toPlainText();
 }
 
 #include "kdxscomment.moc"

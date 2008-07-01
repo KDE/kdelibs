@@ -41,7 +41,7 @@ class QPushButton;
  */
 class QProgressIndicator : public QFrame
 {
-Q_OBJECT
+    Q_OBJECT
 public:
     QProgressIndicator(QWidget *parent);
     void addProgress(const QString & message, int percentage);

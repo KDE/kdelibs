@@ -37,12 +37,12 @@ class QTextEdit;
  */
 class KDXSComment : public KDialog
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-	KDXSComment(QWidget *parent);
-	QString comment();
+    KDXSComment(QWidget *parent);
+    QString comment();
 private:
-	QTextEdit *m_textbox;
+    QTextEdit *m_textbox;
 };
 
 #endif

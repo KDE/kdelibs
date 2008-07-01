@@ -23,7 +23,8 @@
 
 #include <knewstuff2/core/coreengine.h>
 
-namespace KNS {
+namespace KNS
+{
 
 class Dxs;
 class Category;
@@ -40,40 +41,39 @@ class Category;
 class DxsEngine : public CoreEngine
 {
     Q_OBJECT
-    public:
-        DxsEngine(QObject* parent);
-        ~DxsEngine();
+public:
+    DxsEngine(QObject* parent);
+    ~DxsEngine();
 
-        enum Policy
-        {
-          DxsNever,
-          DxsIfPossible,
-          DxsAlways
-        };
+    enum Policy {
+        DxsNever,
+        DxsIfPossible,
+        DxsAlways
+    };
 
-        void setDxsPolicy(Policy policy);
+    void setDxsPolicy(Policy policy);
 
-        void loadEntries(Provider *provider);
-        //void downloadPreview(Entry *entry);
-        //void downloadPayload(Entry *entry);
-        // FIXME: the upload/download stuff is only necessary when we use
-        // integrated base64-encoded files; maybe delay to later version?
+    void loadEntries(Provider *provider);
+    //void downloadPreview(Entry *entry);
+    //void downloadPayload(Entry *entry);
+    // FIXME: the upload/download stuff is only necessary when we use
+    // integrated base64-encoded files; maybe delay to later version?
 
-        //bool uploadEntry(Provider *provider, Entry *entry);
+    //bool uploadEntry(Provider *provider, Entry *entry);
 
-        // get the dxs object
-        Dxs * dxsObject(const Provider * provider);
+    // get the dxs object
+    Dxs * dxsObject(const Provider * provider);
 
-    private slots:
-        // FIXME: idem for slots
-        void slotEntriesLoadedDXS(KNS::Entry::List list, Feed * feed);
-        void slotEntriesFailed();
+private slots:
+    // FIXME: idem for slots
+    void slotEntriesLoadedDXS(KNS::Entry::List list, Feed * feed);
+    void slotEntriesFailed();
 
-        void slotCategories(QList<KNS::Category*>);
+    void slotCategories(QList<KNS::Category*>);
 
-    private:
-        QMap<const Provider *, Dxs *> m_dxsbyprovider;
-        Policy m_dxspolicy;
+private:
+    QMap<const Provider *, Dxs *> m_dxsbyprovider;
+    Policy m_dxspolicy;
 };
 
 }

@@ -33,20 +33,20 @@ Button::Button(const QString& what,
                const QString& providerList,
                const QString& resourceType,
                QWidget* parent)
-    : KPushButton(parent),
-      d(0),
-      m_providerList(providerList),
-      m_type(resourceType),
-      m_engine(0)
+        : KPushButton(parent),
+        d(0),
+        m_providerList(providerList),
+        m_type(resourceType),
+        m_engine(0)
 {
     setButtonText(what);
     init();
 }
 
 Button::Button(QWidget* parent)
-    : KPushButton(parent),
-      d(0),
-      m_engine(0)
+        : KPushButton(parent),
+        d(0),
+        m_engine(0)
 {
     setButtonText(i18n("Download New Stuff"));
     init();

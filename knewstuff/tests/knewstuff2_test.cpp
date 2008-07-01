@@ -16,7 +16,7 @@
 #include <stdio.h> // for stdout
 
 KNewStuff2Test::KNewStuff2Test()
-: QObject()
+        : QObject()
 {
     m_engine = NULL;
     m_testall = false;
@@ -33,13 +33,11 @@ void KNewStuff2Test::entryTest()
 
     QDomDocument doc;
     QFile f(QString("%1/testdata/entry.xml").arg(KNSSRCDIR));
-    if(!f.open(QIODevice::ReadOnly))
-    {
+    if (!f.open(QIODevice::ReadOnly)) {
         kDebug() << "Error loading entry file.";
         quitTest();
     }
-    if(!doc.setContent(&f))
-    {
+    if (!doc.setContent(&f)) {
         kDebug() << "Error parsing entry file.";
         f.close();
         quitTest();
@@ -56,12 +54,9 @@ void KNewStuff2Test::entryTest()
 
     kDebug() << "-- entry->xml test result: " << eh.isValid();
 
-    if(!eh.isValid())
-    {
+    if (!eh.isValid()) {
         quitTest();
-    }
-    else
-    {
+    } else {
         QTextStream out(stdout);
         out << exml;
     }
@@ -73,13 +68,11 @@ void KNewStuff2Test::providerTest()
 
     QDomDocument doc;
     QFile f(QString("%1/testdata/provider.xml").arg(KNSSRCDIR));
-    if(!f.open(QIODevice::ReadOnly))
-    {
+    if (!f.open(QIODevice::ReadOnly)) {
         kDebug() << "Error loading provider file.";
         quitTest();
     }
-    if(!doc.setContent(&f))
-    {
+    if (!doc.setContent(&f)) {
         kDebug() << "Error parsing provider file.";
         f.close();
         quitTest();
@@ -96,12 +89,9 @@ void KNewStuff2Test::providerTest()
 
     kDebug() << "-- provider->xml test result: " << ph.isValid();
 
-    if(!ph.isValid())
-    {
+    if (!ph.isValid()) {
         quitTest();
-    }
-    else
-    {
+    } else {
         QTextStream out(stdout);
         out << pxml;
     }
@@ -116,40 +106,37 @@ void KNewStuff2Test::engineTest()
 
     kDebug() << "-- engine test result: " << ret;
 
-    if(ret)
-    {
+    if (ret) {
         connect(m_engine,
-            SIGNAL(signalProviderLoaded(KNS::Provider*)),
-            SLOT(slotProviderLoaded(KNS::Provider*)));
+                SIGNAL(signalProviderLoaded(KNS::Provider*)),
+                SLOT(slotProviderLoaded(KNS::Provider*)));
         connect(m_engine,
-            SIGNAL(signalProvidersFailed()),
-            SLOT(slotProvidersFailed()));
+                SIGNAL(signalProvidersFailed()),
+                SLOT(slotProvidersFailed()));
         connect(m_engine,
-            SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
-            SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
+                SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
+                SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
         connect(m_engine,
-            SIGNAL(signalEntriesFinished()),
-            SLOT(slotEntriesFinished()));
+                SIGNAL(signalEntriesFinished()),
+                SLOT(slotEntriesFinished()));
         connect(m_engine,
-            SIGNAL(signalEntriesFailed()),
-            SLOT(slotEntriesFailed()));
+                SIGNAL(signalEntriesFailed()),
+                SLOT(slotEntriesFailed()));
         connect(m_engine,
-            SIGNAL(signalPayloadLoaded(KUrl)),
-            SLOT(slotPayloadLoaded(KUrl)));
+                SIGNAL(signalPayloadLoaded(KUrl)),
+                SLOT(slotPayloadLoaded(KUrl)));
         connect(m_engine,
-            SIGNAL(signalPayloadFailed()),
-            SLOT(slotPayloadFailed()));
+                SIGNAL(signalPayloadFailed()),
+                SLOT(slotPayloadFailed()));
         connect(m_engine,
-            SIGNAL(signalInstallationFinished()),
-            SLOT(slotInstallationFinished()));
+                SIGNAL(signalInstallationFinished()),
+                SLOT(slotInstallationFinished()));
         connect(m_engine,
-            SIGNAL(signalInstallationFailed()),
-            SLOT(slotInstallationFailed()));
+                SIGNAL(signalInstallationFailed()),
+                SLOT(slotInstallationFailed()));
 
         m_engine->start();
-    }
-    else
-    {
+    } else {
         kWarning() << "ACHTUNG: you probably need to 'make install' the knsrc file first.";
         kWarning() << "Although this is not required anymore, so something went really wrong.";
         quitTest();
@@ -172,13 +159,12 @@ void KNewStuff2Test::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, c
     kDebug() << "SLOT: slotEntryLoaded";
     kDebug() << "-- entry: " << entry->name().representation();
 
-    if(m_testall)
-    {
+    if (m_testall) {
         kDebug() << "-- now, download the entry's preview and payload file";
 
         if (!entry->preview().isEmpty())
             m_engine->downloadPreview(entry);
-        if(!entry->payload().isEmpty())
+        if (!entry->payload().isEmpty())
             m_engine->downloadPayload(entry);
     }
 }
@@ -186,8 +172,7 @@ void KNewStuff2Test::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, c
 void KNewStuff2Test::slotEntriesFinished()
 {
     // Wait for installation if requested
-    if(!m_testall)
-    {
+    if (!m_testall) {
         quitTest();
     }
 }
@@ -239,15 +224,12 @@ void KNewStuff2Test::slotInstallationFailed()
 void KNewStuff2Test::quitTest()
 {
     kDebug() << "-- quitting now...";
-    if(1 == 0)
-    {
+    if (1 == 0) {
         // this would be the soft way out...
         delete m_engine;
         deleteLater();
         kapp->quit();
-    }
-    else
-    {
+    } else {
         exit(1);
     }
 }
@@ -269,8 +251,7 @@ int main(int argc, char **argv)
 
     KNewStuff2Test *test = new KNewStuff2Test();
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    if(args->isSet("testall"))
-    {
+    if (args->isSet("testall")) {
         test->setTestAll(true);
         test->entryTest();
         test->providerTest();

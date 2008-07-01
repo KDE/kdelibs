@@ -35,7 +35,7 @@
 using namespace KNS;
 
 Dxs::Dxs(QObject* parent, KNS::Provider * provider)
-    : QObject(parent), m_provider(provider)
+        : QObject(parent), m_provider(provider)
 {
     m_soap = new Soap(this);
     connect(m_soap, SIGNAL(signalResult(QDomNode, int)), SLOT(slotResult(QDomNode, int)));
@@ -204,8 +204,7 @@ void Dxs::slotResult(QDomNode node, int jobid)
         QString version = m_soap->xpath(node, "/version");
 
         emit signalInfo(provider, server, version);
-    }
-    else if (m_soap->localname(node) == "GHNSCategoriesResponse") {
+    } else if (m_soap->localname(node) == "GHNSCategoriesResponse") {
         QList<KNS::Category*> categories;
 
         QList<QDomNode> catlist = m_soap->directChildNodes(node, "category");
@@ -227,8 +226,7 @@ void Dxs::slotResult(QDomNode node, int jobid)
         }
 
         emit signalCategories(categories);
-    }
-    else if (m_soap->localname(node) == "GHNSListResponse") {
+    } else if (m_soap->localname(node) == "GHNSListResponse") {
         QList<KNS::Entry*> entries;
 
         Feed * thisFeed = m_jobfeeds.value(jobid);
@@ -249,8 +247,7 @@ void Dxs::slotResult(QDomNode node, int jobid)
         }
 
         emit signalEntries(entries, thisFeed);
-    }
-    else if (m_soap->localname(node) == "GHNSCommentsResponse") {
+    } else if (m_soap->localname(node) == "GHNSCommentsResponse") {
         QStringList comments;
 
         QList<QDomNode> comlist = m_soap->directChildNodes(node, "comments");
@@ -259,8 +256,7 @@ void Dxs::slotResult(QDomNode node, int jobid)
         }
 
         emit signalComments(comments);
-    }
-    else if (m_soap->localname(node) == "GHNSChangesResponse") {
+    } else if (m_soap->localname(node) == "GHNSChangesResponse") {
         QStringList changes;
 
         QList<QDomNode> changelist = m_soap->directChildNodes(node, "entry");
@@ -276,8 +272,7 @@ void Dxs::slotResult(QDomNode node, int jobid)
 
         // FIXME: pass (version, changelog) pairs - Python I miss you :-)
         emit signalChanges(changes);
-    }
-    else if (m_soap->localname(node) == "GHNSHistoryResponse") {
+    } else if (m_soap->localname(node) == "GHNSHistoryResponse") {
         QStringList entries;
 
         QList<QDomNode> entrylist = m_soap->directChildNodes(node, "entry");
@@ -286,17 +281,13 @@ void Dxs::slotResult(QDomNode node, int jobid)
         }
 
         emit signalHistory(entries);
-    }
-    else if (m_soap->localname(node) == "GHNSRemovalResponse") {
+    } else if (m_soap->localname(node) == "GHNSRemovalResponse") {
         emit signalRemoval(success);
-    }
-    else if (m_soap->localname(node) == "GHNSSubscriptionResponse") {
+    } else if (m_soap->localname(node) == "GHNSSubscriptionResponse") {
         emit signalSubscription(success);
-    }
-    else if (m_soap->localname(node) == "GHNSCommentResponse") {
+    } else if (m_soap->localname(node) == "GHNSCommentResponse") {
         emit signalComment(success);
-    }
-    else if (m_soap->localname(node) == "GHNSRatingResponse") {
+    } else if (m_soap->localname(node) == "GHNSRatingResponse") {
         emit signalRating(success);
     }
 }

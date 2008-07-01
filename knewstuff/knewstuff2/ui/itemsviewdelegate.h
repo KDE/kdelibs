@@ -36,45 +36,45 @@
 
 namespace KNS
 {
-    class ItemsViewDelegate: public KWidgetItemDelegate
-    {
-        Q_OBJECT
-        public:
-            ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent = 0);
-            ~ItemsViewDelegate();
+class ItemsViewDelegate: public KWidgetItemDelegate
+{
+    Q_OBJECT
+public:
+    ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent = 0);
+    ~ItemsViewDelegate();
 
-            // paint the item at index with all it's attributes shown
-            virtual void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
-            
-            // get the list of widgets
-            virtual QList<QWidget*> createItemWidgets() const;
+    // paint the item at index with all it's attributes shown
+    virtual void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
-            // update the widgets
-            virtual void updateItemWidgets(const QList<QWidget*> widgets,
-                                               const QStyleOptionViewItem &option,
-                                               const QPersistentModelIndex &index) const;
+    // get the list of widgets
+    virtual QList<QWidget*> createItemWidgets() const;
 
-            virtual QSize sizeHint( const QStyleOptionViewItem & option, const QModelIndex & index) const;
+    // update the widgets
+    virtual void updateItemWidgets(const QList<QWidget*> widgets,
+                                   const QStyleOptionViewItem &option,
+                                   const QPersistentModelIndex &index) const;
 
-        signals:
+    virtual QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
-            void performAction(DownloadDialog::EntryAction action, KNS::Entry * entry);
+signals:
 
-        //protected:
-            //virtual bool eventFilter(QObject *watched, QEvent *event);
+    void performAction(DownloadDialog::EntryAction action, KNS::Entry * entry);
 
-        private slots:
+    //protected:
+    //virtual bool eventFilter(QObject *watched, QEvent *event);
 
-            void slotActionTriggered(QAction *action);
-            void slotInstallClicked();
-            void slotLinkClicked(const QString & url);
+private slots:
 
-        private:
-            KMenu * InstallMenu(const QToolButton* button, Entry::Status status) const;
+    void slotActionTriggered(QAction *action);
+    void slotInstallClicked();
+    void slotLinkClicked(const QString & url);
 
-            QList<KIcon> m_statusicons;
-            QImage m_frameImage;
-    };
+private:
+    KMenu * InstallMenu(const QToolButton* button, Entry::Status status) const;
+
+    QList<KIcon> m_statusicons;
+    QImage m_frameImage;
+};
 }
 
 #endif

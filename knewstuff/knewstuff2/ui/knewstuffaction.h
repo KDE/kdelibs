@@ -26,7 +26,8 @@ class QObject;
 class KAction;
 class KActionCollection;
 
-namespace KNS {
+namespace KNS
+{
 
 /**
  * @brief Standard action for all GHNS workflows.
@@ -34,10 +35,10 @@ namespace KNS {
  * This action can be used to add KNewStuff support to menus and toolbars.
  */
 KNEWSTUFF_EXPORT KAction* standardAction(const QString& what,
-                        const QObject *recvr,
-                        const char *slot,
-                        KActionCollection* parent,
-                        const char *name = 0);
+        const QObject *recvr,
+        const char *slot,
+        KActionCollection* parent,
+        const char *name = 0);
 }
 
 #endif // KNEWSTUFFACTION_H

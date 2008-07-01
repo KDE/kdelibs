@@ -8,7 +8,7 @@
 
 namespace KNS
 {
-	class CoreEngine;
+class CoreEngine;
 }
 
 class QListWidget;
@@ -18,28 +18,28 @@ class QFrame;
 
 class KNewStuff2Download : public QWidget
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-	KNewStuff2Download();
-	void run();
+    KNewStuff2Download();
+    void run();
 public slots:
-	void slotProviderLoaded(KNS::Provider *provider);
-	void slotProvidersFailed();
-	void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
-	void slotEntriesFailed();
-	void slotPreviewLoaded(KUrl payload);
-	void slotPreviewFailed();
-	void slotPayloadLoaded(KUrl payload);
-	void slotPayloadFailed();
-	void slotInstall();
+    void slotProviderLoaded(KNS::Provider *provider);
+    void slotProvidersFailed();
+    void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
+    void slotEntriesFailed();
+    void slotPreviewLoaded(KUrl payload);
+    void slotPreviewFailed();
+    void slotPayloadLoaded(KUrl payload);
+    void slotPayloadFailed();
+    void slotInstall();
 private:
-        FeedWidget *m_feedtab;
-	KNS::CoreEngine *m_engine;
-	QListWidget *m_providerlist;
-	QTabWidget *m_feeds;
-	QWidget *m_activefeed;
-	KNS::Entry *m_activeentry;
-        QFrame *frame;
+    FeedWidget *m_feedtab;
+    KNS::CoreEngine *m_engine;
+    QListWidget *m_providerlist;
+    QTabWidget *m_feeds;
+    QWidget *m_activefeed;
+    KNS::Entry *m_activeentry;
+    QFrame *frame;
 };
 
 #endif

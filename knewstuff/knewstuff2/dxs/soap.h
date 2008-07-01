@@ -26,7 +26,7 @@
 
 namespace KIO
 {
-	class Job;
+class Job;
 }
 class KJob;
 
@@ -51,92 +51,91 @@ namespace KNS
  */
 class Soap : public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-	Soap(QObject* parent);
-	~Soap();
+    Soap(QObject* parent);
+    ~Soap();
 
-	enum Model
-	{
-		soap,
-		canonicaltree
-	};
+    enum Model {
+        soap,
+        canonicaltree
+    };
 
-	/**
-	 * Set the model to be either soap or canonicaltree
-	 * @param m 
-	 */
-	void setModel(Model m);
+    /**
+     * Set the model to be either soap or canonicaltree
+     * @param m
+     */
+    void setModel(Model m);
 
-	/**
-	 * Send to the server - uses either soap or tree
-	 * @param element 
-	 * @param endpoint 
-	 */
-	int call(const QDomElement& element, const QString &endpoint);
+    /**
+     * Send to the server - uses either soap or tree
+     * @param element
+     * @param endpoint
+     */
+    int call(const QDomElement& element, const QString &endpoint);
 
-	/**
-	 * Name of the QDomElement for node without the namespace
-	 * @param node 
-	 * @return localname
-	 */
-	QString localname(const QDomNode& node);
+    /**
+     * Name of the QDomElement for node without the namespace
+     * @param node
+     * @return localname
+     */
+    QString localname(const QDomNode& node);
 
-	/**
-	 * Find the text element to a xpath like expression
-	 * @param node xml (<test>my_text</test>)
-	 * @param expr /test
-	 * @return my_text
-	 */
-	QString xpath(const QDomNode& node, const QString &expr);
-	/**
-	 * 
-	 * @param node 
-	 * @param name 
-	 * @return 
-	 */
-	QList<QDomNode> directChildNodes(const QDomNode& node, const QString &name);
+    /**
+     * Find the text element to a xpath like expression
+     * @param node xml (<test>my_text</test>)
+     * @param expr /test
+     * @return my_text
+     */
+    QString xpath(const QDomNode& node, const QString &expr);
+    /**
+     *
+     * @param node
+     * @param name
+     * @return
+     */
+    QList<QDomNode> directChildNodes(const QDomNode& node, const QString &name);
 
 signals:
-	void signalResult(QDomNode node, int jobid);
-	void signalError();
+    void signalResult(QDomNode node, int jobid);
+    void signalError();
 
 private slots:
-	void slotData(KIO::Job *job, const QByteArray& data);
-	void slotResult(KJob *job);
-	void slotSocket();
-	void slotSocketError(QAbstractSocket::SocketError error);
+    void slotData(KIO::Job *job, const QByteArray& data);
+    void slotResult(KJob *job);
+    void slotSocket();
+    void slotSocketError(QAbstractSocket::SocketError error);
 
 private:
-	/**
-	 * Create the SOAP xml and send it to the server
-	 * @param element the message
-	 * @param endpoint server URL
-	 */
-	int call_soap(QDomElement element, const QString& endpoint);
+    /**
+     * Create the SOAP xml and send it to the server
+     * @param element the message
+     * @param endpoint server URL
+     */
+    int call_soap(QDomElement element, const QString& endpoint);
 
-	/**
-	 * Same as call_soap but with canonicaltree as model
-	 * @param element 
-	 * @param endpoint 
-	 */
-	void call_tree(const QDomElement& element, const QString& endpoint);
-	/**
-	 * 
-	 * @param doc 
-	 * @param cur 
-	 * @param data 
-	 * @return 
-	 */
-	QDomDocument buildtree(QDomDocument doc, QDomElement cur, const QString& data);
+    /**
+     * Same as call_soap but with canonicaltree as model
+     * @param element
+     * @param endpoint
+     */
+    void call_tree(const QDomElement& element, const QString& endpoint);
+    /**
+     *
+     * @param doc
+     * @param cur
+     * @param data
+     * @return
+     */
+    QDomDocument buildtree(QDomDocument doc, QDomElement cur, const QString& data);
 
-	QString m_data;
-	Model m_model;
-	QTcpSocket *m_socket;
-	QByteArray m_buffer;
-	bool m_inprogress;
-	QMap<KJob*, int> m_jobids;
-	int m_lastjobid;
+    QString m_data;
+    Model m_model;
+    QTcpSocket *m_socket;
+    QByteArray m_buffer;
+    bool m_inprogress;
+    QMap<KJob*, int> m_jobids;
+    int m_lastjobid;
 };
 
 }

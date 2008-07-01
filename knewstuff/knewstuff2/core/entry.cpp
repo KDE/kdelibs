@@ -29,7 +29,7 @@ struct KNS::EntryPrivate {
             , mRating(0)
             , mDownloads(0)
             , mStatus(Entry::Invalid)
-            , mSource(Entry::Online) 
+            , mSource(Entry::Online)
             , mIdNumber(0) {}
 
     QString mCategory;

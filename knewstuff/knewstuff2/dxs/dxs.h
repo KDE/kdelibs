@@ -49,71 +49,71 @@ class Provider;
  */
 class Dxs : public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 public:
     Dxs(QObject* parent, KNS::Provider * provider);
     ~Dxs();
     void setEndpoint(KUrl endpoint);
 
     /**
-     * 
+     *
      */
     void call_info();
 
     /**
-     * 
+     *
      */
     void call_categories();
 
     /**
-     * 
-     * @param category 
-     * @param feed 
+     *
+     * @param category
+     * @param feed
      */
     void call_entries(QString category, QString feed);
 
     /**
-     * 
-     * @param id 
+     *
+     * @param id
      */
     void call_comments(int id);
 
     /**
-     * 
-     * @param id 
+     *
+     * @param id
      */
     void call_changes(int id);
 
     /**
-     * 
-     * @param id 
+     *
+     * @param id
      */
     void call_history(int id);
 
     /**
-     * 
-     * @param id 
+     *
+     * @param id
      */
     void call_removal(int id);
 
     /**
-     * 
-     * @param id 
-     * @param subscribe 
+     *
+     * @param id
+     * @param subscribe
      */
     void call_subscription(int id, bool subscribe);
 
     /**
-     * 
-     * @param id 
-     * @param comment 
+     *
+     * @param id
+     * @param comment
      */
     void call_comment(int id, QString comment);
 
     /**
      *        Change the rating
-     * @param id 
-     * @param rating 
+     * @param id
+     * @param rating
      */
     void call_rating(int id, int rating);
 
@@ -136,7 +136,7 @@ signals:
 private slots:
     /**
      * Valid response from server - parsed here to emit the corresponding signal
-     * @param node 
+     * @param node
      */
     void slotResult(QDomNode node, int jobid);
 

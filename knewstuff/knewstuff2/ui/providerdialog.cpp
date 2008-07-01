@@ -35,79 +35,80 @@ using namespace KNS;
 
 class ProviderItem : public QTreeWidgetItem
 {
-  public:
-    ProviderItem( QTreeWidget *parent, Provider *provider ) :
-      QTreeWidgetItem( parent ), mProvider( provider )
-    {
-      setText( 0, provider->name().representation() );
+public:
+    ProviderItem(QTreeWidget *parent, Provider *provider) :
+            QTreeWidgetItem(parent), mProvider(provider) {
+        setText(0, provider->name().representation());
     }
 
-    Provider *provider() { return mProvider; }
+    Provider *provider() {
+        return mProvider;
+    }
 
-  private:
+private:
     Provider *mProvider;
 };
 
-ProviderDialog::ProviderDialog( /*Engine *engine,*/ QWidget *parent ) :
-  KDialog( parent )
+ProviderDialog::ProviderDialog(/*Engine *engine,*/ QWidget *parent) :
+        KDialog(parent)
 //  mEngine( engine )
 {
-  setCaption( i18n("Hot New Stuff Providers") );
-  setButtons( Ok | Cancel );
-  setDefaultButton( Cancel );
-  setModal( false );
-  showButtonSeparator( true );
+    setCaption(i18n("Hot New Stuff Providers"));
+    setButtons(Ok | Cancel);
+    setDefaultButton(Cancel);
+    setModal(false);
+    showButtonSeparator(true);
 
-  QFrame *topPage = new QFrame( this );
-  setMainWidget( topPage );
+    QFrame *topPage = new QFrame(this);
+    setMainWidget(topPage);
 
-  QBoxLayout *topLayout = new QVBoxLayout( topPage );
+    QBoxLayout *topLayout = new QVBoxLayout(topPage);
 
-  QLabel *description = new QLabel( i18n("Please select one of the providers listed below:"), topPage );
-  topLayout->addWidget( description );
+    QLabel *description = new QLabel(i18n("Please select one of the providers listed below:"), topPage);
+    topLayout->addWidget(description);
 
-  mListWidget = new QTreeWidget( topPage );
-  mListWidget->setHeaderLabels( QStringList( i18n("Name") ) );
-  topLayout->addWidget( mListWidget );
-  connect(this, SIGNAL(okClicked()),this,SLOT(slotOk()));
+    mListWidget = new QTreeWidget(topPage);
+    mListWidget->setHeaderLabels(QStringList(i18n("Name")));
+    topLayout->addWidget(mListWidget);
+    connect(this, SIGNAL(okClicked()), this, SLOT(slotOk()));
 }
 
 void ProviderDialog::clear()
 {
-  mListWidget->clear();
+    mListWidget->clear();
 }
 
-void ProviderDialog::addProvider( Provider *provider )
+void ProviderDialog::addProvider(Provider *provider)
 {
-  new ProviderItem( mListWidget, provider );
-  if ( mListWidget->model()->rowCount() == 1 ) {
-    QModelIndex index = mListWidget->model()->index( 0, 0 );
-    mListWidget->selectionModel()->setCurrentIndex( index, QItemSelectionModel::Select );
-  } else if (mListWidget->model()->rowCount() > 1) {
-    QModelIndex index = mListWidget->model()->index( 0, 0 );
-    mListWidget->selectionModel()->setCurrentIndex( index, QItemSelectionModel::Deselect );
-  }
+    new ProviderItem(mListWidget, provider);
+    if (mListWidget->model()->rowCount() == 1) {
+        QModelIndex index = mListWidget->model()->index(0, 0);
+        mListWidget->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);
+    } else if (mListWidget->model()->rowCount() > 1) {
+        QModelIndex index = mListWidget->model()->index(0, 0);
+        mListWidget->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Deselect);
+    }
 }
 
 void ProviderDialog::slotOk()
 {
-  QList<QTreeWidgetItem*> items = mListWidget->selectedItems();
-  ProviderItem *item = static_cast<ProviderItem *>( items.first() );
-  if ( !item ) {
-    KMessageBox::error( this, i18n("No provider selected.") );
-    return;
-  }
+    QList<QTreeWidgetItem*> items = mListWidget->selectedItems();
+    ProviderItem *item = static_cast<ProviderItem *>(items.first());
+    if (!item) {
+        KMessageBox::error(this, i18n("No provider selected."));
+        return;
+    }
 
 //  mEngine->requestMetaInformation( item->provider() );
 //  FIXME: return properly
-  m_provider = item->provider();
+    m_provider = item->provider();
 
-  accept();
+    accept();
 }
 
 KNS::Provider *ProviderDialog::provider() const
 {
-  return m_provider;
+    return m_provider;
 }
 
 #include "providerdialog.moc"

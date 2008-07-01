@@ -39,13 +39,13 @@ class KUrlRequester;
  */
 class KDXSTranslation : public KDialog
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-	KDXSTranslation(QWidget *parent);
+    KDXSTranslation(QWidget *parent);
 private:
-	QLineEdit *m_name;
-	QTextEdit *m_description;
-	KUrlRequester *m_payload;
+    QLineEdit *m_name;
+    QTextEdit *m_description;
+    KUrlRequester *m_payload;
 };
 
 #endif

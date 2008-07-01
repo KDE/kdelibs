@@ -32,7 +32,7 @@
 
 namespace Ui
 {
-    class DownloadDialog;
+class DownloadDialog;
 }
 
 class QLabel;
@@ -40,7 +40,7 @@ class QLabel;
 namespace KNS
 {
 
-    class EntryView;
+class EntryView;
 
 /** GUI/CORE: HTML Widget to operate on AvailableItem::List */
 class ItemsView : public QListView
@@ -60,20 +60,20 @@ public:
     /** set which feed from the current provider to show
      * @param feed the feed to use
      */
-    void setFeed( const Feed* );
+    void setFeed(const Feed*);
 
 public slots:
     /** set the search text to filter the shown entries by
      * @param text filter text
      */
-    void setSearchText( const QString & text );
+    void setSearchText(const QString & text);
     /** update the given item because it has changed
      * @param entry the entry to update
      */
-    void updateItem( Entry *entry );
+    void updateItem(Entry *entry);
 
     // not used because the ui doesn't support it yet
-    void setSorting( int sortType );
+    void setSorting(int sortType);
 
 private:
 
@@ -97,13 +97,13 @@ class EntryView : public QLabel
 {
     Q_OBJECT
 public:
-    EntryView( QWidget * parentWidget );
+    EntryView(QWidget * parentWidget);
 
-    void setEntry( Entry *entry );
-    void updateEntry( Entry *entry );
+    void setEntry(Entry *entry);
+    void updateEntry(Entry *entry);
 
 private slots:
-    void urlSelected( const QString &link);
+    void urlSelected(const QString &link);
 
 private:
     // generate the HTML contents to be displayed by the class itself

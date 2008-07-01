@@ -43,11 +43,11 @@ class QSortFilterProxyModel;
 namespace KNS
 {
 
-    class DownloadDialog;
-    class EntryView;
-    class ItemsView;
-    class ItemsModel;
-    class ItemsViewDelegate;
+class DownloadDialog;
+class EntryView;
+class ItemsView;
+class ItemsModel;
+class ItemsViewDelegate;
 
 /**
  * KNewStuff download dialog.
@@ -72,7 +72,7 @@ class DownloadDialog : public KDialog, public Ui::DownloadDialog
     Q_OBJECT
 
 public:
-    DownloadDialog( DxsEngine* engine, QWidget * parent );
+    DownloadDialog(DxsEngine* engine, QWidget * parent);
     ~DownloadDialog();
 
     enum EntryAction {
@@ -93,26 +93,26 @@ public:
     void refresh();
 
     // show a message in the bottom bar
-    void displayMessage( const QString & msg,
-            KTitleWidget::MessageType type = KTitleWidget::PlainMessage,
-            int timeOutMs = 0 );
+    void displayMessage(const QString & msg,
+                        KTitleWidget::MessageType type = KTitleWidget::PlainMessage,
+                        int timeOutMs = 0);
 
     // begin installing that item
-    void installItem( Entry * entry );
+    void installItem(Entry * entry);
 
     // remove an already installed item
-    void removeItem( Entry * entry );
+    void removeItem(Entry * entry);
 
 private Q_SLOTS:
     /** slot to add an entry (connected to the engine's signalEntryAdded */
     void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
     void slotEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed);
     void slotEntriesFailed();
-    void slotPayloadFailed( KNS::Entry * entry );
+    void slotPayloadFailed(KNS::Entry * entry);
 
     void slotResetMessage();
     void slotNetworkTimeout();
-    void slotSortingSelected( int sortType );
+    void slotSortingSelected(int sortType);
     void slotSearchTextChanged();
     void slotUpdateSearch();
 
@@ -126,7 +126,7 @@ private Q_SLOTS:
     void slotFault();
     void slotError();
     // file downloading
-    void slotEntryChanged( KNS::Entry * );
+    void slotEntryChanged(KNS::Entry *);
     //void slotItemMessage( KJob *, const QString & );
     //void slotItemPercentage( KJob *, unsigned long );
     //void slotItemResult( KJob * );

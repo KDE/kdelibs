@@ -1,7 +1,7 @@
 /*
     This file is part of KNewStuff2.
-    Copyright (c) 2007 Josef Spillner <spillner@kde.org>
     Copyright (c) 2008 Jeremy Whiting <jeremy@scitools.com>
+    Copyright (c) 2007 Josef Spillner <spillner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,7 +23,8 @@
 
 #include <knewstuff2/core/entry.h>
 
-namespace KNS {
+namespace KNS
+{
 
 
 class EnginePrivate;
@@ -69,7 +70,7 @@ public:
      *
      * @return List of installed or deinstalled entries
      */
-    KNS::Entry::List downloadDialogModal(QWidget* parent=0);
+    KNS::Entry::List downloadDialogModal(QWidget* parent = 0);
 
     /**
      * @brief Recommended download workflow entry point.
@@ -139,11 +140,11 @@ public:
 
     bool init(const QString& config);
 
-  private:
+private:
 
     friend class EnginePrivate;
     EnginePrivate* const d;
-    Q_DISABLE_COPY (Engine)
+    Q_DISABLE_COPY(Engine)
 };
 
 }

@@ -30,7 +30,8 @@ class KUrlRequester;
 class QTextEdit;
 class QComboBox;
 
-namespace KNS {
+namespace KNS
+{
 
 class Entry;
 
@@ -50,13 +51,13 @@ class Entry;
 class KNEWSTUFF_EXPORT UploadDialog : public KDialog
 {
     Q_OBJECT
-  public:
+public:
     /**
       Constructor.
 
       @param parent the parent window
     */
-    UploadDialog( QWidget *parent );
+    UploadDialog(QWidget *parent);
 
     /**
       Destructor.
@@ -69,7 +70,7 @@ class KNEWSTUFF_EXPORT UploadDialog : public KDialog
 
       @param previewFile the preview image file
     */
-    void setPreviewFile( const KUrl& previewFile );
+    void setPreviewFile(const KUrl& previewFile);
 
     /**
       Sets the payload filename.
@@ -78,14 +79,14 @@ class KNEWSTUFF_EXPORT UploadDialog : public KDialog
 
       @param payloadFile the payload data file
     */
-    void setPayloadFile( const KUrl& payloadFile );
+    void setPayloadFile(const KUrl& payloadFile);
 
     Entry *entry() const;
 
-  protected Q_SLOTS:
+protected Q_SLOTS:
     void slotOk();
 
-  private:
+private:
     QLineEdit *mNameEdit;
     QLineEdit *mAuthorEdit;
     QLineEdit *mEmailEdit;

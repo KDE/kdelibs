@@ -33,7 +33,7 @@
 using namespace KNS;
 
 Soap::Soap(QObject* parent)
-    : QObject(parent)
+        : QObject(parent)
 {
     //m_model = canonicaltree;
     m_model = soap;
@@ -58,8 +58,7 @@ int Soap::call(const QDomElement& element, const QString &endpoint)
         call_tree(element, endpoint);
         // cDxs doesn't support job ids yet
         return -1;
-    }
-    else {
+    } else {
         return call_soap(element, endpoint);
     }
 
@@ -99,11 +98,11 @@ void Soap::call_tree(const QDomElement& element, const QString &endpoint)
     m_socket->write(data, data.size());
 
     connect(m_socket,
-        SIGNAL(readyRead()),
-        SLOT(slotSocket()));
+            SIGNAL(readyRead()),
+            SLOT(slotSocket()));
     connect(m_socket,
-        SIGNAL(error(QAbstractSocket::SocketError)),
-        SLOT(slotSocketError(QAbstractSocket::SocketError)));
+            SIGNAL(error(QAbstractSocket::SocketError)),
+            SLOT(slotSocketError(QAbstractSocket::SocketError)));
 
     m_buffer = QByteArray();
 }
@@ -137,11 +136,11 @@ int Soap::call_soap(QDomElement element, const QString &endpoint)
     //kDebug() << "Call!";
 
     connect(job,
-        SIGNAL(data(KIO::Job*, const QByteArray&)),
-        SLOT(slotData(KIO::Job*, const QByteArray&)));
+            SIGNAL(data(KIO::Job*, const QByteArray&)),
+            SLOT(slotData(KIO::Job*, const QByteArray&)));
     connect(job,
-        SIGNAL(result(KJob*)),
-        SLOT(slotResult(KJob*)));
+            SIGNAL(result(KJob*)),
+            SLOT(slotResult(KJob*)));
 
     m_buffer = QByteArray();
     return thisjobid;
@@ -197,8 +196,7 @@ void Soap::slotResult(KJob *job)
         //m_inprogress = false;
         emit signalResult(contentnode, m_jobids.value(job));
         m_jobids.remove(job);
-    }
-    else {
+    } else {
         QDomDocument doc;
 
         // FIXME: dummy data
@@ -322,14 +320,12 @@ QDomDocument Soap::buildtree(QDomDocument doc, QDomElement cur, const QString& d
         }
         if (c == '\\') {
             quoted = true;
-        }
-        else if (c == '(') {
+        } else if (c == '(') {
             stack++;
             if (start == -1) {
                 start = i;
             }
-        }
-        else if (c == ')') {
+        } else if (c == ')') {
             stack--;
             if ((stack == 0) && (end == -1)) {
                 end = i;
@@ -344,8 +340,7 @@ QDomDocument Soap::buildtree(QDomDocument doc, QDomElement cur, const QString& d
                 if (cur.isNull()) {
                     elem = doc.createElement("ns:" + expression);
                     doc.appendChild(elem);
-                }
-                else {
+                } else {
                     elem = doc.createElement(expression);
                     cur.appendChild(elem);
                 }

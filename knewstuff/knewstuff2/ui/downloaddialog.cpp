@@ -54,35 +54,35 @@ const char * ConfigGroup = "DownloadDialog Settings";
 
 using namespace KNS;
 
-DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
-    : KDialog( _parent )
+DownloadDialog::DownloadDialog(DxsEngine* _engine, QWidget * _parent)
+        : KDialog(_parent)
 {
     setButtons(0);
 
     m_engine = _engine;
-    connect( m_engine, SIGNAL( signalProgress( QString, int ) ), SLOT( slotProgress( QString, int ) ) );
-    connect( m_engine, SIGNAL( signalEntryChanged( KNS::Entry* ) ), SLOT( slotEntryChanged( KNS::Entry* ) ));
-    connect( m_engine, SIGNAL( signalPayloadFailed( KNS::Entry* ) ), SLOT( slotPayloadFailed( KNS::Entry* ) ));
-    connect( m_engine, SIGNAL(signalProvidersFailed()), SLOT(slotProvidersFailed()));
-    connect( m_engine, SIGNAL(signalEntriesFailed()), SLOT(slotEntriesFailed()));
+    connect(m_engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
+    connect(m_engine, SIGNAL(signalEntryChanged(KNS::Entry*)), SLOT(slotEntryChanged(KNS::Entry*)));
+    connect(m_engine, SIGNAL(signalPayloadFailed(KNS::Entry*)), SLOT(slotPayloadFailed(KNS::Entry*)));
+    connect(m_engine, SIGNAL(signalProvidersFailed()), SLOT(slotProvidersFailed()));
+    connect(m_engine, SIGNAL(signalEntriesFailed()), SLOT(slotEntriesFailed()));
 
-    connect( m_engine, SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
+    connect(m_engine, SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
             this, SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
-    connect( m_engine, SIGNAL(signalEntryRemoved(KNS::Entry*, const KNS::Feed*)),
+    connect(m_engine, SIGNAL(signalEntryRemoved(KNS::Entry*, const KNS::Feed*)),
             this, SLOT(slotEntryRemoved(KNS::Entry *, const KNS::Feed *)));
 
     // initialize the private classes
-    messageTimer = new QTimer( this );
-    messageTimer->setSingleShot( true );
-    connect( messageTimer, SIGNAL( timeout() ), SLOT( slotResetMessage() ) );
+    messageTimer = new QTimer(this);
+    messageTimer->setSingleShot(true);
+    connect(messageTimer, SIGNAL(timeout()), SLOT(slotResetMessage()));
 
-    networkTimer = new QTimer( this );
-    connect( networkTimer, SIGNAL( timeout() ), SLOT( slotNetworkTimeout() ) );
+    networkTimer = new QTimer(this);
+    connect(networkTimer, SIGNAL(timeout()), SLOT(slotNetworkTimeout()));
 
-    m_searchTimer = new QTimer( this );
-    m_searchTimer->setSingleShot( true );
-    m_searchTimer->setInterval( 1000 ); // timeout after 30 seconds
-    connect( m_searchTimer, SIGNAL( timeout() ), SLOT( slotUpdateSearch() ) );
+    m_searchTimer = new QTimer(this);
+    m_searchTimer->setSingleShot(true);
+    m_searchTimer->setInterval(1000);   // timeout after 30 seconds
+    connect(m_searchTimer, SIGNAL(timeout()), SLOT(slotUpdateSearch()));
 
     // popuplate dialog with stuff
     QWidget* _mainWidget = new QWidget(this);
@@ -93,7 +93,7 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     mDelegate = new ItemsViewDelegate(m_listView);
     m_listView->setItemDelegate(mDelegate);
     connect(mDelegate, SIGNAL(performAction(DownloadDialog::EntryAction, KNS::Entry *)),
-        SLOT(slotPerformAction(DownloadDialog::EntryAction, KNS::Entry *)));
+            SLOT(slotPerformAction(DownloadDialog::EntryAction, KNS::Entry *)));
 
     // create the filter model
     m_filteredModel = new QSortFilterProxyModel(this);
@@ -101,7 +101,7 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     m_filteredModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_listView->setModel(m_filteredModel);
     connect(m_listView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
-        this, SLOT(slotListIndexChanged(const QModelIndex &, const QModelIndex &)));
+            this, SLOT(slotListIndexChanged(const QModelIndex &, const QModelIndex &)));
 
     // create left picture widget (if picture found)
     //QPixmap p( KStandardDirs::locate( "data", "knewstuff/pics/ghns.png" ) );
@@ -110,10 +110,10 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     // FIXME KDE4PORT: if we use a left bar image, find a better way
 
 
-    connect( m_sourceCombo, SIGNAL( currentIndexChanged(int) ), SLOT( slotLoadProviderDXS() ) );
-    connect( m_sortCombo, SIGNAL( currentIndexChanged(int) ), SLOT( slotSortingSelected(int) ) );
-    connect( m_searchEdit, SIGNAL( textChanged( const QString &) ), SLOT( slotSearchTextChanged() ));
-    connect( m_searchEdit, SIGNAL( editingFinished() ), SLOT( slotUpdateSearch() ));
+    connect(m_sourceCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotLoadProviderDXS()));
+    connect(m_sortCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotSortingSelected(int)));
+    connect(m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
+    connect(m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
 
     // FIXME: not sure if this is better, or setting openExternalLinks
     //connect( m_providerLinkLabel, SIGNAL( linkActivated(const QString &)),
@@ -126,11 +126,11 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
 
     setCaption(i18n("Get Hot New Stuff"));
     m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
-                                  "%1 Add-On Installer",
-                                  KGlobal::activeComponent().aboutData()->programName()));
+                                 "%1 Add-On Installer",
+                                 KGlobal::activeComponent().aboutData()->programName()));
     m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
 
-    connect( m_buttonBox, SIGNAL( rejected() ), this, SLOT( accept() ) );
+    connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(accept()));
 
     KMenu * collabMenu = new KMenu(m_collaborationButton);
     QAction * action_collabrating = collabMenu->addAction(i18n("Add Rating"));
@@ -141,7 +141,7 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
 
     QAction * action_comment = collabMenu->addAction(SmallIcon("help-about"), i18n("View Comments"));
     action_comment->setData(DownloadDialog::kComments);
-    
+
     QAction * action_collabtranslation = collabMenu->addAction(i18n("Translate"));
     action_collabtranslation->setData(DownloadDialog::kCollabTranslate);
 
@@ -165,74 +165,70 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
     kDebug(551) << "perform action: " << action;
     const Provider * provider = m_providers.contains(entry) ? m_providers[entry] : NULL;
     Dxs * dxs = m_engine->dxsObject(provider);
-    switch (action)
-    {
-        case kViewInfo:
-            if (provider != NULL) {
-                if (provider->webService().isValid()) {
-                    m_engine->dxsObject(provider)->call_info();
-                }
-                else {
-                    slotInfo(provider->name().representation(),
-                        provider->webAccess().pathOrUrl(),
-                        QString());
-                }
+    switch (action) {
+    case kViewInfo:
+        if (provider != NULL) {
+            if (provider->webService().isValid()) {
+                m_engine->dxsObject(provider)->call_info();
+            } else {
+                slotInfo(provider->name().representation(),
+                         provider->webAccess().pathOrUrl(),
+                         QString());
             }
-            break;
-        case kComments:
-            // show the entry's comments
-            if (provider != NULL) {
-                connect(dxs, SIGNAL(signalComments(QStringList)), this, SLOT(slotComments(QStringList)));
-                dxs->call_comments(entry->idNumber());
+        }
+        break;
+    case kComments:
+        // show the entry's comments
+        if (provider != NULL) {
+            connect(dxs, SIGNAL(signalComments(QStringList)), this, SLOT(slotComments(QStringList)));
+            dxs->call_comments(entry->idNumber());
+        }
+        break;
+    case kChanges:
+        // show the entry's changelog
+        break;
+    case kContactEmail:
+        // invoke mail with the address of the author
+        KToolInvocation::invokeMailer(entry->author().email(), i18n("Re: %1", entry->name().representation()));
+        break;
+    case kContactJabber:
+        // start jabber with author's info
+        break;
+    case kCollabTranslate:
+        // open translation dialog
+        break;
+    case kCollabRemoval:
+        // verify removal, maybe authenticate?
+        break;
+    case kCollabSubscribe:
+        // subscribe to changes
+        break;
+    case kUninstall:
+        // uninstall
+        m_engine->uninstall(entry);
+        break;
+    case kInstall:
+        // install
+        m_engine->downloadPayload(entry);
+        break;
+    case kCollabComment: {
+        // open comment dialog
+        KDXSComment * commentDialog = new KDXSComment(this);
+        int ret = commentDialog->exec();
+        if (ret == QDialog::Accepted) {
+            QString s = commentDialog->comment();
+            if (!s.isEmpty()) {
+                dxs->call_comment(entry->idNumber(), s);
             }
-            break;
-        case kChanges:
-            // show the entry's changelog
-            break;
-        case kContactEmail:
-            // invoke mail with the address of the author
-            KToolInvocation::invokeMailer(entry->author().email(), i18n("Re: %1", entry->name().representation()));
-            break;
-        case kContactJabber:
-            // start jabber with author's info
-            break;
-        case kCollabTranslate:
-            // open translation dialog
-            break;
-        case kCollabRemoval:
-            // verify removal, maybe authenticate?
-            break;
-        case kCollabSubscribe:
-            // subscribe to changes
-            break;
-        case kUninstall:
-            // uninstall
-            m_engine->uninstall(entry);
-            break;
-        case kInstall:
-            // install
-            m_engine->downloadPayload(entry);
-            break;
-        case kCollabComment:
-            {
-                // open comment dialog
-                KDXSComment * commentDialog = new KDXSComment(this);
-                int ret = commentDialog->exec();
-                if (ret == QDialog::Accepted) {
-                    QString s = commentDialog->comment();
-                    if (!s.isEmpty()) {
-                        dxs->call_comment(entry->idNumber(), s);
-                    }
-                }
-            }
-            break;
-        case kCollabRate:
-            {
-                // prompt for rating, and send to provider
-                KDXSRating * ratingDialog = new KDXSRating(this);
-                ratingDialog->exec();
-            }
-            break;
+        }
+    }
+    break;
+    case kCollabRate: {
+        // prompt for rating, and send to provider
+        KDXSRating * ratingDialog = new KDXSRating(this);
+        ratingDialog->exec();
+    }
+    break;
     }
 }
 
@@ -245,7 +241,7 @@ void DownloadDialog::slotCollabAction(DownloadDialog::EntryAction action)
     slotPerformAction(action, entry);
 }
 
-void DownloadDialog::slotListIndexChanged(const QModelIndex &index, const QModelIndex &old)
+void DownloadDialog::slotListIndexChanged(const QModelIndex &index, const QModelIndex &/*old */)
 {
     //kDebug() << "slotListIndexChanged called";
 
@@ -259,22 +255,22 @@ void DownloadDialog::hideEvent(QHideEvent * event)
     KDialog::hideEvent(event);
 }
 
-void DownloadDialog::displayMessage( const QString & msg, KTitleWidget::MessageType type, int timeOutMs )
+void DownloadDialog::displayMessage(const QString & msg, KTitleWidget::MessageType type, int timeOutMs)
 {
     // stop the pending timer if present
     messageTimer->stop();
 
     // set text to messageLabel
-    m_titleWidget->setComment( msg, type );
+    m_titleWidget->setComment(msg, type);
 
     // single shot the resetColors timer (and create it if null)
     if (timeOutMs > 0) {
         //kDebug(551) << "starting the message timer for " << timeOutMs;
-        messageTimer->start( timeOutMs );
+        messageTimer->start(timeOutMs);
     }
 }
 
-void DownloadDialog::installItem( Entry *entry )
+void DownloadDialog::installItem(Entry *entry)
 {
     // safety check
 //    if ( item->url().isEmpty() || item->destinationPath().isEmpty() )
@@ -284,10 +280,10 @@ void DownloadDialog::installItem( Entry *entry )
 //    }
 
     //TODO check for AvailableItem deletion! (avoid broken pointers) -> cancel old jobs
-    slotEntryChanged( entry );
+    slotEntryChanged(entry);
 }
 
-void DownloadDialog::removeItem( Entry *entry )
+void DownloadDialog::removeItem(Entry *entry)
 {
     Q_UNUSED(entry);
 //    displayMessage( i18n("%1 is no more installed.").arg( item->name().representation() ) );
@@ -300,13 +296,12 @@ void DownloadDialog::slotResetMessage() // SLOT
 
 void DownloadDialog::slotNetworkTimeout() // SLOT
 {
-    displayMessage( i18n("Timeout. Check Internet connection!"), KTitleWidget::ErrorMessage );
+    displayMessage(i18n("Timeout. Check Internet connection!"), KTitleWidget::ErrorMessage);
 }
 
-void DownloadDialog::slotSortingSelected( int sortType ) // SLOT
+void DownloadDialog::slotSortingSelected(int sortType)   // SLOT
 {
-    if (sortType >= 0)
-    {
+    if (sortType >= 0) {
         //kDebug(551) << "sorting Selected, setting the sourcemodel for the view";
         QString feedName = m_sortCombo->currentText();
         QString feedType = m_sortCombo->itemData(sortType).toString();
@@ -337,7 +332,7 @@ void DownloadDialog::slotLoadProviderDXS()
 
             Feed * selectedFeed = providers[i]->downloadUrlFeed(m_sortCombo->itemData(m_sortCombo->currentIndex()).toString());
             m_filteredModel->setSourceModel(m_models.value(selectedFeed));
-            //m_list->setProvider(providers[i], 
+            //m_list->setProvider(providers[i],
             //    providers[i]->downloadUrlFeed(m_sortCombo->itemData(m_sortCombo->currentIndex()).toString()));
             break;
         }
@@ -363,7 +358,7 @@ void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
 {
     categorymap.clear();
 
-    for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it) {
+    for (QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it) {
         KNS::Category *category = (*it);
         //kDebug(551) << "Category: " << category->name().representation();
         QPixmap icon = DesktopIcon(category->icon().url(), 16);
@@ -442,7 +437,7 @@ void DownloadDialog::refresh()
 
     for (int i = 0; i < m_entriesByProvider.keys().count(); i++) {
         const Provider *provider = m_entriesByProvider.keys().at(i);
-        if(!provider) {
+        if (!provider) {
             //kDebug(551) << "INVALID FEED?!";
             continue;
         }
@@ -458,7 +453,7 @@ void DownloadDialog::refresh()
     //const Provider * selectedProvider = m_entriesByProvider.keys()[0];
 
     //populateSortCombo(selectedProvider);
-    
+
     //m_sourceCombo->setEnabled(true);
     //m_sortCombo->setEnabled(true);
     //m_searchEdit->setEnabled(true);
@@ -469,8 +464,7 @@ void DownloadDialog::populateSortCombo(const Provider * provider)
     QString url = provider->webAccess().pathOrUrl();
     if (url.isEmpty()) {
         m_providerLinkLabel->hide();
-    }
-    else {
+    } else {
         m_providerLinkLabel->setText(QString("<a href=\"%1\">?</a>").arg(url));
     }
 
@@ -491,16 +485,15 @@ void DownloadDialog::slotInfo(QString provider, QString server, QString version)
     infostring += i18n("<br />Version: %1", version);
 
     KMessageBox::information(this,
-        infostring,
-        i18n("Provider information"));
+                             infostring,
+                             i18n("Provider information"));
 }
 
 void DownloadDialog::slotComments(QStringList comments)
 {
     KDXSComments commentsdlg(this);
 
-    for(QStringList::Iterator it = comments.begin(); it != comments.end(); it++)
-    {
+    for (QStringList::Iterator it = comments.begin(); it != comments.end(); it++) {
         //kDebug() << "Comment: " << (*it);
         commentsdlg.addComment("foo", (*it));
     }
@@ -510,17 +503,17 @@ void DownloadDialog::slotComments(QStringList comments)
 
 ///////////////// DXS ////////////////////
 
-void DownloadDialog::slotEntryChanged( KNS::Entry * entry )
+void DownloadDialog::slotEntryChanged(KNS::Entry * entry)
 {
     // FIXMEE: tell the model to emit dataChanged for this entry
     Q_UNUSED(entry);
     //m_list->updateItem(entry);
 }
 
-void DownloadDialog::slotPayloadFailed( KNS::Entry * entry )
+void DownloadDialog::slotPayloadFailed(KNS::Entry * entry)
 {
     KMessageBox::error(this, i18n("Could not install %1", entry->name().representation()),
-        i18n("Get Hot New Stuff!"));
+                       i18n("Get Hot New Stuff!"));
 }
 
 void DownloadDialog::slotProgress(const QString & text, int percentage)
@@ -532,8 +525,8 @@ void DownloadDialog::slotProvidersFailed()
 {
     kDebug(551) << "slotProvidersFailed";
     KMessageBox::error(this,
-        i18n("There was an error loading data providers."),
-        i18n("Get Hot New Stuff"));
+                       i18n("There was an error loading data providers."),
+                       i18n("Get Hot New Stuff"));
 }
 
 /*void DownloadDialog::slotItemMessage( KJob * job, const QString & message )
@@ -563,15 +556,15 @@ void DownloadDialog::slotItemResult( KJob * job )
 void DownloadDialog::slotFault()
 {
     KMessageBox::error(this,
-        i18n("A protocol fault has occurred. The request has failed."),
-        i18n("Desktop Exchange Service"));
+                       i18n("A protocol fault has occurred. The request has failed."),
+                       i18n("Desktop Exchange Service"));
 }
 
 void DownloadDialog::slotError()
 {
     KMessageBox::error(this,
-        i18n("A network error has occurred. The request has failed."),
-        i18n("Desktop Exchange Service"));
+                       i18n("A network error has occurred. The request has failed."),
+                       i18n("Desktop Exchange Service"));
 }
 
 #include "downloaddialog.moc"

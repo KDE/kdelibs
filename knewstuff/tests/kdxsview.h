@@ -34,22 +34,21 @@ namespace KNS
 /* -- FIXME: not used at all by the library? -- */
 class KDXSView : public KDialog
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-	KDXSView(QWidget *parent = NULL);
+    KDXSView(QWidget *parent = NULL);
 private Q_SLOTS:
-	void slotRun();
-	void slotProvidersLoaded(KNS::Provider::List providers);
-	void slotProvidersFailed();
+    void slotRun();
+    void slotProvidersLoaded(KNS::Provider::List providers);
+    void slotProvidersFailed();
 private:
-	enum Access
-	{
-		access_auto,
-		access_http,
-		access_webservice
-	};
-	QComboBox *m_url;
-	QComboBox *m_type;
+    enum Access {
+        access_auto,
+        access_http,
+        access_webservice
+    };
+    QComboBox *m_url;
+    QComboBox *m_type;
 };
 
 }

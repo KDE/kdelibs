@@ -28,7 +28,7 @@
 using namespace KNS;
 
 DxsEngine::DxsEngine(QObject* parent)
-    : CoreEngine(parent), m_dxspolicy(DxsIfPossible)
+        : CoreEngine(parent), m_dxspolicy(DxsIfPossible)
 {
 }
 
@@ -57,13 +57,11 @@ void DxsEngine::loadEntries(Provider *provider)
             CoreEngine::loadEntries(provider);
             return;
         }
-    }
-    else {
+    } else {
         if (m_dxspolicy != DxsAlways) {
             CoreEngine::loadEntries(provider);
             return;
-        }
-        else {
+        } else {
             kError() << "DxsEngine: DXS requested but not offered" << endl;
             return;
         }

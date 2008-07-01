@@ -104,7 +104,7 @@ public:
 
     /**
      * Removes an association to an entry
-     * 
+     *
      * @param entry Entry to remove from this feed
      */
     void removeEntry(Entry * entry);

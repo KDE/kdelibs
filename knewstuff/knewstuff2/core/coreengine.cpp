@@ -52,7 +52,7 @@ using namespace KNS;
 
 CoreEngine::CoreEngine(QObject* parent)
         : QObject(parent), m_uploadedentry(NULL), m_uploadprovider(NULL), m_installation(NULL), m_activefeeds(0),
-            m_initialized(false), m_cachepolicy(CacheNever), m_automationpolicy(AutomationOn)
+        m_initialized(false), m_cachepolicy(CacheNever), m_automationpolicy(AutomationOn)
 {
 }
 
@@ -402,8 +402,7 @@ void CoreEngine::slotProgress(KJob *job, unsigned long percent)
     KIO::TransferJob * transferJob = qobject_cast<KIO::TransferJob*>(job);
     if (copyJob != NULL) {
         url = copyJob->srcUrl().fileName();
-    }
-    else if (transferJob != NULL) {
+    } else if (transferJob != NULL) {
         url = transferJob->url().fileName();
     }
 
@@ -1047,8 +1046,7 @@ void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *p
                 // take cachedentry out of the feed
                 feed->removeEntry(cachedentry);
                 //emit signalEntryRemoved(cachedentry, feed);
-            }
-            else {
+            } else {
                 emit signalEntryLoaded(e, feed, provider);
             }
 
@@ -1092,10 +1090,8 @@ void CoreEngine::mergeEntries(Entry::List entries, Feed *feed, const Provider *p
         // besides feeds.size() has a max of 4 currently (unsorted, score, downloads, and latest)
         QStringList feeds = provider->feeds();
         QString feedname;
-        for (int i = 0; i < feeds.size(); ++i)
-        {
-            if (provider->downloadUrlFeed(feeds[i]) == feed)
-            {
+        for (int i = 0; i < feeds.size(); ++i) {
+            if (provider->downloadUrlFeed(feeds[i]) == feed) {
                 feedname = feeds[i];
             }
         }
@@ -1367,8 +1363,7 @@ bool CoreEngine::install(const QString &payloadfile)
         if (!m_installation->standardResourceDir().isEmpty()) {
             if (m_installation->scope() == Installation::ScopeUser) {
                 installdir = KStandardDirs::locateLocal(m_installation->standardResourceDir().toUtf8(), "/");
-            }
-            else { // system scope
+            } else { // system scope
                 installdir = KStandardDirs::installPath(m_installation->standardResourceDir().toUtf8());
             }
             pathcounter++;
@@ -1376,8 +1371,7 @@ bool CoreEngine::install(const QString &payloadfile)
         if (!m_installation->targetDir().isEmpty()) {
             if (m_installation->scope() == Installation::ScopeUser) {
                 installdir = KStandardDirs::locateLocal("data", m_installation->targetDir() + '/');
-            }
-            else { // system scope
+            } else { // system scope
                 installdir = KStandardDirs::installPath("data") + m_installation->targetDir() + '/';
             }
             pathcounter++;
@@ -1411,13 +1405,11 @@ bool CoreEngine::install(const QString &payloadfile)
 
             if (mimeType->name() == "application/zip") {
                 archive = new KZip(payloadfile);
-            }
-            else if (mimeType->name() == "application/tar"
-                    || mimeType->name() == "application/x-gzip"
-                    || mimeType->name() == "application/x-bzip") {
+            } else if (mimeType->name() == "application/tar"
+                       || mimeType->name() == "application/x-gzip"
+                       || mimeType->name() == "application/x-bzip") {
                 archive = new KTar(payloadfile);
-            }
-            else {
+            } else {
                 delete archive;
                 kError() << "Could not determine type of archive file '" << payloadfile << "'";
                 if (m_installation->uncompression() == "always") {
@@ -1466,8 +1458,7 @@ bool CoreEngine::install(const QString &payloadfile)
                 installfile = entry->name().representation();
                 installfile += '-' + entry->version();
                 if (!ext.isEmpty()) installfile += '.' + ext;
-            }
-            else {
+            } else {
                 installfile = source.fileName();
             }
             installpath = installdir + '/' + installfile;
@@ -1506,8 +1497,7 @@ bool CoreEngine::install(const QString &payloadfile)
 
         if (exitcode) {
             kError() << "Command failed" << endl;
-        }
-        else {
+        } else {
             //kDebug() << "Command executed successfully";
         }
     }
@@ -1554,7 +1544,7 @@ bool CoreEngine::uninstall(KNS::Entry *entry)
             }
         }
     }
-    entry->setUnInstalledFiles( entry->installedFiles());
+    entry->setUnInstalledFiles(entry->installedFiles());
     entry->setInstalledFiles(QStringList());
     unregisterEntry(entry);
 

@@ -8,32 +8,32 @@
 
 namespace KNS
 {
-	class CoreEngine;
+class CoreEngine;
 }
 
 class KNewStuff2Test : public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-	KNewStuff2Test();
-	void setTestAll(bool testall);
-	void entryTest();
-	void providerTest();
-	void engineTest();
+    KNewStuff2Test();
+    void setTestAll(bool testall);
+    void entryTest();
+    void providerTest();
+    void engineTest();
 public slots:
-	void slotProviderLoaded(KNS::Provider *provider);
-	void slotProvidersFailed();
-	void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
-	void slotEntriesFailed();
-	void slotEntriesFinished();
-	void slotPayloadLoaded(KUrl payload);
-	void slotPayloadFailed();
-	void slotInstallationFinished();
-	void slotInstallationFailed();
+    void slotProviderLoaded(KNS::Provider *provider);
+    void slotProvidersFailed();
+    void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
+    void slotEntriesFailed();
+    void slotEntriesFinished();
+    void slotPayloadLoaded(KUrl payload);
+    void slotPayloadFailed();
+    void slotInstallationFinished();
+    void slotInstallationFailed();
 private:
-	void quitTest();
-	KNS::CoreEngine *m_engine;
-	bool m_testall;
+    void quitTest();
+    KNS::CoreEngine *m_engine;
+    bool m_testall;
 };
 
 #endif
