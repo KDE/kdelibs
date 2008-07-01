@@ -162,6 +162,7 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
     QTest::newRow("glob that ends with *, extension") << "README.foo" << "text/x-readme";
     QTest::newRow("glob that ends with *, also matches *.txt. Longer match wins (is also a subclass).") << "README.txt" << "text/x-readme";
     QTest::newRow("glob that ends with *, also matches *.doc. Longer match wins.") << "README.doc" << "text/x-readme";
+    // TODO QTest::newRow("glob that ends with *, also matches *.pdf. fdo bug 15436.") << "README.pdf" << "application/pdf";
     QTest::newRow("glob that ends with *, double match for same mimetype") << "README.nfo" << "text/x-readme";
     QTest::newRow("directory") << "/" << "inode/directory";
     QTest::newRow("doesn't exist, no extension") << "IDontExist" << "application/octet-stream";
@@ -605,8 +606,8 @@ void KMimeTypeTest::testPatterns_data()
     QTest::addColumn<QString>("mimeType");
     QTest::addColumn<QString>("patterns");
     QTest::newRow("mimetype with a single pattern") << "application/pdf" << "*.pdf";
-    QTest::newRow("mimetype with multiple patterns") << "application/x-kpresenter" << "*.kpr,*.kpt";
-    QTest::newRow("mimetype with multiple patterns, *.doc added by kde") << "text/plain" << "*.asc,*.txt,*.doc";
+    QTest::newRow("mimetype with multiple patterns") << "application/x-kpresenter" << "*.kpr;*.kpt";
+    QTest::newRow("mimetype with multiple patterns, *.doc added by kde") << "text/plain" << "*.asc;*.txt;*.doc;*,v";
     QTest::newRow("mimetype with no patterns") << "application/pkcs7-mime" << QString();
 }
 
@@ -615,8 +616,17 @@ void KMimeTypeTest::testPatterns()
     QFETCH(QString, mimeType);
     QFETCH(QString, patterns);
     KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
-    QVERIFY( mime );
-    QCOMPARE( mime->patterns().join(","), patterns );
+    QVERIFY(mime);
+    // Sort both lists; order is unreliable since shared-mime-info uses hashes internally.
+    QStringList expectedPatterns = patterns.split(';');
+    expectedPatterns.sort();
+    QStringList mimePatterns = mime->patterns();
+    // shared-mime-info 0.30 adds *,v to text/plain, let's add it from this test so that it works
+    // with older versions too.
+    if (mimeType == "text/plain" && !mimePatterns.contains("*,v"))
+        mimePatterns.append("*,v");
+    mimePatterns.sort();
+    QCOMPARE(mimePatterns.join(";"), expectedPatterns.join(";"));
 }
 
 void KMimeTypeTest::testExtractKnownExtension_data()
