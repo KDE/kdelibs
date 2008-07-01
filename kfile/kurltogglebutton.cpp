@@ -32,7 +32,7 @@ KUrlToggleButton::KUrlToggleButton(KUrlNavigator* parent) :
     KUrlButton(parent)
 {
     setCheckable(true);
-    connect(this, SIGNAL(clicked()),
+    connect(this, SIGNAL(toggled(bool)),
             this, SLOT(updateToolTip()));
     m_pixmap = KIcon("edit-undo").pixmap(16, 16);
     updateToolTip();
