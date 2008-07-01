@@ -933,7 +933,7 @@ void KGlobalSettings::Private::kdisplaySetFont()
     if (qApp && qApp->type() == QApplication::GuiClient) {
         QApplication::setFont(KGlobalSettings::generalFont());
         QApplication::setFont(KGlobalSettings::menuFont(), "QMenuBar");
-        QApplication::setFont(KGlobalSettings::menuFont(), "QPopupMenu");
+        QApplication::setFont(KGlobalSettings::menuFont(), "QMenu");
         QApplication::setFont(KGlobalSettings::menuFont(), "KPopupTitle");
         QApplication::setFont(KGlobalSettings::toolBarFont(), "QToolBar");
 
