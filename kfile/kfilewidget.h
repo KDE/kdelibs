@@ -461,6 +461,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_toggleSpeedbar( bool ) )
     Q_PRIVATE_SLOT( d, void _k_toggleBookmarks( bool ) )
     Q_PRIVATE_SLOT( d, void _k_slotAutoSelectExtClicked() )
+    Q_PRIVATE_SLOT( d, void _k_placesViewSplitterMoved() )
 };
 
 #endif /* KABSTRACTFILEWIDGET_H */

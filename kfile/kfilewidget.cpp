@@ -70,6 +70,7 @@ public:
         : boxLayout(0),
           labeledCustomWidget(0),
           bottomCustomWidget(0),
+          speedBarWidth(-1),
           inAccept(false),
           dummyAdded(false),
           q(q)
@@ -143,6 +144,7 @@ public:
     void _k_toggleSpeedbar( bool );
     void _k_toggleBookmarks( bool );
     void _k_slotAutoSelectExtClicked();
+    void _k_placesViewSplitterMoved();
 
     void addToRecentDocuments();
 
@@ -184,6 +186,11 @@ public:
     KUrl::List urlList; //the list of selected urls
 
     QStringList mimetypes; //the list of possible mimetypes to save as
+
+    // caches the speed bar width. This value will be updated when the splitter
+    // is moved. This allows us to properly set a value when the dialog itself
+    // is resized
+    int speedBarWidth;
 
     // indicates if the location edit should be kept or cleared when changing
     // directories
@@ -1210,6 +1217,8 @@ void KFileWidgetPrivate::initGUI()
     placesViewSplitter->setChildrenCollapsible(false);
     boxLayout->addWidget(placesViewSplitter);
 
+    QObject::connect(placesViewSplitter, SIGNAL(splitterMoved(int,int)), q, SLOT(_k_placesViewSplitterMoved()));
+
     vbox = new QVBoxLayout();
     vbox->setMargin(0);
     QWidget *vboxWidget = new QWidget();
@@ -1592,8 +1601,6 @@ void KFileWidget::showEvent(QShowEvent* event)
     }
     d->ops->clearHistory();
 
-    d->updateSplitterSize();
-
     QWidget::showEvent(event);
 }
 
@@ -1765,6 +1772,12 @@ void KFileWidgetPrivate::_k_slotAutoSelectExtClicked()
 
     // update the current filename's extension
     updateLocationEditExtension (extension /* extension hasn't changed */);
+}
+
+void KFileWidgetPrivate::_k_placesViewSplitterMoved()
+{
+    const QList<int> sizes = placesViewSplitter->sizes();
+    speedBarWidth = sizes[0];
 }
 
 static QString getExtensionFromPatternList(const QStringList &patternList)
@@ -2038,7 +2051,8 @@ void KFileWidgetPrivate::updateSplitterSize()
     if (sizes.count() == 2) {
         // restore width of speedbar
         KConfigGroup configGroup( KGlobal::config(), ConfigGroup );
-        const int speedbarWidth = configGroup.readEntry( SpeedbarWidth, placesView->sizeHintForColumn(0) );
+        const int speedbarWidth = speedBarWidth == -1 ? configGroup.readEntry( SpeedbarWidth, placesView->sizeHintForColumn(0) )
+                                                      : speedBarWidth;
         const int availableWidth = q->width();
         sizes[0] = speedbarWidth + 1; // without this pixel, our places view is reduced 1 pixel each time is shown.
         sizes[1] = availableWidth - speedbarWidth - 1;
