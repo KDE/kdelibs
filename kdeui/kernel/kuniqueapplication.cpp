@@ -74,6 +74,7 @@ bool s_kuniqueapplication_startCalled = false;
 bool KUniqueApplication::Private::s_handleAutoStarted = false;
 #ifdef Q_WS_WIN
 QString KUniqueApplication::Private::s_dbusServiceName;
+void KApplication_activateWindowForProcess( const QString& executableName ); /* private helper from kapplication_win.cpp */
 #endif
 
 void
