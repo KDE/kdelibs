@@ -138,21 +138,23 @@ KSycocaDict::remove(const QString &key)
 
 int KSycocaDict::find_string(const QString &key ) const
 {
-   //kDebug(7011) << QString("KSycocaDict::find_string(%1)").arg(key);
+    Q_ASSERT(d);
+
+    //kDebug(7011) << QString("KSycocaDict::find_string(%1)").arg(key);
     qint32 offset = d->offsetForKey(key);
 
-   //kDebug(7011) << QString("offset is %1").arg(offset,8,16);
-   if (offset == 0)
-      return 0;
+    //kDebug(7011) << QString("offset is %1").arg(offset,8,16);
+    if (offset == 0)
+        return 0;
 
-   if (offset > 0)
-      return offset; // Positive ID
+    if (offset > 0)
+        return offset; // Positive ID
 
-   // Lookup duplicate list.
-   offset = -offset;
+    // Lookup duplicate list.
+    offset = -offset;
 
-   d->stream->device()->seek(offset);
-   //kDebug(7011) << QString("Looking up duplicate list at %1").arg(offset,8,16);
+    d->stream->device()->seek(offset);
+    //kDebug(7011) << QString("Looking up duplicate list at %1").arg(offset,8,16);
 
    while(true)
    {
