@@ -287,7 +287,7 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KService
         }
     } else {
         kDebug() << action.name() << "first url's path=" << urls.first().path() << "exec=" << action.exec();
-        KRun::run( action.exec(), urls, 0, action.text(), action.icon() );
+        KRun::run( action.exec(), urls, 0, action.text(), action.icon(), "0" /*no startup notification for actions*/ );
         // The action may update the desktop file. Example: eject unmounts (#5129).
         org::kde::KDirNotify::emitFilesChanged( urls.toStringList() );
     }
