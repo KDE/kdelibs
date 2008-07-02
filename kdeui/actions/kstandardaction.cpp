@@ -113,6 +113,12 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
       if ( id == Next )
         iconName = "go-previous";
 
+      if ( id == FirstPage )
+	iconName = "go-last-page";
+
+      if ( id == LastPage )
+	iconName = "go-first-page";
+
       if ( id == DocumentBack )
         iconName = "go-next";
 
