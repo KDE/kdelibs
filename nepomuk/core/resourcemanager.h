@@ -58,7 +58,7 @@ namespace Nepomuk {
          * Initialize the Nepomuk framework. This method will initialize the communication with
          * the local Nepomuk-KDE services, ie. the data repository.
          *
-         * When using multiple threads make sure to call this method in the mail thread
+         * When using multiple threads make sure to call this method in the main thread
          * before doing anything else.
          *
          * \return 0 if all necessary components could be found and -1 otherwise.
