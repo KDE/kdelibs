@@ -55,11 +55,11 @@ namespace Nepomuk {
         static ResourceManager* instance();
 
         /**
-         * Initialize the KMetaData framework. This method will initialize the communication with
-         * the local Nepomuk-KDE services, ie. the RDF repository.
+         * Initialize the Nepomuk framework. This method will initialize the communication with
+         * the local Nepomuk-KDE services, ie. the data repository.
          *
-         * Calling init() manually is optional now. In the future we might introduce options
-         * that make calling it useful.
+         * When using multiple threads make sure to call this method in the mail thread
+         * before doing anything else.
          *
          * \return 0 if all necessary components could be found and -1 otherwise.
          *
