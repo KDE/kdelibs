@@ -2606,7 +2606,13 @@ bool KUrlPropsPlugin::supports( const KFileItemList& _items )
     return false;
 
   // open file and check type
-  KDesktopFile config( item.url().path() );
+  bool isLocal;
+  KUrl url = item.mostLocalUrl(isLocal);
+  if (!isLocal) {
+      return false;
+  }
+
+  KDesktopFile config( url.path() );
   return config.hasLinkType();
 }
 
@@ -2908,8 +2914,15 @@ bool KDevicePropsPlugin::supports( const KFileItemList& _items )
   // check if desktop file
   if (!item.isDesktopFile())
     return false;
+
   // open file and check type
-  KDesktopFile config( item.url().path() );
+  bool isLocal;
+  KUrl url = item.mostLocalUrl(isLocal);
+  if (!isLocal) {
+      return false;
+  }
+
+  KDesktopFile config( url.path() );
   return config.hasDeviceType();
 }
 
