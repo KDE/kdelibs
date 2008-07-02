@@ -1404,6 +1404,9 @@ void KFileWidget::setSelection(const QString& url)
         d->url = d->ops->url();
         d->url.addPath(filename);
     }
+    else {
+        d->setLocationText(url);
+    }
 }
 
 void KFileWidgetPrivate::_k_slotLoadingFinished()
