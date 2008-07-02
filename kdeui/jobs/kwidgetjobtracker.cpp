@@ -427,6 +427,10 @@ void KWidgetJobTracker::Private::ProgressWidget::closeEvent(QCloseEvent *event)
     if (tracker->stopOnClose(job) && !finishedProperty) {
         tracker->slotStop(job);
     }
+
+    if ( keepOpenChecked ) {
+        delete job;
+    }
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::init()

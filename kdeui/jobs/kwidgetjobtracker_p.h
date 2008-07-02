@@ -81,6 +81,10 @@ public:
     ~ProgressWidget()
     {
         beingDeleted = true;    // keep the tracker from trying to delete us
+
+        if ( keepOpenChecked ) {
+            delete job;
+        }
     }
 
     KWidgetJobTracker *const tracker;
