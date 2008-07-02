@@ -1806,6 +1806,7 @@ void KHTMLPart::slotFinished( KJob * job )
     // a directory...
     if (job->error() == KIO::ERR_IS_DIRECTORY)
     {
+      emit canceled( job->errorString() );
       emit d->m_extension->openUrlRequest( d->m_workingURL );
     }
     else
