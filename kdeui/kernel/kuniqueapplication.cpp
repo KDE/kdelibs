@@ -74,7 +74,9 @@ bool s_kuniqueapplication_startCalled = false;
 bool KUniqueApplication::Private::s_handleAutoStarted = false;
 #ifdef Q_WS_WIN
 QString KUniqueApplication::Private::s_dbusServiceName;
-void KApplication_activateWindowForProcess( const QString& executableName ); /* private helper from kapplication_win.cpp */
+/* private helpers from kapplication_win.cpp */
+void KApplication_activateWindowForProcess( const QString& executableName );
+bool KApplication_dbusIsPatched();
 #endif
 
 void
@@ -154,13 +156,16 @@ KUniqueApplication::start(StartFlags flags)
 
      // Check to make sure that we're actually able to register with the D-Bus session
      // server.
-     if (
+     bool registered;
 #ifdef Q_WS_WIN
-       dbusService->registerService(appName + ".unique-" + pid) != QDBusConnectionInterface::ServiceRegistered
+     if (KApplication_dbusIsPatched())
+       registered = dbusService->registerService(appName + ".unique-" + pid) == QDBusConnectionInterface::ServiceRegistered;
+     else
+       registered = dbusService->registerService(appName) == QDBusConnectionInterface::ServiceRegistered;
 #else
-       dbusService->registerService(appName) != QDBusConnectionInterface::ServiceRegistered
+     registered = dbusService->registerService(appName) == QDBusConnectionInterface::ServiceRegistered;
 #endif
-       )
+     if (!registered)
      {
         kError() << "KUniqueApplication: Can't setup D-Bus service. Probably already running."
                  << endl;

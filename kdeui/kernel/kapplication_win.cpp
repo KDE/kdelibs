@@ -24,6 +24,7 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QLibraryInfo>
+#include <QLibrary>
 
 /**
  * MS Windows-related actions for KApplication startup.
@@ -108,6 +109,12 @@ static PPERF_COUNTER_BLOCK CounterBlock(PPERF_INSTANCE_DEFINITION PerfInst)
 #define GETPID_PROCESS_OBJECT_INDEX 230
 #define GETPID_PROC_ID_COUNTER 784
 
+QString fromWChar(const wchar_t *string, int size = -1)
+{
+  return (sizeof(wchar_t) == sizeof(QChar)) ? QString::fromUtf16((ushort *)string, size)
+    : QString::fromUcs4((uint *)string, size);
+}
+
 void KApplication_getProcessesIdForName( const QString& processName, QList<int>& pids )
 {
   qDebug() << "KApplication_getProcessesIdForName" << processName;
@@ -152,8 +159,8 @@ void KApplication_getProcessesIdForName( const QString& processName, QList<int>&
       curCounter = perfCounter;
 
       bstrProcessName = (wchar_t *)((PBYTE)perfInstance + perfInstance->NameOffset);
-      qDebug() << "bstrProcessName: " << QString::fromWCharArray((LPCWSTR)bstrProcessName);
-      if (QString::fromWCharArray((LPCWSTR)bstrProcessName) == processName) {
+      qDebug() << "bstrProcessName: " << fromWChar((LPCWSTR)bstrProcessName);
+      if (fromWChar((LPCWSTR)bstrProcessName) == processName) {
         // retrieve the counters
         for( uint counter = 0; counter < perfObject->NumCounters; counter++ ) {
           if (curCounter->CounterNameTitleIndex == GETPID_PROC_ID_COUNTER) {
@@ -251,3 +258,19 @@ void KApplication_activateWindowForProcess( const QString& executableName )
 
 // </copy>
 
+// returns true if dbus patched for KDE is used
+bool KApplication_dbusIsPatched()
+{
+# ifdef __GNUC__
+#  define DBUSLIB_PREFIX "lib"
+# else
+#  define DBUSLIB_PREFIX ""
+# endif
+# ifdef _DEBUG
+#  define DBUSLIB_SUFFIX "d"
+# else
+#  define DBUSLIB_SUFFIX ""
+# endif
+   QLibrary myLib(DBUSLIB_PREFIX "dbus-1" DBUSLIB_SUFFIX);
+   return myLib.resolve("dbus_kde_patch");
+}
