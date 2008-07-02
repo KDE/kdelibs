@@ -380,6 +380,7 @@ public:
 	KUrlCompletion::Mode mode; // ExeCompletion, FileCompletion, DirCompletion
 	bool replace_env;
 	bool replace_home;
+	bool complete_url; // if true completing a URL (i.e. 'prepend' is a URL), otherwise a path
 
 	KIO::ListJob *list_job; // kio job to list directories
 
@@ -627,6 +628,7 @@ QString KUrlCompletion::makeCompletion(const QString &text)
 	if ( url.kurl()->hasRef() )
 		toRemove += url.kurl()->ref().length() + 1;
 	d->prepend = text.left( text.length() - toRemove );
+	d->complete_url = url.isURL();
 
 	QString aMatch;
 
@@ -1079,8 +1081,12 @@ void KUrlCompletionPrivate::addMatches( const QStringList &matchList )
 	QStringList::ConstIterator it = matchList.begin();
 	QStringList::ConstIterator end = matchList.end();
 
-	for ( ; it != end; ++it )
-		q->addItem( prepend + (*it));
+	if ( complete_url )
+		for ( ; it != end; ++it )
+			q->addItem( prepend + QUrl::toPercentEncoding(*it) );
+	else
+		for ( ; it != end; ++it )
+			q->addItem( prepend + (*it));
 }
 
 /*
