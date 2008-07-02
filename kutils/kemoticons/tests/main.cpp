@@ -27,6 +27,7 @@
 #include <qlabel.h>
 #include <kcombobox.h>
 #include <QVBoxLayout>
+#include <QTextDocument>
 
 class KEmoTest : public QWidget
 {
@@ -70,7 +71,7 @@ void KEmoTest::changed()
 {
     QStringList excl;
     excl << ":)" << ":-)";
-    lb.setText(t.parseEmoticons(kl.text(), KEmoticonsTheme::DefaultParse, excl));
+    lb.setText(t.parseEmoticons(Qt::escape(kl.text()), KEmoticonsTheme::DefaultParse, excl));
 }
 
 void KEmoTest::changeTheme(const QString &theme)
