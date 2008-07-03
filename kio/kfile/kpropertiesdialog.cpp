@@ -291,7 +291,7 @@ bool KPropertiesDialog::showDialog(const KFileItem& item, QWidget* parent,
   if (modal) {
       dlg->exec();
   } else {
-      dlg->close();
+      dlg->show();
   }
 
   return true;
@@ -308,7 +308,7 @@ bool KPropertiesDialog::showDialog(const KUrl& _url, QWidget* parent,
   if (modal) {
       dlg->exec();
   } else {
-      dlg->close();
+      dlg->show();
   }
 
   return true;
@@ -329,7 +329,7 @@ bool KPropertiesDialog::showDialog(const KFileItemList& _items, QWidget* parent,
   if (modal) {
       dlg->exec();
   } else {
-      dlg->close();
+      dlg->show();
   }
   return true;
 }
