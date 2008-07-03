@@ -187,11 +187,12 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
   {
     QString doc;
 
-    QString filter = componentData().componentName() + '/' + _file;
+    const QString filter = componentData().componentName() + '/' + _file;
+    const QStringList allFiles = componentData().dirs()->findAllResources("data", filter) +
+                                 componentData().dirs()->findAllResources("data", _file);
 
-    QStringList allFiles = componentData().dirs()->findAllResources("data", filter) + componentData().dirs()->findAllResources("data", _file);
-
-    file = findMostRecentXMLFile( allFiles, doc );
+    if (!allFiles.isEmpty())
+        file = findMostRecentXMLFile(allFiles, doc);
 
     if ( file.isEmpty() )
     {

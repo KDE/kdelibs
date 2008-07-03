@@ -224,6 +224,16 @@ QString KXmlGuiVersionHandler::findVersionNumber( const QString &xml )
 
 KXmlGuiVersionHandler::KXmlGuiVersionHandler(const QStringList& files)
 {
+    Q_ASSERT(!files.isEmpty());
+
+    if (files.count() == 1) {
+        // No need to parse version numbers if there's only one file anyway
+        m_file = files.first();
+        m_doc = KXMLGUIFactory::readConfigFile(m_file);
+        return;
+    }
+
+
     QList<DocStruct> allDocuments;
 
     foreach (const QString &file, files) {
@@ -312,9 +322,9 @@ KXmlGuiVersionHandler::KXmlGuiVersionHandler(const QStringList& files)
         }
         m_doc = (*best).data;
         m_file = (*best).file;
-    } else if ( !files.isEmpty() ) {
+    } else {
         //kDebug(260) << "returning first one...";
-        m_doc = (*allDocuments.begin()).data;
-        m_file = (*allDocuments.begin()).file;
+        m_doc = allDocuments.first().data;
+        m_file = allDocuments.first().file;
     }
 }
