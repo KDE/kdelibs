@@ -37,6 +37,11 @@ void OrgKdeKDirNotifyInterface::emitFileRenamed(const QString &src, const QStrin
     emitSignal(QLatin1String("FileRenamed"), QVariantList() << src << dst);
 }
 
+void OrgKdeKDirNotifyInterface::emitFileMoved(const QString &src, const QString &dst)
+{
+    emitSignal(QLatin1String("FileMoved"), QVariantList() << src << dst);
+}
+
 void OrgKdeKDirNotifyInterface::emitFilesAdded(const QString &directory)
 {
     emitSignal(QLatin1String("FilesAdded"), QVariantList() << directory);

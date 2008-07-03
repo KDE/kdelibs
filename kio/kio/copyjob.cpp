@@ -1095,9 +1095,12 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
             //required for the undo feature
             emit q->copyingLinkDone( q, (*it).uSource, target, (*it).uDest );
         }
-        else
+        else {
             //required for the undo feature
             emit q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, false, false );
+            if (m_mode == CopyJob::Move)
+                org::kde::KDirNotify::emitFileMoved( (*it).uSource.url(), (*it).uDest.url() );
+        }
         // remove from list, to move on to next file
         files.erase( it );
     }

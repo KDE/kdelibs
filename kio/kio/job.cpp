@@ -491,6 +491,8 @@ void SimpleJob::slotFinished( )
                 str >> src >> dst;
                 if( src.directory() == dst.directory() ) // For the user, moving isn't renaming. Only renaming is.
                     org::kde::KDirNotify::emitFileRenamed( src.url(), dst.url() );
+
+                org::kde::KDirNotify::emitFileMoved( src.url(), dst.url() );
             }
         }
         emitResult();
@@ -2103,16 +2105,16 @@ void FileCopyJob::slotResult( KJob *job)
       else if (job == d->m_getJob)
       {
         d->m_getJob = 0L;
-        if (d->m_putJob) 
+        if (d->m_putJob)
         {
           d->m_putJob->kill( Quietly );
           removeSubjob( d->m_putJob );
-        }  
+        }
       }
       else if (job == d->m_putJob)
       {
         d->m_putJob = 0L;
-        if (d->m_getJob) 
+        if (d->m_getJob)
         {
           d->m_getJob->kill( Quietly );
           removeSubjob( d->m_getJob );

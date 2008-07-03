@@ -39,6 +39,7 @@ public:
 public Q_SLOTS: // METHODS
 Q_SIGNALS: // SIGNALS
     void FileRenamed(const QString &src, const QString &dst);
+    void FileMoved(const QString &src, const QString &dst);
     void FilesAdded(const QString &directory);
     void FilesChanged(const QStringList &fileList);
     void FilesRemoved(const QStringList &fileList);
@@ -47,6 +48,7 @@ Q_SIGNALS: // SIGNALS
 
 public:
     static void emitFileRenamed(const QString &src, const QString &dst);
+    static void emitFileMoved(const QString &src, const QString &dst);
     static void emitFilesAdded(const QString &directory);
     static void emitFilesChanged(const QStringList &fileList);
     static void emitFilesRemoved(const QStringList &fileList);    

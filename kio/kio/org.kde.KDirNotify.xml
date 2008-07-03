@@ -15,6 +15,10 @@
       <arg type="s" name="src" direction="out"/>
       <arg type="s" name="dst" direction="out"/>
     </signal>
+    <signal name="FileMoved">
+      <arg type="s" name="src" direction="out"/>
+      <arg type="s" name="dst" direction="out"/>
+    </signal>
     <signal name="enteredDirectory">
       <arg type="s" name="url" direction="out"/>
     </signal>
