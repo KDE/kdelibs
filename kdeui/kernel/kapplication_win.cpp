@@ -53,12 +53,6 @@ void KApplication_init_windows()
 // <copy of kdepim/libkdepim/utils.cpp, TODO: move to a shared helper library>
 
 #include <windows.h>
-#ifdef _MSC_VER
-# include <comdef.h> // (bstr_t)
-#else
-// mingw: get patched comutil.h from http://pastebin.ca/raw/1060471 and save to kde4/mingw/include/
-# include <comutil.h> // (bstr_t)
-#endif
 #include <winperf.h>
 #include <psapi.h>
 #include <signal.h>
@@ -152,15 +146,14 @@ void KApplication_getProcessesIdForName( const QString& processName, QList<int>&
     pids.clear();
     perfCounter = FirstCounter( perfObject );
     perfInstance = FirstInstance( perfObject );
-    _bstr_t bstrProcessName;
     // retrieve the instances
     qDebug() << "INSTANCES: " << perfObject->NumInstances;
     for( int instance = 0; instance < perfObject->NumInstances; instance++ ) {
       curCounter = perfCounter;
-
-      bstrProcessName = (wchar_t *)((PBYTE)perfInstance + perfInstance->NameOffset);
-      qDebug() << "bstrProcessName: " << fromWChar((LPCWSTR)bstrProcessName);
-      if (fromWChar((LPCWSTR)bstrProcessName) == processName) {
+      const QString foundProcessName( 
+        fromWChar( (wchar_t *)( (PBYTE)perfInstance + perfInstance->NameOffset ) ) );
+      qDebug() << "foundProcessName: " << foundProcessName;
+      if ( foundProcessName == processName ) {
         // retrieve the counters
         for( uint counter = 0; counter < perfObject->NumCounters; counter++ ) {
           if (curCounter->CounterNameTitleIndex == GETPID_PROC_ID_COUNTER) {
