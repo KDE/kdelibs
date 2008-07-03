@@ -285,6 +285,9 @@ void CoreEngine::downloadPreview(Entry *entry)
 
 void CoreEngine::downloadPayload(Entry *entry)
 {
+    if(!entry)
+        return;
+
     KUrl source = KUrl(entry->payload().representation());
 
     if (!source.isValid()) {

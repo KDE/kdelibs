@@ -304,6 +304,9 @@ void ItemsViewDelegate::slotInstallClicked()
         const QSortFilterProxyModel * model = qobject_cast<const QSortFilterProxyModel*>(index.model());
         const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(model->sourceModel());
         KNS::Entry * entry = realmodel->entryForIndex(model->mapToSource(index));
+        if ( !entry )
+            return;
+
         if (entry->status() == Entry::Installed) {
             emit performAction(DownloadDialog::kUninstall, entry);
         } else {

@@ -106,7 +106,10 @@ QVariant ItemsModel::data(const QModelIndex & index, int role) const
 
 KNS::Entry* ItemsModel::entryForIndex(const QModelIndex & index) const
 {
-    return m_entries[index.row()];
+    if (index.row() < 0)
+        return 0;
+    else
+        return m_entries[index.row()];
 }
 
 void ItemsModel::addEntry(Entry * entry)
