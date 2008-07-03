@@ -186,6 +186,10 @@ KLocaleTest::formatTime()
 	locale.setTimeFormat("%H:%M:%S %p");
 	QCOMPARE(locale.formatTime(time, true, false), QString("00:22:33 am"));
 	QCOMPARE(locale.formatTime(time, true, true), QString("00:22:33"));
+
+	locale.setTimeFormat("%l : %M : %S %p"); // #164813
+	QCOMPARE(locale.formatTime(time, true), QString("12 : 22 : 33 am"));
+	QCOMPARE(locale.formatTime(time, false), QString("12 : 22 am"));
 }
 
 void

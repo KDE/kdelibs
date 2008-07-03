@@ -1818,11 +1818,16 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuratio
 	    case 'S':
 	      if (includeSecs)
 		put_it_in( buffer, index, pTime.second() );
-	      else if ( index > 0 )
-		{
+	      else if (index > 0) {
+                  // remove spaces (#164813)
+                  while(index > 0 && buffer[index-1].isSpace())
+                    --index;
 		  // we remove the separator sign before the seconds and
 		  // assume that works everywhere
 		  --index;
+                  // remove spaces (#164813)
+                  while(index > 0 && buffer[index-1].isSpace())
+                    --index;
 		  break;
 		}
 	      break;
@@ -1992,16 +1997,16 @@ void KLocalePrivate::initEncoding()
 
   // This all made more sense when we still had the EncodingEnum config key.
 #if defined(HAVE_LANGINFO_H) && !defined(Q_OS_WIN)
-  // Qt since 4.2 always returns 'System' as codecForLocale and KDE (for example KEncodingFileDialog) 
+  // Qt since 4.2 always returns 'System' as codecForLocale and KDE (for example KEncodingFileDialog)
   // expects real encoding name. So on systems that have langinfo.h use nl_langinfo instead,
   // just like Qt compiled without iconv does. Windows already has its own workaround
-  
+
   QTextCodec* codec = QTextCodec::codecForName( nl_langinfo(CODESET) );
   if ( codec )
     setEncoding( codec->mibEnum() );
 #else
   setEncoding( QTextCodec::codecForLocale()->mibEnum() );
-#endif 
+#endif
 
   if ( ! codecForEncoding )
     {
