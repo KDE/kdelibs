@@ -165,7 +165,7 @@
         <bool>false</bool>
       </property>
     </widget>
-    <widget class="QComboBox" name="L_CertType" >
+    <widget class="KComboBox" name="L_CertType" >
       <property name="geometry" >
         <rect>
           <x>180</x>
@@ -175,7 +175,7 @@
         </rect>
       </property>
     </widget>
-    <widget class="QLineEdit" name="LineEdit3" >
+    <widget class="KLineEdit" name="LineEdit3" >
       <property name="geometry" >
         <rect>
           <x>180</x>
@@ -204,7 +204,7 @@
         <bool>false</bool>
       </property>
     </widget>
-    <widget class="QLineEdit" name="LineEdit4_2_2_2" >
+    <widget class="KLineEdit" name="LineEdit4_2_2_2" >
       <property name="geometry" >
         <rect>
           <x>180</x>
@@ -217,7 +217,7 @@
         <number>200</number>
       </property>
     </widget>
-    <widget class="QLineEdit" name="LineEdit4_2_2_2_2" >
+    <widget class="KLineEdit" name="LineEdit4_2_2_2_2" >
       <property name="geometry" >
         <rect>
           <x>180</x>
@@ -230,7 +230,7 @@
         <number>200</number>
       </property>
     </widget>
-    <widget class="QLineEdit" name="LineEdit4_2_2_2_3" >
+    <widget class="KLineEdit" name="LineEdit4_2_2_2_3" >
       <property name="geometry" >
         <rect>
           <x>180</x>
@@ -243,7 +243,7 @@
         <number>200</number>
       </property>
     </widget>
-    <widget class="QLineEdit" name="E_Passphrase" >
+    <widget class="KLineEdit" name="E_Passphrase" >
       <property name="geometry" >
         <rect>
           <x>180</x>
@@ -259,7 +259,7 @@
         <enum>QLineEdit::Password</enum>
       </property>
     </widget>
-    <widget class="QLineEdit" name="E_Passphrase_2" >
+    <widget class="KLineEdit" name="E_Passphrase_2" >
       <property name="geometry" >
         <rect>
           <x>180</x>
@@ -358,7 +358,7 @@
         <bool>false</bool>
       </property>
     </widget>
-    <widget class="QLineEdit" name="LineEdit19" >
+    <widget class="KLineEdit" name="LineEdit19" >
       <property name="geometry" >
         <rect>
           <x>380</x>
@@ -368,7 +368,7 @@
         </rect>
       </property>
     </widget>
-    <widget class="QLineEdit" name="LineEdit4_2_2" >
+    <widget class="KLineEdit" name="LineEdit4_2_2" >
       <property name="geometry" >
         <rect>
           <x>180</x>
@@ -381,7 +381,7 @@
         <number>200</number>
       </property>
     </widget>
-    <widget class="QLineEdit" name="LineEdit4_2" >
+    <widget class="KLineEdit" name="LineEdit4_2" >
       <property name="geometry" >
         <rect>
           <x>180</x>
@@ -394,7 +394,7 @@
         <number>200</number>
       </property>
     </widget>
-    <widget class="QComboBox" name="ComboBox2" >
+    <widget class="KComboBox" name="ComboBox2" >
       <property name="geometry" >
         <rect>
           <x>380</x>
@@ -433,7 +433,7 @@
         <bool>false</bool>
       </property>
     </widget>
-    <widget class="QComboBox" name="ComboBox5" >
+    <widget class="KComboBox" name="ComboBox5" >
       <property name="geometry" >
         <rect>
           <x>400</x>
@@ -443,7 +443,7 @@
         </rect>
       </property>
     </widget>
-    <widget class="QLineEdit" name="LineEdit4" >
+    <widget class="KLineEdit" name="LineEdit4" >
       <property name="geometry" >
         <rect>
           <x>180</x>

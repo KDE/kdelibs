@@ -38,15 +38,15 @@
 #include <ksslpemcallback.h>
 #include <kfiledialog.h>
 #include <QtCore/Q_PID>
-#include <QtGui/QTabWidget>
 #include <kseparator.h>
 #include <QtGui/QTreeWidget>
-#include <QtGui/QTextEdit>
 #include <QtCore/QRegExp>
 #include <kcombobox.h>
 #include <kparts/browserextension.h>
 #include <kparts/browserinterface.h>
 #include <kmimetype.h>
+#include <ktabwidget.h>
+#include <ktextedit.h>
 
 K_PLUGIN_FACTORY( KCertPartFactory, registerPlugin<KCertPart>(); )
 K_EXPORT_PLUGIN( KCertPartFactory("KCertPart") )
@@ -205,7 +205,7 @@ KCertPart::KCertPart(QWidget *parentWidget,
 //
 //	Make the first tab
 //
-	_tabs = new QTabWidget(_pkcsFrame);
+	_tabs = new KTabWidget(_pkcsFrame);
 	grid->addWidget(_tabs, 8, 0, 5, 6);
 
 	QFrame *tab = new QFrame(_pkcsFrame);
@@ -241,7 +241,7 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	_p12_digest = new QLabel(tab);
 	tabGrid->addWidget(_p12_digest, 0, 1, 1, 4);
 	tabGrid->addWidget(new QLabel(i18n("Signature:"), tab), 1, 0);
-	_p12_sig = new QTextEdit(tab);
+	_p12_sig = new KTextEdit(tab);
 	tabGrid->addWidget(_p12_sig, 1, 1, 3, 4);
 	_p12_sig->setReadOnly(true);
 
@@ -256,7 +256,7 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	tabGrid->setMargin(KDialog::marginHint());
 	tabGrid->setSpacing(KDialog::spacingHint());
 	tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
-	_p12_pubkey = new QTextEdit(tab);
+	_p12_pubkey = new KTextEdit(tab);
 	tabGrid->addWidget(_p12_pubkey, 0, 1, 4, 4);
 	_p12_pubkey->setReadOnly(true);
 
@@ -296,7 +296,7 @@ KCertPart::KCertPart(QWidget *parentWidget,
 //
 //	Make the first tab
 //
-	_tabs = new QTabWidget(_x509Frame);
+	_tabs = new KTabWidget(_x509Frame);
 	grid->addWidget(_tabs, 7, 0, 5, 6);
 
 	tab = new QFrame(_x509Frame);
@@ -332,7 +332,7 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	_ca_digest = new QLabel(tab);
 	tabGrid->addWidget(_ca_digest, 0, 1, 1, 4);
 	tabGrid->addWidget(new QLabel(i18n("Signature:"), tab), 1, 0);
-	_ca_sig = new QTextEdit(tab);
+	_ca_sig = new KTextEdit(tab);
 	tabGrid->addWidget(_ca_sig, 1, 1, 3, 4);
 	_ca_sig->setReadOnly(true);
 
@@ -347,7 +347,7 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	tabGrid->setMargin(KDialog::marginHint());
 	tabGrid->setSpacing(KDialog::spacingHint());
 	tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
-	_ca_pubkey = new QTextEdit(tab);
+	_ca_pubkey = new KTextEdit(tab);
 	tabGrid->addWidget(_ca_pubkey, 0, 1, 4, 4);
 	_ca_pubkey->setReadOnly(true);
 

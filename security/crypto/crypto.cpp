@@ -64,6 +64,8 @@
 #include <k3resolver.h>
 #include <kseparator.h>
 #include <kstandarddirs.h>
+#include <ktabwidget.h>
+#include <ktextbrowser.h>
 #include <kurllabel.h>
 #include <kurlrequester.h>
 #include <kvbox.h>
@@ -251,7 +253,7 @@ QString whatstr;
   // The eighth is peer [email] certificate related (unimplemented)
   ///////////////////////////////////////////////////////////////////////////
 
-  tabs = new QTabWidget(this);
+  tabs = new KTabWidget(this);
   top->addWidget(tabs);
 
   ///////////////////////////////////////////////////////////////////////////
@@ -287,7 +289,7 @@ QString whatstr;
   QVBoxLayout *laygroup2 = new QVBoxLayout;
   cwbg->setLayout(laygroup2);
   laygroup2->setSpacing(KDialog::spacingHint());
-  QComboBox *cwcb = new QComboBox(cwbg);
+  KComboBox *cwcb = new KComboBox(cwbg);
     laygroup2->addWidget( cwcb );
   grid->addWidget(cwbg, 3, 0, 1, 2 );
 
@@ -535,7 +537,7 @@ QString whatstr;
   grid->addWidget(new QLabel(i18n("Host:"), tabAuth), 14, 0);
   grid->addWidget(new QLabel(i18n("Certificate:"), tabAuth), 15, 0);
 
-  authHost = new QLineEdit(tabAuth);
+  authHost = new KLineEdit(tabAuth);
   grid->addWidget(authHost, 14, 1, 1, 4);
   hostCertBox = new KComboBox(false, tabAuth);
   grid->addWidget(hostCertBox, 15, 1, 1, 4);
@@ -801,7 +803,7 @@ QString whatstr;
   grid->addWidget(mWarnExpired, 1, 0, 1, 4 );
   grid->addWidget(mWarnRevoked, 2, 0, 1, 4 );
 
-  macCert = new QLineEdit(tabSSLCOpts);
+  macCert = new KLineEdit(tabSSLCOpts);
   grid->addWidget(macCert, 4, 0, 1, 3 );
 
   macBox = new QTreeWidget(tabSSLCOpts);

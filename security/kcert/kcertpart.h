@@ -34,8 +34,8 @@ class KComboBox;
 class KSSLSigners;
 class KSSLPKCS12;
 class KSSLCertificate;
-class QTabWidget;
-class QTextEdit;
+class KTabWidget;
+class KTextEdit;
 class KAboutData;
 class QGridLayout;
 class QPushButton;
@@ -99,14 +99,14 @@ protected:
          *_p12_serialNum, *_p12_certState;
   QLabel *_p12_digest;
   KComboBox *_p12_chain;
-  QTextEdit*_p12_pubkey, *_p12_sig;
+  KTextEdit*_p12_pubkey, *_p12_sig;
   KSslCertificateBox *_p12_subject, *_p12_issuer;
 
   // for the CA widget
   QLabel *_ca_filenameLabel, *_ca_validFrom, *_ca_validUntil,
          *_ca_serialNum, *_ca_certState;
   QLabel *_ca_digest;
-  QTextEdit *_ca_pubkey, *_ca_sig;
+  KTextEdit *_ca_pubkey, *_ca_sig;
   KSslCertificateBox *_ca_subject, *_ca_issuer;
 
 
@@ -115,7 +115,7 @@ protected:
   // Store the pointer to the current item
   KSSLPKCS12 *_p12;
   KSSLCertificate *_ca;
-  QTabWidget *_tabs;
+  KTabWidget *_tabs;
   QGridLayout *_baseGrid;
   KSSLSigners *_signers;
   bool _silentImport;

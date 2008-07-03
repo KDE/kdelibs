@@ -26,8 +26,6 @@
 #include <klocale.h>
 #include <QCheckBox>
 #include <QDateTime>
-#include <QLineEdit>
-#include <QTabWidget>
 #include <QTreeWidget>
 #include <QLabel>
 #include <kcmodule.h>
@@ -40,9 +38,11 @@ class QButtonGroup;
 
 class KComboBox;
 class KCryptoConfig;
+class KLineEdit;
 class KPushButton;
 class KSslCertificateBox;
 class KSSLSigners;
+class KTabWidget;
 class KUrlLabel;
 class KUrlRequester;
 
@@ -280,7 +280,7 @@ private:
   void setAuthCertLists();
   void genCAList();
 
-  QTabWidget *tabs;
+  KTabWidget *tabs;
   QWidget *tabSSL, *tabOSSL;
 
   QWidget *tabYourSSLCert, *tabOtherSSLCert, *tabSSLCA, *tabSSLCOpts, *tabAuth;
@@ -307,7 +307,7 @@ private:
   QPushButton *yourSSLImport, *yourSSLPass, *yourSSLRemove, *yourSSLExport,
               *yourSSLUnlock, *yourSSLVerify;
   QRadioButton *yourSSLUseDefault, *yourSSLList, *yourSSLDont;
-  QLineEdit *macCert;
+  KLineEdit *macCert;
   KSslCertificateBox *oSubject, *oIssuer;
   KSslCertificateBox *ySubject, *yIssuer;
   QGridLayout *oGrid;
@@ -340,7 +340,7 @@ private:
   QRadioButton *hostSend, *hostPrompt, *hostDont;
   QTreeWidget *hostAuthList;
   QPushButton *authAdd, *authRemove;
-  QLineEdit *authHost;
+  KLineEdit *authHost;
   QList<HostAuthItem*> authDelList;
   QLabel *yHash, *pHash;
 
