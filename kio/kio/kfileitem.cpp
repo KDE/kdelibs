@@ -76,6 +76,7 @@ public:
           m_bIsLocalUrl( url.isLocalFile() ),
           m_bMimeTypeKnown( false ),
           m_delayedMimeTypes( delayedMimeTypes ),
+          m_useIconNameCache(false),
           m_hidden( Auto )
     {
         if (entry.count() != 0) {
