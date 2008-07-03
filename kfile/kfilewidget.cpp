@@ -980,13 +980,18 @@ void KFileWidget::accept()
 
 void KFileWidgetPrivate::_k_fileHighlighted(const KFileItem &i)
 {
+    const bool modified = locationEdit->lineEdit()->isModified();
+    locationEdit->lineEdit()->setModified( false );
+
     if ( ( !i.isNull() && i.isDir() ) ||
          ( locationEdit->hasFocus() && !locationEdit->currentText().isEmpty() ) ) // don't disturb
         return;
 
     if ( (ops->mode() & KFile::Files) != KFile::Files ) {
         if ( i.isNull() ) {
-            setLocationText( KUrl() );
+            if ( !modified ) {
+                setLocationText( KUrl() );
+            }
             return;
         }
 
@@ -1036,12 +1041,6 @@ void KFileWidgetPrivate::multiSelectionChanged()
 
     const KFileItemList list = ops->selectedItems();
 
-    if ( list.isEmpty() ) {
-        setLocationText( KUrl() );
-        return;
-    }
-
-    locationEdit->lineEdit()->setModified( false );
     if ( list.isEmpty() ) {
         setLocationText( KUrl() );
         return;
@@ -1107,17 +1106,19 @@ void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixma
 
 void KFileWidgetPrivate::removeDummyHistoryEntry()
 {
+    if ( !dummyAdded || locationEdit->lineEdit()->isModified() ) {
+        return;
+    }
+
     // setCurrentItem() will cause textChanged() being emitted,
     // so slotLocationChanged() will be called. Make sure we don't clear
     // the KDirOperator's view-selection in there
     QObject::disconnect( locationEdit, SIGNAL( editTextChanged( const QString& ) ),
                         q, SLOT( _k_slotLocationChanged( const QString& ) ) );
 
-    if ( dummyAdded ) {
-        locationEdit->removeItem( 0 );
-        locationEdit->setCurrentIndex( -1 );
-        dummyAdded = false;
-    }
+    locationEdit->removeItem( 0 );
+    locationEdit->setCurrentIndex( -1 );
+    dummyAdded = false;
 
     QObject::connect( locationEdit, SIGNAL( editTextChanged ( const QString& ) ),
                     q, SLOT( _k_slotLocationChanged( const QString& )) );
@@ -1296,8 +1297,10 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
     }
 
     bool blocked = locationEdit->blockSignals( true );
-    if ( keepLocation )
-        locationEdit->changeUrl( 0, KIcon( filename ), filename );
+    if ( keepLocation ) {
+        locationEdit->changeUrl( 0, KIcon( KMimeType::iconNameForUrl( filename ) ), filename );
+        locationEdit->lineEdit()->setModified( true );
+    }
 
     locationEdit->blockSignals( blocked );
 
@@ -1406,6 +1409,7 @@ void KFileWidget::setSelection(const QString& url)
     }
     else {
         d->setLocationText(url);
+        d->locationEdit->lineEdit()->setModified( true );
     }
 }
 
