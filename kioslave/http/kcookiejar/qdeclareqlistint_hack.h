@@ -3,5 +3,9 @@
 
 #include <QtDBus/QtDBus>
 
+#ifndef QDECLAREQLISTINT_HACK_H
+#define QDECLAREQLISTINT_HACK_H
+
 Q_DECLARE_METATYPE (QList<int>)
 
+#endif

@@ -111,7 +111,7 @@ void KHostName::changeX()
    proc.start("xauth", QStringList() << "-n" << "list");
    if (!proc.waitForFinished())
    {
-      fprintf(stderr, "Warning: Can't run xauth.\n");
+      fprintf(stderr, "Warning: Can not run xauth.\n");
       return;
    }
    QList<QByteArray> lines;

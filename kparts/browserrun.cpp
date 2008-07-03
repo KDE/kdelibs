@@ -29,6 +29,7 @@
 #include <kmimetypetrader.h>
 #include <ktemporaryfile.h>
 #include <kdebug.h>
+#include <kde_file.h>
 #include <kstandarddirs.h>
 #include <assert.h>
 
@@ -96,7 +97,7 @@ void BrowserRun::init()
 
     if ( isLocalFile() )  {
       struct stat buff;
-      if ( stat( QFile::encodeName(KRun::url().toLocalFile()), &buff ) == -1 )
+      if ( KDE_stat( QFile::encodeName(KRun::url().toLocalFile()), &buff ) == -1 )
       {
         kDebug(1000) << "BrowserRun::init:" << KRun::url().toLocalFile() << "doesn't exist.";
         redirectToError( KIO::ERR_DOES_NOT_EXIST, KRun::url().toLocalFile() );

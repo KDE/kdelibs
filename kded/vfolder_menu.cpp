@@ -986,7 +986,7 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
 
    struct dirent *ep;
 
-   while( ( ep = readdir( dp ) ) != 0L )
+   while( ( ep = KDE_readdir( dp ) ) != 0L )
    {
       QString fn( QFile::decodeName(ep->d_name));
       if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
@@ -1104,7 +1104,7 @@ kDebug(7021).nospace() << "processLegacyDir(" << dir << ", " << relDir << ", " <
 
    struct dirent *ep;
 
-   while( ( ep = readdir( dp ) ) != 0L )
+   while( ( ep = KDE_readdir( dp ) ) != 0L )
    {
       QString fn( QFile::decodeName(ep->d_name));
       if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')

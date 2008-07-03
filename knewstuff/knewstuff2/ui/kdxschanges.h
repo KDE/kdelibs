@@ -23,7 +23,7 @@
 
 #include <kdialog.h>
 
-class QTextBrowser;
+class KTextBrowser;
 
 /**
  * KNewStuff changelog window.
@@ -42,7 +42,7 @@ public:
     KDXSChanges(QWidget *parent);
     void addChangelog(const QString& version, const QString& log);
 private:
-    QTextBrowser *m_log;
+    KTextBrowser *m_log;
 };
 
 #endif

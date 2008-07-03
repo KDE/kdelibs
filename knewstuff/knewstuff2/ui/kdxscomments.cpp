@@ -21,9 +21,9 @@
 #include "kdxscomments.h"
 
 #include <klocale.h>
+#include <ktextbrowser.h>
 
 #include <QtGui/QLayout>
-#include <QtGui/QTextBrowser>
 #include <QtGui/QApplication>
 
 #include <QtGui/QCursor>
@@ -34,7 +34,7 @@ KDXSComments::KDXSComments(QWidget *parent)
     setCaption(i18n("User comments"));
     setButtons(KDialog::Close);
 
-    m_log = new QTextBrowser(this);
+    m_log = new KTextBrowser(this);
     setMainWidget(m_log);
 
     connect(m_log, SIGNAL(anchorClicked(const QUrl&)),

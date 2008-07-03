@@ -23,7 +23,7 @@
 
 #include <kdialog.h>
 
-class QTextEdit;
+class KTextEdit;
 
 /**
  * KNewStuff comment addition window.
@@ -42,7 +42,7 @@ public:
     KDXSComment(QWidget *parent);
     QString comment();
 private:
-    QTextEdit *m_textbox;
+    KTextEdit *m_textbox;
 };
 
 #endif

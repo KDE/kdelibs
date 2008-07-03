@@ -23,8 +23,8 @@
 
 #include <kdialog.h>
 
-class QLineEdit;
-class QTextEdit;
+class KLineEdit;
+class KTextEdit;
 class KUrlRequester;
 
 /**
@@ -43,8 +43,8 @@ class KDXSTranslation : public KDialog
 public:
     KDXSTranslation(QWidget *parent);
 private:
-    QLineEdit *m_name;
-    QTextEdit *m_description;
+    KLineEdit *m_name;
+    KTextEdit *m_description;
     KUrlRequester *m_payload;
 };
 

@@ -23,9 +23,6 @@
 #include <QtGui/QLayout>
 #include <QtGui/QPixmap>
 #include <QtCore/QStringList>
-#include <QtGui/QTabWidget>
-
-
 
 #include <kcmodule.h>
 #include <kcmoduleinfo.h>
@@ -35,12 +32,12 @@
 #include <kdialog.h>
 #include <kglobal.h>
 #include <kguiitem.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <kpushbutton.h>
 #include <kservice.h>
 #include <kstandardguiitem.h>
-
-#include <kicon.h>
+#include <ktabwidget.h>
 
 /***********************************************************************/
 class KCModuleContainer::KCModuleContainerPrivate
@@ -53,7 +50,7 @@ class KCModuleContainer::KCModuleContainerPrivate
 			{}
 
 		QStringList modules;
-		QTabWidget *tabWidget;
+		KTabWidget *tabWidget;
 		KCModule::Buttons buttons;
 		QVBoxLayout *topLayout;
 
@@ -68,7 +65,7 @@ class KCModuleContainer::KCModuleContainerPrivate
 // KComponentData objects when needed.
 /***********************************************************************/
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QString& mods )
-	: KCModule( KGlobal::mainComponent(), parent ),d(new KCModuleContainerPrivate( QString(mods).remove( " " ).split( "," ) ))
+	: KCModule( KGlobal::mainComponent(), parent ),d(new KCModuleContainerPrivate( QString(mods).remove( ' ' ).split( ',' ) ))
 {
 	init();
 }
@@ -85,7 +82,7 @@ void KCModuleContainer::init()
 	d->topLayout->setMargin( 0 );
 	d->topLayout->setSpacing( KDialog::spacingHint() );
 	d->topLayout->setObjectName( "topLayout" );
-	d->tabWidget = new QTabWidget(this);
+	d->tabWidget = new KTabWidget(this);
 	d->tabWidget->setObjectName( "tabWidget");
 	connect( d->tabWidget, SIGNAL( currentChanged( QWidget* ) ), SLOT( tabSwitched( QWidget* ) ));
 	d->topLayout->addWidget( d->tabWidget );

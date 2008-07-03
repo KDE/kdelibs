@@ -137,7 +137,7 @@ void KDirSelectDialog::Private::slotMkdir()
         writeOk = !exists && KIO::NetAccess::mkdir( folderurl, m_parent->topLevelWidget() );
     }
 
-    if ( exists ) // url was already existant
+    if ( exists ) // url was already existent
     {
         QString which = folderurl.isLocalFile() ? folderurl.path() : folderurl.prettyUrl();
         KMessageBox::sorry(m_parent, i18n("A file or folder named %1 already exists.", which));

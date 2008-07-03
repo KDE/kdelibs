@@ -25,10 +25,10 @@
 #include <kurl.h>
 #include <knewstuff2/knewstuff_export.h>
 
-class QLineEdit;
+class KComboBox;
+class KLineEdit;
 class KUrlRequester;
-class QTextEdit;
-class QComboBox;
+class KTextEdit;
 
 namespace KNS
 {
@@ -87,14 +87,14 @@ protected Q_SLOTS:
     void slotOk();
 
 private:
-    QLineEdit *mNameEdit;
-    QLineEdit *mAuthorEdit;
-    QLineEdit *mEmailEdit;
-    QLineEdit *mVersionEdit;
+    KLineEdit *mNameEdit;
+    KLineEdit *mAuthorEdit;
+    KLineEdit *mEmailEdit;
+    KLineEdit *mVersionEdit;
     KUrlRequester *mPreviewUrl;
-    QTextEdit *mSummaryEdit;
-    QComboBox *mLanguageCombo;
-    QComboBox *mLicenseCombo;
+    KTextEdit *mSummaryEdit;
+    KComboBox *mLanguageCombo;
+    KComboBox *mLicenseCombo;
 
     KUrl mPayloadUrl;
 

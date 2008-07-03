@@ -94,7 +94,7 @@ void KNotifyConfigWidget::save( )
 	d->eventList->save();
 	emit changed(false);
 	
-	//ask the notify deamon to reload the config
+	//ask the notify daemon to reload the config
 	if (QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.knotify")) 
 	{
 		QDBusInterface( QLatin1String("org.kde.knotify"), QLatin1String("/Notify"),

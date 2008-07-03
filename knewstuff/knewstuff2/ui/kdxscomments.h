@@ -23,7 +23,7 @@
 
 #include <kdialog.h>
 
-class QTextBrowser;
+class KTextBrowser;
 
 /**
  * KNewStuff comments window.
@@ -44,7 +44,7 @@ public:
 private Q_SLOTS:
     void slotUrl(const QUrl& url);
 private:
-    QTextBrowser *m_log;
+    KTextBrowser *m_log;
 };
 
 #endif

@@ -111,7 +111,7 @@
     </widget>
    </item>
    <item row="5" column="1" colspan="2" >
-    <widget class="QComboBox" name="KTTS_combo" >
+    <widget class="KComboBox" name="KTTS_combo" >
      <property name="sizePolicy" >
       <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
        <horstretch>0</horstretch>
@@ -139,7 +139,7 @@
     </widget>
    </item>
    <item row="5" column="3" >
-    <widget class="QLineEdit" name="KTTS_select" >
+    <widget class="KLineEdit" name="KTTS_select" >
      <property name="whatsThis" >
       <string>&lt;qt>Specifies how KTTS should speak the event when received.  If you select "Speak custom text", enter the text in the box.  You may use the following substitution strings in the text:&lt;dl>&lt;dt>%e&lt;/dt>&lt;dd>Name of the event&lt;/dd>&lt;dt>%a&lt;/dt>&lt;dd>Application that sent the event&lt;/dd>&lt;dt>%m&lt;/dt>&lt;dd>The message sent by the application&lt;/dd>&lt;/dl>&lt;/qt></string>
      </property>

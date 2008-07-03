@@ -20,14 +20,14 @@
 
 #include "uploaddialog.h"
 
-#include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <QtGui/QLineEdit>
 #include <QtGui/QDoubleSpinBox>
 #include <QtCore/QString>
 #include <ktextedit.h>
 
+#include <kcombobox.h>
+#include <klineedit.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kurlrequester.h>
@@ -66,12 +66,12 @@ UploadDialog::UploadDialog(/*Engine *engine,*/ QWidget *parent) :
 
     QLabel *authorLabel = new QLabel(i18n("Author:"), topPage);
     topLayout->addWidget(authorLabel, 1, 0);
-    mAuthorEdit = new QLineEdit(topPage);
+    mAuthorEdit = new KLineEdit(topPage);
     topLayout->addWidget(mAuthorEdit, 1, 1);
 
     QLabel *emailLabel = new QLabel(i18n("Email address:"), topPage);
     topLayout->addWidget(emailLabel, 2, 0);
-    mEmailEdit = new QLineEdit(topPage);
+    mEmailEdit = new KLineEdit(topPage);
     topLayout->addWidget(mEmailEdit, 2, 1);
 
     QLabel *sectionuploadLabel = new QLabel(i18n("Please describe your upload."), topPage);
@@ -79,17 +79,17 @@ UploadDialog::UploadDialog(/*Engine *engine,*/ QWidget *parent) :
 
     QLabel *nameLabel = new QLabel(i18n("Name:"), topPage);
     topLayout->addWidget(nameLabel, 4, 0);
-    mNameEdit = new QLineEdit(topPage);
+    mNameEdit = new KLineEdit(topPage);
     topLayout->addWidget(mNameEdit, 4, 1);
 
     QLabel *versionLabel = new QLabel(i18n("Version:"), topPage);
     topLayout->addWidget(versionLabel, 5, 0);
-    mVersionEdit = new QLineEdit(topPage);
+    mVersionEdit = new KLineEdit(topPage);
     topLayout->addWidget(mVersionEdit, 5, 1);
 
     QLabel *licenseLabel = new QLabel(i18n("License:"), topPage);
     topLayout->addWidget(licenseLabel, 6, 0);
-    mLicenseCombo = new QComboBox(topPage);
+    mLicenseCombo = new KComboBox(topPage);
     mLicenseCombo->setEditable(true);
     mLicenseCombo->addItem(i18n("GPL"));
     mLicenseCombo->addItem(i18n("LGPL"));
@@ -111,7 +111,7 @@ UploadDialog::UploadDialog(/*Engine *engine,*/ QWidget *parent) :
 
     QLabel *languageLabel = new QLabel(i18n("Language:"), topPage);
     topLayout->addWidget(languageLabel, 11, 0);
-    mLanguageCombo = new QComboBox(topPage);
+    mLanguageCombo = new KComboBox(topPage);
     topLayout->addWidget(mLanguageCombo, 11, 1);
 
     QStringList languagecodes = KGlobal::locale()->languageList();

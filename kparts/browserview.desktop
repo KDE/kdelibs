@@ -86,7 +86,7 @@ Type=QString
 
 # If false, this component won't be used when clicking on a file,
 # the user will have to use "Embed in..." to use it (or the application
-# will have to explicitely embed this particular service, like for the sidebar)
+# will have to explicitly embed this particular service, like for the sidebar)
 [PropertyDef::X-KDE-BrowserView-AllowAsDefault]
 Type=bool
 

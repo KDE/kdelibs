@@ -21,9 +21,9 @@
 #include "kdxscomment.h"
 
 #include <QtGui/QLayout>
-#include <QtGui/QTextEdit>
 
 #include <klocale.h>
+#include <ktextedit.h>
 
 KDXSComment::KDXSComment(QWidget *parent)
         : KDialog(parent)
@@ -36,7 +36,7 @@ KDXSComment::KDXSComment(QWidget *parent)
     QWidget *root = new QWidget(this);
     setMainWidget(root);
 
-    m_textbox = new QTextEdit(root);
+    m_textbox = new KTextEdit(root);
 
     vbox = new QVBoxLayout(root);
     vbox->addWidget(m_textbox);

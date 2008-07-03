@@ -32,7 +32,7 @@ class ItemsModel: public QAbstractListModel
 {
     Q_OBJECT
 public:
-    ItemsModel(QObject * parent = NULL, bool hasWebService = false);
+    explicit ItemsModel(QObject * parent = NULL, bool hasWebService = false);
     ~ItemsModel();
 
     enum EntryRoles {

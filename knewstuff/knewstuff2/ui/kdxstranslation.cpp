@@ -20,14 +20,14 @@
 
 #include "kdxstranslation.h"
 
-#include <QtGui/QLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QLineEdit>
-#include <QtGui/QTextEdit>
 #include <QtGui/QComboBox>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 
-#include <kurlrequester.h>
+#include <klineedit.h>
 #include <klocale.h>
+#include <ktextedit.h>
+#include <kurlrequester.h>
 
 KDXSTranslation::KDXSTranslation(QWidget *parent)
         : KDialog(parent)
@@ -38,12 +38,12 @@ KDXSTranslation::KDXSTranslation(QWidget *parent)
     QWidget *root = new QWidget(this);
     setMainWidget(root);
 
-    m_name = new QLineEdit(root);
-    m_description = new QTextEdit(root);
+    m_name = new KLineEdit(root);
+    m_description = new KTextEdit(root);
     m_payload = new KUrlRequester(root);
 
-    QLineEdit *oname = new QLineEdit(root);
-    QTextEdit *odescription = new QTextEdit(root);
+    KLineEdit *oname = new KLineEdit(root);
+    KTextEdit *odescription = new KTextEdit(root);
 
     QLabel *lname = new QLabel(i18n("Name"), root);
     QLabel *ldescription = new QLabel(i18n("Description"), root);

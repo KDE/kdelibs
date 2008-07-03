@@ -40,7 +40,7 @@ class ItemsViewDelegate: public KWidgetItemDelegate
 {
     Q_OBJECT
 public:
-    ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent = 0);
+    explicit ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent = 0);
     ~ItemsViewDelegate();
 
     // paint the item at index with all it's attributes shown

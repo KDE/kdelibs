@@ -26,7 +26,6 @@
 #include <klocale.h>
 #include <kservicegroup.h>
 #include <kdebug.h>
-#include <kiconloader.h>
 #include <kservicetypetrader.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>

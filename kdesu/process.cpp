@@ -45,6 +45,7 @@
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
+#include <kde_file.h>
 
 
 namespace KDESu {
@@ -325,12 +326,12 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
     unsetenv("DBUS_SESSION_BUS_ADDRESS");
 
     // set temporarily LC_ALL to C, for su (to be able to parse "Password:")
-    const char* old_lc_all = getenv( "LC_ALL" );
-    if( old_lc_all != NULL )
-        setenv( "KDESU_LC_ALL", old_lc_all, 1 );
+    const QByteArray old_lc_all = qgetenv( "LC_ALL" );
+    if( !old_lc_all.isEmpty() )
+        qputenv( "KDESU_LC_ALL", old_lc_all );
     else
         unsetenv( "KDESU_LC_ALL" );
-    setenv("LC_ALL", "C", 1);
+    qputenv("LC_ALL", "C");
 
     // From now on, terminal output goes through the tty.
 
@@ -510,8 +511,8 @@ int PtyProcess::setupTTY()
 {
     // Reset signal handlers
     for (int sig = 1; sig < NSIG; sig++)
-        signal(sig, SIG_DFL);
-    signal(SIGHUP, SIG_IGN);
+        KDE_signal(sig, SIG_DFL);
+    KDE_signal(SIGHUP, SIG_IGN);
 
     d->m_pPTY->setCTty();
 

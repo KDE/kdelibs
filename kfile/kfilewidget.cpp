@@ -118,7 +118,7 @@ public:
 
     /**
      * Sets the dummy entry on the history combo box. If the dummy entry
-     * already exists, it is overriden with this information.
+     * already exists, it is overwritten with this information.
      */
     void setDummyHistoryEntry(const QString& text, const QPixmap& icon = QPixmap(),
                               bool usePreviousPixmapIfNull = true);

@@ -317,7 +317,7 @@ Q_SIGNALS:
      */
     void setWindowCaption( const QString & caption );
     /**
-     * Emited by the part, to set a text in the statusbar of the window(s)
+     * Emitted by the part, to set a text in the statusbar of the window(s)
      * hosting this part
      */
     void setStatusBarText( const QString & text );

@@ -50,7 +50,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="m_sourceCombo" >
+        <widget class="KComboBox" name="m_sourceCombo" >
          <property name="sizePolicy" >
           <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
            <horstretch>1</horstretch>
@@ -80,7 +80,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="m_sortCombo" >
+        <widget class="KComboBox" name="m_sortCombo" >
          <property name="sizePolicy" >
           <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
            <horstretch>1</horstretch>

@@ -21,8 +21,8 @@
 #include "kdxschanges.h"
 
 #include <klocale.h>
+#include <ktextbrowser.h>
 
-#include <QtGui/QTextBrowser>
 #include <QtGui/QTextDocument>
 #include <QtGui/QLayout>
 #include <QtGui/QApplication>
@@ -35,7 +35,7 @@ KDXSChanges::KDXSChanges(QWidget *parent)
 
     QVBoxLayout *vbox;
 
-    m_log = new QTextBrowser(this);
+    m_log = new KTextBrowser(this);
     setMainWidget(m_log);
 
     vbox = new QVBoxLayout(m_log);

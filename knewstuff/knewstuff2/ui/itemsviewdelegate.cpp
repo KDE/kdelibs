@@ -16,11 +16,11 @@
  *   Free Software Foundation, Inc.,                                       *
  ***************************************************************************/
 
-#include <QtGui/QPainter>
-#include <QtGui/QSortFilterProxyModel>
-
 #include "itemsviewdelegate.h"
 #include "itemsmodel.h"
+
+#include <QtGui/QPainter>
+#include <QtGui/QSortFilterProxyModel>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
