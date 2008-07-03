@@ -57,6 +57,9 @@ kmessagebox.cpp
 knotification.cpp       Olivier Goffert <ogoffart@kde.org>
 knuminput.cpp           Dirk Mueller <mueller@kde.org>
 knumvalidator.cpp
+kpagedialog.cpp         Tobias Koenig <tokoe@kde.org>
+kpageview.cpp           Tobias Koenig <tokoe@kde.org>
+kpagewidget.cpp         Tobias Koenig <tokoe@kde.org>
 kpanelapplet.cpp
 kpanelappmenu.cpp
 kpanelextension.cpp
