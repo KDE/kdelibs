@@ -107,23 +107,15 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
     }
 
     if ( QApplication::isRightToLeft() ) {
-      if ( id == Prior )
-        iconName = "go-next";
-
-      if ( id == Next )
-        iconName = "go-previous";
-
-      if ( id == FirstPage )
-	iconName = "go-last-page";
-
-      if ( id == LastPage )
-	iconName = "go-first-page";
-
-      if ( id == DocumentBack )
-        iconName = "go-next";
-
-      if ( id == DocumentForward )
-        iconName = "go-previous";
+     switch ( id ) {
+      case Prior:           iconName = "go-next"; break;
+      case Next:            iconName = "go-previous"; break;
+      case FirstPage:       iconName = "go-last-page"; break;
+      case LastPage:        iconName = "go-first-page"; break;
+      case DocumentBack:    iconName = "go-next"; break;
+      case DocumentForward: iconName = "go-previous"; break;
+      default: break;
+     }
     }
 
     QIcon icon = iconName.isEmpty() ? KIcon() : KIcon(iconName);
