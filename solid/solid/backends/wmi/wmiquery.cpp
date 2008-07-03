@@ -109,8 +109,12 @@ WmiQuery::WmiQuery()
 
 WmiQuery::~WmiQuery()
 {
-    pSvc->Release();
-    pLoc->Release();     
+    if( m_failed )
+      return; // already cleaned up properly
+    if( pSvc )
+      pSvc->Release();
+    if( pLoc )
+      pLoc->Release();     
     CoUninitialize();
 }  
     
