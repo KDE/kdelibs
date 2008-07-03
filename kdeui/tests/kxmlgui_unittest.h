@@ -27,6 +27,8 @@ class KXmlGui_UnitTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void testFindVersionNumber_data();
+    void testFindVersionNumber();
     void testVersionHandlerSameVersion();
     void testVersionHandlerNewVersionNothingKept();
     void testVersionHandlerNewVersionUserChanges();

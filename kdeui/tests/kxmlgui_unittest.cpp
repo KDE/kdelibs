@@ -90,6 +90,34 @@ static void createXmlFile(QFile& file, int version, int flags)
     file.write("</gui>\n");
 }
 
+
+void KXmlGui_UnitTest::testFindVersionNumber_data()
+{
+    QTest::addColumn<QString>("xml");
+    QTest::addColumn<QString>("version");
+
+    QTest::newRow("simple test") <<
+        "<?xml version = '1.0'?>\n"
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"3\" name=\"foo\"/>\n" << "3";
+    QTest::newRow("two digits") <<
+        "<?xml version = '1.0'?>\n"
+        "<gui version=\"42\" name=\"foo\"/>\n" << "42";
+    QTest::newRow("with spaces") << // as found in dirfilterplugin.rc for instance
+        "<?xml version = '1.0'?>\n"
+        "<gui version = \"1\" name=\"foo\"/>\n" << "1";
+    QTest::newRow("with a dot") << // as was found in autorefresh.rc
+        "<?xml version = '1.0'?>\n"
+        "<gui version = \"0.2\" name=\"foo\"/>\n" << QString() /*error*/;
+}
+
+void KXmlGui_UnitTest::testFindVersionNumber()
+{
+    QFETCH(QString, xml);
+    QFETCH(QString, version);
+    QCOMPARE(KXmlGuiVersionHandler::findVersionNumber(xml), version);
+}
+
 void KXmlGui_UnitTest::testVersionHandlerSameVersion()
 {
     // This emulates the case where the user has modified stuff locally

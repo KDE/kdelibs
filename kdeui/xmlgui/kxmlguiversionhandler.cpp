@@ -152,7 +152,7 @@ static void storeActionProperties( QDomDocument &doc,
   }
 }
 
-static QString findVersionNumber( const QString &xml )
+QString KXmlGuiVersionHandler::findVersionNumber( const QString &xml )
 {
     enum { ST_START, ST_AFTER_OPEN, ST_AFTER_GUI,
            ST_EXPECT_VERSION, ST_VERSION_NUM} state = ST_START;
@@ -179,11 +179,17 @@ static QString findVersionNumber( const QString &xml )
             break;
         case ST_EXPECT_VERSION:
         {
-            const int verpos = xml.indexOf("version=\"", pos, Qt::CaseInsensitive);
+            const int verpos = xml.indexOf("version", pos, Qt::CaseInsensitive);
             if (verpos == -1)
                 return QString(); //Reject
+            pos = verpos + 7; // strlen("version") is 7
+            while (xml.at(pos).isSpace())
+                ++pos;
+            if (xml.at(pos++) != '=')
+                return QString(); //Reject
+            while (xml.at(pos).isSpace())
+                ++pos;
 
-            pos = verpos + 8; //v = 0, e = +1, r = +2, s = +3 , i = +4, o = +5, n = +6, = = +7, " = + 8
             state = ST_VERSION_NUM;
             break;
         }
