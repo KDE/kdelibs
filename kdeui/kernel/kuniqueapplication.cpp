@@ -19,6 +19,7 @@
 
 #include "kuniqueapplication.h"
 #include "kuniqueapplication_p.h"
+#include <kmainwindow.h>
 
 #include <config.h>
 
@@ -144,13 +145,13 @@ KUniqueApplication::start(StartFlags flags)
   mac_initialize_dbus();
 #endif
 
-  bool forceNewProcess = Private::s_multipleInstances || flags & NonUniqueInstance; 
+  bool forceNewProcess = Private::s_multipleInstances || flags & NonUniqueInstance;
 
   if (Private::s_nofork)
   {
      QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
 
-     QString pid = QString::number(getpid()); 
+     QString pid = QString::number(getpid());
      if (forceNewProcess)
         appName = appName + '-' + pid;
 
@@ -412,22 +413,25 @@ bool KUniqueApplication::restoringSession()
 
 int KUniqueApplication::newInstance()
 {
-  if (!d->firstInstance)
-  {
-
-    if ( activeWindow() )
-    {
-      activeWindow()->show();
+    if (!d->firstInstance) {
+        QList<KMainWindow*> allWindows = KMainWindow::memberList();
+        if (!allWindows.isEmpty()) {
+            // This method is documented to only work for applications
+            // with only one mainwindow.
+            KMainWindow* mainWindow = allWindows.first();
+            if (mainWindow) {
+                mainWindow->show();
 #if defined Q_WS_X11
-    // This is the line that handles window activation if necessary,
-    // and what's important, it does it properly. If you reimplement newInstance(),
-    // and don't call the inherited one, use this (but NOT when newInstance()
-    // is called for the first time, like here).
-      KStartupInfo::setNewStartupId( activeWindow(), kapp->startupId());
+                // This is the line that handles window activation if necessary,
+                // and what's important, it does it properly. If you reimplement newInstance(),
+                // and don't call the inherited one, use this (but NOT when newInstance()
+                // is called for the first time, like here).
+                KStartupInfo::setNewStartupId(mainWindow, startupId());
 #endif
+            }
+        }
     }
-  }
-  return 0; // do nothing in default implementation
+    return 0; // do nothing in default implementation
 }
 
 void KUniqueApplication::setHandleAutoStarted()
