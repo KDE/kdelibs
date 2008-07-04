@@ -96,7 +96,7 @@ void BrowserRun::init()
       setIsLocalFile( true );
 
     if ( isLocalFile() )  {
-      struct stat buff;
+      KDE_struct_stat buff;
       if ( KDE_stat( QFile::encodeName(KRun::url().toLocalFile()), &buff ) == -1 )
       {
         kDebug(1000) << "BrowserRun::init:" << KRun::url().toLocalFile() << "doesn't exist.";
