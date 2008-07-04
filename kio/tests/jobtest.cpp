@@ -1069,4 +1069,48 @@ void JobTest::slotMimetype(KIO::Job* job, const QString& type)
     m_mimetype = type;
 }
 
+void JobTest::deleteFile()
+{
+    const QString dest = otherTmpDir() + "fileFromHome_copied";
+    QVERIFY(QFile::exists(dest));
+    KIO::Job* job = KIO::del(KUrl(dest), KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    QVERIFY(!QFile::exists(dest));
+}
+
+void JobTest::deleteDirectory()
+{
+    const QString dest = otherTmpDir() + "dirFromHome_copied";
+    QVERIFY(QFile::exists(dest));
+    KIO::Job* job = KIO::del(KUrl(dest), KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    QVERIFY(!QFile::exists(dest));
+}
+
+void JobTest::deleteManyFiles()
+{
+    const int numFiles = 100;
+    const QString baseDir = homeTmpDir();
+    for (int i = 0; i < numFiles; ++i) {
+        // create empty file
+        QFile f(baseDir + QString::number(i));
+        QVERIFY(f.open(QIODevice::WriteOnly));
+    }
+    for (int i = 0; i < numFiles; ++i) {
+        // delete each file independently. lots of jobs. this stress-tests kio scheduling.
+        const QString file = baseDir + QString::number(i);
+        QVERIFY(QFile::exists(file));
+        //kDebug() << file;
+        KIO::Job* job = KIO::del(KUrl(file), KIO::HideProgressInfo);
+        job->setUiDelegate(0);
+        bool ok = KIO::NetAccess::synchronousRun(job, 0);
+        QVERIFY(ok);
+        QVERIFY(!QFile::exists(file));
+    }
+}
+
 #include "jobtest.moc"

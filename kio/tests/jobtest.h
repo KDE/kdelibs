@@ -53,6 +53,9 @@ private Q_SLOTS:
     void moveDirectoryToOtherPartition();
     void moveFileNoPermissions();
     void moveDirectoryNoPermissions();
+    void deleteFile();
+    void deleteDirectory();
+    void deleteManyFiles();
     //void newApiPerformance();
     void calculateRemainingSeconds();
 
