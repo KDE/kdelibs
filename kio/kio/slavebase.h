@@ -758,9 +758,25 @@ public:
 
     /**
      * Internal function to transmit meta data to the application.
+     * m_outgoingMetaData will be cleared; this means that if the slave is for
+     * example put on hold and picked up by a different KIO::Job later the new
+     * job will not see the metadata sent before.
+     * See kio/DESIGN.krun for an overview of the state
+     * progression of a job/slave.
+     * @warning calling this method may seriously interfere with the operation
+     * of KIO which relies on the presence of some metadata at some points in time.
+     * You should not use it if you are not familiar with KIO and not before
+     * the slave is connected to the last job before returning to idle state.
      */
     void sendMetaData();
 
+    /**
+     * Internal function to transmit meta data to the application.
+     * Like sendMetaData() but m_outgoingMetaData will not be cleared.
+     * This method is mainly useful in code that runs before the slave is connected
+     * to its final job.
+     */
+    void sendAndKeepMetaData();
 
     /** If your ioslave was killed by a signal, wasKilled() returns true.
      Check it regularly in lengthy functions (e.g. in get();) and return

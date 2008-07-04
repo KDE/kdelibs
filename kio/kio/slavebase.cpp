@@ -359,13 +359,17 @@ KConfigGroup *SlaveBase::config()
 
 void SlaveBase::sendMetaData()
 {
-   if (mOutgoingMetaData.isEmpty())
-      return;
+    sendAndKeepMetaData();
+    mOutgoingMetaData.clear();
+}
 
-   KIO_DATA << mOutgoingMetaData;
+void SlaveBase::sendAndKeepMetaData()
+{
+    if (!mOutgoingMetaData.isEmpty()) {
+        KIO_DATA << mOutgoingMetaData;
 
-   send( INF_META_DATA, data );
-   mOutgoingMetaData.clear(); // Clear
+        send(INF_META_DATA, data);
+    }
 }
 
 KRemoteEncoding *SlaveBase::remoteEncoding()

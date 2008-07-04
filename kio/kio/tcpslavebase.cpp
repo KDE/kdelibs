@@ -444,18 +444,12 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
     }
     peerCertChain.chop(1);
     setMetaData("ssl_peer_chain", peerCertChain);
-    //The metadata is usually sent automatically before any payload data (including that of
-    //messageBox()) so *theroretically* we just assume that metadata will make it to the other
-    //side when needed.
-    //In practice, calling sendMetaData() here
-    //a) makes the SSL info dialog work
-    //b) breaks Konqueror which then never displays the
-    //   SSL shield icon.
-    //Until I have figured out how to unbreak metadata semantics let's have a working SSL info
-    //dialog and no shield icon in Konqueror. If anyone feels like implementing hacks to
-    //make it work right now - go ahead, have [air quotes here] fun.
-    //Gold star of KDE for fixing it right!
-    sendMetaData();
+
+    // The app side needs the metadata now for the SSL error dialog (if any) but
+    // the same metadata will be needed later, too. The quite important SSL indicator
+    // icon in Konqi's URL bar relies on metadata from here, for example.
+    // Therefore we choose to have our metadata and send it, too :)
+    sendAndKeepMetaData();
 
     SslResult rc = verifyServerCertificate();
     if (rc & ResultFailed) {
