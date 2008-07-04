@@ -639,7 +639,7 @@ QModelIndex KDirModel::indexForUrl(const KUrl& url) const
 {
     const QPair<int, KDirModelNode*> result = d->nodeForUrl(url); // O(n*m) (m is the depth from the root)
     if (!result.second) {
-        kWarning(7007) << url << "not found";
+        kDebug(7007) << url << "not found";
         return QModelIndex();
     }
     return d->indexForNode(result.second, result.first); // O(1)
