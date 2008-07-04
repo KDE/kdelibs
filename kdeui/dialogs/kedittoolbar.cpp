@@ -840,6 +840,7 @@ void KEditToolBarWidgetPrivate::setupLayout()
   m_inactiveList->setDragEnabled(true);
   m_inactiveList->setActiveList(false);
   m_inactiveList->setMinimumSize(180, 250);
+  m_inactiveList->setDropIndicatorShown(false); // #165663
   inactive_label->setBuddy(m_inactiveList);
   QObject::connect(m_inactiveList, SIGNAL(itemSelectionChanged()),
                    m_widget,       SLOT(slotInactiveSelectionChanged()));
