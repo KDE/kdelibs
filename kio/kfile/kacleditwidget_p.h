@@ -27,12 +27,12 @@
 #include <kacl.h>
 
 #include <QPixmap>
-#include <QComboBox>
 #include <QTreeWidget>
 #include <QtCore/QHash>
 
-#include <kfileitem.h>
+#include <kcombobox.h>
 #include <kdialog.h>
+#include <kfileitem.h>
 
 class KACLListViewItem;
 class QButtonGroup;
@@ -157,8 +157,8 @@ private:
      int m_allowedTypes;
      int m_allowedDefaultTypes;
      QButtonGroup *m_buttonGroup;
-     QComboBox *m_usersCombo;
-     QComboBox *m_groupsCombo;
+     KComboBox *m_usersCombo;
+     KComboBox *m_groupsCombo;
      QStackedWidget *m_widgetStack;
      QCheckBox *m_defaultCB;
      QHash<QAbstractButton*, int> m_buttonIds;

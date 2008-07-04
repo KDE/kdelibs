@@ -58,6 +58,7 @@
 #include <kapplication.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kde_file.h>
 
 #ifdef Q_OS_LINUX
 #include <sys/prctl.h>
@@ -237,8 +238,8 @@ static void close_fds()
    }
 #endif
 
-   signal(SIGCHLD, SIG_DFL);
-   signal(SIGPIPE, SIG_DFL);
+   KDE_signal(SIGCHLD, SIG_DFL);
+   KDE_signal(SIGPIPE, SIG_DFL);
 }
 
 /* Notify wrapper program that the child it started has finished. */
@@ -297,21 +298,21 @@ static void setup_tty( const char* tty )
 {
     if( tty == NULL || *tty == '\0' )
         return;
-    int fd = open( tty, O_WRONLY );
+    int fd = KDE_open( tty, O_WRONLY );
     if( fd < 0 )
     {
-        perror( "kdeinit4: couldn't open() tty" );
+        perror( "kdeinit4: could not open() tty" );
         return;
     }
     if( dup2( fd, STDOUT_FILENO ) < 0 )
     {
-        perror( "kdeinit4: couldn't dup2() tty" );
+        perror( "kdeinit4: could not dup2() tty" );
         close( fd );
         return;
     }
     if( dup2( fd, STDERR_FILENO ) < 0 )
     {
-        perror( "kdeinit4: couldn't dup2() tty" );
+        perror( "kdeinit4: could not dup2() tty" );
         close( fd );
         return;
     }
@@ -605,7 +606,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      }
 
 
-     if ( getenv("KDE_IS_PRELINKED") && !execpath.isEmpty() && !launcher)
+     if ( !qgetenv("KDE_IS_PRELINKED").isEmpty() && !execpath.isEmpty() && !launcher)
          libpath.truncate(0);
 
      QLibrary l(libpath);
@@ -796,20 +797,20 @@ static void init_signals()
 
   if (pipe(d.deadpipe) != 0)
   {
-     perror("kdeinit4: Aborting. Can't create pipe: ");
+     perror("kdeinit4: Aborting. Can not create pipe: ");
      exit(255);
   }
 
   options = fcntl(d.deadpipe[0], F_GETFL);
   if (options == -1)
   {
-     perror("kdeinit4: Aborting. Can't make pipe non-blocking: ");
+     perror("kdeinit4: Aborting. Can not make pipe non-blocking: ");
      exit(255);
   }
 
   if (fcntl(d.deadpipe[0], F_SETFL, options | O_NONBLOCK) == -1)
   {
-     perror("kdeinit4: Aborting. Can't make pipe non-blocking: ");
+     perror("kdeinit4: Aborting. Can not make pipe non-blocking: ");
      exit(255);
   }
 
@@ -857,7 +858,7 @@ static void init_kdeinit_socket()
 
   {
      QByteArray path = home_dir;
-     QByteArray readOnly = getenv("KDE_HOME_READONLY");
+     QByteArray readOnly = qgetenv("KDE_HOME_READONLY");
      if (access(path.data(), R_OK|W_OK))
      {
        if (errno == ENOENT)
@@ -936,21 +937,21 @@ static void init_kdeinit_socket()
   options = fcntl(d.wrapper, F_GETFL);
   if (options == -1)
   {
-     perror("kdeinit4: Aborting. Can't make socket non-blocking: ");
+     perror("kdeinit4: Aborting. Can not make socket non-blocking: ");
      close(d.wrapper);
      exit(255);
   }
 
   if (fcntl(d.wrapper, F_SETFL, options | O_NONBLOCK) == -1)
   {
-     perror("kdeinit4: Aborting. Can't make socket non-blocking: ");
+     perror("kdeinit4: Aborting. Can not make socket non-blocking: ");
      close(d.wrapper);
      exit(255);
   }
 
   if (fcntl(d.wrapper, F_SETFD, FD_CLOEXEC) == -1)
   {
-     perror("kdeinit4: Aborting. Can't make socket close-on-execute: ");
+     perror("kdeinit4: Aborting. Can not make socket close-on-execute: ");
      close(d.wrapper);
      exit(255);
   }
@@ -977,7 +978,7 @@ static void init_kdeinit_socket()
   /** set permissions **/
   if (chmod(sock_file, 0600) != 0)
   {
-     perror("kdeinit4: Aborting. Can't set permissions on socket: ");
+     perror("kdeinit4: Aborting. Can not set permissions on socket: ");
      fprintf(stderr, "Wrong permissions of socket '%s'\n", sock_file);
      unlink(sock_file);
      close(d.wrapper);
@@ -1602,7 +1603,7 @@ int kdeinit_xio_errhandler( Display *disp )
     qWarning( "kdeinit4: sending SIGHUP to children." );
 
     /* this should remove all children we started */
-    signal(SIGHUP, SIG_IGN);
+    KDE_signal(SIGHUP, SIG_IGN);
     kill(0, SIGHUP);
 
     sleep(2);
@@ -1611,7 +1612,7 @@ int kdeinit_xio_errhandler( Display *disp )
     qWarning( "kdeinit4: sending SIGTERM to children." );
 
     /* and if they don't listen to us, this should work */
-    signal(SIGTERM, SIG_IGN);
+    KDE_signal(SIGTERM, SIG_IGN);
     kill(0, SIGTERM);
 
     if ( disp )
@@ -1667,7 +1668,7 @@ static int initXconnection()
     (void) setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char *) &on, (int) sizeof(on));
     return fd;
   } else
-    fprintf(stderr, "kdeinit4: Can't connect to the X Server.\n" \
+    fprintf(stderr, "kdeinit4: Can not connect to the X Server.\n" \
      "kdeinit4: Might not terminate at end of session.\n");
 
   return -1;
@@ -1769,7 +1770,7 @@ int main(int argc, char **argv, char **envp)
       // Fork here and let parent process exit.
       // Parent process may only exit after all required services have been
       // launched. (dcopserver/klauncher and services which start with '+')
-      signal( SIGCHLD, secondary_child_handler);
+      KDE_signal( SIGCHLD, secondary_child_handler);
       if (fork() > 0) // Go into background
       {
          close(d.initpipe[1]);

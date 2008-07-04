@@ -17,8 +17,8 @@
 
 */
 
-#ifndef KFILEPLACESSHARED_P_H_
-#define KFILEPLACESSHARED_P_H_
+#ifndef KFILEPLACESSHAREDBOOKMARKS_P_H
+#define KFILEPLACESSHAREDBOOKMARKS_P_H
 
 #include <QtCore/QObject>
 #include <kbookmarkmanager.h>

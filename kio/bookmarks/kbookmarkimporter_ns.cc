@@ -28,6 +28,7 @@
 #include <kstringhandler.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kde_file.h>
 #include <kcharsets.h>
 
 #include <qtextcodec.h>
@@ -131,7 +132,7 @@ void KNSBookmarkExporterImpl::setUtf8(bool utf8) {
 
 void KNSBookmarkExporterImpl::write(const KBookmarkGroup &parent) {
    if (QFile::exists(m_fileName)) {
-      ::rename(
+      KDE_rename(
          QFile::encodeName(m_fileName),
          QFile::encodeName(m_fileName + ".beforekde"));
    }

@@ -48,6 +48,7 @@
 #include <kglobalsettings.h>
 #include <kcomponentdata.h>
 #include <ksvgrenderer.h>
+#include <kde_file.h>
 
 #include <sys/types.h>
 #include <stdlib.h>     //for abs
@@ -1338,8 +1339,8 @@ QStringList KIconLoader::loadAnimated(const QString& name, KIconLoader::Group gr
     if(!dp)
         return lst;
 
-    struct dirent* ep;
-    while( ( ep = readdir( dp ) ) != 0L )
+    KDE_struct_dirent* ep;
+    while( ( ep = KDE_readdir( dp ) ) != 0L )
     {
         QString fn(QFile::decodeName(ep->d_name));
         if(!(fn.left(4)).toUInt())

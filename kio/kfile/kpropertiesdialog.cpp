@@ -69,7 +69,6 @@ extern "C" {
 #include <QtCore/QTextIStream>
 #include <QtGui/QPainter>
 #include <QtGui/QLayout>
-#include <QtGui/QComboBox>
 #include <QtGui/QStyle>
 #include <QtGui/QProgressBar>
 #include <QVector>
@@ -107,6 +106,7 @@ extern "C" {
 #include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kservice.h>
+#include <kcombobox.h>
 #include <kcompletion.h>
 #include <klineedit.h>
 #include <kseparator.h>
@@ -1478,7 +1478,7 @@ public:
   QFrame *m_frame;
   QCheckBox *cbRecursive;
   QLabel *explanationLabel;
-  QComboBox *ownerPermCombo, *groupPermCombo, *othersPermCombo;
+  KComboBox *ownerPermCombo, *groupPermCombo, *othersPermCombo;
   QCheckBox *extraCheckbox;
   mode_t partialPermissions;
   KFilePermissionsPropsPlugin::PermissionsMode pmode;
@@ -1489,7 +1489,7 @@ public:
   KACL defaultACL;
   bool fileSystemSupportsACLs;
 
-  QComboBox *grpCombo;
+  KComboBox *grpCombo;
 
   KLineEdit *usrEdit;
   KLineEdit *grpEdit;
@@ -1655,7 +1655,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   lbl = new QLabel( i18n("O&wner:"), gb);
   gl->addWidget(lbl, 1, 0);
-  l = d->ownerPermCombo = new QComboBox(gb);
+  l = d->ownerPermCombo = new KComboBox(gb);
   lbl->setBuddy(l);
   gl->addWidget(l, 1, 1);
   connect(l, SIGNAL( activated(int) ), this, SIGNAL( changed() ));
@@ -1663,7 +1663,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   lbl = new QLabel( i18n("Gro&up:"), gb);
   gl->addWidget(lbl, 2, 0);
-  l = d->groupPermCombo = new QComboBox(gb);
+  l = d->groupPermCombo = new KComboBox(gb);
   lbl->setBuddy(l);
   gl->addWidget(l, 2, 1);
   connect(l, SIGNAL( activated(int) ), this, SIGNAL( changed() ));
@@ -1671,7 +1671,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   lbl = new QLabel( i18n("O&thers:"), gb);
   gl->addWidget(lbl, 3, 0);
-  l = d->othersPermCombo = new QComboBox(gb);
+  l = d->othersPermCombo = new KComboBox(gb);
   lbl->setBuddy(l);
   gl->addWidget(l, 3, 1);
   connect(l, SIGNAL( activated(int) ), this, SIGNAL( changed() ));
@@ -1805,7 +1805,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   /* Set group: if possible to change:
    * - Offer a KLineEdit for root, since he can change to any group.
-   * - Offer a QComboBox for a normal user, since he can change to a fixed
+   * - Offer a KComboBox for a normal user, since he can change to a fixed
    *   (small) set of groups only.
    * If not changeable: offer a QLabel.
    */
@@ -1824,7 +1824,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   }
   else if ((groupList.count() > 1) && isMyFile && isLocal)
   {
-    d->grpCombo = new QComboBox(gb);
+    d->grpCombo = new KComboBox(gb);
 	d->grpCombo->setObjectName(QLatin1String("combogrouplist"));
     d->grpCombo->addItems(groupList);
     d->grpCombo->setCurrentIndex(groupList.indexOf(d->strGroup));
@@ -2672,7 +2672,7 @@ public:
   QLabel *m_freeSpaceLabel;
   QProgressBar *m_freeSpaceBar;
 
-  QComboBox* device;
+  KComboBox* device;
   QLabel* mountpoint;
   QCheckBox* readonly;
   KIconButton* unmounted;
@@ -2719,7 +2719,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
                       i18n("Device:") ); // new style (combobox)
   layout->addWidget(label, 0, 0);
 
-  d->device = new QComboBox( d->m_frame );
+  d->device = new KComboBox( d->m_frame );
   d->device->setObjectName( QLatin1String( "ComboBox_device" ) );
   d->device->setEditable( true );
   d->device->addItems( devices );

@@ -43,6 +43,7 @@
 #include <kcrash.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
+#include <kde_file.h>
 #include <kdesu/client.h>
 #include <klocale.h>
 
@@ -148,7 +149,7 @@ static const char *s_protocol;
 extern "C" {
 static void genericsig_handler(int sigNumber)
 {
-   signal(sigNumber,SIG_IGN);
+   KDE_signal(sigNumber,SIG_IGN);
    //WABA: Don't do anything that requires malloc, we can deadlock on it since
    //a SIGTERM signal can come in while we are in malloc/free.
    //kDebug()<<"kioslave : exiting due to signal "<<sigNumber;
@@ -156,7 +157,7 @@ static void genericsig_handler(int sigNumber)
    //in lengthy operations in the various slaves
    if (globalSlave!=0)
       globalSlave->setKillFlag();
-   signal(SIGALRM,SIG_DFL);
+   KDE_signal(SIGALRM,SIG_DFL);
    alarm(5);  //generate an alarm signal in 5 seconds, in this time the slave has to exit
 }
 }
@@ -177,26 +178,26 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     if (!getenv("KDE_DEBUG"))
     {
         KCrash::setCrashHandler( sigsegv_handler );
-        signal(SIGILL,&sigsegv_handler);
-        signal(SIGTRAP,&sigsegv_handler);
-        signal(SIGABRT,&sigsegv_handler);
-        signal(SIGBUS,&sigsegv_handler);
-        signal(SIGALRM,&sigsegv_handler);
-        signal(SIGFPE,&sigsegv_handler);
+        KDE_signal(SIGILL,&sigsegv_handler);
+        KDE_signal(SIGTRAP,&sigsegv_handler);
+        KDE_signal(SIGABRT,&sigsegv_handler);
+        KDE_signal(SIGBUS,&sigsegv_handler);
+        KDE_signal(SIGALRM,&sigsegv_handler);
+        KDE_signal(SIGFPE,&sigsegv_handler);
 #ifdef SIGPOLL
-        signal(SIGPOLL, &sigsegv_handler);
+        KDE_signal(SIGPOLL, &sigsegv_handler);
 #endif
 #ifdef SIGSYS
-        signal(SIGSYS, &sigsegv_handler);
+        KDE_signal(SIGSYS, &sigsegv_handler);
 #endif
 #ifdef SIGVTALRM
-        signal(SIGVTALRM, &sigsegv_handler);
+        KDE_signal(SIGVTALRM, &sigsegv_handler);
 #endif
 #ifdef SIGXCPU
-        signal(SIGXCPU, &sigsegv_handler);
+        KDE_signal(SIGXCPU, &sigsegv_handler);
 #endif
 #ifdef SIGXFSZ
-        signal(SIGXFSZ, &sigsegv_handler);
+        KDE_signal(SIGXFSZ, &sigsegv_handler);
 #endif
     }
 
@@ -206,9 +207,9 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     act.sa_flags = 0;
     sigaction( SIGPIPE, &act, 0 );
 
-    signal(SIGINT,&genericsig_handler);
-    signal(SIGQUIT,&genericsig_handler);
-    signal(SIGTERM,&genericsig_handler);
+    KDE_signal(SIGINT,&genericsig_handler);
+    KDE_signal(SIGQUIT,&genericsig_handler);
+    KDE_signal(SIGTERM,&genericsig_handler);
 #endif
 
     globalSlave=this;
@@ -722,10 +723,10 @@ void SlaveBase::listEntries( const UDSEntryList& list )
 static void sigsegv_handler(int sig)
 {
 #ifdef Q_OS_UNIX
-    signal(sig,SIG_DFL); // Next one kills
+    KDE_signal(sig,SIG_DFL); // Next one kills
 
     //Kill us if we deadlock
-    signal(SIGALRM,SIG_DFL);
+    KDE_signal(SIGALRM,SIG_DFL);
     alarm(5);  //generate an alarm signal in 5 seconds, in this time the slave has to exit
 
     // Debug and printf should be avoided because they might
@@ -1039,7 +1040,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         stream >> url >> i;
         QIODevice::OpenMode mode = QFlag(i);
         d->m_state = d->InsideMethod;
-        open(url, mode);
+        open(url, mode); //krazy:exclude=syscalls
         d->m_state = d->Idle;
     } break;
     case CMD_PUT: {
@@ -1063,7 +1064,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_STAT: {
         stream >> url;
         d->m_state = d->InsideMethod;
-        stat( url );
+        stat( url ); //krazy:exclude=syscalls
         d->verifyState("stat()");
         d->m_state = d->Idle;
     } break;
@@ -1084,7 +1085,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_MKDIR: {
         stream >> url >> i;
         d->m_state = d->InsideMethod;
-        mkdir( url, i );
+        mkdir( url, i ); //krazy:exclude=syscalls
         d->verifyState("mkdir()");
         d->m_state = d->Idle;
     } break;
@@ -1095,7 +1096,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         JobFlags flags;
         if ( iOverwrite != 0 ) flags |= Overwrite;
         d->m_state = d->InsideMethod;
-        rename( url, url2, flags );
+        rename( url, url2, flags ); //krazy:exclude=syscalls
         d->verifyState("rename()");
         d->m_state = d->Idle;
     } break;

@@ -115,7 +115,7 @@ int main(int argc, char **argv)
     dbname = argv[1];
     offset = findoffset(dbname);
     if (offset == 0) {
-        fprintf(stderr, "Couldn't determine cert offset in DB file '%s'\n", dbname);
+        fprintf(stderr, "Could not determine cert offset in DB file '%s'\n", dbname);
         exit(1);
     }
     else {
@@ -156,7 +156,7 @@ int main(int argc, char **argv)
                 j++;
                 sprintf(oname, "cert.%02d.der", j);
                 if ((fout = open(oname, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1) {
-                    fprintf(stderr, "couldn't open %s\n", oname);
+                    fprintf(stderr, "could not open %s\n", oname);
                     continue;
                 }
                 write(fout, (char *) dvalue.data + offset - 1, plen);

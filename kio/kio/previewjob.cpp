@@ -42,6 +42,7 @@
 
 #include <kfileitem.h>
 #include <kapplication.h>
+#include <kde_file.h>
 #include <ktemporaryfile.h>
 #include <kservicetypetrader.h>
 #include <kcodecs.h>
@@ -510,7 +511,7 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
         if (temp.open()) //Only try to write out the thumbnail if we
         {                //actually created the temp file.
             thumb.save(temp.fileName(), "PNG");
-            rename(QFile::encodeName(temp.fileName()), QFile::encodeName(thumbPath + thumbName));
+            KDE_rename(QFile::encodeName(temp.fileName()), QFile::encodeName(thumbPath + thumbName));
         }
     }
     emitPreview( thumb );

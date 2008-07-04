@@ -1408,7 +1408,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 #else
 void KDirWatchPrivate::famEventReceived()
 {
-    kWarning (7001) << "Fam event received but FAM isn't supported";
+    kWarning (7001) << "Fam event received but FAM is not supported";
 }
 #endif
 
@@ -1507,7 +1507,7 @@ void KDirWatchPrivate::fswEventReceived(const QString &path)
 void KDirWatchPrivate::fswEventReceived(const QString &path)
 {
     Q_UNUSED(path);
-    kWarning (7001) << "QFileSystemWatcher event received but QFileSystemWatcher isn't supported";
+    kWarning (7001) << "QFileSystemWatcher event received but QFileSystemWatcher is not supported";
 }
 #endif    // HAVE_QFILESYSTEMWATCHER
 

@@ -63,14 +63,14 @@
     </widget>
    </item>
    <item row="1" column="1" >
-    <widget class="QLineEdit" name="_password1" >
+    <widget class="KLineEdit" name="_password1" >
      <property name="echoMode" >
       <enum>QLineEdit::Password</enum>
      </property>
     </widget>
    </item>
    <item row="2" column="1" >
-    <widget class="QLineEdit" name="_password2" >
+    <widget class="KLineEdit" name="_password2" >
      <property name="echoMode" >
       <enum>QLineEdit::Password</enum>
      </property>

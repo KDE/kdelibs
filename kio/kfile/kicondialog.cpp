@@ -16,6 +16,7 @@
 #include <kio/kio_export.h>
 
 #include <kbuttongroup.h>
+#include <kcombobox.h>
 #include <klistwidgetsearchline.h>
 #include <kapplication.h>
 #include <klocale.h>
@@ -27,7 +28,6 @@
 
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
-#include <QtGui/QComboBox>
 #include <QtCore/QTimer>
 #include <QtGui/QRadioButton>
 #include <QtCore/QFileInfo>
@@ -234,7 +234,7 @@ class KIconDialog::KIconDialogPrivate
     KIconLoader::Context mContext;
 
     QStringList mFileList;
-    QComboBox *mpCombo;
+    KComboBox *mpCombo;
     QPushButton *mpBrowseBut;
     QRadioButton *mpSystemIcons, *mpOtherIcons;
     QProgressBar *mpProgress;
@@ -305,7 +305,7 @@ void KIconDialog::KIconDialogPrivate::init()
     mpSystemIcons = new QRadioButton(i18n("S&ystem icons:"), bgroup);
     connect(mpSystemIcons, SIGNAL(clicked()), q, SLOT(_k_slotSystemIconClicked()));
     grid->addWidget(mpSystemIcons, 1, 0);
-    mpCombo = new QComboBox(bgroup);
+    mpCombo = new KComboBox(bgroup);
     connect(mpCombo, SIGNAL(activated(int)), q, SLOT(_k_slotContext(int)));
     grid->addWidget(mpCombo, 1, 1);
     mpOtherIcons = new QRadioButton(i18n("O&ther icons:"), bgroup);

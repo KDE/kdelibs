@@ -18,6 +18,7 @@
 
 #include "pastedialog.h"
 
+#include <kcombobox.h>
 #include <klineedit.h>
 #include <klocale.h>
 
@@ -25,7 +26,6 @@
 #include <QLabel>
 #include <QLayout>
 #include <QClipboard>
-#include <QComboBox>
 
 KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
                                const QString &value, const QStringList& items,
@@ -55,7 +55,7 @@ KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
     m_label->setBuddy( m_lineEdit );
 
     layout->addWidget( new QLabel( i18n( "Data format:" ), frame ) );
-    m_comboBox = new QComboBox( frame );
+    m_comboBox = new KComboBox( frame );
     m_comboBox->addItems( items );
     layout->addWidget( m_comboBox );
 

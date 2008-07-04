@@ -2061,7 +2061,7 @@ void FileCopyJobPrivate::slotDataReq( KIO::Job * , QByteArray &data)
    if (!m_resumeAnswerSent && !m_getJob) {
        // This can't happen
        q->setError( ERR_INTERNAL );
-       q->setErrorText( "'Put' job didn't send canResume or 'Get' job didn't send data!" );
+       q->setErrorText( "'Put' job did not send canResume or 'Get' job did not send data!" );
        m_putJob->kill( FileCopyJob::Quietly );
        q->emitResult();
        return;
@@ -2785,7 +2785,7 @@ QFile *CacheInfo::cachedFile()
    const char *mode = (readWrite ? "r+" : "r");
 #endif
 
-   FILE *fs = fopen(QFile::encodeName(CEF), mode); // Open for reading and writing
+   FILE *fs = KDE_fopen(QFile::encodeName(CEF), mode); // Open for reading and writing
    if (!fs)
       return 0;
 
@@ -2829,7 +2829,7 @@ QFile *CacheInfo::cachedFile()
    }
 
    // Expiration Date
-   m_cacheExpireDateOffset = ftell(fs);
+   m_cacheExpireDateOffset = KDE_ftell(fs);
    if (ok && (!fgets(buffer, 400, fs)))
       ok = false;
    if (ok)

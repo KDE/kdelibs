@@ -48,6 +48,7 @@
 #include <QtGui/QTextDocument>
 
 #include <kdebug.h>
+#include <kde_file.h>
 #include <kurl.h>
 #include <kglobal.h>
 #include <klocale.h>
@@ -409,28 +410,28 @@ void HelpProtocol::get_file( const KUrl& url )
     finished();
 #else
     QByteArray _path( QFile::encodeName(url.path()));
-    struct stat buff;
-    if ( ::stat( _path.data(), &buff ) == -1 ) {
+    KDE_struct_stat buff;
+    if ( KDE_stat( _path.data(), &buff ) == -1 ) {
         if ( errno == EACCES )
            error( KIO::ERR_ACCESS_DENIED, url.url() );
         else
            error( KIO::ERR_DOES_NOT_EXIST, url.url() );
-	return;
+        return;
     }
 
     if ( S_ISDIR( buff.st_mode ) ) {
-	error( KIO::ERR_IS_DIRECTORY, url.path() );
-	return;
+        error( KIO::ERR_IS_DIRECTORY, url.path() );
+        return;
     }
     if ( S_ISFIFO( buff.st_mode ) || S_ISSOCK ( buff.st_mode ) ) {
-	error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
-	return;
+        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+        return;
     }
 
-    int fd = ::open( _path.data(), O_RDONLY);
+    int fd = KDE_open( _path.data(), O_RDONLY);
     if ( fd < 0 ) {
-	error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
-	return;
+        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+        return;
     }
 
     totalSize( buff.st_size );

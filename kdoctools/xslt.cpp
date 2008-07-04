@@ -24,6 +24,7 @@
 #include <stdarg.h>
 #include <klibloader.h>
 #include <kcharsets.h>
+#include <kurl.h>
 
 
 #if !defined( SIMPLE_XSLT )
@@ -182,14 +183,14 @@ void fillInstance(KComponentData &ins, const QString &srcdir)
     QByteArray catalogs;
 
     if ( srcdir.isEmpty() ) {
-        catalogs += QUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/customization/catalog.xml") ).toEncoded();
+        catalogs += KUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/customization/catalog.xml") ).toEncoded();
         catalogs += ' ';
-        catalogs += QUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/catalog.xml") ).toEncoded();
+        catalogs += KUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/catalog.xml") ).toEncoded();
         ins.dirs()->addResourceType("dtd", "data", "ksgmltools2/");
     } else {
-        catalogs += QUrl::fromLocalFile( srcdir +"/customization/catalog.xml" ).toEncoded();
+        catalogs += KUrl::fromLocalFile( srcdir +"/customization/catalog.xml" ).toEncoded();
         catalogs += ' ';
-        catalogs += QUrl::fromLocalFile( srcdir + "/docbook/xml-dtd-4.2/catalog.xml" ).toEncoded();
+        catalogs += KUrl::fromLocalFile( srcdir + "/docbook/xml-dtd-4.2/catalog.xml" ).toEncoded();
         ins.dirs()->addResourceDir("dtd", srcdir);
     }
 

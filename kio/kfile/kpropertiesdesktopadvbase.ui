@@ -187,7 +187,7 @@
        </widget>
       </item>
       <item row="2" column="1" >
-       <widget class="QComboBox" name="dbusCombo" >
+       <widget class="KComboBox" name="dbusCombo" >
         <item>
          <property name="text" >
           <string>None</string>

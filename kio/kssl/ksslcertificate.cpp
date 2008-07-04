@@ -37,6 +37,7 @@
 
 #include <kstandarddirs.h>
 #include <kcodecs.h>
+#include <kde_file.h>
 #include <klocale.h>
 #include <QtCore/QDate>
 #include <ktemporaryfile.h>
@@ -669,9 +670,9 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
     KSSLCertificate::KSSLValidation ksslv = Unknown;
 
     for (QStringList::ConstIterator j = qsl.begin(); j != qsl.end(); ++j) {
-        struct stat sb;
+        KDE_struct_stat sb;
         QString _j = (*j) + "ca-bundle.crt";
-        if (-1 == stat(_j.toAscii().constData(), &sb)) {
+        if (-1 == KDE_stat(_j.toAscii().constData(), &sb)) {
             continue;
         }
 

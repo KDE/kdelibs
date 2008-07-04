@@ -32,6 +32,7 @@
 
 #include "kpropertiesdialog.h"
 
+class KComboBox;
 class QComboBox;
 
 class Ui_KPropertiesDesktopBase;

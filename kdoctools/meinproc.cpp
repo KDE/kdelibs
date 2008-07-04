@@ -31,8 +31,8 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 #include <QtCore/QTextCodec>
 #include <QtCore/QFileInfo>
 #include <kshell.h>
+#include <kurl.h>
 #include <QtCore/QList>
-#include <QtCore/QUrl>
 
 class MyPair {
 public:
@@ -137,9 +137,9 @@ int main(int argc, char **argv) {
         QFileInfo file( args->arg( 0 ) );
 
         QByteArray catalogs;
-        catalogs += QUrl::fromLocalFile( KStandardDirs::locate( "dtd", "customization/catalog.xml" ) ).toEncoded();
+        catalogs += KUrl::fromLocalFile( KStandardDirs::locate( "dtd", "customization/catalog.xml" ) ).toEncoded();
         catalogs += ' ';
-        catalogs += QUrl::fromLocalFile( KStandardDirs::locate( "dtd", "docbook/xml-dtd-4.1.2/catalog.xml" ) ).toEncoded();
+        catalogs += KUrl::fromLocalFile( KStandardDirs::locate( "dtd", "docbook/xml-dtd-4.1.2/catalog.xml" ) ).toEncoded();
 
         setenv( "XML_CATALOG_FILES", catalogs.constData(), 1 );
         QString exe;

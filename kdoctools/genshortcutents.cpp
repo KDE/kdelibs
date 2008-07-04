@@ -274,7 +274,7 @@ int main( int argc, char **argv )
 	       << aboutData.programName() + ' '
 	       << aboutData.version() + " on "
 	       << QDateTime::currentDateTime().toString() + ".\n";
-	stream << "     Don't bother to fiddle with this, your modifications will be\n"
+	stream << "     Do not bother to fiddle with this, your modifications will be\n"
 	       << "     overwritten as soon as the file is regenerated. -->\n";
 	stream << "\n";
 

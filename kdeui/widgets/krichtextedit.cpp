@@ -419,7 +419,7 @@ void KRichTextEdit::updateLink(const QString &linkUrl, const QString &linkText)
 
             QString selectionHtml = cursor.selection().toHtml();
             QString style = selectionHtml.split("<li style=\"").takeAt(1).split("\"").first();
-            QString linkTag = "<a" + selectionHtml.split("<a").takeAt(1).split(">").first() + ">"
+            QString linkTag = "<a" + selectionHtml.split("<a").takeAt(1).split('>').first() + '>'
                 + "<span style=\"" + style + "\">" + _linkText + "</span></a>";
             cursor.insertHtml(linkTag);
         }

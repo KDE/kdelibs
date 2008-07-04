@@ -417,7 +417,7 @@ protected:
   KUrl url() const;
 
   /**
-   * Sets whether an error has occured.
+   * Sets whether an error has occurred.
    */
   void setError( bool error );
 

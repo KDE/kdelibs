@@ -17,4 +17,4 @@ kde4_add_ui_files(kwalletwizardtest_SRCS
 )
 
 kde4_add_executable(kwalletwizardtest TEST ${kwalletwizardtest_SRCS})
-target_link_libraries(kwalletwizardtest ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY})
+target_link_libraries(kwalletwizardtest ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTGUI_LIBRARY})

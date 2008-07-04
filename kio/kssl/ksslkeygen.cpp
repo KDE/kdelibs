@@ -28,13 +28,13 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kopenssl.h>
+#include <kprogressdialog.h>
 #include <kstandarddirs.h>
 #include <ktemporaryfile.h>
 #include <kwallet.h>
 
 #include <QtGui/QLineEdit>
 #include <QtGui/QPushButton>
-#include <QtGui/QProgressDialog>
 
 #include <assert.h>
 
@@ -129,11 +129,11 @@ bool KSSLKeyGen::validateCurrentPage() {
         return false;
     }
 
-    QProgressDialog *kpd = new QProgressDialog(this);
+    KProgressDialog *kpd = new KProgressDialog(this);
     kpd->setObjectName("progress dialog");
     kpd->setWindowTitle(i18n("KDE"));
     kpd->setLabelText(i18n("Please wait while the encryption keys are generated..."));
-    kpd->setValue(0);
+    kpd->progressBar()->setValue(0);
     kpd->show();
     // FIXME - progress dialog won't show this way
 
@@ -141,7 +141,7 @@ bool KSSLKeyGen::validateCurrentPage() {
     if (rc != 0) // error
         return false;
 
-    kpd->setValue(100);
+    kpd->progressBar()->setValue(100);
 
 #if 0 // TODO: implement
     if (rc == 0 && KWallet::Wallet::isEnabled()) {

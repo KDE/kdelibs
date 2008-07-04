@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <kde_file.h>
 
 #include <QtCore/QDate>
 #include <QtCore/QFile>
@@ -210,8 +211,8 @@ QStringList KonfUpdate::findUpdateFiles(bool dirtyOnly)
        ++it)
    {
       QString file = *it;
-      struct stat buff;
-      if (stat( QFile::encodeName(file), &buff) == 0)
+      KDE_struct_stat buff;
+      if (KDE_stat( QFile::encodeName(file), &buff) == 0)
       {
          int i = file.lastIndexOf('/');
          if (i != -1)
@@ -378,8 +379,8 @@ bool KonfUpdate::updateFile(const QString &filename)
    // Flush.
    gotId(QString());
 
-   struct stat buff;
-   stat( QFile::encodeName(filename), &buff);
+   KDE_struct_stat buff;
+   KDE_stat( QFile::encodeName(filename), &buff);
    KConfigGroup cg(config, currentFilename);
    cg.writeEntry("ctime", int(buff.st_ctime));
    cg.writeEntry("mtime", int(buff.st_mtime));
@@ -454,8 +455,8 @@ void KonfUpdate::gotFile(const QString &_file)
       oldConfig2 = 0;
 
       QString file = KStandardDirs::locateLocal("config", oldFile);
-      struct stat s_buf;
-      if (stat(QFile::encodeName(file), &s_buf) == 0)
+      KDE_struct_stat s_buf;
+      if (KDE_stat(QFile::encodeName(file), &s_buf) == 0)
       {
          if (s_buf.st_size == 0)
          {

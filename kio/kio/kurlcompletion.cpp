@@ -224,9 +224,9 @@ void DirectoryListThread::run()
 		// systems that do (HP-UX, Linux, Tru64 UNIX), we overallocate space but
 		// that's ok.
 #ifndef HAVE_READDIR_R
-		struct dirent *dirEntry = 0;
+		KDE_struct_dirent *dirEntry = 0;
 		while ( !terminationRequested() &&
-		        (dirEntry = ::readdir( dir)))
+		        (dirEntry = KDE_readdir( dir)))
 #else
 		struct dirent *dirPosition = (struct dirent *) malloc( sizeof( struct dirent ) + MAXPATHLEN + 1 );
 		struct dirent *dirEntry = 0;

@@ -39,6 +39,7 @@
 
 #include <kconfig.h>
 #include <kdebug.h>
+#include <kde_file.h>
 #include <klibloader.h>
 #include <klocale.h>
 #include <kprotocolmanager.h>
@@ -315,8 +316,8 @@ KLauncher::slotKDEInitData(int)
    if (result == -1)
    {
       kDebug(7016) << "Exiting on read_socket errno:" << errno;
-      ::signal( SIGHUP, SIG_IGN);
-      ::signal( SIGTERM, SIG_IGN);
+      KDE_signal( SIGHUP, SIG_IGN);
+      KDE_signal( SIGTERM, SIG_IGN);
       destruct(); // Exit!
    }
    requestData.resize(request_header.arg_length);

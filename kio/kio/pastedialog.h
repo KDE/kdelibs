@@ -21,7 +21,7 @@
 
 #include <kdialog.h>
 
-class QComboBox;
+class KComboBox;
 class KLineEdit;
 class QLabel;
 
@@ -49,7 +49,7 @@ private Q_SLOTS:
 private:
     QLabel* m_label;
     KLineEdit* m_lineEdit;
-    QComboBox* m_comboBox;
+    KComboBox* m_comboBox;
     bool m_clipboardChanged;
 
     class Private;

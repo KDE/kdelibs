@@ -370,7 +370,7 @@ int main(int argc, char **argv)
       sock = openSocket();
       if( sock < 0 )
       {
-          fprintf( stderr, "Error: Can't contact kdeinit4!\n" );
+          fprintf( stderr, "Error: Can not contact kdeinit4!\n" );
           exit( 255 );
       }
       header.cmd = LAUNCHER_TERMINATE_KDE;
@@ -396,7 +396,7 @@ int main(int argc, char **argv)
    if( sock < 0 ) /* couldn't contact kdeinit4, start argv[ 0 ] directly */
    {
       execvp( argv[ 0 ], argv );
-      fprintf( stderr, "Error: Can't run %s !\n", argv[ 0 ] );
+      fprintf( stderr, "Error: Can not run %s !\n", argv[ 0 ] );
       exit( 255 );
    }
    

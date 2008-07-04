@@ -502,13 +502,13 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     m_widgetStack->insertWidget( KACLListView::NamedGroup,groupsBox );
 
     QLabel *usersLabel = new QLabel( i18n( "User: " ), usersBox );
-    m_usersCombo = new QComboBox( usersBox );
+    m_usersCombo = new KComboBox( usersBox );
     m_usersCombo->setEditable( false );
     m_usersCombo->setObjectName( QLatin1String( "users" ) );
     usersLabel->setBuddy( m_usersCombo );
 
     QLabel *groupsLabel = new QLabel( i18n( "Group: " ), groupsBox );
-    m_groupsCombo = new QComboBox( groupsBox );
+    m_groupsCombo = new KComboBox( groupsBox );
     m_groupsCombo->setEditable( false );
     m_groupsCombo->setObjectName( QLatin1String( "groups" ) );
     groupsLabel->setBuddy( m_groupsCombo );

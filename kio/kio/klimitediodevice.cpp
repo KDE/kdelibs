@@ -22,7 +22,7 @@ KLimitedIODevice::KLimitedIODevice( QIODevice *dev, int start, int length )
     : m_dev( dev ), m_start( start ), m_length( length )
 {
     //kDebug(7005) << "start=" << start << "length=" << length;
-    open( QIODevice::ReadOnly );
+    open( QIODevice::ReadOnly ); //krazy:exclude=syscalls
 }
 
 bool KLimitedIODevice::open( QIODevice::OpenMode m )

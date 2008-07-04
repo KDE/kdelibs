@@ -34,7 +34,6 @@
 #include <QTextLayout>
 #include <QListView>
 #include <QPaintEngine>
-#include <QTextEdit>
 #include <qmath.h>
 
 #include <kglobal.h>
@@ -45,6 +44,7 @@
 #include <kfileitem.h>
 #include <kcolorscheme.h>
 #include <kglobalsettings.h>
+#include <ktextedit.h>
 
 #include "delegateanimationhandler_p.h"
 
@@ -1239,7 +1239,7 @@ QWidget *KFileItemDelegate::createEditor(QWidget *parent, const QStyleOptionView
     QStyleOptionViewItemV4 opt(option);
     d->initStyleOption(&opt, index);
 
-    QTextEdit *edit = new QTextEdit(parent);
+    KTextEdit *edit = new KTextEdit(parent);
     edit->setAcceptRichText(false);
     edit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     edit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -1262,7 +1262,7 @@ bool KFileItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
 void KFileItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-    QTextEdit *textedit = qobject_cast<QTextEdit*>(editor);
+    KTextEdit *textedit = qobject_cast<KTextEdit*>(editor);
     Q_ASSERT(textedit != 0);
 
     const QVariant value = index.data(Qt::EditRole);
@@ -1285,7 +1285,7 @@ void KFileItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index)
 
 void KFileItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
-    QTextEdit *textedit = qobject_cast<QTextEdit*>(editor);
+    KTextEdit *textedit = qobject_cast<KTextEdit*>(editor);
     Q_ASSERT(textedit != 0);
 
     model->setData(index, textedit->toPlainText(), Qt::EditRole);
@@ -1307,7 +1307,7 @@ void KFileItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOption
             r.adjust(-(diff / 2), 0, diff / 2, 0);
     }
 
-    QTextEdit *textedit = qobject_cast<QTextEdit*>(editor);
+    KTextEdit *textedit = qobject_cast<KTextEdit*>(editor);
     Q_ASSERT(textedit != 0);
     const int frame = textedit->frameWidth();
     r.adjust(-frame, -frame, frame, frame);
@@ -1330,7 +1330,7 @@ bool KFileItemDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, co
 
 bool KFileItemDelegate::eventFilter(QObject *object, QEvent *event)
 {
-    QTextEdit *editor = qobject_cast<QTextEdit*>(object);
+    KTextEdit *editor = qobject_cast<KTextEdit*>(object);
     if (!editor)
         return false;
 

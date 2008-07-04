@@ -1003,7 +1003,7 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
       if (ep->d_type == DT_UNKNOWN || ep->d_type == DT_LNK)
 #endif
       {
-	KDE_struct_stat buff;
+        KDE_struct_stat buff;
         if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
            continue; // Couldn't stat (e.g. no read permissions)
         }

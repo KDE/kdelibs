@@ -1615,9 +1615,9 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
             tmpFile.open();
             QByteArray _tmp( QFile::encodeName(tmpFile.fileName()) );
             kDebug(7007) << "KTemporaryFile using" << _tmp << "as intermediary";
-            if ( ::rename( _src, _tmp ) == 0 )
+            if ( KDE_rename( _src, _tmp ) == 0 )
             {
-                if ( !QFile::exists( _dest ) && ::rename( _tmp, _dest ) == 0 )
+                if ( !QFile::exists( _dest ) && KDE_rename( _tmp, _dest ) == 0 )
                 {
                     kDebug(7007) << "Success.";
                     err = 0;
@@ -1625,7 +1625,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 else
                 {
                     // Revert back to original name!
-                    if ( ::rename( _tmp, _src ) != 0 ) {
+                    if ( KDE_rename( _tmp, _src ) != 0 ) {
                         kError(7007) << "Couldn't rename" << tmpFile.fileName() << "back to" << _src << '!';
                         // Severe error, abort
                         q->Job::slotResult( job ); // will set the error and emit result(this)
