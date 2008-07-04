@@ -104,12 +104,16 @@ KShortcut::KShortcut(const QString &s)
             sCuts[i] = sCuts[i].mid( 8, sCuts[i].length() - 9 );
 
     if (sCuts.count() >= 1) {
-        d->primary = QKeySequence::fromString(sCuts.at(0));
+        QString k = sCuts.at(0);
+        k.replace( "Win+", "Meta+" ); // workaround for KDE3-style shortcuts
+        d->primary = QKeySequence::fromString(k);
 	if (d->primary.isEmpty())
 	    kWarning() << "unusable primary shortcut sequence " << sCuts[0];
     }
     if (sCuts.count() >= 2) {
-        d->alternate = QKeySequence::fromString(sCuts.at(1));
+        QString k = sCuts.at(1);
+        k.replace( "Win+", "Meta+" ); // workaround for KDE3-style shortcuts
+        d->alternate = QKeySequence::fromString(k);
 	if (d->alternate.isEmpty())
 	    kWarning() << "unusable alternate shortcut sequence " << sCuts[1];
     }
