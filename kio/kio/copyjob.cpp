@@ -431,6 +431,9 @@ void CopyJobPrivate::slotReport()
         return;
     // If showProgressInfo was set, progressId() is > 0.
     switch (state) {
+        case STATE_RENAMING:
+            q->setTotalAmount(KJob::Files, m_srcList.count());
+            // fall-through intended
         case STATE_COPYING_FILES:
             q->setProcessedAmount( KJob::Files, m_processedFiles );
             if (m_bURLDirty)
@@ -717,6 +720,7 @@ void CopyJobPrivate::startRenameJob( const KUrl& slave_url )
     // Append filename or dirname to destination URL, if allowed
     if ( destinationState == DEST_IS_DIR && !m_asMethod )
         dest.addPath( m_currentSrcURL.fileName() );
+    m_currentDestURL = dest;
     kDebug(7007) << "This seems to be a suitable case for trying to rename before stat+[list+]copy+del";
     state = STATE_RENAMING;
 
@@ -1242,7 +1246,6 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
             assert( 0 );
     }
     state = STATE_COPYING_FILES;
-    //emit processedAmount( this, KJob::Files, m_processedFiles );
     copyNextFile();
 }
 
@@ -1769,6 +1772,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
     else
     {
         //kDebug(7007) << "Renaming succeeded, move on";
+        ++m_processedFiles;
         emit q->copyingDone( q, *m_currentStatSrc, dest, -1 /*mtime unknown, and not needed*/, true, true );
         statNextSrc();
     }
