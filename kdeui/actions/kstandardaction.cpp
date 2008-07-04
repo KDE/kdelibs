@@ -108,8 +108,8 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
 
     if ( QApplication::isRightToLeft() ) {
      switch ( id ) {
-      case Prior:           iconName = "go-next"; break;
-      case Next:            iconName = "go-previous"; break;
+      case Prior:           iconName = "go-next-page"; break;
+      case Next:            iconName = "go-previous-page"; break;
       case FirstPage:       iconName = "go-last-page"; break;
       case LastPage:        iconName = "go-first-page"; break;
       case DocumentBack:    iconName = "go-next"; break;
