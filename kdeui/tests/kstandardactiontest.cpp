@@ -23,7 +23,7 @@
 #include "kactioncollection.h"
 #include "kaction.h"
 
-void tst_KStandardAction::implicitInsertion()
+void tst_KStandardAction::implicitInsertionUsingCreate()
 {
     KActionCollection collection(static_cast<QObject *>(0));
     KAction *a = KStandardAction::create(KStandardAction::Undo, qApp, SLOT(quit()), &collection);
@@ -33,6 +33,14 @@ void tst_KStandardAction::implicitInsertion()
     QVERIFY(collection.action(KStandardAction::name(KStandardAction::Undo)) == a);
 }
 
-QTEST_KDEMAIN(tst_KStandardAction, GUI)
+void tst_KStandardAction::implicitInsertionUsingCut()
+{
+    KActionCollection collection(static_cast<QObject *>(0));
+    KAction* cut = KStandardAction::cut(&collection);
+    QAction* a = collection.action(KStandardAction::name(KStandardAction::Cut));
+    QVERIFY(a);
+    QVERIFY(a == cut);
+}
 
+QTEST_KDEMAIN(tst_KStandardAction, GUI)
 #include "kstandardactiontest.moc"

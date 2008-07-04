@@ -28,7 +28,8 @@ class tst_KStandardAction : public QObject
     Q_OBJECT
 
 private slots:
-    void implicitInsertion();
+    void implicitInsertionUsingCreate();
+    void implicitInsertionUsingCut();
 };
 
 #endif // KSTANDARDACTIONTEST_H

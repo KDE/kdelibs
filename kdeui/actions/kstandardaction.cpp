@@ -439,7 +439,7 @@ KAction *spelling( const QObject *recvr, const char *slot, QObject *parent )
   return KStandardAction::create( Spelling, recvr, slot, parent );
 }
 
-KAction *buildAutomaticAction( QObject* parent, StandardAction id, const char* slot )
+static KAction *buildAutomaticAction( QObject* parent, StandardAction id, const char* slot )
 {
   const KStandardActionInfo* p = infoPtr( id );
   if ( !p )
@@ -450,7 +450,11 @@ KAction *buildAutomaticAction( QObject* parent, StandardAction id, const char* s
   action->setObjectName(p->psName);
   action->setWhatsThis( p->psWhatsThis );
 
-  return action;
+  KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
+  if (collection)
+      collection->addAction(action->objectName(), action);
+
+    return action;
 }
 
 KAction *cut( QObject* parent )
