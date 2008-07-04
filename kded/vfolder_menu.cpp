@@ -984,7 +984,7 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
    if (!dp)
       return;
 
-   struct dirent *ep;
+   KDE_struct_dirent *ep;
 
    while( ( ep = KDE_readdir( dp ) ) != 0L )
    {
@@ -1102,7 +1102,7 @@ kDebug(7021).nospace() << "processLegacyDir(" << dir << ", " << relDir << ", " <
    if (!dp)
       return;
 
-   struct dirent *ep;
+   KDE_struct_dirent *ep;
 
    while( ( ep = KDE_readdir( dp ) ) != 0L )
    {
