@@ -401,10 +401,6 @@ void KConfigPrivate::parseConfigFiles()
     // can only read the file if there is a backend and a file name
     if (mBackend && !fileName.isEmpty()) {
         
-        // don't do variable expansion for .desktop files
-        bool allowExecutableValues = (qstrcmp(resourceType, "config") == 0) ||
-                    !fileName.endsWith(".desktop");
-
         bFileImmutable = false;
         QList<QString> files;
 
@@ -421,11 +417,9 @@ void KConfigPrivate::parseConfigFiles()
 
         const QByteArray utf8Locale = locale.toUtf8();
         foreach(const QString& file, files) {
-            KConfigBackend::ParseOptions parseOpts;
-            if (allowExecutableValues)
-                parseOpts |= KConfigBackend::ParseExpansions;
             if (file == mBackend->filePath()) {
-                KConfigBackend::ParseInfo info = mBackend->parseConfig(utf8Locale, entryMap, parseOpts);
+                KConfigBackend::ParseInfo info = mBackend->parseConfig(
+                                        utf8Locale, entryMap, KConfigBackend::ParseExpansions);
                 if (info == KConfigBackend::ParseImmutable)
                     bFileImmutable = true;
                 else if (info == KConfigBackend::ParseOpenError)
@@ -433,10 +427,10 @@ void KConfigPrivate::parseConfigFiles()
                 else // some other error occurred
                     ; // FIXME what to do here?
             } else {
-                parseOpts |= KConfigBackend::ParseDefaults;
                 KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, file);
-                bFileImmutable = (backend->parseConfig(utf8Locale, entryMap, parseOpts) ==
-                                  KConfigBackend::ParseImmutable);
+                bFileImmutable = (backend->parseConfig(utf8Locale, entryMap,
+                                        KConfigBackend::ParseDefaults|KConfigBackend::ParseExpansions)
+                                  == KConfigBackend::ParseImmutable);
             }
 
             if (bFileImmutable)
