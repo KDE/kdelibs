@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _VFOLDER_MENU_H_
-#define _VFOLDER_MENU_H_
+#ifndef KDED_VFOLDER_MENU_H
+#define KDED_VFOLDER_MENU_H
 
 #include <QtCore/QObject>
 #include <QtXml/QDomDocument>

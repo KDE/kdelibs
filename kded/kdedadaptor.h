@@ -18,8 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef KDEDADAPTOR_H
-#define KDEDADAPTOR_H
+#ifndef KDED_KDEDADAPTOR_H
+#define KDED_KDEDADAPTOR_H
 
 #include <QtDBus/QtDBus>
 

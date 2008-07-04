@@ -3,7 +3,7 @@
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
-   License version 2as published by the Free Software Foundation.
+   License version 2 as published by the Free Software Foundation.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,8 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef K_BUILD_PROTOCOL_INFO_FACTORY_H
-#define K_BUILD_PROTOCOL_INFO_FACTORY_H
+#ifndef KDED_KBUILD_PROTOCOL_INFO_FACTORY_H
+#define KDED_KBUILD_PROTOCOL_INFO_FACTORY_H
 
 #include <kprotocolinfofactory.h>
 #include <assert.h>

@@ -17,8 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#ifndef KMIMEFILEPARSER_H
-#define KMIMEFILEPARSER_H
+#ifndef KDED_KMIMEFILEPARSER_H
+#define KDED_KMIMEFILEPARSER_H
 
 #include <QtCore/QStringList>
 #include <QtCore/QHash>

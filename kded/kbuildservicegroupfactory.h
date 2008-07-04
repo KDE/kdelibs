@@ -16,8 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef K_BUILD_SERVICE_GROUP_FACTORY_H
-#define K_BUILD_SERVICE_GROUP_FACTORY_H
+#ifndef KDED_KBUILD_SERVICE_GROUP_FACTORY_H
+#define KDED_KBUILD_SERVICE_GROUP_FACTORY_H
 
 #include <kservice.h>
 #include <kservicegroupfactory.h>

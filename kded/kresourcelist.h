@@ -15,8 +15,8 @@
  *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  **/
-#ifndef KRESOURCELIST_H
-#define KRESOURCELIST_H
+#ifndef KDED_KRESOURCELIST_H
+#define KDED_KRESOURCELIST_H
 
 #include <QtCore/QLinkedList>
 #include <QtCore/QString>
