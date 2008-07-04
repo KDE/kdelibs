@@ -1,5 +1,5 @@
 /*
-    Copyright 2007 Simon Hausmann <hausmann@kde.org> 
+    Copyright 2007 Simon Hausmann <hausmann@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,7 +26,7 @@
 void tst_KStandardAction::implicitInsertion()
 {
     KActionCollection collection(static_cast<QObject *>(0));
-    KAction *a = KStandardAction::create(KStandardAction::Undo, this, SLOT(dummy()), &collection);
+    KAction *a = KStandardAction::create(KStandardAction::Undo, qApp, SLOT(quit()), &collection);
     QVERIFY(a);
 
     QVERIFY(a->parent() == &collection);
