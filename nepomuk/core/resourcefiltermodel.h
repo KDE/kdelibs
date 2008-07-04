@@ -30,7 +30,7 @@
 
 namespace Nepomuk {
     /**
-     * Filter model that provides a set of convinience methods
+     * Filter model that provides a set of convenience methods
      * for maintaining resource properties.
      *
      * It does automatic NRL named graph handling, i.e. provedance

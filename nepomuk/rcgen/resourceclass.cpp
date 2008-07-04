@@ -168,7 +168,7 @@ QString Property::setterDeclaration( const ResourceClass* rc, bool withNamespace
         .arg( withNamespace ? QString("Nepomuk::%1::").arg(rc->name()) : QString() )
         .arg( name()[0].toUpper() )
         .arg( name().mid(1) )
-        .arg( list ? (name().endsWith("s") ? QLatin1String("es") : QLatin1String("s") ) : QString() )
+        .arg( list ? (name().endsWith('s') ? QLatin1String("es") : QLatin1String("s") ) : QString() )
         .arg( typeString( false, withNamespace ) );
 }
 
@@ -180,7 +180,7 @@ QString Property::getterDeclaration( const ResourceClass* rc, bool withNamespace
         .arg( withNamespace ? QString("Nepomuk::%1::").arg(rc->name()) : QString() )
         .arg( name()[0].toLower() )
         .arg( name().mid(1) )
-        .arg( list ? (name().endsWith("s") ? QLatin1String("es") : QLatin1String("s") ) : QString() );
+        .arg( list ? (name().endsWith('s') ? QLatin1String("es") : QLatin1String("s") ) : QString() );
 }
 
 

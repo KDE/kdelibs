@@ -545,7 +545,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                             qObj = reinterpret_cast<QObject*>(var.value<QWidget*>());
                         if (qObj) {
                             QByteArray typeName = types[idx].constData();
-                            typeName.replace("*", "");
+                            typeName.replace("*", ""); //krazy:exclude=doublequote_chars
                             if (qObj->inherits(typeName))
                                 return new Value<void*>(qObj);
                         }

@@ -18,10 +18,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "tag.h"
+
 #include "tools.h"
 #include "variant.h"
 #include "resourcemanager.h"
-#include "tag.h"
 #include "resource.h"
 
 #include <Soprano/Vocabulary/NAO>

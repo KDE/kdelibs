@@ -203,7 +203,7 @@ KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
             QByteArray typeName = param.constData();
             bool isPtr = typeName.contains("*");
             if (isPtr)
-                typeName.replace("*", "");
+                typeName.replace("*", ""); //krazy:exclude=doublequote_chars
 #ifdef DEBUG_SLOTPROXY
             qDebug() << "\tQVariant::UserType: typeName=" << typeName << " param=" << param.constData() << " isPtr" << isPtr;
 #endif

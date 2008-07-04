@@ -134,7 +134,7 @@ bool OntologyParser::parse( const QString& filename )
         int pos = 0;
         while( ( pos = s.indexOf( nsr, pos+1 ) ) > 0 ) {
             if ( !quiet )
-                qDebug() << "Found namespace abbrevation: " << nsr.cap(1) << "->" << nsr.cap(2) << endl;
+                qDebug() << "Found namespace abbreviation: " << nsr.cap(1) << "->" << nsr.cap(2) << endl;
             d->namespaceAbbr.insert( nsr.cap(1), nsr.cap(2) );
         }
     }

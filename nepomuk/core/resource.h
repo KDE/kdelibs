@@ -161,7 +161,7 @@ namespace Nepomuk {
          * the most important thing to remember is that the URI of for example
          * a file does not necessarily have a relation to its local path.
          * (Although Nepomuk tries to keep the URI of file resources in sync
-         * with the file URL for convinience.)
+         * with the file URL for convenience.)
          *
          * For historical reasons the method does return a URI as QString instead
          * of QUrl. The value equals resourceUri().toString().
@@ -180,7 +180,7 @@ namespace Nepomuk {
          * the most important thing to remember is that the URI of for example
          * a file does not necessarily have a relation to its local path.
          * (Although Nepomuk tries to keep the URI of file resources in sync
-         * with the file URL for convinience.)
+         * with the file URL for convenience.)
          *
          * \sa uri, getIdentifiers
          */

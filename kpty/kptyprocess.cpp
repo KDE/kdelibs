@@ -111,7 +111,7 @@ void KPtyProcess::setupChildProcess()
 
     d->pty->setCTty();
     if (d->addUtmp)
-        d->pty->login(KUser(KUser::UseRealUserID).loginName().toLocal8Bit().data(), getenv("DISPLAY"));
+        d->pty->login(KUser(KUser::UseRealUserID).loginName().toLocal8Bit().data(), qgetenv("DISPLAY"));
     if (d->ptyChannels & StdinChannel)
         dup2(d->pty->slaveFd(), 0);
     if (d->ptyChannels & StdoutChannel)

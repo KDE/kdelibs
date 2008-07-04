@@ -129,6 +129,7 @@ extern "C" {
 
 #include <kdebug.h>
 #include <kstandarddirs.h>	// findExe
+#include <kde_file.h>
 
 #include <QtCore/Q_PID>
 
@@ -223,7 +224,7 @@ bool KPty::open()
 #elif defined(HAVE_GETPT)
   d->masterFd = ::getpt();
 #elif defined(PTM_DEVICE)
-  d->masterFd = ::open(PTM_DEVICE, O_RDWR|O_NOCTTY);
+  d->masterFd = KDE_open(PTM_DEVICE, O_RDWR|O_NOCTTY);
 #else
 # error No method to open a PTY master detected.
 #endif
@@ -260,7 +261,7 @@ bool KPty::open()
       ptyName = QString().sprintf("/dev/pty%c%c", *s3, *s4).toAscii();
       d->ttyName = QString().sprintf("/dev/tty%c%c", *s3, *s4).toAscii();
 
-      d->masterFd = ::open(ptyName.data(), O_RDWR);
+      d->masterFd = KDE_open(ptyName.data(), O_RDWR);
       if (d->masterFd >= 0)
       {
 #ifdef Q_OS_SOLARIS
@@ -299,8 +300,8 @@ bool KPty::open()
   return false;
 
  gotpty:
-  struct stat st;
-  if (stat(d->ttyName.data(), &st))
+  KDE_struct_stat st;
+  if (KDE_stat(d->ttyName.data(), &st))
     return false; // this just cannot happen ... *cough*  Yeah right, I just
                   // had it happen when pty #349 was allocated.  I guess
                   // there was some sort of leak?  I only had a few open.
@@ -326,7 +327,7 @@ bool KPty::open()
   ioctl(d->masterFd, TIOCSPTLCK, &flag);
 #endif
 
-  d->slaveFd = ::open(d->ttyName.data(), O_RDWR | O_NOCTTY);
+  d->slaveFd = KDE_open(d->ttyName.data(), O_RDWR | O_NOCTTY);
   if (d->slaveFd < 0)
   {
     kWarning(175) << "Can't open slave pseudo teletype";
@@ -410,7 +411,7 @@ bool KPty::openSlave()
         kWarning(175) << "Attempting to open pty slave while master is closed";
         return false;
     }
-    d->slaveFd = ::open(d->ttyName.data(), O_RDWR | O_NOCTTY);
+    d->slaveFd = KDE_open(d->ttyName.data(), O_RDWR | O_NOCTTY);
     if (d->slaveFd < 0) {
         kWarning(175) << "Can't open slave pseudo teletype";
         return false;
@@ -462,7 +463,7 @@ void KPty::setCTty()
     ioctl(d->slaveFd, TIOCSCTTY, 0);
 #else
     // __svr4__ hack: the first tty opened after setsid() becomes controlling tty
-    ::close(::open(d->ttyName, O_WRONLY, 0));
+    ::close(KDE_open(d->ttyName, O_WRONLY, 0));
 #endif
 
     // make our new process group the foreground group on the pty
