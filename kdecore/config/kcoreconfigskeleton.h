@@ -621,7 +621,7 @@ public:
 
 
   /**
-   * Class for handling an unsingend 32-bit integer preferences item.
+   * Class for handling an unsigned 32-bit integer preferences item.
    */
   class KDECORE_EXPORT ItemUInt:public KConfigSkeletonGenericItem < quint32 >
   {
