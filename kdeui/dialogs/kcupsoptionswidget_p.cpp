@@ -38,7 +38,8 @@ KCupsOptionsWidget::KCupsOptionsWidget( QPrintDialog *parent ) : QWidget( parent
 
     // When the user changes the selected Printer in the dialog, we need to check
     // if a CUPS printer is still selected.  Dunno if this will actually work :-)
-    connect( m_dialog, SIGNAL(currentIndexChanged(int)), this, SLOT(toggleEnabled()) );
+    //Laurent:2008-07-05 disable it. This signal doesn't exist
+    //connect( m_dialog, SIGNAL(currentIndexChanged(int)), this, SLOT(toggleEnabled()) );
 }
 
 KCupsOptionsWidget::~KCupsOptionsWidget()
@@ -47,8 +48,8 @@ KCupsOptionsWidget::~KCupsOptionsWidget()
 
 bool KCupsOptionsWidget::cupsAvailable()
 {
-    // Ideally we would have access to the private Qt method 
-    // QCUPSSupport::cupsAvailable() to do this as it is very complex, 
+    // Ideally we would have access to the private Qt method
+    // QCUPSSupport::cupsAvailable() to do this as it is very complex,
     // I have requested this for Qt4.5 through the KPrinterInfo class, but
     // for now we have to fake it ourselves.
 
