@@ -117,7 +117,7 @@ void KTextBrowser::wheelEvent( QWheelEvent *event )
 
 void KTextBrowser::contextMenuEvent( QContextMenuEvent *event )
 {
-  QMenu *popup = createStandardContextMenu();
+  QMenu *popup = createStandardContextMenu(event->pos());
   KIconTheme::assignIconsToContextMenu( isReadOnly() ? KIconTheme::ReadOnlyText
                                                      : KIconTheme::TextEditor,
                                         popup->actions() );
