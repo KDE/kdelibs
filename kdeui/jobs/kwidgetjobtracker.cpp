@@ -100,10 +100,11 @@ void KWidgetJobTracker::unregisterJob(KJob *job)
         d->progressWidgetsToBeShown.removeAll(job);
         return;
     }
-    d->progressWidget.remove(job);
-    d->progressWidgetsToBeShown.removeAll(job);
 
     pWidget->deref();
+
+    d->progressWidget.remove(job);
+    d->progressWidgetsToBeShown.removeAll(job);
 }
 
 bool KWidgetJobTracker::keepOpen(KJob *job) const

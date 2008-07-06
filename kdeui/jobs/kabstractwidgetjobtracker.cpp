@@ -56,11 +56,11 @@ KAbstractWidgetJobTracker::~KAbstractWidgetJobTracker()
 
 void KAbstractWidgetJobTracker::registerJob(KJob *job)
 {
-    KJobTrackerInterface::registerJob(job);
-
     if (d->moreOptions.contains(job)) {
         return;
     }
+
+    KJobTrackerInterface::registerJob(job);
 
     Private::MoreOptions mo;
     mo.stopOnClose = true;
@@ -71,11 +71,11 @@ void KAbstractWidgetJobTracker::registerJob(KJob *job)
 
 void KAbstractWidgetJobTracker::unregisterJob(KJob *job)
 {
-    KJobTrackerInterface::unregisterJob(job);
-
     if (!d->moreOptions.contains(job)) {
         return;
     }
+
+     KJobTrackerInterface::unregisterJob(job);
 
     d->moreOptions.remove(job);
 }
