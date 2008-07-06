@@ -77,13 +77,12 @@ QWidget *KWidgetJobTracker::widget(KJob *job)
 
 void KWidgetJobTracker::registerJob(KJob *job)
 {
-    KAbstractWidgetJobTracker::registerJob(job);
-
-    if (d->progressWidget.contains(job)) {
+    if (d->progressWidget.contains(job) ||
+        d->progressWidgetsToBeShown.contains(job)) {
         return;
     }
 
-    job->setAutoDelete(true);
+    KAbstractWidgetJobTracker::registerJob(job);
 
     Private::ProgressWidget *vi = new Private::ProgressWidget(job, this, d->parent);
     d->progressWidget.insert(job, vi);
@@ -98,10 +97,13 @@ void KWidgetJobTracker::unregisterJob(KJob *job)
 
     KWidgetJobTracker::Private::ProgressWidget *pWidget = d->progressWidget.value(job, 0);
     if (!pWidget) {
+        d->progressWidgetsToBeShown.removeAll(job);
         return;
     }
-
     d->progressWidget.remove(job);
+    d->progressWidgetsToBeShown.removeAll(job);
+
+    pWidget->deref();
 }
 
 bool KWidgetJobTracker::keepOpen(KJob *job) const
@@ -183,8 +185,6 @@ void KWidgetJobTracker::slotClean(KJob *job)
         return;
     }
 
-    d->progressWidget.remove(job);
-
     pWidget->slotClean();
 }
 
@@ -220,10 +220,19 @@ void KWidgetJobTracker::Private::ProgressWidget::ref()
 
 void KWidgetJobTracker::Private::ProgressWidget::deref()
 {
-    refCount--;
+    if (refCount) {
+        refCount--;
+    }
+
     if (!refCount) {
-        hide();
-        QTimer::singleShot(500, this, SLOT(deleteLater()));
+        if (!keepOpenChecked || !tracker->widget(job)) {
+            hide();
+            if (tracker->autoDelete(job)) {
+                deleteLater();
+            }
+        } else {
+            slotClean();
+        }
     }
 }
 
@@ -386,25 +395,20 @@ void KWidgetJobTracker::Private::ProgressWidget::speed(unsigned long value)
 
 void KWidgetJobTracker::Private::ProgressWidget::slotClean()
 {
-    if (!keepOpenChecked) {
-        deref();
-    } else {
-        finishedProperty = true;
-        percent(100);
-        cancelClose->setGuiItem(KStandardGuiItem::close());
-        openFile->setEnabled(true);
-        if (!totalSizeKnown || totalSize < processedSize)
-            totalSize = processedSize;
-        processedAmount(KJob::Bytes, totalSize);
-        keepOpenCheck->setEnabled(false);
-        pauseButton->setEnabled(false);
-        if (!startTime.isNull()) {
-            int s = startTime.elapsed();
-            if (!s)
-                s = 1;
-            speedLabel->setText(i18n("%1/s (done)",
-                                        KGlobal::locale()->formatByteSize(1000 * totalSize / s)));
-        }
+    percent(100);
+    cancelClose->setGuiItem(KStandardGuiItem::close());
+    openFile->setEnabled(true);
+    if (!totalSizeKnown || totalSize < processedSize)
+        totalSize = processedSize;
+    processedAmount(KJob::Bytes, totalSize);
+    keepOpenCheck->setEnabled(false);
+    pauseButton->setEnabled(false);
+    if (!startTime.isNull()) {
+        int s = startTime.elapsed();
+        if (!s)
+            s = 1;
+        speedLabel->setText(i18n("%1/s (done)",
+                                    KGlobal::locale()->formatByteSize(1000 * totalSize / s)));
     }
 }
 
@@ -422,15 +426,11 @@ void KWidgetJobTracker::Private::ProgressWidget::resumed()
 
 void KWidgetJobTracker::Private::ProgressWidget::closeEvent(QCloseEvent *event)
 {
-    QWidget::closeEvent(event);
-
-    if (tracker->stopOnClose(job) && !finishedProperty) {
+    if (tracker->stopOnClose(job)) {
         tracker->slotStop(job);
     }
 
-    if ( keepOpenChecked ) {
-        delete job;
-    }
+    QWidget::closeEvent(event);
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::init()
@@ -473,7 +473,6 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     progressHBox->addWidget(progressBar);
 
     suspendedProperty = false;
-    finishedProperty = false;
     pauseButton = new KPushButton(i18n("Pause"), this);
     QObject::connect(pauseButton, SIGNAL(clicked()),
                      this, SLOT(_k_pauseResumeClicked()));
@@ -599,7 +598,6 @@ void KWidgetJobTracker::Private::ProgressWidget::checkDestination(const KUrl &de
 void KWidgetJobTracker::Private::ProgressWidget::_k_keepOpenToggled(bool keepOpen)
 {
     keepOpenChecked = keepOpen;
-    job->setAutoDelete(!keepOpen);
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_openFile()
@@ -625,11 +623,8 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_pauseResumeClicked()
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_stop()
 {
-    if (!finishedProperty) {
-        tracker->slotStop(job);
-    } else {
-        delete this;
-    }
+    tracker->slotStop(job);
+    deref();
 }
 
 #include "kwidgetjobtracker.moc"

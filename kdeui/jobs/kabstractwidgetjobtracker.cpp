@@ -56,6 +56,8 @@ KAbstractWidgetJobTracker::~KAbstractWidgetJobTracker()
 
 void KAbstractWidgetJobTracker::registerJob(KJob *job)
 {
+    KJobTrackerInterface::registerJob(job);
+
     if (d->moreOptions.contains(job)) {
         return;
     }
@@ -65,18 +67,17 @@ void KAbstractWidgetJobTracker::registerJob(KJob *job)
     mo.autoDelete = true;
 
     d->moreOptions.insert(job, mo);
-
-    KJobTrackerInterface::registerJob(job);
 }
 
 void KAbstractWidgetJobTracker::unregisterJob(KJob *job)
 {
+    KJobTrackerInterface::unregisterJob(job);
+
     if (!d->moreOptions.contains(job)) {
         return;
     }
 
     d->moreOptions.remove(job);
-    KJobTrackerInterface::unregisterJob(job);
 }
 
 void KAbstractWidgetJobTracker::setStopOnClose(KJob *job, bool stopOnClose)
@@ -113,11 +114,7 @@ bool KAbstractWidgetJobTracker::autoDelete(KJob *job) const
 
 void KAbstractWidgetJobTracker::finished(KJob *job)
 {
-    if (!d->moreOptions.contains(job)) {
-        return;
-    }
-
-    slotClean(job);
+    Q_UNUSED(job);
 }
 
 void KAbstractWidgetJobTracker::slotStop(KJob *job)
@@ -155,13 +152,7 @@ void KAbstractWidgetJobTracker::slotResume(KJob *job)
 
 void KAbstractWidgetJobTracker::slotClean(KJob *job)
 {
-    if (!d->moreOptions.contains(job)) {
-        return;
-    }
-
-    if (widget(job)) {
-        widget(job)->hide();
-    }
+    Q_UNUSED(job);
 }
 
 #include "kabstractwidgetjobtracker.moc"

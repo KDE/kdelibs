@@ -47,6 +47,8 @@ public:
      */
     virtual ~KAbstractWidgetJobTracker();
 
+// KDE5: move this two virtual methods to be placed correctly (ereslibre)
+public Q_SLOTS:
     /**
      * Register a new job in this tracker.
      * Note that job trackers inheriting from this class can have only one job
@@ -63,6 +65,7 @@ public:
      */
     virtual void unregisterJob(KJob *job);
 
+public:
     /**
      * The widget associated to this tracker.
      *

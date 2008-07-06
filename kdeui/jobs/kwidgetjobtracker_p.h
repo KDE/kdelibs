@@ -69,7 +69,7 @@ public:
     ProgressWidget(KJob *job, KWidgetJobTracker *object, QWidget *parent)
         : QWidget(parent), tracker(object), job(job), totalSize(0), totalFiles(0), totalDirs(0),
           processedSize(0), processedDirs(0), processedFiles(0),
-          totalSizeKnown(false), keepOpenChecked(false), beingDeleted(false),
+          totalSizeKnown(false), keepOpenChecked(false),
           cancelClose(0), openFile(0), openLocation(0),
           keepOpenCheck(0), pauseButton(0), sourceEdit(0), destEdit(0),
           progressLabel(0), destInvite(0), speedLabel(0), sizeLabel(0),
@@ -80,11 +80,6 @@ public:
 
     ~ProgressWidget()
     {
-        beingDeleted = true;    // keep the tracker from trying to delete us
-
-        if ( keepOpenChecked ) {
-            delete job;
-        }
     }
 
     KWidgetJobTracker *const tracker;
@@ -99,7 +94,6 @@ public:
 
     bool totalSizeKnown;
     bool keepOpenChecked;
-    bool beingDeleted;
     QString caption;
 
     KPushButton *cancelClose;
@@ -120,7 +114,6 @@ public:
     QProgressBar *progressBar;
 
     bool suspendedProperty;
-    bool finishedProperty;
 
     int refCount; // will not close the dialog if a modal menu is shown
 

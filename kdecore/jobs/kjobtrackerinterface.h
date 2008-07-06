@@ -46,6 +46,7 @@ public:
      */
     virtual ~KJobTrackerInterface();
 
+public Q_SLOTS:
     /**
      * Register a new job in this tracker.
      *
