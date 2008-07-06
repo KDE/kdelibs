@@ -156,7 +156,8 @@ QDomElement KBookmarkGroup::nextKnownTag( const QDomElement &start, bool goNext 
 
 KBookmarkGroup KBookmarkGroup::createNewFolder( const QString & text )
 {
-    Q_ASSERT(!element.isNull());
+    if (isNull())
+        return KBookmarkGroup();
     QDomDocument doc = element.ownerDocument();
     QDomElement groupElem = doc.createElement( "folder" );
     element.appendChild( groupElem );
@@ -169,7 +170,8 @@ KBookmarkGroup KBookmarkGroup::createNewFolder( const QString & text )
 
 KBookmark KBookmarkGroup::createNewSeparator()
 {
-    Q_ASSERT(!element.isNull());
+    if (isNull())
+        return KBookmark();
     QDomDocument doc = element.ownerDocument();
     Q_ASSERT(!doc.isNull());
     QDomElement sepElem = doc.createElement( "separator" );
@@ -213,7 +215,9 @@ KBookmark KBookmarkGroup::addBookmark( const KBookmark &bm )
 
 KBookmark KBookmarkGroup::addBookmark( const QString & text, const KUrl & url, const QString & icon )
 {
-    QDomDocument doc = element.ownerDocument();
+    if (isNull())
+        return KBookmark();
+    QDomDocument doc = element.ownerDocument();    
     QDomElement elem = doc.createElement( "bookmark" );
     elem.setAttribute( "href", url.url() ); // gives us utf8
 

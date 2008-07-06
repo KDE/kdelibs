@@ -179,6 +179,8 @@ KBookmark KFilePlacesItem::createBookmark(KBookmarkManager *manager,
                                           const QString &iconName)
 {
     KBookmarkGroup root = manager->root();
+    if (root.isNull())
+        return KBookmark();
     KBookmark bookmark = root.addBookmark(label, url, iconName);
     bookmark.setMetaDataItem("ID", generateNewId());
 
@@ -191,7 +193,8 @@ KBookmark KFilePlacesItem::createSystemBookmark(KBookmarkManager *manager,
                                           const QString &iconName)
 {
     KBookmark bookmark = createBookmark(manager, label, url, iconName);
-    bookmark.setMetaDataItem("isSystemItem", "true");
+    if (!bookmark.isNull())
+        bookmark.setMetaDataItem("isSystemItem", "true");
     return bookmark;
 }
 
@@ -200,9 +203,11 @@ KBookmark KFilePlacesItem::createDeviceBookmark(KBookmarkManager *manager,
                                                 const QString &udi)
 {
     KBookmarkGroup root = manager->root();
+    if (root.isNull())
+        return KBookmark();
     KBookmark bookmark = root.createNewSeparator();
     bookmark.setMetaDataItem("UDI", udi);
-    bookmark.setMetaDataItem("isSystemItem", "true");
+    bookmark.setMetaDataItem("isSystemItem", "true");    
     return bookmark;
 }
 

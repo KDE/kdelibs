@@ -425,13 +425,14 @@ QList<KFilePlacesItem *> KFilePlacesModel::Private::loadBookmarkList()
     // Add bookmarks for the remaining devices, they were previously unknown
     foreach (const QString &udi, devices) {
         bookmark = KFilePlacesItem::createDeviceBookmark(bookmarkManager, udi);
-
-        KFilePlacesItem *item = new KFilePlacesItem(bookmarkManager,
-                                                    bookmark.address(), udi);
-        connect(item, SIGNAL(itemChanged(const QString&)),
-                q, SLOT(_k_itemChanged(const QString&)));
-        // TODO: Update bookmark internal element
-        items << item;
+        if (!bookmark.isNull()) {
+            KFilePlacesItem *item = new KFilePlacesItem(bookmarkManager,
+                                                        bookmark.address(), udi);
+            connect(item, SIGNAL(itemChanged(const QString&)),
+                    q, SLOT(_k_itemChanged(const QString&)));
+            // TODO: Update bookmark internal element
+            items << item;
+        }
     }
 
     return items;
