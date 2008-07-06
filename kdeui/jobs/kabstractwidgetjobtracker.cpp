@@ -75,7 +75,7 @@ void KAbstractWidgetJobTracker::unregisterJob(KJob *job)
         return;
     }
 
-     KJobTrackerInterface::unregisterJob(job);
+    KJobTrackerInterface::unregisterJob(job);
 
     d->moreOptions.remove(job);
 }
