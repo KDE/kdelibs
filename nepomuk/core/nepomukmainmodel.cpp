@@ -86,6 +86,8 @@ public:
         // we may get disconnected from the server but we don't want to try
         // to connect every time the model is requested
         if ( !m_socketConnectFailed && !localSocketClient.isConnected() ) {
+            if ( mutexModel->parentModel() == localSocketModel )
+                mutexModel->setParentModel( 0 );
             delete localSocketModel;
             localSocketModel = 0;
             QString socketName = KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" );
