@@ -45,7 +45,7 @@ KJobTrackerInterface::~KJobTrackerInterface()
 
 void KJobTrackerInterface::registerJob(KJob *job)
 {
-    QObject::connect(job, SIGNAL(result(KJob*)),
+    QObject::connect(job, SIGNAL(finished(KJob*)),
                      this, SLOT(unregisterJob(KJob*)));
     QObject::connect(job, SIGNAL(finished(KJob*)),
                      this, SLOT(finished(KJob*)));
@@ -78,7 +78,7 @@ void KJobTrackerInterface::registerJob(KJob *job)
 
 void KJobTrackerInterface::unregisterJob(KJob *job)
 {
-    QObject::disconnect(job, SIGNAL(result(KJob*)),
+    QObject::disconnect(job, SIGNAL(finished(KJob*)),
                         this, SLOT(unregisterJob(KJob*)));
     QObject::disconnect(job, SIGNAL(finished(KJob*)),
                         this, SLOT(finished(KJob*)));
