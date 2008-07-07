@@ -23,6 +23,7 @@
 
 #include <kdebug.h>
 #include <qtest_kde.h>
+#include <QtDBus/QtDBus>
 
 #include <Soprano/Vocabulary/RDFS>
 
@@ -31,6 +32,10 @@ using namespace Nepomuk::Types;
 
 void EntityTest::testClass()
 {
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.nepomuk.services.nepomukstorage")) {
+        QSKIP("nepomuk not running", SkipAll);
+    }
+
     Class c1( Soprano::Vocabulary::RDFS::Resource() );
     Class c2( Soprano::Vocabulary::RDFS::Resource() );
 

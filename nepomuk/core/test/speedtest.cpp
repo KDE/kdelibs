@@ -24,6 +24,8 @@
 #include <Soprano/LiteralValue>
 #include <Soprano/QueryResultIterator>
 
+#include <QtDBus/QtDBus>
+
 #include <qtest_kde.h>
 
 using namespace Soprano;
@@ -83,6 +85,10 @@ void SpeedTest::compareToPlain()
 {
     QFETCH( QUrl, uri );
     QFETCH( QString,  identifier );
+
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.nepomuk.services.nepomukstorage")) {
+        QSKIP("nepomuk not running", SkipAll);
+    }
 
     // first we add some data
     Soprano::Model* rr = ResourceManager::instance()->mainModel();
