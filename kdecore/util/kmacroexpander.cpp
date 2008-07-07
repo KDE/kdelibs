@@ -59,7 +59,6 @@ void KMacroExpanderBase::expandMacros( QString &str )
         if (ec != QLatin1Char(0) ) {
             if (str.unicode()[pos] != ec)
                 goto nohit;
-            kDebug(9010) << "trying"<< str << "from" << pos << ":" << str.mid(pos);
             if (!(len = expandEscapedMacro( str, pos, rst )))
                 goto nohit;
         } else {
@@ -211,7 +210,6 @@ template <typename VT>
 int
 KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 {
-    kDebug() << "Expanding qstring vt macro:" << str << pos;
     if (str.length() <= pos + 1)
       return 0;
 
