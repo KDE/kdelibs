@@ -56,6 +56,7 @@ private Q_SLOTS:
     void deleteFile();
     void deleteDirectory();
     void deleteManyFiles();
+    void stat();
     //void newApiPerformance();
     void calculateRemainingSeconds();
 
