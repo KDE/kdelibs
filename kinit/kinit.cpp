@@ -540,7 +540,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
 #else
                                                        QDir::homePath());
 #endif
-         const QByteArray docPath = QFile::encodeName(docPath);
+         const QByteArray docPath = QFile::encodeName(documentPath);
          chdir(docPath.constData());
      }
 
