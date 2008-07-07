@@ -43,13 +43,13 @@
 
 namespace KStandardAction
 {
-AutomaticAction::AutomaticAction(const KIcon &icon, const QString &text, const QKeySequence &cut, const char *slot,
+AutomaticAction::AutomaticAction(const KIcon &icon, const QString &text, const KShortcut &shortcut, const char *slot,
                                  QObject *parent)
     : KAction(parent)
 {
     setText(text);
     setIcon(icon);
-    setShortcut(cut);
+    setShortcut(shortcut);
     connect(this, SIGNAL(triggered()), this, slot);
 }
 
@@ -445,8 +445,9 @@ static KAction *buildAutomaticAction( QObject* parent, StandardAction id, const 
   if ( !p )
     return 0;
 
-  AutomaticAction *action = new AutomaticAction(KIcon( p->psIconName ), p->psLabel, KStandardShortcut::shortcut( p->idAccel ).primary(),
-                                                slot, parent);
+  AutomaticAction *action = new AutomaticAction( KIcon( p->psIconName ), p->psLabel,
+      KStandardShortcut::shortcut( p->idAccel ), slot, parent);
+
   action->setObjectName(p->psName);
   action->setWhatsThis( p->psWhatsThis );
 
