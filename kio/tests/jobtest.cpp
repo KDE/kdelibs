@@ -1113,4 +1113,19 @@ void JobTest::deleteManyFiles()
     }
 }
 
+void JobTest::stat()
+{
+    const QString filePath = homeTmpDir() + "fileFromHome";
+    createTestFile( filePath );
+    KIO::StatJob* job = KIO::stat(filePath, KIO::HideProgressInfo);
+    QVERIFY(job);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    // TODO set setSide, setDetails
+    const KIO::UDSEntry& entry = job->statResult();
+    QVERIFY(!entry.isDir());
+    QVERIFY(!entry.isLink());
+    QCOMPARE(entry.stringValue(KIO::UDSEntry::UDS_NAME), QString("fileFromHome"));
+}
+
 #include "jobtest.moc"
