@@ -193,7 +193,7 @@ static bool matchFileName( const QString &filename, const QString &pattern )
     if (pattern[0] == '*'  && pattern.indexOf('[') == -1)
     {
         if ( len + 1 < pattern_len ) return false;
-    
+
         const QChar *c1 = pattern.unicode() + pattern_len - 1;
         const QChar *c2 = filename.unicode() + len - 1;
         int cnt = 1;
@@ -217,7 +217,7 @@ static bool matchFileName( const QString &filename, const QString &pattern )
     }
 
     // Names without any wildcards like "README"
-    if (pattern.indexOf('[') == -1 && pattern.indexOf('*') == -1 && pattern.indexOf('?')) 
+    if (pattern.indexOf('[') == -1 && pattern.indexOf('*') == -1 && pattern.indexOf('?'))
         return (pattern == filename);
 
     // Other patterns, like "[Mm]akefile": use slow but correct method
@@ -284,6 +284,8 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper( const QString &_
             } else if (pattern.length() > matchingPatternLength) {
                 // longer: clear any previous match (like *.bz2, when pattern is *.tar.bz2)
                 matchingMimeTypes.clear();
+                // remember the new "longer" length
+                matchingPatternLength = pattern.length();
             }
             KMimeType *newMimeType = createEntry( *it_offset );
             assert (newMimeType && newMimeType->isType( KST_KMimeType ));
