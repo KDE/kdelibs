@@ -112,7 +112,7 @@ void JobTest::initTestCase()
     }
 #endif
 
-    qRegisterMetaType<KIO::Job*>();
+    qRegisterMetaType<KIO::Job*>("KIO::Job*");
     qRegisterMetaType<KUrl>("KUrl");
     qRegisterMetaType<time_t>("time_t");
 }
@@ -1115,6 +1115,7 @@ void JobTest::deleteManyFiles()
 
 void JobTest::stat()
 {
+#if 1
     const QString filePath = homeTmpDir() + "fileFromHome";
     createTestFile( filePath );
     KIO::StatJob* job = KIO::stat(filePath, KIO::HideProgressInfo);
@@ -1126,6 +1127,44 @@ void JobTest::stat()
     QVERIFY(!entry.isDir());
     QVERIFY(!entry.isLink());
     QCOMPARE(entry.stringValue(KIO::UDSEntry::UDS_NAME), QString("fileFromHome"));
+#else
+    // Testing stat over HTTP
+    KIO::StatJob* job = KIO::stat(KUrl("http://www.kde.org"), KIO::HideProgressInfo);
+    QVERIFY(job);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    // TODO set setSide, setDetails
+    const KIO::UDSEntry& entry = job->statResult();
+    QVERIFY(!entry.isDir());
+    QVERIFY(!entry.isLink());
+    QCOMPARE(entry.stringValue(KIO::UDSEntry::UDS_NAME), QString());
+#endif
+}
+
+void JobTest::mimeType()
+{
+#if 1
+    const QString filePath = homeTmpDir() + "fileFromHome";
+    createTestFile( filePath );
+    KIO::MimetypeJob* job = KIO::mimetype(filePath, KIO::HideProgressInfo);
+    QVERIFY(job);
+    QSignalSpy spyMimeType(job, SIGNAL(mimetype(KIO::Job*, QString)));
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    QCOMPARE(spyMimeType.count(), 1);
+    QCOMPARE(spyMimeType[0][0], QVariant::fromValue(static_cast<KIO::Job*>(job)));
+    QCOMPARE(spyMimeType[0][1].toString(), QString("application/octet-stream"));
+#else
+    // Testing mimetype over HTTP
+    KIO::MimetypeJob* job = KIO::mimetype(KUrl("http://www.kde.org"), KIO::HideProgressInfo);
+    QVERIFY(job);
+    QSignalSpy spyMimeType(job, SIGNAL(mimetype(KIO::Job*, QString)));
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    QCOMPARE(spyMimeType.count(), 1);
+    QCOMPARE(spyMimeType[0][0], QVariant::fromValue(static_cast<KIO::Job*>(job)));
+    QCOMPARE(spyMimeType[0][1].toString(), QString("text/html"));
+#endif
 }
 
 #include "jobtest.moc"
