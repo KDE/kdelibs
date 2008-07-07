@@ -2982,7 +2982,8 @@ public:
   QString m_origCommandStr;
   QString m_terminalOptionStr;
   QString m_suidUserStr;
-  QString m_dbusStartusType;
+  QString m_dbusStartupType;
+  QString m_dbusServiceName;
   bool m_terminalBool;
   bool m_suidBool;
   bool m_startupBool;
@@ -3056,10 +3057,13 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     d->m_startupBool = config.readEntry( "StartupNotify", true );
   else
     d->m_startupBool = config.readEntry( "X-KDE-StartupNotify", true );
-  d->m_dbusStartusType = config.readEntry("X-DBUS-StartupType").toLower();
+  d->m_dbusStartupType = config.readEntry("X-DBUS-StartupType").toLower();
   //Compatibility
-  if( d->m_dbusStartusType.isEmpty() && config.hasKey("X-DCOP-ServiceType"))
-         d->m_dbusStartusType = config.readEntry("X-DCOP-ServiceType").toLower();
+  if( d->m_dbusStartupType.isEmpty() && config.hasKey("X-DCOP-ServiceType"))
+         d->m_dbusStartupType = config.readEntry("X-DCOP-ServiceType").toLower();
+  // ### should there be a GUI for this setting?
+  // At least we're copying it over to the local file, to avoid side effects (#157853)
+  d->m_dbusServiceName = config.readEntry("X-DBUS-ServiceName");
 
   const QStringList mimeTypes = config.readXdgListEntry( "MimeType" );
 
@@ -3167,7 +3171,8 @@ void KDesktopPropsPlugin::checkCommandChanged()
       KRun::binaryName(d->m_origCommandStr, true))
   {
     d->m_origCommandStr = d->w->commandEdit->text();
-    d->m_dbusStartusType.clear(); // Reset
+    d->m_dbusStartupType.clear(); // Reset
+    d->m_dbusServiceName.clear();
   }
 }
 
@@ -3234,7 +3239,8 @@ void KDesktopPropsPlugin::applyChanges()
   config.writeEntry("X-KDE-SubstituteUID", d->m_suidBool);
   config.writeEntry("X-KDE-Username", d->m_suidUserStr);
   config.writeEntry("StartupNotify", d->m_startupBool);
-  config.writeEntry("X-DBUS-StartupType", d->m_dbusStartusType);
+  config.writeEntry("X-DBUS-StartupType", d->m_dbusStartupType);
+  config.writeEntry("X-DBUS-ServiceName", d->m_dbusServiceName);
   config.sync();
 
   // KSycoca update needed?
@@ -3315,11 +3321,11 @@ void KDesktopPropsPlugin::slotAdvanced()
   w.startupInfoCheck->setChecked(d->m_startupBool);
   w.systrayCheck->setChecked(d->m_systrayBool);
 
-  if (d->m_dbusStartusType == "unique")
+  if (d->m_dbusStartupType == "unique")
     w.dbusCombo->setCurrentIndex(2);
-  else if (d->m_dbusStartusType == "multi")
+  else if (d->m_dbusStartupType == "multi")
     w.dbusCombo->setCurrentIndex(1);
-  else if (d->m_dbusStartusType == "wait")
+  else if (d->m_dbusStartupType == "wait")
     w.dbusCombo->setCurrentIndex(3);
   else
     w.dbusCombo->setCurrentIndex(0);
@@ -3377,10 +3383,10 @@ void KDesktopPropsPlugin::slotAdvanced()
 
     switch(w.dbusCombo->currentIndex())
     {
-      case 1:  d->m_dbusStartusType = "multi"; break;
-      case 2:  d->m_dbusStartusType = "unique"; break;
-      case 3:  d->m_dbusStartusType = "wait"; break;
-      default: d->m_dbusStartusType = "none"; break;
+      case 1:  d->m_dbusStartupType = "multi"; break;
+      case 2:  d->m_dbusStartupType = "unique"; break;
+      case 3:  d->m_dbusStartupType = "wait"; break;
+      default: d->m_dbusStartupType = "none"; break;
     }
   }
 }
