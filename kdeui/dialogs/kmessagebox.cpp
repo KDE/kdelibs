@@ -276,9 +276,11 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
         dialog->setButtonFocus(defaultCode);
     }
 
+#ifndef Q_WS_WIN // FIXME problems with KNotify on Windows
     if ((options & KMessageBox::Notify)) {
         sendNotification(text, strlist, notifyType, dialog->topLevelWidget()->winId());
     }
+#endif
 
     if (KMessageBox_queue) {
         KDialogQueue::queueDialog(dialog);
