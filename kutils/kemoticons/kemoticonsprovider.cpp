@@ -145,8 +145,11 @@ void KEmoticonsProvider::addEmoticonIndex(const QString &path, const QStringList
         e.matchTextEscaped = escaped;
         e.matchText = s;
 
-        d->m_emoticonsIndex[escaped[0]].append(e);
-        d->m_emoticonsIndex[s[0]].append(e);
+        if (!s.isEmpty() && !escaped.isEmpty())
+        {
+            d->m_emoticonsIndex[escaped[0]].append(e);
+            d->m_emoticonsIndex[s[0]].append(e);
+        }
     }
 }
 
@@ -154,6 +157,11 @@ void KEmoticonsProvider::removeEmoticonIndex(const QString &path, const QStringL
 {
     foreach(const QString &s, emoList) {
         QString escaped = Qt::escape(s);
+
+        if (s.isEmpty() || escaped.isEmpty())
+        {
+            continue;
+        }
 
         QList<Emoticon> ls = d->m_emoticonsIndex.value(escaped[0]);
 
