@@ -913,7 +913,6 @@ SimpleJob *KIO::http_update_cache( const KUrl& url, bool no_cache, time_t expire
 TransferJob::TransferJob(TransferJobPrivate &dd)
     : SimpleJob(dd)
 {
-    JobPrivate::emitTransferring( this, d_func()->m_url );
 }
 
 TransferJob::~TransferJob()
@@ -1147,6 +1146,7 @@ void TransferJobPrivate::start(Slave *slave)
 {
     Q_Q(TransferJob);
     assert(slave);
+    JobPrivate::emitTransferring(q, m_url);
     q->connect( slave, SIGNAL( data( const QByteArray & ) ),
              SLOT( slotData( const QByteArray & ) ) );
 

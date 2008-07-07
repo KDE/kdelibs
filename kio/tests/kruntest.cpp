@@ -54,9 +54,14 @@ Receiver::Receiver()
     stop = new QPushButton( "Stop those KRuns", this );
     stop->setEnabled(false);
     lay->addWidget( stop );
-    QObject::connect( h, SIGNAL(clicked()), kapp, SLOT(quit()) );
-    QObject::connect( start, SIGNAL(clicked()), this, SLOT(slotStart()) );
-    QObject::connect( stop, SIGNAL(clicked()), this, SLOT(slotStop()) );
+
+    QPushButton* launchOne = new QPushButton( "Launch one http KRun", this );
+    lay->addWidget(launchOne);
+
+    connect(h, SIGNAL(clicked()), qApp, SLOT(quit()));
+    connect(start, SIGNAL(clicked()), this, SLOT(slotStart()));
+    connect(stop, SIGNAL(clicked()), this, SLOT(slotStop()));
+    connect(launchOne, SIGNAL(clicked()), this, SLOT(slotLaunchOne()));
 
     adjustSize();
     show();
@@ -78,10 +83,17 @@ void Receiver::slotStart()
   for (int i = 0 ; i < MAXKRUNS ; i++ )
   {
     kDebug() << "creating testKRun " << i;
-    myArray[i] = new testKRun( KUrl("file:/tmp"), window(),0, true, false /* no autodelete */ );
+    myArray[i] = new testKRun( KUrl("file:/tmp"), window(), 0,
+                               true /*isLocalFile*/, false /* showProgressInfo */ );
+    myArray[i]->setAutoDelete(false);
   }
   start->setEnabled(false);
   stop->setEnabled(true);
+}
+
+void Receiver::slotLaunchOne()
+{
+    new testKRun(KUrl("http://www.kde.org"), window());
 }
 
 int main(int argc, char **argv)

@@ -42,16 +42,17 @@ public:
 class QPushButton;
 class Receiver : public QWidget
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-  Receiver();
-  ~Receiver() {}
+    Receiver();
+    ~Receiver() {}
 public Q_SLOTS:
- void slotStart();
- void slotStop();
+    void slotStart();
+    void slotStop();
+    void slotLaunchOne();
 private:
- QPushButton * start;
- QPushButton * stop;
+    QPushButton * start;
+    QPushButton * stop;
 
 };
 
