@@ -283,6 +283,10 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   actionCollection()->addAction( "saveFrame", d->m_paSaveFrame );
   connect( d->m_paSaveFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveFrame() ) );
 
+  d->m_paSecurity = new KAction( i18n( "SSL" ), this );
+  actionCollection()->addAction( "security", d->m_paSecurity );
+  connect( d->m_paSecurity, SIGNAL( triggered( bool ) ), this, SLOT( slotSecurity() ) );
+
   d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), this );
   actionCollection()->addAction( "debugRenderTree", d->m_paDebugRenderTree );
   connect( d->m_paDebugRenderTree, SIGNAL( triggered( bool ) ), this, SLOT( slotDebugRenderTree() ) );

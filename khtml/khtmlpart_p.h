@@ -345,6 +345,7 @@ public:
   KAction *m_paSaveBackground;
   KAction *m_paSaveDocument;
   KAction *m_paSaveFrame;
+  KAction *m_paSecurity;
   KCodecAction *m_paSetEncoding;
   KSelectAction *m_paUseStylesheet;
   KSelectAction *m_paIncZoomFactor;
