@@ -49,9 +49,10 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QRegExp>
 #include <QtGui/QFont>
+#include <QDir>
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
-#include <kglobalsettings.h>
+#include <kconfiggroup.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <klibloader.h>
@@ -262,7 +263,7 @@ static void child_died(pid_t exit_pid, int exit_status)
          write(child->sock, &request_header, sizeof(request_header));
          write(child->sock, request_data, request_header.arg_length);
          close(child->sock);
-         
+
          if (prev)
          {
             prev->next = child->next;
@@ -529,8 +530,17 @@ static pid_t launch(int argc, const char *_name, const char *args,
      if (cwd && *cwd)
         chdir(cwd);
      else {
-         KComponentData componentData("klauncher"); // needed for KConfig usage
-         const QByteArray docPath = QFile::encodeName(KGlobalSettings::documentPath());
+         // Can't use KGlobalSettings::documentPath() here, we don't have a main component set,
+         // and we don't want to set one; e.g. kioslaves will do that.
+         // So we have to duplicate this stuff from KGlobalSettings.
+         KConfigGroup g(s_instance->config(), "Paths");
+         const QString documentPath = g.readPathEntry("Documents",
+#ifdef Q_WS_WIN
+                                                       getWin32ShellFoldersPath("Personal")
+#else
+                                                       QDir::homePath());
+#endif
+         const QByteArray docPath = QFile::encodeName(docPath);
          chdir(docPath.constData());
      }
 
@@ -1292,7 +1302,7 @@ static void handle_launcher_request(int sock = -1)
          children = child;
 
          /* check child hasn't terminated already */
-         if (kill(pid, 0)) 
+         if (kill(pid, 0))
          {
             children = child->next;
             free(child);
