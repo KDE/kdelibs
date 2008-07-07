@@ -73,7 +73,7 @@ endif(${generatedFileInSourceDir})
 #########################################################################
 
 
-add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE) # for off_t
+add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 # for including config.h and for includes like <kparts/foo.h>

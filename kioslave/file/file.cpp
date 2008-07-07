@@ -1046,9 +1046,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 void FileProtocol::rename( const KUrl &src, const KUrl &dest,
                            KIO::JobFlags _flags )
 {
-#ifndef _FILE_OFFSET_BITS
-#error _FILE_OFFSET_BITS should be set so that off_t is 64 bit
-#endif
+    char off_t_should_be_64_bits[sizeof(off_t) >= 8 ? 1 : -1]; (void) off_t_should_be_64_bits;
     QByteArray _src(QFile::encodeName(src.toLocalFile()));
     QByteArray _dest(QFile::encodeName(dest.toLocalFile()));
     KDE_struct_stat buff_src;
