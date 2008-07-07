@@ -1469,12 +1469,22 @@ bool KuitSemantics::mightBeRichText (const QString &text)
     p1 = text.indexOf('<');
     if (p1 >= 0) {
         p1 += 1;
-        while (p1 < tlen && text[p1].isSpace()) {
+        // Also allow first tag to be closing tag,
+        // e.g. in case the text is pieced up with list.join("</foo><foo>")
+        bool closing = false;
+        while (p1 < tlen && (text[p1].isSpace() || text[p1] == '/')) {
+            if (text[p1] == '/') {
+                if (!closing) {
+                    closing = true;
+                } else {
+                    return false;
+                }
+            }
             ++p1;
         }
         for (int p2 = p1; p2 < tlen; ++p2) {
             QChar c = text[p2];
-            if (c == '>' || c == '/' || c.isSpace()) {
+            if (c == '>' || (!closing && c == '/') || c.isSpace()) {
                 return s->qtHtmlTagNames.contains(text.mid(p1, p2 - p1));
             } else if (!c.isLetter()) {
                 return false;
