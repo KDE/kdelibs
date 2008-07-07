@@ -115,6 +115,11 @@ KMacroExpanderTest::expandMacros()
 	s = "Title: %{file} %{url";
 	QCOMPARE(KMacroExpander::expandMacros(s, smap),
 		QLatin1String("Title: filename.txt %{url"));
+
+        s = " * Copyright (C) 2008 %{AUTHOR}";
+        smap.clear();
+        QCOMPARE(KMacroExpander::expandMacros(s, smap),
+                QLatin1String(" * Copyright (C) 2008 %{AUTHOR}"));
 }
 
 void

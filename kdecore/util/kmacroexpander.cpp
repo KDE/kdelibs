@@ -59,6 +59,7 @@ void KMacroExpanderBase::expandMacros( QString &str )
         if (ec != QLatin1Char(0) ) {
             if (str.unicode()[pos] != ec)
                 goto nohit;
+            kDebug(9010) << "trying"<< str << "from" << pos << ":" << str.mid(pos);
             if (!(len = expandEscapedMacro( str, pos, rst )))
                 goto nohit;
         } else {
@@ -145,7 +146,7 @@ KMacroMapExpander<QChar,VT>::expandPlainMacro( const QString &str, int pos, QStr
 {
     const KMacroMapExpander<QChar,VT> *const_this = this;
     typename QHash<QChar,VT>::const_iterator it = const_this->macromap.find(str[pos]);
-    if (it != macromap.end()) {
+    if (it != const_this->macromap.end()) {
        ret += it.value();
        return 1;
     }
@@ -199,7 +200,7 @@ KMacroMapExpander<QString,VT>::expandPlainMacro( const QString &str, int pos, QS
     const KMacroMapExpander<QString,VT> *const_this = this;
     typename QHash<QString,VT>::const_iterator it = 
         const_this->macromap.find( str.mid( pos, sl ) );
-    if (it != macromap.end()) {
+    if (it != const_this->macromap.end()) {
         ret += it.value();
         return sl;
     }
@@ -210,6 +211,7 @@ template <typename VT>
 int
 KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 {
+    kDebug() << "Expanding qstring vt macro:" << str << pos;
     if (str.length() <= pos + 1)
       return 0;
 
@@ -237,7 +239,7 @@ KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, int pos, 
     const KMacroMapExpander<QString,VT> *const_this = this;
     typename QHash<QString,VT>::const_iterator it =
         const_this->macromap.find( str.mid( rpos, sl ) );
-    if (it != macromap.end()) {
+    if (it != const_this->macromap.end()) {
         ret += it.value();
         return rsl;
     }
