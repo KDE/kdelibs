@@ -32,8 +32,6 @@ namespace Sonnet
 
 static Word endWord;
 
-K_GLOBAL_STATIC(Filter, s_defFilter)
-
 class Filter::Private
 {
 public:
