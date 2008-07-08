@@ -155,7 +155,7 @@ public:
     int marginHeight() { return _marginHeight; }
 
     /**
-     * Sets vertical scrollbar mode. 
+     * Sets vertical scrollbar mode.
      *
      * WARNING: do not call this method on a base class pointer unless you
      *          specifically want QAbstractScrollArea's variant (not recommended).
@@ -312,7 +312,7 @@ public:
      * Retrieve the current smooth scrolling mode
      *
      * @since 4.1
-     */    
+     */
     SmoothScrollingMode smoothScrollingMode() const;
 
 public Q_SLOTS:
@@ -371,7 +371,7 @@ protected:
     void keyReleaseEvent ( QKeyEvent *_ke );
     void doAutoScroll();
     void timerEvent ( QTimerEvent * );
-    
+
     void setSmoothScrollingModeDefault( SmoothScrollingMode m );
 
 protected Q_SLOTS:
@@ -381,7 +381,6 @@ private Q_SLOTS:
     void tripleClickTimeout();
     void findTimeout();
     void accessKeysTimeout();
-    void delayedInit();
     void scrollTick();
 
     /**
@@ -391,6 +390,7 @@ private Q_SLOTS:
     void slotMouseScrollTimer();
 
 private:
+    void resizeContentsToViewport();
 
     void scheduleRelayout(khtml::RenderObject* clippedObj=0);
     void unscheduleRelayout();
@@ -408,7 +408,7 @@ private:
 
     QStack<QRegion>* clipHolder() const;
     void setClipHolder( QStack<QRegion>* ch );
-    
+
     void setPart(KHTMLPart *part);
 
     /**

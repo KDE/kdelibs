@@ -543,7 +543,6 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent )
 
     init();
     widget()->setMouseTracking(true);
-    QTimer::singleShot(0, this, SLOT(delayedInit()));
 }
 
 KHTMLView::~KHTMLView()
@@ -587,7 +586,7 @@ void KHTMLView::init()
     connect(&d->smoothScrollTimer, SIGNAL(timeout()), this, SLOT(scrollTick()));
 }
 
-void KHTMLView::delayedInit()
+void KHTMLView::resizeContentsToViewport()
 {
     QSize s = viewport()->size();
     resizeContents(s.width(), s.height());
@@ -825,6 +824,10 @@ void KHTMLView::revertTransforms( int& x, int& y ) const
 void KHTMLView::resizeEvent (QResizeEvent* /*e*/)
 {
     updateScrollBars();
+
+    // If we didn't load anything, make white area as big as the view
+    if (!m_part->xmlDocImpl())
+        resizeContentsToViewport();
 
     // Viewport-dependent media queries may cause us to need completely different style information.
     if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->styleSelector()->affectedByViewportChange()) {
