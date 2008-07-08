@@ -402,7 +402,7 @@ void RenderWidget::layout( )
 
 void RenderWidget::updateFromElement()
 {
-    if (m_widget) {
+    if (m_widget && !qobject_cast<KHTMLView*>(m_widget)) {
         // Color:
         QColor color = style()->color();
         QColor backgroundColor = style()->backgroundColor();
