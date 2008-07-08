@@ -105,7 +105,6 @@ static const colorMap cmap[] = {
     { CSS_VAL_TEAL, 0xFF008080  },
     { CSS_VAL_WHITE, 0xFFFFFFFF },
     { CSS_VAL_YELLOW, 0xFFFFFF00 },
-    { CSS_VAL_INVERT, invertedColor },
     { CSS_VAL_TRANSPARENT, transparentColor },
     { CSS_VAL_GREY, 0xff808080 },
     { 0, 0 }
@@ -194,6 +193,8 @@ QColor khtml::colorForCSSValue( int css_value )
 	++col;
     if ( col->css_value )
 	return QColor::fromRgba(col->color);
+    else if ( css_value == CSS_VAL_INVERT )
+        return QColor();
 
     const uiColors *uicol = uimap;
     while ( uicol->css_value && uicol->css_value != css_value )
