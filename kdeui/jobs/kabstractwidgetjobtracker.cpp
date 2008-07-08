@@ -114,7 +114,7 @@ bool KAbstractWidgetJobTracker::autoDelete(KJob *job) const
 
 void KAbstractWidgetJobTracker::finished(KJob *job)
 {
-    Q_UNUSED(job);
+    KJobTrackerInterface::finished(job);
 }
 
 void KAbstractWidgetJobTracker::slotStop(KJob *job)
