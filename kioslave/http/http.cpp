@@ -172,8 +172,9 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
     sanitizedHeaders += (*it);
     sanitizedHeaders += "\r\n";
   }
+  sanitizedHeaders.chop(2);
 
-  return sanitizedHeaders.trimmed();
+  return sanitizedHeaders;
 }
 
 
@@ -263,8 +264,8 @@ void HTTPProtocol::resetSessionSettings()
 
   if ( m_strProxyRealm.isEmpty() || !proxy.isValid() ||
        m_proxyURL.host() != proxy.host() ||
-       (!proxy.user().isNull() && proxy.user() != m_proxyURL.user()) ||
-       (!proxy.pass().isNull() && proxy.pass() != m_proxyURL.pass()) )
+       (!proxy.user().isEmpty() && proxy.user() != m_proxyURL.user()) ||
+       (!proxy.pass().isEmpty() && proxy.pass() != m_proxyURL.pass()) )
   {
     m_bProxyAuthValid = false;
     m_proxyURL = proxy;
@@ -1786,25 +1787,21 @@ void HTTPProtocol::multiGet(const QByteArray &data)
 
 ssize_t HTTPProtocol::write (const void *_buf, size_t nbytes)
 {
-  int bytes_sent = 0;
+  int sent = 0;
   const char* buf = static_cast<const char*>(_buf);
-  while ( nbytes > 0 )
+  while (sent < nbytes)
   {
-    int n = TCPSlaveBase::write(buf, nbytes);
+    int n = TCPSlaveBase::write(buf + sent, nbytes - sent);
 
-    // remote side closed connection ?
-    if ( n == 0 )
-      break;
-    // some other error occurred ?
-    if ( n < 0 )
+    if (n < 0) {
+      // some error occurred
       return -1;
+    }
 
-    nbytes -= n;
-    buf += n;
-    bytes_sent += n;
+    sent += n;
   }
 
-  return bytes_sent;
+  return sent;
 }
 
 void HTTPProtocol::setRewindMarker()
@@ -2048,8 +2045,8 @@ bool HTTPProtocol::httpOpen()
   QString header;
   QString davHeader;
 
-  bool moreData = false;
-  bool davData = false;
+  bool hasBodyData = false;
+  bool hasDavData = false;
 
   // Clear out per-connection settings...
   resetConnectionSettings ();
@@ -2090,12 +2087,12 @@ bool HTTPProtocol::httpOpen()
         break;
     case HTTP_PUT:
         header = "PUT ";
-        moreData = true;
+        hasBodyData = true;
         m_request.bCachedWrite = false; // Do not put any result in the cache
         break;
     case HTTP_POST:
         header = "POST ";
-        moreData = true;
+        hasBodyData = true;
         m_request.bCachedWrite = false; // Do not put any result in the cache
         break;
     case HTTP_HEAD:
@@ -2111,7 +2108,7 @@ bool HTTPProtocol::httpOpen()
         break;
     case DAV_PROPFIND:
         header = "PROPFIND ";
-        davData = true;
+        hasDavData = true;
         davHeader = "Depth: ";
         if ( hasMetaData( "davDepth" ) )
         {
@@ -2130,7 +2127,7 @@ bool HTTPProtocol::httpOpen()
         break;
     case DAV_PROPPATCH:
         header = "PROPPATCH ";
-        davData = true;
+        hasDavData = true;
         m_request.bCachedWrite = false; // Do not put any result in the cache
         break;
     case DAV_MKCOL:
@@ -2162,7 +2159,7 @@ bool HTTPProtocol::httpOpen()
         }
         davHeader += "\r\n";
         m_request.bCachedWrite = false; // Do not put any result in the cache
-        davData = true;
+        hasDavData = true;
         break;
     case DAV_UNLOCK:
         header = "UNLOCK ";
@@ -2171,7 +2168,7 @@ bool HTTPProtocol::httpOpen()
         break;
     case DAV_SEARCH:
         header = "SEARCH ";
-        davData = true;
+        hasDavData = true;
         m_request.bCachedWrite = false;
         break;
     case DAV_SUBSCRIBE:
@@ -2340,22 +2337,35 @@ bool HTTPProtocol::httpOpen()
     // Only check for a cached copy if the previous
     // response was NOT a 401 or 407.
     // no caching for Negotiate auth.
-    if ( !m_request.bNoAuth && m_responseCode != 401 && m_responseCode != 407 && Authentication != AUTH_Negotiate )
-    {
-      kDebug(7113) << "Calling checkCachedAuthentication ";
+    if (!m_request.bNoAuth && m_responseCode != 401
+        && m_responseCode != 407
+        && Authentication != AUTH_Negotiate) {
+
       AuthInfo info;
       info.url = m_request.url;
       info.verifyPath = true;
-      if ( !m_request.user.isEmpty() )
+      if ( !m_request.user.isEmpty() ) {
         info.username = m_request.user;
-      if ( checkCachedAuthentication( info ) && !info.digestInfo.isEmpty() )
-      {
-        Authentication = info.digestInfo.startsWith("Basic") ? AUTH_Basic : info.digestInfo.startsWith("NTLM") ? AUTH_NTLM : info.digestInfo.startsWith("Negotiate") ? AUTH_Negotiate : AUTH_Digest ;
+      }
+
+      kDebug(7113) << "Calling checkCachedAuthentication";
+      
+      if (checkCachedAuthentication(info) && !info.digestInfo.isEmpty()) {
+        Authentication = AUTH_Digest;
+        if (info.digestInfo.startsWith("Basic")) {
+          Authentication = AUTH_Basic;
+        } else if (info.digestInfo.startsWith("NTLM")) {
+          Authentication = AUTH_NTLM;
+        } else if (info.digestInfo.startsWith("Negotiate")) {
+          Authentication = AUTH_Negotiate;
+        }
+
         m_state.user   = info.username;
         m_state.passwd = info.password;
         m_strRealm = info.realmValue;
-        if ( Authentication != AUTH_NTLM && Authentication != AUTH_Negotiate ) // don't use the cached challenge
+        if (Authentication != AUTH_NTLM && Authentication != AUTH_Negotiate) { // don't use the cached challenge
           m_strAuthorization = info.digestInfo;
+        }
       }
     }
     else
@@ -2415,7 +2425,7 @@ bool HTTPProtocol::httpOpen()
         davHeader += davExtraHeader;
 
       // Set content type of webdav data
-      if (davData)
+      if (hasDavData)
         davHeader += "Content-Type: text/xml; charset=utf-8\r\n";
 
       // add extra header elements for WebDAV
@@ -2425,14 +2435,11 @@ bool HTTPProtocol::httpOpen()
   }
 
   kDebug(7103) << "============ Sending Header:";
+  foreach (const QString &s, header.split("\r\n", QString::SkipEmptyParts)) {
+    kDebug(7103) << s;
+  }
 
-  const QStringList headerOutput = header.split("\r\n", QString::SkipEmptyParts);
-  QStringList::ConstIterator it = headerOutput.begin();
-
-  for (; it != headerOutput.end(); ++it)
-    kDebug(7103) << (*it);
-
-  if ( !moreData && !davData)
+  if (!hasBodyData && !hasDavData)
     header += "\r\n";  /* end header */
 
   // Now that we have our formatted header, let's send it!
@@ -2446,6 +2453,7 @@ bool HTTPProtocol::httpOpen()
        return false;
     }
   }
+
 
   // Send the data to the remote machine...
   ssize_t written = write(header.toLatin1(), header.length());
@@ -2474,11 +2482,10 @@ bool HTTPProtocol::httpOpen()
     }
   }
   else
-      kDebug(7113) << "sent it!";
+    kDebug(7113) << "sent it!";
 
   bool res = true;
-
-  if ( moreData || davData )
+  if (hasBodyData || hasDavData)
     res = sendBody();
 
   infoMessage(i18n("%1 contacted. Waiting for reply...", m_request.hostname));
@@ -4613,8 +4620,6 @@ gzFile HTTPProtocol::checkCacheEntry( bool readWrite)
              fclose(hitdata);
          }
 
-
-
       return fs;
    }
 
@@ -5521,7 +5526,7 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QByteArray& Response
   }
   HA1 = md.hexDigest();
 
-  kDebug(7113) << "calculateResponse(): A1 => " << HA1;
+  kDebug(7113) << "A1 => " << HA1;
 
   // Calcualte H(A2)
   authStr = info.method;
@@ -5536,8 +5541,7 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QByteArray& Response
   md.update( authStr );
   HA2 = md.hexDigest();
 
-  kDebug(7113) << "calculateResponse(): A2 => "
-                << HA2;
+  kDebug(7113) << "A2 => " << HA2;
 
   // Calcualte the response.
   authStr = HA1;
@@ -5558,8 +5562,7 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QByteArray& Response
   md.update( authStr );
   Response = md.hexDigest();
 
-  kDebug(7113) << "calculateResponse(): Response => "
-                << Response;
+  kDebug(7113) << "Response => " << Response;
 }
 
 QString HTTPProtocol::createDigestAuth ( bool isForProxy )
