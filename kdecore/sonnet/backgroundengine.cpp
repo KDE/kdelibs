@@ -36,6 +36,7 @@ BackgroundEngine::BackgroundEngine(QObject *parent)
 
 BackgroundEngine::~BackgroundEngine()
 {
+    delete m_filter;
 }
 
 void BackgroundEngine::setSpeller(const Speller &speller)

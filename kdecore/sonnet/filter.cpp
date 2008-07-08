@@ -45,7 +45,7 @@ public:
 
 Filter* Filter::defaultFilter()
 {
-    return s_defFilter;
+    return new Filter();
 }
 
 Word Filter::end()
