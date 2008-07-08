@@ -468,7 +468,7 @@ bool HTTPProtocol::checkRequestUrl( const KUrl& u )
 void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
 {
   kDebug (7113);
-  if ( !retrieveHeader( false ) )
+  if ( !retrieveHeader() )
   {
     if ( m_bError )
       return;
@@ -493,7 +493,7 @@ void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
   }
 }
 
-bool HTTPProtocol::retrieveHeader( bool close_connection )
+bool HTTPProtocol::retrieveHeader()
 {
   kDebug (7113);
   while ( 1 )
@@ -561,12 +561,6 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
   {
     m_bufPOST.resize(0);
     kDebug(7113) << "HTTP::retrieveHeader: Cleared POST buffer...";
-  }
-
-  if ( close_connection )
-  {
-    httpClose(m_bKeepAlive);
-    finished();
   }
 
   return true;
@@ -1107,7 +1101,7 @@ bool HTTPProtocol::davHostOk()
   // clear davVersions variable, which holds the response to the DAV: header
   m_davCapabilities.clear();
 
-  retrieveHeader(false);
+  retrieveHeader();
 
   if (m_davCapabilities.count())
   {
@@ -1131,7 +1125,7 @@ bool HTTPProtocol::davHostOk()
   return false;
 }
 
-// This function is for closing retrieveHeader( false ); requests
+// This function is for closing retrieveHeader(); requests
 // Required because there may or may not be further info expected
 void HTTPProtocol::davFinished()
 {
@@ -1153,7 +1147,7 @@ void HTTPProtocol::mkdir( const KUrl& url, int )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveHeader( false );
+  retrieveHeader();
 
   if ( m_responseCode == 201 )
     davFinished();
@@ -1231,7 +1225,7 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveHeader( false );
+  retrieveHeader();
 
   kDebug(7113) << "HTTPProtocol::put error = " << m_bError;
   if (m_bError)
@@ -1269,7 +1263,7 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags f
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveHeader( false );
+  retrieveHeader();
 
   // The server returns a HTTP/1.1 201 Created or 204 No Content on successful completion
   if ( m_responseCode == 201 || m_responseCode == 204 )
@@ -1300,7 +1294,7 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveHeader( false );
+  retrieveHeader();
 
   if ( m_responseCode == 201 )
     davFinished();
@@ -1321,7 +1315,7 @@ void HTTPProtocol::del( const KUrl& url, bool )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveHeader( false );
+  retrieveHeader();
 
   // The server returns a HTTP/1.1 200 Ok or HTTP/1.1 204 No Content
   // on successful completion
@@ -3879,6 +3873,8 @@ void HTTPProtocol::mimetype( const KUrl& url )
   m_request.doProxy = m_bUseProxy;
 
   retrieveHeader();
+  httpClose(m_bKeepAlive);
+  finished();
 
   kDebug(7113) << "http: mimetype = " << m_strMimeType;
 }

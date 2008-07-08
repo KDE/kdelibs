@@ -397,7 +397,7 @@ protected:
   /**
    * Performs a HEAD HTTP request.
    */
-  bool retrieveHeader(bool close_connection = true);
+  bool retrieveHeader();
 
   /**
    * Resets any per session settings.
