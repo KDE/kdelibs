@@ -1040,8 +1040,7 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
 
     // Now walk the sorted list of children with negative z-indices.
     if (m_negZOrderList) {
-        uint count = m_negZOrderList->count();
-        for (uint i = 0; i < count; i++) {
+        for (int i = 0; i < m_negZOrderList->count() ; i++) {
             RenderLayer* child = m_negZOrderList->at(i);
             child->paintLayer(rootLayer, p, paintDirtyRect, selectionOnly);
         }
@@ -1088,8 +1087,7 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
 
     // Now walk the sorted list of children with positive z-indices.
     if (m_posZOrderList) {
-        uint count = m_posZOrderList->count();
-        for (uint i = 0; i < count; i++) {
+        for (int i = 0; i < m_posZOrderList->count() ; i++) {
             RenderLayer* child = m_posZOrderList->at(i);
             child->paintLayer(rootLayer, p, paintDirtyRect, selectionOnly);
         }
