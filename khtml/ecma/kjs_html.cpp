@@ -182,6 +182,7 @@ const ClassInfo KJS::HTMLDocument::info =
   width			HTMLDocument::Width		DontDelete|ReadOnly
   dir			HTMLDocument::Dir		DontDelete
   compatMode		HTMLDocument::CompatMode	DontDelete|ReadOnly
+  designMode            HTMLDocument::DesignMode        DontDelete
 #IE extension
   frames		HTMLDocument::Frames		DontDelete|ReadOnly
 #NS4 extension
@@ -389,6 +390,8 @@ JSValue* HTMLDocument::getValueProperty(ExecState *exec, int token)
     case CompatMode:
       return jsString(doc.parseMode()
               == DocumentImpl::Compat ? "BackCompat" : "CSS1Compat");
+    case DesignMode:
+        return jsString((doc.designMode() ? "on":"off"));
     case BgColor:
       return jsString(body->getAttribute(ATTR_BGCOLOR));
     case FgColor:
@@ -457,6 +460,9 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, JSValue *va
         Window::retrieveWindow(view->part())->goURL(exec, value->toString(exec).qstring(), false /*don't lock history*/);
       return;
     }
+    case DesignMode:
+        doc.setDesignMode((value->toString(exec).qstring()=="on"));
+        break;  
   }
 
   /* The rest of the properties require a body. Note that Doc::body may be the
