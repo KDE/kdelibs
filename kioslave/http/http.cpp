@@ -42,6 +42,7 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QDate>
 #include <QtDBus/QtDBus>
+#include <QtNetwork/QNetworkProxy>
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QHostInfo>
 
@@ -266,9 +267,11 @@ void HTTPProtocol::resetSessionSettings()
   // Do not reset the URL on redirection if the proxy
   // URL, username or password has not changed!
   KUrl proxy ( config()->readEntry("UseProxy") );
+  QNetworkProxy::ProxyType proxyType = QNetworkProxy::NoProxy;
 
   if ( m_strProxyRealm.isEmpty() || !proxy.isValid() ||
        m_proxyURL.host() != proxy.host() ||
+       m_proxyURL.port() != proxy.port() ||
        (!proxy.user().isEmpty() && proxy.user() != m_proxyURL.user()) ||
        (!proxy.pass().isEmpty() && proxy.pass() != m_proxyURL.pass()) )
   {
@@ -280,6 +283,22 @@ void HTTPProtocol::resetSessionSettings()
                  << "URL: " << m_proxyURL.url()
                  << "Realm: " << m_strProxyRealm;
   }
+
+  if (m_bUseProxy) {
+      if (m_proxyURL.protocol() == "socks") {
+          proxyType = QNetworkProxy::Socks5Proxy;
+      } else if (isAutoSsl()) {
+          proxyType = QNetworkProxy::HttpProxy;
+      }
+      m_request.proxyUrl = proxy;
+  } else {
+      m_request.proxyUrl = KUrl();
+  }
+ 
+  QNetworkProxy appProxy(proxyType, m_proxyURL.host(), m_proxyURL.port(),
+                         m_proxyURL.user(), m_proxyURL.pass());
+  QNetworkProxy::setApplicationProxy(appProxy);
+
 
   m_bPersistentProxyConnection = config()->readEntry("PersistentProxyConnection", false);
   kDebug(7113) << "Enable Persistent Proxy Connection: "
@@ -1915,14 +1934,12 @@ bool HTTPProtocol::httpShouldCloseConnection()
   }
 
   if (m_state.doProxy)  {
-#if 0   // enable when we actually have proxy support back
-     if (m_state.proxyURL.host() != m_request.proxyURL.host() ||
-          m_state.proxyURL.port() != m_request.proxyURL.port() ||
-          m_state.proxyURL.user() != m_request.proxyURL.user() ||
-          m_state.proxyURL.pass() != m_request.proxyURL.pass()) {
+      if (m_state.proxyUrl.host() != m_request.proxyUrl.host() ||
+          m_state.proxyUrl.port() != m_request.proxyUrl.port() ||
+          m_state.proxyUrl.user() != m_request.proxyUrl.user() ||
+          m_state.proxyUrl.pass() != m_request.proxyUrl.pass()) {
           return true;
-     }
-#endif
+      }
   } else {
       if (m_state.hostname != m_request.hostname ||
           m_state.port != m_request.port ||
@@ -1937,8 +1954,17 @@ bool HTTPProtocol::httpShouldCloseConnection()
 bool HTTPProtocol::httpOpenConnection()
 {
   kDebug(7113);
-  if ( !connectToHost(m_protocol, m_state.hostname, m_state.port ) )
-    return false;
+  
+  bool connectOk = false;
+  if (m_state.doProxy && !isAutoSsl() && m_proxyURL.protocol() != "socks") {
+      connectOk = connectToHost(m_proxyURL.protocol(), m_proxyURL.host(), m_proxyURL.port());
+  } else {
+      connectOk = connectToHost(m_protocol, m_state.hostname, m_state.port);
+  }
+
+  if (!connectOk) {
+      return false;
+  }
 
 #if 0                           // QTcpSocket doesn't support this
   // Set our special socket option!!
@@ -2053,6 +2079,7 @@ bool HTTPProtocol::sendQuery()
   m_state.user = m_request.user;
   m_state.passwd = m_request.passwd;
   m_state.doProxy = m_request.doProxy;
+  m_state.proxyUrl = m_request.proxyUrl;
 
 #if 0 //waaaaaah
   if ( !m_bIsTunneled && m_bNeedTunnel )

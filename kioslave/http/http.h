@@ -82,7 +82,8 @@ public:
     short unsigned int port;
     QString user;
     QString passwd;
-    bool  doProxy;
+    bool doProxy;
+    KUrl proxyUrl;
   };
 
   /** DAV-specific request elements for the current connection **/
@@ -145,6 +146,7 @@ public:
     QString id;
     DAVRequest davData;
     bool doProxy;
+    KUrl proxyUrl;
     bool allowCompressedPage;
     bool disablePassDlg;
     bool bNoAuth; // Do not authenticate
