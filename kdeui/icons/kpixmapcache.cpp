@@ -48,16 +48,13 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <cstring> // memcpy
-#ifdef HAVE_SYS_MMAN_H
+#include <string.h>
+
+#if defined(HAVE_SYS_MMAN_H) && defined(HAVE_MADVISE)
 #include <sys/mman.h>
 #endif
 
-
 //#define DISABLE_PIXMAPCACHE
-#if defined HAVE_MMAP && !defined Q_WS_WIN
-#define USE_MMAP
-#endif
 
 #define KPIXMAPCACHE_VERSION 0x000208
 
@@ -198,7 +195,7 @@ qint64 KPCMemoryDevice::readData(char* data, qint64 len)
     if (len <= 0) {
         return 0;
     }
-    std::memcpy(data, mMemory + mPos, len);
+    memcpy(data, mMemory + mPos, len);
     mPos += len;
     return len;
 }
@@ -209,7 +206,7 @@ qint64 KPCMemoryDevice::writeData(const char* data, qint64 len)
         kError() << "Overflow of" << mPos+len - mAvailable;
         return -1;
     }
-    std::memcpy(mMemory + mPos, (uchar*)data, len);
+    memcpy(mMemory + mPos, (uchar*)data, len);
     mPos += len;
     *mSize = qMax(*mSize, mPos);
     return len;
@@ -401,7 +398,6 @@ KPixmapCache::Private::~Private()
 
 bool KPixmapCache::Private::mmapFiles()
 {
-#ifdef USE_MMAP
     unmmapFiles();  // Noop if nothing has been mmapped
     if (!q->isValid()) {
         return false;
@@ -418,9 +414,6 @@ bool KPixmapCache::Private::mmapFiles()
     }
 
     return true;
-#else
-    return false;
-#endif
 }
 
 void KPixmapCache::Private::unmmapFiles()
@@ -433,18 +426,15 @@ void KPixmapCache::Private::invalidateMmapFiles()
 {
     if (!q->isValid())
         return;
-#ifdef USE_MMAP
     // Set cache id to 0, this will force a reload the next time the files are used
     if (mIndexMmapInfo.file) {
         kDebug(264) << "Invalidating cache";
         mIndexMmapInfo.indexHeader->cacheId = 0;
     }
-#endif
 }
 
 bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, int newsize)
 {
-#ifdef USE_MMAP
     info->file = new QFile(filename);
     if (!info->file->open(QIODevice::ReadWrite)) {
         kDebug(264) << "Couldn't open" << filename;
@@ -467,8 +457,9 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
         return false;
     }
 
-    void* indexMem = mmap(0, info->available, PROT_READ | PROT_WRITE, MAP_SHARED, info->file->handle(), 0);
-    if (indexMem == MAP_FAILED) {
+    //void* indexMem = mmap(0, info->available, PROT_READ | PROT_WRITE, MAP_SHARED, info->file->handle(), 0);
+    void *indexMem = info->file->map(0, info->available);
+    if (indexMem == 0) {
         kError() << "mmap failed for" << filename;
         delete info->file;
         info->file = 0;
@@ -491,16 +482,12 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
     }
 
     return true;
-#else
-    return false;
-#endif
 }
 
 void KPixmapCache::Private::unmmapFile(MmapInfo* info)
 {
-#ifdef USE_MMAP
     if (info->file) {
-        munmap(info->memory, info->available);
+        info->file->unmap(reinterpret_cast<uchar*>(info->memory));
         info->memory = 0;
         info->available = 0;
         info->size = 0;
@@ -508,7 +495,6 @@ void KPixmapCache::Private::unmmapFile(MmapInfo* info)
         delete info->file;
         info->file = 0;
     }
-#endif
 }
 
 
@@ -516,7 +502,6 @@ QIODevice* KPixmapCache::Private::indexDevice()
 {
     QIODevice* device = 0;
 
-#ifdef USE_MMAP
     if (mIndexMmapInfo.file) {
         // Make sure the file still exists
         QFileInfo fi(mIndexFile);
@@ -539,7 +524,6 @@ QIODevice* KPixmapCache::Private::indexDevice()
             return 0;
         }
     }
-#endif
 
     if (!device) {
         QFile* file = new QFile(mIndexFile);
@@ -583,7 +567,6 @@ QIODevice* KPixmapCache::Private::indexDevice()
 
 QIODevice* KPixmapCache::Private::dataDevice()
 {
-#ifdef USE_MMAP
     if (mDataMmapInfo.file) {
         // Make sure the file still exists
         QFileInfo fi(mDataFile);
@@ -605,7 +588,6 @@ QIODevice* KPixmapCache::Private::dataDevice()
         else
             return 0;
     }
-#endif
 
     QFile* file = new QFile(mDataFile);
     if (!file->exists() || (size_t) file->size() < sizeof(KPixmapCacheDataHeader)) {
@@ -1131,11 +1113,9 @@ void KPixmapCache::setTimestamp(unsigned int ts)
 int KPixmapCache::size() const
 {
     ensureInited();
-#ifdef USE_MMAP
     if (d->mDataMmapInfo.file) {
         return d->mDataMmapInfo.size / 1024;
     }
-#endif
     return QFileInfo(d->mDataFile).size() / 1024;
 }
 
@@ -1195,7 +1175,7 @@ bool KPixmapCache::recreateCacheFiles()
     d->mCacheId = ::time(0);
     d->mTimestamp = ::time(0);
 
-    std::memcpy(indexHeader.magic, KPC_MAGIC, sizeof(indexHeader.magic));
+    memcpy(indexHeader.magic, KPC_MAGIC, sizeof(indexHeader.magic));
     indexHeader.cacheVersion = KPIXMAPCACHE_VERSION;
     indexHeader.timestamp = d->mTimestamp;
     indexHeader.cacheId = d->mCacheId;
@@ -1214,7 +1194,7 @@ bool KPixmapCache::recreateCacheFiles()
     }
 
     KPixmapCacheDataHeader dataHeader;
-    std::memcpy(dataHeader.magic, KPC_MAGIC, sizeof(dataHeader.magic));
+    memcpy(dataHeader.magic, KPC_MAGIC, sizeof(dataHeader.magic));
     dataHeader.cacheVersion = KPIXMAPCACHE_VERSION;
     dataHeader.size = sizeof dataHeader;
 
