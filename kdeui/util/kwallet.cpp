@@ -204,13 +204,20 @@ int Wallet::deleteWallet(const QString& name) {
 Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
     if( w == 0 )
         kWarning() << "Pass a valid window to KWallet::Wallet::openWallet().";
+    
+    QDBusMessage openMessage = QDBusMessage::createMethodCall(
+        walletLauncher->getInterface().service(),
+        walletLauncher->getInterface().path(),
+        walletLauncher->getInterface().interface(),
+        (ot == Path) ? "openPath" : "open");
+    openMessage << name << qlonglong(w) << appid();
+    
     if (ot == Asynchronous) {
         Wallet *wallet = new Wallet(-1, name);
 
         // place an asynchronous call
-        QVariantList args;
-        args << name << qlonglong(w) << appid();
-        walletLauncher->getInterface().callWithCallback("open", args, wallet, SLOT(walletOpenResult(int)), SLOT(walletOpenError(const QDBusError&)));
+        walletLauncher->getInterface().connection().callWithCallback(openMessage, wallet,
+            SLOT(walletOpenResult(int)), SLOT(walletOpenError(const QDBusError&)), 18000000);
 
         return wallet;
     }
@@ -219,14 +226,15 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
     while( QWidget* widget = qApp->activePopupWidget())
         widget->close();
 
-    bool isPath = ot == Path;
-    QDBusReply<int> r = isPath ?
-        walletLauncher->getInterface().openPath(name, (qlonglong)w, appid()) :
-        walletLauncher->getInterface().open(name, (qlonglong)w, appid());
-    if (r.isValid()) {
-        int drc = r;
-        if (drc != -1) {
-            return new Wallet(drc, name);
+    QDBusMessage replyMessage = walletLauncher->getInterface().connection().call(
+        openMessage, QDBus::Block, 18000000);
+    if (replyMessage.type() == QDBusMessage::ReplyMessage) {
+        QDBusReply<int> r(replyMessage);
+        if (r.isValid()) {
+            int drc = r;
+            if (drc != -1) {
+                return new Wallet(drc, name);
+            }
         }
     }
 
