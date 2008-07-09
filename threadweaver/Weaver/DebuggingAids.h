@@ -31,9 +31,14 @@
 #ifndef DEBUGGINGAIDS_H
 #define DEBUGGINGAIDS_H
 
+#include <qglobal.h>
+
 extern "C"
 {
 #include <stdarg.h>
+#ifndef Q_WS_WIN
+#include <unistd.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
