@@ -763,6 +763,7 @@ Q_SIGNALS:
      *
      * @param item the file on which the context menu was invoked
      * @param menu the context menu, pre-populated with the file-management actions
+     * @since 4.2
      */
     void contextMenuAboutToShow(const KFileItem& item, QMenu* menu);
 
