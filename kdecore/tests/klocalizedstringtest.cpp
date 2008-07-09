@@ -25,6 +25,8 @@
 #include "kglobal.h"
 #include "klocale.h"
 #include "klocalizedstring.h"
+#include "kconfiggroup.h"
+
 #include <QtCore/QString>
 
 #include "klocalizedstringtest.moc"
@@ -103,6 +105,43 @@ void KLocalizedStringTest::correctSubs ()
     QCOMPARE(i18np("A pod left on %2", "Some pods left on %2",
                    2, QString("Discovery")),
              QString("Some pods left on Discovery"));
+
+    // Visual formatting.
+    QCOMPARE(i18n("E = mc^2"),
+             QString("E = mc^2"));
+    QCOMPARE(i18n("E &lt; mc^2"),
+             QString("E < mc^2"));
+    QCOMPARE(i18n("E &lt; mc^2<br/>"),
+             QString("E &lt; mc^2<br/>"));
+    QCOMPARE(i18n("<b>E</b> &lt; mc^2"),
+             QString("<b>E</b> &lt; mc^2"));
+    QCOMPARE(i18n("<html>E &lt; mc^2</html>"),
+             QString("<html>E &lt; mc^2</html>"));
+    QCOMPARE(i18n("E ? <emphasis>mc^2</emphasis>"),
+             QString("E ? *mc^2*"));
+    QCOMPARE(i18n("E &lt; <emphasis>mc^2</emphasis>"),
+             QString("E < *mc^2*"));
+    QCOMPARE(i18n("<html>E &lt; <emphasis>mc^2</emphasis></html>"),
+             QString("<html>E &lt; <i>mc^2</i></html>"));
+    QCOMPARE(i18n("<b>E</b> &lt; <emphasis>mc^2</emphasis>"),
+             QString("<b>E</b> &lt; <i>mc^2</i>"));
+    QCOMPARE(i18n("<emphasis>E</emphasis> &lt; <b>mc^2</b>"),
+             QString("<i>E</i> &lt; <b>mc^2</b>"));
+    QCOMPARE(i18nc("@label", "E &lt; <emphasis>mc^2</emphasis>"),
+             QString("E < *mc^2*"));
+    QCOMPARE(i18nc("@info", "E &lt; <emphasis>mc^2</emphasis>"),
+             QString("<html>E &lt; <i>mc^2</i></html>"));
+    // ...and some ill-formed i18n, to test markup salvage.
+    // (prevent debug info about bad markup).
+    KConfig dc( "kdebugrc", KConfig::SimpleConfig );
+    dc.group(QString::number(173)).writeEntry("InfoOutput", 4);
+    dc.sync();
+    QCOMPARE(i18n("E < %1 * mc^2", 10),
+             QString("E < 10 * mc^2"));
+    QCOMPARE(i18n("<emphasis>%1</emphasis> &lt; mc^2", QString("<E>")),
+             QString("*<E>* &lt; mc^2"));
+    QCOMPARE(i18n("<emphasis>%1</emphasis> &lt; <b>mc^2</b>", QString("<E>")),
+             QString("<i><E></i> &lt; <b>mc^2</b>"));
 }
 
 void KLocalizedStringTest::wrongSubs ()
