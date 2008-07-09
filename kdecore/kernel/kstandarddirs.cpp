@@ -393,12 +393,14 @@ bool KStandardDirs::addResourceDir( const char *type,
                                     const QString& absdir,
                                     bool priority)
 {
+    if (absdir.isEmpty() || !type)
+      return false;
     // find or insert entry in the map
-    QStringList &paths = d->absolutes[type];
     QString copy = absdir;
     if (copy.at(copy.length() - 1) != '/')
         copy += '/';
 
+    QStringList &paths = d->absolutes[type];
     if (!paths.contains(copy)) {
         if (priority)
             paths.prepend(copy);
@@ -554,13 +556,13 @@ bool KStandardDirs::exists(const QString &fullPath)
     // access() and stat() give a stupid error message to the user
     // if the path is not accessible at all (e.g. no disk in A:/ and
     // we do stat("A:/.directory")
-    if(fullPath.at(fullPath.length() - 1) == '/')
+    if (fullPath.endsWith('/'))
         return QDir(fullPath).exists();
     return QFileInfo(fullPath).exists();
 #else
     KDE_struct_stat buff;
     if (access(QFile::encodeName(fullPath), R_OK) == 0 && KDE_stat( QFile::encodeName(fullPath), &buff ) == 0) {
-        if (fullPath.at(fullPath.length() - 1) != '/') {
+        if (!fullPath.endsWith('/')) {
             if (S_ISREG( buff.st_mode ))
                 return true;
         } else
@@ -577,7 +579,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
                             QStringList& relList,
                             bool recursive, bool unique)
 {
-    QString pattern = regexp.pattern();
+    const QString pattern = regexp.pattern();
     if (recursive || pattern.contains('?') || pattern.contains('*'))
     {
         if (path.isEmpty()) //for sanity
@@ -678,15 +680,12 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
     QString path;
     QString rest;
 
-    if (relpath.length())
-    {
-        int slash = relpath.indexOf('/');
-        if (slash < 0)
-            rest = relpath.left(relpath.length() - 1);
-        else {
-            path = relpath.left(slash);
-            rest = relpath.mid(slash + 1);
-        }
+    int slash = relpath.indexOf('/');
+    if (slash < 0)
+        rest = relpath.left(relpath.length() - 1);
+    else {
+        path = relpath.left(slash);
+        rest = relpath.mid(slash + 1);
     }
 
     if (prefix.isEmpty()) //for sanity
@@ -753,11 +752,10 @@ KStandardDirs::findAllResources( const char *type,
                                  SearchOptions options,
                                  QStringList &relList) const
 {
-    QStringList list;
     QString filterPath;
     QString filterFile;
 
-    if ( filter.length() )
+    if ( !filter.isEmpty() )
     {
         int slash = filter.lastIndexOf('/');
         if (slash < 0) {
@@ -793,6 +791,7 @@ KStandardDirs::findAllResources( const char *type,
 
     QRegExp regExp(filterFile, Qt::CaseSensitive, QRegExp::Wildcard);
 
+    QStringList list;
     foreach ( const QString& candidate, candidates )
     {
         lookupPrefix(candidate, filterPath, "", regExp, list,
@@ -831,6 +830,8 @@ KStandardDirs::realPath(const QString &dirname)
         return QFile::decodeName(realpath_buffer);
     }
 
+    if ( !dirname.endsWith('/') )
+        return dirname + '/';
     return dirname;
 }
 
@@ -1069,7 +1070,7 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
     QStringList tokens;
     QString p = pstr;
 
-    if( p.isNull() )
+    if( p.isEmpty() )
     {
         p = QString::fromLocal8Bit( qgetenv( "PATH" ) );
     }
@@ -1259,7 +1260,7 @@ static int tokenize( QStringList& tokens, const QString& str,
             token += str[ index ];
         }
     }
-    if ( token.length() > 0 )
+    if ( !token.isEmpty() )
     {
         tokens.append( equalizePath(token) );
     }
@@ -1572,7 +1573,7 @@ void KStandardDirs::addKDEDefaults()
     for (QStringList::ConstIterator it = kdedirList.begin();
          it != kdedirList.end(); ++it) {
         QString dir = *it;
-        if (dir.length() < 1 || dir[dir.length()-1] != '/')
+        if (!dir.endsWith('/'))
             dir += '/';
         kdedirDataDirs.append(dir+"share/");
     }
@@ -1779,7 +1780,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
                     // generate directory list, there may be more than 1.
                     QStringList dirs = (*it2).split(',');
                     QStringList::Iterator sIt(dirs.begin());
-                    QString resType = key.mid(4, key.length());
+                    QString resType = key.mid(4);
                     for (; sIt != dirs.end(); ++sIt)
                     {
                         addResourceDir(resType.toLatin1(), *sIt, priority);
