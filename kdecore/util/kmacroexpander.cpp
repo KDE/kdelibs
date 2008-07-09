@@ -143,9 +143,8 @@ template <typename VT>
 int
 KMacroMapExpander<QChar,VT>::expandPlainMacro( const QString &str, int pos, QStringList &ret )
 {
-    const KMacroMapExpander<QChar,VT> *const_this = this;
-    typename QHash<QChar,VT>::const_iterator it = const_this->macromap.find(str[pos]);
-    if (it != const_this->macromap.end()) {
+    typename QHash<QChar,VT>::const_iterator it = macromap.constFind(str[pos]);
+    if (it != macromap.constEnd()) {
        ret += it.value();
        return 1;
     }
@@ -160,9 +159,8 @@ KMacroMapExpander<QChar,VT>::expandEscapedMacro( const QString &str, int pos, QS
         ret += QString( escapeChar() );
         return 2;
     }
-    const KMacroMapExpander<QChar,VT> *const_this = this;
-    typename QHash<QChar,VT>::const_iterator it = const_this->macromap.find(str[pos+1]);
-    if (it != const_this->macromap.end()) {
+    typename QHash<QChar,VT>::const_iterator it = macromap.constFind(str[pos+1]);
+    if (it != macromap.constEnd()) {
        ret += it.value();
        return 2;
     }
@@ -196,10 +194,9 @@ KMacroMapExpander<QString,VT>::expandPlainMacro( const QString &str, int pos, QS
         ;
     if (!sl)
         return 0;
-    const KMacroMapExpander<QString,VT> *const_this = this;
     typename QHash<QString,VT>::const_iterator it = 
-        const_this->macromap.find( str.mid( pos, sl ) );
-    if (it != const_this->macromap.end()) {
+        macromap.constFind( str.mid( pos, sl ) );
+    if (it != macromap.constEnd()) {
         ret += it.value();
         return sl;
     }
@@ -234,10 +231,9 @@ KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, int pos, 
     }
     if (!sl)
         return 0;
-    const KMacroMapExpander<QString,VT> *const_this = this;
     typename QHash<QString,VT>::const_iterator it =
-        const_this->macromap.find( str.mid( rpos, sl ) );
-    if (it != const_this->macromap.end()) {
+        macromap.constFind( str.mid( rpos, sl ) );
+    if (it != macromap.constEnd()) {
         ret += it.value();
         return rsl;
     }
