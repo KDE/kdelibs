@@ -21,8 +21,11 @@
  **/
 
 #include "kdeprintdialog.h"
+#ifdef Q_WS_X11
 #include "kcupsoptionspageswidget_p.h"
 #include "kcupsoptionsjobwidget_p.h"
+#endif
+
 #include "kdebug.h"
 #include "kdialog.h"
 #include "klocale.h"
@@ -31,25 +34,25 @@
 #include <QPrintDialog>
 
 QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
-                                               const QList<QWidget*> &customTabs,
-                                               QWidget *parent)
+                                          const QList<QWidget*> &customTabs,
+                                          QWidget *parent)
 {
     QPrintDialog *dialog = new QPrintDialog( printer, parent );
+#ifdef Q_WS_X11
     KCupsOptionsPagesWidget *cupsOptionsPagesTab = new KCupsOptionsPagesWidget( dialog );
     KCupsOptionsJobWidget *cupsOptionsJobTab = new KCupsOptionsJobWidget( dialog );
     dialog->setOptionTabs( QList<QWidget*>() << cupsOptionsPagesTab << cupsOptionsJobTab << customTabs );
+#else
+    foreach( QWidget* w, customTabs ) // reparent to avoid leaks
+        w->setParent( dialog );
+#endif
     dialog->setWindowTitle( KDialog::makeStandardCaption( i18nc( "@title:window", "Print" ) ) );
     return dialog;
 }
 
 
 QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
-                                               QWidget *parent)
+                                          QWidget *parent)
 {
-    QPrintDialog *dialog = new QPrintDialog( printer, parent );
-    KCupsOptionsPagesWidget *cupsOptionsPagesTab = new KCupsOptionsPagesWidget( dialog );
-    KCupsOptionsJobWidget *cupsOptionsJobTab = new KCupsOptionsJobWidget( dialog );
-    dialog->setOptionTabs( QList<QWidget*>() << cupsOptionsPagesTab << cupsOptionsJobTab );
-    dialog->setWindowTitle( KDialog::makeStandardCaption( i18nc( "@title:window", "Print" ) ) );
-    return dialog;
+    return KdePrint::createPrintDialog(printer, QList<QWidget*>(), parent);
 }

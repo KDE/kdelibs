@@ -37,9 +37,13 @@ namespace KdePrint
     /**
      * Creates a printer dialog for a QPrinter with the given custom widgets.
      *
-     * Note that the custom widgets will @b not be shown on Qt versions prior to
-     * 4.3.2.
+     * Note that the custom widgets are only supported on X11
+     * and will @b not be shown on Qt versions prior to 4.3.2.
+     * On non-X11 systems it is preferred to provide the widgets 
+     * within configuration dialog of the application.
      *
+     * Setting the widgets will transfer their ownership to the print dialog
+     * even on non-X11 systems.
      * The caller takes ownership of the dialog and is responsible
      * for deleting it.
      *
@@ -48,10 +52,11 @@ namespace KdePrint
      * @param customTabs a list of custom widgets to show as tabs, the name printed on the tab will
      *      be taken from the widgets windowTitle().
      * @see QWidget::setWindowTitle()
+     * @see QAbstractPrintDialog::setOptionTabs()
      */
     KDEUI_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
-                                                      const QList<QWidget*> &customTabs,
-                                                      QWidget *parent = 0);
+                                                 const QList<QWidget*> &customTabs,
+                                                 QWidget *parent = 0);
 
     /**
      * Creates a printer dialog for a QPrinter
@@ -63,7 +68,7 @@ namespace KdePrint
      * @param parent the parent for the dialog
      */
     KDEUI_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
-                                                      QWidget *parent = 0);
+                                                 QWidget *parent = 0);
 }
 
 
