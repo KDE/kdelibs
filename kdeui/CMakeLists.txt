@@ -65,9 +65,6 @@ set(kdeui_LIB_SRCS
  dialogs/kassistantdialog.cpp
  dialogs/kconfigdialog.cpp
  dialogs/kconfigdialogmanager.cpp
- dialogs/kcupsoptionswidget_p.cpp
- dialogs/kcupsoptionsjobwidget_p.cpp
- dialogs/kcupsoptionspageswidget_p.cpp
  dialogs/kbugreport.cpp
  dialogs/kdeprintdialog.cpp
  dialogs/kdialog.cpp
@@ -236,7 +233,10 @@ set(kdeui_LIB_SRCS
 )
 
 if (Q_WS_X11)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_x11.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_x11.cpp
+                                         dialogs/kcupsoptionswidget_p.cpp
+                                         dialogs/kcupsoptionsjobwidget_p.cpp
+                                         dialogs/kcupsoptionspageswidget_p.cpp )
 endif (Q_WS_X11)
 if (Q_WS_MAC)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_mac.cpp )
@@ -267,8 +267,6 @@ add_definitions(-D_WIN32_WINNT=0x0500 -DWINVER=0x0500)
 endif(MINGW)
 
 set( kdeui_UI
-   dialogs/kcupsoptionspageswidget.ui
-   dialogs/kcupsoptionsjobwidget.ui
    dialogs/kpassworddialog.ui
    dialogs/knewpassworddialog.ui
    dialogs/kshortcutsdialog.ui
@@ -276,6 +274,12 @@ set( kdeui_UI
    sonnet/sonnetui.ui
    sonnet/configui.ui
    )
+
+if (Q_WS_X11)
+    set( kdeui_UI ${kdeui_UI} dialogs/kcupsoptionspageswidget.ui
+                              dialogs/kcupsoptionsjobwidget.ui
+    )
+endif (Q_WS_X11)
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
