@@ -885,7 +885,7 @@ bool ElementImpl::isContentEditable() const
     if (document()->part() && document()->part()->isEditable())
         return true;
 
-    document()->updateRendering();
+    // document()->updateRendering();
 
     if (!renderer()) {
         if (parentNode())
