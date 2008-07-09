@@ -27,6 +27,7 @@
 #include <kio/deletejob.h>
 #include <kio/netaccess.h>
 #include <kprotocolinfo.h>
+#include <kdatetime.h>
 
 #include <kde_file.h>
 #include <kdebug.h>
