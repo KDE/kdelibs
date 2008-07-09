@@ -997,17 +997,15 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             if ( button == Qt::LeftButton )
                 view()->setMouseEventsTarget( target );
         } else {
-            QWidget *targetMe = view()->mouseEventsTarget();
-            if (targetMe) {
-                QWidget * parent = targetMe;
+            target = view()->mouseEventsTarget();
+            if (target) {
+                QWidget * parent = target;
                 while (parent && parent != m_widget)
                     parent = parent->parentWidget();
                 if (!parent) return false;
+            } else {
+                target = m_widget;
             }
-        }
-
-        if (!target) {
-            target = m_widget;
         }
 
         p = target->mapFrom(m_widget, p);
@@ -1032,7 +1030,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 
         QEvent *e = isMouseWheel ?
                     static_cast<QEvent*>(new QWheelEvent(p, -me.detail()*40, buttons, state, orient)) :
-                    static_cast<QEvent*>(new QMouseEvent(type, p, button, buttons, state));
+                    static_cast<QEvent*>(new QMouseEvent(type,    p, button, buttons, state));
         static_cast<EventPropagator *>(target)->sendEvent(e);
 
         ret = e->isAccepted();
