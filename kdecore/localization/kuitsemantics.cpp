@@ -38,7 +38,7 @@
 // Truncates string, for output of long messages.
 static QString shorten (const QString &str)
 {
-    const int maxlen = 30;
+    const int maxlen = 50;
     if (str.length() <= maxlen)
         return str;
     else
@@ -88,7 +88,7 @@ namespace Kuit {
 
     namespace Fmt { // visual formats
         typedef enum {
-            Plain, Rich, Term
+            None, Plain, Rich, Term
         } Var;
     }
 
@@ -355,19 +355,25 @@ class KuitSemanticsPrivate
     // Determine visual format by parsing the context marker.
     static Kuit::FmtVar formatFromContextMarker (const QString &ctxmark,
                                                  const QString &text);
+    // Determine visual format by parsing tags.
+    static Kuit::FmtVar formatFromTags (const QString &text);
 
     // Apply appropriate top tag is to the text.
-    static QString equipTopTag (const QString &text, Kuit::TagVar &toptag,
-                                Kuit::FmtVar &fmt);
+    static QString equipTopTag (const QString &text, Kuit::TagVar &toptag);
 
     // Formats the semantic into visual text.
     QString semanticToVisualText (const QString &text,
-                                  Kuit::FmtVar fmt) const;
+                                  Kuit::FmtVar fmtExp,
+                                  Kuit::FmtVar fmtImp) const;
 
     // Final touches to the formatted text.
     QString finalizeVisualText (const QString &final,
                                 Kuit::FmtVar fmt,
-                                bool hadQtTag = false) const;
+                                bool hadQtTag = false,
+                                bool hadAnyHtmlTag = false) const;
+
+    // In case of markup errors, try to make result not look too bad.
+    QString salvageMarkup (const QString &text, Kuit::FmtVar fmt) const;
 
     // Data for XML parsing state.
     class OpenEl
@@ -389,6 +395,9 @@ class KuitSemanticsPrivate
     KuitSemanticsPrivate::OpenEl parseOpenEl (const QXmlStreamReader &xml,
                                               Kuit::TagVar etag,
                                               const QString &text) const;
+
+    // Select visual pattern for given tag+attributes+format combination.
+    QString visualPattern (Kuit::TagVar tag, int akey, Kuit::FmtVar fmt) const;
 
     // Format text of the element.
     QString formatSubText (const QString &ptext, const OpenEl &oel,
@@ -864,22 +873,29 @@ QString KuitSemanticsPrivate::format (const QString &text,
                                       const QString &ctxt) const
 {
     // Parse context marker to determine format.
-    Kuit::FmtVar fmt = formatFromContextMarker(ctxt, text);
+    Kuit::FmtVar fmtExplicit = formatFromContextMarker(ctxt, text);
 
     // Quick check: are there any tags at all?
     if (text.indexOf('<') < 0) {
-        return finalizeVisualText(text, fmt);
+        return finalizeVisualText(text, fmtExplicit);
+    }
+
+    // If format not explicitly given, heuristically determine
+    // implicit format based on presence or lack of HTML tags.
+    Kuit::FmtVar fmtImplicit = fmtExplicit;
+    if (fmtExplicit == Kuit::Fmt::None) {
+        fmtImplicit = formatFromTags(text);
     }
 
     // Decide on the top tag, either TopLong or TopShort,
-    // and wrap the text with it. Possibly also override format.
+    // and wrap the text with it.
     Kuit::TagVar toptag;
-    QString wtext = equipTopTag(text, toptag, fmt);
+    QString wtext = equipTopTag(text, toptag);
 
     // Format the text.
-    QString ftext = semanticToVisualText(wtext, fmt);
+    QString ftext = semanticToVisualText(wtext, fmtExplicit, fmtImplicit);
     if (ftext.isEmpty()) { // error while processing markup
-        return text;
+        return salvageMarkup(text, fmtImplicit);
     }
 
     return ftext;
@@ -977,7 +993,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
     else { // unknown or not given format
 
         // Check first if there is a format defined for role/subcue
-        // combination, than for role only, then default to Plain.
+        // combination, than for role only, then default to none.
         if (s->defFmts.contains(rol)) {
             if (s->defFmts[rol].contains(cue)) {
                 fmt = s->defFmts[rol][cue];
@@ -987,7 +1003,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
             }
         }
         else {
-            fmt = Kuit::Fmt::Plain;
+            fmt = Kuit::Fmt::None;
         }
 
         if (!fmtname.isEmpty()) {
@@ -1000,9 +1016,25 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
     return fmt;
 }
 
+Kuit::FmtVar KuitSemanticsPrivate::formatFromTags (const QString &text)
+{
+    KuitSemanticsStaticData *s = staticData;
+    static QRegExp staticTagRx("<\\s*(\\w+)[^>]*>");
+
+    QRegExp tagRx = staticTagRx; // for thread-safety
+    int p = tagRx.indexIn(text);
+    while (p >= 0) {
+        QString tagname = tagRx.capturedTexts().at(1).toLower();
+        if (s->qtHtmlTagNames.contains(tagname)) {
+            return Kuit::Fmt::Rich;
+        }
+        p = tagRx.indexIn(text, p + tagRx.matchedLength());
+    }
+    return Kuit::Fmt::Plain;
+}
+
 QString KuitSemanticsPrivate::equipTopTag (const QString &text_,
-                                           Kuit::TagVar &toptag,
-                                           Kuit::FmtVar &fmt)
+                                           Kuit::TagVar &toptag)
 {
     KuitSemanticsStaticData *s = staticData;
 
@@ -1015,14 +1047,11 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text_,
     QString text = text_;
     int p = opensWithTagRx.indexIn(text);
 
-    // First check for <qt> or <html> tag, which are to be ignored in the
-    // context of deciding upon the top tag, but do override the visual format.
+    // <qt> or <html> tag are to be ignored for deciding the top tag.
     if (p >= 0) {
         QString fullmatch = opensWithTagRx.capturedTexts().at(0);
         QString tagname = opensWithTagRx.capturedTexts().at(1).toLower();
         if (tagname == "qt" || tagname == "html") {
-            // Override format.
-            fmt = Kuit::Fmt::Rich;
             // Kill the tag and see if there is another one following,
             // for primary check below.
             text = text.mid(fullmatch.length());
@@ -1069,7 +1098,8 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text_,
 }
 
 QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
-                                                    Kuit::FmtVar fmt_) const
+                                                    Kuit::FmtVar fmtExp_,
+                                                    Kuit::FmtVar fmtImp_) const
 {
     KuitSemanticsStaticData *s = staticData;
 
@@ -1089,9 +1119,11 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
     }
     text.append(original);
 
-    Kuit::FmtVar fmt = fmt_;
+    Kuit::FmtVar fmtExp = fmtExp_;
+    Kuit::FmtVar fmtImp = fmtImp_;
     int numCtx = 0;
     bool hadQtTag = false;
+    bool hadAnyHtmlTag = false;
     QStack<OpenEl> openEls;
     QXmlStreamReader xml(text);
 
@@ -1113,12 +1145,16 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
             if (oel.name == "qt" || oel.name == "html") {
                 hadQtTag = true;
             }
+            if (s->qtHtmlTagNames.contains(oel.name)) {
+                hadAnyHtmlTag = true;
+            }
 
             // If this is top tag, check if it overrides the context marker
             // by its ctx attribute.
             if (openEls.isEmpty() && oel.avals.contains(Kuit::Att::Ctx)) {
                 // Resolve format override.
-                fmt = formatFromContextMarker(oel.avals[Kuit::Att::Ctx], text);
+                fmtExp = formatFromContextMarker(oel.avals[Kuit::Att::Ctx], text);
+                fmtImp = fmtExp;
             }
 
             // Record the new element on the parse stack.
@@ -1136,12 +1172,13 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
             // If this was closing of the top element, we're done.
             if (openEls.isEmpty()) {
                 // Return with final touches applied.
-                return finalizeVisualText(oel.formattedText, fmt, hadQtTag);
+                return finalizeVisualText(oel.formattedText, fmtExp,
+                                          hadQtTag, hadAnyHtmlTag);
             }
 
             // Append formatted text segment.
             QString pt = openEls.top().formattedText; // preceding text
-            openEls.top().formattedText += formatSubText(pt, oel, fmt, numCtx);
+            openEls.top().formattedText += formatSubText(pt, oel, fmtImp, numCtx);
 
             // Update numeric context.
             if (oel.tag == Kuit::Tag::Numid) {
@@ -1253,6 +1290,23 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
     return oel;
 }
 
+QString KuitSemanticsPrivate::visualPattern (Kuit::TagVar tag, int akey,
+                                             Kuit::FmtVar fmt) const
+{
+    // Default pattern: simple substitution.
+    QString pattern("%1");
+
+    // See if there is a pattern specifically for this element.
+    if (   m_patterns.contains(tag)
+        && m_patterns[tag].contains(akey)
+        && m_patterns[tag][akey].contains(fmt))
+    {
+        pattern = m_patterns[tag][akey][fmt];
+    }
+
+    return pattern;
+}
+
 QString KuitSemanticsPrivate::formatSubText (const QString &ptext,
                                              const OpenEl &oel,
                                              Kuit::FmtVar fmt,
@@ -1261,15 +1315,8 @@ QString KuitSemanticsPrivate::formatSubText (const QString &ptext,
     KuitSemanticsStaticData *s = staticData;
 
     if (oel.handling == OpenEl::Proper) {
-        // Default pattern: simple substitution.
-        QString pattern("%1");
-
-        // See if there is a special pattern for this element.
-        if (   m_patterns.contains(oel.tag)
-            && m_patterns[oel.tag].contains(oel.akey)
-            && m_patterns[oel.tag][oel.akey].contains(fmt)) {
-            pattern = m_patterns[oel.tag][oel.akey][fmt];
-        }
+        // Select formatting pattern.
+        QString pattern = visualPattern(oel.tag, oel.akey, fmt);
 
         // Some tags modify their text.
         QString mtext = modifyTagText(oel.tag, oel.formattedText, numctx, fmt);
@@ -1387,51 +1434,113 @@ QString KuitSemanticsPrivate::modifyTagText (Kuit::TagVar tag,
 
 QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
                                                   Kuit::FmtVar fmt,
-                                                  bool hadQtTag) const
+                                                  bool hadQtTag,
+                                                  bool hadAnyHtmlTag) const
 {
     KuitSemanticsStaticData *s = staticData;
 
     QString text = final;
 
-    // Wrap with <html> tag if rich text.
-    // *Do not* go with <qt> instead: if the message is later concatenated
-    // to more rich text, <qt> would introduce line break, whereas a
-    // non-top <html> will be just ignored by Qt rich text engine.
-    if (fmt == Kuit::Fmt::Rich) {
-        QString rich = "<html>" + text + "</html>";
-        return rich;
-    }
-    // Replace XML entities if not rich text.
-    else {
+    // Resolve XML entities if format explicitly not rich
+    // and no HTML tag encountered.
+    if (fmt != Kuit::Fmt::Rich && !hadAnyHtmlTag)
+    {
         static QRegExp staticEntRx("&([a-z]+);");
-	// We have to have a local copy here, otherwise this function will not be
-	// thread safe because QRegExp is not thread safe.
-	QRegExp entRx = staticEntRx;
-        QString plain;
+        // We have to have a local copy here, otherwise this function
+        // will not be thread safe because QRegExp is not thread safe.
+        QRegExp entRx = staticEntRx;
         int p = entRx.indexIn(text);
+        QString plain;
         while (p >= 0) {
             QString ent = entRx.capturedTexts().at(1);
             plain.append(text.mid(0, p));
             text.remove(0, p + ent.length() + 2);
             if (s->xmlEntities.contains(ent)) { // known entity
                 plain.append(s->xmlEntities[ent]);
-            }
-            else { // unknown entity, just leave as is
+            } else { // unknown entity, just leave as is
                 plain.append('&' + ent + ';');
             }
             p = entRx.indexIn(text);
         }
         plain.append(text);
-
-        // If there was a qt/html tag, it means the text was intended as rich
-        // but it was not equipped with KUIT. Since other HTML tags have
-        // remained preserved in that case, also put back the <html> tag
-        // which was removed while formatting.
-        if (hadQtTag)
-            plain = "<html>" + text + "</html>";
-
-        return plain;
+        text = plain;
     }
+
+    // Add top rich tag if format explicitly rich or such tag encountered.
+    if (fmt == Kuit::Fmt::Rich || hadQtTag) {
+        text = "<html>" + text + "</html>";
+    }
+
+    return text;
+}
+
+QString KuitSemanticsPrivate::salvageMarkup (const QString &text_,
+                                             Kuit::FmtVar fmt) const
+{
+    KuitSemanticsStaticData *s = staticData;
+    QString text = text_;
+    QString ntext;
+    int pos;
+
+    // Resolve KUIT tags simple-mindedly.
+
+    // - tags with content
+    static QRegExp staticWrapRx("(<\\s*(\\w+)\\b([^>]*)>)(.*)(<\\s*/\\s*\\2\\s*>)");
+    QRegExp wrapRx = staticWrapRx; // for thread-safety
+    wrapRx.setMinimal(true);
+    pos = 0;
+    ntext.clear();
+    while (true) {
+        int previousPos = pos;
+        pos = wrapRx.indexIn(text, previousPos);
+        if (pos < 0) {
+            ntext += text.mid(previousPos);
+            break;
+        }
+        ntext += text.mid(previousPos, pos - previousPos);
+        const QStringList capts = wrapRx.capturedTexts();
+        QString tagname = capts[2].toLower();
+        QString content = salvageMarkup(capts[4], fmt);
+        if (s->knownTags.contains(tagname)) {
+            // Select formatting pattern.
+            // TODO: Do not ignore attributes (in capts[3]).
+            // TODO: Locale-format numbers (in num* tags).
+            QString pattern = visualPattern(s->knownTags[tagname], 0, fmt);
+            ntext += pattern.arg(content);
+        } else {
+            ntext += capts[1] + content + capts[5];
+        }
+        pos += wrapRx.matchedLength();
+    }
+    text = ntext;
+
+    // - content-less tags
+    static QRegExp staticNowrRx("<\\s*(\\w+)\\b([^>]*)/\\s*>");
+    QRegExp nowrRx = staticNowrRx; // for thread-safety
+    nowrRx.setMinimal(true);
+    pos = 0;
+    ntext.clear();
+    while (true) {
+        int previousPos = pos;
+        pos = nowrRx.indexIn(text, previousPos);
+        if (pos < 0) {
+            ntext += text.mid(previousPos);
+            break;
+        }
+        ntext += text.mid(previousPos, pos - previousPos);
+        const QStringList capts = nowrRx.capturedTexts();
+        QString tagname = capts[1].toLower();
+        if (s->knownTags.contains(tagname)) {
+            QString pattern = visualPattern(s->knownTags[tagname], 0, fmt);
+            ntext += pattern.arg(QString());
+        } else {
+            ntext += capts[0];
+        }
+        pos += nowrRx.matchedLength();
+    }
+    text = ntext;
+
+    return text;
 }
 
 // -----------------------------------------------------------------------------
