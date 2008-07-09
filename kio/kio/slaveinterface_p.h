@@ -21,7 +21,8 @@
 
 #include "global.h"
 #include "connection.h"
-#include <QTimer>
+#include <QtCore/QTimer>
+#include <QtNetwork/QHostInfo>
 
 static const unsigned int max_nums = 8;
 
@@ -58,6 +59,7 @@ public:
     int messageBox(int type, const QString &text, const QString &caption,
                  const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName);
 
+    void slotHostInfo(const QHostInfo& info);
 };
 
 #endif

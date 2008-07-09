@@ -177,7 +177,8 @@ namespace KIO
     CMD_READ = 'Z', // 90
     CMD_WRITE = 91,
     CMD_SEEK = 92,
-    CMD_CLOSE = 93
+    CMD_CLOSE = 93,
+    CMD_HOST_INFO = 94
     // Add new ones here once a release is done, to avoid breaking binary compatibility.
     // Note that protocol-specific commands shouldn't be added here, but should use special.
   };

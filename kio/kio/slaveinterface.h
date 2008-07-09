@@ -24,6 +24,7 @@
 #include <sys/types.h>
 
 #include <QtCore/QObject>
+#include <QtNetwork/QHostInfo>
 
 #include <kio/global.h>
 #include <kio/udsentry.h>
@@ -82,7 +83,8 @@ class SlaveInterfacePrivate;
    MSG_AUTH_KEY, // 115 // deprecated.
    MSG_DEL_AUTH_KEY, // deprecated.
    MSG_OPENED,
-   MSG_WRITTEN
+   MSG_WRITTEN,
+   MSG_HOST_INFO_REQ
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -169,10 +171,11 @@ protected:
 
 protected Q_SLOTS:
     void calcSpeed();
-
 protected:
     SlaveInterfacePrivate* const d_ptr;
     Q_DECLARE_PRIVATE(SlaveInterface)
+private:
+    Q_PRIVATE_SLOT(d_func(), void slotHostInfo(QHostInfo))
 };
 
 }

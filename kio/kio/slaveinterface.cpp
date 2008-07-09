@@ -21,6 +21,7 @@
 
 #include "slavebase.h"
 #include "connection.h"
+#include "hostinfo_p.h"
 #include <errno.h>
 #include <assert.h>
 #include <kdebug.h>
@@ -336,6 +337,12 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         emit needSubUrlData();
         break;
     }
+    case MSG_HOST_INFO_REQ: {
+        QString hostName;
+        stream >> hostName;
+        HostInfo::lookupHost(hostName, this, SLOT(slotHostInfo(QHostInfo)));
+        break;
+    }
     default:
         kWarning(7007) << "Slave sends unknown command (" << _cmd << "), dropping slave";
         return false;
@@ -494,6 +501,14 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
     KMessageBox::setDontShowAskAgainConfig(0);
     delete config;
     return result;
+}
+
+void SlaveInterfacePrivate::slotHostInfo(const QHostInfo& info)
+{
+    QByteArray data;
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream <<  info.hostName() << info.addresses() << info.error() << info.errorString();
+    connection->send(CMD_HOST_INFO, data);
 }
 
 #include "slaveinterface.moc"

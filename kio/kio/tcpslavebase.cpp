@@ -3,6 +3,7 @@
  * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  * Copyright (C) 2001 Dawit Alemayehu <adawit@kde.org>
  * Copyright (C) 2007,2008 Andreas Hartmetz <ahartmetz@gmail.com>
+ * Copyright (C) 2008 Roland Harnau <tau@gmx.eu>
  *
  * This file is part of the KDE project
  *
@@ -46,6 +47,7 @@
 
 #include <klocale.h>
 #include <QtCore/QDataStream>
+#include <QtCore/QTime>
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QHostInfo>
 #include <QtDBus/QtDBus>
@@ -271,7 +273,6 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
         }
     }
 
-
     KTcpSocket::SslVersion trySslVersion = KTcpSocket::TlsV1;
     while (true) {
         disconnectFromHost();  //Reset some state, even if we are already disconnected
@@ -279,26 +280,37 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
 
         //FIXME! KTcpSocket doesn't know or care about protocol ports! Fix it there, then use it here.
 
-        kDebug(7029) << "before connectToHost: Socket error is"
-                    << d->socket.error() << ", Socket state is" << d->socket.state();
-        d->socket.connectToHost(host, port);
-        kDebug(7029) << "after connectToHost: Socket error is"
-                    << d->socket.error() << ", Socket state is" << d->socket.state();
+        QList<QHostAddress> addresses;
 
-        bool connectOk = d->socket.waitForConnected(d->timeout > -1 ? d->timeout * 1000 : -1);
-        kDebug(7029) << "after waitForConnected: Socket error is"
-                    << d->socket.error() << ", Socket state is" << d->socket.state()
-                    << ", waitForConnected returned " << connectOk;
-
-        if (d->socket.state() != KTcpSocket::ConnectedState) {
-            if (d->socket.error() == KTcpSocket::HostNotFoundError) {
-                error(ERR_UNKNOWN_HOST,
-                      host + QLatin1String(": ") + d->socket.errorString());
-            } else {
-                error(ERR_COULD_NOT_CONNECT,
-                      host + QLatin1String(": ") + d->socket.errorString());
+        QHostAddress address;
+        if (address.setAddress(host)) {
+            addresses.append(address);
+        } else {
+            QHostInfo info;
+            lookupHost(host);
+            waitForHostInfo(info);
+            if (info.error() != QHostInfo::NoError) {
+                error(ERR_UNKNOWN_HOST, info.errorString());
+                return false;
             }
-            return false;
+            addresses = info.addresses();
+        }
+
+        QListIterator<QHostAddress> it(addresses);
+        int timeout = d->timeout * 1000;
+        QTime time;
+        time.start();
+        forever {
+            d->socket.connectToHost(it.next(), port);
+            if (d->socket.waitForConnected(timeout)) {
+                break;
+            }
+            timeout =- time.elapsed();
+            if (!it.hasNext() || (timeout < 0)) {
+                error(ERR_COULD_NOT_CONNECT,
+                    host + QLatin1String(": ") + d->socket.errorString());
+                return false;
+            }
         }
 
         //### check for proxyAuthenticationRequiredError

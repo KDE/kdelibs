@@ -27,6 +27,7 @@
 #include <klocale.h>
 
 #include <QtCore/QByteArray>
+#include <QtNetwork/QHostInfo>
 
 class KConfigGroup;
 class KRemoteEncoding;
@@ -789,6 +790,16 @@ public:
      * @internal
      */
     void setKillFlag();
+
+    /** Internally used
+      * @internal
+    */
+    void lookupHost(const QString& host);
+
+    /** Internally used
+      * @internal
+    */
+    int waitForHostInfo(QHostInfo& info);
 
 protected:
     /**
