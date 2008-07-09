@@ -291,16 +291,16 @@ protected:
 
   void configAuth( char *, bool );
 
-  bool httpOpen();             // Open transfer
+  bool sendQuery();
   void httpClose(bool keepAlive);  // Close transfer
 
   bool httpOpenConnection();   // Open connection
   void httpCloseConnection();  // Close connection
-  void httpCheckConnection();  // Check whether to keep connection.
+  bool httpShouldCloseConnection();  // Check whether to keep the connection.
 
   void forwardHttpResponseHeader();
 
-  bool readHeader();
+  bool readResponseHeader();
   bool readHeaderFromCache();
   void parseContentDisposition(const QString &disposition);
 
@@ -388,16 +388,18 @@ protected:
   void cleanCache();
 
   /**
-   * Performs a GET HTTP request.
+   * Do everything proceedUntilResponseHeader does, and also get the response body.
+   * This is being used as a replacement for proceedUntilResponseHeader() in
+   * situations where we actually expect the response to have a body / payload data.
    */
   // where dataInternal == true, the content is to be made available
   // to an internal function.
-  void retrieveContent( bool dataInternal = false );
+  void proceedUntilResponseContent( bool dataInternal = false );
 
   /**
-   * Performs a HEAD HTTP request.
+   * Ensure we are connected, send our query, and get the response header.
    */
-  bool retrieveHeader();
+  bool proceedUntilResponseHeader();
 
   /**
    * Resets any per session settings.

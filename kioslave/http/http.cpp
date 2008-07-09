@@ -177,6 +177,10 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
   return sanitizedHeaders;
 }
 
+static bool isEncryptedHttpVariety(const QString &p)
+{
+    return p == "https" || p == "webdavs"; 
+}
 
 #define NO_SIZE		((KIO::filesize_t) -1)
 
@@ -191,7 +195,7 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
 
 HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
                             const QByteArray &app )
-    : TCPSlaveBase(protocol, pool, app, (protocol=="https"||protocol=="webdavs"))
+    : TCPSlaveBase(protocol, pool, app, isEncryptedHttpVariety(protocol))
     , m_defaultPort(0)
     , m_iSize(NO_SIZE)
     , m_lineBufUnget(0)
@@ -203,7 +207,8 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
     , m_protocol(protocol)
     , m_remoteRespTimeout(DEFAULT_RESPONSE_TIMEOUT)
 {
-  reparseConfiguration();
+    reparseConfiguration();
+    setBlocking(true);
 }
 
 HTTPProtocol::~HTTPProtocol()
@@ -222,7 +227,7 @@ void HTTPProtocol::reparseConfiguration()
     ProxyAuthentication = AUTH_None;
     m_bUseProxy = false;
 
-    if (m_protocol == "https" || m_protocol == "webdavs")
+    if (isEncryptedHttpVariety(m_protocol))
         m_defaultPort = DEFAULT_HTTPS_PORT;
     else if (m_protocol == "ftp")
         m_defaultPort = DEFAULT_FTP_PORT;
@@ -294,8 +299,7 @@ void HTTPProtocol::resetSessionSettings()
 
   m_request.referrer.clear();
   if ( config()->readEntry("SendReferrer", true) &&
-       (m_protocol == "https" || m_protocol == "webdavs" ||
-        metaData ("ssl_was_in_use") != "TRUE" ) )
+       (isEncryptedHttpVariety(m_protocol) || metaData ("ssl_was_in_use") != "TRUE" ) )
   {
      KUrl referrerURL ( metaData("referrer") );
      if (referrerURL.isValid())
@@ -375,9 +379,6 @@ void HTTPProtocol::resetSessionSettings()
 
   // Bounce back the actual referrer sent
   setMetaData("referrer", m_request.referrer);
-
-  // Set the SSL meta-data here...
-  //setSSLMetaData(); //TODO reimplement better
 
   // Follow HTTP/1.1 spec and enable keep-alive by default
   // unless the remote side tells us otherwise or we determine
@@ -461,14 +462,13 @@ bool HTTPProtocol::checkRequestUrl( const KUrl& u )
         m_request.port = m_defaultPort;
   }
 
-  resetSessionSettings();
   return true;
 }
 
-void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
+void HTTPProtocol::proceedUntilResponseContent( bool dataInternal /* = false */ )
 {
   kDebug (7113);
-  if ( !retrieveHeader() )
+  if ( !proceedUntilResponseHeader() )
   {
     if ( m_bError )
       return;
@@ -493,16 +493,17 @@ void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
   }
 }
 
-bool HTTPProtocol::retrieveHeader()
+bool HTTPProtocol::proceedUntilResponseHeader()
 {
   kDebug (7113);
+
   while ( 1 )
   {
-    if (!httpOpen())
+    if (!sendQuery())
       return false;
 
     resetResponseSettings();
-    if (!readHeader())
+    if (!readResponseHeader())
     {
       if ( m_bError )
         return false;
@@ -549,8 +550,8 @@ bool HTTPProtocol::retrieveHeader()
       }
 #endif
 
-      if (m_responseCode < 400 && (m_prevResponseCode == 401 ||
-          m_prevResponseCode == 407))
+      if (m_responseCode < 400 &&
+          (m_prevResponseCode == 401 || m_prevResponseCode == 407))
         saveAuthorization();
       break;
     }
@@ -560,7 +561,7 @@ bool HTTPProtocol::retrieveHeader()
   if (!m_bufPOST.isEmpty())
   {
     m_bufPOST.resize(0);
-    kDebug(7113) << "HTTP::retrieveHeader: Cleared POST buffer...";
+    kDebug(7113) << "Cleared POST buffer...";
   }
 
   return true;
@@ -572,6 +573,7 @@ void HTTPProtocol::stat(const KUrl& url)
 
   if ( !checkRequestUrl( url ) )
       return;
+  resetSessionSettings();
 
   if ( m_protocol != "webdav" && m_protocol != "webdavs" )
   {
@@ -603,6 +605,7 @@ void HTTPProtocol::listDir( const KUrl& url )
 
   if ( !checkRequestUrl( url ) )
     return;
+  resetSessionSettings();
 
   davStatList( url, false );
 }
@@ -671,7 +674,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
   if (!stat)
      m_request.url.adjustPath(KUrl::AddTrailingSlash);
 
-  retrieveContent( true );
+  proceedUntilResponseContent( true );
 
   // Has a redirection already been called? If so, we're done.
   if (m_bRedirect) {
@@ -760,6 +763,7 @@ void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method )
 
   if ( !checkRequestUrl( url ) )
     return;
+  resetSessionSettings();
 
   // check to make sure this host supports WebDAV
   if ( !davHostOk() )
@@ -771,7 +775,7 @@ void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveContent( false );
+  proceedUntilResponseContent( false );
 }
 
 int HTTPProtocol::codeFromResponse( const QString& response )
@@ -1101,7 +1105,7 @@ bool HTTPProtocol::davHostOk()
   // clear davVersions variable, which holds the response to the DAV: header
   m_davCapabilities.clear();
 
-  retrieveHeader();
+  proceedUntilResponseHeader();
 
   if (m_davCapabilities.count())
   {
@@ -1125,7 +1129,7 @@ bool HTTPProtocol::davHostOk()
   return false;
 }
 
-// This function is for closing retrieveHeader(); requests
+// This function is for closing proceedUntilResponseHeader(); requests
 // Required because there may or may not be further info expected
 void HTTPProtocol::davFinished()
 {
@@ -1140,6 +1144,7 @@ void HTTPProtocol::mkdir( const KUrl& url, int )
 
   if ( !checkRequestUrl( url ) )
     return;
+  resetSessionSettings();
 
   m_request.method = DAV_MKCOL;
   m_request.path = url.path();
@@ -1147,7 +1152,7 @@ void HTTPProtocol::mkdir( const KUrl& url, int )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveHeader();
+  proceedUntilResponseHeader();
 
   if ( m_responseCode == 201 )
     davFinished();
@@ -1161,6 +1166,7 @@ void HTTPProtocol::get( const KUrl& url )
 
   if ( !checkRequestUrl( url ) )
     return;
+  resetSessionSettings();
 
   m_request.method = HTTP_GET;
   m_request.path = url.path();
@@ -1176,7 +1182,7 @@ void HTTPProtocol::get( const KUrl& url )
   m_request.user = url.user();
   m_request.doProxy = m_bUseProxy;
 
-  retrieveContent();
+  proceedUntilResponseContent();
 }
 
 void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
@@ -1185,6 +1191,7 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
 
   if ( !checkRequestUrl( url ) )
     return;
+  resetSessionSettings();
 
   // Webdav hosts are capable of observing overwrite == false
   if (!(flags & KIO::Overwrite) && m_protocol.startsWith("webdav")) {
@@ -1209,7 +1216,7 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
     m_request.doProxy = m_bUseProxy;
     m_request.davData.depth = 0;
 
-    retrieveContent(true);
+    proceedUntilResponseContent(true);
 
     if (m_responseCode == 207) {
       error(ERR_FILE_ALREADY_EXIST, QString());
@@ -1225,13 +1232,13 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveHeader();
+  proceedUntilResponseHeader();
 
-  kDebug(7113) << "HTTPProtocol::put error = " << m_bError;
+  kDebug(7113) << "error = " << m_bError;
   if (m_bError)
     return;
 
-  kDebug(7113) << "HTTPProtocol::put responseCode = " << m_responseCode;
+  kDebug(7113) << "responseCode = " << m_responseCode;
 
   httpClose(false); // Always close connection.
 
@@ -1247,6 +1254,7 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags f
 
   if ( !checkRequestUrl( dest ) || !checkRequestUrl( src ) )
     return;
+  resetSessionSettings();
 
   // destination has to be "http(s)://..."
   KUrl newDest = dest;
@@ -1263,7 +1271,7 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags f
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveHeader();
+  proceedUntilResponseHeader();
 
   // The server returns a HTTP/1.1 201 Created or 204 No Content on successful completion
   if ( m_responseCode == 201 || m_responseCode == 204 )
@@ -1278,6 +1286,7 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
 
   if ( !checkRequestUrl( dest ) || !checkRequestUrl( src ) )
     return;
+  resetSessionSettings();
 
   // destination has to be "http://..."
   KUrl newDest = dest;
@@ -1294,7 +1303,7 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveHeader();
+  proceedUntilResponseHeader();
 
   if ( m_responseCode == 201 )
     davFinished();
@@ -1308,6 +1317,7 @@ void HTTPProtocol::del( const KUrl& url, bool )
 
   if ( !checkRequestUrl( url ) )
     return;
+  resetSessionSettings();
 
   m_request.method = HTTP_DELETE;
   m_request.path = url.path();
@@ -1315,7 +1325,7 @@ void HTTPProtocol::del( const KUrl& url, bool )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveHeader();
+  proceedUntilResponseHeader();
 
   // The server returns a HTTP/1.1 200 Ok or HTTP/1.1 204 No Content
   // on successful completion
@@ -1331,6 +1341,7 @@ void HTTPProtocol::post( const KUrl& url )
 
   if ( !checkRequestUrl( url ) )
     return;
+  resetSessionSettings();
 
   m_request.method = HTTP_POST;
   m_request.path = url.path();
@@ -1338,7 +1349,7 @@ void HTTPProtocol::post( const KUrl& url )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveContent();
+  proceedUntilResponseContent();
 }
 
 void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
@@ -1348,6 +1359,7 @@ void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
 
   if ( !checkRequestUrl( url ) )
     return;
+  resetSessionSettings();
 
   m_request.method = DAV_LOCK;
   m_request.path = url.path();
@@ -1384,7 +1396,7 @@ void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
   // insert the document into the POST buffer
   m_bufPOST = lockReq.toByteArray();
 
-  retrieveContent( true );
+  proceedUntilResponseContent( true );
 
   if ( m_responseCode == 200 ) {
     // success
@@ -1412,6 +1424,7 @@ void HTTPProtocol::davUnlock( const KUrl& url )
 
   if ( !checkRequestUrl( url ) )
     return;
+  resetSessionSettings();
 
   m_request.method = DAV_UNLOCK;
   m_request.path = url.path();
@@ -1419,7 +1432,7 @@ void HTTPProtocol::davUnlock( const KUrl& url )
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveContent( true );
+  proceedUntilResponseContent( true );
 
   if ( m_responseCode == 200 )
     finished();
@@ -1725,6 +1738,8 @@ void HTTPProtocol::multiGet(const QByteArray &data)
   if (m_bBusy)
      saveRequest = m_request;
 
+  resetSessionSettings();
+
 //  m_requestQueue.clear();
   for(unsigned i = 0; i < n; i++)
   {
@@ -1759,20 +1774,20 @@ void HTTPProtocol::multiGet(const QByteArray &data)
   if (!m_bBusy)
   {
      m_bBusy = true;
-	 QMutableListIterator<HTTPRequest*> i(m_requestQueue);
-	 while (i.hasNext()) {
-	 	HTTPRequest *request = i.next();
-		m_request = *request;
-		i.remove();
-		retrieveContent();
-	 }
+     QMutableListIterator<HTTPRequest*> i(m_requestQueue);
+     while (i.hasNext()) {
+        HTTPRequest *request = i.next();
+        m_request = *request;
+        i.remove();
+        proceedUntilResponseContent();
+     }
 #if 0
      while(!m_requestQueue.isEmpty())
      {
         HTTPRequest *request = m_requestQueue.take(0);
         m_request = *request;
         delete request;
-        retrieveContent();
+        proceedUntilResponseContent();
      }
 #endif
      m_bBusy = false;
@@ -1883,56 +1898,45 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
   return ret;
 }
 
-void HTTPProtocol::httpCheckConnection()
+bool HTTPProtocol::httpShouldCloseConnection()
 {
   kDebug(7113) << "Keep Alive:" << m_bKeepAlive << "First:" << m_bFirstRequest;
 
-  if ( !m_bFirstRequest && isConnected() )
-  {
-     bool closeDown = false;
-     if ( !isConnected())
-     {
-        kDebug(7113) << "Connection lost!";
-        closeDown = true;
-     }
-     else if ( m_request.method != HTTP_GET )
-     {
-        closeDown = true;
-     }
-     else if ( !m_state.doProxy && !m_request.doProxy )
-     {
-        if (m_state.hostname != m_request.hostname ||
-            m_state.port != m_request.port ||
-            m_state.user != m_request.user ||
-            m_state.passwd != m_request.passwd)
-          closeDown = true;
-     }
-     else
-     {
-        // Keep the connection to the proxy.
-        if ( !(m_request.doProxy && m_state.doProxy) )
-          closeDown = true;
-     }
-
-     if (closeDown)
-        httpCloseConnection();
+  if (m_bFirstRequest || !isConnected()) {
+      return false;
   }
 
-  // Let's update our current state
-  m_state.hostname = m_request.hostname;
-  m_state.encoded_hostname = m_request.encoded_hostname;
-  m_state.port = m_request.port;
-  m_state.user = m_request.user;
-  m_state.passwd = m_request.passwd;
-  m_state.doProxy = m_request.doProxy;
+  if (m_request.method != HTTP_GET && m_request.method != HTTP_POST) {
+      return true;
+  }
+
+  if (m_state.doProxy != m_request.doProxy) {
+      return true;
+  }
+
+  if (m_state.doProxy)  {
+#if 0   // enable when we actually have proxy support back
+     if (m_state.proxyURL.host() != m_request.proxyURL.host() ||
+          m_state.proxyURL.port() != m_request.proxyURL.port() ||
+          m_state.proxyURL.user() != m_request.proxyURL.user() ||
+          m_state.proxyURL.pass() != m_request.proxyURL.pass()) {
+          return true;
+     }
+#endif
+  } else {
+      if (m_state.hostname != m_request.hostname ||
+          m_state.port != m_request.port ||
+          m_state.user != m_request.user ||
+          m_state.passwd != m_request.passwd) {
+          return true;
+      }
+  }
+  return false;
 }
 
 bool HTTPProtocol::httpOpenConnection()
 {
   kDebug(7113);
-
-  setBlocking( true );
-
   if ( !connectToHost(m_protocol, m_state.hostname, m_state.port ) )
     return false;
 
@@ -1942,7 +1946,6 @@ bool HTTPProtocol::httpOpenConnection()
 #endif
 
   m_bFirstRequest = true;
-
   connected();
   return true;
 }
@@ -1953,30 +1956,23 @@ bool HTTPProtocol::httpOpenConnection()
  * HTTP server and sending the header.  If this requires special
  * authentication or other such fun stuff, then it will handle it.  This
  * function will NOT receive anything from the server, however.  This is in
- * contrast to previous incarnations of 'httpOpen'.
- *
- * The reason for the change is due to one small fact: some requests require
- * data to be sent in addition to the header (POST requests) and there is no
- * way for this function to get that data.  This function is called in the
- * slotPut() or slotGet() functions which, in turn, are called (indirectly) as
- * a result of a KIOJob::put() or KIOJob::get().  It is those latter functions
- * which are responsible for starting up this ioslave in the first place.
- * This means that 'httpOpen' is called (essentially) as soon as the ioslave
- * is created -- BEFORE any data gets to this slave.
+ * contrast to previous incarnations of 'httpOpen' as this method used to be
+ * called.
  *
  * The basic process now is this:
  *
  * 1) Open up the socket and port
  * 2) Format our request/header
  * 3) Send the header to the remote server
+ * 4) Call sendBody() if the HTTP method requires sending body data
  */
-bool HTTPProtocol::httpOpen()
+bool HTTPProtocol::sendQuery()
 {
   kDebug(7113);
 
   // Cannot have an https request without autoSsl!  This can
   // only happen if  the current installation does not support SSL...
-  if ( (m_protocol == "https" || m_protocol == "webdavs") && !isAutoSsl() )
+  if (isEncryptedHttpVariety(m_protocol) && !isAutoSsl() )
   {
     error( ERR_UNSUPPORTED_PROTOCOL, m_protocol );
     return false;
@@ -2043,10 +2039,20 @@ bool HTTPProtocol::httpOpen()
   bool hasDavData = false;
 
   // Clear out per-connection settings...
-  resetConnectionSettings ();
+  resetConnectionSettings();
 
-  // Check the validity of the current connection, if one exists.
-  httpCheckConnection();
+  // Check the reusability of the current connection.
+  if (httpShouldCloseConnection()) {
+    httpCloseConnection();
+  }
+
+  // Let's update our current state
+  m_state.hostname = m_request.hostname;
+  m_state.encoded_hostname = m_request.encoded_hostname;
+  m_state.port = m_request.port;
+  m_state.user = m_request.user;
+  m_state.passwd = m_request.passwd;
+  m_state.doProxy = m_request.doProxy;
 
 #if 0 //waaaaaah
   if ( !m_bIsTunneled && m_bNeedTunnel )
@@ -2195,7 +2201,7 @@ bool HTTPProtocol::httpOpen()
       else
          u.setProtocol( m_protocol );
 
-      // For all protocols other than the once handled by this io-slave
+      // For all protocols other than the ones handled by this io-slave
       // append the username.  This fixes a long standing bug of ftp io-slave
       // logging in anonymously in proxied connections even when the username
       // is explicitly specified.
@@ -2433,8 +2439,10 @@ bool HTTPProtocol::httpOpen()
     kDebug(7103) << s;
   }
 
+  // End the header iff there is no payload data. If we do have payload data
+  // sendBody() will add another field to the header, Content-Length.
   if (!hasBodyData && !hasDavData)
-    header += "\r\n";  /* end header */
+    header += "\r\n";
 
   // Now that we have our formatted header, let's send it!
   // Create a new connection to the remote machine if we do
@@ -2504,10 +2512,10 @@ bool HTTPProtocol::readHeaderFromCache() {
     char buffer[4097];
     if (!gzgets(m_request.fcache, buffer, 4096) )
     {
-    // Error, delete cache entry
-    kDebug(7113) << "Could not access cache to obtain mimetype!";
-    error( ERR_CONNECTION_BROKEN, m_state.hostname );
-    return false;
+        // Error, delete cache entry
+        kDebug(7113) << "Could not access cache to obtain mimetype!";
+        error( ERR_CONNECTION_BROKEN, m_state.hostname );
+        return false;
     }
 
     m_strMimeType = QString::fromUtf8( buffer).trimmed();
@@ -2538,14 +2546,14 @@ bool HTTPProtocol::readHeaderFromCache() {
         if (header.startsWith("content-type: ")) {
             int pos = header.indexOf("charset=");
             if (pos != -1) {
-                QString value = header.mid(pos+8);
-                m_request.strCharset = value;
-                setMetaData("charset", value);
+                QString charset = header.mid(pos+8);
+                m_request.strCharset = charset;
+                setMetaData("charset", charset);
             }
         } else
         if (header.startsWith("content-language: ")) {
-            QString value = header.mid(18);
-            setMetaData("content-language", value);
+            QString language = header.mid(18);
+            setMetaData("content-language", language);
         } else
         if (header.startsWith("content-disposition:")) {
             parseContentDisposition(header.mid(20));
@@ -2570,7 +2578,7 @@ bool HTTPProtocol::readHeaderFromCache() {
  * the header to our client as the client doesn't need to know the gory
  * details of HTTP headers.
  */
-bool HTTPProtocol::readHeader()
+bool HTTPProtocol::readResponseHeader()
 {
 try_again:
   kDebug(7113);
@@ -3733,7 +3741,7 @@ bool HTTPProtocol::sendBody()
   infoMessage( i18n( "Requesting data to send" ) );
 
   // m_bufPOST will NOT be empty iff authentication was required before posting
-  // the data OR a re-connect is requested from ::readHeader because the
+  // the data OR a re-connect is requested from ::readResponseHeader because the
   // connection was lost for some reason.
   if ( !m_bufPOST.isEmpty() )
   {
@@ -3815,8 +3823,8 @@ void HTTPProtocol::httpClose( bool keepAlive )
   // NOTE: we might even want to narrow this down to non-form
   // based submit requests which will require a meta-data from
   // khtml.
-  if (keepAlive && (!m_bUseProxy ||
-      m_bPersistentProxyConnection || m_bIsTunneled))
+  if (keepAlive && 
+      (!m_bUseProxy || m_bPersistentProxyConnection || m_bIsTunneled))
   {
     if (!m_keepAliveTimeout)
        m_keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
@@ -3865,6 +3873,7 @@ void HTTPProtocol::mimetype( const KUrl& url )
 
   if ( !checkRequestUrl( url ) )
     return;
+  resetSessionSettings();
 
   m_request.method = HTTP_HEAD;
   m_request.path = url.path();
@@ -3872,7 +3881,7 @@ void HTTPProtocol::mimetype( const KUrl& url )
   m_request.cache = CC_Cache;
   m_request.doProxy = m_bUseProxy;
 
-  retrieveHeader();
+  proceedUntilResponseHeader();
   httpClose(m_bKeepAlive);
   finished();
 
@@ -4139,7 +4148,7 @@ void HTTPProtocol::slotData(const QByteArray &_d)
  * This function is our "receive" function.  It is responsible for
  * downloading the message (not the header) from the HTTP server.  It
  * is called either as a response to a client's KIOJob::dataEnd()
- * (meaning that the client is done sending data) or by 'httpOpen()'
+ * (meaning that the client is done sending data) or by 'sendQuery()'
  * (if we are in the process of a PUT/POST request). It can also be
  * called by a webDAV function, to receive stat/list/property/etc.
  * data; in this case the data is stored in m_bufWebDavData.
