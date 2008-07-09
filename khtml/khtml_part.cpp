@@ -6681,9 +6681,11 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 #ifndef QT_NO_CLIPBOARD
     QString text = selectedText();
     text.replace(QChar(0xa0), ' ');
-    disconnect( qApp->clipboard(), SIGNAL( selectionChanged()), this, SLOT( slotClearSelection()));
-    qApp->clipboard()->setText(text,QClipboard::Selection);
-    connect( qApp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
+    if (!text.isEmpty()) {
+        disconnect( qApp->clipboard(), SIGNAL( selectionChanged()), this, SLOT( slotClearSelection()));
+        qApp->clipboard()->setText(text,QClipboard::Selection);
+        connect( qApp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
+    }
 #endif
     //kDebug( 6000 ) << "selectedText = " << text;
     emitSelectionChanged();
