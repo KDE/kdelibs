@@ -94,7 +94,7 @@ namespace KIO
 
 using namespace KIO;
 
-K_GLOBAL_STATIC(HostInfoAgentPrivate, hostInfoAgentPrivate);
+K_GLOBAL_STATIC(HostInfoAgentPrivate, hostInfoAgentPrivate)
 
 void HostInfo::lookupHost(const QString& hostName, QObject* receiver,
     const char* member)
