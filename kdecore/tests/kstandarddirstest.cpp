@@ -177,8 +177,14 @@ void KStandarddirsTest::testFindExe()
 #endif
 
     // Check the "exe" resource too
-    QCOMPARE( KGlobal::dirs()->realFilePath(kdeinit),
-              KGlobal::dirs()->locate( "exe", "kdeinit4" ) );
+    QString kdeinitPath1 = KGlobal::dirs()->realFilePath(kdeinit);
+    QString kdeinitPath2 = KGlobal::dirs()->locate( "exe", "kdeinit4" );
+#ifdef Q_WS_WIN // one path can be c:/... and second C:/...
+    kdeinitPath1 = kdeinitPath1.toLower();
+    kdeinitPath2 = kdeinitPath2.toLower();
+#endif
+    QCOMPARE( kdeinitPath1, kdeinitPath2 );
+
 #ifdef Q_OS_UNIX
     QCOMPARE( KGlobal::dirs()->realFilePath(lnusertemp),
               KGlobal::dirs()->locate( "exe", "lnusertemp" ) );
