@@ -1138,6 +1138,8 @@ void KDirOperator::activatedMenu(const KFileItem &item, const QPoint &pos)
     setupMenu();
     updateSelectionDependentActions();
 
+    emit contextMenuAboutToShow( item, d->actionMenu->menu() );
+
     d->actionMenu->menu()->exec(pos);
 }
 

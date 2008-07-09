@@ -757,6 +757,15 @@ Q_SIGNALS:
      */
     void dropped(const KFileItem &item, QDropEvent *event, const KUrl::List &urls);
 
+    /**
+     * Emitted just before the context menu is shown, allows users to
+     * extend the menu with custom actions.
+     *
+     * @param item the file on which the context menu was invoked
+     * @param menu the context menu, pre-populated with the file-management actions
+     */
+    void contextMenuAboutToShow(const KFileItem& item, QMenu* menu);
+
 private:
     class Private;
     Private* const d;
