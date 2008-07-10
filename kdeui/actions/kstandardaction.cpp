@@ -1,3 +1,4 @@
+// vim: sw=2 et
 /* This file is part of the KDE libraries
    Copyright (C) 1999,2000 Kurt Granroth <granroth@kde.org>
 
@@ -69,6 +70,13 @@ QList<StandardAction> actionIds()
 
   return result;
 }
+
+KDEUI_EXPORT KStandardShortcut::StandardShortcut shortcutForActionId(StandardAction id)
+{
+  const KStandardActionInfo* pInfo = infoPtr( id );
+  return (pInfo) ? pInfo->idAccel : KStandardShortcut::AccelNone;
+}
+
 
 KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObject *parent)
 {

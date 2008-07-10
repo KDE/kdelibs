@@ -20,6 +20,7 @@
 #define KSTANDARDACTION_H
 
 #include <kdeui_export.h>
+#include <kstandardshortcut.h>
 #include <QList>
 
 class QObject;
@@ -187,6 +188,13 @@ namespace KStandardAction
    * Returns a list of all actionIds.
    */
   KDEUI_EXPORT QList<StandardAction> actionIds();
+
+  /**
+   * Returns the standardshortcut associated with @a actionId.
+   *
+   * @param actionId    The actionId whose associated shortcut is wanted.
+   */
+  KDEUI_EXPORT KStandardShortcut::StandardShortcut shortcutForActionId(StandardAction id);
 
   /**
    * Create a new document or window.
