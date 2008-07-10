@@ -20,6 +20,7 @@
 */
 
 #include "kabstractwidgetjobtracker.h"
+#include "kabstractwidgetjobtracker_p.h"
 
 #include <QWidget>
 #include <QTimer>
@@ -28,24 +29,9 @@
 
 #include <kdebug.h>
 
-class KAbstractWidgetJobTracker::Private
-{
-public:
-    Private(KAbstractWidgetJobTracker *parent)
-        : q(parent) { }
-
-    KAbstractWidgetJobTracker *const q;
-
-    struct MoreOptions {
-        bool stopOnClose : 1;
-        bool autoDelete : 1;
-    };
-
-    QMap<KJob*, MoreOptions> moreOptions;
-};
-
 KAbstractWidgetJobTracker::KAbstractWidgetJobTracker(QWidget *parent)
-    : KJobTrackerInterface(parent), d(new Private(this))
+    : KJobTrackerInterface(parent)
+    , d(new Private(this))
 {
 }
 
@@ -57,59 +43,31 @@ KAbstractWidgetJobTracker::~KAbstractWidgetJobTracker()
 void KAbstractWidgetJobTracker::registerJob(KJob *job)
 {
     KJobTrackerInterface::registerJob(job);
-
-    if (d->moreOptions.contains(job)) {
-        return;
-    }
-
-    Private::MoreOptions mo;
-    mo.stopOnClose = true;
-    mo.autoDelete = true;
-
-    d->moreOptions.insert(job, mo);
 }
 
 void KAbstractWidgetJobTracker::unregisterJob(KJob *job)
 {
     KJobTrackerInterface::unregisterJob(job);
-
-    if (!d->moreOptions.contains(job)) {
-        return;
-    }
-
-    d->moreOptions.remove(job);
 }
 
 void KAbstractWidgetJobTracker::setStopOnClose(KJob *job, bool stopOnClose)
 {
-    if (!d->moreOptions.contains(job)) {
-        return;
-    }
-
-    d->moreOptions[job].stopOnClose = stopOnClose;
+    d->setStopOnClose(job, stopOnClose);
 }
 
 bool KAbstractWidgetJobTracker::stopOnClose(KJob *job) const
 {
-    if (!d->moreOptions.contains(job)) {
-        return false;
-    }
-
-    return d->moreOptions[job].stopOnClose;
+    return d->stopOnClose(job);
 }
 
 void KAbstractWidgetJobTracker::setAutoDelete(KJob *job, bool autoDelete)
 {
-    if (!d->moreOptions.contains(job)) {
-        return;
-    }
-
-    d->moreOptions[job].autoDelete = autoDelete;
+    d->setAutoDelete(job, autoDelete);
 }
 
 bool KAbstractWidgetJobTracker::autoDelete(KJob *job) const
 {
-    return d->moreOptions[job].autoDelete;
+    return d->autoDelete(job);
 }
 
 void KAbstractWidgetJobTracker::finished(KJob *job)
@@ -119,34 +77,19 @@ void KAbstractWidgetJobTracker::finished(KJob *job)
 
 void KAbstractWidgetJobTracker::slotStop(KJob *job)
 {
-    if (!d->moreOptions.contains(job)) {
-        return;
-    }
-
-    job->kill( KJob::EmitResult ); // notify that the job has been killed
-
+    job->kill(KJob::EmitResult); // notify that the job has been killed
     emit stopped(job);
 }
 
 void KAbstractWidgetJobTracker::slotSuspend(KJob *job)
 {
-    if (!d->moreOptions.contains(job)) {
-        return;
-    }
-
     job->suspend();
-
     emit suspend(job);
 }
 
 void KAbstractWidgetJobTracker::slotResume(KJob *job)
 {
-    if (!d->moreOptions.contains(job)) {
-        return;
-    }
-
     job->resume();
-
     emit resume(job);
 }
 
