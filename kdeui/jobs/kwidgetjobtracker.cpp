@@ -432,6 +432,10 @@ void KWidgetJobTracker::Private::ProgressWidget::closeEvent(QCloseEvent *event)
     }
 
     QWidget::closeEvent(event);
+
+    if (keepOpenChecked) {
+        KGlobal::deref();
+    }
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::init()
@@ -598,6 +602,12 @@ void KWidgetJobTracker::Private::ProgressWidget::checkDestination(const KUrl &de
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_keepOpenToggled(bool keepOpen)
 {
+    if (keepOpen) {
+        KGlobal::ref();
+    } else {
+        KGlobal::deref();
+    }
+
     keepOpenChecked = keepOpen;
 }
 
@@ -626,6 +636,10 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_stop()
 {
     tracker->slotStop(job);
     deref();
+
+    if (keepOpenChecked) {
+        KGlobal::deref();
+    }
 }
 
 #include "kwidgetjobtracker.moc"
