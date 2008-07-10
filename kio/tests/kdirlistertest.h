@@ -36,10 +36,9 @@ private Q_SLOTS:
     void testRefreshItems();
     void testDeleteItem();
     void testRenameItem();
-    void testOpenAndStop();
     void testConcurrentListing();
+    void testOpenAndStop();
     // TODO test filtering
-    // TODO test concurrent listings from two KDirListers
 
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
     void exitLoop();

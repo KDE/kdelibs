@@ -307,32 +307,6 @@ void KDirListerTest::testRenameItem()
     m_refreshedItems.clear();
 }
 
-void KDirListerTest::testOpenAndStop()
-{
-    m_items.clear();
-    const QString path = "/"; // better not use a directory that we already listed!
-    QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
-    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
-    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
-    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
-    QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
-    QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
-    QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
-    connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
-    m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags);
-    m_dirLister.stop(); // we should also test stop(KUrl(path))...
-
-    QCOMPARE(spyStarted.count(), 1); // The call to openUrl itself, emits started
-    QCOMPARE(spyCompleted.count(), 0); // we had time to stop before the job even started
-    QCOMPARE(spyCompletedKUrl.count(), 0);
-    QCOMPARE(spyCanceled.count(), 1);
-    QCOMPARE(spyCanceledKUrl.count(), 1);
-    QCOMPARE(spyClear.count(), 1);
-    QCOMPARE(spyClearKUrl.count(), 0);
-    QCOMPARE(m_items.count(), 0); // we had time to stop before the job even started
-    disconnect(&m_dirLister, 0, this, 0);
-}
-
 void KDirListerTest::testConcurrentListing()
 {
     m_items.clear();
@@ -366,9 +340,9 @@ void KDirListerTest::testConcurrentListing()
     // This reproduces the use case "clicking on a folder in dolphin iconview, and dirlister2
     // is the one used by the "folder panel". m_dirLister is going to list the subdir,
     // while dirLister2 wants to list the folder that m_dirLister has just left.
-    m_dirLister.openUrl(KUrl(path+"subdir"), KDirLister::NoFlags);
     dirLister2.stop(); // like dolphin does, noop.
-    dirLister2.openUrl(KUrl(path), KDirLister::Reload);
+    dirLister2.openUrl(KUrl(path), KDirLister::NoFlags);
+    m_dirLister.openUrl(KUrl(path+"subdir"), KDirLister::NoFlags);
 
     QCOMPARE(spyStarted1.count(), 1);
     QCOMPARE(spyCompleted1.count(), 0);
@@ -414,6 +388,32 @@ void KDirListerTest::testConcurrentListing()
 
     disconnect(&m_dirLister, 0, this, 0);
     disconnect(&dirLister2, 0, this, 0);
+}
+
+void KDirListerTest::testOpenAndStop()
+{
+    m_items.clear();
+    const QString path = "/"; // better not use a directory that we already listed!
+    QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
+    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
+    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
+    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
+    QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
+    QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
+    QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
+    connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+    m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags);
+    m_dirLister.stop(); // we should also test stop(KUrl(path))...
+
+    QCOMPARE(spyStarted.count(), 1); // The call to openUrl itself, emits started
+    QCOMPARE(spyCompleted.count(), 0); // we had time to stop before the job even started
+    QCOMPARE(spyCompletedKUrl.count(), 0);
+    QCOMPARE(spyCanceled.count(), 1);
+    QCOMPARE(spyCanceledKUrl.count(), 1);
+    QCOMPARE(spyClear.count(), 1);
+    QCOMPARE(spyClearKUrl.count(), 0);
+    QCOMPARE(m_items.count(), 0); // we had time to stop before the job even started
+    disconnect(&m_dirLister, 0, this, 0);
 }
 
 void KDirListerTest::enterLoop(int exitCount)
