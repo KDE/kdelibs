@@ -51,9 +51,6 @@
 #include <QtCore/QFile>
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QTimer>
-#ifdef HAVE_QFILESYSTEMWATCHER
-#include <QtCore/QFileSystemWatcher>
-#endif
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -202,7 +199,7 @@ KDirWatchPrivate::KDirWatchPrivate()
 #endif
 #ifdef HAVE_QFILESYSTEMWATCHER
   availableMethods << "QFileSystemWatcher";
-  fsWatcher = new QFileSystemWatcher();
+  fsWatcher = new KFileSystemWatcher();
   connect(fsWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(fswEventReceived(QString)));
   connect(fsWatcher, SIGNAL(fileChanged(QString)),      this, SLOT(fswEventReceived(QString)));
 #endif
