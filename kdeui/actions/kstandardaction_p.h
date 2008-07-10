@@ -42,7 +42,7 @@ static const KStandardActionInfo g_rgActionInfo[] =
 {
   { New,           KStandardShortcut::New, "file_new", I18N_NOOP("&New"), 0, "document-new" },
   { Open,          KStandardShortcut::Open, "file_open", I18N_NOOP("&Open..."), 0, "document-open" },
-  { OpenRecent,    KStandardShortcut::OpenRecent, "file_open_recent", I18N_NOOP("Open &Recent"), 0, "document-open" },
+  { OpenRecent,    KStandardShortcut::AccelNone, "file_open_recent", I18N_NOOP("Open &Recent"), 0, "document-open" },
   { Save,          KStandardShortcut::Save, "file_save", I18N_NOOP("&Save"), 0, "document-save" },
   { SaveAs,        KStandardShortcut::SaveAs, "file_save_as", I18N_NOOP("Save &As..."), 0, "document-save-as" },
   { Revert,        KStandardShortcut::Revert, "file_revert", I18N_NOOP("Re&vert"), 0, "document-revert" },
@@ -113,8 +113,8 @@ static const KStandardActionInfo g_rgActionInfo[] =
   { TipofDay,      KStandardShortcut::TipofDay, "help_show_tip", I18N_NOOP("Tip of the &Day"), 0, "help-hint" },
   { ReportBug,     KStandardShortcut::ReportBug, "help_report_bug", I18N_NOOP("&Report Bug..."), 0, "tools-report-bug" },
   { SwitchApplicationLanguage, KStandardShortcut::SwitchApplicationLanguage, "switch_application_language", I18N_NOOP("Switch Application &Language..."), 0, 0 },
-  { AboutApp,      KStandardShortcut::AboutApp, "help_about_app", I18N_NOOP("&About %1"), 0, 0 },
-  { AboutKDE,      KStandardShortcut::AboutKDE, "help_about_kde", I18N_NOOP("About &KDE"), 0, "kde" },
+  { AboutApp,      KStandardShortcut::AccelNone, "help_about_app", I18N_NOOP("&About %1"), 0, 0 },
+  { AboutKDE,      KStandardShortcut::AccelNone, "help_about_kde", I18N_NOOP("About &KDE"), 0, "kde" },
   { ActionNone,    KStandardShortcut::AccelNone, 0, 0, 0, 0 }
 };
 
