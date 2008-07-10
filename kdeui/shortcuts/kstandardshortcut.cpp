@@ -190,7 +190,7 @@ void saveShortcut(StandardShortcut id, const KShortcut &newShortcut)
 		else
 			return;
 
-	cg.writeEntry(info->name, info->cut.toString());
+    cg.writeEntry(info->name, info->cut.toString(), KConfig::Global|KConfig::Persistent);
 }
 
 QString name(StandardShortcut id)
