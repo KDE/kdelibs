@@ -182,8 +182,9 @@ public:
   KFileItem *findByUrl( const KDirLister *lister, const KUrl &_url ) const;
 
     // Called by CachedItemsJob:
-    // Emits items from the cache, for this lister and this url
-    void emitItemsFromCache(KDirLister* lister, const KUrl& _url, bool _reload, bool _emitCompleted);
+    // Emits those items, for this lister and this url
+    void emitItemsFromCache(KDirLister* lister, const KFileItemList& lst, const KFileItem& rootItem,
+                            const KUrl& _url, bool _reload, bool _emitCompleted);
 
 public Q_SLOTS:
   /**
@@ -398,9 +399,11 @@ private:
 class KDirLister::Private::CachedItemsJob : public KJob {
     Q_OBJECT
 public:
-    CachedItemsJob(KDirLister* lister, const KUrl& url, bool reload, bool emitCompleted)
+    CachedItemsJob(KDirLister* lister, const KFileItemList& items, const KFileItem& rootItem,
+                   const KUrl& url, bool reload, bool emitCompleted)
         : KJob(lister),
           m_lister(lister), m_url(url),
+          m_items(items), m_rootItem(rootItem),
           m_reload(reload), m_emitCompleted(emitCompleted) {
         setAutoDelete(true);
     }
@@ -415,6 +418,8 @@ public Q_SLOTS:
 private:
     KDirLister* m_lister;
     KUrl m_url;
+    KFileItemList m_items;
+    KFileItem m_rootItem;
     bool m_reload;
     bool m_emitCompleted;
 };
