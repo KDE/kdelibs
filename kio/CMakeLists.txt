@@ -131,6 +131,7 @@ endif(UNIX)
 if(WIN32)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
        kio/kdirwatch_win.cpp
+       kio/krun_win.cpp
    )
 endif(WIN32)
 
