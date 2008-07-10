@@ -727,7 +727,7 @@ Qt::ItemFlags KDirModel::flags( const QModelIndex & index ) const
                     }
                 }
             }
-	}
+        }
     }
 
     return f;
@@ -764,9 +764,8 @@ void KDirModel::fetchMore( const QModelIndex & parent )
         return;
     dirNode->setPopulated( true );
 
-    //const KUrl url = parentItem.url();
-    //kDebug(7008) << "listing" << url;
-    d->m_dirLister->openUrl(parentItem.url(), KDirLister::Keep | KDirLister::Reload);
+    const KUrl parentUrl = parentItem.url();
+    d->m_dirLister->openUrl(parentUrl, KDirLister::Keep);
 }
 
 bool KDirModel::dropMimeData( const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent )

@@ -336,6 +336,7 @@ void KDirListerTest::testOpenAndStop()
 void KDirListerTest::testConcurrentListing()
 {
     m_items.clear();
+    m_items2.clear();
 
     KDirLister dirLister2;
 
@@ -359,9 +360,14 @@ void KDirListerTest::testConcurrentListing()
     QSignalSpy spyCompletedKUrl2(&dirLister2, SIGNAL(completed(KUrl)));
     QSignalSpy spyCanceled2(&dirLister2, SIGNAL(canceled()));
     QSignalSpy spyCanceledKUrl2(&dirLister2, SIGNAL(canceled(KUrl)));
+    connect(&dirLister2, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems2(KFileItemList)));
 
-    // The call to openUrl itself, emits started
-    m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags);
+    // Before dirLister2 has time to emit the items, let's make m_dirLister move to another dir.
+    // This reproduces the use case "clicking on a folder in dolphin iconview, and dirlister2
+    // is the one used by the "folder panel". m_dirLister is going to list the subdir,
+    // while dirLister2 wants to list the folder that m_dirLister has just left.
+    m_dirLister.openUrl(KUrl(path+"subdir"), KDirLister::NoFlags);
+    dirLister2.stop(); // like dolphin does, noop.
     dirLister2.openUrl(KUrl(path), KDirLister::Reload);
 
     QCOMPARE(spyStarted1.count(), 1);
@@ -380,6 +386,7 @@ void KDirListerTest::testConcurrentListing()
     QCOMPARE(spyCanceledKUrl2.count(), 0);
     QCOMPARE(spyClear2.count(), 1);
     QCOMPARE(spyClearKUrl2.count(), 0);
+    QCOMPARE(m_items2.count(), 0);
 
     // then wait for completed
     qDebug("waiting for completed");
@@ -387,46 +394,23 @@ void KDirListerTest::testConcurrentListing()
     connect(&dirLister2, SIGNAL(completed()), this, SLOT(exitLoop()));
     enterLoop(2);
 
-    // Using KDirLister::Reload for dirLister2.openUrl() triggered an update in both dirlisters
-    // This is why started is emmitted twice.
-
-    QCOMPARE(spyStarted1.count(), 2);
+    QCOMPARE(spyStarted1.count(), 1);
     QCOMPARE(spyCompleted1.count(), 1);
     QCOMPARE(spyCompletedKUrl1.count(), 1);
     QCOMPARE(spyCanceled1.count(), 0);
     QCOMPARE(spyCanceledKUrl1.count(), 0);
     QCOMPARE(spyClear1.count(), 1);
     QCOMPARE(spyClearKUrl1.count(), 0);
-    QCOMPARE(m_items.count(), 4);
+    QCOMPARE(m_items.count(), 3);
 
-    QCOMPARE(spyStarted2.count(), 2);
+    QCOMPARE(spyStarted2.count(), 1);
     QCOMPARE(spyCompleted2.count(), 1);
     QCOMPARE(spyCompletedKUrl2.count(), 1);
     QCOMPARE(spyCanceled2.count(), 0);
     QCOMPARE(spyCanceledKUrl2.count(), 0);
     QCOMPARE(spyClear2.count(), 1);
     QCOMPARE(spyClearKUrl2.count(), 0);
-
-    // So we can wait for another completed signal from each one...
-    qDebug("waiting for completed again");
-    enterLoop(2);
-
-    QCOMPARE(spyStarted1.count(), 2);
-    QCOMPARE(spyCompleted1.count(), 2);
-    QCOMPARE(spyCompletedKUrl1.count(), 2);
-    QCOMPARE(spyCanceled1.count(), 0);
-    QCOMPARE(spyCanceledKUrl1.count(), 0);
-    QCOMPARE(spyClear1.count(), 1);
-    QCOMPARE(spyClearKUrl1.count(), 0);
-    QCOMPARE(m_items.count(), 4);
-
-    QCOMPARE(spyStarted2.count(), 2);
-    QCOMPARE(spyCompleted2.count(), 2);
-    QCOMPARE(spyCompletedKUrl2.count(), 2);
-    QCOMPARE(spyCanceled2.count(), 0);
-    QCOMPARE(spyCanceledKUrl2.count(), 0);
-    QCOMPARE(spyClear2.count(), 1);
-    QCOMPARE(spyClearKUrl2.count(), 0);
+    QCOMPARE(m_items2.count(), 4);
 
     disconnect(&m_dirLister, 0, this, 0);
     disconnect(&dirLister2, 0, this, 0);
@@ -451,6 +435,11 @@ void KDirListerTest::exitLoop()
 void KDirListerTest::slotNewItems(const KFileItemList& lst)
 {
     m_items += lst;
+}
+
+void KDirListerTest::slotNewItems2(const KFileItemList& lst)
+{
+    m_items2 += lst;
 }
 
 void KDirListerTest::slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > & lst)

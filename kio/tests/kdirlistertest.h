@@ -44,6 +44,7 @@ private Q_SLOTS:
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
     void exitLoop();
     void slotNewItems(const KFileItemList&);
+    void slotNewItems2(const KFileItemList&);
     void slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&);
 
 Q_SIGNALS:
@@ -58,6 +59,7 @@ private:
     KTempDir m_tempDir;
     KDirLister m_dirLister;
     KFileItemList m_items;
+    KFileItemList m_items2;
     QList<QPair<KFileItem, KFileItem> > m_refreshedItems;
 };
 
