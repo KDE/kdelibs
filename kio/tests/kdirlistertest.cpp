@@ -387,8 +387,10 @@ void KDirListerTest::testConcurrentListing()
     connect(&dirLister2, SIGNAL(completed()), this, SLOT(exitLoop()));
     enterLoop(2);
 
-    QEXPECT_FAIL("", "Using KDirLister::Reload for dirLister2.openUrl() has sideeffects m_dirLister.", Continue);
-    QCOMPARE(spyStarted1.count(), 1);
+    // Using KDirLister::Reload for dirLister2.openUrl() triggered an update in both dirlisters
+    // This is why started is emmitted twice.
+
+    QCOMPARE(spyStarted1.count(), 2);
     QCOMPARE(spyCompleted1.count(), 1);
     QCOMPARE(spyCompletedKUrl1.count(), 1);
     QCOMPARE(spyCanceled1.count(), 0);
@@ -396,16 +398,37 @@ void KDirListerTest::testConcurrentListing()
     QCOMPARE(spyClear1.count(), 1);
     QCOMPARE(spyClearKUrl1.count(), 0);
     QCOMPARE(m_items.count(), 4);
-    disconnect(&m_dirLister, 0, this, 0);
 
-    QEXPECT_FAIL("", "Using KDirLister::Reload for dirLister2.openUrl() triggers 2 started signals instead of one.", Continue);
-    QCOMPARE(spyStarted2.count(), 1);
+    QCOMPARE(spyStarted2.count(), 2);
     QCOMPARE(spyCompleted2.count(), 1);
     QCOMPARE(spyCompletedKUrl2.count(), 1);
     QCOMPARE(spyCanceled2.count(), 0);
     QCOMPARE(spyCanceledKUrl2.count(), 0);
     QCOMPARE(spyClear2.count(), 1);
     QCOMPARE(spyClearKUrl2.count(), 0);
+
+    // So we can wait for another completed signal from each one...
+    qDebug("waiting for completed again");
+    enterLoop(2);
+
+    QCOMPARE(spyStarted1.count(), 2);
+    QCOMPARE(spyCompleted1.count(), 2);
+    QCOMPARE(spyCompletedKUrl1.count(), 2);
+    QCOMPARE(spyCanceled1.count(), 0);
+    QCOMPARE(spyCanceledKUrl1.count(), 0);
+    QCOMPARE(spyClear1.count(), 1);
+    QCOMPARE(spyClearKUrl1.count(), 0);
+    QCOMPARE(m_items.count(), 4);
+
+    QCOMPARE(spyStarted2.count(), 2);
+    QCOMPARE(spyCompleted2.count(), 2);
+    QCOMPARE(spyCompletedKUrl2.count(), 2);
+    QCOMPARE(spyCanceled2.count(), 0);
+    QCOMPARE(spyCanceledKUrl2.count(), 0);
+    QCOMPARE(spyClear2.count(), 1);
+    QCOMPARE(spyClearKUrl2.count(), 0);
+
+    disconnect(&m_dirLister, 0, this, 0);
     disconnect(&dirLister2, 0, this, 0);
 }
 
