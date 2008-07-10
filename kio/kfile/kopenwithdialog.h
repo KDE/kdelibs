@@ -29,7 +29,10 @@
 class KOpenWithDialogPrivate;
 
 /**
- * "Open with" dialog box.
+ * "Open With" dialog box.
+ *
+ * @note To let the user choose an application and run it immediately, 
+ *       use simpler KRun::displayOpenWithDialog().
  *
  * @author David Faure <faure@kde.org>
  */

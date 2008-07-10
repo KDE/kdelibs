@@ -31,7 +31,6 @@
 #include <sys/stat.h>
 
 #include <QtGui/QWidget>
-#include <QtCore/QPointer>
 
 #include "kmimetypetrader.h"
 #include "kmimetype.h"
@@ -71,60 +70,18 @@
 #include <kwindowsystem.h>
 #endif
 
-class KRun::KRunPrivate
+KRun::KRunPrivate::KRunPrivate(KRun *parent)
+  : q(parent),
+    m_showingDialog(false)
 {
-public:
-    KRunPrivate(KRun *parent)
-      : q(parent),
-        m_showingDialog(false)
-    {
-    }
+}
 
-    void init (const KUrl& url, QWidget* window, mode_t mode,
-               bool isLocalFile, bool showProgressInfo, const QByteArray& asn);
+void KRun::KRunPrivate::startTimer()
+{
+    m_timer.start(0);
+}
 
-    // This helper method makes debugging easier: a single breakpoint for all
-    // the code paths that start the timer - at least from KRun itself.
-    // TODO: add public method startTimer() and deprecate timer() accessor,
-    // starting is the only valid use of the timer in subclasses (BrowserRun, KHTMLRun and KonqRun)
-    void startTimer() {
-        m_timer.start(0);
-    }
-
-    KRun *q;
-    bool m_showingDialog;
-    bool m_runExecutables;
-
-    QString m_preferredService;
-    QString m_externalBrowser;
-    QString m_localPath;
-    QString m_suggestedFileName;
-    QPointer <QWidget> m_window;
-    QByteArray m_asn;
-    KUrl m_strURL;
-    bool m_bFault;
-    bool m_bAutoDelete;
-    bool m_bProgressInfo;
-    bool m_bFinished;
-    KIO::Job * m_job;
-    QTimer m_timer;
-
-    /**
-     * Used to indicate that the next action is to scan the file.
-     * This action is invoked from slotTimeout.
-     */
-    bool m_bScanFile;
-    bool m_bIsDirectory;
-
-    /**
-     * Used to indicate that the next action is to initialize.
-     * This action is invoked from slotTimeout
-     */
-    bool m_bInit;
-
-    bool m_bIsLocalFile;
-    mode_t m_mode;
-};
+// ---------------------------------------------------------------------------
 
 bool KRun::isExecutableFile( const KUrl& url, const QString &mimetype )
 {
@@ -211,15 +168,24 @@ bool KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, boo
   return KRun::run( *offer, lst, window, tempFile, suggestedFileName, asn );
 }
 
-bool KRun::displayOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles, const QString& suggestedFileName,
-    const QByteArray& asn )
+bool KRun::displayOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles, 
+                                  const QString& suggestedFileName, const QByteArray& asn )
 {
     if (!KAuthorized::authorizeKAction("openwith"))
     {
-       KMessageBox::sorry(window, i18n("You are not authorized to select an application to open this file."));
+       KMessageBox::sorry(window, 
+         i18n("You are not authorized to select an application to open this file."));
        return false;
     }
 
+#ifdef Q_WS_WIN
+    KConfigGroup cfgGroup(KGlobal::config(), "KOpenWithDialog Settings");
+    if (cfgGroup.readEntry("Native", true))
+    {
+      return KRun::KRunPrivate::displayNativeOpenWithDialog( lst, window, tempFiles,
+                                                       suggestedFileName, asn );
+    }
+#endif
     KOpenWithDialog l( lst, i18n("Open with:"), QString(), window );
     if ( l.exec() )
     {
