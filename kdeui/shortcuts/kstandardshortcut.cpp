@@ -175,21 +175,27 @@ static void initialize(StandardShortcut id)
 
 void saveShortcut(StandardShortcut id, const KShortcut &newShortcut)
 {
-	KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
-	if(info->id == AccelNone)
-		return;
+    KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
+    // If the action has no standard shortcut associated there is nothing to
+    // save
+    if(info->id == AccelNone)
+        return;
 
-	KConfigGroup cg(KGlobal::config(), "Shortcuts");
+    KConfigGroup cg(KGlobal::config(), "Shortcuts");
 
-	info->cut = newShortcut;
-	bool sameAsDefault = (newShortcut == hardcodedDefaultShortcut(id));
+    info->cut = newShortcut;
+    bool sameAsDefault = (newShortcut == hardcodedDefaultShortcut(id));
 
-	if (sameAsDefault)
-		if(cg.hasKey(info->name))
-			cg.deleteEntry(info->name);
-		else
-			return;
+    if (sameAsDefault) {
+        // If the shortcut is the equal to the hardcoded one we remove it from
+        // kdeglobal if necessary and return.
+        if(cg.hasKey(info->name))
+            cg.deleteEntry(info->name, KConfig::Global|KConfig::Persistent);
 
+        return;
+    }
+
+    // Write the changed shortcut to kdeglobals
     cg.writeEntry(info->name, info->cut.toString(), KConfig::Global|KConfig::Persistent);
 }
 
