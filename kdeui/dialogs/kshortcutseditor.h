@@ -130,22 +130,26 @@ public:
 
 
 	/**
-     * Undo all change made since the last save().
+     * Undo all change made since the last commit().
 	 */
 	void undoChanges();
 
-	/**
+    /**
      * Save the changes.
      *
-     * Well this function doesn't save actually for global shortcuts. It makes sure the editor
-     * doesn't undo all changes when it is deleted.
-	 *
-	 * This saves the actions to disk.
-	 * Any KActionCollection objects with the xmlFile() value set
-	 * will be written to an XML file.  All other will be written
-	 * to the application's rc file.
-	 */
-	void save();
+     * Before saving the changes are commited. This saves the actions to disk.
+     * Any KActionCollection objects with the xmlFile() value set will be
+     * written to an XML file.  All other will be written to the application's
+     * rc file.
+     */
+    void save();
+
+    /**
+     * Commit the changes without saving.
+     *
+     * This commits the changes without saving.
+     */
+    void commit();
 
     /**
      * Write the current settings to the \p config object.

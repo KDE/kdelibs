@@ -191,20 +191,27 @@ void KShortcutsEditor::resizeColumns()
 }
 
 
-void KShortcutsEditor::save()
+void KShortcutsEditor::commit()
 {
-    // we have to call commit on all items. If we wouldn't do that they would undo their changes
-    // upon deletion! That would lead to weird problems. Changes to Global Shortcuts would vanish
-    // completely. Changes to local shortcuts would vanish for this session.
     for (QTreeWidgetItemIterator it(d->ui.list); (*it); ++it) {
         if ((*it)->childCount())
             continue;
 
         static_cast<KShortcutsEditorItem *>(*it)->commit();
     }
-
-    writeConfiguration();
 }
+
+
+void KShortcutsEditor::save()
+{
+    writeConfiguration();
+    // we have to call commit. If we wouldn't do that the changes would be
+    // undone on deletion! That would lead to weird problems. Changes to
+    // Global Shortcuts would vanish completely. Changes to local shortcuts
+    // would vanish for this session.
+    commit();
+}
+
 
 // KDE5 : rename to undo()
 void KShortcutsEditor::undoChanges()
