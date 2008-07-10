@@ -53,6 +53,8 @@ public:
     /**
      * If \a enabled is true (the default), items will automatically resize
      * themselves to fill the view.
+     *
+     * @since 4.1
      */
     void setAutoResizeItemsEnabled(bool enabled);
     bool isAutoResizeItemsEnabled() const;
