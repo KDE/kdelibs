@@ -191,6 +191,10 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
     pAction->setIcon(icon);
 
     KShortcut cut = KStandardShortcut::shortcut(pInfo->idAccel);
+    // All actions need an associated standard shortcut. It would be
+    // impossible to configure the actions shortcuts with the standard_actions
+    // kcm if not.
+    Q_ASSERT(pInfo->idAccel != KStandardShortcut::AccelNone);
     if (!cut.isEmpty())
         pAction->setShortcut(cut);
 
@@ -465,9 +469,19 @@ static KAction *buildAutomaticAction( QObject* parent, StandardAction id, const 
   if ( !p )
     return 0;
 
-  AutomaticAction *action = new AutomaticAction( KIcon( p->psIconName ), p->psLabel,
-      KStandardShortcut::shortcut( p->idAccel ), slot, parent);
+  // All actions need an associated standard shortcut. It would be
+  // impossible to configure the actions shortcuts with the standard_actions
+  // kcm if not.
+  Q_ASSERT(p->idAccel != KStandardShortcut::AccelNone);
 
+  AutomaticAction *action = new AutomaticAction(
+      KIcon( p->psIconName ),
+      p->psLabel,
+      KStandardShortcut::shortcut( p->idAccel ),
+      slot,
+      parent);
+
+shortcut. That is needed for the standard_shortcuts kcm.:kdeui/actions/kstandardaction.cpp
   action->setObjectName(p->psName);
   action->setWhatsThis( p->psWhatsThis );
 

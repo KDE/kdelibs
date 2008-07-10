@@ -78,6 +78,36 @@ namespace KStandardShortcut
 
     RotateUp, RotateDown,
 
+    OpenRecent,
+    SaveAs,
+    Revert,
+    PrintPreview,
+    Mail,
+    Clear,
+    ActualSize,
+    FitToPage,
+    FitToWidth,
+    FitToHeight,
+    Zoom,
+    Goto,
+    GotoPage,
+    DocumentBack,
+    DocumentForward,
+    EditBookmarks,
+    Spelling,
+    ShowToolbar,
+    ShowStatusbar,
+    SaveOptions,
+    KeyBindings,
+    Preferences,
+    ConfigureToolbars,
+    ConfigureNotifications,
+    TipofDay,
+    ReportBug,
+    SwitchApplicationLanguage,
+    AboutApp,
+    AboutKDE,
+
     // Insert new items here!
 
     StandardShortcutCount // number of standard shortcuts
