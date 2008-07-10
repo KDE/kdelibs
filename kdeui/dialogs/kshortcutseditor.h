@@ -148,6 +148,8 @@ public:
      * Commit the changes without saving.
      *
      * This commits the changes without saving.
+     *
+     * @since 4.2
      */
     void commit();
 

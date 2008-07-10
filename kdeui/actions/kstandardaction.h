@@ -186,6 +186,8 @@ namespace KStandardAction
 
   /**
    * Returns a list of all actionIds.
+   *
+   * @since 4.2
    */
   KDEUI_EXPORT QList<StandardAction> actionIds();
 
@@ -193,6 +195,8 @@ namespace KStandardAction
    * Returns the standardshortcut associated with @a actionId.
    *
    * @param actionId    The actionId whose associated shortcut is wanted.
+   *
+   * @since 4.2
    */
   KDEUI_EXPORT KStandardShortcut::StandardShortcut shortcutForActionId(StandardAction id);
 
