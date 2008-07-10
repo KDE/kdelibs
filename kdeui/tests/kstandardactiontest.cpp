@@ -44,19 +44,19 @@ void tst_KStandardAction::implicitInsertionUsingCut()
 
 void tst_KStandardAction::shortcutForActionId()
 {
-    KAction *cut = KStandardAction::cut(0);
     KShortcut stdShortcut = KStandardShortcut::shortcut(KStandardShortcut::Cut);
+
+    KAction *cut = KStandardAction::cut(NULL);
     KShortcut actShortcut = cut->shortcut();
     QVERIFY(stdShortcut.primary() == actShortcut.primary());
-    // Due to a bug or feature a standard action only get's the primary
-    // shortcuts of the corresponding standard shortcut. The reason is the
-    // following line from kstandardaction.cpp:
-#if 0
-    AutomaticAction *action = new AutomaticAction(KIcon( p->psIconName ), p->psLabel, KStandardShortcut::shortcut( p->idAccel ).primary())
-#endif
-    // So we test that the alternate shortcut is empty. I will ask the ML if
-    // it's a bug or feature.
-    QVERIFY(actShortcut.alternate() == QKeySequence());
+    QVERIFY(actShortcut.alternate() == actShortcut.alternate());
+    delete cut;
+
+    cut = KStandardAction::create(KStandardAction::Cut, NULL, NULL, NULL);
+    actShortcut = cut->shortcut();
+    QVERIFY(stdShortcut.primary() == actShortcut.primary());
+    QVERIFY(actShortcut.alternate() == actShortcut.alternate());
+    delete cut;
 }
 
 QTEST_KDEMAIN(tst_KStandardAction, GUI)
