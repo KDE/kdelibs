@@ -89,7 +89,7 @@ protected Q_SLOTS:
 
     //TODO: Misses canResume()
 
- private:
+private:
     class Private;
     Private *const d;
 

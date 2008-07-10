@@ -77,14 +77,11 @@ QWidget *KWidgetJobTracker::widget(KJob *job)
 
 void KWidgetJobTracker::registerJob(KJob *job)
 {
-    if (d->progressWidget.contains(job) ||
-        d->progressWidgetsToBeShown.contains(job)) {
-        return;
-    }
-
     KAbstractWidgetJobTracker::registerJob(job);
 
     Private::ProgressWidget *vi = new Private::ProgressWidget(job, this, d->parent);
+    vi->jobRegistered = true;
+    vi->setAttribute(Qt::WA_DeleteOnClose);
     d->progressWidget.insert(job, vi);
     d->progressWidgetsToBeShown.enqueue(job);
 
@@ -97,14 +94,11 @@ void KWidgetJobTracker::unregisterJob(KJob *job)
 
     KWidgetJobTracker::Private::ProgressWidget *pWidget = d->progressWidget.value(job, 0);
     if (!pWidget) {
-        d->progressWidgetsToBeShown.removeAll(job);
         return;
     }
 
     pWidget->deref();
-
-    d->progressWidget.remove(job);
-    d->progressWidgetsToBeShown.removeAll(job);
+    pWidget->jobRegistered = false;
 }
 
 bool KWidgetJobTracker::keepOpen(KJob *job) const
@@ -226,10 +220,20 @@ void KWidgetJobTracker::Private::ProgressWidget::deref()
     }
 
     if (!refCount) {
-        if (!keepOpenChecked || !tracker->widget(job)) {
-            hide();
-            if (tracker->autoDelete(job)) {
-                deleteLater();
+        if (!keepOpenChecked || !jobRegistered) {
+            close();
+            // It might happen the next scenario:
+            // - Start a job which opens a progress widget. Keep it open. Address job is 0xdeadbeef
+            // - Start a new job, which is given address 0xdeadbeef. A new window is opened.
+            //   This one will take much longer to complete. The key 0xdeadbeef on the widget map now
+            //   stores the new widget address.
+            // - Close the first progress widget that was opened (and has already finished) while the
+            //   last one is still running. We remove its reference on the map. Wrong.
+            // For that reason we have to check if the map stores the widget as the current one.
+            // ereslibre
+            if (tracker->d->progressWidget[job] == this) {
+                tracker->d->progressWidget.remove(job);
+                tracker->d->progressWidgetsToBeShown.removeAll(job);
             }
         } else {
             slotClean();
@@ -427,15 +431,11 @@ void KWidgetJobTracker::Private::ProgressWidget::resumed()
 
 void KWidgetJobTracker::Private::ProgressWidget::closeEvent(QCloseEvent *event)
 {
-    if (tracker->stopOnClose(job)) {
+    if (jobRegistered && tracker->stopOnClose(job)) {
         tracker->slotStop(job);
     }
 
     QWidget::closeEvent(event);
-
-    if (keepOpenChecked) {
-        KGlobal::deref();
-    }
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::init()
@@ -625,21 +625,19 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_openLocation()
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_pauseResumeClicked()
 {
-    if ( !suspendedProperty ) {
+    if (jobRegistered && !suspendedProperty) {
         tracker->slotSuspend(job);
-    } else {
+    } else if (jobRegistered) {
         tracker->slotResume(job);
     }
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_stop()
 {
-    tracker->slotStop(job);
-    deref();
-
-    if (keepOpenChecked) {
-        KGlobal::deref();
+    if (jobRegistered) {
+        tracker->slotStop(job);
     }
+    deref();
 }
 
 #include "kwidgetjobtracker.moc"

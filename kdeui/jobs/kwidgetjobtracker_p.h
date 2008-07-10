@@ -21,6 +21,8 @@
 #ifndef KWIDGETJOBTRACKER_P_H
 #define KWIDGETJOBTRACKER_P_H
 
+#include "kabstractwidgetjobtracker_p.h"
+
 #include <QWidget>
 #include <QMap>
 #include <QTime>
@@ -28,6 +30,7 @@
 
 #include <kdebug.h>
 #include <kurl.h>
+#include <kglobal.h>
 
 class KPushButton;
 class QCheckBox;
@@ -35,26 +38,30 @@ class KSqueezedTextLabel;
 class QLabel;
 class QProgressBar;
 
-
 class KWidgetJobTracker::Private
+    : public KAbstractWidgetJobTracker::Private
 {
 public:
     Private(QWidget *parent, KWidgetJobTracker *tracker)
-        : parent(parent)
-        , q(tracker)
+        : KAbstractWidgetJobTracker::Private(tracker)
+        , parent(parent)
     {
     }
 
-    ~Private()
+    virtual ~Private()
     {
     }
+
+    virtual void setStopOnClose(KJob *job, bool stopOnClose);
+    virtual bool stopOnClose(KJob *job) const;
+    virtual void setAutoDelete(KJob *job, bool autoDelete);
+    virtual bool autoDelete(KJob *job) const;
 
     void _k_slotShowProgressWidget();
 
     class ProgressWidget;
 
     QWidget *parent;
-    KWidgetJobTracker *q;
     QMap<KJob*, ProgressWidget*> progressWidget;
     QQueue<KJob*> progressWidgetsToBeShown;
 };
@@ -69,8 +76,8 @@ public:
     ProgressWidget(KJob *job, KWidgetJobTracker *object, QWidget *parent)
         : QWidget(parent), tracker(object), job(job), totalSize(0), totalFiles(0), totalDirs(0),
           processedSize(0), processedDirs(0), processedFiles(0),
-          totalSizeKnown(false), keepOpenChecked(false),
-          cancelClose(0), openFile(0), openLocation(0),
+          totalSizeKnown(false), stopOnClose(true), keepOpenChecked(false),
+          jobRegistered(false), cancelClose(0), openFile(0), openLocation(0),
           keepOpenCheck(0), pauseButton(0), sourceEdit(0), destEdit(0),
           progressLabel(0), destInvite(0), speedLabel(0), sizeLabel(0),
           resumeLabel(0), progressBar(0), suspendedProperty(false), refCount(1)
@@ -80,6 +87,9 @@ public:
 
     ~ProgressWidget()
     {
+        if (keepOpenChecked) {
+            KGlobal::deref();
+        }
     }
 
     KWidgetJobTracker *const tracker;
@@ -93,7 +103,9 @@ public:
     qulonglong processedFiles;
 
     bool totalSizeKnown;
+    bool stopOnClose;
     bool keepOpenChecked;
+    bool jobRegistered;
     QString caption;
 
     KPushButton *cancelClose;
@@ -153,5 +165,40 @@ private Q_SLOTS:
     void _k_stop();
 };
 
+void KWidgetJobTracker::Private::setStopOnClose(KJob *job, bool stopOnClose)
+{
+    if (!progressWidget.contains(job)) {
+        return;
+    }
+    progressWidget[job]->stopOnClose = stopOnClose;
+}
+
+bool KWidgetJobTracker::Private::stopOnClose(KJob *job) const
+{
+    if (!progressWidget.contains(job)) {
+        kWarning() << "not found widget for job " << job << ". This method will return a "
+                        "hardcoded value";
+        return true;
+    }
+    return progressWidget[job]->stopOnClose;
+}
+
+void KWidgetJobTracker::Private::setAutoDelete(KJob *job, bool autoDelete)
+{
+    if (!progressWidget.contains(job)) {
+        return;
+    }
+    progressWidget[job]->setAttribute(Qt::WA_DeleteOnClose, autoDelete);
+}
+
+bool KWidgetJobTracker::Private::autoDelete(KJob *job) const
+{
+    if (!progressWidget.contains(job)) {
+        kWarning() << "not found widget for job " << job << ". This method will return a "
+                        "hardcoded value";
+        return true;
+    }
+    return progressWidget[job]->testAttribute(Qt::WA_DeleteOnClose);
+}
 
 #endif // KWIDGETJOBTRACKER_P_H

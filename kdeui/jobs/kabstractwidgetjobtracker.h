@@ -1,6 +1,7 @@
 /*  This file is part of the KDE project
     Copyright (C) 2000 Matej Koss <koss@miesto.sk>
     Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2008 Rafael Fernández López <ereslibre@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -180,7 +181,7 @@ Q_SIGNALS:
      */
     void resume(KJob *job);
 
-private:
+protected:
     class Private;
     Private *const d;
 };
