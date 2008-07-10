@@ -20,6 +20,7 @@
 #define KSTANDARDACTION_H
 
 #include <kdeui_export.h>
+#include <QList>
 
 class QObject;
 class QStringList;
@@ -181,6 +182,11 @@ namespace KStandardAction
    * to give those heigher weight.
    */
   KDEUI_EXPORT QStringList stdNames();
+
+  /**
+   * Returns a list of all actionIds.
+   */
+  KDEUI_EXPORT QList<StandardAction> actionIds();
 
   /**
    * Create a new document or window.

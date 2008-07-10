@@ -58,6 +58,18 @@ QStringList stdNames()
   return internal_stdNames();
 }
 
+QList<StandardAction> actionIds()
+{
+  QList<StandardAction> result;
+
+  for ( uint i = 0; g_rgActionInfo[i].id != ActionNone; i++ )
+      {
+      result.append(g_rgActionInfo[i].id);
+      }
+
+  return result;
+}
+
 KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObject *parent)
 {
   KAction *pAction = 0;
