@@ -761,7 +761,7 @@ void KDialog::setButtonFocus( ButtonCode id )
 {
   KPushButton *button = this->button( id );
   if ( button )
-        d_func()->setButtonFocus(button, false, true);
+        d_func()->setButtonFocus(button, button->isDefault(), true);
 }
 
 void KDialog::setDetailsWidget( QWidget *detailsWidget )
