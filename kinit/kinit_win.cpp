@@ -81,18 +81,18 @@ bool checkIfRegisteredInDBus(const QString &name, int _timeout=10)
 {
     int timeout = _timeout * 5;
     while(timeout) {
-    	if ( QDBusConnection::sessionBus().interface()->isServiceRegistered( name ) )
-    	    break;
-    	Sleep(200);
-    	timeout--;
+        if ( QDBusConnection::sessionBus().interface()->isServiceRegistered( name ) )
+            break;
+        Sleep(200);
+        timeout--;
     }
-		if (!timeout) {
-			if (verbose)
-			    fprintf(stderr,"not registered %s in dbus after %d secs\n",qPrintable(name),_timeout);
-			return false;
-		}
-		if (verbose)
-		    fprintf(stderr,"%s is registered in dbus\n",qPrintable(name));
+        if (!timeout) {
+            if (verbose)
+                fprintf(stderr,"not registered %s in dbus after %d secs\n",qPrintable(name),_timeout);
+            return false;
+        }
+        if (verbose)
+            fprintf(stderr,"%s is registered in dbus\n",qPrintable(name));
     return true;
 }
 
@@ -166,10 +166,10 @@ void ProcessList::getProcessNameAndID( DWORD processID )
                                            sizeof(szProcessName)/sizeof(TCHAR) );
        }
     }
-	if (ret > 0)
-	{
-		processList << new ProcessListEntry(hProcess,szProcessName,processID );
-	}
+    if (ret > 0)
+    {
+        processList << new ProcessListEntry(hProcess,szProcessName,processID );
+    }
 }
 
 
@@ -281,10 +281,10 @@ int main(int argc, char **argv, char **envp)
         }
     }
 
-	ProcessList processList;
-	QString installPrefix = KStandardDirs::installPath("kdedir");
+    ProcessList processList;
+    QString installPrefix = KStandardDirs::installPath("kdedir");
 
-	if (listProcesses) {
+    if (listProcesses) {
         ProcessListEntry *ple;
 
         foreach(ple,processList.list()) 
@@ -292,9 +292,9 @@ int main(int argc, char **argv, char **envp)
             if (ple->path.toLower().startsWith(installPrefix.toLower()))
                 fprintf(stdout,"path: %s name: %s pid: %u\n", ple->path.toLatin1().data(), ple->name.toLatin1().data(), ple->pid);
         }
-		exit(0);
-	}
-	else if (killProcesses) {
+        exit(0);
+    }
+    else if (killProcesses) {
         ProcessListEntry *ple;
 
         foreach(ple,processList.list()) 
@@ -306,10 +306,10 @@ int main(int argc, char **argv, char **envp)
                 processList.terminateProcess(ple->name);
             }
         }
-		exit(0);
-	}
+        exit(0);
+    }
 
-	/** Make process group leader (for shutting down children later) **/
+    /** Make process group leader (for shutting down children later) **/
 
     /** Create our instance **/
     s_instance = new KComponentData("kdeinit4", QByteArray(), KComponentData::SkipMainComponentRegistration);
