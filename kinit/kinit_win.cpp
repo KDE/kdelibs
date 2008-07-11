@@ -43,7 +43,6 @@
 
 
 #define KDED_EXENAME "kded4"
-#define KNOTIFY_EXENAME "knotify4"
 
 static KComponentData *s_instance = 0;
 
@@ -134,7 +133,7 @@ class ProcessList {
        ~ProcessList();
        ProcessListEntry *hasProcessInList(const QString &name);
        bool terminateProcess(const QString &name);
-       void dumpList();
+       QList<ProcessListEntry *> &list() { return processList; }
     private:
        void initProcessList();
        void getProcessNameAndID( DWORD processID );
@@ -170,9 +169,6 @@ void ProcessList::getProcessNameAndID( DWORD processID )
 	if (ret > 0)
 	{
 		processList << new ProcessListEntry(hProcess,szProcessName,processID );
-
-		if (verbose)
-		   fprintf(stderr,"%s    (PID: %u)\n", szProcessName, processID );
 	}
 }
 
@@ -211,15 +207,6 @@ ProcessList::~ProcessList()
     }
 }
 
-
-void ProcessList::dumpList()
-{
-    ProcessListEntry *ple;
-    foreach(ple,processList) {
-        fprintf(stdout,"%s    (PID: %u)\n", ple->name.toLatin1().data(), ple->pid);
-    }
-}
-
 /**
  return process list entry of given name
 */
@@ -228,28 +215,21 @@ ProcessListEntry *ProcessList::hasProcessInList(const QString &name)
     ProcessListEntry *ple;
     foreach(ple,processList) {
         if (ple->name == name || ple->name == name + ".exe") {
-            if (verbose)
-                fprintf(stderr,"found %s with pid=%d\n",qPrintable(ple->name),ple->pid);
             return ple;
         }
     }
     return NULL;
 }
 
+/**
+ terminate process from process list
+*/
 bool ProcessList::terminateProcess(const QString &name)
 {
     ProcessListEntry *p = hasProcessInList(name);
-    if (p) {
-        int ret = TerminateProcess(p->handle,0) ? true : false;
-        if (verbose)
-            fprintf(stderr,"process %s terminated %d %d\n",qPrintable(name),ret,GetLastError());
-        return ret;
-    }
-    else {
-       if (verbose)
-           fprintf(stderr,"process %s not found\n",qPrintable(name));
-       return false;
-    }
+    if (!p)
+        return false;
+    return TerminateProcess(p->handle,0) ? true : false;
 }
 
 
@@ -302,24 +282,30 @@ int main(int argc, char **argv, char **envp)
     }
 
 	ProcessList processList;
+	QString installPrefix = KStandardDirs::installPath("kdedir");
 
 	if (listProcesses) {
-		processList.dumpList();
+        ProcessListEntry *ple;
+
+        foreach(ple,processList.list()) 
+        {
+            if (ple->path.toLower().startsWith(installPrefix.toLower()))
+                fprintf(stdout,"path: %s name: %s pid: %u\n", ple->path.toLatin1().data(), ple->name.toLatin1().data(), ple->pid);
+        }
 		exit(0);
 	}
 	else if (killProcesses) {
-		QStringList appList;
-		appList << KDED_EXENAME 
-				<< KNOTIFY_EXENAME 
-				<< "nepomukdaemon" 
-				<< "kuiserver"  
-				<< "kioslave" 
-				<< "klauncher" 
-				<< "kwalletd"
-				<< "dbus-daemon";
+        ProcessListEntry *ple;
 
-		foreach(QString app, appList)
-			processList.terminateProcess(app);
+        foreach(ple,processList.list()) 
+        {
+            if (ple->path.toLower().startsWith(installPrefix.toLower())) 
+            {
+                if (verbose)
+                    fprintf(stdout,"terminating path: %s name: %s pid: %u\n", ple->path.toLatin1().data(), ple->name.toLatin1().data(), ple->pid);
+                processList.terminateProcess(ple->name);
+            }
+        }
 		exit(0);
 	}
 
