@@ -1,9 +1,9 @@
 [KNewStuff2]
-#ProvidersUrl = http://edu.kde.org/kalzium/molecules.xml
-ProvidersUrl = http://new.kstuff.org/provider-kalzium.xml
-LocalRegistryDir = /tmp/knewstuff2.metafiles
+#ProvidersUrl=http://edu.kde.org/kalzium/molecules.xml
+ProvidersUrl=http://new.kstuff.org/provider-kalzium.xml
+LocalRegistryDir=/tmp/knewstuff2.metafiles
 
-TargetDir = knewstuff2_test
+TargetDir=knewstuff2_test
 
 # For more *.knsrc configuration file options, see doc/tutorial.txt.
 # For a list of providers, see kstuff/hotstuff/providers in KStuff SVN.
