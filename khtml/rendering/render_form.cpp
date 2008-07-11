@@ -1813,6 +1813,8 @@ QString RenderTextArea::text()
            if (tc.movePosition(QTextCursor::Down)) {
                txt += QLatin1String("\n");
                tc.movePosition(QTextCursor::StartOfLine);
+           } else {
+               break;
            }
         }
     }
