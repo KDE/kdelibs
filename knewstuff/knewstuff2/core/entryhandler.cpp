@@ -166,7 +166,7 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
 {
     Entry entry;
     KTranslatable name, summary, preview, payload;
-    int idNumber;
+    int idNumber = 0;
     QStringList installedFiles;
 
     if (entryxml.tagName() != "stuff") return entry;
