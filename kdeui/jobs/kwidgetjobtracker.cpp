@@ -97,8 +97,8 @@ void KWidgetJobTracker::unregisterJob(KJob *job)
         return;
     }
 
-    pWidget->deref();
     pWidget->jobRegistered = false;
+    pWidget->deref();
 }
 
 bool KWidgetJobTracker::keepOpen(KJob *job) const
@@ -220,24 +220,30 @@ void KWidgetJobTracker::Private::ProgressWidget::deref()
     }
 
     if (!refCount) {
-        if (!keepOpenChecked || !jobRegistered) {
-            close();
-            // It might happen the next scenario:
-            // - Start a job which opens a progress widget. Keep it open. Address job is 0xdeadbeef
-            // - Start a new job, which is given address 0xdeadbeef. A new window is opened.
-            //   This one will take much longer to complete. The key 0xdeadbeef on the widget map now
-            //   stores the new widget address.
-            // - Close the first progress widget that was opened (and has already finished) while the
-            //   last one is still running. We remove its reference on the map. Wrong.
-            // For that reason we have to check if the map stores the widget as the current one.
-            // ereslibre
-            if (tracker->d->progressWidget[job] == this) {
-                tracker->d->progressWidget.remove(job);
-                tracker->d->progressWidgetsToBeShown.removeAll(job);
-            }
+        if (!keepOpenChecked) {
+            closeNow();
         } else {
             slotClean();
         }
+    }
+}
+
+void KWidgetJobTracker::Private::ProgressWidget::closeNow()
+{
+    close();
+
+    // It might happen the next scenario:
+    // - Start a job which opens a progress widget. Keep it open. Address job is 0xdeadbeef
+    // - Start a new job, which is given address 0xdeadbeef. A new window is opened.
+    //   This one will take much longer to complete. The key 0xdeadbeef on the widget map now
+    //   stores the new widget address.
+    // - Close the first progress widget that was opened (and has already finished) while the
+    //   last one is still running. We remove its reference on the map. Wrong.
+    // For that reason we have to check if the map stores the widget as the current one.
+    // ereslibre
+    if (tracker->d->progressWidget[job] == this) {
+        tracker->d->progressWidget.remove(job);
+        tracker->d->progressWidgetsToBeShown.removeAll(job);
     }
 }
 
@@ -637,7 +643,7 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_stop()
     if (jobRegistered) {
         tracker->slotStop(job);
     }
-    deref();
+    closeNow();
 }
 
 #include "kwidgetjobtracker.moc"

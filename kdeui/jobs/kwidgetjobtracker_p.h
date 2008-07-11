@@ -136,6 +136,7 @@ public:
     bool keepOpen() const;
     void ref();
     void deref();
+    void closeNow();
 
     virtual bool eventFilter(QObject *watched, QEvent *event);
 
