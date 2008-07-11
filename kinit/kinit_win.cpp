@@ -141,6 +141,7 @@ void ProcessList::getProcessNameAndID( DWORD processID )
                                    false, processID );
 
     // Get the process name.
+    int ret;
 
     if (NULL != hProcess )
     {
@@ -150,15 +151,17 @@ void ProcessList::getProcessNameAndID( DWORD processID )
        if ( EnumProcessModules( hProcess, &hMod, sizeof(hMod),
               &cbNeeded) )
        {
-             GetModuleFileNameExA( hProcess, hMod, szProcessName,
+            ret = GetModuleFileNameExA( hProcess, hMod, szProcessName,
                                            sizeof(szProcessName)/sizeof(TCHAR) );
        }
     }
+	if (ret > 0)
+	{
+		processList << new ProcessListEntry(hProcess,szProcessName,processID );
 
-    processList << new ProcessListEntry(hProcess,szProcessName,processID );
-
-    if (verbose)
-       fprintf(stderr,"%s    (PID: %u)\n", szProcessName, processID );
+		if (verbose)
+		   fprintf(stderr,"%s    (PID: %u)\n", szProcessName, processID );
+	}
 }
 
 
