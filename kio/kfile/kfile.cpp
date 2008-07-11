@@ -80,4 +80,14 @@ bool KFile::isPreviewInfo( const FileView& view )
     return (view & PreviewInfo) == PreviewInfo;
 }
 
+bool KFile::isTreeView( const FileView& view )
+{
+    return (view & Tree) == Tree;
+}
+
+bool KFile::isDetailTreeView( const FileView& view )
+{
+    return (view & DetailTree) == DetailTree;
+}
+
 #include "kfile.moc"

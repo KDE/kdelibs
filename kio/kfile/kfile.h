@@ -58,6 +58,8 @@ public:
         SeparateDirs    = 4,
         PreviewContents = 8,
         PreviewInfo     = 16,
+        Tree            = 32,
+        DetailTree      = 64,
         FileViewMax     = 65536
     };
 
@@ -100,6 +102,10 @@ public:
     static bool isPreviewContents( const FileView& view ); 
 
     static bool isPreviewInfo( const FileView& view );
+    
+    static bool isTreeView( const FileView& view );
+    
+    static bool isDetailTreeView( const FileView& view );
 
 private:
     KFile(); // forbidden

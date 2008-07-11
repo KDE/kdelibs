@@ -21,6 +21,8 @@
 
 #include <QtGui/QTreeView>
 
+#include <kfile.h>
+
 class QAbstractItemModel;
 
 /**
@@ -36,6 +38,11 @@ public:
     virtual ~KDirOperatorDetailView();
     virtual void setModel(QAbstractItemModel *model);
 
+    /**
+    * Displays either Detail, Tree or DetailTree modes.
+    */
+    virtual bool setViewMode(KFile::FileView viewMode);
+
 protected:
     virtual bool event(QEvent *event);
     virtual void dragEnterEvent(QDragEnterEvent *event);
@@ -49,6 +56,7 @@ private slots:
 
 private:
     bool m_resizeColumns;
+    bool m_hideDetailColumns;
 };
 
 #endif

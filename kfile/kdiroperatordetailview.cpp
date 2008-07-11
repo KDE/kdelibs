@@ -20,6 +20,7 @@
 
 #include <kdirlister.h>
 #include <kdirmodel.h>
+#include <kdebug.h>
 
 #include <QtCore/QEvent>
 #include <QtCore/QTimer>
@@ -32,7 +33,7 @@
 
 KDirOperatorDetailView::KDirOperatorDetailView(QWidget *parent) :
     QTreeView(parent),
-    m_resizeColumns(true)
+    m_resizeColumns(true), m_hideDetailColumns(false)
 {
     setRootIsDecorated(false);
     setSortingEnabled(true);
@@ -64,6 +65,28 @@ void KDirOperatorDetailView::setModel(QAbstractItemModel *model)
     QTreeView::setModel(model);
 }
 
+bool KDirOperatorDetailView::setViewMode(KFile::FileView viewMode)
+{
+    bool tree = false;
+    
+    if (KFile::isDetailView(viewMode)) {
+        m_hideDetailColumns = false;
+    } else if (KFile::isTreeView(viewMode)) {
+        m_hideDetailColumns = true;
+        tree = true;
+    } else if (KFile::isDetailTreeView(viewMode)) {
+        m_hideDetailColumns = false;
+        tree = true;
+    } else {
+        return false;
+    }
+    
+    setRootIsDecorated(tree);
+    setItemsExpandable(tree);
+    
+    return true;
+}
+
 bool KDirOperatorDetailView::event(QEvent *event)
 {
     if (event->type() == QEvent::Polish) {
@@ -71,6 +94,10 @@ bool KDirOperatorDetailView::event(QEvent *event)
         headerView->setResizeMode(QHeaderView::Interactive);
         headerView->setStretchLastSection(false);
         headerView->setMovable(false);
+
+        setColumnHidden(KDirModel::Size, m_hideDetailColumns);
+        setColumnHidden(KDirModel::ModifiedTime, m_hideDetailColumns);
+        setColumnHidden(KDirModel::Type, m_hideDetailColumns);
 
         hideColumn(KDirModel::Permissions);
         hideColumn(KDirModel::Owner);
@@ -145,3 +172,5 @@ void KDirOperatorDetailView::disableColumnResizing()
 {
     m_resizeColumns = false;
 }
+
+// kate: space-indent on; indent-width 4; replace-tabs on;
