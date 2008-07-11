@@ -1320,6 +1320,10 @@ void KDirOperator::setView(KFile::FileView viewKind)
     if (viewKind == KFile::Default) {
         if (KFile::isDetailView((KFile::FileView)d->defaultView)) {
             viewKind = KFile::Detail;
+        } else if (KFile::isTreeView((KFile::FileView)d->defaultView)) {
+            viewKind = KFile::Tree;
+        } else if (KFile::isDetailTreeView((KFile::FileView)d->defaultView)) {
+            viewKind = KFile::DetailTree;
         } else {
             viewKind = KFile::Simple;
         }
@@ -1798,6 +1802,10 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
     QString viewStyle = configGroup.readEntry("View Style", "Simple");
     if (viewStyle == QLatin1String("Detail")) {
         d->defaultView |= KFile::Detail;
+    } else if (viewStyle == QLatin1String("Tree")) {
+        d->defaultView |= KFile::Tree;
+    } else if (viewStyle == QLatin1String("DetailTree")) {
+        d->defaultView |= KFile::DetailTree;
     } else {
         d->defaultView |= KFile::Simple;
     }
@@ -1891,6 +1899,10 @@ void KDirOperator::writeConfig(KConfigGroup& configGroup)
         style = QLatin1String("Detail");
     else if (KFile::isSimpleView(fv))
         style = QLatin1String("Simple");
+    else if (KFile::isTreeView(fv))
+        style = QLatin1String("Tree");
+    else if (KFile::isDetailTreeView(fv))
+        style = QLatin1String("DetailTree");
     configGroup.writeEntry(QLatin1String("View Style"), style);
 
 }
