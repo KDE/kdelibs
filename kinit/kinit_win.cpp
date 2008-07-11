@@ -111,7 +111,19 @@ class ProcessListEntry {
        QString path;
        int pid;
        HANDLE handle;
+       friend QDebug operator <<(QDebug out, const ProcessListEntry &c);
 };
+
+QDebug operator <<(QDebug out, const ProcessListEntry &c)
+{
+    out << "(ProcessListEntry" 
+        << "name" << c.name
+        << "path" << c.path
+        << "pid" << c.pid
+        << "handle" << c.handle
+        << ")";
+    return out;
+}    
 
 /**
  holds system process list
@@ -248,9 +260,8 @@ int main(int argc, char **argv, char **envp)
     bool launch_klauncher = true;
     bool launch_kded = true;
     bool suicide = false;
-//    bool terminate_kde = false;       // unused atm
-
-    ProcessList processList;
+    bool listProcesses = false;
+    bool killProcesses = false;
 
     /** Save arguments first... **/
     char **safe_argv = (char **) malloc( sizeof(char *) * argc);
@@ -283,21 +294,36 @@ int main(int argc, char **argv, char **envp)
            exit(0);
         }
         if (strcmp(safe_argv[i], "--list") == 0) {
-            processList.dumpList();
-            exit(0);
+            listProcesses = true;
         }
         if (strcmp(safe_argv[i], "--terminate") == 0) {
-            QStringList appList;
-            appList << KDED_EXENAME << KNOTIFY_EXENAME << "nepomukdaemon" 
-                      << "kuiserver"  << "kioslave" << "klauncher" << "dbus-daemon";
-
-            foreach(QString app, appList)
-                processList.terminateProcess(app);
-            exit(0);
+            killProcesses = true;
         }
     }
 
-    /** Make process group leader (for shutting down children later) **/
+	ProcessList processList;
+
+	if (listProcesses) {
+		processList.dumpList();
+		exit(0);
+	}
+	else if (killProcesses) {
+		QStringList appList;
+		appList << KDED_EXENAME 
+				<< KNOTIFY_EXENAME 
+				<< "nepomukdaemon" 
+				<< "kuiserver"  
+				<< "kioslave" 
+				<< "klauncher" 
+				<< "kwalletd"
+				<< "dbus-daemon";
+
+		foreach(QString app, appList)
+			processList.terminateProcess(app);
+		exit(0);
+	}
+
+	/** Make process group leader (for shutting down children later) **/
 
     /** Create our instance **/
     s_instance = new KComponentData("kdeinit4", QByteArray(), KComponentData::SkipMainComponentRegistration);
