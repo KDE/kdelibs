@@ -113,6 +113,8 @@ ExecState::ExecState(Interpreter* intp, ExecState* save) :
 
 ExecState::~ExecState()
 {
+    for (size_t c = 0; c < m_activePropertyNameArrays.size(); ++c)
+	delete m_activePropertyNameArrays[c].array;
     m_interpreter->setExecState(m_savedExec);
 }
 
