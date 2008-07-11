@@ -277,6 +277,8 @@ Interpreter::~Interpreter()
     if (m_debugger)
         m_debugger->detach(this);
 
+    std::free(stackBase);
+
     next->prev = prev;
     prev->next = next;
     s_hook = next;
