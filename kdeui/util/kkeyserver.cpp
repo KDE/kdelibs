@@ -44,12 +44,15 @@ struct ModInfo
 // Arrays
 //---------------------------------------------------------------------
 
+// Key names with this context are extracted elsewhere,
+// no need for I18N_NOOP2's here.
+#define KEYCTXT "keyboard-key-name"
 static ModInfo g_rgModInfo[4] =
 {
-	{ Qt::SHIFT,   I18N_NOOP("Shift"), 0 },
-	{ Qt::CTRL,    I18N_NOOP("Ctrl"), 0 },
-	{ Qt::ALT,     I18N_NOOP("Alt"), 0 },
-	{ Qt::META,    I18N_NOOP("Meta"), 0 }
+	{ Qt::SHIFT,   "Shift", 0 },
+	{ Qt::CTRL,    "Ctrl", 0 },
+	{ Qt::ALT,     "Alt", 0 },
+	{ Qt::META,    "Meta", 0 }
 };
 
 //---------------------------------------------------------------------
@@ -61,10 +64,10 @@ static bool g_bMacLabels;
 static void intializeKKeyLabels()
 {
 	KConfigGroup cg( KGlobal::config(), "Keyboard" );
-	g_rgModInfo[0].sLabel = new QString( cg.readEntry( "Label Shift", i18n(g_rgModInfo[0].psName) ) );
-	g_rgModInfo[1].sLabel = new QString( cg.readEntry( "Label Ctrl", i18n(g_rgModInfo[1].psName) ) );
-	g_rgModInfo[2].sLabel = new QString( cg.readEntry( "Label Alt", i18n(g_rgModInfo[2].psName) ) );
-	g_rgModInfo[3].sLabel = new QString( cg.readEntry( "Label Win", i18n(g_rgModInfo[3].psName) ) );
+	g_rgModInfo[0].sLabel = new QString( cg.readEntry( "Label Shift", i18nc(KEYCTXT, g_rgModInfo[0].psName) ) );
+	g_rgModInfo[1].sLabel = new QString( cg.readEntry( "Label Ctrl", i18nc(KEYCTXT, g_rgModInfo[1].psName) ) );
+	g_rgModInfo[2].sLabel = new QString( cg.readEntry( "Label Alt", i18nc(KEYCTXT, g_rgModInfo[2].psName) ) );
+	g_rgModInfo[3].sLabel = new QString( cg.readEntry( "Label Win", i18nc(KEYCTXT, g_rgModInfo[3].psName) ) );
 	g_bMacLabels = (*g_rgModInfo[2].sLabel == "Command");
 	g_bInitializedKKeyLabels = true;
     
