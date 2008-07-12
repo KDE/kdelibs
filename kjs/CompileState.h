@@ -85,7 +85,7 @@ public:
 
     // We distinguish two kinds of temporaries --- markable and not. They'll get
     // corresponding bits set in localStore when that's initialized.
-    void requestTemporary(OpType type, OpValue& value, OpValue& reference);
+    void requestTemporary(OpType type, OpValue* value, OpValue* reference);
 
     // This method is used to acquire a read value of a local...
     OpValue localReadVal(Register regNum);

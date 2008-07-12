@@ -120,7 +120,7 @@ void emitConversion(CompileState* comp, bool outImm,
         if (!outImm && original->immediate) {  // Need both checks since NoOp might get here..
             OpValue spillVal, spillRef;
 
-            comp->requestTemporary(out.type, spillVal, spillRef);
+            comp->requestTemporary(out.type, &spillVal, &spillRef);
             CodeGen::emitRegStore(comp, &spillRef, &out);
             out = spillVal;
         }
@@ -291,7 +291,7 @@ Addr CodeGen::emitOp(CompileState* comp, OpName baseInstr,
     // Now that we have a candidate, actually grab a register of the proper return type.
     retType = cheapest->retType;
     if (retType != OpType_void) {
-        comp->requestTemporary(retType, retVal, retReg);
+        comp->requestTemporary(retType, &retVal, &retReg);
 
         // Set return value, if needed
         if (retOut)

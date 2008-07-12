@@ -216,11 +216,11 @@ OpValue VarAccessNode::valueForTypeOf(CompileState* comp)
         CodeGen::emitOp(comp, Op_SymGetKnownObject, &out, comp->globalScope(), &varName);
         break;
     case NonLocal:
-        comp->requestTemporary(OpType_value, out, outReg);
+        comp->requestTemporary(OpType_value, &out, &outReg);
         CodeGen::emitOp(comp, Op_NonLocalScopeLookupAndGet, &scopeTemp, &outReg, &varName);
         break;
     case Dynamic:
-        comp->requestTemporary(OpType_value, out, outReg);
+        comp->requestTemporary(OpType_value, &out, &outReg);
         CodeGen::emitOp(comp, Op_ScopeLookupAndGet, &scopeTemp, &outReg, &varName);
         break;
     }
@@ -264,7 +264,7 @@ CompileReference* VarAccessNode::generateRefRead(CompileState* comp, OpValue* ou
 
     OpValue readReg;
     OpValue varName = OpValue::immIdent(&ident);
-    comp->requestTemporary(OpType_value, *out, readReg);
+    comp->requestTemporary(OpType_value, out, &readReg);
 
     OpName op;
     if (classify == Dynamic)
@@ -338,11 +338,11 @@ void VarAccessNode::generateRefFunc(CompileState* comp, OpValue* funOut, OpValue
         *thisOut = *comp->globalScope();
         break;
     case NonLocal:
-        comp->requestTemporary(OpType_value, *thisOut, thisReg);
+        comp->requestTemporary(OpType_value, thisOut, &thisReg);
         CodeGen::emitOp(comp, Op_NonLocalFunctionLookupAndGet, funOut, &thisReg, &varName);
         break;
     case Dynamic:
-        comp->requestTemporary(OpType_value, *thisOut, thisReg);
+        comp->requestTemporary(OpType_value, thisOut, &thisReg);
         CodeGen::emitOp(comp, Op_FunctionLookupAndGet, funOut, &thisReg, &varName);
         break;
     }
@@ -459,7 +459,7 @@ CompileReference* BracketAccessorNode::generateRefRead(CompileState* comp, OpVal
 
     // Store the object for future use.
     OpValue baseReg;
-    comp->requestTemporary(OpType_value, ref->baseObj, baseReg);
+    comp->requestTemporary(OpType_value, &ref->baseObj, &baseReg);
 
     CodeGen::emitOp(comp, Op_BracketGetAndBind, out, &baseReg, &baseV, &ref->indexVal);
     return ref;
@@ -488,7 +488,7 @@ void BracketAccessorNode::generateRefFunc(CompileState* comp, OpValue* funOut, O
 
     // We need to memorize the toObject for 'this'
     OpValue baseReg;
-    comp->requestTemporary(OpType_value, *thisOut, baseReg);
+    comp->requestTemporary(OpType_value, thisOut, &baseReg);
 
     CodeGen::emitOp(comp, Op_BracketGetAndBind, funOut, &baseReg, &baseV, &indexV);
 }
@@ -519,7 +519,7 @@ CompileReference* DotAccessorNode::generateRefRead(CompileState* comp, OpValue* 
     OpValue baseV = expr->generateEvalCode(comp);
     OpValue baseReg;
     OpValue varName = OpValue::immIdent(&ident);
-    comp->requestTemporary(OpType_value, ref->baseObj, baseReg);
+    comp->requestTemporary(OpType_value, &ref->baseObj, &baseReg);
     CodeGen::emitOp(comp, Op_SymGetAndBind, out, &baseReg, &baseV, &varName);
     return ref;
 }
@@ -546,7 +546,7 @@ void DotAccessorNode::generateRefFunc(CompileState* comp, OpValue* funOut, OpVal
     OpValue varName = OpValue::immIdent(&ident);
 
     OpValue baseReg;
-    comp->requestTemporary(OpType_value, *thisOut, baseReg);
+    comp->requestTemporary(OpType_value, thisOut, &baseReg);
     CodeGen::emitOp(comp, Op_SymGetAndBind, funOut, &baseReg, &baseV, &varName);
 }
 
@@ -864,7 +864,7 @@ OpValue BinaryLogicalNode::generateEvalCode(CompileState* comp)
 
     // Make a register for storing the result, and put 'a' there, as out first guess.
     OpValue aVal, aReg;
-    comp->requestTemporary(a.type, aVal, aReg);
+    comp->requestTemporary(a.type, &aVal, &aReg);
     CodeGen::emitRegStore(comp, &aReg, &a);
 
     // Is this enough to shortcircuit?
@@ -891,7 +891,7 @@ OpValue BinaryLogicalNode::generateEvalCode(CompileState* comp)
 
         // Get a new register for the result, put b there..
         OpValue resVal, resReg;
-        comp->requestTemporary(OpType_value, resVal, resReg);
+        comp->requestTemporary(OpType_value, &resVal, &resReg);
         CodeGen::emitOp(comp, Op_RegPutValue, 0, &resReg, &b);
 
         // skip to after a promotion..
@@ -924,7 +924,7 @@ OpValue ConditionalNode::generateEvalCode(CompileState* comp)
 
     // Request a temporary for the result. (We can't reuse any, since it may be a variable!)
     // ### perhaps do an isTemporary check here?
-    comp->requestTemporary(OpType_value, resVal, resReg);
+    comp->requestTemporary(OpType_value, &resVal, &resReg);
     CodeGen::emitOp(comp, Op_RegPutValue, 0, &resReg, &v1out);
 
     Addr jumpToAfter = CodeGen::emitOp(comp, Op_Jump, 0, OpValue::dummyAddr());
@@ -1529,7 +1529,7 @@ void FunctionBodyNode::generateExecCode(CompileState* comp)
 
     OpValue evalResReg, evalResVal;
     if (comp->codeType() != FunctionCode) {
-        comp->requestTemporary(OpType_value, evalResVal, evalResReg);
+        comp->requestTemporary(OpType_value, &evalResVal, &evalResReg);
         comp->setEvalResultRegister(&evalResReg);
 
         OpValue und = OpValue::immValue(jsUndefined());

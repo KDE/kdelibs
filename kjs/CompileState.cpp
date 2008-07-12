@@ -42,15 +42,15 @@ CodeBlock& CompileState::codeBlock()
     return fbody->code();
 }
 
-void CompileState::requestTemporary(OpType type, OpValue& value, OpValue& reference)
+void CompileState::requestTemporary(OpType type, OpValue* value, OpValue* reference)
 {
     ASSERT(type == OpType_value || type == OpType_bool || type == OpType_int32 || type == OpType_number);
 
-    value.type      = type;
-    value.immediate = false;
+    value->type      = type;
+    value->immediate = false;
 
-    reference.type      = OpType_reg;
-    reference.immediate = true;
+    reference->type      = OpType_reg;
+    reference->immediate = true;
 
     RegDescriptor* temp = 0;
 
@@ -71,10 +71,10 @@ void CompileState::requestTemporary(OpType type, OpValue& value, OpValue& refere
         ++maxTemp;
     }
 
-    value.ownedReg = temp;
+    value->ownedReg = temp;
 
-    reference.ownedReg = temp;
-    reference.value.narrow.regVal = temp->reg();
+    reference->ownedReg = temp;
+    reference->value.narrow.regVal = temp->reg();
 }
 
 OpValue CompileState::localReadVal(Register regNum)
@@ -110,7 +110,7 @@ void CompileState::flushLocal(CodeBlock& block, Register regNum)
         localVal.ownedReg  = locals[regNum];
 
         OpValue out, outReg;
-        requestTemporary(OpType_value, out, outReg);
+        requestTemporary(OpType_value, &out, &outReg);
 
         CodeGen::emitOp(this, Op_RegPutValue, 0, &outReg, &localVal);
 
