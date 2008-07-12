@@ -75,9 +75,9 @@ struct OpValue
     // A few helpers for making immediate values... These are actually inside CompileState.h
     // due to them touching the ownedTemp;
 
-    static void initImm(OpValue& val, OpType type) {
-        val.immediate = true;
-        val.type      = type;
+    static void initImm(OpValue* val, OpType type) {
+        val->immediate = true;
+        val->type      = type;
     }
 
     // A placeholder address value, will be patched up later

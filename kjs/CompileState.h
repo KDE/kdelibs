@@ -324,63 +324,63 @@ private:
 
 inline OpValue OpValue::immInt32(int32_t in) {
     OpValue res;
-    initImm(res, OpType_int32);
+    initImm(&res, OpType_int32);
     res.value.narrow.int32Val = in;
     return res;
 }
 
 inline OpValue OpValue::immNumber(double in) {
     OpValue res;
-    initImm(res, OpType_number);
+    initImm(&res, OpType_number);
     res.value.wide.numberVal = in;
     return res;
 }
 
 inline OpValue OpValue::immValue(JSValue* in) {
     OpValue res;
-    initImm(res, OpType_value);
+    initImm(&res, OpType_value);
     res.value.wide.valueVal = in;
     return res;
 }
 
 inline OpValue OpValue::immBool(bool in) {
     OpValue res;
-    initImm(res, OpType_bool);
+    initImm(&res, OpType_bool);
     res.value.narrow.boolVal = in;
     return res;
 }
 
 inline OpValue OpValue::immString(UString* in) {
     OpValue res;
-    initImm(res, OpType_string);
+    initImm(&res, OpType_string);
     res.value.wide.stringVal = in;
     return res;
 }
 
 inline OpValue OpValue::immIdent(Identifier* in) {
     OpValue res;
-    initImm(res, OpType_ident);
+    initImm(&res, OpType_ident);
     res.value.wide.identVal = in;
     return res;
 }
 
 inline OpValue OpValue::immNode(KJS::Node* in) {
     OpValue res;
-    initImm(res, OpType_node);
+    initImm(&res, OpType_node);
     res.value.wide.nodeVal = in;
     return res;
 }
 
 inline OpValue OpValue::immCStr(const char* in) {
     OpValue res;
-    initImm(res, OpType_cstr);
+    initImm(&res, OpType_cstr);
     res.value.wide.cstrVal = in;
     return res;
 }
 
 inline OpValue OpValue::immAddr(Addr in) {
     OpValue res;
-    initImm(res, OpType_addr);
+    initImm(&res, OpType_addr);
     res.value.narrow.addrVal = in;
     return res;
 }
