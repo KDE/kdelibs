@@ -32,10 +32,9 @@ namespace KJS {
 
 CompileState::~CompileState()
 {
-    for (size_t c = 0; c < freeMarkTemps.size(); ++c)
-        delete freeMarkTemps[c];
-    for (size_t c = 0; c < freeNonMarkTemps.size(); ++c)
-        delete freeNonMarkTemps[c];
+    deleteAllValues(locals);
+    deleteAllValues(freeMarkTemps);
+    deleteAllValues(freeNonMarkTemps);
 }
 
 void CompileState::requestTemporary(OpType type, OpValue& value, OpValue& reference)
