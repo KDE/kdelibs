@@ -52,50 +52,6 @@ int verbose=0;
 /// holds process list for suicide mode
 QList<QProcess*> startedProcesses;
 
-// internal launch function
-int launch(const QString &cmd)
-{
-    QProcess *proc = new QProcess();
-    proc->start(cmd);
-    proc->waitForStarted();
-    startedProcesses << proc;
-    _PROCESS_INFORMATION* _pid = proc->pid();
-    int pid = _pid ? _pid->dwProcessId : 0;
-    if (verbose) {
-        fprintf(stderr,"%s",proc->readAllStandardError().constData());
-        fprintf(stderr,"%s",proc->readAllStandardOutput().constData());
-    }
-    if (pid) {
-       if (verbose)
-           fprintf(stderr, "kdeinit4: Launched %s, pid = %ld\n", qPrintable(cmd),(long) pid);
-    }
-    else {
-       if (verbose)
-           fprintf(stderr, "kdeinit4: could not launch %s, exiting",qPrintable(cmd));
-    }
-    return pid;
-}
-
-/// check dbus registration
-bool checkIfRegisteredInDBus(const QString &name, int _timeout=10)
-{
-    int timeout = _timeout * 5;
-    while(timeout) {
-        if ( QDBusConnection::sessionBus().interface()->isServiceRegistered( name ) )
-            break;
-        Sleep(200);
-        timeout--;
-    }
-        if (!timeout) {
-            if (verbose)
-                fprintf(stderr,"not registered %s in dbus after %d secs\n",qPrintable(name),_timeout);
-            return false;
-        }
-        if (verbose)
-            fprintf(stderr,"%s is registered in dbus\n",qPrintable(name));
-    return true;
-}
-
 class ProcessListEntry {
     public:
        ProcessListEntry(HANDLE _handle,char *_path, int _pid ) 
@@ -232,6 +188,49 @@ bool ProcessList::terminateProcess(const QString &name)
     return TerminateProcess(p->handle,0) ? true : false;
 }
 
+// internal launch function
+int launch(const QString &cmd)
+{
+    QProcess *proc = new QProcess();
+    proc->start(cmd);
+    proc->waitForStarted();
+    startedProcesses << proc;
+    _PROCESS_INFORMATION* _pid = proc->pid();
+    int pid = _pid ? _pid->dwProcessId : 0;
+    if (verbose) {
+        fprintf(stderr,"%s",proc->readAllStandardError().constData());
+        fprintf(stderr,"%s",proc->readAllStandardOutput().constData());
+    }
+    if (pid) {
+       if (verbose)
+           fprintf(stderr, "kdeinit4: Launched %s, pid = %ld\n", qPrintable(cmd),(long) pid);
+    }
+    else {
+       if (verbose)
+           fprintf(stderr, "kdeinit4: could not launch %s, exiting",qPrintable(cmd));
+    }
+    return pid;
+}
+
+/// check dbus registration
+bool checkIfRegisteredInDBus(const QString &name, int _timeout=10)
+{
+    int timeout = _timeout * 5;
+    while(timeout) {
+        if ( QDBusConnection::sessionBus().interface()->isServiceRegistered( name ) )
+            break;
+        Sleep(200);
+        timeout--;
+    }
+        if (!timeout) {
+            if (verbose)
+                fprintf(stderr,"not registered %s in dbus after %d secs\n",qPrintable(name),_timeout);
+            return false;
+        }
+        if (verbose)
+            fprintf(stderr,"%s is registered in dbus\n",qPrintable(name));
+    return true;
+}
 
 int main(int argc, char **argv, char **envp)
 {
