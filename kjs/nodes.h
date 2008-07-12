@@ -150,7 +150,7 @@ namespace KJS {
     JSValue* throwError(ExecState*, ErrorType, const UString& msg, const Identifier&);
     JSValue* throwUndefinedVariableError(ExecState*, const Identifier&);
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
   protected:
     int m_line;
   private:
@@ -171,24 +171,24 @@ namespace KJS {
     // For assignments, we need to conceptually evaluate the LHS to a reference before looking at the RHS
     // generateRefBind corresponds to that action. It never issues an error. The returned
     // reference should be passed to generateRefWrite when needed
-    virtual CompileReference* generateRefBind(CompileState*, CodeBlock& block) = 0;
+    virtual CompileReference* generateRefBind(CompileState*) = 0;
 
     // When we are doing a read-modify-write style op, or just plain read, we want to do a read
     // right after the binding. This does that, and returns a reference for use of follow up
     // writes.
-    virtual CompileReference* generateRefRead(CompileState*, CodeBlock& block, OpValue* out) = 0;
+    virtual CompileReference* generateRefRead(CompileState*, OpValue* out) = 0;
 
     // Writes to a bound reference.
-    virtual void generateRefWrite  (CompileState*, CodeBlock& block,
+    virtual void generateRefWrite  (CompileState*,
                                     CompileReference* ref, OpValue& valToStore) = 0;
 
     // The location nodes also handle deletes themselves. Note that this is called
     // w/o generateRefBegin
-    virtual OpValue generateRefDelete(CompileState*, CodeBlock& block) = 0;
+    virtual OpValue generateRefDelete(CompileState*) = 0;
 
     // For function calls, we also do a specialized lookup, getting both the valie and the
     // scope/this, also making sure it's not an activation.
-    virtual void generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut) = 0;
+    virtual void generateRefFunc(CompileState* comp, OpValue* funOut, OpValue* thisOut) = 0;
   };
 
   class StatementNode : public Node {
@@ -199,25 +199,25 @@ namespace KJS {
     int lastLine() const { return m_lastLine; }
     void hitStatement(ExecState*);
 
-    void generateDebugInfoIfNeeded(CompileState* comp, CodeBlock& block);
+    void generateDebugInfoIfNeeded(CompileState* comp);
 
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
   private:
-    void generateDebugInfo(CompileState* comp, CodeBlock& block);
+    void generateDebugInfo(CompileState* comp);
     int m_lastLine;
   };
 
-  inline void StatementNode::generateDebugInfoIfNeeded(CompileState* comp, CodeBlock& block)
+  inline void StatementNode::generateDebugInfoIfNeeded(CompileState* comp)
   {
     if (comp->compileType() == Debug)
-      generateDebugInfo(comp, block);
+      generateDebugInfo(comp);
   }
 
   class NullNode : public Node {
   public:
     NullNode() {}
     virtual NodeType type() const { return NullNodeType; }
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
   };
 
@@ -227,7 +227,7 @@ namespace KJS {
     bool value() const { return val; }
 
     virtual NodeType type() const { return BooleanNodeType; }
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
   private:
     bool val;
@@ -240,7 +240,7 @@ namespace KJS {
     void setValue(double v) { val = v; }
 
     virtual NodeType type() const { return NumberNodeType; }
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
   private:
     double val;
@@ -253,7 +253,7 @@ namespace KJS {
     void setValue(const UString& v) { val = v; }
 
     virtual NodeType type() const { return StringNodeType; }
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
   private:
     UString val;
@@ -264,7 +264,7 @@ namespace KJS {
     RegExpNode(const UString &p, const UString &f)
       : pattern(p), flags(f) { }
     virtual NodeType type() const { return RegExpNodeType; }
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
   private:
     UString pattern, flags;
@@ -273,7 +273,7 @@ namespace KJS {
   class ThisNode : public Node {
   public:
     ThisNode() {}
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
   };
 
@@ -283,17 +283,17 @@ namespace KJS {
 
     virtual bool isVarAccessNode() const { return true; }
     virtual void streamTo(SourceStream&) const;
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
 
-    virtual CompileReference* generateRefBind(CompileState*, CodeBlock& block);
-    virtual CompileReference* generateRefRead(CompileState*, CodeBlock& block, OpValue* out);
-    virtual void generateRefWrite  (CompileState*, CodeBlock& block,
+    virtual CompileReference* generateRefBind(CompileState*);
+    virtual CompileReference* generateRefRead(CompileState*, OpValue* out);
+    virtual void generateRefWrite  (CompileState*,
                                     CompileReference* ref, OpValue& valToStore);
-    virtual OpValue generateRefDelete(CompileState*, CodeBlock& block);
-    virtual void generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut);
+    virtual OpValue generateRefDelete(CompileState*);
+    virtual void generateRefFunc(CompileState* comp, OpValue* funOut, OpValue* thisOut);
 
     // This one never fails..
-    OpValue valueForTypeOf(CompileState* comp, CodeBlock& block);
+    OpValue valueForTypeOf(CompileState* comp);
 
     // Returns the ID this variable should be accessed as, or
     // missingSymbolMarker(), along with the variable's classification
@@ -314,7 +314,7 @@ namespace KJS {
     GroupNode(Node *g) : group(g) { }
     virtual NodeType type() const { return GroupNodeType; }
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual Node *nodeInsideAllParens();
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
@@ -347,7 +347,7 @@ namespace KJS {
       : element(ele->next.release()), elision(0), opt(false) { Parser::removeNodeCycle(element.get()); }
     ArrayNode(int eli, ElementNode *ele)
       : element(ele->next.release()), elision(eli), opt(true) { Parser::removeNodeCycle(element.get()); }
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -401,7 +401,7 @@ namespace KJS {
   public:
     ObjectLiteralNode() { }
     ObjectLiteralNode(PropertyListNode *l) : list(l->next.release()) { Parser::removeNodeCycle(list.get()); }
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -413,14 +413,14 @@ namespace KJS {
     BracketAccessorNode(Node *e1, Node *e2) : expr1(e1), expr2(e2) {}
     virtual void streamTo(SourceStream&) const;
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
 
-    virtual CompileReference* generateRefBind(CompileState*, CodeBlock& block);
-    virtual CompileReference* generateRefRead(CompileState*, CodeBlock& block, OpValue* out);
-    virtual void generateRefWrite  (CompileState*, CodeBlock& block,
+    virtual CompileReference* generateRefBind(CompileState*);
+    virtual CompileReference* generateRefRead(CompileState*, OpValue* out);
+    virtual void generateRefWrite  (CompileState*,
                                     CompileReference* ref, OpValue& valToStore);
-    virtual OpValue generateRefDelete(CompileState*, CodeBlock& block);
-    virtual void generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut);
+    virtual OpValue generateRefDelete(CompileState*);
+    virtual void generateRefFunc(CompileState* comp, OpValue* funOut, OpValue* thisOut);
 
     Node *base() { return expr1.get(); }
     Node *subscript() { return expr2.get(); }
@@ -436,14 +436,14 @@ namespace KJS {
     DotAccessorNode(Node *e, const Identifier &s) : expr(e), ident(s) { }
     virtual void streamTo(SourceStream&) const;
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
 
-    virtual CompileReference* generateRefBind(CompileState*, CodeBlock& block);
-    virtual CompileReference* generateRefRead(CompileState*, CodeBlock& block, OpValue* out);
-    virtual void generateRefWrite  (CompileState*, CodeBlock& block,
+    virtual CompileReference* generateRefBind(CompileState*);
+    virtual CompileReference* generateRefRead(CompileState*, OpValue* out);
+    virtual void generateRefWrite  (CompileState*,
                                     CompileReference* ref, OpValue& valToStore);
-    virtual OpValue generateRefDelete(CompileState*, CodeBlock& block);
-    virtual void generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut);
+    virtual OpValue generateRefDelete(CompileState*);
+    virtual void generateRefFunc(CompileState* comp, OpValue* funOut, OpValue* thisOut);
 
     Node *base() const { return expr.get(); }
     const Identifier& identifier() const { return ident; }
@@ -478,7 +478,7 @@ namespace KJS {
     ArgumentsNode(ArgumentListNode *l)
       : list(l->next.release()) { Parser::removeNodeCycle(list.get()); }
 
-    void generateEvalArguments(CompileState* comp, CodeBlock& block);
+    void generateEvalArguments(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
 
     virtual void recurseVisit(NodeVisitor *visitor);
@@ -491,7 +491,7 @@ namespace KJS {
     NewExprNode(Node *e) : expr(e) {}
     NewExprNode(Node *e, ArgumentsNode *a) : expr(e), args(a) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -503,7 +503,7 @@ namespace KJS {
   public:
     FunctionCallValueNode(Node *e, ArgumentsNode *a) : expr(e), args(a) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -515,7 +515,7 @@ namespace KJS {
   public:
     FunctionCallReferenceNode(Node *e, ArgumentsNode *a) : expr(e), args(a) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -529,7 +529,7 @@ namespace KJS {
 
     void streamTo(SourceStream&) const;
     void recurseVisit(NodeVisitor * visitor);
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
   protected:
     RefPtr<Node> m_loc;
     Operator m_oper;
@@ -541,7 +541,7 @@ namespace KJS {
 
     void streamTo(SourceStream&) const;
     void recurseVisit(NodeVisitor * visitor);
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
   private:
     RefPtr<LocationNode> loc;
   };
@@ -552,7 +552,7 @@ namespace KJS {
 
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
   private:
     RefPtr<Node> m_expr;
   };
@@ -562,7 +562,7 @@ namespace KJS {
   public:
     VoidNode(Node *e) : expr(e) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -573,7 +573,7 @@ namespace KJS {
   public:
     TypeOfVarNode(VarAccessNode *l) : loc(l) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     void streamTo(SourceStream&) const;
     void recurseVisit(NodeVisitor * visitor);
   private:
@@ -584,7 +584,7 @@ namespace KJS {
   public:
     TypeOfValueNode(Node *e) : m_expr(e) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -595,7 +595,7 @@ namespace KJS {
   public:
     PrefixNode(Node *l, Operator o) : m_loc(l), m_oper(o) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     void streamTo(SourceStream&) const;
     void recurseVisit(NodeVisitor * visitor);
   protected:
@@ -607,7 +607,7 @@ namespace KJS {
   public:
     UnaryPlusNode(Node *e) : expr(e) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -618,7 +618,7 @@ namespace KJS {
   public:
     NegateNode(Node *e) : expr(e) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -629,7 +629,7 @@ namespace KJS {
   public:
     BitwiseNotNode(Node *e) : expr(e) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -640,7 +640,7 @@ namespace KJS {
   public:
     LogicalNotNode(Node *e) : expr(e) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -652,7 +652,7 @@ namespace KJS {
     BinaryOperatorNode(Node* e1, Node* e2, Operator op)
       : expr1(e1), expr2(e2), oper(op) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor* visitor);
   private:
@@ -669,7 +669,7 @@ namespace KJS {
     BinaryLogicalNode(Node *e1, Operator o, Node *e2) :
       expr1(e1), expr2(e2), oper(o) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -686,7 +686,7 @@ namespace KJS {
     ConditionalNode(Node *l, Node *e1, Node *e2) :
       logical(l), expr1(e1), expr2(e2) {}
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -701,7 +701,7 @@ namespace KJS {
       : m_loc(loc), m_oper(oper), m_right(right) {}
 
     void streamTo(SourceStream&) const;
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     void recurseVisit(NodeVisitor * visitor);
   protected:
     RefPtr<Node> m_loc;
@@ -715,7 +715,7 @@ namespace KJS {
 
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
   private:
     RefPtr<Node> expr1;
     RefPtr<Node> expr2;
@@ -727,7 +727,7 @@ namespace KJS {
 
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
 
     Node* getExpr() { return expr.get(); }
   private:
@@ -739,7 +739,7 @@ namespace KJS {
     enum Type { Variable, Constant };
     VarDeclNode(const Identifier &id, AssignExprNode *in, Type t);
 
-    void generateCode(CompileState* comp, CodeBlock& block);
+    void generateCode(CompileState* comp);
 
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
@@ -760,7 +760,7 @@ namespace KJS {
     VarDeclListNode(VarDeclListNode *l, VarDeclNode *v)
       : next(l->next), var(v) { l->next = this; }
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     PassRefPtr<VarDeclListNode> releaseNext() { return next.release(); }
     virtual void breakCycle();
@@ -778,7 +778,7 @@ namespace KJS {
 
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
   private:
     RefPtr<VarDeclListNode> next;
   };
@@ -789,7 +789,7 @@ namespace KJS {
 
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
   protected:
     RefPtr<SourceElementsNode> source;
   };
@@ -799,7 +799,7 @@ namespace KJS {
     EmptyStatementNode() { } // debug
 
     virtual void streamTo(SourceStream&) const;
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
   };
 
   class ExprStatementNode : public StatementNode {
@@ -808,7 +808,7 @@ namespace KJS {
 
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
   private:
     RefPtr<Node> expr;
   };
@@ -820,7 +820,7 @@ namespace KJS {
 
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
   private:
     RefPtr<Node> expr;
     RefPtr<StatementNode> statement1;
@@ -833,7 +833,7 @@ namespace KJS {
 
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual bool isIterationStatement() const { return true; }
   private:
     RefPtr<StatementNode> statement;
@@ -846,7 +846,7 @@ namespace KJS {
 
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual bool isIterationStatement() const { return true; }
   private:
     RefPtr<Node> expr;
@@ -860,7 +860,7 @@ namespace KJS {
     ForNode(VarDeclListNode *e1, Node *e2, Node *e3, StatementNode *s) :
       expr1(e1->next.release()), expr2(e2), expr3(e3), statement(s) { Parser::removeNodeCycle(expr1.get()); }
 
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
     virtual bool isIterationStatement() const { return true; }
@@ -876,7 +876,7 @@ namespace KJS {
     ForInNode(Node *l, Node *e, StatementNode *s);
     ForInNode(const Identifier &i, AssignExprNode *in, Node *e, StatementNode *s);
 
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
     virtual bool isIterationStatement() const { return true; }
@@ -894,7 +894,7 @@ namespace KJS {
     ContinueNode() : target(0) { }
     ContinueNode(const Identifier &i) : ident(i), target(0) { }
 
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual void streamTo(SourceStream&) const;
   private:
     Identifier  ident;
@@ -906,7 +906,7 @@ namespace KJS {
     BreakNode() : target(0) { }
     BreakNode(const Identifier &i) : ident(i), target(0) { }
 
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual void streamTo(SourceStream&) const;
   private:
     Identifier ident;
@@ -917,7 +917,7 @@ namespace KJS {
   public:
     ReturnNode(Node *v) : value(v) {}
 
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -928,7 +928,7 @@ namespace KJS {
   public:
     WithNode(Node *e, StatementNode *s) : expr(e), statement(s) {}
 
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -942,7 +942,7 @@ namespace KJS {
 
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual NodeType type() const { return LabelNodeType; }
   private:
     Identifier label;
@@ -953,7 +953,7 @@ namespace KJS {
   public:
     ThrowNode(Node *e) : expr(e) {}
 
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -966,7 +966,7 @@ namespace KJS {
       : tryBlock(b), exceptionIdent(e), catchBlock(c), finallyBlock(f) { }
     virtual NodeType type() const { return TryNodeType; }
 
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
@@ -1024,7 +1024,7 @@ namespace KJS {
     CompileType compileState() const { return m_compType; }
     
 
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
 
     // Reserves a register for private use, making sure that id is in the right spot..
     void reserveSlot(size_t id, bool shouldMark);
@@ -1057,6 +1057,8 @@ namespace KJS {
     bool tearOffAtEnd() const { return m_tearOffAtEnd; }
 
     const CodeBlock& code() const { return m_compiledCode; }
+    CodeBlock& code() { return m_compiledCode; }
+
   private:
     size_t addSymbol(const Identifier& ident, int attr, FuncDeclNode* funcDecl = 0);
     UString m_sourceURL;
@@ -1089,7 +1091,7 @@ namespace KJS {
     FuncExprNode(const Identifier &i, FunctionBodyNode *b, ParameterNode *p = 0)
       : ident(i), param(p ? p->next.release() : PassRefPtr<ParameterNode>(0)), body(b) { if (p) { Parser::removeNodeCycle(param.get()); } addParams(); }
 
-    virtual OpValue generateEvalCode(CompileState* comp, CodeBlock& block);
+    virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
     virtual bool introducesNewStaticScope() const { return true; }
@@ -1109,7 +1111,7 @@ namespace KJS {
     FuncDeclNode(const Identifier &i, ParameterNode *p, FunctionBodyNode *b)
       : ident(i), param(p->next.release()), body(b) { Parser::removeNodeCycle(param.get()); addParams(); }
 
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
     virtual bool introducesNewStaticScope() const { return true; }
@@ -1130,7 +1132,7 @@ namespace KJS {
     SourceElementsNode(StatementNode*);
     SourceElementsNode(SourceElementsNode *s1, StatementNode *s2);
 
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual void streamTo(SourceStream&) const;
     PassRefPtr<SourceElementsNode> releaseNext() { return next.release(); }
     virtual void breakCycle();
@@ -1195,7 +1197,7 @@ namespace KJS {
 
       virtual void streamTo(SourceStream&) const;
       virtual void recurseVisit(NodeVisitor *visitor);
-      virtual void generateExecCode(CompileState* comp, CodeBlock& block);
+      virtual void generateExecCode(CompileState* comp);
   private:
       RefPtr<Node> expr;
       RefPtr<CaseBlockNode> block;
@@ -1231,7 +1233,7 @@ namespace KJS {
     void enableWildcard() { wld = true; }
     void setAlias(const Identifier &a) { al = a; }
 
-    virtual void generateExecCode(CompileState*, CodeBlock& block);
+    virtual void generateExecCode(CompileState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:

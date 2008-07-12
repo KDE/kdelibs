@@ -171,7 +171,7 @@ void TableBuilder::generateCode()
     *cppStream << "}\n\n";
 
     // Similar helper for simple register conversions..
-    *cppStream << "static bool emitSimpleRegisterConversion(CompileState* comp, CodeBlock& block, ConvOp convType, OpValue* original, OpValue& out)\n{\n";
+    *cppStream << "static bool emitSimpleRegisterConversion(CompileState* comp, ConvOp convType, OpValue* original, OpValue& out)\n{\n";
     *cppStream << "    switch(convType) {\n";
     *cppStream << "    case Conv_NoOp:\n";
     *cppStream << "        out = *original;\n";
@@ -179,7 +179,7 @@ void TableBuilder::generateCode()
     for (unsigned c = 0; c < rgConversionList.size(); ++c) {
         const ConversionInfo& inf = rgConversionList[c];
         *cppStream << "    case Conv_" << inf.name << ":\n";
-        *cppStream << "        CodeGen::emitOp(comp, block, Op_" << inf.name << ", &out, original);\n";
+        *cppStream << "        CodeGen::emitOp(comp, Op_" << inf.name << ", &out, original);\n";
         *cppStream << "        break;\n";
     }
     *cppStream << "    default:\n";

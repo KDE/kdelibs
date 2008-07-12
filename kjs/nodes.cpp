@@ -944,7 +944,7 @@ void FunctionBodyNode::compile(CodeType ctype, CompileType compType)
   m_compType = compType;
 
   CompileState comp(ctype, compType, this, m_symbolList.size());
-  generateExecCode(&comp, m_compiledCode);
+  generateExecCode(&comp);
   m_tearOffAtEnd = comp.needsClosures();
 
 #if 0

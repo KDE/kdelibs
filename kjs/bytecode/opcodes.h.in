@@ -106,25 +106,24 @@ class CodeGen {
 public:
     // All of these emit the instruction of given type, and return its base.
     // If retVal isn't 0, the return value will be placed there
-    static Addr emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
+    static Addr emitOp(CompileState* comp, OpName baseInstr,
                        OpValue* retOut = 0, OpValue* a0 = 0, OpValue* a1 = 0,
                                             OpValue* a2 = 0, OpValue* a3 = 0);
 
-    static void emitConvertTo(CompileState* comp, CodeBlock& block, OpValue* in,
+    static void emitConvertTo(CompileState* comp, OpValue* in,
                               OpType outType, OpValue* out);
 
     // Emits a register store of appropriate type
-    static void emitRegStore(CompileState* comp, CodeBlock& block,
-                              OpValue* regNum, OpValue* val);
+    static void emitRegStore(CompileState* comp, OpValue* regNum, OpValue* val);
 
     static void patchOpArgument(CodeBlock& block, Addr base, int pos, OpValue& newVal);
 
     // Patches op at address 'op' to jump to next instr.
-    static void patchJumpToNext(CompileState* comp, CodeBlock& block, Addr op, int argNum);
+    static void patchJumpToNext(CompileState* comp, Addr op, int argNum);
 
     // This requests the address of next instruction, for use in control flow, and
     // designates a basic block boundary, flushing everything BB-dependent;
-    static Addr nextPC(CompileState* comp, CodeBlock& block);
+    static Addr nextPC(CompileState* comp);
 
     static void disassembleBlock(CodeBlock& block);
 

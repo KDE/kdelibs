@@ -37,6 +37,11 @@ CompileState::~CompileState()
     deleteAllValues(freeNonMarkTemps);
 }
 
+CodeBlock& CompileState::codeBlock()
+{
+    return fbody->code();
+}
+
 void CompileState::requestTemporary(OpType type, OpValue& value, OpValue& reference)
 {
     ASSERT(type == OpType_value || type == OpType_bool || type == OpType_int32 || type == OpType_number);
@@ -107,7 +112,7 @@ void CompileState::flushLocal(CodeBlock& block, Register regNum)
         OpValue out, outReg;
         requestTemporary(OpType_value, out, outReg);
 
-        CodeGen::emitOp(this, block, Op_RegPutValue, 0, &outReg, &localVal);
+        CodeGen::emitOp(this, Op_RegPutValue, 0, &outReg, &localVal);
 
         // Now, patch up the descriptor to point to the same place as the temporary, and to
         // take ownership of it, and remove it from local descriptors list.
@@ -239,12 +244,13 @@ void CompileState::addPendingContinue(Node* node, Addr addr)
     pendingContinues.get(node)->append(addr);
 }
 
-void CompileState::resolvePendingBreaks(Node* node, CodeBlock& block, Addr dest)
+void CompileState::resolvePendingBreaks(Node* node, Addr dest)
 {
     const WTF::Vector<Addr>* stats = pendingBreaks.get(node);
     if (!stats)
         return;
 
+    CodeBlock& block = codeBlock();
     OpValue newDest = OpValue::immAddr(dest);
     for (size_t c = 0; c < stats->size(); ++c)
         CodeGen::patchOpArgument(block, (*stats)[c], 0, newDest);
@@ -253,12 +259,13 @@ void CompileState::resolvePendingBreaks(Node* node, CodeBlock& block, Addr dest)
     delete stats;
 }
 
-void CompileState::resolvePendingContinues(Node* node, CodeBlock& block, Addr dest)
+void CompileState::resolvePendingContinues(Node* node, Addr dest)
 {
     const WTF::Vector<Addr>* stats = pendingContinues.get(node);
     if (!stats)
         return;
 
+    CodeBlock& block = codeBlock();
     OpValue newDest = OpValue::immAddr(dest);
     for (size_t c = 0; c < stats->size(); ++c)
         CodeGen::patchOpArgument(block, (*stats)[c], 0, newDest);

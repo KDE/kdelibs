@@ -68,7 +68,7 @@ namespace KJS {
      /**
      * Returns the address a break or a continue statement targets
      */
-    const Addr target() const { return tar; }
+    Addr target() const { return tar; }
 
     /**
      * Returns true if this is a value completion, false otherwise.

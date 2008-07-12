@@ -112,7 +112,7 @@ ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& co
     return inf->routine;
 }
 
-void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
+void emitConversion(CompileState* comp, bool outImm,
                     ConvOp convType, OpValue* original, OpValue& out)
 {
     if (emitImmediateConversion(convType, original, out)) {
@@ -121,23 +121,23 @@ void emitConversion(CompileState* comp, CodeBlock& block, bool outImm,
             OpValue spillVal, spillRef;
 
             comp->requestTemporary(out.type, spillVal, spillRef);
-            CodeGen::emitRegStore(comp, block, &spillRef, &out);
+            CodeGen::emitRegStore(comp, &spillRef, &out);
             out = spillVal;
         }
 
         return;
     }
 
-    if (emitSimpleRegisterConversion(comp, block, convType, original, out))
+    if (emitSimpleRegisterConversion(comp, convType, original, out))
         return;
 
     switch (convType) {
     case Conv_I_R_Int32_Value:
-        CodeGen::emitOp(comp, block, Op_RInt32_Value_NonImm, &out, original);
+        CodeGen::emitOp(comp, Op_RInt32_Value_NonImm, &out, original);
         break;
 
     case Conv_I_R_Number_Value:
-        CodeGen::emitOp(comp, block, Op_RNum_Value_NonImm, &out, original);
+        CodeGen::emitOp(comp, Op_RNum_Value_NonImm, &out, original);
         break;
 
     default:
@@ -170,32 +170,31 @@ static void emitArg(unsigned char* basePtr, const Op* opDescr, int pos, const Op
     setArg(argBase, val);
 }
 
-void CodeGen::emitConvertTo(CompileState* comp, CodeBlock& block, OpValue* in,
+void CodeGen::emitConvertTo(CompileState* comp, OpValue* in,
                             OpType outType, OpValue* out)
 {
     int cost;
     ConvOp op = computeCast(in, outType, in->immediate, cost, false);
     ASSERT(cost >= 0);
-    emitConversion(comp, block, in->immediate, op, in, *out);
+    emitConversion(comp, in->immediate, op, in, *out);
 }
 
-void CodeGen::emitRegStore(CompileState* comp, CodeBlock& block,
-                           OpValue* regNum, OpValue* val)
+void CodeGen::emitRegStore(CompileState* comp, OpValue* regNum, OpValue* val)
 {
     ASSERT(regNum->immediate && regNum->type == OpType_reg);
 
     switch (val->type) {
     case OpType_bool:
-        emitOp(comp, block, Op_RegPutBool, 0, regNum, val);
+        emitOp(comp, Op_RegPutBool, 0, regNum, val);
         break;
     case OpType_int32:
-        emitOp(comp, block, Op_RegPutInt32, 0, regNum, val);
+        emitOp(comp, Op_RegPutInt32, 0, regNum, val);
         break;
     case OpType_value:
-        emitOp(comp, block, Op_RegPutValue, 0, regNum, val);
+        emitOp(comp, Op_RegPutValue, 0, regNum, val);
         break;
     case OpType_number:
-        emitOp(comp, block, Op_RegPutNumber, 0, regNum, val);
+        emitOp(comp, Op_RegPutNumber, 0, regNum, val);
         break;
     default:
         printf("Don't know how to store type to register:%s\n", OpTypeVals[val->type]);
@@ -203,9 +202,10 @@ void CodeGen::emitRegStore(CompileState* comp, CodeBlock& block,
     }
 }
 
-Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
+Addr CodeGen::emitOp(CompileState* comp, OpName baseInstr,
                      OpValue* retOut, OpValue* a0, OpValue* a1, OpValue* a2, OpValue* a3)
 {
+    CodeBlock& block = comp->codeBlock();
     const Op* const* cands = opSpecializations[baseInstr];
 
     const Op* cheapest = 0;
@@ -301,7 +301,7 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
     OpValue c[4]; // converted version
 
     for (int i = 0; i < numArgs; ++i)
-        emitConversion(comp, block, cheapest->immediateParams[i], cheapestConvOps[i], args[i], c[i]);
+        emitConversion(comp, cheapest->immediateParams[i], cheapestConvOps[i], args[i], c[i]);
 
     // Now figure out if we need to do align.. We need it if the PC is 8-aligned, since
     // the instr will mess that up, and the instruction need it..
@@ -326,8 +326,9 @@ Addr CodeGen::emitOp(CompileState* comp, CodeBlock& block, OpName baseInstr,
     return basePtr - block.data();
 }
 
-Addr CodeGen::nextPC(CompileState* comp, CodeBlock& block)
+Addr CodeGen::nextPC(CompileState* comp)
 {
+    CodeBlock& block = comp->codeBlock();
     comp->localFlushAll(block);
     return block.size();
 }
@@ -346,10 +347,10 @@ void CodeGen::patchOpArgument(CodeBlock& block, Addr baseAddr, int pos, OpValue&
     setArg(argBase, newVal);
 }
 
-void CodeGen::patchJumpToNext(CompileState* comp, CodeBlock& block, Addr op, int argNum)
+void CodeGen::patchJumpToNext(CompileState* comp, Addr op, int argNum)
 {
-    OpValue destAddr = OpValue::immAddr(nextPC(comp, block));
-    patchOpArgument(block, op, argNum, destAddr);
+    OpValue destAddr = OpValue::immAddr(nextPC(comp));
+    patchOpArgument(comp->codeBlock(), op, argNum, destAddr);
 }
 
 static void dumpParam(CodeBlock& block, size_t offset, OpType type, bool wasImm)

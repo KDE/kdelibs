@@ -31,26 +31,26 @@
 namespace KJS {
 
 // A few helpers..
-static void emitError(CompileState* comp, CodeBlock& block, Node* node, ErrorType type, const char* msgStr)
+static void emitError(CompileState* comp, Node* node, ErrorType type, const char* msgStr)
 {
     OpValue me = OpValue::immNode(node);
     OpValue se = OpValue::immInt32(type);
     OpValue msg = OpValue::immCStr(msgStr);
-    CodeGen::emitOp(comp, block, Op_RaiseError, 0, &me, &se, &msg);
+    CodeGen::emitOp(comp, Op_RaiseError, 0, &me, &se, &msg);
 }
 
-static void emitSyntaxError(CompileState* comp, CodeBlock& block, Node* node, const char* msgStr)
+static void emitSyntaxError(CompileState* comp, Node* node, const char* msgStr)
 {
-    emitError(comp, block, node, SyntaxError, msgStr);
+    emitError(comp, node, SyntaxError, msgStr);
 }
 
-static void emitReferenceError(CompileState* comp, CodeBlock& block, Node* node, const char* msgStr)
+static void emitReferenceError(CompileState* comp, Node* node, const char* msgStr)
 {
-    emitError(comp, block, node, ReferenceError, msgStr);
+    emitError(comp, node, ReferenceError, msgStr);
 }
 
 
-OpValue Node::generateEvalCode(CompileState*, CodeBlock&)
+OpValue Node::generateEvalCode(CompileState*)
 {
     std::cerr << "WARNING: no generateEvalCode for:" << typeid(*this).name() << "\n";
     ASSERT(0);
@@ -58,31 +58,31 @@ OpValue Node::generateEvalCode(CompileState*, CodeBlock&)
     return OpValue::immInt32(42);
 }
 
-void StatementNode::generateExecCode(CompileState*, CodeBlock&)
+void StatementNode::generateExecCode(CompileState*)
 {
     std::cerr << "WARNING: no generateExecCode for:" << typeid(*this).name() << "\n";
     ASSERT(0);
 }
 
-void StatementNode::generateDebugInfo(CompileState* comp, CodeBlock& block)
+void StatementNode::generateDebugInfo(CompileState* comp)
 {
     OpValue me = OpValue::immNode(this);
-    CodeGen::emitOp(comp, block, Op_AtStatement, 0, &me);
+    CodeGen::emitOp(comp, Op_AtStatement, 0, &me);
 }
 
 // ------------------------------ Basic literals -----------------------------------------
 
-OpValue NullNode::generateEvalCode(CompileState*, CodeBlock&)
+OpValue NullNode::generateEvalCode(CompileState*)
 {
     return OpValue::immValue(jsNull());
 }
 
-OpValue BooleanNode::generateEvalCode(CompileState*, CodeBlock&)
+OpValue BooleanNode::generateEvalCode(CompileState*)
 {
     return OpValue::immBool(value());
 }
 
-OpValue NumberNode::generateEvalCode(CompileState*, CodeBlock&)
+OpValue NumberNode::generateEvalCode(CompileState*)
 {
 #if 0
     if (typeHint == OpType_Value) {
@@ -105,7 +105,7 @@ OpValue NumberNode::generateEvalCode(CompileState*, CodeBlock&)
 }
 
 
-OpValue StringNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue StringNode::generateEvalCode(CompileState* comp)
 {
     // For now, just generate a register value pointer.
     // We may want to permit string pointers as well, to help overload resolution,
@@ -114,21 +114,21 @@ OpValue StringNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     OpValue inStr = OpValue::immString(&val);
 
     OpValue out;
-    CodeGen::emitOp(comp, block, Op_OwnedString, &out, &inStr);
+    CodeGen::emitOp(comp, Op_OwnedString, &out, &inStr);
     return out;
 }
 
-OpValue RegExpNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue RegExpNode::generateEvalCode(CompileState* comp)
 {
     // ### TODO: cache the engine object?
     OpValue out;
     OpValue patternV = OpValue::immString(&pattern);
     OpValue flagsV   = OpValue::immString(&flags);
-    CodeGen::emitOp(comp, block, Op_NewRegExp, &out, &patternV, &flagsV);
+    CodeGen::emitOp(comp, Op_NewRegExp, &out, &patternV, &flagsV);
     return out;
 }
 
-OpValue ThisNode::generateEvalCode(CompileState* comp, CodeBlock&)
+OpValue ThisNode::generateEvalCode(CompileState* comp)
 {
     return *comp->thisValue();
 }
@@ -171,7 +171,7 @@ size_t VarAccessNode::classifyVariable(CompileState* comp, Classification& class
     return index;
 }
 
-OpValue VarAccessNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue VarAccessNode::generateEvalCode(CompileState* comp)
 {
     Classification classify;
     size_t index = classifyVariable(comp, classify);
@@ -185,20 +185,20 @@ OpValue VarAccessNode::generateEvalCode(CompileState* comp, CodeBlock& block)
         break;
     }
     case NonLocal:
-        CodeGen::emitOp(comp, block, Op_NonLocalVarGet, &out, &varName);
+        CodeGen::emitOp(comp, Op_NonLocalVarGet, &out, &varName);
         break;
     case Global:
-        CodeGen::emitOp(comp, block, Op_GlobalObjectGet, &out, &varName);
+        CodeGen::emitOp(comp, Op_GlobalObjectGet, &out, &varName);
         break;
     case Dynamic:
-        CodeGen::emitOp(comp, block, Op_VarGet, &out, &varName);
+        CodeGen::emitOp(comp, Op_VarGet, &out, &varName);
         break;
     }
 
     return out;
 }
 
-OpValue VarAccessNode::valueForTypeOf(CompileState* comp, CodeBlock& block)
+OpValue VarAccessNode::valueForTypeOf(CompileState* comp)
 {
     // ### some code dupe here.
     Classification classify;
@@ -213,22 +213,22 @@ OpValue VarAccessNode::valueForTypeOf(CompileState* comp, CodeBlock& block)
         out = comp->localReadVal(index);
         break;
     case Global:
-        CodeGen::emitOp(comp, block, Op_SymGetKnownObject, &out, comp->globalScope(), &varName);
+        CodeGen::emitOp(comp, Op_SymGetKnownObject, &out, comp->globalScope(), &varName);
         break;
     case NonLocal:
         comp->requestTemporary(OpType_value, out, outReg);
-        CodeGen::emitOp(comp, block, Op_NonLocalScopeLookupAndGet, &scopeTemp, &outReg, &varName);
+        CodeGen::emitOp(comp, Op_NonLocalScopeLookupAndGet, &scopeTemp, &outReg, &varName);
         break;
     case Dynamic:
         comp->requestTemporary(OpType_value, out, outReg);
-        CodeGen::emitOp(comp, block, Op_ScopeLookupAndGet, &scopeTemp, &outReg, &varName);
+        CodeGen::emitOp(comp, Op_ScopeLookupAndGet, &scopeTemp, &outReg, &varName);
         break;
     }
 
     return out;
 }
 
-CompileReference* VarAccessNode::generateRefBind(CompileState* comp, CodeBlock& block)
+CompileReference* VarAccessNode::generateRefBind(CompileState* comp)
 {
     Classification classify;
     classifyVariable(comp, classify);
@@ -241,12 +241,12 @@ CompileReference* VarAccessNode::generateRefBind(CompileState* comp, CodeBlock& 
 
     OpValue quiet = OpValue::immNode(0);
     OpValue varName = OpValue::immIdent(&ident);
-    CodeGen::emitOp(comp, block, classify == Dynamic ? Op_ScopeLookup : Op_NonLocalScopeLookup,
+    CodeGen::emitOp(comp, classify == Dynamic ? Op_ScopeLookup : Op_NonLocalScopeLookup,
                         &ref->baseObj, &varName, &quiet);
     return ref;
 }
 
-CompileReference* VarAccessNode::generateRefRead(CompileState* comp, CodeBlock& block, OpValue* out)
+CompileReference* VarAccessNode::generateRefRead(CompileState* comp, OpValue* out)
 {
     Classification classify;
     classifyVariable(comp, classify);
@@ -255,7 +255,7 @@ CompileReference* VarAccessNode::generateRefRead(CompileState* comp, CodeBlock& 
 
     // If we don't need any binding, just use normal read code..
     if (classify == Local || classify == Global) {
-        *out = generateEvalCode(comp, block);
+        *out = generateEvalCode(comp);
         return 0;
     }
 
@@ -271,12 +271,12 @@ CompileReference* VarAccessNode::generateRefRead(CompileState* comp, CodeBlock& 
         op = Op_ScopeLookupAndGetChecked;
     else
         op = Op_NonLocalScopeLookupAndGetChecked;
-    CodeGen::emitOp(comp, block, op, &ref->baseObj, &readReg, &varName);
+    CodeGen::emitOp(comp, op, &ref->baseObj, &readReg, &varName);
 
     return ref;
 }
 
-void VarAccessNode::generateRefWrite(CompileState* comp, CodeBlock& block,
+void VarAccessNode::generateRefWrite(CompileState* comp,
                                            CompileReference* ref, OpValue& valToStore)
 {
     Classification classify;
@@ -284,17 +284,17 @@ void VarAccessNode::generateRefWrite(CompileState* comp, CodeBlock& block,
 
     if (classify == Local) {
         // Straight register put..
-        OpValue destReg = comp->localWriteRef(block, index);
-        CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &destReg, &valToStore);
+        OpValue destReg = comp->localWriteRef(comp->codeBlock(), index);
+        CodeGen::emitOp(comp, Op_RegPutValue, 0, &destReg, &valToStore);
     } else {
         // Symbolic write to the appropriate scope..
         OpValue varName = OpValue::immIdent(&ident);
-        CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0,
+        CodeGen::emitOp(comp, Op_SymPutKnownObject, 0,
                        (classify == Global ? comp->globalScope() : &ref->baseObj), &varName, &valToStore);
     }
 }
 
-OpValue VarAccessNode::generateRefDelete(CompileState* comp, CodeBlock& block)
+OpValue VarAccessNode::generateRefDelete(CompileState* comp)
 {
     Classification classify;
     classifyVariable(comp, classify);
@@ -311,18 +311,18 @@ OpValue VarAccessNode::generateRefDelete(CompileState* comp, CodeBlock& block)
     } else {
         OpValue varName = OpValue::immIdent(&ident);
         OpValue silent  = OpValue::immNode(0);
-        CodeGen::emitOp(comp, block, classify == Dynamic ? Op_ScopeLookup : Op_NonLocalScopeLookup,
+        CodeGen::emitOp(comp, classify == Dynamic ? Op_ScopeLookup : Op_NonLocalScopeLookup,
                         &base, &varName, &silent);
     }
 
     // Remove the property..
     OpValue out;
     OpValue varName = OpValue::immIdent(&ident);
-    CodeGen::emitOp(comp, block, Op_SymDeleteKnownObject, &out, &base, &varName);
+    CodeGen::emitOp(comp, Op_SymDeleteKnownObject, &out, &base, &varName);
     return out;
 }
 
-void VarAccessNode::generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut)
+void VarAccessNode::generateRefFunc(CompileState* comp, OpValue* funOut, OpValue* thisOut)
 {
     Classification classify;
     classifyVariable(comp, classify);
@@ -334,33 +334,33 @@ void VarAccessNode::generateRefFunc(CompileState* comp, CodeBlock& block, OpValu
     case Local:
     case Global:
         // Both of these use global object for this, and use straightforward lookup for value
-        *funOut  = generateEvalCode(comp, block);
+        *funOut  = generateEvalCode(comp);
         *thisOut = *comp->globalScope();
         break;
     case NonLocal:
         comp->requestTemporary(OpType_value, *thisOut, thisReg);
-        CodeGen::emitOp(comp, block, Op_NonLocalFunctionLookupAndGet, funOut, &thisReg, &varName);
+        CodeGen::emitOp(comp, Op_NonLocalFunctionLookupAndGet, funOut, &thisReg, &varName);
         break;
     case Dynamic:
         comp->requestTemporary(OpType_value, *thisOut, thisReg);
-        CodeGen::emitOp(comp, block, Op_FunctionLookupAndGet, funOut, &thisReg, &varName);
+        CodeGen::emitOp(comp, Op_FunctionLookupAndGet, funOut, &thisReg, &varName);
         break;
     }
 }
 
 // ------------------------------ GroupNode----------------------------------------
 
-OpValue GroupNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue GroupNode::generateEvalCode(CompileState* comp)
 {
-    return group->generateEvalCode(comp, block);
+    return group->generateEvalCode(comp);
 }
 
 // ------------------------------ Object + Array literals --------------------------
 
-OpValue ArrayNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue ArrayNode::generateEvalCode(CompileState* comp)
 {
     OpValue arr;
-    CodeGen::emitOp(comp, block, Op_NewEmptyArray, &arr);
+    CodeGen::emitOp(comp, Op_NewEmptyArray, &arr);
 
     OpValue und = OpValue::immValue(jsUndefined());
 
@@ -370,7 +370,7 @@ OpValue ArrayNode::generateEvalCode(CompileState* comp, CodeBlock& block)
             // Fill elision w/undefined, unless we can just skip over to a value
             for (int i = 0; i < el->elision; i++) {
                 OpValue ind = OpValue::immInt32(pos);
-                CodeGen::emitOp(comp, block, Op_BracketPutKnownObject, 0, &arr, &ind, &und);
+                CodeGen::emitOp(comp, Op_BracketPutKnownObject, 0, &arr, &ind, &und);
                 ++pos;
             }
         } else {
@@ -378,41 +378,41 @@ OpValue ArrayNode::generateEvalCode(CompileState* comp, CodeBlock& block)
         }
 
         if (el->node) {
-            OpValue val = el->node->generateEvalCode(comp, block);
+            OpValue val = el->node->generateEvalCode(comp);
             OpValue ind = OpValue::immInt32(pos);
-            CodeGen::emitOp(comp, block, Op_BracketPutKnownObject, 0, &arr, &ind, &val);
+            CodeGen::emitOp(comp, Op_BracketPutKnownObject, 0, &arr, &ind, &val);
             ++pos;
         }
     }
 
     for (int i = 0; i < elision; i++) {
         OpValue ind = OpValue::immInt32(pos);
-        CodeGen::emitOp(comp, block, Op_BracketPutKnownObject, 0, &arr, &ind, &und);
+        CodeGen::emitOp(comp, Op_BracketPutKnownObject, 0, &arr, &ind, &und);
         ++pos;
     }
 
     return arr;
 }
 
-OpValue ObjectLiteralNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue ObjectLiteralNode::generateEvalCode(CompileState* comp)
 {
     OpValue obj;
-    CodeGen::emitOp(comp, block, Op_NewObject, &obj);
+    CodeGen::emitOp(comp, Op_NewObject, &obj);
 
     for (PropertyListNode* entry = list.get(); entry; entry = entry->next.get()) {
         PropertyNode* prop = entry->node.get();
         OpValue name = OpValue::immIdent(&prop->name->str);
-        OpValue val  = prop->assign->generateEvalCode(comp, block);
+        OpValue val  = prop->assign->generateEvalCode(comp);
 
         switch (prop->type) {
         case PropertyNode::Getter:
-            CodeGen::emitOp(comp, block, Op_DefineGetter, 0, &obj, &name, &val);
+            CodeGen::emitOp(comp, Op_DefineGetter, 0, &obj, &name, &val);
             break;
         case PropertyNode::Setter:
-            CodeGen::emitOp(comp, block, Op_DefineSetter, 0, &obj, &name, &val);
+            CodeGen::emitOp(comp, Op_DefineSetter, 0, &obj, &name, &val);
             break;
         case PropertyNode::Constant:
-            CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0, &obj, &name, &val);
+            CodeGen::emitOp(comp, Op_SymPutKnownObject, 0, &obj, &name, &val);
             break;
         }
     }
@@ -421,18 +421,18 @@ OpValue ObjectLiteralNode::generateEvalCode(CompileState* comp, CodeBlock& block
 }
 
 // ------------------------------ BracketAccessorNode --------------------------------
-OpValue BracketAccessorNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue BracketAccessorNode::generateEvalCode(CompileState* comp)
 {
     OpValue ret;
-    OpValue base  = expr1->generateEvalCode(comp, block);
-    OpValue index = expr2->generateEvalCode(comp, block);
+    OpValue base  = expr1->generateEvalCode(comp);
+    OpValue index = expr2->generateEvalCode(comp);
 
     // ### optimize foo["bar"] ?
-    CodeGen::emitOp(comp, block, Op_BracketGet, &ret, &base, &index);
+    CodeGen::emitOp(comp, Op_BracketGet, &ret, &base, &index);
     return ret;
 }
 
-CompileReference* BracketAccessorNode::generateRefBind(CompileState* comp, CodeBlock& block)
+CompileReference* BracketAccessorNode::generateRefBind(CompileState* comp)
 {
     // Per 11.2.1, the following steps must happen when evaluating foo[bar]
     // 1) eval foo
@@ -442,187 +442,187 @@ CompileReference* BracketAccessorNode::generateRefBind(CompileState* comp, CodeB
     // ... all of which are part of reference evaluation. Fun.
     // ### FIXME FIXME FIXME: we don't do step 4 in right spot yet!
     CompileReference* ref = new CompileReference;
-    OpValue baseV = expr1->generateEvalCode(comp, block);
-    ref->indexVal = expr2->generateEvalCode(comp, block);
-    CodeGen::emitOp(comp, block, Op_ToObject, &ref->baseObj, &baseV);
+    OpValue baseV = expr1->generateEvalCode(comp);
+    ref->indexVal = expr2->generateEvalCode(comp);
+    CodeGen::emitOp(comp, Op_ToObject, &ref->baseObj, &baseV);
     return ref;
 }
 
-CompileReference* BracketAccessorNode::generateRefRead(CompileState* comp, CodeBlock& block, OpValue* out)
+CompileReference* BracketAccessorNode::generateRefRead(CompileState* comp, OpValue* out)
 {
     CompileReference* ref = new CompileReference;
 
     // ### As above, this sequence should store the toString on reference, if there will be a follow up
     // write --- need a hint for that..
-    OpValue baseV = expr1->generateEvalCode(comp, block);
-    ref->indexVal = expr2->generateEvalCode(comp, block);
+    OpValue baseV = expr1->generateEvalCode(comp);
+    ref->indexVal = expr2->generateEvalCode(comp);
 
     // Store the object for future use.
     OpValue baseReg;
     comp->requestTemporary(OpType_value, ref->baseObj, baseReg);
 
-    CodeGen::emitOp(comp, block, Op_BracketGetAndBind, out, &baseReg, &baseV, &ref->indexVal);
+    CodeGen::emitOp(comp, Op_BracketGetAndBind, out, &baseReg, &baseV, &ref->indexVal);
     return ref;
 }
 
-void BracketAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
+void BracketAccessorNode::generateRefWrite(CompileState* comp,
                                              CompileReference* ref, OpValue& valToStore)
 {
-    CodeGen::emitOp(comp, block, Op_BracketPutKnownObject, 0, &ref->baseObj, &ref->indexVal, &valToStore);
+    CodeGen::emitOp(comp, Op_BracketPutKnownObject, 0, &ref->baseObj, &ref->indexVal, &valToStore);
 }
 
-OpValue BracketAccessorNode::generateRefDelete(CompileState* comp, CodeBlock& block)
+OpValue BracketAccessorNode::generateRefDelete(CompileState* comp)
 {
-    OpValue base  = expr1->generateEvalCode(comp, block);
-    OpValue index = expr2->generateEvalCode(comp, block);
+    OpValue base  = expr1->generateEvalCode(comp);
+    OpValue index = expr2->generateEvalCode(comp);
 
     OpValue out;
-    CodeGen::emitOp(comp, block, Op_BracketDelete, &out, &base, &index);
+    CodeGen::emitOp(comp, Op_BracketDelete, &out, &base, &index);
     return out;
 }
 
-void BracketAccessorNode::generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut)
+void BracketAccessorNode::generateRefFunc(CompileState* comp, OpValue* funOut, OpValue* thisOut)
 {
-    OpValue baseV  = expr1->generateEvalCode(comp, block);
-    OpValue indexV = expr2->generateEvalCode(comp, block);
+    OpValue baseV  = expr1->generateEvalCode(comp);
+    OpValue indexV = expr2->generateEvalCode(comp);
 
     // We need to memorize the toObject for 'this'
     OpValue baseReg;
     comp->requestTemporary(OpType_value, *thisOut, baseReg);
 
-    CodeGen::emitOp(comp, block, Op_BracketGetAndBind, funOut, &baseReg, &baseV, &indexV);
+    CodeGen::emitOp(comp, Op_BracketGetAndBind, funOut, &baseReg, &baseV, &indexV);
 }
 
 // ------------------------------ DotAccessorNode --------------------------------
 
 // ECMA 11.2.1b
-OpValue DotAccessorNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue DotAccessorNode::generateEvalCode(CompileState* comp)
 {
     OpValue ret;
-    OpValue base    = expr->generateEvalCode(comp, block);
+    OpValue base    = expr->generateEvalCode(comp);
     OpValue varName = OpValue::immIdent(&ident);
-    CodeGen::emitOp(comp, block, Op_SymGet, &ret, &base, &varName);
+    CodeGen::emitOp(comp, Op_SymGet, &ret, &base, &varName);
     return ret;
 }
 
-CompileReference* DotAccessorNode::generateRefBind(CompileState* comp, CodeBlock& block)
+CompileReference* DotAccessorNode::generateRefBind(CompileState* comp)
 {
     CompileReference* ref = new CompileReference;
-    OpValue baseV = expr->generateEvalCode(comp, block);
-    CodeGen::emitOp(comp, block, Op_ToObject, &ref->baseObj, &baseV);
+    OpValue baseV = expr->generateEvalCode(comp);
+    CodeGen::emitOp(comp, Op_ToObject, &ref->baseObj, &baseV);
     return ref;
 }
 
-CompileReference* DotAccessorNode::generateRefRead(CompileState* comp, CodeBlock& block, OpValue* out)
+CompileReference* DotAccessorNode::generateRefRead(CompileState* comp, OpValue* out)
 {
     CompileReference* ref = new CompileReference;
-    OpValue baseV = expr->generateEvalCode(comp, block);
+    OpValue baseV = expr->generateEvalCode(comp);
     OpValue baseReg;
     OpValue varName = OpValue::immIdent(&ident);
     comp->requestTemporary(OpType_value, ref->baseObj, baseReg);
-    CodeGen::emitOp(comp, block, Op_SymGetAndBind, out, &baseReg, &baseV, &varName);
+    CodeGen::emitOp(comp, Op_SymGetAndBind, out, &baseReg, &baseV, &varName);
     return ref;
 }
 
-void DotAccessorNode::generateRefWrite(CompileState* comp, CodeBlock& block,
+void DotAccessorNode::generateRefWrite(CompileState* comp,
                                        CompileReference* ref, OpValue& valToStore)
 {
     OpValue varName = OpValue::immIdent(&ident);
-    CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0, &ref->baseObj, &varName, &valToStore);
+    CodeGen::emitOp(comp, Op_SymPutKnownObject, 0, &ref->baseObj, &varName, &valToStore);
 }
 
-OpValue DotAccessorNode::generateRefDelete(CompileState* comp, CodeBlock& block)
+OpValue DotAccessorNode::generateRefDelete(CompileState* comp)
 {
-    OpValue base = expr->generateEvalCode(comp, block);
+    OpValue base = expr->generateEvalCode(comp);
     OpValue varName = OpValue::immIdent(&ident);
     OpValue out;
-    CodeGen::emitOp(comp, block, Op_SymDelete, &out, &base, &varName);
+    CodeGen::emitOp(comp, Op_SymDelete, &out, &base, &varName);
     return out;
 }
 
-void DotAccessorNode::generateRefFunc(CompileState* comp, CodeBlock& block, OpValue* funOut, OpValue* thisOut)
+void DotAccessorNode::generateRefFunc(CompileState* comp, OpValue* funOut, OpValue* thisOut)
 {
-    OpValue baseV = expr->generateEvalCode(comp, block);
+    OpValue baseV = expr->generateEvalCode(comp);
     OpValue varName = OpValue::immIdent(&ident);
 
     OpValue baseReg;
     comp->requestTemporary(OpType_value, *thisOut, baseReg);
-    CodeGen::emitOp(comp, block, Op_SymGetAndBind, funOut, &baseReg, &baseV, &varName);
+    CodeGen::emitOp(comp, Op_SymGetAndBind, funOut, &baseReg, &baseV, &varName);
 }
 
 // ------------------ ........
 
-void ArgumentsNode::generateEvalArguments(CompileState* comp, CodeBlock& block)
+void ArgumentsNode::generateEvalArguments(CompileState* comp)
 {
     WTF::Vector<OpValue> args;
 
     // We need evaluate arguments and push them in separate steps as there may be
     // function/ctor calls inside.
     for (ArgumentListNode* arg = list.get(); arg; arg = arg->next.get()) {
-        args.append(arg->expr->generateEvalCode(comp, block));
+        args.append(arg->expr->generateEvalCode(comp));
     }
 
-    CodeGen::emitOp(comp, block, Op_ClearArgs, 0);
+    CodeGen::emitOp(comp, Op_ClearArgs, 0);
 
     size_t c = 0;
     while (c < args.size()) {
         if (c + 3 <= args.size()) {
-            CodeGen::emitOp(comp, block, Op_Add3Arg, 0, &args[c], &args[c+1], &args[c+2]);
+            CodeGen::emitOp(comp, Op_Add3Arg, 0, &args[c], &args[c+1], &args[c+2]);
             c += 3;
         } else if (c + 2 <= args.size()) {
-            CodeGen::emitOp(comp, block, Op_Add2Arg, 0, &args[c], &args[c+1]);
+            CodeGen::emitOp(comp, Op_Add2Arg, 0, &args[c], &args[c+1]);
             c += 2;
         } else {
-            CodeGen::emitOp(comp, block, Op_AddArg, 0, &args[c]);
+            CodeGen::emitOp(comp, Op_AddArg, 0, &args[c]);
             c += 1;
         }
     }
 }
 
-OpValue NewExprNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue NewExprNode::generateEvalCode(CompileState* comp)
 {
-    OpValue v = expr->generateEvalCode(comp, block);
+    OpValue v = expr->generateEvalCode(comp);
 
     if (args)
-        args->generateEvalArguments(comp, block);
+        args->generateEvalArguments(comp);
     else
-        CodeGen::emitOp(comp, block, Op_ClearArgs, 0);
+        CodeGen::emitOp(comp, Op_ClearArgs, 0);
 
     OpValue out;
-    CodeGen::emitOp(comp, block, Op_CtorCall, &out, &v);
+    CodeGen::emitOp(comp, Op_CtorCall, &out, &v);
     return out;
 }
 
-OpValue FunctionCallValueNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue FunctionCallValueNode::generateEvalCode(CompileState* comp)
 {
-    OpValue v = expr->generateEvalCode(comp, block);
-    args->generateEvalArguments(comp, block);
+    OpValue v = expr->generateEvalCode(comp);
+    args->generateEvalArguments(comp);
 
     OpValue out;
-    CodeGen::emitOp(comp, block, Op_FunctionCall, &out, &v, comp->globalScope());
+    CodeGen::emitOp(comp, Op_FunctionCall, &out, &v, comp->globalScope());
     return out;
 }
 
-OpValue FunctionCallReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue FunctionCallReferenceNode::generateEvalCode(CompileState* comp)
 {
     Node* cand = expr->nodeInsideAllParens();
     ASSERT(cand->isLocation());
     LocationNode* loc = static_cast<LocationNode*>(cand);
 
     OpValue funVal, thisVal;
-    loc->generateRefFunc(comp, block, &funVal, &thisVal);
-    args->generateEvalArguments(comp, block);
+    loc->generateRefFunc(comp, &funVal, &thisVal);
+    args->generateEvalArguments(comp);
 
     OpValue out;
-    CodeGen::emitOp(comp, block, Op_FunctionCall, &out, &funVal, &thisVal);
+    CodeGen::emitOp(comp, Op_FunctionCall, &out, &funVal, &thisVal);
     return out;
 }
 
-OpValue PostfixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue PostfixNode::generateEvalCode(CompileState* comp)
 {
     Node* cand = m_loc->nodeInsideAllParens();
     if (!cand->isLocation()) {
-        emitReferenceError(comp, block, this,
+        emitReferenceError(comp, this,
                 m_oper == OpPlusPlus ?
                     "Postfix ++ operator applied to value that is not a reference." :
                     "Postfix -- operator applied to value that is not a reference.");
@@ -635,63 +635,63 @@ OpValue PostfixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 
     //read current value
     OpValue curV;
-    CompileReference* ref = loc->generateRefRead(comp, block, &curV);
+    CompileReference* ref = loc->generateRefRead(comp, &curV);
 
     // We need it to be a number..
     if (curV.type != OpType_number) {
         OpValue numVal;
-        CodeGen::emitConvertTo(comp, block, &curV, OpType_number, &numVal);
+        CodeGen::emitConvertTo(comp, &curV, OpType_number, &numVal);
         curV = numVal;
     }
 
     // Compute new one
     OpValue newV;
-    CodeGen::emitOp(comp, block, (m_oper == OpPlusPlus) ? Op_Add1 : Op_Sub1,
+    CodeGen::emitOp(comp, (m_oper == OpPlusPlus) ? Op_Add1 : Op_Sub1,
                     &newV, &curV);
 
-    loc->generateRefWrite(comp, block, ref, newV);
+    loc->generateRefWrite(comp, ref, newV);
     delete ref;
     return curV;
 }
 
-OpValue DeleteReferenceNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue DeleteReferenceNode::generateEvalCode(CompileState* comp)
 {
-    return loc->generateRefDelete(comp, block);
+    return loc->generateRefDelete(comp);
 }
 
-OpValue DeleteValueNode::generateEvalCode(CompileState*, CodeBlock&)
+OpValue DeleteValueNode::generateEvalCode(CompileState*)
 {
     return OpValue::immBool(true);
 }
 
-OpValue VoidNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue VoidNode::generateEvalCode(CompileState* comp)
 {
-    (void)expr->generateEvalCode(comp, block);
+    (void)expr->generateEvalCode(comp);
     return OpValue::immValue(jsUndefined());
 }
 
-OpValue TypeOfVarNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue TypeOfVarNode::generateEvalCode(CompileState* comp)
 {
-    OpValue v = loc->valueForTypeOf(comp, block);
+    OpValue v = loc->valueForTypeOf(comp);
 
     OpValue out;
-    CodeGen::emitOp(comp, block, Op_TypeOf, &out, &v);
+    CodeGen::emitOp(comp, Op_TypeOf, &out, &v);
     return out;
 }
 
-OpValue TypeOfValueNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue TypeOfValueNode::generateEvalCode(CompileState* comp)
 {
-    OpValue v = m_expr->generateEvalCode(comp, block);
+    OpValue v = m_expr->generateEvalCode(comp);
     OpValue typeOfV;
-    CodeGen::emitOp(comp, block, Op_TypeOf, &typeOfV, &v);
+    CodeGen::emitOp(comp, Op_TypeOf, &typeOfV, &v);
     return typeOfV;
 }
 
-OpValue PrefixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue PrefixNode::generateEvalCode(CompileState* comp)
 {
     Node* cand = m_loc->nodeInsideAllParens();
     if (!cand->isLocation()) {
-        emitReferenceError(comp, block, this,
+        emitReferenceError(comp, this,
                 m_oper == OpPlusPlus ?
                     "Prefix ++ operator applied to value that is not a reference." :
                     "Prefix -- operator applied to value that is not a reference.");
@@ -704,60 +704,60 @@ OpValue PrefixNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 
     //read current value
     OpValue curV;
-    CompileReference* ref = loc->generateRefRead(comp, block, &curV);
+    CompileReference* ref = loc->generateRefRead(comp, &curV);
 
     OpValue newV;
-    CodeGen::emitOp(comp, block, (m_oper == OpPlusPlus) ? Op_Add1 : Op_Sub1,
+    CodeGen::emitOp(comp, (m_oper == OpPlusPlus) ? Op_Add1 : Op_Sub1,
                     &newV, &curV);
 
     // Write out + return new value.
-    loc->generateRefWrite(comp, block, ref, newV);
+    loc->generateRefWrite(comp, ref, newV);
     delete ref;
     return newV;
 }
 
-OpValue UnaryPlusNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue UnaryPlusNode::generateEvalCode(CompileState* comp)
 {
     // This is basically just a number cast
-    OpValue curV = expr->generateEvalCode(comp, block);
+    OpValue curV = expr->generateEvalCode(comp);
 
     if (curV.type != OpType_number) {
         OpValue numVal;
-        CodeGen::emitConvertTo(comp, block, &curV, OpType_number, &numVal);
+        CodeGen::emitConvertTo(comp, &curV, OpType_number, &numVal);
         curV = numVal;
     }
 
     return curV;
 }
 
-OpValue NegateNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue NegateNode::generateEvalCode(CompileState* comp)
 {
-    OpValue v = expr->generateEvalCode(comp, block);
+    OpValue v = expr->generateEvalCode(comp);
     OpValue negV;
-    CodeGen::emitOp(comp, block, Op_Neg, &negV, &v);
+    CodeGen::emitOp(comp, Op_Neg, &negV, &v);
     return negV;
 }
 
-OpValue BitwiseNotNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue BitwiseNotNode::generateEvalCode(CompileState* comp)
 {
-    OpValue v = expr->generateEvalCode(comp, block);
+    OpValue v = expr->generateEvalCode(comp);
     OpValue out;
-    CodeGen::emitOp(comp, block, Op_BitNot, &out, &v);
+    CodeGen::emitOp(comp, Op_BitNot, &out, &v);
     return out;
 }
 
-OpValue LogicalNotNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue LogicalNotNode::generateEvalCode(CompileState* comp)
 {
-    OpValue v = expr->generateEvalCode(comp, block);
+    OpValue v = expr->generateEvalCode(comp);
     OpValue out;
-    CodeGen::emitOp(comp, block, Op_LogicalNot, &out, &v);
+    CodeGen::emitOp(comp, Op_LogicalNot, &out, &v);
     return out;
 }
 
-OpValue BinaryOperatorNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue BinaryOperatorNode::generateEvalCode(CompileState* comp)
 {
-    OpValue v1 = expr1->generateEvalCode(comp, block);
-    OpValue v2 = expr2->generateEvalCode(comp, block);
+    OpValue v1 = expr1->generateEvalCode(comp);
+    OpValue v2 = expr2->generateEvalCode(comp);
 
     OpName codeOp; // ### could perhaps skip conversion entirely,
                    // and set these in the parser?
@@ -850,40 +850,40 @@ OpValue BinaryOperatorNode::generateEvalCode(CompileState* comp, CodeBlock& bloc
     }
 
     OpValue out;
-    CodeGen::emitOp(comp, block, codeOp, &out, &v1, &v2);
+    CodeGen::emitOp(comp, codeOp, &out, &v1, &v2);
     return out;
 }
 
-OpValue BinaryLogicalNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue BinaryLogicalNode::generateEvalCode(CompileState* comp)
 {
     // This is somewhat ugly since we can't patchup labels in already generated
     // code, and don't know the types in advance. It could also benefit from
     // a type hint, since it's easier if we only want a bool, which is quite common
 
-    OpValue a = expr1->generateEvalCode(comp, block);
+    OpValue a = expr1->generateEvalCode(comp);
 
     // Make a register for storing the result, and put 'a' there, as out first guess.
     OpValue aVal, aReg;
     comp->requestTemporary(a.type, aVal, aReg);
-    CodeGen::emitRegStore(comp, block, &aReg, &a);
+    CodeGen::emitRegStore(comp, &aReg, &a);
 
     // Is this enough to shortcircuit?
     // if op is && and a is false, we jump out, ditto
     // for || and true.
-    Addr jumpToShortCircuit = CodeGen::emitOp(comp, block, oper == OpAnd ? Op_IfNotJump : Op_IfJump,
+    Addr jumpToShortCircuit = CodeGen::emitOp(comp, oper == OpAnd ? Op_IfNotJump : Op_IfJump,
                                               0, &a, OpValue::dummyAddr());
 
     // Now, generate the code for b...
-    OpValue b = expr2->generateEvalCode(comp, block);
+    OpValue b = expr2->generateEvalCode(comp);
 
     // Hopefully, either the types match, or the result slot is already a value,
     // so we can just promote b (which will happen automatically to produce param for Op_RegPutVal)
     if (a.type == b.type || a.type == OpType_value) {
         if (a.type == OpType_value)
-            CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &aReg, &b);
+            CodeGen::emitOp(comp, Op_RegPutValue, 0, &aReg, &b);
         else
-            CodeGen::emitRegStore(comp, block, &aReg, &b);
-        CodeGen::patchJumpToNext(comp, block, jumpToShortCircuit, 1);
+            CodeGen::emitRegStore(comp, &aReg, &b);
+        CodeGen::patchJumpToNext(comp, jumpToShortCircuit, 1);
         return aVal;
     } else {
         // We need to promote 'a' as well, which means we need to skip over the code jumpToShortCircuit
@@ -892,23 +892,23 @@ OpValue BinaryLogicalNode::generateEvalCode(CompileState* comp, CodeBlock& block
         // Get a new register for the result, put b there..
         OpValue resVal, resReg;
         comp->requestTemporary(OpType_value, resVal, resReg);
-        CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &resReg, &b);
+        CodeGen::emitOp(comp, Op_RegPutValue, 0, &resReg, &b);
 
         // skip to after a promotion..
-        Addr jumpToAfter = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
+        Addr jumpToAfter = CodeGen::emitOp(comp, Op_Jump, 0, OpValue::dummyAddr());
 
         // a's promotion goes here..
-        CodeGen::patchJumpToNext(comp, block, jumpToShortCircuit, 1);
-        CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &resReg, &a);
+        CodeGen::patchJumpToNext(comp, jumpToShortCircuit, 1);
+        CodeGen::emitOp(comp, Op_RegPutValue, 0, &resReg, &a);
 
         // now we're after it..
-        CodeGen::patchJumpToNext(comp, block, jumpToAfter, 0);
+        CodeGen::patchJumpToNext(comp, jumpToAfter, 0);
 
         return resVal;
     }
 }
 
-OpValue ConditionalNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue ConditionalNode::generateEvalCode(CompileState* comp)
 {
     // As above, we have some difficulty here, since we do not have a way of knowing
     // the types in advance, but since we can't reasonably speculate on them both being bool,
@@ -916,65 +916,65 @@ OpValue ConditionalNode::generateEvalCode(CompileState* comp, CodeBlock& block)
     OpValue resVal, resReg;
 
     // Evaluate conditional, and jump..
-    OpValue v = logical->generateEvalCode(comp, block);
-    Addr jumpToElse = CodeGen::emitOp(comp, block, Op_IfNotJump, 0, &v, OpValue::dummyAddr());
+    OpValue v = logical->generateEvalCode(comp);
+    Addr jumpToElse = CodeGen::emitOp(comp, Op_IfNotJump, 0, &v, OpValue::dummyAddr());
 
     // True branch
-    OpValue v1out = expr1->generateEvalCode(comp, block);
+    OpValue v1out = expr1->generateEvalCode(comp);
 
     // Request a temporary for the result. (We can't reuse any, since it may be a variable!)
     // ### perhaps do an isTemporary check here?
     comp->requestTemporary(OpType_value, resVal, resReg);
-    CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &resReg, &v1out);
+    CodeGen::emitOp(comp, Op_RegPutValue, 0, &resReg, &v1out);
 
-    Addr jumpToAfter = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
+    Addr jumpToAfter = CodeGen::emitOp(comp, Op_Jump, 0, OpValue::dummyAddr());
 
     // Jump to else goes here.
-    CodeGen::patchJumpToNext(comp, block, jumpToElse, 1);
+    CodeGen::patchJumpToNext(comp, jumpToElse, 1);
 
     // : part..
-    OpValue v2out = expr2->generateEvalCode(comp, block);
-    CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &resReg, &v2out);
+    OpValue v2out = expr2->generateEvalCode(comp);
+    CodeGen::emitOp(comp, Op_RegPutValue, 0, &resReg, &v2out);
 
     // After everything
-    CodeGen::patchJumpToNext(comp, block, jumpToAfter, 0);
+    CodeGen::patchJumpToNext(comp, jumpToAfter, 0);
 
     return resVal;
 }
 
-OpValue FuncExprNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue FuncExprNode::generateEvalCode(CompileState* comp)
 {
     comp->setNeedsClosures();
 
     OpValue out;
     OpValue nameV = OpValue::immIdent(&ident);
     OpValue bodyV = OpValue::immNode(body.get());
-    CodeGen::emitOp(comp, block, Op_EvalFuncExpr, &out, &nameV, &bodyV);
+    CodeGen::emitOp(comp, Op_EvalFuncExpr, &out, &nameV, &bodyV);
     return out;
 }
 
-void FuncDeclNode::generateExecCode(CompileState* comp, CodeBlock&)
+void FuncDeclNode::generateExecCode(CompileState* comp)
 {
     comp->setNeedsClosures();
 
     // No executable content...
 }
 
-void SourceElementsNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void SourceElementsNode::generateExecCode(CompileState* comp)
 {
-    node->generateExecCode(comp, block);
+    node->generateExecCode(comp);
 
     // ### FIXME: how do we do proper completion?
     for (SourceElementsNode *n = next.get(); n; n = n->next.get()) {
-        n->node->generateExecCode(comp, block);
+        n->node->generateExecCode(comp);
     }
 }
 
-OpValue AssignNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue AssignNode::generateEvalCode(CompileState* comp)
 {
     Node* cand = m_loc->nodeInsideAllParens();
     if (!cand->isLocation()) {
-        emitReferenceError(comp, block, this, "Left side of assignment is not a reference.");
+        emitReferenceError(comp, this, "Left side of assignment is not a reference.");
         return OpValue::immValue(jsUndefined());
     }
 
@@ -984,12 +984,12 @@ OpValue AssignNode::generateEvalCode(CompileState* comp, CodeBlock& block)
 
     OpValue v;
     if (m_oper == OpEqual) {
-        ref = loc->generateRefBind(comp, block);
-        v = m_right->generateEvalCode(comp, block);
+        ref = loc->generateRefBind(comp);
+        v = m_right->generateEvalCode(comp);
     } else {
         OpValue v1;
-        ref = loc->generateRefRead(comp, block, &v1);
-        OpValue v2 = m_right->generateEvalCode(comp, block);
+        ref = loc->generateRefRead(comp, &v1);
+        OpValue v2 = m_right->generateEvalCode(comp);
 
         OpName codeOp;
         switch (m_oper) {
@@ -1030,27 +1030,27 @@ OpValue AssignNode::generateEvalCode(CompileState* comp, CodeBlock& block)
             ASSERT(0);
         }
 
-        CodeGen::emitOp(comp, block, codeOp, &v, &v1, &v2);
+        CodeGen::emitOp(comp, codeOp, &v, &v1, &v2);
     }
 
-    loc->generateRefWrite(comp, block, ref, v);
+    loc->generateRefWrite(comp, ref, v);
 
     delete ref;
     return v;
 }
 
-OpValue CommaNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue CommaNode::generateEvalCode(CompileState* comp)
 {
-    expr1->generateEvalCode(comp, block);
-    return expr2->generateEvalCode(comp, block);
+    expr1->generateEvalCode(comp);
+    return expr2->generateEvalCode(comp);
 }
 
-OpValue AssignExprNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue AssignExprNode::generateEvalCode(CompileState* comp)
 {
-    return expr->generateEvalCode(comp, block);
+    return expr->generateEvalCode(comp);
 }
 
-void VarDeclNode::generateCode(CompileState* comp, CodeBlock& block)
+void VarDeclNode::generateCode(CompileState* comp)
 {
     // We only care about things which have an initializer ---
     // everything else is a no-op at execution time,
@@ -1061,187 +1061,187 @@ void VarDeclNode::generateCode(CompileState* comp, CodeBlock& block)
             OpValue quiet   = OpValue::immNode(0);
             OpValue varName = OpValue::immIdent(&ident);
             OpValue base;
-            CodeGen::emitOp(comp, block, Op_ScopeLookup, &base, &varName, &quiet);
+            CodeGen::emitOp(comp, Op_ScopeLookup, &base, &varName, &quiet);
 
-            OpValue val = init->generateEvalCode(comp, block);
-            CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0, &base, &varName, &val);
+            OpValue val = init->generateEvalCode(comp);
+            CodeGen::emitOp(comp, Op_SymPutKnownObject, 0, &base, &varName, &val);
             return;
         }
 
-        OpValue val = init->generateEvalCode(comp, block);
+        OpValue val = init->generateEvalCode(comp);
         size_t localID = comp->functionBody()->lookupSymbolID(ident);
         if (localID == missingSymbolMarker()) {
             // Generate a symbolic assignment, always to local scope
             OpValue identV = OpValue::immIdent(&ident);
-            CodeGen::emitOp(comp, block, Op_SymPutKnownObject, 0, comp->localScope(), &identV, &val);
+            CodeGen::emitOp(comp, Op_SymPutKnownObject, 0, comp->localScope(), &identV, &val);
         } else {
             // Store to the local..
-            OpValue dest = comp->localWriteRef(block, localID);
-            CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &dest, &val);
+            OpValue dest = comp->localWriteRef(comp->codeBlock(), localID);
+            CodeGen::emitOp(comp, Op_RegPutValue, 0, &dest, &val);
         }
     } // if initializer..
 }
 
-OpValue VarDeclListNode::generateEvalCode(CompileState* comp, CodeBlock& block)
+OpValue VarDeclListNode::generateEvalCode(CompileState* comp)
 {
     for (VarDeclListNode *n = this; n; n = n->next.get())
-        n->var->generateCode(comp, block);
+        n->var->generateCode(comp);
 
     return OpValue::immInt32(0); // unused..
 }
 
-void VarStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void VarStatementNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
-    next->generateEvalCode(comp, block);
+    generateDebugInfoIfNeeded(comp);
+    next->generateEvalCode(comp);
 }
 
-void BlockNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void BlockNode::generateExecCode(CompileState* comp)
 {
     if (source) {
-        generateDebugInfoIfNeeded(comp, block);
-        source->generateExecCode(comp, block);
+        generateDebugInfoIfNeeded(comp);
+        source->generateExecCode(comp);
     }
 }
 
-void EmptyStatementNode::generateExecCode(CompileState*, CodeBlock&)
+void EmptyStatementNode::generateExecCode(CompileState*)
 {}
 
-void ExprStatementNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void ExprStatementNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
-    OpValue val = expr->generateEvalCode(comp, block);
+    generateDebugInfoIfNeeded(comp);
+    OpValue val = expr->generateEvalCode(comp);
 
     // Update the result for eval or global code
     if (comp->codeType() != FunctionCode)
-        CodeGen::emitOp(comp, block, Op_RegPutValue, 0, comp->evalResultReg(), &val);
+        CodeGen::emitOp(comp, Op_RegPutValue, 0, comp->evalResultReg(), &val);
 }
 
-void IfNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void IfNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
+    generateDebugInfoIfNeeded(comp);
     
     // eval the condition
-    OpValue cond = expr->generateEvalCode(comp, block);
+    OpValue cond = expr->generateEvalCode(comp);
 
     // If condition is not true, jump to after or else..
-    Addr afterTrueJmp = CodeGen::emitOp(comp, block, Op_IfNotJump, 0, &cond, OpValue::dummyAddr());
+    Addr afterTrueJmp = CodeGen::emitOp(comp, Op_IfNotJump, 0, &cond, OpValue::dummyAddr());
 
     // Emit the body of true...
-    statement1->generateExecCode(comp, block);
+    statement1->generateExecCode(comp);
 
     // If we have an else, add in a jump to skip over it.
     Addr afterAllJmp = 0;
     if (statement2)
-        afterAllJmp = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
+        afterAllJmp = CodeGen::emitOp(comp, Op_Jump, 0, OpValue::dummyAddr());
 
     // This is where we go if true fails --- else, or afterwards.
-    CodeGen::patchJumpToNext(comp, block, afterTrueJmp, 1);
+    CodeGen::patchJumpToNext(comp, afterTrueJmp, 1);
 
     if (statement2) {
         // Body of else
-        statement2->generateExecCode(comp, block);
+        statement2->generateExecCode(comp);
 
         // Fix up the jump-over code
-        CodeGen::patchJumpToNext(comp, block, afterAllJmp, 0);
+        CodeGen::patchJumpToNext(comp, afterAllJmp, 0);
     }
 }
 
-void DoWhileNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void DoWhileNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
+    generateDebugInfoIfNeeded(comp);
     comp->enterLoop(this);
 
     // Body
-    OpValue beforeBody = OpValue::immAddr(CodeGen::nextPC(comp, block));
-    statement->generateExecCode(comp, block);
+    OpValue beforeBody = OpValue::immAddr(CodeGen::nextPC(comp));
+    statement->generateExecCode(comp);
 
     // continues go to just before the test..
-    comp->resolvePendingContinues(this, block, CodeGen::nextPC(comp, block));
+    comp->resolvePendingContinues(this, CodeGen::nextPC(comp));
 
     // test
-    OpValue cond = expr->generateEvalCode(comp, block);
-    CodeGen::emitOp(comp, block, Op_IfJump, 0, &cond, &beforeBody);
+    OpValue cond = expr->generateEvalCode(comp);
+    CodeGen::emitOp(comp, Op_IfJump, 0, &cond, &beforeBody);
 
-    comp->exitLoop(this, block);
+    comp->exitLoop(this);
 }
 
-void WhileNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void WhileNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
+    generateDebugInfoIfNeeded(comp);
     comp->enterLoop(this);
 
     // Jump to test.
-    Addr  jumpToTest = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
+    Addr  jumpToTest = CodeGen::emitOp(comp, Op_Jump, 0, OpValue::dummyAddr());
 
     // Body
-    OpValue beforeBody = OpValue::immAddr(CodeGen::nextPC(comp, block));
-    statement->generateExecCode(comp, block);
+    OpValue beforeBody = OpValue::immAddr(CodeGen::nextPC(comp));
+    statement->generateExecCode(comp);
 
     // continues go to just before the test..
-    comp->resolvePendingContinues(this, block, CodeGen::nextPC(comp, block));
+    comp->resolvePendingContinues(this, CodeGen::nextPC(comp));
 
     // patch up the destination of the initial jump to test
-    CodeGen::patchJumpToNext(comp, block, jumpToTest, 0);
+    CodeGen::patchJumpToNext(comp, jumpToTest, 0);
 
     // test
-    OpValue cond = expr->generateEvalCode(comp, block);
-    CodeGen::emitOp(comp, block, Op_IfJump, 0, &cond, &beforeBody);
+    OpValue cond = expr->generateEvalCode(comp);
+    CodeGen::emitOp(comp, Op_IfJump, 0, &cond, &beforeBody);
 
-    comp->exitLoop(this, block);
+    comp->exitLoop(this);
 }
 
-void ForNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void ForNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
+    generateDebugInfoIfNeeded(comp);
     comp->enterLoop(this);
 
     // Initializer, if any..
     if (expr1)
-        expr1->generateEvalCode(comp, block);
+        expr1->generateEvalCode(comp);
 
     // Insert a jump to the loop test (address not yet known)
-    Addr jumpToTest = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
+    Addr jumpToTest = CodeGen::emitOp(comp, Op_Jump, 0, OpValue::dummyAddr());
 
     // Generate loop body..
-    OpValue bodyAddr = OpValue::immAddr(CodeGen::nextPC(comp, block));
-    statement->generateExecCode(comp, block);
+    OpValue bodyAddr = OpValue::immAddr(CodeGen::nextPC(comp));
+    statement->generateExecCode(comp);
 
     // We're about to generate the increment... The continues should go here..
-    comp->resolvePendingContinues(this, block, CodeGen::nextPC(comp, block));
+    comp->resolvePendingContinues(this, CodeGen::nextPC(comp));
 
     // ### there is a CheckTimeout hook here in nodes.cpp...
 
     // Generate increment...
     if (expr3)
-      expr3->generateEvalCode(comp, block);
+      expr3->generateEvalCode(comp);
 
     // The test goes here, so patch up the previous jump..
-    CodeGen::patchJumpToNext(comp, block, jumpToTest, 0);
+    CodeGen::patchJumpToNext(comp, jumpToTest, 0);
 
     // Make the test itself --- if it exists..
     if (expr2) {
-        OpValue cond = expr2->generateEvalCode(comp, block);
-        CodeGen::emitOp(comp, block, Op_IfJump, 0, &cond, &bodyAddr);
+        OpValue cond = expr2->generateEvalCode(comp);
+        CodeGen::emitOp(comp, Op_IfJump, 0, &cond, &bodyAddr);
     } else {
         // Just jump back to the body.
-        CodeGen::emitOp(comp, block, Op_Jump, 0, &bodyAddr);
+        CodeGen::emitOp(comp, Op_Jump, 0, &bodyAddr);
     }
 
-    comp->exitLoop(this, block);
+    comp->exitLoop(this);
 }
 
-void ForInNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void ForInNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
+    generateDebugInfoIfNeeded(comp);
     if (varDecl)
-        varDecl->generateCode(comp, block);
+        varDecl->generateCode(comp);
 
-    OpValue val = expr->generateEvalCode(comp, block);
+    OpValue val = expr->generateEvalCode(comp);
     OpValue obj; // version of val after toObject, returned by BeginForIn.
 
     // Fetch the property name array..
-    CodeGen::emitOp(comp, block, Op_BeginForIn, &obj, &val);
+    CodeGen::emitOp(comp, Op_BeginForIn, &obj, &val);
 
     // ... as the array is store on an iterator stack, this introduces a cleanup entry.
     comp->pushNest(CompileState::OtherCleanup, this);
@@ -1250,39 +1250,39 @@ void ForInNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
     // We put the test first here, since the test and the fetch are combined.
     OpValue sym;
-    Addr fetchNext = CodeGen::emitOp(comp, block, Op_NextForInEntry, &sym, &obj, OpValue::dummyAddr());
+    Addr fetchNext = CodeGen::emitOp(comp, Op_NextForInEntry, &sym, &obj, OpValue::dummyAddr());
 
     // Write to the variable
     assert (lexpr->isLocation());
     LocationNode* loc = static_cast<LocationNode*>(lexpr.get());
 
-    CompileReference* ref = loc->generateRefBind(comp, block);
-    loc->generateRefWrite (comp, block, ref, sym);
+    CompileReference* ref = loc->generateRefBind(comp);
+    loc->generateRefWrite (comp, ref, sym);
     delete ref;
 
     // Run the body.
-    statement->generateExecCode(comp, block);
+    statement->generateExecCode(comp);
 
     // Can fix the continues to go back to the test...
-    comp->resolvePendingContinues(this, block, fetchNext);
+    comp->resolvePendingContinues(this, fetchNext);
 
     // Jump back..
     OpValue backVal = OpValue::immAddr(fetchNext);
-    CodeGen::emitOp(comp, block, Op_Jump, 0, &backVal);
+    CodeGen::emitOp(comp, Op_Jump, 0, &backVal);
 
     // The end address is here (#2 since return val..)
-    CodeGen::patchJumpToNext(comp, block, fetchNext, 2);
+    CodeGen::patchJumpToNext(comp, fetchNext, 2);
 
     // Cleanup
-    CodeGen::emitOp(comp, block, Op_EndForIn);
+    CodeGen::emitOp(comp, Op_EndForIn);
 
-    comp->exitLoop(this, block);
+    comp->exitLoop(this);
     comp->popNest(); // Remove the cleanup entry.. Note that the breaks go to before here..
 }
 
 // Helper for continue/break -- emits stack cleanup call if needed,
 // and a jump either to the or an ??? exception.
-static void handleJumpOut(CompileState* comp, CodeBlock& block, Node* dest, ComplType breakOrCont)
+static void handleJumpOut(CompileState* comp, Node* dest, ComplType breakOrCont)
 {
     // We scan up the nest stack until we get to the target or
     // a try-finally.
@@ -1299,8 +1299,8 @@ static void handleJumpOut(CompileState* comp, CodeBlock& block, Node* dest, Comp
         case CompileState::TryFinally: {
             // Uh-oh. We have to handle this via exception machinery, giving it the
             // original address
-            Addr    pc    = CodeGen::nextPC(comp, block);
-            CodeGen::emitOp(comp, block, Op_ContBreakInTryFinally, 0, OpValue::dummyAddr());
+            Addr    pc    = CodeGen::nextPC(comp);
+            CodeGen::emitOp(comp, Op_ContBreakInTryFinally, 0, OpValue::dummyAddr());
 
             // Queue destination for resolution
             if (breakOrCont == Continue)
@@ -1317,12 +1317,12 @@ static void handleJumpOut(CompileState* comp, CodeBlock& block, Node* dest, Comp
                 // and the jump.
                 if (toUnwind) {
                     OpValue unwind = OpValue::immInt32(toUnwind);
-                    CodeGen::emitOp(comp, block, Op_UnwindStacks, 0, &unwind);
+                    CodeGen::emitOp(comp, Op_UnwindStacks, 0, &unwind);
                 }
 
                 // Emit a jump...
-                Addr    pc    = CodeGen::nextPC(comp, block);
-                CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
+                Addr    pc    = CodeGen::nextPC(comp);
+                CodeGen::emitOp(comp, Op_Jump, 0, OpValue::dummyAddr());
 
                 // Queue destination for resolution
                 if (breakOrCont == Continue)
@@ -1338,80 +1338,80 @@ static void handleJumpOut(CompileState* comp, CodeBlock& block, Node* dest, Comp
     assert (!"Huh? Unable to find continue/break target in the nest stack");
 }
 
-void ContinueNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void ContinueNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
+    generateDebugInfoIfNeeded(comp);
     Node* dest = comp->resolveContinueLabel(ident);
     if (!dest) {
         if (ident.isEmpty())
-            emitSyntaxError(comp, block, this, "Illegal continue without target outside a loop.");
+            emitSyntaxError(comp, this, "Illegal continue without target outside a loop.");
         else
-            emitSyntaxError(comp, block, this, "Invalid label in continue.");
+            emitSyntaxError(comp, this, "Invalid label in continue.");
     } else {
         // Continue can only be used for a loop
         if (dest->isIterationStatement()) {
-            handleJumpOut(comp, block, dest, Continue);
+            handleJumpOut(comp, dest, Continue);
         } else {
-            emitSyntaxError(comp, block, this, "Invalid continue target; must be a loop.");
+            emitSyntaxError(comp, this, "Invalid continue target; must be a loop.");
         }
     }
 }
 
-void BreakNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void BreakNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
+    generateDebugInfoIfNeeded(comp);
     Node* dest = comp->resolveBreakLabel(ident);
     if (!dest) {
         if (ident.isEmpty())
-            emitSyntaxError(comp, block, this, "Illegal break without target outside a loop or switch.");
+            emitSyntaxError(comp, this, "Illegal break without target outside a loop or switch.");
         else
-            emitSyntaxError(comp, block, this, "Invalid label in break.");
+            emitSyntaxError(comp, this, "Invalid label in break.");
     } else {
-        handleJumpOut(comp, block, dest, Break);
+        handleJumpOut(comp, dest, Break);
     }
 }
 
-void ReturnNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void ReturnNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
+    generateDebugInfoIfNeeded(comp);
     OpValue arg;
 
     // Return is invalid in non-function..
     if (comp->codeType() != FunctionCode) {
-        emitSyntaxError(comp, block, this, "Invalid return.");
+        emitSyntaxError(comp, this, "Invalid return.");
         return;
     }
 
     if (!value)
         arg = OpValue::immValue(jsUndefined());
     else
-        arg = value->generateEvalCode(comp, block);
+        arg = value->generateEvalCode(comp);
 
-    CodeGen::emitOp(comp, block, comp->inTryFinally() ? Op_ReturnInTryFinally : Op_Return, 0, &arg);
+    CodeGen::emitOp(comp, comp->inTryFinally() ? Op_ReturnInTryFinally : Op_Return, 0, &arg);
 }
 
-void WithNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void WithNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
+    generateDebugInfoIfNeeded(comp);
     // ### this may be too conservative --- it only applies if there is
     // a function call within
     comp->setNeedsClosures();
 
-    OpValue scopeObj = expr->generateEvalCode(comp, block);
+    OpValue scopeObj = expr->generateEvalCode(comp);
 
     comp->pushNest(CompileState::Scope, this);
-    CodeGen::emitOp(comp, block, Op_PushScope, 0, &scopeObj);
+    CodeGen::emitOp(comp, Op_PushScope, 0, &scopeObj);
 
-    statement->generateExecCode(comp, block);
+    statement->generateExecCode(comp);
 
-    CodeGen::emitOp(comp, block, Op_PopScope, 0);
+    CodeGen::emitOp(comp, Op_PopScope, 0);
     comp->popNest();
 }
 
-void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void LabelNode::generateExecCode(CompileState* comp)
 {
     if (!comp->pushLabel(label)) {
-        emitSyntaxError(comp, block, this, "Duplicated label found.");
+        emitSyntaxError(comp, this, "Duplicated label found.");
         return;
     }
 
@@ -1421,47 +1421,47 @@ void LabelNode::generateExecCode(CompileState* comp, CodeBlock& block)
     }
 
     // Generate code for stuff inside the label...
-    statement->generateExecCode(comp, block);
+    statement->generateExecCode(comp);
 
     // Fix up any breaks..
     if (!statement->isLabelNode()) {
         comp->popNest();
-        comp->resolvePendingBreaks(statement.get(), block, CodeGen::nextPC(comp, block));
+        comp->resolvePendingBreaks(statement.get(), CodeGen::nextPC(comp));
     }
 
     comp->popLabel();
 }
 
-void ThrowNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void ThrowNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
-    OpValue projectile = expr->generateEvalCode(comp, block);
-    CodeGen::emitOp(comp, block, Op_Throw, 0, &projectile);
+    generateDebugInfoIfNeeded(comp);
+    OpValue projectile = expr->generateEvalCode(comp);
+    CodeGen::emitOp(comp, Op_Throw, 0, &projectile);
 }
 
-void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void TryNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
+    generateDebugInfoIfNeeded(comp);
     // ### this may be too conservative --- it only applies if there is
     // a function call within the catch
     comp->setNeedsClosures();
 
     // Set the catch handler, run the try clause, pop the try handler..
-    Addr setCatchHandler = CodeGen::emitOp(comp, block, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
+    Addr setCatchHandler = CodeGen::emitOp(comp, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
     comp->pushNest(finallyBlock ? CompileState::TryFinally : CompileState::OtherCleanup);
 
-    tryBlock->generateExecCode(comp, block);
+    tryBlock->generateExecCode(comp);
 
-    CodeGen::emitOp(comp, block, Op_PopExceptionHandler);
+    CodeGen::emitOp(comp, Op_PopExceptionHandler);
     comp->popNest();
 
     // Jump over the catch if try is OK
     Addr jumpOverCatch;
     if (catchBlock)
-        jumpOverCatch = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
+        jumpOverCatch = CodeGen::emitOp(comp, Op_Jump, 0, OpValue::dummyAddr());
 
     // Exceptions would go here --- either in a catch or a finally.
-    CodeGen::patchJumpToNext(comp, block, setCatchHandler, 0);
+    CodeGen::patchJumpToNext(comp, setCatchHandler, 0);
 
     Addr catchToFinallyEH;
     if (catchBlock) {
@@ -1470,7 +1470,7 @@ void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
         // are on top. Also, that's needed because if the inside raised a non-exception
         // continuation, EnterCatch will re-raise it.
         if (finallyBlock) {
-            catchToFinallyEH = CodeGen::emitOp(comp, block, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
+            catchToFinallyEH = CodeGen::emitOp(comp, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
             comp->pushNest(CompileState::TryFinally);
         }
 
@@ -1478,52 +1478,52 @@ void TryNode::generateExecCode(CompileState* comp, CodeBlock& block)
         // but the exception object is still set, since we need to make a scope for it.
         // EnterCatch would do that for us, given the name
         OpValue catchVar = OpValue::immIdent(&exceptionIdent);
-        CodeGen::emitOp(comp, block, Op_EnterCatch, 0, &catchVar);
+        CodeGen::emitOp(comp, Op_EnterCatch, 0, &catchVar);
         comp->pushNest(CompileState::Scope);
 
-        catchBlock->generateExecCode(comp, block);
+        catchBlock->generateExecCode(comp);
 
         // If needed, cleanup the binding to finally, and always cleans the catch scope
-        CodeGen::emitOp(comp, block, Op_ExitCatch);
+        CodeGen::emitOp(comp, Op_ExitCatch);
         comp->popNest();
 
         if (finallyBlock) {
-            CodeGen::emitOp(comp, block, Op_PopExceptionHandler);
+            CodeGen::emitOp(comp, Op_PopExceptionHandler);
             comp->popNest();
         }
 
         // after an OK 'try', we always go to finally, if any, which needs an op if there is a catch block
-        CodeGen::patchJumpToNext(comp, block, jumpOverCatch, 0);
+        CodeGen::patchJumpToNext(comp, jumpOverCatch, 0);
     }
 
 
     if (finallyBlock) {
         if (catchBlock) // if a catch was using us an EH, patch that instruction to here
-            CodeGen::patchJumpToNext(comp, block, catchToFinallyEH, 0);
+            CodeGen::patchJumpToNext(comp, catchToFinallyEH, 0);
 
-        CodeGen::emitOp(comp, block, Op_DeferCompletion);
+        CodeGen::emitOp(comp, Op_DeferCompletion);
         comp->pushNest(CompileState::OtherCleanup);
 
-        finallyBlock->generateExecCode(comp, block);
+        finallyBlock->generateExecCode(comp);
 
         OpValue otherTryFinally = OpValue::immBool(comp->inTryFinally());
-        CodeGen::emitOp(comp, block, Op_ReactivateCompletion, 0, &otherTryFinally);
+        CodeGen::emitOp(comp, Op_ReactivateCompletion, 0, &otherTryFinally);
         comp->popNest();
     }
 }
 
-void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void FunctionBodyNode::generateExecCode(CompileState* comp)
 {
     // Load 'scope', global and 'this' pointers.
     // ### probably want to do all of these direct, and skip a bunch of ops.
     OpValue scopeVal;
-    CodeGen::emitOp(comp, block, Op_GetVariableObject, &scopeVal);
+    CodeGen::emitOp(comp, Op_GetVariableObject, &scopeVal);
 
     OpValue globalVal;
-    CodeGen::emitOp(comp, block, Op_GetGlobalObject, &globalVal);
+    CodeGen::emitOp(comp, Op_GetGlobalObject, &globalVal);
 
     OpValue thisVal;
-    CodeGen::emitOp(comp, block, Op_This, &thisVal);
+    CodeGen::emitOp(comp, Op_This, &thisVal);
 
     comp->setPreloadRegs(&scopeVal, &globalVal, &thisVal);
 
@@ -1533,29 +1533,29 @@ void FunctionBodyNode::generateExecCode(CompileState* comp, CodeBlock& block)
         comp->setEvalResultRegister(&evalResReg);
 
         OpValue und = OpValue::immValue(jsUndefined());
-        CodeGen::emitOp(comp, block, Op_RegPutValue, 0, &evalResReg, &und);
+        CodeGen::emitOp(comp, Op_RegPutValue, 0, &evalResReg, &und);
     }
 
     // Set unwind..
-    Addr unwind = CodeGen::emitOp(comp, block, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
+    Addr unwind = CodeGen::emitOp(comp, Op_PushExceptionHandler, 0, OpValue::dummyAddr());
 
     // Generate body...
-    BlockNode::generateExecCode(comp, block);
+    BlockNode::generateExecCode(comp);
 
     // Make sure we exit!
     if (comp->codeType() != FunctionCode)
-        CodeGen::emitOp(comp, block, Op_ExitEval, 0, &evalResVal);
+        CodeGen::emitOp(comp, Op_ExitEval, 0, &evalResVal);
     else
-        CodeGen::emitOp(comp, block, Op_Exit);
+        CodeGen::emitOp(comp, Op_Exit);
 
     // Unwind stuff..
-    CodeGen::patchJumpToNext(comp, block, unwind, 0);
-    CodeGen::emitOp(comp, block, Op_PropagateException);
+    CodeGen::patchJumpToNext(comp, unwind, 0);
+    CodeGen::emitOp(comp, Op_PropagateException);
 }
 
-void SwitchNode::generateExecCode(CompileState* comp, CodeBlock& block)
+void SwitchNode::generateExecCode(CompileState* comp)
 {
-    generateDebugInfoIfNeeded(comp, block);
+    generateDebugInfoIfNeeded(comp);
     CaseBlockNode* caseBlock = this->block.get();
 
     // The code we produce has 2 stages: first, we emit all the conditionals, and pick
@@ -1566,7 +1566,7 @@ void SwitchNode::generateExecCode(CompileState* comp, CodeBlock& block)
     comp->pushDefaultBreak(this);
 
     // What we compare with
-    OpValue switchOn = expr->generateEvalCode(comp, block);
+    OpValue switchOn = expr->generateEvalCode(comp);
 
     WTF::Vector<Addr> list1jumps;
     WTF::Vector<Addr> list2jumps;
@@ -1574,61 +1574,61 @@ void SwitchNode::generateExecCode(CompileState* comp, CodeBlock& block)
 
     // Jumps for list 1..
     for (ClauseListNode* iter = caseBlock->list1.get(); iter; iter = iter->next.get()) {
-        OpValue ref = iter->clause->expr->generateEvalCode(comp, block);
+        OpValue ref = iter->clause->expr->generateEvalCode(comp);
         OpValue match;
-        CodeGen::emitOp(comp, block, Op_StrEq, &match, &switchOn, &ref);
+        CodeGen::emitOp(comp, Op_StrEq, &match, &switchOn, &ref);
 
-        Addr jumpToClause = CodeGen::emitOp(comp, block, Op_IfJump, 0, &match, OpValue::dummyAddr());
+        Addr jumpToClause = CodeGen::emitOp(comp, Op_IfJump, 0, &match, OpValue::dummyAddr());
         list1jumps.append(jumpToClause);
     }
 
     // Jumps for list 2..
     for (ClauseListNode* iter = caseBlock->list2.get(); iter; iter = iter->next.get()) {
-        OpValue ref = iter->clause->expr->generateEvalCode(comp, block);
+        OpValue ref = iter->clause->expr->generateEvalCode(comp);
         OpValue match;
-        CodeGen::emitOp(comp, block, Op_StrEq, &match, &switchOn, &ref);
+        CodeGen::emitOp(comp, Op_StrEq, &match, &switchOn, &ref);
 
-        Addr jumpToClause = CodeGen::emitOp(comp, block, Op_IfJump, 0, &match, OpValue::dummyAddr());
+        Addr jumpToClause = CodeGen::emitOp(comp, Op_IfJump, 0, &match, OpValue::dummyAddr());
         list2jumps.append(jumpToClause);
     }
 
     // Jump to default (or after, if there is no default)
-    defJump = CodeGen::emitOp(comp, block, Op_Jump, 0, OpValue::dummyAddr());
+    defJump = CodeGen::emitOp(comp, Op_Jump, 0, OpValue::dummyAddr());
 
     // Now, we can actually emit the bodies, fixing the addresses as we go
     int p = 0;
     for (ClauseListNode* iter = caseBlock->list1.get(); iter; iter = iter->next.get()) {
-        CodeGen::patchJumpToNext(comp, block, list1jumps[p], 1);
+        CodeGen::patchJumpToNext(comp, list1jumps[p], 1);
         if (iter->clause->source)
-            iter->clause->source->generateExecCode(comp, block);
+            iter->clause->source->generateExecCode(comp);
         ++p;
     }
 
     if (caseBlock->def) {
-        CodeGen::patchJumpToNext(comp, block, defJump, 0);
+        CodeGen::patchJumpToNext(comp, defJump, 0);
         if (caseBlock->def->source)
-            caseBlock->def->source->generateExecCode(comp, block);
+            caseBlock->def->source->generateExecCode(comp);
     }
 
     p = 0;
     for (ClauseListNode* iter = caseBlock->list2.get(); iter; iter = iter->next.get()) {
-        CodeGen::patchJumpToNext(comp, block, list2jumps[p], 1);
+        CodeGen::patchJumpToNext(comp, list2jumps[p], 1);
         if (iter->clause->source)
-            iter->clause->source->generateExecCode(comp, block);
+            iter->clause->source->generateExecCode(comp);
         ++p;
     }
 
     // If we didn't have a default, that jump is to here..
     if (!caseBlock->def)
-        CodeGen::patchJumpToNext(comp, block, defJump, 0);
+        CodeGen::patchJumpToNext(comp, defJump, 0);
 
     // Breaks should go after us..
     comp->popDefaultBreak();
     comp->popNest();
-    comp->resolvePendingBreaks(this, block, CodeGen::nextPC(comp, block));
+    comp->resolvePendingBreaks(this, CodeGen::nextPC(comp));
 }
 
-void ImportStatement::generateExecCode(CompileState*, CodeBlock&)
+void ImportStatement::generateExecCode(CompileState*)
 {} // handled as a declaration..
 
 

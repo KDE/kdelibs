@@ -65,13 +65,16 @@ public:
         return fbody;
     }
 
-    CodeType codeType() {
+    CodeType codeType() const {
         return ctype;
     }
 
-    CompileType compileType() {
+    CodeBlock& codeBlock();
+
+    CompileType compileType() const {
         return compType;
     }
+
 
     ~CompileState();
 
@@ -92,7 +95,7 @@ public:
     // a temporary, and petchup their register descriptor to point to the backup.
     OpValue localWriteRef(CodeBlock& block, Register regNum);
 
-    // This foces all live locals to temporaries.
+    // This forces all live locals to temporaries.
     void localFlushAll(CodeBlock& block);
 
     // This sets the registers containing the local scope and
@@ -196,11 +199,11 @@ public:
         pushDefaultContinue(node);
     }
 
-    void exitLoop(Node* node, CodeBlock& block) {
+    void exitLoop(Node* node) {
         popNest();
         popDefaultBreak();
         popDefaultContinue();
-        resolvePendingBreaks(node, block, CodeGen::nextPC(this, block));
+        resolvePendingBreaks(node, CodeGen::nextPC(this));
     }
 
     // Adds break/continue as needing relevant target for given node
@@ -210,8 +213,8 @@ public:
     // Patches up all pending break/continue statements to given destination.
     // LabelNode takes care of the breaks itself, the loops need to deal
     // with continue, though.
-    void resolvePendingBreaks   (Node* node, CodeBlock& block, Addr dest);
-    void resolvePendingContinues(Node* node, CodeBlock& block, Addr dest);
+    void resolvePendingBreaks   (Node* node, Addr dest);
+    void resolvePendingContinues(Node* node, Addr dest);
 private:
     OpValue* localScopeVal;
     OpValue* thisVal;
