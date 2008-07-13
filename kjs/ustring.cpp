@@ -63,8 +63,8 @@ namespace KJS {
 extern const double NaN;
 extern const double Inf;
 
-static inline const size_t overflowIndicator() { return std::numeric_limits<size_t>::max(); }
-static inline const size_t maxUChars() { return std::numeric_limits<size_t>::max() / sizeof(UChar); }
+static inline size_t overflowIndicator() { return std::numeric_limits<size_t>::max(); }
+static inline size_t maxUChars() { return std::numeric_limits<size_t>::max() / sizeof(UChar); }
 
 static inline UChar* allocChars(size_t length)
 {
