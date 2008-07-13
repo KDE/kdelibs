@@ -253,15 +253,30 @@ int Lexer::lex()
       }
       break;
     case InString:
-      if (current == stringType) {
-        shift(1);
-        setDone(String);
-      } else if (isLineTerminator() || current == -1) {
-        setDone(Bad);
-      } else if (current == '\\') {
+      switch (current) {
+      case '\'':
+      case '"':
+        if (current == stringType) {
+          shift(1);
+          setDone(String);
+        } else {
+          record16(current);
+        }
+        break;
+      case '\\':
         state = InEscapeSequence;
-      } else {
+        break;
+      case '\n':
+      case '\r':
+      case 0x2028:
+      case 0x2029:
+      case -1:
+        // encountered newline or eof
+        setDone(Bad);
+        break;
+      default:
         record16(current);
+        break;
       }
       break;
     // Escape Sequences inside of strings
