@@ -94,10 +94,20 @@ void KSqueezedTextLabel::setText( const QString &text ) {
 void KSqueezedTextLabel::squeezeTextToLabel() {
   QFontMetrics fm(fontMetrics());
   int labelWidth = size().width();
-  int textWidth = fm.width(d->fullText);
-  if (textWidth > labelWidth) {
-    QString squeezedText = fm.elidedText(d->fullText, d->elideMode, labelWidth);
-    QLabel::setText(squeezedText);
+  QStringList squeezedLines;
+  bool squeezed = false;
+  Q_FOREACH(const QString& line, d->fullText.split("\n")) {
+    int lineWidth = fm.width(line);
+    if (lineWidth > labelWidth) {
+      squeezed = true;
+      squeezedLines << fm.elidedText(line, d->elideMode, labelWidth);
+    } else {
+      squeezedLines << line;
+    }
+  }
+
+  if (squeezed) {
+    QLabel::setText(squeezedLines.join("\n"));
     setToolTip(d->fullText);
   } else {
     QLabel::setText(d->fullText);
