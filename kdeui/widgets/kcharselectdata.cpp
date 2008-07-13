@@ -490,7 +490,7 @@ QStringList KCharSelectData::unihanInfo(const QChar& c)
             for(int i = 0; i < 7; i++) {
                 quint32 offset = qFromLittleEndian<quint32>(udata + offsetBegin + mid*30 + 2 + i*4);
                 if(offset != 0) {
-                    res.append(data + offset);
+                    res.append(QString::fromUtf8(data + offset));
                 } else {
                     res.append(QString());
                 }
