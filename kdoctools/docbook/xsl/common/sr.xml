@@ -188,9 +188,9 @@
 <l:gentext key="ListofUnknown" text="списак непознатих"/>
 <l:gentext key="listofunknown" text="Списак непознатих"/>
 <l:gentext key="nav-home" text="Почетак"/>
-<l:gentext key="nav-next" text="Следећи"/>
+<l:gentext key="nav-next" text="Следеће"/>
 <l:gentext key="nav-next-sibling" text="Брзо напред"/>
-<l:gentext key="nav-prev" text="Претходни"/>
+<l:gentext key="nav-prev" text="Претходно"/>
 <l:gentext key="nav-prev-sibling" text="Брзо назад"/>
 <l:gentext key="nav-up" text="Врх"/>
 <l:gentext key="nav-toc" text="Садр."/>
