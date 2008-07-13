@@ -33,7 +33,7 @@
  * katepart version must be a string in double quotes, format: "x.x"
  * it is used for the version in the aboutdata + hl stuff
  */
-#define KATEPART_VERSION "3.0"
+#define KATEPART_VERSION "3.1"
 
 class KateCmd;
 class KateModeManager;
