@@ -688,11 +688,11 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
     QRegExp domainMatcher(QString(), Qt::CaseInsensitive, QRegExp::Wildcard);
     QMutableListIterator<KSslError> it(se);
     while (it.hasNext()) {
-        // QSslCertificate errCert = it.next().certificate();
-        it.next();  // replace above line
-        // Commented out certificate comparison because Qt does not assign a certificate
-        // to the QSslError it emits *in the case of HostNameMismatch*.
-        if (/*errCert != peerCert ||*/ it.value().error() != KSslError::HostNameMismatch) {
+        // As of 4.4.0 Qt does not assign a certificate to the QSslError it emits
+        // *in the case of HostNameMismatch*. A HostNameMismatch, however, will always
+        // be an error of the peer certificate so we just don't check the error's
+        // certificate().
+        if (it.next().error() != KSslError::HostNameMismatch) {
             continue;
         }
         foreach (const QString &dp, domainPatterns) {
