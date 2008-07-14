@@ -256,28 +256,31 @@ static void kMessageConsoleOutput(QtMsgType type, const char *msg)
 */
 static int subSystem()
 {
-	static int subSystem = -1;
-	if (subSystem > -1)
-			return subSystem; 
+    static int subSystem = -1;
+    if (subSystem > -1)
+        return subSystem; 
 
-	PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)0x00400000;
+    PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)0x00400000;
     PIMAGE_NT_HEADERS ntHeader = (PIMAGE_NT_HEADERS) ((char *)dosHeader + dosHeader->e_lfanew);
-	if (ntHeader->Signature != 0x00004550) 
-	{
-		subSystem = IMAGE_SUBSYSTEM_UNKNOWN;
-		return subSystem;
-	}
-	subSystem = ntHeader->OptionalHeader.Subsystem;
-	return subSystem;
+    if (ntHeader->Signature != 0x00004550) 
+    {
+        subSystem = IMAGE_SUBSYSTEM_UNKNOWN;
+        return subSystem;
+    }
+    subSystem = ntHeader->OptionalHeader.Subsystem;
+    return subSystem;
 }
     
 /**
- setup win32 debug printer output
+     setup win32 debug printer output
  
-	gui applications     - uses OutputDebugString 
-	console applications - uses OutputDebugString and stderr 
+         gui applications     - uses OutputDebugString 
+         console applications - uses OutputDebugString and stderr 
 
- in both cases the message type is identified by a specific prefix string
+     in both cases the message type is identified by a specific prefix string
+
+ TODO: report events to the windows event log system 
+ http://msdn.microsoft.com/en-us/library/aa363680(VS.85).aspx
 */
 
 static class kMessageOutputInstaller {
