@@ -21,7 +21,7 @@
 
 #include <kdeui_export.h>
 #include <kstandardshortcut.h>
-#include <QList>
+#include <QtCore/QList>
 
 class QObject;
 class QStringList;
