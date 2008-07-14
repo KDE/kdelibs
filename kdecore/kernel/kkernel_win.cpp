@@ -3,6 +3,7 @@
    Copyright (C) 2004 Jaroslaw Staniek <js@iidea.pl>
    Copyright (C) 2007 Christian Ehrlicher <ch.ehrlicher@gmx.de>
    Copyright (C) 2007 Bernhard Loos <nhuh.put@web.de>
+   Copyright (C) 2008 Ralf Habacker <ralf.habacker@freenet.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -42,15 +43,6 @@
 #else
 # define WIN32_CAST_CHAR (LPCWSTR)
 #endif
-
-static void kMessageOutput(QtMsgType type, const char *msg);
-
-static class kMessageOutputInstaller {
-    public:
-        kMessageOutputInstaller() {
-            qInstallMsgHandler(kMessageOutput);
-        }
-} kMessageOutputInstallerInstance;
 
 static HINSTANCE kdecoreDllInstance = NULL;
 static wchar_t kde4prefixUtf16[MAX_PATH + 2];
@@ -205,9 +197,11 @@ QString getWin32ShellFoldersPath ( const QString& folder )
                                    folder );
 }
 
-void kMessageOutput(QtMsgType type, const char *msg)
+/** 
+  debug message printer for win32 gui applications 
+ */ 
+static void kMessageGuiOutput(QtMsgType type, const char *msg)
 {
-#if 1
     int BUFSIZE=4096;
     char *buf = new char[BUFSIZE];
     switch (type) {
@@ -232,7 +226,14 @@ void kMessageOutput(QtMsgType type, const char *msg)
     strlcat(buf,"\n",BUFSIZE);
     OutputDebugStringA(buf);
     delete[] buf;
-#else
+}
+
+/** 
+  debug message printer for win32 console applications 
+ */ 
+static void kMessageConsoleOutput(QtMsgType type, const char *msg)
+{
+    kMessageGuiOutput(type,msg);
     switch (type) {
     case QtDebugMsg:
         fprintf(stderr, "Debug: %s\n", msg);
@@ -247,7 +248,51 @@ void kMessageOutput(QtMsgType type, const char *msg)
         fprintf(stderr, "Fatal: %s\n", msg);
         //abort();
     }
-#endif
 }
+
+/**
+  retrieve type of win32 subsystem from the executable header 
+  \return type of win32 subsystem - the subsystem types are defined at http://msdn.microsoft.com/en-us/library/ms680339(VS.85).aspx 
+*/
+static int subSystem()
+{
+	static int subSystem = -1;
+	if (subSystem > -1)
+			return subSystem; 
+
+	PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)0x00400000;
+    PIMAGE_NT_HEADERS ntHeader = (PIMAGE_NT_HEADERS) ((char *)dosHeader + dosHeader->e_lfanew);
+	if (ntHeader->Signature != 0x00004550) 
+	{
+		subSystem = IMAGE_SUBSYSTEM_UNKNOWN;
+		return subSystem;
+	}
+	subSystem = ntHeader->OptionalHeader.Subsystem;
+	return subSystem;
+}
+    
+/**
+ setup win32 debug printer output
+ 
+	gui applications     - uses OutputDebugString 
+	console applications - uses OutputDebugString and stderr 
+
+ in both cases the message type is identified by a specific prefix string
+*/
+
+static class kMessageOutputInstaller {
+    public:
+        kMessageOutputInstaller() 
+        {
+            if (subSystem() == IMAGE_SUBSYSTEM_WINDOWS_CUI) {
+                qInstallMsgHandler(kMessageConsoleOutput);
+            }
+            else if (subSystem() == IMAGE_SUBSYSTEM_WINDOWS_GUI) {
+                qInstallMsgHandler(kMessageGuiOutput);
+            }
+            else
+                qWarning("unknown subsystem %d detected, could not setup qt message handler",subSystem());
+        }
+} kMessageOutputInstallerInstance;
 
 #endif  // Q_OS_WIN
