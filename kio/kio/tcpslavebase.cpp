@@ -299,13 +299,13 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
         QListIterator<QHostAddress> it(addresses);
         int timeout = d->timeout * 1000;
         QTime time;
-        time.start();
         forever {
+            time.start();
             d->socket.connectToHost(it.next(), port);
             if (d->socket.waitForConnected(timeout)) {
                 break;
             }
-            timeout =- time.elapsed();
+            timeout -= time.elapsed();
             if (!it.hasNext() || (timeout < 0)) {
                 error(ERR_COULD_NOT_CONNECT,
                     host + QLatin1String(": ") + d->socket.errorString());
@@ -675,6 +675,34 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
     d->sslNoUi = hasMetaData("ssl_no_ui") && (metaData("ssl_no_ui") != "FALSE");
 
     QList<KSslError> se = d->socket.sslErrors();
+    if (se.isEmpty())
+        return ResultOk;
+
+    // Since we connect by IP (cf. KIO::HostInfo) the SSL code will not recognize
+    // that the site certificate belongs to the domain. We therefore do the
+    // domain<->certificate matching here.
+
+    QSslCertificate peerCert = d->socket.peerCertificateChain().first();
+    QStringList domainPatterns(peerCert.subjectInfo(QSslCertificate::CommonName));
+    domainPatterns += peerCert.alternateSubjectNames().values(QSsl::DnsEntry);
+    QRegExp domainMatcher(QString(), Qt::CaseInsensitive, QRegExp::Wildcard);
+    QMutableListIterator<KSslError> it(se);
+    while (it.hasNext()) {
+        // QSslCertificate errCert = it.next().certificate();
+        it.next();  // replace above line
+        // Commented out certificate comparison because Qt does not assign a certificate
+        // to the QSslError it emits *in the case of HostNameMismatch*.
+        if (/*errCert != peerCert ||*/ it.value().error() != KSslError::HostNameMismatch) {
+            continue;
+        }
+        foreach (const QString &dp, domainPatterns) {
+            domainMatcher.setPattern(dp);
+            if (domainMatcher.exactMatch(d->host)) {
+                it.remove();
+            }
+        }
+    }
+
     if (se.isEmpty())
         return ResultOk;
 
