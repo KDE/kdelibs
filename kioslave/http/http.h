@@ -100,81 +100,83 @@ public:
     int depth;
   };
 
+  struct CacheTag
+  {
+    CacheTag()
+    {
+      useCache = false;
+      readFromCache = false;
+      writeToCache = false;
+      isExpired = false;
+      bytesCached = 0;
+      gzs = 0;
+      expireDateOffset = 0;
+      expireDate = 0;
+      creationDate = 0;
+    }
+
+    KIO::CacheControl policy;    // ### initialize in the constructor?
+    bool useCache; // Whether the cache is active
+    bool readFromCache; // Whether the request is to be read from file.
+    bool writeToCache; // Whether the request is to be written to file.
+    bool isExpired;
+    long bytesCached;
+    QString etag; // ETag header as described in the HTTP standard.
+    QString file; // cache entry file belonging to this URL.
+    gzFile gzs; // gzip stream of the cache entry
+    QString lastModified; // Last modified.
+    long expireDateOffset; // Position in the cache entry where the
+                           // 16 byte expire date is stored.
+    time_t expireDate; // Date when the cache entry will expire
+    time_t creationDate; // Date when the cache entry was created
+    QString charset;
+  };
+
   /** The request for the current connection **/
   struct HTTPRequest
   {
     HTTPRequest ()
     {
-      port = 0;
       method = KIO::HTTP_UNKNOWN;
       offset = 0;
       endoffset = 0;
       doProxy = false;
-      allowCompressedPage = false;
-      disablePassDlg = false;
-      bNoAuth = false;
-      bUseCache = false;
-      bCachedRead = false;
-      bCachedWrite = false;
-      fcache = 0;
-      bMustRevalidate = false;
-      cacheExpireDateOffset = 0;
-      bErrorPage = false;
-      bUseCookiejar = false;
-      expireDate = 0;
-      creationDate = 0;
-      bytesCached=0;
+      allowTransferCompression = false;
+      disablePassDialog = false;
+      doNotAuthenticate = false;
+      preferErrorPage = false;
+      useCookieJar = false;
     }
 
-    QString hostname;
-    QString encoded_hostname;
-    short unsigned int port;
-    QString user;
-    QString passwd;
-    QString path;
-    QString query;
+    KUrl url;
+    QString encoded_hostname; //### can be calculated on-the-fly
     KIO::HTTP_METHOD method;
-    KIO::CacheControl cache;
     KIO::filesize_t offset;
     KIO::filesize_t endoffset;
-    KUrl url;
-    QString window;                 // Window Id this request is related to.
+    QString windowId;                 // Window Id this request is related to.
+    // Header fields
     QString referrer;
     QString charsets;
     QString languages;
     QString userAgent;
+    // Miscellaneous
     QString id;
     DAVRequest davData;
     bool doProxy;
     KUrl proxyUrl;
-    bool allowCompressedPage;
-    bool disablePassDlg;
-    bool bNoAuth; // Do not authenticate
+    bool allowTransferCompression;
+    bool disablePassDialog;
+    bool doNotAuthenticate;
 
-    // Indicates whether an error-page or error-msg should is preferred.
-    bool bErrorPage;
+    // Indicates whether an error-page or error-msg is preferred.
+    bool preferErrorPage;
 
     // Cookie flags
-    bool bUseCookiejar;
-
-    // Cache related
-    bool bUseCache; // Whether the cache is active
-    bool bCachedRead; // Whether the file is to be read from m_fcache.
-    bool bCachedWrite; // Whether the file is to be written to m_fcache.
-    bool bMustRevalidate; // Cache entry is expired.
-    QString cef; // Cache Entry File belonging to this URL.
-    gzFile fcache; // File stream of a cache entry
-    QString etag; // ETag header.
-    QString lastModified; // Last modified.
-    long cacheExpireDateOffset; // Position in the cache entry where the
-                                  // 16 byte expire date is stored.
-    long bytesCached;
-    time_t expireDate; // Date when the cache entry will expire
-    time_t creationDate; // Date when the cache entry was created
-    QString strCharset;
-
+    bool useCookieJar;
     // Cookie flags
     enum { CookiesAuto, CookiesManual, CookiesNone } cookieMode;
+
+    CacheTag cacheTag;
   };
 
   struct DigestAuthInfo
@@ -187,7 +189,7 @@ public:
     QByteArray cnonce;
     QByteArray username;
     QByteArray password;
-    KUrl::List digestURI;
+    KUrl::List digestURIs;
     QByteArray algorithm;
     QByteArray entityBody;
   };
@@ -248,7 +250,7 @@ public:
 
   void post( const KUrl& url );
   void multiGet(const QByteArray &data);
-  bool checkRequestUrl( const KUrl& );
+  bool maybeSetRequestUrl(const KUrl &);
   void cacheUpdate( const KUrl &url, bool nocache, time_t expireDate);
 
   void httpError(); // Generate error message based on response code
@@ -265,17 +267,13 @@ protected:
   int readUnlimited();  // Read as much as possible.
 
   /**
-    * A "smart" wrapper around write that will use SSL_write or
-    * write(2) depending on whether you've got an SSL connection or not.
-    * The only shortcomming is that it uses the "global" file handles and
-    * soforth.  So you can't really use this on individual files/sockets.
+    * A thin wrapper around TCPSlaveBase::write() that will retry writing as
+    * long as no error occurs.
     */
   ssize_t write(const void *buf, size_t nbytes);
 
   /**
-    * Another "smart" wrapper, this time around read that will
-    * use SSL_read or read(2) depending on whether you've got an
-    * SSL connection or not.
+    * A wrapper around TCPSlaveBase::read() that integrates unget support.
     */
   ssize_t read (void *b, size_t nbytes);
 
@@ -293,6 +291,13 @@ protected:
 
   void configAuth( char *, bool );
 
+
+  // Return true if the request is already "done", false otherwise.
+  // *sucesss will be set to true if the page was found, false otherwise.
+  bool satisfyRequestFromCache(bool *success);
+
+  QString formatRequestUri() const;
+
   bool sendQuery();
   void httpClose(bool keepAlive);  // Close transfer
 
@@ -301,6 +306,9 @@ protected:
   bool httpShouldCloseConnection();  // Check whether to keep the connection.
 
   void forwardHttpResponseHeader();
+
+  // Helper for readResponseHeader - fix common mimetype errors by webservers.
+  void fixupResponseMimetype();
 
   bool readResponseHeader();
   bool readHeaderFromCache();
@@ -480,47 +488,46 @@ protected:
 protected:
   HTTPState m_state;
   HTTPRequest m_request;
-  QList<HTTPRequest*> m_requestQueue;
+  QList<HTTPRequest> m_requestQueue;
   quint16 m_defaultPort;
 
   // Processing related
   KIO::filesize_t m_iSize; // Expected size of message
   KIO::filesize_t m_iBytesLeft; // # of bytes left to receive in this message.
   KIO::filesize_t m_iContentLeft; // # of content bytes left
-  QByteArray m_bufReceive; // Receive buffer
+  QByteArray m_receiveBuf; // Receive buffer
   char m_lineBuf[1024];
   char m_rewindBuf[8192];
   size_t m_rewindCount;
   size_t m_lineCount;
   size_t m_lineCountUnget;
   char *m_linePtr;
-  char *m_lineBufUnget;
   char *m_linePtrUnget;
   bool m_dataInternal; // Data is for internal consumption
-  bool m_bChunked; // Chunked transfer encoding
+  bool m_isChunked; // Chunked transfer encoding
 
-  bool m_bBusy; // Busy handling request queue.
-  bool m_bEOF;
-  bool m_bEOD;
+  bool m_isBusy; // Busy handling request queue.
+  bool m_isEOF;
+  bool m_isEOD;
 
   // First request on a connection
-  bool m_bFirstRequest;
+  bool m_isFirstRequest;
 
 //--- Settings related to a single response only
-  bool m_bRedirect; // Indicates current request is a redirection
+  bool m_isRedirection; // Indicates current request is a redirection
   QStringList m_responseHeaders; // All headers
 
 
   // Language/Encoding related
-  QStringList m_qTransferEncodings;
-  QStringList m_qContentEncodings;
-  QString m_sContentMD5;
-  QString m_strMimeType;
+  QStringList m_transferEncodings;
+  QStringList m_contentEncodings;
+  QString m_contentMD5;
+  QString m_mimeType;
 
 
 //--- WebDAV
   // Data structure to hold data which will be passed to an internal func.
-  QByteArray m_bufWebDavData;
+  QByteArray m_webDavDataBuf;
   QStringList m_davCapabilities;
 
   bool m_davHostOk;
@@ -535,7 +542,7 @@ protected:
   // Holds the POST data so it won't get lost on if we
   // happend to get a 401/407 response when submitting,
   // a form.
-  QByteArray m_bufPOST;
+  QByteArray m_POSTbuf;
 
   // Cache related
   int m_maxCacheAge; // Maximum age of a cache entry.
@@ -543,12 +550,11 @@ protected:
   QString m_strCacheDir; // Location of the cache.
 
 
-
 //--- Proxy related members
-  bool m_bUseProxy;
-  bool m_bNeedTunnel; // Whether we need to make a SSL tunnel
-  bool m_bIsTunneled; // Whether we have an active SSL tunnel
-  bool m_bProxyAuthValid;
+  bool m_useProxy;
+  bool m_needTunnel; // Whether we need to make a SSL tunnel
+  bool m_isTunneled; // Whether we have an active SSL tunnel
+  bool m_isProxyAuthValid;
   int m_iProxyPort;
   KUrl m_proxyURL;
   QString m_strProxyRealm;
@@ -564,17 +570,16 @@ protected:
   HTTP_AUTH ProxyAuthentication;
   short unsigned int m_iProxyAuthCount;
   short unsigned int m_iWWWAuthCount;
-  bool m_bUnauthorized;
+  bool m_isUnauthorized;
 
   // Persistent proxy connections
-  bool m_bPersistentProxyConnection;
-
+  bool m_isPersistentProxyConnection;
 
   // Indicates whether there was some connection error.
-  bool m_bError;
+  bool m_isError;
 
   // Persistent connections
-  bool m_bKeepAlive;
+  bool m_isKeepAlive;
   int m_keepAliveTimeout; // Timeout in seconds.
 
   // Previous and current response codes
