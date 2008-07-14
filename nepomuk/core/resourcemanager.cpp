@@ -137,7 +137,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUr
             l.append( Resource( *rdIt ) );
         }
 
-        kDebug(300004) << " added local resources: " << l.count();
+//        kDebug(300004) << " added local resources: " << l.count();
 
         Soprano::Model* model = mainModel();
         Soprano::StatementIterator it = model->listStatements( Soprano::Statement( Soprano::Node(), Soprano::Vocabulary::RDF::type(), type ) );
@@ -149,7 +149,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUr
                 l.append( res );
         }
 
-        kDebug(300004) << " added remote resources: " << l.count();
+//        kDebug(300004) << " added remote resources: " << l.count();
     }
 
     return l;
