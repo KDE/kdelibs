@@ -958,7 +958,7 @@ QString KFileItem::getStatusBarInfo() const
     }
     else if ( targetUrl() != url() )
     {
-        text += i18n ( " (Points to %1)", targetUrl().url());
+        text += i18n ( " (Points to %1)", targetUrl().pathOrUrl());
     }
     else if ( S_ISREG( d->m_fileMode ) )
     {
