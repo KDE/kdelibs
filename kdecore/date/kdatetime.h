@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005-2007 David Jarvie <djarvie@kde.org>
+    Copyright (c) 2005-2008 David Jarvie <djarvie@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -848,7 +848,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * Converts the time to a UTC time, measured in seconds since 00:00:00 UTC
      * 1st January 1970 (as returned by time(2)).
      *
-     * @return converted time, or -1 if the date is out of range
+     * @return converted time, or @c uint(-1) if the date is out of range or invalid
      * @see setTime_t()
      */
     uint toTime_t() const;

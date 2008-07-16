@@ -92,7 +92,7 @@ int findString(const QString &string, const char array[][disp], int count, int &
 static QDate checkDate(int year, int month, int day, Status&);
 
 static const int MIN_YEAR = -4712;        // minimum year which QDate allows
-static const int NO_NUMBER = 0x8000000;   // indicates that no number is present in string conversion functinos
+static const int NO_NUMBER = 0x8000000;   // indicates that no number is present in string conversion functions
 
 #ifdef COMPILING_TESTS
 KDECORE_EXPORT int KDateTime_utcCacheHit  = 0;
@@ -994,7 +994,10 @@ KDateTime KDateTime::toTimeSpec(const Spec &spec) const
 
 uint KDateTime::toTime_t() const
 {
-    return d->toUtc().toTime_t();
+    QDateTime qdt = d->toUtc();
+    if (!qdt.isValid())
+        return uint(-1);
+    return qdt.toTime_t();
 }
 
 void KDateTime::setTime_t(qint64 seconds)
