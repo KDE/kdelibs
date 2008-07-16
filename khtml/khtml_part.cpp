@@ -355,7 +355,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   if ( prof == BrowserViewGUI ) {
       d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, "format-font-size-more", i18n( "Enlarge Font" ), this );
       actionCollection()->addAction( "incFontSizes", d->m_paIncZoomFactor );
-      d->m_paIncZoomFactor->setShortcut(KShortcut("CTRL++;CTRL+="));
+      // TODO: Why also CTRL+=?  Because of http://trolltech.com/developer/knowledgebase/524/?
+      // Nobody else does it...
+      d->m_paIncZoomFactor->setShortcut( KShortcut("CTRL++; CTRL+=") );
       connect(d->m_paIncZoomFactor, SIGNAL(triggered(bool)), SLOT( slotIncFontSizeFast() ));
       d->m_paIncZoomFactor->setWhatsThis( i18n( "Enlarge Font<br /><br />"
                                                 "Make the font in this window bigger. "
