@@ -60,6 +60,36 @@ public:
    void recreate(bool initial);
    void loadSecondPhase();
 
+   /**
+    * Check if a module should be loaded on startup.
+    *
+    * @param module Name of the module to configure
+    */
+   //@{
+   bool isModuleAutoloaded(const QString &module);
+   bool isModuleAutoloaded(const KService::Ptr &module);
+   //@}
+
+   /**
+    * Check if module @module should be loaded on demand.
+    *
+    * @param module Name of the module to configure
+    */
+   //@{
+   bool isModuleLoadedOnDemand(const QString &module);
+   bool isModuleLoadedOnDemand(const KService::Ptr &module);
+   //@}
+
+   /**
+    * Configure if module @module should be loaded on startup.
+    *
+    * @param module Name of the module to configure
+    * @param autoload Load/Don't load the module
+    */
+   void setModuleAutoloading(const QString &module, bool autoload);
+
+
+
 public Q_SLOTS:
    /**
     * Loads / unloads modules according to config.

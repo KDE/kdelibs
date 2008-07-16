@@ -1,3 +1,4 @@
+// vim: expandtab sw=4 ts=4
 /*  This file is part of the KDE libraries
  *  Copyright (C) 1999 David Faure <faure@kde.org>
  *  Copyright (C) 2000 Waldo Bastian <bastian@kde.org>
@@ -179,7 +180,6 @@ void Kded::messageFilter(const QDBusMessage &message)
 void Kded::initModules()
 {
      m_dontLoad.clear();
-     KSharedConfig::Ptr config = KGlobal::config();
      bool kde_running = !qgetenv( "KDE_FULL_SESSION" ).isEmpty();
     // not the same user like the one running the session (most likely we're run via sudo or something)
     const QByteArray sessionUID = qgetenv( "KDE_SESSION_UID" );
@@ -190,9 +190,9 @@ void Kded::initModules()
      for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
      {
          KService::Ptr service = *it;
-         bool autoload = service->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
-         KConfigGroup cg(config, QString("Module-%1").arg(service->desktopEntryName()));
-         autoload = cg.readEntry("autoload", autoload);
+         // Should the the service load on startup?
+         bool autoload = isModuleAutoloaded(service);
+
          // see ksmserver's README for description of the phases
          QVariant phasev = service->property("X-KDE-Kded-phase", QVariant::Int );
          int phase = phasev.isValid() ? phasev.toInt() : 2;
@@ -210,17 +210,19 @@ void Kded::initModules()
                  prevent_autoload = true;
                  break;
          }
+
+        // Load the module if necessary and allowed
          if (autoload && !prevent_autoload)
             loadModule(service, false);
 
-         bool dontLoad = false;
-         QVariant p = service->property("X-KDE-Kded-load-on-demand", QVariant::Bool);
-         if (p.isValid() && (p.toBool() == false))
-            dontLoad = true;
-         if (dontLoad)
+         // Remember if the module is allowed to load on demand
+         bool loadOnDemand = isModuleLoadedOnDemand(service);
+         if (!loadOnDemand)
             noDemandLoad(service->desktopEntryName());
 
-         if (dontLoad && !autoload)
+         // In case of reloading the configuration it is possible for a module
+         // to run even if it is now allowed to. Stop it then.
+         if (!loadOnDemand && !autoload)
             unloadModule(service->desktopEntryName().toLatin1());
      }
 }
@@ -246,6 +248,53 @@ void Kded::loadSecondPhase()
 void Kded::noDemandLoad(const QString &obj)
 {
   m_dontLoad.insert(obj.toLatin1(), this);
+}
+
+void Kded::setModuleAutoloading(const QString &obj, bool autoload)
+{
+    KSharedConfig::Ptr config = KGlobal::config();
+    // Ensure the service exists.
+    KService::Ptr service = KService::serviceByDesktopPath("kded/"+obj+".desktop");
+    if (!service) 
+        return;
+    KConfigGroup cg(config, QString("Module-%1").arg(service->desktopEntryName()));
+    cg.writeEntry("autoload", autoload);
+    cg.sync();
+}
+
+bool Kded::isModuleAutoloaded(const QString &obj)
+{
+    KService::Ptr s = KService::serviceByDesktopPath("kded/"+obj+".desktop");
+    if (!s) 
+        return false;
+    return isModuleAutoloaded(s);
+}
+
+bool Kded::isModuleAutoloaded(const KService::Ptr &module)
+{
+    KSharedConfig::Ptr config = KGlobal::config();
+    bool autoload = module->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
+    KConfigGroup cg(config, QString("Module-%1").arg(module->desktopEntryName()));
+    autoload = cg.readEntry("autoload", autoload);
+    return autoload;
+}
+
+bool Kded::isModuleLoadedOnDemand(const QString &obj)
+{
+    KService::Ptr s = KService::serviceByDesktopPath("kded/"+obj+".desktop");
+    if (!s) 
+        return false;
+    return isModuleLoadedOnDemand(s);
+}
+
+bool Kded::isModuleLoadedOnDemand(const KService::Ptr &module)
+{
+    KSharedConfig::Ptr config = KGlobal::config();
+    bool loadOnDemand = true;
+    QVariant p = module->property("X-KDE-Kded-load-on-demand", QVariant::Bool);
+    if (p.isValid() && (p.toBool() == false))
+        loadOnDemand = false;
+    return loadOnDemand;
 }
 
 KDEDModule *Kded::loadModule(const QString &obj, bool onDemand)

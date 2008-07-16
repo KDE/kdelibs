@@ -40,6 +40,9 @@ public Q_SLOTS:
    void reconfigure();
    void loadSecondPhase();
    void quit();
+   bool isModuleAutoloaded(const QString &module);
+   bool isModuleLoadedOnDemand(const QString &module);
+   void setModuleAutoloading(const QString &module, bool autoload);
 };
 
 #endif

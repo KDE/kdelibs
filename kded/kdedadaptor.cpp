@@ -29,6 +29,16 @@ KdedAdaptor::KdedAdaptor(QObject *parent)
 {
 }
 
+bool KdedAdaptor::isModuleAutoloaded(const QString &module)
+{
+   return Kded::self()->isModuleAutoloaded(module);
+}
+
+bool KdedAdaptor::isModuleLoadedOnDemand(const QString &module)
+{
+   return Kded::self()->isModuleLoadedOnDemand(module);
+}
+
 bool KdedAdaptor::loadModule(const QString &module)
 {
    return Kded::self()->loadModule(module, false) != 0;
@@ -44,6 +54,10 @@ void KdedAdaptor::registerWindowId(qlonglong windowId, const QDBusMessage &msg)
    Kded::self()->registerWindowId(windowId, msg.service());
 }
 
+void KdedAdaptor::setModuleAutoloading(const QString &module, bool autoload)
+{
+        return Kded::self()->setModuleAutoloading(module, autoload);
+}
 void KdedAdaptor::unregisterWindowId(qlonglong windowId, const QDBusMessage &msg)
 {
    Kded::self()->unregisterWindowId(windowId, msg.service());
@@ -58,6 +72,9 @@ void KdedAdaptor::reconfigure()
 {
    KGlobal::config()->reparseConfiguration();
    Kded::self()->initModules();
+   // mjansen: I think the following call is missing here but i'm not
+   // confident enough to add it myself.
+   // Kded::self()->loadSecondPhase();
 }
 
 void KdedAdaptor::loadSecondPhase()
