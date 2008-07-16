@@ -1380,12 +1380,14 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
         case CE_ProgressBarContents:
         {
             const QStyleOptionProgressBar* pbOpt = qstyleoption_cast<const QStyleOptionProgressBar*>(option);
+            const QStyleOptionProgressBarV2* pbOpt2 = qstyleoption_cast<const QStyleOptionProgressBarV2*>(option);
             if  (!pbOpt) return;
 
             //We layout as if LTR, relying on visualRect to fix it up
             double progress    = pbOpt->progress - pbOpt->minimum;
             int steps          = qMax(pbOpt->maximum  - pbOpt->minimum, 1);
             bool busyIndicator = (pbOpt->minimum == 0 && pbOpt->maximum == 0);
+            bool horizontal    = !pbOpt2 || pbOpt2->orientation == Qt::Horizontal;
 
             //Do we have to draw anything?
             if (!progress && ! busyIndicator)
@@ -1400,35 +1402,48 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
             //And now the pixel width
             int width = qMin(r.width(), (int)(widthFrac * double(r.width())));
+            int height = qMin(r.height(), (int)(widthFrac * r.height()));
 
             if (busyIndicator)
             {
+                int size = width;
+                if (!horizontal)
+                    size = height;
                 //Clamp to upper width limit
-                if (width > widgetLayoutProp(WT_ProgressBar, ProgressBar::MaxBusyIndicatorSize, option, widget))
-                    width = widgetLayoutProp(WT_ProgressBar, ProgressBar::MaxBusyIndicatorSize, option, widget);
+                if (size > widgetLayoutProp(WT_ProgressBar, ProgressBar::MaxBusyIndicatorSize, option, widget))
+                    size = widgetLayoutProp(WT_ProgressBar, ProgressBar::MaxBusyIndicatorSize, option, widget);
 
-                if (width < 1) width = 1; //A busy indicator with width 0 is kind of useless
+                //A busy indicator with width 0 is kind of useless
+                if (size < 1) size = 1;
 
 
-                int remWidth = r.width() - width; //The space around which we move around...
-                if (remWidth <= 0) remWidth = 1;  //Do something non-crashy when too small...
+                int remSize = (horizontal ? r.width() : r.height()) - size; //The space around which we move around...
+                if (remSize <= 0) remSize = 1;  //Do something non-crashy when too small...
 
-                int pstep =  int(progress)%(2*remWidth);
+                int pstep =  int(progress)%(2*remSize);
 
-                if (pstep > remWidth)
+                if (pstep > remSize)
                 {
                     //Bounce about.. We're remWidth + some delta, we want to be remWidth - delta...
                     // - ( (remWidth + some delta) - 2* remWidth )  = - (some deleta - remWidth) = remWidth - some delta..
-                    pstep = -(pstep - 2*remWidth);
+                    pstep = -(pstep - 2*remSize);
                 }
 
-                QRect indicatorRect = QRect(r.x() + pstep, r.y(), width, r.height());
+                QRect indicatorRect;
+                if (horizontal)
+                    indicatorRect = QRect(r.x() + pstep, r.y(), size, r.height());
+                else
+                    indicatorRect = QRect(r.x(), r.y() + pstep, r.width(), size);
                 drawKStylePrimitive(WT_ProgressBar, ProgressBar::BusyIndicator, option, handleRTL(option, indicatorRect),
                                     pal, flags, p, widget);
             }
             else
             {
-                QRect indicatorRect = QRect(r.x(), r.y(), width, r.height());
+                QRect indicatorRect;
+                if (horizontal)
+                    indicatorRect = QRect(r.x(), r.y(), width, r.height());
+                else
+                    indicatorRect = QRect(r.x(), r.bottom()-height+1, r.width(), height);
                 drawKStylePrimitive(WT_ProgressBar, ProgressBar::Indicator, option, handleRTL(option, indicatorRect),
                                     pal, flags, p, widget);
             }
@@ -1438,9 +1453,26 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
         case CE_ProgressBarLabel:
         {
             const QStyleOptionProgressBar* pbOpt = qstyleoption_cast<const QStyleOptionProgressBar*>(option);
+            const QStyleOptionProgressBarV2* pbOpt2 = qstyleoption_cast<const QStyleOptionProgressBarV2*>(option);
             if (pbOpt)
             {
                 TextOption lbOpt(pbOpt->text);
+                bool horizontal = !pbOpt2 || pbOpt2->orientation == Qt::Horizontal;
+                bool reverseLayout = option->direction == Qt::RightToLeft;
+
+                p->save();
+
+                // rotate label for vertical layout
+                if (!horizontal && !reverseLayout) 
+                {
+                    p->translate(r.topRight());
+                    p->rotate(90.0);
+                } 
+                else if (!horizontal)
+                {
+                    p->translate(r.bottomLeft());
+                    p->rotate(-90.0);
+                }
 
                 if (useSideText(pbOpt))
                 {
@@ -1456,7 +1488,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     int marWidth = widgetLayoutProp(WT_ProgressBar, ProgressBar::SideTextSpace, option, widget);
 
                     drawKStylePrimitive(WT_ProgressBar, Generic::Text, option,
-                            QRect(r.x() + marWidth, r.y(), r.width() - 2*marWidth, r.height()),
+                            horizontal? r.adjusted(0, marWidth, 0, -marWidth) : QRect(0, marWidth, r.height(), r.width()-marWidth),
                             pal, flags, p, widget, &lbOpt);
                 }
                 else
@@ -1473,39 +1505,56 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     bool busyIndicator = (steps <= 1);
 
                     int width;
+                    int height;
                     if (busyIndicator)
                     {
                         //how did this happen? handle as 0%
                         width = 0;
+                        height = 0;
                     }
                     else
                     {
                         double widthFrac = progress / steps;;
                         width = qMin(r.width(), (int)(widthFrac * r.width()));
+                        height = qMin(r.height(), (int)(widthFrac * r.height()));
                     }
 
                     //If there is any indicator, we do two paths, with different
                     //clipping rects, for the two colors.
-                    if (width)
+                    if (width || height)
                     {
-                        p->setClipRect(handleRTL(option, QRect(r.x(), r.y(), width, r.height())));
+                        if (horizontal)
+                            p->setClipRect(handleRTL(option, QRect(r.x(), r.y(), width, r.height())));
+                        else if (!reverseLayout)
+                            p->setClipRect(QRect(r.height()-height, 0, r.height(), r.width()));
+                        else
+                            p->setClipRect(QRect(0, 0, height, r.width()));
                         lbOpt.color = QPalette::HighlightedText;
-                        drawKStylePrimitive(WT_ProgressBar, Generic::Text, option, r,
+                        drawKStylePrimitive(WT_ProgressBar, Generic::Text, option, 
+                                            horizontal? r: QRect(0,0,r.height(),r.width()),
                                             pal, flags, p, widget, &lbOpt);
 
-                        p->setClipRect(handleRTL(option, QRect(r.x() + width, r.y(), r.width() - width, r.height())));
+                        if (horizontal)
+                            p->setClipRect(handleRTL(option, QRect(r.x() + width, r.y(), r.width() - width, r.height())));
+                        else if (!reverseLayout)
+                            p->setClipRect(QRect(0, 0, r.height()-height, r.width()));
+                        else
+                            p->setClipRect(QRect(height, 0, r.height()-height, r.width()));
                         lbOpt.color = QPalette::ButtonText;
-                        drawKStylePrimitive(WT_ProgressBar, Generic::Text, option, r,
+                        drawKStylePrimitive(WT_ProgressBar, Generic::Text, option,
+                                            horizontal? r: QRect(0,0,r.height(),r.width()),
                                             pal, flags, p, widget, &lbOpt);
                         p->setClipping(false);
                     }
                     else
                     {
                         lbOpt.color = QPalette::ButtonText;
-                        drawKStylePrimitive(WT_ProgressBar, Generic::Text, option, r,
+                        drawKStylePrimitive(WT_ProgressBar, Generic::Text, option,
+                                            horizontal? r: QRect(0,0,r.height(),r.width()),
                                             pal, flags, p, widget, &lbOpt);
                     }
                 }
+                p->restore();
             }
             return;
         }
