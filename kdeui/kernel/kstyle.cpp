@@ -110,7 +110,7 @@ KStylePrivate::KStylePrivate() : m_componentData()
     if(KGlobal::hasMainComponent())
     {
         m_componentData = KGlobal::mainComponent();
-    } else 
+    } else
     {
         QString name(QApplication::applicationName());
 
@@ -205,7 +205,7 @@ KStyle::KStyle() : clickedLabel(0), d(new KStylePrivate)
     setWidgetLayoutProp(WT_TabBar, TabBar::BaseHeight, 2);
     setWidgetLayoutProp(WT_TabBar, TabBar::BaseOverlap, 2);
     setWidgetLayoutProp(WT_TabBar, TabBar::ScrollButtonWidth, 10);
-    setWidgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, 6); 
+    setWidgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, 6);
 
     setWidgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin, 2);
 
@@ -926,7 +926,7 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             return;
 
         case PE_PanelButtonCommand:
-           //case PE_PanelButtonBevel: // ### CHECKME   
+           //case PE_PanelButtonBevel: // ### CHECKME
             drawKStylePrimitive(WT_PushButton, PushButton::Panel, option, r, pal, flags, painter, widget);
             return;
         case PE_FrameDefaultButton:
@@ -942,13 +942,13 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             return;
 
         case PE_PanelItemViewItem: {
-            
+
             const QStyleOptionViewItemV4 *opt = qstyleoption_cast<const QStyleOptionViewItemV4*>(option);
             const QAbstractItemView *view = qobject_cast<const QAbstractItemView *>(widget);
             bool hover = (option->state & State_MouseOver) && (!view ||
                          view->selectionMode() != QAbstractItemView::NoSelection);
 
-            bool hasCustomBackground = opt->backgroundBrush.style() != Qt::NoBrush && 
+            bool hasCustomBackground = opt->backgroundBrush.style() != Qt::NoBrush &&
                                         !(option->state & State_Selected);
             bool hasSolidBackground = !hasCustomBackground || opt->backgroundBrush.style() == Qt::SolidPattern;
 
@@ -965,7 +965,7 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
                 cg = QPalette::Disabled;
 
             QColor color;
-            
+
             if (hasCustomBackground && hasSolidBackground)
                 color = opt->backgroundBrush.color();
             else
@@ -1463,11 +1463,11 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                 p->save();
 
                 // rotate label for vertical layout
-                if (!horizontal && !reverseLayout) 
+                if (!horizontal && !reverseLayout)
                 {
                     p->translate(r.topRight());
                     p->rotate(90.0);
-                } 
+                }
                 else if (!horizontal)
                 {
                     p->translate(r.bottomLeft());
@@ -1530,7 +1530,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                         else
                             p->setClipRect(QRect(0, 0, height, r.width()));
                         lbOpt.color = QPalette::HighlightedText;
-                        drawKStylePrimitive(WT_ProgressBar, Generic::Text, option, 
+                        drawKStylePrimitive(WT_ProgressBar, Generic::Text, option,
                                             horizontal? r: QRect(0,0,r.height(),r.width()),
                                             pal, flags, p, widget, &lbOpt);
 
@@ -1851,7 +1851,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
                     //Determine whether any of the buttons is active
                     //Qt sets both sunken and activeSubControls for active,
-                    //just activeSubControls for hover. 
+                    //just activeSubControls for hover.
                     if (flags & State_Sunken)
                     {
                         if (slOpt->activeSubControls & SC_ScrollBarSubLine)
@@ -3719,7 +3719,7 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
 
             //### TODO: Handle minimum size limits, extra spacing as in current styles ??
             size = expandDim(size, WT_PushButton, PushButton::ContentsMargin, option, widget);
-            
+
             if (!bOpt->text.isEmpty() && !bOpt->icon.isNull()) {
                 // Incorporate the spacing between the icon and text. Qt sticks 4 there,
                 // but we use PushButton::TextToIconSpace.
@@ -3732,8 +3732,8 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
         {
             // We want to avoid super-skiny buttons, for things like "up" when icons + text
             // For this, we would like to make width >= height.
-            // However, once we get here, QToolButton may have already put in the menu area 
-            // (PM_MenuButtonIndicator) into the width. So we may have to take it out, fix things 
+            // However, once we get here, QToolButton may have already put in the menu area
+            // (PM_MenuButtonIndicator) into the width. So we may have to take it out, fix things
             // up, and add it back in. So much for class-independent rendering...
             QSize size = contentsSize;
             int   menuAreaWidth = 0;
@@ -3743,12 +3743,12 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                 else if (tbOpt->features & QStyleOptionToolButton::HasMenu)
                     size.setWidth(size.width() + widgetLayoutProp(WT_ToolButton, ToolButton::InlineMenuIndicatorSize, tbOpt, widget));
             }
-            
+
             size.setWidth(size.width() - menuAreaWidth);
             if (size.width() < size.height())
                 size.setWidth(size.height());
             size.setWidth(size.width() + menuAreaWidth);
-            
+
             return expandDim(size, WT_ToolButton, ToolButton::ContentsMargin, option, widget);
         }
 
@@ -3868,11 +3868,11 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                     else
                     {
                         // The width of the accelerator is not included here since
-                        // Qt will add that on separately after obtaining the 
+                        // Qt will add that on separately after obtaining the
                         // sizeFromContents() for each menu item in the menu to be shown
                         // ( see QMenuPrivate::calcActionRects() )
                         QString text = miOpt->text.left(tabPos);
-                        textW = fm.width(text) + 
+                        textW = fm.width(text) +
                                 widgetLayoutProp(WT_MenuItem,MenuItem::AccelSpace,option,widget);
                     }
 
