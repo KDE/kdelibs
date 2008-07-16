@@ -256,32 +256,42 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_bMousePressed = false;
   d->m_bRightMousePressed = false;
   d->m_bCleared = false;
-  d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), this );
-  actionCollection()->addAction( "viewDocumentSource", d->m_paViewDocument );
-  d->m_paViewDocument->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_U) );
-  connect( d->m_paViewDocument, SIGNAL( triggered( bool ) ), this, SLOT( slotViewDocumentSource() ) );
 
-  d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), this );
-  actionCollection()->addAction( "viewFrameSource", d->m_paViewFrame );
-  connect( d->m_paViewFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotViewFrameSource() ) );
+  if ( prof == BrowserViewGUI ) {
+    d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), this );
+    actionCollection()->addAction( "viewDocumentSource", d->m_paViewDocument );
+    d->m_paViewDocument->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_U) );
+    connect( d->m_paViewDocument, SIGNAL( triggered( bool ) ), this, SLOT( slotViewDocumentSource() ) );
 
-  d->m_paViewInfo = new KAction( i18n( "View Document Information" ), this );
-  actionCollection()->addAction( "viewPageInfo", d->m_paViewInfo );
-  d->m_paViewInfo->setShortcut( QKeySequence(Qt::CTRL+Qt::Key_I) );
-  connect( d->m_paViewInfo, SIGNAL( triggered( bool ) ), this, SLOT( slotViewPageInfo() ) );
+    d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), this );
+    actionCollection()->addAction( "viewFrameSource", d->m_paViewFrame );
+    connect( d->m_paViewFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotViewFrameSource() ) );
 
-  d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), this );
-  actionCollection()->addAction( "saveBackground", d->m_paSaveBackground );
-  connect( d->m_paSaveBackground, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveBackground() ) );
+    d->m_paViewInfo = new KAction( i18n( "View Document Information" ), this );
+    actionCollection()->addAction( "viewPageInfo", d->m_paViewInfo );
+    d->m_paViewInfo->setShortcut( QKeySequence(Qt::CTRL+Qt::Key_I) );
+    connect( d->m_paViewInfo, SIGNAL( triggered( bool ) ), this, SLOT( slotViewPageInfo() ) );
 
-  d->m_paSaveDocument = actionCollection()->addAction( KStandardAction::SaveAs, "saveDocument",
+    d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), this );
+    actionCollection()->addAction( "saveBackground", d->m_paSaveBackground );
+    connect( d->m_paSaveBackground, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveBackground() ) );
+
+    d->m_paSaveDocument = actionCollection()->addAction( KStandardAction::SaveAs, "saveDocument",
                                                        this, SLOT( slotSaveDocument() ) );
-  if ( parentPart() )
-      d->m_paSaveDocument->setShortcuts( KShortcut() ); // avoid clashes
+    if ( parentPart() )
+        d->m_paSaveDocument->setShortcuts( KShortcut() ); // avoid clashes
 
-  d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), this );
-  actionCollection()->addAction( "saveFrame", d->m_paSaveFrame );
-  connect( d->m_paSaveFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveFrame() ) );
+    d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), this );
+    actionCollection()->addAction( "saveFrame", d->m_paSaveFrame );
+    connect( d->m_paSaveFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveFrame() ) );
+  } else {
+    d->m_paViewDocument = 0;
+    d->m_paViewFrame = 0;
+    d->m_paViewInfo = 0;
+    d->m_paSaveBackground = 0;
+    d->m_paSaveDocument = 0;
+    d->m_paSaveFrame = 0;
+  }
 
   d->m_paSecurity = new KAction( i18n( "SSL" ), this );
   actionCollection()->addAction( "security", d->m_paSecurity );
@@ -4341,8 +4351,10 @@ void KHTMLPart::updateActions()
           break;
       }
 
-  d->m_paViewFrame->setEnabled( frames );
-  d->m_paSaveFrame->setEnabled( frames );
+  if (d->m_paViewFrame)
+    d->m_paViewFrame->setEnabled( frames );
+  if (d->m_paSaveFrame)
+    d->m_paSaveFrame->setEnabled( frames );
 
   if ( frames )
     d->m_paFind->setText( i18n( "&Find in Frame..." ) );
@@ -4379,7 +4391,8 @@ void KHTMLPart::updateActions()
   if ( d->m_doc && d->m_doc->isHTMLDocument() && static_cast<HTMLDocumentImpl*>(d->m_doc)->body() && !d->m_bClearing )
     bgURL = static_cast<HTMLDocumentImpl*>(d->m_doc)->body()->getAttribute( ATTR_BACKGROUND ).string();
 
-  d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
+  if (d->m_paSaveBackground)
+    d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
 
   if ( d->m_paDebugScript )
     d->m_paDebugScript->setEnabled( d->m_frame ? d->m_frame->m_jscript : 0L );
