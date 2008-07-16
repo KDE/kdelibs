@@ -92,7 +92,7 @@ int findString(const QString &string, const char array[][disp], int count, int &
 static QDate checkDate(int year, int month, int day, Status&);
 
 static const int MIN_YEAR = -4712;        // minimum year which QDate allows
-static const int NO_NUMBER = 0x8000000;   // indicates that no number is present in string conversion functinos
+static const int NO_NUMBER = 0x8000000;   // indicates that no number is present in string conversion functions
 
 #ifdef COMPILING_TESTS
 KDECORE_EXPORT int KDateTime_utcCacheHit  = 0;
@@ -227,14 +227,14 @@ bool KDateTime::Spec::equivalentTo(const Spec &other) const
 {
     if (d->type == other.d->type)
     {
-        if (d->type == KDateTime::TimeZone  &&  d->tz != other.d->tz
+        if ((d->type == KDateTime::TimeZone  &&  d->tz != other.d->tz)
         ||  (d->type == KDateTime::OffsetFromUTC  &&  d->utcOffset != other.d->utcOffset))
             return false;
         return true;
     }
     else
     {
-        if (d->type == KDateTime::UTC  &&  other.d->type == KDateTime::OffsetFromUTC  &&  other.d->utcOffset == 0
+        if ((d->type == KDateTime::UTC  &&  other.d->type == KDateTime::OffsetFromUTC  &&  other.d->utcOffset == 0)
         ||  (other.d->type == KDateTime::UTC  &&  d->type == KDateTime::OffsetFromUTC  &&  d->utcOffset == 0))
             return true;
         return false;
@@ -994,7 +994,10 @@ KDateTime KDateTime::toTimeSpec(const Spec &spec) const
 
 uint KDateTime::toTime_t() const
 {
-    return d->toUtc().toTime_t();
+    QDateTime qdt = d->toUtc();
+    if (!qdt.isValid())
+        return uint(-1);
+    return qdt.toTime_t();
 }
 
 void KDateTime::setTime_t(qint64 seconds)
@@ -2385,7 +2388,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'b':     // month name, translated or English
                 {
                     int m = matchMonth(str, s, &calendar);
-                    if (m <= 0  ||  month != NO_NUMBER && month != m)
+                    if (m <= 0  ||  (month != NO_NUMBER && month != m))
                         return QDateTime();
                     month = m;
                     break;
@@ -2402,7 +2405,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'a':     // week day name, translated or English
                 {
                     int dow = matchDay(str, s, &calendar);
-                    if (dow <= 0  ||  dayOfWeek != NO_NUMBER && dayOfWeek != dow)
+                    if (dow <= 0  ||  (dayOfWeek != NO_NUMBER && dayOfWeek != dow))
                         return QDateTime();
                     dayOfWeek = dow;
                     break;
@@ -2439,7 +2442,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'p':     // am/pm
                 {
                     int ap = getAmPm(str, s, locale);
-                    if (!ap  ||  ampm != NO_NUMBER && ampm != ap)
+                    if (!ap  ||  (ampm != NO_NUMBER && ampm != ap))
                         return QDateTime();
                     ampm = ap;
                     break;
@@ -2475,7 +2478,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'a':     // week day name in English
                 {
                     int dow = matchDay(str, s, 0);
-                    if (dow <= 0  ||  dayOfWeek != NO_NUMBER && dayOfWeek != dow)
+                    if (dow <= 0  ||  (dayOfWeek != NO_NUMBER && dayOfWeek != dow))
                         return QDateTime();
                     dayOfWeek = dow;
                     break;
@@ -2484,7 +2487,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'b':     // month name in English
                 {
                     int m = matchMonth(str, s, 0);
-                    if (m <= 0  ||  month != NO_NUMBER && month != m)
+                    if (m <= 0  ||  (month != NO_NUMBER && month != m))
                         return QDateTime();
                     month = m;
                     break;
@@ -2497,7 +2500,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'p':     // am/pm in English
                 {
                     int ap = getAmPm(str, s, 0);
-                    if (!ap  ||  ampm != NO_NUMBER && ampm != ap)
+                    if (!ap  ||  (ampm != NO_NUMBER && ampm != ap))
                         return QDateTime();
                     ampm = ap;
                     break;
@@ -2869,7 +2872,7 @@ bool getNumber(const QString& string, int& offset, int mindigits, int maxdigits,
     int n = string.mid(offset, ndigits).toInt(&ok);
     if (neg)
         n = -n;
-    if (!ok  ||  result != NO_NUMBER && n != result  ||  minval != NO_NUMBER && n < minval  ||  (n > maxval && maxval >= 0))
+    if (!ok  ||  (result != NO_NUMBER && n != result)  ||  (minval != NO_NUMBER && n < minval)  ||  (n > maxval && maxval >= 0))
         return false;
     result = n;
     offset += ndigits;
