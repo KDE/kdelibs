@@ -162,6 +162,7 @@ void Action::fromDomElement(const QDomElement& element)
 
     setText( element.attribute("text") );
     setDescription( element.attribute("comment") );
+    setEnabled( QVariant( element.attribute("enabled","true") ).toBool() );
     setInterpreter( element.attribute("interpreter") );
 
     QString icon = element.attribute("icon");
@@ -187,9 +188,6 @@ void Action::fromDomElement(const QDomElement& element)
             }
         }
     }
-
-    bool enabled = QVariant( element.attribute("enabled","true") ).toBool();
-    setEnabled(enabled);
 }
 
 QDomElement Action::toDomElement() const
