@@ -41,10 +41,11 @@ namespace Kross {
         public Q_SLOTS:
             void clear();
             void remove(int index);
-            void addItem(const QStringList& labels);
+            void addItem(const QString& text);
             int count();
             int current();
             void setCurrent(int row);
+            QString text(int row);
     };
 
     /**

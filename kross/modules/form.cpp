@@ -80,10 +80,14 @@ FormListView::FormListView(QWidget* parent) : QListWidget(parent) {}
 FormListView::~FormListView() {}
 void FormListView::clear() { QListWidget::clear(); }
 void FormListView::remove(int index) { delete QListWidget::item(index); }
-void FormListView::addItem(const QStringList& labels) { QListWidget::addItems(labels); }
+void FormListView::addItem(const QString& text) { QListWidget::addItem(text); }
 int FormListView::count() { return QListWidget::count(); }
 int FormListView::current() { return QListWidget::currentRow(); }
 void FormListView::setCurrent(int row) { QListWidget::setCurrentRow(row); }
+QString FormListView::text(int row) {
+    QListWidgetItem *item = QListWidget::item(row);
+    return item ? item->text() : QString();
+}
 
 /*********************************************************************************
  * FormDialog
