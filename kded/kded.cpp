@@ -262,7 +262,7 @@ void Kded::setModuleAutoloading(const QString &obj, bool autoload)
     cg.sync();
 }
 
-bool Kded::isModuleAutoloaded(const QString &obj)
+bool Kded::isModuleAutoloaded(const QString &obj) const
 {
     KService::Ptr s = KService::serviceByDesktopPath("kded/"+obj+".desktop");
     if (!s) 
@@ -270,7 +270,7 @@ bool Kded::isModuleAutoloaded(const QString &obj)
     return isModuleAutoloaded(s);
 }
 
-bool Kded::isModuleAutoloaded(const KService::Ptr &module)
+bool Kded::isModuleAutoloaded(const KService::Ptr &module) const
 {
     KSharedConfig::Ptr config = KGlobal::config();
     bool autoload = module->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
@@ -279,7 +279,7 @@ bool Kded::isModuleAutoloaded(const KService::Ptr &module)
     return autoload;
 }
 
-bool Kded::isModuleLoadedOnDemand(const QString &obj)
+bool Kded::isModuleLoadedOnDemand(const QString &obj) const
 {
     KService::Ptr s = KService::serviceByDesktopPath("kded/"+obj+".desktop");
     if (!s) 
@@ -287,7 +287,7 @@ bool Kded::isModuleLoadedOnDemand(const QString &obj)
     return isModuleLoadedOnDemand(s);
 }
 
-bool Kded::isModuleLoadedOnDemand(const KService::Ptr &module)
+bool Kded::isModuleLoadedOnDemand(const KService::Ptr &module) const
 {
     KSharedConfig::Ptr config = KGlobal::config();
     bool loadOnDemand = true;

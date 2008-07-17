@@ -66,8 +66,8 @@ public:
     * @param module Name of the module to configure
     */
    //@{
-   bool isModuleAutoloaded(const QString &module);
-   bool isModuleAutoloaded(const KService::Ptr &module);
+   bool isModuleAutoloaded(const QString &module) const;
+   bool isModuleAutoloaded(const KService::Ptr &module) const;
    //@}
 
    /**
@@ -76,8 +76,8 @@ public:
     * @param module Name of the module to configure
     */
    //@{
-   bool isModuleLoadedOnDemand(const QString &module);
-   bool isModuleLoadedOnDemand(const KService::Ptr &module);
+   bool isModuleLoadedOnDemand(const QString &module) const;
+   bool isModuleLoadedOnDemand(const KService::Ptr &module) const;
    //@}
 
    /**
