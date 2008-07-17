@@ -40,8 +40,20 @@ public Q_SLOTS:
    void reconfigure();
    void loadSecondPhase();
    void quit();
+
+   /**
+    * Check if module @a module has @c X-KDE-Kded-autoload=True.
+    */
    bool isModuleAutoloaded(const QString &module);
+
+   /**
+    * Check if module @a module has @c X-KDE-Kded-load-on-demand=True.
+    */
    bool isModuleLoadedOnDemand(const QString &module);
+
+   /**
+    * Set @c X-KDE-Kded-autoload to @a autoload for module @a module.
+    */
    void setModuleAutoloading(const QString &module, bool autoload);
 };
 
