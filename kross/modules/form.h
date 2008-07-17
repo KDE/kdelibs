@@ -482,6 +482,15 @@ namespace Kross {
             QWidget* createFileWidget(QWidget* parent, const QString& startDirOrVariable = QString());
 
             /**
+             * Create and return a new \a FormListView instance.
+             *
+             * \param parent the parent QWidget the new \a FormListView instance
+             * is a child of.
+             * \return the new \a FormFileWidget instance or NULL.
+             */
+            QWidget* createListView(QWidget* parent);
+
+            /**
              * Load and return a KPart component.
              * \param parent The parent QWidget the KPart's widget will be child of.
              * \param name The name of the KPart library like e.g. "libkhtmlpart".

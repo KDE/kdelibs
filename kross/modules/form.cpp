@@ -612,6 +612,14 @@ QWidget* FormModule::createFileWidget(QWidget* parent, const QString& startDirOr
     return widget;
 }
 
+QWidget* FormModule::createListView(QWidget* parent)
+{
+    FormListView* widget = new FormListView(parent);
+    if( parent && parent->layout() )
+        parent->layout()->addWidget(widget);
+    return widget;
+}
+
 QObject* FormModule::loadPart(QWidget* parent, const QString& name, const QUrl& url)
 {
     //name e.g. "libkghostview"
