@@ -73,6 +73,19 @@ extern "C"
 using namespace Kross;
 
 /*********************************************************************************
+ * FormList
+ */
+
+FormListView::FormListView(QWidget* parent) : QListWidget(parent) {}
+FormListView::~FormListView() {}
+void FormListView::clear() { QListWidget::clear(); }
+void FormListView::remove(int index) { delete QListWidget::item(index); }
+void FormListView::addItem(const QStringList& labels) { QListWidget::addItems(labels); }
+int FormListView::count() { return QListWidget::count(); }
+int FormListView::current() { return QListWidget::currentRow(); }
+void FormListView::setCurrent(int row) { QListWidget::setCurrentRow(row); }
+
+/*********************************************************************************
  * FormDialog
  */
 

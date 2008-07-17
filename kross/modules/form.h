@@ -22,11 +22,30 @@
 
 #include <QtGui/QWidget>
 #include <QtCore/QUrl>
+#include <QtGui/QListWidget>
 
 #include <kpagedialog.h>
 //#include <kfilewidget.h>
 
 namespace Kross {
+
+    /**
+     * The FormListView class provides access to a ListView.
+     */
+    class FormListView : public QListWidget
+    {
+            Q_OBJECT
+        public:
+            explicit FormListView(QWidget* parent);
+            virtual ~FormListView();
+        public Q_SLOTS:
+            void clear();
+            void remove(int index);
+            void addItem(const QStringList& labels);
+            int count();
+            int current();
+            void setCurrent(int row);
+    };
 
     /**
      * The FormFileWidget class provides access to a KFileWidget.
