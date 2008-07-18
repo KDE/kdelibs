@@ -393,15 +393,15 @@ JSValue* HTMLDocument::getValueProperty(ExecState *exec, int token)
     case DesignMode:
         return jsString((doc.designMode() ? "on":"off"));
     case BgColor:
-      return jsString(body->getAttribute(ATTR_BGCOLOR));
+      return jsString(body ? body->getAttribute(ATTR_BGCOLOR) : DOMString());
     case FgColor:
-      return jsString(body->getAttribute(ATTR_TEXT));
+      return jsString(body ? body->getAttribute(ATTR_TEXT) : DOMString());
     case AlinkColor:
-      return jsString(body->getAttribute(ATTR_ALINK));
+      return jsString(body ? body->getAttribute(ATTR_ALINK) : DOMString());
     case LinkColor:
-      return jsString(body->getAttribute(ATTR_LINK));
+      return jsString(body ? body->getAttribute(ATTR_LINK) : DOMString());
     case VlinkColor:
-      return jsString(body->getAttribute(ATTR_VLINK));
+      return jsString(body ? body->getAttribute(ATTR_VLINK) : DOMString());
     case LastModified:
       return jsString(doc.lastModified());
     case Height: // NS-only, not available in IE
