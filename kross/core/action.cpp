@@ -162,8 +162,9 @@ void Action::fromDomElement(const QDomElement& element)
 
     setText( element.attribute("text") );
     setDescription( element.attribute("comment") );
-    setEnabled( QVariant( element.attribute("enabled","true") ).toBool() );
+    setEnabled( true );
     setInterpreter( element.attribute("interpreter") );
+    setEnabled( QVariant(element.attribute("enabled","true")).toBool() && isEnabled() );
 
     QString icon = element.attribute("icon");
     if( icon.isEmpty() && ! d->scriptfile.isNull() )
