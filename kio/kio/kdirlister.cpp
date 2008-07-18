@@ -274,16 +274,16 @@ void KDirListerCache::emitItemsFromCache(KDirLister* lister, const KFileItemList
     // _emitCompleted is usually true, but is false for the special case where
     // listDir() was called while another directory listing for this dir was happening,
     // so we "joined" it.
-    // but then we have to check if completed was emitted already...
+    // but then we have to check if completed was emitted already, by the running job...
     if (_emitCompleted && !oldComplete) {
-        kdl->complete = oldComplete;
-
-        emit lister->completed( _url );
-        emit lister->completed();
 
         DirectoryData& dirData = directoryData[urlStr];
         dirData.listersCurrentlyHolding.append( lister );
         dirData.listersCurrentlyListing.removeAll( lister );
+
+        kdl->complete = true;
+        emit lister->completed( _url );
+        emit lister->completed();
 
         if ( _reload || !itemU->complete )
             updateDirectory( _url );

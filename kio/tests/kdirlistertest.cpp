@@ -79,6 +79,7 @@ void KDirListerTest::testOpenUrl()
     QCOMPARE(spyClear.count(), 1);
     QCOMPARE(spyClearKUrl.count(), 0);
     QCOMPARE(m_items.count(), 0);
+    QVERIFY(!m_dirLister.isFinished());
 
     // then wait for completed
     qDebug("waiting for completed");
@@ -92,6 +93,7 @@ void KDirListerTest::testOpenUrl()
     QCOMPARE(spyClear.count(), 1);
     QCOMPARE(spyClearKUrl.count(), 0);
     QCOMPARE(m_items.count(), 4);
+    QVERIFY(m_dirLister.isFinished());
     disconnect(&m_dirLister, 0, this, 0);
 }
 
@@ -123,6 +125,7 @@ void KDirListerTest::testOpenUrlFromCache()
         QCOMPARE(spyClear.count(), 1);
         QCOMPARE(spyClearKUrl.count(), 0);
         QCOMPARE(m_items.count(), 0);
+        QVERIFY(!secondDirLister.isFinished());
 
         // then wait for completed
         qDebug("waiting for completed");
@@ -136,6 +139,7 @@ void KDirListerTest::testOpenUrlFromCache()
         QCOMPARE(spyClear.count(), 1);
         QCOMPARE(spyClearKUrl.count(), 0);
         QCOMPARE(m_items.count(), 4);
+        QVERIFY(secondDirLister.isFinished());
     }
 
     disconnect(&m_dirLister, 0, this, 0);
@@ -263,8 +267,10 @@ void KDirListerTest::testDeleteItem()
     m_items.clear();
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
     m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags);
+    QVERIFY(!m_dirLister.isFinished());
     connect(&m_dirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
     enterLoop();
+    QVERIFY(m_dirLister.isFinished());
     QCOMPARE(m_items.count(), 4);
 
     disconnect(&m_dirLister, 0, this, 0);
@@ -361,6 +367,8 @@ void KDirListerTest::testConcurrentListing()
     QCOMPARE(spyClear2.count(), 1);
     QCOMPARE(spyClearKUrl2.count(), 0);
     QCOMPARE(m_items2.count(), 0);
+    QVERIFY(!m_dirLister.isFinished());
+    QVERIFY(!dirLister2.isFinished());
 
     // then wait for completed
     qDebug("waiting for completed");
@@ -385,6 +393,7 @@ void KDirListerTest::testConcurrentListing()
     QCOMPARE(spyClear2.count(), 1);
     QCOMPARE(spyClearKUrl2.count(), 0);
     QCOMPARE(m_items2.count(), 4);
+    QVERIFY(m_dirLister.isFinished());
 
     disconnect(&m_dirLister, 0, this, 0);
     disconnect(&dirLister2, 0, this, 0);
@@ -413,6 +422,7 @@ void KDirListerTest::testOpenAndStop()
     QCOMPARE(spyClear.count(), 1);
     QCOMPARE(spyClearKUrl.count(), 0);
     QCOMPARE(m_items.count(), 0); // we had time to stop before the job even started
+    QVERIFY(m_dirLister.isFinished());
     disconnect(&m_dirLister, 0, this, 0);
 }
 
