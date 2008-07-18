@@ -1521,6 +1521,7 @@ void KUrlTest::testPathOrURL()
   QCOMPARE( uloc.path(), QString(LOCAL_FILE_PREFIX"/home/dfaure/konqtests/Mat%C3%A9riel") );
   uloc = KUrl( "http://www.kde.org" );
   QCOMPARE( uloc.pathOrUrl(), uloc.url() );
+  QCOMPARE( uloc.pathOrUrl(KUrl::AddTrailingSlash), QString("http://www.kde.org/") );
   uloc = KUrl( QString("www.kde.org" ) );
   QVERIFY( uloc.isValid() ); // KDE3: was invalid. But it's now a url with path="www.kde.org", ok.
   uloc = KUrl( "index.html" );
