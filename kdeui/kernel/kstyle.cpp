@@ -285,6 +285,17 @@ void KStyle::polish(QWidget *w)
     // Enable hover effects in all itemviews
     if (QAbstractItemView *itemView = qobject_cast<QAbstractItemView*>(w) ) {
         itemView->viewport()->setAttribute(Qt::WA_Hover);
+
+        const bool smoothScroll = d->m_componentData.config()->group("KDE").readEntry("SmoothScroll", KDE_DEFAULT_SMOOTHSCROLL);
+        // Check if user wants smooth scrolling
+        if (itemView->verticalScrollMode() == QAbstractItemView::ScrollPerItem) {
+            itemView->setVerticalScrollMode(smoothScroll ? QAbstractItemView::ScrollPerPixel
+                                                         : QAbstractItemView::ScrollPerItem);
+        }
+        if (itemView->horizontalScrollMode() == QAbstractItemView::ScrollPerItem) {
+            itemView->setHorizontalScrollMode(smoothScroll ? QAbstractItemView::ScrollPerPixel
+                                                           : QAbstractItemView::ScrollPerItem);
+        }
     }
 
     QCommonStyle::polish(w);

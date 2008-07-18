@@ -177,6 +177,12 @@ bool KGlobalSettings::singleClick()
     return g.readEntry("SingleClick", KDE_DEFAULT_SINGLECLICK );
 }
 
+bool KGlobalSettings::smoothScroll()
+{
+    KConfigGroup g( KGlobal::config(), "KDE" );
+    return g.readEntry("SmoothScroll", KDE_DEFAULT_SMOOTHSCROLL );
+}
+
 KGlobalSettings::TearOffHandle KGlobalSettings::insertTearOffHandle()
 {
     int tearoff;
