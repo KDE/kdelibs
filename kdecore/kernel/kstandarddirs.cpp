@@ -55,6 +55,7 @@
 #include <grp.h>
 #ifdef Q_WS_WIN
 #include <windows.h>
+#define _WIN32_IE 0x0500
 #include <shlobj.h>
 #endif
 
