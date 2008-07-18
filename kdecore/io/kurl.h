@@ -738,6 +738,12 @@ public:
    * @return the new KUrl
    */
   QString pathOrUrl() const;
+  /**
+   * Overload with @p trailing parameter
+   * @param trailing use to add or remove a trailing slash to/from the path. see adjustPath.
+   * @since 4.2
+   */
+  QString pathOrUrl(AdjustPathOption trailing) const; // KDE5: merge with above
 
   /**
    * Returns the URL as a string, using the standard conventions for mime data

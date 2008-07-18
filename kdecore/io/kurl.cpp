@@ -1068,10 +1068,15 @@ QString KUrl::prettyUrl( int _trailing, AdjustementFlags _flags) const
 
 QString KUrl::pathOrUrl() const
 {
+    return pathOrUrl(LeaveTrailingSlash);
+}
+
+QString KUrl::pathOrUrl(AdjustPathOption trailing) const
+{
   if ( isLocalFile() && fragment().isNull() && encodedQuery().isNull() ) {
-    return toLocalFile();
+    return toLocalFile(trailing);
   } else {
-    return prettyUrl();
+    return prettyUrl(trailing);
   }
 }
 
