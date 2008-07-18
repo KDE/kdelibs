@@ -1,0 +1,320 @@
+/*
+ * This file is part of the KDE project
+ * Copyright (C) 2008 Rafael Fernández López <ereslibre@kde.org>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
+ */
+
+#include "kcapacitybar.h"
+
+#include <math.h>
+
+#include <QtGui/QApplication>
+#include <QtGui/QLabel>
+#include <QtGui/QStyle>
+#include <QtGui/QPainter>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QPaintEvent>
+#include <QtGui/QPainterPath>
+#include <QtGui/QLinearGradient>
+#include <QtGui/QStyleOptionFrame>
+
+#include <kcolorscheme.h>
+
+#define ROUND_MARGIN     10
+#define VERTICAL_SPACING  1
+
+class KCapacityBar::Private
+{
+public:
+    Private(KCapacityBar::DrawTextMode drawTextMode)
+        : value(0)
+        , fillFullBlocks(true)
+        , continuous(true)
+        , barHeight(12)
+        , horizontalTextAlignment(Qt::AlignCenter)
+        , drawTextMode(drawTextMode) {}
+
+    ~Private() {}
+
+    int value;
+    QString text;
+    bool fillFullBlocks;
+    bool continuous;
+    int barHeight;
+    Qt::Alignment horizontalTextAlignment;
+
+    const KCapacityBar::DrawTextMode drawTextMode;
+};
+
+KCapacityBar::KCapacityBar(KCapacityBar::DrawTextMode drawTextMode, QWidget *parent)
+    : QWidget(parent)
+    , d(new Private(drawTextMode))
+{
+}
+
+KCapacityBar::~KCapacityBar()
+{
+    delete d;
+}
+
+void KCapacityBar::setValue(int value)
+{
+    d->value = value;
+}
+
+int KCapacityBar::value() const
+{
+    return d->value;
+}
+
+void KCapacityBar::setText(const QString &text)
+{
+    d->text = text;
+}
+
+QString KCapacityBar::text() const
+{
+    return d->text;
+}
+
+void KCapacityBar::setFillFullBlocks(bool fillFullBlocks)
+{
+    d->fillFullBlocks = fillFullBlocks;
+}
+
+bool KCapacityBar::fillFullBlocks() const
+{
+    return d->fillFullBlocks;
+}
+
+void KCapacityBar::setContinuous(bool continuous)
+{
+    d->continuous = continuous;
+}
+
+bool KCapacityBar::continuous() const
+{
+    return d->continuous;
+}
+
+void KCapacityBar::setBarHeight(int barHeight)
+{
+    // automatically convert odd values to even. This will make the bar look
+    // better.
+    d->barHeight = (barHeight % 2) ? barHeight + 1 : barHeight;
+}
+
+int KCapacityBar::barHeight() const
+{
+    return d->barHeight;
+}
+
+void KCapacityBar::setHorizontalTextAlignment(Qt::Alignment horizontalTextAlignment)
+{
+    Qt::Alignment alignment = horizontalTextAlignment;
+
+    // if the value came with any vertical alignment flag, remove it.
+    alignment &= ~Qt::AlignTop;
+    alignment &= ~Qt::AlignBottom;
+    alignment &= ~Qt::AlignVCenter;
+
+    d->horizontalTextAlignment = alignment;
+}
+
+Qt::Alignment KCapacityBar::horizontalTextAlignment() const
+{
+    return d->horizontalTextAlignment;
+}
+
+void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
+{
+    p->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+
+    p->save();
+
+    QRect drawRect(rect);
+    drawRect.setHeight(d->barHeight);
+
+    QPainterPath outline;
+    outline.moveTo(ROUND_MARGIN / 4 + 1, 0);
+    outline.lineTo(drawRect.width() - ROUND_MARGIN / 4 - 1, 0);
+    outline.quadTo(drawRect.width() + ROUND_MARGIN / 2, drawRect.height() / 2, drawRect.width() - ROUND_MARGIN / 4 - 1, drawRect.height());
+    outline.lineTo(ROUND_MARGIN / 4 + 1, drawRect.height());
+    outline.quadTo(-ROUND_MARGIN / 2, drawRect.height() / 2, ROUND_MARGIN / 4 + 1, 0);
+    const QColor fillColor = KColorScheme::shade(palette().window().color(), KColorScheme::DarkShade);
+    p->fillPath(outline, QColor(fillColor.red(), fillColor.green(), fillColor.blue(), 50));
+
+    QRadialGradient bottomGradient(QPointF(rect.width() / 2, drawRect.bottom() + 1), rect.width() / 2);
+    bottomGradient.setColorAt(0, KColorScheme::shade(palette().window().color(), KColorScheme::LightShade));
+    bottomGradient.setColorAt(1, Qt::transparent);
+    p->fillRect(QRect(0, drawRect.bottom() + 1, rect.width(), 1), bottomGradient);
+
+    p->translate(2, 1);
+
+    drawRect.setWidth(drawRect.width() - 4);
+    drawRect.setHeight(drawRect.height() - 2);
+
+    QPainterPath path;
+    path.moveTo(ROUND_MARGIN / 4, 0);
+    path.lineTo(drawRect.width() - ROUND_MARGIN / 4, 0);
+    path.quadTo(drawRect.width() + ROUND_MARGIN / 2, drawRect.height() / 2, drawRect.width() - ROUND_MARGIN / 4, drawRect.height());
+    path.lineTo(ROUND_MARGIN / 4, drawRect.height());
+    path.quadTo(-ROUND_MARGIN / 2, drawRect.height() / 2, ROUND_MARGIN / 4, 0);
+
+    QLinearGradient linearGradient(0, 0, 0, drawRect.height());
+    linearGradient.setColorAt(0.5, KColorScheme::shade(palette().window().color(), KColorScheme::MidShade));
+    linearGradient.setColorAt(1, KColorScheme::shade(palette().window().color(), KColorScheme::LightShade));
+    p->fillPath(path, linearGradient);
+
+    p->setBrush(Qt::NoBrush);
+    p->setPen(Qt::NoPen);
+
+    if (d->continuous || !d->fillFullBlocks) {
+        int start = (layoutDirection() == Qt::LeftToRight) ? -1
+                                                           : (drawRect.width() + 2) - (drawRect.width() + 2) * (d->value / 100.0);
+
+        p->setClipRect(QRect(start, 0, (drawRect.width() + 2) * (d->value / 100.0), drawRect.height()), Qt::IntersectClip);
+    }
+
+    int left = (layoutDirection() == Qt::LeftToRight) ? 0
+                                                      : drawRect.width();
+
+    int right = (layoutDirection() == Qt::LeftToRight) ? drawRect.width()
+                                                        : 0;
+
+    int roundMargin = (layoutDirection() == Qt::LeftToRight) ? ROUND_MARGIN
+                                                             : -ROUND_MARGIN;
+
+    int spacing = 2;
+    int verticalSpacing = VERTICAL_SPACING;
+    int slotWidth = 6;
+    int start = roundMargin / 4;
+
+    QPainterPath internalBar;
+    internalBar.moveTo(left + roundMargin / 4, 0);
+    internalBar.lineTo(right - roundMargin / 4, 0);
+    internalBar.quadTo(right + roundMargin / 2, drawRect.height() / 2, right - roundMargin / 4, drawRect.height());
+    internalBar.lineTo(left + roundMargin / 4, drawRect.height());
+    internalBar.quadTo(left - roundMargin / 2, drawRect.height() / 2, left + roundMargin / 4, 0);
+
+    QLinearGradient fillInternalBar(left, 0, right, 0);
+    fillInternalBar.setColorAt(0, KColorScheme::shade(palette().highlight().color(), KColorScheme::MidShade));
+    fillInternalBar.setColorAt(0.5, KColorScheme::shade(palette().highlight().color(), KColorScheme::LightShade));
+    fillInternalBar.setColorAt(1, KColorScheme::shade(palette().highlight().color(), KColorScheme::MidShade));
+
+    if (d->drawTextMode == KCapacityBar::DrawTextInline) {
+        p->save();
+        p->setOpacity(0.7);
+    }
+
+    if (!d->continuous) {
+        int numSlots = (drawRect.width() - ROUND_MARGIN - ((slotWidth + spacing) * 2)) / (slotWidth + spacing);
+        int stopSlot = floor((numSlots + 2) * (d->value / 100.0));
+
+        int plusOffset = d->fillFullBlocks ? ((drawRect.width() - ROUND_MARGIN - ((slotWidth + spacing) * 2)) - (numSlots * (slotWidth + spacing))) / 2.0
+                                           : 0;
+
+        if (!d->fillFullBlocks || stopSlot) {
+            QPainterPath firstSlot;
+            firstSlot.moveTo(left + roundMargin / 4, verticalSpacing);
+            firstSlot.lineTo(left + slotWidth + roundMargin / 4 + plusOffset, verticalSpacing);
+            firstSlot.lineTo(left + slotWidth + roundMargin / 4 + plusOffset, drawRect.height() - verticalSpacing);
+            firstSlot.lineTo(left + roundMargin / 4, drawRect.height() - verticalSpacing);
+            firstSlot.quadTo(left, drawRect.height() / 2, left + roundMargin / 4, verticalSpacing);
+            p->fillPath(firstSlot, fillInternalBar);
+            start += slotWidth + spacing + plusOffset;
+
+            bool stopped = false;
+            for (int i = 0; i < numSlots + 1; i++) {
+                if (d->fillFullBlocks && (i == (stopSlot + 1))) {
+                    stopped = true;
+                    break;
+                }
+                p->fillRect(QRect(start, verticalSpacing, slotWidth, drawRect.height() - verticalSpacing * 2), fillInternalBar);
+                start += slotWidth + spacing;
+            }
+
+            if (!d->fillFullBlocks || (!stopped && (stopSlot != (numSlots + 1)) && (stopSlot != numSlots))) {
+                QPainterPath lastSlot;
+                lastSlot.moveTo(start, verticalSpacing);
+                lastSlot.lineTo(start, drawRect.height() - verticalSpacing);
+                lastSlot.lineTo(start + slotWidth + plusOffset, drawRect.height() - verticalSpacing);
+                lastSlot.quadTo(start + roundMargin, drawRect.height() / 2, start + slotWidth + plusOffset, verticalSpacing);
+                lastSlot.lineTo(start, verticalSpacing);
+                p->fillPath(lastSlot, fillInternalBar);
+            }
+        }
+    } else {
+        p->fillPath(internalBar, fillInternalBar);
+    }
+
+    if (d->drawTextMode == KCapacityBar::DrawTextInline) {
+        p->restore();
+    }
+
+    p->save();
+    p->setClipping(false);
+    QRadialGradient topGradient(QPointF(rect.width() / 2, drawRect.top()), rect.width() / 2);
+    const QColor fillTopColor = KColorScheme::shade(palette().window().color(), KColorScheme::LightShade);
+    topGradient.setColorAt(0, QColor(fillTopColor.red(), fillTopColor.green(), fillTopColor.blue(), 127));
+    topGradient.setColorAt(1, Qt::transparent);
+    p->fillRect(QRect(0, drawRect.top(), rect.width(), 2), topGradient);
+    p->restore();
+
+    p->save();
+    p->setClipRect(QRect(-1, 0, rect.width(), drawRect.height() / 2), Qt::ReplaceClip);
+    QLinearGradient glassGradient(0, -5, 0, drawRect.height());
+    const QColor fillGlassColor = palette().highlightedText().color();
+    glassGradient.setColorAt(0, QColor(fillGlassColor.red(), fillGlassColor.green(), fillGlassColor.blue(), 255));
+    glassGradient.setColorAt(1, Qt::transparent);
+    p->fillPath(internalBar, glassGradient);
+    p->restore();
+
+    p->restore();
+
+    if (d->drawTextMode == KCapacityBar::DrawTextInline) {
+        QRect textRect(rect);
+        textRect.setHeight(textRect.height() - 1);
+        p->drawText(textRect, Qt::AlignCenter, fontMetrics().elidedText(d->text, Qt::ElideRight, drawRect.width() - 2 * ROUND_MARGIN));
+    } else {
+        p->drawText(rect, Qt::AlignBottom | d->horizontalTextAlignment, fontMetrics().elidedText(d->text, Qt::ElideRight, drawRect.width()));
+    }
+}
+
+QSize KCapacityBar::minimumSizeHint() const
+{
+    int width = (d->drawTextMode == KCapacityBar::DrawTextInline) ?
+                fontMetrics().width(d->text) + ROUND_MARGIN * 2 :
+                fontMetrics().width(d->text);
+
+    int height = (d->drawTextMode == KCapacityBar::DrawTextInline) ?
+                 qMax(fontMetrics().height(), d->barHeight) :
+                 (d->text.isEmpty() ? 0 : fontMetrics().height() + VERTICAL_SPACING * 2) + d->barHeight;
+
+    if (height % 2) {
+        height++;
+    }
+
+    return QSize(width, height);
+}
+
+void KCapacityBar::paintEvent(QPaintEvent *event)
+{
+    QPainter p(this);
+    drawCapacityBar(&p, event->rect());
+    p.end();
+}

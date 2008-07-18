@@ -120,6 +120,7 @@ extern "C" {
 #include <kacl.h>
 #include <kconfiggroup.h>
 #include <kshell.h>
+#include <kcapacitybar.h>
 #ifndef Q_OS_WIN
 #include "kfilesharedialog.h"
 #endif
@@ -686,7 +687,7 @@ public:
     dirSizeJob = 0L;
     dirSizeUpdateTimer = 0L;
     m_lined = 0;
-    m_freeSpaceLabel = 0;
+    m_capacityBar = 0;
   }
   ~KFilePropsPluginPrivate()
   {
@@ -701,7 +702,7 @@ public:
   bool bIconChanged;
   bool bKDesktopMode;
   bool bDesktopFile;
-  QLabel *m_freeSpaceLabel;
+  KCapacityBar *m_capacityBar;
   QString mimeType;
   QString oldFileName;
   KLineEdit* m_lined;
@@ -1095,11 +1096,11 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
           grid->addWidget( l, curRow++, 2 );
       }
 
-      l = new QLabel(i18n("Free disk space:"), d->m_frame );
+      l = new QLabel(i18n("Device usage:"), d->m_frame );
       grid->addWidget(l, curRow, 0);
 
-      d->m_freeSpaceLabel = new QLabel( d->m_frame );
-      grid->addWidget( d->m_freeSpaceLabel, curRow++, 2 );
+      d->m_capacityBar = new KCapacityBar( KCapacityBar::DrawTextOutline, d->m_frame );
+      grid->addWidget( d->m_capacityBar, curRow++, 2);
 
       KDiskFreeSpace * job = new KDiskFreeSpace;
       connect(job, SIGNAL(foundMountPoint(QString, quint64, quint64, quint64)),
@@ -1182,11 +1183,13 @@ void KFilePropsPlugin::slotFoundMountPoint( const QString&,
 					    quint64 /*kibUsed*/,
 					    quint64 kibAvail )
 {
-    d->m_freeSpaceLabel->setText(
-	i18nc("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)",
+    d->m_capacityBar->setText(
+	i18nc("Available space out of total partition size (percent used)", "%1 free of %2 (%3% used)",
 	 KIO::convertSizeFromKiB(kibAvail),
 	 KIO::convertSizeFromKiB(kibSize),
 	  100 - (int)(100.0 * kibAvail / kibSize) ));
+
+    d->m_capacityBar->setValue(100 - (int)(100.0 * kibAvail / kibSize));
 }
 
 void KFilePropsPlugin::slotDirSizeUpdate()
@@ -1243,7 +1246,7 @@ void KFilePropsPlugin::slotSizeDetermine()
   d->m_sizeDetermineButton->setEnabled(false);
 
   // also update the "Free disk space" display
-  if ( d->m_freeSpaceLabel )
+  if ( d->m_capacityBar )
   {
     bool isLocal;
     const KFileItem item = properties->item();
@@ -2751,7 +2754,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
   layout->addWidget(d->mountpoint, 3, 1);
 
   // show disk free
-  d->m_freeSpaceText = new QLabel(i18n("Free disk space:"), d->m_frame );
+  d->m_freeSpaceText = new QLabel(i18n("Device usage:"), d->m_frame );
   layout->addWidget(d->m_freeSpaceText, 4, 0);
 
   d->m_freeSpaceLabel = new QLabel( d->m_frame );
