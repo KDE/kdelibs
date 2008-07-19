@@ -79,7 +79,7 @@ int main(int argc, char **argv)
             QString paths = QString::fromLocal8Bit(kdedirs);
             QStringList pathlist = paths.split(';');
             Q_FOREACH(const QString &path, pathlist) {
-              QString slave_path = path + QLatin1String("/lib/kde4/") + libpath;
+              QString slave_path = path + QLatin1String("/lib/kde4/") + QFileInfo(libpath).fileName();
               qDebug("trying to load '%s'",slave_path.toAscii().data());
               lib.setFileName(slave_path);
               if (lib.load() && lib.isLoaded() )
@@ -87,8 +87,7 @@ int main(int argc, char **argv)
             }
             if (!lib.isLoaded())
             {
-              fprintf(stderr, "could not open %s: %s", libpath.data(),
-                      qPrintable (lib.errorString()) );
+              qWarning(stderr, "could not open %s: %s", libpath.data(), qPrintable (lib.errorString()) );
               exit(1);
             }
         }
