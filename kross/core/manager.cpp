@@ -203,7 +203,7 @@ Manager::Manager()
         d->interpreterinfos.insert("lua",
             new InterpreterInfo("lua",
                 funcPtr, // library
-                "*.lua .luac", // file filter-wildcard
+                "*.lua *.luac", // file filter-wildcard
                 QStringList() << "application/x-lua" // mimetypes
             )
         );
