@@ -13,11 +13,8 @@ set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEAS
 set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.1.60 (KDE 4.2 >= 20080709))")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
+set (KDE_DEFAULT_HOME ".kde" CACHE STRING "The default KDE home directory" )
 
-# set default kde home directory
-if (NOT KDE_DEFAULT_HOME)
-    set (KDE_DEFAULT_HOME ".kde")
-endif (NOT KDE_DEFAULT_HOME)
 
 # this must be before FindKDE4Internal in order to preset the result of the visibility test, so that it will be skipped
 option(KHTML_BUILD_TESTREGRESSION "Build KHTML's testregression. Note: this disables hidden visibility")
