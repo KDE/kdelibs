@@ -785,7 +785,8 @@ public:
    * Compares this url with @p u.
    * @param u the URL to compare this one with.
    * @param ignore_trailing set to true to ignore trailing '/' characters.
-   * @return true if both urls are the same
+   * @return True if both urls are the same. If at least one of the urls is invalid,
+   * false is returned.
    * @see operator==. This function should be used if you want to
    * ignore trailing '/' characters.
    * @deprecated Use equals() instead.
@@ -813,7 +814,8 @@ public:
    * Compares this url with @p u.
    * @param u the URL to compare this one with.
    * @param options a set of EqualsOption flags
-   * @return true if both urls are the same
+   * @return True if both urls are the same. If at least one of the urls is invalid,
+   * false is returned.
    * @see operator==. This function should be used if you want to
    * ignore trailing '/' characters.
    */
