@@ -1041,7 +1041,9 @@ void KUrlNavigator::setUrl(const KUrl& url)
     // Check whether current history element has the same URL.
     // If this is the case, just ignore setting the URL.
     const HistoryElem& historyElem = d->m_history[d->m_historyIndex];
-    if (transformedUrl.equals(historyElem.url(), KUrl::CompareWithoutTrailingSlash)) {
+    const bool isUrlEqual = transformedUrl.equals(historyElem.url(), KUrl::CompareWithoutTrailingSlash) ||
+                            !transformedUrl.isValid() && (urlStr == historyElem.url().url());
+    if (isUrlEqual) {
         return;
     }
 
