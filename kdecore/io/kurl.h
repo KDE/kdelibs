@@ -120,7 +120,7 @@ public:
    * KUrl::List is a QList that contains KUrls with a few
    * convenience methods.
    * @see KUrl
-   * @see QValueList
+   * @see QList
    */
   class KDECORE_EXPORT List : public QList<KUrl> //krazy:exclude=dpointer (just some convenience methods)
   {
