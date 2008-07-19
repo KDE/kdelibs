@@ -717,7 +717,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
 
     int msgResult;
     do {
-        msgResult = messageBox(WarningYesNoCancel, message,
+        msgResult = messageBox(WarningYesNoCancel, message.trimmed(),
                                i18n("Server Authentication"),
                                i18n("&Details"), i18n("Co&ntinue"));
         if (msgResult == KMessageBox::Yes) {
