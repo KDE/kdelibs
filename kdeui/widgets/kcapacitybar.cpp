@@ -287,9 +287,9 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
     p->restore();
 
     if (d->drawTextMode == KCapacityBar::DrawTextInline) {
-        QRect textRect(rect);
-        textRect.setHeight(textRect.height() - 1);
-        p->drawText(textRect, Qt::AlignCenter, fontMetrics().elidedText(d->text, Qt::ElideRight, drawRect.width() - 2 * ROUND_MARGIN));
+        QRect rect(drawRect);
+        rect.setHeight(rect.height() + 4);
+        p->drawText(rect, Qt::AlignCenter, fontMetrics().elidedText(d->text, Qt::ElideRight, drawRect.width() - 2 * ROUND_MARGIN));
     } else {
         p->drawText(rect, Qt::AlignBottom | d->horizontalTextAlignment, fontMetrics().elidedText(d->text, Qt::ElideRight, drawRect.width()));
     }
