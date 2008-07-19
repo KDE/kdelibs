@@ -35,7 +35,7 @@ macro_bool_to_01(LIBINTL_FOUND ENABLE_NLS)              # kdecore, khtml, kjs
 # khtml svg support
 set(SVG_SUPPORT 1)              # unused yet, but for the future
 
-#now check for dlfcn.h using the cmake supplied CHECK_include_FILE() macro
+# now check for dlfcn.h using the cmake supplied CHECK_INCLUDE_FILES() macro
 # If definitions like -D_GNU_SOURCE are needed for these checks they
 # should be added to _KDE4_PLATFORM_DEFINITIONS when it is originally
 # defined outside this file.  Here we include these definitions in
@@ -282,5 +282,5 @@ test_big_endian(WORDS_BIGENDIAN)
 
 # TODO: for the more capable cmake authors: we need at least gcc's and MSVC's version in here
 set (KDE_COMPILER_VERSION ${CMAKE_C_COMPILER})
-STRING(REGEX REPLACE ^.*/ "" KDE_COMPILER_VERSION ${KDE_COMPILER_VERSION})
+string(REGEX REPLACE ^.*/ "" KDE_COMPILER_VERSION ${KDE_COMPILER_VERSION})
 

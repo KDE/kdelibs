@@ -1,21 +1,23 @@
 project(kdelibs)
 
-# set version
+# where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+
+
+################# set KDE specific information #################
+
 set (KDE_VERSION_MAJOR 4)
 set (KDE_VERSION_MINOR 1)
 set (KDE_VERSION_RELEASE 60)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
 set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.1.60 (KDE 4.2 >= 20080709))")
 
+set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
+
 # set default kde home directory
 if (NOT KDE_DEFAULT_HOME)
     set (KDE_DEFAULT_HOME ".kde")
 endif (NOT KDE_DEFAULT_HOME)
-
-# where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
-
-set(KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
 # this must be before FindKDE4Internal in order to preset the result of the visibility test, so that it will be skipped
 option(KHTML_BUILD_TESTREGRESSION "Build KHTML's testregression. Note: this disables hidden visibility")
@@ -23,6 +25,9 @@ option(KHTML_BUILD_TESTREGRESSION "Build KHTML's testregression. Note: this disa
 if (KHTML_BUILD_TESTREGRESSION)
    set (__KDE_HAVE_GCC_VISIBILITY 0)
 endif (KHTML_BUILD_TESTREGRESSION)
+
+
+################# now find all used packages #################
 
 find_package(KDE4Internal REQUIRED)
 include(KDE4Defaults)
@@ -60,8 +65,9 @@ set(SOPRANO_MIN_VERSION "2.0.97")
 macro_optional_find_package(Soprano)
 macro_log_feature(Soprano_FOUND "Soprano" "Soprano Libraries" "kdesupport" FALSE "${SOPRANO_MIN_VERSION}" "Provide metadata support (for semantic desktop).")
 
-#########################################################################
-# Disallow in-source build
+
+################# Disallow in-source build #################
+
 macro_ensure_out_of_source_build("kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")
 
 # ... and warn in case of an earlier in-source build
@@ -72,9 +78,11 @@ if(${generatedFileInSourceDir})
 endif(${generatedFileInSourceDir})
 #########################################################################
 
-
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
+
+
+################# setup the include directories #################
 
 # for including config.h and for includes like <kparts/foo.h>
 include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/interfaces)
@@ -150,6 +158,9 @@ set(KDE4_KDE3SUPPORT_INCLUDES ${CMAKE_SOURCE_DIR}/kde3support
 
 set(KDE4_KHTML_INCLUDES ${CMAKE_SOURCE_DIR}/khtml)
 
+
+################# configure checks and create the configured files #################
+
 # ACL stuff (used in kio/ and kioslaves/)
 find_package(ACL)
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
@@ -168,7 +179,8 @@ configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
 check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
-# list the subdirectories
+
+################# list the subdirectories #################
 
 add_subdirectory( cmake )
 add_subdirectory( kdecore )
@@ -213,11 +225,11 @@ endif(Soprano_FOUND)
 
 macro_optional_add_subdirectory( doc  )
 
-######## write dependency file which will be installed #########
+################# write dependency file which will be installed #################
 
 include(CreateKDELibsDependenciesFile.cmake)
 
-########### install files ###############
+################# install files #################
 
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependenciesInternal.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
