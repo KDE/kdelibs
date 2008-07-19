@@ -146,8 +146,11 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
 
     p->save();
 
+    int barHeight = (d->drawTextMode == DrawTextOutline) ? d->barHeight
+                                                         : qMax(d->barHeight, fontMetrics().height());
+
     QRect drawRect(rect);
-    drawRect.setHeight(d->barHeight);
+    drawRect.setHeight(barHeight);
 
     QPainterPath outline;
     outline.moveTo(ROUND_MARGIN / 4 + 1, 0);
