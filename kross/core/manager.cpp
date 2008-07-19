@@ -198,6 +198,18 @@ Manager::Manager()
     }
 #endif
 
+#ifdef KROSS_LUA_LIBRARY
+    if( void* funcPtr = loadLibrary(KROSS_LUA_LIBRARY, "krossinterpreter") ) {
+        d->interpreterinfos.insert("lua",
+            new InterpreterInfo("lua",
+                funcPtr, // library
+                "*.lua .luac", // file filter-wildcard
+                QStringList() << "application/x-lua" // mimetypes
+            )
+        );
+    }
+#endif
+
     // fill the list of supported interpreternames.
     QHash<QString, InterpreterInfo*>::Iterator it( d->interpreterinfos.begin() );
     for(; it != d->interpreterinfos.end(); ++it)

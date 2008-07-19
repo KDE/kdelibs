@@ -83,6 +83,7 @@ namespace Kross {
     #define KROSS_JAVA_LIBRARY "libkrossjava"
     #define KROSS_FALCON_LIBRARY "krossfalcon"
     #define KROSS_QTSCRIPT_LIBRARY "krossqts"
+    #define KROSS_LUA_LIBRARY "kloss"
 
 }
 
