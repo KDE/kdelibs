@@ -22,6 +22,9 @@
 #ifndef KNEWPASSWORDDIALOG_H
 #define KNEWPASSWORDDIALOG_H
 
+// ### KDE 5: remove
+#include <QtGui/QLineEdit>
+
 #include <kdialog.h>
 
 class QWidget;
