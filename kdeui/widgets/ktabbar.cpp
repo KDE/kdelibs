@@ -498,7 +498,7 @@ QPoint KTabBar::closeButtonPos( int tabIndex ) const
     buttonPos = tabBounds.topRight();
     buttonPos.rx() -= KIconLoader::SizeSmall + xInc;
   }
-  buttonPos.ry() += (availableHeight - KIconLoader::SizeSmall) / 2 + 1;
+  buttonPos.ry() += (availableHeight - KIconLoader::SizeSmall) / 2;
 
   return buttonPos;
 }
