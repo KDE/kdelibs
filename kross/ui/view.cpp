@@ -32,8 +32,6 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QTreeView>
 #include <QtGui/QLabel>
-#include <QtGui/QLineEdit>
-#include <QtGui/QComboBox>
 
 #include <kapplication.h>
 //#include <kdeversion.h>
@@ -46,9 +44,11 @@
 #include <kpagedialog.h>
 #include <kaction.h>
 #include <kactioncollection.h>
-#include <kurlrequester.h>
+#include <kcombobox.h>
 #include <kicondialog.h>
 #include <klocale.h>
+#include <klineedit.h>
+#include <kurlrequester.h>
 
 //#include <ktar.h>
 //#include <kio/netaccess.h>
@@ -88,11 +88,11 @@ namespace Kross {
                 return type == ActionType ? action->isEnabled() : collection->isEnabled();
             }
 
-            QLineEdit* nameedit;
-            QLineEdit* textedit;
-            QLineEdit* commentedit;
-            QLineEdit* iconedit;
-            QComboBox* interpreteredit;
+            KLineEdit* nameedit;
+            KLineEdit* textedit;
+            KLineEdit* commentedit;
+            KLineEdit* iconedit;
+            KComboBox* interpreteredit;
             KUrlRequester* fileedit;
             //QCheckBox* enabledcheckbox;
 
@@ -150,7 +150,7 @@ void ActionCollectionEditor::initGui()
 
     QLabel* namelabel = new QLabel(i18n("Name:"), w);
     gridlayout->addWidget(namelabel, 0, 0);
-    d->nameedit = new QLineEdit(w);
+    d->nameedit = new KLineEdit(w);
     namelabel->setBuddy(d->nameedit);
     d->nameedit->setText( d->name() );
     d->nameedit->setEnabled(false);
@@ -158,14 +158,14 @@ void ActionCollectionEditor::initGui()
 
     QLabel* textlabel = new QLabel(i18n("Text:"), w);
     gridlayout->addWidget(textlabel, 1, 0);
-    d->textedit = new QLineEdit(w);
+    d->textedit = new KLineEdit(w);
     textlabel->setBuddy(d->textedit);
     d->textedit->setText( d->text() );
     gridlayout->addWidget(d->textedit, 1, 1);
 
     QLabel* commentlabel = new QLabel(i18n("Comment:"), w);
     gridlayout->addWidget(commentlabel, 2, 0);
-    d->commentedit = new QLineEdit(w);
+    d->commentedit = new KLineEdit(w);
     commentlabel->setBuddy(d->commentedit);
     d->commentedit->setText( d->description() );
     gridlayout->addWidget(d->commentedit, 2, 1);
@@ -176,7 +176,7 @@ void ActionCollectionEditor::initGui()
     QHBoxLayout* iconlayout = new QHBoxLayout();
     iconlayout->setMargin(0);
     iconbox->setLayout(iconlayout);
-    d->iconedit = new QLineEdit(iconbox);
+    d->iconedit = new KLineEdit(iconbox);
     iconlabel->setBuddy(d->iconedit);
     d->iconedit->setText( d->iconName() );
     iconlayout->addWidget(d->iconedit, 1);
@@ -193,7 +193,7 @@ void ActionCollectionEditor::initGui()
     if( d->type == Private::ActionType ) {
         QLabel* interpreterlabel = new QLabel(i18n("Interpreter:"), w);
         gridlayout->addWidget(interpreterlabel, 4, 0);
-        d->interpreteredit = new QComboBox(w);
+        d->interpreteredit = new KComboBox(w);
         interpreterlabel->setBuddy(d->interpreteredit);
         d->interpreteredit->setMaxVisibleItems(10);
         d->interpreteredit->insertItems(0, Manager::self().interpreters());

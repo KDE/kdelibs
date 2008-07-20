@@ -175,7 +175,7 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     d->poolSocket = QFile::decodeName(pool_socket);
     s_protocol = protocol.data();
 #ifdef Q_OS_UNIX
-    if (!getenv("KDE_DEBUG"))
+    if (qgetenv("KDE_DEBUG").isEmpty())
     {
         KCrash::setCrashHandler( sigsegv_handler );
         KDE_signal(SIGILL,&sigsegv_handler);

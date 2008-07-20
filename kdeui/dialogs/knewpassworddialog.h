@@ -22,8 +22,6 @@
 #ifndef KNEWPASSWORDDIALOG_H
 #define KNEWPASSWORDDIALOG_H
 
-#include <QtGui/QLineEdit>
-
 #include <kdialog.h>
 
 class QWidget;

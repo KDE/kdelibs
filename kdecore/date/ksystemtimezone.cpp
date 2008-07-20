@@ -598,13 +598,13 @@ class KSystemTimeZoneSourcePrivate
 public:
     static void setTZ(const QByteArray &zoneName);
     static void restoreTZ();
-    static char      *savedTZ;       // temporary value of TZ environment variable saved by setTZ()
+    static QByteArray savedTZ;       // temporary value of TZ environment variable saved by setTZ()
     static QByteArray originalTZ;    // saved value of TZ environment variable during multiple parse() calls
     static bool       TZIsSaved;     // TZ has been saved in savedTZ
     static bool       multiParse;    // true if performing multiple parse() calls
 };
 
-char      *KSystemTimeZoneSourcePrivate::savedTZ;
+QByteArray KSystemTimeZoneSourcePrivate::savedTZ;
 QByteArray KSystemTimeZoneSourcePrivate::originalTZ;
 bool       KSystemTimeZoneSourcePrivate::TZIsSaved = false;
 bool       KSystemTimeZoneSourcePrivate::multiParse = false;
@@ -641,7 +641,7 @@ KTimeZoneData* KSystemTimeZoneSource::parse(const KTimeZone &zone) const
 
 void KSystemTimeZoneSource::startParseBlock()
 {
-    KSystemTimeZoneSourcePrivate::originalTZ = ::getenv("TZ");   // save the original local time zone
+    KSystemTimeZoneSourcePrivate::originalTZ = qgetenv("TZ");   // save the original local time zone
     KSystemTimeZoneSourcePrivate::multiParse = true;
 }
 
@@ -668,7 +668,7 @@ void KSystemTimeZoneSourcePrivate::setTZ(const QByteArray &zoneName)
     bool setTZ = multiParse;
     if (!setTZ)
     {
-        savedTZ = ::getenv("TZ");   // save the original local time zone
+        savedTZ = qgetenv("TZ");   // save the original local time zone
         TZIsSaved = true;
         setTZ = (tz != savedTZ);
     }
@@ -684,7 +684,7 @@ void KSystemTimeZoneSourcePrivate::restoreTZ()
 {
     if (TZIsSaved)
     {
-        if (!savedTZ)
+        if (savedTZ.isEmpty())
             ::unsetenv("TZ");
         else
             ::setenv("TZ", savedTZ, 1);

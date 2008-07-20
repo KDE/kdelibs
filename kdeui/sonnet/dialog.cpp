@@ -34,7 +34,6 @@
 #include <QtGui/QListView>
 #include <QtGui/QPushButton>
 #include <QtGui/QComboBox>
-#include <QtGui/QLineEdit>
 #include <QtGui/QLabel>
 #include <QtCore/QTimer>
 

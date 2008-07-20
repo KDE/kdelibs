@@ -208,7 +208,7 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
                                 return item->action->icon();
                     } break;
                     case Qt::DisplayRole:
-                        return item->action->text().remove("&");
+                        return item->action->text().remove('&');
                     case Qt::ToolTipRole: // fall through
                     case Qt::WhatsThisRole: {
                         if( d->mode & ToolTips ) {

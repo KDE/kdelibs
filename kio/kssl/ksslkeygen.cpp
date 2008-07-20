@@ -33,9 +33,6 @@
 #include <ktemporaryfile.h>
 #include <kwallet.h>
 
-#include <QtGui/QLineEdit>
-#include <QtGui/QPushButton>
-
 #include <assert.h>
 
 KSSLKeyGenWizardPage2::KSSLKeyGenWizardPage2(QWidget* parent)

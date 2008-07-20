@@ -37,7 +37,6 @@ Boston, MA 02110-1301, USA.
 #include <QtGui/QFont>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <QtGui/QLineEdit>
 #include <QtGui/QScrollBar>
 #include <QtCore/QMutableStringListIterator>
 #include <QtGui/QFontDatabase>
