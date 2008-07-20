@@ -35,7 +35,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="c_group" >
+      <widget class="KComboBox" name="c_group" >
        <item>
         <property name="text" >
          <string>topLevel1</string>
@@ -76,7 +76,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="c_name" />
+      <widget class="KLineEdit" name="c_name" />
      </item>
     </layout>
    </item>
