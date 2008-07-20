@@ -37,7 +37,7 @@ public:
     QVariant::Type type;
     uint attributes;
 };
-const QString PredicateProperties::Private::nullString = QString();
+const QString PredicateProperties::Private::nullString;
 const QStringList PredicateProperties::Private::nullStringList = QStringList();
 const PredicateProperties PredicateProperties::Private::nullPP;
 

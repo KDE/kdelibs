@@ -823,7 +823,7 @@ KAbstractFileWidget* KFileDialog::fileWidget()
 int KFileDialog::exec()
 {
     if (!d->native)
-      return QDialog::exec();
+      return KDialog::exec();
 
 //    d->native->selectedUrls.clear();
     switch (d->native->operationMode) {

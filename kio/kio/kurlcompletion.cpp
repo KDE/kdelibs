@@ -907,7 +907,7 @@ bool KUrlCompletionPrivate::exeCompletion(const KUrlCompletionPrivate::MyURL &ur
 	else {
 		if ( dirListThread )
 			setListedUrl( CTExe, directory, url.file(), no_hidden_files );
-		*pMatch = QString();
+		pMatch->clear();
 	}
 
 	return true;
@@ -992,7 +992,7 @@ bool KUrlCompletionPrivate::fileCompletion(const KUrlCompletionPrivate::MyURL &u
 		*pMatch = finished();
 	}
 	else {
-		*pMatch = QString();
+		pMatch->clear();
 	}
 
 	return true;
@@ -1054,13 +1054,13 @@ bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL &ur
 
 		listUrls( url_list, QString(), false );
 
-		*pMatch = QString();
+		pMatch->clear();
 	}
 	else if ( !q->isRunning() ) {
 		*pMatch = finished();
 	}
 	else {
-		*pMatch = QString();
+		pMatch->clear();
 	}
 
 	return true;

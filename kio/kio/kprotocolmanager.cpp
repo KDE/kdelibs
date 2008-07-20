@@ -92,10 +92,10 @@ void KProtocolManager::reparseConfiguration()
     if (d->config) {
         d->config->reparseConfiguration();
     }
-    d->protocol = QString();
-    d->proxy = QString();
-    d->modifiers = QString();
-    d->useragent = QString();
+    d->protocol.clear();
+    d->proxy.clear();
+    d->modifiers.clear();
+    d->useragent.clear();
     d->url.clear();
 
   // Force the slave config to re-read its config...
@@ -406,7 +406,7 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
   }
 
   d->url = url;
-  d->proxy = proxy = QString();
+  d->proxy.clear(); proxy.clear();
   d->protocol = url.protocol();
   return d->protocol;
 }

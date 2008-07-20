@@ -268,7 +268,7 @@ void listAllNamedAppsInDBus()
     QDBusConnectionInterface *bus = connection.interface();
     const QStringList services = bus->registeredServiceNames();
     foreach(const QString &service, services) {
-        if (service.startsWith("org.freedesktop.DBus") || service.startsWith(":"))
+        if (service.startsWith("org.freedesktop.DBus") || service.startsWith(':'))
             continue;
         fprintf(stderr, "%s \n", service.toLatin1().data());
     }
@@ -280,7 +280,7 @@ void quitApplicationsOverDBus()
     QDBusConnectionInterface *bus = connection.interface();
     const QStringList services = bus->registeredServiceNames();
     foreach(const QString &service, services) {
-        if (service.startsWith("org.freedesktop.DBus") || service.startsWith(":"))
+        if (service.startsWith("org.freedesktop.DBus") || service.startsWith(':'))
             continue;
         QDBusInterface *iface = new QDBusInterface(service,
                                QLatin1String("/MainApplication"),

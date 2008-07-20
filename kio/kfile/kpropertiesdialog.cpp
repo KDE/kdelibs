@@ -756,7 +756,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   }
 
   // Those things only apply to 'single file' mode
-  QString filename= QString();
+  QString filename;
   bool isTrash = false;
   bool isDevice = false;
   d->m_bFromTemplate = false;

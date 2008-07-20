@@ -930,7 +930,7 @@ void KOpenWithDialog::accept()
         cg.sync();
     }
 
-    QDialog::accept();
+    KDialog::accept();
 }
 
 #include "kopenwithdialog.moc"
