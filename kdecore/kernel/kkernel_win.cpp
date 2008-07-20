@@ -89,6 +89,7 @@ QString getKde4Prefix()
  * The dll entry point - get the instance handle for GetModuleFleNameW
  * Maybe also some special initialization / cleanup can be done here
  **/
+extern "C"
 BOOL WINAPI DllMain ( HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpReserved)
 {
     switch ( fdwReason ) {
