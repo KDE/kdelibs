@@ -82,7 +82,7 @@ KShapeGesture::KShapeGesture(const QString &description)
         poly.append(QPoint(x, y));
     }
     if (!ok) {
-        d->m_friendlyName = QString();
+        d->m_friendlyName.clear();
         return;
     }
 

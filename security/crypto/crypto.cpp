@@ -1412,8 +1412,8 @@ QDateTime qdt = x->getExpires();
 
 
 void KCryptoConfig::slotOtherCertSelect() {
-OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->currentItem());
-QString iss = QString();
+   OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->currentItem());
+   QString iss;
    if (x) {
       otherSSLExport->setEnabled(true);
       otherSSLVerify->setEnabled(true);
@@ -2379,7 +2379,7 @@ bool noneDef, noneHost;
   it = QTreeWidgetItemIterator(hostAuthList);
   while (*it) {
      HostAuthItem *x = static_cast<HostAuthItem *>(*it);
-     QString newValue = QString();
+     QString newValue;
      for (int i = 1; i < hostCertBox->count(); i++) {
         if (hostCertBox->itemText(i) == x->getCertName()) {
            newValue = x->getCertName();

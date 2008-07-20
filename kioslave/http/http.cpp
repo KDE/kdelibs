@@ -4801,7 +4801,7 @@ void HTTPProtocol::cleanCache()
       cleanFile += '/';
    cleanFile += "cleaned";
 
-   struct stat stat_buf;
+   KDE_struct_stat stat_buf;
 
    int result = KDE_stat(QFile::encodeName(cleanFile), &stat_buf);
    if (result == -1)

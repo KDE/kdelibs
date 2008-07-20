@@ -247,7 +247,7 @@ void KJobTest::testKill()
              this, SLOT( slotFinished( KJob* ) ) );
 
     m_lastError = KJob::NoError;
-    m_lastErrorText = QString();
+    m_lastErrorText.clear();
     m_resultCount = 0;
     m_finishedCount = 0;
 
@@ -304,7 +304,7 @@ void KJobTest::slotResult( KJob *job )
     else
     {
         m_lastError = KJob::NoError;
-        m_lastErrorText = QString();
+        m_lastErrorText.clear();
     }
 
     m_resultCount++;
@@ -318,7 +318,7 @@ void KJobTest::slotFinished(KJob *job)
         m_lastErrorText = job->errorText();
     } else {
         m_lastError = KJob::NoError;
-        m_lastErrorText = QString();
+        m_lastErrorText.clear();
     }
 
     m_finishedCount++;

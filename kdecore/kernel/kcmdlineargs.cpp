@@ -256,7 +256,7 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     argsList = 0;
     argc = 0;
     argv = 0;
-    mCwd = QString();
+    mCwd.clear();
     about = 0;
     parsed = false;
     ignoreUnknown = false;

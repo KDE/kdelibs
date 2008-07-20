@@ -618,8 +618,10 @@ bool KHTMLPart::openUrl( const KUrl &url )
   if ( url.protocol() == "error" && url.hasSubUrl() ) {
     closeUrl();
 
-    if(  d->m_bJScriptEnabled )
-      d->m_statusBarText[BarOverrideText] = d->m_statusBarText[BarDefaultText] = QString();
+    if(  d->m_bJScriptEnabled ) {
+      d->m_statusBarText[BarOverrideText].clear();
+      d->m_statusBarText[BarDefaultText].clear();
+    }
 
     /**
      * The format of the error url is that two variables are passed in the query:
@@ -794,8 +796,10 @@ bool KHTMLPart::openUrl( const KUrl &url )
   d->m_bLoadEventEmitted = false;
 
   // delete old status bar msg's from kjs (if it _was_ activated on last URL)
-  if( d->m_bJScriptEnabled )
-    d->m_statusBarText[BarOverrideText] = d->m_statusBarText[BarDefaultText] = QString();
+  if( d->m_bJScriptEnabled ) {
+    d->m_statusBarText[BarOverrideText].clear();
+    d->m_statusBarText[BarDefaultText].clear();
+  }
 
   // set the javascript flags according to the current url
   d->m_bJScriptEnabled = KHTMLGlobal::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
@@ -3775,7 +3779,8 @@ void KHTMLPart::resetHoverText()
 {
    if( !d->m_overURL.isEmpty() ) // Only if we were showing a link
    {
-     d->m_overURL = d->m_overURLTarget = QString();
+     d->m_overURL.clear();
+     d->m_overURLTarget.clear();
      emit onURL( QString() );
      // revert to default statusbar text
      setStatusBarText(QString(), BarHoverText);
@@ -4104,7 +4109,7 @@ void KHTMLPart::slotViewPageInfo()
      dlg->setWindowTitle(i18n("Frame Information"));
   }
 
-  QString editStr = QString();
+  QString editStr;
 
   if (!d->m_pageServices.isEmpty())
     editStr = i18n("   <a href=\"%1\">[Properties]</a>", d->m_pageServices);
@@ -5142,7 +5147,8 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
   if ( !guard.isNull() ) {
      delete client;
      emit popupMenu(linkUrl, QCursor::pos());
-     d->m_strSelectedURL = d->m_strSelectedURLTarget = QString();
+     d->m_strSelectedURL.clear();
+     d->m_strSelectedURLTarget.clear();
   }
 }
 
@@ -6390,8 +6396,10 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
     d->m_strSelectedURL = event->url().string();
     d->m_strSelectedURLTarget = event->target().string();
   }
-  else
-    d->m_strSelectedURL = d->m_strSelectedURLTarget = QString();
+  else {
+    d->m_strSelectedURL.clear();
+    d->m_strSelectedURLTarget.clear();
+  }
 
   if ( _mouse->button() == Qt::LeftButton ||
        _mouse->button() == Qt::MidButton )
@@ -6536,7 +6544,8 @@ bool KHTMLPart::handleMouseMoveEventDrag(khtml::MouseMoveEvent *event)
 
     // when we finish our drag, we need to undo our mouse press
     d->m_bMousePressed = false;
-    d->m_strSelectedURL = d->m_strSelectedURLTarget = QString();
+    d->m_strSelectedURL.clear();
+    d->m_strSelectedURLTarget.clear();
     return true;
   }
   return false;

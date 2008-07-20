@@ -185,7 +185,7 @@ bool AdiumEmoticons::loadTheme(const QString &path)
             if (!name.isEmpty()) {
                 addEmoticonIndex(name, sl);
                 addEmoticonsMap(name, sl);
-                name = QString();
+                name.clear();
             }
         }
     }

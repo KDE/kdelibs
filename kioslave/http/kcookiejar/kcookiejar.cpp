@@ -796,7 +796,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             else if (cName == "path")
             {
                 if (Value.isEmpty())
-                   lastCookie->mPath = QString(); // Catch "" <> QString()
+                   lastCookie->mPath.clear(); // Catch "" <> QString()
                 else
                    lastCookie->mPath = QUrl::fromPercentEncoding(Value.toLatin1());
                 lastCookie->mExplicitPath = true;

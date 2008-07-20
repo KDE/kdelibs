@@ -693,8 +693,8 @@ void KLocalePrivate::translate_priv(const char *msgctxt,
   if ( !msgid || !msgid[0] ) {
     kDebug(173) << "KLocale: trying to look up \"\" in catalog. "
                 << "Fix the program" << endl;
-    *language = QString();
-    *translation = QString();
+    language->clear();
+    translation->clear();
     return;
   }
   if ( msgctxt && !msgctxt[0] ) {

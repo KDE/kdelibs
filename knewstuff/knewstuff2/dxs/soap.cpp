@@ -67,7 +67,7 @@ int Soap::call(const QDomElement& element, const QString &endpoint)
 
 void Soap::call_tree(const QDomElement& element, const QString &endpoint)
 {
-    QString s = QString();
+    QString s;
 
     s += localname(element);
     s += '(';

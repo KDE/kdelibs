@@ -283,7 +283,7 @@ void KIconCache::insert(const QString& key, const QPixmap& pix, const QString& p
 {
     d->mSavePath = path;
     insert(key, pix);
-    d->mSavePath = QString();
+    d->mSavePath.clear();
 }
 
 bool KIconCache::find(const QString& key, QPixmap& pix)

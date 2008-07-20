@@ -31,9 +31,9 @@
 static bool check(QString txt, QString a, QString b) // from kurltest
 {
   if (a.isEmpty())
-     a = QString();
+     a.clear();
   if (b.isEmpty())
-     b = QString();
+     b.clear();
   if (a == b) {
     kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok";
   }

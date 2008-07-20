@@ -198,7 +198,7 @@ bool FakeDevice::unlock()
     if (d->broken || !d->locked) return false;
 
     d->locked = false;
-    d->lockReason = QString();
+    d->lockReason.clear();
 
     return true;
 }

@@ -246,7 +246,7 @@ bool ReverseThread::run()
     }
   else
     {
-      node = service = QString();
+      node.clear(); service.clear();
       success = false;
     }
 

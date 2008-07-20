@@ -1022,7 +1022,7 @@ QString TestRegressionWindow::extractTestNameFromData(QString &data, TestResult 
 			QString cachedFilename = test.mid(lastSlashPos + 1);
 
 			if(cachedDirectory == ".") // Handle cases like "./empty.html"
-				cachedDirectory = QString();
+				cachedDirectory.clear();
 
 			assert(m_directoryMap.constFind(cachedDirectory) != m_directoryMap.constEnd());
 

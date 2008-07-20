@@ -549,7 +549,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
 
     KLocalizedStringPrivateStatics *s = staticsKLSP;
 
-    result = QString();
+    result.clear();
     fallback = false;
 
     // Split interpolation into arguments.

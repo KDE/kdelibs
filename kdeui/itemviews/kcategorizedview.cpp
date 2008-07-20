@@ -1052,7 +1052,7 @@ void KCategorizedView::mouseMoveEvent(QMouseEvent *event)
     const QString previousHoveredCategory = d->hoveredCategory;
 
     d->mousePosition = event->pos();
-    d->hoveredCategory = QString();
+    d->hoveredCategory.clear();
 
     // Redraw categories
     foreach (const QString &category, d->categories)
@@ -1205,7 +1205,7 @@ void KCategorizedView::mouseReleaseEvent(QMouseEvent *event)
 void KCategorizedView::leaveEvent(QEvent *event)
 {
     d->hovered = QModelIndex();
-    d->hoveredCategory = QString();
+    d->hoveredCategory.clear();
 
     QListView::leaveEvent(event);
 }

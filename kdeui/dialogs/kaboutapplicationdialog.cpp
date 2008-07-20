@@ -213,7 +213,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     const QList<KAboutPerson> translatorList = aboutData->translators();
 
     if(translatorList.count() > 0) {
-        QString translatorPageText = QString();
+        QString translatorPageText;
 
         QList<KAboutPerson>::ConstIterator it;
         for(it = translatorList.begin(); it != translatorList.end(); ++it) {

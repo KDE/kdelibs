@@ -377,7 +377,7 @@ void SolidHwTest::testPredicate()
               QString("/org/kde/solid/fakehw/acpi_CPU1"));
 
 
-    parentUdi = QString();
+    parentUdi.clear();
     ifaceType = Solid::DeviceInterface::Unknown;
     QList<Solid::Device> list;
 

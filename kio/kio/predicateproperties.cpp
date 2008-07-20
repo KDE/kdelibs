@@ -38,7 +38,7 @@ public:
     uint attributes;
 };
 const QString PredicateProperties::Private::nullString;
-const QStringList PredicateProperties::Private::nullStringList = QStringList();
+const QStringList PredicateProperties::Private::nullStringList;
 const PredicateProperties PredicateProperties::Private::nullPP;
 
 PredicateProperties::PredicateProperties(const QString& predicate) {

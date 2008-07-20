@@ -865,7 +865,7 @@ void KDirOperator::Private::checkPath(const QString &, bool /*takeFiles*/) // SL
         ASSERT(position >= 0); // we already inserted the current d->dirLister in case
         QString filename = text.mid(position + 1, text.length());
         if (filename != selection)
-            selection = QString();
+            selection.clear();
     }
 
     KUrl u(text); // I have to take care of entered URLs
