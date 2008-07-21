@@ -31,6 +31,8 @@
  */
 struct KDEPluginVerificationData
 {
+    enum { PluginVerificationDataVersion = 1 };
+
     /**
      * \internal
      * The version of this structure. Increase it in the K_EXPORT_PLUGIN_VERSION macro whenever you
@@ -48,7 +50,7 @@ struct KDEPluginVerificationData
  */
 #define K_PLUGIN_VERIFICATION_DATA \
 Q_EXTERN_C KDE_EXPORT const KDEPluginVerificationData kde_plugin_verification_data = \
-{ 1, KDE_VERSION, KDE_VERSION_STRING };
+{ KDEPluginVerificationData::PluginVerificationDataVersion, KDE_VERSION, KDE_VERSION_STRING };
 
 /**
  * \relates KPluginLoader
