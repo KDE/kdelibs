@@ -788,6 +788,7 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KSettings )
 
 install( FILES
   KTextEditor/Attribute
+  KTextEditor/ContainerInterface
   KTextEditor/CodeCompletionInterface
   KTextEditor/CodeCompletionModel
   KTextEditor/Command
