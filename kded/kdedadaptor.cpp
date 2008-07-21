@@ -72,9 +72,7 @@ void KdedAdaptor::reconfigure()
 {
    KGlobal::config()->reparseConfiguration();
    Kded::self()->initModules();
-   // mjansen: I think the following call is missing here but i'm not
-   // confident enough to add it myself.
-   // Kded::self()->loadSecondPhase();
+   Kded::self()->loadSecondPhase();
 }
 
 void KdedAdaptor::loadSecondPhase()
