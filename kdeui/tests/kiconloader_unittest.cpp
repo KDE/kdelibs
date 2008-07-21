@@ -109,6 +109,8 @@ private Q_SLOTS:
     {
         const QString dataDir = KStandardDirs::realPath(KDESRCDIR "/../../");
         KGlobal::dirs()->addResourceDir("data", dataDir);
+        // #### This test is broken; it passes even if appName is set to foobar, because
+        // KIcon::pixmap returns an unknown icon if it can't find the real icon...
         const QString appName = "kdewidgets";
         KIconLoader appIconLoader(appName);
         // Now using KIcon. Separate test so that KIconLoader isn't fully inited.
