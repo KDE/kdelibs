@@ -575,7 +575,7 @@ void KIconLoaderPrivate::addInheritedThemes(KIconThemeNode *node, const QString 
 
 void KIconLoaderPrivate::addThemeByName(const QString &themename, const QString &appname)
 {
-    if (mThemesInTree.contains(themename)) {
+    if (mThemesInTree.contains(themename + appname)) {
         return;
     }
     KIconTheme *theme = new KIconTheme(themename, appname);
@@ -584,7 +584,7 @@ void KIconLoaderPrivate::addThemeByName(const QString &themename, const QString 
         return;
     }
     KIconThemeNode *n = new KIconThemeNode(theme);
-    mThemesInTree.append(themename);
+    mThemesInTree.append(themename + appname);
     links.append(n);
     addInheritedThemes(n, appname);
 }
