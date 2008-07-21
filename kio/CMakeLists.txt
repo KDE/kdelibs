@@ -268,9 +268,9 @@ if(X11_Xrender_FOUND)
 endif(X11_Xrender_FOUND)
 
 set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
-                                     SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
-
-_kde4_target_link_interface_libraries(kio "kdeui;kdecore;${QT_QTNETWORK_LIBRARY};${QT_QTXML_LIBRARY}")
+                                     SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} 
+                                     ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kdeui;kdecore;${QT_QTNETWORK_LIBRARY};${QT_QTXML_LIBRARY}"
+                     )
 
 
 ########### install files ###############

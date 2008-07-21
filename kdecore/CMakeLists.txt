@@ -248,9 +248,10 @@ target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_
 
 set_target_properties(kdecore PROPERTIES 
                               VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
-                              SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
+                              SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
+                              ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "${QT_QTDBUS_LIBRARY};${QT_QTCORE_LIBRARY}"
+                     )
 
-_kde4_target_link_interface_libraries(kdecore "${QT_QTDBUS_LIBRARY};${QT_QTCORE_LIBRARY}")
 
 install(TARGETS kdecore ${INSTALL_TARGETS_DEFAULT_ARGS})
 

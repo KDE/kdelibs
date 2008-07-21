@@ -40,7 +40,8 @@ target_link_libraries(kfile
 )
 
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
-                                       SOVERSION ${GENERIC_LIB_SOVERSION} )
+                                       SOVERSION ${GENERIC_LIB_SOVERSION} 
+                     )
 
 install(TARGETS kfile ${INSTALL_TARGETS_DEFAULT_ARGS})
 

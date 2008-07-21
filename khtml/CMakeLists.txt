@@ -336,9 +336,9 @@ kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ktexteditor kjs ${KDE4_PHONON_LIBS} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES})
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
-                                       SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
-
-_kde4_target_link_interface_libraries(khtml "kparts;kjs;kio;kdeui;kdecore")
+                                       SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
+                                       ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kparts;kjs;kio;kdeui;kdecore"
+                     )
 
 
 set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
