@@ -98,13 +98,18 @@ private Q_SLOTS:
         // Now load kdialog again, to use the real kiconcache
         iconPath2 = appIconLoader.iconPath("kdialog", KIconLoader::User);
         QCOMPARE(iconPath, iconPath2);
+        
+        appIconLoader.addAppDir( "khtml" );
+        QString iconPathFail = appIconLoader.iconPath("fail", KIconLoader::User);
+        QVERIFY( iconPathFail.endsWith( "khtml/pics/fail.xpm"));
+        
     }
 
     void testAppPicsDir_KIcon()
     {
         const QString dataDir = KStandardDirs::realPath(KDESRCDIR "/../../");
         KGlobal::dirs()->addResourceDir("data", dataDir);
-        const QString appName = "kdewidgets";
+        const QString appName = "kdewidgetsfoobar";
         KIconLoader appIconLoader(appName);
         // Now using KIcon. Separate test so that KIconLoader isn't fully inited.
         KIcon icon("kdialog", &appIconLoader);
