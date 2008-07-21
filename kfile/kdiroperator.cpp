@@ -2066,6 +2066,10 @@ void KDirOperator::Private::_k_slotSelectionChanged()
         KFileItem nullItem;
         parent->highlightFile(nullItem);
     }
+    else {
+        KFileItem selectedItem = parent->selectedItems().first();
+        parent->highlightFile(selectedItem);
+    }
 }
 
 void KDirOperator::Private::_k_openContextMenu(const QPoint& pos)
