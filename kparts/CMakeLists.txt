@@ -29,6 +29,7 @@ target_link_libraries(kparts  ${KDE4_KDECORE_LIBS} kdeui kio)
 set_target_properties(kparts PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
                                         SOVERSION ${GENERIC_LIB_SOVERSION} )
 
+_kde4_target_link_interface_libraries(kparts "kio;kdeui;kdecore")
 
 install(TARGETS kparts ${INSTALL_TARGETS_DEFAULT_ARGS})
 

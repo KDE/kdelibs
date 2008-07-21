@@ -250,6 +250,8 @@ set_target_properties(kdecore PROPERTIES
                               VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
                               SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
 
+_kde4_target_link_interface_libraries(kdecore "${QT_QTDBUS_LIBRARY};${QT_QTCORE_LIBRARY}")
+
 install(TARGETS kdecore ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### next target ###############

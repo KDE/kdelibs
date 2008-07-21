@@ -83,6 +83,8 @@ target_link_libraries(kde3support  ${KDE4_KPARTS_LIBS} ${KDE4_KPTY_LIBS} ${QT_QT
 set_target_properties(kde3support PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
                                              SOVERSION ${GENERIC_LIB_SOVERSION} )
 
+_kde4_target_link_interface_libraries(kde3support "kio;kdeui;kdecore;${QT_QT3SUPPORT_LIBRARY}")
+
 install(TARGETS kde3support ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############

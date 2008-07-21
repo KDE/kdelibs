@@ -270,6 +270,8 @@ endif(X11_Xrender_FOUND)
 set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
                                      SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
 
+_kde4_target_link_interface_libraries(kio "kdeui;kdecore;${QT_QTNETWORK_LIBRARY};${QT_QTXML_LIBRARY}")
+
 
 ########### install files ###############
 install(TARGETS kio ${INSTALL_TARGETS_DEFAULT_ARGS})

@@ -15,6 +15,8 @@ target_link_libraries(krosscore ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTS
 set_target_properties(krosscore PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
                                 SOVERSION ${GENERIC_LIB_SOVERSION} )
 
+_kde4_target_link_interface_libraries(krosscore "kdecore;${QT_QTSCRIPT_LIBRARY};${QT_QTXML_LIBRARY}")
+
 install(TARGETS krosscore ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES

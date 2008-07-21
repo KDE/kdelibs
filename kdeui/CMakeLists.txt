@@ -321,7 +321,10 @@ if (X11_Xrender_FOUND)
 endif(X11_Xrender_FOUND)
 
 set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
-                            SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
+                            SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} 
+                       )
+
+_kde4_target_link_interface_libraries (kdeui "kdecore;${QT_QTSVG_LIBRARY};${QT_QTGUI_LIBRARY}")
 
 install(TARGETS kdeui ${INSTALL_TARGETS_DEFAULT_ARGS})
 ########### install files ###############
