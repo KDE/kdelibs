@@ -139,17 +139,10 @@ void KUrlComboBox::addDefaultUrl( const KUrl& url, const QIcon& icon,
     KUrlComboBoxPrivate::KUrlComboItem *item = new KUrlComboBoxPrivate::KUrlComboItem;
     item->url = url;
     item->icon = icon;
-    if ( text.isEmpty() ) {
-        KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
-        if (d->myMode == Directories)
-          mode = KUrl::AddTrailingSlash;
-        else
-          mode = KUrl::RemoveTrailingSlash;
-        if ( url.isLocalFile() )
-          item->text = url.path( mode );
-        else
-          item->text = url.prettyUrl( mode );
-    }
+    if ( text.isEmpty() )
+        item->text = url.pathOrUrl(d->myMode == Directories
+                                   ? KUrl::AddTrailingSlash
+                                   : KUrl::RemoveTrailingSlash);
     else
         item->text = text;
 
@@ -202,7 +195,7 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
         if (remove == RemoveBottom) {
             if (!urls.isEmpty())
                 urls.removeLast();
-        }                
+        }
         else {
             if (!urls.isEmpty())
                 urls.removeFirst();
@@ -230,18 +223,9 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
         item = new KUrlComboBoxPrivate::KUrlComboItem;
         item->url = u;
         item->icon = d->getIcon( u );
-
-        if ( u.isLocalFile() )
-        {
-          KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
-          if (d->myMode == Directories)
-              mode = KUrl::AddTrailingSlash;
-          else
-              mode = KUrl::RemoveTrailingSlash;
-          item->text = u.path( mode ); // don't show file:/
-        }
-        else
-            item->text = *it;
+        item->text = u.pathOrUrl(d->myMode == Directories
+                                 ? KUrl::AddTrailingSlash
+                                 : KUrl::RemoveTrailingSlash);
 
         d->insertUrlItem( item );
         d->itemList.append( item );
@@ -290,18 +274,12 @@ void KUrlComboBox::setUrl( const KUrl& url )
     while ( it.hasNext() )
         d->insertUrlItem( it.next() );
 
-    KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
-    if (d->myMode == Directories)
-      mode = KUrl::AddTrailingSlash;
-    else
-      mode = KUrl::RemoveTrailingSlash;
     KUrlComboBoxPrivate::KUrlComboItem *item = new KUrlComboBoxPrivate::KUrlComboItem;
     item->url = url;
     item->icon = d->getIcon( url );
-    if ( url.isLocalFile() )
-      item->text = url.path( mode );
-    else
-      item->text = url.prettyUrl( mode );
+    item->text = url.pathOrUrl(d->myMode == Directories
+                               ? KUrl::AddTrailingSlash
+                               : KUrl::RemoveTrailingSlash);
      kDebug(250) << "setURL: text=" << item->text;
 
     int id = count();
@@ -311,7 +289,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
         KComboBox::insertItem( id, d->opendirIcon, text);
     else
         KComboBox::insertItem( id,item->icon, text);
-    
+
     d->itemMapper.insert( id, item );
     d->itemList.append( item );
 
@@ -444,14 +422,9 @@ void KUrlComboBox::KUrlComboBoxPrivate::updateItem( const KUrlComboBoxPrivate::K
     m_parent->setItemIcon(index,icon);
 
     if ( m_parent->isEditable() ) {
-        KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
-        if (myMode == Directories)
-            mode = KUrl::AddTrailingSlash;
-        else
-            mode = KUrl::RemoveTrailingSlash;
-
-        m_parent->setItemText( index, item->url.isLocalFile() ? item->url.path( mode ) :
-                                                           item->url.prettyUrl( mode ));
+        m_parent->setItemText(index, item->url.pathOrUrl(myMode == Directories
+                                                         ? KUrl::AddTrailingSlash
+                                                         : KUrl::RemoveTrailingSlash));
     }
     else {
         m_parent->setItemText(index,item->text);
