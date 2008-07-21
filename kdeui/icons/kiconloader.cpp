@@ -59,7 +59,11 @@
 
 // The following define exists because the Qt SVG renderer needs
 // to be improved. This will be removed soon. (ereslibre)
+#ifdef QT_VERSION >= 0x040400
+#define KDE_QT_SVG_RENDERER_FIXED
+#else
 #undef KDE_QT_SVG_RENDERER_FIXED
+#endif
 
 //#define NO_LAZYLOAD_ICONTHEME
 
