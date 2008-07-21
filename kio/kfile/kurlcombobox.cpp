@@ -202,7 +202,7 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
         if (remove == RemoveBottom) {
             if (!urls.isEmpty())
                 urls.removeLast();
-        }                
+        }
         else {
             if (!urls.isEmpty())
                 urls.removeFirst();
@@ -241,7 +241,7 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
           item->text = u.path( mode ); // don't show file:/
         }
         else
-            item->text = *it;
+            item->text = u.prettyUrl();
 
         d->insertUrlItem( item );
         d->itemList.append( item );
@@ -311,7 +311,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
         KComboBox::insertItem( id, d->opendirIcon, text);
     else
         KComboBox::insertItem( id,item->icon, text);
-    
+
     d->itemMapper.insert( id, item );
     d->itemList.append( item );
 
