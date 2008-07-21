@@ -413,7 +413,6 @@ int KApplication::xioErrhandler( Display* dpy )
 {
     if(kapp)
     {
-        emit aboutToQuit();
 #ifdef Q_WS_X11
         d->oldXIOErrorHandler( dpy );
 #else
