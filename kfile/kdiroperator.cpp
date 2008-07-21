@@ -2080,7 +2080,7 @@ void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
     if (selectDir) {
         parent->selectDir(item);
     } else {
-        parent->highlightFile(item);
+        parent->selectFile(item);
     }
 }
 
