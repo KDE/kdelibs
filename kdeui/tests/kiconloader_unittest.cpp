@@ -109,7 +109,7 @@ private Q_SLOTS:
     {
         const QString dataDir = KStandardDirs::realPath(KDESRCDIR "/../../");
         KGlobal::dirs()->addResourceDir("data", dataDir);
-        const QString appName = "kdewidgetsfoobar";
+        const QString appName = "kdewidgets";
         KIconLoader appIconLoader(appName);
         // Now using KIcon. Separate test so that KIconLoader isn't fully inited.
         KIcon icon("kdialog", &appIconLoader);
