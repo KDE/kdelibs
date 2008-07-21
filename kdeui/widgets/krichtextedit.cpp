@@ -99,10 +99,12 @@ void KRichTextEditPrivate::setTextCursor(QTextCursor &cursor)
 void KRichTextEditPrivate::mergeFormatOnWordOrSelection(const QTextCharFormat &format)
 {
     QTextCursor cursor = q->textCursor();
+    cursor.beginEditBlock();
     if (!cursor.hasSelection())
         cursor.select(QTextCursor::WordUnderCursor);
     cursor.mergeCharFormat(format);
     q->mergeCurrentCharFormat(format);
+    cursor.endEditBlock();
 }
 //@endcond
 
