@@ -1397,10 +1397,24 @@ void KUrlTest::testMoreBrokenStuff()
 
 void KUrlTest::testMailto()
 {
-  KUrl umail1 ( "mailto:faure@kde.org" );
+  const QString faure = "faure@kde.org";
+  const QString mailtoFaure = "mailto:" + faure;
+  KUrl umail1 ( mailtoFaure );
   QCOMPARE( umail1.protocol(), QString("mailto") );
-  QCOMPARE( umail1.path(), QString("faure@kde.org") );
-  QVERIFY( !KUrl::isRelativeUrl("mailto:faure@kde.org") );
+  QCOMPARE( umail1.path(), QString(faure) );
+  QVERIFY( !KUrl::isRelativeUrl(mailtoFaure) );
+
+  // Make sure populateMimeData() works correct:
+  // 1. the text/plain part of the mimedata should not contain the mailto: part
+  // 2. the uri-list part of the mimedata should contain the mailto: part
+  QMimeData md;
+  umail1.populateMimeData(&md);
+  QCOMPARE(md.text(), faure);
+  KUrl::List uriList = KUrl::List::fromMimeData(&md);
+  QCOMPARE(uriList.size(), 1);
+  KUrl first = uriList.first();
+  QCOMPARE(first.protocol(), QString("mailto"));
+  QCOMPARE(first.path(), faure);
 
   KUrl mailtoOnly( "mailto:" );
   QVERIFY( mailtoOnly.isValid() ); // KDE3 said invalid, QUrl is more tolerant

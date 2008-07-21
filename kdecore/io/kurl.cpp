@@ -241,8 +241,13 @@ void KUrl::List::populateMimeData( QMimeData* mimeData,
     if ( ( flags & KUrl::NoTextExport ) == 0 )
     {
         QStringList prettyURLsList;
-        for ( uit = begin(); uit != uEnd ; ++uit )
-            prettyURLsList.append( (*uit).prettyUrl() );
+        for ( uit = begin(); uit != uEnd ; ++uit ) {
+            QString prettyURL = (*uit).prettyUrl();
+            if ( (*uit).protocol() == "mailto" ) {
+                prettyURL = (*uit).path(); // remove mailto: when pasting into konsole
+            }
+            prettyURLsList.append( prettyURL );
+        }
 
         QByteArray plainTextData = prettyURLsList.join( "\n" ).toLocal8Bit();
         if( count() > 1 ) // terminate last line, unless it's the only line
@@ -1075,6 +1080,7 @@ QString KUrl::pathOrUrl() const
   }
 }
 
+// Used for text/uri-list in the mime data
 QString KUrl::toMimeDataString() const // don't fold this into populateMimeData, it's also needed by other code like konqdrag
 {
   if ( isLocalFile() )
@@ -1099,10 +1105,6 @@ QString KUrl::toMimeDataString() const // don't fold this into populateMimeData,
         }
     }
 #endif
-  }
-
-  if ( protocol() == "mailto" ) {
-      return path();
   }
 
   return url(/*0 , 106*/); // 106 is mib enum for utf8 codec
