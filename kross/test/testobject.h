@@ -105,6 +105,7 @@ class TestObject : public QObject
     public Q_SLOTS:
 
         QObject* myself() { return this; }
+        TestObject* myself2() { return this; }
 
         // return a TestThread instance.
         QObject* createThread(int steps, int msecs, bool start = false);
