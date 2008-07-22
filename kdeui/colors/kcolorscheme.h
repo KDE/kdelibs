@@ -153,8 +153,9 @@ public:
          * Fourth color; corresponds to (unvisited) links.
          *
          * Exactly what this might be used for is somewhat harder to qualify;
-         * it might be used as a 'you can click here' indicator, or to
-         * highlight recent content (i.e. in a most-recently-accessed list).
+         * it might be used for bookmarks, as a 'you can click here' indicator,
+         * or to highlight recent content (i.e. in a most-recently-accessed
+         * list).
          */
         LinkBackground = 3,
         /**
