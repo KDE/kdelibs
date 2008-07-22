@@ -473,7 +473,14 @@ void CopyJobPrivate::slotReport()
             if (m_bURLDirty)
             {
                 m_bURLDirty = false;
-                emitCopying( q, m_currentSrcURL, m_currentDestURL );
+                if (m_mode==CopyJob::Move)
+                {
+                    emitMoving( q, m_currentSrcURL, m_currentDestURL );
+                }
+                else
+                {
+                    emitCopying( q, m_currentSrcURL, m_currentDestURL );
+                }
             }
             q->setTotalAmount(KJob::Bytes, m_totalSize);
             q->setTotalAmount(KJob::Files, files.count());
