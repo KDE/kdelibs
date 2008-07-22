@@ -224,6 +224,8 @@ KMainWindow::KMainWindow(KMainWindowPrivate &dd, QWidget *parent, Qt::WFlags f)
 
 void KMainWindowPrivate::init(KMainWindow *_q)
 {
+    KGlobal::ref();
+
     q = _q;
 
     q->setAnimated(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
@@ -540,6 +542,9 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
                 // cancel closing, it's stupid to end up with no windows at all....
                 e->ignore();
             }
+        } else {
+            // not the last window, simple deref
+            KGlobal::deref();
         }
     } else e->ignore(); //if the window should not be closed, don't close it
 }
