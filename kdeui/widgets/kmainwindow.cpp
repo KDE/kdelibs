@@ -537,9 +537,6 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
 
         if ( !no_query_exit && not_withdrawn <= 0 ) { // last window close accepted?
             if ( queryExit() && ( !kapp || !kapp->sessionSaving() ) && !d->shuttingDown ) { // Yes, Quit app?
-                // don't call queryExit() twice
-                disconnect(qApp, SIGNAL(aboutToQuit()), this, SLOT(_k_shuttingDown()));
-                d->shuttingDown = true;
                 KGlobal::deref();             // ...done with this window, the process will quit (unless it's doing something else)
             }  else {
                 // cancel closing, it's stupid to end up with no windows at all....
@@ -1053,6 +1050,7 @@ void KMainWindowPrivate::_k_shuttingDown()
     if (!reentrancy_protection)
     {
        reentrancy_protection = true;
+       d->shuttingDown = true;
        // call the virtual queryExit
        q->queryExit();
        reentrancy_protection = false;
