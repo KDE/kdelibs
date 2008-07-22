@@ -1050,7 +1050,7 @@ void KMainWindowPrivate::_k_shuttingDown()
     if (!reentrancy_protection)
     {
        reentrancy_protection = true;
-       d->shuttingDown = true;
+       shuttingDown = true;
        // call the virtual queryExit
        q->queryExit();
        reentrancy_protection = false;
