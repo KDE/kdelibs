@@ -232,6 +232,9 @@ void KMainWindowPrivate::init(KMainWindow *_q)
 
     q->setAttribute( Qt::WA_DeleteOnClose );
 
+    // We handle this functionality (quitting the app) ourselves, with KGlobal::ref/deref.
+    q->setAttribute( Qt::WA_QuitOnClose, false );
+
     KWhatsThisManager::init ();
 
     helpMenu = 0;
