@@ -87,7 +87,7 @@ int main(int argc, char **argv)
             }
             if (!lib.isLoaded())
             {
-              qWarning(stderr, "could not open %s: %s", libpath.data(), qPrintable (lib.errorString()) );
+              qWarning("could not open %s: %s", libpath.data(), qPrintable (lib.errorString()) );
               exit(1);
             }
         }
