@@ -17,19 +17,19 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __konq_htmlsettings_h__
-#define __konq_htmlsettings_h__
+#ifndef KHTML_SETTINGS_H
+#define KHTML_SETTINGS_H
 
 class KConfig;
 class KConfigGroup;
-#include <khtml_export.h>
-#include <QtGui/QColor>
-#include <QtCore/QString>
-#include <QtCore/QStringList>
-#include <QtGui/QFont>
-#include <QtCore/QMap>
-#include <QtCore/QPair>
 
+#include <khtml_export.h>
+
+#include <QtGui/QColor>
+#include <QtGui/QFont> // ### KDE 5: remove
+#include <QtCore/QMap> // ### KDE 5: remove
+#include <QtCore/QStringList>
+#include <QtCore/QPair>
 
 struct KPerDomainSettings;
 class KHTMLSettingsPrivate;

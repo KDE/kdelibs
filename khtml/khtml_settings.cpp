@@ -19,15 +19,16 @@
 
 #include "khtml_settings.h"
 #include "khtmldefaults.h"
-#include <kglobalsettings.h>
+
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kglobal.h>
-#include <klocale.h>
 #include <kdebug.h>
-#include <QtCore/QRegExp>
-#include <QtGui/QFontDatabase>
+#include <kglobal.h>
+#include <kglobalsettings.h>
+#include <klocale.h>
 #include <kmessagebox.h>
+
+#include <QtGui/QFontDatabase>
 
 /**
  * @internal
@@ -350,8 +351,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
                   QRegExp rx;
                   int left,right;
 
-                  for (right=url.length(); right>0 && url[right-1]=='*' ; --right);
-                  for (left=0; left<right && url[left]=='*' ; ++left);
+                  for (right=url.length(); right>0 && url[right-1]=='*' ; --right) ;
+                  for (left=0; left<right && url[left]=='*' ; ++left) ;
 
                   rx.setPatternSyntax(QRegExp::Wildcard);
                   rx.setPattern(url.mid(left,right-left));
@@ -768,8 +769,8 @@ void KHTMLSettings::addAdFilter( const QString &url )
         int left,right;
 
         rx.setPatternSyntax(QRegExp::Wildcard);
-        for (right=url.length(); right>0 && url[right-1]=='*' ; --right);
-        for (left=0; left<right && url[left]=='*' ; ++left);
+        for (right=url.length(); right>0 && url[right-1]=='*' ; --right) ;
+        for (left=0; left<right && url[left]=='*' ; ++left) ;
 
         rx.setPattern(url.mid(left,right-left));
     }
