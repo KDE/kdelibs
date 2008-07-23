@@ -177,6 +177,49 @@ static bool isEncryptedHttpVariety(const QString &p)
     return p == "https" || p == "webdavs"; 
 }
 
+static QString methodString(HTTP_METHOD m)
+{
+    switch(m) {
+    case HTTP_GET:
+        return"GET ";
+    case HTTP_PUT:
+        return "PUT ";
+    case HTTP_POST:
+        return "POST ";
+    case HTTP_HEAD:
+        return "HEAD ";
+    case HTTP_DELETE:
+        return "DELETE ";
+    case HTTP_OPTIONS:
+        return "OPTIONS ";
+    case DAV_PROPFIND:
+        return "PROPFIND ";
+    case DAV_PROPPATCH:
+        return "PROPPATCH ";
+    case DAV_MKCOL:
+        return "MKCOL ";
+    case DAV_COPY:
+        return "COPY ";
+    case DAV_MOVE:
+        return "MOVE ";
+    case DAV_LOCK:
+        return "LOCK ";
+    case DAV_UNLOCK:
+        return "UNLOCK ";
+    case DAV_SEARCH:
+        return "SEARCH ";
+    case DAV_SUBSCRIBE:
+        return "SUBSCRIBE ";
+    case DAV_UNSUBSCRIBE:
+        return "UNSUBSCRIBE ";
+    case DAV_POLL:
+        return "POLL ";
+    default:
+        Q_ASSERT(false);
+        return QString();
+    }
+}
+
 #define NO_SIZE		((KIO::filesize_t) -1)
 
 #ifdef HAVE_STRTOLL
@@ -197,7 +240,6 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
     , m_isFirstRequest(false)
     , m_maxCacheAge(DEFAULT_MAX_CACHE_AGE)
     , m_maxCacheSize(DEFAULT_MAX_CACHE_SIZE/2)
-    , m_isProxyAuthValid(false)
     , m_protocol(protocol)
     , m_remoteRespTimeout(DEFAULT_RESPONSE_TIMEOUT)
 {
@@ -214,10 +256,10 @@ void HTTPProtocol::reparseConfiguration()
 {
     kDebug(7113);
 
-    m_strProxyRealm.clear();
-    m_strProxyAuthorization.clear();
-    ProxyAuthentication = AUTH_None;
-    m_useProxy = false;
+    m_proxyAuth.realm.clear();
+    m_proxyAuth.authorization.clear();
+    m_proxyAuth.scheme = AUTH_None;
+    m_request.proxyUrl.clear(); //TODO revisit
 
     if (isEncryptedHttpVariety(m_protocol))
         m_defaultPort = DEFAULT_HTTPS_PORT;
@@ -232,13 +274,12 @@ void HTTPProtocol::resetConnectionSettings()
   m_isEOF = false;
   m_isError = false;
   m_lineCount = 0;
-  m_iWWWAuthCount = 0;
+  m_auth.authCount = 0;
   m_lineCountUnget = 0;
-  m_iProxyAuthCount = 0;
-
+  m_proxyAuth.authCount = 0;
 }
 
-void HTTPProtocol::resetResponseSettings()
+void HTTPProtocol::resetResponseParsing()
 {
   m_isRedirection = false;
   m_isChunked = false;
@@ -260,23 +301,21 @@ void HTTPProtocol::resetSessionSettings()
   KUrl proxy ( config()->readEntry("UseProxy") );
   QNetworkProxy::ProxyType proxyType = QNetworkProxy::NoProxy;
 
-  if ( m_strProxyRealm.isEmpty() || !proxy.isValid() ||
-       m_proxyURL.host() != proxy.host() ||
-       m_proxyURL.port() != proxy.port() ||
-       (!proxy.user().isEmpty() && proxy.user() != m_proxyURL.user()) ||
-       (!proxy.pass().isEmpty() && proxy.pass() != m_proxyURL.pass()) )
+  if ( m_proxyAuth.realm.isEmpty() || !proxy.isValid() ||
+       m_request.proxyUrl.host() != proxy.host() ||
+       m_request.proxyUrl.port() != proxy.port() ||
+       (!proxy.user().isEmpty() && proxy.user() != m_request.proxyUrl.user()) ||
+       (!proxy.pass().isEmpty() && proxy.pass() != m_request.proxyUrl.pass()) )
   {
-    m_isProxyAuthValid = false;
-    m_proxyURL = proxy;
-    m_useProxy = m_proxyURL.isValid();
+    m_request.proxyUrl = proxy;
 
-    kDebug(7113) << "Using proxy:" << m_useProxy
-                 << "URL: " << m_proxyURL.url()
-                 << "Realm: " << m_strProxyRealm;
+    kDebug(7113) << "Using proxy:" << m_request.proxyUrl.isValid()
+                 << "URL: " << m_request.proxyUrl.url()
+                 << "Realm: " << m_proxyAuth.realm;
   }
 
-  if (m_useProxy) {
-      if (m_proxyURL.protocol() == "socks") {
+  if (m_request.proxyUrl.isValid()) {
+      if (m_request.proxyUrl.protocol() == "socks") {
           proxyType = QNetworkProxy::Socks5Proxy;
       } else if (isAutoSsl()) {
           proxyType = QNetworkProxy::HttpProxy;
@@ -286,14 +325,14 @@ void HTTPProtocol::resetSessionSettings()
       m_request.proxyUrl = KUrl();
   }
  
-  QNetworkProxy appProxy(proxyType, m_proxyURL.host(), m_proxyURL.port(),
-                         m_proxyURL.user(), m_proxyURL.pass());
+  QNetworkProxy appProxy(proxyType, m_request.proxyUrl.host(), m_request.proxyUrl.port(),
+                         m_request.proxyUrl.user(), m_request.proxyUrl.pass());
   QNetworkProxy::setApplicationProxy(appProxy);
 
 
-  m_isPersistentProxyConnection = config()->readEntry("PersistentProxyConnection", false);
+  m_request.isPersistentProxyConnection = config()->readEntry("PersistentProxyConnection", false);
   kDebug(7113) << "Enable Persistent Proxy Connection: "
-                << m_isPersistentProxyConnection;
+                << m_request.isPersistentProxyConnection;
 
   m_request.useCookieJar = config()->readEntry("Cookies", false);
   m_request.cacheTag.useCache = config()->readEntry("UseCache", true);
@@ -372,12 +411,12 @@ void HTTPProtocol::resetSessionSettings()
      cleanCache();
   }
 
-  m_responseCode = 0;
-  m_prevResponseCode = 0;
+  m_request.responseCode = 0;
+  m_request.prevResponseCode = 0;
 
-  m_strRealm.clear();
-  m_strAuthorization.clear();
-  Authentication = AUTH_None;
+  m_auth.realm.clear();
+  m_auth.authorization.clear();
+  m_auth.scheme = AUTH_None;
 
   // Obtain timeout values
   m_remoteRespTimeout = responseTimeout();
@@ -388,8 +427,8 @@ void HTTPProtocol::resetSessionSettings()
   // Follow HTTP/1.1 spec and enable keep-alive by default
   // unless the remote side tells us otherwise or we determine
   // the persistent link has been terminated by the remote end.
-  m_isKeepAlive = true;
-  m_keepAliveTimeout = 0;
+  m_request.isKeepAlive = true;
+  m_request.keepAliveTimeout = 0;
   m_isUnauthorized = false;
 
   // A single request can require multiple exchanges with the remote
@@ -426,8 +465,8 @@ void HTTPProtocol::setHost( const QString& host, quint16 port,
   m_request.url.setPort((port <= 0) ? m_defaultPort : port);
   m_request.url.setUser(user);
   m_request.url.setPass(pass);
-
-  m_isTunneled = false;
+  
+  //TODO need to do anything about proxying?
 
   kDebug(7113) << "Hostname is now:" << m_request.url.host()
                << "(" << m_request.encoded_hostname << ")";
@@ -468,28 +507,24 @@ bool HTTPProtocol::maybeSetRequestUrl(const KUrl &u)
 void HTTPProtocol::proceedUntilResponseContent( bool dataInternal /* = false */ )
 {
   kDebug (7113);
-  if ( !proceedUntilResponseHeader() )
-  {
-    if ( m_isError )
+  if (!proceedUntilResponseHeader() && m_isError) {
       return;
   }
-  else
-  {
-    if ( !readBody( dataInternal ) && m_isError )
+  if (!readBody(dataInternal) && m_isError) {
       return;
   }
 
-  httpClose(m_isKeepAlive);
+  httpClose(m_request.isKeepAlive);
 
   // if data is required internally, don't finish,
   // it is processed before we finish()
-  if ( !dataInternal )
-  {
-    if ((m_responseCode == 204) &&
-        ((m_request.method == HTTP_GET) || (m_request.method == HTTP_POST)))
-       error(ERR_NO_CONTENT, "");
-    else
-       finished();
+  if (!dataInternal) {
+      if ((m_request.responseCode == 204) &&
+          ((m_request.method == HTTP_GET) || (m_request.method == HTTP_POST))) {
+          error(ERR_NO_CONTENT, "");
+      } else {
+          finished();
+      }
   }
 }
 
@@ -497,72 +532,39 @@ bool HTTPProtocol::proceedUntilResponseHeader()
 {
   kDebug (7113);
 
-  while ( 1 )
-  {
-    if (!sendQuery())
-      return false;
+  // Retry the request until it succeeds or an unrecoverable error occurs.
+  // Recoverable errors are, for example:
+  // - Proxy or server authentication required: Ask for credentials and try again,
+  //   this time with an authorization header in the request.
+  // - Server-initiated timeout on keep-alive connection: Reconnect and try again
 
-    resetResponseSettings();
-    if (!readResponseHeader())
-    {
-      if ( m_isError )
+  while(1) {
+    if (!sendQuery()) {
         return false;
-
-#if 0
-      if (m_isTunneled)
-      {
-        kDebug(7113) << "Re-establishing SSL tunnel...";
-        httpCloseConnection();
-      }
-#endif
     }
-    else
-    {
-      // Do not save authorization if the current response code is
-      // 4xx (client error) or 5xx (server error).
-      kDebug(7113) << "Previous Response:" << m_prevResponseCode;
-      kDebug(7113) << "Current Response:" << m_responseCode;
+    if (!readResponseHeader() && m_isError) {
+        return false;
+    }
 
-#if 0 //what a mess
-      if (isSSLTunnelEnabled() && usingSSL() && !m_isUnauthorized && !m_isError)
-      {
-        // If there is no error, disable tunneling
-        if ( m_responseCode < 400 )
-        {
-          kDebug(7113) << "Unset tunneling flag!";
-          setSSLTunnelEnabled( false );
-          m_isTunneled = true;
-          // Reset the CONNECT response code...
-          m_responseCode = m_prevResponseCode;
-          continue;
-        }
-        else
-        {
-          if ( !m_request.preferErrorPage )
-          {
-            kDebug(7113) << "Sending an error message!";
-            error( ERR_UNKNOWN_PROXY_HOST, m_proxyURL.host() );
-            return false;
-          }
+    // Do not save authorization if the current response code is
+    // 4xx (client error) or 5xx (server error).
+    kDebug(7113) << "Previous Response:" << m_request.prevResponseCode;
+    kDebug(7113) << "Current Response:" << m_request.responseCode;
 
-          kDebug(7113) << "Sending an error page!";
-        }
-      }
-#endif
-
-      if (m_responseCode < 400 &&
-          (m_prevResponseCode == 401 || m_prevResponseCode == 407))
+    if (m_request.responseCode < 400 &&
+        (m_request.prevResponseCode == 401 || m_request.prevResponseCode == 407)) {
         saveAuthorization();
-      break;
     }
+    break;
   }
+  // At this point sendBody() should have delivered any POST data.
+  m_POSTbuf.clear();
 
-  // Clear of the temporary POST buffer if it is not empty...
-  if (!m_POSTbuf.isEmpty())
-  {
-    m_POSTbuf.resize(0);
-    kDebug(7113) << "Cleared POST buffer...";
-  }
+  // Save the most interesting current state for keep-alive decisions
+  m_prevRequest.url = m_request.url;
+  m_prevRequest.isKeepAlive = m_request.isKeepAlive;
+  m_prevRequest.proxyUrl = m_request.url;
+  m_prevRequest.isPersistentProxyConnection = m_request.isPersistentProxyConnection;
 
   return true;
 }
@@ -669,7 +671,6 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
   m_request.method = query.isEmpty() ? DAV_PROPFIND : DAV_SEARCH;
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
-  m_request.doProxy = m_useProxy;
   m_request.davData.depth = stat ? 0 : 1;
   if (!stat)
      m_request.url.adjustPath(KUrl::AddTrailingSlash);
@@ -773,7 +774,6 @@ void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method )
   m_request.method = method;
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
-  m_request.doProxy = m_useProxy;
 
   proceedUntilResponseContent( false );
 }
@@ -1100,7 +1100,6 @@ bool HTTPProtocol::davHostOk()
   m_request.url.setPath("*");
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
-  m_request.doProxy = m_useProxy;
 
   // clear davVersions variable, which holds the response to the DAV: header
   m_davCapabilities.clear();
@@ -1134,7 +1133,7 @@ bool HTTPProtocol::davHostOk()
 void HTTPProtocol::davFinished()
 {
   // TODO: Check with the DAV extension developers
-  httpClose(m_isKeepAlive);
+  httpClose(m_request.isKeepAlive);
   finished();
 }
 
@@ -1149,11 +1148,10 @@ void HTTPProtocol::mkdir( const KUrl& url, int )
   m_request.method = DAV_MKCOL;
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
-  m_request.doProxy = m_useProxy;
 
   proceedUntilResponseHeader();
 
-  if ( m_responseCode == 201 )
+  if ( m_request.responseCode == 201 )
     davFinished();
   else
     davError();
@@ -1174,8 +1172,6 @@ void HTTPProtocol::get( const KUrl& url )
     m_request.cacheTag.policy = parseCacheControl(tmp);
   else
     m_request.cacheTag.policy = DEFAULT_CACHE_CONTROL;
-
-  m_request.doProxy = m_useProxy;
 
   proceedUntilResponseContent();
 }
@@ -1208,12 +1204,11 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
     m_request.method = DAV_PROPFIND;
     m_request.url.setQuery(QString());
     m_request.cacheTag.policy = CC_Reload;
-    m_request.doProxy = m_useProxy;
     m_request.davData.depth = 0;
 
     proceedUntilResponseContent(true);
 
-    if (m_responseCode == 207) {
+    if (m_request.responseCode == 207) {
       error(ERR_FILE_ALREADY_EXIST, QString());
       return;
     }
@@ -1224,7 +1219,6 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
   m_request.method = HTTP_PUT;
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
-  m_request.doProxy = m_useProxy;
 
   proceedUntilResponseHeader();
 
@@ -1232,11 +1226,11 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
   if (m_isError)
     return;
 
-  kDebug(7113) << "responseCode = " << m_responseCode;
+  kDebug(7113) << "responseCode = " << m_request.responseCode;
 
   httpClose(false); // Always close connection.
 
-  if ( (m_responseCode >= 200) && (m_responseCode < 300) )
+  if ( (m_request.responseCode >= 200) && (m_request.responseCode < 300) )
     finished();
   else
     httpError();
@@ -1262,12 +1256,11 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags f
   m_request.davData.overwrite = (flags & KIO::Overwrite);
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
-  m_request.doProxy = m_useProxy;
 
   proceedUntilResponseHeader();
 
   // The server returns a HTTP/1.1 201 Created or 204 No Content on successful completion
-  if ( m_responseCode == 201 || m_responseCode == 204 )
+  if ( m_request.responseCode == 201 || m_request.responseCode == 204 )
     davFinished();
   else
     davError();
@@ -1293,11 +1286,10 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
   m_request.davData.overwrite = (flags & KIO::Overwrite);
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
-  m_request.doProxy = m_useProxy;
 
   proceedUntilResponseHeader();
 
-  if ( m_responseCode == 201 )
+  if ( m_request.responseCode == 201 )
     davFinished();
   else
     davError();
@@ -1314,13 +1306,12 @@ void HTTPProtocol::del( const KUrl& url, bool )
   m_request.method = HTTP_DELETE;
   m_request.url.setQuery(QString());;
   m_request.cacheTag.policy = CC_Reload;
-  m_request.doProxy = m_useProxy;
 
   proceedUntilResponseHeader();
 
   // The server returns a HTTP/1.1 200 Ok or HTTP/1.1 204 No Content
   // on successful completion
-  if ( m_responseCode == 200 || m_responseCode == 204 )
+  if ( m_request.responseCode == 200 || m_request.responseCode == 204 )
     davFinished();
   else
     davError();
@@ -1336,7 +1327,6 @@ void HTTPProtocol::post( const KUrl& url )
 
   m_request.method = HTTP_POST;
   m_request.cacheTag.policy= CC_Reload;
-  m_request.doProxy = m_useProxy;
 
   proceedUntilResponseContent();
 }
@@ -1353,7 +1343,6 @@ void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
   m_request.method = DAV_LOCK;
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy= CC_Reload;
-  m_request.doProxy = m_useProxy;
 
   /* Create appropriate lock XML request. */
   QDomDocument lockReq;
@@ -1386,7 +1375,7 @@ void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
 
   proceedUntilResponseContent( true );
 
-  if ( m_responseCode == 200 ) {
+  if ( m_request.responseCode == 200 ) {
     // success
     QDomDocument multiResponse;
     multiResponse.setContent( m_webDavDataBuf, true );
@@ -1417,11 +1406,10 @@ void HTTPProtocol::davUnlock( const KUrl& url )
   m_request.method = DAV_UNLOCK;
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy= CC_Reload;
-  m_request.doProxy = m_useProxy;
 
   proceedUntilResponseContent( true );
 
-  if ( m_responseCode == 200 )
+  if ( m_request.responseCode == 200 )
     finished();
   else
     davError();
@@ -1431,7 +1419,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
 {
   bool callError = false;
   if ( code == -1 ) {
-    code = m_responseCode;
+    code = m_request.responseCode;
     callError = true;
   }
   if ( code == -2 ) {
@@ -1493,7 +1481,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
   // default error message if the following code fails
   kError = ERR_INTERNAL;
   errorString = i18nc("%1: code, %2: request type", "An unexpected error (%1) occurred"
-                      "while attempting to %2.", code, action );
+                      "while attempting to %2.", code, action);
 
   switch ( code )
   {
@@ -1639,19 +1627,21 @@ void HTTPProtocol::httpError()
 
   switch ( m_request.method ) {
     case HTTP_PUT:
-      action = i18nc( "request type", "upload %1" , m_request.url.prettyUrl());
+      action = i18nc("request type", "upload %1", m_request.url.prettyUrl());
       break;
     default:
       // this should not happen, this function is for http errors only
+      // ### WTF, what about HTTP_GET?
       Q_ASSERT(0);
   }
 
   // default error message if the following code fails
   kError = ERR_INTERNAL;
-  errorString = i18nc( "%1: response code, %2: request type", "An unexpected error (%1) occurred while attempting to %2.",
-                        m_responseCode ,  action );
+  errorString = i18nc("%1: response code, %2: request type",
+                      "An unexpected error (%1) occurred while attempting to %2.",
+                       m_request.responseCode, action);
 
-  switch ( m_responseCode )
+  switch ( m_request.responseCode )
   {
     case 403:
     case 405:
@@ -1747,8 +1737,6 @@ void HTTPProtocol::multiGet(const QByteArray &data)
      else
         m_request.cacheTag.policy= DEFAULT_CACHE_CONTROL;
 
-     m_request.doProxy = m_useProxy;
-
      m_requestQueue.append(m_request);
   }
 
@@ -1770,7 +1758,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
 
 ssize_t HTTPProtocol::write (const void *_buf, size_t nbytes)
 {
-  int sent = 0;
+  size_t sent = 0;
   const char* buf = static_cast<const char*>(_buf);
   while (sent < nbytes)
   {
@@ -1800,13 +1788,13 @@ void HTTPProtocol::rewind()
 }
 
 
-char *HTTPProtocol::gets (char *s, int size)
+char *HTTPProtocol::gets(char *s, size_t size)
 {
-  int len=0;
-  char *buf=s;
-  char mybuf[2]={0,0};
+  //### usually gets() returns a null pointer on error, we just don't detect any errors.
+  char *buf = s;
+  char mybuf[2] = {0, 0};
 
-  while (len < size)
+  while ((size_t)(buf - s) < size)
   {
     read(mybuf, 1);
     if (m_isEOF)
@@ -1822,10 +1810,9 @@ char *HTTPProtocol::gets (char *s, int size)
       break;
 
     *buf++ = *mybuf;
-    len++;
   }
 
-  *buf=0;
+  *buf = 0;
   return s;
 }
 
@@ -1835,7 +1822,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 
   if (m_lineCountUnget > 0)
   {
-    ret = ( nbytes < m_lineCountUnget ? nbytes : m_lineCountUnget );
+    ret = qMin(nbytes, m_lineCountUnget);
     m_lineCountUnget -= ret;
     memcpy(b, m_linePtrUnget, ret);
     m_linePtrUnget += ret;
@@ -1845,7 +1832,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 
   if (m_lineCount > 0)
   {
-    ret = ( nbytes < m_lineCount ? nbytes : m_lineCount );
+    ret = qMin(nbytes, m_lineCount);
     m_lineCount -= ret;
     memcpy(b, m_linePtr, ret);
     m_linePtr += ret;
@@ -1874,7 +1861,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 
 bool HTTPProtocol::httpShouldCloseConnection()
 {
-  kDebug(7113) << "Keep Alive:" << m_isKeepAlive << "First:" << m_isFirstRequest;
+  kDebug(7113) << "Keep Alive:" << m_request.isKeepAlive << "First:" << m_isFirstRequest;
 
   if (m_isFirstRequest || !isConnected()) {
       return false;
@@ -1884,22 +1871,24 @@ bool HTTPProtocol::httpShouldCloseConnection()
       return true;
   }
 
-  if (m_state.doProxy != m_request.doProxy) {
+  if (m_request.proxyUrl != m_prevRequest.proxyUrl) {
       return true;
   }
 
-  if (m_state.doProxy)  {
-      if (m_state.proxyUrl.host() != m_request.proxyUrl.host() ||
-          m_state.proxyUrl.port() != m_request.proxyUrl.port() ||
-          m_state.proxyUrl.user() != m_request.proxyUrl.user() ||
-          m_state.proxyUrl.pass() != m_request.proxyUrl.pass()) {
+  // TODO compare current proxy state against proxy needs of next request,
+  // *when* we actually have variable proxy settings!
+
+  if (m_request.proxyUrl.isValid())  {
+      if (m_request.proxyUrl != m_prevRequest.proxyUrl ||
+          m_request.proxyUrl.user() != m_prevRequest.proxyUrl.user() ||
+          m_request.proxyUrl.pass() != m_prevRequest.proxyUrl.pass()) {
           return true;
       }
   } else {
-      if (m_state.hostname != m_request.url.host() ||
-          m_state.port != m_request.url.port() ||
-          m_state.user != m_request.url.user() ||
-          m_state.passwd != m_request.url.pass()) {
+      if (m_request.url.host() != m_prevRequest.url.host() ||
+          m_request.url.port() != m_prevRequest.url.port() ||
+          m_request.url.user() != m_prevRequest.url.user() ||
+          m_request.url.pass() != m_prevRequest.url.pass()) {
           return true;
       }
   }
@@ -1911,8 +1900,8 @@ bool HTTPProtocol::httpOpenConnection()
   kDebug(7113);
   
   bool connectOk = false;
-  if (m_state.doProxy && !isAutoSsl() && m_proxyURL.protocol() != "socks") {
-      connectOk = connectToHost(m_proxyURL.protocol(), m_proxyURL.host(), m_proxyURL.port());
+  if (m_request.proxyUrl.isValid() && !isAutoSsl() && m_request.proxyUrl.protocol() != "socks") {
+      connectOk = connectToHost(m_request.proxyUrl.protocol(), m_request.proxyUrl.host(), m_request.proxyUrl.port());
   } else {
       connectOk = connectToHost(m_protocol, m_state.hostname, m_state.port);
   }
@@ -1944,7 +1933,7 @@ bool HTTPProtocol::satisfyRequestFromCache(bool *success)
 
         m_request.cacheTag.gzs = checkCacheEntry();
         bool bCacheOnly = (m_request.cacheTag.policy == KIO::CC_CacheOnly);
-        bool bOffline = isOffline(m_request.doProxy ? m_proxyURL : m_request.url);
+        bool bOffline = isOffline(m_request.proxyUrl.isValid() ? m_request.proxyUrl : m_request.url);
 
         if (bOffline && m_request.cacheTag.policy != KIO::CC_Reload) {
             m_request.cacheTag.policy= KIO::CC_CacheOnly;
@@ -1990,7 +1979,8 @@ bool HTTPProtocol::satisfyRequestFromCache(bool *success)
 
 QString HTTPProtocol::formatRequestUri() const
 {
-    if (m_state.doProxy && !m_isTunneled) {
+    // ### why the proxied / not proxied distinction?
+    if (m_request.proxyUrl.isValid() /* left as a hint && !m_isTunneled*/) {
         KUrl u;
 
         if (m_protocol == "webdav") {
@@ -2058,22 +2048,12 @@ bool HTTPProtocol::sendQuery()
   bool hasBodyData = false;
   bool hasDavData = false;
 
-  // Clear out per-connection settings...
-  resetConnectionSettings();
-
-  // Check the reusability of the current connection.
-  if (httpShouldCloseConnection()) {
-    httpCloseConnection();
-  }
-
   // Let's update our current state
   m_state.hostname = m_request.url.host();
   m_state.encoded_hostname = m_request.encoded_hostname;
   m_state.port = m_request.url.port();
   m_state.user = m_request.url.user();
   m_state.passwd = m_request.url.pass();
-  m_state.doProxy = m_request.doProxy;
-  m_state.proxyUrl = m_request.proxyUrl;
 
 #if 0 //waaaaaah
   if ( !m_isTunneled && m_bNeedTunnel )
@@ -2100,35 +2080,30 @@ bool HTTPProtocol::sendQuery()
   else
 #endif
   {
+    header = methodString(m_request.method);
+  
     // Fill in some values depending on the HTTP method to guide further processing
     switch (m_request.method)
     {
     case HTTP_GET:
-        header = "GET ";
         break;
     case HTTP_PUT:
-        header = "PUT ";
         hasBodyData = true;
         m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case HTTP_POST:
-        header = "POST ";
         hasBodyData = true;
         m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case HTTP_HEAD:
-        header = "HEAD ";
         break;
     case HTTP_DELETE:
-        header = "DELETE ";
         m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case HTTP_OPTIONS:
-        header = "OPTIONS ";
         m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case DAV_PROPFIND:
-        header = "PROPFIND ";
         hasDavData = true;
         davHeader = "Depth: ";
         if ( hasMetaData( "davDepth" ) )
@@ -2147,17 +2122,14 @@ bool HTTPProtocol::sendQuery()
         m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case DAV_PROPPATCH:
-        header = "PROPPATCH ";
         hasDavData = true;
         m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case DAV_MKCOL:
-        header = "MKCOL ";
         m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case DAV_COPY:
     case DAV_MOVE:
-        header = ( m_request.method == DAV_COPY ) ? "COPY " : "MOVE ";
         davHeader = "Destination: " + m_request.davData.desturl;
         // infinity depth means copy recursively
         // (optional for copy -> but is the desired action)
@@ -2167,7 +2139,6 @@ bool HTTPProtocol::sendQuery()
         m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case DAV_LOCK:
-        header = "LOCK ";
         davHeader = "Timeout: ";
         {
           uint timeout = 0;
@@ -2183,25 +2154,20 @@ bool HTTPProtocol::sendQuery()
         hasDavData = true;
         break;
     case DAV_UNLOCK:
-        header = "UNLOCK ";
         davHeader = "Lock-token: " + metaData("davLockToken") + "\r\n";
         m_request.cacheTag.writeToCache = false; // Do not put any result in the cache
         break;
     case DAV_SEARCH:
-        header = "SEARCH ";
         hasDavData = true;
         m_request.cacheTag.writeToCache = false;
         break;
     case DAV_SUBSCRIBE:
-        header = "SUBSCRIBE ";
         m_request.cacheTag.writeToCache = false;
         break;
     case DAV_UNSUBSCRIBE:
-        header = "UNSUBSCRIBE ";
         m_request.cacheTag.writeToCache = false;
         break;
     case DAV_POLL:
-        header = "POLL ";
         m_request.cacheTag.writeToCache = false;
         break;
     default:
@@ -2216,7 +2182,7 @@ bool HTTPProtocol::sendQuery()
     // purposes as well as performance improvements while giving end
     // users the ability to disable this feature proxy servers that
     // don't not support such feature, e.g. junkbuster proxy server.
-    if (!m_useProxy || m_isPersistentProxyConnection || m_isTunneled)
+    if (!m_request.proxyUrl.isValid() || m_request.isPersistentProxyConnection /* || m_isTunneled */)
       header += "Connection: Keep-Alive\r\n";
     else
       header += "Connection: close\r\n";
@@ -2237,8 +2203,10 @@ bool HTTPProtocol::sendQuery()
 
     if ( m_request.endoffset > m_request.offset )
     {
-        header += QString("Range: bytes=%1-%2\r\n").arg(KIO::number(m_request.offset)).arg(KIO::number(m_request.endoffset));
-        kDebug(7103) << "kio_http : Range = " << KIO::number(m_request.offset) << " - "  << KIO::number(m_request.endoffset);
+        header += QString("Range: bytes=%1-%2\r\n").arg(KIO::number(m_request.offset))
+                         .arg(KIO::number(m_request.endoffset));
+        kDebug(7103) << "kio_http : Range = " << KIO::number(m_request.offset) <<
+                        " - "  << KIO::number(m_request.endoffset);
     }
     else if ( m_request.offset > 0 && m_request.endoffset == 0 )
     {
@@ -2304,7 +2272,7 @@ bool HTTPProtocol::sendQuery()
     {
       m_request.cookieMode = HTTPRequest::CookiesAuto;
       if (m_request.useCookieJar)
-        cookieStr = findCookies( m_request.url.url());
+        cookieStr = findCookies(m_request.url.url());
     }
 
     if (!cookieStr.isEmpty())
@@ -2318,88 +2286,23 @@ bool HTTPProtocol::sendQuery()
     }
 
     QString contentType = metaData("content-type");
-    if (m_request.method == HTTP_POST && !contentType.isEmpty() )
+    if (m_request.method == HTTP_POST && !contentType.isEmpty())
     {
       header += contentType;
       header += "\r\n";
     }
 
-    // Only check for a cached copy if the previous
-    // response was NOT a 401 or 407.
-    // no caching for Negotiate auth.
-    if (!m_request.doNotAuthenticate && m_responseCode != 401
-        && m_responseCode != 407
-        && Authentication != AUTH_Negotiate) {
-
-      AuthInfo info;
-      info.url = m_request.url;
-      info.verifyPath = true;
-      if (!m_request.url.user().isEmpty()) {
-        info.username = m_request.url.user();
-      }
-
-      kDebug(7113) << "Calling checkCachedAuthentication";
-      
-      if (checkCachedAuthentication(info) && !info.digestInfo.isEmpty()) {
-        Authentication = AUTH_Digest;
-        if (info.digestInfo.startsWith("Basic")) {
-          Authentication = AUTH_Basic;
-        } else if (info.digestInfo.startsWith("NTLM")) {
-          Authentication = AUTH_NTLM;
-        } else if (info.digestInfo.startsWith("Negotiate")) {
-          Authentication = AUTH_Negotiate;
-        }
-
-        m_state.user   = info.username;
-        m_state.passwd = info.password;
-        m_strRealm = info.realmValue;
-        if (Authentication != AUTH_NTLM && Authentication != AUTH_Negotiate) { // don't use the cached challenge
-          m_strAuthorization = info.digestInfo;
-        }
-      }
-    }
-    else
-    {
-      kDebug(7113) << "Not calling checkCachedAuthentication ";
-    }
-
-    switch ( Authentication )
-    {
-      case AUTH_Basic:
-          header += createBasicAuth();
-          break;
-      case AUTH_Digest:
-          header += createDigestAuth();
-          break;
-#ifdef HAVE_LIBGSSAPI
-      case AUTH_Negotiate:
-          header += createNegotiateAuth();
-          break;
-#endif
-      case AUTH_NTLM:
-          header += createNTLMAuth();
-          break;
-      case AUTH_None:
-      default:
-          break;
-    }
-
-    /********* Only for debugging purpose *********/
-    if ( Authentication != AUTH_None )
-    {
-      kDebug(7113) << "Using Authentication: ";
-      kDebug(7113) << "  HOST= " << m_state.hostname;
-      kDebug(7113) << "  PORT= " << m_state.port;
-      kDebug(7113) << "  USER= " << m_state.user;
-      kDebug(7113) << "  PASSWORD= [protected]";
-      kDebug(7113) << "  REALM= " << m_strRealm;
-      kDebug(7113) << "  EXTRA= " << m_strAuthorization;
-    }
+    // Remember that at least one failed (with 401 or 407) request/response
+    // roundtrip is necessary for the server to tell us that it requires
+    // authentication.
+    // If we already have cached credentials, or we have obtained authentication
+    // data from the user since the previous attempt, we add that information here.
+    header += wwwAuthenticationHeader();
 
     // Do we need to authorize to the proxy server ?
-    if ( m_state.doProxy && !m_isTunneled )
+    if ( m_request.proxyUrl.isValid() /* && !m_isTunneled*/ )
     {
-      if ( m_isPersistentProxyConnection )
+      if ( m_request.isPersistentProxyConnection )
         header += "Proxy-Connection: Keep-Alive\r\n";
 
       header += proxyAuthenticationHeader();
@@ -2434,6 +2337,11 @@ bool HTTPProtocol::sendQuery()
   if (!hasBodyData && !hasDavData)
     header += "\r\n";
 
+  // Check the reusability of the current connection.
+  if (httpShouldCloseConnection()) {
+    httpCloseConnection();
+  }
+
   // Now that we have our formatted header, let's send it!
   // Create a new connection to the remote machine if we do
   // not already have one...
@@ -2446,6 +2354,9 @@ bool HTTPProtocol::sendQuery()
     }
   }
 
+  // Clear out per-connection settings...
+  resetConnectionSettings();
+
 
   // Send the data to the remote machine...
   ssize_t written = write(header.toLatin1(), header.length());
@@ -2453,25 +2364,22 @@ bool HTTPProtocol::sendQuery()
   if (!sendOk)
   {
     kDebug(7113) << "Connection broken! (" << m_state.hostname << ")"
-                 << "  -- intended to write " << header.length()
-                 << " bytes but wrote " << (int)written << ".";
+                 << "  -- intended to write" << header.length()
+                 << "bytes but wrote" << (int)written << ".";
 
     // With a Keep-Alive connection this can happen.
     // Just reestablish the connection.
-    if (m_isKeepAlive)
+    if (m_request.isKeepAlive)
     {
        httpCloseConnection();
        return true; // Try again
     }
 
-    if (!sendOk)
-    {
-       kDebug(7113) << "sendOk==false. Connection broken !"
-                    << "  -- intended to write " << header.length()
-                    << " bytes but wrote " << (int)written << ".";
-       error( ERR_CONNECTION_BROKEN, m_state.hostname );
-       return false;
-    }
+    kDebug(7113) << "sendOk == false. Connection broken !"
+                 << "  -- intended to write" << header.length()
+                 << "bytes but wrote" << (int)written << ".";
+    error( ERR_CONNECTION_BROKEN, m_state.hostname );
+    return false;
   }
   else
     kDebug(7113) << "sent it!";
@@ -2613,10 +2521,11 @@ void HTTPProtocol::fixupResponseMimetype()
  */
 bool HTTPProtocol::readResponseHeader()
 {
+  resetResponseParsing();
+
 try_again:
   kDebug(7113);
 
-  // Check
   if (m_request.cacheTag.readFromCache)
       return readHeaderFromCache();
 
@@ -2658,7 +2567,7 @@ try_again:
   if ( !isConnected() )
   {
      kDebug(7113) << "No connection.";
-     return false; // Restablish connection and try again
+     return false; // Reestablish connection and try again
   }
 
   if (!waitForResponse(m_remoteRespTimeout))
@@ -2675,7 +2584,7 @@ try_again:
   if (m_isEOF || *buffer == '\0')
   {
     kDebug(7113) << "EOF while waiting for header start.";
-    if (m_isKeepAlive) // Try to reestablish connection.
+    if (m_request.isKeepAlive) // Try to reestablish connection.
     {
       httpCloseConnection();
       return false; // Reestablish connection and try again.
@@ -2758,7 +2667,7 @@ try_again:
       {
         // Shoutcast support
         httpRev = SHOUTCAST;
-        m_isKeepAlive = false;
+        m_request.isKeepAlive = false;
       }
       else if (strncmp((buf + 5), "1.0",3) == 0)
       {
@@ -2768,7 +2677,7 @@ try_again:
         // not.  By default, we assume it does not, but we do
         // send the old style header "Connection: Keep-Alive" to
         // inform it that we support persistence.
-        m_isKeepAlive = false;
+        m_request.isKeepAlive = false;
       }
       else if (strncmp((buf + 5), "1.1",3) == 0)
       {
@@ -2779,16 +2688,16 @@ try_again:
         httpRev = HTTP_Unknown;
       }
 
-      if (m_responseCode)
-        m_prevResponseCode = m_responseCode;
+      if (m_request.responseCode)
+        m_request.prevResponseCode = m_request.responseCode;
 
       const char* rptr = buf;
       while ( *rptr && *rptr > ' ' )
           ++rptr;
-      m_responseCode = atoi(rptr);
+      m_request.responseCode = atoi(rptr);
 
       // server side errors
-      if (m_responseCode >= 500 && m_responseCode <= 599)
+      if (m_request.responseCode >= 500 && m_request.responseCode <= 599)
       {
         if (m_request.method == HTTP_HEAD)
         {
@@ -2808,12 +2717,12 @@ try_again:
         mayCache = false;
       }
       // Unauthorized access
-      else if (m_responseCode == 401 || m_responseCode == 407)
+      else if (m_request.responseCode == 401 || m_request.responseCode == 407)
       {
         // Double authorization requests, i.e. a proxy auth
         // request followed immediately by a regular auth request.
-        if ( m_prevResponseCode != m_responseCode &&
-            (m_prevResponseCode == 401 || m_prevResponseCode == 407) )
+        if ( m_request.prevResponseCode != m_request.responseCode &&
+            (m_request.prevResponseCode == 401 || m_request.prevResponseCode == 407) )
           saveAuthorization();
 
         m_isUnauthorized = true;
@@ -2821,18 +2730,18 @@ try_again:
         mayCache = false;
       }
       //
-      else if (m_responseCode == 416) // Range not supported
+      else if (m_request.responseCode == 416) // Range not supported
       {
         m_request.offset = 0;
         return false; // Try again.
       }
       // Upgrade Required
-      else if (m_responseCode == 426)
+      else if (m_request.responseCode == 426)
       {
         upgradeRequired = true;
       }
       // Any other client errors
-      else if (m_responseCode >= 400 && m_responseCode <= 499)
+      else if (m_request.responseCode >= 400 && m_request.responseCode <= 499)
       {
         // Tell that we will only get an error page here.
         if (m_request.preferErrorPage)
@@ -2845,22 +2754,22 @@ try_again:
         m_request.cacheTag.writeToCache = false; // Don't put in cache
         mayCache = false;
       }
-      else if (m_responseCode == 307)
+      else if (m_request.responseCode == 307)
       {
         // 307 Temporary Redirect
         m_request.cacheTag.writeToCache = false; // Don't put in cache
         mayCache = false;
       }
-      else if (m_responseCode == 304)
+      else if (m_request.responseCode == 304)
       {
         // 304 Not Modified
         // The value in our cache is still valid.
         cacheValidated = true;
       }
-      else if (m_responseCode >= 301 && m_responseCode<= 303)
+      else if (m_request.responseCode >= 301 && m_request.responseCode<= 303)
       {
         // 301 Moved permanently
-        if (m_responseCode == 301)
+        if (m_request.responseCode == 301)
            setMetaData("permanent-redirect", "true");
 
         // 302 Found (temporary location)
@@ -2887,11 +2796,11 @@ try_again:
         m_request.cacheTag.writeToCache = false; // Don't put in cache
         mayCache = false;
       }
-      else if ( m_responseCode == 207 ) // Multi-status (for WebDav)
+      else if ( m_request.responseCode == 207 ) // Multi-status (for WebDav)
       {
 
       }
-      else if ( m_responseCode == 204 ) // No content
+      else if ( m_request.responseCode == 204 ) // No content
       {
         // error(ERR_NO_CONTENT, i18n("Data have been successfully sent."));
         // Short circuit and do nothing!
@@ -2901,12 +2810,12 @@ try_again:
         // m_isError = true;
         // return false;
       }
-      else if ( m_responseCode == 206 )
+      else if ( m_request.responseCode == 206 )
       {
         if ( m_request.offset )
           bCanResume = true;
       }
-      else if (m_responseCode == 102) // Processing (for WebDAV)
+      else if (m_request.responseCode == 102) // Processing (for WebDAV)
       {
         /***
          * This status code is given when the server expects the
@@ -2916,7 +2825,7 @@ try_again:
         infoMessage( i18n( "Server processing request, please wait..." ) );
         cont = true;
       }
-      else if (m_responseCode == 100)
+      else if (m_request.responseCode == 100)
       {
         // We got 'Continue' - ignore it
         cont = true;
@@ -2939,18 +2848,17 @@ try_again:
          QString option = (*it).trimmed().toLower();
          if (option.startsWith("timeout="))
          {
-            m_keepAliveTimeout = option.mid(8).toInt();
+            m_request.keepAliveTimeout = option.mid(8).toInt();
          }
       }
     }
 
     // Cache control
     else if (strncasecmp(buf, "Cache-Control:", 14) == 0) {
-      const QStringList cacheControls = QString::fromLatin1(trimLead(buf+14)).
-          split(',',QString::SkipEmptyParts);
-      for(QStringList::ConstIterator it = cacheControls.begin();
-          it != cacheControls.end();
-          ++it)
+      const QStringList cacheControls = QString::fromLatin1(trimLead(buf+14))
+                                        .split(',', QString::SkipEmptyParts);
+      for (QStringList::ConstIterator it = cacheControls.begin();
+           it != cacheControls.end(); ++it)
       {
          QString cacheControl = (*it).trimmed();
          if (strncasecmp(cacheControl.toLatin1(), "no-cache", 8) == 0)
@@ -2966,7 +2874,7 @@ try_again:
          else if (strncasecmp(cacheControl.toLatin1(), "max-age=", 8) == 0)
          {
             QString age = cacheControl.mid(8).trimmed();
-            if (!age.isNull())
+            if (!age.isEmpty())
               maxAge = STRTOLL(age.toLatin1(), 0, 10);
          }
       }
@@ -3082,7 +2990,7 @@ try_again:
     // In fact we should do redirection only if we got redirection code
     else if (strncasecmp(buf, "Location:", 9) == 0) {
       // Redirect only for 3xx status code, will ya! Thanks, pal!
-      if ( m_responseCode > 299 && m_responseCode < 400 )
+      if ( m_request.responseCode > 299 && m_request.responseCode < 400 )
         locationStr = QByteArray(trimLead(buf+9)).trimmed();
     }
 
@@ -3138,9 +3046,9 @@ try_again:
     else if (strncasecmp(buf, "Proxy-Connection:", 17) == 0)
     {
       if (strncasecmp(trimLead(buf + 17), "Close", 5) == 0)
-        m_isKeepAlive = false;
+        m_request.isKeepAlive = false;
       else if (strncasecmp(trimLead(buf + 17), "Keep-Alive", 10)==0)
-        m_isKeepAlive = true;
+        m_request.isKeepAlive = true;
     }
     else if (strncasecmp(buf, "Link:", 5) == 0) {
       // We only support Link: <url>; rel="type"   so far
@@ -3198,12 +3106,12 @@ try_again:
       if (strncasecmp(buf, "Connection:", 11) == 0)
       {
         if (strncasecmp(trimLead(buf + 11), "Close", 5) == 0)
-          m_isKeepAlive = false;
+          m_request.isKeepAlive = false;
         else if (strncasecmp(trimLead(buf + 11), "Keep-Alive", 10)==0)
-          m_isKeepAlive = true;
+          m_request.isKeepAlive = true;
         else if (strncasecmp(trimLead(buf + 11), "Upgrade", 7)==0)
         {
-          if (m_responseCode == 101) {
+          if (m_request.responseCode == 101) {
             // Ok, an upgrade was accepted, now we must do it
             upgradeRequired = true;
           } else if (upgradeRequired) {  // 426
@@ -3245,12 +3153,12 @@ try_again:
       // Remote server does not seem to speak HTTP at all
       // Put the crap back into the buffer and hope for the best
       rewind();
-      if (m_responseCode)
-        m_prevResponseCode = m_responseCode;
+      if (m_request.responseCode)
+        m_request.prevResponseCode = m_request.responseCode;
 
-      m_responseCode = 200; // Fake it
+      m_request.responseCode = 200; // Fake it
       httpRev = HTTP_Unknown;
-      m_isKeepAlive = false;
+      m_request.isKeepAlive = false;
       break;
     }
     setRewindMarker();
@@ -3282,8 +3190,8 @@ try_again:
   }
 
   // If we do not support the requested authentication method...
-  if ( (m_responseCode == 401 && Authentication == AUTH_None) ||
-       (m_responseCode == 407 && ProxyAuthentication == AUTH_None) )
+  if ( (m_request.responseCode == 401 && m_auth.scheme == AUTH_None) ||
+       (m_request.responseCode == 407 && m_proxyAuth.scheme == AUTH_None) )
   {
     m_isUnauthorized = false;
     if (m_request.preferErrorPage)
@@ -3388,9 +3296,9 @@ try_again:
   // Do not do a keep-alive connection if the size of the
   // response is not known and the response is not Chunked.
   if (!m_isChunked && (m_iSize == NO_SIZE))
-    m_isKeepAlive = false;
+    m_request.isKeepAlive = false;
 
-  if ( m_responseCode == 204 )
+  if ( m_request.responseCode == 204 )
   {
     return true;
   }
@@ -3398,17 +3306,17 @@ try_again:
   // We need to try to login again if we failed earlier
   if ( m_isUnauthorized )
   {
-    if ( (m_responseCode == 401) || (m_useProxy && (m_responseCode == 407)))
+    if ( (m_request.responseCode == 401) || (m_request.proxyUrl.isValid() && (m_request.responseCode == 407)))
     {
       if ( getAuthorization() )
       {
-          // for NTLM Authentication we have to keep the connection open!
-          if ( Authentication == AUTH_NTLM && m_strAuthorization.length() > 4 )
+          // for NTLM authentication we have to keep the connection open!
+          if ( m_auth.scheme == AUTH_NTLM && m_auth.authorization.length() > 4 )
           {
-            m_isKeepAlive = true;
+            m_request.isKeepAlive = true;
             readBody(true);
           }
-          else if (ProxyAuthentication == AUTH_NTLM && m_strProxyAuthorization.length() > 4)
+          else if (m_proxyAuth.scheme == AUTH_NTLM && m_proxyAuth.authorization.length() > 4)
           {
             readBody(true);
           }
@@ -3484,7 +3392,7 @@ try_again:
      // Do not cache secure pages or pages
      // originating from password protected sites
      // unless the webserver explicitly allows it.
-     if (isUsingSsl() || (Authentication != AUTH_None) )
+     if (isUsingSsl() || (m_auth.scheme != AUTH_None) )
      {
         m_request.cacheTag.writeToCache = false;
         mayCache = false;
@@ -3581,10 +3489,9 @@ try_again:
   // Do we want to cache this request?
   if (m_request.cacheTag.useCache)
   {
-    ::unlink( QFile::encodeName(m_request.cacheTag.file));
+    ::unlink(QFile::encodeName(m_request.cacheTag.file));
     if ( m_request.cacheTag.writeToCache && !m_mimeType.isEmpty() )
     {
-      // Check...
       kDebug(7113) << "Cache, adding" << m_request.url.url();
       createCacheEntry(m_mimeType, expireDate); // Create a cache entry
       if (!m_request.cacheTag.gzs)
@@ -3818,18 +3725,18 @@ void HTTPProtocol::httpClose( bool keepAlive )
   // based submit requests which will require a meta-data from
   // khtml.
   if (keepAlive && 
-      (!m_useProxy || m_isPersistentProxyConnection || m_isTunneled))
+      (!m_request.proxyUrl.isValid() || m_request.isPersistentProxyConnection /* || m_isTunneled*/))
   {
-    if (!m_keepAliveTimeout)
-       m_keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
-    else if (m_keepAliveTimeout > 2*DEFAULT_KEEP_ALIVE_TIMEOUT)
-       m_keepAliveTimeout = 2*DEFAULT_KEEP_ALIVE_TIMEOUT;
+    if (!m_request.keepAliveTimeout)
+       m_request.keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
+    else if (m_request.keepAliveTimeout > 2*DEFAULT_KEEP_ALIVE_TIMEOUT)
+       m_request.keepAliveTimeout = 2*DEFAULT_KEEP_ALIVE_TIMEOUT;
 
-    kDebug(7113) << "keep alive (" << m_keepAliveTimeout << ")";
+    kDebug(7113) << "keep alive (" << m_request.keepAliveTimeout << ")";
     QByteArray data;
     QDataStream stream( &data, QIODevice::WriteOnly );
     stream << int(99); // special: Close connection
-    setTimeoutSpecialCommand(m_keepAliveTimeout, data);
+    setTimeoutSpecialCommand(m_request.keepAliveTimeout, data);
     return;
   }
 
@@ -3845,8 +3752,7 @@ void HTTPProtocol::closeConnection()
 void HTTPProtocol::httpCloseConnection ()
 {
   kDebug(7113);
-  m_isTunneled = false;
-  m_isKeepAlive = false;
+  m_request.isKeepAlive = false;
   disconnectFromHost();
   setTimeoutSpecialCommand(-1); // Cancel any connection timeout
 }
@@ -3871,10 +3777,9 @@ void HTTPProtocol::mimetype( const KUrl& url )
 
   m_request.method = HTTP_HEAD;
   m_request.cacheTag.policy= CC_Cache;
-  m_request.doProxy = m_useProxy;
 
   proceedUntilResponseHeader();
-  httpClose(m_isKeepAlive);
+  httpClose(m_request.isKeepAlive);
   finished();
 
   kDebug(7113) << "http: mimetype = " << m_mimeType;
@@ -4038,10 +3943,10 @@ int HTTPProtocol::readLimited()
 
 int HTTPProtocol::readUnlimited()
 {
-  if (m_isKeepAlive)
+  if (m_request.isKeepAlive)
   {
      kDebug(7113) << "Unbounded datastream on a Keep-alive connection!";
-     m_isKeepAlive = false;
+     m_request.isKeepAlive = false;
   }
 
   m_receiveBuf.resize(4096);
@@ -4078,7 +3983,7 @@ void HTTPProtocol::slotData(const QByteArray &_d)
       // we try to id it from the content before dealing
       // with the content itself.
       if ( m_mimeType.isEmpty() && !m_isRedirection &&
-           !( m_responseCode >= 300 && m_responseCode <=399) )
+           !( m_request.responseCode >= 300 && m_request.responseCode <=399) )
       {
         kDebug(7113) << "Determining mime-type from content...";
         int old_size = m_mimeTypeBuffer.size();
@@ -4147,7 +4052,7 @@ void HTTPProtocol::slotData(const QByteArray &_d)
  */
 bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 {
-  if (m_responseCode == 204)
+  if (m_request.responseCode == 204)
      return true;
 
   m_isEOD = false;
@@ -4368,10 +4273,10 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   if (sz <= 1)
   {
-    if (m_responseCode >= 500 && m_responseCode <= 599) {
+    if (m_request.responseCode >= 500 && m_request.responseCode <= 599) {
       error(ERR_INTERNAL_SERVER, m_state.hostname);
       return false;
-    } else if (m_responseCode >= 400 && m_responseCode <= 499) {
+    } else if (m_request.responseCode >= 400 && m_request.responseCode <= 499) {
       error(ERR_DOES_NOT_EXIST, m_state.hostname);
       return false;
     }
@@ -4393,12 +4298,8 @@ void HTTPProtocol::error( int _err, const QString &_text )
     sendMetaData();
   }
 
-  // Clear of the temporary POST buffer if it is not empty...
-  if (!m_POSTbuf.isEmpty())
-  {
-    m_POSTbuf.resize(0);
-    kDebug(7113) << "Cleared POST buffer...";
-  }
+  // It's over, we don't need it anymore
+  m_POSTbuf.clear();
 
   SlaveBase::error( _err, _text );
   m_isError = true;
@@ -4436,7 +4337,6 @@ void HTTPProtocol::cacheUpdate( const KUrl& url, bool no_cache, time_t expireDat
       return;
 
   m_request.cacheTag.policy= CC_Reload;
-  m_request.doProxy = m_useProxy;
 
   if (no_cache)
   {
@@ -4832,9 +4732,9 @@ void HTTPProtocol::cleanCache()
 //**************************  AUTHENTICATION CODE ********************/
 
 
-void HTTPProtocol::configAuth( char *p, bool b )
+void HTTPProtocol::configAuth(const char *p, bool isProxyAuth)
 {
-  HTTP_AUTH f = AUTH_None;
+  AUTH_SCHEME f = AUTH_None;
   const char *strAuth = p;
 
   if ( strncasecmp( p, "Basic", 5 ) == 0 )
@@ -4861,7 +4761,7 @@ void HTTPProtocol::configAuth( char *p, bool b )
   {
     // if we get two 401 in a row let's assume for now that
     // Negotiate isn't working and ignore it
-    if ( !b && !(m_responseCode == 401 && m_prevResponseCode == 401) )
+    if (!isProxyAuth && !(m_request.responseCode == 401 && m_request.prevResponseCode == 401))
     {
       f = AUTH_Negotiate;
       memcpy((void *)p, "Negotiate", 9); // Correct for upper-case variations.
@@ -4870,19 +4770,19 @@ void HTTPProtocol::configAuth( char *p, bool b )
   }
 #endif
   else if ( strncasecmp( p, "NTLM", 4 ) == 0 &&
-    (( b && m_isPersistentProxyConnection ) || !b ) )
+    (( isProxyAuth && m_request.isPersistentProxyConnection ) || !isProxyAuth ) )
   {
     f = AUTH_NTLM;
     memcpy((void *)p, "NTLM", 4); // Correct for upper-case variations.
     p += 4;
-    m_strRealm = "NTLM"; // set a dummy realm
+    m_auth.realm = "NTLM"; // set a dummy realm
   }
   else
   {
     kWarning(7113) << "Unsupported or invalid authorization "
                     << "type requested";
-    if (b)
-      kWarning(7113) << "Proxy URL: " << m_proxyURL;
+    if (isProxyAuth)
+      kWarning(7113) << "Proxy URL: " << m_request.proxyUrl;
     else
       kWarning(7113) << "URL: " << m_request.url;
     kWarning(7113) << "Request Authorization: " << p;
@@ -4895,32 +4795,32 @@ void HTTPProtocol::configAuth( char *p, bool b )
          and when multiple Proxy-Authenticate or WWW-Authenticate
          header field is sent.
   */
-  if (b)
+  if (isProxyAuth)
   {
     if ((f == AUTH_None) ||
-        ((m_iProxyAuthCount > 0) && (f < ProxyAuthentication)))
+        ((m_proxyAuth.authCount > 0) && (f < m_proxyAuth.scheme)))
     {
       // Since I purposefully made the Proxy-Authentication settings
       // persistent to reduce the number of round-trips to kdesud we
       // have to take special care when an unknown/unsupported auth-
       // scheme is received. This check accomplishes just that...
-      if ( m_iProxyAuthCount == 0)
-        ProxyAuthentication = f;
+      if ( m_proxyAuth.authCount == 0)
+        m_proxyAuth.scheme = f;
       kDebug(7113) << "Rejected proxy auth method: " << f;
       return;
     }
-    m_iProxyAuthCount++;
+    m_proxyAuth.authCount++;
     kDebug(7113) << "Accepted proxy auth method: " << f;
   }
   else
   {
     if ((f == AUTH_None) ||
-        ((m_iWWWAuthCount > 0) && (f < Authentication)))
+        ((m_auth.authCount > 0) && (f < m_auth.scheme)))
     {
       kDebug(7113) << "Rejected auth method: " << f;
       return;
     }
-    m_iWWWAuthCount++;
+    m_auth.authCount++;
     kDebug(7113) << "Accepted auth method: " << f;
   }
 
@@ -4938,58 +4838,53 @@ void HTTPProtocol::configAuth( char *p, bool b )
       if (KGlobal::locale()->language().contains("ru"))
       { //for sites like lib.homelinux.org
         QTextCodec* codec = QTextCodec::codecForName("CP1251");
-        if( b )
-          m_strProxyRealm = codec->toUnicode( p, i );
+        if (isProxyAuth)
+          m_proxyAuth.realm = codec->toUnicode( p, i );
         else
-          m_strRealm = codec->toUnicode( p, i );
+          m_auth.realm = codec->toUnicode( p, i );
       }
       else
       {
-        if( b )
-          m_strProxyRealm = QString::fromLatin1( p, i );
+        if (isProxyAuth)
+          m_proxyAuth.realm = QString::fromLatin1( p, i );
         else
-          m_strRealm = QString::fromLatin1( p, i );
+          m_auth.realm = QString::fromLatin1( p, i );
       }
 
       if (!p[i]) break;
     }
-    p+=(i+1);
+    p += i + 1;
   }
 
-  if( b )
+  if (isProxyAuth)
   {
-    ProxyAuthentication = f;
-    m_strProxyAuthorization = QString::fromLatin1( strAuth );
+    m_proxyAuth.scheme = f;
+    m_proxyAuth.authorization = QString::fromLatin1( strAuth );
   }
   else
   {
-    Authentication = f;
-    m_strAuthorization = QString::fromLatin1( strAuth );
+    m_auth.scheme = f;
+    m_auth.authorization = QString::fromLatin1( strAuth );
   }
 }
 
 
 bool HTTPProtocol::retryPrompt()
 {
-  QString prompt;
-  switch ( m_responseCode )
-  {
-    case 401:
-      prompt = i18n("Authentication Failed.");
-      break;
-    case 407:
-      prompt = i18n("Proxy Authentication Failed.");
-      break;
-    default:
-      break;
-  }
-  prompt += i18n("  Do you want to retry?");
-  return (messageBox(QuestionYesNo, prompt, i18n("Authentication")) == 3);
+    QString prompt;
+    if (m_request.responseCode == 401) {
+        prompt = i18n("Authentication Failed.");
+    } else {
+        prompt = i18n("Proxy Authentication Failed.");
+    }
+    prompt += i18n(" Do you want to retry?");
+    return messageBox(QuestionYesNo, prompt, i18n("Authentication")) == 3;
 }
 
-void HTTPProtocol::promptInfo( AuthInfo& info )
+void HTTPProtocol::fillPromptInfo(AuthInfo *inf)
 {
-  if ( m_responseCode == 401 )
+  AuthInfo &info = *inf;    //no use rewriting everything below
+  if ( m_request.responseCode == 401 )
   {
     info.url = m_request.url;
     if ( !m_state.user.isEmpty() )
@@ -4998,282 +4893,218 @@ void HTTPProtocol::promptInfo( AuthInfo& info )
     info.prompt = i18n( "You need to supply a username and a "
                         "password to access this site." );
     info.keepPassword = true; // Prompt the user for persistence as well.
-    if ( !m_strRealm.isEmpty() )
+    if ( !m_auth.realm.isEmpty() )
     {
-      info.realmValue = m_strRealm;
+      info.realmValue = m_auth.realm;
       info.verifyPath = false;
-      info.digestInfo = m_strAuthorization;
+      info.digestInfo = m_auth.authorization;
       info.commentLabel = i18n("Site:");
-      info.comment = i18n("<b>%1</b> at <b>%2</b>", m_strRealm , m_request.url.host());
+      info.comment = i18n("<b>%1</b> at <b>%2</b>", m_auth.realm , m_request.url.host());
     }
   }
-  else if ( m_responseCode == 407 )
+  else if ( m_request.responseCode == 407 )
   {
-    info.url = m_proxyURL;
-    info.username = m_proxyURL.user();
+    info.url = m_request.proxyUrl;
+    info.username = m_request.proxyUrl.user();
     info.prompt = i18n( "You need to supply a username and a password for "
                         "the proxy server listed below before you are allowed "
                         "to access any sites." );
     info.keepPassword = true;
-    if ( !m_strProxyRealm.isEmpty() )
+    if (!m_proxyAuth.realm.isEmpty())
     {
-      info.realmValue = m_strProxyRealm;
+      info.realmValue = m_proxyAuth.realm;
       info.verifyPath = false;
-      info.digestInfo = m_strProxyAuthorization;
-      info.commentLabel = i18n( "Proxy:" );
-      info.comment = i18n("<b>%1</b> at <b>%2</b>",  m_strProxyRealm ,  m_proxyURL.host() );
+      info.digestInfo = m_proxyAuth.authorization;
+      info.commentLabel = i18n("Proxy:");
+      info.comment = i18n("<b>%1</b> at <b>%2</b>", m_proxyAuth.realm, m_request.proxyUrl.host());
     }
   }
+}
+
+//Helper for (ATM only) HTTProtocol::getAuthorization().
+static int valueForKey(const QString &haystack, const QString &key, int from = 0)
+{
+    int pos = haystack.indexOf(key, from, Qt::CaseInsensitive);
+    if (pos == -1) {
+        return -1;
+    }
+    pos += key.length();
+    const int len = haystack.length();
+    while (pos < len && (haystack[pos] == ' ' || haystack[pos] == '=')) {
+        pos++;
+    }
+    if (pos >= len - 1) {
+        return -1;
+    }
+    return pos;
 }
 
 bool HTTPProtocol::getAuthorization()
 {
-  AuthInfo info;
-  bool result = false;
+    AuthInfo info;
+    bool result = false;
 
-  kDebug (7113)  << "Current Response: " << m_responseCode << ", "
-                 << "Previous Response: " << m_prevResponseCode << ", "
-                 << "Authentication: " << Authentication << ", "
-                 << "ProxyAuthentication: " << ProxyAuthentication;
+    kDebug(7113)  << "Current Response: " << m_request.responseCode << ", "
+                  << "Previous Response: " << m_request.prevResponseCode << ", "
+                  << "Authentication: " << m_auth.scheme << ", "
+                  << "ProxyAuthentication: " << m_proxyAuth.scheme;
 
-  if (m_request.doNotAuthenticate)
-  {
-     if (m_request.preferErrorPage)
-        errorPage();
-     else
-        error(ERR_COULD_NOT_LOGIN, i18n("Authentication needed for %1 but authentication is disabled.",
-              m_request.url.host()));
-     return false;
-  }
-
-  bool repeatFailure = (m_prevResponseCode == m_responseCode);
-
-  QString errorMsg;
-
-  if (repeatFailure)
-  {
-    bool prompt = true;
-    if ( Authentication == AUTH_Digest || ProxyAuthentication == AUTH_Digest )
-    {
-      bool isStaleNonce = false;
-      QString auth = ( m_responseCode == 401 ) ? m_strAuthorization : m_strProxyAuthorization;
-      int pos = auth.indexOf("stale", 0, Qt::CaseInsensitive);
-      if ( pos != -1 )
-      {
-        pos += 5;
-        int len = auth.length();
-        while( pos < len && (auth[pos] == ' ' || auth[pos] == '=') ) pos++;
-        if ( pos < len && auth.indexOf("true", pos, Qt::CaseInsensitive) != -1 )
-        {
-          isStaleNonce = true;
-          kDebug(7113) << "Stale nonce value. Will retry using same info...";
+    if (m_request.doNotAuthenticate) {
+        if (m_request.preferErrorPage) {
+            errorPage();
+        } else {
+            error(ERR_COULD_NOT_LOGIN, i18n("Authentication needed for %1 but "
+                                            "authentication is disabled.",
+                                            m_request.url.host()));
         }
-      }
-      if ( isStaleNonce )
-      {
-        prompt = false;
-        result = true;
-        if ( m_responseCode == 401 )
-        {
-          info.username = m_request.url.user();
-          info.password = m_request.url.pass();
-          info.realmValue = m_strRealm;
-          info.digestInfo = m_strAuthorization;
+        return false;
+    }
+
+    if (m_request.responseCode != 401 && m_request.responseCode != 407) {
+        return false;
+    }
+
+    KUrl &authUrl = (m_request.responseCode == 401) ? m_request.url : m_request.proxyUrl;
+    AuthState &authState = (m_request.responseCode == 401) ? m_auth : m_proxyAuth;
+
+    const bool repeatFailure = (m_request.prevResponseCode == m_request.responseCode);
+
+    if (repeatFailure) {
+        bool prompt = true;
+        if (m_auth.scheme == AUTH_Digest || m_proxyAuth.scheme == AUTH_Digest) {
+            bool isStaleNonce = false;
+            const QString auth = authState.authorization;
+
+            int pos = valueForKey(auth, "stale");
+            if (pos != -1 && auth.indexOf("true", pos, Qt::CaseInsensitive) != -1) {
+                isStaleNonce = true;
+                kDebug(7113) << "Stale nonce value. Will retry using same info...";
+            }
+
+            if (isStaleNonce) {
+                prompt = false;
+                result = true;
+
+                info.username = authUrl.user();
+                info.password = authUrl.pass();
+                info.realmValue = authState.realm;
+                info.digestInfo = authState.authorization;
+            }
         }
-        else if ( m_responseCode == 407 )
-        {
-          info.username = m_proxyURL.user();
-          info.password = m_proxyURL.pass();
-          info.realmValue = m_strProxyRealm;
-          info.digestInfo = m_strProxyAuthorization;
+
+        if (m_auth.scheme == AUTH_NTLM || m_proxyAuth.scheme == AUTH_NTLM) {
+            const QString auth = authState.authorization;
+
+            kDebug(7113) << "auth: " << auth;
+            if (auth.length() > 4) {
+                prompt = false;
+                result = true;
+                kDebug(7113) << "NTLM auth second phase, "
+                             << "sending response...";
+
+                info.username = authUrl.user();
+                info.password = authUrl.pass();
+                info.realmValue = authState.realm;
+                info.digestInfo = authState.authorization;
+            }
         }
-      }
-    }
+    } else {
+        // !repeatFailure case
+    
+        // At this point we know more details, so use it to find
+        // out if we have a cached version and avoid a re-prompt!
+        // We also do not use verify path unlike the pre-emptive
+        // requests because we already know the realm value...
+        //### that comment sounds like it's exactly wrong(?) --ahartmetz
 
-    if ( Authentication == AUTH_NTLM || ProxyAuthentication == AUTH_NTLM )
-    {
-      QString auth = ( m_responseCode == 401 ) ? m_strAuthorization : m_strProxyAuthorization;
-      kDebug(7113) << "auth: " << auth;
-      if ( auth.length() > 4 )
-      {
-        prompt = false;
-        result = true;
-        kDebug(7113) << "NTLM auth second phase, "
-                      << "sending response...";
-        if ( m_responseCode == 401 )
-        {
-          info.username = m_request.url.user();
-          info.password = m_request.url.pass();
-          info.realmValue = m_strRealm;
-          info.digestInfo = m_strAuthorization;
+        if (m_proxyAuth.scheme != AUTH_None) {
+            // Reset cached proxy auth
+            m_proxyAuth.scheme = AUTH_None;
+            KUrl proxy(config()->readEntry("UseProxy"));
+            m_request.proxyUrl.setUser(proxy.user());
+            m_request.proxyUrl.setPass(proxy.pass());
         }
-        else if ( m_responseCode == 407 )
-        {
-          info.username = m_proxyURL.user();
-          info.password = m_proxyURL.pass();
-          info.realmValue = m_strProxyRealm;
-          info.digestInfo = m_strProxyAuthorization;
+
+        info.verifyPath = false;
+        info.url = authUrl;
+        info.username = authUrl.user();
+        info.password = authUrl.pass();
+        info.realmValue = authState.realm;
+        info.digestInfo = authState.authorization;
+
+        // If either username or password is not supplied
+        // with the request, check the password cache.
+        if (info.username.isEmpty() || info.password.isEmpty()) {
+            result = checkCachedAuthentication(info);
         }
-      }
-    }
 
-    if ( prompt )
-    {
-      switch ( m_responseCode )
-      {
-        case 401:
-          errorMsg = i18n("Authentication Failed.");
-          break;
-        case 407:
-          errorMsg = i18n("Proxy Authentication Failed.");
-          break;
-        default:
-          break;
-      }
-    }
-  }
-  else
-  {
-    // At this point we know more details, so use it to find
-    // out if we have a cached version and avoid a re-prompt!
-    // We also do not use verify path unlike the pre-emptive
-    // requests because we already know the realm value...
+        if (m_auth.scheme == AUTH_Digest) {
+            const QString auth = authState.authorization;
 
-    if (m_isProxyAuthValid)
-    {
-      // Reset cached proxy auth
-      m_isProxyAuthValid = false;
-      KUrl proxy ( config()->readEntry("UseProxy") );
-      m_proxyURL.setUser(proxy.user());
-      m_proxyURL.setPass(proxy.pass());
-    }
-
-    info.verifyPath = false;
-    if ( m_responseCode == 407 )
-    {
-      info.url = m_proxyURL;
-      info.username = m_proxyURL.user();
-      info.password = m_proxyURL.pass();
-      info.realmValue = m_strProxyRealm;
-      info.digestInfo = m_strProxyAuthorization;
-    }
-    else
-    {
-      info.url = m_request.url;
-      info.username = m_request.url.user();
-      info.password = m_request.url.pass();
-      info.realmValue = m_strRealm;
-      info.digestInfo = m_strAuthorization;
-    }
-
-    // If either username or password is not supplied
-    // with the request, check the password cache.
-    if ( info.username.isNull() ||
-         info.password.isNull() )
-      result = checkCachedAuthentication( info );
-
-    if ( Authentication == AUTH_Digest )
-    {
-      QString auth;
-
-      if (m_responseCode == 401)
-        auth = m_strAuthorization;
-      else
-        auth = m_strProxyAuthorization;
-
-      int pos = auth.indexOf("stale", 0, Qt::CaseInsensitive);
-      if ( pos != -1 )
-      {
-        pos += 5;
-        int len = auth.length();
-        while( pos < len && (auth[pos] == ' ' || auth[pos] == '=') ) pos++;
-        if ( pos < len && auth.indexOf("true", pos, Qt::CaseInsensitive) != -1 )
-        {
-          info.digestInfo = (m_responseCode == 401) ? m_strAuthorization : m_strProxyAuthorization;
-          kDebug(7113) << "Just a stale nonce value! Retrying using the new nonce sent...";
+            int pos = valueForKey(auth, "stale");
+            if (pos != -1 && auth.indexOf("true", pos, Qt::CaseInsensitive) != -1) {
+                info.digestInfo = auth;
+                kDebug(7113) << "Just a stale nonce value! Retrying "
+                                "using the new nonce sent...";
+            }
         }
-      }
     }
-  }
 
-  if (!result )
-  {
-    // Do not prompt if the username & password
-    // is already supplied and the login attempt
-    // did not fail before.
-    if ( !repeatFailure &&
-         !info.username.isNull() &&
-         !info.password.isNull() )
-      result = true;
-    else
-    {
-      if (Authentication == AUTH_Negotiate)
-      {
-        if (!repeatFailure)
-          result = true;
-      }
-      else if ( m_request.disablePassDialog == false )
-      {
-        kDebug( 7113 ) << "Prompting the user for authorization...";
-        promptInfo( info );
-        result = openPasswordDialog( info, errorMsg );
-      }
+    if (!result) {
+        // Do not prompt if the username & password
+        // is already supplied and the login attempt
+        // did not fail before.
+        if (!repeatFailure &&
+            !info.username.isEmpty() && !info.password.isEmpty()) {
+            result = true;
+        } else {
+            if (m_auth.scheme == AUTH_Negotiate) {
+                if (!repeatFailure) {
+                    result = true;
+                }
+            } else if (!m_request.disablePassDialog)  {
+                kDebug(7113) << "Prompting the user for authorization...";
+                fillPromptInfo(&info);
+                QString msg = (m_request.responseCode == 401) ? 
+                                  i18n("Authentication Failed.") :
+                                  i18n("Proxy Authentication Failed.");
+                result = openPasswordDialog(info, msg);
+            }
+        }
     }
-  }
 
-  if ( result )
-  {
-    switch (m_responseCode)
-    {
-      case 401: // Request-Authentication
-        m_request.url.setUser(info.username);
-        m_request.url.setPass(info.password);
-        m_strRealm = info.realmValue;
-        m_strAuthorization = info.digestInfo;
-        break;
-      case 407: // Proxy-Authentication
-        m_proxyURL.setUser( info.username );
-        m_proxyURL.setPass( info.password );
-        m_strProxyRealm = info.realmValue;
-        m_strProxyAuthorization = info.digestInfo;
-        break;
-      default:
-        break;
+    if (result) {
+        authUrl.setUser(info.username);
+        authUrl.setPass(info.password);
+        authState.realm = info.realmValue;
+        authState.authorization = info.digestInfo;
+    } else {
+        if (m_request.preferErrorPage) {
+            errorPage();
+        } else {
+            error(ERR_USER_CANCELED, QString());
+        }
     }
-    return true;
-  }
 
-  if (m_request.preferErrorPage)
-     errorPage();
-  else
-     error( ERR_USER_CANCELED, QString() );
-  return false;
+    return result;
 }
 
 void HTTPProtocol::saveAuthorization()
 {
-  AuthInfo info;
-  if ( m_prevResponseCode == 407 )
-  {
-    if (!m_useProxy)
-       return;
-    m_isProxyAuthValid = true;
-    info.url = m_proxyURL;
-    info.username = m_proxyURL.user();
-    info.password = m_proxyURL.pass();
-    info.realmValue = m_strProxyRealm;
-    info.digestInfo = m_strProxyAuthorization;
-    cacheAuthentication( info );
-  }
-  else
-  {
-    info.url = m_request.url;
-    info.username = m_request.url.user();
-    info.password = m_request.url.pass();
-    info.realmValue = m_strRealm;
-    info.digestInfo = m_strAuthorization;
-    cacheAuthentication( info );
-  }
+    if (m_request.prevResponseCode == 407 && !m_request.proxyUrl.isValid()) {
+        return;
+    }
+    AuthInfo info;
+    KUrl &authUrl = (m_request.responseCode == 401) ? m_request.url : m_request.proxyUrl;
+    AuthState &authState = (m_request.responseCode == 401) ? m_auth : m_proxyAuth;
+
+    info.url = authUrl;   //### strip username / password?
+    info.username = authUrl.user();
+    info.password = authUrl.pass();
+    info.realmValue = authState.realm;
+    info.digestInfo = authState.authorization;
+
+    cacheAuthentication(info);
 }
 
 #ifdef HAVE_LIBGSSAPI
@@ -5355,7 +5186,7 @@ QString HTTPProtocol::createNegotiateAuth()
   if (GSS_ERROR(major_status)) {
     kDebug(7113) << "gss_import_name failed: " << gssError(major_status, minor_status);
     // reset the auth string so that subsequent methods aren't confused
-    m_strAuthorization.clear();
+    m_auth.authorization.clear();
     return QString();
   }
 
@@ -5375,7 +5206,7 @@ QString HTTPProtocol::createNegotiateAuth()
       ctx = GSS_C_NO_CONTEXT;
     }
     // reset the auth string so that subsequent methods aren't confused
-    m_strAuthorization.clear();
+    m_auth.authorization.clear();
     return QString();
   }
 
@@ -5398,7 +5229,7 @@ QString HTTPProtocol::createNegotiateAuth()
 // Dummy
 QByteArray HTTPProtocol::gssError( int, int )
 {
-  return "";
+  return QByteArray();
 }
 
 // Dummy
@@ -5418,18 +5249,18 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
   if ( isForProxy )
   {
     auth = "Proxy-Authorization: NTLM ";
-    user = m_proxyURL.user();
-    passwd = m_proxyURL.pass();
-    strauth = m_strProxyAuthorization.toLatin1();
-    len = m_strProxyAuthorization.length();
+    user = m_request.proxyUrl.user();
+    passwd = m_request.proxyUrl.pass();
+    strauth = m_proxyAuth.authorization.toLatin1();
+    len = m_proxyAuth.authorization.length();
   }
   else
   {
     auth = "Authorization: NTLM ";
     user = m_state.user;
     passwd = m_state.passwd;
-    strauth = m_strAuthorization.toLatin1();
-    len = m_strAuthorization.length();
+    strauth = m_auth.authorization.toLatin1();
+    len = m_auth.authorization.length();
   }
   if ( user.contains('\\') ) {
     domain = user.section( '\\', 0, 0);
@@ -5455,9 +5286,9 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
 
   // remove the challenge to prevent reuse
   if ( isForProxy )
-    m_strProxyAuthorization = "NTLM";
+    m_proxyAuth.authorization = "NTLM";
   else
-    m_strAuthorization = "NTLM";
+    m_auth.authorization = "NTLM";
 
   auth += KCodecs::base64Encode( buf );
   auth += "\r\n";
@@ -5472,8 +5303,8 @@ QString HTTPProtocol::createBasicAuth( bool isForProxy )
   if ( isForProxy )
   {
     auth = "Proxy-Authorization: Basic ";
-    user = m_proxyURL.user().toLatin1();
-    passwd = m_proxyURL.pass().toLatin1();
+    user = m_request.proxyUrl.user().toLatin1();
+    passwd = m_request.proxyUrl.pass().toLatin1();
   }
   else
   {
@@ -5482,17 +5313,11 @@ QString HTTPProtocol::createBasicAuth( bool isForProxy )
     passwd = m_state.passwd.toLatin1();
   }
 
-  if ( user.isEmpty() )
-    user = "";
-  if ( passwd.isEmpty() )
-    passwd = "";
+  if (user.isEmpty() || passwd.isEmpty()) {
+    return QString();    
+  }
 
-  user += ':';
-  user += passwd;
-  auth += KCodecs::base64Encode( user );
-  auth += "\r\n";
-
-  return auth;
+  return auth + KCodecs::base64Encode(user + ':' + passwd) + "\r\n";
 }
 
 void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QByteArray& Response )
@@ -5574,16 +5399,16 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   if ( isForProxy )
   {
     auth = "Proxy-Authorization: Digest ";
-    info.username = m_proxyURL.user().toLatin1();
-    info.password = m_proxyURL.pass().toLatin1();
-    p = m_strProxyAuthorization.toLatin1();
+    info.username = m_request.proxyUrl.user().toLatin1();
+    info.password = m_request.proxyUrl.pass().toLatin1();
+    p = m_proxyAuth.authorization.toLatin1();
   }
   else
   {
     auth = "Authorization: Digest ";
     info.username = m_state.user.toLatin1();
     info.password = m_state.passwd.toLatin1();
-    p = m_strAuthorization.toLatin1();
+    p = m_auth.authorization.toLatin1();
   }
   if (!p || !*p)
     return QString();
@@ -5606,59 +5431,11 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   info.nc = "00000001";
 
   // Set the method used...
-  switch ( m_request.method )
-  {
-    case HTTP_GET:
-        info.method = "GET";
-        break;
-    case HTTP_PUT:
-        info.method = "PUT";
-        break;
-    case HTTP_POST:
-        info.method = "POST";
-        break;
-    case HTTP_HEAD:
-        info.method = "HEAD";
-        break;
-    case HTTP_DELETE:
-        info.method = "DELETE";
-        break;
-    case DAV_PROPFIND:
-        info.method = "PROPFIND";
-        break;
-    case DAV_PROPPATCH:
-        info.method = "PROPPATCH";
-        break;
-    case DAV_MKCOL:
-        info.method = "MKCOL";
-        break;
-    case DAV_COPY:
-        info.method = "COPY";
-        break;
-    case DAV_MOVE:
-        info.method = "MOVE";
-        break;
-    case DAV_LOCK:
-        info.method = "LOCK";
-        break;
-    case DAV_UNLOCK:
-        info.method = "UNLOCK";
-        break;
-    case DAV_SEARCH:
-        info.method = "SEARCH";
-        break;
-    case DAV_SUBSCRIBE:
-        info.method = "SUBSCRIBE";
-        break;
-    case DAV_UNSUBSCRIBE:
-        info.method = "UNSUBSCRIBE";
-        break;
-    case DAV_POLL:
-        info.method = "POLL";
-        break;
-    default:
-        error( ERR_UNSUPPORTED_ACTION, i18n("Unsupported method: authentication will fail. Please submit a bug report."));
-        break;
+  info.method = methodString(m_request.method).toLatin1();
+  info.method.chop(1);  // trim space
+  if (info.method.isEmpty()) {
+      error(ERR_UNSUPPORTED_ACTION, i18n("Unsupported method: authentication will fail. "
+                                         "Please submit a bug report."));
   }
 
   // Parse the Digest response....
@@ -5743,7 +5520,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   // If the "domain" attribute was not specified and the current response code
   // is authentication needed, add the current request url to the list over which
   // this credential can be automatically applied.
-  if (info.digestURIs.isEmpty() && (m_responseCode == 401 || m_responseCode == 407))
+  if (info.digestURIs.isEmpty() && (m_request.responseCode == 401 || m_request.responseCode == 407))
     info.digestURIs.append (m_request.url);
   else
   {
@@ -5831,84 +5608,146 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
 
 QString HTTPProtocol::proxyAuthenticationHeader()
 {
-  QString header;
+    // We keep proxy authentication locally until they are changed.
+    // Thus, no need to check with the password manager for every
+    // connection.
+    if (m_proxyAuth.realm.isEmpty()) {
+        AuthInfo info;
+        info.url = m_request.proxyUrl;
+        info.username = m_request.proxyUrl.user();
+        info.password = m_request.proxyUrl.pass();
+        info.verifyPath = true;
 
-  // We keep proxy authentication locally until they are changed.
-  // Thus, no need to check with the password manager for every
-  // connection.
-  if ( m_strProxyRealm.isEmpty() )
-  {
-    AuthInfo info;
-    info.url = m_proxyURL;
-    info.username = m_proxyURL.user();
-    info.password = m_proxyURL.pass();
-    info.verifyPath = true;
-
-    // If the proxy URL already contains username
-    // and password simply attempt to retrieve it
-    // without prompting the user...
-    if ( !info.username.isNull() && !info.password.isNull() )
-    {
-      if( m_strProxyAuthorization.isEmpty() )
-        ProxyAuthentication = AUTH_None;
-      else if( m_strProxyAuthorization.startsWith("Basic") )
-        ProxyAuthentication = AUTH_Basic;
-      else if( m_strProxyAuthorization.startsWith("NTLM") )
-        ProxyAuthentication = AUTH_NTLM;
-      else
-        ProxyAuthentication = AUTH_Digest;
+        // If the proxy URL already contains username
+        // and password simply attempt to retrieve it
+        // without prompting the user...
+        if (!info.username.isEmpty() && !info.password.isEmpty()) {
+            if( m_proxyAuth.authorization.isEmpty() )
+                m_proxyAuth.scheme = AUTH_None;
+            else if( m_proxyAuth.authorization.startsWith("Basic") )
+                m_proxyAuth.scheme = AUTH_Basic;
+            else if( m_proxyAuth.authorization.startsWith("NTLM") )
+                m_proxyAuth.scheme = AUTH_NTLM;
+            else
+                m_proxyAuth.scheme = AUTH_Digest;
+        } else {
+            if (checkCachedAuthentication(info) && !info.digestInfo.isEmpty()) {
+                m_request.proxyUrl.setUser(info.username);
+                m_request.proxyUrl.setPass(info.password);
+                m_proxyAuth.realm = info.realmValue;
+                m_proxyAuth.authorization = info.digestInfo;
+                if (m_proxyAuth.authorization.startsWith("Basic")) {
+                    m_proxyAuth.scheme = AUTH_Basic;
+                } else if (m_proxyAuth.authorization.startsWith("NTLM")) {
+                    m_proxyAuth.scheme = AUTH_NTLM;
+                } else {
+                    m_proxyAuth.scheme = AUTH_Digest;
+                }
+            } else {
+                m_proxyAuth.scheme = AUTH_None;
+            }
+        }
     }
-    else
-    {
-      if ( checkCachedAuthentication(info) && !info.digestInfo.isEmpty() )
-      {
-        m_proxyURL.setUser( info.username );
-        m_proxyURL.setPass( info.password );
-        m_strProxyRealm = info.realmValue;
-        m_strProxyAuthorization = info.digestInfo;
-        if( m_strProxyAuthorization.startsWith("Basic") )
-          ProxyAuthentication = AUTH_Basic;
-        else if( m_strProxyAuthorization.startsWith("NTLM") )
-          ProxyAuthentication = AUTH_NTLM;
-        else
-          ProxyAuthentication = AUTH_Digest;
-      }
-      else
-      {
-        ProxyAuthentication = AUTH_None;
-      }
+
+    if (m_proxyAuth.scheme != AUTH_None) {
+        kDebug(7113) << "Using Proxy Authentication: ";
+        kDebug(7113) << " HOST =" << m_request.proxyUrl.host();
+        kDebug(7113) << " PORT =" << m_request.proxyUrl.port();
+        kDebug(7113) << " USER =" << m_request.proxyUrl.user();
+        kDebug(7113) << " PASSWORD = [protected]";
+        kDebug(7113) << " REALM =" << m_proxyAuth.realm;
+        kDebug(7113) << " EXTRA =" << m_proxyAuth.authorization;
     }
-  }
 
-  /********* Only for debugging purpose... *********/
-  if ( ProxyAuthentication != AUTH_None )
-  {
-    kDebug(7113) << "Using Proxy Authentication: ";
-    kDebug(7113) << "  HOST= " << m_proxyURL.host();
-    kDebug(7113) << "  PORT= " << m_proxyURL.port();
-    kDebug(7113) << "  USER= " << m_proxyURL.user();
-    kDebug(7113) << "  PASSWORD= [protected]";
-    kDebug(7113) << "  REALM= " << m_strProxyRealm;
-    kDebug(7113) << "  EXTRA= " << m_strProxyAuthorization;
-  }
-
-  switch ( ProxyAuthentication )
-  {
+    switch (m_proxyAuth.scheme) {
     case AUTH_Basic:
-      header += createBasicAuth( true );
-      break;
+        return createBasicAuth(true);
+        break;
     case AUTH_Digest:
-      header += createDigestAuth( true );
-      break;
+        return createDigestAuth(true);
+        break;
     case AUTH_NTLM:
-      if ( m_isFirstRequest ) header += createNTLMAuth( true );
-      break;
+        if (m_isFirstRequest) {
+            return createNTLMAuth(true);
+        }
+        break;
     case AUTH_None:
     default:
-      break;
-  }
+        break;
+    }
+    return QString();
+}
 
-  return header;
+QString HTTPProtocol::wwwAuthenticationHeader()
+{
+    // Only check for cached authentication if the previous response was NOT a 401 or 407.
+    // In that case we have already tried the cached authentication in a previous attempt
+    // (because it's the first thing we try) and it did not work.
+    // Also no caching for schemes where challenges become stale.
+    
+    // m_auth *might* already contain useful values from getAuthorization(), continue
+    // and try them in any case.
+    
+    if (!m_request.doNotAuthenticate && m_request.responseCode != 401
+        && m_request.responseCode != 407
+        && m_auth.scheme != AUTH_Negotiate) {
+
+        AuthInfo info;
+        info.url = m_request.url;
+        info.verifyPath = true;
+        if (!m_request.url.user().isEmpty()) {
+            info.username = m_request.url.user();
+        }
+
+        kDebug(7113) << "Calling checkCachedAuthentication";
+        
+        if (checkCachedAuthentication(info) && !info.digestInfo.isEmpty()) {
+            m_auth.scheme = AUTH_Digest;
+            if (info.digestInfo.startsWith("Basic")) {
+                m_auth.scheme = AUTH_Basic;
+            } else if (info.digestInfo.startsWith("NTLM")) {
+                m_auth.scheme = AUTH_NTLM;
+            } else if (info.digestInfo.startsWith("Negotiate")) {
+                m_auth.scheme = AUTH_Negotiate;
+            }
+
+            m_state.user = info.username;
+            m_state.passwd = info.password;
+            m_auth.realm = info.realmValue;
+            if (m_auth.scheme != AUTH_NTLM && m_auth.scheme != AUTH_Negotiate) { // don't use the cached challenge
+                m_auth.authorization = info.digestInfo;
+            }
+        }
+    } else {
+        kDebug(7113) << "Not calling checkCachedAuthentication";
+    }
+
+    if (m_auth.scheme != AUTH_None) {
+        kDebug(7113) << "Using Authentication: ";
+        kDebug(7113) << " HOST =" << m_state.hostname;
+        kDebug(7113) << " PORT =" << m_state.port;
+        kDebug(7113) << " USER =" << m_state.user;
+        kDebug(7113) << " PASSWORD = [protected]";
+        kDebug(7113) << " REALM =" << m_auth.realm;
+        kDebug(7113) << " EXTRA =" << m_auth.authorization;
+    }
+
+    switch (m_auth.scheme) {
+    case AUTH_Basic:
+        return createBasicAuth();
+    case AUTH_Digest:
+        return createDigestAuth();
+#ifdef HAVE_LIBGSSAPI
+    case AUTH_Negotiate:
+        return createNegotiateAuth();
+#endif
+    case AUTH_NTLM:
+        return createNTLMAuth();
+    case AUTH_None:
+    default:
+        break;
+    }
+    return QString();
 }
 
 #include "http.moc"

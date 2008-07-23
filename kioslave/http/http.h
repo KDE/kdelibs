@@ -60,13 +60,7 @@ public:
   enum HTTP_REV    {HTTP_None, HTTP_Unknown, HTTP_10, HTTP_11, SHOUTCAST};
 
   /** Authorization method used **/
-  enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_NTLM, AUTH_Digest, AUTH_Negotiate};
-
-  /** HTTP / DAV method **/
-  // Removed to interfaces/kio/http.h
-  //enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, HTTP_HEAD, HTTP_DELETE,
-  //                  HTTP_OPTIONS, DAV_PROPFIND, DAV_PROPPATCH, DAV_MKCOL,
-  //                  DAV_COPY, DAV_MOVE, DAV_LOCK, DAV_UNLOCK, DAV_SEARCH };
+  enum AUTH_SCHEME   {AUTH_None, AUTH_Basic, AUTH_NTLM, AUTH_Digest, AUTH_Negotiate};
 
   /** State of the current Connection **/
   struct HTTPState
@@ -74,7 +68,6 @@ public:
     HTTPState ()
     {
       port = 0;
-      doProxy = false;
     }
 
     QString hostname;
@@ -82,8 +75,6 @@ public:
     short unsigned int port;
     QString user;
     QString passwd;
-    bool doProxy;
-    KUrl proxyUrl;
   };
 
   /** DAV-specific request elements for the current connection **/
@@ -121,7 +112,7 @@ public:
     bool writeToCache; // Whether the request is to be written to file.
     bool isExpired;
     long bytesCached;
-    QString etag; // ETag header as described in the HTTP standard.
+    QString etag; // entity tag header as described in the HTTP standard.
     QString file; // cache entry file belonging to this URL.
     gzFile gzs; // gzip stream of the cache entry
     QString lastModified; // Last modified.
@@ -140,7 +131,6 @@ public:
       method = KIO::HTTP_UNKNOWN;
       offset = 0;
       endoffset = 0;
-      doProxy = false;
       allowTransferCompression = false;
       disablePassDialog = false;
       doNotAuthenticate = false;
@@ -150,6 +140,10 @@ public:
 
     KUrl url;
     QString encoded_hostname; //### can be calculated on-the-fly
+    // Persistent connections
+    bool isKeepAlive;
+    int keepAliveTimeout;   // Timeout in seconds.
+
     KIO::HTTP_METHOD method;
     KIO::filesize_t offset;
     KIO::filesize_t endoffset;
@@ -159,25 +153,44 @@ public:
     QString charsets;
     QString languages;
     QString userAgent;
+    // Previous and current response codes
+    unsigned int responseCode;
+    unsigned int prevResponseCode;
     // Miscellaneous
     QString id;
     DAVRequest davData;
-    bool doProxy;
     KUrl proxyUrl;
+    bool isPersistentProxyConnection;
     bool allowTransferCompression;
     bool disablePassDialog;
     bool doNotAuthenticate;
-
-    // Indicates whether an error-page or error-msg is preferred.
+    // Indicates whether an error page or error message is preferred.
     bool preferErrorPage;
 
-    // Cookie flags
+    // Use the cookie jar (or pass cookies to the application as metadata instead)
     bool useCookieJar;
     // Cookie flags
     enum { CookiesAuto, CookiesManual, CookiesNone } cookieMode;
 
     CacheTag cacheTag;
   };
+
+  // this is for anything from the previous connection that is interesting for
+  // some decision like whether to reuse a persistent connection.
+  struct PrevRequest
+  {
+    PrevRequest()
+    {
+      isKeepAlive = false;
+      isPersistentProxyConnection = false;
+    }
+    KUrl url;
+    bool isKeepAlive;
+    KUrl proxyUrl;
+    bool isPersistentProxyConnection;
+  };
+  
+  PrevRequest m_prevRequest;
 
   struct DigestAuthInfo
   {
@@ -275,9 +288,9 @@ protected:
   /**
     * A wrapper around TCPSlaveBase::read() that integrates unget support.
     */
-  ssize_t read (void *b, size_t nbytes);
+  ssize_t read(void *b, size_t nbytes);
 
-  char *gets (char *str, int size);
+  char *gets(char *s, size_t size);
 
   void setRewindMarker();
   void rewind();
@@ -289,27 +302,27 @@ protected:
     */
   void addEncoding(const QString &, QStringList &);
 
-  void configAuth( char *, bool );
+  void configAuth(const char *authHeader, bool isProxyAuth);
 
+
+  // The methods between here and sendQuery() are helpers for sendQuery().
 
   // Return true if the request is already "done", false otherwise.
   // *sucesss will be set to true if the page was found, false otherwise.
   bool satisfyRequestFromCache(bool *success);
-
   QString formatRequestUri() const;
-
+  QString wwwAuthenticationHeader();
   bool sendQuery();
+  
   void httpClose(bool keepAlive);  // Close transfer
-
   bool httpOpenConnection();   // Open connection
   void httpCloseConnection();  // Close connection
-  bool httpShouldCloseConnection();  // Check whether to keep the connection.
+  bool httpShouldCloseConnection();  // Check whether to keep or close the connection.
 
   void forwardHttpResponseHeader();
 
   // Helper for readResponseHeader - fix common mimetype errors by webservers.
   void fixupResponseMimetype();
-
   bool readResponseHeader();
   bool readHeaderFromCache();
   void parseContentDisposition(const QString &disposition);
@@ -417,13 +430,13 @@ protected:
   void resetSessionSettings();
 
   /**
-   * Resets settings related to parsing a response.
+   * Resets variables related to parsing a response.
    */
-  void resetResponseSettings();
+  void resetResponseParsing();
 
   /**
-   * Resets any per connection settings.  These are different from
-   * per-session settings in that they must be invalidates every time
+   * Resets any per connection settings. These are different from
+   * per-session settings in that they must be invalidated every time
    * a request is made, e.g. a retry to re-send the header to the
    * server, as compared to only when a new request arrives.
    */
@@ -483,7 +496,7 @@ protected:
   /**
    * Creates authorization prompt info.
    */
-  void promptInfo( KIO::AuthInfo& info );
+  void fillPromptInfo(KIO::AuthInfo *info);
 
 protected:
   HTTPState m_state;
@@ -540,7 +553,7 @@ protected:
 
 
   // Holds the POST data so it won't get lost on if we
-  // happend to get a 401/407 response when submitting,
+  // happend to get a 401/407 response when submitting
   // a form.
   QByteArray m_POSTbuf;
 
@@ -551,40 +564,29 @@ protected:
 
 
 //--- Proxy related members
-  bool m_useProxy;
-  bool m_needTunnel; // Whether we need to make a SSL tunnel
-  bool m_isTunneled; // Whether we have an active SSL tunnel
-  bool m_isProxyAuthValid;
-  int m_iProxyPort;
-  KUrl m_proxyURL;
-  QString m_strProxyRealm;
 
   // Operation mode
   QByteArray m_protocol;
 
   // Authentication
-  QString m_strRealm;
-  QString m_strAuthorization;
-  QString m_strProxyAuthorization;
-  HTTP_AUTH Authentication;
-  HTTP_AUTH ProxyAuthentication;
-  short unsigned int m_iProxyAuthCount;
-  short unsigned int m_iWWWAuthCount;
   bool m_isUnauthorized;
 
-  // Persistent proxy connections
-  bool m_isPersistentProxyConnection;
+  //TODO use PrevRequest fully
+  //TODO isAuthValid/m_isUnauthorized -> auth.scheme != AUTH_None ?
+
+  struct AuthState
+  {
+    AUTH_SCHEME scheme;
+    QString realm;
+    QString authorization;
+    int authCount;
+  };
+
+  AuthState m_auth;
+  AuthState m_proxyAuth;
 
   // Indicates whether there was some connection error.
   bool m_isError;
-
-  // Persistent connections
-  bool m_isKeepAlive;
-  int m_keepAliveTimeout; // Timeout in seconds.
-
-  // Previous and current response codes
-  unsigned int m_responseCode;
-  unsigned int m_prevResponseCode;
 
   // Values that determine the remote connection timeouts.
   int m_remoteRespTimeout;
