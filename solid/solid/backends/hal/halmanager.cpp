@@ -121,14 +121,15 @@ QStringList HalManager::devicesFromQuery(const QString &parentUdi,
 
         if (type!=Solid::DeviceInterface::Unknown) {
             QStringList::Iterator it = result.begin();
-            QStringList::ConstIterator end = result.end();
+            QStringList::Iterator end = result.end();
 
             for (; it!=end; ++it)
             {
                 HalDevice device(*it);
 
                 if (!device.queryDeviceInterface(type)) {
-                    result.erase(it);
+                    it = result.erase(it);
+                    --it;
                 }
             }
         }
