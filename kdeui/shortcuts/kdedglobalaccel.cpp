@@ -290,7 +290,6 @@ QList<QStringList> KdedGlobalAccel::allActionsForComponent(const QStringList &ac
 QList<int> KdedGlobalAccel::allKeys()
 {
     QList<int> ret = d->keyToAction.keys();
-    kDebug() << ret;
     return ret;
 }
 
