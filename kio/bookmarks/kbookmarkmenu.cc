@@ -46,12 +46,28 @@
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
+class KBookmarkMenuPrivate
+{
+public:
+    KBookmarkMenuPrivate()
+        : newBookmarkFolder(0),
+        addAddBookmark(0),
+        bookmarksToFolder(0)
+    {
+    }
+
+    QAction *newBookmarkFolder;
+    QAction *addAddBookmark;
+    QAction *bookmarksToFolder;
+};
+
 
 KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
                               KBookmarkOwner * _owner, KMenu * _parentMenu,
                               KActionCollection * actionCollection)
   : QObject(),
     m_actionCollection( actionCollection ),
+    d (new KBookmarkMenuPrivate()),
     m_bIsRoot(true),
     m_pManager(mgr), m_pOwner(_owner),
     m_parentMenu( _parentMenu ),
@@ -74,6 +90,7 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
               SLOT( slotBookmarksChanged(const QString &) ) );
 
   m_bDirty = true;
+    addActions();
 }
 
 void KBookmarkMenu::addActions()
@@ -102,6 +119,7 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
                               const QString & parentAddress)
   : QObject(),
     m_actionCollection( new KActionCollection(this) ),
+    d (new KBookmarkMenuPrivate()),
     m_bIsRoot(false),
     m_pManager(mgr), m_pOwner(_owner),
     m_parentMenu( _parentMenu ),
@@ -121,6 +139,7 @@ KBookmarkMenu::~KBookmarkMenu()
 {
   qDeleteAll( m_lstSubMenus );
   qDeleteAll( m_actions );
+    delete d;
 }
 
 void KBookmarkMenu::ensureUpToDate()
@@ -382,6 +401,7 @@ KBookmark KBookmarkContextMenu::bookmark() const
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
+
 void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
 {
   kDebug(7043)<<"KBookmarkMenu::slotBookmarksChanged( "<<groupAddress;
@@ -447,16 +467,8 @@ void KBookmarkMenu::addAddBookmarksList()
   if( !m_pOwner || !m_pOwner->enableOption(KBookmarkOwner::ShowAddBookmark) || !m_pOwner->supportsTabs() || !KAuthorized::authorizeKAction("bookmarks") )
     return;
 
-  QString title = i18n( "Bookmark Tabs as Folder..." );
-
-  KAction * paAddBookmarksList = new KAction( title, this );
-  m_actionCollection->addAction( m_bIsRoot ? "add_bookmarks_list" : 0, paAddBookmarksList );
-  paAddBookmarksList->setIcon( KIcon( "bookmark-new-list" ) );
-  paAddBookmarksList->setToolTip( i18n( "Add a folder of bookmarks for all open tabs." ) );
-  connect( paAddBookmarksList, SIGNAL( triggered( bool ) ), this, SLOT( slotAddBookmarksList() ) );
-
-  m_parentMenu->addAction(paAddBookmarksList);
-  m_actions.append( paAddBookmarksList );
+    m_parentMenu->addAction(d->bookmarksToFolder);
+    m_actions.append( d->bookmarksToFolder );
 }
 
 void KBookmarkMenu::addAddBookmark()
@@ -464,17 +476,15 @@ void KBookmarkMenu::addAddBookmark()
   if( !m_pOwner || !m_pOwner->enableOption(KBookmarkOwner::ShowAddBookmark) || !KAuthorized::authorizeKAction("bookmarks") )
     return;
 
-  QString title = i18n( "Add Bookmark" );
+    if (d->addAddBookmark == 0) {
+        QString title = i18n( "Add Bookmark" );
 
-  KAction * paAddBookmarks = new KAction( title, this );
-  m_actionCollection->addAction( m_bIsRoot ? "add_bookmark" : 0, paAddBookmarks );
-  paAddBookmarks->setIcon( KIcon( "bookmark-new" ) );
-  paAddBookmarks->setShortcut( m_bIsRoot ? KStandardShortcut::addBookmark() : KShortcut() );
-  paAddBookmarks->setToolTip( i18n( "Add a bookmark for the current document" ) );
-  connect( paAddBookmarks, SIGNAL( triggered( bool ) ), this, SLOT( slotAddBookmark() ) );
+        d->addAddBookmark = KStandardAction::addBookmark(this, SLOT(slotAddBookmark()), this);
+        m_actionCollection->addAction( m_bIsRoot ? "add_bookmark" : 0, d->addAddBookmark );
+    }
 
-  m_parentMenu->addAction(paAddBookmarks);
-  m_actions.append( paAddBookmarks );
+    m_parentMenu->addAction(d->addAddBookmark);
+    m_actions.append( d->addAddBookmark );
 }
 
 void KBookmarkMenu::addEditBookmarks()
@@ -494,14 +504,16 @@ void KBookmarkMenu::addNewFolder()
   if( !m_pOwner || !m_pOwner->enableOption(KBookmarkOwner::ShowAddBookmark) || !KAuthorized::authorizeKAction("bookmarks"))
     return;
 
-  KAction * paNewFolder = new KAction( i18n( "New Bookmark Folder..." ), this );
-  m_actionCollection->addAction( "dummyname", paNewFolder );
-  paNewFolder->setIcon( KIcon( "folder-new" ) );
-  paNewFolder->setToolTip( i18n( "Create a new bookmark folder in this menu" ) );
-  connect( paNewFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotNewFolder() ) );
+    if (d->newBookmarkFolder == 0) {
+      d->newBookmarkFolder = new KAction( i18n( "New Bookmark Folder..." ), this );
+      m_actionCollection->addAction( "dummyname", d->newBookmarkFolder );
+      d->newBookmarkFolder->setIcon( KIcon( "folder-new" ) );
+      d->newBookmarkFolder->setToolTip( i18n( "Create a new bookmark folder in this menu" ) );
+      connect( d->newBookmarkFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotNewFolder() ) );
+    }
 
-  m_parentMenu->addAction(paNewFolder);
-  m_actions.append( paNewFolder );
+    m_parentMenu->addAction(d->newBookmarkFolder);
+    m_actions.append( d->newBookmarkFolder );
 }
 
 void KBookmarkMenu::fillBookmarks()
