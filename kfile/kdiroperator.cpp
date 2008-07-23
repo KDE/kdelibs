@@ -1390,9 +1390,11 @@ void KDirOperator::setView(QAbstractItemView *view)
         selectionModel->select(selection, QItemSelectionModel::Select);
     }
 
+    setFocusProxy(0);
     delete d->itemView;
     d->itemView = view;
     d->itemView->setModel(d->proxyModel);
+    setFocusProxy(d->itemView);
 
     view->viewport()->installEventFilter(this);
 
