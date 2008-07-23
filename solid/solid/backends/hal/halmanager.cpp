@@ -120,10 +120,10 @@ QStringList HalManager::devicesFromQuery(const QString &parentUdi,
         QStringList result = findDeviceStringMatch("info.parent", parentUdi);
 
         if (type!=Solid::DeviceInterface::Unknown) {
-            QStringList matches = result;
+            const QStringList matches = result;
             result.clear();
 
-            foreach (QString match, matches) {
+            foreach (const QString &match, matches) {
                 HalDevice device(match);
                 
                 if (device.queryDeviceInterface(type)) {
