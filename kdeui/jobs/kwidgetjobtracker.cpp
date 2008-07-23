@@ -271,10 +271,8 @@ void KWidgetJobTracker::Private::ProgressWidget::description(const QString &titl
                                                                 const QPair<QString, QString> &field1,
                                                                 const QPair<QString, QString> &field2)
 {
-    if (caption.isEmpty() ) {
-        setWindowTitle(title);
-        caption = title;
-    }
+    setWindowTitle(title);
+    caption = title;
 
     sourceInvite->setText(field1.first);
     sourceEdit->setText(field1.second);
