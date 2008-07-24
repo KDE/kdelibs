@@ -80,6 +80,8 @@ public:
      *
      * Only valid after a successful run of readDF() or findUsageInfo()
      * (ie. error() returns 0).
+     *
+     * \since 4.2
      */
     QString mountPoint() const;
 
@@ -88,6 +90,8 @@ public:
      *
      * Only valid after a successful run of readDF() or findUsageInfo()
      * (ie. error() returns 0).
+     *
+     * \since 4.2
      */
     KIO::filesize_t size() const;
 
@@ -96,6 +100,8 @@ public:
      *
      * Only valid after a successful run of readDF() or findUsageInfo()
      * (ie. error() returns 0).
+     *
+     * \since 4.2
      */
     KIO::filesize_t used() const;
 
@@ -104,6 +110,8 @@ public:
      *
      * Only valid after a successful run of readDF() or findUsageInfo()
      * (ie. error() returns 0).
+     *
+     * \since 4.2
      */
     KIO::filesize_t avail() const;
 
@@ -112,6 +120,8 @@ public:
      * Only call this method from the slot connected to finished().
      *
      * \return the error code for this job, 0 is no error.
+     *
+     * \since 4.2
      */
     int error() const;
 
@@ -161,6 +171,8 @@ Q_SIGNALS:
     /**
      * Emitted once the request is done. Check error() to see if the call was
      * successful.
+     *
+     * \since 4.2
      */
     void finished( KDiskFreeSpace* );
 
