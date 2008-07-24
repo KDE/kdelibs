@@ -736,7 +736,7 @@ static void checkRestartVersion( QSessionManager& sm )
     int format;
     unsigned long nitems, after;
     unsigned char* data;
-    if( XGetWindowProperty( dpy, DefaultRootWindow( dpy ), XInternAtom( dpy, "KDE_SESSION_VERSION", False ),
+    if( XGetWindowProperty( dpy, RootWindow( dpy, 0 ), XInternAtom( dpy, "KDE_SESSION_VERSION", False ),
         0, 1, False, AnyPropertyType, &type, &format, &nitems, &after, &data ) == Success ) {
         if( type == XA_INTEGER && format == 32 ) {
             int version = *( long* ) data;
