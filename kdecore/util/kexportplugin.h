@@ -35,8 +35,9 @@ struct KDEPluginVerificationData
 
     /**
      * \internal
-     * The version of this structure. Increase it in the K_EXPORT_PLUGIN_VERSION macro whenever you
-     * make changes to this structure.
+     * The version of this structure. Do not ever delete or change a field.
+     * Increase it in the K_EXPORT_PLUGIN_VERSION macro whenever you
+     * append a field to this structure.
      */
     quint8 dataVersion;
     quint32 KDEVersion;
