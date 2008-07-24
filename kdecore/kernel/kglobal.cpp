@@ -251,10 +251,11 @@ QString KGlobal::caption()
 
 /**
  * This counter indicates when to quit the application.
- * It starts at 0, is decremented in KMainWindow when the last window is closed, but
- * is incremented by operations that should outlive the last window closed
- * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
- * KMainWindow on init() method will increase the ref counting too.
+ * It starts at 0, is incremented by KMainWindow, systray icons, running jobs, etc.
+ * and decremented again when those things are destroyed.
+ * This mechanism allows dialogs and jobs to outlive the last window closed
+ * e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client,
+ * the job progress widget with "keep open" checked, etc.
  */
 static int s_refCount = 0;
 
