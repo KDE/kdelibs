@@ -1251,12 +1251,12 @@ static void checkRestartVersion( QSessionManager& sm )
     int format;
     unsigned long nitems, after;
     unsigned char* data;
-    if( XGetWindowProperty( dpy, DefaultRootWindow( dpy ), XInternAtom( dpy, "KDE_FULL_SESSION", False ),
+    if( XGetWindowProperty( dpy, RootWindow( dpy, 0 ), XInternAtom( dpy, "KDE_FULL_SESSION", False ),
         0, 1, False, AnyPropertyType, &type, &format, &nitems, &after, &data ) == Success ) {
         if( data != NULL )
             XFree( data );
         if( type == XA_STRING && format == 8 ) { // session set, check if KDE_SESSION_VERSION is not set (meaning KDE3)
-            if( XGetWindowProperty( dpy, DefaultRootWindow( dpy ), XInternAtom( dpy, "KDE_SESSION_VERSION", False ),
+            if( XGetWindowProperty( dpy, RootWindow( dpy, 0 ), XInternAtom( dpy, "KDE_SESSION_VERSION", False ),
                 0, 1, False, AnyPropertyType, &type, &format, &nitems, &after, &data ) == Success ) {
                 if( data != NULL )
                     XFree( data ); // KDE4 or newer
