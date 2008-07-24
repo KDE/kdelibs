@@ -224,6 +224,8 @@ KMainWindow::KMainWindow(KMainWindowPrivate &dd, QWidget *parent, Qt::WFlags f)
 
 void KMainWindowPrivate::init(KMainWindow *_q)
 {
+    KGlobal::ref();
+
     q = _q;
 
     q->setAnimated(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);

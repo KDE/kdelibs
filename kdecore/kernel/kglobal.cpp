@@ -251,11 +251,12 @@ QString KGlobal::caption()
 
 /**
  * This counter indicates when to quit the application.
- * It starts at 1, is decremented in KMainWindow when the last window is closed, but
+ * It starts at 0, is decremented in KMainWindow when the last window is closed, but
  * is incremented by operations that should outlive the last window closed
  * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
+ * KMainWindow on init() method will increase the ref counting too.
  */
-static int s_refCount = 1;
+static int s_refCount = 0;
 
 void KGlobal::ref()
 {
