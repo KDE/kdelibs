@@ -63,7 +63,10 @@ QString Nepomuk::typePredicate()
 
 Soprano::Node Nepomuk::valueToRDFNode( const Nepomuk::Variant& v )
 {
-    return Soprano::Node( Soprano::LiteralValue( v.variant() ) );
+    if ( v.isUrl() )
+        return Soprano::Node( v.toUrl() );
+    else
+        return Soprano::Node( Soprano::LiteralValue( v.variant() ) );
 }
 
 
@@ -71,9 +74,15 @@ QList<Soprano::Node> Nepomuk::valuesToRDFNodes( const Nepomuk::Variant& v )
 {
     QList<Soprano::Node> nl;
 
+    if ( v.isUrlList() ) {
+        QList<QUrl> urls = v.toUrlList();
+        for ( QList<QUrl>::const_iterator it = urls.constBegin(); it != urls.constEnd(); ++it ) {
+            nl.append( Soprano::Node( *it ) );
+        }
+    }
     if( v.isList() ) {
         QStringList vl = v.toStringList();
-        for( QStringList::const_iterator it = vl.begin(); it != vl.end(); ++it ) {
+        for( QStringList::const_iterator it = vl.constBegin(); it != vl.constEnd(); ++it ) {
             nl.append( Soprano::Node( Soprano::LiteralValue::fromString( *it, ( QVariant::Type )v.simpleType() ) ) );
         }
     }
