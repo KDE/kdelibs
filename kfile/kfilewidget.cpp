@@ -145,6 +145,7 @@ public:
     void _k_toggleBookmarks( bool );
     void _k_slotAutoSelectExtClicked();
     void _k_placesViewSplitterMoved();
+    void _k_activateUrlNavigator();
 
     void addToRecentDocuments();
 
@@ -380,6 +381,9 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->toolbar->addAction( coll->action( "mkdir" ) );
     coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new folder."));
 
+    KAction *goToNavigatorAction = coll->addAction( "gotonavigator", this, SLOT( _k_activateUrlNavigator() ) );
+    goToNavigatorAction->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_L) );
+
     KToggleAction *showSidebarAction =
         new KToggleAction(i18n("Show Places Navigation Panel"), this);
     coll->addAction("toggleSpeedbar", showSidebarAction);
@@ -435,6 +439,8 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     connect( d->urlNavigator, SIGNAL( urlChanged( const KUrl&  )),
              this,  SLOT( _k_enterUrl( const KUrl& ) ));
+    connect( d->urlNavigator, SIGNAL( returnPressed() ),
+             d->ops,  SLOT( setFocus() ));
 
     QString whatsThisText;
 
@@ -1336,6 +1342,8 @@ void KFileWidgetPrivate::_k_enterUrl( const KUrl& url )
     // tokenize() expects it because uses KUrl::setFileName()
     fixedUrl.adjustPath( KUrl::AddTrailingSlash );
     q->setUrl( fixedUrl );
+    if (!locationEdit->hasFocus())
+        ops->setFocus();
 }
 
 void KFileWidgetPrivate::_k_enterUrl( const QString& url )
@@ -1785,6 +1793,13 @@ void KFileWidgetPrivate::_k_placesViewSplitterMoved()
 {
     const QList<int> sizes = placesViewSplitter->sizes();
     speedBarWidth = sizes[0];
+}
+
+void KFileWidgetPrivate::_k_activateUrlNavigator()
+{
+    urlNavigator->setUrlEditable(true);
+    urlNavigator->setFocus();
+    urlNavigator->editor()->lineEdit()->selectAll();
 }
 
 static QString getExtensionFromPatternList(const QStringList &patternList)
