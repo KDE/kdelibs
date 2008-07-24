@@ -53,6 +53,7 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define ESCAPEKEY " []\0017[]==]"
 #define ESCAPEENTRY "[]\170[]]=3=]\\] "
 #define DOUBLEENTRY 123456.78912345
+#define FLOATENTRY 123.567f
 #define POINTENTRY QPoint( 4351, 1235 )
 #define SIZEENTRY QSize( 10, 20 )
 #define RECTENTRY QRect( 10, 23, 5321, 13 )
@@ -109,6 +110,7 @@ void KConfigTest::initTestCase()
   cg.writeEntry( "byteArrayEntry1", QByteArray( STRINGENTRY1 ),
                  KConfig::Global|KConfig::Persistent );
   cg.writeEntry( "doubleEntry1", DOUBLEENTRY );
+  cg.writeEntry( "floatEntry1", FLOATENTRY );
 
   sc.deleteGroup("deleteMe"); // deleting a nonexistant group
 
@@ -288,6 +290,7 @@ void KConfigTest::testSimple()
   QCOMPARE( sc3.readEntry( "byteArrayEntry1", QByteArray() ),
             QByteArray( STRINGENTRY1 ) );
   QCOMPARE( sc3.readEntry( "doubleEntry1", 0.0 ), DOUBLEENTRY );
+  QCOMPARE( sc3.readEntry( "floatEntry1", 0.0f ), FLOATENTRY );
 }
 
 void KConfigTest::testDefaults()
@@ -496,6 +499,7 @@ void KConfigTest::testEntryMap()
     QCOMPARE(entryMap.value("keywith=equalsign"), QString(STRINGENTRY1));
     QCOMPARE(entryMap.value("byteArrayEntry1"), QString(STRINGENTRY1));
     QCOMPARE(entryMap.value("doubleEntry1"), QString::number(DOUBLEENTRY, 'g', 15));
+    QCOMPARE(entryMap.value("floatEntry1"), QString::number(FLOATENTRY, 'g', 8));
 }
 
 void KConfigTest::testInvalid()

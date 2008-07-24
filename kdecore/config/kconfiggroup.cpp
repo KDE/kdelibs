@@ -232,6 +232,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             return true;
         }
         case QVariant::Double:
+        case QMetaType::Float:
         case QVariant::Int:
         case QVariant::UInt:
         case QVariant::LongLong:
@@ -992,6 +993,7 @@ void KConfigGroup::writeEntry( const char* key, const QVariant &value,
         case QVariant::Int:
         case QVariant::UInt:
         case QVariant::Double:
+        case QMetaType::Float:
         case QVariant::Bool:
         case QVariant::LongLong:
         case QVariant::ULongLong:
