@@ -385,19 +385,6 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
     if (capture == item->keySequence(column))
         return;
 
-    if (!capture.isEmpty()) {
-        unsigned int i = 0;
-
-        //refuse to assign a global shortcut occupied by a standard shortcut
-        if (column == GlobalPrimary || column == GlobalAlternate) {
-            KStandardShortcut::StandardShortcut ssc = KStandardShortcut::find(capture);
-            if (ssc != KStandardShortcut::AccelNone && !stealStandardShortcut(ssc, capture)) {
-                return;
-            }
-        }
-
-    }
-
     item->setKeySequence(column, capture);
     q->keyChange();
     //force view update
@@ -465,38 +452,6 @@ void KShortcutsEditorPrivate::changeRockerGesture(KShortcutsEditorItem *item, co
     }
 
     item->setRockerGesture(capture);
-}
-
-
-bool KShortcutsEditorPrivate::stealShortcut(KShortcutsEditorItem *item, unsigned int column, const QKeySequence &seq)
-{
-    QString title = i18n("Key Conflict");
-    QString message = i18n("The '%1' key combination has already been allocated to the \"%2\" action.\n"
-                           "Do you want to reassign it from that action to the current one?",
-                           seq.toString(QKeySequence::NativeText), item->m_action->text().remove('&'));
-
-    if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign")))
-        != KMessageBox::Continue)
-        return false;
-
-    item->setKeySequence(column - LocalPrimary, QKeySequence());
-    q->keyChange();
-    return true;
-}
-
-
-bool KShortcutsEditorPrivate::stealStandardShortcut(KStandardShortcut::StandardShortcut std, const QKeySequence &seq)
-{
-    QString title = i18n("Conflict with Standard Application Shortcut");
-    QString message = i18n("The '%1' key combination is also used for the standard action "
-                           "\"%2\" that some applications use.\n"
-                           "Do you really want to use it as a global shortcut as well?",
-                           seq.toString(QKeySequence::NativeText), KStandardShortcut::name(std));
-
-    if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign"))) != KMessageBox::Continue) {
-        return false;
-    }
-    return true;
 }
 
 

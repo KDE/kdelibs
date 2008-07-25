@@ -131,6 +131,11 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
                       model->data(index, ShortcutRole).value<QKeySequence>(),
                       m_allowLetterShortcuts);
             m_editor = editor;
+            // For global shortcuts check against the kde standard shortcuts
+            if (column == GlobalPrimary || column == GlobalAlternate) {
+                editor->setCheckAgainstStandardShortcuts(true);
+            }
+
             editor->setCheckActionCollections(m_checkActionCollections);
 
             connect(m_editor, SIGNAL(keySequenceChanged(const QKeySequence &)),

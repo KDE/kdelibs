@@ -152,13 +152,15 @@ public:
     ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq, const QKeySequence &activeSeq,
                        bool allowLetterShortcuts);
 
-    /**
-     * Set a list of action collections to check against for conflicting
-     * shortcuts.
-     *
-     * @see KKeySequenceWidget::setCheckActionCollections
-     */
+    //! @see KKeySequenceWidget::setCheckActionCollections()
     void setCheckActionCollections( const QList<KActionCollection*> checkActionCollections);
+
+    //! @see KKeySequenceWidget::checkAgainstStandardShortcuts()
+    //@{
+    bool checkAgainstStandardShortcuts() const;
+    void setCheckAgainstStandardShortcuts(bool check);
+    //@}
+
 
 Q_SIGNALS:
     void keySequenceChanged(const QKeySequence &);
@@ -275,8 +277,6 @@ public:
     void allDefault();
 
     //helper functions for conflict resolution
-    bool stealShortcut(KShortcutsEditorItem *item, unsigned int column, const QKeySequence &seq);
-    bool stealStandardShortcut(KStandardShortcut::StandardShortcut sa, const QKeySequence &seq);
     bool stealShapeGesture(KShortcutsEditorItem *item, const KShapeGesture &gest);
     bool stealRockerGesture(KShortcutsEditorItem *item, const KRockerGesture &gest);
 

@@ -82,6 +82,11 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
 }
 
 
+bool ShortcutEditWidget::checkAgainstStandardShortcuts() const
+{
+    return m_customEditor->checkAgainstStandardShortcuts();
+}
+
 //slot
 void ShortcutEditWidget::defaultToggled(bool checked)
 {
@@ -89,11 +94,19 @@ void ShortcutEditWidget::defaultToggled(bool checked)
         return;
 
     m_isUpdating = true;
-    m_customEditor->clearKeySequence();
     if  (checked) {
-        emit keySequenceChanged(m_defaultKeySequence);
+        // The default key sequence should be activated. We check first if this is
+        // possible.
+        if (m_customEditor->isKeySequenceAvailable(m_defaultKeySequence)) {
+            m_customEditor->clearKeySequence();
+            emit keySequenceChanged(m_defaultKeySequence);
+        } else {
+            // We tried to switch to the default key sequence and failed. Go
+            // back.
+            m_customRadio->setChecked(true);
+        }
     } else {
-        //custom was checked
+        // The empty key sequence is always valid
         emit keySequenceChanged(QKeySequence());
     }
     m_isUpdating = false;
@@ -107,6 +120,11 @@ void ShortcutEditWidget::setCheckActionCollections(
     m_customEditor->setCheckActionCollections(checkActionCollections);
 }
 
+
+void ShortcutEditWidget::setCheckAgainstStandardShortcuts(bool check)
+{
+    m_customEditor->setCheckAgainstStandardShortcuts(check);
+}
 
 //slot
 void ShortcutEditWidget::setCustom(const QKeySequence &seq)
