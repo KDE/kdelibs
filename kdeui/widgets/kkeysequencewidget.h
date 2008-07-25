@@ -1,3 +1,4 @@
+// vim: noexpandtab ts=4 sw=4
 /* This file is part of the KDE libraries
     Copyright (C) 2001, 2002 Ellis Whitehead <ellis@kde.org>
     Copyright (C) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
@@ -97,13 +98,18 @@ public:
 	/**
 	 * Set a list of action collections to check against for conflictuous shortcut.
 	 *
-	 * If there is a conflictuous shortcut with a KAction, and its shortcut can be configured
-	 * (KAction::isShortcutConfigurable() returns true) the user will be prompted whether to steal
-	 * the shortcut from this action.
+	 * If a KAction with a conflicting shortcut is found inside this list and
+	 * its shortcut can be configured (KAction::isShortcutConfigurable()
+	 * returns true) the user will be prompted whether to steal the shortcut
+	 * from this action.
 	 *
-	 * Global shortcuts are automatically checked for conflicts
+	 * Global shortcuts are automatically checked for conflicts. For checking
+	 * against the shortcuts of KStandardActions @see
+	 * checkAgainstStandardActions().
 	 *
-	 * Don't forget to call applyStealShortcut to actually steal the shortcut.
+	 * Don't forget to call applyStealShortcut to actually steal the shortcut
+	 * and read it's documentation for some limitation when handling global
+	 * shortcuts.
 	 *
 	 * @since 4.1
 	 */
@@ -148,12 +154,18 @@ public Q_SLOTS:
 
 	/**
 	 * Actually remove the shortcut that the user wanted to steal, from the
-	 * action that was using it.
+	 * action that was using it. This only applies to actions provided to us
+	 * by setCheckActionCollections() and setCheckActionList().
 	 *
-	 * To be called before you apply your changes.
-	 * No shortcuts are stolen until this function is called.
+	 * Global and Standard Shortcuts have to be stolen immediately when the
+	 * user gives his consent (technical reasons). That means those changes
+	 * will be active even if you never call applyStealShortcut().
+	 *
+	 * To be called before you apply your changes. No local shortcuts are
+	 * stolen until this function is called.
 	 */
 	void applyStealShortcut();
+
 private:
 	Q_PRIVATE_SLOT(d, void doneRecording())
 

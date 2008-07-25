@@ -239,7 +239,7 @@ void KKeySequenceWidget::applyStealShortcut()
                 if (parentCollection)
 			parentCollection->writeSettings();
 	}
-	KGlobalAccel::stealShortcutSystemwide(d->keySequence);
+	d->stealAction = NULL;
 }
 
 void KKeySequenceButton::setText(const QString &text)
@@ -273,6 +273,7 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 	isRecording = false;
 	keyButton->releaseKeyboard();
 	keyButton->setDown(false);
+	stealAction = NULL;
 
 	if (keySequence != oldKeySequence && validate) {
 		if (   conflictWithLocalShortcuts(keySequence)
@@ -297,6 +298,13 @@ bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &
 		if (!KGlobalAccel::promptStealShortcutSystemwide(q, conflicting, keySequence)) {
 			return true;
 		}
+		// The user approved stealing the shortcut. We have to steal
+		// it immediately because KAction::setGlobalShortcut() refuses
+		// to set a global shortcut that is already used. There is no
+		// error it just silently fails. So be nice because this is
+		// most likely the first action that is done in the slot
+		// listening to keySequenceChanged().
+		KGlobalAccel::stealShortcutSystemwide(keySequence);
 	}
 	return false;
 }
