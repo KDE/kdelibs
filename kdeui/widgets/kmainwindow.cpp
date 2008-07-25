@@ -226,6 +226,11 @@ void KMainWindowPrivate::init(KMainWindow *_q)
 {
     KGlobal::ref();
 
+    // We set allow quit to true, so when the refcounting reaches 0 the application instance will
+    // be exited. This has a similar purpose than setQuitOnLastWindowClosed (from
+    // QApplication), but it honors (de)refing from KGlobal.
+    KGlobal::setAllowQuit(true);
+
     q = _q;
 
     q->setAnimated(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
