@@ -1,3 +1,4 @@
+// vim: set noet ts=4 sw=4
 /* This file is part of the KDE libraries
     Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
     Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
@@ -23,7 +24,6 @@
 #include "kkeysequencewidget_p.h"
 
 #include "kkeyserver.h"
-#include "kiconloader.h"
 
 #include <QKeyEvent>
 #include <QTimer>
@@ -39,37 +39,6 @@
 #include <kshortcut.h>
 #include <kaction.h>
 #include <kactioncollection.h>
-
-#if 0
-#ifdef Q_WS_X11
-#define XK_XKB_KEYS
-#define XK_MISCELLANY
-#include <X11/Xlib.h>	// For x11Event()
-#include <X11/keysymdef.h> // For XK_...
-
-#ifdef KeyPress
-const int XFocusOut = FocusOut;
-const int XFocusIn = FocusIn;
-const int XKeyPress = KeyPress;
-const int XKeyRelease = KeyRelease;
-#undef KeyRelease
-#undef KeyPress
-#undef FocusOut
-#undef FocusIn
-#endif // KeyPress
-#endif // Q_WS_X11*/
-
-//static const char* psTemp[] = {
-//  I18N_NOOP("Primary"), I18N_NOOP("Alternate"), I18N_NOOP("Multi-Key")
-//};
-#endif
-
-/***********************************************************************/
-/* KKeySequenceWidget                                                  */
-/*                                                                     */
-/* Initially added by Mark Donohoe <donohoe@kde.org>                   */
-/*                                                                     */
-/***********************************************************************/
 
 class KKeySequenceWidgetPrivate
 {
