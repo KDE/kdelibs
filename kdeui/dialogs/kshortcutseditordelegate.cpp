@@ -126,10 +126,12 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
         QWidget *viewport = static_cast<QAbstractItemView*>(parent())->viewport();
 
         if (column >= LocalPrimary && column <= GlobalAlternate) {
-            m_editor = new ShortcutEditWidget(viewport,
+            ShortcutEditWidget *editor = new ShortcutEditWidget(viewport,
                       model->data(index, DefaultShortcutRole).value<QKeySequence>(),
                       model->data(index, ShortcutRole).value<QKeySequence>(),
                       m_allowLetterShortcuts);
+            m_editor = editor;
+            editor->setCheckActionCollections(m_checkActionCollections);
 
             connect(m_editor, SIGNAL(keySequenceChanged(const QKeySequence &)),
                     this, SLOT(keySequenceChanged(const QKeySequence &)));
@@ -223,6 +225,12 @@ void KShortcutsEditorDelegate::keySequenceChanged(const QKeySequence &seq)
     emit shortcutChanged(ret, m_editingIndex);
 }
 
+
+void KShortcutsEditorDelegate::setCheckActionCollections(
+    const QList<KActionCollection*> checkActionCollections )
+{
+    m_checkActionCollections = checkActionCollections;
+}
 
 //slot
 void KShortcutsEditorDelegate::shapeGestureChanged(const KShapeGesture &gest)

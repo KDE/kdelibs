@@ -96,6 +96,9 @@ void KShortcutsEditor::clearCollections()
 void KShortcutsEditor::addCollection(KActionCollection *collection, const QString &title)
 {
     d->actionCollections.append(collection);
+    // Forward our actionCollections to the delegate which does the conflict
+    // checking.
+    d->delegate->setCheckActionCollections(d->actionCollections);
     enum hierarchyLevel {Root = 0, Program, Group, Action/*unused*/};
     KAction *kact;
     QTreeWidgetItem *hier[3];
@@ -270,8 +273,12 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
         ui.list->header()->hideSection(LocalAlternate);
     }
 
-    delegate = new KShortcutsEditorDelegate(ui.list,
-                                           allowLetterShortcuts == KShortcutsEditor::LetterShortcutsAllowed);
+    // Create the Delegate. It is responsible for the KKeySeqeunceWidgets that
+    // really change the shortcuts.
+    delegate = new KShortcutsEditorDelegate(
+        ui.list,
+        allowLetterShortcuts == KShortcutsEditor::LetterShortcutsAllowed);
+
     ui.list->setItemDelegate(delegate);
     ui.list->setSelectionBehavior(QAbstractItemView::SelectItems);
     ui.list->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -374,6 +381,7 @@ void KShortcutsEditorPrivate::capturedShortcut(const QVariant &newShortcut, cons
 
 void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint column, const QKeySequence &capture)
 {
+    // The keySequence we get is cleared by KKeySequenceWidget. No conflicts.
     if (capture == item->keySequence(column))
         return;
 
@@ -388,40 +396,6 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
             }
         }
 
-        //find conflicting shortcuts in this application
-        bool conflict = false;
-        KShortcutsEditorItem *otherItem = 0;
-        for (QTreeWidgetItemIterator it(ui.list); (*it) && !conflict; ++it) {
-            //when moving around a shortcut in the same action item the intent is clear
-            //and we don't need to ask about conflicts
-            if ((*it)->childCount() || (*it == item))
-                continue;
-
-            otherItem = static_cast<KShortcutsEditorItem *>(*it);
-
-            // We only check for conflicts with local shortcuts. If the app
-            // has global shortcuts we will check against them below with the
-            // global shortcuts of other applications
-            for (i = LocalPrimary; i <= LocalAlternate; i++) {
-                if (capture == otherItem->keySequence(i)) {
-                    conflict = true;
-                    break;
-                }
-            }
-        }
-
-        if (conflict && !stealShortcut(otherItem, i, capture))
-            return;
-
-        //check for conflicts with other applications' global shortcuts
-        QStringList conflicting = KGlobalAccel::findActionNameSystemwide(capture);
-        if (!conflicting.isEmpty()) {
-            if (KGlobalAccel::promptStealShortcutSystemwide(0/*TODO:right?*/, conflicting, capture)) {
-                KGlobalAccel::stealShortcutSystemwide(capture);
-            } else {
-                return;
-            }
-        }
     }
 
     item->setKeySequence(column, capture);

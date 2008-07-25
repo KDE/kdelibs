@@ -30,11 +30,13 @@
 #include <QMetaType>
 #include <QModelIndex>
 #include <QTreeWidget>
+#include <QtCore/QList>
 
 class QTreeWidget;
 class QTreeWidgetItem;
 class QRadioButton;
 class KKeySequenceWidget;
+class KActionCollection;
 
 enum ColumnDesignation {
     Name = 0,
@@ -85,6 +87,15 @@ public:
     KShortcutsEditorDelegate(QTreeWidget *parent, bool allowLetterShortcuts);
     //reimplemented to have some extra height
     virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+    /**
+     * Set a list of action collections to check against for conflicting
+     * shortcuts.
+     *
+     * @see KKeySequenceWidget::setCheckActionCollections
+     */
+    void setCheckActionCollections(const QList<KActionCollection*> checkActionCollections );
+
 Q_SIGNALS:
     void shortcutChanged(QVariant, const QModelIndex &);
 public Q_SLOTS:
@@ -95,6 +106,10 @@ private:
     mutable QModelIndex m_editingIndex;
     bool m_allowLetterShortcuts;
     QWidget *m_editor;
+
+    //! List of actionCollections to check for conflicts.
+    QList<KActionCollection*> m_checkActionCollections;
+
 private Q_SLOTS:
     void itemActivated(QModelIndex index);
 
@@ -136,6 +151,15 @@ class ShortcutEditWidget : public TabConnectedWidget
 public:
     ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq, const QKeySequence &activeSeq,
                        bool allowLetterShortcuts);
+
+    /**
+     * Set a list of action collections to check against for conflicting
+     * shortcuts.
+     *
+     * @see KKeySequenceWidget::setCheckActionCollections
+     */
+    void setCheckActionCollections( const QList<KActionCollection*> checkActionCollections);
+
 Q_SIGNALS:
     void keySequenceChanged(const QKeySequence &);
 private Q_SLOTS:
