@@ -46,7 +46,7 @@ class QAction;
  * Please note that QSystemTrayIcon::showMessage(..) should not be
  * used for KDE application because the popup message has no KDE standard
  * look & feel and cannot be controlled by KDE configurations. 
- * Use KNotify or KPassivePopup instead.
+ * Use KNotification or KPassivePopup instead.
  *
  * @author Matthias Ettrich <ettrich@kde.org>
  **/
