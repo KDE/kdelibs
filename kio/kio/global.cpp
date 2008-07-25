@@ -195,7 +195,7 @@ KIO_EXPORT QString KIO::buildErrorString(int errorCode, const QString &errorText
       result = i18n( "A folder named %1 already exists." ,  errorText );
       break;
     case  KIO::ERR_UNKNOWN_HOST:
-      result = errorText.isEmpty() ? i18n( "No hostname specified." ) : i18n( "Unknown host %1" ,  errorText );
+      result = errorText.isEmpty() ? i18n( "No hostname specified." ) : i18n( "Unknown host %1." ,  errorText );
       break;
     case  KIO::ERR_ACCESS_DENIED:
       result = i18n( "Access denied to %1." ,  errorText );
@@ -288,25 +288,25 @@ KIO_EXPORT QString KIO::buildErrorString(int errorCode, const QString &errorText
       result = i18n( "Error. Out of memory.\n%1" ,  errorText );
       break;
     case  KIO::ERR_UNKNOWN_PROXY_HOST:
-      result = i18n( "Unknown proxy host\n%1" ,  errorText );
+      result = i18n( "Unknown proxy host.\n%1" ,  errorText );
       break;
     case  KIO::ERR_COULD_NOT_AUTHENTICATE:
-      result = i18n( "Authorization failed, %1 authentication not supported" ,  errorText );
+      result = i18n( "Authorization failed, %1 authentication not supported." ,  errorText );
       break;
     case  KIO::ERR_ABORTED:
-      result = i18n( "User canceled action\n%1" ,  errorText );
+      result = i18n( "User canceled action.\n%1" ,  errorText );
       break;
     case  KIO::ERR_INTERNAL_SERVER:
-      result = i18n( "Internal error in server\n%1" ,  errorText );
+      result = i18n( "Internal error in server.\n%1" ,  errorText );
       break;
     case  KIO::ERR_SERVER_TIMEOUT:
-      result = i18n( "Timeout on server\n%1" ,  errorText );
+      result = i18n( "Timeout on server.\n%1" ,  errorText );
       break;
     case  KIO::ERR_UNKNOWN:
-      result = i18n( "Unknown error\n%1" ,  errorText );
+      result = i18n( "Unknown error.\n%1" ,  errorText );
       break;
     case  KIO::ERR_UNKNOWN_INTERRUPT:
-      result = i18n( "Unknown interrupt\n%1" ,  errorText );
+      result = i18n( "Unknown interrupt.\n%1" ,  errorText );
       break;
 /*
     case  KIO::ERR_CHECKSUM_MISMATCH:
@@ -350,7 +350,7 @@ KIO_EXPORT QString KIO::buildErrorString(int errorCode, const QString &errorText
       result = i18n( "Access to restricted port in POST denied.");
       break;
     default:
-      result = i18n( "Unknown error code %1\n%2\nPlease send a full bug report at http://bugs.kde.org." ,  errorCode ,  errorText );
+      result = i18n( "Unknown error code %1.\n%2\nPlease send a full bug report at http://bugs.kde.org." ,  errorCode ,  errorText );
       break;
     }
 
