@@ -125,10 +125,8 @@ void KExtendableItemDelegate::Private::_k_extenderDestructionHandler(QObject *de
     QWidget *extender = static_cast<QWidget *>(destroyed);
     stateTick++;
 
-    if (!extenderIndices.value(extender).isValid())
-        return;
-
-    if (q->receivers(SIGNAL(extenderDestroyed(QWidget *, QModelIndex)))) {
+    if (extenderIndices.value(extender).isValid() &&
+      q->receivers(SIGNAL(extenderDestroyed(QWidget *, QModelIndex)))) {
         QPersistentModelIndex persistentIndex = extenderIndices.take(extender);
         QModelIndex index = persistentIndex;
         emit q->extenderDestroyed(extender, index);
