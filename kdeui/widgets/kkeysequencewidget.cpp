@@ -43,7 +43,7 @@
 class KKeySequenceWidgetPrivate
 {
 public:
-	KKeySequenceWidgetPrivate(KKeySequenceWidget *q): q(q) {}
+	KKeySequenceWidgetPrivate(KKeySequenceWidget *q);
 
 	void init();
 
@@ -53,8 +53,28 @@ public:
 	void updateShortcutDisplay();
 	void startRecording();
 
+	/**
+	 * Conflicts the key sequence @a seq with a current standard
+	 * shortcut?
+	 */
+	bool conflictWithStandardShortcuts(const QKeySequence &seq);
+
+	/**
+	 * Conflicts the key sequence @a seq with a current local
+	 * shortcut?
+	 */
 	bool conflictWithLocalShortcuts(const QKeySequence &seq);
+
+	/**
+	 * Conflicts the key sequence @a seq with a current global
+	 * shortcut?
+	 */
 	bool conflictWithGlobalShortcuts(const QKeySequence &seq);
+
+	/**
+	 * Get permission to steal the shortcut @seq from the standard shortcut @a std.
+	 */
+	bool stealStandardShortcut(KStandardShortcut::StandardShortcut std, const QKeySequence &seq);
 
 //private slot
 	void doneRecording(bool validate = true);
@@ -73,10 +93,14 @@ public:
 	uint modifierKeys;
 	bool isRecording;
 
+	//! Check the key sequence against KStandardShortcut::find()
+	bool checkAgainstStandardShortcuts;
+
     /**
      * The list of action to check against for conflict shortcut
      */
     QList<QAction*> checkList; // deprecated
+
     /**
      * The list of action collections to check against for conflict shortcut
      */
@@ -91,6 +115,20 @@ public:
 	void wontStealShortcut(QAction *item, const QKeySequence &seq);
 
 };
+
+KKeySequenceWidgetPrivate::KKeySequenceWidgetPrivate(KKeySequenceWidget *q)
+	: q(q)
+	 ,layout(NULL)
+	 ,keyButton(NULL)
+	 ,clearButton(NULL)
+	 ,allowModifierless(false)
+	 ,nKey(0)
+	 ,modifierKeys(0)
+	 ,isRecording(false)
+	 ,checkAgainstStandardShortcuts(false)
+	 ,stealAction(NULL)
+{}
+
 
 bool KKeySequenceWidgetPrivate::stealShortcut(QAction *item, const QKeySequence &seq)
 {
@@ -132,10 +170,6 @@ KKeySequenceWidget::KKeySequenceWidget(QWidget *parent)
 
 void KKeySequenceWidgetPrivate::init()
 {
-	stealAction = 0;
-	isRecording = false;
-	allowModifierless = false;
-
 	layout = new QHBoxLayout(q);
 
 	keyButton = new KKeySequenceButton(this, q);
@@ -159,9 +193,24 @@ KKeySequenceWidget::~KKeySequenceWidget ()
 }
 
 
+bool KKeySequenceWidget::checkAgainstStandardShortcuts() const
+{
+	return d->checkAgainstStandardShortcuts;
+}
+
+
 void KKeySequenceWidget::setModifierlessAllowed(bool allow)
 {
 	d->allowModifierless = allow;
+}
+
+
+bool KKeySequenceWidget::isKeySequenceAvailable(const QKeySequence &keySequence) const
+{
+	return ! ( d->conflictWithLocalShortcuts(keySequence)
+	           || d->conflictWithGlobalShortcuts(keySequence)
+	           || ( d->checkAgainstStandardShortcuts 
+		        && d->conflictWithStandardShortcuts(keySequence)));
 }
 
 
@@ -185,6 +234,11 @@ void KKeySequenceWidget::setCheckActionList(const QList<QAction*> &checkList) //
 void KKeySequenceWidget::setCheckActionCollections(const QList<KActionCollection *>& actionCollections)
 {
     d->checkActionCollections = actionCollections;
+}
+
+void KKeySequenceWidget::setCheckAgainstStandardShortcuts(bool check)
+{
+	d->checkAgainstStandardShortcuts = check;
 }
 
 //slot
@@ -275,13 +329,10 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 	keyButton->setDown(false);
 	stealAction = NULL;
 
-	if (keySequence != oldKeySequence && validate) {
-		if (   conflictWithLocalShortcuts(keySequence)
-			|| conflictWithGlobalShortcuts(keySequence)) {
-			keySequence = oldKeySequence;
-			updateShortcutDisplay();
-			return;
-		}
+	if (keySequence != oldKeySequence && validate && !q->isKeySequenceAvailable(keySequence)) {
+		keySequence = oldKeySequence;
+		updateShortcutDisplay();
+		return;
 	}
 
 	updateShortcutDisplay();
@@ -355,6 +406,31 @@ bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &k
 	}
 
 	return false;
+}
+
+
+bool KKeySequenceWidgetPrivate::conflictWithStandardShortcuts(const QKeySequence &keySequence)
+{
+	KStandardShortcut::StandardShortcut ssc = KStandardShortcut::find(keySequence);
+	if (ssc != KStandardShortcut::AccelNone && !stealStandardShortcut(ssc, keySequence)) {
+		return true;
+	}
+	return false;
+}
+
+
+bool KKeySequenceWidgetPrivate::stealStandardShortcut(KStandardShortcut::StandardShortcut std, const QKeySequence &seq)
+{
+    QString title = i18n("Conflict with Standard Application Shortcut");
+    QString message = i18n("The '%1' key combination is also used for the standard action "
+                           "\"%2\" that some applications use.\n"
+                           "Do you really want to use it as a global shortcut as well?",
+                           seq.toString(QKeySequence::NativeText), KStandardShortcut::name(std));
+
+    if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign"))) != KMessageBox::Continue) {
+        return false;
+    }
+    return true;
 }
 
 

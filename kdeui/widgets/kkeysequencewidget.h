@@ -71,6 +71,22 @@ public:
 	virtual ~KKeySequenceWidget();
 
 	/**
+	 * Set if a key sequence should be checked against kde's standard
+	 * shortcuts (@see KStandardShortcut).
+	 *
+	 * It is a good idea to enable this when caputing a key sequence for a
+	 * global shortcut. The default is not to check against standard
+	 * shortcuts.
+	 *
+	 * @param check True -> Check against standard shortcuts
+	 * @since 4.2
+	 */
+	//@{
+	bool checkAgainstStandardShortcuts() const;
+	void setCheckAgainstStandardShortcuts(bool check);
+	//@}
+
+	/**
 	 * This only applies to user input, not to setShortcut().
 	 * Set whether to accept "plain" keys without modifiers (like Ctrl, Alt, Meta).
 	 * Plain keys by our definition include letter and symbol keys and
@@ -78,6 +94,15 @@ public:
 	 * "Special" keys like F1, Cursor keys, Insert, PageDown will always work.
 	 */
 	void setModifierlessAllowed(bool allow);
+
+	/**
+	 * Checks wether the key sequence @a seq is available to grab.
+	 *
+	 * The sequence is checked under the same rules as if it has been typed by
+	 * the user. This method is useful if you get key sequences from another
+	 * input source and want to check if it is save to set them.
+	 */
+	bool isKeySequenceAvailable(const QKeySequence &seq) const;
 
 	/**
 	 * @see setModifierlessAllowed()
@@ -104,8 +129,7 @@ public:
 	 * from this action.
 	 *
 	 * Global shortcuts are automatically checked for conflicts. For checking
-	 * against the shortcuts of KStandardActions @see
-	 * checkAgainstStandardActions().
+	 * against KStandardShortcuts - @see checkAgainstStandardShortcuts().
 	 *
 	 * Don't forget to call applyStealShortcut to actually steal the shortcut
 	 * and read it's documentation for some limitation when handling global
