@@ -101,6 +101,8 @@ public:
 	 * The sequence is checked under the same rules as if it has been typed by
 	 * the user. This method is useful if you get key sequences from another
 	 * input source and want to check if it is save to set them.
+	 *
+	 * @since 4.2
 	 */
 	bool isKeySequenceAvailable(const QKeySequence &seq) const;
 
