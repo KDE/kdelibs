@@ -417,26 +417,37 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
     }
 
     //now we are actually changing the shortcut of the action
-
     QList<int> added = d->nonemptyOnly(keys);
 
-    //take care of stale keys and remove from added these that remain.
+    // Go over the current shortcuts and remove those that aren't present in
+    // the new shortcut list. We do not active the required new shortcuts.
     foreach(int oldKey, ad->keys) {
-        if (oldKey != 0) {
-            bool remains = false;
-            for (int i = 0; i < added.count(); i++) {
-                if (oldKey == added[i]) {
-                    added.removeAt(i);
-                    i--;
-                    remains = true;
-                    //no break; - remove possible duplicates
-                }
+
+        // No key ... nothing to do
+        if (oldKey == 0) {
+            continue;
+        }
+
+        // controls wether the current shortcuts remains active.
+        bool remains = false;
+
+        for (int i = 0; i < added.count(); ++i) {
+            if (oldKey == added[i]) {
+                // We have a match. This shortcut is present in the current
+                // active shortcuts list and the desired new shortcuts list.
+                // Keep it active and forget about it.
+                added.removeAt(i);
+                i--;
+                remains = true;
+                //no break; - remove possible duplicates
             }
-            if (!remains) {
-                d->keyToAction.remove(oldKey);
-                if (ad->isPresent) {
-                    d->impl->grabKey(oldKey, false);
-                }
+        }
+
+        // Remove the shortcut if it isn't active anymore
+        if (!remains) {
+            d->keyToAction.remove(oldKey);
+            if (ad->isPresent) {
+                d->impl->grabKey(oldKey, false);
             }
         }
     }
@@ -457,9 +468,13 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
     //this code inherently does the right thing for duplicates in added
     for (int i = 0; i < added.count(); i++) {
         if (!d->keyToAction.contains(added[i])) {
+            // The desired new shortcut is available. Take it.
             d->keyToAction.insert(added[i], ad);
         } else {
-            //clash
+            kDebug(125) << "Found a conflict for action " << actionId << ". Key " << added[i] << " will be skipped!";
+            // The desired new shortcut is not available. Find the conflicting
+            // shortcut in our list and remove it. We will not steal that
+            // shortcut
             for (int j = 0; j < ad->keys.count(); j++) {
                 if (ad->keys[j] == added[i]) {
                     if (ad->keys.last() == added[i]) {
@@ -474,6 +489,7 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
         }
     }
 
+    // Activate all remaining shortcuts.
     if (ad->isPresent) {
         foreach (int key, added) {
             Q_ASSERT(d->keyToAction.value(key) == ad);
