@@ -487,14 +487,6 @@ bool KShortcutsEditorPrivate::stealRockerGesture(KShortcutsEditorItem *item, con
 }
 
 
-//TODO have KGlobalAccel emit a signal on changes, connect it to this, do what needs to be done
-//slot
-void KShortcutsEditorPrivate::globalSettingsChangedSystemwide(int which)
-{
-    Q_UNUSED(which)
-    //update display or similar
-}
-
 /*TODO for the printShortcuts function
 Nice to have features (which I'm not sure I can do before may due to
 more important things):
