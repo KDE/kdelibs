@@ -1,4 +1,4 @@
-// vim: set noet ts=4 sw=4
+// vim: noet ts=8 sw=8
 /* This file is part of the KDE libraries
     Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
     Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
@@ -52,6 +52,10 @@ public:
 
 	void updateShortcutDisplay();
 	void startRecording();
+
+	bool conflictWithLocalShortcuts(const QKeySequence &seq);
+	bool conflictWithGlobalShortcuts(const QKeySequence &seq);
+
 //private slot
 	void doneRecording(bool validate = true);
 
@@ -255,7 +259,7 @@ void KKeySequenceWidgetPrivate::startRecording()
 	keyButton->grabKeyboard();
 
 	if (!QWidget::keyboardGrabber()) {
-		kDebug() << "Failed to grab the keyboard! Most likely qt's nograb option is active";
+		kWarning() << "Failed to grab the keyboard! Most likely qt's nograb option is active";
 	}
 
 	keyButton->setDown(true);
@@ -265,12 +269,41 @@ void KKeySequenceWidgetPrivate::startRecording()
 
 void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 {
-	KAction *steal=0;
 	modifierlessTimeout.stop();
 	isRecording = false;
 	keyButton->releaseKeyboard();
 	keyButton->setDown(false);
 
+	if (keySequence != oldKeySequence && validate) {
+		if (   conflictWithLocalShortcuts(keySequence)
+			|| conflictWithGlobalShortcuts(keySequence)) {
+			keySequence = oldKeySequence;
+			updateShortcutDisplay();
+			return;
+		}
+	}
+
+	updateShortcutDisplay();
+	if (keySequence != oldKeySequence)
+		emit q->keySequenceChanged(keySequence);
+	return;
+}
+
+
+bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &keySequence)
+{
+	QStringList conflicting = KGlobalAccel::findActionNameSystemwide(keySequence);
+	if (!conflicting.isEmpty()) {
+		if (!KGlobalAccel::promptStealShortcutSystemwide(q, conflicting, keySequence)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
+bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &keySequence)
+{
 	// We have actions both in the deprecated checkList and the
 	// checkActionCollections list. Add all the actions to a single list to
 	// be able to process them in a single loop below.
@@ -284,49 +317,36 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 		allActions += collection->actions();
 	}
 
-	// We don't check for global shortcut when the allActions list is empty
-	// because we are not certain that apply will be called.
-	if (keySequence != oldKeySequence && validate && !allActions.isEmpty()) {
-		//find conflicting shortcuts with existing actions
-		foreach(QAction * qaction , allActions )
-		{
-			KAction *kaction=qobject_cast<KAction*>(qaction);
-			if(kaction) {
-				if(kaction->shortcut().contains(keySequence)) {
-					if(kaction->isShortcutConfigurable ()) {
-						if(!stealShortcut(kaction, keySequence))
-							goto reset;
-						steal = kaction;
+	//find conflicting shortcuts with existing actions
+	foreach(QAction * qaction , allActions ) {
+		KAction *kaction=qobject_cast<KAction*>(qaction);
+		if(kaction) {
+			if(kaction->shortcut().contains(keySequence)) {
+				// A conflict with a KAction. If that action is configurable
+				// ask the user what to do. If not reject this keySequence.
+				if(kaction->isShortcutConfigurable ()) {
+					if(stealShortcut(kaction, keySequence)) {
+						stealAction = kaction;
 						break;
 					} else {
-						wontStealShortcut(kaction, keySequence);
-						goto reset;
+						return true;
 					}
-				}
-			} else {
-				if(qaction->shortcut() == keySequence) {
-					wontStealShortcut(qaction, keySequence);
-					goto reset;
+				} else {
+					wontStealShortcut(kaction, keySequence);
+					return true;
 				}
 			}
-		}
-		//check for conflicts with other applications' global shortcuts
-		QStringList conflicting = KGlobalAccel::findActionNameSystemwide(keySequence);
-		if (!conflicting.isEmpty()) {
-			if (!KGlobalAccel::promptStealShortcutSystemwide(0/*TODO:right?*/, conflicting, keySequence))
-				goto reset;
+		} else {
+			if(qaction->shortcut() == keySequence) {
+				// A conflict with a QAction. Don't know why :-( but we won't
+				// steal from that kind of actions.
+				wontStealShortcut(qaction, keySequence);
+				return true;
+			}
 		}
 	}
-	stealAction = steal;
-	updateShortcutDisplay();
-	if (keySequence != oldKeySequence)
-		emit q->keySequenceChanged(keySequence);
-	return;
 
-reset:
-	keySequence = oldKeySequence;
-	updateShortcutDisplay();
-	return;
+	return false;
 }
 
 
@@ -378,7 +398,6 @@ bool KKeySequenceButton::event (QEvent* e)
 		return true;
 	}
 
-	// mjansen - 29.03.08
 	// The shortcut 'alt+c' ( or any other dialog local action shortcut )
 	// ended the recording and triggered the action associated with the
 	// action. In case of 'alt+c' ending the dialog.  It seems that those
