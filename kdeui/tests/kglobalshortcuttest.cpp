@@ -43,11 +43,6 @@ const QKeySequence sequenceF = QKeySequence(Qt::META + Qt::Key_F27);
    and we just choose very improbable shortcuts to avoid conflicts with real
    applications' shortcuts. */
 
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-   The order here i very important. An test expects the shortcuts to have
-   certain values. Be careful when changing. */
-
 //we need a KComponentData and a GUI so that the implementation can grab keys
 QTEST_KDEMAIN( KGlobalShortcutTest, GUI )
 
