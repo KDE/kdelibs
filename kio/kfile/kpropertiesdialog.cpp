@@ -83,7 +83,7 @@ extern "C" {
 #include <kdialog.h>
 #include <kdirwatch.h>
 #include <kdirnotify.h>
-#include <kdiskfreespace.h>
+#include <kdiskfreespaceinfo.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kicondialog.h>
@@ -1102,10 +1102,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       d->m_capacityBar = new KCapacityBar( KCapacityBar::DrawTextOutline, d->m_frame );
       grid->addWidget( d->m_capacityBar, curRow++, 2);
 
-      KDiskFreeSpace * job = new KDiskFreeSpace;
-      connect(job, SIGNAL(foundMountPoint(QString, quint64, quint64, quint64)),
-              this, SLOT(slotFoundMountPoint(QString, quint64, quint64, quint64)));
-      job->readDF( mp->mountPoint() );
+      KDiskFreeSpaceInfo info = KDiskFreeSpaceInfo::freeSpaceInfo( mp->mountPoint() );
+      slotFoundMountPoint( info.mountPoint(), info.size()/1024, info.used()/1024, info.available()/1024);
     }
   }
 
@@ -1253,10 +1251,8 @@ void KFilePropsPlugin::slotSizeDetermine()
     KUrl url = item.mostLocalUrl( isLocal );
     KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( url.path() );
     if (mp) {
-      KDiskFreeSpace * job = new KDiskFreeSpace;
-      connect(job, SIGNAL(foundMountPoint(QString, quint64, quint64, quint64)),
-              this, SLOT(slotFoundMountPoint(QString, quint64, quint64, quint64)));
-      job->readDF( mp->mountPoint() );
+      KDiskFreeSpaceInfo info = KDiskFreeSpaceInfo::freeSpaceInfo( mp->mountPoint() );
+      slotFoundMountPoint( info.mountPoint(), info.size()/1024, info.used()/1024, info.available()/1024);
     }
   }
 }
@@ -2859,11 +2855,8 @@ void KDevicePropsPlugin::updateInfo()
 
   if ( !d->mountpoint->text().isEmpty() )
   {
-    KDiskFreeSpace * job = new KDiskFreeSpace;
-    connect(job, SIGNAL(foundMountPoint(QString, quint64, quint64, quint64)),
-            this, SLOT(slotFoundMountPoint(QString, quint64, quint64, quint64)));
-
-    job->readDF( d->mountpoint->text() );
+      KDiskFreeSpaceInfo info = KDiskFreeSpaceInfo::freeSpaceInfo( d->mountpoint->text() );
+      slotFoundMountPoint( info.mountPoint(), info.size()/1024, info.used()/1024, info.available()/1024);
   }
 }
 

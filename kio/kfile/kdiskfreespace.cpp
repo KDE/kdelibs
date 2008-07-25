@@ -21,36 +21,24 @@
  */
 
 #include "kdiskfreespace.h"
-#include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include "kdiskfreespaceinfo.h"
 #include <QtCore/QTimer>
 
 #include <kdebug.h>
-#include <kprocess.h>
-#include <kmountpoint.h>
-#include <kio/global.h>
-#include <config-kfile.h>
 
-class KDiskFreeSpace::Private
+
+struct KDiskFreeSpace::Private
 {
-public:
     Private(KDiskFreeSpace *parent)
-        : m_parent(parent),
-          total(0),
-          avail(0),
-          error(-1)
+        : m_parent(parent)
     {}
 
     bool _k_calculateFreeSpace();
 
     KDiskFreeSpace   *m_parent;
     QString           m_path;
-
-    QString mountPoint;
-    KIO::filesize_t total;
-    KIO::filesize_t avail;
-    int error;
 };
+
 
 KDiskFreeSpace::KDiskFreeSpace(QObject *parent)
     : QObject(parent), d(new Private(this))
@@ -64,90 +52,27 @@ KDiskFreeSpace::~KDiskFreeSpace()
 }
 
 
-QString KDiskFreeSpace::mountPoint() const
-{
-    return d->mountPoint;
-}
-
-
-KIO::filesize_t KDiskFreeSpace::size() const
-{
-    return d->total;
-}
-
-
-KIO::filesize_t KDiskFreeSpace::used() const
-{
-    return d->total - d->avail;
-}
-
-
-KIO::filesize_t KDiskFreeSpace::avail() const
-{
-    return d->avail;
-}
-
-
-int KDiskFreeSpace::error() const
-{
-    return d->error;
-}
-
-
 bool KDiskFreeSpace::readDF( const QString & mountPoint )
 {
     d->m_path = mountPoint;
     return d->_k_calculateFreeSpace();
 }
 
-#ifdef Q_OS_WIN
-#include <QtCore/QDir>
-#include <windows.h>
-#else
-#include <sys/statvfs.h>
-#endif
 
 bool KDiskFreeSpace::Private::_k_calculateFreeSpace()
 {
-    // determine the mount point
-    KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( m_path );
-    if (mp)
-        mountPoint = mp->mountPoint();
-
-    error = -1;
-
-#ifdef Q_OS_WIN
-    quint64 availUser;
-    QFileInfo fi(mountPoint);
-    QString dir = QDir::toNativeSeparators(fi.absoluteDir().canonicalPath());
-
-    if(GetDiskFreeSpaceExW((LPCWSTR)dir.utf16(),
-                           (PULARGE_INTEGER)&availUser,
-                           (PULARGE_INTEGER)&total,
-                           (PULARGE_INTEGER)&avail) != 0) {
-        error = 0;
-    }
-#else
-    struct statvfs statvfs_buf;
-
-    if (!statvfs(QFile::encodeName(m_path).constData(), &statvfs_buf)) {
-        avail = statvfs_buf.f_bavail * statvfs_buf.f_frsize;
-        total = statvfs_buf.f_blocks * statvfs_buf.f_frsize;
-        error = 0;
-    }
-#endif
-
-    if (!error) {
-        quint64 totalKib = total / 1024;
-        quint64 availKib = avail / 1024;
-        emit m_parent->foundMountPoint( mountPoint, totalKib, totalKib-availKib, availKib );
+    KDiskFreeSpaceInfo info = KDiskFreeSpaceInfo::freeSpaceInfo( m_path );
+    if ( info.isValid() ) {
+        quint64 sizeKiB = info.size() / 1024;
+        quint64 availKiB = info.available() / 1024;
+        emit m_parent->foundMountPoint( info.mountPoint(), sizeKiB, sizeKiB-availKiB, availKiB );
     }
 
     emit m_parent->done();
-    emit m_parent->finished( m_parent );
+
     m_parent->deleteLater();
 
-    return !error;
+    return info.isValid();
 }
 
 KDiskFreeSpace * KDiskFreeSpace::findUsageInfo( const QString & path )

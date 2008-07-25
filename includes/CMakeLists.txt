@@ -147,6 +147,7 @@ install( FILES
   KDirSelectDialog
   KDirWatch
   KDiskFreeSpace
+  KDiskFreeSpaceInfo
   KDoubleNumInput
   KDoubleSpinBox
   KDoubleValidator

@@ -157,6 +157,7 @@ set(kfile_STAT_SRCS
   kfile/kdevicelistitem.cpp
   kfile/kdevicelistmodel.cpp
   kfile/kdiskfreespace.cpp
+  kfile/kdiskfreespaceinfo.cpp
   kfile/kencodingfiledialog.cpp
   kfile/kfile.cpp
   kfile/kfiledialog.cpp
@@ -245,7 +246,6 @@ kde4_add_ui_files(kio_LIB_SRCS
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
 target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY} ${KDE4_SOLID_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${X11_LIBRARIES})
-
 
 set(SYS_INOTIFY_H_FOUND 0)
 if(SYS_INOTIFY_H_FOUND)
@@ -379,6 +379,7 @@ install( FILES
   kfile/kabstractfilewidget.h
   kfile/kdevicelistmodel.h
   kfile/kdiskfreespace.h
+  kfile/kdiskfreespaceinfo.h
   kfile/kencodingfiledialog.h
   kfile/kfile.h
   kfile/kfiledialog.h
