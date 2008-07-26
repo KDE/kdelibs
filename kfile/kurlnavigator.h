@@ -323,6 +323,7 @@ private:
     Q_PRIVATE_SLOT(d, void updateButtonVisibility())
     Q_PRIVATE_SLOT(d, void switchToBreadcrumbMode())
     Q_PRIVATE_SLOT(d, void updateContent())
+    Q_PRIVATE_SLOT(d, void goUp())
 
 private:
     class Private;

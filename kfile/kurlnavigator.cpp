@@ -26,6 +26,7 @@
 #include "kurldropdownbutton_p.h"
 #include "kurlnavigatorbutton_p.h"
 #include "kurltogglebutton_p.h"
+#include "kurlupbutton_p.h"
 
 #include <kfileitem.h>
 #include <kfileplacesmodel.h>
@@ -235,6 +236,8 @@ public:
 
     void updateContent();
 
+    void goUp();
+
     /**
      * Updates all buttons to have one button for each part of the
      * path \a path. Existing buttons, which are available by m_navButtons,
@@ -283,6 +286,7 @@ public:
     QHBoxLayout* m_layout;
 
     QList<HistoryElem> m_history;
+    KUrlUpButton* m_upButton;
     KFilePlacesSelector* m_placesSelector;
     KUrlComboBox* m_pathBox;
     KProtocolCombo* m_protocols;
@@ -309,6 +313,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     m_showPlacesSelector(placesModel != 0),
     m_historyIndex(0),
     m_layout(new QHBoxLayout),
+    m_upButton(0),
     m_placesSelector(0),
     m_pathBox(0),
     m_protocols(0),
@@ -323,6 +328,9 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
 
     // initialize the places selector
     q->setAutoFillBackground(false);
+
+    m_upButton = new KUrlUpButton(q);
+    connect(m_upButton, SIGNAL(clicked()), q, SLOT(goUp()));
 
     if (placesModel != 0) {
         m_placesSelector = new KFilePlacesSelector(q, placesModel);
@@ -361,6 +369,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     connect(m_toggleEditableMode, SIGNAL(clicked()),
             q, SLOT(switchView()));
 
+    m_layout->addWidget(m_upButton);
     if (m_placesSelector != 0) {
         m_layout->addWidget(m_placesSelector);
     }
@@ -615,6 +624,11 @@ void KUrlNavigator::Private::updateContent()
     }
 }
 
+void KUrlNavigator::Private::goUp()
+{
+    q->goUp();
+}
+
 void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
 {
     QLinkedList<KUrlNavigatorButton*>::iterator it = m_navButtons.begin();
@@ -837,6 +851,7 @@ KUrlNavigator::KUrlNavigator(KFilePlacesModel* placesModel,
     d(new Private(this, placesModel))
 {
     d->m_history.prepend(HistoryElem(url));
+    d->m_upButton->setEnabled(url.upUrl() != url);
 
     const QFont font = KGlobalSettings::generalFont();
     setFont(font);
@@ -1068,6 +1083,8 @@ void KUrlNavigator::setUrl(const KUrl& url)
         QList<HistoryElem>::iterator end = d->m_history.end();
         d->m_history.erase(begin, end);
     }
+
+    d->m_upButton->setEnabled(transformedUrl.upUrl() != transformedUrl);
 
     emit historyChanged();
     emit urlChanged(transformedUrl);
