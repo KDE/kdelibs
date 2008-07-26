@@ -445,7 +445,12 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     KIO::NetAccess::synchronousRun( statJob, 0 );
     QFileInfo fileInfo( d->url.url() );
     QString dir = fileInfo.path();
-    d->urlNavigator->setUrl( dir );
+
+    if (statJob->statResult().isDir()) {
+        d->urlNavigator->setUrl( d->url.url( KUrl::AddTrailingSlash ) );
+    } else {
+        d->urlNavigator->setUrl( dir );
+    }
 
     fileCompletionObj->setDir( dir );
     d->locationEdit->setCompletionObject( fileCompletionObj );
