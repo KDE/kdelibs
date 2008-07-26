@@ -23,6 +23,7 @@
 #include "../core/action.h"
 #include "../core/interpreter.h"
 #include "../core/manager.h"
+#include "../core/wrapperinterface.h"
 
 // Qt
 
@@ -121,6 +122,25 @@ int runScriptFile(const QString& scriptfile)
     return ERROR_OK;
 }
 
+class MyWrapper : public QObject, public Kross::WrapperInterface {
+    public:
+        MyWrapper(QObject* obj) : QObject(obj) {
+            Q_ASSERT(obj);
+            setObjectName(QString("%1_wrapper").arg(obj->objectName()).toLatin1());
+        }
+        void* wrappedObject() const { return parent(); }
+};
+
+QVariant TestObjectHandler(void* ptr)
+{
+    kDebug()<<"TestObjectHandler !!!!!!!!!!!!!!!!!!!!!!!!!!!";
+    TestObject* obj = (TestObject*) ptr;
+    MyWrapper* w = new MyWrapper(obj);
+    QVariant r;
+    r.setValue( (QObject*)w );
+    return r;
+}
+
 int main(int argc, char **argv)
 {
     int result = 0;
@@ -162,6 +182,8 @@ int main(int argc, char **argv)
     TestObject* testobj2 = new TestObject(0, "TestObject2");
     Kross::Manager::self().addObject( testobj1 );
     Kross::Manager::self().addObject( testobj2 );
+
+    Kross::Manager::self().registerMetaTypeHandler("TestObject*", TestObjectHandler);
 
     foreach(const QString &file, scriptfiles) {
         result = runScriptFile(file);

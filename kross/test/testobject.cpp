@@ -34,6 +34,7 @@ TestObject::TestObject(QObject* parent, const QString& name)
     setObjectName(name);
 
     qRegisterMetaType<TestObject*>("TestObject");
+    //qRegisterMetaType< QList<TestObject*> >("QList<TestObject*>");
 
     QTimer* timer = new QTimer(this);
     timer->setObjectName("TestTimer");
@@ -240,6 +241,19 @@ TestObject* TestObject::func_testobject_testobject(TestObject* obj)
 {
     kDebug() << "TestObject::func_testobject_testobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
     return obj;
+}
+
+void TestObject::func_void_testobjectlist(QList<TestObject*> l)
+{
+    kDebug() << "TestObject::func_void_testobjectlist " << l.count();
+    foreach(TestObject* obj, l)
+        kDebug() << "  " << (obj ? obj->objectName() : "NULL");
+}
+
+QList<TestObject*> TestObject::func_testobjectlist_testobjectlist(QList<TestObject*> l)
+{
+    kDebug() << "TestObject::func_testobjectlist_testobjectlist " << l.count();
+    return l;
 }
 
 TestObject* TestObject::func_testobject_qobject(QObject* obj)

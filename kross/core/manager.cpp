@@ -58,6 +58,9 @@ namespace Kross {
 
             /// The collection of \a Action instances.
             ActionCollection* collection;
+
+            /// List with custom handlers for metatypes.
+            QHash<QByteArray, MetaTypeHandler*> wrappers;
     };
 
 }
@@ -67,6 +70,16 @@ Q_GLOBAL_STATIC(Manager, _self)
 Manager& Manager::self()
 {
     return *_self();
+}
+
+Manager::MetaTypeHandler* Manager::metaTypeHandler(const QByteArray& typeName) const
+{
+    return d->wrappers.contains(typeName) ? d->wrappers[typeName] : 0;
+}
+
+void Manager::registerMetaTypeHandler(const QByteArray& typeName, Manager::MetaTypeHandler* wrapper)
+{
+    d->wrappers.insert(typeName, wrapper);
 }
 
 void* loadLibrary(const char* libname, const char* functionname)

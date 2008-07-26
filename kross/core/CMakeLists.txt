@@ -25,6 +25,7 @@ install(FILES
     krossconfig.h
     errorinterface.h
     childreninterface.h
+    wrapperinterface.h
     metatype.h
     metafunction.h
     interpreter.h

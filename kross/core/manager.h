@@ -109,6 +109,31 @@ namespace Kross {
              */
             ActionCollection* actionCollection() const;
 
+            /**
+             * Definition for a function-callback used to define a handler
+             * for custom types.
+             *
+             * \since 4.2
+             */
+            typedef QVariant (MetaTypeHandler) (void*);
+
+            /**
+             * \return the \a MetaTypeHandler instance for custom types
+             * of type \p typeName .
+             */
+            MetaTypeHandler* metaTypeHandler(const QByteArray& typeName) const;
+
+            /**
+             * Register a handler for custom types.
+             *
+             * See also the \a WrapperInterface class.
+             *
+             * \param typeName The custom type the handler should handle.
+             * \param wrapper Function that should be called to handle
+             * a custom type.
+             */
+            void registerMetaTypeHandler(const QByteArray& typeName, MetaTypeHandler* wrapper);
+
         public Q_SLOTS:
 
             /**

@@ -106,6 +106,7 @@ class TestObject : public QObject
 
         QObject* myself() { return this; }
         TestObject* myself2() { return this; }
+        QList<TestObject*> myself3() { return QList<TestObject*>() << this; }
 
         // return a TestThread instance.
         QObject* createThread(int steps, int msecs, bool start = false);
@@ -187,8 +188,8 @@ class TestObject : public QObject
         void func_void_testobject(TestObject*);
         TestObject* func_testobject_testobject(TestObject*);
         TestObject* func_testobject_qobject(QObject*);
-
-        //QObject* self() { return this; }
+        void func_void_testobjectlist(QList<TestObject*>);
+        QList<TestObject*> func_testobjectlist_testobjectlist(QList<TestObject*>);
 };
 
 /**
