@@ -132,6 +132,8 @@ namespace Kross {
     /**
      * Base class for metatype-handlers as used returned by
      * the Kross::Manager::metaTypeHandler() method.
+     *
+     * \since 4.2
      */
     class KROSSCORE_EXPORT MetaTypeHandler
     {
