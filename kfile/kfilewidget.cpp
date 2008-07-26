@@ -323,22 +323,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
                              u.path(KUrl::AddTrailingSlash));
 
     d->url = getStartUrl( startDir, d->fileClass );
-    d->selection = d->url.url();
-
-    // If local, check it exists. If not, go up until it exists.
-    if ( d->url.isLocalFile() )
-    {
-        if ( !QFile::exists( d->url.toLocalFile() ) )
-        {
-            d->url = d->url.upUrl();
-            QDir dir( d->url.toLocalFile() );
-            while ( !dir.exists() )
-            {
-                d->url = d->url.upUrl();
-                dir.setPath( d->url.toLocalFile() );
-            }
-        }
-    }
 
     d->ops = new KDirOperator(d->url, this );
     d->ops->setObjectName( "KFileWidget::ops" );
@@ -457,8 +441,10 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->locationLabel->setBuddy(d->locationEdit);
 
     KUrlCompletion *fileCompletionObj = new KUrlCompletion( KUrlCompletion::FileCompletion );
-    QString dir = d->url.url(KUrl::AddTrailingSlash);
-
+    KIO::StatJob *statJob = KIO::stat( d->url.url(), KIO::HideProgressInfo );
+    KIO::NetAccess::synchronousRun( statJob, 0 );
+    QFileInfo fileInfo( d->url.url() );
+    QString dir = fileInfo.path();
     d->urlNavigator->setUrl( dir );
 
     fileCompletionObj->setDir( dir );
@@ -504,6 +490,10 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->viewConfigGroup=new KConfigGroup(config,ConfigGroup);
     d->ops->setViewConfig(*d->viewConfigGroup);
     d->readConfig(* d->viewConfigGroup);
+    if (!statJob->statResult().isDir()) {
+        d->selection = fileInfo.fileName();
+        d->locationEdit->setUrl(fileInfo.fileName());
+    }
     setSelection(d->selection);
     d->locationEdit->setFocus();
 }
