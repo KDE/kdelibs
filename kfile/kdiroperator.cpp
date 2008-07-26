@@ -2048,7 +2048,9 @@ void KDirOperator::Private::_k_slotPressed(const QModelIndex&)
     // Remember whether the left mouse button has been pressed, to prevent
     // that a right-click on an item opens an item (see _k_slotClicked(),
     // _k_slotDoubleClicked() and _k_openContextMenu()).
-    leftButtonPressed = (QApplication::mouseButtons() & Qt::LeftButton);
+    const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
+    leftButtonPressed = (QApplication::mouseButtons() & Qt::LeftButton) &&
+                        !(modifiers & Qt::ShiftModifier) && !(modifiers & Qt::ControlModifier);
 }
 
 void KDirOperator::Private::_k_slotClicked(const QModelIndex& index)
@@ -2067,7 +2069,8 @@ void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
     KFileItem item = dirModel->itemForIndex(dirIndex);
     bool selectDir = false;
 
-    if (item.isNull())
+    const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
+    if (item.isNull() || (modifiers & Qt::ShiftModifier) || (modifiers & Qt::ControlModifier))
         return;
 
     if (item.isDir())
