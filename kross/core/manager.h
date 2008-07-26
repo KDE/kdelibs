@@ -147,6 +147,8 @@ namespace Kross {
 
             /**
              * Returns true if strict type handling is enabled.
+             *
+             * \since 4.2
              */
             bool strictTypesEnabled() const;
 
@@ -157,6 +159,8 @@ namespace Kross {
              * allows to also handle unknown QObject's but will also result in a crash
              * if the unknown type isn't a QObject. Per default strict type handling is
              * enabled.
+             *
+             * \since 4.2
              */
             void setStrictTypesEnabled(bool enabled);
 
