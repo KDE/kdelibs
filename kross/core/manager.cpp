@@ -61,6 +61,9 @@ namespace Kross {
 
             /// List with custom handlers for metatypes.
             QHash<QByteArray, MetaTypeHandler*> wrappers;
+
+            /// Strict type handling enabled or disabled.
+            bool strictTypesEnabled;
     };
 
 }
@@ -70,16 +73,6 @@ Q_GLOBAL_STATIC(Manager, _self)
 Manager& Manager::self()
 {
     return *_self();
-}
-
-Manager::MetaTypeHandler* Manager::metaTypeHandler(const QByteArray& typeName) const
-{
-    return d->wrappers.contains(typeName) ? d->wrappers[typeName] : 0;
-}
-
-void Manager::registerMetaTypeHandler(const QByteArray& typeName, Manager::MetaTypeHandler* wrapper)
-{
-    d->wrappers.insert(typeName, wrapper);
 }
 
 void* loadLibrary(const char* libname, const char* functionname)
@@ -131,6 +124,7 @@ Manager::Manager()
     , ChildrenInterface()
     , d( new Private() )
 {
+    d->strictTypesEnabled = true;
     setObjectName("Kross");
     d->collection = new ActionCollection("main");
 
@@ -236,6 +230,7 @@ Manager::Manager()
 
 Manager::~Manager()
 {
+    qDeleteAll(d->wrappers.values());
     qDeleteAll(d->interpreterinfos.values());
     qDeleteAll(d->modules.values());
     delete d->collection;
@@ -389,6 +384,36 @@ QObject* Manager::qobject(const QString &name) const
 QStringList Manager::qobjectNames() const
 {
     return this->objects().keys();
+}
+
+MetaTypeHandler* Manager::metaTypeHandler(const QByteArray& typeName) const
+{
+    return d->wrappers.contains(typeName) ? d->wrappers[typeName] : 0;
+}
+
+void Manager::registerMetaTypeHandler(const QByteArray& typeName, MetaTypeHandler::FunctionPtr* handler)
+{
+    d->wrappers.insert(typeName, new MetaTypeHandler(handler));
+}
+
+void Manager::registerMetaTypeHandler(const QByteArray& typeName, MetaTypeHandler::FunctionPtr2* handler)
+{
+    d->wrappers.insert(typeName, new MetaTypeHandler(handler));
+}
+
+void Manager::registerMetaTypeHandler(const QByteArray& typeName, MetaTypeHandler* handler)
+{
+    d->wrappers.insert(typeName, handler);
+}
+
+bool Manager::strictTypesEnabled() const
+{
+    return d->strictTypesEnabled;
+}
+
+void Manager::setStrictTypesEnabled(bool enabled)
+{
+    d->strictTypesEnabled = enabled;
 }
 
 #include "manager.moc"

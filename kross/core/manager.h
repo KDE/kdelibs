@@ -28,6 +28,7 @@
 
 #include "krossconfig.h"
 #include "childreninterface.h"
+#include "metatype.h"
 
 namespace Kross {
 
@@ -110,16 +111,10 @@ namespace Kross {
             ActionCollection* actionCollection() const;
 
             /**
-             * Definition for a function-callback used to define a handler
-             * for custom types.
-             *
-             * \since 4.2
-             */
-            typedef QVariant (MetaTypeHandler) (void*);
-
-            /**
              * \return the \a MetaTypeHandler instance for custom types
              * of type \p typeName .
+             *
+             * \since 4.2
              */
             MetaTypeHandler* metaTypeHandler(const QByteArray& typeName) const;
 
@@ -129,10 +124,41 @@ namespace Kross {
              * See also the \a WrapperInterface class.
              *
              * \param typeName The custom type the handler should handle.
-             * \param wrapper Function that should be called to handle
+             * \param handler Function that should be called to handle
              * a custom type.
+             *
+             * \since 4.2
              */
-            void registerMetaTypeHandler(const QByteArray& typeName, MetaTypeHandler* wrapper);
+            void registerMetaTypeHandler(const QByteArray& typeName, MetaTypeHandler::FunctionPtr* handler);
+            void registerMetaTypeHandler(const QByteArray& typeName, MetaTypeHandler::FunctionPtr2* handler);
+
+            /**
+             * Register a handler for custom types.
+             *
+             * See also the \a WrapperInterface class.
+             *
+             * \param typeName The custom type the handler should handle.
+             * \param handler Function that should be called to handle
+             * a custom type.
+             *
+             * \since 4.2
+             */
+            void registerMetaTypeHandler(const QByteArray& typeName, MetaTypeHandler* handler);
+
+            /**
+             * Returns true if strict type handling is enabled.
+             */
+            bool strictTypesEnabled() const;
+
+            /**
+             * Enable more strict type handling. If enabled then scripting-backends don't
+             * handle unknown pointer-types where no MetaTypeHandler was registered for.
+             * If disabled, such unknown types will be reinterpret_cast to QObject* what
+             * allows to also handle unknown QObject's but will also result in a crash
+             * if the unknown type isn't a QObject. Per default strict type handling is
+             * enabled.
+             */
+            void setStrictTypesEnabled(bool enabled);
 
         public Q_SLOTS:
 

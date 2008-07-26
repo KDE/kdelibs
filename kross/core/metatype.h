@@ -129,6 +129,33 @@ namespace Kross {
             bool m_owner;
     };
 
+    /**
+     * Base class for metatype-handlers as used returned by
+     * the Kross::Manager::metaTypeHandler() method.
+     */
+    class KROSSCORE_EXPORT MetaTypeHandler
+    {
+        public:
+            typedef QVariant (FunctionPtr) (void*);
+            typedef QVariant (FunctionPtr2) (MetaTypeHandler* handler, void*);
+
+            explicit MetaTypeHandler() : m_func1(0), m_func2(0) {}
+            explicit MetaTypeHandler(FunctionPtr *func) : m_func1(func), m_func2(0) {}
+            explicit MetaTypeHandler(FunctionPtr2 *func) : m_func1(0), m_func2(func) {}
+            virtual ~MetaTypeHandler() {}
+
+            /**
+             * This got called by the scripting-backend if the type-handler
+             * is called to translate a void-star pointer to a QVariant.
+             */
+            virtual QVariant call(void* ptr) {
+                return m_func1 ? m_func1(ptr) : m_func2 ? m_func2(this, ptr) : QVariant();
+            }
+
+        private:
+            FunctionPtr  *m_func1;
+            FunctionPtr2 *m_func2;
+    };
 }
 
 #endif
