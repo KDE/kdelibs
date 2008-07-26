@@ -347,11 +347,14 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     // and agreed upon on the kde-core-devel mailing list:
     //
     // http://lists.kde.org/?l=kde-core-devel&m=116888382514090&w=2
-    //
-    d->toolbar->addAction( coll->action( "up" ) );
-    coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<br /><br />"
-                                            "For instance, if the current location is file:/home/%1 clicking this "
-                                            "button will take you to file:/home.</qt>",  KUser().loginName() ));
+    
+    // TODO: The up-button is temporary removed as the URL navigator provides already
+    // an up-button. It's open yet whether the up-button from the URL navigator should be
+    // made optional or whether we leave this up-button removed:
+    //d->toolbar->addAction( coll->action( "up" ) );
+    //coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<br /><br />"
+    //                                        "For instance, if the current location is file:/home/%1 clicking this "
+    //                                        "button will take you to file:/home.</qt>",  KUser().loginName() ));
 
     d->toolbar->addAction( coll->action( "back" ) );
     coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
