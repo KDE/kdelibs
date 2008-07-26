@@ -420,14 +420,11 @@ public:
     virtual void writeConfig(KConfigGroup& configGroup);
 
     /**
-     * This is a KFileDialog specific hack: we want to select directories with
-     * single click, but not files. But as a generic class, we have to be able
-     * to select files on single click as well.
+     * This toggles between double/single click file and directory selection mode.
+     * When argument is true, files and directories are highlighted with single click and
+     * selected (executed) with double click.
      *
-     * This gives us the opportunity to do both.
-     *
-     * The default is false, set it to true if you don't want files selected
-     * with single click.
+     * The default follows the signle/double click system setting.
      */
     void setOnlyDoubleClickSelectsFiles(bool enable);
 

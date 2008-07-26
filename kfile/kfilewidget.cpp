@@ -342,7 +342,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     d->ops = new KDirOperator(d->url, this );
     d->ops->setObjectName( "KFileWidget::ops" );
-    d->ops->setOnlyDoubleClickSelectsFiles( true );
     connect(d->ops, SIGNAL(urlEntered(const KUrl&)),
             SLOT(_k_urlEntered(const KUrl&)));
     connect(d->ops, SIGNAL(fileHighlighted(const KFileItem &)),

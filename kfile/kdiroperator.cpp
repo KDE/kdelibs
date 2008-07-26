@@ -276,7 +276,7 @@ KDirOperator::Private::Private(KDirOperator *_parent) :
     previewWidth(0),
     leftButtonPressed(false),
     dirHighlighting(false),
-    onlyDoubleClickSelectsFiles(false),
+    onlyDoubleClickSelectsFiles(!KGlobalSettings::singleClick()),
     progressDelayTimer(0),
     dropOptions(0),
     actionMenu(0),
@@ -2059,8 +2059,6 @@ void KDirOperator::Private::_k_slotClicked(const QModelIndex& index)
 
     if (!parent->onlyDoubleClickSelectsFiles())
         _k_slotDoubleClicked(index);
-    else
-        _k_slotActivated(index);
 }
 
 void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
@@ -2072,18 +2070,10 @@ void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
     if (item.isNull())
         return;
 
-    if (item.isDir()) {
-        const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
-        selectDir = KGlobalSettings::singleClick() &&
-                    !(modifiers & Qt::ShiftModifier) &&
-                    !(modifiers & Qt::ControlModifier);
-    }
-
-    if (selectDir) {
+    if (item.isDir())
         parent->selectDir(item);
-    } else {
+    else
         parent->selectFile(item);
-    }
 }
 
 void KDirOperator::Private::_k_slotDoubleClicked(const QModelIndex& index)
