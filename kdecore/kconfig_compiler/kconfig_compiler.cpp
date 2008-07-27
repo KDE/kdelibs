@@ -379,7 +379,7 @@ static QString quoteString( const QString &s )
 {
   QString r = s;
   r.replace( '\\', "\\\\" );
-  r.replace( "\"", "\\\"" );
+  r.replace( '\"', "\\\"" );
   r.remove( '\r' );
   r.replace( '\n', "\\n\"\n\"" );
   return '\"' + r + '\"';
@@ -482,7 +482,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       cpp << "  QList<int> default" << name << ";" << endl;
       if (!defaultValue.isEmpty())
       {
-        QStringList defaults = defaultValue.split( "," );
+        QStringList defaults = defaultValue.split( ',' );
         QStringList::ConstIterator it;
         for( it = defaults.begin(); it != defaults.end(); ++it ) {
           cpp << "  default" << name << ".append( " << *it << " );"
