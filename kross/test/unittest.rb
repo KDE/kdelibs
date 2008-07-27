@@ -400,6 +400,20 @@ class TestKross < Test::Unit::TestCase
 		assert(TestObject1.call_krossobject_method(myclass, "myMethod") == s)
 	end
 
+	def testOtherObject
+ 		otherobj1 = TestObject1.func_otherobject("OtherObject1")
+ 		otherobj2 = TestObject1.func_otherobject("OtherObject2")
+
+ 		assert(otherobj1.objectName == "OtherObject1_wrapper")
+ 		assert(otherobj2.parentObject().objectName == "OtherObject2")
+ 		assert(TestObject1.func_otherobject_otherobject(otherobj1).objectName == otherobj1.objectName)
+
+ 		l = TestObject1.func_otherobjectlist_otherobjectlist( [otherobj1,otherobj2] )
+ 		assert( l.size == 2 )
+ 		assert( l[0].objectName == "OtherObject1_wrapper" )
+ 		assert( l[1].parentObject().objectName == "OtherObject2" )
+	end
+
 end
 
 require 'test/unit/ui/console/testrunner'

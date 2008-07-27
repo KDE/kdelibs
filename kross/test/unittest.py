@@ -283,8 +283,6 @@ class TestKross(unittest.TestCase):
 		#print "otherobj1=%s otherobj1.objectName=%s dir(otherobj1)=%s" % (otherobj1, otherobj1.objectName, dir(otherobj1))
 
 		self.assert_( otherobj1.objectName == "OtherObject1_wrapper" )
-		self.assert_( otherobj2.objectName == "OtherObject2_wrapper" )
-		self.assert_( otherobj1.parentObject().objectName == "OtherObject1" )
 		self.assert_( otherobj2.parentObject().objectName == "OtherObject2" )
 		self.assert_( self.object1.func_otherobject_otherobject(otherobj1).objectName == otherobj1.objectName )
 
