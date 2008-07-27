@@ -181,7 +181,7 @@ namespace KIO {
         static KIO::Slave *getConnectedSlave(const KUrl &url,
                 const KIO::MetaData &config = MetaData() );
 
-        /*
+        /**
          * Uses @p slave to do @p job.
          * This function should be called immediately after creating a Job.
          *
@@ -199,7 +199,7 @@ namespace KIO {
          */
         static bool assignJobToSlave(KIO::Slave *slave, KIO::SimpleJob *job);
 
-        /*
+        /**
          * Disconnects @p slave.
          *
          * @param slave The slave to disconnect. The slave must have been
