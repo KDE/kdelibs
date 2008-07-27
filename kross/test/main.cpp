@@ -122,22 +122,13 @@ int runScriptFile(const QString& scriptfile)
     return ERROR_OK;
 }
 
-class MyWrapper : public QObject, public Kross::WrapperInterface {
-    public:
-        MyWrapper(QObject* obj) : QObject(obj) {
-            Q_ASSERT(obj);
-            setObjectName(QString("%1_wrapper").arg(obj->objectName()).toLatin1());
-        }
-        void* wrappedObject() const { return parent(); }
-};
-
-QVariant TestObjectHandler(void* ptr)
+QVariant OtherObjectHandler(void* ptr)
 {
-    kDebug()<<"TestObjectHandler !!!!!!!!!!!!!!!!!!!!!!!!!!!";
-    TestObject* obj = (TestObject*) ptr;
-    MyWrapper* w = new MyWrapper(obj);
+    OtherObject* obj = static_cast<OtherObject*>(ptr);
+    kDebug()<<"OtherObjectHandler objectName="<<(obj ? obj->objectName() : "NULL");
+    OtherObjectWrapper* wrapper = new OtherObjectWrapper(obj);
     QVariant r;
-    r.setValue( (QObject*)w );
+    r.setValue( (QObject*) wrapper );
     return r;
 }
 
@@ -183,7 +174,7 @@ int main(int argc, char **argv)
     Kross::Manager::self().addObject( testobj1 );
     Kross::Manager::self().addObject( testobj2 );
 
-    Kross::Manager::self().registerMetaTypeHandler("TestObject*", TestObjectHandler);
+    Kross::Manager::self().registerMetaTypeHandler("OtherObject*", OtherObjectHandler);
 
     foreach(const QString &file, scriptfiles) {
         result = runScriptFile(file);

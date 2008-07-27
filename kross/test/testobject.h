@@ -47,8 +47,11 @@ class QDateTime;
 
 #include "../core/action.h"
 #include "../core/object.h"
+#include "../core/wrapperinterface.h"
 
-/// \internal
+class OtherObject;
+
+/// \internal class to test functionality within krosstest
 class TestObject : public QObject
 {
         Q_OBJECT
@@ -190,10 +193,39 @@ class TestObject : public QObject
         TestObject* func_testobject_qobject(QObject*);
         void func_void_testobjectlist(QList<TestObject*>);
         QList<TestObject*> func_testobjectlist_testobjectlist(QList<TestObject*>);
+
+        // OtherObject
+        OtherObject* func_otherobject(const QByteArray& name);
+        OtherObject* func_otherobject_otherobject(OtherObject*);
+        QList<OtherObject*> func_otherobjectlist_otherobjectlist(QList<OtherObject*>);
+};
+
+/// \internal class used in TestObject to test functionality within krosstest
+class OtherObject : public QObject
+{
+        Q_OBJECT
+    public:
+        explicit OtherObject(TestObject* testobj, const QByteArray& name) : QObject(testobj) { setObjectName(name); }
+    public Q_SLOTS:
+        QObject* testObject() const { return parent(); }
+};
+
+/// \internal class used in a handler within krosstest to provide a OtherObject wrapper on demand
+class OtherObjectWrapper : public QObject, public Kross::WrapperInterface
+{
+        Q_OBJECT
+    public:
+        OtherObjectWrapper(QObject* obj) : QObject(obj) {
+            Q_ASSERT(obj);
+            setObjectName(QString("%1_wrapper").arg(obj->objectName()).toLatin1());
+        }
+        void* wrappedObject() const { return parent(); }
+    public Q_SLOTS:
+        QObject* parentObject() const { return parent(); }
 };
 
 /**
-* \internal class to test threading functionality.
+* \internal class to test threading functionality within krosstest.
 *
 * Following python code does provide a sample how this class
 * may used to test the threading functionality.

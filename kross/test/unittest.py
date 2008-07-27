@@ -277,6 +277,22 @@ class TestKross(unittest.TestCase):
 		myclass = MyClass(s)
 		self.assert_( self.object1.call_krossobject_method(myclass, "myMethod") == s )
 
+	def testOtherObject(self):
+		otherobj1 = self.object1.func_otherobject("OtherObject1")
+		otherobj2 = self.object1.func_otherobject("OtherObject2")
+		#print "otherobj1=%s otherobj1.objectName=%s dir(otherobj1)=%s" % (otherobj1, otherobj1.objectName, dir(otherobj1))
+
+		self.assert_( otherobj1.objectName == "OtherObject1_wrapper" )
+		self.assert_( otherobj2.objectName == "OtherObject2_wrapper" )
+		self.assert_( otherobj1.parentObject().objectName == "OtherObject1" )
+		self.assert_( otherobj2.parentObject().objectName == "OtherObject2" )
+		self.assert_( self.object1.func_otherobject_otherobject(otherobj1).objectName == otherobj1.objectName )
+
+		l = self.object1.func_otherobjectlist_otherobjectlist( [otherobj1,otherobj2] )
+		self.assert_( len(l) == 2 )
+		self.assert_( l[0].objectName == "OtherObject1_wrapper" )
+		self.assert_( l[1].parentObject().objectName == "OtherObject2" )
+
 print "__name__ = %s" % __name__
 #print "__main__ = %s %s" % (__main__,dir(__main__))
 #print "TestObject3.name = %s" % TestObject3.name()

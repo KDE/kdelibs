@@ -130,6 +130,18 @@ namespace Kross {
              * \since 4.2
              */
             void registerMetaTypeHandler(const QByteArray& typeName, MetaTypeHandler::FunctionPtr* handler);
+
+            /**
+             * Register a handler for custom types.
+             *
+             * See also the \a WrapperInterface class.
+             *
+             * \param typeName The custom type the handler should handle.
+             * \param handler Function that should be called to handle
+             * a custom type.
+             *
+             * \since 4.2
+             */
             void registerMetaTypeHandler(const QByteArray& typeName, MetaTypeHandler::FunctionPtr2* handler);
 
             /**

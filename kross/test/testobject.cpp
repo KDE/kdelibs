@@ -243,6 +243,12 @@ TestObject* TestObject::func_testobject_testobject(TestObject* obj)
     return obj;
 }
 
+TestObject* TestObject::func_testobject_qobject(QObject* obj)
+{
+    TestObject* tobj = dynamic_cast<TestObject*>(obj);
+    return tobj;
+}
+
 void TestObject::func_void_testobjectlist(QList<TestObject*> l)
 {
     kDebug() << "TestObject::func_void_testobjectlist " << l.count();
@@ -256,12 +262,30 @@ QList<TestObject*> TestObject::func_testobjectlist_testobjectlist(QList<TestObje
     return l;
 }
 
-TestObject* TestObject::func_testobject_qobject(QObject* obj)
+/*****************************************************************************************
+ * OtherObject
+ */
+
+OtherObject* TestObject::func_otherobject(const QByteArray& name)
 {
-    TestObject* tobj = dynamic_cast<TestObject*>(obj);
-    Q_ASSERT(tobj);
-    return tobj;
+    if( OtherObject* obj = findChild<OtherObject*>(name) )
+        return obj;
+    return new OtherObject(this, name);
 }
+
+OtherObject* TestObject::func_otherobject_otherobject(OtherObject* obj)
+{
+    return obj;
+}
+
+QList<OtherObject*> TestObject::func_otherobjectlist_otherobjectlist(QList<OtherObject*> l)
+{
+    return l;
+}
+
+/*****************************************************************************************
+ * TestThread
+ */
 
 TestThread::TestThread(TestObject* parent, int steps, int msecs)
     : QThread(parent)
