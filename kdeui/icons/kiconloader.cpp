@@ -748,7 +748,7 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
 
     foreach(KIconThemeNode *themeNode, links)
     {
-        QStringList nameParts = name.split("-");
+        QStringList nameParts = name.split('-');
         QString currentName = name;
 
         while (!nameParts.isEmpty())

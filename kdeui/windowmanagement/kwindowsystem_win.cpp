@@ -162,7 +162,7 @@ class hIconCache
 public:
     ~hIconCache()
     {
-        Q_FOREACH(HICON hIcon, m_iconList)
+        Q_FOREACH(const HICON &hIcon, m_iconList)
             DestroyIcon(hIcon);
     }
     QList<HICON> m_iconList;

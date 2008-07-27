@@ -115,7 +115,7 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
     } else {
         kDebug(125) << "Ungrabbing key " << keyQt;
         if (refs->count(keyQt) == 0) kWarning(125) << "Trying to ungrab a key thas is not grabbed";
-        foreach (EventHotKeyRef ref, refs->value(keyQt)) {
+        foreach (const EventHotKeyRef &ref, refs->value(keyQt)) {
             if (UnregisterEventHotKey(ref) != noErr) {
                 kWarning(125) << "UnregisterEventHotKey should not fail!";
             }

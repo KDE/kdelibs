@@ -55,7 +55,7 @@ public:
       *                     or not.
       * @param parent       The parent of the widget.
       */
-    KCapacityBar(DrawTextMode drawTextMode = DrawTextOutline, QWidget *parent = 0);
+    explicit KCapacityBar(DrawTextMode drawTextMode = DrawTextOutline, QWidget *parent = 0);
     ~KCapacityBar();
 
     /**

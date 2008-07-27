@@ -6,7 +6,7 @@
     Copyright (C) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
     Copyright (C) 2008 Michael Jansen <kde@michael-jansen.biz>
 
-    This library is free software; you can redistribute it and/or
+    This library is free software; you can redistribute it and/orffffff
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
@@ -137,7 +137,7 @@ public:
     /**
      * Save the changes.
      *
-     * Before saving the changes are commited. This saves the actions to disk.
+     * Before saving the changes are committed. This saves the actions to disk.
      * Any KActionCollection objects with the xmlFile() value set will be
      * written to an XML file.  All other will be written to the application's
      * rc file.

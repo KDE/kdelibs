@@ -428,7 +428,7 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
             continue;
         }
 
-        // controls wether the current shortcuts remains active.
+        // controls whether the current shortcuts remains active.
         bool remains = false;
 
         for (int i = 0; i < added.count(); ++i) {

@@ -219,10 +219,10 @@ BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
     GetWindowThreadProcessId(hwnd, &pidwin);
     if ( pidwin == ((EnumWindowsStruct*)lParam)->pid ) {
       ((EnumWindowsStruct*)lParam)->windowId = hwnd;
-      return FALSE;
+      return false;
     }
   }
-  return TRUE;
+  return true;
 }
 
 void KApplication_activateWindowForProcess( const QString& executableName )

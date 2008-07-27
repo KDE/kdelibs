@@ -96,7 +96,7 @@ public:
 	void setModifierlessAllowed(bool allow);
 
 	/**
-	 * Checks wether the key sequence @a seq is available to grab.
+	 * Checks whether the key sequence @a seq is available to grab.
 	 *
 	 * The sequence is checked under the same rules as if it has been typed by
 	 * the user. This method is useful if you get key sequences from another

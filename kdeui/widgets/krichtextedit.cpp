@@ -420,7 +420,7 @@ void KRichTextEdit::updateLink(const QString &linkUrl, const QString &linkText)
             // -- Stephen Kelly, 8th June 2008
 
             QString selectionHtml = cursor.selection().toHtml();
-            QString style = selectionHtml.split("<li style=\"").takeAt(1).split("\"").first();
+            QString style = selectionHtml.split("<li style=\"").takeAt(1).split('\"').first();
             QString linkTag = "<a" + selectionHtml.split("<a").takeAt(1).split('>').first() + '>'
                 + "<span style=\"" + style + "\">" + _linkText + "</span></a>";
             cursor.insertHtml(linkTag);
@@ -494,15 +494,16 @@ QString KRichTextEdit::toCleanHtml() const
                       "text-indent:0px; -qt-user-state:0;\">";
         
     QString result;
-    QStringList lines = toHtml().split("\n");
-    foreach(QString tempLine, lines ) {
+    const QStringList lines = toHtml().split('\n');
+    Q_FOREACH (const QString &tempLine, lines) {
         if (tempLine.startsWith(evilline)) { 
-            tempLine.remove(evilline);
-            if (tempLine.endsWith("</p>")) {
-                tempLine.remove(QRegExp("</p>$"));
-                tempLine.append("<br>\n");
+            QString tempLineCopy = tempLine;
+            tempLineCopy.remove(evilline);
+            if (tempLineCopy.endsWith("</p>")) {
+                tempLineCopy.remove(QRegExp("</p>$"));
+                tempLineCopy.append("<br>\n");
             }
-            result += tempLine;
+            result += tempLineCopy;
         } else {
             result += tempLine;
         }

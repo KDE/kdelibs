@@ -164,7 +164,7 @@ void KFontFamilyDelegate::paint (QPainter *painter,
     if (canShowLanguageSample) {
         sample = alphabetSample();
     } else {
-        foreach (QFontDatabase::WritingSystem ws, availableSystems) {
+        foreach (const QFontDatabase::WritingSystem &ws, availableSystems) {
             sample += QFontDatabase::writingSystemSample(ws) + "  ";
             if (sample.length() > 40) { // do not let the sample be too long
                 break;

@@ -19,6 +19,9 @@
 
 */
 
+#ifndef KABSTRACTWIDGETJOBTRACKER_P
+#define KABSTRACTWIDGETJOBTRACKER_P
+
 class KAbstractWidgetJobTracker::Private
 {
 public:
@@ -59,3 +62,5 @@ public:
         return true;
     }
 };
+
+#endif // KABSTRACTWIDGETJOBTRACKER_P
