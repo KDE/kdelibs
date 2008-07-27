@@ -90,6 +90,8 @@ public:
                      OpenFlags mode = FullConfig, const char* resourceType = "config");
 
     /**
+     * @internal
+     *
      * Creates a KConfig oject using the specified backend. If the backend can not
      * be found or loaded, then the standard configuration parser is used as a fallback.
      *
