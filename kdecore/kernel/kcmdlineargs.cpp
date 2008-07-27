@@ -1206,7 +1206,7 @@ KCmdLineArgs::usage(const QByteArray &id)
          // Options
          if (!descriptionFull.isEmpty())
          {
-            dl = descriptionFull.split( "\n", QString::KeepEmptyParts);
+            dl = descriptionFull.split( '\n', QString::KeepEmptyParts);
             description = dl.first();
             dl.erase( dl.begin() );
          }

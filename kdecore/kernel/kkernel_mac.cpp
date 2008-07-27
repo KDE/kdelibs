@@ -17,10 +17,10 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kkernel_mac.h"
+
 #include <config.h>
 #include <QtCore/qglobal.h>
-
-#include "kkernel_mac.h"
 
 #ifdef Q_OS_MACX
 

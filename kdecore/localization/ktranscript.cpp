@@ -1177,7 +1177,7 @@ JSValue *Scriptface::setPropf (ExecState *exec, JSValue *phrase, JSValue *prop, 
     QByteArray qphrase = normKeystr(phrase->toString(exec).qstring());
     QByteArray qprop = normKeystr(prop->toString(exec).qstring());
     QByteArray qvalue = value->toString(exec).qstring().toUtf8();
-    // Any non-existant key in first or second-level hash will be created.
+    // Any non-existent key in first or second-level hash will be created.
     phraseProps[qphrase][qprop] = qvalue;
     return jsUndefined();
 }

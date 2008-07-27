@@ -378,11 +378,11 @@ static void addQuotes( QString &s )
 static QString quoteString( const QString &s )
 {
   QString r = s;
-  r.replace( "\\", "\\\\" );
+  r.replace( '\\', "\\\\" );
   r.replace( "\"", "\\\"" );
-  r.remove( "\r" );
-  r.replace( "\n", "\\n\"\n\"" );
-  return "\"" + r + "\"";
+  r.remove( '\r' );
+  r.replace( '\n', "\\n\"\n\"" );
+  return '\"' + r + '\"';
 }
 
 static QString literalString( const QString &s )
@@ -443,7 +443,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
          cpp << endl;
 
       cpp << "  QStringList default" << name << ";" << endl;
-      const QStringList defaults = defaultValue.split( "," );
+      const QStringList defaults = defaultValue.split( ',' );
       QStringList::ConstIterator it;
       for( it = defaults.begin(); it != defaults.end(); ++it ) {
         cpp << "  default" << name << ".append( QString::fromUtf8( \"" << *it << "\" ) );"
