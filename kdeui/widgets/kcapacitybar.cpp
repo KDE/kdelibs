@@ -146,11 +146,11 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
 
     p->save();
 
-    int barHeight = (d->drawTextMode == DrawTextOutline) ? d->barHeight
-                                                         : qMax(d->barHeight, fontMetrics().height());
-
     QRect drawRect(rect);
-    drawRect.setHeight(barHeight);
+
+    if (d->drawTextMode == DrawTextOutline) {
+        drawRect.setHeight(d->barHeight);
+    }
 
     QPainterPath outline;
     outline.moveTo(ROUND_MARGIN / 4 + 1, 0);
@@ -164,7 +164,7 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
     QRadialGradient bottomGradient(QPointF(rect.width() / 2, drawRect.bottom() + 1), rect.width() / 2);
     bottomGradient.setColorAt(0, KColorScheme::shade(palette().window().color(), KColorScheme::LightShade));
     bottomGradient.setColorAt(1, Qt::transparent);
-    p->fillRect(QRect(0, drawRect.bottom() + 1, rect.width(), 1), bottomGradient);
+    p->fillRect(QRect(0, drawRect.bottom(), rect.width(), 1), bottomGradient);
 
     p->translate(2, 1);
 

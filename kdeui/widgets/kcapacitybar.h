@@ -66,6 +66,7 @@ public:
       * @note Its value is 0 by default.
       */
     void setValue(int value);
+
     /**
       * @return The fill value of the capacity bar.
       */
@@ -79,6 +80,7 @@ public:
       * @note This is an empty string by default.
       */
     void setText(const QString &text);
+
     /**
       * @return The text that the capacity bar will show.
       */
@@ -100,6 +102,7 @@ public:
       * @see setContinuous, continuous
       */
     void setFillFullBlocks(bool fillFullBlocks);
+
     /**
       * @return Whether the last block shown can be cut off when necessary.
       */
@@ -116,6 +119,7 @@ public:
       * @note Its value is true by default.
       */
     void setContinuous(bool continuous);
+
     /**
       * @return Whether the fill of the capacity bar should be continuous or
       *         block-based.
@@ -140,6 +144,7 @@ public:
       * @note Its value is 12 pixels by default.
       */
     void setBarHeight(int barHeight);
+
     /**
       * @return The preferred height of the capacity bar.
       */
@@ -162,6 +167,7 @@ public:
       * @note Its value is centered by default.
       */
     void setHorizontalTextAlignment(Qt::Alignment textAlignment);
+
     /**
       * @return The horizontal alignment for the text that will be drawn.
       */
