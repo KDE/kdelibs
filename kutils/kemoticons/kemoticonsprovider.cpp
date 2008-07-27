@@ -108,7 +108,9 @@ void KEmoticonsProvider::clearEmoticonsMap()
 
 void KEmoticonsProvider::addEmoticonsMap(QString key, QStringList value)
 {
-    d->m_emoticonsMap.insert(key, value);
+    if (!value.isEmpty()) {
+        d->m_emoticonsMap.insert(key, value);
+    }
 }
 
 void KEmoticonsProvider::removeEmoticonsMap(QString key)
