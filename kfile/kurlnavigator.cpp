@@ -727,7 +727,7 @@ void KUrlNavigator::Private::updateButtonVisibility()
     int hiddenButtonsCount = 0;
 
     // subtract all widgets from the available width, that must be shown anyway
-    int availableWidth = q->width() - m_toggleEditableMode->minimumWidth();
+    int availableWidth = q->width() - m_toggleEditableMode->minimumWidth() - m_upButton->width();
 
     if ((m_placesSelector != 0) && m_placesSelector->isVisible()) {
         availableWidth -= m_placesSelector->width();
