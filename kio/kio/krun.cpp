@@ -488,6 +488,7 @@ static bool runCommandInternal( KProcess* proc, const KService* service, const Q
   {
      kWarning() << "No authorization to execute " << service->entryPath();
      KMessageBox::sorry( window, i18n("You are not authorized to execute this file."));
+     delete proc;
      return false;
   }
   QString bin = KRun::binaryName( binName, true );
