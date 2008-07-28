@@ -147,5 +147,6 @@ private:
     Private *const d;
 
     Q_PRIVATE_SLOT(d, void _k_extenderDestructionHandler(QObject *destroyed))
+    Q_PRIVATE_SLOT(d, void _k_verticalScroll())
 };
 #endif // KEXTENDABLEITEMDELEGATE_H
