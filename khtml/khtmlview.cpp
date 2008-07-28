@@ -164,7 +164,8 @@ public:
 
         possibleTripleClick = false;
         emitCompletedAfterRepaint = CSNone;
-	cursor_icon_widget = NULL;
+        cursorIconWidget = 0;
+        cursorIconType   = KHTMLView::LINK_NORMAL;
         m_mouseScrollTimer = 0;
         m_mouseScrollIndicator = 0;
         contentsX = 0;
@@ -182,7 +183,7 @@ public:
         if (oldUnderMouse)
             oldUnderMouse->deref();
 
-        delete cursor_icon_widget;
+        delete cursorIconWidget;
         delete m_mouseScrollTimer;
         delete m_mouseScrollIndicator;
     }
@@ -410,7 +411,8 @@ public:
     bool accessKeysPreActivate;
     CompletedState emitCompletedAfterRepaint;
 
-    QWidget* cursor_icon_widget;
+    QLabel*               cursorIconWidget;
+    KHTMLView::LinkCursor cursorIconType;
 
     // scrolling activated by MMB
     short m_mouseScroll_byX;
@@ -603,8 +605,8 @@ void KHTMLView::clear()
     if (d->accessKeysEnabled && d->accessKeysActivated)
         accessKeysTimeout();
     viewport()->unsetCursor();
-    if ( d->cursor_icon_widget )
-        d->cursor_icon_widget->hide();
+    if ( d->cursorIconWidget )
+        d->cursorIconWidget->hide();
     if (d->smoothScrolling)
         d->stopScrolling();
     d->reset();
@@ -1436,62 +1438,53 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
 
     if ( linkCursor!=LINK_NORMAL && isVisible() && hasFocus() ) {
 #ifdef Q_WS_X11
-	QString cursorIcon;
-	switch (linkCursor)
-	{
-          case LINK_MAILTO:     cursorIcon = "mail-message-new"; break;
-          case LINK_NEWWINDOW:  cursorIcon = "window-new";       break;
-          default:              cursorIcon = "dialog-error";     break;
-	}
-        QPixmap icon_pixmap = KHTMLGlobal::iconLoader()->loadIcon( cursorIcon, KIconLoader::Small, 0, KIconLoader::DefaultState, QStringList(), 0, true );
 
-#if 0
-	if (d->cursor_icon_widget)
-	{
-	    const QPixmap *pm = d->cursor_icon_widget->backgroundPixmap();
-	    if (!pm || pm->serialNumber()!=icon_pixmap.serialNumber())
-	    {
-		delete d->cursor_icon_widget;
-		d->cursor_icon_widget = NULL;
-	    }
-	}
-#endif
-
-        if( !d->cursor_icon_widget ) {
+        if( !d->cursorIconWidget ) {
 #ifdef Q_WS_X11
-            d->cursor_icon_widget = new QWidget( 0, Qt::X11BypassWindowManagerHint );
+            d->cursorIconWidget = new QLabel( 0, Qt::X11BypassWindowManagerHint );
             XSetWindowAttributes attr;
             attr.save_under = True;
-            XChangeWindowAttributes( QX11Info::display(), d->cursor_icon_widget->winId(), CWSaveUnder, &attr );
+            XChangeWindowAttributes( QX11Info::display(), d->cursorIconWidget->winId(), CWSaveUnder, &attr );
 #else
-            d->cursor_icon_widget = new QWidget( NULL, NULL );
+            d->cursorIconWidget = new QLabel( NULL, NULL );
             //TODO
 #endif
-            d->cursor_icon_widget->resize( icon_pixmap.width(), icon_pixmap.height());
-            if( !icon_pixmap.mask().isNull() )
-                d->cursor_icon_widget->setMask( icon_pixmap.mask());
-            else
-                d->cursor_icon_widget->clearMask();
-            QPalette palette;
-            palette.setBrush( d->cursor_icon_widget->backgroundRole(), QBrush( icon_pixmap ) );
-            d->cursor_icon_widget->setPalette( palette );
-            d->cursor_icon_widget->update();
         }
+
+        // Update the pixmap if need be.
+        if (linkCursor != d->cursorIconType) {
+            d->cursorIconType = linkCursor;
+            QString cursorIcon;
+            switch (linkCursor)
+            {
+              case LINK_MAILTO:     cursorIcon = "mail-message-new"; break;
+              case LINK_NEWWINDOW:  cursorIcon = "window-new";       break;
+              default:              cursorIcon = "dialog-error";     break;
+            }
+
+            QPixmap icon_pixmap = KHTMLGlobal::iconLoader()->loadIcon( cursorIcon, KIconLoader::Small, 0, KIconLoader::DefaultState, QStringList(), 0, true );
+
+            d->cursorIconWidget->resize( icon_pixmap.width(), icon_pixmap.height());
+            d->cursorIconWidget->setMask( icon_pixmap.createMaskFromColor(Qt::transparent));
+            d->cursorIconWidget->setPixmap( icon_pixmap);
+            d->cursorIconWidget->update();
+        }
+        
         QPoint c_pos = QCursor::pos();
-        d->cursor_icon_widget->move( c_pos.x() + 15, c_pos.y() + 15 );
+        d->cursorIconWidget->move( c_pos.x() + 15, c_pos.y() + 15 );
 #ifdef Q_WS_X11
-        XRaiseWindow( QX11Info::display(), d->cursor_icon_widget->winId());
+        XRaiseWindow( QX11Info::display(), d->cursorIconWidget->winId());
         QApplication::flush();
 #elif defined(Q_WS_WIN)
-        SetWindowPos( d->cursor_icon_widget->winId(), HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( d->cursorIconWidget->winId(), HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE );
 #else
         //TODO?
 #endif
-        d->cursor_icon_widget->show();
+        d->cursorIconWidget->show();
 #endif
     }
-    else if ( d->cursor_icon_widget )
-        d->cursor_icon_widget->hide();
+    else if ( d->cursorIconWidget )
+        d->cursorIconWidget->hide();
 
     if (r && r->isWidget()) {
 	_mouse->ignore();
@@ -2157,8 +2150,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
     }
 
     if ( e->type() == QEvent::Leave ) {
-      if ( d->cursor_icon_widget )
-        d->cursor_icon_widget->hide();
+      if ( d->cursorIconWidget )
+        d->cursorIconWidget->hide();
       m_part->resetHoverText();
     }
 
@@ -3782,8 +3775,8 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
 
     m_part->setSelectionVisible(false);
 
-    if ( d->cursor_icon_widget )
-        d->cursor_icon_widget->hide();
+    if ( d->cursorIconWidget )
+        d->cursorIconWidget->hide();
 
     QScrollArea::focusOutEvent( e );
 }
