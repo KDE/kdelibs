@@ -512,7 +512,7 @@ private:
 
     // ------------------------------------- member variables ------------------------------------
  private:
-
+    friend class KHTMLViewPrivate;
     enum LinkCursor { LINK_NORMAL, LINK_MAILTO, LINK_NEWWINDOW };
 
     void setWidgetVisible(::khtml::RenderWidget*, bool visible);
