@@ -136,7 +136,9 @@ void ItemsModel::removeEntry(Entry * entry)
     kDebug(551) << "removing entry " << entry->name().representation() << " from the model";
     int index = m_entries.indexOf(entry);
     if (index > -1) {
+        beginRemoveRows(QModelIndex(), index, index);
         m_entries.removeAt(index);
+        endRemoveRows();
     }
 }
 
