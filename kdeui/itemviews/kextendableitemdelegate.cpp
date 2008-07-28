@@ -21,6 +21,7 @@
 #include "kextendableitemdelegate.h"
 
 #include <QModelIndex>
+#include <QScrollBar>
 #include <QTreeView>
 #include <QPainter>
 #include <QApplication>
@@ -35,6 +36,7 @@ public:
     {}
 
     void _k_extenderDestructionHandler(QObject *destroyed);
+    void _k_verticalScroll();
 
     QSize maybeExtendedSize(const QStyleOptionViewItem &option, const QModelIndex &index) const;
     QModelIndex indexOfExtendedColumnInSameRow(const QModelIndex &index) const;
@@ -64,7 +66,8 @@ KExtendableItemDelegate::KExtendableItemDelegate(QAbstractItemView* parent)
  : QStyledItemDelegate(parent),
    d(new Private(this))
 {
-    //parent->installEventFilter(this); //not sure if this is good
+    connect(parent->verticalScrollBar(), SIGNAL(valueChanged(int)),                                            
+            this, SLOT(_k_verticalScroll()));     
 }
 
 
@@ -141,7 +144,24 @@ void KExtendableItemDelegate::Private::_k_extenderDestructionHandler(QObject *de
 }
 
 
-bool KExtendableItemDelegate::isExtended(const QModelIndex &index) const {
+//slot
+void KExtendableItemDelegate::Private::_k_verticalScroll()
+{
+    foreach (QWidget *extender, extenders) {
+        // Fast scrolling can lead to artifacts where extenders stay in the viewport
+        // of the parent's scroll area even though their items are scrolled out.
+        // Therefore we hide all extenders when scrolling.
+        // In paintEvent() show() will be called on actually visible extenders and
+        // Qt's double buffering takes care of eliminating flicker.
+        // ### This scales badly to many extenders. There are probably better ways to
+        //     avoid the artifacts.
+        extender->hide();
+    }
+}
+
+
+bool KExtendableItemDelegate::isExtended(const QModelIndex &index) const
+{
     return d->extenders.value(index);
 }
 
