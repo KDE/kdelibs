@@ -269,7 +269,8 @@ public:
   KUrlLabel* m_statusBarUALabel;
   KUrlLabel* m_statusBarJSErrorLabel;
   KUrlLabel* m_statusBarPopupLabel;
-  QList<KHTMLPart *> m_suppressedPopupOriginParts;
+  QList<QPointer<KHTMLPart> > m_suppressedPopupOriginParts; // We need to guard these in case the origin
+                                                            // is a child part.
   int m_openableSuppressedPopups;
   DOM::DocumentImpl *m_doc;
   KEncodingDetector::AutoDetectScript m_autoDetectLanguage;
