@@ -221,7 +221,7 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
 
     if (d->drawTextMode == KCapacityBar::DrawTextInline) {
         p->save();
-        p->setOpacity(0.7);
+        p->setOpacity(p->opacity() * 0.7);
     }
 
     if (!d->continuous) {
