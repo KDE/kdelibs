@@ -75,6 +75,7 @@ class DialogPrivate : public KCMultiDialogPrivate
          * Check whether the plugin associated with this KCM is enabled.
          */
         bool isPluginForKCMEnabled(const KCModuleInfo *moduleinfo, KPluginInfo &pinfo) const;
+        bool isPluginImmutable(const KPluginInfo &pinfo) const;
 
         QSet<KCModuleInfo> instanceServices();
         QSet<KCModuleInfo> parentComponentsServices(const QStringList &);

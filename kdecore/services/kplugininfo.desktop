@@ -103,3 +103,6 @@ Type=QString
 
 [PropertyDef::X-KDE-PluginInfo-EnabledByDefault]
 Type=bool
+
+[PropertyDef::X-KDE-PluginInfo-Immutable]
+Type=bool
