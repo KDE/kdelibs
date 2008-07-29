@@ -46,6 +46,9 @@ else (APPLE)
 endif (APPLE)
 
 target_link_libraries(kdeinit4 ${KDE4_KDECORE_LIBS} ${kdeinit_LIBS} )
+if (Q_WS_X11)
+  target_link_libraries(kdeinit4 ${X11_X11_LIB})
+endif(Q_WS_X11)
 
 install(TARGETS kdeinit4 DESTINATION ${BIN_INSTALL_DIR} )
 
