@@ -475,7 +475,7 @@ void KPageWidgetModel::removePage( KPageWidgetItem *item )
   if ( parentPageItem != d->rootItem )
     index = createIndex( row, 0, parentPageItem );
 
-    beginRemoveRows(index, pageItem->row(), pageItem->row() + 1);
+    beginRemoveRows(index, pageItem->row(), pageItem->row());
 
   parentPageItem->removeChild( pageItem->row() );
   delete pageItem;
