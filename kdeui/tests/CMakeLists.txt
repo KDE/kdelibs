@@ -111,6 +111,7 @@ if (Q_WS_X11)
 KDEUI_EXECUTABLE_TESTS(
  kxerrorhandlertest
 )
+target_link_libraries(kxerrorhandlertest ${X11_X11_LIB})
 endif (Q_WS_X11)
 
 ## kplottest
