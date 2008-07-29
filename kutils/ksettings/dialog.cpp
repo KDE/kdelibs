@@ -210,6 +210,11 @@ bool DialogPrivate::isPluginForKCMEnabled(const KCModuleInfo *moduleinfo, KPlugi
 	return enabled;
 }
 
+bool DialogPrivate::isPluginImmutable(const KPluginInfo &pinfo) const
+{
+    return pinfo.property("X-KDE-PluginInfo-Immutable").toBool();
+}
+
 void DialogPrivate::parseGroupFile( const QString & filename )
 {
     Q_Q(Dialog);
@@ -340,8 +345,9 @@ void DialogPrivate::createDialogFromServices()
                         QCheckBox *checkBox = checkBoxForItem.value(parent);
                         Q_ASSERT(checkBox);
                         pluginForItem.insert(parent, pinfo);
-                        parent->setCheckable(true);
+                        parent->setCheckable(!isPluginImmutable(pinfo));
                         parent->setChecked(isEnabled);
+                        checkBox->setVisible(!isPluginImmutable(pinfo));
                         checkBox->setChecked(isEnabled);
                         q->connect(parent, SIGNAL(toggled(bool)), q, SLOT(_k_updateEnabledState(bool)));
                         q->connect(parent, SIGNAL(toggled(bool)), checkBox, SLOT(setChecked(bool)));
@@ -349,7 +355,7 @@ void DialogPrivate::createDialogFromServices()
                     }
                 } else {
                     pluginForItem.insert(item, pinfo);
-                    item->setCheckable(true);
+                    item->setCheckable(!isPluginImmutable(pinfo));
                     item->setChecked(isEnabled);
                     q->connect(item, SIGNAL(toggled(bool)), q, SLOT(_k_updateEnabledState(bool)));
                 }
