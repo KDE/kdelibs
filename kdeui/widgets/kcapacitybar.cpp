@@ -153,20 +153,20 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
     }
 
     QPainterPath outline;
-    outline.moveTo(ROUND_MARGIN / 4 + 1, 0);
-    outline.lineTo(drawRect.width() - ROUND_MARGIN / 4 - 1, 0);
-    outline.quadTo(drawRect.width() + ROUND_MARGIN / 2, drawRect.height() / 2, drawRect.width() - ROUND_MARGIN / 4 - 1, drawRect.height());
-    outline.lineTo(ROUND_MARGIN / 4 + 1, drawRect.height());
-    outline.quadTo(-ROUND_MARGIN / 2, drawRect.height() / 2, ROUND_MARGIN / 4 + 1, 0);
+    outline.moveTo(rect.left() + ROUND_MARGIN / 4 + 1, rect.top());
+    outline.lineTo(rect.left() + drawRect.width() - ROUND_MARGIN / 4 - 1, rect.top());
+    outline.quadTo(rect.left() + drawRect.width() + ROUND_MARGIN / 2, drawRect.height() / 2 + rect.top(), rect.left() + drawRect.width() - ROUND_MARGIN / 4 - 1, drawRect.height() + rect.top());
+    outline.lineTo(rect.left() + ROUND_MARGIN / 4 + 1, drawRect.height() + rect.top());
+    outline.quadTo(-ROUND_MARGIN / 2 + rect.left(), drawRect.height() / 2 + rect.top(), rect.left() + ROUND_MARGIN / 4 + 1, rect.top());
     const QColor fillColor = KColorScheme::shade(palette().window().color(), KColorScheme::DarkShade);
     p->fillPath(outline, QColor(fillColor.red(), fillColor.green(), fillColor.blue(), 50));
 
     QRadialGradient bottomGradient(QPointF(rect.width() / 2, drawRect.bottom() + 1), rect.width() / 2);
     bottomGradient.setColorAt(0, KColorScheme::shade(palette().window().color(), KColorScheme::LightShade));
     bottomGradient.setColorAt(1, Qt::transparent);
-    p->fillRect(QRect(0, drawRect.bottom(), rect.width(), 1), bottomGradient);
+    p->fillRect(QRect(rect.left(), drawRect.bottom() + rect.top(), rect.width(), 1), bottomGradient);
 
-    p->translate(2, 1);
+    p->translate(rect.left() + 2, rect.top() + 1);
 
     drawRect.setWidth(drawRect.width() - 4);
     drawRect.setHeight(drawRect.height() - 2);
@@ -247,7 +247,7 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
                     stopped = true;
                     break;
                 }
-                p->fillRect(QRect(start, verticalSpacing, slotWidth, drawRect.height() - verticalSpacing * 2), fillInternalBar);
+                p->fillRect(QRect(rect.left() + start, rect.top() + verticalSpacing, slotWidth, drawRect.height() - verticalSpacing * 2), fillInternalBar);
                 start += slotWidth + spacing;
             }
 
@@ -275,7 +275,7 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
     const QColor fillTopColor = KColorScheme::shade(palette().window().color(), KColorScheme::LightShade);
     topGradient.setColorAt(0, QColor(fillTopColor.red(), fillTopColor.green(), fillTopColor.blue(), 127));
     topGradient.setColorAt(1, Qt::transparent);
-    p->fillRect(QRect(0, drawRect.top(), rect.width(), 2), topGradient);
+    p->fillRect(QRect(rect.left(), rect.top() + drawRect.top(), rect.width(), 2), topGradient);
     p->restore();
 
     p->save();
