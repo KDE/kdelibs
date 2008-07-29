@@ -624,6 +624,11 @@ QWidget* FormModule::createListView(QWidget* parent)
     return widget;
 }
 
+QAction* FormModule::createAction(QObject* parent)
+{
+    return new QAction(parent);
+}
+
 QObject* FormModule::loadPart(QWidget* parent, const QString& name, const QUrl& url)
 {
     //name e.g. "libkghostview"

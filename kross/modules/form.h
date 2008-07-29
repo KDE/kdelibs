@@ -499,6 +499,15 @@ namespace Kross {
              */
             QObject* loadPart(QWidget* parent, const QString& name, const QUrl& url = QUrl());
 
+            /**
+             * Create and return a new \a QAction instance.
+             *
+             * \param parent the parent QObject the new \a QAction instance
+             * is a child of.
+             * \return the new \a QAction instance or NULL.
+             */
+            QAction* createAction(QObject* parent);
+
         private:
             /// \internal d-pointer class.
             class Private;
