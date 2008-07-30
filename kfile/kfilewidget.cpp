@@ -716,8 +716,8 @@ void KFileWidget::slotOk()
 
         d->url = url;
 
-        if ( d->confirmOverwrite ) {
-            if ( !d->toOverwrite(d->url) ) {
+        if (d->confirmOverwrite) {
+            if (!d->toOverwrite(d->url)) {
                 return;
             }
         }
@@ -1368,12 +1368,12 @@ bool KFileWidgetPrivate::toOverwrite(const KUrl &fileName)
 {
     QFileInfo fileInfo(fileName.pathOrUrl());
 
-    if ( fileInfo.exists() ) {
+    if (fileInfo.exists()) {
         int ret = KMessageBox::warningContinueCancel( q,
             i18n( "The file \"%1\" already exists. Do you wish to overwrite it?" ,
             fileName.pathOrUrl() ), i18n( "Overwrite File?" ), KStandardGuiItem::overwrite());
 
-        if ( ret != KMessageBox::Continue ) {
+        if (ret != KMessageBox::Continue) {
             return false;
         }
         return true;
@@ -2399,7 +2399,7 @@ void KFileWidget::virtual_hook( int id, void* data )
     // introduced for 4.2. As stated in kabstractfilewidget.h this workaround
     // is going to become a virtual function for KDE5
 
-    switch ( id ) {
+    switch (id) {
     case 0:
         bool *enable = static_cast<bool*>(data);
         d->confirmOverwrite = *enable;
