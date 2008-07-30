@@ -506,11 +506,11 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             break;
         case ID_HTML:
             if (!current->isDocumentNode() ) {
-		if ( doc()->firstChild()->id() == ID_HTML) {
+		if ( doc()->documentElement()->id() == ID_HTML) {
 		    // we have another <HTML> element.... apply attributes to existing one
 		    // make sure we don't overwrite already existing attributes
 		    NamedAttrMapImpl *map = static_cast<ElementImpl*>(n)->attributes(true);
-		    NamedAttrMapImpl *bmap = static_cast<ElementImpl*>(doc()->firstChild())->attributes(false);
+		    NamedAttrMapImpl *bmap = static_cast<ElementImpl*>(doc()->documentElement())->attributes(false);
 		    bool changed = false;
 		    for (unsigned long l = 0; map && l < map->length(); ++l) {
 			NodeImpl::Id attrId = map->idAt(l);
@@ -1790,16 +1790,16 @@ void KHTMLParser::freeBlock()
 
 void KHTMLParser::createHead()
 {
-    if(head || !doc()->firstChild())
+    if(head || !doc()->documentElement())
         return;
 
     head = new HTMLHeadElementImpl(document);
     HTMLElementImpl *body = doc()->body();
     int exceptioncode = 0;
-    doc()->firstChild()->insertBefore(head, body, exceptioncode);
+    doc()->documentElement()->insertBefore(head, body, exceptioncode);
     if ( exceptioncode ) {
 #ifdef PARSER_DEBUG
-        kDebug( 6035 ) << "creation of head failed!!!!";
+        kDebug( 6035 ) << "creation of head failed!!!!:" << exceptioncode;
 #endif
         delete head;
         head = 0;
