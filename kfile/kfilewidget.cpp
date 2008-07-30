@@ -73,7 +73,8 @@ public:
           speedBarWidth(-1),
           inAccept(false),
           dummyAdded(false),
-          q(q)
+          q(q),
+          confirmOverwrite(false)
     {
     }
     void updateLocationWhatsThis();
@@ -127,6 +128,12 @@ public:
      * Removes the dummy entry of the history combo box.
      */
     void removeDummyHistoryEntry();
+
+    /**
+     * Asks for overwrite confirmation using a KMessageBox and returns
+     * true if the user accepts.
+     */
+    bool toOverwrite(const KUrl&);
 
     // private slots
     void _k_slotLocationChanged( const QString& );
@@ -224,6 +231,8 @@ public:
     KFileWidget* q;
 
     KFilePlacesModel *model;
+
+    bool confirmOverwrite;
 };
 
 K_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
@@ -706,6 +715,13 @@ void KFileWidget::slotOk()
         }
 
         d->url = url;
+
+        if ( d->confirmOverwrite ) {
+            if ( !d->toOverwrite(d->url) ) {
+                return;
+            }
+        }
+
         emit accepted();
         return;
     }
@@ -1348,6 +1364,23 @@ void KFileWidgetPrivate::_k_enterUrl( const QString& url )
     _k_enterUrl( KUrl( KUrlCompletion::replacedPath( url, true, true )) );
 }
 
+bool KFileWidgetPrivate::toOverwrite(const KUrl &fileName)
+{
+    QFileInfo fileInfo(fileName.pathOrUrl());
+
+    if ( fileInfo.exists() ) {
+        int ret = KMessageBox::warningContinueCancel( q,
+            i18n( "The file \"%1\" already exists. Do you wish to overwrite it?" ,
+            fileName.pathOrUrl() ), i18n( "Overwrite File?" ), KStandardGuiItem::overwrite());
+
+        if ( ret != KMessageBox::Continue ) {
+            return false;
+        }
+        return true;
+    }
+
+    return false;
+}
 
 void KFileWidget::setSelection(const QString& url)
 {
@@ -2361,8 +2394,17 @@ void KFileWidget::setCustomWidget(const QString& text, QWidget* widget)
 
 void KFileWidget::virtual_hook( int id, void* data )
 {
-    Q_UNUSED(id);
-    Q_UNUSED(data);
+    // this is a workaround to avoid binary compatibility breakage
+    // since setConfirmOverwrite in kabstractfilewidget.h is a new function
+    // introduced for 4.2. As stated in kabstractfilewidget.h this workaround
+    // is going to become a virtual function for KDE5
+
+    switch ( id ) {
+    case 0:
+        bool *enable = static_cast<bool*>(data);
+        d->confirmOverwrite = *enable;
+        break;
+    }
 }
 
 QString KFileWidgetPrivate::locationEditCurrentText() const
