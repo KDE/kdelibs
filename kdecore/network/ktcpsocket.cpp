@@ -317,7 +317,11 @@ public:
     void reemitSslErrors(const QList<QSslError> &errors)
     {
         q->showSslErrors(); //H4X
-        emit q->sslErrors(errors);
+        QList<KSslError> kErrors;
+        foreach (const QSslError &e, errors) {
+            kErrors.append(KSslError(e));
+        }
+        emit q->sslErrors(kErrors);
     }
 
     void reemitStateChanged(QAbstractSocket::SocketState s)

@@ -325,7 +325,7 @@ Q_SIGNALS:
     //from QSslSocket
     // void encrypted();
     void encryptionModeChanged(EncryptionMode);
-    void sslErrors(const QList<QSslError> &errors);
+    void sslErrors(const QList<KSslError> &errors);
 
 public Q_SLOTS:
     void ignoreSslErrors();
