@@ -538,25 +538,29 @@ bool HTTPProtocol::proceedUntilResponseHeader()
   //   this time with an authorization header in the request.
   // - Server-initiated timeout on keep-alive connection: Reconnect and try again
 
-  while(1) {
-    if (!sendQuery()) {
-        return false;
-    }
-    if (!readResponseHeader() && m_isError) {
-        return false;
-    }
-
-    // Do not save authorization if the current response code is
-    // 4xx (client error) or 5xx (server error).
-    kDebug(7113) << "Previous Response:" << m_request.prevResponseCode;
-    kDebug(7113) << "Current Response:" << m_request.responseCode;
-
-    if (m_request.responseCode < 400 &&
-        (m_request.prevResponseCode == 401 || m_request.prevResponseCode == 407)) {
-        saveAuthorization();
-    }
-    break;
+  while (true) {
+      if (!sendQuery()) {
+          return false;
+      }
+      if (readResponseHeader()) {
+          // Success, finish the request.
+          break;
+      } else if (m_isError) {
+          // Hard error, abort everything.
+          return false;
+      }
   }
+
+  // Do not save authorization if the current response code is
+  // 4xx (client error) or 5xx (server error).
+  kDebug(7113) << "Previous Response:" << m_request.prevResponseCode;
+  kDebug(7113) << "Current Response:" << m_request.responseCode;
+
+  if (m_request.responseCode < 400 &&
+      (m_request.prevResponseCode == 401 || m_request.prevResponseCode == 407)) {
+      saveAuthorization();
+  }
+
   // At this point sendBody() should have delivered any POST data.
   m_POSTbuf.clear();
 
@@ -2367,8 +2371,8 @@ bool HTTPProtocol::sendQuery()
                  << "  -- intended to write" << header.length()
                  << "bytes but wrote" << (int)written << ".";
 
-    // With a Keep-Alive connection this can happen.
-    // Just reestablish the connection.
+    // The server might have closed the connection due to a timeout, or maybe
+    // some transport problem arose while the connection was idle.
     if (m_request.isKeepAlive)
     {
        httpCloseConnection();
@@ -3304,31 +3308,38 @@ try_again:
   }
 
   // We need to try to login again if we failed earlier
-  if ( m_isUnauthorized )
-  {
-    if ( (m_request.responseCode == 401) || (m_request.proxyUrl.isValid() && (m_request.responseCode == 407)))
-    {
-      if ( getAuthorization() )
-      {
-          // for NTLM authentication we have to keep the connection open!
-          if ( m_auth.scheme == AUTH_NTLM && m_auth.authorization.length() > 4 )
-          {
-            m_request.isKeepAlive = true;
-            readBody(true);
-          }
-          else if (m_proxyAuth.scheme == AUTH_NTLM && m_proxyAuth.authorization.length() > 4)
-          {
-            readBody(true);
-          }
-          else
-            httpCloseConnection();
-          return false; // Try again.
-      }
+  if (m_isUnauthorized) {
 
-      if (m_isError)
-          return false; // Error out
-    }
-    m_isUnauthorized = false;
+      kDebug(7113) << "Trace A";
+
+      if ((m_request.responseCode == 401) ||
+          (m_request.responseCode == 407 && m_request.proxyUrl.isValid())) {
+
+          kDebug(7113) << "Trace B";
+
+          if (getAuthorization()) {
+              // for NTLM authentication we have to keep the connection open!
+              if (m_auth.scheme == AUTH_NTLM && m_auth.authorization.length() > 4) {
+                  m_request.isKeepAlive = true;
+                  readBody(true);
+              } else if (m_proxyAuth.scheme == AUTH_NTLM && m_proxyAuth.authorization.length() > 4) {
+                  readBody(true);
+              } else {
+                  httpCloseConnection();
+              }
+              
+              kDebug(7113) << "Trace C";
+              
+              return false; // Try again.
+          }
+
+          if (m_isError) {
+              kDebug(7113) << "Trace D";
+              return false; // Error out
+          }
+      }
+      kDebug(7113) << "Trace E";
+      m_isUnauthorized = false;
   }
 
   // We need to do a redirect
@@ -5017,7 +5028,7 @@ bool HTTPProtocol::getAuthorization()
         // requests because we already know the realm value...
         //### that comment sounds like it's exactly wrong(?) --ahartmetz
 
-        if (m_proxyAuth.scheme != AUTH_None) {
+        if (m_proxyAuth.scheme != AUTH_None) {  //### we actually need some "stale flag". this is wrong!!!
             // Reset cached proxy auth
             m_proxyAuth.scheme = AUTH_None;
             KUrl proxy(config()->readEntry("UseProxy"));
@@ -5051,9 +5062,8 @@ bool HTTPProtocol::getAuthorization()
     }
 
     if (!result) {
-        // Do not prompt if the username & password
-        // is already supplied and the login attempt
-        // did not fail before.
+        // Do not prompt if the username & password are already supplied and
+        // the login attempt did not fail before.
         if (!repeatFailure &&
             !info.username.isEmpty() && !info.password.isEmpty()) {
             result = true;
@@ -5608,6 +5618,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
 
 QString HTTPProtocol::proxyAuthenticationHeader()
 {
+    kDebug(7113);
     // We keep proxy authentication locally until they are changed.
     // Thus, no need to check with the password manager for every
     // connection.
@@ -5680,6 +5691,7 @@ QString HTTPProtocol::proxyAuthenticationHeader()
 
 QString HTTPProtocol::wwwAuthenticationHeader()
 {
+    kDebug(7113);
     // Only check for cached authentication if the previous response was NOT a 401 or 407.
     // In that case we have already tried the cached authentication in a previous attempt
     // (because it's the first thing we try) and it did not work.
