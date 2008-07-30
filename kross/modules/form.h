@@ -349,9 +349,9 @@ namespace Kross {
      * dialog = forms.createDialog("My Dialog")
      * dialog.setButtons("Ok|Cancel")
      * page = dialog.addPage("Welcome","Welcome Page","document-open")
-     * label = self.forms.createWidget("QLabel", page)
+     * label = forms.createWidget(page,"QLabel")
      * label.text = "Hello World Label"
-     * if self.dialog.exec_loop():
+     * if dialog.exec_loop():
      *     forms.showMessageBox("Information", "Okay...", "The Ok-button was pressed")
      * \endcode
      */
