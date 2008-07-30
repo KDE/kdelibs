@@ -500,6 +500,13 @@ KUrl::List KFileDialog::getOpenUrls(const KUrl& startDir,
     return dlg.selectedUrls();
 }
 
+void KFileDialog::setConfirmOverwrite(bool enable)
+{
+    if ( operationMode() == KFileDialog::Saving ) {
+        d->w->setConfirmOverwrite( enable );
+    }
+}
+
 KUrl KFileDialog::getExistingDirectoryUrl(const KUrl& startDir,
                                           QWidget *parent,
                                           const QString& caption)

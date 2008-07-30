@@ -356,6 +356,18 @@ public:
 
     /// @internal for future extensions
     virtual void virtual_hook( int id, void* data ) = 0;
+
+    /**
+     * Sets whether the user should be asked for confirmation
+     * when an overwrite might occurr.
+     *
+     * @param enable Set this to true to enable checking.
+     * @since 4.2
+     */
+    void setConfirmOverwrite(bool enable){  // KDE5 TODO: make this virtual
+        virtual_hook(0, static_cast<void*>(&enable));
+    }
+
 };
 
 Q_DECLARE_INTERFACE(KAbstractFileWidget, "org.kde.KAbstractFileWidget")

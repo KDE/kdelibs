@@ -305,6 +305,17 @@ public:
      */
     void setPreviewWidget(KPreviewWidgetBase *w);
 
+    /**
+     * Sets whether the dialog should ask before accepting the selected file
+     * when KFileDialog::OperationMode is set to Saving.
+     *
+     * In this case a KMessageBox appears for confirmation.
+     *
+     * @param enable Set this to true to enable checking.
+     * @since 4.2
+     */
+    void setConfirmOverwrite(bool enable);
+
     /** @see QWidget::sizeHint() */
     virtual QSize sizeHint() const;
 
