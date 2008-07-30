@@ -502,8 +502,8 @@ KUrl::List KFileDialog::getOpenUrls(const KUrl& startDir,
 
 void KFileDialog::setConfirmOverwrite(bool enable)
 {
-    if ( operationMode() == KFileDialog::Saving ) {
-        d->w->setConfirmOverwrite( enable );
+    if (operationMode() == KFileDialog::Saving) {
+        d->w->setConfirmOverwrite(enable);
     }
 }
 
