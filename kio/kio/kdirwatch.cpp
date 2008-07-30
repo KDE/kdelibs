@@ -3,6 +3,7 @@
    Copyright (C) 1998 Sven Radej <sven@lisa.exp.univie.ac.at>
    Copyright (C) 2006 Dirk Mueller <mueller@kde.org>
    Copyright (C) 2007 Flavio Castelli <flavio.castelli@gmail.com>
+   Copyright (C) 2008 Rafal Rzepecki <divided.mind@gmail.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -21,6 +22,7 @@
 
 
 // CHANGES:
+// Jul 30, 2008 - Don't follow symlinks when recursing to avoid loops (Rafal)
 // Aug 6,  2007 - KDirWatch::WatchModes support complete, flags work fine also
 // when using FAMD (Flavio Castelli)
 // Aug 3,  2007 - Handled KDirWatch::WatchModes flags when using inotify, now
@@ -649,9 +651,14 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   if (exists) {
     e->isDir = S_ISDIR(stat_buf.st_mode);
 
-    if (e->isDir && !isDir)
-      qWarning() << "KDirWatch:" << path << "is a directory. Use addDir!";
-    else if (!e->isDir && isDir)
+    if (e->isDir && !isDir) {
+      KDE_lstat(tpath, &stat_buf);
+      if (S_ISLNK(stat_buf.st_mode))
+        // if it's a symlink, don't follow it
+        e->isDir = false;
+      else
+        qWarning() << "KDirWatch:" << path << "is a directory. Use addDir!";
+    } else if (!e->isDir && isDir)
       qWarning("KDirWatch: %s is a file. Use addFile!", qPrintable(path));
 
     if (!e->isDir && ( watchModes != KDirWatch::WatchDirOnly)) {
@@ -712,7 +719,9 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
          iter != contents.constEnd(); ++iter)
     {
       const QFileInfo &fileInfo = *iter;
-      bool isDir = fileInfo.isDir();
+      // treat symlinks as files--don't follow them.
+      bool isDir = fileInfo.isDir() && !fileInfo.isSymLink();
+      
       addEntry (instance, fileInfo.absoluteFilePath(), 0, isDir,
                 isDir ? watchModes : KDirWatch::WatchDirOnly);
     }

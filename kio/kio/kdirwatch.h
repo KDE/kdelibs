@@ -101,7 +101,9 @@ class KIO_EXPORT KDirWatch : public QObject
     * directory are watched for changes, too. Thus, the signals dirty(),
     * created(), deleted() can be emitted.
     * When @p watchModes is set to WatchSubDirs, all subdirs are watched using
-    * the same flags specified in @p watchModes .
+    * the same flags specified in @p watchModes (symlinks aren't followed).
+    * If the @p path points to a symlink to a directory, the target directory
+    * is watched instead. If you want to watch the link, use @p addFile().
     *
     * @param path the path to watch
     * @param watchModes watch modes
@@ -112,6 +114,7 @@ class KIO_EXPORT KDirWatch : public QObject
 
    /**
     * Adds a file to be watched.
+    * If it's a symlink to a directory, it watches the symlink itself.
     * @param file the file to watch
     */
    void addFile(const QString& file);
