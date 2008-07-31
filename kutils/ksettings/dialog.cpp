@@ -371,7 +371,7 @@ void DialogPrivate::createDialogFromServices()
         for (; it != end; ++it) {
             const QModelIndex index = model->index(it.value());
             KPluginInfo pinfo;
-            foreach (KPluginInfo p, plugininfos) {
+            foreach (const KPluginInfo &p, plugininfos) {
                 if (p.name()==it.key()) {
                     pinfo = p;
                     break;
