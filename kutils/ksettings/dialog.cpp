@@ -370,9 +370,34 @@ void DialogPrivate::createDialogFromServices()
         QHash<QString, KPageWidgetItem *>::ConstIterator it = pageItemForGroupId.constBegin();
         for (; it != end; ++it) {
             const QModelIndex index = model->index(it.value());
+            KPluginInfo pinfo;
+            foreach (KPluginInfo p, plugininfos) {
+                if (p.name()==it.key()) {
+                    pinfo = p;
+                    break;
+                }
+            }
+            bool allowEmpty = false;
+            if (pinfo.isValid()) {
+                allowEmpty = pinfo.property("X-KDE-PluginInfo-AllowEmptySettings").toBool();
+            }
+
             if (!index.child(0, 0).isValid()) {
-                // no children => remove this item
-                q->removePage(it.value());
+                // no children, and it's not allowed => remove this item
+                if (!allowEmpty) {
+                    q->removePage(it.value());
+                } else {
+                    QCheckBox *checkBox = checkBoxForItem.value(it.value());
+                    Q_ASSERT(checkBox);
+                    pluginForItem.insert(it.value(), pinfo);
+                    it.value()->setCheckable(!isPluginImmutable(pinfo));
+                    it.value()->setChecked(pinfo.isPluginEnabled());
+                    checkBox->setVisible(!isPluginImmutable(pinfo));
+                    checkBox->setChecked(pinfo.isPluginEnabled());
+                    q->connect(it.value(), SIGNAL(toggled(bool)), q, SLOT(_k_updateEnabledState(bool)));
+                    q->connect(it.value(), SIGNAL(toggled(bool)), checkBox, SLOT(setChecked(bool)));
+                    q->connect(checkBox, SIGNAL(clicked(bool)), it.value(), SLOT(setChecked(bool)));
+                }
             }
         }
     }
@@ -496,10 +521,6 @@ void DialogPrivate::_k_updateEnabledState(bool enabled)
                 }
             }
         }
-    } else {
-        // change only this item
-        kDebug(700) << "item->setEnabled(" << enabled << ')';
-        item->setEnabled(enabled);
     }
 }
 
