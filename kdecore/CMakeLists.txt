@@ -246,9 +246,17 @@ kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
 target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
-set_target_properties(kdecore PROPERTIES 
-                              VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
-                              SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
+if(WIN32)
+  set(kdecore_LINK_INTERFACE_LIBRARIES "${QT_QTDBUS_LIBRARY};${QT_QTCORE_LIBRARY};${KDEWIN32_LIBRARIES}")
+else(WiN32)
+  set(kdecore_LINK_INTERFACE_LIBRARIES "${QT_QTDBUS_LIBRARY};${QT_QTCORE_LIBRARY}")
+endif(WIN32)
+
+set_target_properties(kdecore PROPERTIES
+                              VERSION ${KDE_NON_GENERIC_LIB_VERSION}
+                              SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} 
+                              ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "${kdecore_LINK_INTERFACE_LIBRARIES}"
+)
 
 install(TARGETS kdecore ${INSTALL_TARGETS_DEFAULT_ARGS})
 
