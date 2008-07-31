@@ -75,6 +75,10 @@ qt4_add_dbus_interface(networkingclient_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/../soli
 
 kde4_add_executable(networkingclient TEST ${networkingclient_SRCS})
 
+if(WIN32)
+    set_target_properties( networkingclient PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
+endif(WIN32)
+
 target_link_libraries(networkingclient solid_static ${KDE4_KIO_LIBS})
 ########### install files ###############
 
