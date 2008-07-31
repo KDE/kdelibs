@@ -106,3 +106,6 @@ Type=bool
 
 [PropertyDef::X-KDE-PluginInfo-Immutable]
 Type=bool
+
+[PropertyDef::X-KDE-PluginInfo-AllowEmptySettings]
+Type=bool
