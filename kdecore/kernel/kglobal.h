@@ -409,6 +409,16 @@ namespace KGlobal
      * "last window closed" event, but some events should outlive the last window closed
      * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
      *
+     * We have some use cases that we want to take care of (the format is "action refcount"):
+     * - open window -> setAllowQuit(true) 1 ; close window 0 => EXIT
+     * - job start 1; job end 0 [don't exit yet]; open window -> setAllowQuit(true) 1 ; close window 0 => EXIT
+     * - job start 1; open window -> setAllowQuit(true) 2; close window 1; job end 0 => EXIT
+     * - job start 1; open window -> setAllowQuit(true) 2; job end 1; close window 0 => EXIT
+     * - open dialog 0; close dialog 0; => DO NOT EXIT
+     * - job start 1; job end 0; create two main objects 2; delete both main objects 0 => EXIT
+     * - open window -> setAllowQuit(true) 1; add systray icon 2; close window 1 => DO NOT EXIT
+     * - open window -> setAllowQuit(true) 1; add systray icon 2; remove systray icon 1; close window 0 => EXIT
+     *
      * Note that for this to happen you must call qApp->setQuitOnLastWindowClosed(false),
      * in main() for instance.
      */
@@ -419,6 +429,13 @@ namespace KGlobal
      * This call makes the QApplication quit if the counter is back to 0.
      */
     KDECORE_EXPORT void deref();
+
+    /**
+     * If refcounting reaches 0 (or less), and @p allowQuit is true, the instance of the application
+     * will automatically be exited. Otherwise, the application will not exit automatically.
+     * @since 4.2
+     */
+    KDECORE_EXPORT void setAllowQuit(bool allowQuit);
 
     /**
      * The component currently active (useful in a multi-component
