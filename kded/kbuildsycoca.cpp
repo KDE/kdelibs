@@ -466,7 +466,6 @@ bool KBuildSycoca::recreate()
     QFile ksycocastamp(stamppath);
     ksycocastamp.open( QIODevice::WriteOnly );
     QDataStream str( &ksycocastamp );
-    str.setVersion(QDataStream::Qt_3_1);
     str << newTimestamp;
     str << existingResourceDirs();
     if (g_vfolder)
@@ -758,7 +757,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
        if( ksycocastamp.open( QIODevice::ReadOnly ))
        {
            QDataStream str( &ksycocastamp );
-           str.setVersion(QDataStream::Qt_3_1);
 
            if (!str.atEnd())
                str >> filestamp;
