@@ -42,6 +42,16 @@ können.</para></listitem>
 
 <varlistentry>
 <term><menuchoice>
+<guimenu>Help</guimenu>
+<guimenuitem>Anwendungssprache umschalten ...</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Öffnet einen Dialog</action> zur Einstellung
+der <guilabel>Hauptsprache</guilabel> und <guilabel>Standardsprache</guilabel>
+für diese Anwendung.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
 <guimenu>Hilfe</guimenu>
 <guimenuitem>Über &kappname;</guimenuitem>
 </menuchoice></term>
