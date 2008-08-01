@@ -251,11 +251,14 @@ QString KGlobal::caption()
 
 /**
  * This counter indicates when to quit the application.
- * It starts at 1, is decremented in KMainWindow when the last window is closed, but
- * is incremented by operations that should outlive the last window closed
- * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
+ * It starts at 0, is incremented by KMainWindow, systray icons, running jobs, etc.
+ * and decremented again when those things are destroyed.
+ * This mechanism allows dialogs and jobs to outlive the last window closed
+ * e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client,
+ * the job progress widget with "keep open" checked, etc.
  */
-static int s_refCount = 1;
+static int s_refCount = 0;
+static bool s_allowQuit = false;
 
 void KGlobal::ref()
 {
@@ -267,9 +270,14 @@ void KGlobal::deref()
 {
     --s_refCount;
     //kDebug() << "KGlobal::deref() : refCount = " << s_refCount;
-    if (s_refCount <= 0) {
+    if (s_refCount <= 0 && s_allowQuit) {
         QCoreApplication::instance()->quit();
     }
+}
+
+void KGlobal::setAllowQuit(bool allowQuit)
+{
+    s_allowQuit = allowQuit;
 }
 
 #undef PRIVATE_DATA
