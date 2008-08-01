@@ -73,6 +73,10 @@ public:
           speedBarWidth(-1),
           inAccept(false),
           dummyAdded(false),
+          toolbar(0),
+          locationEdit(0),
+          ops(0),
+          filterWidget(0),
           q(q),
           confirmOverwrite(false)
     {
