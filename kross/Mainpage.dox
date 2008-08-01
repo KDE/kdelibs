@@ -12,7 +12,7 @@ refer to pages (see eg: Mainpage.dox in the parent directory).
 
 If you have content for these sections and want
 help writing the doxygen bits for them, get in touch with me:
-Alex Merry <huntedhacker@tiscali.co.uk>.
+Alex Merry <kde@randomguy3.me.uk>
 
 If there is no more to put, then remove the @ref, the following
 word (eg: core) and the quotation marks.  Also, putting % before

@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2007 Alex Merry <huntedhacker@tiscali.co.uk>
+ *  Copyright (c) 2007 Alex Merry <alex.merry@kdemail.net>
  *  Copyright (c) 2007 Thomas Zander <zander@kde.org>
  *  Copyright (c) 2008 John Layt <john@layt.net>
  *
