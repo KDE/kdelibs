@@ -466,6 +466,7 @@ bool KBuildSycoca::recreate()
     QFile ksycocastamp(stamppath);
     ksycocastamp.open( QIODevice::WriteOnly );
     QDataStream str( &ksycocastamp );
+    str.setVersion(QDataStream::Qt_3_1);
     str << newTimestamp;
     str << existingResourceDirs();
     if (g_vfolder)
@@ -579,7 +580,7 @@ bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& 
 
 // check times of last modification of all files on which ksycoca depens,
 // and also their directories
-// if all of them all older than the timestamp in file ksycocastamp, this
+// if all of them are older than the timestamp in file ksycocastamp, this
 // means that there's no need to rebuild ksycoca
 bool KBuildSycoca::checkTimestamps( quint32 timestamp, const QStringList &dirs )
 {
@@ -757,6 +758,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
        if( ksycocastamp.open( QIODevice::ReadOnly ))
        {
            QDataStream str( &ksycocastamp );
+           str.setVersion(QDataStream::Qt_3_1);
+
            if (!str.atEnd())
                str >> filestamp;
            if (!str.atEnd())
