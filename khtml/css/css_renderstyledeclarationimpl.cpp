@@ -109,6 +109,7 @@ static const int computedProperties[] = {
     CSS_PROP_TEXT_ALIGN,
     CSS_PROP_TEXT_DECORATION,
     CSS_PROP_TEXT_INDENT,
+    CSS_PROP_TEXT_OVERFLOW,    
     CSS_PROP_TEXT_SHADOW,
     CSS_PROP_TEXT_TRANSFORM,
     CSS_PROP_TOP,
@@ -119,8 +120,7 @@ static const int computedProperties[] = {
     CSS_PROP_WIDOWS,
     CSS_PROP_WIDTH,
     CSS_PROP_WORD_SPACING,
-    CSS_PROP_Z_INDEX,
-    CSS_PROP_TEXT_OVERFLOW
+    CSS_PROP_Z_INDEX
 };
 
 const unsigned numComputedProperties = sizeof(computedProperties) / sizeof(computedProperties[0]);
