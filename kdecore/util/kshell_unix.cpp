@@ -122,9 +122,14 @@ QStringList KShell::splitArgs( const QString &args, Options flags, Errors *err)
             {
                 int pos2 = pos;
                 QChar cc;
-                do
+                do {
+                    if (pos2 >= args.length()) {
+                        // Exactly one word
+                        ret += args.mid(pos - 1);
+                        goto okret;
+                    }
                     cc = args[pos2++];
-                while (cc == QLatin1Char('_') ||
+                } while (cc == QLatin1Char('_') ||
                        (cc >= QLatin1Char('A') && cc <= QLatin1Char('Z')) ||
                        (cc >= QLatin1Char('a') && cc <= QLatin1Char('z')) ||
                        (cc >= QLatin1Char('0') && cc <= QLatin1Char('9')));
