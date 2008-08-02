@@ -41,6 +41,16 @@ report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
 <varlistentry>
 <term><menuchoice>
 <guimenu>Help</guimenu>
+<guimenuitem>Switch Application Language...</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Opens a dialog</action> where you can
+edit the <guilabel>Primary language</guilabel> and <guilabel>Fallback language</guilabel>
+for this application.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<guimenu>Help</guimenu>
 <guimenuitem>About &kappname;</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>This will display version and author
