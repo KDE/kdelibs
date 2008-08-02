@@ -3,7 +3,7 @@ bugs
 
 - make expandString stuff consistent
 - KConfigGroup::revertToDefault
-  - does not match apidoc re. reverting to kdeglobals
+  - does not match apidoc re. reverting to kdeglobals 1)
   - should use entryMap.revertEntry()
   - map has no bRevert flag that could be set along with bDirty, so it
     is impossible to get rid of a once set key
@@ -15,23 +15,66 @@ bugs
   (but also save the original string, so locale() semantics don't change
   at that point).
 
+1)
+> > > > > > > I think the apidoc is wrong, it probably shouldn't have the extra
+> > > > > > > paragraph about opening kdeglobals explicitely
+> > > > > > >
+> > > > > > not necessarily. you are assuming a certain model: that kdeglobals
+> > > > > > blends into the config and is on the same level as the master file.
+> > > > > > however, that's not the case - kdeglobals is also a defaults file
+> > > > > > for the master file - which also happens to be writeable. in that, it
+> > > > > > already is an instance of the "master diversion" idea i want to
+> > > > > > generalize.
+> > > > >
+> > > > > no, I'm assuming that any entry read from kdeglobals if reverted will
+> > > > > revert back to the value from kdeglobals, since the default should
+> > > > > have bGlobal set.
+> > > > >
+> > > > yes. and now imagine that you want to revert the entries in kdeglobals
+> > > > to the system wide kdeglobals. this is what this comment is about.
+> > >
+> > > this is what happens, look at KConfig::parseGlobalFiles(). all the
+> > > files are parsed with ParseDefaults *except* the local one.
+> > >
+> > that is right, but makes no sense argumentation-wise.
+> > suppose we have default-foorc, kdeglobals and local-foorc; we opened the
+> > latter explicitly. now i revert key bar. it can only revert from
+> > local-foorc to kdeglobals or from kdeglobals to default-foorc.
+> >
+> no, you will revert from local-foorc to either default-foorc or
+> kdeglobals depending on whether bGlobal is set on the default.
+> $KDEHOME/share/config/kdeglobals can revert from any of
+> $KDEDIRS/share/config/[system.]kdeglobals
+>
+ok - but in either case the key in the master file is reverted.
+to revert the values in kdeglobals itself, you have to open kdeglobals
+as the master file. that's all that the comment says.
+
+
 wishes
 ======
 
 - use lazy loading
+  - load as soon as the first KConfigGroup is instanciated
+  - lazy parsing of values is interesting, too - see kconfig_take2 branch
 - add $\\VAR and $\\(cmd) escapes to list-quote expanded string
 - possibly:
   - preserve unchanged parts of the config literally. problem: comments
-    might become stale.
+    might become stale. so if a comment is already there, add an additional
+    comment that indicates that the value was changed (include old value?).
   - api to actively add comments to files, groups and keys
+    - option to start these comments with ## as a sign that they should not
+      trigger the above change indicator logic.
   - guaranteeing that write order of new keys is preserved
+  - detect commented out entries and put actual entries with the same key
+    right behind them
 - possibly: selective multi-level master diversion
   - this is to support roaming profiles that have machine/user/etc. specific
     settings
   - files, groups and keys can have [$m] and [$s] markers; these cascade
     within each file only. the least significant object (farthest away from
     the master) with an effective $m mode becomes the master (i.e., is
-    written to and not read past)..
+    written to and not read past).
     default is $m for the master file and $s for the default files.
   - the CascadeConfig flag being unset doesn't make things exactly simpler
   - can kdeglobals be handled by this?
@@ -45,7 +88,7 @@ internals
 - the handling of opening kdeglobals explicitly seems weird, at least.
   couldn't it simply mask out IncludeGlobals and thus handle it as any
   other config without globals instead of spreading kdeglobals special
-  cases all over the place?
+  cases all over the place? 2)
 - clear up bDeleted vs. isNull in entrymap
 - make entrymap truly hierarchical
   - an entry map contains its flags, a map of keys and a map of submaps.
@@ -55,6 +98,93 @@ internals
     link it and tell parent to add it to its entry map. both query and
     creation are recursive, obviously.
     a kconfiggroup DOES contain its name and has a parent pointer.
+  - 3)
+- 4)
+
+2)
+> > kdeglobals has to be handled specially because either you open
+> > $KDEHOME/share/config/kdeglobals twice or you ignore all
+> > system.kdeglobals files. but, I have an idea that might clean this up
+> > some, I'll see what I can do.
+> >
+> i must admit i don't understand the system.* files at all. when was this
+> introduced and for which purpose?
+>
+a while ago, according to svn they were in 2.0. and I don't know what the
+purpose was.
+
+3)
+> We wouldn't have to worry about the KEntryGroup being removed out from
+> under us, because the only way that should happen is if the config
+> object is destroyed or reparsed, and in those cases you shouldn't be
+> using a KConfigGroup from prior to that.
+>
+i don't think "this is stupid and will not happen" works; [...]
+given that cascaded parsing includes writing to existing maps, i think
+the simplest approach is clearing the existing structure from keymaps
+and resetting the attributes, but leaving the subgroup maps populated,
+thus keeping any group refs valid.
+the question is about the type of reference held to the entry map.
+originally i had thought of pointers. a map would be linked only if it
+really existed, otherwise the pointer would be null (thus indicating
+reads to return the default immediately and writes to ask the parent to
+create a submap). however, keeping that consistent with deletions would
+be a nightmare, and with the rescan changing the groups underneath
+impossible without each map having a list of referring configgroups.
+therefore it might make more sense to always create a corresponding tree
+of empty maps when a configroup for a non-existing group is instanciated
+- these groups won't be written out (they have no entries and cannot be
+immutable) and access to non-existing groups (esp. without an subsequent
+write that would actually create it) is rare, so the performance and
+memory overhead of this "eager" approach is likely to be negligible. as
+a middle way one could use a pointer and lazily populate it on first
+access whithout putting semantics into the pointer being already set,
+but i don't think the added complexity will pay off.
+
+4)
+> > > > hmm, wait. maybe it would be better if the map did not do actual
+> > > > permission checking. the frontent is peppered with asserts already
+> > >
+> > > that's the group doing permission checking, if this group is immutable
+> > > then the entry can't be changed. plus, now that KEntryKey doesn't know
+> > > what group it belongs to KEntryMap can't check if the group is
+> > > immutable.
+> > >
+> > > > (need to consider how to handle release builds). in the backend, the
+> > > > ugly immutableGroups hack would be unnecessary.
+> > >
+> > > no, immutableGroups would still be necessary unless i remove all
+> > > checking from KGroupEntry and KEntryMap. but, then checks for
+> > > immutable would have to be used everywhere that an entry might be
+> > > changed.
+> > >
+> > yes - and the frontend already handles it and the backend *should*
+> > handle it (issue warnings for trying to overwrite $i settings).
+>
+> i don't know, i think most handling of the immutability of a group
+> can/should be handled by the KGroupEntry itself. this way we can keep
+> all the data about a group in one place and let KGroupEntry keep
+> itself in a consistent/valid state.
+>
+dunno, either. the use cases are:
+- backend: writing immutable objects is fine, as long as the
+  immutability does not come from a pre-existing default.
+  given that there will be multiple backends, it sounds like
+  centralizing the check and warning reporting might make sense. otoh,
+  such a low-level function might not have enough context to make a
+  useful message.
+- frontend: obviously, writing immutable objects is not permitted. this
+  is already checked everywhere through asserts. in non-debug builds
+  these asserts have no effect, but if a write gets that far it means
+  that the app already permitted changing the option in the first place
+  due to failure to check for immutability. i don't see much point in
+  preventing the illegitimate change from being saved, as it can be
+  repeated anyway (i'm not really convinced of security through
+  exhaustion/boredom of the attacker :).
+i'm not sure whether that means that the two use cases need separate
+mutators or whether the mutator should not apply any immutability
+semantics at all.
+
 
 overwriting semantics
 =====================
