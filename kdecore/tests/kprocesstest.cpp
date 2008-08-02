@@ -19,14 +19,19 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kprocesstest.h"
-
 #include <kprocess.h>
 #include <qtest_kde.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+
+class KProcessTest : public QObject {
+    Q_OBJECT
+
+private Q_SLOTS:
+    void test_channels();
+};
 
 // IOCCC nomination pending
 
