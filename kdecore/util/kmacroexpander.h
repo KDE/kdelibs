@@ -224,7 +224,9 @@ public:
     explicit KWordMacroExpander( QChar c = QLatin1Char('%') ) : KMacroExpanderBase( c ) {}
 
 protected:
+    /** \internal Not to be called or reimplemented. */
     virtual int expandPlainMacro( const QString &str, int pos, QStringList &ret );
+    /** \internal Not to be called or reimplemented. */
     virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
     /**
@@ -258,7 +260,9 @@ public:
     explicit KCharMacroExpander( QChar c = QLatin1Char('%') ) : KMacroExpanderBase( c ) {}
 
 protected:
+    /** \internal Not to be called or reimplemented. */
     virtual int expandPlainMacro( const QString &str, int pos, QStringList &ret );
+    /** \internal Not to be called or reimplemented. */
     virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
     /**
