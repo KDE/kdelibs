@@ -1,7 +1,7 @@
 /*
    This file is part of the KDE libraries
 
-   Copyright (c) 2001-2005 George Staikos <staikos@kde.org>
+   Copyright (c) 2007, 2008 Andreas Hartmetz <ahartmetz@gmail.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -23,7 +23,6 @@
 #define KSSLD_H
 
 #include <kdedmodule.h>
-//#include <ksslcertificatecache.h>
 #include <QtCore/QList>
 #include <QtCore/QVariant>
 

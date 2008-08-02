@@ -1,7 +1,7 @@
 /*
    This file is part of the KDE libraries
 
-   Copyright (c) 2001-2005 George Staikos <staikos@kde.org>
+   Copyright (c) 2007, 2008 Andreas Hartmetz <ahartmetz@gmail.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -25,17 +25,6 @@
 #include "ksslcertificatemanager.h"
 #include "kssld_adaptor.h"
 
-#if 0
-#include <QtNetwork/QSslCertificate>
-#include <QtNetwork/QSslError>
-#include <QtCore/QString>
-#include <QtCore/QStringList>
-#include <QtCore/QDate>
-#endif
-
-
-//#include <QtCore/QTimer>
-
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <QtCore/QFile>
@@ -58,7 +47,6 @@ class KSSLDPrivate
 public:
     KSSLDPrivate()
      : config("ksslcertificatemanager", KConfig::SimpleConfig)
-        //TODO find a really good name for the config file
     {
         struct strErr {
             const char *str;
