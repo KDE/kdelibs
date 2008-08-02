@@ -4,7 +4,7 @@
    Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
    Copyright (C) 2001,2002 Hamish Rodda <rodda@kde.org>
    Copyright (C) 2007      Daniel Nicoletti <mirttex@users.sourceforge.net>
-
+   Copyright (C) 2008      Andreas Hartmetz <ahartmetz@gmail.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
