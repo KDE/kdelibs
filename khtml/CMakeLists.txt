@@ -337,7 +337,7 @@ target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ktexteditor kjs ${KDE4_PHONON_LI
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
-                                       ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kparts;kjs;kio;kdeui;kdecore"
+                                       ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kparts;kjs;kio;kdeui;kdecore;${QT_QTCORE_LIBRARY};${QT_QTGUI_LIBRARY}"
                      )
 
 
