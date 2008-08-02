@@ -25,6 +25,13 @@
 
 namespace KuitFormats {
     /**
+     * Reformat raw number string according to locale settings.
+     * @param numstr raw number string
+     * @returns number string in proper format
+     */
+    QString toNumberSystem (const QString &numstr);
+
+    /**
      * Reformat raw number string to US standard.
      * @param numstr raw number string
      * @returns number string in proper format
