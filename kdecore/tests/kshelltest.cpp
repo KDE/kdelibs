@@ -159,6 +159,10 @@ KShellTest::abortOnMeta()
 {
     KShell::Errors err1 = KShell::NoError, err2 = KShell::NoError;
 
+    QCOMPARE(sj("text", KShell::AbortOnMeta, &err1),
+             QString("text"));
+    QVERIFY(err1 == KShell::NoError);
+
 #ifdef Q_OS_WIN
     QVERIFY(KShell::splitArgs("BLA & asdf sdfess d", KShell::AbortOnMeta, &err1).isEmpty());
     QVERIFY(err1 == KShell::FoundMeta);
