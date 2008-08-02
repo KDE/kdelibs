@@ -120,6 +120,7 @@ static const int computedProperties[] = {
     CSS_PROP_WIDTH,
     CSS_PROP_WORD_SPACING,
     CSS_PROP_Z_INDEX,
+    CSS_PROP_TEXT_OVERFLOW
 };
 
 const unsigned numComputedProperties = sizeof(computedProperties) / sizeof(computedProperties[0]);
@@ -1101,7 +1102,14 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         break;
     case CSS_PROP__KHTML_USER_INPUT:
         break;
+    case CSS_PROP_TEXT_OVERFLOW:
+        if (style->textOverflow())
+            return new CSSPrimitiveValueImpl(CSS_VAL_ELLIPSIS);
+        else
+            return new CSSPrimitiveValueImpl(CSS_VAL_CLIP);
+        break;
     default:
+        kWarning() << "Unhandled property:" << getPropertyName(propertyID);
         Q_ASSERT( 0 );
         break;
     }
