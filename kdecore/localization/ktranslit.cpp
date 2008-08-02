@@ -55,7 +55,9 @@ QStringList KTranslit::fallbackList (const QString &lang)
     QStringList fallbacks;
 
     if (   lang == QString::fromAscii("sr@latin")
-        || lang == QString::fromAscii("sr@Latn")) {
+        || lang == QString::fromAscii("sr@Latn")
+        || lang == QString::fromAscii("sr@ije")
+        || lang == QString::fromAscii("sr@ijelatin")) {
         fallbacks += QString::fromAscii("sr");
     }
 
@@ -113,13 +115,10 @@ QString KTranslit::transliterate (const QString &str,
     return str;
 }
 
-// Head of alternative inserts directives.
-#define ALTINS_HEAD "~@"
-
-QString KTranslit::resolveInserts (const QString &str_, int nins, int ind) const
+QString KTranslit::resolveInserts (const QString &str_, int nins, int ind,
+                                   const QString &head) const
 {
-    static QString head(ALTINS_HEAD);
-    static int hlen = head.length();
+    int hlen = head.length();
 
     QString str = str_;
     QString rstr;
@@ -174,10 +173,10 @@ QString KTranslit::resolveInserts (const QString &str_, int nins, int ind) const
 // If the insert is just starting at position i, return the position of the
 // first character after the insert (or string length if none).
 // If the insert is not starting, return i itself.
-static int skipInsert (const QString &str, int i, int ninserts)
+static int skipInsert (const QString &str, int i, int ninserts,
+                       const QString &head)
 {
-    static QString head(ALTINS_HEAD);
-    static int hlen = head.length();
+    int hlen = head.length();
 
     if (str.mid(i, hlen) == head) {
         int slen = str.length();
@@ -202,7 +201,11 @@ class KTranslitSerbianPrivate
 {
     public:
     QHash<QString, bool> latinNames;
+    QHash<QString, bool> iyekavianNames;
     QHash<QChar, QString> dictC2L;
+    QHash<QString, QString> dictI2E;
+    int maxReflexLen;
+    QChar reflexMark;
 };
 
 KTranslitSerbian::KTranslitSerbian ()
@@ -210,6 +213,9 @@ KTranslitSerbian::KTranslitSerbian ()
 {
     d->latinNames[QString::fromAscii("latin")] = true;
     d->latinNames[QString::fromAscii("Latn")] = true;
+    d->latinNames[QString::fromAscii("ijelatin")] = true;
+    d->iyekavianNames[QString::fromAscii("ije")] = true;
+    d->iyekavianNames[QString::fromAscii("ijelatin")] = true;
 
     #define SR_DICTC2L_ENTRY(a, b) do { \
         d->dictC2L[QString::fromUtf8(a)[0]] = QString::fromUtf8(b); \
@@ -274,6 +280,30 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_DICTC2L_ENTRY("Ч", "Č");
     SR_DICTC2L_ENTRY("Џ", "Dž");
     SR_DICTC2L_ENTRY("Ш", "Š");
+
+    d->reflexMark = QString::fromUtf8("›")[0];
+    #define SR_DICTI2E_ENTRY(a, b) do { \
+        d->dictI2E[QString::fromUtf8(a)] = QString::fromUtf8(b); \
+    } while (0)
+    // basic
+    SR_DICTI2E_ENTRY("ије", "е");
+    SR_DICTI2E_ENTRY("је", "е");
+    SR_DICTI2E_ENTRY("ље", "ле");
+    SR_DICTI2E_ENTRY("ње", "не");
+    SR_DICTI2E_ENTRY("ио", "ео");
+    SR_DICTI2E_ENTRY("иљ", "ел");
+    // special cases (include one prev. letter)
+    SR_DICTI2E_ENTRY("лије", "ли");
+    SR_DICTI2E_ENTRY("мија", "меја");
+    SR_DICTI2E_ENTRY("мије", "мејe");
+    SR_DICTI2E_ENTRY("није", "ни");
+
+    d->maxReflexLen = 0;
+    foreach (const QString &reflex, d->dictI2E.keys()) {
+        if (d->maxReflexLen < reflex.length()) {
+            d->maxReflexLen = reflex.length();
+        }
+    }
 }
 
 KTranslitSerbian::~KTranslitSerbian ()
@@ -281,11 +311,57 @@ KTranslitSerbian::~KTranslitSerbian ()
     delete d;
 }
 
-QString KTranslitSerbian::transliterate (const QString &str,
+QString KTranslitSerbian::transliterate (const QString &str_,
                                          const QString &script) const
 {
-    static QString insHead(ALTINS_HEAD);
+    static QString insHead("~@");
+    static QString insHeadIje("~#");
 
+    QString str = str_;
+
+    // Resolve Ekavian/Iyekavian (must come before Cyrillic/Latin).
+    if (d->iyekavianNames.contains(script)) {
+        // Just remove reflex marks.
+        str.remove(d->reflexMark);
+        str = resolveInserts(str, 2, 1, insHeadIje);
+    } else {
+        QString nstr;
+        int p = 0;
+        while (true) {
+            int pp = p;
+            p = str.indexOf(d->reflexMark, p);
+            if (p < 0) {
+                nstr.append(str.mid(pp));
+                break;
+            }
+            nstr.append(str.mid(pp, p - pp));
+            p += 1;
+
+            // Try to resolve yat-reflex.
+            QString reflex;
+            QString ekvform;
+            for (int rl = d->maxReflexLen; rl > 0; --rl) {
+                reflex = str.mid(p, rl);
+                ekvform = d->dictI2E[reflex];
+                if (!ekvform.isEmpty()) {
+                    break;
+                }
+            }
+
+            if (!ekvform.isEmpty()) {
+                nstr.append(ekvform);
+                p += reflex.length();
+            } else {
+                QString dreflex = str.mid(p - 1, d->maxReflexLen + 1);
+                kDebug(173) << QString("Unknown yat-reflex {%1} "
+                                       "in {%2}").arg(dreflex, str);
+                nstr.append(str.mid(p - 1, 1));
+            }
+        }
+        str = resolveInserts(nstr, 2, 0, insHeadIje);
+    }
+
+    // Resolve Cyrillic/Latin.
     if (d->latinNames.contains(script)) {
         // NOTE: This loop has been somewhat optimized for speed.
         int slen = str.length();
@@ -296,7 +372,7 @@ QString KTranslitSerbian::transliterate (const QString &str,
             // Skip alternative inserts altogether, so that they can be used
             // as a mean to exclude from transliteration.
             if (anyInserts) {
-                int to = skipInsert(str, i, 2);
+                int to = skipInsert(str, i, 2, insHead);
                 if (to > i) {
                     nstr.append(str.mid(i, to - i));
                     if (to >= slen) break;
@@ -311,20 +387,17 @@ QString KTranslitSerbian::transliterate (const QString &str,
                     && (   (i + 1 < slen && str[i + 1].isUpper())
                         || (i > 0 && str[i - 1].isUpper()))) {
                     nstr.append(r.toUpper());
-                }
-                else {
+                } else {
                     nstr.append(r);
                 }
-            }
-            else {
+            } else {
                 nstr.append(c);
             }
         }
-        nstr = resolveInserts(nstr, 2, 1);
-        return nstr;
+        str = resolveInserts(nstr, 2, 1, insHead);
+    } else {
+        str = resolveInserts(str, 2, 0, insHead);
     }
-    else {
-        QString nstr = resolveInserts(str, 2, 0);
-        return nstr;
-    }
+
+    return str;
 }
