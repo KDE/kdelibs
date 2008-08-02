@@ -19,18 +19,23 @@
 
 #include "kglobalaccel_win.h"
 
+#include "kkeyserver_win.h"
+
 #include <config.h>
 
 #include <QtGui/QWidgetList>
 #ifdef Q_WS_WIN
 
 #include "kglobalaccel.h"
+#include "kdedglobalaccel.h"
 
 #include <kapplication.h>
 #include <kdebug.h>
 
+#include <windows.h>
+
 KGlobalAccelImpl::KGlobalAccelImpl(KdedGlobalAccel* owner)
-	: m_owner(owner)
+	: m_owner(owner), m_enabled(false)
 {
 }
 
@@ -40,20 +45,42 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 		kWarning(125) << "Tried to grab key with null code.";
 		return false;
 	}
+    
+    uint keyCodeW;
+	uint keyModW;
+	KKeyServer::keyQtToCodeWin(keyQt, &keyCodeW);
+	KKeyServer::keyQtToModWin(keyQt, &keyModW);
+    
+    ATOM id = GlobalAddAtom(MAKEINTATOM(keyQt));
+    bool b;
+    if (grab) {
+        b = RegisterHotKey(winId(), id, keyModW, keyCodeW);
+    } else {
+        b = UnregisterHotKey(winId(), id);
+    }
 
-	// TODO ...
-
-	return false;
+	return b;
 }
 
 void KGlobalAccelImpl::setEnabled( bool enable )
 {
-#if 0
-	if ( enable )
-		kapp->installWinEventFilter( this );
-	else
-		kapp->removeWinEventFilter( this );
-#endif
+    m_enabled = enable;
+}
+
+bool KGlobalAccelImpl::winEvent( MSG * message, long * result )
+{
+    if (message->message == WM_HOTKEY) {
+        uint keyCodeW = HIWORD(message->lParam);
+        uint keyModW = LOWORD(message->lParam);
+        
+        int keyCodeQt, keyModQt;
+        KKeyServer::codeWinToKeyQt(keyCodeW, &keyCodeQt);
+        KKeyServer::modWinToKeyQt(keyModW, &keyModQt);
+        
+        
+        return m_owner->keyPressed(keyCodeQt | keyModQt);
+    }
+    return false;
 }
 
 #include "kglobalaccel_win.moc"

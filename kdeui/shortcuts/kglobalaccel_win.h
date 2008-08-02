@@ -55,8 +55,10 @@ public:
 	void setEnabled(bool);
 
 private:
+    bool winEvent(MSG * message, long * result);
 
 	KdedGlobalAccel* m_owner;
+    bool m_enabled;
 };
 
 #endif // _KGLOBALACCEL_WIN_H

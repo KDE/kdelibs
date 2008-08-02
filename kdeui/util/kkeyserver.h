@@ -29,6 +29,8 @@
 #include "kkeyserver_x11.h"
 #elif defined Q_WS_MACX
 #include "kkeyserver_mac.h"
+#elif defined Q_WS_WIN
+#include "kkeyserver_win.h"
 #endif
 
 /**

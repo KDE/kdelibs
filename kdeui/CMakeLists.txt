@@ -243,7 +243,7 @@ if (Q_WS_MAC)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_mac.cpp )
 endif (Q_WS_MAC)
 if (Q_WS_WIN)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kernel/kapplication_win.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kernel/kapplication_win.cpp util/kkeyserver_win.cpp )
 endif (Q_WS_WIN)
 
 
