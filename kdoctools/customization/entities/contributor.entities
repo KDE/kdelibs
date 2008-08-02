@@ -230,6 +230,8 @@
 <!ENTITY Matthias.Kiefer.mail '<email>matthias.kiefer@gmx.de</email>'>
 <!ENTITY Ingo.Kloecker '<personname><firstname>Ingo</firstname><surname>Klöcker</surname></personname>'>
 <!ENTITY Ingo.Kloecker.mail '<email>kloecker@kde.de</email>'>
+<!ENTITY Robert.Knight '<personname><firstname>Robert</firstname><surname>Knight</surname></personname>'>
+<!ENTITY Robert.Knight.mail '<email>robertknight@gmail.com</email>'>
 <!ENTITY Lars.Knoll '<personname><firstname>Lars</firstname><surname>Knoll</surname></personname>'>
 <!ENTITY Lars.Knoll.mail '<email>knoll@kde.org</email>'>
 <!ENTITY Michael.Koch '<personname><firstname>Michael</firstname><surname>Koch</surname></personname>'>
