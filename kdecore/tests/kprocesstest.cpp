@@ -31,6 +31,7 @@ class KProcessTest : public QObject {
 
 private Q_SLOTS:
     void test_channels();
+    void test_setShellCommand();
 };
 
 // IOCCC nomination pending
@@ -70,6 +71,21 @@ void KProcessTest::test_channels()
     TESTCHAN(MergedChannels, "merged", "", EO EE, "");
 #else
     QSKIP("This test needs a UNIX system", SkipSingle);
+#endif
+}
+
+void KProcessTest::test_setShellCommand()
+{
+// Condition copied from kprocess.cpp
+#if !defined(__linux__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__OpenBSD__) && !defined(__DragonFly__) && !defined(__GNU__)
+    QSKIP("This test needs a free UNIX system", SkipSingle);
+#else
+    KProcess p;
+
+    p.setShellCommand("cat");
+    QCOMPARE(p.program(), QStringList() << "/bin/cat");
+    p.setShellCommand("true || false");
+    QCOMPARE(p.program(), QStringList() << "/bin/sh" << "-c" << "true || false");
 #endif
 }
 

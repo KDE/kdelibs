@@ -22,6 +22,7 @@
 #include "kprocess_p.h"
 
 #include <kstandarddirs.h>
+#include <kshell.h>
 #ifdef Q_OS_WIN
 # include <kshell_p.h>
 #endif
@@ -239,6 +240,17 @@ void KProcess::clearProgram()
 void KProcess::setShellCommand(const QString &cmd)
 {
     Q_D(KProcess);
+
+    KShell::Errors err;
+    d->args = KShell::splitArgs(
+            cmd, KShell::AbortOnMeta | KShell::TildeExpand, &err);
+    if (err == KShell::NoError && !d->args.isEmpty()) {
+        d->prog = KStandardDirs::findExe(d->args[0]);
+        if (!d->prog.isEmpty()) {
+            d->args.removeFirst();
+            return;
+        }
+    }
 
     d->args.clear();
 
