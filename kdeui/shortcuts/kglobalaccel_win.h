@@ -31,33 +31,33 @@ class KdedGlobalAccel;
  */
 class KGlobalAccelImpl : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	KGlobalAccelImpl(KdedGlobalAccel* owner);
+    KGlobalAccelImpl(KdedGlobalAccel* owner);
 
 public:
-	/**
-	 * This function registers or unregisters a certain key for global capture,
-	 * depending on \b grab.
-	 *
-	 * Before destruction, every grabbed key will be released, so this
-	 * object does not need to do any tracking.
-	 *
-	 * \param key the Qt keycode to grab or release.
-	 * \param grab true to grab they key, false to release the key.
-	 *
-	 * \return true if successful, otherwise false.
-	 */
-	bool grabKey(int key, bool grab);
-	
-	/// Enable/disable all shortcuts. There will not be any grabbed shortcuts at this point.
-	void setEnabled(bool);
+    /**
+    * This function registers or unregisters a certain key for global capture,
+    * depending on \b grab.
+    *
+    * Before destruction, every grabbed key will be released, so this
+    * object does not need to do any tracking.
+    *
+    * \param key the Qt keycode to grab or release.
+    * \param grab true to grab they key, false to release the key.
+    *
+    * \return true if successful, otherwise false.
+    */
+    bool grabKey(int key, bool grab);
+
+    /// Enable/disable all shortcuts. There will not be any grabbed shortcuts at this point.
+    void setEnabled(bool);
 
 private:
     bool winEvent(MSG * message, long * result);
 
-	KdedGlobalAccel* m_owner;
+    KdedGlobalAccel* m_owner;
     bool m_enabled;
 };
 

@@ -35,22 +35,22 @@
 #include <windows.h>
 
 KGlobalAccelImpl::KGlobalAccelImpl(KdedGlobalAccel* owner)
-	: m_owner(owner), m_enabled(false)
+    : m_owner(owner), m_enabled(false)
 {
 }
 
 bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 {
-	if( !keyQt ) {
-		kWarning(125) << "Tried to grab key with null code.";
-		return false;
-	}
-    
+    if( !keyQt ) {
+        kWarning(125) << "Tried to grab key with null code.";
+        return false;
+    }
+
     uint keyCodeW;
-	uint keyModW;
-	KKeyServer::keyQtToCodeWin(keyQt, &keyCodeW);
-	KKeyServer::keyQtToModWin(keyQt, &keyModW);
-    
+    uint keyModW;
+    KKeyServer::keyQtToCodeWin(keyQt, &keyCodeW);
+    KKeyServer::keyQtToModWin(keyQt, &keyModW);
+
     ATOM id = GlobalAddAtom(MAKEINTATOM(keyQt));
     bool b;
     if (grab) {
@@ -59,7 +59,7 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
         b = UnregisterHotKey(winId(), id);
     }
 
-	return b;
+    return b;
 }
 
 void KGlobalAccelImpl::setEnabled( bool enable )
@@ -72,12 +72,11 @@ bool KGlobalAccelImpl::winEvent( MSG * message, long * result )
     if (message->message == WM_HOTKEY) {
         uint keyCodeW = HIWORD(message->lParam);
         uint keyModW = LOWORD(message->lParam);
-        
+
         int keyCodeQt, keyModQt;
         KKeyServer::codeWinToKeyQt(keyCodeW, &keyCodeQt);
         KKeyServer::modWinToKeyQt(keyModW, &keyModQt);
-        
-        
+
         return m_owner->keyPressed(keyCodeQt | keyModQt);
     }
     return false;
