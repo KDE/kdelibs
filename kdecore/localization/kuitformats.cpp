@@ -20,6 +20,8 @@
 #include <kuitformats_p.h>
 
 #include <config.h>
+#include <kglobal.h>
+#include <klocale.h>
 
 #include <QStringList>
 #include <QRegExp>
@@ -75,6 +77,11 @@ static QString toNumberGeneric (const QString &numstr,
     }
 
     return pre + mid + post;
+}
+
+QString KuitFormats::toNumberSystem (const QString &numstr)
+{
+    return KGlobal::locale()->formatNumber(numstr, false);
 }
 
 QString KuitFormats::toNumberUS (const QString &numstr)

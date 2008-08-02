@@ -94,7 +94,7 @@ namespace Kuit {
 
     namespace Numfmt { // number formats
         typedef enum {
-            Posix, US, Euro, Euro2, Euro2ct
+            System, Posix, US, Euro, Euro2, Euro2ct
         } Var;
     }
 
@@ -137,6 +137,8 @@ class KuitSemanticsStaticData
 
     KuitSemanticsStaticData ();
 
+    int numfmtInt;
+    int numfmtReal;
 };
 
 KuitSemanticsStaticData::KuitSemanticsStaticData ()
@@ -310,6 +312,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     #define SETUP_NUMFMT(numfmt, name) do { \
         knownNumfmts[name] = Kuit::Numfmt::numfmt; \
     } while (0)
+    SETUP_NUMFMT(System, "system");
     SETUP_NUMFMT(Posix, "posix");
     SETUP_NUMFMT(US, "us");
     SETUP_NUMFMT(Euro, "euro");
@@ -327,6 +330,10 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     xmlEntitiesInverse[QString('&')] = "amp";
     xmlEntitiesInverse[QString('\'')] = "apos";
     xmlEntitiesInverse[QString('"')] = "quot";
+
+    // Global setting for number formatting (<0 means no global setting).
+    numfmtInt = -1;
+    numfmtReal = -1;
 }
 
 K_GLOBAL_STATIC(KuitSemanticsStaticData, staticData)
@@ -771,6 +778,7 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
     //   euro    - thousands separation by point, decimal comma
     //   euro2   - thousands separation by space, decimal comma
     //   euro2ct - as euro2, except thousand not separated when <10000
+    //   system  - by locale settings (i.e. override language ortography)
     // If none of the existing formats is appropriate for your language,
     // write to kde-i18n-doc@kde.org to arrange for a new format.
     QString fmtnameInt = cat.translate("number-format:integer", "us").toLower();
@@ -794,6 +802,14 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
         kDebug(173) << QString("Format of real numbers '%1', selected in "
                                "kdelibs4.po, is not valid; using POSIX format.")
                               .arg(fmtnameReal);
+    }
+
+    // If adherence to locale settings requested, set it globally.
+    if (s->knownNumfmts[fmtnameInt] == Kuit::Numfmt::System) {
+        s->numfmtInt = Kuit::Numfmt::System;
+    }
+    if (s->knownNumfmts[fmtnameReal] == Kuit::Numfmt::System) {
+        s->numfmtReal = Kuit::Numfmt::System;
     }
 
     // i18n: Decide which string is used to delimit keys in a keyboard
@@ -1400,12 +1416,21 @@ QString KuitSemanticsPrivate::modifyTagText (Kuit::TagVar tag,
                                              int numctx,
                                              Kuit::FmtVar fmt) const
 {
+    KuitSemanticsStaticData *s = staticData;
+
     // numctx < 1 means that the number is not in numeric-id context.
     if (   (tag == Kuit::Tag::NumIntg || tag == Kuit::Tag::NumReal) \
         && numctx < 1)
     {
-        int numfmt = (tag == Kuit::Tag::NumIntg ? m_numfmtInt : m_numfmtReal);
+        int numfmt;
+        if (tag == Kuit::Tag::NumIntg) {
+            numfmt = s->numfmtInt >= 0 ? s->numfmtInt : m_numfmtInt;
+        } else {
+            numfmt = s->numfmtReal >= 0 ? s->numfmtReal : m_numfmtReal;
+        }
         switch (numfmt) {
+        case Kuit::Numfmt::System:
+            return KuitFormats::toNumberSystem(text);
         case Kuit::Numfmt::US:
             return KuitFormats::toNumberUS(text);
         case Kuit::Numfmt::Euro:
