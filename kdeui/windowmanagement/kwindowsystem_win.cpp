@@ -193,8 +193,18 @@ void KWindowSystem::setIcons( WId win, const QPixmap& icon, const QPixmap& miniI
 
 void KWindowSystem::setState( WId win, unsigned long state )
 {
-   //TODO
-   kDebug() << "KWindowSystem::setState( WId win, unsigned long state ) isn't yet implemented!";
+    bool got = false;
+    if (state & NET::SkipTaskbar) {
+        got = true;
+        LONG_PTR lp = GetWindowLongPtr(win, GWL_EXSTYLE);
+        SetWindowLongPtr(win, GWL_EXSTYLE, lp | WS_EX_TOOLWINDOW);
+    }
+    if (state & NET::KeepAbove) {
+        got = true;
+        SetWindowPos(win, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    }
+    if (!got)
+        kDebug() << "KWindowSystem::setState( WId win, unsigned long state ) isn't yet implemented for the state you requested!";
 }
 
 void KWindowSystem::clearState( WId win, unsigned long state )
