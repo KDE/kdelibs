@@ -21,7 +21,7 @@
 <guimenuitem>Шта је ово?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Претвара показивач миша у стрелицу са знаком питања.</action> Када потом кликнете на неку контролу &kappname-g;, приказаће се помоћни текст (ако је дефинисан) који објашњава намену контроле.</para></listitem>
+<listitem><para><action>Претвара показивач миша у стрелицу са знаком питања.</action> Када потом кликнете на неки виџет &kappname-g;, приказаће се помоћни текст (ако је дефинисан) који објашњава намену виџета.</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -30,6 +30,14 @@
 <guimenuitem>Пријави грешку...</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Отвара дијалог за пријаву грешака</action>, у коме можете описати проблем или затражити нову могућност (<quote>списак жеља</quote>).</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<guimenu>Помоћ</guimenu>
+<guimenuitem>Промени језик програма...</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Отвара дијалог</action> у којем можете одредити главни и позадински језик за овај програм.</para></listitem>
 </varlistentry>
 
 <varlistentry>
