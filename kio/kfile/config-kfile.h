@@ -48,5 +48,6 @@ const int kfile_area = 250;
 #define ShowBookmarks QLatin1String("Show Bookmarks")
 #define AutoSelectExtChecked QLatin1String("Automatically select filename extension")
 #define BreadcrumbNavigation QLatin1String("Breadcrumb Navigation")
+#define ShowFullPath QLatin1String("Show Full Path")
 
 #endif
