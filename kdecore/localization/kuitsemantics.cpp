@@ -34,6 +34,7 @@
 #include <kglobal.h>
 #include <kcatalog_p.h>
 #include <kuitformats_p.h>
+#include <ktranslit_p.h>
 
 // Truncates string, for output of long messages.
 static QString shorten (const QString &str)
@@ -350,11 +351,14 @@ class KuitSemanticsPrivate
 
     QString format (const QString &text, const QString &ctxt) const;
 
+    // Get metatranslation (formatting patterns, etc.)
+    QString metaTr (const char *ctxt, const char *id) const;
+
     // Set visual formatting patterns for text in semantic tags.
-    void setFormattingPatterns (const KCatalog &cat);
+    void setFormattingPatterns ();
 
     // Set data used in transformation of text within semantic tags.
-    void setTextTransformData (const KCatalog &cat);
+    void setTextTransformData ();
 
     // Compute integer hash key from the set of attributes.
     static int attSetKey (const QSet<Kuit::AttVar> &aset = QSet<Kuit::AttVar>());
@@ -433,30 +437,70 @@ class KuitSemanticsPrivate
     QHash<Kuit::FmtVar, QString> m_guiPathDelim;
 
     QHash<QString, QString> m_keyNames;
+
+    // For fetching metatranslations.
+    KCatalog *m_metaCat;
+    KTranslit *m_metaTranslit;
+    QString m_metaScript;
 };
 
 KuitSemanticsPrivate::KuitSemanticsPrivate (const QString &lang)
+: m_metaCat(NULL), m_metaTranslit(NULL)
 {
     m_lang = lang;
 
     // NOTE: This function draws translation from raw message catalogs
     // because full i18n system is not available at this point (this
-    // function is called within the initialization of the i18n system).
-    //
-    // A possibility would be to delay the initializations until the first
-    // call of format(); however, even so it is preferable to do raw reads
-    // from the catalog, as we must assure that the exact supplied language
-    // is being used for translation (normal i18n calls do fallbacks).
-    KCatalog cat("kdelibs4", m_lang);
+    // function is called within the initialization of the i18n system),
+    // Also, pattern/transformation strings are "metastrings", not
+    // fully proper i18n strings on their own.
+
+    // If this language may be made by transliteration from another,
+    // look for the catalog in transliteration fallbacks too.
+    QStringList possibleLangs = KTranslit::fallbackList(lang);
+    possibleLangs.prepend(lang);
+    QString realLang = lang;
+    foreach (const QString& clang, possibleLangs) {
+        if (!KCatalog::catalogLocaleDir("kdelibs4", clang).isEmpty()) {
+            realLang = clang;
+            break;
+        }
+    }
+    m_metaCat = new KCatalog("kdelibs4", realLang);
+
+    // Create transliterator and script to transliterate into.
+    m_metaTranslit = KTranslit::create(realLang); // may be NULL
+    int pos = lang.indexOf('@');
+    if (pos >= 0) {
+        m_metaScript = lang.mid(pos + 1);
+    }
+
+    // Fetching of metatranslations prepared, assemble all metadata.
 
     // Get formatting patterns for all tag/att/fmt combinations.
-    setFormattingPatterns(cat);
+    setFormattingPatterns();
 
     // Get data for tag text transformations.
-    setTextTransformData(cat);
+    setTextTransformData();
+
+    // Catalog and transliterator not needed any more.
+    delete m_metaCat;
+    delete m_metaTranslit;
 }
 
-void KuitSemanticsPrivate::setFormattingPatterns (const KCatalog &cat)
+QString KuitSemanticsPrivate::metaTr (const char *ctxt, const char *id) const
+{
+    if (m_metaCat == NULL) {
+        return QString(id);
+    }
+    QString meta = m_metaCat->translate(ctxt, id);
+    if (m_metaTranslit != NULL) {
+        meta = m_metaTranslit->transliterate(meta, m_metaScript);
+    }
+    return meta;
+}
+
+void KuitSemanticsPrivate::setFormattingPatterns ()
 {
     using namespace Kuit;
 
@@ -466,7 +510,7 @@ void KuitSemanticsPrivate::setFormattingPatterns (const KCatalog &cat)
         QSet<AttVar> aset; \
         aset << atts; \
         int akey = attSetKey(aset); \
-        QString pattern = cat.translate(ctxt_ptrn); \
+        QString pattern = metaTr(ctxt_ptrn); \
         m_patterns[tag][akey][fmt] = pattern; \
         /* Make Term pattern same as Plain, unless explicitly given. */ \
         if (fmt == Fmt::Plain && !m_patterns[tag][akey].contains(Fmt::Term)) { \
@@ -766,7 +810,7 @@ void KuitSemanticsPrivate::setFormattingPatterns (const KCatalog &cat)
                            "%1<br/>"));
 }
 
-void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
+void KuitSemanticsPrivate::setTextTransformData ()
 {
     KuitSemanticsStaticData *s = staticData;
 
@@ -781,7 +825,7 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
     //   system  - by locale settings (i.e. override language ortography)
     // If none of the existing formats is appropriate for your language,
     // write to kde-i18n-doc@kde.org to arrange for a new format.
-    QString fmtnameInt = cat.translate("number-format:integer", "us").toLower();
+    QString fmtnameInt = metaTr("number-format:integer", "us").toLower();
     if (s->knownNumfmts.contains(fmtnameInt)) {
         m_numfmtInt = s->knownNumfmts[fmtnameInt];
     }
@@ -794,7 +838,7 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
     m_numfmtReal = Kuit::Numfmt::Posix;
     // i18n: Decide how real-valued amounts will be formatted in your
     // language. See the comment to previous entry.
-    QString fmtnameReal = cat.translate("number-format:real", "us").toLower();
+    QString fmtnameReal = metaTr("number-format:real", "us").toLower();
     if (s->knownNumfmts.contains(fmtnameReal)) {
         m_numfmtReal = s->knownNumfmts[fmtnameReal];
     }
@@ -814,19 +858,19 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
 
     // i18n: Decide which string is used to delimit keys in a keyboard
     // shortcut (e.g. + in Ctrl+Alt+Tab) in plain text.
-    m_comboKeyDelim[Kuit::Fmt::Plain] = cat.translate("shortcut-key-delimiter/plain", "+");
+    m_comboKeyDelim[Kuit::Fmt::Plain] = metaTr("shortcut-key-delimiter/plain", "+");
     m_comboKeyDelim[Kuit::Fmt::Term] = m_comboKeyDelim[Kuit::Fmt::Plain];
     // i18n: Decide which string is used to delimit keys in a keyboard
     // shortcut (e.g. + in Ctrl+Alt+Tab) in rich text.
-    m_comboKeyDelim[Kuit::Fmt::Rich] = cat.translate("shortcut-key-delimiter/rich", "+");
+    m_comboKeyDelim[Kuit::Fmt::Rich] = metaTr("shortcut-key-delimiter/rich", "+");
 
     // i18n: Decide which string is used to delimit elements in a GUI path
     // (e.g. -> in "Go to Settings->Advanced->Core tab.") in plain text.
-    m_guiPathDelim[Kuit::Fmt::Plain] = cat.translate("gui-path-delimiter/plain", "→");
+    m_guiPathDelim[Kuit::Fmt::Plain] = metaTr("gui-path-delimiter/plain", "→");
     m_guiPathDelim[Kuit::Fmt::Term] = m_guiPathDelim[Kuit::Fmt::Plain];
     // i18n: Decide which string is used to delimit elements in a GUI path
     // (e.g. -> in "Go to Settings->Advanced->Core tab.") in rich text.
-    m_guiPathDelim[Kuit::Fmt::Rich] = cat.translate("gui-path-delimiter/rich", "→");
+    m_guiPathDelim[Kuit::Fmt::Rich] = metaTr("gui-path-delimiter/rich", "→");
     // NOTE: The '→' glyph seems to be available in all widespread fonts.
 
     // Collect keyboard key names.
@@ -834,7 +878,7 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
     #define SET_KEYNAME(rawname) do { \
         /* Normalize key, trim and all lower-case. */ \
         QString normname = QString(rawname).trimmed().toLower(); \
-        m_keyNames[normname] = cat.translate("keyboard-key-name", rawname); \
+        m_keyNames[normname] = metaTr("keyboard-key-name", rawname); \
     } while (0)
 
     // Now we need I18N_NOOP2 that does remove context.
