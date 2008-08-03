@@ -13,8 +13,12 @@ set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEAS
 set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.1.60 (KDE 4.2 >= 20080709))")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
-set (KDE_DEFAULT_HOME ".kde" CACHE STRING "The default KDE home directory" )
 
+# win32: give kde home in debug mode a different name as the  release home dir because the settings and caches are different
+if (WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set (_KDE_DEFAULT_HOME_POSTFIX "-debug" CACHE STRING "default KDE home directory postfix" )
+endif (WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+set (KDE_DEFAULT_HOME ".kde${_KDE_DEFAULT_HOME_POSTFIX}" CACHE STRING "The default KDE home directory" )
 
 # this must be before FindKDE4Internal in order to preset the result of the visibility test, so that it will be skipped
 option(KHTML_BUILD_TESTREGRESSION "Build KHTML's testregression. Note: this disables hidden visibility")
