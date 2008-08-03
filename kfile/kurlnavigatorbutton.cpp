@@ -61,18 +61,16 @@ KUrlNavigatorButton::~KUrlNavigatorButton()
 void KUrlNavigatorButton::setIndex(int index)
 {
     m_index = index;
+    const QString path = urlNavigator()->url().pathOrUrl();
+    setText(path.section('/', index, index));
+}
 
-    if (m_index < 0) {
-        return;
-    }
-
-    QString path(urlNavigator()->url().pathOrUrl());
-    const QString buttonText = path.section('/', index, index);
-    setText(buttonText);
-
+void KUrlNavigatorButton::setActive(bool active)
+{
     // Check whether the button indicates the full path of the URL. If
     // this is the case, the button is marked as 'active'.
-    ++index;
+    const QString path = urlNavigator()->url().pathOrUrl();
+    const int index = m_index + 1;
     QFont adjustedFont(font());
     if (path.section('/', index, index).isEmpty()) {
         setDisplayHintEnabled(ActivatedHint, true);
@@ -87,29 +85,17 @@ void KUrlNavigatorButton::setIndex(int index)
     update();
 }
 
+bool KUrlNavigatorButton::isActive() const
+{
+    return isDisplayHintEnabled(ActivatedHint);
+}
+
 QSize KUrlNavigatorButton::sizeHint() const
 {
     // the minimum size is textWidth + arrowWidth() + 2 * BorderWidth; for the
     // preferred size we add the BorderWidth 2 times again for having an uncluttered look
-    int width = fontMetrics().width(text()) + arrowWidth() + 4 * BorderWidth;
-    if (width < minimumWidth()) {
-        width = minimumWidth();
-    }
+    const int width = fontMetrics().width(text()) + arrowWidth() + 4 * BorderWidth;
     return QSize(width, KUrlButton::sizeHint().height());
-}
-
-void KUrlNavigatorButton::updateMinimumWidth()
-{
-    QFontMetrics fontMetrics(font());
-    int minWidth = fontMetrics.width(text()) + arrowWidth() + 2 * BorderWidth;
-    if (minWidth < 50) {
-        minWidth = 50;
-    }
-    else if (minWidth > 150) {
-        // don't let an overlong path name waste all the URL navigator space
-        minWidth = 150;
-    }
-    setMinimumWidth(minWidth);
 }
 
 void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
@@ -117,11 +103,18 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     Q_UNUSED(event);
 
     QPainter painter(this);
-    const int buttonWidth  = width();
+    
+    int buttonWidth  = width();
+    int preferredWidth = sizeHint().width();
+    if (preferredWidth < minimumWidth()) {
+        preferredWidth = minimumWidth();
+    }
+    if (buttonWidth > preferredWidth) {
+        buttonWidth = preferredWidth;
+    }
     const int buttonHeight = height();
-
+    
     const QColor fgColor = foregroundColor();
-
     drawHoverBackground(&painter);
 
     int textLeft = 0;
@@ -435,6 +428,23 @@ bool KUrlNavigatorButton::isTextClipped() const
 
     QFontMetrics fontMetrics(font());
     return fontMetrics.width(text()) >= availableWidth;
+}
+
+void KUrlNavigatorButton::updateMinimumWidth()
+{
+    const int oldMinWidth = minimumWidth();
+    
+    int minWidth = sizeHint().width();
+    if (minWidth < 40) {
+        minWidth = 40;
+    }
+    else if (minWidth > 150) {
+        // don't let an overlong path name waste all the URL navigator space
+        minWidth = 150;
+    }
+    if (oldMinWidth != minWidth) {
+        setMinimumWidth(minWidth);
+    }
 }
 
 #include "kurlnavigatorbutton_p.moc"

@@ -29,7 +29,6 @@ set(kfile_LIB_SRCS
   kurlnavigatorbutton.cpp
   kurlnavigator.cpp
   kurltogglebutton.cpp
-  kurlupbutton.cpp
 )
 
 kde4_add_library(kfile SHARED ${kfile_LIB_SRCS})

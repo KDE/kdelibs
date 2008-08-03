@@ -50,22 +50,15 @@ class KUrlNavigatorButton : public KUrlButton
 public:
     explicit KUrlNavigatorButton(int index, KUrlNavigator* parent);
     virtual ~KUrlNavigatorButton();
+
     void setIndex(int index);
-    int index() const
-    {
-        return m_index;
-    }
+    int index() const;
+
+    void setActive(bool active);
+    bool isActive() const;
 
     /** @see QWidget::sizeHint() */
     virtual QSize sizeHint() const;
-
-    /**
-     * Updates the minimum width of the button and should be invoked
-     * when the text of the button is changed by QAbstractButton::setText().
-     * TODO: this method would not be necessary if QAbstractButton::setText()
-     * would be virtual.
-     */
-    void updateMinimumWidth();
 
 Q_SIGNALS:
     /**
@@ -98,6 +91,7 @@ private:
     int arrowWidth() const;
     bool isAboveArrow(int x) const;
     bool isTextClipped() const;
+    void updateMinimumWidth();
 
 private:
     int m_index;
@@ -107,5 +101,10 @@ private:
     KIO::Job* m_listJob;
     QStringList m_subdirs;
 };
+
+inline int KUrlNavigatorButton::index() const
+{
+    return m_index;
+}
 
 #endif

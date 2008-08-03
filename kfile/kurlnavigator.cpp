@@ -26,7 +26,6 @@
 #include "kurldropdownbutton_p.h"
 #include "kurlnavigatorbutton_p.h"
 #include "kurltogglebutton_p.h"
-#include "kurlupbutton_p.h"
 
 #include <kfileitem.h>
 #include <kfileplacesmodel.h>
@@ -134,76 +133,6 @@ inline int HistoryElem::contentsY() const
     return m_contentsY;
 }
 
-/**
- * @brief Line editor for the host part of the URL.
- *
- * Extends the class KLineEdit to return a preferred
- * width in HostLineEdit::sizeHint() which assures that
- * the host part is always fully visible.
- */
-class HostLineEdit : public KLineEdit
-{
-public:
-    explicit HostLineEdit(const QString& text, KUrlNavigator* parent = 0);
-    virtual ~HostLineEdit();
-    virtual QSize sizeHint() const;
-    inline void setOptimizeWidth(bool optimize);
-
-protected:
-    virtual void mousePressEvent(QMouseEvent* event);
-
-private:
-    bool m_optimizeWidth;
-    KUrlNavigator* m_urlNavigator;
-};
-
-HostLineEdit::HostLineEdit(const QString& text, KUrlNavigator* parent) :
-    KLineEdit(text, parent),
-    m_optimizeWidth(true),
-    m_urlNavigator(parent)
-{
-}
-
-HostLineEdit::~HostLineEdit()
-{
-}
-
-void HostLineEdit::setOptimizeWidth(bool optimize)
-{
-    m_optimizeWidth = optimize;
-    setClearButtonShown(!optimize);
-}
-
-QSize HostLineEdit::sizeHint() const
-{
-    QSize size = KLineEdit::sizeHint();
-
-    if (m_optimizeWidth) {
-        const QFontMetrics fm(font());
-        const int width = fm.width(text()) + 32;
-        if (width > size.width()) {
-            size.setWidth(width);
-        }
-    }
-
-    return size;
-}
-
-void HostLineEdit::mousePressEvent(QMouseEvent* event)
-{
-    KLineEdit::mousePressEvent(event);
-
-    if (event->button() == Qt::LeftButton) {
-        // behave like a button when a mouse click has been done
-        // inside the host editor and go to the host URL
-        const KUrl currentUrl = m_urlNavigator->url();
-        const KUrl newUrl(currentUrl.protocol() + "://" + text());
-        if (currentUrl != newUrl) {
-            m_urlNavigator->setUrl(newUrl);
-        }
-    }
-}
-
 ////
 
 class KUrlNavigator::Private
@@ -235,8 +164,6 @@ public:
     void dropUrls(const KUrl::List& urls, const KUrl& destination);
 
     void updateContent();
-
-    void goUp();
 
     /**
      * Updates all buttons to have one button for each part of the
@@ -277,33 +204,28 @@ public:
      * compressed file like TAR or ZIP.
      */
     bool isCompressedPath(const KUrl& path) const;
+    
+    void removeTrailingSlash(QString& url);
 
-    bool m_editable;
-    bool m_active;
-    bool m_showPlacesSelector;
+    bool m_editable : 1;
+    bool m_active : 1;
+    bool m_showPlacesSelector : 1;
+    bool m_showFullPath : 1;
     int m_historyIndex;
 
     QHBoxLayout* m_layout;
 
     QList<HistoryElem> m_history;
-    KUrlUpButton* m_upButton;
     KFilePlacesSelector* m_placesSelector;
     KUrlComboBox* m_pathBox;
     KProtocolCombo* m_protocols;
-    HostLineEdit* m_host;
+    KLineEdit* m_host;
     KUrlDropDownButton* m_dropDownButton;
     QLinkedList<KUrlNavigatorButton*> m_navButtons;
     KUrlButton* m_toggleEditableMode;
     QString m_homeUrl;
     QStringList m_customProtocols;
     KUrlNavigator* q;
-
-private:
-    /**
-     * Creates an instance of the class HostLineEdit and
-     * assigns it to m_host.
-     */
-    void createHostLineEdit(const QString& text);
 };
 
 
@@ -311,9 +233,9 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     m_editable(false),
     m_active(true),
     m_showPlacesSelector(placesModel != 0),
+    m_showFullPath(false),
     m_historyIndex(0),
     m_layout(new QHBoxLayout),
-    m_upButton(0),
     m_placesSelector(0),
     m_pathBox(0),
     m_protocols(0),
@@ -329,9 +251,6 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     // initialize the places selector
     q->setAutoFillBackground(false);
 
-    m_upButton = new KUrlUpButton(q);
-    connect(m_upButton, SIGNAL(clicked()), q, SLOT(goUp()));
-
     if (placesModel != 0) {
         m_placesSelector = new KFilePlacesSelector(q, placesModel);
         connect(m_placesSelector, SIGNAL(placeActivated(const KUrl&)),
@@ -345,6 +264,20 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
                 q, SLOT(updateContent()));
     }
 
+    // create protocol combo
+    m_protocols = new KProtocolCombo(QString(), q);
+    connect(m_protocols, SIGNAL(activated(QString)),
+            q, SLOT(slotProtocolChanged(QString)));
+
+    // create editor for editing the host
+    m_host = new KLineEdit(QString(), q);
+    m_host->setClearButtonShown(true);
+    connect(m_host, SIGNAL(editingFinished()),
+            q, SLOT(slotRemoteHostActivated()));
+    connect(m_host, SIGNAL(returnPressed()),
+            q, SIGNAL(returnPressed()));
+            
+    // create drop down button for accessing all paths of the URL
     m_dropDownButton = new KUrlDropDownButton(q);
     connect(m_dropDownButton, SIGNAL(clicked()),
             q, SLOT(openPathSelectorMenu()));
@@ -369,11 +302,13 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     connect(m_toggleEditableMode, SIGNAL(clicked()),
             q, SLOT(switchView()));
 
-    m_layout->addWidget(m_upButton);
     if (m_placesSelector != 0) {
         m_layout->addWidget(m_placesSelector);
     }
+    m_layout->addWidget(m_protocols);
     m_layout->addWidget(m_dropDownButton);
+    m_layout->addWidget(m_host);
+    m_layout->setStretchFactor(m_host, 1);
     m_layout->addWidget(m_pathBox, 1);
     m_layout->addWidget(m_toggleEditableMode);
 }
@@ -467,11 +402,7 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
     if (KProtocolInfo::protocolClass(protocol) == ":local") {
         q->setUrl(url);
     } else {
-        if (m_host == 0) {
-            createHostLineEdit("");
-        } else {
-            m_host->setText("");
-        }
+        m_host->setText(QString());
         m_host->show();
         m_host->setFocus();
     }
@@ -479,26 +410,46 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
 
 void KUrlNavigator::Private::openPathSelectorMenu()
 {
-    KMenu* popup = new KMenu(q);
-
+    if (m_navButtons.count() <= 0) {
+        return;
+    }
+    
+    const KUrl firstVisibleUrl = q->url(m_navButtons.first()->index());
+    
     QString spacer;
-    QLinkedList<KUrlNavigatorButton*>::iterator it = m_navButtons.begin();
-    const QLinkedList<KUrlNavigatorButton*>::const_iterator itEnd = m_navButtons.end();
-    while (it != itEnd) {
-        const QString text = spacer + (*it)->text();
-        spacer.append("  ");
+    KMenu* popup = new KMenu(q); 
+    
+    const QString path = q->url().pathOrUrl();
+    QString placePath = retrievePlacePath(path);
+    removeTrailingSlash(placePath);
+    int idx = placePath.count('/'); // idx points to the first directory
+                                    // after the place path
+
+    QString dirName = path.section('/', idx, idx);
+    if (dirName.isEmpty()) {
+        dirName = QChar('/');
+    }
+    do {   
+        const QString text = spacer + dirName;
 
         QAction* action = new QAction(text, popup);
-        action->setData(QVariant((*it)->index()));
-        popup->addAction(action);
+        const KUrl currentUrl = q->url(idx);
+        if (currentUrl == firstVisibleUrl) {
+            popup->addSeparator();
+        }
+        action->setData(QVariant(currentUrl.prettyUrl()));
+        popup->addAction(action);      
+        
+        ++idx;
+        spacer.append("  ");
+        dirName = path.section('/', idx, idx);
+    } while (!dirName.isEmpty());
 
-        ++it;
-    }
-
-    const QAction* activatedAction = popup->exec(QCursor::pos());
+    const QPoint pos = q->mapToGlobal(m_dropDownButton->geometry().bottomRight());
+    const QAction* activatedAction = popup->exec(pos);
     if (activatedAction != 0) {
-        const int index = activatedAction->data().toInt();
-        q->setUrl(q->url(index));
+        const KUrl url = KUrl(activatedAction->data().toString());
+        q->setUrl(url);
     }
 
     popup->deleteLater();
@@ -531,102 +482,65 @@ void KUrlNavigator::Private::updateContent()
     }
 
     if (m_editable) {
-        delete m_protocols;
-        m_protocols = 0;
-        delete m_host;
-        m_host = 0;
-
+        m_protocols->hide();
+        m_host->hide();
         m_dropDownButton->hide();
+        
         deleteButtons();
         m_toggleEditableMode->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
-
         q->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+        
         m_pathBox->show();
         m_pathBox->setUrl(q->url());
     } else {
-        const QString path = q->url().pathOrUrl();
-
-        q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        m_dropDownButton->setVisible(!m_showFullPath);
         m_pathBox->hide();
+
+        QString path = q->url().pathOrUrl();
+        removeTrailingSlash(path);
+
         m_toggleEditableMode->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
         // get the data from the currently selected place
-        KUrl placeUrl = KUrl();
-        if (m_placesSelector != 0) {
+        KUrl placeUrl;
+        if ((m_placesSelector != 0) && !m_showFullPath) {
             placeUrl = m_placesSelector->selectedPlaceUrl();
         }
 
-        const QString placePath = placeUrl.isValid() ? placeUrl.pathOrUrl() : retrievePlacePath(path);
-        const uint len = placePath.length();
+        QString placePath = placeUrl.isValid() ? placeUrl.pathOrUrl() : retrievePlacePath(path);
+        removeTrailingSlash(placePath);
 
         // calculate the start point for the URL navigator buttons by counting
         // the slashs inside the place URL
-        int slashCount = 0;
-        for (uint i = 0; i < len; ++i) {
-            if (placePath.at(i) == QChar('/')) {
-                ++slashCount;
-            }
-        }
-        if ((len > 0) && placePath.at(len - 1) == QChar('/')) {
-            Q_ASSERT(slashCount > 0);
-            --slashCount;
-        }
+        const int slashCount = placePath.count('/');
 
         const KUrl currentUrl = q->url();
-        if (!currentUrl.isLocalFile() && !placeUrl.isValid()) {
-            QString protocol = currentUrl.scheme();
-            if (m_protocols == 0) {
-                deleteButtons();
-
-                m_protocols = new KProtocolCombo(protocol, q);
-                const int index = m_layout->indexOf(m_dropDownButton);
-                m_layout->insertWidget(index, m_protocols);
-
-                if (!m_customProtocols.isEmpty()) {
-                    m_protocols->setCustomProtocols(m_customProtocols);
-                }
-                connect(m_protocols, SIGNAL(activated(QString)),
-                        q, SLOT(slotProtocolChanged(QString)));
-            } else {
-                m_protocols->setProtocol(protocol);
-            }
-            m_protocols->show();
-
-            if (KProtocolInfo::protocolClass(protocol) != ":local") {
-                QString hostText = currentUrl.host();
-
-                if (!currentUrl.user().isEmpty()) {
-                    hostText = currentUrl.user() + '@' + hostText;
-                }
-
-                if (currentUrl.port() != -1) {
-                    hostText = hostText + ':' + QString::number(currentUrl.port());
-                }
-
-                if (m_host == 0) {
-                    createHostLineEdit(hostText);
-                } else {
-                    m_host->setText(hostText);
-                }
-                m_host->show();
-            } else {
-                delete m_host;
-                m_host = 0;
-            }
-        } else if (m_protocols != 0) {
+        if (currentUrl.isLocalFile() || placeUrl.isValid()) {
             m_protocols->hide();
-            if (m_host != 0) {
-                m_host->hide();
+            m_host->hide();
+        } else {
+            // The URL is invalid or is a non local file. In this
+            // case the protocol combo is shown. 
+            const QString protocol = currentUrl.scheme();
+            m_protocols->setProtocol(protocol);
+            m_protocols->show();
+            
+            // set the text for the host widget
+            QString hostText = currentUrl.host();
+            if (!currentUrl.user().isEmpty()) {
+                hostText = currentUrl.user() + '@' + hostText;
             }
+            if (currentUrl.port() != -1) {
+                hostText = hostText + ':' + QString::number(currentUrl.port());
+            }
+            m_host->setText(hostText);
+            m_host->setVisible((placePath == path) &&
+                               (KProtocolInfo::protocolClass(protocol) != ":local"));
         }
-
+        
         updateButtons(path, slashCount);
     }
-}
-
-void KUrlNavigator::Private::goUp()
-{
-    q->goUp();
 }
 
 void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
@@ -649,14 +563,18 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
             if (isFirstButton) {
                 // the first URL navigator button should get the name of the
                 // place instead of the directory name
-                if (m_placesSelector != 0) {
+                if ((m_placesSelector != 0) && !m_showFullPath) {
                     const KUrl placeUrl = m_placesSelector->selectedPlaceUrl();
                     text = m_placesSelector->selectedPlaceText();
                 }
                 if (text.isEmpty()) {
                     if (currentUrl.isLocalFile()) {
-                        text = i18n("Custom Path");
+                        text = m_showFullPath ? "/" : i18n("Custom Path");
+                    } else if (!m_host->isVisible() && !m_host->text().isEmpty()) {
+                        text = m_host->text();
                     } else {
+                        // The host is already displayed by the m_host widget,
+                        // no button may be added for this index.
                         ++idx;
                         continue;
                     }
@@ -676,7 +594,6 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
 
             if (isFirstButton) {
                 button->setText(text);
-                button->updateMinimumWidth();
             }
 
             if (createButton) {
@@ -687,7 +604,7 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
             ++idx;
         }
     } while (hasNext);
-
+    
     // delete buttons which are not used anymore
     QLinkedList<KUrlNavigatorButton*>::iterator itBegin = it;
     while (it != itEnd) {
@@ -696,7 +613,7 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
         ++it;
     }
     m_navButtons.erase(itBegin, m_navButtons.end());
-
+    
     updateButtonVisibility();
 }
 
@@ -707,27 +624,13 @@ void KUrlNavigator::Private::updateButtonVisibility()
     }
 
     const int buttonsCount = m_navButtons.count();
-    if (m_host != 0) {
-        const bool optimize = (buttonsCount != 0);
-        m_host->setOptimizeWidth(optimize);
-        if (optimize) {
-            m_host->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
-            m_layout->setStretchFactor(m_host, 0);
-        } else {
-            m_host->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-            m_layout->setStretchFactor(m_host, 1);
-        }
-    }
-
     if (buttonsCount == 0) {
         m_dropDownButton->hide();
         return;
     }
 
-    int hiddenButtonsCount = 0;
-
     // subtract all widgets from the available width, that must be shown anyway
-    int availableWidth = q->width() - m_toggleEditableMode->minimumWidth() - m_upButton->width();
+    int availableWidth = q->width() - m_toggleEditableMode->minimumWidth();
 
     if ((m_placesSelector != 0) && m_placesSelector->isVisible()) {
         availableWidth -= m_placesSelector->width();
@@ -737,7 +640,7 @@ void KUrlNavigator::Private::updateButtonVisibility()
         availableWidth -= m_protocols->width();
     }
 
-    if ((m_host != 0) && m_host->isVisible()) {
+    if (m_host->isVisible()) {
         availableWidth -= m_host->width();
     }
 
@@ -756,35 +659,39 @@ void KUrlNavigator::Private::updateButtonVisibility()
     // hide buttons...
     QLinkedList<KUrlNavigatorButton*>::iterator it = m_navButtons.end();
     const QLinkedList<KUrlNavigatorButton*>::const_iterator itBegin = m_navButtons.begin();
+    bool isLastButton = true;
+    bool hasHiddenButtons = false;
+    
+    QLinkedList<KUrlNavigatorButton*> buttonsToShow;
     while (it != itBegin) {
         --it;
         KUrlNavigatorButton* button = (*it);
         availableWidth -= button->minimumWidth();
-        if (availableWidth <= 0) {
+        if ((availableWidth <= 0) && !isLastButton) {
             button->hide();
-            ++hiddenButtonsCount;
+            hasHiddenButtons = true;
         }
         else {
-            button->show();
+            button->setActive(isLastButton);
+            // Don't show the button immediately, as setActive()
+            // might change the size and a relayout gets triggered
+            // after showing the button. So the showing of all buttons
+            // is postponed until all buttons have the correct
+            // activation state.
+            buttonsToShow.append(button);
         }
+        isLastButton = false;
     }
 
-    Q_ASSERT(hiddenButtonsCount <= buttonsCount);
-    if (hiddenButtonsCount == buttonsCount) {
-        // assure that at least one button is visible
-        hiddenButtonsCount = buttonsCount - 1;
+    // all buttons have the correct activation state and
+    // can be shown now
+    foreach (KUrlNavigatorButton* button, buttonsToShow) {
+        button->show();
     }
 
-    int index = 0;
-    it = m_navButtons.begin();
-    const QLinkedList<KUrlNavigatorButton*>::const_iterator itEnd = m_navButtons.end();
-    while (it != itEnd) {
-        (*it)->setVisible(index >= hiddenButtonsCount);
-        ++it;
-        ++index;
+    if (m_showFullPath) {
+        m_dropDownButton->setVisible(hasHiddenButtons);
     }
-
-    m_dropDownButton->setVisible(hiddenButtonsCount != 0);
 }
 
 void KUrlNavigator::Private::switchToBreadcrumbMode()
@@ -826,20 +733,12 @@ bool KUrlNavigator::Private::isCompressedPath(const KUrl& url) const
             mime->is("application/x-archive");
 }
 
-void KUrlNavigator::Private::createHostLineEdit(const QString& text)
+void KUrlNavigator::Private::removeTrailingSlash(QString& url)
 {
-    Q_ASSERT(m_host == 0);
-
-    m_host = new HostLineEdit(text, q);
-    m_host->setClearButtonShown(true);
-
-    const int index = m_layout->indexOf(m_dropDownButton);
-    m_layout->insertWidget(index, m_host);
-
-    connect(m_host, SIGNAL(editingFinished()),
-            q, SLOT(slotRemoteHostActivated()));
-    connect(m_host, SIGNAL(returnPressed()),
-            q, SIGNAL(returnPressed()));
+    const int length = url.length();
+    if ((length > 0) && (url.at(length - 1) == QChar('/'))) {
+        url.remove(length -1, 1);
+    }
 }
 
 ////
@@ -851,7 +750,6 @@ KUrlNavigator::KUrlNavigator(KFilePlacesModel* placesModel,
     d(new Private(this, placesModel))
 {
     d->m_history.prepend(HistoryElem(url));
-    d->m_upButton->setEnabled(url.upUrl() != url);
 
     const QFont font = KGlobalSettings::generalFont();
     setFont(font);
@@ -891,8 +789,8 @@ KUrl KUrlNavigator::url(int index) const
         index = 0;
     }
 
-    // keep scheme, hostname etc. maybe we will need this in the future
-    // for e.g. browsing ftp repositories.
+    // keep scheme, hostname etc. as this is needed for e. g. browsing
+    // FTP directories
     KUrl newUrl = url();
     newUrl.setPath(QString());
 
@@ -980,6 +878,20 @@ bool KUrlNavigator::isUrlEditable() const
     return d->m_editable;
 }
 
+void KUrlNavigator::setShowFullPath(bool show)
+{
+    if (d->m_showFullPath != show) {
+        d->m_showFullPath = show;
+        d->updateContent();
+    }
+}
+
+bool KUrlNavigator::showFullPath() const
+{
+    return d->m_showFullPath;
+}
+
+
 void KUrlNavigator::setActive(bool active)
 {
     if (active != d->m_active) {
@@ -1057,7 +969,7 @@ void KUrlNavigator::setUrl(const KUrl& url)
     // If this is the case, just ignore setting the URL.
     const HistoryElem& historyElem = d->m_history[d->m_historyIndex];
     const bool isUrlEqual = transformedUrl.equals(historyElem.url(), KUrl::CompareWithoutTrailingSlash) ||
-                            !transformedUrl.isValid() && (urlStr == historyElem.url().url());
+                            (!transformedUrl.isValid() && (urlStr == historyElem.url().url()));
     if (isUrlEqual) {
         return;
     }
@@ -1083,8 +995,6 @@ void KUrlNavigator::setUrl(const KUrl& url)
         QList<HistoryElem>::iterator end = d->m_history.end();
         d->m_history.erase(begin, end);
     }
-
-    d->m_upButton->setEnabled(transformedUrl.upUrl() != transformedUrl);
 
     emit historyChanged();
     emit urlChanged(transformedUrl);
@@ -1169,7 +1079,6 @@ KUrlComboBox* KUrlNavigator::editor() const
 void KUrlNavigator::setCustomProtocols(const QStringList &protocols)
 {
     d->m_customProtocols = protocols;
-
     d->m_protocols->setCustomProtocols(d->m_customProtocols);
 }
 

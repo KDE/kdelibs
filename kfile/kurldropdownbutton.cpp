@@ -21,13 +21,13 @@
 
 #include <kglobalsettings.h>
 
-#include <QtGui/QPainter>
 #include <QtGui/QKeyEvent>
+#include <QtGui/QPainter>
+#include <QtGui/QStyleOption>
 
 KUrlDropDownButton::KUrlDropDownButton(KUrlNavigator* parent) :
     KUrlButton(parent)
 {
-    setText("...");
 }
 
 KUrlDropDownButton::~KUrlDropDownButton()
@@ -36,11 +36,9 @@ KUrlDropDownButton::~KUrlDropDownButton()
 
 QSize KUrlDropDownButton::sizeHint() const
 {
-    int width = fontMetrics().width(text()) + 4 * BorderWidth;
-    if (width < minimumWidth()) {
-        width = minimumWidth();
-    }
-    return QSize(width, KUrlButton::sizeHint().height());
+    QSize size = KUrlButton::sizeHint();
+    size.setWidth(size.height() / 2);
+    return size;
 }
 
 void KUrlDropDownButton::paintEvent(QPaintEvent* event)
@@ -50,9 +48,22 @@ void KUrlDropDownButton::paintEvent(QPaintEvent* event)
     QPainter painter(this);
     drawHoverBackground(&painter);
 
-    // draw '...'
-    painter.setPen(foregroundColor());
-    painter.drawText(rect(), Qt::AlignCenter, text());
+    const QColor fgColor = foregroundColor();
+    
+    QStyleOption option;
+    option.initFrom(this);
+    option.rect = QRect(0, 0, width(), height());
+    option.palette = palette();
+    option.palette.setColor(QPalette::Text, fgColor);
+    option.palette.setColor(QPalette::WindowText, fgColor);
+    option.palette.setColor(QPalette::ButtonText, fgColor);
+    
+    if (layoutDirection() == Qt::LeftToRight) {
+        style()->drawPrimitive(QStyle::PE_IndicatorArrowRight, &option, &painter, this);
+    } else {
+        style()->drawPrimitive(QStyle::PE_IndicatorArrowLeft, &option, &painter, this);
+    }
+
 }
 
 #include "kurldropdownbutton_p.moc"

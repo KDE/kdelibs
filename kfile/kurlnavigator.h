@@ -45,11 +45,15 @@ class QMouseEvent;
  *
  * The mode can be changed by clicking on the empty area of the URL navigator.
  * It is recommended that the application remembers the setting
- * of the mode or allows the user to configure the default mode
- * (see KUrlNavigator::setUrlEditable()).
+ * or allows to configure the default mode (see KUrlNavigator::setUrlEditable()).
  *
  * The URL navigator remembers the URL history during navigation and allows to go
  * back and forward within this history.
+ *
+ * In the non editable mode ("breadcrumb view") it can be configured whether
+ * the full path should be shown. It is recommended that the application
+ * remembers the setting or allows to configure the default mode (see
+ * KUrlNavigator::setShowFullPath()).
  *
  * The typical usage of the KUrlNavigator is:
  * - Create an instance providing a places model and an URL.
@@ -152,6 +156,23 @@ public:
      */
     bool isUrlEditable() const;
 
+    /**
+     * Shows the full path of the URL even if a place represents a part of the URL.
+     * Assuming that a place called "Pictures" uses the URL /home/user/Pictures.
+     * An URL like /home/user/Pictures/2008 is shown as [Pictures] > [2008]
+     * in the breadcrumb view, if showing the full path is turned off. If
+     * showing the full path is turned on, the URL is shown
+     * as [/] > [home] > [Pictures] > [2008].
+     * @since 4.2
+     */
+    void setShowFullPath(bool show);
+    
+    /**
+     * @return True, if the full path of the URL should be shown in the breadcrumb view.
+     * @since 4.2
+     */
+    bool showFullPath() const;
+    
     /**
      * Set the URL navigator to the active mode, if \a active
      * is true. The active mode is default. The inactive mode only differs
@@ -323,7 +344,6 @@ private:
     Q_PRIVATE_SLOT(d, void updateButtonVisibility())
     Q_PRIVATE_SLOT(d, void switchToBreadcrumbMode())
     Q_PRIVATE_SLOT(d, void updateContent())
-    Q_PRIVATE_SLOT(d, void goUp())
 
 private:
     class Private;

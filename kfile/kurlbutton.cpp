@@ -112,6 +112,13 @@ void KUrlButton::contextMenuEvent(QContextMenuEvent* event)
     } else {
         navigateAction->setChecked(true);
     }
+    
+    popup.addSeparator();
+    
+    // allow showing of the full path
+    QAction* showFullPathAction = popup.addAction(i18n("Show Full Path"));
+    showFullPathAction->setCheckable(true);
+    showFullPathAction->setChecked(m_urlNavigator->showFullPath());
 
     QAction* activatedAction = popup.exec(QCursor::pos());
     if (activatedAction == copyAction) {
@@ -124,6 +131,8 @@ void KUrlButton::contextMenuEvent(QContextMenuEvent* event)
         m_urlNavigator->setUrlEditable(true);
     } else if (activatedAction == navigateAction) {
         m_urlNavigator->setUrlEditable(false);
+    } else if (activatedAction == showFullPathAction) {
+        m_urlNavigator->setShowFullPath(showFullPathAction->isChecked());
     }
 }
 

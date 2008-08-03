@@ -363,13 +363,10 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     //
     // http://lists.kde.org/?l=kde-core-devel&m=116888382514090&w=2
     
-    // TODO: The up-button is temporary removed as the URL navigator provides already
-    // an up-button. It's open yet whether the up-button from the URL navigator should be
-    // made optional or whether we leave this up-button removed:
-    //d->toolbar->addAction( coll->action( "up" ) );
-    //coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<br /><br />"
-    //                                        "For instance, if the current location is file:/home/%1 clicking this "
-    //                                        "button will take you to file:/home.</qt>",  KUser().loginName() ));
+    d->toolbar->addAction( coll->action( "up" ) );
+    coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<br /><br />"
+                                            "For instance, if the current location is file:/home/%1 clicking this "
+                                            "button will take you to file:/home.</qt>",  KUser().loginName() ));
 
     d->toolbar->addAction( coll->action( "back" ) );
     coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
@@ -1071,7 +1068,6 @@ void KFileWidgetPrivate::multiSelectionChanged()
         return;
     }
 
-    static const QString &begin = KGlobal::staticQString(" \"");
     KUrl::List urlList;
     foreach (const KFileItem &fileItem, list) {
         urlList << fileItem.url();
@@ -1711,6 +1707,9 @@ void KFileWidgetPrivate::readConfig( const KConfigGroup &configGroup)
     // should the URL navigator use the breadcrumb navigation?
     urlNavigator->setUrlEditable( !configGroup.readEntry(BreadcrumbNavigation, true) );
 
+    // should the URL navigator show the full path?
+    urlNavigator->setShowFullPath( configGroup.readEntry(ShowFullPath, false) );
+
     int w1 = q->minimumSize().width();
     int w2 = toolbar->sizeHint().width();
     if (w1 < w2)
@@ -1736,6 +1735,7 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
     configGroup.writeEntry( ShowBookmarks, bookmarkHandler != 0 );
     configGroup.writeEntry( AutoSelectExtChecked, autoSelectExtChecked );
     configGroup.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable() );
+    configGroup.writeEntry( ShowFullPath, urlNavigator->showFullPath() );
 
     ops->writeConfig(configGroup);
 }
