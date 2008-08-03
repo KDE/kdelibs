@@ -153,6 +153,10 @@ namespace KKeyServer
         { Qt::Key_Control,          VK_RCONTROL },
         { Qt::Key_Alt,          VK_LMENU },
         { Qt::Key_Alt,          VK_RMENU },
+
+//  winuser.h from psdk w2kserver2003R2 defines the following constants only for _WIN32_WINNT >= 0x0500
+// and we should also do so - otherwise the constants may not be available
+#if(_WIN32_WINNT >= 0x0500)        
         { Qt::Key_Back,         VK_BROWSER_BACK },
         { Qt::Key_Forward,          VK_BROWSER_FORWARD },
         { Qt::Key_Refresh,          VK_BROWSER_REFRESH },
@@ -171,6 +175,7 @@ namespace KKeyServer
         { Qt::Key_LaunchMedia,          VK_LAUNCH_MEDIA_SELECT },
         { Qt::Key_Launch0,          VK_LAUNCH_APP1 },
         { Qt::Key_Launch1,          VK_LAUNCH_APP2 },
+#endif        
 /*        { 0,            VK_OEM_1 },
         { 0,            VK_OEM_PLUS },
         { 0,            VK_OEM_COMMA },
