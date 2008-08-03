@@ -298,11 +298,15 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.J
 
 kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
-target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} )
+target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY})
 
 if(MINGW)
    target_link_libraries(kdeui gdi32 oleaut32)
 endif(MINGW)
+
+if(Q_WS_MAC)
+   target_link_libraries(kdeui ${CARBON_LIBRARY})
+endif(Q_WS_MAC)
 
 if(X11_XTest_FOUND)
    target_link_libraries(kdeui ${X11_XTest_LIB})
@@ -559,6 +563,11 @@ endif ( Q_WS_QWS )
 
 kde4_add_plugin( kded_globalaccel ${kded_globalaccel_SRCS} )
 target_link_libraries(kded_globalaccel ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${X11_LIBRARIES})
+
+if(Q_WS_MAC)
+   target_link_libraries(kded_globalaccel ${CARBON_LIBRARY})
+endif(Q_WS_MAC)
+
 
 install( TARGETS kded_globalaccel DESTINATION ${PLUGIN_INSTALL_DIR} )
 

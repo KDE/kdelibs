@@ -11,7 +11,6 @@ set(kwalletbackend_LIB_SRCS
    kwalletbackend.cc
    )
 
-
 kde4_add_library(kwalletbackend SHARED ${kwalletbackend_LIB_SRCS})
 
 target_link_libraries(kwalletbackend ${KDE4_KDEUI_LIBS} )
