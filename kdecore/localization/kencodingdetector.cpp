@@ -122,6 +122,12 @@ public:
     {
         delete m_decoder;
     }
+
+    // Returns true if the encoding was explicitly specified someplace.
+    bool isExplicitlySpecifiedEncoding()
+    {
+        return m_source != KEncodingDetector::DefaultEncoding && m_source != KEncodingDetector::AutoDetectedEncoding;
+    }
 };
 
 
@@ -716,7 +722,12 @@ bool KEncodingDetector::setEncoding(const char *_encoding, EncodingChoiceSource 
     }
 
     if (d->m_codec->mibEnum()==codec->mibEnum())
+    {
+        // We already have the codec, but we still want to re-set the type,
+        // as we may have overwritten a default with a detected
+        d->m_source = type;
         return true;
+    }
 
     if ((type==EncodingFromMetaTag || type==EncodingFromXMLHeader) && is16Bit(codec))
     {
@@ -786,13 +797,9 @@ QString KEncodingDetector::decodeWithBuffering(const char *data, int len)
     {
         if (d->m_bufferForDefferedEncDetection.isEmpty())
         {
-            if (analyze(data,len)
-                && (d->m_seenBody
-                    || !(d->m_source==AutoDetectedEncoding
-                        ||d->m_source==DefaultEncoding
-                        )
-                   )
-               )//dontWannaSeeHead()
+            // If encoding detection produced something, and we either got to the body or
+            // actually saw the encoding explicitly, we're done.
+            if (analyze(data,len) && (d->m_seenBody || d->isExplicitlySpecifiedEncoding()))
             {
 #ifdef DECODE_DEBUG
                 kWarning() << "KEncodingDetector: m_writtingHappened first time "<< d->m_codec->name();
@@ -812,14 +819,11 @@ QString KEncodingDetector::decodeWithBuffering(const char *data, int len)
         else
         {
             d->m_bufferForDefferedEncDetection+=data;
-            if ( (analyze(data,len)
-                  && (d->m_seenBody
-                     || !(d->m_source==AutoDetectedEncoding
-                        ||d->m_source==DefaultEncoding
-                         )
-                     )
-                 ) || d->m_bufferForDefferedEncDetection.length()>MAX_BUFFER
-               )//dontWannaSeeHead()
+            // As above, but also limit the buffer size. We must use the entire buffer here,
+            // since the boundaries might split the meta tag, etc.
+            bool detected = analyze(d->m_bufferForDefferedEncDetection.constData(), d->m_bufferForDefferedEncDetection.length());
+            if ((detected && (d->m_seenBody || d->isExplicitlySpecifiedEncoding())) ||
+                 d->m_bufferForDefferedEncDetection.length() > MAX_BUFFER)
             {
                 d->m_writtingHappened=true;
                 d->m_bufferForDefferedEncDetection.replace('\0',' ');
@@ -928,6 +932,10 @@ bool KEncodingDetector::analyze(const char *data, int len)
             setEncoding("",DefaultEncoding);
         return true;
     }
+
+    // HTTP header takes precedence over meta-type stuff
+    if (d->m_source==EncodingFromHTTPHeader)
+        return true;
 
     if (!d->m_seenBody)
     {
@@ -1039,9 +1047,6 @@ bool KEncodingDetector::analyze(const char *data, int len)
             }
         }
     }
-
-    if (d->m_source==EncodingFromHTTPHeader)
-        return true;
 
     if (len<20)
     {
