@@ -2,6 +2,7 @@
 Type=Service
 Name=Kde Emoticons Theme
 Name[bg]=Тема с емоции за KDE
+Name[bn]=কে-ডি-ই ইমোট-আইকন থীম
 Name[bn_IN]=Kde ইমো-আইকন থিম
 Name[ca]=Tema d'emoticones KDE
 Name[cs]=Motiv emotikonů KDE
@@ -47,6 +48,7 @@ Name[zh_CN]=KDE 表情主题
 Name[zh_TW]=KDE 表情圖示主題
 Comment=Library to use KDE emoticons theme
 Comment[bg]=Библиотека за тема с емоции KDE
+Comment[bn]=কে-ডি-ই ইমোট-আইকন থীম ব্যবহার করার লাইব্রেরী
 Comment[bn_IN]=KDE ইমো-আইকন থিম প্রয়োগ করতে ব্যবহৃত লাইব্রেরি
 Comment[ca]=Biblioteca per a usar el tema d'emoticones KDE
 Comment[cs]=Knihovna pro použití motivu emotikonů KDE
