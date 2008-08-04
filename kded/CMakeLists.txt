@@ -6,21 +6,20 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 
 ########### next target ###############
 
-set(kded_KDEINIT_SRCS kded.cpp kdedadaptor.cpp)
 
 
-kde4_add_kdeinit_executable(kded4  ${kded_KDEINIT_SRCS})
+set(kded_KDEINIT_SRCS kded.cpp kdedadaptor.cpp )
 
+qt4_generate_dbus_interface( ${CMAKE_SOURCE_DIR}/kded/kdedadaptor.h org.kde.kded.xml )
+qt4_add_dbus_interfaces( kded_KDEINIT_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded.xml )
+
+kde4_add_kdeinit_executable(kded4  ${kded_KDEINIT_SRCS} )
 target_link_libraries(kdeinit_kded4  ${KDE4_KIO_LIBS} )
-
 install(TARGETS kdeinit_kded4 ${INSTALL_TARGETS_DEFAULT_ARGS})
+
 
 target_link_libraries( kded4 kdeinit_kded4 )
 install(TARGETS kded4 DESTINATION ${BIN_INSTALL_DIR} )
-
-
-qt4_generate_dbus_interface( kdedadaptor.h org.kde.kded.xml )
-qt4_add_dbus_interfaces( kded_KDEINIT_SRCS org.kde.kded.xml )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
