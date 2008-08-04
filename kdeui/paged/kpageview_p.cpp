@@ -173,6 +173,8 @@ void KPageTreeView::updateWidth()
     return;
 
   int columns = model()->columnCount();
+  
+  expandItems();
 
   int width = 0;
   for ( int i = 0; i < columns; ++i ) {
@@ -181,8 +183,6 @@ void KPageTreeView::updateWidth()
   }
 
   setFixedWidth( width + 25 );
-
-  expandItems();
 }
 
 void KPageTreeView::expandItems( const QModelIndex &index )
