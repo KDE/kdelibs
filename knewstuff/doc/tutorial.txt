@@ -118,11 +118,14 @@ and further details such as data security policies.
 # InstallPath=.dir/subdir # becomes $HOME/.dir/subdir
 
 # # How to name the files?
-# CustomName=true # doesn't use payload file name
+  #doesn't use payload file name
+# CustomName=true 
 
 # # What to do after installation? Any number of the lines below
-# Uncompress=true # unpack the downloaded archive
-# InstallationCommand=dbus-send ... %f ... # post-installation command
+# # unpack the downloaded archive
+# Uncompress=true
+# # post-installation command 
+# InstallationCommand=dbus-send ... %f ... 
 
 Downloading data
 ----------------
@@ -143,11 +146,10 @@ with something like:
 
 Or, in detail:
 
-# KNS::Engine *engine = new KNS::Engine();
-# engine->init("myapp.knsrc");
-# KNS::Entry::List entries = engine->downloadDialogModal();
+# KNS::Engine engine(this);
+# engine.init("myapp.knsrc");
+# KNS::Entry::List entries = engine.downloadDialogModal(this);
 # // inspect entries, if wanted
-# delete engine;
 
 Uploading data
 --------------
@@ -158,11 +160,10 @@ Similar to downloads, both modal and non-modal ways of invoking the dialog exist
 
 Or, in detail:
 
-# KNS::Engine *engine = new KNS::Engine();
-# engine->init("myapp.knsrc");
-# KNS::Entry *entry = engine->uploadDialogModal(QString file);
+# KNS::Engine engine(this);
+# engine.init("myapp.knsrc");
+# KNS::Entry *entry = engine.uploadDialogModal(QString file);
 # // if !entry, then something went wrong
-# delete engine;
 
 The server side
 ---------------
