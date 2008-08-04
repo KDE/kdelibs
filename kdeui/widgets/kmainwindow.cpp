@@ -423,6 +423,7 @@ KMainWindow::~KMainWindow()
 {
     sMemberList->removeAll( this );
     delete k_ptr;
+    KGlobal::deref();
 }
 
 KMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
@@ -547,15 +548,10 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         }
 
         if ( !no_query_exit && not_withdrawn <= 0 ) { // last window close accepted?
-            if ( queryExit() && ( !kapp || !kapp->sessionSaving() ) && !d->shuttingDown ) { // Yes, Quit app?
-                KGlobal::deref();             // ...done with this window, the process will quit (unless it's doing something else)
-            }  else {
-                // cancel closing, it's stupid to end up with no windows at all....
-                e->ignore();
+            if (!( queryExit() && ( !kapp || !kapp->sessionSaving() ) && !d->shuttingDown )) {
+              // cancel closing, it's stupid to end up with no windows at all....
+              e->ignore();
             }
-        } else {
-            // not the last window, simple deref
-            KGlobal::deref();
         }
     } else e->ignore(); //if the window should not be closed, don't close it
 }
