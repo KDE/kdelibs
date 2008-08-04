@@ -98,9 +98,9 @@ void KCModule::showEvent(QShowEvent *ev)
     if (d->_firstshow) {
         d->_firstshow = false;
         load();
+        emit( changed( false ));
     }
     QWidget::showEvent(ev);
-    emit( changed( false ));
 }
 
 KCModule::Buttons KCModule::buttons() const
