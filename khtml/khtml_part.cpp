@@ -2388,7 +2388,7 @@ KUrl KHTMLPart::completeURL( const QString &url )
 
 QString KHTMLPartPrivate::codeForJavaScriptURL(const QString &u)
 {
-    return KUrl::fromPercentEncoding( u.right( u.length() - 11 ).toLatin1() );
+    return KUrl::fromPercentEncoding( u.right( u.length() - 11 ).toUtf8() );
 }
 
 void KHTMLPartPrivate::executeJavascriptURL(const QString &u)
