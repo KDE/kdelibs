@@ -1484,7 +1484,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
 
   // default error message if the following code fails
   kError = ERR_INTERNAL;
-  errorString = i18nc("%1: code, %2: request type", "An unexpected error (%1) occurred"
+  errorString = i18nc("%1: code, %2: request type", "An unexpected error (%1) occurred "
                       "while attempting to %2.", code, action);
 
   switch ( code )
