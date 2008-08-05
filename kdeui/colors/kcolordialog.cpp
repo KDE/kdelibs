@@ -1736,6 +1736,8 @@ KColorDialog::grabColor(const QPoint &p)
     // we use the X11 API directly in this case as we are not getting back a valid
     // return from QPixmap::grabWindow in the case where the application is using
     // an argb visual
+    if( !qApp->desktop()->geometry().contains( p ))
+        return QColor();
     Window root = RootWindow(QX11Info::display(), QX11Info::appScreen());
     XImage *ximg = XGetImage(QX11Info::display(), root, p.x(), p.y(), 1, 1, -1, ZPixmap);
     unsigned long xpixel = XGetPixel(ximg, 0, 0);
