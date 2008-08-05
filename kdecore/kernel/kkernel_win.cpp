@@ -215,7 +215,7 @@ static void kMessageGuiOutput(QtMsgType type, const char *msg)
             strlcat(buf,msg,BUFSIZE);
             break;
         case QtCriticalMsg:
-            strlcpy(buf,"Critial:",BUFSIZE);
+            strlcpy(buf,"Critical:",BUFSIZE);
             strlcat(buf,msg,BUFSIZE);
             break;
         case QtFatalMsg:
