@@ -222,6 +222,20 @@ namespace Nepomuk {
         QList<QUrl> types() const;
 
         /**
+         * Set the types of the resource. Previous types will be overwritten.
+         *
+         * \since 4.2
+         */
+        void setTypes( const QList<QUrl>& types );
+
+        /**
+         * Add a type to the list of types.
+         *
+         * \since 4.2
+         */
+        void addType( const QUrl& type );
+
+        /**
          * Check if the resource is of a certain type. The type hierarchy
          * is checked including subclass relations.
          */

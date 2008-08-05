@@ -84,6 +84,8 @@ namespace Nepomuk {
 
         QList<QUrl> allTypes();
 
+        void setTypes( const QList<QUrl>& types );
+
         QHash<QUrl, Variant> allProperties();
 
         bool hasProperty( const QUrl& uri );
@@ -183,6 +185,7 @@ namespace Nepomuk {
 
     private:
         bool constHasType( const QUrl& type ) const;
+        void loadType( const QUrl& type );
 
         /**
          * The kickoff URI or ID is used as long as the resource has not been synced yet
@@ -215,6 +218,9 @@ namespace Nepomuk {
 
         QHash<QUrl, Variant> m_cache;
         bool m_cacheDirty;
+
+        // used to prevent countless model operations in store()
+        bool m_initialTypeSaved;
 
         friend class ResourceManager;
     };

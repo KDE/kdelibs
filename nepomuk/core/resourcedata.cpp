@@ -87,6 +87,9 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
 
     m_types << m_mainType;
 
+    // there is no need to store the trivial type
+    m_initialTypeSaved = ( m_mainType == Soprano::Vocabulary::RDFS::Resource() );
+
     // TODO: handle the caching in a decent Cache class and not this ugly.
     if ( s_dataCnt >= 1000 ) {
         for( ResourceDataHash::iterator rdIt = initializedData()->begin();
@@ -141,6 +144,31 @@ QList<QUrl> Nepomuk::ResourceData::allTypes()
     load();
     return m_types;
 }
+
+
+void Nepomuk::ResourceData::setTypes( const QList<QUrl>& types )
+{
+    if( m_proxyData ) {
+        m_proxyData->setTypes( types );
+    }
+    else if ( store() ) {
+        // reset types
+        m_types.clear();
+        m_mainType = Soprano::Vocabulary::RDFS::Resource();
+
+        // load types (and set maintype)
+        QList<Node> nodes;
+        foreach( const QUrl& url, types ) {
+            loadType( url );
+            nodes << Node( url );
+        }
+
+        // update the data store
+        ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
+        fm.updateProperty( m_uri, Soprano::Vocabulary::RDF::type(), nodes );
+    }
+}
+
 
 
 void Nepomuk::ResourceData::deleteData()
@@ -257,13 +285,17 @@ bool Nepomuk::ResourceData::store()
         m_modificationMutex.unlock();
     }
 
-    if ( !exists() ) {
-        QList<Statement> statements;
+    QList<Statement> statements;
 
-        // save type (There should be no need to save all the types since there is only one way
-        // that m_types contains more than one element: if we loaded them)
+    // save type (There should be no need to save all the types since there is only one way
+    // that m_types contains more than one element: if we loaded them)
+    // The first type, however, can be set at creation time to any value
+    if ( !m_initialTypeSaved &&
+         !ResourceManager::instance()->mainModel()->containsAnyStatement( m_uri, Soprano::Vocabulary::RDF::type(), m_types.first() ) ) {
         statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_types.first() ) );
+    }
 
+    if ( !exists() ) {
         // save the creation date
         statements.append( Statement( m_uri, Soprano::Vocabulary::NAO::created(), Soprano::LiteralValue( QDateTime::currentDateTime() ) ) );
 
@@ -274,18 +306,64 @@ bool Nepomuk::ResourceData::store()
 
         // HACK: make sure that files have proper fileUrl properties so long as we do not have a File class for
         // Dolphin and co.
-        if ( constHasType( Soprano::Vocabulary::Xesam::File() ) &&
+        if ( ( m_uri.scheme() == "file" ||
+               constHasType( Soprano::Vocabulary::Xesam::File() ) ) &&
              QFile::exists( m_uri.toLocalFile()) ) {
             statements.append( Statement( m_uri,
                                           Soprano::Vocabulary::Xesam::url(),
                                           LiteralValue( m_uri.toLocalFile() ) ) );
         }
+    }
 
+    if ( !statements.isEmpty() ) {
+        m_initialTypeSaved = true;
         ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
         return fm.addStatements( statements ) == Soprano::Error::ErrorNone;
     }
     else {
         return true;
+    }
+}
+
+
+void Nepomuk::ResourceData::loadType( const QUrl& storedType )
+{
+    if ( !m_types.contains( storedType ) ) {
+        m_types << storedType;
+    }
+    if ( m_mainType == Soprano::Vocabulary::RDFS::Resource() ) {
+        Q_ASSERT( !storedType.isEmpty() );
+        m_mainType = storedType;
+    }
+    else {
+        Types::Class currentTypeClass = m_mainType;
+        Types::Class storedTypeClass = storedType;
+
+        // Keep the type that is further down the hierarchy
+        if ( storedTypeClass.isSubClassOf( currentTypeClass ) ) {
+            m_mainType = storedTypeClass.uri();
+        }
+        else {
+            // This is a little convenience hack since the user is most likely
+            // more interested in the file content than the actual file
+            Types::Class xesamContentClass( Soprano::Vocabulary::Xesam::Content() );
+            if ( m_mainType == Soprano::Vocabulary::Xesam::File() &&
+                 ( storedTypeClass == xesamContentClass ||
+                   storedTypeClass.isSubClassOf( xesamContentClass ) ) ) {
+                m_mainType = storedTypeClass.uri();
+            }
+            else {
+                // the same is true for nie:DataObject vs. nie:InformationElement
+                Types::Class nieInformationElementClass( Vocabulary::NIE::InformationElement() );
+                Types::Class nieDataObjectClass( Vocabulary::NIE::DataObject() );
+                if( ( currentTypeClass == nieDataObjectClass ||
+                      currentTypeClass.isSubClassOf( nieDataObjectClass ) ) &&
+                    ( storedTypeClass == nieInformationElementClass ||
+                      storedTypeClass.isSubClassOf( nieInformationElementClass ) ) ) {
+                    m_mainType = storedTypeClass.uri();
+                }
+            }
+        }
     }
 }
 
@@ -304,43 +382,7 @@ bool Nepomuk::ResourceData::load()
                 if ( statement.predicate().uri() == Soprano::Vocabulary::RDF::type() ) {
                     if ( statement.object().isResource() ) {
                         QUrl storedType = statement.object().uri();
-                        if ( !m_types.contains( storedType ) ) {
-                            m_types << storedType;
-                        }
-                        if ( m_mainType == Soprano::Vocabulary::RDFS::Resource() ) {
-                            Q_ASSERT( !storedType.isEmpty() );
-                            m_mainType = storedType;
-                        }
-                        else {
-                            Types::Class currentTypeClass = m_mainType;
-                            Types::Class storedTypeClass = storedType;
-
-                            // Keep the type that is further down the hierarchy
-                            if ( storedTypeClass.isSubClassOf( currentTypeClass ) ) {
-                                m_mainType = storedTypeClass.uri();
-                            }
-                            else {
-                                // This is a little convenience hack since the user is most likely
-                                // more interested in the file content than the actual file
-                                Types::Class xesamContentClass( Soprano::Vocabulary::Xesam::Content() );
-                                if ( m_mainType == Soprano::Vocabulary::Xesam::File() &&
-                                     ( storedTypeClass == xesamContentClass ||
-                                       storedTypeClass.isSubClassOf( xesamContentClass ) ) ) {
-                                    m_mainType = storedTypeClass.uri();
-                                }
-                                else {
-                                    // the same is true for nie:DataObject vs. nie:InformationElement
-                                    Types::Class nieInformationElementClass( Vocabulary::NIE::InformationElement() );
-                                    Types::Class nieDataObjectClass( Vocabulary::NIE::DataObject() );
-                                    if( ( currentTypeClass == nieDataObjectClass ||
-                                          currentTypeClass.isSubClassOf( nieDataObjectClass ) ) &&
-                                        ( storedTypeClass == nieInformationElementClass ||
-                                          storedTypeClass.isSubClassOf( nieInformationElementClass ) ) ) {
-                                        m_mainType = storedTypeClass.uri();
-                                    }
-                                }
-                            }
-                        }
+                        loadType( storedType );
                     }
                 }
                 else {
@@ -374,8 +416,7 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
         if ( value.simpleType() == qMetaTypeId<Resource>() ) {
             QList<Resource> l = value.toResourceList();
             for( QList<Resource>::iterator resIt = l.begin(); resIt != l.end(); ++resIt ) {
-                if ( resIt->isValid() )
-                    resIt->m_data->store();
+                resIt->m_data->store();
             }
         }
 
@@ -396,7 +437,7 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
 
         // one-to-many literals
         else if( value.isList() ) {
-            valueNodes += Nepomuk::valuesToRDFNodes( value );
+            valueNodes = Nepomuk::valuesToRDFNodes( value );
         }
 
         // one-to-one literal
@@ -480,7 +521,9 @@ bool Nepomuk::ResourceData::determineUri()
 
         Soprano::Model* model = ResourceManager::instance()->mainModel();
 
-        if( model->containsAnyStatement( Statement( QUrl( kickoffUriOrId() ), Node(), Node() ) ) ) {
+        // kickoffUriOrId() cannot be a URI without a slash (ugly hack for a tiny speed gain)
+        if( kickoffUriOrId().contains('/') &&
+            model->containsAnyStatement( Statement( QUrl( kickoffUriOrId() ), Node(), Node() ) ) ) {
             //
             // The kickoffUriOrId is actually a URI
             //
@@ -549,13 +592,15 @@ bool Nepomuk::ResourceData::determineUri()
                 //
                 // The resource does not exist, create a new one:
                 // If the kickoffUriOrId is a valid URI we use it as such, otherwise we create a new URI
-                // Special case: files: paths are always converted to URIs
+                // Special case: files: paths are always converted to URIs (but we only allow absolute paths,
+                // otherwise there can be false positives when for example a tag has the same name as a folder)
                 //
                 QUrl uri( kickoffUriOrId() );
                 if ( uri.isValid() && !uri.scheme().isEmpty() ) {
                     m_uri = uri;
                 }
-                else if ( QFile::exists( kickoffUriOrId() ) ) {
+                else if ( kickoffUriOrId()[0] == '/' &&
+                          QFile::exists( kickoffUriOrId() ) ) {
                     // KURL defaults to schema "file:"
                     m_uri = KUrl::fromPath( kickoffUriOrId() );
                 }

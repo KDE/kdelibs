@@ -83,6 +83,7 @@ Nepomuk::Resource::Resource( Nepomuk::ResourceData* data )
 
 Nepomuk::Resource::~Resource()
 {
+    // FIXME: ResourceData instances having a proxy also need to be deleted, maybe extend deref
     if( m_data && m_data->deref() == 0 && !m_data->isValid() ) {
         m_data->deleteData();
     }
@@ -147,6 +148,20 @@ QList<QUrl> Nepomuk::Resource::types() const
     else {
         return QList<QUrl>();
     }
+}
+
+
+void Nepomuk::Resource::setTypes( const QList<QUrl>& types )
+{
+    if ( m_data )
+        m_data->setTypes( types );
+}
+
+
+void Nepomuk::Resource::addType( const QUrl& type )
+{
+    if ( m_data )
+        setTypes( types() << type );
 }
 
 
@@ -321,6 +336,7 @@ QString Nepomuk::Resource::genericDescription() const
 
 QString Nepomuk::Resource::genericIcon() const
 {
+    // FIXME: support resource symbols
     Variant symbol = property( Soprano::Vocabulary::NAO::hasSymbol() );
     if ( symbol.isString() ) {
         return symbol.toString();

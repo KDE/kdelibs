@@ -25,13 +25,6 @@ Overview |
 
 This is the KDE Meta Data library (not to confuse with KFileMetaData).
 
-@warning The Nepomuk API may be subject to change before the release of
-KDE 4.1. Using these classes in applications that are part of the KDE core
-packages is no problem at all; API changes will be merged in quickly.
-However, if you intend to use this API in external applications please
-be aware that your application might stop working with KDE 4.1. Changes to
-the API will be announced on the kde-core mailing list.
-
 
 \section overview The General Idea
 
@@ -82,7 +75,7 @@ greater than 1.
 - \ref hacking
 - \ref examples
 - \ref nepomuk-rcgen
-
+- <a href="http://techbase.kde.org/Development/Tutorials#Nepomuk">The Nepomuk techbase tutorials</a>
 
 \authors
 Sebastian Trueg \<trueg@kde.org\>
@@ -241,7 +234,8 @@ while( it.hasNext() )
             << it.next().genericLabel();
 \endcode
 
-Reading the information using the convenience classes:
+Reading the information using the convenience classes (be aware that these classes need to be generated
+from an ontology using the \ref nepomuk-rcgen "Resource Generator"):
 
 \code
 Nepomuk::File f( "/home/foo/bar.txt" );
