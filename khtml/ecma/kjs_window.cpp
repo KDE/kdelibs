@@ -756,13 +756,13 @@ JSValue* Window::getValueProperty(ExecState *exec, int token) const
     case Status:
       return jsString(UString(part->jsStatusBarText()));
     case Document:
-      if (part->document().isNull()) {
+      if (!part->xmlDocImpl()) {
         kDebug(6070) << "Document.write: adding <HTML><BODY> to create document";
         part->begin();
         part->write("<HTML><BODY>");
         part->end();
       }
-      return getDOMNode(exec,part->document().handle());
+      return getDOMNode(exec, part->xmlDocImpl());
     case FrameElement:
       if (m_frame->m_partContainerElement)
         return getDOMNode(exec,m_frame->m_partContainerElement);
@@ -1328,11 +1328,11 @@ bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
   if (!part)
     return true; // not a KHTMLPart
 
-  if ( part->document().isNull() )
+  if ( !part->xmlDocImpl() )
     return true; // allow to access a window that was just created (e.g. with window.open("about:blank"))
 
-  DOM::HTMLDocument thisDocument = part->htmlDocument();
-  if ( thisDocument.isNull() ) {
+  DOM::HTMLDocumentImpl* thisDocument = part->docImpl();
+  if ( !thisDocument ) {
     kDebug(6070) << "Window::isSafeScript: trying to access an XML document !?";
     return false;
   }
@@ -1341,13 +1341,13 @@ bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
   if (!activeKHTMLPart)
     return true; // not a KHTMLPart
 
-  DOM::HTMLDocument actDocument = activeKHTMLPart->htmlDocument();
-  if ( actDocument.isNull() ) {
+  DOM::HTMLDocumentImpl* actDocument = activeKHTMLPart->docImpl();
+  if ( !actDocument ) {
     kDebug(6070) << "Window::isSafeScript: active part has no document!";
     return false;
   }
-  DOM::DOMString actDomain = actDocument.domain();
-  DOM::DOMString thisDomain = thisDocument.domain();
+  DOM::DOMString actDomain = actDocument->domain();
+  DOM::DOMString thisDomain = thisDocument->domain();
 
   if ( actDomain == thisDomain ) {
 #ifdef KJS_VERBOSE

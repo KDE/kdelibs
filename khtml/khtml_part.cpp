@@ -5321,10 +5321,9 @@ bool KHTMLPart::checkFrameAccess(KHTMLPart *callingHtmlPart)
   }
 
   // now compare the domains
-  if (callingHtmlPart && !callingHtmlPart->htmlDocument().isNull() &&
-      !htmlDocument().isNull())  {
-    DOM::DOMString actDomain = callingHtmlPart->htmlDocument().domain();
-    DOM::DOMString destDomain = htmlDocument().domain();
+  if (callingHtmlPart && callingHtmlPart->docImpl() && docImpl())  {
+    DOM::DOMString actDomain = callingHtmlPart->docImpl()->domain();
+    DOM::DOMString destDomain = docImpl()->domain();
 
 #ifdef DEBUG_FINDFRAME
     kDebug(6050) << "KHTMLPart::checkFrameAccess: actDomain = '" << actDomain.string() << "' destDomain = '" << destDomain.string() << "'";
