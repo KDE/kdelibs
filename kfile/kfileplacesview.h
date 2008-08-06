@@ -27,7 +27,6 @@
 
 class QResizeEvent;
 class QContextMenuEvent;
-class KFilePlacesViewDelegate;
 
 /**
  * This class allows to display a KFilePlacesModel.
