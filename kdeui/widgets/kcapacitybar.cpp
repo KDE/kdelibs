@@ -34,8 +34,8 @@
 
 #include <kcolorscheme.h>
 
-#define ROUND_MARGIN     10
-#define VERTICAL_SPACING  1
+#define ROUND_MARGIN     6
+#define VERTICAL_SPACING 1
 
 class KCapacityBar::Private
 {

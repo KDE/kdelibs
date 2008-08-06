@@ -53,6 +53,60 @@
 #define LATERAL_MARGIN 4
 #define CAPACITYBAR_HEIGHT 6
 
+class KFilePlacesView::Private
+{
+public:
+    Private(KFilePlacesView *parent) : q(parent) { }
+    
+    enum FadeType {
+        FadeIn = 0,
+        FadeOut
+    };
+
+    KFilePlacesView * const q;
+
+    KUrl currentUrl;
+    bool autoResizeItems;
+    bool showAll;
+    bool smoothItemResizing;
+    bool dropOnPlace;
+    bool dragging;
+    Solid::StorageAccess *lastClickedStorage;
+    QPersistentModelIndex lastClickedIndex;
+    QPersistentModelIndex lastHoveredIndex;
+    
+    QMap<QPersistentModelIndex, QTimeLine*> timeLineMap;
+    QMap<QTimeLine*, QPersistentModelIndex> timeLineInverseMap;
+
+    QRect dropRect;
+
+    void setCurrentIndex(const QModelIndex &index);
+    void adaptItemSize();
+    void updateHiddenRows();
+    bool insertAbove(const QRect &itemRect, const QPoint &pos) const;
+    bool insertBelow(const QRect &itemRect, const QPoint &pos) const;
+    int insertIndicatorHeight(int itemHeight) const;
+    void fadeCapacityBar(const QModelIndex &index, FadeType fadeType);
+    float contentsOpacity(const QModelIndex &index);
+
+    void _k_placeClicked(const QModelIndex &index);
+    void _k_placeActivated(const QModelIndex &index);
+    void _k_placeEntered(const QModelIndex &index);
+    void _k_storageSetupDone(const QModelIndex &index, bool success);
+    void _k_adaptItemsUpdate(qreal value);
+    void _k_itemAppearUpdate(qreal value);
+    void _k_itemDisappearUpdate(qreal value);
+    void _k_enableSmoothItemResizing();
+    void _k_trashUpdated(KJob *job);
+    void _k_timeLineValueChanged(qreal value);
+
+    QTimeLine adaptItemsTimeline;
+    int oldSize, endSize;
+
+    QTimeLine itemAppearTimeline;
+    QTimeLine itemDisappearTimeline;
+};
+
 class KFilePlacesViewDelegate : public QAbstractItemDelegate
 {
 public:
@@ -141,7 +195,9 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
         if ((device.is<Solid::StorageAccess>() && device.as<Solid::StorageAccess>()->isAccessible() ||
              device.parent().is<Solid::StorageAccess>() && device.parent().as<Solid::StorageAccess>()->isAccessible()) &&
             (device.is<Solid::StorageDrive>() && device.as<Solid::StorageDrive>()->isRemovable() ||
-             device.parent().is<Solid::StorageDrive>() && device.parent().as<Solid::StorageDrive>()->isRemovable())) {
+             device.parent().is<Solid::StorageDrive>() && device.parent().as<Solid::StorageDrive>()->isRemovable()) &&
+            (device.is<Solid::StorageDrive>() && device.as<Solid::StorageDrive>()->driveType() != Solid::StorageDrive::CdromDrive ||
+             device.parent().is<Solid::StorageDrive>() && device.parent().as<Solid::StorageDrive>()->driveType() != Solid::StorageDrive::CdromDrive)) {
             isRemovableDevice = true;
         }
     }
@@ -160,6 +216,9 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 
     QRect rectText;
     if (isRemovableDevice) {
+        painter->save();
+        painter->setOpacity(painter->opacity() * m_view->d->contentsOpacity(index));
+        
         int height = option.fontMetrics.height() + CAPACITYBAR_HEIGHT;
         rectText = QRect(m_iconSize + LATERAL_MARGIN * 2 + option.rect.left(), option.rect.top() + (option.rect.height() / 2 - height / 2), option.rect.width() - m_iconSize - LATERAL_MARGIN * 2, option.fontMetrics.height());
         painter->drawText(rectText, Qt::AlignLeft | Qt::AlignTop, option.fontMetrics.elidedText(index.model()->data(index).toString(), Qt::ElideRight, rectText.width()));
@@ -171,9 +230,18 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
             capacityBar.setValue((info.used() * 100) / info.size());
             capacityBar.drawCapacityBar(painter, capacityRect);
         }
-    } else {
-        rectText = QRect(m_iconSize + LATERAL_MARGIN * 2 + option.rect.left(), option.rect.top(), option.rect.width() - m_iconSize - LATERAL_MARGIN * 2, option.rect.height());
-        painter->drawText(rectText, Qt::AlignLeft | Qt::AlignVCenter, option.fontMetrics.elidedText(index.model()->data(index).toString(), Qt::ElideRight, rectText.width()));
+        
+        painter->restore();
+        
+        painter->save();
+        painter->setOpacity(painter->opacity() * (1 - m_view->d->contentsOpacity(index)));
+    }
+
+    rectText = QRect(m_iconSize + LATERAL_MARGIN * 2 + option.rect.left(), option.rect.top(), option.rect.width() - m_iconSize - LATERAL_MARGIN * 2, option.rect.height());
+    painter->drawText(rectText, Qt::AlignLeft | Qt::AlignVCenter, option.fontMetrics.elidedText(index.model()->data(index).toString(), Qt::ElideRight, rectText.width()));
+
+    if (isRemovableDevice) {
+        painter->restore();
     }
 
     painter->restore();
@@ -244,47 +312,6 @@ void KFilePlacesViewDelegate::setShowHoverIndication(bool show)
     m_showHoverIndication = show;
 }
 
-class KFilePlacesView::Private
-{
-public:
-    Private(KFilePlacesView *parent) : q(parent) { }
-
-    KFilePlacesView * const q;
-
-    KUrl currentUrl;
-    bool autoResizeItems;
-    bool showAll;
-    bool smoothItemResizing;
-    bool dropOnPlace;
-    bool dragging;
-    Solid::StorageAccess *lastClickedStorage;
-    QPersistentModelIndex lastClickedIndex;
-
-    QRect dropRect;
-
-    void setCurrentIndex(const QModelIndex &index);
-    void adaptItemSize();
-    void updateHiddenRows();
-    bool insertAbove(const QRect &itemRect, const QPoint &pos) const;
-    bool insertBelow(const QRect &itemRect, const QPoint &pos) const;
-    int insertIndicatorHeight(int itemHeight) const;
-
-    void _k_placeClicked(const QModelIndex &index);
-    void _k_placeActivated(const QModelIndex &index);
-    void _k_storageSetupDone(const QModelIndex &index, bool success);
-    void _k_adaptItemsUpdate(qreal value);
-    void _k_itemAppearUpdate(qreal value);
-    void _k_itemDisappearUpdate(qreal value);
-    void _k_enableSmoothItemResizing();
-    void _k_trashUpdated(KJob *job);
-
-    QTimeLine adaptItemsTimeline;
-    int oldSize, endSize;
-
-    QTimeLine itemAppearTimeline;
-    QTimeLine itemDisappearTimeline;
-};
-
 KFilePlacesView::KFilePlacesView(QWidget *parent)
     : QListView(parent), d(new Private(this))
 {
@@ -300,6 +327,7 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
 
     setDragEnabled(true);
     setAcceptDrops(true);
+    setMouseTracking(true);
     setDropIndicatorShown(false);
     setFrameStyle(QFrame::NoFrame);
 
@@ -314,6 +342,8 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
             this, SLOT(_k_placeClicked(const QModelIndex&)));
     connect(this, SIGNAL(activated(const QModelIndex&)),
             this, SLOT(_k_placeActivated(const QModelIndex&)));
+    connect(this, SIGNAL(entered(const QModelIndex&)),
+            this, SLOT(_k_placeEntered(const QModelIndex&)));
 
     connect(&d->adaptItemsTimeline, SIGNAL(valueChanged(qreal)),
             this, SLOT(_k_adaptItemsUpdate(qreal)));
@@ -882,6 +912,35 @@ int KFilePlacesView::Private::insertIndicatorHeight(int itemHeight) const
     return height;
 }
 
+void KFilePlacesView::Private::fadeCapacityBar(const QModelIndex &index, FadeType fadeType)
+{
+    QTimeLine *timeLine = timeLineMap.value(index, 0);
+    delete timeLine;
+    timeLineMap.remove(index);
+    timeLineInverseMap.remove(timeLine);
+    timeLine = new QTimeLine(250, q);
+    connect(timeLine, SIGNAL(valueChanged(qreal)), q, SLOT(_k_timeLineValueChanged(qreal)));
+    if (fadeType == FadeIn) {
+        timeLine->setDirection(QTimeLine::Forward);
+        timeLine->setCurrentTime(0);
+    } else {
+        timeLine->setDirection(QTimeLine::Backward);
+        timeLine->setCurrentTime(250);
+    }
+    timeLineMap.insert(index, timeLine);
+    timeLineInverseMap.insert(timeLine, index);
+    timeLine->start();
+}
+
+float KFilePlacesView::Private::contentsOpacity(const QModelIndex &index)
+{
+    QTimeLine *timeLine = timeLineMap.value(index, 0);
+    if (timeLine) {
+        return timeLine->currentValue();
+    }
+    return 0;
+}
+
 void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
 {
     if (!KGlobalSettings::singleClick()) {
@@ -908,6 +967,13 @@ void KFilePlacesView::Private::_k_placeActivated(const QModelIndex &index)
     }
 
     setCurrentIndex(index);
+}
+
+void KFilePlacesView::Private::_k_placeEntered(const QModelIndex &index)
+{
+    fadeCapacityBar(lastHoveredIndex, FadeOut);
+    fadeCapacityBar(index, FadeIn);
+    lastHoveredIndex = index;
 }
 
 void KFilePlacesView::Private::_k_storageSetupDone(const QModelIndex &index, bool success)
@@ -973,6 +1039,15 @@ void KFilePlacesView::Private::_k_trashUpdated(KJob *job)
         static_cast<KIO::Job*>(job)->ui()->showErrorMessage();
     }
     org::kde::KDirNotify::emitFilesAdded("trash:/");
+}
+
+void KFilePlacesView::Private::_k_timeLineValueChanged(qreal value)
+{
+    const QModelIndex index = timeLineInverseMap.value(static_cast<QTimeLine*>(q->sender()));
+    if (!index.isValid()) {
+        return;
+    }
+    q->update(index);
 }
 
 void KFilePlacesView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
