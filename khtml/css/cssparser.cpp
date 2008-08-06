@@ -1743,11 +1743,16 @@ bool CSSParser::parseShape( int propId, bool important )
     int i = 0;
     Value *a = args->current();
     while ( a ) {
-        valid = validUnit( a, FLength, strict );
-        if ( !valid )
-            break;
-        CSSPrimitiveValueImpl *length =
-            new CSSPrimitiveValueImpl( a->fValue, (CSSPrimitiveValue::UnitTypes) a->unit );
+        CSSPrimitiveValueImpl *length;
+        if ( a->id == CSS_VAL_AUTO ) {
+            length = new CSSPrimitiveValueImpl( CSS_VAL_AUTO );
+        } else {
+            valid  = validUnit( a, FLength, strict );
+            if ( !valid )
+                break;
+            length = new CSSPrimitiveValueImpl( a->fValue, (CSSPrimitiveValue::UnitTypes) a->unit );
+        }
+
         if ( i == 0 )
             rect->setTop( length );
         else if ( i == 1 )
