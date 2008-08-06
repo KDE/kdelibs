@@ -101,6 +101,7 @@ public:
     void _k_enableSmoothItemResizing();
     void _k_trashUpdated(KJob *job);
     void _k_timeLineValueChanged();
+    void _k_slotPollDevices();
 
     QTimeLine adaptItemsTimeline;
     int oldSize, endSize;
@@ -109,6 +110,8 @@ public:
     QTimeLine itemDisappearTimeline;
     
     KFilePlacesEventWatcher *const watcher;
+    QTimer pollDevices;
+    int pollingRequestCount;
 };
 
 class KFilePlacesViewDelegate : public QAbstractItemDelegate
@@ -325,6 +328,7 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
     d->autoResizeItems = true;
     d->dragging = false;
     d->lastClickedStorage = 0;
+    d->pollingRequestCount = 0;
 
     setSelectionRectVisible(false);
     setSelectionMode(SingleSelection);
@@ -370,6 +374,9 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
             this, SLOT(_k_placeEntered(const QModelIndex&)));
     connect(d->watcher, SIGNAL(entryLeft(const QModelIndex&)),
             this, SLOT(_k_placeLeft(const QModelIndex&)));
+
+    d->pollDevices.setInterval(5000);
+    connect(&d->pollDevices, SIGNAL(timeout()), this, SLOT(_k_slotPollDevices()));
 }
 
 KFilePlacesView::~KFilePlacesView()
@@ -982,11 +989,19 @@ void KFilePlacesView::Private::_k_placeActivated(const QModelIndex &index)
 void KFilePlacesView::Private::_k_placeEntered(const QModelIndex &index)
 {
     fadeCapacityBar(index, FadeIn);
+    pollingRequestCount++;
+    if (pollingRequestCount == 1) {
+        pollDevices.start();
+    }
 }
 
 void KFilePlacesView::Private::_k_placeLeft(const QModelIndex &index)
 {
     fadeCapacityBar(index, FadeOut);
+    pollingRequestCount--;
+    if (!pollingRequestCount) {
+        pollDevices.stop();
+    }
 }
 
 void KFilePlacesView::Private::_k_storageSetupDone(const QModelIndex &index, bool success)
@@ -1061,6 +1076,24 @@ void KFilePlacesView::Private::_k_timeLineValueChanged()
         return;
     }
     q->update(index);
+}
+
+void KFilePlacesView::Private::_k_slotPollDevices()
+{
+    const QModelIndex hoveredIndex = watcher->hoveredIndex();
+    if (hoveredIndex.isValid()) {
+        const KFilePlacesModel *placesModel = static_cast<const KFilePlacesModel*>(hoveredIndex.model());
+        if (placesModel->isDevice(hoveredIndex)) {
+            q->update(hoveredIndex);
+        }
+    }
+    const QModelIndex focusedIndex = watcher->focusedIndex();
+    if (focusedIndex.isValid() && focusedIndex != hoveredIndex) {
+        const KFilePlacesModel *placesModel = static_cast<const KFilePlacesModel*>(focusedIndex.model());
+        if (placesModel->isDevice(focusedIndex)) {
+            q->update(focusedIndex);
+        }
+    }
 }
 
 void KFilePlacesView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)

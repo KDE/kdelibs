@@ -103,6 +103,7 @@ private:
     Q_PRIVATE_SLOT(d, void _k_enableSmoothItemResizing())
     Q_PRIVATE_SLOT(d, void _k_trashUpdated(KJob *))
     Q_PRIVATE_SLOT(d, void _k_timeLineValueChanged())
+    Q_PRIVATE_SLOT(d, void _k_slotPollDevices())
 
     class Private;
     Private * const d;

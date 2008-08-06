@@ -31,6 +31,16 @@ public:
     KFilePlacesEventWatcher(QObject *parent = 0)
         : QObject(parent) {}
 
+    const QModelIndex &hoveredIndex() const
+    {
+        return m_hoveredIndex;
+    }
+    
+    const QModelIndex &focusedIndex() const
+    {
+        return m_focusedIndex;
+    }
+
 Q_SIGNALS:
     void entryEntered(const QModelIndex &index);
     void entryLeft(const QModelIndex &index);
@@ -38,17 +48,17 @@ Q_SIGNALS:
 public Q_SLOTS:
     void currentIndexChanged(const QModelIndex &index)
     {
-        if (focusedIndex.isValid() && focusedIndex != hoveredIndex) {
-            emit entryLeft(focusedIndex);
+        if (m_focusedIndex.isValid() && m_focusedIndex != m_hoveredIndex) {
+            emit entryLeft(m_focusedIndex);
         }
-        if (index == hoveredIndex) {
-            focusedIndex = hoveredIndex;
+        if (index == m_hoveredIndex) {
+            m_focusedIndex = m_hoveredIndex;
             return;
         }
         if (index.isValid()) {
             emit entryEntered(index);
         }
-        focusedIndex = index;
+        m_focusedIndex = index;
     }
 
 protected:
@@ -58,22 +68,22 @@ protected:
             case QEvent::MouseMove: {
                     QAbstractItemView *view = qobject_cast<QAbstractItemView*>(watched->parent());
                     const QModelIndex index = view->indexAt(static_cast<QMouseEvent*>(event)->pos());
-                    if (index != hoveredIndex) {
-                        if (hoveredIndex.isValid() && hoveredIndex != focusedIndex) {
-                            emit entryLeft(hoveredIndex);
+                    if (index != m_hoveredIndex) {
+                        if (m_hoveredIndex.isValid() && m_hoveredIndex != m_focusedIndex) {
+                            emit entryLeft(m_hoveredIndex);
                         }
-                        if (index.isValid() && index != focusedIndex) {
+                        if (index.isValid() && index != m_focusedIndex) {
                             emit entryEntered(index);
                         }
-                        hoveredIndex = index;
+                        m_hoveredIndex = index;
                     }
                 }
                 break;
             case QEvent::Leave:
-                if (hoveredIndex.isValid() && hoveredIndex != focusedIndex) {
-                    emit entryLeft(hoveredIndex);
+                if (m_hoveredIndex.isValid() && m_hoveredIndex != m_focusedIndex) {
+                    emit entryLeft(m_hoveredIndex);
                 }
-                hoveredIndex = QModelIndex();
+                m_hoveredIndex = QModelIndex();
                 break;
             case QEvent::MouseButtonPress:
             case QEvent::MouseButtonDblClick: {
@@ -92,8 +102,8 @@ protected:
     }
 
 private:
-    QPersistentModelIndex hoveredIndex;
-    QPersistentModelIndex focusedIndex;
+    QPersistentModelIndex m_hoveredIndex;
+    QPersistentModelIndex m_focusedIndex;
 };
 
 #endif
