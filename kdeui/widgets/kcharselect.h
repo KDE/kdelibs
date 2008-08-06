@@ -159,7 +159,7 @@ Q_SIGNALS:
     void charSelected(const QChar &c);
 
 private:
-    Q_PRIVATE_SLOT(d, void _k_activateSearchLine());
+    Q_PRIVATE_SLOT(d, void _k_activateSearchLine())
     Q_PRIVATE_SLOT(d, void _k_back())
     Q_PRIVATE_SLOT(d, void _k_forward())
     Q_PRIVATE_SLOT(d, void _k_fontSelected())
