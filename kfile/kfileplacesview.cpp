@@ -352,8 +352,8 @@ public:
     void _k_itemDisappearUpdate(qreal value);
     void _k_enableSmoothItemResizing();
     void _k_trashUpdated(KJob *job);
-    void _k_timeLineValueChanged();
-    void _k_slotPollDevices();
+    void _k_capacityBarTimeLineValueChanged();
+    void _k_pollDevices();
 
     QTimeLine adaptItemsTimeline;
     int oldSize, endSize;
@@ -425,7 +425,7 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
             this, SLOT(_k_placeLeft(const QModelIndex&)));
 
     d->pollDevices.setInterval(5000);
-    connect(&d->pollDevices, SIGNAL(timeout()), this, SLOT(_k_slotPollDevices()));
+    connect(&d->pollDevices, SIGNAL(timeout()), this, SLOT(_k_pollDevices()));
 }
 
 KFilePlacesView::~KFilePlacesView()
@@ -985,7 +985,7 @@ void KFilePlacesView::Private::fadeCapacityBar(const QModelIndex &index, FadeTyp
     delegate->removeTimeLineMap(index);
     delegate->removeTimeLineMap(timeLine);
     timeLine = new QTimeLine(250, q);
-    connect(timeLine, SIGNAL(valueChanged(qreal)), q, SLOT(_k_timeLineValueChanged()));
+    connect(timeLine, SIGNAL(valueChanged(qreal)), q, SLOT(_k_capacityBarTimeLineValueChanged()));
     if (fadeType == FadeIn) {
         timeLine->setDirection(QTimeLine::Forward);
         timeLine->setCurrentTime(0);
@@ -1109,7 +1109,7 @@ void KFilePlacesView::Private::_k_trashUpdated(KJob *job)
     org::kde::KDirNotify::emitFilesAdded("trash:/");
 }
 
-void KFilePlacesView::Private::_k_timeLineValueChanged()
+void KFilePlacesView::Private::_k_capacityBarTimeLineValueChanged()
 {
     const QModelIndex index = delegate->timeLineMap(static_cast<QTimeLine*>(q->sender()));
     if (!index.isValid()) {
@@ -1118,7 +1118,7 @@ void KFilePlacesView::Private::_k_timeLineValueChanged()
     q->update(index);
 }
 
-void KFilePlacesView::Private::_k_slotPollDevices()
+void KFilePlacesView::Private::_k_pollDevices()
 {
     const QModelIndex hoveredIndex = watcher->hoveredIndex();
     if (hoveredIndex.isValid()) {
