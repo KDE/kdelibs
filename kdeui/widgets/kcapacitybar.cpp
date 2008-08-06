@@ -197,7 +197,7 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
                                                       : drawRect.width();
 
     int right = (layoutDirection() == Qt::LeftToRight) ? drawRect.width()
-                                                        : 0;
+                                                       : 0;
 
     int roundMargin = (layoutDirection() == Qt::LeftToRight) ? ROUND_MARGIN
                                                              : -ROUND_MARGIN;

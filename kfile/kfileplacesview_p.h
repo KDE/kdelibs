@@ -35,7 +35,7 @@ public:
     {
         return m_hoveredIndex;
     }
-    
+
     const QModelIndex &focusedIndex() const
     {
         return m_focusedIndex;
@@ -66,17 +66,17 @@ protected:
     {
         switch (event->type()) {
             case QEvent::MouseMove: {
-                QAbstractItemView *view = qobject_cast<QAbstractItemView*>(watched->parent());
-                const QModelIndex index = view->indexAt(static_cast<QMouseEvent*>(event)->pos());
-                if (index != m_hoveredIndex) {
-                    if (m_hoveredIndex.isValid() && m_hoveredIndex != m_focusedIndex) {
-                        emit entryLeft(m_hoveredIndex);
+                    QAbstractItemView *view = qobject_cast<QAbstractItemView*>(watched->parent());
+                    const QModelIndex index = view->indexAt(static_cast<QMouseEvent*>(event)->pos());
+                    if (index != m_hoveredIndex) {
+                        if (m_hoveredIndex.isValid() && m_hoveredIndex != m_focusedIndex) {
+                            emit entryLeft(m_hoveredIndex);
+                        }
+                        if (index.isValid() && index != m_focusedIndex) {
+                            emit entryEntered(index);
+                        }
+                        m_hoveredIndex = index;
                     }
-                    if (index.isValid() && index != m_focusedIndex) {
-                        emit entryEntered(index);
-                    }
-                    m_hoveredIndex = index;
-                }
                 }
                 break;
             case QEvent::Leave:
@@ -87,11 +87,11 @@ protected:
                 break;
             case QEvent::MouseButtonPress:
             case QEvent::MouseButtonDblClick: {
-                // Prevent the selection clearing by clicking on the viewport directly
-                QAbstractItemView *view = qobject_cast<QAbstractItemView*>(watched->parent());
-                if (!view->indexAt(static_cast<QMouseEvent*>(event)->pos()).isValid()) {
-                    return true;
-                }
+                    // Prevent the selection clearing by clicking on the viewport directly
+                    QAbstractItemView *view = qobject_cast<QAbstractItemView*>(watched->parent());
+                    if (!view->indexAt(static_cast<QMouseEvent*>(event)->pos()).isValid()) {
+                        return true;
+                    }
                 }
                 break;
             default:
