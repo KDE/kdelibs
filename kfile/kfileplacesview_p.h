@@ -75,7 +75,8 @@ protected:
                 }
                 hoveredIndex = QModelIndex();
                 break;
-            case QEvent::MouseButtonPress: {
+            case QEvent::MouseButtonPress:
+            case QEvent::MouseButtonDblClick: {
                     // Prevent the selection clearing by clicking on the viewport directly
                     QAbstractItemView *view = qobject_cast<QAbstractItemView*>(watched->parent());
                     if (!view->indexAt(static_cast<QMouseEvent*>(event)->pos()).isValid()) {
