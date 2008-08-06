@@ -238,6 +238,29 @@ public:
      */
     static QString documentPath();
 
+    /**
+     * The path where music are stored of the current user.
+     * @return the path of the music directory
+     */
+    static QString musicPath();
+
+    /**
+     * The path where videos are stored of the current user.
+     * @return the path of the video directory
+     */
+    static QString videosPath();
+
+    /**
+     * The path where download are stored of the current user.
+     * @return the path of the download directory
+     */
+    static QString downloadPath();
+
+    /**
+     * The path where pictures are stored of the current user.
+     * @return the path of the pictures directory
+     */
+    static QString picturesPath();
 
     /**
      * The default color to use for inactive titles.
