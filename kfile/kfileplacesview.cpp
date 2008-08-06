@@ -77,11 +77,9 @@ public:
     void setShowHoverIndication(bool show);
 
     void insertTimeLineMap(const QModelIndex &index, QTimeLine *timeLine);
-    void insertTimeLineMap(QTimeLine *timeLine, const QModelIndex &index);
     void removeTimeLineMap(const QModelIndex &index);
-    void removeTimeLineMap(QTimeLine *timeLine);
-    QModelIndex timeLineMap(QTimeLine *timeLine) const;
-    QTimeLine *timeLineMap(const QModelIndex &index) const;
+    QModelIndex indexForTimeLine(QTimeLine *timeLine) const;
+    QTimeLine *timeLineForIndex(const QModelIndex &index) const;
 
     float contentsOpacity(const QModelIndex &index) const;
 
@@ -275,36 +273,29 @@ void KFilePlacesViewDelegate::setShowHoverIndication(bool show)
 void KFilePlacesViewDelegate::insertTimeLineMap(const QModelIndex &index, QTimeLine *timeLine)
 {
     m_timeLineMap.insert(index, timeLine);
-}
-
-void KFilePlacesViewDelegate::insertTimeLineMap(QTimeLine *timeLine, const QModelIndex &index)
-{
     m_timeLineInverseMap.insert(timeLine, index);
 }
 
 void KFilePlacesViewDelegate::removeTimeLineMap(const QModelIndex &index)
 {
+    QTimeLine *timeLine = m_timeLineMap.value(index, 0);
     m_timeLineMap.remove(index);
-}
-
-void KFilePlacesViewDelegate::removeTimeLineMap(QTimeLine *timeLine)
-{
     m_timeLineInverseMap.remove(timeLine);
 }
 
-QModelIndex KFilePlacesViewDelegate::timeLineMap(QTimeLine *timeLine) const
+QModelIndex KFilePlacesViewDelegate::indexForTimeLine(QTimeLine *timeLine) const
 {
     return m_timeLineInverseMap.value(timeLine, QModelIndex());
 }
 
-QTimeLine *KFilePlacesViewDelegate::timeLineMap(const QModelIndex &index) const
+QTimeLine *KFilePlacesViewDelegate::timeLineForIndex(const QModelIndex &index) const
 {
     return m_timeLineMap.value(index, 0);
 }
 
 float KFilePlacesViewDelegate::contentsOpacity(const QModelIndex &index) const
 {
-    QTimeLine *timeLine = timeLineMap(index);
+    QTimeLine *timeLine = timeLineForIndex(index);
     if (timeLine) {
         return timeLine->currentValue();
     }
@@ -980,10 +971,9 @@ int KFilePlacesView::Private::insertIndicatorHeight(int itemHeight) const
 
 void KFilePlacesView::Private::fadeCapacityBar(const QModelIndex &index, FadeType fadeType)
 {
-    QTimeLine *timeLine = delegate->timeLineMap(index);
+    QTimeLine *timeLine = delegate->timeLineForIndex(index);
     delete timeLine;
     delegate->removeTimeLineMap(index);
-    delegate->removeTimeLineMap(timeLine);
     timeLine = new QTimeLine(250, q);
     connect(timeLine, SIGNAL(valueChanged(qreal)), q, SLOT(_k_capacityBarTimeLineValueChanged()));
     if (fadeType == FadeIn) {
@@ -994,7 +984,6 @@ void KFilePlacesView::Private::fadeCapacityBar(const QModelIndex &index, FadeTyp
         timeLine->setCurrentTime(250);
     }
     delegate->insertTimeLineMap(index, timeLine);
-    delegate->insertTimeLineMap(timeLine, index);
     timeLine->start();
 }
 
@@ -1111,7 +1100,7 @@ void KFilePlacesView::Private::_k_trashUpdated(KJob *job)
 
 void KFilePlacesView::Private::_k_capacityBarTimeLineValueChanged()
 {
-    const QModelIndex index = delegate->timeLineMap(static_cast<QTimeLine*>(q->sender()));
+    const QModelIndex index = delegate->indexForTimeLine(static_cast<QTimeLine*>(q->sender()));
     if (!index.isValid()) {
         return;
     }
