@@ -102,8 +102,8 @@ private:
     Q_PRIVATE_SLOT(d, void _k_itemDisappearUpdate(qreal))
     Q_PRIVATE_SLOT(d, void _k_enableSmoothItemResizing())
     Q_PRIVATE_SLOT(d, void _k_trashUpdated(KJob *))
-    Q_PRIVATE_SLOT(d, void _k_capacityBarTimeLineValueChanged())
-    Q_PRIVATE_SLOT(d, void _k_pollDevices())
+    Q_PRIVATE_SLOT(d, void _k_capacityBarFadeValueChanged())
+    Q_PRIVATE_SLOT(d, void _k_triggerDevicePolling())
 
     class Private;
     Private * const d;

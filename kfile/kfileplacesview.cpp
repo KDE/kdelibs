@@ -76,10 +76,10 @@ public:
 
     void setShowHoverIndication(bool show);
 
-    void insertTimeLineMap(const QModelIndex &index, QTimeLine *timeLine);
-    void removeTimeLineMap(const QModelIndex &index);
-    QModelIndex indexForTimeLine(QTimeLine *timeLine) const;
-    QTimeLine *timeLineForIndex(const QModelIndex &index) const;
+    void addFadeAnimation(const QModelIndex &index, QTimeLine *timeLine);
+    void removeFadeAnimation(const QModelIndex &index);
+    QModelIndex indexForFadeAnimation(QTimeLine *timeLine) const;
+    QTimeLine *fadeAnimationForIndex(const QModelIndex &index) const;
 
     float contentsOpacity(const QModelIndex &index) const;
 
@@ -270,32 +270,32 @@ void KFilePlacesViewDelegate::setShowHoverIndication(bool show)
     m_showHoverIndication = show;
 }
 
-void KFilePlacesViewDelegate::insertTimeLineMap(const QModelIndex &index, QTimeLine *timeLine)
+void KFilePlacesViewDelegate::addFadeAnimation(const QModelIndex &index, QTimeLine *timeLine)
 {
     m_timeLineMap.insert(index, timeLine);
     m_timeLineInverseMap.insert(timeLine, index);
 }
 
-void KFilePlacesViewDelegate::removeTimeLineMap(const QModelIndex &index)
+void KFilePlacesViewDelegate::removeFadeAnimation(const QModelIndex &index)
 {
     QTimeLine *timeLine = m_timeLineMap.value(index, 0);
     m_timeLineMap.remove(index);
     m_timeLineInverseMap.remove(timeLine);
 }
 
-QModelIndex KFilePlacesViewDelegate::indexForTimeLine(QTimeLine *timeLine) const
+QModelIndex KFilePlacesViewDelegate::indexForFadeAnimation(QTimeLine *timeLine) const
 {
     return m_timeLineInverseMap.value(timeLine, QModelIndex());
 }
 
-QTimeLine *KFilePlacesViewDelegate::timeLineForIndex(const QModelIndex &index) const
+QTimeLine *KFilePlacesViewDelegate::fadeAnimationForIndex(const QModelIndex &index) const
 {
     return m_timeLineMap.value(index, 0);
 }
 
 float KFilePlacesViewDelegate::contentsOpacity(const QModelIndex &index) const
 {
-    QTimeLine *timeLine = timeLineForIndex(index);
+    QTimeLine *timeLine = fadeAnimationForIndex(index);
     if (timeLine) {
         return timeLine->currentValue();
     }
@@ -343,8 +343,8 @@ public:
     void _k_itemDisappearUpdate(qreal value);
     void _k_enableSmoothItemResizing();
     void _k_trashUpdated(KJob *job);
-    void _k_capacityBarTimeLineValueChanged();
-    void _k_pollDevices();
+    void _k_capacityBarFadeValueChanged();
+    void _k_triggerDevicePolling();
 
     QTimeLine adaptItemsTimeline;
     int oldSize, endSize;
@@ -416,7 +416,7 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
             this, SLOT(_k_placeLeft(const QModelIndex&)));
 
     d->pollDevices.setInterval(5000);
-    connect(&d->pollDevices, SIGNAL(timeout()), this, SLOT(_k_pollDevices()));
+    connect(&d->pollDevices, SIGNAL(timeout()), this, SLOT(_k_triggerDevicePolling()));
 }
 
 KFilePlacesView::~KFilePlacesView()
@@ -971,11 +971,11 @@ int KFilePlacesView::Private::insertIndicatorHeight(int itemHeight) const
 
 void KFilePlacesView::Private::fadeCapacityBar(const QModelIndex &index, FadeType fadeType)
 {
-    QTimeLine *timeLine = delegate->timeLineForIndex(index);
+    QTimeLine *timeLine = delegate->fadeAnimationForIndex(index);
     delete timeLine;
-    delegate->removeTimeLineMap(index);
+    delegate->removeFadeAnimation(index);
     timeLine = new QTimeLine(250, q);
-    connect(timeLine, SIGNAL(valueChanged(qreal)), q, SLOT(_k_capacityBarTimeLineValueChanged()));
+    connect(timeLine, SIGNAL(valueChanged(qreal)), q, SLOT(_k_capacityBarFadeValueChanged()));
     if (fadeType == FadeIn) {
         timeLine->setDirection(QTimeLine::Forward);
         timeLine->setCurrentTime(0);
@@ -983,7 +983,7 @@ void KFilePlacesView::Private::fadeCapacityBar(const QModelIndex &index, FadeTyp
         timeLine->setDirection(QTimeLine::Backward);
         timeLine->setCurrentTime(250);
     }
-    delegate->insertTimeLineMap(index, timeLine);
+    delegate->addFadeAnimation(index, timeLine);
     timeLine->start();
 }
 
@@ -1098,16 +1098,16 @@ void KFilePlacesView::Private::_k_trashUpdated(KJob *job)
     org::kde::KDirNotify::emitFilesAdded("trash:/");
 }
 
-void KFilePlacesView::Private::_k_capacityBarTimeLineValueChanged()
+void KFilePlacesView::Private::_k_capacityBarFadeValueChanged()
 {
-    const QModelIndex index = delegate->indexForTimeLine(static_cast<QTimeLine*>(q->sender()));
+    const QModelIndex index = delegate->indexForFadeAnimation(static_cast<QTimeLine*>(q->sender()));
     if (!index.isValid()) {
         return;
     }
     q->update(index);
 }
 
-void KFilePlacesView::Private::_k_pollDevices()
+void KFilePlacesView::Private::_k_triggerDevicePolling()
 {
     const QModelIndex hoveredIndex = watcher->hoveredIndex();
     if (hoveredIndex.isValid()) {
