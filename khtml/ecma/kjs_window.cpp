@@ -1440,6 +1440,13 @@ void Window::clear( ExecState *exec )
   // Get rid of everything, those user vars could hold references to DOM nodes
   clearProperties();
 
+  // Ditto for the special subobjects.
+  screen   = 0;
+  history  = 0;
+  external = 0;
+  m_frames = 0;
+  loc      = 0;
+
   // Break the dependency between the listeners and their object
   QHashIterator<const QPair<void*, bool>, JSEventListener*> it(jsEventListeners);
   while ( it.hasNext() ) {
