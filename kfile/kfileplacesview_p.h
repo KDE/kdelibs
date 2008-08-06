@@ -82,6 +82,7 @@ protected:
                         return true;
                     }
                 }
+                break;
             default:
                 return false;
         }
