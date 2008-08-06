@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2008 Rafael Fernández López <ereslibre@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,6 +19,7 @@
 */
 
 #include "kfileplacesview.h"
+#include "kfileplacesview_p.h"
 
 #include <QtCore/QTimeLine>
 #include <QtCore/QTimer>
@@ -56,7 +58,7 @@
 class KFilePlacesView::Private
 {
 public:
-    Private(KFilePlacesView *parent) : q(parent) { }
+    Private(KFilePlacesView *parent) : q(parent), watcher(new KFilePlacesEventWatcher(q)) { }
     
     enum FadeType {
         FadeIn = 0,
@@ -73,7 +75,6 @@ public:
     bool dragging;
     Solid::StorageAccess *lastClickedStorage;
     QPersistentModelIndex lastClickedIndex;
-    QPersistentModelIndex lastHoveredIndex;
     
     QMap<QPersistentModelIndex, QTimeLine*> timeLineMap;
     QMap<QTimeLine*, QPersistentModelIndex> timeLineInverseMap;
@@ -92,19 +93,22 @@ public:
     void _k_placeClicked(const QModelIndex &index);
     void _k_placeActivated(const QModelIndex &index);
     void _k_placeEntered(const QModelIndex &index);
+    void _k_placeLeft(const QModelIndex &index);
     void _k_storageSetupDone(const QModelIndex &index, bool success);
     void _k_adaptItemsUpdate(qreal value);
     void _k_itemAppearUpdate(qreal value);
     void _k_itemDisappearUpdate(qreal value);
     void _k_enableSmoothItemResizing();
     void _k_trashUpdated(KJob *job);
-    void _k_timeLineValueChanged(qreal value);
+    void _k_timeLineValueChanged();
 
     QTimeLine adaptItemsTimeline;
     int oldSize, endSize;
 
     QTimeLine itemAppearTimeline;
     QTimeLine itemDisappearTimeline;
+    
+    KFilePlacesEventWatcher *const watcher;
 };
 
 class KFilePlacesViewDelegate : public QAbstractItemDelegate
@@ -342,8 +346,6 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
             this, SLOT(_k_placeClicked(const QModelIndex&)));
     connect(this, SIGNAL(activated(const QModelIndex&)),
             this, SLOT(_k_placeActivated(const QModelIndex&)));
-    connect(this, SIGNAL(entered(const QModelIndex&)),
-            this, SLOT(_k_placeEntered(const QModelIndex&)));
 
     connect(&d->adaptItemsTimeline, SIGNAL(valueChanged(qreal)),
             this, SLOT(_k_adaptItemsUpdate(qreal)));
@@ -362,6 +364,12 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
     d->itemDisappearTimeline.setDuration(500);
     d->itemDisappearTimeline.setUpdateInterval(5);
     d->itemDisappearTimeline.setCurveShape(QTimeLine::EaseInOutCurve);
+
+    viewport()->installEventFilter(d->watcher);
+    connect(d->watcher, SIGNAL(entryEntered(const QModelIndex&)),
+            this, SLOT(_k_placeEntered(const QModelIndex&)));
+    connect(d->watcher, SIGNAL(entryLeft(const QModelIndex&)),
+            this, SLOT(_k_placeLeft(const QModelIndex&)));
 }
 
 KFilePlacesView::~KFilePlacesView()
@@ -727,6 +735,8 @@ void KFilePlacesView::setModel(QAbstractItemModel *model)
     d->updateHiddenRows();
     connect(model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
             this, SLOT(adaptItemSize()));
+    connect(selectionModel(), SIGNAL(currentChanged(const QModelIndex&,const QModelIndex&)),
+            d->watcher, SLOT(currentIndexChanged(const QModelIndex&)));
 }
 
 void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end)
@@ -919,7 +929,7 @@ void KFilePlacesView::Private::fadeCapacityBar(const QModelIndex &index, FadeTyp
     timeLineMap.remove(index);
     timeLineInverseMap.remove(timeLine);
     timeLine = new QTimeLine(250, q);
-    connect(timeLine, SIGNAL(valueChanged(qreal)), q, SLOT(_k_timeLineValueChanged(qreal)));
+    connect(timeLine, SIGNAL(valueChanged(qreal)), q, SLOT(_k_timeLineValueChanged()));
     if (fadeType == FadeIn) {
         timeLine->setDirection(QTimeLine::Forward);
         timeLine->setCurrentTime(0);
@@ -971,9 +981,12 @@ void KFilePlacesView::Private::_k_placeActivated(const QModelIndex &index)
 
 void KFilePlacesView::Private::_k_placeEntered(const QModelIndex &index)
 {
-    fadeCapacityBar(lastHoveredIndex, FadeOut);
     fadeCapacityBar(index, FadeIn);
-    lastHoveredIndex = index;
+}
+
+void KFilePlacesView::Private::_k_placeLeft(const QModelIndex &index)
+{
+    fadeCapacityBar(index, FadeOut);
 }
 
 void KFilePlacesView::Private::_k_storageSetupDone(const QModelIndex &index, bool success)
@@ -1041,7 +1054,7 @@ void KFilePlacesView::Private::_k_trashUpdated(KJob *job)
     org::kde::KDirNotify::emitFilesAdded("trash:/");
 }
 
-void KFilePlacesView::Private::_k_timeLineValueChanged(qreal value)
+void KFilePlacesView::Private::_k_timeLineValueChanged()
 {
     const QModelIndex index = timeLineInverseMap.value(static_cast<QTimeLine*>(q->sender()));
     if (!index.isValid()) {
@@ -1056,3 +1069,4 @@ void KFilePlacesView::dataChanged(const QModelIndex &topLeft, const QModelIndex 
 }
 
 #include "kfileplacesview.moc"
+#include "kfileplacesview_p.moc"

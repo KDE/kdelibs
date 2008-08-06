@@ -95,13 +95,14 @@ private:
     Q_PRIVATE_SLOT(d, void _k_placeClicked(const QModelIndex &))
     Q_PRIVATE_SLOT(d, void _k_placeActivated(const QModelIndex &))
     Q_PRIVATE_SLOT(d, void _k_placeEntered(const QModelIndex &))
+    Q_PRIVATE_SLOT(d, void _k_placeLeft(const QModelIndex &))
     Q_PRIVATE_SLOT(d, void _k_storageSetupDone(const QModelIndex &, bool))
     Q_PRIVATE_SLOT(d, void _k_adaptItemsUpdate(qreal))
     Q_PRIVATE_SLOT(d, void _k_itemAppearUpdate(qreal))
     Q_PRIVATE_SLOT(d, void _k_itemDisappearUpdate(qreal))
     Q_PRIVATE_SLOT(d, void _k_enableSmoothItemResizing())
     Q_PRIVATE_SLOT(d, void _k_trashUpdated(KJob *))
-    Q_PRIVATE_SLOT(d, void _k_timeLineValueChanged(qreal))
+    Q_PRIVATE_SLOT(d, void _k_timeLineValueChanged())
 
     class Private;
     Private * const d;
