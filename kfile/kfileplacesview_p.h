@@ -38,7 +38,7 @@ Q_SIGNALS:
 public Q_SLOTS:
     void currentIndexChanged(const QModelIndex &index)
     {
-        if (focusedIndex.isValid()) {
+        if (focusedIndex.isValid() && focusedIndex != hoveredIndex) {
             emit entryLeft(focusedIndex);
         }
         if (index == hoveredIndex) {
@@ -78,8 +78,8 @@ protected:
             case QEvent::Leave:
                 if (hoveredIndex.isValid() && hoveredIndex != focusedIndex) {
                     emit entryLeft(hoveredIndex);
-                    hoveredIndex = QModelIndex();
                 }
+                hoveredIndex = QModelIndex();
                 break;
             default:
                 return false;
