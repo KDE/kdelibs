@@ -26,6 +26,7 @@
 #include <QtGui/QDoubleSpinBox>
 #include <QtGui/QHeaderView>
 #include <QtGui/QBoxLayout>
+#include <QtGui/QShortcut>
 #include <QtGui/QSplitter>
 #include <QtGui/QPushButton>
 #include <QtGui/QToolButton>
@@ -90,6 +91,7 @@ public:
     void historyAdd(const QChar &c, bool fromSearch, const QString &searchString);
     void showFromHistory(int index);
     void updateBackForwardButtons();
+    void _k_activateSearchLine();
     void _k_back();
     void _k_forward();
     void _k_fontSelected();
@@ -293,6 +295,7 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
         d->searchLine->setClickMessage(i18n("Enter a search term or character here"));
         d->searchLine->setClearButtonShown(true);
         d->searchLine->setToolTip(i18n("Enter a search term or character here"));
+        new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_L), this, SLOT(_k_activateSearchLine()));
         connect(d->searchLine, SIGNAL(textChanged(QString)), this, SLOT(_k_searchEditChanged()));
 
         QPushButton* searchButton = new QPushButton(i18n("Search"), this);
@@ -324,6 +327,8 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
     d->forwardButton->setIcon(KIcon("go-next"));
     d->forwardButton->setToolTip(i18n("Next Character"));
 
+    new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Left), d->backButton, SLOT(animateClick()));
+    new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Right), d->forwardButton, SLOT(animateClick()));
     connect(d->backButton, SIGNAL(clicked()), this, SLOT(_k_back()));
     connect(d->forwardButton, SIGNAL(clicked()), this, SLOT(_k_forward()));
 
@@ -531,6 +536,12 @@ void KCharSelect::KCharSelectPrivate::updateBackForwardButtons()
 {
     backButton->setEnabled(inHistory > 0);
     forwardButton->setEnabled(inHistory < history.count() - 1);
+}
+
+void KCharSelect::KCharSelectPrivate::_k_activateSearchLine()
+{
+    searchLine->setFocus();
+    searchLine->selectAll();
 }
 
 void KCharSelect::KCharSelectPrivate::_k_back()
@@ -789,6 +800,7 @@ void KCharSelect::KCharSelectPrivate::_k_search()
     if (!contents.isEmpty()) {
         charTable->setChar(contents[0]);
     }
+    charTable->setFocus();
 }
 
 void  KCharSelect::KCharSelectPrivate::_k_linkClicked(QUrl url)
