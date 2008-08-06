@@ -3322,10 +3322,18 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             RectImpl *rect = primitiveValue->getRectValue();
             if (rect) {
                 hasClip = true;
-                top = convertToLength( rect->top(), style, logicalDpiY );
-                right = convertToLength( rect->right(), style, logicalDpiY );
-                bottom = convertToLength( rect->bottom(), style, logicalDpiY );
-                left = convertToLength( rect->left(), style, logicalDpiY );
+                // As a convention, we pass in auto as Length(Variable). See RenderBox::clipRect
+                top    = rect->top()->getIdent()    == CSS_VAL_AUTO ? Length(Variable)
+                            : convertToLength( rect->top(), style, logicalDpiY );
+
+                right  = rect->right()->getIdent()  == CSS_VAL_AUTO ? Length(Variable)
+                            : convertToLength( rect->right(), style, logicalDpiY );
+
+                bottom = rect->bottom()->getIdent() == CSS_VAL_AUTO ? Length(Variable)
+                            : convertToLength( rect->bottom(), style, logicalDpiY );
+
+                left   = rect->left()->getIdent()   == CSS_VAL_AUTO ? Length(Variable)
+                            : convertToLength( rect->left(), style, logicalDpiY );
             }
         }
 
