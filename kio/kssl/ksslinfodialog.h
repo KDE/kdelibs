@@ -92,17 +92,6 @@ public:
     void setMainPartEncrypted(bool);
     void setAuxiliaryPartsEncrypted(bool);
 
-	/**
-	 *  Setup the dialog before showing it.  This is a convenience version
-	 *  of the above method, and obtains the same information using the
-	 *  @param ssl parameter instead.
-	 *
-	 *  @param ssl the ssl connection
-	 *  @param ip the ip of the remote host
-	 *  @param url the url being accessed
-	 */
-	void setup(const KTcpSocket &socket, const QString &ip, const QString &url);
-
 private:
     void updateWhichPartsEncrypted();
 

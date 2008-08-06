@@ -152,21 +152,6 @@ void KSSLInfoDialog::updateWhichPartsEncrypted()
 }
 
 
-void KSSLInfoDialog::setup(const KTcpSocket &socket, const QString &ip, const QString &url)
-{
-    Q_ASSERT(false); //TODO, or maybe not
-#if 0
-    setup(&ssl.peerInfo().getPeerCertificate(),
-          ip, url,
-          ssl.connectionInfo().getCipher(),
-          ssl.connectionInfo().getCipherDescription(),
-          ssl.connectionInfo().getCipherVersion(),
-          ssl.connectionInfo().getCipherUsedBits(),
-          ssl.connectionInfo().getCipherBits(),
-          ssl.peerInfo().getPeerCertificate().validate());
-#endif
-}
-
 void KSSLInfoDialog::setSslInfo(const QList<QSslCertificate> &certificateChain,
                                 const QString &ip, const QString &url,
                                 const QString &sslProtocol, const QString &cipher,
@@ -215,81 +200,6 @@ void KSSLInfoDialog::setSslInfo(const QList<QSslCertificate> &certificateChain,
 }
 
 
-#if 0 //###
-void KSSLInfoDialog::displayCert(const QSslCertificate &x) {
-    QPalette cspl;
-
-    d->_serialNum->setText(x.getSerialNumber());
-
-    cspl = d->_validFrom->palette();
-    if (x->getQDTNotBefore() > QDateTime::currentDateTime().toUTC())
-        cspl.setColor(QPalette::Foreground, QColor(196,33,21));
-    else cspl.setColor(QPalette::Foreground, QColor(42,153,59));
-    d->_validFrom->setPalette(cspl);
-    d->_validFrom->setText(x.getNotBefore());
-
-    cspl = d->_validUntil->palette();
-    if (x->getQDTNotAfter() < QDateTime::currentDateTime().toUTC())
-        cspl.setColor(QPalette::Foreground, QColor(196,33,21));
-    else cspl.setColor(QPalette::Foreground, QColor(42,153,59));
-    d->_validUntil->setPalette(cspl);
-    d->_validUntil->setText(x->getNotAfter());
-
-    cspl = palette();
-
-    KSSLCertificate::KSSLValidation ksv;
-    KSSLCertificate::KSSLValidationList ksvl;
-    if ((x == d->_cert) && !d->_cert_ksvl.isEmpty()) {
-        ksvl = d->_cert_ksvl;
-        ksv = ksvl.first();
-    } else {
-        if (x == d->_cert)
-            ksvl = d->_cert->validateVerbose(KSSLCertificate::SSLServer);
-        else
-            ksvl = d->_cert->validateVerbose(KSSLCertificate::SSLServer, x);
-
-        if (ksvl.isEmpty())
-            ksvl << KSSLCertificate::Ok;
-
-        ksv = ksvl.first();
-
-        if (ksv == KSSLCertificate::SelfSigned) {
-            if (x->getQDTNotAfter() > QDateTime::currentDateTime().toUTC() &&
-                    x->getQDTNotBefore() < QDateTime::currentDateTime().toUTC()) {
-                if (KSSLSigners().useForSSL(*x))
-                    ksv = KSSLCertificate::Ok;
-            } else {
-                ksv = KSSLCertificate::Expired;
-            }
-        }
-    }
-
-    if (ksv == KSSLCertificate::Ok) {
-        cspl.setColor(QPalette::Foreground, QColor(42,153,59));
-    } else if (ksv != KSSLCertificate::Irrelevant) {
-        cspl.setColor(QPalette::Foreground, QColor(196,33,21));
-    }
-    d->_csl->setPalette(cspl);
-
-    QString errorStr;
-    for(KSSLCertificate::KSSLValidationList::ConstIterator it = ksvl.begin();
-            it != ksvl.end(); ++it) {
-        if (!errorStr.isEmpty())
-            errorStr.append(QChar('\n'));
-        errorStr += KSSLCertificate::verifyText(*it);
-    }
-
-    d->_csl->setText(errorStr);
-    d->_csl->setMinimumSize(d->_csl->sizeHint());
-
-    d->_subject->setValues(x->getSubject());
-    d->_issuer->setValues(x->getIssuer());
-
-    d->_digest->setText(x->getMD5DigestText());
-}
-#endif
-
-
 void KSSLInfoDialog::displayFromChain(int i)
 {
     const QSslCertificate &cert = d->certificateChain[i];
@@ -306,86 +216,5 @@ void KSSLInfoDialog::displayFromChain(int i)
     d->subject->setCertificate(cert, KSslCertificateBox::Subject);
     d->issuer->setCertificate(cert, KSslCertificateBox::Issuer);
 }
-
-#if 0
-void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
-    if (certName.isEmpty()) {
-        setWidget(new QFrame(this));
-        show();
-        return;
-    }
-
-    KSSLX509Map cert(certName);
-    QString tmp;
-    viewport()->setBackgroundRole(QPalette::Button);
-    QFrame* _frame = new QFrame;
-    QGridLayout *grid = new QGridLayout(_frame);
-    grid->setMargin(KDialog::marginHint());
-    grid->setSpacing(KDialog::spacingHint());
-    int row = 0;
-    QLabel *label = 0L;
-    if (!(tmp = cert.getValue("O")).isEmpty()) {
-        label = new QLabel(i18n("Organization:"));
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        grid->addWidget( label,row, 0);
-        grid->addWidget( new QLabel(tmp), row, 1 );
-        row++;
-    }
-    if (!(tmp = cert.getValue("OU")).isEmpty()) {
-        label = new QLabel(i18n("Organizational unit:"));
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        grid->addWidget( label,row, 0);
-        grid->addWidget( new QLabel(tmp), row, 1 );
-        row++;
-    }
-    if (!(tmp = cert.getValue("L")).isEmpty()) {
-        label = new QLabel(i18n("Locality:"));
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        grid->addWidget( label,row, 0);
-        grid->addWidget( new QLabel(tmp), row, 1 );
-        row++;
-    }
-    if (!(tmp = cert.getValue("ST")).isEmpty()) {
-        label = new QLabel(i18nc("Federal State","State:"));
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        grid->addWidget( label,row, 0);
-        grid->addWidget( new QLabel(tmp), row, 1 );
-        row++;
-    }
-    if (!(tmp = cert.getValue("C")).isEmpty()) {
-        label = new QLabel(i18n("Country:"));
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        grid->addWidget( label,row, 0);
-        grid->addWidget( new QLabel(tmp), row, 1 );
-        row++;
-    }
-    if (!(tmp = cert.getValue("CN")).isEmpty()) {
-        label = new QLabel(i18n("Common name:"));
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        grid->addWidget( label,row, 0);
-        grid->addWidget( new QLabel(tmp), row, 1 );
-        row++;
-    }
-    if (!(tmp = cert.getValue("Email")).isEmpty()) {
-        label = new QLabel(i18n("Email:"));
-        grid->addWidget( label,row, 0);
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        if (mailCatcher) {
-            KUrlLabel *mail = new KUrlLabel(tmp, tmp);
-            grid->addWidget( mail, row, 1 );
-            connect(mail, SIGNAL(leftClickedURL(const QString &)), mailCatcher, SLOT(mailClicked(const QString &)));
-        } else {
-            label = new QLabel(tmp);
-            grid->addWidget( label, row, 1 );
-        }
-    }
-    if (label && viewport()) {
-        viewport()->setBackgroundRole(label->backgroundRole());
-    }
-    setWidget(_frame);
-    show();
-}
-#endif
-
 
 #include "ksslinfodialog.moc"
