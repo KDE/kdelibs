@@ -23,8 +23,9 @@
 #include <QtCore/QTimer>
 #include <QtGui/QMenu>
 #include <QtGui/QPainter>
-#include <QtGui/QStyledItemDelegate>
+#include <QtGui/QAbstractItemDelegate>
 #include <QtGui/QKeyEvent>
+#include <QtGui/QApplication>
 
 #include <kdebug.h>
 
@@ -38,6 +39,8 @@
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kjob.h>
+#include <kcapacitybar.h>
+#include <kdiskfreespaceinfo.h>
 #include <solid/storageaccess.h>
 #include <solid/storagedrive.h>
 #include <solid/storagevolume.h>
@@ -47,7 +50,10 @@
 #include "kfileplaceeditdialog.h"
 #include "kfileplacesmodel.h"
 
-class KFilePlacesViewDelegate : public QStyledItemDelegate
+#define LATERAL_MARGIN 4
+#define CAPACITYBAR_HEIGHT 6
+
+class KFilePlacesViewDelegate : public QAbstractItemDelegate
 {
 public:
     KFilePlacesViewDelegate(KFilePlacesView *parent);
@@ -84,7 +90,7 @@ private:
 };
 
 KFilePlacesViewDelegate::KFilePlacesViewDelegate(KFilePlacesView *parent) :
-    QStyledItemDelegate(parent),
+    QAbstractItemDelegate(parent),
     m_view(parent),
     m_iconSize(48),
     m_appearingIconSize(0),
@@ -102,7 +108,6 @@ KFilePlacesViewDelegate::~KFilePlacesViewDelegate()
 QSize KFilePlacesViewDelegate::sizeHint(const QStyleOptionViewItem &option,
                                         const QModelIndex &index) const
 {
-    QSize size = QStyledItemDelegate::sizeHint(option, index);
     int iconSize = m_iconSize;
     if (m_appearingItems.contains(index)) {
         iconSize = m_appearingIconSize;
@@ -110,8 +115,10 @@ QSize KFilePlacesViewDelegate::sizeHint(const QStyleOptionViewItem &option,
         iconSize = m_disappearingIconSize;
     }
 
-    size.setHeight(iconSize + KDialog::marginHint());
-    return size;
+    const KFilePlacesModel *filePlacesModel = static_cast<const KFilePlacesModel*>(index.model());
+    Solid::Device device = filePlacesModel->deviceForIndex(index);
+
+    return QSize(option.rect.width(), qMax(iconSize, option.fontMetrics.height()) + KDialog::marginHint());
 }
 
 void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -125,11 +132,49 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     }
 
     QStyleOptionViewItemV4 opt = option;
-    opt.decorationSize = QSize(m_iconSize, m_iconSize);
+    QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter);
+    const KFilePlacesModel *placesModel = static_cast<const KFilePlacesModel*>(index.model());
+    bool isRemovableDevice = false;
+    Solid::Device device;
+    if (placesModel->isDevice(index)) {
+        device = placesModel->deviceForIndex(index);
+        if ((device.is<Solid::StorageAccess>() && device.as<Solid::StorageAccess>()->isAccessible() ||
+             device.parent().is<Solid::StorageAccess>() && device.parent().as<Solid::StorageAccess>()->isAccessible()) &&
+            (device.is<Solid::StorageDrive>() && device.as<Solid::StorageDrive>()->isRemovable() ||
+             device.parent().is<Solid::StorageDrive>() && device.parent().as<Solid::StorageDrive>()->isRemovable())) {
+            isRemovableDevice = true;
+        }
+    }
     if (!m_showHoverIndication) {
         opt.state &= ~QStyle::State_MouseOver;
     }
-    QStyledItemDelegate::paint(painter, opt, index);
+
+    QIcon icon = index.model()->data(index, Qt::DecorationRole).value<QIcon>();
+    QPixmap pm = icon.pixmap(m_iconSize, m_iconSize);
+    QPoint point(option.rect.left() + LATERAL_MARGIN, option.rect.top() + (option.rect.height() - m_iconSize) / 2);
+    painter->drawPixmap(point, pm);
+
+    if (option.state & QStyle::State_Selected) {
+        painter->setPen(option.palette.highlightedText().color());
+    }
+
+    QRect rectText;
+    if (isRemovableDevice) {
+        int height = option.fontMetrics.height() + CAPACITYBAR_HEIGHT;
+        rectText = QRect(m_iconSize + LATERAL_MARGIN * 2 + option.rect.left(), option.rect.top() + (option.rect.height() / 2 - height / 2), option.rect.width() - m_iconSize - LATERAL_MARGIN * 2, option.fontMetrics.height());
+        painter->drawText(rectText, Qt::AlignLeft | Qt::AlignTop, option.fontMetrics.elidedText(index.model()->data(index).toString(), Qt::ElideRight, rectText.width()));
+        QRect capacityRect(rectText.x(), rectText.bottom() - 1, rectText.width() - LATERAL_MARGIN, CAPACITYBAR_HEIGHT);
+        Solid::StorageAccess *storage = device.as<Solid::StorageAccess>();
+        KDiskFreeSpaceInfo info = KDiskFreeSpaceInfo::freeSpaceInfo(storage->filePath());
+        if (info.size()) {
+            KCapacityBar capacityBar(KCapacityBar::DrawTextInline);
+            capacityBar.setValue((info.used() * 100) / info.size());
+            capacityBar.drawCapacityBar(painter, capacityRect);
+        }
+    } else {
+        rectText = QRect(m_iconSize + LATERAL_MARGIN * 2 + option.rect.left(), option.rect.top(), option.rect.width() - m_iconSize - LATERAL_MARGIN * 2, option.rect.height());
+        painter->drawText(rectText, Qt::AlignLeft | Qt::AlignVCenter, option.fontMetrics.elidedText(index.model()->data(index).toString(), Qt::ElideRight, rectText.width()));
+    }
 
     painter->restore();
 }
