@@ -28,6 +28,7 @@
 #include <QtGui/QBoxLayout>
 #include <QtGui/QSplitter>
 #include <QtGui/QPushButton>
+#include <QtGui/QToolButton>
 
 #include <kcombobox.h>
 #include <kdebug.h>
@@ -58,6 +59,20 @@ public:
 class KCharSelect::KCharSelectPrivate
 {
 public:
+    struct HistoryItem
+    {
+        QChar c;
+        bool fromSearch;
+        QString searchString;
+    };
+
+    enum { MaxHistoryItems = 100 };
+
+    KCharSelectPrivate(KCharSelect *q) : q(q), searchMode(false), historyEnabled(false), inHistory(0) {}
+    KCharSelect *q;
+
+    QToolButton *backButton;
+    QToolButton *forwardButton;
     KLineEdit* searchLine;
     KFontComboBox *fontCombo;
     QSpinBox *fontSizeSpinBox;
@@ -66,9 +81,17 @@ public:
     KCharSelectTable *charTable;
     KTextBrowser *detailBrowser;
 
-    KCharSelect *q;
+    bool searchMode; //a search is active
+    bool historyEnabled;
+    int inHistory; //index of current char in history
+    QList<HistoryItem> history;
 
     QString createLinks(QString s);
+    void historyAdd(const QChar &c, bool fromSearch, const QString &searchString);
+    void showFromHistory(int index);
+    void updateBackForwardButtons();
+    void _k_back();
+    void _k_forward();
     void _k_fontSelected();
     void _k_updateCurrentChar(const QChar &c);
     void _k_slotUpdateUnicode(const QChar &c);
@@ -258,10 +281,8 @@ void KCharSelectTable::keyPressEvent(QKeyEvent *e)
 /******************************************************************/
 
 KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
-        : QWidget(parent), d(new KCharSelectPrivate)
+        : QWidget(parent), d(new KCharSelectPrivate(this))
 {
-    d->q = this;
-
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(0);
     if (SearchLine & controls) {
@@ -289,6 +310,22 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
 
     QHBoxLayout *comboLayout = new QHBoxLayout();
 
+    d->backButton = new QToolButton(this);
+    comboLayout->addWidget(d->backButton);
+    d->backButton->setEnabled(false);
+    d->backButton->setText(i18n("Back"));
+    d->backButton->setIcon(KIcon("go-previous"));
+    d->backButton->setToolTip(i18n("Previous Character"));
+
+    d->forwardButton = new QToolButton(this);
+    comboLayout->addWidget(d->forwardButton);
+    d->forwardButton->setEnabled(false);
+    d->forwardButton->setText(i18n("Forward"));
+    d->forwardButton->setIcon(KIcon("go-next"));
+    d->forwardButton->setToolTip(i18n("Next Character"));
+
+    connect(d->backButton, SIGNAL(clicked()), this, SLOT(_k_back()));
+    connect(d->forwardButton, SIGNAL(clicked()), this, SLOT(_k_forward()));
 
     d->fontCombo = new KFontComboBox(this);
     comboLayout->addWidget(d->fontCombo);
@@ -319,8 +356,12 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
 
     connect(d->sectionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(_k_sectionSelected(int)));
     connect(d->blockCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(_k_blockSelected(int)));
-    if ((FontCombo & controls) || (FontSize & controls) || (BlockCombos & controls)) {
+    if ((HistoryButtons & controls) || (FontCombo & controls) || (FontSize & controls) || (BlockCombos & controls)) {
         mainLayout->addLayout(comboLayout);
+    }
+    if (!(HistoryButtons & controls)) {
+        d->backButton->hide();
+        d->forwardButton->hide();
     }
     if (!(FontCombo & controls)) {
         d->fontCombo->hide();
@@ -375,6 +416,8 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
     d->_k_sectionSelected(0);
     d->_k_blockSelected(0);
     setCurrentChar(0x0);
+
+    d->historyEnabled = true;
 }
 
 KCharSelect::~KCharSelect()
@@ -411,6 +454,8 @@ QList<QChar> KCharSelect::displayedChars() const
 
 void KCharSelect::setCurrentChar(const QChar &c)
 {
+    bool oldHistoryEnabled = d->historyEnabled;
+    d->historyEnabled = false;
     int block = s_data->blockIndex(c);
     int section = s_data->sectionIndex(block);
     d->sectionCombo->setCurrentIndex(section);
@@ -418,7 +463,86 @@ void KCharSelect::setCurrentChar(const QChar &c)
     if (index != -1) {
         d->blockCombo->setCurrentIndex(index);
     }
+    d->historyEnabled = oldHistoryEnabled;
     d->charTable->setChar(c);
+}
+
+void KCharSelect::KCharSelectPrivate::historyAdd(const QChar &c, bool fromSearch, const QString &searchString)
+{
+    //kDebug() << "about to add char" << c << "fromSearch" << fromSearch << "searchString" << searchString;
+
+    if (!historyEnabled) {
+        return;
+    }
+
+    if (!history.isEmpty() && c == history.last().c) {
+        //avoid duplicates
+        return;
+    }
+
+    //behave like a web browser, i.e. if user goes back from B to A then clicks C, B is forgotten
+    while (!history.isEmpty() && inHistory != history.count() - 1) {
+        history.removeLast();
+    }
+
+    while (history.size() >= MaxHistoryItems) {
+        history.removeFirst();
+    }
+
+    HistoryItem item;
+    item.c = c;
+    item.fromSearch = fromSearch;
+    item.searchString = searchString;
+    history.append(item);
+
+    inHistory = history.count() - 1;
+    updateBackForwardButtons();
+}
+
+void KCharSelect::KCharSelectPrivate::showFromHistory(int index)
+{
+    Q_ASSERT(index >= 0 && index < history.count());
+    Q_ASSERT(index != inHistory);
+
+    inHistory = index;
+    updateBackForwardButtons();
+
+    const HistoryItem &item = history[index];
+    //kDebug() << "index" << index << "char" << item.c << "fromSearch" << item.fromSearch
+    //    << "searchString" << item.searchString;
+
+    //avoid adding an item from history into history again
+    bool oldHistoryEnabled = historyEnabled;
+    historyEnabled = false;
+    if (item.fromSearch) {
+        if (searchLine->text() != item.searchString) {
+            searchLine->setText(item.searchString);
+            _k_search();
+        }
+        charTable->setChar(item.c);
+    } else {
+        searchLine->clear();
+        q->setCurrentChar(item.c);
+    }
+    historyEnabled = oldHistoryEnabled;
+}
+
+void KCharSelect::KCharSelectPrivate::updateBackForwardButtons()
+{
+    backButton->setEnabled(inHistory > 0);
+    forwardButton->setEnabled(inHistory < history.count() - 1);
+}
+
+void KCharSelect::KCharSelectPrivate::_k_back()
+{
+    Q_ASSERT(inHistory > 0);
+    showFromHistory(inHistory - 1);
+}
+
+void KCharSelect::KCharSelectPrivate::_k_forward()
+{
+    Q_ASSERT(inHistory + 1 < history.count());
+    showFromHistory(inHistory + 1);
 }
 
 void KCharSelect::KCharSelectPrivate::_k_fontSelected()
@@ -431,7 +555,7 @@ void KCharSelect::KCharSelectPrivate::_k_fontSelected()
 
 void KCharSelect::KCharSelectPrivate::_k_updateCurrentChar(const QChar &c)
 {
-    if(blockCombo->isEnabled() == false) {
+    if (searchMode) {
         //we are in search mode. make the two comboboxes show the section & block for this character.
         //(when we are not in search mode the current character always belongs to the current section & block.)
         int block = s_data->blockIndex(c);
@@ -442,6 +566,8 @@ void KCharSelect::KCharSelectPrivate::_k_updateCurrentChar(const QChar &c)
             blockCombo->setCurrentIndex(index);
         }
     }
+
+    historyAdd(c, searchMode, searchLine->text());
 
     _k_slotUpdateUnicode(c);
 }
@@ -612,7 +738,11 @@ void KCharSelect::KCharSelectPrivate::_k_sectionSelected(int index)
 
 void KCharSelect::KCharSelectPrivate::_k_blockSelected(int index)
 {
-    if(blockCombo->isEnabled() == false) {
+    if (index == -1) {
+        //the combo box has been cleared and is about to be filled again (because the section has changed)
+        return;
+    }
+    if (searchMode) {
         //we are in search mode, so don't fill the table with this block.
         return;
     }
@@ -634,8 +764,12 @@ void KCharSelect::KCharSelectPrivate::_k_searchEditChanged()
         blockCombo->setEnabled(true);
 
         //upon leaving search mode, keep the same character selected
+        searchMode = false;
         QChar c = charTable->chr();
+        bool oldHistoryEnabled = historyEnabled;
+        historyEnabled = false;
         _k_blockSelected(blockCombo->currentIndex());
+        historyEnabled = oldHistoryEnabled;
         q->setCurrentChar(c);
     } else {
         sectionCombo->setEnabled(false);
@@ -648,8 +782,13 @@ void KCharSelect::KCharSelectPrivate::_k_search()
     if (searchLine->text().isEmpty()) {
         return;
     }
-    charTable->setContents(s_data->find(searchLine->text()));
+    searchMode = true;
+    const QList<QChar> contents = s_data->find(searchLine->text());
+    charTable->setContents(contents);
     emit q->displayedCharsChanged();
+    if (!contents.isEmpty()) {
+        charTable->setChar(contents[0]);
+    }
 }
 
 void  KCharSelect::KCharSelectPrivate::_k_linkClicked(QUrl url)

@@ -93,6 +93,10 @@ public:
          */
         DetailBrowser = 0x20,
         /**
+         * Shows the Back/Forward buttons
+         */
+        HistoryButtons = 0x40,
+        /**
          * Shows everything
          */
         AllGuiElements      = 65535
@@ -155,6 +159,8 @@ Q_SIGNALS:
     void charSelected(const QChar &c);
 
 private:
+    Q_PRIVATE_SLOT(d, void _k_back())
+    Q_PRIVATE_SLOT(d, void _k_forward())
     Q_PRIVATE_SLOT(d, void _k_fontSelected())
     Q_PRIVATE_SLOT(d, void _k_updateCurrentChar(const QChar &c))
     Q_PRIVATE_SLOT(d, void _k_slotUpdateUnicode(const QChar &c))
