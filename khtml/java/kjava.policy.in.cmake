@@ -1,4 +1,4 @@
-grant codeBase "file:${CMAKE_INSTALL_PREFIX}/share/apps/kjava/-"
+grant codeBase "file:${DATA_INSTALL_DIR}/kjava/-"
 {
     permission java.security.AllPermission;
 };
