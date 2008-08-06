@@ -48,6 +48,7 @@
 #include <QApplication>
 #include <QtDBus/QtDBus>
 #include <QtGui/QStyleFactory>
+#include <QDesktopServices>
 
 // next two needed so we can set their palettes
 #include <QtGui/QToolTip>
@@ -74,13 +75,6 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <stdlib.h>
 #include <kconfiggroup.h>
 
-static QString* s_desktopPath = 0;
-static QString* s_autostartPath = 0;
-static QString* s_documentPath = 0;
-static QString* s_videosPath = 0;
-static QString* s_musicPath = 0;
-static QString* s_downloadPath = 0;
-static QString* s_picturesPath = 0;
 static QFont *_generalFont = 0;
 static QFont *_fixedFont = 0;
 static QFont *_toolBarFont = 0;
@@ -124,17 +118,9 @@ class KGlobalSettings::Private
         void applyCursorTheme();
 
         /**
-         * reads in all paths from kdeglobals
-         */
-        static void initPaths();
-        /**
          * drop cached values for fonts
          */
         static void rereadFontSettings();
-        /**
-         * drop cached values for paths
-         */
-        static void rereadPathSettings();
         /**
          * drop cached values for mouse settings
          */
@@ -507,111 +493,6 @@ QFont KGlobalSettings::smallestReadableFont()
     return *_smallestReadableFont;
 }
 
-void KGlobalSettings::Private::initPaths()
-{
-    //this code is duplicated in kde_config.cpp.in
-
-    if ( s_desktopPath != 0 )
-        return;
-
-    KGlobalSettings::self(); // listen to changes
-
-    s_autostartPath = new QString();
-    s_desktopPath = new QString();
-    s_downloadPath = new QString();
-    s_documentPath = new QString();
-    s_musicPath = new QString();
-    s_picturesPath = new QString();
-    s_videosPath = new QString();
-
-    KConfigGroup g( KGlobal::config(), "Paths" );
-
-    // XDG User Dirs file
-	bool haveXdgUserDirs = false;
-	QString xdgUserDirs = QDir::homePath() + "/.config/user-dirs.dirs";
-	KConfig xdgUserConf( xdgUserDirs, KConfig::SimpleConfig );
-	KConfigGroup g_user;
-	if ( QFile::exists( xdgUserDirs ) )
-	{
-		haveXdgUserDirs = true;
-		g_user = KConfigGroup( &xdgUserConf, "" );
-	}
-
-    // Desktop Path
-    *s_desktopPath = QDir::homePath() + "/Desktop/";
-    *s_desktopPath = g.readPathEntry( "Desktop", *s_desktopPath);
-	if ( haveXdgUserDirs )
-    	*s_desktopPath = g_user.readPathEntry( "XDG_DESKTOP_DIR", *s_desktopPath).remove( '"' );
-    *s_desktopPath = QDir::cleanPath( *s_desktopPath );
-    if ( !s_desktopPath->endsWith('/') ) {
-        s_desktopPath->append( QLatin1Char( '/' ) );
-    }
-
-    // Autostart Path
-    *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart/";
-    *s_autostartPath = g.readPathEntry( "Autostart" , *s_autostartPath);
-    *s_autostartPath = QDir::cleanPath( *s_autostartPath );
-    if ( !s_autostartPath->endsWith('/') ) {
-        s_autostartPath->append( QLatin1Char( '/' ) );
-    }
-
-    // Document Path
-    *s_documentPath = g.readPathEntry( "Documents",
-#ifdef Q_WS_WIN
-        getWin32ShellFoldersPath("Personal")
-#else
-        QDir::homePath()
-#endif
-    );
-	if ( haveXdgUserDirs )
-    	*s_documentPath = g_user.readPathEntry( "XDG_DOCUMENTS_DIR", *s_documentPath).remove( '"' );
-    *s_documentPath = QDir::cleanPath( *s_documentPath );
-    if ( !s_documentPath->endsWith('/')) {
-        s_documentPath->append( QLatin1Char( '/' ) );
-    }
-
-    // Pictures Path
-    *s_picturesPath = QDir::homePath() + "/Pictures/";
-    *s_picturesPath = g.readPathEntry( "Pictures", *s_picturesPath);
-	if ( haveXdgUserDirs )
-    	*s_picturesPath = g_user.readPathEntry( "XDG_PICTURES_DIR", *s_picturesPath).remove( '"' );
-    *s_picturesPath = QDir::cleanPath( *s_picturesPath );
-    if ( !s_picturesPath->endsWith('/') ) {
-        s_picturesPath->append( QLatin1Char( '/' ) );
-    }
-
-    // Videos Path
-    *s_videosPath = QDir::homePath() + "/Videos/";
-    *s_videosPath = g.readPathEntry( "Videos", *s_videosPath);
-	if ( haveXdgUserDirs )
-    	*s_videosPath = g_user.readEntry( "XDG_VIDEOS_DIR", *s_videosPath).remove( '"' );
-    *s_videosPath = QDir::cleanPath( *s_videosPath );
-    if ( !s_videosPath->endsWith('/') ) {
-        s_videosPath->append( QLatin1Char( '/' ) );
-    }
-
-    // Download Path
-    *s_downloadPath = QDir::homePath() + "/Download/";
-    *s_downloadPath = g.readPathEntry( "Download", *s_downloadPath);
-	if ( haveXdgUserDirs )
-        *s_downloadPath = g_user.readPathEntry( "XDG_DOWNLOAD_DIR", *s_downloadPath).remove( '"' );
-    	*s_downloadPath = QDir::cleanPath( *s_downloadPath );
-    if ( !s_downloadPath->endsWith('/') ) {
-        s_downloadPath->append( QLatin1Char( '/' ) );
-    }
-
-    // Music Path
-    *s_musicPath = QDir::homePath() + "/Music/";
-    *s_musicPath = g.readPathEntry( "Music", *s_musicPath);
-	if ( haveXdgUserDirs )
-    	*s_musicPath = g_user.readPathEntry( "XDG_MUSIC_DIR", *s_musicPath).remove( '"' );
-    *s_musicPath = QDir::cleanPath( *s_musicPath );
-    if ( !s_musicPath->endsWith('/') ) {
-        s_musicPath->append( QLatin1Char( '/' ) );
-    }
-
-}
-
 void KGlobalSettings::Private::rereadFontSettings()
 {
     delete _generalFont;
@@ -628,16 +509,6 @@ void KGlobalSettings::Private::rereadFontSettings()
     _taskbarFont = 0L;
     delete _smallestReadableFont;
     _smallestReadableFont = 0L;
-}
-
-void KGlobalSettings::Private::rereadPathSettings()
-{
-    delete s_autostartPath;
-    s_autostartPath = 0L;
-    delete s_desktopPath;
-    s_desktopPath = 0L;
-    delete s_documentPath;
-    s_documentPath = 0L;
 }
 
 KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
@@ -700,44 +571,60 @@ void KGlobalSettings::Private::rereadMouseSettings()
 
 QString KGlobalSettings::desktopPath()
 {
-    Private::initPaths();
-    return *s_desktopPath;
+	return QDesktopServices::storageLocation( QDesktopServices::DesktopLocation );
 }
 
+// Autostart is not a XDG path, so we keep with old kdelibs code code
 QString KGlobalSettings::autostartPath()
 {
-    Private::initPaths();
-    return *s_autostartPath;
+    QString s_autostartPath;
+    KConfigGroup g( KGlobal::config(), "Paths" );
+    s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart/";
+    s_autostartPath = g.readPathEntry( "Autostart" , s_autostartPath );
+    s_autostartPath = QDir::cleanPath( s_autostartPath );
+    if ( !s_autostartPath.endsWith( '/' ) ) {
+        s_autostartPath.append( QLatin1Char( '/' ) );
+    }
+    return s_autostartPath;
 }
 
 QString KGlobalSettings::documentPath()
 {
-    Private::initPaths();
-    return *s_documentPath;
+    return QDesktopServices::storageLocation( QDesktopServices::DocumentsLocation );
 }
 
 QString KGlobalSettings::downloadPath()
 {
-    Private::initPaths();
-    return *s_downloadPath;
+    // Qt 4.4.1 does not have DOWNLOAD, so we based on old code for now
+    QString downloadPath = QDir::homePath();
+#ifndef Q_WS_WIN
+    QString xdgUserDirs = QDir::homePath() + QLatin1String( "/.config/user-dirs.dirs" );
+    if( QFile::exists( xdgUserDirs ) ) {
+        KConfig xdgUserConf( xdgUserDirs, KConfig::SimpleConfig );
+        KConfigGroup g( &xdgUserConf, "" );
+        downloadPath  = g.readPathEntry( "XDG_DOWNLOAD_DIR", downloadPath ).remove(  '"' );
+    }
+#endif
+    downloadPath = QDir::cleanPath( downloadPath );
+    if ( !downloadPath.endsWith( '/' ) ) {
+        downloadPath.append( QLatin1Char(  '/' ) );
+    }
+    return downloadPath;
 }
 
 QString KGlobalSettings::videosPath()
 {
-    Private::initPaths();
-    return *s_videosPath;
+    return QDesktopServices::storageLocation( QDesktopServices::MoviesLocation );
 }
 
 QString KGlobalSettings::picturesPath()
 {
-    Private::initPaths();
-    return *s_picturesPath;
+    return QDesktopServices::storageLocation( QDesktopServices::PicturesLocation );
 }
 
 QString KGlobalSettings::musicPath()
 {
-    Private::initPaths();
-    return *s_musicPath;
+    return QDesktopServices::storageLocation( QDesktopServices::MusicLocation );
 }
 
 bool KGlobalSettings::isMultiHead()
@@ -902,9 +789,7 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
         KGlobal::config()->reparseConfiguration();
         rereadOtherSettings();
         SettingsCategory category = static_cast<SettingsCategory>(arg);
-        if (category == SETTINGS_PATHS) {
-            KGlobalSettings::Private::rereadPathSettings();
-        } else if (category == SETTINGS_MOUSE) {
+        if (category == SETTINGS_MOUSE) {
             KGlobalSettings::Private::rereadMouseSettings();
         }
         propagateSettings(category);
