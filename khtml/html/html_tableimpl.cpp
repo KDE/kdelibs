@@ -454,6 +454,8 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
         DOMString v = QString::number( border );
         addCSSLength(CSS_PROP_BORDER_WIDTH, v );
 
+        attr->rewriteValue( v );
+
         // wanted by HTML4 specs
         if(!border)
             frame = Void, rules = None;
