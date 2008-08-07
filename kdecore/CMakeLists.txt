@@ -207,6 +207,34 @@ set(kdecore_LIB_SRCS
    localization/kcharsets.cpp
    localization/kencodingdetector.cpp
    localization/guess_ja.cpp
+   localization/kencodingprober.cpp
+   localization/probers/CharDistribution.cpp
+   localization/probers/ChineseGroupProber.cpp
+   localization/probers/JapaneseGroupProber.cpp
+   localization/probers/JpCntx.cpp
+   localization/probers/LangBulgarianModel.cpp
+   localization/probers/LangCyrillicModel.cpp
+   localization/probers/LangGreekModel.cpp
+   localization/probers/LangHebrewModel.cpp
+   localization/probers/LangHungarianModel.cpp
+   localization/probers/LangThaiModel.cpp
+   localization/probers/nsBig5Prober.cpp
+   localization/probers/nsCharSetProber.cpp
+   localization/probers/nsEUCJPProber.cpp
+   localization/probers/nsEUCKRProber.cpp
+   localization/probers/nsEUCTWProber.cpp
+   localization/probers/nsEscCharsetProber.cpp
+   localization/probers/nsEscSM.cpp
+   localization/probers/nsGB2312Prober.cpp
+   localization/probers/nsHebrewProber.cpp
+   localization/probers/nsLatin1Prober.cpp
+   localization/probers/nsMBCSGroupProber.cpp
+   localization/probers/nsMBCSSM.cpp
+   localization/probers/nsSBCSGroupProber.cpp
+   localization/probers/nsSBCharSetProber.cpp
+   localization/probers/nsSJISProber.cpp
+   localization/probers/nsUTF8Prober.cpp
+   localization/probers/nsUniversalDetector.cpp
    localization/klocale.cpp
    localization/klocalizedstring.cpp
    localization/ktranslit.cpp
@@ -383,6 +411,7 @@ install( FILES
    services/kplugininfo.h
    localization/kcharsets.h
    localization/kencodingdetector.h
+   localization/kencodingprober.h
    localization/klocale.h
    localization/klocalizedstring.h
    sycoca/kprotocolinfo.h
