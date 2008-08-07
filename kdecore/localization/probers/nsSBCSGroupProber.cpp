@@ -45,6 +45,7 @@
 #include "nsSBCSGroupProber.h"
 
 #include "nsHebrewProber.h"
+#include "nsUTF8Prober.h"
 
 nsSBCSGroupProber::nsSBCSGroupProber()
 {
@@ -65,6 +66,8 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   mProbers[10] = hebprober;
   mProbers[11] = new nsSingleByteCharSetProber(&Win1255Model, false, hebprober); // Logical Hebrew
   mProbers[12] = new nsSingleByteCharSetProber(&Win1255Model, true, hebprober); // Visual Hebrew
+  mProbers[13] = new nsUTF8Prober();
+  
   // Tell the Hebrew prober about the logical and visual probers
   if (mProbers[10] && mProbers[11] && mProbers[12]) // all are not null
   {
