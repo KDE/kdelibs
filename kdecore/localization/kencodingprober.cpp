@@ -127,6 +127,7 @@ KEncodingProber::KEncodingProber(KEncodingProber::ProberType proberType): d(new 
 
 KEncodingProber::~KEncodingProber()
 {
+    delete d;
 }
 
 void KEncodingProber::reset()
