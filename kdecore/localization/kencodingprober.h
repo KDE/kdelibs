@@ -51,7 +51,7 @@ class KEncodingProberPrivate;
  *    QString out = QTextCodec::codeForName(prober.getEncodingName())->toUnicode(data);
  * \endcode
  *
- * at least 256 characters are needed to change the ProberState from Probing to other states.
+ * at least 256 characters are needed to change the ProberState from Probing to FoundIt.
  * if you don't have so many characters to probe, 
  * decide whether to accept the encoding it guessed so far according to the Confidence by yourself.
  *
@@ -62,13 +62,10 @@ class KDECORE_EXPORT KEncodingProber
 {
 public:
 
-    /**
-     * Sure find the encoding / not included in current ProberType / need more data to make final decision
-     */
     enum ProberState {
-        FoundIt,
-        NotMe,
-        Probing
+        FoundIt,  /**< Sure find the encoding */
+        NotMe,    /**< Sure not included in current ProberType's all supported encodings  */
+        Probing   /**< Need more data to make a decision */
     };
 
     enum ProberType {
