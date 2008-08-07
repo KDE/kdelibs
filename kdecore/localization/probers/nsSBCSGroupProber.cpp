@@ -36,7 +36,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -227,5 +227,5 @@ void nsSBCSGroupProber::DumpStatus()
 }
 #endif
 
-#pragma GCC visibility pop
+
 

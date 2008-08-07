@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsEUCTWProber.h"
 
@@ -96,5 +96,5 @@ float nsEUCTWProber::GetConfidence(void)
   return (float)distribCf;
 }
 
-#pragma GCC visibility pop
+
 

@@ -37,7 +37,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsSBCharSetProber.h"
 
@@ -219,5 +219,5 @@ SequenceModel Win1255Model =
   "windows-1255"
 };
 
-#pragma GCC visibility pop
+
 

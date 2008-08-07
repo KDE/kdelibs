@@ -48,7 +48,7 @@ class KEncodingProberPrivate;
  * prober.feed(data);
  * prober.feed(moredata);
  * if (prober.getConfidence() > 0.6)
- *    QString out = QTextCodec::codeForName(prober.getEncoding())->toUnicode(data);
+ *    QString out = QTextCodec::codeForName(prober.getEncodingName())->toUnicode(data);
  * \endcode
  *
  * at least 256 characters are needed to change the ProberState from Probing to other states.

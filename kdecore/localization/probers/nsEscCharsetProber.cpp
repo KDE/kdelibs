@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsEscCharsetProber.h"
 
@@ -106,5 +106,5 @@ nsProbingState nsEscCharSetProber::HandleData(const char* aBuf, unsigned int aLe
   return mState;
 }
 
-#pragma GCC visibility pop
+
 

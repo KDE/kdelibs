@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsUTF8Prober.h"
 
@@ -92,5 +92,5 @@ float nsUTF8Prober::GetConfidence(void)
     return (float)0.99;
 }
 
-#pragma GCC visibility pop
+
 

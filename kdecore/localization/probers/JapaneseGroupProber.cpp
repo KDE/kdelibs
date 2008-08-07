@@ -36,7 +36,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -203,5 +203,5 @@ void JapaneseGroupProber::DumpStatus()
 }
 #endif
 
-#pragma GCC visibility pop
+
 

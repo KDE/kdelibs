@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsSBCharSetProber.h"
 /****************************************************************
@@ -245,5 +245,5 @@ SequenceModel Win1253Model =
   "windows-1253"
 };
 
-#pragma GCC visibility pop
+
 

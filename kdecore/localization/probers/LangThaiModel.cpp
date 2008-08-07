@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsSBCharSetProber.h"
 
@@ -222,5 +222,5 @@ SequenceModel TIS620ThaiModel =
   "TIS-620"
 };
 
-#pragma GCC visibility pop
+
 

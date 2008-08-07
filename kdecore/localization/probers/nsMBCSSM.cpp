@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsCodingStateMachine.h"
 
@@ -627,5 +627,5 @@ SMModel UTF8SMModel = {
   "UTF-8",
 };
 
-#pragma GCC visibility pop
+
 

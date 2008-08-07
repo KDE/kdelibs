@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsCodingStateMachine.h"
 
@@ -264,5 +264,5 @@ SMModel ISO2022KRSMModel = {
   "ISO-2022-KR",
 };
 
-#pragma GCC visibility pop
+
 

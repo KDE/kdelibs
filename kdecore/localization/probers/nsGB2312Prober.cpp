@@ -40,7 +40,7 @@
 // 2, kana character often exist in group
 // 3, certain combination of kana is never used in japanese language
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsGB2312Prober.h"
 
@@ -101,5 +101,5 @@ float nsGB18030Prober::GetConfidence(void)
   return (float)distribCf;
 }
 
-#pragma GCC visibility pop
+
 

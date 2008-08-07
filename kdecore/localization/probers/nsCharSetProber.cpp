@@ -36,7 +36,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsCharSetProber.h"
 
@@ -127,5 +127,5 @@ bool nsCharSetProber::FilterWithEnglishLetters(const char* aBuf, unsigned int aL
   return true;
 }
 
-#pragma GCC visibility pop
+
 

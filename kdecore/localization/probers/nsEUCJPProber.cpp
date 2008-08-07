@@ -40,7 +40,7 @@
 // 2, kana character often exist in group
 // 3, certain combination of kana is never used in japanese language
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsEUCJPProber.h"
 
@@ -104,5 +104,5 @@ float nsEUCJPProber::GetConfidence(void)
   return (contxtCf > distribCf ? contxtCf : distribCf);
 }
 
-#pragma GCC visibility pop
+
 

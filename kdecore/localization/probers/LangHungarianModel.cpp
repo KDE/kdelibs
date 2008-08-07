@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsSBCharSetProber.h"
 /****************************************************************
@@ -243,5 +243,5 @@ SequenceModel Win1250HungarianModel =
   "windows-1250"
 };
 
-#pragma GCC visibility pop
+
 

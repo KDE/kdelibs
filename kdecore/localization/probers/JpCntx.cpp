@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 
 #include "JpCntx.h"
@@ -230,4 +230,4 @@ int EUCJPContextAnalysis::GetOrder(const char* str, unsigned int *charLen)
   return -1;
 }
 
-#pragma GCC visibility pop
+

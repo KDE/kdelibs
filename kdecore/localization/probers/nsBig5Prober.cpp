@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsBig5Prober.h"
 
@@ -93,5 +93,5 @@ float nsBig5Prober::GetConfidence(void)
   return (float)distribCf;
 }
 
-#pragma GCC visibility pop
+
 

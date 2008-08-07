@@ -36,7 +36,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsLatin1Prober.h"
 #include <stdio.h>
@@ -181,5 +181,5 @@ void  nsLatin1Prober::DumpStatus()
 }
 #endif
 
-#pragma GCC visibility pop
+
 

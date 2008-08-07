@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "CharDistribution.h"
 
@@ -107,4 +107,4 @@ EUCJPDistributionAnalysis::EUCJPDistributionAnalysis()
   mTypicalDistributionRatio = JIS_TYPICAL_DISTRIBUTION_RATIO;
 }
 
-#pragma GCC visibility pop
+

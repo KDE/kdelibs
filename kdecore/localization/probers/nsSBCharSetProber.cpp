@@ -36,7 +36,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include <stdio.h>
 #include "nsSBCharSetProber.h"
@@ -128,5 +128,5 @@ void nsSingleByteCharSetProber::DumpStatus()
 }
 #endif
 
-#pragma GCC visibility pop
+
 

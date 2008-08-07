@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 #include "nsHebrewProber.h"
 #include <stdio.h>
@@ -195,5 +195,5 @@ void  nsHebrewProber::DumpStatus()
 }
 #endif
 
-#pragma GCC visibility pop
+
 

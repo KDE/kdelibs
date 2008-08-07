@@ -36,7 +36,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#pragma GCC visibility push(hidden)
+
 
 
 
@@ -265,5 +265,5 @@ nsProbingState nsUniversalDetector::GetState()
         return eDetecting;
 }
 
-#pragma GCC visibility pop
+
 
