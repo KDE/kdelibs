@@ -91,6 +91,11 @@ public:
     virtual NodeImpl::Id id() const { return m_attrId; }
     virtual void childrenChanged();
 
+    // This is used for when the value is normalized on setting by
+    // parseAttribute; it silently updates it w/o issuing any events, etc.
+    // Doesn't work for ATTR_ID!
+    void rewriteValue( const DOMString& newValue );
+
     virtual DOMString toString() const;
 
     void setElement(ElementImpl *element);
@@ -125,6 +130,9 @@ struct AttributeImpl
     void setValue(DOMStringImpl *value, ElementImpl *element);
     AttrImpl *createAttr(ElementImpl *element, DocumentImpl *docPtr);
     void free();
+
+    // See the description for AttrImpl.
+    void rewriteValue( const DOMString& newValue );
 
     NodeImpl::Id m_attrId;
     union {
@@ -202,10 +210,18 @@ public:
 
     //This is always called, whenever an attribute changed
     virtual void parseAttribute(AttributeImpl *) {}
-    void parseAttribute(NodeImpl::Id attrId, DOMStringImpl *value) {
+
+    void parseNullAttribute(NodeImpl::Id attrId) {
 	AttributeImpl aimpl;
 	aimpl.m_attrId = attrId;
-	aimpl.m_data.value = value;
+	aimpl.m_data.value = 0;
+	parseAttribute(&aimpl);
+    }
+
+    void parseAttribute(AttrImpl* fullAttr) {
+	AttributeImpl aimpl;
+	aimpl.m_attrId = 0;
+	aimpl.m_data.attr = fullAttr;
 	parseAttribute(&aimpl);
     }
 

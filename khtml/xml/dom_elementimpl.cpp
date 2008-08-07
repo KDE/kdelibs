@@ -185,7 +185,7 @@ void AttrImpl::childrenChanged()
     if (m_element) {
 	if (m_attrId == ATTR_ID)
 	    m_element->updateId(oldVal, m_value);
-	m_element->parseAttribute(m_attrId, m_value);
+	m_element->parseAttribute  (this);
 	m_element->attributeChanged(m_attrId);
     }
 
@@ -216,6 +216,17 @@ void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
     int e = 0;
     removeChildren();
     appendChild(ownerDocument()->createTextNode(v.implementation()), e);
+}
+
+void AttrImpl::rewriteValue( const DOMString& newValue )
+{
+    int ec;
+
+    // We want to avoid any notifications, so temporarily set m_element to 0
+    ElementImpl* saveElement = m_element;
+    m_element = 0;
+    setValue(newValue, ec);
+    m_element = saveElement;
 }
 
 void AttrImpl::setNodeValue( const DOMString &v, int &exceptioncode )
@@ -303,6 +314,22 @@ void AttributeImpl::setValue(DOMStringImpl *value, ElementImpl *element)
 	int exceptioncode = 0;
 	m_data.attr->setValue(value,exceptioncode);
 	// AttrImpl::setValue() calls parseAttribute()
+    }
+}
+
+void AttributeImpl::rewriteValue( const DOMString& newValue )
+{
+    if (m_attrId) {
+	DOMStringImpl* value = newValue.implementation();
+	if (m_data.value == value)
+	    return;
+
+	m_data.value->deref();
+	m_data.value = value;
+	m_data.value->ref();
+    }
+    else {
+	m_data.attr->rewriteValue(newValue);
     }
 }
 
@@ -1262,7 +1289,7 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, bool nsAware, DOMStrin
 	    memmove(m_attrs+i,m_attrs+i+1,(m_attrCount-i-1)*sizeof(AttributeImpl));
 	    m_attrCount--;
 	    m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
-	    m_element->parseAttribute(id,0);
+	    m_element->parseNullAttribute(id);
 	    m_element->attributeChanged(id);
 	    return removed;
 	}
@@ -1473,7 +1500,7 @@ Attr NamedAttrMapImpl::removeAttr(AttrImpl *attr)
 	    memmove(m_attrs+i,m_attrs+i+1,(m_attrCount-i-1)*sizeof(AttributeImpl));
 	    m_attrCount--;
 	    m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
-	    m_element->parseAttribute(id,0);
+	    m_element->parseNullAttribute(id);
 	    m_element->attributeChanged(id);
 	    // ### dispatch mutation events
 	    return removed;
