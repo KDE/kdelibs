@@ -70,7 +70,7 @@ public:
 
 private:
 	DomainModelPrivate* const d;
-	friend class DomainModelPrivate;
+	friend struct DomainModelPrivate;
 
 };
 
