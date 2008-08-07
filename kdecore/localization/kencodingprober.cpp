@@ -58,7 +58,7 @@ public:
                 case '\xFE':
                     if (('\xFF' == aBuf[1]) && ('\x00' == aBuf[2]) && ('\x00' == aBuf[3]))
                         // FE FF 00 00  UCS-4, unusual octet order BOM (3412)
-                        encoding = "X-ISO-10646-UCS-4-3412";
+                        encoding = "ISO-10646-UCS-4";
                     else if ('\xFF' == aBuf[1])
                         // FE FF  UTF-16, big endian BOM
                         encoding = "UTF-16BE";
@@ -69,7 +69,7 @@ public:
                         encoding = "UTF-32BE";
                     else if (('\x00' == aBuf[1]) && ('\xFF' == aBuf[2]) && ('\xFE' == aBuf[3]))
                         // 00 00 FF FE  UCS-4, unusual octet order BOM (2143)
-                        encoding = "X-ISO-10646-UCS-4-2143";
+                        encoding = "ISO-10646-UCS-4";
                         break;
                 case '\xFF':
                     if (('\xFE' == aBuf[1]) && ('\x00' == aBuf[2]) && ('\x00' == aBuf[3]))
@@ -105,11 +105,21 @@ KEncodingProber::KEncodingProber(KEncodingProber::ProberType proberType): d(new 
      *   because encoding state machine can detect many such encodings.
      */ 
     switch (proberType) {
+        case Arabic:
+        case Baltic:
+        case CentralEuropean:
+        case Cyrillic:
+        case Greek:
+        case Hebrew:
+        case NorthernSaami:
+        case SouthEasternEurope:
+        case Thai:
+        case Turkish:
+        case WesternEuropean:
+            d->prober = new nsSBCSGroupProber();
+            break;
         case Chinese:
             d->prober = new ChineseGroupProber();
-            break;
-        case Hebrew:
-            d->prober = new nsSBCSGroupProber();
             break;
         case Japanese:
             d->prober = new JapaneseGroupProber();
