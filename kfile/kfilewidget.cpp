@@ -458,16 +458,16 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     KUrlCompletion *fileCompletionObj = new KUrlCompletion( KUrlCompletion::FileCompletion );
     KIO::StatJob *statJob = KIO::stat( d->url.url(), KIO::HideProgressInfo );
     KIO::NetAccess::synchronousRun( statJob, 0 );
-    QFileInfo fileInfo( d->url.url() );
-    QString dir = fileInfo.path();
-
+    
+    KUrl dirUrl = d->url;
     if (statJob->statResult().isDir()) {
-        d->urlNavigator->setUrl( d->url.url( KUrl::AddTrailingSlash ) );
+        dirUrl.adjustPath( KUrl::AddTrailingSlash );
     } else {
-        d->urlNavigator->setUrl( dir );
+        dirUrl.upUrl();
     }
+    d->urlNavigator->setUrl( dirUrl.url() );
 
-    fileCompletionObj->setDir( dir );
+    fileCompletionObj->setDir( dirUrl.url() );
     d->locationEdit->setCompletionObject( fileCompletionObj );
     d->locationEdit->setAutoDeleteCompletionObject( true );
     connect( fileCompletionObj, SIGNAL( match( const QString& ) ),
@@ -511,8 +511,8 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->ops->setViewConfig(*d->viewConfigGroup);
     d->readConfig(* d->viewConfigGroup);
     if (!statJob->statResult().isDir()) {
-        d->selection = fileInfo.fileName();
-        d->locationEdit->setUrl(fileInfo.fileName());
+        d->selection = d->url.fileName();
+        d->locationEdit->setUrl(d->url.fileName());
     }
     setSelection(d->selection);
     d->locationEdit->setFocus();
