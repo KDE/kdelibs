@@ -37,7 +37,7 @@
 
 #pragma GCC visibility push(hidden)
 
-#include "nscore.h"
+
 #include "JpCntx.h"
 
 //This is hiragana 2-char sequence table, the number in each cell represents its frequency category
@@ -130,11 +130,11 @@ char jp2CharContext[83][83] =
 
 #define MINIMUM_DATA_THRESHOLD  4
 
-void JapaneseContextAnalysis::HandleData(const char* aBuf, PRUint32 aLen)
+void JapaneseContextAnalysis::HandleData(const char* aBuf, unsigned int aLen)
 {
-  PRUint32 charLen;
-  PRInt32 order;
-  PRUint32 i;
+  unsigned int charLen;
+  int order;
+  unsigned int i;
   
   if (mDone)
     return;
@@ -160,7 +160,7 @@ void JapaneseContextAnalysis::HandleData(const char* aBuf, PRUint32 aLen)
         mTotalRel ++;
         if (mTotalRel > MAX_REL_THRESHOLD)
         {
-          mDone = PR_TRUE;
+          mDone = true;
           break;
         }
         mRelSample[(int)jp2CharContext[mLastCharOrder][order]]++;
@@ -175,11 +175,11 @@ void JapaneseContextAnalysis::HandleData(const char* aBuf, PRUint32 aLen)
 void JapaneseContextAnalysis::Reset(void)
 {
   mTotalRel = 0;
-  for (PRUint32 i = 0; i < NUM_OF_CATEGORY; i++)
+  for (unsigned int i = 0; i < NUM_OF_CATEGORY; i++)
     mRelSample[i] = 0;
   mNeedToSkipCharNum = 0;
   mLastCharOrder = -1;
-  mDone = PR_FALSE;
+  mDone = false;
 }
 #define DONT_KNOW (float)-1
 
@@ -193,7 +193,7 @@ float  JapaneseContextAnalysis::GetConfidence()
 }
 
 
-PRInt32 SJISContextAnalysis::GetOrder(const char* str, PRUint32 *charLen)
+int SJISContextAnalysis::GetOrder(const char* str, unsigned int *charLen)
 {
   //find out current char's byte length
   if (((unsigned char)*str >= (unsigned char)0x81 && (unsigned char)*str <= (unsigned char)0x9f ) || 
@@ -210,7 +210,7 @@ PRInt32 SJISContextAnalysis::GetOrder(const char* str, PRUint32 *charLen)
   return -1;
 }
 
-PRInt32 EUCJPContextAnalysis::GetOrder(const char* str, PRUint32 *charLen)
+int EUCJPContextAnalysis::GetOrder(const char* str, unsigned int *charLen)
 {
   //find out current char's byte length
   if ((unsigned char)*str == (unsigned char)0x8e ||

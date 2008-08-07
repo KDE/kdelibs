@@ -230,7 +230,7 @@ SequenceModel Latin2HungarianModel =
   Latin2_HungarianCharToOrderMap,
   HungarianLangModel,
   (float)0.947368,
-  PR_TRUE,
+  true,
   "ISO-8859-2"
 };
 
@@ -239,7 +239,7 @@ SequenceModel Win1250HungarianModel =
   win1250HungarianCharToOrderMap,
   HungarianLangModel,
   (float)0.947368,
-  PR_TRUE,
+  true,
   "windows-1250"
 };
 

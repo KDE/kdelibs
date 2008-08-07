@@ -54,7 +54,7 @@ typedef struct
   unsigned char *charToOrderMap;    // [256] table use to find a char's order
   char *precedenceMatrix;           // [SAMPLE_SIZE][SAMPLE_SIZE]; table to find a 2-char sequence's frequency
   float  mTypicalPositiveRatio;     // = freqSeqs / totalSeqs 
-  PRBool keepEnglishLetter;         // says if this script contains English characters (not implemented)
+  bool keepEnglishLetter;         // says if this script contains English characters (not implemented)
   const char* charsetName;
 } SequenceModel;
 
@@ -62,24 +62,24 @@ typedef struct
 class nsSingleByteCharSetProber : public nsCharSetProber{
 public:
   nsSingleByteCharSetProber(SequenceModel *model) 
-    :mModel(model), mReversed(PR_FALSE), mNameProber(0) { Reset(); }
-  nsSingleByteCharSetProber(SequenceModel *model, PRBool reversed, nsCharSetProber* nameProber)
+    :mModel(model), mReversed(false), mNameProber(0) { Reset(); }
+  nsSingleByteCharSetProber(SequenceModel *model, bool reversed, nsCharSetProber* nameProber)
     :mModel(model), mReversed(reversed), mNameProber(nameProber) { Reset(); }
 
   virtual const char* GetCharSetName();
-  virtual nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
+  virtual nsProbingState HandleData(const char* aBuf, unsigned int aLen);
   virtual nsProbingState GetState(void) {return mState;};
   virtual void      Reset(void);
   virtual float     GetConfidence(void);
   virtual void      SetOpion() {};
   
   // This feature is not implemented yet. any current language model
-  // contain this parameter as PR_FALSE. No one is looking at this
+  // contain this parameter as false. No one is looking at this
   // parameter or calling this method.
   // Moreover, the nsSBCSGroupProber which calls the HandleData of this
   // prober has a hard-coded call to FilterWithoutEnglishLetters which gets rid
   // of the English letters.
-  PRBool KeepEnglishLetters() {return mModel->keepEnglishLetter;}; // (not implemented)
+  bool KeepEnglishLetters() {return mModel->keepEnglishLetter;}; // (not implemented)
 
 #ifdef DEBUG_chardet
   virtual void  DumpStatus();
@@ -88,17 +88,17 @@ public:
 protected:
   nsProbingState mState;
   const SequenceModel *mModel;
-  const PRBool mReversed; // PR_TRUE if we need to reverse every pair in the model lookup
+  const bool mReversed; // true if we need to reverse every pair in the model lookup
 
   //char order of last character
   unsigned char mLastOrder;
 
-  PRUint32 mTotalSeqs;
-  PRUint32 mSeqCounters[NUMBER_OF_SEQ_CAT];
+  unsigned int mTotalSeqs;
+  unsigned int mSeqCounters[NUMBER_OF_SEQ_CAT];
 
-  PRUint32 mTotalChar;
+  unsigned int mTotalChar;
   //characters that fall in our sampling range
-  PRUint32 mFreqChar;
+  unsigned int mFreqChar;
   
   // Optional auxiliary prober for name decision. created and destroyed by the GroupProber
   nsCharSetProber* mNameProber; 

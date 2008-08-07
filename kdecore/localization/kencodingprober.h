@@ -122,7 +122,7 @@ public:
     /**
      * @returns the name of the best encoding it guessed so far
      */
-    const char* getEncoding() const;
+    const char* getEncodingName() const;
 
     /**
      * @returns the confidence(sureness) of encoding it guessed so far (0.0 ~ 0.99)

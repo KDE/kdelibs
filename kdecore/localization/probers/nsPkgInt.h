@@ -37,7 +37,7 @@
 
 #ifndef nsPkgInt_h__
 #define nsPkgInt_h__
-#include "nscore.h"
+
 
 typedef enum {
   eIdxSft4bits  = 3,
@@ -68,19 +68,19 @@ typedef struct nsPkgInt {
   nsSftMsk  sftmsk;
   nsBitSft  bitsft;
   nsUnitMsk unitmsk;
-  PRUint32  *data;
+  unsigned int  *data;
 } nsPkgInt;
 
 
-#define PCK16BITS(a,b)            ((PRUint32)(((b) << 16) | (a)))
+#define PCK16BITS(a,b)            ((unsigned int)(((b) << 16) | (a)))
 
-#define PCK8BITS(a,b,c,d)         PCK16BITS( ((PRUint32)(((b) << 8) | (a))),  \
-                                             ((PRUint32)(((d) << 8) | (c))))
+#define PCK8BITS(a,b,c,d)         PCK16BITS( ((unsigned int)(((b) << 8) | (a))),  \
+                                             ((unsigned int)(((d) << 8) | (c))))
 
-#define PCK4BITS(a,b,c,d,e,f,g,h) PCK8BITS(  ((PRUint32)(((b) << 4) | (a))), \
-                                             ((PRUint32)(((d) << 4) | (c))), \
-                                             ((PRUint32)(((f) << 4) | (e))), \
-                                             ((PRUint32)(((h) << 4) | (g))) )
+#define PCK4BITS(a,b,c,d,e,f,g,h) PCK8BITS(  ((unsigned int)(((b) << 4) | (a))), \
+                                             ((unsigned int)(((d) << 4) | (c))), \
+                                             ((unsigned int)(((f) << 4) | (e))), \
+                                             ((unsigned int)(((h) << 4) | (g))) )
 
 #define GETFROMPCK(i, c) \
  (((((c).data)[(i)>>(c).idxsft])>>(((i)&(c).sftmsk)<<(c).bitsft))&(c).unitmsk)

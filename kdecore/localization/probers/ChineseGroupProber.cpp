@@ -39,7 +39,7 @@
 #pragma GCC visibility push(hidden)
 
 #include <stdio.h>
-#include "prmem.h"
+#include <stdlib.h>
 
 #include "ChineseGroupProber.h"
 
@@ -63,7 +63,7 @@ ChineseGroupProber::ChineseGroupProber()
 
 ChineseGroupProber::~ChineseGroupProber()
 {
-  for (PRUint32 i = 0; i < CN_NUM_OF_PROBERS; i++)
+  for (unsigned int i = 0; i < CN_NUM_OF_PROBERS; i++)
   {
     delete mProbers[i];
   }
@@ -83,31 +83,31 @@ const char* ChineseGroupProber::GetCharSetName()
 void  ChineseGroupProber::Reset(void)
 {
   mActiveNum = 0;
-  for (PRUint32 i = 0; i < CN_NUM_OF_PROBERS; i++)
+  for (unsigned int i = 0; i < CN_NUM_OF_PROBERS; i++)
   {
     if (mProbers[i])
     {
       mProbers[i]->Reset();
-      mIsActive[i] = PR_TRUE;
+      mIsActive[i] = true;
       ++mActiveNum;
     }
     else
-      mIsActive[i] = PR_FALSE;
+      mIsActive[i] = false;
   }
   mBestGuess = -1;
   mState = eDetecting;
 }
 
-nsProbingState ChineseGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState ChineseGroupProber::HandleData(const char* aBuf, unsigned int aLen)
 {
   nsProbingState st;
-  PRUint32 i;
+  unsigned int i;
 
   //do filtering to reduce load to probers
   char *highbyteBuf;
   char *hptr;
-  PRBool keepNext = PR_TRUE;   //assume previous is not ascii, it will do no harm except add some noise
-  hptr = highbyteBuf = (char*)PR_Malloc(aLen);
+  bool keepNext = true;   //assume previous is not ascii, it will do no harm except add some noise
+  hptr = highbyteBuf = (char*)malloc(aLen);
   if (!hptr)
       return mState;
   for (i = 0; i < aLen; i++)
@@ -115,7 +115,7 @@ nsProbingState ChineseGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
     if (aBuf[i] & 0x80)
     {
       *hptr++ = aBuf[i];
-      keepNext = PR_TRUE;
+      keepNext = true;
     }
     else
     {
@@ -123,7 +123,7 @@ nsProbingState ChineseGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
       if (keepNext)
       {
           *hptr++ = aBuf[i];
-          keepNext = PR_FALSE;
+          keepNext = false;
       }
     }
   }
@@ -141,7 +141,7 @@ nsProbingState ChineseGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
      }
      else if (st == eNotMe)
      {
-       mIsActive[i] = PR_FALSE;
+       mIsActive[i] = false;
        mActiveNum--;
        if (mActiveNum <= 0)
        {
@@ -151,14 +151,14 @@ nsProbingState ChineseGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
      }
   }
 
-  PR_FREEIF(highbyteBuf);
+  free(highbyteBuf);
 
   return mState;
 }
 
 float ChineseGroupProber::GetConfidence(void)
 {
-  PRUint32 i;
+  unsigned int i;
   float bestConf = 0.0, cf;
 
   switch (mState)
@@ -186,7 +186,7 @@ float ChineseGroupProber::GetConfidence(void)
 #ifdef DEBUG_chardet
 void ChineseGroupProber::DumpStatus()
 {
-  PRUint32 i;
+  unsigned int i;
   float cf;
   
   GetConfidence();

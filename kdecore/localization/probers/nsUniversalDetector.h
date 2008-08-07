@@ -52,7 +52,7 @@ class nsUniversalDetector: public nsCharSetProber {
 public:
     nsUniversalDetector();
     virtual ~nsUniversalDetector();
-    nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
+    nsProbingState HandleData(const char* aBuf, unsigned int aLen);
     const char* GetCharSetName();
     void      Reset(void);
     float     GetConfidence(void);
@@ -61,13 +61,13 @@ public:
 
 protected:
    nsInputState  mInputState;
-   PRBool  mDone;
-   PRBool  mInTag;
-   PRBool  mStart;
-   PRBool  mGotData;
+   bool  mDone;
+   bool  mInTag;
+   bool  mStart;
+   bool  mGotData;
    char    mLastChar;
    const char *  mDetectedCharset;
-   PRInt32 mBestGuess;
+   int mBestGuess;
 
    nsCharSetProber  *mCharSetProbers[NUM_OF_CHARSET_PROBERS];
    nsCharSetProber  *mEscCharSetProber;

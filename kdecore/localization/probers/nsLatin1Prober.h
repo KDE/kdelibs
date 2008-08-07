@@ -47,7 +47,7 @@ class nsLatin1Prober: public nsCharSetProber {
 public:
   nsLatin1Prober(void){Reset();};
   virtual ~nsLatin1Prober(void){};
-  nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
+  nsProbingState HandleData(const char* aBuf, unsigned int aLen);
   const char* GetCharSetName() {return "windows-1252";};
   nsProbingState GetState(void) {return mState;};
   void      Reset(void);
@@ -62,7 +62,7 @@ protected:
   
   nsProbingState mState;
   char mLastCharClass;
-  PRUint32 mFreqCounter[FREQ_CAT_NUM];
+  unsigned int mFreqCounter[FREQ_CAT_NUM];
 };
 
 

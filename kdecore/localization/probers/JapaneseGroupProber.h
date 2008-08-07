@@ -48,7 +48,7 @@ class JapaneseGroupProber: public nsCharSetProber {
 public:
   JapaneseGroupProber();
   virtual ~JapaneseGroupProber();
-  nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
+  nsProbingState HandleData(const char* aBuf, unsigned int aLen);
   const char* GetCharSetName();
   nsProbingState GetState(void) {return mState;};
   void      Reset(void);
@@ -62,9 +62,9 @@ public:
 protected:
   nsProbingState mState;
   nsCharSetProber* mProbers[JP_NUM_OF_PROBERS];
-  PRBool          mIsActive[JP_NUM_OF_PROBERS];
-  PRInt32 mBestGuess;
-  PRUint32 mActiveNum;
+  bool          mIsActive[JP_NUM_OF_PROBERS];
+  int mBestGuess;
+  unsigned int mActiveNum;
 };
 
 #endif /* CHINESEGROUPPROBLER_H */

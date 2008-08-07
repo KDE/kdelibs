@@ -47,29 +47,29 @@ nsEscCharSetProber::nsEscCharSetProber(void)
   mCodingSM[3] = new nsCodingStateMachine(&ISO2022KRSMModel);
   mActiveSM = NUM_OF_ESC_CHARSETS;
   mState = eDetecting;
-  mDetectedCharset = nsnull;
+  mDetectedCharset = 0;
 }
 
 nsEscCharSetProber::~nsEscCharSetProber(void)
 {
-  for (PRUint32 i = 0; i < NUM_OF_ESC_CHARSETS; i++)
+  for (unsigned int i = 0; i < NUM_OF_ESC_CHARSETS; i++)
     delete mCodingSM[i];
 }
 
 void nsEscCharSetProber::Reset(void)
 {
   mState = eDetecting;
-  for (PRUint32 i = 0; i < NUM_OF_ESC_CHARSETS; i++)
+  for (unsigned int i = 0; i < NUM_OF_ESC_CHARSETS; i++)
     mCodingSM[i]->Reset();
   mActiveSM = NUM_OF_ESC_CHARSETS;
-  mDetectedCharset = nsnull;
+  mDetectedCharset = 0;
 }
 
-nsProbingState nsEscCharSetProber::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsEscCharSetProber::HandleData(const char* aBuf, unsigned int aLen)
 {
   nsSMState codingState;
-  PRInt32 j;
-  PRUint32 i;
+  int j;
+  unsigned int i;
 
   for ( i = 0; i < aLen && mState == eDetecting; i++)
   {
@@ -86,7 +86,7 @@ nsProbingState nsEscCharSetProber::HandleData(const char* aBuf, PRUint32 aLen)
           mState = eNotMe;
           return mState;
         }
-        else if (j != (PRInt32)mActiveSM)
+        else if (j != (int)mActiveSM)
         {
           nsCodingStateMachine* t;
           t = mCodingSM[mActiveSM];

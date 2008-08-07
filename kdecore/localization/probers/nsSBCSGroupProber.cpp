@@ -39,7 +39,7 @@
 #pragma GCC visibility push(hidden)
 
 #include <stdio.h>
-#include "prmem.h"
+#include <stdlib.h>
 
 #include "nsSBCharSetProber.h"
 #include "nsSBCSGroupProber.h"
@@ -63,8 +63,8 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   // Notice: Any change in these indexes - 10,11,12 must be reflected
   // in the code below as well.
   mProbers[10] = hebprober;
-  mProbers[11] = new nsSingleByteCharSetProber(&Win1255Model, PR_FALSE, hebprober); // Logical Hebrew
-  mProbers[12] = new nsSingleByteCharSetProber(&Win1255Model, PR_TRUE, hebprober); // Visual Hebrew
+  mProbers[11] = new nsSingleByteCharSetProber(&Win1255Model, false, hebprober); // Logical Hebrew
+  mProbers[12] = new nsSingleByteCharSetProber(&Win1255Model, true, hebprober); // Visual Hebrew
   // Tell the Hebrew prober about the logical and visual probers
   if (mProbers[10] && mProbers[11] && mProbers[12]) // all are not null
   {
@@ -72,7 +72,7 @@ nsSBCSGroupProber::nsSBCSGroupProber()
   }
   else // One or more is null. avoid any Hebrew probing, null them all
   {
-    for (PRUint32 i = 10; i <= 12; ++i)
+    for (unsigned int i = 10; i <= 12; ++i)
     { 
       delete mProbers[i]; 
       mProbers[i] = 0; 
@@ -89,7 +89,7 @@ nsSBCSGroupProber::nsSBCSGroupProber()
 
 nsSBCSGroupProber::~nsSBCSGroupProber()
 {
-  for (PRUint32 i = 0; i < NUM_OF_SBCS_PROBERS; i++)
+  for (unsigned int i = 0; i < NUM_OF_SBCS_PROBERS; i++)
   {
     delete mProbers[i];
   }
@@ -113,28 +113,28 @@ const char* nsSBCSGroupProber::GetCharSetName()
 void  nsSBCSGroupProber::Reset(void)
 {
   mActiveNum = 0;
-  for (PRUint32 i = 0; i < NUM_OF_SBCS_PROBERS; i++)
+  for (unsigned int i = 0; i < NUM_OF_SBCS_PROBERS; i++)
   {
     if (mProbers[i]) // not null
     {
       mProbers[i]->Reset();
-      mIsActive[i] = PR_TRUE;
+      mIsActive[i] = true;
       ++mActiveNum;
     }
     else
-      mIsActive[i] = PR_FALSE;
+      mIsActive[i] = false;
   }
   mBestGuess = -1;
   mState = eDetecting;
 }
 
 
-nsProbingState nsSBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsSBCSGroupProber::HandleData(const char* aBuf, unsigned int aLen)
 {
   nsProbingState st;
-  PRUint32 i;
+  unsigned int i;
   char *newBuf1 = 0;
-  PRUint32 newLen1 = 0;
+  unsigned int newLen1 = 0;
 
   //apply filter to original buffer, and we got new buffer back
   //depend on what script it is, we will feed them the new buffer 
@@ -161,7 +161,7 @@ nsProbingState nsSBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
      }
      else if (st == eNotMe)
      {
-       mIsActive[i] = PR_FALSE;
+       mIsActive[i] = false;
        mActiveNum--;
        if (mActiveNum <= 0)
        {
@@ -172,14 +172,14 @@ nsProbingState nsSBCSGroupProber::HandleData(const char* aBuf, PRUint32 aLen)
   }
 
 done:
-  PR_FREEIF(newBuf1);
+  free(newBuf1);
 
   return mState;
 }
 
 float nsSBCSGroupProber::GetConfidence(void)
 {
-  PRUint32 i;
+  unsigned int i;
   float bestConf = 0.0, cf;
 
   switch (mState)
@@ -207,7 +207,7 @@ float nsSBCSGroupProber::GetConfidence(void)
 #ifdef DEBUG_chardet
 void nsSBCSGroupProber::DumpStatus()
 {
-  PRUint32 i;
+  unsigned int i;
   float cf;
   
   cf = GetConfidence();

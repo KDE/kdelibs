@@ -47,7 +47,7 @@ class nsSBCSGroupProber: public nsCharSetProber {
 public:
   nsSBCSGroupProber();
   virtual ~nsSBCSGroupProber();
-  nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
+  nsProbingState HandleData(const char* aBuf, unsigned int aLen);
   const char* GetCharSetName();
   nsProbingState GetState(void) {return mState;};
   void      Reset(void);
@@ -61,9 +61,9 @@ public:
 protected:
   nsProbingState mState;
   nsCharSetProber* mProbers[NUM_OF_SBCS_PROBERS];
-  PRBool          mIsActive[NUM_OF_SBCS_PROBERS];
-  PRInt32 mBestGuess;
-  PRUint32 mActiveNum;
+  bool          mIsActive[NUM_OF_SBCS_PROBERS];
+  int mBestGuess;
+  unsigned int mActiveNum;
 };
 
 #endif /* nsSBCSGroupProber_h__ */

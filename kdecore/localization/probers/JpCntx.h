@@ -40,7 +40,7 @@
 
 #define NUM_OF_CATEGORY 6
 
-#include "nscore.h" 
+ 
 
 #define ENOUGH_REL_THRESHOLD  100
 #define MAX_REL_THRESHOLD     1000
@@ -54,14 +54,14 @@ public:
   JapaneseContextAnalysis() {Reset();};
   virtual ~JapaneseContextAnalysis() {};
 
-  void HandleData(const char* aBuf, PRUint32 aLen);
+  void HandleData(const char* aBuf, unsigned int aLen);
 
-  void HandleOneChar(const char* aStr, PRUint32 aCharLen)
+  void HandleOneChar(const char* aStr, unsigned int aCharLen)
   {
-    PRInt32 order;
+    int order;
 
     //if we received enough data, stop here   
-    if (mTotalRel > MAX_REL_THRESHOLD)   mDone = PR_TRUE;
+    if (mTotalRel > MAX_REL_THRESHOLD)   mDone = true;
     if (mDone)       return;
      
     //Only 2-bytes characters are of our interest
@@ -78,27 +78,27 @@ public:
   float GetConfidence();
   void      Reset(void);
   void      SetOpion(){};
-  PRBool GotEnoughData() {return mTotalRel > ENOUGH_REL_THRESHOLD;};
+  bool GotEnoughData() {return mTotalRel > ENOUGH_REL_THRESHOLD;};
 
 protected:
-  virtual PRInt32 GetOrder(const char* str, PRUint32 *charLen) = 0;
-  virtual PRInt32 GetOrder(const char* str) = 0;
+  virtual int GetOrder(const char* str, unsigned int *charLen) = 0;
+  virtual int GetOrder(const char* str) = 0;
 
   //category counters, each interger counts sequence in its category
-  PRUint32 mRelSample[NUM_OF_CATEGORY];
+  unsigned int mRelSample[NUM_OF_CATEGORY];
 
   //total sequence received
-  PRUint32 mTotalRel;
+  unsigned int mTotalRel;
   
   //The order of previous char
-  PRInt32  mLastCharOrder;
+  int  mLastCharOrder;
 
   //if last byte in current buffer is not the last byte of a character, we
   //need to know how many byte to skip in next buffer.
-  PRUint32 mNeedToSkipCharNum;
+  unsigned int mNeedToSkipCharNum;
 
-  //If this flag is set to PR_TRUE, detection is done and conclusion has been made
-  PRBool   mDone;
+  //If this flag is set to true, detection is done and conclusion has been made
+  bool   mDone;
 };
 
 
@@ -106,9 +106,9 @@ class SJISContextAnalysis : public JapaneseContextAnalysis
 {
   //SJISContextAnalysis(){};
 protected:
-  PRInt32 GetOrder(const char* str, PRUint32 *charLen);
+  int GetOrder(const char* str, unsigned int *charLen);
 
-  PRInt32 GetOrder(const char* str)
+  int GetOrder(const char* str)
   {
     //We only interested in Hiragana, so first byte is '\202'
     if (*str == '\202' && 
@@ -122,8 +122,8 @@ protected:
 class EUCJPContextAnalysis : public JapaneseContextAnalysis
 {
 protected:
-  PRInt32 GetOrder(const char* str, PRUint32 *charLen);
-  PRInt32 GetOrder(const char* str)
+  int GetOrder(const char* str, unsigned int *charLen);
+  int GetOrder(const char* str)
     //We only interested in Hiragana, so first byte is '\244'
   {
     if (*str == '\244' &&

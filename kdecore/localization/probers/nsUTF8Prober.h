@@ -47,7 +47,7 @@ public:
                 mCodingSM = new nsCodingStateMachine(&UTF8SMModel);
                 Reset(); };
   virtual ~nsUTF8Prober(){delete mCodingSM;};
-  nsProbingState HandleData(const char* aBuf, PRUint32 aLen);
+  nsProbingState HandleData(const char* aBuf, unsigned int aLen);
   const char* GetCharSetName() {return "UTF-8";};
   nsProbingState GetState(void) {return mState;};
   void      Reset(void);
@@ -57,7 +57,7 @@ public:
 protected:
   nsCodingStateMachine* mCodingSM;
   nsProbingState mState;
-  PRUint32 mNumOfMBChar;
+  unsigned int mNumOfMBChar;
 };
 
 #endif /* nsUTF8Prober_h__ */

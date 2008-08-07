@@ -63,12 +63,12 @@
 #define VISUAL_HEBREW_NAME ("ISO-8859-8")
 #define LOGICAL_HEBREW_NAME ("windows-1255")
 
-PRBool nsHebrewProber::isFinal(char c)
+bool nsHebrewProber::isFinal(char c)
 {
   return ((c == FINAL_KAF) || (c == FINAL_MEM) || (c == FINAL_NUN) || (c == FINAL_PE) || (c == FINAL_TSADI));
 }
 
-PRBool nsHebrewProber::isNonFinal(char c)
+bool nsHebrewProber::isNonFinal(char c)
 {
   return ((c == NORMAL_KAF) || (c == NORMAL_MEM) || (c == NORMAL_NUN) || (c == NORMAL_PE));
   // The normal Tsadi is not a good Non-Final letter due to words like 
@@ -108,7 +108,7 @@ PRBool nsHebrewProber::isNonFinal(char c)
  * The input buffer should not contain any white spaces that are not (' ')
  * or any low-ascii punctuation marks. 
  */
-nsProbingState nsHebrewProber::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsHebrewProber::HandleData(const char* aBuf, unsigned int aLen)
 {
   // Both model probers say it's not them. No reason to continue.
   if (GetState() == eNotMe)
@@ -147,7 +147,7 @@ nsProbingState nsHebrewProber::HandleData(const char* aBuf, PRUint32 aLen)
 const char* nsHebrewProber::GetCharSetName()
 {
   // If the final letter score distance is dominant enough, rely on it.
-  PRInt32 finalsub = mFinalCharLogicalScore - mFinalCharVisualScore;
+  int finalsub = mFinalCharLogicalScore - mFinalCharVisualScore;
   if (finalsub >= MIN_FINAL_CHAR_DISTANCE) 
     return LOGICAL_HEBREW_NAME;
   if (finalsub <= -(MIN_FINAL_CHAR_DISTANCE))

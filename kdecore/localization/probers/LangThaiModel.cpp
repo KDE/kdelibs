@@ -218,7 +218,7 @@ SequenceModel TIS620ThaiModel =
   TIS620CharToOrderMap,
   ThaiLangModel,
   (float)0.926386,
-  PR_FALSE,
+  false,
   "TIS-620"
 };
 

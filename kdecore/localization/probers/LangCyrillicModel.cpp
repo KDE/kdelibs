@@ -307,7 +307,7 @@ SequenceModel Koi8rModel =
   KOI8R_CharToOrderMap,
   RussianLangModel,
   (float)0.976601,
-  PR_FALSE,
+  false,
   "KOI8-R"
 };
 
@@ -316,7 +316,7 @@ SequenceModel Win1251Model =
   win1251_CharToOrderMap,
   RussianLangModel,
   (float)0.976601,
-  PR_FALSE,
+  false,
   "windows-1251"
 };
 
@@ -325,7 +325,7 @@ SequenceModel Latin5Model =
   latin5_CharToOrderMap,
   RussianLangModel,
   (float)0.976601,
-  PR_FALSE,
+  false,
   "ISO-8859-5"
 };
 
@@ -334,7 +334,7 @@ SequenceModel MacCyrillicModel =
   macCyrillic_CharToOrderMap,
   RussianLangModel,
   (float)0.976601,
-  PR_FALSE,
+  false,
   "x-mac-cyrillic"
 };
 
@@ -343,7 +343,7 @@ SequenceModel Ibm866Model =
   IBM866_CharToOrderMap,
   RussianLangModel,
   (float)0.976601,
-  PR_FALSE,
+  false,
   "IBM866"
 };
 
@@ -352,7 +352,7 @@ SequenceModel Ibm855Model =
   IBM855_CharToOrderMap,
   RussianLangModel,
   (float)0.976601,
-  PR_FALSE,
+  false,
   "IBM855"
 };
 

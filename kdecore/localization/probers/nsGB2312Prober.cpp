@@ -52,11 +52,11 @@ void  nsGB18030Prober::Reset(void)
   //mContextAnalyser.Reset();
 }
 
-nsProbingState nsGB18030Prober::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsGB18030Prober::HandleData(const char* aBuf, unsigned int aLen)
 {
   nsSMState codingState;
 
-  for (PRUint32 i = 0; i < aLen; i++)
+  for (unsigned int i = 0; i < aLen; i++)
   {
     codingState = mCodingSM->NextState(aBuf[i]);
     if (codingState == eError)
@@ -71,7 +71,7 @@ nsProbingState nsGB18030Prober::HandleData(const char* aBuf, PRUint32 aLen)
     }
     if (codingState == eStart)
     {
-      PRUint32 charLen = mCodingSM->GetCurrentCharLen();
+      unsigned int charLen = mCodingSM->GetCurrentCharLen();
 
       if (i == 0)
       {

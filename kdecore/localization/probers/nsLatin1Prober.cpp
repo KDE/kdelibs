@@ -39,8 +39,8 @@
 #pragma GCC visibility push(hidden)
 
 #include "nsLatin1Prober.h"
-#include "prmem.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #define UDF    0        // undefined
 #define OTH    1        //other
@@ -116,10 +116,10 @@ void  nsLatin1Prober::Reset(void)
 }
 
 
-nsProbingState nsLatin1Prober::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsLatin1Prober::HandleData(const char* aBuf, unsigned int aLen)
 {
   char *newBuf1 = 0;
-  PRUint32 newLen1 = 0;
+  unsigned int newLen1 = 0;
 
   if (!FilterWithEnglishLetters(aBuf, aLen, &newBuf1, newLen1)) {
     newBuf1 = (char*)aBuf;
@@ -128,7 +128,7 @@ nsProbingState nsLatin1Prober::HandleData(const char* aBuf, PRUint32 aLen)
   
   unsigned char charClass;
   unsigned char freq;
-  for (PRUint32 i = 0; i < newLen1; i++)
+  for (unsigned int i = 0; i < newLen1; i++)
   {
     charClass = Latin1_CharToClass[(unsigned char)newBuf1[i]];
     freq = Latin1ClassModel[mLastCharClass*CLASS_NUM + charClass];
@@ -141,7 +141,7 @@ nsProbingState nsLatin1Prober::HandleData(const char* aBuf, PRUint32 aLen)
   }
 
   if (newBuf1 != aBuf)
-    PR_FREEIF(newBuf1);
+    free(newBuf1);
 
   return mState;
 }
@@ -152,8 +152,8 @@ float nsLatin1Prober::GetConfidence(void)
     return 0.01f;
   
   float confidence;
-  PRUint32 total = 0;
-  for (PRInt32 i = 0; i < FREQ_CAT_NUM; i++)
+  unsigned int total = 0;
+  for (int i = 0; i < FREQ_CAT_NUM; i++)
     total += mFreqCounter[i];
 
   if(!total)

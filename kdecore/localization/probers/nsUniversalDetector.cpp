@@ -38,7 +38,7 @@
 
 #pragma GCC visibility push(hidden)
 
-#include "nscore.h"
+
 
 #include "nsUniversalDetector.h"
 
@@ -49,25 +49,25 @@
 
 nsUniversalDetector::nsUniversalDetector()
 {
-  mDone = PR_FALSE;
+  mDone = false;
   mBestGuess = -1;   //illegal value as signal
-  mInTag = PR_FALSE;
-  mEscCharSetProber = nsnull;
+  mInTag = false;
+  mEscCharSetProber = 0;
 
-  mStart = PR_TRUE;
-  mDetectedCharset = nsnull;
-  mGotData = PR_FALSE;
+  mStart = true;
+  mDetectedCharset = 0;
+  mGotData = false;
   mInputState = ePureAscii;
   mLastChar = '\0';
 
-  PRUint32 i;
+  unsigned int i;
   for (i = 0; i < NUM_OF_CHARSET_PROBERS; i++)
-    mCharSetProbers[i] = nsnull;
+    mCharSetProbers[i] = 0;
 }
 
 nsUniversalDetector::~nsUniversalDetector() 
 {
-  for (PRInt32 i = 0; i < NUM_OF_CHARSET_PROBERS; i++)
+  for (int i = 0; i < NUM_OF_CHARSET_PROBERS; i++)
     if (mCharSetProbers[i])      
       delete mCharSetProbers[i];
   if (mEscCharSetProber)
@@ -77,20 +77,20 @@ nsUniversalDetector::~nsUniversalDetector()
 void 
 nsUniversalDetector::Reset()
 {
-  mDone = PR_FALSE;
+  mDone = false;
   mBestGuess = -1;   //illegal value as signal
-  mInTag = PR_FALSE;
+  mInTag = false;
 
-  mStart = PR_TRUE;
-  mDetectedCharset = nsnull;
-  mGotData = PR_FALSE;
+  mStart = true;
+  mDetectedCharset = 0;
+  mGotData = false;
   mInputState = ePureAscii;
   mLastChar = '\0';
 
   if (mEscCharSetProber)
     mEscCharSetProber->Reset();
 
-  PRUint32 i;
+  unsigned int i;
   for (i = 0; i < NUM_OF_CHARSET_PROBERS; i++)
     if (mCharSetProbers[i])
       mCharSetProbers[i]->Reset();
@@ -100,15 +100,15 @@ nsUniversalDetector::Reset()
 #define SHORTCUT_THRESHOLD      (float)0.95
 #define MINIMUM_THRESHOLD      (float)0.20
 
-nsProbingState nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
+nsProbingState nsUniversalDetector::HandleData(const char* aBuf, unsigned int aLen)
 {
   if(mDone) 
     return eFoundIt;
 
   if (aLen > 0)
-    mGotData = PR_TRUE;
+    mGotData = true;
 
-  PRUint32 i;
+  unsigned int i;
   for (i = 0; i < aLen; i++)
   {
     //other than 0xa0, if every othe character is ascii, the page is ascii
@@ -123,15 +123,15 @@ nsProbingState nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
         //kill mEscCharSetProber if it is active
         if (mEscCharSetProber) {
           delete mEscCharSetProber;
-          mEscCharSetProber = nsnull;
+          mEscCharSetProber = 0;
         }
 
         //start multibyte and singlebyte charset prober
-        if (nsnull == mCharSetProbers[0])
+        if (0 == mCharSetProbers[0])
           mCharSetProbers[0] = new nsMBCSGroupProber;
-        if (nsnull == mCharSetProbers[1])
+        if (0 == mCharSetProbers[1])
           mCharSetProbers[1] = new nsSBCSGroupProber;
-        if (nsnull == mCharSetProbers[2])
+        if (0 == mCharSetProbers[2])
           mCharSetProbers[2] = new nsLatin1Prober; 
       }
     }
@@ -153,13 +153,13 @@ nsProbingState nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
   switch (mInputState)
   {
   case eEscAscii:
-    if (nsnull == mEscCharSetProber) {
+    if (0 == mEscCharSetProber) {
       mEscCharSetProber = new nsEscCharSetProber;
     }
     st = mEscCharSetProber->HandleData(aBuf, aLen);
     if (st == eFoundIt)
     {
-      mDone = PR_TRUE;
+      mDone = true;
       mDetectedCharset = mEscCharSetProber->GetCharSetName();
     }
     break;
@@ -169,7 +169,7 @@ nsProbingState nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
       st = mCharSetProbers[i]->HandleData(aBuf, aLen);
       if (st == eFoundIt) 
       {
-        mDone = PR_TRUE;
+        mDone = true;
         mDetectedCharset = mCharSetProbers[i]->GetCharSetName();
       } 
     }
@@ -193,9 +193,9 @@ const char* nsUniversalDetector::GetCharSetName()
     {
       float proberConfidence;
       float maxProberConfidence = (float)0.0;
-      PRInt32 maxProber = 0;
+      int maxProber = 0;
 
-      for (PRInt32 i = 0; i < NUM_OF_CHARSET_PROBERS; i++)
+      for (int i = 0; i < NUM_OF_CHARSET_PROBERS; i++)
       {
         proberConfidence = mCharSetProbers[i]->GetConfidence();
         if (proberConfidence > maxProberConfidence)
@@ -234,9 +234,9 @@ switch (mInputState)
     {
       float proberConfidence;
       float maxProberConfidence = (float)0.0;
-      PRInt32 maxProber = 0;
+      int maxProber = 0;
 
-      for (PRInt32 i = 0; i < NUM_OF_CHARSET_PROBERS; i++)
+      for (int i = 0; i < NUM_OF_CHARSET_PROBERS; i++)
       {
         proberConfidence = mCharSetProbers[i]->GetConfidence();
         if (proberConfidence > maxProberConfidence)

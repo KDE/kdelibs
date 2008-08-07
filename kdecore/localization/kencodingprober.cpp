@@ -175,7 +175,7 @@ KEncodingProber::ProberState KEncodingProber::getState() const
     return d->proberState;
 }
 
-const char* KEncodingProber::getEncoding() const
+const char* KEncodingProber::getEncodingName() const
 {
     return strdup(d->encoding);
 }
