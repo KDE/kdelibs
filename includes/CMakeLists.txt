@@ -155,6 +155,7 @@ install( FILES
   KEditListBox
   KEditToolBar
   KEncodingFileDialog
+  KEncodingProber
   KExtendableItemDelegate
   KFadeWidgetEffect
   KFile
