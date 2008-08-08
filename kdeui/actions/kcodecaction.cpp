@@ -96,9 +96,12 @@ void KCodecAction::Private::init(bool showAutoOptions)
         KSelectAction* tmp = new KSelectAction(encodingsForScript.at(0),q);
         if (showAutoOptions)
         {
-            KEncodingProber::ProberType scri=KEncodingProber::proberTypeForName(encodingsForScript.at(0));
-            tmp->addAction(i18nc("Encodings menu","Autodetect"))->setData(QVariant((uint)scri));
-            tmp->menu()->addSeparator();
+            KEncodingDetector::AutoDetectScript scri=KEncodingDetector::scriptForName(encodingsForScript.at(0));
+            if (KEncodingDetector::hasAutoDetectionForScript(scri))
+            {
+                tmp->addAction(i18nc("Encodings menu","Autodetect"))->setData(QVariant((uint)scri));
+                tmp->menu()->addSeparator();
+            }
         }
         for (i=1; i<encodingsForScript.size(); ++i)
         {
@@ -161,7 +164,7 @@ void KCodecAction::actionTriggered(QAction *action)
 //except for the default one
     if (action==d->defaultAction)
     {
-        emit triggered(KEncodingProber::Universal);
+        emit triggered(KEncodingDetector::SemiautomaticDetection);
         emit defaultItemTriggered();
     }
 }
@@ -181,7 +184,7 @@ void KCodecAction::Private::_k_subActionTriggered(QAction *action)
     else
     {
         if (!action->data().isNull())
-            emit q->triggered((KEncodingProber::ProberType) action->data().toUInt());
+            emit q->triggered((KEncodingDetector::AutoDetectScript) action->data().toUInt());
     }
 }
 
@@ -240,23 +243,21 @@ bool KCodecAction::setCurrentCodec( int mib )
         return setCurrentCodec(codecForMib(mib));
 }
 
-KEncodingProber::ProberType KCodecAction::currentProberType() const
+KEncodingDetector::AutoDetectScript KCodecAction::currentAutoDetectScript() const
 {
     return d->currentSubAction->data().isNull()?
-            KEncodingProber::Universal:
-            (KEncodingProber::ProberType)d->currentSubAction->data().toUInt();
+            KEncodingDetector::None            :
+            (KEncodingDetector::AutoDetectScript)d->currentSubAction->data().toUInt();
 }
 
-bool KCodecAction::setCurrentProberType(KEncodingProber::ProberType scri)
+bool KCodecAction::setCurrentAutoDetectScript(KEncodingDetector::AutoDetectScript scri)
 {
-    /*
     if (scri==KEncodingDetector::SemiautomaticDetection)
     {
         d->currentSubAction=d->defaultAction;
         d->currentSubAction->trigger();
         return true;
     }
-    */
 
     int i;
     for (i=0;i<actions().size();++i)
