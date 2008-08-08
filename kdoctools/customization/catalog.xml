@@ -85,6 +85,7 @@ SGMLDECL "xml.dcl"
   <nextCatalog catalog="fi/catalog.xml"/>
   <nextCatalog catalog="fo/catalog.xml"/>
   <nextCatalog catalog="fr/catalog.xml"/>
+  <nextCatalog catalog="gl/catalog.xml"/>
   <nextCatalog catalog="he/catalog.xml"/>
   <nextCatalog catalog="hu/catalog.xml"/>
   <nextCatalog catalog="id/catalog.xml"/>
