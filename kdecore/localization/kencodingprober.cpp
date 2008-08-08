@@ -20,6 +20,7 @@
 
 */
 
+#include "klocale.h"
 #include "kencodingprober.h"
 
 #include "probers/nsCharSetProber.h"
@@ -101,7 +102,7 @@ KEncodingProber::KEncodingProber(KEncodingProber::ProberType proberType): d(new 
     d->proberType = proberType;
     /* handle multi-byte encodings carefully , because they're hard to detect,
      *   and have to use some Stastics methods.
-     * for single-byte encodings (most western encodings), nsUniversalDetector is ok,
+     * for single-byte encodings (most western encodings), nsSBCSGroupProber is ok,
      *   because encoding state machine can detect many such encodings.
      */ 
     switch (proberType) {
@@ -180,19 +181,98 @@ KEncodingProber::ProberState KEncodingProber::feed(const char* data, int len)
     return d->proberState;
 }
 
-KEncodingProber::ProberState KEncodingProber::getState() const
+KEncodingProber::ProberState KEncodingProber::state() const
 {
     return d->proberState;
 }
 
-const char* KEncodingProber::getEncodingName() const
+const char* KEncodingProber::encodingName() const
 {
     return strdup(d->encoding);
 }
 
-float KEncodingProber::getConfidence() const
+float KEncodingProber::confidence() const
 {
     return d->currentConfidence;
 }
 
+KEncodingProber::ProberType KEncodingProber::proberTypeForName(const QString& lang)
+{
+    if (lang.isEmpty())
+        return KEncodingProber::Universal;
+    else if (lang==i18nc("@item Text character set", "Unicode"))
+        return KEncodingProber::Unicode;
+    else if (lang==i18nc("@item Text character set", "Cyrillic"))
+        return KEncodingProber::Cyrillic;
+    else if (lang==i18nc("@item Text character set", "Western European"))
+        return KEncodingProber::WesternEuropean;
+    else if (lang==i18nc("@item Text character set", "Central European"))
+        return KEncodingProber::CentralEuropean;
+    else if (lang==i18nc("@item Text character set", "Greek"))
+        return KEncodingProber::Greek;
+    else if (lang==i18nc("@item Text character set", "Hebrew"))
+        return KEncodingProber::Hebrew;
+    else if (lang==i18nc("@item Text character set", "Turkish"))
+        return KEncodingProber::Turkish;
+    else if (lang==i18nc("@item Text character set", "Japanese"))
+        return KEncodingProber::Japanese;
+    else if (lang==i18nc("@item Text character set", "Baltic"))
+        return KEncodingProber::Baltic;
+    else if (lang==i18nc("@item Text character set", "Chinese Traditional") || lang==i18nc("@item Text character set", "Chinese Simplified"))
+        return KEncodingProber::Chinese;
+    else if (lang==i18nc("@item Text character set", "Arabic"))
+        return KEncodingProber::Arabic;
 
+    return KEncodingProber::Universal;
+}
+
+QString KEncodingProber::nameForProberType(KEncodingProber::ProberType proberType)
+{
+    switch (proberType)
+    {
+        case KEncodingProber::Universal:
+            return i18nc("@item Text character set", "Universal");
+            break;
+        case KEncodingProber::Arabic:
+            return i18nc("@item Text character set", "Arabic");
+            break;
+        case KEncodingProber::Baltic:
+            return i18nc("@item Text character set", "Baltic");
+            break;
+        case KEncodingProber::CentralEuropean:
+            return i18nc("@item Text character set", "Central European");
+            break;
+        case KEncodingProber::Cyrillic:
+            return i18nc("@item Text character set", "Cyrillic");
+            break;
+        case KEncodingProber::Greek:
+            return i18nc("@item Text character set", "Greek");
+            break;
+        case KEncodingProber::Hebrew:
+            return i18nc("@item Text character set", "Hebrew");
+            break;
+        case KEncodingProber::Japanese:
+            return i18nc("@item Text character set", "Japanese");
+            break;
+        case KEncodingProber::Turkish:
+            return i18nc("@item Text character set", "Turkish");
+            break;
+        case KEncodingProber::WesternEuropean:
+            return i18nc("@item Text character set", "Western European");
+            break;
+        case KEncodingProber::Chinese:
+            return i18nc("@item Text character set", "Chinese");
+            break;
+        case KEncodingProber::Korean:
+            return i18nc("@item Text character set", "Korean");
+            break;
+        case KEncodingProber::Thai:
+            return i18nc("@item Text character set", "Thai");
+            break;
+        case KEncodingProber::Unicode:
+            return i18nc("@item Text character set", "Unicode");
+            break;
+        default:
+            return QString();
+        }
+}

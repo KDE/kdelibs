@@ -114,17 +114,21 @@ public:
      * @returns the prober's current ProberState
      *
      */
-    ProberState getState() const;
+    ProberState state() const;
 
     /**
      * @returns the name of the best encoding it guessed so far
      */
-    const char* getEncodingName() const;
+    const char* encodingName() const;
 
     /**
      * @returns the confidence(sureness) of encoding it guessed so far (0.0 ~ 0.99)
      */
-    float getConfidence() const;
+    float confidence() const;
+
+    static ProberType proberTypeForName(const QString& lang);
+    
+    static QString nameForProberType(ProberType proberType);
     
 private:
     KEncodingProberPrivate* const d;
