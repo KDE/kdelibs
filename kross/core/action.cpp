@@ -21,6 +21,7 @@
 #include "interpreter.h"
 #include "script.h"
 #include "manager.h"
+#include "wrapperinterface.h"
 
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
@@ -481,6 +482,13 @@ void Action::slotTriggered()
     }
 
     emit finished(this);
+}
+
+// --------
+
+// interface files
+WrapperInterface::~WrapperInterface()
+{
 }
 
 #include "action.moc"

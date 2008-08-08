@@ -77,7 +77,7 @@ namespace Kross {
             /**
              * Destructor.
              */
-            virtual ~WrapperInterface() {}
+            virtual ~WrapperInterface();
 
             /**
              * This method got called by Kross if the wrapper-instance
