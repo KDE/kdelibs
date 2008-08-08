@@ -27,7 +27,7 @@
 #ifndef KCODECACTION_H
 #define KCODECACTION_H
 
-#include <kencodingdetector.h>
+#include <kencodingprober.h>
 #include <kselectaction.h>
 
 /**
@@ -68,15 +68,15 @@ public:
         /**
          * Applicable only if showAutoOptions in c'tor was true
          *
-         * @returns KEncodingDetector::None if specific encoding is selected, not autodetection, otherwise... you know it!
+         * @returns KEncodingProber::Universal if specific encoding is selected, not autodetection, otherwise... you know it!
          */
-	KEncodingDetector::AutoDetectScript currentAutoDetectScript() const;
+	KEncodingProber::ProberType currentProberType() const;
         /**
          * Applicable only if showAutoOptions in c'tor was true
          *
          * KEncodingDetector::SemiautomaticDetection means 'Default' item
          */
-	bool setCurrentAutoDetectScript(KEncodingDetector::AutoDetectScript);
+	bool setCurrentProberType(KEncodingProber::ProberType);
 
 
 Q_SIGNALS:
@@ -98,7 +98,7 @@ Q_SIGNALS:
          *
          * Applicable only if showAutoOptions in c'tor was true
          */
-        void triggered(KEncodingDetector::AutoDetectScript);
+        void triggered(KEncodingProber::ProberType);
 
         /**
          * If showAutoOptions==true, then better handle triggered(KEncodingDetector::AutoDetectScript) signal
