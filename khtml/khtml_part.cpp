@@ -345,7 +345,10 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
         d->m_autoDetectLanguage=KEncodingDetector::SemiautomaticDetection;
 //         kWarning() << "0000000end " << d->m_autoDetectLanguage << " " << KGlobal::locale()->encodingMib();
     }
-    d->m_paSetEncoding->setCurrentAutoDetectScript(d->m_autoDetectLanguage);
+    /* FIXME: please improve KEncodingDetector to Detect all certain encodings (ie. from html/xml tag information)
+     *        use KEncodingProber to guess(probe) encodings from raw data.
+     */
+    d->m_paSetEncoding->setCurrentProberType(KEncodingProber::proberTypeForName(KEncodingDetector::nameForScript(d->m_autoDetectLanguage)));
   }
 
   d->m_paUseStylesheet = new KSelectAction( i18n( "Use S&tylesheet"), this );
