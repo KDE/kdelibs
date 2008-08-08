@@ -28,6 +28,7 @@
 #define KCODECACTION_H
 
 #include <kencodingdetector.h>
+#include <kencodingprober.h>
 #include <kselectaction.h>
 
 /**
@@ -78,7 +79,10 @@ public:
          */
 	bool setCurrentAutoDetectScript(KEncodingDetector::AutoDetectScript);
 
+    KEncodingProber::ProberType currentProberType() const;
 
+    bool setCurrentProberType(KEncodingProber::ProberType);
+    
 Q_SIGNALS:
         /**
          * Specific (proper) codec was selected
@@ -100,6 +104,8 @@ Q_SIGNALS:
          */
         void triggered(KEncodingDetector::AutoDetectScript);
 
+        void triggered(KEncodingProber::ProberType);
+        
         /**
          * If showAutoOptions==true, then better handle triggered(KEncodingDetector::AutoDetectScript) signal
          */

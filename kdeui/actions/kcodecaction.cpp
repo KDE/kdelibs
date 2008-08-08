@@ -278,4 +278,32 @@ bool KCodecAction::setCurrentAutoDetectScript(KEncodingDetector::AutoDetectScrip
     return false;
 }
 
+KEncodingProber::ProberType KCodecAction::currentProberType() const
+{
+    return d->currentSubAction->data().isNull()?
+    KEncodingProber::Universal:
+    (KEncodingProber::ProberType)d->currentSubAction->data().toUInt();
+}
+
+bool KCodecAction::setCurrentProberType(KEncodingProber::ProberType scri)
+{
+    int i;
+    for (i=0;i<actions().size();++i)
+    {
+        if (actions().at(i)->menu())
+        {
+            if (!actions().at(i)->menu()->actions().isEmpty()
+                &&!actions().at(i)->menu()->actions().at(0)->data().isNull()
+                &&actions().at(i)->menu()->actions().at(0)->data().toUInt()==(uint)scri
+                )
+            {
+                d->currentSubAction=actions().at(i)->menu()->actions().at(0);
+                d->currentSubAction->trigger();
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 #include "kcodecaction.moc"
