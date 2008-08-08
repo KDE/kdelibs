@@ -113,19 +113,20 @@ KEncodingProber::KEncodingProber(KEncodingProber::ProberType proberType): d(new 
         case Greek:
         case Hebrew:
         case NorthernSaami:
+        case Other:
         case SouthEasternEurope:
         case Thai:
         case Turkish:
         case WesternEuropean:
             d->prober = new nsSBCSGroupProber();
             break;
-        case Chinese:
+        case ChineseSimplified:
+        case ChineseTraditional:
             d->prober = new ChineseGroupProber();
             break;
         case Japanese:
             d->prober = new JapaneseGroupProber();
             break;
-        case EasternAsia:
         case Korean:
             d->prober = new nsMBCSGroupProber();
             break;
@@ -200,6 +201,8 @@ KEncodingProber::ProberType KEncodingProber::proberTypeForName(const QString& la
 {
     if (lang.isEmpty())
         return KEncodingProber::Universal;
+    else if (lang==i18nc("@item Text character set", "Universal"))
+        return KEncodingProber::Universal;
     else if (lang==i18nc("@item Text character set", "Unicode"))
         return KEncodingProber::Unicode;
     else if (lang==i18nc("@item Text character set", "Cyrillic"))
@@ -218,8 +221,10 @@ KEncodingProber::ProberType KEncodingProber::proberTypeForName(const QString& la
         return KEncodingProber::Japanese;
     else if (lang==i18nc("@item Text character set", "Baltic"))
         return KEncodingProber::Baltic;
-    else if (lang==i18nc("@item Text character set", "Chinese Traditional") || lang==i18nc("@item Text character set", "Chinese Simplified"))
-        return KEncodingProber::Chinese;
+    else if (lang==i18nc("@item Text character set", "Chinese Traditional"))
+        return KEncodingProber::ChineseTraditional;
+    else if (lang==i18nc("@item Text character set", "Chinese Simplified"))
+        return KEncodingProber::ChineseSimplified;
     else if (lang==i18nc("@item Text character set", "Arabic"))
         return KEncodingProber::Arabic;
 
@@ -260,8 +265,11 @@ QString KEncodingProber::nameForProberType(KEncodingProber::ProberType proberTyp
         case KEncodingProber::WesternEuropean:
             return i18nc("@item Text character set", "Western European");
             break;
-        case KEncodingProber::Chinese:
-            return i18nc("@item Text character set", "Chinese");
+        case KEncodingProber::ChineseTraditional:
+            return i18nc("@item Text character set", "Chinese Traditional");
+            break;
+        case KEncodingProber::ChineseSimplified:
+            return i18nc("@item Text character set", "Chinese Simplified");
             break;
         case KEncodingProber::Korean:
             return i18nc("@item Text character set", "Korean");
