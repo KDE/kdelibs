@@ -106,6 +106,9 @@ KEncodingProber::KEncodingProber(KEncodingProber::ProberType proberType): d(new 
      *   because encoding state machine can detect many such encodings.
      */ 
     switch (proberType) {
+        case None:
+            d->prober = NULL;
+            break;
         case Arabic:
         case Baltic:
         case CentralEuropean:
@@ -157,6 +160,8 @@ KEncodingProber::ProberState KEncodingProber::feed(const QByteArray &data)
 
 KEncodingProber::ProberState KEncodingProber::feed(const char* data, int len)
 {
+    if (!d->prober)
+        return KEncodingProber::Probing;
     if (d->proberState == Probing) {
         if (d->mStart) {
             d->unicodeTest(data, len);
@@ -197,10 +202,17 @@ float KEncodingProber::confidence() const
     return d->currentConfidence;
 }
 
+KEncodingProber::ProberType KEncodingProber::proberType() const
+{
+    return d->proberType;
+}
+
 KEncodingProber::ProberType KEncodingProber::proberTypeForName(const QString& lang)
 {
     if (lang.isEmpty())
         return KEncodingProber::Universal;
+    else if (lang==i18nc("@item Text character set", "Disabled"))
+        return KEncodingProber::None;
     else if (lang==i18nc("@item Text character set", "Universal"))
         return KEncodingProber::Universal;
     else if (lang==i18nc("@item Text character set", "Unicode"))
@@ -235,6 +247,9 @@ QString KEncodingProber::nameForProberType(KEncodingProber::ProberType proberTyp
 {
     switch (proberType)
     {
+        case KEncodingProber::None:
+            return i18nc("@item Text character set", "Disabled");
+            break;
         case KEncodingProber::Universal:
             return i18nc("@item Text character set", "Universal");
             break;

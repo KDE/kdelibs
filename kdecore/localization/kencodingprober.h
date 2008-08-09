@@ -69,6 +69,7 @@ public:
     };
 
     enum ProberType {
+        None,
         Universal,
         Arabic,
         Baltic,
@@ -126,6 +127,8 @@ public:
      * @returns the confidence(sureness) of encoding it guessed so far (0.0 ~ 0.99)
      */
     float confidence() const;
+    
+    ProberType proberType() const;
 
     static ProberType proberTypeForName(const QString& lang);
     
