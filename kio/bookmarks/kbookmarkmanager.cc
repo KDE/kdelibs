@@ -511,7 +511,7 @@ void KBookmarkManager::emitChanged()
 
 void KBookmarkManager::emitChanged( const KBookmarkGroup & group )
 {
-    save();
+    (void) save(); // KDE5 TODO: emitChanged should return a bool? Maybe rename it to saveAndEmitChanged?
 
     // Tell the other processes too
     // kDebug(7043) << "KBookmarkManager::emitChanged : broadcasting change " << group.address();
