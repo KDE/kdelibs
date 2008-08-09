@@ -460,18 +460,6 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
             }
         }
 
-        sl = meta["ssl_cert_errors"].split('\n', QString::SkipEmptyParts);
-        QList<QSslError::SslError> errors;
-        foreach (const QString &s, sl) {
-            bool didConvert;
-            QSslError::SslError error = static_cast<QSslError::SslError>(s.toInt(&didConvert));
-            if (!didConvert) {
-                decodedOk = false;
-                break;
-            }
-            errors.append(error);
-        }
-
         if (decodedOk || true/*H4X*/) {
             kid->setSslInfo(certChain,
                             meta["ssl_peer_ip"],
@@ -480,7 +468,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
                             meta["ssl_cipher"],
                             meta["ssl_cipher_used_bits"].toInt(),
                             meta["ssl_cipher_bits"].toInt(),
-                            errors);
+                            KSSLInfoDialog::errorsFromString(meta["ssl_cert_errors"]));
             kDebug(7024) << "Showing SSL Info dialog";
             kid->exec();
             kDebug(7024) << "SSL Info dialog closed";

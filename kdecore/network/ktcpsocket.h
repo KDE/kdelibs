@@ -101,7 +101,7 @@ public:
     enum Error {
         NoError = 0,
         UnknownError,
-        InvalidCertificateAuthority,
+        InvalidCertificateAuthorityCertificate,
         InvalidCertificate,
         CertificateSignatureFailed,
         SelfSignedCertificate,

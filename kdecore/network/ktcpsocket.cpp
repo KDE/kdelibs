@@ -122,14 +122,14 @@ private:
 class KSslErrorPrivate
 {
 public:
-    KSslError::Error errorFromQSslError(QSslError::SslError e)
+    static KSslError::Error errorFromQSslError(QSslError::SslError e)
     {
         switch (e) {
         case QSslError::NoError:
             return KSslError::NoError;
         case QSslError::UnableToGetLocalIssuerCertificate:
         case QSslError::InvalidCaCertificate:
-            return KSslError::InvalidCertificateAuthority;
+            return KSslError::InvalidCertificateAuthorityCertificate;
         case QSslError::InvalidNotBeforeField:
         case QSslError::InvalidNotAfterField:
         case QSslError::CertificateNotYetValid:
@@ -168,8 +168,42 @@ public:
         }
     }
 
+    static QString errorString(KSslError::Error e)                      
+    {                                                                   
+        switch (e) {                                                    
+        case KSslError::NoError:                                        
+            return "No error";                                          
+        case KSslError::InvalidCertificateAuthorityCertificate:         
+            return "The certificate authority's certificate is invalid";
+        case KSslError::ExpiredCertificate:                             
+            return "The certificate has expired";                       
+        case KSslError::InvalidCertificate:                             
+            return "The certificate is invalid";                        
+        case KSslError::SelfSignedCertificate:                          
+            return "The certificate is not signed by any trusted certificate authority";
+        case KSslError::RevokedCertificate:                                             
+            return "The certificate has been revoked";                                  
+        case KSslError::InvalidCertificatePurpose:                                      
+            return "The certificate is unsuitable for this purpose";                    
+        case KSslError::UntrustedCertificate:                                           
+            return "The root certificate authority's certificate is not trusted for this purpose";
+        case KSslError::RejectedCertificate:                                                      
+            return "The certificate authority's certificate is marked to reject this certificate's purpose";
+        case KSslError::NoPeerCertificate:                                                                  
+            return "The peer did not present any certificate";                                              
+        case KSslError::HostNameMismatch:                                                                   
+            return "The certificate does not apply to the given host";                                      
+        case KSslError::CertificateSignatureFailed:                                                         
+            return "The certificate cannot be verified for internal reasons";                               
+        case KSslError::PathLengthExceeded:                                                                 
+            return "The certificate chain is too long";                                                     
+        case KSslError::UnknownError:                                                                       
+        default:                                                                                            
+            return "Unknown error";                                                                         
+        }                                                                                                   
+    }                                                                                                       
+             
     KSslError::Error error;
-    QString errorString;
     QSslCertificate certificate;
 };
 
@@ -179,15 +213,13 @@ KSslError::KSslError(Error errorCode, const QSslCertificate &certificate)
 {
     d->error = errorCode;
     d->certificate = certificate;
-    //TODO do *something* about the error string
 }
 
 
 KSslError::KSslError(const QSslError &other)
  : d(new KSslErrorPrivate())
 {
-    d->error = d->errorFromQSslError(other.error());
-    d->errorString = other.errorString();
+    d->error = KSslErrorPrivate::errorFromQSslError(other.error());  
     d->certificate = other.certificate();
 }
 
@@ -220,7 +252,7 @@ KSslError::Error KSslError::error() const
 
 QString KSslError::errorString() const
 {
-    return d->errorString;
+    return KSslErrorPrivate::errorString(d->error); 
 }
 
 

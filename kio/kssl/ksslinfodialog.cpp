@@ -55,6 +55,7 @@ class KSSLInfoDialog::KSSLInfoDialogPrivate
 {
 public:
     QList<QSslCertificate> certificateChain;
+    QList<QList<KSslError::Error> > certificateErrors;
 
     bool isMainPartEncrypted;
     bool auxPartsEncrypted;
@@ -156,9 +157,11 @@ void KSSLInfoDialog::setSslInfo(const QList<QSslCertificate> &certificateChain,
                                 const QString &ip, const QString &url,
                                 const QString &sslProtocol, const QString &cipher,
                                 int usedBits, int bits,
-                                const QList<QSslError::SslError> &validationErrors/*###*/) {
+                                const QList<QList<KSslError::Error> > &validationErrors) {
 
     d->certificateChain = certificateChain;
+    d->certificateErrors = validationErrors;
+    
     d->ui.certSelector->clear();
     for (int i = 0; i < certificateChain.size(); i++) {
         const QSslCertificate &cert = certificateChain[i];
@@ -203,7 +206,19 @@ void KSSLInfoDialog::setSslInfo(const QList<QSslCertificate> &certificateChain,
 void KSSLInfoDialog::displayFromChain(int i)
 {
     const QSslCertificate &cert = d->certificateChain[i];
-    d->ui.trusted->setText("TODO"); //TODO :)
+    
+    QString trusted;
+    if (!d->certificateErrors[i].isEmpty()) {
+        trusted = i18n("NO, there were errors:");
+        foreach (KSslError::Error e, d->certificateErrors[i]) {
+            KSslError classError(e);
+            trusted.append('\n');
+            trusted.append(classError.errorString());
+        }
+    } else {
+        trusted = i18n("Yes");
+    }
+    d->ui.trusted->setText(trusted);
 
     QString vp = "%1 to %2";
     vp = vp.arg(KGlobal::locale()->formatDateTime(cert.effectiveDate()));
@@ -215,6 +230,27 @@ void KSSLInfoDialog::displayFromChain(int i)
 
     d->subject->setCertificate(cert, KSslCertificateBox::Subject);
     d->issuer->setCertificate(cert, KSslCertificateBox::Issuer);
+}
+
+
+//static
+QList<QList<KSslError::Error> > KSSLInfoDialog::errorsFromString(const QString &es)
+{
+    QStringList sl = es.split('\n', QString::KeepEmptyParts);
+    QList<QList<KSslError::Error> > ret;
+    foreach (const QString &s, sl) {
+        QList<KSslError::Error> certErrors;
+        QStringList sl2 = s.split('\t', QString::SkipEmptyParts);
+        foreach (const QString &s2, sl2) {
+            bool didConvert;
+            KSslError::Error error = static_cast<KSslError::Error>(s2.toInt(&didConvert));
+            if (didConvert) {
+                certErrors.append(error);
+            }
+        }
+        ret.append(certErrors);
+    }
+    return ret;
 }
 
 #include "ksslinfodialog.moc"

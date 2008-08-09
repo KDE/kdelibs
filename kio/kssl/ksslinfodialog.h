@@ -22,17 +22,10 @@
 #ifndef _KSSLINFODIALOG_H
 #define _KSSLINFODIALOG_H
 
+#include <kssl.h>
 #include <kdialog.h>
 
-#include "ksslx509map.h"
-#include "ksslcertificate.h"
-#include "kssl.h"
-#include <QtNetwork/QSslError>
-
-class QWidget;
-class KSSLCertBox;
-class QSslCertificate;
-class KTcpSocket;
+#include "ktcpsocket.h"
 
 /**
  * KDE SSL Information Dialog
@@ -87,10 +80,12 @@ public:
 			        const QString &ip, const QString &url,
 			        const QString &sslProtocol, const QString &cipher,
                     int usedBits, int bits,
-			        const QList<QSslError::SslError> &validationErrors);
+			        const QList<QList<KSslError::Error> > &validationErrors);
 
     void setMainPartEncrypted(bool);
     void setAuxiliaryPartsEncrypted(bool);
+
+    static QList<QList<KSslError::Error> > errorsFromString(const QString &s);
 
 private:
     void updateWhichPartsEncrypted();

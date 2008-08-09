@@ -57,7 +57,7 @@ public:
         const static strErr strError[] = {
             {"NoError", KSslError::NoError},
             {"UnknownError", KSslError::UnknownError},
-            {"InvalidCertificateAuthority", KSslError::InvalidCertificateAuthority},
+            {"InvalidCertificateAuthority", KSslError::InvalidCertificateAuthorityCertificate},
             {"InvalidCertificate", KSslError::InvalidCertificate},
             {"CertificateSignatureFailed", KSslError::CertificateSignatureFailed},
             {"SelfSignedCertificate", KSslError::SelfSignedCertificate},

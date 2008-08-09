@@ -442,11 +442,30 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
     setMetaData("ssl_cipher_bits", QString::number(cipher.supportedBits()));
     setMetaData("ssl_peer_ip", d->ip);
 
-    //TODO Qt 4.4 actually has non-null certificates in QSslError::certificate() so
-    //     we should use that then
+    // try to fill in the blanks, i.e. missing certificates, and just assume that
+    // those belong to the peer (==website or similar) certificate.
+    QList<KSslError> sslErrors = d->socket.sslErrors();
+    for (int i = 0; i < sslErrors.count(); i++) {
+        if (sslErrors[i].certificate().isNull()) {
+            sslErrors[i] = KSslError(sslErrors[i].error(),
+                                     d->socket.peerCertificateChain()[0]);
+        }
+    }
+
     QString errorStr;
-    foreach(const KSslError &se, d->socket.sslErrors())
-        errorStr += QString::number(static_cast<int>(se.error())) + '\n';
+    // encode the two-dimensional numeric error list using '\n' and '\t' as outer and inner separators
+    foreach (const QSslCertificate &cert, d->socket.peerCertificateChain()) {                         
+        foreach (const KSslError &error, sslErrors) {
+            if (error.certificate() == cert) {
+                errorStr += QString::number(static_cast<int>(error.error())) + '\t';
+            }
+        }
+        if (errorStr.endsWith('\t')) {
+            errorStr.chop(1);
+        }
+        errorStr += '\n';
+    };
+    errorStr.chop(1);
     setMetaData("ssl_cert_errors", errorStr);
 
     QString peerCertChain;
