@@ -38,7 +38,7 @@
 #ifndef nsCharSetProber_h__
 #define nsCharSetProber_h__
 
-
+#pragma GCC visibility push(hidden)
 
 //#define DEBUG_chardet // Uncomment this for debug dump.
 
@@ -72,5 +72,7 @@ public:
   static bool FilterWithEnglishLetters(const char* aBuf, unsigned int aLen, char** newBuf, unsigned int& newLen);
 
 };
+
+#pragma GCC visibility pop
 
 #endif /* nsCharSetProber_h__ */

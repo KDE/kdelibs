@@ -38,6 +38,8 @@
 #ifndef nsBig5Prober_h__
 #define nsBig5Prober_h__
 
+#pragma GCC visibility push(hidden)
+
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
 #include "CharDistribution.h"
@@ -66,6 +68,7 @@ protected:
 
 };
 
+#pragma GCC visibility pop
 
 #endif /* nsBig5Prober_h__ */
 

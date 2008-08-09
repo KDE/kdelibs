@@ -38,6 +38,8 @@
 #ifndef JAPANESEGROUPPROBLER_H
 #define JAPANESEGROUPPROBLER_H
 
+#pragma GCC visibility push(hidden)
+
 #include "nsUTF8Prober.h"
 #include "nsSJISProber.h"
 #include "nsEUCJPProber.h"
@@ -66,6 +68,8 @@ protected:
   int mBestGuess;
   unsigned int mActiveNum;
 };
+
+#pragma GCC visibility pop
 
 #endif /* CHINESEGROUPPROBLER_H */
 

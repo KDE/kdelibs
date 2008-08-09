@@ -38,6 +38,8 @@
 #ifndef nsHebrewProber_h__
 #define nsHebrewProber_h__
 
+#pragma GCC visibility push(hidden)
+
 #include "nsSBCharSetProber.h"
 
 // This prober doesn't actually recognize a language or a charset.
@@ -173,4 +175,7 @@ protected:
  * charset identified, either "windows-1255" or "ISO-8859-8".
  *
  */
+
+#pragma GCC visibility pop
+
 #endif /* nsHebrewProber_h__ */

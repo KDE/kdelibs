@@ -39,6 +39,7 @@
 #ifndef nsSBCSGroupProber_h__
 #define nsSBCSGroupProber_h__
 
+#pragma GCC visibility push(hidden)
 
 #define NUM_OF_SBCS_PROBERS    14
 
@@ -65,6 +66,8 @@ protected:
   int mBestGuess;
   unsigned int mActiveNum;
 };
+
+#pragma GCC visibility pop
 
 #endif /* nsSBCSGroupProber_h__ */
 

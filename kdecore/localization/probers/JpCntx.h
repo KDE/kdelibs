@@ -38,6 +38,8 @@
 #ifndef __JPCNTX_H__
 #define __JPCNTX_H__
 
+#pragma GCC visibility push(hidden)
+
 #define NUM_OF_CATEGORY 6
 
  
@@ -46,7 +48,7 @@
 #define MAX_REL_THRESHOLD     1000
 
 //hiragana frequency category table
-extern char jp2CharContext[83][83];
+extern const char jp2CharContext[83][83];
 
 class JapaneseContextAnalysis
 {
@@ -133,6 +135,8 @@ protected:
     return -1;
   };
 };
+
+#pragma GCC visibility pop
 
 #endif /* __JPCNTX_H__ */
 

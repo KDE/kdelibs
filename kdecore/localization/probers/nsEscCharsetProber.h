@@ -38,6 +38,8 @@
 #ifndef nsEscCharSetProber_h__
 #define nsEscCharSetProber_h__
 
+#pragma GCC visibility push(hidden)
+
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
 
@@ -62,6 +64,8 @@ protected:
   nsProbingState mState;
   const char *  mDetectedCharset;
 };
+
+#pragma GCC visibility pop
 
 #endif /* nsEscCharSetProber_h__ */
 

@@ -43,6 +43,8 @@
 #ifndef nsEUCJPProber_h__
 #define nsEUCJPProber_h__
 
+#pragma GCC visibility push(hidden)
+
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
 #include "JpCntx.h"
@@ -70,6 +72,7 @@ protected:
   char mLastChar[2];
 };
 
+#pragma GCC visibility pop
 
 #endif /* nsEUCJPProber_h__ */
 

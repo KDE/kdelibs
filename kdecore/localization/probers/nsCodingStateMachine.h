@@ -37,6 +37,8 @@
 #ifndef nsCodingStateMachine_h__
 #define nsCodingStateMachine_h__
 
+#pragma GCC visibility push(hidden)
+
 #include "nsPkgInt.h"
 
 typedef enum {
@@ -103,6 +105,8 @@ extern SMModel HZSMModel;
 extern SMModel ISO2022CNSMModel;
 extern SMModel ISO2022JPSMModel;
 extern SMModel ISO2022KRSMModel;
+
+#pragma GCC visibility pop
 
 #endif /* nsCodingStateMachine_h__ */
 

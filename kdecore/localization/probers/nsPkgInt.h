@@ -38,6 +38,7 @@
 #ifndef nsPkgInt_h__
 #define nsPkgInt_h__
 
+#pragma GCC visibility push(hidden)
 
 typedef enum {
   eIdxSft4bits  = 3,
@@ -84,6 +85,8 @@ typedef struct nsPkgInt {
 
 #define GETFROMPCK(i, c) \
  (((((c).data)[(i)>>(c).idxsft])>>(((i)&(c).sftmsk)<<(c).bitsft))&(c).unitmsk)
+
+#pragma GCC visibility push(hidden)
 
 #endif /* nsPkgInt_h__ */
 

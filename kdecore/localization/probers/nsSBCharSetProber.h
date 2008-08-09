@@ -38,6 +38,8 @@
 #ifndef nsSingleByteCharSetProber_h__
 #define nsSingleByteCharSetProber_h__
 
+#pragma GCC visibility push(hidden)
+
 #include "nsCharSetProber.h"
 
 #define SAMPLE_SIZE 64
@@ -51,8 +53,8 @@
 
 typedef struct
 {
-  unsigned char *charToOrderMap;    // [256] table use to find a char's order
-  char *precedenceMatrix;           // [SAMPLE_SIZE][SAMPLE_SIZE]; table to find a 2-char sequence's frequency
+  const unsigned char *charToOrderMap;    // [256] table use to find a char's order
+  const char *precedenceMatrix;           // [SAMPLE_SIZE][SAMPLE_SIZE]; table to find a 2-char sequence's frequency
   float  mTypicalPositiveRatio;     // = freqSeqs / totalSeqs 
   bool keepEnglishLetter;         // says if this script contains English characters (not implemented)
   const char* charsetName;
@@ -119,6 +121,8 @@ extern SequenceModel Win1251BulgarianModel;
 extern SequenceModel Latin2HungarianModel;
 extern SequenceModel Win1250HungarianModel;
 extern SequenceModel Win1255Model;
+
+#pragma GCC visibility pop
 
 #endif /* nsSingleByteCharSetProber_h__ */
 

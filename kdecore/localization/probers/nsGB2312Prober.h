@@ -38,6 +38,8 @@
 #ifndef nsGB2312Prober_h__
 #define nsGB2312Prober_h__
 
+#pragma GCC visibility push(hidden)
+
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
 #include "CharDistribution.h"
@@ -68,6 +70,7 @@ protected:
 
 };
 
+#pragma GCC visibility pop
 
 #endif /* nsGB2312Prober_h__ */
 
