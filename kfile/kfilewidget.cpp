@@ -265,6 +265,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->bookmarkHandler = 0;
     d->hasDefaultFilter = false;
     d->hasView = false;
+    d->placesViewSplitter = 0;
 
     d->okButton = new KPushButton(KStandardGuiItem::ok(), this);
     d->okButton->setDefault( true );
@@ -2054,6 +2055,10 @@ void KFileWidgetPrivate::updateFilter()
 // wider than what the user wanted.
 void KFileWidgetPrivate::updateSplitterSize()
 {
+    if (!placesViewSplitter) {
+        return;
+    }
+
     QList<int> sizes = placesViewSplitter->sizes();
     if (sizes.count() == 2) {
         // restore width of speedbar
