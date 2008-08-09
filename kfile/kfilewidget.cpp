@@ -1635,9 +1635,7 @@ KUrl KFileWidget::baseUrl() const
 
 void KFileWidget::resizeEvent(QResizeEvent* event)
 {
-    if (d->placesViewSplitter) {
-        d->updateSplitterSize();
-    }
+    d->updateSplitterSize();
 
     QWidget::resizeEvent(event);
 }
@@ -2108,6 +2106,10 @@ void KFileWidgetPrivate::updateFilter()
 // wider than what the user wanted.
 void KFileWidgetPrivate::updateSplitterSize()
 {
+    if (!placesViewSplitter) {
+        return;
+    }
+
     QList<int> sizes = placesViewSplitter->sizes();
     if (sizes.count() == 2) {
         // restore width of speedbar
