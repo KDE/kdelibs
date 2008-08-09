@@ -245,9 +245,9 @@
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
 
-<!ENTITY % Gallegan "IGNORE">
-<![%Gallegan;[
-<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Gallegan Documentation V1.0//GL"
+<!ENTITY % Galician "IGNORE">
+<![%Galician;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Galician Documentation V1.0//GL"
            "../gl/lang.entities">
 %kde.l10n.ents;
 <!ENTITY % kde.i-default "IGNORE">

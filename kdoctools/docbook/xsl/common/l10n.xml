@@ -17,6 +17,7 @@
 <!ENTITY eu SYSTEM "eu.xml">
 <!ENTITY fi SYSTEM "fi.xml">
 <!ENTITY fr SYSTEM "fr.xml">
+<!ENTITY gl SYSTEM "gl.xml">
 <!ENTITY he SYSTEM "he.xml">
 <!ENTITY hr SYSTEM "hr.xml">
 <!ENTITY hu SYSTEM "hu.xml">
@@ -64,6 +65,7 @@
 &eu;
 &fi;
 &fr;
+&gl;
 &he;
 &hr;
 &hu;
