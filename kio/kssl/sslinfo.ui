@@ -29,12 +29,15 @@
      <property name="text" >
       <string>Address:</string>
      </property>
+     <property name="alignment" >
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
     </widget>
    </item>
    <item row="1" column="1" >
     <widget class="KSqueezedTextLabel" name="address" >
      <property name="text" >
-      <string comment="KDE::DoNotExtract" >https://localhost/</string>
+      <string comment="KDE::DoNotExtract" >KSqueeze…extLabel</string>
      </property>
     </widget>
    </item>
@@ -42,6 +45,9 @@
     <widget class="QLabel" name="ipTag" >
      <property name="text" >
       <string>IP Address:</string>
+     </property>
+     <property name="alignment" >
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
@@ -57,6 +63,9 @@
      <property name="text" >
       <string>Encryption:</string>
      </property>
+     <property name="alignment" >
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
     </widget>
    </item>
    <item row="3" column="1" colspan="2" >
@@ -70,6 +79,9 @@
     <widget class="QLabel" name="detailsTag" >
      <property name="text" >
       <string>Details:</string>
+     </property>
+     <property name="alignment" >
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
@@ -85,6 +97,9 @@
      <property name="text" >
       <string>SSL Version:</string>
      </property>
+     <property name="alignment" >
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
     </widget>
    </item>
    <item row="5" column="1" >
@@ -98,6 +113,9 @@
     <widget class="QLabel" name="certSelectorTag" >
      <property name="text" >
       <string>Certificate Chain</string>
+     </property>
+     <property name="alignment" >
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
@@ -125,6 +143,9 @@
      <property name="text" >
       <string>Trusted:</string>
      </property>
+     <property name="alignment" >
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
     </widget>
    </item>
    <item row="8" column="1" >
@@ -138,6 +159,9 @@
     <widget class="QLabel" name="validityPeriodTag" >
      <property name="text" >
       <string>Validity period:</string>
+     </property>
+     <property name="alignment" >
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
@@ -153,6 +177,9 @@
      <property name="text" >
       <string>Serial Number:</string>
      </property>
+     <property name="alignment" >
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
     </widget>
    </item>
    <item row="10" column="1" >
@@ -167,6 +194,9 @@
      <property name="text" >
       <string>MD5 Digest:</string>
      </property>
+     <property name="alignment" >
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
     </widget>
    </item>
    <item row="11" column="1" >
@@ -180,15 +210,20 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>KTabWidget</class>
-   <extends>QTabWidget</extends>
-   <header>ktabwidget.h</header>
-   <container>1</container>
+   <class>KComboBox</class>
+   <extends>QComboBox</extends>
+   <header>kcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>KSqueezedTextLabel</class>
    <extends>QLabel</extends>
    <header>ksqueezedtextlabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KTabWidget</class>
+   <extends>QTabWidget</extends>
+   <header>ktabwidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
