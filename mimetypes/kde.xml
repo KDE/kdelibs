@@ -18,21 +18,10 @@ Notes:
     <comment>Metalink download</comment>
     <glob pattern="*.metalink"/>
   </mime-type>
-  <mime-type type="application/pkcs10"> <!-- fdo #10076, FIXED 0.21 -->
-    <comment>PKCS#10 certification request</comment>
-    <glob pattern="*.p10"/>
-  </mime-type>
   <mime-type type="application/relaxng">
     <sub-class-of type="application/xml"/>
     <comment>RELAX NG</comment>
     <glob pattern="*.rng"/>
-  </mime-type>
-  <mime-type type="application/vnd.ms-xpsdocument"> <!-- fdo #10027, FIXED 0.21 -->
-    <sub-class-of type="application/zip"/>
-    <comment>XPS document</comment>
-    <acronym>XPS</acronym>
-    <expanded-acronym>XML Paper Specification</expanded-acronym>
-    <glob pattern="*.xps"/>
   </mime-type>
   <mime-type type="application/x-cda">
     <comment>CD audio</comment>
@@ -98,13 +87,6 @@ Notes:
     </magic>
     <glob pattern="*.odr"/>
   </mime-type>
-  <mime-type type="application/x-pak"> <!-- fdo #10030, FIXED 0.21 -->
-    <comment>PAK archive</comment>
-    <magic priority="80">
-      <match offset="0" type="string" value="PACK" />
-    </magic>
-    <glob pattern="*.pak" />
-  </mime-type>
   <mime-type type="application/x-plasma">
     <comment>plasmoid</comment>
     <glob pattern="*.plasma"/>
@@ -130,12 +112,6 @@ Notes:
     <comment>Kugar archive</comment>
     <glob pattern="*.kug"/>
   </mime-type>
-  <mime-type type="application/x-xcursor"> <!-- fdo #10043, FIXED 0.21 -->
-    <comment>X11 cursor</comment>
-    <magic priority="80">
-      <match type="string" value="Xcur" offset="0"/>
-    </magic>
-  </mime-type>
   <mime-type type="application/x-webarchive">
     <sub-class-of type="application/zip"/>
     <comment>web archive</comment>
@@ -152,13 +128,6 @@ Notes:
   </mime-type>
   <mime-type type="audio/x-pn-realaudio-plugin">
     <comment>RealAudio plugin file</comment>
-  </mime-type>
-  <mime-type type="image/x-dds"> <!-- fdo #10083, FIXED 0.21 -->
-    <comment>DirectDraw surface</comment>
-    <magic priority="50">
-      <match value="DDS" type="string" offset="0"/>
-    </magic>
-    <glob pattern="*.dds"/>
   </mime-type>
   <mime-type type="image/x-exr"> <!-- fdo #6488, FIXED 0.24 -->
     <comment>EXR image</comment>
@@ -197,33 +166,6 @@ Notes:
     <glob pattern="*.asc"/>
     <glob pattern="*.txt"/>
     <glob pattern="*.doc"/>
-  </mime-type>
-  <mime-type type="application/msword"> <!-- As discussed on xdg list, subclass was missing, FIXED 0.23 -->
-    <sub-class-of type="application/x-ole-storage"/>
-      <comment>Word document</comment>
-      <comment xml:lang="bg">Документ, формат Word</comment>
-      <comment xml:lang="cs">Dokument Word</comment>
-      <comment xml:lang="de">Word-Dokument</comment>
-      <comment xml:lang="es">Documento de Word</comment>
-      <comment xml:lang="eu">Word dokumentua</comment>
-      <comment xml:lang="hu">Word dokumentum</comment>
-      <comment xml:lang="it">Documento Word</comment>
-      <comment xml:lang="ko">Word 문서</comment>
-      <comment xml:lang="nb">Word-dokument</comment>
-      <comment xml:lang="nn">Word-dokument</comment>
-      <comment xml:lang="sv">Word-dokument</comment>
-      <comment xml:lang="uk">Документ Word</comment>
-      <comment xml:lang="vi">Tài liệu Word của Microsoft™</comment>
-    <magic priority="50">
-      <match value="\x31\xbe\x00\x00" type="string" offset="0"/>
-      <match value="PO^Q`" type="string" offset="0"/>
-      <match value="\376\067\0\043" type="string" offset="0"/>
-      <match value="\333\245-\0\0\0" type="string" offset="0"/>
-      <match value="Microsoft Word 6.0 Document" type="string" offset="2080"/>
-      <match value="Microsoft Word document data" type="string" offset="2112"/>
-    </magic>
-    <glob pattern="*.doc"/>
-    <alias type="application/vnd.ms-word"/>
   </mime-type>
   <mime-type type="text/x-hex">
     <sub-class-of type="text/plain"/>
@@ -368,12 +310,6 @@ Notes:
     <expanded-acronym>Multimedia Retrieval Markup Language</expanded-acronym>
     <glob pattern="*.mrml"/>
   </mime-type>
-  <mime-type type="application/prs.plucker"> <!-- fdo #10379, FIXED 0.22 -->
-    <comment>Plucker document</comment>
-    <magic priority="80">
-      <match type="string" value="DataPlkr" offset="60"/>
-    </magic>
-  </mime-type>
 
   <mime-type type="application/x-cabri">
     <comment>Cabri figure</comment>
@@ -417,18 +353,6 @@ Notes:
     <glob pattern="*.wql"/>
   </mime-type>
 
-  <mime-type type="application/vnd.ms-tnef"> <!-- fdo #10077, FIXED 0.21 -->
-    <comment>TNEF file</comment>
-    <acronym>TNEF</acronym>
-    <expanded-acronym>Transport Neutral Encapsulation Format</expanded-acronym>
-    <magic priority="50">
-      <match type="little32" value="0x223e9f78" offset="0"/>
-    </magic>
-    <glob pattern="*.tnef"/>
-    <glob pattern="*.tnf"/>
-    <alias type="application/ms-tnef"/>
-  </mime-type>
-
   <mime-type type="application/x-kcachegrind">
     <comment>Cachegrind/Callgrind profile dump</comment>
     <glob pattern="cachegrind.out*"/>
@@ -461,9 +385,6 @@ Notes:
     <glob pattern="*.icq"/>
   </mime-type>
 
-  <mime-type type="text/xmcd"> <!-- fdo #10074, FIXED 0.21 -->
-    <comment>CD database file</comment>
-  </mime-type>
   <mime-type type="interface/x-winamp-skin">
     <sub-class-of type="application/zip"/>
     <comment>compressed Winamp skin</comment>
