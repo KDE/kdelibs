@@ -1366,16 +1366,18 @@ bool KCookieJar::loadCookies(const QString &_filename)
             if ((line[0] == '#') || (line[0] == '['))
                 continue;
 
-            const char *host( parseField(line) );
-            const char *domain( parseField(line) );
-            const char *path( parseField(line) );
-            const char *expStr( parseField(line) );
-            if (!expStr) continue;
-            int expDate  = (time_t) strtoul(expStr, 0, 10);
-            const char *verStr( parseField(line) );
-            if (!verStr) continue;
-            int protVer  = (time_t) strtoul(verStr, 0, 10);
-            const char *name( parseField(line) );
+            const QString host = QString::fromLatin1( parseField(line) );
+            const QString domain = QString::fromLatin1( parseField(line) );
+            if (host.isEmpty() && domain.isEmpty())
+                continue;
+            const QString path = QString::fromLatin1( parseField(line) );
+            const QString expStr = QString::fromLatin1( parseField(line) );
+            if (expStr.isEmpty()) continue;
+            const int expDate = expStr.toInt();
+            const QString verStr = QString::fromLatin1( parseField(line) );
+            if (verStr.isEmpty()) continue;
+            int protVer  = verStr.toInt();
+            QString name = QString::fromLatin1( parseField(line) );
             bool keepQuotes = false;
             bool secure = false;
             bool httpOnly = false;
@@ -1412,11 +1414,11 @@ bool KCookieJar::loadCookies(const QString &_filename)
             if ((expDate == 0) || (expDate < curTime))
                 continue;
 
-            KHttpCookie cookie(QString::fromLatin1(host),
-                               QString::fromLatin1(domain),
-                               QString::fromLatin1(path),
-                               QString::fromLatin1(name),
-                               QString::fromLatin1(value),
+            KHttpCookie cookie(host,
+                               domain,
+                               path,
+                               name,
+                               value,
                                expDate, protVer,
                                secure, httpOnly, explicitPath);
             addCookie(cookie);

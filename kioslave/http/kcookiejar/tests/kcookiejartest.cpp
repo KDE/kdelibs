@@ -80,6 +80,13 @@ static void saveCookies()
    QString file = KStandardDirs::locateLocal("config", "kcookiejar-testcookies");
    QFile::remove(file);
    jar->saveCookies(file);
+
+   // Add an empty domain to the cookies file, just for testing robustness
+   QFile f(file);
+   f.open(QIODevice::Append);
+   f.write("[]\n   \"\"   \"/\"    1584320400  0 h  4  x\n");
+   f.close();
+
    delete jar;
    jar = new KCookieJar();
    clearConfig();
