@@ -48,7 +48,7 @@
 
 #define NUM_OF_PROBERS    7
 
-class nsMBCSGroupProber: public nsCharSetProber {
+class KDE_NO_EXPORT nsMBCSGroupProber: public nsCharSetProber {
 public:
   nsMBCSGroupProber();
   virtual ~nsMBCSGroupProber();

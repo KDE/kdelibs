@@ -228,7 +228,7 @@ const char BulgarianLangModel[] =
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 };
 
-SequenceModel Latin5BulgarianModel = 
+SequenceModel KDE_NO_EXPORT Latin5BulgarianModel = 
 {
   Latin5_BulgarianCharToOrderMap,
   BulgarianLangModel,
@@ -237,7 +237,7 @@ SequenceModel Latin5BulgarianModel =
   "ISO-8859-5"
 };
 
-SequenceModel Win1251BulgarianModel = 
+SequenceModel KDE_NO_EXPORT Win1251BulgarianModel = 
 {
   win1251BulgarianCharToOrderMap,
   BulgarianLangModel,

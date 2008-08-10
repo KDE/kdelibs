@@ -44,7 +44,7 @@
 
 #define CN_NUM_OF_PROBERS    3
 
-class ChineseGroupProber: public nsCharSetProber {
+class KDE_NO_EXPORT ChineseGroupProber: public nsCharSetProber {
 public:
   ChineseGroupProber();
   virtual ~ChineseGroupProber();

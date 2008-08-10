@@ -44,7 +44,7 @@
 
 #define JP_NUM_OF_PROBERS    3
 
-class JapaneseGroupProber: public nsCharSetProber {
+class KDE_NO_EXPORT JapaneseGroupProber: public nsCharSetProber {
 public:
   JapaneseGroupProber();
   virtual ~JapaneseGroupProber();

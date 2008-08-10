@@ -49,7 +49,7 @@
 #include "CharDistribution.h"
 
 
-class nsSJISProber: public nsCharSetProber {
+class KDE_NO_EXPORT nsSJISProber: public nsCharSetProber {
 public:
   nsSJISProber(void){mCodingSM = new nsCodingStateMachine(&SJISSMModel);
                       Reset();};

@@ -38,11 +38,11 @@
 #ifndef CharDistribution_h__
 #define CharDistribution_h__
 
-
+#include "kdemacros.h"
 
 #define ENOUGH_DATA_THRESHOLD 256
  
-class CharDistributionAnalysis
+class KDE_NO_EXPORT  CharDistributionAnalysis
 {
 public:
   CharDistributionAnalysis() {Reset();};
@@ -117,7 +117,7 @@ protected:
 };
 
 
-class EUCTWDistributionAnalysis: public CharDistributionAnalysis
+class KDE_NO_EXPORT  EUCTWDistributionAnalysis: public CharDistributionAnalysis
 {
 public:
   EUCTWDistributionAnalysis();
@@ -136,7 +136,7 @@ protected:
 };
 
 
-class EUCKRDistributionAnalysis : public CharDistributionAnalysis
+class KDE_NO_EXPORT  EUCKRDistributionAnalysis : public CharDistributionAnalysis
 {
 public:
   EUCKRDistributionAnalysis();
@@ -153,7 +153,7 @@ protected:
   };
 };
 
-class GB2312DistributionAnalysis : public CharDistributionAnalysis
+class KDE_NO_EXPORT  GB2312DistributionAnalysis : public CharDistributionAnalysis
 {
 public:
   GB2312DistributionAnalysis();
@@ -171,7 +171,7 @@ protected:
 };
 
 
-class Big5DistributionAnalysis : public CharDistributionAnalysis
+class KDE_NO_EXPORT  Big5DistributionAnalysis : public CharDistributionAnalysis
 {
 public:
   Big5DistributionAnalysis();
@@ -191,7 +191,7 @@ protected:
   };
 };
 
-class SJISDistributionAnalysis : public CharDistributionAnalysis
+class KDE_NO_EXPORT  SJISDistributionAnalysis : public CharDistributionAnalysis
 {
 public:
   SJISDistributionAnalysis();
@@ -216,7 +216,7 @@ protected:
   };
 };
 
-class EUCJPDistributionAnalysis : public CharDistributionAnalysis
+class KDE_NO_EXPORT  EUCJPDistributionAnalysis : public CharDistributionAnalysis
 {
 public:
   EUCJPDistributionAnalysis();

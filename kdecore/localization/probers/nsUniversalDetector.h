@@ -48,7 +48,7 @@ typedef enum {
   eHighbyte  = 2
 } nsInputState;
 
-class nsUniversalDetector: public nsCharSetProber {
+class KDE_NO_EXPORT nsUniversalDetector: public nsCharSetProber {
 public:
     nsUniversalDetector();
     virtual ~nsUniversalDetector();

@@ -42,7 +42,7 @@
 
 // This prober doesn't actually recognize a language or a charset.
 // It is a helper prober for the use of the Hebrew model probers
-class nsHebrewProber: public nsCharSetProber
+class KDE_NO_EXPORT nsHebrewProber: public nsCharSetProber
 {
 public:
   nsHebrewProber(void) :mLogicalProb(0), mVisualProb(0) { Reset(); }

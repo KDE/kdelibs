@@ -43,7 +43,7 @@
 
 #define FREQ_CAT_NUM    4
 
-class nsLatin1Prober: public nsCharSetProber {
+class KDE_NO_EXPORT nsLatin1Prober: public nsCharSetProber {
 public:
   nsLatin1Prober(void){Reset();};
   virtual ~nsLatin1Prober(void){};

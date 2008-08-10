@@ -38,7 +38,7 @@
 #ifndef nsCharSetProber_h__
 #define nsCharSetProber_h__
 
-
+#include "kdemacros.h"
 
 //#define DEBUG_chardet // Uncomment this for debug dump.
 
@@ -50,7 +50,7 @@ typedef enum {
 
 #define SHORTCUT_THRESHOLD      (float)0.95
 
-class nsCharSetProber {
+class KDE_NO_EXPORT nsCharSetProber {
 public:
   virtual ~nsCharSetProber() {};
   virtual const char* GetCharSetName() = 0;

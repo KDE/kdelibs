@@ -43,7 +43,7 @@
 
 #define NUM_OF_ESC_CHARSETS   4
 
-class nsEscCharSetProber: public nsCharSetProber {
+class KDE_NO_EXPORT nsEscCharSetProber: public nsCharSetProber {
 public:
   nsEscCharSetProber(void);
   virtual ~nsEscCharSetProber(void);

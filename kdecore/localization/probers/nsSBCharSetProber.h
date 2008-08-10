@@ -59,7 +59,7 @@ typedef struct
 } SequenceModel;
 
 
-class nsSingleByteCharSetProber : public nsCharSetProber{
+class KDE_NO_EXPORT nsSingleByteCharSetProber : public nsCharSetProber{
 public:
   nsSingleByteCharSetProber(SequenceModel *model) 
     :mModel(model), mReversed(false), mNameProber(0) { Reset(); }

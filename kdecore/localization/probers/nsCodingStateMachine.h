@@ -37,6 +37,8 @@
 #ifndef nsCodingStateMachine_h__
 #define nsCodingStateMachine_h__
 
+#include "kdemacros.h"
+
 #include "nsPkgInt.h"
 
 typedef enum {
@@ -57,21 +59,21 @@ typedef struct
   const char* name;
 } SMModel;
 
-class nsCodingStateMachine {
+class KDE_NO_EXPORT nsCodingStateMachine {
 public:
   nsCodingStateMachine(SMModel* sm){
           mCurrentState = eStart;
           mModel = sm;
         };
   nsSMState NextState(char c){
-    //for each byte we get its class , if it is first byte, we also get byte length
+    //for each byte we get its class KDE_NO_EXPORT , if it is first byte, we also get byte length
     unsigned int byteCls = GETCLASS(c);
     if (mCurrentState == eStart)
     { 
       mCurrentBytePos = 0; 
       mCurrentCharLen = mModel->charLenTable[byteCls];
     }
-    //from byte's class and stateTable, we get its next state
+    //from byte's class KDE_NO_EXPORT and stateTable, we get its next state
     mCurrentState=(nsSMState)GETFROMPCK(mCurrentState*(mModel->classFactor)+byteCls,
                                        mModel->stateTable);
     mCurrentBytePos++;
@@ -89,20 +91,20 @@ protected:
   SMModel *mModel;
 };
 
-extern SMModel UTF8SMModel;
-extern SMModel Big5SMModel;
-extern SMModel EUCJPSMModel;
-extern SMModel EUCKRSMModel;
-extern SMModel EUCTWSMModel;
-extern SMModel GB18030SMModel;
-extern SMModel SJISSMModel;
-extern SMModel UCS2BESMModel;
+extern KDE_NO_EXPORT SMModel UTF8SMModel;
+extern KDE_NO_EXPORT SMModel Big5SMModel;
+extern KDE_NO_EXPORT SMModel EUCJPSMModel;
+extern KDE_NO_EXPORT SMModel EUCKRSMModel;
+extern KDE_NO_EXPORT SMModel EUCTWSMModel;
+extern KDE_NO_EXPORT SMModel GB18030SMModel;
+extern KDE_NO_EXPORT SMModel SJISSMModel;
+extern KDE_NO_EXPORT SMModel UCS2BESMModel;
 
 
-extern SMModel HZSMModel;
-extern SMModel ISO2022CNSMModel;
-extern SMModel ISO2022JPSMModel;
-extern SMModel ISO2022KRSMModel;
+extern KDE_NO_EXPORT SMModel HZSMModel;
+extern KDE_NO_EXPORT SMModel ISO2022CNSMModel;
+extern KDE_NO_EXPORT SMModel ISO2022JPSMModel;
+extern KDE_NO_EXPORT SMModel ISO2022KRSMModel;
 
 #endif /* nsCodingStateMachine_h__ */
 

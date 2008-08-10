@@ -42,7 +42,7 @@
 #include "nsCodingStateMachine.h"
 #include "CharDistribution.h"
 
-class nsEUCTWProber: public nsCharSetProber {
+class KDE_NO_EXPORT nsEUCTWProber: public nsCharSetProber {
 public:
   nsEUCTWProber(void){mCodingSM = new nsCodingStateMachine(&EUCTWSMModel);
                       Reset();};

@@ -43,7 +43,7 @@
 
 //KOI8-R language model
 //Character Mapping Table:
-const unsigned char KOI8R_CharToOrderMap[] =
+static const unsigned char KOI8R_CharToOrderMap[] =
 {
 255,255,255,255,255,255,255,255,255,255,254,255,255,254,255,255,  //00
 255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,  //10
@@ -63,7 +63,7 @@ const unsigned char KOI8R_CharToOrderMap[] =
  35, 43, 45, 32, 40, 52, 56, 33, 61, 62, 51, 57, 47, 63, 50, 70,  //f0
 };
 
-const unsigned char win1251_CharToOrderMap[] =
+static const unsigned char win1251_CharToOrderMap[] =
 {
 255,255,255,255,255,255,255,255,255,255,254,255,255,254,255,255,  //00
 255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,  //10

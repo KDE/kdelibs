@@ -48,7 +48,7 @@
 #include "JpCntx.h"
 #include "CharDistribution.h"
 
-class nsEUCJPProber: public nsCharSetProber {
+class KDE_NO_EXPORT nsEUCJPProber: public nsCharSetProber {
 public:
   nsEUCJPProber(void){mCodingSM = new nsCodingStateMachine(&EUCJPSMModel);
                       Reset();};

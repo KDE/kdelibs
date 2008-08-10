@@ -42,7 +42,7 @@
 #include "nsCodingStateMachine.h"
 #include "CharDistribution.h"
 
-class nsBig5Prober: public nsCharSetProber {
+class KDE_NO_EXPORT nsBig5Prober: public nsCharSetProber {
 public:
   nsBig5Prober(void){mCodingSM = new nsCodingStateMachine(&Big5SMModel);
                       Reset();};

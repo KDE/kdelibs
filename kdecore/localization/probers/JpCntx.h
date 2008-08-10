@@ -38,9 +38,9 @@
 #ifndef __JPCNTX_H__
 #define __JPCNTX_H__
 
-#define NUM_OF_CATEGORY 6
+#include "kdemacros.h"
 
- 
+#define NUM_OF_CATEGORY 6
 
 #define ENOUGH_REL_THRESHOLD  100
 #define MAX_REL_THRESHOLD     1000
@@ -48,7 +48,7 @@
 //hiragana frequency category table
 extern const char jp2CharContext[83][83];
 
-class JapaneseContextAnalysis
+class KDE_NO_EXPORT JapaneseContextAnalysis
 {
 public:
   JapaneseContextAnalysis() {Reset();};
@@ -102,7 +102,7 @@ protected:
 };
 
 
-class SJISContextAnalysis : public JapaneseContextAnalysis
+class KDE_NO_EXPORT SJISContextAnalysis : public JapaneseContextAnalysis
 {
   //SJISContextAnalysis(){};
 protected:
@@ -119,7 +119,7 @@ protected:
   };
 };
 
-class EUCJPContextAnalysis : public JapaneseContextAnalysis
+class KDE_NO_EXPORT EUCJPContextAnalysis : public JapaneseContextAnalysis
 {
 protected:
   int GetOrder(const char* str, unsigned int *charLen);
