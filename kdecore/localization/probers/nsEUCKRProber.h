@@ -38,8 +38,6 @@
 #ifndef nsEUCKRProber_h__
 #define nsEUCKRProber_h__
 
-#pragma GCC visibility push(hidden)
-
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
 #include "CharDistribution.h"
@@ -68,7 +66,6 @@ protected:
 
 };
 
-#pragma GCC visibility pop
 
 #endif /* nsEUCKRProber_h__ */
 

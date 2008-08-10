@@ -39,8 +39,6 @@
 #ifndef nsLatin1Prober_h__
 #define nsLatin1Prober_h__
 
-#pragma GCC visibility push(hidden)
-
 #include "nsCharSetProber.h"
 
 #define FREQ_CAT_NUM    4
@@ -67,7 +65,6 @@ protected:
   unsigned int mFreqCounter[FREQ_CAT_NUM];
 };
 
-#pragma GCC visibility pop
 
 #endif /* nsLatin1Prober_h__ */
 

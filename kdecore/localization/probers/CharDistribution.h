@@ -38,7 +38,7 @@
 #ifndef CharDistribution_h__
 #define CharDistribution_h__
 
-#pragma GCC visibility push(hidden)
+
 
 #define ENOUGH_DATA_THRESHOLD 256
  
@@ -232,8 +232,6 @@ protected:
       return -1;
   };
 };
-
-#pragma GCC visibility pop
 
 #endif //CharDistribution_h__
 

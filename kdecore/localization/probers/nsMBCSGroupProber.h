@@ -38,8 +38,6 @@
 #ifndef nsMBCSGroupProber_h__
 #define nsMBCSGroupProber_h__
 
-#pragma GCC visibility push(hidden)
-
 #include "nsSJISProber.h"
 #include "nsUTF8Prober.h"
 #include "nsEUCJPProber.h"
@@ -72,8 +70,6 @@ protected:
   int mBestGuess;
   unsigned int mActiveNum;
 };
-
-#pragma GCC visibility pop
 
 #endif /* nsMBCSGroupProber_h__ */
 

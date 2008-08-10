@@ -38,8 +38,6 @@
 #ifndef nsUTF8Prober_h__
 #define nsUTF8Prober_h__
 
-#pragma GCC visibility push(hidden)
-
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
 
@@ -61,8 +59,6 @@ protected:
   nsProbingState mState;
   unsigned int mNumOfMBChar;
 };
-
-#pragma GCC visibility pop
 
 #endif /* nsUTF8Prober_h__ */
 

@@ -38,8 +38,6 @@
 #ifndef nsUniversalDetector_h__
 #define nsUniversalDetector_h__
 
-#pragma GCC visibility push(hidden)
-
 #include "nsCharSetProber.h"
 
 #define NUM_OF_CHARSET_PROBERS  3
@@ -74,8 +72,6 @@ protected:
    nsCharSetProber  *mCharSetProbers[NUM_OF_CHARSET_PROBERS];
    nsCharSetProber  *mEscCharSetProber;
 };
-
-#pragma GCC visibility pop
 
 #endif
 

@@ -38,8 +38,6 @@
 #ifndef CHINESEGROUPPROBLER_H
 #define CHINESEGROUPPROBLER_H
 
-#pragma GCC visibility push(hidden)
-
 #include "nsUTF8Prober.h"
 #include "nsGB2312Prober.h"
 #include "nsBig5Prober.h"
@@ -68,8 +66,6 @@ protected:
   int mBestGuess;
   unsigned int mActiveNum;
 };
-
-#pragma GCC visibility pop
 
 #endif /* CHINESEGROUPPROBLER_H */
 

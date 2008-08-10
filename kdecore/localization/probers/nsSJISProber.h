@@ -43,8 +43,6 @@
 #ifndef nsSJISProber_h__
 #define nsSJISProber_h__
 
-#pragma GCC visibility push(hidden)
-
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
 #include "JpCntx.h"
@@ -74,7 +72,6 @@ protected:
 
 };
 
-#pragma GCC visibility pop
 
 #endif /* nsSJISProber_h__ */
 

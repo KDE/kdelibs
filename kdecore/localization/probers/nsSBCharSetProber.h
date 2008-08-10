@@ -38,8 +38,6 @@
 #ifndef nsSingleByteCharSetProber_h__
 #define nsSingleByteCharSetProber_h__
 
-#pragma GCC visibility push(hidden)
-
 #include "nsCharSetProber.h"
 
 #define SAMPLE_SIZE 64
@@ -121,8 +119,6 @@ extern SequenceModel Win1251BulgarianModel;
 extern SequenceModel Latin2HungarianModel;
 extern SequenceModel Win1250HungarianModel;
 extern SequenceModel Win1255Model;
-
-#pragma GCC visibility pop
 
 #endif /* nsSingleByteCharSetProber_h__ */
 
