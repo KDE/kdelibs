@@ -571,7 +571,8 @@ void KGlobalSettings::Private::rereadMouseSettings()
 
 QString KGlobalSettings::desktopPath()
 {
-	return QDesktopServices::storageLocation( QDesktopServices::DesktopLocation );
+    QString path = QDesktopServices::storageLocation( QDesktopServices::DesktopLocation );
+    return path.isEmpty() ? path : QDir::homePath();
 }
 
 // Autostart is not a XDG path, so we keep with old kdelibs code code
@@ -590,7 +591,8 @@ QString KGlobalSettings::autostartPath()
 
 QString KGlobalSettings::documentPath()
 {
-    return QDesktopServices::storageLocation( QDesktopServices::DocumentsLocation );
+    QString path = QDesktopServices::storageLocation( QDesktopServices::DocumentsLocation );
+    return path.isEmpty() ? path : QDir::homePath();
 }
 
 QString KGlobalSettings::downloadPath()
@@ -614,17 +616,20 @@ QString KGlobalSettings::downloadPath()
 
 QString KGlobalSettings::videosPath()
 {
-    return QDesktopServices::storageLocation( QDesktopServices::MoviesLocation );
+    QString path = QDesktopServices::storageLocation( QDesktopServices::MoviesLocation );
+    return path.isEmpty() ? path : QDir::homePath();
 }
 
 QString KGlobalSettings::picturesPath()
 {
-    return QDesktopServices::storageLocation( QDesktopServices::PicturesLocation );
+    QString path = QDesktopServices::storageLocation( QDesktopServices::PicturesLocation );
+    return path.isEmpty() ? path : QDir::homePath();
 }
 
 QString KGlobalSettings::musicPath()
 {
-    return QDesktopServices::storageLocation( QDesktopServices::MusicLocation );
+    QString path = QDesktopServices::storageLocation( QDesktopServices::MusicLocation );
+    return path.isEmpty() ? path : QDir::homePath();
 }
 
 bool KGlobalSettings::isMultiHead()
