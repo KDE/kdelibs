@@ -459,12 +459,12 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     KUrlCompletion *fileCompletionObj = new KUrlCompletion( KUrlCompletion::FileCompletion );
     KIO::StatJob *statJob = KIO::stat( d->url.url(), KIO::HideProgressInfo );
     KIO::NetAccess::synchronousRun( statJob, 0 );
-    
+
     KUrl dirUrl = d->url;
     if (statJob->statResult().isDir()) {
         dirUrl.adjustPath( KUrl::AddTrailingSlash );
     } else {
-        dirUrl.upUrl();
+        dirUrl.setFileName(QString());
     }
     d->urlNavigator->setUrl( dirUrl.url() );
 
