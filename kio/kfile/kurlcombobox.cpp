@@ -398,10 +398,10 @@ void KUrlComboBox::mouseMoveEvent(QMouseEvent *event)
         QDrag *drag = new QDrag(this);
         QMimeData *mime = new QMimeData();
         mime->setUrls(QList<QUrl>() << KUrl(itemText(index)));
-        mime->setText("text/uri-list");
+        mime->setText(itemText(index));
         drag->setPixmap(itemIcon(index).pixmap(KIconLoader::SizeMedium));
         drag->setMimeData(mime);
-        drag->start();
+        drag->exec();
     }
 
     KComboBox::mouseMoveEvent(event);
