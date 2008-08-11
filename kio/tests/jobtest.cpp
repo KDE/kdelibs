@@ -1167,4 +1167,23 @@ void JobTest::mimeType()
 #endif
 }
 
+void JobTest::moveFileDestAlreadyExists() // #157601
+{
+    const QString file1 = homeTmpDir() + "fileFromHome";
+    createTestFile( file1 );
+    const QString file2 = homeTmpDir() + "anotherFile";
+    createTestFile( file2 );
+    const QString existingDest = otherTmpDir() + "fileFromHome";
+    createTestFile( existingDest );
+
+    KUrl::List urls; urls << KUrl(file1) << KUrl(file2);
+    KIO::CopyJob* job = KIO::move(urls, otherTmpDir(), KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    job->setAutoSkip(true);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    QVERIFY(QFile::exists(file1)); // it was skipped
+    QVERIFY(!QFile::exists(file2)); // it was moved
+}
+
 #include "jobtest.moc"

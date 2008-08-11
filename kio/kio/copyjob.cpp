@@ -151,6 +151,7 @@ public:
     QList<CopyInfo> dirs;
     KUrl::List dirsToRemove;
     KUrl::List m_srcList;
+    KUrl::List m_skippedSourceUrls;
     KUrl::List::const_iterator m_currentStatSrc;
     bool m_bCurrentSrcIsDir;
     bool m_bCurrentOperationIsLink;
@@ -768,8 +769,8 @@ void CopyJobPrivate::skip( const KUrl & sourceUrl )
 {
     // If this is one if toplevel sources,
     // remove it from d->m_srcList, for a correct FilesRemoved() signal
-    //kDebug(7007) << "looking for " << sourceUrl;
-    m_srcList.removeAll( sourceUrl );
+    // But don't do it right away, we have iterators into that list (#157601)
+    m_skippedSourceUrls.append( sourceUrl );
     dirsToRemove.removeAll( sourceUrl );
 }
 
@@ -1513,6 +1514,9 @@ void CopyJobPrivate::setNextDirAttribute()
             //kDebug(7007) << "KDirNotify'ing FilesAdded " << url;
             org::kde::KDirNotify::emitFilesAdded( url.url() );
 
+            Q_FOREACH(const KUrl& url, m_skippedSourceUrls)
+                m_srcList.removeAll(url);
+
             if ( m_mode == CopyJob::Move && !m_srcList.isEmpty() ) {
                 //kDebug(7007) << "KDirNotify'ing FilesRemoved " << m_srcList.toStringList();
                 org::kde::KDirNotify::emitFilesRemoved( m_srcList.toStringList() );
@@ -1657,10 +1661,9 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
         Q_ASSERT( m_currentSrcURL == *m_currentStatSrc );
 
         // Existing dest?
-        if ( ( err == ERR_DIR_ALREADY_EXIST ||
+        if ( err == ERR_DIR_ALREADY_EXIST ||
                err == ERR_FILE_ALREADY_EXIST ||
                err == ERR_IDENTICAL_FILES )
-             && q->isInteractive() )
         {
             if (m_reportTimer)
                 m_reportTimer->stop();
@@ -1672,7 +1675,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 return;
             } else if ( m_bOverwriteAll ) {
                 ; // nothing to do, stat+copy+del will overwrite
-            } else {
+            } else if ( q->isInteractive() ) {
                 QString newPath;
                 // If src==dest, use "overwrite-itself"
                 RenameDialog_Mode mode = (RenameDialog_Mode)
@@ -1761,6 +1764,12 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                     //assert( 0 );
                     break;
                 }
+            } else if ( err != KIO::ERR_UNSUPPORTED_ACTION ) {
+                // Dest already exists, and job is not interactive -> abort with error
+                q->setError( err );
+                q->setErrorText( errText );
+                q->emitResult();
+                return;
             }
         } else if ( err != KIO::ERR_UNSUPPORTED_ACTION ) {
             kDebug(7007) << "Couldn't rename" << m_currentSrcURL << "to" << dest << ", aborting";
@@ -1778,7 +1787,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
     }
     else
     {
-        //kDebug(7007) << "Renaming succeeded, move on";
+        kDebug(7007) << "Renaming succeeded, move on";
         ++m_processedFiles;
         emit q->copyingDone( q, *m_currentStatSrc, dest, -1 /*mtime unknown, and not needed*/, true, true );
         statNextSrc();
@@ -1848,6 +1857,11 @@ void KIO::CopyJob::setDefaultPermissions( bool b )
 KIO::CopyJob::CopyMode KIO::CopyJob::operationMode() const
 {
     return d_func()->m_mode;
+}
+
+void KIO::CopyJob::setAutoSkip(bool autoSkip)
+{
+    d_func()->m_bAutoSkip = autoSkip;
 }
 
 CopyJob *KIO::copy(const KUrl& src, const KUrl& dest, JobFlags flags)

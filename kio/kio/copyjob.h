@@ -102,6 +102,15 @@ namespace KIO {
         void setDefaultPermissions( bool b );
 
         /**
+         * Skip copying or moving any file when the destination already exists,
+         * instead of the default behavior (interactive mode: showing a dialog to the user,
+         * non-interactive mode: aborting with an error).
+         * Initially added for a unit test.
+         * \since 4.2
+         */
+        void setAutoSkip(bool autoSkip);
+
+        /**
          * Reimplemented for internal reasons
          */
         virtual bool doSuspend();

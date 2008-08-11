@@ -60,6 +60,7 @@ private Q_SLOTS:
     void mimeType();
     //void newApiPerformance();
     void calculateRemainingSeconds();
+    void moveFileDestAlreadyExists();
 
     // Remote tests
     //void copyFileToSystem();
