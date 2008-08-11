@@ -423,8 +423,12 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
   if (_service.terminal()) {
     KConfigGroup cg(KGlobal::config(), "General");
     QString terminal = cg.readPathEntry("TerminalApplication", "konsole");
-    if (terminal == "konsole")
+    if (terminal == "konsole") {
+      if (!_service.path().isEmpty()) {
+        terminal += " --workdir " + KShell::quoteArg(_service.path());
+      }
       terminal += " -caption=%c %i %m";
+    }
     terminal += ' ';
     terminal += _service.terminalOptions();
     if( !mx1.expandMacrosShellQuote( terminal ) ) {
