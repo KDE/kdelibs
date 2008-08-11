@@ -1186,4 +1186,18 @@ void JobTest::moveFileDestAlreadyExists() // #157601
     QVERIFY(!QFile::exists(file2)); // it was moved
 }
 
+void JobTest::moveAndOverwrite()
+{
+    const QString sourceFile = homeTmpDir() + "fileFromHome";
+    createTestFile( sourceFile );
+    const QString existingDest = otherTmpDir() + "fileFromHome";
+    createTestFile( existingDest );
+
+    KIO::FileCopyJob* job = KIO::file_move(KUrl(sourceFile), KUrl(existingDest), -1, KIO::HideProgressInfo | KIO::Overwrite);
+    job->setUiDelegate(0);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    QVERIFY(!QFile::exists(sourceFile)); // it was moved
+}
+
 #include "jobtest.moc"

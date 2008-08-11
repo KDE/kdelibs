@@ -62,6 +62,8 @@ private Q_SLOTS:
     void calculateRemainingSeconds();
     void moveFileDestAlreadyExists();
 
+    void moveAndOverwrite();
+
     // Remote tests
     //void copyFileToSystem();
 
