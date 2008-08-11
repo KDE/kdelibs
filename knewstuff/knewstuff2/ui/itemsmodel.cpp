@@ -144,6 +144,8 @@ void ItemsModel::removeEntry(Entry * entry)
 
 void ItemsModel::slotEntryPreviewLoaded(const QString &url, const QPixmap & pix)
 {
+    if( pix.isNull())
+        return;
     QImage image = pix.toImage();
     m_largePreviewImages.insert(url, image);
     m_previewImages.insert(url, image.scaled(64, 64, Qt::KeepAspectRatio));
