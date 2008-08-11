@@ -28,6 +28,15 @@ avaneb väike abiaken (kui see on antud elemendi kohta olemas), mis selgitab
 elemendi funktsiooni.</para></listitem>
 </varlistentry>
 
+<varlistentry>
+<term><menuchoice>
+<guimenu>Abi</guimenu>
+<guimenuitem>Vaheta rakenduse keelt...</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Avab dialoogi</action>, kus saab muuta rakenduse
+<guilabel>esmast keelt</guilabel> ja <guilabel>tagavarakeelt</guilabel>,
+kui esmane keel pole saadaval.</para></listitem>
+</varlistentry>
 
 <varlistentry>
 <term><menuchoice>
