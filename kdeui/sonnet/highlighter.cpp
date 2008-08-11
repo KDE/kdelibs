@@ -40,7 +40,7 @@
 #include <QTextCursor>
 #include <QEvent>
 #include <QKeyEvent>
-
+#include <QApplication>
 namespace Sonnet {
 
 class Highlighter::Private
@@ -318,7 +318,7 @@ void Highlighter::setMisspelled(int start, int count)
 
 void Highlighter::unsetMisspelled( int start, int count )
 {
-    setFormat( start, count, Qt::black );
+    setFormat( start, count, qApp->palette().color( QPalette::Text ) );
 }
 
 bool Highlighter::eventFilter( QObject *o, QEvent *e)
