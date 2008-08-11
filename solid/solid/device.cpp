@@ -213,6 +213,7 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
                 iface = deviceinterface_cast(Ifaces::Video, Video, dev_iface);
                 break;
             case DeviceInterface::Unknown:
+            case DeviceInterface::Last:
                 break;
             }
         }
