@@ -129,6 +129,7 @@ public:
     float confidence() const;
     
     ProberType proberType() const;
+    void setProberType(ProberType proberType);
 
     static ProberType proberTypeForName(const QString& lang);
     

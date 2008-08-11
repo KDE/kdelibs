@@ -37,11 +37,54 @@
 class KEncodingProberPrivate
 {
 public:
-    KEncodingProberPrivate(): encoding(""), prober(NULL), mStart(true) {};
+    KEncodingProberPrivate(): encoding(strdup("")), prober(NULL), mStart(true) {};
     ~KEncodingProberPrivate()
     {
         delete encoding;
         delete prober;
+    }
+    void setProberType(KEncodingProber::ProberType pType)
+    {
+        proberType = pType;
+        /* handle multi-byte encodings carefully , because they're hard to detect,
+        *   and have to use some Stastics methods.
+        * for single-byte encodings (most western encodings), nsSBCSGroupProber is ok,
+        *   because encoding state machine can detect many such encodings.
+        */ 
+        switch (proberType) {
+            case KEncodingProber::None:
+                prober = NULL;
+                break;
+            case KEncodingProber::Arabic:
+            case KEncodingProber::Baltic:
+            case KEncodingProber::CentralEuropean:
+            case KEncodingProber::Cyrillic:
+            case KEncodingProber::Greek:
+            case KEncodingProber::Hebrew:
+            case KEncodingProber::NorthernSaami:
+            case KEncodingProber::Other:
+            case KEncodingProber::SouthEasternEurope:
+            case KEncodingProber::Thai:
+            case KEncodingProber::Turkish:
+            case KEncodingProber::WesternEuropean:
+                prober = new kencodingprober::nsSBCSGroupProber();
+                break;
+            case KEncodingProber::ChineseSimplified:
+            case KEncodingProber::ChineseTraditional:
+                prober = new kencodingprober::ChineseGroupProber();
+                break;
+            case KEncodingProber::Japanese:
+                prober = new kencodingprober::JapaneseGroupProber();
+                break;
+            case KEncodingProber::Korean:
+                prober = new kencodingprober::nsMBCSGroupProber();
+                break;
+            case KEncodingProber::Universal:
+                prober = new kencodingprober::nsUniversalDetector();
+                break;
+            default:
+                prober = NULL;
+        }
     }
     void unicodeTest(const char *aBuf, int aLen)
     {
@@ -93,51 +136,13 @@ public:
     KEncodingProber::ProberState proberState;
     float currentConfidence;
     const char *encoding;
-    nsCharSetProber *prober;
+    kencodingprober::nsCharSetProber *prober;
     bool mStart;
 };
 
 KEncodingProber::KEncodingProber(KEncodingProber::ProberType proberType): d(new KEncodingProberPrivate())
 {
-    d->proberType = proberType;
-    /* handle multi-byte encodings carefully , because they're hard to detect,
-     *   and have to use some Stastics methods.
-     * for single-byte encodings (most western encodings), nsSBCSGroupProber is ok,
-     *   because encoding state machine can detect many such encodings.
-     */ 
-    switch (proberType) {
-        case None:
-            d->prober = NULL;
-            break;
-        case Arabic:
-        case Baltic:
-        case CentralEuropean:
-        case Cyrillic:
-        case Greek:
-        case Hebrew:
-        case NorthernSaami:
-        case Other:
-        case SouthEasternEurope:
-        case Thai:
-        case Turkish:
-        case WesternEuropean:
-            d->prober = new nsSBCSGroupProber();
-            break;
-        case ChineseSimplified:
-        case ChineseTraditional:
-            d->prober = new ChineseGroupProber();
-            break;
-        case Japanese:
-            d->prober = new JapaneseGroupProber();
-            break;
-        case Korean:
-            d->prober = new nsMBCSGroupProber();
-            break;
-        default:
-            d->prober = new nsUniversalDetector();
-            break;
-    }
-    reset();
+    setProberType(proberType);
 }
 
 KEncodingProber::~KEncodingProber()
@@ -149,7 +154,7 @@ void KEncodingProber::reset()
 {
     d->proberState = KEncodingProber::Probing;
     d->currentConfidence = MINIMUM_THRESHOLD;
-    d->encoding = "";
+    d->encoding = strdup("");
     d->mStart = true;
 }
 
@@ -173,10 +178,10 @@ KEncodingProber::ProberState KEncodingProber::feed(const char* data, int len)
         d->encoding = strdup(d->prober->GetCharSetName());
         switch (d->prober->GetState())
         {
-            case eNotMe:
+            case kencodingprober::eNotMe:
                 d->proberState = NotMe;
                 break;
-            case eFoundIt:
+            case kencodingprober::eFoundIt:
                 d->proberState = FoundIt;
                 break;
             default:
@@ -205,6 +210,12 @@ float KEncodingProber::confidence() const
 KEncodingProber::ProberType KEncodingProber::proberType() const
 {
     return d->proberType;
+}
+
+void KEncodingProber::setProberType(KEncodingProber::ProberType proberType)
+{
+    d->setProberType(proberType);
+    reset();
 }
 
 KEncodingProber::ProberType KEncodingProber::proberTypeForName(const QString& lang)
