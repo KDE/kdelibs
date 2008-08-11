@@ -25,14 +25,18 @@
 
 #include "JapaneseGroupProber.h"
 
+#include "UnicodeGroupProber.h"
+#include "nsSJISProber.h"
+#include "nsEUCJPProber.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
 namespace kencodingprober {
-#ifdef DEBUG_chardet
-char *ProberName[] = 
+#ifdef DEBUG_PROBE
+static char *ProberName[] = 
 {
-  "UTF8",
+  "Unicode",
   "GB18030",
   "Big5",
 };
@@ -41,7 +45,7 @@ char *ProberName[] =
 
 JapaneseGroupProber::JapaneseGroupProber()
 {
-  mProbers[0] = new nsUTF8Prober();
+  mProbers[0] = new UnicodeGroupProber();
   mProbers[1] = new nsSJISProber();
   mProbers[2] = new nsEUCJPProber();
   Reset();
@@ -169,7 +173,7 @@ float JapaneseGroupProber::GetConfidence(void)
   return bestConf;
 }
 
-#ifdef DEBUG_chardet
+#ifdef DEBUG_PROBE
 void JapaneseGroupProber::DumpStatus()
 {
   unsigned int i;

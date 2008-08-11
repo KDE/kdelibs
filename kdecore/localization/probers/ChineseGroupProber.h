@@ -27,9 +27,7 @@
 #ifndef CHINESEGROUPPROBER_H
 #define CHINESEGROUPPROBER_H
 
-#include "nsUTF8Prober.h"
-#include "nsGB2312Prober.h"
-#include "nsBig5Prober.h"
+#include "nsCharSetProber.h"
 
 #define CN_NUM_OF_PROBERS    3
 namespace kencodingprober {
@@ -44,7 +42,7 @@ public:
   float     GetConfidence(void);
   void      SetOpion() {};
 
-#ifdef DEBUG_chardet
+#ifdef DEBUG_PROBE
   void  DumpStatus();
 #endif
 

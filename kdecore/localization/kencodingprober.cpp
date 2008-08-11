@@ -28,6 +28,7 @@
 #include "probers/nsUniversalDetector.h"
 #include "probers/ChineseGroupProber.h"
 #include "probers/JapaneseGroupProber.h"
+#include "probers/UnicodeGroupProber.h"
 #include "probers/nsSBCSGroupProber.h"
 #include "probers/nsMBCSGroupProber.h"
 
@@ -79,6 +80,9 @@ public:
                 break;
             case KEncodingProber::Korean:
                 prober = new kencodingprober::nsMBCSGroupProber();
+                break;
+            case KEncodingProber::Unicode:
+                prober = new kencodingprober::UnicodeGroupProber();
                 break;
             case KEncodingProber::Universal:
                 prober = new kencodingprober::nsUniversalDetector();
@@ -154,8 +158,6 @@ KEncodingProber::~KEncodingProber()
 void KEncodingProber::reset()
 {
     d->proberState = KEncodingProber::Probing;
-    d->currentConfidence = MINIMUM_THRESHOLD;
-    d->encoding = strdup("");
     d->mStart = true;
 }
 
@@ -175,8 +177,6 @@ KEncodingProber::ProberState KEncodingProber::feed(const char* data, int len)
                 return d->proberState;
         }
         d->prober->HandleData(data, len);
-        d->currentConfidence = d->prober->GetConfidence();
-        d->encoding = strdup(d->prober->GetCharSetName());
         switch (d->prober->GetState())
         {
             case kencodingprober::eNotMe:
@@ -190,6 +190,9 @@ KEncodingProber::ProberState KEncodingProber::feed(const char* data, int len)
                 break;
         }
     }
+#ifdef DEBUG_PROBE
+    dumpStatus();
+#endif
     return d->proberState;
 }
 
@@ -200,12 +203,12 @@ KEncodingProber::ProberState KEncodingProber::state() const
 
 const char* KEncodingProber::encodingName() const
 {
-    return strdup(d->encoding);
+    return strdup(d->prober->GetCharSetName());
 }
 
 float KEncodingProber::confidence() const
 {
-    return d->currentConfidence;
+    return d->prober->GetConfidence();
 }
 
 KEncodingProber::ProberType KEncodingProber::proberType() const
@@ -311,3 +314,10 @@ QString KEncodingProber::nameForProberType(KEncodingProber::ProberType proberTyp
             return QString();
         }
 }
+
+#ifdef DEBUG_PROBE
+void KEncodingProber::dumpStatus()
+{
+    d->prober->DumpStatus();
+}
+#endif

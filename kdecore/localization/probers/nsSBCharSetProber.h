@@ -70,7 +70,7 @@ public:
   // of the English letters.
   bool KeepEnglishLetters() {return mModel->keepEnglishLetter;}; // (not implemented)
 
-#ifdef DEBUG_chardet
+#ifdef DEBUG_PROBE
   virtual void  DumpStatus();
 #endif
 

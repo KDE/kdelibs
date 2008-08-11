@@ -160,7 +160,7 @@ float nsLatin1Prober::GetConfidence(void)
   return confidence;
 }
 
-#ifdef DEBUG_chardet
+#ifdef DEBUG_PROBE
 void  nsLatin1Prober::DumpStatus()
 {
   printf(" Latin1Prober: %1.3f [%s]\r\n", GetConfidence(), GetCharSetName());

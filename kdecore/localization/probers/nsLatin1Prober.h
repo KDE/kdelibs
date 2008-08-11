@@ -41,7 +41,7 @@ public:
   float     GetConfidence(void);
   void      SetOpion() {};
 
-#ifdef DEBUG_chardet
+#ifdef DEBUG_PROBE
   virtual void  DumpStatus();
 #endif
 

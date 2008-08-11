@@ -29,10 +29,10 @@
 #include <stdlib.h>
 
 namespace kencodingprober {
-#ifdef DEBUG_chardet
-char *ProberName[] = 
+#ifdef DEBUG_PROBE
+static char *ProberName[] = 
 {
-  "UTF8",
+  "Unicode",
   "SJIS",
   "EUCJP",
   "GB18030",
@@ -45,7 +45,7 @@ char *ProberName[] =
 
 nsMBCSGroupProber::nsMBCSGroupProber()
 {
-  mProbers[0] = new nsUTF8Prober();
+  mProbers[0] = new UnicodeGroupProber();
   mProbers[1] = new nsSJISProber();
   mProbers[2] = new nsEUCJPProber();
   mProbers[3] = new nsGB18030Prober();
@@ -177,7 +177,7 @@ float nsMBCSGroupProber::GetConfidence(void)
   return bestConf;
 }
 
-#ifdef DEBUG_chardet
+#ifdef DEBUG_PROBE
 void nsMBCSGroupProber::DumpStatus()
 {
   unsigned int i;

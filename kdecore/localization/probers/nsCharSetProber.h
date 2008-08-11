@@ -26,9 +26,10 @@
 #ifndef nsCharSetProber_h__
 #define nsCharSetProber_h__
 
+#include "kencodingprober.h"
+
 #include "kdemacros.h"
 
-//#define DEBUG_chardet // Uncomment this for debug dump.
 namespace kencodingprober {
 typedef enum {
   eDetecting = 0,   //We are still detecting, no sure answer yet, but caller can ask for confidence.
@@ -48,7 +49,7 @@ public:
   virtual float     GetConfidence(void) = 0;
   virtual void      SetOpion() = 0;
 
-#ifdef DEBUG_chardet
+#ifdef DEBUG_PROBE
   virtual void  DumpStatus() {};
 #endif
 

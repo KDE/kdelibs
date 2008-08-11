@@ -175,7 +175,7 @@ nsProbingState nsHebrewProber::GetState(void)
   return eDetecting;
 }
 
-#ifdef DEBUG_chardet
+#ifdef DEBUG_PROBE
 void  nsHebrewProber::DumpStatus()
 {
   printf("  HEB: %d - %d [Logical-Visual score]\r\n", mFinalCharLogicalScore, mFinalCharVisualScore);

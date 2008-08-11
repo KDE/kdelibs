@@ -26,6 +26,8 @@
 #ifndef nsCodingStateMachine_h__
 #define nsCodingStateMachine_h__
 
+#include "kencodingprober.h"
+
 #include "kdemacros.h"
 
 #include "nsPkgInt.h"
@@ -71,6 +73,20 @@ public:
   unsigned int  GetCurrentCharLen(void) {return mCurrentCharLen;};
   void      Reset(void) {mCurrentState = eStart;};
   const char * GetCodingStateMachine() {return mModel->name;};
+#ifdef DEBUG_PROBE
+  const char * DumpCurrentState(){
+    switch (mCurrentState) {
+        case eStart:
+            return "eStart";
+        case eError:
+            return "eError";
+        case eItsMe:
+            return "eItsMe";
+        default:
+            return "OK";
+    }
+  }
+#endif
 
 protected:
   nsSMState mCurrentState;
@@ -87,6 +103,7 @@ extern KDE_NO_EXPORT SMModel EUCKRSMModel;
 extern KDE_NO_EXPORT SMModel EUCTWSMModel;
 extern KDE_NO_EXPORT SMModel GB18030SMModel;
 extern KDE_NO_EXPORT SMModel SJISSMModel;
+extern KDE_NO_EXPORT SMModel UCS2LESMModel;
 extern KDE_NO_EXPORT SMModel UCS2BESMModel;
 
 

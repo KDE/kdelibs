@@ -27,7 +27,7 @@
 #define nsMBCSGroupProber_h__
 
 #include "nsSJISProber.h"
-#include "nsUTF8Prober.h"
+#include "UnicodeGroupProber.h"
 #include "nsEUCJPProber.h"
 #include "nsGB2312Prober.h"
 #include "nsEUCKRProber.h"
@@ -47,7 +47,7 @@ public:
   float     GetConfidence(void);
   void      SetOpion() {};
 
-#ifdef DEBUG_chardet
+#ifdef DEBUG_PROBE
   void  DumpStatus();
 #endif
 

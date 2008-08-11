@@ -26,7 +26,8 @@
 #ifndef JAPANESEGROUPPROBER_H
 #define JAPANESEGROUPPROBER_H
 
-#include "nsUTF8Prober.h"
+#include "nsCharSetProber.h"
+#include "UnicodeGroupProber.h"
 #include "nsSJISProber.h"
 #include "nsEUCJPProber.h"
 
@@ -43,7 +44,7 @@ public:
   float     GetConfidence(void);
   void      SetOpion() {};
 
-#ifdef DEBUG_chardet
+#ifdef DEBUG_PROBE
   void  DumpStatus();
 #endif
 

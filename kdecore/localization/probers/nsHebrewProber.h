@@ -48,7 +48,7 @@ public:
   void SetModelProbers(nsCharSetProber *logicalPrb, nsCharSetProber *visualPrb) 
   { mLogicalProb = logicalPrb; mVisualProb = visualPrb; }
 
-#ifdef DEBUG_chardet
+#ifdef DEBUG_PROBE
   virtual void  DumpStatus();
 #endif
 

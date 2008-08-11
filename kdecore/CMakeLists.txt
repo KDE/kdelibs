@@ -218,6 +218,7 @@ set(kdecore_LIB_SRCS
    localization/probers/LangHebrewModel.cpp
    localization/probers/LangHungarianModel.cpp
    localization/probers/LangThaiModel.cpp
+   localization/probers/UnicodeGroupProber.cpp
    localization/probers/nsBig5Prober.cpp
    localization/probers/nsCharSetProber.cpp
    localization/probers/nsEUCJPProber.cpp
@@ -233,7 +234,6 @@ set(kdecore_LIB_SRCS
    localization/probers/nsSBCSGroupProber.cpp
    localization/probers/nsSBCharSetProber.cpp
    localization/probers/nsSJISProber.cpp
-   localization/probers/nsUTF8Prober.cpp
    localization/probers/nsUniversalDetector.cpp
    localization/klocale.cpp
    localization/klocalizedstring.cpp

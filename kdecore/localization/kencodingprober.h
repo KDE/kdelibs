@@ -22,7 +22,13 @@
 #ifndef KENCODINGPROBER_H
 #define KENCODINGPROBER_H
 
+// enable debug of private probers
+// #define DEBUG_PROBE
+
 #include <kdecore_export.h>
+#ifdef DEBUG_PROBE
+#include <kdebug.h>
+#endif
 #include <QtCore/QString>
 
 class KEncodingProberPrivate;
@@ -134,6 +140,10 @@ public:
     static ProberType proberTypeForName(const QString& lang);
     
     static QString nameForProberType(ProberType proberType);
+
+    #ifdef DEBUG_PROBE
+    void dumpStatus();
+    #endif
     
 private:
     KEncodingProberPrivate* const d;

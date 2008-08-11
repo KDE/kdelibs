@@ -25,14 +25,18 @@
 
 #include "ChineseGroupProber.h"
 
+#include "UnicodeGroupProber.h"
+#include "nsGB2312Prober.h"
+#include "nsBig5Prober.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
 namespace kencodingprober {
-#ifdef DEBUG_chardet
-char *ProberName[] = 
+#ifdef DEBUG_PROBE
+static char *ProberName[] = 
 {
-  "UTF8",
+  "Unicode",
   "GB18030",
   "Big5",
 };
@@ -41,7 +45,7 @@ char *ProberName[] =
 
 ChineseGroupProber::ChineseGroupProber()
 {
-  mProbers[0] = new nsUTF8Prober();
+  mProbers[0] = new UnicodeGroupProber();
   mProbers[1] = new nsGB18030Prober();
   mProbers[2] = new nsBig5Prober();
   Reset();
@@ -169,7 +173,7 @@ float ChineseGroupProber::GetConfidence(void)
   return bestConf;
 }
 
-#ifdef DEBUG_chardet
+#ifdef DEBUG_PROBE
 void ChineseGroupProber::DumpStatus()
 {
   unsigned int i;

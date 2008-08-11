@@ -107,7 +107,7 @@ const char* nsSingleByteCharSetProber::GetCharSetName()
   return mNameProber->GetCharSetName();
 }
 
-#ifdef DEBUG_chardet
+#ifdef DEBUG_PROBE
 void nsSingleByteCharSetProber::DumpStatus()
 {
   printf("  SBCS: %1.3f [%s]\r\n", GetConfidence(), GetCharSetName());

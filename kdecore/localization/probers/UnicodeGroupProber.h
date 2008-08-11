@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*  -*- C++ -*-
-*  Copyright (C) 1998 <developer@mozilla.org>
+*  Copyright (C) 2008 <wkai@gmail.com>
 *
 *
 *  Permission is hereby granted, free of charge, to any person obtaining
@@ -23,61 +23,36 @@
 *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "nsUTF8Prober.h"
+#ifndef UNICODEGROUPPROBER_H
+#define UNICODEGROUPPROBER_H
 
+#include "nsCharSetProber.h"
+#include "nsCodingStateMachine.h"
+
+#define NUM_OF_UNICODE_CHARSETS   3
 namespace kencodingprober {
-void  nsUTF8Prober::Reset(void)
-{
-  mCodingSM->Reset(); 
-  mNumOfMBChar = 0;
-  mState = eDetecting;
+class KDE_NO_EXPORT UnicodeGroupProber: public nsCharSetProber {
+public:
+  UnicodeGroupProber(void);
+  virtual ~UnicodeGroupProber(void);
+  nsProbingState HandleData(const char* aBuf, unsigned int aLen);
+  const char* GetCharSetName() {return mDetectedCharset;};
+  nsProbingState GetState(void) {return mState;};
+  void      Reset(void);
+  float     GetConfidence(void){return (float)0.99;};
+  void      SetOpion() {};
+#ifdef DEBUG_PROBE
+  void DumpStatus();
+#endif
+
+protected:
+  void      GetDistribution(unsigned int aCharLen, const char* aStr);
+  
+  nsCodingStateMachine* mCodingSM[NUM_OF_UNICODE_CHARSETS] ;
+  unsigned int    mActiveSM;
+  nsProbingState mState;
+  const char *  mDetectedCharset;
+};
 }
-
-nsProbingState nsUTF8Prober::HandleData(const char* aBuf, unsigned int aLen)
-{
-  nsSMState codingState;
-
-  for (unsigned int i = 0; i < aLen; i++)
-  {
-    codingState = mCodingSM->NextState(aBuf[i]);
-    if (codingState == eError)
-    {
-      mState = eNotMe;
-      break;
-    }
-    if (codingState == eItsMe)
-    {
-      mState = eFoundIt;
-      break;
-    }
-    if (codingState == eStart)
-    {
-      if (mCodingSM->GetCurrentCharLen() >= 2)
-        mNumOfMBChar++;
-    }
-  }
-
-  if (mState == eDetecting)
-    if (GetConfidence() > SHORTCUT_THRESHOLD)
-      mState = eFoundIt;
-  return mState;
-}
-
-#define ONE_CHAR_PROB   (float)0.50
-
-float nsUTF8Prober::GetConfidence(void)
-{
-  float unlike = (float)0.99;
-
-  if (mNumOfMBChar < 6)
-  {
-    for (unsigned int i = 0; i < mNumOfMBChar; i++)
-      unlike *= ONE_CHAR_PROB;
-    return (float)1.0 - unlike;
-  }
-  else
-    return (float)0.99;
-}
-}
-
+#endif /* UNICODEGROUPPROBER_H */
 
