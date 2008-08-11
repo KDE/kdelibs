@@ -35,7 +35,7 @@ class KEncodingProberPrivate;
  *
  * Always do Unicode probe regardless the ProberType
  *
- * Feed data to it serveral times until ProberState changed to FoundIt/NotMe,
+ * Feed data to it several times until ProberState changed to FoundIt/NotMe,
  * or the Confidence reach a value you think acceptable.
  *
  * Intended lifetime of the object: one instance per ProberType.
@@ -107,7 +107,7 @@ public:
      *
      * feed data to the prober
      *
-     * @returns the ProberState after probe the feeded data
+     * @returns the ProberState after probe the feedded data
      */
     ProberState feed(const QByteArray &data);
     ProberState feed(const char* data, int len);

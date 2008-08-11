@@ -39,11 +39,11 @@
 #ifndef nsSBCSGroupProber_h__
 #define nsSBCSGroupProber_h__
 
+#include "nsCharSetProber.h"
 
 #define NUM_OF_SBCS_PROBERS    14
 
 namespace kencodingprober {
-class nsCharSetProber;
 class KDE_NO_EXPORT nsSBCSGroupProber: public nsCharSetProber {
 public:
   nsSBCSGroupProber();

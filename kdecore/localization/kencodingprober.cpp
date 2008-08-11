@@ -20,8 +20,9 @@
 
 */
 
-#include "klocale.h"
 #include "kencodingprober.h"
+
+#include "klocale.h"
 
 #include "probers/nsCharSetProber.h"
 #include "probers/nsUniversalDetector.h"
