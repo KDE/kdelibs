@@ -39,19 +39,29 @@ class KDECORE_EXPORT KDesktopFile : public KConfig
 {
 public:
   /**
-   * Constructs a KDesktopFile object and make it either read-write
-   * or read-only.
+   * Constructs a KDesktopFile object.
    *
-   * @param fileName  The name or path of the desktop file. If it
-   *                  is not absolute, it will be located
-   *                  using the resource type @p resType.
-   * @param readOnly  Whether the object should be read-only.
-   * @param resType   Allows you to change what sort of resource
-   *                  to search for if @p fileName is not absolute.  For
-   *                  instance, you might want to specify "config".
+   * See KStandardDirs for more information on resources.
+   *
+   * @param resourceType   Allows you to change what sort of resource
+   *                       to search for if @p fileName is not absolute.
+   *                       For instance, you might want to specify "config".
+   * @param fileName       The name or path of the desktop file. If it
+   *                       is not absolute, it will be located
+   *                       using the resource type @p resType.
    */
-  explicit KDesktopFile( const char * resourceType, const QString &fileName);
-  explicit KDesktopFile( const QString& fileName);
+  explicit KDesktopFile(const char *resourceType, const QString &fileName);
+
+  /**
+   * Constructs a KDesktopFile object.
+   *
+   * See KStandardDirs for more information on resources.
+   *
+   * @param fileName       The name or path of the desktop file. If it
+   *                       is not absolute, it will be located
+   *                       using the resource type "apps"
+   */
+  explicit KDesktopFile(const QString &fileName);
 
   /**
    * Destructs the KDesktopFile object.
