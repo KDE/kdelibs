@@ -92,8 +92,6 @@ public:
     {
     }
 
-//    KFileItemPrivate(const KFileItemPrivate& other);
-
     /**
      * Computes the text and mode from the UDSEntry
      * Called by constructor, but can be called again later
@@ -890,13 +888,12 @@ bool KFileItem::isWritable() const
 
 bool KFileItem::isHidden() const
 {
+    // The kioslave can specify explicitely that a file is hidden or shown
     if ( d->m_hidden != KFileItemPrivate::Auto )
         return d->m_hidden == KFileItemPrivate::Hidden;
 
-    if ( !d->m_url.isEmpty() )
-        return d->m_url.fileName()[0] == '.';
-    else // should never happen
-        return d->m_strName[0] == '.';
+    const QString fileName = d->m_url.isEmpty() /*should never happen*/ ? d->m_strName : d->m_url.fileName();
+    return fileName[0] == '.';
 }
 
 bool KFileItem::isDir() const
