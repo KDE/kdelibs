@@ -1110,6 +1110,8 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // Unset the mouse over bit if we're not drawing the first column
     if (index.column() > 0)
         opt.state &= ~QStyle::State_MouseOver;
+    else
+        opt.viewItemPosition = QStyleOptionViewItemV4::OnlyOne;
 
     const QAbstractItemView *view = qobject_cast<const QAbstractItemView*>(opt.widget);
 
