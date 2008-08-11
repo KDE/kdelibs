@@ -39,6 +39,7 @@
 
 #include "nsCodingStateMachine.h"
 
+namespace kencodingprober {
 static unsigned int HZ_cls[ 256 / 8 ] = {
 PCK4BITS(1,0,0,0,0,0,0,0),  // 00 - 07 
 PCK4BITS(0,0,0,0,0,0,0,0),  // 08 - 0f 
@@ -263,6 +264,6 @@ SMModel ISO2022KRSMModel = {
   ISO2022KRCharLenTable,
   "ISO-2022-KR",
 };
-
+}
 
 

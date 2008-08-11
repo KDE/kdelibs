@@ -43,7 +43,7 @@
 #include "nsEUCJPProber.h"
 
 #define JP_NUM_OF_PROBERS    3
-
+namespace kencodingprober {
 class KDE_NO_EXPORT JapaneseGroupProber: public nsCharSetProber {
 public:
   JapaneseGroupProber();
@@ -66,6 +66,6 @@ protected:
   int mBestGuess;
   unsigned int mActiveNum;
 };
-
+}
 #endif /* CHINESEGROUPPROBLER_H */
 

@@ -50,6 +50,7 @@
 
 *****************************************************************/
 
+namespace kencodingprober {
 //Windows-1255 language model
 //Character Mapping Table:
 const unsigned char win1255_CharToOrderMap[] =
@@ -218,6 +219,6 @@ SequenceModel Win1255Model =
   false,
   "windows-1255"
 };
-
+}
 
 

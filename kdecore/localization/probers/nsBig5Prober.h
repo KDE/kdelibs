@@ -41,7 +41,7 @@
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
 #include "CharDistribution.h"
-
+namespace kencodingprober {
 class KDE_NO_EXPORT nsBig5Prober: public nsCharSetProber {
 public:
   nsBig5Prober(void){mCodingSM = new nsCodingStateMachine(&Big5SMModel);
@@ -65,7 +65,7 @@ protected:
   char mLastChar[2];
 
 };
-
+}
 
 #endif /* nsBig5Prober_h__ */
 

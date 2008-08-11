@@ -48,6 +48,7 @@
 
 *****************************************************************/
 
+namespace kencodingprober {
 //The following result for thai was collected from a limited sample (1M). 
 
 //Character Mapping Table:
@@ -221,6 +222,6 @@ SequenceModel TIS620ThaiModel =
   false,
   "TIS-620"
 };
-
+}
 
 

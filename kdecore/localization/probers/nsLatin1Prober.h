@@ -42,7 +42,7 @@
 #include "nsCharSetProber.h"
 
 #define FREQ_CAT_NUM    4
-
+namespace kencodingprober {
 class KDE_NO_EXPORT nsLatin1Prober: public nsCharSetProber {
 public:
   nsLatin1Prober(void){Reset();};
@@ -64,7 +64,7 @@ protected:
   char mLastCharClass;
   unsigned int mFreqCounter[FREQ_CAT_NUM];
 };
-
+}
 
 #endif /* nsLatin1Prober_h__ */
 

@@ -42,6 +42,7 @@
 
 #include <stdlib.h>
 
+namespace kencodingprober {
 //This filter applies to all scripts which do not use English characters
 bool nsCharSetProber::FilterWithoutEnglishLetters(const char* aBuf, unsigned int aLen, char** newBuf, unsigned int& newLen)
 {
@@ -126,6 +127,6 @@ bool nsCharSetProber::FilterWithEnglishLetters(const char* aBuf, unsigned int aL
 
   return true;
 }
-
+}
 
 

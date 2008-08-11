@@ -40,7 +40,7 @@
 #include "kdemacros.h"
 
 #include "nsPkgInt.h"
-
+namespace kencodingprober {
 typedef enum {
    eStart = 0,
    eError = 1,
@@ -105,6 +105,6 @@ extern KDE_NO_EXPORT SMModel HZSMModel;
 extern KDE_NO_EXPORT SMModel ISO2022CNSMModel;
 extern KDE_NO_EXPORT SMModel ISO2022JPSMModel;
 extern KDE_NO_EXPORT SMModel ISO2022KRSMModel;
-
+}
 #endif /* nsCodingStateMachine_h__ */
 

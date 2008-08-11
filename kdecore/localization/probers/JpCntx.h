@@ -44,7 +44,7 @@
 
 #define ENOUGH_REL_THRESHOLD  100
 #define MAX_REL_THRESHOLD     1000
-
+namespace kencodingprober {
 //hiragana frequency category table
 extern const char jp2CharContext[83][83];
 
@@ -133,6 +133,6 @@ protected:
     return -1;
   };
 };
-
+}
 #endif /* __JPCNTX_H__ */
 

@@ -48,6 +48,7 @@
 #define SURE_YES 0.99f
 #define SURE_NO  0.01f
 
+namespace kencodingprober {
 //return confidence base on received data
 float CharDistributionAnalysis::GetConfidence()
 { 
@@ -106,5 +107,5 @@ EUCJPDistributionAnalysis::EUCJPDistributionAnalysis()
   mTableSize = JIS_TABLE_SIZE;
   mTypicalDistributionRatio = JIS_TYPICAL_DISTRIBUTION_RATIO;
 }
-
+}
 

@@ -46,6 +46,7 @@
 
 *****************************************************************/
 
+namespace kencodingprober {
 //Character Mapping Table:
 //this talbe is modified base on win1251BulgarianCharToOrderMap, so 
 //only number <64 is sure valid
@@ -245,6 +246,4 @@ SequenceModel KDE_NO_EXPORT Win1251BulgarianModel =
   false,
   "windows-1251"
 };
-
-
-
+}

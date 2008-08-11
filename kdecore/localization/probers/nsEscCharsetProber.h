@@ -42,7 +42,7 @@
 #include "nsCodingStateMachine.h"
 
 #define NUM_OF_ESC_CHARSETS   4
-
+namespace kencodingprober {
 class KDE_NO_EXPORT nsEscCharSetProber: public nsCharSetProber {
 public:
   nsEscCharSetProber(void);
@@ -62,6 +62,6 @@ protected:
   nsProbingState mState;
   const char *  mDetectedCharset;
 };
-
+}
 #endif /* nsEscCharSetProber_h__ */
 

@@ -43,6 +43,7 @@
 
 #include "JapaneseGroupProber.h"
 
+namespace kencodingprober {
 #ifdef DEBUG_chardet
 char *ProberName[] = 
 {
@@ -202,6 +203,4 @@ void JapaneseGroupProber::DumpStatus()
   }
 }
 #endif
-
-
-
+}

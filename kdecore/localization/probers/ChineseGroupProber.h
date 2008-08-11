@@ -43,7 +43,7 @@
 #include "nsBig5Prober.h"
 
 #define CN_NUM_OF_PROBERS    3
-
+namespace kencodingprober {
 class KDE_NO_EXPORT ChineseGroupProber: public nsCharSetProber {
 public:
   ChineseGroupProber();
@@ -66,6 +66,6 @@ protected:
   int mBestGuess;
   unsigned int mActiveNum;
 };
-
+}
 #endif /* CHINESEGROUPPROBLER_H */
 

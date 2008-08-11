@@ -43,6 +43,7 @@
 
 #include "ChineseGroupProber.h"
 
+namespace kencodingprober {
 #ifdef DEBUG_chardet
 char *ProberName[] = 
 {
@@ -202,6 +203,4 @@ void ChineseGroupProber::DumpStatus()
   }
 }
 #endif
-
-
-
+}

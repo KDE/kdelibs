@@ -46,6 +46,7 @@
 
 *****************************************************************/
 
+namespace kencodingprober {
 //Character Mapping Table:
 const unsigned char Latin2_HungarianCharToOrderMap[] =
 {
@@ -242,6 +243,6 @@ SequenceModel Win1250HungarianModel =
   true,
   "windows-1250"
 };
-
+}
 
 

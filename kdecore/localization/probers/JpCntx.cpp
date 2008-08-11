@@ -40,6 +40,7 @@
 
 #include "JpCntx.h"
 
+namespace kencodingprober {
 //This is hiragana 2-char sequence table, the number in each cell represents its frequency category
 const char jp2CharContext[83][83] = 
 { 
@@ -229,5 +230,5 @@ int EUCJPContextAnalysis::GetOrder(const char* str, unsigned int *charLen)
      return (unsigned char)*(str+1) - (unsigned char)0xa1;
   return -1;
 }
-
+}
 

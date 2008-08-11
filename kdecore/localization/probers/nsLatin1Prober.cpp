@@ -52,6 +52,7 @@
 #define ASO    7        // accent small other
 #define CLASS_NUM   8    // total classes
 
+namespace kencodingprober {
 static unsigned char Latin1_CharToClass[] = 
 {
   OTH, OTH, OTH, OTH, OTH, OTH, OTH, OTH,   // 00 - 07
@@ -180,6 +181,6 @@ void  nsLatin1Prober::DumpStatus()
   printf(" Latin1Prober: %1.3f [%s]\r\n", GetConfidence(), GetCharSetName());
 }
 #endif
-
+}
 
 

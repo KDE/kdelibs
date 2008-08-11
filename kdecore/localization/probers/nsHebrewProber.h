@@ -39,7 +39,7 @@
 #define nsHebrewProber_h__
 
 #include "nsSBCharSetProber.h"
-
+namespace kencodingprober {
 // This prober doesn't actually recognize a language or a charset.
 // It is a helper prober for the use of the Hebrew model probers
 class KDE_NO_EXPORT nsHebrewProber: public nsCharSetProber
@@ -76,6 +76,7 @@ protected:
   // These probers are owned by the group prober.
   nsCharSetProber *mLogicalProb, *mVisualProb;
 };
+}
 
 /**
  * ** General ideas of the Hebrew charset recognition **

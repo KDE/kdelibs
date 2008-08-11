@@ -63,6 +63,7 @@
 #define VISUAL_HEBREW_NAME ("ISO-8859-8")
 #define LOGICAL_HEBREW_NAME ("windows-1255")
 
+namespace kencodingprober {
 bool nsHebrewProber::isFinal(char c)
 {
   return ((c == FINAL_KAF) || (c == FINAL_MEM) || (c == FINAL_NUN) || (c == FINAL_PE) || (c == FINAL_TSADI));
@@ -194,6 +195,6 @@ void  nsHebrewProber::DumpStatus()
   printf("  HEB: %d - %d [Logical-Visual score]\r\n", mFinalCharLogicalScore, mFinalCharVisualScore);
 }
 #endif
-
+}
 
 

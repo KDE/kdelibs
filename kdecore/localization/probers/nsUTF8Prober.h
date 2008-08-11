@@ -41,6 +41,7 @@
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
 
+namespace kencodingprober {
 class KDE_NO_EXPORT nsUTF8Prober: public nsCharSetProber {
 public:
   nsUTF8Prober(){mNumOfMBChar = 0; 
@@ -59,6 +60,7 @@ protected:
   nsProbingState mState;
   unsigned int mNumOfMBChar;
 };
+}
 
 #endif /* nsUTF8Prober_h__ */
 

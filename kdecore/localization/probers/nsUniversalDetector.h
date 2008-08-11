@@ -42,6 +42,7 @@
 
 #define NUM_OF_CHARSET_PROBERS  3
 
+namespace kencodingprober {
 typedef enum {
   ePureAscii = 0,
   eEscAscii  = 1,
@@ -72,6 +73,7 @@ protected:
    nsCharSetProber  *mCharSetProbers[NUM_OF_CHARSET_PROBERS];
    nsCharSetProber  *mEscCharSetProber;
 };
+}
 
 #endif
 

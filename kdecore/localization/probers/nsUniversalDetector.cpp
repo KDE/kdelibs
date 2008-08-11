@@ -47,6 +47,7 @@
 #include "nsEscCharsetProber.h"
 #include "nsLatin1Prober.h"
 
+namespace kencodingprober {
 nsUniversalDetector::nsUniversalDetector()
 {
   mDone = false;
@@ -264,6 +265,6 @@ nsProbingState nsUniversalDetector::GetState()
     else
         return eDetecting;
 }
-
+}
 
 

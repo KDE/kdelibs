@@ -39,6 +39,7 @@
 
 #include "nsBig5Prober.h"
 
+namespace kencodingprober {
 void  nsBig5Prober::Reset(void)
 {
   mCodingSM->Reset(); 
@@ -92,6 +93,6 @@ float nsBig5Prober::GetConfidence(void)
 
   return (float)distribCf;
 }
-
+}
 
 

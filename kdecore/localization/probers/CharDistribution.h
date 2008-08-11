@@ -42,6 +42,7 @@
 
 #define ENOUGH_DATA_THRESHOLD 256
  
+namespace kencodingprober {
 class KDE_NO_EXPORT  CharDistributionAnalysis
 {
 public:
@@ -232,6 +233,6 @@ protected:
       return -1;
   };
 };
-
+}
 #endif //CharDistribution_h__
 

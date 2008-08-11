@@ -47,7 +47,7 @@
 #include "nsEUCTWProber.h"
 
 #define NUM_OF_PROBERS    7
-
+namespace kencodingprober {
 class KDE_NO_EXPORT nsMBCSGroupProber: public nsCharSetProber {
 public:
   nsMBCSGroupProber();
@@ -70,6 +70,7 @@ protected:
   int mBestGuess;
   unsigned int mActiveNum;
 };
+}
 
 #endif /* nsMBCSGroupProber_h__ */
 

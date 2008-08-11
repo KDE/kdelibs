@@ -39,6 +39,7 @@
 
 #include "nsEUCKRProber.h"
 
+namespace kencodingprober {
 void  nsEUCKRProber::Reset(void)
 {
   mCodingSM->Reset(); 
@@ -95,6 +96,6 @@ float nsEUCKRProber::GetConfidence(void)
 
   return (float)distribCf;
 }
-
+}
 
 

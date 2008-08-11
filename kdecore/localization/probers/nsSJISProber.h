@@ -48,7 +48,7 @@
 #include "JpCntx.h"
 #include "CharDistribution.h"
 
-
+namespace kencodingprober {
 class KDE_NO_EXPORT nsSJISProber: public nsCharSetProber {
 public:
   nsSJISProber(void){mCodingSM = new nsCodingStateMachine(&SJISSMModel);
@@ -71,7 +71,7 @@ protected:
   char mLastChar[2];
 
 };
-
+}
 
 #endif /* nsSJISProber_h__ */
 

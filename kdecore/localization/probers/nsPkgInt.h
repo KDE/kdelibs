@@ -38,7 +38,7 @@
 #ifndef nsPkgInt_h__
 #define nsPkgInt_h__
 
-
+namespace kencodingprober {
 typedef enum {
   eIdxSft4bits  = 3,
   eIdxSft8bits  = 2,
@@ -70,7 +70,7 @@ typedef struct nsPkgInt {
   nsUnitMsk unitmsk;
   unsigned int  *data;
 } nsPkgInt;
-
+}
 
 #define PCK16BITS(a,b)            ((unsigned int)(((b) << 16) | (a)))
 

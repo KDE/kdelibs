@@ -43,7 +43,7 @@
 #include "CharDistribution.h"
 
 // We use gb18030 to replace gb2312, because 18030 is a superset. 
-
+namespace kencodingprober {
 class KDE_NO_EXPORT nsGB18030Prober: public nsCharSetProber {
 public:
   nsGB18030Prober(void){mCodingSM = new nsCodingStateMachine(&GB18030SMModel);
@@ -67,7 +67,7 @@ protected:
   char mLastChar[2];
 
 };
-
+}
 
 #endif /* nsGB2312Prober_h__ */
 

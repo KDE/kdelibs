@@ -42,6 +42,7 @@
 
 #define NUM_OF_SBCS_PROBERS    14
 
+namespace kencodingprober {
 class nsCharSetProber;
 class KDE_NO_EXPORT nsSBCSGroupProber: public nsCharSetProber {
 public:
@@ -65,6 +66,7 @@ protected:
   int mBestGuess;
   unsigned int mActiveNum;
 };
+}
 
 #endif /* nsSBCSGroupProber_h__ */
 

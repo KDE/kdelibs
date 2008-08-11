@@ -40,7 +40,7 @@
 #include "nsSBCharSetProber.h"
 
 
-
+namespace kencodingprober {
 //KOI8-R language model
 //Character Mapping Table:
 static const unsigned char KOI8R_CharToOrderMap[] =
@@ -355,6 +355,6 @@ SequenceModel Ibm855Model =
   false,
   "IBM855"
 };
-
+}
 
 

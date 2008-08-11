@@ -47,7 +47,7 @@
 #include "nsCodingStateMachine.h"
 #include "JpCntx.h"
 #include "CharDistribution.h"
-
+namespace kencodingprober {
 class KDE_NO_EXPORT nsEUCJPProber: public nsCharSetProber {
 public:
   nsEUCJPProber(void){mCodingSM = new nsCodingStateMachine(&EUCJPSMModel);
@@ -69,7 +69,7 @@ protected:
 
   char mLastChar[2];
 };
-
+}
 
 #endif /* nsEUCJPProber_h__ */
 

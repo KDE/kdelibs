@@ -39,6 +39,7 @@
 
 #include "nsUTF8Prober.h"
 
+namespace kencodingprober {
 void  nsUTF8Prober::Reset(void)
 {
   mCodingSM->Reset(); 
@@ -91,6 +92,6 @@ float nsUTF8Prober::GetConfidence(void)
   else
     return (float)0.99;
 }
-
+}
 
 

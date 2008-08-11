@@ -44,6 +44,7 @@
 
 #include "nsEUCJPProber.h"
 
+namespace kencodingprober {
 void  nsEUCJPProber::Reset(void)
 {
   mCodingSM->Reset(); 
@@ -103,6 +104,6 @@ float nsEUCJPProber::GetConfidence(void)
 
   return (contxtCf > distribCf ? contxtCf : distribCf);
 }
-
+}
 
 

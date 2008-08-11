@@ -47,6 +47,7 @@ Modification from frank tang's original work:
 
 // BIG5 
 
+namespace kencodingprober {
 static unsigned int BIG5_cls [ 256 / 8 ] = {
 //PCK4BITS(0,1,1,1,1,1,1,1),  // 00 - 07 
 PCK4BITS(1,1,1,1,1,1,1,1),  // 00 - 07    //allow 0x00 as legal value
@@ -626,6 +627,6 @@ SMModel UTF8SMModel = {
   UTF8CharLenTable,
   "UTF-8",
 };
-
+}
 
 

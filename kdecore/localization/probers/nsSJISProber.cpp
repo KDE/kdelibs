@@ -44,6 +44,7 @@
 
 #include "nsSJISProber.h"
 
+namespace kencodingprober {
 void  nsSJISProber::Reset(void)
 {
   mCodingSM->Reset(); 
@@ -102,6 +103,6 @@ float nsSJISProber::GetConfidence(void)
 
   return (contxtCf > distribCf ? contxtCf : distribCf);
 }
-
+}
 
 

@@ -41,7 +41,7 @@
 #include "kdemacros.h"
 
 //#define DEBUG_chardet // Uncomment this for debug dump.
-
+namespace kencodingprober {
 typedef enum {
   eDetecting = 0,   //We are still detecting, no sure answer yet, but caller can ask for confidence.
   eFoundIt = 1,     //That's a positive answer
@@ -72,5 +72,5 @@ public:
   static bool FilterWithEnglishLetters(const char* aBuf, unsigned int aLen, char** newBuf, unsigned int& newLen);
 
 };
-
+}
 #endif /* nsCharSetProber_h__ */

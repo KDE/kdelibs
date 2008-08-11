@@ -49,6 +49,7 @@
 #define POSITIVE_CAT   (NUMBER_OF_SEQ_CAT-1)
 #define NEGATIVE_CAT   0
 
+namespace kencodingprober {
 typedef struct
 {
   const unsigned char *charToOrderMap;    // [256] table use to find a char's order
@@ -119,6 +120,6 @@ extern SequenceModel Win1251BulgarianModel;
 extern SequenceModel Latin2HungarianModel;
 extern SequenceModel Win1250HungarianModel;
 extern SequenceModel Win1255Model;
-
+}
 #endif /* nsSingleByteCharSetProber_h__ */
 

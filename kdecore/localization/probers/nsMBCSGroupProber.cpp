@@ -43,6 +43,7 @@
 
 #include "nsMBCSGroupProber.h"
 
+namespace kencodingprober {
 #ifdef DEBUG_chardet
 char *ProberName[] = 
 {
@@ -210,6 +211,6 @@ void nsMBCSGroupProber::DumpStatus()
   }
 }
 #endif
-
+}
 
 

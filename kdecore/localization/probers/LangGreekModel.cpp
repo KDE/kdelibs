@@ -46,6 +46,7 @@
 
 *****************************************************************/
 
+namespace kencodingprober {
 //Character Mapping Table:
 const unsigned char Latin7_CharToOrderMap[] =
 {
@@ -244,6 +245,6 @@ SequenceModel Win1253Model =
   false,
   "windows-1253"
 };
-
+}
 
 

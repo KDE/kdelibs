@@ -41,7 +41,7 @@
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
 #include "CharDistribution.h"
-
+namespace kencodingprober {
 class KDE_NO_EXPORT nsEUCTWProber: public nsCharSetProber {
 public:
   nsEUCTWProber(void){mCodingSM = new nsCodingStateMachine(&EUCTWSMModel);
@@ -65,7 +65,7 @@ protected:
   char mLastChar[2];
 
 };
-
+}
 
 #endif /* nsEUCTWProber_h__ */
 

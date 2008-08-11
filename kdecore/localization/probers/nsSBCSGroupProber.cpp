@@ -47,6 +47,7 @@
 #include "nsHebrewProber.h"
 #include "nsUTF8Prober.h"
 
+namespace kencodingprober {
 nsSBCSGroupProber::nsSBCSGroupProber()
 {
   mProbers[0] = new nsSingleByteCharSetProber(&Win1251Model);
@@ -226,6 +227,6 @@ void nsSBCSGroupProber::DumpStatus()
          mProbers[mBestGuess]->GetCharSetName(), cf);
 }
 #endif
-
+}
 
 

@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include "nsSBCharSetProber.h"
 
+namespace kencodingprober {
 nsProbingState nsSingleByteCharSetProber::HandleData(const char* aBuf, unsigned int aLen)
 {
   unsigned char order;
@@ -127,6 +128,6 @@ void nsSingleByteCharSetProber::DumpStatus()
   printf("  SBCS: %1.3f [%s]\r\n", GetConfidence(), GetCharSetName());
 }
 #endif
-
+}
 
 

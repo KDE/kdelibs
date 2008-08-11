@@ -39,6 +39,7 @@
 
 #include "nsEscCharsetProber.h"
 
+namespace kencodingprober {
 nsEscCharSetProber::nsEscCharSetProber(void)
 {
   mCodingSM[0] = new nsCodingStateMachine(&HZSMModel);
@@ -105,6 +106,6 @@ nsProbingState nsEscCharSetProber::HandleData(const char* aBuf, unsigned int aLe
 
   return mState;
 }
-
+}
 
 

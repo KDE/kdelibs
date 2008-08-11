@@ -44,6 +44,7 @@
 
 #include "nsGB2312Prober.h"
 
+namespace kencodingprober {
 void  nsGB18030Prober::Reset(void)
 {
   mCodingSM->Reset(); 
@@ -100,6 +101,6 @@ float nsGB18030Prober::GetConfidence(void)
 
   return (float)distribCf;
 }
-
+}
 
 
