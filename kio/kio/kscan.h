@@ -22,8 +22,8 @@
 
 #include <kio/kio_export.h>
 #include <kpagedialog.h>
-#include <kcomponentdata.h>
-#include <kpluginfactory.h>
+#include <kcomponentdata.h> // KDE5: remove include
+#include <kpluginfactory.h> // KDE5: remove include
 
 class QByteArray;
 class QImage;
