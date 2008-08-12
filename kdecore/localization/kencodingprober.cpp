@@ -208,6 +208,9 @@ const char* KEncodingProber::encodingName() const
 
 float KEncodingProber::confidence() const
 {
+    if (!d->prober)
+        return 0.0;
+
     return d->prober->GetConfidence();
 }
 
