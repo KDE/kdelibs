@@ -169,7 +169,7 @@ KEncodingProber::ProberState KEncodingProber::feed(const QByteArray &data)
 KEncodingProber::ProberState KEncodingProber::feed(const char* data, int len)
 {
     if (!d->prober)
-        return KEncodingProber::Probing;
+        return d->proberState;
     if (d->proberState == Probing) {
         if (d->mStart) {
             d->unicodeTest(data, len);
@@ -191,7 +191,7 @@ KEncodingProber::ProberState KEncodingProber::feed(const char* data, int len)
         }
     }
 #ifdef DEBUG_PROBE
-    dumpStatus();
+    d->prober->DumpStatus();
 #endif
     return d->proberState;
 }
@@ -203,6 +203,9 @@ KEncodingProber::ProberState KEncodingProber::state() const
 
 const char* KEncodingProber::encodingName() const
 {
+    if (!d->prober)
+        return strdup("UTF-8");
+
     return strdup(d->prober->GetCharSetName());
 }
 
@@ -317,10 +320,3 @@ QString KEncodingProber::nameForProberType(KEncodingProber::ProberType proberTyp
             return QString();
         }
 }
-
-#ifdef DEBUG_PROBE
-void KEncodingProber::dumpStatus()
-{
-    d->prober->DumpStatus();
-}
-#endif

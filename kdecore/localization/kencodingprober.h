@@ -130,20 +130,26 @@ public:
     const char* encodingName() const;
 
     /**
-     * @returns the confidence(sureness) of encoding it guessed so far (0.0 ~ 0.99)
+     * @returns the confidence(sureness) of encoding it guessed so far (0.0 ~ 0.99), not very reliable for single byte encodings 
      */
     float confidence() const;
     
     ProberType proberType() const;
+
+    /** 
+     * change current prober's ProberType and reset the prober
+     */
     void setProberType(ProberType proberType);
 
+    /**
+     * @return the ProberType for lang (eg. proberTypeForName("Chinese Simplified") will return KEncodingProber::ChineseSimplified
+     */
     static ProberType proberTypeForName(const QString& lang);
     
+    /**
+     * map ProberType to language string
+     */
     static QString nameForProberType(ProberType proberType);
-
-    #ifdef DEBUG_PROBE
-    void dumpStatus();
-    #endif
     
 private:
     KEncodingProberPrivate* const d;
