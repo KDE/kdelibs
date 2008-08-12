@@ -69,7 +69,7 @@ bool KDirOperatorDetailView::event(QEvent *event)
     if (event->type() == QEvent::Polish) {
         QHeaderView *headerView = header();
         headerView->setResizeMode(QHeaderView::Interactive);
-        headerView->setStretchLastSection(false);
+        headerView->setStretchLastSection(true);
         headerView->setMovable(false);
 
         hideColumn(KDirModel::Permissions);
