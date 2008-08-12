@@ -226,9 +226,14 @@ void KXMLGUIClient::setLocalXMLFile( const QString &file )
 
 void KXMLGUIClient::setXML( const QString &document, bool merge )
 {
-  QDomDocument doc;
-  doc.setContent( document );
-  setDOMDocument( doc, merge );
+    QDomDocument doc;
+    QString errorMsg;
+    int errorLine, errorColumn;
+    if (doc.setContent(document, &errorMsg, &errorLine, &errorColumn)) {
+        setDOMDocument( doc, merge );
+    } else {
+        kError() << "Error parsing XML document:" << errorMsg << "at line" << errorLine << "column" << errorColumn;
+    }
 }
 
 void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
