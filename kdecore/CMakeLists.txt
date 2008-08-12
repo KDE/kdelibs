@@ -276,8 +276,12 @@ target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_
 
 if(WIN32)
   set(kdecore_LINK_INTERFACE_LIBRARIES "${QT_QTDBUS_LIBRARY};${QT_QTCORE_LIBRARY};${KDEWIN32_LIBRARIES}")
-else(WiN32)
-  set(kdecore_LINK_INTERFACE_LIBRARIES "${QT_QTDBUS_LIBRARY};${QT_QTCORE_LIBRARY}")
+else(WIN32)
+  if(APPLE)
+    set(kdecore_LINK_INTERFACE_LIBRARIES "${QT_QTDBUS_LIBRARY};${QT_QTCORE_LIBRARY};${CARBON_LIBRARY}")
+  else(APPLE)
+    set(kdecore_LINK_INTERFACE_LIBRARIES "${QT_QTDBUS_LIBRARY};${QT_QTCORE_LIBRARY}")
+  endif(APPLE)
 endif(WIN32)
 
 set_target_properties(kdecore PROPERTIES 
@@ -287,7 +291,7 @@ set_target_properties(kdecore PROPERTIES
                      )
 
 
-install(TARGETS kdecore ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdecore EXPORT kdelibs ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### next target ###############
 
