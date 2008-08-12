@@ -390,7 +390,8 @@ void KXmlGui_UnitTest::testActionListAndSeparator()
         "  <Separator />"
         "   <Action name=\"view_add_to_new_group\" />\n"
         " </Menu>\n"
-        "</MenuBar>";
+        "</MenuBar>\n"
+        "</gui>";
 
     TestGuiClient client(xml);
     createActions(client.actionCollection(),
