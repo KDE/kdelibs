@@ -1099,13 +1099,22 @@ void Window::put(ExecState* exec, const Identifier &propertyName, JSValue *value
   }
 
   // Called by an internal KJS call (e.g. InterpreterImp's constructor) ?
-  // If yes, save time and jump directly to JSObject.
-  if ( (attr != None && attr != DontDelete) ||
-       // Same thing if we have a local override (e.g. "var location")
-       ( isSafeScript( exec ) && JSObject::getDirect(propertyName) ) )
+  // If yes, save time and jump directly to JSObject. We also have
+  // to do this now since calling isSafeScript() may not work yet.
+  if (attr != None && attr != DontDelete)
   {
     JSObject::put( exec, propertyName, value, attr );
     return;
+  }
+  
+
+  // If we already have a variable, that's writeable w/o a getter/setter mess, just write to it.
+  bool safe = isSafeScript(exec);
+  if (safe) {
+    if (JSValue** slot = getDirectWriteLocation(propertyName)) {
+      *slot = value;
+      return;
+    }
   }
 
   const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
@@ -1245,7 +1254,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, JSValue *value
       isSafeScript(exec) &&
       m_frame->m_liveconnect->put(0, propertyName.qstring(), value->toString(exec).qstring()))
     return;
-  if (isSafeScript(exec)) {
+  if (safe) {
     //kDebug(6070) << "Window("<<this<<")::put storing " << propertyName.qstring();
     JSObject::put(exec, propertyName, value, attr);
   }

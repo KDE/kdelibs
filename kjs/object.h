@@ -439,6 +439,12 @@ namespace KJS {
     JSValue **getDirectLocation(const Identifier& propertyName)
         { return _prop.getLocation(propertyName); }
 
+    // If this method returns non-0, there is already a property
+    // with name propertyName that's not readonly and not a setter-getter
+    // which can be updated via the returned pointer.
+    JSValue **getDirectWriteLocation(const Identifier& propertyName)
+        { return _prop.getWriteLocation(propertyName); }
+
     void putDirect(const Identifier &propertyName, JSValue *value, int attr = 0)
         { _prop.put(propertyName, value, attr); }
     void putDirect(const Identifier &propertyName, int value, int attr = 0);
