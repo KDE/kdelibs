@@ -92,7 +92,7 @@ static JSValue* typeStringForValue(JSValue* v)
             // as null when doing comparisons.
             if (static_cast<JSObject*>(v)->masqueradeAsUndefined())
                 return jsString("undefined");
-            else if (static_cast<JSObject*>(v)->implementsCall())
+            else if (static_cast<JSObject*>(v)->isFunctionType())
                 return jsString("function");
         }
 

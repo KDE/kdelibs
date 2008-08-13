@@ -377,6 +377,16 @@ namespace KJS {
     virtual bool implementsCall() const;
 
     /**
+     * Whether or not this object should be considered a function for the purpose
+     * of the typeof operator. Normally this is the same as implementsCall(),
+     * which is what the default implementation delegates too, 
+     * but in some cases compatibility dictates that the object both be callable
+     * and call itself an object and not a function. In this case, this method should
+     * be overriden as well
+    */
+    virtual bool isFunctionType() const;
+
+    /**
      * Calls this object as if it is a function.
      *
      * Note: This function should not be called if implementsCall() returns
