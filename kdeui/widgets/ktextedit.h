@@ -25,6 +25,46 @@
 #include <QtGui/QTextEdit>
 
 /**
+ * This interface is a workaround to keep binary compatibilty in KDE4, because
+ * adding the virtual keyword to functions is not BC.
+ *
+ * Call KTextEdit::setSpellInterface() to set this interface to a KTextEdit,
+ * and some functions of KTextEdit will delegate their calls to this interface
+ * instead, which provides a way for derived classes to modifiy the behavior
+ * or those functions.
+ *
+ * @since 4.2
+ *
+ * TODO: Get rid of this class in KDE5 and add the methods to KTextEdit instead,
+ *       by making them virtual there.
+ */
+class KTextEditSpellInterface
+{
+  public:
+
+    /**
+     * @return true if spellchecking for the text edit is enabled.
+     */
+    virtual bool isSpellCheckingEnabled() const = 0;
+
+    /**
+     * Sets whether to enable spellchecking for the KTextEdit.
+     * @param enable true if spellchecking should be enabled, false otherwise
+     */
+    virtual void setSpellCheckingEnabled(bool enable) = 0;
+
+    /**
+     * Returns true if the given paragraph or block should be spellcheck.
+     * For example, a mail client does not want to check quoted text, and
+     * would return false here (by checking whether the block starts with a
+     * quote sign).
+     */
+    virtual bool shouldBlockBeSpellChecked(const QString& block) const = 0;
+
+    virtual ~KTextEditSpellInterface() {}
+};
+
+/**
  * @short A KDE'ified QTextEdit
  *
  * This is just a little subclass of QTextEdit, implementing
@@ -75,6 +115,9 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      * Enabling spell checking will set back the current highlighter to the one
      * returned by createHighlighter().
      *
+     * If a spell interface is set by setSpellInterface(),
+     * the call will be delegated to there instead.
+     *
      * @see checkSpellingEnabled()
      * @see isReadOnly()
      * @see setReadOnly()
@@ -86,6 +129,9 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      * Note that it even returns true if this is a read-only KTextEdit,
      * where spell checking is actually disabled.
      * By default spell checking is disabled.
+     *
+     * If a spell interface is set by setSpellInterface(),
+     * the call will be delegated to there instead.
      *
      * @see setCheckSpellingEnabled()
      */
@@ -115,12 +161,6 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      *      check
      */
     void setSpellCheckingConfigFileName(const QString &fileName);
-
-     /**
-      * change default language for spell checking dialogbox
-      * @since 4.1
-      */
-    void setSpellCheckingLanguage(const QString &language);
 
     /**
      * Allows to create a specific highlighter if reimplemented.
@@ -175,6 +215,23 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      */
     void enableFindReplace( bool enabled);
 
+    /**
+     * Sets the spell interface, which is used to delegate certain function
+     * calls to the interface.
+     * This is a workaround for binary compatibilty and should be removed in
+     * KDE5.
+     *
+     * @since 4.2
+     */
+    void setSpellInterface( KTextEditSpellInterface *spellInterface );
+
+    /**
+     * @return the spell checking language which was set by
+     *         setSpellCheckingLanguage(), the spellcheck dialog or the spellcheck
+     *         config dialog, or an empty string if that has never been called.
+     * @since 4.2
+     */
+    const QString& spellCheckingLanguage() const;
 
   Q_SIGNALS:
     /**
@@ -192,7 +249,7 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
 
      /**
       * Emitted when the user changes the language in the spellcheck dialog
-      * shown by checkSpelling().
+      * shown by checkSpelling() or when calling setSpellCheckingLanguage().
       *
       * @param language the new language the user selected
       * @since 4.1
@@ -200,11 +257,39 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      void languageChanged(const QString &language);
 
   public Q_SLOTS:
+
+    /**
+     * Set the spell check language which will be used for highlighting spelling
+     * mistakes and for the spellcheck dialog.
+     * The languageChanged() signal will be emited when the new language is
+     * different from the old one.
+     * 
+     * @since 4.1
+     */
+    void setSpellCheckingLanguage(const QString &language);
+
     /**
      * Create a modal dialog to check the spelling.  This slot will not return
      * until spell checking has been completed.
      */
     void checkSpelling();
+
+    /**
+     * Opens a Sonnet::ConfigDialog for this text edit. The config settings the
+     * user makes are read from and stored to the given config file.
+     * The spellcheck language of the config dialog is set to the current spellcheck
+     * language of the textedit. If the user changes the language in that dialog,
+     * the languageChanged() signal is emitted.
+     *
+     * @param configFileName The file which is used to store and load the config
+     *                       settings
+     * @param windowIcon the icon which is used for the titlebar of the spell dialog
+     *                   window. Can be empty, then no icon is set.
+     *
+     * @since 4.2
+     */
+    void showSpellConfigDialog(const QString &configFileName,
+                               const QString &windowIcon = QString());
 
     /**
      * Create replace dialogbox
@@ -265,11 +350,29 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      */
     virtual void contextMenuEvent( QContextMenuEvent* );
 
+    // TODO: KDE5: get rid of these as soon as BIC changes are allowed, they
+    //             should be folded back into the normal public version, which
+    //             should be made virtual.
+    //             These methods just provide a way for derived classes to call
+    //             the base class version of the normal methods.
+
+    /**
+     * Enable or disable the spellchecking. This is what setCheckSpellingEnabled()
+     * calls if there is no spell interface.
+     * @since 4.2
+     */
+    void setCheckSpellingEnabledInternal(bool check);
+
+    /**
+     * Checks whether spellchecking is enabled or disabled. This is what
+     * checkSpellingEnabled calls if there is no spell interface.
+     * @since 4.2
+     */
+    bool checkSpellingEnabledInternal() const;
+
   private:
     class Private;
     Private *const d;
-
-    Q_PRIVATE_SLOT( d, void slotSpellCheckDone( const QString& ) )
 
     Q_PRIVATE_SLOT( d, void spellCheckerMisspelling( const QString&, int ) )
     Q_PRIVATE_SLOT( d, void spellCheckerCorrected(const QString&, int,const QString&) )
