@@ -487,6 +487,11 @@ bool JSObject::implementsCall() const
   return false;
 }
 
+bool JSObject::isFunctionType() const
+{
+  return implementsCall();
+}
+
 JSValue *JSObject::callAsFunction(ExecState * /*exec*/, JSObject * /*thisObj*/, const List &/*args*/)
 {
   assert(false);
