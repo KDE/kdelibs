@@ -1234,7 +1234,7 @@ void KHTMLView::mouseDoubleClickEvent( QMouseEvent *_mouse )
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MouseDblClick);
 
     khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
-    if (r && r->isWidget())
+    if (r && r->isWidget() && !static_cast<RenderWidget*>(r)->isDisabled())
 	_mouse->ignore();
 
     if (!swallowEvent) {
@@ -3596,6 +3596,11 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
     bool swallowEvent = false;
 
     if (targetNode) {
+	// if the target node is a disabled widget, we don't want any full-blown mouse events
+	khtml::RenderObject* r = targetNode ? targetNode->renderer() : 0;
+	if (r && r->isWidget() && static_cast<RenderWidget*>(r)->isDisabled())
+	    return true;
+
         // send the actual event
         bool dblclick = ( eventId == EventImpl::CLICK_EVENT &&
                           _mouse->type() == QEvent::MouseButtonDblClick );
