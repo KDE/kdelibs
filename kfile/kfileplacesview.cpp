@@ -551,6 +551,8 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     QAction *edit = 0;
     QAction *hide = 0;
     QAction *emptyTrash = 0;
+    QAction* teardown = 0;
+
     if (index.isValid()) {
         if (!placesModel->isDevice(index)) {
             if (placesModel->url(index) == KUrl("trash:/")) {
@@ -561,6 +563,13 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
             }
 
             edit = menu.addAction(KIcon("document-properties"), i18n("&Edit '%1'...", label));
+        } else {
+            teardown = placesModel->teardownActionForIndex(index);
+            if (teardown!=0) {
+                teardown->setParent(&menu);
+                menu.addAction(teardown);
+                menu.addSeparator();
+            }
         }
 
         hide = menu.addAction(i18n("&Hide '%1'", label));
@@ -575,19 +584,11 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         showAll->setChecked(d->showAll);
     }
 
-    QAction* remove = 0L;
-    QAction* teardown = 0L;
+    QAction* remove = 0;
     if (index.isValid()) {
         if (!placesModel->isDevice(index)) {
             menu.addSeparator();
             remove = menu.addAction( KIcon("edit-delete"), i18n("&Remove '%1'", label));
-        } else {
-            teardown = placesModel->teardownActionForIndex(index);
-            if (teardown!=0) {
-                teardown->setParent(&menu);
-                menu.addSeparator();
-                menu.addAction(teardown);
-            }
         }
     }
 
