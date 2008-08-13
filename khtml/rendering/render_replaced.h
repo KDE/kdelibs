@@ -104,6 +104,7 @@ public:
     static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty);
     virtual bool handleEvent(const DOM::EventImpl& ev);
     bool isRedirectedWidget() const;
+    bool isDisabled() const { return m_widget && !m_widget->isEnabled(); }
 
 #ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
