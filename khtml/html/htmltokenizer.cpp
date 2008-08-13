@@ -513,7 +513,10 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
             {
                 if ( scriptCodeSize > 2 && scriptCode[scriptCodeSize-3] == '-' &&
                      scriptCode[scriptCodeSize-2] == '-' )
+                {
+                    scriptCodeSize -= 1;
                     scriptEnd=true;
+                }
             }
 
             if (canClose || handleBrokenComments || scriptEnd ){
