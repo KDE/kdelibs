@@ -280,6 +280,45 @@ JSValue **PropertyMap::getLocation(const Identifier &name)
     return 0;
 }
 
+JSValue **PropertyMap::getWriteLocation(const Identifier &name)
+{
+    assert(!name.isNull());
+
+    UString::Rep *rep = name._ustring.rep();
+
+    if (!m_usingTable) {
+        UString::Rep *key = m_singleEntryKey;
+        if (rep == key && !(m_singleEntryAttributes & (ReadOnly | GetterSetter)))
+            return &m_u.singleEntryValue;
+        return 0;
+    }
+
+    unsigned h = rep->hash();
+    int sizeMask = m_u.table->sizeMask;
+    Entry *entries = m_u.table->entries;
+    int i = h & sizeMask;
+    int k = 0;
+#if DUMP_STATISTICS
+    ++numProbes;
+    numCollisions += entries[i].key && entries[i].key != rep;
+#endif
+    while (UString::Rep *key = entries[i].key) {
+        if (rep == key) {
+            if (entries[i].attributes & (ReadOnly | GetterSetter))
+                return 0;
+            else
+                return &entries[i].value;
+        }
+        if (k == 0)
+            k = 1 | (h % sizeMask);
+        i = (i + k) & sizeMask;
+#if DUMP_STATISTICS
+        ++numRehashes;
+#endif
+    }
+    return 0;
+}
+
 #if DEBUG_PROPERTIES
 static void printAttributes(int attributes)
 {

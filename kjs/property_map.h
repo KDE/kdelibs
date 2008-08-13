@@ -79,6 +79,11 @@ namespace KJS {
         JSValue *get(const Identifier &name, unsigned &attributes) const;
         JSValue **getLocation(const Identifier &name);
 
+        // Returns a location where this property can be set, if it
+        // exists, is writeable, and not a setter.
+        // Warning: this pointer may become invalid after any further modifications
+        JSValue **getWriteLocation(const Identifier &name);
+
         void mark() const;
         void getEnumerablePropertyNames(PropertyNameArray&) const;
 
