@@ -20,6 +20,7 @@
 #include "halstorageaccess.h"
 
 #include <QtCore/QDebug>
+#include <QtCore/QProcess>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
@@ -124,6 +125,29 @@ void StorageAccess::slotDBusReply(const QDBusMessage &/*reply*/)
     } else if (m_teardownInProgress) {
         m_teardownInProgress = false;
         emit teardownDone(Solid::NoError, QVariant(), m_device->udi());
+
+        HalDevice drive(m_device->property("block.storage_device").toString());
+        if (drive.property("storage.requires_eject").toBool()) {
+
+            QString devnode = m_device->property("block.device").toString();
+
+#if defined(Q_OS_OPENBSD)
+            QString program = "cdio";
+            QStringList args;
+            args << "-f" << devnode << "eject";
+#elif defined(Q_OS_FREEBSD) || defined(Q_OS_NETBSD)
+            devnode.replace("/dev/", "").replace("([0-9]).", "\\1");
+            QString program = "cdcontrol";
+            QStringList args;
+            args << "-f" << devnode << "eject";
+#else
+            QString program = "eject";
+            QStringList args;
+            args << devnode;
+#endif
+
+            QProcess::startDetached(program, args);
+        }
     }
 }
 
