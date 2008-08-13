@@ -410,6 +410,24 @@ public:
    * @return converted duration as a string - e.g. "5.5 seconds" "23.0 minutes"
    */
   QString formatDuration( unsigned long mSec) const;
+
+  /**
+   * Given a number of milliseconds, converts that to a pretty string containing
+   * the localized equivalent. 
+   *
+   * e.g. given formatDuration(60001) returns "1 minute" 
+   *      given formatDuration(62005) returns "1 minute and 2 seconds"
+   *      given formatDuration(90060000) returns "1 day and 1 hour"
+   *
+   * @param mSec Time duration in milliseconds
+   * @return converted duration as a string.
+   *         Units not interesting to the user, for example seconds or minutes when the first
+   *         unit is day, are not returned because they are irrelevant. The same applies for seconds
+   *         when the first unit is hour.
+   * @since 4.2
+   */
+  QString prettyFormatDuration( unsigned long mSec ) const;
+
   /**
    * Use this to determine whether nouns are declined in
    * locale's language. This property should remain

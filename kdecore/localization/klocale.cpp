@@ -168,6 +168,17 @@ public:
    */
   static QString fancyDate(const KLocale *locale, const QDate &date, int daysToNow);
 
+  enum DurationType {
+      DaysDurationType = 0,
+      HoursDurationType,
+      MinutesDurationType,
+      SecondsDurationType
+  };
+  /**
+   * @internal Formats a duration according to the given type and number
+   */
+  static QString formatSingleDuration( DurationType durationType, int n );
+
   // Numbers and money
   QString decimalSymbol;
   QString thousandsSeparator;
@@ -1221,6 +1232,48 @@ QString KLocale::formatDuration( unsigned long mSec) const
    }
 
    return i18n( "%1 milliseconds", formatNumber(mSec, 0));
+}
+
+QString KLocalePrivate::formatSingleDuration( DurationType durationType, int n )
+{
+    switch (durationType) {
+        case DaysDurationType:
+            return i18ncp("@item:intext", "1 day", "%1 days", n);
+        case HoursDurationType:
+            return i18ncp("@item:intext", "1 hour", "%1 hours", n);
+        case MinutesDurationType:
+            return i18ncp("@item:intext", "1 minute", "%1 minutes", n);
+        case SecondsDurationType:
+            return i18ncp("@item:intext", "1 second", "%1 seconds", n);
+    }
+}
+
+QString KLocale::prettyFormatDuration( unsigned long mSec ) const
+{
+    unsigned long ms = mSec;
+    int days = ms/(24*3600000);
+    ms = ms%(24*3600000);
+    int hours = ms/3600000;
+    ms = ms%3600000;
+    int minutes = ms/60000;
+    ms = ms%60000;
+    int seconds = qRound(ms/1000.0);
+
+    if (days && hours) {
+        return i18nc("@item:intext days and hours. This uses the previous item:intext messages. If this does not fit the grammar of your language please contact the i18n team to solve the problem", "%1 and %2", d->formatSingleDuration(KLocalePrivate::DaysDurationType, days), d->formatSingleDuration(KLocalePrivate::HoursDurationType, hours));
+    } else if (days) {
+        return d->formatSingleDuration(KLocalePrivate::DaysDurationType, days);
+    } else if (hours && minutes) {
+        return i18nc("@item:intext hours and minutes. This uses the previous item:intext messages. If this does not fit the grammar of your language please contact the i18n team to solve the problem", "%1 and %2", d->formatSingleDuration(KLocalePrivate::HoursDurationType, hours), d->formatSingleDuration(KLocalePrivate::MinutesDurationType, minutes));
+    } else if (hours) {
+        return d->formatSingleDuration(KLocalePrivate::HoursDurationType, hours);
+    } else if (minutes && seconds) {
+        return i18nc("@item:intext minutes and seconds. This uses the previous item:intext messages. If this does not fit the grammar of your language please contact the i18n team to solve the problem", "%1 and %2", d->formatSingleDuration(KLocalePrivate::MinutesDurationType, minutes), d->formatSingleDuration(KLocalePrivate::SecondsDurationType, seconds));
+    } else if (minutes) {
+        return d->formatSingleDuration(KLocalePrivate::MinutesDurationType, minutes);
+    } else {
+        return d->formatSingleDuration(KLocalePrivate::SecondsDurationType, seconds);
+    }
 }
 
 QString KLocale::formatDate(const QDate &pDate, DateFormat format) const
