@@ -181,7 +181,15 @@ KBookmark KFilePlacesItem::createBookmark(KBookmarkManager *manager,
     KBookmarkGroup root = manager->root();
     if (root.isNull())
         return KBookmark();
-    KBookmark bookmark = root.addBookmark(label, url, iconName);
+    QString empty_icon = iconName;
+    if (url==KUrl("trash:/")) {
+        if (empty_icon.endsWith("-full")) {
+            empty_icon.chop(5);
+        } else if (empty_icon.isEmpty()) {
+            empty_icon = "user-trash";
+        }
+    }
+    KBookmark bookmark = root.addBookmark(label, url, empty_icon);
     bookmark.setMetaDataItem("ID", generateNewId());
 
     return bookmark;
