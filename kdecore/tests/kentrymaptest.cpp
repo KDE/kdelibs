@@ -84,6 +84,19 @@ void KEntryMapTest::testSimple()
     QVERIFY(found == value2);
 }
 
+void KEntryMapTest::testDirty()
+{
+    KEntryMap map;
+    bool ret = map.setEntry(group1, key1, value1, EntryDefault);
+    QCOMPARE(ret, true);
+    ret = map.setEntry(group1, key1, value1, EntryDefault);
+    QCOMPARE(ret, false);
+    ret = map.setEntry(group1, key2, value2, EntryOptions());
+    QCOMPARE(ret, true);
+    ret = map.setEntry(group1, key2, value2, EntryOptions());
+    QCOMPARE(ret, false);
+}
+
 void KEntryMapTest::testDefault()
 {
     KEntryMap map;

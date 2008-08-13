@@ -26,6 +26,7 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QString>
 #include <QtCore/QMap>
+#include <QtCore/QDebug>
 
 /**
  * map/dict/list config node entry.
@@ -60,6 +61,20 @@ struct KEntry
    */
   bool    bExpand:1;
 };
+
+
+inline bool operator ==(const KEntry &k1, const KEntry &k2)
+{
+    int result = qstrcmp(k1.mValue.constData(), k2.mValue.constData());
+    return (result == 0 && k1.bDirty == k2.bDirty && k1.bGlobal == k2.bGlobal
+        && k1.bImmutable == k2.bImmutable && k1.bDeleted == k2.bDeleted &&
+        k1.bExpand == k2.bExpand);
+}
+
+inline bool operator !=(const KEntry &k1, const KEntry &k2)
+{
+    return !(k1 == k2);
+}
 
 /**
  * key structure holding both the actual key and the the group
@@ -146,6 +161,19 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
         };
         Q_DECLARE_FLAGS(EntryOptions, EntryOption)
 
+        Iterator findExactEntry(const QByteArray& group, const QByteArray& key = QByteArray(),
+                           SearchFlags flags = SearchFlags())
+        {
+            KEntryKey theKey(group, key, false, bool(flags&SearchDefaults));
+
+            // try the localized key first
+            if (flags&SearchLocalized) {
+                theKey.bLocal = true;
+                return find(theKey);
+            }
+            return find(theKey);
+        }
+
         Iterator findEntry(const QByteArray& group, const QByteArray& key = QByteArray(),
                            SearchFlags flags = SearchFlags())
         {
@@ -181,36 +209,49 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
             }
             return find(theKey);
         }
-
-        void setEntry(const QByteArray& group, const QByteArray& key,
+        
+        /**
+         * Returns true if the entry gets dirtied or false in other case
+         */
+        bool setEntry(const QByteArray& group, const QByteArray& key,
                       const QByteArray& value, EntryOptions options)
         {
             KEntryKey k;
             KEntry e;
+            bool newKey = false;
 
+            const Iterator it = findExactEntry(group, key, SearchFlags(options>>16));
+            
             if (key.isEmpty()) { // inserting a group marker
                 k.mGroup = group;
                 e.bImmutable = (options&EntryImmutable);
-                insert(k, e);
-                return;
+                if(it == end())
+                {
+                    insert(k, e);
+                    return true;
+                } else if(it.value() == e)
+                    return false;
+                
+                it.value() = e;
+                return true;
             }
 
-            const ConstIterator it = findEntry(group, key, SearchFlags(options>>16));
 
-            if (it != constEnd()) {
+            if (it != end()) {
                 if (it->bImmutable)
-                    return; // we cannot change this entry. Inherits group immutability.
+                    return false; // we cannot change this entry. Inherits group immutability.
                 k = it.key();
                 e = *it;
             } else {
                 // make sure the group marker is in the map
-                ConstIterator it = findEntry(group);
-                if (it == constEnd())
+                ConstIterator cit = findEntry(group);
+                if (cit == constEnd())
                     insert(KEntryKey(group), KEntry());
-                else if (it->bImmutable)
-                    return; // this group is immutable, so we cannot change this entry.
+                else if (cit->bImmutable)
+                    return false; // this group is immutable, so we cannot change this entry.
 
                 k = KEntryKey(group, key);
+                newKey = true;
             }
 
             // set these here, since we may be changing the type of key from the one we found
@@ -233,16 +274,65 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
                 e.bDeleted = false; // setting a value to a previously deleted entry
             e.bExpand = (options&EntryExpansion);
 
-            insert(k, e);
 //             qDebug() << "to" << QString("[%1,%2]").arg(group).arg(key).toLatin1().constData()
 //                     << '=' << maybeNull(e.mValue)
 //                     << entryDataToQString(e).toLatin1().constData();
-
-            if (k.bDefault) { // inserted as default entry
-                k.bDefault = false;
-                insert(k, e); // now insert as normal entry
+            if(newKey)
+            {
+                insert(k, e);
+                if(k.bDefault)
+                {
+                    k.bDefault = false;
+                    insert(k, e);
+                }
+                // TODO check for presence of unlocalized key
+                return true;
+            } else {
+//                KEntry e2 = it.value();
+                if(it.value() != e)
+                {
+                    it.value() = e;
+                    if(k.bDefault)
+                    {
+                        k.bDefault = false;
+                        insert(k, e);
+                    }
+                    if (!(options & EntryLocalized)) {
+                        KEntryKey theKey(group, key, true, false);
+                        remove(theKey);
+                        if (k.bDefault) {
+                            theKey.bDefault = false;
+                            remove(theKey);
+                        }
+                    }
+                    return true;
+                } else {
+                    if (!(options & EntryLocalized)) {
+                        KEntryKey theKey(group, key, true, false);
+                        bool ret = false;
+                        Iterator cit = find(theKey);
+                        if (cit != end()) {
+                            erase(cit);
+                            ret = true;
+                        }
+                        if (k.bDefault) {
+                            theKey.bDefault = false;
+                            Iterator cit = find(theKey);
+                            if (cit != end()) {
+                                erase(cit);
+                                return true;
+                            }
+                        }
+                        return ret;
+                    }
+                    // When we are writing a default, we know that the non-
+                    // default is the same as the default, so we can simply
+                    // use the same branch.
+                    return false;
+                }
             }
         }
+        
         void setEntry(const QByteArray& group, const QByteArray& key,
                       const QString & value, EntryOptions options)
         {
@@ -268,6 +358,8 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
 
             return theValue;
         }
+        
+        
 
         bool hasEntry(const QByteArray& group, const QByteArray& key = QByteArray(),
                       SearchFlags flags = SearchFlags()) const

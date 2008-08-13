@@ -46,6 +46,7 @@ public:
 private Q_SLOTS:
     void testKeyOrder();
     void testSimple();
+    void testDirty();
     void testDefault();
     void testDelete();
     void testGlobal();

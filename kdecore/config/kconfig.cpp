@@ -699,6 +699,7 @@ void KConfigPrivate::putData( const QByteArray& group, const char* key,
                       const QByteArray& value, KConfigBase::WriteConfigFlags flags, bool expand)
 {
     KEntryMap::EntryOptions options = convertToOptions(flags);
+    
     if (bForceGlobal)
         options |= KEntryMap::EntryGlobal;
     if (expand)
@@ -707,9 +708,8 @@ void KConfigPrivate::putData( const QByteArray& group, const char* key,
     if (value.isNull()) // deleting entry
         options |= KEntryMap::EntryDeleted;
 
-    entryMap.setEntry(group, key, value, options);
-
-    if (flags & KConfigBase::Persistent)
+    bool dirtied = entryMap.setEntry(group, key, value, options);
+    if( flags &  KConfigBase::Persistent && dirtied )
         bDirty = true;
 }
 
