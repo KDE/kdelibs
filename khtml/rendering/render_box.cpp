@@ -740,10 +740,10 @@ QRect RenderBox::overflowClipRect(int tx, int ty)
 
 QRect RenderBox::clipRect(int tx, int ty)
 {
-    int bl=borderLeft(),bt=borderTop(),bb=borderBottom(),br=borderRight();
-    // ### what about paddings?
-    int clipw = m_width-bl-br;
-    int cliph = m_height-bt-bb;
+    // Clipping applies to the entire box, including the borders, so we
+    // don't have to do anything about them or margins
+    int clipw = m_width;
+    int cliph = m_height;
 
     bool rtl = (style()->direction() == RTL);
 
