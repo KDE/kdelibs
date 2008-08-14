@@ -373,6 +373,7 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     update(); // ensure the button is drawn highlighted
 
     KMenu* dirsMenu = new KMenu(this);
+    dirsMenu->setLayoutDirection(Qt::LeftToRight);
     QStringList::const_iterator it = m_subdirs.constBegin();
     QStringList::const_iterator itEnd = m_subdirs.constEnd();
     int i = 0;

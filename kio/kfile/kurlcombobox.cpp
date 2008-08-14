@@ -76,6 +76,7 @@ KUrlComboBox::KUrlComboBox( Mode mode, QWidget *parent)
     : KComboBox( parent),d(new KUrlComboBoxPrivate(this))
 {
     d->init( mode );
+    setLayoutDirection( Qt::LeftToRight );
 }
 
 

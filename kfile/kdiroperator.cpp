@@ -341,6 +341,10 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent) :
         d->currUrl.addPath("/"); // make sure we have a trailing slash!
     }
 
+    // We set the direction of this widget to LTR, since even on RTL desktops
+    // viewing directory listings in RTL mode makes people's head explode.
+    // Is this the correct place? Maybe it should be in some lower level widgets...?
+    setLayoutDirection(Qt::LeftToRight);
     setDirLister(new KDirLister());
 
     connect(&d->completion, SIGNAL(match(const QString&)),

@@ -35,6 +35,11 @@
  * It will manage the default dirs root-directory, home-directory and
  * Desktop-directory, as well as a number of URLs set via setUrls()
  * and one additional entry to be set via setUrl().
+ * 
+ * This widget forces the layout direction to be Qt::LeftToRight instead
+ * of inheriting the layout direction like a normal widget. This means
+ * that even in RTL desktops the widget will be displayed in LTR mode,
+ * as generally URLs are LTR by nature.
  *
  * @short A combo box showing a number of recent URLs/directories
  * @author Carsten Pfeiffer <pfeiffer@kde.org>

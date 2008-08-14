@@ -418,6 +418,7 @@ void KUrlNavigator::Private::openPathSelectorMenu()
     
     QString spacer;
     KMenu* popup = new KMenu(q); 
+    popup->setLayoutDirection(Qt::LeftToRight);
     
     const QString path = q->url().pathOrUrl();
     QString placePath = retrievePlacePath(path);
@@ -750,6 +751,7 @@ KUrlNavigator::KUrlNavigator(KFilePlacesModel* placesModel,
     d(new Private(this, placesModel))
 {
     d->m_history.prepend(HistoryElem(url));
+    setLayoutDirection(Qt::LeftToRight);
 
     const QFont font = KGlobalSettings::generalFont();
     setFont(font);

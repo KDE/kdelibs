@@ -290,7 +290,7 @@ void KLineEdit::updateClearButtonIcon(const QString& text)
         return;
     }
 
-    if (qApp->isLeftToRight()) {
+    if (layoutDirection() == Qt::RightToLeft) {
         d->clearButton->setPixmap(SmallIcon("edit-clear-locationbar-rtl", 0, clearButtonState));
     } else {
         d->clearButton->setPixmap(SmallIcon("edit-clear-locationbar-ltr", 0, clearButtonState));
@@ -321,7 +321,7 @@ void KLineEdit::updateClearButton()
         d->overlap = wideEnough ? buttonWidth + frameWidth : 0;
     }
 
-    if (qApp->isLeftToRight()) {
+    if (layoutDirection() == Qt::LeftToRight ) {
         d->clearButton->move(geom.width() - frameWidth - buttonWidth - 1, 0);
     } else {
         d->clearButton->move(frameWidth + 1, 0);
