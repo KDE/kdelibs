@@ -38,7 +38,7 @@
   class KConfigSkeletonItemPrivate;
   /**
    * \class KConfigSkeletonItem kcoreconfigskeleton.h <KConfigSkeletonItem>
-   * 
+   *
    * @short Class for storing a preferences setting
    * @author Cornelius Schumacher
    * @see KCoreConfigSkeleton
@@ -108,6 +108,18 @@
       Return label of item. See setLabel().
     */
     QString label() const;
+
+    /**
+      Set ToolTip description of item.
+      @since 4.2
+    */
+    void setToolTip( const QString &t );
+
+    /**
+      Return ToolTip description of item. See setToolTip().
+      @since 4.2
+    */
+    QString toolTip() const;
 
     /**
       Set WhatsThis description of item.
@@ -294,7 +306,7 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
 
   /**
    * \class KCoreConfigSkeleton kcoreconfigskeleton.h <KCoreConfigSkeleton>
-   * 
+   *
    * @short Class for handling preferences settings for an application.
    * @author Cornelius Schumacher
    * @see KConfigSkeletonItem
@@ -594,10 +606,19 @@ public:
   class KDECORE_EXPORT ItemEnum:public ItemInt
   {
   public:
+    //KDE5: remove the old Choice struct, rename Choice2 to Choice
     struct Choice
     {
       QString name;
       QString label;
+      QString whatsThis;
+    };
+
+    struct Choice2
+    {
+      QString name;
+      QString label;
+      QString toolTip;
       QString whatsThis;
     };
 
@@ -607,7 +628,14 @@ public:
     ItemEnum(const QString & _group, const QString & _key, qint32 &reference,
              const QList<Choice> &choices, qint32 defaultValue = 0);
 
+    /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem
+        @param choices The list of enums that can be stored in this item
+      */
+    ItemEnum(const QString & _group, const QString & _key, qint32 &reference,
+             const QList<Choice2> &choices, qint32 defaultValue = 0);
+
     QList<Choice> choices() const;
+    QList<Choice2> choices2() const;
 
     /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
@@ -616,7 +644,7 @@ public:
     void writeConfig(KConfig * config);
 
   private:
-      QList<Choice> mChoices;
+    QList<Choice2> mChoices;
   };
 
 
