@@ -27,8 +27,6 @@
 #include "kdebug.h"
 #include "kstringhandler.h"
 
-#include <QtCore/QSharedData>
-
 KConfigSkeletonItem::KConfigSkeletonItem(const QString & _group,
                                          const QString & _key)
     : mGroup(_group)
