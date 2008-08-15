@@ -41,7 +41,7 @@
 #endif
 
 typedef QMultiHash<QString, QString> QStringMultiHash;
-SOLID_GLOBAL_STATIC(QStringMultiHash, globalMountPointsCache);
+SOLID_GLOBAL_STATIC(QStringMultiHash, globalMountPointsCache)
 
 QString _k_resolveSymLink(const QString &filename)
 {
