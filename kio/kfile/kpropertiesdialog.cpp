@@ -994,6 +994,12 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     grid->addWidget(l, curRow, 0);
 
     l = new KSqueezedTextLabel( directory, d->m_frame );
+    // force the layout direction to be always LTR
+    l->setLayoutDirection(Qt::LeftToRight);
+    // but if we are in RTL mode, align the text to the right
+    // otherwise the text is on the wrong side of the dialog
+    if (properties->layoutDirection() == Qt::RightToLeft) 
+	l->setAlignment( Qt::AlignRight );
     l->setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard);
     grid->addWidget(l, curRow++, 2);
   }
