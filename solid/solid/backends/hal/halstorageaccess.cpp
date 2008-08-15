@@ -127,7 +127,8 @@ void StorageAccess::slotDBusReply(const QDBusMessage &/*reply*/)
         emit teardownDone(Solid::NoError, QVariant(), m_device->udi());
 
         HalDevice drive(m_device->property("block.storage_device").toString());
-        if (drive.property("storage.requires_eject").toBool()) {
+        if (drive.property("storage.drive_type").toString()!="cdrom"
+         && drive.property("storage.requires_eject").toBool()) {
 
             QString devnode = m_device->property("block.device").toString();
 

@@ -551,6 +551,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     QAction *edit = 0;
     QAction *hide = 0;
     QAction *emptyTrash = 0;
+    QAction* eject = 0;
     QAction* teardown = 0;
 
     if (index.isValid()) {
@@ -564,10 +565,19 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
 
             edit = menu.addAction(KIcon("document-properties"), i18n("&Edit '%1'...", label));
         } else {
+            eject = placesModel->ejectActionForIndex(index);
+            if (eject!=0) {
+                eject->setParent(&menu);
+                menu.addAction(eject);
+            }
+
             teardown = placesModel->teardownActionForIndex(index);
             if (teardown!=0) {
                 teardown->setParent(&menu);
                 menu.addAction(teardown);
+            }
+
+            if (teardown!=0 || eject!=0) {
                 menu.addSeparator();
             }
         }
@@ -647,6 +657,8 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         setShowAll(showAll->isChecked());
     } else if (teardown != 0 && result == teardown) {
         placesModel->requestTeardown(index);
+    } else if (eject != 0 && result == eject) {
+        placesModel->requestEject(index);
     }
 
     index = placesModel->closestItem(d->currentUrl);
