@@ -485,7 +485,9 @@ KuitSemanticsPrivate::KuitSemanticsPrivate (const QString &lang)
 
     // Catalog and transliterator not needed any more.
     delete m_metaCat;
+    m_metaCat = NULL;
     delete m_metaTranslit;
+    m_metaTranslit = NULL;
 }
 
 QString KuitSemanticsPrivate::metaTr (const char *ctxt, const char *id) const
@@ -814,6 +816,10 @@ void KuitSemanticsPrivate::setTextTransformData ()
 {
     KuitSemanticsStaticData *s = staticData;
 
+    // Mask metaTr with I18N_NOOP2 to have stuff extracted.
+    #undef I18N_NOOP2
+    #define I18N_NOOP2(ctxt, msg) metaTr(ctxt, msg)
+
     m_numfmtInt = Kuit::Numfmt::Posix;
     // i18n: Decide how integer-valued amounts will be formatted in your
     // language. Currently available number formats are:
@@ -825,7 +831,7 @@ void KuitSemanticsPrivate::setTextTransformData ()
     //   system  - by locale settings (i.e. override language ortography)
     // If none of the existing formats is appropriate for your language,
     // write to kde-i18n-doc@kde.org to arrange for a new format.
-    QString fmtnameInt = metaTr("number-format:integer", "us").toLower();
+    QString fmtnameInt = I18N_NOOP2("number-format:integer", "us").toLower();
     if (s->knownNumfmts.contains(fmtnameInt)) {
         m_numfmtInt = s->knownNumfmts[fmtnameInt];
     }
@@ -838,7 +844,7 @@ void KuitSemanticsPrivate::setTextTransformData ()
     m_numfmtReal = Kuit::Numfmt::Posix;
     // i18n: Decide how real-valued amounts will be formatted in your
     // language. See the comment to previous entry.
-    QString fmtnameReal = metaTr("number-format:real", "us").toLower();
+    QString fmtnameReal = I18N_NOOP2("number-format:real", "us").toLower();
     if (s->knownNumfmts.contains(fmtnameReal)) {
         m_numfmtReal = s->knownNumfmts[fmtnameReal];
     }
@@ -858,19 +864,19 @@ void KuitSemanticsPrivate::setTextTransformData ()
 
     // i18n: Decide which string is used to delimit keys in a keyboard
     // shortcut (e.g. + in Ctrl+Alt+Tab) in plain text.
-    m_comboKeyDelim[Kuit::Fmt::Plain] = metaTr("shortcut-key-delimiter/plain", "+");
+    m_comboKeyDelim[Kuit::Fmt::Plain] = I18N_NOOP2("shortcut-key-delimiter/plain", "+");
     m_comboKeyDelim[Kuit::Fmt::Term] = m_comboKeyDelim[Kuit::Fmt::Plain];
     // i18n: Decide which string is used to delimit keys in a keyboard
     // shortcut (e.g. + in Ctrl+Alt+Tab) in rich text.
-    m_comboKeyDelim[Kuit::Fmt::Rich] = metaTr("shortcut-key-delimiter/rich", "+");
+    m_comboKeyDelim[Kuit::Fmt::Rich] = I18N_NOOP2("shortcut-key-delimiter/rich", "+");
 
     // i18n: Decide which string is used to delimit elements in a GUI path
     // (e.g. -> in "Go to Settings->Advanced->Core tab.") in plain text.
-    m_guiPathDelim[Kuit::Fmt::Plain] = metaTr("gui-path-delimiter/plain", "→");
+    m_guiPathDelim[Kuit::Fmt::Plain] = I18N_NOOP2("gui-path-delimiter/plain", "→");
     m_guiPathDelim[Kuit::Fmt::Term] = m_guiPathDelim[Kuit::Fmt::Plain];
     // i18n: Decide which string is used to delimit elements in a GUI path
     // (e.g. -> in "Go to Settings->Advanced->Core tab.") in rich text.
-    m_guiPathDelim[Kuit::Fmt::Rich] = metaTr("gui-path-delimiter/rich", "→");
+    m_guiPathDelim[Kuit::Fmt::Rich] = I18N_NOOP2("gui-path-delimiter/rich", "→");
     // NOTE: The '→' glyph seems to be available in all widespread fonts.
 
     // Collect keyboard key names.
