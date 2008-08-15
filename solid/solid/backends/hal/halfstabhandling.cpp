@@ -20,9 +20,13 @@
 #include "halfstabhandling.h"
 
 #include <QtCore/QFile>
+#include <QtCore/QMultiHash>
 #include <QtCore/QObject>
 #include <QtCore/QProcess>
 #include <QtCore/QTextStream>
+#include <QtCore/QTime>
+
+#include <solid/soliddefs_p.h>
 
 #ifdef HAVE_MNTENT_H
 #include <mntent.h>
@@ -35,6 +39,9 @@
 #else
 #define FSTAB "/etc/fstab"
 #endif
+
+typedef QMultiHash<QString, QString> QStringMultiHash;
+SOLID_GLOBAL_STATIC(QStringMultiHash, globalMountPointsCache);
 
 QString _k_resolveSymLink(const QString &filename)
 {
@@ -49,29 +56,35 @@ QString _k_resolveSymLink(const QString &filename)
     return resolved;
 }
 
-bool Solid::Backends::Hal::FstabHandling::isInFstab(const QString &device)
+void _k_updateMountPointsCache()
 {
-    const QString deviceToFind = _k_resolveSymLink(device);
+    static bool firstCall = true;
+    static QTime elapsedTime;
 
-    if (deviceToFind.isEmpty()) {
-        return false;
+    if (firstCall) {
+        firstCall = false;
+        elapsedTime.start();
+    } else if (elapsedTime.elapsed()>10000) {
+        elapsedTime.restart();
+    } else {
+        return;
     }
+
+    globalMountPointsCache->clear();
 
 #ifdef HAVE_SETMNTENT
 
     struct mntent *fstab;
     if ((fstab = setmntent(FSTAB, "r")) == 0) {
-        return false;
+        return;
     }
 
     struct mntent *fe;
     while ((fe = getmntent(fstab)) != 0) {
         const QString device = _k_resolveSymLink(QFile::decodeName(fe->mnt_fsname));
+        const QString mountpoint = _k_resolveSymLink(QFile::decodeName(fe->mnt_dir));
 
-        if (device==deviceToFind) {
-            endmntent(fstab);
-            return true;
-        }
+        globalMountPointsCache->insert(device, mountpoint);
     }
 
     endmntent(fstab);
@@ -80,7 +93,7 @@ bool Solid::Backends::Hal::FstabHandling::isInFstab(const QString &device)
 
     QFile fstab(FSTAB);
     if (!fstab.open(QIODevice::ReadOnly)) {
-        return false;
+        return;
     }
 
     QTextStream stream(&fstab);
@@ -105,18 +118,22 @@ bool Solid::Backends::Hal::FstabHandling::isInFstab(const QString &device)
         }
 #endif
 
-        const QString device = _k_resolveSymLink(items.first());
+        const QString device = _k_resolveSymLink(items.at(0));
+        const QString mountpoint = _k_resolveSymLink(items.at(1));
 
-        if (device==deviceToFind) {
-            fstab.close();
-            return true;
-        }
+        globalMountPointsCache->insert(device, mountpoint);
    }
 
    fstab.close();
 #endif
+}
 
-   return false;
+bool Solid::Backends::Hal::FstabHandling::isInFstab(const QString &device)
+{
+    _k_updateMountPointsCache();
+    const QString deviceToFind = _k_resolveSymLink(device);
+
+    return globalMountPointsCache->contains(deviceToFind);
 }
 
 QProcess *Solid::Backends::Hal::FstabHandling::callSystemCommand(const QString &commandName,
