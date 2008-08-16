@@ -166,12 +166,14 @@ QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObjec
         if (args.contains(QVariant("Browser/View")))
             kpartsIface = "Browser/View";
 
-        if ((obj = reinterpret_cast<QObject *>(createPartObject(parentWidget, parent, kpartsIface, variantListToStringList(args))))) {
+        const QStringList argsStringList = variantListToStringList(args);
+
+        if ((obj = reinterpret_cast<QObject *>(createPartObject(parentWidget, parent, kpartsIface, argsStringList)))) {
             objectCreated(obj);
             return obj;
         }
 
-        if ((obj = createObject(parent, iface, variantListToStringList(args)))) {
+        if ((obj = createObject(parent, iface, argsStringList))) {
             objectCreated(obj);
             return obj;
         }
