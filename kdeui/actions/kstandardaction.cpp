@@ -467,13 +467,13 @@ static KAction *buildAutomaticAction( QObject* parent, StandardAction id, const 
 
   AutomaticAction *action = new AutomaticAction(
       KIcon( p->psIconName ),
-      p->psLabel,
+      i18n(p->psLabel),
       KStandardShortcut::shortcut( p->idAccel ),
       slot,
       parent);
 
   action->setObjectName(p->psName);
-  action->setWhatsThis( p->psWhatsThis );
+  action->setWhatsThis( i18n(p->psWhatsThis) );
 
   KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
   if (collection)
