@@ -7,15 +7,14 @@
 #include <kfiledialog.h>
 #include <kmessagebox.h>
 #include <kcmdlineargs.h>
-#include <klibloader.h>
+#include <kpluginloader.h>
 
 #include <QtGui/QWidget>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 
-#include <kparts/componentfactory.h>
-
 #include "ghostview.h"
+#include <kmimetypetrader.h>
 #include <kicon.h>
 
 Shell::Shell()
@@ -34,10 +33,9 @@ Shell::Shell()
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
 
     // Try to find a postscript component first
-    m_gvpart = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>( "application/postscript",
-                                                                                            QString(),
-                                                                                            this,
-                                                                                            this );
+    m_gvpart = KMimeTypeTrader::self()->createPartInstanceFromQuery<KParts::ReadOnlyPart>( "application/postscript",
+                                                                                           this,
+                                                                                           this );
 
     // if we couldn't find a component with the trader, try the
     // kghostview library directly.  if this ever happens, then something
@@ -45,7 +43,8 @@ Shell::Shell()
     // should be picked up by the trader
     if (!m_gvpart)
     {
-        KLibFactory* factory = KLibLoader::self()->factory( "libkghostview" );
+        KPluginLoader loader("libkghostview");
+        KPluginFactory* factory = loader.factory();
         if (factory)
         {
             // Create the part
