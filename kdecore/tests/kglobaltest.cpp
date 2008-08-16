@@ -16,13 +16,11 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include "kglobaltest.h"
-#include "kglobaltest.moc"
 #include <kglobal.h>
 
-#include <qtest_kde.h>
+#include <QtCore/QObject>
 
-QTEST_KDEMAIN_CORE( KGlobalTest )
+#include <qtest_kde.h>
 
 static QString testMethod()
 {
@@ -31,7 +29,40 @@ static QString testMethod()
     return s_strDefaultMimeType;
 }
 
-void KGlobalTest::testStaticQString()
+class KGlobalTest : public QObject
 {
-    QCOMPARE(testMethod(), QString::fromLatin1("application/octet-stream"));
-}
+    Q_OBJECT
+private Q_SLOTS:
+    void testStaticQString()
+    {
+        QCOMPARE(testMethod(), QString::fromLatin1("application/octet-stream"));
+    }
+
+    // The former implementation of QTest::kWaitForSignal would return
+    // false even if the signal was emitted, when the timeout fired too
+    // (e.g. due to a breakpoint in gdb).
+    void testWaitForSignal()
+    {
+        QTimer::singleShot(0, this, SLOT(emitSigFoo()));
+        QVERIFY(QTest::kWaitForSignal(this, SIGNAL(sigFoo()), 1));
+    }
+
+    void testWaitForSignalTimeout()
+    {
+        QVERIFY(!QTest::kWaitForSignal(this, SIGNAL(sigFoo()), 1));
+    }
+
+protected Q_SLOTS:
+    void emitSigFoo()
+    {
+        emit sigFoo();
+        QTest::qWait(10);
+    }
+
+Q_SIGNALS:
+    void sigFoo();
+};
+
+QTEST_KDEMAIN_CORE( KGlobalTest )
+
+#include "kglobaltest.moc"

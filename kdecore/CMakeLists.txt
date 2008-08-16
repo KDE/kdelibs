@@ -262,6 +262,7 @@ set(kdecore_LIB_SRCS
    util/kshell.cpp
    util/krandom.cpp
    util/krandomsequence.cpp
+   util/qtest_kde.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
 

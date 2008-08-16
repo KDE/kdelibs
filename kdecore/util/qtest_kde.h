@@ -24,6 +24,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kcomponentdata.h>
+#include <kglobal.h>
 #include <kurl.h>
 #include <QtGui/QApplication>
 #include <QtCore/QEventLoop>
@@ -38,20 +39,7 @@ namespace QTest
      * \return \p true if the requested signal was received
      *         \p false on timeout
      */
-    inline bool kWaitForSignal(QObject *obj, const char *signal, int timeout = 0)
-    {
-        QEventLoop loop;
-        QObject::connect(obj, signal, &loop, SLOT(quit()));
-        QTimer timer;
-        QSignalSpy timeoutSpy(&timer, SIGNAL(timeout()));
-        if (timeout > 0) {
-            QObject::connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
-            timer.setSingleShot(true);
-            timer.start(timeout);
-        }
-        loop.exec();
-        return timeoutSpy.isEmpty();
-    }
+    KDECORE_EXPORT bool kWaitForSignal(QObject *obj, const char *signal, int timeout = 0);
 } // namespace QTest
 
 // By default, unit tests get no gui.
@@ -90,6 +78,7 @@ int main(int argc, char *argv[]) \
     qRegisterMetaType<KUrl>(); /*as done by kapplication*/ \
     qRegisterMetaType<KUrl::List>(); \
     TestObject tc; \
+    KGlobal::ref(); /* don't quit qeventloop after closing a mainwindow */ \
     return QTest::qExec( &tc, argc, argv ); \
 }
 
@@ -135,6 +124,7 @@ int main(int argc, char *argv[]) \
     qRegisterMetaType<KUrl>(); /*as done by kapplication*/ \
     qRegisterMetaType<KUrl::List>(); \
     TestObject tc; \
+    KGlobal::ref(); /* don't quit qeventloop after closing a mainwindow */ \
     return QTest::qExec( &tc, argc, argv ); \
 }
 
