@@ -1079,7 +1079,10 @@ void DocLoader::insertCachedObject( CachedObject* o ) const
 bool DocLoader::needReload(CachedObject *existing, const QString& fullURL)
 {
     bool reload = false;
-    if (m_cachePolicy == KIO::CC_Verify)
+    if (m_cachePolicy == KIO::CC_Verify ||    
+        // During a softReload, we favour using cached images
+        // over forcibly re-downloading them.
+        (existing->type() == CachedObject::Image && m_part->browserExtension()->browserArguments().softReload))
     {
        if (!m_reloadedURLs.contains(fullURL))
        {
