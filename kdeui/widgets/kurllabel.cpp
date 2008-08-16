@@ -32,7 +32,7 @@ class KUrlLabel::Private
         url( _url ),
         tipText( url ),
         linkColor( KColorScheme(QPalette::Active, KColorScheme::Window).foreground(KColorScheme::LinkText).color() ),
-        highlightedLinkColor( Qt::red ),
+        highlightedLinkColor( KColorScheme(QPalette::Active, KColorScheme::Window).foreground(KColorScheme::ActiveText).color() ),
         cursor( 0 ),
         textUnderlined( true ),
         realUnderlined( true ),
