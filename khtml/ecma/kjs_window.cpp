@@ -1455,6 +1455,7 @@ void Window::clear( ExecState *exec )
   external = 0;
   m_frames = 0;
   loc      = 0;
+  setPrototype(jsNull());
 
   // Break the dependency between the listeners and their object
   QHashIterator<const QPair<void*, bool>, JSEventListener*> it(jsEventListeners);
