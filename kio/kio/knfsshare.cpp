@@ -69,7 +69,7 @@ bool KNFSShare::KNFSSharePrivate::findExportsFile()
   if ( QFile::exists("/etc/exports") )
     exportsFile = "/etc/exports";
   else {
-    kDebug(7000) << "KNFSShare: Could not find exports file!";
+    kDebug(7000) << "Could not find exports file! /etc/exports doesn't exist. Configure it in share/config/knfsshare, [General], exportsFile=....";
     return false;
   }
 
@@ -85,7 +85,7 @@ bool KNFSShare::KNFSSharePrivate::readExportsFile()
 {
   QFile f(exportsFile);
 
-  kDebug(7000) << exportsFile;
+  //kDebug(7000) << exportsFile;
 
   if (!f.open(QIODevice::ReadOnly)) {
     kError() << "KNFSShare: Could not open" << exportsFile;
@@ -111,7 +111,7 @@ bool KNFSShare::KNFSSharePrivate::readExportsFile()
       completeLine = currentLine;
 
     // is the line continued in the next line ?
-    if ( completeLine.endsWith(QLatin1String("\\")) )
+    if ( completeLine.endsWith(QLatin1Char('\\')) )
     {
       continuedLine = true;
       // remove the ending backslash
@@ -120,7 +120,7 @@ bool KNFSShare::KNFSSharePrivate::readExportsFile()
     }
 
     // comments or empty lines
-    if (completeLine.startsWith(QLatin1String("#")))
+    if (completeLine.startsWith(QLatin1Char('#')) || completeLine.isEmpty())
     {
       continue;
     }
@@ -128,7 +128,7 @@ bool KNFSShare::KNFSSharePrivate::readExportsFile()
     QString path;
 
     // Handle quotation marks
-    if ( completeLine.startsWith(QLatin1String("\"")) ) {
+    if ( completeLine[0] == QLatin1Char('\"') ) {
       int i = completeLine.indexOf(QLatin1Char('"'), 1);
       if (i == -1) {
         kError() << "KNFSShare: Parse error: Missing quotation mark:" << completeLine;
@@ -148,16 +148,16 @@ bool KNFSShare::KNFSSharePrivate::readExportsFile()
 
     }
 
-    kDebug(7000) << "KNFSShare: Found path: " << path;
+    //kDebug(7000) << "KNFSShare: Found path: " << path;
 
-    // normalize path
-    if ( !path.endsWith(QLatin1String("/")) )
-             path += QLatin1Char('/');
+    if (!path.isEmpty()) {
+        // normalize path
+        if ( !path.endsWith(QLatin1Char('/')) )
+            path += QLatin1Char('/');
 
-    sharedPaths.insert(path);
+        sharedPaths.insert(path);
+    }
   }
-
-  f.close();
 
   return true;
 }

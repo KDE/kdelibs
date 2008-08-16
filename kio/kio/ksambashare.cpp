@@ -111,7 +111,7 @@ bool KSambaShare::KSambaSharePrivate::readSmbConf()
 {
   QFile f(smbConf);
 
-  kDebug(7000) << smbConf;
+  //kDebug(7000) << smbConf;
 
   if (!f.open(QIODevice::ReadOnly)) {
     kError() << "KSambaShare: Could not open" << smbConf;
@@ -174,7 +174,7 @@ bool KSambaShare::KSambaSharePrivate::readSmbConf()
              value += '/';
 
         sharedPaths.insert(value);
-        kDebug(7000) << "KSambaShare: Found path: " << value;
+        //kDebug(7000) << "KSambaShare: Found path: " << value;
       }
     }
   }

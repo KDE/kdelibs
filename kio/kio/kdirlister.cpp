@@ -927,7 +927,7 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
     url.adjustPath(KUrl::RemoveTrailingSlash);
     QString urlStr = url.url();
 
-    kDebug(7004) << "new entries for " << url;
+    //kDebug(7004) << "new entries for " << url;
 
     DirItem *dir = itemsInUse.value(urlStr);
     Q_ASSERT( dir );
