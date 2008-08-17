@@ -30,6 +30,7 @@
 #include <kdebug.h>
 #include <kde_file.h>
 #include <kcharsets.h>
+#include <kmessagebox.h>
 
 #include <qtextcodec.h>
 #include <qtextdocument.h> // Qt::escape
@@ -130,7 +131,14 @@ void KNSBookmarkExporterImpl::setUtf8(bool utf8) {
    m_utf8 = utf8;
 }
 
-void KNSBookmarkExporterImpl::write(const KBookmarkGroup &parent) {
+void KNSBookmarkExporterImpl::write(const KBookmarkGroup &parent) 
+{
+   if (!QFile::exists(m_fileName)) {
+      QString errorMsg = QString("Could not find %1. Netscape is probably not installed. "
+                       "Aborting the export.").arg(m_fileName);
+      KMessageBox::error(0,errorMsg , "Netscape not found");
+      return;
+   }
    if (QFile::exists(m_fileName)) {
       KDE_rename(
          QFile::encodeName(m_fileName),
