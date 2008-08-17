@@ -151,9 +151,13 @@ protected:
    * List of our sub menus
    */
   QList<KBookmarkMenu *> m_lstSubMenus;
+
+  // This is used to "export" our actions into an actionlist
+  // we got in the constructor. So that the program can show our 
+  // actions in their shortcut dialog
   KActionCollection * m_actionCollection;
   /**
-   * List of our actions.
+   * List of our actions.   
    */
   QList<QAction *> m_actions;
 
