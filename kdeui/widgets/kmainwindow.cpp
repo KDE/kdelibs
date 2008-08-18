@@ -117,11 +117,11 @@ bool DockResizeListener::eventFilter(QObject *watched, QEvent *event)
     if (event->type() == QEvent::Resize) {
         m_win->setSettingsDirty();
     }
-
+#ifdef Q_WS_WIN
     if (event->type() == QEvent::Move) {
         m_win->setSettingsDirty();
     }
-
+#endif
     return QObject::eventFilter(watched, event);
 }
 
@@ -631,19 +631,10 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
            cg.writeEntry("MenuBar", mb->isHidden() ? "Disabled" : "Enabled");
     }
 
-    // One day will need to save the version number, but for now, assume 0
-    // Utilise the QMainWindow::saveState() functionality.
-    // In case we are switching between parts (and have different main toolbars), we need to save
-    // the different states of the window (taking in count some toolbars could have the same name,
-    // as "mainToolbar", for instance). This way we always load the state of the correct window. (ereslibre)
-    QString componentDataName;
-    if (KGlobal::hasActiveComponent()) {
-        componentDataName = KGlobal::activeComponent().componentName();
-    } else if (KGlobal::hasMainComponent()) {
-        componentDataName = KGlobal::mainComponent().componentName();
-    }
+    // Utilise the QMainWindow::saveState() functionality
     QByteArray state = saveState();
-    cg.writeEntry(QString("State%1").arg(componentDataName), state.toBase64());
+    cg.writeEntry("State", state.toBase64());
+    // One day will need to save the version number, but for now, assume 0
 
     if ( !autoSaveSettings() || cg.name() == autoSaveGroup() ) { // TODO should be cg == d->autoSaveGroup, to compare both kconfig and group name
         if(!cg.hasDefault("ToolBarsMovable") && !KToolBar::toolBarsLocked())
@@ -714,20 +705,10 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
            mb->show();
     }
 
-    // Utilise the QMainWindow::restoreState() functionality.
-    // In case we are switching between parts (and have different main toolbars), we need to save
-    // the different states of the window (taking in count some toolbars could have the same name,
-    // as "mainToolbar", for instance). This way we always load the state of the correct window. (ereslibre)
-    QString componentDataName;
-    if (KGlobal::hasActiveComponent()) {
-        componentDataName = KGlobal::activeComponent().componentName();
-    } else if (KGlobal::hasMainComponent()) {
-        componentDataName = KGlobal::mainComponent().componentName();
-    }
-    QString entry = QString("State%1").arg(componentDataName);
-    if (cg.hasKey(entry)) {
+    // Utilise the QMainWindow::restoreState() functionality
+    if (cg.hasKey("State")) {
         QByteArray state;
-        state = cg.readEntry(entry, state);
+        state = cg.readEntry("State", state);
         state = QByteArray::fromBase64(state);
         // One day will need to load the version number, but for now, assume 0
         restoreState(state);
@@ -919,7 +900,7 @@ void KMainWindow::setSettingsDirty()
            d->settingsTimer = new QTimer( this );
            connect( d->settingsTimer, SIGNAL( timeout() ), SLOT( saveAutoSaveSettings() ) );
         }
-        d->settingsTimer->setInterval(500);
+        d->settingsTimer->setInterval(5000);
         d->settingsTimer->setSingleShot(true);
         d->settingsTimer->start();
     }
@@ -1004,7 +985,6 @@ bool KMainWindow::event( QEvent* ev )
         {
             QChildEvent *event = static_cast<QChildEvent*>(ev);
             QDockWidget *dock = qobject_cast<QDockWidget*>(event->child());
-            KToolBar *toolbar = qobject_cast<KToolBar*>(event->child());
             if (dock) {
                 connect(dock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)),
                         this, SLOT(setSettingsDirty()));
@@ -1016,10 +996,6 @@ bool KMainWindow::event( QEvent* ev )
                 // there is no signal emitted if the size of the dock changes,
                 // hence install an event filter instead
                 dock->installEventFilter(k_ptr->dockResizeListener);
-            } else if (toolbar) {
-                // there is no signal emitted if the size of the dock changes,
-                // hence install an event filter instead
-                toolbar->installEventFilter(k_ptr->dockResizeListener);
             }
         }
         break;
