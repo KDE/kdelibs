@@ -318,7 +318,7 @@ Q_SIGNALS:
     void disconnected();
     void error(KTcpSocket::Error);
     void hostFound();
-    // void proxyAuthenticationRequired(); //investigate
+    void proxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *authenticator);
     // only for raw socket state, SSL is separate
     void stateChanged(State);
 
