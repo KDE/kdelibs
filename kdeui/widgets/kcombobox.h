@@ -90,7 +90,7 @@ class KUrl;
  * words do not do the following:
  *
  * \code
- * KComboBox* combo = new KCompletionBox(true, this);
+ * KComboBox* combo = new KComboBox(true, this);
  * KCompletion* comp = combo->completionObject();
  * combo->setEditable( false );
  * comp->clear(); // CRASH: completion object does not exist anymore.
