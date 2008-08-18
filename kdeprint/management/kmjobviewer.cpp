@@ -655,7 +655,7 @@ void KMJobViewer::reload()
 
 void KMJobViewer::closeEvent(QCloseEvent *e)
 {
-	if (m_standalone)
+	if (m_standalone && !kapp->sessionSaving())
 	{
 		hide();
 		e->ignore();
