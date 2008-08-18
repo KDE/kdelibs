@@ -42,6 +42,7 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QDate>
 #include <QtDBus/QtDBus>
+#include <QtNetwork/QAuthenticator>
 #include <QtNetwork/QNetworkProxy>
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QHostInfo>
@@ -245,6 +246,8 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
 {
     reparseConfiguration();
     setBlocking(true);
+    connect(socket(), SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),
+            this, SLOT(proxyAuthenticationForSocket(const QNetworkProxy &, QAuthenticator *)));
 }
 
 HTTPProtocol::~HTTPProtocol()
@@ -558,7 +561,7 @@ bool HTTPProtocol::proceedUntilResponseHeader()
 
   if (m_request.responseCode < 400 &&
       (m_request.prevResponseCode == 401 || m_request.prevResponseCode == 407)) {
-      saveAuthorization();
+      saveAuthorization(m_request.prevResponseCode == 407);
   }
 
   // At this point sendBody() should have delivered any POST data.
@@ -1902,7 +1905,12 @@ bool HTTPProtocol::httpShouldCloseConnection()
 bool HTTPProtocol::httpOpenConnection()
 {
   kDebug(7113);
-  
+
+  // Only save proxy auth information after proxy authentication has
+  // actually taken place, which will set up exactly this connection.
+  disconnect(socket(), SIGNAL(connected()),
+             this, SLOT(saveProxyAuthenticationForSocket()));
+
   bool connectOk = false;
   if (m_request.proxyUrl.isValid() && !isAutoSsl() && m_request.proxyUrl.protocol() != "socks") {
       connectOk = connectToHost(m_request.proxyUrl.protocol(), m_request.proxyUrl.host(), m_request.proxyUrl.port());
@@ -2727,7 +2735,7 @@ try_again:
         // request followed immediately by a regular auth request.
         if ( m_request.prevResponseCode != m_request.responseCode &&
             (m_request.prevResponseCode == 401 || m_request.prevResponseCode == 407) )
-          saveAuthorization();
+          saveAuthorization(m_request.prevResponseCode == 407);
 
         m_isUnauthorized = true;
         m_request.cacheTag.writeToCache = false; // Don't put in cache
@@ -5099,14 +5107,14 @@ bool HTTPProtocol::getAuthorization()
     return result;
 }
 
-void HTTPProtocol::saveAuthorization()
+void HTTPProtocol::saveAuthorization(bool isForProxy)
 {
     if (m_request.prevResponseCode == 407 && !m_request.proxyUrl.isValid()) {
         return;
     }
     AuthInfo info;
-    KUrl &authUrl = (m_request.responseCode == 401) ? m_request.url : m_request.proxyUrl;
-    AuthState &authState = (m_request.responseCode == 401) ? m_auth : m_proxyAuth;
+    KUrl &authUrl = isForProxy ? m_request.proxyUrl : m_request.url;
+    AuthState &authState = isForProxy ? m_proxyAuth : m_auth;
 
     info.url = authUrl;   //### strip username / password?
     info.username = authUrl.user();
@@ -5760,6 +5768,49 @@ QString HTTPProtocol::wwwAuthenticationHeader()
         break;
     }
     return QString();
+}
+
+void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAuthenticator *authenticator)
+{
+    kDebug(7113) << "Authenticator received -- realm: " << authenticator->realm() << "user:"
+                 << authenticator->user();
+
+    AuthInfo info;
+    info.url = m_request.proxyUrl;
+    info.realmValue = authenticator->realm();
+    info.verifyPath = true;    //### whatever
+    info.username = authenticator->user();
+    info.password = authenticator->password();  // well...
+
+    if (!checkCachedAuthentication(info)) {
+        // Save authentication info if the connection succeeds. We need to disconnect
+        // this after saving the auth data (or an error) so we won't save garbage afterwards!
+        connect(socket(), SIGNAL(connected()),
+                this, SLOT(saveProxyAuthenticationForSocket()));
+        //### fillPromptInfo(&info);
+        info.prompt = i18n("You need to supply a username and a password for "
+                           "the proxy server listed below before you are allowed "
+                           "to access any sites.");
+        info.keepPassword = true;
+        info.commentLabel = i18n("Proxy:");
+        info.comment = i18n("<b>%1</b> at <b>%2</b>", m_proxyAuth.realm, m_request.proxyUrl.host());
+        openPasswordDialog(info, i18n("Proxy Authentication Failed."));
+    }
+    authenticator->setUser(info.username);
+    authenticator->setPassword(info.password);
+
+    m_request.proxyUrl.setUser(info.username);
+    m_request.proxyUrl.setPassword(info.password);
+    m_proxyAuth.scheme = AUTH_Basic;    // anything but AUTH_None should be fine
+    m_proxyAuth.realm = info.realmValue;
+    m_proxyAuth.authorization.clear();  // internal to QAbstractSocket and not needed
+}
+
+void HTTPProtocol::saveProxyAuthenticationForSocket()
+{
+    disconnect(socket(), SIGNAL(connected()),
+               this, SLOT(saveProxyAuthenticationForSocket()));
+    saveAuthorization(true /*isForProxy*/);
 }
 
 #include "http.moc"

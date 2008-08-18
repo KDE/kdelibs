@@ -272,7 +272,9 @@ public:
 
 protected Q_SLOTS:
   void slotData(const QByteArray &);
-  void error( int _errid, const QString &_text );
+  void error(int errid, const QString &text);
+  void proxyAuthenticationForSocket(const QNetworkProxy &, QAuthenticator *);
+  void saveProxyAuthenticationForSocket();
 
 protected:
   int readChunked();    // Read a chunk
@@ -456,7 +458,7 @@ protected:
   /**
    * Saves valid authorization info in the cache daemon.
    */
-  void saveAuthorization();
+  void saveAuthorization(bool isForProxy);
 
   /**
    * Creates the entity-header for Basic authentication.
