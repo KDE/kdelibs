@@ -271,8 +271,8 @@ void KWalletD::setupDialog( QWidget* dialog, WId wId, const QString& appid, bool
 		// allow dialog activation even if it interrupts, better than trying hacks
 		// with keeping the dialog on top or on all desktops
 		kapp->updateUserTimestamp();
-#ifdef Q_WS_X11
 	}
+#ifdef Q_WS_X11
 	if( modal )
 		KWindowSystem::setState( dialog->winId(), NET::Modal );
 	else
