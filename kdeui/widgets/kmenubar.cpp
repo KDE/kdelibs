@@ -42,6 +42,7 @@
 #include <kdebug.h>
 #include <kmanagerselection.h>
 #include <kconfiggroup.h>
+#include <kwindowsystem.h>
 
 #ifdef Q_WS_X11
 #include <kwindowsystem.h>
@@ -191,9 +192,9 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       setGeometry(0,0,width(),height());
 #ifdef Q_WS_X11
       KWindowSystem::setType( winId(), NET::TopMenu );
-      if( parentWidget())
-          XSetTransientForHint( QX11Info::display(), winId(), parentWidget()->topLevelWidget()->winId());
 #endif
+      if( parentWidget())
+          KWindowSystem::setMainWindow( this, parentWidget()->topLevelWidget()->winId());
       //QMenuBar::setFrameStyle( NoFrame );
       //QMenuBar::setLineWidth( 0 );
       //QMenuBar::setMargin( 0 );
@@ -257,22 +258,14 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
         }
         if( parentWidget() && obj == parentWidget() && ev->type() == QEvent::ParentChange )
             {
-#ifdef Q_WS_X11
-            XSetTransientForHint( QX11Info::display(), winId(), parentWidget()->topLevelWidget()->winId());
-#else
-            //TODO: WIN32?
-#endif
+            KWindowSystem::setMainWindow( this, parentWidget()->topLevelWidget()->winId());
             setVisible( parentWidget()->isTopLevel() || parentWidget()->isVisible());
             }
         if( parentWidget() && !parentWidget()->isTopLevel() && obj == parentWidget())
         { // if the parent is not toplevel, KMenuBar needs to match its visibility status
             if( ev->type() == QEvent::Show )
                 {
-#ifdef Q_WS_X11
-                XSetTransientForHint( QX11Info::display(), winId(), parentWidget()->topLevelWidget()->winId());
-#else
-                //TODO: WIN32?
-#endif
+                KWindowSystem::setMainWindow( this, parentWidget()->topLevelWidget()->winId());
                 show();
                 }
             if( ev->type() == QEvent::Hide )

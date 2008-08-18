@@ -38,12 +38,7 @@
 #include <kiconloader.h>
 #include <kconfiggroup.h>
 #include <ktextedit.h>
-
-#ifdef Q_WS_X11
-#include <qx11info_x11.h>
-#include <X11/Xlib.h>
-#include <fixx11h.h>
-#endif
+#include <kwindowsystem.h>
 
 // Some i18n filters, that standard button texts are piped through
 // (the new KGuiItem object with filtered text is created from the old one).
@@ -438,11 +433,9 @@ int KMessageBox::questionYesNoListWId(WId parent_id, const QString &text,
     if ( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
-#ifdef Q_WS_X11
     if ( parent == NULL && parent_id ) {
-        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
+        KWindowSystem::setMainWindow( dialog, parent_id );
     }
-#endif
 
     bool checkboxResult = false;
     int result = createKMessageBox(dialog, QMessageBox::Information, text, strlist,
@@ -502,11 +495,9 @@ int KMessageBox::questionYesNoCancelWId(WId parent_id,
     if ( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
-#ifdef Q_WS_X11
     if ( parent == NULL && parent_id ) {
-        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
+        KWindowSystem::setMainWindow( dialog, parent_id );
     }
-#endif
 
     bool checkboxResult = false;
     int result = createKMessageBox(dialog, QMessageBox::Information,
@@ -593,11 +584,9 @@ int KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
     if ( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
-#ifdef Q_WS_X11
     if ( parent == NULL && parent_id ) {
-        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
+        KWindowSystem::setMainWindow( dialog, parent_id );
     }
-#endif
 
     bool checkboxResult = false;
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
@@ -676,11 +665,9 @@ int KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text
     if ( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
-#ifdef Q_WS_X11
     if ( parent == NULL && parent_id ) {
-        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
+        KWindowSystem::setMainWindow( dialog, parent_id );
     }
-#endif
 
     bool checkboxResult = false;
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
@@ -766,11 +753,9 @@ int KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
     if ( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
-#ifdef Q_WS_X11
     if ( parent == NULL && parent_id ) {
-        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
+        KWindowSystem::setMainWindow( dialog, parent_id );
     }
-#endif
 
     bool checkboxResult = false;
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
@@ -826,11 +811,9 @@ void KMessageBox::errorListWId(WId parent_id,  const QString &text, const QStrin
     if ( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
-#ifdef Q_WS_X11
     if ( parent == NULL && parent_id ) {
-        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
+        KWindowSystem::setMainWindow( dialog, parent_id );
     }
-#endif
 
     createKMessageBox(dialog, QMessageBox::Critical, text, strlist, QString(), 0, options);
 }
@@ -860,11 +843,9 @@ void KMessageBox::detailedErrorWId(WId parent_id,  const QString &text,
     if( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
-#ifdef Q_WS_X11
     if ( parent == NULL && parent_id ) {
-        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
+        KWindowSystem::setMainWindow( dialog, parent_id );
     }
-#endif
 
     createKMessageBox(dialog, QMessageBox::Critical, text, QStringList(), QString(), 0, options, details);
 }
@@ -908,11 +889,9 @@ void KMessageBox::sorryWId(WId parent_id, const QString &text,
     if ( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
-#ifdef Q_WS_X11
     if ( parent == NULL && parent_id ) {
-        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
+        KWindowSystem::setMainWindow( dialog, parent_id );
     }
-#endif
 
     createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString(), 0, options);
 }
@@ -941,11 +920,9 @@ void KMessageBox::detailedSorryWId(WId parent_id, const QString &text,
     if ( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
-#ifdef Q_WS_X11
     if ( parent == NULL && parent_id ) {
-        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
+        KWindowSystem::setMainWindow( dialog, parent_id );
     }
-#endif
 
     createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString(), 0, options, details);
 }
@@ -989,11 +966,9 @@ void KMessageBox::informationListWId(WId parent_id,const QString &text, const QS
     if ( options & PlainCaption ) {
         dialog->setPlainCaption( caption );
     }
-#ifdef Q_WS_X11
     if ( parent == NULL && parent_id ) {
-        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
+        KWindowSystem::setMainWindow( dialog, parent_id );
     }
-#endif
 
     bool checkboxResult = false;
 
