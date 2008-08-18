@@ -27,8 +27,9 @@
 #include <kdebug.h>
 
 
-struct KDiskFreeSpace::Private
+class KDiskFreeSpace::Private
 {
+public:
     Private(KDiskFreeSpace *parent)
         : m_parent(parent)
     {}
