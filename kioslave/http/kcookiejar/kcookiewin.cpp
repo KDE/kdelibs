@@ -51,12 +51,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <klineedit.h>
 #include <kiconloader.h>
 #include <kapplication.h>
-
-#ifdef Q_WS_X11
-#include <QX11Info>
-#include <X11/Xlib.h>
-#endif
-
+#include <kwindowsystem.h>
 #include <kvbox.h>
 
 KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
@@ -70,18 +65,18 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     setCaption( i18n("Cookie Alert") );
     setWindowIcon( KIcon("preferences-web-browser-cookies") );
     // all cookies in the list should have the same window at this time, so let's take the first
-# ifdef Q_WS_X11
     if( cookieList.first().windowIds().count() > 0 )
     {
-        XSetTransientForHint( QX11Info::display(), winId(), cookieList.first().windowIds().first());
+        KWindowSystem::setMainWindow( this, cookieList.first().windowIds().first());
     }
     else
     {
         // No window associated... make sure the user notices our dialog.
+#ifdef Q_WS_X11
         KWindowSystem::setState( winId(), NET::KeepAbove );
+#endif
         kapp->updateUserTimestamp();
     }
-# endif
 #endif
     KVBox* vBox1 = new KVBox( this );
     vBox1->setSpacing( KDialog::spacingHint() );

@@ -38,15 +38,10 @@
 #include <kpluginloader.h>
 #include <kpluginfactory.h>
 #include <kdebug.h>
+#include <kwindowsystem.h>
 #include "kabstractfilewidget.h"
 #include "kabstractfilemodule.h"
 #include "krecentdirs.h"
-
-#ifdef Q_WS_X11
-#include <qx11info_x11.h>
-#include <X11/Xlib.h>
-#include <fixx11h.h>
-#endif
 
 /** File dialogs are native by default on Windows. */
 #ifdef Q_WS_WIN
@@ -418,12 +413,8 @@ QString KFileDialog::getOpenFileNameWId(const KUrl& startDir,
         return KFileDialog::getOpenFileName(startDir, filter, 0, caption); // everything we can do...
     QWidget* parent = QWidget::find( parent_id );
     KFileDialog dlg(startDir, filter, parent);
-#ifdef Q_WS_X11
     if( parent == NULL && parent_id != 0 )
-        XSetTransientForHint( QX11Info::display(), dlg.winId(), parent_id );
-#else
-    // TODO
-#endif
+        KWindowSystem::setMainWindow( &dlg, parent_id );
 
     dlg.setOperationMode( KFileDialog::Opening );
 
@@ -656,12 +647,8 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
     bool specialDir = !defaultDir && dir.protocol() == "kfiledialog";
     QWidget* parent = QWidget::find( parent_id );
     KFileDialog dlg( specialDir ? dir : KUrl(), filter, parent);
-#ifdef Q_WS_X11
     if( parent == NULL && parent_id != 0 )
-        XSetTransientForHint(QX11Info::display(), dlg.winId(), parent_id);
-#else
-    // TODO
-#endif
+        KWindowSystem::setMainWindow( &dlg, parent_id);
 
     if ( !specialDir && !defaultDir ) {
         if (!dir.isLocalFile())
