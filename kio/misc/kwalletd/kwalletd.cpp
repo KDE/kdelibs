@@ -261,11 +261,9 @@ int KWalletD::open(const QString& wallet, qlonglong wId, const QString& appid, c
 
 // Sets up a dialog that will be shown by kwallet.
 void KWalletD::setupDialog( QWidget* dialog, WId wId, const QString& appid, bool modal ) {
-#ifdef Q_WS_X11
 	if( wId != 0 )
 		KWindowSystem::setMainWindow( dialog, wId ); // correct, set dialog parent
 	else {
-#endif
 		if( appid.isEmpty())
 			kWarning() << "Using kwallet without parent window!";
 		else
