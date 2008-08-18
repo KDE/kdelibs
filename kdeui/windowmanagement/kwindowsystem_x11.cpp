@@ -557,8 +557,7 @@ WId KWindowSystem::transientFor( WId win )
 
 void KWindowSystem::setMainWindow( QWidget* subwindow, WId mainwindow )
 {
-    // This will be Qt::WA_X11BypassTransientForHint in Qt4.4, but the code is already there now.
-    subwindow->setAttribute( Qt::WidgetAttribute( 99 ));
+    subwindow->setAttribute( Qt::WA_X11BypassTransientForHint );
     if( mainwindow != 0 )
         XSetTransientForHint( QX11Info::display(), subwindow->winId(), mainwindow );
     else
