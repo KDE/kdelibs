@@ -149,6 +149,7 @@ void KApplication_getProcessesIdForName( const QString& processName, QList<int>&
     // retrieve the instances
     qDebug() << "INSTANCES: " << perfObject->NumInstances;
     for( int instance = 0; instance < perfObject->NumInstances; instance++ ) {
+      curCounter = perfCounter;
       const QString foundProcessName( 
         fromWChar( (wchar_t *)( (PBYTE)perfInstance + perfInstance->NameOffset ) ) );
       qDebug() << "foundProcessName: " << foundProcessName;
