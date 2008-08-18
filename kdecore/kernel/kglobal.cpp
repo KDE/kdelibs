@@ -176,6 +176,15 @@ KComponentData KGlobal::activeComponent()
     return d->activeComponent;
 }
 
+bool KGlobal::hasActiveComponent()
+{
+    if (globalData.isDestroyed()) {
+        return false;
+    }
+    PRIVATE_DATA;
+    return d->activeComponent.isValid();
+}
+
 void KGlobal::setActiveComponent(const KComponentData &c)
 {
     PRIVATE_DATA;
