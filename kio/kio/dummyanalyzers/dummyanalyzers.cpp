@@ -40,7 +40,7 @@ public:
     bool checkHeader(const char*, int32_t) const {
         return false;
     }
-    char analyze(Strigi::AnalysisResult&, InputStream*) {
+    signed char analyze(Strigi::AnalysisResult&, InputStream*) {
         return -1;
     }
     const char* name() const { return "DummyEndAnalyzer"; }
