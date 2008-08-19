@@ -1246,6 +1246,7 @@ QString KLocalePrivate::formatSingleDuration( DurationType durationType, int n )
         case SecondsDurationType:
             return i18ncp("@item:intext", "1 second", "%1 seconds", n);
     }
+    return QString();
 }
 
 QString KLocale::prettyFormatDuration( unsigned long mSec ) const
