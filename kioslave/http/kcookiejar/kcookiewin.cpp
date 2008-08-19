@@ -67,7 +67,11 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     // all cookies in the list should have the same window at this time, so let's take the first
     if( cookieList.first().windowIds().count() > 0 )
     {
+#ifdef Q_WS_WIN
+        KWindowSystem::setMainWindow( this, reinterpret_cast<WId>( cookieList.first().windowIds().first() ) );
+#else
         KWindowSystem::setMainWindow( this, cookieList.first().windowIds().first());
+#endif
     }
     else
     {
