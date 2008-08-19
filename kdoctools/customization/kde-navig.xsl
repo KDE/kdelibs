@@ -210,7 +210,7 @@
 	<xsl:call-template name="gentext.footer-doc-comment"/>
 	<br/>
 	<xsl:call-template name="gentext.footer-doc-feedback"/>
-	<a href="mailto:kde-docs@kdemail.net" style="background:transparent; color: #282828; text-decoration: underline;">
+	<a href="mailto:kde-doc-english@kde.org" style="background:transparent; color: #282828; text-decoration: underline;">
 	<xsl:call-template name="gentext.footer-doc-teamname"/>
 	</a></p>
 	</div>
