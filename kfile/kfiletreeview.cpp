@@ -91,6 +91,7 @@ KFileTreeView::KFileTreeView(QWidget *parent)
 
     setModel(d->mProxyModel);
     setItemDelegate(new KFileItemDelegate(this));
+    setLayoutDirection(Qt::LeftToRight);
 
     d->mSourceModel->dirLister()->openUrl(KUrl(QDir::root().absolutePath()), KDirLister::Keep);
 

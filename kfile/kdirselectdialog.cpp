@@ -250,6 +250,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
         d->m_treeView->hideColumn(i);
 
     d->m_urlCombo = new KHistoryComboBox( page);
+    d->m_urlCombo->setLayoutDirection( Qt::LeftToRight );
     d->m_urlCombo->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
     d->m_urlCombo->setTrapReturnKey( true );
     d->m_urlCombo->setPixmapProvider( new KUrlPixmapProvider() );
