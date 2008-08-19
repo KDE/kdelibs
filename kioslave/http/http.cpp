@@ -5793,7 +5793,7 @@ void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAut
                            "to access any sites.");
         info.keepPassword = true;
         info.commentLabel = i18n("Proxy:");
-        info.comment = i18n("<b>%1</b> at <b>%2</b>", m_proxyAuth.realm, m_request.proxyUrl.host());
+        info.comment = i18n("<b>%1</b> at <b>%2</b>", info.realmValue, m_request.proxyUrl.host());
         openPasswordDialog(info, i18n("Proxy Authentication Failed."));
     }
     authenticator->setUser(info.username);
