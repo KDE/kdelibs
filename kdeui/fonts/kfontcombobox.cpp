@@ -373,8 +373,7 @@ bool KFontComboBox::event (QEvent *e)
             int iconWidth = d->delegate->truetype.actualSize(size()).width();
             int vsbarWidth = 0;
             if (lview->verticalScrollBar()) {
-                // The height is the apparent width for the vertical scrollbar.
-                vsbarWidth = lview->verticalScrollBar()->height();
+                vsbarWidth = lview->verticalScrollBar()->width();
             }
             lview->window()->setFixedWidth(  qMax(widgetWidth, sampleWidth)
                                            + iconWidth + vsbarWidth);
