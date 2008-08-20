@@ -69,12 +69,12 @@
    <l:gentext key="Procedure" text="Postopek"/>
    <l:gentext key="procedure" text="Postopek"/>
    <l:gentext key="ProductionSet" text="Izdelava"/>
-   <l:gentext key="PubDate" text="Publication Date" lang="en"/>
-   <l:gentext key="pubdate" text="Publication date" lang="en"/>
+   <l:gentext key="PubDate" text="Datum objave"/>
+   <l:gentext key="pubdate" text="Datum objave"/>
    <l:gentext key="Published" text="Izdano"/>
    <l:gentext key="published" text="Izdano"/>
-   <l:gentext key="Qandadiv" text="Q &amp; A" lang="en"/>
-   <l:gentext key="qandadiv" text="Q &amp; A" lang="en"/>
+   <l:gentext key="Qandadiv" text="V &amp; O"/>
+   <l:gentext key="qandadiv" text="V &amp; O"/>
    <l:gentext key="Question" text="V:"/>
    <l:gentext key="question" text="V:"/>
    <l:gentext key="RefEntry" text=""/>
@@ -150,8 +150,8 @@
    <l:gentext key="listofexamples" text="Seznam primerov"/>
    <l:gentext key="ListofFigures" text="Seznam slik"/>
    <l:gentext key="listoffigures" text="Seznam slik"/>
-   <l:gentext key="ListofProcedures" text="List of Procedures" lang="en"/>
-   <l:gentext key="listofprocedures" text="List of Procedures" lang="en"/>
+   <l:gentext key="ListofProcedures" text="Seznam postopkov"/>
+   <l:gentext key="listofprocedures" text="Seznam postopkov"/>
    <l:gentext key="listoftables" text="Seznam tabel"/>
    <l:gentext key="ListofTables" text="Seznam tabel"/>
    <l:gentext key="ListofUnknown" text="Seznam neznanih stvari"/>
@@ -162,7 +162,7 @@
    <l:gentext key="nav-prev" text="Nazaj"/>
    <l:gentext key="nav-prev-sibling" text="Hitro nazaj"/>
    <l:gentext key="nav-up" text="Gor"/>
-   <l:gentext key="nav-toc" text="ToC" lang="en"/>
+   <l:gentext key="nav-toc" text="Vsebina"/>
    <l:gentext key="Draft" text="Draft"/>
    <l:gentext key="above" text="above"/>
    <l:gentext key="below" text="below"/>
@@ -177,9 +177,12 @@
    <l:dingbat key="singlestartquote" text="&#8216;" lang="en"/>
    <l:dingbat key="singleendquote" text="&#8217;" lang="en"/>
    <l:dingbat key="bullet" text="&#8226;"/>
-   <l:gentext key="hyphenation-character" text="-" lang="en"/>
-   <l:gentext key="hyphenation-push-character-count" text="2" lang="en"/>
-   <l:gentext key="hyphenation-remain-character-count" text="2" lang="en"/>
+   <l:gentext key="hyphenation-character" text="-"/>
+   <l:gentext key="hyphenation-push-character-count" text="2"/>
+   <l:gentext key="hyphenation-remain-character-count" text="2"/>
+   <l:gentext key="footer-doc-comment" text="Ali imate morda komentar glede te strani ali pa želite prispevati posodobitev?"/>
+   <l:gentext key="footer-doc-feedback" text="Povratne informacije pošljite "/>
+   <l:gentext key="footer-doc-teamname" text="KDE-jevi ekipi za dokumentacijo"/>
 
    <l:context name="styles">
       <l:template name="person-name" text="first-last"/>
@@ -188,13 +191,13 @@
    <l:context name="title">
       <l:template name="abstract" text="%t"/>
       <l:template name="answer" text="%t"/>
-      <l:template name="appendix" text="Dodatek %n. %t"/>
+      <l:template name="appendix" text="Dodatek&#160;%n.&#160;%t"/>
       <l:template name="article" text="%t"/>
       <l:template name="authorblurb" text="%t"/>
       <l:template name="bibliodiv" text="%t"/>
       <l:template name="biblioentry" text="%t"/>
       <l:template name="bibliography" text="%t"/>
-      <l:template name="bibliolist" text="%t" lang="en"/>
+      <l:template name="bibliolist" text="%t"/>
       <l:template name="bibliomixed" text="%t"/>
       <l:template name="bibliomset" text="%t"/>
       <l:template name="biblioset" text="%t"/>
@@ -202,19 +205,19 @@
       <l:template name="book" text="%t"/>
       <l:template name="calloutlist" text="%t"/>
       <l:template name="caution" text="%t"/>
-      <l:template name="chapter" text="Poglavje %n. %t"/>
+      <l:template name="chapter" text="Poglavje&#160;%n.&#160;%t"/>
       <l:template name="colophon" text="%t"/>
       <l:template name="dedication" text="%t"/>
-      <l:template name="equation" text="Ena&#269;ba %n. %t"/>
-      <l:template name="example" text="Primer %n. %t"/>
-      <l:template name="figure" text="Slika %n. %t"/>
-      <l:template name="foil" text="%t" lang="en"/>
-      <l:template name="foilgroup" text="%t" lang="en"/>
+      <l:template name="equation" text="Ena&#269;ba&#160;%n.&#160;%t"/>
+      <l:template name="example" text="Primer&#160;%n.&#160;%t"/>
+      <l:template name="figure" text="Slika&#160;%n.&#160;%t"/>
+      <l:template name="foil" text="%t"/>
+      <l:template name="foilgroup" text="%t"/>
       <l:template name="formalpara" text="%t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="glossdiv" text="%t"/>
-      <l:template name="glosslist" text="%t" lang="en"/>
-      <l:template name="glossentry" text="%t" lang="en"/>
+      <l:template name="glosslist" text="%t"/>
+      <l:template name="glossentry" text="%t"/>
       <l:template name="important" text="%t"/>
       <l:template name="index" text="%t"/>
       <l:template name="indexdiv" text="%t"/>
@@ -230,13 +233,13 @@
       <l:template name="msgsub" text="%t"/>
       <l:template name="note" text="%t"/>
       <l:template name="orderedlist" text="%t"/>
-      <l:template name="part" text="Del %n. %t"/>
+      <l:template name="part" text="Del&#160;%n.&#160;%t"/>
       <l:template name="partintro" text="%t"/>
       <l:template name="preface" text="%t"/>
       <l:template name="procedure" text="%t"/>
-      <l:template name="procedure.formal" text="Postopek %n. %t"/>
+      <l:template name="procedure.formal" text="Postopek&#160;%n.&#160;%t"/>
       <l:template name="productionset" text="%t"/>
-      <l:template name="productionset.formal" text="Izdelava %n"/>
+      <l:template name="productionset.formal" text="Izdelava&#160;%n"/>
       <l:template name="qandadiv" text="%t"/>
       <l:template name="qandaentry" text="%t"/>
       <l:template name="qandaset" text="%t"/>
@@ -254,8 +257,8 @@
       <l:template name="setindex" text="%t"/>
       <l:template name="sidebar" text="%t"/>
       <l:template name="step" text="%t"/>
-      <l:template name="table" text="Tabela %n. %t"/>
-      <l:template name="task" text="%t" lang="en"/>
+      <l:template name="table" text="Tabela&#160;%n.&#160;%t"/>
+      <l:template name="task" text="%t"/>
       <l:template name="tip" text="%t"/>
       <l:template name="toc" text="%t"/>
       <l:template name="variablelist" text="%t"/>
@@ -265,7 +268,7 @@
 
    <l:context name="title-unnumbered">
       <l:template name="appendix" text="%t"/>
-      <l:template name="article/appendix" text="%t" lang="en"/>
+      <l:template name="article/appendix" text="%t"/>
       <l:template name="bridgehead" text="%t"/>
       <l:template name="chapter" text="%t"/>
       <l:template name="sect1" text="%t"/>
@@ -278,17 +281,17 @@
    </l:context>
 
    <l:context name="title-numbered">
-      <l:template name="appendix" text="Dodatek %n. %t"/>
-      <l:template name="article/appendix" text="%n.&#160;%t" lang="en"/>
+      <l:template name="appendix" text="Dodatek&#160;%n.&#160;%t"/>
+      <l:template name="article/appendix" text="%n.&#160;%t"/>
       <l:template name="bridgehead" text="%t"/>
-      <l:template name="chapter" text="Poglavje %n. %t"/>
-      <l:template name="sect1" text="%n. %t"/>
-      <l:template name="sect2" text="%n. %t"/>
-      <l:template name="sect3" text="%n. %t"/>
-      <l:template name="sect4" text="%n. %t"/>
-      <l:template name="sect5" text="%n. %t"/>
-      <l:template name="section" text="%n. %t"/>
-      <l:template name="simplesect" text="%n. %t"/>
+      <l:template name="chapter" text="Poglavje&#160;%n.&#160;%t"/>
+      <l:template name="sect1" text="%n.&#160;%t"/>
+      <l:template name="sect2" text="%n.&#160;%t"/>
+      <l:template name="sect3" text="%n.&#160;%t"/>
+      <l:template name="sect4" text="%n.&#160;%t"/>
+      <l:template name="sect5" text="%n.&#160;%t"/>
+      <l:template name="section" text="%n.&#160;%t"/>
+      <l:template name="simplesect" text="%n.&#160;%t"/>
    </l:context>
 
    <l:context name="subtitle">
@@ -353,8 +356,8 @@
       <l:template name="equation" text="%t"/>
       <l:template name="example" text="%t"/>
       <l:template name="figure" text="%t"/>
-      <l:template name="foil" text="%t" lang="en"/>
-      <l:template name="foilgroup" text="%t" lang="en"/>
+      <l:template name="foil" text="%t"/>
+      <l:template name="foilgroup" text="%t"/>
       <l:template name="formalpara" text="%t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="glossdiv" text="%t"/>
@@ -394,14 +397,14 @@
       <l:template name="variablelist" text="%t"/>
       <l:template name="varlistentry" text="%n"/>
       <l:template name="warning" text="%t"/>
-      <l:template name="olink.document.citation" text=" in %o" lang="en"/>
-      <l:template name="olink.page.citation" text=" (page %p)" lang="en"/>
+      <l:template name="olink.document.citation" text=" v %o"/>
+      <l:template name="olink.page.citation" text=" (stran %p)"/>
       <l:template name="page.citation" text=" [%p]"/>
-      <l:template name="page" text="(page %p)" lang="en"/>
-      <l:template name="docname" text=" in %o" lang="en"/>
-      <l:template name="docnamelong" text=" in the document titled %o" lang="en"/>
-      <l:template name="pageabbrev" text="(p. %p)" lang="en"/>
-      <l:template name="Page" text="Page %p" lang="en"/>
+      <l:template name="page" text="(stran %p)"/>
+      <l:template name="docname" text=" v %o"/>
+      <l:template name="docnamelong" text=" v dokumentu z naslovom %o"/>
+      <l:template name="pageabbrev" text="(str. %p)"/>
+      <l:template name="Page" text="Stran %p"/>
       <l:template name="bridgehead" text="&#8220;%t&#8221;"/>
       <l:template name="refsection" text="&#8220;%t&#8221;"/>
       <l:template name="refsect1" text="&#8220;%t&#8221;"/>
@@ -427,7 +430,7 @@
       <l:template name="part" text="Del&#160;%n"/>
       <l:template name="procedure" text="Postopek&#160;%n"/>
       <l:template name="productionset" text="Izdelava&#160;%n"/>
-      <l:template name="qandadiv" text="Q &amp; A&#160;%n"/>
+      <l:template name="qandadiv" text="V &amp; O&#160;%n"/>
       <l:template name="qandaentry" text="V:&#160;%n"/>
       <l:template name="question" text="V:&#160;%n"/>
       <l:template name="sect1" text="Razdelek&#160;%n"/>
@@ -467,7 +470,7 @@
    <l:context name="authorgroup">
       <l:template name="sep" text=", "/>
       <l:template name="sep2" text=" in "/>
-      <l:template name="seplast" text=", in "/>
+      <l:template name="seplast" text=" in "/>
    </l:context>
 
    <l:context name="glossary">
@@ -482,51 +485,51 @@
    </l:context>
 
    <l:context name="datetime">
-      <l:template name="format" text="m/d/Y" lang="en"/>
+      <l:template name="format" text="d.m.Y"/>
    </l:context>
 
    <l:context name="datetime-full">
-      <l:template name="January" text="January" lang="en"/>
-      <l:template name="February" text="February" lang="en"/>
-      <l:template name="March" text="March" lang="en"/>
-      <l:template name="April" text="April" lang="en"/>
-      <l:template name="May" text="May" lang="en"/>
-      <l:template name="June" text="June" lang="en"/>
-      <l:template name="July" text="July" lang="en"/>
-      <l:template name="August" text="August" lang="en"/>
-      <l:template name="September" text="September" lang="en"/>
-      <l:template name="October" text="October" lang="en"/>
-      <l:template name="November" text="November" lang="en"/>
-      <l:template name="December" text="December" lang="en"/>
-      <l:template name="Monday" text="Monday" lang="en"/>
-      <l:template name="Tuesday" text="Tuesday" lang="en"/>
-      <l:template name="Wednesday" text="Wednesday" lang="en"/>
-      <l:template name="Thursday" text="Thursday" lang="en"/>
-      <l:template name="Friday" text="Friday" lang="en"/>
-      <l:template name="Saturday" text="Saturday" lang="en"/>
-      <l:template name="Sunday" text="Sunday" lang="en"/>
+      <l:template name="January" text="januar"/>
+      <l:template name="February" text="februar"/>
+      <l:template name="March" text="marec"/>
+      <l:template name="April" text="april"/>
+      <l:template name="May" text="maj"/>
+      <l:template name="June" text="junij"/>
+      <l:template name="July" text="julij"/>
+      <l:template name="August" text="avgust"/>
+      <l:template name="September" text="september"/>
+      <l:template name="October" text="oktober"/>
+      <l:template name="November" text="november"/>
+      <l:template name="December" text="december"/>
+      <l:template name="Monday" text="ponedeljek"/>
+      <l:template name="Tuesday" text="torek"/>
+      <l:template name="Wednesday" text="sreda"/>
+      <l:template name="Thursday" text="&#269;etrtek"/>
+      <l:template name="Friday" text="petek"/>
+      <l:template name="Saturday" text="sobota"/>
+      <l:template name="Sunday" text="nedelja"/>
    </l:context>
 
    <l:context name="datetime-abbrev">
-      <l:template name="Jan" text="Jan" lang="en"/>
-      <l:template name="Feb" text="Feb" lang="en"/>
-      <l:template name="Mar" text="Mar" lang="en"/>
-      <l:template name="Apr" text="Apr" lang="en"/>
-      <l:template name="May" text="May" lang="en"/>
-      <l:template name="Jun" text="Jun" lang="en"/>
-      <l:template name="Jul" text="Jul" lang="en"/>
-      <l:template name="Aug" text="Aug" lang="en"/>
-      <l:template name="Sep" text="Sep" lang="en"/>
-      <l:template name="Oct" text="Oct" lang="en"/>
-      <l:template name="Nov" text="Nov" lang="en"/>
-      <l:template name="Dec" text="Dec" lang="en"/>
-      <l:template name="Mon" text="Mon" lang="en"/>
-      <l:template name="Tue" text="Tue" lang="en"/>
-      <l:template name="Wed" text="Wed" lang="en"/>
-      <l:template name="Thu" text="Thu" lang="en"/>
-      <l:template name="Fri" text="Fri" lang="en"/>
-      <l:template name="Sat" text="Sat" lang="en"/>
-      <l:template name="Sun" text="Sun" lang="en"/>
+      <l:template name="Jan" text="jan"/>
+      <l:template name="Feb" text="feb"/>
+      <l:template name="Mar" text="mar"/>
+      <l:template name="Apr" text="apr"/>
+      <l:template name="May" text="maj"/>
+      <l:template name="Jun" text="jun"/>
+      <l:template name="Jul" text="jul"/>
+      <l:template name="Aug" text="avg"/>
+      <l:template name="Sep" text="sep"/>
+      <l:template name="Oct" text="okt"/>
+      <l:template name="Nov" text="nov"/>
+      <l:template name="Dec" text="dec"/>
+      <l:template name="Mon" text="pon"/>
+      <l:template name="Tue" text="tor"/>
+      <l:template name="Wed" text="sre"/>
+      <l:template name="Thu" text="&#269;et"/>
+      <l:template name="Fri" text="pet"/>
+      <l:template name="Sat" text="sob"/>
+      <l:template name="Sun" text="ned"/>
    </l:context>
 
    <l:context name="htmlhelp">
