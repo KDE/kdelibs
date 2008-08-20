@@ -5,7 +5,7 @@
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
                   1999,2000,2001,2002,2003 Carsten Pfeiffer <pfeiffer@kde.org>
                   2003 Clarence Dang <dang@kde.org>
-                  2008 Jaroslaw Staniek <js@iidea.pl>
+                  2008 Jarosław Staniek <staniek@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public

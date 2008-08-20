@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (C) 2004 Jaroslaw Staniek <js@iidea.pl>
+   Copyright (C) 2004 Jarosław Staniek <staniek@kde.org>
    Copyright (C) 2007 Christian Ehrlicher <ch.ehrlicher@gmx.de>
    Copyright (C) 2007 Bernhard Loos <nhuh.put@web.de>
    Copyright (C) 2008 Ralf Habacker <ralf.habacker@freenet.de>

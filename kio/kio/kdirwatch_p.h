@@ -7,7 +7,7 @@
  * Copyright (C) 1998 Sven Radej <sven@lisa.exp.univie.ac.at>
  * Copyright (C) 2006 Dirk Mueller <mueller@kde.org>
  * Copyright (C) 2007 Flavio Castelli <flavio.castelli@gmail.com>
- * Copyright (C) 2008 Jaroslaw Staniek <js@iidea.pl>
+ * Copyright (C) 2008 Jarosław Staniek <staniek@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

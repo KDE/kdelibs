@@ -2,7 +2,7 @@
     Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
 
     Win32 port:
-    Copyright (C) 2004 Jaroslaw Staniek <js@iidea.pl>
+    Copyright (C) 2004 Jarosław Staniek <staniek@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public

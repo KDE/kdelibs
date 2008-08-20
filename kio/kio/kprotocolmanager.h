@@ -2,7 +2,7 @@
    Copyright (C) 1999 Torben Weis <weis@kde.org>
    Copyright (C) 2000- Waldo Bastain <bastain@kde.org>
    Copyright (C) 2000- Dawit Alemayehu <adawit@kde.org>
-   Copyright (C) 2008 Jaroslaw Staniek <js@iidea.pl>
+   Copyright (C) 2008 Jarosław Staniek <staniek@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public

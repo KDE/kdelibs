@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1998 Kurt Granroth <granroth@kde.org>
    Copyright (C) 2000 Peter Putzer <putzer@kde.org>
-   Copyright (C) 2005 Jaroslaw Staniek <js@iidea.pl>
+   Copyright (C) 2005 Jarosław Staniek <staniek@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
