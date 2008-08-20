@@ -148,7 +148,7 @@ EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker kpixmapio-perf.png dcolorrese
 
 kdepackages:
 	-rm $(srcdir)/kdepackages.h
-	curl "http://bugs.kde.org/xml.cgi?data=versiontable" > tmp_download
+	curl "http://bugsold.kde.org/xml.cgi?data=versiontable" > tmp_download
 	echo "// DO NOT EDIT - EDIT bugs/Maintainers instead" >  $(srcdir)/kdepackages.h
 	echo "const char * const packages[] = {" >> $(srcdir)/kdepackages.h
 	cat tmp_download | egrep "product|component" | grep -v "</product>" | \
