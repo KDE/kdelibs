@@ -615,17 +615,18 @@ int KStyle::widgetLayoutProp(WidgetType widget, int metric,
 }
 
 QSize KStyle::expandDim(const QSize& orig, WidgetType wt, int baseMarginMetric,
-                        const QStyleOption* opt, const QWidget* w) const
+                        const QStyleOption* opt, const QWidget* w, bool rotated) const
 {
-    int width = orig.width() +  2*widgetLayoutProp(wt, baseMarginMetric + MainMargin, opt, w) +
-                                  widgetLayoutProp(wt, baseMarginMetric + Left, opt, w) +
-                                  widgetLayoutProp(wt, baseMarginMetric + Right, opt, w);
+    int addWidth =  2*widgetLayoutProp(wt, baseMarginMetric + MainMargin, opt, w) +
+                    widgetLayoutProp(wt, baseMarginMetric + Left, opt, w) +
+                    widgetLayoutProp(wt, baseMarginMetric + Right, opt, w);
 
-    int height = orig.height() + 2*widgetLayoutProp(wt, baseMarginMetric + MainMargin, opt, w) +
-                                   widgetLayoutProp(wt, baseMarginMetric + Top, opt, w) +
-                                   widgetLayoutProp(wt, baseMarginMetric + Bot, opt, w);
+    int addHeight = 2*widgetLayoutProp(wt, baseMarginMetric + MainMargin, opt, w) +
+                    widgetLayoutProp(wt, baseMarginMetric + Top, opt, w) +
+                    widgetLayoutProp(wt, baseMarginMetric + Bot, opt, w);
 
-    return QSize(width, height);
+    return QSize(orig.width() + (rotated? addHeight: addWidth), 
+                 orig.height() + (rotated? addWidth: addHeight));
 }
 
 QRect KStyle::insideMargin(const QRect &orig, WidgetType wt,
@@ -2318,7 +2319,7 @@ QRect KStyle::marginAdjustedTab(const QStyleOptionTab* tabOpt, int property) con
         leftMargin  = botMargin;
         botMargin   = t;
 
-        if (flip)
+        if (!flip)
             qSwap(leftMargin, rightMargin);
     }
     else if (flip)
@@ -3643,7 +3644,6 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                     return contentsSize;
             }
 
-
             //...now apply the outermost margin.
             return expandDim(insideSize, WT_MenuItem, MenuItem::Margin, option, widget);
         }
@@ -3652,10 +3652,18 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
             return expandDim(contentsSize, WT_MenuBarItem, MenuBarItem::Margin, option, widget);
 
         case CT_TabBarTab:
+        {
             //With our PM_TabBarTabHSpace/VSpace, Qt should give us what we want for
             //contentsSize, so we just expand that. Qt also takes care of
             //the vertical thing.
-            return expandDim(contentsSize, WT_TabBar, TabBar::TabContentsMargin, option, widget);
+
+            bool rotated = false; // indicates whether the tab is rotated by 90 degrees
+            if (const QStyleOptionTab *tabOpt = qstyleoption_cast<const QStyleOptionTab*>(option)) {
+                rotated = isVerticalTab(tabOpt);
+            }
+
+            return expandDim(contentsSize, WT_TabBar, TabBar::TabContentsMargin, option, widget, rotated);
+        }
 
         case CT_TabWidget:
         {
