@@ -183,13 +183,10 @@ void JobPrivate::emitUnmounting(KIO::Job * job, const QString &point)
 
 bool Job::doKill()
 {
-  kDebug(7007) << "this=" << this << metaObject()->className();
   // kill all subjobs, without triggering their result slot
-  const QList<KJob *> &jobs = subjobs();
-  QList<KJob *>::const_iterator it = jobs.constBegin();
-  const QList<KJob *>::const_iterator end = jobs.constEnd();
-  for ( ; it != end ; ++it )
-    (*it)->kill( KJob::Quietly );
+  Q_FOREACH( KJob* it, subjobs()) {
+      it->kill( KJob::Quietly );
+  }
   clearSubjobs();
 
   return true;
@@ -197,12 +194,8 @@ bool Job::doKill()
 
 bool Job::doSuspend()
 {
-    const QList<KJob *> &jobs = subjobs();
-    QList<KJob *>::const_iterator it = jobs.constBegin();
-    const QList<KJob *>::const_iterator end = jobs.constEnd();
-    for ( ; it != end ; ++it )
-    {
-        if (!(*it)->suspend())
+    Q_FOREACH(KJob* it, subjobs()) {
+        if (!it->suspend())
             return false;
     }
 
@@ -211,12 +204,9 @@ bool Job::doSuspend()
 
 bool Job::doResume()
 {
-    const QList<KJob *> &jobs = subjobs();
-    QList<KJob *>::const_iterator it = jobs.constBegin();
-    const QList<KJob *>::const_iterator end = jobs.constEnd();
-    for ( ; it != end ; ++it )
+    Q_FOREACH ( KJob* it, subjobs() )
     {
-        if (!(*it)->resume())
+        if (!it->resume())
             return false;
     }
 
@@ -329,6 +319,7 @@ void SimpleJobPrivate::simpleJobInit()
 
 bool SimpleJob::doKill()
 {
+    kDebug() << "SimpleJob::doKill for " << this;
     Q_D(SimpleJob);
     Scheduler::cancelJob( this ); // deletes the slave if not 0
     d->m_slave = 0; // -> set to 0
