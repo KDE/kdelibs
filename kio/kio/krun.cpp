@@ -607,7 +607,7 @@ static bool runTempService( const KService& _service, const KUrl::List& _urls, Q
       {
          KUrl::List singleUrl;
          singleUrl.append(*it);
-         runTempService( _service, singleUrl, window, tempFiles, suggestedFileName, "" );
+         runTempService( _service, singleUrl, window, tempFiles, suggestedFileName, QByteArray() );
       }
       KUrl::List singleUrl;
       singleUrl.append(_urls.first());
@@ -759,7 +759,7 @@ bool KRun::run( const QString& _exec, const KUrl::List& _urls, QWidget* window, 
 bool KRun::runCommand( const QString &cmd, QWidget* window )
 {
   QString bin = binaryName( cmd, true );
-  return KRun::runCommand( cmd, bin, bin, window, "" );
+  return KRun::runCommand( cmd, bin, bin, window, QByteArray() );
 }
 
 bool KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName, QWidget* window, const QByteArray& asn )

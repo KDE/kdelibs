@@ -86,7 +86,7 @@ public:
    *        Application startup notification id, if available (otherwise "").
    */
   KRun( const KUrl& url, QWidget* window, mode_t mode = 0,
-	bool isLocalFile = false, bool showProgressInfo = true, const QByteArray& asn = "" );
+	bool isLocalFile = false, bool showProgressInfo = true, const QByteArray& asn = QByteArray() );
 
   /**
    * Destructor. Don't call it yourself, since a KRun object auto-deletes
@@ -190,7 +190,8 @@ public:
    * @return @c true on success, @c false on error
    */
   static bool run( const KService& service, const KUrl::List& urls, QWidget* window,
-      bool tempFiles = false, const QString& suggestedFileName = QString(), const QByteArray& asn = "" );
+      bool tempFiles = false, const QString& suggestedFileName = QString(), const QByteArray& asn =
+      QByteArray() );
 
   /**
    * Open a list of URLs with.
@@ -208,7 +209,7 @@ public:
   static bool run( const QString& exec, const KUrl::List& urls, QWidget* window,
                     const QString& name = QString(),
                     const QString& icon = QString(),
-                    const QByteArray& asn = "" );
+                    const QByteArray& asn = QByteArray() );
 
   /**
    * Open the given URL.
@@ -229,7 +230,8 @@ public:
    * @return @c true on success, @c false on error
    */
   static bool runUrl( const KUrl& url, const QString& mimetype, QWidget* window,
-      bool tempFile = false , bool runExecutables = true, const QString& suggestedFileName = QString(), const QByteArray& asn = "" );
+      bool tempFile = false , bool runExecutables = true, 
+      const QString& suggestedFileName = QString(), const QByteArray& asn = QByteArray() );
 
   /**
    * Run the given shell command and notifies kicker of the starting
@@ -259,7 +261,8 @@ public:
    * @param asn Application startup notification id, if any (otherwise "").
    * @return @c true on success, @c false on error
    */
-  static bool runCommand( const QString& cmd, const QString & execName, const QString & icon, QWidget* window, const QByteArray& asn = "" );
+  static bool runCommand( const QString& cmd, const QString & execName, 
+          const QString & icon, QWidget* window, const QByteArray& asn = QByteArray() );
 
   /**
    * Display the Open-With dialog for those URLs, and run the chosen application.
@@ -272,7 +275,8 @@ public:
    * @return false if the dialog was canceled
    */
   static bool displayOpenWithDialog( const KUrl::List& lst, QWidget* window,
-      bool tempFiles = false, const QString& suggestedFileName = QString(), const QByteArray& asn = "" );
+      bool tempFiles = false, const QString& suggestedFileName = QString(), 
+      const QByteArray& asn = QByteArray() );
 
   /**
    * Quotes a string for the shell.
