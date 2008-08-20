@@ -1567,6 +1567,16 @@ void KUrlTest::testPathOrURL()
   QCOMPARE( uloc.pathOrUrl(), QString::fromUtf8("file:///home/dfaure/konq tests/Matériel?query" ) );
   uloc = KUrl( LOCAL_FILE_PREFIX"/home/dfaure/file#with#hash" );
   QCOMPARE( uloc.pathOrUrl(), QString(LOCAL_FILE_PREFIX"/home/dfaure/file#with#hash" ) );
+
+  // test creation of url from pathOrUrl
+  uloc = KUrl( QString::fromUtf8("http://www.kde.org/home/andreas/täst") );
+  QCOMPARE( KUrl( uloc.pathOrUrl() ), uloc );
+  uloc = KUrl( "http://www.kde.org/home/andreas/t%C3%A4st");
+  QCOMPARE( KUrl( uloc.pathOrUrl() ), uloc );
+  uloc = KUrl( QString::fromUtf8("file:///home/andreas/täst") );
+  QCOMPARE( KUrl( uloc.pathOrUrl() ), uloc );
+  uloc = KUrl( "file:///home/andreas/t%C3%A4st");
+  QCOMPARE( KUrl( uloc.pathOrUrl() ), uloc );
 }
 
 void KUrlTest::testAssignment()
