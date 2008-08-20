@@ -394,7 +394,7 @@ void SchedulerPrivate::scheduleJob(SimpleJob *job) {
 }
 
 void SchedulerPrivate::cancelJob(SimpleJob *job) {
-//    kDebug(7006) << "Scheduler: canceling job " << job;
+    //    kDebug(7006) << "Scheduler: canceling job " << job;
     Slave *slave = jobSlave(job);
     if ( !slave  )
     {
@@ -407,11 +407,12 @@ void SchedulerPrivate::cancelJob(SimpleJob *job) {
         // Search all slaves to see if job is in the queue of a coSlave
         foreach( Slave* coSlave, slaveList )
         {
-           JobList *list = coSlaves.value(slave);
+           JobList *list = coSlaves.value(coSlave);
            if (list && list->removeAll(job)) {
                // Job was found and removed.
                // Fall through to kill the slave as well!
                slave = coSlave;
+               break;
            }
         }
         if (!slave)
@@ -758,12 +759,8 @@ void SchedulerPrivate::slotSlaveDied(KIO::Slave *slave)
        urlOnHold = KUrl();
     }
     idleSlaves.removeAll(slave);
-    JobList *list = coSlaves.value(slave);
-    if (list)
-    {
-       // coSlave dies, kill jobs waiting in queue
-       disconnectSlave(slave);
-    }
+
+    disconnectSlave(slave);
 
     if (!slaveList.removeAll(slave))
         kDebug(7006) << "Scheduler: BUG!! Slave " << slave << "/" << slave->slave_pid() << " died, but is NOT in slaveList!!!\n";
@@ -967,19 +964,20 @@ SchedulerPrivate::disconnectSlave(KIO::Slave *slave)
 {
 //    kDebug(7006) << "_disconnectSlave( " << slave << ")";
     CoSlaveMap::iterator coSlaveIt = coSlaves.find( slave );
-    assert( coSlaveIt != coSlaves.end() );
-    JobList *list = *coSlaveIt;
-    coSlaves.erase( coSlaveIt );
-    assert(list);
-    if (!list)
-       return false;
-    // Kill jobs still in queue.
-    while(!list->isEmpty())
-    {
-       Job *job = list->takeFirst();
-       job->kill();
+    if ( coSlaveIt != coSlaves.end() ) {
+        JobList *list = *coSlaveIt;
+        coSlaves.erase( coSlaveIt );
+        if (list)
+        {
+            // Kill jobs still in queue.
+            while(!list->isEmpty())
+            {
+               Job *job = list->takeFirst();
+               job->kill();
+            }
+            delete list;
+        }
     }
-    delete list;
     coIdleSlaves.removeAll(slave);
     assert(!coIdleSlaves.contains(slave));
     QObject::disconnect(slave, SIGNAL(connected()),
