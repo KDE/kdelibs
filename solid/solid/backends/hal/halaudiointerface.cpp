@@ -20,6 +20,7 @@
 #include "halaudiointerface.h"
 
 #include "haldevice.h"
+#include <QtDBus/QDBusInterface>
 
 using namespace Solid::Backends::Hal;
 
@@ -161,9 +162,18 @@ Solid::AudioInterface::SoundcardType AudioInterface::soundcardType() const
         return m_soundcardType;
     }
 
-    if (! m_device->parentUdi().isEmpty())
-    {
-        HalDevice parentDevice(m_device->parentUdi());
+    QString parentUdi = m_device->parentUdi();
+    if (!parentUdi.isEmpty()) {
+        QDBusInterface parentIface(QLatin1String("org.freedesktop.Hal"), m_device->parentUdi(), "org.freedesktop.Hal.Device", QDBusConnection::systemBus());
+        const QDBusMessage &reply = parentIface.call("GetProperty", QLatin1String("info.subsystem"));
+        if (reply.type() != QDBusMessage::ReplyMessage && reply.errorName() == "org.freedesktop.Hal.NoSuchProperty") {
+            const QDBusMessage &reply2 = parentIface.call("GetProperty", QLatin1String("info.parent"));
+            if (reply2.type() == QDBusMessage::ReplyMessage) {
+                parentUdi = reply2.arguments().at(0).toString();
+            }
+        }
+
+        HalDevice parentDevice(parentUdi);
         QString productName = parentDevice.product();
         QString deviceName = name();
         if (productName.contains("headset", Qt::CaseInsensitive) ||
