@@ -43,11 +43,11 @@ endif(UNIX AND Q_WS_X11)
 
 #required features
 find_package(ZLIB REQUIRED)
-if (ONLY_KLEO)
+if (ONLY_KLEO OR CROSS_COMPILATION_TOOLS_ONLY)
   find_package(Strigi)
-else (ONLY_KLEO)
+else (ONLY_KLEO OR CROSS_COMPILATION_TOOLS_ONLY)
   find_package(Strigi REQUIRED)
-endif (ONLY_KLEO)
+endif (ONLY_KLEO OR CROSS_COMPILATION_TOOLS_ONLY)
 #optional features
 macro_optional_find_package(BZip2)
 macro_log_feature(BZIP2_FOUND "BZip2" "A high-quality data compressor" "http://www.bzip.org" FALSE "" "STRONGLY RECOMMENDED: Provides the ability to read and write bzip2 compressed data files.")
