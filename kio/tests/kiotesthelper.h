@@ -59,19 +59,15 @@ static void createTestFile( const QString& path )
     setTimeStamp( path, s_referenceTimeStamp );
 }
 
-static void createTestSymlink( const QString& path )
+static void createTestSymlink( const QString& path, const QByteArray& target = "/IDontExist" )
 {
-    // Create symlink if it doesn't exist yet
+    QFile::remove(path);
+    bool ok = symlink( target.constData(), QFile::encodeName( path ) ) == 0; // broken symlink
+    if ( !ok )
+        kFatal() << "couldn't create symlink: " << strerror( errno );
     KDE_struct_stat buf;
-    if ( KDE_lstat( QFile::encodeName( path ), &buf ) != 0 ) {
-        bool ok = symlink( "/IDontExist", QFile::encodeName( path ) ) == 0; // broken symlink
-        if ( !ok )
-            kFatal() << "couldn't create symlink: " << strerror( errno );
-        QVERIFY( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
-        QVERIFY( S_ISLNK( buf.st_mode ) );
-    } else {
-        QVERIFY( S_ISLNK( buf.st_mode ) );
-    }
+    QVERIFY( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
+    QVERIFY( S_ISLNK( buf.st_mode ) );
     //qDebug( "symlink %s created", qPrintable( path ) );
     QVERIFY( QFileInfo( path ).isSymLink() );
 }

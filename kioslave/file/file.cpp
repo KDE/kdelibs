@@ -870,7 +870,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
         // the symlink actually points to current source!
         if ((_flags & KIO::Overwrite) && S_ISLNK(buff_dest.st_mode))
         {
-            kDebug(7101) << "copy(): LINK DESTINATION";
+            //kDebug(7101) << "copy(): LINK DESTINATION";
             remove( _dest.data() );
         }
     }
@@ -1059,7 +1059,9 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
     }
 
     KDE_struct_stat buff_dest;
-    bool dest_exists = ( KDE_stat( _dest.data(), &buff_dest ) != -1 );
+    // stat symlinks here (lstat, not stat), to avoid ERR_IDENTICAL_FILES when replacing symlink
+    // with its target (#169547)
+    bool dest_exists = ( KDE_lstat( _dest.data(), &buff_dest ) != -1 );
     if ( dest_exists )
     {
         if (S_ISDIR(buff_dest.st_mode))

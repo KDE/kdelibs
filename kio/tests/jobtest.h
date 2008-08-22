@@ -61,6 +61,9 @@ private Q_SLOTS:
     //void newApiPerformance();
     void calculateRemainingSeconds();
 
+    void moveAndOverwrite();
+    void moveOverSymlinkToSelf();
+
     // Remote tests
     //void copyFileToSystem();
 
