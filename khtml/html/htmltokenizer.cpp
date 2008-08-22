@@ -513,7 +513,10 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
             {
                 if ( scriptCodeSize > 2 && scriptCode[scriptCodeSize-3] == '-' &&
                      scriptCode[scriptCodeSize-2] == '-' )
+                {
+                    scriptCodeSize -= 1;
                     scriptEnd=true;
+                }
             }
 
             if (canClose || handleBrokenComments || scriptEnd ){
@@ -1444,7 +1447,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
             else if ( !brokenScript && tagID == ID_SCRIPT ) {
                 DOMStringImpl* a = 0;
                 bool foundTypeAttribute = false;
-                scriptSrc = scriptSrcCharset = QString();
+                scriptSrc.clear(); scriptSrcCharset.clear();
                 if ( currToken.attrs && /* potentially have a ATTR_SRC ? */
                      view &&  /* are we a regular tokenizer or just for innerHTML ? */
                      parser->doc()->view()->part()->jScriptEnabled() /* jscript allowed at all? */
