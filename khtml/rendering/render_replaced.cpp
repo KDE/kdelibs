@@ -452,7 +452,6 @@ void RenderWidget::updateFromElement()
                     { QPalette::Inactive, QPalette::Foreground },
                     { QPalette::Inactive, QPalette::ButtonText },
                     { QPalette::Inactive, QPalette::Text },
-                    { QPalette::Disabled,QPalette::ButtonText },
                     { QPalette::NColorGroups, QPalette::NColorRoles },
                 };
                 const ColorSet *set = toSet;
@@ -461,19 +460,22 @@ void RenderWidget::updateFromElement()
                     ++set;
                 }
 
-                QColor disfg = color;
-                int h, s, v;
-                disfg.getHsv( &h, &s, &v );
-                if (v > 128)
-                    // dark bg, light fg - need a darker disabled fg
-                    disfg = disfg.dark(lowlightVal);
-                else if (disfg != Qt::black)
-                    // light bg, dark fg - need a lighter disabled fg - but only if !black
-                    disfg = disfg.light(highlightVal);
-                else
-                    // black fg - use darkgray disabled fg
-                    disfg = Qt::darkGray;
-                pal.setColor(QPalette::Disabled,QPalette::Foreground,disfg);
+		QColor disfg = color;
+		int h, s, v;
+		disfg.getHsv( &h, &s, &v );
+		if (v > 128)
+		    // dark bg, light fg - need a darker disabled fg
+		    disfg = disfg.dark(lowlightVal);
+		else if (v > 64)
+		    // light bg, dark fg - need a lighter disabled fg - but only if !black
+		    disfg = disfg.light(highlightVal);
+		else
+		    // for really dark fg - use darkgray disabled fg,
+		    // as ::light is pretty useless in this range
+		    disfg = Qt::darkGray;
+		pal.setColor(QPalette::Disabled,QPalette::Foreground,disfg);
+		pal.setColor(QPalette::Disabled,QPalette::Text,disfg);
+		pal.setColor(QPalette::Disabled,QPalette::ButtonText,disfg);
             }
         }
         m_widget->setPalette(pal);    
