@@ -63,6 +63,7 @@ private Q_SLOTS:
     void moveFileDestAlreadyExists();
 
     void moveAndOverwrite();
+    void moveOverSymlinkToSelf();
 
     // Remote tests
     //void copyFileToSystem();
