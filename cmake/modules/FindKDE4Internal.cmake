@@ -1161,10 +1161,12 @@ if (KDE4Internal_FIND_REQUIRED AND NOT KDE4_FOUND)
    message(FATAL_ERROR "ERROR: could NOT find everything required for compiling KDE 4 programs")
 endif (KDE4Internal_FIND_REQUIRED AND NOT KDE4_FOUND)
 
+if (NOT ONLY_KLEO)
 find_package(Phonon REQUIRED)
 set(KDE4_PHONON_LIBRARY ${PHONON_LIBRARY})
 set(KDE4_PHONON_LIBS ${PHONON_LIBS})
 set(KDE4_PHONON_INCLUDES ${PHONON_INCLUDES})
+endif (NOT ONLY_KLEO)
 
 if (NOT KDE4Internal_FIND_QUIETLY)
    kde4_print_results()
