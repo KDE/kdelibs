@@ -6,6 +6,7 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 
 ########### next target ###############
 
+if(NOT ONLY_KLEO)
 set(kded_KDEINIT_SRCS kded.cpp kdedadaptor.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded.xml # just so that it gets generated
 )
@@ -24,7 +25,7 @@ install(TARGETS kded4 DESTINATION ${BIN_INSTALL_DIR} )
 qt4_generate_dbus_interface( kdedadaptor.h org.kde.kded.xml )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
-
+endif(NOT ONLY_KLEO)
 
 ########### next target ###############
 
@@ -47,7 +48,7 @@ set(kbuildsycoca_KDEINIT_SRCS
 kde4_add_kdeinit_executable( kbuildsycoca4 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
 # needs kio for KServiceGroup
-target_link_libraries(kdeinit_kbuildsycoca4  ${KDE4_KIO_LIBS} )
+target_link_libraries(kdeinit_kbuildsycoca4  ${KDE4_KDEUI_LIBS} )
 
 install(TARGETS kdeinit_kbuildsycoca4 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
@@ -55,7 +56,7 @@ target_link_libraries( kbuildsycoca4 kdeinit_kbuildsycoca4 )
 install(TARGETS kbuildsycoca4 DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### next target ###############
-
+if(NOT ONLY_KLEO)
 set(kdontchangethehostname_SRCS khostname.cpp )
 
 
@@ -67,8 +68,11 @@ install(TARGETS kdontchangethehostname DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### install files ###############
 
-install( FILES applications.menu  DESTINATION  ${SYSCONF_INSTALL_DIR}/xdg/menus )
 install( FILES kdedmodule.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 install( FILES kded.upd           DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
+
+endif(NOT ONLY_KLEO)
+
+install( FILES applications.menu  DESTINATION  ${SYSCONF_INSTALL_DIR}/xdg/menus )
 
 

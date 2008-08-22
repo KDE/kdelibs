@@ -46,7 +46,7 @@ class KCModuleProxy;
  *
  * @author Frans Englich <frans.englich@telia.com>
  */
-class KUTILS_EXPORT KCModuleContainer : public KCModule
+class KCMUTILS_EXPORT KCModuleContainer : public KCModule
 {
 	Q_OBJECT
 	public:

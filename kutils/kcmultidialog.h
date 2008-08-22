@@ -34,7 +34,7 @@ class KCMultiDialogPrivate;
  *
  * @author Matthias Elter <elter@kde.org>, Daniel Molkentin <molkentin@kde.org>
  */
-class KUTILS_EXPORT KCMultiDialog : public KPageDialog
+class KCMUTILS_EXPORT KCMultiDialog : public KPageDialog
 {
   Q_OBJECT
     Q_DECLARE_PRIVATE(KCMultiDialog)

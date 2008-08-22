@@ -96,13 +96,15 @@ endif (UNIX)
 
 
 add_subdirectory( kconfig_compiler )
+
+if (NOT CROSS_COMPILATION_TOOLS_ONLY)
 add_subdirectory( tests )
 add_subdirectory( sonnet/tests )
+endif (NOT CROSS_COMPILATION_TOOLS_ONLY)
 
 ########### next target ###############
 
-if (UNIX)
-
+if (UNIX AND NOT CROSS_COMPILATION_TOOLS_ONLY)
    kde4_add_library(kdefakes SHARED fakes.c)
    set_target_properties(kdefakes PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
    if (NOT HAVE_TRUNC)
@@ -110,7 +112,7 @@ if (UNIX)
    endif (NOT HAVE_TRUNC)
    install(TARGETS kdefakes ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
-endif (UNIX)
+endif (UNIX AND NOT CROSS_COMPILATION_TOOLS_ONLY)
 
 
 
@@ -243,6 +245,8 @@ if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
    add_definitions(-DNO_DISPLAY)
 endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
+if (NOT CROSS_COMPILATION_TOOLS_ONLY)
+
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
 target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
@@ -261,7 +265,11 @@ set_target_properties(kdecore PROPERTIES
 
 install(TARGETS kdecore ${INSTALL_TARGETS_DEFAULT_ARGS})
 
+endif (NOT CROSS_COMPILATION_TOOLS_ONLY)
+
 ########### next target ###############
+
+if (NOT CROSS_COMPILATION_TOOLS_ONLY)
 
 configure_file(all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)  
 
@@ -271,6 +279,96 @@ target_link_libraries(kde4-config ${KDE4_KDECORE_LIBS} )
 
 install(TARGETS kde4-config DESTINATION ${BIN_INSTALL_DIR} )
 
+else (NOT CROSS_COMPILATION_TOOLS_ONLY)
+
+kde4_add_executable(kde4-config NOGUI kde-config.cpp
+   config/kconfig.cpp
+   config/kconfigbackend.cpp
+   config/kconfigbase.cpp
+   config/kconfiggroup.cpp
+   config/ksharedconfig.cpp
+   config/kconfigini.cpp
+   config/kdesktopfile.cpp
+   config/kcoreconfigskeleton.cpp
+   date/kcalendarsystem.cpp
+   date/kcalendarsystemgregorian.cpp
+   date/kcalendarsystemhijri.cpp
+   date/kcalendarsystemhebrew.cpp
+   date/kcalendarsystemjalali.cpp
+   date/kdatetime.cpp
+   date/ktimezone.cpp
+   date/ksystemtimezone.cpp
+   date/ktzfiletimezone.cpp
+   io/kdebug.cpp
+   io/kdebugdbusiface.cpp
+   io/kmessage.cpp
+   io/ksavefile.cpp
+   io/ktemporaryfile.cpp
+   io/kurl.cpp
+   kernel/kauthorized.cpp
+   kernel/kaboutdata.cpp
+   kernel/kcmdlineargs.cpp
+   kernel/kglobal.cpp
+   kernel/kcomponentdata.cpp
+   kernel/kstandarddirs.cpp
+   kernel/ktoolinvocation.cpp
+   localization/kcatalog.cpp
+   localization/kcharsets.cpp
+   localization/klocale.cpp
+   localization/klocalizedstring.cpp
+   localization/ktranslit.cpp
+   localization/kuitformats.cpp
+   localization/kuitsemantics.cpp
+   sycoca/ksycoca.cpp
+   sycoca/ksycocadict.cpp
+   sycoca/ksycocaentry.cpp
+   sycoca/ksycocafactory.cpp
+   sycoca/kprotocolinfo.cpp
+   sycoca/kprotocolinfofactory.cpp
+   sycoca/kmemfile.cpp
+   services/kfoldermimetype.cpp
+   services/kmimetypefactory.cpp
+   services/kmimemagicrule.cpp
+   services/kmimetypetrader.cpp
+   services/kmimetype.cpp
+   services/kservice.cpp
+   services/kserviceaction.cpp
+   services/kservicefactory.cpp
+   services/kservicegroup.cpp
+   services/kservicegroupfactory.cpp
+   services/kserviceoffer.cpp
+   services/kservicetype.cpp
+   services/kservicetypefactory.cpp
+   services/kservicetypeprofile.cpp
+   services/kservicetypetrader.cpp
+   services/ktraderparse.cpp
+   services/ktraderparsetree.cpp
+   services/yacc.c
+   services/lex.c
+   services/kplugininfo.cpp
+   text/kstringhandler.cpp
+   util/klauncher_iface.cpp
+   util/klibrary.cpp
+   util/kmacroexpander.cpp
+   util/kpluginfactory.cpp
+   util/kpluginloader.cpp
+   util/kshell.cpp
+   util/krandom.cpp
+   io/klockfile_unix.cpp
+   kernel/kstandarddirs_unix.cpp
+   util/kmacroexpander_unix.cpp
+   util/kshell_unix.cpp
+   util/kuser_unix.cpp
+   kernel/ktoolinvocation_x11.cpp
+)
+
+target_link_libraries(kde4-config ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} )
+
+install(TARGETS kde4-config DESTINATION ${BIN_INSTALL_DIR} )
+
+endif (NOT CROSS_COMPILATION_TOOLS_ONLY)
+
+if (NOT CROSS_COMPILATION_TOOLS_ONLY)
 
 ########### next target ###############
 
@@ -295,6 +393,7 @@ add_custom_command(
    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
 )
 
+if (NOT ONLY_KLEO)
 # the transcript plugin
 set( ktranscript_LIB_SRCS
    localization/ktranscript.cpp
@@ -312,6 +411,8 @@ else(KDE4_ENABLE_FINAL)
 endif(KDE4_ENABLE_FINAL)
 
 install( TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR} )
+
+endif (NOT ONLY_KLEO)
 
 ########### install files ###############
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
@@ -426,3 +527,4 @@ install( FILES
    sonnet/sonnetspeller.desktop
    DESTINATION  ${SERVICETYPES_INSTALL_DIR}
 )
+endif (NOT CROSS_COMPILATION_TOOLS_ONLY)

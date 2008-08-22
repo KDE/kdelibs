@@ -17,19 +17,19 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KUTILS_EXPORT_H
-#define KUTILS_EXPORT_H
+#ifndef KCMUTILS_EXPORT_H
+#define KCMUTILS_EXPORT_H
 
 /* needed for KDE_EXPORT and KDE_IMPORT macros */
 #include <kdemacros.h>
 
-#ifndef KUTILS_EXPORT
-# if defined(MAKE_KUTILS_LIB)
+#ifndef KCMUTILS_EXPORT
+# if defined(MAKE_KCMUTILS_LIB)
    /* We are building this library */ 
-#  define KUTILS_EXPORT KDE_EXPORT
+#  define KCMUTILS_EXPORT KDE_EXPORT
 # else
    /* We are using this library */ 
-#  define KUTILS_EXPORT KDE_IMPORT
+#  define KCMUTILS_EXPORT KDE_IMPORT
 # endif
 #endif
 

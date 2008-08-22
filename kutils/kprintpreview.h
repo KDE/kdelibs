@@ -20,7 +20,7 @@
 #ifndef KPRINTPREVIEW_H
 #define KPRINTPREVIEW_H
 
-#include <kutils_export.h>
+#include <kprintutils_export.h>
 
 #include <kdialog.h>
 
@@ -38,7 +38,7 @@ class KPrintPreviewPrivate;
  * preview.exec();
  * @endcode
  */
-class KUTILS_EXPORT KPrintPreview : public KDialog
+class KPRINTUTILS_EXPORT KPrintPreview : public KDialog
 {
     Q_OBJECT
 

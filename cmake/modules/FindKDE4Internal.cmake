@@ -52,7 +52,9 @@
 #  KDE4_KDEUI_LIBS            - the kdeui library and all depending libraries
 #  KDE4_KIO_LIBS              - the kio library and all depending libraries
 #  KDE4_KPARTS_LIBS           - the kparts library and all depending libraries
-#  KDE4_KUTILS_LIBS           - the kutils library and all depending libraries
+#  KDE4_KCMUTILS_LIBS         - the kcmutils library and all depending libraries
+#  KDE4_KPRINTUTILS_LIBS      - the kprintutils library and all depending libraries
+#  KDE4_KUTILS_LIBS           - the kutils library and all depending libraries (deprecated)
 #  KDE4_KDE3SUPPORT_LIBS      - the kde3support library and all depending libraries
 #  KDE4_KFILE_LIBS            - the kfile library and all depending libraries
 #  KDE4_KHTML_LIBS            - the khtml library and all depending libraries
@@ -316,7 +318,9 @@ if (_kdeBootStrapping)
    if (UNIX)
       set(KDE4_KPTY_LIBS ${KDE4_KDECORE_LIBS} kpty)
    endif (UNIX)
-   set(KDE4_KUTILS_LIBS ${KDE4_KIO_LIBS} kutils)
+   set(KDE4_KCMUTILS_LIBS ${KDE4_KDEUI_LIBS} kcmutils)
+   set(KDE4_KPRINTUTILS_LIBS ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS} kprintutils)
+   set(KDE4_KUTILS_LIBS ${KDE4_KCMUTILS_LIBS} ${KDE4_KPRINTUTILS_LIBS} kutils)
    set(KDE4_KDE3SUPPORT_LIBS ${KDE4_KIO_LIBS} kde3support)
    set(KDE4_SOLID_LIBS ${KDE4_KDECORE_LIBS} solid)
    set(KDE4_KFILE_LIBS ${KDE4_KDE3SUPPORT_LIBS} kfile)
@@ -406,6 +410,12 @@ else (_kdeBootStrapping)
 
    find_library(KDE4_KPARTS_LIBRARY NAMES kparts PATHS ${KDE4_LIB_INSTALL_DIR} NO_DEFAULT_PATH )
    set(KDE4_KPARTS_LIBS ${kparts_LIB_DEPENDS} ${KDE4_KPARTS_LIBRARY} )
+
+   find_library(KDE4_KCMUTILS_LIBRARY NAMES kcmutils PATHS ${KDE4_LIB_INSTALL_DIR} NO_DEFAULT_PATH )
+   set(KDE4_KCMUTILS_LIBS ${kcmutils_LIB_DEPENDS} ${KDE4_KCMUTILS_LIBRARY} )
+
+   find_library(KDE4_KPRINTUTILS_LIBRARY NAMES kprintutils PATHS ${KDE4_LIB_INSTALL_DIR} NO_DEFAULT_PATH )
+   set(KDE4_KPRINTUTILS_LIBS ${kprintutils_LIB_DEPENDS} ${KDE4_KPRINTUTILS_LIBRARY} )
 
    find_library(KDE4_KUTILS_LIBRARY NAMES kutils PATHS ${KDE4_LIB_INSTALL_DIR} NO_DEFAULT_PATH )
    set(KDE4_KUTILS_LIBS ${kutils_LIB_DEPENDS} ${KDE4_KUTILS_LIBRARY} )

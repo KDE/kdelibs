@@ -72,7 +72,7 @@ namespace KCModuleLoader
      *
      * @return a pointer to the loaded @ref KCModule
      */
-    KUTILS_EXPORT KCModule *loadModule(const KCModuleInfo &module, ErrorReporting
+    KCMUTILS_EXPORT KCModule *loadModule(const KCModuleInfo &module, ErrorReporting
         report, QWidget * parent = 0, const QStringList& args = QStringList() );
 
     /**
@@ -83,14 +83,14 @@ namespace KCModuleLoader
      *
      * @return a pointer to the loaded @ref KCModule
      */
-    KUTILS_EXPORT KCModule *loadModule( const QString &module, ErrorReporting report,
+    KCMUTILS_EXPORT KCModule *loadModule( const QString &module, ErrorReporting report,
         QWidget *parent = 0, const QStringList& args = QStringList() );
 
     /**
      * Unloads the module's library
      * @param mod What module to unload for
      */
-    KUTILS_EXPORT void unloadModule(const KCModuleInfo &mod);
+    KCMUTILS_EXPORT void unloadModule(const KCModuleInfo &mod);
 
     /**
      * Display a message box explaining an error occurred and possible
@@ -99,7 +99,7 @@ namespace KCModuleLoader
      * @deprecated Use a constructor with ErrorReporting set to Dialog to show a
      * message box like this function did.
      */
-    KUTILS_EXPORT KDE_DEPRECATED void showLastLoaderError(QWidget *parent);
+    KCMUTILS_EXPORT KDE_DEPRECATED void showLastLoaderError(QWidget *parent);
 
     /**
      * Returns a KCModule containing the messages @p report and @p text.
@@ -110,7 +110,7 @@ namespace KCModuleLoader
      *
      * @internal
      */
-    KUTILS_EXPORT KCModule* reportError( ErrorReporting report, const QString & text,
+    KCMUTILS_EXPORT KCModule* reportError( ErrorReporting report, const QString & text,
         const QString &details, QWidget * parent );
 
 }

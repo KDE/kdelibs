@@ -37,6 +37,8 @@
 #include <shellapi.h>
 #include <process.h>
 
+#include <cassert>
+
 #if defined(__MINGW32__)
 # define WIN32_CAST_CHAR (const WCHAR*)
 #else

@@ -24,7 +24,7 @@
 #ifndef KCMODULEINFO_H
 #define KCMODULEINFO_H
 
-#include <kutils_export.h>
+#include <kcmutils_export.h>
 #include <kservice.h>
 
 class QString;
@@ -44,7 +44,7 @@ class QStringList;
  * @author Daniel Molkentin <molkentin@kde.org>
  *
  */
-class KUTILS_EXPORT KCModuleInfo // krazy:exclude=dpointer (implicitly shared)
+class KCMUTILS_EXPORT KCModuleInfo // krazy:exclude=dpointer (implicitly shared)
 {
 
 public:

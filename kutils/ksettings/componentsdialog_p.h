@@ -20,7 +20,7 @@
 #ifndef COMPONENTSDIALOG_P_H
 #define COMPONENTSDIALOG_P_H
 
-#include <kutils_export.h>
+#include <kcmutils_export.h>
 #include <kdialog.h>
 
 #include <QtCore/QList>
@@ -39,7 +39,7 @@ namespace KSettings
   to the okClicked() and applyClicked() signals to be notified about
   configuration changes.
 */
-class KUTILS_EXPORT ComponentsDialog : public KDialog
+class KCMUTILS_EXPORT ComponentsDialog : public KDialog
 {
     Q_OBJECT
     public:

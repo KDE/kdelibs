@@ -22,7 +22,7 @@ if (WIN32)
   endif (KDEPIMLIBS_DIR)
 endif (WIN32)
 
-find_path( KDEPIMLIBS_INCLUDE_DIR kcal/kcal_export.h
+find_path( KDEPIMLIBS_INCLUDE_DIR kmime/kmime_export.h
   ${KDE4_INCLUDE_DIR}
 )
 

@@ -43,8 +43,11 @@ endif(UNIX AND Q_WS_X11)
 
 #required features
 find_package(ZLIB REQUIRED)
-find_package(Strigi REQUIRED)
-
+if (ONLY_KLEO)
+  find_package(Strigi)
+else (ONLY_KLEO)
+  find_package(Strigi REQUIRED)
+endif (ONLY_KLEO)
 #optional features
 macro_optional_find_package(BZip2)
 macro_log_feature(BZIP2_FOUND "BZip2" "A high-quality data compressor" "http://www.bzip.org" FALSE "" "STRONGLY RECOMMENDED: Provides the ability to read and write bzip2 compressed data files.")
@@ -181,7 +184,14 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 add_subdirectory( cmake )
 add_subdirectory( kdecore )
+if(NOT CROSS_COMPILATION_TOOLS_ONLY)
 add_subdirectory( kdeui )
+add_subdirectory( kutils )
+add_subdirectory( kded       )
+add_subdirectory( includes )
+add_subdirectory( mimetypes  )
+
+if (NOT ONLY_KLEO)
 if (UNIX)
    add_subdirectory( kpty )
    add_subdirectory( kdesu )
@@ -191,7 +201,6 @@ add_subdirectory( kjsembed )
 add_subdirectory( kwallet )
 add_subdirectory( kio )
 add_subdirectory( solid )
-add_subdirectory( kded       )
 add_subdirectory( kde3support  )
 add_subdirectory( kfile )
 add_subdirectory( kconf_update )
@@ -199,9 +208,7 @@ add_subdirectory( kdoctools  )
 add_subdirectory( kioslave   )
 add_subdirectory( knewstuff  )
 add_subdirectory( kparts     )
-add_subdirectory( kutils     )
 add_subdirectory( licenses   )
-add_subdirectory( mimetypes  )
 add_subdirectory( kinit  )
 add_subdirectory( threadweaver )
 add_subdirectory( sonnet  )
@@ -214,13 +221,14 @@ add_subdirectory( kimgio )
 add_subdirectory( dnssd )
 add_subdirectory( kross )
 add_subdirectory( security )
-add_subdirectory( includes )
 
 if(Soprano_FOUND)
   add_subdirectory(nepomuk)
 endif(Soprano_FOUND)
 
 macro_optional_add_subdirectory( doc  )
+
+endif(NOT ONLY_KLEO)
 
 ################# write dependency file which will be installed #################
 
@@ -235,3 +243,5 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake ${CMAKE_CUR
 
 
 macro_display_feature_log()
+
+endif(NOT CROSS_COMPILATION_TOOLS_ONLY)

@@ -1,3 +1,4 @@
+
 /**********************************************************************************
  *   Copyright (C) 2008 by Carlo Segato <brandon.ml@gmail.com>                    *
  *   Copyright (c) 2002-2003 by Stefan Gehn            <metz@gehn.net>            *
@@ -31,7 +32,7 @@ class QString;
 /**
  * This class contains the emoticons theme
  */
-class KUTILS_EXPORT KEmoticonsTheme
+class KEMOTICONS_EXPORT KEmoticonsTheme
 {
 public:
 

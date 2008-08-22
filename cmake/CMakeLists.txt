@@ -4,5 +4,7 @@
 #   add_subdirectory(automoc)
 #endif(NOT AUTOMOC4_EXECUTABLE)
 
+if(NOT CROSS_COMPILATION_TOOLS_ONLY)
 add_subdirectory(modules)
+endif(NOT CROSS_COMPILATION_TOOLS_ONLY)
 
