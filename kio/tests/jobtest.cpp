@@ -1199,6 +1199,7 @@ void JobTest::moveAndOverwrite()
     QVERIFY(ok);
     QVERIFY(!QFile::exists(sourceFile)); // it was moved
 
+#ifndef Q_WS_WIN
     // Now same thing when the target is a symlink to the source
     createTestFile( sourceFile );
     createTestSymlink( existingDest, QFile::encodeName(sourceFile) );
@@ -1229,6 +1230,7 @@ void JobTest::moveAndOverwrite()
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY(ok);
     QVERIFY(!QFile::exists(sourceFile)); // it was moved
+#endif
 }
 
 void JobTest::moveOverSymlinkToSelf() // #169547
