@@ -2400,6 +2400,11 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
     // don't process focus changes while detaching
     if( !m_render ) return;
 
+    // See if the new node is really focusable. It might not be
+    // if focus() was called explicitly.
+    if (newFocusNode && !newFocusNode->isFocusable())
+        return;
+
     // Make sure newFocusNode is actually in this document
     if (newFocusNode && (newFocusNode->document() != this))
         return;
