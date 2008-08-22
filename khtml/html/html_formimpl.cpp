@@ -979,7 +979,7 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
 
 bool HTMLGenericFormElementImpl::isFocusable() const
 {
-    if (disabled())
+    if (disabled() || readOnly())
 	return false;
 
     //Non-widget INPUT TYPE="image" and <BUTTON> support focus, too.
