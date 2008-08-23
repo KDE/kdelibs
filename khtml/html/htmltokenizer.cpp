@@ -514,7 +514,6 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
                 if ( scriptCodeSize > 2 && scriptCode[scriptCodeSize-3] == '-' &&
                      scriptCode[scriptCodeSize-2] == '-' )
                 {
-                    scriptCodeSize -= 1;
                     scriptEnd=true;
                 }
             }
@@ -526,7 +525,7 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
                     scriptCode[ scriptCodeSize ] = 0;
                     scriptCode[ scriptCodeSize + 1 ] = 0;
                     currToken.tid = ID_COMMENT;
-                    processListing(TokenizerString(scriptCode, scriptCodeSize - 2));
+                    processListing(TokenizerString(scriptCode, scriptCodeSize - 3));
                     processToken();
                     currToken.tid = ID_COMMENT + ID_CLOSE_TAG;
                     processToken();
