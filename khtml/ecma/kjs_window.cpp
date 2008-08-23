@@ -260,8 +260,8 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   removeEventListener	Window::RemoveEventListener	DontDelete|Function 3
 # Normally found in prototype. Add to window object itself to make them
 # accessible in closed and cross-site windows
-  valueOf       Window::ValueOf		DontDelete|Function 0
-  toString      Window::ToString	DontDelete|Function 0
+  valueOf       Window::ValueOf		DontEnum|DontDelete|Function 0
+  toString      Window::ToString	DontEnum|DontDelete|Function 0
 # IE extension
   navigate	Window::Navigate	DontDelete|Function 1
 # Mozilla extension

@@ -3348,7 +3348,7 @@ JSValue* KJS::HTMLSelectCollectionProtoFunc::callAsFunction(ExecState *exec, JSO
 ////////////////////// Option Object ////////////////////////
 
 OptionConstructorImp::OptionConstructorImp(ExecState *exec, DOM::DocumentImpl* d)
-    : JSObject(), doc(d)
+    : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), doc(d)
 {
   // ## isn't there some redundancy between JSObject::_proto and the "prototype" property ?
   //put(exec,"prototype", ...,DontEnum|DontDelete|ReadOnly);
@@ -3390,8 +3390,8 @@ JSObject *OptionConstructorImp::construct(ExecState *exec, const List &args)
 
 //Like in other browsers, we merely make a new HTMLImageElement
 //not in tree for this.
-ImageConstructorImp::ImageConstructorImp(ExecState *, DOM::DocumentImpl* d)
-    : JSObject(), doc(d)
+ImageConstructorImp::ImageConstructorImp(ExecState* exec, DOM::DocumentImpl* d)
+    : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), doc(d)
 {
 }
 

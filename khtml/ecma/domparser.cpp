@@ -47,8 +47,8 @@ KJS_IMPLEMENT_PROTOFUNC(DOMParserProtoFunc)
 KJS_IMPLEMENT_PROTOTYPE("DOMParser",DOMParserProto,DOMParserProtoFunc)
 
 
-DOMParserConstructorImp::DOMParserConstructorImp(ExecState *, DOM::DocumentImpl *d)
-    : doc(d)
+DOMParserConstructorImp::DOMParserConstructorImp(ExecState* exec, DOM::DocumentImpl *d)
+    : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), doc(d)
 {
 }
 
