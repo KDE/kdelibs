@@ -56,7 +56,6 @@ namespace KJS {
   class History;
   class External;
   class ScheduledAction;
-  class FrameArray;
   class JSEventListener;
   class JSLazyEventListener;
 
@@ -105,7 +104,7 @@ namespace KJS {
     }
 
     virtual void mark();
-    JSValue* getValueProperty(ExecState *exec, int token) const;
+    JSValue* getValueProperty(ExecState *exec, int token);
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr = None);
     virtual bool toBoolean(ExecState *exec) const;
@@ -125,7 +124,6 @@ namespace KJS {
       return checkIsSafeScript( activePart );
     }
     Location *location() const;
-    JSObject* frames( ExecState* exec ) const;
     JSEventListener *getJSEventListener(JSValue* val, bool html = false);
     JSLazyEventListener *getJSLazyEventListener(const QString &code, const QString& sourceUrl, int lineNo, 
                                                 const QString &name, DOM::NodeImpl* node);
@@ -198,7 +196,6 @@ namespace KJS {
     Screen *screen;
     History *history;
     External *external;
-    FrameArray *m_frames;
     Location *loc;
     DOM::EventImpl *m_evt;
 
