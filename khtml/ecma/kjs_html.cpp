@@ -412,7 +412,7 @@ JSValue* HTMLDocument::getValueProperty(ExecState *exec, int token)
       return body ? jsString(body->getAttribute(ATTR_DIR)) : jsUndefined();
     case Frames:
       if ( win )
-        return win->frames(exec);
+        return win;
       else
         return jsUndefined();
   }
