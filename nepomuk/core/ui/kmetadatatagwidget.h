@@ -89,6 +89,7 @@ namespace Nepomuk {
         void createTag();
         void updateAssignedTagsFromMenu();
         void slotTagUpdateDone();
+        void slotTagClicked( const QString& text );
 
     private:
         class Private;
