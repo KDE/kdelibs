@@ -33,8 +33,8 @@
 
 namespace KJS {
 
-AudioConstructorImp::AudioConstructorImp(ExecState *, DOM::DocumentImpl* d)
-    : JSObject(), doc(d)
+AudioConstructorImp::AudioConstructorImp(ExecState* exec, DOM::DocumentImpl* d)
+    : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), doc(d)
 {
 }
 

@@ -99,7 +99,7 @@ void XMLHttpRequestQObject::slotRedirection( KIO::Job* job, const KUrl& url)
 }
 
 XMLHttpRequestConstructorImp::XMLHttpRequestConstructorImp(ExecState *exec, DOM::DocumentImpl* d)
-    : JSObject(), doc(d)
+    : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), doc(d)
 {
     JSObject* proto = XMLHttpRequestProto::self(exec);
     putDirect(exec->propertyNames().prototype, proto, DontDelete|ReadOnly);
