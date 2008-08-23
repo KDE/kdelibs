@@ -182,11 +182,9 @@ public:
     int   pixS;
     XFontStruct* xfs;
 
-    bool stringToCMap(const QChar *str, int len, QGlyphLayout *glyphs, int *nglyphs, QTextEngine::ShaperFlags flags) const
+    void recalcAdvances(int len, QGlyphLayout *glyphs, QTextEngine::ShaperFlags flags) const
     {
-        bool res = QFontEngineXLFD::stringToCMap(str, len, glyphs, nglyphs, flags);
-        if (!res)
-            return false;
+        QFontEngineXLFD::recalcAdvances(len, glyphs, flags);
 
         // Go through the glyhs with glyph 0 and fix up their x advance
         // to make sense (or at least match Qt3)
@@ -206,8 +204,6 @@ public:
                 g->advance.x = fallBackWidth;
             }
         }
-
-        return true;
     }
 
     Type type() const
