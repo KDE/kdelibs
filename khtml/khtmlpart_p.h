@@ -488,6 +488,8 @@ public:
   KHTMLWalletQueue *m_wq;
 #endif
 
+  void clearRedirection();
+
   bool isLocalAnchorJump(const KUrl& url);
   void executeAnchorJump(const KUrl& url, bool lockHistory);
 
