@@ -1030,10 +1030,13 @@ public:
   QString currentGroup() const;
 
   /**
-   * Register a custom @ref KConfigSkeletonItem with a given name. If the name
-   * parameter is null, take the name from KConfigSkeletonItem::key().
+   * Register a custom @ref KConfigSkeletonItem with a given name.
+   *
+   * If the name parameter is null, take the name from KConfigSkeletonItem::key().
    * Note that all names must be unique but that multiple entries can have
    * the same key if they reside in different groups.
+   *
+   * KCoreConfigSkeleton takes ownership of the KConfigSkeletonItem.
    */
   void addItem(KConfigSkeletonItem *, const QString & name = QString() );
 
