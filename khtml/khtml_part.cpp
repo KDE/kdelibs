@@ -1514,9 +1514,7 @@ void KHTMLPart::clear()
   connect( partManager(), SIGNAL( activePartChanged( KParts::Part * ) ),
              this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );
 
-  d->m_delayRedirect = 0;
-  d->m_redirectURL.clear();
-  d->m_redirectionTimer.stop();
+  d->clearRedirection();
   d->m_redirectLockHistory = true;
   d->m_bClearing = false;
   d->m_frameNameId = 1;
@@ -2439,13 +2437,19 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockH
   }
 }
 
+void KHTMLPartPrivate::clearRedirection()
+{
+  m_delayRedirect = 0;
+  m_redirectURL.clear();
+  m_redirectionTimer.stop();
+}
+
 void KHTMLPart::slotRedirect()
 {
   kDebug(6050) << this << " slotRedirect()";
   QString u = d->m_redirectURL;
   KUrl url( u );
-  d->m_delayRedirect = 0;
-  d->m_redirectURL.clear();
+  d->clearRedirection();
 
   if ( d->isInPageURL(u) )
   {
@@ -4937,6 +4941,10 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
                          ki18n( "<qt>The form will be submitted to <br /><b>%1</b><br />on your local filesystem.<br />Do you want to submit the form?</qt>" ),
                          i18n( "Submit" )))
     return;
+
+  // OK. We're actually going to submit stuff. Clear any redirections,
+  // we should win over them
+  d->clearRedirection();
 
   KParts::OpenUrlArguments args;
 
