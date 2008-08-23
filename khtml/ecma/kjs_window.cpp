@@ -206,26 +206,26 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   status	Window::Status		DontDelete
   document	Window::Document	DontDelete|ReadOnly
   frameElement		Window::FrameElement		DontDelete|ReadOnly
-  frames	Window::Frames		DontDelete|ReadOnly
+  frames	Window::Frames		DontDelete
   history	Window::_History	DontDelete|ReadOnly
   external	Window::_External	DontDelete|ReadOnly
   event		Window::Event		DontDelete|ReadOnly
   innerHeight	Window::InnerHeight	DontDelete|ReadOnly
   innerWidth	Window::InnerWidth	DontDelete|ReadOnly
-  length	Window::Length		DontDelete|ReadOnly
+  length	Window::Length		DontDelete
   location	Window::_Location	DontDelete
   name		Window::Name		DontDelete
   navigator	Window::_Navigator	DontDelete|ReadOnly
   clientInformation	Window::ClientInformation	DontDelete|ReadOnly
-  konqueror	Window::_Konqueror	DontDelete|ReadOnly
+  konqueror	Window::_Konqueror	DontDelete
   offscreenBuffering	Window::OffscreenBuffering	DontDelete|ReadOnly
   opener	Window::Opener		DontDelete|ReadOnly
   outerHeight	Window::OuterHeight	DontDelete|ReadOnly
   outerWidth	Window::OuterWidth	DontDelete|ReadOnly
   pageXOffset	Window::PageXOffset	DontDelete|ReadOnly
   pageYOffset	Window::PageYOffset	DontDelete|ReadOnly
-  parent	Window::Parent		DontDelete|ReadOnly
-  personalbar	Window::Personalbar	DontDelete|ReadOnly
+  parent	Window::Parent		DontDelete
+  personalbar	Window::Personalbar	DontDelete
   screenX	Window::ScreenX		DontDelete|ReadOnly
   screenY	Window::ScreenY		DontDelete|ReadOnly
   scrollbars	Window::Scrollbars	DontDelete|ReadOnly
@@ -240,7 +240,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   resizeTo	Window::ResizeTo	DontDelete|Function 2
   self		Window::Self		DontDelete|ReadOnly
   window	Window::_Window		DontDelete|ReadOnly
-  top		Window::Top		DontDelete|ReadOnly
+  top		Window::Top		DontDelete
   screen	Window::_Screen		DontDelete|ReadOnly
   alert		Window::Alert		DontDelete|Function 1
   confirm	Window::Confirm		DontDelete|Function 1
@@ -310,12 +310,12 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   MutationEvent Window::MutationEventCtor   DontEnum|DontDelete
   KeyboardEvent Window::KeyboardEventCtor   DontEnum|DontDelete
   EventException Window::EventExceptionCtor DontEnum|DontDelete
-  Audio		Window::Audio		DontEnum|DontDelete|ReadOnly
-  Image		Window::Image		DontEnum|DontDelete|ReadOnly
-  Option	Window::Option		DontEnum|DontDelete|ReadOnly
-  XMLHttpRequest Window::XMLHttpRequest DontEnum|DontDelete|ReadOnly
-  XMLSerializer	Window::XMLSerializer	DontEnum|DontDelete|ReadOnly
-  DOMParser	Window::DOMParser	DontEnum|DontDelete|ReadOnly
+  Audio		Window::Audio		DontEnum|DontDelete
+  Image		Window::Image		DontEnum|DontDelete
+  Option	Window::Option		DontEnum|DontDelete
+  XMLHttpRequest Window::XMLHttpRequest DontEnum|DontDelete
+  XMLSerializer	Window::XMLSerializer	DontEnum|DontDelete
+  DOMParser	Window::DOMParser	DontEnum|DontDelete
 
 # Mozilla dom emulation ones.
   Element   Window::ElementCtor DontEnum|DontDelete
