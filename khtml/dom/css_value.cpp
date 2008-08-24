@@ -174,10 +174,10 @@ DOMString CSSValue::cssText() const
     return ((CSSValueImpl *)impl)->cssText();
 }
 
-void CSSValue::setCssText( const DOMString &/*value*/ )
+void CSSValue::setCssText(const DOMString &value)
 {
     if(!impl) return;
-    ((CSSValueImpl *)impl)->cssText(); // ### setter missing
+    ((CSSValueImpl *)impl)->setCssText(value);
 }
 
 unsigned short CSSValue::cssValueType() const

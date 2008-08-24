@@ -115,6 +115,7 @@ public:
     virtual unsigned short cssValueType() const = 0;
 
     virtual DOM::DOMString cssText() const = 0;
+    void setCssText(const DOM::DOMString&) { } // FIXME: Not implemented.
 
     virtual bool isValue() const { return true; }
     virtual bool isFontValue() const { return false; }
