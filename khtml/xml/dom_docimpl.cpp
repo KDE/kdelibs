@@ -125,6 +125,10 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
         (version.isEmpty() || version == "2.0"))
         return true;
 
+    if ((lower == "css") &&
+        (version.isEmpty() || version == "2.0"))
+        return true;
+
     if ((lower == "events" || lower == "uievents" ||
          lower == "mouseevents" || lower == "mutationevents" ||
          lower == "htmlevents" || lower == "textevents" ) &&
