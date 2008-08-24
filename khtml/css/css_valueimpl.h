@@ -74,7 +74,7 @@ public:
     virtual DOM::DOMString item ( unsigned long index ) const;
 
     DOM::DOMString cssText() const;
-    void setCssText(DOM::DOMString str);
+    void setCssText(const DOM::DOMString& str);
 
     virtual bool isStyleDeclaration() const { return true; }
     virtual bool parseString( const DOMString &string, bool = false );

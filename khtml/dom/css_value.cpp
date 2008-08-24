@@ -177,7 +177,7 @@ DOMString CSSValue::cssText() const
 void CSSValue::setCssText( const DOMString &/*value*/ )
 {
     if(!impl) return;
-    ((CSSValueImpl *)impl)->cssText();
+    ((CSSValueImpl *)impl)->cssText(); // ### setter missing
 }
 
 unsigned short CSSValue::cssValueType() const

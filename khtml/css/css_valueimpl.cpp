@@ -760,7 +760,7 @@ DOM::DOMString CSSStyleDeclarationImpl::cssText() const
     return result;
 }
 
-void CSSStyleDeclarationImpl::setCssText(DOM::DOMString text)
+void CSSStyleDeclarationImpl::setCssText(const DOM::DOMString& text)
 {
     if (m_lstValues) {
         qDeleteAll(*m_lstValues);
