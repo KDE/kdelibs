@@ -121,9 +121,9 @@ class KRockerGesture;
  *
  * \section kaction_general The kinds of shortcuts
  *
- * Local shortcuts are active
- * in their context, global shortcus are active everywhere, usually even if
- * another program has focus.
+ * Local shortcuts are active if their context has the focus, global shortcus
+ * are active even if the program does not have the focus. If a global
+ * shortcut and a local shortcut are ambiguous the global shortcut wins.
  *
  * @li Active shortcuts trigger a KAction if activated.
  * @li Default shortcuts are what the active shortcuts revert to if the user chooses
@@ -145,7 +145,7 @@ class KRockerGesture;
  *
  * @see KStandardAction for more information. 
  *
- * If you want to create your own non standard action use
+ * If you want to create your own actions use
  * \code
  * KAction *newAct = actionCollection()->addAction("quick-connect");
  * newAct->setText(i18n("Quick Connect"))
@@ -154,10 +154,9 @@ class KRockerGesture;
  * connect(newAct, SIGNAL(triggered()), this, SLOT(quickConnect()));
  * \endcode
  *
- * This section creates our action. It will display the text "Quick Connect"
- * and use the Icon "quick-connect". \c F6 will trigger the action. It further
- * says that whenever this action is invoked, it will use the quickConnect()
- * slot to execute it.
+ * This section creates our action. It displays the text "Quick Connect",
+ * uses the Icon "quick-connect" and pressing \c F6 will trigger it. When
+ * invoked, the slot quickConnect() is called.
  *
  * \code
  * QMenu *file = new QMenu;
@@ -188,12 +187,17 @@ class KRockerGesture;
  *
  * \note calling QAction::setShortcut() on a KAction may lead to unexpected
  * behavior. There is nothing we can do about it because QAction::setShortcut()
-*  is not virtual.
+ * is not virtual.
  *
  * \note if you are using a "standard" action like "new", "paste",
  * "quit", or any other action described in the KDE UI Standards,
  * please use the methods in the KStandardAction class rather than
  * defining your own.
+ *
+ * \section Using QActions
+ *
+ * Mixing QActions and KActions in an application is not a
+ * good idea. KShortcutsEditor doesn't handle QActions at all.
  *
  * \section kaction_xmlgui Usage Within the XML Framework
  *
