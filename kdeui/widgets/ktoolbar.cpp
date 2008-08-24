@@ -70,7 +70,6 @@ class KToolBar::Private
         ToolButtonStyleDefault(Qt::ToolButtonTextUnderIcon),
         HiddenDefault(false),
         NewLineDefault(false),
-        OffsetDefault(0),
         PositionDefault("Top"),
         dropIndicatorAction(0),
         context(0),
@@ -116,26 +115,6 @@ class KToolBar::Private
 
     KXMLGUIClient *xmlguiClient;
 
-#if 0 // currently unused
-    struct ToolBarInfo
-    {
-      ToolBarInfo()
-        : index(-1), offset(-1), newline(false), area(Qt::TopToolBarArea)
-      {
-      }
-
-      ToolBarInfo(Qt::ToolBarArea a, int i, bool n, int o)
-        : index(i), offset(o), newline(n), area(a)
-      {
-      }
-
-      int index, offset;
-      bool newline;
-      Qt::ToolBarArea area;
-    };
-
-    ToolBarInfo toolBarInfo;
-#endif
     QList<int> iconSizes;
 
     QMenu* contextOrient;
@@ -158,7 +137,6 @@ class KToolBar::Private
     Qt::ToolButtonStyle ToolButtonStyleDefault;
     bool HiddenDefault : 1;
     bool NewLineDefault : 1;
-    int OffsetDefault;
     QString PositionDefault;
 
     QList<QAction*> actionsBeingDragged;
@@ -710,12 +688,6 @@ void KToolBar::saveSettings(KConfigGroup &cg)
     else
         cg.revertToDefault("Index");
 
-    /* FIXME KMainWindow port - no replacement
-    if(!cg.hasDefault("Offset") && offset() == d->OffsetDefault)
-      cg.revertToDefault("Offset");
-    else
-      cg.writeEntry("Offset", offset());*/
-
     /* FIXME KToolBar port - need to implement
     if(!cg.hasDefault("NewLine") && newLine() == d->NewLineDefault)
       cg.revertToDefault("NewLine");
@@ -783,10 +755,9 @@ void KToolBar::loadState(const QDomElement &element)
       into the XML.
    */
   bool loadingAppDefaults = true;
-  if (element.hasAttribute("offsetDefault")) {
+  if (element.hasAttribute("newlineDefault")) {
     // this isn't the first time, so the defaults have been saved into the (in-memory) XML
     loadingAppDefaults = false;
-    d->OffsetDefault = element.attribute("offsetDefault").toInt();
     d->NewLineDefault = element.attribute("newlineDefault") == "true";
     d->HiddenDefault = element.attribute("hiddenDefault") == "true";
     d->IconSizeDefault = element.attribute("iconSizeDefault").toInt();
@@ -827,15 +798,8 @@ void KToolBar::loadState(const QDomElement &element)
       index = attrIndex.toInt();
   }
 
-  int offset = d->OffsetDefault;
   bool newLine = d->NewLineDefault;
   bool hidden = d->HiddenDefault;
-
-  {
-    QString attrOffset = element.attribute("offset");
-    if (!attrOffset.isEmpty())
-      offset = attrOffset.toInt();
-  }
 
   {
     QString attrNewLine = element.attribute("newline").toLower();
@@ -869,7 +833,6 @@ void KToolBar::loadState(const QDomElement &element)
   if (loadingAppDefaults) {
     d->getAttributes(d->PositionDefault, d->ToolButtonStyleDefault, index);
 
-    d->OffsetDefault = offset;
     d->NewLineDefault = newLine;
     d->HiddenDefault = hidden;
     d->IconSizeDefault = iconSize;
@@ -891,7 +854,6 @@ void KToolBar::saveState(QDomElement &current) const
   current.setAttribute("toolButtonStyle", d->toolButtonStyleToString(ToolButtonStyle));
   current.setAttribute("index", index);
   // FIXME KAction port
-  //current.setAttribute("offset", offset());
   //current.setAttribute("newline", newLine());
   if (isHidden())
     current.setAttribute("hidden", "true");
@@ -899,7 +861,6 @@ void KToolBar::saveState(QDomElement &current) const
 
   // TODO if this method is used by more than KXMLGUIBuilder, e.g. to save XML settings to *disk*,
   // then the stuff below shouldn't always be done.
-  current.setAttribute("offsetDefault", d->OffsetDefault);
   current.setAttribute("newlineDefault", d->NewLineDefault);
   current.setAttribute("hiddenDefault", d->HiddenDefault ? "true" : "false");
   current.setAttribute("iconSizeDefault", d->IconSizeDefault);
@@ -922,7 +883,7 @@ void KToolBar::applySettings(const KConfigGroup &cg, bool force)
     and the XMLGUI-related code (loadState()) uses the static methods of this class
     to get the global defaults.
 
-    Global config doesn't include position (index, offset, newline and hidden/shown).
+    Global config doesn't include position (index, newline and hidden/shown).
   */
 
   // First the appearance stuff - the one which has a global config
@@ -933,7 +894,6 @@ void KToolBar::applySettings(const KConfigGroup &cg, bool force)
 #if 0 // currently unused
     QString position = cg.readEntry("Position", d->PositionDefault);
     int index = cg.readEntry("Index", int(-1));
-    int offset = cg.readEntry("Offset", int(d->OffsetDefault));
     bool newLine = cg.readEntry("NewLine", d->NewLineDefault);
 
     Qt::ToolBarArea pos = Qt::TopToolBarArea;
@@ -952,11 +912,6 @@ void KToolBar::applySettings(const KConfigGroup &cg, bool force)
       hide();
     else
       show();
-
-#if 0 // currently unused
-    if (mainWindow())
-      d->toolBarInfo = KToolBar::Private::ToolBarInfo(pos, index, newLine, offset);
-#endif
   }
 }
 
