@@ -50,6 +50,22 @@ void KActionPrivate::init(KAction *q_ptr)
   q->setProperty("isShortcutConfigurable", true);
 }
 
+void KActionPrivate::setActiveGlobalShortcutNoEnable(const KShortcut &cut)
+{
+    globalShortcut = cut;
+    emit q->globalShortcutChanged();
+}
+
+
+void KActionPrivate::slotTriggered()
+{
+#ifdef KDE3_SUPPORT
+  emit q->activated();
+#endif
+  emit q->triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
+}
+
+
 //---------------------------------------------------------------------
 // KAction
 //---------------------------------------------------------------------
@@ -142,14 +158,6 @@ void KAction::setShortcut( const QKeySequence & keySeq, ShortcutTypes type )
 void KAction::setShortcuts(const QList<QKeySequence>& shortcuts, ShortcutTypes type)
 {
   setShortcut(KShortcut(shortcuts), type);
-}
-
-void KActionPrivate::slotTriggered()
-{
-#ifdef KDE3_SUPPORT
-  emit q->activated();
-#endif
-  emit q->triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
 }
 
 const KShortcut & KAction::globalShortcut(ShortcutTypes type) const

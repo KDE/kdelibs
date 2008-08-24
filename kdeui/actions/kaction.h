@@ -453,6 +453,12 @@ Q_SIGNALS:
      */
     void triggered(Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
 
+    /**
+     * Emitted when the global shortcut is changed. A global shortcut is
+     * subject to be changed by the global shortcuts kcm.
+     */
+    void globalShortcutChanged();
+
 private:
     friend class KGlobalAccelPrivate;
     friend class KActionCollectionPrivate;

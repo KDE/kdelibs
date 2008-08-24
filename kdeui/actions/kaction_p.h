@@ -36,8 +36,7 @@ class KActionPrivate
         void slotTriggered();
 
         void init(KAction *q_ptr);
-        void setActiveGlobalShortcutNoEnable(const KShortcut &cut)
-            { globalShortcut = cut; }
+        void setActiveGlobalShortcutNoEnable(const KShortcut &cut);
 
         void maybeSetComponentData(const KComponentData &kcd)
         {
