@@ -99,42 +99,25 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
     // Forward our actionCollections to the delegate which does the conflict
     // checking.
     d->delegate->setCheckActionCollections(d->actionCollections);
-    enum hierarchyLevel {Root = 0, Program, Group, Action/*unused*/};
+    enum hierarchyLevel {Root = 0, Program, Action/*unused*/};
     KAction *kact;
-    QTreeWidgetItem *hier[3];
+    QTreeWidgetItem *hier[2];
     uint l = Program;
     hier[Root] = d->ui.list->invisibleRootItem();
     hier[Program] = d->findOrMakeItem(hier[Root], title.isEmpty() ? i18n("Shortcuts") : title);
-    hier[Group] = d->findOrMakeItem(hier[Program], "if you see this, something went wrong");
 
     foreach (QAction *action, collection->actions()) {
-        QString name = action->text().remove('&');
-
-        if (name.startsWith(QLatin1String("Program:")))
-            l = Program;
-        else if (name.startsWith(QLatin1String("Group:")))
-            l = Group;
-        else if (qobject_cast<QAction *>(action)) {
-            // TODO  non-KAction QActions are not listed
-            if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
-                // If the shortcut is not configurable skip it
-                if (!kact->isShortcutConfigurable()) {
-                    continue;
-                }
-                // Create the editor
-                new KShortcutsEditorItem((hier[l]), kact);
+        // This code doesn't allow editing of QAction. I have no idea why :-(
+        // But i guess it's for a good reason so i won't change that. If
+        // anyone know why please add a comment explaining the reason.
+        if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
+            // If the shortcut is not configurable skip it
+            if (!kact->isShortcutConfigurable()) {
+                continue;
             }
-            continue;
+            // Create the editor
+            new KShortcutsEditorItem((hier[l]), kact);
         }
-        if (!hier[l]->childCount())
-            delete hier[l];
-
-        hier[l] = d->findOrMakeItem(hier[l - 1], name);
-    }
-
-    for (l = Group; l >= Program; l--) {
-        if (!hier[l]->childCount())
-            delete hier[l];
     }
 
     d->ui.list->sortItems(0, Qt::AscendingOrder);
