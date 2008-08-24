@@ -973,7 +973,9 @@ void KMainWindow::resetAutoSaveSettings()
 {
     K_D(KMainWindow);
     d->autoSaveSettings = false;
-    d->settingsTimer->stop();
+    if (d->settingsTimer) {
+        d->settingsTimer->stop();
+    }
 }
 
 bool KMainWindow::autoSaveSettings() const
