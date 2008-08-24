@@ -1149,12 +1149,14 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 		if (m_value.rgbcolor == khtml::transparentColor)
 		    text = "transparent";
 		else
-		    text = "rgba(" + QString::number(qRed  (m_value.rgbcolor)) + ","
-				   + QString::number(qBlue (m_value.rgbcolor)) + ","
-				   + QString::number(qGreen(m_value.rgbcolor)) + ","
+		    text = "rgba(" + QString::number(qRed  (m_value.rgbcolor)) + ", "
+				   + QString::number(qGreen(m_value.rgbcolor)) + ", "
+				   + QString::number(qBlue (m_value.rgbcolor)) + ", "
 				   + QString::number(qAlpha(m_value.rgbcolor)/255.0) + ")";
 	    } else {
-		text = QColor(m_value.rgbcolor).name();
+                text = "rgb(" + QString::number(qRed  (m_value.rgbcolor)) + ", "
+                              + QString::number(qGreen(m_value.rgbcolor)) + ", "
+                              + QString::number(qBlue (m_value.rgbcolor)) + ")";
 	    }
 	    break;
         case CSSPrimitiveValue::CSS_PAIR:
