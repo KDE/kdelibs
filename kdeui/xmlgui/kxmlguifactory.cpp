@@ -117,9 +117,9 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, const KComponen
     }
 
     QFile file( xml_file );
-    if ( !file.open( QIODevice::ReadOnly ) )
+    if ( xml_file.isEmpty() || !file.open( QIODevice::ReadOnly ) )
     {
-        kError(240) << "No such XML file " << filename << endl;
+        kError(240) << "No such XML file" << filename;
         return QString();
     }
 
@@ -137,9 +137,9 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
         xml_file = KStandardDirs::locateLocal("data", componentData.componentName() + '/' + filename);
 
     QFile file( xml_file );
-    if ( !file.open( QIODevice::WriteOnly ) )
+    if ( xml_file.isEmpty() || !file.open( QIODevice::WriteOnly ) )
     {
-        kError(240) << "Could not write to " << filename << endl;
+        kError(240) << "Could not write to" << filename;
         return false;
     }
 
