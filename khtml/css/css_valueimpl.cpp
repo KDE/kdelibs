@@ -159,7 +159,9 @@ DOMString CSSStyleDeclarationImpl::removeProperty(const DOMString &propertyName)
     int propID = propertyID(propertyName);
     if (!propID)
         return DOMString();
-    return removeProperty(propID);
+    DOMString old;
+    removeProperty(propID, &old);
+    return old;
 }
 
 DOMString CSSStyleDeclarationImpl::getPropertyValue( int propertyID ) const
@@ -534,10 +536,11 @@ static void initShorthandMap(QHash<int, PropertyLonghand>& shorthandMap)
 
 // -------------------------------------------
 
-DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID)
+void CSSStyleDeclarationImpl::removeProperty(int propertyID,
+                                             DOM::DOMString* old)
 {
-    if(!m_lstValues) return DOMString();
-    DOMString value;
+    if(!m_lstValues)
+        return;
 
     static QHash<int, PropertyLonghand> shorthandMap;
     if (shorthandMap.isEmpty())
@@ -547,7 +550,7 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID)
     if (longhand.length()) {
         removePropertiesInSet(longhand.properties(), longhand.length());
         // FIXME: Return an equivalent shorthand when possible.
-        return DOMString();
+        return;
     }
 
     QMutableListIterator<CSSProperty*> lstValuesIt(*m_lstValues);
@@ -556,15 +559,14 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID)
     while ( lstValuesIt.hasPrevious() ) {
         current = lstValuesIt.previous();
         if (current->m_id == propertyID) {
-            value = current->value()->cssText();
+            if (old)
+                *old = current->value()->cssText();
             delete lstValuesIt.value();
             lstValuesIt.remove();
             setChanged();
             break;
         }
      }
-
-    return value;
 }
 
 void CSSStyleDeclarationImpl::removePropertiesInSet(const int* set, unsigned length)

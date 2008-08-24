@@ -51,7 +51,7 @@ public:
     bool getPropertyPriority( int propertyID ) const;
     unsigned long length() const;
 
-    DOM::DOMString removeProperty( int propertyID );
+    virtual void removeProperty(int propertyID, DOM::DOMString* old = 0);
     virtual void removePropertiesInSet(const int* set, unsigned length);
     bool setProperty ( int propertyId, const DOM::DOMString &value, bool important, int &ec );
     bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false );

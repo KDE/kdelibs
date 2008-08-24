@@ -1133,10 +1133,9 @@ bool RenderStyleDeclarationImpl::getPropertyPriority( int ) const
     return false;
 }
 
-DOM::DOMString RenderStyleDeclarationImpl::removeProperty( int )
+void RenderStyleDeclarationImpl::removeProperty(int, DOM::DOMString*)
 {
     // ### emit error since we're read-only
-    return DOMString();
 }
 
 void RenderStyleDeclarationImpl::removePropertiesInSet(const int* set, unsigned length)
