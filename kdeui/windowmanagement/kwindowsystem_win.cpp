@@ -44,10 +44,9 @@ int KWindowSystem::numberOfDesktops()
     return 1;
 }
 
-void KWindowSystem::setMainWindow( QWidget*, WId )
+void KWindowSystem::setMainWindow( QWidget* subwindow, WId mainwindow )
 {
-    kDebug() << "KWindowSystem::setMainWindow( QWidget, WId ) isn't yet implemented!";
-    //TODO
+    SetForegroundWindow(subwindow->winId());
 }
 
 void KWindowSystem::setCurrentDesktop( int desktop )
