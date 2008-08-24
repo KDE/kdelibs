@@ -40,10 +40,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     d( 0 )
 {
     setPlainCaption(i18n("About KDE"));
-    setButtons(KDialog::Help | KDialog::Close);
-    setDefaultButton(KDialog::Close);
-    setHelp("khelpcenter/main.html");
-    setModal(false);
+    setButtons(KDialog::Close);
 
     KTitleWidget *titleWidget = new KTitleWidget(this);
     titleWidget->setText(i18n("<html><font size=\"5\">K Desktop Environment</font><br /><b>Version %1</b></html>",
