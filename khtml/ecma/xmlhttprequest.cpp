@@ -249,8 +249,19 @@ static bool isValidFieldName(const QString& name)
     return true;
 }
 
-static bool isValidFieldValue(const QString& /*name*/)
+static bool isValidFieldValue(const QString& name)
 {
+    const QChar* c = name.constData();
+    int l = name.length();
+    if (l == 0)
+        return true;
+
+    for (int i = 0; i < l; ++i, ++c) {
+        int u = c->unicode();
+	if ( u == '\n' || u == '\r' )
+	  return false;
+    }
+
     // ### what is invalid?
     return true;
 }
