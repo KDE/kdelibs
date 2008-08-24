@@ -60,6 +60,13 @@ public:
 
     void init(KMainWindow *_q);
     void polish(KMainWindow *q);
+    enum CallCompression {
+        NoCompressCalls = 0,
+        CompressCalls
+    };
+    void setSettingsDirty(CallCompression callCompression = NoCompressCalls);
+
+    class DockResizeListener;
 };
 
 #endif
