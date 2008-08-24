@@ -1000,7 +1000,7 @@ void KMainWindow::saveAutoSaveSettings()
 {
     K_D(KMainWindow);
     Q_ASSERT( d->autoSaveSettings );
-    kDebug(200) << "KMainWindow::saveAutoSaveSettings -> saving settings";
+    //kDebug(200) << "KMainWindow::saveAutoSaveSettings -> saving settings";
     saveMainWindowSettings(d->autoSaveGroup);
     d->autoSaveGroup.sync();
     d->settingsDirty = false;
