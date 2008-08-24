@@ -128,7 +128,15 @@ namespace DOM {
 
         CSSValueImpl* parseBackgroundColor();
         CSSValueImpl* parseBackgroundImage(bool& didParse);
-        CSSValueImpl* parseBackgroundPositionXY(bool& xFound, bool& yFound);
+
+        enum BackgroundPosKind {
+            BgPos_X,
+            BgPos_Y,
+            BgPos_NonKW,
+            BgPos_Center
+        };
+        
+        CSSValueImpl* parseBackgroundPositionXY(BackgroundPosKind& kindOut);
         void parseBackgroundPosition(CSSValueImpl*& value1, CSSValueImpl*& value2);
         CSSValueImpl* parseBackgroundSize();
 
