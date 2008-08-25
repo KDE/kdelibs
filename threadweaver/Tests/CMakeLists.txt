@@ -22,7 +22,7 @@ set(QueueTests_SRCS QueueTests.cpp AppendCharacterJob.cpp)
 
 kde4_add_unit_test(ThreadWeaverQueueTests ${QueueTests_SRCS})
 
-target_link_libraries(ThreadWeaverQueueTests ${QT_QTTEST_LIBRARY} threadweaver)
+target_link_libraries(ThreadWeaverQueueTests ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} threadweaver)
 
 ########### next target ###############
 
@@ -31,5 +31,5 @@ set(DeleteTest_SRCS DeleteTest.cpp AppendCharacterJob.cpp)
 
 kde4_add_unit_test(ThreadWeaverDeleteTest ${DeleteTest_SRCS})
 
-target_link_libraries(ThreadWeaverDeleteTest ${QT_QTTEST_LIBRARY} threadweaver)
+target_link_libraries(ThreadWeaverDeleteTest ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} threadweaver)
 
