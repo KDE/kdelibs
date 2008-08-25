@@ -335,11 +335,11 @@ JSValue* DOMNode::getValueProperty(ExecState *exec, int token) const
     if (doc->isHTMLDocument()) {
       HTMLCollectionImpl all(doc, HTMLCollectionImpl::DOC_ALL);
       unsigned long i = 0;
-      DOM::NodeImpl* n = all.firstItem();
-      for ( ; !n && n != impl(); n = all.nextItem() )
+      for (DOM::NodeImpl* n = all.firstItem(); n; n = all.nextItem() ) {
+        if (n == impl())
+            return jsNumber(i);
         ++i;
-      Q_ASSERT( n ); // node not in document.all !?
-      return jsNumber(i);
+      }
     }
     return jsUndefined();
   }
