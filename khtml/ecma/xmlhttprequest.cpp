@@ -417,7 +417,8 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
 
     // Abondon the request when the protocol is other than "http",
     // instead of blindly changing it to a "get" request.
-    if (!protocol.startsWith("http") && !protocol.startsWith("webdav"))
+    if (!protocol.startsWith(QLatin1String("http")) &&
+        !protocol.startsWith(QLatin1String("webdav")))
     {
       abort();
       return;

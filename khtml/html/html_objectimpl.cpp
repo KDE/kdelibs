@@ -412,7 +412,8 @@ void HTMLObjectBaseElementImpl::computeContent()
             effectiveURL = embed->url;
             if (!embed->serviceType.isEmpty())
                 effectiveServiceType = embed->serviceType;
-        } else if (effectiveURL.isEmpty() && classId.startsWith("java:")) {
+        } else if (effectiveURL.isEmpty() &&
+                   classId.startsWith(QLatin1String("java:"))) {
             effectiveServiceType = "application/x-java-applet";
             effectiveURL         = classId.mid(5);
         }
@@ -440,7 +441,8 @@ void HTMLObjectBaseElementImpl::computeContent()
         }
     }
 
-    if (effectiveServiceType.isEmpty() && effectiveURL.startsWith("data:")) {
+    if (effectiveServiceType.isEmpty() &&
+        effectiveURL.startsWith(QLatin1String("data:"))) {
         // Extract the MIME type from the data URL.
         int index = effectiveURL.indexOf(';');
         if (index == -1)
@@ -458,7 +460,7 @@ void HTMLObjectBaseElementImpl::computeContent()
     // but may need to do a detach/attach
     QStringList supportedImageTypes = khtmlImLoad::ImageManager::loaderDatabase()->supportedMimeTypes();
 
-    bool newImageLike = effectiveServiceType.startsWith("image/") && supportedImageTypes.contains(effectiveServiceType);
+    bool newImageLike = effectiveServiceType.startsWith(QLatin1String("image/")) && supportedImageTypes.contains(effectiveServiceType);
 
     if (newImageLike != m_imageLike) {
         m_imageLike = newImageLike;
