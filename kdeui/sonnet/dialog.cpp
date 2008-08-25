@@ -65,10 +65,9 @@ Dialog::Dialog(BackgroundChecker *checker,
     setCaption(i18nc("@title:window", "Check Spelling"));
     setButtons(Help | Cancel | User1);
     setButtonGuiItem(User1, KGuiItem(i18nc("@action:button", "&Finished")));
-    setDefaultButton(Cancel);
     showButtonSeparator(true);
 
-    setDefaultButton(Cancel);
+    setDefaultButton(User1);
     d->checker = checker;
 
     initGui();
@@ -296,7 +295,7 @@ void Dialog::slotDone()
     }
     else
     {
-        emit spellCheckStatus(i18n("Spell check complete."));        
+        emit spellCheckStatus(i18n("Spell check complete."));
         accept();
     }
 }
