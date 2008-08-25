@@ -263,7 +263,6 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
     guiFactory()->addClient( this );
 
     //  setUpdatesEnabled( true );
-    updateGeometry();
 }
 
 void KXmlGuiWindow::slotStateChanged(const QString &newstate)

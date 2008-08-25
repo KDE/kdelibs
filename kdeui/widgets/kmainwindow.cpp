@@ -635,17 +635,8 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
 
     // One day will need to save the version number, but for now, assume 0
     // Utilise the QMainWindow::saveState() functionality.
-    // In case we are switching between parts (and have different main toolbars), we need to save
-    // the different states of the window (taking in count some toolbars could have the same name,
-    // as "mainToolbar", for instance). This way we always load the state of the correct window. (ereslibre)
-    QString componentDataName;
-    if (KGlobal::activeComponent().isValid()) {
-        componentDataName = KGlobal::activeComponent().componentName();
-    } else if (KGlobal::hasMainComponent()) {
-        componentDataName = KGlobal::mainComponent().componentName();
-    }
     QByteArray state = saveState();
-    cg.writeEntry(QString("State%1").arg(componentDataName), state.toBase64());
+    cg.writeEntry(QString("State"), state.toBase64());
 
     QStatusBar* sb = internalStatusBar(this);
     if (sb) {
@@ -755,22 +746,9 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
         n++;
     }
 
-    // Utilise the QMainWindow::restoreState() functionality.
-    // In case we are switching between parts (and have different main toolbars), we need to save
-    // the different states of the window (taking in count some toolbars could have the same name,
-    // as "mainToolbar", for instance). This way we always load the state of the correct window. (ereslibre)
-    QString componentDataName;
-    if (KGlobal::activeComponent().isValid()) {
-        componentDataName = KGlobal::activeComponent().componentName();
-    } else if (KGlobal::hasMainComponent()) {
-        componentDataName = KGlobal::mainComponent().componentName();
-    }
-    QString entry = QString("State%1").arg(componentDataName);
-    bool hasKey = false;
     QByteArray state;
-    if (cg.hasKey(entry)) {
-        hasKey = true;
-        state = cg.readEntry(entry, state);
+    if (cg.hasKey("State")) {
+        state = cg.readEntry("State", state);
         state = QByteArray::fromBase64(state);
         // One day will need to load the version number, but for now, assume 0
         restoreState(state);
