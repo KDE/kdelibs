@@ -65,8 +65,6 @@ public:
         CompressCalls
     };
     void setSettingsDirty(CallCompression callCompression = NoCompressCalls);
-
-    class DockResizeListener;
 };
 
 #endif

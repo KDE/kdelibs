@@ -91,7 +91,7 @@ static KStatusBar *internalStatusBar(KMainWindow *mw)
  * by dock->installEventFilter(dockResizeListener) inside
  * KMainWindow::event().
  */
-class KMainWindowPrivate::DockResizeListener : public QObject
+class DockResizeListener : public QObject
 {
 public:
     DockResizeListener(KMainWindow *win);
@@ -102,24 +102,24 @@ private:
     KMainWindow *m_win;
 };
 
-KMainWindowPrivate::DockResizeListener::DockResizeListener(KMainWindow *win) :
+DockResizeListener::DockResizeListener(KMainWindow *win) :
     QObject(win),
     m_win(win)
 {
 }
 
-KMainWindowPrivate::DockResizeListener::~DockResizeListener()
+DockResizeListener::~DockResizeListener()
 {
 }
 
-bool KMainWindowPrivate::DockResizeListener::eventFilter(QObject *watched, QEvent *event)
+bool DockResizeListener::eventFilter(QObject *watched, QEvent *event)
 {
     if (event->type() == QEvent::Resize) {
-        m_win->k_ptr->setSettingsDirty(CompressCalls);
+        m_win->k_ptr->setSettingsDirty(KMainWindowPrivate::CompressCalls);
     }
 
     if (event->type() == QEvent::Move) {
-        m_win->k_ptr->setSettingsDirty(CompressCalls);
+        m_win->k_ptr->setSettingsDirty(KMainWindowPrivate::CompressCalls);
     }
 
     return QObject::eventFilter(watched, event);
@@ -282,7 +282,7 @@ void KMainWindowPrivate::init(KMainWindow *_q)
 
     q->setWindowTitle( KGlobal::caption() );
 
-    dockResizeListener = new KMainWindowPrivate::DockResizeListener(_q);
+    dockResizeListener = new DockResizeListener(_q);
 }
 
 static bool endsWithHashNumber( const QString& s )
