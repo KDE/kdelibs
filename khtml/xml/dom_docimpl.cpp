@@ -1440,6 +1440,7 @@ void DocumentImpl::open( bool clearEventListeners )
         detach();
 
     removeChildren();
+    childrenChanged(); // Reset m_documentElement
     delete m_styleSelector;
     m_styleSelector = 0;
     m_view = view;
