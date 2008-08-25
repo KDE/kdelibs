@@ -447,13 +447,6 @@ namespace KGlobal
     KDECORE_EXPORT KComponentData activeComponent();
 
     /**
-     * @internal
-     * Returns whether an active KComponentData is available.
-     * @since 4.2
-     */
-    KDECORE_EXPORT bool hasActiveComponent();
-
-    /**
      * Set the active component for use by KAboutDialog and KBugReport.
      * To be used only by a multi-component (KParts) application.
      *

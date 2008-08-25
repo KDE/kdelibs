@@ -283,6 +283,7 @@ void KMainWindowPrivate::init(KMainWindow *_q)
     q->setWindowTitle( KGlobal::caption() );
 
     dockResizeListener = new DockResizeListener(_q);
+    letDirtySettings = true;
 }
 
 static bool endsWithHashNumber( const QString& s )
@@ -375,6 +376,10 @@ void KMainWindowPrivate::polish(KMainWindow *q)
 
 void KMainWindowPrivate::setSettingsDirty(CallCompression callCompression)
 {
+    if (!letDirtySettings) {
+        return;
+    }
+
     settingsDirty = true;
     if (autoSaveSettings) {
         if (callCompression == CompressCalls) {
@@ -628,6 +633,20 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
 
     KConfigGroup cg(_cg); // for saving
 
+    // One day will need to save the version number, but for now, assume 0
+    // Utilise the QMainWindow::saveState() functionality.
+    // In case we are switching between parts (and have different main toolbars), we need to save
+    // the different states of the window (taking in count some toolbars could have the same name,
+    // as "mainToolbar", for instance). This way we always load the state of the correct window. (ereslibre)
+    QString componentDataName;
+    if (KGlobal::activeComponent().isValid()) {
+        componentDataName = KGlobal::activeComponent().componentName();
+    } else if (KGlobal::hasMainComponent()) {
+        componentDataName = KGlobal::mainComponent().componentName();
+    }
+    QByteArray state = saveState();
+    cg.writeEntry(QString("State%1").arg(componentDataName), state.toBase64());
+
     QStatusBar* sb = internalStatusBar(this);
     if (sb) {
        if(!cg.hasDefault("StatusBar") && !sb->isHidden() )
@@ -663,20 +682,6 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
         toolbar->saveSettings(toolbarGroup);
         n++;
     }
-
-    // One day will need to save the version number, but for now, assume 0
-    // Utilise the QMainWindow::saveState() functionality.
-    // In case we are switching between parts (and have different main toolbars), we need to save
-    // the different states of the window (taking in count some toolbars could have the same name,
-    // as "mainToolbar", for instance). This way we always load the state of the correct window. (ereslibre)
-    QString componentDataName;
-    if (KGlobal::hasActiveComponent()) {
-        componentDataName = KGlobal::activeComponent().componentName();
-    } else if (KGlobal::hasMainComponent()) {
-        componentDataName = KGlobal::mainComponent().componentName();
-    }
-    QByteArray state = saveState();
-    cg.writeEntry(QString("State%1").arg(componentDataName), state.toBase64());
 }
 
 bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
@@ -708,28 +713,9 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
     K_D(KMainWindow);
     kDebug(200) << "KMainWindow::applyMainWindowSettings " << cg.name();
 
-    restoreWindowSize(cg);
+    d->letDirtySettings = false;
 
-    // Utilise the QMainWindow::restoreState() functionality.
-    // In case we are switching between parts (and have different main toolbars), we need to save
-    // the different states of the window (taking in count some toolbars could have the same name,
-    // as "mainToolbar", for instance). This way we always load the state of the correct window. (ereslibre)
-    QString componentDataName;
-    if (KGlobal::hasActiveComponent()) {
-        componentDataName = KGlobal::activeComponent().componentName();
-    } else if (KGlobal::hasMainComponent()) {
-        componentDataName = KGlobal::mainComponent().componentName();
-    }
-    QString entry = QString("State%1").arg(componentDataName);
-    bool hasKey = false;
-    QByteArray state;
-    if (cg.hasKey(entry)) {
-        hasKey = true;
-        state = cg.readEntry(entry, state);
-        state = QByteArray::fromBase64(state);
-        // One day will need to load the version number, but for now, assume 0
-        restoreState(state);
-    }
+    restoreWindowSize(cg);
 
     QStatusBar* sb = internalStatusBar(this);
     if (sb) {
@@ -769,16 +755,29 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
         n++;
     }
 
-    // Really important: This restoreState() needs to be here. So, we have 2 restoreState calls in
-    // this method. And both are necessary. The first one will set up things up correctly, but it
-    // will still have done bad maths (since toolbar appearance information has not been loaded),
-    // and after loading the toolbar appearance information, we do this restore, which will actually
-    // do the correct math with the valid sizes. (ereslibre)
-    if (hasKey) {
+    // Utilise the QMainWindow::restoreState() functionality.
+    // In case we are switching between parts (and have different main toolbars), we need to save
+    // the different states of the window (taking in count some toolbars could have the same name,
+    // as "mainToolbar", for instance). This way we always load the state of the correct window. (ereslibre)
+    QString componentDataName;
+    if (KGlobal::activeComponent().isValid()) {
+        componentDataName = KGlobal::activeComponent().componentName();
+    } else if (KGlobal::hasMainComponent()) {
+        componentDataName = KGlobal::mainComponent().componentName();
+    }
+    QString entry = QString("State%1").arg(componentDataName);
+    bool hasKey = false;
+    QByteArray state;
+    if (cg.hasKey(entry)) {
+        hasKey = true;
+        state = cg.readEntry(entry, state);
+        state = QByteArray::fromBase64(state);
+        // One day will need to load the version number, but for now, assume 0
         restoreState(state);
     }
 
     d->settingsDirty = false;
+    d->letDirtySettings = true;
 }
 
 #ifdef Q_WS_WIN
@@ -934,6 +933,11 @@ void KMainWindow::setSettingsDirty()
 {
     K_D(KMainWindow);
     //kDebug(200) << "KMainWindow::setSettingsDirty";
+
+    if (!d->letDirtySettings) {
+        return;
+    }
+
     d->settingsDirty = true;
     if ( d->autoSaveSettings )
     {
