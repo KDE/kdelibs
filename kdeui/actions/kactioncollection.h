@@ -355,16 +355,27 @@ public:
   KAction *addAction(const QString &name, const QObject *receiver = 0, const char *member = 0);
 
   /**
-   * Creates a new action under the given name, adds it to the collection and connects the action's triggered()
-   * signal to the specified receiver/member. The type of the action is specified by the template
-   * parameter ActionType.
+   * Creates a new action under the given name, adds it to the collection and connects the action's triggered(bool)
+   * signal to the specified receiver/member. The receiver slot may accept either a bool or no
+   * parameters at all (i.e. slotTriggered(bool) or slotTriggered() ).
+   * The type of the action is specified by the template parameter ActionType.
+   *
+   * NOTE: KDE prior to 4.2 connected the triggered() signal instead of the triggered(bool)
+   * signal.
+   *
+   * @param name The internal name of the action (e.g. "file-open").
+   * @param receiver The QObject to connect the triggered(bool) signal to.  Leave 0 if no
+   *                 connection is desired.
+   * @param member The SLOT to connect the triggered(bool) signal to.  Leave 0 if no
+   *               connection is desired.
+   * @return new action of the given type ActionType.
    */
   template<class ActionType>
   ActionType *add(const QString &name, const QObject *receiver = 0, const char *member = 0)
   {
       ActionType *a = new ActionType(this);
       if (receiver && member)
-          connect(a, SIGNAL(triggered()), receiver, member);
+          connect(a, SIGNAL(triggered(bool)), receiver, member);
       addAction(name, a);
       return a;
   }

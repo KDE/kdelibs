@@ -311,7 +311,7 @@ KAction *KActionCollection::addAction(const QString &name, const QObject *receiv
 {
   KAction *a = new KAction(this);
   if (receiver && member)
-    connect(a, SIGNAL(triggered()), receiver, member);
+    connect(a, SIGNAL(triggered(bool)), receiver, member);
   return addAction(name, a);
 }
 
