@@ -1833,7 +1833,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     {
         QString str = content.string().toLower().trimmed();
         KUrl url = v->part()->url();
-        if ((str == "no-cache") && url.protocol().startsWith("http"))
+        if ((str == "no-cache") && url.protocol().startsWith(QLatin1String("http")))
         {
            KIO::http_update_cache(url, true, 0);
         }

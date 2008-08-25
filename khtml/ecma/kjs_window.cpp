@@ -1595,7 +1595,8 @@ JSValue *Window::openWindow(ExecState *exec, const List& args)
   if (v && v->type() != UndefinedType && v->toString(exec).size() > 0) {
     features = v->toString(exec).qstring();
     // Buggy scripts have ' at beginning and end, cut those
-    if (features.startsWith("\'") && features.endsWith("\'"))
+    if (features.startsWith(QLatin1Char('\'')) &&
+        features.endsWith(QLatin1Char('\'')))
       features = features.mid(1, features.length()-2);
   }
 

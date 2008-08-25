@@ -275,7 +275,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
                     src_param = value;
                 else if (name_lower == QLatin1String("archive") ||
                          name_lower == QLatin1String("java_archive") ||
-                         name_lower.startsWith ("cache_archive"))
+                         name_lower.startsWith(QLatin1String("cache_archive")))
                     applet->setArchives (value);
                 else if (name_lower == QLatin1String("name"))
                     appletname = value;
@@ -283,7 +283,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
                     width = value.toInt();
                 else if (name_lower == QLatin1String("height"))
                     height = value.toInt();
-                if (!name.startsWith ("__KHTML__")) {
+                if (!name.startsWith(QLatin1String("__KHTML__"))) {
                     applet->setParameter (name, value);
                 }
             }
@@ -292,10 +292,10 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
     if (!classid.isEmpty ()) {
         applet->setParameter ("CLSID", classid);
         kDebug(6100) << "classid=" << classid << classid.startsWith("clsid:");
-        if (classid.startsWith ("clsid:"))
+        if (classid.startsWith(QLatin1String("clsid:")))
             // codeBase contains the URL to the plugin page
             khtml_codebase = baseurl;
-        else if (classname.isEmpty () && classid.startsWith ("java:"))
+        else if (classname.isEmpty () && classid.startsWith(QLatin1String("java:")))
             classname = classid.mid(5);
     }
     if (classname.isEmpty ())
