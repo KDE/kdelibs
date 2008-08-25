@@ -152,6 +152,8 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
             ret.setValue(m_action->rockerGesture(KAction::DefaultShortcut));
             return ret; }
         }
+    case ObjectRole:
+        return qVariantFromValue((QObject*)m_action);
 
     default:
         break;

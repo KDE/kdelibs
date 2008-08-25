@@ -457,7 +457,7 @@ Q_SIGNALS:
      * Emitted when the global shortcut is changed. A global shortcut is
      * subject to be changed by the global shortcuts kcm.
      */
-    void globalShortcutChanged();
+    void globalShortcutChanged(const QKeySequence&);
 
 private:
     friend class KGlobalAccelPrivate;

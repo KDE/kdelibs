@@ -53,27 +53,23 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
     QGridLayout *layout = new QGridLayout(this);
 
     m_defaultRadio = new QRadioButton(i18n("Default:"), this);
+    m_defaultLabel = new QLabel(i18n("None"), this);
     QString defaultText = defaultSeq.toString(QKeySequence::NativeText);
-    if (defaultText.isEmpty())
+    if (defaultText.isEmpty()) 
         defaultText = i18n("None");
-    QLabel *defaultLabel = new QLabel(defaultText, this);
+    m_defaultLabel->setText(defaultText);
 
     m_customRadio = new QRadioButton(i18n("Custom:"), this);
     m_customEditor = new KKeySequenceWidget(this);
     m_customEditor->setModifierlessAllowed(allowLetterShortcuts);
 
-    if (activeSeq == defaultSeq) {
-        m_defaultRadio->setChecked(true);
-    } else {
-        m_customRadio->setChecked(true);
-        m_customEditor->setKeySequence(activeSeq);
-    }
-
     layout->addWidget(m_defaultRadio, 0, 0);
-    layout->addWidget(defaultLabel, 0, 1);
+    layout->addWidget(m_defaultLabel, 0, 1);
     layout->addWidget(m_customRadio, 1, 0);
     layout->addWidget(m_customEditor, 1, 1);
     layout->setColumnStretch(2, 1);
+
+    setKeySequence(activeSeq);
 
     connect(m_defaultRadio, SIGNAL(toggled(bool)),
             this, SLOT(defaultToggled(bool)));
@@ -139,5 +135,15 @@ void ShortcutEditWidget::setCustom(const QKeySequence &seq)
         m_defaultRadio->setChecked(true);
     emit keySequenceChanged(seq);
     m_isUpdating = false;
+}
+
+void ShortcutEditWidget::setKeySequence(const QKeySequence &activeSeq)
+{
+    if (activeSeq == m_defaultLabel->text()) {
+        m_defaultRadio->setChecked(true);
+    } else {
+        m_customRadio->setChecked(true);
+        m_customEditor->setKeySequence(activeSeq);
+    }
 }
 

@@ -53,7 +53,7 @@ void KActionPrivate::init(KAction *q_ptr)
 void KActionPrivate::setActiveGlobalShortcutNoEnable(const KShortcut &cut)
 {
     globalShortcut = cut;
-    emit q->globalShortcutChanged();
+    emit q->globalShortcutChanged(cut.primary());
 }
 
 

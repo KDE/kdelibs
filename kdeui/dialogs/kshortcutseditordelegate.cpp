@@ -32,6 +32,8 @@
 #include <QLabel>
 #include <QPainter>
 
+#include "kaction.h"
+
 #include "kdebug.h"
 
 
@@ -79,9 +81,6 @@ QSize KShortcutsEditorDelegate::sizeHint(const QStyleOptionViewItem &option,
 //slot
 void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 {
-    const QAbstractItemModel *model = index.model();
-    if (!model)
-        return;
     //As per our constructor our parent *is* a QTreeWidget
     QTreeWidget *view = static_cast<QTreeWidget *>(parent());
 
@@ -102,19 +101,19 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
         } else {
             // do nothing.
         }
-        index = model->index(index.row(), column, index.parent());
+        index = index.sibling(index.row(), column);
         view->selectionModel()->select(index, QItemSelectionModel::SelectCurrent);
     }
 
     // Check if the models wants us to edit the item at index
-    if (!model->data(index, ShowExtensionIndicatorRole).value<bool>()) {
+    if (!index.data(ShowExtensionIndicatorRole).value<bool>()) {
         return;
     }
 
     if (!isExtended(index)) {
         //we only want maximum ONE extender open at any time.
         if (m_editingIndex.isValid()) {
-            QModelIndex idx = model->index(m_editingIndex.row(), Name, m_editingIndex.parent());
+            QModelIndex idx = index.sibling(m_editingIndex.row(), Name);
             KShortcutsEditorItem *oldItem = KShortcutsEditorPrivate::itemFromIndex(view, idx);
             Q_ASSERT(oldItem); //here we really expect nothing but a real KShortcutsEditorItem
 
@@ -127,9 +126,17 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 
         if (column >= LocalPrimary && column <= GlobalAlternate) {
             ShortcutEditWidget *editor = new ShortcutEditWidget(viewport,
-                      model->data(index, DefaultShortcutRole).value<QKeySequence>(),
-                      model->data(index, ShortcutRole).value<QKeySequence>(),
+                      index.data(DefaultShortcutRole).value<QKeySequence>(),
+                      index.data(ShortcutRole).value<QKeySequence>(),
                       m_allowLetterShortcuts);
+            if (column==GlobalPrimary) {
+                QObject *action = index.data(ObjectRole).value<QObject*>();
+                connect(
+                    action, SIGNAL(globalShortcutChanged(QKeySequence)),
+                    editor, SLOT(setKeySequence(QKeySequence)));
+                }
+
+
             m_editor = editor;
             // For global shortcuts check against the kde standard shortcuts
             if (column == GlobalPrimary || column == GlobalAlternate) {

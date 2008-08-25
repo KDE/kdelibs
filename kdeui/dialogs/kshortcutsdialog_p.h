@@ -32,6 +32,7 @@
 #include <QTreeWidget>
 #include <QtCore/QList>
 
+class QLabel;
 class QTreeWidget;
 class QTreeWidgetItem;
 class QRadioButton;
@@ -51,7 +52,8 @@ enum ColumnDesignation {
 
 enum MyRoles {
     ShortcutRole = Qt::UserRole,
-    DefaultShortcutRole
+    DefaultShortcutRole,
+    ObjectRole
 };
 
 
@@ -161,13 +163,21 @@ public:
     void setCheckAgainstStandardShortcuts(bool check);
     //@}
 
+public Q_SLOTS:
+
+    //! Set the displayed sequences
+    void setKeySequence(const QKeySequence &activeSeq);
 
 Q_SIGNALS:
+    //! Emitted when the key sequence is changed.
     void keySequenceChanged(const QKeySequence &);
+
 private Q_SLOTS:
     void defaultToggled(bool);
     void setCustom(const QKeySequence &);
+
 private:
+    QLabel *m_defaultLabel;
     QKeySequence m_defaultKeySequence;
     QRadioButton *m_defaultRadio;
     QRadioButton *m_customRadio;

@@ -120,9 +120,11 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
         }
     }
 
+
     d->ui.list->sortItems(0, Qt::AscendingOrder);
     QTimer::singleShot(0, this, SLOT(resizeColumns()));
 }
+
 
 void KShortcutsEditor::importConfiguration( KConfig *config)
 {
@@ -280,7 +282,9 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 }
 
 
-//a gross hack to make a protected method public
+//a gross hack to make a protected method public. We should inherit instead
+//and move some KShortcutsEditorPrivate method there. or even better use
+//QTreeView
 class QTreeWidgetHack : public QTreeWidget
 {
 public:
