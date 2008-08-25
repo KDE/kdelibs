@@ -97,9 +97,8 @@ public:
     QRectF dataRect, secondDataRect;
     // Limits of the plot area in pixel units
     QRect pixRect;
-    // Grid of bools to mask "used" regions of the plot
-    float plotMask[100][100];
-    double px[100], py[100];
+    //Array holding the mask of "used" regions of the plot
+    QImage plotMask;
 };
 
 KPlotWidget::KPlotWidget( QWidget * parent )
@@ -248,9 +247,10 @@ void KPlotWidget::removeAllPlotObjects()
 }
 
 void KPlotWidget::resetPlotMask() {
-    for (int ix=0; ix<100; ++ix ) 
-        for ( int iy=0; iy<100; ++iy ) 
-            d->plotMask[ix][iy] = 0.0;
+    d->plotMask = QImage( pixRect().size(), QImage::Format_ARGB32 );
+    QColor fillColor = Qt::black;
+    fillColor.setAlpha( 128 );
+    d->plotMask.fill( fillColor.rgb() );
 }
 
 void KPlotWidget::resetPlot() {
@@ -377,7 +377,7 @@ bool KPlotWidget::event( QEvent* e ) {
         if ( d->showObjectToolTip )
         {
             QHelpEvent *he = static_cast<QHelpEvent*>( e );
-            const QList<KPlotPoint*> pts = pointsUnderPoint( he->pos() - QPoint( leftPadding(), topPadding() ) - contentsRect().topLeft() );
+            QList<KPlotPoint*> pts = pointsUnderPoint( he->pos() - QPoint( leftPadding(), topPadding() ) - contentsRect().topLeft() );
             if ( pts.count() > 0 ) {
                 QToolTip::showText( he->globalPos(), pts.front()->label(), this );
             }
@@ -391,6 +391,8 @@ bool KPlotWidget::event( QEvent* e ) {
 
 void KPlotWidget::resizeEvent( QResizeEvent* e ) {
     QFrame::resizeEvent( e );
+    setPixRect();
+    resetPlotMask();
 }
 
 void KPlotWidget::setPixRect() {
@@ -398,10 +400,6 @@ void KPlotWidget::setPixRect() {
     int newHeight = contentsRect().height() - topPadding() - bottomPadding();
     // PixRect starts at (0,0) because we will translate by leftPadding(), topPadding()
     d->pixRect = QRect( 0, 0, newWidth, newHeight );
-    for ( int i=0; i<100; ++i ) {
-        d->px[i] = double(i*d->pixRect.width())/100.0 + double(d->pixRect.x());
-        d->py[i] = double(i*d->pixRect.height())/100.0 + double(d->pixRect.y());
-    }
 }
 
 QPointF KPlotWidget::mapToWidget( const QPointF& p ) const
@@ -411,133 +409,259 @@ QPointF KPlotWidget::mapToWidget( const QPointF& p ) const
     return QPointF( px, py );
 }
 
-void KPlotWidget::maskRect( const QRectF& r, float value ) {
-    //Loop over Mask grid points that are near the target rectangle.
-    int ix1 = int( 100.0*(r.x() - d->pixRect.x())/d->pixRect.width() );
-    int iy1 = int( 100.0*(r.y() - d->pixRect.y())/d->pixRect.height() );
-    if ( ix1 < 0 ) ix1 = 0;
-    if ( iy1 < 0 ) iy1 = 0;
-    int ix2 = int( 100.0*(r.right() - d->pixRect.x())/d->pixRect.width() ) + 2;
-    int iy2 = int( 100.0*(r.bottom() - d->pixRect.y())/d->pixRect.height() ) + 2;
-    if ( ix1 > 99 ) ix1 = 99;
-    if ( iy1 > 99 ) iy1 = 99;
+void KPlotWidget::maskRect( const QRectF& rf, float fvalue ) {
+    QRect r = rf.toRect().intersected( d->pixRect );
+    int value = int( fvalue );
+    QColor newColor;
+    for ( int ix=r.left(); ix<r.right(); ++ix ) {
+        for ( int iy=r.top(); iy<r.bottom(); ++iy ) {
+            newColor = QColor( d->plotMask.pixel(ix,iy) );
+            newColor.setAlpha( 200 );
+            newColor.setRed( qMin( newColor.red() + value, 255 ) );
+            d->plotMask.setPixel( ix, iy, newColor.rgba() );
+        }
+    }
 
-    for ( int ix=ix1; ix<ix2; ++ix ) 
-        for ( int iy=iy1; iy<iy2; ++iy ) 
-            d->plotMask[ix][iy] += value;
 }
 
-void KPlotWidget::maskAlongLine( const QPointF &p1, const QPointF &p2, float value ) {
+void KPlotWidget::maskAlongLine( const QPointF &p1, const QPointF &p2, float fvalue ) {
+    if ( ! d->pixRect.contains( p1.toPoint() ) && ! d->pixRect.contains( p2.toPoint() ) ) {
+        return;
+    }
+    
+    int value = int( fvalue );
+    
     //Determine slope and zeropoint of line
     double m = (p2.y() - p1.y())/(p2.x() - p1.x());
     double y0 = p1.y() - m*p1.x();
- 
-    //Make steps along line from p1 to p2, computing the nearest 
-    //gridpoint position at each point.
-    double x1 = p1.x();
-    double x2 = p2.x();
-    if ( x1 > x2 ) {
-        x1 = p2.x(); 
-        x2 = p1.x();
-    }
-    for ( double x=x1; x<x2; x+=0.01*(x2-x1) ) {
-        double y = y0 + m*x;
-        int ix = int( 100.0*( x - d->pixRect.x() )/d->pixRect.width() );
-        int iy = int( 100.0*( y - d->pixRect.y() )/d->pixRect.height() );
+    QColor newColor;
 
-        if ( ix >= 0 && ix < 100 && iy >= 0 && iy < 100 )
-          d->plotMask[ix][iy] += value;
+    //Mask each pixel along the line joining p1 and p2
+    if ( m > 1.0 || m < -1.0 ) { //step in y-direction
+        int y1 = int( p1.y() );
+        int y2 = int( p2.y() );
+        if ( y1 > y2 ) {
+            y1 = int( p2.y() );
+            y2 = int( p1.y() );
+        }
 
+        for ( int y=y1; y<=y2; ++y ) {
+            int x = int( (y - y0)/m );
+            if ( d->pixRect.contains( x, y ) ) {
+                newColor = QColor( d->plotMask.pixel(x,y) );
+                newColor.setAlpha( 100 );
+                newColor.setRed( qMin( newColor.red() + value, 255 ) );
+                d->plotMask.setPixel( x, y, newColor.rgba() );
+            }
+        }
+
+    } else { //step in x-direction
+        int x1 = int( p1.x() );
+        int x2 = int( p2.x() );
+        if ( x1 > x2 ) {
+            x1 = int( p2.x() ); 
+            x2 = int( p1.x() );
+        }
+
+        for ( int x=x1; x<=x2; ++x ) {
+            int y = int( y0 + m*x );
+            if ( d->pixRect.contains( x, y ) ) {
+                newColor = QColor( d->plotMask.pixel(x,y) );
+                newColor.setAlpha( 100 );
+                newColor.setRed( qMin( newColor.red() + value, 255 ) );
+                d->plotMask.setPixel( x, y, newColor.rgba() );
+            }
+        }
     }
 }
 
+//Determine optimal placement for a text label for point pp.  We want
+//the label to be near point pp, but we don't want it to overlap with
+//other labels or plot elements.  We will use a "downhill simplex"
+//algorithm to find a label position that minimizes the pixel values
+//in the plotMask image over the label's rect().  The sum of pixel
+//values in the label's rect is the "cost" of placing the label there.
+//
+//Because a downhill simplex follows the local gradient to find low
+//values, it can get stuck in local minima.  To mitigate this, we will
+//iteratively attempt each of the initial path offset directions (up,
+//down, right, left) in the order of increasing cost at each location.
 void KPlotWidget::placeLabel( QPainter *painter, KPlotPoint *pp ) {
     int textFlags = Qt::TextSingleLine | Qt::AlignCenter;
 
-    float rbest = 100;
-    float bestCost = 1.0e7;
     QPointF pos = mapToWidget( pp->position() );
-    QRectF bestRect;
-    int ix0 = int( 100.0*( pos.x() - d->pixRect.x() )/d->pixRect.width() );
-    int iy0 = int( 100.0*( pos.y() - d->pixRect.y() )/d->pixRect.height() );
+    if ( ! d->pixRect.contains( pos.toPoint() ) ) return;
 
     QFontMetricsF fm( painter->font(), painter->device() );
-    int xmin = qMax( ix0 - 20, 0 );
-    int xmax = qMin( ix0 + 20, 100 );
-    int ymin = qMax( iy0 - 20, 0 );
-    int ymax = qMin( iy0 + 20, 100 );
-    for ( int ix = xmin; ix < xmax; ++ix )
-    {
-        for ( int iy = ymin; iy < ymax; ++iy )
-        {
-            QRectF labelRect = fm.boundingRect( QRectF( d->px[ix], d->py[iy], 1, 1 ), textFlags, pp->label() );
-                //Add some padding to labelRect
-                labelRect.adjust( -2, -2, 2, 2 );
+    QRectF bestRect = fm.boundingRect( QRectF( pos.x(), pos.y(), 1, 1 ), textFlags, pp->label() );
+    float xStep = 0.5*bestRect.width();
+    float yStep = 0.5*bestRect.height();
+    float maxCost = 0.05 * bestRect.width() * bestRect.height();
+    float bestCost = d->rectCost( bestRect );
 
-                float r = sqrt( (float)(ix-ix0)*(ix-ix0) + (iy-iy0)*(iy-iy0) );
-                float cost = d->rectCost( labelRect ) + 0.1*r;
+    //We will travel along a path defined by the maximum decrease in
+    //the cost at each step.  If this path takes us to a local minimum
+    //whose cost exceeds maxCost, then we will restart at the
+    //beginning and select the next-best path.  The indices of
+    //already-tried paths are stored in the TriedPathIndex list.
+    //
+    //If we try all four first-step paths and still don't get below 
+    //maxCost, then we'll adopt the local minimum position with the 
+    //best cost (designated as bestBadCost).
+    int iter = 0;
+    QList<int> TriedPathIndex;
+    float bestBadCost = 10000;
+    QRectF bestBadRect;
 
-                if ( cost < bestCost ) {
-                    bestRect = labelRect;
-                    bestCost = cost;
-                    rbest = r;
-                }
+    //needed to halt iteration from inside the switch
+    bool flagStop = false;
+
+    while ( bestCost > maxCost ) {
+        //Displace the label up, down, left, right; determine which 
+        //step provides the lowest cost
+        QRectF upRect = bestRect;
+        upRect.moveTop( upRect.top() + yStep );
+        float upCost = d->rectCost( upRect );
+        QRectF downRect = bestRect;
+        downRect.moveTop( downRect.top() - yStep );
+        float downCost = d->rectCost( downRect );
+        QRectF leftRect = bestRect;
+        leftRect.moveLeft( leftRect.left() - xStep );
+        float leftCost = d->rectCost( leftRect );
+        QRectF rightRect = bestRect;
+        rightRect.moveLeft( rightRect.left() + xStep );
+        float rightCost = d->rectCost( rightRect );
+        
+        //which direction leads to the lowest cost?
+        QList<float> costList;
+        costList << upCost << downCost << leftCost << rightCost;
+        int imin = -1;
+        for ( int i=0; i<costList.size(); ++i ) {
+            if ( iter == 0 && TriedPathIndex.contains( i ) ) {
+                continue; //Skip this first-step path, we already tried it!
+            }
+            
+            //If this first-step path doesn't improve the cost, 
+            //skip this direction from now on
+            if ( iter == 0 && costList[i] >= bestCost ) {
+                TriedPathIndex.append( i );
+                continue;
+            }
+            
+            if ( costList[i] < bestCost && (imin < 0 || costList[i] < costList[imin]) ) {
+                
+                imin = i;
+            }
         }
+
+        //Make a note that we've tried the current first-step path
+        if ( iter == 0 && imin >= 0 ) {
+            TriedPathIndex.append( imin );
+        }
+
+        //Adopt the step that produced the best cost
+        switch ( imin ) {
+        case 0: //up
+            bestRect.moveTop( upRect.top() );
+            bestCost = upCost;
+            break;
+        case 1: //down
+            bestRect.moveTop( downRect.top() );
+            bestCost = downCost;
+            break;
+        case 2: //left
+            bestRect.moveLeft( leftRect.left() );
+            bestCost = leftCost;
+            break;
+        case 3: //right
+            bestRect.moveLeft( rightRect.left() );
+            bestCost = rightCost;
+            break;
+        case -1: //no lower cost found!  
+            //We hit a local minimum.  Keep the best of these as bestBadRect
+            if ( bestCost < bestBadCost ) {
+                bestBadCost = bestCost;
+                bestBadRect = bestRect;
+            }
+
+            //If all of the first-step paths have now been searched, we'll
+            //have to adopt the bestBadRect
+            if ( TriedPathIndex.size() == 4 ) {
+                bestRect = bestBadRect;
+                flagStop = true; //halt iteration
+                break;
+            }
+
+            //If we haven't yet tried all of the first-step paths, start over
+            if ( TriedPathIndex.size() < 4 ) {
+                iter = -1; //anticipating the ++iter below	    
+                bestRect = fm.boundingRect( QRectF( pos.x(), pos.y(), 1, 1 ), textFlags, pp->label() );
+                bestCost = d->rectCost( bestRect );
+            }
+            break;
+        }
+
+        //Halt iteration, because we've tried all directions and 
+        //haven't gotten below maxCost (we'll adopt the best 
+        //local minimum found)
+        if ( flagStop ) {
+            break;
+        }
+        
+        ++iter;
     }
 
-    if ( ! bestRect.isNull() ) {
-        painter->drawText( bestRect, textFlags, pp->label() );
+    painter->drawText( bestRect, textFlags, pp->label() );
 
-        //Is a line needed to connect the label to the point?
-        if ( rbest > 2.0 ) {
-            //Draw a rectangle around the label 
-            painter->setBrush( QBrush() );
-            //QPen pen = painter->pen();
-            //pen.setStyle( Qt::DotLine );
-            //painter->setPen( pen );
-            painter->drawRoundRect( bestRect );
-    
-            //Now connect the label to the point with a line.
-            //The line is drawn from the center of the near edge of the rectangle
-            float xline = bestRect.center().x();
-            if ( bestRect.left() > pos.x() )
-                xline = bestRect.left();
-            if ( bestRect.right() < pos.x() )
-                xline = bestRect.right();
-    
-            float yline = bestRect.center().y();
-            if ( bestRect.top() > pos.y() )
-                yline = bestRect.top();
-            if ( bestRect.bottom() < pos.y() )
-                yline = bestRect.bottom();
-    
-            painter->drawLine( QPointF( xline, yline ), pos );
-        }
-                                                
-        //Mask the label's rectangle so other labels won't overlap it.
-        maskRect( bestRect );
+    //Is a line needed to connect the label to the point?
+    float deltax = pos.x() - bestRect.center().x();
+    float deltay = pos.y() - bestRect.center().y();
+    float rbest = sqrt( deltax*deltax + deltay*deltay );
+    if ( rbest > 20.0 ) {
+        //Draw a rectangle around the label 
+        painter->setBrush( QBrush() );
+        //QPen pen = painter->pen();
+        //pen.setStyle( Qt::DotLine );
+        //painter->setPen( pen );
+        painter->drawRoundRect( bestRect );
+
+        //Now connect the label to the point with a line.
+        //The line is drawn from the center of the near edge of the rectangle
+        float xline = bestRect.center().x();
+        if ( bestRect.left() > pos.x() )
+            xline = bestRect.left();
+        if ( bestRect.right() < pos.x() )
+            xline = bestRect.right();
+
+        float yline = bestRect.center().y();
+        if ( bestRect.top() > pos.y() )
+            yline = bestRect.top();
+        if ( bestRect.bottom() < pos.y() )
+            yline = bestRect.bottom();
+
+        painter->drawLine( QPointF( xline, yline ), pos );
     }
+                                            
+    //Mask the label's rectangle so other labels won't overlap it.
+    maskRect( bestRect );
 }
 
 float KPlotWidget::Private::rectCost( const QRectF &r ) const
 {
-    int ix1 = int( 100.0 * ( r.x() - pixRect.x() ) / pixRect.width() );
-    int ix2 = int( 100.0 * ( r.right() - pixRect.x() ) / pixRect.width() );
-    int iy1 = int( 100.0 * ( r.y() - pixRect.y() ) / pixRect.height() );
-    int iy2 = int( 100.0 * ( r.bottom() - pixRect.y() ) / pixRect.height() );
-    float cost = 0.0;
-
-    for ( int ix=ix1; ix<ix2; ++ix ) {
-        for ( int iy=iy1; iy<iy2; ++iy ) {
-            if ( ix >= 0 && ix < 100 && iy >= 0 && iy < 100 ) {
-                cost += plotMask[ix][iy];
-            } else {
-                cost += 100.;
-            }
+    if ( ! plotMask.rect().contains( r.toRect() ) ) {
+        return 10000.;
+    }
+    
+    //Compute sum of mask values in the rect r
+    QImage subMask = plotMask.copy( r.toRect() );
+    int cost = 0;
+    for ( int ix=0; ix<subMask.width(); ++ix ) {
+        for ( int iy=0; iy<subMask.height(); ++iy ) {
+            cost += QColor( subMask.pixel( ix, iy ) ).red();
         }
     }
-
-    return cost;
+    
+    return float(cost);
 }
 
 void KPlotWidget::paintEvent( QPaintEvent *e ) {
@@ -559,21 +683,8 @@ void KPlotWidget::paintEvent( QPaintEvent *e ) {
     foreach( KPlotObject *po, d->objectList )
         po->draw( &p, this );
 
-    //DEBUG_MASK
-    /*
-    p.setPen( Qt::magenta );
-    p.setBrush( Qt::magenta );
-    for ( int ix=0; ix<100; ++ix ) {
-        for ( int iy=0; iy<100; ++iy ) {
-            if ( PlotMask[ix][iy] > 0.0 ) {
-                double x = d->pixRect.x() + double(ix*d->pixRect.width())/100.;
-                double y = d->pixRect.y() + double(iy*d->pixRect.height())/100.;
-
-                p.drawRect( QRectF(x-1, y-1, 2, 2 ) );
-            }
-        }
-    }
-  */
+//DEBUG: Draw the plot mask
+//    p.drawImage( 0, 0, d->plotMask );
 
     p.setClipping( false );
     drawAxes( &p );
