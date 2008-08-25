@@ -855,7 +855,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         default:
             if(current->isDocumentNode())
             {
-                if(current->firstChild() == 0 || !current->firstChild()->isHTMLElement()) {
+                DocumentImpl* doc = static_cast<DocumentImpl*>(current);
+                if (!doc->documentElement()) {
                     e = new HTMLHtmlElementImpl(document);
                     insertNode(e);
                     handled = true;
@@ -890,7 +891,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLHtmlElementImpl(document);
         break;
     case ID_HEAD:
-        if(!head && current->id() == ID_HTML) {
+        if(!head && (current->id() == ID_HTML || current->isDocumentNode())) {
             head = new HTMLHeadElementImpl(document);
             n = head;
         }
