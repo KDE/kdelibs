@@ -429,4 +429,9 @@ bool Highlighter::isWordMisspelled(const QString &word)
     return d->dict->isMisspelled(word);
 }
 
+void Highlighter::setMisspelledColor(const QColor &color)
+{
+    d->spellColor = color;
+}
+
 }

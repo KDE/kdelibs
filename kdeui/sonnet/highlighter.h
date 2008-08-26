@@ -117,6 +117,12 @@ namespace Sonnet
          */
         bool isWordMisspelled(const QString &word);
 
+        /**
+         * Sets the color in which the highlighter underlines misspelled words.
+         * @since 4.2
+         */
+        void setMisspelledColor(const QColor &color);
+
     Q_SIGNALS:
 
         /**
