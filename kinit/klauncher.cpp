@@ -137,15 +137,15 @@ IdleSlave::reparseConfiguration()
 }
 
 bool
-IdleSlave::match(const QString &protocol, const QString &host, bool connected)
+IdleSlave::match(const QString &protocol, const QString &host, bool needConnected)
 {
-   if (mOnHold) return false;
-   if (protocol != mProtocol) return false;
-   if (host.isEmpty()) return true;
-   if (host != mHost) return false;
-   if (!connected) return true;
-   if (!mConnected) return false;
-   return true;
+   if (mOnHold || protocol != mProtocol) {
+      return false;
+   }
+   if (host.isEmpty()) {
+      return true;
+   }
+   return (host == mHost) && (!needConnected || mConnected);
 }
 
 bool
