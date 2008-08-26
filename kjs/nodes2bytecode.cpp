@@ -1273,11 +1273,13 @@ void ForInNode::generateExecCode(CompileState* comp)
     // The end address is here (#2 since return val..)
     CodeGen::patchJumpToNext(comp, fetchNext, 2);
 
+    // The looping action ends here.. We need to do it before the EndForIn instruction so we always cleanup
+    // right on breaks.
+    comp->exitLoop(this);
+    comp->popNest(); // Remove the cleanup entry.. Note that the breaks go to before here..    
+
     // Cleanup
     CodeGen::emitOp(comp, Op_EndForIn);
-
-    comp->exitLoop(this);
-    comp->popNest(); // Remove the cleanup entry.. Note that the breaks go to before here..
 }
 
 // Helper for continue/break -- emits stack cleanup call if needed,
