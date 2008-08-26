@@ -23,7 +23,8 @@ target_link_libraries(resourcetest
   ${QT_QTDBUS_LIBRARY}
   ${QT_QTTEST_LIBRARY}
   ${QT_QTGUI_LIBRARY}
-  ${KDE4_KDECORE_LIBRARY})
+  ${SOPRANO_LIBRARIES}
+  ${KDE4_KDECORE_LIBS})
 
 #kde4_add_unit_test(varianttest varianttest.cpp)
 #target_link_libraries(varianttest kmetadata ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY})
