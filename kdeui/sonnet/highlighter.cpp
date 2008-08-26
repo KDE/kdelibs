@@ -226,12 +226,13 @@ void Highlighter::slotAutoDetection()
 	    d->active = true;
     }
     if (d->active != savedActive) {
-	if (d->wordCount > 1)
+	if (d->wordCount > 1) {
 	    if ( d->active )
 		emit activeChanged(i18n("As-you-type spell checking enabled."));
 	    else
 		emit activeChanged(i18n( "Too many misspelled words. "
                                          "As-you-type spell checking disabled."));
+	}
 	d->completeRehighlightRequired = true;
 	d->rehighlightRequest->setInterval(100);
         d->rehighlightRequest->setSingleShot(true);
