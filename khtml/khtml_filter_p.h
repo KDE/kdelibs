@@ -25,6 +25,7 @@
 #include <QVector>
 #include <wtf/HashMap.h>
 #include <QHash>
+#include <QBitArray>
 
 namespace khtml {
 
@@ -37,15 +38,17 @@ public:
     // check if string match at least one string from matching set
     bool isMatched(const QString& str) const;
 
-    void clear() {
-        stringFilters.clear();
-        shortStringFilters.clear();
-        stringFiltersHash.clear();
-    }
-    
+    // add filter to matching set with wildcards (*,?) in it
+    void addWildedString(const QString& prefix, const QRegExp& rx);
+
+    void clear();
+
 private:
     QVector<QString> stringFilters;
     QVector<QString> shortStringFilters;
+    QVector<QRegExp> reFilters;
+    QVector<QString> rePrefixes;
+    QBitArray fastLookUp;
 
     WTF::HashMap<int, QVector<int> > stringFiltersHash;
 };

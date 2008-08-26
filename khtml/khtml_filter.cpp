@@ -24,10 +24,10 @@
 #include <QDebug>
 
 // rolling hash parameters
-#define HASH_P (2003)
-#define HASH_Q (8191)
+#define HASH_P (1997)
+#define HASH_Q (17509)
 // HASH_MOD = (HASH_P^7) % HASH_Q
-#define HASH_MOD (598)
+#define HASH_MOD (523)
 
 namespace khtml {
 
@@ -87,11 +87,29 @@ void FilterSet::addFilter(const QString& filterStr)
         if (filter.contains("*") || filter.contains("?")) 
         {
 //             qDebug() << "W:" << filter;
-            QRegExp rx;
+            // check if we can use RK first (and then check full RE for the rest) for better performance
+            int aPos = filter.indexOf('*');
+            if (aPos < 0)
+                aPos = filter.length();
+            int qPos = filter.indexOf('?');
+            if (qPos < 0)
+                qPos = filter.length();
+            int pos = qMin(aPos, qPos);
+            if (pos > 7) {
+                QRegExp rx;
 
-            rx.setPatternSyntax(QRegExp::Wildcard);
-            rx.setPattern(filter);
-            reFilters.append(rx);        
+                rx.setPatternSyntax(QRegExp::Wildcard);
+                rx.setPattern(filter.mid(pos));
+
+                stringFiltersMatcher.addWildedString(filter.mid(0, pos), rx);
+
+            } else {
+                QRegExp rx;
+
+                rx.setPatternSyntax(QRegExp::Wildcard);
+                rx.setPattern(filter);
+                reFilters.append(rx);
+            }
         }
         else
         {
@@ -125,7 +143,7 @@ void FilterSet::clear()
 void StringsMatcher::addString(const QString& pattern)
 {
     if (pattern.length() < 8) {
-        // hanlde short string differently
+        // handle short string differently
         shortStringFilters.append(pattern);
     } else {
         // use modified Rabin-Karp's algorithm with 8-length string hash
@@ -138,8 +156,10 @@ void StringsMatcher::addString(const QString& pattern)
         // hash for string: x0,x1,x2...xn-1 will be:
         // (p^(n-1)*x0 + p^(n-2)*x1 + ... + p * xn-2 + xn-1) % q
         // where p and q some wisely-chosen integers
-        for (int k = 0; k < 8; ++k)
-            current = (current * HASH_P + pattern[k].unicode()) & HASH_Q;
+        /*for (int k = 0; k < 8; ++k)*/
+        int len = pattern.length();
+        for (int k = len - 8; k < len; ++k)
+            current = (current * HASH_P + pattern[k].unicode()) % HASH_Q;
 
         // insert computed hash value into HashMap
         WTF::HashMap<int, QVector<int> >::iterator it = stringFiltersHash.find(current + 1);
@@ -147,9 +167,34 @@ void StringsMatcher::addString(const QString& pattern)
             QVector<int> list;
             list.append(ind);
             stringFiltersHash.add(current + 1, list);
+            fastLookUp.setBit(current);
         } else {
             it->second.append(ind);
+            qDebug() << pattern << it->second.size() << current;
         }
+    }
+}
+
+void StringsMatcher::addWildedString(const QString& prefix, const QRegExp& rx)
+{
+    rePrefixes.append(prefix);
+    reFilters.append(rx);
+    int index = -rePrefixes.size();
+
+    int current = 0;
+    for (int k = 0; k < 8; ++k)
+        current = (current * HASH_P + prefix[k].unicode()) % HASH_Q;
+
+    // insert computed hash value into HashMap
+    WTF::HashMap<int, QVector<int> >::iterator it = stringFiltersHash.find(current + 1);
+    if (it == stringFiltersHash.end()) {
+        QVector<int> list;
+        list.append(index);
+        stringFiltersHash.add(current + 1, list);
+        fastLookUp.setBit(current);
+    } else {
+        it->second.append(index);
+        qDebug() << prefix << it->second.size() << current;
     }
 }
 
@@ -165,13 +210,22 @@ bool StringsMatcher::isMatched(const QString& str) const
     int k;
 
     int current = 0;
+    int next = 0;
     // compute hash for first 8 characters
     for (k = 0; k < 8 && k < len; ++k)
-        current = (current * HASH_P + str[k].unicode()) & HASH_Q;
+        current = (current * HASH_P + str[k].unicode()) % HASH_Q;
 
     WTF::HashMap<int, QVector<int> >::const_iterator hashEnd = stringFiltersHash.end();
     // main Rabin-Karp's algorithm loop
-    for (k = 7; k < len; ++k) {
+    for (k = 7; k < len; ++k, current = next) {
+        // roll the hash if not at the end
+        // (calculate hash for the next iteration)
+        if (k + 1 < len)
+            next = (HASH_P * ((current + HASH_Q - ((HASH_MOD * str[k - 7].unicode()) % HASH_Q)) % HASH_Q) + str[k + 1].unicode()) % HASH_Q;
+
+        if (!fastLookUp.testBit(current))
+            continue;
+
         // look-up the hash in the HashMap and check all strings
         WTF::HashMap<int, QVector<int> >::const_iterator it = stringFiltersHash.find(current + 1);
 
@@ -179,18 +233,34 @@ bool StringsMatcher::isMatched(const QString& str) const
         if (it != hashEnd) {
             for (int j = 0; j < it->second.size(); ++j) {
                 int index = it->second[j];
-                int flen = stringFilters[index].length();
-                if (k - 8 + flen < len && stringFilters[index] == str.midRef(k - 7, flen))
-                    return true;
+                // check if we got simple string or REs prefix
+                if (index >= 0) {
+                    int flen = stringFilters[index].length();
+                    if (k - flen + 1 >= 0 && stringFilters[index] == str.midRef(k - flen + 1 , flen))
+                        return true;
+                } else {
+                    index = -index - 1;
+                    int flen = rePrefixes[index].length();
+                    if (k - 8 + flen < len && rePrefixes[index] == str.midRef(k - 7, flen) &&
+                            str.indexOf(reFilters[index], k - 7 + flen) == k - 7 + flen)
+                        return true;
+                }
             }
         }
-
-        // roll the hash if not at the end
-        if (k + 1 < len)
-            current = (HASH_P * ((current + HASH_Q + 1 - ((HASH_MOD * str[k - 7].unicode()) & HASH_Q)) & HASH_Q) + str[k + 1].unicode()) & HASH_Q;
     }
 
     return false;
+}
+
+void StringsMatcher::clear()
+{
+    stringFilters.clear();
+    shortStringFilters.clear();
+    reFilters.clear();
+    rePrefixes.clear();
+    stringFiltersHash.clear();
+    fastLookUp.resize(HASH_Q);
+    fastLookUp.fill(0, 0, HASH_Q);
 }
 
 }
