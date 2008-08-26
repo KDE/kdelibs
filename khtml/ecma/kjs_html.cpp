@@ -461,7 +461,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, JSValue *va
       return;
     }
     case DesignMode:
-        doc.setDesignMode((value->toString(exec).qstring()=="on"));
+        doc.setDesignMode((value->toString(exec).qstring().toLower()=="on"));
         return;  
   }
 
