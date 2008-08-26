@@ -39,6 +39,7 @@
 #include "khtml_pagecache.h"
 #include "khtml_part.h"
 #include "dom/dom_misc.h"
+#include "misc/shared.h"
 
 #include <QStack>
 #include <QVector>
@@ -71,7 +72,8 @@ class ConsoleDock;
 *
 * There is only one debug window per program. This can be obtained by calling #instance
 */
-class DebugWindow : public KXmlGuiWindow, public KJS::Debugger, public KComponentData
+class DebugWindow : public KXmlGuiWindow, public KJS::Debugger, public KComponentData,
+                    public khtml::Shared<DebugWindow>
 {
     Q_OBJECT
 
@@ -79,8 +81,6 @@ public:
     DebugWindow(QWidget *parent = 0);
     virtual ~DebugWindow();
 
-    static DebugWindow *createInstance();
-    static void destroyInstance();
     static DebugWindow *window();
 
     // Returns true if the debugger is active, and has blocked the execution

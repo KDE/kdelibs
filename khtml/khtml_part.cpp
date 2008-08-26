@@ -1080,8 +1080,7 @@ KJSProxy *KHTMLPart::jScript()
   if ( !d->m_frame->m_jscript )
     if (!createJScript(d->m_frame))
       return 0;
-  if (d->m_bJScriptDebugEnabled)
-    d->m_frame->m_jscript->setDebugEnabled(true);
+   d->m_frame->m_jscript->setDebugEnabled(d->m_bJScriptDebugEnabled);
 
   return d->m_frame->m_jscript;
 }
