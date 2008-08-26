@@ -289,6 +289,7 @@ set(khtml_LIB_SRCS
    khtml_run.cpp
    khtml_global.cpp
    khtml_settings.cc
+   khtml_filter.cpp
    khtml_events.cpp
    khtml_ext.cpp
    khtml_pagecache.cpp
