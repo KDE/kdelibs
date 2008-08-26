@@ -420,7 +420,9 @@
 9522        kdevplatform (standardoutputview)
 9523        kdevplatform (teamwork)
 9524        kdevplatform (usehighlight)
-9045        kdevelop (dvcs plugins)
+9525        kdevelop (git)
+9526        kdevelop (mercurial)
+9527        kdevelop (bazaar)
 
 # toys and games
 10000        amor
