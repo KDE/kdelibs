@@ -70,4 +70,5 @@ kde4_add_executable(tagcloudtest TEST tagcloudtest.cpp)
 target_link_libraries(tagcloudtest nepomuk
   ${QT_QTCORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}
-  ${KDE4_KDECORE_LIBS})
+  ${KDE4_KDECORE_LIBS}
+  ${KDE4_KDEUI_LIBS})
