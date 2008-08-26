@@ -33,8 +33,6 @@
 #include <QVector>
 
 #include "kdebug.h"
-#include "QtCore/QDate"
-#include "QtGui/QFontMetrics"
 
 #include <limits.h>
 

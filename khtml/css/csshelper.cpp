@@ -21,20 +21,8 @@
  */
 #include "csshelper.h"
 
-#include <QtGui/QFontMetrics>
-#include <QtGui/QFontInfo>
-#include <QtGui/QPaintDevice>
-#include <QtGui/QFontDatabase>
-
-#include <kglobal.h>
-#include <kdebug.h>
-
-#include "rendering/render_style.h"
-#include "css_valueimpl.h"
-#include "dom/css_value.h"
 #include "misc/helper.h"
 #include "xml/dom_stringimpl.h"
-#include "khtml_settings.h"
 
 using namespace DOM;
 using namespace khtml;
