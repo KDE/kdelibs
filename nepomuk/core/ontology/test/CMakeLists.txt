@@ -10,4 +10,6 @@ set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 # tests
 kde4_add_unit_test(entitytest entitytest.cpp)
-target_link_libraries(entitytest nepomuk ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
+target_link_libraries(entitytest nepomuk ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} 
+                                         ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY}
+					 ${SOPRANO_LIBRARIES})
