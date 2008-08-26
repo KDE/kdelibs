@@ -462,7 +462,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, JSValue *va
     }
     case DesignMode:
         doc.setDesignMode((value->toString(exec).qstring()=="on"));
-        break;  
+        return;  
   }
 
   /* The rest of the properties require a body. Note that Doc::body may be the
