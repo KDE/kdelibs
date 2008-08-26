@@ -170,7 +170,6 @@ void StringsMatcher::addString(const QString& pattern)
             fastLookUp.setBit(current);
         } else {
             it->second.append(ind);
-            qDebug() << pattern << it->second.size() << current;
         }
     }
 }
@@ -194,7 +193,6 @@ void StringsMatcher::addWildedString(const QString& prefix, const QRegExp& rx)
         fastLookUp.setBit(current);
     } else {
         it->second.append(index);
-        qDebug() << prefix << it->second.size() << current;
     }
 }
 
