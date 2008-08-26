@@ -91,23 +91,12 @@ using namespace KJS;
 using namespace KJSDebugger;
 
 DebugWindow* DebugWindow::s_debugger = 0;
-DebugWindow *DebugWindow::createInstance()
-{
-    Q_ASSERT(!s_debugger);
-    s_debugger = new DebugWindow();
-    return s_debugger;
-}
-
-void DebugWindow::destroyInstance()
-{
-    Q_ASSERT(s_debugger);
-    Q_ASSERT(s_debugger->m_activeSessionCtxs.isEmpty());
-    s_debugger->hide();
-    delete s_debugger;
-}
 
 DebugWindow * DebugWindow::window()
 {
+    if (!s_debugger)
+        s_debugger = new DebugWindow();
+
     return s_debugger;
 }
 
@@ -376,6 +365,8 @@ DebugWindow::~DebugWindow()
     assert(m_docsForIntrp.isEmpty());
     assert(m_docForSid.isEmpty());
     assert(m_docForIUKey.isEmpty());
+    assert(m_activeSessionCtxs.isEmpty());
+    s_debugger = 0;
 }
 
 void DebugWindow::closeEvent(QCloseEvent* event)
