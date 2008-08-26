@@ -437,9 +437,19 @@ KeyEventBaseImpl::KeyEventBaseImpl(EventId id, bool canBubbleArg, bool cancelabl
     m_virtKeyVal = virtKeyToQtKey()->toLeft(key->key());
 
     // m_keyVal should contain the unicode value
-    // of the pressed key if available.
-    if (m_virtKeyVal == DOM_VK_UNDEFINED && !key->text().isEmpty())
-        m_keyVal = key->text().unicode()[0].unicode();
+    // of the pressed key if available, including case distinction
+    if (m_virtKeyVal == DOM_VK_UNDEFINED && !key->text().isEmpty()) {
+        // ... unfortunately, this value is useless if ctrl+ or alt+ are used.
+        if (key->modifiers() & (Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier)) {
+            // Try to recover the case... Not quite right with caps lock involved, hence proving again its evilness
+            if (key->modifiers() & (Qt::ShiftModifier))
+                m_keyVal = key->key(); // The original is upper case anyway
+            else
+                m_keyVal = QChar(key->key()).toLower().unicode();
+        } else {
+            m_keyVal = key->text().unicode()[0].unicode();
+        }
+    }
 
     // key->state returns enum ButtonState, which is ShiftButton, ControlButton and AltButton or'ed together.
     m_modifier = key->modifiers();
