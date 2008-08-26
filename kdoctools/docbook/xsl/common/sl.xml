@@ -180,8 +180,8 @@
    <l:gentext key="hyphenation-character" text="-"/>
    <l:gentext key="hyphenation-push-character-count" text="2"/>
    <l:gentext key="hyphenation-remain-character-count" text="2"/>
-   <l:gentext key="footer-doc-comment" text="Ali imate morda komentar glede te strani ali pa želite prispevati posodobitev?"/>
-   <l:gentext key="footer-doc-feedback" text="Povratne informacije pošljite "/>
+   <l:gentext key="footer-doc-comment" text="Ali imate morda komentar glede te strani ali pa &#382;elite prispevati posodobitev?"/>
+   <l:gentext key="footer-doc-feedback" text="Povratne informacije po&#353;ljite "/>
    <l:gentext key="footer-doc-teamname" text="KDE-jevi ekipi za dokumentacijo"/>
 
    <l:context name="styles">
