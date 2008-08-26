@@ -32,6 +32,15 @@
 
 #include <windows.h>
 
+class KWindowSystemStaticContainer {
+public:
+    KWindowSystemStaticContainer() : d(0) {}
+    KWindowSystem kwm;
+    KWindowSystemPrivate* d;
+};
+
+K_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
+
 K_GLOBAL_STATIC(QDesktopWidget, s_deskWidget)
 
 int KWindowSystem::currentDesktop()
@@ -330,6 +339,11 @@ void KWindowSystem::setType( WId win, NET::WindowType windowType )
 {
  //TODO
  kDebug() << "setType( WId win, NET::WindowType windowType ) isn't yet implemented!";
+}
+
+KWindowSystem* KWindowSystem::self()
+{
+    return &(g_kwmInstanceContainer->kwm);
 }
 
 #include "kwindowsystem.moc"
