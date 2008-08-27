@@ -247,6 +247,12 @@ public:
      * Typically this function replaces createGUI().
      *
      * @see StandardWindowOptions
+     * @note Since this method will restore the state of the application (toolbar, dockwindows
+     *       positions...), you need to have added all your actions to your toolbars etc before
+     *       calling to this method. (This note is only applicable if you are using the Default or
+     *       Save flag).
+     * @warning If you are calling on your code to createGUI, remind to remove the Create flag from
+     *          the @p options parameter. Also, call to setupGUI always after you call to createGUI.
      *
      */
     void setupGUI( StandardWindowOptions options = Default, const QString& xmlfile = QString() );
@@ -261,6 +267,12 @@ public:
      * Typically this function replaces createGUI().
      *
      * @see StandardWindowOptions
+     * @note Since this method will restore the state of the application (toolbar, dockwindows
+     *       positions...), you need to have added all your actions to your toolbars etc before
+     *       calling to this method. (This note is only applicable if you are using the Default or
+     *       Save flag).
+     * @warning If you are calling on your code to createGUI, remind to remove the Create flag from
+     *          the @p options parameter. Also, call to setupGUI always after you call to createGUI.
      */
     void setupGUI( const QSize& defaultSize, StandardWindowOptions options = Default, const QString& xmlfile = QString() );
 
