@@ -25,6 +25,11 @@
 #include "spellerplugin_p.h"
 
 #include <kconfig.h>
+#include <kglobal.h>
+#include <klocale.h>
+#include <QLocale>
+#include <QSet>
+#include <QDebug>
 
 namespace Sonnet
 {
@@ -262,7 +267,37 @@ void Speller::setLanguage(const QString &lang)
     d->recreateDict();
 }
 
+QMap<QString, QString> Sonnet::Speller::availableDictionaries() const
+{
+    Loader *l = Loader::openLoader();
+    QStringList lst = l->languages();
+    QMap<QString, QString> langs;
+
+    foreach(QString tag, lst) {
+        tag = tag.mid(0, tag.indexOf("-"));
+        int underscorePos = tag.indexOf("_");
+        QString cIsoName, lIsoName;
+	if (underscorePos != -1 && underscorePos <= 3) {
+            cIsoName = tag.mid(underscorePos + 1, 2);
+            lIsoName = tag.left(underscorePos);
+	}  else {
+            lIsoName = tag;
+        }
+        QLocale loc(tag);
+        QString description;
+
+        if (!cIsoName.isEmpty())
+            description= QString("%1 (%2)")
+                         .arg(KGlobal::locale()->languageCodeToName(lIsoName))
+                         .arg(KGlobal::locale()->countryCodeToName(cIsoName));
+        else
+            description= QString("%1")
+                         .arg(KGlobal::locale()->languageCodeToName(lIsoName));
+        //qDebug()<<"Dict is "<<tag<<" ( "<<loc.name()<<")"<<", descr = "<<description;
+        langs.insert(description, tag);
+    }
+
+    return langs;
 }
 
-
-
+}

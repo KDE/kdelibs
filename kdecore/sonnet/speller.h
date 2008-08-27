@@ -119,12 +119,23 @@ namespace Sonnet
 
         /**
          * Returns a list of supported languages.
+         *
+         * Note: use availableDictionaries
          */
         QStringList availableLanguages() const;
         /**
          * Returns a localized list of names of supported languages.
+         *
+         * Note: use availableDictionaries
          */
         QStringList availableLanguageNames() const;
+
+        /**
+         * Returns a map of all available language descriptions and their
+         * codes
+         */
+        QMap<QString, QString> availableDictionaries() const;
+
 
         void setDefaultLanguage(const QString &lang);
         QString defaultLanguage() const;

@@ -34,6 +34,8 @@ void SonnetCoreTest::testCore()
 
     kDebug()<< "Clients are "   << dict.availableBackends();
     kDebug()<< "Languages are " << dict.availableLanguages();
+    kDebug()<< "Language names are " << dict.availableLanguageNames();
+    kDebug()<< "Language dicts " << dict.availableDictionaries();
 
     QStringList words;
 
