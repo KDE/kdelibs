@@ -251,8 +251,8 @@ public:
      *       positions...), you need to have added all your actions to your toolbars etc before
      *       calling to this method. (This note is only applicable if you are using the Default or
      *       Save flag).
-     * @warning If you are calling on your code to createGUI, remind to remove the Create flag from
-     *          the @p options parameter. Also, call to setupGUI always after you call to createGUI.
+     * @warning If you are calling createGUI yourself, remember to remove the Create flag from
+     *          the @p options parameter. Also, call setupGUI always after you call createGUI.
      *
      */
     void setupGUI( StandardWindowOptions options = Default, const QString& xmlfile = QString() );
@@ -271,8 +271,8 @@ public:
      *       positions...), you need to have added all your actions to your toolbars etc before
      *       calling to this method. (This note is only applicable if you are using the Default or
      *       Save flag).
-     * @warning If you are calling on your code to createGUI, remind to remove the Create flag from
-     *          the @p options parameter. Also, call to setupGUI always after you call to createGUI.
+     * @warning If you are calling createGUI yourself, remember to remove the Create flag from
+     *          the @p options parameter. Also, call setupGUI always after you call createGUI.
      */
     void setupGUI( const QSize& defaultSize, StandardWindowOptions options = Default, const QString& xmlfile = QString() );
 
