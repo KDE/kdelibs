@@ -52,7 +52,8 @@ Word Filter::end()
 }
 
 Filter::Filter()
-    : m_currentPosition( 0 ),d(new Private)
+    : m_currentPosition(0),
+      d(new Private)
 {
     d->settings = 0;
 }

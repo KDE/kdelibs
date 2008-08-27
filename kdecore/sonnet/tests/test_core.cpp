@@ -18,6 +18,7 @@
  * 02110-1301  USA
  */
 #include "speller.h"
+#include "globals.h"
 #include "test_core.h"
 
 #include <qtest_kde.h>
@@ -92,6 +93,10 @@ void SonnetCoreTest::testCore()
     }
     //mtime.stop();
     kDebug()<<"Elapsed time is "<<mtime.elapsed();
+
+    kDebug()<<"Detecting language ...";
+    QString sentence = QString::fromLatin1("QClipboard features some convenience functions to access common data types: setText() allows the exchange of Unicode text and setPixmap() and setImage() allows the exchange of QPixmaps and QImages between applications.");
+    kDebug()<<"\tlang is "<<Sonnet::detectLanguage(sentence);
 }
 
 #include "test_core.moc"

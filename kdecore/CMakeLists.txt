@@ -186,6 +186,7 @@ set(kdecore_LIB_SRCS
    sonnet/settings.cpp
    sonnet/backgroundchecker.cpp
    sonnet/backgroundengine.cpp
+   sonnet/globals.cpp
    network/k3socketdevice.cpp # must be before the rest of network/, for enable-final
    network/k3bufferedsocket.cpp
    network/k3clientsocketbase.cpp
@@ -451,7 +452,7 @@ install( FILES
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
-install( FILES sonnet/backgroundchecker.h sonnet/speller.h
+install( FILES sonnet/backgroundchecker.h sonnet/speller.h sonnet/globals.h
          DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel)
 
 install( FILES
