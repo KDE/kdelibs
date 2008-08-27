@@ -58,6 +58,7 @@ static const int computedProperties[] = {
     CSS_PROP_BORDER_BOTTOM_WIDTH,
     CSS_PROP_BORDER_LEFT_WIDTH,
     CSS_PROP_BOTTOM,
+    CSS_PROP_BOX_SIZING,
     CSS_PROP_CAPTION_SIDE,
     CSS_PROP_CLEAR,
     CSS_PROP_COLOR,
@@ -480,6 +481,11 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         return new CSSPrimitiveValueImpl( style->borderLeftWidth(), CSSPrimitiveValue::CSS_PX );
     case CSS_PROP_BOTTOM:
         return getPositionOffsetValue(renderer, CSS_PROP_BOTTOM);
+    case CSS_PROP_BOX_SIZING:
+        if (style->boxSizing() == BORDER_BOX)
+            return new CSSPrimitiveValueImpl(CSS_VAL_BORDER_BOX);
+        else
+            return new CSSPrimitiveValueImpl(CSS_VAL_CONTENT_BOX);
     case CSS_PROP_CAPTION_SIDE:
         switch (style->captionSide()) {
         case CAPLEFT:
