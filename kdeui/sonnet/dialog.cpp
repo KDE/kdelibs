@@ -54,6 +54,8 @@ public:
     Word   currentWord;
     QMap<QString, QString> replaceAllMap;
     bool restart;//used when text is distributed across several qtextedits, eg in KAider
+
+    QMap<QString, QString> dictsMap;
 };
 
 Dialog::Dialog(BackgroundChecker *checker,
@@ -125,8 +127,10 @@ void Dialog::initGui()
     //d->ui.m_suggestions->setSorting( NONSORTINGCOLUMN );
     d->ui.m_language->clear();
     Speller speller = d->checker->speller();
-    d->ui.m_language->insertItems(0, speller.availableLanguageNames());
-    d->ui.m_language->setCurrentIndex(speller.availableLanguages().indexOf(
+    d->dictsMap = speller.availableDictionaries();
+    QStringList langs = d->dictsMap.keys();
+    d->ui.m_language->insertItems(0, langs);
+    d->ui.m_language->setCurrentIndex(d->dictsMap.values().indexOf(
                                           speller.language()));
     d->restart = false;
 }
@@ -247,14 +251,15 @@ void Dialog::slotSuggest()
     fillSuggestions( suggs );
 }
 
-void Dialog::slotChangeLanguage( const QString& lang )
+void Dialog::slotChangeLanguage(const QString &lang)
 {
     Speller speller = d->checker->speller();
-    QString languageCode = speller.availableLanguages().at(
-        speller.availableLanguageNames().indexOf(lang));
-    d->checker->changeLanguage( languageCode );
-    slotSuggest();
-    emit languageChanged( languageCode );
+    QString languageCode = d->dictsMap[lang];
+    if (!languageCode.isEmpty()) {
+        d->checker->changeLanguage(languageCode);
+        slotSuggest();
+        emit languageChanged(lang);
+    }
 }
 
 void Dialog::slotSelectionChanged( QListWidgetItem *item )
