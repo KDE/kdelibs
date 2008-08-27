@@ -258,7 +258,7 @@ void Dialog::slotChangeLanguage(const QString &lang)
     if (!languageCode.isEmpty()) {
         d->checker->changeLanguage(languageCode);
         slotSuggest();
-        emit languageChanged(lang);
+        emit languageChanged(languageCode);
     }
 }
 
