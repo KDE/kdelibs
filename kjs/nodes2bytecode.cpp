@@ -1458,14 +1458,14 @@ void TryNode::generateExecCode(CompileState* comp)
     comp->popNest();
 
     // Jump over the catch if try is OK
-    Addr jumpOverCatch;
+    Addr jumpOverCatch = 0;
     if (catchBlock)
         jumpOverCatch = CodeGen::emitOp(comp, Op_Jump, 0, OpValue::dummyAddr());
 
     // Exceptions would go here --- either in a catch or a finally.
     CodeGen::patchJumpToNext(comp, setCatchHandler, 0);
 
-    Addr catchToFinallyEH;
+    Addr catchToFinallyEH = 0;
     if (catchBlock) {
         // If there is a finally block, that acts as an exception handler for the catch;
         // we need to set it before entering the catch scope, so the cleanup entries for that

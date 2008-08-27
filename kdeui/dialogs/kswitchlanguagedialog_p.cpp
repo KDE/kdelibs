@@ -188,18 +188,19 @@ void KSwitchLanguageDialog::removeButtonClicked()
 
 void KSwitchLanguageDialog::languageOnButtonChanged(const QString & languageCode)
 {
+    Q_UNUSED(languageCode);
+#if 0
     for ( int i = 0, count = d->languageButtons.count(); i < count; ++i )
     {
         KLanguageButton *languageButton = d->languageButtons[i];
-#if 0
         if (languageButton->current() == languageCode)
         {
             //update all buttons which have matching id
             //might update buttons which were not changed, but well...
             languageButton->setText(KGlobal::locale()->languageCodeToName(languageCode));
         }
-#endif
     }
+#endif
 }
 
 void KSwitchLanguageDialog::slotOk()
