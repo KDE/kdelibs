@@ -2668,8 +2668,8 @@ void KHTMLPartPrivate::setFlagRecursively(
     QList<khtml::ChildFrame*>::Iterator it = m_objects.begin();
     const QList<khtml::ChildFrame*>::Iterator itEnd = m_objects.end();
     for (; it != itEnd; ++it) {
-      KHTMLPart* const part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it)->m_part);
-      if (part->inherits("KHTMLPart"))
+      KHTMLPart* const part = qobject_cast<KHTMLPart *>( (*it)->m_part );
+      if (part)
         part->d->setFlagRecursively(flag, value);
     }/*next it*/
   }
