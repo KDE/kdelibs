@@ -179,7 +179,7 @@
 <!ENTITY Richard.Hawthorne '<personname><firstname>Richard</firstname><surname>Hawthorne</surname></personname>'>
 <!ENTITY Richard.Hawthorne.mail '<email>techno_plume-coding@yahoo.com</email>'>
 <!ENTITY Kurt.Hindenburg '<personname><firstname>Kurt</firstname><surname>Hindenburg</surname></personname>'>
-<!ENTITY Kurt.Hindenburg.mail '<email>kurt.hindenburg@kdemail.org</email>'>
+<!ENTITY Kurt.Hindenburg.mail '<email>kurt.hindenburg@gmail.com</email>'>
 <!ENTITY Matthias.Hoelzer-Kluepfel '<personname><firstname>Matthias</firstname><surname>H&ouml;lzer-Kl&uuml;pfel</surname></personname>'>
 <!ENTITY Matthias.Hoelzer-Kluepfel.mail '<email>hoelzer@kde.org</email>'>
 <!ENTITY Rik.Hemsley '<personname><firstname>Rik</firstname><surname>Hemsley</surname></personname>'>
@@ -230,6 +230,8 @@
 <!ENTITY Matthias.Kiefer.mail '<email>matthias.kiefer@gmx.de</email>'>
 <!ENTITY Ingo.Kloecker '<personname><firstname>Ingo</firstname><surname>Klöcker</surname></personname>'>
 <!ENTITY Ingo.Kloecker.mail '<email>kloecker@kde.de</email>'>
+<!ENTITY Robert.Knight '<personname><firstname>Robert</firstname><surname>Knight</surname></personname>'>
+<!ENTITY Robert.Knight.mail '<email>robertknight@gmail.com</email>'>
 <!ENTITY Lars.Knoll '<personname><firstname>Lars</firstname><surname>Knoll</surname></personname>'>
 <!ENTITY Lars.Knoll.mail '<email>knoll@kde.org</email>'>
 <!ENTITY Michael.Koch '<personname><firstname>Michael</firstname><surname>Koch</surname></personname>'>
