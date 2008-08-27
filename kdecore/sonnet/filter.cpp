@@ -227,7 +227,6 @@ int Filter::currentPosition() const
 void Filter::replace( const Word& w, const QString& newWord)
 {
     int oldLen = w.word.length();
-    int newLen = newWord.length();
 
     //start spell checkin from the just correct word
     m_currentPosition = w.start;
