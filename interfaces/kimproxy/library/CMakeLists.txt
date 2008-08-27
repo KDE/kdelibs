@@ -18,7 +18,11 @@ kde4_add_library(kimproxy SHARED ${kimproxy_LIB_SRCS})
 
 target_link_libraries(kimproxy  ${KDE4_KIO_LIBS} )
 
-set_target_properties(kimproxy PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+set_target_properties(kimproxy PROPERTIES
+   VERSION ${GENERIC_LIB_VERSION}
+   SOVERSION ${GENERIC_LIB_SOVERSION}
+   ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "${QT_QTCORE_LIBRARY}"
+)
 
 ########### install files ###############
 

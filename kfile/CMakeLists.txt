@@ -41,6 +41,7 @@ target_link_libraries(kfile
 
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
                                        SOVERSION ${GENERIC_LIB_SOVERSION} 
+                                       ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kdeui;kdecore;${QT_QTGUI_LIBRARY}"
                      )
 
 install(TARGETS kfile ${INSTALL_TARGETS_DEFAULT_ARGS})

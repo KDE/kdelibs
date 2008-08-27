@@ -10,7 +10,11 @@ kde4_add_library(kunittest SHARED ${kunittest_LIB_SRCS})
 
 target_link_libraries(kunittest ${KDE4_KDECORE_LIBS} )
 
-set_target_properties(kunittest PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+set_target_properties(kunittest PROPERTIES
+   VERSION ${GENERIC_LIB_VERSION}
+   SOVERSION ${GENERIC_LIB_SOVERSION}
+   ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kdecore;${QT_QTCORE_LIBRARY}"
+)
 install(TARGETS kunittest ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
