@@ -286,7 +286,7 @@ long HTMLImageElementImpl::width() const
             return 0;
     }
 
-    document()->updateRendering();
+    document()->updateLayout();
 
     return m_render ? m_render->contentWidth() :
                       getAttribute(ATTR_WIDTH).toInt();
@@ -304,7 +304,7 @@ long HTMLImageElementImpl::height() const
             return 0;
     }
 
-    document()->updateRendering();
+    document()->updateLayout();
 
     return m_render ? m_render->contentHeight() :
                       getAttribute(ATTR_HEIGHT).toInt();
