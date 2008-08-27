@@ -59,6 +59,9 @@ namespace Sonnet
         void show();
         void activeAutoCorrect(bool _active);
 
+        // Hide warning about done(), which is a slot in QDialog and a signal here.
+        using KDialog::done;
+
     public Q_SLOTS:
         void setBuffer(const QString &);
 
