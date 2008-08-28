@@ -998,7 +998,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     l->setLayoutDirection(Qt::LeftToRight);
     // but if we are in RTL mode, align the text to the right
     // otherwise the text is on the wrong side of the dialog
-    if (properties->layoutDirection() == Qt::RightToLeft) 
+    if (properties->layoutDirection() == Qt::RightToLeft)
 	l->setAlignment( Qt::AlignRight );
     l->setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard);
     grid->addWidget(l, curRow++, 2);
@@ -1086,12 +1086,12 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   if ( isLocal && hasDirs )  // only for directories
   {
-    sep = new KSeparator( Qt::Horizontal, d->m_frame);
-    grid->addWidget(sep, curRow, 0, 1, 3);
-    ++curRow;
 
     KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( url.path() );
-    if (mp) {
+    if (mp && (mp->mountPoint() != "/proc") && (mp->mountPoint() != "/sys") ) {
+        sep = new KSeparator( Qt::Horizontal, d->m_frame);
+        grid->addWidget(sep, curRow, 0, 1, 3);
+        ++curRow;
       if (mp->mountPoint() != "/")
       {
           l = new QLabel(i18n("Mounted on:"), d->m_frame );
