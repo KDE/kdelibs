@@ -34,10 +34,12 @@ class KFadeWidgetEffectPrivate
         KFadeWidgetEffect *q_ptr;
 
     private:
+	QPixmap transition(const QPixmap &from, const QPixmap &to, qreal amount) const;
         void finished();
 
         QTimeLine timeLine;
         QPixmap oldPixmap;
+        QPixmap newPixmap;
         QWidget *destWidget;
         bool disabled;
 };

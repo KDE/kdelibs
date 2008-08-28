@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2008 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2008 Rafael Fernández López <ereslibre@kde.org>
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,14 +21,136 @@
 
 #include "kfadewidgeteffect.h"
 #include "kfadewidgeteffect_p.h"
+
+#include <config.h> // for HAVE_XRENDER
+
 #include <QtCore/QEvent>
+#include <QtGui/QPaintEngine>
 #include <QtGui/QPainter>
 
 #include <kglobalsettings.h>
 
+#if defined(Q_WS_X11) && defined(HAVE_XRENDER)
+#  include <X11/Xlib.h>
+#  include <X11/extensions/Xrender.h>
+#  include <QX11Info>
+#  undef KeyPress
+#  undef FocusOut
+#endif
+
 KFadeWidgetEffectPrivate::KFadeWidgetEffectPrivate(QWidget *_destWidget)
     : destWidget(_destWidget), disabled(false)
 {
+}
+
+// Code from KFileItemDelegate (Author: Frederik Höglund)
+// Fast transitions. Read:
+// http://techbase.kde.org/Development/Tutorials/Graphics/Performance
+// for further information on why not use setOpacity.
+QPixmap KFadeWidgetEffectPrivate::transition(const QPixmap &from, const QPixmap &to, qreal amount) const
+{
+    int value = int(0xff * amount);
+
+    if (value == 0)
+        return from;
+
+    if (value == 1)
+        return to;
+
+    QColor color;
+    color.setAlphaF(amount);
+
+    // If the native paint engine supports Porter/Duff compositing and CompositionMode_Plus
+    if (from.paintEngine()->hasFeature(QPaintEngine::PorterDuff) &&
+        from.paintEngine()->hasFeature(QPaintEngine::BlendModes))
+    {
+        QPixmap under = from;
+        QPixmap over  = to;
+
+        QPainter p;
+        p.begin(&over);
+        p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+        p.fillRect(over.rect(), color);
+        p.end();
+
+        p.begin(&under);
+        p.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+        p.fillRect(under.rect(), color);
+        p.setCompositionMode(QPainter::CompositionMode_Plus);
+        p.drawPixmap(0, 0, over);
+        p.end();
+
+        return under;
+    }
+#if defined(Q_WS_X11) && defined(HAVE_XRENDER)
+    else if (from.paintEngine()->hasFeature(QPaintEngine::PorterDuff)) // We have Xrender support
+    {
+        // QX11PaintEngine doesn't implement CompositionMode_Plus in Qt 4.3,
+        // which we need to be able to do a transition from one pixmap to
+        // another.
+        //
+        // In order to avoid the overhead of converting the pixmaps to images
+        // and doing the operation entirely in software, this function has a
+        // specialized path for X11 that uses Xrender directly to do the
+        // transition. This operation can be fully accelerated in HW.
+        //
+        // This specialization can be removed when QX11PaintEngine supports
+        // CompositionMode_Plus.
+        QPixmap source(to), destination(from);
+
+        source.detach();
+        destination.detach();
+
+        Display *dpy = QX11Info::display();
+
+        XRenderPictFormat *format = XRenderFindStandardFormat(dpy, PictStandardA8);
+        XRenderPictureAttributes pa;
+        pa.repeat = 1; // RepeatNormal
+
+        // Create a 1x1 8 bit repeating alpha picture
+        Pixmap pixmap = XCreatePixmap(dpy, destination.handle(), 1, 1, 8);
+        Picture alpha = XRenderCreatePicture(dpy, pixmap, format, CPRepeat, &pa);
+        XFreePixmap(dpy, pixmap);
+
+        // Fill the alpha picture with the opacity value
+        XRenderColor xcolor;
+        xcolor.alpha = quint16(0xffff * amount);
+        XRenderFillRectangle(dpy, PictOpSrc, alpha, &xcolor, 0, 0, 1, 1);
+
+        // Reduce the alpha of the destination with 1 - opacity
+        XRenderComposite(dpy, PictOpOutReverse, alpha, None, destination.x11PictureHandle(),
+                         0, 0, 0, 0, 0, 0, destination.width(), destination.height());
+
+        // Add source * opacity to the destination
+        XRenderComposite(dpy, PictOpAdd, source.x11PictureHandle(), alpha,
+                         destination.x11PictureHandle(),
+                         0, 0, 0, 0, 0, 0, destination.width(), destination.height());
+
+        XRenderFreePicture(dpy, alpha);
+        return destination;
+    }
+#endif
+    else
+    {
+        // Fall back to using QRasterPaintEngine to do the transition.
+        QImage under = from.toImage();
+        QImage over  = to.toImage();
+
+        QPainter p;
+        p.begin(&over);
+        p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+        p.fillRect(over.rect(), color);
+        p.end();
+
+        p.begin(&under);
+        p.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+        p.fillRect(under.rect(), color);
+        p.setCompositionMode(QPainter::CompositionMode_Plus);
+        p.drawImage(0, 0, over);
+        p.end();
+
+        return QPixmap::fromImage(under);
+    }
 }
 
 KFadeWidgetEffect::KFadeWidgetEffect(QWidget *destWidget)
@@ -72,6 +195,7 @@ void KFadeWidgetEffect::start(int duration)
         deleteLater();
         return;
     }
+    d->newPixmap = QPixmap::grabWidget(d->destWidget);
     d->timeLine.setDuration(duration);
     d->timeLine.start();
 }
@@ -80,8 +204,9 @@ void KFadeWidgetEffect::paintEvent(QPaintEvent *)
 {
     Q_D(KFadeWidgetEffect);
     QPainter p(this);
-    p.setOpacity(1.0 - d->timeLine.currentValue());
-    p.drawPixmap(rect(), d->oldPixmap);
+    QPixmap pixmap(d->transition(d->oldPixmap, d->newPixmap, d->timeLine.currentValue()));
+    p.drawPixmap(rect(), pixmap);
+    p.end();
 }
 
 #include "moc_kfadewidgeteffect.cpp"

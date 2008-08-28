@@ -218,6 +218,9 @@ void KPageViewPrivate::_k_pageSelected(const QModelIndex &index, const QModelInd
 
   if (faceType != KPageView::Tabbed) {
   QWidget *widget = qvariant_cast<QWidget*>( model->data( index, KPageModel::WidgetRole ) );
+
+  KFadeWidgetEffect *effect = new KFadeWidgetEffect(stack);
+
   if ( widget ) {
     if ( stack->indexOf( widget ) == -1 ) { // not included yet
       stack->addWidget( widget );
@@ -229,6 +232,7 @@ void KPageViewPrivate::_k_pageSelected(const QModelIndex &index, const QModelInd
   }
 
   updateTitleWidget(index);
+  effect->start();
   }
 
   Q_Q(KPageView);
