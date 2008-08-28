@@ -133,6 +133,13 @@ void ShortcutEditWidget::setCustom(const QKeySequence &seq)
         m_customRadio->setChecked(true);
     else
         m_defaultRadio->setChecked(true);
+
+    // BUG: The shortcuts is taken away from the other action. But there is
+    // currently no way to undo that, because noone remembers what happend
+    // after that call.
+    // TODO: Adapt the shortcuteditor so it is able to undo this
+    m_customEditor->applyStealShortcut();
+
     emit keySequenceChanged(seq);
     m_isUpdating = false;
 }
