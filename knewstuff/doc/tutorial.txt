@@ -178,4 +178,5 @@ also provides GHNS feeds.
 
 http://newstuff.kde.org/
 http://www.kde-look.org/help/ghns.php
+http://open-collaboration-services.org/
 
