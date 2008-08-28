@@ -26,8 +26,8 @@
 // rolling hash parameters
 #define HASH_P (2003)
 #define HASH_Q (8191)
-// HASH_MOD = (HASH_P^7) % HASH_Q
-#define HASH_MOD (598)
+// HASH_MOD = (HASH_P^7) & HASH_Q
+#define HASH_MOD (6843)
 
 namespace khtml {
 
