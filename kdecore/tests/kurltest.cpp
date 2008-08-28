@@ -1577,6 +1577,10 @@ void KUrlTest::testPathOrURL()
   QCOMPARE( KUrl( uloc.pathOrUrl() ), uloc );
   uloc = KUrl( "file:///home/andreas/t%C3%A4st");
   QCOMPARE( KUrl( uloc.pathOrUrl() ), uloc );
+  uloc = KUrl( "http://www.kde.org/home/kde?foobar#test" );
+  QCOMPARE( KUrl( uloc.pathOrUrl() ), uloc );
+  uloc = KUrl( "http://www.kde.org/home/%andreas");
+  QCOMPARE( KUrl( uloc.pathOrUrl() ), uloc );
 }
 
 void KUrlTest::testAssignment()
