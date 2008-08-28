@@ -204,8 +204,7 @@ void KFadeWidgetEffect::paintEvent(QPaintEvent *)
 {
     Q_D(KFadeWidgetEffect);
     QPainter p(this);
-    QPixmap pixmap(d->transition(d->oldPixmap, d->newPixmap, d->timeLine.currentValue()));
-    p.drawPixmap(rect(), pixmap);
+    p.drawPixmap(rect(), d->transition(d->oldPixmap, d->newPixmap, d->timeLine.currentValue()));
     p.end();
 }
 
