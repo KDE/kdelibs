@@ -2330,7 +2330,8 @@ bool CSSParser::parseShadow(int propId, bool important)
         else {
             // The only other type of value that's ok is a color value.
             CSSPrimitiveValueImpl* parsedColor = 0;
-            bool isColor = (val->id >= CSS_VAL_AQUA && val->id <= CSS_VAL_WINDOWTEXT || val->id == CSS_VAL_MENU ||
+            bool isColor = ((val->id >= CSS_VAL_AQUA && val->id <= CSS_VAL_WINDOWTEXT) ||
+                            val->id == CSS_VAL_MENU ||
                            (val->id >= CSS_VAL_GREY && val->id <= CSS_VAL__KHTML_TEXT && !strict));
 	    if (!context.allowColor)
                 return context.failed();
