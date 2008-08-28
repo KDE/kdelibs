@@ -60,23 +60,27 @@ static QString *kde4Prefix = NULL;
 
 void initKde4prefixUtf16()
 {
-    //the path is C:\some\path\kde4\bin\kdecore.dll
-    GetModuleFileNameW(kdecoreDllInstance, kde4prefixUtf16, MAX_PATH + 1);
-    int bs1 = 0, bs2 = 0;
-
-    //we convert \ to / and remove \bin\kdecore.dll from the string
-    int pos;
-    for (pos = 0; pos < MAX_PATH + 1 && kde4prefixUtf16[pos] != 0; ++pos) {
-        if (kde4prefixUtf16[pos] == '\\') {
-            bs1 = bs2;
-            bs2 = pos;
-            kde4prefixUtf16[pos] = '/';
+    //the path is C:\some\path\kde4\bin\kdecore.dll, or C:\some\InstallationDirectory\kdecore.dll
+    //for non-standard distributions (e.g., Gpg4win)
+    //To find the prefix, we cut kdecore.dll and also \bin\ if present 
+    const DWORD pathLength = GetModuleFileNameW(kdecoreDllInstance, kde4prefixUtf16, MAX_PATH + 1);
+    const DWORD lastError = GetLastError();
+    if ( pathLength == 0 || lastError != 0 )
+        qFatal("Could not determine kde installation prefix (Error code=%d)", lastError);
+    assert(pathLength <= MAX_PATH + 1);
+    int lastSlash = -1;
+    for (int i = 0; i < pathLength; ++i)
+        if (kde4prefixUtf16[i] == '\\') {
+            kde4prefixUtf16[i] = '/';            
+            lastSlash = i;
         }
-    }
-    Q_ASSERT(bs1);
-    Q_ASSERT(pos < MAX_PATH + 1);
-    kde4prefixUtf16[bs1] = '/';
-    kde4prefixUtf16[bs1+1] = 0;
+    if (lastSlash == -1)
+        qFatal("Could not determine kde installation prefix from \"%s\"", kde4prefixUtf16);
+    //cut off "kdecore.dll"
+    kde4prefixUtf16[lastSlash+1] = 0;
+    //cut possible "/bin"
+    if (lastSlash > 3 && wcsncmp(kde4prefixUtf16 + lastSlash - 4, L"/bin", 4) == 0) 
+        kde4prefixUtf16[lastSlash-3] = 0; 
 }
 
 // can't use QCoreApplication::applicationDirPath() because sometimes we
