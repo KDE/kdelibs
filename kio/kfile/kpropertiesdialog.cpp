@@ -1088,28 +1088,31 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   {
 
     KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( url.path() );
-    if (mp && (mp->mountPoint() != "/proc") && (mp->mountPoint() != "/sys") ) {
-        sep = new KSeparator( Qt::Horizontal, d->m_frame);
-        grid->addWidget(sep, curRow, 0, 1, 3);
-        ++curRow;
-      if (mp->mountPoint() != "/")
-      {
-          l = new QLabel(i18n("Mounted on:"), d->m_frame );
-          grid->addWidget(l, curRow, 0);
+    if (mp) {
+        KDiskFreeSpaceInfo info = KDiskFreeSpaceInfo::freeSpaceInfo( mp->mountPoint() );
+        if(info.size() != 0 )
+        {
+            sep = new KSeparator( Qt::Horizontal, d->m_frame);
+            grid->addWidget(sep, curRow, 0, 1, 3);
+            ++curRow;
+            if (mp->mountPoint() != "/")
+            {
+                l = new QLabel(i18n("Mounted on:"), d->m_frame );
+                grid->addWidget(l, curRow, 0);
 
-          l = new KSqueezedTextLabel( mp->mountPoint(), d->m_frame );
-          l->setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard);
-          grid->addWidget( l, curRow++, 2 );
-      }
+                l = new KSqueezedTextLabel( mp->mountPoint(), d->m_frame );
+                l->setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard);
+                grid->addWidget( l, curRow++, 2 );
+            }
 
-      l = new QLabel(i18n("Device usage:"), d->m_frame );
-      grid->addWidget(l, curRow, 0);
+            l = new QLabel(i18n("Device usage:"), d->m_frame );
+            grid->addWidget(l, curRow, 0);
 
-      d->m_capacityBar = new KCapacityBar( KCapacityBar::DrawTextOutline, d->m_frame );
-      grid->addWidget( d->m_capacityBar, curRow++, 2);
+            d->m_capacityBar = new KCapacityBar( KCapacityBar::DrawTextOutline, d->m_frame );
+            grid->addWidget( d->m_capacityBar, curRow++, 2);
 
-      KDiskFreeSpaceInfo info = KDiskFreeSpaceInfo::freeSpaceInfo( mp->mountPoint() );
-      slotFoundMountPoint( info.mountPoint(), info.size()/1024, info.used()/1024, info.available()/1024);
+            slotFoundMountPoint( info.mountPoint(), info.size()/1024, info.used()/1024, info.available()/1024);
+        }
     }
   }
 
