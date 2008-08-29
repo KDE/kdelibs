@@ -78,9 +78,9 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
 }
 
 
-bool ShortcutEditWidget::checkAgainstStandardShortcuts() const
+KKeySequenceWidget::ShortcutTypes ShortcutEditWidget::checkForConflictsAgainst() const
 {
-    return m_customEditor->checkAgainstStandardShortcuts();
+    return m_customEditor->checkForConflictsAgainst();
 }
 
 //slot
@@ -94,6 +94,9 @@ void ShortcutEditWidget::defaultToggled(bool checked)
         // The default key sequence should be activated. We check first if this is
         // possible.
         if (m_customEditor->isKeySequenceAvailable(m_defaultKeySequence)) {
+            // Steal the shortcut if the use gave his consens
+            m_customEditor->applyStealShortcut();
+            // Clear the customs widget
             m_customEditor->clearKeySequence();
             emit keySequenceChanged(m_defaultKeySequence);
         } else {
@@ -117,9 +120,9 @@ void ShortcutEditWidget::setCheckActionCollections(
 }
 
 
-void ShortcutEditWidget::setCheckAgainstStandardShortcuts(bool check)
+void ShortcutEditWidget::setCheckForConflictsAgainst(KKeySequenceWidget::ShortcutTypes types)
 {
-    m_customEditor->setCheckAgainstStandardShortcuts(check);
+    m_customEditor->setCheckForConflictsAgainst(types);
 }
 
 //slot

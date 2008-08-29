@@ -23,8 +23,9 @@
 
 #include "kgesture.h"
 
-#include <kextendableitemdelegate.h>
-#include <kshortcutseditor.h>
+#include "kextendableitemdelegate.h"
+#include "kshortcutseditor.h"
+#include "kkeysequencewidget.h"
 
 #include <QKeySequence>
 #include <QMetaType>
@@ -36,7 +37,6 @@ class QLabel;
 class QTreeWidget;
 class QTreeWidgetItem;
 class QRadioButton;
-class KKeySequenceWidget;
 class KActionCollection;
 
 enum ColumnDesignation {
@@ -157,10 +157,10 @@ public:
     //! @see KKeySequenceWidget::setCheckActionCollections()
     void setCheckActionCollections( const QList<KActionCollection*> checkActionCollections);
 
-    //! @see KKeySequenceWidget::checkAgainstStandardShortcuts()
     //@{
-    bool checkAgainstStandardShortcuts() const;
-    void setCheckAgainstStandardShortcuts(bool check);
+    //! @see KKeySequenceWidget::checkAgainstStandardShortcuts()
+    KKeySequenceWidget::ShortcutTypes checkForConflictsAgainst() const;
+    void setCheckForConflictsAgainst(KKeySequenceWidget::ShortcutTypes);
     //@}
 
 public Q_SLOTS:

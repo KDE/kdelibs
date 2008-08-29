@@ -140,7 +140,13 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
             m_editor = editor;
             // For global shortcuts check against the kde standard shortcuts
             if (column == GlobalPrimary || column == GlobalAlternate) {
-                editor->setCheckAgainstStandardShortcuts(true);
+                editor->setCheckForConflictsAgainst(
+                    // Don't know why that is necessary but it doesn't compile
+                    // without.
+                    KKeySequenceWidget::ShortcutTypes(
+                        KKeySequenceWidget::LocalShortcuts
+                            | KKeySequenceWidget::GlobalShortcuts
+                            | KKeySequenceWidget::StandardShortcuts ));
             }
 
             editor->setCheckActionCollections(m_checkActionCollections);
