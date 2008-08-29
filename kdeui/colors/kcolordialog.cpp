@@ -1036,7 +1036,7 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     connect(d->smode, SIGNAL(clicked()),
             SLOT(setSMode()));
 
-    d->vmode = new QRadioButton(i18n("Value:"), page);
+    d->vmode = new QRadioButton(i18nc("This is the V of HSV", "Value:"), page);
     l_lbot->addWidget(d->vmode, 2, 0);
 
     d->vedit = new KColorSpinBox(0, 255, 1, page);
