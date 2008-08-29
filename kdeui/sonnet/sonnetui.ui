@@ -184,11 +184,6 @@ Click here if you consider that the unknown word is not misspelled and you want 
 &lt;p>Select the language of the document you are proofing here.&lt;/p>
 &lt;/qt></string>
      </property>
-     <item>
-      <property name="text" >
-       <string>English</string>
-      </property>
-     </item>
     </widget>
    </item>
    <item rowspan="3" row="2" column="5" >
