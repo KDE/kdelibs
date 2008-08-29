@@ -71,29 +71,92 @@ public:
 	virtual ~KKeySequenceWidget();
 
 	/**
-	 * Set if a key sequence should be checked against kde's standard
-	 * shortcuts (@see KStandardShortcut).
+	 * \group Configuration
 	 *
-	 * It is a good idea to enable this when caputing a key sequence for a
-	 * global shortcut. The default is not to check against standard
-	 * shortcuts.
-	 *
-	 * @param check True -> Check against standard shortcuts
-	 * @since 4.2
+	 * Configuration options for the widget.
 	 */
 	//@{
-	bool checkAgainstStandardShortcuts() const;
-	void setCheckAgainstStandardShortcuts(bool check);
-	//@}
 
-	/**
-	 * This only applies to user input, not to setShortcut().
-	 * Set whether to accept "plain" keys without modifiers (like Ctrl, Alt, Meta).
-	 * Plain keys by our definition include letter and symbol keys and
-	 * text editing keys (Return, Space, Tab, Backspace, Delete).
-	 * "Special" keys like F1, Cursor keys, Insert, PageDown will always work.
-	 */
-	void setModifierlessAllowed(bool allow);
+		enum ShortcutType {
+			LocalShortcuts = 0x01,      //!< Check with local shortcuts. @see setCheckActionCollections()
+			StandardShortcuts = 0x02,   //!< Check against standard shortcuts. @see KStandardShortcut
+			GlobalShortcuts = 0x03      //!< Check against global shortcuts. @see KGlobalAccel
+		};
+		Q_DECLARE_FLAGS(ShortcutTypes, ShortcutType)
+
+		/**
+		 * Configure if the widget should check for conflicts with existing
+		 * shortcuts.
+		 *
+		 * When capturing a key sequence for local shortcuts you should check
+		 * against GlobalShortcuts and your other local shortcuts. This is the
+		 * default.
+		 *
+		 * The easiest way to check against local shortcuts is
+		 * setCheckActionCollections().
+		 *
+		 * When capturing a key sequence for a global shortcut you should
+		 * check against StandardShortcuts, GlobalShortcuts and your local
+		 * shortcuts.
+		 *
+		 * If you want to do the conflict checking yourself here are some code
+		 * snippets for standard and global shortcuts:
+		 *
+		 * \code
+		 * QStringList conflicting = KGlobalAccel::findActionNameSystemwide(keySequence);
+		 * if (!conflicting.isEmpty()) {
+		 *     // Inform and ask the user about the conflict and reassigning
+		 *     // the keys sequence
+		 *     if (!KGlobalAccel::promptStealShortcutSystemwide(q, conflicting, keySequence)) {
+		 *         return true;
+		 *     }
+		 *     KGlobalAccel::stealShortcutSystemwide(keySequence);
+		 * }
+		 * \endcode
+		 *
+		 * \code
+		 * KStandardShortcut::StandardShortcut ssc = KStandardShortcut::find(keySequence);
+		 * if (ssc != KStandardShortcut::AccelNone) {
+		 *     // We have a conflict
+		 * }
+		 * \endcode
+		 *
+		 * We normally inform the user abput the possible conflict and let him
+		 * proceed if he wants.
+		 *
+		 * @since 4.2
+		 */
+		void setCheckForConflictsAgainst( ShortcutTypes types );
+
+		/**
+		 * The shortcut types we check for conflicts.
+		 * @see setCheckForConflictsAgainst
+		 *
+		 * @since 4.2
+		 */
+		ShortcutTypes checkForConflictsAgainst() const;
+
+		/**
+		 * This only applies to user input, not to setShortcut().
+		 * Set whether to accept "plain" keys without modifiers (like Ctrl, Alt, Meta).
+		 * Plain keys by our definition include letter and symbol keys and
+		 * text editing keys (Return, Space, Tab, Backspace, Delete).
+		 * "Special" keys like F1, Cursor keys, Insert, PageDown will always work.
+		 */
+		void setModifierlessAllowed(bool allow);
+
+		/**
+		 * @see setModifierlessAllowed()
+		 */
+		bool isModifierlessAllowed();
+
+		/**
+		 * Set whether a small button to set an empty key sequence should be displayed next to the
+		 * main input widget. The default is to show the clear button.
+		 */
+		void setClearButtonShown(bool show);
+
+	//@}
 
 	/**
 	 * Checks whether the key sequence @a seq is available to grab.
@@ -105,17 +168,6 @@ public:
 	 * @since 4.2
 	 */
 	bool isKeySequenceAvailable(const QKeySequence &seq) const;
-
-	/**
-	 * @see setModifierlessAllowed()
-	 */
-	bool isModifierlessAllowed();
-
-	/**
-	 * Set whether a small button to set an empty key sequence should be displayed next to the
-	 * main input widget. The default is to show the clear button.
-	 */
-	void setClearButtonShown(bool show);
 
 	/**
 	 * Return the currently selected key sequence.

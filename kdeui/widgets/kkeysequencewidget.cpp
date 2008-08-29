@@ -76,6 +76,21 @@ public:
 	 */
 	bool stealStandardShortcut(KStandardShortcut::StandardShortcut std, const QKeySequence &seq);
 
+	bool checkAgainstStandardShortcuts() const
+	{
+		return checkAgainstShortcutTypes & KKeySequenceWidget::StandardShortcuts;
+	}
+
+	bool checkAgainstGlobalShortcuts() const
+	{
+		return checkAgainstShortcutTypes & KKeySequenceWidget::GlobalShortcuts;
+	}
+
+	bool checkAgainstLocalShortcuts() const
+	{
+		return checkAgainstShortcutTypes & KKeySequenceWidget::LocalShortcuts;
+	}
+
 //private slot
 	void doneRecording(bool validate = true);
 
@@ -94,7 +109,7 @@ public:
 	bool isRecording;
 
 	//! Check the key sequence against KStandardShortcut::find()
-	bool checkAgainstStandardShortcuts;
+	KKeySequenceWidget::ShortcutTypes checkAgainstShortcutTypes;
 
     /**
      * The list of action to check against for conflict shortcut
@@ -125,7 +140,7 @@ KKeySequenceWidgetPrivate::KKeySequenceWidgetPrivate(KKeySequenceWidget *q)
 	 ,nKey(0)
 	 ,modifierKeys(0)
 	 ,isRecording(false)
-	 ,checkAgainstStandardShortcuts(false)
+	 ,checkAgainstShortcutTypes(KKeySequenceWidget::LocalShortcuts & KKeySequenceWidget::GlobalShortcuts)
 	 ,stealAction(NULL)
 {}
 
@@ -149,7 +164,6 @@ void KKeySequenceWidgetPrivate::wontStealShortcut(QAction *item, const QKeySeque
 			"Please select a different one.</qt>", seq.toString(QKeySequence::NativeText) , item->text().remove('&') ) );
 	KMessageBox::sorry( q, msg );
 }
-
 
 
 KKeySequenceWidget::KKeySequenceWidget(QWidget *parent)
@@ -193,11 +207,16 @@ KKeySequenceWidget::~KKeySequenceWidget ()
 }
 
 
-bool KKeySequenceWidget::checkAgainstStandardShortcuts() const
+KKeySequenceWidget::ShortcutTypes KKeySequenceWidget::checkForConflictsAgainst() const
 {
-	return d->checkAgainstStandardShortcuts;
+	return d->checkAgainstShortcutTypes;
 }
 
+
+void KKeySequenceWidget::setCheckForConflictsAgainst(ShortcutTypes types)
+{
+	d->checkAgainstShortcutTypes = types;
+}
 
 void KKeySequenceWidget::setModifierlessAllowed(bool allow)
 {
@@ -209,8 +228,7 @@ bool KKeySequenceWidget::isKeySequenceAvailable(const QKeySequence &keySequence)
 {
 	return ! ( d->conflictWithLocalShortcuts(keySequence)
 	           || d->conflictWithGlobalShortcuts(keySequence)
-	           || ( d->checkAgainstStandardShortcuts 
-		        && d->conflictWithStandardShortcuts(keySequence)));
+	           || d->conflictWithStandardShortcuts(keySequence));
 }
 
 
@@ -234,11 +252,6 @@ void KKeySequenceWidget::setCheckActionList(const QList<QAction*> &checkList) //
 void KKeySequenceWidget::setCheckActionCollections(const QList<KActionCollection *>& actionCollections)
 {
     d->checkActionCollections = actionCollections;
-}
-
-void KKeySequenceWidget::setCheckAgainstStandardShortcuts(bool check)
-{
-	d->checkAgainstStandardShortcuts = check;
 }
 
 //slot
@@ -278,10 +291,15 @@ void KKeySequenceWidget::clearKeySequence()
 //slot
 void KKeySequenceWidget::applyStealShortcut()
 {
+	kDebug();
+
 	if(d->stealAction) {
-		KShortcut cut=d->stealAction->shortcut();
-		cut.remove(d->keySequence);
-		d->stealAction->setShortcut(cut, KAction::ActiveShortcut);
+
+		kDebug() << "Stealing shortcut for " << d->stealAction->objectName();
+
+		// Stealing a shortcut means setting it to an empty one
+		d->stealAction->setShortcut(KShortcut(), KAction::ActiveShortcut);
+
                 // Find the collection where stealAction belongs
                 KActionCollection* parentCollection = 0;
                 foreach(KActionCollection* collection, d->checkActionCollections) {
@@ -344,6 +362,10 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 
 bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &keySequence)
 {
+	if (!checkAgainstShortcutTypes & KKeySequenceWidget::GlobalShortcuts) {
+		return false;
+	}
+
 	QStringList conflicting = KGlobalAccel::findActionNameSystemwide(keySequence);
 	if (!conflicting.isEmpty()) {
 		if (!KGlobalAccel::promptStealShortcutSystemwide(q, conflicting, keySequence)) {
@@ -363,6 +385,10 @@ bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &
 
 bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &keySequence)
 {
+	if (!checkAgainstShortcutTypes & KKeySequenceWidget::LocalShortcuts) {
+		return false;
+	}
+
 	// We have actions both in the deprecated checkList and the
 	// checkActionCollections list. Add all the actions to a single list to
 	// be able to process them in a single loop below.
@@ -411,6 +437,10 @@ bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &k
 
 bool KKeySequenceWidgetPrivate::conflictWithStandardShortcuts(const QKeySequence &keySequence)
 {
+	if (!checkAgainstShortcutTypes & KKeySequenceWidget::StandardShortcuts) {
+		return false;
+	}
+
 	KStandardShortcut::StandardShortcut ssc = KStandardShortcut::find(keySequence);
 	if (ssc != KStandardShortcut::AccelNone && !stealStandardShortcut(ssc, keySequence)) {
 		return true;
