@@ -60,6 +60,7 @@ public:
   virtual KJS::Interpreter *interpreter();
 
   virtual void setDebugEnabled(bool enabled);
+  virtual bool debugEnabled() const;
   virtual void showDebugWindow(bool show=true);
   virtual bool paused() const;
   virtual void dataReceived();
@@ -276,6 +277,15 @@ void KJSProxyImpl::setDebugEnabled(bool enabled)
   // see the entire session
   if (enabled)
     m_debugWindow = DebugWindow::window();
+#endif
+}
+
+bool KJSProxyImpl::debugEnabled() const
+{
+#ifdef KJS_DEBUGGER
+  return m_debugEnabled;
+#else
+  return false;
 #endif
 }
 
