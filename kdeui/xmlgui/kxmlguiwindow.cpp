@@ -324,20 +324,13 @@ void KXmlGuiWindow::createStandardStatusBarAction(){
 
 void KXmlGuiWindow::finalizeGUI( bool /*force*/ )
 {
-    //kDebug(260) << "KXmlGuiWindow::finalizeGUI force=" << force;
-    // The whole reason for this is that moveToolBar relies on the indexes
-    // of the other toolbars, so in theory it should be called only once per
-    // toolbar, but in increasing order of indexes.
-    // Since we can't do that immediately, we move them, and _then_
-    // we call positionYourself again for each of them, but this time
-    // the toolbariterator should give them in the proper order.
-    // Both the XMLGUI and applySettings call this, hence "force" for the latter.
-    /* FIXME KAction port - not needed?
-    foreach (KToolBar* toolbar, toolBars()) {
-        toolbar->positionYourself( force );
-    }*/
-
-    //d->settingsDirty = false;
+    // FIXME: this really needs to be removed with a code more like the one we had on KDE3.
+    //        what we need to do here is to position correctly toolbars so they don't overlap.
+    //        Also, take in count plugins could provide their own toolbars and those also need to
+    //        be restored.
+    if (autoSaveSettings() && autoSaveConfigGroup().isValid()) {
+        applyMainWindowSettings(autoSaveConfigGroup());
+    }
 }
 
 void KXmlGuiWindow::applyMainWindowSettings(const KConfigGroup &config, bool force)
