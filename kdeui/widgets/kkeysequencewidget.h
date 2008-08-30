@@ -254,4 +254,6 @@ private:
 	Q_DISABLE_COPY(KKeySequenceWidget)
 };
 
+Q_DECLARE_OPERATORS_FOR_FLAGS(KKeySequenceWidget::ShortcutTypes)
+
 #endif //KKEYSEQUENCEWIDGET_H
