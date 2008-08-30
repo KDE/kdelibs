@@ -290,7 +290,8 @@ void KShortcutsEditorItem::undo()
     }
 #endif
     if (m_oldLocalShortcut) {
-        m_action->setShortcut(*m_oldLocalShortcut);
+        // We only ever reset the active Shortcut
+        m_action->setShortcut(*m_oldLocalShortcut, KAction::ActiveShortcut);
     }
 
     if (m_oldGlobalShortcut) {
