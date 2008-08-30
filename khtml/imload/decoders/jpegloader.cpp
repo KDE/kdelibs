@@ -346,12 +346,9 @@ int JPEGLoader::Private::processData(uchar* buffer, int length)
         if ( cinfo.jpeg_color_space == JCS_YCbCr )
             cinfo.out_color_space = JCS_RGB;
         
-    
         cinfo.do_fancy_upsampling = true;
         cinfo.do_block_smoothing = false;
-        cinfo.dct_method = JDCT_FASTEST;
         cinfo.quantize_colors = false;
-        
 
         // false: IO suspension
         if(jpeg_start_decompress(&cinfo)) {
