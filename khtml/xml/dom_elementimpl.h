@@ -5,7 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Peter Kelly (pmk@post.com)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
- *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2003, 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -41,6 +41,7 @@ namespace DOM {
 class ElementImpl;
 class DocumentImpl;
 class NamedAttrMapImpl;
+class ElementRareDataImpl;
 
 // Attr can have Text and EntityReference children
 // therefore it has to be a fullblown Node. The plan
@@ -64,7 +65,7 @@ private:
 public:
 
     // DOM methods & attributes for Attr
-    bool specified() const { return m_specified; }
+    bool specified() const { return true; /* we don't yet support default attributes*/ }
     ElementImpl* ownerElement() const { return m_element; }
     void setOwnerElement( ElementImpl* impl ) { m_element = impl; }
     DOMString name() const;
@@ -245,6 +246,7 @@ public:
     virtual khtml::RenderStyle *styleForRenderer(khtml::RenderObject *parent);
     virtual khtml::RenderObject *createRenderer(khtml::RenderArena *, khtml::RenderStyle *);
     virtual void recalcStyle( StyleChange = NoChange );
+    virtual khtml::RenderStyle* computedStyle();
 
     virtual void mouseEventHandler( MouseEvent* /*ev*/, bool /*inside*/ ) {}
 
@@ -297,6 +299,14 @@ private:
     // for setting this according to the corresponding element description
     // in the DTD
     virtual NamedAttrMapImpl* defaultMap() const;
+
+    // There is some information such as computed style for display:none
+    // elements that is needed only for a few elements. We store it
+    // in one of these. 
+    ElementRareDataImpl* rareData();
+    const ElementRareDataImpl* rareData() const;
+    ElementRareDataImpl* createRareData();
+
 
 protected: // member variables
     mutable NamedAttrMapImpl *namedAttrMap;
