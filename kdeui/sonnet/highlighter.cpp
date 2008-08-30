@@ -33,16 +33,14 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 
-#include <QTextEdit>
-#include <QTextCharFormat>
-#include <QTimer>
-#include <QColor>
+#include <QtGui/QTextEdit>
+#include <QtCore/QTimer>
+#include <QtGui/QColor>
 #include <QHash>
 #include <QTextCursor>
 #include <QEvent>
 #include <QKeyEvent>
 #include <QApplication>
-
 namespace Sonnet {
 
 class Highlighter::Private
@@ -215,23 +213,21 @@ void Highlighter::slotAutoDetection()
 {
     bool savedActive = d->active;
 
-    //don't disable just because 1 of 4 is misspelled.
-    if (d->automatic && d->wordCount >= 10) {
+    if ( d->automatic ) {
 	// tme = Too many errors
-        bool tme = (d->errorCount >= d->disableWordCount) && (
-            d->errorCount * 100 >= d->disablePercentage * d->wordCount);
-	if (d->active && tme)
+        bool tme = ( d->errorCount >= d->disableWordCount ) && ( d->errorCount * 100 >= d->disablePercentage * d->wordCount );
+	if ( d->active && tme )
 	    d->active = false;
-	else if (!d->active && !tme)
+	else if ( !d->active && !tme )
 	    d->active = true;
     }
-    if (d->active != savedActive) {
-	if (d->wordCount > 1)
+    if ( d->active != savedActive ) {
+	if ( d->wordCount > 1 )
 	    if ( d->active )
-		emit activeChanged(i18n("As-you-type spell checking enabled."));
+		emit activeChanged( i18n("As-you-type spell checking enabled.") );
 	    else
-		emit activeChanged(i18n( "Too many misspelled words. "
-                                         "As-you-type spell checking disabled."));
+		emit activeChanged( i18n( "Too many misspelled words. "
+					  "As-you-type spell checking disabled." ) );
 	d->completeRehighlightRequired = true;
 	d->rehighlightRequest->setInterval(100);
         d->rehighlightRequest->setSingleShot(true);
@@ -259,15 +255,15 @@ bool Highlighter::isActive() const
     return d->active;
 }
 
-void Highlighter::highlightBlock(const QString &text)
+void Highlighter::highlightBlock ( const QString & text )
 {
-    if (text.isEmpty() || !d->active || !d->spellCheckerFound)
+    if ( text.isEmpty() || !d->active || !d->spellCheckerFound)
         return;
     QTextCursor cursor = d->edit->textCursor();
     int index = cursor.position();
 
     const int lengthPosition = text.length() - 1;
-
+    
     if ( index != lengthPosition ||
          ( lengthPosition > 0 && !text[lengthPosition-1].isLetter() ) ) {
         d->filter->setBuffer( text );
@@ -317,16 +313,12 @@ void Highlighter::setCurrentLanguage(const QString &lang)
 
 void Highlighter::setMisspelled(int start, int count)
 {
-    QTextCharFormat format;
-    format.setFontUnderline(true);
-    format.setUnderlineStyle(QTextCharFormat::SpellCheckUnderline);
-    format.setUnderlineColor(d->spellColor);
-    setFormat(start, count, format);
+    setFormat(start, count, d->spellColor);
 }
 
 void Highlighter::unsetMisspelled( int start, int count )
 {
-    setFormat(start, count, qApp->palette().color(QPalette::Text));
+    setFormat( start, count, qApp->palette().color( QPalette::Text ) );
 }
 
 bool Highlighter::eventFilter( QObject *o, QEvent *e)
@@ -403,6 +395,19 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
     }
     return false;
 }
+
+
+/*
+  void Highlighter::checkWords()
+  {
+  Word w = d->filter->nextWord();
+  if ( !w.end ) {
+  if ( !d->dict->check( w.word ) ) {
+  setFormat( w.start, w.word.length(),
+  Qt::red );
+  }
+  }
+  }*/
 
 void Highlighter::addWordToDictionary(const QString &word)
 {
