@@ -281,7 +281,7 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
     p->save();
     p->setClipRect(QRect(-1, 0, rect.width(), drawRect.height() / 2), Qt::ReplaceClip);
     QLinearGradient glassGradient(0, -5, 0, drawRect.height());
-    const QColor fillGlassColor = palette().highlightedText().color();
+    const QColor fillGlassColor = palette().base().color();
     glassGradient.setColorAt(0, QColor(fillGlassColor.red(), fillGlassColor.green(), fillGlassColor.blue(), 255));
     glassGradient.setColorAt(1, Qt::transparent);
     p->fillPath(internalBar, glassGradient);
