@@ -295,9 +295,7 @@ void KKeySequenceWidget::applyStealShortcut()
 
 	if(d->stealAction) {
 
-		kDebug() << "Stealing shortcut for " << d->stealAction->objectName();
-
-		// Stealing a shortcut means setting it to an empty one
+		// Stealing a shortcut means setting it to an empty one.
 		d->stealAction->setShortcut(KShortcut(), KAction::ActiveShortcut);
 
                 // Find the collection where stealAction belongs
@@ -362,7 +360,7 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 
 bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &keySequence)
 {
-	if (!checkAgainstShortcutTypes & KKeySequenceWidget::GlobalShortcuts) {
+	if (!(checkAgainstShortcutTypes & KKeySequenceWidget::GlobalShortcuts)) {
 		return false;
 	}
 
@@ -385,7 +383,7 @@ bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &
 
 bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &keySequence)
 {
-	if (!checkAgainstShortcutTypes & KKeySequenceWidget::LocalShortcuts) {
+	if (!(checkAgainstShortcutTypes & KKeySequenceWidget::LocalShortcuts)) {
 		return false;
 	}
 
@@ -437,7 +435,7 @@ bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &k
 
 bool KKeySequenceWidgetPrivate::conflictWithStandardShortcuts(const QKeySequence &keySequence)
 {
-	if (!checkAgainstShortcutTypes & KKeySequenceWidget::StandardShortcuts) {
+	if (!(checkAgainstShortcutTypes & KKeySequenceWidget::StandardShortcuts)) {
 		return false;
 	}
 
