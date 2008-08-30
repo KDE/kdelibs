@@ -74,11 +74,12 @@ KShortcutsEditor::~KShortcutsEditor()
 
 bool KShortcutsEditor::isModified() const
 {
-    for (QTreeWidgetItemIterator it(d->ui.list); (*it); ++it) {
-        if ((*it)->childCount())
-            continue;
+    // Iterate over all items
+    QTreeWidgetItemIterator it(d->ui.list, QTreeWidgetItemIterator::NoChildren);
 
-        if (static_cast<KShortcutsEditorItem *>(*it)->isModified()) {
+    for (; (*it); ++it) {
+        KShortcutsEditorItem* item = dynamic_cast<KShortcutsEditorItem *>(*it);
+        if (item && item->isModified()) {
             return true;
         }
     }
@@ -277,7 +278,7 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
     //hide the editor widget chen its item becomes hidden
     QObject::connect(ui.searchFilter->searchLine(), SIGNAL(hiddenChanged(QTreeWidgetItem *, bool)),
                      delegate, SLOT(hiddenBySearchLine(QTreeWidgetItem *, bool)));
-    
+
     ui.searchFilter->setFocus();
 }
 

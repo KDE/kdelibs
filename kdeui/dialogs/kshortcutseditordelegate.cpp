@@ -31,6 +31,7 @@
 #include <QHeaderView>
 #include <QLabel>
 #include <QPainter>
+#include <QTreeWidgetItemIterator>
 
 #include "kaction.h"
 
@@ -66,6 +67,33 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QTreeWidget *parent, bool all
 
     // Listen to collapse signals
     connect(parent, SIGNAL(collapsed(QModelIndex)), this, SLOT(itemCollapsed(QModelIndex)));
+}
+
+
+void KShortcutsEditorDelegate::aboutToStealShortcut(
+    const QKeySequence &seq,
+    KAction *action)
+{
+    QTreeWidget *view = static_cast<QTreeWidget *>(parent());
+
+    // Iterate over all items
+    QTreeWidgetItemIterator it(view, QTreeWidgetItemIterator::NoChildren);
+
+    for (; (*it); ++it) {
+        KShortcutsEditorItem* item = dynamic_cast<KShortcutsEditorItem *>(*it);
+        if (item && item->data(0, ObjectRole).value<QObject*>() == action) {
+
+            // We found the action, snapshot the current state
+            KShortcut cut = action->shortcut();
+            if (cut.primary() == seq) {
+                item->setKeySequence(LocalPrimary, QKeySequence());
+            } else {
+                item->setKeySequence(LocalAlternate, QKeySequence());
+            }
+            break;
+        }
+    }
+
 }
 
 
@@ -150,6 +178,8 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 
             connect(m_editor, SIGNAL(keySequenceChanged(const QKeySequence &)),
                     this, SLOT(keySequenceChanged(const QKeySequence &)));
+            connect(m_editor, SIGNAL(aboutToStealShortcut(const QKeySequence &, KAction*)),
+                    this, SLOT(aboutToStealShortcut(const QKeySequence&, KAction*)));
 
         } else if (column == RockerGesture) {
             m_editor = new QLabel("A lame placeholder", viewport);
