@@ -5,6 +5,8 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Peter Kelly (pmk@post.com)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
+  *          (C) 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
+ *           (C) 2005, 2008 Maksim Orlovich (maksim@kde.org)  
  *           (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -54,12 +56,15 @@
 #include <kdebug.h>
 #include <stdlib.h>
 
+#include <wtf/HashMap.h>
+
 // ### support default attributes
 // ### dispatch mutation events
 // ### check for INVALID_CHARACTER_ERR where appropriate
 
-using namespace DOM;
 using namespace khtml;
+
+namespace DOM {
 
 AttrImpl::AttrImpl(ElementImpl* element, DocumentImpl* docPtr, NodeImpl::Id attrId,
 		   DOMStringImpl *value, DOMStringImpl *prefix)
@@ -72,7 +77,6 @@ AttrImpl::AttrImpl(ElementImpl* element, DocumentImpl* docPtr, NodeImpl::Id attr
     m_prefix = prefix;
     if (m_prefix)
 	m_prefix->ref();
-    m_specified = true; // we don't yet support default attributes
 
     // When creating the text node initially, we want element = 0,
     // so we don't attempt to update the getElementById cache or
@@ -361,6 +365,40 @@ void AttributeImpl::free()
 
 // -------------------------------------------------------------------------
 
+class ElementRareDataImpl {
+public:
+    ElementRareDataImpl();
+    void resetComputedStyle();
+    RenderStyle* m_computedStyle;
+};
+
+typedef WTF::HashMap<const ElementImpl*, ElementRareDataImpl*> ElementRareDataMap;
+
+static ElementRareDataMap& rareDataMap()
+{
+    static ElementRareDataMap* dataMap = new ElementRareDataMap;
+    return *dataMap;
+}
+
+static ElementRareDataImpl* rareDataFromMap(const ElementImpl* element)
+{
+    return rareDataMap().get(element);
+}
+
+inline ElementRareDataImpl::ElementRareDataImpl()
+    : m_computedStyle(0)
+{}
+
+void ElementRareDataImpl::resetComputedStyle()
+{
+    if (!m_computedStyle)
+        return;
+    m_computedStyle->deref();
+    m_computedStyle = 0;
+}
+
+// -------------------------------------------------------------------------
+
 ElementImpl::ElementImpl(DocumentImpl *doc)
     : NodeBaseImpl(doc)
 {
@@ -394,6 +432,37 @@ ElementImpl::~ElementImpl()
 
     if (m_prefix)
         m_prefix->deref();
+
+    if (!m_elementHasRareData) {
+        ASSERT(!rareDataMap().contains(this));
+    } else {
+        ElementRareDataMap& dataMap = rareDataMap();
+        ElementRareDataMap::iterator it = dataMap.find(this);
+        ASSERT(it != dataMap.end());
+        delete it->second;
+        dataMap.remove(it);
+    }
+}
+
+ElementRareDataImpl* ElementImpl::rareData()
+{
+    return m_elementHasRareData ? rareDataFromMap(this) : 0;
+}
+
+const ElementRareDataImpl* ElementImpl::rareData() const
+{
+    return m_elementHasRareData ? rareDataFromMap(this) : 0;
+}
+
+ElementRareDataImpl* ElementImpl::createRareData()
+{
+    if (m_elementHasRareData)
+        return rareDataMap().get(this);
+    ASSERT(!rareDataMap().contains(this));
+    ElementRareDataImpl* data = new ElementRareDataImpl();
+    rareDataMap().set(this, data);
+    m_elementHasRareData = true;
+    return data;
 }
 
 void ElementImpl::removeAttribute( NodeImpl::Id id, int &exceptioncode )
@@ -788,6 +857,9 @@ void ElementImpl::detach()
 {
     document()->dynamicDomRestyler().resetDependencies(this);
 
+    if (ElementRareDataImpl* rd = rareData())
+        rd->resetComputedStyle();
+
     NodeBaseImpl::detach();
 }
 
@@ -837,6 +909,11 @@ void ElementImpl::recalcStyle( StyleChange change )
     // ### should go away and be done in renderobject
     RenderStyle* _style = m_render ? m_render->style() : 0;
     bool hasParentRenderer = parent() ? parent()->attached() : false;
+
+    if ((change > NoChange || changed())) {
+        if (ElementRareDataImpl* rd = rareData())
+            rd->resetComputedStyle();
+    }
 
 #if 0
     const char* debug;
@@ -1172,6 +1249,24 @@ DOMString ElementImpl::toString() const
     }
 
     return result;
+}
+
+RenderStyle* ElementImpl::computedStyle()
+{
+    if (m_render && m_render->style())
+	return m_render->style();
+
+    if (!attached())
+        // FIXME: Try to do better than this. Ensure that styleForElement() works for elements that are not in the
+        // document tree and figure out when to destroy the computed style for such elements.
+        return 0;
+
+    ElementRareDataImpl* rd = createRareData();
+    if (!rd->m_computedStyle) {
+        rd->m_computedStyle = document()->styleSelector()->styleForElement(this, parent() ? parent()->computedStyle() : 0);
+        rd->m_computedStyle->ref();
+    }
+    return rd->m_computedStyle;
 }
 
 // -------------------------------------------------------------------------
@@ -1571,4 +1666,6 @@ void NamedAttrMapImpl::detachFromElement()
     free(m_attrs);
     m_attrs = 0;
     m_attrCount = 0;
+}
+
 }

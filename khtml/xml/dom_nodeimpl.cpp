@@ -4,7 +4,8 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
- *           (C) 2003-2006 Apple Computer, Inc.
+ *           (C) 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
+ *           (C) 2005 Maksim Orlovich (maksim@kde.org)
  *           (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -77,7 +78,7 @@ NodeImpl::NodeImpl(DocumentImpl *doc)
       m_changedAscendentAttribute( false ),
       m_inDocument( false ),
       m_hasAnchor( false ),
-      m_specified( false ),
+      m_elementHasRareData( false ),
       m_hovered( false ),
       m_focused( false ),
       m_active( false ),
@@ -1112,6 +1113,11 @@ RenderObject *NodeImpl::createRenderer(RenderArena* /*arena*/, RenderStyle* /*st
     return 0;
 }
 
+RenderStyle *NodeImpl::computedStyle()
+{
+    return parentNode() ? parentNode()->computedStyle() : 0;
+}
+
 NodeImpl *NodeImpl::previousLeafNode() const
 {
     NodeImpl *node = traversePreviousNode();
@@ -2010,7 +2016,8 @@ unsigned long NodeListImpl::calcLength(NodeImpl *start) const
                 len++;
         if (recurse)
             len+= NodeListImpl::calcLength(n);
-        }
+    }
+
 
     return len;
 }

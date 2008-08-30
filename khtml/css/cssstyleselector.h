@@ -180,7 +180,8 @@ namespace khtml
 
 	static void loadDefaultStyle(const KHTMLSettings *s, DOM::DocumentImpl *doc);
 
-	RenderStyle *styleForElement(DOM::ElementImpl *e);
+	// fallbackParentStyle will be inheritted from if the parent doesn't have style info
+	RenderStyle *styleForElement(DOM::ElementImpl *e, RenderStyle* fallbackParentStyle = 0);
 
         QVector<int> fontSizes() const { return m_fontSizes; }
 	QVector<int> fixedFontSizes() const { return m_fixedFontSizes; }
