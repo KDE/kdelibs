@@ -2116,32 +2116,45 @@ bool CSSParser::parseHSLParameters(Value* value, double* colorArray, bool parseA
     return true;
 }
 
-static bool parseColor(int unit, const QString &name, QRgb& rgb)
+static int hex2int(unsigned short c, bool* error)
+{
+    if ( c >= '0' && c <= '9' ) {
+        return c - '0';
+    } else if ( c >= 'A' && c <= 'F' ) {
+        return 10 + c - 'A';
+    } else if ( c >= 'a' && c <= 'f' ) {
+        return 10 + c - 'a';
+    } else {
+        *error = true;
+        return -1;
+    }
+}
+
+static bool parseColor(int unit, const QString& name, QRgb& rgb)
 {
     int len = name.length();
 
     if ( !len )
         return false;
 
+    const unsigned short* c =
+        reinterpret_cast<const unsigned short*>( name.unicode() );
 
-    bool ok;
-
-    if ( len == 3 || len == 6 ) {
-        int val = name.toInt(&ok, 16);
-        if ( ok ) {
-            if (len == 6) {
-                rgb = (0xff << 24) | val;
-                return true;
-            }
-            else if ( len == 3 ) {
-                // #abc converts to #aabbcc according to the specs
-                rgb = (0xff << 24) |
-                      (val&0xf00)<<12 | (val&0xf00)<<8 |
-                      (val&0xf0)<<8 | (val&0xf0)<<4 |
-                      (val&0xf)<<4 | (val&0xf);
-                return true;
-            }
-        }
+    rgb = 0xff; // fixed alpha
+    if ( len == 6 ) {
+        // RRGGBB
+        bool error = false;
+        for ( int i = 0; i < 6; ++i, ++c )
+            rgb = rgb << 4 | hex2int( *c, &error );
+        if ( !error )
+            return true;
+    } else if ( len == 3 ) {
+        // RGB, shortcut for RRGGBB
+        bool error = false;
+        for ( int i = 0; i < 3; ++i, ++c )
+            rgb = rgb << 8 | 0x11 * hex2int( *c, &error );
+        if ( !error )
+            return true;
     }
 
     if ( unit == CSSPrimitiveValue::CSS_IDENT ) {
