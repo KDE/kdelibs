@@ -75,6 +75,8 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
             this, SLOT(defaultToggled(bool)));
     connect(m_customEditor, SIGNAL(keySequenceChanged(const QKeySequence &)),
             this, SLOT(setCustom(const QKeySequence &)));
+    connect(m_customEditor, SIGNAL(aboutToStealShortcut(const QKeySequence &, KAction *)),
+        this, SIGNAL(aboutToStealShortcut(const QKeySequence &, KAction *)));
 }
 
 
@@ -132,6 +134,7 @@ void ShortcutEditWidget::setCustom(const QKeySequence &seq)
         return;
 
     m_isUpdating = true;
+
     // Check if the user typed in the default sequence into the custom field.
     // We do this by calling setKeySequence which will do the right thing.
     setKeySequence(seq);
@@ -153,7 +156,11 @@ void ShortcutEditWidget::setKeySequence(const QKeySequence &activeSeq)
         m_customEditor->clearKeySequence();
     } else {
         m_customRadio->setChecked(true);
-        m_customEditor->setKeySequence(activeSeq);
+        // m_customEditor->setKeySequence does some stuff we only want to
+        // execute when the sequence really changes.
+        if (activeSeq!=m_customEditor->keySequence()) {
+            m_customEditor->setKeySequence(activeSeq);
+        }
     }
 }
 

@@ -30,6 +30,7 @@
 
 class KKeySequenceWidgetPrivate;
 class QAction;
+class KAction;
 class KActionCollection;
 
 /**
@@ -203,11 +204,21 @@ public:
     KDE_DEPRECATED void setCheckActionList(const QList<QAction*> &checkList);
 
 Q_SIGNALS:
+
 	/**
 	 * This signal is emitted when the current key sequence has changed, be it by user
 	 * input or programmatically.
 	 */
 	void keySequenceChanged(const QKeySequence &seq);
+
+	/**
+	 * This signal is emitted when an shortcut is about to be stolen. This is
+	 * only done for local shortcuts. So you can be sure \a action is one of
+	 * the actions you provided with setCheckActionList() or
+	 * setCheckActionCollections().
+	 */
+	void aboutToStealShortcut(const QKeySequence &seq, KAction *action);
+
 public Q_SLOTS:
 	/**
 	 * Capture a shortcut from the keyboard. This call will only return once a key sequence

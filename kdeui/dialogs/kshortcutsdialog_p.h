@@ -37,6 +37,7 @@ class QLabel;
 class QTreeWidget;
 class QTreeWidgetItem;
 class QRadioButton;
+class KAction;
 class KActionCollection;
 
 enum ColumnDesignation {
@@ -120,9 +121,17 @@ private Q_SLOTS:
      * extended items. Else we get that artefact bug. See above.
      */
     void itemCollapsed(QModelIndex index );
+
+    /**
+     * If the user allowed stealing a shortcut we want to be able to undo
+     * that.
+     */
+    void aboutToStealShortcut(const QKeySequence &seq, KAction *action);
+
     void keySequenceChanged(const QKeySequence &);
     void shapeGestureChanged(const KShapeGesture &);
     void rockerGestureChanged(const KRockerGesture &);
+
 };
 
 
@@ -157,6 +166,7 @@ public:
     //! @see KKeySequenceWidget::setCheckActionCollections()
     void setCheckActionCollections( const QList<KActionCollection*> checkActionCollections);
 
+
     //@{
     //! @see KKeySequenceWidget::checkAgainstStandardShortcuts()
     KKeySequenceWidget::ShortcutTypes checkForConflictsAgainst() const;
@@ -169,10 +179,15 @@ public Q_SLOTS:
     void setKeySequence(const QKeySequence &activeSeq);
 
 Q_SIGNALS:
+
     //! Emitted when the key sequence is changed.
     void keySequenceChanged(const QKeySequence &);
 
+    //! @see KKeySequenceWidget::aboutToStealShortcut()
+    void aboutToStealShortcut(const QKeySequence &seq, KAction *action);
+
 private Q_SLOTS:
+
     void defaultToggled(bool);
     void setCustom(const QKeySequence &);
 
