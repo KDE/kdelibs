@@ -20,8 +20,7 @@ KImageIO::pattern(Mode mode)
     QString separator("|");
 
     const KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
-    KService::Ptr service;
-    foreach(service, services)
+    foreach(const KService::Ptr &service, services)
     {
         if ( (service->property("X-KDE-Read").toBool() && mode == Reading) ||
              (service->property("X-KDE-Write").toBool() && mode == Writing ) ) {
@@ -55,8 +54,7 @@ QStringList KImageIO::typeForMime(const QString& mimeType)
         return QStringList();
 
     KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
-    KService::Ptr service;
-    foreach(service, services) {
+    foreach(const KService::Ptr &service, services) {
         if ( mimeType == service->property("X-KDE-MimeType").toString() )
             return ( service->property("X-KDE-ImageFormat").toStringList() );
     }
@@ -68,8 +66,7 @@ QStringList KImageIO::mimeTypes( Mode mode )
     QStringList mimeList, allFormats;
 
     KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
-    KService::Ptr service;
-    foreach(service, services) {
+    foreach(const KService::Ptr &service, services) {
         if ( (service->property("X-KDE-Read").toBool() && mode == Reading) ||
              (service->property("X-KDE-Write").toBool() && mode == Writing ) ) {
 
@@ -86,8 +83,7 @@ QStringList KImageIO::types( Mode mode )
 {
     QStringList imagetypes;
     KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
-    KService::Ptr service;
-    foreach(service, services) {
+    foreach(const KService::Ptr &service, services) {
         if ( (service->property("X-KDE-Read").toBool() && mode == Reading) ||
              (service->property("X-KDE-Write").toBool() && mode == Writing ) ) {
 
@@ -103,8 +99,7 @@ bool KImageIO::isSupported( const QString& mimeType, Mode mode )
         return false;
 
     KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
-    KService::Ptr service;
-    foreach(service, services) {
+    foreach(const KService::Ptr &service, services) {
         if ( mimeType == service->property("X-KDE-MimeType").toString() ) {
 
             if ( (service->property("X-KDE-Read").toBool() && mode == Reading) ||
