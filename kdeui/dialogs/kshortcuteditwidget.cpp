@@ -94,7 +94,7 @@ void ShortcutEditWidget::defaultToggled(bool checked)
         // The default key sequence should be activated. We check first if this is
         // possible.
         if (m_customEditor->isKeySequenceAvailable(m_defaultKeySequence)) {
-            // Steal the shortcut if the use gave his consens
+            // Steal the shortcut if the user gave his consens
             m_customEditor->applyStealShortcut();
             // Clear the customs widget
             m_customEditor->clearKeySequence();
@@ -132,10 +132,9 @@ void ShortcutEditWidget::setCustom(const QKeySequence &seq)
         return;
 
     m_isUpdating = true;
-    if (seq != m_defaultKeySequence)
-        m_customRadio->setChecked(true);
-    else
-        m_defaultRadio->setChecked(true);
+    // Check if the user typed in the default sequence into the custom field.
+    // We do this by calling setKeySequence which will do the right thing.
+    setKeySequence(seq);
 
     // BUG: The shortcuts is taken away from the other action. But there is
     // currently no way to undo that, because noone remembers what happend
@@ -151,6 +150,7 @@ void ShortcutEditWidget::setKeySequence(const QKeySequence &activeSeq)
 {
     if (activeSeq == m_defaultLabel->text()) {
         m_defaultRadio->setChecked(true);
+        m_customEditor->clearKeySequence();
     } else {
         m_customRadio->setChecked(true);
         m_customEditor->setKeySequence(activeSeq);
