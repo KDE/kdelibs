@@ -305,8 +305,6 @@ void KDirWatchPrivate::inotifyEventReceived()
               sub_entry->dirty = true;
             }
             else if ((e->isDir) && (!e->m_clients.empty())) {
-              Client* client = 0;
-
               KDE_struct_stat stat_buf;
               QByteArray tpath = QFile::encodeName(e->path+'/'+path);
               KDE_stat(tpath, &stat_buf);
@@ -316,7 +314,7 @@ void KDirWatchPrivate::inotifyEventReceived()
               flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
 
               int counter = 0;
-              Q_FOREACH(client, e->m_clients) {
+              Q_FOREACH(Client *client, e->m_clients) {
                   if (client->m_watchModes & flag) {
                       addEntry (client->instance, tpath, 0, isDir,
                                 isDir ? client->m_watchModes : KDirWatch::WatchDirOnly);
@@ -1379,8 +1377,6 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
           }
         }
         else if ((sub_entry == 0) && (!e->m_clients.empty())) {
-          Client* client = 0;
-
           KDE_struct_stat stat_buf;
           KDE_stat(tpath, &stat_buf);
           bool isDir = S_ISDIR(stat_buf.st_mode);
@@ -1389,7 +1385,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
           flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
 
           int counter = 0;
-          Q_FOREACH(client, e->m_clients) {
+          Q_FOREACH(Client *client, e->m_clients) {
             if (client->m_watchModes & flag) {
               addEntry (client->instance, tpath, 0, isDir,
                         isDir ? client->m_watchModes : KDirWatch::WatchDirOnly);
