@@ -323,6 +323,13 @@ protected:
      */
     virtual bool event( QEvent * event );
 
+    /**
+     * Will return if setupGUI has been called with Save flag. After returning the
+     * value, the boolean is set to false (for not saving more than one time).
+     * For KParts::MainWindow usage only.
+     */
+    bool testAndUnsetSaveFlag();
+
 
 protected Q_SLOTS:
    /**
