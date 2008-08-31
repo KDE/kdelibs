@@ -76,6 +76,7 @@
 class KXmlGuiWindowPrivate : public KMainWindowPrivate {
 public:
     bool showHelpMenu:1;
+    bool saveFlag:1;
 
     KDEPrivate::ToolBarHandler *toolBarHandler;
     KToggleAction *showStatusBarAction;
@@ -88,6 +89,7 @@ KXmlGuiWindow::KXmlGuiWindow( QWidget* parent, Qt::WFlags f )
 {
     K_D(KXmlGuiWindow);
     d->showHelpMenu = true;
+    d->saveFlag = false;
     d->toolBarHandler = 0;
     d->showStatusBarAction = 0;
     d->factory = 0;
@@ -180,6 +182,8 @@ void KXmlGuiWindow::setupGUI( StandardWindowOptions options, const QString & xml
 }
 
 void KXmlGuiWindow::setupGUI( const QSize & defaultSize, StandardWindowOptions options, const QString & xmlfile ) {
+    K_D(KXmlGuiWindow);
+
     if( options & Keys ){
         KStandardAction::keyBindings(guiFactory(),
                     SLOT(configureShortcuts()), actionCollection());
@@ -195,11 +199,13 @@ void KXmlGuiWindow::setupGUI( const QSize & defaultSize, StandardWindowOptions o
                       SLOT(configureToolbars() ), actionCollection());
     }
 
+    d->saveFlag = options & Save;
+
     if( options & Create ){
         createGUI(xmlfile);
     }
 
-    if( options & Save ){
+    if (d->saveFlag) {
         // setupGUI() is typically called in the constructor before show(),
         // so the default window size will be incorrect unless the application
         // hard coded the size which they should try not to do (i.e. use
@@ -216,9 +222,7 @@ void KXmlGuiWindow::setupGUI( const QSize & defaultSize, StandardWindowOptions o
         {
           adjustSize();
         }
-        setAutoSaveSettings();
     }
-
 }
 
 void KXmlGuiWindow::createGUI( const QString &xmlfile )
@@ -261,6 +265,11 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
 
     // do the actual GUI building
     guiFactory()->addClient( this );
+
+    if (d->saveFlag) {
+        setAutoSaveSettings();
+        d->saveFlag = false;
+    }
 
     //  setUpdatesEnabled( true );
 }
