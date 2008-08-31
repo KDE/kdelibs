@@ -567,9 +567,9 @@ public:
     RenderBlock *containingBlock() const;
 
     // return just the width of the containing block
-    virtual short containingBlockWidth() const;
+    virtual short containingBlockWidth(RenderObject* providedCB=0) const;
     // return just the height of the containing block
-    virtual int containingBlockHeight() const;
+    virtual int containingBlockHeight(RenderObject* providedCB=0) const;
 
     // size of the content area (box size minus padding/border)
     virtual short contentWidth() const { return 0; }

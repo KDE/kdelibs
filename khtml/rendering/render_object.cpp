@@ -788,13 +788,13 @@ RenderBlock *RenderObject::containingBlock() const
     return static_cast<RenderBlock*>( o );
 }
 
-short RenderObject::containingBlockWidth() const
+short RenderObject::containingBlockWidth(RenderObject*) const
 {
     // ###
     return containingBlock()->contentWidth();
 }
 
-int RenderObject::containingBlockHeight() const
+int RenderObject::containingBlockHeight(RenderObject*) const
 {
     // ###
     return containingBlock()->contentHeight();
