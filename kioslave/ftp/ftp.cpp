@@ -220,33 +220,33 @@ const char* Ftp::ftpResponse(int iOffset)
     int  iMore = 0;
     m_iRespCode = 0;
 
-    // If the server sends multiline responses "nnn-text" we loop here until
-    // a final "nnn text" line is reached. Only data from the final line will
-    // be stored. Some servers (OpenBSD) send a single "nnn-" followed by
-    // optional lines that start with a space and a final "nnn text" line.
+    // If the server sends a multiline response starting with
+    // "nnn-text" we loop here until a final "nnn text" line is
+    // reached. Only data from the final line will be stored.
     do {
       while (!m_control->canReadLine() && m_control->waitForReadyRead()) {}
       m_lastControlLine = m_control->readLine();
       pTxt = m_lastControlLine.data();
-      int nBytes = m_lastControlLine.size();
       int iCode  = atoi(pTxt);
-      if(iCode > 0) m_iRespCode = iCode;
-
-      // ignore lines starting with a space in multiline response
-      if(iMore != 0 && pTxt[0] == 32)
-        ;
-      // otherwise the line should start with "nnn-" or "nnn "
-      else if(nBytes < 4 || iCode < 100)
-        iMore = 0;
-      // we got a valid line, now check for multiline responses ...
-      else if(iMore == 0 && pTxt[3] == '-')
-        iMore = iCode;
-      // "nnn " ends multiline mode ...
-      else if(iMore != 0 && (iMore != iCode || pTxt[3] != '-'))
-        iMore = 0;
-
-      if(iMore != 0)
-         kDebug(7102) << "    > " << pTxt;
+      if (iMore == 0) {
+          // first line
+          kDebug(7102) << "    > " << pTxt;
+          if(iCode >= 100) {
+              m_iRespCode = iCode;
+              if (pTxt[3] == '-') {
+                  // marker for a multiple line response
+                  iMore = iCode;
+              }
+          } else {
+              kWarning(7102) << "Cannot parse valid code from line" << pTxt;
+          }
+      } else {
+          // multi-line
+          kDebug(7102) << "    > " << pTxt;
+          if (iCode >= 100 && iCode == iMore && pTxt[3] == ' ') {
+              iMore = 0;
+          }
+      }
     } while(iMore != 0);
     kDebug(7102) << "resp> " << pTxt;
 
@@ -638,7 +638,7 @@ bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
 
   // If we were able to successfully send the command, then we will
   // attempt to read the response. Otherwise, take action to re-attempt
-  // the login based on the maximum number of retires specified...
+  // the login based on the maximum number of retries specified...
   if( num > 0 )
     ftpResponse(-1);
   else
