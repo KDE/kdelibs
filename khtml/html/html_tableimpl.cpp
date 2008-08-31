@@ -440,6 +440,7 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_BORDER:
     {
         int border;
+        bool ok = true;
         // ### this needs more work, as the border value is not only
         //     the border of the box, but also between the cells
         if(!attr->val())
@@ -447,7 +448,9 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
         else if(attr->val()->l == 0)
             border = 1;
         else
-            border = attr->val()->toInt();
+            border = attr->val()->toInt(&ok);
+        if (!ok)
+            border = 1;
 #ifdef DEBUG_DRAW_BORDER
         border=1;
 #endif
