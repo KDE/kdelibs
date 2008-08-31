@@ -87,12 +87,12 @@ void MainWindow::createGUI( Part * part )
 
   assert( factory );
 
-    if (autoSaveSettings() && settingsDirty()) {
-        // Save any unsaved window settings before we change the gui,
-        // so that the applyMainWindowSettings call below will re-apply the right settings.
-        // Testcase: hiding a konqueror toolbar and switching tabs immediately.
-        saveAutoSaveSettings();
-    }
+  if (autoSaveSettings() && settingsDirty()) {
+    // Save any unsaved window settings before we change the gui,
+    // so that the applyMainWindowSettings call below will re-apply the right settings.
+    // Testcase: hiding a konqueror toolbar and switching tabs immediately.
+    saveAutoSaveSettings();
+  }
 
   if ( d->m_activePart )
   {
@@ -148,6 +148,10 @@ void MainWindow::createGUI( Part * part )
   }
 
   d->m_activePart = part;
+
+  if (testAndUnsetSaveFlag()) {
+    setAutoSaveSettings();
+  }
 }
 
 void MainWindow::slotSetStatusBarText( const QString & text )

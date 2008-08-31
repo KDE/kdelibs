@@ -133,6 +133,14 @@ bool KXmlGuiWindow::event( QEvent* ev )
     return ret;
 }
 
+bool KXmlGuiWindow::testAndUnsetSaveFlag()
+{
+    K_D(KXmlGuiWindow);
+    bool ret = d->saveFlag;
+    d->saveFlag = false;
+    return ret;
+}
+
 void KXmlGuiWindow::setHelpMenuEnabled(bool showHelpMenu)
 {
     K_D(KXmlGuiWindow);
@@ -199,7 +207,7 @@ void KXmlGuiWindow::setupGUI( const QSize & defaultSize, StandardWindowOptions o
                       SLOT(configureToolbars() ), actionCollection());
     }
 
-    d->saveFlag = options & Save;
+    d->saveFlag = bool(options & Save);
 
     if( options & Create ){
         createGUI(xmlfile);
