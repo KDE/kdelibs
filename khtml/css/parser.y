@@ -225,6 +225,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %type <rule> charset
 %type <rule> ruleset
+%type <rule> safe_ruleset
 %type <rule> ruleset_or_import
 %type <rule> media
 %type <rule> import
@@ -456,6 +457,13 @@ rule:
   | import error { delete $1; $$ = 0; }
     ;
 
+safe_ruleset:
+    ruleset
+  | invalid_rule
+  | invalid_at
+  | import error { delete $1; $$ = 0; }
+    ;
+
 string_or_uri:
     STRING
   | URI
@@ -572,7 +580,7 @@ media:
 
 ruleset_list:
     /* empty */ { $$ = 0; }
-  | ruleset_list ruleset maybe_space {
+  | ruleset_list safe_ruleset maybe_space {
       $$ = $1;
       if ( $2 ) {
 	  if ( !$$ ) $$ = new CSSRuleListImpl();
