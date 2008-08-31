@@ -397,7 +397,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
                     }
                 }
             }
-            count = sc->m_negZOrderList ? sc->m_negZOrderList->count() : 0;
+            count = sc->m_posZOrderList ? sc->m_posZOrderList->count() : 0;
             if ( count > 0 ) {
                 needUpdate = true;
                 for (uint i = 0; i < count; i++) {
