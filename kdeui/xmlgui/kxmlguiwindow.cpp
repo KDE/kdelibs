@@ -266,6 +266,7 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
     // do the actual GUI building
     guiFactory()->addClient( this );
 
+    // This needs to be the last call in this method. Always.
     if (d->saveFlag) {
         setAutoSaveSettings();
         d->saveFlag = false;
