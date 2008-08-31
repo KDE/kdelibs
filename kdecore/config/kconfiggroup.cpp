@@ -393,9 +393,12 @@ QString KConfigGroupPrivate::expandString(const QString& value)
 
             QString result;
             QByteArray oldpath = qgetenv( "PATH" );
-            QByteArray newpath = QFile::encodeName( KGlobal::dirs()->resourceDirs( "exe" ).join( QChar( KPATH_SEPARATOR ) ) );
-            if( !newpath.isEmpty() && !oldpath.isEmpty() )
-                newpath += KPATH_SEPARATOR;
+            QByteArray newpath;
+            if (KGlobal::hasMainComponent()) {
+                newpath = QFile::encodeName( KGlobal::dirs()->resourceDirs( "exe" ).join( QChar( KPATH_SEPARATOR ) ) );
+                if (!newpath.isEmpty() && !oldpath.isEmpty())
+                    newpath += KPATH_SEPARATOR;
+            }
             newpath += oldpath;
             setenv( "PATH", newpath, 1/*overwrite*/ );
             FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
