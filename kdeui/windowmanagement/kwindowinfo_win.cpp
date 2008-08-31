@@ -36,20 +36,23 @@ KWindowInfo::~KWindowInfo()
 {
 }
 
-KWindowInfo::KWindowInfo( const KWindowInfo& wininfo )
+KWindowInfo::KWindowInfo( const KWindowInfo& )
 {
 }
 
 KWindowInfo& KWindowInfo::operator=( const KWindowInfo& wininfo )
 {
+    return *this;
 }
 
 bool KWindowInfo::valid( bool withdrawn_is_valid ) const
 {
+    return false;
 }
 
 WId KWindowInfo::win() const
 {
+    return WId(-1);
 }
 
 unsigned long KWindowInfo::state() const
@@ -64,66 +67,82 @@ bool KWindowInfo::hasState( unsigned long s ) const
 
 bool KWindowInfo::isMinimized() const
 {
+    return false;
 }
 
 NET::MappingState KWindowInfo::mappingState() const
 {
+    return NET::MappingState();
 }
 
 NETExtendedStrut KWindowInfo::extendedStrut() const
 {
+    return NETExtendedStrut();
 }
 
 NET::WindowType KWindowInfo::windowType( int supported_types ) const
 {
+    return NET::WindowType(0);
 }
 
 QString KWindowInfo::visibleNameWithState() const
 {
+    return QString();
 }
 
 QString KWindowInfo::visibleName() const
 {
+    return QString();
 }
 
 QString KWindowInfo::name() const
 {
+    return QString();
 }
 
 QString KWindowInfo::visibleIconNameWithState() const
 {
+    return QString();
 }
 
 QString KWindowInfo::visibleIconName() const
 {
+    return QString();
 }
 
 QString KWindowInfo::iconName() const
 {
+    return QString();
 }
 
 bool KWindowInfo::isOnCurrentDesktop() const
 {
+    return false;
 }
 
-bool KWindowInfo::isOnDesktop( int _desktop ) const
+bool KWindowInfo::isOnDesktop( int ) const
 {
+    return false;
 }
 
 bool KWindowInfo::onAllDesktops() const
 {
+    return false;
 }
 
 int KWindowInfo::desktop() const
 {
+    return 0;
 }
 
 QRect KWindowInfo::geometry() const
 {
+    return QRect();
 }
 
 QRect KWindowInfo::frameGeometry() const
 {
+    return QRect();
 }
 
 bool KWindowInfo::actionSupported( NET::Action action ) const
