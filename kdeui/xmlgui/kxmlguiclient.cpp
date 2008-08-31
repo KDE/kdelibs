@@ -229,7 +229,9 @@ void KXMLGUIClient::setXML( const QString &document, bool merge )
     QDomDocument doc;
     QString errorMsg;
     int errorLine, errorColumn;
-    if (doc.setContent(document, &errorMsg, &errorLine, &errorColumn)) {
+    bool result = doc.setContent(document, &errorMsg, &errorLine, &errorColumn);
+    Q_ASSERT_X( result, "setXML", "The XML file that was set to KXMLGUIClient is invalid. Please check its correctness with xmllint" );
+    if ( result ) { // kept for release mode
         setDOMDocument( doc, merge );
     } else {
         kError() << "Error parsing XML document:" << errorMsg << "at line" << errorLine << "column" << errorColumn;
