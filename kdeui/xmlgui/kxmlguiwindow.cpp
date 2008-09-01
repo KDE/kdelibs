@@ -336,7 +336,12 @@ void KXmlGuiWindow::finalizeGUI( bool /*force*/ )
     //        Also, take in count plugins could provide their own toolbars and those also need to
     //        be restored.
     if (autoSaveSettings() && autoSaveConfigGroup().isValid()) {
+        QWidget *focus = QApplication::focusWidget();
         applyMainWindowSettings(autoSaveConfigGroup());
+        //The call to applyMainWindowSettings likes to steal focus via the
+        //call to QMainWindow::restoreState.  Don't let it.
+        if (focus)
+            focus->setFocus();
     }
     // END OF FIXME
 }
