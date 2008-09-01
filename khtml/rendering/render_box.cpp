@@ -580,8 +580,21 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                 }
             }
 
-            int pw = w - hpab;
-            int ph = h - vpab;
+            int pw, ph;
+            if (isRoot()) {
+                // the root's background box 'spills out' to cover the whole canvas, so we have to
+                // go back to its true edge for the purpose of computing background-size
+                // and honouring background-origin
+                pw = width() - hpab;
+                ph = height() - vpab; 
+                left += marginLeft();
+                hpab += marginLeft() + marginRight();
+                vpab += marginTop() + marginBottom();
+                top += marginTop();
+            } else {
+                pw = w - hpab;
+                ph = h - vpab;
+            }
             scaledImageWidth = pw;
             scaledImageHeight = ph;
             calculateBackgroundSize(bgLayer, scaledImageWidth, scaledImageHeight);
@@ -789,7 +802,7 @@ void RenderBox::close()
     setNeedsLayoutAndMinMaxRecalc();
 }
 
-short RenderBox::containingBlockWidth() const
+short RenderBox::containingBlockWidth(RenderObject* providedCB) const
 {
     if (isCanvas() && canvas()->view())
     {
@@ -799,18 +812,36 @@ short RenderBox::containingBlockWidth() const
             return canvas()->view()->visibleWidth();
     }
 
-    RenderBlock* cb = containingBlock();
+    RenderObject* cb = providedCB ? providedCB : containingBlock();
     if (isRenderBlock() && cb->isTable() && static_cast<RenderTable*>(cb)->caption() == this) {
         //captions are not affected by table border or padding
         return cb->width();
     }
-    if (isPositioned())
-        // cf. 10.1.4.2 - use padding edge
-        // ### FIXME: still wrong for inline CBs - 10.1.4.1
+    if (isPositioned()) {
+        // cf. 10.1.4 - use padding edge
+        if (cb->isInlineFlow()) {
+            // 10.1.4.1
+            int l, r;
+            InlineFlowBox* firstLineBox = static_cast<const RenderFlow*>(cb)->firstLineBox();
+            InlineFlowBox* lastLineBox = static_cast<const RenderFlow*>(cb)->lastLineBox();
+            if (!lastLineBox)
+                return 0;
+            if (cb->style()->direction() == RTL) {
+                l = lastLineBox->xPos() + lastLineBox->borderLeft();
+                r = firstLineBox->xPos() + firstLineBox->width() - firstLineBox->borderRight();
+            } else {
+                l = firstLineBox->xPos() + firstLineBox->borderLeft();
+                r = lastLineBox->xPos() + lastLineBox->width() - lastLineBox->borderRight();
+            }
+            return qMax(0, r-l);
+        }    
+        // 10.1.4.2
         return cb->contentWidth() + cb->paddingLeft() + cb->paddingRight();
-    else if (usesLineWidth())
-        return cb->lineWidth(m_y);
-    else
+    }
+    else if (usesLineWidth()) {
+        assert( cb->isRenderBlock() );
+        return static_cast<RenderBlock*>(cb)->lineWidth(m_y);
+    } else
         return cb->contentWidth();
 }
 
@@ -1466,9 +1497,9 @@ void RenderBox::calcAbsoluteHorizontal()
 
     // We don't use containingBlock(), since we may be positioned by an enclosing
     // relative positioned inline.
-    const RenderObject* containerBlock = container();
+    RenderObject* containerBlock = container();
 
-    const int containerWidth = containingBlockWidth();
+    const int containerWidth = containingBlockWidth(containerBlock);
 
     // To match WinIE, in quirks mode use the parent's 'direction' property
     // instead of the the container block's.
@@ -1982,9 +2013,9 @@ void RenderBox::calcAbsoluteHorizontalReplaced()
     // the numbers correspond to numbers in spec)
 
     // We don't use containingBlock(), since we may be positioned by an enclosing relpositioned inline.
-    const RenderObject* containerBlock = container();
+    RenderObject* containerBlock = container();
 
-    const int containerWidth = containingBlockWidth();
+    const int containerWidth = containingBlockWidth(containerBlock);
 
     // To match WinIE, in quirks mode use the parent's 'direction' property
     // instead of the the container block's.

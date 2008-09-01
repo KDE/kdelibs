@@ -225,6 +225,7 @@
 <!ENTITY kget	"<application>KGet</application>">
 <!ENTITY kghostview	"<application>KGhostView</application>">
 <!ENTITY kgoldrunner    "<application>KGoldrunner</application>">
+<!ENTITY kgpg "<application>KGpg</application>">
 <!ENTITY kgpgcertmanager "<application>KgpgCertManager</application>">
 <!ENTITY khelpcenter	"<application>KHelpCenter</application>">
 <!ENTITY khexedit	"<application>KHexEdit</application>">

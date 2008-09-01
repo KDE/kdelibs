@@ -652,10 +652,12 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                 answer = "nossl";
             } else if (args.size() > 2) {
                 const int certsnr = args[1].toInt();
+                Q_ASSERT(args.size() > certsnr + 1);
                 QString text;
                 QList<KSSLCertificate *> certs;
-                for (int i = certsnr; i >= 0; --i) {
-                    KSSLCertificate * cert = KSSLCertificate::fromString(args[i+2].toAscii().constData());
+                for (int i = certsnr - 1; i >= 0; --i) {
+                    const QByteArray &arg = args[i + 2].toAscii();
+                    KSSLCertificate * cert = KSSLCertificate::fromString(arg.constData());
                     if (cert) {
                         certs.prepend(cert);
                         if (cert->isSigner())

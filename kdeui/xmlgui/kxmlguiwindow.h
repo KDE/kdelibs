@@ -323,7 +323,6 @@ protected:
      */
     virtual bool event( QEvent * event );
 
-
 protected Q_SLOTS:
    /**
     * Rebuilds the GUI after KEditToolbar changed the toolbar layout.

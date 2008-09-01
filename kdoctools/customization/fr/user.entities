@@ -221,6 +221,9 @@
 <!ENTITY traducteurYannVerley  '<othercredit role="translator"><firstname>Yann</firstname><surname>Verley</surname><affiliation><address><email>yann.verley@free.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurYannVerley   '<othercredit role="relecteur"><firstname>Yann</firstname><surname>Verley</surname><affiliation><address><email>yann.verley@free.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurStanislasZeller  '<othercredit role="translator"><firstname>Stanislas</firstname><surname>Zeller</surname><affiliation><address><email>uncensored.assault@gmail.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurStanislasZeller   '<othercredit role="relecteur"><firstname>Stanislas</firstname><surname>Zeller</surname><affiliation><address><email>uncensored.assault@gmail.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
 <!-- CREDITS FOR TRANSLATORS -->
 
 <!ENTITY DavidAmmouial     'David Ammouial <email></email>'>
@@ -293,7 +296,8 @@
 <!ENTITY GillesThioliere   'Gilles Thiolière <email>zhovirax@wanadoo.fr</email>'>
 <!ENTITY MathiasViallon   'Mathias Viallon <email>mathias.viallon@wanadoo.fr</email>'>
 <!ENTITY ThomasVergnaud   'Thomas Vergnaud <email>thomas.vergnaud@laposte.net</email>'>
-<!ENTITY YannVerley   ' Yann Verley<email>yann.verley@free.fr</email>'>
+<!ENTITY YannVerley   'Yann Verley<email>yann.verley@free.fr</email>'>
+<!ENTITY StanislasZeller 'Stanislas Zeller <email>uncensored.assault@gmail.com</email>'>
 
 <!-- OTHER USER ENTITIES -->
 

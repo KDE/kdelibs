@@ -62,18 +62,18 @@ JSEventListener::~JSEventListener()
 
 void JSEventListener::handleEvent(DOM::Event &evt)
 {
-#ifdef KJS_DEBUGGER
-  //### This is the wrong place to do this --- we need 
-  // a more global/general stategy to prevent unwanted event loop recursion issues.
-  if (DebugWindow::window() && DebugWindow::window()->inSession())
-    return;
-#endif
   KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<Window*>(win.get())->part());
   KJSProxy *proxy = 0L;
   if (part)
     proxy = part->jScript();
 
   if (proxy && listener && listener->implementsCall()) {
+#ifdef KJS_DEBUGGER
+  //### This is the wrong place to do this --- we need 
+  // a more global/general stategy to prevent unwanted event loop recursion issues.
+    if (proxy->debugEnabled() && DebugWindow::window()->inSession())
+      return;
+#endif
     ref();
 
     KJS::ScriptInterpreter *interpreter = static_cast<KJS::ScriptInterpreter *>(proxy->interpreter());

@@ -125,6 +125,10 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
         (version.isEmpty() || version == "2.0"))
         return true;
 
+    if ((lower == "css") &&
+        (version.isEmpty() || version == "2.0"))
+        return true;
+
     if ((lower == "events" || lower == "uievents" ||
          lower == "mouseevents" || lower == "mutationevents" ||
          lower == "htmlevents" || lower == "textevents" ) &&
@@ -1436,6 +1440,7 @@ void DocumentImpl::open( bool clearEventListeners )
         detach();
 
     removeChildren();
+    childrenChanged(); // Reset m_documentElement
     delete m_styleSelector;
     m_styleSelector = 0;
     m_view = view;
@@ -1829,7 +1834,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     {
         QString str = content.string().toLower().trimmed();
         KUrl url = v->part()->url();
-        if ((str == "no-cache") && url.protocol().startsWith("http"))
+        if ((str == "no-cache") && url.protocol().startsWith(QLatin1String("http")))
         {
            KIO::http_update_cache(url, true, 0);
         }
@@ -2399,6 +2404,11 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
 {
     // don't process focus changes while detaching
     if( !m_render ) return;
+
+    // See if the new node is really focusable. It might not be
+    // if focus() was called explicitly.
+    if (newFocusNode && !newFocusNode->isFocusable())
+        return;
 
     // Make sure newFocusNode is actually in this document
     if (newFocusNode && (newFocusNode->document() != this))

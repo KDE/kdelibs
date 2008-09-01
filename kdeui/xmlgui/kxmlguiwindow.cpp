@@ -76,6 +76,8 @@
 class KXmlGuiWindowPrivate : public KMainWindowPrivate {
 public:
     bool showHelpMenu:1;
+    bool saveFlag:1;
+    QSize defaultSize;
 
     KDEPrivate::ToolBarHandler *toolBarHandler;
     KToggleAction *showStatusBarAction;
@@ -88,6 +90,7 @@ KXmlGuiWindow::KXmlGuiWindow( QWidget* parent, Qt::WFlags f )
 {
     K_D(KXmlGuiWindow);
     d->showHelpMenu = true;
+    d->saveFlag = false;
     d->toolBarHandler = 0;
     d->showStatusBarAction = 0;
     d->factory = 0;
@@ -180,6 +183,8 @@ void KXmlGuiWindow::setupGUI( StandardWindowOptions options, const QString & xml
 }
 
 void KXmlGuiWindow::setupGUI( const QSize & defaultSize, StandardWindowOptions options, const QString & xmlfile ) {
+    K_D(KXmlGuiWindow);
+
     if( options & Keys ){
         KStandardAction::keyBindings(guiFactory(),
                     SLOT(configureShortcuts()), actionCollection());
@@ -195,32 +200,13 @@ void KXmlGuiWindow::setupGUI( const QSize & defaultSize, StandardWindowOptions o
                       SLOT(configureToolbars() ), actionCollection());
     }
 
+    d->saveFlag = bool(options & Save);
+    d->defaultSize = defaultSize;
+
     if( options & Create ){
         createGUI(xmlfile);
     }
-
-    if( options & Save ){
-        // setupGUI() is typically called in the constructor before show(),
-        // so the default window size will be incorrect unless the application
-        // hard coded the size which they should try not to do (i.e. use
-        // size hints).
-        if(initialGeometrySet())
-        {
-          // Do nothing...
-        }
-        else if(defaultSize.isValid())
-        {
-          resize(defaultSize);
-        }
-        else if(isHidden())
-        {
-          adjustSize();
-        }
-        setAutoSaveSettings();
-    }
-
 }
-
 void KXmlGuiWindow::createGUI( const QString &xmlfile )
 {
     K_D(KXmlGuiWindow);
@@ -263,7 +249,6 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
     guiFactory()->addClient( this );
 
     //  setUpdatesEnabled( true );
-    updateGeometry();
 }
 
 void KXmlGuiWindow::slotStateChanged(const QString &newstate)
@@ -325,20 +310,35 @@ void KXmlGuiWindow::createStandardStatusBarAction(){
 
 void KXmlGuiWindow::finalizeGUI( bool /*force*/ )
 {
-    //kDebug(260) << "KXmlGuiWindow::finalizeGUI force=" << force;
-    // The whole reason for this is that moveToolBar relies on the indexes
-    // of the other toolbars, so in theory it should be called only once per
-    // toolbar, but in increasing order of indexes.
-    // Since we can't do that immediately, we move them, and _then_
-    // we call positionYourself again for each of them, but this time
-    // the toolbariterator should give them in the proper order.
-    // Both the XMLGUI and applySettings call this, hence "force" for the latter.
-    /* FIXME KAction port - not needed?
-    foreach (KToolBar* toolbar, toolBars()) {
-        toolbar->positionYourself( force );
-    }*/
+    K_D(KXmlGuiWindow);
 
-    //d->settingsDirty = false;
+    if (d->saveFlag) {
+        if(initialGeometrySet())
+        {
+          // Do nothing...
+        }
+        else if(d->defaultSize.isValid())
+        {
+          resize(d->defaultSize);
+        }
+        else if(isHidden())
+        {
+          adjustSize();
+        }
+        setAutoSaveSettings();
+        // We only pretend to call this one time. If setupGUI(... | Save | ...) is called this wil
+        // be set again to true.
+        d->saveFlag = false;
+    }
+
+    // FIXME: this really needs to be removed with a code more like the one we had on KDE3.
+    //        what we need to do here is to position correctly toolbars so they don't overlap.
+    //        Also, take in count plugins could provide their own toolbars and those also need to
+    //        be restored.
+    if (autoSaveSettings() && autoSaveConfigGroup().isValid()) {
+        applyMainWindowSettings(autoSaveConfigGroup());
+    }
+    // END OF FIXME
 }
 
 void KXmlGuiWindow::applyMainWindowSettings(const KConfigGroup &config, bool force)

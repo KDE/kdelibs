@@ -1371,7 +1371,13 @@ void Loader::slotMimetype( KIO::Job *j, const QString& s )
     if (!r)
         return;
     CachedObject *o = r->object;
-    o->m_mimetype = s;
+    
+    // Mozilla plain ignores any  mimetype that doesn't have / in it, and handles it as "",
+    // including when being picky about mimetypes. Match that for better compatibility with broken servers.
+    if (s.contains('/'))
+        o->m_mimetype = s;
+    else
+        o->m_mimetype = "";
 }
 
 void Loader::slotFinished( KJob* job )

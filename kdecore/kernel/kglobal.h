@@ -418,6 +418,7 @@ namespace KGlobal
      * - job start 1; job end 0; create two main objects 2; delete both main objects 0 => EXIT
      * - open window -> setAllowQuit(true) 1; add systray icon 2; close window 1 => DO NOT EXIT
      * - open window -> setAllowQuit(true) 1; add systray icon 2; remove systray icon 1; close window 0 => EXIT
+     * - unit test which opens and closes many windows: should call ref() to avoid subevent-loops quitting too early.
      *
      * Note that for this to happen you must call qApp->setQuitOnLastWindowClosed(false),
      * in main() for instance.
@@ -433,7 +434,7 @@ namespace KGlobal
     /**
      * If refcounting reaches 0 (or less), and @p allowQuit is true, the instance of the application
      * will automatically be exited. Otherwise, the application will not exit automatically.
-     * @since 4.2
+     * @since 4.1.1
      */
     KDECORE_EXPORT void setAllowQuit(bool allowQuit);
 

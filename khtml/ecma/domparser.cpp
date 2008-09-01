@@ -47,8 +47,8 @@ KJS_IMPLEMENT_PROTOFUNC(DOMParserProtoFunc)
 KJS_IMPLEMENT_PROTOTYPE("DOMParser",DOMParserProto,DOMParserProtoFunc)
 
 
-DOMParserConstructorImp::DOMParserConstructorImp(ExecState *, DOM::DocumentImpl *d)
-    : doc(d)
+DOMParserConstructorImp::DOMParserConstructorImp(ExecState* exec, DOM::DocumentImpl *d)
+    : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), doc(d)
 {
 }
 
@@ -89,14 +89,14 @@ JSValue *DOMParserProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, 
       QString contentType = args[1]->toString(exec).qstring().trimmed();
 
       if (contentType == "text/xml" || contentType == "application/xml" || contentType == "application/xhtml+xml") {
-        DocumentImpl *docImpl = parser->doc->implementation()->createDocument();
+        SharedPtr<DocumentImpl> docImpl = parser->doc->implementation()->createDocument();
 
         docImpl->open();
         docImpl->write(str);
         docImpl->finishParsing();
         docImpl->close();
 
-        return getDOMNode(exec, docImpl);
+        return getDOMNode(exec, docImpl.get());
       }
     }
   }

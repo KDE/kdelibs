@@ -104,28 +104,6 @@ namespace KJS {
   private:
     QPointer<KHTMLPart> part;
   };
-
-
-  class FrameArray : public JSObject {
-  public:
-    FrameArray(ExecState *exec, KHTMLPart *p)
-      : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), part(p) { }
-    virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    JSValue *getValueProperty(ExecState *exec, int token);
-    virtual UString toString(ExecState *exec) const;
-    enum { Length, Location };
-    JSValue *indexGetter(ExecState *, unsigned index);
-    virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
-    virtual bool implementsCall() const { return true; }
-  private:
-    static JSValue *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
-    static JSValue *nameFallBackGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
-    virtual const ClassInfo* classInfo() const { return &info; }
-    static const ClassInfo info;
-
-    QPointer<KHTMLPart> part;
-  };
-
 } //namespace KJS
 
 #include "kjs_window.lut.h"
@@ -228,26 +206,26 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   status	Window::Status		DontDelete
   document	Window::Document	DontDelete|ReadOnly
   frameElement		Window::FrameElement		DontDelete|ReadOnly
-  frames	Window::Frames		DontDelete|ReadOnly
+  frames	Window::Frames		DontDelete
   history	Window::_History	DontDelete|ReadOnly
   external	Window::_External	DontDelete|ReadOnly
   event		Window::Event		DontDelete|ReadOnly
   innerHeight	Window::InnerHeight	DontDelete|ReadOnly
   innerWidth	Window::InnerWidth	DontDelete|ReadOnly
-  length	Window::Length		DontDelete|ReadOnly
+  length	Window::Length		DontDelete
   location	Window::_Location	DontDelete
   name		Window::Name		DontDelete
   navigator	Window::_Navigator	DontDelete|ReadOnly
   clientInformation	Window::ClientInformation	DontDelete|ReadOnly
-  konqueror	Window::_Konqueror	DontDelete|ReadOnly
+  konqueror	Window::_Konqueror	DontDelete
   offscreenBuffering	Window::OffscreenBuffering	DontDelete|ReadOnly
   opener	Window::Opener		DontDelete|ReadOnly
   outerHeight	Window::OuterHeight	DontDelete|ReadOnly
   outerWidth	Window::OuterWidth	DontDelete|ReadOnly
   pageXOffset	Window::PageXOffset	DontDelete|ReadOnly
   pageYOffset	Window::PageYOffset	DontDelete|ReadOnly
-  parent	Window::Parent		DontDelete|ReadOnly
-  personalbar	Window::Personalbar	DontDelete|ReadOnly
+  parent	Window::Parent		DontDelete
+  personalbar	Window::Personalbar	DontDelete
   screenX	Window::ScreenX		DontDelete|ReadOnly
   screenY	Window::ScreenY		DontDelete|ReadOnly
   scrollbars	Window::Scrollbars	DontDelete|ReadOnly
@@ -262,7 +240,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   resizeTo	Window::ResizeTo	DontDelete|Function 2
   self		Window::Self		DontDelete|ReadOnly
   window	Window::_Window		DontDelete|ReadOnly
-  top		Window::Top		DontDelete|ReadOnly
+  top		Window::Top		DontDelete
   screen	Window::_Screen		DontDelete|ReadOnly
   alert		Window::Alert		DontDelete|Function 1
   confirm	Window::Confirm		DontDelete|Function 1
@@ -282,8 +260,8 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   removeEventListener	Window::RemoveEventListener	DontDelete|Function 3
 # Normally found in prototype. Add to window object itself to make them
 # accessible in closed and cross-site windows
-  valueOf       Window::ValueOf		DontDelete|Function 0
-  toString      Window::ToString	DontDelete|Function 0
+  valueOf       Window::ValueOf		DontEnum|DontDelete|Function 0
+  toString      Window::ToString	DontEnum|DontDelete|Function 0
 # IE extension
   navigate	Window::Navigate	DontDelete|Function 1
 # Mozilla extension
@@ -332,12 +310,12 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   MutationEvent Window::MutationEventCtor   DontEnum|DontDelete
   KeyboardEvent Window::KeyboardEventCtor   DontEnum|DontDelete
   EventException Window::EventExceptionCtor DontEnum|DontDelete
-  Audio		Window::Audio		DontEnum|DontDelete|ReadOnly
-  Image		Window::Image		DontEnum|DontDelete|ReadOnly
-  Option	Window::Option		DontEnum|DontDelete|ReadOnly
-  XMLHttpRequest Window::XMLHttpRequest DontEnum|DontDelete|ReadOnly
-  XMLSerializer	Window::XMLSerializer	DontEnum|DontDelete|ReadOnly
-  DOMParser	Window::DOMParser	DontEnum|DontDelete|ReadOnly
+  Audio		Window::Audio		DontEnum|DontDelete
+  Image		Window::Image		DontEnum|DontDelete
+  Option	Window::Option		DontEnum|DontDelete
+  XMLHttpRequest Window::XMLHttpRequest DontEnum|DontDelete
+  XMLSerializer	Window::XMLSerializer	DontEnum|DontDelete
+  DOMParser	Window::DOMParser	DontEnum|DontDelete
 
 # Mozilla dom emulation ones.
   Element   Window::ElementCtor DontEnum|DontDelete
@@ -409,7 +387,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
 KJS_IMPLEMENT_PROTOFUNC(WindowFunc)
 
 Window::Window(khtml::ChildFrame *p)
-  : JSObject(/*no proto*/), m_frame(p), screen(0), history(0), external(0), m_frames(0), loc(0), m_evt(0)
+  : JSObject(/*no proto*/), m_frame(p), screen(0), history(0), external(0), loc(0), m_evt(0)
 {
   winq = new WindowQObject(this);
   //kDebug(6070) << "Window::Window this=" << this << " part=" << m_part << " " << m_part->name();
@@ -480,15 +458,6 @@ Location *Window::location() const
   return loc;
 }
 
-JSObject* Window::frames( ExecState* exec ) const
-{
-  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
-  if (part)
-    return m_frames ? m_frames :
-      (const_cast<Window*>(this)->m_frames = new FrameArray(exec, part));
-  return 0L;
-}
-
 // reference our special objects during garbage collection
 void Window::mark()
 {
@@ -499,8 +468,6 @@ void Window::mark()
     history->mark();
   if (external && !external->marked())
     external->mark();
-  if (m_frames && !m_frames->marked())
-    m_frames->mark();
   //kDebug(6070) << "Window::mark " << this << " marking loc=" << loc;
   if (loc && !loc->marked())
     loc->mark();
@@ -711,7 +678,7 @@ JSValue *Window::namedItemGetter(ExecState *exec, JSObject*, const Identifier& p
   return getDOMNode(exec, element);
 }
 
-JSValue* Window::getValueProperty(ExecState *exec, int token) const
+JSValue* Window::getValueProperty(ExecState *exec, int token)
 {
   KHTMLPart *part = m_frame.isNull() ? 0 : qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part) {
@@ -735,7 +702,7 @@ JSValue* Window::getValueProperty(ExecState *exec, int token) const
     case Self:
       return retrieve(part);
     case Frames:
-      return frames(exec);
+      return this;
     case Opener:
       if (!part->opener())
         return jsNull();    // ### a null Window might be better, but == null
@@ -1453,7 +1420,6 @@ void Window::clear( ExecState *exec )
   screen   = 0;
   history  = 0;
   external = 0;
-  m_frames = 0;
   loc      = 0;
   setPrototype(jsNull());
 
@@ -1629,7 +1595,8 @@ JSValue *Window::openWindow(ExecState *exec, const List& args)
   if (v && v->type() != UndefinedType && v->toString(exec).size() > 0) {
     features = v->toString(exec).qstring();
     // Buggy scripts have ' at beginning and end, cut those
-    if (features.startsWith("\'") && features.endsWith("\'"))
+    if (features.startsWith(QLatin1Char('\'')) &&
+        features.endsWith(QLatin1Char('\'')))
       features = features.mid(1, features.length()-2);
   }
 
@@ -2481,130 +2448,6 @@ void WindowQObject::timeoutClose()
 {
   parent->closeNow();
 }
-
-const ClassInfo FrameArray::info = { "FrameArray", 0, &FrameArrayTable, 0 };
-
-/*
-@begin FrameArrayTable 2
-length		FrameArray::Length	DontDelete|ReadOnly
-location	FrameArray::Location	DontDelete|ReadOnly
-@end
-*/
-
-JSValue *FrameArray::getValueProperty(ExecState *exec, int token)
-{
-  switch (token) {
-  case Length:
-    return jsNumber(part->frames().count());
-  case Location:
-    // non-standard property, but works in NS and IE
-    if (JSObject *obj = Window::retrieveWindow(part))
-      return obj->get(exec, "location");
-    return jsUndefined();
-  default:
-    assert(0);
-    return jsUndefined();
-  }
-}
-
-JSValue *FrameArray::indexGetter(ExecState *exec, unsigned index)
-{
-  KParts::ReadOnlyPart *frame = part->frames().at(index);
-  if (frame)
-    return Window::retrieve(frame);
-
-  return jsUndefined();
-}
-
-JSValue *FrameArray::nameGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
-{
-  FrameArray *thisObj = static_cast<FrameArray *>(slot.slotBase());
-  KParts::ReadOnlyPart *frame = thisObj->part->findFrame(propertyName.qstring());
-  if (frame)
-    return Window::retrieve(frame);
-  return jsUndefined();
-}
-
-JSValue *FrameArray::nameFallBackGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
-{
-  FrameArray *thisObj = static_cast<FrameArray *>(slot.slotBase());
-  DOM::DocumentImpl* doc  = static_cast<DOM::DocumentImpl*>(thisObj->part->document().handle());
-  if (doc) {
-    DOM::HTMLCollectionImpl docuAll(doc, DOM::HTMLCollectionImpl::DOC_ALL);
-    DOM::NodeImpl*     node = docuAll.namedItem(propertyName.domString());
-    if (node) {
-      if (node->id() == ID_FRAME || node->id() == ID_IFRAME) {
-        //Return the Window object.
-        KHTMLPart* part = static_cast<DOM::HTMLFrameElementImpl*>(node)->contentPart();
-        if (part)
-          return Window::retrieveWindow(part);
-        else
-          return jsUndefined();
-      } else {
-        //Just a regular node..
-        return getDOMNode(exec, node);
-      }
-    }
-  } else {
-    kWarning(6070) << "Missing own document in FrameArray::get()";
-  }
-  return jsUndefined();
-}
-
-bool FrameArray::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
-{
-#ifdef KJS_VERBOSE
-  kDebug(6070) << "FrameArray::getOwnPropertySlot " << propertyName.qstring() << " part=" << (void*)part;
-#endif
-
-  if (part.isNull()) {
-    slot.setUndefined(this);
-    return true;
-  }
-
-  if (getStaticOwnValueSlot(&FrameArrayTable, this, propertyName, slot))
-    return true;
-
-  // check for the name or number
-  KParts::ReadOnlyPart *frame = part->findFrame(propertyName.qstring());
-  if (frame) {
-    slot.setCustom(this, nameGetter);
-    return true;
-  }
-
-  if (getIndexSlot(this, part->frames().count(), propertyName, slot))
-    return true;
-
-  // Fun IE quirk: name lookup in there is actually done by document.all
-  // hence, it can find non-frame things (and even let them hide frame ones!)
-  // We don't quite do that, but do this as a fallback.
-  DOM::DocumentImpl* doc  = static_cast<DOM::DocumentImpl*>(part->document().handle());
-  DOM::HTMLCollectionImpl docuAll(doc, DOM::HTMLCollectionImpl::DOC_ALL);
-  if (docuAll.namedItem(propertyName.domString())) {
-    slot.setCustom(this, nameFallBackGetter);
-    return true;
-  }
-
-  return JSObject::getOwnPropertySlot(exec, propertyName, slot);
-}
-
-UString FrameArray::toString(ExecState *) const
-{
-  return "[object FrameArray]";
-}
-
-JSValue* FrameArray::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
-{
-    //IE supports a subset of the get functionality as call...
-    //... basically, when the return is a window, it supports that, otherwise it
-    //errors out. We do a cheap-and-easy emulation of that, and just do the same
-    //thing as get does.
-    if (args.size() == 1)
-        return get(exec, Identifier(args[0]->toString(exec)));
-
-    return jsUndefined();
-}
-
 
 ////////////////////// Location Object ////////////////////////
 

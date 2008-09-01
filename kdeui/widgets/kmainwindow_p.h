@@ -52,6 +52,7 @@ public:
     KMainWindow *q;
     QObject* dockResizeListener;
     QString dbusName;
+    bool letDirtySettings;
 
     void _k_shuttingDown();
     // This slot will be called when the style KCM changes settings that need
@@ -60,6 +61,11 @@ public:
 
     void init(KMainWindow *_q);
     void polish(KMainWindow *q);
+    enum CallCompression {
+        NoCompressCalls = 0,
+        CompressCalls
+    };
+    void setSettingsDirty(CallCompression callCompression = NoCompressCalls);
 };
 
 #endif

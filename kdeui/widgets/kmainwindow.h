@@ -105,6 +105,7 @@ class KToolBar;
 class KDEUI_EXPORT KMainWindow : public QMainWindow
 {
     friend class KMWSessionManager;
+    friend class DockResizeListener;
     KDEUI_DECLARE_PRIVATE(KMainWindow)
     Q_OBJECT
     Q_PROPERTY( bool hasMenuBar READ hasMenuBar )

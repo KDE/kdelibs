@@ -1478,30 +1478,29 @@ CSSValueImpl* CSSParser::parseBackgroundImage(bool& didParse)
     return 0;
 }
 
-CSSValueImpl* CSSParser::parseBackgroundPositionXY(bool& xFound, bool& yFound)
+CSSValueImpl* CSSParser::parseBackgroundPositionXY(BackgroundPosKind& kindOut)
 {
     int id = valueList->current()->id;
     if (id == CSS_VAL_LEFT || id == CSS_VAL_TOP || id == CSS_VAL_RIGHT || id == CSS_VAL_BOTTOM || id == CSS_VAL_CENTER) {
         int percent = 0;
         if (id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT) {
-            if (xFound)
-                return 0;
-            xFound = true;
+            kindOut = BgPos_X;
             if (id == CSS_VAL_RIGHT)
                 percent = 100;
         }
         else if (id == CSS_VAL_TOP || id == CSS_VAL_BOTTOM) {
-            if (yFound)
-                return 0;
-            yFound = true;
+            kindOut = BgPos_Y;
             if (id == CSS_VAL_BOTTOM)
                 percent = 100;
         }
-        else if (id == CSS_VAL_CENTER)
+        else if (id == CSS_VAL_CENTER) {
             // Center is ambiguous, so we're not sure which position we've found yet, an x or a y.
+            kindOut = BgPos_Center;
             percent = 50;
+        }
         return new CSSPrimitiveValueImpl(percent, CSSPrimitiveValue::CSS_PERCENTAGE);
     }
+    kindOut = BgPos_NonKW;
     if (validUnit(valueList->current(), FPercent|FLength, strict))
         return new CSSPrimitiveValueImpl(valueList->current()->fValue,
                                          (CSSPrimitiveValue::UnitTypes)valueList->current()->unit);
@@ -1515,8 +1514,8 @@ void CSSParser::parseBackgroundPosition(CSSValueImpl*& value1, CSSValueImpl*& va
     Value* value = valueList->current();
 
     // Parse the first value.  We're just making sure that it is one of the valid keywords or a percentage/length.
-    bool value1IsX = false, value1IsY = false;
-    value1 = parseBackgroundPositionXY(value1IsX, value1IsY);
+    BackgroundPosKind value1pos;
+    value1 = parseBackgroundPositionXY(value1pos);
     if (!value1)
         return;
 
@@ -1529,9 +1528,9 @@ void CSSParser::parseBackgroundPosition(CSSValueImpl*& value1, CSSValueImpl*& va
     if (value && value->unit == Value::Operator && value->iValue == ',')
         value = 0;
 
-    bool value2IsX = false, value2IsY = false;
+    BackgroundPosKind value2pos = BgPos_Center; // true if not specified.
     if (value) {
-        value2 = parseBackgroundPositionXY(value2IsX, value2IsY);
+        value2 = parseBackgroundPositionXY(value2pos);
         if (value2)
             valueList->next();
         else {
@@ -1544,13 +1543,39 @@ void CSSParser::parseBackgroundPosition(CSSValueImpl*& value1, CSSValueImpl*& va
     }
 
     if (!value2)
-        // Only one value was specified.  If that value was not a keyword, then it sets the x position, and the y position
-        // is simply 50%.  This is our default.
-        // For keywords, the keyword was either an x-keyword (left/right), a y-keyword (top/bottom), or an ambiguous keyword (center).
-        // For left/right/center, the default of 50% in the y is still correct.
+        // Only one value was specified.  The other direction is always 50%.
+        // If the one given was not a keyword, it should be viewed as 'x',
+        // and so setting value2 would set y, as desired.
+        // If the one value was a keyword, the swap below would put things in order
+        // if needed.
         value2 = new CSSPrimitiveValueImpl(50, CSSPrimitiveValue::CSS_PERCENTAGE);
 
-    if (value1IsY || value2IsX) {
+    // Check for various failures
+    bool ok = true;
+
+    // Two keywords on the same axis.
+    if (value1pos == BgPos_X && value2pos == BgPos_X)
+        ok = false;
+    if (value1pos == BgPos_Y && value2pos == BgPos_Y)
+        ok = false;
+
+    // Will we need to swap them?
+    bool swap = (value1pos == BgPos_Y || value2pos == BgPos_X);
+
+    // If we had a non-KW value and a keyword value that's in the "wrong" position,
+    // this is malformed (#169612)
+    if (swap && (value1pos == BgPos_NonKW || value2pos == BgPos_NonKW))
+        ok = false;
+
+    if (!ok) {
+        delete value1;
+        delete value2;
+        value1 = 0;
+        value2 = 0;
+        return;
+    }
+
+    if (swap) {
         // Swap our two values.
         CSSValueImpl* val = value2;
         value2 = value1;
@@ -1648,17 +1673,29 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                     // unlike the other functions, parseBackgroundPosition advances the valueList pointer
                     break;
                 case CSS_PROP_BACKGROUND_POSITION_X: {
-                    bool xFound = false, yFound = true;
-                    currValue = parseBackgroundPositionXY(xFound, yFound);
-                    if (currValue)
-                        valueList->next();
+                    BackgroundPosKind pos;
+                    currValue = parseBackgroundPositionXY(pos);
+                    if (currValue) {
+                        if (pos == BgPos_Y) {
+                            delete currValue;
+                            currValue = 0;
+                        } else {
+                            valueList->next();
+                        }
+                    }
                     break;
                 }
                 case CSS_PROP_BACKGROUND_POSITION_Y: {
-                    bool xFound = true, yFound = false;
-                    currValue = parseBackgroundPositionXY(xFound, yFound);
-                    if (currValue)
-                        valueList->next();
+                    BackgroundPosKind pos;
+                    currValue = parseBackgroundPositionXY(pos);
+                    if (currValue) {
+                        if (pos == BgPos_X) {
+                            delete currValue;
+                            currValue = 0;
+                        } else {                    
+                            valueList->next();
+                        }
+                    }
                     break;
                 }
                 case CSS_PROP_BACKGROUND_REPEAT:
@@ -2079,32 +2116,45 @@ bool CSSParser::parseHSLParameters(Value* value, double* colorArray, bool parseA
     return true;
 }
 
-static bool parseColor(int unit, const QString &name, QRgb& rgb)
+static int hex2int(unsigned short c, bool* error)
+{
+    if ( c >= '0' && c <= '9' ) {
+        return c - '0';
+    } else if ( c >= 'A' && c <= 'F' ) {
+        return 10 + c - 'A';
+    } else if ( c >= 'a' && c <= 'f' ) {
+        return 10 + c - 'a';
+    } else {
+        *error = true;
+        return -1;
+    }
+}
+
+static bool parseColor(int unit, const QString& name, QRgb& rgb)
 {
     int len = name.length();
 
     if ( !len )
         return false;
 
+    const unsigned short* c =
+        reinterpret_cast<const unsigned short*>( name.unicode() );
 
-    bool ok;
-
-    if ( len == 3 || len == 6 ) {
-        int val = name.toInt(&ok, 16);
-        if ( ok ) {
-            if (len == 6) {
-                rgb = (0xff << 24) | val;
-                return true;
-            }
-            else if ( len == 3 ) {
-                // #abc converts to #aabbcc according to the specs
-                rgb = (0xff << 24) |
-                      (val&0xf00)<<12 | (val&0xf00)<<8 |
-                      (val&0xf0)<<8 | (val&0xf0)<<4 |
-                      (val&0xf)<<4 | (val&0xf);
-                return true;
-            }
-        }
+    rgb = 0xff; // fixed alpha
+    if ( len == 6 ) {
+        // RRGGBB
+        bool error = false;
+        for ( int i = 0; i < 6; ++i, ++c )
+            rgb = rgb << 4 | hex2int( *c, &error );
+        if ( !error )
+            return true;
+    } else if ( len == 3 ) {
+        // RGB, shortcut for RRGGBB
+        bool error = false;
+        for ( int i = 0; i < 3; ++i, ++c )
+            rgb = rgb << 8 | 0x11 * hex2int( *c, &error );
+        if ( !error )
+            return true;
     }
 
     if ( unit == CSSPrimitiveValue::CSS_IDENT ) {

@@ -56,7 +56,7 @@ public:
 
     virtual unsigned long length() const;
     CSSRuleImpl *parentRule() const;
-    virtual DOM::DOMString removeProperty( int propertyID);
+    virtual void removeProperty(int propertyID, DOM::DOMString* old = 0);
     virtual void removePropertiesInSet(const int* set, unsigned length);
     virtual bool setProperty ( int propertyId, const DOM::DOMString &value, bool important, int &ec);
     virtual bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false);

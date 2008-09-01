@@ -84,12 +84,12 @@ static QString cssPropertyName( const Identifier &p, bool& hadPixelPrefix )
     prop = prop.toLower();
     hadPixelPrefix = false;
 
-    if (prop.startsWith("css-")) {
+    if (prop.startsWith(QLatin1String("css-"))) {
         prop = prop.mid(4);
-    } else if (prop.startsWith("pixel-")) {
+    } else if (prop.startsWith(QLatin1String("pixel-"))) {
         prop = prop.mid(6);
         hadPixelPrefix = true;
-    } else if (prop.startsWith("pos-")) {
+    } else if (prop.startsWith(QLatin1String("pos-"))) {
         prop = prop.mid(4);
         hadPixelPrefix = true;
     }
@@ -229,7 +229,7 @@ void DOMCSSStyleDeclaration::put(ExecState *exec, const Identifier &propertyName
     QString propvalue = value->toString(exec).qstring();
 
     if (pxSuffix)
-      propvalue += "px";
+      propvalue += QLatin1String("px");
 #ifdef KJS_VERBOSE
     kDebug(6070) << "DOMCSSStyleDeclaration: prop=" << prop << " propvalue=" << propvalue;
 #endif

@@ -31,12 +31,10 @@ KMainWindowInterface::KMainWindowInterface(KXmlGuiWindow * mainWindow)
         : QDBusAbstractAdaptor(mainWindow)
 {
 	m_MainWindow = mainWindow;
-	//m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
 }
 
 KMainWindowInterface::~KMainWindowInterface()
 {
-        //delete m_dcopActionProxy;
 }
 
 QStringList KMainWindowInterface::actions()

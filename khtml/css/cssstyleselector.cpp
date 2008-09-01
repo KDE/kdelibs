@@ -554,7 +554,7 @@ static inline void bubbleSort( CSSOrderedProperty **b, CSSOrderedProperty **e )
     }
 }
 
-RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
+RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fallbackParentStyle)
 {
     if (!e->document()->haveStylesheetsLoaded() || !e->document()->view()) {
         if (!styleNotYetAvailable) {
@@ -570,7 +570,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
     element = e;
     parentNode = e->parentNode();
-    parentStyle = ( parentNode && parentNode->renderer()) ? parentNode->renderer()->style() : 0;
+    parentStyle = ( parentNode && parentNode->renderer()) ?
+                            parentNode->renderer()->style() : fallbackParentStyle;
     view = element->document()->view();
     part = view->part();
     settings = part->settings();

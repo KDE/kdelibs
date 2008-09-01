@@ -28,6 +28,7 @@
 #include "editor.h"
 
 #include "css/cssproperties.h"
+#include "css/cssvalues.h"
 #include "css/css_valueimpl.h"
 #include "xml/dom_selection.h"
 #include "xml/dom_docimpl.h"
@@ -130,6 +131,16 @@ static bool execStyleChange(KHTMLPart *part, int propertyID, const DOMString &pr
     return true;
 }
 
+static bool execStyleChange(KHTMLPart *part, int propertyID, int propertyEnum)
+{
+    CSSStyleDeclarationImpl *style = new CSSStyleDeclarationImpl(0);
+    style->setProperty(propertyID, propertyEnum);
+    style->ref();
+    part->editor()->applyStyle(style);
+    style->deref();
+    return true;
+}
+
 static bool execStyleChange(KHTMLPart *part, int propertyID, const char *propertyValue)
 {
     return execStyleChange(part, propertyID, DOMString(propertyValue));
@@ -201,6 +212,23 @@ static bool execFontName(KHTMLPart *part, bool /*userInterface*/, const DOMStrin
 
 static bool execFontSize(KHTMLPart *part, bool /*userInterface*/, const DOMString &value)
 {
+    // This should handle sizes 1-7 like <font> does. Who the heck designed this interface? (Rhetorical question)
+    bool ok;
+    int val = value.string().toInt(&ok);
+    if (ok && val >= 1 && val <= 7) {
+        int size;
+        switch (val) {
+        case 1: size = CSS_VAL_XX_SMALL; break;
+        case 2: size = CSS_VAL_SMALL; break;
+        case 3: size = CSS_VAL_MEDIUM; break;
+        case 4: size = CSS_VAL_LARGE; break;
+        case 5: size = CSS_VAL_X_LARGE;  break;
+        case 6: size = CSS_VAL_XX_LARGE; break;
+        default: size = CSS_VAL__KHTML_XXX_LARGE;
+        }
+        return execStyleChange(part, CSS_PROP_FONT_SIZE, size);
+    }
+    
     return execStyleChange(part, CSS_PROP_FONT_SIZE, value);
 }
 

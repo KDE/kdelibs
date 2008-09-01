@@ -28,6 +28,7 @@
 #include <QtCore/QRegExp>
 #include <QtGui/QFontDatabase>
 #include <kmessagebox.h>
+#include <khtml_filter_p.h>
 
 /**
  * @internal
@@ -107,7 +108,8 @@ public:
     QStringList fonts;
     QStringList defaultFonts;
 
-    QVector<QRegExp> adFilters;
+    khtml::FilterSet adBlackList;
+    khtml::FilterSet adWhiteList;
     QList< QPair< QString, QChar > > m_fallbackAccessKeysAssignments;
 };
 
@@ -324,40 +326,22 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       d->m_adFilterEnabled = cgFilter.readEntry("Enabled", false);
       d->m_hideAdsEnabled = cgFilter.readEntry("Shrink", false);
 
-      d->adFilters.clear();
+      d->adBlackList.clear();
+      d->adWhiteList.clear();
 
       QMap<QString,QString> entryMap = cgFilter.entryMap();
       QMap<QString,QString>::ConstIterator it;
-      d->adFilters.reserve(entryMap.count());
       for( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it )
       {
           QString name = it.key();
           QString url = it.value();
 
-          if (url.startsWith("!"))
-              continue;
-
           if (name.startsWith("Filter"))
           {
-              if (url.length()>2 && url[0]=='/' && url[url.length()-1] == '/')
-              {
-                  QString inside = url.mid(1, url.length()-2);
-                  QRegExp rx(inside);
-                  d->adFilters.append(rx);
-              }
+              if (url.startsWith(QLatin1String("@@")))
+                  d->adWhiteList.addFilter(url);
               else
-              {
-                  QRegExp rx;
-                  int left,right;
-
-                  for (right=url.length(); right>0 && url[right-1]=='*' ; --right);
-                  for (left=0; left<right && url[left]=='*' ; ++left);
-
-                  rx.setPatternSyntax(QRegExp::Wildcard);
-                  rx.setPattern(url.mid(left,right-left));
-
-                  d->adFilters.append(rx);
-              }
+                  d->adBlackList.addFilter(url);
           }
       }
   }
@@ -738,16 +722,8 @@ bool KHTMLSettings::isAdFiltered( const QString &url ) const
     {
         if (!url.startsWith("data:"))
         {
-            QVector<QRegExp>::const_iterator it(d->adFilters.constBegin());
-            QVector<QRegExp>::const_iterator end(d->adFilters.constEnd());
-            for (; it != end; ++it)
-            {
-                if ((*it).indexIn(url) != -1)
-                {
-                    kDebug( 6080 ) << "Filtered: " << url;
-                    return true;
-                }
-            }
+            // Check the blacklist, and only if that matches, the whitelist
+            return d->adBlackList.isUrlMatched(url) && !d->adWhiteList.isUrlMatched(url);
         }
     }
     return false;
@@ -758,6 +734,9 @@ void KHTMLSettings::addAdFilter( const QString &url )
     KConfigGroup config = KSharedConfig::openConfig( "khtmlrc", KConfig::NoGlobals )->group( "Filter Settings" );
 
     QRegExp rx;
+    
+    // Try compiling to avoid invalid stuff. Only support the basic syntax here...
+    // ### refactor somewhat
     if (url.length()>2 && url[0]=='/' && url[url.length()-1] == '/')
     {
         QString inside = url.mid(1, url.length()-2);
@@ -765,13 +744,8 @@ void KHTMLSettings::addAdFilter( const QString &url )
     }
     else
     {
-        int left,right;
-
         rx.setPatternSyntax(QRegExp::Wildcard);
-        for (right=url.length(); right>0 && url[right-1]=='*' ; --right);
-        for (left=0; left<right && url[left]=='*' ; ++left);
-
-        rx.setPattern(url.mid(left,right-left));
+        rx.setPattern(url);
     }
 
     if (rx.isValid())
@@ -782,7 +756,7 @@ void KHTMLSettings::addAdFilter( const QString &url )
         config.writeEntry("Count",last+1);
         config.sync();
 
-        d->adFilters.append(rx);
+        d->adBlackList.addFilter(url);
     }
     else
     {

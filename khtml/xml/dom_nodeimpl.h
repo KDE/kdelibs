@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
- *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2003, 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -422,6 +422,8 @@ public:
     virtual bool rendererIsNeeded(khtml::RenderStyle *);
     virtual khtml::RenderObject *createRenderer(khtml::RenderArena *, khtml::RenderStyle *);
 
+    virtual khtml::RenderStyle* computedStyle();
+
     // -----------------------------------------------------------------------------
     // Methods for maintaining the state of the element between history navigation
 
@@ -520,7 +522,7 @@ protected:
     bool m_changedAscendentAttribute : 1;
     bool m_inDocument : 1;
     bool m_hasAnchor : 1;
-    bool m_specified : 1; // used in AttrImpl. Accessor functions there
+    bool m_elementHasRareData : 1;
 
     bool m_hovered : 1;
     bool m_focused : 1;

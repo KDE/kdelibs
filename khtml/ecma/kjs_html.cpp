@@ -412,7 +412,7 @@ JSValue* HTMLDocument::getValueProperty(ExecState *exec, int token)
       return body ? jsString(body->getAttribute(ATTR_DIR)) : jsUndefined();
     case Frames:
       if ( win )
-        return win->frames(exec);
+        return win;
       else
         return jsUndefined();
   }
@@ -461,8 +461,8 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, JSValue *va
       return;
     }
     case DesignMode:
-        doc.setDesignMode((value->toString(exec).qstring()=="on"));
-        break;  
+        doc.setDesignMode((value->toString(exec).qstring().toLower()=="on"));
+        return;  
   }
 
   /* The rest of the properties require a body. Note that Doc::body may be the
@@ -3348,7 +3348,7 @@ JSValue* KJS::HTMLSelectCollectionProtoFunc::callAsFunction(ExecState *exec, JSO
 ////////////////////// Option Object ////////////////////////
 
 OptionConstructorImp::OptionConstructorImp(ExecState *exec, DOM::DocumentImpl* d)
-    : JSObject(), doc(d)
+    : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), doc(d)
 {
   // ## isn't there some redundancy between JSObject::_proto and the "prototype" property ?
   //put(exec,"prototype", ...,DontEnum|DontDelete|ReadOnly);
@@ -3390,8 +3390,8 @@ JSObject *OptionConstructorImp::construct(ExecState *exec, const List &args)
 
 //Like in other browsers, we merely make a new HTMLImageElement
 //not in tree for this.
-ImageConstructorImp::ImageConstructorImp(ExecState *, DOM::DocumentImpl* d)
-    : JSObject(), doc(d)
+ImageConstructorImp::ImageConstructorImp(ExecState* exec, DOM::DocumentImpl* d)
+    : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), doc(d)
 {
 }
 

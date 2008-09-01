@@ -115,13 +115,13 @@ DockResizeListener::~DockResizeListener()
 bool DockResizeListener::eventFilter(QObject *watched, QEvent *event)
 {
     if (event->type() == QEvent::Resize) {
-        m_win->setSettingsDirty();
+        m_win->k_ptr->setSettingsDirty(KMainWindowPrivate::CompressCalls);
     }
-#ifdef Q_WS_WIN
+
     if (event->type() == QEvent::Move) {
-        m_win->setSettingsDirty();
+        m_win->k_ptr->setSettingsDirty(KMainWindowPrivate::CompressCalls);
     }
-#endif
+
     return QObject::eventFilter(watched, event);
 }
 
@@ -237,6 +237,15 @@ void KMainWindowPrivate::init(KMainWindow *_q)
 
     q->setAttribute( Qt::WA_DeleteOnClose );
 
+    // We handle this functionality (quitting the app) ourselves, with KGlobal::ref/deref.
+    // This makes apps stay alive even if they only have a systray icon visible, or
+    // a progress widget with "keep open" checked, for instance.
+    // So don't let the default Qt mechanism allow any toplevel widget to just quit the app on us.
+    // Setting WA_QuitOnClose to false for all KMainWindows is not enough, any progress widget
+    // or dialog box would still quit the app...
+    if (qApp)
+        qApp->setQuitOnLastWindowClosed(false);
+
     KWhatsThisManager::init ();
 
     helpMenu = 0;
@@ -273,11 +282,8 @@ void KMainWindowPrivate::init(KMainWindow *_q)
 
     q->setWindowTitle( KGlobal::caption() );
 
-    // Get notified when settings change
-    QObject::connect( q, SIGNAL( iconSizeChanged(const QSize&) ), q, SLOT( setSettingsDirty() ) );
-    QObject::connect( q, SIGNAL( toolButtonStyleChanged(Qt::ToolButtonStyle) ), q, SLOT( setSettingsDirty() ) );
-
     dockResizeListener = new DockResizeListener(_q);
+    letDirtySettings = true;
 }
 
 static bool endsWithHashNumber( const QString& s )
@@ -366,6 +372,28 @@ void KMainWindowPrivate::polish(KMainWindow *q)
                                        QDBusConnection::ExportNonScriptableSlots |
                                        QDBusConnection::ExportNonScriptableProperties |
                                        QDBusConnection::ExportAdaptors);
+}
+
+void KMainWindowPrivate::setSettingsDirty(CallCompression callCompression)
+{
+    if (!letDirtySettings) {
+        return;
+    }
+
+    settingsDirty = true;
+    if (autoSaveSettings) {
+        if (callCompression == CompressCalls) {
+            if (!settingsTimer) {
+                settingsTimer = new QTimer(q);
+                settingsTimer->setInterval(500);
+                settingsTimer->setSingleShot(true);
+                QObject::connect(settingsTimer, SIGNAL(timeout()), q, SLOT(saveAutoSaveSettings()));
+            }
+            settingsTimer->start();
+        } else {
+            q->saveAutoSaveSettings();
+        }
+    }
 }
 
 void KMainWindow::parseGeometry(bool parsewidth)
@@ -539,13 +567,9 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         }
 
         if ( !no_query_exit && not_withdrawn <= 0 ) { // last window close accepted?
-            if ( queryExit() && ( !kapp || !kapp->sessionSaving() ) && !d->shuttingDown ) { // Yes, Quit app?
-                // don't call queryExit() twice
-                disconnect(qApp, SIGNAL(aboutToQuit()), this, SLOT(_k_shuttingDown()));
-                d->shuttingDown = true;
-            }  else {
-                // cancel closing, it's stupid to end up with no windows at all....
-                e->ignore();
+            if (!( queryExit() && ( !kapp || !kapp->sessionSaving() ) && !d->shuttingDown )) {
+              // cancel closing, it's stupid to end up with no windows at all....
+              e->ignore();
             }
         }
     } else e->ignore(); //if the window should not be closed, don't close it
@@ -609,6 +633,11 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
 
     KConfigGroup cg(_cg); // for saving
 
+    // One day will need to save the version number, but for now, assume 0
+    // Utilise the QMainWindow::saveState() functionality.
+    QByteArray state = saveState();
+    cg.writeEntry(QString("State"), state.toBase64());
+
     QStatusBar* sb = internalStatusBar(this);
     if (sb) {
        if(!cg.hasDefault("StatusBar") && !sb->isHidden() )
@@ -625,11 +654,6 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
        else
            cg.writeEntry("MenuBar", mb->isHidden() ? "Disabled" : "Enabled");
     }
-
-    // Utilise the QMainWindow::saveState() functionality
-    QByteArray state = saveState();
-    cg.writeEntry("State", state.toBase64());
-    // One day will need to save the version number, but for now, assume 0
 
     if ( !autoSaveSettings() || cg.name() == autoSaveGroup() ) { // TODO should be cg == d->autoSaveGroup, to compare both kconfig and group name
         if(!cg.hasDefault("ToolBarsMovable") && !KToolBar::toolBarsLocked())
@@ -680,6 +704,8 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
     K_D(KMainWindow);
     kDebug(200) << "KMainWindow::applyMainWindowSettings " << cg.name();
 
+    d->letDirtySettings = false;
+
     restoreWindowSize(cg);
 
     QStatusBar* sb = internalStatusBar(this);
@@ -698,15 +724,6 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
            mb->hide();
         else
            mb->show();
-    }
-
-    // Utilise the QMainWindow::restoreState() functionality
-    if (cg.hasKey("State")) {
-        QByteArray state;
-        state = cg.readEntry("State", state);
-        state = QByteArray::fromBase64(state);
-        // One day will need to load the version number, but for now, assume 0
-        restoreState(state);
     }
 
     if ( !autoSaveSettings() || cg.name() == autoSaveGroup() ) { // TODO should be cg == d->autoSaveGroup, to compare both kconfig and group name
@@ -729,7 +746,16 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
         n++;
     }
 
+    QByteArray state;
+    if (cg.hasKey("State")) {
+        state = cg.readEntry("State", state);
+        state = QByteArray::fromBase64(state);
+        // One day will need to load the version number, but for now, assume 0
+        restoreState(state);
+    }
+
     d->settingsDirty = false;
+    d->letDirtySettings = true;
 }
 
 #ifdef Q_WS_WIN
@@ -885,19 +911,20 @@ void KMainWindow::setSettingsDirty()
 {
     K_D(KMainWindow);
     //kDebug(200) << "KMainWindow::setSettingsDirty";
+
+    if (!d->letDirtySettings) {
+        return;
+    }
+
     d->settingsDirty = true;
     if ( d->autoSaveSettings )
     {
-        // Use a timer to save "immediately" user-wise, but not too immediately
-        // (to compress calls and save only once, in case of multiple changes)
-        if ( !d->settingsTimer )
-        {
-           d->settingsTimer = new QTimer( this );
-           connect( d->settingsTimer, SIGNAL( timeout() ), SLOT( saveAutoSaveSettings() ) );
-        }
-        d->settingsTimer->setInterval(5000);
-        d->settingsTimer->setSingleShot(true);
-        d->settingsTimer->start();
+        // Saving directly is safe here. Calls that will be donen very often in a short period of
+        // time will call to the private version of this method, that is KMainWindowPrivate::setSettingsDirty(CompressCalls).
+        // When working with toolbars, and restore/saveState mechanism from Qt is esential to save
+        // at the very moment, so no toolbars are removed and no information is lost/changed (like
+        // sizes of toolbars), in case we were compressing calls here (having a timer). (ereslibre)
+        saveAutoSaveSettings();
     }
 }
 
@@ -928,8 +955,9 @@ void KMainWindow::resetAutoSaveSettings()
 {
     K_D(KMainWindow);
     d->autoSaveSettings = false;
-    if ( d->settingsTimer )
+    if (d->settingsTimer) {
         d->settingsTimer->stop();
+    }
 }
 
 bool KMainWindow::autoSaveSettings() const
@@ -958,8 +986,6 @@ void KMainWindow::saveAutoSaveSettings()
     saveMainWindowSettings(d->autoSaveGroup);
     d->autoSaveGroup.sync();
     d->settingsDirty = false;
-    if ( d->settingsTimer )
-        d->settingsTimer->stop();
 }
 
 bool KMainWindow::event( QEvent* ev )
@@ -971,7 +997,7 @@ bool KMainWindow::event( QEvent* ev )
 #endif
     case QEvent::Resize:
         if ( d->autoSaveWindowSize )
-            setSettingsDirty();
+        d->setSettingsDirty(KMainWindowPrivate::CompressCalls);
         break;
     case QEvent::Polish:
         d->polish(this);
@@ -980,6 +1006,7 @@ bool KMainWindow::event( QEvent* ev )
         {
             QChildEvent *event = static_cast<QChildEvent*>(ev);
             QDockWidget *dock = qobject_cast<QDockWidget*>(event->child());
+            KToolBar *toolbar = qobject_cast<KToolBar*>(event->child());
             if (dock) {
                 connect(dock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)),
                         this, SLOT(setSettingsDirty()));
@@ -991,6 +1018,15 @@ bool KMainWindow::event( QEvent* ev )
                 // there is no signal emitted if the size of the dock changes,
                 // hence install an event filter instead
                 dock->installEventFilter(k_ptr->dockResizeListener);
+            } else if (toolbar) {
+                connect(toolbar, SIGNAL(iconSizeChanged(QSize)),
+                        this, SLOT(setSettingsDirty()));
+                connect(toolbar, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
+                        this, SLOT(setSettingsDirty()));
+
+                // there is no signal emitted if the size of the dock changes,
+                // hence install an event filter instead
+                toolbar->installEventFilter(k_ptr->dockResizeListener);
             }
         }
         break;
@@ -998,6 +1034,7 @@ bool KMainWindow::event( QEvent* ev )
         {
             QChildEvent *event = static_cast<QChildEvent*>(ev);
             QDockWidget *dock = qobject_cast<QDockWidget*>(event->child());
+            KToolBar *toolbar = qobject_cast<KToolBar*>(event->child());
             if (dock) {
                 disconnect(dock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)),
                            this, SLOT(setSettingsDirty()));
@@ -1006,6 +1043,12 @@ bool KMainWindow::event( QEvent* ev )
                 disconnect(dock, SIGNAL(topLevelChanged(bool)),
                            this, SLOT(setSettingsDirty()));
                 dock->removeEventFilter(k_ptr->dockResizeListener);
+            } else if (toolbar) {
+                disconnect(toolbar, SIGNAL(iconSizeChanged(QSize)),
+                           this, SLOT(setSettingsDirty()));
+                disconnect(toolbar, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
+                           this, SLOT(setSettingsDirty()));
+                toolbar->removeEventFilter(k_ptr->dockResizeListener);
             }
         }
         break;
@@ -1052,6 +1095,7 @@ void KMainWindowPrivate::_k_shuttingDown()
     if (!reentrancy_protection)
     {
        reentrancy_protection = true;
+       shuttingDown = true;
        // call the virtual queryExit
        q->queryExit();
        reentrancy_protection = false;

@@ -99,7 +99,7 @@ void XMLHttpRequestQObject::slotRedirection( KIO::Job* job, const KUrl& url)
 }
 
 XMLHttpRequestConstructorImp::XMLHttpRequestConstructorImp(ExecState *exec, DOM::DocumentImpl* d)
-    : JSObject(), doc(d)
+    : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), doc(d)
 {
     JSObject* proto = XMLHttpRequestProto::self(exec);
     putDirect(exec->propertyNames().prototype, proto, DontDelete|ReadOnly);
@@ -406,7 +406,8 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
 
     // Abondon the request when the protocol is other than "http",
     // instead of blindly changing it to a "get" request.
-    if (!protocol.startsWith("http") && !protocol.startsWith("webdav"))
+    if (!protocol.startsWith(QLatin1String("http")) &&
+        !protocol.startsWith(QLatin1String("webdav")))
     {
       abort();
       return;

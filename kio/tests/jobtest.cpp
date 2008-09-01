@@ -1167,4 +1167,69 @@ void JobTest::mimeType()
 #endif
 }
 
+void JobTest::moveAndOverwrite()
+{
+    const QString sourceFile = homeTmpDir() + "fileFromHome";
+    createTestFile( sourceFile );
+    QString existingDest = otherTmpDir() + "fileFromHome";
+    createTestFile( existingDest );
+
+    KIO::FileCopyJob* job = KIO::file_move(KUrl(sourceFile), KUrl(existingDest), -1, KIO::HideProgressInfo | KIO::Overwrite);
+    job->setUiDelegate(0);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    QVERIFY(!QFile::exists(sourceFile)); // it was moved
+
+#ifndef Q_WS_WIN
+    // Now same thing when the target is a symlink to the source
+    createTestFile( sourceFile );
+    createTestSymlink( existingDest, QFile::encodeName(sourceFile) );
+    QVERIFY(QFile::exists(existingDest));
+    job = KIO::file_move(KUrl(sourceFile), KUrl(existingDest), -1, KIO::HideProgressInfo | KIO::Overwrite);
+    job->setUiDelegate(0);
+    ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    QVERIFY(!QFile::exists(sourceFile)); // it was moved
+
+    // Now same thing when the target is a symlink to another file
+    createTestFile( sourceFile );
+    createTestFile( sourceFile + "2" );
+    createTestSymlink( existingDest, QFile::encodeName(sourceFile + "2") );
+    QVERIFY(QFile::exists(existingDest));
+    job = KIO::file_move(KUrl(sourceFile), KUrl(existingDest), -1, KIO::HideProgressInfo | KIO::Overwrite);
+    job->setUiDelegate(0);
+    ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    QVERIFY(!QFile::exists(sourceFile)); // it was moved
+
+    // Now same thing when the target is a _broken_ symlink
+    createTestFile( sourceFile );
+    createTestSymlink( existingDest );
+    QVERIFY(!QFile::exists(existingDest)); // it exists, but it's broken...
+    job = KIO::file_move(KUrl(sourceFile), KUrl(existingDest), -1, KIO::HideProgressInfo | KIO::Overwrite);
+    job->setUiDelegate(0);
+    ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    QVERIFY(!QFile::exists(sourceFile)); // it was moved
+#endif
+}
+
+void JobTest::moveOverSymlinkToSelf() // #169547
+{
+#ifndef Q_WS_WIN
+    const QString sourceFile = homeTmpDir() + "fileFromHome";
+    createTestFile( sourceFile );
+    const QString existingDest = homeTmpDir() + "testlink";
+    createTestSymlink( existingDest, QFile::encodeName(sourceFile) );
+    QVERIFY(QFile::exists(existingDest));
+
+    KIO::CopyJob* job = KIO::move(KUrl(sourceFile), KUrl(existingDest), KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(!ok);
+    QCOMPARE(job->error(), (int)KIO::ERR_FILE_ALREADY_EXIST); // and not ERR_IDENTICAL_FILES!
+    QVERIFY(QFile::exists(sourceFile)); // it not moved
+#endif
+}
+
 #include "jobtest.moc"

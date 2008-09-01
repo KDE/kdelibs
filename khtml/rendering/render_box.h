@@ -96,7 +96,7 @@ public:
 
     virtual void repaintRectangle(int x, int y, int w, int h, Priority p=NormalPriority, bool f=false);
 
-    virtual short containingBlockWidth() const;
+    virtual short containingBlockWidth(RenderObject* providedCB=0) const;
     void relativePositionOffset(int &tx, int &ty) const;
 
     virtual void calcWidth();

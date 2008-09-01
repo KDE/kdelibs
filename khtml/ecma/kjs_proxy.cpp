@@ -60,15 +60,16 @@ public:
   virtual KJS::Interpreter *interpreter();
 
   virtual void setDebugEnabled(bool enabled);
+  virtual bool debugEnabled() const;
   virtual void showDebugWindow(bool show=true);
   virtual bool paused() const;
   virtual void dataReceived();
 
   void initScript();
   void applyUserAgent();
-
 private:
   KJS::ScriptInterpreter* m_script;
+  WTF::RefPtr<DebugWindow> m_debugWindow;
   bool m_debugEnabled;
 #ifndef NDEBUG
   static int s_count;
@@ -141,8 +142,8 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 #ifdef KJS_DEBUGGER
     if (inlineCode)
         filename = "(unknown file)";
-    if (DebugWindow::window())
-        DebugWindow::window()->attach(m_script);
+    if (m_debugWindow)
+        m_debugWindow->attach(m_script);
 #else
     Q_UNUSED(baseLine);
 #endif
@@ -202,9 +203,8 @@ void KJSProxyImpl::clear() {
   // (we used to delete and re-create it, previously)
     if (m_script) {
 #ifdef KJS_DEBUGGER
-        DebugWindow *debugWin = DebugWindow::window();
-        if (debugWin)
-            debugWin->clearInterpreter(m_script);
+        if (m_debugWindow)
+            m_debugWindow->clearInterpreter(m_script);
 #endif
         m_script->clear();
 
@@ -225,6 +225,14 @@ void KJSProxyImpl::clear() {
 	    ;
     JSLock::unlock();
   }
+
+#ifdef KJS_DEBUGGER
+  // Detach from debugging entirely if it's been turned off.
+  if (m_debugWindow && !m_debugEnabled) {
+    m_debugWindow->detach(m_script);
+    m_debugWindow = 0;
+  }
+#endif
 }
 
 DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QString name, QString code, DOM::NodeImpl *node)
@@ -232,8 +240,8 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
   initScript();
 
 #ifdef KJS_DEBUGGER
-    if (DebugWindow::window())
-        DebugWindow::window()->attach(m_script);
+    if (m_debugWindow)
+        m_debugWindow->attach(m_script);
 #else
     Q_UNUSED(sourceUrl);
 #endif
@@ -262,30 +270,30 @@ void KJSProxyImpl::setDebugEnabled(bool enabled)
 {
 #ifdef KJS_DEBUGGER
   m_debugEnabled = enabled;
-  //if (m_script)
-  //    m_script->setDebuggingEnabled(enabled);
-  // NOTE: this is consistent across all KJSProxyImpl instances, as we only
-  // ever have 1 debug window
-    if (!enabled && DebugWindow::window())
-    {
-        DebugWindow::destroyInstance();
-    }
-    else if (enabled && !DebugWindow::window())
-    {
-        DebugWindow::createInstance();
-        initScript();
-        DebugWindow::window()->attach(m_script);
-    }
+
+  // Note that we attach to the debugger only before
+  // running a script. Detaches/disabling are done between
+  // documents, at clear. Both are done so the debugger
+  // see the entire session
+  if (enabled)
+    m_debugWindow = DebugWindow::window();
+#endif
+}
+
+bool KJSProxyImpl::debugEnabled() const
+{
+#ifdef KJS_DEBUGGER
+  return m_debugEnabled;
 #else
-    Q_UNUSED(enabled);
+  return false;
 #endif
 }
 
 void KJSProxyImpl::showDebugWindow(bool /*show*/)
 {
 #ifdef KJS_DEBUGGER
-    if (DebugWindow::window())
-        DebugWindow::window()->show();
+    if (m_debugWindow)
+        m_debugWindow->show();
 #else
     //Q_UNUSED(show);
 #endif

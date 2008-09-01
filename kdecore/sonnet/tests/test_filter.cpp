@@ -37,7 +37,7 @@ struct Hit {
 
 void SonnetFilterTest::testFilter()
 {
-    QString buffer( "This is     a sample buffer.      Please test me." );
+    QString buffer( "This is     a sample buffer.      Please test me. He's don't Le'Clerk." );
     QList<Hit> hits;
     hits.append( Hit( "This", 0 ) );
     hits.append( Hit( "is", 5 ) );
@@ -47,6 +47,9 @@ void SonnetFilterTest::testFilter()
     hits.append( Hit( "Please", 34 ) );
     hits.append( Hit( "test", 41 ) );
     hits.append( Hit( "me", 46 ) );
+    hits.append( Hit( "He's", 50 ) );
+    hits.append( Hit( "don't", 55 ) );
+    hits.append( Hit( "Le'Clerk", 61 ) );
 
     Filter filter;
     filter.setBuffer( buffer );

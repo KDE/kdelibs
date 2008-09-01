@@ -807,7 +807,7 @@ static bool lastRunAt(RenderObject *renderNode, int y, NodeImpl *&endNode, long 
 
 static bool startAndEndLineNodesIncludingNode(NodeImpl *node, int offset, Selection &selection)
 {
-    if (node && (node->nodeType() == Node::TEXT_NODE || node->nodeType() == Node::CDATA_SECTION_NODE)) {
+    if (node && node->renderer() && (node->nodeType() == Node::TEXT_NODE || node->nodeType() == Node::CDATA_SECTION_NODE)) {
         int pos;
         int selectionPointY;
         RenderText *renderer = static_cast<RenderText *>(node->renderer());

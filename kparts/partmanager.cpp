@@ -478,7 +478,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
         }
     }
     // Set the new active instance in KGlobal
-    setActiveComponent(d->m_activePart ? d->m_activePart->componentData() : KComponentData());
+    setActiveComponent(d->m_activePart ? d->m_activePart->componentData() : KGlobal::mainComponent());
 
     kDebug(1000) << this << " emitting activePartChanged " << d->m_activePart;
     emit activePartChanged( d->m_activePart );
