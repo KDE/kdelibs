@@ -313,22 +313,21 @@ void KXmlGuiWindow::finalizeGUI( bool /*force*/ )
     K_D(KXmlGuiWindow);
 
     if (d->saveFlag) {
-        if(initialGeometrySet())
-        {
+        if (initialGeometrySet()) {
           // Do nothing...
         }
-        else if(d->defaultSize.isValid())
-        {
+        else if (d->defaultSize.isValid()) {
           resize(d->defaultSize);
         }
-        else if(isHidden())
-        {
+        else if (isHidden()) {
           adjustSize();
         }
         setAutoSaveSettings();
-        // We only pretend to call this one time. If setupGUI(... | Save | ...) is called this wil
+        // We only pretend to call this one time. If setupGUI(... | Save | ...) is called this will
         // be set again to true.
         d->saveFlag = false;
+        return; // no need to call to applyMainWindowSettings, since setAutoSaveSettings already
+                // does it
     }
 
     // FIXME: this really needs to be removed with a code more like the one we had on KDE3.
@@ -336,12 +335,7 @@ void KXmlGuiWindow::finalizeGUI( bool /*force*/ )
     //        Also, take in count plugins could provide their own toolbars and those also need to
     //        be restored.
     if (autoSaveSettings() && autoSaveConfigGroup().isValid()) {
-        QWidget *focus = QApplication::focusWidget();
         applyMainWindowSettings(autoSaveConfigGroup());
-        //The call to applyMainWindowSettings likes to steal focus via the
-        //call to QMainWindow::restoreState.  Don't let it.
-        if (focus)
-            focus->setFocus();
     }
     // END OF FIXME
 }
