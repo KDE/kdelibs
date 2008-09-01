@@ -466,41 +466,36 @@ static void calculateBackgroundSize(const BackgroundLayer* bgLayer, int& scaledW
     CachedImage* bg = bgLayer->backgroundImage();
 
     if (bgLayer->isBackgroundSizeSet()) {
+        int w = scaledWidth;
+        int h = scaledHeight;
+
         Length bgWidth = bgLayer->backgroundSize().width;
         Length bgHeight = bgLayer->backgroundSize().height;
 
-        if (bgWidth.isPercent())
-            scaledWidth = scaledWidth * bgWidth.value() / 100;
-        else if (bgWidth.isFixed())
-            scaledWidth = bgWidth.value();
-        else if (bgWidth.isVariable()) {
-            // If the width is auto and the height is not, we have to use the appropriate
-            // scale to maintain our aspect ratio.
-            if (bgHeight.isPercent()) {
-                int scaledH = scaledHeight * bgHeight.value() / 100;
-                scaledWidth = bg->pixmap_size().width() * scaledH / bg->pixmap_size().height();
-            } else if (bgHeight.isFixed())
-                scaledWidth = bg->pixmap_size().width() * bgHeight.value() / bg->pixmap_size().height();
-        }
-
-        if (bgHeight.isPercent())
-            scaledHeight = scaledHeight * bgHeight.value() / 100;
-        else if (bgHeight.isFixed())
-            scaledHeight = bgHeight.value();
-        else if (bgHeight.isVariable()) {
-            // If the height is auto and the width is not, we have to use the appropriate
-            // scale to maintain our aspect ratio.
-            if (bgWidth.isPercent())
-                scaledHeight = bg->pixmap_size().height() * scaledWidth / bg->pixmap_size().width();
-            else if (bgWidth.isFixed())
-                scaledHeight = bg->pixmap_size().height() * bgWidth.value() / bg->pixmap_size().width();
-            else if (bgWidth.isVariable()) {
-                // If both width and height are auto, we just want to use the image's
-                // intrinsic size.
-                scaledWidth = bg->pixmap_size().width();
-                scaledHeight = bg->pixmap_size().height();
-            }
-        }
+        if (bgWidth.isFixed())
+            w = bgWidth.value();
+        else if (bgWidth.isPercent())
+            w = bgWidth.width(scaledWidth);
+        
+        if (bgHeight.isFixed())
+            h = bgHeight.value();
+        else if (bgHeight.isPercent())
+            h = bgHeight.width(scaledHeight);
+        
+        // If one of the values is auto we have to use the appropriate
+        // scale to maintain our aspect ratio.
+        if (bgWidth.isVariable() && !bgHeight.isVariable())
+            w = bg->pixmap_size().width() * h / bg->pixmap_size().height();        
+        else if (!bgWidth.isVariable() && bgHeight.isVariable())
+            h = bg->pixmap_size().height() * w / bg->pixmap_size().width();
+        else if (bgWidth.isVariable() && bgHeight.isVariable()) {
+            // If both width and height are auto, we just want to use the image's
+            // intrinsic size.
+            w = bg->pixmap_size().width();
+            h = bg->pixmap_size().height();
+        }        
+        scaledWidth = qMax(1, w);
+        scaledHeight = qMax(1, h);
     } else {
         scaledWidth = bg->pixmap_size().width();
         scaledHeight = bg->pixmap_size().height();
