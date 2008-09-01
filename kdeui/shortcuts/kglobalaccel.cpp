@@ -458,3 +458,5 @@ void KGlobalAccel::stealShortcutSystemwide(const QKeySequence &seq)
 }
 
 #include "kglobalaccel.moc"
+#include "kdedglobalaccel_interface.moc"
+
