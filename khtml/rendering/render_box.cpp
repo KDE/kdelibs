@@ -580,8 +580,21 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                 }
             }
 
-            int pw = w - hpab;
-            int ph = h - vpab;
+            int pw, ph;
+            if (isRoot()) {
+                // the root's background box 'spills out' to cover the whole canvas, so we have to
+                // go back to its true edge for the purpose of computing background-size
+                // and honouring background-origin
+                pw = width() - hpab;
+                ph = height() - vpab; 
+                left += marginLeft();
+                hpab += marginLeft() + marginRight();
+                vpab += marginTop() + marginBottom();
+                top += marginTop();
+            } else {
+                pw = w - hpab;
+                ph = h - vpab;
+            }
             scaledImageWidth = pw;
             scaledImageHeight = ph;
             calculateBackgroundSize(bgLayer, scaledImageWidth, scaledImageHeight);
