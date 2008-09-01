@@ -88,7 +88,7 @@
 // latin1 regardless of their actual encoding.
 
 // L1 is used to indicate latin1 constants
-#define L1(x) QString::fromLatin1(x)
+#define L1(x) QLatin1String(x)
 
 QString KCookieJar::adviceToStr(KCookieAdvice _advice)
 {
@@ -545,7 +545,7 @@ bool KCookieJar::parseUrl(const QString &_url,
            ((kurl.protocol() == L1("https")) && (kurl.port() != 443)))
        {
           // It's <port>:<host> so that the sorting works as expected
-          _fqdn = L1("%1:%2").arg(kurl.port()).arg(_fqdn);
+          _fqdn = QString::fromLatin1("%1:%2").arg(kurl.port()).arg(_fqdn);
        }
     }
 
@@ -925,7 +925,7 @@ void KCookieJar::addCookie(KHttpCookie &cookie)
           (it != domains.end() && !cookieList);
           ++it )
     {
-        QString key = (*it).isNull() ? L1("") : (*it);
+        QString key = (*it).isNull() ? QString::fromLatin1("") : (*it);
         KHttpCookieList *list= m_cookieDomains.value(key);
         if ( !list ) continue;
 
@@ -933,7 +933,7 @@ void KCookieJar::addCookie(KHttpCookie &cookie)
     }
 
     QString domain = stripDomain( cookie );
-    QString key = domain.isNull() ? L1("") : domain;
+    QString key = domain.isNull() ? QString::fromLatin1("") : domain;
     cookieList = m_cookieDomains.value(key);
     if (!cookieList)
     {
@@ -1485,7 +1485,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     m_rejectCrossDomainCookies = policyGroup.readEntry("RejectCrossDomainCookies", true);
     m_autoAcceptSessionCookies = policyGroup.readEntry("AcceptSessionCookies", true);
     m_ignoreCookieExpirationDate = policyGroup.readEntry("IgnoreExpirationDate", false);
-    QString value = policyGroup.readEntry("CookieGlobalAdvice", L1("Accept"));
+    QString value = policyGroup.readEntry("CookieGlobalAdvice", QString::fromLatin1("Accept"));
     m_globalAdvice = strToAdvice(value);
 
     // Reset current domain settings first.
