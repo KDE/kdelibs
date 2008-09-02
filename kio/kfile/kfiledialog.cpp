@@ -44,7 +44,7 @@
 #include "krecentdirs.h"
 
 /** File dialogs are native by default on Windows. */
-#ifdef Q_WS_WIN
+#if defined (Q_WS_WIN) || defined (Q_OS_MAC)
 const bool NATIVE_FILEDIALOGS_BY_DEFAULT = true;
 #else
 const bool NATIVE_FILEDIALOGS_BY_DEFAULT = false;
@@ -203,7 +203,7 @@ KUrl KFileDialogPrivate::Native::s_startDir;
 
 KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
                           QWidget *parent, QWidget* customWidget)
-#ifdef Q_WS_WIN
+#if defined (Q_WS_WIN) || defined (Q_OS_MAC)
     : KDialog( parent , Qt::WindowMinMaxButtonsHint),
 #else
     : KDialog( parent ),
@@ -806,7 +806,7 @@ KAbstractFileWidget* KFileDialog::fileWidget()
     return d->w;
 }
 
-#ifdef Q_WS_WIN
+#if defined (Q_WS_WIN) || defined (Q_OS_MAC)
 int KFileDialog::exec()
 {
     if (!d->native)
@@ -863,7 +863,7 @@ int KFileDialog::exec()
     }
     return QDialog::Rejected;
 }
-#endif // Q_WS_WIN
+#endif // Q_WS_WIN || Q_OS_MAC
 
 #ifdef Q_WS_WIN
 #define KF_EXTERN extern __declspec(dllimport)
