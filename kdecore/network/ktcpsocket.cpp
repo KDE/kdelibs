@@ -459,7 +459,7 @@ bool KTcpSocket::isSequential() const
 bool KTcpSocket::open(QIODevice::OpenMode open)
 {
     bool ret = d->sock.open(open);
-    setOpenMode(d->sock.openMode());
+    setOpenMode(d->sock.openMode() | QIODevice::Unbuffered);
     return ret;
 }
 
@@ -501,7 +501,13 @@ void KTcpSocket::connectToHost(const QString &hostName, quint16 port, ProxyPolic
         //###
     }
     d->sock.connectToHost(hostName, port);
-    setOpenMode(d->sock.openMode());
+    // there are enough layers of buffers between us and the network, and there is a quirk
+    // in QIODevice that can make it try to readData() twice per read() call if buffered and
+    // reaData() does not deliver enough data the first time. like when the other side is
+    // simply not sending any more data...
+    // this can *apparently* lead to long delays sometimes which stalls applications.
+    // do not want.
+    setOpenMode(d->sock.openMode() | QIODevice::Unbuffered);
 }
 
 
@@ -511,7 +517,7 @@ void KTcpSocket::connectToHost(const QHostAddress &hostAddress, quint16 port, Pr
         //###
     }
     d->sock.connectToHost(hostAddress, port);
-    setOpenMode(d->sock.openMode());
+    setOpenMode(d->sock.openMode() | QIODevice::Unbuffered);
 }
 
 
@@ -521,14 +527,14 @@ void KTcpSocket::connectToHost(const KUrl &url, ProxyPolicy policy)
         //###
     }
     d->sock.connectToHost(url.host(), url.port());
-    setOpenMode(d->sock.openMode());
+    setOpenMode(d->sock.openMode() | QIODevice::Unbuffered);
 }
 
 
 void KTcpSocket::disconnectFromHost()
 {
     d->sock.disconnectFromHost();
-    setOpenMode(d->sock.openMode());
+    setOpenMode(d->sock.openMode() | QIODevice::Unbuffered);
 }
 
 
@@ -619,7 +625,7 @@ KTcpSocket::State KTcpSocket::state() const
 bool KTcpSocket::waitForConnected(int msecs)
 {
     bool ret = d->sock.waitForConnected(msecs);
-    setOpenMode(d->sock.openMode());
+    setOpenMode(d->sock.openMode() | QIODevice::Unbuffered);
     return ret;
 }
 
@@ -627,7 +633,7 @@ bool KTcpSocket::waitForConnected(int msecs)
 bool KTcpSocket::waitForDisconnected(int msecs)
 {
     bool ret = d->sock.waitForDisconnected(msecs);
-    setOpenMode(d->sock.openMode());
+    setOpenMode(d->sock.openMode() | QIODevice::Unbuffered);
     return ret;
 }
 
@@ -670,7 +676,7 @@ void KTcpSocket::connectToHostEncrypted(const QString &hostName, quint16 port, O
 {
     d->sock.setProtocol(qSslProtocolFromK(d->advertisedSslVersion));
     d->sock.connectToHostEncrypted(hostName, port, openMode);
-    setOpenMode(d->sock.openMode());
+    setOpenMode(d->sock.openMode() | QIODevice::Unbuffered);
 }
 
 
