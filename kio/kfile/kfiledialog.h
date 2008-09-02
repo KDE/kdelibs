@@ -691,7 +691,7 @@ public:
      */
     static void setStartDir( const KUrl& directory );
 
-#ifdef Q_WS_WIN
+#if defined (Q_WS_WIN) || (Q_OS_MAC)
 public Q_SLOTS:
     int exec();
 #endif
