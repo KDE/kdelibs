@@ -42,6 +42,9 @@
 #include "kio/tcpslavebase.h"
 #include "kio/http.h"
 
+// HeaderTokenizer declarations
+#include "parsinghelpers.h"
+
 class QDomNodeList;
 
 namespace KIO {
@@ -184,6 +187,13 @@ public:
       isKeepAlive = false;
       isPersistentProxyConnection = false;
     }
+    void initFrom(const HTTPRequest &request)
+    {
+      url = request.url;
+      isKeepAlive = request.isKeepAlive;
+      proxyUrl = request.proxyUrl;
+      isPersistentProxyConnection = request.isPersistentProxyConnection;
+    }
     KUrl url;
     bool isKeepAlive;
     KUrl proxyUrl;
@@ -288,23 +298,13 @@ protected:
   ssize_t write(const void *buf, size_t nbytes);
 
   /**
-    * A wrapper around TCPSlaveBase::read() that integrates unget support.
-    */
-  ssize_t read(void *b, size_t nbytes);
-
-  char *gets(char *s, size_t size);
-
-  void setRewindMarker();
-  void rewind();
-
-  /**
     * Add an encoding on to the appropriate stack this
     * is nececesary because transfer encodings and
     * content encodings must be handled separately.
     */
   void addEncoding(const QString &, QStringList &);
 
-  void configAuth(const char *authHeader, bool isProxyAuth);
+  void configAuth(const QList<QByteArray> &headerLine, bool isProxyAuth);
 
 
   // The methods between here and sendQuery() are helpers for sendQuery().
@@ -511,13 +511,6 @@ protected:
   KIO::filesize_t m_iBytesLeft; // # of bytes left to receive in this message.
   KIO::filesize_t m_iContentLeft; // # of content bytes left
   QByteArray m_receiveBuf; // Receive buffer
-  char m_lineBuf[1024];
-  char m_rewindBuf[8192];
-  size_t m_rewindCount;
-  size_t m_lineCount;
-  size_t m_lineCountUnget;
-  char *m_linePtr;
-  char *m_linePtrUnget;
   bool m_dataInternal; // Data is for internal consumption
   bool m_isChunked; // Chunked transfer encoding
 
@@ -592,5 +585,12 @@ protected:
 
   // Values that determine the remote connection timeouts.
   int m_remoteRespTimeout;
+
+
+  QByteArray m_unreadBuf;
+  void clearUnreadBuffer();
+  void unread(char *buf, size_t size);
+  size_t readBuffered(char *buf, size_t size);
+  bool readDelimitedText(char *buf, int *idx, int end, int numNewlines);
 };
 #endif
