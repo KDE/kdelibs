@@ -586,7 +586,16 @@ QList<QChar> KCharSelectData::find(const QString& needle)
         }
     }
 
-    foreach(quint16 c, result) {
+    // remove results found by matching the code point to prevent duplicate results
+    // while letting these characters stay at the beginning
+    foreach(QChar c, returnRes) {
+        result.remove(c.unicode());
+    }
+
+    QList<quint16> sortedResult = result.toList();
+    qSort(sortedResult);
+
+    foreach(quint16 c, sortedResult) {
         returnRes.append(c);
     }
 
