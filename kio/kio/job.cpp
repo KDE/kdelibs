@@ -1239,13 +1239,43 @@ TransferJob *KIO::get( const KUrl& url, LoadType reload, JobFlags flags )
     return job;
 }
 
+class KIO::StoredTransferJobPrivate: public TransferJobPrivate
+{
+public:
+    StoredTransferJobPrivate(const KUrl& url, int command,
+                             const QByteArray &packedArgs,
+                             const QByteArray &_staticData)
+        : TransferJobPrivate(url, command, packedArgs, _staticData),
+          m_uploadOffset( 0 )
+        {}
+    QByteArray m_data;
+    int m_uploadOffset;
+
+    void slotStoredData( KIO::Job *job, const QByteArray &data );
+    void slotStoredDataReq( KIO::Job *job, QByteArray &data );
+
+    Q_DECLARE_PUBLIC(StoredTransferJob)
+
+    static inline StoredTransferJob *newJob(const KUrl &url, int command,
+                                            const QByteArray &packedArgs,
+                                            const QByteArray &staticData, JobFlags flags)
+    {
+        StoredTransferJob *job = new StoredTransferJob(
+            *new StoredTransferJobPrivate(url, command, packedArgs, staticData));
+        job->setUiDelegate(new JobUiDelegate);
+        if (!(flags & HideProgressInfo))
+            KIO::getJobTracker()->registerJob(job);
+        return job;
+    }
+};
+
 namespace KIO {
-    class PostErrorJob : public TransferJob
+    class PostErrorJob : public StoredTransferJob
     {
     public:
 
         PostErrorJob(int _error, const QString& url, const QByteArray &packedArgs, const QByteArray &postData)
-            : TransferJob(*new TransferJobPrivate(KUrl(), CMD_SPECIAL, packedArgs, postData))
+            : StoredTransferJob(*new StoredTransferJobPrivate(KUrl(), CMD_SPECIAL, packedArgs, postData))
             {
                 setError( _error );
                 setErrorText( url );
@@ -1254,7 +1284,7 @@ namespace KIO {
     };
 }
 
-TransferJob *KIO::http_post( const KUrl& url, const QByteArray &postData, JobFlags flags )
+static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, const QByteArray& postData, JobFlags flags )
 {
     int _error = 0;
 
@@ -1351,6 +1381,27 @@ TransferJob *KIO::http_post( const KUrl& url, const QByteArray &postData, JobFla
     if ((url.protocol() != "http") && (url.protocol() != "https" ))
         _error = KIO::ERR_POST_DENIED;
 
+    if (!_error && !KAuthorized::authorizeUrlAction("open", KUrl(), url))
+        _error = KIO::ERR_ACCESS_DENIED;
+
+    // if request is not valid, return an invalid transfer job
+    if (_error)
+    {
+        KIO_ARGS << (int)1 << url;
+        PostErrorJob * job = new PostErrorJob(_error, url.prettyUrl(), packedArgs, postData);
+        job->setUiDelegate(new JobUiDelegate());
+        if (!(flags & HideProgressInfo)) {
+            KIO::getJobTracker()->registerJob(job);
+        }
+        return job;
+    }
+
+    // all is ok, return 0
+    return 0;
+}
+
+TransferJob *KIO::http_post( const KUrl& url, const QByteArray &postData, JobFlags flags )
+{
     bool redirection = false;
     KUrl _url(url);
     if (_url.path().isEmpty())
@@ -1359,28 +1410,37 @@ TransferJob *KIO::http_post( const KUrl& url, const QByteArray &postData, JobFla
       _url.setPath("/");
     }
 
-    if (!_error && !KAuthorized::authorizeUrlAction("open", KUrl(), _url))
-        _error = KIO::ERR_ACCESS_DENIED;
-
-    // if request is not valid, return an invalid transfer job
-    if (_error)
-    {
-        KIO_ARGS << (int)1 << url;
-        TransferJob * job = new PostErrorJob(_error, url.prettyUrl(), packedArgs, postData);
-        job->setUiDelegate(new JobUiDelegate());
-        if (!(flags & HideProgressInfo)) {
-            KIO::getJobTracker()->registerJob(job);
-        }
+    TransferJob* job = precheckHttpPost(_url, postData, flags);
+    if (job)
         return job;
-    }
 
     // Send http post command (1), decoded path and encoded query
     KIO_ARGS << (int)1 << _url;
-    TransferJob * job = TransferJobPrivate::newJob(_url, CMD_SPECIAL, packedArgs, postData, flags);
+    job = TransferJobPrivate::newJob(_url, CMD_SPECIAL, packedArgs, postData, flags);
 
     if (redirection)
       QTimer::singleShot(0, job, SLOT(slotPostRedirection()) );
 
+    return job;
+}
+
+StoredTransferJob *KIO::storedHttpPost( const QByteArray& postData, const KUrl& url, JobFlags flags )
+{
+    bool redirection = false;
+    KUrl _url(url);
+    if (_url.path().isEmpty())
+    {
+      redirection = true;
+      _url.setPath("/");
+    }
+
+    StoredTransferJob* job = precheckHttpPost(_url, postData, flags);
+    if (job)
+        return job;
+
+    // Send http post command (1), decoded path and encoded query
+    KIO_ARGS << (int)1 << _url;
+    job = StoredTransferJobPrivate::newJob(_url, CMD_SPECIAL, packedArgs, postData, flags );
     return job;
 }
 
@@ -1403,35 +1463,6 @@ TransferJob *KIO::put( const KUrl& url, int permissions, JobFlags flags )
 }
 
 //////////
-
-class KIO::StoredTransferJobPrivate: public TransferJobPrivate
-{
-public:
-    StoredTransferJobPrivate(const KUrl& url, int command,
-                             const QByteArray &packedArgs,
-                             const QByteArray &_staticData)
-        : TransferJobPrivate(url, command, packedArgs, _staticData),
-          m_uploadOffset( 0 )
-        {}
-    QByteArray m_data;
-    int m_uploadOffset;
-
-    void slotStoredData( KIO::Job *job, const QByteArray &data );
-    void slotStoredDataReq( KIO::Job *job, QByteArray &data );
-
-    Q_DECLARE_PUBLIC(StoredTransferJob)
-
-    static inline StoredTransferJob *newJob(const KUrl &url, int command,
-                                            const QByteArray &packedArgs, JobFlags flags)
-    {
-        StoredTransferJob *job = new StoredTransferJob(
-            *new StoredTransferJobPrivate(url, command, packedArgs, QByteArray()));
-        job->setUiDelegate(new JobUiDelegate);
-        if (!(flags & HideProgressInfo))
-            KIO::getJobTracker()->registerJob(job);
-        return job;
-    }
-};
 
 StoredTransferJob::StoredTransferJob(StoredTransferJobPrivate &dd)
     : TransferJob(dd)
@@ -1494,7 +1525,7 @@ StoredTransferJob *KIO::storedGet( const KUrl& url, LoadType reload, JobFlags fl
 {
     // Send decoded path and encoded query
     KIO_ARGS << url;
-    StoredTransferJob * job = StoredTransferJobPrivate::newJob(url, CMD_GET, packedArgs, flags);
+    StoredTransferJob * job = StoredTransferJobPrivate::newJob(url, CMD_GET, packedArgs, QByteArray(), flags);
     if (reload == Reload)
        job->addMetaData("cache", "reload");
     return job;
@@ -1504,7 +1535,7 @@ StoredTransferJob *KIO::storedPut( const QByteArray& arr, const KUrl& url, int p
                                    JobFlags flags )
 {
     KIO_ARGS << url << qint8( (flags & Overwrite) ? 1 : 0 ) << qint8( (flags & Resume) ? 1 : 0 ) << permissions;
-    StoredTransferJob * job = StoredTransferJobPrivate::newJob(url, CMD_PUT, packedArgs, flags );
+    StoredTransferJob * job = StoredTransferJobPrivate::newJob(url, CMD_PUT, packedArgs, QByteArray(), flags );
     job->setData( arr );
     return job;
 }

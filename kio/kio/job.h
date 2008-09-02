@@ -321,6 +321,18 @@ namespace KIO {
                                              JobFlags flags = DefaultFlags );
 
     /**
+     * HTTP POST (a.k.a. write) data from a single QByteArray.
+     * @see StoredTransferJob
+     *
+     * @param arr The data to write
+     * @param url Where to write data.
+     * @param flags Can be HideProgressInfo here.
+     * @return the job handling the operation.
+     */
+    KIO_EXPORT StoredTransferJob *storedHttpPost( const QByteArray& arr, const KUrl& url,
+                                                  JobFlags flags = DefaultFlags );
+
+    /**
      * Creates a new multiple get job.
      *
      * @param id the id of the get operation
