@@ -198,10 +198,8 @@ ssize_t TCPSlaveBase::read(char* data, ssize_t len)
         return -1;
     }
 
-    if (d->isBlocking) {
-        if (!d->socket.bytesAvailable()) {
-            d->socket.waitForReadyRead(-1);
-        }
+    if (d->isBlocking && !d->socket.bytesAvailable()) {
+        d->socket.waitForReadyRead(-1);
     } else {
         d->socket.waitForReadyRead(0);
     }
@@ -344,8 +342,12 @@ void TCPSlaveBase::disconnectFromHost()
     d->ip.clear();
     d->usingSSL = false;
 
-    if (d->socket.state() == KTcpSocket::UnconnectedState)
+    if (d->socket.state() == KTcpSocket::UnconnectedState) {
+        // discard incoming data - the remote host might have disconnected us in the meantime
+        // but the visible effect of disconnectFromHost() should stay the same.
+        d->socket.close();
         return;
+    }
 
     //### maybe save a session for reuse on SSL shutdown if and when QSslSocket
     //    does that. QCA::TLS can do it apparently but that is not enough if
@@ -477,8 +479,12 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
     setMetaData("ssl_peer_chain", peerCertChain);
 
     // The app side needs the metadata now for the SSL error dialog (if any) but
-    // the same metadata will be needed later, too. The quite important SSL indicator
-    // icon in Konqi's URL bar relies on metadata from here, for example.
+    // the same metadata will be needed later, too. When "later" arrives the slave
+    // may actually be connected to a different application that doesn't know
+    // the metadata the slave sent to the previous application.
+    // The quite important SSL indicator icon in Konqi's URL bar relies on metadata
+    // from here, for example. And Konqi will be the second application to connect
+    // to the slave.
     // Therefore we choose to have our metadata and send it, too :)
     sendAndKeepMetaData();
 
@@ -740,9 +746,6 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
     //### Consider that hostname mismatch and e.g. an expired certificate are very different.
     //    Maybe there should be no option to acceptForever a cert with bad hostname.
 
-    //### the truth of the following comment is disputed
-    //### The old code also checks if the CN (==domain name, here) matches the actual peer IP.
-    //This is not a feature of the SSL infrastructure itself so we need to do some work.
 
     /* We need a list of ignorable errors. I don't think it makes sense to ignore
        malformed certificates, for example, as other environments probably don't do

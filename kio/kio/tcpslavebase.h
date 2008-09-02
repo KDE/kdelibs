@@ -102,16 +102,9 @@ protected:
      * Performs the initial TCP connection stuff and/or
      * SSL handshaking as necessary.
      *
-     * Please note that unlike its deprecated counterpart, this
-     * function allows you to disable any error message from being
-     * sent back to the calling application!  You can then use the
-     * connectResult() function to determine the result of the
-     * request for connection.
-     *
      * @param protocol the protocol being used
      * @param host hostname
      * @param port port number
-     * @param sendError if true sends error message to calling app on error.
      *
      * @return on succes, true is returned.
      *         on failure, false is returned and an appropriate
