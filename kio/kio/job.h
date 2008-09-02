@@ -328,6 +328,7 @@ namespace KIO {
      * @param url Where to write data.
      * @param flags Can be HideProgressInfo here.
      * @return the job handling the operation.
+     * @since 4.2
      */
     KIO_EXPORT StoredTransferJob *storedHttpPost( const QByteArray& arr, const KUrl& url,
                                                   JobFlags flags = DefaultFlags );
