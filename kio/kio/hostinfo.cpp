@@ -31,6 +31,14 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtCore/QtConcurrentRun>
 #include <QtNetwork/QHostInfo>
 
+#ifdef Q_OS_UNIX
+# include <QtCore/QFileInfo>
+# include <resolv.h>            // for _PATH_RESCONF
+# ifndef _PATH_RESCONF
+#  define _PATH_RESCONF         "/etc/resolv.conf"
+# endif
+#endif
+
 #define TTL 300
 
 namespace KIO
@@ -50,6 +58,7 @@ namespace KIO
 
         QHash<QString, Query*> openQueries;
         QCache<QString, QPair<QHostInfo, QTime> > dnsCache;
+        time_t resolvConfMTime;
     };
 
     class HostInfoAgentPrivate::Result : public QObject
@@ -102,12 +111,26 @@ void HostInfo::lookupHost(const QString& hostName, QObject* receiver,
     hostInfoAgentPrivate->lookupHost(hostName, receiver, member);
 }
 
-HostInfoAgentPrivate::HostInfoAgentPrivate(int cacheSize) : openQueries(),
-    dnsCache(cacheSize) {}
+HostInfoAgentPrivate::HostInfoAgentPrivate(int cacheSize)
+    : openQueries(),
+      dnsCache(cacheSize),
+      resolvConfMTime(0)
+{}
 
 void HostInfoAgentPrivate::lookupHost(const QString& hostName,
     QObject* receiver, const char* member)
 {
+#ifdef _PATH_RESCONF
+    QFileInfo resolvConf(QFile::encodeName(_PATH_RESCONF));
+    time_t currentMTime = resolvConf.lastModified().toTime_t();
+    if (resolvConf.exists() && currentMTime != resolvConfMTime) {
+        // /etc/resolv.conf has been modified
+        // clear our cache
+        resolvConfMTime = currentMTime;
+        dnsCache.clear();
+    }
+#endif
+
     if (QPair<QHostInfo, QTime>* info = dnsCache.object(hostName)) {
         if (QTime::currentTime() <= info->second.addSecs(TTL)) {
             Result result;
