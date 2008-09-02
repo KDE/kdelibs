@@ -1035,6 +1035,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         if (!pix.isNull() || canReturnNull) {
             return pix;
         } else {
+            if ( key == str_unknown )
+               return pix; // don't recurse endlessly
             return loadIcon(str_unknown, group, size, state,
                             overlays, path_store, canReturnNull);
         }
