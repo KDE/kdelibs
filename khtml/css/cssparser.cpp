@@ -2477,6 +2477,7 @@ int DOM::CSSParser::lex( void *_yylval )
     case IDENT:
     case NTH:
     case HASH:
+    case HEXCOLOR:
     case DIMEN:
     case UNICODERANGE:
     case NOTFUNCTION:
@@ -2551,6 +2552,7 @@ unsigned short *DOM::CSSParser::text(int *length)
         l--;
         /* nobreak */
     case HASH:
+    case HEXCOLOR:
         start++;
         l--;
         break;
