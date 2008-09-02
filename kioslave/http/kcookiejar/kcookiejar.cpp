@@ -516,8 +516,10 @@ void KCookieJar::stripDomain(const QString &_fqdn, QString &_domain)
    extractDomains(_fqdn, domains);
    if (domains.count() > 3)
       _domain = domains[3];
-   else
+   else if ( domains.count() > 0 )
       _domain = domains[0];
+   else
+      _domain = L1("");
 }
 
 QString KCookieJar::stripDomain(const KHttpCookie& cookie)
