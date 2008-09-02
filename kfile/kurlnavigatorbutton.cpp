@@ -67,12 +67,8 @@ void KUrlNavigatorButton::setIndex(int index)
 
 void KUrlNavigatorButton::setActive(bool active)
 {
-    // Check whether the button indicates the full path of the URL. If
-    // this is the case, the button is marked as 'active'.
-    const QString path = urlNavigator()->url().pathOrUrl();
-    const int index = m_index + 1;
     QFont adjustedFont(font());
-    if (path.section('/', index, index).isEmpty()) {
+    if (active) {
         setDisplayHintEnabled(ActivatedHint, true);
         adjustedFont.setBold(true);
     } else {
