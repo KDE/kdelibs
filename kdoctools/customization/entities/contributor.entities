@@ -128,6 +128,8 @@
 <!ENTITY David.Faure.mail '<email>faure@kde.org</email>'>
 <!ENTITY John.Firebaugh '<personname><firstname>John</firstname><surname>Firebaugh</surname></personname>'>
 <!ENTITY John.Firebaugh.mail '<email>jfirebaugh@kde.org</email>'>
+<!ENTITY Dario.Freddi '<personname><firstname>Dario</firstname><surname>Freddi</surname></personname>'>
+<!ENTITY Dario.Freddi.mail '<email>drf@kdemod.ath.cx</email>'>
 <!ENTITY Klaus.Freitag '<personname><firstname>Klaus</firstname><surname>Freitag</surname></personname>'>
 <!ENTITY Klaus.Freitag.mail '<email>freitag@suse.de</email>'>
 <!ENTITY Haavard.Froeiland '<personname><firstname>Haavard</firstname><surname>Froeiland</surname></personname>'>
