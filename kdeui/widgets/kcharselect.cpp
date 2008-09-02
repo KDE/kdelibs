@@ -297,6 +297,7 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
         d->searchLine->setToolTip(i18n("Enter a search term or character here"));
         new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_L), this, SLOT(_k_activateSearchLine()));
         connect(d->searchLine, SIGNAL(textChanged(QString)), this, SLOT(_k_searchEditChanged()));
+        connect(d->searchLine, SIGNAL(returnPressed()), this, SLOT(_k_search()));
     }
 
     if ((SearchLine & controls) && ((FontCombo & controls) || (FontSize & controls) || (BlockCombos & controls))) {
