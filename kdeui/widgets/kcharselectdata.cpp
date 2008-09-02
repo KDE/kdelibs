@@ -23,6 +23,7 @@
 #include <QStringList>
 #include <QFile>
 #include <qendian.h>
+#include <QtConcurrentRun>
 
 #include <string.h>
 #include <klocalizedstring.h>
@@ -70,6 +71,7 @@ bool KCharSelectData::openDataFile()
         }
         dataFile = file.readAll();
         file.close();
+        futureIndex = QtConcurrent::run(this, &KCharSelectData::createIndex, dataFile);
         return true;
     }
 }
@@ -541,49 +543,192 @@ QString KCharSelectData::categoryText(QChar::Category category)
 
 QList<QChar> KCharSelectData::find(const QString& needle)
 {
-    QList<QChar> res;
-    QStringList searchStrings = needle.simplified().split(' ');
+    QSet<quint16> result;
+
+    QList<QChar> returnRes;
+    QStringList searchStrings = splitString(needle.simplified());
 
     if (searchStrings.count() == 0) {
-        return res;
+        return returnRes;
     }
 
     if(searchStrings.count() == 1 && searchStrings[0].length() == 1) {
-        res.append(searchStrings[0].at(0));
-        return res;
+        returnRes.append(searchStrings[0].at(0));
+        return returnRes;
     }
 
+    //TODO: U+ doesn't make sense here, because splitStrings splits it, so this should be checked and removed before
     QRegExp regExp("^(|u\\+|U\\+|0x|0X)([A-Fa-f0-9]{4})$");
     foreach(const QString &s, searchStrings) {
         if(regExp.exactMatch(s)) {
-            res.append(regExp.cap(2).toInt(0, 16));
+            returnRes.append(regExp.cap(2).toInt(0, 16));
+            // search for "1234" instead of "0x1234"
+            if (s.length() == 6) {
+                searchStrings[searchStrings.indexOf(s)] = regExp.cap(2);
+            }
+        }
+        // try to parse string as decimal number
+        bool ok;
+        int unicode = s.toInt(&ok);
+        if (ok && unicode >= 0 && unicode <= 0xFFFF) {
+            returnRes.append(unicode);
         }
     }
 
-    QString firstString = searchStrings.takeFirst();
+    bool firstSubString = true;
+    foreach(QString s, searchStrings) {
+        QSet<quint16> partResult = getMatchingChars(s.toLower());
+        if (firstSubString) {
+            result = partResult;
+            firstSubString = false;
+        } else {
+            result = result.intersect(partResult);
+        }
+    }
 
+    foreach(quint16 c, result) {
+        returnRes.append(c);
+    }
+
+    return returnRes;
+}
+
+QSet<quint16> KCharSelectData::getMatchingChars(const QString& s)
+{
+    futureIndex.waitForFinished();
+    Index index = futureIndex;
+    Index::const_iterator pos = index.lowerBound(s);
+    QSet<quint16> result;
+
+    while (pos != index.end() && pos.key().startsWith(s)) {
+        foreach (quint16 c, pos.value()) {
+            result.insert(c);
+        }
+        pos++;
+    }
+
+    return result;
+}
+
+QStringList KCharSelectData::splitString(const QString& s)
+{
+    QStringList result;
+    int start = 0;
+    int end = 0;
+    int length = s.length();
+    while (end < length) {
+        while (end < length && s[end].isLetterOrNumber()) {
+            end++;
+        }
+        if (start != end) {
+            result.append(s.mid(start, end - start));
+        }
+        start = end;
+        while (end < length && !s[end].isLetterOrNumber()) {
+            end++;
+            start++;
+        }
+    }
+    return result;
+}
+
+void KCharSelectData::appendToIndex(Index *index, quint16 unicode, const QString& s)
+{
+    QStringList strings = splitString(s);
+    foreach(QString s, strings) {
+        (*index)[s.toLower()].append(unicode);
+    }
+}
+
+Index KCharSelectData::createIndex(const QByteArray& dataFile)
+{
+    Index i;
+
+    // character names
+    const uchar* udata = reinterpret_cast<const uchar*>(dataFile.constData());
     const char* data = dataFile.constData();
-    const uchar* udata = reinterpret_cast<const uchar*>(data);
-    const quint32 offsetBegin = qFromLittleEndian<quint32>(udata+4);
-    const quint32 offsetEnd = qFromLittleEndian<quint32>(udata+8);
+    const quint32 nameOffsetBegin = qFromLittleEndian<quint32>(udata+4);
+    const quint32 nameOffsetEnd = qFromLittleEndian<quint32>(udata+8);
 
-    int max = ((offsetEnd - offsetBegin) / 6) - 1;
+    int max = ((nameOffsetEnd - nameOffsetBegin) / 6) - 1;
 
-    for (int i = 0; i <= max; i++) {
-        quint32 offset = qFromLittleEndian<quint32>(udata + offsetBegin + i*6 + 2);
-        QString name(data + offset);
-        if (name.contains(firstString, Qt::CaseInsensitive)) {
-            bool valid = true;
-            foreach(const QString &s, searchStrings) {
-                if (!name.contains(s, Qt::CaseInsensitive)) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (valid) {
-                res.append(qFromLittleEndian<quint16>(udata + offsetBegin + i*6));
-            }
+    for (int pos = 0; pos <= max; pos++) {
+        const quint16 unicode = qFromLittleEndian<quint16>(udata + nameOffsetBegin + pos*6);
+        quint32 offset = qFromLittleEndian<quint32>(udata + nameOffsetBegin + pos*6 + 2);
+        appendToIndex(&i, unicode, QString(data + offset));
+    }
+
+    // details
+    const quint32 detailsOffsetBegin = qFromLittleEndian<quint32>(udata+12);
+    const quint32 detailsOffsetEnd = qFromLittleEndian<quint32>(udata+16);
+
+    max = ((detailsOffsetEnd - detailsOffsetBegin) / 27) - 1;
+
+    for (int pos = 0; pos <= max; pos++) {
+        const quint16 unicode = qFromLittleEndian<quint16>(udata + detailsOffsetBegin + pos*27);
+
+        // aliases
+        const quint8 aliasCount = * (quint8 *)(udata + detailsOffsetBegin + pos*27 + 6);
+        quint32 aliasOffset = qFromLittleEndian<quint32>(udata + detailsOffsetBegin + pos*27 + 2);
+
+        for (int j = 0;  j < aliasCount;  j++) {
+            appendToIndex(&i, unicode, QString::fromUtf8(data + aliasOffset));
+            aliasOffset += strlen(data + aliasOffset) + 1;
+        }
+
+        // notes
+        const quint8 notesCount = * (quint8 *)(udata + detailsOffsetBegin + pos*27 + 11);
+        quint32 notesOffset = qFromLittleEndian<quint32>(udata + detailsOffsetBegin + pos*27 + 7);
+
+        for (int j = 0;  j < notesCount;  j++) {
+            appendToIndex(&i, unicode, QString::fromUtf8(data + notesOffset));
+            notesOffset += strlen(data + notesOffset) + 1;
+        }
+
+        // approximate equivalents
+        const quint8 apprCount = * (quint8 *)(udata + detailsOffsetBegin + pos*27 + 16);
+        quint32 apprOffset = qFromLittleEndian<quint32>(udata + detailsOffsetBegin + pos*27 + 12);
+
+        for (int j = 0;  j < apprCount;  j++) {
+            appendToIndex(&i, unicode, QString::fromUtf8(data + apprOffset));
+            apprOffset += strlen(data + apprOffset) + 1;
+        }
+
+        // equivalents
+        const quint8 equivCount = * (quint8 *)(udata + detailsOffsetBegin + pos*27 + 21);
+        quint32 equivOffset = qFromLittleEndian<quint32>(udata + detailsOffsetBegin + pos*27 + 17);
+
+        for (int j = 0;  j < equivCount;  j++) {
+            appendToIndex(&i, unicode, QString::fromUtf8(data + equivOffset));
+            equivOffset += strlen(data + equivOffset) + 1;
+        }
+
+        // see also - convert to string (hex)
+        const quint8 seeAlsoCount = * (quint8 *)(udata + detailsOffsetBegin + pos*27 + 26);
+        quint32 seeAlsoOffset = qFromLittleEndian<quint32>(udata + detailsOffsetBegin + pos*27 + 22);
+
+        for (int j = 0;  j < seeAlsoCount;  j++) {
+            quint16 unicode = qFromLittleEndian<quint16> (udata + seeAlsoOffset);
+            appendToIndex(&i, unicode, QString::number(unicode, 16));
+            equivOffset += strlen(data + equivOffset) + 1;
         }
     }
-    return res;
+
+    // unihan data
+    // temporary disabled due to the huge amount of data
+//     const quint32 unihanOffsetBegin = qFromLittleEndian<quint32>(udata+36);
+//     const quint32 unihanOffsetEnd = dataFile.size();
+//     max = ((unihanOffsetEnd - unihanOffsetBegin) / 30) - 1;
+//
+//     for (int pos = 0; pos <= max; pos++) {
+//         const quint16 unicode = qFromLittleEndian<quint16>(udata + unihanOffsetBegin + pos*30);
+//         for(int j = 0; j < 7; j++) {
+//             quint32 offset = qFromLittleEndian<quint32>(udata + unihanOffsetBegin + pos*30 + 2 + j*4);
+//             if(offset != 0) {
+//                 appendToIndex(&i, unicode, QString::fromUtf8(data + offset));
+//             }
+//         }
+//     }
+
+    return i;
 }

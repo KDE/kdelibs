@@ -25,8 +25,12 @@
 #include <QtCore/QList>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
+#include <QtCore/QFuture>
 
 // Internal class used by KCharSelect
+
+class QVarLengthArray;
+typedef QMap<QString, QVector<quint16> > Index;
 
 class KCharSelectData
 {
@@ -61,8 +65,14 @@ public:
 private:
     bool openDataFile();
     quint32 getDetailIndex(const QChar& c) const;
+    QSet<quint16> getMatchingChars(const QString& s);
+
+    QStringList splitString(const QString& s);
+    void appendToIndex(Index *index, quint16 unicode, const QString& s);
+    Index createIndex(const QByteArray& dataFile);
 
     QByteArray dataFile;
+    QFuture<Index> futureIndex;
 };
 
 #endif  /* #ifndef KCHARSELECTDATA_H */

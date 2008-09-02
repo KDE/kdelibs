@@ -297,11 +297,6 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
         d->searchLine->setToolTip(i18n("Enter a search term or character here"));
         new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_L), this, SLOT(_k_activateSearchLine()));
         connect(d->searchLine, SIGNAL(textChanged(QString)), this, SLOT(_k_searchEditChanged()));
-
-        QPushButton* searchButton = new QPushButton(i18n("Search"), this);
-        searchLayout->addWidget(searchButton);
-        connect(d->searchLine, SIGNAL(returnPressed(QString)), searchButton, SLOT(animateClick()));
-        connect(searchButton, SIGNAL(pressed()), this, SLOT(_k_search()));
     }
 
     if ((SearchLine & controls) && ((FontCombo & controls) || (FontSize & controls) || (BlockCombos & controls))) {
@@ -785,6 +780,11 @@ void KCharSelect::KCharSelectPrivate::_k_searchEditChanged()
     } else {
         sectionCombo->setEnabled(false);
         blockCombo->setEnabled(false);
+
+        int length = searchLine->text().length();
+        if (length >= 3) {
+            _k_search();
+        }
     }
 }
 
@@ -800,7 +800,6 @@ void KCharSelect::KCharSelectPrivate::_k_search()
     if (!contents.isEmpty()) {
         charTable->setChar(contents[0]);
     }
-    charTable->setFocus();
 }
 
 void  KCharSelect::KCharSelectPrivate::_k_linkClicked(QUrl url)
