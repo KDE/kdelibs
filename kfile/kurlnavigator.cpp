@@ -344,6 +344,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     // initialize the path box of the traditional view
     m_pathBox = new KUrlComboBox(KUrlComboBox::Both, true, q);
     m_pathBox->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
+    m_pathBox->installEventFilter(q);
 
     KUrlCompletion* kurlCompletion = new KUrlCompletion(KUrlCompletion::DirCompletion);
     m_pathBox->setCompletionObject(kurlCompletion);
@@ -1120,6 +1121,16 @@ void KUrlNavigator::resizeEvent(QResizeEvent* event)
 {
     QTimer::singleShot(0, this, SLOT(updateButtonVisibility()));
     QWidget::resizeEvent(event);
+}
+
+bool KUrlNavigator::eventFilter(QObject* watched, QEvent* event)
+{
+    if ((watched == d->m_pathBox) && (event->type() == QEvent::FocusIn)) {
+        requestActivation();
+        setFocus();
+    }
+
+    return QWidget::eventFilter(watched, event);
 }
 
 int KUrlNavigator::historySize() const
