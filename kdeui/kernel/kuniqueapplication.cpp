@@ -171,11 +171,9 @@ KUniqueApplication::start(StartFlags flags)
         kError() << "KUniqueApplication: Can't setup D-Bus service. Probably already running."
                  << endl;
 #ifdef Q_WS_WIN
-        // on Windows we'll restart the app (at least in KMail, KOrganizer, Konact...)
-        return false;
-#else
-        ::exit(255);
+        KApplication_activateWindowForProcess(KCmdLineArgs::aboutData()->appName());
 #endif
+        ::exit(255);
      }
 #ifdef Q_WS_WIN
      Private::s_dbusServiceName = appName;
