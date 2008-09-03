@@ -2307,9 +2307,7 @@ bool HTTPProtocol::sendQuery()
     if (m_request.proxyUrl.isValid()) {
       if ( m_request.isPersistentProxyConnection )
         header += "Proxy-Connection: Keep-Alive\r\n";
-      QString pah = proxyAuthenticationHeader();
-      kDebug(7113) << "\nProxy authentication header =\n" << pah << "\n";
-      header += pah;
+      header += proxyAuthenticationHeader();
     }
 
     if ( m_protocol == "webdav" || m_protocol == "webdavs" )
