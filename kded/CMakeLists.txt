@@ -46,7 +46,7 @@ set(kbuildsycoca_KDEINIT_SRCS
 kde4_add_kdeinit_executable( kbuildsycoca4 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
 # needs kio for KServiceGroup
-target_link_libraries(kdeinit_kbuildsycoca4  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(kdeinit_kbuildsycoca4  ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY})
 
 install(TARGETS kdeinit_kbuildsycoca4 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
