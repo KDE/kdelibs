@@ -75,8 +75,8 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
             this, SLOT(defaultToggled(bool)));
     connect(m_customEditor, SIGNAL(keySequenceChanged(const QKeySequence &)),
             this, SLOT(setCustom(const QKeySequence &)));
-    connect(m_customEditor, SIGNAL(aboutToStealShortcut(const QKeySequence &, KAction *)),
-        this, SIGNAL(aboutToStealShortcut(const QKeySequence &, KAction *)));
+    connect(m_customEditor, SIGNAL(stealShortcut(const QKeySequence &, KAction *)),
+        this, SIGNAL(stealShortcut(const QKeySequence &, KAction *)));
 }
 
 
@@ -96,8 +96,6 @@ void ShortcutEditWidget::defaultToggled(bool checked)
         // The default key sequence should be activated. We check first if this is
         // possible.
         if (m_customEditor->isKeySequenceAvailable(m_defaultKeySequence)) {
-            // Steal the shortcut if the user gave his consens
-            m_customEditor->applyStealShortcut();
             // Clear the customs widget
             m_customEditor->clearKeySequence();
             emit keySequenceChanged(m_defaultKeySequence);
@@ -138,12 +136,6 @@ void ShortcutEditWidget::setCustom(const QKeySequence &seq)
     // Check if the user typed in the default sequence into the custom field.
     // We do this by calling setKeySequence which will do the right thing.
     setKeySequence(seq);
-
-    // BUG: The shortcuts is taken away from the other action. But there is
-    // currently no way to undo that, because noone remembers what happend
-    // after that call.
-    // TODO: Adapt the shortcuteditor so it is able to undo this
-    m_customEditor->applyStealShortcut();
 
     emit keySequenceChanged(seq);
     m_isUpdating = false;

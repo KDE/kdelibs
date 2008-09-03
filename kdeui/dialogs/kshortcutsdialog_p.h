@@ -126,7 +126,7 @@ private Q_SLOTS:
      * If the user allowed stealing a shortcut we want to be able to undo
      * that.
      */
-    void aboutToStealShortcut(const QKeySequence &seq, KAction *action);
+    void stealShortcut(const QKeySequence &seq, KAction *action);
 
     void keySequenceChanged(const QKeySequence &);
     void shapeGestureChanged(const KShapeGesture &);
@@ -183,8 +183,8 @@ Q_SIGNALS:
     //! Emitted when the key sequence is changed.
     void keySequenceChanged(const QKeySequence &);
 
-    //! @see KKeySequenceWidget::aboutToStealShortcut()
-    void aboutToStealShortcut(const QKeySequence &seq, KAction *action);
+    //! @see KKeySequenceWidget::stealShortcut()
+    void stealShortcut(const QKeySequence &seq, KAction *action);
 
 private Q_SLOTS:
 

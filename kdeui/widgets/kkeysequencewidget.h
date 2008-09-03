@@ -36,13 +36,12 @@ class KActionCollection;
 /**
  * @short A widget to input a QKeySequence.
  *
- * This widget lets the user choose a QKeySequence, which is usually used as a shortcut key,
- * by pressing the keys just like to trigger a shortcut. Calling captureKeySequence(), or
- * the user clicking into the widget, start recording.
+ * This widget lets the user choose a QKeySequence, which is usually used as a
+ * shortcut key. The recording is initiated by calling captureKeySequence() or
+ * the user clicking into the widget.
  *
- * A check for conflict with shortcut of this application can also be performed.
- * call setCheckActionCollections() to set the list of action collections to check with,
- * and applyStealShortcut when applying changes.
+ * The widgets provides support for conflict handling. See
+ * setCheckForConflictsAgainst() for more information.
  *
  * @author Mark Donohoe <donohoe@kde.org>
  * @internal
@@ -72,7 +71,7 @@ public:
 	virtual ~KKeySequenceWidget();
 
 	/**
-	 * \group Configuration
+	 * \name Configuration
 	 *
 	 * Configuration options for the widget.
 	 */
@@ -94,15 +93,27 @@ public:
 		 * against GlobalShortcuts and your other local shortcuts. This is the
 		 * default.
 		 *
-		 * The easiest way to check against local shortcuts is
+		 * You have to provide the local actions to check against with
 		 * setCheckActionCollections().
 		 *
 		 * When capturing a key sequence for a global shortcut you should
 		 * check against StandardShortcuts, GlobalShortcuts and your local
 		 * shortcuts.
 		 *
+		 * There are two ways to react to a user agreeing to steal a shortcut:
+		 *
+		 * 1. Listen to the stealShortcut() signal and steal the shortcuts
+		 * manually. It's your responsibility to save that change later when
+		 * you think it is appropriate.
+		 *
+		 * 2. Call applyStealShortcut and KKeySequenceWidget will steal the
+		 * shortcut. This will save the actionCollections the shortcut is part
+		 * of so make sure it doesn't inadvertly save some unwanted changes
+		 * too. Read it's documentation for some limitation when handling
+		 * global shortcuts.
+		*
 		 * If you want to do the conflict checking yourself here are some code
-		 * snippets for standard and global shortcuts:
+		 * snippets for global ...
 		 *
 		 * \code
 		 * QStringList conflicting = KGlobalAccel::findActionNameSystemwide(keySequence);
@@ -116,6 +127,8 @@ public:
 		 * }
 		 * \endcode
 		 *
+		 * ...  and standard shortcuts
+		 *
 		 * \code
 		 * KStandardShortcut::StandardShortcut ssc = KStandardShortcut::find(keySequence);
 		 * if (ssc != KStandardShortcut::AccelNone) {
@@ -123,8 +136,6 @@ public:
 		 * }
 		 * \endcode
 		 *
-		 * We normally inform the user abput the possible conflict and let him
-		 * proceed if he wants.
 		 *
 		 * @since 4.2
 		 */
@@ -132,8 +143,8 @@ public:
 
 		/**
 		 * The shortcut types we check for conflicts.
-		 * @see setCheckForConflictsAgainst
 		 *
+		 * @see setCheckForConflictsAgainst()
 		 * @since 4.2
 		 */
 		ShortcutTypes checkForConflictsAgainst() const;
@@ -179,17 +190,12 @@ public:
 	/**
 	 * Set a list of action collections to check against for conflictuous shortcut.
 	 *
+	 * @see setCheckForConflictsAgainst()
+	 *
 	 * If a KAction with a conflicting shortcut is found inside this list and
 	 * its shortcut can be configured (KAction::isShortcutConfigurable()
 	 * returns true) the user will be prompted whether to steal the shortcut
 	 * from this action.
-	 *
-	 * Global shortcuts are automatically checked for conflicts. For checking
-	 * against KStandardShortcuts - @see checkAgainstStandardShortcuts().
-	 *
-	 * Don't forget to call applyStealShortcut to actually steal the shortcut
-	 * and read it's documentation for some limitation when handling global
-	 * shortcuts.
 	 *
 	 * @since 4.1
 	 */
@@ -212,14 +218,18 @@ Q_SIGNALS:
 	void keySequenceChanged(const QKeySequence &seq);
 
 	/**
-	 * This signal is emitted when an shortcut is about to be stolen. This is
-	 * only done for local shortcuts. So you can be sure \a action is one of
-	 * the actions you provided with setCheckActionList() or
+	 * This signal is emitted after the user agreed to steal a shortcut from
+	 * an action. This is only done for local shortcuts. So you can be sure \a
+	 * action is one of the actions you provided with setCheckActionList() or
 	 * setCheckActionCollections().
+	 *
+	 * If you listen to that signal and don't call applyStealShortcut() you
+	 * are supposed to steal the shortcut and save this change.
 	 */
-	void aboutToStealShortcut(const QKeySequence &seq, KAction *action);
+	void stealShortcut(const QKeySequence &seq, KAction *action);
 
 public Q_SLOTS:
+
 	/**
 	 * Capture a shortcut from the keyboard. This call will only return once a key sequence
 	 * has been captured or input was aborted.

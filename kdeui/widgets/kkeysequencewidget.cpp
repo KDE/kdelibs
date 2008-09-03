@@ -293,29 +293,11 @@ void KKeySequenceWidget::applyStealShortcut()
 {
 	if(d->stealAction) {
 
-		// Announce that we are about to steal the shortcut
-		emit aboutToStealShortcut(
-			d->keySequence,
-			d->stealAction);
-
 		// Stealing a shortcut means setting it to an empty one.
 		d->stealAction->setShortcut(KShortcut(), KAction::ActiveShortcut);
 
-		// KDE5: ??? Do not save here and rename 
-		// KDE5: ???    aboutToStealShortcut() to stealShortcut() and
-		// let the called do the work. Why? read below.
-
 		// The following code will find the action we are about to
-		// steal from and save it's actioncollection. That has some
-		// drawbacks:
-		// 1. In most of the cases all actions are in the same
-		// collection. All changes made until now will be saved! That
-		// effects KShortcutsEditor! But it will only lead to trouble if
-		// we die. KShortcutsEditor will do the right thing else and
-		// save the day.
-		// 2. When the changed shortcut will be saved later we save
-		// the same collection a second time.
-		// 3. It's inconsistent with not saving the changed shortcut.
+		// steal from and save it's actioncollection.
                 KActionCollection* parentCollection = 0;
                 foreach(KActionCollection* collection, d->checkActionCollections) {
                     if (collection->actions().contains(d->stealAction)) {
@@ -428,6 +410,11 @@ bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &k
 				if(kaction->isShortcutConfigurable ()) {
 					if(stealShortcut(kaction, keySequence)) {
 						stealAction = kaction;
+						// Announce that the user
+						// agreed
+						emit q->stealShortcut(
+							keySequence,
+							stealAction);
 						break;
 					} else {
 						return true;
