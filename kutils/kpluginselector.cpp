@@ -685,6 +685,15 @@ void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWi
         aboutPushButton->setVisible(false);
         configurePushButton->setVisible(false);
     } else {
+        if (!checkBoxInfoMap.contains(index)) {
+            PluginEntry *pe = index.model()->data(index, PluginEntryRole).value<PluginEntry*>();
+            KConfigGroup cg(pe->cfgGroup);
+            bool enable = !cg.isValid() || !cg.isEntryImmutable(pe->pluginInfo.pluginName() + QLatin1String("Enabled"));
+            const_cast<PluginDelegate*>(this)->checkBoxInfoMap.insert(index, enable);
+            checkBox->setEnabled(enable);
+        } else {
+            checkBox->setEnabled(checkBoxInfoMap[index]);
+        }
         checkBox->setChecked(index.model()->data(index, Qt::CheckStateRole).toBool());
         configurePushButton->setVisible(index.model()->data(index, ServicesCountRole).toBool());
         configurePushButton->setEnabled(index.model()->data(index, Qt::CheckStateRole).toBool());
