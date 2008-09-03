@@ -212,6 +212,7 @@ private:
     QCheckBox *checkBox;
     QPushButton *pushButton;
     QList<KCModuleProxy*> moduleProxyList;
+    QMap<QPersistentModelIndex, bool> checkBoxInfoMap;
 
     KPluginSelector::Private *pluginSelector_d;
 };
