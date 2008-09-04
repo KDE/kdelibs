@@ -658,7 +658,7 @@ bool KService::noDisplay() const {
             return true;
     }
 
-    if (!KAuthorized::authorizeControlModule(d->menuId))
+    if (!KAuthorized::authorizeControlModule( storageId() ) )
         return true;
 
     return false;
