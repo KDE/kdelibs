@@ -952,7 +952,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   {
     l = new QLabel(i18n("Type:"), d->m_frame );
 
-    grid->addWidget(l, curRow, 0);
+    grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
     KHBox *box = new KHBox(d->m_frame);
     box->setSpacing(20);
@@ -982,7 +982,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   if ( !magicMimeComment.isEmpty() && magicMimeComment != mimeComment )
   {
     l = new QLabel(i18n("Contents:"), d->m_frame );
-    grid->addWidget(l, curRow, 0);
+    grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
     l = new QLabel(magicMimeComment, d->m_frame );
     grid->addWidget(l, curRow++, 2);
@@ -991,7 +991,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   if ( !directory.isEmpty() )
   {
     l = new QLabel( i18n("Location:"), d->m_frame );
-    grid->addWidget(l, curRow, 0);
+    grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
     l = new KSqueezedTextLabel( directory, d->m_frame );
     // force the layout direction to be always LTR
@@ -1005,7 +1005,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   }
 
   l = new QLabel(i18n("Size:"), d->m_frame );
-  grid->addWidget(l, curRow, 0);
+  grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
   d->m_sizeLabel = new QLabel( d->m_frame );
   grid->addWidget( d->m_sizeLabel, curRow++, 2 );
@@ -1044,7 +1044,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   if (!d->bMultiple && item.isLink()) {
     l = new QLabel(i18n("Points to:"), d->m_frame );
-    grid->addWidget(l, curRow, 0);
+    grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
     l = new KSqueezedTextLabel(item.linkDest(), d->m_frame );
     l->setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard);
@@ -1057,7 +1057,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     if ( !dt.isNull() )
     {
       l = new QLabel(i18n("Created:"), d->m_frame );
-      grid->addWidget(l, curRow, 0);
+      grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
       l = new QLabel(KGlobal::locale()->formatDateTime(dt), d->m_frame );
       grid->addWidget(l, curRow++, 2);
@@ -1067,7 +1067,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     if ( !dt.isNull() )
     {
       l = new QLabel(i18n("Modified:"), d->m_frame );
-      grid->addWidget(l, curRow, 0);
+      grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
       l = new QLabel(KGlobal::locale()->formatDateTime(dt), d->m_frame );
       grid->addWidget(l, curRow++, 2);
@@ -1077,7 +1077,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     if ( !dt.isNull() )
     {
       l = new QLabel(i18n("Accessed:"), d->m_frame );
-      grid->addWidget(l, curRow, 0);
+      grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
       l = new QLabel(KGlobal::locale()->formatDateTime(dt), d->m_frame );
       grid->addWidget(l, curRow++, 2);
@@ -1098,7 +1098,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
             if (mp->mountPoint() != "/")
             {
                 l = new QLabel(i18n("Mounted on:"), d->m_frame );
-                grid->addWidget(l, curRow, 0);
+                grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
                 l = new KSqueezedTextLabel( mp->mountPoint(), d->m_frame );
                 l->setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard);
@@ -1106,7 +1106,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
             }
 
             l = new QLabel(i18n("Device usage:"), d->m_frame );
-            grid->addWidget(l, curRow, 0);
+            grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
             d->m_capacityBar = new KCapacityBar( KCapacityBar::DrawTextOutline, d->m_frame );
             grid->addWidget( d->m_capacityBar, curRow++, 2);
@@ -1662,7 +1662,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   gl->addWidget(l, 0, 0, 1, 2);
 
   lbl = new QLabel( i18n("O&wner:"), gb);
-  gl->addWidget(lbl, 1, 0);
+  gl->addWidget(lbl, 1, 0, Qt::AlignRight);
   l = d->ownerPermCombo = new KComboBox(gb);
   lbl->setBuddy(l);
   gl->addWidget(l, 1, 1);
@@ -1670,7 +1670,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   l->setWhatsThis(i18n("Specifies the actions that the owner is allowed to do."));
 
   lbl = new QLabel( i18n("Gro&up:"), gb);
-  gl->addWidget(lbl, 2, 0);
+  gl->addWidget(lbl, 2, 0, Qt::AlignRight);
   l = d->groupPermCombo = new KComboBox(gb);
   lbl->setBuddy(l);
   gl->addWidget(l, 2, 1);
@@ -1678,7 +1678,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   l->setWhatsThis(i18n("Specifies the actions that the members of the group are allowed to do."));
 
   lbl = new QLabel( i18n("O&thers:"), gb);
-  gl->addWidget(lbl, 3, 0);
+  gl->addWidget(lbl, 3, 0, Qt::AlignRight);
   l = d->othersPermCombo = new KComboBox(gb);
   lbl->setBuddy(l);
   gl->addWidget(l, 3, 1);
@@ -1723,7 +1723,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   /*** Set Owner ***/
   l = new QLabel( i18n("User:"), gb );
-  gl->addWidget (l, 1, 0);
+  gl->addWidget (l, 1, 0, Qt::AlignRight);
 
   /* GJ: Don't autocomplete more than 1000 users. This is a kind of random
    * value. Huge sites having 10.000+ user have a fair chance of using NIS,
@@ -1809,7 +1809,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     groupList += d->strGroup;
 
   l = new QLabel( i18n("Group:"), gb );
-  gl->addWidget (l, 2, 0);
+  gl->addWidget (l, 2, 0, Qt::AlignRight);
 
   /* Set group: if possible to change:
    * - Offer a KLineEdit for root, since he can change to any group.
@@ -2564,7 +2564,7 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
     l = new QLabel( d->m_frame );
     l->setObjectName( QLatin1String( "Label_1" ) );
     l->setText( i18n("URL:") );
-    layout->addWidget(l);
+    layout->addWidget(l, Qt::AlignRight);
 
     d->URLEdit = new KUrlRequester( d->m_frame );
     layout->addWidget(d->URLEdit);
@@ -2725,7 +2725,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
   label->setText( devices.count() == 0 ?
                       i18n("Device (/dev/fd0):") : // old style
                       i18n("Device:") ); // new style (combobox)
-  layout->addWidget(label, 0, 0);
+  layout->addWidget(label, 0, 0, Qt::AlignRight);
 
   d->device = new KComboBox( d->m_frame );
   d->device->setObjectName( QLatin1String( "ComboBox_device" ) );
@@ -2742,7 +2742,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
 
   label = new QLabel( d->m_frame );
   label->setText( i18n("File system:") );
-  layout->addWidget(label, 2, 0);
+  layout->addWidget(label, 2, 0, Qt::AlignRight);
 
   QLabel *fileSystem = new QLabel( d->m_frame );
   layout->addWidget(fileSystem, 2, 1);
@@ -2751,7 +2751,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
   label->setText( devices.count()==0 ?
                       i18n("Mount point (/mnt/floppy):") : // old style
                       i18n("Mount point:")); // new style (combobox)
-  layout->addWidget(label, 3, 0);
+  layout->addWidget(label, 3, 0, Qt::AlignRight);
 
   d->mountpoint = new QLabel( d->m_frame );
   d->mountpoint->setObjectName( QLatin1String( "LineEdit_mountpoint" ) );
@@ -2760,7 +2760,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
 
   // show disk free
   d->m_freeSpaceText = new QLabel(i18n("Device usage:"), d->m_frame );
-  layout->addWidget(d->m_freeSpaceText, 4, 0);
+  layout->addWidget(d->m_freeSpaceText, 4, 0, Qt::AlignRight);
 
   d->m_freeSpaceLabel = new QLabel( d->m_frame );
   layout->addWidget( d->m_freeSpaceLabel, 4, 1 );
