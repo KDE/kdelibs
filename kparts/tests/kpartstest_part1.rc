@@ -1,7 +1,7 @@
 <!DOCTYPE kpartgui>
 <kpartgui name="Part" version="4">
 <MenuBar>
- <Menu name="file"><Text>&amp;File</Text>
+ <Menu name="file"><text>&amp;File</text>
   <Action name="p1_blah"/>
  </Menu>
  <Menu name="Part1Menu"><text>Part1's Menu</text>
@@ -17,5 +17,4 @@
 <ToolBar name="Part1-ToolBar">
  <Action name="p1_blah"/>
 </ToolBar>
-<StatusBar/>
 </kpartgui>

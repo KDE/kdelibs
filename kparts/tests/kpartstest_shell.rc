@@ -1,7 +1,7 @@
 <!DOCTYPE kpartgui>
 <kpartgui name="Shell" version="4">
 <MenuBar>
-  <Menu name="file"><Text>&amp;File</Text>
+  <Menu name="file"><text>&amp;File</text>
    <Action name="open_local_file"/>
    <Action name="open_remote_file"/>
    <Separator/>
@@ -14,9 +14,9 @@
    <Action name="shell_quit"/>
   </Menu>
   <Merge/>
-  <Menu name="blah"><Text>BlahFoo</Text>
+  <Menu name="blah"><text>BlahFoo</text>
    <Action name="shell_yami"/>
-   <Menu name="nonsense"><Text>Dummdidumm</Text>
+   <Menu name="nonsense"><text>Dummdidumm</text>
     <Action name="shell_yasmi"/>
    </Menu>
   </Menu>
@@ -24,5 +24,4 @@
 <ToolBar name="mainToolBar">
  <Action name="shell_quit"/>
 </ToolBar>
-<StatusBar/>
 </kpartgui>
