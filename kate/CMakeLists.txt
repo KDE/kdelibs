@@ -146,7 +146,7 @@ kde4_add_ui_files(katepart_PART_SRCS ${katepart_PART_UI} )
 kde4_add_plugin(katepart ${katepart_PART_SRCS})
 
 # linking
-target_link_libraries(katepart ${KDE4_KDECORE_LIBS} kparts kutils ktexteditor kde3support ${QT_QTSCRIPT_LIBRARY})
+target_link_libraries(katepart ${KDE4_KDECORE_LIBS} kparts ${KDE4_KUTILS_LIBS} ktexteditor kde3support ${QT_QTSCRIPT_LIBRARY})
 
 if(KDE4_ENABLE_FINAL)
    macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/katepart_final_cpp.cpp )
