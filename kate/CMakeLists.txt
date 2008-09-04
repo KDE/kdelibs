@@ -173,7 +173,7 @@ set(testkateregression_SRCS ${katepart_PART_SRCS} tests/test_regression.cpp test
 
 kde4_add_executable(testkateregression NOGUI RUN_UNINSTALLED ${testkateregression_SRCS})
 
-target_link_libraries(testkateregression ${KDE4_KDECORE_LIBS} ${QT_QTSCRIPT_LIBRARY} kutils ktexteditor kde3support )
+target_link_libraries(testkateregression ${KDE4_KDECORE_LIBS} ${QT_QTSCRIPT_LIBRARY} ${KDE4_KUTILS_LIBS} ktexteditor kde3support )
 
 #add_dependencies(check testkateregression)
 
