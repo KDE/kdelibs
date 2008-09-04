@@ -603,8 +603,7 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
     }
 
     painter->save();
-    if (disabled)
-    {
+    if (disabled) {
         QPalette pal(option.palette);
         pal.setCurrentColorGroup(QPalette::Disabled);
         painter->setPen(pal.text().color());
