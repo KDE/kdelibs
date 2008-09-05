@@ -30,8 +30,7 @@
 #include <kprotocolmanager.h>
 #include <kde_file.h>
 #include <kmimetype.h>
-#include <kwidgetjobtracker.h>
-#include <kuiserverjobtracker.h>
+#include <kdynamicjobtracker.h>
 
 #include <QtCore/QByteArray>
 #include <QtCore/QDate>
@@ -48,7 +47,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-K_GLOBAL_STATIC(KWidgetJobTracker, globalJobTracker)
+K_GLOBAL_STATIC(KDynamicJobTracker, globalJobTracker)
 
 // If someone wants the SI-standard prefixes kB/MB/GB/TB, I would recommend
 // a hidden kconfig option and getting the code from #57240 into the same
