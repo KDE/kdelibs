@@ -30,10 +30,7 @@
 #include <netwm_def.h>
 #include <kwindowinfo.h>
 
-#if defined(Q_WS_X11) || defined(Q_WS_MAC)
 class KWindowSystemPrivate;
-#endif
-
 
 /**
  *
@@ -84,7 +81,7 @@ public:
      * @return the list of all toplevel windows
      */
     static const QList<WId>& windows();
-#if defined(Q_WS_X11) || defined(Q_WS_MAC)
+
     /**
      * Test to see if @p id still managed at present.
      * @param id the window id to test
@@ -103,7 +100,7 @@ public:
      * @return the window information
      */
     static KWindowInfo windowInfo( WId win, unsigned long properties, unsigned long properties2 = 0 );
-#endif
+
     /**
      * Returns the list of all toplevel windows currently managed by the
      * window manager in the current stacking order (from lower to

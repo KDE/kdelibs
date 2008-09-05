@@ -346,5 +346,15 @@ KWindowSystem* KWindowSystem::self()
     return &(g_kwmInstanceContainer->kwm);
 }
 
-#include "kwindowsystem.moc"
+KWindowInfo KWindowSystem::windowInfo( WId win, unsigned long properties, unsigned long properties2 )
+{
+    return KWindowInfo( win, properties, properties2 );
+}
 
+bool KWindowSystem::hasWId(WId w)
+{
+    kDebug() << "bool KWindowSystem::hasWId(WId w)  isn't yet implemented!";
+    return false;
+}
+
+#include "kwindowsystem.moc"
