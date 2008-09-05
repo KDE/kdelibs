@@ -2716,12 +2716,16 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	style->setCursor(cursor);
         break;
 // colors || inherit
+    case CSS_PROP_COLOR:
+        // If the 'currentColor' keyword is set on the 'color' property itself,
+        // it is treated as 'color:inherit' at parse time
+        if (primitiveValue && primitiveValue->getIdent() == CSS_VAL_CURRENTCOLOR)
+            isInherit = true;      
     case CSS_PROP_BACKGROUND_COLOR:
     case CSS_PROP_BORDER_TOP_COLOR:
     case CSS_PROP_BORDER_RIGHT_COLOR:
     case CSS_PROP_BORDER_BOTTOM_COLOR:
     case CSS_PROP_BORDER_LEFT_COLOR:
-    case CSS_PROP_COLOR:
     case CSS_PROP_OUTLINE_COLOR:
         // this property is an extension used to get HTML4 <font> right.
     case CSS_PROP_SCROLLBAR_BASE_COLOR:
@@ -2758,6 +2762,8 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    if ( ident ) {
 		if ( ident == CSS_VAL__KHTML_TEXT )
 		    col = element->document()->textColor();
+                else if (ident == CSS_VAL_CURRENTCOLOR)
+                    col = style->color();
 		else
 		    col = colorForCSSValue( ident );
 	    } else if ( primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_RGBCOLOR ) {

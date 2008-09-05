@@ -153,6 +153,7 @@ threedshadow
 window
 windowframe
 windowtext
+currentcolor
 #
 # colors in non strict mode
 grey
