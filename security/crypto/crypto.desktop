@@ -10,6 +10,7 @@ X-KDE-ParentApp=kcontrol
 
 Name=Crypto
 Name[ar]=مساعد التعمية
+Name[be@latin]=Šyfravańnie
 Name[bg]=Шифроване
 Name[ca]=Criptografia
 Name[cs]=Šifrování
@@ -64,6 +65,7 @@ Name[zh_CN]=加密算法
 Comment=Configure SSL, manage certificates, and other cryptography settings
 Comment[af]=Konfigureer SSL, hanteer sertifikate, en ander kriptografieverstellings
 Comment[ar]=اضبط SSL، أدر الشهادات وإعدادات تعمية أخرى
+Comment[be@latin]=Naładžvaje SSL, kiruje sertyfikatami, inšyja nałady šyfravańnia
 Comment[bg]=SSL, управление на сертификати и други настройки за шифроване
 Comment[bn_IN]=SSL কনফিগারেশন, সার্টিফিকেট পরিচালনা ও ক্রিপ্টোগ্রাফি সংক্রান্ত বিবিধ বৈশিষ্ট্য কনফিগার করুন
 Comment[ca]=Configura l'SSL, gestiona certificats, i altres arranjaments de criptografia

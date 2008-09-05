@@ -4,6 +4,7 @@ X-KDE-ServiceType=DBUS/InstantMessenger
 Comment=Instant Messenger with a D-Bus interface
 Comment[ar]=مرسال فوري مع واجهة D-Bus
 Comment[be]=Імгненны абвестнік з інтэрфейсам D-Bus
+Comment[be@latin]=Kamunikatar z interfejsam „D-Bus”
 Comment[bg]=Програма за съобщения в реално време с интерфейс DCOP
 Comment[bn_IN]=D-Bus ইন্টারফেসসহ ইনস্ট্যান্ট বার্তা আদান-প্রদান ব্যবস্থা
 Comment[ca]=Missatgeria instantània amb una interfície D-Bus

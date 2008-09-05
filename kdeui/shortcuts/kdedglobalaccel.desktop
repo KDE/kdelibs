@@ -10,6 +10,7 @@ X-KDE-Kded-load-on-demand=true
 Name=KDED Global Shortcuts Server
 Name[af]=KDED Globale kortpadbediener
 Name[ar]=خادم المختصرات الشاملة لـ KDE
+Name[be@latin]=Server paŭsiudnych klavijaturnych skarotaŭ KDED
 Name[bg]=Сървър за глобални бързи калвиши KDED
 Name[bn_IN]=KDED গ্লোবাল শর্ট-কাট সার্ভার
 Name[ca]=Servidor KDED de dreceres globals
