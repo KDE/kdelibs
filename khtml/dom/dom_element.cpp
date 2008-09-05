@@ -324,6 +324,36 @@ CSSStyleDeclaration Element::style()
     return 0;
 }
 
+Element Element::firstElementChild() const
+{
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    return static_cast<ElementImpl*>(impl)->firstElementChild();
+}
+
+Element Element::lastElementChild() const
+{
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    return static_cast<ElementImpl*>(impl)->lastElementChild();
+}
+
+Element Element::previousElementSibling() const
+{
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    return static_cast<ElementImpl*>(impl)->previousElementSibling();
+}
+
+Element Element::nextElementSibling() const
+{
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    return static_cast<ElementImpl*>(impl)->nextElementSibling();
+}
+
+unsigned long Element::childElementCount() const
+{
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+    return static_cast<ElementImpl*>(impl)->childElementCount();
+}
+
 bool Element::khtmlValidAttrName(const DOMString &name)
 {
     // Check if name is valid

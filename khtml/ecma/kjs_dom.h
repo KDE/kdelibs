@@ -165,7 +165,8 @@ namespace KJS {
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { TagName, Style,
+    enum { TagName, Style, FirstElementChild, LastElementChild,
+           PreviousElementSibling, NextElementSibling, ChildElementCount,
            GetAttribute, SetAttribute, RemoveAttribute, GetAttributeNode,
            SetAttributeNode, RemoveAttributeNode, GetElementsByTagName,
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,

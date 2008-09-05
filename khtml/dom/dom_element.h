@@ -557,6 +557,53 @@ public:
      * The style attribute
      */
     CSSStyleDeclaration style (  );
+
+    /**
+     * Introduced in  DOM level 3
+     * This method is part of the ElementTraversal interface
+     *
+     *  The first child node which is of nodeType ELEMENT_NODE.
+     *
+     */
+    Element firstElementChild ( ) const;
+
+    /**
+     * Introduced in  DOM level 3
+     * This method is part of the ElementTraversal interface
+     *
+     *  @return The last child node of that element which is of nodeType ELEMENT_NODE.
+     *
+     */
+    Element lastElementChild ( ) const;
+
+    /**
+     * Introduced in  DOM level 3
+     * This method is part of the ElementTraversal interface
+     *
+     *  @return  The sibling node of that element which most immediately precedes that element in document order,
+     *           and which is of nodeType ELEMENT_NODE
+     *
+     */
+    Element previousElementSibling ( ) const;
+
+    /**
+     * Introduced in  DOM level 3
+     * This method is part of the ElementTraversal interface
+     *
+     *  @return  The sibling node of that element which most immediately follows that element in document order,
+     *           and which is of nodeType ELEMENT_NODE
+     *
+     */
+    Element nextElementSibling ( ) const;
+
+    /**
+     * Introduced in  DOM level 3
+     * This method is part of the ElementTraversal interface
+     *
+     *  @return The current number of child nodes of that element which are of nodeType ELEMENT_NODE
+     *
+     */
+    unsigned long childElementCount ( ) const;
     
     /**
      * not part of the official DOM

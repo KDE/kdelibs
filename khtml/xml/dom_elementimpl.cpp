@@ -1269,6 +1269,50 @@ RenderStyle* ElementImpl::computedStyle()
     return rd->m_computedStyle;
 }
 
+// ElementTraversal API
+ElementImpl* ElementImpl::firstElementChild() const
+{
+    NodeImpl* n = firstChild();
+    while (n && !n->isElementNode())
+        n = n->nextSibling();
+    return static_cast<ElementImpl*>(n);
+}
+
+ElementImpl* ElementImpl::lastElementChild() const
+{
+    NodeImpl* n = lastChild();
+    while (n && !n->isElementNode())
+        n = n->previousSibling();
+    return static_cast<ElementImpl*>(n);
+}
+
+ElementImpl* ElementImpl::previousElementSibling() const
+{
+    NodeImpl* n = previousSibling();
+    while (n && !n->isElementNode())
+        n = n->previousSibling();
+    return static_cast<ElementImpl*>(n);
+}
+
+ElementImpl* ElementImpl::nextElementSibling() const
+{
+    NodeImpl* n = nextSibling();
+    while (n && !n->isElementNode())
+        n = n->nextSibling();
+    return static_cast<ElementImpl*>(n);
+}
+
+unsigned ElementImpl::childElementCount() const
+{
+    unsigned count = 0;
+    NodeImpl* n = firstChild();
+    while (n) {
+        count += n->isElementNode();
+        n = n->nextSibling();
+    }
+    return count;
+}
+
 // -------------------------------------------------------------------------
 
 XMLElementImpl::XMLElementImpl(DocumentImpl *doc, NodeImpl::Id id)

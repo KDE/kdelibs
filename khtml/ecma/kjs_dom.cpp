@@ -1186,9 +1186,15 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR(ElementPseudoCtor, "Element", DOMElementProto)
 
 const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable, 0 };
 /* Source for DOMElementTable.
-@begin DOMElementTable 3
-  tagName	DOMElement::TagName                         DontDelete|ReadOnly
-  style		DOMElement::Style                           DontDelete|ReadOnly
+@begin DOMElementTable 7
+  tagName		DOMElement::TagName                 DontDelete|ReadOnly
+  style			DOMElement::Style                   DontDelete|ReadOnly
+# DOM 3 - ElementTraversal interface
+  firstElementChild	DOMElement::FirstElementChild       DontDelete|ReadOnly
+  lastElementChild	DOMElement::LastElementChild        DontDelete|ReadOnly
+  previousElementSibling DOMElement::PreviousElementSibling DontDelete|ReadOnly
+  nextElementSibling	DOMElement::NextElementSibling      DontDelete|ReadOnly
+  childElementCount	DOMElement::ChildElementCount       DontDelete|ReadOnly
 @end
 */
 DOMElement::DOMElement(ExecState *exec, DOM::ElementImpl* e)
@@ -1209,6 +1215,16 @@ JSValue* DOMElement::getValueProperty(ExecState *exec, int token) const
       return jsString(element.tagName());
     case Style:
       return getDOMCSSStyleDeclaration(exec,element.getInlineStyleDecls());
+    case FirstElementChild:
+      return getDOMNode(exec,element.firstElementChild());
+    case LastElementChild:
+      return getDOMNode(exec,element.lastElementChild());
+    case PreviousElementSibling:
+      return getDOMNode(exec,element.previousElementSibling());
+    case NextElementSibling:
+      return getDOMNode(exec,element.nextElementSibling());
+    case ChildElementCount:
+      return jsNumber((unsigned int)element.childElementCount());
     default:
       kDebug(6070) << "WARNING: Unhandled token in DOMElement::getValueProperty : " << token;
       return jsUndefined();

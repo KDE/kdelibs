@@ -200,6 +200,13 @@ public:
     virtual void insertedIntoDocument();
     virtual void removedFromDocument();
 
+    // ElementTraversal API
+    ElementImpl* firstElementChild() const;
+    ElementImpl* lastElementChild() const;
+    ElementImpl* previousElementSibling() const;
+    ElementImpl* nextElementSibling() const;
+    unsigned childElementCount() const;
+
     // convenience methods which ignore exceptions
     void setAttribute (NodeImpl::Id id, const DOMString &value);
 
