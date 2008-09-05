@@ -407,7 +407,8 @@ namespace KGlobal
      * Tells KGlobal about one more operations that should be finished
      * before the application exits. The standard behavior is to exit on the
      * "last window closed" event, but some events should outlive the last window closed
-     * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
+     * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client),
+     * or simply any application with a system tray icon.
      *
      * We have some use cases that we want to take care of (the format is "action refcount"):
      * - open window -> setAllowQuit(true) 1 ; close window 0 => EXIT
@@ -434,6 +435,16 @@ namespace KGlobal
     /**
      * If refcounting reaches 0 (or less), and @p allowQuit is true, the instance of the application
      * will automatically be exited. Otherwise, the application will not exit automatically.
+     *
+     * This is used by KMainWindow to allow quitting after the first mainwindow is created,
+     * and is used by special applications like kfmclient, to allow quitting even though
+     * no mainwindow was created.
+     *
+     * However, don't try to call setAllowQuit(false) in applications, it doesn't make sense.
+     * If you find that the application quits too early when closing a window, then consider
+     * _what_ is making your application still alive to the user (like a systray icon or a dbus object)
+     * and use KGlobal::ref() + KGlobal::deref() in that object.
+     *
      * @since 4.1.1
      */
     KDECORE_EXPORT void setAllowQuit(bool allowQuit);

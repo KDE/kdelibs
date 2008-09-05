@@ -226,9 +226,9 @@ void KMainWindowPrivate::init(KMainWindow *_q)
 {
     KGlobal::ref();
 
-    // We set allow quit to true, so when the refcounting reaches 0 the application instance will
-    // be exited. This has a similar purpose than setQuitOnLastWindowClosed (from
-    // QApplication), but it honors (de)refing from KGlobal.
+    // We set allow quit to true when the first mainwindow is created, so that when the refcounting
+    // reaches 0 the application can quit. We don't want this to happen before the first mainwindow
+    // is created, otherwise running a job in main would exit the app too early.
     KGlobal::setAllowQuit(true);
 
     q = _q;
