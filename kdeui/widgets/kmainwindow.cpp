@@ -625,7 +625,7 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
 {
     K_D(KMainWindow);
-    kDebug(200) << "KMainWindow::saveMainWindowSettings " << _cg.name();
+    //kDebug(200) << "KMainWindow::saveMainWindowSettings " << _cg.name();
 
     // Called by session management - or if we want to save the window size anyway
     if ( d->autoSaveWindowSize )
