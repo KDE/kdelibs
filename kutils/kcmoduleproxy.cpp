@@ -228,7 +228,7 @@ void KCModuleProxyPrivate::_k_moduleChanged(bool c)
     Q_Q(KCModuleProxy);
     changed = c;
     emit q->changed(c);
-    emit q->changed(this);
+    emit q->changed(q);
 }
 
 void KCModuleProxyPrivate::_k_moduleDestroyed()
