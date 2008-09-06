@@ -38,8 +38,8 @@ namespace KStandardShortcut
 struct KStandardShortcutInfo
 {
 	StandardShortcut id;
-	const char* name;
-	const char* description;
+	const char* name; // unique name for the given accel
+	const char* description; // localized label for user-visible display
 	int cutDefault, cutDefault2;
 	KShortcut cut;
 	bool isInitialized;

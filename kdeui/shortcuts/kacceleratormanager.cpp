@@ -789,15 +789,13 @@ void KPopupAccelManager::calculateAccelerators()
 
 void KPopupAccelManager::findMenuEntries(KAccelStringList &list)
 {
-  QAction *maction;
   QString s;
 
   list.clear();
 
   // read out the menu entries
-  for (int i=0; i<m_popup->actions().count(); i++)
+  foreach (QAction *maction, m_popup->actions())
   {
-    maction = m_popup->actions()[i];
     if (maction->isSeparator())
       continue;
 
@@ -819,12 +817,9 @@ void KPopupAccelManager::findMenuEntries(KAccelStringList &list)
 
 void KPopupAccelManager::setMenuEntries(const KAccelStringList &list)
 {
-  QAction *maction;
-
   uint cnt = 0;
-  for (int i=0; i<m_popup->actions().count(); i++)
+  foreach (QAction *maction, m_popup->actions())
   {
-    maction = m_popup->actions()[i];
     if (maction->isSeparator())
       continue;
 
