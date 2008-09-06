@@ -3420,6 +3420,22 @@ try_again:
     mimeType( m_mimeType );
   }
 
+  if (config()->readEntry("PropagateHttpHeader", false) ||
+      (m_request.cacheTag.useCache) && m_request.cacheTag.writeToCache) {
+      // store header lines if they will be used; note that the tokenizer removing
+      // line continuation special cases is probably more good than bad.
+      int nextLinePos = 0;
+      int prevLinePos = 0;
+      bool haveMore = true;
+      while (haveMore) {
+          haveMore = nextLine(buffer, &nextLinePos, bufPos);
+          m_responseHeaders.append(QString::fromLatin1(&buffer[prevLinePos],
+                                                       nextLinePos - prevLinePos));
+
+          prevLinePos = nextLinePos;
+      }
+  }
+
   // Do not move send response header before any redirection as it seems
   // to screw up some sites. See BR# 150904.
   forwardHttpResponseHeader();
