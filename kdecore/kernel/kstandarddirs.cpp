@@ -566,7 +566,8 @@ bool KStandardDirs::exists(const QString &fullPath)
     return QFileInfo(fullPath).exists();
 #else
     KDE_struct_stat buff;
-    if (access(QFile::encodeName(fullPath), R_OK) == 0 && KDE_stat( QFile::encodeName(fullPath), &buff ) == 0) {
+    QByteArray cFullPath = QFile::encodeName(fullPath);
+    if (access(cFullPath, R_OK) == 0 && KDE_stat( cFullPath, &buff ) == 0) {
         if (!fullPath.endsWith('/')) {
             if (S_ISREG( buff.st_mode ))
                 return true;
@@ -1885,7 +1886,8 @@ QString KStandardDirs::locateLocal( const char *type,
 
 bool KStandardDirs::checkAccess(const QString& pathname, int mode)
 {
-    int accessOK = access( QFile::encodeName(pathname), mode );
+    QByteArray cPathname = QFile::encodeName(pathname);
+    int accessOK = access( cPathname, mode );
     if ( accessOK == 0 )
         return true;  // OK, I can really access the file
 
@@ -1896,7 +1898,7 @@ bool KStandardDirs::checkAccess(const QString& pathname, int mode)
         return false;   // Check for write access is not part of mode => bail out
 
 
-    if (!access( QFile::encodeName(pathname), F_OK)) // if it already exists
+    if (!access( cPathname, F_OK)) // if it already exists
         return false;
 
     //strip the filename (everything until '/' from the end
