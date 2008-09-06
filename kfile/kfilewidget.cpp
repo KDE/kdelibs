@@ -733,10 +733,11 @@ void KFileWidget::slotOk()
 
     KUrl selectedUrl;
 
-    if ( (mode() & KFile::Files) == KFile::Files ) {// multiselection mode
-        if ( locationEditCurrentText.contains( '/' ) ) {
+    if ( (mode() & KFile::Files) == KFile::Files ) { // multiselection mode
+        if ( locationEditCurrentText.contains('/')  ) {
             // relative path? -> prepend the current directory
-            KUrl u( d->ops->url(), KShell::tildeExpand( locationEditCurrentText ));
+            KUrl u( d->ops->url() );
+            u.setFileName( KShell::tildeExpand( locationEditCurrentText ) );
             if ( u.isValid() )
                 selectedUrl = u;
             else
@@ -840,13 +841,13 @@ void KFileWidget::slotOk()
     }
     else { // we don't want dir
         KUrl::List urls = d->tokenize( locationEditCurrentText );
-        if ( urls.count()==1 && urls.first().isLocalFile() ) {
-            QFileInfo info( urls.first().toLocalFile() );
-            if ( info.isDir() && this->selectedUrl().isValid() && !this->selectedUrl().equals( urls.first(), KUrl::CompareWithoutTrailingSlash ) ) {
-                setSelection( info.absolutePath() );
-                slotOk();
-                return;
-            }
+        if ( urls.count() == 1 && locationEditCurrentText.contains('/') ) {
+            KUrl url( urls.first() );
+            setSelection( url.url() );
+            d->locationEdit->lineEdit()->setText( url.fileName() );
+            d->url = url.url();
+            slotOk();
+            return;
         }
     }
 
@@ -1339,8 +1340,18 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
         placesView->setUrl( url );
 }
 
-void KFileWidgetPrivate::_k_locationAccepted( const QString& url )
+void KFileWidgetPrivate::_k_locationAccepted( const QString& _url )
 {
+    QString url( _url );
+    if ( url.contains('/') ) {
+        KUrl u( ops->url().url() + url );
+        QString fileName = u.fileName();
+        u.setFileName( QString() );
+        ops->setUrl( u, true );
+        url = fileName;
+        locationEdit->lineEdit()->setText( fileName );
+        this->url = u;
+    }
     ops->setCurrentItem( url );
     q->slotOk();
 }
