@@ -45,7 +45,7 @@ void errorExit(LPWSTR lpszFunction)
 
     OutputDebugStringW(szBuf);
     LocalFree(lpMsgBuf);
-    ExitProcess(-1);
+    ExitProcess(~0U);
 }
 
 void printUsage(void)

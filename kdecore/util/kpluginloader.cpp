@@ -36,7 +36,7 @@ class KPluginLoaderPrivate
     Q_DECLARE_PUBLIC(KPluginLoader)
 protected:
     KPluginLoaderPrivate(const QString &libname)
-        : name(libname), pluginVersion(-1), verificationData(0), lib(0)
+        : name(libname), pluginVersion(~0U), verificationData(0), lib(0)
     {}
     ~KPluginLoaderPrivate()
     {
@@ -200,7 +200,7 @@ bool KPluginLoader::load()
     if (version)
         d->pluginVersion = *version;
     else
-        d->pluginVersion = -1;
+        d->pluginVersion = ~0U;
 
     lib.unload();
 
