@@ -162,6 +162,7 @@ KMenu* KHelpMenu::menu()
       d->mWhatsThisAction = new KAction(KIcon("help-contextual"), i18n( "What's &This" ), d->mMenu);
       d->mWhatsThisAction->setShortcut(Qt::SHIFT + Qt::Key_F1);
       connect(d->mWhatsThisAction, SIGNAL(triggered(bool)), this, SLOT(contextHelpActivated()));
+      d->mMenu->addAction(d->mWhatsThisAction);
       need_separator = true;
     }
 
