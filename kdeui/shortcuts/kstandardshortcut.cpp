@@ -205,9 +205,11 @@ static void initialize(StandardShortcut id)
     KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
 
     // All three are needed.
-    Q_ASSERT(info->description);
-    Q_ASSERT(info->translation_context);
-    Q_ASSERT(info->name);
+    if (info->id!=AccelNone) {
+        Q_ASSERT(info->description);
+        Q_ASSERT(info->translation_context);
+        Q_ASSERT(info->name);
+    }
 
     KConfigGroup cg(KGlobal::config(), "Shortcuts");
 
