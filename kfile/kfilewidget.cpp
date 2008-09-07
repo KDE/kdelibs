@@ -735,13 +735,16 @@ void KFileWidget::slotOk()
 
     if ( (mode() & KFile::Files) == KFile::Files ) { // multiselection mode
         if ( locationEditCurrentText.contains('/')  ) {
-            // relative path? -> prepend the current directory
-            KUrl u( d->ops->url() );
-            u.setFileName( KShell::tildeExpand( locationEditCurrentText ) );
-            if ( u.isValid() )
-                selectedUrl = u;
-            else
-                selectedUrl = d->ops->url();
+            QString url( locationEditCurrentText );
+            KUrl u( d->ops->url().url() + url );
+            selectedUrl = u;
+            QString fileName = u.fileName();
+            u.setFileName( QString() );
+            d->ops->setUrl( u, true );
+            url = fileName;
+            d->locationEdit->lineEdit()->setText( fileName );
+            d->url = u;
+            d->ops->setCurrentItem( url );
         }
         else // simple filename -> just use the current URL
             selectedUrl = d->ops->url();
