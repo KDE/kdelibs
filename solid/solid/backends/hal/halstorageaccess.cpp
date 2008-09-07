@@ -19,6 +19,7 @@
 
 #include "halstorageaccess.h"
 
+#include <QtCore/QLocale>
 #include <QtCore/QDebug>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
@@ -232,6 +233,38 @@ bool StorageAccess::callHalVolumeMount()
 
     if (halOptions.contains("uid=")) {
         options << "uid="+QString::number(::getuid());
+    }
+    //respect windows-enforced charsets for fat
+    if ( m_device->property("volume.fstype").toString()=="vfat" && halOptions.contains("codepage=") ) {
+        options << "iocharset=utf8";
+        switch (QLocale::system().language()) {
+        case QLocale::Russian:
+        case QLocale::Ukrainian:
+            options << "codepage=1251";
+            break;
+        case QLocale::Hebrew:
+            options << "codepage=1255";
+            break;
+        case QLocale::Turkish:
+            options << "codepage=1254";
+        case QLocale::Greek:
+            options << "codepage=1253";
+        case QLocale::Arabic:
+            options << "codepage=1256";
+        case QLocale::German:
+        case QLocale::Italian:
+        case QLocale::Spanish:
+        case QLocale::Portuguese:
+        case QLocale::French:
+        case QLocale::Dutch:
+        case QLocale::Danish:
+        case QLocale::Swedish:
+        case QLocale::Norwegian:
+        case QLocale::Icelandic:
+            options << "codepage=1255";
+        default:
+            options.removeLast();
+        }
     }
 
     msg << "" << "" << options;
