@@ -383,6 +383,11 @@ public:
      */
     virtual void setCustomWidget(const QString& text, QWidget* widget);
 
+    /**
+     * @reimplemented from QObject
+     */
+    bool eventFilter(QObject *watched, QEvent *event);
+
     /// @internal for future extensions
     virtual void virtual_hook( int id, void* data );
 

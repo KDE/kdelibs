@@ -54,6 +54,7 @@
 #include <kdebug.h>
 
 #include <QtGui/QCheckBox>
+#include <QtGui/QDockWidget>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
@@ -74,6 +75,8 @@ public:
           inAccept(false),
           dummyAdded(false),
           toolbar(0),
+          placesDock(0),
+          placesView(0),
           locationEdit(0),
           ops(0),
           filterWidget(0),
@@ -180,11 +183,14 @@ public:
     QVBoxLayout *vbox;
 
     QLabel *locationLabel;
+    QWidget *opsWidget;
+    QWidget *pathSpacer;
+    QAction *pathSpacerAction;
 
-    // @deprecated remove in KDE4 -- err, remove what?
     QLabel *filterLabel;
     KUrlNavigator *urlNavigator;
     KPushButton *okButton, *cancelButton;
+    QDockWidget *placesDock;
     KFilePlacesView *placesView;
     QSplitter *placesViewSplitter;
     QWidget *labeledCustomWidget;
@@ -292,15 +298,20 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     d->autoSelectExtCheckBox = 0; // delayed loading
     d->autoSelectExtChecked = false;
-    d->placesView = 0; // delayed loading
 
-    d->toolbar = new KToolBar(this, true);
+    d->opsWidget = new QWidget(this);
+    QVBoxLayout *opsWidgetLayout = new QVBoxLayout(d->opsWidget);
+    opsWidgetLayout->setMargin(0);
+    //d->toolbar = new KToolBar(this, true);
+    d->toolbar = new KToolBar(d->opsWidget, true);
     d->toolbar->setObjectName("KFileWidget::toolbar");
     d->toolbar->setMovable(false);
+    opsWidgetLayout->addWidget(d->toolbar);
 
     d->model = new KFilePlacesModel(this);
-    d->urlNavigator = new KUrlNavigator(d->model, startDir, d->toolbar);
+    d->urlNavigator = new KUrlNavigator(d->model, startDir, d->opsWidget); //d->toolbar);
     d->urlNavigator->setPlacesSelectorVisible(false);
+    opsWidgetLayout->addWidget(d->urlNavigator);
 
     KUrl u;
     KUrlComboBox *pathCombo = d->urlNavigator->editor();
@@ -340,8 +351,9 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     d->url = getStartUrl( startDir, d->fileClass );
 
-    d->ops = new KDirOperator(d->url, this );
+    d->ops = new KDirOperator(d->url, d->opsWidget);
     d->ops->setObjectName( "KFileWidget::ops" );
+    opsWidgetLayout->addWidget(d->ops);
     connect(d->ops, SIGNAL(urlEntered(const KUrl&)),
             SLOT(_k_urlEntered(const KUrl&)));
     connect(d->ops, SIGNAL(fileHighlighted(const KFileItem &)),
@@ -363,21 +375,16 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     // and agreed upon on the kde-core-devel mailing list:
     //
     // http://lists.kde.org/?l=kde-core-devel&m=116888382514090&w=2
-    
-    d->toolbar->addAction( coll->action( "up" ) );
+
     coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<br /><br />"
                                             "For instance, if the current location is file:/home/%1 clicking this "
                                             "button will take you to file:/home.</qt>",  KUser().loginName() ));
 
-    d->toolbar->addAction( coll->action( "back" ) );
     coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
-    d->toolbar->addAction( coll->action( "forward" ) );
     coll->action( "forward" )->setWhatsThis(i18n("Click this button to move forward one step in the browsing history."));
 
-    d->toolbar->addAction( coll->action( "reload" ) );
     coll->action( "reload" )->setWhatsThis(i18n("Click this button to reload the contents of the current location."));
     coll->action( "mkdir" )->setShortcut( QKeySequence(Qt::Key_F10) );
-    d->toolbar->addAction( coll->action( "mkdir" ) );
     coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new folder."));
 
     KAction *goToNavigatorAction = coll->addAction( "gotonavigator", this, SLOT( _k_activateUrlNavigator() ) );
@@ -423,9 +430,20 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     menu->setDelayed( false );
     connect( menu->menu(), SIGNAL( aboutToShow() ),
              d->ops, SLOT( updateSelectionDependentActions() ));
-    d->toolbar->addAction( menu );
 
-    d->toolbar->addWidget(d->urlNavigator);
+//    d->pathSpacer = new QWidget(this);
+    QWidget *midSpacer = new QWidget(this);
+    midSpacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+//    d->toolbar->addWidget(d->urlNavigator);
+//    d->pathSpacerAction = d->toolbar->addWidget(d->pathSpacer);
+    d->toolbar->addAction(coll->action("back" ));
+    d->toolbar->addAction(coll->action("forward"));
+    d->toolbar->addAction(coll->action("up"));
+    d->toolbar->addAction(coll->action("reload"));
+    d->toolbar->addWidget(midSpacer);
+    d->toolbar->addAction(coll->action("mkdir"));
+    d->toolbar->addAction(menu);
 
     // FIXME KAction port - add capability
     //d->toolbar->setItemAutoSized (PATH_COMBO);
@@ -444,7 +462,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     QString whatsThisText;
 
     // the Location label/edit
-    d->locationLabel = new QLabel(i18n("&Location:"), this);
+    d->locationLabel = new QLabel(i18n("&Name:"), this);
     d->locationEdit = new KUrlComboBox(KUrlComboBox::Files, true, this);
     // Properly let the dialog be resized (to smaller). Otherwise we could have
     // huge dialogs that can't be resized to smaller (it would be as big as the longest
@@ -518,6 +536,8 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     }
     setSelection(d->selection);
     d->locationEdit->setFocus();
+    d->opsWidget->installEventFilter(this);
+    //d->ops->installEventFilter(this);
 }
 
 KFileWidget::~KFileWidget()
@@ -1214,21 +1234,31 @@ void KFileWidgetPrivate::updateLocationWhatsThis()
 
 void KFileWidgetPrivate::initSpeedbar()
 {
-    placesView = new KFilePlacesView( q );
-    placesView->setModel(model);
-    placesView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    if (placesDock) {
+        return;
+    }
 
-    placesView->setObjectName( QLatin1String( "url bar" ) );
-    QObject::connect( placesView, SIGNAL( urlChanged( const KUrl& )),
-                      q, SLOT( _k_enterUrl( const KUrl& )) );
+    placesDock = new QDockWidget(i18n("Places"), q);
+    placesDock->setFeatures(QDockWidget::DockWidgetClosable);
+
+    placesView = new KFilePlacesView(placesDock);
+    placesView->setModel(model);
+    placesView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    placesView->setObjectName(QLatin1String("url bar"));
+    QObject::connect(placesView, SIGNAL(urlChanged(KUrl)),
+                     q, SLOT(_k_enterUrl(KUrl)));
 
     // need to set the current url of the urlbar manually (not via urlEntered()
     // here, because the initial url of KDirOperator might be the same as the
     // one that will be set later (and then urlEntered() won't be emitted).
-    // ### REMOVE THIS when KDirOperator's initial URL (in the c'tor) is gone.
-    placesView->setUrl( url );
+    // TODO: KDE5 ### REMOVE THIS when KDirOperator's initial URL (in the c'tor) is gone.
+    placesView->setUrl(url);
 
-    placesViewSplitter->insertWidget( 0, placesView );
+    placesDock->setWidget(placesView);
+    placesViewSplitter->insertWidget(0, placesDock);
+    QObject::connect(placesDock, SIGNAL(visibilityChanged(bool)),
+                     q, SLOT(_k_toggleSpeedbar(bool)));
 }
 
 void KFileWidgetPrivate::initGUI()
@@ -1238,7 +1268,7 @@ void KFileWidgetPrivate::initGUI()
     boxLayout = new QVBoxLayout( q);
     boxLayout->setMargin(0); // no additional margin to the already existing
     boxLayout->setSpacing(0);
-    boxLayout->addWidget(toolbar, 0, Qt::AlignTop);
+    //boxLayout->addWidget(toolbar, 0, Qt::AlignTop);
 
     placesViewSplitter = new QSplitter(q);
     placesViewSplitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -1246,24 +1276,21 @@ void KFileWidgetPrivate::initGUI()
     boxLayout->addWidget(placesViewSplitter);
 
     QObject::connect(placesViewSplitter, SIGNAL(splitterMoved(int,int)), q, SLOT(_k_placesViewSplitterMoved()));
+    placesViewSplitter->insertWidget(0, opsWidget);
 
     vbox = new QVBoxLayout();
     vbox->setMargin(0);
-    QWidget *vboxWidget = new QWidget();
-    vboxWidget->setLayout(vbox);
-    placesViewSplitter->insertWidget(0, vboxWidget);
-
-    vbox->addWidget(ops, 4);
     vbox->addSpacing(KDialog::spacingHint());
+    boxLayout->addLayout(vbox);
 
     lafBox = new QGridLayout();
 
     lafBox->setSpacing(KDialog::spacingHint());
-    lafBox->addWidget(locationLabel, 0, 0, Qt::AlignVCenter);
+    lafBox->addWidget(locationLabel, 0, 0, Qt::AlignVCenter | Qt::AlignRight);
     lafBox->addWidget(locationEdit, 0, 1, Qt::AlignVCenter);
     lafBox->addWidget(okButton, 0, 2, Qt::AlignVCenter);
 
-    lafBox->addWidget(filterLabel, 1, 0, Qt::AlignVCenter);
+    lafBox->addWidget(filterLabel, 1, 0, Qt::AlignVCenter | Qt::AlignRight);
     lafBox->addWidget(filterWidget, 1, 1, Qt::AlignVCenter);
     lafBox->addWidget(cancelButton, 1, 2, Qt::AlignVCenter);
 
@@ -1339,8 +1366,9 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
     if( completion )
         completion->setDir( dir );
 
-    if ( placesView )
+    if (placesView) {
         placesView->setUrl( url );
+    }
 }
 
 void KFileWidgetPrivate::_k_locationAccepted( const QString& _url )
@@ -1740,7 +1768,7 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
     configGroup.writeEntry( PathComboCompletionMode, static_cast<int>(pathCombo->completionMode()) );
     configGroup.writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
 
-    const bool showSpeedbar = placesView && !placesView->isHidden();
+    const bool showSpeedbar = placesDock && !placesDock->isHidden();
     configGroup.writeEntry( ShowSpeedbar, showSpeedbar );
     if (showSpeedbar) {
         const QList<int> sizes = placesViewSplitter->sizes();
@@ -2237,20 +2265,17 @@ KActionCollection * KFileWidget::actionCollection() const
     return d->ops->actionCollection();
 }
 
-void KFileWidgetPrivate::_k_toggleSpeedbar( bool show )
+void KFileWidgetPrivate::_k_toggleSpeedbar(bool show)
 {
-    if ( show )
-    {
-        if ( !placesView )
-            initSpeedbar();
-
-        placesView->show();
+    if (show) {
+        initSpeedbar();
+        placesDock->show();
 
         // check to see if they have a home item defined, if not show the home button
         KUrl homeURL;
         homeURL.setPath( QDir::homePath() );
         KFilePlacesModel *model = static_cast<KFilePlacesModel*>(placesView->model());
-        for ( int rowIndex = 0 ; rowIndex < placesView->model()->rowCount() ; rowIndex++ )
+        for ( int rowIndex = 0 ; rowIndex < model->rowCount() ; rowIndex++ )
         {
             QModelIndex index = model->index(rowIndex, 0);
             KUrl url = model->url(index);
@@ -2260,19 +2285,20 @@ void KFileWidgetPrivate::_k_toggleSpeedbar( bool show )
                 break;
             }
         }
-    }
-    else
-    {
-        if (placesView)
-            placesView->hide();
+    } else {
+        if (placesDock) {
+            placesDock->hide();
+        }
 
-        QAction* homeAction = ops->actionCollection()->action( "home" );
-        QAction* reloadAction = ops->actionCollection()->action( "reload" );
-        if ( !toolbar->actions().contains(homeAction) )
-            toolbar->insertAction( reloadAction, homeAction );
+        QAction* homeAction = ops->actionCollection()->action("home");
+        QAction* reloadAction = ops->actionCollection()->action("reload");
+        if (!toolbar->actions().contains(homeAction)) {
+            toolbar->insertAction(reloadAction, homeAction);
+        }
     }
 
-    static_cast<KToggleAction *>(q->actionCollection()->action("toggleSpeedbar"))->setChecked( show );
+//    pathSpacerAction->setVisible(show);
+    static_cast<KToggleAction *>(q->actionCollection()->action("toggleSpeedbar"))->setChecked(show);
 }
 
 void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
@@ -2414,8 +2440,20 @@ void KFileWidget::setCustomWidget(const QString& text, QWidget* widget)
     d->labeledCustomWidget = widget;
 
     QLabel* label = new QLabel(text, this);
+    label->setAlignment(Qt::AlignRight);
     d->lafBox->addWidget(label, 2, 0, Qt::AlignVCenter);
     d->lafBox->addWidget(widget, 2, 1, Qt::AlignVCenter);
+}
+
+bool KFileWidget::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == d->opsWidget && event->type() == QEvent::Move) {
+        int alignmentPoint = d->opsWidget->pos().x() - d->lafBox->spacing();
+        //d->pathSpacer->setMinimumWidth(alignmentPoint);
+        d->lafBox->setColumnMinimumWidth(0, alignmentPoint);
+    }
+
+    return QWidget::eventFilter(watched, event);
 }
 
 void KFileWidget::virtual_hook( int id, void* data )
