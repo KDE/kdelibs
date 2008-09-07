@@ -42,6 +42,11 @@ namespace KStandardShortcut
    * !!!    !!!!   !!!!!    !!!!
    *    !!!!    !!!     !!!!    !!!!
    * Remember to also update kdoctools/genshortcutents.cpp.
+   *
+   * Other Rules:
+   *
+   * - Never change the name of an existing shortcut
+   * - Never translate the name of an shortcut
    */
 
   /**

@@ -31,18 +31,21 @@ void KStandardShortcutTest::testShortcutDefault()
     QCOMPARE( KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::FullScreen ).toString(), QLatin1String( "Ctrl+Shift+F" ) );
     QCOMPARE( KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::BeginningOfLine ).toString(), QLatin1String( "Home" ) );
     QCOMPARE( KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::EndOfLine ).toString(), QLatin1String( "End" ) );
+    QCOMPARE( KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::Home ).toString(), QLatin1String( "Alt+Home; Home Page" ) );
 }
 
 void KStandardShortcutTest::testName()
 {
     QCOMPARE( KStandardShortcut::name( KStandardShortcut::BeginningOfLine ), QLatin1String( "BeginningOfLine" ) );
     QCOMPARE( KStandardShortcut::name( KStandardShortcut::EndOfLine ), QLatin1String( "EndOfLine" ) );
+    QCOMPARE( KStandardShortcut::name( KStandardShortcut::Home ), QLatin1String( "Home" ) );
 }
 
 void KStandardShortcutTest::testLabel()
 {
     // Tests run in English, right?
     QCOMPARE( KStandardShortcut::label( KStandardShortcut::FindNext ), QLatin1String( "Find Next" ) );
+    QCOMPARE( KStandardShortcut::label( KStandardShortcut::Home ), QLatin1String( "Home" ) );
 }
 
 void KStandardShortcutTest::testShortcut()

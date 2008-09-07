@@ -458,7 +458,7 @@ bool KKeySequenceWidgetPrivate::stealStandardShortcut(KStandardShortcut::Standar
     QString message = i18n("The '%1' key combination is also used for the standard action "
                            "\"%2\" that some applications use.\n"
                            "Do you really want to use it as a global shortcut as well?",
-                           seq.toString(QKeySequence::NativeText), KStandardShortcut::name(std));
+                           seq.toString(QKeySequence::NativeText), KStandardShortcut::label(std));
 
     if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign"))) != KMessageBox::Continue) {
         return false;
