@@ -37,12 +37,12 @@ namespace KStandardShortcut
 
 struct KStandardShortcutInfo
 {
-	StandardShortcut id;
-	const char* name; // unique name for the given accel
-	const char* description; // localized label for user-visible display
-	int cutDefault, cutDefault2;
-	KShortcut cut;
-	bool isInitialized;
+    StandardShortcut id;
+    const char* name; // unique name for the given accel
+    const char* description; // localized label for user-visible display
+    int cutDefault, cutDefault2;
+    KShortcut cut;
+    bool isInitialized;
 };
 
 #define CTRL(x) Qt::CTRL+Qt::Key_##x
@@ -59,71 +59,71 @@ struct KStandardShortcutInfo
 static KStandardShortcutInfo g_infoStandardShortcut[] =
 {
 //Group File,
-	{AccelNone,            0, 0, 0, 0, KShortcut(), false },
-	{ Open,                I18N_NOOP2("@action","Open"),  0,    CTRL(O), 0, KShortcut(), false },
-	{ New,                 I18N_NOOP2("@action","New"),   0,    CTRL(N), 0, KShortcut(), false },
-	{ Close,               I18N_NOOP2("@action","Close"), 0,    CTRL(W), CTRL(Escape), KShortcut(), false },
-	{ Save,                I18N_NOOP2("@action","Save"),  0,    CTRL(S), 0, KShortcut(), false },
-	{ Print,               I18N_NOOP2("@action","Print"), 0,    CTRL(P), 0, KShortcut(), false },
-	{ Quit,                I18N_NOOP2("@action","Quit"),  0,    CTRL(Q), 0, KShortcut(), false },
+    {AccelNone,            0, 0, 0, 0, KShortcut(), false },
+    { Open,                I18N_NOOP2("@action","Open"),  0,    CTRL(O), 0, KShortcut(), false },
+    { New,                 I18N_NOOP2("@action","New"),   0,    CTRL(N), 0, KShortcut(), false },
+    { Close,               I18N_NOOP2("@action","Close"), 0,    CTRL(W), CTRL(Escape), KShortcut(), false },
+    { Save,                I18N_NOOP2("@action","Save"),  0,    CTRL(S), 0, KShortcut(), false },
+    { Print,               I18N_NOOP2("@action","Print"), 0,    CTRL(P), 0, KShortcut(), false },
+    { Quit,                I18N_NOOP2("@action","Quit"),  0,    CTRL(Q), 0, KShortcut(), false },
 
 //Group Edit
-	{ Undo,                I18N_NOOP2("@action","Undo"),  0,           CTRL(Z), 0, KShortcut(), false },
-	{ Redo,                I18N_NOOP2("@action","Redo"),  0,           CTRLSHIFT(Z), 0, KShortcut(), false },
-	{ Cut,                 I18N_NOOP2("@action","Cut"),   0,           CTRL(X), SHIFT(Delete), KShortcut(), false },
-	{ Copy,                I18N_NOOP2("@action","Copy"),  0,           CTRL(C), CTRL(Insert), KShortcut(), false },
-	{ Paste,               I18N_NOOP2("@action","Paste"), 0,           CTRL(V), SHIFT(Insert), KShortcut(), false },
-	{ PasteSelection,      I18N_NOOP2("@action","Paste Selection"),    0, CTRLSHIFT(Insert), 0, KShortcut(), false },
+    { Undo,                I18N_NOOP2("@action","Undo"),  0,           CTRL(Z), 0, KShortcut(), false },
+    { Redo,                I18N_NOOP2("@action","Redo"),  0,           CTRLSHIFT(Z), 0, KShortcut(), false },
+    { Cut,                 I18N_NOOP2("@action","Cut"),   0,           CTRL(X), SHIFT(Delete), KShortcut(), false },
+    { Copy,                I18N_NOOP2("@action","Copy"),  0,           CTRL(C), CTRL(Insert), KShortcut(), false },
+    { Paste,               I18N_NOOP2("@action","Paste"), 0,           CTRL(V), SHIFT(Insert), KShortcut(), false },
+    { PasteSelection,      I18N_NOOP2("@action","Paste Selection"),    0, CTRLSHIFT(Insert), 0, KShortcut(), false },
 
-	{ SelectAll,           "SelectAll", I18N_NOOP2("@action","Select All"), CTRL(A), 0, KShortcut(), false },
-	{ Deselect,            I18N_NOOP2("@action","Deselect"), 0, CTRLSHIFT(A), 0, KShortcut(), false },
-	{ DeleteWordBack,      "DeleteWordBack", I18N_NOOP2("@action","Delete Word Backwards"), CTRL(Backspace), 0, KShortcut(), false },
-	{ DeleteWordForward,   "DeleteWordForward", I18N_NOOP2("@action","Delete Word Forward"),CTRL(Delete), 0,  KShortcut(), false },
+    { SelectAll,           "SelectAll", I18N_NOOP2("@action","Select All"), CTRL(A), 0, KShortcut(), false },
+    { Deselect,            I18N_NOOP2("@action","Deselect"), 0, CTRLSHIFT(A), 0, KShortcut(), false },
+    { DeleteWordBack,      "DeleteWordBack", I18N_NOOP2("@action","Delete Word Backwards"), CTRL(Backspace), 0, KShortcut(), false },
+    { DeleteWordForward,   "DeleteWordForward", I18N_NOOP2("@action","Delete Word Forward"),CTRL(Delete), 0,  KShortcut(), false },
 
-	{ Find,                I18N_NOOP2("@action","Find"),  0,     CTRL(F), 0, KShortcut(), false },
-	{ FindNext,            "FindNext", I18N_NOOP2("@action","Find Next"), Qt::Key_F3, 0, KShortcut(), false },
-	{ FindPrev,            "FindPrev", I18N_NOOP2("@action","Find Prev"), SHIFT(F3), 0, KShortcut(), false },
-	{ Replace,             I18N_NOOP2("@action","Replace"), 0,  CTRL(R), 0, KShortcut(), false },
+    { Find,                I18N_NOOP2("@action","Find"),  0,     CTRL(F), 0, KShortcut(), false },
+    { FindNext,            "FindNext", I18N_NOOP2("@action","Find Next"), Qt::Key_F3, 0, KShortcut(), false },
+    { FindPrev,            "FindPrev", I18N_NOOP2("@action","Find Prev"), SHIFT(F3), 0, KShortcut(), false },
+    { Replace,             I18N_NOOP2("@action","Replace"), 0,  CTRL(R), 0, KShortcut(), false },
 
 //Group Navigation
-	{ Home,                I18N_NOOP2("@action Go to main page","Home"), 0, ALT(Home), Qt::Key_HomePage, KShortcut(), false },
-	{ Begin,               I18N_NOOP2("@action Beginning of document","Begin"), 0, CTRL(Home), 0, KShortcut(), false },
-	{ End,                 I18N_NOOP2("@action End of document","End"), 0,      CTRL(End), 0, KShortcut(), false },
-	{ Prior,               I18N_NOOP2("@action","Prior"), 0,    Qt::Key_PageUp, 0,KShortcut(), false },
-	{ Next,                I18N_NOOP2("@action Opposite to Prior","Next"), 0, Qt::Key_PageDown, 0, KShortcut(), false },
+    { Home,                I18N_NOOP2("@action Go to main page","Home"), 0, ALT(Home), Qt::Key_HomePage, KShortcut(), false },
+    { Begin,               I18N_NOOP2("@action Beginning of document","Begin"), 0, CTRL(Home), 0, KShortcut(), false },
+    { End,                 I18N_NOOP2("@action End of document","End"), 0,      CTRL(End), 0, KShortcut(), false },
+    { Prior,               I18N_NOOP2("@action","Prior"), 0,    Qt::Key_PageUp, 0,KShortcut(), false },
+    { Next,                I18N_NOOP2("@action Opposite to Prior","Next"), 0, Qt::Key_PageDown, 0, KShortcut(), false },
 
-	{ Up,                  I18N_NOOP2("@action","Up"), 0,       ALT(Up), 0, KShortcut(), false },
-	{ Back,                I18N_NOOP2("@action","Back"), 0,     ALT(Left), Qt::Key_Back, KShortcut(), false },
-	{ Forward,             I18N_NOOP2("@action","Forward"), 0,  ALT(Right), Qt::Key_Forward, KShortcut(), false },
-	{ Reload,              I18N_NOOP2("@action","Reload"), 0,   Qt::Key_F5, Qt::Key_Refresh, KShortcut(), false },
+    { Up,                  I18N_NOOP2("@action","Up"), 0,       ALT(Up), 0, KShortcut(), false },
+    { Back,                I18N_NOOP2("@action","Back"), 0,     ALT(Left), Qt::Key_Back, KShortcut(), false },
+    { Forward,             I18N_NOOP2("@action","Forward"), 0,  ALT(Right), Qt::Key_Forward, KShortcut(), false },
+    { Reload,              I18N_NOOP2("@action","Reload"), 0,   Qt::Key_F5, Qt::Key_Refresh, KShortcut(), false },
 
-	{ BeginningOfLine,     "BeginningOfLine", I18N_NOOP2("@action","Beginning of Line"), Qt::Key_Home, 0, KShortcut(), false},
-	{ EndOfLine,           "EndOfLine", I18N_NOOP2("@action","End of Line"), Qt::Key_End, 0, KShortcut(), false},
-	{ GotoLine,            "GotoLine", I18N_NOOP2("@action","Go to Line"), CTRL(G), 0, KShortcut(), false },
-	{ BackwardWord,        "BackwardWord", I18N_NOOP2("@action","Backward Word"), CTRL(Left), 0, KShortcut(), false },
-	{ ForwardWord,         "ForwardWord", I18N_NOOP2("@action","Forward Word"), CTRL(Right), 0, KShortcut(), false },
+    { BeginningOfLine,     "BeginningOfLine", I18N_NOOP2("@action","Beginning of Line"), Qt::Key_Home, 0, KShortcut(), false},
+    { EndOfLine,           "EndOfLine", I18N_NOOP2("@action","End of Line"), Qt::Key_End, 0, KShortcut(), false},
+    { GotoLine,            "GotoLine", I18N_NOOP2("@action","Go to Line"), CTRL(G), 0, KShortcut(), false },
+    { BackwardWord,        "BackwardWord", I18N_NOOP2("@action","Backward Word"), CTRL(Left), 0, KShortcut(), false },
+    { ForwardWord,         "ForwardWord", I18N_NOOP2("@action","Forward Word"), CTRL(Right), 0, KShortcut(), false },
 
-	{ AddBookmark,         "AddBookmark", I18N_NOOP2("@action","Add Bookmark"), CTRL(B), 0, KShortcut(), false },
-	{ ZoomIn,              "ZoomIn", I18N_NOOP2("@action","Zoom In"), CTRL(Plus), 0, KShortcut(), false },
-	{ ZoomOut,             "ZoomOut", I18N_NOOP2("@action","Zoom Out"), CTRL(Minus), 0, KShortcut(), false },
-	{ FullScreen,          "FullScreen", I18N_NOOP2("@action","Full Screen Mode"), CTRLSHIFT(F), 0, KShortcut(), false },
+    { AddBookmark,         "AddBookmark", I18N_NOOP2("@action","Add Bookmark"), CTRL(B), 0, KShortcut(), false },
+    { ZoomIn,              "ZoomIn", I18N_NOOP2("@action","Zoom In"), CTRL(Plus), 0, KShortcut(), false },
+    { ZoomOut,             "ZoomOut", I18N_NOOP2("@action","Zoom Out"), CTRL(Minus), 0, KShortcut(), false },
+    { FullScreen,          "FullScreen", I18N_NOOP2("@action","Full Screen Mode"), CTRLSHIFT(F), 0, KShortcut(), false },
 
-	{ ShowMenubar,         "ShowMenubar", I18N_NOOP2("@action","Show Menu Bar"),CTRL(M), 0, KShortcut(), false },
-	{ TabNext,             I18N_NOOP2("@action","Activate Next Tab"), 0, CTRL(Period), CTRL(BracketRight), KShortcut(), false },
-	{ TabPrev,             I18N_NOOP2("@action","Activate Previous Tab"), 0, CTRL(Comma), CTRL(BracketLeft), KShortcut(), false },
+    { ShowMenubar,         "ShowMenubar", I18N_NOOP2("@action","Show Menu Bar"),CTRL(M), 0, KShortcut(), false },
+    { TabNext,             I18N_NOOP2("@action","Activate Next Tab"), 0, CTRL(Period), CTRL(BracketRight), KShortcut(), false },
+    { TabPrev,             I18N_NOOP2("@action","Activate Previous Tab"), 0, CTRL(Comma), CTRL(BracketLeft), KShortcut(), false },
 
 //Group Help
-	{ Help,                I18N_NOOP2("@action","Help"), 0,                        Qt::Key_F1, 0, KShortcut(), false },
-	{ WhatsThis,           "WhatsThis",       I18N_NOOP2("@action","What's This"), SHIFT(F1),  0, KShortcut(), false },
+    { Help,                I18N_NOOP2("@action","Help"), 0,                        Qt::Key_F1, 0, KShortcut(), false },
+    { WhatsThis,           "WhatsThis",       I18N_NOOP2("@action","What's This"), SHIFT(F1),  0, KShortcut(), false },
 
 //Group TextCompletion
-	{ TextCompletion,      "TextCompletion",       I18N_NOOP2("@action","Text Completion"),           CTRL(E),    0, KShortcut(), false },
-	{ PrevCompletion,      "PrevCompletion",       I18N_NOOP2("@action","Previous Completion Match"), CTRL(Up),   0, KShortcut(), false },
-	{ NextCompletion,      "NextCompletion",       I18N_NOOP2("@action","Next Completion Match"),     CTRL(Down), 0, KShortcut(), false },
-	{ SubstringCompletion, "SubstringCompletion",  I18N_NOOP2("@action","Substring Completion"),      CTRL(T),    0, KShortcut(), false },
+    { TextCompletion,      "TextCompletion",       I18N_NOOP2("@action","Text Completion"),           CTRL(E),    0, KShortcut(), false },
+    { PrevCompletion,      "PrevCompletion",       I18N_NOOP2("@action","Previous Completion Match"), CTRL(Up),   0, KShortcut(), false },
+    { NextCompletion,      "NextCompletion",       I18N_NOOP2("@action","Next Completion Match"),     CTRL(Down), 0, KShortcut(), false },
+    { SubstringCompletion, "SubstringCompletion",  I18N_NOOP2("@action","Substring Completion"),      CTRL(T),    0, KShortcut(), false },
 
-	{ RotateUp,            "RotateUp",   I18N_NOOP2("@action","Previous Item in List"), Qt::Key_Up,   0, KShortcut(), false },
-	{ RotateDown,          "RotateDown", I18N_NOOP2("@action","Next Item in List"),     Qt::Key_Down, 0, KShortcut(), false },
+    { RotateUp,            "RotateUp",   I18N_NOOP2("@action","Previous Item in List"), Qt::Key_Up,   0, KShortcut(), false },
+    { RotateDown,          "RotateDown", I18N_NOOP2("@action","Next Item in List"),     Qt::Key_Down, 0, KShortcut(), false },
 
     { OpenRecent               , I18N_NOOP2("@action", "OpenRecent")               , 0, 0, 0, KShortcut(), false },
     { SaveAs                   , I18N_NOOP2("@action", "SaveAs")                   , 0, 0, 0, KShortcut(), false },
@@ -156,7 +156,7 @@ static KStandardShortcutInfo g_infoStandardShortcut[] =
     { AboutKDE                 , I18N_NOOP2("@action", "AboutKDE")                 , 0, 0, 0, KShortcut(), false },
 
 //dummy entry to catch simple off-by-one errors. Insert new entries before this line.
-	{ AccelNone,            0, 0, 0, 0, KShortcut(), false }
+    { AccelNone,            0, 0, 0, 0, KShortcut(), false }
 };
 
 
@@ -165,12 +165,12 @@ static KStandardShortcutInfo g_infoStandardShortcut[] =
 */
 static KStandardShortcutInfo *guardedStandardShortcutInfo(StandardShortcut id)
 {
-	if (id >= static_cast<int>(sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo)) ||
+    if (id >= static_cast<int>(sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo)) ||
              id < 0) {
-		kWarning(125) << "KStandardShortcut: id not found!";
-		return &g_infoStandardShortcut[AccelNone];
-	} else
-		return &g_infoStandardShortcut[id];
+        kWarning(125) << "KStandardShortcut: id not found!";
+        return &g_infoStandardShortcut[AccelNone];
+    } else
+        return &g_infoStandardShortcut[id];
 }
 
 /** Initialize the accelerator @p id by checking if it is overridden
@@ -180,27 +180,27 @@ static KStandardShortcutInfo *guardedStandardShortcutInfo(StandardShortcut id)
 */
 static void initialize(StandardShortcut id)
 {
-	KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
+    KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
 
-	KConfigGroup cg(KGlobal::config(), "Shortcuts");
+    KConfigGroup cg(KGlobal::config(), "Shortcuts");
 
 #ifdef Q_WS_X11
-	// Code within this block breaks if we aren't running in GUI mode.
-	if(QX11Info::display() && cg.hasKey(info->name))
+    // Code within this block breaks if we aren't running in GUI mode.
+    if(QX11Info::display() && cg.hasKey(info->name))
 #else
-	if(cg.hasKey(info->name))
+    if(cg.hasKey(info->name))
 #endif
-	{
-		QString s = cg.readEntry(info->name);
-		if (s != "none")
-			info->cut = KShortcut(s);
-		else
-			info->cut = KShortcut();
-	} else {
-		info->cut = hardcodedDefaultShortcut(id);
-	}
+    {
+        QString s = cg.readEntry(info->name);
+        if (s != "none")
+            info->cut = KShortcut(s);
+        else
+            info->cut = KShortcut();
+    } else {
+        info->cut = hardcodedDefaultShortcut(id);
+    }
 
-	info->isInitialized = true;
+    info->isInitialized = true;
 }
 
 void saveShortcut(StandardShortcut id, const KShortcut &newShortcut)
@@ -231,66 +231,66 @@ void saveShortcut(StandardShortcut id, const KShortcut &newShortcut)
 
 QString name(StandardShortcut id)
 {
-	return guardedStandardShortcutInfo(id)->name;
+    return guardedStandardShortcutInfo(id)->name;
 }
 
 QString label(StandardShortcut id)
 {
-	KStandardShortcutInfo *info = guardedStandardShortcutInfo( id );
-	return i18n((info->description) ? info->description : info->name);
+    KStandardShortcutInfo *info = guardedStandardShortcutInfo( id );
+    return i18n((info->description) ? info->description : info->name);
 }
 
 // TODO: Add psWhatsThis entry to KStandardShortcutInfo
 QString whatsThis( StandardShortcut /*id*/ )
 {
-//	KStandardShortcutInfo* info = guardedStandardShortcutInfo( id );
-//	if( info && info->whatsThis )
-//		return i18n(info->whatsThis);
-//	else
-		return QString();
+//  KStandardShortcutInfo* info = guardedStandardShortcutInfo( id );
+//  if( info && info->whatsThis )
+//      return i18n(info->whatsThis);
+//  else
+        return QString();
 }
 
 const KShortcut &shortcut(StandardShortcut id)
 {
-	KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
+    KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
 
-	if(!info->isInitialized)
-		initialize(id);
+    if(!info->isInitialized)
+        initialize(id);
 
-	return info->cut;
+    return info->cut;
 }
 
 StandardShortcut find(const QKeySequence &seq)
 {
-	if( !seq.isEmpty() ) {
-		for(uint i = 0; i < sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo); i++) {
-			StandardShortcut id = g_infoStandardShortcut[i].id;
-			if( id != AccelNone ) {
-				if(!g_infoStandardShortcut[i].isInitialized)
-					initialize(id);
-				if(g_infoStandardShortcut[i].cut.contains(seq))
-					return id;
-			}
-		}
-	}
-	return AccelNone;
+    if( !seq.isEmpty() ) {
+        for(uint i = 0; i < sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo); i++) {
+            StandardShortcut id = g_infoStandardShortcut[i].id;
+            if( id != AccelNone ) {
+                if(!g_infoStandardShortcut[i].isInitialized)
+                    initialize(id);
+                if(g_infoStandardShortcut[i].cut.contains(seq))
+                    return id;
+            }
+        }
+    }
+    return AccelNone;
 }
 
 StandardShortcut find(const char *keyName)
 {
-	for(uint i = 0; i < sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo); i++)
-		if (qstrcmp(g_infoStandardShortcut[i].name, keyName))
-			return g_infoStandardShortcut[i].id;
+    for(uint i = 0; i < sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo); i++)
+        if (qstrcmp(g_infoStandardShortcut[i].name, keyName))
+            return g_infoStandardShortcut[i].id;
 
-	return AccelNone;
+    return AccelNone;
 }
 
 KShortcut hardcodedDefaultShortcut(StandardShortcut id)
 {
-	KShortcut cut;
-	KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
+    KShortcut cut;
+    KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
 
-	return KShortcut(info->cutDefault, info->cutDefault2);
+    return KShortcut(info->cutDefault, info->cutDefault2);
 }
 
 const KShortcut& open()                  { return shortcut( Open ); }
