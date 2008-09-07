@@ -49,7 +49,8 @@ public:
     QPushButton *servNewButton, *servRemoveButton;
     KLineEdit *lineEdit;
     QWidget* editingWidget;
-    QGridLayout* mainLayout;
+    QVBoxLayout* mainLayout;
+    QVBoxLayout* btnsLayout;
     QStringListModel *model;
 
     bool checkAtEntering;
@@ -75,17 +76,22 @@ void KEditListBoxPrivate::init( bool checkAtEntering, KEditListBox::Buttons newB
     q->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding,
                                  QSizePolicy::MinimumExpanding));
 
-    mainLayout = new QGridLayout(q);
+    mainLayout = new QVBoxLayout(q);
     mainLayout->setMargin( KDialog::marginHint() );
     mainLayout->setSpacing( KDialog::spacingHint() );
-    mainLayout->setRowStretch( 6, 1 );
+
+    QHBoxLayout* subLayout = new QHBoxLayout;
+    btnsLayout = new QVBoxLayout;
+    btnsLayout->addStretch();
 
     model = new QStringListModel();
     listView = new QListView(q);
-
     listView->setModel(model);
 
-    mainLayout->addWidget(listView, 2, 0, 5, 1);
+    subLayout->addWidget(listView);
+    subLayout->addLayout(btnsLayout);
+
+    mainLayout->insertLayout(1, subLayout);
 
     setEditor( lineEdit, representationWidget );
 
@@ -113,7 +119,7 @@ void KEditListBoxPrivate::setEditor( KLineEdit* newLineEdit, QWidget* representa
     if ( representationWidget )
         representationWidget->setParent(q);
 
-    mainLayout->addWidget(editingWidget,1,0,1,2);
+    mainLayout->insertWidget(0,editingWidget);
 
     lineEdit->setTrapReturnKey(true);
     lineEdit->installEventFilter(q);
@@ -318,14 +324,13 @@ void KEditListBox::setButtons( Buttons buttons )
     if ( d->buttons == buttons )
         return;
 
-    QGridLayout* grid = static_cast<QGridLayout *>( layout() );
     if ( ( buttons & Add ) && !d->servNewButton ) {
         d->servNewButton = new KPushButton(KIcon("list-add"), i18n("&Add"), this);
         d->servNewButton->setEnabled(false);
         d->servNewButton->show();
         connect(d->servNewButton, SIGNAL(clicked()), SLOT(addItem()));
 
-        grid->addWidget(d->servNewButton, 2, 1);
+        d->btnsLayout->insertWidget(0, d->servNewButton);
     } else if ( ( buttons & Add ) == 0 && d->servNewButton ) {
         delete d->servNewButton;
         d->servNewButton = 0;
@@ -337,7 +342,7 @@ void KEditListBox::setButtons( Buttons buttons )
         d->servRemoveButton->show();
         connect(d->servRemoveButton, SIGNAL(clicked()), SLOT(removeItem()));
 
-        grid->addWidget(d->servRemoveButton, 3, 1);
+        d->btnsLayout->insertWidget(1, d->servRemoveButton);
     } else if ( ( buttons & Remove ) == 0 && d->servRemoveButton ) {
         delete d->servRemoveButton;
         d->servRemoveButton = 0;
@@ -354,8 +359,8 @@ void KEditListBox::setButtons( Buttons buttons )
         d->servDownButton->show();
         connect(d->servDownButton, SIGNAL(clicked()), SLOT(moveItemDown()));
 
-        grid->addWidget(d->servUpButton, 4, 1);
-        grid->addWidget(d->servDownButton, 5, 1);
+        d->btnsLayout->insertWidget(2, d->servUpButton);
+        d->btnsLayout->insertWidget(3, d->servDownButton);
     } else if ( ( buttons & UpDown ) == 0 && d->servUpButton ) {
         delete d->servUpButton; d->servUpButton = 0;
         delete d->servDownButton; d->servDownButton = 0;
