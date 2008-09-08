@@ -64,11 +64,13 @@
 // debug
 #include <sys/ioctl.h>
 
-#ifdef HAVE_INOTIFY
+#ifdef HAVE_SYS_INOTIFY
+#include <sys/inotify.h>
+#include <fcntl.h>
+#elif HAVE_INOTIFY
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/syscall.h>
-#include <linux/types.h>
 // Linux kernel headers are documented to not compile
 #define _S390_BITOPS_H
 #include <linux/inotify.h>
