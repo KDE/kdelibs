@@ -284,9 +284,9 @@ void KCompletionBox::popup()
     }
 
     // Make sure we give the focus back to the parent widget (ereslibre)
-    if (parentWidget()) {
-        QFocusEvent focusEvent(QEvent::FocusIn);
-        QApplication::sendEvent(parentWidget(), &focusEvent);
+    if ( parentWidget() ) {
+        QFocusEvent focusEvent( QEvent::FocusIn );
+        QApplication::sendEvent( parentWidget(), &focusEvent );
     }
 }
 
