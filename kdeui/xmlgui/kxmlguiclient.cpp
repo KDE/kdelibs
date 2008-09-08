@@ -232,11 +232,14 @@ void KXMLGUIClient::setXML( const QString &document, bool merge )
     // QDomDocument raises a parse error on empty document, but we accept no app-specific document,
     // in which case you only get ui_standards.rc layout.
     bool result = document.isEmpty() || doc.setContent(document, &errorMsg, &errorLine, &errorColumn);
-    Q_ASSERT_X( result, "setXML", "The XML file that was set to KXMLGUIClient is invalid. Please check its correctness with xmllint" );
-    if ( result ) { // kept for release mode
+    if ( result ) {
         setDOMDocument( doc, merge );
     } else {
+#ifdef NDEBUG
         kError() << "Error parsing XML document:" << errorMsg << "at line" << errorLine << "column" << errorColumn;
+#else
+        kFatal() << "Error parsing XML document:" << errorMsg << "at line" << errorLine << "column" << errorColumn;
+#endif
     }
 }
 
