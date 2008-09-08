@@ -51,6 +51,7 @@ public:
     //this will trigger a lot of auto-casting QModelIndex <-> QPersistentModelIndex
     QHash<QPersistentModelIndex, QWidget *> extenders;
     QHash<QWidget *, QPersistentModelIndex> extenderIndices;
+    QHash<QWidget *, QPersistentModelIndex> deletionQueue;
     QPixmap extendPixmap;
     QPixmap contractPixmap;
     int stateTick;
@@ -107,6 +108,11 @@ void KExtendableItemDelegate::contractItem(const QModelIndex& index)
     extender->hide();
     extender->deleteLater();
 
+    QPersistentModelIndex persistentIndex = d->extenderIndices.take(extender);
+    d->extenders.remove(persistentIndex);
+    
+    d->deletionQueue.insert(extender, persistentIndex);
+
     d->scheduleUpdateViewLayout();
 }
 
@@ -125,15 +131,12 @@ void KExtendableItemDelegate::Private::_k_extenderDestructionHandler(QObject *de
     QWidget *extender = static_cast<QWidget *>(destroyed);
     stateTick++;
 
-    if (extenderIndices.value(extender).isValid() &&
+    QPersistentModelIndex persistentIndex = deletionQueue.take(extender);
+    if (persistentIndex.isValid() &&
         q->receivers(SIGNAL(extenderDestroyed(QWidget *, QModelIndex)))) {
 
-        QPersistentModelIndex persistentIndex = extenderIndices.take(extender);
         QModelIndex index = persistentIndex;
         emit q->extenderDestroyed(extender, index);
-        extenders.remove(persistentIndex);
-    } else {
-        extenders.remove(extenderIndices.take(extender));
     }
 
     scheduleUpdateViewLayout();
@@ -385,11 +388,10 @@ void KExtendableItemDelegate::updateExtenderGeometry(QWidget *extender, const QS
 void KExtendableItemDelegate::Private::deleteExtenders()
 {
     foreach (QWidget *ext, extenders) {
-        // Don't call _k_extenderDestructionHandler because (???)
-        // disconnect(ext, SIGNAL(destroyed(QObject *)), q, SLOT(_k_extenderDestructionHandler(QObject *)));
         ext->hide();
         ext->deleteLater();
     }
+    deletionQueue.unite(extenderIndices);
     extenders.clear();
     extenderIndices.clear();
 }
