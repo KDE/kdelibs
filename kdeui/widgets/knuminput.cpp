@@ -822,7 +822,7 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
     if( priv->m_slider ) {
         // don't update the slider to avoid an endless recursion
         QDoubleSpinBox * spin = d->spin;
-        disconnect(spin, SIGNAL(valueChanged(int)),
+        disconnect(spin, SIGNAL(valueChanged(double)),
                 priv->m_slider, SLOT(setValue(int)) );
     }
     d->spin->setRange( lower, upper);
