@@ -288,7 +288,7 @@ bool StorageAccess::callHalVolumeMount()
             case QLocale::Swedish:
             case QLocale::Norwegian:
             case QLocale::Icelandic:
-                codepage = "codepage=1255";
+                codepage = "codepage=1252";
         }
         if (!codepage.isEmpty()) {
             options << codepage;
