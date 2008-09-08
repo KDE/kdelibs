@@ -281,14 +281,22 @@ int KTabWidget::tabBarWidthForMaxChars( int maxLength )
 
 QString KTabWidget::tabText( int index ) const
 {
-  if ( d->m_automaticResizeTabs ) {
-    if ( index >= 0 && index < count() )
-      return d->m_tabNames[ index ];
+    if ( d->m_automaticResizeTabs ) {
+        if (index >= 0 && index < count()) {
+            if (index >= d->m_tabNames.count()) {
+                // Ooops, the tab exists, but tabInserted wasn't called yet.
+                // This can happen when inserting the first tab,
+                // and calling tabText from slotCurrentChanged,
+                // see KTabWidget_UnitTest.
+                const_cast<KTabWidget*>(this)->tabInserted(index);
+            }
+            return d->m_tabNames[ index ];
+        }
+        else
+            return QString();
+    }
     else
-      return QString();
-  }
-  else
-    return QTabWidget::tabText( index );
+        return QTabWidget::tabText( index );
 }
 
 void KTabWidget::setTabText( int index, const QString &text )
