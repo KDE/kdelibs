@@ -69,7 +69,7 @@ public:
 
     enum { MaxHistoryItems = 100 };
 
-    KCharSelectPrivate(KCharSelect *q) : q(q), searchMode(false), historyEnabled(false), inHistory(0) {}
+    KCharSelectPrivate(KCharSelect *q) : q(q), searchMode(false), historyEnabled(false),searchLine(0), inHistory(0) {}
     KCharSelect *q;
 
     QToolButton *backButton;
@@ -574,7 +574,8 @@ void KCharSelect::KCharSelectPrivate::_k_updateCurrentChar(const QChar &c)
         }
     }
 
-    historyAdd(c, searchMode, searchLine->text());
+    if( searchLine)
+       historyAdd(c, searchMode, searchLine->text());
 
     _k_slotUpdateUnicode(c);
 }
