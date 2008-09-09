@@ -5475,7 +5475,7 @@ QString HTTPProtocol::createDigestAuth( bool isForProxy )
       if (m_request.url.port() > 0 && u.port() > 0)
         send &= (m_request.url.port() == u.port());
 
-      QString digestPath = u.directory (0);
+      QString digestPath = u.directory (KUrl::AppendTrailingSlash|KUrl::ObeyTrailingSlash);
       if (digestPath.isEmpty())
         digestPath = "/";
 
