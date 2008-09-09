@@ -136,6 +136,9 @@ if test "x$kde_enable_inotify" = "xyes"; then
 
   ],kde_cv_have_inotify=yes,kde_cv_have_inotify=no)
 
+  AC_LANG_RESTORE
+  ])
+
   AC_CACHE_VAL(kde_cv_have_sys_inotify,
   [
   kde_cv_have_sys_inotify=no
