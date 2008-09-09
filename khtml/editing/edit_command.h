@@ -81,7 +81,7 @@ public:
     virtual void unapply() = 0;
     virtual void reapply() = 0;
 
-    virtual DOM::DocumentImpl * const document() const = 0;
+    virtual DOM::DocumentImpl* document() const = 0;
 
     virtual DOM::Selection startingSelection() const = 0;
     virtual DOM::Selection endingSelection() const = 0;
@@ -113,7 +113,7 @@ public:
     void unapply();
     void reapply();
 
-    DOM::DocumentImpl * const document() const;
+    DOM::DocumentImpl* document() const;
 
     DOM::Selection startingSelection() const;
     DOM::Selection endingSelection() const;

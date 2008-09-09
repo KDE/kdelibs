@@ -78,7 +78,7 @@ public:
     virtual void doUnapply() = 0;
     virtual void doReapply();  // calls doApply()
 
-    virtual DOM::DocumentImpl * const document() const { return m_document.get(); }
+    virtual DOM::DocumentImpl* document() const { return m_document.get(); }
 
     DOM::Selection startingSelection() const { return m_startingSelection; }
     DOM::Selection endingSelection() const { return m_endingSelection; }

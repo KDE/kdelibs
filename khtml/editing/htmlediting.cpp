@@ -116,7 +116,7 @@ void EditCommand::reapply()
     get()->reapply();
 }
 
-DocumentImpl * const EditCommand::document() const
+DocumentImpl* EditCommand::document() const
 {
     IF_IMPL_NULL_RETURN_ARG(0);
     return get()->document();
