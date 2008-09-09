@@ -80,7 +80,7 @@ public:
     virtual SelectionState selectionState() const {return KDE_CAST_BF_ENUM(SelectionState, m_selectionState);}
     virtual void setSelectionState(SelectionState s) {m_selectionState = s; }
 #if 0
-    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
+    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height) const;
 #endif
 
 private:

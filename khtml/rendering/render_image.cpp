@@ -509,7 +509,7 @@ int RenderImage::calcReplacedHeight() const
 }
 
 #if 0
-void RenderImage::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height)
+void RenderImage::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height) const
 {
     RenderReplaced::caretPos(offset, flags, _x, _y, width, height);
 

@@ -2458,7 +2458,7 @@ bool RenderBox::handleEvent(const DOM::EventImpl& e)
     return RenderContainer::handleEvent(e);
 }
 
-void RenderBox::caretPos(int /*offset*/, int flags, int &_x, int &_y, int &width, int &height)
+void RenderBox::caretPos(int /*offset*/, int flags, int &_x, int &_y, int &width, int &height) const
 {
 #if 0
     _x = -1;

@@ -117,7 +117,7 @@ public:
     int staticX() const { return m_staticX; }
     int staticY() const { return m_staticY; }
 
-    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
+    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height) const;
 
     void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
     RenderBlock* createAnonymousBlock();

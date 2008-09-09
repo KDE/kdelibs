@@ -761,7 +761,7 @@ public:
      * @param width returns the caret's width
      * @param height returns the caret's height
      */
-    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
+    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height) const;
 
     // returns the lowest position of the lowest object in that particular object.
     // This 'height' is relative to the topleft of the margin box of the object.

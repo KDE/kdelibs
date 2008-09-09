@@ -811,7 +811,7 @@ static bool startAndEndLineNodesIncludingNode(NodeImpl *node, int offset, Select
         int pos;
         int selectionPointY;
         RenderText *renderer = static_cast<RenderText *>(node->renderer());
-        InlineTextBox * run = renderer->findInlineTextBox( offset, pos );
+        const InlineTextBox * run = renderer->findInlineTextBox( offset, pos );
         DOMString t = node->nodeValue();
 
         if (!run)
@@ -872,7 +872,7 @@ void Selection::debugRenderer(RenderObject *r, bool selected) const
                 offset = end().offset();
 
             int pos;
-            InlineTextBox *box = textRenderer->findInlineTextBox(offset, pos);
+            const InlineTextBox *box = textRenderer->findInlineTextBox(offset, pos);
             text = text.mid(box->m_start, box->m_len);
 
             QString show;

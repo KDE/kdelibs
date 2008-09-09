@@ -82,7 +82,7 @@ public:
 
     virtual DOM::Position positionForCoordinates(int x, int y);
 
-    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
+    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height) const;
     void paintOutlines(QPainter *p, int tx, int ty);    
 
 protected:

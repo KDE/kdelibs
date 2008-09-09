@@ -235,9 +235,9 @@ public:
 
     virtual SelectionState selectionState() const {return KDE_CAST_BF_ENUM(SelectionState, m_selectionState);}
     virtual void setSelectionState(SelectionState s) {m_selectionState = s; }
-    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
+    virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height) const;
     virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool f = false) const;
-    bool posOfChar(int ch, int &x, int &y);
+    bool posOfChar(int ch, int &x, int &y) const;
     virtual bool isPointInsideSelection(int x, int y, const DOM::Selection &) const;
 
     virtual short marginLeft() const { return style()->marginLeft().minWidth(0); }
@@ -277,8 +277,8 @@ public:
      *		boxes, if available.
      * @return the text box, or 0 if no match has been found
      */
-    InlineTextBox * findInlineTextBox( int offset, int &pos,
-    					bool checkFirstLetter = false );
+    const InlineTextBox * findInlineTextBox( int offset, int &pos,
+    					bool checkFirstLetter = false ) const;
 	
 protected: // members
     InlineTextBox* m_firstTextBox;

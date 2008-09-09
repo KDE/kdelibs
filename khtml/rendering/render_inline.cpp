@@ -872,7 +872,7 @@ Position RenderInline::positionForCoordinates(int x, int y)
     return RenderFlow::positionForCoordinates(x, y);
 }
 
-void RenderInline::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height)
+void RenderInline::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height) const
 {
     _x = -1;
 

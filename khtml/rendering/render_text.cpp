@@ -803,7 +803,7 @@ DOM::DOMStringImpl* RenderText::originalString() const
     return element() ? element()->string() : 0;
 }
 
-InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkFirstLetter )
+const InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkFirstLetter ) const
 {
   Q_UNUSED( checkFirstLetter );
     // The text boxes point to parts of the rendertext's str string
@@ -977,7 +977,7 @@ Position RenderText::positionForCoordinates(int _x, int _y)
     return Position(element(), 0);
 }
 
-void RenderText::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height)
+void RenderText::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height) const
 {
   if (!m_firstTextBox) {
     _x = _y = height = -1;
@@ -986,8 +986,8 @@ void RenderText::caretPos(int offset, int flags, int &_x, int &_y, int &width, i
   }
 
   int pos;
-  InlineTextBox * s = findInlineTextBox( offset, pos, true );
-  RenderText *t = s->renderText();
+  const InlineTextBox * s = findInlineTextBox( offset, pos, true );
+  const RenderText *t = s->renderText();
 //  kDebug(6040) << "offset="<<offset << " pos="<<pos;
 
   const QFontMetrics &fm = t->metrics( s->m_firstLine );
@@ -1075,14 +1075,14 @@ bool RenderText::absolutePosition(int &xPos, int &yPos, bool) const
     return RenderObject::absolutePosition(xPos, yPos, false);
 }
 
-bool RenderText::posOfChar(int chr, int &x, int &y)
+bool RenderText::posOfChar(int chr, int &x, int &y) const
 {
     if (!parent())
         return false;
     parent()->absolutePosition( x, y, false );
 
     int pos;
-    InlineTextBox * s = findInlineTextBox( chr, pos );
+    const InlineTextBox * s = findInlineTextBox( chr, pos );
 
     if ( s ) {
         // s is the line containing the character

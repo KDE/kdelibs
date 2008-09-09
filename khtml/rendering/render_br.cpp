@@ -57,7 +57,7 @@ Position RenderBR::positionForCoordinates(int _x, int _y)
 }
 
 #if 0
-void RenderBR::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height)
+void RenderBR::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height) const
 {
   RenderText::caretPos(offset,flags,_x,_y,width,height);
   return;
