@@ -66,12 +66,12 @@ KWidgetItemDelegatePrivate::~KWidgetItemDelegatePrivate()
 
 void KWidgetItemDelegatePrivate::_k_slotRowsInserted(const QModelIndex &parent, int start, int end)
 {
-    updateRange(parent, start, end, false);
+    updateRowRange(parent, start, end, false);
 }
 
 void KWidgetItemDelegatePrivate::_k_slotRowsRemoved(const QModelIndex &parent, int start, int end)
 {
-    updateRange(parent, start, end, true);
+    updateRowRange(parent, start, end, true);
 }
 
 void KWidgetItemDelegatePrivate::_k_slotDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
@@ -95,7 +95,7 @@ void KWidgetItemDelegatePrivate::_k_slotLayoutChanged()
     initializeModel();
 }
 
-void KWidgetItemDelegatePrivate::updateRange(const QModelIndex &parent, int start, int end, bool isRemoving)
+void KWidgetItemDelegatePrivate::updateRowRange(const QModelIndex &parent, int start, int end, bool isRemoving)
 {
     int i = start;
     while (i <= end) {
@@ -107,9 +107,10 @@ void KWidgetItemDelegatePrivate::updateRange(const QModelIndex &parent, int star
             QList<QWidget*> widgetList = widgetPool->findWidgets(index, optionView, isRemoving ? KWidgetItemDelegatePool::NotUpdateWidgets
                                                                                                : KWidgetItemDelegatePool::UpdateWidgets);
             if (isRemoving) {
+                widgetPool->d->allocatedWidgets.removeAll(widgetList);
                 foreach (QWidget *widget, widgetList) {
                     widgetPool->d->widgetInIndex.remove(widget);
-                    delete widget;
+                    widget->hide(); // FIXME: delete the widget
                 }
             }
         }

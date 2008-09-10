@@ -151,13 +151,16 @@ bool EventListener::eventFilter(QObject *watched, QEvent *event)
         case QEvent::FocusIn:
         case QEvent::MouseMove: {
             const QAbstractProxyModel *proxyModel = qobject_cast<const QAbstractProxyModel*>(poolPrivate->delegate->d->model);
-            QModelIndex index;
-            if (proxyModel) {
-                index = proxyModel->mapFromSource(poolPrivate->widgetInIndex[widget]);
-            } else {
-                index = poolPrivate->widgetInIndex[widget];
+            const QModelIndex idx = poolPrivate->widgetInIndex[widget];
+            if (idx.isValid()) {
+                QModelIndex index;
+                if (proxyModel) {
+                    index = proxyModel->mapFromSource(idx);
+                } else {
+                    index = idx;
+                }
+                poolPrivate->delegate->d->focusedIndex = index;
             }
-            poolPrivate->delegate->d->focusedIndex = index;
         } // fall through
         default:
             if (dynamic_cast<QInputEvent*>(event) && !poolPrivate->delegate->blockedEventTypes(widget).contains(event->type())) {
