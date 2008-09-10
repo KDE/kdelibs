@@ -75,6 +75,7 @@ set(kiocore_STAT_SRCS
   kio/kdirmodel.cpp
   kio/kdirnotify.cpp
   kio/kdirwatch.cpp
+  kio/kdynamicjobtracker.cpp
   kio/kemailsettings.cpp
   kio/kfileitem.cpp
   kio/kfileitemdelegate.cpp

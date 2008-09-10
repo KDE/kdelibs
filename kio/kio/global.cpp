@@ -30,7 +30,7 @@
 #include <kprotocolmanager.h>
 #include <kde_file.h>
 #include <kmimetype.h>
-#include <kdynamicjobtracker.h>
+#include <kdynamicjobtracker_p.h>
 
 #include <QtCore/QByteArray>
 #include <QtCore/QDate>

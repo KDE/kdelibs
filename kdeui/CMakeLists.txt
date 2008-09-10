@@ -113,7 +113,6 @@ set(kdeui_LIB_SRCS
  itemviews/kwidgetitemdelegatepool.cpp
  jobs/kdialogjobuidelegate.cpp
  jobs/kabstractwidgetjobtracker.cpp
- jobs/kdynamicjobtracker.cpp
  jobs/kwidgetjobtracker.cpp
  jobs/kstatusbarjobtracker.cpp
  jobs/kuiserverjobtracker.cpp
@@ -428,7 +427,6 @@ install( FILES
  itemviews/kwidgetitemdelegate.h
  jobs/kdialogjobuidelegate.h
  jobs/kabstractwidgetjobtracker.h
- jobs/kdynamicjobtracker.h
  jobs/kwidgetjobtracker.h
  jobs/kstatusbarjobtracker.h
  jobs/kuiserverjobtracker.h
