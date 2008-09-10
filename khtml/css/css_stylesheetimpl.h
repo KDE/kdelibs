@@ -67,6 +67,7 @@ public:
     DOM::DOMString title() const { return m_strTitle; }
     MediaListImpl *media() const { return m_media; }
     void setMedia( MediaListImpl *media );
+    void setTitle( const DOM::DOMString& title ) { m_strTitle = title; }
 
 protected:
     DOM::NodeImpl *m_parentNode;

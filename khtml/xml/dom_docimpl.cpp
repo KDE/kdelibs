@@ -211,14 +211,15 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     return doc;
 }
 
-CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl* /*title*/, DOMStringImpl *media,
+CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl* title, DOMStringImpl *media,
                                                               int &/*exceptioncode*/)
 {
-    // ### TODO : title should be set, and media could have wrong syntax, in which case we should
+    // ### TODO : media could have wrong syntax, in which case we should
 	// generate an exception.
 	CSSStyleSheetImpl *parent = 0L;
 	CSSStyleSheetImpl *sheet = new CSSStyleSheetImpl(parent, DOMString());
 	sheet->setMedia(new MediaListImpl(sheet, media, true /*fallbackToDescriptor*/));
+	sheet->setTitle(DOMString(title));
 	return sheet;
 }
 
@@ -2224,6 +2225,7 @@ void DocumentImpl::recalcStyleSelector()
         m_availableSheets << i18n("Basic Page Style");
         bool canResetSheet = false;
 
+        QString title;
         for (n = this; n; n = n->traverseNextNode()) {
             StyleSheetImpl *sheet = 0;
 
@@ -2253,10 +2255,17 @@ void DocumentImpl::recalcStyleSelector()
                         sheet = cssSheet;
                     }
                 }
-
+                if (sheet) {
+                    title = sheet->title().string();
+                    if ((autoselect || title != sheetUsed) && sheet->disabled()) {
+                        sheet = 0;
+                    } else if (!title.isEmpty() && !pi->isAlternate() && sheetUsed.isEmpty()) {
+                        sheetUsed = title;
+                        sheet->setDisabled(false);
+                    }
+                }
             }
             else if (n->isHTMLElement() && ( n->id() == ID_LINK || n->id() == ID_STYLE) ) {
-                QString title;
                 if ( n->id() == ID_LINK ) {
                     HTMLLinkElementImpl* l = static_cast<HTMLLinkElementImpl*>(n);
                     if (l->isCSSStyleSheet()) {
@@ -2283,21 +2292,20 @@ void DocumentImpl::recalcStyleSelector()
                     if (!title.isEmpty() && sheetUsed.isEmpty())
                         sheetUsed = title;
                 }
-
-                if ( !title.isEmpty() ) {
-                    if ( title != sheetUsed )
-                        sheet = 0; // don't use it
-
-                    title = title.replace('&',  "&&");
-
-                    if ( !m_availableSheets.contains( title ) )
-                        m_availableSheets.append( title );
-                }
             }
             else if (n->isHTMLElement() && n->id() == ID_BODY) {
                 // <BODY> element (doesn't contain styles as such but vlink="..." and friends
                 // are treated as style declarations)
                 sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
+            }
+
+            if ( !title.isEmpty() ) {
+                if ( title != sheetUsed )
+                    sheet = 0; // don't use it
+                title = title.replace('&',  "&&");
+                if ( !m_availableSheets.contains( title ) )
+                    m_availableSheets.append( title );
+                title = QString();
             }
 
             if (sheet) {

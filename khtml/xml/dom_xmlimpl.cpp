@@ -26,6 +26,7 @@
 #include "dom_docimpl.h"
 #include "dom_stringimpl.h"
 #include <css/css_stylesheetimpl.h>
+#include <css/css_mediaquery.h>
 #include <misc/loader.h>
 
 using namespace DOM;
@@ -296,6 +297,9 @@ ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentImpl *doc) : NodeBa
     m_target = 0;
     m_data = 0;
     m_localHref = 0;
+    m_alternate = false;
+    m_title = 0;
+    m_media = 0;
     m_sheet = 0;
     m_cachedSheet = 0;
 }
@@ -311,12 +315,19 @@ ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentImpl *doc, DOMStrin
     m_sheet = 0;
     m_cachedSheet = 0;
     m_localHref = 0;
+    m_title = 0;
+    m_media = 0;
+    m_alternate = false;
 }
 
 ProcessingInstructionImpl::~ProcessingInstructionImpl()
 {
     if (m_target)
         m_target->deref();
+    if (m_title)
+        m_title->deref();
+    if (m_media)
+        m_media->deref();
     if (m_data)
         m_data->deref();
     if (m_cachedSheet)
@@ -399,6 +410,20 @@ void ProcessingInstructionImpl::checkStyleSheet()
             return;
 
         DOMString href = attrs.value("href");
+        DOMString alternate = attrs.value("alternate");
+        m_alternate = alternate == "yes";
+        DOMString title = attrs.value("title");
+        DOMString media = attrs.value("media");
+        if (m_title)
+            m_title->deref();
+        m_title = title.implementation();
+        if (m_title)
+            m_title->ref();
+        if (m_media)
+            m_media->deref();
+        m_media = media.implementation();
+        if (m_media)
+            m_media->ref();
 
         if (href.length()>1)
         {
@@ -438,6 +463,8 @@ void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const D
     m_sheet = new CSSStyleSheetImpl(document(), url);
     m_sheet->ref();
     m_sheet->setCharset(charset);
+    m_sheet->setTitle(m_title);
+    m_sheet->setMedia(new MediaListImpl((CSSStyleSheetImpl*)m_sheet, m_media, false));
     m_sheet->parseString(khtml::isAcceptableCSSMimetype(mimetype) ? sheet : "");
     if (m_cachedSheet)
 	m_cachedSheet->deref(this);
@@ -453,6 +480,7 @@ void ProcessingInstructionImpl::setStyleSheet(CSSStyleSheetImpl* sheet)
     m_sheet = sheet;
     if (m_sheet)
         m_sheet->ref();
+    m_sheet->setTitle(m_title);
 }
 
 DOMString ProcessingInstructionImpl::toString() const

@@ -157,10 +157,15 @@ public:
 
     virtual bool offsetInCharacters() const { return true; }
     virtual int maxCharacterOffset() const;
+
+    bool isAlternate() const { return m_alternate; }
 protected:
     DOMStringImpl *m_target;
     DOMStringImpl *m_data;
     DOMStringImpl *m_localHref;
+    DOMStringImpl *m_title;
+    DOMStringImpl *m_media;
+    bool m_alternate;
     khtml::CachedCSSStyleSheet *m_cachedSheet;
     CSSStyleSheetImpl *m_sheet;
 };
