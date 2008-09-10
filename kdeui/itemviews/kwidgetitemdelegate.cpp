@@ -83,8 +83,8 @@ void KWidgetItemDelegatePrivate::_k_slotRowsRemoved(const QModelIndex &parent, i
 
 void KWidgetItemDelegatePrivate::_k_slotDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
-    for (int i = topLeft.row(); i < bottomRight.row(); ++i) {
-        for (int j = topLeft.column(); j < bottomRight.column(); ++j) {
+    for (int i = topLeft.row(); i <= bottomRight.row(); ++i) {
+        for (int j = topLeft.column(); j <= bottomRight.column(); ++j) {
             const QModelIndex index = model->index(i, j, topLeft.parent());
             QStyleOptionViewItemV4 optionView;
             optionView.initFrom(itemView->viewport());
@@ -155,6 +155,7 @@ QPersistentModelIndex KWidgetItemDelegate::focusedIndex() const
 void KWidgetItemDelegate::paintWidgets(QPainter *painter, const QStyleOptionViewItem &option,
                                        const QPersistentModelIndex &index) const
 {
+    // No longer needed. Kept for BC reasons.
 }
 
 //@cond PRIVATE
