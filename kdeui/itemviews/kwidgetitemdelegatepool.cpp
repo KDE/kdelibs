@@ -191,10 +191,10 @@ bool EventListener::eventFilter(QObject *watched, QEvent *event)
                     case QEvent::TabletLeaveProximity: {
                             QTabletEvent *tabletEvent = static_cast<QTabletEvent*>(event);
                             QTabletEvent evt(event->type(), viewport->mapFromGlobal(tabletEvent->globalPos()),
-                                            tabletEvent->globalPos(), tabletEvent->hiResGlobalPos(), tabletEvent->device(),
-                                            tabletEvent->pointerType(), tabletEvent->pressure(), tabletEvent->xTilt(),
-                                            tabletEvent->yTilt(), tabletEvent->tangentialPressure(), tabletEvent->rotation(),
-                                            tabletEvent->z(), tabletEvent->modifiers(), tabletEvent->uniqueId());
+                                             tabletEvent->globalPos(), tabletEvent->hiResGlobalPos(), tabletEvent->device(),
+                                             tabletEvent->pointerType(), tabletEvent->pressure(), tabletEvent->xTilt(),
+                                             tabletEvent->yTilt(), tabletEvent->tangentialPressure(), tabletEvent->rotation(),
+                                             tabletEvent->z(), tabletEvent->modifiers(), tabletEvent->uniqueId());
                             QApplication::sendEvent(viewport, &evt);
                         }
                         break;

@@ -207,13 +207,13 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
         connect(model, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), q, SLOT(_k_slotRowsAboutToBeRemoved(QModelIndex,int,int)));
         connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), q, SLOT(_k_slotDataChanged(QModelIndex,QModelIndex)));
         connect(model, SIGNAL(layoutChanged()), q, SLOT(_k_slotLayoutChanged()));
-        initializeModel();
+        QTimer::singleShot(0, this, SLOT(initializeModel()));
     }
 
     switch (event->type()) {
         case QEvent::Polish:
         case QEvent::Resize:
-            initializeModel();
+            QTimer::singleShot(0, this, SLOT(initializeModel()));
             itemView->viewport()->update();
             break;
         case QEvent::MouseMove: {
