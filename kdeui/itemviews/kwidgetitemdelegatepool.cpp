@@ -110,6 +110,7 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
             d->widgetInIndex[widget] = index;
             widget->setParent(d->delegate->d->itemView->viewport());
             widget->setVisible(true);
+            widget->installEventFilter(d->eventListener);
         }
     }
 
@@ -117,7 +118,6 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
 
     foreach (QWidget *widget, result) {
         widget->move(widget->x() + option.rect.left(), widget->y() + option.rect.top());
-        widget->installEventFilter(d->eventListener);
     }
 
     return result;

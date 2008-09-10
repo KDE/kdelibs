@@ -42,6 +42,9 @@ public:
     ~KWidgetItemDelegatePrivate();
 
     void _k_slotRowsInserted(const QModelIndex &parent, int start, int end);
+    void _k_slotRowsRemoved(const QModelIndex &parent, int start, int end);
+    void _k_slotDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
+    void _k_slotLayoutChanged();
 
 public Q_SLOTS:
     void initializeModel(const QModelIndex &parent = QModelIndex());

@@ -77,6 +77,28 @@ void KWidgetItemDelegatePrivate::_k_slotRowsInserted(const QModelIndex &parent, 
     }
 }
 
+void KWidgetItemDelegatePrivate::_k_slotRowsRemoved(const QModelIndex &parent, int start, int end)
+{
+}
+
+void KWidgetItemDelegatePrivate::_k_slotDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
+{
+    for (int i = topLeft.row(); i < bottomRight.row(); ++i) {
+        for (int j = topLeft.column(); j < bottomRight.column(); ++j) {
+            const QModelIndex index = model->index(i, j, topLeft.parent());
+            QStyleOptionViewItemV4 optionView;
+            optionView.initFrom(itemView->viewport());
+            optionView.rect = itemView->visualRect(index);
+            widgetPool->findWidgets(index, optionView);
+        }
+    }
+}
+
+void KWidgetItemDelegatePrivate::_k_slotLayoutChanged()
+{
+    initializeModel();
+}
+
 void KWidgetItemDelegatePrivate::initializeModel(const QModelIndex &parent)
 {
     for (int i = 0; i < model->rowCount(parent); ++i) {
@@ -145,9 +167,15 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
     if (model != itemView->model()) {
         if (model) {
             disconnect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), q, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
+            disconnect(model, SIGNAL(rowsRemoved(QModelIndex,int,int)), q, SLOT(_k_slotRowsRemoved(QModelIndex,int,int)));
+            disconnect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), q, SLOT(_k_slotDataChanged(QModelIndex,QModelIndex)));
+            disconnect(model, SIGNAL(layoutChanged()), q, SLOT(_k_slotLayoutChanged()));
         }
         model = itemView->model();
         connect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), q, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
+        connect(model, SIGNAL(rowsRemoved(QModelIndex,int,int)), q, SLOT(_k_slotRowsRemoved(QModelIndex,int,int)));
+        connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), q, SLOT(_k_slotDataChanged(QModelIndex,QModelIndex)));
+        connect(model, SIGNAL(layoutChanged()), q, SLOT(_k_slotLayoutChanged()));
         initializeModel();
     }
 
