@@ -34,6 +34,7 @@
 #include <QtGui/QAbstractItemView>
 #include <QtGui/QApplication>
 #include <QtGui/QInputEvent>
+#include <QtGui/QAbstractProxyModel>
 
 #include "kwidgetitemdelegate.h"
 #include "kwidgetitemdelegate_p.h"
@@ -74,7 +75,7 @@ public:
     EventListener *eventListener;
 
     QList<QList<QWidget*> > allocatedWidgets;
-    QHash<QPersistentModelIndex, QList<QWidget*> > usedWidgets;
+    QHash<QModelIndex, QList<QWidget*> > usedWidgets;
     QHash<QWidget*, QPersistentModelIndex> widgetInIndex;
 };
 
@@ -89,13 +90,20 @@ KWidgetItemDelegatePool::~KWidgetItemDelegatePool()
     delete d;
 }
 
-QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex &index,
+QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex &idx,
                                                      const QStyleOptionViewItem &option) const
 {
     QList<QWidget*> result;
 
-    if (!index.isValid()) {
+    if (!idx.isValid()) {
         return result;
+    }
+
+    QModelIndex index;
+    if (const QAbstractProxyModel *proxyModel = qobject_cast<const QAbstractProxyModel*>(idx.model())) {
+        index = proxyModel->mapToSource(idx);
+    } else {
+        index = idx;
     }
 
     if (d->usedWidgets.contains(index)) {
@@ -105,14 +113,18 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
         d->allocatedWidgets << result;
         d->usedWidgets[index] = result;
         foreach (QWidget *widget, result) {
-            d->widgetInIndex[widget] = index;
+            d->widgetInIndex[widget] = idx;
             widget->setParent(d->delegate->d->itemView->viewport());
             widget->installEventFilter(d->eventListener);
             widget->setVisible(true);
         }
     }
 
-    d->delegate->updateItemWidgets(result, option, index);
+    foreach (QWidget *widget, result) {
+        widget->setVisible(true);
+    }
+
+    d->delegate->updateItemWidgets(result, option, idx);
 
     foreach (QWidget *widget, result) {
         widget->move(widget->x() + option.rect.left(), widget->y() + option.rect.top());

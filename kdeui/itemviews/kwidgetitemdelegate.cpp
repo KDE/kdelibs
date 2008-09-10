@@ -96,6 +96,9 @@ void KWidgetItemDelegatePrivate::_k_slotDataChanged(const QModelIndex &topLeft, 
 
 void KWidgetItemDelegatePrivate::_k_slotLayoutChanged()
 {
+    foreach (QWidget *widget, widgetPool->invalidIndexesWidgets()) {
+        widget->setVisible(false);
+    }
     initializeModel();
 }
 
