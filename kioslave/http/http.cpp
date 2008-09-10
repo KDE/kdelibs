@@ -2415,7 +2415,7 @@ bool HTTPProtocol::readHeaderFromCache() {
         return false;
     }
 
-    m_mimeType = QString::fromUtf8( buffer).trimmed();
+    m_mimeType = QString::fromLatin1(buffer).trimmed();
 
     kDebug(7113) << "cached data mimetype: " << m_mimeType;
 
@@ -2433,13 +2433,15 @@ bool HTTPProtocol::readHeaderFromCache() {
         if (!gzgets(m_request.cacheTag.gzs, buffer, 8192) )
         {
             // Error, delete cache entry
-            kDebug(7113) << "Could not access cached data! ";
+            kDebug(7113) << "Could not access cached data!";
             error( ERR_CONNECTION_BROKEN, m_state.hostname );
             return false;
         }
         m_responseHeaders << buffer;
-        QString header = QString::fromUtf8( buffer).trimmed().toLower();
-        if (header.isEmpty()) break;
+        QString header = QString::fromLatin1(buffer).trimmed().toLower();
+        if (header.isEmpty()) {
+            break;
+        }
         if (header.startsWith("content-type: ")) {
             int pos = header.indexOf("charset=");
             if (pos != -1) {
@@ -3429,9 +3431,12 @@ try_again:
       bool haveMore = true;
       while (haveMore) {
           haveMore = nextLine(buffer, &nextLinePos, bufPos);
+          int prevLineEnd = nextLinePos;
+          while (buffer[prevLineEnd - 1] == '\r' || buffer[prevLineEnd - 1] == '\n') {
+              prevLineEnd--;
+          }
           m_responseHeaders.append(QString::fromLatin1(&buffer[prevLinePos],
-                                                       nextLinePos - prevLinePos));
-
+                                                       prevLineEnd - prevLinePos));
           prevLinePos = nextLinePos;
       }
   }
