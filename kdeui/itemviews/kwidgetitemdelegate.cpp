@@ -158,7 +158,7 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
             itemView->viewport()->update();
             break;
         case QEvent::MouseMove: {
-                QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(event);
+                QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
                 focusedIndex = itemView->indexAt(mouseEvent->pos());
             }
             break;
