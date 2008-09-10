@@ -113,7 +113,7 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
         d->allocatedWidgets << result;
         d->usedWidgets[index] = result;
         foreach (QWidget *widget, result) {
-            d->widgetInIndex[widget] = idx;
+            d->widgetInIndex[widget] = index;
             widget->setParent(d->delegate->d->itemView->viewport());
             widget->installEventFilter(d->eventListener);
             widget->setVisible(true);
@@ -137,7 +137,14 @@ QList<QWidget*> KWidgetItemDelegatePool::invalidIndexesWidgets() const
 {
     QList<QWidget*> result;
     foreach (QWidget *widget, d->widgetInIndex.keys()) {
-        if (!d->widgetInIndex[widget].isValid()) {
+        const QAbstractProxyModel *proxyModel = qobject_cast<const QAbstractProxyModel*>(d->delegate->d->model);
+        QModelIndex index;
+        if (proxyModel) {
+            index = proxyModel->mapFromSource(d->widgetInIndex[widget]);
+        } else {
+            index = d->widgetInIndex[widget];
+        }
+        if (!index.isValid()) {
             result << widget;
         }
     }
@@ -150,8 +157,16 @@ bool EventListener::eventFilter(QObject *watched, QEvent *event)
     switch (event->type()) {
         case QEvent::Enter:
         case QEvent::FocusIn:
-        case QEvent::MouseMove:
-            poolPrivate->delegate->d->focusedIndex = poolPrivate->widgetInIndex[widget]; // fall through
+        case QEvent::MouseMove: {
+            const QAbstractProxyModel *proxyModel = qobject_cast<const QAbstractProxyModel*>(poolPrivate->delegate->d->model);
+            QModelIndex index;
+            if (proxyModel) {
+                index = proxyModel->mapFromSource(poolPrivate->widgetInIndex[widget]);
+            } else {
+                index = poolPrivate->widgetInIndex[widget];
+            }
+            poolPrivate->delegate->d->focusedIndex = index; // fall through
+        }
         default:
             if (dynamic_cast<QInputEvent*>(event) && !poolPrivate->delegate->blockedEventTypes(widget).contains(event->type())) {
                 QWidget *viewport = poolPrivate->delegate->d->itemView->viewport();
