@@ -44,7 +44,7 @@ static int set_protection( pid_t pid, int enable )
 {
    char buf[ 1024 ];
    int procfile;
-   sprintf( buf, "/proc/%d/oom_adj", pid );
+   sprintf( buf, "/proc/%d/stat", pid );
    if( !enable ) {
        /* Be paranoid and check that the pid we got from the pipe
           belongs to this user. */
@@ -52,6 +52,7 @@ static int set_protection( pid_t pid, int enable )
        if( lstat( buf, &st ) < 0 || st.st_uid != getuid())
            return 0;
    }
+   sprintf( buf, "/proc/%d/oom_adj", pid );
    procfile = open( buf, O_WRONLY );
    if( procfile >= 0 ) {
       if( enable )
