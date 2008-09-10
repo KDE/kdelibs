@@ -51,11 +51,7 @@ Q_DECLARE_METATYPE(QList<QEvent::Type>)
 KWidgetItemDelegatePrivate::KWidgetItemDelegatePrivate(KWidgetItemDelegate *q, QObject *parent)
     : QObject(parent)
     , itemView(0)
-    , hoveredIndex(QPersistentModelIndex())
-    , lastHoveredIndex(QPersistentModelIndex())
     , focusedIndex(QPersistentModelIndex())
-    , currentIndex(QPersistentModelIndex())
-    , selectionModel(0)
     , widgetPool(new KWidgetItemDelegatePool(q))
     , q(q)
 {
@@ -87,19 +83,6 @@ QPoint KWidgetItemDelegatePrivate::mappedPointForWidget(QWidget *widget,
 
     return pos - widgetPos;
 }
-
-void KWidgetItemDelegatePrivate::slotCurrentChanged(const QModelIndex &currentIndex,
-                                                    const QModelIndex &previousIndex)
-{
-    Q_UNUSED(previousIndex);
-
-    this->currentIndex = currentIndex;
-}
-
-void KWidgetItemDelegatePrivate::slotSelectionModelDestroyed()
-{
-    selectionModel = 0;
-}
 //@endcond
 
 KWidgetItemDelegate::KWidgetItemDelegate(QAbstractItemView *itemView, QObject *parent)
@@ -115,13 +98,6 @@ KWidgetItemDelegate::KWidgetItemDelegate(QAbstractItemView *itemView, QObject *p
 
     itemView->viewport()->installEventFilter(d); // mouse events
     itemView->installEventFilter(d);             // keyboard events
-
-    if (itemView->selectionModel()) {
-        d->selectionModel = itemView->selectionModel();
-
-        connect(itemView->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
-                d, SLOT(slotCurrentChanged(QModelIndex,QModelIndex)));
-    }
 }
 
 KWidgetItemDelegate::~KWidgetItemDelegate()
@@ -166,76 +142,7 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
     Q_UNUSED(watched);
     Q_ASSERT(itemView);
 
-    if (selectionModel != itemView->selectionModel()) {
-        if (selectionModel) {
-            disconnect(selectionModel, SIGNAL(currentChanged(QModelIndex,QModelIndex)),
-                       this, SLOT(slotCurrentChanged(QModelIndex,QModelIndex)));
-        }
-
-        selectionModel = itemView->selectionModel();
-
-        if (selectionModel) {
-            connect(selectionModel, SIGNAL(currentChanged(QModelIndex,QModelIndex)),
-                    this, SLOT(slotCurrentChanged(QModelIndex,QModelIndex)));
-            connect(selectionModel, SIGNAL(destroyed(QObject*)),
-                    this, SLOT(slotSelectionModelDestroyed()));
-        }
-    }
-
-    bool filterEvent = false;
-    bool eventReply = false;
-
-    switch (event->type()) {
-        case QEvent::Paint:
-        case QEvent::Timer:
-        case QEvent::UpdateRequest:
-        case QEvent::Destroy:
-        case QEvent::MetaCall:
-            return false;
-        case QEvent::Leave:
-        case QEvent::Enter:
-        case QEvent::MouseMove: {
-                QStyleOptionViewItem styleOptionViewItem;
-                styleOptionViewItem.initFrom(itemView);
-                styleOptionViewItem.rect = itemView->visualRect(hoveredIndex);
-
-                QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(event);
-                lastHoveredIndex = hoveredIndex;
-                hoveredIndex = itemView->indexAt(itemView->viewport()->mapFromGlobal(QCursor::pos()));
-            }
-            break;
-        case QEvent::MouseButtonPress:
-        case QEvent::MouseButtonRelease: {
-                focusedIndex = hoveredIndex;
-
-                QStyleOptionViewItem styleOptionViewItem;
-                styleOptionViewItem.initFrom(itemView);
-                styleOptionViewItem.rect = itemView->visualRect(focusedIndex);
-                QList<QWidget*> widgetList = widgetPool->findWidgets(focusedIndex, styleOptionViewItem);
-                foreach (QWidget *widget, widgetList) {
-                    QPoint widgetPos = widget->pos();
-                    QSize widgetSize = widget->size();
-                    widget->move(widgetPos.x() + styleOptionViewItem.rect.left(), widgetPos.y() + styleOptionViewItem.rect.top());
-                }
-
-                QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-
-                if (event->type() == QEvent::MouseButtonPress) {
-                    buttonPressedIndex = hoveredIndex;
-                } else {
-                    buttonPressedIndex = QModelIndex();
-                }
-            }
-            break;
-        default: {
-                if (event->type() == QEvent::FocusOut) {
-                    buttonPressedIndex = QModelIndex();
-                }
-            }
-            break;
-    }
-
-    return filterEvent || eventReply || QObject::eventFilter(watched, event);
+    return QObject::eventFilter(watched, event);
 }
 //@endcond
 
@@ -248,5 +155,3 @@ QList<QEvent::Type> KWidgetItemDelegate::blockedEventTypes(QWidget *widget) cons
 {
     return widget->property("goya:blockedEventTypes").value<QList<QEvent::Type> >();
 }
-
-#include "kwidgetitemdelegate_p.moc"
