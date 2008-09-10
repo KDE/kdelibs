@@ -1781,7 +1781,7 @@ DOMString HTMLInputElementImpl::value() const
     if (val.isNull() && m_type != FILE)
         val = getAttribute(ATTR_VALUE);
 
-    return val.isNull() ? DOMString("") : val;
+    return val;
 }
 
 
