@@ -43,18 +43,38 @@
   @internal
 */
 //@cond PRIVATE
+class EventListener
+    : public QObject
+{
+public:
+    EventListener(KWidgetItemDelegatePoolPrivate *poolPrivate, QObject *parent = 0)
+        : QObject(parent)
+        , poolPrivate(poolPrivate)
+    {
+    }
+
+    virtual bool eventFilter(QObject *watched, QEvent *event);
+
+private:
+    KWidgetItemDelegatePoolPrivate *poolPrivate;
+};
+
 class KWidgetItemDelegatePoolPrivate
 {
 public:
     KWidgetItemDelegatePoolPrivate(KWidgetItemDelegate *d)
-        : delegate(d), fakeParent(new QWidget()) { }
+        : delegate(d)
+        , eventListener(new EventListener(this))
+    {
+    }
 
     KWidgetItemDelegate *delegate;
-    QWidget *fakeParent;
+    EventListener *eventListener;
 
     QList<QList<QWidget*> > allocatedWidgets;
     QList<QList<QWidget*> > unusedWidgets;
     QHash<QPersistentModelIndex, QList<QWidget*> > usedWidgets;
+    QMap<QWidget*, QPersistentModelIndex> widgetInIndex; // FIXME: remove this with a much better thing =)
 };
 
 KWidgetItemDelegatePool::KWidgetItemDelegatePool(KWidgetItemDelegate *delegate)
@@ -67,7 +87,7 @@ KWidgetItemDelegatePool::~KWidgetItemDelegatePool()
     foreach (const QList<QWidget*> &list, d->allocatedWidgets) {
         qDeleteAll(list);
     }
-    delete d->fakeParent;
+    delete d->eventListener;
     delete d;
 }
 
@@ -88,6 +108,7 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
         d->usedWidgets[index] = result;
 
         foreach (QWidget *widget, result) {
+            d->widgetInIndex.insert(widget, index);
             widget->setParent(d->delegate->d->itemView->viewport());
             widget->setVisible(true);
         }
@@ -97,8 +118,17 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
 
     foreach (QWidget *widget, result) {
         widget->move(widget->x() + option.rect.left(), widget->y() + option.rect.top());
+        widget->installEventFilter(d->eventListener);
     }
 
     return result;
+}
+
+bool EventListener::eventFilter(QObject *watched, QEvent *event)
+{
+    QWidget *widget = static_cast<QWidget*>(watched);
+    poolPrivate->delegate->d->focusedIndex = poolPrivate->widgetInIndex[widget];
+
+    return QObject::eventFilter(watched, event);
 }
 //@endcond
