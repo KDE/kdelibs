@@ -74,7 +74,6 @@ public:
     EventListener *eventListener;
 
     QList<QList<QWidget*> > allocatedWidgets;
-    QList<QList<QWidget*> > unusedWidgets;
     QHash<QPersistentModelIndex, QList<QWidget*> > usedWidgets;
     QHash<QWidget*, QPersistentModelIndex> widgetInIndex;
 };
@@ -91,7 +90,7 @@ KWidgetItemDelegatePool::~KWidgetItemDelegatePool()
 }
 
 QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex &index,
-                                                     const QStyleOptionViewItem &option)
+                                                     const QStyleOptionViewItem &option) const
 {
     QList<QWidget*> result;
 
@@ -105,12 +104,11 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
         result = d->delegate->createItemWidgets();
         d->allocatedWidgets << result;
         d->usedWidgets[index] = result;
-
         foreach (QWidget *widget, result) {
             d->widgetInIndex[widget] = index;
             widget->setParent(d->delegate->d->itemView->viewport());
-            widget->setVisible(true);
             widget->installEventFilter(d->eventListener);
+            widget->setVisible(true);
         }
     }
 
@@ -120,6 +118,17 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
         widget->move(widget->x() + option.rect.left(), widget->y() + option.rect.top());
     }
 
+    return result;
+}
+
+QList<QWidget*> KWidgetItemDelegatePool::invalidIndexesWidgets() const
+{
+    QList<QWidget*> result;
+    foreach (QWidget *widget, d->widgetInIndex.keys()) {
+        if (!d->widgetInIndex[widget].isValid()) {
+            result << widget;
+        }
+    }
     return result;
 }
 

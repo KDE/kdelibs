@@ -61,7 +61,9 @@ public:
       * @return A QList of the pointers to the widgets found.
       * @internal
       */
-    QList<QWidget*> findWidgets(const QPersistentModelIndex &index, const QStyleOptionViewItem &option);
+    QList<QWidget*> findWidgets(const QPersistentModelIndex &index, const QStyleOptionViewItem &option) const;
+
+    QList<QWidget*> invalidIndexesWidgets() const;
 
 private:
     KWidgetItemDelegatePoolPrivate *const d;
