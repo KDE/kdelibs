@@ -41,7 +41,7 @@ public:
 
     void _k_slotRowsInserted(const QModelIndex &parent, int start, int end);
 
-    void initializeModel();
+    void initializeModel(const QModelIndex &parent = QModelIndex());
 
 protected:
     virtual bool eventFilter(QObject *watched, QEvent *event);
