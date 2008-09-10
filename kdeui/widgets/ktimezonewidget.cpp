@@ -56,16 +56,23 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
     d( 0 )
 {
   // If the user did not provide a timezone database, we'll use the system default.
-  if ( !db )
-      db = KSystemTimeZones::timeZones();
-
   setRootIsDecorated(false);
   setHeaderLabels( QStringList() << i18n( "Area" ) << i18n( "Region" ) << i18n( "Comment" ) );
 
   // Collect zones by localized city names, so that they can be sorted properly.
-  const KTimeZones::ZoneMap zones = db->zones();
   QStringList cities;
   QHash<QString, KTimeZone> zonesByCity;
+
+  if (!db) {
+      db = KSystemTimeZones::timeZones();
+
+      // add UTC to the defaults default
+      KTimeZone utc = KTimeZone::utc();
+      cities.append(utc.name());
+      zonesByCity.insert(utc.name(), utc);
+  }
+
+  const KTimeZones::ZoneMap zones = db->zones();
   for ( KTimeZones::ZoneMap::ConstIterator it = zones.begin(); it != zones.end(); ++it ) {
     KTimeZone zone = it.value();
     const QStringList continentCity = displayName( zone ).split( '/' );
