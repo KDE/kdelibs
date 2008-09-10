@@ -56,13 +56,10 @@ public:
     QAbstractItemView *itemView;
     QPersistentModelIndex hoveredIndex;
     QPersistentModelIndex lastHoveredIndex;
-    QWidget *hoveredWidget;
     QPersistentModelIndex focusedIndex;
-    QWidget *focusedWidget;
 
     // If we do a press event, and we later move the mouse, those events will be forwarded to
     // the widget that has been pressed (while still not released).
-    QWidget *buttonPressedWidget;
     QPersistentModelIndex buttonPressedIndex;
 
     QPersistentModelIndex currentIndex;

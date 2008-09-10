@@ -53,10 +53,7 @@ KWidgetItemDelegatePrivate::KWidgetItemDelegatePrivate(KWidgetItemDelegate *q, Q
     , itemView(0)
     , hoveredIndex(QPersistentModelIndex())
     , lastHoveredIndex(QPersistentModelIndex())
-    , hoveredWidget(0)
     , focusedIndex(QPersistentModelIndex())
-    , focusedWidget(0)
-    , buttonPressedWidget(0)
     , currentIndex(QPersistentModelIndex())
     , selectionModel(0)
     , widgetPool(new KWidgetItemDelegatePool(q))
@@ -75,94 +72,6 @@ KWidgetItemDelegatePrivate::~KWidgetItemDelegatePrivate()
 void KWidgetItemDelegatePrivate::analyzeInternalMouseEvents(const QStyleOptionViewItem &option,
                                                             QMouseEvent *mouseEvent)
 {
-    QPoint pos;
-    if (mouseEvent) {
-        pos = mouseEvent->globalPos();
-    } else {
-        pos = QCursor::pos();
-    }
-
-    QRect mappedRect;
-
-    if (hoveredWidget) {
-        mappedRect = QRect(itemView->viewport()->mapToGlobal(widgetRect(hoveredWidget, option, hoveredIndex).topLeft()),
-                           itemView->viewport()->mapToGlobal(widgetRect(hoveredWidget, option, hoveredIndex).bottomRight()));
-    }
-
-    QRect globalViewPortRect(itemView->viewport()->mapToGlobal(itemView->viewport()->rect().topLeft()),
-                             itemView->viewport()->mapToGlobal(itemView->viewport()->rect().bottomRight()));
-    bool itemViewContainsMousePos = globalViewPortRect.contains(pos);
-
-    if (hoveredWidget && (!mappedRect.contains(pos) || !itemViewContainsMousePos)) {
-        QPersistentModelIndex indexList[] = { lastHoveredIndex, hoveredIndex };
-        for (int i = 0; i < 2; i++) {
-            if (!indexList[i].isValid()) {
-                continue;
-            }
-
-            QEvent leaveEvent(QEvent::Leave);
-            QCoreApplication::sendEvent(hoveredWidget, &leaveEvent);
-            if (mouseEvent) {
-                QHoverEvent hoverLeaveEvent(QEvent::HoverLeave,
-                                            mappedPointForWidget(hoveredWidget, indexList[i], mouseEvent->pos()),
-                                            mappedPointForWidget(hoveredWidget, indexList[i], mouseEvent->pos()));
-                QCoreApplication::sendEvent(hoveredWidget, &hoverLeaveEvent);
-            }
-        }
-
-        hoveredWidget = 0;
-
-        return;
-    }
-
-    if (!itemViewContainsMousePos) {
-        return;
-    }
-
-    QList<QWidget*> widgetList = widgetPool->findWidgets(hoveredIndex, option);
-
-    foreach (QWidget *widget, widgetList) {
-        if (!widget->isVisibleTo(widget->parentWidget())) continue;
-
-        QWidget *childWidget = widget;
-        if (mouseEvent) {
-            QPoint eventPos = mappedPointForWidget(widget, hoveredIndex, mouseEvent->pos());
-            childWidget = widget->childAt(eventPos);
-
-            if (!childWidget) {
-                childWidget = widget;
-            }
-        }
-
-        if (widget != hoveredWidget || hoveredWidget != childWidget) {
-            QRect mappedRect = QRect(itemView->viewport()->mapToGlobal(widgetRect(widget, option, hoveredIndex).topLeft()),
-                                     itemView->viewport()->mapToGlobal(widgetRect(widget, option, hoveredIndex).bottomRight()));
-
-            if (mappedRect.contains(pos)) {
-                hoveredWidget = childWidget;
-
-                QEvent enterEvent(QEvent::Enter);
-                QCoreApplication::sendEvent(hoveredWidget, &enterEvent);
-                if (mouseEvent) {
-                    QHoverEvent hoverEnterEvent(QEvent::HoverEnter,
-                                                mappedPointForWidget(hoveredWidget, hoveredIndex, mouseEvent->pos()),
-                                                mappedPointForWidget(hoveredWidget, hoveredIndex, mouseEvent->pos()));
-                    QCoreApplication::sendEvent(hoveredWidget, &hoverEnterEvent);
-                }
-                break;
-            }
-        } else if (mouseEvent) { // we are moving the mouse over a previously hovered widget, generate MouseMove events
-            QPoint eventPos = mappedPointForWidget(childWidget, hoveredIndex, mouseEvent->pos());
-            QMouseEvent genMouseEvent(QEvent::MouseMove, eventPos, pos, mouseEvent->button(),
-                                      mouseEvent->buttons(), mouseEvent->modifiers());
-            QCoreApplication::sendEvent(hoveredWidget, &genMouseEvent);
-            QHoverEvent hoverMoveEvent(QEvent::HoverMove,
-                                       mappedPointForWidget(hoveredWidget, hoveredIndex, mouseEvent->pos()),
-                                       mappedPointForWidget(hoveredWidget, hoveredIndex, mouseEvent->pos()));
-            QCoreApplication::sendEvent(hoveredWidget, &hoverMoveEvent);
-            break;
-        }
-    }
 }
 
 QPoint KWidgetItemDelegatePrivate::mappedPointForWidget(QWidget *widget,
@@ -185,8 +94,6 @@ void KWidgetItemDelegatePrivate::slotCurrentChanged(const QModelIndex &currentIn
     Q_UNUSED(previousIndex);
 
     this->currentIndex = currentIndex;
-
-    itemView->viewport()->update();
 }
 
 void KWidgetItemDelegatePrivate::slotSelectionModelDestroyed()
@@ -247,30 +154,6 @@ QRect KWidgetItemDelegatePrivate::widgetRect(QWidget *widget,
 void KWidgetItemDelegate::paintWidgets(QPainter *painter, const QStyleOptionViewItem &option,
                                        const QPersistentModelIndex &index) const
 {
-    if (!index.isValid()) {
-        return;
-    }
-
-    Q_ASSERT(d->itemView);
-
-    QList<QWidget*> widgetList = d->widgetPool->findWidgets(index, option);
-
-    // Now that all widgets have been set up we can ask for their positions, sizes
-    // and for them being rendered.
-    foreach (QWidget *widget, widgetList) {
-        if (!widget->isVisibleTo(widget->parentWidget())) continue;
-
-        QPoint widgetPos = widget->pos();
-        QSize widgetSize = widget->size();
-
-        QPixmap pixmap(widgetSize.width(), widgetSize.height());
-        pixmap.fill(QColor(Qt::transparent));
-
-        widget->render(&pixmap, QPoint(0, 0),
-                       QRect(QPoint(0, 0), widgetSize),
-                       QWidget::DrawChildren);
-        painter->drawPixmap(widgetPos + option.rect.topLeft(), pixmap);
-    }
 }
 
 //@cond PRIVATE
@@ -319,120 +202,40 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
                 QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(event);
                 lastHoveredIndex = hoveredIndex;
                 hoveredIndex = itemView->indexAt(itemView->viewport()->mapFromGlobal(QCursor::pos()));
-
-                // If a widget has been pressed and not released, mouse move events will be forwarded to the
-                // initially pressed widget (until the button mouse is released).
-                if (buttonPressedWidget) {
-                    if (event->type() == QEvent::MouseMove) {
-                        hoveredWidget = buttonPressedWidget;
-
-                        QMouseEvent mouseEventCpy(mouseEvent->type(), mappedPointForWidget(hoveredWidget, buttonPressedIndex, mouseEvent->pos()),
-                                                  mouseEvent->globalPos(), mouseEvent->button(), mouseEvent->buttons(), mouseEvent->modifiers());
-
-                        QCoreApplication::sendEvent(hoveredWidget, &mouseEventCpy);
-                    }
-                } else {
-                    // Consider moving this block into analyzeInternalMouseEvents
-                    if (hoveredWidget && lastHoveredIndex.isValid() && (hoveredIndex != lastHoveredIndex)) {
-                        QEvent leaveEvent(QEvent::Leave);
-                        QCoreApplication::sendEvent(hoveredWidget, &leaveEvent);
-                    }
-
-                    if (event->type() == QEvent::Leave && !buttonPressedWidget) {
-                        QStyleOptionViewItem option;
-                        option.rect = itemView->visualRect(hoveredIndex);
-                        analyzeInternalMouseEvents(option, 0);
-                    } else {
-                        QStyleOptionViewItem option;
-                        option.rect = itemView->visualRect(hoveredIndex);
-                        analyzeInternalMouseEvents(option, mouseEvent);
-                    }
-                }
-
-                itemView->viewport()->update();
-
-                if (hoveredWidget) {
-                    itemView->setCursor(hoveredWidget->cursor());
-                } else {
-                    itemView->setCursor(Qt::ArrowCursor);
-                }
             }
             break;
         case QEvent::MouseButtonPress:
         case QEvent::MouseButtonRelease: {
                 focusedIndex = hoveredIndex;
 
+                QStyleOptionViewItem styleOptionViewItem;
+                styleOptionViewItem.initFrom(itemView);
+                styleOptionViewItem.rect = itemView->visualRect(focusedIndex);
+                QList<QWidget*> widgetList = widgetPool->findWidgets(focusedIndex, styleOptionViewItem);
+                foreach (QWidget *widget, widgetList) {
+                    QPoint widgetPos = widget->pos();
+                    QSize widgetSize = widget->size();
+                    widget->move(widgetPos.x() + styleOptionViewItem.rect.left(), widgetPos.y() + styleOptionViewItem.rect.top());
+                }
+
                 QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
 
                 if (event->type() == QEvent::MouseButtonPress) {
-                    buttonPressedWidget = hoveredWidget;
                     buttonPressedIndex = hoveredIndex;
                 } else {
-                    buttonPressedWidget = 0;
                     buttonPressedIndex = QModelIndex();
                 }
-
-                if (focusedWidget && (focusedWidget != hoveredWidget)) {
-
-                    QFocusEvent focusEvent(QEvent::FocusOut);
-                    QCoreApplication::sendEvent(focusedWidget, &focusEvent);
-                }
-
-                if (hoveredWidget) {
-                    QPoint eventPos = mappedPointForWidget(hoveredWidget,
-                                                           hoveredIndex,
-                                                           mouseEvent->pos());
-
-                    QMouseEvent mouseEvt(mouseEvent->type(), eventPos, mouseEvent->button(),
-                                         mouseEvent->buttons(), mouseEvent->modifiers());
-
-                    QWidget *receiver = hoveredWidget;
-
-                    QWidget *parent = hoveredWidget->parentWidget();
-                    QPoint itemPos = itemView->visualRect(hoveredIndex).topLeft();
-                    QPoint globalPos = itemView->viewport()->mapToGlobal(itemPos);
-                    parent->move(globalPos);
-                    parent->resize(itemView->visualRect(hoveredIndex).size());
-
-                    QCoreApplication::sendEvent(hoveredWidget, &mouseEvt);
-
-                    QList<QEvent::Type> blocked = q->blockedEventTypes(receiver);
-                    filterEvent = blocked.contains(mouseEvent->type());
-
-                    focusedWidget = receiver;
-
-                    QFocusEvent focusEvent(QEvent::FocusIn);
-                    QCoreApplication::sendEvent(focusedWidget, &focusEvent);
-                } else {
-                    focusedWidget = 0;
-                }
             }
-            itemView->viewport()->update();
             break;
         default: {
                 if (event->type() == QEvent::FocusOut) {
-                    buttonPressedWidget = 0;
                     buttonPressedIndex = QModelIndex();
                 }
-
-                // We don't need to do special stuff with this events. Just forward them the best we can
-                // at this point. If it is a key event, send it to the focused widget (if any), and in other
-                // case, forward it to the hovered widget (if any).
-                if (dynamic_cast<QKeyEvent*>(event) && focusedWidget) {
-                    QCoreApplication::sendEvent(focusedWidget, event);
-                    QList<QEvent::Type> blocked = q->blockedEventTypes(focusedWidget);
-                    filterEvent = blocked.contains(event->type());
-                } else if (hoveredWidget) {
-                    QCoreApplication::sendEvent(hoveredWidget, event);
-                    QList<QEvent::Type> blocked = q->blockedEventTypes(hoveredWidget);
-                    filterEvent = blocked.contains(event->type());
-                }
             }
-            itemView->viewport()->update();
             break;
     }
 
-    return filterEvent || eventReply;
+    return filterEvent || eventReply || QObject::eventFilter(watched, event);
 }
 //@endcond
 

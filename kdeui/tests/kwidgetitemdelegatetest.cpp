@@ -56,6 +56,8 @@ public:
     TestWidget(QWidget *parent = 0)
         : QWidget(parent)
     {
+        setMouseTracking(true);
+        setAttribute(Qt::WA_Hover);
     }
 
     ~TestWidget()

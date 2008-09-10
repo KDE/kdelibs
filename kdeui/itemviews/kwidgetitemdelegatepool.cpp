@@ -34,6 +34,7 @@
 #include <QtGui/QAbstractItemView>
 
 #include "kwidgetitemdelegate.h"
+#include "kwidgetitemdelegate_p.h"
 
 #define POOL_USAGE 0
 
@@ -75,6 +76,10 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
 {
     QList<QWidget*> result;
 
+    if (!index.isValid()) {
+        return result;
+    }
+
     if (d->usedWidgets.contains(index)) {
         result = d->usedWidgets[index];
     } else {
@@ -83,7 +88,7 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
         d->usedWidgets[index] = result;
 
         foreach (QWidget *widget, result) {
-            widget->setParent(d->fakeParent);
+            widget->setParent(d->delegate->d->itemView->viewport());
             widget->setVisible(true);
         }
     }
