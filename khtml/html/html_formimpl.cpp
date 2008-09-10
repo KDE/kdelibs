@@ -2177,7 +2177,7 @@ void HTMLSelectElementImpl::focus()
 DOMString HTMLInputElementImpl::valueWithDefault() const
 {
     DOMString v = value();
-    if (v.isEmpty()) {
+    if (v.isNull()) {
         switch (m_type) {
             case RESET:
 #ifdef APPLE_CHANGES
