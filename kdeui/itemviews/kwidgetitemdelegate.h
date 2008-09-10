@@ -146,7 +146,7 @@ private:
     friend class KWidgetItemDelegatePrivate;
     KWidgetItemDelegatePrivate *const d;
 
-    Q_PRIVATE_SLOT(d, void _k_slotRowsInserted(QModelIndex,int,int))
+    Q_PRIVATE_SLOT(d, void _k_slotRowsInserted(const QModelIndex&,int,int))
     //@endcond
 };
 

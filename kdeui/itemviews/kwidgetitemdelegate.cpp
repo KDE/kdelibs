@@ -63,7 +63,7 @@ KWidgetItemDelegatePrivate::~KWidgetItemDelegatePrivate()
     delete widgetPool;
 }
 
-void KWidgetItemDelegatePrivate::_k_slotRowsInserted(QModelIndex &parent, int start, int end)
+void KWidgetItemDelegatePrivate::_k_slotRowsInserted(const QModelIndex &parent, int start, int end)
 {
     int i = start;
     while (i <= end) {
@@ -159,4 +159,3 @@ QList<QEvent::Type> KWidgetItemDelegate::blockedEventTypes(QWidget *widget) cons
 }
 
 #include "kwidgetitemdelegate.moc"
-
