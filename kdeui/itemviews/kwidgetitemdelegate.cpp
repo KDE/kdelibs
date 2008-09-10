@@ -124,15 +124,17 @@ void KWidgetItemDelegatePrivate::initializeModel(const QModelIndex &parent)
     for (int i = 0; i < model->rowCount(parent); ++i) {
         for (int j = 0; j < model->columnCount(parent); ++j) {
             const QModelIndex index = model->index(i, j, parent);
-            QStyleOptionViewItemV4 optionView;
-            optionView.initFrom(itemView->viewport());
-            optionView.rect = itemView->visualRect(index);
-            widgetPool->findWidgets(index, optionView);
+            if (index.isValid()) {
+                QStyleOptionViewItemV4 optionView;
+                optionView.initFrom(itemView->viewport());
+                optionView.rect = itemView->visualRect(index);
+                widgetPool->findWidgets(index, optionView);
+            }
         }
         // Check if we need to go recursively through the childs of parent (if any) to initialize
         // all possible indexes that are shown.
         const QModelIndex index = model->index(i, 0, parent);
-        if (model->hasChildren(index)) {
+        if (index.isValid() && model->hasChildren(index)) {
             initializeModel(index);
         }
     }
