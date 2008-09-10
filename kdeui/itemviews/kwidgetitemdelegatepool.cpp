@@ -107,7 +107,7 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
         d->usedWidgets[index] = result;
 
         foreach (QWidget *widget, result) {
-            d->widgetInIndex.insert(widget, index);
+            d->widgetInIndex[widget] = index;
             widget->setParent(d->delegate->d->itemView->viewport());
             widget->setVisible(true);
         }
@@ -126,8 +126,9 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
 bool EventListener::eventFilter(QObject *watched, QEvent *event)
 {
     QWidget *widget = static_cast<QWidget*>(watched);
-
     switch (event->type()) {
+        case QEvent::Enter:
+        case QEvent::FocusIn:
         case QEvent::MouseMove:
             poolPrivate->delegate->d->focusedIndex = poolPrivate->widgetInIndex[widget]; // fall through
         default:
