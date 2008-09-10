@@ -69,7 +69,7 @@ void KWidgetItemDelegatePrivate::_k_slotRowsInserted(const QModelIndex &parent, 
     updateRowRange(parent, start, end, false);
 }
 
-void KWidgetItemDelegatePrivate::_k_slotRowsRemoved(const QModelIndex &parent, int start, int end)
+void KWidgetItemDelegatePrivate::_k_slotRowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
 {
     updateRowRange(parent, start, end, true);
 }
@@ -104,13 +104,14 @@ void KWidgetItemDelegatePrivate::updateRowRange(const QModelIndex &parent, int s
             QStyleOptionViewItemV4 optionView;
             optionView.initFrom(itemView->viewport());
             optionView.rect = itemView->visualRect(index);
+
             QList<QWidget*> widgetList = widgetPool->findWidgets(index, optionView, isRemoving ? KWidgetItemDelegatePool::NotUpdateWidgets
                                                                                                : KWidgetItemDelegatePool::UpdateWidgets);
             if (isRemoving) {
                 widgetPool->d->allocatedWidgets.removeAll(widgetList);
                 foreach (QWidget *widget, widgetList) {
                     widgetPool->d->widgetInIndex.remove(widget);
-                    widget->hide(); // FIXME: delete the widget
+                    delete widget;
                 }
             }
         }
@@ -186,13 +187,13 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
     if (model != itemView->model()) {
         if (model) {
             disconnect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), q, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
-            disconnect(model, SIGNAL(rowsRemoved(QModelIndex,int,int)), q, SLOT(_k_slotRowsRemoved(QModelIndex,int,int)));
+            disconnect(model, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), q, SLOT(_k_slotRowsAboutToBeRemoved(QModelIndex,int,int)));
             disconnect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), q, SLOT(_k_slotDataChanged(QModelIndex,QModelIndex)));
             disconnect(model, SIGNAL(layoutChanged()), q, SLOT(_k_slotLayoutChanged()));
         }
         model = itemView->model();
         connect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), q, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
-        connect(model, SIGNAL(rowsRemoved(QModelIndex,int,int)), q, SLOT(_k_slotRowsRemoved(QModelIndex,int,int)));
+        connect(model, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), q, SLOT(_k_slotRowsAboutToBeRemoved(QModelIndex,int,int)));
         connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), q, SLOT(_k_slotDataChanged(QModelIndex,QModelIndex)));
         connect(model, SIGNAL(layoutChanged()), q, SLOT(_k_slotLayoutChanged()));
         initializeModel();

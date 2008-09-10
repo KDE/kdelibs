@@ -151,7 +151,7 @@ private:
     friend class EventListener;
     KWidgetItemDelegatePrivate *const d;
     Q_PRIVATE_SLOT(d, void _k_slotRowsInserted(const QModelIndex&,int,int))
-    Q_PRIVATE_SLOT(d, void _k_slotRowsRemoved(const QModelIndex&,int,int))
+    Q_PRIVATE_SLOT(d, void _k_slotRowsAboutToBeRemoved(const QModelIndex&,int,int))
     Q_PRIVATE_SLOT(d, void _k_slotDataChanged(const QModelIndex&,const QModelIndex&))
     Q_PRIVATE_SLOT(d, void _k_slotLayoutChanged())
     //@endcond
