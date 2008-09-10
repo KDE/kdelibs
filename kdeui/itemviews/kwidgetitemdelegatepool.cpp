@@ -86,9 +86,6 @@ KWidgetItemDelegatePool::KWidgetItemDelegatePool(KWidgetItemDelegate *delegate)
 
 KWidgetItemDelegatePool::~KWidgetItemDelegatePool()
 {
-    foreach (const QList<QWidget*> &list, d->allocatedWidgets) {
-        qDeleteAll(list);
-    }
     delete d->eventListener;
     delete d;
 }

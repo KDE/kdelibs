@@ -35,12 +35,15 @@ class KWidgetItemDelegate;
 class KWidgetItemDelegatePrivate
     : public QObject
 {
+    Q_OBJECT
+
 public:
     explicit KWidgetItemDelegatePrivate(KWidgetItemDelegate *q, QObject *parent = 0);
     ~KWidgetItemDelegatePrivate();
 
     void _k_slotRowsInserted(const QModelIndex &parent, int start, int end);
 
+public Q_SLOTS:
     void initializeModel(const QModelIndex &parent = QModelIndex());
 
 protected:

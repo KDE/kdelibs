@@ -29,6 +29,7 @@
 #include <QHoverEvent>
 #include <QFocusEvent>
 #include <QCursor>
+#include <QTimer>
 #include <QBitmap>
 #include <QLayout>
 #include <QPainter>
@@ -152,7 +153,8 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
 
     switch (event->type()) {
         case QEvent::Resize:
-            initializeModel();
+            QTimer::singleShot(0, this, SLOT(initializeModel()));
+            itemView->viewport()->update();
             break;
         default:
             break;
@@ -173,3 +175,4 @@ QList<QEvent::Type> KWidgetItemDelegate::blockedEventTypes(QWidget *widget) cons
 }
 
 #include "kwidgetitemdelegate.moc"
+#include "kwidgetitemdelegate_p.moc"
