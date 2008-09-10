@@ -111,7 +111,7 @@ void KWidgetItemDelegatePrivate::updateRowRange(const QModelIndex &parent, int s
                 widgetPool->d->allocatedWidgets.removeAll(widgetList);
                 foreach (QWidget *widget, widgetList) {
                     widgetPool->d->widgetInIndex.remove(widget);
-                    delete widget;
+                    widget->hide(); // why deleting it crashes ?
                 }
             }
         }

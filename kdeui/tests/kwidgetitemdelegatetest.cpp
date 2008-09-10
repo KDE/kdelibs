@@ -285,6 +285,7 @@ private Q_SLOTS:
     {
         bool isInstalled = installed[focusedIndex().row()];
         installed[focusedIndex().row()] = !isInstalled;
+        const_cast<QAbstractItemModel*>(focusedIndex().model())->setData(focusedIndex(), QString("makemodelbeupdated"));
     }
 
 private:
