@@ -165,23 +165,42 @@ bool EventListener::eventFilter(QObject *watched, QEvent *event)
         default:
             if (dynamic_cast<QInputEvent*>(event) && !poolPrivate->delegate->blockedEventTypes(widget).contains(event->type())) {
                 QWidget *viewport = poolPrivate->delegate->d->itemView->viewport();
-                if (QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(event)) {
-                    QMouseEvent evt(event->type(), viewport->mapFromGlobal(mouseEvent->globalPos()),
-                                    mouseEvent->button(), mouseEvent->buttons(), mouseEvent->modifiers());
-                    QApplication::sendEvent(viewport, &evt);
-                } else if (QWheelEvent *wheelEvent = dynamic_cast<QWheelEvent*>(event)) {
-                    QWheelEvent evt(viewport->mapFromGlobal(wheelEvent->globalPos()),
-                                    wheelEvent->delta(), wheelEvent->buttons(), wheelEvent->modifiers(), wheelEvent->orientation());
-                    QApplication::sendEvent(viewport, &evt);
-                } else if (QTabletEvent *tabletEvent = dynamic_cast<QTabletEvent*>(event)) {
-                    QTabletEvent evt(event->type(), viewport->mapFromGlobal(tabletEvent->globalPos()),
-                                     tabletEvent->globalPos(), tabletEvent->hiResGlobalPos(), tabletEvent->device(),
-                                     tabletEvent->pointerType(), tabletEvent->pressure(), tabletEvent->xTilt(),
-                                     tabletEvent->yTilt(), tabletEvent->tangentialPressure(), tabletEvent->rotation(),
-                                     tabletEvent->z(), tabletEvent->modifiers(), tabletEvent->uniqueId());
-                    QApplication::sendEvent(viewport, &evt);
-                } else {
-                    QApplication::sendEvent(viewport, event);
+                switch(event->type()) {
+                    case QEvent::MouseMove:
+                    case QEvent::MouseButtonPress:
+                    case QEvent::MouseButtonRelease:
+                    case QEvent::MouseButtonDblClick: {
+                            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+                            QMouseEvent evt(event->type(), viewport->mapFromGlobal(mouseEvent->globalPos()),
+                                            mouseEvent->button(), mouseEvent->buttons(), mouseEvent->modifiers());
+                            QApplication::sendEvent(viewport, &evt);
+                        }
+                        break;
+                    case QEvent::Wheel: {
+                            QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
+                            QWheelEvent evt(viewport->mapFromGlobal(wheelEvent->globalPos()),
+                                            wheelEvent->delta(), wheelEvent->buttons(), wheelEvent->modifiers(),
+                                            wheelEvent->orientation());
+                            QApplication::sendEvent(viewport, &evt);
+                        }
+                        break;
+                    case QEvent::TabletMove:
+                    case QEvent::TabletPress:
+                    case QEvent::TabletRelease:
+                    case QEvent::TabletEnterProximity:
+                    case QEvent::TabletLeaveProximity: {
+                            QTabletEvent *tabletEvent = static_cast<QTabletEvent*>(event);
+                            QTabletEvent evt(event->type(), viewport->mapFromGlobal(tabletEvent->globalPos()),
+                                            tabletEvent->globalPos(), tabletEvent->hiResGlobalPos(), tabletEvent->device(),
+                                            tabletEvent->pointerType(), tabletEvent->pressure(), tabletEvent->xTilt(),
+                                            tabletEvent->yTilt(), tabletEvent->tangentialPressure(), tabletEvent->rotation(),
+                                            tabletEvent->z(), tabletEvent->modifiers(), tabletEvent->uniqueId());
+                            QApplication::sendEvent(viewport, &evt);
+                        }
+                        break;
+                    default:
+                        QApplication::sendEvent(viewport, event);
+                        break;
                 }
             }
             break;
