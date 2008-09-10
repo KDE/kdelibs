@@ -150,6 +150,14 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
         initializeModel();
     }
 
+    switch (event->type()) {
+        case QEvent::Resize:
+            initializeModel();
+            break;
+        default:
+            break;
+    }
+
     return QObject::eventFilter(watched, event);
 }
 //@endcond
