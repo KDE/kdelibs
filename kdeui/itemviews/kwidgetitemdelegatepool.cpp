@@ -32,6 +32,8 @@
 #include <QtCore/QList>
 #include <QtGui/QWidget>
 #include <QtGui/QAbstractItemView>
+#include <QtGui/QApplication>
+#include <QtGui/QInputEvent>
 
 #include "kwidgetitemdelegate.h"
 #include "kwidgetitemdelegate_p.h"
@@ -74,7 +76,7 @@ public:
     QList<QList<QWidget*> > allocatedWidgets;
     QList<QList<QWidget*> > unusedWidgets;
     QHash<QPersistentModelIndex, QList<QWidget*> > usedWidgets;
-    QMap<QWidget*, QPersistentModelIndex> widgetInIndex; // FIXME: remove this with a much better thing =)
+    QHash<QWidget*, QPersistentModelIndex> widgetInIndex;
 };
 
 KWidgetItemDelegatePool::KWidgetItemDelegatePool(KWidgetItemDelegate *delegate)
@@ -127,7 +129,34 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
 bool EventListener::eventFilter(QObject *watched, QEvent *event)
 {
     QWidget *widget = static_cast<QWidget*>(watched);
-    poolPrivate->delegate->d->focusedIndex = poolPrivate->widgetInIndex[widget];
+
+    switch (event->type()) {
+        case QEvent::MouseMove:
+            poolPrivate->delegate->d->focusedIndex = poolPrivate->widgetInIndex[widget]; // fall through
+        default:
+            if (dynamic_cast<QInputEvent*>(event) && !poolPrivate->delegate->blockedEventTypes(widget).contains(event->type())) {
+                QWidget *viewport = poolPrivate->delegate->d->itemView->viewport();
+                if (QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent*>(event)) {
+                    QMouseEvent evt(event->type(), viewport->mapFromGlobal(mouseEvent->globalPos()),
+                                    mouseEvent->button(), mouseEvent->buttons(), mouseEvent->modifiers());
+                    QApplication::sendEvent(viewport, &evt);
+                } else if (QWheelEvent *wheelEvent = dynamic_cast<QWheelEvent*>(event)) {
+                    QWheelEvent evt(viewport->mapFromGlobal(wheelEvent->globalPos()),
+                                    wheelEvent->delta(), wheelEvent->buttons(), wheelEvent->modifiers(), wheelEvent->orientation());
+                    QApplication::sendEvent(viewport, &evt);
+                } else if (QTabletEvent *tabletEvent = dynamic_cast<QTabletEvent*>(event)) {
+                    QTabletEvent evt(event->type(), viewport->mapFromGlobal(tabletEvent->globalPos()),
+                                     tabletEvent->globalPos(), tabletEvent->hiResGlobalPos(), tabletEvent->device(),
+                                     tabletEvent->pointerType(), tabletEvent->pressure(), tabletEvent->xTilt(),
+                                     tabletEvent->yTilt(), tabletEvent->tangentialPressure(), tabletEvent->rotation(),
+                                     tabletEvent->z(), tabletEvent->modifiers(), tabletEvent->uniqueId());
+                    QApplication::sendEvent(viewport, &evt);
+                } else {
+                    QApplication::sendEvent(viewport, event);
+                }
+            }
+            break;
+    }
 
     return QObject::eventFilter(watched, event);
 }
