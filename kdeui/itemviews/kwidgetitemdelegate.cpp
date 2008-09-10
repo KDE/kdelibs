@@ -152,6 +152,7 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
     }
 
     switch (event->type()) {
+        case QEvent::Polish:
         case QEvent::Resize:
             QTimer::singleShot(0, this, SLOT(initializeModel()));
             itemView->viewport()->update();
