@@ -38,23 +38,18 @@ public:
     explicit KWidgetItemDelegatePrivate(KWidgetItemDelegate *q, QObject *parent = 0);
     ~KWidgetItemDelegatePrivate();
 
-    void analyzeInternalMouseEvents(const QStyleOptionViewItem &option, QMouseEvent *mouseEvent);
+    void _k_slotRowsInserted(QModelIndex &parent, int start, int end);
 
-    QPoint mappedPointForWidget(QWidget *widget, const QPersistentModelIndex &index, const QPoint &pos) const;
-    QRect widgetRect(QWidget *widget, const QStyleOptionViewItem &option, const QPersistentModelIndex &index) const;
+    void initializeModel();
 
 protected:
     virtual bool eventFilter(QObject *watched, QEvent *event);
 
 public:
     QAbstractItemView *itemView;
-    QPersistentModelIndex focusedIndex;
-
-    // If we do a press event, and we later move the mouse, those events will be forwarded to
-    // the widget that has been pressed (while still not released).
-    QPersistentModelIndex buttonPressedIndex;
-
     KWidgetItemDelegatePool *widgetPool;
+    QAbstractItemModel *model;
+    QPersistentModelIndex focusedIndex;
 
     KWidgetItemDelegate *q;
 };

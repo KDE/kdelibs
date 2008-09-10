@@ -47,6 +47,8 @@ class KWidgetItemDelegatePool;
  */
 class KDEUI_EXPORT KWidgetItemDelegate : public QAbstractItemDelegate
 {
+    Q_OBJECT
+
 public:
     /**
      * Creates a new ItemDelegate to be used with a given itemview.
@@ -143,6 +145,8 @@ private:
     friend class KWidgetItemDelegatePool;
     friend class KWidgetItemDelegatePrivate;
     KWidgetItemDelegatePrivate *const d;
+
+    Q_PRIVATE_SLOT(d, void _k_slotRowsInserted(QModelIndex,int,int))
     //@endcond
 };
 

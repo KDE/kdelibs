@@ -95,6 +95,10 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
 
     d->delegate->updateItemWidgets(result, option, index);
 
+    foreach (QWidget *widget, result) {
+        widget->move(widget->x() + option.rect.left(), widget->y() + option.rect.top());
+    }
+
     return result;
 }
 //@endcond

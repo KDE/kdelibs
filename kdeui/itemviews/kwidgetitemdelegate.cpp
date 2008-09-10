@@ -51,8 +51,9 @@ Q_DECLARE_METATYPE(QList<QEvent::Type>)
 KWidgetItemDelegatePrivate::KWidgetItemDelegatePrivate(KWidgetItemDelegate *q, QObject *parent)
     : QObject(parent)
     , itemView(0)
-    , focusedIndex(QPersistentModelIndex())
     , widgetPool(new KWidgetItemDelegatePool(q))
+    , model(0)
+    , focusedIndex(QPersistentModelIndex())
     , q(q)
 {
 }
@@ -62,26 +63,30 @@ KWidgetItemDelegatePrivate::~KWidgetItemDelegatePrivate()
     delete widgetPool;
 }
 
-// When receiving move events on the viewport we need to check if we should
-// post events to certain widgets like "enter", "leave"...
-// Note: mouseEvent can be 0
-void KWidgetItemDelegatePrivate::analyzeInternalMouseEvents(const QStyleOptionViewItem &option,
-                                                            QMouseEvent *mouseEvent)
+void KWidgetItemDelegatePrivate::_k_slotRowsInserted(QModelIndex &parent, int start, int end)
 {
+    int i = start;
+    while (i <= end) {
+        const QModelIndex index = model->index(i, parent.column(), parent);
+        QStyleOptionViewItemV4 optionView;
+        optionView.initFrom(itemView->viewport());
+        optionView.rect = itemView->visualRect(index);
+        widgetPool->findWidgets(index, optionView);
+        i++;
+    }
 }
 
-QPoint KWidgetItemDelegatePrivate::mappedPointForWidget(QWidget *widget,
-                                                        const QPersistentModelIndex &index,
-                                                        const QPoint &pos) const
+void KWidgetItemDelegatePrivate::initializeModel()
 {
-    // Map the event point relative to the widget
-    QStyleOptionViewItem option;
-    option.rect = itemView->visualRect(index);
-    QPoint widgetPos = widget->pos();
-    widgetPos.setX(widgetPos.x() + option.rect.left());
-    widgetPos.setY(widgetPos.y() + option.rect.top());
-
-    return pos - widgetPos;
+    for (int i = 0; i < model->rowCount(); ++i) {
+        for (int j = 0; j < model->columnCount(); ++j) {
+            const QModelIndex index = model->index(i, j, QModelIndex());
+            QStyleOptionViewItemV4 optionView;
+            optionView.initFrom(itemView->viewport());
+            optionView.rect = itemView->visualRect(index);
+            widgetPool->findWidgets(index, optionView);
+        }
+    }
 }
 //@endcond
 
@@ -115,18 +120,6 @@ QPersistentModelIndex KWidgetItemDelegate::focusedIndex() const
     return d->focusedIndex;
 }
 
-//@cond PRIVATE
-QRect KWidgetItemDelegatePrivate::widgetRect(QWidget *widget,
-                                             const QStyleOptionViewItem &option,
-                                             const QPersistentModelIndex &index) const
-{
-    Q_UNUSED(index);
-    QRect retRect = QRect(widget->pos(), widget->size());
-    retRect.translate(option.rect.topLeft());
-    return retRect;
-}
-//@endcond
-
 void KWidgetItemDelegate::paintWidgets(QPainter *painter, const QStyleOptionViewItem &option,
                                        const QPersistentModelIndex &index) const
 {
@@ -142,6 +135,15 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
     Q_UNUSED(watched);
     Q_ASSERT(itemView);
 
+    if (model != itemView->model()) {
+        if (model) {
+            disconnect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), q, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
+        }
+        model = itemView->model();
+        connect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), q, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
+        initializeModel();
+    }
+
     return QObject::eventFilter(watched, event);
 }
 //@endcond
@@ -155,3 +157,6 @@ QList<QEvent::Type> KWidgetItemDelegate::blockedEventTypes(QWidget *widget) cons
 {
     return widget->property("goya:blockedEventTypes").value<QList<QEvent::Type> >();
 }
+
+#include "kwidgetitemdelegate.moc"
+
