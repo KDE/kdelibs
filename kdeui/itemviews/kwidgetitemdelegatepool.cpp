@@ -62,22 +62,11 @@ private:
     KWidgetItemDelegatePoolPrivate *poolPrivate;
 };
 
-class KWidgetItemDelegatePoolPrivate
+KWidgetItemDelegatePoolPrivate::KWidgetItemDelegatePoolPrivate(KWidgetItemDelegate *d)
+    : delegate(d)
+    , eventListener(new EventListener(this))
 {
-public:
-    KWidgetItemDelegatePoolPrivate(KWidgetItemDelegate *d)
-        : delegate(d)
-        , eventListener(new EventListener(this))
-    {
-    }
-
-    KWidgetItemDelegate *delegate;
-    EventListener *eventListener;
-
-    QList<QList<QWidget*> > allocatedWidgets;
-    QHash<QModelIndex, QList<QWidget*> > usedWidgets;
-    QHash<QWidget*, QPersistentModelIndex> widgetInIndex;
-};
+}
 
 KWidgetItemDelegatePool::KWidgetItemDelegatePool(KWidgetItemDelegate *delegate)
     : d(new KWidgetItemDelegatePoolPrivate(delegate))
@@ -91,7 +80,8 @@ KWidgetItemDelegatePool::~KWidgetItemDelegatePool()
 }
 
 QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex &idx,
-                                                     const QStyleOptionViewItem &option) const
+                                                     const QStyleOptionViewItem &option,
+                                                     UpdateWidgetsEnum updateWidgets) const
 {
     QList<QWidget*> result;
 
@@ -120,14 +110,16 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
         }
     }
 
-    foreach (QWidget *widget, result) {
-        widget->setVisible(true);
-    }
+    if (updateWidgets == UpdateWidgets) {
+        foreach (QWidget *widget, result) {
+            widget->setVisible(true);
+        }
 
-    d->delegate->updateItemWidgets(result, option, idx);
+        d->delegate->updateItemWidgets(result, option, idx);
 
-    foreach (QWidget *widget, result) {
-        widget->move(widget->x() + option.rect.left(), widget->y() + option.rect.top());
+        foreach (QWidget *widget, result) {
+            widget->move(widget->x() + option.rect.left(), widget->y() + option.rect.top());
+        }
     }
 
     return result;
@@ -165,8 +157,8 @@ bool EventListener::eventFilter(QObject *watched, QEvent *event)
             } else {
                 index = poolPrivate->widgetInIndex[widget];
             }
-            poolPrivate->delegate->d->focusedIndex = index; // fall through
-        }
+            poolPrivate->delegate->d->focusedIndex = index;
+        } // fall through
         default:
             if (dynamic_cast<QInputEvent*>(event) && !poolPrivate->delegate->blockedEventTypes(widget).contains(event->type())) {
                 QWidget *viewport = poolPrivate->delegate->d->itemView->viewport();

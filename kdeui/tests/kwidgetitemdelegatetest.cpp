@@ -326,6 +326,8 @@ int main(int argc, char **argv)
 
     mainWindow->show();
 
+    model->removeRows(0, 50);
+
     return app.exec();
 }
 

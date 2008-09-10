@@ -66,19 +66,12 @@ KWidgetItemDelegatePrivate::~KWidgetItemDelegatePrivate()
 
 void KWidgetItemDelegatePrivate::_k_slotRowsInserted(const QModelIndex &parent, int start, int end)
 {
-    int i = start;
-    while (i <= end) {
-        const QModelIndex index = model->index(i, parent.column(), parent);
-        QStyleOptionViewItemV4 optionView;
-        optionView.initFrom(itemView->viewport());
-        optionView.rect = itemView->visualRect(index);
-        widgetPool->findWidgets(index, optionView);
-        i++;
-    }
+    updateRange(parent, start, end, false);
 }
 
 void KWidgetItemDelegatePrivate::_k_slotRowsRemoved(const QModelIndex &parent, int start, int end)
 {
+    updateRange(parent, start, end, true);
 }
 
 void KWidgetItemDelegatePrivate::_k_slotDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
@@ -100,6 +93,28 @@ void KWidgetItemDelegatePrivate::_k_slotLayoutChanged()
         widget->setVisible(false);
     }
     initializeModel();
+}
+
+void KWidgetItemDelegatePrivate::updateRange(const QModelIndex &parent, int start, int end, bool isRemoving)
+{
+    int i = start;
+    while (i <= end) {
+        for (int j = 0; j < model->columnCount(parent); ++j) {
+            const QModelIndex index = model->index(i, j, parent);
+            QStyleOptionViewItemV4 optionView;
+            optionView.initFrom(itemView->viewport());
+            optionView.rect = itemView->visualRect(index);
+            QList<QWidget*> widgetList = widgetPool->findWidgets(index, optionView, isRemoving ? KWidgetItemDelegatePool::NotUpdateWidgets
+                                                                                               : KWidgetItemDelegatePool::UpdateWidgets);
+            if (isRemoving) {
+                foreach (QWidget *widget, widgetList) {
+                    widgetPool->d->widgetInIndex.remove(widget);
+                    delete widget;
+                }
+            }
+        }
+        i++;
+    }
 }
 
 void KWidgetItemDelegatePrivate::initializeModel(const QModelIndex &parent)
@@ -155,7 +170,6 @@ QPersistentModelIndex KWidgetItemDelegate::focusedIndex() const
 void KWidgetItemDelegate::paintWidgets(QPainter *painter, const QStyleOptionViewItem &option,
                                        const QPersistentModelIndex &index) const
 {
-    // No longer needed. Kept for BC reasons.
 }
 
 //@cond PRIVATE

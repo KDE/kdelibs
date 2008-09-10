@@ -23,6 +23,8 @@
 #define KWIDGETITEMDELEGATEPOOL_P_H
 
 #include <QtCore/QModelIndex>
+#include <QtCore/QHash>
+#include <QtCore/QList>
 
 class QWidget;
 class QStyleOptionViewItem;
@@ -31,16 +33,16 @@ class KWidgetItemDelegatePoolPrivate;
 
 
 /**
-  * @brief Implements a widget pool. The pool will have a constant size, where
-  *        widgets will be allocated. The substitution strategy used is Least
-  *        Recently Used (LRU)
-  * @note Since this class is only meant for implementation purposes, it is not
-  *       exported on the library.
   * @internal
   */
 class KWidgetItemDelegatePool
 {
 public:
+    enum UpdateWidgetsEnum {
+        UpdateWidgets = 0,
+        NotUpdateWidgets
+    };
+
     /**
       * Creates a new ItemDelegatePool.
       *
@@ -61,12 +63,32 @@ public:
       * @return A QList of the pointers to the widgets found.
       * @internal
       */
-    QList<QWidget*> findWidgets(const QPersistentModelIndex &index, const QStyleOptionViewItem &option) const;
+    QList<QWidget*> findWidgets(const QPersistentModelIndex &index, const QStyleOptionViewItem &option,
+                                UpdateWidgetsEnum updateWidgets = UpdateWidgets) const;
 
     QList<QWidget*> invalidIndexesWidgets() const;
 
 private:
+    friend class KWidgetItemDelegatePrivate;
     KWidgetItemDelegatePoolPrivate *const d;
+};
+
+class EventListener;
+
+/**
+  * @internal
+  */
+class KWidgetItemDelegatePoolPrivate
+{
+public:
+    KWidgetItemDelegatePoolPrivate(KWidgetItemDelegate *d);
+
+    KWidgetItemDelegate *delegate;
+    EventListener *eventListener;
+
+    QList<QList<QWidget*> > allocatedWidgets;
+    QHash<QModelIndex, QList<QWidget*> > usedWidgets;
+    QHash<QWidget*, QPersistentModelIndex> widgetInIndex;
 };
 
 #endif

@@ -46,6 +46,8 @@ public:
     void _k_slotDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
     void _k_slotLayoutChanged();
 
+    void updateRange(const QModelIndex &parent, int start, int end, bool isRemoving);
+
 public Q_SLOTS:
     void initializeModel(const QModelIndex &parent = QModelIndex());
 
