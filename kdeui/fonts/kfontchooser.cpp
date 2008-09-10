@@ -380,6 +380,7 @@ KFontChooser::KFontChooser( QWidget *parent,
     // representative of language's writing system.
     // If you wish, you can input several lines of text separated by \n.
     setSampleText(i18n("The Quick Brown Fox Jumps Over The Lazy Dog"));
+    d->sampleEdit->setTextCursor(QTextCursor(d->sampleEdit->document()));
     QString sampleEditWhatsThisText =
         i18n("This sample text illustrates the current settings. "
              "You may edit it to test special characters." );
