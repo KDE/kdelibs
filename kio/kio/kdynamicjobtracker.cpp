@@ -22,6 +22,7 @@
 #include <kuiserverjobtracker.h>
 #include <kwidgetjobtracker.h>
 #include <kjobtrackerinterface.h>
+#include <kdebug.h>
 
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
@@ -79,7 +80,10 @@ void KDynamicJobTracker::registerJob(KJob *job)
 
 void KDynamicJobTracker::unregisterJob(KJob *job)
 {
-    Q_ASSERT(d->trackers[job]);
+    if (!d->trackers[job]) {
+        kWarning() << "Tried to unregister a kio job that hasn't been registered.";
+        return;
+    }
 
     d->trackers[job]->unregisterJob(job);
 }
