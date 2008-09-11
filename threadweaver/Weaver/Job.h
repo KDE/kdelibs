@@ -195,7 +195,7 @@ namespace ThreadWeaver {
 	    thread. */
 	void started ( ThreadWeaver::Job* );
 	/** 
-	 * This signal is emitted when the job has been finished.
+	 * This signal is emitted when the job has been finished (no matter if it succeeded or not).
 	 * After this signal has been emitted, ThreadWeaver no longer references the Job internally
 	 * and the Job can be deleted.
 	 */
