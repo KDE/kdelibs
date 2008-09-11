@@ -1319,10 +1319,10 @@ void KFileWidgetPrivate::_k_slotFilterChanged()
 
 void KFileWidget::setUrl(const KUrl& url, bool clearforward)
 {
-    kDebug(kfile_area);
+    kDebug(kfile_area) << url;
 
     d->selection.clear();
-    d->ops->setUrl( url, clearforward);
+    d->ops->setUrl(url, clearforward);
 }
 
 // Protected
@@ -1359,21 +1359,10 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
     }
 }
 
-void KFileWidgetPrivate::_k_locationAccepted( const QString& _url )
+void KFileWidgetPrivate::_k_locationAccepted(const QString &url)
 {
+    Q_UNUSED(url);
     kDebug(kfile_area);
-
-    QString url( _url );
-    if ( url.contains('/') ) {
-        KUrl u( ops->url().url() + url );
-        QString fileName = u.fileName();
-        u.setFileName( QString() );
-        ops->setUrl( u, true );
-        url = fileName;
-        locationEdit->lineEdit()->setText( fileName );
-        this->url = u;
-    }
-    ops->setCurrentItem( url );
     q->slotOk();
 }
 
