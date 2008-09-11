@@ -147,6 +147,14 @@ QList<QWidget*> KWidgetItemDelegatePool::invalidIndexesWidgets() const
     return result;
 }
 
+void KWidgetItemDelegatePool::fullClear()
+{
+    qDeleteAll(d->widgetInIndex.keys());
+    d->allocatedWidgets.clear();
+    d->usedWidgets.clear();
+    d->widgetInIndex.clear();
+}
+
 bool EventListener::eventFilter(QObject *watched, QEvent *event)
 {
     QWidget *widget = static_cast<QWidget*>(watched);

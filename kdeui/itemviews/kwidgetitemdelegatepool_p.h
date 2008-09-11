@@ -66,7 +66,15 @@ public:
     QList<QWidget*> findWidgets(const QPersistentModelIndex &index, const QStyleOptionViewItem &option,
                                 UpdateWidgetsEnum updateWidgets = UpdateWidgets) const;
 
+    /**
+      * @internal
+      */
     QList<QWidget*> invalidIndexesWidgets() const;
+
+    /**
+      * @internal
+      */
+    void fullClear();
 
 private:
     friend class KWidgetItemDelegatePrivate;

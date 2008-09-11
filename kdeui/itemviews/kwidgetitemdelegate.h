@@ -154,6 +154,7 @@ private:
     Q_PRIVATE_SLOT(d, void _k_slotRowsAboutToBeRemoved(const QModelIndex&,int,int))
     Q_PRIVATE_SLOT(d, void _k_slotDataChanged(const QModelIndex&,const QModelIndex&))
     Q_PRIVATE_SLOT(d, void _k_slotLayoutChanged())
+    Q_PRIVATE_SLOT(d, void _k_slotModelReset())
     //@endcond
 };
 

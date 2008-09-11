@@ -96,6 +96,12 @@ void KWidgetItemDelegatePrivate::_k_slotLayoutChanged()
     initializeModel();
 }
 
+void KWidgetItemDelegatePrivate::_k_slotModelReset()
+{
+    widgetPool->fullClear();
+    QTimer::singleShot(0, this, SLOT(initializeModel()));
+}
+
 void KWidgetItemDelegatePrivate::updateRowRange(const QModelIndex &parent, int start, int end, bool isRemoving)
 {
     int i = start;
@@ -201,12 +207,14 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
             disconnect(model, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), q, SLOT(_k_slotRowsAboutToBeRemoved(QModelIndex,int,int)));
             disconnect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), q, SLOT(_k_slotDataChanged(QModelIndex,QModelIndex)));
             disconnect(model, SIGNAL(layoutChanged()), q, SLOT(_k_slotLayoutChanged()));
+            disconnect(model, SIGNAL(modelReset()), q, SLOT(_k_slotModelReset()));
         }
         model = itemView->model();
         connect(model, SIGNAL(rowsInserted(QModelIndex,int,int)), q, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
         connect(model, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)), q, SLOT(_k_slotRowsAboutToBeRemoved(QModelIndex,int,int)));
         connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), q, SLOT(_k_slotDataChanged(QModelIndex,QModelIndex)));
         connect(model, SIGNAL(layoutChanged()), q, SLOT(_k_slotLayoutChanged()));
+        connect(model, SIGNAL(modelReset()), q, SLOT(_k_slotModelReset()));
         QTimer::singleShot(0, this, SLOT(initializeModel()));
     }
 
