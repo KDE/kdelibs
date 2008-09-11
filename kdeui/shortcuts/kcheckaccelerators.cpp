@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
     Copyright (C) 1998, 1999, 2000 KDE Team
+    Copyright (C) 2008 Nick Shaforostoff <shaforostoff@kde.ru>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,15 +29,23 @@
 #include <QCheckBox>
 #include <QDialog>
 #include <QShortcutEvent>
+#include <QMouseEvent>
 #include <QLayout>
 #include <QMenuBar>
 #include <QMetaObject>
 #include <QPushButton>
 #include <QTabBar>
 
+#include <QLabel>
+#include <QComboBox>
+#include <QGroupBox>
+#include <QClipboard>
+#include <QProcess>
+
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
+#include <kcomponentdata.h>
 #include <klocale.h>
 #include <kshortcut.h>
 #include <ktextbrowser.h>
@@ -44,7 +53,7 @@
 #include "kacceleratormanager.h"
 #include <kconfiggroup.h>
 
-/*
+/**
 
  HOWTO:
 
@@ -73,6 +82,21 @@
  window (if there are any checkboxes etc.). For every submenu and all controls
  there are shown all conflicts grouped by accelerator, and a list of all used
  accelerators.
+
+
+ COPY WIDGET TEXT:
+
+ You can copy widgets' texts to find them in translation files faster by middle-clicking them.
+ Put the following lines in ~/.kde4/share/config/kdeglobals (or in rc file for specific app):
+
+ [Development]
+ CopyWidgetText=true
+ CopyWidgetTextCommand=find_in_po_script "%1" "%2"
+
+ Where %1 gets replaced with program name and %2 - with text.
+ CopyWidgetTextCommand may be empty, in which case the text gets copied to clipboard.
+ Press Ctrl+MMB to get widget text w/o accelerator mark (&)
+
 */
 
 KCheckAccelerators::KCheckAccelerators( QObject* parent )
@@ -89,8 +113,10 @@ KCheckAccelerators::KCheckAccelerators( QObject* parent )
     }
     alwaysShow = cg.readEntry( "AlwaysShowCheckAccelerators", false );
     autoCheck = cg.readEntry( "AutoCheckAccelerators", true );
+    copyWidgetText = cg.readEntry( "CopyWidgetText", false );
+    copyWidgetTextCommand = cg.readEntry( "CopyWidgetTextCommand", "" );
 
-    if (key==0 && !autoCheck)
+    if (!copyWidgetText && key==0 && !autoCheck)
     {
         deleteLater();
         return;
@@ -100,7 +126,7 @@ KCheckAccelerators::KCheckAccelerators( QObject* parent )
     connect( &autoCheckTimer, SIGNAL(timeout()), SLOT(autoCheckSlot()));
 }
 
-bool KCheckAccelerators::eventFilter( QObject * , QEvent * e)
+bool KCheckAccelerators::eventFilter(QObject* obj, QEvent* e)
 {
     if ( block )
         return false;
@@ -130,6 +156,60 @@ bool KCheckAccelerators::eventFilter( QObject * , QEvent * e)
             autoCheckTimer.start( 20 ); // 20 ms
         }
         break;
+    //case QEvent::MouseButtonDblClick:
+    case QEvent::MouseButtonPress:
+        if ( copyWidgetText && static_cast<QMouseEvent*>(e)->button() == Qt::MidButton ) {
+            //kWarning()<<"obj"<<obj;
+            QWidget* w=static_cast<QWidget*>(obj)->childAt(static_cast<QMouseEvent*>(e)->pos());
+            if (!w)
+                w=static_cast<QWidget*>(obj);
+            if (!w)
+                return false;
+            //kWarning()<<"MouseButtonDblClick"<<w;
+            QString text;
+            if (qobject_cast<QLabel*>(w))
+                text=static_cast<QLabel*>(w)->text();
+            else if (qobject_cast<QAbstractButton*>(w))
+                text=static_cast<QAbstractButton*>(w)->text();
+            else if (qobject_cast<QComboBox*>(w))
+                text=static_cast<QComboBox*>(w)->currentText();
+            else if (qobject_cast<QTabBar*>(w))
+                text=static_cast<QTabBar*>(w)->tabText(  static_cast<QTabBar*>(w)->tabAt(static_cast<QMouseEvent*>(e)->pos())  );
+            else if (qobject_cast<QGroupBox*>(w))
+                text=static_cast<QGroupBox*>(w)->title();
+            else if (qobject_cast<QMenu*>(obj))
+            {
+                QAction* a=static_cast<QMenu*>(obj)->actionAt(static_cast<QMouseEvent*>(e)->pos());
+                if (!a)
+                    return false;
+                text=a->text();
+                if (text.isEmpty())
+                    text=a->iconText();
+            }
+            if (text.isEmpty())
+                return false;
+
+            if (static_cast<QMouseEvent*>(e)->modifiers() == Qt::ControlModifier)
+                text.remove('&');
+
+            //kWarning()<<KGlobal::activeComponent().catalogName()<<text;
+            if (copyWidgetTextCommand.isEmpty())
+            {
+                QClipboard *clipboard = QApplication::clipboard();
+                clipboard->setText(text);
+            }
+            else
+            {
+                QProcess* script=new QProcess(this);
+                script->start(copyWidgetTextCommand.arg(KGlobal::activeComponent().catalogName()).arg(text));
+                connect(script,SIGNAL(finished(int,QProcess::ExitStatus)),script,SLOT(deleteLater()));
+            }
+            e->accept();
+            return true;
+
+            //kWarning()<<"MouseButtonDblClick"<<static_cast<QWidget*>(obj)->childAt(static_cast<QMouseEvent*>(e)->globalPos());
+	}
+        return false;
     case QEvent::Timer:
     case QEvent::MouseMove:
     case QEvent::Paint:
@@ -160,7 +240,7 @@ void KCheckAccelerators::createDialog(QWidget *actWin, bool automatic)
         return;
 
     drklash = new QDialog( actWin );
-    //drklash->setAttribute( Qt::WA_DeleteOnClose ); WE REUSE IT!!!
+    drklash->setAttribute( Qt::WA_DeleteOnClose );
     drklash->setObjectName( "kapp_accel_check_dlg" );
     drklash->setWindowTitle( i18nc("@title:window", "Dr. Klash' Accelerator Diagnosis" ));
     drklash->resize( 500, 460 );
@@ -232,7 +312,6 @@ void KCheckAccelerators::checkAccelerators( bool automatic )
     drklash->raise();
 
     // dlg will be destroyed before returning
-    //WTF that ^ means? --Nick Shaforostoff
 }
 
 #include "kcheckaccelerators.moc"

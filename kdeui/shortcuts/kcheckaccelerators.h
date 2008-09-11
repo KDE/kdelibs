@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
     Copyright (C) 1998, 1999, 2000 KDE Team
+    Copyright (C) 2008 Nick Shaforostoff <shaforostoff@kde.ru>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -61,7 +62,7 @@ class QTextBrowser;
  there are shown all conflicts grouped by accelerator, and a list of all used
  accelerators.
 */
-class KDEUI_EXPORT KCheckAccelerators : public QObject
+class KCheckAccelerators : public QObject
 {
     Q_OBJECT
 public:
@@ -73,7 +74,7 @@ public:
     /**
      * Re-implemented to filter the parent's events.
      */
-    bool eventFilter( QObject * , QEvent * e);
+    bool eventFilter(QObject*, QEvent* e);
 
 private:
     void checkAccelerators( bool automatic );
@@ -81,6 +82,10 @@ private:
     bool alwaysShow;
     bool autoCheck;
     bool block;
+
+    bool copyWidgetText;
+    QString copyWidgetTextCommand;
+
     QTimer autoCheckTimer;
     void createDialog(QWidget *parent, bool automatic);
     QPointer<QDialog> drklash;
