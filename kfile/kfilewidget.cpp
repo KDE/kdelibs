@@ -200,7 +200,6 @@ public:
     QLabel *locationLabel;
     QWidget *opsWidget;
     QWidget *pathSpacer;
-    QAction *pathSpacerAction;
 
     QLabel *filterLabel;
     KUrlNavigator *urlNavigator;
@@ -435,12 +434,9 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     connect( menu->menu(), SIGNAL( aboutToShow() ),
              d->ops, SLOT( updateSelectionDependentActions() ));
 
-//    d->pathSpacer = new QWidget(this);
     QWidget *midSpacer = new QWidget(this);
     midSpacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-//    d->toolbar->addWidget(d->urlNavigator);
-//    d->pathSpacerAction = d->toolbar->addWidget(d->pathSpacer);
     d->toolbar->addAction(coll->action("back" ));
     d->toolbar->addAction(coll->action("forward"));
     d->toolbar->addAction(coll->action("up"));
@@ -449,8 +445,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->toolbar->addAction(coll->action("mkdir"));
     d->toolbar->addAction(menu);
 
-    // FIXME KAction port - add capability
-    //d->toolbar->setItemAutoSized (PATH_COMBO);
     d->toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
     d->toolbar->setMovable(false);
 
@@ -561,7 +555,7 @@ void KFileWidget::setFilter(const QString& filter)
     // interpret as a MIME filter.
 
     if (pos > 0 && filter[pos - 1] != '\\') {
-        QStringList filters = filter.split(" ", QString::SkipEmptyParts); //QStringList::split( " ", filter );
+        QStringList filters = filter.split(" ", QString::SkipEmptyParts);
         setMimeFilter( filters );
         return;
     }
@@ -1264,7 +1258,6 @@ void KFileWidgetPrivate::initGUI()
     boxLayout = new QVBoxLayout( q);
     boxLayout->setMargin(0); // no additional margin to the already existing
     boxLayout->setSpacing(0);
-    //boxLayout->addWidget(toolbar, 0, Qt::AlignTop);
 
     placesViewSplitter = new QSplitter(q);
     placesViewSplitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -1317,7 +1310,7 @@ void KFileWidgetPrivate::_k_slotFilterChanged()
     ops->clearFilter();
 
     if ( filter.indexOf( '/' ) > -1 ) {
-        QStringList types = filter.split(" ",QString::SkipEmptyParts); //QStringList::split( " ", filter );
+        QStringList types = filter.split(" ",QString::SkipEmptyParts);
         types.prepend( "inode/directory" );
         ops->setMimeFilter( types );
     }
@@ -1446,7 +1439,6 @@ void KFileWidget::setSelection(const QString& url)
     KIO::StatJob *statJob = KIO::stat(u, KIO::HideProgressInfo);
     bool res = KIO::NetAccess::synchronousRun(statJob, 0);
     KFileItem i(statJob->statResult(), u);
-    //    KFileItem i(u.path());
     kDebug(kfile_area) << "KFileItem " << u.path() << " " << i.isDir() << " " << u.isLocalFile() << " " << QFile::exists( u.path() );
     if ( res && i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) {
         // trust isDir() only if the file is
@@ -2332,7 +2324,6 @@ void KFileWidgetPrivate::_k_toggleSpeedbar(bool show)
         lafBox->setColumnMinimumWidth(0, 0);
     }
 
-//    pathSpacerAction->setVisible(show);
     static_cast<KToggleAction *>(q->actionCollection()->action("toggleSpeedbar"))->setChecked(show);
 }
 
