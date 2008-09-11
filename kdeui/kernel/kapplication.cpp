@@ -149,53 +149,50 @@ class KApplicationPrivate
 {
 public:
   KApplicationPrivate(KApplication* q, const QByteArray &cName)
-      : q(q),
-      componentData(cName),
-      checkAccelerators(0),
-      startup_id("0"),
-      app_started_timer(0),
-      session_save(false)
+      : q(q)
+      , componentData(cName)
+      , startup_id("0")
+      , app_started_timer(0)
+      , session_save(false)
 #ifdef Q_WS_X11
       , oldIceIOErrorHandler(0)
       , oldXErrorHandler(0)
       , oldXIOErrorHandler(0)
 #endif
-      ,pSessionConfig( 0 )
-      ,bSessionManagement( true )
+      , pSessionConfig( 0 )
+      , bSessionManagement( true )
   {
   }
 
   KApplicationPrivate(KApplication* q, const KComponentData &cData)
-      : q(q),
-      componentData(cData),
-      checkAccelerators(0),
-      startup_id("0"),
-      app_started_timer(0),
-      session_save(false)
+      : q(q)
+      , componentData(cData)
+      , startup_id("0")
+      , app_started_timer(0)
+      , session_save(false)
 #ifdef Q_WS_X11
       , oldIceIOErrorHandler(0)
       , oldXErrorHandler(0)
       , oldXIOErrorHandler(0)
 #endif
-      ,pSessionConfig( 0 )
-      ,bSessionManagement( true )
+      , pSessionConfig( 0 )
+      , bSessionManagement( true )
   {
   }
 
   KApplicationPrivate(KApplication *q)
-      : q(q),
-      componentData(KCmdLineArgs::aboutData()),
-      checkAccelerators(0),
-      startup_id( "0" ),
-      app_started_timer( 0 ),
-      session_save( false )
+      : q(q)
+      , componentData(KCmdLineArgs::aboutData())
+      , startup_id( "0" )
+      , app_started_timer( 0 )
+      , session_save( false )
 #ifdef Q_WS_X11
-      ,oldIceIOErrorHandler( 0 )
-      ,oldXErrorHandler( 0 )
-      ,oldXIOErrorHandler( 0 )
+      , oldIceIOErrorHandler( 0 )
+      , oldXErrorHandler( 0 )
+      , oldXIOErrorHandler( 0 )
 #endif
-      ,pSessionConfig( 0 )
-      ,bSessionManagement( true )
+      , pSessionConfig( 0 )
+      , bSessionManagement( true )
   {
   }
 
@@ -220,7 +217,6 @@ public:
 
   KApplication *q;
   KComponentData componentData;
-  KCheckAccelerators* checkAccelerators;
   QByteArray startup_id;
   QTimer* app_started_timer;
   bool session_save;
@@ -586,7 +582,7 @@ void KApplicationPrivate::init(bool GUIenabled)
 
     KMessage::setMessageHandler( new KMessageBoxMessageHandler(0) );
 
-    checkAccelerators = new KCheckAccelerators( q );
+    new KCheckAccelerators( q );
     KGestureMap::self()->installEventFilterOnMe( q );
 
     q->connect(KToolInvocation::self(), SIGNAL(kapplication_hook(QStringList&, QByteArray&)),

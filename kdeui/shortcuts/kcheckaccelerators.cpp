@@ -27,7 +27,7 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QDialog>
-#include <QKeyEvent>
+#include <QShortcutEvent>
 #include <QLayout>
 #include <QMenuBar>
 #include <QMetaObject>
@@ -79,16 +79,24 @@ KCheckAccelerators::KCheckAccelerators( QObject* parent )
     : QObject( parent ), key(0), block( false ), drklash(0)
 {
     setObjectName( "kapp_accel_filter" );
-    parent->installEventFilter( this );
+
     KConfigGroup cg( KGlobal::config(), "Development" );
     QString sKey = cg.readEntry( "CheckAccelerators" ).trimmed();
     if( !sKey.isEmpty() ) {
       KShortcut cuts( sKey );
       if( !cuts.isEmpty() )
-        key = int(cuts.primary()[0]);
+        key = cuts.primary()[0];
     }
     alwaysShow = cg.readEntry( "AlwaysShowCheckAccelerators", false );
     autoCheck = cg.readEntry( "AutoCheckAccelerators", true );
+
+    if (key==0 && !autoCheck)
+    {
+        deleteLater();
+        return;
+    }
+
+    parent->installEventFilter( this );
     connect( &autoCheckTimer, SIGNAL(timeout()), SLOT(autoCheckSlot()));
 }
 
@@ -99,11 +107,11 @@ bool KCheckAccelerators::eventFilter( QObject * , QEvent * e)
 
     switch ( e->type() ) { // just simplify debuggin
     case QEvent::Shortcut:
-        if ( key && (static_cast<QKeyEvent *>(e)->key() == key) ) {
+        if ( key && (static_cast<QShortcutEvent*>(e)->key()[0] == key) ) {
     	    block = true;
 	    checkAccelerators( false );
 	    block = false;
-	    static_cast<QKeyEvent *>(e)->accept();
+	    e->accept();
 	    return true;
 	}
         break;
@@ -152,7 +160,7 @@ void KCheckAccelerators::createDialog(QWidget *actWin, bool automatic)
         return;
 
     drklash = new QDialog( actWin );
-    drklash->setAttribute( Qt::WA_DeleteOnClose );
+    //drklash->setAttribute( Qt::WA_DeleteOnClose ); WE REUSE IT!!!
     drklash->setObjectName( "kapp_accel_check_dlg" );
     drklash->setWindowTitle( i18nc("@title:window", "Dr. Klash' Accelerator Diagnosis" ));
     drklash->resize( 500, 460 );
@@ -160,7 +168,7 @@ void KCheckAccelerators::createDialog(QWidget *actWin, bool automatic)
     layout->setMargin( 11 );
     layout->setSpacing( 6 );
     drklash_view = new KTextBrowser( drklash );
-    layout->addWidget( drklash );
+    layout->addWidget( drklash_view);
     QCheckBox* disableAutoCheck = NULL;
     if( automatic )  {
         disableAutoCheck = new QCheckBox( i18nc("@option:check","Disable automatic checking" ), drklash );
@@ -224,6 +232,7 @@ void KCheckAccelerators::checkAccelerators( bool automatic )
     drklash->raise();
 
     // dlg will be destroyed before returning
+    //WTF that ^ means? --Nick Shaforostoff
 }
 
 #include "kcheckaccelerators.moc"
