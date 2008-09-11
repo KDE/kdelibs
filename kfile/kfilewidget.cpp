@@ -682,10 +682,10 @@ void KFileWidget::slotOk()
     // if we are not on directory navigation mode let's check if what we have on the location edit
     // is a directory. If it is, let's open it
     if ( (mode() & KFile::Directory) != KFile::Directory ) {
-        KIO::UDSEntry entry;
         KUrl url = d->getCompleteUrl(locationEditCurrentText);
-        KIO::NetAccess::stat(url, entry, 0);
-        if (entry.isDir()) {
+        KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
+        KIO::NetAccess::synchronousRun(statJob, 0);
+        if (statJob->statResult().isDir()) {
             d->setLocationText(QString());
             d->ops->setUrl(url, true);
             return;
@@ -1432,9 +1432,9 @@ void KFileWidget::setSelection(const QString& url)
     /* we strip the first / from the path to avoid file://usr which means
      *  / on host usr
      */
-    KIO::UDSEntry entry;
-    bool res = KIO::NetAccess::stat(u, entry, this);
-    KFileItem i(entry, u);
+    KIO::StatJob *statJob = KIO::stat(u, KIO::HideProgressInfo);
+    bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+    KFileItem i(statJob->statResult(), u);
     //    KFileItem i(u.path());
     kDebug(kfile_area) << "KFileItem " << u.path() << " " << i.isDir() << " " << u.isLocalFile() << " " << QFile::exists( u.path() );
     if ( res && i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) {
@@ -2107,12 +2107,13 @@ void KFileWidgetPrivate::updateLocationEditExtension (const QString &lastExtensi
         )
     {
         // exists?
-        KIO::UDSEntry t;
-        if (KIO::NetAccess::stat (url, t, q->topLevelWidget()))
+        KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
+        bool result = KIO::NetAccess::synchronousRun(statJob, 0);
+        if (result)
         {
             kDebug (kfile_area) << "\tfile exists";
 
-            if (t.isDir())
+            if (statJob->statResult().isDir())
             {
                 kDebug (kfile_area) << "\tisDir - won't alter extension";
                 return;
@@ -2212,13 +2213,14 @@ void KFileWidgetPrivate::appendExtension (KUrl &url)
     const bool suppressExtension = (dot == len - 1);
     const bool unspecifiedExtension = (dot <= 0);
 
-    // don't KIO::NetAccess::Stat if unnecessary
+    // don't KIO::Stat if unnecessary
     if (!(suppressExtension || unspecifiedExtension))
         return;
 
     // exists?
-    KIO::UDSEntry t;
-    if (KIO::NetAccess::stat (url, t, q->topLevelWidget()))
+    KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
+    bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+    if (res)
     {
         kDebug (kfile_area) << "\tfile exists - won't append extension";
         return;
