@@ -92,11 +92,18 @@ public:
           confirmOverwrite(false)
     {
     }
+
+    ~KFileWidgetPrivate()
+    {
+        delete bookmarkHandler; // Should be deleted before ops!
+        delete ops;
+    }
+
     void updateLocationWhatsThis();
     void updateAutoSelectExtension();
     void initSpeedbar();
     void initGUI();
-    void readConfig(const KConfigGroup &configGroup);
+    void readConfig(KConfigGroup &configGroup);
     void writeConfig(KConfigGroup &configGroup);
     void setNonExtSelection();
     void setLocationText(const KUrl&);
@@ -116,11 +123,11 @@ public:
     /**
      * Reads the recent used files and inserts them into the location combobox
      */
-    void readRecentFiles( KConfig * );
+    void readRecentFiles(KConfigGroup &cg);
     /**
      * Saves the entries from the location combobox.
      */
-    void saveRecentFiles( KConfig * );
+    void saveRecentFiles(KConfigGroup &cg);
     /**
      * called when an item is highlighted/selected in multiselection mode.
      * handles setting the locationEdit.
@@ -229,7 +236,6 @@ public:
     KFileBookmarkHandler *bookmarkHandler;
 
     KActionMenu* bookmarkButton;
-    KConfigGroup *viewConfigGroup;
 
     KToolBar *toolbar;
     KUrlComboBox *locationEdit;
@@ -524,16 +530,16 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     d->initGUI(); // activate GM
 
+    // read our configuration
     KSharedConfig::Ptr config = KGlobal::config();
-    d->readRecentFiles(config.data());
+    KConfigGroup viewConfigGroup(config, ConfigGroup);
+    d->readConfig(viewConfigGroup);
 
-    d->viewConfigGroup=new KConfigGroup(config,ConfigGroup);
-    d->ops->setViewConfig(*d->viewConfigGroup);
-    d->readConfig(* d->viewConfigGroup);
     if (!statJob->statResult().isDir()) {
         d->selection = d->url.fileName();
         d->locationEdit->setUrl(d->url.fileName());
     }
+
     setSelection(d->selection);
     d->locationEdit->setFocus();
     d->opsWidget->installEventFilter(this);
@@ -542,12 +548,8 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 KFileWidget::~KFileWidget()
 {
     KSharedConfig::Ptr config = KGlobal::config();
-
     config->sync();
 
-    delete d->bookmarkHandler; // Should be deleted before ops!
-    delete d->ops;
-    delete d->viewConfigGroup;
     delete d;
 }
 
@@ -1009,11 +1011,12 @@ void KFileWidget::accept()
 
     KSharedConfig::Ptr config = KGlobal::config();
     config->setForceGlobal( true );
+        //KCG_UNECESSARY
     KConfigGroup grp(config,ConfigGroup);
     d->writeConfig(grp);
     config->setForceGlobal( false );
 
-    d->saveRecentFiles(config.data());
+    d->saveRecentFiles(grp);
     config->sync();
 
     d->addToRecentDocuments();
@@ -1713,8 +1716,11 @@ KFile::Modes KFileWidget::mode() const
 }
 
 
-void KFileWidgetPrivate::readConfig( const KConfigGroup &configGroup)
+void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
 {
+    readRecentFiles(configGroup);
+
+    ops->setViewConfig(configGroup);
     ops->readConfig(configGroup);
 
     KUrlComboBox *combo = urlNavigator->editor();
@@ -1784,21 +1790,17 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
 }
 
 
-void KFileWidgetPrivate::readRecentFiles( KConfig *kc )
+void KFileWidgetPrivate::readRecentFiles(KConfigGroup &cg)
 {
-    KConfigGroup cg( kc, ConfigGroup );
-
-    locationEdit->setMaxItems( cg.readEntry( RecentFilesNumber,
-                                             DefaultRecentURLsNumber ) );
-    locationEdit->setUrls( cg.readPathEntry( RecentFiles, QStringList() ),
-                           KUrlComboBox::RemoveBottom );
-    locationEdit->setCurrentIndex( -1 );
+    locationEdit->setMaxItems(cg.readEntry(RecentFilesNumber, DefaultRecentURLsNumber));
+    locationEdit->setUrls(cg.readPathEntry(RecentFiles, QStringList()),
+                          KUrlComboBox::RemoveBottom);
+    locationEdit->setCurrentIndex(-1);
 }
 
-void KFileWidgetPrivate::saveRecentFiles( KConfig *kc )
+void KFileWidgetPrivate::saveRecentFiles(KConfigGroup &cg)
 {
-    KConfigGroup cg(kc, ConfigGroup );
-    cg.writePathEntry( RecentFiles, locationEdit->urls() );
+    cg.writePathEntry(RecentFiles, locationEdit->urls());
 }
 
 KPushButton * KFileWidget::okButton() const
@@ -1818,6 +1820,7 @@ void KFileWidget::slotCancel()
 
     KSharedConfig::Ptr config = KGlobal::config();
     config->setForceGlobal( true );
+        //KCG_UNECESSARY
     KConfigGroup grp(config,ConfigGroup);
     d->writeConfig(grp);
     config->setForceGlobal( false );
@@ -2155,9 +2158,14 @@ void KFileWidgetPrivate::updateSplitterSize()
     QList<int> sizes = placesViewSplitter->sizes();
     if (sizes.count() == 2) {
         // restore width of speedbar
-        KConfigGroup configGroup( KGlobal::config(), ConfigGroup );
-        const int speedbarWidth = placesViewWidth == -1 ? configGroup.readEntry( SpeedbarWidth, placesView->sizeHintForColumn(0) )
-                                                      : placesViewWidth;
+        //KCG_UNECESSARY
+        KConfigGroup configGroup(KGlobal::config(), ConfigGroup);
+        int speedbarWidth = placesViewWidth;
+
+        if (speedbarWidth < 0) {
+            speedbarWidth = configGroup.readEntry(SpeedbarWidth, placesView->sizeHintForColumn(0));
+        }
+
         const int availableWidth = q->width();
         sizes[0] = speedbarWidth + 1; // without this pixel, our places view is reduced 1 pixel each time is shown.
         sizes[1] = availableWidth - speedbarWidth - 1;
