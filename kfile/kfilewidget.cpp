@@ -72,15 +72,15 @@ public:
           labeledCustomWidget(0),
           bottomCustomWidget(0),
           speedBarWidth(-1),
-          inAccept(false),
-          dummyAdded(false),
-          toolbar(0),
           placesDock(0),
           placesView(0),
+          toolbar(0),
           locationEdit(0),
           ops(0),
           filterWidget(0),
           q(q),
+          inAccept(false),
+          dummyAdded(false),
           confirmOverwrite(false)
     {
     }
@@ -2275,8 +2275,7 @@ void KFileWidgetPrivate::_k_toggleSpeedbar(bool show)
         KUrl homeURL;
         homeURL.setPath( QDir::homePath() );
         KFilePlacesModel *model = static_cast<KFilePlacesModel*>(placesView->model());
-        for ( int rowIndex = 0 ; rowIndex < model->rowCount() ; rowIndex++ )
-        {
+        for (int rowIndex = 0 ; rowIndex < model->rowCount() ; rowIndex++) {
             QModelIndex index = model->index(rowIndex, 0);
             KUrl url = model->url(index);
 
@@ -2286,6 +2285,12 @@ void KFileWidgetPrivate::_k_toggleSpeedbar(bool show)
             }
         }
     } else {
+        if (q->sender() == placesDock && placesDock->isVisibleTo(q)) {
+            // we didn't *really* go away! the dialog was simply hidden or
+            // we changed virtual desktops or ...
+            return;
+        }
+
         if (placesDock) {
             placesDock->hide();
         }
