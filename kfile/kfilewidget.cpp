@@ -67,18 +67,26 @@
 class KFileWidgetPrivate
 {
 public:
-    KFileWidgetPrivate( KFileWidget* q )
-        : boxLayout(0),
-          labeledCustomWidget(0),
-          bottomCustomWidget(0),
-          speedBarWidth(-1),
+    KFileWidgetPrivate(KFileWidget *widget)
+        : q(widget),
+          boxLayout(0),
           placesDock(0),
           placesView(0),
+          placesViewSplitter(0),
+          placesViewWidth(-1),
+          labeledCustomWidget(0),
+          bottomCustomWidget(0),
+          autoSelectExtCheckBox(0),
+          operationMode(KFileWidget::Opening),
+          bookmarkHandler(0),
           toolbar(0),
           locationEdit(0),
           ops(0),
           filterWidget(0),
-          q(q),
+          autoSelectExtChecked(false),
+          keepLocation(false),
+          hasView(false),
+          hasDefaultFilter(false),
           inAccept(false),
           dummyAdded(false),
           confirmOverwrite(false)
@@ -167,6 +175,8 @@ public:
 
     QString locationEditCurrentText() const;
 
+    KFileWidget* q;
+
     // the last selected url
     KUrl url;
 
@@ -193,12 +203,16 @@ public:
     QDockWidget *placesDock;
     KFilePlacesView *placesView;
     QSplitter *placesViewSplitter;
+    // caches the places view width. This value will be updated when the splitter
+    // is moved. This allows us to properly set a value when the dialog itself
+    // is resized
+    int placesViewWidth;
+
     QWidget *labeledCustomWidget;
     QWidget *bottomCustomWidget;
 
     // Automatically Select Extension stuff
     QCheckBox *autoSelectExtCheckBox;
-    bool autoSelectExtChecked; // whether or not the _user_ has checked the above box
     QString extension; // current extension for this filter
 
     QList<KIO::StatJob*> statJobs;
@@ -206,25 +220,6 @@ public:
     KUrl::List urlList; //the list of selected urls
 
     QStringList mimetypes; //the list of possible mimetypes to save as
-
-    // caches the speed bar width. This value will be updated when the splitter
-    // is moved. This allows us to properly set a value when the dialog itself
-    // is resized
-    int speedBarWidth;
-
-    // indicates if the location edit should be kept or cleared when changing
-    // directories
-    bool keepLocation;
-
-    // the KDirOperators view is set in KFileWidget::show(), so to avoid
-    // setting it again and again, we have this nice little boolean :)
-    bool hasView;
-
-    bool hasDefaultFilter; // necessary for the operationMode
-    bool autoDirectoryFollowing;
-    bool inAccept; // true between beginning and end of accept()
-    bool dummyAdded; // if the dummy item has been added. This prevents the combo from having a
-                     // blank item added when loaded
 
     KFileWidget::OperationMode operationMode;
 
@@ -240,11 +235,27 @@ public:
     KUrlComboBox *locationEdit;
     KDirOperator *ops;
     KFileFilterCombo *filterWidget;
-    KFileWidget* q;
 
     KFilePlacesModel *model;
 
-    bool confirmOverwrite;
+    // whether or not the _user_ has checked the above box
+    bool autoSelectExtChecked : 1;
+
+    // indicates if the location edit should be kept or cleared when changing
+    // directories
+    bool keepLocation : 1;
+
+    // the KDirOperators view is set in KFileWidget::show(), so to avoid
+    // setting it again and again, we have this nice little boolean :)
+    bool hasView : 1;
+
+    bool hasDefaultFilter : 1; // necessary for the operationMode
+    bool autoDirectoryFollowing : 1;
+    bool inAccept : 1; // true between beginning and end of accept()
+    bool dummyAdded : 1; // if the dummy item has been added. This prevents the combo from having a
+                     // blank item added when loaded
+
+    bool confirmOverwrite : 1;
 };
 
 K_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
@@ -281,23 +292,12 @@ static bool containsProtocolSection( const QString& string )
 KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     : QWidget(parent), KAbstractFileWidget(), d(new KFileWidgetPrivate(this))
 {
-    // TODO move most of this code for the KFileWidgetPrivate constructor
-    d->keepLocation = false;
-    d->operationMode = Opening;
-    d->bookmarkHandler = 0;
-    d->hasDefaultFilter = false;
-    d->hasView = false;
-    d->placesViewSplitter = 0;
-
     d->okButton = new KPushButton(KStandardGuiItem::ok(), this);
-    d->okButton->setDefault( true );
+    d->okButton->setDefault(true);
     d->cancelButton = new KPushButton(KStandardGuiItem::cancel(), this);
     // The dialog shows them
     d->okButton->hide();
     d->cancelButton->hide();
-
-    d->autoSelectExtCheckBox = 0; // delayed loading
-    d->autoSelectExtChecked = false;
 
     d->opsWidget = new QWidget(this);
     QVBoxLayout *opsWidgetLayout = new QVBoxLayout(d->opsWidget);
@@ -537,7 +537,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     setSelection(d->selection);
     d->locationEdit->setFocus();
     d->opsWidget->installEventFilter(this);
-    //d->ops->installEventFilter(this);
 }
 
 KFileWidget::~KFileWidget()
@@ -1872,7 +1871,7 @@ void KFileWidgetPrivate::_k_slotAutoSelectExtClicked()
 void KFileWidgetPrivate::_k_placesViewSplitterMoved()
 {
     const QList<int> sizes = placesViewSplitter->sizes();
-    speedBarWidth = sizes[0];
+    placesViewWidth = sizes[0];
 }
 
 void KFileWidgetPrivate::_k_activateUrlNavigator()
@@ -2157,8 +2156,8 @@ void KFileWidgetPrivate::updateSplitterSize()
     if (sizes.count() == 2) {
         // restore width of speedbar
         KConfigGroup configGroup( KGlobal::config(), ConfigGroup );
-        const int speedbarWidth = speedBarWidth == -1 ? configGroup.readEntry( SpeedbarWidth, placesView->sizeHintForColumn(0) )
-                                                      : speedBarWidth;
+        const int speedbarWidth = placesViewWidth == -1 ? configGroup.readEntry( SpeedbarWidth, placesView->sizeHintForColumn(0) )
+                                                      : placesViewWidth;
         const int availableWidth = q->width();
         sizes[0] = speedbarWidth + 1; // without this pixel, our places view is reduced 1 pixel each time is shown.
         sizes[1] = availableWidth - speedbarWidth - 1;
