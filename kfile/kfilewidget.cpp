@@ -165,7 +165,6 @@ public:
     void _k_enterUrl( const KUrl& );
     void _k_enterUrl( const QString& );
     void _k_locationAccepted( const QString& );
-    void _k_locationActivated( const QString& );
     void _k_slotFilterChanged();
     void _k_fileHighlighted( const KFileItem& );
     void _k_fileSelected( const KFileItem& );
@@ -501,8 +500,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     connect(d->locationEdit, SIGNAL( returnPressed( const QString&  )),
             this,  SLOT( _k_locationAccepted( const QString& ) ));
-    connect(d->locationEdit, SIGNAL( activated( const QString& )),
-            this,  SLOT( _k_locationActivated( const QString& ) ));
 
     // the Filter label/edit
     whatsThisText = i18n("<qt>This is the filter to apply to the file list. "
@@ -644,6 +641,8 @@ void KFileWidget::setPreviewWidget(KPreviewWidgetBase *w) {
 
 KUrl KFileWidgetPrivate::getCompleteUrl(const QString &_url) const
 {
+    kDebug(kfile_area) << "got url " << _url;
+
     QString url = KShell::tildeExpand(_url);
     KUrl u;
 
@@ -654,12 +653,17 @@ KUrl KFileWidgetPrivate::getCompleteUrl(const QString &_url) const
         else
         {
             u = ops->url();
+            kDebug(kfile_area) << "ops url " << u;
             u.addPath( url ); // works for filenames and relative paths
+            kDebug(kfile_area) << "after adding path " << u;
             u.cleanPath(); // fix "dir/.."
+            kDebug(kfile_area) << "after cleaning path " << u;
         }
     }
     else // complete URL
         u = url;
+
+    kDebug(kfile_area) << "returning url " << u;
 
     return u;
 }
@@ -1319,7 +1323,7 @@ void KFileWidgetPrivate::_k_slotFilterChanged()
 
 void KFileWidget::setUrl(const KUrl& url, bool clearforward)
 {
-    kDebug(kfile_area) << url;
+    kDebug(kfile_area) << "setting url " << url;
 
     d->selection.clear();
     d->ops->setUrl(url, clearforward);
@@ -1364,13 +1368,6 @@ void KFileWidgetPrivate::_k_locationAccepted(const QString &url)
     Q_UNUSED(url);
     kDebug(kfile_area);
     q->slotOk();
-}
-
-void KFileWidgetPrivate::_k_locationActivated( const QString& url )
-{
-    // the location has been activated by selecting an entry
-    // from the combo box of the location bar
-    q->setUrl( url );
 }
 
 void KFileWidgetPrivate::_k_enterUrl( const KUrl& url )

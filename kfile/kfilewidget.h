@@ -456,7 +456,6 @@ private:
     Q_PRIVATE_SLOT( d, void _k_enterUrl( const KUrl& ) )
     Q_PRIVATE_SLOT( d, void _k_enterUrl( const QString& ) )
     Q_PRIVATE_SLOT( d, void _k_locationAccepted( const QString& ) )
-    Q_PRIVATE_SLOT( d, void _k_locationActivated( const QString& ) )
     Q_PRIVATE_SLOT( d, void _k_slotFilterChanged() )
     Q_PRIVATE_SLOT( d, void _k_fileHighlighted( const KFileItem& ) )
     Q_PRIVATE_SLOT( d, void _k_fileSelected( const KFileItem& ) )
