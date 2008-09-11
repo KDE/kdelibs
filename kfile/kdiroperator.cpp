@@ -180,7 +180,7 @@ public:
     void triggerSorting();
 
     static bool isReadable(const KUrl &url);
-    
+
     KFile::FileView allViews();
 
     // private slots
