@@ -1609,10 +1609,13 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
 
     QLineEdit::paintEvent( ev );
 
-    if ( d->enableClickMsg && d->drawClickMsg && !hasFocus() && text().isEmpty() ) {
-        QPainter p( this );
-        QPen tmp = p.pen();
-        p.setPen( palette().color( QPalette::Disabled, QPalette::Text ) );
+    if (d->enableClickMsg && d->drawClickMsg && !hasFocus() && text().isEmpty()) {
+        QPainter p(this);
+        QFont f = font();
+        f.setItalic(true);
+        p.setFont(f);
+
+        p.setPen(palette().color(QPalette::Disabled, QPalette::Text));
 
         //FIXME: fugly alert!
         // qlineedit uses an internal qstyleoption set to figure this out
@@ -1620,13 +1623,12 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
         // probably requires fixes to Qt itself to do this cleanly
         // see define horizontalMargin 2 in qlineedit.cpp
         QStyleOptionFrame opt;
-        initStyleOption( &opt );
-        QRect cr = style()->subElementRect( QStyle::SE_LineEditContents, &opt, this );
-        cr.setLeft( cr.left() + 2 );
-        cr.setRight( cr.right() - 2 );
+        initStyleOption(&opt);
+        QRect cr = style()->subElementRect(QStyle::SE_LineEditContents, &opt, this);
+        cr.setLeft(cr.left() + 2);
+        cr.setRight(cr.right() - 2);
 
-        p.drawText( cr, Qt::AlignLeft|Qt::AlignVCenter, d->clickMessage );
-        p.setPen( tmp );
+        p.drawText(cr, Qt::AlignLeft|Qt::AlignVCenter, d->clickMessage);
     }
 }
 
