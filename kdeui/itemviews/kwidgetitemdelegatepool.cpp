@@ -96,6 +96,10 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
         index = idx;
     }
 
+    if (!index.isValid()) {
+        return result;
+    }
+
     if (d->usedWidgets.contains(index)) {
         result = d->usedWidgets[index];
     } else {
