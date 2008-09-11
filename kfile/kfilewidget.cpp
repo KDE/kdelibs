@@ -1010,14 +1010,9 @@ void KFileWidget::accept()
     }
 
     KSharedConfig::Ptr config = KGlobal::config();
-    config->setForceGlobal( true );
-        //KCG_UNECESSARY
     KConfigGroup grp(config,ConfigGroup);
     d->writeConfig(grp);
-    config->setForceGlobal( false );
-
     d->saveRecentFiles(grp);
-    config->sync();
 
     d->addToRecentDocuments();
 
@@ -1767,6 +1762,9 @@ void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
 
 void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
 {
+    // these settings are global settings; ALL instances of the file dialog
+    // should reflect them
+    configGroup.config()->setForceGlobal(true);
     KUrlComboBox *pathCombo = urlNavigator->editor();
     configGroup.writePathEntry( RecentURLs, pathCombo->urls() );
     //saveDialogSize( configGroup, KConfigGroup::Persistent | KConfigGroup::Global );
@@ -1787,6 +1785,7 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
     configGroup.writeEntry( ShowFullPath, urlNavigator->showFullPath() );
 
     ops->writeConfig(configGroup);
+    configGroup.config()->setForceGlobal(false);
 }
 
 
@@ -1818,12 +1817,8 @@ void KFileWidget::slotCancel()
 {
     d->ops->close();
 
-    KSharedConfig::Ptr config = KGlobal::config();
-    config->setForceGlobal( true );
-        //KCG_UNECESSARY
-    KConfigGroup grp(config,ConfigGroup);
+    KConfigGroup grp(KGlobal::config(), ConfigGroup);
     d->writeConfig(grp);
-    config->setForceGlobal( false );
 }
 
 void KFileWidget::setKeepLocation( bool keep )
@@ -2158,7 +2153,6 @@ void KFileWidgetPrivate::updateSplitterSize()
     QList<int> sizes = placesViewSplitter->sizes();
     if (sizes.count() == 2) {
         // restore width of speedbar
-        //KCG_UNECESSARY
         KConfigGroup configGroup(KGlobal::config(), ConfigGroup);
         int speedbarWidth = placesViewWidth;
 
