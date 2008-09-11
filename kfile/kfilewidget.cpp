@@ -111,7 +111,6 @@ public:
     void appendExtension(KUrl &url);
     void updateLocationEditExtension(const QString &);
     void updateFilter();
-    void updateSplitterSize();
     KUrl::List& parseSelectedUrls();
     /**
      * Parses the string "line" for files. If line doesn't contain any ", the
@@ -174,7 +173,7 @@ public:
     void _k_toggleSpeedbar( bool );
     void _k_toggleBookmarks( bool );
     void _k_slotAutoSelectExtClicked();
-    void _k_placesViewSplitterMoved();
+    void _k_placesViewSplitterMoved(int, int);
     void _k_activateUrlNavigator();
 
     void addToRecentDocuments();
@@ -539,7 +538,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     setSelection(d->selection);
     d->locationEdit->setFocus();
-    d->opsWidget->installEventFilter(this);
 }
 
 KFileWidget::~KFileWidget()
@@ -1243,6 +1241,18 @@ void KFileWidgetPrivate::initSpeedbar()
 
     placesDock->setWidget(placesView);
     placesViewSplitter->insertWidget(0, placesDock);
+
+    // initialize the size of the splitter
+    KConfigGroup configGroup(KGlobal::config(), ConfigGroup);
+    placesViewWidth = configGroup.readEntry(SpeedbarWidth, 0);
+
+    QList<int> sizes = placesViewSplitter->sizes();
+    if (placesViewWidth > 0) {
+        sizes[0] = placesViewWidth + 1;
+        sizes[1] = q->width() - placesViewWidth -1;
+        placesViewSplitter->setSizes(sizes);
+    }
+
     QObject::connect(placesDock, SIGNAL(visibilityChanged(bool)),
                      q, SLOT(_k_toggleSpeedbar(bool)));
 }
@@ -1261,7 +1271,8 @@ void KFileWidgetPrivate::initGUI()
     placesViewSplitter->setChildrenCollapsible(false);
     boxLayout->addWidget(placesViewSplitter);
 
-    QObject::connect(placesViewSplitter, SIGNAL(splitterMoved(int,int)), q, SLOT(_k_placesViewSplitterMoved()));
+    QObject::connect(placesViewSplitter, SIGNAL(splitterMoved(int,int)),
+                     q, SLOT(_k_placesViewSplitterMoved(int,int)));
     placesViewSplitter->insertWidget(0, opsWidget);
 
     vbox = new QVBoxLayout();
@@ -1678,9 +1689,16 @@ KUrl KFileWidget::baseUrl() const
 
 void KFileWidget::resizeEvent(QResizeEvent* event)
 {
-    d->updateSplitterSize();
-
     QWidget::resizeEvent(event);
+
+    if (d->placesDock) {
+        // we don't want our places dock actually changing size when we resize
+        // and qt doesn't make it easy to enforce such a thing with QSplitter
+        QList<int> sizes = d->placesViewSplitter->sizes();
+        sizes[0] = d->placesViewWidth + 1; // without this pixel, our places view is reduced 1 pixel each time is shown.
+        sizes[1] = width() - d->placesViewWidth - 1;
+        d->placesViewSplitter->setSizes( sizes );
+    }
 }
 
 void KFileWidget::showEvent(QShowEvent* event)
@@ -1883,12 +1901,17 @@ void KFileWidgetPrivate::_k_slotAutoSelectExtClicked()
     updateLocationEditExtension (extension /* extension hasn't changed */);
 }
 
-void KFileWidgetPrivate::_k_placesViewSplitterMoved()
+void KFileWidgetPrivate::_k_placesViewSplitterMoved(int pos, int index)
 {
     kDebug(kfile_area);
 
-    const QList<int> sizes = placesViewSplitter->sizes();
-    placesViewWidth = sizes[0];
+    // we need to record the size of the splitter when the splitter changes size
+    // so we can keep the places box the right size!
+    if (placesDock && index == 1) {
+        placesViewWidth = pos;
+        kDebug() << "setting lafBox minwidth to" << placesViewWidth;
+        lafBox->setColumnMinimumWidth(0, placesViewWidth);
+    }
 }
 
 void KFileWidgetPrivate::_k_activateUrlNavigator()
@@ -2166,33 +2189,6 @@ void KFileWidgetPrivate::updateFilter()
     }
 }
 
-// Updates the splitter size. This is necessary since we call to this method when the widget is
-// shown as well as when it is resized. This is also very important, because this will be
-// contained in other widget, which can try to resize this one, and make the places view be
-// wider than what the user wanted.
-void KFileWidgetPrivate::updateSplitterSize()
-{
-    if (!placesViewSplitter) {
-        return;
-    }
-
-    QList<int> sizes = placesViewSplitter->sizes();
-    if (sizes.count() == 2) {
-        // restore width of speedbar
-        KConfigGroup configGroup(KGlobal::config(), ConfigGroup);
-        int speedbarWidth = placesViewWidth;
-
-        if (speedbarWidth < 0) {
-            speedbarWidth = configGroup.readEntry(SpeedbarWidth, placesView->sizeHintForColumn(0));
-        }
-
-        const int availableWidth = q->width();
-        sizes[0] = speedbarWidth + 1; // without this pixel, our places view is reduced 1 pixel each time is shown.
-        sizes[1] = availableWidth - speedbarWidth - 1;
-        placesViewSplitter->setSizes( sizes );
-    }
-}
-
 // applies only to a file that doesn't already exist
 void KFileWidgetPrivate::appendExtension (KUrl &url)
 {
@@ -2300,6 +2296,7 @@ void KFileWidgetPrivate::_k_toggleSpeedbar(bool show)
     if (show) {
         initSpeedbar();
         placesDock->show();
+        lafBox->setColumnMinimumWidth(0, placesViewWidth);
 
         // check to see if they have a home item defined, if not show the home button
         KUrl homeURL;
@@ -2330,6 +2327,9 @@ void KFileWidgetPrivate::_k_toggleSpeedbar(bool show)
         if (!toolbar->actions().contains(homeAction)) {
             toolbar->insertAction(reloadAction, homeAction);
         }
+
+        // reset the lafbox to not follow the width of the splitter
+        lafBox->setColumnMinimumWidth(0, 0);
     }
 
 //    pathSpacerAction->setVisible(show);
@@ -2480,17 +2480,6 @@ void KFileWidget::setCustomWidget(const QString& text, QWidget* widget)
     label->setAlignment(Qt::AlignRight);
     d->lafBox->addWidget(label, 2, 0, Qt::AlignVCenter);
     d->lafBox->addWidget(widget, 2, 1, Qt::AlignVCenter);
-}
-
-bool KFileWidget::eventFilter(QObject *watched, QEvent *event)
-{
-    if (watched == d->opsWidget && event->type() == QEvent::Move) {
-        int alignmentPoint = d->opsWidget->pos().x() - d->lafBox->spacing();
-        //d->pathSpacer->setMinimumWidth(alignmentPoint);
-        d->lafBox->setColumnMinimumWidth(0, alignmentPoint);
-    }
-
-    return QWidget::eventFilter(watched, event);
 }
 
 void KFileWidget::virtual_hook( int id, void* data )

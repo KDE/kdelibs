@@ -383,11 +383,6 @@ public:
      */
     virtual void setCustomWidget(const QString& text, QWidget* widget);
 
-    /**
-     * @reimplemented from QObject
-     */
-    bool eventFilter(QObject *watched, QEvent *event);
-
     /// @internal for future extensions
     virtual void virtual_hook( int id, void* data );
 
@@ -451,22 +446,22 @@ private:
     friend class KFileWidgetPrivate;
     KFileWidgetPrivate* const d;
 
-    Q_PRIVATE_SLOT( d, void _k_slotLocationChanged( const QString& ) )
-    Q_PRIVATE_SLOT( d, void _k_urlEntered( const KUrl& ) )
-    Q_PRIVATE_SLOT( d, void _k_enterUrl( const KUrl& ) )
-    Q_PRIVATE_SLOT( d, void _k_enterUrl( const QString& ) )
-    Q_PRIVATE_SLOT( d, void _k_locationAccepted( const QString& ) )
-    Q_PRIVATE_SLOT( d, void _k_slotFilterChanged() )
-    Q_PRIVATE_SLOT( d, void _k_fileHighlighted( const KFileItem& ) )
-    Q_PRIVATE_SLOT( d, void _k_fileSelected( const KFileItem& ) )
-    Q_PRIVATE_SLOT( d, void _k_slotStatResult( KJob* ) )
-    Q_PRIVATE_SLOT( d, void _k_slotLoadingFinished() )
-    Q_PRIVATE_SLOT( d, void _k_fileCompletion( const QString& ) )
-    Q_PRIVATE_SLOT( d, void _k_toggleSpeedbar( bool ) )
-    Q_PRIVATE_SLOT( d, void _k_toggleBookmarks( bool ) )
-    Q_PRIVATE_SLOT( d, void _k_slotAutoSelectExtClicked() )
-    Q_PRIVATE_SLOT( d, void _k_placesViewSplitterMoved() )
-    Q_PRIVATE_SLOT( d, void _k_activateUrlNavigator() )
+    Q_PRIVATE_SLOT(d, void _k_slotLocationChanged(const QString&))
+    Q_PRIVATE_SLOT(d, void _k_urlEntered(const KUrl&))
+    Q_PRIVATE_SLOT(d, void _k_enterUrl(const KUrl&))
+    Q_PRIVATE_SLOT(d, void _k_enterUrl(const QString&))
+    Q_PRIVATE_SLOT(d, void _k_locationAccepted(const QString&))
+    Q_PRIVATE_SLOT(d, void _k_slotFilterChanged())
+    Q_PRIVATE_SLOT(d, void _k_fileHighlighted(const KFileItem&))
+    Q_PRIVATE_SLOT(d, void _k_fileSelected(const KFileItem&))
+    Q_PRIVATE_SLOT(d, void _k_slotStatResult(KJob*))
+    Q_PRIVATE_SLOT(d, void _k_slotLoadingFinished())
+    Q_PRIVATE_SLOT(d, void _k_fileCompletion(const QString&))
+    Q_PRIVATE_SLOT(d, void _k_toggleSpeedbar(bool))
+    Q_PRIVATE_SLOT(d, void _k_toggleBookmarks(bool))
+    Q_PRIVATE_SLOT(d, void _k_slotAutoSelectExtClicked())
+    Q_PRIVATE_SLOT(d, void _k_placesViewSplitterMoved(int, int))
+    Q_PRIVATE_SLOT(d, void _k_activateUrlNavigator())
 };
 
 #endif /* KABSTRACTFILEWIDGET_H */
