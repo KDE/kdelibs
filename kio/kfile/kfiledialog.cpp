@@ -375,7 +375,7 @@ void KFileDialog::setSelection(const QString& name)
 {
     if (d->native) {
          d->native->selectedUrls.clear();
-         d->native->selectedUrls.append( KUrl::fromPath(name) );
+         d->native->selectedUrls.append( KUrl(name) );
          return;
     }
     d->w->setSelection(name);
@@ -819,7 +819,8 @@ int KFileDialog::exec()
     if (!d->native)
       return KDialog::exec();
 
-//    d->native->selectedUrls.clear();
+// not clear here to let KFileDialogPrivate::Native::startDir() return a usefull value
+// d->native->selectedUrls.clear();
     switch (d->native->operationMode) {
     case KAbstractFileWidget::Opening:
     case KAbstractFileWidget::Other:
@@ -828,6 +829,7 @@ int KFileDialog::exec()
                d->native->startDir(), d->native->filter, parentWidget(), windowTitle()) );
             if (url.isEmpty() || !url.isValid())
                 return QDialog::Rejected;
+            d->native->selectedUrls.clear();
             d->native->selectedUrls.append(url);
             return QDialog::Accepted;
         }
@@ -844,6 +846,7 @@ int KFileDialog::exec()
                 d->native->startDir(), parentWidget(), windowTitle()) );
             if (url.isEmpty() || !url.isValid())
                 return QDialog::Rejected;
+            d->native->selectedUrls.clear();
             d->native->selectedUrls.append(url);
             return QDialog::Accepted;
         }
@@ -854,6 +857,7 @@ int KFileDialog::exec()
                 d->native->startDir(), d->native->filter, parentWidget(), windowTitle()) );
             if (url.isEmpty() || !url.isValid())
                 return QDialog::Rejected;
+            d->native->selectedUrls.clear();
             d->native->selectedUrls.append(url);
             return QDialog::Accepted;
         }
@@ -862,6 +866,7 @@ int KFileDialog::exec()
                 d->native->startDir(), parentWidget(), windowTitle()) );
             if (url.isEmpty() || !url.isValid())
                 return QDialog::Rejected;
+            d->native->selectedUrls.clear();
             d->native->selectedUrls.append(url);
             return QDialog::Accepted;
         }
