@@ -336,7 +336,7 @@ KGlobalSettings::Completion KCompletion::completionMode() const {
 QStringList KCompletion::allMatches()
 {
     // Don't use d->matches since calling postProcessMatches()
-    // on d->matches here would interfere wit:h call to
+    // on d->matches here would interfere with call to
     // postProcessMatch() during rotation
     KCompletionMatchesWrapper matches( d->myOrder );
     bool dummy;
