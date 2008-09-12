@@ -167,8 +167,8 @@ namespace KIO {
 	 * @param arr byte array containing data
 	 */
         virtual void send(int cmd, const QByteArray &arr = QByteArray());
-	// == end communication with connected kioslave ==
 
+	// == end communication with connected kioslave ==
 	/**
 	 * Puts the kioslave associated with @p url at halt, and return it to klauncher, in order
 	 * to let another application connect to it and finish the job.
