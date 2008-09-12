@@ -57,7 +57,6 @@ check_include_files(fstab.h       HAVE_FSTAB_H)                        # kio, kd
 check_include_files(limits.h      HAVE_LIMITS_H)                       # various
 check_include_files(mntent.h      HAVE_MNTENT_H)                       # solid, kio, kdecore
 check_include_files(sysent.h      HAVE_SYSENT_H)                       # kdecore
-check_include_files(sys/bitypes.h HAVE_SYS_BITYPES_H)                  # kwallet
 check_include_files("sys/types.h;sys/mman.h" HAVE_SYS_MMAN_H)          # kdecore
 check_include_files(sys/stat.h    HAVE_SYS_STAT_H)                     # various
 check_include_files(sys/ucred.h   HAVE_SYS_UCRED_H)                    # kio

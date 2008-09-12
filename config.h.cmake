@@ -52,7 +52,6 @@
 #cmakedefine HAVE_SYS_PARAM_H 1
 #cmakedefine HAVE_SYS_TIME_H 1
 #cmakedefine HAVE_SYS_SELECT_H 1
-#cmakedefine HAVE_SYS_BITYPES_H 1
 #cmakedefine HAVE_SYSENT_H 1
 #cmakedefine HAVE_SYS_MNTTAB_H 1
 #cmakedefine HAVE_SYS_MNTENT_H 1
@@ -67,7 +66,6 @@
 #cmakedefine HAVE_MNTENT_H 1
 #cmakedefine HAVE_NETINET_IN_H 1
 #cmakedefine HAVE_PATHS_H 1
-#cmakedefine HAVE_SYS_BITYPES_H 1
 #cmakedefine HAVE_SYS_MMAN_H 1
 #cmakedefine HAVE_SYS_UCRED_H 1
 #cmakedefine HAVE_UNISTD_H 1
