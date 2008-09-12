@@ -25,6 +25,7 @@
 #include <klocale.h>
 #include <knotification.h>
 #include <kglobal.h>
+#include <kstringhandler.h>
 #include <QtCore/QMutableVectorIterator>
 
 class KCompletionPrivate
@@ -74,7 +75,7 @@ KCompletion::~KCompletion()
 void KCompletion::setOrder( CompOrder order )
 {
     d->myOrder = order;
-    d->matches.setSorting( order == Weighted );
+    d->matches.setSorting( order );
 }
 
 KCompletion::CompOrder KCompletion::order() const
@@ -288,8 +289,7 @@ QString KCompletion::makeCompletion( const QString& string )
 QStringList KCompletion::substringCompletion( const QString& string ) const
 {
     // get all items in the tree, eventually in sorted order
-    bool sorted = (d->myOrder == Weighted);
-    KCompletionMatchesWrapper allItems( sorted );
+    KCompletionMatchesWrapper allItems( d->myOrder );
     extractStringsFromNode( d->myTreeRoot, QString(), &allItems, false );
 
     QStringList list = allItems.list();
@@ -336,9 +336,9 @@ KGlobalSettings::Completion KCompletion::completionMode() const {
 QStringList KCompletion::allMatches()
 {
     // Don't use d->matches since calling postProcessMatches()
-    // on d->matches here would interfere with call to
+    // on d->matches here would interfere wit:h call to
     // postProcessMatch() during rotation
-    KCompletionMatchesWrapper matches( d->myOrder == Weighted );
+    KCompletionMatchesWrapper matches( d->myOrder );
     bool dummy;
     findAllCompletions( d->myLastString, &matches, dummy );
     QStringList l = matches.list();
@@ -351,7 +351,7 @@ KCompletionMatches KCompletion::allWeightedMatches()
     // Don't use d->matches since calling postProcessMatches()
     // on d->matches here would interfere with call to
     // postProcessMatch() during rotation
-    KCompletionMatchesWrapper matches( d->myOrder == Weighted );
+    KCompletionMatchesWrapper matches( d->myOrder );
     bool dummy;
     findAllCompletions( d->myLastString, &matches, dummy );
     KCompletionMatches ret( matches );
@@ -361,7 +361,7 @@ KCompletionMatches KCompletion::allWeightedMatches()
 
 QStringList KCompletion::allMatches( const QString &string )
 {
-    KCompletionMatchesWrapper matches( d->myOrder == Weighted );
+    KCompletionMatchesWrapper matches( d->myOrder );
     bool dummy;
     findAllCompletions( string, &matches, dummy );
     QStringList l = matches.list();
@@ -371,7 +371,7 @@ QStringList KCompletion::allMatches( const QString &string )
 
 KCompletionMatches KCompletion::allWeightedMatches( const QString &string )
 {
-    KCompletionMatchesWrapper matches( d->myOrder == Weighted );
+    KCompletionMatchesWrapper matches( d->myOrder );
     bool dummy;
     findAllCompletions( string, &matches, dummy );
     KCompletionMatches ret( matches );
@@ -806,6 +806,11 @@ void KCompTreeNode::remove( const QString& str )
     }
 }
 
+bool lessThan( const QString &left, const QString &right )
+{
+    return KStringHandler::naturalCompare( left, right ) < 0;
+}
+
 QStringList KCompletionMatchesWrapper::list() const
 {
     if ( sortedList && dirty ) {
@@ -818,6 +823,8 @@ QStringList KCompletionMatchesWrapper::list() const
         QList<KSortableItem<QString> >::const_iterator it;
         for ( it = sortedList->begin(); it != sortedList->end(); ++it )
             stringList.prepend( (*it).value() );
+    } else if ( compOrder == KCompletion::Sorted ) {
+        qStableSort(stringList.begin(), stringList.end(), lessThan);
     }
 
     return stringList;

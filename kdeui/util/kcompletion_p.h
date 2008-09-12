@@ -149,27 +149,29 @@ typedef KSortableList<QString> KCompletionMatchesList;
 class KDEUI_EXPORT KCompletionMatchesWrapper
 {
 public:
-    KCompletionMatchesWrapper( bool sort = false )
-        : sortedList( sort ? new KCompletionMatchesList : 0L ),
-          dirty( false )
+    KCompletionMatchesWrapper( KCompletion::CompOrder _compOrder = KCompletion::Insertion )
+        : sortedList( _compOrder == KCompletion::Weighted ? new KCompletionMatchesList : 0L ),
+          dirty( false ),
+          compOrder( _compOrder )
     {}
     ~KCompletionMatchesWrapper() {
         delete sortedList;
     }
 
-    void setSorting( bool sort ) {
-        if ( sort && !sortedList )
+    void setSorting( KCompletion::CompOrder _compOrder ) {
+        if ( _compOrder == KCompletion::Weighted && !sortedList )
             sortedList = new KCompletionMatchesList;
-        else if ( !sort ) {
+        else if ( _compOrder != KCompletion::Weighted ) {
             delete sortedList;
             sortedList = 0L;
         }
+        compOrder = _compOrder;
         stringList.clear();
         dirty = false;
     }
 
-    bool sorting() const {
-        return sortedList != 0L;
+    KCompletion::CompOrder sorting() const {
+        return compOrder;
     }
 
     void append( int i, const QString& string ) {
@@ -210,6 +212,7 @@ public:
     mutable QStringList stringList;
     KCompletionMatchesList *sortedList;
     mutable bool dirty;
+    KCompletion::CompOrder compOrder;
 };
 
 

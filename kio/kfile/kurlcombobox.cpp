@@ -101,6 +101,9 @@ void KUrlComboBox::KUrlComboBoxPrivate::init( Mode mode )
     m_parent->setInsertPolicy( NoInsert );
     m_parent->setTrapReturnKey( true );
     m_parent->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
+    if ( m_parent->completionObject() ) {
+        m_parent->completionObject()->setOrder( KCompletion::Sorted );
+    }
 
     opendirIcon = KIcon(QLatin1String("folder-open"));
 
@@ -371,6 +374,17 @@ void KUrlComboBox::removeUrl( const KUrl& url, bool checkDefaultURLs )
         d->insertUrlItem( it.next() );
     }
     blockSignals( blocked );
+}
+
+void KUrlComboBox::setCompletionObject(KCompletion* compObj, bool hsig)
+{
+    if ( compObj ) {
+        // on a url combo box we want completion matches to be sorted. This way, if we are given
+        // a suggestion, we match the "best" one. For instance, if we have "foo" and "foobar",
+        // and we write "foo", the match is "foo" and never "foobar". (ereslibre)
+        compObj->setOrder( KCompletion::Sorted );
+    }
+    KComboBox::setCompletionObject( compObj, hsig );
 }
 
 void KUrlComboBox::mousePressEvent(QMouseEvent *event)

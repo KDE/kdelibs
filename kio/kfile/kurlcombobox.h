@@ -175,6 +175,12 @@ public:
      */
     void removeUrl( const KUrl& url, bool checkDefaultURLs = true );
 
+    /**
+     * Reimplemented from KComboBox (from KCompletion)
+     * @internal
+     */
+    virtual void setCompletionObject(KCompletion* compObj, bool hsig = true);
+
 Q_SIGNALS:
     /**
      * Emitted when an item was clicked at.
