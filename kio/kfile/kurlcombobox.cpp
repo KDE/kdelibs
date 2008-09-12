@@ -76,7 +76,6 @@ KUrlComboBox::KUrlComboBox( Mode mode, QWidget *parent)
     : KComboBox( parent),d(new KUrlComboBoxPrivate(this))
 {
     d->init( mode );
-    setLayoutDirection( Qt::LeftToRight );
 }
 
 
@@ -101,6 +100,7 @@ void KUrlComboBox::KUrlComboBoxPrivate::init( Mode mode )
     m_parent->setInsertPolicy( NoInsert );
     m_parent->setTrapReturnKey( true );
     m_parent->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
+    m_parent->setLayoutDirection( Qt::LeftToRight );
     if ( m_parent->completionObject() ) {
         m_parent->completionObject()->setOrder( KCompletion::Sorted );
     }
