@@ -2304,7 +2304,7 @@ void KFileWidgetPrivate::_k_toggleSpeedbar(bool show)
             }
         }
     } else {
-        if (q->sender() == placesDock && placesDock->isVisibleTo(q)) {
+        if (q->sender() == placesDock && placesDock && placesDock->isVisibleTo(q)) {
             // we didn't *really* go away! the dialog was simply hidden or
             // we changed virtual desktops or ...
             return;
