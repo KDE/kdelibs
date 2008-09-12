@@ -259,7 +259,7 @@ bool StorageAccess::callHalVolumeMount()
     if (halOptions.contains("uid=")) {
         options << "uid="+QString::number(::getuid());
     }
-    //respect windows-enforced charsets for fat
+    //respect window$-enforced charsets for fat
     if ( m_device->property("volume.fstype").toString()=="vfat" && halOptions.contains("codepage=") ) {
         QString codepage;
         switch (QLocale::system().language()) {
@@ -269,15 +269,6 @@ bool StorageAccess::callHalVolumeMount()
             case QLocale::Bulgarian:
                 codepage = "codepage=1251";
                 break;
-            case QLocale::Hebrew:
-                codepage = "codepage=1255";
-                break;
-            case QLocale::Turkish:
-                codepage = "codepage=1254";
-            case QLocale::Greek:
-                codepage = "codepage=1253";
-            case QLocale::Arabic:
-                codepage = "codepage=1256";
             case QLocale::German:
             case QLocale::Italian:
             case QLocale::Spanish:
@@ -288,7 +279,21 @@ bool StorageAccess::callHalVolumeMount()
             case QLocale::Swedish:
             case QLocale::Norwegian:
             case QLocale::Icelandic:
-                codepage = "codepage=1252";
+            case QLocale::English:
+                codepage = "codepage=850";//1252 didn't work
+                break;
+            case QLocale::Hebrew:
+                codepage = "codepage=1255";
+                break;
+            case QLocale::Turkish:
+                codepage = "codepage=1254";
+                break;
+            case QLocale::Greek:
+                codepage = "codepage=1253";
+                break;
+            case QLocale::Arabic:
+                codepage = "codepage=1256";
+                break;
         }
         if (!codepage.isEmpty()) {
             options << codepage;
