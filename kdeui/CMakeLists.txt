@@ -287,10 +287,7 @@ endif (Q_WS_X11)
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
 
-set(kwallet_adaptor ${CMAKE_SOURCE_DIR}/kio/misc/kwalletd/kwalletdadaptor.h)
-set(kwallet_xml ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KWallet.xml)
-
-qt4_generate_dbus_interface( ${kwallet_adaptor} org.kde.KWallet.xml )
+set(kwallet_xml util/org.kde.KWallet.xml)
 install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 qt4_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
