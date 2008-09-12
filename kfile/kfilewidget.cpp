@@ -671,6 +671,17 @@ void KFileWidget::slotOk()
 
     const QString locationEditCurrentText(KShell::tildeExpand(d->locationEditCurrentText()));
 
+    // in the case that we haven't got a relative url, let's navigate and make it relative
+    if (!KUrl::isRelativeUrl(locationEditCurrentText) ||
+        !QDir::isRelativePath(locationEditCurrentText)) {
+        KUrl _url(locationEditCurrentText);
+        KUrl url(_url);
+        url.setFileName(QString());
+        d->ops->setUrl(url, true);
+        d->url = url;
+        d->ops->setCurrentItem(_url.fileName());
+    }
+
     // if we are not on directory navigation mode let's check if what we have on the location edit
     // is a directory. If it is, let's open it
     if ( (mode() & KFile::Directory) != KFile::Directory ) {
