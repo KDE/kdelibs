@@ -669,7 +669,7 @@ void KFileWidget::slotOk()
     // can only be used if the user didn't type any filenames/urls himself
     const KFileItemList items = d->ops->selectedItems();
 
-    const QString locationEditCurrentText( d->locationEditCurrentText() );
+    const QString locationEditCurrentText(KShell::tildeExpand(d->locationEditCurrentText()));
 
     // if we are not on directory navigation mode let's check if what we have on the location edit
     // is a directory. If it is, let's open it
@@ -747,12 +747,10 @@ void KFileWidget::slotOk()
             d->locationEdit->lineEdit()->setText( fileName );
             d->url = u;
             d->ops->setCurrentItem( url );
-        }
-        else // simple filename -> just use the current URL
+        } else { // simple filename -> just use the current URL
             selectedUrl = d->ops->url();
-    }
-
-    else {
+        }
+    } else {
         selectedUrl = d->getCompleteUrl( locationEditCurrentText );
 
         // appendExtension() may change selectedUrl
@@ -1131,7 +1129,7 @@ void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixma
 
 void KFileWidgetPrivate::removeDummyHistoryEntry()
 {
-    if ( !dummyAdded || locationEdit->lineEdit()->isModified() ) {
+    if ( !dummyAdded ) {
         return;
     }
 
