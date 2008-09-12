@@ -267,12 +267,11 @@ bool StorageAccess::callHalVolumeMount()
             case QLocale::Ukrainian:
             case QLocale::Byelorussian:
             case QLocale::Bulgarian:
-                codepage = "codepage=1251";
+                codepage = "codepage=855";
                 break;
             case QLocale::German:
             case QLocale::Italian:
             case QLocale::Spanish:
-            case QLocale::Portuguese:
             case QLocale::French:
             case QLocale::Dutch:
             case QLocale::Danish:
@@ -280,19 +279,16 @@ bool StorageAccess::callHalVolumeMount()
             case QLocale::Norwegian:
             case QLocale::Icelandic:
             case QLocale::English:
-                codepage = "codepage=850";//1252 didn't work
+                codepage = "codepage=850";
+                break;
+            case QLocale::Portuguese:
+                codepage = "codepage=860";
                 break;
             case QLocale::Hebrew:
                 codepage = "codepage=1255";
                 break;
             case QLocale::Turkish:
-                codepage = "codepage=1254";
-                break;
-            case QLocale::Greek:
-                codepage = "codepage=1253";
-                break;
-            case QLocale::Arabic:
-                codepage = "codepage=1256";
+                codepage = "codepage=857";
                 break;
         }
         if (!codepage.isEmpty()) {
