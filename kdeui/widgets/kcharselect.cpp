@@ -38,6 +38,7 @@
 #include <klineedit.h>
 #include <ktextbrowser.h>
 #include <kfontcombobox.h>
+#include <kstandardshortcut.h>
 
 K_GLOBAL_STATIC(KCharSelectData, s_data)
 
@@ -69,7 +70,7 @@ public:
 
     enum { MaxHistoryItems = 100 };
 
-    KCharSelectPrivate(KCharSelect *q) : q(q), searchMode(false), historyEnabled(false),searchLine(0), inHistory(0) {}
+    KCharSelectPrivate(KCharSelect *q) : q(q), searchLine(0), searchMode(false), historyEnabled(false), inHistory(0) {}
     KCharSelect *q;
 
     QToolButton *backButton;
@@ -295,7 +296,7 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
         d->searchLine->setClickMessage(i18n("Enter a search term or character here"));
         d->searchLine->setClearButtonShown(true);
         d->searchLine->setToolTip(i18n("Enter a search term or character here"));
-        new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_L), this, SLOT(_k_activateSearchLine()));
+        new QShortcut(KStandardShortcut::find().primary(), this, SLOT(_k_activateSearchLine()));
         connect(d->searchLine, SIGNAL(textChanged(QString)), this, SLOT(_k_searchEditChanged()));
         connect(d->searchLine, SIGNAL(returnPressed()), this, SLOT(_k_search()));
     }
@@ -323,8 +324,8 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
     d->forwardButton->setIcon(KIcon("go-next"));
     d->forwardButton->setToolTip(i18n("Next Character"));
 
-    new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Left), d->backButton, SLOT(animateClick()));
-    new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Right), d->forwardButton, SLOT(animateClick()));
+    new QShortcut(KStandardShortcut::back().primary(), d->backButton, SLOT(animateClick()));
+    new QShortcut(KStandardShortcut::forward().primary(), d->forwardButton, SLOT(animateClick()));
     connect(d->backButton, SIGNAL(clicked()), this, SLOT(_k_back()));
     connect(d->forwardButton, SIGNAL(clicked()), this, SLOT(_k_forward()));
 
