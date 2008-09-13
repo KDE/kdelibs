@@ -122,7 +122,7 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
     }
 
 
-    d->ui.list->sortItems(0, Qt::AscendingOrder);
+    d->ui.list->sortItems(Name, Qt::AscendingOrder);
     QTimer::singleShot(0, this, SLOT(resizeColumns()));
 }
 
