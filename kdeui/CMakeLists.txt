@@ -34,6 +34,7 @@ add_subdirectory( sonnet/tests )
 ########### next target ###############
 set(kdeui_LIB_SRCS
  actions/kactioncollection.cpp
+ actions/kactioncategory.cpp
  actions/kaction.cpp
  actions/kactionmenu.cpp
  actions/kcodecaction.cpp
@@ -354,6 +355,7 @@ install( FILES xmlgui/ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
  kdeui_export.h
  actions/kactioncollection.h
+ actions/kactioncategory.h
  actions/kaction.h
  actions/kactionmenu.h
  actions/kcodecaction.h
