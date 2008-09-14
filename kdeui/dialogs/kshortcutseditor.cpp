@@ -193,12 +193,10 @@ void KShortcutsEditor::exportConfiguration( KConfig *config) const
     }
 }
 
-
 void KShortcutsEditor::writeConfiguration( KConfigGroup *config) const
 {
-    foreach (KActionCollection* collection, d->actionCollections) {
+    foreach (KActionCollection* collection, d->actionCollections)
         collection->writeSettings(config);
-    }
 }
 
 

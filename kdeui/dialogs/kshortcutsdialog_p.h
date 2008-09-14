@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2006,2007 Andreas Hartmetz (ahartmetz@gmail.com)
     Copyright (C) 2008 Michael Jansen <kde@michael-jansen.biz>
+    Copyright (C) 2008 Alexander Dymo <adymo@kdevelop.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -32,6 +33,7 @@
 #include <QModelIndex>
 #include <QTreeWidget>
 #include <QtCore/QList>
+#include <QGroupBox>
 
 class QLabel;
 class QTreeWidget;
@@ -39,6 +41,9 @@ class QTreeWidgetItem;
 class QRadioButton;
 class KAction;
 class KActionCollection;
+class KPushButton;
+class KComboBox;
+class KShortcutsDialog;
 
 enum ColumnDesignation {
     Name = 0,
@@ -204,6 +209,31 @@ Q_DECLARE_METATYPE(KShapeGesture)
 Q_DECLARE_METATYPE(KRockerGesture)
 
 
+class KShortcutSchemesEditor: public QGroupBox {
+    Q_OBJECT
+public:
+    KShortcutSchemesEditor(KShortcutsDialog *parent);
+
+    /** @return the currently selected scheme in the editor (may differ from current app's scheme.*/
+    QString currentScheme();
+
+private Q_SLOTS:
+    void newScheme();
+    void deleteScheme();
+    void exportShortcutsScheme();
+    void saveAsDefaultsForScheme();
+
+Q_SIGNALS:
+    void shortcutsSchemeChanged(const QString&);
+
+private:
+    KPushButton *m_newScheme;
+    KPushButton *m_deleteScheme;
+    KPushButton *m_exportScheme;
+    KComboBox *m_schemesList;
+
+    KShortcutsDialog *m_dialog;
+};
 
 
 class KAction;
@@ -333,3 +363,4 @@ Q_DECLARE_METATYPE(KShortcutsEditorItem *)
 
 #endif /* KSHORTCUTSDIALOG_P_H */
 
+//kate: space-indent on; indent-width 4; replace-tabs on;tab-width 4;

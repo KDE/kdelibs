@@ -175,6 +175,12 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    */
   void resetContainer( const QString &containerName, bool useTagName = false );
 
+  /**
+   * Use this method to reset and reread action properties (shortcuts, etc.) for all actions.
+   * This is needed, for example, when you change shortcuts scheme at runtime.
+  */
+  void refreshActionProperties();
+
  public Q_SLOTS:
   /**
    * Show a standard configure shortcut for every action in this factory.
@@ -191,6 +197,8 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    *      the *uirc file which they were intially read from.
    */
   int configureShortcuts(bool bAllowLetterShortcuts = true, bool bSaveSettings = true);
+
+  void changeShortcutScheme(const QString &scheme);
 
  Q_SIGNALS:
   void clientAdded( KXMLGUIClient *client );

@@ -77,6 +77,11 @@ public:
 	void addCollection(KActionCollection *, const QString &title = QString());
 
 	/**
+	 * @return the list of action collections that are available for configuration in the dialog.
+	 */
+	QList<KActionCollection*> actionCollections() const;
+
+	/**
 	 * Run the dialog and call writeSettings() on the action collections
 	 * that were added if @p bSaveSettings is true.
 	 */
@@ -102,6 +107,8 @@ public:
                           KShortcutsEditor::LetterShortcutsAllowed, QWidget* parent = 0, bool bSaveSettings = true);
 
 private:
+	Q_PRIVATE_SLOT(d, void changeShortcutScheme(const QString &));
+
 	class KShortcutsDialogPrivate;
 	friend class KShortcutsDialogPrivate;
 	class KShortcutsDialogPrivate *const d;
@@ -110,3 +117,5 @@ private:
 };
 
 #endif // KSHORTCUTSDIALOG_H
+
+//kate: space-indent off; indent-width 4; replace-tabs off;tab-width 4;

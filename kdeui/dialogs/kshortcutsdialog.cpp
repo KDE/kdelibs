@@ -6,6 +6,7 @@
     Copyright (C) 2007 Roberto Raggi <roberto@kdevelop.org>
     Copyright (C) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
     Copyright (C) 2008 Michael Jansen <kde@michael-jansen.biz>
+    Copyright (C) 2008 Alexander Dymo <adymo@kdevelop.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,10 +25,19 @@
 */
 
 #include "kshortcutsdialog.h"
+#include "kshortcutsdialog_p.h"
+#include "kshortcutschemeshelper_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"
 
+#include <QApplication>
+#include <QDomDocument>
+
+#include <kmessagebox.h>
+#include <kxmlguiclient.h>
+#include <kxmlguifactory.h>
+#include <kactioncollection.h>
 
 /************************************************************************/
 /* KShortcutsDialog                                                     */
@@ -45,11 +55,48 @@ class KShortcutsDialog::KShortcutsDialogPrivate
 {
 public:
 
-    KShortcutsDialogPrivate(KShortcutsDialog *q): q(q), m_keyChooser(0) 
+    KShortcutsDialogPrivate(KShortcutsDialog *q): q(q), m_keyChooser(0), m_schemeEditor(0)
         {}
+
+    QList<KActionCollection*> m_collections;
+
+    void changeShortcutScheme(const QString &scheme)
+    {
+        if (m_keyChooser->isModified() && KMessageBox::questionYesNo(q,
+                i18n("The current shortcut scheme is modified. Save before switching to the new one?")) == KMessageBox::Yes)
+            m_keyChooser->save();
+        else
+            m_keyChooser->undoChanges();
+
+        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+        m_keyChooser->clearCollections();
+
+        foreach (KActionCollection *collection, m_collections)
+        {
+            // passing an empty stream forces the clients to reread the XML
+            KXMLGUIClient *client = const_cast<KXMLGUIClient *>(collection->parentGUIClient());
+            client->setXMLGUIBuildDocument( QDomDocument() );
+        }
+
+        //get xmlguifactory
+        if (!m_collections.isEmpty())
+        {
+            const KXMLGUIClient *client = m_collections.first()->parentGUIClient();
+            if (client)
+            {
+                KXMLGUIFactory *factory = client->factory();
+                if (factory)
+                    factory->changeShortcutScheme(scheme);
+            }
+        }
+        foreach (KActionCollection *collection, m_collections)
+            m_keyChooser->addCollection(collection);
+        QApplication::restoreOverrideCursor();
+     }
 
     KShortcutsDialog *q;
     KShortcutsEditor* m_keyChooser; // ### move
+    KShortcutSchemesEditor* m_schemeEditor;
 };
 
 
@@ -57,12 +104,19 @@ KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortc
 : KDialog( parent ), d(new KShortcutsDialogPrivate(this))
 {
     setCaption(i18n("Configure Shortcuts"));
-    setButtons(Default|Ok|Cancel|KDialog::User1);
+    setButtons(Details|Default|Ok|Cancel|KDialog::User1);
     setButtonText(KDialog::User1, i18n("Print"));
     setButtonIcon(KDialog::User1, KIcon("document-print"));
     setModal(true);
     d->m_keyChooser = new KShortcutsEditor( this, types, allowLetterShortcuts );
     setMainWidget( d->m_keyChooser );
+    setDefaultButton(Ok);
+
+    d->m_schemeEditor = new KShortcutSchemesEditor(this);
+    connect( d->m_schemeEditor, SIGNAL(shortcutsSchemeChanged(const QString&)),
+             this, SLOT(changeShortcutScheme(const QString&)) );
+    setDetailsWidget(d->m_schemeEditor);
+
     connect( this, SIGNAL(defaultClicked()), d->m_keyChooser, SLOT(allDefault()) );
     connect( this, SIGNAL(user1Clicked()), d->m_keyChooser, SLOT(printShortcuts()) );
 
@@ -82,8 +136,14 @@ KShortcutsDialog::~KShortcutsDialog()
 void KShortcutsDialog::addCollection(KActionCollection *collection, const QString &title)
 {
     d->m_keyChooser->addCollection(collection, title);
+    d->m_collections << collection;
 }
 
+
+QList<KActionCollection*> KShortcutsDialog::actionCollections() const
+{
+    return d->m_collections;
+}
 
 bool KShortcutsDialog::configure(bool saveSettings)
 {
@@ -112,3 +172,5 @@ int KShortcutsDialog::configure(KActionCollection *collection, KShortcutsEditor:
 
 #include "kshortcutsdialog.moc"
 #include "kshortcutsdialog_p.moc"
+
+//kate: space-indent on; indent-width 4; replace-tabs on;tab-width 4;

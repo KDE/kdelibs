@@ -83,6 +83,7 @@ set(kdeui_LIB_SRCS
  dialogs/kshortcutseditordelegate.cpp
  dialogs/kshortcutseditoritem.cpp
  dialogs/kshortcutseditor.cpp
+ dialogs/kshortcutschemeseditor.cpp
  dialogs/kshortcutsdialog.cpp
  dialogs/ksplashscreen.cpp
  dialogs/kswitchlanguagedialog_p.cpp
@@ -135,6 +136,7 @@ set(kdeui_LIB_SRCS
  plotting/kplotobject.cpp
  plotting/kplotwidget.cpp
  shortcuts/kshortcut.cpp
+ shortcuts/kshortcutschemeshelper.cpp
  shortcuts/kstandardshortcut.cpp
  shortcuts/kglobalaccel.cpp
  shortcuts/kdedglobalaccel_interface.cpp
