@@ -57,7 +57,7 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
 {
   // If the user did not provide a timezone database, we'll use the system default.
   setRootIsDecorated(false);
-  setHeaderLabels( QStringList() << i18n( "Area" ) << i18n( "Region" ) << i18n( "Comment" ) );
+  setHeaderLabels( QStringList() << i18nc("Define an area in the time zone, like a town area", "Area" ) << i18nc( "Time zone", "Region" ) << i18n( "Comment" ) );
 
   // Collect zones by localized city names, so that they can be sorted properly.
   QStringList cities;
