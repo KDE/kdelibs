@@ -21,7 +21,6 @@
 #include <QtGui/QAction>
 
 #include "kaction.h"
-#include "kdebug.h"
 
 
 struct KActionCategoryPrivate
@@ -45,14 +44,12 @@ KActionCategory::KActionCategory(const QString &text, KActionCollection *parent)
     :   QObject(parent)
         ,d( new KActionCategoryPrivate(this) )
     {
-    kDebug() << text;
     d->text = text;
     }
 
 
 KActionCategory::~KActionCategory()
     {
-    kDebug() << d->text;
     delete d; d=0;
     }
 

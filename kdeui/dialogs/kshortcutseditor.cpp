@@ -42,7 +42,6 @@
 #include "kaction.h"
 #include "kactioncollection.h"
 #include "kactioncategory.h"
-#include "kdebug.h"
 #include "kglobalaccel.h"
 #include "kmessagebox.h"
 #include "kaboutdata.h"
@@ -116,7 +115,6 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
     QList<KActionCategory*> categories = collection->findChildren<KActionCategory*>();
     foreach (KActionCategory *category, categories) {
         hier[Action] = d->findOrMakeItem(hier[Program], category->text());
-        kDebug() << category->text();
         foreach(QAction *action, category->actions()) {
             // Set a marker that we have seen this action
             actionsSeen.insert(action);
