@@ -227,7 +227,7 @@ static QString methodString(HTTP_METHOD m)
 static QString decodeRFC2047String(const QString &msg)
 {
     QString charset;
-    QString encoding;
+    QChar encoding;
     QString notEncodedText;
     QString encodedText;
     QString decodedText;
@@ -242,16 +242,16 @@ static QString decodeRFC2047String(const QString &msg)
     if (questionMark==-1)
         return msg;
     charset=encodedText.left(questionMark).toLower();
-    encoding=encodedText.mid(questionMark+1,1).toLower();
-    if (encoding!="b" && encoding!="q")
+    encoding=encodedText.at(questionMark+1).toLower();
+    if (encoding!='b' && encoding!='q')
         return msg;
     encodedText=encodedText.mid(questionMark+3);
-    if(charset.indexOf(" ")!=-1 && encodedText.indexOf(" ")!=-1)
+    if(charset.indexOf(' ')!=-1 && encodedText.indexOf(' ')!=-1)
         return msg;
     QByteArray tmpIn;
     QByteArray tmpOut;
     tmpIn = encodedText.toLocal8Bit();
-    if(encoding=="q")
+    if(encoding=='q')
         tmpOut=KCodecs::quotedPrintableDecode(tmpIn);
     else
         tmpOut=KCodecs::base64Decode(tmpIn);
@@ -261,10 +261,10 @@ static QString decodeRFC2047String(const QString &msg)
         if(!codec)
             return msg;
         decodedText=codec->toUnicode(tmpOut);
-        decodedText=decodedText.replace("_"," ");
+        decodedText=decodedText.replace('_',' ');
     }
     else
-        decodedText=tmpOut.replace("_"," ");
+        decodedText=tmpOut.replace('_',' ');
 
     return decodedText + notEncodedText;
 }
