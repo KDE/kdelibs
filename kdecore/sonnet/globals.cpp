@@ -20,11 +20,17 @@
 
 #include "speller.h"
 #include "filter_p.h"
+#include "loader_p.h"
+#include "settings_p.h"
+
+#include <kconfig.h>
 
 #include <QMap>
 #include <QVector>
 #include <QSet>
 #include <QDebug>
+
+#include <memory>
 
 namespace Sonnet {
 /* a very silly implementation: uses all available dictionaries
@@ -75,6 +81,15 @@ QString detectLanguage(const QString &sentence)
             min = itr;
     }
     return min.key();
+}
+
+QString defaultLanguageName()
+{
+  Loader *loader = Loader::openLoader();
+  std::auto_ptr<KConfig> config(new KConfig("sonnetrc"));
+  loader->settings()->restore(config.get());
+
+  return loader->languageNameForCode(loader->settings()->defaultLanguage());
 }
 
 }

@@ -98,6 +98,13 @@ namespace Sonnet
         QStringList languageNames() const;
 
         /**
+         * @param langCode the dictionary name/language code, e.g. en_gb
+         * @return the localized language name, e.g. "British English"
+         * @since 4.2
+         */
+        QString languageNameForCode(const QString &langCode) const;
+
+        /**
          * Returns the Settings object used by the loader.
          */
         Settings *settings() const;
