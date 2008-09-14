@@ -42,7 +42,7 @@
 class KComboBox::KComboBoxPrivate
 {
 public:
-    KComboBoxPrivate() : klineEdit(0L)
+    KComboBoxPrivate() : klineEdit(0L), trapReturnKey(false)
     {
     }
     ~KComboBoxPrivate()
@@ -50,6 +50,7 @@ public:
     }
 
     KLineEdit *klineEdit;
+    bool trapReturnKey;
 };
 
 KComboBox::KComboBox( QWidget *parent )
@@ -181,6 +182,8 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 
 void KComboBox::setTrapReturnKey( bool grab )
 {
+    d->trapReturnKey = grab;
+
     if ( d->klineEdit )
         d->klineEdit->setTrapReturnKey( grab );
     else
@@ -189,7 +192,7 @@ void KComboBox::setTrapReturnKey( bool grab )
 
 bool KComboBox::trapReturnKey() const
 {
-    return d->klineEdit && d->klineEdit->trapReturnKey();
+    return d->trapReturnKey;
 }
 
 
@@ -331,6 +334,8 @@ void KComboBox::setLineEdit( QLineEdit *edit )
         connect( d->klineEdit,
                  SIGNAL( completionBoxActivated( const QString& )),
                  SIGNAL( activated( const QString& )) );
+
+        d->klineEdit->setTrapReturnKey( d->trapReturnKey );
     }
 }
 
