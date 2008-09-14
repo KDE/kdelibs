@@ -26,7 +26,6 @@
 
 #include "kactioncollection.h"
 #include <kauthorized.h>
-#include "ktoolbar.h"
 #include "kxmlguiclient.h"
 #include "kxmlguifactory.h"
 
@@ -36,12 +35,10 @@
 #include "kaction_p.h"
 
 #include <QtXml/QDomDocument>
-#include <QSet>
-#include <QtCore/QVariant>
-#include <QHash>
-#include <QChildEvent>
-#include <QTimer>
-#include <QAction>
+#include <QtCore/QSet>
+#include <QtCore/QMap>
+#include <QtCore/QList>
+#include <QtGui/QAction>
 
 #include <stdio.h>
 #include "kcomponentdata.h"
@@ -75,8 +72,12 @@ public:
 
   KComponentData m_componentData;
 
+  //! Remove a action from our internal bookkeeping. Returns NULL if the
+  //! action doesn't belong to us.
+  QAction *unlistAction(QAction*);
+
   QMap<QString, QAction*> actionByName;
-  QHash<QAction *, QString> nameByAction;
+  QList<QAction*> actions;
 
   const KXMLGUIClient *m_parentGUIClient;
 
@@ -123,10 +124,9 @@ KActionCollection::~KActionCollection()
 
 void KActionCollection::clear()
 {
-  QList<QAction *> actions = d->nameByAction.keys();
   d->actionByName.clear();
-  d->nameByAction.clear();
-  qDeleteAll(actions);
+  qDeleteAll(d->actions);
+  d->actions.clear();
 }
 
 QAction* KActionCollection::action( const QString& name ) const
@@ -147,7 +147,7 @@ QAction* KActionCollection::action( int index ) const
 
 int KActionCollection::count() const
 {
-  return d->nameByAction.count();
+  return d->actions.count();
 }
 
 bool KActionCollection::isEmpty() const
@@ -186,13 +186,13 @@ const KXMLGUIClient *KActionCollection::parentGUIClient() const
 
 QList<QAction*> KActionCollection::actions() const
 {
-  return d->actionByName.values();
+  return d->actions;
 }
 
 const QList< QAction* > KActionCollection::actionsWithoutGroup( ) const
 {
   QList<QAction*> ret;
-  foreach (QAction* action, d->actionByName)
+  foreach (QAction* action, d->actions)
     if (!action->actionGroup())
       ret.append(action);
   return ret;
@@ -201,7 +201,7 @@ const QList< QAction* > KActionCollection::actionsWithoutGroup( ) const
 const QList< QActionGroup * > KActionCollection::actionGroups( ) const
 {
   QSet<QActionGroup*> set;
-  foreach (QAction* action, d->actionByName)
+  foreach (QAction* action, d->actions)
     if (action->actionGroup())
       set.insert(action->actionGroup());
   return set.toList();
@@ -249,7 +249,7 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     takeAction(action);
     // really insert action
     d->actionByName.insert(index_name, action);
-    d->nameByAction.insert(action, index_name);
+    d->actions.append(action);
 
     foreach (QWidget* widget, d->associatedWidgets)
       widget->addAction(action);
@@ -278,15 +278,13 @@ void KActionCollection::removeAction( QAction* action )
 
 QAction* KActionCollection::takeAction(QAction *action)
 {
-  QHash<QAction *, QString>::Iterator it = d->nameByAction.find(action);
-  if (it == d->nameByAction.end())
-    return 0;
-  const QString name = *it;
-  d->nameByAction.erase(it);
-  d->actionByName.remove(name);
+  if (!d->unlistAction(action))
+      return NULL;
 
-  foreach (QWidget* widget, d->associatedWidgets)
+  // Remove the action from all widgets
+  foreach (QWidget* widget, d->associatedWidgets) {
     widget->removeAction(action);
+  }
 
   action->disconnect(this);
 
@@ -584,15 +582,15 @@ void KActionCollection::slotActionHovered( )
   }
 }
 
+
 void KActionCollectionPrivate::_k_actionDestroyed( QObject *obj )
 {
+  // obj isn't really a QAction anymore. So make sure we don't do fancy stuff
+  // with it.
   QAction *action = static_cast<QAction*>(obj);
-  QHash<QAction *, QString>::Iterator it = nameByAction.find(action);
-  if (it == nameByAction.end())
-    return;
-  const QString name = *it;
-  nameByAction.erase(it);
-  actionByName.remove(name);
+
+  if (!unlistAction(action))
+      return;
 
   //HACK the object we emit is partly destroyed
   emit q->removed(action); //deprecated. remove in KDE5
@@ -653,6 +651,34 @@ void KActionCollection::removeAssociatedWidget(QWidget * widget)
   d->associatedWidgets.removeAll(widget);
   disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(_k_associatedWidgetDestroyed(QObject*)));
 }
+
+
+QAction *KActionCollectionPrivate::unlistAction(QAction* action)
+{
+  // ATTENTION:
+  //   This method is called with an QObject formerly known as a QAction
+  //   during _k_actionDestroyed(). So don't do fancy stuff here that needs a
+  //   real QAction!
+
+  // Get the index for the action
+  int index = actions.indexOf(action);
+
+  // Action not found.
+  if (index==-1) return NULL;
+
+  // An action collection can't have the same action twice.
+  Q_ASSERT(actions.indexOf(action,index+1)==-1);
+
+  // Get the actions name
+  const QString name = action->objectName();
+
+  // Remove the action
+  actionByName.remove(name);
+  actions.takeAt(index);
+
+  return action;
+}
+
 
 QList< QWidget * > KActionCollection::associatedWidgets() const
 {

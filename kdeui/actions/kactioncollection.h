@@ -216,6 +216,9 @@ public:
 
   /**
    * Returns the list of KActions which belong to this action collection.
+   *
+   * The list is guaranteed to be in the same order the action were put into
+   * the collection.
    */
   QList<QAction*> actions() const;
 
