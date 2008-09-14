@@ -265,6 +265,27 @@ bool StorageAccess::callHalVolumeMount()
             case QLocale::Turkish:
                 codepage = "codepage=857";
                 break;
+            case QLocale::Chinese:
+                if (QLocale::system().country()==QLocale::China)
+                    codepage = "codepage=936";
+                else
+                    //case QLocale::Taiwan:
+                    //case QLocale::HongKong:
+                    //case QLocale::Macau:
+                    codepage = "codepage=950";
+                break;
+            case QLocale::Japanese:
+                codepage = "codepage=932";
+                break;
+            case QLocale::Korean:
+                codepage = "codepage=949";
+                break;
+            case QLocale::Thai:
+                codepage = "codepage=874";
+                break;
+            case QLocale::Vietnamese:
+                codepage = "codepage=1258";
+                break;
         }
         if (!codepage.isEmpty()) {
             options << codepage;
