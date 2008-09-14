@@ -245,8 +245,6 @@ void KXMLGUIClient::setXML( const QString &document, bool merge )
 
 void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
 {
-  Q_ASSERT(!document.isNull());
-
   if ( merge && !d->m_doc.isNull() )
   {
     QDomElement base = d->m_doc.documentElement();
