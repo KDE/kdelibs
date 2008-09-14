@@ -18,7 +18,6 @@
 
 #include "kactioncategory.h"
 
-#include <QtCore/QList>
 #include <QtGui/QAction>
 
 #include "kaction.h"
@@ -55,6 +54,12 @@ KActionCategory::~KActionCategory()
     {
     kDebug() << d->text;
     delete d; d=0;
+    }
+
+
+const QList<QAction*> KActionCategory::actions() const
+    {
+    return d->actions;
     }
 
 

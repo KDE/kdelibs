@@ -22,6 +22,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
+#include <QtCore/QList>
 
 #include "kstandardaction.h"
 #include "kactioncollection.h"
@@ -35,7 +36,55 @@ class QAction;
 
 
 /**
- * TODO
+ * Categorize actions for KShortcutsEditor.
+ *
+ * KActionCategory provides a second level to organize the actions in
+ * KShortcutsEditor.
+ *
+ * The first possibility is using more than one action collection. Each
+ * actions collection becomes a top level node.
+ *
+ * + action collection 1
+ *   + first action
+ *   + second action
+ *   + third action
+ * + action collection 2
+ *   + first action
+ *   + second action
+ *   + third action
+ *
+ * Using KActionCategory it's possible to group the actions of one collection.
+ * + action collection 1
+ *   + first action
+ *   + first category
+ *     + action 1 in category
+ *     + action 2 in category
+ *   + second action
+ *
+ * \section Usage
+ *
+ * The usage is analog to action collections. Just create a category and use
+ * it instead of the collection to create the actions.
+ *
+ * \code
+ *
+ * KActionCategory *file = KActionCategory(i18n("File"), actionCollection())
+ * file->addAction(
+ *      KStandardAction::New,   //< see KStandardAction
+ *      this,                   //< Receiver
+ *      SLOT(fileNew()));       //< SLOT
+ *
+ * ... more actions added to file ...
+ *
+ * KActionCategory *edit = KActionCategory(i18n("Edit"), actionCollection())
+ * edit->addAction(
+ *      KStandardAction::Copy,  //< see KStandardAction
+ *      this,                   //< Receiver
+ *      SLOT(fileNew()));       //< SLOT
+ *
+ * ...
+ *
+ * \endcode
  */
 class KDEUI_EXPORT KActionCategory : public QObject
     {
@@ -97,6 +146,10 @@ public:
 
     //@}
 
+    /**
+     * Returns the actions belonging to this category
+      */
+    const QList<QAction*> actions() const;
 
     /**
      * The action collection this category is associated with.

@@ -29,6 +29,8 @@
 #include "kshortcutsdialog_p.h"
 
 #include <QHeaderView>
+#include <QList>
+#include <QObject>
 #include <QTimer>
 #include <QTextDocument>
 #include <QTextTable>
@@ -39,6 +41,7 @@
 
 #include "kaction.h"
 #include "kactioncollection.h"
+#include "kactioncategory.h"
 #include "kdebug.h"
 #include "kglobalaccel.h"
 #include "kmessagebox.h"
@@ -103,11 +106,40 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
     enum hierarchyLevel {Root = 0, Program, Action/*unused*/};
     KAction *kact;
     QTreeWidgetItem *hier[2];
-    uint l = Program;
     hier[Root] = d->ui.list->invisibleRootItem();
     hier[Program] = d->findOrMakeItem(hier[Root], title.isEmpty() ? i18n("Shortcuts") : title);
 
+    // Set to remember which actions we have seen.
+    QSet<QAction*> actionsSeen;
+
+    // Add all categories in their own subtree below the collections root node
+    QList<KActionCategory*> categories = collection->findChildren<KActionCategory*>();
+    foreach (KActionCategory *category, categories) {
+        hier[Action] = d->findOrMakeItem(hier[Program], category->text());
+        kDebug() << category->text();
+        foreach(QAction *action, category->actions()) {
+            // Set a marker that we have seen this action
+            actionsSeen.insert(action);
+            // This code doesn't allow editing of QAction. I have no idea why :-(
+            // But i guess it's for a good reason so i won't change that. If
+            // anyone know why please add a comment explaining the reason.
+            if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
+                // If the shortcut is not configurable skip it
+                if (!kact->isShortcutConfigurable()) {
+                    continue;
+                }
+                // Create the editor
+                new KShortcutsEditorItem((hier[Action]), kact);
+            }
+        }
+    }
+
+    // The rest of the shortcuts is added as a direct shild of the action
+    // collections root node
     foreach (QAction *action, collection->actions()) {
+        if (actionsSeen.contains(action)) {
+            continue;
+        }
         // This code doesn't allow editing of QAction. I have no idea why :-(
         // But i guess it's for a good reason so i won't change that. If
         // anyone know why please add a comment explaining the reason.
@@ -117,7 +149,7 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
                 continue;
             }
             // Create the editor
-            new KShortcutsEditorItem((hier[l]), kact);
+            new KShortcutsEditorItem((hier[Program]), kact);
         }
     }
 
@@ -243,7 +275,6 @@ KShortcutsEditorPrivate::KShortcutsEditorPrivate( KShortcutsEditor *q )
 
 void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KShortcutsEditor::LetterShortcuts allowLetterShortcuts )
 {
-
     actionTypes = types;
 
     ui.setupUi(q);
