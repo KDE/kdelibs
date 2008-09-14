@@ -107,7 +107,7 @@ public:
                           KShortcutsEditor::LetterShortcutsAllowed, QWidget* parent = 0, bool bSaveSettings = true);
 
 private:
-	Q_PRIVATE_SLOT(d, void changeShortcutScheme(const QString &));
+	Q_PRIVATE_SLOT(d, void changeShortcutScheme(const QString &))
 
 	class KShortcutsDialogPrivate;
 	friend class KShortcutsDialogPrivate;
