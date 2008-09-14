@@ -217,6 +217,60 @@ static QString methodString(HTTP_METHOD m)
     }
 }
 
+
+
+/**
+ * copied from mhtmlthroughanalyzer.cpp
+ * this function belongs to kdepimlibs/libkmime
+ * but I decided to copy-paste it instead of linking to 400+ kb library
+ */
+static QString decodeRFC2047String(const QString &msg)
+{
+    QString charset;
+    QString encoding;
+    QString notEncodedText;
+    QString encodedText;
+    QString decodedText;
+    int encEnd=0;
+    if(!msg.startsWith("=?") || (encEnd=msg.lastIndexOf("?="))==-1)
+        return msg;
+
+    notEncodedText=msg.mid(encEnd+2);
+    encodedText=msg.left(encEnd);
+    encodedText=encodedText.mid(2,encodedText.length()-2);
+    int questionMark=encodedText.indexOf('?');
+    if (questionMark==-1)
+        return msg;
+    charset=encodedText.left(questionMark).toLower();
+    encoding=encodedText.mid(questionMark+1,1).toLower();
+    if (encoding!="b" && encoding!="q")
+        return msg;
+    encodedText=encodedText.mid(questionMark+3);
+    if(charset.indexOf(" ")!=-1 && encodedText.indexOf(" ")!=-1)
+        return msg;
+    QByteArray tmpIn;
+    QByteArray tmpOut;
+    tmpIn = encodedText.toLocal8Bit();
+    if(encoding=="q")
+        tmpOut=KCodecs::quotedPrintableDecode(tmpIn);
+    else
+        tmpOut=KCodecs::base64Decode(tmpIn);
+    if(charset!="us-ascii")
+    {
+        QTextCodec *codec = QTextCodec::codecForName(charset.toLocal8Bit());
+        if(!codec)
+            return msg;
+        decodedText=codec->toUnicode(tmpOut);
+        decodedText=decodedText.replace("_"," ");
+    }
+    else
+        decodedText=tmpOut.replace("_"," ");
+
+    return decodedText + notEncodedText;
+}
+
+
+
 #define NO_SIZE		((KIO::filesize_t) -1)
 
 #ifdef HAVE_STRTOLL
@@ -3566,7 +3620,7 @@ void HTTPProtocol::parseContentDisposition(const QString &disposition)
     }
     setMetaData("content-disposition-type", strDisposition);
     if (!strFilename.isEmpty())
-        setMetaData("content-disposition-filename", strFilename);
+        setMetaData("content-disposition-filename", decodeRFC2047String(strFilename));
 }
 
 void HTTPProtocol::addEncoding(const QString &_encoding, QStringList &encs)
