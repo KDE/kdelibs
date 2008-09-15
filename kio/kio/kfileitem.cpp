@@ -896,7 +896,7 @@ bool KFileItem::isHidden() const
     QString fileName = d->m_url.fileName();
     if (fileName.isEmpty()) // e.g. "trash:/"
         fileName = d->m_strName;
-    return fileName[0] == '.';
+    return fileName.length() > 1 && fileName[0] == '.';  // Just "." is current directory, not hidden.
 }
 
 bool KFileItem::isDir() const

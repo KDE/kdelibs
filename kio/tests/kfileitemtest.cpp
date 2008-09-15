@@ -131,6 +131,24 @@ void KFileItemTest::testBasic()
 #endif
 }
 
+void KFileItemTest::testRootDirectory()
+{
+    const QString rootPath = QDir::rootPath();
+    KUrl url(rootPath);
+    KIO::UDSEntry entry;
+    entry.insert(KIO::UDSEntry::UDS_NAME, ".");
+    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
+    KFileItem fileItem(entry, rootPath);
+    QCOMPARE(fileItem.text(), QString("."));
+    QVERIFY(fileItem.isLocalFile());
+    QCOMPARE(fileItem.localPath(), url.path());
+    QVERIFY(fileItem.linkDest().isEmpty());
+    QVERIFY(!fileItem.isHidden());
+    QVERIFY(!fileItem.isFile());
+    QVERIFY(fileItem.isDir());
+    QVERIFY(!fileItem.isDesktopFile());
+}
+
 void KFileItemTest::testMimeTypeOnDemand()
 {
     KTemporaryFile file;

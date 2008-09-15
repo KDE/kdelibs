@@ -31,6 +31,7 @@ private Q_SLOTS:
     void testDoesNotExist();
     void testDetach();
     void testBasic();
+    void testRootDirectory();
     void testMimeTypeOnDemand();
     void testCmp();
 
