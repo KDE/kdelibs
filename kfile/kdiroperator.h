@@ -217,12 +217,14 @@ public:
     /**
      * Clears the current selection and attempts to set @p filenames
      * the current files. @p filenames is just the name, no path or url.
+     * @since 4.2
      */
     void setCurrentItems(const QStringList& filenames);
 
     /**
      * Clears the current selection and attempts to set @p items
      * as the current items.
+     * @since 4.2
      */
     void setCurrentItems(const KFileItemList& items);
 
