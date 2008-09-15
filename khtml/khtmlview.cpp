@@ -335,6 +335,18 @@ public:
         contentsY = view->verticalScrollBar()->value();
     }
 
+    void scrollExternalWidgets(int dx, int dy)
+    {
+        if (visibleWidgets.isEmpty())
+            return;
+
+        QHashIterator<void*, QWidget*> it(visibleWidgets);
+        while (it.hasNext()) {
+            it.next();
+            it.value()->move( it.value()->pos() + QPoint(dx, dy) );
+        }
+    }
+
 #ifdef DEBUG_PIXEL
     QTime timer;
     unsigned int pixelbooth;
@@ -3861,14 +3873,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
             for (int i = 0; i < ar.size() ; ++i) {
                 w->scroll( dx, dy, ar[i].translated(off) );
             }
-            // scroll external widgets
-            if (!d->visibleWidgets.isEmpty()) {
-                QHashIterator<void*, QWidget*> it(d->visibleWidgets);
-                while (it.hasNext()) {
-                    it.next();
-                    it.value()->move( it.value()->pos() + QPoint(dx, dy) );
-                }
-            }
+            d->scrollExternalWidgets(dx, dy);
         } else
             // we can't avoid a full update
             widget()->update();
@@ -3879,8 +3884,9 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
     if (m_kwp->isRedirected()) {
         w->scroll(dx, dy, QRect(off.x(), off.y(), visibleWidth(), visibleHeight()));
     }  else {
-        widget()->scroll(dx, dy);
+        widget()->scroll(dx, dy, widget()->rect() & viewport()->rect());
     }
+    d->scrollExternalWidgets(dx, dy);
 }
 
 void KHTMLView::setupSmoothScrolling(int dx, int dy)
