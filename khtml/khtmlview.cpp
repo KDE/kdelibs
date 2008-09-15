@@ -226,7 +226,7 @@ public:
         scrollingFromWheel = QPoint(-1,-1);
 	borderX = 30;
 	borderY = 30;
-	dx = dy = ddx = ddy = rdx = rdy = dddx = dddy = rddx = rddy = 0;
+	dx = dy = ddx = ddy = rdx = rdy = dddx = dddy = 0;
         paged = false;
 	clickX = -1;
 	clickY = -1;
@@ -320,6 +320,9 @@ public:
     {
         smoothScrollTimer.stop();
         dx = dy = 0;
+        ddx = ddy = 0;
+        rdx = rdy = 0;
+        dddx = dddy = 0;
         updateContentsXY();
         smoothScrolling = false;
         shouldSmoothScroll = false;
@@ -361,7 +364,7 @@ public:
 
     int zoomLevel;
     int borderX, borderY;
-    int dx, dy, ddx, ddy, rdx, rdy, dddx, dddy, rddy, rddx;
+    int dx, dy, ddx, ddy, rdx, rdy, dddx, dddy;
     KConfig *formCompletions;
 
     int clickX, clickY, clickCount;
@@ -1469,7 +1472,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
             d->cursorIconWidget->setPixmap( icon_pixmap);
             d->cursorIconWidget->update();
         }
-        
+
         QPoint c_pos = QCursor::pos();
         d->cursorIconWidget->move( c_pos.x() + 15, c_pos.y() + 15 );
 #ifdef Q_WS_X11
@@ -3912,8 +3915,8 @@ void KHTMLView::setupSmoothScrolling(int dx, int dy)
     d->ddy *= 2;
 
     // deacceleration speed
-    d->dddx = (d->ddx*16)/steps;
-    d->dddy = (d->ddy*16)/steps;
+    d->dddx = (d->ddx+1)/steps;
+    d->dddy = (d->ddy+1)/steps;
 
     if (!d->smoothScrolling) {
         d->startScrolling();
@@ -3945,25 +3948,29 @@ void KHTMLView::scrollTick() {
     d->rdy = tddy % 16;
 
     // limit step to requested scrolling distance
-    if (d->dx > 0 && ddx > d->dx) ddx = d->dx;
-    if (d->dx < 0 && ddx < d->dx) ddx = d->dx;
-    if (d->dy > 0 && ddy > d->dy) ddy = d->dy;
-    if (d->dy < 0 && ddy < d->dy) ddy = d->dy;
+    if (abs(ddx) > abs(d->dx)) ddx = d->dx;
+    if (abs(ddy) > abs(d->dy)) ddy = d->dy;
+
+    // Don't stop if deaccelerated too fast
+    if (!ddx) ddx = d->dx;
+    if (!ddy) ddy = d->dy;
 
     // update remaining scroll
     d->dx -= ddx;
     d->dy -= ddy;
 
-    int tdddx = d->dddx + d->rddx;
-    int tdddy = d->dddy + d->rddy;
-    // update scrolling speed
-    d->ddx = d->ddx - tdddx/16;
-    d->ddy = d->ddy - tdddy/16;
-    d->rddx = tdddx % 16;
-    d->rddy = tdddy % 16;
-
     d->shouldSmoothScroll = false;
     scrollContentsBy(ddx, ddy);
+
+    // update scrolling speed
+    int dddx = d->dddx;
+    int dddy = d->dddy;
+    // don't change direction
+    if (abs(dddx) > abs(d->ddx)) dddx = d->ddx;
+    if (abs(dddy) > abs(d->ddy)) dddy = d->ddy;
+
+    d->ddx -= dddx;
+    d->ddy -= dddy;
 }
 
 
