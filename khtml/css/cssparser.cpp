@@ -331,6 +331,7 @@ void CSSParser::addProperty( int propId, CSSValueImpl *value, bool important )
     prop->m_id = propId;
     prop->setValue( value );
     prop->m_important = important;
+    prop->m_implicit = m_implicitShorthand;
 
     if ( numParsedProperties >= maxParsedProperties ) {
         maxParsedProperties += 32;

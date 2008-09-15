@@ -290,6 +290,7 @@ DOMString CSSStyleDeclarationImpl::getCommonValue(const int* properties, int num
 {
     DOMString res;
     for (int i = 0; i < number; ++i) {
+        if (!isPropertyImplicit(properties[i])) {
             CSSValueImpl* value = getPropertyCSSValue(properties[i]);
             if (!value)
                 return DOMString();
@@ -300,6 +301,7 @@ DOMString CSSStyleDeclarationImpl::getCommonValue(const int* properties, int num
                 res = text;
             else if (res != text)
                 return DOMString();
+        }
     }
     return res;
 }
@@ -308,13 +310,15 @@ DOMString CSSStyleDeclarationImpl::get4Values( const int* properties ) const
 {
     DOMString res;
     for ( int i = 0 ; i < 4 ; ++i ) {
-        CSSValueImpl* value = getPropertyCSSValue( properties[i] );
-        if ( !value ) { // apparently all 4 properties must be specified.
-            return DOMString();
+        if (!isPropertyImplicit(properties[i])) {
+            CSSValueImpl* value = getPropertyCSSValue( properties[i] );
+            if ( !value ) { // apparently all 4 properties must be specified.
+                return DOMString();
+            }
+            if ( i > 0 )
+                res += " ";
+            res += value->cssText();
         }
-        if ( i > 0 )
-            res += " ";
-        res += value->cssText();
     }
     return res;
 }
@@ -382,11 +386,13 @@ DOMString CSSStyleDeclarationImpl::getShortHandValue( const int* properties, int
 {
     DOMString res;
     for ( int i = 0 ; i < number ; ++i ) {
-        CSSValueImpl* value = getPropertyCSSValue( properties[i] );
-        if ( value ) { // TODO provide default value if !value
-            if ( !res.isNull() )
-                res += " ";
-            res += value->cssText();
+        if (!isPropertyImplicit(properties[i])) {
+            CSSValueImpl* value = getPropertyCSSValue( properties[i] );
+            if ( value ) { // TODO provide default value if !value
+                if ( !res.isNull() )
+                    res += " ";
+                res += value->cssText();
+            }
         }
     }
     return res;
@@ -404,6 +410,18 @@ DOMString CSSStyleDeclarationImpl::getShortHandValue( const int* properties, int
             return current->value();
     }
     return 0;
+}
+
+bool CSSStyleDeclarationImpl::isPropertyImplicit(int propertyID) const
+{
+    QListIterator<CSSProperty*> lstValuesIt(*m_lstValues);
+    CSSProperty const *current;
+    while ( lstValuesIt.hasNext() ) {
+        current = lstValuesIt.next();
+        if (current->m_id == propertyID)
+            return current->isImplicit();;
+    }
+    return false;
 }
 
 // --------------- Shorthands mapping ----------------

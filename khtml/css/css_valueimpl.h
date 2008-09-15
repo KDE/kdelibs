@@ -77,6 +77,7 @@ public:
     void setCssText(const DOM::DOMString& str);
 
     virtual bool isStyleDeclaration() const { return true; }
+    virtual bool isPropertyImplicit(int propertyID) const;
     virtual bool parseString( const DOMString &string, bool = false );
 
     CSSValueImpl *getPropertyCSSValue(const DOMString &propertyName) const;
@@ -144,7 +145,8 @@ public:
 
     virtual bool isImplicitInitialValue() const { return m_implicit; }
 private:
-    bool m_implicit;          
+    bool m_implicit; // wether this property has been created implicitly to fill undeclared properties
+                     // of a shorthand (e.g. 'border-top-width: medium' set from the 'border: solid red' declaration)
 };
 
 class CSSValueListImpl : public CSSValueImpl
@@ -463,14 +465,17 @@ public:
     int id() const { return m_id; }
 
     bool isImportant() const { return m_important; }
+    bool isImplicit() const { return m_implicit; }
 
     CSSValueImpl *value() const { return m_value; }
 
     DOM::DOMString cssText() const;
 
     // make sure the following fits in 4 bytes.
-    signed int  m_id   : 29;
+    signed int  m_id   : 28;
     bool m_important   : 1;
+    bool m_implicit    : 1; // wether this property has been set implicitly as part of a shorthand
+                            // (e.g. 'margin-left: 10px' set from the 'margin: 10px' declaration)
 protected:
     CSSValueImpl *m_value;
 };

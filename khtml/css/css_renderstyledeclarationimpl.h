@@ -53,6 +53,7 @@ public:
 
     virtual void removeProperty(int propertyID, DOM::DOMString* old = 0);
     virtual void removePropertiesInSet(const int* set, unsigned length);
+    virtual bool isPropertyImplicit(int propertyID) const { return false; }
     bool setProperty ( int propertyId, const DOM::DOMString &value, bool important, int &ec );
     bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false );
     void setProperty ( int propertyId, int value, bool important = false );
