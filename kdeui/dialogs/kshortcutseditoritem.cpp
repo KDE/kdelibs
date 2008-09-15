@@ -63,6 +63,7 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
     case Qt::DisplayRole:
         switch(column) {
         case Name:
+            // i18n filtering message requested by translators (scripting).
             return i18nc("@item:intable Action name in shortcuts configuration", "%1", m_action->text().remove('&'));
         case LocalPrimary:
         case LocalAlternate:
