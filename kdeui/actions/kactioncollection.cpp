@@ -25,6 +25,7 @@
 */
 
 #include "kactioncollection.h"
+#include "kactioncategory.h"
 #include <kauthorized.h>
 #include "kxmlguiclient.h"
 #include "kxmlguifactory.h"
@@ -243,16 +244,21 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
       action->blockSignals(true);
     }
 
+    // Check if we have another action under this name
     if (QAction *oldAction = d->actionByName.value(index_name)) {
       takeAction(oldAction);
     }
+
+    // Check if we have this action under a different name.
     takeAction(action);
-    // really insert action
+
+    // Add action to our lists.
     d->actionByName.insert(index_name, action);
     d->actions.append(action);
 
-    foreach (QWidget* widget, d->associatedWidgets)
+    foreach (QWidget* widget, d->associatedWidgets) {
       widget->addAction(action);
+    }
 
     connect(action, SIGNAL(destroyed(QObject*)), SLOT(_k_actionDestroyed(QObject*)));
 
@@ -675,6 +681,12 @@ QAction *KActionCollectionPrivate::unlistAction(QAction* action)
   // Remove the action
   actionByName.remove(name);
   actions.takeAt(index);
+
+  // Remove the action from the categories. Should be only one
+  QList<KActionCategory*> categories = q->findChildren<KActionCategory*>();
+  foreach (KActionCategory *category, categories) {
+      category->unlistAction(action);
+  }
 
   return action;
 }

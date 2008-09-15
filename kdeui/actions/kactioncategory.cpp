@@ -128,6 +128,24 @@ void KActionCategory::setText(const QString &text)
     }
 
 
+void KActionCategory::unlistAction(QAction *action)
+    {
+    // ATTENTION:
+    //   This method is called from KActionCollection with an QObject formerly
+    //   known as a QAction during _k_actionDestroyed(). So don't do fancy stuff
+    //   here that needs a real QAction!
+
+    // Get the index for the action
+    int index = d->actions.indexOf(action);
+
+    // Action not found.
+    if (index==-1) return;
+
+    // Remove the action
+    d->actions.takeAt(index);
+    }
+
+
 KActionCategoryPrivate::KActionCategoryPrivate( KActionCategory *host )
     : q(host)
     {}

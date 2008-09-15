@@ -66,6 +66,11 @@ class QAction;
  * The usage is analog to action collections. Just create a category and use
  * it instead of the collection to create the actions.
  *
+ * The synchronization between KActionCollection and KActionCategory is done
+ * internally. There is for example no need to remove actions from a category.
+ * It is done implicitely if the action is removed from the associated
+ * collection.
+ *
  * \code
  *
  * KActionCategory *file = KActionCategory(i18n("File"), actionCollection())
@@ -105,9 +110,9 @@ public:
     virtual ~KActionCategory();
 
     /**
-     * \group Adding Actions
+     * \name Adding Actions
      *
-     * Add a actions to the category.
+     * Add a action to the category.
      *
      * This methods are provided for your convenience. They call the
      * corresponding method of KActionCollection.
@@ -167,6 +172,14 @@ public:
     void setText(const QString& text);
 
 private:
+
+    /**
+     * Remove \action from this category if found.
+     */
+    void unlistAction(QAction *action);
+
+    //! KActionCollection needs access to some of our helper methods
+    friend class KActionCollectionPrivate;
 
     //! Implementation details
     KActionCategoryPrivate *d;
