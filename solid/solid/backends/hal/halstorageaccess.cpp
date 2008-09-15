@@ -279,7 +279,7 @@ bool StorageAccess::callHalVolumeMount()
             case QLocale::Norwegian:
             case QLocale::Icelandic:
             case QLocale::English:
-                codepage = "codepage=850";
+                codepage = "codepage=437";
                 break;
             case QLocale::Portuguese:
                 codepage = "codepage=860";
