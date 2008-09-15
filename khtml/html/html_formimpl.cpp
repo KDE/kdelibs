@@ -1375,7 +1375,7 @@ QString HTMLInputElementImpl::state( )
             document()->view()->addFormCompletionItem(name().string(), value().string());
         /* nobreak */
     default:
-        return value().string() + (m_unsubmittedFormChange ? 'M' : '.');
+        return value().string() + (m_unsubmittedFormChange ? 'M' : '.') + (value().isNull() ? 'N' : '.');
     }
 }
 
@@ -1387,15 +1387,15 @@ void HTMLInputElementImpl::restoreState(const QString &state)
         setChecked((state == QLatin1String("on")));
         break;
     case FILE:
-        m_value = DOMString(state.left(state.length()-1));
+        m_value = DOMString(state.left(state.length()-2));
         setChanged();
         break;
     case HIDDEN:
         // Don't mess with those...
         break;
     default:
-        setValue(DOMString(state.left(state.length()-1)));
-        m_unsubmittedFormChange = state.endsWith('M');
+        setValue(state.endsWith('N') ? DOMString() : DOMString(state.left(state.length()-2)));
+        m_unsubmittedFormChange = (state.right(1) == "M");
         break;
     }
 }
@@ -1789,7 +1789,7 @@ void HTMLInputElementImpl::setValue(DOMString val)
 {
     if (m_type == FILE) return;
 
-    m_value = (val.isNull() ? DOMString("") : val);
+    m_value = val;
     // ### set attribute for other types, too. no need for m_value
     // ### in those cases.
     if (m_type == RADIO || m_type == CHECKBOX)
