@@ -1,6 +1,8 @@
 /* This file is part of the KDE libraries
 
     Copyright (C) 1999 Matthias Ettrich (ettrich@kde.org)
+    Copyright (c) 2007      by Charles Connell <charles@connells.org>
+    Copyright (C) 2008 Lukas Appelhans <l.appelhans@gmx.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -43,6 +45,8 @@
 
 #include <QMouseEvent>
 #include <QToolButton>
+#include <QMovie>
+#include <QPointer>
 
 #ifdef Q_WS_WIN
 class KSystemTrayIconPrivate : public QObject
@@ -52,11 +56,13 @@ class KSystemTrayIconPrivate
 {
 public:
     KSystemTrayIconPrivate(KSystemTrayIcon* trayIcon, QWidget* parent)
+        : q(trayIcon)
     {
         actionCollection = new KActionCollection( trayIcon );
         hasQuit = false;
         onAllDesktops = false;
         window = parent;
+        movie = 0;
 #ifdef Q_WS_WIN
         // FIXME the below makes korgac ( the reminder daemon in kdepim) crash
         // on startup
@@ -74,6 +80,12 @@ public:
         delete menu;
     }
 
+
+    void _k_slotNewFrame()
+    {
+        q->setIcon(QIcon(movie->currentPixmap()));
+    }
+
 #ifdef Q_WS_WIN
     bool eventFilter(QObject *obj, QEvent *ev)
     {
@@ -85,12 +97,14 @@ public:
     DWORD dwTickCount;
 #endif
 
+    KSystemTrayIcon* q;
     KActionCollection* actionCollection;
     KMenu* menu;
     QWidget* window;
     QAction* titleAction;
     bool onAllDesktops : 1; // valid only when the parent widget was hidden
     bool hasQuit : 1;
+    QPointer<QMovie> movie;
 };
 
 KSystemTrayIcon::KSystemTrayIcon( QWidget* parent )
@@ -112,6 +126,14 @@ KSystemTrayIcon::KSystemTrayIcon( const QIcon& icon, QWidget* parent )
       d( new KSystemTrayIconPrivate( this, parent ) )
 {
     init( parent );
+}
+
+KSystemTrayIcon::KSystemTrayIcon(QMovie* movie, QWidget *parent)
+    : QSystemTrayIcon(parent),
+      d( new KSystemTrayIconPrivate( this, parent ) )
+{
+    init(parent);
+    setMovie(movie);
 }
 
 void KSystemTrayIcon::init( QWidget* parent )
@@ -363,6 +385,20 @@ QAction *KSystemTrayIcon::contextMenuTitle() const
 {
     QToolButton *button = static_cast<QToolButton*>((static_cast<QWidgetAction*>(d->titleAction))->defaultWidget());
     return button->defaultAction();
+}
+
+void KSystemTrayIcon::setMovie(QMovie* m)
+{
+    delete d->movie;
+    m->setParent(this);
+    d->movie = m;
+    connect(d->movie, SIGNAL(frameChanged(int)), this, SLOT(_k_slotNewFrame()));
+    d->movie->setCacheMode(QMovie::CacheAll);
+}
+
+const QMovie* KSystemTrayIcon::movie() const
+{
+    return d->movie;
 }
 
 #include "ksystemtrayicon.moc"
