@@ -2189,7 +2189,7 @@ Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, const QString &sCop
 {
   // check if source is ok ...
   KDE_struct_stat buff;
-  QByteArray sSrc( QFile::encodeName(sCopyFile) );
+  const QByteArray sSrc( QFile::encodeName(sCopyFile) );
   bool bSrcExists = (KDE_stat( sSrc.data(), &buff ) != -1);
   if(bSrcExists)
   { if(S_ISDIR(buff.st_mode))
@@ -2226,7 +2226,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
 {
   // check if destination is ok ...
   KDE_struct_stat buff;
-  QByteArray sDest( QFile::encodeName(sCopyFile) );
+  const QByteArray sDest( QFile::encodeName(sCopyFile) );
   bool bDestExists = (KDE_stat( sDest.data(), &buff ) != -1);
   if(bDestExists)
   { if(S_ISDIR(buff.st_mode))
@@ -2242,7 +2242,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   }
 
   // do we have a ".part" file?
-  QByteArray sPart = QFile::encodeName(sCopyFile + ".part");
+  const QByteArray sPart = QFile::encodeName(sCopyFile + ".part");
   bool bResume = false;
   bool bPartExists = (KDE_stat( sPart.data(), &buff ) != -1);
   bool bMarkPartial = config()->readEntry("MarkPartial", true);
@@ -2308,6 +2308,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
     iError = ERR_COULD_NOT_WRITE;
     iRes = statusClientError;
   }
+  iCopyFile = -1;
 
   // handle renaming or deletion of a partial file ...
   if(bMarkPartial)
