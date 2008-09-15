@@ -388,16 +388,16 @@ JSValue* DOMNode::getValueProperty(ExecState *exec, int token) const
       return rend ? jsNumber(rend->scrollHeight()) : jsUndefined();
     case ScrollLeft:
       if (rend && rend->layer()) {
-          if (rend->isRoot() && !rend->style()->hidesOverflow())
+          if (rend->isRoot() && !rend->hasOverflowClip())
               return jsNumber( node.document()->view() ? node.document()->view()->contentsX() : 0);
-          return jsNumber( rend->layer()->scrollXOffset() );
+          return jsNumber( rend->hasOverflowClip() ? rend->layer()->scrollXOffset() : 0 );
       }
       return jsNumber( 0 );
     case ScrollTop:
       if (rend && rend->layer()) {
-          if (rend->isRoot() && !rend->style()->hidesOverflow())
+          if (rend->isRoot() && !rend->hasOverflowClip())
               return jsNumber( node.document()->view() ? node.document()->view()->contentsY() : 0);
-          return jsNumber( rend->layer()->scrollYOffset() );
+          return jsNumber( rend->hasOverflowClip() ? rend->layer()->scrollYOffset() : 0 );
       }
       return jsNumber( 0 );
     default:
@@ -519,7 +519,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, JSValue* value, int /
     switch (token) {
       case ScrollLeft:
         if (rend && rend->layer()) {
-          if (rend->style()->hidesOverflow())
+          if (rend->hasOverflowClip())
             rend->layer()->scrollToXOffset(value->toInt32(exec));
           else if (rend->isRoot()) {
             KHTMLView* sview = node.document()->view();
@@ -530,7 +530,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, JSValue* value, int /
         break;
       case ScrollTop:
         if (rend && rend->layer()) {
-          if (rend->style()->hidesOverflow())
+          if (rend->hasOverflowClip())
             rend->layer()->scrollToYOffset(value->toInt32(exec));
           else if (rend->isRoot()) {
             KHTMLView* sview = node.document()->view();
