@@ -188,6 +188,8 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
 {
     m_widget = 0;
     m_underMouse = 0;
+    m_buffer[0] = 0;
+    m_buffer[1] = 0;
     // a widget doesn't support being anonymous
     assert(!isAnonymous());
     m_view  = node->document()->view();
@@ -238,6 +240,8 @@ RenderWidget::~RenderWidget()
         if (m_ownsWidget)
             m_widget->deleteLater();
     }
+    delete m_buffer[0];
+    delete m_buffer[1];
 }
 
 class QWidgetResizeEvent : public QEvent
@@ -637,8 +641,24 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     else
         m_view->addChild( m_widget, xPos, -500000 +yPos);
     m_widget->show();
-    if (khtmlw)
-        paintWidget(paintInfo, m_widget, xPos, yPos);
+    if (khtmlw) {
+        if ( KHTMLView* v = qobject_cast<KHTMLView*>(m_widget) ) {
+            // our buffers are dedicated to scrollbars.
+            if (v->verticalScrollBar()->isVisible() && (!m_buffer[0] || v->verticalScrollBar()->size() != m_buffer[0]->size())) {
+                delete m_buffer[0];
+                m_buffer[0] = new QPixmap( v->verticalScrollBar()->size() );
+            }
+            if (v->horizontalScrollBar()->isVisible() && (!m_buffer[1] || v->horizontalScrollBar()->size() != m_buffer[1]->size())) {
+                delete m_buffer[1];
+                m_buffer[1] = new QPixmap( v->horizontalScrollBar()->size() );
+            }
+        } else if (!m_buffer[0] || (m_widget->size() != m_buffer[0]->size())) {
+            assert(!m_buffer[1]);
+            delete m_buffer[0];
+            m_buffer[0] = new QPixmap( m_widget->size() );
+        }
+        paintWidget(paintInfo, m_widget, xPos, yPos, m_buffer);
+    }
 }
 
 static void setInPaintEventFlag(QWidget* w, bool b = true, bool recurse=true)
@@ -663,7 +683,7 @@ static void setInPaintEventFlag(QWidget* w, bool b = true, bool recurse=true)
       }
 }
 
-static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int ty, bool buffered = false)
+static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int ty, bool buffered = false, QPixmap* buffer = 0)
 {
     if (r.isNull() || r.isEmpty() )
         return;
@@ -688,11 +708,14 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     if (buffered) {
         if (!widget->size().isValid())
             return;
-        pm = PaintBuffer::grab(widget->size());
-        // Qt 4.4 regression #1:
-        // QPainter::CompositionMode_Source is severly broken (cf. kde #160518)
+        // TT says Qt 4's widget painting hits an NVidia RenderAccel bug/shortcoming
+        // resulting in pixmap buffers being unsuitable for reuse by more than one widget.
         //
-        if (1 || !pm->hasAlphaChannel()) {
+        // Until a turnaround exist in Qt, we can't reliably use shared buffers.
+        // ###  pm = PaintBuffer::grab(widget->size());
+        assert( buffer );
+        pm = buffer;
+        if (!pm->hasAlphaChannel()) {
             pm->fill(Qt::transparent);
         } else {
             QPainter pp(pm);
@@ -701,7 +724,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         }
         d = pm;
     }
-    // Qt 4.4 regression #2: 
+    // Qt 4.4 regression #1: 
     // can't let a painter active on the view as Qt thinks it is opened on the *pixmap*
     // and prints "paint device can only be painted by one painter at a time" warnings.
     //
@@ -733,16 +756,16 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         // transfer results
         QPoint off(r.x(), r.y());
         p->drawPixmap(thePoint+off, static_cast<QPixmap&>(*d), r);
-        PaintBuffer::release(pm);
+        // ### PaintBuffer::release(pm);
     }
 }
 
-void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
+void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty, QPixmap* buffer[])
 {
     QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
-    // Qt 4.4 regression #3: 
+    // Qt 4.4 regression #2: 
     //    can't use QWidget::render to directly paint widgets on the view anymore.
     //    Results are unreliable for subrects, leaving blank squares. (cf. kde #158607)
     //
@@ -760,7 +783,7 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
             vbr &= r;
             vbr.translate( -of );
             if (vbr.isValid() && !vbr.isEmpty())
-                copyWidget(vbr, p, v->verticalScrollBar(), tx+of.x(), ty+of.y(), buffered);
+                copyWidget(vbr, p, v->verticalScrollBar(), tx+of.x(), ty+of.y(), buffered, buffer[0]);
         }
         if (v->horizontalScrollBar()->isVisible()) {
             QRect hbr = v->horizontalScrollBar()->rect();
@@ -769,13 +792,13 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
             hbr &= r;
             hbr.translate( -of );
             if (hbr.isValid() && !hbr.isEmpty())
-                copyWidget(hbr, p, v->horizontalScrollBar(), tx+ of.x(), ty+ of.y(), buffered);
+                copyWidget(hbr, p, v->horizontalScrollBar(), tx+ of.x(), ty+ of.y(), buffered, buffer[1]);
         }
         QRect vr = (r & v->viewport()->rect());
         if (vr.isValid() && !vr.isEmpty())
             v->render(p, vr, thePoint);
     } else {
-        copyWidget(r, p, widget, tx, ty, buffered);
+        copyWidget(r, p, widget, tx, ty, buffered, buffer[0]);
     }
     allowWidgetPaintEvents = false;
 }

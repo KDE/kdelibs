@@ -101,7 +101,7 @@ public:
     void cancelPendingResize();
     bool needsMask() const { return m_needsMask; }
 
-    static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty);
+    static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty, QPixmap* buffer[] = 0);
     virtual bool handleEvent(const DOM::EventImpl& ev);
     bool isRedirectedWidget() const;
     bool isDisabled() const { return m_widget && !m_widget->isEnabled(); }
@@ -147,6 +147,7 @@ protected:
     QWidget *m_widget;
     KHTMLView* m_view;
     QPointer<QWidget> m_underMouse;
+    QPixmap *m_buffer[2];
 
     //Because we mess with normal detach due to ref/deref,
     //we need to keep track of the arena ourselves

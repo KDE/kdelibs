@@ -86,7 +86,10 @@ public:
     BufferedPainter(QPixmap* px, QPainter*& p, const QRegion &rr, bool replacePainter) {
          QRect br = rr.boundingRect();
          m_rect = br;
-         bool doFill = !px->hasAlphaChannel();
+         bool doFill = 1 || !px->hasAlphaChannel(); // shared pixmaps aren't properly cleared
+                                                    // with Qt 4 + NVidia proprietary driver.
+                                                    // So we can't use this optimisation until
+                                                    // we can detect this defect. 
          if (doFill)
              px->fill(Qt::transparent);
          m_painter.begin(px);
