@@ -764,7 +764,7 @@ bool CSSParser::parseValue( int propId, bool important )
         else if (value->unit == CSSPrimitiveValue::CSS_URI ) {
             // ### allow string in non strict mode?
             DOMString uri = khtml::parseURL( domString( value->string ) );
-            if (!uri.isEmpty()) {
+            if (!uri.isNull()) {
                 parsedValue = new CSSImageValueImpl(
                     DOMString(KUrl( styleElement->baseURL(), uri.string()).url()),
                     styleElement );
@@ -1471,7 +1471,7 @@ CSSValueImpl* CSSParser::parseBackgroundImage(bool& didParse)
     if (valueList->current()->unit == CSSPrimitiveValue::CSS_URI) {
         didParse = true;
         DOMString uri = khtml::parseURL(domString(valueList->current()->string));
-        if (!uri.isEmpty())
+        if (!uri.isNull())
             return new CSSImageValueImpl(DOMString(KUrl(styleElement->baseURL(), uri.string()).url()),
                                          styleElement);
     }
