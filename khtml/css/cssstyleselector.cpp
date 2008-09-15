@@ -1288,21 +1288,21 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             //kDebug( 6080 ) << "checking for contains match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
-            return val_str.contains(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+            return val_str.contains(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive) && !sel_str.isEmpty();
         }
         case CSSSelector::Begin:
         {
             //kDebug( 6080 ) << "checking for beginswith match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
-            return val_str.startsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+            return val_str.startsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive) && !sel_str.isEmpty();
         }
         case CSSSelector::End:
         {
             //kDebug( 6080 ) << "checking for endswith match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
-            return val_str.endsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+            return val_str.endsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive) && !sel_str.isEmpty();
         }
         case CSSSelector::Hyphen:
         {
