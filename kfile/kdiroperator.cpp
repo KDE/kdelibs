@@ -1515,6 +1515,8 @@ void KDirOperator::highlightFile(const KFileItem &item)
 
 void KDirOperator::setCurrentItem(const QString& filename)
 {
+    kDebug();
+
     KFileItem item;
     if ( !filename.isNull() ) {
         item = d->dirLister->findByName(filename);
@@ -1524,6 +1526,8 @@ void KDirOperator::setCurrentItem(const QString& filename)
 
 void KDirOperator::setCurrentItem(const KFileItem& item)
 {
+    kDebug();
+
     if (d->itemView == 0) {
         return;
     }
@@ -1536,6 +1540,39 @@ void KDirOperator::setCurrentItem(const KFileItem& item)
             const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
             selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::SelectCurrent);
             QMetaObject::invokeMethod(this, "_k_assureVisibleSelection", Qt::QueuedConnection);
+        }
+    }
+}
+
+void KDirOperator::setCurrentItems(const QStringList& filenames)
+{
+    kDebug();
+
+    KFileItemList itemList;
+    foreach (const QString &filename, filenames) {
+        itemList << KFileItem(d->dirLister->findByName(filename));
+    }
+    setCurrentItems(itemList);
+}
+
+void KDirOperator::setCurrentItems(const KFileItemList& items)
+{
+    kDebug();
+
+    if (d->itemView == 0) {
+        return;
+    }
+
+    QItemSelectionModel *selModel = d->itemView->selectionModel();
+    if (selModel) {
+        selModel->clear();
+        foreach (const KFileItem &item, items) {
+            if (!item.isNull()) {
+                const QModelIndex dirIndex = d->dirModel->indexForItem(item);
+                const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
+                selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::Select);
+                QMetaObject::invokeMethod(this, "_k_assureVisibleSelection", Qt::QueuedConnection);
+            }
         }
     }
 }

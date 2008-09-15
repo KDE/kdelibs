@@ -167,7 +167,6 @@ public:
     void _k_slotFilterChanged();
     void _k_fileHighlighted( const KFileItem& );
     void _k_fileSelected( const KFileItem& );
-    void _k_slotStatResult( KJob* );
     void _k_slotLoadingFinished();
     void _k_fileCompletion( const QString& );
     void _k_toggleSpeedbar( bool );
@@ -179,6 +178,13 @@ public:
     void addToRecentDocuments();
 
     QString locationEditCurrentText() const;
+
+    /**
+     * KIO::NetAccess::mostLocalUrl local replacement.
+     * This method won't show any progress dialogs for stating, since
+     * they are very annoying when stating.
+     */
+    static KUrl mostLocalUrl(const KUrl &url);
 
     KFileWidget* q;
 
@@ -633,7 +639,7 @@ void KFileWidget::setPreviewWidget(KPreviewWidgetBase *w) {
 
 KUrl KFileWidgetPrivate::getCompleteUrl(const QString &_url) const
 {
-    kDebug(kfile_area) << "got url " << _url;
+//     kDebug(kfile_area) << "got url " << _url;
 
     QString url = KShell::tildeExpand(_url);
     KUrl u;
@@ -645,17 +651,17 @@ KUrl KFileWidgetPrivate::getCompleteUrl(const QString &_url) const
         else
         {
             u = ops->url();
-            kDebug(kfile_area) << "ops url " << u;
+//             kDebug(kfile_area) << "ops url " << u;
             u.addPath( url ); // works for filenames and relative paths
-            kDebug(kfile_area) << "after adding path " << u;
+//             kDebug(kfile_area) << "after adding path " << u;
             u.cleanPath(); // fix "dir/.."
-            kDebug(kfile_area) << "after cleaning path " << u;
+//             kDebug(kfile_area) << "after cleaning path " << u;
         }
     }
     else // complete URL
         u = url;
 
-    kDebug(kfile_area) << "returning url " << u;
+//     kDebug(kfile_area) << "returning url " << u;
 
     return u;
 }
@@ -663,305 +669,96 @@ KUrl KFileWidgetPrivate::getCompleteUrl(const QString &_url) const
 // Called by KFileDialog
 void KFileWidget::slotOk()
 {
-    kDebug(kfile_area) << "slotOk\n";
+//     kDebug(kfile_area) << "slotOk\n";
 
-    // a list of all selected files/directories (if any)
-    // can only be used if the user didn't type any filenames/urls himself
     const KFileItemList items = d->ops->selectedItems();
-
     const QString locationEditCurrentText(KShell::tildeExpand(d->locationEditCurrentText()));
+    const KUrl::List locationEditCurrentTextList(d->tokenize(locationEditCurrentText));
+    KFile::Modes mode = d->ops->mode();
 
-    // in the case that we haven't got a relative url, let's navigate and make it relative
-    if (!KUrl::isRelativeUrl(locationEditCurrentText) ||
-        !QDir::isRelativePath(locationEditCurrentText)) {
-        KUrl _url(locationEditCurrentText);
-        KUrl url(_url);
-        url.setFileName(QString());
-        d->ops->setUrl(url, true);
-        d->url = url;
-        d->ops->setCurrentItem(_url.fileName());
+    // if there is nothing to do, just return from here
+    if (!locationEditCurrentTextList.count()) {
+        return;
     }
 
-    // if we are not on directory navigation mode let's check if what we have on the location edit
-    // is a directory. If it is, let's open it
-    if ( (mode() & KFile::Directory) != KFile::Directory ) {
-        KUrl url = d->getCompleteUrl(locationEditCurrentText);
-        KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
-        KIO::NetAccess::synchronousRun(statJob, 0);
-        if (statJob->statResult().isDir()) {
-            d->setLocationText(QString());
+    // sanity flag checks
+    // KFile::File, KFile::Directory and KFile::Files are mutually exclusive. Make sure we haven't
+    // got invalid flags.
+    Q_ASSERT(!(mode & KFile::File) || (!(mode & KFile::Directory) && !(mode & KFile::Files)));
+    Q_ASSERT(!(mode & KFile::Directory) || (!(mode & KFile::File) && !(mode & KFile::Files)));
+    Q_ASSERT(!(mode & KFile::Files) || (!(mode & KFile::Directory) && !(mode & KFile::File)));
+    // Also make sure that one of them was provided
+    Q_ASSERT((mode & KFile::File) || (mode & KFile::Directory) || (mode & KFile::Files));
+
+    // if we are on file mode, and the list of provided files/folder is greater than one, inform
+    // the user about it
+    if (locationEditCurrentTextList.count() > 1) {
+        if (mode & KFile::File) {
+            KMessageBox::sorry(this,
+                               i18n("More than one file provided"),
+                               i18n("You can only select one file"));
+            return;
+        }
+    } else if (locationEditCurrentTextList.count()) {
+        // if we are on file or files mode, and we have an absolute url written by
+        // the user, convert it to relative
+        if (!(mode & KFile::Directory) && (!KUrl::isRelativeUrl(locationEditCurrentText) ||
+                                           QDir::isAbsolutePath(locationEditCurrentText))) {
+            KUrl _url(locationEditCurrentText);
+            KUrl url(_url);
+            url.setFileName(QString());
             d->ops->setUrl(url, true);
-            return;
-        }
-    }
-
-    bool dirOnly = d->ops->dirOnlyMode();
-
-    // we can use our kfileitems, no need to parse anything
-    if ( !d->locationEdit->lineEdit()->isModified() &&
-         !(items.isEmpty() && !dirOnly) ) {
-
-        d->urlList.clear();
-        d->filenames.clear();
-
-        if ( dirOnly ) {
-            d->url = d->ops->url();
-        }
-        else {
-            if ( !(mode() & KFile::Files) ) {// single selection
-                d->url = items.first().url();
-            }
-
-            else { // multi (dirs and/or files)
-                d->url = d->ops->url();
-                KUrl::List urlList;
-                foreach (const KFileItem &item, items) {
-                    urlList.append(item.url());
-                }
-                d->urlList = urlList;
-            }
-        }
-
-        KUrl url = KIO::NetAccess::mostLocalUrl(d->url,topLevelWidget());
-        if ( ( (mode() & KFile::LocalOnly) == KFile::LocalOnly ) &&
-             !url.isLocalFile() )
-        {
-            KMessageBox::sorry( this,
-                                i18n("You can only select local files."),
-                                i18n("Remote Files Not Accepted") );
-            return;
-        }
-
-        d->url = url;
-
-        if (d->confirmOverwrite) {
-            if (!d->toOverwrite(d->url)) {
-                return;
-            }
-        }
-
-        emit accepted();
-        return;
-    }
-
-    KUrl selectedUrl;
-
-    if ( (mode() & KFile::Files) == KFile::Files ) { // multiselection mode
-        if ( locationEditCurrentText.contains('/')  ) {
-            QString url( locationEditCurrentText );
-            KUrl u( d->ops->url().url() + url );
-            selectedUrl = u;
-            QString fileName = u.fileName();
-            u.setFileName( QString() );
-            d->ops->setUrl( u, true );
-            url = fileName;
-            d->locationEdit->lineEdit()->setText( fileName );
-            d->url = u;
-            d->ops->setCurrentItem( url );
-        } else { // simple filename -> just use the current URL
-            selectedUrl = d->ops->url();
-        }
-    } else {
-        selectedUrl = d->getCompleteUrl( locationEditCurrentText );
-
-        // appendExtension() may change selectedUrl
-        d->appendExtension (selectedUrl);
-    }
-
-    if ( !selectedUrl.isValid() ) {
-       KMessageBox::sorry( this, i18n("%1\ndoes not appear to be a valid URL.\n", d->url.url()), i18n("Invalid URL") );
-       return;
-    }
-
-    KUrl url = KIO::NetAccess::mostLocalUrl(selectedUrl,topLevelWidget());
-    if ( ( (mode() & KFile::LocalOnly) == KFile::LocalOnly ) &&
-         !url.isLocalFile() )
-    {
-        KMessageBox::sorry( this,
-                            i18n("You can only select local files."),
-                            i18n("Remote Files Not Accepted") );
-        return;
-    }
-
-    d->url = url;
-
-    // d->url is a correct URL now
-
-    if ( (mode() & KFile::Directory) == KFile::Directory ) {
-        kDebug(kfile_area) << "Directory";
-        bool done = true;
-        if ( d->url.isLocalFile() ) {
-            if ( locationEditCurrentText.isEmpty() ) {
-                QFileInfo info( d->url.toLocalFile() );
-                if ( info.isDir() ) {
-                    d->filenames.clear();
-                    d->urlList.clear();
-                    d->urlList.append( d->url );
-                    emit accepted();
-                }
-                else if (!info.exists() && (mode() & KFile::File) != KFile::File) {
-                    // directory doesn't exist, create and enter it
-                    if ( d->ops->mkdir( d->url.url(), true ))
-                        return;
-                    else
-                        emit accepted();
-                }
-                else { // d->url is not a directory,
-                    // maybe we are in File(s) | Directory mode
-                    if ( (mode() & KFile::File) == KFile::File ||
-                        (mode() & KFile::Files) == KFile::Files )
-                        done = false;
-                }
-            }
-            else  // Directory mode, with file[s]/dir[s] selected
-            {
-                if ( mode() & KFile::ExistingOnly )
-                {
-                    if ( d->ops->dirOnlyMode() )
-                    {
-                        KUrl fullURL(d->url, locationEditCurrentText);
-                        if ( QFile::exists( fullURL.toLocalFile() ) )
-                        {
-                            d->url = fullURL;
-                            d->filenames.clear();
-                            d->urlList.clear();
-                            emit accepted();
-                            return;
-                        }
-                        else // doesn't exist -> reject
-                            return;
-                    }
-                }
-
-                d->filenames = locationEditCurrentText;
-                emit accepted(); // what can we do?
-            }
-
-        }
-        else { // FIXME: remote directory, should we allow that?
-//             qDebug( "**** Selected remote directory: %s", d->url.url().toLatin1().constData());
-            d->filenames.clear();
-            d->urlList.clear();
-            d->urlList.append( d->url );
-
-            if ( mode() & KFile::ExistingOnly )
-                done = false;
-            else
-                emit accepted();
-        }
-
-        if ( done )
-            return;
-    }
-    else { // we don't want dir
-        KUrl::List urls = d->tokenize( locationEditCurrentText );
-        if ( urls.count() == 1 && locationEditCurrentText.contains('/') ) {
-            KUrl url( urls.first() );
-            setSelection( url.url() );
-            d->locationEdit->lineEdit()->setText( url.fileName() );
-            d->url = url.url();
+            d->locationEdit->lineEdit()->setText(_url.fileName());
             slotOk();
             return;
         }
     }
 
-    if (!KAuthorized::authorizeUrlAction("open", KUrl(), d->url))
-    {
-        QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyUrl());
-        KMessageBox::error( this, msg);
+    // if we are on local mode, make sure we haven't got a remote base url
+    if ((mode & KFile::LocalOnly) && !d->mostLocalUrl(d->url).isLocalFile()) {
+        KMessageBox::sorry(this,
+                           i18n("Remote files not accepted"),
+                           i18n("You can only select local files"));
         return;
     }
 
-    KIO::StatJob *job = 0L;
-    d->statJobs.clear();
-    d->filenames = KShell::tildeExpand( locationEditCurrentText );
+    if (!(mode & KFile::Directory)) {
+        // locationEditCurrentTextList contains absolute paths
+        // this is the general loop for the File and Files mode. Obviously we know
+        // that the File mode will iterate only one time here
+        foreach (const KUrl &url, locationEditCurrentTextList) {
+            d->url = url;
+            KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
+            bool res = KIO::NetAccess::synchronousRun(statJob, 0);
 
-    if ( (mode() & KFile::Files) == KFile::Files &&
-         !locationEditCurrentText.contains( '/' ) ) {
-        kDebug(kfile_area) << "Files\n";
-        KUrl::List list = d->parseSelectedUrls();
-        for ( KUrl::List::ConstIterator it = list.begin();
-              it != list.end(); ++it )
-        {
-            if (!KAuthorized::authorizeUrlAction("open", KUrl(), *it))
-            {
-                QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, (*it).prettyUrl());
-                KMessageBox::error( this, msg);
+            if (!KAuthorized::authorizeUrlAction("open", KUrl(), url)) {
+                QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyUrl());
+                KMessageBox::error(this, msg);
                 return;
             }
-        }
-        for ( KUrl::List::ConstIterator it = list.begin();
-              it != list.end(); ++it )
-        {
-            KIO::JobFlags flags = !(*it).isLocalFile() ? KIO::DefaultFlags : KIO::HideProgressInfo;
-            job = KIO::stat( *it, flags );
-            job->ui()->setWindow (topLevelWidget());
-            KIO::Scheduler::scheduleJob( job );
-            d->statJobs.append( job );
-            connect( job, SIGNAL( result(KJob *) ),
-                     SLOT( _k_slotStatResult( KJob *) ));
-        }
-        return;
-    }
 
-    KIO::JobFlags flags = !d->url.isLocalFile() ? KIO::DefaultFlags : KIO::HideProgressInfo;
-    job = KIO::stat(d->url,flags);
-    job->ui()->setWindow (topLevelWidget());
-    d->statJobs.append( job );
-    connect(job, SIGNAL(result(KJob*)), SLOT(_k_slotStatResult(KJob*)));
-}
+            if ((d->operationMode == Saving) && d->confirmOverwrite && !d->toOverwrite(url)) {
+                return;
+            }
 
-// FIXME : count all errors and show messagebox when d->statJobs.count() == 0
-// in case of an error, we cancel the whole operation (clear d->statJobs and
-// don't call accept)
-void KFileWidgetPrivate::_k_slotStatResult(KJob* job)
-{
-    kDebug(kfile_area) << "slotStatResult";
-    KIO::StatJob *sJob = static_cast<KIO::StatJob *>( job );
-
-    if ( !statJobs.removeAll( sJob ) ) {
-        return;
-    }
-
-    int count = statJobs.count();
-
-    // errors mean in general, the location is no directory ;/
-    // Can we be sure that it is exististant at all? (pfeiffer)
-    if (sJob->error() && count == 0 && !ops->dirOnlyMode())
-    {
-        emit q->accepted();
-        return;
-    }
-
-    KIO::UDSEntry t = sJob->statResult();
-    if (t.isDir())
-    {
-        if ( ops->dirOnlyMode() )
-        {
-            filenames.clear();
-            urlList.clear();
-            emit q->accepted();
-        }
-        else // in File[s] mode, directory means error -> cd into it
-        {
-            if ( count == 0 ) {
-                locationEdit->clearEditText();
-                locationEdit->lineEdit()->setModified( false );
-                q->setUrl( sJob->url() );
+            // if we are given a folder, let's get into it
+            if (res && statJob->statResult().isDir()) {
+                d->ops->setUrl(url, true);
+                d->locationEdit->lineEdit()->setText(QString());
+                return;
+            } else if (!(mode & KFile::ExistingOnly) || res) {
+                // if we don't care about ExistingOnly flag, add the file even if
+                // it doesn't exist. If we care about it, don't add it to the list
+                d->urlList << url;
             }
         }
-        statJobs.clear();
-        return;
-    }
-    else if ( ops->dirOnlyMode() )
-    {
-        return; // ### error message?
+    } else {
+        Q_ASSERT_X(0, "slotOk", "Don't use KFileWidget in directory mode, use KDirSelectDialog instead.");
     }
 
-    kDebug(kfile_area) << "filename " << sJob->url().url();
-
-    if ( count == 0 )
-        emit q->accepted();
+    // if we have reached this point and we didn't return before, that is because
+    // we want this dialog to be accepted
+    emit accepted();
 }
 
 void KFileWidget::accept()
@@ -1006,8 +803,9 @@ void KFileWidget::accept()
 
     d->addToRecentDocuments();
 
-    if ( (mode() & KFile::Files) != KFile::Files ) // single selection
+    if (!(mode() & KFile::Files)) { // single selection
         emit fileSelected(d->url.url());
+    }
 
     d->ops->close();
 }
@@ -1018,27 +816,26 @@ void KFileWidgetPrivate::_k_fileHighlighted(const KFileItem &i)
     const bool modified = locationEdit->lineEdit()->isModified();
     locationEdit->lineEdit()->setModified( false );
 
-    if ( ( !i.isNull() && i.isDir() ) ||
-         ( locationEdit->hasFocus() && !locationEdit->currentText().isEmpty() ) ) // don't disturb
+    if ((!i.isNull() && i.isDir() ) ||
+        (locationEdit->hasFocus() && !locationEdit->currentText().isEmpty())) // don't disturb
         return;
 
-    if ( (ops->mode() & KFile::Files) != KFile::Files ) {
-        if ( i.isNull() ) {
-            if ( !modified ) {
-                setLocationText( KUrl() );
+    if (!(ops->mode() & KFile::Files)) {
+        if (i.isNull()) {
+            if (!modified) {
+                setLocationText(KUrl());
             }
             return;
         }
 
         url = i.url();
 
-        if ( !locationEdit->hasFocus() ) { // don't disturb while editing
+        if (!locationEdit->hasFocus()) { // don't disturb while editing
             setLocationText( url );
         }
-        emit q->fileHighlighted(url.url());
-    }
 
-    else {
+        emit q->fileHighlighted(url.url());
+    } else {
         multiSelectionChanged();
         emit q->selectionChanged();
     }
@@ -1048,21 +845,21 @@ void KFileWidgetPrivate::_k_fileHighlighted(const KFileItem &i)
 
 void KFileWidgetPrivate::_k_fileSelected(const KFileItem &i)
 {
-    if (!i.isNull() && i.isDir())
+    if (!i.isNull() && i.isDir()) {
         return;
+    }
 
-    if ( (ops->mode() & KFile::Files) != KFile::Files ) {
-        if ( i.isNull() ) {
-            setLocationText( KUrl() );
+    if (!(ops->mode() & KFile::Files)) {
+        if (i.isNull()) {
+            setLocationText(KUrl());
             return;
         }
-
-        setLocationText( i.url() );
-    }
-    else {
+        setLocationText(i.url());
+    } else {
         multiSelectionChanged();
         emit q->selectionChanged();
     }
+
     q->slotOk();
 }
 
@@ -1071,13 +868,14 @@ void KFileWidgetPrivate::_k_fileSelected(const KFileItem &i)
 // (d->ops->selectedItems()), but what can we do?
 void KFileWidgetPrivate::multiSelectionChanged()
 {
-    if ( locationEdit->hasFocus() && !locationEdit->currentText().isEmpty() ) // don't disturb
+    if (locationEdit->hasFocus() && !locationEdit->currentText().isEmpty()) { // don't disturb
         return;
+    }
 
     const KFileItemList list = ops->selectedItems();
 
-    if ( list.isEmpty() ) {
-        setLocationText( KUrl() );
+    if (list.isEmpty()) {
+        setLocationText(KUrl());
         return;
     }
 
@@ -1086,7 +884,7 @@ void KFileWidgetPrivate::multiSelectionChanged()
         urlList << fileItem.url();
     }
 
-    setLocationText( urlList );
+    setLocationText(urlList);
 }
 
 void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixmap& icon,
@@ -1158,9 +956,9 @@ void KFileWidgetPrivate::removeDummyHistoryEntry()
                     q, SLOT( _k_slotLocationChanged( const QString& )) );
 }
 
-void KFileWidgetPrivate::setLocationText( const KUrl& url )
+void KFileWidgetPrivate::setLocationText(const KUrl& url)
 {
-    if ( !url.isEmpty() ) {
+    if (!url.isEmpty()) {
         QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( url ), KIconLoader::Small );
         setDummyHistoryEntry( url.fileName(), mimeTypeIcon );
     } else {
@@ -1168,8 +966,9 @@ void KFileWidgetPrivate::setLocationText( const KUrl& url )
     }
 
     // don't change selection when user has clicked on an item
-    if ( operationMode == KFileWidget::Saving && !locationEdit->isVisible())
+    if (operationMode == KFileWidget::Saving && !locationEdit->isVisible()) {
        setNonExtSelection();
+    }
 }
 
 void KFileWidgetPrivate::setLocationText( const KUrl::List& urlList )
@@ -1309,18 +1108,19 @@ void KFileWidgetPrivate::initGUI()
     q->setTabOrder(urlNavigator, ops);
     q->setTabOrder(cancelButton, urlNavigator);
     q->setTabOrder(urlNavigator, ops);
+
 }
 
 void KFileWidgetPrivate::_k_slotFilterChanged()
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     QString filter = filterWidget->currentFilter();
     ops->clearFilter();
 
     if ( filter.indexOf( '/' ) > -1 ) {
-        QStringList types = filter.split(" ",QString::SkipEmptyParts);
-        types.prepend( "inode/directory" );
+        QStringList types = filter.split(' ', QString::SkipEmptyParts);
+        types.prepend("inode/directory");
         ops->setMimeFilter( types );
     }
     else
@@ -1330,13 +1130,13 @@ void KFileWidgetPrivate::_k_slotFilterChanged()
 
     updateAutoSelectExtension();
 
-    emit q->filterChanged( filter );
+    emit q->filterChanged(filter);
 }
 
 
 void KFileWidget::setUrl(const KUrl& url, bool clearforward)
 {
-    kDebug(kfile_area) << "setting url " << url;
+//     kDebug(kfile_area) << "setting url " << url;
 
     d->selection.clear();
     d->ops->setUrl(url, clearforward);
@@ -1345,7 +1145,7 @@ void KFileWidget::setUrl(const KUrl& url, bool clearforward)
 // Protected
 void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     QString filename = locationEditCurrentText();
     selection.clear();
@@ -1355,10 +1155,10 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
         pathCombo->setUrl( url );
     }
 
-    bool blocked = locationEdit->blockSignals( true );
-    if ( keepLocation ) {
-        locationEdit->changeUrl( 0, KIcon( KMimeType::iconNameForUrl( filename ) ), filename );
-        locationEdit->lineEdit()->setModified( true );
+    bool blocked = locationEdit->blockSignals(true);
+    if (keepLocation) {
+        locationEdit->changeUrl(0, KIcon(KMimeType::iconNameForUrl(filename)), filename);
+        locationEdit->lineEdit()->setModified(true);
     }
 
     locationEdit->blockSignals( blocked );
@@ -1379,13 +1179,13 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
 void KFileWidgetPrivate::_k_locationAccepted(const QString &url)
 {
     Q_UNUSED(url);
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
     q->slotOk();
 }
 
 void KFileWidgetPrivate::_k_enterUrl( const KUrl& url )
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     KUrl fixedUrl( url );
     // append '/' if needed: url combo does not add it
@@ -1398,21 +1198,22 @@ void KFileWidgetPrivate::_k_enterUrl( const KUrl& url )
 
 void KFileWidgetPrivate::_k_enterUrl( const QString& url )
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     _k_enterUrl( KUrl( KUrlCompletion::replacedPath( url, true, true )) );
 }
 
-bool KFileWidgetPrivate::toOverwrite(const KUrl &fileName)
+bool KFileWidgetPrivate::toOverwrite(const KUrl &url)
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
-    QFileInfo fileInfo(fileName.pathOrUrl());
+    KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
+    bool res = KIO::NetAccess::synchronousRun(statJob, 0);
 
-    if (fileInfo.exists()) {
+    if (res) {
         int ret = KMessageBox::warningContinueCancel( q,
             i18n( "The file \"%1\" already exists. Do you wish to overwrite it?" ,
-            fileName.pathOrUrl() ), i18n( "Overwrite File?" ), KStandardGuiItem::overwrite());
+            url.fileName() ), i18n( "Overwrite File?" ), KStandardGuiItem::overwrite());
 
         if (ret != KMessageBox::Continue) {
             return false;
@@ -1420,12 +1221,12 @@ bool KFileWidgetPrivate::toOverwrite(const KUrl &fileName)
         return true;
     }
 
-    return false;
+    return true;
 }
 
 void KFileWidget::setSelection(const QString& url)
 {
-    kDebug(kfile_area) << "setSelection " << url;
+//     kDebug(kfile_area) << "setSelection " << url;
 
     if (url.isEmpty()) {
         d->selection.clear();
@@ -1448,7 +1249,7 @@ void KFileWidget::setSelection(const QString& url)
     KIO::StatJob *statJob = KIO::stat(u, KIO::HideProgressInfo);
     bool res = KIO::NetAccess::synchronousRun(statJob, 0);
     KFileItem i(statJob->statResult(), u);
-    kDebug(kfile_area) << "KFileItem " << u.path() << " " << i.isDir() << " " << u.isLocalFile() << " " << QFile::exists( u.path() );
+//     kDebug(kfile_area) << "KFileItem " << u.path() << " " << i.isDir() << " " << u.isLocalFile() << " " << QFile::exists( u.path() );
     if ( res && i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) {
         // trust isDir() only if the file is
         // local (we cannot stat non-local urls) and if it exists!
@@ -1468,7 +1269,7 @@ void KFileWidget::setSelection(const QString& url)
             // filename must be decoded, or "name with space" would become
             // "name%20with%20space", so we use KUrl::fileName()
             filename = u.fileName();
-            kDebug(kfile_area) << "filename " << filename;
+//             kDebug(kfile_area) << "filename " << filename;
             d->selection = filename;
             d->setLocationText( u );
 
@@ -1493,7 +1294,7 @@ void KFileWidget::setSelection(const QString& url)
 
 void KFileWidgetPrivate::_k_slotLoadingFinished()
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     if ( !selection.isEmpty() )
         ops->setCurrentItem( selection );
@@ -1501,40 +1302,50 @@ void KFileWidgetPrivate::_k_slotLoadingFinished()
 
 void KFileWidgetPrivate::_k_fileCompletion( const QString& match )
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
-    if ( match.isEmpty() && ops->view() ) {
+    if (locationEdit->currentText().contains('"')) {
+        return;
+    }
+
+    if (match.isEmpty() && ops->view()) {
         ops->view()->clearSelection();
     } else {
-        ops->setCurrentItem( match );
-        setDummyHistoryEntry( locationEdit->currentText(), KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( match ), KIconLoader::Small ), !locationEdit->currentText().isEmpty() );
-        locationEdit->setCompletedText( match );
+        ops->setCurrentItem(match);
+        setDummyHistoryEntry(locationEdit->currentText(), KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( match ), KIconLoader::Small), !locationEdit->currentText().isEmpty());
+        locationEdit->setCompletedText(match);
     }
 }
 
 void KFileWidgetPrivate::_k_slotLocationChanged( const QString& text )
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
-    locationEdit->lineEdit()->setModified( true );
+    locationEdit->lineEdit()->setModified(true);
 
-    if ( text.isEmpty() && ops->view() )
+    if (text.isEmpty() && ops->view()) {
         ops->view()->clearSelection();
+    }
 
-    if ( text.isEmpty() ) {
+    if (text.isEmpty()) {
         removeDummyHistoryEntry();
     } else {
         setDummyHistoryEntry( text );
     }
 
-    ops->setCurrentItem( text );
+    const KUrl::List urlList(tokenize(text));
+    QStringList stringList;
+    foreach (const KUrl &url, urlList) {
+        stringList << url.fileName();
+    }
+    ops->setCurrentItems(stringList);
 
     updateFilter();
 }
 
 KUrl KFileWidget::selectedUrl() const
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     if ( d->inAccept )
         return d->url;
@@ -1544,11 +1355,11 @@ KUrl KFileWidget::selectedUrl() const
 
 KUrl::List KFileWidget::selectedUrls() const
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     KUrl::List list;
     if ( d->inAccept ) {
-        if ( (d->ops->mode() & KFile::Files) == KFile::Files )
+        if (d->ops->mode() & KFile::Files)
             list = d->parseSelectedUrls();
         else
             list.append( d->url );
@@ -1559,7 +1370,7 @@ KUrl::List KFileWidget::selectedUrls() const
 
 KUrl::List& KFileWidgetPrivate::parseSelectedUrls()
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     if ( filenames.isEmpty() ) {
         return urlList;
@@ -1594,7 +1405,7 @@ KUrl::List& KFileWidgetPrivate::parseSelectedUrls()
 // FIXME: current implementation drawback: a filename can't contain quotes
 KUrl::List KFileWidgetPrivate::tokenize( const QString& line ) const
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     KUrl::List urls;
     KUrl u( ops->url() );
@@ -1609,22 +1420,13 @@ KUrl::List KFileWidgetPrivate::tokenize( const QString& line ) const
         return urls;
     }
 
-    if ( (count % 2) == 1 ) { // odd number of " -> error
-        KMessageBox::sorry(q, i18n("The requested filenames\n"
-                                   "%1\n"
-                                   "do not appear to be valid;\n"
-                                   "make sure every filename is enclosed in double quotes.", line),
-                           i18n("Filename Error"));
-        return urls;
-    }
-
     int start = 0;
     int index1 = -1, index2 = -1;
     while ( true ) {
         index1 = line.indexOf( '"', start );
         index2 = line.indexOf( '"', index1 + 1 );
 
-        if ( index1 < 0 )
+        if ( index1 < 0 || index2 < 0 )
             break;
 
         // get everything between the " "
@@ -1641,10 +1443,10 @@ KUrl::List KFileWidgetPrivate::tokenize( const QString& line ) const
 
 QString KFileWidget::selectedFile() const
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     if ( d->inAccept ) {
-        const KUrl url = KIO::NetAccess::mostLocalUrl(d->url,topLevelWidget());
+        const KUrl url = d->mostLocalUrl(d->url);
         if (url.isLocalFile())
             return url.path();
         else {
@@ -1658,18 +1460,18 @@ QString KFileWidget::selectedFile() const
 
 QStringList KFileWidget::selectedFiles() const
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     QStringList list;
 
-    if ( d->inAccept ) {
-        if ( (d->ops->mode() & KFile::Files) == KFile::Files ) {
+    if (d->inAccept) {
+        if (d->ops->mode() & KFile::Files) {
             KUrl::List urls = d->parseSelectedUrls();
             QList<KUrl>::const_iterator it = urls.begin();
-            while ( it != urls.end() ) {
-                KUrl url = KIO::NetAccess::mostLocalUrl(*it,topLevelWidget());
-                if ( url.isLocalFile() )
-                    list.append( url.path() );
+            while (it != urls.end()) {
+                KUrl url = d->mostLocalUrl(*it);
+                if (url.isLocalFile())
+                    list.append(url.path());
                 ++it;
             }
         }
@@ -1716,7 +1518,7 @@ void KFileWidget::showEvent(QShowEvent* event)
 
 void KFileWidget::setMode( KFile::Modes m )
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     d->ops->setMode(m);
     if ( d->ops->dirOnlyMode() ) {
@@ -1737,7 +1539,7 @@ KFile::Modes KFileWidget::mode() const
 
 void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     readRecentFiles(configGroup);
 
@@ -1749,8 +1551,8 @@ void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
     combo->setMaxItems( configGroup.readEntry( RecentURLsNumber,
                                        DefaultRecentURLsNumber ) );
     combo->setUrl( ops->url() );
-    autoDirectoryFollowing = configGroup.readEntry( AutoDirectoryFollowing,
-                                            DefaultDirectoryFollowing );
+    autoDirectoryFollowing = configGroup.readEntry(AutoDirectoryFollowing,
+                                                   DefaultDirectoryFollowing);
 
     KGlobalSettings::Completion cm = (KGlobalSettings::Completion)
                                       configGroup.readEntry( PathComboCompletionMode,
@@ -1788,7 +1590,7 @@ void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
 
 void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     // these settings are global settings; ALL instances of the file dialog
     // should reflect them
@@ -1820,7 +1622,7 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
 
 void KFileWidgetPrivate::readRecentFiles(KConfigGroup &cg)
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     locationEdit->setMaxItems(cg.readEntry(RecentFilesNumber, DefaultRecentURLsNumber));
     locationEdit->setUrls(cg.readPathEntry(RecentFiles, QStringList()),
@@ -1830,7 +1632,7 @@ void KFileWidgetPrivate::readRecentFiles(KConfigGroup &cg)
 
 void KFileWidgetPrivate::saveRecentFiles(KConfigGroup &cg)
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
     cg.writePathEntry(RecentFiles, locationEdit->urls());
 }
 
@@ -1847,7 +1649,7 @@ KPushButton * KFileWidget::cancelButton() const
 // Called by KFileDialog
 void KFileWidget::slotCancel()
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     d->ops->close();
 
@@ -1867,7 +1669,7 @@ bool KFileWidget::keepsLocation() const
 
 void KFileWidget::setOperationMode( OperationMode mode )
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     d->operationMode = mode;
     d->keepLocation = (mode == Saving);
@@ -1892,8 +1694,8 @@ KFileWidget::OperationMode KFileWidget::operationMode() const
 
 void KFileWidgetPrivate::_k_slotAutoSelectExtClicked()
 {
-    kDebug (kfile_area) << "slotAutoSelectExtClicked(): "
-                         << autoSelectExtCheckBox->isChecked() << endl;
+//     kDebug (kfile_area) << "slotAutoSelectExtClicked(): "
+//                          << autoSelectExtCheckBox->isChecked() << endl;
 
     // whether the _user_ wants it on/off
     autoSelectExtChecked = autoSelectExtCheckBox->isChecked();
@@ -1904,20 +1706,20 @@ void KFileWidgetPrivate::_k_slotAutoSelectExtClicked()
 
 void KFileWidgetPrivate::_k_placesViewSplitterMoved(int pos, int index)
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     // we need to record the size of the splitter when the splitter changes size
     // so we can keep the places box the right size!
     if (placesDock && index == 1) {
         placesViewWidth = pos;
-        kDebug() << "setting lafBox minwidth to" << placesViewWidth;
+//         kDebug() << "setting lafBox minwidth to" << placesViewWidth;
         lafBox->setColumnMinimumWidth(0, placesViewWidth);
     }
 }
 
 void KFileWidgetPrivate::_k_activateUrlNavigator()
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     urlNavigator->setUrlEditable(true);
     urlNavigator->setFocus();
@@ -1926,17 +1728,17 @@ void KFileWidgetPrivate::_k_activateUrlNavigator()
 
 static QString getExtensionFromPatternList(const QStringList &patternList)
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     QString ret;
-    kDebug (kfile_area) << "\tgetExtension " << patternList;
+//     kDebug (kfile_area) << "\tgetExtension " << patternList;
 
     QStringList::ConstIterator patternListEnd = patternList.end();
     for (QStringList::ConstIterator it = patternList.begin();
          it != patternListEnd;
          ++it)
     {
-        kDebug (kfile_area) << "\t\ttry: \'" << (*it) << "\'";
+//         kDebug (kfile_area) << "\t\ttry: \'" << (*it) << "\'";
 
         // is this pattern like "*.BMP" rather than useless things like:
         //
@@ -1984,7 +1786,7 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
     // COPYING.txt ...)
     //
 
-    kDebug (kfile_area) << "Figure out an extension: ";
+//     kDebug (kfile_area) << "Figure out an extension: ";
     QString lastExtension = extension;
     extension.clear();
 
@@ -2002,8 +1804,8 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
             if (filter.indexOf ('/') < 0)
             {
                 extension = getExtensionFromPatternList (filter.split(" ",QString::SkipEmptyParts)/*QStringList::split (" ", filter)*/).toLower();
-                kDebug (kfile_area) << "\tsetFilter-style: pattern ext=\'"
-                                    << extension << "\'" << endl;
+//                 kDebug (kfile_area) << "\tsetFilter-style: pattern ext=\'"
+//                                     << extension << "\'" << endl;
             }
             // e.g. "text/html"
             else
@@ -2017,16 +1819,16 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
                     if (!nativeExtension.isEmpty() && nativeExtension.at (0) == '.')
                     {
                         extension = nativeExtension.toLower();
-                        kDebug (kfile_area) << "\tsetMimeFilter-style: native ext=\'"
-                                            << extension << "\'" << endl;
+//                         kDebug (kfile_area) << "\tsetMimeFilter-style: native ext=\'"
+//                                             << extension << "\'" << endl;
                     }
 
                     // no X-KDE-NativeExtension
                     if (extension.isEmpty())
                     {
                         extension = getExtensionFromPatternList (mime->patterns()).toLower();
-                        kDebug (kfile_area) << "\tsetMimeFilter-style: pattern ext=\'"
-                                            << extension << "\'" << endl;
+//                         kDebug (kfile_area) << "\tsetMimeFilter-style: pattern ext=\'"
+//                                             << extension << "\'" << endl;
                     }
                 }
             }
@@ -2118,7 +1920,7 @@ void KFileWidgetPrivate::updateLocationEditExtension (const QString &lastExtensi
         return;
 
     KUrl url = getCompleteUrl(urlStr);
-    kDebug (kfile_area) << "updateLocationEditExtension (" << url << ")";
+//     kDebug (kfile_area) << "updateLocationEditExtension (" << url << ")";
 
     const int fileNameOffset = urlStr.lastIndexOf ('/') + 1;
     QString fileName = urlStr.mid (fileNameOffset);
@@ -2135,11 +1937,11 @@ void KFileWidgetPrivate::updateLocationEditExtension (const QString &lastExtensi
         bool result = KIO::NetAccess::synchronousRun(statJob, 0);
         if (result)
         {
-            kDebug (kfile_area) << "\tfile exists";
+//             kDebug (kfile_area) << "\tfile exists";
 
             if (statJob->statResult().isDir())
             {
-                kDebug (kfile_area) << "\tisDir - won't alter extension";
+//                 kDebug (kfile_area) << "\tisDir - won't alter extension";
                 return;
             }
 
@@ -2174,7 +1976,7 @@ void KFileWidgetPrivate::updateLocationEditExtension (const QString &lastExtensi
 // (this prevents you from accidently saving "file.kwd" as RTF, for example)
 void KFileWidgetPrivate::updateFilter()
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     if ((operationMode == KFileWidget::Saving) && (ops->mode() & KFile::File) ) {
         const QString urlStr = locationEditCurrentText();
@@ -2193,7 +1995,7 @@ void KFileWidgetPrivate::updateFilter()
 // applies only to a file that doesn't already exist
 void KFileWidgetPrivate::appendExtension (KUrl &url)
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     if (!autoSelectExtCheckBox->isChecked() || extension.isEmpty())
         return;
@@ -2202,7 +2004,7 @@ void KFileWidgetPrivate::appendExtension (KUrl &url)
     if (fileName.isEmpty())
         return;
 
-    kDebug (kfile_area) << "appendExtension(" << url << ")";
+//     kDebug (kfile_area) << "appendExtension(" << url << ")";
 
     const int len = fileName.length();
     const int dot = fileName.lastIndexOf ('.');
@@ -2219,7 +2021,7 @@ void KFileWidgetPrivate::appendExtension (KUrl &url)
     bool res = KIO::NetAccess::synchronousRun(statJob, 0);
     if (res)
     {
-        kDebug (kfile_area) << "\tfile exists - won't append extension";
+//         kDebug (kfile_area) << "\tfile exists - won't append extension";
         return;
     }
 
@@ -2236,15 +2038,15 @@ void KFileWidgetPrivate::appendExtension (KUrl &url)
         // and the trailing dot will be removed (or just stop being lazy and
         // turn off this feature so that you can type "README.")
         //
-        kDebug (kfile_area) << "\tstrip trailing dot";
+//         kDebug (kfile_area) << "\tstrip trailing dot";
         url.setFileName (fileName.left (len - 1));
     }
     // evilmatically append extension :) if the user hasn't specified one
     else if (unspecifiedExtension)
     {
-        kDebug (kfile_area) << "\tappending extension \'" << extension << "\'...";
+//         kDebug (kfile_area) << "\tappending extension \'" << extension << "\'...";
         url.setFileName (fileName + extension);
-        kDebug (kfile_area) << "\tsaving as \'" << url << "\'";
+//         kDebug (kfile_area) << "\tsaving as \'" << url << "\'";
     }
 }
 
@@ -2256,7 +2058,7 @@ void KFileWidgetPrivate::addToRecentDocuments()
     int atmost = KRecentDocument::maximumItems();
     //don't add more than we need. KRecentDocument::add() is pretty slow
 
-    if ( m & KFile::LocalOnly ) {
+    if (m & KFile::LocalOnly) {
         const QStringList files = q->selectedFiles();
         QStringList::ConstIterator it = files.begin();
         for ( ; it != files.end() && atmost > 0; ++it ) {
@@ -2375,7 +2177,7 @@ void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
 KUrl KFileWidget::getStartUrl( const KUrl& startDir,
                                QString& recentDirClass )
 {
-    kDebug(kfile_area);
+//     kDebug(kfile_area);
 
     recentDirClass.clear();
     KUrl ret;
@@ -2500,6 +2302,29 @@ void KFileWidget::virtual_hook( int id, void* data )
 QString KFileWidgetPrivate::locationEditCurrentText() const
 {
     return QDir::fromNativeSeparators(locationEdit->currentText().trimmed());
+}
+
+KUrl KFileWidgetPrivate::mostLocalUrl(const KUrl &url)
+{
+    if (url.isLocalFile()) {
+        return url;
+    }
+
+    KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
+    bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+
+    if (!res) {
+        return url;
+    }
+
+    const QString path = statJob->statResult().stringValue(KIO::UDSEntry::UDS_LOCAL_PATH);
+    if (!path.isEmpty()) {
+        KUrl newUrl;
+        newUrl.setPath(path);
+        return newUrl;
+    }
+
+    return url;
 }
 
 #include "kfilewidget.moc"

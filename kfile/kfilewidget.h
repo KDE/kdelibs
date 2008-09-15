@@ -6,6 +6,7 @@
                   2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
                   2001 Frerich Raabe <raabe@kde.org>
                   2007 David Faure <faure@kde.org>
+                  2008 Rafael Fernández López <ereslibre@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -454,7 +455,6 @@ private:
     Q_PRIVATE_SLOT(d, void _k_slotFilterChanged())
     Q_PRIVATE_SLOT(d, void _k_fileHighlighted(const KFileItem&))
     Q_PRIVATE_SLOT(d, void _k_fileSelected(const KFileItem&))
-    Q_PRIVATE_SLOT(d, void _k_slotStatResult(KJob*))
     Q_PRIVATE_SLOT(d, void _k_slotLoadingFinished())
     Q_PRIVATE_SLOT(d, void _k_fileCompletion(const QString&))
     Q_PRIVATE_SLOT(d, void _k_toggleSpeedbar(bool))

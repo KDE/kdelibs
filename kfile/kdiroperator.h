@@ -204,7 +204,7 @@ public:
 
     /**
      * Clears the current selection and attempts to set @p filename
-     * the current file. filename is just the name, no path or url.
+     * the current file. @p filename is just the name, no path or url.
      */
     void setCurrentItem(const QString& filename);
 
@@ -213,6 +213,18 @@ public:
      * as the the current item.
      */
     void setCurrentItem(const KFileItem& item);
+
+    /**
+     * Clears the current selection and attempts to set @p filenames
+     * the current files. @p filenames is just the name, no path or url.
+     */
+    void setCurrentItems(const QStringList& filenames);
+
+    /**
+     * Clears the current selection and attempts to set @p items
+     * as the current items.
+     */
+    void setCurrentItems(const KFileItemList& items);
 
     /**
      * Sets a new view to be used for showing and browsing files.
