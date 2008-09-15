@@ -32,6 +32,7 @@ private Q_SLOTS:
     void testDetach();
     void testBasic();
     void testRootDirectory();
+    void testHiddenFile();
     void testMimeTypeOnDemand();
     void testCmp();
 

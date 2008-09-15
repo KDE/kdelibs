@@ -149,6 +149,17 @@ void KFileItemTest::testRootDirectory()
     QVERIFY(!fileItem.isDesktopFile());
 }
 
+void KFileItemTest::testHiddenFile()
+{
+    KTempDir tempDir;
+    QFile file(tempDir.name() + ".hiddenfile");
+    QVERIFY(file.open(QIODevice::WriteOnly));
+    KFileItem fileItem(KUrl(file.fileName()), QString(), KFileItem::Unknown);
+    QCOMPARE(fileItem.text(), QString(".hiddenfile"));
+    QVERIFY(fileItem.isLocalFile());
+    QVERIFY(fileItem.isHidden());
+}
+
 void KFileItemTest::testMimeTypeOnDemand()
 {
     KTemporaryFile file;
@@ -257,5 +268,3 @@ void KFileItemTest::testEncodeFileName()
     QFETCH(QString, expectedFileName);
     QCOMPARE(KIO::encodeFileName(text), expectedFileName);
 }
-
-// TODO test KFileItem(UDSEntry), for instance doing a synchronous kio listing or stat.
