@@ -89,7 +89,7 @@ public:
      * be used for the system tray icon. Memory management for the movie will
      * be handled by KSystemTrayIcon.
      */
-    explicit KSystemTrayIcon(QMovie* movie, QWidget* parent = 0);
+    explicit KSystemTrayIcon(QMovie* movie, QWidget* parent);
 
     /**
      * Destructor
