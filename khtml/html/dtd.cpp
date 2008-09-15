@@ -474,14 +474,11 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
     case ID_FONT:
     case ID_LEGEND:
     case ID_Q:
+    case ID_A:
     case ID_NOBR:
     case ID_WBR:
         // %inline *
-        return check_inline(childID, strict) ||
-               (!strict && check_block(childID, strict));
-    case ID_A:
-        // A: %inline * (but even strict sites expect %flow)
-        return check_flow(childID, strict);
+        return check_inline(childID, strict) || check_block(childID, strict);
     case ID_P:
         // P: %inline *
         return check_inline(childID, strict) ||

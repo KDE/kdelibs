@@ -801,14 +801,6 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             insertNode(e);
             handled = true;
             break;
-        case ID_DL:
-            popBlock(ID_DL);
-            handled = true;
-            break;
-        case ID_DT:
-            popBlock(ID_DT);
-            handled = true;
-            break;
         case ID_FORM:
             popBlock(ID_FORM);
             handled = true;
