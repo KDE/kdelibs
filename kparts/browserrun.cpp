@@ -305,7 +305,7 @@ bool BrowserRun::allowExecution( const QString &mimeType, const KUrl &url )
 
 static QString makeQuestion( const KUrl& url, const QString& mimeType, const QString& suggestedFileName )
 {
-    QString surl = KStringHandler::csqueeze( url.prettyUrl() );
+    QString surl = url.prettyUrl();
     KMimeType::Ptr mime = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
     QString comment = mimeType;
 

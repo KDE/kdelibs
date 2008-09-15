@@ -38,6 +38,7 @@
 #include <kiconloader.h>
 #include <kconfiggroup.h>
 #include <ktextedit.h>
+#include <ksqueezedtextlabel.h>
 #include <kwindowsystem.h>
 
 // Some i18n filters, that standard button texts are piped through
@@ -149,13 +150,6 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QMessageBox::Icon icon,
                       ask, checkboxReturn, options, details, icon);
 }
 
-static int longest_line( const QFontMetrics & fm, const QString & text ) {
-    const QStringList lines = QTextDocumentFragment::fromHtml( text ).toPlainText().split( QLatin1String( "\n" ) );
-    int len = 0;
-    Q_FOREACH( const QString & line, lines )
-        len = qMax( len, fm.width( line ) );
-    return len;
-}
 
 int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
                              const QString &text, const QStringList &strlist,
@@ -170,8 +164,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     QHBoxLayout *hLayout = new QHBoxLayout();
     hLayout->setMargin(0);
     hLayout->setSpacing(KDialog::spacingHint());
-    mainLayout->addLayout(hLayout);
-    mainLayout->addStretch();
+    mainLayout->addLayout(hLayout,5);
 
     QLabel *iconLabel = new QLabel(mainWidget);
 
@@ -184,10 +177,23 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     iconLayout->addWidget(iconLabel);
     iconLayout->addStretch(5);
 
-    hLayout->addLayout(iconLayout);
+    hLayout->addLayout(iconLayout,0);
     hLayout->addSpacing(KDialog::spacingHint());
 
     QLabel *messageLabel = new QLabel(text, mainWidget);
+    QRect desktop = KGlobalSettings::desktopGeometry(dialog);
+    bool usingSqueezedTextLabel=false;
+    if (desktop.width() / 2 < messageLabel->sizeHint().width()) {
+        // do only enable automatic wrapping of messages which are longer than one third of the current screen
+        messageLabel->setWordWrap(true);
+        usingSqueezedTextLabel=desktop.width() / 2 < messageLabel->sizeHint().width();
+        if (usingSqueezedTextLabel)
+        {
+            delete messageLabel;
+            messageLabel = new KSqueezedTextLabel(text, mainWidget);
+        }
+    }
+
     messageLabel->setOpenExternalLinks(options & KMessageBox::AllowLink );
     Qt::TextInteractionFlags flags = Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard;
     if ( options & KMessageBox::AllowLink )
@@ -197,32 +203,36 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     messagePal.setColor(QPalette::Window, Qt::transparent);
     messageLabel->setPalette(messagePal);
 
-    QRect desktop = KGlobalSettings::desktopGeometry(dialog);
-    if (desktop.width() / 3 < longest_line(messageLabel->fontMetrics(), text)) {
-        // do only enable automatic wrapping of messages which are longer than one third of the current screen
-        messageLabel->setWordWrap(true);
+
+    bool usingScrollArea=desktop.height() / 3 < messageLabel->sizeHint().height();
+    if (usingScrollArea)
+    {
+        QScrollArea* messageScrollArea = new QScrollArea(mainWidget);
+        messageScrollArea->setWidget(messageLabel);
+        messageScrollArea->setFrameShape(QFrame::NoFrame);
+        messageScrollArea->setWidgetResizable(true);
+        QPalette scrollPal(messageScrollArea->palette());
+        scrollPal.setColor(QPalette::Window, Qt::transparent);
+        messageScrollArea->setPalette(scrollPal);
+        hLayout->addWidget(messageScrollArea,5);
     }
+    else
+        hLayout->addWidget(messageLabel,5);
 
-    QScrollArea* messageScrollArea = new QScrollArea(mainWidget);
-    messageScrollArea->setWidget(messageLabel);
-    messageScrollArea->setFrameShape(QFrame::NoFrame);
-    messageScrollArea->setWidgetResizable(true);
-    QPalette scrollPal(messageScrollArea->palette());
-    scrollPal.setColor(QPalette::Window, Qt::transparent);
-    messageScrollArea->setPalette(scrollPal);
 
-    hLayout->addWidget(messageScrollArea);
-
-    QListWidget *listWidget = 0;
-    if (!strlist.isEmpty()) {
+    bool usingListWidget=!strlist.isEmpty();
+    if (usingListWidget) {
         // enable automatic wrapping since the listwidget has already a good initial width
         messageLabel->setWordWrap(true);
-        listWidget = new QListWidget(mainWidget);
-        mainLayout->addWidget(listWidget);
+        QListWidget *listWidget = new QListWidget(mainWidget);
+        mainLayout->addWidget(listWidget,usingScrollArea?10:50);
         listWidget->addItems(strlist);
         listWidget->setSelectionMode(QListWidget::NoSelection);
-        mainLayout->setStretchFactor(listWidget, 1);
+        messageLabel->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Minimum);
     }
+    else if (!usingScrollArea)
+        mainLayout->addStretch(15);
+
 
     QPointer<QCheckBox> checkbox = 0;
     if (!ask.isEmpty()) {
@@ -244,26 +254,30 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
                 flags |= Qt::LinksAccessibleByMouse | Qt::LinksAccessibleByKeyboard;;
             detailsLabel->setTextInteractionFlags(flags);
             detailsLabel->setWordWrap(true);
-            detailsLayout->addWidget(detailsLabel);
+            detailsLayout->addWidget(detailsLabel,50);
         } else {
             KTextEdit *detailTextEdit = new KTextEdit(details);
             detailTextEdit->setReadOnly(true);
             detailTextEdit->setMinimumHeight(detailTextEdit->fontMetrics().lineSpacing() * 11);
-            detailsLayout->addWidget(detailTextEdit);
+            detailsLayout->addWidget(detailTextEdit,50);
         }
+        if (!usingListWidget)
+            mainLayout->setStretchFactor(hLayout,10);
         dialog->setDetailsWidget(detailsGroup);
     }
 
     dialog->setMainWidget(mainWidget);
     dialog->showButtonSeparator(true);
-    if (!listWidget) {
-        int hfw = messageLabel->heightForWidth(messageScrollArea->sizeHint().width() - 2);
-        if (hfw != messageScrollArea->sizeHint().height() && hfw < desktop.height() / 2) {
-            messageScrollArea->setMinimumHeight(hfw);
-        }
-        if (details.isEmpty())
-            dialog->setFixedSize(dialog->sizeHint() + QSize( 10, 10 ));
+    if (!usingListWidget && !usingScrollArea && !usingSqueezedTextLabel && details.isEmpty())
+        dialog->setFixedSize(dialog->sizeHint() + QSize( 10, 10 ));
+    else if (!details.isEmpty() && dialog->minimumHeight()<iconLabel->sizeHint().height()*2)//strange bug...
+    {
+        if (!usingScrollArea)
+            dialog->setMinimumSize(300,qMax(150,qMax(iconLabel->sizeHint().height(),messageLabel->sizeHint().height())));
+        else
+            dialog->setMinimumSize(300,qMax(150,iconLabel->sizeHint().height()));
     }
+
 
     if ((options & KMessageBox::Dangerous)) {
         if (dialog->isButtonEnabled(KDialog::Cancel))
