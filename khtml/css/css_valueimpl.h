@@ -96,6 +96,7 @@ public:
 
 protected:
     DOMString getShortHandValue( const int* properties, int number ) const;
+    DOMString getCommonValue(const int* properties, int number) const;
     DOMString getLayeredShortHandValue(const int* properties, unsigned number) const;
     DOMString get4Values( const int* properties ) const;
 
