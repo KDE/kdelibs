@@ -234,7 +234,7 @@ bool StorageAccess::callHalVolumeMount()
     if (halOptions.contains("uid=")) {
         options << "uid="+QString::number(::getuid());
     }
-    //respect window$-enforced charsets for fat
+    //respect Microsoft Windows-enforced charsets for fat
     if ( m_device->property("volume.fstype").toString()=="vfat" && halOptions.contains("codepage=") ) {
         QString codepage;
         switch (QLocale::system().language()) {
