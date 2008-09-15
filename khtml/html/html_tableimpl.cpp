@@ -465,8 +465,11 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
         else
             frame = Box, rules = All;
 
-
-        if (attached()) updateFrame();
+        if (attached()) {
+            updateFrame();
+            if (tFirstBody())
+                setTableCellsChanged(tFirstBody());
+        }
         break;
     }
     case ATTR_BGCOLOR:
