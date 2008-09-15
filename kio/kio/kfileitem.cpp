@@ -892,7 +892,10 @@ bool KFileItem::isHidden() const
     if ( d->m_hidden != KFileItemPrivate::Auto )
         return d->m_hidden == KFileItemPrivate::Hidden;
 
-    const QString fileName = d->m_url.isEmpty() /*should never happen*/ ? d->m_strName : d->m_url.fileName();
+    // Prefer the filename that is part of the URL, in case the display name is different.
+    QString fileName = d->m_url.fileName();
+    if (fileName.isEmpty()) // e.g. "trash:/"
+        fileName = d->m_strName;
     return fileName[0] == '.';
 }
 

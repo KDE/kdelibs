@@ -73,6 +73,7 @@ void KFileItemTest::testNull()
     QVERIFY(!null.isNull());
     QVERIFY(null.isMarked());
     QVERIFY(null.isReadable());
+    QVERIFY(!null.isHidden());
 }
 
 void KFileItemTest::testDoesNotExist()
