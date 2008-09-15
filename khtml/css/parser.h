@@ -51,46 +51,47 @@
      IDENT = 267,
      NTH = 268,
      HASH = 269,
-     IMPORT_SYM = 270,
-     PAGE_SYM = 271,
-     MEDIA_SYM = 272,
-     FONT_FACE_SYM = 273,
-     CHARSET_SYM = 274,
-     NAMESPACE_SYM = 275,
-     KHTML_RULE_SYM = 276,
-     KHTML_DECLS_SYM = 277,
-     KHTML_VALUE_SYM = 278,
-     KHTML_MEDIAQUERY_SYM = 279,
-     IMPORTANT_SYM = 280,
-     MEDIA_ONLY = 281,
-     MEDIA_NOT = 282,
-     MEDIA_AND = 283,
-     QEMS = 284,
-     EMS = 285,
-     EXS = 286,
-     PXS = 287,
-     CMS = 288,
-     MMS = 289,
-     INS = 290,
-     PTS = 291,
-     PCS = 292,
-     DEGS = 293,
-     RADS = 294,
-     GRADS = 295,
-     MSECS = 296,
-     SECS = 297,
-     HERZ = 298,
-     KHERZ = 299,
-     DPI = 300,
-     DPCM = 301,
-     DIMEN = 302,
-     PERCENTAGE = 303,
-     FLOAT = 304,
-     INTEGER = 305,
-     URI = 306,
-     FUNCTION = 307,
-     NOTFUNCTION = 308,
-     UNICODERANGE = 309
+     HEXCOLOR = 270,
+     IMPORT_SYM = 271,
+     PAGE_SYM = 272,
+     MEDIA_SYM = 273,
+     FONT_FACE_SYM = 274,
+     CHARSET_SYM = 275,
+     NAMESPACE_SYM = 276,
+     KHTML_RULE_SYM = 277,
+     KHTML_DECLS_SYM = 278,
+     KHTML_VALUE_SYM = 279,
+     KHTML_MEDIAQUERY_SYM = 280,
+     IMPORTANT_SYM = 281,
+     MEDIA_ONLY = 282,
+     MEDIA_NOT = 283,
+     MEDIA_AND = 284,
+     QEMS = 285,
+     EMS = 286,
+     EXS = 287,
+     PXS = 288,
+     CMS = 289,
+     MMS = 290,
+     INS = 291,
+     PTS = 292,
+     PCS = 293,
+     DEGS = 294,
+     RADS = 295,
+     GRADS = 296,
+     MSECS = 297,
+     SECS = 298,
+     HERZ = 299,
+     KHERZ = 300,
+     DPI = 301,
+     DPCM = 302,
+     DIMEN = 303,
+     PERCENTAGE = 304,
+     FLOAT = 305,
+     INTEGER = 306,
+     URI = 307,
+     FUNCTION = 308,
+     NOTFUNCTION = 309,
+     UNICODERANGE = 310
    };
 #endif
 /* Tokens.  */
@@ -106,46 +107,47 @@
 #define IDENT 267
 #define NTH 268
 #define HASH 269
-#define IMPORT_SYM 270
-#define PAGE_SYM 271
-#define MEDIA_SYM 272
-#define FONT_FACE_SYM 273
-#define CHARSET_SYM 274
-#define NAMESPACE_SYM 275
-#define KHTML_RULE_SYM 276
-#define KHTML_DECLS_SYM 277
-#define KHTML_VALUE_SYM 278
-#define KHTML_MEDIAQUERY_SYM 279
-#define IMPORTANT_SYM 280
-#define MEDIA_ONLY 281
-#define MEDIA_NOT 282
-#define MEDIA_AND 283
-#define QEMS 284
-#define EMS 285
-#define EXS 286
-#define PXS 287
-#define CMS 288
-#define MMS 289
-#define INS 290
-#define PTS 291
-#define PCS 292
-#define DEGS 293
-#define RADS 294
-#define GRADS 295
-#define MSECS 296
-#define SECS 297
-#define HERZ 298
-#define KHERZ 299
-#define DPI 300
-#define DPCM 301
-#define DIMEN 302
-#define PERCENTAGE 303
-#define FLOAT 304
-#define INTEGER 305
-#define URI 306
-#define FUNCTION 307
-#define NOTFUNCTION 308
-#define UNICODERANGE 309
+#define HEXCOLOR 270
+#define IMPORT_SYM 271
+#define PAGE_SYM 272
+#define MEDIA_SYM 273
+#define FONT_FACE_SYM 274
+#define CHARSET_SYM 275
+#define NAMESPACE_SYM 276
+#define KHTML_RULE_SYM 277
+#define KHTML_DECLS_SYM 278
+#define KHTML_VALUE_SYM 279
+#define KHTML_MEDIAQUERY_SYM 280
+#define IMPORTANT_SYM 281
+#define MEDIA_ONLY 282
+#define MEDIA_NOT 283
+#define MEDIA_AND 284
+#define QEMS 285
+#define EMS 286
+#define EXS 287
+#define PXS 288
+#define CMS 289
+#define MMS 290
+#define INS 291
+#define PTS 292
+#define PCS 293
+#define DEGS 294
+#define RADS 295
+#define GRADS 296
+#define MSECS 297
+#define SECS 298
+#define HERZ 299
+#define KHERZ 300
+#define DPI 301
+#define DPCM 302
+#define DIMEN 303
+#define PERCENTAGE 304
+#define FLOAT 305
+#define INTEGER 306
+#define URI 307
+#define FUNCTION 308
+#define NOTFUNCTION 309
+#define UNICODERANGE 310
 
 
 

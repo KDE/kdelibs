@@ -2,7 +2,7 @@
 %option noyywrap
 %option 8bit
 %option stack
-%s mediaquery
+%s mediaquery at_rule block
 
 h               [0-9a-fA-F]
 nonascii        [\200-\377]
@@ -12,6 +12,7 @@ nmstart         [_a-zA-Z]|{nonascii}|{escape}
 nmchar          [_a-zA-Z0-9-]|{nonascii}|{escape}
 string1         \"([\t !#$%&(-~]|\\{nl}|\'|{nonascii}|{escape})*\"
 string2         \'([\t !#$%&(-~]|\\{nl}|\"|{nonascii}|{escape})*\'
+hexcolor        {h}{3}|{h}{6}
 
 ident           -?{nmstart}{nmchar}*
 name            {nmchar}+
@@ -42,20 +43,21 @@ nth             (-?[0-9]*n[\+-][0-9]+)|(-?[0-9]*n)
 <mediaquery>"and"       {yyTok = MEDIA_AND; return yyTok;}
 
 {string}                {yyTok = STRING; return yyTok;}
-
 {ident}                 {yyTok = IDENT; return yyTok;}
-
 {nth}                   {yyTok = NTH; return yyTok;}
 
-"#"{name}               {yyTok = HASH; return yyTok;}
 
+<block>"#"{hexcolor}           {yyTok = HEXCOLOR; return yyTok;}
+"#"{ident}              {yyTok = HASH; return yyTok;}
+
+/* @rule tokens surrounding css declaration blocks with { } braces must start a BEGIN(at_rule) context */
 "@import"               {BEGIN(mediaquery); yyTok = IMPORT_SYM; return yyTok;}
-"@page"                 {yyTok = PAGE_SYM; return yyTok;}
+"@page"                 {BEGIN(at_rule); yyTok = PAGE_SYM; return yyTok;}
 "@media"                {BEGIN(mediaquery); yyTok = MEDIA_SYM; return yyTok;}
-"@font-face"            {yyTok = FONT_FACE_SYM; return yyTok;}
-"@charset"              {yyTok = CHARSET_SYM; return yyTok;}
-"@namespace"		{yyTok = NAMESPACE_SYM; return yyTok; }
-"@-khtml-rule"    {yyTok = KHTML_RULE_SYM; return yyTok; }
+"@font-face"            {BEGIN(at_rule); yyTok = FONT_FACE_SYM; return yyTok;}
+"@charset"              {BEGIN(at_rule); yyTok = CHARSET_SYM; return yyTok;}
+"@namespace"		{BEGIN(at_rule); yyTok = NAMESPACE_SYM; return yyTok; }
+"@-khtml-rule"    {BEGIN(at_rule); yyTok = KHTML_RULE_SYM; return yyTok; }
 "@-khtml-decls"   {yyTok = KHTML_DECLS_SYM; return yyTok; }
 "@-khtml-value"   {yyTok = KHTML_VALUE_SYM; return yyTok; }
 "@-khtml-mediaquery"   {BEGIN(mediaquery); yyTok = KHTML_MEDIAQUERY_SYM; return yyTok; }
@@ -94,6 +96,10 @@ nth             (-?[0-9]*n[\+-][0-9]+)|(-?[0-9]*n)
 U\+{range}              {yyTok = UNICODERANGE; return yyTok;}
 U\+{h}{1,6}-{h}{1,6}    {yyTok = UNICODERANGE; return yyTok;}
 
+<INITIAL>"{"		{BEGIN(block); yyTok = *yytext; return yyTok;}
+<at_rule>"{"            |
+<at_rule>";"            |
+<block>"}"              |
 <mediaquery>"{"         |
 <mediaquery>";"         {BEGIN(INITIAL); yyTok = *yytext; return yyTok; }
 .                       {yyTok = *yytext; return yyTok;}
