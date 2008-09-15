@@ -57,7 +57,7 @@ public:
 KDateWidget::KDateWidget( QWidget *parent ) : QWidget( parent ), d( new KDateWidgetPrivate )
 {
     init( QDate() );
-    setDate( QDate() );
+    setDate( QDate::currentDate() );
 }
 
 KDateWidget::KDateWidget( const QDate &date, QWidget *parent )
@@ -106,6 +106,8 @@ void KDateWidget::init( const QDate &date )
     connect( d->m_day, SIGNAL( valueChanged( int ) ), this, SLOT( slotDateChanged() ) );
     connect( d->m_month, SIGNAL( activated( int ) ), this, SLOT( slotDateChanged() ) );
     connect( d->m_year, SIGNAL( valueChanged( int ) ), this, SLOT( slotDateChanged() ) );
+
+    d->m_dat = initDate;
 }
 
 KDateWidget::~KDateWidget()
