@@ -648,10 +648,17 @@
 # kdeextragear
 50001   kfortune
 50002   mailody
+50003   digikam
 
 # KIPI - KDE Imaging Plugin Interface
 51000   KIPI (general)
 51001   KIPI (loading)
+
+# KDCRAW - KDE C++ wrapper for LibRaw
+51002   KDCRAW
+
+# KEXIV2 - KDE C++ wrapper for LibExiv2
+51003   KEXIV2
 
 # kdemultimedia
 60001   kreatecd
