@@ -13,6 +13,7 @@
 #include <QStackedWidget>
 #include <kpreviewwidgetbase.h>
 #include <kurl.h>
+#include <kmimetype.h>
 
 class KIO_EXPORT KFileMetaPreview : public KPreviewWidgetBase
 {
@@ -35,6 +36,7 @@ protected:
 
 private:
     void initPreviewProviders();
+    KPreviewWidgetBase* findExistingProvider(const QString& mimeType, const KMimeType::Ptr& mimeInfo) const;
 
     QStackedWidget *m_stack;
     QHash<QString,KPreviewWidgetBase*> m_previewProviders;

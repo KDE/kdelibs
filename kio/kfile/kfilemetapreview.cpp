@@ -14,7 +14,6 @@
 #include <kpluginloader.h>
 #include <kpluginfactory.h>
 #include <kimagefilepreview.h>
-#include <kmimetype.h>
 
 bool KFileMetaPreview::s_tryAudioPreview = true;
 
@@ -40,7 +39,7 @@ KFileMetaPreview::~KFileMetaPreview()
 void KFileMetaPreview::initPreviewProviders()
 {
     qDeleteAll(m_previewProviders);
-	m_previewProviders.clear();
+    m_previewProviders.clear();
     // hardcoded so far
 
     // image previews
@@ -58,16 +57,46 @@ void KFileMetaPreview::initPreviewProviders()
     }
 }
 
+KPreviewWidgetBase* KFileMetaPreview::findExistingProvider(const QString& mimeType, const KMimeType::Ptr& mimeInfo) const
+{
+    KPreviewWidgetBase* provider = m_previewProviders.value(mimeType);
+    if ( provider )
+        return provider;
+
+    if ( mimeInfo ) {
+        // check mime type inheritance
+        const QStringList parentMimeTypes = mimeInfo->allParentMimeTypes();
+        Q_FOREACH(const QString& parentMimeType, parentMimeTypes) {
+            provider = m_previewProviders.value(parentMimeType);
+            if (provider)
+                return provider;
+        }
+    }
+
+    // ### mimetype may be image/* for example, try that
+    const int index = mimeType.indexOf( '/' );
+    if (index > 0)
+    {
+        provider = m_previewProviders.value(mimeType.left(index + 1) + '*');
+        if (provider)
+            return provider;
+    }
+
+    return 0;
+}
+
 KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeType )
 {
-//     qDebug("### looking for: %s", mimeType.toLatin1().constData());
+    KMimeType::Ptr mimeInfo = KMimeType::mimeType( mimeType );
+
+    //     qDebug("### looking for: %s", mimeType.toLatin1().constData());
     // often the first highlighted item, where we can be sure, there is no plugin
     // (this "folders reflect icons" is a konq-specific thing, right?)
-    if ( mimeType == "inode/directory" )
+    if ( mimeInfo && mimeInfo->is("inode/directory") )
         return 0L;
 
-    KPreviewWidgetBase *provider = m_previewProviders.value( mimeType );
-    if ( provider )
+    KPreviewWidgetBase *provider = findExistingProvider(mimeType, mimeInfo);
+    if (provider)
         return provider;
 
 //qDebug("#### didn't find anything for: %s", mimeType.toLatin1().constData());
@@ -91,29 +120,10 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
     }
 
     // with the new mimetypes from the audio-preview, try again
-    provider = m_previewProviders.value( mimeType );
-    if ( provider )
+    provider = findExistingProvider(mimeType, mimeInfo);
+    if (provider)
         return provider;
 
-    // ### mimetype may be image/* for example, try that
-    int index = mimeType.indexOf( '/' );
-    if ( index > 0 )
-    {
-        provider = m_previewProviders.value( mimeType.left( index + 1 ) + '*' );
-        if ( provider )
-            return provider;
-    }
-
-    KMimeType::Ptr mimeInfo = KMimeType::mimeType( mimeType );
-    if ( mimeInfo ) {
-        // check mime type inheritance
-        const QStringList parentMimeTypes = mimeInfo->allParentMimeTypes();
-        Q_FOREACH(const QString& parentMimeType, parentMimeTypes) {
-            provider = m_previewProviders.value( parentMimeType );
-            if ( provider )
-                return provider;
-        }
-    }
     // The logic in this code duplicates the logic in PreviewJob.
     // But why do we need multiple KPreviewWidgetBase instances anyway?
 
