@@ -300,6 +300,8 @@ private:
     KRockerGesture *m_oldRockerGesture;
     //@}
 
+    //! The localized action name
+    QString m_actionNameInTable;
 
 };
 
