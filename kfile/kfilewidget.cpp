@@ -532,7 +532,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     KConfigGroup viewConfigGroup(config, ConfigGroup);
     d->readConfig(viewConfigGroup);
 
-    if (!statJob->statResult().isDir()) {
+    if (ok && !statJob->statResult().isDir()) {
         d->selection = d->url.fileName();
         d->locationEdit->setUrl(d->url.fileName());
     }
@@ -1244,53 +1244,7 @@ void KFileWidget::setSelection(const QString& url)
     if (!KProtocolManager::supportsListing(u))
         return;
 
-    /* we strip the first / from the path to avoid file://usr which means
-     *  / on host usr
-     */
-    KIO::StatJob *statJob = KIO::stat(u, KIO::HideProgressInfo);
-    bool res = KIO::NetAccess::synchronousRun(statJob, 0);
-    KFileItem i(statJob->statResult(), u);
-//     kDebug(kfile_area) << "KFileItem " << u.path() << " " << i.isDir() << " " << u.isLocalFile() << " " << QFile::exists( u.path() );
-    if ( res && i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) {
-        // trust isDir() only if the file is
-        // local (we cannot stat non-local urls) and if it exists!
-        // (as KFileItem does not check if the file exists or not
-        // -> the statbuffer is undefined -> isDir() is unreliable) (Simon)
-        setUrl(u, true);
-    }
-    else if ( res ) {
-        QString filename = u.url();
-        int sep = filename.lastIndexOf('/');
-        if (sep >= 0) { // there is a / in it
-            KUrl dir(u);
-            dir.setQuery( QString() );
-            dir.setFileName( QString() );
-            setUrl(dir, true );
-
-            // filename must be decoded, or "name with space" would become
-            // "name%20with%20space", so we use KUrl::fileName()
-            filename = u.fileName();
-//             kDebug(kfile_area) << "filename " << filename;
-            d->selection = filename;
-            d->setLocationText( u );
-
-            // tell the line edit that it has been edited
-            // otherwise we won't know this was set by the user
-            // and it will be ignored if there has been an
-            // auto completion. this caused bugs where automcompletion
-            // would start, the user would pick something from the
-            // history and then hit Ok only to get the autocompleted
-            // selection. OOD->OPS.
-            d->locationEdit->lineEdit()->setModified( true );
-        }
-
-        d->url = d->ops->url();
-        d->url.addPath(filename);
-    }
-    else {
-        d->setLocationText(url);
-        d->locationEdit->lineEdit()->setModified( true );
-    }
+    d->setLocationText(url);
 }
 
 void KFileWidgetPrivate::_k_slotLoadingFinished()
