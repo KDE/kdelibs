@@ -480,18 +480,19 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     KUrlCompletion *fileCompletionObj = new KUrlCompletion( KUrlCompletion::FileCompletion );
     KIO::StatJob *statJob = KIO::stat( d->url.url(), KIO::HideProgressInfo );
-    KIO::NetAccess::synchronousRun( statJob, 0 );
+    bool ok = KIO::NetAccess::synchronousRun( statJob, 0 );
 
-    KUrl dirUrl;
-    if (statJob->statResult().isDir()) {
-        dirUrl = d->url;
-        dirUrl.adjustPath( KUrl::AddTrailingSlash );
-    } else {
-        dirUrl = d->url.upUrl();
+    if (ok) {
+        KUrl dirUrl;
+        if (statJob->statResult().isDir()) {
+            dirUrl = d->url;
+            dirUrl.adjustPath( KUrl::AddTrailingSlash );
+        } else {
+            dirUrl = d->url.upUrl();
+        }
+        d->urlNavigator->setUrl( dirUrl.url() );
+        fileCompletionObj->setDir( dirUrl.url() );
     }
-    d->urlNavigator->setUrl( dirUrl.url() );
-
-    fileCompletionObj->setDir( dirUrl.url() );
     d->locationEdit->setCompletionObject( fileCompletionObj );
     d->locationEdit->setAutoDeleteCompletionObject( true );
     connect( fileCompletionObj, SIGNAL( match( const QString& ) ),
