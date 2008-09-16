@@ -146,6 +146,18 @@ namespace Nepomuk {
         QString generateUniqueUri();
 
         /**
+         * Generates a unique URI that is not used in the store yet. This method ca be used to 
+         * generate URIs for virtual types such as Tag.
+         *
+         * \param label A label that the algorithm should use to try to create a more readable URI.
+         *
+         * \return A new unique URI which can be used to define a new resource.
+         *
+         * \since 4.2
+         */
+        QUrl generateUniqueUri( const QString& label );
+
+        /**
          * \internal Non-public API. Used by Resource to signalize errors.
          */
         void notifyError( const QString& uri, int errorCode );
@@ -174,7 +186,6 @@ namespace Nepomuk {
         // FIXME: add a loggin mechanism that reports successfully and failed sync operations and so on
 
     private Q_SLOTS:
-        // FIXME: use the new Soprano::Model signals once they are implemented
         void slotStoreChanged();
 
     private:

@@ -74,9 +74,6 @@ class Nepomuk::ResourceManagerHelper
 };
 K_GLOBAL_STATIC(Nepomuk::ResourceManagerHelper, instanceHelper)
 
-// FIXME: make the singleton deletion thread-safe so autosyncing will be forced when shutting
-//        down the application
-//        Maybe connect to QCoreApplication::aboutToQuit?
 Nepomuk::ResourceManager* Nepomuk::ResourceManager::instance()
 {
     return &instanceHelper->q;
@@ -203,15 +200,30 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
 
 QString Nepomuk::ResourceManager::generateUniqueUri()
 {
+    return generateUniqueUri( QString() ).toString();
+}
+
+
+QUrl Nepomuk::ResourceManager::generateUniqueUri( const QString& name )
+{
     Soprano::Model* model = mainModel();
-    QString s;
+
+    QUrl uri;
+    QString normalizedName( name );
+    normalizedName.replace( QRegExp( "[^\\w\\.\\-_:]" ), "" );
+    if ( !normalizedName.isEmpty() ) {
+        uri = "nepomuk:/" + normalizedName;
+    }
+    else {
+        uri = "nepomuk:/" + KRandom::randomString( 20 );
+    }
+
     while( 1 ) {
-        // Should we use the Nepomuk localhost whatever namespace here?
-        s = "nepomuk:/" + KRandom::randomString( 20 );
         if ( !model->executeQuery( QString("ask where { { <%1> ?p1 ?o1 . } UNION { ?r2 <%1> ?o2 . } UNION { ?r3 ?p3 <%1> . } }")
-                                   .arg( s ), Soprano::Query::QueryLanguageSparql ).boolValue() ) {
-            return s;
+                                   .arg( QString::fromAscii( uri.toEncoded() ) ), Soprano::Query::QueryLanguageSparql ).boolValue() ) {
+            return uri;
         }
+        uri = "nepomuk:/" + normalizedName + '_' +  KRandom::randomString( 20 );
     }
 }
 

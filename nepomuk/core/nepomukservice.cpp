@@ -61,7 +61,7 @@ void Nepomuk::Service::setServiceInitialized( bool success )
     // the parent will always be a control class in the service stub
     QMetaObject::invokeMethod( parent(),
                                "setServiceInitialized",
-                               Qt::QueuedConnection,
+                               Qt::QueuedConnection,  // needs to be queued to give the service time to register with DBus
                                Q_ARG(bool, success) );
 }
 

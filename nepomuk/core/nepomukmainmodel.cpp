@@ -19,6 +19,7 @@
  */
 
 #include "nepomukmainmodel.h"
+#include "resourcemanager.h"
 
 #include <Soprano/Node>
 #include <Soprano/Statement>
@@ -31,6 +32,9 @@
 #include <Soprano/Query/QueryLanguage>
 #include <Soprano/Util/DummyModel>
 #include <Soprano/Util/MutexModel>
+#include <Soprano/Vocabulary/RDF>
+#include <Soprano/Vocabulary/NRL>
+#include <Soprano/Vocabulary/NAO>
 
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -45,6 +49,13 @@
 //        disconnecting when iterators are open)
 
 using namespace Soprano;
+
+namespace Soprano {
+uint qHash( const Soprano::Node& node )
+{
+    return qHash( node.toString() );
+}
+}
 
 namespace {
 class GlobalModelContainer
@@ -65,6 +76,8 @@ public:
         delete localSocketModel;
         delete dummyModel;
     }
+
+    QUrl mainContext;
 
     Soprano::Client::DBusClient dbusClient;
     Soprano::Client::LocalSocketClient localSocketClient;
@@ -239,7 +252,11 @@ int Nepomuk::MainModel::statementCount() const
 
 Soprano::Error::ErrorCode Nepomuk::MainModel::addStatement( const Statement& statement )
 {
-    Soprano::Error::ErrorCode c = modelContainer()->model()->addStatement( statement );
+    Statement s( statement );
+    if( s.context().isEmpty() ) {
+        s.setContext( mainContext() );
+    }
+    Soprano::Error::ErrorCode c = modelContainer()->model()->addStatement( s );
     setError( modelContainer()->model()->lastError() );
     return c;
 }
@@ -266,6 +283,123 @@ Soprano::Node Nepomuk::MainModel::createBlankNode()
     Soprano::Node n = modelContainer()->model()->createBlankNode();
     setError( modelContainer()->model()->lastError() );
     return n;
+}
+
+
+QUrl Nepomuk::MainModel::mainContext()
+{
+    if ( !modelContainer()->mainContext.isValid() ) {
+        // let's find some MainDataGraph to put all our statements in
+        Soprano::QueryResultIterator it
+            = executeQuery( QString( "select ?c where { ?c a <%1> . "
+                                     "?c a <http://nepomuk.kde.org/ontologies/core#MainDataGraph> . }")
+                            .arg( Soprano::Vocabulary::NRL::InstanceBase().toString() ),
+                            Soprano::Query::QueryLanguageSparql );
+        if ( it.next() ) {
+            modelContainer()->mainContext = it.binding(0).uri();
+        }
+        else {
+            it.close();
+            modelContainer()->mainContext = ResourceManager::instance()->generateUniqueUri();
+            addStatement( modelContainer()->mainContext,
+                          Soprano::Vocabulary::RDF::type(),
+                          Soprano::Vocabulary::NRL::InstanceBase(),
+                          modelContainer()->mainContext );
+            addStatement( modelContainer()->mainContext,
+                          Soprano::Vocabulary::RDF::type(),
+                          QUrl::fromEncoded( "http://nepomuk.kde.org/ontologies/core#MainDataGraph" ),
+                          modelContainer()->mainContext );
+        }
+    }
+
+    return modelContainer()->mainContext;
+}
+
+
+Soprano::Error::ErrorCode Nepomuk::MainModel::updateModificationDate( const QUrl& resource, const QDateTime& date )
+{
+    Error::ErrorCode c = removeAllStatements( resource, Soprano::Vocabulary::NAO::lastModified(), Soprano::Node() );
+    if ( c != Error::ErrorNone )
+        return c;
+    else
+        return addStatement( resource, Soprano::Vocabulary::NAO::lastModified(), LiteralValue( date ), mainContext() );
+}
+
+
+Soprano::Error::ErrorCode Nepomuk::MainModel::updateProperty( const QUrl& resource, const QUrl& property, const Node& value )
+{
+    StatementIterator it = listStatements( Statement( resource, property, Node() ) );
+    if ( it.next() ) {
+        Statement s = it.current();
+        it.close();
+        if ( s.object() == value ) {
+            // nothing to do. Yey!
+            return Error::ErrorNone;
+        }
+        else {
+            removeStatement( s );
+        }
+    }
+
+    // update property
+    Error::ErrorCode c = addStatement( resource, property, value, mainContext() );
+    if ( c != Error::ErrorNone )
+        return updateModificationDate( resource );
+
+    return c;
+}
+
+
+Soprano::Error::ErrorCode Nepomuk::MainModel::updateProperty( const QUrl& resource, const QUrl& property, const QList<Node>& values )
+{
+    QList<Node> existingValues = listStatements( Statement( resource, property, Node() ) ).iterateObjects().allNodes();
+
+    Error::ErrorCode c = Error::ErrorNone;
+    foreach( const Node &node, existingValues.toSet() - values.toSet() ) {
+        if ( ( c = removeAllStatements( Statement( resource, property, node ) ) ) != Error::ErrorNone ) {
+            return c;
+        }
+    }
+
+    QSet<Node> newNodes = values.toSet() - existingValues.toSet();
+    if ( !newNodes.isEmpty() ) {
+        QUrl context = mainContext();
+        foreach( const Node &node, newNodes ) {
+            if ( ( c = addStatement( Statement( resource, property, node, context ) ) ) != Error::ErrorNone ) {
+                return c;
+            }
+        }
+
+        c = updateModificationDate( resource );
+    }
+
+    return c;
+}
+
+
+Soprano::Error::ErrorCode Nepomuk::MainModel::removeProperty( const QUrl& resource, const QUrl& property )
+{
+    Soprano::Error::ErrorCode c = removeAllStatements( Statement( resource, property, Node() ) );
+    if ( c == Soprano::Error::ErrorNone )
+        return updateModificationDate( resource );
+    else
+        return c;
+}
+
+
+Soprano::Error::ErrorCode Nepomuk::MainModel::ensureResource( const QUrl& resource, const QUrl& type )
+{
+    if ( !containsAnyStatement( Statement( resource, Vocabulary::RDF::type(), type ) ) ) {
+         Soprano::Error::ErrorCode c = addStatement( Statement( resource, Vocabulary::RDF::type(), type, mainContext() ) );
+         if ( c == Soprano::Error::ErrorNone )
+             return updateModificationDate( resource );
+         else
+             return c;
+    }
+    else {
+        clearError();
+        return Error::ErrorNone;
+    }
 }
 
 #include "nepomukmainmodel.moc"

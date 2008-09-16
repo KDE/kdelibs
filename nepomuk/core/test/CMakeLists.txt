@@ -55,16 +55,6 @@ target_link_libraries(speedtest
 #  ${QT_QTGUI_LIBRARY}
 #  ${KDE4_KDECORE_LIBRARY})
 
-kde4_add_unit_test(resourcefiltermodeltest resourcefiltermodeltest.cpp ../resourcefiltermodel.cpp)
-target_link_libraries(resourcefiltermodeltest
-  nepomuk
-  ${QT_QTCORE_LIBRARY}
-  ${QT_QTDBUS_LIBRARY}
-  ${QT_QTTEST_LIBRARY}
-  ${QT_QTGUI_LIBRARY}
-  ${SOPRANO_LIBRARIES}
-  ${KDE4_KDECORE_LIBS})
-
 # Not a real test, just a simple app for testing a widget manually
 kde4_add_executable(tagcloudtest TEST tagcloudtest.cpp)
 target_link_libraries(tagcloudtest nepomuk

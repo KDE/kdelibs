@@ -347,7 +347,7 @@ namespace Nepomuk {
 
         /**
          * Tries very hard to find a suitable human-readable description of the resource.
-         * This description is supposed to be longer than text() and includes such properties
+         * This description is supposed to be longer than genericLabel() and includes such properties
          * as nao:description, xesam:comment, rdfs:comment
          *
          * \return A human readable description of the resource or an empty string if none

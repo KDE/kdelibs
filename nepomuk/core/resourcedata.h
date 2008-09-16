@@ -178,8 +178,9 @@ namespace Nepomuk {
          */
         static ResourceData* data( const QUrl& uri, const QUrl& type );
 
-        static QList<ResourceData*> allResourceData();
+        static bool dataCacheFull();
 
+        static QList<ResourceData*> allResourceData();
         static QList<ResourceData*> allResourceDataOfType( const QUrl& type );
         static QList<ResourceData*> allResourceDataWithProperty( const QUrl& _uri, const Variant& v );
 

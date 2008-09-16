@@ -22,8 +22,8 @@
 #include "resourcemanager.h"
 #include "resource.h"
 #include "tools.h"
-#include "resourcefiltermodel.h"
 #include "nie.h"
+#include "nepomukmainmodel.h"
 
 #include <Soprano/Statement>
 #include <Soprano/StatementIterator>
@@ -53,9 +53,10 @@ static inline uint qHash( const QUrl& url )
 typedef QHash<QString, Nepomuk::ResourceData*> ResourceDataHash;
 
 // FIXME: make these things thread-safe. Even better: put them into the ResourceManager and make that thread-safe!
-Q_GLOBAL_STATIC( ResourceDataHash, initializedData )
-Q_GLOBAL_STATIC( ResourceDataHash, kickoffData )
+K_GLOBAL_STATIC( ResourceDataHash, s_initializedData )
+K_GLOBAL_STATIC( ResourceDataHash, s_kickoffData )
 
+#define MAINMODEL static_cast<Nepomuk::MainModel*>( ResourceManager::instance()->mainModel() )
 
 static int s_dataCnt = 0;
 
@@ -92,8 +93,8 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
 
     // TODO: handle the caching in a decent Cache class and not this ugly.
     if ( s_dataCnt >= 1000 ) {
-        for( ResourceDataHash::iterator rdIt = initializedData()->begin();
-             rdIt != initializedData()->end(); ++rdIt ) {
+        for( ResourceDataHash::iterator rdIt = s_initializedData->begin();
+             rdIt != s_initializedData->end(); ++rdIt ) {
             ResourceData* data = rdIt.value();
             if ( !data->cnt() ) {
                 data->deleteData();
@@ -164,8 +165,7 @@ void Nepomuk::ResourceData::setTypes( const QList<QUrl>& types )
         }
 
         // update the data store
-        ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
-        fm.updateProperty( m_uri, Soprano::Vocabulary::RDF::type(), nodes );
+        MAINMODEL->updateProperty( m_uri, Soprano::Vocabulary::RDF::type(), nodes );
     }
 }
 
@@ -179,9 +179,9 @@ void Nepomuk::ResourceData::deleteData()
     }
     else {
         if( !m_uri.isEmpty() )
-            initializedData()->remove( m_uri.toString() );
+            s_initializedData->remove( m_uri.toString() );
         if( !m_kickoffUriOrId.isEmpty() )
-            kickoffData()->remove( m_kickoffUriOrId );
+            s_kickoffData->remove( m_kickoffUriOrId );
     }
 
     deleteLater();
@@ -281,7 +281,7 @@ bool Nepomuk::ResourceData::store()
         // create a random URI and add us to the initialized data, i.e. make us "valid"
         m_modificationMutex.lock();
         m_uri = ResourceManager::instance()->generateUniqueUri();
-        initializedData()->insert( m_uri.toString(), this );
+        s_initializedData->insert( m_uri.toString(), this );
         m_modificationMutex.unlock();
     }
 
@@ -290,9 +290,8 @@ bool Nepomuk::ResourceData::store()
     // save type (There should be no need to save all the types since there is only one way
     // that m_types contains more than one element: if we loaded them)
     // The first type, however, can be set at creation time to any value
-    if ( !m_initialTypeSaved &&
-         !ResourceManager::instance()->mainModel()->containsAnyStatement( m_uri, Soprano::Vocabulary::RDF::type(), m_types.first() ) ) {
-        statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_types.first() ) );
+    if ( !m_initialTypeSaved ) {
+        MAINMODEL->ensureResource( m_uri, m_types.first() );
     }
 
     if ( !exists() ) {
@@ -317,8 +316,7 @@ bool Nepomuk::ResourceData::store()
 
     if ( !statements.isEmpty() ) {
         m_initialTypeSaved = true;
-        ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
-        return fm.addStatements( statements ) == Soprano::Error::ErrorNone;
+        return MAINMODEL->addStatements( statements ) == Soprano::Error::ErrorNone;
     }
     else {
         return true;
@@ -449,8 +447,7 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
         m_cache[uri] = value;
 
         // update the store
-        ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
-        fm.updateProperty( m_uri, uri, valueNodes );
+        MAINMODEL->updateProperty( m_uri, uri, valueNodes );
     }
 }
 
@@ -461,8 +458,7 @@ void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
         return m_proxyData->removeProperty( uri );
 
     if ( determineUri() ) {
-        ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
-        fm.removeProperty( m_uri, uri );
+        MAINMODEL->removeProperty( m_uri, uri );
     }
 }
 
@@ -473,14 +469,13 @@ void Nepomuk::ResourceData::remove( bool recursive )
         return m_proxyData->remove();
 
     if ( determineUri() ) {
-        ResourceFilterModel fm( ResourceManager::instance()->mainModel() );
-        fm.removeAllStatements( Statement( m_uri, Node(), Node() ) );
+        MAINMODEL->removeAllStatements( Statement( m_uri, Node(), Node() ) );
         if ( recursive ) {
-            fm.removeAllStatements( Statement( Node(), Node(), m_uri ) );
+            MAINMODEL->removeAllStatements( Statement( Node(), Node(), m_uri ) );
         }
 
         // the url is invalid now
-        initializedData()->remove( m_uri.toString() );
+        s_initializedData->remove( m_uri.toString() );
         m_uri = QUrl();
     }
 }
@@ -606,7 +601,7 @@ bool Nepomuk::ResourceData::determineUri()
                 }
                 else {
                     m_kickoffIdentifier = kickoffUriOrId();
-                    m_uri = ResourceManager::instance()->generateUniqueUri();
+                    m_uri = ResourceManager::instance()->generateUniqueUri( m_kickoffIdentifier );
                 }
 
 //                kDebug(300004) << " kickoff identifier " << kickoffUriOrId() << " seems fresh. Generated new URI " << m_uri;
@@ -618,11 +613,11 @@ bool Nepomuk::ResourceData::determineUri()
         //
         if( !uri().isEmpty() && uri() != kickoffUriOrId() ) {
             QString s = uri().toString();
-            if( !initializedData()->contains( s ) ) {
-                initializedData()->insert( s, this );
+            if( !s_initializedData->contains( s ) ) {
+                s_initializedData->insert( s, this );
             }
             else {
-                m_proxyData = initializedData()->value( s );
+                m_proxyData = s_initializedData->value( s );
                 m_proxyData->ref();
             }
         }
@@ -694,18 +689,18 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QUrl& uri, const QUrl&
         return data( fileUri, type );
     }
 
-    ResourceDataHash::iterator it = initializedData()->find( uri.toString() );
+    ResourceDataHash::iterator it = s_initializedData->find( uri.toString() );
 
     //
     // The uriOrId has no local representation yet -> create one
     //
-    if( it == initializedData()->end() ) {
+    if( it == s_initializedData->end() ) {
 //        kDebug(300004) << "No existing ResourceData instance found for uri " << uri;
         //
         // The actual URI is already known here
         //
         ResourceData* d = new ResourceData( uri, QString(), type );
-        initializedData()->insert( uri.toString(), d );
+        s_initializedData->insert( uri.toString(), d );
 
         return d;
     }
@@ -726,26 +721,26 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QString& uriOrId, cons
 
     // special case: files (only absolute paths for now)
     if ( uriOrId[0] == '/' ) {
-        ResourceDataHash::iterator it = initializedData()->find( "file://" + uriOrId );
-        if ( it != initializedData()->end() ) {
+        ResourceDataHash::iterator it = s_initializedData->find( "file://" + uriOrId );
+        if ( it != s_initializedData->end() ) {
             return *it;
         }
     }
 
-    ResourceDataHash::iterator it = initializedData()->find( uriOrId );
+    ResourceDataHash::iterator it = s_initializedData->find( uriOrId );
 
-    bool resFound = ( it != initializedData()->end() );
+    bool resFound = ( it != s_initializedData->end() );
 
     //
     // The uriOrId is not a known local URI. Might be a kickoff value though
     //
-    if( it == initializedData()->end() ) {
-        it = kickoffData()->find( uriOrId );
+    if( it == s_initializedData->end() ) {
+        it = s_kickoffData->find( uriOrId );
 
         // check if the type matches (see determineUri for details)
         if ( !type.isEmpty() && type != Soprano::Vocabulary::RDFS::Resource() ) {
             Types::Class wantedType = type;
-            while ( it != kickoffData()->end() &&
+            while ( it != s_kickoffData->end() &&
                     it.key() == uriOrId ) {
                 if ( it.value()->hasType( type ) ) {
                     break;
@@ -754,7 +749,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QString& uriOrId, cons
             }
         }
 
-        resFound = ( it != kickoffData()->end() && it.key() == uriOrId );
+        resFound = ( it != s_kickoffData->end() && it.key() == uriOrId );
     }
 
     //
@@ -766,7 +761,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QString& uriOrId, cons
         // Every new ResourceData object ends up in the kickoffdata since its actual URI is not known yet
         //
         ResourceData* d = new ResourceData( QUrl(), uriOrId, type );
-        kickoffData()->insert( uriOrId, d );
+        s_kickoffData->insert( uriOrId, d );
 
         return d;
     }
@@ -784,8 +779,8 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceData::allResourceDataOfType( cons
     QList<ResourceData*> l;
 
     if( !type.isEmpty() ) {
-        for( ResourceDataHash::iterator rdIt = kickoffData()->begin();
-             rdIt != kickoffData()->end(); ++rdIt ) {
+        for( ResourceDataHash::iterator rdIt = s_kickoffData->begin();
+             rdIt != s_kickoffData->end(); ++rdIt ) {
             if( rdIt.value()->type() == type ) {
                 l.append( rdIt.value() );
             }
@@ -800,8 +795,8 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceData::allResourceDataWithProperty
 {
     QList<ResourceData*> l;
 
-    for( ResourceDataHash::iterator rdIt = kickoffData()->begin();
-         rdIt != kickoffData()->end(); ++rdIt ) {
+    for( ResourceDataHash::iterator rdIt = s_kickoffData->begin();
+         rdIt != s_kickoffData->end(); ++rdIt ) {
 
         if( rdIt.value()->hasProperty( uri ) &&
             rdIt.value()->property( uri ) == v ) {
@@ -817,16 +812,22 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceData::allResourceData()
 {
     QList<ResourceData*> l;
 
-    for( ResourceDataHash::iterator rdIt = kickoffData()->begin();
-         rdIt != kickoffData()->end(); ++rdIt ) {
+    for( ResourceDataHash::iterator rdIt = s_kickoffData->begin();
+         rdIt != s_kickoffData->end(); ++rdIt ) {
         l.append( rdIt.value() );
     }
-    for( ResourceDataHash::iterator rdIt = initializedData()->begin();
-         rdIt != initializedData()->end(); ++rdIt ) {
+    for( ResourceDataHash::iterator rdIt = s_initializedData->begin();
+         rdIt != s_initializedData->end(); ++rdIt ) {
         l.append( rdIt.value() );
     }
 
     return l;
+}
+
+
+bool Nepomuk::ResourceData::dataCacheFull()
+{
+    return s_dataCnt >= 1000;
 }
 
 #include "resourcedata.moc"

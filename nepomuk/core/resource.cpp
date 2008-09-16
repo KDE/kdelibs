@@ -84,7 +84,9 @@ Nepomuk::Resource::Resource( Nepomuk::ResourceData* data )
 Nepomuk::Resource::~Resource()
 {
     // FIXME: ResourceData instances having a proxy also need to be deleted, maybe extend deref
-    if( m_data && m_data->deref() == 0 && !m_data->isValid() ) {
+    if( m_data &&
+        m_data->deref() == 0 &&
+        ( !m_data->isValid() || ResourceData::dataCacheFull() ) ) {
         m_data->deleteData();
     }
 }

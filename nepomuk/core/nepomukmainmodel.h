@@ -22,6 +22,9 @@
 #define _NEPOMUK_MAIN_MODEL_H_
 
 #include <Soprano/Model>
+#include <Soprano/Vocabulary/RDFS>
+
+#include <QtCore/QDateTime>
 
 namespace Nepomuk {
     /**
@@ -41,9 +44,20 @@ namespace Nepomuk {
      * in one application as internally all is mapped to a single global
      * instance which is also reused in ResourceManager::mainModel.
      *
+     * Provides a set of convenience methods
+     * for maintaining resource properties.
+     *
+     * It does automatic NRL named graph handling, i.e. provedance
+     * data is created and deleted automatically.
+     *
+     * \warning This model assumes that no property value is stored twice,
+     * i.e. in two different named graphs.
+     *
      * \author Sebastian Trueg <trueg@kde.org>
      *
-     * \since 4.1
+     * \since 4.2
+     *
+     * \sa ResourceManager::mainModel()
      */
     class MainModel : public Soprano::Model
     {
@@ -76,10 +90,57 @@ namespace Nepomuk {
         bool containsAnyStatement( const Soprano::Statement &statement ) const;
         bool isEmpty() const;
         int statementCount() const;
+
+        /**
+         * Adds a statement to the Model. Statements without a valid context will be
+         * added to the mainContext.
+         */
         Soprano::Error::ErrorCode addStatement( const Soprano::Statement& statement );
+
         Soprano::Error::ErrorCode removeStatement( const Soprano::Statement& statement );
         Soprano::Error::ErrorCode removeAllStatements( const Soprano::Statement& statement );
         Soprano::Node createBlankNode();
+
+        /**
+         * The Nepomuk lib uses just one context (named graph)
+         * for all statements. This makes things simpler and
+         * we do not use the context for anything else than
+         * the named graph type anyway.
+         */
+        QUrl mainContext();
+
+        /**
+         * Updates the modification date of \p resource to \p date.
+         */
+        Soprano::Error::ErrorCode updateModificationDate( const QUrl& resource, const QDateTime& date = QDateTime::currentDateTime() );
+
+        /**
+         * Update a property. This means an existing property is replaced if it differs from
+         * the provided value. Otherwise nothing is done.
+         *
+         * This method assumes that the cardinality or property is 1.
+         */
+        Soprano::Error::ErrorCode updateProperty( const QUrl& resource, const QUrl& property, const Soprano::Node& value );
+
+        /**
+         * Update a property with a cardinality > 1.
+         * This method optmizes the add and remove actions necessary.
+         */
+        Soprano::Error::ErrorCode updateProperty( const QUrl& resource, const QUrl& property, const QList<Soprano::Node>& values );
+
+        /**
+         * Remove a property from a resource and make sure no dangling graphs are left
+         */
+        Soprano::Error::ErrorCode removeProperty( const QUrl& resource, const QUrl& property );
+
+        /**
+         * Ensures that resoruce exists with type.
+         */
+        Soprano::Error::ErrorCode ensureResource( const QUrl& resource, const QUrl& type = Soprano::Vocabulary::RDFS::Resource() );
+
+        using Model::addStatement;
+        using Model::removeStatement;
+        using Model::removeAllStatements;
 
     private:
         class Private;

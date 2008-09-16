@@ -17,7 +17,6 @@ set(nepomuk_LIB_SRCS
   resourcedata.cpp
   resourcemanager.cpp
   nepomukmainmodel.cpp
-  resourcefiltermodel.cpp
   tools.cpp
   ui/kratingwidget.cpp
   ui/ktagcloudwidget.cpp
