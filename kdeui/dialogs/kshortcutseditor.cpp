@@ -42,6 +42,7 @@
 #include "kaction.h"
 #include "kactioncollection.h"
 #include "kactioncategory.h"
+#include "kdebug.h"
 #include "kglobalaccel.h"
 #include "kmessagebox.h"
 #include "kaboutdata.h"
@@ -98,6 +99,10 @@ void KShortcutsEditor::clearCollections()
 
 void KShortcutsEditor::addCollection(KActionCollection *collection, const QString &title)
 {
+    // We add a bunch of items. Prevent the treewidget from permanently
+    // updating.
+    setUpdatesEnabled(false);
+
     d->actionCollections.append(collection);
     // Forward our actionCollections to the delegate which does the conflict
     // checking.
@@ -151,8 +156,12 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
         }
     }
 
-
+    // sort the list
     d->ui.list->sortItems(Name, Qt::AscendingOrder);
+
+    // reenable updating
+    setUpdatesEnabled(true);
+
     QTimer::singleShot(0, this, SLOT(resizeColumns()));
 }
 
