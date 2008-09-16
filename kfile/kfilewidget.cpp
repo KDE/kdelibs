@@ -696,8 +696,8 @@ void KFileWidget::slotOk()
     if (locationEditCurrentTextList.count() > 1) {
         if (mode & KFile::File) {
             KMessageBox::sorry(this,
-                               i18n("More than one file provided"),
-                               i18n("You can only select one file"));
+                               i18n("You can only select one file"),
+                               i18n("More than one file provided"));
             return;
         }
     } else if (locationEditCurrentTextList.count()) {
@@ -718,8 +718,8 @@ void KFileWidget::slotOk()
     // if we are on local mode, make sure we haven't got a remote base url
     if ((mode & KFile::LocalOnly) && !d->mostLocalUrl(d->url).isLocalFile()) {
         KMessageBox::sorry(this,
-                           i18n("Remote files not accepted"),
-                           i18n("You can only select local files"));
+                           i18n("You can only select local files"),
+                           i18n("Remote files not accepted"));
         return;
     }
 
