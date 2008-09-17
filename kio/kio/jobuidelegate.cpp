@@ -71,6 +71,7 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
                                                            time_t mtimeSrc,
                                                            time_t mtimeDest)
 {
+    Q_UNUSED(job);
     //kDebug() << "job=" << job;
     // We now do it in process, so that opening the rename dialog
     // doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)

@@ -1091,15 +1091,38 @@ void JobTest::deleteDirectory()
     QVERIFY(!QFile::exists(dest));
 }
 
-void JobTest::deleteManyFiles()
+void JobTest::deleteTwoDirs()
 {
-    const int numFiles = 100;
-    const QString baseDir = homeTmpDir();
+    const QString dir1 = homeTmpDir() + "dir1";
+    createTestDirectory(dir1);
+    const QString dir2 = homeTmpDir() + "dir2";
+    createTestDirectory(dir2);
+    KUrl::List dirs;
+    dirs << dir1 << dir2;
+    KIO::Job* job = KIO::del(dirs, KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    QVERIFY(!QFile::exists(dir1));
+    QVERIFY(!QFile::exists(dir2));
+}
+
+static void createManyFiles(const QString& baseDir, int numFiles)
+{
     for (int i = 0; i < numFiles; ++i) {
         // create empty file
         QFile f(baseDir + QString::number(i));
         QVERIFY(f.open(QIODevice::WriteOnly));
     }
+}
+
+void JobTest::deleteManyFilesIndependently()
+{
+    QTime dt;
+    dt.start();
+    const int numFiles = 100; // Use 1000 for performance testing
+    const QString baseDir = homeTmpDir();
+    createManyFiles(baseDir, numFiles);
     for (int i = 0; i < numFiles; ++i) {
         // delete each file independently. lots of jobs. this stress-tests kio scheduling.
         const QString file = baseDir + QString::number(i);
@@ -1111,6 +1134,29 @@ void JobTest::deleteManyFiles()
         QVERIFY(ok);
         QVERIFY(!QFile::exists(file));
     }
+    kDebug() << "Deleted" << numFiles << "files in" << dt.elapsed() << "milliseconds";
+}
+
+void JobTest::deleteManyFilesTogether()
+{
+    QTime dt;
+    dt.start();
+    const int numFiles = 100; // Use 1000 for performance testing
+    const QString baseDir = homeTmpDir();
+    createManyFiles(baseDir, numFiles);
+    KUrl::List urls;
+    for (int i = 0; i < numFiles; ++i) {
+        const QString file = baseDir + QString::number(i);
+        QVERIFY(QFile::exists(file));
+        urls.append(KUrl(file));
+    }
+
+    //kDebug() << file;
+    KIO::Job* job = KIO::del(urls, KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    kDebug() << "Deleted" << numFiles << "files in" << dt.elapsed() << "milliseconds";
 }
 
 void JobTest::stat()
