@@ -1043,6 +1043,10 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                 }
                 m_underMouse = target;
             }
+        } else if (target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {
+            QMouseEvent evt(QEvent::MouseMove, p, Qt::NoButton,
+                            QApplication::mouseButtons(), QApplication::keyboardModifiers());
+            QApplication::sendEvent(target, &evt);
         }
 
         if (ev.id() == EventImpl::MOUSEDOWN_EVENT) {
