@@ -107,7 +107,9 @@ KShortcut::KShortcut(const QString &s)
         QString k = sCuts.at(0);
         k.replace( "Win+", "Meta+" ); // workaround for KDE3-style shortcuts
         d->primary = QKeySequence::fromString(k);
-        if (d->primary.isEmpty()) {
+        // Complain about a unusable shortcuts sequence only if we have got
+        // something.
+        if (d->primary.isEmpty() and not k.isEmpty()) {
             kDebug(240) << "unusable primary shortcut sequence " << sCuts[0];
         }
     }
