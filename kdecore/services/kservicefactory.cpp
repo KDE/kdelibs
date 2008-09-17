@@ -134,13 +134,13 @@ KService::Ptr KServiceFactory::findServiceByDesktopPath(const QString &_name)
 
     int offset = m_relNameDict->find_string( _name );
     if (!offset) {
-        qDebug( "findServiceByDesktopPath: %s not found", qPrintable( _name ) );
+        kDebug() << QString("findServiceByDesktopPath: %1 not found").arg( _name );
         return KService::Ptr(); // Not found
     }
 
     KService::Ptr newService(createEntry(offset));
     if ( !newService )
-        qDebug( "findServiceByDesktopPath: createEntry failed!" );
+        kDebug() << "findServiceByDesktopPath: createEntry failed!";
     // Check whether the dictionary was right
     // It's ok that it's wrong, for the case where we're looking up an unknown service,
     // and the hash value gave us another one.
