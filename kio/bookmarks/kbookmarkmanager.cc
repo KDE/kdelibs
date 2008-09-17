@@ -114,6 +114,7 @@ public:
       : m_doc("xbel")
       , m_dbusObjectName(dbusObjectName)
       , m_docIsLoaded(bDocIsloaded)
+      , m_update(false)
       , m_typeExternal(false)
       , m_kDirWatch(0)
 
