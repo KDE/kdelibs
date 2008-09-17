@@ -183,6 +183,9 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     entryMap.remove("X-KDE-Keywords");
     categories = desktopGroup.readXdgListEntry("Categories");
     entryMap.remove("Categories");
+    // TODO KDE5: only care for X-KDE-Library in Type=Service desktop files
+    // This will prevent people defining a part and an app in the same desktop file
+    // which makes user-preference handling difficult.
     m_strLibrary = desktopGroup.readEntry( "X-KDE-Library" );
     entryMap.remove("X-KDE-Library");
 
