@@ -319,6 +319,10 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   KUrl charles2("file:/home/charles/foo%20moo");
   QCOMPARE( charles2.path(), QString("/home/charles/foo moo") );
 
+  //NOTE this test should be ran in UTF8 locale
+  KUrl percentEncodedQuery( "http://mail.yandex.ru/message_part/%D0%9A%D1%80%D0%B8%D1%82%D0%B5%D1%80%D0%B8%D0%B8%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%BE%D1%80%D0%BB%D0%BE%D0%B2%D0%BE%D0%B9.rar?hid=1.1&mid=391.56424458.99241672611486679803334485488&name=%D0%9A%D1%80%D0%B8%D1%82%D0%B5%D1%80%D0%B8%D0%B8%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%BE%D1%80%D0%BB%D0%BE%D0%B2%D0%BE%D0%B9.rar" );
+  QCOMPARE( percentEncodedQuery.prettyUrl(), QString::fromUtf8("http://mail.yandex.ru/message_part/Критерии оценивания орловой.rar?hid=1.1&mid=391.56424458.99241672611486679803334485488&name=Критерии оценивания орловой.rar"));
+
 #ifdef Q_WS_WIN
 #ifdef Q_CC_MSVC
 #pragma message ("port KUser")
