@@ -658,7 +658,9 @@
 51002   KDCRAW
 
 # KEXIV2 - KDE C++ wrapper for LibExiv2
-51003   KEXIV2
+51004   KSANE
+
+# KSANE - KDE C++ wrapper for LibSane
 
 # kdemultimedia
 60001   kreatecd
