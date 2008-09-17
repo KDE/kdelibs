@@ -1014,15 +1014,11 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 
         QWidget* target = 0;
         target = m_widget->childAt(p);
-        
-        if ( includesPadding() && ::qobject_cast<QAbstractScrollArea*>(m_widget) )
-        {
-            QAbstractScrollArea *w = static_cast<QAbstractScrollArea*>(m_widget);
-            // childAt returns the wrong child in this case?
-            if (target == w->viewport())
-                p -= QPoint(RenderWidget::paddingLeft(), RenderWidget::paddingTop());
+
+        if (target) {
+            p = target->mapFromParent(p);
         }
-        
+
         if (m_underMouse != target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {
             if (m_underMouse) {
                 QEvent moe( QEvent::Leave );
