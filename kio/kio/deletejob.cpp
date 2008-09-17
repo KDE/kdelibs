@@ -81,7 +81,7 @@ namespace KIO
         KUrl::List symlinks;
         KUrl::List dirs;
         KUrl::List m_srcList;
-        KUrl::List::Iterator m_currentStat;
+        KUrl::List::iterator m_currentStat;
 	QStringList m_parentDirs;
         QTimer *m_reportTimer;
 
@@ -222,13 +222,13 @@ void DeleteJobPrivate::statNextSrc()
         q->addSubjob(job);
     } else
     {
-        m_totalFilesDirs = files.count()+symlinks.count() + dirs.count();
+        m_totalFilesDirs = files.count() + symlinks.count() + dirs.count();
         slotReport();
         // Now we know which dirs hold the files we're going to delete.
         // To speed things up and prevent double-notification, we disable KDirWatch
         // on those dirs temporarily (using KDirWatch::self, that's the instanced
         // used by e.g. kdirlister).
-        for ( QStringList::Iterator it = m_parentDirs.begin() ; it != m_parentDirs.end() ; ++it )
+        for ( QStringList::const_iterator it = m_parentDirs.constBegin() ; it != m_parentDirs.constEnd() ; ++it )
             KDirWatch::self()->stopDirScan( *it );
         state = DELETEJOB_STATE_DELETING_FILES;
         deleteNextFile();
@@ -244,7 +244,7 @@ void DeleteJobPrivate::deleteNextFile()
         SimpleJob *job;
         do {
             // Take first file to delete out of list
-            KUrl::List::Iterator it = files.begin();
+            KUrl::List::iterator it = files.begin();
             bool isLink = false;
             if ( it == files.end() ) // No more files
             {
@@ -289,7 +289,7 @@ void DeleteJobPrivate::deleteNextDir()
     {
         do {
             // Take first dir to delete out of list - last ones first !
-            KUrl::List::Iterator it = --dirs.end();
+            KUrl::List::iterator it = --dirs.end();
             // If local dir, try to rmdir it directly
             if ( (*it).isLocalFile() && ::rmdir( QFile::encodeName((*it).path()) ) == 0 ) {
 
@@ -317,7 +317,7 @@ void DeleteJobPrivate::deleteNextDir()
     }
 
     // Re-enable watching on the dirs that held the deleted files
-    for ( QStringList::Iterator it = m_parentDirs.begin() ; it != m_parentDirs.end() ; ++it )
+    for ( QStringList::const_iterator it = m_parentDirs.constBegin() ; it != m_parentDirs.constEnd() ; ++it )
         KDirWatch::self()->restartDirScan( *it );
 
     // Finished - tell the world
