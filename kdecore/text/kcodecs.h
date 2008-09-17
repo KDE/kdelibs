@@ -267,6 +267,19 @@ namespace KCodecs
    */
   KDECORE_EXPORT void base64Decode( const QByteArray& in, QByteArray& out );
 
+
+  /**
+   * Decodes string @p text according to RFC2047,
+   * i.e., the construct =?charset?[qb]?encoded?=
+   *
+   * Note: a more rubust version of this function is included in kdepimlibs/libkmime
+   *
+   * @param text source string
+   * @returns the decoded string
+   */
+  KDECORE_EXPORT QString decodeRFC2047String(const QString &text);
+
+
 }
 
 class KMD5Private;

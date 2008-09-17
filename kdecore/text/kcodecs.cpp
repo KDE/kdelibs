@@ -39,6 +39,7 @@
 
 #include <kdebug.h>
 #include <QtCore/QIODevice>
+#include <QtCore/QTextCodec>
 
 #define KMD5_S11 7
 #define KMD5_S12 12
@@ -686,6 +687,57 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
     if ( didx < out.size()  )
         out.resize( didx );
 }
+
+
+
+QString KCodecs::decodeRFC2047String(const QString &msg)
+{
+    QString charset;
+    QChar encoding;
+    QString notEncodedText;
+    QString encodedText;
+    QString decodedText;
+    int encEnd=0;
+    if(!msg.startsWith("=?") || (encEnd=msg.lastIndexOf("?="))==-1)
+        return msg;
+
+    notEncodedText=msg.mid(encEnd+2);
+    encodedText=msg.left(encEnd);
+    encodedText=encodedText.mid(2,encodedText.length()-2);
+    int questionMark=encodedText.indexOf('?');
+    if (questionMark==-1)
+        return msg;
+    charset=encodedText.left(questionMark).toLower();
+    encoding=encodedText.at(questionMark+1).toLower();
+    if (encoding!='b' && encoding!='q')
+        return msg;
+    encodedText=encodedText.mid(questionMark+3);
+    if(charset.indexOf(' ')!=-1 && encodedText.indexOf(' ')!=-1)
+        return msg;
+    QByteArray tmpIn;
+    QByteArray tmpOut;
+    tmpIn = encodedText.toLocal8Bit();
+    if(encoding=='q')
+        tmpOut=KCodecs::quotedPrintableDecode(tmpIn);
+    else
+        tmpOut=KCodecs::base64Decode(tmpIn);
+    if(charset!="us-ascii")
+    {
+        QTextCodec *codec = QTextCodec::codecForName(charset.toLocal8Bit());
+        if(!codec)
+            return msg;
+        decodedText=codec->toUnicode(tmpOut);
+        decodedText=decodedText.replace('_',' ');
+    }
+    else
+        decodedText=tmpOut.replace('_',' ');
+
+    return decodedText + notEncodedText;
+}
+
+
+
+
 
 /******************************** KMD5 ********************************/
 KMD5::KMD5()
