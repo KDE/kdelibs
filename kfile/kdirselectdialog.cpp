@@ -112,7 +112,7 @@ void KDirSelectDialog::Private::slotMkdir()
 {
     bool ok;
     QString where = m_parent->url().pathOrUrl();
-    QString name = i18n( "New Folder" );
+    QString name = i18nc("folder name", "New Folder" );
     if ( m_parent->url().isLocalFile() && QFileInfo( m_parent->url().path(KUrl::AddTrailingSlash) + name ).exists() )
         name = KIO::RenameDialog::suggestName( m_parent->url(), name );
 
