@@ -264,7 +264,7 @@ KBookmarkContextMenu::~KBookmarkContextMenu()
 void KBookmarkContextMenu::addBookmark()
 {
   if( m_pOwner && m_pOwner->enableOption(KBookmarkOwner::ShowAddBookmark)  )
-      addAction( SmallIcon("bookmark-new"), i18n( "Add Bookmark Here" ), this, SLOT(slotInsert()) );
+      addAction( KIcon("bookmark-new"), i18n( "Add Bookmark Here" ), this, SLOT(slotInsert()) );
 }
 
 void KBookmarkContextMenu::addFolderActions()
@@ -272,7 +272,7 @@ void KBookmarkContextMenu::addFolderActions()
   addAction( i18n( "Open Folder in Bookmark Editor" ), this, SLOT(slotEditAt()) );
   addProperties();
   addSeparator();
-  addAction( SmallIcon("edit-delete"), i18n( "Delete Folder" ), this, SLOT(slotRemove()) );
+  addAction( KIcon("edit-delete"), i18n( "Delete Folder" ), this, SLOT(slotRemove()) );
 }
 
 
@@ -286,13 +286,13 @@ void KBookmarkContextMenu::addBookmarkActions()
   addAction( i18n( "Copy Link Address" ), this, SLOT(slotCopyLocation()) );
   addProperties();
   addSeparator();
-  addAction( SmallIcon("edit-delete"), i18n( "Delete Bookmark" ), this, SLOT(slotRemove()) );
+  addAction( KIcon("edit-delete"), i18n( "Delete Bookmark" ), this, SLOT(slotRemove()) );
 }
 
 void KBookmarkContextMenu::addOpenFolderInTabs()
 {
    if(m_pOwner->supportsTabs())
-      addAction(SmallIcon("tab-new"), i18n( "Open Folder in Tabs" ), this, SLOT( slotOpenFolderInTabs() ) );
+      addAction(KIcon("tab-new"), i18n( "Open Folder in Tabs" ), this, SLOT( slotOpenFolderInTabs() ) );
 }
 
 void KBookmarkContextMenu::slotEditAt()
@@ -495,7 +495,7 @@ void KBookmarkMenu::addAddBookmark()
 
 void KBookmarkMenu::addEditBookmarks()
 {
-  if( m_pOwner && !m_pOwner->enableOption(KBookmarkOwner::ShowEditBookmark) || !KAuthorized::authorizeKAction("bookmarks") )
+  if( ( m_pOwner && !m_pOwner->enableOption(KBookmarkOwner::ShowEditBookmark) ) || !KAuthorized::authorizeKAction("bookmarks") )
     return;
 
   QAction * m_paEditBookmarks = m_actionCollection->addAction( KStandardAction::EditBookmarks, "edit_bookmarks",
