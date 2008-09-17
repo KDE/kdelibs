@@ -648,7 +648,10 @@
 # kdeextragear
 50001   kfortune
 50002   mailody
-50003   digikam
+50003   digikam (core)
+50004   digikam (kio-slave)
+50005   digikam (showfoto)
+50006   digikam (editor plugins)
 
 # KIPI - KDE Imaging Plugin Interface
 51000   KIPI (general)
