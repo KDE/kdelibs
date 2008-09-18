@@ -99,7 +99,7 @@ void KAutostartTest::testStartName()
     if ( !KAutostart::isServiceRegistered("plasma") )
         QSKIP( "plasma.desktop not found, kdebase not installed", SkipSingle );
     KAutostart autostart("plasma");
-    QCOMPARE(autostart.visibleName(), QString("Plasma"));
+    QCOMPARE(autostart.visibleName(), QString("Plasma Desktop Workspace"));
 }
 
 void KAutostartTest::testServiceRegistered()
