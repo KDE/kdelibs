@@ -2978,7 +2978,7 @@ try_again:
 
     // content?
     tIt = tokenizer.iterator("content-encoding");
-    if (tIt.hasNext()) {
+    while (tIt.hasNext()) {
         // This is so wrong !!  No wonder kio_http is stripping the
         // gzip encoding from downloaded files.  This solves multiple
         // bug reports and caitoo's problem with downloads when such a
