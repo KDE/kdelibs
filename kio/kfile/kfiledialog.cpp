@@ -934,7 +934,7 @@ public:
         QString               filter;
         QTextStream           str(&filter, QIODevice::WriteOnly);
         QStringList           list(f.split(";;"));
-        QStringList::Iterator it(list.begin()),
+        QStringList::const_iterator it(list.begin()),
                               end(list.end());
         bool                  first=true;
 
@@ -964,7 +964,7 @@ public:
         if(sel)
         {
             QStringList           list(orig.split(";;"));
-            QStringList::Iterator it(list.begin()),
+            QStringList::const_iterator it(list.begin()),
                                   end(list.end());
             int                   pos;
 

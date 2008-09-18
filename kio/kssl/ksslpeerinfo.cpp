@@ -66,7 +66,7 @@ bool KSSLPeerInfo::certMatchesAddress() {
 	QStringList cns = certinfo.getValue("CN").split(QRegExp("[ \n\r]"), QString::SkipEmptyParts);
 	cns += m_cert.subjAltNames();
 
-	for (QStringList::Iterator cn = cns.begin(); cn != cns.end(); ++cn) {
+	for (QStringList::const_iterator cn = cns.begin(); cn != cns.end(); ++cn) {
 		if (cnMatchesAddress((*cn).trimmed().toLower()))
 			return true;
 	}

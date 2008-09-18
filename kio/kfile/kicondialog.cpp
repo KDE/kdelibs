@@ -428,7 +428,7 @@ void KIconDialog::KIconDialogPrivate::showIcons()
 	filelist=mFileList;
 
     QList<IconPath> iconlist;
-    QStringList::Iterator it;
+    QStringList::const_iterator it;
     foreach (const QString &it, filelist) {
        iconlist.append(IconPath(it));
     }

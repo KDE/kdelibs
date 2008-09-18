@@ -501,7 +501,7 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
         //Add the suggestions to the popup menu
         QStringList reps = highlighter()->suggestionsForWord(selectedWord);
         if (reps.count() > 0) {
-            for (QStringList::Iterator it = reps.begin(); it != reps.end(); ++it) {
+            for (QStringList::const_iterator it = reps.begin(); it != reps.end(); ++it) {
                 suggestions.addAction(*it);
             }
 

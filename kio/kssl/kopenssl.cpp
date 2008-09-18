@@ -256,7 +256,7 @@ static QString findMostRecentLib(QString dir, QString name)
        QString best = 0L;
        // where do we start
        uint s = filter.length()-1;
-       for (QStringList::Iterator it = l.begin(); it != l.end(); ++it) {
+       for (QStringList::const_iterator it = l.begin(); it != l.end(); ++it) {
                QString numberpart = (*it).mid(s);
                uint endmaj = numberpart.indexOf('.');
                if (endmaj == -1)
@@ -379,10 +379,10 @@ KOpenSSLProxy::KOpenSSLProxy()
 	     ;
 #endif
 
-   for (QStringList::Iterator it = libpaths.begin();
+   for (QStringList::const_iterator it = libpaths.begin();
                               it != libpaths.end();
                               ++it) {
-      for (QStringList::Iterator shit = libnamesc.begin();
+      for (QStringList::const_iterator shit = libnamesc.begin();
                                  shit != libnamesc.end();
                                  ++shit) {
          QString alib = *it;
@@ -552,10 +552,10 @@ KOpenSSLProxy::KOpenSSLProxy()
    }
    }
 #else
-   for (QStringList::Iterator it = libpaths.begin();
+   for (QStringList::const_iterator it = libpaths.begin();
                               it != libpaths.end();
                               ++it) {
-      for (QStringList::Iterator shit = libnamess.begin();
+      for (QStringList::const_iterator shit = libnamess.begin();
                                  shit != libnamess.end();
                                  ++shit) {
          QString alib = *it;

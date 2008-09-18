@@ -231,8 +231,8 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
 
   KUrl::List urls;
   KURLDrag::decode(data, urls);
-  QStringList::Iterator end(data.end());
-  for(QStringList::Iterator it=data.begin(); it!=end; ++it)
+  QStringList::const_iterator end(data.end());
+  for(QStringList::const_iterator it=data.begin(); it!=end; ++it)
       txtStream << *it;
   if ( ba.size() == 0 )
   {

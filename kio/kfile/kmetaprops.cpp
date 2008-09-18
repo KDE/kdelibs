@@ -180,7 +180,7 @@ void KFileMetaPropsPlugin::createLayout()
 
         QStringList sk = d->m_info.supportedKeys();
         d->m_add->setEnabled(false);
-        for (QStringList::Iterator it = sk.begin(); it!=sk.end(); ++it)
+        for (QStringList::const_iterator it = sk.begin(); it!=sk.end(); ++it)
         {
                 if ( l.find(*it)==l.end() )
                 {

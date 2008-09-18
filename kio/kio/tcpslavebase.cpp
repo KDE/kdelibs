@@ -602,7 +602,7 @@ void TCPSlaveBase::selectClientCertificate()
     if (prompt || forcePrompt) {
         QStringList certs = KSSLCertificateHome::getCertificateList();
 
-        QStringList::Iterator it = certs.begin();
+        QStringList::const_iterator it = certs.begin();
         while (it != certs.end()) {
             KSSLPKCS12 *pkcs = KSSLCertificateHome::getCertificateByName(*it);
             if (pkcs && (!pkcs->getCertificate() ||
