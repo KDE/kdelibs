@@ -808,8 +808,6 @@ void KHTMLView::repaintContents( const QRect& r )
 
 void KHTMLView::applyTransforms( int& x, int& y, int& w, int& h) const
 {
-    x -= contentsX();
-    y -= contentsY();
     if (d->haveZoom()) {
         const int z = d->zoomLevel;
         x = x*z/100;
@@ -817,6 +815,8 @@ void KHTMLView::applyTransforms( int& x, int& y, int& w, int& h) const
         w = w*z/100;
         h = h*z/100;
     }
+    x -= contentsX();
+    y -= contentsY();
 }
 
 void KHTMLView::revertTransforms( int& x, int& y, int& w, int& h) const
