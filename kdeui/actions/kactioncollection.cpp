@@ -220,6 +220,7 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     if (!action)
         return action;
 
+    const QString origName = action->objectName();
     QString index_name = name;
 
     if (index_name.isEmpty())
@@ -250,7 +251,13 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     }
 
     // Check if we have this action under a different name.
-    takeAction(action);
+    // Not using takeAction because we don't want to remove it from categories,
+    // and because it has the new name already.
+    const int oldIndex = d->actions.indexOf(action);
+    if (oldIndex != -1) {
+        d->actionByName.remove(origName);
+        d->actions.removeAt(oldIndex);
+    }
 
     // Add action to our lists.
     d->actionByName.insert(index_name, action);
@@ -475,7 +482,7 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
       QString actionName = it.key();
 
       bool bSameAsDefault = (kaction->shortcut() == kaction->shortcut(KAction::DefaultShortcut));
-      kDebug(129) << "name = " << actionName 
+      kDebug(129) << "name = " << actionName
                   << " shortcut = " << kaction->shortcut(KAction::ActiveShortcut).toString()
                   << " globalshortcut = " << kaction->globalShortcut(KAction::ActiveShortcut).toString()
                   << " def = " << kaction->shortcut(KAction::DefaultShortcut).toString();
@@ -607,7 +614,7 @@ void KActionCollection::connectNotify ( const char * signal )
   if (d->connectHovered && d->connectTriggered)
     return;
 
-  if (QMetaObject::normalizedSignature(SIGNAL(actionHighlighted(QAction*))) == signal || 
+  if (QMetaObject::normalizedSignature(SIGNAL(actionHighlighted(QAction*))) == signal ||
       QMetaObject::normalizedSignature(SIGNAL(actionHovered(QAction*))) == signal) {
     if (!d->connectHovered) {
       d->connectHovered = true;
@@ -680,7 +687,7 @@ QAction *KActionCollectionPrivate::unlistAction(QAction* action)
 
   // Remove the action
   actionByName.remove(name);
-  actions.takeAt(index);
+  actions.removeAt(index);
 
   // Remove the action from the categories. Should be only one
   QList<KActionCategory*> categories = q->findChildren<KActionCategory*>();
