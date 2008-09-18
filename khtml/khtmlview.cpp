@@ -3570,6 +3570,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
     bool altKey = (_mouse->modifiers() & Qt::AltModifier);
     bool shiftKey = (_mouse->modifiers() & Qt::ShiftModifier);
     bool metaKey = (_mouse->modifiers() & Qt::MetaModifier);
+
     // mouseout/mouseover
     if (setUnder && d->oldUnderMouse != targetNode) {
         if (d->oldUnderMouse && d->oldUnderMouse->document() != m_part->xmlDocImpl()) {
