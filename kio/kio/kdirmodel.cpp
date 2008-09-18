@@ -49,8 +49,6 @@ public:
         m_preview()
     {
     }
-    //KUrl url() const { return m_item->url(); }
-
     // m_item is KFileItem() for the root item
     const KFileItem& item() const { return m_item; }
     void setItem(const KFileItem& item) { m_item = item; }
@@ -116,7 +114,7 @@ public:
     }
 
     void _k_slotNewItems(const KFileItemList&);
-    void _k_slotDeleteItem(const KFileItem&);
+    void _k_slotDeleteItems(const KFileItemList&);
     void _k_slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&);
     void _k_slotClear();
 
@@ -134,6 +132,9 @@ public:
     QModelIndex indexForNode(KDirModelNode* node, int rowNumber = -1 /*unknown*/) const;
     bool isDir(KDirModelNode* node) const {
         return (node == m_rootNode) || node->item().isDir();
+    }
+    KUrl url(KDirModelNode* node) const {
+        return (node == m_rootNode) ? m_dirLister->url() : node->item().url();
     }
 
     KDirModel* q;
@@ -278,8 +279,8 @@ void KDirModel::setDirLister(KDirLister* dirLister)
     d->m_dirLister->setParent(this);
     connect( d->m_dirLister, SIGNAL(newItems(KFileItemList)),
              this, SLOT(_k_slotNewItems(KFileItemList)) );
-    connect( d->m_dirLister, SIGNAL(deleteItem(KFileItem)),
-             this, SLOT(_k_slotDeleteItem(KFileItem)) );
+    connect( d->m_dirLister, SIGNAL(itemsDeleted(KFileItemList)),
+             this, SLOT(_k_slotDeleteItems(KFileItemList)) );
     connect( d->m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem, KFileItem> >)),
              this, SLOT(_k_slotRefreshItems(QList<QPair<KFileItem, KFileItem> >)) );
     connect( d->m_dirLister, SIGNAL(clear()),
@@ -359,14 +360,16 @@ void KDirModelPrivate::_k_slotNewItems(const KFileItemList& items)
     }
 }
 
-void KDirModelPrivate::_k_slotDeleteItem(const KFileItem& item)
+void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
 {
-    //KUrl dir( item->url().upUrl() );
-    //dir.adjustPath(KUrl::RemoveTrailingSlash);
+    //kDebug() << items.count();
 
+    // I assume all items are from the same directory.
+    // From KDirLister's code, this should be the case, except maybe emitChanges?
+    const KFileItem item = items.first();
     Q_ASSERT(!item.isNull());
-    const KUrl url = item.url();
-    const KDirModelNode* node = nodeForUrl(url); // O(depth)
+    KUrl url = item.url();
+    KDirModelNode* node = nodeForUrl(url); // O(depth)
     if (!node)
         return;
 
@@ -375,12 +378,56 @@ void KDirModelPrivate::_k_slotDeleteItem(const KFileItem& item)
         return;
 
     QModelIndex parentIndex = indexForNode(dirNode); // O(n)
-    const int rowNumber = node->rowNumber();
-    q->beginRemoveRows( parentIndex, rowNumber, rowNumber );
-    dirNode->m_childNodes.removeAt(rowNumber);
-    Q_ASSERT(dirNode->m_childNodesByName.contains(url.fileName()));
-    dirNode->m_childNodesByName.remove(url.fileName());
-    q->endRemoveRows();
+
+    // Short path for deleting a single item
+    if (items.count() == 1) {
+        const int r = node->rowNumber();
+        q->beginRemoveRows(parentIndex, r, r);
+        delete dirNode->m_childNodes.takeAt(r);
+        q->endRemoveRows();
+        Q_ASSERT(dirNode->m_childNodesByName.contains(url.fileName()));
+        dirNode->m_childNodesByName.remove(url.fileName());
+        return;
+    }
+
+    // We need to make lists of consecutive row numbers, for the beginRemoveRows call.
+    // Let's use a bit array where each bit represents a given child node.
+    const int childCount = dirNode->m_childNodes.count();
+    QBitArray rowNumbers(childCount, false);
+    Q_FOREACH(const KFileItem& item, items) {
+        if (!node) { // don't lookup the first item twice
+            url = item.url();
+            node = nodeForUrl(url);
+            Q_ASSERT(node);
+        }
+        rowNumbers.setBit(node->rowNumber(), 1); // O(n)
+        Q_ASSERT(dirNode->m_childNodesByName.contains(url.fileName()));
+        dirNode->m_childNodesByName.remove(url.fileName());
+        node = 0;
+    }
+
+    int start = -1;
+    int end = -1;
+    bool lastVal = false;
+    // Start from the end, otherwise all the row numbers are offset while we go
+    for (int i = childCount - 1; i >= 0; --i) {
+        const bool val = rowNumbers.testBit(i);
+        if (!lastVal && val) {
+            end = i;
+            //kDebug() << "end=" << end;
+        }
+        if ((lastVal && !val) || (i == 0 && val)) {
+            start = val ? i : i + 1;
+            //kDebug() << "beginRemoveRows" << start << end;
+            q->beginRemoveRows(parentIndex, start, end);
+            for (int r = end; r >= start; --r) { // reverse because takeAt changes indexes ;)
+                //kDebug() << "Removing from m_childNodes at" << r;
+                delete dirNode->m_childNodes.takeAt(r);
+            }
+            q->endRemoveRows();
+        }
+        lastVal = val;
+    }
 }
 
 void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
@@ -586,7 +633,10 @@ int KDirModel::rowCount( const QModelIndex & parent ) const
     KDirModelDirNode* parentNode = static_cast<KDirModelDirNode *>(d->nodeForIndex(parent));
     Q_ASSERT(parentNode);
     const int count = parentNode->m_childNodes.count();
-    //kDebug(7008) << "rowCount for " << parentUrl << ": " << count;;
+    kDebug(7008) << "rowCount for " << d->url(parentNode) << ": " << count;
+    for (int i = 0; i < count; ++i) {
+        kDebug(7008) << i << d->url(parentNode->m_childNodes.at(i));
+    }
     return count;
 }
 

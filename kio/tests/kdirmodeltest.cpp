@@ -44,6 +44,8 @@ QTEST_KDEMAIN( KDirModelTest, NoGUI )
 
 void KDirModelTest::initTestCase()
 {
+    qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
+
     s_referenceTimeStamp = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
     m_tempDir = 0;
     m_topLevelFileNames << "toplevelfile_1"
@@ -480,7 +482,7 @@ void KDirModelTest::testDeleteFile()
     const QString file = m_tempDir->name() + "toplevelfile_1";
     const KUrl url(file);
 
-    qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
+    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
     connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
              &m_eventLoop, SLOT(quit()) );
 
@@ -494,6 +496,41 @@ void KDirModelTest::testDeleteFile()
     // If we come here, then rowsRemoved() was emitted - all good.
     const int topLevelRowCount = m_dirModel.rowCount();
     QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 1); // one less than before
+    QCOMPARE(spyRowsRemoved.count(), 1);
+    QCOMPARE(spyRowsRemoved[0][1].toInt(), m_fileIndex.row());
+    QCOMPARE(spyRowsRemoved[0][2].toInt(), m_fileIndex.row());
     disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(quit()) );
+
+    // Recreate the file, for consistency in the next tests
+    createTestFile(file);
+    fillModel(true);
+}
+
+void KDirModelTest::testDeleteFiles()
+{
+    const int oldTopLevelRowCount = m_dirModel.rowCount();
+    const QString file = m_tempDir->name() + "toplevelfile_";
+    KUrl::List urls;
+    urls << KUrl(file + '1') << KUrl(file + '2') << KUrl(file + '3');
+
+    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+
+    KIO::DeleteJob* job = KIO::del(urls, KIO::HideProgressInfo);
+    bool ok = job->exec();
+    QVERIFY(ok);
+
+    int numRowsRemoved = 0;
+    while (numRowsRemoved < 3) {
+
+        QTest::qWait(20);
+
+        numRowsRemoved = 0;
+        for (int sigNum = 0; sigNum < spyRowsRemoved.count(); ++sigNum)
+            numRowsRemoved += spyRowsRemoved[sigNum][2].toInt() - spyRowsRemoved[sigNum][1].toInt() + 1;
+        kDebug() << "numRowsRemoved=" << numRowsRemoved;
+    }
+
+    const int topLevelRowCount = m_dirModel.rowCount();
+    QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 3); // three less than before
 }

@@ -252,6 +252,7 @@ void KDirListerTest::testDeleteItem()
     const QString path = m_tempDir.name();
     qRegisterMetaType<KFileItem>("KFileItem");
     QSignalSpy spyDeleteItem(&m_dirLister, SIGNAL(deleteItem(const KFileItem&)));
+    QSignalSpy spyItemsDeleted(&m_dirLister, SIGNAL(itemsDeleted(const KFileItemList&)));
     connect(&m_dirLister, SIGNAL(deleteItem(const KFileItem&)), this, SLOT(exitLoop()));
 
     //kDebug() << "Removing " << path+"toplevelfile_1";
@@ -263,6 +264,8 @@ void KDirListerTest::testDeleteItem()
         enterLoop();
     }
 
+    QCOMPARE(spyDeleteItem.count(), 1);
+    QCOMPARE(spyItemsDeleted.count(), 1);
     // OK now kdirlister told us the file was deleted, let's try a re-listing
     m_items.clear();
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));

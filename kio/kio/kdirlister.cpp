@@ -707,12 +707,12 @@ void KDirListerCache::slotFilesAdded( const QString &dir ) // from KDirNotify si
 
 void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KDirNotify signals
 {
-  kDebug(7004) ;
-  QStringList::const_iterator it = fileList.begin();
-  for ( ; it != fileList.end() ; ++it )
-  {
-    // emit the deleteItem signal if this file was shown in any view
-    KFileItem fileitem;
+    kDebug(7004) << fileList.count();
+    // Group notifications by parent dirs (usually there would be only one parent dir)
+    QMap<QString, KFileItemList> removedItemsByDir;
+    QStringList deletedSubdirs;
+
+    for (QStringList::const_iterator it = fileList.begin(); it != fileList.end() ; ++it) {
     KUrl url( *it );
     KUrl parentDir( url );
     parentDir.setPath( parentDir.directory() );
@@ -721,31 +721,34 @@ void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KD
     {
       for ( KFileItemList::iterator fit = lstItems->begin(), fend = lstItems->end() ; fit != fend ; ++fit ) {
         if ( (*fit ).url() == url ) {
-          fileitem = *fit;
+          const KFileItem fileitem = *fit;
+          removedItemsByDir[parentDir.url()].append(fileitem);
+          // If we found a fileitem, we can test if it's a dir. If not, we'll go to deleteDir just in case.
+          if (fileitem.isNull() || fileitem.isDir()) {
+              deletedSubdirs.append(url.url());
+          }
           lstItems->erase( fit ); // remove fileitem from list
           break;
         }
       }
     }
+    }
 
-    // Tell the views about it before deleting the KFileItems. They might need the subdirs'
-    // file items (see the dirtree).
-    if ( !fileitem.isNull() ) {
-        DirectoryDataHash::iterator dit = directoryData.find(parentDir.url());
-        if ( dit != directoryData.end() ) {
-            foreach ( KDirLister *kdl, (*dit).listersCurrentlyHolding )
-                kdl->d->emitDeleteItem( fileitem );
+    QMap<QString, KFileItemList>::const_iterator rit = removedItemsByDir.begin();
+    for(; rit != removedItemsByDir.end(); ++rit) {
+        // Tell the views about it before calling deleteDir.
+        // They might need the subdirs' file items (see the dirtree).
+        DirectoryDataHash::const_iterator dit = directoryData.find(rit.key());
+        if (dit != directoryData.end()) {
+            itemsDeleted((*dit).listersCurrentlyHolding, rit.value());
         }
     }
 
-    // If we found a fileitem, we can test if it's a dir. If not, we'll go to deleteDir just in case.
-    if ( fileitem.isNull() || fileitem.isDir() )
-    {
-      // in case of a dir, check if we have any known children, there's much to do in that case
-      // (stopping jobs, removing dirs from cache etc.)
-      deleteDir( url );
+    Q_FOREACH(const QString& url, deletedSubdirs) {
+        // in case of a dir, check if we have any known children, there's much to do in that case
+        // (stopping jobs, removing dirs from cache etc.)
+        deleteDir(url);
     }
-  }
 }
 
 void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KDirNotify signals
@@ -1552,23 +1555,31 @@ void KDirListerCache::killJob( KIO::ListJob *job )
 
 void KDirListerCache::deleteUnmarkedItems( const QList<KDirLister *>& listers, KFileItemList &lstItems )
 {
-  // Find all unmarked items and delete them
-  QMutableListIterator<KFileItem> kit( lstItems );
-  while ( kit.hasNext() )
-  {
-    const KFileItem item = kit.next();
-    if ( !item.isMarked() )
-    {
-      //kDebug() << item->name();
-      foreach ( KDirLister *kdl, listers )
-        kdl->d->emitDeleteItem( item );
-
-      if ( item.isDir() )
-        deleteDir( item.url() );
-
-      kit.remove();
+    KFileItemList deletedItems;
+    // Find all unmarked items and delete them
+    QMutableListIterator<KFileItem> kit(lstItems);
+    while (kit.hasNext()) {
+        const KFileItem item = kit.next();
+        if (!item.isMarked()) {
+            //kDebug() << item->name();
+            deletedItems.append(item);
+            kit.remove();
+        }
     }
-  }
+    if (!deletedItems.isEmpty())
+        itemsDeleted(listers, deletedItems);
+}
+
+void KDirListerCache::itemsDeleted(const QList<KDirLister *>& listers, const KFileItemList& deletedItems)
+{
+    Q_FOREACH(KDirLister *kdl, listers) {
+        kdl->d->emitItemsDeleted(deletedItems);
+    }
+
+    Q_FOREACH(const KFileItem& item, deletedItems) {
+        if (item.isDir())
+            deleteDir(item.url());
+    }
 }
 
 void KDirListerCache::deleteDir( const KUrl& dirUrl )
@@ -1609,8 +1620,10 @@ void KDirListerCache::deleteDir( const KUrl& dirUrl )
                 if ( kdl->d->url == deletedUrl )
                 {
                     // tell the view first. It might need the subdirs' items (which forgetDirs will delete)
-                    if ( !kdl->d->rootFileItem.isNull() )
+                    if ( !kdl->d->rootFileItem.isNull() ) {
                         emit kdl->deleteItem( kdl->d->rootFileItem );
+                        emit kdl->itemsDeleted(KFileItemList() << kdl->d->rootFileItem);
+                    }
                     forgetDirs( kdl );
                     kdl->d->rootFileItem = KFileItem();
                 }
@@ -1828,6 +1841,8 @@ void KDirLister::emitChanges()
   for ( KUrl::List::Iterator it = d->lstDirs.begin();
         it != d->lstDirs.end(); ++it )
   {
+    KFileItemList deletedItems;
+
     const KFileItemList* itemList = kDirListerCache->itemsForDir( *it );
     KFileItemList::const_iterator kit = itemList->begin();
     const KFileItemList::const_iterator kend = itemList->end();
@@ -1848,7 +1863,7 @@ void KDirLister::emitChanges()
 
         if ( oldMime && !newMime )
         {
-          emit deleteItem( *kit );
+          deletedItems.append(*kit);
           continue;
         }
       }
@@ -1860,7 +1875,7 @@ void KDirLister::emitChanges()
         {
           if ( !(*kit).isDir() )
           {
-            emit deleteItem( *kit );
+              deletedItems.append(*kit);
           }
         }
         else if ( !(*kit).isDir() )
@@ -1878,7 +1893,7 @@ void KDirLister::emitChanges()
             d->addNewItem( *kit );
           else
           {
-            emit deleteItem( *kit );
+              deletedItems.append(*kit);
           }
 
           continue;
@@ -1896,7 +1911,7 @@ void KDirLister::emitChanges()
 
         if ( oldName && !newName )
         {
-          emit deleteItem( *kit );
+          deletedItems.append(*kit);
           continue;
         }
         else if ( !oldName && newName )
@@ -1907,6 +1922,10 @@ void KDirLister::emitChanges()
         d->addNewItem( *kit );
     }
 
+    emit itemsDeleted(deletedItems);
+    // for compat
+    Q_FOREACH(const KFileItem& item, deletedItems)
+        emit deleteItem(item);
     d->emitItems();
   }
 
@@ -2217,13 +2236,8 @@ void KDirLister::Private::emitItems()
 
   if ( tmpRemove )
   {
-    KFileItemList::const_iterator kit = tmpRemove->begin();
-    const KFileItemList::const_iterator kend = tmpRemove->end();
-    for ( ; kit != kend; ++kit )
-    {
-      emit m_parent->deleteItem( *kit );
-    }
-    delete tmpRemove;
+      emit m_parent->itemsDeleted( *tmpRemove );
+      delete tmpRemove;
   }
 }
 
@@ -2237,6 +2251,24 @@ void KDirLister::Private::emitDeleteItem( const KFileItem &item )
   }
 }
 
+void KDirLister::Private::emitItemsDeleted(const KFileItemList &_items)
+{
+    KFileItemList items = _items;
+    QMutableListIterator<KFileItem> it(items);
+    while (it.hasNext()) {
+        const KFileItem& item = it.next();
+        if ((dirOnlyMode && !item.isDir())
+            || !m_parent->matchesFilter(item)
+            || !m_parent->matchesMimeFilter(item) ) { // do this one last
+            it.remove();
+        } else {
+            // for compat
+            emit m_parent->deleteItem(item);
+        }
+    }
+    if (!items.isEmpty())
+        emit m_parent->itemsDeleted(items);
+}
 
 // ================ private slots ================ //
 
