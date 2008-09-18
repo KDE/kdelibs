@@ -1016,7 +1016,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         target = m_widget->childAt(p);
 
         if (target) {
-            p = target->mapFromParent(p);
+            p = target->mapFrom(m_widget, p);
         }
 
         if (m_underMouse != target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {
@@ -1030,8 +1030,8 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                 }
             }
             if (target) {
-	        QEvent moe( QEvent::Enter );
-	        QApplication::sendEvent(target, &moe);
+                QEvent moe( QEvent::Enter );
+                QApplication::sendEvent(target, &moe);
 //                qDebug() << "sending ENTER to" << target;
                 if (target->testAttribute(Qt::WA_Hover)) {
                     QHoverEvent he( QEvent::HoverEnter, QPoint(0,0), QPoint(-1,-1) );
@@ -1039,7 +1039,9 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                 }
                 m_underMouse = target;
             }
-        } else if (target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {
+        }
+
+        if (target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {
             QMouseEvent evt(QEvent::MouseMove, p, Qt::NoButton,
                             QApplication::mouseButtons(), QApplication::keyboardModifiers());
             QApplication::sendEvent(target, &evt);
@@ -1062,8 +1064,6 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                 target = m_widget;
             }
         }
-
-        p = target->mapFrom(m_widget, p);
 
         bool needContextMenuEvent = (type == QMouseEvent::MouseButtonPress && button == Qt::RightButton);
         bool isMouseWheel = (ev.id() == EventImpl::KHTML_MOUSEWHEEL_EVENT);
