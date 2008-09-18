@@ -1175,14 +1175,14 @@ void KCookieJar::eatSessionCookies( long windowId )
     if (!windowId)
         return;
 
-    QStringList::Iterator it=m_domainList.begin();
+    QStringList::const_iterator it=m_domainList.begin();
     for ( ; it != m_domainList.end(); ++it )
         eatSessionCookies( *it, windowId, false );
 }
 
 void KCookieJar::eatAllCookies()
 {
-    for ( QStringList::Iterator it=m_domainList.begin();
+    for ( QStringList::const_iterator it=m_domainList.begin();
           it != m_domainList.end();)
     {
         QString domain = *it++;
@@ -1253,7 +1253,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
               "Name", "Sec", "Value");
     ts << s.toLatin1().constData();
 
-    for ( QStringList::Iterator it=m_domainList.begin(); it != m_domainList.end();
+    for ( QStringList::const_iterator it=m_domainList.begin(); it != m_domainList.end();
           it++ )
     {
         const QString &domain = *it;
@@ -1449,7 +1449,7 @@ void KCookieJar::saveConfig(KConfig *_config)
     policyGroup.writeEntry("CookieGlobalAdvice", adviceToStr( m_globalAdvice));
 
     QStringList domainSettings;
-    for ( QStringList::Iterator it=m_domainList.begin();
+    for ( QStringList::const_iterator it=m_domainList.begin();
           it != m_domainList.end();
           it++ )
     {
@@ -1499,7 +1499,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     }
 
     // Now apply the domain settings read from config file...
-    for ( QStringList::Iterator it=domainSettings.begin();
+    for ( QStringList::const_iterator it=domainSettings.begin();
           it != domainSettings.end(); )
     {
         const QString &value = *it++;

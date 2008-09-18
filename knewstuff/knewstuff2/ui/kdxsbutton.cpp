@@ -280,7 +280,7 @@ void KDXSButton::slotComments(QStringList comments)
 {
     KDXSComments commentsdlg(this);
 
-    for (QStringList::Iterator it = comments.begin(); it != comments.end(); it++) {
+    for (QStringList::const_iterator it = comments.begin(); it != comments.end(); it++) {
         //kDebug() << "Comment: " << (*it);
         commentsdlg.addComment("foo", (*it));
     }
@@ -292,7 +292,7 @@ void KDXSButton::slotChanges(QStringList changes)
 {
     KDXSChanges changesdlg(this);
 
-    for (QStringList::Iterator it = changes.begin(); it != changes.end(); it++) {
+    for (QStringList::const_iterator it = changes.begin(); it != changes.end(); it++) {
         //kDebug() << "Changelog: " << (*it);
         changesdlg.addChangelog("v???", (*it));
     }
@@ -305,7 +305,7 @@ void KDXSButton::slotHistory(QStringList entries)
     m_history->clear();
 
     int i = 0;
-    for (QStringList::Iterator it = entries.begin(); it != entries.end(); it++) {
+    for (QStringList::const_iterator it = entries.begin(); it != entries.end(); it++) {
         //kDebug() << (*it);
 
         // FIXME KDE4PORT

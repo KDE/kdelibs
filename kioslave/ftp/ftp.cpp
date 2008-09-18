@@ -580,7 +580,7 @@ void Ftp::ftpAutoLoginMacro ()
 
   QStringList list = macro.split('\n',QString::SkipEmptyParts);
 
-  for(QStringList::Iterator it = list.begin() ; it != list.end() ; ++it )
+  for(QStringList::const_iterator it = list.begin() ; it != list.end() ; ++it )
   {
     if ( (*it).startsWith("init") )
     {

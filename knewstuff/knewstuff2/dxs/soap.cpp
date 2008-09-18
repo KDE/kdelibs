@@ -249,7 +249,7 @@ QString Soap::xpath(const QDomNode& node, const QString &expr)
 
     QDomNode n = node;
     QStringList explist = expr.split("/", QString::SkipEmptyParts);
-    for (QStringList::Iterator it = explist.begin(); it != explist.end(); ++it) {
+    for (QStringList::const_iterator it = explist.begin(); it != explist.end(); ++it) {
         QDomElement el = n.toElement();
         QDomNodeList l = el.elementsByTagName((*it));
         if (!l.size()) {

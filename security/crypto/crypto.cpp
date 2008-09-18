@@ -925,7 +925,7 @@ void KCryptoConfig::load()
   QStringList groups = policies->groupList();
 
   otherSSLBox->clear();
-  for (QStringList::Iterator i = groups.begin(); i != groups.end(); ++i) {
+  for (QStringList::const_iterator i = groups.begin(); i != groups.end(); ++i) {
     if (*i == "General") continue;
     KConfigGroup _cg(policies, *i);
     KSSLCertificate *cert = KSSLCertificate::fromString(_cg.readEntry("Certificate", QString()).toLocal8Bit());
@@ -941,7 +941,7 @@ void KCryptoConfig::load()
   groups = pcerts->groupList();
 
   yourSSLBox->clear();
-  for (QStringList::Iterator i = groups.begin(); i != groups.end(); ++i) {
+  for (QStringList::const_iterator i = groups.begin(); i != groups.end(); ++i) {
     KConfigGroup _cg(pcerts, *i);
     YourCertItem *j = new YourCertItem(yourSSLBox,
                      _cg.readEntry("PKCS12Base64"),
@@ -971,7 +971,7 @@ void KCryptoConfig::load()
   }
   hostAuthList->clear();
   groups = authcfg->groupList();
-  for (QStringList::Iterator i = groups.begin();
+  for (QStringList::const_iterator i = groups.begin();
                              i != groups.end();
                              ++i) {
     KConfigGroup _cg(authcfg, *i);
@@ -991,7 +991,7 @@ void KCryptoConfig::load()
   groups = _signers->list();
   KConfig sigcfg( "ksslcalist", KConfig::NoGlobals );
   caList->clear();
-  for (QStringList::Iterator i = groups.begin();
+  for (QStringList::const_iterator i = groups.begin();
                              i != groups.end();
                              ++i) {
     if (!sigcfg.hasGroup(*i)) continue;
@@ -2022,7 +2022,7 @@ void KCryptoConfig::slotCARestore() {
   QStringList groups = _signers->list();
   KConfig sigcfg( "ksslcalist", KConfig::NoGlobals );
 
-  for (QStringList::Iterator i = groups.begin();
+  for (QStringList::const_iterator i = groups.begin();
                              i != groups.end();
                              ++i) {
     if (!sigcfg.hasGroup(*i)) continue;
