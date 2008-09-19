@@ -265,7 +265,11 @@ bool KPtyDevicePrivate::_k_canRead()
 #else
     int available;
 #endif
+#ifdef Q_OS_FREEBSD
+    if (!::ioctl(q->masterFd(), TIOCOUTQ, (char *) &available)) {
+#else
     if (!::ioctl(q->masterFd(), FIONREAD, (char *) &available)) {
+#endif
         char *ptr = readBuffer.reserve(available);
         NO_INTR(readBytes, read(q->masterFd(), ptr, available));
         if (readBytes < 0) {
