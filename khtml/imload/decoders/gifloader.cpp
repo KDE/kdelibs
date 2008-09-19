@@ -212,7 +212,11 @@ public:
 
             ++frame;
             if (frame >= frameInfo.size())
+            {
+                if (animationAdvice == KHTMLSettings::KAnimationLoopOnce)
+                    animationAdvice = KHTMLSettings::KAnimationDisabled;
                 frame = 0;
+            }
             nextFrame();
         }
 

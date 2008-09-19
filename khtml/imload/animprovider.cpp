@@ -38,6 +38,8 @@ void AnimProvider::nextFrame()
 
 void AnimProvider::switchFrame()
 {
+    if (animationAdvice == KHTMLSettings::KAnimationDisabled)
+        return;
     shouldSwitchFrame = true; 
     image->notifyPerformUpdate();
 }
@@ -45,6 +47,11 @@ void AnimProvider::switchFrame()
 AnimProvider::~AnimProvider()
 {
     ImageManager::animTimer()->destroyed(this);
+}
+
+void AnimProvider::setShowAnimations(KHTMLSettings::KAnimationAdvice newAdvice)
+{
+    animationAdvice = newAdvice;
 }
 
 }
