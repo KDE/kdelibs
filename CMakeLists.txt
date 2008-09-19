@@ -48,11 +48,6 @@ endif(UNIX AND Q_WS_X11)
 #required features
 find_package(ZLIB REQUIRED)
 find_package(Strigi REQUIRED)
-# STRIGI_NEEDS_SIGNED_CHAR is only set correct when pkgconfig is available...
-# we don't use strigi < 0.6.0
-if(WIN32)
-  set(STRIGI_NEEDS_SIGNED_CHAR TRUE)
-endif(WIN32)
 
 #optional features
 macro_optional_find_package(BZip2)
