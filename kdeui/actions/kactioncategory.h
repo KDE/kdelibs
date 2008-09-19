@@ -73,7 +73,7 @@ class QAction;
  *
  * \code
  *
- * KActionCategory *file = KActionCategory(i18n("File"), actionCollection())
+ * KActionCategory *file = new KActionCategory(i18n("File"), actionCollection());
  * file->addAction(
  *      KStandardAction::New,   //< see KStandardAction
  *      this,                   //< Receiver
@@ -81,7 +81,7 @@ class QAction;
  *
  * ... more actions added to file ...
  *
- * KActionCategory *edit = KActionCategory(i18n("Edit"), actionCollection())
+ * KActionCategory *edit = new KActionCategory(i18n("Edit"), actionCollection());
  * edit->addAction(
  *      KStandardAction::Copy,  //< see KStandardAction
  *      this,                   //< Receiver
