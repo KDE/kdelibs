@@ -413,6 +413,9 @@ public:
 
     /*reimp*/ void start() { QMetaObject::invokeMethod(this, "done", Qt::QueuedConnection); }
 
+    // For updateDirectory() to cancel m_emitCompleted;
+    void setEmitCompleted(bool b) { m_emitCompleted = b; }
+
     KUrl url() const { return m_url; }
 
 public Q_SLOTS:
