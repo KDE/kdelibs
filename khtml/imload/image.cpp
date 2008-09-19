@@ -48,6 +48,7 @@ Image::Image(ImageOwner* _owner)
     inError      = false;
 
     width = height = 0;
+    animationAdvice = KHTMLSettings::KAnimationEnabled;
 
     noUpdates();
 }
@@ -214,6 +215,9 @@ void Image::processEOF()
     }
     else
     {
+        if (original && original->animProvider)
+            original->animProvider->setShowAnimations(animationAdvice);
+
         fullyDecoded = true;
         owner->imageDone(this);
     }
@@ -450,6 +454,16 @@ bool Image::hasAlpha() const
     if (!original || !original->parent)
         return false;
     return original->parent->format.hasAlpha();
+}
+
+void Image::setShowAnimations(KHTMLSettings::KAnimationAdvice newAdvice)
+{
+    if (animationAdvice != newAdvice)
+    {
+        animationAdvice = newAdvice;
+        if (original && original->animProvider)
+            original->animProvider->setShowAnimations(newAdvice);
+    }
 }
 
 }

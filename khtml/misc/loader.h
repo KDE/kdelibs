@@ -363,7 +363,6 @@ namespace khtml
 	bool typeChecked : 1;
         bool isFullyTransparent : 1;
         bool monochrome : 1;
-        KHTMLSettings::KAnimationAdvice m_showAnimations : 2;
 
         friend class Cache;
         friend class ::KHTMLPart;
