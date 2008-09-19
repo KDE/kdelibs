@@ -161,7 +161,8 @@ void KDirModelTest::testRowCount()
 {
     const int topLevelRowCount = m_dirModel.rowCount();
     QCOMPARE(topLevelRowCount, m_topLevelFileNames.count() + 1 /*subdir*/);
-    QCOMPARE(m_dirModel.rowCount(m_dirIndex), 3);
+    const int subdirRowCount = m_dirModel.rowCount(m_dirIndex);
+    QCOMPARE(subdirRowCount, 3);
 }
 
 void KDirModelTest::testIndex()
@@ -328,7 +329,6 @@ void KDirModelTest::testModifyFile()
     const QString file = m_tempDir->name() + "toplevelfile_2";
     const KUrl url(file);
 
-    qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
     QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
     connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(quit()) );
@@ -362,7 +362,6 @@ void KDirModelTest::testRenameFile()
     const QString newFile = m_tempDir->name() + "toplevelfile_2_renamed";
     const KUrl newUrl(newFile);
 
-    qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
     QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
     connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(quit()) );
@@ -469,6 +468,36 @@ void KDirModelTest::slotExpand(const QModelIndex& index)
 void KDirModelTest::slotRowsInserted(const QModelIndex&, int, int)
 {
     m_rowsInsertedEmitted = true;
+}
+
+void KDirModelTest::testFilter()
+{
+    const int oldTopLevelRowCount = m_dirModel.rowCount();
+    const int oldSubdirRowCount = m_dirModel.rowCount(m_dirIndex);
+    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    m_dirModel.dirLister()->setNameFilter("toplevel*");
+    QCOMPARE(m_dirModel.rowCount(), oldTopLevelRowCount); // no change yet
+    QCOMPARE(m_dirModel.rowCount(m_dirIndex), oldSubdirRowCount); // no change yet
+    m_dirModel.dirLister()->emitChanges();
+
+    const int expectedTopLevelRowCount = 4; // 3 toplevel* files, one subdir
+    const int expectedSubdirRowCount = 1; // the files get filtered out, the subdir remains
+
+    //while (m_dirModel.rowCount() > expectedTopLevelRowCount) {
+    //    QTest::qWait(20);
+    //    kDebug() << "rowCount=" << m_dirModel.rowCount();
+    //}
+
+    QCOMPARE(m_dirModel.rowCount(), expectedTopLevelRowCount);
+    QCOMPARE(m_dirModel.rowCount(m_dirIndex), expectedSubdirRowCount);
+
+    // Reset the filter
+    kDebug() << "reset to no filter";
+    m_dirModel.dirLister()->setNameFilter(QString());
+    m_dirModel.dirLister()->emitChanges();
+
+    QCOMPARE(m_dirModel.rowCount(), oldTopLevelRowCount);
+    QCOMPARE(m_dirModel.rowCount(m_dirIndex), oldSubdirRowCount);
 }
 
 // Must be done last because it changes the other indexes

@@ -310,7 +310,7 @@ void KDirModelPrivate::_k_slotNewItems(const KFileItemList& items)
     const QModelIndex index = indexForNode(dirNode); // O(n)
     const int newItemsCount = items.count();
     const int newRowCount = dirNode->m_childNodes.count() + newItemsCount;
-#ifndef NDEBUG // debugIndex only defined in debug mode
+#if 0 // ifndef NDEBUG // debugIndex only defined in debug mode
     kDebug(7008) << items.count() << "in" << dir
              << "index=" << debugIndex(index) << "newRowCount=" << newRowCount;
 #endif
@@ -634,10 +634,11 @@ int KDirModel::rowCount( const QModelIndex & parent ) const
     Q_ASSERT(parentNode);
     const int count = parentNode->m_childNodes.count();
 #if 0
-    kDebug(7008) << "rowCount for " << d->url(parentNode) << ": " << count;
+    QStringList filenames;
     for (int i = 0; i < count; ++i) {
-        kDebug(7008) << i << d->url(parentNode->m_childNodes.at(i));
+        filenames << d->url(parentNode->m_childNodes.at(i)).fileName();
     }
+    kDebug(7008) << "rowCount for " << d->url(parentNode) << ": " << count << filenames;
 #endif
     return count;
 }

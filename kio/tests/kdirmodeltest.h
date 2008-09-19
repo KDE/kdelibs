@@ -43,6 +43,7 @@ private Q_SLOTS:
     void testRenameFile();
     void testExpandToUrl_data();
     void testExpandToUrl();
+    void testFilter();
     void testDeleteFile();
     void testDeleteFiles();
 
