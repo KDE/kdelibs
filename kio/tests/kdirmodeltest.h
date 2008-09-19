@@ -44,6 +44,7 @@ private Q_SLOTS:
     void testExpandToUrl_data();
     void testExpandToUrl();
     void testDeleteFile();
+    void testDeleteFiles();
 
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
     void slotListingCompleted();

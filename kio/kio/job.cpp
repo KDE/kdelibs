@@ -879,7 +879,7 @@ StatJob *KIO::stat(const KUrl& url, JobFlags flags)
 
 StatJob *KIO::stat(const KUrl& url, bool sideIsSource, short int details, JobFlags flags )
 {
-    kDebug(7007) << "stat" << url;
+    //kDebug(7007) << "stat" << url;
     KIO_ARGS << url;
     StatJob * job = StatJobPrivate::newJob(url, CMD_STAT, packedArgs, flags);
     job->setSide( sideIsSource ? StatJob::SourceSide : StatJob::DestinationSide );
@@ -889,7 +889,7 @@ StatJob *KIO::stat(const KUrl& url, bool sideIsSource, short int details, JobFla
 
 StatJob *KIO::stat(const KUrl& url, KIO::StatJob::StatSide side, short int details, JobFlags flags )
 {
-    kDebug(7007) << "stat" << url;
+    //kDebug(7007) << "stat" << url;
     KIO_ARGS << url;
     StatJob * job = StatJobPrivate::newJob(url, CMD_STAT, packedArgs, flags);
     job->setSide( side );

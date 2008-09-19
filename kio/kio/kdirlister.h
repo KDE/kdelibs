@@ -507,11 +507,21 @@ Q_SIGNALS:
   void itemsFilteredByMime( const KFileItemList& items );
 
   /**
-   * Signal an item to remove.
+   * Signals that an item has been deleted
    *
    * @param _fileItem the fileItem to delete
    */
-  void deleteItem( const KFileItem &_fileItem );
+  void deleteItem( const KFileItem &_fileItem ); // KDE5: remove, and port to deleteItems
+
+  /**
+   * Signal that items have been deleted
+   * Note that this signal is newer than deleteItem, so
+   * when items are deleted, both signals are emitted, for compatibility reasons.
+   *
+   * @since 4.1.2
+   * @param items the list of deleted items
+   */
+  void itemsDeleted( const KFileItemList& items );
 
   /**
    * Signal an item to refresh (its mimetype/icon/name has changed).

@@ -88,6 +88,7 @@ public:
   void addRefreshItem( const KFileItem& oldItem, const KFileItem& item );
   void emitItems();
   void emitDeleteItem( const KFileItem &item );
+  void emitItemsDeleted(const KFileItemList &items);
   void redirect( const KUrl& oldUrl, const KUrl& newUrl );
 
   KDirLister *m_parent;
@@ -250,7 +251,9 @@ private:
   // the parent directory need to be notified, the unmarked items have to be deleted
   // and removed from the cache including all the children.
   void deleteUnmarkedItems( const QList<KDirLister *>&, KFileItemList & );
-  // common for slotRedirection and slotFileRenamed
+    // Helper method called when we know that a list of items was deleted
+    void itemsDeleted(const QList<KDirLister *>& listers, const KFileItemList& deletedItems);
+    // common for slotRedirection and slotFileRenamed
   void renameDir( const KUrl &oldUrl, const KUrl &url );
   // common for deleteUnmarkedItems and slotFilesRemoved
   void deleteDir( const KUrl& dirUrl );

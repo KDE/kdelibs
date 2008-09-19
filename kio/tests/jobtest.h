@@ -55,7 +55,9 @@ private Q_SLOTS:
     void moveDirectoryNoPermissions();
     void deleteFile();
     void deleteDirectory();
-    void deleteManyFiles();
+    void deleteTwoDirs();
+    void deleteManyFilesIndependently();
+    void deleteManyFilesTogether();
     void stat();
     void mimeType();
     //void newApiPerformance();
