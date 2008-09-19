@@ -518,7 +518,7 @@ Q_SIGNALS:
    * Note that this signal is newer than deleteItem, so
    * when items are deleted, both signals are emitted, for compatibility reasons.
    *
-   * @since 4.2
+   * @since 4.1.2
    * @param items the list of deleted items
    */
   void itemsDeleted( const KFileItemList& items );
