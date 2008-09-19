@@ -633,10 +633,12 @@ int KDirModel::rowCount( const QModelIndex & parent ) const
     KDirModelDirNode* parentNode = static_cast<KDirModelDirNode *>(d->nodeForIndex(parent));
     Q_ASSERT(parentNode);
     const int count = parentNode->m_childNodes.count();
+#if 0
     kDebug(7008) << "rowCount for " << d->url(parentNode) << ": " << count;
     for (int i = 0; i < count; ++i) {
         kDebug(7008) << i << d->url(parentNode->m_childNodes.at(i));
     }
+#endif
     return count;
 }
 
