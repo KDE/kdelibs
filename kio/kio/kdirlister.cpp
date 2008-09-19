@@ -1922,10 +1922,12 @@ void KDirLister::emitChanges()
         d->addNewItem( *kit );
     }
 
-    emit itemsDeleted(deletedItems);
-    // for compat
-    Q_FOREACH(const KFileItem& item, deletedItems)
-        emit deleteItem(item);
+    if (!deletedItems.isEmpty()) {
+        emit itemsDeleted(deletedItems);
+        // for compat
+        Q_FOREACH(const KFileItem& item, deletedItems)
+            emit deleteItem(item);
+    }
     d->emitItems();
   }
 
