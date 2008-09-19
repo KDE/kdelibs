@@ -241,6 +241,7 @@ void Slave::deref()
     Q_D(Slave);
     d->m_refCount--;
     if (!d->m_refCount) {
+        d->connection->disconnect(this);
         this->disconnect();
         deleteLater();
     }
