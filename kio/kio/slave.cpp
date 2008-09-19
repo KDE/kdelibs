@@ -340,8 +340,8 @@ void Slave::kill()
 {
     Q_D(Slave);
     d->dead = true; // OO can be such simple.
-    kDebug(7002) << "killing slave pid=" << d->m_pid << " (" << d->m_protocol << "://"
-		  << d->m_host << ")";
+    kDebug(7002) << "killing slave pid" << d->m_pid
+                 << "(" << QString(d->m_protocol) + "://" + d->m_host << ")";
     if (d->m_pid)
     {
        ::kill(d->m_pid, SIGTERM);

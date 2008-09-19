@@ -590,6 +590,19 @@ void JobTest::listRecursive()
     QCOMPARE( joinedNames.toLatin1(), ref_names );
 }
 
+void JobTest::killJob()
+{
+    const QString src = homeTmpDir();
+    KIO::ListJob* job = KIO::listDir( KUrl(src), KIO::HideProgressInfo );
+    QVERIFY(job->isAutoDelete());
+    QPointer<KIO::ListJob> ptr(job);
+    job->setUiDelegate( 0 );
+    qApp->processEvents(); // let the job start, it's no fun otherwise
+    job->kill();
+    qApp->sendPostedEvents(0, QEvent::DeferredDelete); // process the deferred delete of the job
+    QVERIFY(ptr.isNull());
+}
+
 void JobTest::directorySize()
 {
     // Note: many other tests must have been run before since we rely on the files they created

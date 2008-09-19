@@ -44,6 +44,7 @@ private Q_SLOTS:
     void copyFileToOtherPartition();
     void copyDirectoryToOtherPartition();
     void listRecursive();
+    void killJob();
     void directorySize();
     void directorySizeError();
     void moveFileToSamePartition();

@@ -421,7 +421,7 @@ void SchedulerPrivate::cancelJob(SimpleJob *job) {
            return; // Job was not yet running and not in a coSlave queue.
         }
     }
-    kDebug(7006) << "Scheduler: killing slave " << slave->slave_pid();
+    //kDebug(7006) << "Scheduler: killing slave " << slave->slave_pid();
     slave->kill();
     jobFinished( job, slave );
     slotSlaveDied(slave);

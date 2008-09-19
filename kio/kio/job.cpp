@@ -319,7 +319,7 @@ void SimpleJobPrivate::simpleJobInit()
 
 bool SimpleJob::doKill()
 {
-    kDebug() << "SimpleJob::doKill for " << this;
+    //kDebug() << this;
     Q_D(SimpleJob);
     Scheduler::cancelJob( this ); // deletes the slave if not 0
     d->m_slave = 0; // -> set to 0
