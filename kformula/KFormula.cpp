@@ -27,7 +27,8 @@
 #include "AttributeManager.h"
 #include <kdebug.h>
 
-struct KFormulaPrivate {
+class KFormulaPrivate {
+public:
     QString mathML;
     FormulaElement formula;
     FormulaRenderer formulaRenderer;

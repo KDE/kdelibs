@@ -23,11 +23,12 @@
 #include <QWidget>
 #include <kdemacros.h>
 #include <kcomponentdata.h>
+#include "kformula_export.h"
 
 class QString;
 class KFormulaPrivate;
 
-class KDE_EXPORT KFormula : public QWidget {
+class KOFORMULA_EXPORT KFormula : public QWidget {
   Q_OBJECT
   Q_PROPERTY( QString mathML READ mathML WRITE setMathML )
 
