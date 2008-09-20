@@ -301,7 +301,7 @@ bool StorageAccess::callHalVolumeMount()
                     codepage+="860";
                     break;
                 case QLocale::Hebrew:
-                    codepage+="1255";
+                    codepage+="862";
                     break;
                 case QLocale::Turkish:
                     codepage+="857";
@@ -323,9 +323,6 @@ bool StorageAccess::callHalVolumeMount()
                     break;
                 case QLocale::Thai:
                     codepage+="874";
-                    break;
-                case QLocale::Vietnamese:
-                    codepage+="1258";
                     break;
                 default:
                     codepage.clear();
