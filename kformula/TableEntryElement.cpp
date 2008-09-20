@@ -20,7 +20,7 @@
 */
 
 #include "TableEntryElement.h"
-#include <KoXmlWriter.h>
+#include <QXmlStreamWriter>
 
 TableEntryElement::TableEntryElement( BasicElement* parent ) : RowElement( parent )
 {}

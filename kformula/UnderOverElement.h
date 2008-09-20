@@ -77,10 +77,10 @@ public:
    
 protected:
     /// Read all content from the node - reimplemented by child elements
-    bool readMathMLContent( const KoXmlElement& element );
+    bool readMathMLContent( const QDomElement& element );
 
-    /// Write all content to the KoXmlWriter - reimplemented by the child elements
-    void writeMathMLContent( KoXmlWriter* writer ) const;   
+    /// Write all content to the QXmlStreamWriter - reimplemented by the child elements
+    void writeMathMLContent( QXmlStreamWriter* writer ) const;   
  
 private:
     /// The element used as basis for the under and the over element

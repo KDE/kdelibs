@@ -19,15 +19,11 @@
 
 #include "AttributeManager.h"
 #include "BasicElement.h"
-#include <KoUnit.h>
-#include <KoViewConverter.h>
-#include <KoPostscriptPaintDevice.h>
 #include <QFontMetricsF>
 #include <QColor>
 
 AttributeManager::AttributeManager()
 {
-    m_viewConverter = 0;
 }
 
 AttributeManager::~AttributeManager()
@@ -86,7 +82,7 @@ QString AttributeManager::stringOf( const QString& attribute, BasicElement* elem
 QColor AttributeManager::colorOf( const QString& attribute, BasicElement* element ) const
 {
     QString tmpColor = findValue( attribute, element );
-    if( attribute == "mathbackground" && tmpColor.isEmpty() )
+    if( tmpColor.isEmpty() && attribute == "mathbackground" )
         return Qt::transparent;
 
     return QColor( tmpColor );
@@ -173,9 +169,9 @@ double AttributeManager::parseUnit( const QString& value,
                                     const BasicElement* element ) const
 {
     // test for value without unit
-    if( value.toDouble() != 0 )
+//    if( value.toDouble() != 0 )
         return value.toDouble();
-
+/*
     // process values with units
     QString unit = value.right( value.endsWith( '%' ) ? 1 : 2 );
     double v = value.left( value.length() - unit.length() ).toDouble();
@@ -194,6 +190,7 @@ double AttributeManager::parseUnit( const QString& value,
 //        return defaultValueOf( m_attribute ) * ( tmpValue.toDouble()/100 ); 
     else
         return 0.0;   // actually a value should never be 0.0
+	*/
 }
 
 Align AttributeManager::parseAlign( const QString& value ) const
@@ -235,13 +232,19 @@ QFont AttributeManager::font( const BasicElement* element ) const
     // if contains italic -> font.setItalic( true )
     // if contains sans-serif setStyleHint( SansSerif ) --> Helvetica
   
-    return QFont();
+    return m_defaultFont;
 }
 
-void AttributeManager::setViewConverter( KoViewConverter* converter )
+QFont AttributeManager::defaultFont() const
 {
-    m_viewConverter = converter;
+    return m_defaultFont;
 }
+
+void AttributeManager::setDefaultFont(const QFont &font) 
+{
+    m_defaultFont = font;
+}
+
 
 double AttributeManager::maxHeightOfChildren( BasicElement* element ) const
 {

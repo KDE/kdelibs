@@ -20,8 +20,8 @@
 #include "SubSupElement.h"
 #include "FormulaCursor.h"
 #include "AttributeManager.h"
-#include <KoXmlWriter.h>
-#include <KoXmlReader.h>
+#include <QXmlStreamWriter>
+#include <QDomElement>
 #include <QPainter>
 
 SubSupElement::SubSupElement( BasicElement* parent ) : BasicElement( parent )
@@ -126,11 +126,12 @@ ElementType SubSupElement::elementType() const
     return Unknown;
 }
 
-bool SubSupElement::readMathMLContent( const KoXmlElement& parent )
+bool SubSupElement::readMathMLContent( const QDomElement& parent )
 {
     BasicElement* tmpElement = 0;
-    KoXmlElement tmp;
-    forEachElement( tmp, parent ) { 
+    QDomElement tmp;
+    for ( QDomNode n = parent.firstChild(); !n.isNull(); n = n.nextSibling() ) 
+        if ( ( tmp = n.toElement() ).isNull() ) {} else {
         tmpElement = ElementFactory::createElement( tmp.tagName(), this );
         if( !tmpElement->readMathML( tmp ) )
             return false;
@@ -153,7 +154,7 @@ bool SubSupElement::readMathMLContent( const KoXmlElement& parent )
     return true;
 }
 
-void SubSupElement::writeMathMLContent( KoXmlWriter* writer ) const
+void SubSupElement::writeMathMLContent( QXmlStreamWriter* writer ) const
 {
     // just save the children in the right order
     m_baseElement->writeMathML( writer );

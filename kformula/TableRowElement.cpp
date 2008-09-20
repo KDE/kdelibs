@@ -24,7 +24,7 @@
 #include "TableElement.h"
 #include "TableEntryElement.h"
 #include "AttributeManager.h"
-#include <KoXmlReader.h>
+#include <QDomElement>
 #include <QStringList>
 #include <QPainter>
 
@@ -125,12 +125,12 @@ QList<Align> TableRowElement::alignments( Qt::Orientation orientation )
     return alignList;
 }
 
-bool TableRowElement::readMathMLContent( const KoXmlElement& element )
+bool TableRowElement::readMathMLContent( const QDomElement& parent )
 {
     BasicElement* tmpElement = 0;
-    KoXmlElement tmp;
-    forEachElement( tmp, element )
-    {
+    QDomElement tmp;
+    for ( QDomNode n = parent.firstChild(); !n.isNull(); n = n.nextSibling() ) 
+        if ( ( tmp = n.toElement() ).isNull() ) {} else {
         tmpElement = ElementFactory::createElement( tmp.tagName(), this );
 	if( tmpElement->elementType() != TableEntry )
             return false;
@@ -142,7 +142,7 @@ bool TableRowElement::readMathMLContent( const KoXmlElement& element )
     return true;
 }
 
-void TableRowElement::writeMathMLContent( KoXmlWriter* writer ) const
+void TableRowElement::writeMathMLContent( QXmlStreamWriter* writer ) const
 {
     foreach( TableEntryElement* tmpEntry, m_entries )
         tmpEntry->writeMathML( writer );

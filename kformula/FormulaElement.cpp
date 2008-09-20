@@ -23,7 +23,6 @@
 #include "FormulaElement.h"
 #include "FormulaCursor.h"
 #include "ElementFactory.h"
-#include <KoXmlWriter.h>
 
 FormulaElement::FormulaElement() : RowElement( 0 )
 {

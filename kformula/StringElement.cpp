@@ -22,7 +22,7 @@
 StringElement::StringElement( BasicElement* parent ) : TokenElement( parent )
 {}
 
-void StringElement::renderToPath( const QString& raw, QPainterPath& path )
+void StringElement::renderToPath( const QString& raw, QPainterPath& path, const AttributeManager *am )
 {
 }
 

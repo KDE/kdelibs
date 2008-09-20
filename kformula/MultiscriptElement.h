@@ -69,10 +69,10 @@ public:
 
 protected:
     /// Read all content from the node
-    bool readMathMLContent( const KoXmlElement& element );
+    bool readMathMLContent( const QDomElement& element );
 
-    /// Write all content to the KoXmlWriter
-    void writeMathMLContent( KoXmlWriter* writer ) const;
+    /// Write all content to the QXmlStreamWriter
+    void writeMathMLContent( QXmlStreamWriter* writer ) const;
 
     /// Make sure that there are an even number of elements, as the spec says
     /// there must be.

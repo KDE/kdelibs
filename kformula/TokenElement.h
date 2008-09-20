@@ -95,14 +95,14 @@ public:
     double cursorOffset( const FormulaCursor* cursor ) const;
 
     /// Process @p raw and render it to @p path
-    virtual void renderToPath( const QString& raw, QPainterPath& path ) = 0;
+    virtual void renderToPath( const QString& raw, QPainterPath& path, const AttributeManager *am ) = 0;
 
 protected:
     /// Read contents of the token element. Content should be unicode text strings or mglyphs
-    bool readMathMLContent( const KoXmlElement& parent );
+    bool readMathMLContent( const QDomElement& parent );
 
-    /// Write all content to the KoXmlWriter - reimplemented by the child elements
-    void writeMathMLContent( KoXmlWriter* writer ) const;
+    /// Write all content to the QXmlStreamWriter - reimplemented by the child elements
+    void writeMathMLContent( QXmlStreamWriter* writer ) const;
 
     /// @return The font to use
     QFont font() const;

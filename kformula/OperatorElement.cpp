@@ -29,13 +29,12 @@ QPainterPath OperatorElement::renderForFence( const QString& raw, Form form )
     return QPainterPath();
 }
 
-void OperatorElement::renderToPath( const QString& raw, QPainterPath& path )
+void OperatorElement::renderToPath( const QString& raw, QPainterPath& path, const AttributeManager *am )
 {
     Dictionary dict;
     dict.queryOperator( raw, determineOperatorForm() );
     
-    AttributeManager manager;
-    path.addText( path.currentPosition(), manager.font( this ), raw );
+    path.addText( path.currentPosition(), am->font( this ), raw );
 
 //    path.moveTo( path.currentPosition() + QPointF( lspace, 0.0 ) );
 //    path.moveTo( path.currentPosition() + QPointF( rspace, 0.0 ) );

@@ -1,4 +1,4 @@
-include_directories(${QT_INCLUDES} ${KOGUIUTILS_INCLUDES} )
+include_directories(${QT_INCLUDES} ${KDE4_KDECORE_INCLUDES} )
 
 ########### KFormula Library ###############
 
@@ -36,52 +36,18 @@ set( kformulalib_PART_SRCS
    SquareRootElement.cpp
    UnknownElement.cpp
    Dictionary.cpp
+   KFormula.cpp
 )
 
 kde4_add_library(kformulalib SHARED ${kformulalib_PART_SRCS})
-
-target_link_libraries(kformulalib flake koodf kostore ${KDE4_KDEUI_LIBS} koguiutils)
-
-set_target_properties(kformulalib PROPERTIES VERSION ${GENERIC_KOFFICE_LIB_VERSION} SOVERSION ${GENERIC_KOFFICE_LIB_SOVERSION} )
-
+target_link_libraries(kformulalib ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY})
 install(TARGETS kformulalib DESTINATION ${LIB_INSTALL_DIR})
 
-########### FormulaShape Plugin ###############
-
-set( formulashape_PART_SRCS
-   KoFormulaShapePlugin.cpp
-   KoFormulaShape.cpp
-   KoFormulaShapeFactory.cpp
-   KoFormulaTool.cpp
-   KoFormulaToolFactory.cpp
-   FormulaToolWidget.cpp
-)
-
-kde4_add_ui_files( formulashape_PART_SRCS
-    FormulaToolWidget.ui
-)
-
-kde4_add_plugin(formulashape ${formulashape_PART_SRCS})
-
-target_link_libraries(
-    formulashape
-    kostore
-    koguiutils
-    kformulaprivate
-    flake
-    kformulalib
-    komain
-    ${KDE4_KDEUI_LIBS}
-    ${KDE4_KIO_LIBS}
-    ${QT_QT3SUPPORT_LIBRARY}
-    )
-
-
-#set_target_properties(kformulalib PROPERTIES VERSION ${GENERIC_KOFFICE_LIB_VERSION} SOVERSION ${GENERIC_KOFFICE_LIB_SOVERSION} )
-install(TARGETS formulashape  DESTINATION ${PLUGIN_INSTALL_DIR})
-install(FILES formulashape.desktop DESTINATION ${SERVICES_INSTALL_DIR})
+KDE4_ADD_WIDGET_FILES(kformulawidgets_PART_SRCS kformula.widgets)
+kde4_add_plugin(kformulawidgets ${kformulawidgets_PART_SRCS})
+target_link_libraries(kformulawidgets ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY} kformulalib)
+install(TARGETS kformulawidgets DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/designer )
 
 add_subdirectory( pics ) 
 add_subdirectory( fonts ) 
-add_subdirectory( tests )
 add_subdirectory( templates )

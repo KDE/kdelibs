@@ -21,8 +21,8 @@
 
 #include "RowElement.h"
 #include "FormulaCursor.h"
-#include <KoXmlWriter.h>
-#include <KoXmlReader.h>
+#include <QXmlStreamWriter>
+#include <QDomElement>
 #include <QPainter>
 
 #include <kdebug.h>
@@ -80,7 +80,7 @@ void RowElement::insertChild( FormulaCursor* cursor, BasicElement* child )
 void RowElement::removeChild( FormulaCursor* cursor, BasicElement* child )
 {
     Q_UNUSED( cursor )
-    m_childElements.remove( child );
+    m_childElements.removeOne( child );
 }
 
 BasicElement* RowElement::acceptCursor( const FormulaCursor* cursor )
@@ -93,11 +93,12 @@ ElementType RowElement::elementType() const
     return Row;
 }
 
-bool RowElement::readMathMLContent( const KoXmlElement& parent )
+bool RowElement::readMathMLContent( const QDomElement& parent )
 {
     BasicElement* tmpElement = 0;
-    KoXmlElement tmp;
-    forEachElement( tmp, parent )
+    QDomElement tmp;
+    for ( QDomNode n = parent.firstChild(); !n.isNull(); n = n.nextSibling() ) 
+        if ( ( tmp = n.toElement() ).isNull() ) {} else 
     {
         tmpElement = ElementFactory::createElement( tmp.tagName(), this );
         Q_ASSERT( tmpElement );
@@ -108,7 +109,7 @@ bool RowElement::readMathMLContent( const KoXmlElement& parent )
     return true;
 }
 
-void RowElement::writeMathMLContent( KoXmlWriter* writer ) const
+void RowElement::writeMathMLContent( QXmlStreamWriter* writer ) const
 {
     foreach( BasicElement* tmp, m_childElements )
         tmp->writeMathML( writer );

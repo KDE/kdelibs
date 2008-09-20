@@ -23,7 +23,6 @@
 #include <QFont>
 #include "kformula_export.h"
 
-class KoViewConverter;
 class BasicElement;
 
 /** Enum encoding all possibilities to align */
@@ -54,7 +53,7 @@ enum Align {
  *
  * @author Martin Pfeiffer <hubipete@gmx.net>
  */
-class KOFORMULA_EXPORT AttributeManager {
+class AttributeManager {
 public:
     /// The constructor
     AttributeManager();
@@ -166,8 +165,11 @@ public:
     /// @return The font that is set for @p element 
     QFont font( const BasicElement* element ) const;
 
-    /// Set the KoViewConverter to use
-    void setViewConverter( KoViewConverter* converter );
+    /// @return The default font for font() to return
+    QFont defaultFont() const;
+
+    /// Set the default font for font() to return
+    void setDefaultFont(const QFont &font);
 
 private:
     /// @return The parsed the @p value into a Qt::PenStyle
@@ -179,8 +181,8 @@ private:
     /// Find a value for @p attribute that applies to @p element
     QString findValue( const QString& attribute, const BasicElement* element ) const;
 
-    /// The KoViewConverter used to determine the point values of pixels
-    KoViewConverter* m_viewConverter;
+    /// Default font to use
+    QFont m_defaultFont;
 };
 
 #endif // ATTRIBUTEMANAGER_H

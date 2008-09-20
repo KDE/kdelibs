@@ -22,8 +22,8 @@
 #include "FractionElement.h"
 #include "FormulaCursor.h"
 #include "AttributeManager.h"
-#include <KoXmlWriter.h>
-#include <KoXmlReader.h>
+#include <QXmlStreamWriter>
+#include <QDomElement>
 #include <QPainter>
 #include <kdebug.h>
 
@@ -180,10 +180,12 @@ QString FractionElement::attributesDefaultValue( const QString& attribute ) cons
         return QString();
 }
 
-bool FractionElement::readMathMLContent( const KoXmlElement& parent )
+bool FractionElement::readMathMLContent( const QDomElement& parent )
 {
-    KoXmlElement tmp;
-    forEachElement( tmp, parent ) {
+    QDomElement tmp;
+
+    for ( QDomNode n = parent.firstChild(); !n.isNull(); n = n.nextSibling() ) 
+        if ( ( tmp = n.toElement() ).isNull() ) {} else {
         if( m_numerator->elementType() == Basic ) {
             delete m_numerator;
             m_numerator = ElementFactory::createElement( tmp.tagName(), this );
@@ -204,7 +206,7 @@ bool FractionElement::readMathMLContent( const KoXmlElement& parent )
     return true;
 }
 
-void FractionElement::writeMathMLContent( KoXmlWriter* writer ) const
+void FractionElement::writeMathMLContent( QXmlStreamWriter* writer ) const
 {
     m_numerator->writeMathML( writer );
     m_denominator->writeMathML( writer );

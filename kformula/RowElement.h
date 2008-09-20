@@ -95,10 +95,10 @@ public:
 
 protected:
     /// Read contents of the token element. Content should be unicode text strings or mglyphs
-    bool readMathMLContent( const KoXmlElement& parent );
+    bool readMathMLContent( const QDomElement& parent );
 
-    /// Write all content to the KoXmlWriter - reimplemented by the child elements
-    void writeMathMLContent( KoXmlWriter* writer ) const;
+    /// Write all content to the QXmlStreamWriter - reimplemented by the child elements
+    void writeMathMLContent( QXmlStreamWriter* writer ) const;
 
     /// A list of the child elements
     QList<BasicElement*> m_childElements;

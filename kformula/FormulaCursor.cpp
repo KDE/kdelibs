@@ -26,8 +26,6 @@
 #include <QPainter>
 #include <QPen>
 
-#include <kdebug.h>
-
 FormulaCursor::FormulaCursor( BasicElement* element )
               : m_currentElement( element )
 {
@@ -127,10 +125,10 @@ void FormulaCursor::insertData( const QString& data )
     else if( data == "mtd" ) {
         // TODO
     }
-    else
+    else {
         elementToInsert = ElementFactory::createElement( data, m_currentElement );
-
-    insertElement( elementToInsert );
+        insertElement( elementToInsert );
+    }
 }
 
 void FormulaCursor::insertElement( BasicElement* element )

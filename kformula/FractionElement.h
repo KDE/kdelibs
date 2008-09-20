@@ -88,10 +88,10 @@ public:
 
 protected:
     /// Read all content from the node - reimplemented by child elements
-    bool readMathMLContent( const KoXmlElement& parent );
+    bool readMathMLContent( const QDomElement& parent );
 
-    /// Write all content to the KoXmlWriter - reimplemented by the child elements
-    void writeMathMLContent( KoXmlWriter* writer ) const;   
+    /// Write all content to the QXmlStreamWriter - reimplemented by the child elements
+    void writeMathMLContent( QXmlStreamWriter* writer ) const;   
 
 private:
     /// Layout the fraction in a bevelled way

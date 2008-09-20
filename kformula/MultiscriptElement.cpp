@@ -19,9 +19,9 @@
 
 #include "MultiscriptElement.h"
 #include "AttributeManager.h"
-#include <KoXmlWriter.h>
-#include <KoXmlReader.h>
+#include <QXmlStreamWriter>
 #include <QPainter>
+#include <QDomElement>
 
 MultiscriptElement::MultiscriptElement( BasicElement* parent ) : BasicElement( parent )
 {
@@ -238,13 +238,15 @@ ElementType MultiscriptElement::elementType() const
     return MultiScript;
 }
 
-bool MultiscriptElement::readMathMLContent( const KoXmlElement& parent )
+bool MultiscriptElement::readMathMLContent( const QDomElement& parent )
 {
     QString name = parent.tagName().toLower();
     BasicElement* tmpElement = 0;
-    KoXmlElement tmp;
+    QDomElement tmp;
     bool prescript = false; //When we see a mprescripts tag, we enable this
-    forEachElement( tmp, parent ) { 
+    
+    for ( QDomNode n = parent.firstChild(); !n.isNull(); n = n.nextSibling() ) 
+        if ( ( tmp = n.toElement() ).isNull() ) {} else {
         if(tmp.tagName() == "none") {
             //In mathml, we read subscript, then superscript, etc.  To skip one,
             //you use "none"
@@ -278,7 +280,7 @@ bool MultiscriptElement::readMathMLContent( const KoXmlElement& parent )
     return true;
 }
 
-void MultiscriptElement::writeMathMLContent( KoXmlWriter* writer ) const
+void MultiscriptElement::writeMathMLContent( QXmlStreamWriter* writer ) const
 {
     m_baseElement->writeMathML( writer );        // Just save the children in
                                                  // the right order
@@ -287,20 +289,20 @@ void MultiscriptElement::writeMathMLContent( KoXmlWriter* writer ) const
             tmp->writeMathML( writer );
         else {
             //We need to use a none element for missing elements in the super/sub scripts
-            writer->startElement("none");
-            writer->endElement();
+            writer->writeStartElement("none");
+            writer->writeEndElement();
         }
     }
     if( m_preScripts.isEmpty() ) return;
-    writer->startElement("mprescripts");
-    writer->endElement();
+    writer->writeStartElement("mprescripts");
+    writer->writeEndElement();
     foreach( BasicElement* tmp, m_preScripts ) {
         if(tmp)
             tmp->writeMathML( writer );
         else {
             //We need to use a none element for missing elements in the super/sub scripts
-            writer->startElement("none");
-            writer->endElement();
+            writer->writeStartElement("none");
+            writer->writeEndElement();
         }
     }
 }

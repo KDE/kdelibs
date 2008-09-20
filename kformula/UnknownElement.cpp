@@ -22,7 +22,6 @@
 
 #include "UnknownElement.h"
 #include "AttributeManager.h"
-#include <KoXmlReader.h>
 #include <QPainter>
 #include <kdebug.h>
 
@@ -68,13 +67,13 @@ ElementType UnknownElement::elementType() const
     return Unknown;
 }
 
-bool UnknownElement::readMathMLContent( const KoXmlElement& element )
+bool UnknownElement::readMathMLContent( const QDomElement& element )
 {
 //TODO - save the mathml content in a string
     return true;
 }
 
-void UnknownElement::writeMathMLContent( KoXmlWriter* writer ) const
+void UnknownElement::writeMathMLContent( QXmlStreamWriter* writer ) const
 {
     //TODO - write the save mathml content back into writer
 }

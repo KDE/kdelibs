@@ -22,7 +22,7 @@
 #include "TableElement.h"
 #include "AttributeManager.h"
 #include "TableRowElement.h"
-#include <KoXmlReader.h>
+#include <QDomElement>
 #include <QPainter>
 #include <QList>
 
@@ -183,11 +183,12 @@ QString TableElement::attributesDefaultValue( const QString& attribute ) const
         return QString();
 }
 
-bool TableElement::readMathMLContent( const KoXmlElement& element )
+bool TableElement::readMathMLContent( const QDomElement& parent )
 {  
     BasicElement* tmpElement = 0;
-    KoXmlElement tmp;
-    forEachElement( tmp, element )   // iterate over the elements
+    QDomElement tmp;
+    for ( QDomNode n = parent.firstChild(); !n.isNull(); n = n.nextSibling() ) 
+        if ( ( tmp = n.toElement() ).isNull() ) {} else 
     {
         tmpElement = ElementFactory::createElement( tmp.tagName(), this );
         if( tmpElement->elementType() != TableRow )
@@ -200,7 +201,7 @@ bool TableElement::readMathMLContent( const KoXmlElement& element )
     return true;
 }
 
-void TableElement::writeMathMLContent( KoXmlWriter* writer ) const
+void TableElement::writeMathMLContent( QXmlStreamWriter* writer ) const
 {
     foreach( TableRowElement* tmpRow, m_rows )  // write each mtr element
 	tmpRow->writeMathML( writer );

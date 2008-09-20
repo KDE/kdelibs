@@ -77,6 +77,12 @@ public:
     /// Just for updating one elements layout after a change
     void updateElementLayout( BasicElement* element );
 
+    /**
+     *  Return a pointer to the attribute manager that sets the font etc
+     *  Note that this can be deleted at any time so do not save the pointer for later use
+     */
+    AttributeManager *attributeManager();
+
 private:
     double elementScaleFactor( BasicElement* element ) const;
 

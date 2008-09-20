@@ -87,10 +87,10 @@ public:
 
 protected:
     /// Read root contents - reimplemented from BasicElement
-    bool readMathMLContent( const KoXmlElement& element );
+    bool readMathMLContent( const QDomElement& element );
 
     /// Write root contents - reimplemented from BasicElement
-    void writeMathMLContent( KoXmlWriter* writer ) const;
+    void writeMathMLContent( QXmlStreamWriter* writer ) const;
 
 private:
 };

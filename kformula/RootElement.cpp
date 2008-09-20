@@ -24,8 +24,8 @@
 #include "AttributeManager.h"
 #include "FormulaCursor.h"
 #include "RowElement.h"
-#include <KoXmlReader.h>
 #include <QPainter>
+#include <QDomElement>
 #include <QPen>
 #include <kdebug.h>
 
@@ -115,10 +115,11 @@ ElementType RootElement::elementType() const
     return Root;
 }
 
-bool RootElement::readMathMLContent( const KoXmlElement& element )
+bool RootElement::readMathMLContent( const QDomElement& parent )
 {
-    KoXmlElement tmp;
-    forEachElement( tmp, element ) {
+    QDomElement tmp;
+    for ( QDomNode n = parent.firstChild(); !n.isNull(); n = n.nextSibling() ) 
+        if ( ( tmp = n.toElement() ).isNull() ) {} else {
         if( m_radicand->elementType() == Basic ) {
             delete m_radicand;
             m_radicand = ElementFactory::createElement( tmp.tagName(), this );
@@ -141,7 +142,7 @@ bool RootElement::readMathMLContent( const KoXmlElement& element )
     return true;
 }
 
-void RootElement::writeMathMLContent( KoXmlWriter* writer ) const
+void RootElement::writeMathMLContent( QXmlStreamWriter* writer ) const
 {
     Q_ASSERT( m_radicand );
     Q_ASSERT( m_exponent );

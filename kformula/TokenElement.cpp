@@ -21,8 +21,8 @@
 #include "AttributeManager.h"
 #include "FormulaCursor.h"
 #include "GlyphElement.h"
-#include <KoXmlWriter.h>
-#include <KoXmlReader.h>
+#include <QXmlStreamWriter>
+#include <QDomNode>
 #include <QPainter>
 #include <kdebug.h>
 
@@ -68,14 +68,14 @@ void TokenElement::layout( const AttributeManager* am )
         if( m_rawString[ i ] != QChar::ObjectReplacementCharacter )
             chunk.append( m_rawString[ i ] );
         else {
-            renderToPath( chunk, m_contentPath );
-            m_glyphs[ counter ]->renderToPath( QString(), m_contentPath );
+            renderToPath( chunk, m_contentPath, am );
+            m_glyphs[ counter ]->renderToPath( QString(), m_contentPath, am );
             counter++;
             chunk.clear();
         }
     }
     if( !chunk.isEmpty() )
-        renderToPath( chunk, m_contentPath );
+        renderToPath( chunk, m_contentPath, am );
 
     // As the text is added to ( 0 / 0 ) the baseline equals the top edge of the
     // elements bounding rect, while translating it down the text's baseline moves too
@@ -120,13 +120,13 @@ QFont TokenElement::font() const
     return m_font;
 }
 
-bool TokenElement::readMathMLContent( const KoXmlElement& element )
+bool TokenElement::readMathMLContent( const QDomElement& element )
 {
     // iterate over all child elements ( possible embedded glyphs ) and put the text
     // content in the m_rawString and mark glyph positions with
     // QChar::ObjectReplacementCharacter
     GlyphElement* tmpGlyph;
-    KoXmlNode node = element.firstChild();
+    QDomNode node = element.firstChild();
     while( !node.isNull() ) {
         if( node.isElement() && node.toElement().tagName() == "mglyph" ) {
             tmpGlyph = new GlyphElement( this );
@@ -143,7 +143,7 @@ bool TokenElement::readMathMLContent( const KoXmlElement& element )
     return true;
 }
 
-void TokenElement::writeMathMLContent( KoXmlWriter* writer ) const
+void TokenElement::writeMathMLContent( QXmlStreamWriter* writer ) const
 {
     // split the m_rawString into text content chunks that are divided by glyphs 
     // which are represented as ObjectReplacementCharacter and write each chunk
@@ -151,10 +151,10 @@ void TokenElement::writeMathMLContent( KoXmlWriter* writer ) const
     for ( int i = 0; i < tmp.count(); i++ ) {
         if( m_rawString.startsWith( QChar( QChar::ObjectReplacementCharacter ) ) ) {
             m_glyphs[ i ]->writeMathML( writer );
-            writer->addTextNode( tmp[ i ] );
+            writer->writeCharacters( tmp[ i ] );
         }
         else {
-            writer->addTextNode( tmp[ i ] );       
+            writer->writeCharacters( tmp[ i ] );       
             m_glyphs[ i ]->writeMathML( writer );
         }
     }

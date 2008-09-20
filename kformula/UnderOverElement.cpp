@@ -21,8 +21,8 @@
 #include "UnderOverElement.h"
 #include "FormulaCursor.h"
 #include "AttributeManager.h"
-#include <KoXmlReader.h>
 #include <kdebug.h>
+#include <QDomElement>
 #include <QPainter>
 
 UnderOverElement::UnderOverElement( BasicElement* parent ) : BasicElement( parent )
@@ -102,12 +102,13 @@ QString UnderOverElement::attributesDefaultValue( const QString& attribute ) con
     return "false";  // the default for accent and
 }
 
-bool UnderOverElement::readMathMLContent( const KoXmlElement& parent )
+bool UnderOverElement::readMathMLContent( const QDomElement& parent )
 {
     QString name = parent.tagName().toLower();
     BasicElement* tmpElement = 0;
-    KoXmlElement tmp;
-    forEachElement( tmp, parent ) { 
+    QDomElement tmp;
+    for ( QDomNode n = parent.firstChild(); !n.isNull(); n = n.nextSibling() ) 
+        if ( ( tmp = n.toElement() ).isNull() ) {} else {
         tmpElement = ElementFactory::createElement( tmp.tagName(), this );
         if( !tmpElement->readMathML( tmp ) )
             return false;
@@ -132,7 +133,7 @@ bool UnderOverElement::readMathMLContent( const KoXmlElement& parent )
     return true;
 } 
 
-void UnderOverElement::writeMathMLContent( KoXmlWriter* writer ) const
+void UnderOverElement::writeMathMLContent( QXmlStreamWriter* writer ) const
 {
     m_baseElement->writeMathML( writer );   // Just save the children in
     m_underElement->writeMathML( writer );  // the right order

@@ -22,8 +22,8 @@
 
 #include "BasicElement.h"
 #include "AttributeManager.h"
-#include <KoXmlWriter.h>
-#include <KoXmlReader.h>
+#include <QXmlStreamWriter>
+#include <QDomElement>
 #include <QPainter>
 #include <QVariant>
 
@@ -126,50 +126,49 @@ QString BasicElement::attributesDefaultValue( const QString& ) const
     return QString();  // do nothing
 }
 
-bool BasicElement::readMathML( const KoXmlElement& element )
+bool BasicElement::readMathML( const QDomElement& element )
 {
     readMathMLAttributes( element );
     return readMathMLContent( element );
 }
 
-void BasicElement::readMathMLAttributes( const KoXmlElement& element )
+void BasicElement::readMathMLAttributes( const QDomElement& element )
 {
-    QStringList attributeList = KoXml::attributeNames( element );
-    foreach( QString attributeName, attributeList ) {
-        m_attributes.insert( attributeName.toLower(),
-                             element.attribute( attributeName ).toLower() );
+    QDomNamedNodeMap al = element.attributes();
+    for(int i = 0; i < al.count(); ++i) {
+        QDomAttr a = al.item(i).toAttr();
+        m_attributes.insert( a.name().toLower(),
+                             a.value().toLower() );
     }
 }
 
-bool BasicElement::readMathMLContent( const KoXmlElement& parent )
+bool BasicElement::readMathMLContent( const QDomElement& parent )
 {
     Q_UNUSED( parent )
     return true;
 }
-
-void BasicElement::writeMathML( KoXmlWriter* writer ) const
+void BasicElement::writeMathML( QXmlStreamWriter* writer ) const
 {
     if( elementType() == Basic )
         return;
 
     const QByteArray name = ElementFactory::elementName( elementType() ).toLatin1();
-    writer->startElement( name );
+    writer->writeStartElement( name );
     writeMathMLAttributes( writer );
     writeMathMLContent( writer );
-    writer->endElement();
+    writer->writeEndElement();
 }
 
-void BasicElement::writeMathMLAttributes( KoXmlWriter* writer ) const
+void BasicElement::writeMathMLAttributes( QXmlStreamWriter* writer ) const
 {
     foreach( QString value, m_attributes )
-        writer->addAttribute( m_attributes.key( value ).toLatin1(), value );
+        writer->writeAttribute( m_attributes.key( value ), value );
 }
 
-void BasicElement::writeMathMLContent( KoXmlWriter* writer ) const
+void BasicElement::writeMathMLContent( QXmlStreamWriter* writer ) const
 {
     Q_UNUSED( writer )   // this is just to be reimplemented
 }
-
 ElementType BasicElement::elementType() const
 {
     return Basic;

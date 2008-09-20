@@ -32,10 +32,11 @@
 #include <QRectF>
 class QPainter;
 class QVariant;
-class KoXmlWriter;
-class KoXmlElement;
+class QDomElement;
+class QXmlStreamWriter;
 class AttributeManager;
 class FormulaCursor;
+class AttributeManager;
 
 #define DEBUGID 40000
 
@@ -178,23 +179,23 @@ public:
     virtual QString attributesDefaultValue( const QString& attribute ) const;
     
     /// Read the element from MathML
-    bool readMathML( const KoXmlElement& element );
+    bool readMathML( const QDomElement& element );
 
     /// Save the element to MathML 
-    void writeMathML( KoXmlWriter* writer ) const;
+    void writeMathML( QXmlStreamWriter* writer ) const;
 
 protected:
     /// Read all attributes loaded and add them to the m_attributes map 
-    void readMathMLAttributes( const KoXmlElement& element );
+    void readMathMLAttributes( const QDomElement& element );
 
     /// Read all content from the node - reimplemented by child elements
-    virtual bool readMathMLContent( const KoXmlElement& element );
+    virtual bool readMathMLContent( const QDomElement& element );
 
     /// Write all attributes of m_attributes to @p writer
-    void writeMathMLAttributes( KoXmlWriter* writer ) const;
+    void writeMathMLAttributes( QXmlStreamWriter* writer ) const;
 
-    /// Write all content to the KoXmlWriter - reimplemented by the child elements
-    virtual void writeMathMLContent( KoXmlWriter* writer ) const;
+    /// Write all content to the QXmlStreamWriter - reimplemented by the child elements
+    virtual void writeMathMLContent( QXmlStreamWriter* writer ) const;
 
 private:
     /// The element's parent element - might not be null except of FormulaElement

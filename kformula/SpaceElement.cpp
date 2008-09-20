@@ -22,7 +22,7 @@
 
 #include "SpaceElement.h"
 #include "AttributeManager.h"
-#include <KoXmlWriter.h>
+#include <QXmlStreamWriter>
 #include <QPainter>
 #include <QBrush>
 

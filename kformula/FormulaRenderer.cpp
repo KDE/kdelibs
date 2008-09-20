@@ -20,7 +20,6 @@
 #include "FormulaRenderer.h"
 #include "AttributeManager.h"
 #include "BasicElement.h"
-#include <kdebug.h>
 
 FormulaRenderer::FormulaRenderer()
 {
@@ -94,6 +93,11 @@ void FormulaRenderer::updateElementLayout( BasicElement* element )
 
 double FormulaRenderer::elementScaleFactor( BasicElement* element ) const
 {
-    AttributeManager am;
     return -1;  // FIXME!
 }
+
+AttributeManager *FormulaRenderer::attributeManager() 
+{
+    return m_attributeManager;
+}
+
