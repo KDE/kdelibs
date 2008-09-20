@@ -28,14 +28,7 @@ IdentifierElement::IdentifierElement( BasicElement* parent ) : TokenElement( par
 
 void IdentifierElement::renderToPath( const QString& raw, QPainterPath& path, const AttributeManager *am )
 {
-    if( raw.startsWith( '&' ) && raw.endsWith( ';' ) ) {
-        Dictionary dict;
-        QChar mappedEntity = dict.mapEntity( raw );
-        kDebug() << "mappenEntity: " << mappedEntity;
-        path.addText( path.currentPosition(), am->font( this ), mappedEntity ); 
-    }
-    else
-        path.addText( path.currentPosition(), am->font( this ), raw );
+    path.addText( path.currentPosition(), am->font( this ), raw );
 }
 
 ElementType IdentifierElement::elementType() const
