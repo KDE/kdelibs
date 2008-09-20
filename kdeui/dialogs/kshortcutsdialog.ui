@@ -23,7 +23,7 @@
       <string>Here you can see a list of key bindings, i.e. associations between actions (e.g. 'Copy') shown in the left column and keys or combination of keys (e.g. Ctrl+V) shown in the right column.</string>
      </property>
      <property name="rootIsDecorated" >
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <column>
       <property name="text" >
