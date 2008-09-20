@@ -216,6 +216,7 @@ add_subdirectory( knotify )
 add_subdirectory( kimgio )
 add_subdirectory( dnssd )
 add_subdirectory( kross )
+add_subdirectory( kformula )
 add_subdirectory( security )
 add_subdirectory( includes )
 
