@@ -20,6 +20,7 @@
 #include "TokenElement.h"
 #include "AttributeManager.h"
 #include "FormulaCursor.h"
+#include "Dictionary.h"
 #include "GlyphElement.h"
 #include <QXmlStreamWriter>
 #include <QDomNode>
@@ -135,8 +136,13 @@ bool TokenElement::readMathMLContent( const QDomElement& element )
         }
         else if( node.isElement() )
             return false;
-        else
+	else if (node.isEntityReference()) {
+            Dictionary dict;
+            m_rawString.append( dict.mapEntity( node.nodeName() ) );
+	}
+	else {
             m_rawString.append( node.toText().data().trimmed() );
+	}
 
         node = node.nextSibling();
     }
