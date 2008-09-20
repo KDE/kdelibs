@@ -177,7 +177,13 @@ public:
 
     /// @return The default value of the attribute for this element
     virtual QString attributesDefaultValue( const QString& attribute ) const;
+
+    /// Whether displaystyle is set
+    bool displayStyle() const;
     
+    /// Whether displaystyle is set.  This is updated by FormulaRenderer
+    void setDisplayStyle(bool displayStyle);
+
     /// Read the element from MathML
     bool readMathML( const QDomElement& element );
 
