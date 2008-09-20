@@ -437,6 +437,12 @@ public:
     void setShapeGesture(const KShapeGesture& gest, ShortcutTypes type = ShortcutTypes(ActiveShortcut | DefaultShortcut));
     void setRockerGesture(const KRockerGesture& gest, ShortcutTypes type = ShortcutTypes(ActiveShortcut | DefaultShortcut));
 
+    /**
+     * @reimp
+     */
+    bool event(QEvent*);
+
+
 Q_SIGNALS:
 #ifdef KDE3_SUPPORT
     /**

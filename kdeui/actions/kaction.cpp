@@ -27,8 +27,11 @@
 #include "kaction.h"
 #include "kaction_p.h"
 #include "kglobalaccel_p.h"
+#include "klocale.h"
+#include "kmessagebox.h"
 
 #include <QtGui/QApplication>
+#include <QtGui/QShortcutEvent>
 
 #include <kdebug.h>
 
@@ -63,6 +66,26 @@ void KActionPrivate::slotTriggered()
   emit q->activated();
 #endif
   emit q->triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
+}
+
+
+bool KAction::event(QEvent *event)
+{
+    if (event->type() == QEvent::Shortcut) {
+        QShortcutEvent *se = static_cast<QShortcutEvent*>(event);
+        if(se->isAmbiguous()) {
+            KMessageBox::information(
+                    NULL,  // No widget to be seen around here
+                    i18n( "The key sequence '%1' is ambiguous. Use 'Configure Shortcuts'\n"
+                          "from the 'Settings' menu to solve the ambiguouity.\n"
+                          "No action will be triggered.",
+                                se->key().toString()),
+                    i18n("Ambiguous shortcut detected"));
+            return true;
+        }
+    }
+
+    return QAction::event(event);
 }
 
 
