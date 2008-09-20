@@ -111,7 +111,7 @@ public Q_SLOTS:
 protected:
     virtual bool eventFilter(QObject *, QEvent *);
 private:
-    mutable QModelIndex m_editingIndex;
+    mutable QPersistentModelIndex m_editingIndex;
     bool m_allowLetterShortcuts;
     QWidget *m_editor;
 
