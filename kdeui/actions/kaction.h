@@ -185,7 +185,7 @@ class KRockerGesture;
  * when you have finished with it - the destructor takes care of all
  * of the cleanup.
  *
- * \note calling QAction::setShortcut() on a KAction may lead to unexpected
+ * \warning calling QAction::setShortcut() on a KAction may lead to unexpected
  * behavior. There is nothing we can do about it because QAction::setShortcut()
  * is not virtual.
  *
