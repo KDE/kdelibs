@@ -21,6 +21,7 @@
 #include "BasicElement.h"
 #include <QFontMetricsF>
 #include <QColor>
+#include <kdebug.h>
 
 AttributeManager::AttributeManager()
 {
@@ -168,9 +169,32 @@ double AttributeManager::layoutSpacing( const BasicElement* element ) const
 double AttributeManager::parseUnit( const QString& value,
                                     const BasicElement* element ) const
 {
-    // test for value without unit
-//    if( value.toDouble() != 0 )
-        return value.toDouble();
+    if (value.isEmpty())
+        return 0;
+    QRegExp re("(-?[\\d\\.]*)(px|em|ex|in|cm|pc|mm|pt)?", Qt::CaseInsensitive);
+    if (re.indexIn(value) == -1)
+        return 0;
+    QString real = re.cap(1);
+    QString unit = re.cap(2);
+
+    bool ok;
+    qreal number = real.toDouble(&ok);
+    if (!ok)
+        return 0;
+    if(!unit.isEmpty()) {
+        if (unit.compare("em", Qt::CaseInsensitive) == 0) {
+            QFontMetrics fm(font(element));
+            return fm.height() * number;
+        }
+        else if (unit.compare("ex", Qt::CaseInsensitive) == 0) {
+            QFontMetrics fm(font(element));
+            return fm.xHeight() * number;
+        }
+    }
+
+    return number;
+
+//FIXME - parse the other units - in, cm etc
 /*
     // process values with units
     QString unit = value.right( value.endsWith( '%' ) ? 1 : 2 );

@@ -171,7 +171,6 @@ public:
     /// Set the default font for font() to return
     void setDefaultFont(const QFont &font);
 
-private:
     /// @return The parsed the @p value into a Qt::PenStyle
     Qt::PenStyle parsePenStyle( const QString& value ) const;
 
@@ -181,6 +180,7 @@ private:
     /// Find a value for @p attribute that applies to @p element
     QString findValue( const QString& attribute, const BasicElement* element ) const;
 
+private:
     /// Default font to use
     QFont m_defaultFont;
 };
