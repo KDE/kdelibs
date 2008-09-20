@@ -20,6 +20,7 @@
 #include "OperatorElement.h"
 #include "RowElement.h"
 #include "AttributeManager.h"
+#include "kdebug.h"
 
 OperatorElement::OperatorElement( BasicElement* parent ) : TokenElement( parent )
 {}
@@ -33,11 +34,13 @@ void OperatorElement::renderToPath( const QString& raw, QPainterPath& path, cons
 {
     Dictionary dict;
     dict.queryOperator( raw, determineOperatorForm() );
-    
+   
+    qreal rSpace = am->parseMathSpace(dict.rSpace(), this);
+    qreal lSpace = am->parseMathSpace(dict.lSpace(), this);
+    kDebug() << lSpace << " " << raw << " " << rSpace;
+    path.moveTo( path.currentPosition() + QPointF( lSpace, 0.0 ) );
     path.addText( path.currentPosition(), am->font( this ), raw );
-
-//    path.moveTo( path.currentPosition() + QPointF( lspace, 0.0 ) );
-//    path.moveTo( path.currentPosition() + QPointF( rspace, 0.0 ) );
+    path.moveTo( path.currentPosition() + QPointF( rSpace, 0.0 ) );
 }
 
 Form OperatorElement::determineOperatorForm() const
@@ -56,39 +59,6 @@ Form OperatorElement::determineOperatorForm() const
         return Infix;
 }
 
-double OperatorElement::parseMathSpace( const QString& value )  const
-{
-/*    if( value == "negativeveryverythinmathspace" )
-        return -1*calculateEmExUnits( 0.055556, true );
-    else if( value == "negativeverythinmathspace" )
-        return -1*calculateEmExUnits( 0.111111, true );
-    else if( value == "negativethinmathspace" )
-        return -1*calculateEmExUnits( 0.166667, true );
-    else if( value == "negativemediummathspace" )
-        return -1*calculateEmExUnits( 0.222222, true );
-    else if( value == "negativethickmathspace" )
-        return -1*calculateEmExUnits( 0.277778, true );
-    else if( value == "negativeverythickmathspace" )
-        return -1*calculateEmExUnits( 0.333333, true );
-    else if( value == "negativeveryverythickmathspace" )
-        return -1*calculateEmExUnits( 0.388889, true );
-    else if( value == "veryverythinmathspace" )
-        return calculateEmExUnits( 0.055556, true );
-    else if( value == "verythinmathspace" )
-        return calculateEmExUnits( 0.111111, true );
-    else if( value == "thinmathspace" )
-        return calculateEmExUnits( 0.166667, true );
-    else if( value == "mediummathspace" )
-        return calculateEmExUnits( 0.222222, true );
-    else if( value == "thickmathspace" )
-        return calculateEmExUnits( 0.277778, true );
-    else if( value == "verythickmathspace" )
-        return calculateEmExUnits( 0.333333, true );
-    else if( value == "veryverythickmathspace" )
-        return calculateEmExUnits( 0.388889, true );
-    else*/
-        return -1.0;
-}
 
 Form OperatorElement::parseForm( const QString& value ) const
 {

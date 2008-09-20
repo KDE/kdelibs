@@ -180,6 +180,8 @@ public:
     /// Find a value for @p attribute that applies to @p element
     QString findValue( const QString& attribute, const BasicElement* element ) const;
 
+    /// Convert a math space string, such as "thinmathspace", to a size in pixels
+    double parseMathSpace( const QString& value, BasicElement *element ) const;
 private:
     /// Default font to use
     QFont m_defaultFont;
