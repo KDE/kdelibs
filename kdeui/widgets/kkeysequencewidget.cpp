@@ -38,6 +38,7 @@
 #include <kshortcut.h>
 #include <kaction.h>
 #include <kactioncollection.h>
+#include <kdebug.h>
 
 class KKeySequenceWidgetPrivate
 {
