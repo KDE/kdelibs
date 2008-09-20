@@ -131,15 +131,21 @@ void ShortcutEditWidget::setCustom(const QKeySequence &seq)
     if (m_isUpdating)
         return;
 
+    // seq is a const reference to a private variable of KKeySequenceWidget.
+    // Somewhere below we possible change that one. But we want to emit seq
+    // whatever happens. So we make a copy.
+    QKeySequence original = seq;
+
     m_isUpdating = true;
 
     // Check if the user typed in the default sequence into the custom field.
     // We do this by calling setKeySequence which will do the right thing.
-    setKeySequence(seq);
+    setKeySequence(original);
 
-    emit keySequenceChanged(seq);
+    emit keySequenceChanged(original);
     m_isUpdating = false;
 }
+
 
 void ShortcutEditWidget::setKeySequence(const QKeySequence &activeSeq)
 {

@@ -31,7 +31,6 @@
 #include <QToolButton>
 #include <QApplication>
 
-#include <kdebug.h>
 #include <kglobalaccel.h>
 #include <kicon.h>
 #include <klocale.h>

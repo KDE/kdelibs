@@ -42,7 +42,6 @@
 #include "kaction.h"
 #include "kactioncollection.h"
 #include "kactioncategory.h"
-#include "kdebug.h"
 #include "kglobalaccel.h"
 #include "kmessagebox.h"
 #include "kaboutdata.h"
@@ -406,8 +405,9 @@ void KShortcutsEditorPrivate::capturedShortcut(const QVariant &newShortcut, cons
 void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint column, const QKeySequence &capture)
 {
     // The keySequence we get is cleared by KKeySequenceWidget. No conflicts.
-    if (capture == item->keySequence(column))
+    if (capture == item->keySequence(column)) {
         return;
+    }
 
     item->setKeySequence(column, capture);
     q->keyChange();
