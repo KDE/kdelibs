@@ -235,64 +235,79 @@ bool StorageAccess::callHalVolumeMount()
         options << "uid="+QString::number(::getuid());
     }
     //respect Microsoft Windows-enforced charsets for fat
-    if ( m_device->property("volume.fstype").toString()=="vfat" && halOptions.contains("codepage=") ) {
+    if ( m_device->property("volume.fstype").toString()=="vfat" ) {
+        bool linuxMount=halOptions.contains("codepage=");
+        bool bsdMount=halOptions.contains("-D=");
         QString codepage;
-        switch (QLocale::system().language()) {
-            case QLocale::Russian:
-            case QLocale::Ukrainian:
-            case QLocale::Byelorussian:
-            case QLocale::Bulgarian:
-                codepage = "codepage=855";
-                break;
-            case QLocale::German:
-            case QLocale::Italian:
-            case QLocale::Spanish:
-            case QLocale::French:
-            case QLocale::Dutch:
-            case QLocale::Danish:
-            case QLocale::Swedish:
-            case QLocale::Norwegian:
-            case QLocale::Icelandic:
-            case QLocale::English:
-                codepage = "codepage=850";
-                break;
-            case QLocale::Portuguese:
-                codepage = "codepage=860";
-                break;
-            case QLocale::Hebrew:
-                codepage = "codepage=1255";
-                break;
-            case QLocale::Turkish:
-                codepage = "codepage=857";
-                break;
-            case QLocale::Chinese:
-                if (QLocale::system().country()==QLocale::China)
-                    codepage = "codepage=936";
-                else
-                    //case QLocale::Taiwan:
-                    //case QLocale::HongKong:
-                    //case QLocale::Macau:
-                    codepage = "codepage=950";
-                break;
-            case QLocale::Japanese:
-                codepage = "codepage=932";
-                break;
-            case QLocale::Korean:
-                codepage = "codepage=949";
-                break;
-            case QLocale::Thai:
-                codepage = "codepage=874";
-                break;
-            case QLocale::Vietnamese:
-                codepage = "codepage=1258";
-                break;
+        QString iocharset;
+        if (linuxMount)
+        {
+            codepage="codepage=";
+            iocharset="iocharset=utf8";
         }
-        if (!codepage.isEmpty()) {
-            options << codepage;
-            options << "iocharset=utf8";
+        else if (bsdMount)
+        {
+            codepage="-D=CP";
+            iocharset="-L="+QLocale::system().name()+".UTF-8";
+        }
+
+        if (linuxMount||bsdMount)
+        {
+            switch (QLocale::system().language()) {
+                case QLocale::Russian:
+                case QLocale::Ukrainian:
+                case QLocale::Byelorussian:
+                case QLocale::Bulgarian:
+                    codepage+="866";
+                    break;
+                case QLocale::German:
+                case QLocale::Italian:
+                case QLocale::Spanish:
+                case QLocale::French:
+                case QLocale::Dutch:
+                case QLocale::Danish:
+                case QLocale::Swedish:
+                case QLocale::Norwegian:
+                case QLocale::Icelandic:
+                case QLocale::English:
+                    codepage+="437";
+                    break;
+                case QLocale::Portuguese:
+                    codepage+="860";
+                    break;
+                case QLocale::Hebrew:
+                    codepage+="862";
+                    break;
+                case QLocale::Turkish:
+                    codepage+="857";
+                    break;
+                case QLocale::Chinese:
+                    if (QLocale::system().country()==QLocale::China)
+                        codepage+="936";
+                    else
+                        //case QLocale::Taiwan:
+                        //case QLocale::HongKong:
+                        //case QLocale::Macau:
+                        codepage+="950";
+                    break;
+                case QLocale::Japanese:
+                    codepage+="932";
+                    break;
+                case QLocale::Korean:
+                    codepage+="949";
+                    break;
+                case QLocale::Thai:
+                    codepage+="874";
+                    break;
+                default:
+                    codepage.clear();
+            }
+            if (!codepage.isEmpty()) {
+                options << codepage;
+                options << iocharset;
+            }
         }
     }
-
     msg << "" << "" << options;
 
     return c.callWithCallback(msg, this,
