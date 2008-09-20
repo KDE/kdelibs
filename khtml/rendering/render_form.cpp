@@ -259,7 +259,7 @@ void RenderCheckBox::calcMinMaxWidth()
 
     QCheckBox *cb = static_cast<QCheckBox *>( m_widget );
     QSize s( qMin(22, qMax(14, cb->style()->pixelMetric( QStyle::PM_IndicatorWidth ))),
-             qMin(20, qMax(12, cb->style()->pixelMetric( QStyle::PM_IndicatorHeight ))) );
+             qMin(22, qMax(12, cb->style()->pixelMetric( QStyle::PM_IndicatorHeight ))) );
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
 
