@@ -137,7 +137,6 @@ ElementType SubSupElement::elementType() const
 
 bool SubSupElement::readMathMLContent( const QDomElement& parent )
 {
-    kDebug() << "Element type is " << elementType();
     BasicElement* tmpElement = 0;
     QDomElement tmp;
     for ( QDomNode n = parent.firstChild(); !n.isNull(); n = n.nextSibling() ) 
