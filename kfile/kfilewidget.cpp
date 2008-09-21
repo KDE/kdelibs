@@ -682,13 +682,7 @@ void KFileWidget::slotOk()
         return;
     }
 
-    // sanity flag checks
-    // KFile::File, KFile::Directory and KFile::Files are mutually exclusive. Make sure we haven't
-    // got invalid flags.
-    Q_ASSERT(!(mode & KFile::File) || (!(mode & KFile::Directory) && !(mode & KFile::Files)));
-    Q_ASSERT(!(mode & KFile::Directory) || (!(mode & KFile::File) && !(mode & KFile::Files)));
-    Q_ASSERT(!(mode & KFile::Files) || (!(mode & KFile::Directory) && !(mode & KFile::File)));
-    // Also make sure that one of them was provided
+    // Make sure that one of the modes was provided
     Q_ASSERT((mode & KFile::File) || (mode & KFile::Directory) || (mode & KFile::Files));
 
     // if we are on file mode, and the list of provided files/folder is greater than one, inform
@@ -723,38 +717,38 @@ void KFileWidget::slotOk()
         return;
     }
 
-    if (!(mode & KFile::Directory)) {
-        // locationEditCurrentTextList contains absolute paths
-        // this is the general loop for the File and Files mode. Obviously we know
-        // that the File mode will iterate only one time here
-        foreach (const KUrl &url, locationEditCurrentTextList) {
-            d->url = url;
-            KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
-            bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+    // locationEditCurrentTextList contains absolute paths
+    // this is the general loop for the File and Files mode. Obviously we know
+    // that the File mode will iterate only one time here
+    bool directoryMode = (mode & KFile::Directory);
+    bool onlyDirectoryMode = directoryMode && !(mode & KFile::File) && !(mode & KFile::Files);
+    foreach (const KUrl &url, locationEditCurrentTextList) {
+        d->url = url;
+        KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
+        bool res = KIO::NetAccess::synchronousRun(statJob, 0);
 
-            if (!KAuthorized::authorizeUrlAction("open", KUrl(), url)) {
-                QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyUrl());
-                KMessageBox::error(this, msg);
-                return;
-            }
+        if (!KAuthorized::authorizeUrlAction("open", KUrl(), url)) {
+            QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyUrl());
+            KMessageBox::error(this, msg);
+            return;
+        }
 
-            if ((d->operationMode == Saving) && d->confirmOverwrite && !d->toOverwrite(url)) {
-                return;
-            }
+        if ((d->operationMode == Saving) && d->confirmOverwrite && !d->toOverwrite(url)) {
+            return;
+        }
 
-            // if we are given a folder, let's get into it
-            if (res && statJob->statResult().isDir()) {
-                d->ops->setUrl(url, true);
-                d->locationEdit->lineEdit()->setText(QString());
-                return;
-            } else if (!(mode & KFile::ExistingOnly) || res) {
-                // if we don't care about ExistingOnly flag, add the file even if
-                // it doesn't exist. If we care about it, don't add it to the list
+        // if we are given a folder when not on directory mode, let's get into it
+        if (res && !directoryMode && statJob->statResult().isDir()) {
+            d->ops->setUrl(url, true);
+            d->locationEdit->lineEdit()->setText(QString());
+            return;
+        } else if (!(mode & KFile::ExistingOnly) || res) {
+            // if we don't care about ExistingOnly flag, add the file even if
+            // it doesn't exist. If we care about it, don't add it to the list
+            if (!onlyDirectoryMode || (res && statJob->statResult().isDir())) {
                 d->urlList << url;
             }
         }
-    } else {
-        Q_ASSERT_X(0, "slotOk", "Don't use KFileWidget in directory mode, use KDirSelectDialog instead.");
     }
 
     // if we have reached this point and we didn't return before, that is because
