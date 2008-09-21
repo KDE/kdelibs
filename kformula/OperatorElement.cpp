@@ -17,6 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <QFontMetricsF>
 #include "OperatorElement.h"
 #include "RowElement.h"
 #include "AttributeManager.h"
@@ -30,7 +31,7 @@ QPainterPath OperatorElement::renderForFence( const QString& raw, Form form )
     return QPainterPath();
 }
 
-void OperatorElement::renderToPath( const QString& raw, QPainterPath& path, const AttributeManager *am )
+QRectF OperatorElement::renderToPath( const QString& raw, QPainterPath& path, const AttributeManager *am )
 {
     Dictionary dict;
     dict.queryOperator( raw, determineOperatorForm() );
@@ -38,8 +39,10 @@ void OperatorElement::renderToPath( const QString& raw, QPainterPath& path, cons
     qreal rSpace = am->parseMathSpace(dict.rSpace(), this);
     qreal lSpace = am->parseMathSpace(dict.lSpace(), this);
     path.moveTo( path.currentPosition() + QPointF( lSpace, 0.0 ) );
-    path.addText( path.currentPosition(), am->font( this ), raw );
-    path.moveTo( path.boundingRect().right() + rSpace, 0);
+    QFont font = am->font(this);
+    path.addText( path.currentPosition(), font, raw );
+    QFontMetricsF fm(font);
+    return fm.boundingRect(QRect(), Qt::TextIncludeTrailingSpaces, raw).adjusted(0,0,lSpace+rSpace,0).adjusted(0,-fm.ascent(), 0, -fm.ascent());
 }
 
 Form OperatorElement::determineOperatorForm() const

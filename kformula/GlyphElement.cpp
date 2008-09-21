@@ -20,12 +20,13 @@
 #include "GlyphElement.h"
 #include "AttributeManager.h"
 #include <QFontDatabase>
+#include <QFontMetricsF>
 #include <QStringList>
 
 GlyphElement::GlyphElement( BasicElement* parent ) : TokenElement( parent )
 {}
 
-void GlyphElement::renderToPath( const QString& raw, QPainterPath& path, const AttributeManager *am )
+QRectF GlyphElement::renderToPath( const QString& raw, QPainterPath& path, const AttributeManager *am )
 {
     // try to lookup the char in the font database
     QString fontFamily = am->stringOf( "fontfamily", this );
@@ -38,12 +39,18 @@ void GlyphElement::renderToPath( const QString& raw, QPainterPath& path, const A
         tmpFont.setFamily( fontFamily );
         path.addText( path.currentPosition(), tmpFont,
                       QChar( am->stringOf( "index", this ).toInt() ) ); 
+	QFontMetricsF fm(tmpFont);
+	return fm.boundingRect(QChar( am->stringOf( "index", this ).toInt() ) );
     }
-    else // if not found use alt text
+    else { // if not found use alt text
         path.addText( path.currentPosition(), font(), am->stringOf( "alt", this ) );
+	QFontMetricsF fm(font());
+	return fm.boundingRect(am->stringOf( "alt", this ));
+    }
 }
 
 ElementType GlyphElement::elementType() const
 {
     return Glyph;
 }
+

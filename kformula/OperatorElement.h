@@ -48,7 +48,7 @@ public:
     ElementType elementType() const;
 
     /// Process @p raw and render it to @p path
-    void renderToPath( const QString& raw, QPainterPath& path, const AttributeManager *am );
+    QRectF renderToPath( const QString& raw, QPainterPath& path, const AttributeManager *am );
 
 private:
     /// @return The Form value that was passed as QString @p value

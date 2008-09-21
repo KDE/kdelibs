@@ -20,13 +20,18 @@
 
 #include "NumberElement.h"
 #include "AttributeManager.h"
+#include <QFontMetricsF>
 
 NumberElement::NumberElement( BasicElement* parent ) : TokenElement( parent )
 {}
 
-void NumberElement::renderToPath( const QString& rawString, QPainterPath& path, const AttributeManager *am )
+QRectF NumberElement::renderToPath( const QString& rawString, QPainterPath& path, const AttributeManager *am )
 {
-    path.addText( path.currentPosition(), am->font(this), rawString );
+    QFont font = am->font(this);
+    path.addText( path.currentPosition(), font, rawString );
+    QFontMetricsF fm(font);
+    return fm.boundingRect(rawString);
+
 }
 
 ElementType NumberElement::elementType() const

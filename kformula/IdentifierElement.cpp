@@ -20,15 +20,19 @@
 #include "IdentifierElement.h"
 #include "AttributeManager.h"
 #include "Dictionary.h"
+#include <QFontMetricsF>
 
 #include <kdebug.h>
 
 IdentifierElement::IdentifierElement( BasicElement* parent ) : TokenElement( parent )
 {}
 
-void IdentifierElement::renderToPath( const QString& raw, QPainterPath& path, const AttributeManager *am )
+QRectF IdentifierElement::renderToPath( const QString& raw, QPainterPath& path, const AttributeManager *am )
 {
-    path.addText( path.currentPosition(), am->font( this ), raw );
+    QFont font = am->font(this);
+    path.addText( path.currentPosition(), font, raw );
+    QFontMetricsF fm(font);
+    return fm.boundingRect(raw);
 }
 
 ElementType IdentifierElement::elementType() const
