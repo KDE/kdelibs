@@ -190,6 +190,8 @@ set_target_properties(solid PROPERTIES
 install(TARGETS solid ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES org.kde.Solid.Networking.Client.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+install(FILES org.kde.Solid.PowerManagement.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+install(FILES org.kde.Solid.PowerManagement.Inhibit.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 ########### static lib for tests  ###############
 
