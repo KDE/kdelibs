@@ -26,6 +26,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 
+#include <kdebug.h>
 #include <klocale.h>
 #include <kicon.h>
 #include <kmimetype.h>
@@ -296,6 +297,8 @@ void Action::setInterpreter(const QString& interpretername)
         finalize();
         d->interpretername = interpretername;
         setEnabled( Manager::self().interpreters().contains(interpretername) );
+        if (!isEnabled())
+            kWarning()<<"interpreter not found:"<<interpretername;
         emit updated();
     }
 }
