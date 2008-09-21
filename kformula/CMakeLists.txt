@@ -40,12 +40,12 @@ set( kformulalib_PART_SRCS
 )
 
 kde4_add_library(kformulalib SHARED ${kformulalib_PART_SRCS})
-target_link_libraries(kformulalib ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY})
+target_link_libraries(kformulalib kdeui ${QT_QTXML_LIBRARY})
 install(TARGETS kformulalib DESTINATION ${LIB_INSTALL_DIR})
 
 KDE4_ADD_WIDGET_FILES(kformulawidgets_PART_SRCS kformula.widgets)
 kde4_add_plugin(kformulawidgets ${kformulawidgets_PART_SRCS})
-target_link_libraries(kformulawidgets ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY} kformulalib)
+target_link_libraries(kformulawidgets kdeui ${QT_QTXML_LIBRARY} kformulalib)
 install(TARGETS kformulawidgets DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/designer )
 
 add_subdirectory( pics ) 
