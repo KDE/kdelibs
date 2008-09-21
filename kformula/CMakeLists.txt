@@ -51,3 +51,7 @@ install(TARGETS kformulawidgets DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/design
 add_subdirectory( pics ) 
 add_subdirectory( fonts ) 
 add_subdirectory( templates )
+
+# This is a sample application for debugging purposes
+# Enable only if you want to develop KFormula widget
+# add_subdirectory( sample )
