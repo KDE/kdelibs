@@ -559,11 +559,15 @@ void KdedGlobalAccel::writeSettings()
                 //state should be regarded as transitional *only*.)
                 continue;
             }
-            QStringList entry(stringFromKeys(ad->keys));
-            entry.append(stringFromKeys(ad->defaultKeys));
-            entry.append(ad->friendlyName);
 
-            configGroup.writeEntry(ad->uniqueName, entry);
+            // We do not write session shortcuts
+            if (!ad->uniqueName.startsWith("session:")) {
+                QStringList entry(stringFromKeys(ad->keys));
+                entry.append(stringFromKeys(ad->defaultKeys));
+                entry.append(ad->friendlyName);
+
+                configGroup.writeEntry(ad->uniqueName, entry);
+            }
         }
     }
 
@@ -598,7 +602,7 @@ void KdedGlobalAccel::loadSettings()
             ad->defaultKeys = keysFromString(entry[1]);
             ad->isPresent = false;
             ad->isFresh = false;
-    
+
             foreach (int key, ad->keys) {
                 if (key != 0) {
                     d->keyToAction.insert(key, ad);
