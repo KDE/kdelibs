@@ -30,17 +30,31 @@
 
 class KFormulaPrivate {
 public:
+    KFormula *q;
     QString mathML;
     FormulaElement formula;
     FormulaRenderer formulaRenderer;
     QSize sizeHint;
-    KFormula *q;
+    Qt::Alignment alignment;
+
+    int x_offset;
+    int y_offset;
+
+
+KFormulaPrivate() {
+    x_offset = 0;
+    y_offset = 0;
+}
 
 void layoutFormula() {
     formulaRenderer.attributeManager()->setDefaultFont(q->font());
     formulaRenderer.layoutElement( &formula );
-    sizeHint = QSize( formula.width(), formula.height() );
-    q->updateGeometry();
+
+    QSize newSizeHint( formula.width(), formula.height() );
+    if(newSizeHint != sizeHint) {
+        sizeHint = newSizeHint;
+        q->updateGeometry();
+    }
 }
 
 };
@@ -50,6 +64,7 @@ KFormula::KFormula(QWidget *parent) : QWidget(parent), d(new KFormulaPrivate)
     d->q = this;
     QDomDocument doc;
     setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
+    setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     setMathML("<xml version=\"1.0\"><mfrac><mi>a</mi><mi>b</mi></mfrac></xml>");
 }
 KFormula::~KFormula()
@@ -76,13 +91,40 @@ QString KFormula::mathML() const {
     return d->mathML;
 }
 
-void KFormula::paintEvent ( QPaintEvent * event )
+void KFormula::paintEvent ( QPaintEvent * /*event */)
 {
     QPainter painter(this);
     if( font() != d->formulaRenderer.attributeManager()->defaultFont() ) {
         d->layoutFormula();
     }
 
+    if( d->alignment & Qt::AlignLeft || d->alignment & Qt::AlignJustify)
+        d->x_offset = 0;
+    else if( d->alignment & Qt::AlignRight)
+        d->x_offset = width() - d->formula.width();
+    else if( d->alignment & Qt::AlignHCenter)
+        d->x_offset = (width() - d->formula.width())/2;
+
+    if( d->alignment & Qt::AlignTop)
+        d->y_offset = 0;
+    else if( d->alignment & Qt::AlignBottom)
+        d->y_offset = height() - d->formula.height();
+    else if( d->alignment & Qt::AlignVCenter)
+        d->y_offset = (height() - d->formula.height())/2;
+
+
+    painter.translate(d->x_offset, d->y_offset);
     d->formulaRenderer.paintElement( painter, &d->formula);
+}
+
+Qt::Alignment KFormula::alignment () const
+{
+    return d->alignment;
+}
+void KFormula::setAlignment ( Qt::Alignment alignment)
+{
+    d->alignment = alignment;
+    d->layoutFormula();
+    update();
 }
 #include "KFormula.moc"

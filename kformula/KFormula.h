@@ -31,6 +31,7 @@ class KFormulaPrivate;
 class KOFORMULA_EXPORT KFormula : public QWidget {
   Q_OBJECT
   Q_PROPERTY( QString mathML READ mathML WRITE setMathML )
+  Q_PROPERTY( Qt::Alignment alignment READ alignment WRITE setAlignment )
 
   public:
     KFormula(QWidget *parent);
@@ -40,6 +41,8 @@ class KOFORMULA_EXPORT KFormula : public QWidget {
     QString mathML() const;
     void paintEvent ( QPaintEvent * event );
     virtual QSize sizeHint() const;
+    Qt::Alignment alignment () const;
+    void setAlignment ( Qt::Alignment );
   private:
     KFormulaPrivate *const d;
 };
