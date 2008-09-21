@@ -23,6 +23,7 @@
 #include <QByteArray>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QSize>
 #include "KFormula.h"
 #include "AttributeManager.h"
 #include <kdebug.h>
@@ -32,11 +33,23 @@ public:
     QString mathML;
     FormulaElement formula;
     FormulaRenderer formulaRenderer;
+    QSize sizeHint;
+    KFormula *q;
+
+void layoutFormula() {
+    formulaRenderer.attributeManager()->setDefaultFont(q->font());
+    formulaRenderer.layoutElement( &formula );
+    sizeHint = QSize( formula.width(), formula.height() );
+    q->updateGeometry();
+}
+
 };
 
 KFormula::KFormula(QWidget *parent) : QWidget(parent), d(new KFormulaPrivate)
 {
+    d->q = this;
     QDomDocument doc;
+    setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
     setMathML("<xml version=\"1.0\"><mfrac><mi>a</mi><mi>b</mi></mfrac></xml>");
 }
 KFormula::~KFormula()
@@ -50,19 +63,26 @@ void KFormula::setMathML(const QString &mathml)
     doc.setContent( mathml );
     d->formula = FormulaElement();
     d->formula.readMathML(doc.documentElement());
-
     d->mathML = mathml;  
+    d->layoutFormula();
     update();
+}
+
+QSize KFormula::sizeHint() const {
+    return d->sizeHint;
 }
 
 QString KFormula::mathML() const {
     return d->mathML;
 }
+
 void KFormula::paintEvent ( QPaintEvent * event )
 {
     QPainter painter(this);
-    d->formulaRenderer.attributeManager()->setDefaultFont(font());
-    d->formulaRenderer.layoutElement( &d->formula );
+    if( font() != d->formulaRenderer.attributeManager()->defaultFont() ) {
+        d->layoutFormula();
+    }
+
     d->formulaRenderer.paintElement( painter, &d->formula);
 }
 #include "KFormula.moc"

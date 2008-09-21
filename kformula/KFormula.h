@@ -39,6 +39,7 @@ class KOFORMULA_EXPORT KFormula : public QWidget {
     void setMathML(const QString &mathml);
     QString mathML() const;
     void paintEvent ( QPaintEvent * event );
+    virtual QSize sizeHint() const;
   private:
     KFormulaPrivate *const d;
 };
