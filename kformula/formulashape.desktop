@@ -1,5 +1,12 @@
 [Desktop Entry]
 Name=Formula Shape
+Name[es]=Forma de la fórmula
+Name[gl]=Forma de fórmula
+Name[pt]=Forma de Fórmula
+Name[pt_BR]=Forma de Fórmula
+Name[sv]=Formelskepnad
+Name[uk]=Форма формули
+Name[zh_TW]=公式元件
 X-KDE-ServiceTypes=KOffice/Flake
 Type=Service
 X-KDE-Library=formulashape
