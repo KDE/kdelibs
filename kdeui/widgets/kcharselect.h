@@ -27,6 +27,8 @@
 #include <kglobal.h>
 #include <kdeui_export.h>
 
+class KActionCollection;
+
 class QFont;
 class QUrl;
 
@@ -106,9 +108,23 @@ public:
 
     /**
      * Constructor. @p controls can be used to show a custom set of widgets.
+     *
+     * The widget uses the following actions:
+     *   - KStandardActions::find()
+     *   - KStandardActions::back()
+     *   - KStandardActions::forward()
+     *
+     * @param collection the widget will put its actions into.
      */
-    explicit KCharSelect(QWidget *parent, const Controls controls = AllGuiElements);
+    KDE_CONSTRUCTOR_DEPRECATED explicit KCharSelect(QWidget *parent, const Controls controls = AllGuiElements);
+
+    explicit KCharSelect(
+            QWidget *parent,
+            KActionCollection *collection = NULL,
+            const Controls controls = AllGuiElements);
+
     ~KCharSelect();
+
     /**
      * Reimplemented.
      */
@@ -173,6 +189,8 @@ private:
 
     class KCharSelectPrivate;
     KCharSelectPrivate* const d;
+
+    void init(const Controls, KActionCollection *);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KCharSelect::Controls)

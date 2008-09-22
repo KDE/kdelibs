@@ -38,14 +38,17 @@
 #include <klineedit.h>
 #include <ktextbrowser.h>
 #include <kfontcombobox.h>
-#include <kstandardshortcut.h>
+#include <kactioncollection.h>
+#include <kstandardaction.h>
 
 K_GLOBAL_STATIC(KCharSelectData, s_data)
 
 class KCharSelectTablePrivate
 {
 public:
-    KCharSelectTablePrivate(KCharSelectTable *q): q(q), model(0) {}
+    KCharSelectTablePrivate(KCharSelectTable *q): q(q), model()
+        {}
+
     KCharSelectTable *q;
 
     QFont font;
@@ -70,7 +73,16 @@ public:
 
     enum { MaxHistoryItems = 100 };
 
-    KCharSelectPrivate(KCharSelect *q) : q(q), searchLine(0), searchMode(false), historyEnabled(false), inHistory(0) {}
+    KCharSelectPrivate(KCharSelect *q) 
+        : q(q)
+          ,searchLine(0)
+          ,searchMode(false)
+          ,historyEnabled(false)
+          ,inHistory(0)
+          ,actions(NULL)
+    {
+    }
+
     KCharSelect *q;
 
     QToolButton *backButton;
@@ -87,6 +99,7 @@ public:
     bool historyEnabled;
     int inHistory; //index of current char in history
     QList<HistoryItem> history;
+    KActionCollection* actions;
 
     QString createLinks(QString s);
     void historyAdd(const QChar &c, bool fromSearch, const QString &searchString);
@@ -286,6 +299,26 @@ void KCharSelectTable::keyPressEvent(QKeyEvent *e)
 KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
         : QWidget(parent), d(new KCharSelectPrivate(this))
 {
+    init(controls, NULL);
+}
+
+KCharSelect::KCharSelect(
+        QWidget *parent
+        ,KActionCollection *collection
+        ,const Controls controls)
+    : QWidget(parent), d(new KCharSelectPrivate(this))
+{
+    init(controls, collection);
+}
+
+void KCharSelect::init(const Controls controls, KActionCollection *collection)
+{
+    if (collection==NULL) {
+        d->actions = new KActionCollection(this);
+    } else {
+        d->actions = collection;
+    }
+
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(0);
     if (SearchLine & controls) {
@@ -296,7 +329,7 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
         d->searchLine->setClickMessage(i18n("Enter a search term or character here"));
         d->searchLine->setClearButtonShown(true);
         d->searchLine->setToolTip(i18n("Enter a search term or character here"));
-        new QShortcut(KStandardShortcut::find().primary(), this, SLOT(_k_activateSearchLine()));
+        KStandardAction::find(this, SLOT(_k_activateSearchLine()), d->actions);
         connect(d->searchLine, SIGNAL(textChanged(QString)), this, SLOT(_k_searchEditChanged()));
         connect(d->searchLine, SIGNAL(returnPressed()), this, SLOT(_k_search()));
     }
@@ -324,8 +357,8 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
     d->forwardButton->setIcon(KIcon("go-next"));
     d->forwardButton->setToolTip(i18n("Next Character"));
 
-    new QShortcut(KStandardShortcut::back().primary(), d->backButton, SLOT(animateClick()));
-    new QShortcut(KStandardShortcut::forward().primary(), d->forwardButton, SLOT(animateClick()));
+    KStandardAction::back(d->backButton, SLOT(animateClick()), d->actions);
+    KStandardAction::forward(d->forwardButton, SLOT(animateClick()), d->actions);
     connect(d->backButton, SIGNAL(clicked()), this, SLOT(_k_back()));
     connect(d->forwardButton, SIGNAL(clicked()), this, SLOT(_k_forward()));
 
