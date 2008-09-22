@@ -790,12 +790,11 @@ QRect RenderCanvas::viewRect() const
             kDebug(6040) << "viewRect: " << QRect(0, m_pageTop, m_width, m_pageBottom - m_pageTop);
             return QRect(0, m_pageTop, m_width, m_pageBottom - m_pageTop);
         }
-    else if (m_view)
-        return QRect(m_view->contentsX(),
-            m_view->contentsY(),
-            m_view->visibleWidth(),
-            m_view->visibleHeight());
-    else
+    else if (m_view) {
+        const int z = m_view->zoomLevel() ? m_view->zoomLevel() : 100;
+        return QRect(m_view->contentsX() * 100 / z, m_view->contentsY() * 100 / z,
+                     m_view->visibleWidth(), m_view->visibleHeight());
+    } else
         return QRect(0,0,m_rootWidth,m_rootHeight);
 }
 
