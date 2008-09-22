@@ -120,7 +120,7 @@ public:
 
     explicit KCharSelect(
             QWidget *parent,
-            KActionCollection *collection = NULL,
+            KActionCollection *collection,
             const Controls controls = AllGuiElements);
 
     ~KCharSelect();
