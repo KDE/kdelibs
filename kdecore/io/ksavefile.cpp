@@ -27,6 +27,7 @@
 
 #include <QtCore/QDir>
 #include <QProcess>
+#include <QTemporaryFile>
 
 #include <kconfig.h>
 #include <kde_file.h>
@@ -34,7 +35,6 @@
 #include <kstandarddirs.h>
 #include <kconfiggroup.h>
 #include <kcomponentdata.h>
-#include "ktemporaryfile.h"
 
 class KSaveFile::Private
 {
@@ -102,7 +102,7 @@ bool KSaveFile::open(OpenMode flags)
     }
 
     //Create our temporary file
-    KTemporaryFile tempFile(d->componentData);
+    QTemporaryFile tempFile;
     tempFile.setAutoRemove(false);
     tempFile.setFileTemplate(d->realFileName + "XXXXXX.new");
     if (!tempFile.open()) {
