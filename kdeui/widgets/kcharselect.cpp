@@ -315,6 +315,7 @@ void KCharSelect::init(const Controls controls, KActionCollection *collection)
 {
     if (collection==NULL) {
         d->actions = new KActionCollection(this);
+        d->actions->addAssociatedWidget(this);
     } else {
         d->actions = collection;
     }
