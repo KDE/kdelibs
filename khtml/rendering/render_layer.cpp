@@ -1139,8 +1139,12 @@ bool RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y)
     int stx = m_x;
     int sty = m_y;
 
+#ifdef __GNUC__
+#warning HACK
+#endif
     if (renderer()->isCanvas()) {
-        static_cast<RenderCanvas*>(renderer())->view()->revertTransforms(stx, sty);
+        stx += static_cast<RenderCanvas*>(renderer())->view()->contentsX();
+        sty += static_cast<RenderCanvas*>(renderer())->view()->contentsY();
     }
 
     QRect damageRect(stx,sty, width(), height());
