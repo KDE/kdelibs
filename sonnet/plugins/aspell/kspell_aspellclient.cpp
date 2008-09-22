@@ -31,10 +31,23 @@ K_EXPORT_PLUGIN( ASpellClientFactory( "kspell_aspell" ) )
 
 using namespace Sonnet;
 
+#ifdef Q_WS_WIN
+#include <kstandarddirs.h>
+#define ASPELL_DATA_ROOT "lib/aspell-0.60/"
+
+QString aspell_data_dir() {
+    return KStandardDirs::installPath("kdedir") + ASPELL_DATA_ROOT;        
+}
+#endif
+
 ASpellClient::ASpellClient( QObject *parent, const QVariantList& /* args */  )
     : Client( parent )
 {
     m_config = new_aspell_config();
+#ifdef Q_WS_WIN
+    aspell_config_replace( m_config, "data-dir", aspell_data_dir().toLocal8Bit().data());
+    aspell_config_replace( m_config, "dict-dir", aspell_data_dir().toLocal8Bit().data());
+#endif
 }
 
 ASpellClient::~ASpellClient()
