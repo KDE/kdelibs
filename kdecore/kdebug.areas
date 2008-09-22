@@ -332,6 +332,7 @@
 7127        kio_fish
 7128        kio_svn
 7129        kio_akonadi
+7130        kio_trash
 
 # kdesdk
 8100        kompare
