@@ -112,6 +112,7 @@ public:
     QString name;
     QString folder;
     int handle;
+    int transactionId;
 };
 
 class KWalletDLauncher
@@ -204,41 +205,70 @@ int Wallet::deleteWallet(const QString& name) {
 Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
     if( w == 0 )
         kWarning() << "Pass a valid window to KWallet::Wallet::openWallet().";
-    
-    QDBusMessage openMessage = QDBusMessage::createMethodCall(
-        walletLauncher->getInterface().service(),
-        walletLauncher->getInterface().path(),
-        walletLauncher->getInterface().interface(),
-        (ot == Path) ? "openPath" : "open");
-    openMessage << name << qlonglong(w) << appid();
-    
-    if (ot == Asynchronous) {
-        Wallet *wallet = new Wallet(-1, name);
 
-        // place an asynchronous call
-        walletLauncher->getInterface().connection().callWithCallback(openMessage, wallet,
-            SLOT(walletOpenResult(int)), SLOT(walletOpenError(const QDBusError&)), 18000000);
+    Wallet *wallet = new Wallet(-1, name);
 
-        return wallet;
+    // connect the daemon's opened signal to the slot filtering the
+    // signals we need
+    connect(&walletLauncher->getInterface(), SIGNAL(walletAsyncOpened(int, int)),
+            wallet, SLOT(walletAsyncOpened(int, int)));
+                                             
+    // Use an eventloop for synchronous calls
+    QEventLoop loop;
+    if (ot == Synchronous) {
+        connect(wallet, SIGNAL(walletOpened(bool)), &loop, SLOT(quit()));
     }
-
-    // avoid deadlock if the app has some popup open (#65978/#71048)
-    while( QWidget* widget = qApp->activePopupWidget())
-        widget->close();
-
-    QDBusMessage replyMessage = walletLauncher->getInterface().connection().call(
-        openMessage, QDBus::Block, 18000000);
-    if (replyMessage.type() == QDBusMessage::ReplyMessage) {
-        QDBusReply<int> r(replyMessage);
-        if (r.isValid()) {
-            int drc = r;
-            if (drc != -1) {
-                return new Wallet(drc, name);
+    
+    // do the call
+    QDBusReply<int> r;
+    if (ot == Synchronous || ot == Asynchronous) {
+        r = walletLauncher->getInterface().openAsync(name, (qlonglong)w, appid());
+    } else if (ot == Path) {
+        r = walletLauncher->getInterface().openPath(name, (qlonglong)w, appid());
+    } else {
+        delete wallet;
+        return 0;
+    }
+    wallet->d->transactionId = r.value();
+    
+    switch (ot) {
+        
+    case Synchronous:
+        // check for an immediate error
+        if (wallet->d->transactionId < 0) {
+            delete wallet;
+            wallet = 0;
+        } else {
+            // wait for the daemon's reply
+            loop.exec();
+            if (wallet->d->handle < 0) {
+                delete wallet;
+                return 0;
             }
         }
+        break;
+        
+    case Asynchronous:
+        if (wallet->d->transactionId < 0) {
+            QTimer::singleShot(0, wallet, SLOT(emitWalletAsyncOpenError()));
+            // client code is responsible for deleting the wallet
+        }
+        break;
+        
+    case Path:
+        if (wallet->d->transactionId < 0) {
+            delete wallet;
+            return 0;
+        } else {
+            wallet->d->handle = wallet->d->transactionId;
+        }
+        break;
+        
+    default:
+        break;
     }
 
-    return 0;
+    return wallet;
 }
 
 
@@ -683,26 +713,21 @@ void Wallet::slotApplicationDisconnected(const QString& wallet, const QString& a
     }
 }
 
-
-void Wallet::walletOpenResult(int id) {
-    if (d->handle != -1) {
-        // This is BAD.
+void Wallet::walletAsyncOpened(int tId, int handle) {
+    // ignore responses to calls other than ours
+    if (d->transactionId != tId || d->handle != -1) {
         return;
     }
-
-    if (id > 0) {
-        d->handle = id;
-        emit walletOpened(true);
-    } else if (id < 0) {
-        emit walletOpened(false);
-    } // id == 0 => wait
+    
+    // disconnect the async signal
+    disconnect(this, SLOT(walletAsyncOpened(int, int)));
+    
+    d->handle = handle;
+    emit walletOpened(handle > 0);
 }
 
-void Wallet::walletOpenError(const QDBusError& error)
-{
-    if (error.isValid()) {
-        emit walletOpened(false);
-    }
+void Wallet::emitWalletAsyncOpenError() {
+    emit walletOpened(false);
 }
 
 bool Wallet::folderDoesNotExist(const QString& wallet, const QString& folder)

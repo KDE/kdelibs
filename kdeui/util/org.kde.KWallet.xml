@@ -9,6 +9,10 @@
     <signal name="walletOpened">
       <arg name="wallet" type="s" direction="out"/>
     </signal>
+    <signal name="walletAsyncOpened">
+      <arg name="tId" type="i" direction="out"/>
+      <arg name="handle" type="i" direction="out"/>
+    </signal>
     <signal name="walletDeleted">
       <arg name="wallet" type="s" direction="out"/>
     </signal>
@@ -43,6 +47,12 @@
     <method name="openPath">
       <arg type="i" direction="out"/>
       <arg name="path" type="s" direction="in"/>
+      <arg name="wId" type="x" direction="in"/>
+      <arg name="appid" type="s" direction="in"/>
+    </method>
+    <method name="openAsync">
+      <arg type="i" direction="out"/>
+      <arg name="wallet" type="s" direction="in"/>
       <arg name="wId" type="x" direction="in"/>
       <arg name="appid" type="s" direction="in"/>
     </method>

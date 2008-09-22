@@ -480,14 +480,16 @@ class KDEUI_EXPORT Wallet : public QObject
 		/**
 		 *  @internal
 		 *  Callback for kwalletd
+		 *  @param tId identifer for the open transaction
+		 *  @param handle the wallet's handle
 		 */
-		void walletOpenResult(int rc);
+		void walletAsyncOpened(int tId, int handle);
 
 		/**
 		 *  @internal
 		 *  DBUS error slot.
 		 */
-		void walletOpenError(const QDBusError& error);
+		void emitWalletAsyncOpenError();
 
 		/**
 		 *  @internal
