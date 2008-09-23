@@ -29,6 +29,7 @@ extern "C"
 {
     KDE_EXPORT int kdemain( int argc, char **argv )
     {
+        Q_ASSERT(!KGlobal::hasMainComponent()); // kdeinit is messed up if this is the case.
         KComponentData componentData( "kio_help", "kio_help4" );
         fillInstance(componentData);
         (void)componentData.config(); // we need this one to make sure system globals are read
