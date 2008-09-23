@@ -13,9 +13,12 @@ MainWindow::MainWindow( QWidget* parent ) : KXmlGuiWindow( parent )
     KConfig config;
     KConfigGroup generalGroup( &config, "General" );
     QString mathml = generalGroup.readEntry("mathml", "<mrow>>mfrac><mi>x</mi></mfrac></mrow>");
+    QFont font = generalGroup.readEntry("mathfont", QFont() );
 
     ui->text->setText( mathml );
     ui->kformula->setMathML(mathml);
+    ui->mathfont->setFont(font);
+    ui->kformula->setFont(font);
 
     connect(ui->text, SIGNAL(textChanged()), this, SLOT(textChanged()));
 }
@@ -24,6 +27,7 @@ MainWindow::~MainWindow() {
     KConfig config;
     KConfigGroup generalGroup( &config, "General" );
     generalGroup.writeEntry("mathml", ui->text->toPlainText() );
+    generalGroup.writeEntry("mathfont", ui->mathfont->font() );
 }
 
 void MainWindow::textChanged() {
