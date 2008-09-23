@@ -24,7 +24,13 @@
 #include <kdemacros.h>
 
 #ifndef KFORMULA_EXPORT
-#define KFORMULA_EXPORT KDE_EXPORT
+# if defined(MAKE_KFORMULALIB_LIB)
+   /* We are building this library */ 
+#  define KFORMULA_EXPORT KDE_EXPORT
+# else
+   /* We are using this library */ 
+#  define KFORMULA_EXPORT KDE_IMPORT
+# endif
 #endif
 
 #endif
