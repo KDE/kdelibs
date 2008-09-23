@@ -52,7 +52,7 @@
 #include <QDir>
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
-#include <kconfiggroup.h>
+#include <kglobalsettings.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <klibloader.h>
@@ -530,17 +530,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      if (cwd && *cwd)
         chdir(cwd);
      else {
-         // Can't use KGlobalSettings::documentPath() here, we don't have a main component set,
-         // and we don't want to set one; e.g. kioslaves will do that.
-         // So we have to duplicate this stuff from KGlobalSettings.
-         KConfigGroup g(s_instance->config(), "Paths");
-         const QString documentPath = g.readPathEntry("Documents",
-#ifdef Q_WS_WIN
-                                                       getWin32ShellFoldersPath("Personal")
-#else
-                                                       QDir::homePath());
-#endif
-         const QByteArray docPath = QFile::encodeName(documentPath);
+         const QByteArray docPath = QFile::encodeName(KGlobalSettings::documentPath());
          chdir(docPath.constData());
      }
 
