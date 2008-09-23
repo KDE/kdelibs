@@ -116,6 +116,7 @@ class KFileItemDelegate::Private
         QPointF shadowOffset;
         qreal shadowBlur;
         QSize maximumSize;
+        bool showToolTipWhenElided;
 
     private:
         KFileItemDelegate * const q;
@@ -128,7 +129,8 @@ class KFileItemDelegate::Private
 
 KFileItemDelegate::Private::Private(KFileItemDelegate *parent)
      : shadowColor(Qt::transparent), shadowOffset(1, 1), shadowBlur(2), maximumSize(0, 0),
-       q(parent), animationHandler(new KIO::DelegateAnimationHandler(parent))
+       showToolTipWhenElided(true), q(parent),
+       animationHandler(new KIO::DelegateAnimationHandler(parent))
 {
 }
 
@@ -973,6 +975,18 @@ QSize KFileItemDelegate::maximumSize() const
 }
 
 
+void KFileItemDelegate::setShowToolTipWhenElided(bool showToolTip)
+{
+    d->showToolTipWhenElided = showToolTip;
+}
+
+
+bool KFileItemDelegate::showToolTipWhenElided() const
+{
+    return d->showToolTipWhenElided;
+}
+
+
 QIcon KFileItemDelegate::Private::decoration(const QStyleOptionViewItemV4 &option, const QModelIndex &index) const
 {
     const QVariant value = index.data(Qt::DecorationRole);
@@ -1323,8 +1337,37 @@ bool KFileItemDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, co
 {
     Q_UNUSED(event)
     Q_UNUSED(view)
-    Q_UNUSED(option)
-    Q_UNUSED(index)
+
+    // if the tooltip information the model keeps is different from the display information,
+    // show it always
+    const QVariant toolTip = index.data(Qt::ToolTipRole);
+
+    if (!toolTip.isValid()) {
+        return false;
+    }
+
+    if (index.data() != toolTip) {
+        return QAbstractItemDelegate::helpEvent(event, view, option, index);
+    }
+
+    if (!d->showToolTipWhenElided) {
+        return false;
+    }
+
+    // in the case the tooltip information is the same as the display information,
+    // show it only in the case the display information is elided
+    QStyleOptionViewItemV4 opt(option);
+    d->initStyleOption(&opt, index);
+
+    QTextLayout labelLayout;
+    QTextLayout infoLayout;
+    QRect textBoundingRect;
+    d->layoutTextItems(opt, index, &labelLayout, &infoLayout, &textBoundingRect);
+    const QString elidedText = d->elidedText(labelLayout, opt, textBoundingRect.size());
+
+    if (elidedText != d->display(index)) {
+        return QAbstractItemDelegate::helpEvent(event, view, option, index);
+    }
 
     return false;
 }

@@ -117,6 +117,15 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
      */
     Q_PROPERTY(QSize maximumSize READ maximumSize WRITE setMaximumSize)
 
+    /**
+     * This property determines whether a tooltip will be shown by the delegate
+     * if the display role is elided. This tooltip will contain the full display
+     * role information. The tooltip will only be shown if the Qt::ToolTipRole differs
+     * from Qt::DisplayRole, or if they match, showToolTipWhenElided flag is set and
+     * the display role information is elided.
+     */
+    Q_PROPERTY(bool showToolTipWhenElided READ showToolTipWhenElided WRITE setShowToolTipWhenElided)
+
     Q_ENUMS(Information)
 
 
@@ -343,6 +352,30 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
          * @since 4.1
          */
         QSize maximumSize() const;
+
+        /**
+         * Sets whether a tooltip should be shown if the display role is
+         * elided containing the full display role information.
+         *
+         * @note The tooltip will only be shown if the Qt::ToolTipRole differs
+         *       from Qt::DisplayRole, or if they match, showToolTipWhenElided
+         *       flag is set and the display role information is elided.
+         * @see showToolTipWhenElided()
+         * @since 4.2
+         */
+        void setShowToolTipWhenElided(bool showToolTip);
+
+        /**
+         * Returns whether a tooltip should be shown if the display role
+         * is elided containing the full display role information.
+         *
+         * @note The tooltip will only be shown if the Qt::ToolTipRole differs
+         *       from Qt::DisplayRole, or if they match, showToolTipWhenElided
+         *       flag is set and the display role information is elided.
+         * @see setShowToolTipWhenElided()
+         * @since 4.2
+         */
+        bool showToolTipWhenElided() const;
 
         /**
          * Reimplemented from @ref QAbstractItemDelegate.

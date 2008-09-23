@@ -537,6 +537,8 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 return int(alignment);
             }
             break;
+        case Qt::ToolTipRole:
+            return item.text();
         case FileItemRole:
             return QVariant::fromValue(item);
         case ChildCountRole:
