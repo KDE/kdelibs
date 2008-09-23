@@ -1279,6 +1279,7 @@ void K3Spell::dialog( const QString & word, QStringList & sugg, const char *_slo
   context.replace( '<', QLatin1String("&lt;") );
   context.replace( '>', QLatin1String("&gt;") );
   context.replace( marker, QString::fromLatin1("<b>%1</b>").arg( word ) );
+  context = "<qt>" + context + "</qt>";
 
   ksdlg->init( word, &sugg, context );
   d->m_bNoMisspellingsEncountered = false;

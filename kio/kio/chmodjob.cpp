@@ -210,7 +210,7 @@ void ChmodJobPrivate::chmodNextFile()
             QString path = info.url.path();
             if ( chown( QFile::encodeName(path), m_newOwner, m_newGroup ) != 0 )
             {
-                int answer = KMessageBox::warningContinueCancel( 0, i18n( "Could not modify the ownership of file <b>%1</b>. You have insufficient access to the file to perform the change." , path), QString(), KGuiItem(i18n("&Skip File")) );
+                int answer = KMessageBox::warningContinueCancel( 0, i18n( "<qt>Could not modify the ownership of file <b>%1</b>. You have insufficient access to the file to perform the change.</qt>" , path), QString(), KGuiItem(i18n("&Skip File")) );
                 if (answer == KMessageBox::Cancel)
                 {
                     q->setError( ERR_USER_CANCELED );

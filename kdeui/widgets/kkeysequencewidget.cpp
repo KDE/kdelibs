@@ -160,8 +160,8 @@ bool KKeySequenceWidgetPrivate::stealShortcut(QAction *item, const QKeySequence 
 void KKeySequenceWidgetPrivate::wontStealShortcut(QAction *item, const QKeySequence &seq)
 {
 	QString title( i18n( "Shortcut conflict" ) );
-	QString msg( i18n( "The '%1' key combination is already used by the <b>%2</b> action.<br>"
-			"Please select a different one.", seq.toString(QKeySequence::NativeText) , item->text().remove('&') ) );
+	QString msg( i18n( "<qt>The '%1' key combination is already used by the <b>%2</b> action.<br>"
+			"Please select a different one.</qt>", seq.toString(QKeySequence::NativeText) , item->text().remove('&') ) );
 	KMessageBox::sorry( q, msg );
 }
 

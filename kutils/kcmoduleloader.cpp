@@ -74,10 +74,10 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting rep
   if ( !mod.service() )
     return reportError( report,
         i18n("The module %1 could not be found.",
-          mod.moduleName() ), i18n("<p>The diagnostics is:<br />The desktop file %1 could not be found.</p>", mod.fileName()), parent );
+          mod.moduleName() ), i18n("<qt><p>The diagnostics is:<br />The desktop file %1 could not be found.</p></qt>", mod.fileName()), parent );
   if( mod.service()->noDisplay() )
     return reportError( report, i18n( "The module %1 is disabled.", mod.moduleName() ),
-        i18n( "<p>Either the hardware/software the module configures is not available or the module has been disabled by the administrator.</p>" ),
+        i18n( "<qt><p>Either the hardware/software the module configures is not available or the module has been disabled by the administrator.</p></qt>" ),
         parent );
 
   if (!mod.library().isEmpty())
@@ -131,7 +131,7 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting rep
    */
   return reportError( report,
       i18n("The module %1 is not a valid configuration module.", mod.moduleName() ),
-      i18n("The diagnostics is:<br />The desktop file %1 does not specify a library.", mod.fileName()), parent );
+      i18n("<qt>The diagnostics is:<br />The desktop file %1 does not specify a library.</qt>", mod.fileName()), parent );
 }
 
 
@@ -150,12 +150,12 @@ void KCModuleLoader::unloadModule(const KCModuleInfo &mod)
 void KCModuleLoader::showLastLoaderError(QWidget *parent)
 {
   KMessageBox::detailedError(parent,
-      i18n("There was an error loading the module."),i18n("The diagnostics is:<br />%1"
+      i18n("There was an error loading the module."),i18n("<qt>The diagnostics is:<br />%1"
         "<p>Possible reasons:</p><ul><li>An error occurred during your last "
         "KDE upgrade leaving an orphaned control module</li><li>You have old third party "
         "modules lying around.</li></ul><p>Check these points carefully and try to remove "
         "the module mentioned in the error message. If this fails, consider contacting "
-        "your distributor or packager.</p>",
+        "your distributor or packager.</p></qt>",
        KLibLoader::self()->lastErrorMessage()));
 
 }
@@ -165,11 +165,11 @@ KCModule* KCModuleLoader::reportError( ErrorReporting report, const QString & te
 {
     QString realDetails = details;
     if (realDetails.isNull()) {
-        realDetails = i18n("<p>Possible reasons:<ul><li>An error occurred during your last "
+        realDetails = i18n("<qt><p>Possible reasons:<ul><li>An error occurred during your last "
                 "KDE upgrade leaving an orphaned control module</li><li>You have old third party "
                 "modules lying around.</li></ul></p><p>Check these points carefully and try to remove "
                 "the module mentioned in the error message. If this fails, consider contacting "
-                "your distributor or packager.</p>");
+                "your distributor or packager.</p></qt>");
     }
     if (report & KCModuleLoader::Dialog) {
         KMessageBox::detailedError(parent, text, realDetails);

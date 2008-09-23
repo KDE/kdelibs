@@ -2603,7 +2603,7 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVect
             if( accesskey.isNull() && fallbacks.contains( en )) {
                 QChar a = fallbacks[ en ].toUpper();
                 if( qFind( taken.begin(), taken.end(), a ) == taken.end()) // !contains
-                    accesskey = QString( "<i>" ) + a + "</i>";
+                    accesskey = QString( "<qt><i>" ) + a + "</i></qt>";
             }
             if( !accesskey.isNull()) {
 	        QRect rec=en->getRect();

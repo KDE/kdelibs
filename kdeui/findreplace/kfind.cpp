@@ -55,7 +55,7 @@ KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent) :
     setDefaultButton( User1 );
     showButtonSeparator( false );
 
-    setMainWidget( new QLabel( i18n("Find next occurrence of '<b>%1</b>'?", pattern), this ) );
+    setMainWidget( new QLabel( i18n("<qt>Find next occurrence of '<b>%1</b>'?</qt>", pattern), this ) );
 }
 
 ////
@@ -586,7 +586,7 @@ void KFind::displayFinalDialog() const
     if ( numMatches() )
         message = i18np( "1 match found.", "%1 matches found.", numMatches() );
     else
-        message = i18n("No matches found for '<b>%1</b>'.", Qt::escape(d->pattern));
+        message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>", Qt::escape(d->pattern));
     KMessageBox::information(dialogsParent(), message);
 }
 
@@ -623,7 +623,7 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
         i18n("Continue from the end?")
         : i18n("Continue from the beginning?");
 
-    int ret = KMessageBox::questionYesNo( dialogsParent(), message,
+    int ret = KMessageBox::questionYesNo( dialogsParent(), "<qt>"+message+"</qt>",
                                           QString(), KStandardGuiItem::cont(), KStandardGuiItem::stop() );
     bool yes = ( ret == KMessageBox::Yes );
     if ( yes )

@@ -213,7 +213,7 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
                     case Qt::WhatsThisRole: {
                         if( d->mode & ToolTips ) {
                             const QString file = QFileInfo( item->action->file() ).fileName();
-                            return QString("<b>%1</b><br>%2")
+                            return QString("<qt><b>%1</b><br>%2</qt>")
                                 .arg( file.isEmpty() ? item->action->name() : file )
                                 .arg( item->action->description() );
                         }
@@ -237,7 +237,7 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
                     case Qt::ToolTipRole: // fall through
                     case Qt::WhatsThisRole: {
                         if( d->mode & ToolTips )
-                            return QString("<b>%1</b><br>%2").arg(item->collection->text()).arg(item->collection->description());
+                            return QString("<qt><b>%1</b><br>%2</qt>").arg(item->collection->text()).arg(item->collection->description());
                     } break;
                     case Qt::CheckStateRole: {
                         if( d->mode & UserCheckable )

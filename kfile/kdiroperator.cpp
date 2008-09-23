@@ -738,7 +738,7 @@ KIO::DeleteJob * KDirOperator::del(const KFileItemList& items,
         int ret;
         if (items.count() == 1) {
             ret = KMessageBox::warningContinueCancel(parent,
-                    i18n("Do you really want to delete\n <b>'%1'</b>?" ,
+                    i18n("<qt>Do you really want to delete\n <b>'%1'</b>?</qt>" ,
                          files.first()),
                     i18n("Delete File"),
                     KStandardGuiItem::del(),
@@ -796,7 +796,7 @@ KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
         int ret;
         if (items.count() == 1) {
             ret = KMessageBox::warningContinueCancel(parent,
-                    i18n("Do you really want to trash\n <b>'%1'</b>?" ,
+                    i18n("<qt>Do you really want to trash\n <b>'%1'</b>?</qt>" ,
                          files.first()),
                     i18n("Trash File"),
                     KGuiItem(i18nc("to trash", "&Trash"), "user-trash"),

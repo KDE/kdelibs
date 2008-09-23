@@ -2455,6 +2455,13 @@ void KDirLister::Private::redirect( const KUrl& oldUrl, const KUrl& newUrl )
         url = newUrl;
     }
 
+    kDebug() << "LSTDIRS" << lstDirs;
+    kDebug() << "OLD" << oldUrl;
+    kDebug() << "NEW" << newUrl;
+    kDebug() << "IDX" << lstDirs.indexOf( oldUrl );
+    kDebug() << "LSTCOUNT" << lstDirs.count();
+    kDebug() << oldUrl.toEncoded();
+    kDebug() << lstDirs.at(0).toEncoded();
     lstDirs[ lstDirs.indexOf( oldUrl ) ] = newUrl;
 
     if ( lstDirs.count() == 1 ) {

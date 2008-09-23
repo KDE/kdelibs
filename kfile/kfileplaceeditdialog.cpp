@@ -96,9 +96,9 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     layout->setSpacing( spacingHint() );
     box->addLayout( layout );
 
-    QString whatsThisText = i18n("This is the text that will appear in the Places panel.<br /><br />"
+    QString whatsThisText = i18n("<qt>This is the text that will appear in the Places panel.<br /><br />"
                                  "The description should consist of one or two words "
-                                 "that will help you remember what this entry refers to.");
+                                 "that will help you remember what this entry refers to.</qt>");
     QLabel *label = new QLabel( i18n("&Description:"), wdg );
     layout->addWidget( label, 0, 0 );
 
@@ -109,10 +109,10 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     label->setWhatsThis(whatsThisText );
     m_edit->setWhatsThis(whatsThisText );
 
-    whatsThisText = i18n("This is the location associated with the entry. Any valid URL may be used. For example:<br /><br />"
+    whatsThisText = i18n("<qt>This is the location associated with the entry. Any valid URL may be used. For example:<br /><br />"
                          "%1<br />http://www.kde.org<br />ftp://ftp.kde.org/pub/kde/stable<br /><br />"
                          "By clicking on the button next to the text edit box you can browse to an "
-                         "appropriate URL.", QDir::homePath());
+                         "appropriate URL.</qt>", QDir::homePath());
     label = new QLabel( i18n("&Location:"), wdg );
     layout->addWidget( label, 1, 0 );
     m_urlEdit = new KUrlRequester( url.prettyUrl(), wdg );
@@ -122,8 +122,8 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     label->setWhatsThis(whatsThisText );
     m_urlEdit->setWhatsThis(whatsThisText );
 
-    whatsThisText = i18n("This is the icon that will appear in the Places panel.<br /><br />"
-                         "Click on the button to select a different icon.");
+    whatsThisText = i18n("<qt>This is the icon that will appear in the Places panel.<br /><br />"
+                         "Click on the button to select a different icon.</qt>");
     label = new QLabel( i18n("Choose an &icon:"), wdg );
     layout->addWidget( label, 2, 0 );
     m_iconButton = new KIconButton( wdg );
@@ -146,10 +146,10 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
             appName = KGlobal::mainComponent().componentName();
         m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)",  appName ), wdg );
         m_appLocal->setChecked( appLocal );
-        m_appLocal->setWhatsThis(i18n("Select this setting if you want this "
+        m_appLocal->setWhatsThis(i18n("<qt>Select this setting if you want this "
                               "entry to show only when using the current application (%1).<br /><br />"
                               "If this setting is not selected, the entry will be available in all "
-                              "applications.",
+                              "applications.</qt>",
                                appName));
         box->addWidget(m_appLocal);
     }

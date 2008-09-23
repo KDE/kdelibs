@@ -148,7 +148,7 @@ K3AboutApplication::K3AboutApplication( const KAboutData *aboutData, QWidget *pa
 
   if(translatorList.count() > 0)
   {
-      QString text;
+      QString text = "<qt>";
 
       QList<KAboutPerson>::ConstIterator it;
       for(it = translatorList.begin(); it != translatorList.end(); ++it)
@@ -160,7 +160,7 @@ K3AboutApplication::K3AboutApplication( const KAboutData *aboutData, QWidget *pa
             .arg((*it).emailAddress());
       }
 
-      text += KAboutData::aboutTranslationTeam();
+      text += KAboutData::aboutTranslationTeam() + "</qt>";
       addTextPage( i18n("T&ranslation"), text, true);
   }
 

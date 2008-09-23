@@ -298,7 +298,7 @@ QString whatstr;
   cwcb->addItem(i18n("Export Ciphers Only"));
   cwcb->addItem(i18n("Enable All"));
 
-  whatstr = i18n("Use these preconfigurations to more easily configure "
+  whatstr = i18n("<qt>Use these preconfigurations to more easily configure "
                  "the SSL encryption settings. You can choose among the "
                  "following modes:<ul>"
                  "<li><b>Strong Ciphers Only:</b> Select only the strong "
@@ -307,7 +307,7 @@ QString whatstr;
                  "ciphers (&lt;= 56 bit).</li>"
                  "<li><b>Enable All:</b> Select all SSL ciphers and "
                  "methods.</li>"
-                 "</ul>");
+                 "</ul></qt>");
 
   cwcb->setWhatsThis( whatstr);
 
