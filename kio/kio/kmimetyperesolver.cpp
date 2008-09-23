@@ -30,19 +30,23 @@
 class KMimeTypeResolverPrivate
 {
 public:
-    KMimeTypeResolverPrivate()
-        : m_delayForNonVisibleIcons(10), // TODO set me to 0 when image preview is enabled
+    KMimeTypeResolverPrivate(KMimeTypeResolver *parent)
+        : q(parent),
+          m_delayForNonVisibleIcons(10), // TODO set me to 0 when image preview is enabled
           m_noVisibleIcon(false)
     {
         m_timer.setSingleShot(true);
     }
 
+
     void _k_slotRowsInserted(const QModelIndex&,int,int);
     void _k_slotViewportAdjusted();
     void _k_slotProcessMimeIcons();
 
+    void init();
     QModelIndex findVisibleIcon();
 
+    KMimeTypeResolver* q;
     QAbstractItemView* m_view;
     QAbstractProxyModel* m_proxyModel;
     KDirModel* m_dirModel;
@@ -54,6 +58,17 @@ public:
     bool m_noVisibleIcon;
 };
 
+void KMimeTypeResolverPrivate::init()
+{
+    QObject::connect(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
+                     q, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
+    QObject::connect(&m_timer, SIGNAL(timeout()),
+                     q, SLOT(_k_slotProcessMimeIcons()));
+    QObject::connect(m_view->horizontalScrollBar(), SIGNAL(valueChanged(int)),
+                     q, SLOT(_k_slotViewportAdjusted()));
+    QObject::connect(m_view->verticalScrollBar(), SIGNAL(valueChanged(int)),
+                     q, SLOT(_k_slotViewportAdjusted()));
+}
 
 QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
 {
@@ -85,35 +100,21 @@ QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
 ////
 
 KMimeTypeResolver::KMimeTypeResolver(QAbstractItemView* view, KDirModel* model)
-    : QObject(view), d(new KMimeTypeResolverPrivate)
+    : QObject(view), d(new KMimeTypeResolverPrivate(this))
 {
     d->m_view = view;
     d->m_proxyModel = 0;
     d->m_dirModel = model;
-    connect(d->m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
-            this, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
-    connect(&d->m_timer, SIGNAL(timeout()),
-            this, SLOT(_k_slotProcessMimeIcons()));
-    connect(d->m_view->horizontalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SLOT(_k_slotViewportAdjusted()));
-    connect(d->m_view->verticalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SLOT(_k_slotViewportAdjusted()));
+    d->init();
 }
 
 KMimeTypeResolver::KMimeTypeResolver(QAbstractItemView* view, QAbstractProxyModel* model)
-    : QObject(view), d(new KMimeTypeResolverPrivate)
+    : QObject(view), d(new KMimeTypeResolverPrivate(this))
 {
     d->m_view = view;
     d->m_proxyModel = model;
     d->m_dirModel = static_cast<KDirModel*>(model->sourceModel());
-    connect(d->m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
-            this, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
-    connect(&d->m_timer, SIGNAL(timeout()),
-            this, SLOT(_k_slotProcessMimeIcons()));
-    connect(d->m_view->horizontalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SLOT(_k_slotViewportAdjusted()));
-    connect(d->m_view->verticalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SLOT(_k_slotViewportAdjusted()));
+    d->init();
 }
 
 KMimeTypeResolver::~KMimeTypeResolver()
