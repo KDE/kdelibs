@@ -1584,8 +1584,8 @@ JSValue *Window::openWindow(ExecState *exec, const List& args)
                                     i18n( "This site is requesting to open up a new browser "
                                           "window via JavaScript.\n"
                                           "Do you want to allow this?" ) :
-                                    i18n( "<qt>This site is requesting to open<p>%1</p>in a new browser window via JavaScript.<br />"
-                                          "Do you want to allow this?</qt>", KStringHandler::csqueeze(Qt::escape(url.prettyUrl()),  100)),
+                                    i18n( "This site is requesting to open<p>%1</p>in a new browser window via JavaScript.<br />"
+                                          "Do you want to allow this?", KStringHandler::csqueeze(Qt::escape(url.prettyUrl()),  100)),
                                     caption, KGuiItem(i18n("Allow")), KGuiItem(i18n("Do Not Allow")) ) == KMessageBox::Yes )
       policy = KHTMLSettings::KJSWindowOpenAllow;
   } else if ( policy == KHTMLSettings::KJSWindowOpenSmart )

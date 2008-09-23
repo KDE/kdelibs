@@ -423,9 +423,8 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L
 
   ret << errorName;
   ret << i18nc( "@info %1 error name, %2 description",
-                "<qt><p><b>%1</b></p><p>%2</p></qt>", errorName, description);
+                "<p><b>%1</b></p><p>%2</p>", errorName, description);
 
-  ret2 = QLatin1String( "<qt>" );
   if ( !techName.isEmpty() )
     ret2 += QLatin1String( "<p>" ) + i18n( "<b>Technical reason</b>: " ) +
             techName + QLatin1String( "</p>" );
@@ -447,7 +446,6 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L
             QLatin1String( "</p><ul><li>" ) + solutions.join( "</li><li>" ) +
             QLatin1String( "</li></ul>" );
   }
-  ret2 += QLatin1String( "</qt>" );
   ret << ret2;
 
   return ret;

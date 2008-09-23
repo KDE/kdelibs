@@ -201,16 +201,16 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
     {
       q->setButtonGuiItem( KDialog::Ok, KGuiItem( i18n("&Replace"), QString(),
                     i18n("Start replace"),
-                    i18n("<qt>If you press the <b>Replace</b> button, the text you entered "
+                    i18n("If you press the <b>Replace</b> button, the text you entered "
                          "above is searched for within the document and any occurrence is "
-                         "replaced with the replacement text.</qt>")));
+                         "replaced with the replacement text.")));
     }
     else
     {
       q->setButtonGuiItem( KDialog::Ok, KGuiItem( i18n("&Find"), "edit-find",
                     i18n("Start searching"),
-                    i18n("<qt>If you press the <b>Find</b> button, the text you entered "
-                         "above is searched for within the document.</qt>")));
+                    i18n("If you press the <b>Find</b> button, the text you entered "
+                         "above is searched for within the document.")));
     }
 
     // QWhatsthis texts
@@ -224,12 +224,12 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
     replace->setWhatsThis(i18n(
             "Enter a replacement string, or select a previous one from the list.") );
     backRef->setWhatsThis(i18n(
-            "<qt>If enabled, any occurrence of <code><b>\\N</b></code>, where "
+            "If enabled, any occurrence of <code><b>\\N</b></code>, where "
             "<code><b>N</b></code> is an integer number, will be replaced with "
             "the corresponding capture (\"parenthesized substring\") from the "
             "pattern.<p>To include (a literal <code><b>\\N</b></code> in your "
             "replacement, put an extra backslash in front of it, like "
-            "<code><b>\\\\N</b></code>.</p></qt>") );
+            "<code><b>\\\\N</b></code>.</p>") );
     backRefItem->setWhatsThis(i18n(
             "Click for a menu of available captures.") );
     wholeWordsOnly->setWhatsThis(i18n(

@@ -472,9 +472,9 @@ KOpenWithDialog::KOpenWithDialog( const KUrl::List& _urls, QWidget* parent )
     QString text;
     if( _urls.count() == 1 )
     {
-        text = i18n("<qt>Select the program that should be used to open <b>%1</b>. "
+        text = i18n("Select the program that should be used to open <b>%1</b>. "
                      "If the program is not listed, enter the name or click "
-                     "the browse button.</qt>",  _urls.first().fileName() );
+                     "the browse button.",  _urls.first().fileName() );
     }
     else
         // Should never happen ??
@@ -506,9 +506,9 @@ KOpenWithDialog::KOpenWithDialog( const QString &mimeType, const QString& value,
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
   setCaption(i18n("Choose Application for %1", mimeType));
-  QString text = i18n("<qt>Select the program for the file type: <b>%1</b>. "
+  QString text = i18n("Select the program for the file type: <b>%1</b>. "
                       "If the program is not listed, enter the name or click "
-                      "the browse button.</qt>", mimeType);
+                      "the browse button.", mimeType);
     d->qMimeType = mimeType;
     d->init(text, value);
     if (d->remember) {
@@ -522,9 +522,9 @@ KOpenWithDialog::KOpenWithDialog( QWidget *parent)
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
   setCaption(i18n("Choose Application"));
-  QString text = i18n("<qt>Select a program. "
+  QString text = i18n("Select a program. "
                       "If the program is not listed, enter the name or click "
-                      "the browse button.</qt>");
+                      "the browse button.");
     d->qMimeType.clear();
     d->init(text, QString());
 }

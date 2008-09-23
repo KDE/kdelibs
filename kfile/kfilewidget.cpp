@@ -269,10 +269,10 @@ public:
 
 K_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
 
-static const char autocompletionWhatsThisText[] = I18N_NOOP("<qt>While typing in the text area, you may be presented "
+static const char autocompletionWhatsThisText[] = I18N_NOOP("While typing in the text area, you may be presented "
                                                   "with possible matches. "
                                                   "This feature can be controlled by clicking with the right mouse button "
-                                                  "and selecting a preferred mode from the <b>Text Completion</b> menu.")  "</qt>";
+                                                  "and selecting a preferred mode from the <b>Text Completion</b> menu.");
 
 // returns true if the string contains "<a>:/" sequence, where <a> is at least 2 alpha chars
 static bool containsProtocolSection( const QString& string )
@@ -385,9 +385,9 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     //
     // http://lists.kde.org/?l=kde-core-devel&m=116888382514090&w=2
 
-    coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<br /><br />"
+    coll->action( "up" )->setWhatsThis(i18n("Click this button to enter the parent folder.<br /><br />"
                                             "For instance, if the current location is file:/home/%1 clicking this "
-                                            "button will take you to file:/home.</qt>",  KUser().loginName() ));
+                                            "button will take you to file:/home.",  KUser().loginName() ));
 
     coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
     coll->action( "forward" )->setWhatsThis(i18n("Click this button to move forward one step in the browsing history."));
@@ -414,14 +414,14 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     KActionMenu *menu = new KActionMenu( KIcon("configure"), i18n("Options"), this);
     coll->addAction("extra menu", menu);
-    menu->setWhatsThis(i18n("<qt>This is the preferences menu for the file dialog. "
+    menu->setWhatsThis(i18n("This is the preferences menu for the file dialog. "
                             "Various options can be accessed from this menu including: <ul>"
                             "<li>how files are sorted in the list</li>"
                             "<li>types of view, including icon and list</li>"
                             "<li>showing of hidden files</li>"
                             "<li>the Places navigation panel</li>"
                             "<li>file previews</li>"
-                            "<li>separating folders from files</li></ul></qt>"));
+                            "<li>separating folders from files</li></ul>"));
     menu->addAction( coll->action( "sorting menu" ));
     menu->addSeparator();
     coll->action( "short view" )->setShortcut( QKeySequence(Qt::Key_F6) );
@@ -502,12 +502,12 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
             this,  SLOT( _k_locationAccepted( const QString& ) ));
 
     // the Filter label/edit
-    whatsThisText = i18n("<qt>This is the filter to apply to the file list. "
+    whatsThisText = i18n("This is the filter to apply to the file list. "
                          "File names that do not match the filter will not be shown.<p>"
                          "You may select from one of the preset filters in the "
                          "drop down menu, or you may enter a custom filter "
                          "directly into the text area.</p><p>"
-                         "Wildcards such as * and ? are allowed.</p></qt>");
+                         "Wildcards such as * and ? are allowed.</p>");
     d->filterLabel = new QLabel(i18n("&Filter:"), this);
     d->filterLabel->setWhatsThis(whatsThisText);
     d->filterWidget = new KFileFilterCombo(this);
@@ -993,20 +993,20 @@ void KFileWidgetPrivate::updateLocationWhatsThis()
     QString whatsThisText;
     if (operationMode == KFileWidget::Saving)
     {
-        whatsThisText = "<qt>" + i18n("This is the name to save the file as.") +
-                             i18n (autocompletionWhatsThisText);
+        whatsThisText =  i18n("This is the name to save the file as.") +
+                         i18n(autocompletionWhatsThisText);
     }
     else if (ops->mode() & KFile::Files)
     {
-        whatsThisText = "<qt>" + i18n("This is the list of files to open. More than "
-                             "one file can be specified by listing several "
-                             "files, separated by spaces.") +
-                              i18n (autocompletionWhatsThisText);
+        whatsThisText = i18n("This is the list of files to open. More than "
+                        "one file can be specified by listing several "
+                        "files, separated by spaces.") +
+                        i18n(autocompletionWhatsThisText);
     }
     else
     {
-        whatsThisText = "<qt>" + i18n("This is the name of the file to open.") +
-                             i18n (autocompletionWhatsThisText);
+        whatsThisText = i18n("This is the name of the file to open.") +
+                        i18n (autocompletionWhatsThisText);
     }
 
     locationLabel->setWhatsThis(whatsThisText);
@@ -1810,7 +1810,7 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
 
         const QString locationLabelText = stripUndisplayable (locationLabel->text());
         const QString filterLabelText = stripUndisplayable (filterLabel->text());
-        autoSelectExtCheckBox->setWhatsThis(            "<qt>" +
+        autoSelectExtCheckBox->setWhatsThis(
                 i18n (
                   "This option enables some convenient features for "
                   "saving files with extensions:<br />"
@@ -1839,7 +1839,6 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
                   locationLabelText,
                   locationLabelText,
                   whatsThisExtension)
-            + "</qt>"
             );
 
         autoSelectExtCheckBox->show();
@@ -2104,11 +2103,11 @@ void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
         bookmarkButton->setDelayed(false);
         q->actionCollection()->addAction("bookmark", bookmarkButton);
         bookmarkButton->setMenu(bookmarkHandler->menu());
-        bookmarkButton->setWhatsThis(i18n("<qt>This button allows you to bookmark specific locations. "
+        bookmarkButton->setWhatsThis(i18n("This button allows you to bookmark specific locations. "
                                 "Click on this button to open the bookmark menu where you may add, "
                                 "edit or select a bookmark.<br /><br />"
                                 "These bookmarks are specific to the file dialog, but otherwise operate "
-                                "like bookmarks elsewhere in KDE.</qt>"));
+                                "like bookmarks elsewhere in KDE."));
         toolbar->addAction(bookmarkButton);
     }
     else if (bookmarkHandler)

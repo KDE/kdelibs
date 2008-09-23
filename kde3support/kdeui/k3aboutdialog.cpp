@@ -681,7 +681,7 @@ void K3AboutContainerBase::setProduct(const QString &appName,
   int size = IconSize(KIconLoader::Desktop);
   mIconLabel->setPixmap(qApp->windowIcon().pixmap(size,size));
 
-  const QString msg1 = i18n("<html><font size=\"5\">%1</font><br/><b>version %2</b><br/>Using KDE %3</html>", appName, version,
+  const QString msg1 = i18n("<font size=\"5\">%1</font><br/><b>version %2</b><br/>Using KDE %3", appName, version,
     QLatin1String(KDE_VERSION_STRING));
   const QString msg2 = !year.isEmpty() ? i18n("%1 %2, %3", QChar(0xA9), year,
     author) : QLatin1String("");

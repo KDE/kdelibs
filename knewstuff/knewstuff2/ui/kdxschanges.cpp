@@ -44,10 +44,9 @@ KDXSChanges::KDXSChanges(QWidget *parent)
 
 void KDXSChanges::addChangelog(const QString& version, const QString& log)
 {
-    QString t = QLatin1String("<qt>");
+    QString t;
 
-    t += m_log->toHtml();
-
+    t = m_log->toHtml();
     t += QLatin1String("<table class='itemBox'>")
          + "<tr>"
          +   "<td class='contentsColumn'>"

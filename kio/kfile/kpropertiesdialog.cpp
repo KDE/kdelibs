@@ -1441,8 +1441,8 @@ void KFilePropsPlugin::applyIconChanges()
     if ( !sIcon.isEmpty() || f.exists() )
     {
         if ( !f.open( QIODevice::ReadWrite ) ) {
-          KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not "
-				      "have sufficient access to write to <b>%1</b>.</qt>", path));
+          KMessageBox::sorry( 0, i18n("Could not save properties. You do not "
+				      "have sufficient access to write to <b>%1</b>.", path));
           return;
         }
         f.close();
@@ -2636,8 +2636,8 @@ void KUrlPropsPlugin::applyChanges()
 
   QFile f( path );
   if ( !f.open( QIODevice::ReadWrite ) ) {
-    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
-				"sufficient access to write to <b>%1</b>.</qt>", path));
+    KMessageBox::sorry( 0, i18n("Could not save properties. You do not have "
+				"sufficient access to write to <b>%1</b>.", path));
     return;
   }
   f.close();
@@ -2941,8 +2941,8 @@ void KDevicePropsPlugin::applyChanges()
   QFile f( path );
   if ( !f.open( QIODevice::ReadWrite ) )
   {
-    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient "
-				"access to write to <b>%1</b>.</qt>", path));
+    KMessageBox::sorry( 0, i18n("Could not save properties. You do not have sufficient "
+				"access to write to <b>%1</b>.", path));
     return;
   }
   f.close();
@@ -3195,8 +3195,8 @@ void KDesktopPropsPlugin::applyChanges()
   QFile f( path );
 
   if ( !f.open( QIODevice::ReadWrite ) ) {
-    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
-				"sufficient access to write to <b>%1</b>.</qt>", path));
+    KMessageBox::sorry( 0, i18n("Could not save properties. You do not have "
+				"sufficient access to write to <b>%1</b>.", path));
     return;
   }
   f.close();

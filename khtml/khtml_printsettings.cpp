@@ -28,7 +28,7 @@ KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent)
     : QWidget(parent)
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
-	QString whatsThisPrintImages = i18n( "<qt>"
+	QString whatsThisPrintImages = i18n(
 		"<p><strong>'Print images'</strong></p>"
 		"<p>"
 		"If this checkbox is enabled, images contained in the HTML page will "
@@ -39,8 +39,8 @@ KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent)
 		"printed, without the included images. Printing will be faster and use "
 		"less ink or toner."
 		"</p>"
-						" </qt>" );
-	QString whatsThisPrintHeader = i18n( "<qt>"
+	);
+	QString whatsThisPrintHeader = i18n(
 		"<p><strong>'Print header'</strong></p>"
 		"<p>"
 		"If this checkbox is enabled, the printout of the HTML document will "
@@ -52,8 +52,8 @@ KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent)
 		"If this checkbox is disabled, the printout of the HTML document will "
 		"not contain such a header line."
 		"</p>"
-						" </qt>" );
-	QString whatsThisPrinterFriendlyMode = i18n( "<qt>"
+	);
+	QString whatsThisPrinterFriendlyMode = i18n(
 		"<p><strong>'Printerfriendly mode'</strong></p>"
 		"<p>"
 		"If this checkbox is enabled, the printout of the HTML document will "
@@ -67,7 +67,7 @@ KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent)
 		"a black+white printer). Printout will possibly happen slower and will "
 		"certainly use much more toner or ink."
 		"</p>"
-						" </qt>" );
+	);
 	setWindowTitle(i18n("HTML Settings"));
 
 	m_printfriendly = new QCheckBox(i18n("Printer friendly mode (black text, no background)"), this);

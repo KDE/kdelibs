@@ -73,7 +73,7 @@ void Security::readKeys()
             this, SLOT(slotReadyReadStandardOutput()));
     m_process->start();
     if (!m_process->waitForStarted()) {
-        KMessageBox::error(0L, i18n("<qt>Cannot start <i>gpg</i> and retrieve the available keys. Make sure that <i>gpg</i> is installed, otherwise verification of downloaded resources will not be possible.</qt>"));
+        KMessageBox::error(0L, i18n("Cannot start <i>gpg</i> and retrieve the available keys. Make sure that <i>gpg</i> is installed, otherwise verification of downloaded resources will not be possible."));
         delete m_process;
         m_process = 0;
     } else
@@ -195,7 +195,7 @@ void Security::slotReadyReadStandardOutput()
             if (data.contains("passphrase.enter")) {
                 KeyStruct key = m_keys[m_secretKey];
                 KPasswordDialog dlg;
-                dlg.setPrompt(i18n("<qt>Enter passphrase for key <b>0x%1</b>, belonging to<br /><i>%2&lt;%3&gt;</i><br />:</qt>", m_secretKey, key.name, key.mail));
+                dlg.setPrompt(i18n("Enter passphrase for key <b>0x%1</b>, belonging to<br /><i>%2&lt;%3&gt;</i><br />:", m_secretKey, key.name, key.mail));
                 if (dlg.exec()) {
                     m_process->write(dlg.password().toLocal8Bit() + '\n');
                 } else {
@@ -274,7 +274,7 @@ void Security::slotCheckValidity()
     if (m_process->waitForStarted())
         m_gpgRunning = true;
     else {
-        KMessageBox::error(0L, i18n("<qt>Cannot start <i>gpg</i> and check the validity of the file. Make sure that <i>gpg</i> is installed, otherwise verification of downloaded resources will not be possible.</qt>"));
+        KMessageBox::error(0L, i18n("Cannot start <i>gpg</i> and check the validity of the file. Make sure that <i>gpg</i> is installed, otherwise verification of downloaded resources will not be possible."));
         emit validityResult(0);
         delete m_process;
         m_process = 0;
@@ -361,7 +361,7 @@ void Security::slotSignFile()
     if (m_process->waitForStarted())
         m_gpgRunning = true;
     else {
-        KMessageBox::error(0L, i18n("<qt>Cannot start <i>gpg</i> and sign the file. Make sure that <i>gpg</i> is installed, otherwise signing of the resources will not be possible.</qt>"));
+        KMessageBox::error(0L, i18n("Cannot start <i>gpg</i> and sign the file. Make sure that <i>gpg</i> is installed, otherwise signing of the resources will not be possible."));
         emit fileSigned(0);
         delete m_process;
         m_process = 0;

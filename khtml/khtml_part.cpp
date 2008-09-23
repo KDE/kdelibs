@@ -1229,7 +1229,7 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
     if (dlg) {
       QString msg = KJSDebugger::DebugWindow::exceptionToString(
                               proxy->interpreter()->globalExec(), comp.value());
-      dlg->addError(i18n("<qt><b>Error</b>: %1: %2</qt>",
+      dlg->addError(i18n("<b>Error</b>: %1: %2",
                          Qt::escape(filename), Qt::escape(msg)));
     }
   }
@@ -1278,7 +1278,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
     if (dlg) {
       QString msg = KJSDebugger::DebugWindow::exceptionToString(
                               proxy->interpreter()->globalExec(), comp.value());
-      dlg->addError(i18n("<qt><b>Error</b>: node %1: %2</qt>",
+      dlg->addError(i18n("<b>Error</b>: node %1: %2",
                          n.nodeName().string(), Qt::escape(msg)));
     }
   }
@@ -3928,7 +3928,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
           mailtoMsg += i18n(" - BCC: ") + KUrl::fromPercentEncoding((*it).mid(4).toLatin1());
       mailtoMsg = Qt::escape(mailtoMsg);
       mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), QString());
-      setStatusBarText("<qt>"+mailtoMsg, BarHoverText);
+      setStatusBarText(""+mailtoMsg, BarHoverText);
       return;
     }
    // Is this check necessary at all? (Frerich)
@@ -4007,7 +4007,7 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   }
 
   if (!checkLinkSecurity(cURL,
-                         ki18n( "<qt>This untrusted page links to<br /><b>%1</b>.<br />Do you want to follow the link?</qt>" ),
+                         ki18n( "This untrusted page links to<br /><b>%1</b>.<br />Do you want to follow the link?" ),
                          i18n( "Follow" )))
     return false;
 
@@ -4937,7 +4937,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   }
 
   if (!checkLinkSecurity(u,
-                         ki18n( "<qt>The form will be submitted to <br /><b>%1</b><br />on your local filesystem.<br />Do you want to submit the form?</qt>" ),
+                         ki18n( "The form will be submitted to <br /><b>%1</b><br />on your local filesystem.<br />Do you want to submit the form?" ),
                          i18n( "Submit" )))
     return;
 
@@ -5997,7 +5997,6 @@ void KHTMLPart::setStatusBarText( const QString& text, StatusBarPriority p)
     if (d->m_jobspeed)
       tobe += i18n( "(%1/s)" ,  KIO::convertSize( d->m_jobspeed ) );
   }
-  tobe = "<qt>"+tobe;
 
   emit ReadOnlyPart::setStatusBarText(tobe);
 }
@@ -6917,7 +6916,7 @@ bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const KLocalizedString &me
     else
     {
             KMessageBox::error( 0,
-                                i18n( "<qt>Access by untrusted page to<br /><b>%1</b><br /> denied.</qt>", Qt::escape(linkURL.prettyUrl())),
+                                i18n( "Access by untrusted page to<br /><b>%1</b><br /> denied.", Qt::escape(linkURL.prettyUrl())),
                                 i18n( "Security Alert" ));
     }
 
