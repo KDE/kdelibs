@@ -91,6 +91,10 @@ QString KFormula::mathML() const {
     return d->mathML;
 }
 
+void KFormula::setFont(const QFont &font) 
+{
+    QWidget::setFont(font);
+}
 void KFormula::paintEvent ( QPaintEvent * /*event */)
 {
     QPainter painter(this);

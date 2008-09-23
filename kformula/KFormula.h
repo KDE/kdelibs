@@ -37,12 +37,14 @@ class KOFORMULA_EXPORT KFormula : public QWidget {
     KFormula(QWidget *parent);
     virtual ~KFormula();
 
-    void setMathML(const QString &mathml);
     QString mathML() const;
     void paintEvent ( QPaintEvent * event );
     virtual QSize sizeHint() const;
     Qt::Alignment alignment () const;
     void setAlignment ( Qt::Alignment );
+  public Q_SLOTS:
+    void setMathML(const QString &mathml);
+    void setFont(const QFont &font);
   private:
     KFormulaPrivate *const d;
 };
