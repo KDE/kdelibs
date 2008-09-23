@@ -23,33 +23,8 @@
 /* needed for KDE_EXPORT and KDE_IMPORT macros */
 #include <kdemacros.h>
 
-#ifndef KOFORMULA_EXPORT
-# if defined(MAKE_KFORMULALIB_LIB)
-   /* We are building this library */ 
-#  define KOFORMULA_EXPORT KDE_EXPORT
-# else
-   /* We are using this library */ 
-#  define KOFORMULA_EXPORT KDE_IMPORT
-# endif
+#ifndef KFORMULA_EXPORT
+#define KFORMULA_EXPORT KDE_EXPORT
 #endif
-
-#ifndef KFORMULAPRIVATE_EXPORT
-# if defined(MAKE_KFORMULAPRIVATE_LIB)
-   /* We are building this library */
-#  define KFORMULAPRIVATE_EXPORT KDE_EXPORT
-# else
-   /* We are using this library */
-#  define KFORMULAPRIVATE_EXPORT KDE_IMPORT
-# endif
-#endif
-
-# ifndef KOFORMULA_EXPORT_DEPRECATED
-#  define KOFORMULA_EXPORT_DEPRECATED KDE_DEPRECATED KOFORMULA_EXPORT
-# endif
-
-# ifndef KFORMULAPRIVATE_EXPORT_DEPRECATED
-#  define KFORMULAPRIVATE_EXPORT_DEPRECATED KDE_DEPRECATED KFORMULAPRIVATE_EXPORT
-# endif
-
 
 #endif

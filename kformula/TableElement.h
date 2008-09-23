@@ -36,7 +36,7 @@ class TableRowElement;
  * TableElement takes care that the different TableRowElements are informed how
  * to lay out their children correctly as they need to be synced.
  */
-class KOFORMULA_EXPORT TableElement : public BasicElement {
+class KFORMULA_EXPORT TableElement : public BasicElement {
 public:
     /// The standard constructor
     TableElement( BasicElement* parent = 0 );

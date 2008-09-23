@@ -42,7 +42,7 @@ class FormulaCursor;
  * category. For rendering these QChar's are replaced with the content of the glyph
  * elements they represent in the raw string.
  */
-class KOFORMULA_EXPORT TokenElement : public BasicElement {
+class KFORMULA_EXPORT TokenElement : public BasicElement {
 public:
     /// The standart constructor
     TokenElement( BasicElement* parent = 0 );

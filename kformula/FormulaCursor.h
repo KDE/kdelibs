@@ -57,7 +57,7 @@ enum CursorDirection {
  * method. The element should return a pointer to itsself if it accepts the cursor
  * means if it wants the cursor to be set to itsself.
  */
-class KOFORMULA_EXPORT FormulaCursor {
+class KFORMULA_EXPORT FormulaCursor {
 public:
     /**
      * The constructor - set the FormulaCursor right to the beginning

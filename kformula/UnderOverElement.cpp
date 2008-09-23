@@ -80,12 +80,21 @@ void UnderOverElement::layout( const AttributeManager* am )
 
     QPointF origin(0.0,0.0);
     if(m_elementType != Under) {
-        origin.setX(( largestWidth - m_overElement->width() ) / 2.0 ) ;
+	//Deal with Over element
+	if( overStretchy )
+	    m_overElement->setWidth(largestWidth);  //leave origin as (0,0) and stretch the width
+	else 
+            origin.setX(( largestWidth - m_overElement->width() ) / 2.0 ) ;
         m_overElement->setOrigin( origin );
         origin.setY( m_overElement->height() );
     }
 
-    origin.setX( ( largestWidth - m_baseElement->width() ) / 2.0 );
+    if( baseStretchy ) {
+	origin.setX(0.0);  //set origin back to (0,0) and stretch the width
+        m_baseElement->setWidth(largestWidth);
+    }
+    else
+        origin.setX( ( largestWidth - m_baseElement->width() ) / 2.0 );
     m_baseElement->setOrigin( origin );
     setBaseLine( origin.y() + m_baseElement->baseLine() );
 

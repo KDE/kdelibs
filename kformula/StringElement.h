@@ -26,7 +26,7 @@
 /**
  * @short Implementation of the MathML ms element 
  */
-class KOFORMULA_EXPORT StringElement : public TokenElement {
+class KFORMULA_EXPORT StringElement : public TokenElement {
 public:
     /// The standart constructor
     StringElement( BasicElement* parent = 0 );

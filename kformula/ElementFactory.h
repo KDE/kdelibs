@@ -73,7 +73,7 @@ enum ElementType {
  *
  * @author Martin Pfeiffer
  */
-class KOFORMULA_EXPORT ElementFactory {
+class KFORMULA_EXPORT ElementFactory {
 public:
     /// The default constructor
     ElementFactory();

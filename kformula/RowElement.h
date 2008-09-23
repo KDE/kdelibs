@@ -41,7 +41,7 @@ class FormulaCursor;
  * do not handle it.
  * At the moment there is no linebreaking implementation in RowElement.
  */
-class KOFORMULA_EXPORT RowElement : public BasicElement {
+class KFORMULA_EXPORT RowElement : public BasicElement {
 public:
     /// The standard constructor
     RowElement( BasicElement* parent = 0 );

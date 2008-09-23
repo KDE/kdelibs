@@ -62,7 +62,7 @@ class AttributeManager;
  * changes and the latter calculates the size of the element. After a formula change
  * first calculateSize is called for all elements then layoutElement().
  */
-class KOFORMULA_EXPORT BasicElement {
+class KFORMULA_EXPORT BasicElement {
 public:
     /*
      * The standard constructor

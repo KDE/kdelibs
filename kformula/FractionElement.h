@@ -33,7 +33,7 @@
  * FractionElement holds two child elements that are the numerator and the
  * denominator.
  */
-class KOFORMULA_EXPORT FractionElement : public BasicElement {
+class KFORMULA_EXPORT FractionElement : public BasicElement {
 public:
     /// The standard constructor
     FractionElement( BasicElement* parent = 0 );

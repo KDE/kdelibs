@@ -31,7 +31,7 @@
  * operator. Processed in the renderToPath method the operator element renders its
  * contents to the path. It also respects the right and left spaces. 
  */
-class KOFORMULA_EXPORT OperatorElement : public TokenElement {
+class KFORMULA_EXPORT OperatorElement : public TokenElement {
 public:
     /// The standart constructor
     OperatorElement( BasicElement* parent = 0 );

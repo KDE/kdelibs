@@ -27,7 +27,7 @@
 /**
  * @short Implementation of the mmultiscript element
  */
-class KOFORMULA_EXPORT MultiscriptElement : public BasicElement {
+class KFORMULA_EXPORT MultiscriptElement : public BasicElement {
 public:
     /// The standard constructor
     MultiscriptElement( BasicElement* parent = 0 );

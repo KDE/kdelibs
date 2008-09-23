@@ -44,7 +44,7 @@ enum LineBreak {
  * FormulaShape currently does not implement linebreaking the linebreaking
  * attributes of SpaceElement are ignored.
  */
-class KOFORMULA_EXPORT SpaceElement : public BasicElement {
+class KFORMULA_EXPORT SpaceElement : public BasicElement {
 public:
     /// The standard constructor
     SpaceElement( BasicElement* parent = 0 );

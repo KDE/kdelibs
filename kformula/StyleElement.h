@@ -30,7 +30,7 @@
  * Basically it holds children like a row but it is able to apply almost any style on
  * them.
  */
-class KOFORMULA_EXPORT StyleElement : public RowElement {
+class KFORMULA_EXPORT StyleElement : public RowElement {
 public:
     /// The standart constructor
     StyleElement( BasicElement* parent = 0 );

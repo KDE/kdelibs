@@ -27,7 +27,7 @@
 /**
  * @short Implementation of the MathML menclose element
  */
-class KOFORMULA_EXPORT EncloseElement : public RowElement {
+class KFORMULA_EXPORT EncloseElement : public RowElement {
 public:
     /// The standart constructor
     EncloseElement( BasicElement* parent = 0 );

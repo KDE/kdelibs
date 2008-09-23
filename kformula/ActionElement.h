@@ -30,7 +30,7 @@
  * (Section 3.6.1.1), a MathML conformant application is not required to 
  * recognize any single actiontype.
  */
-class KOFORMULA_EXPORT ActionElement : public RowElement {
+class KFORMULA_EXPORT ActionElement : public RowElement {
 public:
     /// The standard constructor
     ActionElement( BasicElement* parent = 0 );

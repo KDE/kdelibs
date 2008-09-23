@@ -30,7 +30,7 @@
  * MathML spec. The number element holds the number to be painted as a sequence
  * of TextElement and/or GlyphElements.
  */
-class KOFORMULA_EXPORT NumberElement : public TokenElement {
+class KFORMULA_EXPORT NumberElement : public TokenElement {
 public:
     /// Standart constructor
     NumberElement( BasicElement* parent = 0 );

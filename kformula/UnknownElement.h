@@ -36,7 +36,7 @@ class FormulaCursor;
  * Used when we see a tag that we do not recognise. This element draws nothing, takes up
  * no space, and ignores any calls to insert children etc. 
  */
-class KOFORMULA_EXPORT UnknownElement : public BasicElement {
+class KFORMULA_EXPORT UnknownElement : public BasicElement {
 public:
     /// The standard constructor
     UnknownElement( BasicElement* parent = 0 );

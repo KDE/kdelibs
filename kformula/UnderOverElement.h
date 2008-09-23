@@ -28,7 +28,7 @@
  * @short Implementation of the MathML mover, munder and moverunder elements
  *
  */
-class KOFORMULA_EXPORT UnderOverElement : public BasicElement {
+class KFORMULA_EXPORT UnderOverElement : public BasicElement {
 public:
     /// The standard constructor
     UnderOverElement( BasicElement* parent = 0, ElementType elementType = UnderOver );

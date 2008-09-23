@@ -31,7 +31,7 @@
 /**
  * @short Implementation of the MathML mroot and msqrt elements 
  */
-class KOFORMULA_EXPORT RootElement : public BasicElement {
+class KFORMULA_EXPORT RootElement : public BasicElement {
 public:
     /// The standard constructor
     RootElement( BasicElement* parent = 0 );

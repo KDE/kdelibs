@@ -33,7 +33,7 @@
  * It's functionality is reduced to layouting its children in a different way. It is
  * the element with highest size and can also dictate the size to all other elements. 
  */
-class KOFORMULA_EXPORT FormulaElement : public RowElement {
+class KFORMULA_EXPORT FormulaElement : public RowElement {
 public:
     /// The standard constructor
     FormulaElement();

@@ -46,7 +46,7 @@ class BasicElement;
  *
  * @author Martin Pfeiffer <hubipete@gmx.net>
  */
-class KOFORMULA_EXPORT FormulaRenderer {
+class KFORMULA_EXPORT FormulaRenderer {
 public:
     /// The constructor
     FormulaRenderer();

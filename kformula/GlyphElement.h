@@ -30,7 +30,7 @@
  * GlyphElement uses the Qt font database classes to load the additional fonts to
  * display its contents.
  */
-class KOFORMULA_EXPORT GlyphElement : public TokenElement {
+class KFORMULA_EXPORT GlyphElement : public TokenElement {
 public:
     /// The standart constructor
     GlyphElement( BasicElement* parent = 0 );

@@ -36,7 +36,7 @@ class TableEntryElement;
  * For layouting each row in a table will query a list of height and width values
  * from the parental TableElement which can determine these without hussel.
  */
-class KOFORMULA_EXPORT TableRowElement : public BasicElement {
+class KFORMULA_EXPORT TableRowElement : public BasicElement {
 public:
     /// The standard constructor
     TableRowElement( BasicElement* parent = 0 );

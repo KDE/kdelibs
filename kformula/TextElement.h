@@ -30,7 +30,7 @@
  * @short Implementation of the MathML
  * An element that represents one char.
  */
-class KOFORMULA_EXPORT TextElement : public TokenElement {
+class KFORMULA_EXPORT TextElement : public TokenElement {
 public:
     /// The standard constructor
     TextElement( BasicElement* parent = 0 );

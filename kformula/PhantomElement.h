@@ -26,7 +26,7 @@
 /**
  * @short Implementation of the MathML mphantom element
  */
-class KOFORMULA_EXPORT PhantomElement : public RowElement {
+class KFORMULA_EXPORT PhantomElement : public RowElement {
 public:
     /// The standart constructor
     PhantomElement( BasicElement* parent = 0 );

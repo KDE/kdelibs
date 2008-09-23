@@ -54,4 +54,4 @@ add_subdirectory( templates )
 
 # This is a sample application for debugging purposes
 # Enable only if you want to develop KFormula widget
-# add_subdirectory( sample )
+#add_subdirectory( sample )

@@ -29,7 +29,7 @@
  * The mi element represents an identifier and is defined in the section 3.2.3
  * of the MathMl spec.
  */
-class KOFORMULA_EXPORT IdentifierElement : public TokenElement {
+class KFORMULA_EXPORT IdentifierElement : public TokenElement {
 public:
     /// The standart constructor
     IdentifierElement( BasicElement* parent = 0 );

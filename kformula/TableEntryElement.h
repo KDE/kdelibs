@@ -31,7 +31,7 @@
  * The lines behaviour is (a little) different from that
  * of ordinary sequences. Its MathML tag is \<mtd\>.
  */
-class KOFORMULA_EXPORT TableEntryElement : public RowElement {
+class KFORMULA_EXPORT TableEntryElement : public RowElement {
 public:
     /// The standard constructor
     TableEntryElement( BasicElement* parent = 0 );

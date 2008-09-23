@@ -27,7 +27,7 @@
 /**
  * @short Implementation of the msub, msup, msubsup elements
  */
-class KOFORMULA_EXPORT SubSupElement : public BasicElement {
+class KFORMULA_EXPORT SubSupElement : public BasicElement {
 public:
     /// The standard constructor
     SubSupElement( BasicElement* parent = 0, ElementType elementType = SubSupScript);

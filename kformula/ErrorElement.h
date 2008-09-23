@@ -25,7 +25,7 @@
 /**
  * @short Implementation of the MathML merror element
  */
-class KOFORMULA_EXPORT ErrorElement : public RowElement {
+class KFORMULA_EXPORT ErrorElement : public RowElement {
 public:
     /// The standart constructor
     ErrorElement( BasicElement* parent = 0 );

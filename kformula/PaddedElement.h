@@ -29,7 +29,7 @@
  * The mpadded element adjusts the space around a sequence of elements.
  * Therefore it just implements the layout() method.
  */
-class KOFORMULA_EXPORT PaddedElement : public RowElement {
+class KFORMULA_EXPORT PaddedElement : public RowElement {
 public:
     /// The standart constructor
     PaddedElement( BasicElement* parent = 0 );

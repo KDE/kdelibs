@@ -31,7 +31,7 @@
 /**
  * A left and/or right bracket around one child.
  */
-class KOFORMULA_EXPORT FencedElement : public RowElement {
+class KFORMULA_EXPORT FencedElement : public RowElement {
 public:
     /// The standart constructor
     FencedElement( BasicElement* parent = 0 );

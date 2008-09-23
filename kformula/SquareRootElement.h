@@ -34,7 +34,7 @@
  * and layouting perspective both are very similar except for the lack of a exponent
  * in square root.
  */
-class KOFORMULA_EXPORT SquareRootElement : public RowElement {
+class KFORMULA_EXPORT SquareRootElement : public RowElement {
 public:
     /// The standard constructor
     SquareRootElement( BasicElement* parent = 0 );

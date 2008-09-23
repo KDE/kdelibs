@@ -28,7 +28,7 @@
 class QString;
 class KFormulaPrivate;
 
-class KOFORMULA_EXPORT KFormula : public QWidget {
+class KFORMULA_EXPORT KFormula : public QWidget {
   Q_OBJECT
   Q_PROPERTY( QString mathML READ mathML WRITE setMathML )
   Q_PROPERTY( Qt::Alignment alignment READ alignment WRITE setAlignment )
