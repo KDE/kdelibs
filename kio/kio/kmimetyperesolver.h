@@ -25,6 +25,7 @@
 #include <kio/kio_export.h>
 class QModelIndex;
 class QAbstractItemView;
+class QAbstractProxyModel;
 class KDirModel;
 class KMimeTypeResolverPrivate;
 
@@ -49,6 +50,13 @@ public:
      * If this is a problem, tell me and I'll add a signal...
      */
     explicit KMimeTypeResolver(QAbstractItemView* view, KDirModel* model);
+
+    /**
+     * This constructor should be used when the view uses a proxy model instead of a KDirModel.
+     * The source model must be a KDirModel however, and the above warning applies
+     * to this constructor as well.
+     */
+    explicit KMimeTypeResolver(QAbstractItemView* view, QAbstractProxyModel* model);
 
     ~KMimeTypeResolver();
 

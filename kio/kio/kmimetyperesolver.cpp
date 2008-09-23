@@ -23,6 +23,7 @@
 #include <kfileitem.h>
 #include <kdirlister.h>
 #include <QAbstractItemView>
+#include <QAbstractProxyModel>
 #include <QScrollBar>
 #include <QTimer>
 
@@ -43,6 +44,7 @@ public:
     QModelIndex findVisibleIcon();
 
     QAbstractItemView* m_view;
+    QAbstractProxyModel* m_proxyModel;
     KDirModel* m_dirModel;
     int m_delayForNonVisibleIcons;
     QList<QPersistentModelIndex> m_pendingIndexes;
@@ -67,7 +69,8 @@ QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
     QList<QPersistentModelIndex>::const_iterator it = m_pendingIndexes.begin();
     const QList<QPersistentModelIndex>::const_iterator end = m_pendingIndexes.end();
     for ( ; it != end ; ++it ) {
-        const QRect rect = m_view->visualRect(*it);
+        const QModelIndex index = m_proxyModel ? m_proxyModel->mapFromSource(*it) : QModelIndex(*it);
+        const QRect rect = m_view->visualRect(index);
         if (rect.intersects(visibleArea)) {
             //kDebug() << "found item at " << rect << " in visibleArea " << visibleArea;
             return QModelIndex(*it);
@@ -85,7 +88,24 @@ KMimeTypeResolver::KMimeTypeResolver(QAbstractItemView* view, KDirModel* model)
     : QObject(view), d(new KMimeTypeResolverPrivate)
 {
     d->m_view = view;
+    d->m_proxyModel = 0;
     d->m_dirModel = model;
+    connect(d->m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
+            this, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
+    connect(&d->m_timer, SIGNAL(timeout()),
+            this, SLOT(_k_slotProcessMimeIcons()));
+    connect(d->m_view->horizontalScrollBar(), SIGNAL(valueChanged(int)),
+            this, SLOT(_k_slotViewportAdjusted()));
+    connect(d->m_view->verticalScrollBar(), SIGNAL(valueChanged(int)),
+            this, SLOT(_k_slotViewportAdjusted()));
+}
+
+KMimeTypeResolver::KMimeTypeResolver(QAbstractItemView* view, QAbstractProxyModel* model)
+    : QObject(view), d(new KMimeTypeResolverPrivate)
+{
+    d->m_view = view;
+    d->m_proxyModel = model;
+    d->m_dirModel = static_cast<KDirModel*>(model->sourceModel());
     connect(d->m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
             this, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
     connect(&d->m_timer, SIGNAL(timeout()),
