@@ -45,11 +45,6 @@ RenderBody::~RenderBody()
 
 void RenderBody::setStyle(RenderStyle* style)
 {
-//     qDebug("RenderBody::setStyle()");
-    // ignore position: fixed on body
-    if (style->htmlHacks() && style->position() == FIXED)
-        style->setPosition(STATIC);
-
     RenderBlock::setStyle(style);
     document()->setTextColor( style->color() );
     scrollbarsStyled = false;
