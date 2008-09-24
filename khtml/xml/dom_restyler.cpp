@@ -80,7 +80,7 @@ void DynamicDomRestyler::resetDependencies(ElementImpl* subject)
     reverse_map.remove(subject);
 }
 
-void DynamicDomRestyler::restyleDepedent(ElementImpl* dependency, StructuralDependencyType type)
+void DynamicDomRestyler::restyleDependent(ElementImpl* dependency, StructuralDependencyType type)
 {
     assert(type < LastStructuralDependency);
     QSet<ElementImpl*>* dep = dependency_map[type].find(dependency);

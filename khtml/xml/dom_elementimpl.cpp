@@ -870,10 +870,10 @@ void ElementImpl::structureChanged()
     if (!document()->renderer())
         return; // the document is about to be destroyed
 
-    document()->dynamicDomRestyler().restyleDepedent(this, StructuralDependency);
+    document()->dynamicDomRestyler().restyleDependent(this, StructuralDependency);
     // In theory BackwardsStructurualDependencies are indifferent to prepend,
     // but it's too rare to optimize.
-    document()->dynamicDomRestyler().restyleDepedent(this, BackwardsStructuralDependency);
+    document()->dynamicDomRestyler().restyleDependent(this, BackwardsStructuralDependency);
 }
 
 void ElementImpl::backwardsStructureChanged()
@@ -884,7 +884,7 @@ void ElementImpl::backwardsStructureChanged()
         return; // the document is about to be destroyed
 
     // Most selectors are not affected by append. Fire the few that are.
-    document()->dynamicDomRestyler().restyleDepedent(this, BackwardsStructuralDependency);
+    document()->dynamicDomRestyler().restyleDependent(this, BackwardsStructuralDependency);
 }
 
 void ElementImpl::attributeChanged(NodeImpl::Id id)
@@ -893,7 +893,7 @@ void ElementImpl::attributeChanged(NodeImpl::Id id)
         return; // the document is about to be destroyed
 
 #if 0 // one-one dependencies for attributes disabled
-    document()->dynamicDomRestyler().restyleDepedent(this, AttributeDependency);
+    document()->dynamicDomRestyler().restyleDependent(this, AttributeDependency);
 #endif
     if (document()->dynamicDomRestyler().checkDependency(id, PersonalDependency))
         setChanged(true);

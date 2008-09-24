@@ -147,6 +147,9 @@ namespace DOM {
             PseudoRoot,
             PseudoEnabled,
             PseudoDisabled,
+            PseudoDefault,
+            PseudoReadOnly,
+            PseudoReadWrite,
             PseudoChecked,
             PseudoIndeterminate,
 // pseudo-elements:

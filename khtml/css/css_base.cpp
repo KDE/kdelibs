@@ -208,6 +208,8 @@ void CSSSelector::extractPseudoType() const
             case 'd':
                 if (value == "disabled")
                     _pseudoType = PseudoDisabled;
+                if (value == "default")
+                    _pseudoType = PseudoDefault;
                 break;
             case 'e':
                 if (value == "empty")
@@ -270,6 +272,10 @@ void CSSSelector::extractPseudoType() const
             case 'r':
                 if (value == "root")
                     _pseudoType = PseudoRoot;
+                else if (value == "read-only")
+                    _pseudoType = PseudoReadOnly;
+                else if (value == "read-write")
+                    _pseudoType = PseudoReadWrite;
                 break;
             case 's':
                 if (value == "selection") {

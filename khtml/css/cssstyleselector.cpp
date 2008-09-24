@@ -1663,6 +1663,34 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             }
             break;
         }
+        case CSSSelector::PseudoDefault: {
+            if (e->isGenericFormElement()) {
+                return static_cast<HTMLGenericFormElementImpl*>(e)->isDefault();
+            }
+            break;
+        }
+         case CSSSelector::PseudoReadWrite:
+             if (e->isGenericFormElement()) {
+                 HTMLGenericFormElementImpl* fe = static_cast<HTMLGenericFormElementImpl*>(e);
+                 // no need for dependency tracking - readonly attr change always triggers a recalc
+                 return fe->isEditable() && !fe->readOnly();
+             } else {
+                 // ### contentEditable should either not be accessible from CSS, or should not trigger selection
+                 //     by this pseudo class. See with CSS WG.
+                 return e->isContentEditable();
+             }
+             break;
+        case CSSSelector::PseudoReadOnly:
+             if (e->isGenericFormElement()) {
+                 HTMLGenericFormElementImpl* fe = static_cast<HTMLGenericFormElementImpl*>(e);
+                 // no need for dependency tracking - readonly attr change always triggers a recalc
+                 return !fe->isEditable() || fe->readOnly();
+             } else {
+                 // ### contentEditable should either not be accessible from CSS, or should not trigger selection
+                 //     by this pseudo class. See with CSS WG.
+                 return !e->isContentEditable();
+             }
+             break;
 	case CSSSelector::PseudoChecked: {
            if (e->isHTMLElement() && e->id() == ID_INPUT) {
                addDependency(OtherStateDependency, e);

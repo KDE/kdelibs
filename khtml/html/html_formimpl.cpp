@@ -973,7 +973,7 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
     if ( m_disabled != _disabled ) {
         m_disabled = _disabled;
         // Trigger dynamic restyles
-        document()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+        document()->dynamicDomRestyler().restyleDependent(this, OtherStateDependency);
         // We need to update rendering under all circumstances
         if (!changed() && m_render) {
             m_render->updateFromElement();
@@ -1743,7 +1743,7 @@ void HTMLInputElementImpl::setChecked(bool _checked)
 //     setIndeterminate(false);
 
     // Trigger dynamic restyles
-    document()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+    document()->dynamicDomRestyler().restyleDependent(this, OtherStateDependency);
     // We need to update rendering under all circumstances
     if (!changed() && m_render) {
         m_render->updateFromElement();
@@ -1759,7 +1759,7 @@ void HTMLInputElementImpl::setIndeterminate(bool _indeterminate)
     m_indeterminate = _indeterminate;
 
     // Trigger dynamic restyles
-//     document()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+//     document()->dynamicDomRestyler().restyleDependent(this, OtherStateDependency);
     // We need to update rendering under all circumstances
     if (!changed() && m_render) {
         m_render->updateFromElement();
@@ -2602,6 +2602,7 @@ HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentImpl *doc, HTMLFormElementI
     : HTMLGenericFormElementImpl(doc, f)
 {
     m_selected = false;
+    m_defaultSelected = false;
 }
 
 NodeImpl::Id HTMLOptionElementImpl::id() const
@@ -2655,6 +2656,7 @@ void HTMLOptionElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_SELECTED:
         m_selected = (attr->val() != 0);
+        m_defaultSelected = m_selected;
         break;
     case ATTR_VALUE:
         m_value = attr->value();

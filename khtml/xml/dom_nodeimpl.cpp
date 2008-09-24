@@ -1167,7 +1167,7 @@ bool NodeImpl::isBlockFlow() const
 
 bool NodeImpl::isEditableBlock() const
 {
-    return isContentEditable() && isBlockFlow();
+    return isBlockFlow() && isContentEditable();
 }
 
 ElementImpl *NodeImpl::enclosingBlockFlowElement() const
@@ -1853,7 +1853,7 @@ void NodeBaseImpl::setFocus(bool received)
     // note that we need to recalc the style
         setChanged(); // *:focus is a default style, so we just assume personal dependency
     if (isElementNode()) {
-        document()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), OtherStateDependency);
+        document()->dynamicDomRestyler().restyleDependent(static_cast<ElementImpl*>(this), OtherStateDependency);
     }
 }
 
@@ -1865,7 +1865,7 @@ void NodeBaseImpl::setActive(bool down)
 
     // note that we need to recalc the style
     if (isElementNode())
-        document()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), ActiveDependency);
+        document()->dynamicDomRestyler().restyleDependent(static_cast<ElementImpl*>(this), ActiveDependency);
 }
 
 void NodeBaseImpl::setHovered(bool hover)
@@ -1876,7 +1876,7 @@ void NodeBaseImpl::setHovered(bool hover)
 
     // note that we need to recalc the style
     if (isElementNode())
-        document()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), HoverDependency);
+        document()->dynamicDomRestyler().restyleDependent(static_cast<ElementImpl*>(this), HoverDependency);
 }
 
 unsigned long NodeBaseImpl::childNodeCount()

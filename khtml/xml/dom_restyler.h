@@ -79,7 +79,7 @@ public:
     void resetDependencies(ElementImpl* subject);
     void removeDependency(ElementImpl* subject, ElementImpl* dependency, StructuralDependencyType type);
     void removeDependencies(ElementImpl* subject, StructuralDependencyType type);
-    void restyleDepedent(ElementImpl* dependency, StructuralDependencyType type);
+    void restyleDependent(ElementImpl* dependency, StructuralDependencyType type);
 
     // Attribute dependencies are traced on attribute alone
     void addDependency(uint attrID, AttributeDependencyType type);

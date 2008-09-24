@@ -156,6 +156,8 @@ public:
 
     virtual bool isFocusable() const;
     virtual bool isEnumeratable() const { return false; }
+    
+    virtual bool isDefault() const { return false; }
 
     bool readOnly() const { return m_readOnly; }
     void setReadOnly(bool _readOnly) { m_readOnly = _readOnly; }
@@ -266,6 +268,7 @@ public:
     virtual Id id() const;
 
     virtual bool isEnumeratable() const { return inputType() != IMAGE; }
+    virtual bool isDefault() const { return m_defaultChecked; }
 
     bool autoComplete() const { return m_autocomplete; }
 
@@ -511,6 +514,8 @@ public:
     DOMString value() const;
     void setValue(DOMStringImpl* value);
 
+    virtual bool isDefault() const { return m_defaultSelected; }    
+
     bool selected() const { return m_selected; }
     void setSelected(bool _selected);
     void setDefaultSelected( bool _defaultSelected );
@@ -520,6 +525,7 @@ public:
 protected:
     DOMString m_value;
     bool m_selected;
+    bool m_defaultSelected;
 };
 
 
