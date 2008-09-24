@@ -731,7 +731,7 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repai
     }
 
     // Fire the scroll DOM event. Do this the very last thing, since the handler may kill us.
-    m_object->element()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);    
+    m_object->element()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, false, false);    
 }
 
 void RenderLayer::updateScrollPositionFromScrollbars()
