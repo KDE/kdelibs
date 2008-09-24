@@ -1087,7 +1087,7 @@ void ElementImpl::createInlineDecl( )
     dcl->ref();
     dcl->setParent(document()->elementSheet());
     dcl->setNode(this);
-    dcl->setStrictParsing( false );
+    dcl->setStrictParsing( !document()->inCompatMode() );
     if (m_hasCombinedStyle)
         m_style.combinedDecls->inlineDecls = dcl;
     else
