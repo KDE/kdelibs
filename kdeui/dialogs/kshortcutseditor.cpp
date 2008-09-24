@@ -108,7 +108,7 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
     d->delegate->setCheckActionCollections(d->actionCollections);
     enum hierarchyLevel {Root = 0, Program, Action/*unused*/};
     KAction *kact;
-    QTreeWidgetItem *hier[2];
+    QTreeWidgetItem *hier[3];
     hier[Root] = d->ui.list->invisibleRootItem();
     hier[Program] = d->findOrMakeItem(hier[Root], title.isEmpty() ? i18n("Shortcuts") : title);
 
