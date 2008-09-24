@@ -93,7 +93,7 @@ void KWidgetItemDelegatePrivate::_k_slotLayoutChanged()
     foreach (QWidget *widget, widgetPool->invalidIndexesWidgets()) {
         widget->setVisible(false);
     }
-    initializeModel();
+    QTimer::singleShot(0, this, SLOT(initializeModel()));
 }
 
 void KWidgetItemDelegatePrivate::_k_slotModelReset()
@@ -221,7 +221,9 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
     switch (event->type()) {
         case QEvent::Polish:
         case QEvent::Resize:
-            QTimer::singleShot(0, this, SLOT(initializeModel()));
+            if (!qobject_cast<QAbstractItemView*>(watched)) {
+                QTimer::singleShot(0, this, SLOT(initializeModel()));
+            }
             itemView->viewport()->update();
             break;
         case QEvent::Leave:
@@ -231,6 +233,7 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
         case QEvent::MouseMove: {
                 QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
                 focusedIndex = itemView->indexAt(mouseEvent->pos());
+                itemView->viewport()->update(); // TODO: more granular update
             }
             break;
         default:
