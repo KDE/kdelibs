@@ -2132,31 +2132,33 @@ static int hex2int(unsigned short c, bool* error)
     }
 }
 
-static bool parseColor(int unit, const QString& name, QRgb& rgb)
+static bool parseColor(int unit, const QString& name, QRgb& rgb, bool strict)
 {
     int len = name.length();
 
     if ( !len )
         return false;
 
-    const unsigned short* c =
-        reinterpret_cast<const unsigned short*>( name.unicode() );
+    if (unit == CSSPrimitiveValue::CSS_RGBCOLOR || !strict) {
+        const unsigned short* c =
+            reinterpret_cast<const unsigned short*>( name.unicode() );
 
-    rgb = 0xff; // fixed alpha
-    if ( len == 6 ) {
-        // RRGGBB
-        bool error = false;
-        for ( int i = 0; i < 6; ++i, ++c )
-            rgb = rgb << 4 | hex2int( *c, &error );
-        if ( !error )
-            return true;
-    } else if ( len == 3 ) {
-        // RGB, shortcut for RRGGBB
-        bool error = false;
-        for ( int i = 0; i < 3; ++i, ++c )
-            rgb = rgb << 8 | 0x11 * hex2int( *c, &error );
-        if ( !error )
-            return true;
+        rgb = 0xff; // fixed alpha
+        if ( len == 6 ) {
+            // RRGGBB
+            bool error = false;
+            for ( int i = 0; i < 6; ++i, ++c )
+                rgb = rgb << 4 | hex2int( *c, &error );
+            if ( !error )
+                return true;
+        } else if ( len == 3 ) {
+            // RGB, shortcut for RRGGBB
+            bool error = false;
+            for ( int i = 0; i < 3; ++i, ++c )
+                rgb = rgb << 8 | 0x11 * hex2int( *c, &error );
+            if ( !error )
+                return true;
+        }
     }
 
     if ( unit == CSSPrimitiveValue::CSS_IDENT ) {
@@ -2180,17 +2182,17 @@ CSSPrimitiveValueImpl *CSSParser::parseColor()
 CSSPrimitiveValueImpl *CSSParser::parseColorFromValue(Value* value)
 {
     QRgb c = khtml::transparentColor;
-    if ( !strict && value->unit == CSSPrimitiveValue::CSS_NUMBER &&
+    if ( !strict && value->unit == CSSPrimitiveValue::CSS_NUMBER &&            // color: 000000 (quirk)
               value->fValue >= 0. && value->fValue < 1000000. ) {
         QString str;
         str.sprintf( "%06d", (int)(value->fValue+.5) );
-        if ( !::parseColor( value->unit, str, c ) )
+        if ( !::parseColor( CSSPrimitiveValue::CSS_RGBCOLOR, str, c, strict ) )
             return 0;
     }
-    else if (value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ||
-             value->unit == CSSPrimitiveValue::CSS_IDENT ||
-             (!strict && value->unit == CSSPrimitiveValue::CSS_DIMENSION)) {
-        if ( !::parseColor( value->unit, qString( value->string ), c) )
+    else if (value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ||                 // color: #ff0000
+             value->unit == CSSPrimitiveValue::CSS_IDENT ||                    // color: red || color: ff0000 (quirk)
+             (!strict && value->unit == CSSPrimitiveValue::CSS_DIMENSION)) {   // color: 00ffff (quirk)
+        if ( !::parseColor( value->unit, qString( value->string ), c, strict) )
             return 0;
     }
     else if ( value->unit == Value::Function &&
