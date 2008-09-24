@@ -44,7 +44,7 @@ puoi segnalare un bug oppure esprimere un <quote>desiderio</quote>.</para></list
 <guimenuitem>Cambia la lingua dell'applicazione...</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Apre una finestra di dialogo</action> dove puoi
-modificare la <guilabel>Lingua principale</guilabel> e la <guilabel>Lingua di
+scegliere la <guilabel>Lingua principale</guilabel> e la <guilabel>Lingua di
 ripiego</guilabel> per questa applicazione.</para></listitem>
 </varlistentry>
 
