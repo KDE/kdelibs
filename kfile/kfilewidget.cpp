@@ -482,14 +482,18 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     KIO::StatJob *statJob = KIO::stat( d->url.url(), KIO::HideProgressInfo );
     bool ok = KIO::NetAccess::synchronousRun( statJob, 0 );
 
+    KUrl dirUrl;
     if (ok) {
-        KUrl dirUrl;
         if (statJob->statResult().isDir()) {
             dirUrl = d->url;
             dirUrl.adjustPath( KUrl::AddTrailingSlash );
         } else {
             dirUrl = d->url.upUrl();
         }
+        d->urlNavigator->setUrl( dirUrl.url() );
+        fileCompletionObj->setDir( dirUrl.url() );
+    } else {
+        dirUrl = d->url.upUrl();
         d->urlNavigator->setUrl( dirUrl.url() );
         fileCompletionObj->setDir( dirUrl.url() );
     }
@@ -532,8 +536,10 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     KConfigGroup viewConfigGroup(config, ConfigGroup);
     d->readConfig(viewConfigGroup);
 
-    if (ok && !statJob->statResult().isDir()) {
-        d->selection = d->url.fileName();
+    if (!ok || !statJob->statResult().isDir()) {
+        if (ok) {
+            d->selection = d->url.fileName();
+        }
         d->locationEdit->setUrl(d->url.fileName());
     }
 
