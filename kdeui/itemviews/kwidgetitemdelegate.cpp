@@ -224,6 +224,10 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
             QTimer::singleShot(0, this, SLOT(initializeModel()));
             itemView->viewport()->update();
             break;
+        case QEvent::Leave:
+            focusedIndex = QModelIndex();
+            itemView->viewport()->update();
+            break;
         case QEvent::MouseMove: {
                 QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
                 focusedIndex = itemView->indexAt(mouseEvent->pos());
