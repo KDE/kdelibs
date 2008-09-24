@@ -133,6 +133,10 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
             QVariant ret;
             ret.setValue(m_action->rockerGesture());
             return ret; }
+        default:
+            // Column not valid for this role
+            Q_ASSERT(false);
+            return QVariant();
         }
 
     case DefaultShortcutRole:
@@ -153,6 +157,10 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
             QVariant ret;
             ret.setValue(m_action->rockerGesture(KAction::DefaultShortcut));
             return ret; }
+        default:
+            // Column not valid for this role
+            Q_ASSERT(false);
+            return QVariant();
         }
     case ObjectRole:
         return qVariantFromValue((QObject*)m_action);
