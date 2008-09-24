@@ -2218,19 +2218,19 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    y += ap.y();
 
 		    QRect pr = isUpdate ? static_cast<QUpdateLaterEvent*>(e)->region().boundingRect() : static_cast<QPaintEvent*>(e)->rect();
-                    bool asap = !isUpdate && !d->contentsMoving && qobject_cast<QAbstractScrollArea*>(c);
+                    bool asap = !d->contentsMoving && qobject_cast<QAbstractScrollArea*>(c);
 
                     if (isUpdate) {
                         setInPaintEventFlag(w, false);
-                        w->update(static_cast<QUpdateLaterEvent*>(e)->region());
+                        if (asap)
+                            w->repaint(static_cast<QUpdateLaterEvent*>(e)->region());
+                        else
+                            w->update(static_cast<QUpdateLaterEvent*>(e)->region());
                         setInPaintEventFlag(w);
-                        // implicitly call qt_syncBackingStore(w)
-                        QEvent fakeEvent(QEvent::UpdateRequest);
-                        static_cast<KHTMLBackingStoreHackWidget *>(w)->publicEvent(&fakeEvent);
                     }
 
 		    // QScrollView needs fast repaints
-		    if ( asap && !d->painting && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
+		    if ( asap && !isUpdate && !d->painting && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
 		         !static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer())->needsLayout() ) {
 		        repaintContents(x + pr.x(), y + pr.y(),
 	                                        pr.width(), pr.height()+1); // ### investigate that +1 (shows up when
