@@ -664,7 +664,11 @@ void HTMLFormElementImpl::submit(  )
         }
 #endif // KHTML_NO_WALLET
 
-        const DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));
+        DOMString value = getAttribute(ATTR_ACTION);
+        DOMString url = khtml::parseURL(value);
+        // ignore base url if 'action' attribute is empty.
+        if (value.isEmpty())
+            url = formUrl.url();
         if(m_post) {
             view->part()->submitForm( "post", url.string(), form_data,
                                       m_target.string(),
