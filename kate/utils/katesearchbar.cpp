@@ -952,6 +952,7 @@ void KateSearchBar::onForAll(const QString & pattern, Range inputRange,
         if (!match.isValid()) {
             break;
         }
+        bool const originalMatchEmpty = match.isEmpty();
 
         // Work with the match
         if (replacement != NULL) {
@@ -967,7 +968,8 @@ void KateSearchBar::onForAll(const QString & pattern, Range inputRange,
             replaceMatch(resultRanges, *replacement, ++matchCounter);
 
             // Highlight and continue after adjusted match
-            highlightReplacement(match = *afterReplace);
+            highlightReplacement(*afterReplace);
+            match = *afterReplace;
             delete afterReplace;
         } else {
             // Highlight and continue after original match
@@ -978,7 +980,7 @@ void KateSearchBar::onForAll(const QString & pattern, Range inputRange,
         // Continue after match
         SmartCursor & workingStart = workingRange->smartStart();
         workingStart.setPosition(match.end());
-        if (workingStart == match.start()) {
+        if (originalMatchEmpty) {
             // Can happen for regex patterns like "^".
             // If we don't advance here we will loop forever...
             workingStart.advance(1);
@@ -988,6 +990,7 @@ void KateSearchBar::onForAll(const QString & pattern, Range inputRange,
             workingStart.advance(1);
         }
 
+        // Are we done?
         if (!workingRange->isValid() || workingStart.atEndOfDocument()) {
             break;
         }
