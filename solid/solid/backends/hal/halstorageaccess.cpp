@@ -31,6 +31,7 @@
 #include <QtGui/QWidget>
 
 #include <unistd.h>
+#include <stdlib.h>
 
 using namespace Solid::Backends::Hal;
 
@@ -331,6 +332,16 @@ bool StorageAccess::callHalVolumeMount()
                 options << codepage;
                 options << iocharset;
             }
+        }
+    }
+
+    // pass our locale to the ntfs-3g driver so it can translate local characters
+    if ( m_device->property("volume.fstype").toString()=="ntfs-3g" && halOptions.contains("locale=") ) {
+        // have to obtain LC_CTYPE as returned by the `locale` command
+        // check in the same order as `locale` does
+        char *cType;
+        if ( (cType = getenv("LC_ALL")) || (cType = getenv("LC_CTYPE")) || (cType = getenv("LANG")) ) {
+            options << "locale="+QString(cType);
         }
     }
 
