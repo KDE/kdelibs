@@ -3829,7 +3829,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
     }
 
     if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
-        m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
+        m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, false, false);
 
     if (!d->smoothScrolling) {
         d->updateContentsXY();
