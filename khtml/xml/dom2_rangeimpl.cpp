@@ -285,16 +285,16 @@ short RangeImpl::compareBoundaryPoints( Range::CompareHow how, RangeImpl *source
                                       sourceRange->startContainer(exceptioncode), sourceRange->startOffset(exceptioncode) );
         break;
     case Range::START_TO_END:
-        return compareBoundaryPoints( m_startContainer, m_startOffset,
-                                      sourceRange->endContainer(exceptioncode), sourceRange->endOffset(exceptioncode) );
+        return compareBoundaryPoints( m_endContainer, m_endOffset,
+                                      sourceRange->startContainer(exceptioncode), sourceRange->startOffset(exceptioncode) );
         break;
     case Range::END_TO_END:
         return compareBoundaryPoints( m_endContainer, m_endOffset,
                                       sourceRange->endContainer(exceptioncode), sourceRange->endOffset(exceptioncode) );
         break;
     case Range::END_TO_START:
-        return compareBoundaryPoints( m_endContainer, m_endOffset,
-                                      sourceRange->startContainer(exceptioncode), sourceRange->startOffset(exceptioncode) );
+        return compareBoundaryPoints( m_startContainer, m_startOffset,
+                                      sourceRange->endContainer(exceptioncode), sourceRange->endOffset(exceptioncode) );
         break;
     default:
         exceptioncode = DOMException::SYNTAX_ERR;
