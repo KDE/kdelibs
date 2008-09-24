@@ -106,7 +106,7 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
     // Forward our actionCollections to the delegate which does the conflict
     // checking.
     d->delegate->setCheckActionCollections(d->actionCollections);
-    enum hierarchyLevel {Root = 0, Program, Action/*unused*/};
+    enum hierarchyLevel {Root = 0, Program, Action};
     KAction *kact;
     QTreeWidgetItem *hier[3];
     hier[Root] = d->ui.list->invisibleRootItem();
