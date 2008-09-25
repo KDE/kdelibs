@@ -62,7 +62,7 @@ public:
         NoFlags = 0x00,
         /**
          * If this flag is set, the "keep this password" checkbox will been shown,
-         * otherwhise, it will not be shown and keepPassword will have no effect
+         * otherwise, it will not be shown and keepPassword will have no effect
          */
         ShowKeepPassword = 0x01,
         /**
@@ -272,7 +272,7 @@ Q_SIGNALS:
     /**
      * emitted when the dialog has been accepted
      * @param password  the entered password
-     * @param keep true if the "remember password" checkbox was checked, false otherwhise.  false if ShowKeepPassword was not set in the constructor
+     * @param keep true if the "remember password" checkbox was checked, false otherwise.  false if ShowKeepPassword was not set in the constructor
      */
     void gotPassword( const QString& password , bool keep );
 
@@ -280,7 +280,7 @@ Q_SIGNALS:
      * emitted when the dialog has been accepted, and ShowUsernameLine was set on the constructor
      * @param username the entered username
      * @param password  the entered password
-     * @param keep true if the "remember password" checkbox was checked, false otherwhise.  false if ShowKeepPassword was not set in the constructor
+     * @param keep true if the "remember password" checkbox was checked, false otherwise.  false if ShowKeepPassword was not set in the constructor
      */
     void gotUsernameAndPassword( const QString& username, const QString& password , bool keep );
 

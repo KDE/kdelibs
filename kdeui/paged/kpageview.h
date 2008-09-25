@@ -179,7 +179,7 @@ class KDEUI_EXPORT KPageView : public QWidget
 
     /**
      * Returns the position where the navigation view should be
-     * located according the page stack.
+     * located according to the page stack.
      *
      * This method can be reimplemented for adapting custom
      * views.
