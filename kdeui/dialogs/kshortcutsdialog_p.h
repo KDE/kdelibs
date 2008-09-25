@@ -226,6 +226,9 @@ private Q_SLOTS:
 Q_SIGNALS:
     void shortcutsSchemeChanged(const QString&);
 
+protected:
+    void updateDeleteButton();
+
 private:
     KPushButton *m_newScheme;
     KPushButton *m_deleteScheme;

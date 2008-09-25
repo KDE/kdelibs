@@ -91,6 +91,7 @@ KShortcutSchemesEditor::KShortcutSchemesEditor(KShortcutsDialog *parent)
         this, SIGNAL(shortcutsSchemeChanged(const QString&)));
     connect(m_newScheme, SIGNAL(clicked()), this, SLOT(newScheme()));
     connect(m_deleteScheme, SIGNAL(clicked()), this, SLOT(deleteScheme()));
+    updateDeleteButton();
 }
 
 void KShortcutSchemesEditor::newScheme()
@@ -124,6 +125,7 @@ void KShortcutSchemesEditor::newScheme()
 
     m_schemesList->addItem(newName);
     m_schemesList->setCurrentIndex(m_schemesList->findText(newName));
+    updateDeleteButton();
     emit shortcutsSchemeChanged(newName);
 }
 
@@ -147,6 +149,7 @@ Note that this will not remove any system wide shortcut schemes.", currentScheme
     }
 
     m_schemesList->removeItem(m_schemesList->findText(currentScheme()));
+    updateDeleteButton();
     emit shortcutsSchemeChanged(currentScheme());
 }
 
@@ -188,3 +191,8 @@ void KShortcutSchemesEditor::saveAsDefaultsForScheme()
         KShortcutSchemesHelper::exportActionCollection(collection, currentScheme());
 }
 
+
+void KShortcutSchemesEditor::updateDeleteButton()
+{
+    m_deleteScheme->setEnabled(m_schemesList->count()>=1);
+}
