@@ -98,7 +98,7 @@ bool KCheckAccelerators::eventFilter( QObject * , QEvent * e)
         return false;
 
     switch ( e->type() ) { // just simplify debuggin
-    case QEvent::Shortcut:
+    case QEvent::ShortcutOverride:
         if ( key && (static_cast<QKeyEvent *>(e)->key() == key) ) {
     	    block = true;
 	    checkAccelerators( false );
@@ -160,7 +160,7 @@ void KCheckAccelerators::createDialog(QWidget *actWin, bool automatic)
     layout->setMargin( 11 );
     layout->setSpacing( 6 );
     drklash_view = new KTextBrowser( drklash );
-    layout->addWidget( drklash );
+    layout->addWidget( drklash_view );
     QCheckBox* disableAutoCheck = NULL;
     if( automatic )  {
         disableAutoCheck = new QCheckBox( i18nc("@option:check","Disable automatic checking" ), drklash );
