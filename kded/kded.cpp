@@ -194,7 +194,7 @@ void Kded::initModules()
      for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
      {
          KService::Ptr service = *it;
-         // Should the the service load on startup?
+         // Should the service load on startup?
          bool autoload = isModuleAutoloaded(service);
 
          // see ksmserver's README for description of the phases

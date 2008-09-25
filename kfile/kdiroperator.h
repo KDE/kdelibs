@@ -210,7 +210,7 @@ public:
 
     /**
      * Clears the current selection and attempts to set @p item
-     * as the the current item.
+     * as the current item.
      */
     void setCurrentItem(const KFileItem& item);
 

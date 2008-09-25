@@ -77,7 +77,7 @@ inline bool operator !=(const KEntry &k1, const KEntry &k2)
 }
 
 /**
- * key structure holding both the actual key and the the group
+ * key structure holding both the actual key and the group
  * to which it belongs.
  * @internal
  */

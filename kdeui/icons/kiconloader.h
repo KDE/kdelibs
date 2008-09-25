@@ -44,7 +44,7 @@ class KIconTheme;
  *
  * KIconLoader will load the current icon theme and all its base themes.
  * Icons will be searched in any of these themes. Additionally, it caches
- * icons and applies effects according the the user's preferences.
+ * icons and applies effects according to the user's preferences.
  *
  * In KDE, it is encouraged to load icons by "Group". An icon group is a
  * location on the screen where icons are being used. Standard groups are:

@@ -442,7 +442,7 @@ public:
     void setDesktopViewport(int desktop, const NETPoint &viewport);
 
     /**
-       Sets the number of desktops the the specified number.
+       Sets the number of desktops to the specified number.
 
        NOTE: KDE uses virtual desktops and does not directly support
        viewport in any way. Viewport is mapped to virtual desktops

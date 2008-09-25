@@ -104,7 +104,7 @@ namespace KJS {
   /**
    * @internal
    *
-   * The initial value of the the global variable's "String" property
+   * The initial value of the global variable's "String" property
    */
   class StringObjectImp : public InternalFunctionImp {
   public:

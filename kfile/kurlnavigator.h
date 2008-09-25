@@ -258,7 +258,7 @@ public Q_SLOTS:
     /**
      * Saves the used root URL of the content for the current history element.
      * Saving the root URL might be useful if the item view is represented by a tree or
-     * columns, where it is mandatory to restore the the root URL too iterating
+     * columns, where it is mandatory to restore the root URL to iterating
      * through the history.
      */
     void saveRootUrl(const KUrl& url);

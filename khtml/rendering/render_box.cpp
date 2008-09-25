@@ -1497,7 +1497,7 @@ void RenderBox::calcAbsoluteHorizontal()
     const int containerWidth = containingBlockWidth(containerBlock);
 
     // To match WinIE, in quirks mode use the parent's 'direction' property
-    // instead of the the container block's.
+    // instead of the container block's.
     EDirection containerDirection = (style()->htmlHacks()) ? parent()->style()->direction() : containerBlock->style()->direction();
 
     const int bordersPlusPadding = borderLeft() + borderRight() + paddingLeft() + paddingRight();
@@ -2013,7 +2013,7 @@ void RenderBox::calcAbsoluteHorizontalReplaced()
     const int containerWidth = containingBlockWidth(containerBlock);
 
     // To match WinIE, in quirks mode use the parent's 'direction' property
-    // instead of the the container block's.
+    // instead of the container block's.
     EDirection containerDirection = (style()->htmlHacks()) ? parent()->style()->direction() : containerBlock->style()->direction();
 
     // Variables to solve.

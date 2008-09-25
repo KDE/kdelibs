@@ -90,7 +90,7 @@ public:
 
     /**
      * Return the full actionIds of all actions with global shortcuts for the main component
-     * specified by actionId. Only the the ComponentUnique part of actionId will be used;
+     * specified by actionId. Only the ComponentUnique part of actionId will be used;
      * the other members of the actionId QStringList will be ignored.
      */
     QList<QStringList> allActionsForComponent(const QStringList &actionId);

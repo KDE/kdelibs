@@ -60,7 +60,7 @@ namespace KJS {
   /**
    * @internal
    *
-   * The initial value of the the global variable's "Object" property
+   * The initial value of the global variable's "Object" property
    */
   class ObjectObjectImp : public InternalFunctionImp {
   public:

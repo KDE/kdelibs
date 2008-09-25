@@ -770,7 +770,7 @@ protected:
 
   /**
    * Specify the actual executable that should be started (first argument to execve)
-   * Normally the the first argument is the executable but you can
+   * Normally the first argument is the executable but you can
    * override that with this function.
    */
   void setBinaryExecutable(const char *filename);

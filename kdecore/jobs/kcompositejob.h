@@ -51,7 +51,7 @@ protected:
     /**
      * Add a job that has to be finished before a result
      * is emitted. This has obviously to be called before
-     * the the result has been emitted by the job.
+     * the result has been emitted by the job.
      *
      * @param job the subjob to add
      * @return true if the job has been added correctly, false otherwise

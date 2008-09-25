@@ -178,7 +178,7 @@ public:
   static bool useProxy();
 
   /**
-   * Returns whether or not the the proxy server
+   * Returns whether or not the proxy server
    * lookup should be reversed or not.
    * @return true to use a reversed proxy
    */

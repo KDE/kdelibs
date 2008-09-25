@@ -169,7 +169,7 @@ private:
 	typedef void (*PixelCopyOperation)(Layer& layer, uint i, uint j, int k, int l,
 			QImage& image, int m, int n);
 
-	//! Higher layers are merged into the the final QImage by this routine.
+	//! Higher layers are merged into the final QImage by this routine.
 	typedef void (*PixelMergeOperation)(Layer& layer, uint i, uint j, int k, int l,
 			QImage& image, int m, int n);
 

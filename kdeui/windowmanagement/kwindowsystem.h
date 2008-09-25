@@ -517,7 +517,7 @@ Q_SIGNALS:
 
     /**
      * A window has been added.
-     * @param id the id of the the window
+     * @param id the id of the window
      */
     void windowAdded(WId id);
 

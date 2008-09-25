@@ -236,7 +236,7 @@ class KDEUI_EXPORT KHelpMenu : public QObject
 
     /**
      * This slot will delete a dialog (about kde or bug report) if the
-     * dialog pointer is not zero and the the dialog is not visible. This
+     * dialog pointer is not zero and the dialog is not visible. This
      * slot is activated by a one shot timer started in dialogHidden
      */
     void timerExpired();

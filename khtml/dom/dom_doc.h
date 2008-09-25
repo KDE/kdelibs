@@ -589,7 +589,7 @@ public:
      * DocumentType will be considered for addition to a future release of the
      * DOM.
      * On import, the publicId, systemId, and notationName attributes are
-     * copied. If a deep import is requested, the descendants of the the source
+     * copied. If a deep import is requested, the descendants of the source
      * Entity are recursively imported and the resulting nodes reassembled to
      * form the corresponding subtree.
      *

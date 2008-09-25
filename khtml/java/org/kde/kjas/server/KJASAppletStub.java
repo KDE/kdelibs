@@ -398,7 +398,7 @@ public final class KJASAppletStub
 
     /**
     * destroys the applet managed by this stub by calling the applets destroy() method.
-    * Also marks the the applet as inactive.
+    * Also marks the applet as inactive.
     * @see java.applet.Applet#init()
     */
     synchronized void destroyApplet()

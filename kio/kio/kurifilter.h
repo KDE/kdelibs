@@ -347,7 +347,7 @@ public:
 protected:
 
     /**
-     * Sets the the URL in @p data to @p uri.
+     * Sets the URL in @p data to @p uri.
      */
     void setFilteredUri ( KUriFilterData& data, const KUrl& uri ) const;
 

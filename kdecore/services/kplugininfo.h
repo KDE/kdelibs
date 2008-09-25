@@ -180,7 +180,7 @@ class KDECORE_EXPORT KPluginInfo
         bool isPluginEnabledByDefault() const;
 
         /**
-         * @return The value associated the the @p key. You can use it if you
+         * @return The value associated to the @p key. You can use it if you
          *         want to read custom values. To do this you need to define
          *         your own servicetype and add it to the ServiceTypes keys.
          */

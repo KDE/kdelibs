@@ -83,7 +83,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(TCPSlaveBase::SslResult)
 //TODO recognize partially encrypted websites as "somewhat safe"
 
 /* List of dialogs/messageboxes we need to use (current code location in parentheses)
- - Can the the "dontAskAgainName" thing be improved?
+ - Can the "dontAskAgainName" thing be improved?
 
  - "SSLCertDialog" [select client cert] (SlaveInterface)
  - Enter password for client certificate (inline)

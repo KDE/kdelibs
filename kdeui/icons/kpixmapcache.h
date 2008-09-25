@@ -209,12 +209,12 @@ protected:
     void ensureInited() const;
 
     /**
-     * Can be used by subclasses to write custom data into the the stream.
+     * Can be used by subclasses to write custom data into the stream.
      **/
     virtual bool loadCustomData(QDataStream& stream);
 
     /**
-     * Can be used by subclasses to load custom data from the the stream.
+     * Can be used by subclasses to load custom data from the stream.
      **/
     virtual bool writeCustomData(QDataStream& stream);
 

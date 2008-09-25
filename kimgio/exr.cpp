@@ -116,7 +116,7 @@ QRgb RgbaToQrgba(struct Imf::Rgba imagePixel)
 	//     function.  Pixel values above kneeLow are lowered
 	//     according to a logarithmic curve, such that the
 	//     value 2^kneeHigh is mapped to 2^3.5 (in step 6,
-	//     this value will be mapped to the the display's
+	//     this value will be mapped to the display's
 	//     maximum intensity).
 	// Response: kneeLow = 0.0 (2^0.0 => 1); kneeHigh = 5.0 (2^5 =>32)
     if (r > 1.0)

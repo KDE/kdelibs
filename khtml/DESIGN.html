@@ -261,7 +261,7 @@ RenderRoot*
 A call to of <a href="rendering/render_root.cpp">layout()</a> on the
 <a href="rendering/render_root.h">RenderRoot </a> (the root of the rendering tree)
 object causes the rendering tree to layout itself into the available space
-(width) given by the the KHTMLView. After that, the drawContents() method of
+(width) given by the KHTMLView. After that, the drawContents() method of
 KHTMLView can call RenderRoot->print() with appropriate parameters to actually
 paint the document. This is not 100% correct, when parsing incrementally, but
 is exactly what happens when you resize the document.

@@ -95,7 +95,7 @@ class KToggleFullScreenAction;
  * Another non-standard usage concerns getting a pointer to an
  * existing action if, say, you want to enable or disable the action.
  * You could do it the recommended way and just grab a pointer when
- * you instantiate it as in the the 'openNew' example above... or you
+ * you instantiate it as in the 'openNew' example above... or you
  * could do it the hard way:
  *
  * \code

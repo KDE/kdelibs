@@ -86,7 +86,7 @@ namespace KJS {
     /**
      * @internal
      *
-     * The initial value of the the global variable's "Date" property
+     * The initial value of the global variable's "Date" property
      */
     class DateObjectImp : public InternalFunctionImp {
         using InternalFunctionImp::construct;

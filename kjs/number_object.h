@@ -68,7 +68,7 @@ namespace KJS {
   /**
    * @internal
    *
-   * The initial value of the the global variable's "Number" property
+   * The initial value of the global variable's "Number" property
    */
   class NumberObjectImp : public InternalFunctionImp {
     using InternalFunctionImp::construct;
