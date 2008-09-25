@@ -9,6 +9,8 @@
     <Action name="format_text_strikeout"/>
     <Action name="format_text_foreground_color"/>
     <Action name="format_text_background_color"/>
+    <Action name="format_text_superscript"/>
+    <Action name="format_text_subscript"/>
     <Separator/>
     <Menu name="alignment"><text>&amp;Alignment</text>
        <Action name="format_align_left"/>
@@ -38,6 +40,8 @@
   <Action name="format_font_family"/>
   <Action name="format_font_size"/>
   <Separator lineSeparator="true"/>
+  <Action name="format_text_superscript"/>
+  <Action name="format_text_subscript"/>
 </ToolBar>
 <ToolBar name="formatToolBar" iconText="icononly"><text>Format Toolbar</text>
   <Action name="format_align_left"/>

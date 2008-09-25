@@ -201,6 +201,14 @@ public:
          */
         SupportToPlainText = 0x2000000,
 
+        /**
+         * Actions to format text as superscript or subscript. If no text is selected,
+         * the word under the cursor is formatted as selected.
+         * This is a KToggleAction. The status is automatically updated when
+         * the text cursor is moved.
+         */
+         SupportSuperScriptAndSubScript = 0x4000000,
+
 //         SupportChangeParagraphSpacing = 0x200000,
 
         /**

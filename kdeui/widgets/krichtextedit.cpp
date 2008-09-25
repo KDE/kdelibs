@@ -284,6 +284,24 @@ void KRichTextEdit::switchToPlainText()
     }
 }
 
+void KRichTextEdit::setTextSuperScript(bool superscript)
+{
+    QTextCharFormat fmt;
+    fmt.setVerticalAlignment(superscript ? QTextCharFormat::AlignSuperScript : QTextCharFormat::AlignNormal);
+    d->mergeFormatOnWordOrSelection(fmt);
+    setFocus();
+    d->activateRichText();
+}
+
+void KRichTextEdit::setTextSubScript(bool subscript)
+{
+    QTextCharFormat fmt;
+    fmt.setVerticalAlignment(subscript ? QTextCharFormat::AlignSubScript : QTextCharFormat::AlignNormal);
+    d->mergeFormatOnWordOrSelection(fmt);
+    setFocus();
+    d->activateRichText();
+}
+
 void KRichTextEdit::enableRichTextMode()
 {
     d->activateRichText();

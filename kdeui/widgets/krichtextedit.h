@@ -310,6 +310,22 @@ public Q_SLOTS:
      */
     QString toCleanHtml() const;
 
+    /**
+     * Toggles the superscript formatting of the current word or selection at the current
+     * cursor position.
+     *
+     * @param superscript If true, the text will be set to superscript
+     */
+    void setTextSuperScript(bool superscript);
+
+    /**
+     * Toggles the subscript formatting of the current word or selection at the current
+     * cursor position.
+     *
+     * @param subscript If true, the text will be set to subscript
+     */
+    void setTextSubScript(bool subscript);
+
 Q_SIGNALS:
 
     /**

@@ -28,6 +28,7 @@
 #include <kfontsizeaction.h>
 #include <klocale.h>
 #include <ktoggleaction.h>
+#include <kdebug.h>
 
 // Qt includes
 #include <QtGui/QTextList>
@@ -66,7 +67,9 @@ public:
             action_align_left(0),
             action_align_right(0),
             action_align_center(0),
-            action_align_justify(0)
+            action_align_justify(0),
+            action_text_superscript(0),
+            action_text_subscript(0)
     {
     }
 
@@ -106,6 +109,9 @@ public:
     KToggleAction *action_align_right;
     KToggleAction *action_align_center;
     KToggleAction *action_align_justify;
+
+    KToggleAction *action_text_superscript;
+    KToggleAction *action_text_subscript;
 
     //
     // Normal functions
@@ -458,6 +464,30 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         d->action_to_plain_text = 0;
     }
 
+    if (d->richTextSupport & SupportSuperScriptAndSubScript) {
+        kDebug() << "s";
+        d->action_text_subscript = new KToggleAction(KIcon("format-text-subscript"), i18nc("@action", "Subscript"), actionCollection);
+        d->richTextActionList.append((d->action_text_subscript));
+        actionCollection->addAction("format_text_subscript", d->action_text_subscript);
+
+        connect(d->action_text_subscript, SIGNAL(triggered(bool)),
+                this, SLOT(setTextSubScript(bool)));
+
+        d->action_text_superscript = new KToggleAction(KIcon("format-text-superscript"), i18nc("@action", "Superscript"), actionCollection);
+        d->richTextActionList.append((d->action_text_superscript));
+        actionCollection->addAction("format_text_superscript", d->action_text_superscript);
+
+        connect(d->action_text_superscript, SIGNAL(triggered(bool)),
+                this, SLOT(setTextSuperScript(bool)));
+    } else {
+        actionCollection->removeAction(d->action_text_subscript);
+        d->action_text_subscript = 0;
+
+        actionCollection->removeAction(d->action_text_superscript);
+        d->action_text_superscript = 0;
+    }
+    
+
     disconnect(this, SIGNAL(currentCharFormatChanged(const QTextCharFormat &)),
                this, SLOT(_k_updateCharFormatActions(const QTextCharFormat &)));
     disconnect(this, SIGNAL(cursorPositionChanged()),
@@ -513,6 +543,12 @@ void KRichTextWidget::Private::_k_updateCharFormatActions(const QTextCharFormat 
 
     if (richTextSupport & SupportStrikeOut) {
         action_text_strikeout->setChecked(f.strikeOut());
+    }
+
+    if (richTextSupport & SupportSuperScriptAndSubScript) {
+        QTextCharFormat::VerticalAlignment vAlign = format.verticalAlignment();
+        action_text_superscript->setChecked(vAlign == QTextCharFormat::AlignSuperScript);
+        action_text_subscript->setChecked(vAlign == QTextCharFormat::AlignSubScript);
     }
 }
 
