@@ -549,6 +549,10 @@ void KdedGlobalAccel::writeSettings()
     foreach (const componentData *const cd, d->mainComponents) {
         KConfigGroup configGroup(&d->config, cd->uniqueName);
 
+        // If we don't delete the current content global shortcut
+        // registrations will never not deleted after forgetGlobalShortcut()
+        configGroup.deleteGroup();
+
         KConfigGroup friendlyGroup(&configGroup, "Friendly Name");  // :)
         friendlyGroup.writeEntry("Friendly Name", cd->friendlyName);
 
