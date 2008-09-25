@@ -132,8 +132,8 @@ bool KCheckAccelerators::eventFilter(QObject* obj, QEvent* e)
         return false;
 
     switch ( e->type() ) { // just simplify debuggin
-    case QEvent::Shortcut:
-        if ( key && (static_cast<QShortcutEvent*>(e)->key()[0] == key) ) {
+    case QEvent::ShortcutOverride:
+        if ( key && (static_cast<QKeyEvent*>(e)->key() == key) ) {
     	    block = true;
 	    checkAccelerators( false );
 	    block = false;
