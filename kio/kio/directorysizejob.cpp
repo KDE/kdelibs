@@ -168,9 +168,9 @@ void DirectorySizeJob::slotResult( KJob * job )
 {
     Q_D(DirectorySizeJob);
     kDebug(7007);
+    removeSubjob(job);
     if (d->m_currentItem < d->m_lstItems.count())
     {
-        removeSubjob(job);
         d->processNextItem();
     }
     else

@@ -626,7 +626,7 @@ void JobTest::directorySize()
     QVERIFY(job->totalSize() > 512);
 #endif
 
-    // TODO test error case
+    qApp->sendPostedEvents(0, QEvent::DeferredDelete);
 }
 
 void JobTest::directorySizeError()
@@ -635,6 +635,7 @@ void JobTest::directorySizeError()
     job->setUiDelegate( 0 );
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( !ok );
+    qApp->sendPostedEvents(0, QEvent::DeferredDelete);
 }
 
 void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )
