@@ -1227,8 +1227,8 @@ KHTMLView* KHTMLWidgetPrivate::rootViewPos(QPoint& pos)
     KHTMLView* last = 0;
     while (v) {
         last = v;
-        pos.setX( pos.x() - v->contentsX() );
-        pos.setY( pos.y() - v->contentsY() );
+        int w,h = 0;
+        v->applyTransforms(pos.rx(), pos.ry(), w, h);
         KHTMLWidget*kw = dynamic_cast<KHTMLWidget*>(v);
         if (!kw || !kw->m_kwp->isRedirected()) 
             break;

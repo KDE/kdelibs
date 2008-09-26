@@ -106,6 +106,7 @@ class KHTML_EXPORT KHTMLView : public QScrollArea, public khtml::KHTMLWidget
     friend class khtml::RenderLineEdit;
     friend class khtml::RenderPartObject;
     friend class khtml::RenderWidget;
+    friend class khtml::KHTMLWidgetPrivate;
     friend class khtml::RenderLayer;
     friend class khtml::RenderBox;
     friend class khtml::CSSStyleSelector;

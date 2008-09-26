@@ -1153,15 +1153,9 @@ void ComboBoxWidget::showPopup()
     int zoomLevel = v ? v->zoomLevel() : 100;
     if (zoomLevel != 100) {
         if (v) {
-            QPoint zoomedOffset(v->horizontalScrollBar()->value()*zoomLevel/100,
-                                v->verticalScrollBar()->value()*zoomLevel/100);
-            QPoint offset(m_kwp->rootViewPos(p)->horizontalScrollBar()->value(),
-                          m_kwp->rootViewPos(p)->verticalScrollBar()->value());
-            dest.setX(dest.x()*zoomLevel/100 + (zoomedOffset - offset).x());
             // we need to place the popup even lower on the screen, take in count the widget is bigger
             // now, so we add also the difference between the original height, and the zoomed height
-            dest.setY(dest.y()*zoomLevel/100 + (sizeHint().height()*zoomLevel/100 - sizeHint().height()) +
-                       (zoomedOffset - offset).y());
+            dest.setY(dest.y() + (sizeHint().height() * zoomLevel / 100 - sizeHint().height()));
         }
     }
     bool blocked = blockSignals(true);
