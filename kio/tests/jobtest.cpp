@@ -613,7 +613,7 @@ void JobTest::directorySize()
     QVERIFY(job->totalSize() > 512);
 #endif
 
-    // TODO test error case
+    qApp->sendPostedEvents(0, QEvent::DeferredDelete);
 }
 
 void JobTest::directorySizeError()
