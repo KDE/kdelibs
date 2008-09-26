@@ -303,7 +303,15 @@ void KDirModelPrivate::_k_slotNewItems(const KFileItemList& items)
     //kDebug(7008) << "dir=" << dir;
 
     KDirModelNode* result = nodeForUrl(dir); // O(depth)
-    Q_ASSERT(result); // Are you calling KDirLister::openUrl(url,true,false)? Please use expandToUrl() instead.
+    // If the directory containing the items wasn't found, then we have a big problem.
+    // Are you calling KDirLister::openUrl(url,true,false)? Please use expandToUrl() instead.
+    if (!result) {
+        kError(7008) << "First item has URL" << items.first().url()
+                     << "-> parent directory would be" << dir
+                     << "but that directory isn't in KDirModel!"
+                     << "Root directory:" << m_dirLister->url();
+        Q_ASSERT(result);
+    }
     Q_ASSERT(isDir(result));
     KDirModelDirNode* dirNode = static_cast<KDirModelDirNode *>(result);
 
