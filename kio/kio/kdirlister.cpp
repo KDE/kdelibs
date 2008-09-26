@@ -174,7 +174,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
             // List items from the cache in a delayed manner, just like things would happen
             // if we were not using the cache.
             KDirLister::Private::CachedItemsJob* cachedItemsJob =
-                new KDirLister::Private::CachedItemsJob(lister, itemU->lstItems, itemU->rootItem, _url, _reload, true /*emit completed*/);
+                new KDirLister::Private::CachedItemsJob(lister, itemU->lstItems, itemU->rootItem, _url, _reload);
             cachedItemsJob->start();
             lister->d->m_cachedItemsJob = cachedItemsJob;
 
@@ -218,7 +218,8 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
         }
     } else {
 
-        kDebug(7004) << "Entry currently being listed:" << _url;
+        kDebug(7004) << "Entry currently being listed:" << _url << "by" << dirData.listersCurrentlyListing;
+        printDebug();
 
         emit lister->started( _url );
 
@@ -236,7 +237,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
         // if we were not using the cache.
         //kDebug() << "Listing" << itemU->lstItems.count() << "cached items soon";
         KDirLister::Private::CachedItemsJob* cachedItemsJob =
-            new KDirLister::Private::CachedItemsJob(lister, itemU->lstItems, itemU->rootItem, _url, _reload, false /*do not emit completed*/);
+            new KDirLister::Private::CachedItemsJob(lister, itemU->lstItems, itemU->rootItem, _url, _reload);
         cachedItemsJob->start();
         lister->d->m_cachedItemsJob = cachedItemsJob;
     }
@@ -266,23 +267,24 @@ void KDirListerCache::emitItemsFromCache(KDirLister* lister, const KFileItemList
 
     KDirLister::Private* kdl = lister->d;
 
-    const bool oldComplete = kdl->complete;
     kdl->complete = false;
 
     if ( kdl->rootFileItem.isNull() && kdl->url == _url )
         kdl->rootFileItem = rootItem;
 
-    //kDebug(7004) << this << "emitting" << items.count() << "for lister" << kdl;
+    //kDebug(7004) << "emitting" << items.count() << "for lister" << lister;
     kdl->addNewItems( items );
     kdl->emitItems();
 
-    // _emitCompleted is usually true, but is false for the special case where
-    // listDir() was called while another directory listing for this dir was happening,
-    // so we "joined" it.
-    // but then we have to check if completed was emitted already, by the running job...
-    if (_emitCompleted && !oldComplete) {
+    DirectoryData& dirData = directoryData[urlStr];
+    Q_ASSERT(dirData.listersCurrentlyListing.contains(lister));
 
-        DirectoryData& dirData = directoryData[urlStr];
+    // Emit completed, unless we were told not to,
+    // or if listDir() was called while another directory listing for this dir was happening,
+    // so we "joined" it. We detect that using jobForUrl to ensure it's a real ListJob,
+    // not just a lister-specific CachedItemsJob (which wouldn't emit completed for us).
+    if (_emitCompleted && jobForUrl( urlStr ) == 0) {
+
         dirData.listersCurrentlyHolding.append( lister );
         dirData.listersCurrentlyListing.removeAll( lister );
 
