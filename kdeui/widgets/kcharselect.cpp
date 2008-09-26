@@ -445,6 +445,7 @@ void KCharSelect::init(const Controls controls, KActionCollection *collection)
     } else {
         d->detailBrowser->hide();
     }
+    d->detailBrowser->setOpenLinks(false);
     connect(d->detailBrowser, SIGNAL(anchorClicked(QUrl)), this, SLOT(_k_linkClicked(QUrl)));
 
     setFocusPolicy(Qt::StrongFocus);
@@ -846,6 +847,7 @@ void  KCharSelect::KCharSelectPrivate::_k_linkClicked(QUrl url)
         return;
     }
     int unicode = hex.toInt(0, 16);
+    searchLine->clear();
     q->setCurrentChar(QChar(unicode));
 }
 
