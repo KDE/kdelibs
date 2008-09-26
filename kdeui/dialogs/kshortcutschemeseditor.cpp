@@ -24,7 +24,6 @@
 #include <QFile>
 #include <QTextStream>
 #include <QtXml/QDomDocument>
-#include <QInputDialog>
 #include <QFileDialog>
 
 #include <kcombobox.h>
@@ -34,6 +33,7 @@
 #include <kmessagebox.h>
 #include <kxmlguiclient.h>
 #include <kmessagebox.h>
+#include <kinputdialog.h>
 
 #include "kshortcutsdialog.h"
 #include "kshortcutschemeshelper_p.h"
@@ -97,9 +97,9 @@ KShortcutSchemesEditor::KShortcutSchemesEditor(KShortcutsDialog *parent)
 void KShortcutSchemesEditor::newScheme()
 {
     bool ok;
-    QString newName = QInputDialog::getText(this, i18n("Name for New Scheme"),
-        i18n("Name for New Scheme:"), QLineEdit::Normal, "New Scheme", &ok);
-    if (!ok || newName.isEmpty())
+    QString newName = KInputDialog::getText(i18n("Name for New Scheme"),
+        i18n("Name for New Scheme:"), i18n("New Scheme"), &ok,this);
+    if (!ok )
         return;
 
     if (m_schemesList->findText(newName) != -1)
