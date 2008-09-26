@@ -403,11 +403,11 @@ class KDirLister::Private::CachedItemsJob : public KJob {
     Q_OBJECT
 public:
     CachedItemsJob(KDirLister* lister, const KFileItemList& items, const KFileItem& rootItem,
-                   const KUrl& url, bool reload, bool emitCompleted)
+                   const KUrl& url, bool reload)
         : KJob(lister),
           m_lister(lister), m_url(url),
           m_items(items), m_rootItem(rootItem),
-          m_reload(reload), m_emitCompleted(emitCompleted) {
+          m_reload(reload), m_emitCompleted(true) {
         setAutoDelete(true);
     }
 
