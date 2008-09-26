@@ -205,9 +205,14 @@
         <div class="bannerBottomLeft">
           <img src="{$kde.common}bottom-left.png" style="height: 70px; margin: 0px;" alt=""/>
         </div>
-<div id="comments" style="position:relative; top: 15px; left: 1em; width: 50%; color: #282828;">
-	<p>Would you like to make a comment or contribute an update to this page?<br/>
-        Send feedback to the <a href="mailto:kde-docs@kdemail.net" style="background:transparent; color: #282828; text-decoration: underline;">KDE Docs Team</a></p>
+        <div id="comments" style="position:relative; top: 15px; left: 1em; width: 100%; color: #282828;">
+        <p>
+	<xsl:call-template name="gentext.footer-doc-comment"/>
+	<br/>
+	<xsl:call-template name="gentext.footer-doc-feedback"/>
+	<a href="mailto:kde-doc-english@kde.org" style="background:transparent; color: #282828; text-decoration: underline;">
+	<xsl:call-template name="gentext.footer-doc-teamname"/>
+	</a></p>
 	</div>
 
       </div>
