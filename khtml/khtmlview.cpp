@@ -3975,8 +3975,9 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
 #endif
 
     if (m_kwp->isRedirected()) {
-        w->scroll(dx, dy, QRect(off.x(), off.y(), visibleWidth(), visibleHeight()));
-        w->update(); // without this update we are getting bad rendering when an iframe is zoomed in
+        const QRect rect(off.x(), off.y(), visibleWidth(), visibleHeight());
+        w->scroll(dx, dy, rect);
+        w->update(rect); // without this update we are getting bad rendering when an iframe is zoomed in
     }  else {
         widget()->scroll(dx, dy, widget()->rect() & viewport()->rect());
     }
