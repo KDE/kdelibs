@@ -440,14 +440,24 @@ struct KDebugPrivate
     QDebug printHeader(QDebug s, const QByteArray &areaName, const char *, int, const char *funcinfo, bool colored)
     {
 #ifdef KDE_EXTENDED_DEBUG_OUTPUT
-        QByteArray programName = cache.value(0).name;
-        if (programName.isEmpty())
-            programName = "<unknown program name>";
-        s.nospace() << programName.constData() << "(" << unsigned(getpid()) << ")";
-        if (areaName != programName)
-            s << "/" << areaName.constData();
+        static bool printProcessInfo = (qgetenv("KDE_DEBUG_NOPROCESSINFO").isEmpty());
+        static bool printAreaName = (qgetenv("KDE_DEBUG_NOAREANAME").isEmpty());
+        static bool printMethodName = (qgetenv("KDE_DEBUG_NOMETHODNAME").isEmpty());
+        QByteArray programName;
+        s = s.nospace();
+        if (printProcessInfo) {
+            programName = cache.value(0).name;
+            if (programName.isEmpty())
+                programName = "<unknown program name>";
+            s << programName.constData() << "(" << unsigned(getpid()) << ")";
+        }
+        if (printAreaName && (!printProcessInfo || areaName != programName)) {
+            if (printProcessInfo)
+                s << "/";
+            s << areaName.constData();
+        }
 
-        if (funcinfo) {
+        if (funcinfo && printMethodName) {
             if(colored)
                 s << "\033[0;34m"; //blue
 # ifdef Q_CC_GNU
@@ -517,7 +527,7 @@ struct KDebugPrivate
 
         if (areaName.isEmpty())
             areaName = cache.value(0).name;
-        
+
         bool colored=false;
 
         QDebug s(&devnull);
@@ -539,7 +549,7 @@ struct KDebugPrivate
             s = setupQtWriter(type);
 #ifndef Q_OS_WIN
             //only color if the debug goes to a tty.
-            colored = env_colored && isatty(fileno(stderr));  
+            colored = env_colored && isatty(fileno(stderr));
 #endif
             break;
         }
