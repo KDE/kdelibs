@@ -521,6 +521,38 @@ void KDirModelTest::testFilter()
     fillModel(true);
 }
 
+void KDirModelTest::testUrlWithRef() // #171117
+{
+    const QString path = m_tempDir->name();
+    KDirLister* dirLister = m_dirModel.dirLister();
+    KUrl url(path);
+    url.setRef("ref");
+    QVERIFY(url.url().endsWith("#ref"));
+    dirLister->openUrl(url, KDirLister::NoFlags);
+    connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+    enterLoop();
+
+    m_dirIndex = QModelIndex();
+    m_fileIndex = QModelIndex();
+    m_secondFileIndex = QModelIndex();
+    for (int row = 0; row < m_topLevelFileNames.count() + 1 /*subdir*/; ++row) {
+        QModelIndex idx = m_dirModel.index(row, 0, QModelIndex());
+        KFileItem item = m_dirModel.itemForIndex(idx);
+        if (item.isDir())
+            m_dirIndex = idx;
+        else if (item.url().fileName() == "toplevelfile_1")
+            m_fileIndex = idx;
+        else if (item.url().fileName() == "toplevelfile_2")
+            m_secondFileIndex = idx;
+        else if (item.url().fileName().startsWith("special"))
+            m_specialFileIndex = idx;
+    }
+    QVERIFY(m_dirIndex.isValid());
+    QVERIFY(m_fileIndex.isValid());
+    QVERIFY(m_secondFileIndex.isValid());
+    QVERIFY(m_specialFileIndex.isValid());
+}
+
 void KDirModelTest::testDeleteFile()
 {
     QVERIFY(m_fileIndex.isValid());
