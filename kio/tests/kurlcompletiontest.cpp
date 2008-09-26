@@ -70,6 +70,8 @@ void KUrlCompletionTest::setup( bool setDirAsURL )
     ok = f2.open( QIODevice::WriteOnly );
     assert( ok );
     f2.close();
+
+    QDir().mkdir( m_dir + "/file_subdir" );
 }
 
 void KUrlCompletionTest::teardown()
@@ -94,9 +96,11 @@ void KUrlCompletionTest::testLocalRelativePath()
     m_completion->makeCompletion( "f" );
     waitForCompletion();
     QStringList comp1all = m_completion->allMatches();
-    assert( comp1all.count() == 2 );
+    kDebug() << comp1all;
+    assert( comp1all.count() == 3 );
     assert( comp1all.contains( "file1" ) );
     assert( comp1all.contains( "file#a" ) );
+    assert( comp1all.contains( "file_subdir/" ) );
     QString comp1 = m_completion->replacedPath( "file1" ); // like KUrlRequester does
     assert( comp1 == "file1" );
 
@@ -136,8 +140,9 @@ void KUrlCompletionTest::testLocalURL()
     waitForCompletion();
     QStringList comp1all = m_completion->allMatches();
     kDebug() << comp1all;
-    assert( comp1all.count() == 2 );
+    assert( comp1all.count() == 3 );
     assert( comp1all.contains( m_dirURL.url() + "file1" ) );
+    assert( comp1all.contains( m_dirURL.url() + "file_subdir/" ) );
     QString filehash = m_dirURL.url() + "file%23a";
     assert( comp1all.contains( filehash ) );
     QString filehashPath = m_completion->replacedPath( filehash ); // note that it returns a path!!
