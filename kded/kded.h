@@ -54,6 +54,11 @@ public:
    QStringList loadedModules();
    bool unloadModule(const QString &obj);
    //bool isWindowRegistered(qlonglong windowId) const;
+   /**
+    * Applications can register/unregister their windows with kded modules.
+    * This allows kpasswdserver and kcookiejar to delete authentication
+    * and cookies that are local to a particular window when closing it.
+    */
    void registerWindowId(qlonglong windowId, const QString &sender);
    void unregisterWindowId(qlonglong windowId, const QString &sender);
    void recreate(const QDBusMessage&);
