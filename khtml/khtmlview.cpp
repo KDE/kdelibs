@@ -758,10 +758,10 @@ int KHTMLView::visibleWidth() const
                     ret -= lhs;
                 ret = qMax(0, ret);
             }
-            return ret * d->zoomLevel / 100;
+            return ret;
         }
     }
-    return viewport()->width() * d->zoomLevel / 100;
+    return viewport()->width();
 }
 
 int KHTMLView::visibleHeight() const
@@ -777,10 +777,10 @@ int KHTMLView::visibleHeight() const
                     ret -= lvs;
                 ret = qMax(0, ret);
             }
-            return ret * d->zoomLevel / 100;
+            return ret;
         }
     }
-    return viewport()->height() * d->zoomLevel / 100;
+    return viewport()->height();
 }
 
 void KHTMLView::setContentsPos( int x, int y)
@@ -3975,9 +3975,11 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
 #endif
 
     if (m_kwp->isRedirected()) {
-        const QRect rect(off.x(), off.y(), visibleWidth(), visibleHeight());
+        const QRect rect(off.x(), off.y(), visibleWidth() * d->zoomLevel / 100, visibleHeight() * d->zoomLevel / 100);
         w->scroll(dx, dy, rect);
-        w->update(rect); // without this update we are getting bad rendering when an iframe is zoomed in
+        if (d->zoomLevel != 100) {
+            w->update(rect); // without this update we are getting bad rendering when an iframe is zoomed in
+        }
     }  else {
         widget()->scroll(dx, dy, widget()->rect() & viewport()->rect());
     }
