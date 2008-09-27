@@ -732,6 +732,7 @@ void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
         m_spellAction->setEnabled( !text().isEmpty() );
     }
     if ( !m_view->part()->onlyLocalReferences() ) {
+        popup->addSeparator();
         QAction *act = popup->addAction( i18n("Create Web Shortcut") );
         connect(act, SIGNAL(triggered()),
                 this, SLOT(slotCreateWebShortcut()));
