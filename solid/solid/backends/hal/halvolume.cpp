@@ -18,6 +18,7 @@
 */
 
 #include "halvolume.h"
+#include "halstorageaccess.h"
 
 using namespace Solid::Backends::Hal;
 
@@ -44,11 +45,10 @@ bool Volume::isIgnored() const
      * are useless to him.
      */
     HalDevice drive(m_device->property("block.storage_device").toString());
-    QString mount_point = m_device->property("volume.mount_point").toString();
+    QString mount_point = StorageAccess(m_device).filePath();
     bool mounted = m_device->property("volume.is_mounted").toBool();
     bool removable = drive.property("storage.removable").toBool();
     bool hotpluggable = drive.property("storage.hotpluggable").toBool();
-
 
     return !removable && !hotpluggable
         && mounted && !mount_point.startsWith("/media/")

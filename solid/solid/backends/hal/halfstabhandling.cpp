@@ -136,6 +136,14 @@ bool Solid::Backends::Hal::FstabHandling::isInFstab(const QString &device)
     return globalMountPointsCache->contains(deviceToFind);
 }
 
+QStringList Solid::Backends::Hal::FstabHandling::possibleMountPoints(const QString &device)
+{
+    _k_updateMountPointsCache();
+    const QString deviceToFind = _k_resolveSymLink(device);
+
+    return globalMountPointsCache->values(deviceToFind);
+}
+
 QProcess *Solid::Backends::Hal::FstabHandling::callSystemCommand(const QString &commandName,
                                                                  const QString &device,
                                                                  QObject *obj, const char *slot)

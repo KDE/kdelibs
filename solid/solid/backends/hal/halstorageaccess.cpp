@@ -74,7 +74,17 @@ bool StorageAccess::isAccessible() const
 
 QString StorageAccess::filePath() const
 {
-    return m_device->property("volume.mount_point").toString();
+    QString result = m_device->property("volume.mount_point").toString();
+
+    if (result.isEmpty()) {
+        QStringList mountpoints
+            = FstabHandling::possibleMountPoints(m_device->property("block.device").toString());
+        if (mountpoints.size()==1) {
+            result = mountpoints.first();
+        }
+    }
+
+    return result;
 }
 
 
