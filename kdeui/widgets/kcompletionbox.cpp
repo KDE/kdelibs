@@ -524,13 +524,12 @@ void KCompletionBox::setItems( const QStringList& items )
 
     int rowIndex = 0;
 
-    if ( rowIndex >= count() ) {
-        addItems( items );
-    }
-    else {
-        //Keep track of whether we need to change anything,
-        //so we can avoid a repaint for identical updates,
-        //to reduce flicker
+    if (!count()) {
+        addItems(items);
+    } else {
+        // Keep track of whether we need to change anything,
+        // so we can avoid a repaint for identical updates,
+        // to reduce flicker
         bool dirty = false;
 
         QStringList::ConstIterator it = items.constBegin();
@@ -540,39 +539,35 @@ void KCompletionBox::setItems( const QStringList& items )
             if ( rowIndex < count() ) {
                 const bool changed = ((KCompletionBoxItem*)item(rowIndex))->reuse( *it );
                 dirty = dirty || changed;
-                
-                rowIndex++;
-            }
-            else {
+            } else {
                 dirty = true;
-                //Inserting an item is a way of making this dirty
-                addItem( *it );
+                // Inserting an item is a way of making this dirty
+                addItem(*it);
             }
+            rowIndex++;
         }
 
-        //If there is an unused item, mark as dirty -> less items now
-        if ( rowIndex < count() ) {
+        // If there is an unused item, mark as dirty -> less items now
+        if (rowIndex < count()) {
             dirty = true;
         }
 
         // remove unused items with an index >= rowIndex
         for ( ; rowIndex < count() ; ) {
             QListWidgetItem* item = takeItem(rowIndex);
-            
             Q_ASSERT(item);
-
             delete item;
         }
-        
+
         //TODO KDE4 : Port me
         //if (dirty)
         //    triggerUpdate( false );
     }
 
-    if ( isVisible() && size().height() != sizeHint().height() )
+    if (isVisible() && size().height() != sizeHint().height())
         sizeAndPosition();
 
-    blockSignals( block );
+    blockSignals(block);
     d->down_workaround = true;
 }
 
