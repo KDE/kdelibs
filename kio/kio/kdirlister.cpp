@@ -219,7 +219,9 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
     } else {
 
         kDebug(7004) << "Entry currently being listed:" << _url << "by" << dirData.listersCurrentlyListing;
+#ifdef DEBUG_CACHE
         printDebug();
+#endif
 
         emit lister->started( _url );
 
