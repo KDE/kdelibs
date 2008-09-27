@@ -46,15 +46,25 @@
 #include <kstandardaction.h>
 #include <kactioncollection.h>
 #include <kdeuiwidgetsproxystyle_p.h>
+#include <kurl.h>
+#include <KDesktopFile>
+#include <KConfigGroup>
+#include <kstandarddirs.h>
+#include <kdialog.h>
+#include <kbuildsycocaprogressdialog.h>
+#include <kservicetypetrader.h>
+#include <kservice.h>
 
 #include <QAbstractItemView>
 #include <QAbstractTextDocumentLayout>
 #include <QtGui/QStyle>
 #include <QStyleOptionButton>
+#include <QtGui/QLabel>
 
 #include <misc/helper.h>
 #include <xml/dom2_eventsimpl.h>
 #include <html/html_formimpl.h>
+#include <html/html_miscimpl.h>
 #include <misc/htmlhashes.h>
 
 #include <assert.h>
@@ -65,6 +75,8 @@
 
 #include <QtGui/QMenu>
 #include <QtGui/QBitmap>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QVBoxLayout>
 
 using namespace khtml;
 
@@ -563,6 +575,140 @@ void LineEditWidget::slotSpellCheckDone( const QString &s )
         setText( s );
 }
 
+class WebShortcutCreator {
+    //Creates a Web Shourtcut without using kdebase SearchProvider class
+    //It is used by LineEditWidget
+    public:
+      static bool createWebShortcut(QString query);
+
+    private:
+      static bool askData(QString &name, QString &keys);
+      static void createFile(QString query, QString name, QString keys);
+};
+
+bool WebShortcutCreator::createWebShortcut(QString query) {
+    QString name = i18n("New Web Shortcut");
+    QString keys = "";
+    if ( askData(name, keys) ) {
+        bool isOk=true;
+        do { //It's going to be checked if the keys have already been assigned
+            QStringList keyList(keys.split(','));
+            KService::List providers =
+              KServiceTypeTrader::self()->query("SearchProvider");
+            foreach (KService::Ptr provider, providers) {
+                foreach (QString s,provider->property("Keys").toStringList()) {
+                    foreach (QString t, keys) {
+                        if (s==t) {
+                            KDialog *d = new KDialog();
+                            d->setMainWidget( new QLabel(s + i18n(" is already assigned to ")
+                              + provider->name() ) );
+                            d->setCaption("Error");
+                            d->setButtons( KDialog::Ok );
+                            d->exec();
+                            delete d;
+                            isOk = false; 
+                        }
+                    }
+                }
+            }
+            if ( !isOk && !askData(name, keys) ) return false;
+        } while ( !isOk );
+        createFile(query, name, keys);
+        return true;
+    } else return false;
+}
+
+void WebShortcutCreator::createFile(QString query, QString name, QString keys){
+    //SearchProvider class is part of kdebase, so the file is written as
+    //an standard desktop file.
+    QString fileName=keys;
+    KStandardDirs dirs;
+    QString dir=dirs.saveLocation("services", "searchproviders");
+    while ( KStandardDirs::exists(dir+fileName+".desktop") )
+      fileName+='_';
+    KDesktopFile f(dir+fileName+".desktop");
+    f.desktopGroup().writeEntry("Keys", keys);
+    f.desktopGroup().writeEntry("Type", "Service");
+    f.desktopGroup().writeEntry("ServiceTypes", "SearchProvider");
+    f.desktopGroup().writeEntry("Name", name);
+    f.desktopGroup().writeEntry("Query", query);
+    f.sync();
+    KBuildSycocaProgressDialog::rebuildKSycoca(0);
+}
+
+bool WebShortcutCreator::askData(QString &name, QString &keys) {
+    KDialog *dialog = new KDialog();
+    QWidget *widget = new QWidget();
+    dialog->setButtons( KDialog::Ok | KDialog::Cancel );
+    dialog->setCaption( name );
+    QVBoxLayout *mainLayout = new QVBoxLayout();
+    widget->setLayout(mainLayout);
+    dialog->setMainWidget(widget);
+    QHBoxLayout *layout = new QHBoxLayout();
+    mainLayout->addLayout(layout);
+    QLabel *label = new QLabel(i18n("Search &provider name:"));
+    layout->addWidget( label );
+    QLineEdit *nameEdit = new QLineEdit(i18n("New search provider"));
+    label->setBuddy( nameEdit );
+    layout->addWidget( nameEdit );
+    layout = new QHBoxLayout();
+    mainLayout->addLayout(layout);
+    label = new QLabel(i18n("UR&I shortcuts:"));
+    layout->addWidget( label );
+    QLineEdit *keysEdit = new QLineEdit();
+    label->setBuddy(keysEdit);
+    layout->addWidget(keysEdit);
+    bool res = dialog->exec();
+    if (res) {
+      name = nameEdit->text();
+      keys = keysEdit->text();
+    }
+    delete dialog;
+    return res;
+}
+
+void LineEditWidget::slotCreateWebShortcut() {
+    QString queryName=m_input->name().string();
+    HTMLFormElementImpl *form=m_input->form();
+    KUrl url(form->action().string());
+    KUrl baseUrl(m_view->part()->baseURL().url()+'?');
+    if ( !url.hasPath() ) {
+        url.setPath(baseUrl.path());
+    }
+    if ( !url.hasHost() ) {
+        url.setProtocol(baseUrl.protocol());
+        url.setHost(baseUrl.host());
+    }
+    NodeImpl *node;
+    HTMLInputElementImpl *inputNode;
+    for(unsigned long i=0; (node=form->elements()->item(i)); i++) {
+        inputNode=dynamic_cast<HTMLInputElementImpl *>(node);
+        if (inputNode) {
+            if ( ( !inputNode->name().string().size() ) ||
+              (inputNode->name().string() == queryName)) continue;
+            else {
+                switch ( inputNode->inputType() ) {
+                case HTMLInputElementImpl::CHECKBOX:
+                case HTMLInputElementImpl::RADIO:
+                    if ( !inputNode->checked() ) break;
+                case HTMLInputElementImpl::TEXT:
+                case HTMLInputElementImpl::PASSWORD:
+                case HTMLInputElementImpl::HIDDEN:
+                    url.addQueryItem(inputNode->name().string(), inputNode->value().string());
+                default:
+                    //Any element of other type is ignored
+                    ;
+                }
+            }
+        }
+    }
+    QString query=url.url();
+    if ( !query.contains("?") )
+        query+='?'; //This input is the only one of the form
+    query+='&'+queryName+"=\\{@}";
+    WebShortcutCreator::createWebShortcut(query);
+}
+
 void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
 {
     QMenu* popup = createStandardContextMenu();
@@ -585,6 +731,14 @@ void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
         popup->addAction( m_spellAction );
         m_spellAction->setEnabled( !text().isEmpty() );
     }
+    if ( !m_view->part()->onlyLocalReferences() ) {
+        QAction *act = popup->addAction( i18n("Create Web Shortcut") );
+        connect(act, SIGNAL(triggered()),
+                this, SLOT(slotCreateWebShortcut()));
+    }
+
+    emit aboutToShowContextMenu(popup);
+
     popup->exec(e->globalPos());
     delete popup;
 }

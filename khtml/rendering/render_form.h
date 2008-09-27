@@ -301,6 +301,7 @@ private Q_SLOTS:
     void clearHistoryActivated();
     void slotCheckSpelling();
     void slotSpellCheckDone( const QString &s );
+    void slotCreateWebShortcut();
     void spellCheckerMisspelling( const QString &text, int pos);
     void spellCheckerCorrected( const QString &, int, const QString &);
     void spellCheckerFinished();
