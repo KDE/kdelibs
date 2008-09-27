@@ -847,7 +847,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                    mode == KGlobalSettings::CompletionPopupAuto ) &&
                    noModifier && !e->text().isEmpty() )
         {
-            QString old_txt = text();
+            QString old_txt = e->text();
             bool hasUserSelection=d->userSelection;
             bool hadSelection=hasSelectedText();
             bool cursorNotAtEnd=false;
@@ -880,7 +880,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
             QString txt = text();
             int len = txt.length();
-
             if ( txt != old_txt && len/* && ( cursorPosition() == len || force )*/ &&
                  ( (!keycode.isEmpty() && keycode.unicode()->isPrint()) ||
                    e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete) )
