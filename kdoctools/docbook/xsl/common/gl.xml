@@ -213,6 +213,9 @@
 <l:gentext key="hyphenation-character" text="-"/>
 <l:gentext key="hyphenation-push-character-count" text="2"/>
 <l:gentext key="hyphenation-remain-character-count" text="2"/>
+<l:gentext key="footer-doc-comment" text="Desexa facer un comentario ou actualizar esta páxina?"/>
+<l:gentext key="footer-doc-feedback" text="Envíe as súas aportacións á "/>
+<l:gentext key="footer-doc-teamname" text="Equipa de documentación de KDE"/>
 <l:context name="styles"><l:template name="person-name" text="first-last"/>
 </l:context>
 <l:context name="title"><l:template name="abstract" text="%t"/>
