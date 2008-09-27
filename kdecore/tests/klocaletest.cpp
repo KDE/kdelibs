@@ -311,6 +311,29 @@ KLocaleTest::readTime()
 }
 
 void
+KLocaleTest::prettyFormatDuration()
+{
+	KLocale locale(*KGlobal::locale());
+
+	QCOMPARE(locale.prettyFormatDuration(1000), QString("1 second"));
+	QCOMPARE(locale.prettyFormatDuration(5000), QString("5 seconds"));
+	QCOMPARE(locale.prettyFormatDuration(60000), QString("1 minute"));
+	QCOMPARE(locale.prettyFormatDuration(300000), QString("5 minutes"));
+	QCOMPARE(locale.prettyFormatDuration(3600000), QString("1 hour"));
+	QCOMPARE(locale.prettyFormatDuration(18000000), QString("5 hours"));
+	QCOMPARE(locale.prettyFormatDuration(75000), QString("1 minute and 15 seconds"));
+	// Problematic case #1 (there is a reference to this case on klocale.cpp)
+	QCOMPARE(locale.prettyFormatDuration(119999), QString("2 minutes"));
+	// This case is strictly 2 hours, 15 minutes and 59 seconds. However, since the range is
+	// pretty high between hours and minutes, prettyFormatDuration always omits seconds when there
+	// are hours in scene.
+	QCOMPARE(locale.prettyFormatDuration(8159000), QString("2 hours and 15 minutes"));
+	// This case is strictly 1 hour and 10 seconds. For the same reason, prettyFormatDuration
+	// detects that 10 seconds is just garbage compared to 1 hour, and omits it on the result.
+	QCOMPARE(locale.prettyFormatDuration(3610000), QString("1 hour"));
+}
+
+void
 KLocaleTest::bug95511()
 {
 	KLocale locale(*KGlobal::locale());

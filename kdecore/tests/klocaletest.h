@@ -34,6 +34,7 @@ private Q_SLOTS:
 	void formatTime();
 	void formatDateTime();
 	void readTime();
+	void prettyFormatDuration();
 	void bug95511();
 };
 

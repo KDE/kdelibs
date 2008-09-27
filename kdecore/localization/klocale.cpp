@@ -1260,6 +1260,12 @@ QString KLocale::prettyFormatDuration( unsigned long mSec ) const
     ms = ms%60000;
     int seconds = qRound(ms/1000.0);
 
+    // Handle correctly problematic case #1 (look at KLocaleTest::prettyFormatDuration()
+    // at klocaletest.cpp)
+    if (seconds == 60) {
+        return prettyFormatDuration(mSec - ms + 60000);
+    }
+
     if (days && hours) {
         return i18nc("@item:intext days and hours. This uses the previous item:intext messages. If this does not fit the grammar of your language please contact the i18n team to solve the problem", "%1 and %2", d->formatSingleDuration(KLocalePrivate::DaysDurationType, days), d->formatSingleDuration(KLocalePrivate::HoursDurationType, hours));
     } else if (days) {
