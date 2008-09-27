@@ -325,7 +325,7 @@ KLocaleTest::prettyFormatDuration()
 	// Problematic case #1 (there is a reference to this case on klocale.cpp)
 	QCOMPARE(locale.prettyFormatDuration(119999), QString("2 minutes"));
 	// This case is strictly 2 hours, 15 minutes and 59 seconds. However, since the range is
-	// pretty high between hours and minutes, prettyFormatDuration always omits seconds when there
+	// pretty high between hours and seconds, prettyFormatDuration always omits seconds when there
 	// are hours in scene.
 	QCOMPARE(locale.prettyFormatDuration(8159000), QString("2 hours and 15 minutes"));
 	// This case is strictly 1 hour and 10 seconds. For the same reason, prettyFormatDuration
