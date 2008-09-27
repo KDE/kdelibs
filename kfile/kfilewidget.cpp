@@ -1288,12 +1288,14 @@ void KFileWidgetPrivate::_k_slotLocationChanged( const QString& text )
         setDummyHistoryEntry( text );
     }
 
-    const KUrl::List urlList(tokenize(text));
-    QStringList stringList;
-    foreach (const KUrl &url, urlList) {
-        stringList << url.fileName();
+    if (!locationEdit->lineEdit()->text().isEmpty()) {
+        const KUrl::List urlList(tokenize(text));
+        QStringList stringList;
+        foreach (const KUrl &url, urlList) {
+            stringList << url.fileName();
+        }
+        ops->setCurrentItems(stringList);
     }
-    ops->setCurrentItems(stringList);
 
     updateFilter();
 }
