@@ -215,6 +215,7 @@ QSet<Nepomuk::Types::Class> Nepomuk::Types::ClassPrivate::findParentClasses( Cla
     for ( QList<Class>::iterator it = parents.begin(); it != parents.end(); ++it ) {
         ClassPrivate* p = static_cast<Nepomuk::Types::ClassPrivate*>( it->d.data() );
         if ( p != requestingClass ) {
+            p->init();
             allParents += p->findParentClasses( requestingClass );
             allParents += *it;
         }
@@ -231,6 +232,7 @@ QSet<Nepomuk::Types::Class> Nepomuk::Types::ClassPrivate::findSubClasses( ClassP
     for ( QList<Class>::iterator it = children.begin(); it != children.end(); ++it ) {
         ClassPrivate* p = static_cast<Nepomuk::Types::ClassPrivate*>( it->d.data() );
         if ( p != requestingClass ) {
+            p->initAncestors();
             allChildren += p->findSubClasses( requestingClass );
             allChildren += *it;
         }
