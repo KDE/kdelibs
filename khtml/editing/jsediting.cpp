@@ -578,7 +578,7 @@ const CommandImp *JSEditor::commandImp(const DOMString &command)
 
 const CommandImp *JSEditor::commandImp(int command)
 {
-    if (command < 0 || command > int(sizeof commands / sizeof commands[0]))
+    if (command < 0 || command >= int(sizeof commands / sizeof commands[0]) )
         return 0;
     return &commands[command].imp;
 }
