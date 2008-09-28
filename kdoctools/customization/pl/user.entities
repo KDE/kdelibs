@@ -74,6 +74,7 @@
 <!ENTITY kdm-dopelniacz    '<application>KDM</application>'>
 <!ENTITY kdm-celownik    '<application>KDM</application>'>
 <!ENTITY kdm-biernik    '<application>KDM</application>'>
+<!ENTITY kdm-narzednik    '<application>KDM</application>'>
 <!ENTITY kdm-miejscownik    '<application>KDM</application>'>
 <!ENTITY kdm    '&kdm-mianownik;'>
 
