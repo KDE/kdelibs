@@ -226,13 +226,15 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     if (indexName.isEmpty()) {
         // No name provided. Use the objectName.
         indexName = objectName;
+
     } else {
-        // A name was provided. Check against objectName
-        if ((!objectName.isEmpty()) && (indexName != objectName)) {
-            KAction *kaction = qobject_cast<KAction*>(action);
+
+        // A name was provided. Check against objectName.
+        if ((!objectName.isEmpty()) && (objectName != indexName)) {
             // The user specified a new name and the action already has a
             // different one. The objectName is used for saving shortcut
             // settings to disk. Both for local and global shortcuts.
+            KAction *kaction = qobject_cast<KAction*>(action);
             kDebug(125) << "Registering action " << objectName << " under new name " << indexName;
             // If there is a global shortcuts it's a very bad idea.
             if (kaction && kaction->isGlobalShortcutEnabled()) {
@@ -242,17 +244,22 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
                 kError() << "Changing action name from " << objectName << " to " << indexName << "\nignored because of active global shortcut.";
                 indexName = objectName;
             }
-        } else {
-            // No old name. Use the new one
-            action->setObjectName(indexName);
         }
+
+        // Set the new name
+        action->setObjectName(indexName);
     }
 
     // No name provided and the action had no name. Make one up. This will not
-    // work when trying to save shortcuts. Both local and global shortcuts
+    // work when trying to save shortcuts. Both local and global shortcuts.
     if( indexName.isEmpty() ) {
         indexName = indexName.sprintf("unnamed-%p", (void*)action);
+        action->setObjectName(indexName);
     }
+
+    // From now on the objectName has to have a value. Else we cannot safely
+    // remove actions.
+    Q_ASSERT(!action->objectName().isEmpty());
 
     // look if we already have THIS action under THIS name ;)
     if (d->actionByName.value(indexName, 0) == action ) {
@@ -447,6 +454,13 @@ void KActionCollection::exportGlobalShortcuts( KConfigGroup* config, bool writeA
           continue;
       QString actionName = it.key();
 
+      // If the action name starts with unnamed- spit out a warning. That name
+      // will change at will and will break loading writing
+      if (actionName.startsWith("unnamed-")) {
+          kError() << "Skipped exporting Shortcut for action without name " << kaction->text() << "!";
+          continue;
+      }
+
       if( kaction->isShortcutConfigurable() && kaction->isGlobalShortcutEnabled() ) {
           bool bConfigHasAction = !config->readEntry( actionName, QString() ).isEmpty();
           bool bSameAsDefault = (kaction->globalShortcut() == kaction->globalShortcut(KAction::DefaultShortcut));
@@ -507,6 +521,13 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
 
       QString actionName = it.key();
 
+      // If the action name starts with unnamed- spit out a warning and ignore
+      // it. That name will change at will and will break loading writing
+      if (actionName.startsWith("unnamed-")) {
+          kError() << "Skipped writing shortcut for action " << actionName << "(" << kaction->text() << ")!";
+          continue;
+      }
+
       bool bSameAsDefault = (kaction->shortcut() == kaction->shortcut(KAction::DefaultShortcut));
       kDebug(129) << "name = " << actionName
                   << " shortcut = " << kaction->shortcut(KAction::ActiveShortcut).toString()
@@ -565,9 +586,17 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
             continue;
         }
 
+        QString actionName = it.key();
+
+        // If the action name starts with unnamed- spit out a warning and ignore
+        // it. That name will change at will and will break loading writing
+        if (actionName.startsWith("unnamed-")) {
+            kError() << "Skipped saving Shortcut for action without name " << kaction->text() << "!";
+            continue;
+        }
+
         // Write the shortcut
         if( kaction->isShortcutConfigurable() ) {
-            QString actionName = it.key();
             bool bConfigHasAction = !config->readEntry( actionName, QString() ).isEmpty();
             bool bSameAsDefault = (kaction->shortcut() == kaction->shortcut(KAction::DefaultShortcut));
             // If we're using a global config or this setting

@@ -42,6 +42,7 @@
 #include "kaction.h"
 #include "kactioncollection.h"
 #include "kactioncategory.h"
+#include "kdebug.h"
 #include "kglobalaccel.h"
 #include "kmessagebox.h"
 #include "kaboutdata.h"
@@ -120,6 +121,15 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
     foreach (KActionCategory *category, categories) {
         hier[Action] = d->findOrMakeItem(hier[Program], category->text());
         foreach(QAction *action, category->actions()) {
+
+            QString actionName = action->objectName();
+            // If the action name starts with unnamed- spit out a warning and ignore
+            // it. That name will change at will and will break loading writing
+            if (actionName.isEmpty() || actionName.startsWith("unnamed-")) {
+                    kError() << "Skipping action without name " << action->text() << "," << actionName << "!";
+                continue;
+            }
+
             // Set a marker that we have seen this action
             actionsSeen.insert(action);
             // This code doesn't allow editing of QAction. I have no idea why :-(
@@ -142,10 +152,20 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
         if (actionsSeen.contains(action)) {
             continue;
         }
+
+        // If the action name starts with unnamed- spit out a warning and ignore
+        // it. That name will change at will and will break loading writing
+        QString actionName = action->objectName();
+        if (actionName.isEmpty() || actionName.startsWith("unnamed-")) {
+            kError() << "Skipping action without name " << action->text() << "," << actionName << "!";
+            continue;
+        }
+
         // This code doesn't allow editing of QAction. I have no idea why :-(
         // But i guess it's for a good reason so i won't change that. If
         // anyone know why please add a comment explaining the reason.
         if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
+
             // If the shortcut is not configurable skip it
             if (!kact->isShortcutConfigurable()) {
                 continue;
