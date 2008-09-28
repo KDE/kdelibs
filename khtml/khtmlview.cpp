@@ -2984,8 +2984,8 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
                         default:
                             priority = 5;
                             break;
-                    break;
                     }
+                    break;
                 case ID_SELECT: // these don't have accesskey attribute, but quick access may be handy
                     text_before = true;
                     text_after = true;
