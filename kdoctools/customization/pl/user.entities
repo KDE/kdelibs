@@ -7,9 +7,13 @@
  -->
 
 <!ENTITY Alt        		"<keycap>Alt</keycap>">
+<!ENTITY Backspace     		"<keycap>Backspace</keycap>">
 <!ENTITY Ctrl        		"<keycap>Ctrl</keycap>">				  <!-- English: &Ctrl; -->
 <!ENTITY Enter        		"<keycap>Enter</keycap>">				  <!-- English: &Enter; -->
+<!ENTITY Esc        		"<keycap>Esc</keycap>">
+<!ENTITY eg        		"np.">
 <!ENTITY etc        		"itp.">
+<!ENTITY FAQ			"<acronym>FAQ</acronym>">
 <!ENTITY Shift        		"<keycap>Shift</keycap>">				  <!-- English: &Shift; -->
 <!ENTITY Tab        		"<keycap>Tab</keycap>">
 
@@ -30,6 +34,12 @@
 <!ENTITY ark    '&ark-mianownik;'>
 
 <!ENTITY gif        		'<literal role="extension">.gif</literal>'>
+
+<!ENTITY dolphin-mianownik    '<application>Dolphin</application>'>
+<!ENTITY dolphin-dopelniacz    '<application>Dolphina</application>'>
+<!ENTITY dolphin-celownik    '<application>Dolphinowi</application>'>
+<!ENTITY dolphin-biernik    '<application>Dolphina</application>'>
+<!ENTITY dolphin    '&dolphin-mianownik;'>
 
 <!ENTITY GUI-mianownik    'graficzny interfejs użytkownika'>
 <!ENTITY GUI-dopelniacz    'graficznego interfejsu użytkownika'>
@@ -92,9 +102,10 @@
 
 <!ENTITY kmail-mianownik    '<application>Kmail</application>'>
 <!ENTITY kmail-dopelniacz    '<application>Kmaila</application>'>
-<!ENTITY kmail-celownik    '<application>Kmail-owi</application>'>
+<!ENTITY kmail-celownik    '<application>Kmailowi</application>'>
 <!ENTITY kmail-biernik    '<application>Kmaila</application>'>
-<!ENTITY kmail-miejscownik    '<application>Kmail-u</application>'>
+<!ENTITY kmail-narzednik    '<application>Kmailem</application>'>
+<!ENTITY kmail-miejscownik    '<application>Kmailu</application>'>
 <!ENTITY kmail    '&kmail-mianownik;'>
 
 <!ENTITY kmenu-mianownik    'Menu K'>
@@ -159,10 +170,27 @@
 <!ENTITY Linux-miejscownik    'Linuksie'>
 <!ENTITY Linux    '&Linux-mianownik;'>
 
+<!ENTITY okular-mianownik    '<application>Okular</application>'>
+<!ENTITY okular-dopelniacz    '<application>Okulara</application>'>
+<!ENTITY okular-celownik    '<application>Okularowi</application>'>
+<!ENTITY okular-biernik    '<application>Okulara</application>'>
+<!ENTITY okular-narzednik    '<application>Okularem</application>'>
+<!ENTITY okular-miejscownik    '<application>Okularze</application>'>
+<!ENTITY okular    '&okular-mianownik;'>
+
+
 <!ENTITY Sendmail-mianownik    '<application>Sendmail</application>'>
-<!ENTITY Sendmail-dopelniacz    '<application>Sendmail-a</application>'>
-<!ENTITY Sendmail-celownik    '<application>Sendmail-owi</application>'>
-<!ENTITY Sendmail-biernik    '<application>Sendmail-a</application>'>
-<!ENTITY Sendmail-narzednik    '<application>Sendmail-em</application>'>
-<!ENTITY Sendmail-miejscownik    '<application>Sendmail-u/application>'>
+<!ENTITY Sendmail-dopelniacz    '<application>Sendmaila</application>'>
+<!ENTITY Sendmail-celownik    '<application>Sendmailowi</application>'>
+<!ENTITY Sendmail-biernik    '<application>Sendmaila</application>'>
+<!ENTITY Sendmail-narzednik    '<application>Sendmailem</application>'>
+<!ENTITY Sendmail-miejscownik    '<application>Sendmailu/application>'>
 <!ENTITY Sendmail    '&Sendmail-mianownik;'>
+
+<!ENTITY UNIX-mianownik    'Unix'>
+<!ENTITY UNIX-dopelniacz    'Uniksa'>
+<!ENTITY UNIX-celownik    'Uniksowi'>
+<!ENTITY UNIX-biernik    'Uniksa'>
+<!ENTITY UNIX-narzednik    'Uniksem'>
+<!ENTITY UNIX-miejscownik    'Uniksie'>
+<!ENTITY UNIX    '&UNIX-mianownik;'>
