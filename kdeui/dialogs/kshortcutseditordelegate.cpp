@@ -163,6 +163,7 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
                 connect(
                     action, SIGNAL(globalShortcutChanged(QKeySequence)),
                     editor, SLOT(setKeySequence(QKeySequence)));
+                editor->setMultiKeyShortcutsAllowed(false);
                 }
 
 

@@ -50,6 +50,17 @@ class KDEUI_EXPORT KKeySequenceWidget: public QWidget
 {
 	Q_OBJECT
 
+	Q_PROPERTY( 
+			bool multiKeyShortcutsAllowed
+			READ multiKeyShortcutsAllowed
+			WRITE setMultiKeyShortcutsAllowed )
+
+	Q_PROPERTY(
+			ShortcutTypes checkForConflictsAgainst
+			READ checkForConflictsAgainst
+			WRITE setCheckForConflictsAgainst )
+
+
 public:
 	///An enum about validation when setting a key sequence.
 	///@see setKeySequence()
@@ -148,6 +159,12 @@ public:
 		 * @since 4.2
 		 */
 		ShortcutTypes checkForConflictsAgainst() const;
+
+		/**
+		 * Allow multikey shortcuts?
+		 */
+		void setMultiKeyShortcutsAllowed(bool);
+		bool multiKeyShortcutsAllowed() const;
 
 		/**
 		 * This only applies to user input, not to setShortcut().

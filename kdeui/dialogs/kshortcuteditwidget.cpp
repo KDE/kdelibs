@@ -125,6 +125,19 @@ void ShortcutEditWidget::setCheckForConflictsAgainst(KKeySequenceWidget::Shortcu
     m_customEditor->setCheckForConflictsAgainst(types);
 }
 
+
+void ShortcutEditWidget::setMultiKeyShortcutsAllowed(bool allowed)
+{
+    // We just forward them to out KKeySequenceWidget.
+    m_customEditor->setMultiKeyShortcutsAllowed(allowed);
+}
+
+
+bool ShortcutEditWidget::multiKeyShortcutsAllowed() const
+{
+    return m_customEditor->multiKeyShortcutsAllowed();
+}
+
 //slot
 void ShortcutEditWidget::setCustom(const QKeySequence &seq)
 {

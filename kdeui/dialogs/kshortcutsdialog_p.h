@@ -178,6 +178,12 @@ public:
     void setCheckForConflictsAgainst(KKeySequenceWidget::ShortcutTypes);
     //@}
 
+    //@{
+    //! @see KKeySequenceWidget::checkAgainstStandardShortcuts()
+    bool multiKeyShortcutsAllowed() const;
+    void setMultiKeyShortcutsAllowed(bool);
+    //@}
+
 public Q_SLOTS:
 
     //! Set the displayed sequences

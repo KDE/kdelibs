@@ -107,6 +107,7 @@ public:
 	uint nKey;
 	uint modifierKeys;
 	bool isRecording;
+	bool multiKeyShortcutsAllowed;
 
 	//! Check the key sequence against KStandardShortcut::find()
 	KKeySequenceWidget::ShortcutTypes checkAgainstShortcutTypes;
@@ -140,6 +141,7 @@ KKeySequenceWidgetPrivate::KKeySequenceWidgetPrivate(KKeySequenceWidget *q)
 	 ,nKey(0)
 	 ,modifierKeys(0)
 	 ,isRecording(false)
+	 ,multiKeyShortcutsAllowed(true)
 	 ,checkAgainstShortcutTypes(KKeySequenceWidget::LocalShortcuts & KKeySequenceWidget::GlobalShortcuts)
 	 ,stealAction(NULL)
 {}
@@ -210,6 +212,18 @@ KKeySequenceWidget::~KKeySequenceWidget ()
 KKeySequenceWidget::ShortcutTypes KKeySequenceWidget::checkForConflictsAgainst() const
 {
 	return d->checkAgainstShortcutTypes;
+}
+
+
+bool KKeySequenceWidget::multiKeyShortcutsAllowed() const
+{
+	return d->multiKeyShortcutsAllowed;
+}
+
+
+void KKeySequenceWidget::setMultiKeyShortcutsAllowed(bool allowed)
+{
+	d->multiKeyShortcutsAllowed = allowed;
 }
 
 
@@ -590,7 +604,7 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 			}
 
 			d->nKey++;
-			if (d->nKey >= 4) {
+			if ((!d->multiKeyShortcutsAllowed) || (d->nKey >= 4)) {
 				d->doneRecording();
 				return;
 			}
