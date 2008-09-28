@@ -623,7 +623,13 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     // They should be seen as non-printable characters, as trying to display them leads
     //  to a crash caused by a Qt "noBlockInString" assertion.
     if (c.isPrint() && c.unicode() != 0xFDD0 && c.unicode() != 0xFDD1) {
-        html = QString("<p>" + i18n("Character:") + " <font size=\"+4\" face=\"") + charTable->font().family() + "\">&#" + QString::number(c.unicode()) + ";</font> " + s_data->formatCode(c.unicode())  + "<br>";
+    // Wrap Combining Diacritical Marks in spaces to prevent them from being combined with the text around them
+    // It still doesn't look perfect, but at least better than without the spaces
+    QString combiningSpace;
+    if(s_data->block(c) == i18nc("KCharselect unicode block name", "Combining Diacritical Marks")) {
+        combiningSpace = "&nbsp;";
+    }
+        html = QString("<p>" + i18n("Character:") + " <font size=\"+4\" face=\"") + charTable->font().family() + "\">" + combiningSpace + "&#" + QString::number(c.unicode()) + ";" + combiningSpace + "</font> " + s_data->formatCode(c.unicode())  + "<br>";
     } else {
         html = QString("<p>" + i18n("Character:") + " <b>" + i18n("Non-printable") + "</b> ") + s_data->formatCode(c.unicode())  + "<br>";
     }
@@ -868,10 +874,16 @@ QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
         return QVariant();
     else if (role == Qt::ToolTipRole) {
         QString s;
-        if (c.isPrint())
+        if (c.isPrint()) {
             s = "&#" + QString::number(c.unicode()) + ';';
-        else
+            // Wrap Combining Diacritical Marks in spaces
+            // It still doesn't look perfect, but at least better than without the spaces
+            if(s_data->block(c) == i18nc("KCharselect unicode block name", "Combining Diacritical Marks")) {
+                s = "&nbsp;" + s + "&nbsp;";
+            }
+        } else {
             s = i18n("Non-printable");
+        }
         QString result = i18nc("Character", "<qt><font size=\"+4\" face=\"%1\">%2</font><br />%3<br />Unicode code point: %4<br />(In decimal: %5)</qt>" ,  m_font.family() ,  s , Qt::escape(s_data->name(c)), s_data->formatCode(c.unicode()) ,  c.unicode());
         return QVariant(result);
     } else if (role == Qt::TextAlignmentRole)
