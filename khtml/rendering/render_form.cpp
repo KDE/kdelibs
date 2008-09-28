@@ -602,12 +602,12 @@ bool WebShortcutCreator::createWebShortcut(QString query)
             QStringList keyList( keys.split( ',' ) );
             KService::List providers = KServiceTypeTrader::self()->query( "SearchProvider" );
             foreach ( KService::Ptr provider, providers ) {
-                foreach ( QString s, provider->property("Keys").toStringList() ) {
+                foreach ( QString s, provider->property( "Keys" ).toStringList() ) {
                     foreach ( QString t, keys ) {
                         if ( s == t ) {
                             KDialog *d = new KDialog();
-                            d->setMainWidget( new QLabel(s + i18n(" is already assigned to ")
-                              + provider->name() ) );
+                            d->setMainWidget( new QLabel(s + i18n( " is already assigned to " )
+                                                         + provider->name() ) );
                             d->setCaption( "Error" );
                             d->setButtons( KDialog::Ok );
                             d->exec();
@@ -642,7 +642,7 @@ void WebShortcutCreator::createFile(QString query, QString name, QString keys)
     f.desktopGroup().writeEntry( "Name", name );
     f.desktopGroup().writeEntry( "Query", query );
     f.sync();
-    KBuildSycocaProgressDialog::rebuildKSycoca(0);
+    KBuildSycocaProgressDialog::rebuildKSycoca( 0 );
 }
 
 bool WebShortcutCreator::askData(QString &name, QString &keys)
@@ -693,7 +693,7 @@ void LineEditWidget::slotCreateWebShortcut()
     NodeImpl *node;
     HTMLInputElementImpl *inputNode;
     for( unsigned long i = 0; ( node = form->elements()->item( i ) ); i++ ) {
-        inputNode = dynamic_cast<HTMLInputElementImpl *>( node );
+        inputNode = dynamic_cast<HTMLInputElementImpl*>( node );
         if ( inputNode ) {
             if ( ( !inputNode->name().string().size() ) || 
                  (inputNode->name().string() == queryName) ) {
@@ -708,7 +708,7 @@ void LineEditWidget::slotCreateWebShortcut()
                     case HTMLInputElementImpl::TEXT:
                     case HTMLInputElementImpl::PASSWORD:
                     case HTMLInputElementImpl::HIDDEN:
-                        url.addQueryItem(inputNode->name().string(), inputNode->value().string());
+                        url.addQueryItem( inputNode->name().string(), inputNode->value().string() );
                     default:
                         break;
                 }
