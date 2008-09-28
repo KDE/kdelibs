@@ -23,10 +23,12 @@
 #include "resource.h"
 #include "tools.h"
 #include "nie.h"
+#include "pimo.h"
 #include "nepomukmainmodel.h"
 
 #include <Soprano/Statement>
 #include <Soprano/StatementIterator>
+#include <Soprano/QueryResultIterator>
 #include <Soprano/Model>
 #include <Soprano/Vocabulary/RDFS>
 #include <Soprano/Vocabulary/RDF>
@@ -81,7 +83,8 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
       m_mainType( type ),
       m_ref(0),
       m_proxyData(0),
-      m_cacheDirty(true)
+      m_cacheDirty(true),
+      m_pimoThing(0)
 {
     if( m_mainType.isEmpty() )
         m_mainType = Soprano::Vocabulary::RDFS::Resource();
@@ -109,6 +112,7 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
 
 Nepomuk::ResourceData::~ResourceData()
 {
+    delete m_pimoThing;
     --s_dataCnt;
 }
 
@@ -389,6 +393,21 @@ bool Nepomuk::ResourceData::load()
             }
 
             m_cacheDirty = false;
+
+            if( hasType( Vocabulary::PIMO::Thing() ) ) {
+                m_pimoThing = new Thing( m_uri );
+            }
+            else {
+                // TODO: somehow handle pimo:referencingOccurrence and pimo:occurrence
+                QueryResultIterator pimoIt = model->executeQuery( QString( "select ?r where { ?r <%1> <%2> . }")
+                                                                  .arg( Vocabulary::PIMO::groundingOccurrence().toString() )
+                                                                  .arg( QString::fromAscii( m_uri.toEncoded() ) ),
+                                                                  Soprano::Query::QueryLanguageSparql );
+                if( pimoIt.next() ) {
+                    m_pimoThing = new Thing( pimoIt.binding("r").uri() );
+                }
+            }
+
             return true;
         }
         else {
@@ -828,6 +847,14 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceData::allResourceData()
 bool Nepomuk::ResourceData::dataCacheFull()
 {
     return s_dataCnt >= 1000;
+}
+
+
+Nepomuk::Thing Nepomuk::ResourceData::pimoThing()
+{
+    if( !m_pimoThing )
+        m_pimoThing = new Thing();
+    return *m_pimoThing;
 }
 
 #include "resourcedata.moc"

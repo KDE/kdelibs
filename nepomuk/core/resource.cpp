@@ -23,6 +23,7 @@
 #include "resourcemanager.h"
 #include "tools.h"
 #include "tag.h"
+#include "pimo.h"
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -357,6 +358,17 @@ QString Nepomuk::Resource::genericIcon() const
     }
 
     return QString();
+}
+
+
+Nepomuk::Thing Nepomuk::Resource::pimoThing()
+{
+    Thing thing = m_data->pimoThing();
+    if( !thing.isValid() ) {
+        // make it valid
+        thing.setProperty( Vocabulary::PIMO::groundingOccurrence(), *this );
+    }
+    return thing;
 }
 
 

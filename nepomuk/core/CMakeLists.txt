@@ -28,6 +28,7 @@ set(nepomuk_LIB_SRCS
   ui/kratingpainter.cpp
   ui/nepomukmassupdatejob.cpp
   resource.cpp
+  thing.cpp
   tag.cpp
   ontology/entity.cpp
   ontology/ontology.cpp
@@ -42,6 +43,7 @@ set(nepomuk_LIB_SRCS
   ontology/global.cpp
   ontology/entitymanager.cpp
   nie.cpp
+  pimo.cpp
   nepomukservice.cpp
 )
 
@@ -75,6 +77,7 @@ install(FILES
   tools.h
   nepomukservice.h
   resource.h
+  thing.h
   tag.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )

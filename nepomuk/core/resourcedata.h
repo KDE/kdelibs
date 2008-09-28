@@ -27,6 +27,7 @@
 #include <QtCore/QMutex>
 
 #include "variant.h"
+#include "thing.h"
 
 #include <soprano/statement.h>
 
@@ -149,6 +150,8 @@ namespace Nepomuk {
 
         void invalidateCache() { m_cacheDirty = true; }
 
+        Thing pimoThing();
+
         /**
          * Compares the properties of two ResourceData objects taking into account the Deleted flag
          */
@@ -222,6 +225,8 @@ namespace Nepomuk {
 
         // used to prevent countless model operations in store()
         bool m_initialTypeSaved;
+
+        Thing* m_pimoThing;
 
         friend class ResourceManager;
     };
