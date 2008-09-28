@@ -331,10 +331,31 @@ void KXMLGUIFactoryPrivate::refreshActionProperties(KXMLGUIClient *client, QDomD
 
 void KXMLGUIFactoryPrivate::saveDefaultActionProperties(KXMLGUIClient *client)
 {
+    // This method is called once during application initialization. At this
+    // point no user configured shortcut were loaded. Therefore we expect all
+    // shortcuts we encounter to have empty custom shortcuts.
     foreach (QAction *action, client->actionCollection()->actions())
     {
         if (KAction* kaction = qobject_cast<KAction*>(action))
-            kaction->setProperty("DefaultShortcut", kaction->shortcut(KAction::DefaultShortcut));
+        {
+            // Check if the default shortcut is set
+            KShortcut defaultShortcut = kaction->shortcut(KAction::DefaultShortcut);
+            KShortcut activeShortcut  = kaction->shortcut(KAction::ActiveShortcut);
+
+            // Check if we have an empty default shortcut and an non empty
+            // custom shortcut. This should only happen if a developer called
+            // QAction::setShortcut on an KAction. Print out a warning and
+            // correct the mistake
+            if ((!activeShortcut.isEmpty()) && defaultShortcut.isEmpty())
+            {
+                kError() << "Shortcut for KAction " << kaction->objectName() << kaction->text() << "set with QShortcut::setShortcut()! See KAction documentation.";
+                kaction->setProperty("DefaultShortcut", activeShortcut);
+            }
+            else
+            {
+                kaction->setProperty("DefaultShortcut", defaultShortcut);
+            }
+        }
     }
 }
 
