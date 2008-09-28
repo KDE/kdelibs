@@ -894,6 +894,7 @@ install(FILES
   Nepomuk/Tag
   Nepomuk/Tools
   Nepomuk/Variant
+  Nepomuk/Thing
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk )
 
 
