@@ -86,9 +86,13 @@ void KShortcutsEditorDelegate::stealShortcut(
             // We found the action, snapshot the current state. Steal the
             // shortcut. We will save the change later.
             KShortcut cut = action->shortcut();
-            if (cut.primary() == seq) {
+            if (   cut.primary().matches(seq) != QKeySequence::NoMatch
+                || seq.matches(cut.primary()) != QKeySequence::NoMatch) {
                 item->setKeySequence(LocalPrimary, QKeySequence());
-            } else {
+            }
+
+            if (   cut.alternate().matches(seq) != QKeySequence::NoMatch
+                || seq.matches(cut.alternate()) != QKeySequence::NoMatch) {
                 item->setKeySequence(LocalAlternate, QKeySequence());
             }
             break;

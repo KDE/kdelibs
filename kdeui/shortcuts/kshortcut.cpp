@@ -151,6 +151,34 @@ bool KShortcut::contains(const QKeySequence &needle) const
     return d->primary == needle || d->alternate == needle;
 }
 
+bool KShortcut::conflictsWith(const QKeySequence &needle) const
+{
+    if (needle.isEmpty())
+        return false;
+
+    bool primaryConflicts = false;
+    bool alternateConflicts = false;
+
+    if (!d->primary.isEmpty()) {
+        primaryConflicts = 
+            (    d->primary.matches(needle) == QKeySequence::NoMatch
+              && needle.matches(d->primary) == QKeySequence::NoMatch )
+            ? false
+            : true;
+    }
+
+    if (!d->alternate.isEmpty()) {
+        alternateConflicts= 
+            (    d->alternate.matches(needle) == QKeySequence::NoMatch
+              && needle.matches(d->alternate) == QKeySequence::NoMatch )
+            ? false
+            : true;
+    }
+
+    return primaryConflicts || alternateConflicts;
+}
+
+
 void KShortcut::setPrimary(const QKeySequence &newPrimary)
 {
     d->primary = newPrimary;

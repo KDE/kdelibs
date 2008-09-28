@@ -156,6 +156,12 @@ public:
      */
     bool contains(const QKeySequence &needle) const;
 
+    /**
+     * Returns whether at least one of the key sequences conflicts witho @p needle.
+     * @return whether this shortcut conflicts with @p needle
+     */
+    bool conflictsWith(const QKeySequence &needle) const;
+
    /**
      * Returns a description of the shortcut as a semicolon-separated
      * list of key sequences, as returned by QKeySequence::toString().

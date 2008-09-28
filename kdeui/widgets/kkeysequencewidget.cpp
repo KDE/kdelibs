@@ -150,8 +150,12 @@ KKeySequenceWidgetPrivate::KKeySequenceWidgetPrivate(KKeySequenceWidget *q)
 bool KKeySequenceWidgetPrivate::stealShortcut(QAction *item, const QKeySequence &seq)
 {
 	QString title = i18n("Key Conflict");
-	QString message = i18n("The '%1' key combination has already been allocated to the \"%2\" action.\n"
-            "Do you want to reassign it from that action to the current one?", seq.toString(QKeySequence::NativeText), item->text().remove('&'));
+	QString message = i18n(
+			"The \"%1\" key sequence conflicts with \"%2\" for the \"%3\" action.\n"
+			"Do you want to assign an empty shortcut to that action?",
+			seq.toString(QKeySequence::NativeText),
+			item->shortcut().toString(),
+			item->text().remove('&'));
 
 	if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign"))) != KMessageBox::Continue)
 		return false;
@@ -418,7 +422,7 @@ bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &k
 	foreach(QAction * qaction , allActions ) {
 		KAction *kaction=qobject_cast<KAction*>(qaction);
 		if(kaction) {
-			if(kaction->shortcut().contains(keySequence)) {
+			if(kaction->shortcut().conflictsWith(keySequence)) {
 				// A conflict with a KAction. If that action is configurable
 				// ask the user what to do. If not reject this keySequence.
 				if(kaction->isShortcutConfigurable ()) {
