@@ -428,11 +428,13 @@ void DeleteJob::slotResult( KJob *job )
             return;
         }
 
-        const UDSEntry entry = static_cast<StatJob*>(job)->statResult();
-        // Is it a file or a dir ?
-        const bool isLink = entry.isLink();
-        const bool isDir = entry.isDir();
-        d->currentSourceStated(isDir, isLink);
+        if (StatJob *statJob = qobject_cast<StatJob*>(job)) {
+            const UDSEntry entry = statJob->statResult();
+            // Is it a file or a dir ?
+            const bool isLink = entry.isLink();
+            const bool isDir = entry.isDir();
+            d->currentSourceStated(isDir, isLink);
+        }
 
         removeSubjob( job );
 
