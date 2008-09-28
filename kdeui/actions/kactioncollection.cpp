@@ -220,25 +220,51 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     if (!action)
         return action;
 
-    const QString origName = action->objectName();
-    QString index_name = name;
+    const QString objectName = action->objectName();
+    QString indexName = name;
 
-    if (index_name.isEmpty())
-        index_name = action->objectName();
-    else
-        action->setObjectName(index_name);
+    if (indexName.isEmpty()) {
+        // No name provided. Use the objectName.
+        indexName = objectName;
+    } else {
+        // A name was provided. Check against objectName
+        if ((!objectName.isEmpty()) && (indexName != objectName)) {
+            KAction *kaction = qobject_cast<KAction*>(action);
+            // The user specified a new name and the action already has a
+            // different one. The objectName is used for saving shortcut
+            // settings to disk. Both for local and global shortcuts.
+            kDebug(125) << "Registering action " << objectName << " under new name " << indexName;
+            // If there is a global shortcuts it's a very bad idea.
+            if (kaction && kaction->isGlobalShortcutEnabled()) {
+                // In debug mode assert
+                Q_ASSERT(!kaction->isGlobalShortcutEnabled());
+                // In release mode keep the old name
+                kError() << "Changing action name from " << objectName << " to " << indexName << "\nignored because of active global shortcut.";
+                indexName = objectName;
+            }
+        } else {
+            // No old name. Use the new one
+            action->setObjectName(indexName);
+        }
+    }
 
-    if( index_name.isEmpty() )
-        index_name = index_name.sprintf("unnamed-%p", (void*)action);
+    // No name provided and the action had no name. Make one up. This will not
+    // work when trying to save shortcuts. Both local and global shortcuts
+    if( indexName.isEmpty() ) {
+        // An action has to have a reliable objectName. Else saving shortcuts
+        // will fail miserably
+        Q_ASSERT(!indexName.isEmpty());
+        indexName = indexName.sprintf("unnamed-%p", (void*)action);
+    }
 
     // look if we already have THIS action under THIS name ;)
-    if (d->actionByName.value(index_name, 0) == action ) {
+    if (d->actionByName.value(indexName, 0) == action ) {
         // This is not a multi map!
-        Q_ASSERT( d->actionByName.count(index_name)==1);
+        Q_ASSERT( d->actionByName.count(indexName)==1);
         return action;
     }
 
-    if (!KAuthorized::authorizeKAction(index_name)) {
+    if (!KAuthorized::authorizeKAction(indexName)) {
       // Disable this action
       action->setEnabled(false);
       action->setVisible(false);
@@ -246,7 +272,7 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     }
 
     // Check if we have another action under this name
-    if (QAction *oldAction = d->actionByName.value(index_name)) {
+    if (QAction *oldAction = d->actionByName.value(indexName)) {
       takeAction(oldAction);
     }
 
@@ -255,12 +281,12 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     // and because it has the new name already.
     const int oldIndex = d->actions.indexOf(action);
     if (oldIndex != -1) {
-        d->actionByName.remove(origName);
+        d->actionByName.remove(objectName);
         d->actions.removeAt(oldIndex);
     }
 
     // Add action to our lists.
-    d->actionByName.insert(index_name, action);
+    d->actionByName.insert(indexName, action);
     d->actions.append(action);
 
     foreach (QWidget* widget, d->associatedWidgets) {
@@ -315,6 +341,9 @@ KAction *KActionCollection::addAction(KStandardAction::StandardAction actionType
                                       const QObject *receiver, const char *member)
 {
   KAction *action = KStandardAction::create(actionType, receiver, member, this);
+  // Reset the objectName so we don't trigger the warning about changing a
+  // objectName. It's safe here
+  action->setObjectName(name);
   return addAction(name, action);
 }
 
