@@ -47,8 +47,8 @@
 #include <kactioncollection.h>
 #include <kdeuiwidgetsproxystyle_p.h>
 #include <kurl.h>
-#include <KDesktopFile>
-#include <KConfigGroup>
+#include <kdesktopfile.h>
+#include <kconfiggroup.h>
 #include <kstandarddirs.h>
 #include <kdialog.h>
 #include <kbuildsycocaprogressdialog.h>
