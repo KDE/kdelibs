@@ -706,7 +706,7 @@ void KFileWidget::slotOk()
         if (!(mode & KFile::Directory) && (!KUrl::isRelativeUrl(locationEditCurrentText) ||
                                            QDir::isAbsolutePath(locationEditCurrentText))) {
             KUrl _url(locationEditCurrentText);
-            KUrl url(_url);
+            KUrl url(_url.path(KUrl::RemoveTrailingSlash));
             url.setFileName(QString());
             d->ops->setUrl(url, true);
             d->locationEdit->lineEdit()->setText(_url.fileName());
