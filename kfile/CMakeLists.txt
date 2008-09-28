@@ -23,6 +23,7 @@ set(kfile_LIB_SRCS
   kfileplacesselector.cpp
   kfileplacesview.cpp
   kfileplaceeditdialog.cpp
+  kfilepreviewgenerator.cpp
   kprotocolcombo.cpp
   kurlbutton.cpp
   kurldropdownbutton.cpp
@@ -53,6 +54,7 @@ install( FILES
   kfilefiltercombo.h
   kfileplacesmodel.h
   kfileplacesview.h
+  kfilepreviewgenerator.h
   kfiletreeview.h
   kfilewidget.h
   kurlnavigator.h
