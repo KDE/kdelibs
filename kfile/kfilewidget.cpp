@@ -185,8 +185,6 @@ public:
 
     KUrl::List urlList; //the list of selected urls
 
-    QStringList mimetypes; //the list of possible mimetypes to save as
-
     // caches the speed bar width. This value will be updated when the splitter
     // is moved. This allows us to properly set a value when the dialog itself
     // is resized
@@ -558,7 +556,6 @@ QString KFileWidget::currentFilter() const
 void KFileWidget::setMimeFilter( const QStringList& mimeTypes,
                                  const QString& defaultType )
 {
-    d->mimetypes = mimeTypes;
     d->filterWidget->setMimeFilter( mimeTypes, defaultType );
 
     QStringList types = d->filterWidget->currentFilter().split(" ",QString::SkipEmptyParts); //QStringList::split(" ", d->filterWidget->currentFilter());
@@ -574,7 +571,6 @@ void KFileWidget::setMimeFilter( const QStringList& mimeTypes,
 
 void KFileWidget::clearFilter()
 {
-    d->mimetypes.clear();
     d->filterWidget->setFilter( QString() );
     d->ops->clearFilter();
     d->hasDefaultFilter = false;
@@ -586,12 +582,10 @@ void KFileWidget::clearFilter()
 QString KFileWidget::currentMimeFilter() const
 {
     int i = d->filterWidget->currentIndex();
-    if (d->filterWidget->showsAllTypes())
-        i--;
+    if (d->filterWidget->showsAllTypes() && i == 0)
+        return QString(); // The "all types" item has no mimetype
 
-    if ((i >= 0) && (i < (int) d->mimetypes.count()))
-        return d->mimetypes[i];
-    return QString(); // The "all types" item has no mimetype
+    return d->filterWidget->filters()[i];
 }
 
 KMimeType::Ptr KFileWidget::currentFilterMimeType()
