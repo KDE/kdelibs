@@ -532,6 +532,7 @@ void KDirModelTest::testUrlWithRef() // #171117
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
 
+    QCOMPARE(dirLister->url().url(), url.url(KUrl::RemoveTrailingSlash));
     m_dirIndex = QModelIndex();
     m_fileIndex = QModelIndex();
     m_secondFileIndex = QModelIndex();
