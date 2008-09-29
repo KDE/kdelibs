@@ -162,7 +162,8 @@ void KDirModelTest::testRowCount()
 {
     const int topLevelRowCount = m_dirModel.rowCount();
     QCOMPARE(topLevelRowCount, m_topLevelFileNames.count() + 1 /*subdir*/);
-    QCOMPARE(m_dirModel.rowCount(m_dirIndex), 3);
+    const int subdirRowCount = m_dirModel.rowCount(m_dirIndex);
+    QCOMPARE(subdirRowCount, 3);
 }
 
 void KDirModelTest::testIndex()
@@ -329,7 +330,6 @@ void KDirModelTest::testModifyFile()
     const QString file = m_tempDir->name() + "toplevelfile_2";
     const KUrl url(file);
 
-    qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
     QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
     connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(quit()) );
@@ -363,7 +363,6 @@ void KDirModelTest::testRenameFile()
     const QString newFile = m_tempDir->name() + "toplevelfile_2_renamed";
     const KUrl newUrl(newFile);
 
-    qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
     QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
     connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(quit()) );
@@ -520,6 +519,39 @@ void KDirModelTest::testFilter()
     // The order of things changed because of filtering.
     // Fill again, so that m_fileIndex etc. are correct again.
     fillModel(true);
+}
+
+void KDirModelTest::testUrlWithRef() // #171117
+{
+    const QString path = m_tempDir->name();
+    KDirLister* dirLister = m_dirModel.dirLister();
+    KUrl url(path);
+    url.setRef("ref");
+    QVERIFY(url.url().endsWith("#ref"));
+    dirLister->openUrl(url, KDirLister::NoFlags);
+    connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+    enterLoop();
+
+    QCOMPARE(dirLister->url().url(), url.url(KUrl::RemoveTrailingSlash));
+    m_dirIndex = QModelIndex();
+    m_fileIndex = QModelIndex();
+    m_secondFileIndex = QModelIndex();
+    for (int row = 0; row < m_topLevelFileNames.count() + 1 /*subdir*/; ++row) {
+        QModelIndex idx = m_dirModel.index(row, 0, QModelIndex());
+        KFileItem item = m_dirModel.itemForIndex(idx);
+        if (item.isDir())
+            m_dirIndex = idx;
+        else if (item.url().fileName() == "toplevelfile_1")
+            m_fileIndex = idx;
+        else if (item.url().fileName() == "toplevelfile_2")
+            m_secondFileIndex = idx;
+        else if (item.url().fileName().startsWith("special"))
+            m_specialFileIndex = idx;
+    }
+    QVERIFY(m_dirIndex.isValid());
+    QVERIFY(m_fileIndex.isValid());
+    QVERIFY(m_secondFileIndex.isValid());
+    QVERIFY(m_specialFileIndex.isValid());
 }
 
 void KDirModelTest::testDeleteFile()
