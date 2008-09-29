@@ -26,7 +26,6 @@
 #include "kdirwatch.h"
 #include "kprotocolmanager.h"
 #include "jobuidelegate.h"
-#include "netaccess.h"
 #include <kdirnotify.h>
 #include <kuiserverjobtracker.h>
 
@@ -393,11 +392,11 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
             state = DELETEJOB_STATE_LISTING;
             ListJob *newjob = KIO::listRecursive(url, KIO::HideProgressInfo);
             newjob->setUnrestricted(true); // No KIOSK restrictions
+            Scheduler::scheduleJob(newjob);
             QObject::connect(newjob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList&)),
                              q, SLOT(slotEntries(KIO::Job*,const KIO::UDSEntryList&)));
-            // Force the list job to happen _right now_ and block the rest of stat jobs. This will
-            // make this code to have a defined state. Otherwise we can hit bad castings.
-            NetAccess::synchronousRun(newjob, 0);
+            q->addSubjob(newjob);
+            // Note that this listing job will happen in parallel with other stat jobs.
         }
     } else {
         if (isLink) {
