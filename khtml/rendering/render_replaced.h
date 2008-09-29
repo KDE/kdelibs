@@ -92,6 +92,7 @@ public:
     virtual void layout( );
 
     virtual void updateFromElement();
+    virtual void handleFocusOut() {}
 
     QWidget *widget() const { return m_widget; }
     KHTMLView* view() const { return m_view; }
@@ -105,6 +106,7 @@ public:
     virtual bool handleEvent(const DOM::EventImpl& ev);
     bool isRedirectedWidget() const;
     bool isDisabled() const { return m_widget && !m_widget->isEnabled(); }
+    
 
 #ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
@@ -137,7 +139,7 @@ protected:
     }
     virtual bool acceptsSyntheticEvents() const { return true; }
 
-    virtual void handleFocusOut() {}
+
     bool event( QEvent *e );
 
     bool eventFilter(QObject* /*o*/, QEvent* e);

@@ -256,6 +256,7 @@ public:
     virtual void updateFromElement();
     virtual void setStyle(RenderStyle *style);
     virtual short baselinePosition( bool ) const;
+    virtual void handleFocusOut();
 
     void select();
 
@@ -273,7 +274,6 @@ public Q_SLOTS:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
 protected:
-    virtual void handleFocusOut();
 
 private:
     virtual bool isEditable() const { return true; }
