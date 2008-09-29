@@ -733,24 +733,25 @@ QModelIndex KDirModel::index( int row, int column, const QModelIndex & parent ) 
 
 QVariant KDirModel::headerData( int section, Qt::Orientation orientation, int role ) const
 {
-    Q_UNUSED(orientation);
-    switch (role) {
-    case Qt::DisplayRole:
-        switch (section) {
-        case Name:
-            return i18nc("@title:column","Name");
-        case Size:
-            return i18nc("@title:column","Size");
-        case ModifiedTime:
-            return i18nc("@title:column","Date");
-        case Permissions:
-            return i18nc("@title:column","Permissions");
-        case Owner:
-            return i18nc("@title:column","Owner");
-        case Group:
-            return i18nc("@title:column","Group");
-        case Type:
-            return i18nc("@title:column","Type");
+    if (orientation == Qt::Horizontal) {
+        switch (role) {
+        case Qt::DisplayRole:
+            switch (section) {
+            case Name:
+                return i18nc("@title:column","Name");
+            case Size:
+                return i18nc("@title:column","Size");
+            case ModifiedTime:
+                return i18nc("@title:column","Date");
+            case Permissions:
+                return i18nc("@title:column","Permissions");
+            case Owner:
+                return i18nc("@title:column","Owner");
+            case Group:
+                return i18nc("@title:column","Group");
+            case Type:
+                return i18nc("@title:column","Type");
+            }
         }
     }
     return QVariant();
