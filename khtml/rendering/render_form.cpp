@@ -606,8 +606,7 @@ bool WebShortcutCreator::createWebShortcut(QString query)
                     foreach ( QString t, keys ) {
                         if ( s == t ) {
                             KDialog *d = new KDialog();
-                            d->setMainWidget( new QLabel(s + i18n( " is already assigned to " )
-                                                         + provider->name() ) );
+                            d->setMainWidget( new QLabel( i18n( "%1 is already assigned to %2", s, provider->name() ) ) );
                             d->setCaption( i18n( "Error" ) );
                             d->setButtons( KDialog::Ok );
                             d->exec();
