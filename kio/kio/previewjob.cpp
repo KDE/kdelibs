@@ -74,7 +74,7 @@ public:
     PreviewJob *q;
 
     KFileItemList initialItems;
-    const QStringList *enabledPlugins;
+    QStringList enabledPlugins;
     // Our todo list :)
     // We remove the first item at every step, so use QLinkedList
     QLinkedList<PreviewItem> items;
@@ -139,7 +139,7 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     d->shmid = -1;
     d->shmaddr = 0;
     d->initialItems = items;
-    d->enabledPlugins = enabledPlugins;
+    d->enabledPlugins = *enabledPlugins;
     d->width = width;
     d->height = height ? height : width;
     d->cacheWidth = d->width;
@@ -175,7 +175,7 @@ void PreviewJobPrivate::startPreview()
     QMap<QString, KService::Ptr> mimeMap;
 
     for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it) {
-        if (!enabledPlugins || enabledPlugins->contains((*it)->desktopEntryName()))
+        if (enabledPlugins.isEmpty() || enabledPlugins.contains((*it)->desktopEntryName()))
     {
         const QStringList mimeTypes = (*it)->serviceTypes();
         for (QStringList::ConstIterator mt = mimeTypes.begin(); mt != mimeTypes.end(); ++mt)
