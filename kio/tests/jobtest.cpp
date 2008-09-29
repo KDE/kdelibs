@@ -1105,20 +1105,32 @@ void JobTest::deleteDirectory()
     QVERIFY(!QFile::exists(dest));
 }
 
-void JobTest::deleteTwoDirs()
+void JobTest::deleteManyDirs(bool using_fast_path)
 {
-    const QString dir1 = homeTmpDir() + "dir1";
-    createTestDirectory(dir1);
-    const QString dir2 = homeTmpDir() + "dir2";
-    createTestDirectory(dir2);
+    extern KIO_EXPORT bool kio_resolve_local_urls;
+    kio_resolve_local_urls = !using_fast_path;
+
     KUrl::List dirs;
-    dirs << dir1 << dir2;
+    for (int i = 0; i < 50; ++i) {
+        const QString dir = homeTmpDir() + "dir" + QString::number(i);
+        createTestDirectory(dir);
+        dirs << KUrl(dir);
+    }
     KIO::Job* job = KIO::del(dirs, KIO::HideProgressInfo);
     job->setUiDelegate(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY(ok);
-    QVERIFY(!QFile::exists(dir1));
-    QVERIFY(!QFile::exists(dir2));
+    Q_FOREACH(const KUrl& dir, dirs) {
+        QVERIFY(!QFile::exists(dir.path()));
+    }
+
+    kio_resolve_local_urls = true;
+}
+
+void JobTest::deleteManyDirs()
+{
+    deleteManyDirs(true);
+    deleteManyDirs(false);
 }
 
 static void createManyFiles(const QString& baseDir, int numFiles)
@@ -1151,8 +1163,11 @@ void JobTest::deleteManyFilesIndependently()
     kDebug() << "Deleted" << numFiles << "files in" << dt.elapsed() << "milliseconds";
 }
 
-void JobTest::deleteManyFilesTogether()
+void JobTest::deleteManyFilesTogether(bool using_fast_path)
 {
+    extern KIO_EXPORT bool kio_resolve_local_urls;
+    kio_resolve_local_urls = !using_fast_path;
+
     QTime dt;
     dt.start();
     const int numFiles = 100; // Use 1000 for performance testing
@@ -1171,6 +1186,14 @@ void JobTest::deleteManyFilesTogether()
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY(ok);
     kDebug() << "Deleted" << numFiles << "files in" << dt.elapsed() << "milliseconds";
+
+    kio_resolve_local_urls = true;
+}
+
+void JobTest::deleteManyFilesTogether()
+{
+    deleteManyFilesTogether(true);
+    deleteManyFilesTogether(false);
 }
 
 void JobTest::stat()
