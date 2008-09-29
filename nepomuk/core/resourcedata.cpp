@@ -394,6 +394,7 @@ bool Nepomuk::ResourceData::load()
 
             m_cacheDirty = false;
 
+            delete m_pimoThing;
             if( hasType( Vocabulary::PIMO::Thing() ) ) {
                 m_pimoThing = new Thing( m_uri );
             }
@@ -852,6 +853,7 @@ bool Nepomuk::ResourceData::dataCacheFull()
 
 Nepomuk::Thing Nepomuk::ResourceData::pimoThing()
 {
+    load();
     if( !m_pimoThing )
         m_pimoThing = new Thing();
     return *m_pimoThing;
