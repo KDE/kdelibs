@@ -288,7 +288,7 @@ public:
      */
     KFileItemList m_dispatchedItems;
 
-    QStringList *m_enabledPlugins;
+    QStringList m_enabledPlugins;
 
 private:
     KFilePreviewGenerator* const q;
@@ -314,7 +314,6 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
     m_previews(),
     m_pendingItems(),
     m_dispatchedItems(),
-    m_enabledPlugins(0),
     q(parent)
 {
     if (!m_viewAdapter->iconSize().isValid()) {
@@ -355,7 +354,6 @@ KFilePreviewGenerator::Private::~Private()
         m_mimeTypeResolver->deleteLater();
         m_mimeTypeResolver = 0;
     }
-    delete m_enabledPlugins;
 }
 
 void KFilePreviewGenerator::Private::generatePreviews(const KFileItemList& items)
@@ -701,7 +699,7 @@ void KFilePreviewGenerator::Private::startPreviewJob(const KFileItemList& items)
     // do a downscaling anyhow because of the frame, only the provided
     // cache sizes are requested.
     const int cacheSize = (size.width() > 128) || (size.height() > 128) ? 256 : 128;
-    KIO::PreviewJob* job = KIO::filePreview(items, cacheSize, cacheSize, 0, 70, true, true, m_enabledPlugins);
+    KIO::PreviewJob* job = KIO::filePreview(items, cacheSize, cacheSize, 0, 70, true, true, &m_enabledPlugins);
     connect(job, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
             q, SLOT(addToPreviewQueue(const KFileItem&, const QPixmap&)));
     connect(job, SIGNAL(finished(KJob*)),
@@ -882,23 +880,12 @@ void KFilePreviewGenerator::cancelPreviews()
 
 void KFilePreviewGenerator::setEnabledPlugins(const QStringList& plugins)
 {
-    if (plugins.isEmpty()) {
-        delete d->m_enabledPlugins;
-        d->m_enabledPlugins = 0;
-    } else if (d->m_enabledPlugins) {
-        *d->m_enabledPlugins = plugins;
-    } else {
-        d->m_enabledPlugins = new QStringList(plugins);
-    }
+    d->m_enabledPlugins = plugins;
 }
 
 QStringList KFilePreviewGenerator::enabledPlugins() const
 {
-    if (d->m_enabledPlugins) {
-        return *d->m_enabledPlugins;
-    } else {
-        return QStringList();
-    }
+    return d->m_enabledPlugins;
 }
 
 #include "kfilepreviewgenerator.moc"
