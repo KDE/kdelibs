@@ -603,20 +603,25 @@ bool WebShortcutCreator::createWebShortcut(QString query)
     QString name = i18n( "New Web Shortcut" );
     QString keys;
     if ( askData( name, keys ) ) {
-        bool isOk = true;
+        bool isOk;
         do { //It's going to be checked if the keys have already been assigned
+            isOk = true;
             QStringList keyList( keys.split( ',' ) );
             KService::List providers = KServiceTypeTrader::self()->query( "SearchProvider" );
             foreach ( KService::Ptr provider, providers ) {
+                if ( !isOk ) {
+                    break;
+                }
                 foreach ( QString s, provider->property( "Keys" ).toStringList() ) {
+                    if ( !isOk ) {
+                        break;
+                    }
                     foreach ( QString t, keys ) {
+                        if ( !isOk ) {
+                            break;
+                        }
                         if ( s == t ) {
-                            KDialog *d = new KDialog();
-                            d->setMainWidget( new QLabel( i18n( "%1 is already assigned to %2", s, provider->name() ) ) );
-                            d->setCaption( i18n( "Error" ) );
-                            d->setButtons( KDialog::Ok );
-                            d->exec();
-                            delete d;
+                            KMessageBox::sorry( 0, i18n( "%1 is already assigned to %2", s, provider->name() ), i18n( "Error" ) )
                             isOk = false; 
                         }
                     }
