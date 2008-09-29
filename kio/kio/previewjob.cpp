@@ -139,7 +139,7 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     d->shmid = -1;
     d->shmaddr = 0;
     d->initialItems = items;
-    d->enabledPlugins = *enabledPlugins;
+    d->enabledPlugins = enabledPlugins ? *enabledPlugins : QStringList();
     d->width = width;
     d->height = height ? height : width;
     d->cacheWidth = d->width;
