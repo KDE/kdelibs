@@ -84,6 +84,13 @@ namespace Nepomuk {
         Thing( const QString& uriOrName, const QUrl& pimoType = QUrl() );
 
         /**
+         * Copy constructor.
+         *
+         * \param other the resoruce to construct the Thing from.
+         */
+        Thing( const Resource& other );
+
+        /**
          * Desctructor
          */
         ~Thing();

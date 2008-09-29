@@ -37,6 +37,13 @@ Nepomuk::Thing::Thing( const QString& uriOrName, const QUrl& pimoType )
 }
 
 
+Nepomuk::Thing::Thing( const Resource& other )
+    : Resource( other )
+{
+    // FIXME: s.o.
+}
+
+
 Nepomuk::Thing::~Thing()
 {
 }
