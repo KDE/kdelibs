@@ -39,20 +39,9 @@ ghostview.cpp
 kde4_add_executable(ghostviewtest TEST ${ghostviewtest_SRCS})
 target_link_libraries(ghostviewtest  ${KDE4_KPARTS_LIBS} )
 
-########### kpartloader ###############
-
-set(kpartloader_SRCS
- kpartloader.cpp
-)
-
-kde4_add_executable(kpartloader ${kpartloader_SRCS})
-target_link_libraries(kpartloader ${KDE4_KPARTS_LIBS})
-install(FILES kpartloaderui.rc DESTINATION ${DATA_INSTALL_DIR}/kpartloader)
-
 ########### next target ###############
 
 set(spellcheckplugin_PART_SRCS plugin_spellcheck.cpp )
-
 
 kde4_add_plugin(spellcheckplugin ${spellcheckplugin_PART_SRCS})
 
