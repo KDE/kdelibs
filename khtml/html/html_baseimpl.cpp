@@ -731,6 +731,7 @@ void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
     {
         m_frame = (!attr->val() || attr->value().toInt() > 0);
         if (attached()) updateFrame();
+        break;
     }
     default:
         HTMLFrameElementImpl::parseAttribute( attr );

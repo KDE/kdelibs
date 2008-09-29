@@ -824,7 +824,8 @@ static bool startAndEndLineNodesIncludingNode(NodeImpl *node, int offset, Select
         while (renderNode && renderNode->isInline())
             renderNode = renderNode->parent();
 
-        renderNode = renderNode->firstChild();
+        if (renderNode)
+            renderNode = renderNode->firstChild();
 
         NodeImpl *startNode = 0;
         NodeImpl *endNode = 0;

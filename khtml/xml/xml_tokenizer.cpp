@@ -499,8 +499,7 @@ void XMLTokenizer::finish()
         // fact we are using a known tag set)
         doc->appendChild(html,exceptioncode);
         html->appendChild(body,exceptioncode);
-        if ( body )
-            body->appendChild(h1,exceptioncode);
+        body->appendChild(h1,exceptioncode);
         h1->appendChild(headingText,exceptioncode);
         body->appendChild(errorText,exceptioncode);
         body->appendChild(hr,exceptioncode);

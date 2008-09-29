@@ -478,9 +478,10 @@ void ProcessingInstructionImpl::setStyleSheet(CSSStyleSheetImpl* sheet)
     if (m_sheet)
         m_sheet->deref();
     m_sheet = sheet;
-    if (m_sheet)
+    if (m_sheet) {
         m_sheet->ref();
-    m_sheet->setTitle(m_title);
+        m_sheet->setTitle(m_title);
+    }
 }
 
 DOMString ProcessingInstructionImpl::toString() const
