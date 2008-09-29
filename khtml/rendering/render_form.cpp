@@ -608,7 +608,7 @@ bool WebShortcutCreator::createWebShortcut(QString query)
                             KDialog *d = new KDialog();
                             d->setMainWidget( new QLabel(s + i18n( " is already assigned to " )
                                                          + provider->name() ) );
-                            d->setCaption( "Error" );
+                            d->setCaption( i18n( "Error" ) );
                             d->setButtons( KDialog::Ok );
                             d->exec();
                             delete d;
