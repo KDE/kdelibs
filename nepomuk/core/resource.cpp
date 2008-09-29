@@ -24,6 +24,7 @@
 #include "tools.h"
 #include "tag.h"
 #include "pimo.h"
+#include "thing.h"
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -297,8 +298,14 @@ QString Nepomuk::Resource::genericLabel() const
                     label = property( Soprano::Vocabulary::Xesam::url() ).toString().section( '/', -1 );
 
                     if ( label.isEmpty() ) {
-                        // ugly fallback
-                        label = resourceUri().toString();
+                        QList<Resource> go = property( Vocabulary::PIMO::groundingOccurrence() ).toResourceList();
+                        if( !go.isEmpty() ) {
+                            label = go.first().genericLabel();
+                        }
+                        else {
+                            // ugly fallback
+                            label = resourceUri().toString();
+                        }
                     }
                 }
             }
