@@ -480,6 +480,8 @@ RenderResetButton::RenderResetButton(HTMLInputElementImpl *element)
 
 // -------------------------------------------------------------------------------
 
+namespace khtml {
+
 class CompletionWidget: public KCompletionBox
 {
 public:
@@ -506,6 +508,8 @@ public:
         return ret;
     }
 };
+
+}
 
 LineEditWidget::LineEditWidget(DOM::HTMLInputElementImpl* input, KHTMLView* view, QWidget* parent)
     : KLineEdit(parent), m_input(input), m_view(view)
@@ -574,6 +578,8 @@ void LineEditWidget::slotSpellCheckDone( const QString &s )
     if( s != text() )
         setText( s );
 }
+
+namespace khtml {
 
 /**
   * @internal
@@ -674,6 +680,8 @@ bool WebShortcutCreator::askData(QString &name, QString &keys)
     }
     delete dialog;
     return res;
+}
+
 }
 
 void LineEditWidget::slotCreateWebShortcut()
