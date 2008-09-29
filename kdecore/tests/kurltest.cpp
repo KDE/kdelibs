@@ -530,7 +530,10 @@ void KUrlTest::testPathAndQuery()
 
   KUrl uloc( "file:///home/dfaure/konqtests/Mat%C3%A9riel" );
   QCOMPARE( uloc.encodedPathAndQuery(), QString( "/home/dfaure/konqtests/Mat%C3%A9riel" ) );
+}
 
+void KUrlTest::testUpUrl()
+{
   KUrl url1( "ftp://user%40host.com@ftp.host.com/var/www/" );
   QCOMPARE( url1.user(), QString("user@host.com" ) );
   QCOMPARE( url1.host(), QString("ftp.host.com" ) );
@@ -540,6 +543,12 @@ void KUrlTest::testPathAndQuery()
   QCOMPARE( up.url(), QString("ftp://user%40host.com@ftp.host.com/") );
   up = up.upUrl();
   QCOMPARE( up.url(), QString("ftp://user%40host.com@ftp.host.com/") ); // unchanged
+
+  // Going up from a relative url is not supported (#170695)
+  KUrl invalid("tmp");
+  QVERIFY(invalid.isValid());
+  up = invalid.upUrl();
+  QVERIFY(!up.isValid());
 }
 
 void KUrlTest::testSetFileName() // and addPath

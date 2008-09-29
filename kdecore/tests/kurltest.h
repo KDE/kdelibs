@@ -42,6 +42,7 @@ private Q_SLOTS:
     void testEmptyQueryOrRef();
     void testURLsWithoutPath();
     void testPathAndQuery();
+    void testUpUrl();
     void testSetFileName();
     void testPrettyURL();
     void testIsRelative();

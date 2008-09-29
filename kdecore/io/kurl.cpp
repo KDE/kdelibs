@@ -124,7 +124,7 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
 #define IS_DRIVE_OR_DOUBLESLASH(isletter, char1, char2, colon, slash) \
   ((isletter && char2 == colon) || (char1 == slash && char2 == slash))
 
-// Removes file:/// or file:// or file:/ or / prefix assuming that str 
+// Removes file:/// or file:// or file:/ or / prefix assuming that str
 // is (nonempty) Windows absolute path with a drive letter or double slash.
 // If there was file protocol, the path is decoded from percent encoding
 static QString removeSlashOrFilePrefix(const QString& str)
@@ -132,7 +132,7 @@ static QString removeSlashOrFilePrefix(const QString& str)
   // FIXME this should maybe be replaced with some (faster?)/nicer logic
   const int len = str.length();
   if (str[0]=='f') {
-    if ( len > 10 && str.startsWith( QLatin1String( "file:///" ) ) 
+    if ( len > 10 && str.startsWith( QLatin1String( "file:///" ) )
          && IS_DRIVE_OR_DOUBLESLASH(str[8].isLetter(), str[8], str[9], QLatin1Char(':'), QLatin1Char('/')) )
       return QUrl::fromPercentEncoding( str.toLatin1() ).mid(8);
     else if ( len > 9 && str.startsWith( QLatin1String( "file://" ) )
@@ -1381,12 +1381,15 @@ bool KUrl::cd( const QString& _dir )
 
 KUrl KUrl::upUrl( ) const
 {
+  if (!isValid() || isRelative())
+    return KUrl();
+
   if (!encodedQuery().isEmpty())
   {
      KUrl u(*this);
      u.setEncodedQuery(QByteArray());
      return u;
-  };
+  }
 
   if (!hasSubUrl())
   {
