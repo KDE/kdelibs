@@ -100,8 +100,6 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   // like this we don't have to worry about trailing slashes any further
   KUrl _url(_u);
   _url.cleanPath(); // kill consecutive slashes
-  _url.setQuery(QString()); // kill query
-  _url.setRef(QString()); // kill ref (#171117)
   _url.adjustPath(KUrl::RemoveTrailingSlash);
   const QString urlStr = _url.url();
 

@@ -133,8 +133,20 @@ public:
     bool isDir(KDirModelNode* node) const {
         return (node == m_rootNode) || node->item().isDir();
     }
-    KUrl url(KDirModelNode* node) const {
-        return (node == m_rootNode) ? m_dirLister->url() : node->item().url();
+    KUrl urlForNode(KDirModelNode* node) const {
+        /**
+         * Queries and fragments are removed from the URL, so that the URL of
+         * child items really starts with the URL of the parent.
+         *
+         * For instance ksvn+http://url?rev=100 is the parent for ksvn+http://url/file?rev=100
+         * so we have to remove the query in both to be able to compare the URLs
+         */
+        KUrl url(node == m_rootNode ? m_dirLister->url() : node->item().url());
+        if (url.hasQuery() || url.hasRef()) { // avoid detach if not necessary.
+            url.setQuery(QString());
+            url.setRef(QString()); // kill ref (#171117)
+        }
+        return url;
     }
 
     KDirModel* q;
@@ -154,9 +166,11 @@ KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url, bool returnLastPar
 {
     KUrl url(_url);
     url.adjustPath(KUrl::RemoveTrailingSlash);
+    url.setQuery(QString());
+    url.setRef(QString());
 
     //kDebug(7008) << url;
-    KUrl nodeUrl = m_dirLister->url();
+    KUrl nodeUrl = urlForNode(m_rootNode);
     // For a URL without a path, like "applications:" or "settings://",
     // we want to resolve here "no path" to "/ assumed".
     // We don't do it before (e.g. in KDirLister) because we want to
@@ -297,7 +311,10 @@ void KDirModelPrivate::_k_slotNewItems(const KFileItemList& items)
     // Find parent item - it's the same for all the items
     // TODO (if Michael Brade agrees): add parent url to the newItems signal
     // This way we can finally support properly trees where the urls are using different protocols.
-    KUrl dir( items.first().url().upUrl() );
+    KUrl firstItemUrl = items.first().url();
+    firstItemUrl.setQuery(QString());
+    firstItemUrl.setRef(QString());
+    KUrl dir( firstItemUrl.upUrl() );
     dir.adjustPath(KUrl::RemoveTrailingSlash);
 
     //kDebug(7008) << "dir=" << dir;
@@ -306,10 +323,10 @@ void KDirModelPrivate::_k_slotNewItems(const KFileItemList& items)
     // If the directory containing the items wasn't found, then we have a big problem.
     // Are you calling KDirLister::openUrl(url,true,false)? Please use expandToUrl() instead.
     if (!result) {
-        kError(7008) << "First item has URL" << items.first().url()
+        kError(7008) << "First item has URL" << firstItemUrl
                      << "-> parent directory would be" << dir
                      << "but that directory isn't in KDirModel!"
-                     << "Root directory:" << m_dirLister->url();
+                     << "Root directory:" << urlForNode(m_rootNode);
         Q_ASSERT(result);
     }
     Q_ASSERT(isDir(result));
