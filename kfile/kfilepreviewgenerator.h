@@ -86,6 +86,28 @@ public:
     /** Cancels all pending previews. */
     void cancelPreviews();
 
+    /**
+     * Sets the list of enabled thumbnail plugins.
+     * If the list is empty, all plugins will be enabled.
+     * All plugins are enabled by default.
+     *
+     * Note that this method doesn't cause already generated previews
+     * to be regenerated.
+     *
+     * For a list of available plugins, call KServiceTypeTrader::self()->query("ThumbCreator").
+     *
+     * @see enabledPlugins
+     */
+    void setEnabledPlugins(const QStringList& list);
+
+    /**
+     * Returns the list of enabled thumbnail plugins,
+     * or an empty list if all plugins are enabled.
+     *
+     * @see setEnabledPlugins
+     */
+    QStringList enabledPlugins() const;
+
 private:
     class Private;
     Private* const d; /// @internal
