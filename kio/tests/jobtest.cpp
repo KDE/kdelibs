@@ -1110,12 +1110,15 @@ void JobTest::deleteManyDirs(bool using_fast_path)
     extern KIO_EXPORT bool kio_resolve_local_urls;
     kio_resolve_local_urls = !using_fast_path;
 
+    const int numDirs = 50;
     KUrl::List dirs;
-    for (int i = 0; i < 50; ++i) {
+    for (int i = 0; i < numDirs; ++i) {
         const QString dir = homeTmpDir() + "dir" + QString::number(i);
         createTestDirectory(dir);
         dirs << KUrl(dir);
     }
+    QTime dt;
+    dt.start();
     KIO::Job* job = KIO::del(dirs, KIO::HideProgressInfo);
     job->setUiDelegate(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
@@ -1124,6 +1127,7 @@ void JobTest::deleteManyDirs(bool using_fast_path)
         QVERIFY(!QFile::exists(dir.path()));
     }
 
+    kDebug() << "Deleted" << numDirs << "dirs in" << dt.elapsed() << "milliseconds";
     kio_resolve_local_urls = true;
 }
 
