@@ -48,7 +48,6 @@ namespace KIO
 {
     enum DeleteJobState {
         DELETEJOB_STATE_STATING,
-        DELETEJOB_STATE_LISTING,
         DELETEJOB_STATE_DELETING_FILES,
         DELETEJOB_STATE_DELETING_DIRS
     };
@@ -149,7 +148,6 @@ void DeleteJobPrivate::slotReport()
 
    switch( state ) {
         case DELETEJOB_STATE_STATING:
-        case DELETEJOB_STATE_LISTING:
             q->setTotalAmount(KJob::Bytes, m_totalSize);
             q->setTotalAmount(KJob::Files, files.count());
             q->setTotalAmount(KJob::Directories, dirs.count());
@@ -204,7 +202,7 @@ void DeleteJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
 void DeleteJobPrivate::statNextSrc()
 {
     Q_Q(DeleteJob);
-    //kDebug(7007) << "statNextSrc";
+    //kDebug(7007);
     if (m_currentStat != m_srcList.end()) {
         m_currentURL = (*m_currentStat);
 
@@ -220,13 +218,18 @@ void DeleteJobPrivate::statNextSrc()
         // Stat it
         state = DELETEJOB_STATE_STATING;
 
-        // Fast path for local files
-        // (using a loop, instead of a huge recursion)
-        while(m_currentStat != m_srcList.end() && (*m_currentStat).isLocalFile()) {
-            m_currentURL = (*m_currentStat);
-            QFileInfo fileInfo(m_currentURL.path());
-            currentSourceStated(fileInfo.isDir(), fileInfo.isSymLink());
-            ++m_currentStat;
+        // Hook for unit test to disable the fast path.
+        extern bool kio_resolve_local_urls; // from copyjob.cpp, abused here to save a symbol.
+        if (!kio_resolve_local_urls) {
+
+            // Fast path for local files
+            // (using a loop, instead of a huge recursion)
+            while(m_currentStat != m_srcList.end() && (*m_currentStat).isLocalFile()) {
+                m_currentURL = (*m_currentStat);
+                QFileInfo fileInfo(m_currentURL.path());
+                currentSourceStated(fileInfo.isDir(), fileInfo.isSymLink());
+                ++m_currentStat;
+            }
         }
         if (m_currentStat == m_srcList.end()) {
             // Done, jump to the last else of this method
@@ -234,7 +237,7 @@ void DeleteJobPrivate::statNextSrc()
         } else {
             KIO::SimpleJob * job = KIO::stat( m_currentURL, StatJob::SourceSide, 0, KIO::HideProgressInfo );
             Scheduler::scheduleJob(job);
-            //kDebug(7007) << "KIO::stat (DeleteJob) " << m_currentURL;
+            //kDebug(7007) << "stat'ing" << m_currentURL;
             q->addSubjob(job);
         }
     } else {
@@ -260,7 +263,7 @@ void DeleteJobPrivate::finishedStatPhase()
 void DeleteJobPrivate::deleteNextFile()
 {
     Q_Q(DeleteJob);
-    //kDebug(7007) << "deleteNextFile";
+    //kDebug(7007);
     if ( !files.isEmpty() || !symlinks.isEmpty() )
     {
         SimpleJob *job;
@@ -387,9 +390,7 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
             m_parentDirs.insert(parentDir);
         }
         if (!KProtocolManager::canDeleteRecursive(url)) {
-            //kDebug(7007) << " Target is a directory ";
-            // List it
-            state = DELETEJOB_STATE_LISTING;
+            kDebug(7007) << url << "is a directory, let's list it";
             ListJob *newjob = KIO::listRecursive(url, KIO::HideProgressInfo);
             newjob->setUnrestricted(true); // No KIOSK restrictions
             Scheduler::scheduleJob(newjob);
@@ -419,35 +420,32 @@ void DeleteJob::slotResult( KJob *job )
     switch ( d->state )
     {
     case DELETEJOB_STATE_STATING:
-    {
-        // Was there an error while stating ?
-        if (job->error() )
-        {
-            // Probably : doesn't exist
-            Job::slotResult( job ); // will set the error and emit result(this)
-            return;
-        }
-
-        const UDSEntry entry = static_cast<StatJob*>(job)->statResult();
-        // Is it a file or a dir ?
-        const bool isLink = entry.isLink();
-        const bool isDir = entry.isDir();
-        d->currentSourceStated(isDir, isLink);
-
         removeSubjob( job );
 
-        ++d->m_currentStat;
-        d->statNextSrc();
-    }
-        break;
-    case DELETEJOB_STATE_LISTING:
-        if ( job->error() )
-        {
-            // Try deleting nonetheless, it may be empty (and non-listable)
+        // Was this a stat job or a list job? We do both in parallel.
+        if (StatJob* statJob = qobject_cast<StatJob*>(job)) {
+            // Was there an error while stating ?
+            if (job->error()) {
+                // Probably : doesn't exist
+                Job::slotResult(job); // will set the error and emit result(this)
+                return;
+            }
+
+            const UDSEntry entry = statJob->statResult();
+            // Is it a file or a dir ?
+            const bool isLink = entry.isLink();
+            const bool isDir = entry.isDir();
+            d->currentSourceStated(isDir, isLink);
+
+            ++d->m_currentStat;
+            d->statNextSrc();
+        } else {
+            if (job->error()) {
+                // Try deleting nonetheless, it may be empty (and non-listable)
+            }
+            if (!hasSubjobs())
+                d->finishedStatPhase();
         }
-        removeSubjob( job );
-        if (!hasSubjobs())
-            d->finishedStatPhase();
         break;
     case DELETEJOB_STATE_DELETING_FILES:
         if ( job->error() )
