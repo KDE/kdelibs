@@ -66,13 +66,22 @@ struct componentData
 struct actionData
 {
 //TODO: clear isPresent when an action's application/mainComponent disappears
+
+    //! means the associated application is active.
     bool isPresent:1;
+
+    //! means the shortcut is new
     bool isFresh:1;
+
+    //! The componentData the shortcut belongs to.
     componentData *parent;
+
     QString uniqueName;
     QString friendlyName; //usually localized
     QList<int> keys;
     QList<int> defaultKeys;
+
+    actionData(const QStringList &actionId, componentData *cd);
 };
 
 enum actionIdFields
@@ -82,6 +91,17 @@ enum actionIdFields
     ComponentFriendly = 2,
     ActionFriendly = 3
 };
+
+actionData::actionData(const QStringList &actionId, componentData *cd)
+{
+    Q_ASSERT(actionId.size() >= 4);
+    parent = cd;
+    uniqueName = actionId.at(ActionUnique);
+    friendlyName = actionId.at(ActionFriendly);
+    // Add this action to the component
+    cd->actions.insert(actionId.at(ActionUnique), this);
+}
+
 
 
 //Consider to emit warnings if an actionId does not contain enough elements of that turns out
@@ -97,6 +117,9 @@ public:
     actionData *findAction(const QStringList &actionId) const;
     actionData *addAction(const QStringList &actionId);
     actionData *takeAction(const QStringList &actionId);
+
+    //! Get or create component for the action
+    componentData *component(const QStringList &actionId);
 
     //helpers
     static bool isEmpty(const QList<int>&);
@@ -140,9 +163,9 @@ actionData *KdedGlobalAccelPrivate::findAction(const QStringList &actionId) cons
 }
 
 
-actionData *KdedGlobalAccelPrivate::addAction(const QStringList &actionId)
+componentData *KdedGlobalAccelPrivate::component(const QStringList &actionId)
 {
-    Q_ASSERT(actionId.size() >= 4);
+    // Get the component for the action. If we have none create a new one
     componentData *cd = mainComponents.value(actionId.at(ComponentUnique));
     if (!cd) {
         cd = new componentData;
@@ -150,12 +173,18 @@ actionData *KdedGlobalAccelPrivate::addAction(const QStringList &actionId)
         cd->friendlyName = actionId.at(ComponentFriendly);
         mainComponents.insert(actionId.at(ComponentUnique), cd);
     }
+    return cd;
+}
+
+actionData *KdedGlobalAccelPrivate::addAction(const QStringList &actionId)
+{
+    Q_ASSERT(actionId.size() >= 4);
+    componentData *cd = component(actionId);
+
+    // Assert there is no action under this ID.
     Q_ASSERT(!cd->actions.value(actionId.at(ActionUnique)));
-    actionData *ad = new actionData;
-    ad->parent = cd;
-    ad->uniqueName = actionId.at(ActionUnique);
-    ad->friendlyName = actionId.at(ActionFriendly);
-    cd->actions.insert(actionId.at(ActionUnique), ad);
+
+    actionData *ad = new actionData(actionId, cd);
     return ad;
 }
 
@@ -332,9 +361,14 @@ QList<int> KdedGlobalAccel::defaultShortcut(const QStringList &action)
 }
 
 
+// This method just registers the action. Nothing else. Shortcut has to be set
+// later.
 void KdedGlobalAccel::doRegister(const QStringList &actionId)
 {
+    kDebug(125) << actionId;
+
     if (actionId.size() < 4) {
+        kDebug(125) << "Skipped because of invalid actionId";
         return;
     }
     actionData *ad = d->findAction(actionId);
@@ -383,6 +417,8 @@ void KdedGlobalAccel::unRegister(const QStringList &actionId)
 QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
                                         const QList<int> &keys, uint flags)
 {
+    kDebug(125) << actionId;
+
     //spare the DBus framework some work
     const bool setPresent = (flags & SetPresent);
     const bool isAutoloading = !(flags & NoAutoloading);
@@ -402,25 +438,46 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
         return keys;    //doesn't matter
     }
 
-    //the trivial and common case - synchronize the action from our data and exit
     if (isAutoloading && !ad->isFresh) {
+        //the trivial and common case - synchronize the action from our data
+        //and exit. 
         if (!ad->isPresent && setPresent) {
+            // Set the shortcut to present and grab the keys
             ad->isPresent = true;
             foreach (int key, ad->keys) {
                 if (key != 0) {
+                    // Ensure our internal registry is correct. The action
+                    // corresponding to the key we are about to register has
+                    // to be ad
+#ifndef NDEBUG
+                    if (!d->keyToAction.contains(key)) {
+                        kDebug() << "Key not found!";
+                    }
+
+                    if (d->keyToAction.value(key) != ad) {
+                        if (d->keyToAction.value(key)) {
+                            kDebug() << "ASSERTION WILL FAIL!" << "Expected" << ad->parent->friendlyName << ad->uniqueName 
+                                     << "\ngot" << d->keyToAction.value(key)->parent->friendlyName << d->keyToAction.value(key)->uniqueName;
+                        } else {
+                            kDebug() << "Is NULL";
+                        }
+                    }
+#endif
                     Q_ASSERT(d->keyToAction.value(key) == ad);
                     d->impl->grabKey(key, true);
                 }
             }
         }
+        // We are finished here. Return the list of current active keys.
         return ad->keys;
     }
 
     //now we are actually changing the shortcut of the action
     QList<int> added = d->nonemptyOnly(keys);
+    QList<int> validKeys;
 
     // Go over the current shortcuts and remove those that aren't present in
-    // the new shortcut list. We do not active the required new shortcuts.
+    // the new shortcut list. We do not activate the required new shortcuts.
     foreach(int oldKey, ad->keys) {
 
         // No key ... nothing to do
@@ -431,33 +488,40 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
         // controls whether the current shortcuts remains active.
         bool remains = false;
 
-        for (int i = 0; i < added.count(); ++i) {
+        for (int i = added.count() -1; i >= 0; --i) {
             if (oldKey == added[i]) {
                 // We have a match. This shortcut is present in the current
                 // active shortcuts list and the desired new shortcuts list.
                 // Keep it active and forget about it.
+                validKeys.append(i);
                 added.removeAt(i);
-                i--;
                 remains = true;
                 //no break; - remove possible duplicates
             }
         }
 
-        // Remove the shortcut if it isn't active anymore
+        // Remove the shortcut if it isn't active anymore. Stop grabbing it if
+        // necessary
         if (!remains) {
-            d->keyToAction.remove(oldKey);
             if (ad->isPresent) {
                 d->impl->grabKey(oldKey, false);
             }
+            d->keyToAction.remove(oldKey);
         }
     }
+
+    ad->keys = validKeys;
+    // ad->keys only contains keys that are valid now. added[i] holds some
+    // keys we additionaly should set. And we disabled correctly all now
+    // obsolete keys.
+
 
     //update ad
     //note that ad->keys may still get changed later if conflicts are found
     if (setPresent) {
         ad->isPresent = true;
     }
-    ad->keys = keys;
+
     //maybe isFresh should really only be set if setPresent, but only two things should use !setPresent:
     //- the global shortcuts KCM: very unlikely to catch KWin/etc.'s actions in isFresh state
     //- KGlobalAccel::stealGlobalShortcutSystemwide(): only applies to actions with shortcuts
@@ -465,35 +529,19 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
     ad->isFresh = false;
 
     //update keyToAction and find conflicts with other actions
-    //this code inherently does the right thing for duplicates in added
+    //this code inherently does the right thing for duplicates in added.
     for (int i = 0; i < added.count(); i++) {
         if (!d->keyToAction.contains(added[i])) {
             // The desired new shortcut is available. Take it.
+            ad->keys.append(added[i]);
             d->keyToAction.insert(added[i], ad);
-        } else {
-            kDebug(125) << "Found a conflict for action " << actionId << ". Key " << added[i] << " will be skipped!";
-            // The desired new shortcut is not available. Find the conflicting
-            // shortcut in our list and remove it. We will not steal that
-            // shortcut
-            for (int j = 0; j < ad->keys.count(); j++) {
-                if (ad->keys[j] == added[i]) {
-                    if (ad->keys.last() == added[i]) {
-                        ad->keys.removeLast();
-                        j--;
-                    } else
-                        ad->keys[j] = 0;
-                }
+            if (ad->isPresent) {
+                d->impl->grabKey(added[i], true);
             }
-            added.removeAt(i);
-            i--;
-        }
-    }
-
-    // Activate all remaining shortcuts.
-    if (ad->isPresent) {
-        foreach (int key, added) {
-            Q_ASSERT(d->keyToAction.value(key) == ad);
-            d->impl->grabKey(key, true);
+        } else {
+            if (d->keyToAction.value(added[i]) != ad) {
+                kDebug(125) << "Found a conflict for action " << actionId << ". Key " << added[i] << " will be skipped!";
+            }
         }
     }
 
@@ -505,6 +553,8 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
 
 void KdedGlobalAccel::setForeignShortcut(const QStringList &actionId, const QList<int> &keys)
 {
+    kDebug(125) << actionId;
+
     actionData *ad = d->findAction(actionId);
     if (!ad)
         return;
@@ -524,6 +574,8 @@ void KdedGlobalAccel::setForeignShortcut(const QStringList &actionId, const QLis
 
 void KdedGlobalAccel::setInactive(const QStringList &actionId)
 {
+    kDebug(125) << actionId;
+
     actionData *ad = d->findAction(actionId);
     if (!ad)
         return;
@@ -651,9 +703,13 @@ QString KdedGlobalAccel::stringFromKeys(const QList<int> &keys)
 
 bool KdedGlobalAccel::keyPressed(int keyQt)
 {
+    kDebug(125) << keyQt;
+
     actionData *ad = d->keyToAction.value(keyQt);
-    if (!ad || !ad->isPresent)
+    if (!ad || !ad->isPresent) {
+        kDebug() << "skipping because action is not active";
         return false;
+    }
 
     QStringList data(ad->parent->uniqueName);
     data.append(ad->uniqueName);
