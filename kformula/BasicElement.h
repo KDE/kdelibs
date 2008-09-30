@@ -30,10 +30,11 @@
 #include <QList>
 #include <QString>
 #include <QRectF>
+#include <QXmlStreamWriter>
+
 class QPainter;
 class QVariant;
 class QDomElement;
-class QXmlStreamWriter;
 class AttributeManager;
 class FormulaCursor;
 class AttributeManager;
