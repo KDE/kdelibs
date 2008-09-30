@@ -331,11 +331,14 @@ void KXMLGUIFactoryPrivate::refreshActionProperties(KXMLGUIClient *client, QDomD
 
 void KXMLGUIFactoryPrivate::saveDefaultActionProperties(KXMLGUIClient *client)
 {
-    // This method is called once during application initialization. At this
-    // point no user configured shortcut were loaded. Therefore we expect all
-    // shortcuts we encounter to have empty custom shortcuts.
+    // This method is called every time the user activated a new
+    // kxmlguiclient. We only want to execute the following code only once in
+    // the lifetime of an action.
     foreach (QAction *action, client->actionCollection()->actions())
     {
+        // Skip actions we have seen already.
+        if (action->property("_k_DefaultShortcut").isValid()) continue;
+
         if (KAction* kaction = qobject_cast<KAction*>(action))
         {
             // Check if the default shortcut is set
@@ -349,13 +352,20 @@ void KXMLGUIFactoryPrivate::saveDefaultActionProperties(KXMLGUIClient *client)
             if ((!activeShortcut.isEmpty()) && defaultShortcut.isEmpty())
             {
                 kError() << "Shortcut for KAction " << kaction->objectName() << kaction->text() << "set with QShortcut::setShortcut()! See KAction documentation.";
-                kaction->setProperty("DefaultShortcut", activeShortcut);
+                kaction->setProperty("_k_DefaultShortcut", activeShortcut);
             }
             else
             {
-                kaction->setProperty("DefaultShortcut", defaultShortcut);
+                kaction->setProperty("_k_DefaultShortcut", defaultShortcut);
             }
         }
+        else
+        {
+            // A QAction used with KXMLGUI? Set our property and ignore it.
+            kError() << "Attempt to use QAction" << action->objectName() << "with KXMLGUIFactory!";
+            action->setProperty("_k_DefaultShortcut", KShortcut());
+        }
+
     }
 }
 
@@ -674,7 +684,7 @@ void KXMLGUIFactoryPrivate::applyShortcutScheme(KXMLGUIClient *client, QDomDocum
         {
             if (KAction *kaction = qobject_cast<KAction*>(action))
             {
-                QVariant savedDefaultShortcut = kaction->property("DefaultShortcut");
+                QVariant savedDefaultShortcut = kaction->property("_k_DefaultShortcut");
                 if (savedDefaultShortcut.isValid())
                 {
                     KShortcut shortcut = savedDefaultShortcut.value<KShortcut>();
