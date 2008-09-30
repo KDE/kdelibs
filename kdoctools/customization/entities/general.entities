@@ -165,6 +165,7 @@
 <!ENTITY kamera	"<application>Kamera</application>">
 <!ENTITY kanagram	"<application>Kanagram</application>">
 <!ENTITY kandy	"<application>Kandy</application>">
+<!ENTITY kapman     "<application>Kapman</application>">
 <!ENTITY kappfinder	"<application>Kappfinder</application>">
 <!ENTITY kapptemplate	"<application>KAppTemplate</application>">
 <!ENTITY kaphorism	"<application>KAphorism</application>">
