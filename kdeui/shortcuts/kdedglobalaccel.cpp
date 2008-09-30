@@ -565,7 +565,7 @@ void KdedGlobalAccel::writeSettings()
             }
 
             // We do not write session shortcuts
-            if (!ad->uniqueName.startsWith("session:")) {
+            if (!ad->uniqueName.startsWith("_k_session:")) {
                 QStringList entry(stringFromKeys(ad->keys));
                 entry.append(stringFromKeys(ad->defaultKeys));
                 entry.append(ad->friendlyName);
