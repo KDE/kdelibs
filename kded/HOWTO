@@ -1,8 +1,14 @@
 HOWTO Make KDED Modules
 =======================
 
-KDED Modules are very similar to modules for the control center. 
-A KDED Module is loaded when a call is made to it.
+A KDED module implementation looks similar to a KControl module.
+A module is loaded when a call is made to it.
+KDED modules should not be added if it is avoidable because (especially
+when new) they endanger the stability of KDED and its other modules which
+provide important services. There are other ways to achieve what a KDED
+module can do in many cases.
+KDED modules should be useful during the whole session and manage
+information that, for some reason, cannot be kept in any other process.
 
 Here are examples of KDED modules:
  kdelibs/kioslave/http/kcookiejar/kcookieserver.cpp  Cookie-handling module (including GUI)
