@@ -451,15 +451,15 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
                     // to be ad
 #ifndef NDEBUG
                     if (!d->keyToAction.contains(key)) {
-                        kDebug() << "Key not found!";
+                        kDebug(125) << "Key not found!";
                     }
 
                     if (d->keyToAction.value(key) != ad) {
                         if (d->keyToAction.value(key)) {
-                            kDebug() << "ASSERTION WILL FAIL!" << "Expected" << ad->parent->friendlyName << ad->uniqueName 
+                            kDebug(125) << "ASSERTION WILL FAIL!" << "Expected" << ad->parent->friendlyName << ad->uniqueName 
                                      << "\ngot" << d->keyToAction.value(key)->parent->friendlyName << d->keyToAction.value(key)->uniqueName;
                         } else {
-                            kDebug() << "Is NULL";
+                            kDebug(125) << "Is NULL";
                         }
                     }
 #endif
@@ -707,7 +707,7 @@ bool KdedGlobalAccel::keyPressed(int keyQt)
 
     actionData *ad = d->keyToAction.value(keyQt);
     if (!ad || !ad->isPresent) {
-        kDebug() << "skipping because action is not active";
+        kDebug(125) << "skipping because action is not active";
         return false;
     }
 
