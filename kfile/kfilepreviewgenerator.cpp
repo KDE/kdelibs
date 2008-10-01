@@ -19,7 +19,7 @@
 
 #include "kfilepreviewgenerator.h"
 
-#include <kabstractviewadapter_p.h>
+#include "../kio/kio/defaultviewadapter_p.h"
 #include <kfileitem.h>
 #include <kiconeffect.h>
 #include <kio/previewjob.h>
@@ -44,64 +44,6 @@
 #  include <X11/Xlib.h>
 #  include <X11/extensions/Xrender.h>
 #endif*/
-
-/**
- * Implementation of the view adapter for the default case when
- * an instance of QAbstractItemView is used as view.
- */
-class DefaultViewAdapter : public KAbstractViewAdapter
-{
-public:
-    DefaultViewAdapter(QAbstractItemView* view, QObject* parent);
-    virtual QObject* createMimeTypeResolver(KDirModel* model) const;
-    virtual QSize iconSize() const;
-    virtual QPalette palette() const;
-    virtual QRect visibleArea() const;
-    virtual QRect visualRect(const QModelIndex& index) const;
-    virtual void connect(Signal signal, QObject* receiver, const char* slot);
-
-private:
-    QAbstractItemView* m_view;
-};
-
-DefaultViewAdapter::DefaultViewAdapter(QAbstractItemView* view, QObject* parent) :
-    KAbstractViewAdapter(parent),
-    m_view(view)
-{
-}
-
-QObject* DefaultViewAdapter::createMimeTypeResolver(KDirModel* model) const
-{
-    return new KMimeTypeResolver(m_view, model);
-}
-
-QSize DefaultViewAdapter::iconSize() const
-{
-    return m_view->iconSize();
-}
-
-QPalette DefaultViewAdapter::palette() const
-{
-    return m_view->palette();
-}
-
-QRect DefaultViewAdapter::visibleArea() const
-{
-    return m_view->viewport()->rect();
-}
-
-QRect DefaultViewAdapter::visualRect(const QModelIndex& index) const
-{
-    return m_view->visualRect(index);
-}
-
-void DefaultViewAdapter::connect(Signal signal, QObject* receiver, const char* slot)
-{
-    if (signal == ScrollBarValueChanged) {
-        QObject::connect(m_view->horizontalScrollBar(), SIGNAL(valueChanged(int)), receiver, slot);
-        QObject::connect(m_view->verticalScrollBar(), SIGNAL(valueChanged(int)), receiver, slot);
-    }
-}
 
 /**
  * If the passed item view is an instance of QListView, expensive
@@ -819,7 +761,7 @@ bool KFilePreviewGenerator::Private::decodeIsCutSelection(const QMimeData* mimeD
 
 KFilePreviewGenerator::KFilePreviewGenerator(QAbstractItemView* parent, QAbstractProxyModel* model) :
     QObject(parent),
-    d(new Private(this, new DefaultViewAdapter(parent, this), parent->model()))
+    d(new Private(this, new KIO::DefaultViewAdapter(parent, this), parent->model()))
 {
     Q_UNUSED(model); // TODO: remove parameter 'model' on Monday the 6th of October
     d->m_itemView = parent;
