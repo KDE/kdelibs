@@ -215,24 +215,29 @@ KFileMetaInfoPrivate::initWriters(const KUrl& file) {
     }
 }
 KFileMetaInfo::KFileMetaInfo(const QString& path, const QString& /*mimetype*/,
-        KFileMetaInfo::WhatFlags /*w*/) :p(new KFileMetaInfoPrivate()) {
+                             KFileMetaInfo::WhatFlags /*w*/)
+    : p(new KFileMetaInfoPrivate())
+{
     QFileInfo fileinfo(path);
     QFile file(path);
-    file.open(QIODevice::ReadOnly);
-    KUrl u;
-    u.setPath(path);
-    p->init(file, u, fileinfo.lastModified().toTime_t());
-    if (fileinfo.isWritable()) {
-        p->initWriters(u);
+    if (file.open(QIODevice::ReadOnly)) {
+        KUrl u(path);
+        p->init(file, u, fileinfo.lastModified().toTime_t());
+        if (fileinfo.isWritable()) {
+            p->initWriters(u);
+        }
     }
 }
-KFileMetaInfo::KFileMetaInfo(const KUrl& url) :p(new KFileMetaInfoPrivate()) {
+KFileMetaInfo::KFileMetaInfo(const KUrl& url)
+    : p(new KFileMetaInfoPrivate())
+{
     QFileInfo fileinfo(url.path());
     QFile file(url.path());
-    file.open(QIODevice::ReadOnly);
-    p->init(file, url, fileinfo.lastModified().toTime_t());
-    if (fileinfo.isWritable()) {
-        p->initWriters(url);
+    if (file.open(QIODevice::ReadOnly)) {
+        p->init(file, url, fileinfo.lastModified().toTime_t());
+        if (fileinfo.isWritable()) {
+            p->initWriters(url);
+        }
     }
 }
 KFileMetaInfo::KFileMetaInfo() :p(new KFileMetaInfoPrivate()) {
@@ -290,7 +295,7 @@ KFileMetaInfo::item(const QString& key) {
 }
 bool
 KFileMetaInfo::isValid() const {
-    return true;
+    return !p->kurl.isEmpty();
 }
 QStringList KFileMetaInfo::preferredKeys() const { return QStringList(); }
 QStringList KFileMetaInfo::supportedKeys() const { return QStringList(); }
