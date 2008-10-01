@@ -130,6 +130,7 @@ public:
 
     /**
      * Record this job while it's happening and add a command for it so that the user can undo it.
+     * The signal jobRecordingStarted() is emitted.
      * @param op the type of job - which is also the type of command that will be created for it
      * @param src list of source urls
      * @param dst destination url
@@ -139,6 +140,7 @@ public:
 
     /**
      * Record this CopyJob while it's happening and add a command for it so that the user can undo it.
+     * The signal jobRecordingStarted() is emitted.
      */
     void recordCopyJob(KIO::CopyJob* copyJob);
 
@@ -177,6 +179,22 @@ Q_SIGNALS:
 
     /// Emitted when an undo job finishes. Used for unit testing.
     void undoJobFinished();
+    
+    /**
+     * Emitted when a job recording has been started by FileUndoManager::recordJob()
+     * or FileUndoManager::recordCopyJob(). After the job recording has been finished,
+     * the signal jobRecordingFinished() will be emitted.
+     * @since 4.2
+     */
+    void jobRecordingStarted(CommandType op);
+    
+    /**
+     * Emitted when a job that has been recorded by FileUndoManager::recordJob()
+     * or FileUndoManager::recordCopyJob has been finished. The command
+     * is now available for an undo-operation.
+     * @since 4.2
+     */
+    void jobRecordingFinished(CommandType op);
 
 private:
     FileUndoManager();

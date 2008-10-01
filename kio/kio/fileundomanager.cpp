@@ -241,6 +241,7 @@ void FileUndoManager::recordJob(CommandType op, const KUrl::List &src, const KUr
 {
     // This records what the job does and calls addCommand when done
     (void) new CommandRecorder(op, src, dst, job);
+    emit jobRecordingStarted(op);
 }
 
 void FileUndoManager::recordCopyJob(KIO::CopyJob* copyJob)
@@ -264,6 +265,7 @@ void FileUndoManager::recordCopyJob(KIO::CopyJob* copyJob)
 void FileUndoManagerPrivate::addCommand(const UndoCommand &cmd)
 {
     broadcastPush(cmd);
+    emit q->jobRecordingFinished(cmd.m_type);
 }
 
 bool FileUndoManager::undoAvailable() const
