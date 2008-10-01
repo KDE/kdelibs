@@ -371,12 +371,12 @@ void KWidgetJobTracker::Private::ProgressWidget::percent(unsigned long percent)
     QString title = caption + " (";
 
     if (totalSizeKnown) {
-        title += i18n("%1 % of %2", percent,
+        title += i18n("%1% of %2", percent,
                       KGlobal::locale()->formatByteSize(totalSize));
     } else if (totalFiles) {
-        title += i18np("%2 % of 1 file", "%2 % of %1 files", totalFiles, percent);
+        title += i18np("%2% of 1 file", "%2% of %1 files", totalFiles, percent);
     } else {
-        title += i18n("%1 %", percent);
+        title += i18n("%1%", percent);
     }
 
     title += ')';
