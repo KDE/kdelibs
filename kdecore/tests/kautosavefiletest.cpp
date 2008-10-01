@@ -93,7 +93,11 @@ void KAutoSaveFileTest::test_locking()
     QVERIFY( !QFile::exists(saveFile.fileName()) );
     QVERIFY( saveFile.open(QIODevice::ReadWrite) );
 
-    KAutoSaveFile* saveFile2 = KAutoSaveFile::staleFiles(normalFile).at(0);
+    const QList<KAutoSaveFile *> staleFiles( KAutoSaveFile::staleFiles( normalFile ) );
+
+    QVERIFY( !staleFiles.isEmpty() );
+
+    KAutoSaveFile* saveFile2 = staleFiles.at(0);
 
     QVERIFY( QFile::exists(saveFile2->fileName()) );
     QVERIFY( !saveFile2->open(QIODevice::ReadWrite) );
