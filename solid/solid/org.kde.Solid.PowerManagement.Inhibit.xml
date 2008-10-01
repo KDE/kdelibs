@@ -9,8 +9,6 @@
     <method name="UnInhibit">
       <arg type="u" name="cookie" direction="in"/>
     </method>
-    <method name="ForceUnInhibitAll">
-    </method>
 
     <signal name="HasInhibitChanged">
       <arg type="b" name="has_inhibit" direction="out"/>
