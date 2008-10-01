@@ -1,4 +1,4 @@
-# - Try to find Strigi
+# - Try to find Strigi, a fast and small desktop search program (http://strigi.sourceforge.net )
 # Once done this will define
 #
 #  STRIGI_FOUND - system has Strigi
@@ -17,9 +17,6 @@ include(FindLibraryWithDebug)
 if(NOT STRIGI_MIN_VERSION)
   set(STRIGI_MIN_VERSION "0.5.9")
 endif(NOT STRIGI_MIN_VERSION)
-if(NOT STRIGI_MAX_VERSION)
-  set(STRIGI_MAX_VERSION "0.5.99")
-endif(NOT STRIGI_MAX_VERSION)
 
 if (WIN32)
   file(TO_CMAKE_PATH "$ENV{PROGRAMFILES}" _program_FILES_DIR)
@@ -85,8 +82,7 @@ if (NOT WIN32 AND NOT HAVE_STRIGI_VERSION)
   # if pkgconfig found strigi, check the version, otherwise print a warning
   if(_dummyLinkFlags)
 
-    ## TODO find out why --max-version does not work!
-    exec_program(${PKGCONFIG_EXECUTABLE} ARGS --atleast-version=${STRIGI_MIN_VERSION} --max-version=${STRIGI_MAX_VERSION}
+    exec_program(${PKGCONFIG_EXECUTABLE} ARGS --atleast-version=${STRIGI_MIN_VERSION}
                  libstreamanalyzer RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _pkgconfigDevNull )
 
     if(NOT _return_VALUE STREQUAL "0")
@@ -100,7 +96,7 @@ if (NOT WIN32 AND NOT HAVE_STRIGI_VERSION)
       # message(STATUS "Strigi version is ${_strigiVersion}. Needs signed char: ${STRIGI_NEEDS_SIGNED_CHAR}")
 
       if(NOT Strigi_FIND_QUIETLY)
-        message(STATUS "Found Strigi >= ${STRIGI_MIN_VERSION}")
+        message(STATUS "Found Strigi ${_strigiVersion}")
       endif(NOT Strigi_FIND_QUIETLY)
     endif(NOT _return_VALUE STREQUAL "0")
     if (NOT STRIGI_STREAMANALYZER_LIBRARY)
@@ -124,9 +120,15 @@ if (NOT WIN32 AND NOT HAVE_STRIGI_VERSION)
   endif(_dummyLinkFlags)
 endif (NOT WIN32 AND NOT HAVE_STRIGI_VERSION)
 
+if(WIN32)
+  # STRIGI_NEEDS_SIGNED_CHAR is only set correct when pkgconfig is available...
+  # we don't use strigi < 0.6.0 so assume STRIGI_NEEDS_SIGNED_CHAR is needed
+  set(STRIGI_NEEDS_SIGNED_CHAR TRUE)
+endif(WIN32)
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Strigi  
-                                  "Couldn't find Strigi streams and streamanalyzer libraries. Set the environment variable STRIGI_HOME (or CMAKE_FIND_PREFIX_PATH if using CMake >=2.5) to the strigi install dir."  
+                                  "Couldn't find Strigi streams and streamanalyzer libraries. Set the environment variable STRIGI_HOME (or CMAKE_PREFIX_PATH if using CMake >=2.6) to the strigi install dir."  
                                   STRIGI_STREAMS_LIBRARY  STRIGI_STREAMANALYZER_LIBRARY  STRIGI_INCLUDE_DIR)
 
 if(WIN32)
