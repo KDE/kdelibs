@@ -32,9 +32,9 @@ DefaultViewAdapter::DefaultViewAdapter(QAbstractItemView* view, QObject* parent)
 {
 }
 
-QObject* DefaultViewAdapter::createMimeTypeResolver(KDirModel* model) const
+QAbstractItemModel *DefaultViewAdapter::model() const
 {
-    return new KMimeTypeResolver(m_view, model);
+    return m_view->model();
 }
 
 QSize DefaultViewAdapter::iconSize() const

@@ -213,7 +213,7 @@ public:
     KDirModel* m_dirModel;
     QAbstractProxyModel* m_proxyModel;
 
-    QObject* m_mimeTypeResolver;
+    KMimeTypeResolver* m_mimeTypeResolver;
 
     QList<ItemInfo> m_cutItemsCache;
     QList<ItemInfo> m_previews;
@@ -802,7 +802,7 @@ void KFilePreviewGenerator::setPreviewShown(bool show)
     } else if (!show && (d->m_mimeTypeResolver == 0)) {
         // the preview is turned off: resolve the MIME-types so that
         // the icons gets updated
-        d->m_mimeTypeResolver = d->m_viewAdapter->createMimeTypeResolver(d->m_dirModel);
+        d->m_mimeTypeResolver = new KMimeTypeResolver(d->m_viewAdapter);
     }
 }
 

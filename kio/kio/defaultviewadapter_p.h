@@ -35,7 +35,7 @@ namespace KIO
     {
     public:
         DefaultViewAdapter(QAbstractItemView* view, QObject* parent);
-        virtual QObject* createMimeTypeResolver(KDirModel* model) const;
+        virtual QAbstractItemModel* model() const;
         virtual QSize iconSize() const;
         virtual QPalette palette() const;
         virtual QRect visibleArea() const;

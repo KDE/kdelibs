@@ -22,8 +22,8 @@
 
 #include <QObject>
 
+class QAbstractItemModel;
 class QModelIndex;
-class KDirModel;
 class QPalette;
 class QRect;
 class QSize;
@@ -40,7 +40,7 @@ public:
 
     KAbstractViewAdapter(QObject *parent) : QObject(parent) {}
     virtual ~KAbstractViewAdapter() {}
-    virtual QObject *createMimeTypeResolver(KDirModel*) const = 0;
+    virtual QAbstractItemModel *model() const = 0;
     virtual QSize iconSize() const = 0;
     virtual QPalette palette() const = 0;
     virtual QRect visibleArea() const = 0;

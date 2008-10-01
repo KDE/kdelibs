@@ -28,6 +28,7 @@ class QAbstractItemView;
 class QAbstractProxyModel;
 class KDirModel;
 class KMimeTypeResolverPrivate;
+class KAbstractViewAdapter;
 
 /**
  * This class implements the "delayed-mimetype-determination" feature,
@@ -57,6 +58,11 @@ public:
      * to this constructor as well.
      */
     explicit KMimeTypeResolver(QAbstractItemView* view, QAbstractProxyModel* model);
+
+    /**
+     * @internal
+     */
+    explicit KMimeTypeResolver(KAbstractViewAdapter* adapter);
 
     ~KMimeTypeResolver();
 

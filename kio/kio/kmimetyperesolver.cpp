@@ -19,6 +19,7 @@
 */
 
 #include "kmimetyperesolver.h"
+#include "defaultviewadapter_p.h"
 #include <kdirmodel.h>
 #include <kfileitem.h>
 #include <kdirlister.h>
@@ -47,7 +48,7 @@ public:
     QModelIndex findVisibleIcon();
 
     KMimeTypeResolver* q;
-    QAbstractItemView* m_view;
+    KAbstractViewAdapter* m_adapter;
     QAbstractProxyModel* m_proxyModel;
     KDirModel* m_dirModel;
     int m_delayForNonVisibleIcons;
@@ -64,10 +65,7 @@ void KMimeTypeResolverPrivate::init()
                      q, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
     QObject::connect(&m_timer, SIGNAL(timeout()),
                      q, SLOT(_k_slotProcessMimeIcons()));
-    QObject::connect(m_view->horizontalScrollBar(), SIGNAL(valueChanged(int)),
-                     q, SLOT(_k_slotViewportAdjusted()));
-    QObject::connect(m_view->verticalScrollBar(), SIGNAL(valueChanged(int)),
-                     q, SLOT(_k_slotViewportAdjusted()));
+    m_adapter->connect(KAbstractViewAdapter::ScrollBarValueChanged, q, SLOT(_k_slotViewportAdjusted()));
 }
 
 QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
@@ -80,12 +78,12 @@ QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
         return QModelIndex(m_pendingIndexes.first());
     }
 
-    const QRect visibleArea = m_view->viewport()->rect();
+    const QRect visibleArea = m_adapter->visibleArea();
     QList<QPersistentModelIndex>::const_iterator it = m_pendingIndexes.begin();
     const QList<QPersistentModelIndex>::const_iterator end = m_pendingIndexes.end();
     for ( ; it != end ; ++it ) {
         const QModelIndex index = m_proxyModel ? m_proxyModel->mapFromSource(*it) : QModelIndex(*it);
-        const QRect rect = m_view->visualRect(index);
+        const QRect rect = m_adapter->visualRect(index);
         if (rect.intersects(visibleArea)) {
             //kDebug() << "found item at " << rect << " in visibleArea " << visibleArea;
             return QModelIndex(*it);
@@ -102,7 +100,7 @@ QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
 KMimeTypeResolver::KMimeTypeResolver(QAbstractItemView* view, KDirModel* model)
     : QObject(view), d(new KMimeTypeResolverPrivate(this))
 {
-    d->m_view = view;
+    d->m_adapter = new KIO::DefaultViewAdapter(view, this);
     d->m_proxyModel = 0;
     d->m_dirModel = model;
     d->init();
@@ -111,9 +109,21 @@ KMimeTypeResolver::KMimeTypeResolver(QAbstractItemView* view, KDirModel* model)
 KMimeTypeResolver::KMimeTypeResolver(QAbstractItemView* view, QAbstractProxyModel* model)
     : QObject(view), d(new KMimeTypeResolverPrivate(this))
 {
-    d->m_view = view;
+    d->m_adapter = new KIO::DefaultViewAdapter(view, this);
     d->m_proxyModel = model;
     d->m_dirModel = static_cast<KDirModel*>(model->sourceModel());
+    d->init();
+}
+
+KMimeTypeResolver::KMimeTypeResolver(KAbstractViewAdapter* adapter)
+    : QObject(adapter), d(new KMimeTypeResolverPrivate(this))
+{
+    QAbstractItemModel *model = adapter->model();
+    d->m_adapter = adapter;
+    d->m_proxyModel = qobject_cast<QAbstractProxyModel*>(model);
+    d->m_dirModel = d->m_proxyModel ? qobject_cast<KDirModel*>(d->m_proxyModel->sourceModel())
+                                    : qobject_cast<KDirModel*>(model);
+    Q_ASSERT(d->m_dirModel);
     d->init();
 }
 
