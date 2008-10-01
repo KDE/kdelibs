@@ -255,7 +255,7 @@ void KTcpSocketTest::states()
                              "Host: ");
     QByteArray requestEpilog("\r\n\r\n");
     //Test rapid connection and disconnection to different hosts
-    const char *hosts[] = {"www.heise.de", "www.spiegel.de", "www.stern.de", "www.laut.de"};
+    const char *hosts[] = {"www.google.de", "www.spiegel.de", "www.stern.de", "www.laut.de"};
     for (int i = 0; i < 20; i++) {
         QCOMPARE(s->state(), KTcpSocket::UnconnectedState);
         s->connectToHost(hosts[i % 4], 80);
