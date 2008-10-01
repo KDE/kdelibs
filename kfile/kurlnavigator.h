@@ -307,8 +307,19 @@ Q_SIGNALS:
      * Is emitted if the URLs \a urls have been dropped
      * to the destination \a destination.
      */
+    // KDE5: remove, as the signal has been replaced by
+    // urlsDropped(const KUrl& destination, QDropEvent* event)
     void urlsDropped(const KUrl::List& urls,
                      const KUrl& destination);
+                     
+    /**
+     * Is emitted if a dropping has been done above the destination
+     * \a destination. The receiver must accept the drop event if
+     * the dropped data can be handled.
+     *
+     * @since 4.2
+     */
+    void urlsDropped(const KUrl& destination, QDropEvent* event);
 
     /**
      * This signal is emitted when the Return or Enter key is pressed.
@@ -341,7 +352,7 @@ private:
     Q_PRIVATE_SLOT(d, void slotRemoteHostActivated())
     Q_PRIVATE_SLOT(d, void slotProtocolChanged(const QString& protocol))
     Q_PRIVATE_SLOT(d, void switchView())
-    Q_PRIVATE_SLOT(d, void dropUrls(const KUrl::List& list, const KUrl& destination))
+    Q_PRIVATE_SLOT(d, void dropUrls(const KUrl& destination, QDropEvent*))
     Q_PRIVATE_SLOT(d, void openPathSelectorMenu())
     Q_PRIVATE_SLOT(d, void updateButtonVisibility())
     Q_PRIVATE_SLOT(d, void switchToBreadcrumbMode())

@@ -43,6 +43,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QApplication>
 #include <QtGui/QClipboard>
+#include <QtGui/QDropEvent>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QLabel>
@@ -161,7 +162,7 @@ public:
     void switchView();
 
     /** Emits the signal urlsDropped(). */
-    void dropUrls(const KUrl::List& urls, const KUrl& destination);
+    void dropUrls(const KUrl& destination, QDropEvent* event);
 
     void updateContent();
 
@@ -472,10 +473,16 @@ void KUrlNavigator::Private::switchView()
     emit q->editableStateChanged(m_editable);
 }
 
-void KUrlNavigator::Private::dropUrls(const KUrl::List& urls,
-                                      const KUrl& destination)
+void KUrlNavigator::Private::dropUrls(const KUrl& destination, QDropEvent* event)
 {
-    emit q->urlsDropped(urls, destination);
+    const KUrl::List urls = KUrl::List::fromMimeData(event->mimeData());
+    if (!urls.isEmpty()) {
+        emit q->urlsDropped(destination, event);
+    
+        // KDE5: remove, as the signal has been replaced by
+        // urlsDropped(const KUrl& destination, QDropEvent* event)
+        emit q->urlsDropped(urls, destination);
+    }
 }
 
 void KUrlNavigator::Private::updateContent()
@@ -587,8 +594,8 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
             KUrlNavigatorButton* button = 0;
             if (createButton) {
                 button = new KUrlNavigatorButton(idx, q);
-                connect(button, SIGNAL(urlsDropped(const KUrl::List&, const KUrl&)),
-                        q, SLOT(dropUrls(const KUrl::List&, const KUrl&)));
+                connect(button, SIGNAL(urlsDropped(const KUrl&, QDropEvent*)),
+                        q, SLOT(dropUrls(const KUrl&, QDropEvent*)));
                 appendWidget(button);
             } else {
                 button = *it;

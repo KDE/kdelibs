@@ -28,6 +28,7 @@
 
 class KJob;
 class KUrlNavigator;
+class QDropEvent;
 class QPaintEvent;
 
 namespace KIO
@@ -62,11 +63,10 @@ public:
 
 Q_SIGNALS:
     /**
-     * Is emitted if the URLs \a urls have been dropped
+     * Is emitted if URLs have been dropped
      * to the destination \a destination.
      */
-    void urlsDropped(const KUrl::List& urls,
-                     const KUrl& destination);
+    void urlsDropped(const KUrl& destination, QDropEvent* event);
 
 protected:
     virtual void paintEvent(QPaintEvent* event);

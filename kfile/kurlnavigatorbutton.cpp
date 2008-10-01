@@ -210,14 +210,12 @@ void KUrlNavigatorButton::dropEvent(QDropEvent* event)
 
     const KUrl::List urls = KUrl::List::fromMimeData(event->mimeData());
     if (!urls.isEmpty()) {
-        event->acceptProposedAction();
-
         setDisplayHintEnabled(DraggedHint, true);
 
-        QString path(urlNavigator()->url().prettyUrl());
+        QString path = urlNavigator()->url().prettyUrl();
         path = path.section('/', 0, m_index + 2);
 
-        emit urlsDropped(urls, KUrl(path));
+        emit urlsDropped(KUrl(path), event);
 
         setDisplayHintEnabled(DraggedHint, false);
         update();
