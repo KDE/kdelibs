@@ -30,9 +30,9 @@
  * and translatable strings.
  *
  * An assistant dialog consists of a sequence of pages.
- * Its purpose is to walk the user (assist) through a process step by step.
+ * Its purpose is to guide the user (assist) through a process step by step.
  * Assistant dialogs are useful for complex or infrequently occurring tasks 
- * that people may find difficult to learn or do. 
+ * that people may find difficult to learn or do.
  * Sometimes a task requires too many input fields to fit them on a single dialog.
  *
  * KAssistantDialog provides page titles and displays Next, Back, Finish, Cancel, 
@@ -109,7 +109,7 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
          * Called when the user clicks the Back button.
          *
          * This function will show the preceding relevant page in the sequence.
-         * Do nothing if the current page is the first page is the sequence.
+         * Do nothing if the current page is the first page in the sequence.
          */
         virtual void back();
 
