@@ -3287,11 +3287,10 @@ void KDateTimeTest::strings_qttextdate()
     QVERIFY(!dtutc2.isValid());
     dtutc2 = KDateTime::fromString(QString("Sun Dec 11 03:45:00 1999 +0000"), KDateTime::QtTextDate);
     QVERIFY(dtutc2.isValid());     // wrong weekday: accepted by Qt!!
-    QTest::ignoreMessage(QtWarningMsg, "QDateTime::fromString: Parameter out of range");
     dtutc2 = KDateTime::fromString(QString("Satu, Dec 11 03:45:00 1999 +0000"), KDateTime::QtTextDate);
     QVERIFY(dtutc2.isValid());     // bad weekday, accepted by Qt (since 4.3)
     dtutc2 = KDateTime::fromString(QString("Sat Dece 11 03:45:00 1999 +0000"), KDateTime::QtTextDate);
-    QVERIFY(!dtutc2.isValid());     // bad month: not accepted by Qt anymore (since 4.3)
+    QVERIFY(!dtutc2.isValid());     // bad month, not accepted by Qt anymore (since 4.3)
 
     // Restore the original local time zone
     if (!originalZone)
