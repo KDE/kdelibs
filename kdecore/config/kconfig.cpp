@@ -409,7 +409,7 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
                 fileName = appName + QLatin1String("rc");
                 if (type && *type)
                     resourceType = type; // only change it if it's not empty
-                file = KStandardDirs::locateLocal(resourceType, fileName, componentData);
+                file = KStandardDirs::locateLocal(resourceType, fileName, false, componentData);
             }
         } else if (wantGlobals()) { // accessing "kdeglobals"
             resourceType = "config";
@@ -421,7 +421,7 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
     else {
         if (type && *type)
             resourceType = type; // only change it if it's not empty
-        file = KStandardDirs::locateLocal(resourceType, fileName, componentData);
+        file = KStandardDirs::locateLocal(resourceType, fileName, false, componentData);
 
         if (fileName == QLatin1String("kdeglobals"))
             openFlags |= KConfig::IncludeGlobals;
