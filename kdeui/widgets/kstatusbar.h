@@ -52,7 +52,7 @@ class KStatusBarPrivate;
  *  Empty text items are not visible. They will become visible when you change
  *  (add) text.
  *
- *  @author Mark Donohoe (donohoe@kde.org) Maintained by Sven Radej <radej@kde.org>
+ *  @author Mark Donohoe <donohoe@kde.org> and Sven Radej <radej@kde.org>
 
  *  @see KActionCollection
  */

@@ -36,18 +36,13 @@
 class KStatusBarPrivate
 {
 public:
-    int id(QObject* object)
+    int id(QObject* object) const
     {
-        QHash<int, QLabel*>::const_iterator it = items.constBegin();
-        QHash<int, QLabel*>::const_iterator end = items.constEnd();
-        while ( it != end ) {
-            if ( object == it.value() ) {
-                return it.key();
-            }
-
-            ++it;
-        }
-        kDebug() << "Danger: Unable to find originating event object in object list. This shouldn't happen!";
+        QHash<int, QLabel*>::const_iterator it = qFind(items, object);
+        if (it != items.constEnd())
+            return it.key();
+        // Not found. This happens when a subclass uses an eventFilter too,
+        // on objects not registered here.
         return -1;
     }
 
@@ -58,14 +53,20 @@ public:
 bool KStatusBar::eventFilter(QObject* object, QEvent* event)
 {
     if ( event->type() == QEvent::MouseButtonPress ) {
-        emit pressed( d->id( object ) );
-        return true;
+        const int id = d->id(object);
+        if (id > -1) {
+            emit pressed( d->id( object ) );
+            return true;
+        }
     }
     else if ( event->type() == QEvent::MouseButtonRelease ) {
-        emit released( d->id( object ) );
-        return true;
+        const int id = d->id(object);
+        if (id > -1) {
+            emit released( d->id( object ) );
+            return true;
+        }
     }
-    return false;
+    return QStatusBar::eventFilter(object, event);
 }
 
 KStatusBar::KStatusBar( QWidget *parent )
