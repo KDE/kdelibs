@@ -139,6 +139,7 @@ public:
   QList<QRegExp> lstFilters, oldFilters;
   QStringList mimeFilter, oldMimeFilter;
   QStringList mimeExcludeFilter, oldMimeExcludeFilter;
+  friend class KDirListerCache;
 };
 
 /**
