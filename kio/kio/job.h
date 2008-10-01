@@ -57,7 +57,7 @@ namespace KIO {
 
     /**
      * Changes permissions on a file or directory.
-     * See the other chmod below for changing many files
+     * See the other chmod in chmodjob.h for changing many files
      * or directories.
      *
      * @param url The URL of file or directory.

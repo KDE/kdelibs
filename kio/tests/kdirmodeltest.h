@@ -41,10 +41,12 @@ private Q_SLOTS:
     void testCreateFile();
     void testModifyFile();
     void testRenameFile();
+    void testChmodDirectory();
     void testExpandToUrl_data();
     void testExpandToUrl();
     void testFilter();
     void testUrlWithRef();
+    void testUrlWithHost();
     // These two must be done last
     void testDeleteFile();
     void testDeleteFiles();
@@ -58,6 +60,7 @@ private:
     void recreateTestData();
     void enterLoop();
     void fillModel( bool reload );
+    void collectKnownIndexes();
 
 private:
     QEventLoop m_eventLoop;

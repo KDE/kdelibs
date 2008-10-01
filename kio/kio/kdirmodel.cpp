@@ -198,23 +198,22 @@ KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url, bool returnLastPar
         const int nextSlash = relativePath.indexOf('/');
         const QString fileName = relativePath.left(nextSlash); // works even if nextSlash==-1
         KDirModelNode* node = dirNode->m_childNodesByName.value(fileName);
-        if (node) {
-            if (node->item().url() == url) {
-                //kDebug(7008) << "Found node" << node << "for" << url;
-                return node;
-            }
-            //kDebug(7008) << "going into" << node->item().url();
-            Q_ASSERT(isDir(node));
-            dirNode = static_cast<KDirModelDirNode *>(node);
-        } else {
+        if (!node) {
             //kDebug(7008) << "child equal or starting with" << url << "not found";
             if (returnLastParent)
                 return dirNode;
             else
                 return 0;
         }
-        nodeUrl = dirNode->item().url();
-        //kDebug(7008) << " " << nodeUrl;
+        nodeUrl = urlForNode(node);
+        //kDebug(7008) << " nodeUrl=" << nodeUrl;
+        if (nodeUrl == url) {
+            //kDebug(7008) << "Found node" << node << "for" << url;
+            return node;
+        }
+        //kDebug(7008) << "going into" << node->item().url();
+        Q_ASSERT(isDir(node));
+        dirNode = static_cast<KDirModelDirNode *>(node);
     }
     // NOTREACHED
     //return 0;
@@ -309,13 +308,16 @@ KDirLister* KDirModel::dirLister() const
 void KDirModelPrivate::_k_slotNewItems(const KFileItemList& items)
 {
     // Find parent item - it's the same for all the items
-    // TODO (if Michael Brade agrees): add parent url to the newItems signal
+    // TODO: add parent url to the newItems signal
+    //
     // This way we can finally support properly trees where the urls are using different protocols.
+    // Well, it's not that simple - nodeForUrl still needs to know where to drill down...
+
     KUrl firstItemUrl = items.first().url();
     firstItemUrl.setQuery(QString());
     firstItemUrl.setRef(QString());
-    KUrl dir( firstItemUrl.upUrl() );
-    dir.adjustPath(KUrl::RemoveTrailingSlash);
+    KUrl dir(firstItemUrl);
+    dir.setPath(dir.directory());
 
     //kDebug(7008) << "dir=" << dir;
 
@@ -335,9 +337,11 @@ void KDirModelPrivate::_k_slotNewItems(const KFileItemList& items)
     const QModelIndex index = indexForNode(dirNode); // O(n)
     const int newItemsCount = items.count();
     const int newRowCount = dirNode->m_childNodes.count() + newItemsCount;
-#if 0 // ifndef NDEBUG // debugIndex only defined in debug mode
+#if 0
+#ifndef NDEBUG // debugIndex only defined in debug mode
     kDebug(7008) << items.count() << "in" << dir
              << "index=" << debugIndex(index) << "newRowCount=" << newRowCount;
+#endif
 #endif
     q->beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 ); // parent, first, last
 
@@ -356,6 +360,7 @@ void KDirModelPrivate::_k_slotNewItems(const KFileItemList& items)
         dirNode->m_childNodes.append(node);
         const KUrl url = it->url();
         dirNode->m_childNodesByName.insert(url.fileName(), node);
+        //kDebug(7008) << url;
 
         if (isDir && !urlsBeingFetched.isEmpty()) {
             const KUrl dirUrl = url;
@@ -387,7 +392,7 @@ void KDirModelPrivate::_k_slotNewItems(const KFileItemList& items)
 
 void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
 {
-    //kDebug() << items.count();
+    //kDebug(7008) << items.count();
 
     // I assume all items are from the same directory.
     // From KDirLister's code, this should be the case, except maybe emitChanges?
@@ -439,14 +444,14 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
         const bool val = rowNumbers.testBit(i);
         if (!lastVal && val) {
             end = i;
-            //kDebug() << "end=" << end;
+            //kDebug(7008) << "end=" << end;
         }
         if ((lastVal && !val) || (i == 0 && val)) {
             start = val ? i : i + 1;
-            //kDebug() << "beginRemoveRows" << start << end;
+            //kDebug(7008) << "beginRemoveRows" << start << end;
             q->beginRemoveRows(parentIndex, start, end);
             for (int r = end; r >= start; --r) { // reverse because takeAt changes indexes ;)
-                //kDebug() << "Removing from m_childNodes at" << r;
+                //kDebug(7008) << "Removing from m_childNodes at" << r;
                 delete dirNode->m_childNodes.takeAt(r);
             }
             q->endRemoveRows();
@@ -462,23 +467,27 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
     // Solution 1: we could emit dataChanged for one row (if items.size()==1) or all rows
     // Solution 2: more fine-grained, actually figure out the beginning and end rows.
     for ( QList<QPair<KFileItem, KFileItem> >::const_iterator fit = items.begin(), fend = items.end() ; fit != fend ; ++fit ) {
+        Q_ASSERT(!fit->first.isNull());
+        Q_ASSERT(!fit->second.isNull());
         const KUrl oldUrl = fit->first.url();
         const KUrl newUrl = fit->second.url();
         const QModelIndex index = q->indexForUrl(oldUrl); // O(n); maybe we could look up to the parent only once
         KDirModelNode* node = nodeForIndex(index);
-        node->setItem(fit->second);
+        if (node != m_rootNode) { // we never set an item in the rootnode, we use m_dirLister->rootItem instead.
+            node->setItem(fit->second);
 
-        if (oldUrl.fileName() != newUrl.fileName()) {
-            KDirModelDirNode* parentNode = node->parent();
-            Q_ASSERT(parentNode);
-            parentNode->m_childNodesByName.remove(oldUrl.fileName());
-            parentNode->m_childNodesByName.insert(newUrl.fileName(), node);
-        }
-        if (!topLeft.isValid() || index.row() < topLeft.row()) {
-            topLeft = index;
-        }
-        if (!bottomRight.isValid() || index.row() > bottomRight.row()) {
-            bottomRight = index;
+            if (oldUrl.fileName() != newUrl.fileName()) {
+                KDirModelDirNode* parentNode = node->parent();
+                Q_ASSERT(parentNode);
+                parentNode->m_childNodesByName.remove(oldUrl.fileName());
+                parentNode->m_childNodesByName.insert(newUrl.fileName(), node);
+            }
+            if (!topLeft.isValid() || index.row() < topLeft.row()) {
+                topLeft = index;
+            }
+            if (!bottomRight.isValid() || index.row() > bottomRight.row()) {
+                bottomRight = index;
+            }
         }
     }
 #ifndef NDEBUG // debugIndex only defined in debug mode

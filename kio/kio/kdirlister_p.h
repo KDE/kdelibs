@@ -164,7 +164,7 @@ public:
     void updateDirectory( const KUrl& dir );
 
     KFileItem itemForUrl( const KUrl& url ) const;
-    KFileItemList *itemsForDir( const KUrl& dir ) const;
+    KFileItemList *itemsForDir(const KUrl& dir) const;
 
     bool listDir( KDirLister *lister, const KUrl& _url, bool _keep, bool _reload );
 
@@ -178,9 +178,11 @@ public:
   void forgetDirs( KDirLister *lister );
   void forgetDirs( KDirLister *lister, const KUrl &_url, bool notify );
 
-  KFileItem findByName( const KDirLister *lister, const QString &_name ) const;
-  // if lister is set, it is checked that the url is held by the lister
-  KFileItem *findByUrl( const KDirLister *lister, const KUrl &_url ) const;
+    KFileItem findByName( const KDirLister *lister, const QString &_name ) const;
+    // findByUrl returns a pointer so that it's possible to modify the item.
+    // See itemForUrl for the version that returns a readonly kfileitem.
+    // @param lister can be 0. If set, it is checked that the url is held by the lister
+    KFileItem *findByUrl(const KDirLister *lister, const KUrl &url) const;
 
     // Called by CachedItemsJob:
     // Emits those items, for this lister and this url
@@ -214,14 +216,6 @@ public Q_SLOTS:
   void slotFilesChanged( const QStringList& fileList );
   void slotFileRenamed( const QString& srcUrl, const QString& dstUrl );
 
-private:
-
-    bool validUrl( const KDirLister *lister, const KUrl& _url ) const;
-
-    // helper for both stop methods
-    struct DirectoryData;
-    void stopLister(KDirLister* lister, const QString& url, DirectoryData& dirData);
-
 private Q_SLOTS:
   void slotFileDirty( const QString &_file );
   void slotFileCreated( const QString &_file );
@@ -236,11 +230,19 @@ private Q_SLOTS:
   void processPendingUpdates();
 
 private:
+    class DirItem;
+    DirItem* dirItemForUrl(const KUrl& dir) const;
 
-  KIO::ListJob *jobForUrl( const QString& url, KIO::ListJob *not_job = 0 );
-  const KUrl& joburl( KIO::ListJob *job );
+    bool validUrl( const KDirLister *lister, const KUrl& _url ) const;
 
-  void killJob( KIO::ListJob *job );
+    // helper for both stop methods
+    struct DirectoryData;
+    void stopLister(KDirLister* lister, const QString& url, DirectoryData& dirData);
+
+    KIO::ListJob *jobForUrl( const QString& url, KIO::ListJob *not_job = 0 );
+    const KUrl& joburl( KIO::ListJob *job );
+
+    void killJob( KIO::ListJob *job );
 
     // Called when something tells us that the directory @p url has changed.
     // Returns true if @p url is held by some lister (meaning: do the update now)
@@ -379,6 +381,8 @@ private:
         QList<KDirLister *> listersCurrentlyListing;
         // Listers that are currently holding this url
         QList<KDirLister *> listersCurrentlyHolding;
+
+        void moveListersWithoutCachedItemsJob();
     };
 
     typedef QHash<QString /*url*/, DirectoryData> DirectoryDataHash;
