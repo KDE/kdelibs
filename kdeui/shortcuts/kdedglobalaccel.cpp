@@ -394,8 +394,9 @@ void KdedGlobalAccel::doRegister(const QStringList &actionId)
 
 void KdedGlobalAccel::unRegister(const QStringList &actionId)
 {
-    Q_ASSERT(actionId.size()==4);
+    kDebug(125) << actionId;
 
+    Q_ASSERT(actionId.size()==4);
     if (actionId.size() < 4) {
         return;
     }
@@ -661,7 +662,14 @@ void KdedGlobalAccel::loadSettings()
 
             foreach (int key, ad->keys) {
                 if (key != 0) {
-                    d->keyToAction.insert(key, ad);
+                    if (d->keyToAction.contains(key)) {
+                        // The shortcut is already used. The config file is
+                        // broken. Ignore the request.
+                        ad->keys.removeAll(key);
+                        kWarning() << "Shortcut found twice in kglobalshortcutsrc.";
+                    } else {
+                        d->keyToAction.insert(key, ad);
+                    }
                 }
             }
         }
