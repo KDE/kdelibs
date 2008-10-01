@@ -180,7 +180,9 @@
    <l:gentext key="hyphenation-character" text="-"/>
    <l:gentext key="hyphenation-push-character-count" text="2"/>
    <l:gentext key="hyphenation-remain-character-count" text="2"/>
-
+   <l:gentext key="footer-doc-comment" text="Vous souhaitez faire un commentaire ou participer au contenu de cette page&#160;?"/>
+   <l:gentext key="footer-doc-feedback" text="Envoyez vos contributions &#224; l'"/>
+   <l:gentext key="footer-doc-teamname" text="&#233;quipe de documentation de KDE"/>
    <l:context name="styles">
       <l:template name="person-name" text="first-last"/>
    </l:context>
