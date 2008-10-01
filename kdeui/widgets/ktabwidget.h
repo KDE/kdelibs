@@ -327,6 +327,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
     virtual void mouseDoubleClick( int );
     virtual void mouseMiddleClick( int );
     virtual void closeRequest( int );
+    void currentChanged( int );
 #ifndef QT_NO_WHEELEVENT
     virtual void wheelDelta( int );
 #endif

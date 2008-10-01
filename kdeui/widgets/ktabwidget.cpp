@@ -28,6 +28,7 @@
 #include <QtGui/QStyleOption>
 #include <QtGui/QTextDocument>
 #include <QtGui/QWheelEvent>
+#include <QtCore/QList>
 
 #include <ksharedconfig.h>
 #include <kiconloader.h>
@@ -60,11 +61,14 @@ class KTabWidget::Private
     //holds the full names of the tab, otherwise all we
     //know about is the shortened name
     QStringList m_tabNames;
-
+    
+    // Used when tabCloseActivatePrevious is enabled
+    QList<QWidget*> m_previousTabList;
 
     bool isEmptyTabbarSpace( const QPoint & )  const;
     void resizeTabs( int changedTabIndex = -1 );
     void updateTab( int index );
+    void removeTab( int index );
 };
 
 bool KTabWidget::Private::isEmptyTabbarSpace( const QPoint &point ) const
@@ -93,6 +97,25 @@ bool KTabWidget::Private::isEmptyTabbarSpace( const QPoint &point ) const
   }
 
   return false;
+}
+
+void KTabWidget::Private::removeTab( int index )
+{
+  m_previousTabList.removeOne( m_parent->widget( index ) );
+  
+  // We need to get the widget for "activate previous" before calling to 
+  // QTabWidget::removeTab() because that call changes currentIndex which calls
+  // to currentChanged() and thus modifies m_previousTabList.first(). And we
+  // store the widget and not the index of it because the index might be changed
+  // by the removeTab call.
+  QWidget *widget = 0;
+  if( !m_previousTabList.isEmpty() && m_parent->tabCloseActivatePrevious() )
+    widget = m_previousTabList.first();
+  
+  m_parent->QTabWidget::removeTab( index );
+  
+  if( widget )
+    m_parent->setCurrentIndex( m_parent->indexOf( widget ) );
 }
 
 void KTabWidget::Private::resizeTabs( int changeTabIndex )
@@ -164,6 +187,7 @@ KTabWidget::KTabWidget( QWidget *parent, Qt::WFlags flags )
   connect(tabBar(), SIGNAL(receivedDropEvent( int, QDropEvent * )), SLOT(receivedDropEvent( int, QDropEvent * )));
   connect(tabBar(), SIGNAL(moveTab( int, int )), SLOT(moveTab( int, int )));
   connect(tabBar(), SIGNAL(closeRequest( int )), SLOT(closeRequest( int )));
+  connect(tabBar(), SIGNAL(currentChanged( int )), SLOT(currentChanged( int )));
 #ifndef QT_NO_WHEELEVENT
   connect(tabBar(), SIGNAL(wheelDelta( int )), SLOT(wheelDelta( int )));
 #endif
@@ -491,13 +515,13 @@ void KTabWidget::removePage( QWidget *widget )
 
     setUpdatesEnabled(false);
 
-    QTabWidget::removeTab( indexOf( widget ) );
+    d->removeTab( indexOf( widget ) );
     d->resizeTabs();
 
     setUpdatesEnabled(true);
 
   } else {
-    QTabWidget::removeTab( indexOf( widget ) );
+    d->removeTab( indexOf( widget ) );
   }
 }
 
@@ -507,13 +531,13 @@ void KTabWidget::removeTab( int index )
 
     setUpdatesEnabled(false);
 
-    QTabWidget::removeTab( index );
+    d->removeTab( index );
     d->resizeTabs();
 
     setUpdatesEnabled(true);
 
   } else {
-    QTabWidget::removeTab( index );
+    d->removeTab( index );
   }
 }
 
@@ -596,6 +620,14 @@ void KTabWidget::tabInserted( int idx )
 void KTabWidget::tabRemoved( int idx )
 {
    d->m_tabNames.removeAt( idx );
+}
+
+void KTabWidget::currentChanged( int idx )
+{
+   // The tab should appear only once
+   d->m_previousTabList.removeOne( widget(idx) );
+   
+   d->m_previousTabList.push_front( widget(idx) );
 }
 
 #include "ktabwidget.moc"
