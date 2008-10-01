@@ -456,7 +456,7 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L
 KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
                                const KUrl *reqUrl /*= 0L*/, int /*method = -1*/ )
 {
-  QString url, host, protocol, datetime, domain, path, dir, filename;
+  QString url, host, protocol, datetime, domain, path, filename;
   bool isSlaveNetwork = false;
   if ( reqUrl ) {
     url = reqUrl->prettyUrl();
@@ -468,39 +468,14 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
     else
       domain = host;
 
-    path = reqUrl->path(KUrl::AddTrailingSlash);
     filename = reqUrl->fileName();
-    dir =  path + filename;
+    path = reqUrl->path();
 
     // detect if protocol is a network protocol...
-    // add your hacks here...
-    if ( protocol == "http" ||
-         protocol == "https" ||
-         protocol == "ftp" ||
-         protocol == "sftp" ||
-         protocol == "webdav" ||
-         protocol == "webdavs" ||
-         protocol == "finger" ||
-         protocol == "fish" ||
-         protocol == "gopher" ||
-         protocol == "imap" ||
-         protocol == "imaps" ||
-         protocol == "lan" ||
-         protocol == "ldap" ||
-         protocol == "mailto" ||
-         protocol == "news" ||
-         protocol == "nntp" ||
-         protocol == "pop3" ||
-         protocol == "pop3s" ||
-         protocol == "smtp" ||
-         protocol == "smtps" ||
-         protocol == "telnet"
-        ) {
-      isSlaveNetwork = false;
-    }
+    isSlaveNetwork = KProtocolInfo::protocolClass(protocol) == ":internet";
   } else {
     // assume that the errorText has the location we are interested in
-    url = host = domain = path = filename = dir = errorText;
+    url = host = domain = path = filename = errorText;
     protocol = i18nc("@info protocol", "(unknown)" );
   }
 
@@ -561,7 +536,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
       errorName = i18n( "Cannot Open Resource For Reading" );
       description = i18n( "This means that the contents of the requested file "
         "or folder <strong>%1</strong> could not be retrieved, as read "
-        "access could not be obtained." ,  dir );
+        "access could not be obtained.", path );
       causes << i18n( "You may not have permissions to read the file or open "
         "the folder.") << cLocked << cHardware;
       solutions << sAccess << sQuerylock << sSysadmin;
@@ -652,7 +627,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
     case  KIO::ERR_IS_DIRECTORY:
       errorName = i18n( "File Expected" );
       description = i18n( "The request expected a file, however the "
-        "folder <strong>%1</strong> was found instead." ,  dir );
+        "folder <strong>%1</strong> was found instead." , path );
       causes << i18n( "This may be an error on the server side." ) << cBug;
       solutions << sUpdate << sSysadmin;
       break;
@@ -660,7 +635,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
     case  KIO::ERR_IS_FILE:
       errorName = i18n( "Folder Expected" );
       description = i18n( "The request expected a folder, however "
-        "the file <strong>%1</strong> was found instead." ,  filename );
+        "the file <strong>%1</strong> was found instead." , filename );
       causes << cBug;
       solutions << sUpdate << sSysadmin;
       break;
@@ -668,7 +643,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
     case  KIO::ERR_DOES_NOT_EXIST:
       errorName = i18n( "File or Folder Does Not Exist" );
       description = i18n( "The specified file or folder <strong>%1</strong> "
-        "does not exist." ,  dir );
+        "does not exist." , path );
       causes << cBug;
       solutions << sUpdate << sSysadmin;
       break;
@@ -729,7 +704,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
       errorName = i18n( "Unable to Enter Folder" );
       description = i18n( "This means that an attempt to enter (in other words, "
         "to open) the requested folder <strong>%1</strong> was rejected." ,
-          dir );
+          path );
       causes << cAccess << cLocked;
       solutions << sAccess << sQuerylock << sSysadmin;
       break;
@@ -817,7 +792,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
         "<strong>L</strong>ocator (URL) that you entered did not refer to "
         "a valid mechanism of accessing the specific resource, "
         "<strong>%1%2</strong>." ,
-          !host.isNull() ? host + '/' : QString() ,  dir );
+          !host.isNull() ? host + '/' : QString() , path );
       causes << i18n( "KDE is able to communicate through a protocol within a "
         "protocol. This request specified a protocol be used as such, however "
         "this protocol is not capable of such an action. This is a rare event, "
@@ -962,7 +937,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
     case  KIO::ERR_COULD_NOT_RMDIR:
       errorName = i18n( "Could Not Remove Folder" );
       description = i18n( "An attempt to remove the specified folder, "
-        "<strong>%1</strong>, failed." ,  dir );
+        "<strong>%1</strong>, failed." , path );
       causes << i18n( "The specified folder may not exist." )
         << i18n( "The specified folder may not be empty." )
         << cAccess;
