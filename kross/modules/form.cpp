@@ -90,7 +90,7 @@ QString FormListView::text(int row) {
 }
 
 /*********************************************************************************
- * FormDialog
+ * FormFileWidget
  */
 
 namespace Kross {
@@ -399,21 +399,27 @@ QWidget* FormDialog::page(const QString& name) const
     return d->items.contains(name) ? d->items[name]->widget() : 0;
 }
 
-QWidget* FormDialog::addPage(const QString& name, const QString& header, const QString& iconname)
+//shared by FormDialog and FormAssistant
+static KPageWidgetItem* formAddPage(KPageDialog* dialog, const QString& name, const QString& header, const QString& iconname)
 {
-    QWidget* widget = new QWidget( mainWidget() );
+    QWidget* widget = new QWidget( dialog->mainWidget() );
     QVBoxLayout* boxlayout = new QVBoxLayout(widget);
     boxlayout->setSpacing(0);
     boxlayout->setMargin(0);
     widget->setLayout(boxlayout);
 
-    KPageWidgetItem* item = KPageDialog::addPage(widget, name);
+    KPageWidgetItem* item = dialog->addPage(widget, name);
     item->setHeader(header.isNull() ? name : header);
     if( ! iconname.isEmpty() )
         item->setIcon( KIcon(iconname) );
-    d->items.insert(name, item);
+    //d->items.insert(name, item);
 
-    return item->widget();
+    return item;
+}
+
+QWidget* FormDialog::addPage(const QString& name, const QString& header, const QString& iconname)
+{
+    return d->items.insert(name, formAddPage((KPageDialog*)this,name,header,iconname)).value()->widget();
 }
 
 void FormDialog::setMainWidget(QWidget *newMainWidget)
@@ -442,6 +448,123 @@ void FormDialog::slotCurrentPageChanged(KPageWidgetItem* current)
 {
     Q_UNUSED(current);
     //kDebug() << "FormDialog::slotCurrentPageChanged current=" << current->name();
+    //foreach(QWidget* widget, current->widget()->findChildren< QWidget* >("")) widget->setFocus();
+}
+
+
+namespace Kross {
+    /// \internal d-pointer class.
+    class FormAssistant::Private
+    {
+        public:
+            KDialog::ButtonCode buttoncode;
+            QHash<QString, KPageWidgetItem*> items;
+    };
+}
+FormAssistant::FormAssistant(const QString& caption)
+    : KAssistantDialog( /*0, Qt::WShowModal | Qt::WDestructiveClose*/ )
+    , d( new Private() )
+{
+    setCaption(caption);
+    setSizePolicy( QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding) );
+
+    connect(this, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)),
+            this, SLOT(slotCurrentPageChanged(KPageWidgetItem*)));
+    /* unlike boost qt doesnt support defining of slot call order!
+    connect(this, SIGNAL(user2Clicked()), this, SIGNAL (nextClicked()));
+    connect(this, SIGNAL(user3Clicked()), this, SIGNAL (backClicked()));
+    */
+}
+
+FormAssistant::~FormAssistant()
+{
+    delete d;
+}
+
+void FormAssistant::showHelpButton(bool show)
+{
+    showButton(KDialog::Help, show);
+}
+
+void FormAssistant::back()
+{
+    emit backClicked();
+    KAssistantDialog::back();
+}
+void FormAssistant::next()
+{
+    emit nextClicked();
+    KAssistantDialog::next();
+}
+
+QString FormAssistant::currentPage() const
+{
+    KPageWidgetItem* item = KPageDialog::currentPage();
+    return item ? item->name() : QString();
+}
+
+bool FormAssistant::setCurrentPage(const QString& name)
+{
+    if( ! d->items.contains(name) )
+        return false;
+    KPageDialog::setCurrentPage( d->items[name] );
+    return true;
+}
+
+QWidget* FormAssistant::page(const QString& name) const
+{
+    return d->items.contains(name) ? d->items[name]->widget() : 0;
+}
+
+QWidget* FormAssistant::addPage(const QString& name, const QString& header, const QString& iconname)
+{
+    return d->items.insert(name, formAddPage((KPageDialog*)this,name,header,iconname)).value()->widget();
+}
+
+bool FormAssistant::isAppropriate (const QString& name) const
+{
+    return d->items.contains(name) && KAssistantDialog::isAppropriate(d->items[name]);
+}
+void FormAssistant::setAppropriate (const QString& name, bool appropriate)
+{
+    if (!d->items.contains(name))
+        return;
+
+    KAssistantDialog::setAppropriate(d->items[name],appropriate);
+}
+bool FormAssistant::isValid (const QString& name) const
+{
+    return d->items.contains(name) && KAssistantDialog::isValid(d->items[name]);
+}
+void FormAssistant::setValid (const QString& name, bool enable)
+{
+    if (!d->items.contains(name))
+        return;
+
+    KAssistantDialog::setValid(d->items[name],enable);
+}
+
+QString FormAssistant::result()
+{
+    int i = metaObject()->indexOfEnumerator("AssistantButtonCode");
+    if( i < 0 ) {
+        kWarning() << "Kross::FormAssistant::setButtons No such enumerator \"AssistantButtonCode\"";
+        return QString();
+    }
+    QMetaEnum e = metaObject()->enumerator(i);
+    return e.valueToKey(FormAssistant::AssistantButtonCode(int(d->buttoncode)));
+}
+
+void FormAssistant::slotButtonClicked(int button)
+{
+    d->buttoncode = (KDialog::ButtonCode) button;
+    KDialog::slotButtonClicked(button);
+}
+
+void FormAssistant::slotCurrentPageChanged(KPageWidgetItem* current)
+{
+    Q_UNUSED(current);
+    //kDebug() << "FormAssistant::slotCurrentPageChanged current=" << current->name();
     //foreach(QWidget* widget, current->widget()->findChildren< QWidget* >("")) widget->setFocus();
 }
 
@@ -548,6 +671,11 @@ QWidget* FormModule::showProgressDialog(const QString& caption, const QString& l
 QWidget* FormModule::createDialog(const QString& caption)
 {
     return new FormDialog(caption);
+}
+
+QWidget* FormModule::createAssistant(const QString& caption)
+{
+    return new FormAssistant(caption);
 }
 
 QObject* FormModule::createLayout(QWidget* parent, const QString& layout)

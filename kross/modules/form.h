@@ -25,6 +25,7 @@
 #include <QtGui/QListWidget>
 
 #include <kpagedialog.h>
+#include <kassistantdialog.h>
 //#include <kfilewidget.h>
 
 namespace Kross {
@@ -215,13 +216,13 @@ namespace Kross {
      * mydialog.setButtons("Ok|Cancel")
      * mydialog.setFaceType("Plain") #Auto Plain List Tree Tabbed
      * mywidget = forms.createWidgetFromUIFile(mydialog, "./mywidget.ui")
-     * mywidget["QLineEdit"].setText("some string")
+     * mywidget["lineEdit"].setText("some string")
      * if mydialog.exec_loop():
      *     if mydialog.result() == "Ok":
-     *         print mywidget["QLineEdit"].text
+     *         print mywidget["lineEdit"].text
      * \endcode
      */
-    class FormDialog : public KPageDialog
+    class FormDialog: public KPageDialog
     {
             Q_OBJECT
 
@@ -339,6 +340,163 @@ namespace Kross {
             Private* const d;
     };
 
+
+    /**
+     * The FormAssistant class provides access to KAssistantDialog objects as
+     * top-level containers.
+     *
+     * Example (in Python) :
+     * \code
+     * import Kross
+     * forms = Kross.module("forms")
+     * myassistant = forms.createAssistant("MyAssistant")
+     * myassistant.showHelpButton(0)
+     * mywidget = myassistant.addPage("name","header")
+     * myoptions = forms.createWidgetFromUIFile(mywidget, "./mywidget.ui")
+     * mywidget2 = myassistant.addPage("name2","header2")
+     * myoptions2 = forms.createWidgetFromUIFile(mywidget2, "./mywidget.ui")
+     * mywidget3 = myassistant.addPage("name3","header3")
+     * myoptions3 = forms.createWidgetFromUIFile(mywidget3, "./mywidget.ui")
+     * myoptions["lineEdit"].setText("some string")
+     *
+     * def nextClicked():
+     *     myassistant.setAppropriate("name2",0)
+     * def finished():
+     *     ...
+     *     myassistant.deleteLater() #remember to cleanup
+     *
+     * myassistant.connect("nextClicked()",nextClicked)
+     * myassistant.connect("finished()",finished)
+     * myassistant.show()
+     *
+     * \endcode
+     */
+    class FormAssistant: public KAssistantDialog
+    {
+            Q_OBJECT
+            Q_ENUMS(AssistantButtonCode)
+        public:
+            enum AssistantButtonCode
+            {
+                None    = 0x00000000,
+                Help    = 0x00000001,
+                Default = 0x00000002,
+                Cancel  = 0x00000020,
+                Finish  = 0x00001000,
+                Next    = 0x00002000,
+                Back    = 0x00004000,
+                NoDefault = 0x00008000
+            };
+            Q_DECLARE_FLAGS(AssistantButtonCodes, AssistantButtonCode)
+
+        public:
+            FormAssistant(const QString& caption);
+            virtual ~FormAssistant();
+
+        public Q_SLOTS:
+
+            void showHelpButton(bool);
+
+            /**
+             * \return the name of the currently selected page. Use the \a page()
+             * method to get the matching page QWidget instance.
+             */
+            QString currentPage() const;
+
+            /**
+             * Set the current page to \p name . If there exists no page with
+             * such a pagename the method returns false else (if the page was
+             * successfully set) true is returned.
+             */
+            bool setCurrentPage(const QString& name);
+
+            /**
+             * \return the QWidget page instance which has the pagename \p name
+             * or NULL if there exists no such page.
+             */
+            QWidget* page(const QString& name) const;
+
+            /**
+             * Add and return a new page.
+             *
+             * \param name The name the page has. This name is for example returned
+             * at the \a currentPage() method and should be unique. The name is also
+             * used to display a short title for the page.
+             * \param header The longer header title text used for display purposes.
+             * \param iconname The name of the icon which the page have. This could
+             * be for example "about_kde", "document-open", "configure" or any other
+             * iconname known by KDE.
+             * \return the new QWidget page instance.
+             */
+            QWidget* addPage(const QString& name, const QString& header = QString(), const QString& iconname = QString());
+
+            /**
+             * @see KAssistantDialog::isAppropriate()
+             */
+            bool isAppropriate (const QString& name) const;
+            /**
+             * @see KAssistantDialog::setAppropriate()
+             */
+            void setAppropriate (const QString& name, bool appropriate);
+            /**
+             * @see KAssistantDialog::isValid()
+             */
+            bool isValid (const QString& name) const;
+            /**
+             * @see KAssistantDialog::setValid()
+             */
+            void setValid (const QString& name, bool enable);
+
+            /**
+             * Shows the dialog as a modal dialog, blocking until the user
+             * closes it and returns the execution result.
+             *
+             * \return >=1 if the dialog was accepted (e.g. "Finished" pressed) else
+             * the user rejected the dialog (e.g. by pressing "Cancel" or just
+             * closing the dialog by pressing the escape-key).
+             */
+            int exec() { return KDialog::exec(); }
+
+            /**
+             * Same as the \a exec() method above provided for Python-lovers (python
+             * does not like functions named "exec" and PyQt named it "exec_loop", so
+             * just let's do the same).
+             */
+            int exec_loop() { return exec(); }
+
+            /**
+             * \return the result. The result may for example "Finish" or "Cancel".
+             */
+            QString result();
+
+            /**
+             * Force page switching. This will also emit backClicked()
+             */
+            void back();
+            /**
+             * Force page switching. This will also emit nextClicked()
+             */
+            void next();
+
+        private Q_SLOTS:
+            virtual void slotButtonClicked(int button);
+            void slotCurrentPageChanged(KPageWidgetItem* current);
+
+        signals:
+            /**
+             * use it to setAppropriate()
+             */
+            void nextClicked();
+            void backClicked();
+
+        private:
+            /// \internal d-pointer class.
+            class Private;
+            /// \internal d-pointer instance.
+            Private* const d;
+    };
+
+
     /**
      * The FormModule provides access to UI functionality like dialogs or widgets.
      *
@@ -418,6 +576,13 @@ namespace Kross {
              * \param caption The displayed caption of the dialog.
              */
             QWidget* createDialog(const QString& caption);
+
+            /**
+             * Create and return a new \a FormAssistant instance.
+             *
+             * \param caption The displayed caption of the dialog.
+             */
+            QWidget* createAssistant(const QString& caption);
 
             /**
              * Create and return a new QWidget instance.
