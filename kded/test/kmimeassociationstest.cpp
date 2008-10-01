@@ -252,7 +252,8 @@ private Q_SLOTS:
         offers = offerHash.offersFor("text/html");
         qStableSort(offers);
         QStringList textHtmlApps = preferredApps["text/html"];
-        textHtmlApps.append("firefox.desktop");
+        if (KService::serviceByStorageId("firefox.desktop"))
+            textHtmlApps.append("firefox.desktop");
         qDebug() << assembleOffers(offers);
         QCOMPARE(assembleOffers(offers), textHtmlApps);
 
