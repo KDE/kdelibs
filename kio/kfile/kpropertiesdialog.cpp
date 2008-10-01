@@ -2487,40 +2487,40 @@ void KFilePermissionsPropsPlugin::applyChanges()
   const bool ACLChange = ( d->extendedACL !=  properties->item().ACL() );
   const bool defaultACLChange = ( d->defaultACL != properties->item().defaultACL() );
 
-  if ( owner.isEmpty() && group.isEmpty() && !recursive
-      && !permissionChange && !ACLChange && !defaultACLChange )
-    return;
+    if (owner.isEmpty() && group.isEmpty() && !recursive
+        && !permissionChange && !ACLChange && !defaultACLChange)
+        return;
 
     KIO::Job * job;
     if (files.count() > 0) {
-      job = KIO::chmod( files, orFilePermissions, ~andFilePermissions,
-			owner, group, false );
-    if ( ACLChange && d->fileSystemSupportsACLs )
-      job->addMetaData( "ACL_STRING", d->extendedACL.isValid()?d->extendedACL.asString():"ACL_DELETE" );
-    if ( defaultACLChange && d->fileSystemSupportsACLs )
-      job->addMetaData( "DEFAULT_ACL_STRING", d->defaultACL.isValid()?d->defaultACL.asString():"ACL_DELETE" );
+        job = KIO::chmod( files, orFilePermissions, ~andFilePermissions,
+                          owner, group, false );
+        if ( ACLChange && d->fileSystemSupportsACLs )
+            job->addMetaData( "ACL_STRING", d->extendedACL.isValid()?d->extendedACL.asString():"ACL_DELETE" );
+        if ( defaultACLChange && d->fileSystemSupportsACLs )
+            job->addMetaData( "DEFAULT_ACL_STRING", d->defaultACL.isValid()?d->defaultACL.asString():"ACL_DELETE" );
 
-      connect( job, SIGNAL( result( KJob * ) ),
-	       SLOT( slotChmodResult( KJob * ) ) );
-      QEventLoop eventLoop;
-      connect(this, SIGNAL(leaveModality()),
-              &eventLoop, SLOT(quit()));
-      eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
+        connect( job, SIGNAL( result( KJob * ) ),
+                 SLOT( slotChmodResult( KJob * ) ) );
+        QEventLoop eventLoop;
+        connect(this, SIGNAL(leaveModality()),
+                &eventLoop, SLOT(quit()));
+        eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
     }
     if (dirs.count() > 0) {
-      job = KIO::chmod( dirs, orDirPermissions, ~andDirPermissions,
-			owner, group, recursive );
-    if ( ACLChange && d->fileSystemSupportsACLs )
-      job->addMetaData( "ACL_STRING", d->extendedACL.isValid()?d->extendedACL.asString():"ACL_DELETE" );
-    if ( defaultACLChange && d->fileSystemSupportsACLs )
-      job->addMetaData( "DEFAULT_ACL_STRING", d->defaultACL.isValid()?d->defaultACL.asString():"ACL_DELETE" );
+        job = KIO::chmod( dirs, orDirPermissions, ~andDirPermissions,
+                          owner, group, recursive );
+        if ( ACLChange && d->fileSystemSupportsACLs )
+            job->addMetaData( "ACL_STRING", d->extendedACL.isValid()?d->extendedACL.asString():"ACL_DELETE" );
+        if ( defaultACLChange && d->fileSystemSupportsACLs )
+            job->addMetaData( "DEFAULT_ACL_STRING", d->defaultACL.isValid()?d->defaultACL.asString():"ACL_DELETE" );
 
-      connect( job, SIGNAL( result( KJob * ) ),
-	       SLOT( slotChmodResult( KJob * ) ) );
-      QEventLoop eventLoop;
-      connect(this, SIGNAL(leaveModality()),
-              &eventLoop, SLOT(quit()));
-      eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
+        connect( job, SIGNAL( result( KJob * ) ),
+                 SLOT( slotChmodResult( KJob * ) ) );
+        QEventLoop eventLoop;
+        connect(this, SIGNAL(leaveModality()),
+                &eventLoop, SLOT(quit()));
+        eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
     }
 }
 
