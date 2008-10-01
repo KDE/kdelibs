@@ -18,6 +18,8 @@
 */
 
 #include "kdirmodeltest.h"
+#include <kio/chmodjob.h>
+#include <kprotocolinfo.h>
 #include "kdirmodeltest.moc"
 #include <kdirmodel.h>
 #include <kdirlister.h>
@@ -99,6 +101,12 @@ void KDirModelTest::fillModel( bool reload )
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
 
+    collectKnownIndexes();
+    disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+}
+
+void KDirModelTest::collectKnownIndexes()
+{
     m_dirIndex = QModelIndex();
     m_fileIndex = QModelIndex();
     m_secondFileIndex = QModelIndex();
@@ -145,7 +153,6 @@ void KDirModelTest::fillModel( bool reload )
 
     // Index of ... well, subdir/subsubdir/testfile
     m_fileInSubdirIndex = m_dirModel.index(0, 0, subdirIndex);
-    disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
 }
 
 void KDirModelTest::enterLoop()
@@ -395,6 +402,38 @@ void KDirModelTest::testRenameFile()
                 &m_eventLoop, SLOT(quit()) );
 }
 
+void KDirModelTest::testChmodDirectory() // #53397
+{
+    QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+             &m_eventLoop, SLOT(quit()) );
+    const QString path = m_tempDir->name();
+    KFileItem rootItem = m_dirModel.itemForIndex(QModelIndex());
+    const mode_t origPerm = rootItem.permissions();
+    mode_t newPerm = origPerm ^ S_IWGRP;
+    QVERIFY(newPerm != origPerm);
+    KFileItemList items; items << rootItem;
+    KIO::Job* job = KIO::chmod(items, newPerm, S_IWGRP, QString(), QString(), false, KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    // ChmodJob doesn't talk to KDirNotify, kpropertiesdialog does.
+    // [this allows to group notifications after all the changes one can make in the dialog]
+    org::kde::KDirNotify::emitFilesChanged( QStringList() << path );
+    // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
+    enterLoop();
+
+    // If we come here, then dataChanged() was emitted - all good.
+    QCOMPARE(spyDataChanged.count(), 1);
+    QModelIndex receivedIndex = spyDataChanged[0][0].value<QModelIndex>();
+    QVERIFY(!receivedIndex.isValid());
+
+    QCOMPARE(m_dirModel.itemForIndex(QModelIndex()).permissions(), newPerm);
+
+    disconnect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+                &m_eventLoop, SLOT(quit()) );
+}
+
 void KDirModelTest::testExpandToUrl_data()
 {
     QTest::addColumn<bool>("newdir"); // whether to re-create a new KTempDir completely, to avoid cached fileitems
@@ -533,29 +572,29 @@ void KDirModelTest::testUrlWithRef() // #171117
     enterLoop();
 
     QCOMPARE(dirLister->url().url(), url.url(KUrl::RemoveTrailingSlash));
-    m_dirIndex = QModelIndex();
-    m_fileIndex = QModelIndex();
-    m_secondFileIndex = QModelIndex();
-    for (int row = 0; row < m_topLevelFileNames.count() + 1 /*subdir*/; ++row) {
-        QModelIndex idx = m_dirModel.index(row, 0, QModelIndex());
-        KFileItem item = m_dirModel.itemForIndex(idx);
-        if (item.isDir())
-            m_dirIndex = idx;
-        else if (item.url().fileName() == "toplevelfile_1")
-            m_fileIndex = idx;
-        else if (item.url().fileName() == "toplevelfile_2")
-            m_secondFileIndex = idx;
-        else if (item.url().fileName().startsWith("special"))
-            m_specialFileIndex = idx;
+    collectKnownIndexes();
+    disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+}
+
+void KDirModelTest::testUrlWithHost() // #160057
+{
+    if (!KProtocolInfo::isKnownProtocol("fonts")) {
+        QSKIP("kio_fonts not installed", SkipAll);
     }
-    QVERIFY(m_dirIndex.isValid());
-    QVERIFY(m_fileIndex.isValid());
-    QVERIFY(m_secondFileIndex.isValid());
-    QVERIFY(m_specialFileIndex.isValid());
+    KUrl url("fonts://foo/System");
+    KDirLister* dirLister = m_dirModel.dirLister();
+    dirLister->openUrl(url, KDirLister::NoFlags);
+    connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+    enterLoop();
+
+    QCOMPARE(dirLister->url().url(), QString("fonts:/System"));
+    disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
 }
 
 void KDirModelTest::testDeleteFile()
 {
+    fillModel(false);
+
     QVERIFY(m_fileIndex.isValid());
     const int oldTopLevelRowCount = m_dirModel.rowCount();
     const QString file = m_tempDir->name() + "toplevelfile_1";
