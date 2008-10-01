@@ -152,7 +152,7 @@ class KFilePreviewGenerator::Private
 public:
     Private(KFilePreviewGenerator* parent,
             KAbstractViewAdapter* viewAdapter,
-            QAbstractProxyModel* model);
+            QAbstractItemModel* model);
     ~Private();
     
     /**
@@ -297,7 +297,7 @@ private:
 
 KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
                                         KAbstractViewAdapter* viewAdapter,
-                                        QAbstractProxyModel* model) :
+                                        QAbstractItemModel* model) :
     m_previewShown(true),
     m_clearItemQueues(true),
     m_hasCutSelection(false),
@@ -308,7 +308,7 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
     m_scrollAreaTimer(0),
     m_previewJobs(),
     m_dirModel(0),
-    m_proxyModel(model),
+    m_proxyModel(0),
     m_mimeTypeResolver(0),
     m_cutItemsCache(),
     m_previews(),
@@ -319,10 +319,18 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
     if (!m_viewAdapter->iconSize().isValid()) {
         m_previewShown = false;
     }
-
-    m_dirModel = static_cast<KDirModel*>(m_proxyModel->sourceModel());
-    connect(m_dirModel->dirLister(), SIGNAL(newItems(const KFileItemList&)),
-            q, SLOT(generatePreviews(const KFileItemList&)));
+    
+    m_proxyModel = qobject_cast<QAbstractProxyModel*>(model);
+    m_dirModel = (m_proxyModel == 0) ?
+                 qobject_cast<KDirModel*>(model) :
+                 qobject_cast<KDirModel*>(m_proxyModel->sourceModel());
+    if (m_dirModel == 0) {
+        // previews can only get generated for directory models
+        m_previewShown = false;
+    } else {
+        connect(m_dirModel->dirLister(), SIGNAL(newItems(const KFileItemList&)),
+                q, SLOT(generatePreviews(const KFileItemList&)));
+    }
 
     QClipboard* clipboard = QApplication::clipboard();
     connect(clipboard, SIGNAL(dataChanged()),
@@ -730,18 +738,27 @@ void KFilePreviewGenerator::Private::orderItems(KFileItemList& items)
     // the model. Choosing the right algorithm is important when having directories
     // with several hundreds or thousands of items.
 
+
+    const bool hasProxy = (m_proxyModel != 0);
     const int itemCount = items.count();
-    const int rowCount = m_proxyModel->rowCount();
+    const int rowCount = hasProxy ? m_proxyModel->rowCount() : m_dirModel->rowCount();
     const QRect visibleArea = m_viewAdapter->visibleArea();
 
+    QModelIndex dirIndex;
+    QRect itemRect;
     int insertPos = 0;
     if (itemCount * 10 > rowCount) {
         // Algorithm 1: The number of items is > 10 % of the row count. Parse all rows
         // and check whether the received row is part of the item list.
         for (int row = 0; row < rowCount; ++row) {
-            const QModelIndex proxyIndex = m_proxyModel->index(row, 0);
-            const QRect itemRect = m_viewAdapter->visualRect(proxyIndex);
-            const QModelIndex dirIndex = m_proxyModel->mapToSource(proxyIndex);
+            if (hasProxy) {
+                const QModelIndex proxyIndex = m_proxyModel->index(row, 0);
+                itemRect = m_viewAdapter->visualRect(proxyIndex);
+                dirIndex = m_proxyModel->mapToSource(proxyIndex);
+            } else {
+                dirIndex = m_dirModel->index(row, 0);
+                itemRect = m_viewAdapter->visualRect(dirIndex);
+            }
 
             KFileItem item = m_dirModel->itemForIndex(dirIndex);  // O(1)
             const KUrl url = item.url();
@@ -769,9 +786,13 @@ void KFilePreviewGenerator::Private::orderItems(KFileItemList& items)
         // Algorithm 2: The number of items is <= 10 % of the row count. In this case iterate
         // all items and receive the corresponding row from the item.
         for (int i = 0; i < itemCount; ++i) {
-            const QModelIndex dirIndex = m_dirModel->indexForItem(items.at(i)); // O(n) (n = number of rows)
-            const QModelIndex proxyIndex = m_proxyModel->mapFromSource(dirIndex);
-            const QRect itemRect = m_viewAdapter->visualRect(proxyIndex);
+            dirIndex = m_dirModel->indexForItem(items.at(i)); // O(n) (n = number of rows)
+            if (hasProxy) {
+                const QModelIndex proxyIndex = m_proxyModel->mapFromSource(dirIndex);
+                itemRect = m_viewAdapter->visualRect(proxyIndex);
+            } else {
+                itemRect = m_viewAdapter->visualRect(dirIndex);
+            }
 
             if (itemRect.intersects(visibleArea)) {
                 // The current item is (at least partly) visible. Move it
@@ -798,8 +819,9 @@ bool KFilePreviewGenerator::Private::decodeIsCutSelection(const QMimeData* mimeD
 
 KFilePreviewGenerator::KFilePreviewGenerator(QAbstractItemView* parent, QAbstractProxyModel* model) :
     QObject(parent),
-    d(new Private(this, new DefaultViewAdapter(parent, this), model))
+    d(new Private(this, new DefaultViewAdapter(parent, this), parent->model()))
 {
+    Q_UNUSED(model); // TODO: remove parameter 'model' on Monday the 6th of October
     d->m_itemView = parent;
 }
 
@@ -816,9 +838,9 @@ KFilePreviewGenerator::~KFilePreviewGenerator()
 
 void KFilePreviewGenerator::setPreviewShown(bool show)
 {
-    if (show && !d->m_viewAdapter->iconSize().isValid()) {
-        // the view must provide an icon size, otherwise the showing
-        // off previews will get ignored
+    if (show && (!d->m_viewAdapter->iconSize().isValid() || (d->m_dirModel == 0))) {
+        // the view must provide an icon size and a directory model,
+        // otherwise the showing the previews will get ignored
         return;
     }
     
