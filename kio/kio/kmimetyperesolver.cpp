@@ -81,18 +81,26 @@ QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
     const QRect visibleArea = m_adapter->visibleArea();
     QList<QPersistentModelIndex>::const_iterator it = m_pendingIndexes.begin();
     const QList<QPersistentModelIndex>::const_iterator end = m_pendingIndexes.end();
+    bool layoutDone = true;
     for ( ; it != end ; ++it ) {
         const QModelIndex index = m_proxyModel ? m_proxyModel->mapFromSource(*it) : QModelIndex(*it);
         const QRect rect = m_adapter->visualRect(index);
-        if (rect.intersects(visibleArea)) {
+        if (rect.isEmpty())
+            layoutDone = false;
+        else if (rect.intersects(visibleArea)) {
             //kDebug() << "found item at " << rect << " in visibleArea " << visibleArea;
             return QModelIndex(*it);
         }
     }
 
-    //kDebug() << "no more visible icon found";
-    m_noVisibleIcon = true;
-    return QModelIndex();
+    if (layoutDone) {
+        //kDebug() << "no more visible icon found";
+        m_noVisibleIcon = true;
+        return QModelIndex();
+    } else {
+        // Return a random index if the layout is still ongoing
+        return QModelIndex(m_pendingIndexes.first());
+    }
 }
 
 ////
