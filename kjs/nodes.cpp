@@ -975,6 +975,10 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
       // eval-injected symbols can be deleted...
       flags &= ~DontDelete;
 
+      // eval injected a new local into scope! Better mark that down,
+      // so that NonLocalResolver stops skipping the local scope
+      exec->variableObject()->setLocalInjected();
+
       // fallthrough intentional
     case GlobalCode:
       exec->variableObject()->put(exec, ident, makeFunctionObject(exec), flags);
