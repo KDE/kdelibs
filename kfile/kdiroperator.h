@@ -40,6 +40,7 @@ class KActionCollection;
 class KActionMenu;
 class KDirLister;
 class KPreviewWidgetBase;
+class KFilePreviewGenerator;
 
 namespace KIO
 {
@@ -530,6 +531,12 @@ public:
      */
     virtual KIO::CopyJob* trash(const KFileItemList& items, QWidget *parent,
                                 bool ask = true, bool showProgress = true);
+
+    /**
+      * Returns the preview generator for the current view.
+      * @since 4.2
+      */
+    KFilePreviewGenerator *previewGenerator() const;
 
 protected:
     /**

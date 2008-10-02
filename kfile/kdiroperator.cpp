@@ -68,6 +68,7 @@
 #include <kio/netaccess.h>
 #include <kio/previewjob.h>
 #include <kio/renamedialog.h>
+#include <kfilepreviewgenerator.h>
 #include <kpropertiesdialog.h>
 #include <kstandardshortcut.h>
 #include <kde_file.h>
@@ -258,6 +259,8 @@ public:
     KActionCollection *actionCollection;
 
     KConfigGroup *configGroup;
+
+    KFilePreviewGenerator *previewGenerator;
 };
 
 KDirOperator::Private::Private(KDirOperator *_parent) :
@@ -278,7 +281,8 @@ KDirOperator::Private::Private(KDirOperator *_parent) :
     dropOptions(0),
     actionMenu(0),
     actionCollection(0),
-    configGroup(0)
+    configGroup(0),
+    previewGenerator(0)
 {
 }
 
@@ -817,6 +821,11 @@ KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
     }
 
     return 0L;
+}
+
+KFilePreviewGenerator *KDirOperator::previewGenerator() const
+{
+    return d->previewGenerator;
 }
 
 void KDirOperator::trashSelected()
@@ -1435,6 +1444,9 @@ void KDirOperator::setView(QAbstractItemView *view)
     connect(d->itemView->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, SLOT(_k_slotSelectionChanged()));
+
+    delete d->previewGenerator;
+    d->previewGenerator = new KFilePreviewGenerator(d->itemView, dynamic_cast<QAbstractProxyModel*>(d->itemView->model()));
 
     emit viewChanged(view);
 }

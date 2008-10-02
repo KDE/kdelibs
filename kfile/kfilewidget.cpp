@@ -571,6 +571,11 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     inlinePreview->setChecked(d->showInlinePreviews);
 
+    KFilePreviewGenerator *pg = d->ops->previewGenerator();
+    if (pg) {
+        inlinePreview->setChecked(pg->isPreviewShown());
+    }
+
     setSelection(d->selection);
     d->locationEdit->setFocus();
 }
@@ -2177,6 +2182,28 @@ void KFileWidgetPrivate::_k_iconSizeSliderChanged( int value )
         ops->view()->setIconSize(QSize(val, val));
         if (previewGenerator && showInlinePreviews) {
             previewGenerator->updatePreviews();
+        }
+    }
+}
+
+void KFileWidgetPrivate::_k_toggleInlinePreviews( bool show )
+{
+    KFilePreviewGenerator *pg = ops->previewGenerator();
+    if (pg) {
+        pg->setPreviewShown( show );
+    }
+}
+
+void KFileWidgetPrivate::_k_iconSizeSliderChanged( int value )
+{
+    if (ops->view()) {
+        int maxSize = KIconLoader::SizeEnormous;
+        int val = maxSize * value / 100;
+        val = qMax(val, (int) KIconLoader::SizeSmall);
+        ops->view()->setIconSize(QSize(val, val));
+        KFilePreviewGenerator *pg = ops->previewGenerator();
+        if (pg) {
+            pg->updatePreviews();
         }
     }
 }
