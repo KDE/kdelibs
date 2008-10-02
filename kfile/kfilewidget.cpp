@@ -437,16 +437,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     coll->action( "detailed view" )->setShortcut( QKeySequence(Qt::Key_F7) );
     menu->addAction( coll->action( "detailed view" ));
     menu->addSeparator();
-    KActionMenu *iconSizeMenu = new KActionMenu(KIcon("zoom-original"), i18n("Icon Size"), this);
-    menu->addAction(iconSizeMenu);
-    QSlider *iconSizeSlider = new QSlider(this);
-    iconSizeSlider->setMinimum(0);
-    iconSizeSlider->setMaximum(100);
-    connect(iconSizeSlider, SIGNAL(valueChanged(int)),
-            SLOT(_k_iconSizeSliderChanged(int)));
-    KAction *iconSize = new KAction(this);
-    iconSize->setDefaultWidget(iconSizeSlider);
-    iconSizeMenu->addAction(iconSize);
     coll->action( "show hidden" )->setShortcut( QKeySequence(Qt::Key_F8) );
     menu->addAction( coll->action( "show hidden" ));
     menu->addAction( showSidebarAction );
@@ -466,6 +456,20 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     connect( menu->menu(), SIGNAL( aboutToShow() ),
              d->ops, SLOT( updateSelectionDependentActions() ));
 
+    QSlider *iconSizeSlider = new QSlider(this);
+    iconSizeSlider->setOrientation(Qt::Horizontal);
+    iconSizeSlider->setMinimum(0);
+    iconSizeSlider->setMaximum(100);
+    connect(iconSizeSlider, SIGNAL(valueChanged(int)),
+            SLOT(_k_iconSizeSliderChanged(int)));
+
+    KActionMenu *zoom = new KActionMenu( KIcon("zoom-original"), i18n("Icon Size"), this);
+    zoom->setDelayed( false );
+    coll->addAction("icon size", zoom);
+    KAction *sizeSlider = new KAction(this);
+    sizeSlider->setDefaultWidget(iconSizeSlider);
+    zoom->addAction(sizeSlider);
+
     QWidget *midSpacer = new QWidget(this);
     midSpacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -475,6 +479,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->toolbar->addAction(coll->action("reload"));
     d->toolbar->addWidget(midSpacer);
     d->toolbar->addAction(coll->action("mkdir"));
+    d->toolbar->addAction(zoom);
     d->toolbar->addAction(menu);
 
     d->toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
