@@ -2167,27 +2167,6 @@ void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
 
 void KFileWidgetPrivate::_k_toggleInlinePreviews( bool show )
 {
-    if ( previewGenerator ) {
-        previewGenerator->setPreviewShown( show );
-    }
-    showInlinePreviews = show;
-}
-
-void KFileWidgetPrivate::_k_iconSizeSliderChanged( int value )
-{
-    if (ops->view()) {
-        int maxSize = KIconLoader::SizeEnormous;
-        int val = maxSize * value / 100;
-        val = qMax(val, (int) KIconLoader::SizeSmall);
-        ops->view()->setIconSize(QSize(val, val));
-        if (previewGenerator && showInlinePreviews) {
-            previewGenerator->updatePreviews();
-        }
-    }
-}
-
-void KFileWidgetPrivate::_k_toggleInlinePreviews( bool show )
-{
     KFilePreviewGenerator *pg = ops->previewGenerator();
     if (pg) {
         pg->setPreviewShown( show );
