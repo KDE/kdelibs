@@ -104,20 +104,20 @@ KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortc
 : KDialog( parent ), d(new KShortcutsDialogPrivate(this))
 {
     setCaption(i18n("Configure Shortcuts"));
-    setButtons(Details|Default|Ok|Cancel|KDialog::User1);
+    setButtons(Details|Reset|Ok|Cancel|KDialog::User1);
     setButtonText(KDialog::User1, i18n("Print"));
     setButtonIcon(KDialog::User1, KIcon("document-print"));
     setModal(true);
     d->m_keyChooser = new KShortcutsEditor( this, types, allowLetterShortcuts );
     setMainWidget( d->m_keyChooser );
-    setDefaultButton(Ok);
+    setButtonText(Reset,i18n("Reset to Defaults"));
 
     d->m_schemeEditor = new KShortcutSchemesEditor(this);
     connect( d->m_schemeEditor, SIGNAL(shortcutsSchemeChanged(const QString&)),
              this, SLOT(changeShortcutScheme(const QString&)) );
     setDetailsWidget(d->m_schemeEditor);
 
-    connect( this, SIGNAL(defaultClicked()), d->m_keyChooser, SLOT(allDefault()) );
+    connect( this, SIGNAL(resetClicked()), d->m_keyChooser, SLOT(allDefault()) );
     connect( this, SIGNAL(user1Clicked()), d->m_keyChooser, SLOT(printShortcuts()) );
 
     KConfigGroup group( KGlobal::config(), "KShortcutsDialog Settings" );
