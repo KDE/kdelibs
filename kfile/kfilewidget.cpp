@@ -93,8 +93,7 @@ public:
           inAccept(false),
           dummyAdded(false),
           confirmOverwrite(false),
-          previewGenerator(0),
-          showInlinePreviews(false)
+          previewGenerator(0)
     {
     }
 
@@ -272,7 +271,6 @@ public:
     bool confirmOverwrite : 1;
 
     KFilePreviewGenerator *previewGenerator;
-    bool showInlinePreviews;
 };
 
 K_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
@@ -574,7 +572,8 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
         d->locationEdit->setUrl(d->url.fileName());
     }
 
-    inlinePreview->setChecked(d->showInlinePreviews);
+    inlinePreview->setChecked(d->ops->isInlinePreviewShown());
+    iconSizeSlider->setValue(d->ops->iconZoom());
 
     KFilePreviewGenerator *pg = d->ops->previewGenerator();
     if (pg) {
@@ -1573,8 +1572,6 @@ void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
     // should the URL navigator show the full path?
     urlNavigator->setShowFullPath( configGroup.readEntry(ShowFullPath, false) );
 
-    showInlinePreviews = configGroup.readEntry("inlinePreviews", false);
-
     int w1 = q->minimumSize().width();
     int w2 = toolbar->sizeHint().width();
     if (w1 < w2)
@@ -1607,7 +1604,6 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
     configGroup.writeEntry( AutoSelectExtChecked, autoSelectExtChecked );
     configGroup.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable() );
     configGroup.writeEntry( ShowFullPath, urlNavigator->showFullPath() );
-    configGroup.writeEntry( "inlinePreviews", showInlinePreviews );
 
     ops->writeConfig(configGroup);
     configGroup.config()->setForceGlobal(false);

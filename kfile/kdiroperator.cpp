@@ -831,6 +831,16 @@ KFilePreviewGenerator *KDirOperator::previewGenerator() const
     return d->previewGenerator;
 }
 
+bool KDirOperator::isInlinePreviewShown() const
+{
+    return d->showPreviews;
+}
+
+int KDirOperator::iconZoom() const
+{
+    return d->iconZoom;
+}
+
 void KDirOperator::trashSelected()
 {
     if (d->itemView == 0) {

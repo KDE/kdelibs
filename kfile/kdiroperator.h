@@ -538,6 +538,18 @@ public:
       */
     KFilePreviewGenerator *previewGenerator() const;
 
+    /**
+     * Returns whether the inline previews are shown or not.
+     * @since 4.2
+     */
+    bool isInlinePreviewShown() const;
+
+    /**
+     * Returns the icon zoom.
+     * @since 4.2
+     */
+    int iconZoom() const;
+
 protected:
     /**
      * A view factory for creating predefined fileviews. Called internally by setView,
