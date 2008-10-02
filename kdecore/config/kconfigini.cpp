@@ -485,8 +485,24 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
 
 bool KConfigIniBackend::isWritable() const
 {
-    if (!filePath().isEmpty())
-        return KStandardDirs::checkAccess(filePath(), W_OK);
+    if (!filePath().isEmpty()) {
+        if (KStandardDirs::checkAccess(filePath(), W_OK)) {
+            return true;
+        }
+        // The check might have failed because any of the containing dirs
+        // did not exist. If the file does not exist, check if the deepest
+        // existing dir is writable.
+        if (!QFileInfo(filePath()).exists()) {
+            QDir dir = QFileInfo(filePath()).absolutePath();
+            while (!dir.exists()) {
+                if (!dir.cdUp()) {
+                    return false;
+                }
+            }
+            return QFileInfo(dir.absolutePath()).isWritable();
+        }
+    }
+
     return false;
 }
 
@@ -532,7 +548,7 @@ KConfigBase::AccessMode KConfigIniBackend::accessMode() const
     if (filePath().isEmpty())
         return KConfigBase::NoAccess;
 
-    if (KStandardDirs::checkAccess(filePath(), W_OK))
+    if (isWritable())
         return KConfigBase::ReadWrite;
 
     return KConfigBase::ReadOnly;
