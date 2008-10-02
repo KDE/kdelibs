@@ -22,7 +22,7 @@
 
 #include <kfile_export.h>
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class KAbstractViewAdapter;
 class KDirModel;
