@@ -1496,9 +1496,6 @@ void KFileWidget::showEvent(QShowEvent* event)
         d->ops->setView( KFile::Default );
         d->ops->view()->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum ) );
         d->hasView = true;
-        d->previewGenerator = new KFilePreviewGenerator( d->ops->view(),
-                                                         static_cast<QAbstractProxyModel*>( d->ops->view()->model() ) );
-        d->previewGenerator->setPreviewShown( d->showInlinePreviews );
     }
     d->ops->clearHistory();
 

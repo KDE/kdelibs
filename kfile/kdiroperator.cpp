@@ -1445,7 +1445,6 @@ void KDirOperator::setView(QAbstractItemView *view)
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, SLOT(_k_slotSelectionChanged()));
 
-    delete d->previewGenerator;
     d->previewGenerator = new KFilePreviewGenerator(d->itemView, static_cast<QAbstractProxyModel*>(d->itemView->model()));
 
     emit viewChanged(view);
