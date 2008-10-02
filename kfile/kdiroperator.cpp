@@ -109,10 +109,8 @@ KDirOperatorIconView::KDirOperatorIconView(QWidget *parent) :
     setVerticalScrollMode(QListView::ScrollPerPixel);
     setHorizontalScrollMode(QListView::ScrollPerPixel);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-    QFontMetrics metrics(viewOptions().font);
-    const int fontHeight = metrics.height();
-    setGridSize(QSize(fontHeight * 10, fontHeight + 4));
+    setSpacing(0);
+    setIconSize(QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall));
 }
 
 KDirOperatorIconView::~KDirOperatorIconView()
@@ -125,7 +123,6 @@ QStyleOptionViewItem KDirOperatorIconView::viewOptions() const
     viewOptions.showDecorationSelected = true;
     viewOptions.decorationPosition = QStyleOptionViewItem::Left;
     viewOptions.displayAlignment = Qt::AlignLeft | Qt::AlignVCenter;
-    viewOptions.decorationSize = QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall);
 
     return viewOptions;
 }
@@ -1170,19 +1167,6 @@ void KDirOperator::activatedMenu(const KFileItem &item, const QPoint &pos)
 void KDirOperator::changeEvent(QEvent *event)
 {
     QWidget::changeEvent(event);
-
-    if (event->type() == QEvent::FontChange) {
-        // Only cast when necessary, speeding up things
-        KDirOperatorIconView *iconView = dynamic_cast<KDirOperatorIconView*>(d->itemView);
-
-        if (!iconView) {
-            return;
-        }
-
-        QFontMetrics metrics(font());
-        const int fontHeight = metrics.height();
-        iconView->setGridSize(QSize(fontHeight * 10, fontHeight + 4));
-    }
 }
 
 bool KDirOperator::eventFilter(QObject *watched, QEvent *event)
@@ -1451,8 +1435,6 @@ void KDirOperator::setView(QAbstractItemView *view)
     connect(d->itemView->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, SLOT(_k_slotSelectionChanged()));
-
-    view->setIconSize(QSize(64, 64));
 
     emit viewChanged(view);
 }
