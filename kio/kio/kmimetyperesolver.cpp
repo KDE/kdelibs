@@ -85,7 +85,7 @@ QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
     for ( ; it != end ; ++it ) {
         const QModelIndex index = m_proxyModel ? m_proxyModel->mapFromSource(*it) : QModelIndex(*it);
         const QRect rect = m_adapter->visualRect(index);
-        if (rect.isEmpty())
+        if (rect.isNull())
             layoutDone = false;
         else if (rect.intersects(visibleArea)) {
             //kDebug() << "found item at " << rect << " in visibleArea " << visibleArea;
