@@ -459,6 +459,7 @@ private:
     Q_PRIVATE_SLOT(d, void _k_fileCompletion(const QString&))
     Q_PRIVATE_SLOT(d, void _k_toggleSpeedbar(bool))
     Q_PRIVATE_SLOT(d, void _k_toggleBookmarks(bool))
+    Q_PRIVATE_SLOT(d, void _k_toggleInlinePreviews(bool))
     Q_PRIVATE_SLOT(d, void _k_slotAutoSelectExtClicked())
     Q_PRIVATE_SLOT(d, void _k_placesViewSplitterMoved(int, int))
     Q_PRIVATE_SLOT(d, void _k_activateUrlNavigator())

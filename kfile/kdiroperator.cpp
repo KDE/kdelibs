@@ -1452,6 +1452,8 @@ void KDirOperator::setView(QAbstractItemView *view)
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, SLOT(_k_slotSelectionChanged()));
 
+    view->setIconSize(QSize(64, 64));
+
     emit viewChanged(view);
 }
 

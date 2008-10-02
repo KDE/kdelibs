@@ -31,6 +31,7 @@
 #include "kfilebookmarkhandler_p.h"
 #include "kurlcombobox.h"
 #include "kurlnavigator.h"
+#include "kfilepreviewgenerator.h"
 #include <config-kfile.h>
 
 #include <kactioncollection.h>
@@ -52,6 +53,7 @@
 #include <kio/scheduler.h>
 #include <krecentdirs.h>
 #include <kdebug.h>
+#include <kio/kfileitemdelegate.h>
 
 #include <QtGui/QCheckBox>
 #include <QtGui/QDockWidget>
@@ -59,6 +61,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
 #include <QtGui/QSplitter>
+#include <QtGui/QAbstractProxyModel>
 #include <QtCore/QFSFileEngine>
 #include <kshell.h>
 #include <kmessagebox.h>
@@ -89,7 +92,9 @@ public:
           hasDefaultFilter(false),
           inAccept(false),
           dummyAdded(false),
-          confirmOverwrite(false)
+          confirmOverwrite(false),
+          previewGenerator(0),
+          showInlinePreviews(false)
     {
     }
 
@@ -171,6 +176,7 @@ public:
     void _k_fileCompletion( const QString& );
     void _k_toggleSpeedbar( bool );
     void _k_toggleBookmarks( bool );
+    void _k_toggleInlinePreviews( bool );
     void _k_slotAutoSelectExtClicked();
     void _k_placesViewSplitterMoved(int, int);
     void _k_activateUrlNavigator();
@@ -263,6 +269,9 @@ public:
                      // blank item added when loaded
 
     bool confirmOverwrite : 1;
+
+    KFilePreviewGenerator *previewGenerator;
+    bool showInlinePreviews;
 };
 
 K_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
@@ -434,6 +443,14 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     coll->action( "preview" )->setShortcut( QKeySequence(Qt::Key_F11) );
     menu->addAction( coll->action( "preview" ));
 
+    // support for inline previews
+    KToggleAction *inlinePreview = new KToggleAction( KIcon( "preview" ),
+                                                      i18n( "Inline preview" ), this );
+    menu->addAction( inlinePreview );
+
+    connect( inlinePreview, SIGNAL(toggled(bool)),
+             SLOT(_k_toggleInlinePreviews(bool)) );
+
     menu->setDelayed( false );
     connect( menu->menu(), SIGNAL( aboutToShow() ),
              d->ops, SLOT( updateSelectionDependentActions() ));
@@ -540,6 +557,8 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
         }
         d->locationEdit->setUrl(d->url.fileName());
     }
+
+    inlinePreview->setChecked(d->showInlinePreviews);
 
     setSelection(d->selection);
     d->locationEdit->setFocus();
@@ -1458,9 +1477,12 @@ void KFileWidget::resizeEvent(QResizeEvent* event)
 void KFileWidget::showEvent(QShowEvent* event)
 {
     if ( !d->hasView ) { // delayed view-creation
-        d->ops->setView(KFile::Default);
+        d->ops->setView( KFile::Default );
         d->ops->view()->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum ) );
         d->hasView = true;
+        d->previewGenerator = new KFilePreviewGenerator( d->ops->view(),
+                                                         static_cast<QAbstractProxyModel*>( d->ops->view()->model() ) );
+        d->previewGenerator->setPreviewShown( d->showInlinePreviews );
     }
     d->ops->clearHistory();
 
@@ -1533,6 +1555,8 @@ void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
     // should the URL navigator show the full path?
     urlNavigator->setShowFullPath( configGroup.readEntry(ShowFullPath, false) );
 
+    showInlinePreviews = configGroup.readEntry("inlinePreviews", false);
+
     int w1 = q->minimumSize().width();
     int w2 = toolbar->sizeHint().width();
     if (w1 < w2)
@@ -1565,6 +1589,7 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
     configGroup.writeEntry( AutoSelectExtChecked, autoSelectExtChecked );
     configGroup.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable() );
     configGroup.writeEntry( ShowFullPath, urlNavigator->showFullPath() );
+    configGroup.writeEntry( "inlinePreviews", showInlinePreviews );
 
     ops->writeConfig(configGroup);
     configGroup.config()->setForceGlobal(false);
@@ -2122,6 +2147,11 @@ void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
     }
 
     static_cast<KToggleAction *>(q->actionCollection()->action("toggleBookmarks"))->setChecked( show );
+}
+
+void KFileWidgetPrivate::_k_toggleInlinePreviews( bool show )
+{
+    previewGenerator->setPreviewShown( show );
 }
 
 // static
