@@ -436,7 +436,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     coll->action( "detailed view" )->setShortcut( QKeySequence(Qt::Key_F7) );
     menu->addAction( coll->action( "detailed view" ));
     menu->addSeparator();
-    KActionMenu *iconSizeMenu = new KActionMenu(KIcon("zoom-original"), i18n("Icons Size"), this);
+    KActionMenu *iconSizeMenu = new KActionMenu(KIcon("zoom-original"), i18n("Icon Size"), this);
     menu->addAction(iconSizeMenu);
     QSlider *iconSizeSlider = new QSlider(this);
     iconSizeSlider->setMinimum(0);
@@ -453,7 +453,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     // support for inline previews
     KToggleAction *inlinePreview = new KToggleAction( KIcon( "preview" ),
-                                                      i18n( "Inline preview" ), this );
+                                                      i18n( "Show Inline Preview" ), this );
     menu->addAction( inlinePreview );
 
     connect( inlinePreview, SIGNAL(toggled(bool)),
