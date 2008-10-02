@@ -390,7 +390,7 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
             m_parentDirs.insert(parentDir);
         }
         if (!KProtocolManager::canDeleteRecursive(url)) {
-            kDebug(7007) << url << "is a directory, let's list it";
+            //kDebug(7007) << url << "is a directory, let's list it";
             ListJob *newjob = KIO::listRecursive(url, KIO::HideProgressInfo);
             newjob->setUnrestricted(true); // No KIOSK restrictions
             Scheduler::scheduleJob(newjob);
