@@ -450,7 +450,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     menu->addAction( inlinePreview );
 
     connect( inlinePreview, SIGNAL(toggled(bool)),
-             SLOT(_k_toggleInlinePreviews(bool)) );
+             d->ops, SLOT(toggleInlinePreviews(bool)) );
 
     menu->setDelayed( false );
     connect( menu->menu(), SIGNAL( aboutToShow() ),
@@ -461,9 +461,9 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     iconSizeSlider->setMinimum(0);
     iconSizeSlider->setMaximum(100);
     connect(iconSizeSlider, SIGNAL(valueChanged(int)),
-            SLOT(_k_iconSizeSliderChanged(int)));
+            d->ops, SLOT(changeIconsSize(int)));
 
-    KActionMenu *zoom = new KActionMenu( KIcon("zoom-original"), i18n("Icon Size"), this);
+    KActionMenu *zoom = new KActionMenu( KIcon("zoom-fit-best"), i18n("Icon Size"), this);
     zoom->setDelayed( false );
     coll->addAction("icon size", zoom);
     KAction *sizeSlider = new KAction(this);
@@ -2165,28 +2165,6 @@ void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
     }
 
     static_cast<KToggleAction *>(q->actionCollection()->action("toggleBookmarks"))->setChecked( show );
-}
-
-void KFileWidgetPrivate::_k_toggleInlinePreviews( bool show )
-{
-    KFilePreviewGenerator *pg = ops->previewGenerator();
-    if (pg) {
-        pg->setPreviewShown( show );
-    }
-}
-
-void KFileWidgetPrivate::_k_iconSizeSliderChanged( int value )
-{
-    if (ops->view()) {
-        int maxSize = KIconLoader::SizeEnormous;
-        int val = maxSize * value / 100;
-        val = qMax(val, (int) KIconLoader::SizeSmall);
-        ops->view()->setIconSize(QSize(val, val));
-        KFilePreviewGenerator *pg = ops->previewGenerator();
-        if (pg) {
-            pg->updatePreviews();
-        }
-    }
 }
 
 // static

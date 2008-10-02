@@ -676,6 +676,19 @@ public Q_SLOTS:
      */
     virtual void trashSelected();
 
+    /**
+     * Notifies that the inline previews should be shown or hidden, depending on @p show value.
+     * @since 4.2
+     */
+    void toggleInlinePreviews(bool show);
+
+    /**
+     * Notifies that the icons size should change. @p value is an int ranged from 0 to 100.
+     * 100 means KIconLoader::SizeEnormous.
+     * @since 4.2
+     */
+    void changeIconsSize(int value);
+
 protected Q_SLOTS:
     /**
      * Restores the normal cursor after showing the busy-cursor. Also hides

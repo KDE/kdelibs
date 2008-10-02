@@ -261,6 +261,9 @@ public:
     KConfigGroup *configGroup;
 
     KFilePreviewGenerator *previewGenerator;
+
+    bool showPreviews;
+    int iconZoom;
 };
 
 KDirOperator::Private::Private(KDirOperator *_parent) :
@@ -843,6 +846,41 @@ void KDirOperator::trashSelected()
     if (!list.isEmpty()) {
         trash(list, this);
     }
+}
+
+void KDirOperator::toggleInlinePreviews(bool show)
+{
+    if (d->showPreviews == show) {
+        return;
+    }
+
+    d->showPreviews = show;
+
+    if (!d->previewGenerator) {
+        return;
+    }
+
+    d->previewGenerator->setPreviewShown(show);
+}
+
+void KDirOperator::changeIconsSize(int value)
+{
+    if (d->iconZoom == value) {
+        return;
+    }
+
+    d->iconZoom = value;
+
+    if (!d->previewGenerator) {
+        return;
+    }
+
+    int maxSize = KIconLoader::SizeEnormous;
+    int val = maxSize * value / 100;
+    // do not let the icon to be smaller than the smallest size on KIconLoader
+    val = qMax(val, (int) KIconLoader::SizeSmall);
+    d->itemView->setIconSize(QSize(val, val));
+    d->previewGenerator->updatePreviews();
 }
 
 void KDirOperator::close()
@@ -1446,6 +1484,11 @@ void KDirOperator::setView(QAbstractItemView *view)
             this, SLOT(_k_slotSelectionChanged()));
 
     d->previewGenerator = new KFilePreviewGenerator(d->itemView, static_cast<QAbstractProxyModel*>(d->itemView->model()));
+    int maxSize = KIconLoader::SizeEnormous;
+    int val = maxSize * d->iconZoom / 100;
+    val = qMax(val, (int) KIconLoader::SizeSmall);
+    d->itemView->setIconSize(QSize(val, val));
+    d->previewGenerator->setPreviewShown(d->showPreviews);
 
     emit viewChanged(view);
 }
@@ -1888,6 +1931,9 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
     if (descending) {
         d->sorting = d->sorting | QDir::Reversed;
     }
+
+    d->showPreviews = configGroup.readEntry(QLatin1String("Previews"), false);
+    d->iconZoom = configGroup.readEntry(QLatin1String("Zoom"), 0);
 }
 
 void KDirOperator::writeConfig(KConfigGroup& configGroup)
@@ -1943,6 +1989,8 @@ void KDirOperator::writeConfig(KConfigGroup& configGroup)
         style = QLatin1String("DetailTree");
     configGroup.writeEntry(QLatin1String("View Style"), style);
 
+    configGroup.writeEntry(QLatin1String("Previews"), d->showPreviews);
+    configGroup.writeEntry(QLatin1String("Zoom"), d->iconZoom);
 }
 
 void KDirOperator::resizeEvent(QResizeEvent *)
