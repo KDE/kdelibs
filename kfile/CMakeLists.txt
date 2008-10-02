@@ -38,7 +38,11 @@ target_link_libraries(kfile
    ${ZLIB_LIBRARY}
    ${STRIGI_LIBRARIES}
    ${KDE4_SOLID_LIBS}
+   ${X11_LIBRARIES}
 )
+if(X11_Xrender_FOUND)
+  target_link_libraries(kfile ${X11_Xrender_LIB} )
+endif(X11_Xrender_FOUND)
 
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
                                        SOVERSION ${GENERIC_LIB_SOVERSION} 

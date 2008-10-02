@@ -39,11 +39,11 @@
 #include <QScrollBar>
 #include <QIcon>
 
-/*#ifdef Q_WS_X11
+#ifdef Q_WS_X11
 #  include <QX11Info>
 #  include <X11/Xlib.h>
 #  include <X11/extensions/Xrender.h>
-#endif*/
+#endif
 
 /**
  * If the passed item view is an instance of QListView, expensive
@@ -600,7 +600,7 @@ bool KFilePreviewGenerator::Private::applyImageFrame(QPixmap& icon)
 void KFilePreviewGenerator::Private::limitToSize(QPixmap& icon, const QSize& maxSize)
 {
     if ((icon.width() > maxSize.width()) || (icon.height() > maxSize.height())) {
-/*#ifdef Q_WS_X11
+#ifdef Q_WS_X11
         // Assume that the texture size limit is 2048x2048
         if ((icon.width() <= 2048) && (icon.height() <= 2048)) {
             QSize size = icon.size();
@@ -626,9 +626,9 @@ void KFilePreviewGenerator::Private::limitToSize(QPixmap& icon, const QSize& max
         } else {
             icon = icon.scaled(maxSize, Qt::KeepAspectRatio, Qt::FastTransformation);
         }
-#else*/
+#else
         icon = icon.scaled(maxSize, Qt::KeepAspectRatio, Qt::FastTransformation);
-//#endif
+#endif
     }
 }
 
