@@ -436,6 +436,14 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     coll->action( "detailed view" )->setShortcut( QKeySequence(Qt::Key_F7) );
     menu->addAction( coll->action( "detailed view" ));
     menu->addSeparator();
+    KActionMenu *iconSizeMenu = new KActionMenu(KIcon("zoom-original"), i18n("Icons Size"), this);
+    menu->addAction(iconSizeMenu);
+    QSlider *iconSizeSlider = new QSlider(this);
+    iconSizeSlider->setMinimum(0);
+    iconSizeSlider->setMaximum(100);
+    KAction *iconSize = new KAction(this);
+    iconSize->setDefaultWidget(iconSizeSlider);
+    iconSizeMenu->addAction(iconSize);
     coll->action( "show hidden" )->setShortcut( QKeySequence(Qt::Key_F8) );
     menu->addAction( coll->action( "show hidden" ));
     menu->addAction( showSidebarAction );
