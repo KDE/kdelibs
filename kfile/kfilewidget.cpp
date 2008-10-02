@@ -177,6 +177,7 @@ public:
     void _k_toggleSpeedbar( bool );
     void _k_toggleBookmarks( bool );
     void _k_toggleInlinePreviews( bool );
+    void _k_iconSizeSliderChanged( int );
     void _k_slotAutoSelectExtClicked();
     void _k_placesViewSplitterMoved(int, int);
     void _k_activateUrlNavigator();
@@ -441,6 +442,8 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     QSlider *iconSizeSlider = new QSlider(this);
     iconSizeSlider->setMinimum(0);
     iconSizeSlider->setMaximum(100);
+    connect(iconSizeSlider, SIGNAL(valueChanged(int)),
+            SLOT(_k_iconSizeSliderChanged(int)));
     KAction *iconSize = new KAction(this);
     iconSize->setDefaultWidget(iconSizeSlider);
     iconSizeMenu->addAction(iconSize);
@@ -2163,6 +2166,19 @@ void KFileWidgetPrivate::_k_toggleInlinePreviews( bool show )
         previewGenerator->setPreviewShown( show );
     }
     showInlinePreviews = show;
+}
+
+void KFileWidgetPrivate::_k_iconSizeSliderChanged( int value )
+{
+    if (ops->view()) {
+        int maxSize = KIconLoader::SizeEnormous;
+        int val = maxSize * value / 100;
+        val = qMax(val, (int) KIconLoader::SizeSmall);
+        ops->view()->setIconSize(QSize(val, val));
+        if (previewGenerator && showInlinePreviews) {
+            previewGenerator->updatePreviews();
+        }
+    }
 }
 
 // static
