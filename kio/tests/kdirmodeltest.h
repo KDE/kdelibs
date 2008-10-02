@@ -47,6 +47,7 @@ private Q_SLOTS:
     void testFilter();
     void testUrlWithRef();
     void testUrlWithHost();
+    void testZipFile();
     // These two must be done last
     void testDeleteFile();
     void testDeleteFiles();
