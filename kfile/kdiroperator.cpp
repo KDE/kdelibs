@@ -871,6 +871,16 @@ void KDirOperator::toggleInlinePreviews(bool show)
     }
 
     d->previewGenerator->setPreviewShown(show);
+
+    if (!show) {
+        // remove all generated previews
+        QAbstractItemModel *model = d->dirModel;
+        for (int i = 0; i < model->rowCount(); ++i) {
+            QModelIndex index = model->index(i, 0);
+            const KFileItem item = d->dirModel->itemForIndex(index);
+            const_cast<QAbstractItemModel*>(index.model())->setData(index, KIcon(item.iconName()), Qt::DecorationRole);
+        }
+    }
 }
 
 void KDirOperator::changeIconsSize(int value)

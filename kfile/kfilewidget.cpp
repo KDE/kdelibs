@@ -175,7 +175,6 @@ public:
     void _k_fileCompletion( const QString& );
     void _k_toggleSpeedbar( bool );
     void _k_toggleBookmarks( bool );
-    void _k_toggleInlinePreviews( bool );
     void _k_iconSizeSliderChanged( int );
     void _k_slotAutoSelectExtClicked();
     void _k_placesViewSplitterMoved(int, int);
