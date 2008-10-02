@@ -177,6 +177,12 @@ class KDEUI_EXPORT KDialog : public QDialog
     /**
      * Creates (or recreates) the button box and all the buttons in it.
      *
+     * Note that some combinations are not possible. That means, you can't
+     * have the following pairs of buttons in a dialog:
+     * - Default and Details
+     * - Cancel and Close
+     * - Ok and Try
+     *
      * This will reset all default KGuiItem of all button.
      *
      * @param buttonMask Specifies what buttons will be made.
