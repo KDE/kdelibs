@@ -591,6 +591,26 @@ void KDirModelTest::testUrlWithHost() // #160057
     disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
 }
 
+void KDirModelTest::testZipFile() // # 171721
+{
+    const QString path = KDESRCDIR;
+    KDirLister* dirLister = m_dirModel.dirLister();
+    dirLister->openUrl(KUrl(path), KDirLister::NoFlags);
+    connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+    enterLoop();
+    disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+
+    KUrl zipUrl(path);
+    zipUrl.addPath("wronglocalsizes.zip"); // just a zip file lying here for other reasons
+    QVERIFY(QFile::exists(zipUrl.path()));
+    zipUrl.setProtocol("zip");
+    QModelIndex index = m_dirModel.indexForUrl(zipUrl);
+    QVERIFY(!index.isValid()); // protocol mismatch, can't find it!
+    zipUrl.setProtocol("file");
+    index = m_dirModel.indexForUrl(zipUrl);
+    QVERIFY(index.isValid());
+}
+
 void KDirModelTest::testDeleteFile()
 {
     fillModel(false);

@@ -182,6 +182,10 @@ KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url, bool returnLastPar
     if (url == nodeUrl)
         return m_rootNode;
 
+    // Protocol mismatch? Don't even start comparing paths then. #171721
+    if (url.protocol() != nodeUrl.protocol())
+        return 0;
+
     const QString pathStr = url.path();
     KDirModelDirNode* dirNode = m_rootNode;
 
