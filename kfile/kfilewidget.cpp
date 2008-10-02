@@ -2152,6 +2152,7 @@ void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
 void KFileWidgetPrivate::_k_toggleInlinePreviews( bool show )
 {
     previewGenerator->setPreviewShown( show );
+    showInlinePreviews = show;
 }
 
 // static
