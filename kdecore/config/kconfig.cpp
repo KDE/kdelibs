@@ -296,11 +296,8 @@ void KConfig::sync()
     if (d->bDirty && d->mBackend) {
         const QByteArray utf8Locale(locale().toUtf8());
 
-        // Check if we can write to the local file.
-        if (!d->mBackend->isWritable()) {
-            // Create the containing dir, maybe it wasn't there
-            d->mBackend->createEnclosing();
-        }
+        // Create the containing dir, maybe it wasn't there
+        d->mBackend->createEnclosing();
 
         // lock the local file
         if (d->configState == ReadWrite && !d->lockLocal()) {
