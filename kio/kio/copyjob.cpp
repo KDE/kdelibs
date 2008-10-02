@@ -115,8 +115,10 @@ public:
         , m_bSingleFileCopy(false)
         , m_bOnlyRenames(mode==CopyJob::Move)
         , m_dest(dest)
-        , m_bAutoSkip( false )
-        , m_bOverwriteAll( false )
+        , m_bAutoSkipFiles( false )
+        , m_bAutoSkipDirs( false )
+        , m_bOverwriteAllFiles( false )
+        , m_bOverwriteAllDirs( false )
         , m_conflictError(0)
         , m_reportTimer(0)
     {
@@ -162,8 +164,10 @@ public:
     //
     QStringList m_skipList;
     QStringList m_overwriteList;
-    bool m_bAutoSkip;
-    bool m_bOverwriteAll;
+    bool m_bAutoSkipFiles;
+    bool m_bAutoSkipDirs;
+    bool m_bOverwriteAllFiles;
+    bool m_bOverwriteAllDirs;
     int m_conflictError;
 
     QTimer *m_reportTimer;
@@ -193,7 +197,8 @@ public:
     void setNextDirAttribute();
 
     void startRenameJob(const KUrl &slave_url);
-    bool shouldOverwrite( const QString& path ) const;
+    bool shouldOverwriteDir( const QString& path ) const;
+    bool shouldOverwriteFile( const QString& path ) const;
     bool shouldSkip( const QString& path ) const;
     void skipSrc();
 
@@ -774,15 +779,18 @@ void CopyJobPrivate::skip( const KUrl & sourceUrl )
     dirsToRemove.removeAll( sourceUrl );
 }
 
-bool CopyJobPrivate::shouldOverwrite( const QString& path ) const
+bool CopyJobPrivate::shouldOverwriteDir( const QString& path ) const
 {
-    if ( m_bOverwriteAll )
+    if ( m_bOverwriteAllDirs )
         return true;
-    Q_FOREACH(const QString& overwritePath, m_overwriteList) {
-        if ( path.startsWith(overwritePath) )
-            return true;
-    }
-    return false;
+    return m_overwriteList.contains(path);
+}
+
+bool CopyJobPrivate::shouldOverwriteFile( const QString& path ) const
+{
+    if ( m_bOverwriteAllFiles )
+        return true;
+    return m_overwriteList.contains(path);
 }
 
 bool CopyJobPrivate::shouldSkip( const QString& path ) const
@@ -808,15 +816,15 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
         {
             KUrl oldURL = ((SimpleJob*)job)->url();
             // Should we skip automatically ?
-            if ( m_bAutoSkip ) {
+            if ( m_bAutoSkipDirs ) {
                 // We don't want to copy files in this directory, so we put it on the skip list
-              m_skipList.append( oldURL.path( KUrl::AddTrailingSlash ) );
+                m_skipList.append( oldURL.path( KUrl::AddTrailingSlash ) );
                 skip( oldURL );
                 dirs.erase( it ); // Move on to next dir
             } else {
                 // Did the user choose to overwrite already?
-                const QString destFile = (*it).uDest.path();
-                if ( shouldOverwrite( destFile ) ) { // overwrite => just skip
+                const QString destDir = (*it).uDest.path();
+                if ( shouldOverwriteDir( destDir ) ) { // overwrite => just skip
                     emit q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, true /* directory */, false /* renamed */ );
                     dirs.erase( it ); // Move on to next dir
                 } else {
@@ -883,7 +891,7 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
     assert ( !q->hasSubjobs() ); // We should have only one job at a time ...
 
     // Always multi and skip (since there are files after that)
-    RenameDialog_Mode mode = (RenameDialog_Mode)( M_MULTI | M_SKIP );
+    RenameDialog_Mode mode = (RenameDialog_Mode)( M_MULTI | M_SKIP | M_ISDIR );
     // Overwrite only if the existing thing is a dir (no chance with a file)
     if ( m_conflictError == ERR_DIR_ALREADY_EXIST )
     {
@@ -915,7 +923,7 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
             return;
         case R_RENAME:
         {
-          QString oldPath = (*it).uDest.path( KUrl::AddTrailingSlash );
+            QString oldPath = (*it).uDest.path( KUrl::AddTrailingSlash );
             KUrl newUrl( (*it).uDest );
             newUrl.setPath( newPath );
             emit q->renamed( q, (*it).uDest, newUrl ); // for e.g. kpropsdlg
@@ -959,7 +967,7 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
         }
         break;
         case R_AUTO_SKIP:
-            m_bAutoSkip = true;
+            m_bAutoSkipDirs = true;
             // fall through
         case R_SKIP:
             m_skipList.append( existingDest );
@@ -976,7 +984,7 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
             m_processedDirs++;
             break;
         case R_OVERWRITE_ALL:
-            m_bOverwriteAll = true;
+            m_bOverwriteAllDirs = true;
             emit q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, true /* directory */, false /* renamed */ );
             // Move on to next dir
             dirs.erase( it );
@@ -1040,7 +1048,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
     if ( job->error() )
     {
         // Should we skip automatically ?
-        if ( m_bAutoSkip )
+        if ( m_bAutoSkipFiles )
         {
             skip( (*it).uSource );
             m_fileProcessedSize = (*it).size;
@@ -1164,7 +1172,7 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
         bool isDir = true;
 
         if( m_conflictError == ERR_DIR_ALREADY_EXIST )
-            mode = (RenameDialog_Mode) 0;
+            mode = M_ISDIR;
         else
         {
             if ( (*it).uSource == (*it).uDest  ||
@@ -1176,9 +1184,7 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
             isDir = false;
         }
 
-        if ( m_bSingleFileCopy )
-            mode = (RenameDialog_Mode) ( mode | M_SINGLE );
-        else
+        if ( !m_bSingleFileCopy )
             mode = (RenameDialog_Mode) ( mode | M_MULTI | M_SKIP );
 
         res = q->ui()->askFileRename( q, !isDir ?
@@ -1234,7 +1240,7 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
         }
         break;
         case R_AUTO_SKIP:
-            m_bAutoSkip = true;
+            m_bAutoSkipFiles = true;
             // fall through
         case R_SKIP:
             // Move on to next file
@@ -1244,7 +1250,7 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
             m_processedFiles++;
             break;
        case R_OVERWRITE_ALL:
-            m_bOverwriteAll = true;
+            m_bOverwriteAllFiles = true;
             break;
         case R_OVERWRITE:
             // Add to overwrite list, so that copyNextFile knows to overwrite
@@ -1358,11 +1364,11 @@ void CopyJobPrivate::copyNextFile()
         // Do we set overwrite ?
         bool bOverwrite;
         const QString destFile = uDest.path();
-        kDebug(7007) << "copying " << destFile;
+        // kDebug(7007) << "copying" << destFile;
         if ( uDest == uSource )
             bOverwrite = false;
         else
-            bOverwrite = shouldOverwrite( destFile );
+            bOverwrite = shouldOverwriteFile( destFile );
 
         m_bCurrentOperationIsLink = false;
         KIO::Job * newjob = 0;
@@ -1669,23 +1675,15 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 m_reportTimer->stop();
 
             // Should we skip automatically ?
-            if ( m_bAutoSkip ) {
-                // Move on to next file
+            bool isDir = (err == ERR_DIR_ALREADY_EXIST);
+            if ((isDir && m_bAutoSkipDirs) || (!isDir && m_bAutoSkipFiles)) {
+                // Move on to next source url
                 skipSrc();
                 return;
-            } else if ( m_bOverwriteAll ) {
+            } else if ((isDir && m_bOverwriteAllDirs) || (!isDir && m_bOverwriteAllFiles)) {
                 ; // nothing to do, stat+copy+del will overwrite
             } else if ( q->isInteractive() ) {
                 QString newPath;
-                // If src==dest, use "overwrite-itself"
-                RenameDialog_Mode mode = (RenameDialog_Mode)
-                                      ( ( m_currentSrcURL == dest ) ? M_OVERWRITE_ITSELF : M_OVERWRITE );
-
-                if ( m_srcList.count() > 1 )
-                    mode = (RenameDialog_Mode) ( mode | M_MULTI | M_SKIP );
-                else
-                    mode = (RenameDialog_Mode) ( mode | M_SINGLE );
-
                 // we lack mtime info for both the src (not stated)
                 // and the dest (stated but this info wasn't stored)
                 // Let's do it for local files, at least
@@ -1702,6 +1700,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                     sizeSrc = stat_buf.st_size;
                     ctimeSrc = stat_buf.st_ctime;
                     mtimeSrc = stat_buf.st_mtime;
+                    isDir = S_ISDIR(stat_buf.st_mode);
                 }
                 if ( dest.isLocalFile() &&
                     KDE_stat(QFile::encodeName(dest.path()), &stat_buf) == 0 ) {
@@ -1709,6 +1708,14 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                     ctimeDest = stat_buf.st_ctime;
                     mtimeDest = stat_buf.st_mtime;
                 }
+
+                // If src==dest, use "overwrite-itself"
+                RenameDialog_Mode mode = ( m_currentSrcURL == dest ) ? M_OVERWRITE_ITSELF : M_OVERWRITE;
+
+                if ( m_srcList.count() > 1 )
+                    mode = (RenameDialog_Mode) ( mode | M_MULTI | M_SKIP );
+                if ( isDir )
+                    mode = (RenameDialog_Mode) ( mode | M_ISDIR );
 
                 RenameDialog_Result r = q->ui()->askFileRename(
                     q,
@@ -1742,14 +1749,20 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                     return;
                 }
                 case R_AUTO_SKIP:
-                    m_bAutoSkip = true;
+                    if (isDir)
+                        m_bAutoSkipDirs = true;
+                    else
+                        m_bAutoSkipFiles = true;
                     // fall through
                 case R_SKIP:
-                    // Move on to next file
+                    // Move on to next url
                     skipSrc();
                     return;
                 case R_OVERWRITE_ALL:
-                    m_bOverwriteAll = true;
+                    if (isDir)
+                        m_bOverwriteAllDirs = true;
+                    else
+                        m_bOverwriteAllFiles = true;
                     break;
                 case R_OVERWRITE:
                     // Add to overwrite list
@@ -1861,7 +1874,8 @@ KIO::CopyJob::CopyMode KIO::CopyJob::operationMode() const
 
 void KIO::CopyJob::setAutoSkip(bool autoSkip)
 {
-    d_func()->m_bAutoSkip = autoSkip;
+    d_func()->m_bAutoSkipFiles = autoSkip;
+    d_func()->m_bAutoSkipDirs = autoSkip;
 }
 
 CopyJob *KIO::copy(const KUrl& src, const KUrl& dest, JobFlags flags)

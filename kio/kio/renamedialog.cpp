@@ -108,18 +108,26 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
 
     if ( ( _mode & M_MULTI ) && ( _mode & M_SKIP ) ) {
         d->bSkip = new QPushButton( i18n( "&Skip" ), this );
+        d->bSkip->setToolTip((_mode & M_ISDIR) ? i18n("Do not copy or move this folder, skip to the next item instead")
+                             : i18n("Do not copy or move this file, skip to the next item instead"));
         connect(d->bSkip, SIGNAL(clicked()), this, SLOT(skipPressed()));
 
         d->bAutoSkip = new QPushButton( i18n( "&Auto Skip" ), this );
+        d->bAutoSkip->setToolTip((_mode & M_ISDIR) ? i18n("Do not copy or move any folder that already exists in the destination folder.\nYou will be prompted again in case of a conflict with an existing file though.")
+                                 : i18n("Do not copy or move any file that already exists in the destination folder.\nYou will be prompted again in case of a conflict with an existing directory though."));
         connect(d->bAutoSkip, SIGNAL(clicked()), this, SLOT(autoSkipPressed()));
     }
 
     if ( _mode & M_OVERWRITE ) {
-        d->bOverwrite = new QPushButton( i18n( "&Overwrite" ), this );
+        const QString text = (_mode & M_ISDIR) ? i18nc("Write files into an existing folder", "&Write Into") : i18n("&Overwrite");
+        d->bOverwrite = new QPushButton(text, this);
+        d->bOverwrite->setToolTip(i18n("Files and folders will be copied into the existing directory, alongside its existing contents.\nYou will be prompted again in case of a conflict with an existing file in the directory."));
         connect(d->bOverwrite, SIGNAL(clicked()), this, SLOT(overwritePressed()));
 
         if ( _mode & M_MULTI ) {
-            d->bOverwriteAll = new QPushButton( i18n( "O&verwrite All" ), this );
+            const QString textAll = (_mode & M_ISDIR) ? i18nc("Write files into any existing directory", "&Write Into All") : i18n("&Overwrite All");
+            d->bOverwriteAll = new QPushButton( textAll, this );
+            d->bOverwriteAll->setToolTip(i18n("Files and folders will be copied into any existing directory, alongside its existing contents.\nYou will be prompted again in case of a conflict with an existing file in a directory, but not in case of another existing directory."));
             connect(d->bOverwriteAll, SIGNAL(clicked()), this, SLOT(overwriteAllPressed()));
         }
     }
