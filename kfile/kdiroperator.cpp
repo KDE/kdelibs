@@ -2413,6 +2413,10 @@ void KDirOperator::Private::updateListViewGrid()
 
 int KDirOperator::Private::iconSizeForViewType(QAbstractItemView *itemView) const
 {
+    if (!itemView || !configGroup) {
+        return 0;
+    }
+
     int size;
     if (qobject_cast<QListView*>(itemView)) {
         size = configGroup->readEntry("listViewIconSize", 0);
