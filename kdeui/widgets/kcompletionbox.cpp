@@ -182,6 +182,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                             ev->accept();
                             return true;
                         }
+                        break;
                     case Qt::Key_Home:
                         if ( ev->modifiers() & Qt::ControlModifier )
                         {
