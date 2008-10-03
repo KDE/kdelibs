@@ -60,7 +60,6 @@
 #include <QtGui/QMovie>
 #include <QtGui/QWidget>
 #include <QtCore/QDebug>
-
 #include <kauthorized.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
@@ -238,7 +237,7 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KI
     m_wasBlocked = false;
     m_err = 0;
     // load the file
-    Cache::loader()->load(dl, this, false);
+    Cache::loader()->load(dl, this, false, true /*highPriority*/);
     m_loading = true;
 }
 
@@ -1284,31 +1283,46 @@ void DocLoader::resumeAnimations()
 Loader::Loader() : QObject()
 {
     connect(&m_timer, SIGNAL(timeout()), this, SLOT( servePendingRequests() ) );
+    m_highPriorityRequestPending = 0;
 }
 
 Loader::~Loader()
 {
+    delete m_highPriorityRequestPending;
     qDeleteAll(m_requestsPending);
     qDeleteAll(m_requestsLoading);
 }
 
-void Loader::load(DocLoader* dl, CachedObject *object, bool incremental)
+void Loader::load(DocLoader* dl, CachedObject *object, bool incremental, bool highPriority)
 {
     Request *req = new Request(dl, object, incremental);
-    m_requestsPending.append(req);
+    if (highPriority && !m_highPriorityRequestPending) {
+        m_highPriorityRequestPending = req;
+    } else {
+        if (highPriority) {
+            m_requestsPending.prepend(req);
+        } else {
+            m_requestsPending.append(req);
+        }
+        highPriority = false;
+    }
 
     emit requestStarted( req->m_docLoader, req->object );
 
-    m_timer.setSingleShot(true);
-    m_timer.start(0);
+    if (highPriority) {
+        servePendingRequests();
+    } else {
+        m_timer.setSingleShot(true);
+        m_timer.start(0);
+    }
 }
 
 void Loader::servePendingRequests()
 {
-    while ( (m_requestsPending.count() != 0) && (m_requestsLoading.count() < MAX_JOB_COUNT) )
+    while ( (m_highPriorityRequestPending != 0 || m_requestsPending.count() != 0) && (m_requestsLoading.count() < MAX_JOB_COUNT) )
     {
         // get the first pending request
-        Request *req = m_requestsPending.takeFirst();
+        Request *req = m_highPriorityRequestPending ? m_highPriorityRequestPending : m_requestsPending.takeFirst();
 
 #ifdef LOADER_DEBUG
   kDebug( 6060 ) << "starting Loader url=" << req->object->url().string();
@@ -1342,6 +1356,10 @@ void Loader::servePendingRequests()
             KIO::Scheduler::scheduleJob( job );
 
         m_requestsLoading.insertMulti(job, req);
+        if (m_highPriorityRequestPending) {
+            m_highPriorityRequestPending = 0;
+            break;
+        }
     }
 }
 
@@ -1422,7 +1440,7 @@ void Loader::slotFinished( KJob* job )
 
   delete r;
 
-  if ( (m_requestsPending.count() != 0) && (m_requestsLoading.count() < MAX_JOB_COUNT / 2) ) {
+  if ( (m_highPriorityRequestPending != 0 || m_requestsPending.count() != 0) && (m_requestsLoading.count() < MAX_JOB_COUNT / 2) ) {
       m_timer.setSingleShot(true);
       m_timer.start(0);
   }
@@ -1448,6 +1466,8 @@ void Loader::slotData( KIO::Job*job, const QByteArray &data )
 int Loader::numRequests( DocLoader* dl ) const
 {
     int res = 0;
+    if (m_highPriorityRequestPending && m_highPriorityRequestPending->m_docLoader == dl)
+        res++;
 
     foreach( Request* req, m_requestsPending )
         if ( req->m_docLoader == dl )
@@ -1462,6 +1482,13 @@ int Loader::numRequests( DocLoader* dl ) const
 
 void Loader::cancelRequests( DocLoader* dl )
 {
+    if (m_highPriorityRequestPending && m_highPriorityRequestPending->m_docLoader == dl) {
+        CDEBUG << "canceling high priority pending request for " << m_highPriorityRequestPending->object->url().string() << endl;
+        Cache::removeCacheEntry( m_highPriorityRequestPending->object );
+        delete m_highPriorityRequestPending;
+        m_highPriorityRequestPending = 0;
+    }
+
     QMutableLinkedListIterator<Request*> pIt( m_requestsPending );
     while ( pIt.hasNext() ) {
         Request* cur = pIt.next();

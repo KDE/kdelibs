@@ -42,7 +42,6 @@
 #include <QtCore/QTextCodec>
 #include <QtCore/QTimer>
 #include <QtCore/QSet>
-
 #include <QLinkedList>
 
 #include <kurl.h>
@@ -391,6 +390,7 @@ namespace khtml
 	QByteArray m_sound;
     };
 
+
     /**
      * @internal
      *
@@ -473,7 +473,7 @@ namespace khtml
 	Loader();
 	~Loader();
 
-	void load(DocLoader* dl, CachedObject *object, bool incremental = true);
+	void load(DocLoader* dl, CachedObject *object, bool incremental = true, bool highPriority = false);
 
         int numRequests( DocLoader* dl ) const;
         void cancelRequests( DocLoader* dl );
@@ -494,6 +494,7 @@ namespace khtml
 
     protected:
 	QLinkedList<Request*> m_requestsPending;
+	Request* m_highPriorityRequestPending;
 	QHash<KIO::Job*,Request*> m_requestsLoading;
 #ifdef HAVE_LIBJPEG
         // TODO KJPEGFormatType m_jpegloader;
