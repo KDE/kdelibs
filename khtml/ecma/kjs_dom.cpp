@@ -1183,6 +1183,9 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   getElementsByTagNameNS DOMElement::GetElementsByTagNameNS	DontDelete|Function 2
   hasAttributeNS	DOMElement::HasAttributeNS	DontDelete|Function 2
   getElementsByClassName DOMElement::GetElementsByClassName   DontDelete|Function 1
+# Extensions
+  blur          DOMElement::Blur    DontDelete|Function 0
+  focus         DOMElement::Focus   DontDelete|Function 0
 @end
 */
 KJS_IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
@@ -1321,7 +1324,7 @@ JSValue* DOMElementProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj,
     case DOMElement::RemoveAttributeNS: // DOM2
       element.removeAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(), exception);
       return jsUndefined();
-   case DOMElement::GetAttributeNodeNS: // DOM2
+    case DOMElement::GetAttributeNodeNS: // DOM2
       return getDOMNode(exec,element.getAttributeNodeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(),exception));
     case DOMElement::SetAttributeNodeNS: {
       DOM::Attr toRet = element.setAttributeNodeNS(KJS::toAttr(args[0]), exception);
@@ -1331,10 +1334,16 @@ JSValue* DOMElementProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj,
       return getDOMNodeList(exec,element.getElementsByTagNameNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
     case DOMElement::HasAttributeNS: // DOM2
       return jsBoolean(element.hasAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
-  case DOMElement::GetElementsByClassName: // HTML 5
+    case DOMElement::GetElementsByClassName: // HTML 5
       return getDOMNodeList(exec, element.getElementsByClassName(args[0]->toString(exec).domString()));
-  default:
-    return jsUndefined();
+    case DOMElement::Focus:
+      element.focus();
+      return jsUndefined();
+    case DOMElement::Blur:
+      element.blur();
+      return jsUndefined();
+    default:
+      return jsUndefined();
   }
 }
 

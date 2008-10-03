@@ -1313,6 +1313,17 @@ unsigned ElementImpl::childElementCount() const
     return count;
 }
 
+void ElementImpl::blur()
+{
+    if(document()->focusNode() == this)
+        document()->setFocusNode(0);
+}
+
+void ElementImpl::focus()
+{
+    document()->setFocusNode(this);
+}
+
 // -------------------------------------------------------------------------
 
 XMLElementImpl::XMLElementImpl(DocumentImpl *doc, NodeImpl::Id id)

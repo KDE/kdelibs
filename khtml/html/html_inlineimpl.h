@@ -40,9 +40,6 @@ public:
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void defaultEventHandler(EventImpl *evt);
     void click();
-
-    void focus();
-    void blur();
 protected:
     bool m_hasTarget : 1;
 };

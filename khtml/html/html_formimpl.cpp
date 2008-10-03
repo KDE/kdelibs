@@ -1130,17 +1130,6 @@ DOMString HTMLButtonElementImpl::type() const
     return "";
 }
 
-void HTMLButtonElementImpl::blur()
-{
-    if(document()->focusNode() == this)
-        document()->setFocusNode(0);
-}
-
-void HTMLButtonElementImpl::focus()
-{
-    document()->setFocusNode(this);
-}
-
 void HTMLButtonElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch(attr->id())
@@ -1803,17 +1792,6 @@ void HTMLInputElementImpl::setValue(DOMString val)
     setChanged();
 }
 
-void HTMLInputElementImpl::blur()
-{
-    if(document()->focusNode() == this)
-	document()->setFocusNode(0);
-}
-
-void HTMLInputElementImpl::focus()
-{
-    document()->setFocusNode(this);
-}
-
 void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if ( !m_disabled )
@@ -2165,17 +2143,6 @@ void HTMLSelectElementImpl::remove( long index )
         m_recalcListItems = false;
     } else if( !exceptioncode)
         setRecalcListItems();
-}
-
-void HTMLSelectElementImpl::blur()
-{
-    if(document()->focusNode() == this)
-	document()->setFocusNode(0);
-}
-
-void HTMLSelectElementImpl::focus()
-{
-    document()->setFocusNode(this);
 }
 
 DOMString HTMLInputElementImpl::valueWithDefault() const
@@ -2950,17 +2917,6 @@ void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
     }
     insertBefore(document()->createTextNode(_defaultValue.implementation()),firstChild(), exceptioncode);
     setValue(_defaultValue);
-}
-
-void HTMLTextAreaElementImpl::blur()
-{
-    if(document()->focusNode() == this)
-	document()->setFocusNode(0);
-}
-
-void HTMLTextAreaElementImpl::focus()
-{
-    document()->setFocusNode(this);
 }
 
 bool HTMLTextAreaElementImpl::isEditable()
