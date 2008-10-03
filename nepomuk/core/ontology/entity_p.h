@@ -43,7 +43,7 @@ namespace Nepomuk {
             QHash<QString, QString> l10nComments;
 
             QIcon icon;
-        
+
             // -1 - unknown
             // 0  - no
             // 1  - yes
@@ -82,5 +82,7 @@ public:
     QHash<QString, QString> l10nLabels;
     QHash<QString, QString> l10nComments;
 };
+
+uint qHash( const QUrl& url );
 
 #endif

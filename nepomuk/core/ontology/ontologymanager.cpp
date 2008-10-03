@@ -34,12 +34,6 @@
 #include <QtCore/QDebug>
 
 
-static inline uint qHash( const QUrl& url )
-{
-    return qHash( ( QString )url.toString() );
-}
-
-
 using namespace Soprano;
 
 class Nepomuk::OntologyManager::Private
