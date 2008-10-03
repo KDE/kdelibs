@@ -457,6 +457,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
              d->ops, SLOT( updateSelectionDependentActions() ));
 
     QSlider *iconSizeSlider = new QSlider(this);
+    iconSizeSlider->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
     iconSizeSlider->setOrientation(Qt::Horizontal);
     iconSizeSlider->setMinimum(0);
     iconSizeSlider->setMaximum(100);
@@ -465,23 +466,28 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     connect(d->ops, SIGNAL(currentIconSizeChanged(int)),
             iconSizeSlider, SLOT(setValue(int)));
 
-    KActionMenu *zoom = new KActionMenu( KIcon("zoom-fit-best"), i18n("Icon Size"), this);
-    zoom->setDelayed( false );
-    coll->addAction("icon size", zoom);
-    KAction *sizeSlider = new KAction(this);
-    sizeSlider->setDefaultWidget(iconSizeSlider);
-    zoom->addAction(sizeSlider);
+    QLabel *furtherActionIcon = new QLabel(this);
+    QLabel *closerActionIcon = new QLabel(this);
+
+    furtherActionIcon->setPixmap(KIconLoader::global()->loadIcon("zoom-out", KIconLoader::Toolbar));
+    closerActionIcon->setPixmap(KIconLoader::global()->loadIcon("zoom-in", KIconLoader::Toolbar));
 
     QWidget *midSpacer = new QWidget(this);
     midSpacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    QAction *separator = new QAction(this);
+    separator->setSeparator(true);
 
     d->toolbar->addAction(coll->action("back" ));
     d->toolbar->addAction(coll->action("forward"));
     d->toolbar->addAction(coll->action("up"));
     d->toolbar->addAction(coll->action("reload"));
     d->toolbar->addWidget(midSpacer);
+    d->toolbar->addWidget(furtherActionIcon);
+    d->toolbar->addWidget(iconSizeSlider);
+    d->toolbar->addWidget(closerActionIcon);
+    d->toolbar->addAction(separator);
     d->toolbar->addAction(coll->action("mkdir"));
-    d->toolbar->addAction(zoom);
     d->toolbar->addAction(menu);
 
     d->toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
