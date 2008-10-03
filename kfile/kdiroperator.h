@@ -810,6 +810,14 @@ Q_SIGNALS:
      */
     void contextMenuAboutToShow(const KFileItem& item, QMenu* menu);
 
+    /**
+     * Will notify that the icon size has changed. Since we save the icon size depending
+     * on the view type (list view or a different kind of view), a call to setView() can
+     * trigger this signal to be emitted.
+     * @since 4.2
+     */
+    void currentIconSizeChanged(int size);
+
 private:
     class Private;
     Private* const d;

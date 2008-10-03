@@ -1529,8 +1529,6 @@ void KDirOperator::setView(QAbstractItemView *view)
     // needs to be done here, and not in createView, since we can be set an external view
     d->decorationMenu->setEnabled(qobject_cast<QListView*>(d->itemView));
 
-    d->iconZoom = d->iconSizeForViewType(view);
-
     d->previewGenerator = new KFilePreviewGenerator(d->itemView, static_cast<QAbstractProxyModel*>(d->itemView->model()));
     int maxSize = KIconLoader::SizeEnormous;
     int val = maxSize * d->iconZoom / 100;
@@ -1542,6 +1540,10 @@ void KDirOperator::setView(QAbstractItemView *view)
     d->_k_slotChangeDecorationPosition();
 
     emit viewChanged(view);
+
+    const int zoom = d->iconSizeForViewType(view);
+    // this will make d->iconZoom be updated, since changeIconsSize slot will be called
+    emit currentIconSizeChanged(zoom);
 }
 
 void KDirOperator::setDirLister(KDirLister *lister)

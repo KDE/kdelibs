@@ -462,6 +462,8 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     iconSizeSlider->setMaximum(100);
     connect(iconSizeSlider, SIGNAL(valueChanged(int)),
             d->ops, SLOT(changeIconsSize(int)));
+    connect(d->ops, SIGNAL(currentIconSizeChanged(int)),
+            iconSizeSlider, SLOT(setValue(int)));
 
     KActionMenu *zoom = new KActionMenu( KIcon("zoom-fit-best"), i18n("Icon Size"), this);
     zoom->setDelayed( false );
