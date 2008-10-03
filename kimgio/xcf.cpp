@@ -1178,6 +1178,10 @@ void XCFImageFormat::copyLayerToImage(XCFImage& xcf_image)
 				copy = copyIndexedAToRGB;
 	}
 
+	if (!copy) {
+	    return;
+	}
+
 	// For each tile...
 
 	for (uint j = 0; j < layer.nrows; j++) {
@@ -1443,6 +1447,10 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage& xcf_image)
 				merge = mergeIndexedAToIndexed;
 			else
 				merge = mergeIndexedAToRGB;
+	}
+
+	if (!merge) {
+	    return;
 	}
 
 	for (uint j = 0; j < layer.nrows; j++) {
