@@ -139,6 +139,7 @@ void KUrlTest::testSetHTMLRef()
   QCOMPARE( url1.htmlRef(), QString("kde=rocks&a=b") );
   url1.setHTMLRef( "#" );
   QCOMPARE( url1.htmlRef(), QString("#") );
+  QCOMPARE( url1.ref(), QString("%23") ); // it's encoded
   url1.setHTMLRef( "" );
   QCOMPARE( url1.htmlRef(), QString("") );
   url1.setHTMLRef( QString() );
@@ -278,6 +279,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
+  QCOMPARE( url1.ref(), QString("QObject%3A%3Aconnect") );
   QCOMPARE( url1.htmlRef(), QString("QObject::connect") );
   QCOMPARE( url1.upUrl().url(), QString("file:///opt/kde2/qt2/doc/html/") );
 
@@ -287,6 +289,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
+  QCOMPARE( url1.ref(), QString("QObject%3A%3Aconnect") );
   QCOMPARE( url1.htmlRef(), QString("QObject::connect") );
   QCOMPARE( url1.upUrl().url(), QString("file:///opt/kde2/qt2/doc/html/") );
 
@@ -296,6 +299,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
+  QCOMPARE( url1.ref(), QString("QObject%3Aconnect") );
   QCOMPARE( url1.htmlRef(), QString("QObject:connect") );
   QCOMPARE( url1.upUrl().url(), QString("file:///opt/kde2/qt2/doc/html/") );
 
