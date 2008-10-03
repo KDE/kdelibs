@@ -221,6 +221,8 @@ public:
     void _k_synchronizeSortingState(int, Qt::SortOrder);
     void _k_slotChangeDecorationPosition(bool);
 
+    void updateListViewGrid();
+
     // private members
     KDirOperator *parent;
     QStack<KUrl*> backStack;    ///< Contains all URLs you can reach with the back button.
@@ -912,6 +914,7 @@ void KDirOperator::changeIconsSize(int value)
     // do not let the icon to be smaller than the smallest size on KIconLoader
     val = qMax(val, (int) KIconLoader::SizeSmall);
     d->itemView->setIconSize(QSize(val, val));
+    d->updateListViewGrid();
     d->previewGenerator->updatePreviews();
 }
 
@@ -2356,10 +2359,19 @@ void KDirOperator::Private::_k_slotChangeDecorationPosition(bool checked)
     } else {
         decorationPosition = QStyleOptionViewItem::Top;
         view->setFlow(QListView::LeftToRight);
-        view->setGridSize(QSize(150,150));
+        updateListViewGrid();
     }
 
     itemView->update();
+}
+
+void KDirOperator::Private::updateListViewGrid()
+{
+    QListView *view = static_cast<QListView*>(itemView);
+    const QFontMetrics metrics(itemView->viewport()->font());
+    int size = itemView->iconSize().height() + metrics.height() * 2;
+    // some heuristics for good looking. let's guess width = height * (3 / 2) is nice
+    view->setGridSize(QSize(size * (3.0 / 2.0), size));
 }
 
 void KDirOperator::setViewConfig(KConfigGroup& configGroup)
