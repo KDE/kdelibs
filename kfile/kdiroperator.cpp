@@ -2357,7 +2357,12 @@ void KDirOperator::Private::_k_slotChangeDecorationPosition()
         return;
     }
 
-    QListView *view = static_cast<QListView*>(itemView);
+    QListView *view = qobject_cast<QListView*>(itemView);
+
+    if (!view) {
+        return;
+    }
+
     const bool leftChecked = actionCollection->action("decorationAtLeft")->isChecked();
 
     if (leftChecked) {
