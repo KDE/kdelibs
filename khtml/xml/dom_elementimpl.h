@@ -176,6 +176,10 @@ public:
     AttrImpl* getAttributeNodeNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode );
     Attr setAttributeNodeNS( AttrImpl* newAttr, int& exceptioncode );
 
+    //Commonly supported extensions
+    void blur();
+    void focus();
+
     //Lower-level implementation primitives
     DOMString getAttribute( NodeImpl::Id id, bool nsAware = false, const DOMString& qName = DOMString() ) const;
     DOMStringImpl* getAttributeImpl( NodeImpl::Id id, bool nsAware = false, DOMStringImpl* qName = 0 ) const;
