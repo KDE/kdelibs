@@ -36,6 +36,7 @@ public:
     void testLocalRelativePath();
     void testLocalAbsolutePath();
     void testLocalURL();
+    void testEmptyCwd();
 
 private:
     void waitForCompletion();
@@ -43,6 +44,7 @@ private:
     KTempDir* m_tempDir;
     KUrl m_dirURL;
     QString m_dir;
+    KUrlCompletion* m_completionEmptyCwd;
 };
 
 void KUrlCompletionTest::setup( bool setDirAsURL )
@@ -72,6 +74,9 @@ void KUrlCompletionTest::setup( bool setDirAsURL )
     f2.close();
 
     QDir().mkdir( m_dir + "/file_subdir" );
+
+    m_completionEmptyCwd = new KUrlCompletion;
+    m_completionEmptyCwd->setDir( "" );
 }
 
 void KUrlCompletionTest::teardown()
@@ -80,6 +85,8 @@ void KUrlCompletionTest::teardown()
     m_completion = 0;
     delete m_tempDir;
     m_tempDir = 0;
+    delete m_completionEmptyCwd;
+    m_completionEmptyCwd = 0;
 }
 void KUrlCompletionTest::waitForCompletion()
 {
@@ -114,6 +121,13 @@ void KUrlCompletionTest::testLocalRelativePath()
     assert( compall.first() == "file#a" );
     QString comp2 = m_completion->replacedPath( compall.first() ); // like KUrlRequester does
     assert( comp2 == "file#a" );
+
+    // Completion with empty string
+    kDebug () << endl << "now completing on ''";
+    m_completion->makeCompletion( "" );
+    waitForCompletion();
+    QStringList compEmpty = m_completion->allMatches();
+    assert( compEmpty.count() == 0 );
 }
 
 void KUrlCompletionTest::testLocalAbsolutePath()
@@ -166,6 +180,17 @@ void KUrlCompletionTest::testLocalURL()
     assert( m_completion->allMatches().isEmpty() );
 }
 
+void KUrlCompletionTest::testEmptyCwd()
+{
+    kDebug() ;
+    // Completion with empty string (with a KUrlCompletion whose cwd is "")
+    kDebug () << endl << "now completing on '' with empty cwd";
+    m_completionEmptyCwd->makeCompletion( "" );
+    waitForCompletion();
+    QStringList compEmpty = m_completionEmptyCwd->allMatches();
+    assert( compEmpty.count() == 0 );
+}
+
 int main( int argc, char **argv )
 {
     //KApplication::disableAutoDcopRegistration();
@@ -178,6 +203,7 @@ int main( int argc, char **argv )
         test.testLocalRelativePath();
         test.testLocalAbsolutePath();
         test.testLocalURL();
+        test.testEmptyCwd();
         test.teardown();
 
         // Try again, with another KTempDir (to check that the caching doesn't give us wrong results)
@@ -185,6 +211,7 @@ int main( int argc, char **argv )
         test.testLocalRelativePath();
         test.testLocalAbsolutePath();
         test.testLocalURL();
+        test.testEmptyCwd();
         test.teardown();
     }
     qDebug( "All tests OK." );

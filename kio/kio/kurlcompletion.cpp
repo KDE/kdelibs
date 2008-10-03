@@ -480,41 +480,28 @@ void KUrlCompletionPrivate::MyURL::init(const QString &_url, const QString &cwd)
 	QRegExp protocol_regex = QRegExp( "^(?![A-Za-z]:)[^/\\s\\\\]*:" );
 
 	// Assume "file:" or whatever is given by 'cwd' if there is
-	// no protocol.  (KUrl does this only for absoute paths)
+	// no protocol.  (KUrl does this only for absolute paths)
 	if ( protocol_regex.indexIn( url_copy ) == 0 )
-    {
+	{
 		m_kurl = new KUrl( url_copy );
 		m_isURL = true;
 	}
 	else // relative path or ~ or $something
 	{
 		m_isURL = false;
-		if ( cwd.isEmpty() )
+		if ( !QDir::isRelativePath(url_copy) ||
+		     url_copy.startsWith( QLatin1Char('~') ) ||
+		     url_copy.startsWith( QLatin1Char('$') ))
 		{
 			m_kurl = new KUrl;
-			if ( !QDir::isRelativePath(url_copy) ||
-			     url_copy.at(0) == QLatin1Char('$') ||
-			     url_copy.at(0) == QLatin1Char('~') )
-				m_kurl->setPath( url_copy );
-			else
-				*m_kurl = url_copy;
+			m_kurl->setPath( url_copy );
 		}
 		else
 		{
-			KUrl base = cwd;
-			base.adjustPath(KUrl::AddTrailingSlash);
-
-			if ( !QDir::isRelativePath(url_copy) ||
-			     url_copy.at(0) == QLatin1Char('~') ||
-			     url_copy.at(0) == QLatin1Char('$') )
-			{
-				m_kurl = new KUrl;
-				m_kurl->setPath( url_copy );
-			}
-			else // relative path
-			{
-				//m_kurl = new KUrl( base, url_copy );
-				m_kurl = new KUrl( base );
+			if ( cwd.isEmpty() ) {
+				m_kurl = new KUrl( url_copy );
+			} else {
+				m_kurl = new KUrl( cwd );
 				m_kurl->addPath( url_copy );
 			}
 		}
