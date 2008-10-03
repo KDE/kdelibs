@@ -34,7 +34,7 @@
 #include <Soprano/Vocabulary/RDFS>
 #include <Soprano/Vocabulary/RDF>
 
-
+#undef D
 #define D static_cast<Nepomuk::Types::ClassPrivate*>( d.data() )
 
 Nepomuk::Types::ClassPrivate::ClassPrivate( const QUrl& uri )

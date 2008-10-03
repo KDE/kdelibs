@@ -36,6 +36,7 @@
 #include <Soprano/Vocabulary/NAO>
 
 #include "ontology/class.h"
+#include "ontology/entity_p.h" // for qHash(QUrl)
 
 #include <QtCore/QFile>
 #include <QtCore/QDateTime>
@@ -44,13 +45,6 @@
 #include <kurl.h>
 
 using namespace Soprano;
-
-
-static inline uint qHash( const QUrl& url )
-{
-    return qHash( url.toString() );
-}
-
 
 typedef QHash<QString, Nepomuk::ResourceData*> ResourceDataHash;
 

@@ -30,11 +30,6 @@
 
 #include <soprano/statement.h>
 
-inline uint qHash( const QUrl& url )
-{
-    return qHash( ( QString )url.toString() );
-}
-
 struct OntoBuffer
 {
     QString fileName;

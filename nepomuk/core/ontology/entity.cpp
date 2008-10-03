@@ -31,6 +31,10 @@
 
 #include <kicon.h>
 
+uint qHash( const QUrl& url )
+{
+    return qHash( url.toString() );
+}
 
 // uint qHash( const Nepomuk::Types::Entity& c )
 // {
