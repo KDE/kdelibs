@@ -20,6 +20,7 @@
 #include "kfilepreviewgenerator.h"
 
 #include "../kio/kio/defaultviewadapter_p.h"
+#include "../kio/kio/imagefilter_p.h"
 #include <kfileitem.h>
 #include <kiconeffect.h>
 #include <kio/previewjob.h>
@@ -87,6 +88,65 @@ public:
 private:
     bool m_uniformSizes;
     QListView* m_view;
+};
+
+class TileSet
+{
+public:
+    enum Tile { TopLeftCorner = 0, TopSide, TopRightCorner, LeftSide, Center,
+                RightSide, BottomLeftCorner, BottomSide, BottomRightCorner,
+                NumTiles };
+
+    TileSet(const QColor &frameColor)
+    {
+        QImage image(8 * 3, 8 * 3, QImage::Format_ARGB32_Premultiplied);
+
+        QPainter p(&image);
+        p.setCompositionMode(QPainter::CompositionMode_Source);
+        p.fillRect(image.rect(), Qt::transparent);
+        p.fillRect(image.rect().adjusted(2, 2, -2, -2), frameColor);
+        p.end();
+
+        QImage temp = image;
+        KIO::ImageFilter::shadowBlur(temp, 2, Qt::black);
+
+        p.begin(&temp);
+        p.drawImage(0, 0, image);
+        p.end();
+
+        QPixmap pixmap = QPixmap::fromImage(temp);
+        m_tiles[TopLeftCorner]     = pixmap.copy(0, 0, 8, 8);
+        m_tiles[TopSide]           = pixmap.copy(8, 0, 8, 8);
+        m_tiles[TopRightCorner]    = pixmap.copy(16, 0, 8, 8);
+        m_tiles[LeftSide]          = pixmap.copy(0, 8, 8, 8);
+        m_tiles[Center]            = pixmap.copy(8, 8, 8, 8);
+        m_tiles[RightSide]         = pixmap.copy(16, 8, 8, 8);
+        m_tiles[BottomLeftCorner]  = pixmap.copy(0, 16, 8, 8);
+        m_tiles[BottomSide]        = pixmap.copy(8, 16, 8, 8);
+        m_tiles[BottomRightCorner] = pixmap.copy(16, 16, 8, 8);
+    }
+
+    void paint(QPainter *p, const QRect &r)
+    {
+        p->drawPixmap(r.topLeft(), m_tiles[TopLeftCorner]);
+        if (r.width() - 16 > 0)
+            p->drawTiledPixmap(r.x() + 8, r.y(), r.width() - 16, 8, m_tiles[TopSide]);
+        p->drawPixmap(r.right() - 8 + 1, r.y(), m_tiles[TopRightCorner]);
+        if (r.height() - 16 > 0)
+        {
+            p->drawTiledPixmap(r.x(), r.y() + 8, 8, r.height() - 16,  m_tiles[LeftSide]);
+            if (r.width() - 16 > 0)
+                p->drawTiledPixmap(r.x() + 8, r.y() + 8, r.width() - 16, r.height() - 16, m_tiles[Center]);
+            p->drawTiledPixmap(r.right() - 8 + 1, r.y() + 8, 8, r.height() - 16, m_tiles[RightSide]);
+        }
+        p->drawPixmap(r.x(), r.bottom() - 8 + 1, m_tiles[BottomLeftCorner]);
+        if (r.width() - 16 > 0)
+            p->drawTiledPixmap(r.x() + 8, r.bottom() - 8 + 1, r.width() - 16, 8, m_tiles[BottomSide]);
+        p->drawPixmap(r.right() - 8 + 1, r.bottom() - 8 + 1, m_tiles[BottomRightCorner]);
+    }
+
+private:
+    QPixmap m_tiles[NumTiles];
 };
 
 class KFilePreviewGenerator::Private
@@ -231,6 +291,8 @@ public:
     KFileItemList m_dispatchedItems;
 
     QStringList m_enabledPlugins;
+
+    QCache<quint32, TileSet> m_tileCache;
 
 private:
     KFilePreviewGenerator* const q;
@@ -567,33 +629,23 @@ bool KFilePreviewGenerator::Private::applyImageFrame(QPixmap& icon)
 
     QPainter painter;
     const QPalette palette = m_viewAdapter->palette();
+    const QColor color = palette.color(QPalette::Normal, QPalette::Base);
+    TileSet *tiles = m_tileCache.object(color.rgba());
+    if (!tiles) {
+        tiles = new TileSet(color);
+        m_tileCache.insert(color.rgba(), tiles);
+    }
     QPixmap framedIcon(icon.size().width() + doubleFrame, icon.size().height() + doubleFrame);
-    framedIcon.fill(palette.color(QPalette::Normal, QPalette::Base));
-    const int width = framedIcon.width() - 1;
-    const int height = framedIcon.height() - 1;
+    framedIcon.fill(Qt::transparent);
 
     painter.begin(&framedIcon);
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+    tiles->paint(&painter, framedIcon.rect());
+    painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
     painter.drawPixmap(frame, frame, icon);
-
-    // add a border
-    painter.setPen(palette.color(QPalette::Text));
-    painter.drawRect(0, 0, width, height);
-    painter.drawRect(1, 1, width - 2, height - 2);
-     
-    painter.setCompositionMode(QPainter::CompositionMode_Plus);
-    QColor blendColor = palette.color(QPalette::Normal, QPalette::Base);
-    
-    blendColor.setAlpha(255 - 32);
-    painter.setPen(blendColor);
-    painter.drawRect(0, 0, width, height);
-    
-    blendColor.setAlpha(255 - 64);
-    painter.setPen(blendColor);
-    painter.drawRect(1, 1, width - 2, height - 2);
     painter.end();
 
     icon = framedIcon;
-
     return true;
 }
 
