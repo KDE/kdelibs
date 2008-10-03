@@ -222,6 +222,7 @@ public:
     void _k_slotChangeDecorationPosition();
 
     void updateListViewGrid();
+    int iconSizeForViewType(QAbstractItemView *itemView) const;
 
     // private members
     KDirOperator *parent;
@@ -905,6 +906,12 @@ void KDirOperator::changeIconsSize(int value)
 
     d->iconZoom = value;
 
+    if (qobject_cast<QListView*>(d->itemView)) {
+        d->configGroup->writeEntry("listViewIconSize", d->iconZoom);
+    } else {
+        d->configGroup->writeEntry("detailedViewIconSize", d->iconZoom);
+    }
+
     if (!d->previewGenerator) {
         return;
     }
@@ -1521,6 +1528,8 @@ void KDirOperator::setView(QAbstractItemView *view)
     // if we cannot cast it to a QListView, disable the "Icon Position" menu. Note that this check
     // needs to be done here, and not in createView, since we can be set an external view
     d->decorationMenu->setEnabled(qobject_cast<QListView*>(d->itemView));
+
+    d->iconZoom = d->iconSizeForViewType(view);
 
     d->previewGenerator = new KFilePreviewGenerator(d->itemView, static_cast<QAbstractProxyModel*>(d->itemView->model()));
     int maxSize = KIconLoader::SizeEnormous;
@@ -2400,6 +2409,18 @@ void KDirOperator::Private::updateListViewGrid()
         // some heuristics for good looking. let's guess width = height * (3 / 2) is nice
         view->setGridSize(QSize(size * (3.0 / 2.0), size));
     }
+}
+
+int KDirOperator::Private::iconSizeForViewType(QAbstractItemView *itemView) const
+{
+    int size;
+    if (qobject_cast<QListView*>(itemView)) {
+        size = configGroup->readEntry("listViewIconSize", 0);
+    } else {
+        size = configGroup->readEntry("detailedViewIconSize", 0);
+    }
+
+    return size;
 }
 
 void KDirOperator::setViewConfig(KConfigGroup& configGroup)
