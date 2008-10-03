@@ -131,6 +131,7 @@ public:
     virtual void setOnHold(bool /*_onHold*/) {}
     virtual bool isWaitingForScripts() const = 0;
     virtual bool isExecutingScript() const = 0;
+    virtual void setNormalYeldDelay() {}
     virtual void abort() {}
     virtual void setAutoClose(bool b=true) = 0;
 
