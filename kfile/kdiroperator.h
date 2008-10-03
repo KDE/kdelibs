@@ -845,7 +845,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotSplitterMoved(int, int) )
     Q_PRIVATE_SLOT( d, void _k_assureVisibleSelection() )
     Q_PRIVATE_SLOT( d, void _k_synchronizeSortingState(int, Qt::SortOrder) )
-    Q_PRIVATE_SLOT( d, void _k_slotChangeDecorationPosition(bool) )
+    Q_PRIVATE_SLOT( d, void _k_slotChangeDecorationPosition() )
 };
 
 #endif

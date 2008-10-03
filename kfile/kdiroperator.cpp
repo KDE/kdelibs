@@ -219,7 +219,7 @@ public:
     void _k_slotSplitterMoved(int, int);
     void _k_assureVisibleSelection();
     void _k_synchronizeSortingState(int, Qt::SortOrder);
-    void _k_slotChangeDecorationPosition(bool);
+    void _k_slotChangeDecorationPosition();
 
     void updateListViewGrid();
 
@@ -1529,6 +1529,9 @@ void KDirOperator::setView(QAbstractItemView *view)
     d->itemView->setIconSize(QSize(val, val));
     d->previewGenerator->setPreviewShown(d->showPreviews);
 
+    // ensure we change everything needed
+    d->_k_slotChangeDecorationPosition();
+
     emit viewChanged(view);
 }
 
@@ -1772,13 +1775,13 @@ void KDirOperator::setupActions()
     d->decorationMenu = new KActionMenu(i18n("Icon Position"), this);
     d->actionCollection->addAction("decoration menu", d->decorationMenu);
 
-    d->leftAction = new KToggleAction(i18n("Left"), this);
+    d->leftAction = new KToggleAction(i18n("Next to the filename"), this);
     d->actionCollection->addAction("decorationAtLeft", d->leftAction);
-    connect(d->leftAction, SIGNAL(triggered(bool)), this, SLOT(_k_slotChangeDecorationPosition(bool)));
+    connect(d->leftAction, SIGNAL(triggered(bool)), this, SLOT(_k_slotChangeDecorationPosition()));
 
-    KToggleAction *topAction = new KToggleAction(i18n("Top"), this);
+    KToggleAction *topAction = new KToggleAction(i18n("Above the filename"), this);
     d->actionCollection->addAction("decorationAtTop", topAction);
-    connect(topAction, SIGNAL(triggered(bool)), this, SLOT(_k_slotChangeDecorationPosition(bool)));
+    connect(topAction, SIGNAL(triggered(bool)), this, SLOT(_k_slotChangeDecorationPosition()));
 
     d->decorationMenu->addAction(d->leftAction);
     d->decorationMenu->addAction(topAction);
@@ -1991,6 +1994,10 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
 
     d->showPreviews = configGroup.readEntry(QLatin1String("Previews"), false);
     d->iconZoom = configGroup.readEntry(QLatin1String("Zoom"), 0);
+    decorationPosition = (QStyleOptionViewItem::Position) configGroup.readEntry(QLatin1String("Decoration position"), (int) QStyleOptionViewItem::Left);
+    const bool decorationAtLeft = decorationPosition == QStyleOptionViewItem::Left;
+    d->actionCollection->action("decorationAtLeft")->setChecked(decorationAtLeft);
+    d->actionCollection->action("decorationAtTop")->setChecked(!decorationAtLeft);
 }
 
 void KDirOperator::writeConfig(KConfigGroup& configGroup)
@@ -2048,6 +2055,7 @@ void KDirOperator::writeConfig(KConfigGroup& configGroup)
 
     configGroup.writeEntry(QLatin1String("Previews"), d->showPreviews);
     configGroup.writeEntry(QLatin1String("Zoom"), d->iconZoom);
+    configGroup.writeEntry(QLatin1String("Decoration position"), (int) decorationPosition);
 }
 
 void KDirOperator::resizeEvent(QResizeEvent *)
@@ -2343,16 +2351,16 @@ void KDirOperator::Private::_k_synchronizeSortingState(int logicalIndex, Qt::Sor
     QMetaObject::invokeMethod(parent, "_k_assureVisibleSelection", Qt::QueuedConnection);
 }
 
-void KDirOperator::Private::_k_slotChangeDecorationPosition(bool checked)
+void KDirOperator::Private::_k_slotChangeDecorationPosition()
 {
-    if (!checked) {
+    if (!itemView) {
         return;
     }
 
     QListView *view = static_cast<QListView*>(itemView);
+    const bool leftChecked = actionCollection->action("decorationAtLeft")->isChecked();
 
-    KAction *action = static_cast<KAction*>(parent->sender());
-    if (action == leftAction) {
+    if (leftChecked) {
         decorationPosition = QStyleOptionViewItem::Left;
         view->setFlow(QListView::TopToBottom);
         view->setGridSize(QSize());
