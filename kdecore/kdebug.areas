@@ -124,10 +124,16 @@
 1441        Solid (NetworkManager)
 
 # kdeutils
-1501        khexedit (kdeutils)
 1511        kdessh (kdeutils)
 1512        kdepasswd
 1601        ark (kdeutils)
+1800        okteta
+1801        liboktetacore
+1802        liboktetagui
+1803        libkakaocore
+1804        libkakaogui
+1805        libkakaocontrollers
+1806        oktetakakao
 1901        kfind
 1902        kfind (KfindWindow::updateResults)
 1903        kfind (KfindTabDialog::createQuery)
