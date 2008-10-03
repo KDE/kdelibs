@@ -295,9 +295,21 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
         //const QPixmap& pix = i->pixmap();
         if (!m_imagePainter)
             m_imagePainter = new ImagePainter(i->image());
-        m_imagePainter->setSize(QSize(contentWidth(), contentHeight()));
 
-        //Intersect with the painting clip rectangle.
+       // If we have a scaled  painter we want to handle the resizing ourselves, so figure out the scaled size,
+       QTransform painterTransform = paintInfo.p->transform();
+
+       bool scaled = painterTransform.isScaling() && !painterTransform.isRotating();
+
+       QRect scaledRect; // bounding box of the whole thing, transformed, so we also know where the origin goes.
+       if (scaled) {
+           scaledRect = painterTransform.mapRect(QRect(0, 0, contentWidth(), contentHeight()));
+           m_imagePainter->setSize(QSize(scaledRect.width(), scaledRect.height()));
+       } else {
+           m_imagePainter->setSize(QSize(contentWidth(), contentHeight()));
+       }
+
+        // Now, figure out the rectangle to paint (in painter coordinates), by interesting us with the painting clip rectangle.
         int x = _tx + leftBorder + leftPad;
         int y = _ty + topBorder + topPad;
         QRect imageGeom   = QRect(0, 0, contentWidth(), contentHeight());
@@ -305,9 +317,22 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
         QRect clipPortion = paintInfo.r.translated(-x, -y);
         imageGeom &= clipPortion;
 
-        m_imagePainter->paint(x + imageGeom.x(), y + imageGeom.y(), paintInfo.p,
+       QPoint destPos = QPoint(x + imageGeom.x(), y + imageGeom.y());
+
+       // If we're scaling, reset the painters transform, and apply it ourselves; though
+       // being careful not apply the translation to the source rect.
+       if (scaled) {
+           paintInfo.p->resetTransform();
+           destPos   = painterTransform.map(destPos);
+           imageGeom = painterTransform.mapRect(imageGeom).translated(-scaledRect.topLeft());
+       }
+
+        m_imagePainter->paint(destPos.x(), destPos.y(), paintInfo.p,
                                     imageGeom.x(),     imageGeom.y(),
                                     imageGeom.width(), imageGeom.height());
+
+       if (scaled)
+           paintInfo.p->setTransform(painterTransform);
 
     }
     if (m_selectionState != SelectionNone) {
