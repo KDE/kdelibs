@@ -2363,23 +2363,34 @@ void KDirOperator::Private::_k_slotChangeDecorationPosition()
     if (leftChecked) {
         decorationPosition = QStyleOptionViewItem::Left;
         view->setFlow(QListView::TopToBottom);
-        view->setGridSize(QSize());
     } else {
         decorationPosition = QStyleOptionViewItem::Top;
         view->setFlow(QListView::LeftToRight);
-        updateListViewGrid();
     }
+
+    updateListViewGrid();
 
     itemView->update();
 }
 
 void KDirOperator::Private::updateListViewGrid()
 {
+    if (!itemView) {
+        return;
+    }
+
     QListView *view = static_cast<QListView*>(itemView);
-    const QFontMetrics metrics(itemView->viewport()->font());
-    int size = itemView->iconSize().height() + metrics.height() * 2;
-    // some heuristics for good looking. let's guess width = height * (3 / 2) is nice
-    view->setGridSize(QSize(size * (3.0 / 2.0), size));
+
+    const bool leftChecked = actionCollection->action("decorationAtLeft")->isChecked();
+
+    if (leftChecked) {
+        view->setGridSize(QSize());
+    } else {
+        const QFontMetrics metrics(itemView->viewport()->font());
+        int size = itemView->iconSize().height() + metrics.height() * 2;
+        // some heuristics for good looking. let's guess width = height * (3 / 2) is nice
+        view->setGridSize(QSize(size * (3.0 / 2.0), size));
+    }
 }
 
 void KDirOperator::setViewConfig(KConfigGroup& configGroup)
