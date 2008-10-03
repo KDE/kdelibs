@@ -953,7 +953,9 @@ void KHTMLView::paintEvent( QPaintEvent *e )
         unscheduleRelayout();
         layout();
     } else if (m_part->xmlDocImpl()->tokenizer()) {
-        m_part->xmlDocImpl()->tokenizer()->setNormalYeldDelay();
+        if (HTMLTokenizer* htmltokenizer = dynamic_cast<HTMLTokenizer*>(m_part->xmlDocImpl()->tokenizer())) {
+            htmltokenizer->setNormalYeldDelay();
+        }
     }
 
     if (d->painting) {
