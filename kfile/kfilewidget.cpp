@@ -429,10 +429,13 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
                             "<li>separating folders from files</li></ul></qt>"));
     menu->addAction( coll->action( "sorting menu" ));
     menu->addSeparator();
+    menu->addAction(coll->action("decoration menu"));
+    menu->addSeparator();
     coll->action( "short view" )->setShortcut( QKeySequence(Qt::Key_F6) );
     menu->addAction( coll->action( "short view" ));
     coll->action( "detailed view" )->setShortcut( QKeySequence(Qt::Key_F7) );
     menu->addAction( coll->action( "detailed view" ));
+    menu->addSeparator();
     menu->addSeparator();
     coll->action( "show hidden" )->setShortcut( QKeySequence(Qt::Key_F8) );
     menu->addAction( coll->action( "show hidden" ));

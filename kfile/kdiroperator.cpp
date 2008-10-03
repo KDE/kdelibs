@@ -81,6 +81,8 @@
 
 template class QHash<QString, KFileItem>;
 
+static QStyleOptionViewItem::Position decorationPosition = QStyleOptionViewItem::Left;
+
 /**
  * Default icon view for KDirOperator using
  * custom view options.
@@ -122,8 +124,12 @@ QStyleOptionViewItem KDirOperatorIconView::viewOptions() const
 {
     QStyleOptionViewItem viewOptions = QListView::viewOptions();
     viewOptions.showDecorationSelected = true;
-    viewOptions.decorationPosition = QStyleOptionViewItem::Left;
-    viewOptions.displayAlignment = Qt::AlignLeft | Qt::AlignVCenter;
+    viewOptions.decorationPosition = decorationPosition;
+    if (decorationPosition == QStyleOptionViewItem::Left) {
+        viewOptions.displayAlignment = Qt::AlignLeft | Qt::AlignVCenter;
+    } else {
+        viewOptions.displayAlignment = Qt::AlignCenter;
+    }
 
     return viewOptions;
 }
@@ -213,6 +219,7 @@ public:
     void _k_slotSplitterMoved(int, int);
     void _k_assureVisibleSelection();
     void _k_synchronizeSortingState(int, Qt::SortOrder);
+    void _k_slotChangeDecorationPosition(bool);
 
     // private members
     KDirOperator *parent;
@@ -264,6 +271,9 @@ public:
 
     bool showPreviews;
     int iconZoom;
+
+    KActionMenu *decorationMenu;
+    KToggleAction *leftAction;
 };
 
 KDirOperator::Private::Private(KDirOperator *_parent) :
@@ -285,7 +295,9 @@ KDirOperator::Private::Private(KDirOperator *_parent) :
     actionMenu(0),
     actionCollection(0),
     configGroup(0),
-    previewGenerator(0)
+    previewGenerator(0),
+    decorationMenu(0),
+    leftAction(0)
 {
 }
 
@@ -1503,6 +1515,10 @@ void KDirOperator::setView(QAbstractItemView *view)
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this, SLOT(_k_slotSelectionChanged()));
 
+    // if we cannot cast it to a QListView, disable the "Icon Position" menu. Note that this check
+    // needs to be done here, and not in createView, since we can be set an external view
+    d->decorationMenu->setEnabled(qobject_cast<QListView*>(d->itemView));
+
     d->previewGenerator = new KFilePreviewGenerator(d->itemView, static_cast<QAbstractProxyModel*>(d->itemView->model()));
     int maxSize = KIconLoader::SizeEnormous;
     int val = maxSize * d->iconZoom / 100;
@@ -1750,6 +1766,24 @@ void KDirOperator::setupActions()
     byDateAction->setActionGroup(sortGroup);
     byTypeAction->setActionGroup(sortGroup);
 
+    d->decorationMenu = new KActionMenu(i18n("Icon Position"), this);
+    d->actionCollection->addAction("decoration menu", d->decorationMenu);
+
+    d->leftAction = new KToggleAction(i18n("Left"), this);
+    d->actionCollection->addAction("decorationAtLeft", d->leftAction);
+    connect(d->leftAction, SIGNAL(triggered(bool)), this, SLOT(_k_slotChangeDecorationPosition(bool)));
+
+    KToggleAction *topAction = new KToggleAction(i18n("Top"), this);
+    d->actionCollection->addAction("decorationAtTop", topAction);
+    connect(topAction, SIGNAL(triggered(bool)), this, SLOT(_k_slotChangeDecorationPosition(bool)));
+
+    d->decorationMenu->addAction(d->leftAction);
+    d->decorationMenu->addAction(topAction);
+
+    QActionGroup* decorationGroup = new QActionGroup(this);
+    d->leftAction->setActionGroup(decorationGroup);
+    topAction->setActionGroup(decorationGroup);
+
     KToggleAction *shortAction = new KToggleAction(i18n("Short View"), this);
     d->actionCollection->addAction("short view",  shortAction);
     shortAction->setIcon(KIcon(QLatin1String("view-list-icons")));
@@ -1759,12 +1793,12 @@ void KDirOperator::setupActions()
     d->actionCollection->addAction("detailed view", detailedAction);
     detailedAction->setIcon(KIcon(QLatin1String("view-list-details")));
     connect(detailedAction, SIGNAL(triggered ()), SLOT(_k_slotDetailedView()));
-    
+
     KToggleAction *treeAction = new KToggleAction(i18n("Tree View"), this);
     d->actionCollection->addAction("tree view", treeAction);
     treeAction->setIcon(KIcon(QLatin1String("view-list-tree")));
     connect(treeAction, SIGNAL(triggered ()), SLOT(_k_slotTreeView()));
-    
+
     KToggleAction *detailedTreeAction = new KToggleAction(i18n("Detailed Tree View"), this);
     d->actionCollection->addAction("detailed tree view", detailedTreeAction);
     detailedTreeAction->setIcon(KIcon(QLatin1String("view-list-tree")));
@@ -2304,6 +2338,28 @@ void KDirOperator::Private::_k_synchronizeSortingState(int logicalIndex, Qt::Sor
 
     proxyModel->sort(sortColumn(), sortOrder());
     QMetaObject::invokeMethod(parent, "_k_assureVisibleSelection", Qt::QueuedConnection);
+}
+
+void KDirOperator::Private::_k_slotChangeDecorationPosition(bool checked)
+{
+    if (!checked) {
+        return;
+    }
+
+    QListView *view = static_cast<QListView*>(itemView);
+
+    KAction *action = static_cast<KAction*>(parent->sender());
+    if (action == leftAction) {
+        decorationPosition = QStyleOptionViewItem::Left;
+        view->setFlow(QListView::TopToBottom);
+        view->setGridSize(QSize());
+    } else {
+        decorationPosition = QStyleOptionViewItem::Top;
+        view->setFlow(QListView::LeftToRight);
+        view->setGridSize(QSize(150,150));
+    }
+
+    itemView->update();
 }
 
 void KDirOperator::setViewConfig(KConfigGroup& configGroup)
