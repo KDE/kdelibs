@@ -279,8 +279,8 @@ static int hebrewDaysElapsed( int y )
     nm %= DAY;
 
     // special cases of Molad Zaken
-    if ( l < 12 && dw == 3 && nm >= M( 9 + 6, 204 ) ||
-            l < 7 && dw == 2 && nm >= M( 15 + 6, 589 ) ) {
+    if ( (l < 12 && dw == 3 && nm >= M( 9 + 6, 204 )) ||
+            (l < 7 && dw == 2 && nm >= M( 15 + 6, 589 )) ) {
         s++, dw++;
     }
 
