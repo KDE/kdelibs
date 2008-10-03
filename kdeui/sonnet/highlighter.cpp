@@ -217,24 +217,26 @@ void Highlighter::slotAutoDetection()
 
     //don't disable just because 1 of 4 is misspelled.
     if (d->automatic && d->wordCount >= 10) {
-	// tme = Too many errors
+        // tme = Too many errors
         bool tme = (d->errorCount >= d->disableWordCount) && (
             d->errorCount * 100 >= d->disablePercentage * d->wordCount);
-	if (d->active && tme)
-	    d->active = false;
-	else if (!d->active && !tme)
-	    d->active = true;
+        if (d->active && tme) {
+            d->active = false;
+        } else if (!d->active && !tme) {
+            d->active = true;
+        }
     }
+
     if (d->active != savedActive) {
-	if (d->wordCount > 1) {
-	    if ( d->active )
-		emit activeChanged(i18n("As-you-type spell checking enabled."));
-	    else
-		emit activeChanged(i18n( "Too many misspelled words. "
-                                         "As-you-type spell checking disabled."));
-	}
-	d->completeRehighlightRequired = true;
-	d->rehighlightRequest->setInterval(100);
+        if (d->active) {
+            emit activeChanged(i18n("As-you-type spell checking enabled."));
+        } else {
+            emit activeChanged(i18n( "Too many misspelled words. "
+                               "As-you-type spell checking disabled."));
+        }
+
+        d->completeRehighlightRequired = true;
+        d->rehighlightRequest->setInterval(100);
         d->rehighlightRequest->setSingleShot(true);
         kDebug()<<" Highlighter::slotAutoDetection :"<<d->active;
     }
