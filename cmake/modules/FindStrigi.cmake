@@ -18,6 +18,40 @@ if(NOT STRIGI_MIN_VERSION)
   set(STRIGI_MIN_VERSION "0.5.9")
 endif(NOT STRIGI_MIN_VERSION)
 
+if (NOT WIN32)
+  include(UsePkgConfig)
+  pkgconfig(libstreamanalyzer _STRIGI_INCLUDEDIR _STRIGI_LIBDIR _dummyLinkFlags _dummyCflags)
+  #message(STATUS "_STRIGI_INCLUDEDIR=${_STRIGI_INCLUDEDIR} _STRIGI_LIBDIR=${_STRIGI_LIBDIR}")
+
+  if(_dummyLinkFlags)
+
+    exec_program(${PKGCONFIG_EXECUTABLE} ARGS --atleast-version=${STRIGI_MIN_VERSION}
+                 libstreamanalyzer RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _pkgconfigDevNull )
+
+    if(NOT _return_VALUE STREQUAL "0")
+      message(STATUS "pkg-config query failed. did you set $PKG_CONFIG_PATH to the directory where strigi libstreamanalyzer.pc is installed?")
+      message(FATAL_ERROR "Didn't find strigi >= ${STRIGI_MIN_VERSION}")
+    else(NOT _return_VALUE STREQUAL "0")
+      set (STRIGI_NEEDS_SIGNED_CHAR FALSE)
+      exec_program(${PKGCONFIG_EXECUTABLE} ARGS --modversion libstreamanalyzer RETURN_VALUE _version_return_VALUE OUTPUT_VARIABLE _strigiVersion )
+      MACRO_ENSURE_VERSION("0.6.0" ${_strigiVersion} STRIGI_NEEDS_SIGNED_CHAR)
+      # message(STATUS "Strigi version is ${_strigiVersion}. Needs signed char: ${STRIGI_NEEDS_SIGNED_CHAR}")
+
+      set( STRIGI_NEEDS_SIGNED_CHAR ${STRIGI_NEEDS_SIGNED_CHAR} CACHE BOOL "TRUE if strigi is 0.6.0 or later" )
+
+      if(NOT Strigi_FIND_QUIETLY)
+        message(STATUS "Found Strigi ${_strigiVersion}")
+      endif(NOT Strigi_FIND_QUIETLY)
+    endif(NOT _return_VALUE STREQUAL "0")
+  else(_dummyLinkFlags)
+    message(STATUS "pkgconfig didn't find strigi, couldn't check strigi version")
+  endif(_dummyLinkFlags)
+else (NOT WIN32)
+  # STRIGI_NEEDS_SIGNED_CHAR is only set correct when pkgconfig is available...
+  # we don't use strigi < 0.6.0 so assume STRIGI_NEEDS_SIGNED_CHAR is needed
+  set(STRIGI_NEEDS_SIGNED_CHAR TRUE)
+endif(NOT WIN32)
+
 if (WIN32)
   file(TO_CMAKE_PATH "$ENV{PROGRAMFILES}" _program_FILES_DIR)
   string(REPLACE "\\" "/" _program_FILES_DIR "${_program_FILES_DIR}")
@@ -28,6 +62,7 @@ string(REPLACE "\\" "/" strigi_home "$ENV{STRIGI_HOME}")
 find_path(STRIGI_INCLUDE_DIR strigi/streamanalyzer.h
   PATHS
   ${strigi_home}/include
+  ${_STRIGI_INCLUDEDIR}
   ${_program_FILES_DIR}/strigi/include
   NO_DEFAULT_PATH
 )
@@ -39,6 +74,7 @@ find_library_with_debug(STRIGI_STREAMANALYZER_LIBRARY
   NAMES streamanalyzer
   PATHS
   ${strigi_home}/lib
+  ${_STRIGI_LIBDIR}
   ${_program_FILES_DIR}/strigi/lib
   NO_DEFAULT_PATH
 )
@@ -53,6 +89,7 @@ find_library_with_debug(STRIGI_STREAMS_LIBRARY
   NAMES streams
   PATHS
   ${strigi_home}/lib
+  ${_STRIGI_LIBDIR}
   ${_program_FILES_DIR}/strigi/lib
   NO_DEFAULT_PATH
 )
@@ -66,6 +103,7 @@ find_library_with_debug(STRIGI_STRIGIQTDBUSCLIENT_LIBRARY
   NAMES strigiqtdbusclient
   PATHS
   ${strigi_home}/lib
+  ${_STRIGI_LIBDIR}
   ${_program_FILES_DIR}/strigi/lib
   NO_DEFAULT_PATH
 )
@@ -73,58 +111,6 @@ find_library_with_debug(STRIGI_STRIGIQTDBUSCLIENT_LIBRARY
 find_library_with_debug(STRIGI_STRIGIQTDBUSCLIENT_LIBRARY
                         WIN32_DEBUG_POSTFIX d
                         NAMES strigiqtdbusclient )
-
-
-if (NOT WIN32 AND NOT HAVE_STRIGI_VERSION)
-  include(UsePkgConfig)
-  pkgconfig(libstreamanalyzer _dummyIncDir _dummyLinkDir _dummyLinkFlags _dummyCflags)
-
-  # if pkgconfig found strigi, check the version, otherwise print a warning
-  if(_dummyLinkFlags)
-
-    exec_program(${PKGCONFIG_EXECUTABLE} ARGS --atleast-version=${STRIGI_MIN_VERSION}
-                 libstreamanalyzer RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _pkgconfigDevNull )
-
-    if(NOT _return_VALUE STREQUAL "0")
-      message(STATUS "pkg-config query failed. did you set $PKG_CONFIG_PATH to the directory where strigi libstreamanalyzer.pc is installed?")
-      message(FATAL_ERROR "Didn't find strigi >= ${STRIGI_MIN_VERSION}")
-    else(NOT _return_VALUE STREQUAL "0")
-      set(HAVE_STRIGI_VERSION TRUE)
-      set (STRIGI_NEEDS_SIGNED_CHAR FALSE)
-      exec_program(${PKGCONFIG_EXECUTABLE} ARGS --modversion libstreamanalyzer RETURN_VALUE _version_return_VALUE OUTPUT_VARIABLE _strigiVersion )
-      MACRO_ENSURE_VERSION("0.6.0" ${_strigiVersion} STRIGI_NEEDS_SIGNED_CHAR)
-      # message(STATUS "Strigi version is ${_strigiVersion}. Needs signed char: ${STRIGI_NEEDS_SIGNED_CHAR}")
-
-      if(NOT Strigi_FIND_QUIETLY)
-        message(STATUS "Found Strigi ${_strigiVersion}")
-      endif(NOT Strigi_FIND_QUIETLY)
-    endif(NOT _return_VALUE STREQUAL "0")
-    if (NOT STRIGI_STREAMANALYZER_LIBRARY)
-      find_library(STRIGI_STREAMANALYZER_LIBRARY NAMES streamanalyzer
-                   PATHS ${_dummyLinkDir})
-    endif(NOT STRIGI_STREAMANALYZER_LIBRARY)
-    if( NOT STRIGI_STRIGIQTDBUSCLIENT_LIBRARY)
-       find_library(STRIGI_STRIGIQTDBUSCLIENT_LIBRARY NAMES strigiqtdbusclient
-                    PATHS ${_dummyLinkDir})
-    endif(NOT STRIGI_STRIGIQTDBUSCLIENT_LIBRARY)
-    if (NOT STRIGI_STREAMS_LIBRARY)
-      find_library(STRIGI_STREAMS_LIBRARY NAMES streams
-                   PATHS ${_dummyLinkDir})
-    endif(NOT STRIGI_STREAMS_LIBRARY)
-    if (NOT STRIGI_INCLUDE_DIR)
-      find_path(STRIGI_INCLUDE_DIR strigi/streamanalyzer.h
-                PATHS ${_dummyIncDir})
-    endif(NOT STRIGI_INCLUDE_DIR)
-  else(_dummyLinkFlags)
-    message(STATUS "pkgconfig didn't find strigi, couldn't check strigi version")
-  endif(_dummyLinkFlags)
-endif (NOT WIN32 AND NOT HAVE_STRIGI_VERSION)
-
-if(WIN32)
-  # STRIGI_NEEDS_SIGNED_CHAR is only set correct when pkgconfig is available...
-  # we don't use strigi < 0.6.0 so assume STRIGI_NEEDS_SIGNED_CHAR is needed
-  set(STRIGI_NEEDS_SIGNED_CHAR TRUE)
-endif(WIN32)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Strigi  
