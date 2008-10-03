@@ -23,7 +23,7 @@
 #define _DOM_dtd_h_
 
 #include "dom/dom_string.h"
-#include "misc/htmlhashes.h"
+#include "misc/htmlnames.h"
 
 #undef OPTIONAL
 

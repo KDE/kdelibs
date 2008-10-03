@@ -54,6 +54,16 @@ DOMString::DOMString(const char *str)
     impl->ref();
 }
 
+DOMString::DOMString(const char *str, uint len)
+{
+    if (!str) {
+        impl = 0;
+        return;
+    }
+    impl = new DOMStringImpl(str, len);
+    impl->ref();
+}
+
 DOMString::DOMString(DOMStringImpl *i)
 {
     impl = i;

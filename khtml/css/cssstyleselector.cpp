@@ -604,7 +604,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
     int schecked = 0;
 
     for ( unsigned int i = 0; i < selectors_size; i++ ) {
-	quint16 tag = localNamePart(selectors[i]->tag);
+	quint16 tag = selectors[i]->tagLocalName.id();
 	if ( cssTagId == tag || tag == anyLocalName ) {
 	    ++schecked;
 
@@ -1044,15 +1044,16 @@ static bool matchNth(int count, const QString& nth)
 //structure of checkSubSelectors
 static void precomputeAttributeDependenciesAux(DOM::DocumentImpl* doc, DOM::CSSSelector* sel, bool isAncestor, bool isSubject)
 {
-    if(sel->attr)
+    if(sel->attrLocalName.id())
     {
+        uint selAttr = makeId(sel->attrNamespace.id(), sel->attrLocalName.id());
         // Sets up global dependencies of attributes
         if (isSubject)
-            doc->dynamicDomRestyler().addDependency(sel->attr, PersonalDependency);
+            doc->dynamicDomRestyler().addDependency(selAttr, PersonalDependency);
         else if (isAncestor)
-            doc->dynamicDomRestyler().addDependency(sel->attr, AncestorDependency);
+            doc->dynamicDomRestyler().addDependency(selAttr, AncestorDependency);
         else
-            doc->dynamicDomRestyler().addDependency(sel->attr, PredecessorDependency);
+            doc->dynamicDomRestyler().addDependency(selAttr, PredecessorDependency);
     }
     if(sel->match == CSSSelector::PseudoClass)
     {
@@ -1199,17 +1200,19 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
     if(!e)
         return false;
 
-    if (sel->tag != anyQName) {
+
+    uint selTag = makeId(sel->tagNamespace.id(), sel->tagLocalName.id());
+    if (selTag != anyQName) {
         int eltID = e->id();
         quint16 localName = localNamePart(eltID);
         quint16 ns = namespacePart(eltID);
-        quint16 selLocalName = localNamePart(sel->tag);
-        quint16 selNS = namespacePart(sel->tag);
+        quint16 selLocalName = localNamePart(selTag);
+        quint16 selNS = namespacePart(selTag);
 
-        if (localName <= ID_LAST_TAG && ns == defaultNamespace) {
+        /*if (localName <= ID_LAST_TAG && ns == defaultNamespace) {
             assert(e->isHTMLElement());
             ns = xhtmlNamespace;
-        }
+        }*/
 
         // match on local
         if (selLocalName != anyLocalName && localName != selLocalName) return false;
@@ -1217,14 +1220,12 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         if (selNS != anyNamespace && ns != selNS) return false;
     }
 
-    if(sel->attr)
+    uint selAttr = makeId(sel->attrNamespace.id(), sel->attrLocalName.id());
+    if(selAttr)
     {
-        quint16 selLocalName = localNamePart(sel->attr);
-        quint16 selNS = namespacePart(sel->attr);
-        bool nsAware = (selNS != anyNamespace);
-        if (selNS == emptyNamespace)
-            selNS = defaultNamespace;
-        DOMStringImpl* value = e->getAttributeImpl(makeId(selNS, selLocalName), nsAware);
+        quint16 selLocalName = localNamePart(selAttr);
+        quint16 selNS = namespacePart(selAttr);
+        DOMStringImpl* value = e->getAttributeImpl(makeId(selNS, selLocalName), emptyPrefixName, true/*nsAware*/);
         if(!value) return false; // attribute is not set
 
         // attributes are always case-sensitive in XHTML
@@ -1233,7 +1234,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         // for compatibility reasons
         bool caseSensitive = e->document()->htmlMode() == DocumentImpl::XHtml;
         bool caseSensitive_alt = strictParsing || caseSensitive;
-        caseSensitive |= (sel->attr > ATTR_LAST_CI_ATTR);
+        caseSensitive |= caseSensitiveAttr(selAttr);
 
         switch(sel->match)
         {
@@ -1257,7 +1258,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             // Be smart compare on length first
             if ((!sel_len && !val_len) || sel_len > val_len) return false;
             // Selector string may not contain spaces
-            if ((sel->attr != ATTR_CLASS || e->hasClassList()) && sel->value.find(' ') != -1) return false;
+            if ((selAttr != ATTR_CLASS || e->hasClassList()) && sel->value.find(' ') != -1) return false;
             if (sel_len == val_len)
                 return (caseSensitive && !strcmp(sel->value, value)) ||
 		       (!caseSensitive && !strcasecmp(sel->value, value));
@@ -1558,7 +1559,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
 	    break;
         case CSSSelector::PseudoHover: {
 	    // If we're in quirks mode, then *:hover should only match focusable elements.
-	    if (strictParsing || (sel->tag != anyQName) || isSubSelector || e->isFocusable() ) {
+	    if (strictParsing || (selTag != anyQName) || isSubSelector || e->isFocusable() ) {
                 addDependency(HoverDependency, e);
 
                 if (e->hovered())
@@ -1568,7 +1569,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             }
 	case CSSSelector::PseudoActive:
 	    // If we're in quirks mode, then *:active should only match focusable elements
-	    if (strictParsing || (sel->tag != anyQName) || isSubSelector || e->isFocusable()) {
+	    if (strictParsing || (selTag != anyQName) || isSubSelector || e->isFocusable()) {
                 addDependency(ActiveDependency, e);
 
 		if (e->active())
@@ -3445,9 +3446,13 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_ATTR)
             {
                 // TODO: setup dynamic attribute dependencies
-                int attrID = element->document()->getId(NodeImpl::AttributeId, val->getStringValue(), false, true);
-                if (attrID)
-                    style->addContent(element->getAttribute(attrID).implementation());
+                LocalName attrName;
+                if (element->htmlCompat())
+                    attrName = LocalName::fromString(DOMString(val->getStringValue()).lower());
+                else
+                    attrName = LocalName::fromString(val->getStringValue());
+                if (attrName.id())
+                    style->addContent(element->getAttribute(makeId(emptyNamespace, attrName.id())).implementation());
                 else
                     kDebug(6080) << "Attribute \"" << val->getStringValue() << "\" not found";
             }

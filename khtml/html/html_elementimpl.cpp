@@ -121,13 +121,7 @@ DOMString HTMLElementImpl::localName() const
     // case we are an XHTML element. This also means we have a lowercase name.
     if (!m_htmlCompat) // XHTML == not HTMLCompat
     {
-        NodeImpl::Id _id = id();
-        DOMString tn;
-        if ( _id >= ID_LAST_TAG )
-            tn = document()->getName(ElementId, _id);
-        else // HTML tag
-            tn = getTagName( _id );
-	return tn; // lowercase already
+        return LocalName::fromId(id()).toString();
     }
     // createElement() always returns elements with a null localName.
     else
@@ -136,18 +130,14 @@ DOMString HTMLElementImpl::localName() const
 
 DOMString HTMLElementImpl::tagName() const
 {
-    DOMString tn;
-    NodeImpl::Id _id = id();
-    if ( _id >= ID_LAST_TAG )
-        tn = document()->getName(ElementId, _id);
-    else // HTML tag
-        tn = getTagName( _id );
+    DOMString tn = LocalName::fromId(id()).toString();
 
     if ( m_htmlCompat )
         tn = tn.upper();
 
-    if (m_prefix)
-        return DOMString(m_prefix) + ":" + tn;
+    DOMString prefix = m_prefix.toString();
+    if (!prefix.isEmpty())
+        return prefix + ":" + tn;
 
     return tn;
 }
@@ -710,7 +700,7 @@ DOMString HTMLElementImpl::toString() const
 HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentImpl *doc, ushort i)
     : HTMLElementImpl(doc)
 {
-    _id = i;
+    m_localName = LocalName::fromId(i);
 }
 
 HTMLGenericElementImpl::~HTMLGenericElementImpl()

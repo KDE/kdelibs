@@ -277,6 +277,7 @@ void HTMLDocumentImpl::changeModes(ParseMode newPMode, HTMLMode newHMode)
         hMode = XHtml;
         pMode = Transitional;
     }
+    m_htmlCompat = (hMode != XHtml);
 
     m_styleSelector->strictParsing = !inCompatMode();
 

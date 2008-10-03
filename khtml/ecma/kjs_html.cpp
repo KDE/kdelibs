@@ -69,6 +69,8 @@
 #include <QtCore/QList>
 #include <QtCore/QHash>
 
+using namespace DOM;
+
 namespace KJS {
 
 KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLDocumentProto, DOMDocumentProto)

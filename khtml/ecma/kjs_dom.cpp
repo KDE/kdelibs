@@ -55,6 +55,7 @@
 
 using namespace KJS;
 using namespace khtml;
+using namespace DOM;
 
 // -------------------------------------------------------------------------
 /* Source for DOMNodeConstantsTable.

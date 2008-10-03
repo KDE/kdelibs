@@ -31,6 +31,7 @@
 #include "dom/dom_element.h"
 #include "xml/dom_stringimpl.h"
 #include "misc/shared.h"
+#include "wtf/Vector.h"
 
 namespace khtml {
     class CSSStyleSelector;
@@ -54,8 +55,7 @@ class AttrImpl : public NodeBaseImpl
     friend class NamedAttrMapImpl;
 
 public:
-    AttrImpl(ElementImpl* element, DocumentImpl* docPtr, NodeImpl::Id attrId,
-	     DOMStringImpl *value, DOMStringImpl *prefix = 0);
+    AttrImpl(ElementImpl* element, DocumentImpl* docPtr, NamespaceName namespaceName, LocalName localName, PrefixName prefix, DOMStringImpl *value);
     ~AttrImpl();
 
 private:
@@ -77,9 +77,11 @@ public:
     virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString prefix() const;
-    virtual void setPrefix(const DOMString &_prefix, int &exceptioncode );
+    virtual void setPrefix(const DOMString& refix, int &exceptioncode );
     virtual DOMString namespaceURI() const;
     virtual DOMString localName() const;
+
+    PrefixName prefixName() const { return m_prefix; }
 
     virtual DOMString nodeValue() const;
     virtual void setNodeValue( const DOMString &, int &exceptioncode );
@@ -89,7 +91,7 @@ public:
     virtual bool isAttributeNode() const { return true; }
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short type );
-    virtual NodeImpl::Id id() const { return m_attrId; }
+    virtual NodeImpl::Id id() const { return makeId(m_namespace.id(), m_localName.id()); }
     virtual void childrenChanged();
 
     // This is used for when the value is normalized on setting by
@@ -104,29 +106,31 @@ public:
 
 protected:
     ElementImpl *m_element;
-    NodeImpl::Id m_attrId;
+    LocalName m_localName;
+    NamespaceName m_namespace;
+    PrefixName m_prefix;
     DOMStringImpl *m_value;
-    DOMStringImpl *m_prefix;
-    DOMStringImpl *m_localName;
 };
 
 // Mini version of AttrImpl internal to NamedAttrMapImpl.
-// Stores either the id and value of an attribute
-// (in the case of m_attrId != 0), or a pointer to an AttrImpl (if m_attrId == 0)
+// Stores either the id (LocalName and NamespaceName) and value of an attribute
+// (in the case of m_localName.id() != 0), or a pointer to an AttrImpl (if m_localName.id() == 0)
 // The latter case only happens when the Attr node is requested by some DOM
 // code or is an XML attribute.
 // In most cases the id and value is all we need to store, which is more
 // memory efficient.
+// FIXME: update comment - no longer create mini version for only html attributes
 struct AttributeImpl
 {
-    NodeImpl::Id id() const { return m_attrId ? m_attrId : m_data.attr->id(); }
-    DOMStringImpl *val() const { if (m_attrId) return m_data.value; else return m_data.attr->val(); }
+    NodeImpl::Id id() const { return m_localName.id() ? makeId(m_namespace.id(), m_localName.id()) : m_data.attr->id(); }
+    DOMStringImpl *val() const { return m_localName.id() ? m_data.value : m_data.attr->val(); }
     DOMString value() const { return val(); }
-    AttrImpl *attr() const { return m_attrId ? 0 : m_data.attr; }
-    DOMString namespaceURI() { return m_attrId ? DOMString() : m_data.attr->namespaceURI(); }
-    DOMString prefix() { return m_attrId ? DOMString() : m_data.attr->prefix(); }
-    DOMString localName() { return m_attrId ? DOMString() : m_data.attr->localName(); }
-    DOMString name() { return m_attrId ? DOMString() : m_data.attr->name(); }
+    AttrImpl *attr() const { return m_localName.id() ? 0 : m_data.attr; }
+    DOMString namespaceURI() const { return m_localName.id() ? m_namespace.toString() : m_data.attr->namespaceURI(); }
+    DOMString prefix() const { return m_localName.id() ? m_prefix.toString() : m_data.attr->prefix(); }
+    DOMString localName() const { return m_localName.id() ? m_localName.toString() : m_data.attr->localName(); }
+    //DOMString name() const { return m_localName.id() ? DOMString() : m_data.attr->name(); }
+    PrefixName prefixName() const { return m_localName.id() ? m_prefix : m_data.attr->prefixName(); }
 
     void setValue(DOMStringImpl *value, ElementImpl *element);
     AttrImpl *createAttr(ElementImpl *element, DocumentImpl *docPtr);
@@ -135,7 +139,9 @@ struct AttributeImpl
     // See the description for AttrImpl.
     void rewriteValue( const DOMString& newValue );
 
-    NodeImpl::Id m_attrId;
+    LocalName m_localName;
+    NamespaceName m_namespace;
+    PrefixName m_prefix;
     union {
         DOMStringImpl *value;
         AttrImpl *attr;
@@ -170,7 +176,7 @@ public:
     AttrImpl* getAttributeNode( const DOMString &name );
     Attr setAttributeNode( AttrImpl* newAttr, int& exceptioncode );
     Attr removeAttributeNode( AttrImpl* oldAttr, int& exceptioncode );
-    
+
     DOMString getAttributeNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode );
     void removeAttributeNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode );
     AttrImpl* getAttributeNodeNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode );
@@ -181,16 +187,15 @@ public:
     void focus();
 
     //Lower-level implementation primitives
-    DOMString getAttribute( NodeImpl::Id id, bool nsAware = false, const DOMString& qName = DOMString() ) const;
-    DOMStringImpl* getAttributeImpl( NodeImpl::Id id, bool nsAware = false, DOMStringImpl* qName = 0 ) const;
-    bool hasAttribute( NodeImpl::Id id, bool nsAware = false, DOMStringImpl* qName = 0 ) const {
-        return getAttributeImpl( id, nsAware, qName ) != 0;
+    DOMString getAttribute(NodeImpl::Id id, PrefixName prefix = emptyPrefixName, bool nsAware = false) const { return DOMString(getAttributeImpl(id, prefix, nsAware)); }
+    DOMStringImpl* getAttributeImpl(const NodeImpl::Id id, PrefixName prefix = emptyPrefixName, bool nsAware = false) const;
+    void setAttribute(NodeImpl::Id id, PrefixName prefix, bool nsAware, const DOMString &value, int &exceptioncode);
+    void setAttributeNS(const DOMString &namespaceURI, const DOMString &localName, const DOMString& value, int &exceptioncode);
+
+    bool hasAttribute(NodeImpl::Id id, PrefixName prefix = emptyPrefixName, bool nsAware = false) const {
+        return getAttributeImpl(id, prefix, nsAware) != 0;
     }
-    void setAttribute( NodeImpl::Id id, const DOMString &value, const DOMString &qName,
-                       int &exceptioncode );
-    void setAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName,
-                         const DOMString& value, int &exceptioncode );
-    virtual DOMString prefix() const;
+    virtual DOMString prefix() const { return m_prefix.toString(); }
     void setPrefix(const DOMString &_prefix, int &exceptioncode );
     virtual DOMString namespaceURI() const;
 
@@ -221,20 +226,21 @@ public:
     }
 
     //This is always called, whenever an attribute changed
-    virtual void parseAttribute(AttributeImpl *) {}
-
-    void parseNullAttribute(NodeImpl::Id attrId) {
-	AttributeImpl aimpl;
-	aimpl.m_attrId = attrId;
-	aimpl.m_data.value = 0;
-	parseAttribute(&aimpl);
+    virtual void parseAttribute(AttributeImpl*) {}
+    virtual void parseNullAttribute(NodeImpl::Id id, PrefixName prefix) {
+        AttributeImpl aimpl;
+        aimpl.m_localName = LocalName::fromId(localNamePart(id));
+        aimpl.m_namespace = NamespaceName::fromId(namespacePart(id));
+        aimpl.m_prefix = prefix;
+        aimpl.m_data.value = 0;
+        parseAttribute(&aimpl);
     }
 
-    void parseAttribute(AttrImpl* fullAttr) {
-	AttributeImpl aimpl;
-	aimpl.m_attrId = 0;
-	aimpl.m_data.attr = fullAttr;
-	parseAttribute(&aimpl);
+    virtual void parseAttribute(AttrImpl* fullAttr) {
+        AttributeImpl aimpl;
+        aimpl.m_localName = emptyLocalName;
+        aimpl.m_data.attr = fullAttr;
+        parseAttribute(&aimpl);
     }
 
     // not part of the DOM
@@ -326,7 +332,7 @@ protected: // member variables
         DOM::CSSStyleDeclarationImpl *inlineDecls;
         CombinedStyleDecl *combinedDecls;
     } m_style;
-    DOMStringImpl *m_prefix;
+    PrefixName m_prefix;
 };
 
 
@@ -334,8 +340,7 @@ class XMLElementImpl : public ElementImpl
 {
 
 public:
-    XMLElementImpl(DocumentImpl *doc, NodeImpl::Id id);
-    XMLElementImpl(DocumentImpl *doc, NodeImpl::Id id, DOMStringImpl *_qualifiedName);
+    XMLElementImpl(DocumentImpl *doc, NamespaceName namespacename, LocalName localName, PrefixName prefix);
     ~XMLElementImpl();
 
     // DOM methods overridden from  parent classes
@@ -345,10 +350,11 @@ public:
 
     // Other methods (not part of DOM)
     virtual bool isXMLElementNode() const { return true; }
-    virtual Id id() const { return m_id; }
+    virtual Id id() const { return makeId(m_namespace.id(), m_localName.id()); }
 
 protected:
-    Id  m_id;
+    LocalName m_localName;
+    NamespaceName m_namespace;
 };
 
 // the map of attributes of an element
@@ -360,33 +366,35 @@ public:
     virtual ~NamedAttrMapImpl();
 
     // DOM methods & attributes for NamedNodeMap
-    virtual NodeImpl *getNamedItem ( NodeImpl::Id id, bool nsAware = false, DOMStringImpl* qName = 0 ) const;
-    virtual Node removeNamedItem ( NodeImpl::Id id, bool nsAware, DOMStringImpl* qName, int &exceptioncode );
-    virtual Node setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl* qName, int &exceptioncode );
+    virtual NodeImpl *getNamedItem(NodeImpl::Id id, PrefixName prefix = emptyPrefixName, bool nsAware = false);
+    virtual Node removeNamedItem(NodeImpl::Id id, PrefixName prefix, bool nsAware, int &exceptioncode);
+    virtual Node setNamedItem(NodeImpl* arg, PrefixName prefix, bool nsAware, int &exceptioncode);
 
-    virtual NodeImpl *item ( unsigned long index ) const;
-    virtual unsigned long length(  ) const;
+    virtual NodeImpl *item(unsigned index);
+    virtual unsigned length() const { return m_attrs.size(); }
 
     // Other methods (not part of DOM)
     virtual bool isReadOnly() { return false; }
+    virtual bool htmlCompat() { return m_element ? m_element->m_htmlCompat : false; }
 
-    AttributeImpl *attrAt(unsigned long index) const { return &m_attrs[index]; }
+    AttributeImpl& attributeAt(unsigned index) { return m_attrs[index]; }
+    const AttributeImpl& attributeAt(unsigned index) const { return m_attrs[index]; }
+    AttrImpl* attrAt(unsigned index) const { return m_attrs[index].attr(); }
     // ### replace idAt and getValueAt with attrAt
-    NodeImpl::Id idAt(unsigned long index) const;
-    DOMStringImpl *valueAt(unsigned long index) const;
-    DOMStringImpl *getValue(NodeImpl::Id id, bool nsAware = false, DOMStringImpl* qName = 0) const;
-    void setValue(NodeImpl::Id id, DOMStringImpl *value, DOMStringImpl* qName = 0,
-                  DOMStringImpl *prefix = 0, bool nsAware = false, bool hasNS = false);
+    NodeImpl::Id idAt(unsigned index) const;
+    DOMStringImpl *valueAt(unsigned index) const;
+    DOMStringImpl *getValue(NodeImpl::Id id, PrefixName prefix = emptyPrefixName , bool nsAware = false) const;
+    void setValue(NodeImpl::Id id, DOMStringImpl *value, PrefixName prefix = emptyPrefixName, bool nsAware = false);
     Attr removeAttr(AttrImpl *attr);
-    NodeImpl::Id mapId(DOMStringImpl* namespaceURI, DOMStringImpl* localName, bool readonly);
     void copyAttributes(NamedAttrMapImpl *other);
     void setElement(ElementImpl *element);
     void detachFromElement();
 
+    int find(NodeImpl::Id id, PrefixName prefix, bool nsAware) const;
+
 protected:
     ElementImpl *m_element;
-    AttributeImpl *m_attrs;
-    unsigned long m_attrCount;
+    WTF::Vector<AttributeImpl> m_attrs;
 };
 
 // ------------  inline DOM helper functions ---------------
@@ -465,6 +473,18 @@ inline void splitPrefixLocalName(DOMStringImpl *qualifiedName, DOMString &prefix
         prefix.implementation()->truncate(colonPos);
     } else
         localName = qualifiedName->copy();
+}
+
+inline void splitPrefixLocalName(const DOMString& qualifiedName, PrefixName& prefix, LocalName& localName, bool htmlCompat = false, int colonPos = -2)
+{
+    DOMString localname, prefixname;
+    splitPrefixLocalName(qualifiedName.implementation(), prefixname, localname, colonPos);
+    if (htmlCompat) {
+        localname = localname.lower();
+        prefixname = prefixname.lower();
+    }
+    prefix = PrefixName::fromString(prefixname);
+    localName = LocalName::fromString(localname);
 }
 
 } //namespace

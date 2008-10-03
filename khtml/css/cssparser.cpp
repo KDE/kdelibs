@@ -164,6 +164,7 @@ void CSSParser::runParser(int length)
     currentParser = this;
     cssyyparse( this );
     currentParser = old;
+    boundLocalNames.clear();
 }
 
 void CSSParser::parseSheet( CSSStyleSheetImpl *sheet, const DOMString &string )

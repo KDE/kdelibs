@@ -52,6 +52,10 @@ public:
     DOMString(const QChar *str, uint len);
     DOMString(const QString &);
     DOMString(const char *str);
+    /**
+     * @since 4.2
+     */
+    DOMString(const char *str, uint len);
     DOMString(DOMStringImpl *i);
 
     virtual ~DOMString();
@@ -126,7 +130,7 @@ protected:
 };
 
 inline QDebug operator<<(QDebug stream, const DOMString &string) {
-	return (stream << string.string());
+	return (stream << (string.implementation() ? string.string() : "null"));
 }
 
 KHTML_EXPORT bool operator==( const DOMString &a, const DOMString &b );

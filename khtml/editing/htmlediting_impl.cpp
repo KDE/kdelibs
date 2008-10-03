@@ -215,7 +215,7 @@ static DOMString &styleSpanClassString()
 #ifndef LOG_DISABLED
 static void debugPosition(const char *prefix, const Position &pos)
 {
-    kDebug(6200) << prefix << getTagName(pos.node()->id()) << pos.node() << pos.offset();
+    kDebug(6200) << prefix << DOM::getPrintableName(pos.node()->id()) << pos.node() << pos.offset();
 }
 #endif
 
@@ -975,20 +975,20 @@ Position DeleteCollapsibleWhitespaceCommandImpl::deleteWhitespace(const Position
 
     bool del = shouldDeleteUpstreamPosition(upstream);
 
-    kDebug(6200) << "pos:" << getTagName(pos.node()->id()) << "["<< pos.node() << ":" << pos.offset() << "]";
+    kDebug(6200) << "pos:" << DOM::getPrintableName(pos.node()->id()) << "["<< pos.node() << ":" << pos.offset() << "]";
     if (upstream == downstream) {
-        kDebug(6200) << "same:" << getTagName(upstream.node()->id()) << "["<< upstream.node()<< ":" << upstream.offset()<< "]";
+        kDebug(6200) << "same:" << DOM::getPrintableName(upstream.node()->id()) << "["<< upstream.node()<< ":" << upstream.offset()<< "]";
     }
     else {
-        kDebug(6200) << "upstream:" << ( del ? "DELETE" : "SKIP") << getTagName(upstream.node()->id())<< "["<< upstream.node() << ":" <<  upstream.offset()<< "]";
+        kDebug(6200) << "upstream:" << ( del ? "DELETE" : "SKIP") << DOM::getPrintableName(upstream.node()->id())<< "["<< upstream.node() << ":" <<  upstream.offset()<< "]";
         PositionIterator it(upstream);
         for (it.next(); it.current() != downstream; it.next()) {
             if (it.current().node()->isTextNode() && (long)static_cast<TextImpl *>(it.current().node())->length() == it.current().offset())
-                kDebug(6200) << "   node:    AT END"<< getTagName(it.current().node()->id())<< "["<< it.current().node()<< ":" << it.current().offset()<< "]";
+                kDebug(6200) << "   node:    AT END"<< DOM::getPrintableName(it.current().node()->id())<< "["<< it.current().node()<< ":" << it.current().offset()<< "]";
             else
-                kDebug(6200) << "   node:    DELETE"<< getTagName(it.current().node()->id())<< "["<< it.current().node()<< ":" << it.current().offset()<< "]";
+                kDebug(6200) << "   node:    DELETE"<< DOM::getPrintableName(it.current().node()->id())<< "["<< it.current().node()<< ":" << it.current().offset()<< "]";
         }
-        kDebug(6200) << "downstream:" << getTagName(downstream.node()->id()) << "["<<  downstream.node() << ":" << downstream.offset()<< "]";
+        kDebug(6200) << "downstream:" << DOM::getPrintableName(downstream.node()->id()) << "["<<  downstream.node() << ":" << downstream.offset()<< "]";
     }
 
     if (upstream == downstream)

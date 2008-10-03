@@ -46,6 +46,7 @@
 #include <kdebug.h>
 
 using namespace khtml;
+using namespace DOM;
 
 NodeImpl::Id HTMLBaseElementImpl::id() const
 {

@@ -35,6 +35,8 @@
 const double doubleMax = 999999999.8; // ### numeric_limits<double>::max()
 const double doubleInf = 999999999.0; // ### numeric_limits<double>::infinity()
 
+using namespace DOM;
+
 namespace khtml {
 
 HTMLMediaElement::HTMLMediaElement(Document* doc)

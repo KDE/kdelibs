@@ -130,7 +130,7 @@ StyleListImpl::~StyleListImpl()
 
 void CSSSelector::print(void)
 {
-    kDebug( 6080 ) << "[Selector: tag = " <<       QString::number(tag,16) << ", attr = \"" << attr << "\", match = \"" << match
+    kDebug( 6080 ) << "[Selector: tag = " <<       QString::number(makeId(tagNamespace.id(), tagLocalName.id()),16) << ", attr = \"" << makeId(attrNamespace.id(), attrLocalName.id()) << "\", match = \"" << match
 		    << "\" value = \"" << value.string().toLatin1().constData() << "\" relation = " << (int)relation
 		    << "]" << endl;
     if ( tagHistory )
@@ -141,7 +141,7 @@ void CSSSelector::print(void)
 unsigned int CSSSelector::specificity() const
 {
 
-    int s = ((localNamePart(tag) == anyLocalName) ? 0 : 1);
+    int s = ((tagLocalName.id() == anyLocalName) ? 0 : 1);
     switch(match)
     {
     case Id:
@@ -310,7 +310,8 @@ bool CSSSelector::operator == ( const CSSSelector &other ) const
     while ( sel1 && sel2 ) {
         //assert(sel1->_pseudoType != PseudoNotParsed);
         //assert(sel2->_pseudoType != PseudoNotParsed);
-	if ( sel1->tag != sel2->tag || sel1->attr != sel2->attr ||
+	if ( sel1->tagLocalName.id() != sel2->tagLocalName.id() || sel1->attrLocalName.id() != sel2->attrLocalName.id() ||
+         sel1->tagNamespace.id() != sel2->tagNamespace.id() || sel1->attrNamespace.id() != sel2->attrNamespace.id() ||
 	     sel1->relation != sel2->relation || sel1->match != sel2->match ||
 	     sel1->value != sel2->value ||
              sel1->pseudoType() != sel2->pseudoType() ||
@@ -330,15 +331,15 @@ DOMString CSSSelector::selectorText() const
     // the original namespace prefix used. Ugh. -dwh
     DOMString str;
     const CSSSelector* cs = this;
-    quint16 tag = localNamePart(cs->tag);
+    quint16 tag = cs->tagLocalName.id();
     if (tag == anyLocalName && cs->match == CSSSelector::None)
         str = "*";
     else if (tag != anyLocalName)
-        str = getTagName( cs->tag );
+        str = LocalName::fromId(tag).toString();
 
     const CSSSelector* op = 0;
     while (true) {
-        if ( cs->attr == ATTR_ID && cs->match == CSSSelector::Id )
+        if ( makeId(cs->attrNamespace.id(), cs->attrLocalName.id()) == ATTR_ID && cs->match == CSSSelector::Id )
         {
             str += "#";
             str += cs->value;
@@ -367,8 +368,8 @@ DOMString CSSSelector::selectorText() const
             str += cs->value;
         }
         // optional attribute
-        else if ( cs->attr ) {
-            DOMString attrName = getAttrName( cs->attr );
+        else if ( cs->attrLocalName.id() ) {
+            DOMString attrName = LocalName::fromId(cs->attrLocalName.id()).toString();
             str += "[";
             str += attrName;
             switch (cs->match) {

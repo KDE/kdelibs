@@ -32,9 +32,7 @@
 #include "misc/shared.h"
 #include "misc/idstring.h"
 #include "wtf/PassRefPtr.h"
-
-// The namespace used for XHTML elements
-#define XHTML_NAMESPACE "http://www.w3.org/1999/xhtml"
+#include "misc/htmlnames.h"
 
 template <class type> class QList;
 class KHTMLView;
@@ -81,23 +79,6 @@ struct RegisteredListenerList {
 private:
     bool isHTMLEventListener(EventListener* listener);
 };
-
-
-// this class implements nodes, which can have a parent but no children:
-#define NodeImpl_IdNSMask    0xffff0000
-#define NodeImpl_IdLocalMask 0x0000ffff
-
-const quint16 defaultNamespace = 0;
-const quint16 xhtmlNamespace = 1;
-const quint16 emptyNamespace = 2;
-const quint16 anyNamespace = 0xffff;
-const quint16 anyLocalName = 0xffff;
-
-inline quint16 localNamePart(quint32 id) { return id & NodeImpl_IdLocalMask; }
-inline quint16 namespacePart(quint32 id) { return (((unsigned int)id) & NodeImpl_IdNSMask) >> 16; }
-inline quint32 makeId(quint16 n, quint16 l) { return (n << 16) | l; }
-
-const quint32 anyQName = makeId(anyNamespace, anyLocalName);
 
 class NodeImpl : public khtml::TreeShared<NodeImpl>
 {
@@ -692,19 +673,17 @@ protected:
 class TagNodeListImpl : public NodeListImpl
 {
 public:
-    TagNodeListImpl( NodeImpl *n, NodeImpl::Id id );
-    TagNodeListImpl( NodeImpl *n, const DOMString &namespaceURI, const DOMString &localName );
+    TagNodeListImpl(NodeImpl *n, NamespaceName namespaceName, LocalName localName, PrefixName);
+    TagNodeListImpl(NodeImpl *n, const DOMString &namespaceURI, const DOMString &localName);
 
     // Other methods (not part of DOM)
 
 protected:
-    virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const;
-    NodeImpl::Id m_id;
-    DOMString m_namespaceURI;
-    DOMString m_localName;
+    virtual bool nodeMatches(NodeImpl *testNode, bool& doRecurse) const;
+    NamespaceName m_namespace;
+    LocalName m_localName;
+    PrefixName m_prefix;
 
-    bool m_matchAllNames;
-    bool m_matchAllNamespaces;
     bool m_namespaceAware;
 };
 
@@ -735,9 +714,9 @@ public:
     virtual ~NamedNodeMapImpl();
 
     // DOM methods & attributes for NamedNodeMap
-    virtual NodeImpl *getNamedItem ( NodeImpl::Id id, bool nsAware = false, DOMStringImpl* qName = 0 ) const = 0;
-    virtual Node removeNamedItem ( NodeImpl::Id id, bool nsAware, DOMStringImpl* qName, int &exceptioncode ) = 0;
-    virtual Node setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl* qName, int &exceptioncode ) = 0;
+    virtual NodeImpl *getNamedItem(NodeImpl::Id id, PrefixName prefix = emptyPrefixName, bool nsAware = false) = 0;
+    virtual Node removeNamedItem(NodeImpl::Id id, PrefixName prefix, bool nsAware, int &exceptioncode) = 0;
+    virtual Node setNamedItem(NodeImpl* arg, PrefixName prefix, bool nsAware, int &exceptioncode) = 0;
 
     //The DOM-style wrappers
     NodeImpl* getNamedItem( const DOMString &name );
@@ -747,13 +726,11 @@ public:
     Node setNamedItemNS( const Node &arg, int& exceptioncode );
     Node removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode );
 
-    virtual NodeImpl *item ( unsigned long index ) const = 0;
-    virtual unsigned long length(  ) const = 0;
+    virtual NodeImpl *item(unsigned index) = 0;
+    virtual unsigned length() const = 0;
 
-    // Other methods (not part of DOM)
-    virtual NodeImpl::Id mapId(DOMStringImpl* namespaceURI,
-				DOMStringImpl* localName, bool readonly) = 0;
     virtual bool isReadOnly() { return false; }
+    virtual bool htmlCompat() { return false; }
 };
 
 // Generic read-only NamedNodeMap implementation
@@ -767,16 +744,12 @@ public:
 
     // DOM methods & attributes for NamedNodeMap
 
-    virtual NodeImpl *getNamedItem ( NodeImpl::Id id, bool nsAware = false, DOMStringImpl* qName = 0 ) const;
-    virtual Node removeNamedItem ( NodeImpl::Id id, bool nsAware, DOMStringImpl* qName, int &exceptioncode );
-    virtual Node setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl* qName, int &exceptioncode );
+    virtual NodeImpl *getNamedItem(NodeImpl::Id id, PrefixName prefix = emptyPrefixName, bool nsAware = false);
+    virtual Node removeNamedItem(NodeImpl::Id id, PrefixName prefix, bool nsAware, int &exceptioncode);
+    virtual Node setNamedItem(NodeImpl* arg, PrefixName prefix, bool nsAware, int &exceptioncode);
 
-    virtual NodeImpl *item ( unsigned long index ) const;
-    virtual unsigned long length(  ) const;
-
-    // Other methods (not part of DOM)
-    virtual NodeImpl::Id mapId(DOMStringImpl* namespaceURI,
-                               DOMStringImpl* localName, bool readonly);
+    virtual NodeImpl *item(unsigned index);
+    virtual unsigned length() const;
 
     virtual bool isReadOnly() { return true; }
 

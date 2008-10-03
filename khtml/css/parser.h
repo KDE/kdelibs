@@ -168,7 +168,6 @@ typedef union YYSTYPE
     int prop_id;
     unsigned int attribute;
     unsigned int element;
-    unsigned int ns;
     CSSSelector::Relation relation;
     CSSSelector::Match match;
     bool b;

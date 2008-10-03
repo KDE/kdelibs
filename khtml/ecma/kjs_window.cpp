@@ -75,6 +75,7 @@
 
 
 using namespace KJS;
+using namespace DOM;
 
 namespace KJS {
 

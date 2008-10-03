@@ -378,10 +378,10 @@ void HTMLObjectBaseElementImpl::computeContent()
     if (id() != ID_OBJECT) {
           NamedAttrMapImpl* a = attributes();
           if (a) {
-            for (unsigned long i = 0; i < a->length(); ++i) {
+            for (unsigned i = 0; i < a->length(); ++i) {
                 NodeImpl::Id id = a->idAt(i);
                 DOMString value = a->valueAt(i);
-                params.append(document()->getName(NodeImpl::AttributeId, id).string() + "=\"" + value.string() + "\"");
+                params.append(LocalName::fromId(localNamePart(id)).toString().string() + "=\"" + value.string() + "\"");
             }
         }
     }

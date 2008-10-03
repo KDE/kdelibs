@@ -1170,12 +1170,14 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         currToken.flat = true;
                 }
 
-                uint tagID = khtml::getTagID(ptr, len);
+                uint tagID = 0;
                 if (!tagID) {
                     DOMString tagName(ptr);
                     DocumentImpl *doc = parser->docPtr();
-                    if (Element::khtmlValidQualifiedName(tagName))
-                        tagID = doc->getId(NodeImpl::ElementId, tagName.implementation(), false, false);
+                    if (Element::khtmlValidQualifiedName(tagName)) {
+                        safeLocalName = LocalName::fromString(tagName.lower());
+                        tagID = safeLocalName.id();
+                    }
 #ifdef TOKEN_DEBUG
                     QByteArray tmp(ptr, len+1);
                     kDebug( 6036 ) << "Unknown tag: \"" << tmp.data() << "\"";
@@ -1237,14 +1239,20 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     if(curchar <= ' ' || curchar == '=' || curchar == '>') {
                         unsigned int a;
                         cBuffer[cBufferPos] = '\0';
-                        a = khtml::getAttrID(cBuffer, cBufferPos);
+                        a = LocalName::fromString(DOMString(cBuffer).lower()).id();
+                        if (a > ATTR_LAST_ATTR)
+                            a = 0;
 
                         if ( !a ) {
                             // did we just get /> or e.g checked/>
                             if (curchar == '>' && cBufferPos >=1 && cBuffer[cBufferPos-1] == '/') {
                                 currToken.flat = true;
+                                cBuffer[cBufferPos - 1] = '\0';
                                 if (cBufferPos>1)
-                                    a = khtml::getAttrID(cBuffer, cBufferPos-1);
+                                    a = LocalName::fromString(DOMString(cBuffer).lower()).id();
+                                if (a > ATTR_LAST_ATTR)
+                                    a = 0;
+                                cBuffer[cBufferPos - 1] = '/';
                             }
                             if (!a)
                                 attrName = QLatin1String(QByteArray(cBuffer, cBufferPos+1).data());

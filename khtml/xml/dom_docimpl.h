@@ -394,12 +394,6 @@ public:
     virtual bool childTypeAllowed( unsigned short nodeType );
     virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
 
-    NodeImpl::Id getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI, DOMStringImpl *_localName,
-                        DOMStringImpl *_prefix, bool readonly, bool lookupHTML, int *pExceptioncode = 0);
-    NodeImpl::Id getId( NodeImpl::IdType _type, DOMStringImpl *_nodeName, bool readonly, bool lookupHTML,
-                                      int *pExceptioncode = 0);
-    DOMString getName( NodeImpl::IdType _type, NodeImpl::Id _id ) const;
-
     StyleSheetListImpl* styleSheets() { return m_styleSheets; }
 
     DOMString preferredStylesheetSet() const { return m_preferredStylesheetSet; }

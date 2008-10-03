@@ -1355,10 +1355,10 @@ QString RenderObject::information() const
         if (element()->active()) ts << "act ";
         if (element()->hasAnchor()) ts << "anchor ";
         if (element()->focused()) ts << "focus ";
-        ts << " <" <<  getTagName(element()->id()) << ">";
+        ts << " <" << LocalName::fromId(localNamePart(element()->id())).toString().string() << ">";
 
     } else if (isPseudoAnonymous() && style() && style()->styleType() != RenderStyle::NOPSEUDO) {
-        ts << " <" <<  getTagName(node()->id());
+        ts << " <" << LocalName::fromId(localNamePart(element()->id())).toString().string();
         QString pseudo;
         switch (style()->styleType()) {
           case RenderStyle::FIRST_LETTER:
@@ -1419,7 +1419,7 @@ static QTextStream &operator<<(QTextStream &ts, const QRect &r)
 
 //A bit like getTagName, but handles XML, too.
 static QString lookupTagName(NodeImpl* node) {
-    return node->document()->getName(NodeImpl::ElementId, node->id()).string();
+    return LocalName::fromId(node->id()).toString().string();
 }
 
 void RenderObject::dump(QTextStream &ts, const QString &ind) const

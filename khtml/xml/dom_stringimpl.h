@@ -57,6 +57,7 @@ public:
     }
 
     explicit DOMStringImpl(const char *str);
+    explicit DOMStringImpl(const char *str, uint len);
     explicit DOMStringImpl(const QChar &ch) {
 	s = QT_ALLOC_QCHAR_VEC( 1 );
 	s[0] = ch;
@@ -111,7 +112,8 @@ public:
 };
 
 inline unsigned int qHash(const DOMString& key) {
-    return key.implementation()->hash();
+    // 82610334 - hash value for empty string ""
+    return key.implementation() ? key.implementation()->hash() : 82610334;
 }
 
 }

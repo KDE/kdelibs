@@ -690,8 +690,10 @@ void ProspectiveTokenizer::tokenize(const TokenizerString& source)
     
 void ProspectiveTokenizer::processAttribute()
 {
-    uint tag = khtml::getTagID(m_tagName.data(), m_tagName.size());
-    uint attribute = khtml::getAttrID(m_attributeName.data(), m_attributeName.size());
+    LocalName tagLocal = LocalName::fromString(DOMString(m_tagName.data(), m_tagName.size()).lower());
+    uint tag = tagLocal.id();
+    LocalName attrLocal = LocalName::fromString(DOMString(m_tagName.data(), m_tagName.size()).lower());
+    uint attribute = attrLocal.id();
 
     const DOMString value = DOMString(m_attributeValue.data(), m_attributeValue.size()); // ####
     switch (tag) {
@@ -805,8 +807,9 @@ void ProspectiveTokenizer::emitTag()
         clearLastCharacters();
         return;
     }
-    
-    uint tag  = khtml::getTagID(m_tagName.data(), m_tagName.size());
+   
+    LocalName tagLocal = LocalName::fromString(DOMString(m_tagName.data(), m_tagName.size()));
+    uint tag = tagLocal.id();
     m_lastStartTagId = tag;
     m_lastStartTag = m_tagName;
 

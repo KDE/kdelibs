@@ -68,9 +68,14 @@ namespace DOM {
     {
     public:
 	CSSSelector()
-	    : tagHistory(0), simpleSelector(0), attr(0), tag(anyQName), relation( Descendant ),
+	    : tagHistory(0), simpleSelector(0), relation( Descendant ),
 	      match( None ), pseudoId( 0 ), _pseudoType(PseudoNotParsed)
-        {}
+        {
+            tagLocalName = LocalName::fromId(anyLocalName);
+            tagNamespace = NamespaceName::fromId(anyNamespace);
+            attrLocalName = LocalName::fromId(0);
+            attrNamespace = NamespaceName::fromId(0);
+        }
 
 	~CSSSelector() {
 	    delete tagHistory;
@@ -174,8 +179,12 @@ namespace DOM {
 	CSSSelector *tagHistory;
         CSSSelector* simpleSelector; // Used by :not
         DOM::DOMString string_arg; // Used by :contains, :lang and :nth-*
-        DOM::NodeImpl::Id attr;
-        DOM::NodeImpl::Id tag;
+        LocalName attrLocalName;
+        NamespaceName attrNamespace;
+        LocalName tagLocalName;
+        NamespaceName tagNamespace;
+        //DOM::NodeImpl::Id attr;
+        //DOM::NodeImpl::Id tag;
 
 	KDE_BF_ENUM(Relation) relation     : 3;
 	mutable KDE_BF_ENUM(Match) 	 match         : 4;

@@ -53,6 +53,25 @@ DOMStringImpl::DOMStringImpl(const char *str)
     }
 }
 
+DOMStringImpl::DOMStringImpl(const char *str, uint len)
+{
+    if(str && *str)
+    {
+        l = len;
+        s = QT_ALLOC_QCHAR_VEC( l );
+        int i = l;
+        QChar* ptr = s;
+        while( i-- )
+            *ptr++ = *str++;
+    }
+    else
+    {
+        s = QT_ALLOC_QCHAR_VEC( 1 );  // crash protection
+        s[0] = 0x0; // == QChar::null;
+        l = 0;
+    }
+}
+
 // FIXME: should be a cached flag maybe.
 bool DOMStringImpl::containsOnlyWhitespace() const
 {

@@ -99,8 +99,8 @@ public:
     void deleteRule ( unsigned long index, int &exceptioncode );
 
     void addNamespace(CSSParser* p, const DOM::DOMString& prefix, const DOM::DOMString& uri);
-    void determineNamespace(quint32& id, const DOM::DOMString& prefix);
-    quint32 defaultNamespace() { return m_defaultNamespace; }
+    void determineNamespace(NamespaceName& namespacename, const DOM::DOMString& prefix);
+    quint32 defaultNamespace() { return m_defaultNamespace.id(); }
 
     void setCharset(const DOMString &charset) { m_charset = charset; }
     const DOMString& charset() const { return m_charset; }
@@ -123,7 +123,7 @@ protected:
     DocumentImpl *m_doc;
     bool m_implicit;
     mutable bool m_loadedHint;
-    quint32 m_defaultNamespace;
+    NamespaceName m_defaultNamespace;
     CSSNamespace* m_namespaces;
     DOMString m_charset;
 };

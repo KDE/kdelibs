@@ -88,6 +88,10 @@ public:
     bool operator==(const IDString<TableFactory>& other) const {
         return m_id == other.m_id;
     }
+
+    QDebug operator<<(QDebug stream) const {
+        return id() ? (stream << id() << toString()) : "null idstring";
+    }
 };
 
 class IDTableBase {
@@ -103,6 +107,8 @@ class IDTableBase {
     };
 protected:
     void refId(unsigned id) {
+        if (id == 0xFFFF)
+            return;
         ++m_mappings[id].refCount;
     }
 

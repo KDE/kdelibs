@@ -937,34 +937,34 @@ void Selection::debugPosition() const
         Position pos = start();
         Position upstream = pos.equivalentUpstreamPosition();
         Position downstream = pos.equivalentDownstreamPosition();
-        fprintf(stderr, "upstream:   %s %p:%ld\n", getTagName(upstream.node()->id())
+        /*FIXME:use kDebug() fprintf(stderr, "upstream:   %s %p:%ld\n", getTagName(upstream.node()->id())
             , upstream.node(), upstream.offset());
         fprintf(stderr, "pos:        %s %p:%ld\n", getTagName(pos.node()->id())
             , pos.node(), pos.offset());
         fprintf(stderr, "downstream: %s %p:%ld\n", getTagName(downstream.node()->id())
-            , downstream.node(), downstream.offset());
+            , downstream.node(), downstream.offset());*/
     }
     else {
         Position pos = start();
         Position upstream = pos.equivalentUpstreamPosition();
         Position downstream = pos.equivalentDownstreamPosition();
-        fprintf(stderr, "upstream:   %s %p:%ld\n", getTagName(upstream.node()->id())
+        /*FIXME: use kDebug() fprintf(stderr, "upstream:   %s %p:%ld\n", getTagName(upstream.node()->id())
             , upstream.node(), upstream.offset());
         fprintf(stderr, "start:      %s %p:%ld\n", getTagName(pos.node()->id())
             , pos.node(), pos.offset());
         fprintf(stderr, "downstream: %s %p:%ld\n", getTagName(downstream.node()->id())
             , downstream.node(), downstream.offset());
-        fprintf(stderr, "-----------------------------------\n");
+        fprintf(stderr, "-----------------------------------\n");*/
         pos = end();
         upstream = pos.equivalentUpstreamPosition();
         downstream = pos.equivalentDownstreamPosition();
-        fprintf(stderr, "upstream:   %s %p:%ld\n", getTagName(upstream.node()->id())
+        /*FIXME: use kDebug() fprintf(stderr, "upstream:   %s %p:%ld\n", getTagName(upstream.node()->id())
             , upstream.node(), upstream.offset());
         fprintf(stderr, "end:        %s %p:%ld\n", getTagName(pos.node()->id())
             , pos.node(), pos.offset());
         fprintf(stderr, "downstream: %s %p:%ld\n", getTagName(downstream.node()->id())
             , downstream.node(), downstream.offset());
-        fprintf(stderr, "-----------------------------------\n");
+        fprintf(stderr, "-----------------------------------\n");*/
     }
 
 #if 0

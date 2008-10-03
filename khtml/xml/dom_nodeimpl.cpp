@@ -814,7 +814,7 @@ void NodeImpl::checkSetPrefix(const DOMString &_prefix, int &exceptioncode)
     // - if this node is an attribute and the specified prefix is "xmlns" and
     //   the namespaceURI of this node is different from "http://www.w3.org/2000/xmlns/",
     // - or if this node is an attribute and the qualifiedName of this node is "xmlns" [Namespaces].
-    if (Element::khtmlMalformedPrefix(_prefix) || (namespacePart(id()) == defaultNamespace && id() > ID_LAST_TAG) ||
+    if (Element::khtmlMalformedPrefix(_prefix) || /*FIXME: use IDString somehow here (namespacePart(id()) == defaultNamespace && id() > ID_LAST_TAG) ||*/
         (_prefix == "xml" && namespaceURI() != "http://www.w3.org/XML/1998/namespace")) {
         exceptioncode = DOMException::NAMESPACE_ERR;
         return;
@@ -1252,19 +1252,22 @@ bool NodeImpl::isPointInsideSelection(int x, int y, const Selection &sel) const
 
 }
 
-NodeListImpl* NodeImpl::getElementsByTagName( const DOMString &tagName )
+NodeListImpl* NodeImpl::getElementsByTagName(const DOMString &tagName)
 {
-    NodeImpl::Id id;
-    if ( tagName == "*" )
-        id = 0;
-    else
-        id = document()->getId(NodeImpl::ElementId, tagName.implementation(), false, true);
-    return new TagNodeListImpl( this, id );
+        //FIXME: split into prefix and localName
+    LocalName localname;
+    PrefixName prefixname;
+    if (tagName == "*") {
+        localname = LocalName::fromId(anyLocalName);
+        prefixname = PrefixName::fromId(emptyPrefix);
+    } else
+        splitPrefixLocalName(tagName, prefixname, localname, m_htmlCompat);
+    return new TagNodeListImpl(this, NamespaceName::fromId(0), localname, prefixname);
 }
 
-NodeListImpl* NodeImpl::getElementsByTagNameNS( const DOMString &namespaceURI, const DOMString &localName )
+NodeListImpl* NodeImpl::getElementsByTagNameNS(const DOMString &namespaceURI, const DOMString &localName)
 {
-    return new TagNodeListImpl( this, namespaceURI, localName );
+    return new TagNodeListImpl(this, namespaceURI, localName);
 }
 
 NodeListImpl* NodeImpl::getElementsByClassName(const DOMString &name)
@@ -2135,39 +2138,42 @@ bool ChildNodeListImpl::nodeMatches( NodeImpl* /*testNode*/, bool& doRecurse ) c
     return true;
 }
 
-TagNodeListImpl::TagNodeListImpl( NodeImpl *n, NodeImpl::Id id )
+TagNodeListImpl::TagNodeListImpl(NodeImpl *n, NamespaceName namespaceName, LocalName localName, PrefixName prefix)
   : NodeListImpl(n, UNCACHEABLE),
-    m_id(id),
     m_namespaceAware(false)
 {
-    // An id of 0 here means "*" (match all nodes)
-    m_matchAllNames = (id == 0);
-    m_matchAllNamespaces = false;
+    m_namespace = namespaceName;
+    m_localName = localName;
+    m_prefix = prefix;
 }
 
 TagNodeListImpl::TagNodeListImpl( NodeImpl *n, const DOMString &namespaceURI, const DOMString &localName )
   : NodeListImpl(n, UNCACHEABLE),
-    m_id(0),
-    m_namespaceURI(namespaceURI),
-    m_localName(localName),
     m_namespaceAware(true)
 {
-    m_matchAllNames = (localName == "*");
-    m_matchAllNamespaces = (namespaceURI == "*");
+    if (namespaceURI == "*")
+        m_namespace = NamespaceName::fromId(anyNamespace);
+    else
+        m_namespace = NamespaceName::fromString(namespaceURI);
+    if (localName == "*")
+        m_localName = LocalName::fromId(anyLocalName);
+    else
+        m_localName = LocalName::fromString(localName);
+    m_prefix = PrefixName::fromId(emptyPrefix);
 }
 
 
-bool TagNodeListImpl::nodeMatches( NodeImpl *testNode, bool& /*doRecurse*/ ) const
+bool TagNodeListImpl::nodeMatches(NodeImpl *testNode, bool& /*doRecurse*/) const
 {
-    if ( testNode->nodeType() != Node::ELEMENT_NODE ) return false;
-    if (m_namespaceAware)
-	return (m_matchAllNamespaces || testNode->namespaceURI() == m_namespaceURI) &&
-	       (m_matchAllNames || testNode->localName() == m_localName);
-    else {
-        NodeImpl::Id testId = testNode->id();
-        //we have to strip the namespaces if we compare in a namespace unaware fashion
-        if ( !m_namespaceAware ) testId = localNamePart(testId);
-	return (m_id == 0 || m_id == testId);
+    if (testNode->nodeType() != Node::ELEMENT_NODE)
+        return false;
+
+    if (m_namespaceAware) {
+        return (m_namespace.id() == anyNamespace || m_namespace.id() == namespacePart(testNode->id())) &&
+            (m_localName.id() == anyLocalName || m_localName.id() == localNamePart(testNode->id()));
+    } else {
+        return (m_localName.id() == anyLocalName) || (m_localName.id() == localNamePart(testNode->id()) &&
+            m_prefix.toString() == testNode->prefix());
     }
 }
 
@@ -2194,9 +2200,14 @@ NamedNodeMapImpl::~NamedNodeMapImpl()
 
 NodeImpl* NamedNodeMapImpl::getNamedItem( const DOMString &name )
 {
-    NodeImpl::Id nid = mapId(0, name.implementation(), true);
-    if (!nid) return 0;
-    return getNamedItem(nid, false, name.implementation());
+    DOMString prefix, localName;
+    splitPrefixLocalName(name.implementation(), prefix, localName);
+    if (htmlCompat()) {
+        prefix = prefix.lower();
+        localName = localName.lower();
+    }
+    LocalName localname = LocalName::fromString(localName);
+    return getNamedItem(localname.id(), PrefixName::fromString(prefix), false);
 }
 
 Node NamedNodeMapImpl::setNamedItem( const Node &arg, int& exceptioncode )
@@ -2206,37 +2217,41 @@ Node NamedNodeMapImpl::setNamedItem( const Node &arg, int& exceptioncode )
       return 0;
     }
 
-    Node r = setNamedItem(arg.handle(), false,
-                       arg.handle()->nodeName().implementation(), exceptioncode);
+    Node r = setNamedItem(arg.handle(), emptyPrefixName, false, exceptioncode);
     return r;
 }
 
 Node NamedNodeMapImpl::removeNamedItem( const DOMString &name, int& exceptioncode )
 {
-    Node r = removeNamedItem(mapId(0, name.implementation(), false),
-                                   false, name.implementation(), exceptioncode);
+    DOMString prefix, localName;
+    splitPrefixLocalName(name.implementation(), prefix, localName);
+    if (htmlCompat()) {
+        prefix = prefix.lower();
+        localName = localName.lower();
+    }
+    LocalName localname = LocalName::fromString(localName);
+    Node r = removeNamedItem(localname.id(), PrefixName::fromString(prefix), false, exceptioncode);
     return r;
 }
 
 Node NamedNodeMapImpl::getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName )
 {
-    NodeImpl::Id nid = mapId( namespaceURI.implementation(), localName.implementation(), true );
-    return getNamedItem(nid, true);
+    LocalName localname = LocalName::fromString(localName);
+    NamespaceName namespacename = NamespaceName::fromString(namespaceURI);
+    return getNamedItem(makeId(namespacename.id(), localname.id()), emptyPrefixName, true);
 }
 
 Node NamedNodeMapImpl::setNamedItemNS( const Node &arg, int& exceptioncode )
 {
-    Node r = setNamedItem(arg.handle(), true, 0, exceptioncode);
-    return r;
+    return setNamedItem(arg.handle(), emptyPrefixName, true, exceptioncode);
 }
 
 Node NamedNodeMapImpl::removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName, int& exceptioncode )
 {
-    NodeImpl::Id nid = mapId( namespaceURI.implementation(), localName.implementation(), false );
-    Node r = removeNamedItem(nid, true, 0, exceptioncode);
-    return r;
+    LocalName localname = LocalName::fromString(localName);
+    NamespaceName namespacename = NamespaceName::fromString(namespaceURI);
+    return removeNamedItem(makeId(namespacename.id(), localname.id()), emptyPrefixName, true, exceptioncode);
 }
-
 
 // ----------------------------------------------------------------------------
 
@@ -2255,7 +2270,7 @@ GenericRONamedNodeMapImpl::~GenericRONamedNodeMapImpl()
     delete m_contents;
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( NodeImpl::Id id, bool /*nsAware*/, DOMStringImpl* /*qName*/ ) const
+NodeImpl *GenericRONamedNodeMapImpl::getNamedItem(NodeImpl::Id id, PrefixName /*prefix*/, bool /*nsAware*/)
 {
     // ## do we need namespace support in this class?
     QListIterator<NodeImpl*> it(*m_contents);
@@ -2265,7 +2280,7 @@ NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( NodeImpl::Id id, bool /*nsAw
     return 0;
 }
 
-Node GenericRONamedNodeMapImpl::setNamedItem ( NodeImpl* /*arg*/, bool /*nsAware*/, DOMStringImpl* /*qName*/, int &exceptioncode )
+Node GenericRONamedNodeMapImpl::setNamedItem(NodeImpl* /*arg*/, PrefixName /*prefix*/, bool /*nsAware*/, int &exceptioncode)
 {
     // can't modify this list through standard DOM functions
     // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly
@@ -2273,7 +2288,7 @@ Node GenericRONamedNodeMapImpl::setNamedItem ( NodeImpl* /*arg*/, bool /*nsAware
     return 0;
 }
 
-Node GenericRONamedNodeMapImpl::removeNamedItem ( NodeImpl::Id /*id*/, bool /*nsAware*/, DOMStringImpl* /*qName*/, int &exceptioncode )
+Node GenericRONamedNodeMapImpl::removeNamedItem(NodeImpl::Id /*id*/, PrefixName /*prefix*/, bool /*nsAware*/, int &exceptioncode)
 {
     // can't modify this list through standard DOM functions
     // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly
@@ -2281,7 +2296,7 @@ Node GenericRONamedNodeMapImpl::removeNamedItem ( NodeImpl::Id /*id*/, bool /*ns
     return 0;
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::item ( unsigned long index ) const
+NodeImpl *GenericRONamedNodeMapImpl::item(unsigned index)
 {
     if (index >= (unsigned int) m_contents->count())
         return 0;
@@ -2289,7 +2304,7 @@ NodeImpl *GenericRONamedNodeMapImpl::item ( unsigned long index ) const
     return m_contents->at(index);
 }
 
-unsigned long GenericRONamedNodeMapImpl::length(  ) const
+unsigned GenericRONamedNodeMapImpl::length() const
 {
     return m_contents->count();
 }
@@ -2297,22 +2312,11 @@ unsigned long GenericRONamedNodeMapImpl::length(  ) const
 void GenericRONamedNodeMapImpl::addNode(NodeImpl *n)
 {
     // The spec says that in the case of duplicates we only keep the first one
-    if (getNamedItem(n->id(), false, 0))
+    if (getNamedItem(n->id(), emptyPrefixName, false))
         return;
 
     n->ref();
     m_contents->append(n);
-}
-
-NodeImpl::Id GenericRONamedNodeMapImpl::mapId(DOMStringImpl* namespaceURI,
-                                              DOMStringImpl* localName, bool readonly)
-{
-    if (!m_doc)
-	return 0;
-
-    return m_doc->getId(NodeImpl::ElementId,
-                        namespaceURI, 0, localName, readonly,
-                        false /*don't lookupHTML*/);
 }
 
 // -----------------------------------------------------------------------------

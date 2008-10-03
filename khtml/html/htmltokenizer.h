@@ -76,24 +76,27 @@ namespace khtml {
         }
         void addAttribute(DocumentImpl* doc, QChar* buffer, const QString& attrName, const DOMString& v)
         {
-            DOMStringImpl *value = 0;
-            NodeImpl::Id tid = 0;
+            DOMStringImpl *value = v.implementation();
+            LocalName localname = LocalName::fromId(0);
+            PrefixName prefixname = PrefixName::fromId(emptyPrefix);
             if(buffer->unicode()) {
-		tid = buffer->unicode();
-		value = v.implementation();
+                localname = LocalName::fromId(buffer->unicode());
             }
             else if ( !attrName.isEmpty() && attrName != "/" ) {
-		tid = doc->getId(NodeImpl::AttributeId, DOMString(attrName).implementation(), false, true);
-		value = v.implementation();
+                DOMString prefix, local;
+                splitPrefixLocalName(DOMString(attrName.toLower()).implementation(), prefix, local);
+                localname = LocalName::fromString(local);
+                prefixname = PrefixName::fromString(prefix);
             }
 
-            if (value && tid) {
+            if (value && localname.id()) {
                 if(!attrs) {
                     attrs = new DOM::NamedAttrMapImpl(0);
                     attrs->ref();
                 }
-                if (!attrs->getValue(tid))
-		    attrs->setValue(tid,value);
+                if (!attrs->getValue(makeId(emptyNamespace, localname.id()), prefixname))
+                    // place attributes in the empty namespace
+                    attrs->setValue(makeId(emptyNamespace, localname.id()), value, prefixname);
             }
         }
         void reset()
@@ -225,6 +228,7 @@ protected:
     QChar *dest;
 
     khtml::Token currToken;
+    LocalName safeLocalName;
 
     // the size of buffer
     int size;

@@ -366,6 +366,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_implementation->ref();
     pMode = Strict;
     hMode = XHtml;
+    m_htmlCompat = false;
     m_textColor = "#000000";
     m_attrMap = new IdNameMapping(ATTR_LAST_ATTR+1);
     m_elementMap = new IdNameMapping(ID_LAST_TAG+1);
@@ -549,25 +550,38 @@ ElementImpl *DocumentImpl::documentElement() const
 
 ElementImpl *DocumentImpl::createElement( const DOMString &name, int* pExceptioncode )
 {
-    Id id = getId( NodeImpl::ElementId, name.implementation(),
-                   false /* allocate */, false /*HTMLDocumentImpl::createElement looked for HTML elements already*/,
-                   pExceptioncode);
-    if ( pExceptioncode && *pExceptioncode )
+    if (pExceptioncode && !Element::khtmlValidQualifiedName(name)) {
+        *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
         return 0;
-
-    XMLElementImpl* e = new XMLElementImpl( document(), id );
-    e->setHTMLCompat( htmlMode() != XHtml ); // Not a real HTML element, but inside an html-compat doc all tags are uppercase.
+    }
+    DOMString prefix, localName;
+    splitPrefixLocalName(name.implementation(), prefix, localName);
+    bool htmlCompat = (htmlMode() != XHtml);
+    if (htmlCompat) {
+        localName = localName.lower();
+        prefix = prefix.lower();
+    }
+    XMLElementImpl* e = new XMLElementImpl(document(), emptyNamespaceName, LocalName::fromString(localName), PrefixName::fromString(prefix));
+    e->setHTMLCompat(htmlCompat); // Not a real HTML element, but inside an html-compat doc all tags are uppercase.
     return e;
 }
 
 AttrImpl *DocumentImpl::createAttribute( const DOMString &tagName, int* pExceptioncode )
 {
-    Id id = getId( NodeImpl::AttributeId, tagName.implementation(),
-                  false /* allocate */, isHTMLDocument(), pExceptioncode);
-    if ( pExceptioncode && *pExceptioncode )
+    if (pExceptioncode && !Element::khtmlValidAttrName(tagName)) {
+        *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
         return 0;
-    AttrImpl* attr = new AttrImpl( 0, document(), id, DOMString("").implementation());
-    attr->setHTMLCompat( htmlMode() != XHtml );
+    }
+    DOMString prefix, localName;
+    splitPrefixLocalName(tagName.implementation(), prefix, localName);
+    bool htmlCompat = (htmlMode() != XHtml);
+    if (htmlCompat) {
+        localName = localName.lower();
+        prefix = prefix.lower();
+    }
+    AttrImpl* attr = new AttrImpl(0, document(), NamespaceName::fromId(emptyNamespace), LocalName::fromString(localName),
+            PrefixName::fromString(prefix), DOMString("").implementation());
+    attr->setHTMLCompat(htmlCompat);
     return attr;
 }
 
@@ -626,9 +640,9 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 
 
 	if(otherMap) {
-	    for(unsigned long i = 0; i < otherMap->length(); i++)
+	    for(unsigned i = 0; i < otherMap->length(); i++)
 	    {
-		AttrImpl *otherAttr = otherMap->attrAt(i)->createAttr(otherElem,otherElem->docPtr());
+		AttrImpl *otherAttr = otherMap->attributeAt(i).createAttr(otherElem,otherElem->docPtr());
 
 		if (!otherAttr->localName().isNull()) {
 		    // attr was created via createElementNS()
@@ -640,8 +654,8 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 		else {
 		    // attr was created via createElement()
 		    tempElementImpl->setAttribute(otherAttr->id(),
+                    emptyPrefixName, true /*nsAware*/,
                                                   otherAttr->nodeValue(),
-                                                  otherAttr->name(),
 						  exceptioncode);
 		}
 
@@ -716,9 +730,8 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
         }
     }
     if (!e) {
-        Id id = getId(NodeImpl::ElementId, _namespaceURI.implementation(), prefix.implementation(),
-                      localName.implementation(), false, false /*HTML already looked up*/);
-        e = new XMLElementImpl( document(), id, prefix.implementation() );
+        e = new XMLElementImpl(document(), NamespaceName::fromString(_namespaceURI),
+                LocalName::fromString(localName), PrefixName::fromString(prefix));
     }
 
     return e;
@@ -735,10 +748,8 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI,
         return 0;
     DOMString prefix, localName;
     splitPrefixLocalName(_qualifiedName.implementation(), prefix, localName, colonPos);
-    Id id = getId(NodeImpl::AttributeId, _namespaceURI.implementation(), prefix.implementation(),
-                  localName.implementation(), false, true /*lookupHTML*/);
-    AttrImpl* attr = new AttrImpl(0, document(), id, DOMString("").implementation(),
-                         prefix.implementation());
+    AttrImpl* attr = new AttrImpl(0, document(), NamespaceName::fromString(_namespaceURI), LocalName::fromString(localName),
+            PrefixName::fromString(prefix), DOMString("").implementation());
     attr->setHTMLCompat( _namespaceURI.isNull() && htmlMode() != XHtml );
     return attr;
 }
@@ -835,7 +846,8 @@ unsigned short DocumentImpl::nodeType() const
 
 ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 {
-    uint id = khtml::getTagID( name.string().toLower().toLatin1().constData(), name.string().length() );
+    LocalName localname = LocalName::fromString(name.lower());
+    uint id = localname.id();
 
     ElementImpl *n = 0;
     switch(id)
@@ -1545,6 +1557,7 @@ void DocumentImpl::determineParseMode()
     // For XML documents, use strict parse mode
     pMode = Strict;
     hMode = XHtml;
+    m_htmlCompat = false;
     kDebug(6020) << " using strict parseMode";
 }
 
@@ -1942,168 +1955,6 @@ WTF::PassRefPtr<NodeImpl> DocumentImpl::cloneNode ( bool deep )
 	cloneChildNodes(clone.get());
 
     return clone;
-}
-
-typedef const char* (*NameLookupFunction)(unsigned short id);
-typedef int (*IdLookupFunction)(const char *tagStr, int len);
-
-NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI, DOMStringImpl *_prefix,
-                                  DOMStringImpl *_name, bool readonly, bool /*lookupHTML*/, int *pExceptioncode)
-{
-    /*kDebug() << "DocumentImpl::getId( type: " << _type << ", uri: " << DOMString(_nsURI).string()
-              << ", prefix: " << DOMString(_prefix).string() << ", name: " << DOMString(_name).string()
-              << ", readonly: " << readonly
-              << ", lookupHTML: " << lookupHTML
-              << ", exceptions: " << (pExceptioncode ? "yes" : "no")
-              << " )" << endl;*/
-
-    if(!_name) return 0;
-    IdNameMapping *map;
-    IdLookupFunction lookup;
-
-    switch (_type) {
-    case NodeImpl::ElementId:
-        map = m_elementMap;
-        lookup = getTagID;
-        break;
-    case NodeImpl::AttributeId:
-        map = m_attrMap;
-        lookup = getAttrID;
-        break;
-    case NodeImpl::NamespaceId:
-        if( strcasecmp(_name, XHTML_NAMESPACE) == 0)
-            return xhtmlNamespace;
-        if( _name->l == 0)
-            return emptyNamespace;
-        // defaultNamespace handled by "if (!_name) return 0"
-        map = m_namespaceMap;
-        lookup= 0;
-        break;
-    default:
-        return 0;
-    }
-    // Names and attributes with ""
-    if (_name->l == 0) return 0;
-
-    NodeImpl::Id id, nsid;
-    id = nsid = 0;
-    const QString n = QString::fromRawData(_name->s, _name->l);
-    bool cs = true; // case sensitive
-    if (_type != NodeImpl::NamespaceId) {
-        if (_nsURI)
-            nsid = getId( NodeImpl::NamespaceId, 0, 0, _nsURI, false, false, 0 );
-
-        // for attributes empty and default namespaces are the same
-        if (_type == NodeImpl::AttributeId && nsid == emptyNamespace)
-            nsid = defaultNamespace;
-
-        // Each document maintains a mapping of tag name -> id for every tag name encountered
-        // in the document.
-        cs = (htmlMode() == XHtml) || (_nsURI && _type != NodeImpl::AttributeId);
-
-        // First see if it's a HTML element name
-        // xhtml is lower case - case sensitive, easy to implement
-        if ( cs && (id = lookup(n.toAscii().constData(), _name->l)) ) {
-            map->addAlias(_prefix, _name, cs, id);
-            return makeId(nsid, id);
-        }
-        // compatibility: upper case - case insensitive
-        if ( !cs && (id = lookup(n.toLower().toAscii().constData(), _name->l )) ) {
-            map->addAlias(_prefix, _name, cs, id);
-            return makeId(nsid, id);
-        }
-    }
-
-    // Look in the names array for the name
-    // compatibility mode has to lookup upper case
-    QString name = cs ? n : n.toUpper();
-
-    if (!_nsURI) {
-        id = (NodeImpl::Id)(long)map->ids.value( name );
-        if (!id && _type != NodeImpl::NamespaceId) {
-            id = (NodeImpl::Id)(long)map->ids.value( "aliases: " + name );
-	}
-    } else {
-        id = (NodeImpl::Id)(long)map->ids.value( name );
-        if (!readonly && id && _prefix && _prefix->l) {
-            // we were called in registration mode... check if the alias exists
-            const QString px = QString::fromRawData( _prefix->s, _prefix->l );
-            QString qn("aliases: " + (cs ? px : px.toUpper()) + ":" + name);
-            if (!map->ids.contains( qn )) {
-                map->ids.insert( qn, (void*)id );
-            }
-        }
-    }
-
-    if (id) return makeId(nsid, id);
-
-    // unknown
-    if (readonly) return 0;
-
-    if ( pExceptioncode && _type != NodeImpl::NamespaceId && !Element::khtmlValidQualifiedName(_name)) {
-        *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
-        return 0;
-    }
-
-    // Name not found, so let's add it
-    NodeImpl::Id cid = map->count++ + map->idStart;
-    map->names.insert( cid, _name );
-    _name->ref();
-
-    map->ids.insert( name, (void*)cid );
-
-    // and register an alias if needed for DOM1 methods compatibility
-    map->addAlias(_prefix, _name, cs, cid);
-
-    return makeId(nsid, cid);
- }
-
-NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl *_nodeName, bool readonly, bool lookupHTML, int *pExceptioncode)
-{
-     return getId(_type, 0, 0, _nodeName, readonly, lookupHTML, pExceptioncode);
-}
-
-DOMString DocumentImpl::getName( NodeImpl::IdType _type, NodeImpl::Id _id ) const
-{
-    IdNameMapping *map;
-    NameLookupFunction lookup;
-    bool hasNS = (namespacePart(_id) != defaultNamespace);
-    switch (_type) {
-    case NodeImpl::ElementId:
-        map = m_elementMap;
-        lookup = getTagName;
-        break;
-    case NodeImpl::AttributeId:
-        map = m_attrMap;
-        lookup = getAttrName;
-        break;
-    case NodeImpl::NamespaceId:
-        if( _id == xhtmlNamespace )
-            return XHTML_NAMESPACE;
-        else
-        if( _id == emptyNamespace )
-            return DOMString("");
-        else
-        if ( _id == defaultNamespace )
-            return DOMString();
-        map = m_namespaceMap;
-        lookup = 0;
-        break;
-    default:
-        return DOMString();;
-    }
-    _id = localNamePart(_id) ;
-    if (_id >= map->idStart) {
-        return map->names[_id];
-    }
-    else if (lookup) {
-        // ### put them in a cache
-        if (hasNS)
-            return DOMString(lookup(_id)).lower();
-        else
-            return lookup(_id);
-    } else
-        return DOMString();
 }
 
 // This method is called whenever a top-level stylesheet has finished loading.

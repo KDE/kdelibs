@@ -47,7 +47,7 @@ static DOMString escapeHTML( const DOMString& in )
 CharacterDataImpl::CharacterDataImpl(DocumentImpl *doc, DOMStringImpl* _text)
     : NodeImpl(doc)
 {
-    str = _text ? _text : new DOMStringImpl(0, 0);
+    str = _text ? _text : new DOMStringImpl((QChar*)0, 0);
     str->ref();
 }
 

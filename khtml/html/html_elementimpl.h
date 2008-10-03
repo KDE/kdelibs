@@ -80,10 +80,10 @@ public:
 
     virtual ~HTMLGenericElementImpl();
 
-    virtual Id id() const { return _id; }
+    virtual Id id() const { return m_localName.id(); }
 
 protected:
-    ushort _id;
+    LocalName m_localName;
 };
 
 } //namespace

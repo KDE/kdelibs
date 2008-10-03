@@ -26,6 +26,8 @@
 #include <QtGui/QColor>
 #include <QtCore/QVector>
 #include <dom/dom_string.h>
+#include <misc/htmlnames.h>
+#include <wtf/Vector.h>
 
 namespace khtml {
     class MediaQuery;
@@ -111,6 +113,11 @@ namespace DOM {
 
 	static CSSParser *current() { return currentParser; }
 
+        unsigned int getLocalNameId(const DOMString& str) {
+            LocalName localname = LocalName::fromString(str);
+            boundLocalNames.append(localname);
+            return localname.id();
+        }
 
 	DOM::DocumentImpl *document() const;
 
@@ -223,6 +230,7 @@ namespace DOM {
 	int yyleng;
 	int yyTok;
 	int yy_start;
+        WTF::Vector<LocalName> boundLocalNames;
     };
 
 } // namespace

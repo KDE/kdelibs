@@ -316,7 +316,6 @@ typedef union YYSTYPE
     int prop_id;
     unsigned int attribute;
     unsigned int element;
-    unsigned int ns;
     CSSSelector::Relation relation;
     CSSSelector::Match match;
     bool b;
@@ -731,26 +730,26 @@ static const yytype_int16 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   293,   293,   294,   295,   296,   297,   301,   302,   306,
-     313,   319,   344,   351,   352,   355,   357,   358,   361,   363,
-     366,   377,   380,   385,   387,   398,   408,   411,   417,   418,
-     422,   430,   431,   435,   436,   439,   441,   452,   453,   454,
-     455,   456,   457,   458,   462,   463,   464,   465,   469,   470,
-     474,   480,   483,   489,   495,   499,   506,   509,   515,   518,
-     521,   527,   530,   536,   539,   544,   548,   553,   560,   571,
-     583,   584,   594,   616,   619,   625,   628,   634,   635,   636,
-     637,   641,   642,   646,   668,   681,   699,   708,   711,   725,
-     732,   733,   734,   738,   742,   747,   752,   759,   768,   780,
-     784,   789,   796,   808,   824,   830,   833,   843,   850,   856,
-     857,   858,   862,   871,   895,   900,   906,   914,   926,   929,
-     932,   935,   938,   941,   947,   948,   952,   958,   964,   971,
-     978,   985,   992,  1001,  1004,  1007,  1010,  1015,  1021,  1025,
-    1028,  1033,  1039,  1061,  1067,  1074,  1075,  1079,  1083,  1099,
-    1102,  1105,  1111,  1112,  1114,  1115,  1116,  1122,  1123,  1124,
-    1126,  1132,  1133,  1134,  1135,  1136,  1137,  1138,  1139,  1140,
-    1141,  1142,  1143,  1144,  1145,  1146,  1147,  1148,  1149,  1150,
-    1151,  1152,  1157,  1165,  1181,  1188,  1194,  1203,  1229,  1230,
-    1234,  1235
+       0,   292,   292,   293,   294,   295,   296,   300,   301,   305,
+     312,   318,   343,   350,   351,   354,   356,   357,   360,   362,
+     365,   376,   379,   384,   386,   397,   407,   410,   416,   417,
+     421,   429,   430,   434,   435,   438,   440,   451,   452,   453,
+     454,   455,   456,   457,   461,   462,   463,   464,   468,   469,
+     473,   479,   482,   488,   494,   498,   505,   508,   514,   517,
+     520,   526,   529,   535,   538,   543,   547,   552,   559,   570,
+     582,   583,   593,   615,   618,   624,   627,   633,   634,   635,
+     636,   640,   641,   645,   667,   680,   698,   707,   710,   724,
+     731,   732,   733,   737,   742,   749,   756,   764,   774,   787,
+     792,   799,   807,   820,   836,   842,   845,   855,   862,   869,
+     870,   871,   875,   885,   909,   915,   922,   931,   944,   947,
+     950,   953,   956,   959,   965,   966,   970,   976,   982,   989,
+     996,  1003,  1010,  1019,  1022,  1025,  1028,  1033,  1039,  1043,
+    1046,  1051,  1057,  1079,  1085,  1092,  1093,  1097,  1101,  1117,
+    1120,  1123,  1129,  1130,  1132,  1133,  1134,  1140,  1141,  1142,
+    1144,  1150,  1151,  1152,  1153,  1154,  1155,  1156,  1157,  1158,
+    1159,  1160,  1161,  1162,  1163,  1164,  1165,  1166,  1167,  1168,
+    1169,  1170,  1175,  1183,  1199,  1206,  1212,  1221,  1247,  1248,
+    1252,  1253
 };
 #endif
 
@@ -2544,7 +2543,8 @@ yyreduce:
 
     {
 	(yyval.selector) = new CSSSelector();
-	(yyval.selector)->tag = (yyvsp[(1) - (2)].element);
+        (yyval.selector)->tagLocalName = LocalName::fromId(localNamePart((yyvsp[(1) - (2)].element)));
+        (yyval.selector)->tagNamespace = NamespaceName::fromId(namespacePart((yyvsp[(1) - (2)].element)));
     ;}
     break;
 
@@ -2552,8 +2552,10 @@ yyreduce:
 
     {
 	(yyval.selector) = (yyvsp[(2) - (3)].selector);
-        if ( (yyval.selector) )
-	    (yyval.selector)->tag = (yyvsp[(1) - (3)].element);
+        if ( (yyval.selector) ) {
+            (yyval.selector)->tagLocalName = LocalName::fromId(localNamePart((yyvsp[(1) - (3)].element)));
+            (yyval.selector)->tagNamespace = NamespaceName::fromId(namespacePart((yyvsp[(1) - (3)].element)));
+        }
     ;}
     break;
 
@@ -2561,8 +2563,10 @@ yyreduce:
 
     {
 	(yyval.selector) = (yyvsp[(1) - (2)].selector);
-        if ( (yyval.selector) )
-            (yyval.selector)->tag = makeId(static_cast<CSSParser*>(parser)->defaultNamespace(), anyLocalName);
+        if ( (yyval.selector) ) {
+            (yyval.selector)->tagLocalName = LocalName::fromId(anyLocalName);
+            (yyval.selector)->tagNamespace = NamespaceName::fromId(static_cast<CSSParser*>(parser)->defaultNamespace());
+        }
     ;}
     break;
 
@@ -2570,10 +2574,11 @@ yyreduce:
 
     {
         (yyval.selector) = new CSSSelector();
-        (yyval.selector)->tag = (yyvsp[(2) - (3)].element);
+        (yyval.selector)->tagLocalName = LocalName::fromId(localNamePart((yyvsp[(2) - (3)].element)));
+        (yyval.selector)->tagNamespace = NamespaceName::fromId(namespacePart((yyvsp[(2) - (3)].element)));
 	CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
-            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tag, domString((yyvsp[(1) - (3)].string)));
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tagNamespace, domString((yyvsp[(1) - (3)].string)));
     ;}
     break;
 
@@ -2582,10 +2587,11 @@ yyreduce:
     {
         (yyval.selector) = (yyvsp[(3) - (4)].selector);
         if ((yyval.selector)) {
-            (yyval.selector)->tag = (yyvsp[(2) - (4)].element);
+            (yyval.selector)->tagLocalName = LocalName::fromId(localNamePart((yyvsp[(2) - (4)].element)));
+            (yyval.selector)->tagNamespace = NamespaceName::fromId(namespacePart((yyvsp[(2) - (4)].element)));
             CSSParser *p = static_cast<CSSParser *>(parser);
             if (p->styleElement && p->styleElement->isCSSStyleSheet())
-                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tag, domString((yyvsp[(1) - (4)].string)));
+                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tagNamespace, domString((yyvsp[(1) - (4)].string)));
         }
     ;}
     break;
@@ -2595,10 +2601,11 @@ yyreduce:
     {
         (yyval.selector) = (yyvsp[(2) - (3)].selector);
         if ((yyval.selector)) {
-            (yyval.selector)->tag = makeId(anyNamespace, anyLocalName);
+            (yyval.selector)->tagLocalName = LocalName::fromId(anyLocalName);
+            (yyval.selector)->tagNamespace = NamespaceName::fromId(anyNamespace);
             CSSParser *p = static_cast<CSSParser *>(parser);
             if (p->styleElement && p->styleElement->isCSSStyleSheet())
-                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tag, domString((yyvsp[(1) - (3)].string)));
+                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tagNamespace, domString((yyvsp[(1) - (3)].string)));
         }
     ;}
     break;
@@ -2607,7 +2614,8 @@ yyreduce:
 
     {
 	(yyval.selector) = new CSSSelector();
-	(yyval.selector)->tag = (yyvsp[(1) - (2)].element);
+        (yyval.selector)->tagLocalName = LocalName::fromId(localNamePart((yyvsp[(1) - (2)].element)));
+        (yyval.selector)->tagNamespace = NamespaceName::fromId(namespacePart((yyvsp[(1) - (2)].element)));
     ;}
     break;
 
@@ -2615,8 +2623,10 @@ yyreduce:
 
     {
 	(yyval.selector) = (yyvsp[(1) - (2)].selector);
-        if ( (yyval.selector) )
-            (yyval.selector)->tag = makeId(static_cast<CSSParser*>(parser)->defaultNamespace(), anyLocalName);
+        if ( (yyval.selector) ) {
+            (yyval.selector)->tagLocalName = LocalName::fromId(anyLocalName);
+            (yyval.selector)->tagNamespace = NamespaceName::fromId(static_cast<CSSParser*>(parser)->defaultNamespace());
+        }
     ;}
     break;
 
@@ -2624,10 +2634,11 @@ yyreduce:
 
     {
         (yyval.selector) = new CSSSelector();
-        (yyval.selector)->tag = (yyvsp[(2) - (3)].element);
+        (yyval.selector)->tagLocalName = LocalName::fromId(localNamePart((yyvsp[(2) - (3)].element)));
+        (yyval.selector)->tagNamespace = NamespaceName::fromId(namespacePart((yyvsp[(2) - (3)].element)));
 	CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
-            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tag, domString((yyvsp[(1) - (3)].string)));
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tagNamespace, domString((yyvsp[(1) - (3)].string)));
     ;}
     break;
 
@@ -2636,10 +2647,11 @@ yyreduce:
     {
         (yyval.selector) = (yyvsp[(2) - (3)].selector);
         if ((yyval.selector)) {
-            (yyval.selector)->tag = makeId(anyNamespace, anyLocalName);
+            (yyval.selector)->tagLocalName = LocalName::fromId(anyLocalName);
+            (yyval.selector)->tagNamespace = NamespaceName::fromId(anyNamespace);
             CSSParser *p = static_cast<CSSParser *>(parser);
             if (p->styleElement && p->styleElement->isCSSStyleSheet())
-                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tag, domString((yyvsp[(1) - (3)].string)));
+                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tagNamespace, domString((yyvsp[(1) - (3)].string)));
         }
     ;}
     break;
@@ -2654,9 +2666,9 @@ yyreduce:
 	    if (doc->isHTMLDocument())
 		tag = tag.toLower();
 	    const DOMString dtag(tag);
-            (yyval.element) = makeId(p->defaultNamespace(), doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true));
+            (yyval.element) = makeId(p->defaultNamespace(), p->getLocalNameId(dtag));
 	} else {
-	    (yyval.element) = makeId(p->defaultNamespace(), khtml::getTagID(tag.toLower().toAscii(), tag.length()));
+	    (yyval.element) = makeId(p->defaultNamespace(), p->getLocalNameId(tag.toLower()));
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown tags
 // 	    assert($$ != 0);
@@ -2705,7 +2717,8 @@ yyreduce:
     {
 	(yyval.selector) = new CSSSelector();
 	(yyval.selector)->match = CSSSelector::Id;
-	(yyval.selector)->attr = ATTR_ID;
+        (yyval.selector)->attrLocalName = LocalName::fromId(localNamePart(ATTR_ID));
+        (yyval.selector)->attrNamespace = NamespaceName::fromId(namespacePart(ATTR_ID));
 	(yyval.selector)->value = domString((yyvsp[(1) - (1)].string));
     ;}
     break;
@@ -2715,7 +2728,8 @@ yyreduce:
     {
 	(yyval.selector) = new CSSSelector();
 	(yyval.selector)->match = CSSSelector::Class;
-	(yyval.selector)->attr = ATTR_CLASS;
+        (yyval.selector)->attrLocalName = LocalName::fromId(localNamePart(ATTR_CLASS));
+        (yyval.selector)->attrNamespace = NamespaceName::fromId(namespacePart(ATTR_CLASS));
 	(yyval.selector)->value = domString((yyvsp[(2) - (2)].string));
     ;}
     break;
@@ -2734,10 +2748,10 @@ yyreduce:
 #ifdef APPLE_CHANGES
             (yyval.attribute) = doc->attrId(0, dattr.implementation(), false);
 #else
-	    (yyval.attribute) = doc->getId(NodeImpl::AttributeId, dattr.implementation(), false, true);
+	    (yyval.attribute) = makeId(emptyNamespace, p->getLocalNameId(dattr));
 #endif
 	} else {
-	    (yyval.attribute) = khtml::getAttrID(attr.toLower().toAscii(), attr.length());
+	    (yyval.attribute) = makeId(emptyNamespace, p->getLocalNameId(attr.toLower()));
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown attributes
 	    assert((yyval.attribute) != 0);
@@ -2749,7 +2763,8 @@ yyreduce:
 
     {
 	(yyval.selector) = new CSSSelector();
-	(yyval.selector)->attr = (yyvsp[(3) - (4)].attribute);
+        (yyval.selector)->attrLocalName = LocalName::fromId(localNamePart((yyvsp[(3) - (4)].attribute)));
+        (yyval.selector)->attrNamespace = NamespaceName::fromId(namespacePart((yyvsp[(3) - (4)].attribute)));
 	(yyval.selector)->match = CSSSelector::Set;
     ;}
     break;
@@ -2758,7 +2773,8 @@ yyreduce:
 
     {
 	(yyval.selector) = new CSSSelector();
-	(yyval.selector)->attr = (yyvsp[(3) - (8)].attribute);
+        (yyval.selector)->attrLocalName = LocalName::fromId(localNamePart((yyvsp[(3) - (8)].attribute)));
+        (yyval.selector)->attrNamespace = NamespaceName::fromId(namespacePart((yyvsp[(3) - (8)].attribute)));
 	(yyval.selector)->match = (yyvsp[(4) - (8)].match);
 	(yyval.selector)->value = domString((yyvsp[(6) - (8)].string));
     ;}
@@ -2768,11 +2784,12 @@ yyreduce:
 
     {
         (yyval.selector) = new CSSSelector();
-        (yyval.selector)->attr = (yyvsp[(4) - (5)].attribute);
+        (yyval.selector)->attrLocalName = LocalName::fromId(localNamePart((yyvsp[(4) - (5)].attribute)));
+        (yyval.selector)->attrNamespace = NamespaceName::fromId(namespacePart((yyvsp[(4) - (5)].attribute)));
         (yyval.selector)->match = CSSSelector::Set;
         CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
-            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->attr, domString((yyvsp[(3) - (5)].string)));
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->attrNamespace, domString((yyvsp[(3) - (5)].string)));
     ;}
     break;
 
@@ -2780,12 +2797,13 @@ yyreduce:
 
     {
         (yyval.selector) = new CSSSelector();
-        (yyval.selector)->attr = (yyvsp[(4) - (9)].attribute);
+        (yyval.selector)->attrLocalName = LocalName::fromId(localNamePart((yyvsp[(4) - (9)].attribute)));
+        (yyval.selector)->attrNamespace = NamespaceName::fromId(namespacePart((yyvsp[(4) - (9)].attribute)));
         (yyval.selector)->match = (CSSSelector::Match)(yyvsp[(5) - (9)].match);
         (yyval.selector)->value = domString((yyvsp[(7) - (9)].string));
         CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
-            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->attr, domString((yyvsp[(3) - (9)].string)));
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->attrNamespace, domString((yyvsp[(3) - (9)].string)));
    ;}
     break;
 
