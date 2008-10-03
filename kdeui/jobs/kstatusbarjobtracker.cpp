@@ -153,7 +153,7 @@ void KStatusBarJobTracker::Private::ProgressWidget::init(KJob *job, QWidget *par
     box->setSpacing(0);
     widget->setLayout(box);
 
-    button = new KPushButton("Stop", widget);
+    button = new KPushButton(i18n("Stop"), widget);
     box->addWidget(button);
     stack = new QStackedWidget(widget);
     box->addWidget(stack);
