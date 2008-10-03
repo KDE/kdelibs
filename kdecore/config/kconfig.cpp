@@ -589,7 +589,7 @@ bool KConfig::isImmutable() const
 bool KConfig::isGroupImmutableImpl(const QByteArray& aGroup) const
 {
     Q_D(const KConfig);
-    return isImmutable()|d->entryMap.getEntryOption(aGroup, 0, 0, KEntryMap::EntryImmutable);
+    return isImmutable() || d->entryMap.getEntryOption(aGroup, 0, 0, KEntryMap::EntryImmutable);
 }
 
 void KConfig::setForceGlobal(bool b)
