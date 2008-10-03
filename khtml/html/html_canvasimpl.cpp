@@ -673,7 +673,8 @@ static inline unsigned char unpremulComponent(unsigned original, unsigned alpha)
 
 QColor CanvasImageDataImpl::pixel(unsigned pixelNum) const
 {
-    QRgb code = data.pixel(pixelNum % data.width(), pixelNum / data.width());
+    int w = data.width();
+    QRgb code = data.pixel(pixelNum % w, pixelNum / w);
     unsigned char  a = qAlpha(code);
     return QColor(unpremulComponent(qRed(code),  a), unpremulComponent(qGreen(code), a),
                   unpremulComponent(qBlue(code), a), a);
@@ -690,7 +691,8 @@ void CanvasImageDataImpl::setPixel(unsigned pixelNum, const QColor& val)
     unsigned char a = val.alpha();
     QRgb code = qRgba(premulComponent(val.red(), a), premulComponent(val.green(), a),
                       premulComponent(val.blue(),a), a);
-    data.setPixel(pixelNum % data.width(), pixelNum / data.width(), code);
+    int w = data.width();
+    data.setPixel(pixelNum % w, pixelNum / w, code);
 }
 
 //-------
