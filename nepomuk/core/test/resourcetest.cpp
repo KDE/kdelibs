@@ -130,7 +130,7 @@ void ResourceTest::testProperties()
         QCOMPARE( r1.property( QUrl("http://nepomuk.test.org/Resource" ) ).toResource(), r2 );
 
         QHash<QString, Variant> allProps = r1.allProperties();
-        QCOMPARE( allProps.count(), 9 ); // properties + type + identifier
+        QCOMPARE( allProps.count(), 10 ); // properties + type + identifier + modification date
         QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/int" ) );
         QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/bool1" ) );
         QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/bool2" ) );
