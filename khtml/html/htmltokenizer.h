@@ -31,6 +31,7 @@
 #include <QtCore/QString>
 #include <QtCore/QObject>
 #include <QtCore/QQueue>
+#include <QtCore/QTime>
 
 #include "misc/loader_client.h"
 #include "misc/htmltags.h"
@@ -169,6 +170,8 @@ public:
     void end();
     void finish();
     void timerEvent( QTimerEvent *e );
+    bool continueProcessing(int&);
+    void setNormalYeldDelay();
     virtual void setOnHold(bool _onHold);
     void abort() { m_abort = true; }
     virtual void setAutoClose(bool b=true);
@@ -385,7 +388,6 @@ protected:
     bool onHold;
     // you can ask the tokenizer to abort the current write() call, e.g. to redirect somewhere else
     bool m_abort;
-
     // if we found one broken comment, there are most likely others as well
     // store a flag to get rid of the O(n^2) behavior in such a case.
     bool brokenComments;
@@ -397,6 +399,9 @@ protected:
     // autoClose mode is used when the tokenizer was created by a script document.writing
     // on an already loaded document
     int m_autoCloseTimer;
+    int m_tokenizerYeldDelay;
+    int m_yeldTimer;
+    QTime m_time;
 
 #define CBUFLEN 1024
     char cBuffer[CBUFLEN+2];

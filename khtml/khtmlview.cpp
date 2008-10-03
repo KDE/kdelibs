@@ -39,6 +39,7 @@
 #include "html/html_documentimpl.h"
 #include "html/html_inlineimpl.h"
 #include "html/html_formimpl.h"
+#include "html/htmltokenizer.h"
 #include "editing/editor.h"
 #include "rendering/render_arena.h"
 #include "rendering/render_canvas.h"
@@ -951,6 +952,8 @@ void KHTMLView::paintEvent( QPaintEvent *e )
         // an external update request happens while we have a layout scheduled
         unscheduleRelayout();
         layout();
+    } else if (m_part->xmlDocImpl()->tokenizer()) {
+        m_part->xmlDocImpl()->tokenizer()->setNormalYeldDelay();
     }
 
     if (d->painting) {
