@@ -5,5 +5,5 @@ input=none
 output=filesystem
 reading=true
 defaultMimetype=text/html
-Icon=help
+Icon=help-browser
 Class=:local
