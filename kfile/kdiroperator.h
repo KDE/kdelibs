@@ -689,12 +689,6 @@ public Q_SLOTS:
     virtual void trashSelected();
 
     /**
-     * Notifies that the inline previews should be shown or hidden, depending on @p show value.
-     * @since 4.2
-     */
-    void toggleInlinePreviews(bool show);
-
-    /**
      * Notifies that the icons size should change. @p value is an int ranged from 0 to 100.
      * 100 means KIconLoader::SizeEnormous.
      * @since 4.2
@@ -828,6 +822,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotDetailedTreeView() )
     Q_PRIVATE_SLOT( d, void _k_slotToggleHidden(bool) )
     Q_PRIVATE_SLOT( d, void _k_togglePreview(bool) )
+    Q_PRIVATE_SLOT( d, void _k_toggleInlinePreviews(bool) )
     Q_PRIVATE_SLOT( d, void _k_slotSortByName() )
     Q_PRIVATE_SLOT( d, void _k_slotSortBySize() )
     Q_PRIVATE_SLOT( d, void _k_slotSortByDate() )

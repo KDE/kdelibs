@@ -431,26 +431,12 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     menu->addSeparator();
     menu->addAction(coll->action("decoration menu"));
     menu->addSeparator();
-    coll->action( "short view" )->setShortcut( QKeySequence(Qt::Key_F6) );
-    menu->addAction( coll->action( "short view" ));
-    coll->action( "detailed view" )->setShortcut( QKeySequence(Qt::Key_F7) );
-    menu->addAction( coll->action( "detailed view" ));
-    menu->addSeparator();
-    menu->addSeparator();
     coll->action( "show hidden" )->setShortcut( QKeySequence(Qt::Key_F8) );
     menu->addAction( coll->action( "show hidden" ));
     menu->addAction( showSidebarAction );
     menu->addAction( showBookmarksAction );
-    coll->action( "preview" )->setShortcut( QKeySequence(Qt::Key_F11) );
+    coll->action( "inline preview" )->setShortcut( QKeySequence(Qt::Key_F11) );
     menu->addAction( coll->action( "preview" ));
-
-    // support for inline previews
-    KToggleAction *inlinePreview = new KToggleAction( KIcon( "preview" ),
-                                                      i18n( "Show Inline Preview" ), this );
-    menu->addAction( inlinePreview );
-
-    connect( inlinePreview, SIGNAL(toggled(bool)),
-             d->ops, SLOT(toggleInlinePreviews(bool)) );
 
     menu->setDelayed( false );
     connect( menu->menu(), SIGNAL( aboutToShow() ),
@@ -478,15 +464,26 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     QAction *separator = new QAction(this);
     separator->setSeparator(true);
 
+    QAction *separator2 = new QAction(this);
+    separator2->setSeparator(true);
+
+    QAction *separator3 = new QAction(this);
+    separator3->setSeparator(true);
+
     d->toolbar->addAction(coll->action("back" ));
     d->toolbar->addAction(coll->action("forward"));
     d->toolbar->addAction(coll->action("up"));
     d->toolbar->addAction(coll->action("reload"));
+    d->toolbar->addAction(separator);
+    d->toolbar->addAction(coll->action("short view"));
+    d->toolbar->addAction(coll->action("detailed view"));
+    d->toolbar->addAction(separator2);
+    d->toolbar->addAction(coll->action("inline preview"));
     d->toolbar->addWidget(midSpacer);
     d->toolbar->addWidget(furtherActionIcon);
     d->toolbar->addWidget(iconSizeSlider);
     d->toolbar->addWidget(closerActionIcon);
-    d->toolbar->addAction(separator);
+    d->toolbar->addAction(separator3);
     d->toolbar->addAction(coll->action("mkdir"));
     d->toolbar->addAction(menu);
 
@@ -582,12 +579,12 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
         d->locationEdit->setUrl(d->url.fileName());
     }
 
-    inlinePreview->setChecked(d->ops->isInlinePreviewShown());
+    coll->action("inline preview")->setChecked(d->ops->isInlinePreviewShown());
     iconSizeSlider->setValue(d->ops->iconZoom());
 
     KFilePreviewGenerator *pg = d->ops->previewGenerator();
     if (pg) {
-        inlinePreview->setChecked(pg->isPreviewShown());
+        coll->action("inline preview")->setChecked(pg->isPreviewShown());
     }
 
     setSelection(d->selection);

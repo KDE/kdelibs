@@ -194,6 +194,7 @@ public:
     void _k_slotDetailedTreeView();
     void _k_slotToggleHidden(bool);
     void _k_togglePreview(bool);
+    void _k_toggleInlinePreviews(bool);
     void _k_slotSortByName();
     void _k_slotSortBySize();
     void _k_slotSortByDate();
@@ -620,6 +621,31 @@ void KDirOperator::Private::_k_togglePreview(bool on)
     }
 }
 
+void KDirOperator::Private::_k_toggleInlinePreviews(bool show)
+{
+    if (showPreviews == show) {
+        return;
+    }
+
+    showPreviews = show;
+
+    if (!previewGenerator) {
+        return;
+    }
+
+    previewGenerator->setPreviewShown(show);
+
+    if (!show) {
+        // remove all generated previews
+        QAbstractItemModel *model = dirModel;
+        for (int i = 0; i < model->rowCount(); ++i) {
+            QModelIndex index = model->index(i, 0);
+            const KFileItem item = dirModel->itemForIndex(index);
+            const_cast<QAbstractItemModel*>(index.model())->setData(index, KIcon(item.iconName()), Qt::DecorationRole);
+        }
+    }
+}
+
 void KDirOperator::Private::_k_slotSortByName()
 {
     parent->sortByName();
@@ -870,31 +896,6 @@ void KDirOperator::trashSelected()
     const KFileItemList list = selectedItems();
     if (!list.isEmpty()) {
         trash(list, this);
-    }
-}
-
-void KDirOperator::toggleInlinePreviews(bool show)
-{
-    if (d->showPreviews == show) {
-        return;
-    }
-
-    d->showPreviews = show;
-
-    if (!d->previewGenerator) {
-        return;
-    }
-
-    d->previewGenerator->setPreviewShown(show);
-
-    if (!show) {
-        // remove all generated previews
-        QAbstractItemModel *model = d->dirModel;
-        for (int i = 0; i < model->rowCount(); ++i) {
-            QModelIndex index = model->index(i, 0);
-            const KFileItem item = d->dirModel->itemForIndex(index);
-            const_cast<QAbstractItemModel*>(index.model())->setData(index, KIcon(item.iconName()), Qt::DecorationRole);
-        }
     }
 }
 
@@ -1831,11 +1832,15 @@ void KDirOperator::setupActions()
     d->actionCollection->addAction("show hidden", showHiddenAction);
     connect(showHiddenAction, SIGNAL(toggled(bool)), SLOT(_k_slotToggleHidden(bool)));
 
-    KToggleAction *previewAction = new KToggleAction(i18n("Show Preview"), this);
+    KToggleAction *previewAction = new KToggleAction(i18n("Show Aside Preview"), this);
     d->actionCollection->addAction("preview", previewAction);
-    previewAction->setIcon(KIcon("view-preview"));
     connect(previewAction, SIGNAL(toggled(bool)),
             SLOT(_k_togglePreview(bool)));
+
+    KToggleAction *inlinePreview = new KToggleAction(KIcon("view-preview"),
+                                                     i18n("Show Preview"), this);
+    d->actionCollection->addAction("inline preview", inlinePreview);
+    connect(inlinePreview, SIGNAL(toggled(bool)), SLOT(_k_toggleInlinePreviews(bool)));
 
     action = new KAction(i18n("Properties"), this);
     d->actionCollection->addAction("properties", action);
@@ -2005,7 +2010,7 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
 
     d->showPreviews = configGroup.readEntry(QLatin1String("Previews"), false);
     d->iconZoom = configGroup.readEntry(QLatin1String("Zoom"), 0);
-    decorationPosition = (QStyleOptionViewItem::Position) configGroup.readEntry(QLatin1String("Decoration position"), (int) QStyleOptionViewItem::Left);
+    decorationPosition = (QStyleOptionViewItem::Position) configGroup.readEntry(QLatin1String("Decoration position"), (int) QStyleOptionViewItem::Top);
     const bool decorationAtLeft = decorationPosition == QStyleOptionViewItem::Left;
     d->actionCollection->action("decorationAtLeft")->setChecked(decorationAtLeft);
     d->actionCollection->action("decorationAtTop")->setChecked(!decorationAtLeft);
