@@ -815,22 +815,7 @@ void CanvasImageDataArray::put(ExecState* exec, unsigned index, JSValue* value, 
         unsigned char componentValue = decodeComponent(exec, value);
         unsigned int  pixel = index / 4;
         unsigned int  comp  = index % 4;
-        QColor cur = parent->impl()->pixel(pixel);
-        switch (comp) { //RGBA..
-        case 0:
-            cur.setRed(componentValue);
-            break;
-        case 1:
-            cur.setGreen(componentValue);
-            break;
-        case 2:
-            cur.setBlue(componentValue);
-            break;
-        default:
-            cur.setAlpha(componentValue);
-            break;
-        }
-        parent->impl()->setPixel(pixel, cur);
+        parent->impl()->setComponent(pixel, comp, componentValue);
         return;
     }
 
