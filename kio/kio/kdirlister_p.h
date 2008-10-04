@@ -36,7 +36,7 @@
 class KDirLister;
 namespace KIO { class Job; class ListJob; }
 class OrgKdeKDirNotifyInterface;
-
+struct KDirListerCacheDirectoryData;
 
 class KDirLister::Private
 {
@@ -237,8 +237,7 @@ private:
     bool validUrl( const KDirLister *lister, const KUrl& _url ) const;
 
     // helper for both stop methods
-    struct DirectoryData;
-    void stopLister(KDirLister* lister, const QString& url, DirectoryData& dirData);
+    void stopLister(KDirLister* lister, const QString& url, KDirListerCacheDirectoryData& dirData);
 
     KIO::ListJob *jobForUrl( const QString& url, KIO::ListJob *not_job = 0 );
     const KUrl& joburl( KIO::ListJob *job );
@@ -369,25 +368,7 @@ private:
     QHash<QString /*url*/, DirItem*> itemsInUse;
     QCache<QString /*url*/, DirItem> itemsCached;
 
-    // Data associated with a directory url
-    // This could be in DirItem but only in the itemsInUse dict...
-    struct DirectoryData
-    {
-        // A lister can be EITHER in listersCurrentlyListing OR listersCurrentlyHolding
-        // but NOT in both at the same time.
-        // But both lists can have different listers at the same time; this
-        // happens if more listers are requesting url at the same time and
-        // one lister was stopped during the listing of files.
-
-        // Listers that are currently listing this url
-        QList<KDirLister *> listersCurrentlyListing;
-        // Listers that are currently holding this url
-        QList<KDirLister *> listersCurrentlyHolding;
-
-        void moveListersWithoutCachedItemsJob();
-    };
-
-    typedef QHash<QString /*url*/, DirectoryData> DirectoryDataHash;
+    typedef QHash<QString /*url*/, KDirListerCacheDirectoryData> DirectoryDataHash;
     DirectoryDataHash directoryData;
 
     // List of files that we have changed recently
@@ -397,6 +378,24 @@ private:
 
     // the KDirNotify signals
     OrgKdeKDirNotifyInterface *kdirnotify;
+};
+
+// Data associated with a directory url
+// This could be in DirItem but only in the itemsInUse dict...
+struct KDirListerCacheDirectoryData
+{
+    // A lister can be EITHER in listersCurrentlyListing OR listersCurrentlyHolding
+    // but NOT in both at the same time.
+    // But both lists can have different listers at the same time; this
+    // happens if more listers are requesting url at the same time and
+    // one lister was stopped during the listing of files.
+
+    // Listers that are currently listing this url
+    QList<KDirLister *> listersCurrentlyListing;
+    // Listers that are currently holding this url
+    QList<KDirLister *> listersCurrentlyHolding;
+
+    void moveListersWithoutCachedItemsJob();
 };
 
 //const unsigned short KDirListerCache::MAX_JOBS_PER_LISTER = 5;
