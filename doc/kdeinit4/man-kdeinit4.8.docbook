@@ -1,0 +1,248 @@
+<?xml version="1.0" ?>
+<!DOCTYPE refentry PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
+  <!ENTITY % English "INCLUDE"><!-- change language only here -->
+]>
+
+<refentry>
+
+<refentryinfo>
+<title>&kde; User's Manual</title>
+<author>
+<firstname>Waldo</firstname>
+<surname>Bastian</surname>
+<affiliation>
+<address><email>bastian@kde.org</email></address>
+</affiliation>
+</author>
+
+<author>
+<firstname>Mario</firstname>
+<surname>Weilguni</surname>
+<affiliation>
+<address><email>mweilguni@sime.com</email></address>
+</affiliation>
+</author>
+
+<author>
+<firstname>Lubos</firstname>
+<surname>Lunak</surname>
+<affiliation>
+<address><email>l.lunak@kde.org</email></address>
+</affiliation>
+</author>
+
+<date>2008-10-03</date>
+<releaseinfo>0.01.01</releaseinfo>
+
+</refentryinfo>
+
+<refmeta>
+<refentrytitle><command>kdeinit4</command></refentrytitle>
+<manvolnum>8</manvolnum>
+</refmeta>
+
+<refnamediv>
+<refname><command>kdeinit4</command></refname>
+<refpurpose>Start all other &kde; programs and kdeinit loadable modules (KLMs).</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<title>Synopsis</title>
+
+<cmdsynopsis>
+<command>kdeinit4</command>
+
+<arg choice="opt">--help</arg>
+<group>
+<arg>--no-fork</arg>
+<arg>--no-kded</arg>
+<arg>--suicide</arg>
+</group>
+<group>
+<arg>+programs</arg>
+<arg>programs</arg>
+</group>
+</cmdsynopsis>
+
+</refsynopsisdiv>
+
+<refsect1>
+<title>Description</title>
+
+<para>kdeinit4 is a process launcher somewhat similar to the
+famous <command>init</command> used for booting UNIX. It executes &kde;
+programs and kdeinit loadable modules (KLMs) starting them more efficiently.
+</para>
+
+<para>Using kdeinit4 to launch &kde; applications makes starting a typical
+&kde; application a couple times faster and reduces memory consumption by
+a substantial amount.</para>
+
+<para>kdeinit4 is linked against all libraries a standard &kde; application
+needs. With this technique, starting an application becomes much faster 
+because now only the application itself needs to be linked whereas otherwise
+both the application as well as all the libaries it uses need to be linked.
+</para>
+
+</refsect1>
+
+<refsect1>
+<title>Disadvantages</title>
+
+<para>
+The process name of applications started via kdeinit4
+is "kdeinit4". This problem can be corrected to a degree by changing the
+application name as shown by <command>ps</command>. However, applications
+like <command>killall</command> will only see kdeinit4
+as the process name. To workaround this, use <command>kdekillall</command>
+(from kdesdk/scripts) for applications started via kdeinit4.
+</para>
+
+</refsect1>
+
+<refsect1>
+<title>Options</title>
+
+<variablelist>
+
+<varlistentry>
+<term><option>--help</option></term>
+<listitem>
+<para>
+Show help about options
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--no-fork</option></term>
+<listitem>
+<para>Do not fork, i.e. do not exit until all the executed programs ends</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--no-kded</option></term>
+<listitem>
+<para>Do not start kded</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--suicide</option></term>
+<listitem>
+<para>
+Terminate when no KDE applications are left running
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>+programs</option></term>
+<listitem>
+<para>
+runs the programs handling requests
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>programs</option></term>
+<listitem>
+<para>
+runs the programs without handling requests
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+
+</refsect1>
+
+<refsect1>
+<title>Usage</title>
+<para>
+A standard way to run this program is by simply specifying the following
+command at the prompt
+<userinput><command>kdeinit4</command> program or
+</userinput>
+<userinput><command>kdeinit4</command> +program
+</userinput>
+</para>
+
+</refsect1>
+
+<!--
+<refsect1>
+<title>Examples</title>
+<para>
+<userinput><command>kdeinit4</command> +kwrite</userinput>
+</para>
+</refsect1>
+-->
+
+<refsect1>
+<title>Files</title>
+
+<variablelist>
+<varlistentry>
+<term><filename>/tmp/kde-$USER/kdeinit4_$INSTANCE</filename></term>
+<listitem>
+<para>...</para>
+</listitem>
+</varlistentry>
+</variablelist>
+
+</refsect1>
+
+<refsect1>
+<title>Environment Variables</title>
+<variablelist>
+
+<varlistentry>
+<term>$<envar>HOME</envar></term>
+<listitem>
+<para>Specifies the home directory of the current user</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>$<envar>KDE_HOME_READONLY</envar></term>
+<listitem>
+<para>Specifies if the home directory of the current user is read only</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>$<envar>KDE_IS_PRELINKED</envar></term>
+<listitem>
+<para>If set, tells kdeinit4 that the &kde; programs are pre-linked.</para>
+<para>(Prelinking is a process that allows you to speed up the process of dynamic linking.)</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>$<envar>KDE_DISPLAY</envar></term>
+<listitem>
+<para>If set, tells kdeinit4 that the it is running on a &kde; desktop.</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+
+</refsect1>
+
+<refsect1>
+<title>See Also</title>
+<para>kded, kdekillall</para>
+</refsect1>
+
+<refsect1>
+<title>Bugs</title>
+<para>There are no known bugs at the time of writing.</para>
+</refsect1>
+
+</refentry>
+
+
+
