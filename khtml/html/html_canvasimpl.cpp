@@ -695,6 +695,34 @@ void CanvasImageDataImpl::setPixel(unsigned pixelNum, const QColor& val)
     data.setPixel(pixelNum % w, pixelNum / w, code);
 }
 
+void CanvasImageDataImpl::setComponent(unsigned pixelNum, int component,
+                                       int value)
+{
+    int w = data.width();
+    int x = pixelNum % w;
+    int y = pixelNum / w;
+    // ### could avoid inherent QImage::detach() by a const cast
+    QRgb *rgb = reinterpret_cast<QRgb*>(data.scanLine(y) + 4 * x);
+    unsigned char a = qAlpha(*rgb);
+    switch (component) {
+    case 0:
+      *rgb = qRgba(premulComponent(value, a), qGreen(*rgb), qBlue(*rgb), a);
+      break;
+    case 1:
+      *rgb = qRgba(qRed(*rgb), premulComponent(value, a), qBlue(*rgb), a);
+      break;
+    case 2:
+      *rgb = qRgba(qRed(*rgb), qGreen(*rgb), premulComponent(value, a), a);
+      break;
+    default:
+      *rgb = qRgba(premulComponent(unpremulComponent(qRed(*rgb), a), value),
+                   premulComponent(unpremulComponent(qGreen(*rgb), a), value),
+                   premulComponent(unpremulComponent(qBlue(*rgb), a), value),
+                   value);
+      break;
+    }
+}
+
 //-------
 
 void CanvasContext2DImpl::setStrokeStyle(CanvasStyleBaseImpl* strokeStyle)

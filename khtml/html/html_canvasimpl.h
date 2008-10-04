@@ -186,6 +186,7 @@ public:
     unsigned height() const;
     QColor pixel(unsigned pixelNum) const;
     void   setPixel(unsigned pixelNum, const QColor& val);
+    void   setComponent(unsigned pixelNum, int component, int value);
     QImage data;
 };
 
