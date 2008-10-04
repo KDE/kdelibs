@@ -112,6 +112,7 @@ KDirOperatorIconView::KDirOperatorIconView(QWidget *parent) :
     setVerticalScrollMode(QListView::ScrollPerPixel);
     setHorizontalScrollMode(QListView::ScrollPerPixel);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
+    setWordWrap(true);
     setSpacing(0);
     setIconSize(QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall));
 }
@@ -2414,7 +2415,11 @@ void KDirOperator::Private::updateListViewGrid()
         const QFontMetrics metrics(itemView->viewport()->font());
         int size = itemView->iconSize().height() + metrics.height() * 2;
         // some heuristics for good looking. let's guess width = height * (3 / 2) is nice
-        view->setGridSize(QSize(size * (3.0 / 2.0), size));
+        view->setGridSize(QSize(size * (3.0 / 2.0), size + metrics.height()));
+        KFileItemDelegate *delegate = qobject_cast<KFileItemDelegate*>(view->itemDelegate());
+        if (delegate) {
+            delegate->setMaximumSize(QSize(size * (3.0 / 2.0), size + metrics.height()));
+        }
     }
 }
 
