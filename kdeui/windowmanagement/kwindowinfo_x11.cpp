@@ -143,8 +143,10 @@ WId KWindowInfo::win() const
 
 unsigned long KWindowInfo::state() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMState ) == 0, 176 )
-        << "Pass NET::WMState to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMState))
+        kWarning(176) << "Pass NET::WMState to KWindowInfo" << endl;
+#endif
     return d->info->state();
 }
 
@@ -155,15 +157,19 @@ bool KWindowInfo::hasState( unsigned long s ) const
 
 NET::MappingState KWindowInfo::mappingState() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::XAWMState ) == 0, 176 )
-        << "Pass NET::XAWMState to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::XAWMState))
+        kWarning(176) << "Pass NET::XAWMState to KWindowInfo" << endl;
+#endif
     return d->info->mappingState();
 }
 
 NETExtendedStrut KWindowInfo::extendedStrut() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2ExtendedStrut ) == 0, 176 )
-        << "Pass NET::WM2ExtendedStrut to second argument of KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WM2ExtendedStrut))
+        kWarning(176) << "Pass NET::WM2ExtendedStrut to KWindowInfo" << endl;
+#endif
     NETExtendedStrut ext = d->info->extendedStrut();
     NETStrut str = d->info->strut();
     if( ext.left_width == 0 && ext.right_width == 0 && ext.top_width == 0 && ext.bottom_width == 0
@@ -195,8 +201,10 @@ NETExtendedStrut KWindowInfo::extendedStrut() const
 
 NET::WindowType KWindowInfo::windowType( int supported_types ) const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMWindowType ) == 0, 176 )
-        << "Pass NET::WMWindowType to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMWindowType))
+        kWarning(176) << "Pass NET::WMWindowType to KWindowInfo" << endl;
+#endif
     if( !d->info->hasWindowType()) { // fallback, per spec recommendation
         if( transientFor() != None ) { // dialog
             if( supported_types & NET::DialogMask )
@@ -221,16 +229,20 @@ QString KWindowInfo::visibleNameWithState() const
 
 QString KWindowInfo::visibleName() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleName ) == 0, 176 )
-        << "Pass NET::WMVisibleName to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleName))
+        kWarning(176) << "Pass NET::WMVisibleName to KWindowInfo" << endl;
+#endif
     return d->info->visibleName() && d->info->visibleName()[ 0 ] != '\0'
         ? QString::fromUtf8(d->info->visibleName()) : name();
 }
 
 QString KWindowInfo::name() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMName ) == 0, 176 )
-        << "Pass NET::WMName to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMName))
+        kWarning(176) << "Pass NET::WMName to KWindowInfo" << endl;
+#endif
     return d->name_;
 }
 
@@ -246,8 +258,10 @@ QString KWindowInfo::visibleIconNameWithState() const
 
 QString KWindowInfo::visibleIconName() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleIconName ) == 0, 176 )
-        << "Pass NET::WMVisibleIconName to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleIconName))
+        kWarning(176) << "Pass NET::WMVisibleIconName to KWindowInfo" << endl;
+#endif
     if( d->info->visibleIconName() && d->info->visibleIconName()[ 0 ] != '\0' )
         return QString::fromUtf8( d->info->visibleIconName());
     if( d->info->iconName() && d->info->iconName()[ 0 ] != '\0' )
@@ -259,8 +273,10 @@ QString KWindowInfo::visibleIconName() const
 
 QString KWindowInfo::iconName() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMIconName ) == 0, 176 )
-        << "Pass NET::WMIconName to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMIconName))
+        kWarning(176) << "Pass NET::WMIconName to KWindowInfo" << endl;
+#endif
     if( d->info->iconName() && d->info->iconName()[ 0 ] != '\0' )
         return QString::fromUtf8( d->info->iconName());
     if( !d->iconic_name_.isEmpty())
@@ -275,8 +291,10 @@ bool KWindowInfo::isOnCurrentDesktop() const
 
 bool KWindowInfo::isOnDesktop( int _desktop ) const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
-        << "Pass NET::WMDesktop to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop))
+        kWarning(176) << "Pass NET::WMDesktop to KWindowInfo" << endl;
+#endif
     if( KWindowSystem::mapViewport()) {
         if( onAllDesktops())
             return true;
@@ -293,8 +311,10 @@ bool KWindowInfo::isOnDesktop( int _desktop ) const
 
 bool KWindowInfo::onAllDesktops() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
-        << "Pass NET::WMDesktop to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop))
+        kWarning(176) << "Pass NET::WMDesktop to KWindowInfo" << endl;
+#endif
     if( KWindowSystem::mapViewport()) {
         if( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMState )
             return d->info->state() & NET::Sticky;
@@ -306,8 +326,10 @@ bool KWindowInfo::onAllDesktops() const
 
 int KWindowInfo::desktop() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
-        << "Pass NET::WMDesktop to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop))
+        kWarning(176) << "Pass NET::WMDesktop to KWindowInfo" << endl;
+#endif
     if( KWindowSystem::mapViewport()) {
         if( onAllDesktops())
             return NET::OnAllDesktops;
@@ -322,64 +344,82 @@ int KWindowInfo::desktop() const
 
 QRect KWindowInfo::geometry() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMGeometry ) == 0, 176 )
-        << "Pass NET::WMGeometry to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop))
+        kWarning(176) << "Pass NET::WMDesktop to KWindowInfo" << endl;
+#endif
     return d->geometry_;
 }
 
 QRect KWindowInfo::frameGeometry() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMFrameExtents ) == 0, 176 )
-        << "Pass NET::WMFrameExtents to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMFrameExtents))
+        kWarning(176) << "Pass NET::WMFrameExtents to KWindowInfo" << endl;
+#endif
     return d->frame_geometry_;
 }
 
 WId KWindowInfo::transientFor() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2TransientFor ) == 0, 176 )
-        << "Pass NET::WM2TransientFor to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WM2TransientFor))
+        kWarning(176) << "Pass NET::WM2TransientFor to KWindowInfo" << endl;
+#endif
     return d->info->transientFor();
 }
 
 WId KWindowInfo::groupLeader() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2GroupLeader ) == 0, 176 )
-        << "Pass NET::WM2GroupLeader to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WM2GroupLeader))
+        kWarning(176) << "Pass NET::WM2GroupLeader to KWindowInfo" << endl;
+#endif
     return d->info->groupLeader();
 }
 
 QByteArray KWindowInfo::windowClassClass() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
-        << "Pass NET::WM2WindowClass to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WM2WindowClass))
+        kWarning(176) << "Pass NET::WM2WindowClass to KWindowInfo" << endl;
+#endif
     return d->info->windowClassClass();
 }
 
 QByteArray KWindowInfo::windowClassName() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
-        << "Pass NET::WM2WindowClass to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WM2WindowClass))
+        kWarning(176) << "Pass NET::WM2WindowClass to KWindowInfo" << endl;
+#endif
     return d->info->windowClassName();
 }
 
 QByteArray KWindowInfo::windowRole() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowRole ) == 0, 176 )
-        << "Pass NET::WM2WindowRole to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WM2WindowRole))
+        kWarning(176) << "Pass NET::WM2WindowRole to KWindowInfo" << endl;
+#endif
     return d->info->windowRole();
 }
 
 QByteArray KWindowInfo::clientMachine() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2ClientMachine ) == 0, 176 )
-        << "Pass NET::WM2ClientMachine to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WM2ClientMachine))
+        kWarning(176) << "Pass NET::WM2ClientMachine to KWindowInfo" << endl;
+#endif
     return d->info->clientMachine();
 }
 
 bool KWindowInfo::actionSupported( NET::Action action ) const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2AllowedActions ) == 0, 176 )
-        << "Pass NET::WM2AllowedActions to KWindowInfo" << endl;
+#if !defined(KDE_NO_WARNING_OUTPUT)
+    if (!(d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WM2AllowedActions))
+        kWarning(176) << "Pass NET::WM2AllowedActions to KWindowInfo" << endl;
+#endif
     if( KWindowSystem::allowedActionsSupported())
         return d->info->allowedActions() & action;
     else
