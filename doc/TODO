@@ -12,7 +12,7 @@ kjsconsole
 embed
 kjscmd
 kross
-kdeinit4
+<DONE> kdeinit4
 
 kdeinit4 execs:
  kded4
