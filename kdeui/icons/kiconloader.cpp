@@ -936,8 +936,14 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 
         if (d->mIconCache->find(key, pix, path_store)) {
             //kDebug(264) << "KIL: " << "found the icon from KIC";
-            return pix;
-        } else if (!d->initIconThemes()) {
+            if (!pix.isNull() || canReturnNull) {
+                return pix;
+            } else if (_name != str_unknown) {
+                return loadIcon(str_unknown, group, size, state,
+                            overlays, path_store, canReturnNull);
+            } 
+        }
+        if (!d->initIconThemes()) {
             return pix;  // null pixmap
         }
 
@@ -945,6 +951,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
                         iconPath(name, KIconLoader::User, canReturnNull);
         if (path.isEmpty())
         {
+            d->mIconCache->insert(key, pix); //insert the null icon so we know it's null
             if (!canReturnNull) {
 #ifndef NDEBUG
                 kWarning(264) << "No such icon" << _name;
@@ -1037,10 +1044,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         //kDebug() << "KIL: " << "found icon from KIC";
         if (!pix.isNull() || canReturnNull) {
             return pix;
-        } else {
+        } else if (_name != str_unknown) {
             return loadIcon(str_unknown, group, size, state,
                             overlays, path_store, canReturnNull);
-        }
+        } 
     }
     if (!d->initIconThemes()) {
         return pix; // null pixmap
@@ -1073,14 +1080,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
                 if (!name.isEmpty()) {
                     pix = loadIcon(name, KIconLoader::User, size, state, overlays, path_store, true);
                 }
-                if (!pix.isNull()) {
-                    d->mIconCache->insert(key, pix, path);
+                d->mIconCache->insert(key, pix, path);
+                if (!pix.isNull() || canReturnNull) {
                     return pix;
                 }
-                if (canReturnNull) {
-                    return pix; // null pixmap
-                }
-
 #ifndef NDEBUG
                 kWarning(264) << "No such icon" << _name;
 #endif
@@ -1105,6 +1108,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         {
             img = new QImage(icon.path, ext.toLatin1());
             if (img->isNull()) {
+                if (!unknownIcon)
+                    d->mIconCache->insert(key, pix, path);
                 delete img;
                 return pix;
             }
@@ -1134,6 +1139,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
                 renderer->render(&p);
             } else {
                 delete renderer;
+                if (!unknownIcon)
+                    d->mIconCache->insert(key, pix, path);
                 return pix;
             }
         }
@@ -1180,17 +1187,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         *img = d->mpEffect.apply(*img, group, state);
     }
 
-    bool addToCache = true;
     if (favIconOverlay)
     {
         QImage favIcon(name, "PNG");
-        if (favIcon.isNull())
-        {
-            // favIcon not there yet, don't try to blend it and don't cache the
-            // result
-            addToCache = false;
-        }
-        else
+        if (!favIcon.isNull()) // if favIcon not there yet, don't try to blend it
         {
             // Blend favIcon over img.
             // FIXME: This code should be updated to use modern QPainter
@@ -1222,11 +1222,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 
     delete img;
 
-    if (unknownIcon && addToCache)
-    {
-        d->mIconCache->insert(key, QPixmap(), QString());
-    }
-    else if (addToCache)
+    if (!unknownIcon)
     {
         d->mIconCache->insert(key, pix, path);
     }
