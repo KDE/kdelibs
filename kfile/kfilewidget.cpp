@@ -428,11 +428,9 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
                             "<li>file previews</li>"
                             "<li>separating folders from files</li></ul></qt>"));
     menu->addAction(coll->action("sorting menu"));
+    menu->addAction(coll->action("view menu"));
     menu->addSeparator();
     menu->addAction(coll->action("decoration menu"));
-    menu->addSeparator();
-    menu->addAction(coll->action("tree view"));
-    menu->addAction(coll->action("detailed tree view"));
     menu->addSeparator();
     coll->action( "show hidden" )->setShortcut( QKeySequence(Qt::Key_F8) );
     menu->addAction( coll->action( "show hidden" ));
