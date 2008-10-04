@@ -347,6 +347,9 @@ bool KFileItemPrivate::cmp( const KFileItemPrivate & item ) const
              && m_permissions == item.m_permissions
              && m_entry.stringValue( KIO::UDSEntry::UDS_USER ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_USER )
              && m_entry.stringValue( KIO::UDSEntry::UDS_GROUP ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_GROUP )
+             && m_entry.stringValue( KIO::UDSEntry::UDS_EXTENDED_ACL ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_EXTENDED_ACL )
+             && m_entry.stringValue( KIO::UDSEntry::UDS_ACL_STRING ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_ACL_STRING )
+             && m_entry.stringValue( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING )
              && m_bLink == item.m_bLink
              && m_hidden == item.m_hidden
              && size() == item.size()
