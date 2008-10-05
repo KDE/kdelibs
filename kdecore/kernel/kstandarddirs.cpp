@@ -1252,14 +1252,14 @@ static int tokenize( QStringList& tokens, const QString& str,
                      const QString& delim )
 {
     int len = str.length();
-    QString token = "";
+    QString token;
 
     for( int index = 0; index < len; index++)
     {
         if ( delim.contains( str[ index ] ) )
         {
             tokens.append( equalizePath(token) );
-            token = "";
+            token = QString();
         }
         else
         {
@@ -1380,7 +1380,7 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
     if (dir.at(len - 1) != '/')
         target += '/';
 
-    QString base("");
+    QString base;
     uint i = 1;
 
     while( i < len )
