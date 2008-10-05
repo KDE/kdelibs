@@ -2411,6 +2411,10 @@ void KDirOperator::Private::updateListViewGrid()
 
     if (leftChecked) {
         view->setGridSize(QSize());
+        KFileItemDelegate *delegate = qobject_cast<KFileItemDelegate*>(view->itemDelegate());
+        if (delegate) {
+            delegate->setMaximumSize(QSize());
+        }
     } else {
         const QFontMetrics metrics(itemView->viewport()->font());
         int size = itemView->iconSize().height() + metrics.height() * 2;
