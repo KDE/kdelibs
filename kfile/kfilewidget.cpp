@@ -1108,7 +1108,7 @@ void KFileWidgetPrivate::setLocationText( const KUrl::List& urlList )
         setDummyHistoryEntry( urls, QPixmap(), false );
     } else if ( urlList.count() ) {
         const QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( urlList[0] ),  KIconLoader::Small );
-        setDummyHistoryEntry( urlList[0].fileName(), mimeTypeIcon );
+        setDummyHistoryEntry( KUrl::relativeUrl(currUrl, urlList[0]), mimeTypeIcon );
     } else {
         removeDummyHistoryEntry();
     }
