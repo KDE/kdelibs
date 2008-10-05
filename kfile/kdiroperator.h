@@ -204,10 +204,11 @@ public:
     virtual void setUrl(const KUrl& url, bool clearforward);
 
     /**
-     * Clears the current selection and attempts to set @p filename
-     * the current file. @p filename is just the name, no path or url.
+     * Clears the current selection and attempts to set @p url
+     * the current url file. Note that urls can be relative or
+     * absolute.
      */
-    void setCurrentItem(const QString& filename);
+    void setCurrentItem(const QString& url);
 
     /**
      * Clears the current selection and attempts to set @p item
@@ -216,11 +217,12 @@ public:
     void setCurrentItem(const KFileItem& item);
 
     /**
-     * Clears the current selection and attempts to set @p filenames
-     * the current files. @p filenames is just the name, no path or url.
+     * Clears the current selection and attempts to set @p urls
+     * the current url files. Note that urls can be relative or
+     * absolute.
      * @since 4.2
      */
-    void setCurrentItems(const QStringList& filenames);
+    void setCurrentItems(const QStringList& urls);
 
     /**
      * Clears the current selection and attempts to set @p items

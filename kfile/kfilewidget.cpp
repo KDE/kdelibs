@@ -1398,10 +1398,8 @@ void KFileWidgetPrivate::_k_fileCompletion( const QString& match )
 
     if (match.isEmpty() && ops->view()) {
         ops->view()->clearSelection();
-    } else {
-        ops->setCurrentItem(match);
+    } else if (!match.isEmpty()) {
         setDummyHistoryEntry(locationEdit->currentText(), KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( match ), KIconLoader::Small), !locationEdit->currentText().isEmpty());
-        locationEdit->setCompletedText(match);
     }
 }
 
@@ -1425,7 +1423,7 @@ void KFileWidgetPrivate::_k_slotLocationChanged( const QString& text )
         const KUrl::List urlList(tokenize(text));
         QStringList stringList;
         foreach (const KUrl &url, urlList) {
-            stringList << url.fileName();
+            stringList << url.url();
         }
         ops->setCurrentItems(stringList);
     }

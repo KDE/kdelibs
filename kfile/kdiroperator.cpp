@@ -1606,13 +1606,13 @@ void KDirOperator::highlightFile(const KFileItem &item)
     emit fileHighlighted(item);
 }
 
-void KDirOperator::setCurrentItem(const QString& filename)
+void KDirOperator::setCurrentItem(const QString& url)
 {
     kDebug();
 
     KFileItem item;
-    if ( !filename.isNull() ) {
-        item = d->dirLister->findByName(filename);
+    if ( !url.isNull() ) {
+        item = d->dirLister->findByUrl(url);
     }
     setCurrentItem(item);
 }
@@ -1637,13 +1637,13 @@ void KDirOperator::setCurrentItem(const KFileItem& item)
     }
 }
 
-void KDirOperator::setCurrentItems(const QStringList& filenames)
+void KDirOperator::setCurrentItems(const QStringList& urls)
 {
     kDebug();
 
     KFileItemList itemList;
-    foreach (const QString &filename, filenames) {
-        itemList << KFileItem(d->dirLister->findByName(filename));
+    foreach (const QString &url, urls) {
+        itemList << KFileItem(d->dirLister->findByUrl(url));
     }
     setCurrentItems(itemList);
 }
