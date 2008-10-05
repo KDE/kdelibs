@@ -550,7 +550,7 @@ public:
      * Returns the icon zoom.
      * @since 4.2
      */
-    int iconZoom() const;
+    int iconsZoom() const;
 
 protected:
     /**
@@ -695,7 +695,7 @@ public Q_SLOTS:
      * 100 means KIconLoader::SizeEnormous.
      * @since 4.2
      */
-    void changeIconsSize(int value);
+    void setIconsZoom(int value);
 
 protected Q_SLOTS:
     /**

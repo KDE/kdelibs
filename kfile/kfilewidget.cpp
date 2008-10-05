@@ -94,7 +94,8 @@ public:
           dummyAdded(false),
           confirmOverwrite(false),
           differentHierarchyLevelItemsEntered(false),
-          previewGenerator(0)
+          previewGenerator(0),
+          iconSizeSlider(0)
     {
     }
 
@@ -176,10 +177,11 @@ public:
     void _k_fileCompletion( const QString& );
     void _k_toggleSpeedbar( bool );
     void _k_toggleBookmarks( bool );
-    void _k_iconSizeSliderChanged( int );
     void _k_slotAutoSelectExtClicked();
     void _k_placesViewSplitterMoved(int, int);
     void _k_activateUrlNavigator();
+    void _k_zoomOutIconsSize();
+    void _k_zoomInIconsSize();
 
     void addToRecentDocuments();
 
@@ -271,6 +273,7 @@ public:
     bool differentHierarchyLevelItemsEntered;
 
     KFilePreviewGenerator *previewGenerator;
+    QSlider *iconSizeSlider;
 };
 
 K_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
@@ -444,21 +447,20 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     connect( menu->menu(), SIGNAL( aboutToShow() ),
              d->ops, SLOT( updateSelectionDependentActions() ));
 
-    QSlider *iconSizeSlider = new QSlider(this);
-    iconSizeSlider->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
-    iconSizeSlider->setOrientation(Qt::Horizontal);
-    iconSizeSlider->setMinimum(0);
-    iconSizeSlider->setMaximum(100);
-    connect(iconSizeSlider, SIGNAL(valueChanged(int)),
-            d->ops, SLOT(changeIconsSize(int)));
+    d->iconSizeSlider = new QSlider(this);
+    d->iconSizeSlider->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    d->iconSizeSlider->setOrientation(Qt::Horizontal);
+    d->iconSizeSlider->setMinimum(0);
+    d->iconSizeSlider->setMaximum(100);
+    connect(d->iconSizeSlider, SIGNAL(valueChanged(int)),
+            d->ops, SLOT(setIconsZoom(int)));
     connect(d->ops, SIGNAL(currentIconSizeChanged(int)),
-            iconSizeSlider, SLOT(setValue(int)));
+            d->iconSizeSlider, SLOT(setValue(int)));
 
-    QLabel *furtherActionIcon = new QLabel(this);
-    QLabel *closerActionIcon = new QLabel(this);
-
-    furtherActionIcon->setPixmap(KIconLoader::global()->loadIcon("zoom-out", KIconLoader::Toolbar));
-    closerActionIcon->setPixmap(KIconLoader::global()->loadIcon("zoom-in", KIconLoader::Toolbar));
+    KAction *furtherAction = new KAction(KIcon("zoom-out"), i18n("Zoom out"), this);
+    connect(furtherAction, SIGNAL(triggered()), SLOT(_k_zoomOutIconsSize()));
+    KAction *closerAction = new KAction(KIcon("zoom-in"), i18n("Zoom in"), this);
+    connect(closerAction, SIGNAL(triggered()), SLOT(_k_zoomInIconsSize()));
 
     QWidget *midSpacer = new QWidget(this);
     midSpacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -482,9 +484,9 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->toolbar->addAction(separator2);
     d->toolbar->addAction(coll->action("inline preview"));
     d->toolbar->addWidget(midSpacer);
-    d->toolbar->addWidget(furtherActionIcon);
-    d->toolbar->addWidget(iconSizeSlider);
-    d->toolbar->addWidget(closerActionIcon);
+    d->toolbar->addAction(furtherAction);
+    d->toolbar->addWidget(d->iconSizeSlider);
+    d->toolbar->addAction(closerAction);
     d->toolbar->addAction(separator3);
     d->toolbar->addAction(coll->action("mkdir"));
     d->toolbar->addAction(menu);
@@ -582,7 +584,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     }
 
     coll->action("inline preview")->setChecked(d->ops->isInlinePreviewShown());
-    iconSizeSlider->setValue(d->ops->iconZoom());
+    d->iconSizeSlider->setValue(d->ops->iconsZoom());
 
     KFilePreviewGenerator *pg = d->ops->previewGenerator();
     if (pg) {
@@ -1830,6 +1832,18 @@ void KFileWidgetPrivate::_k_activateUrlNavigator()
     urlNavigator->setUrlEditable(true);
     urlNavigator->setFocus();
     urlNavigator->editor()->lineEdit()->selectAll();
+}
+
+void KFileWidgetPrivate::_k_zoomOutIconsSize()
+{
+    const int currValue = ops->iconsZoom();
+    iconSizeSlider->setValue(qMax(0, currValue - 10));
+}
+
+void KFileWidgetPrivate::_k_zoomInIconsSize()
+{
+    const int currValue = ops->iconsZoom();
+    iconSizeSlider->setValue(qMin(100, currValue + 10));
 }
 
 static QString getExtensionFromPatternList(const QStringList &patternList)

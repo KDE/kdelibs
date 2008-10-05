@@ -275,7 +275,7 @@ public:
     KFilePreviewGenerator *previewGenerator;
 
     bool showPreviews;
-    int iconZoom;
+    int iconsZoom;
 
     KActionMenu *decorationMenu;
     KToggleAction *leftAction;
@@ -878,9 +878,9 @@ bool KDirOperator::isInlinePreviewShown() const
     return d->showPreviews;
 }
 
-int KDirOperator::iconZoom() const
+int KDirOperator::iconsZoom() const
 {
-    return d->iconZoom;
+    return d->iconsZoom;
 }
 
 void KDirOperator::trashSelected()
@@ -900,18 +900,18 @@ void KDirOperator::trashSelected()
     }
 }
 
-void KDirOperator::changeIconsSize(int value)
+void KDirOperator::setIconsZoom(int value)
 {
-    if (d->iconZoom == value) {
+    if (d->iconsZoom == value) {
         return;
     }
 
-    d->iconZoom = value;
+    d->iconsZoom = value;
 
     if (qobject_cast<QListView*>(d->itemView)) {
-        d->configGroup->writeEntry("listViewIconSize", d->iconZoom);
+        d->configGroup->writeEntry("listViewIconSize", d->iconsZoom);
     } else {
-        d->configGroup->writeEntry("detailedViewIconSize", d->iconZoom);
+        d->configGroup->writeEntry("detailedViewIconSize", d->iconsZoom);
     }
 
     if (!d->previewGenerator) {
@@ -1533,7 +1533,7 @@ void KDirOperator::setView(QAbstractItemView *view)
 
     d->previewGenerator = new KFilePreviewGenerator(d->itemView, static_cast<QAbstractProxyModel*>(d->itemView->model()));
     int maxSize = KIconLoader::SizeEnormous;
-    int val = maxSize * d->iconZoom / 100;
+    int val = maxSize * d->iconsZoom / 100;
     val = qMax(val, (int) KIconLoader::SizeSmall);
     d->itemView->setIconSize(QSize(val, val));
     d->previewGenerator->setPreviewShown(d->showPreviews);
@@ -1544,7 +1544,7 @@ void KDirOperator::setView(QAbstractItemView *view)
     emit viewChanged(view);
 
     const int zoom = d->iconSizeForViewType(view);
-    // this will make d->iconZoom be updated, since changeIconsSize slot will be called
+    // this will make d->iconsZoom be updated, since changeIconsZoom slot will be called
     emit currentIconSizeChanged(zoom);
 }
 
@@ -2010,7 +2010,7 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
     }
 
     d->showPreviews = configGroup.readEntry(QLatin1String("Previews"), false);
-    d->iconZoom = configGroup.readEntry(QLatin1String("Zoom"), 0);
+    d->iconsZoom = configGroup.readEntry(QLatin1String("Zoom"), 0);
     decorationPosition = (QStyleOptionViewItem::Position) configGroup.readEntry(QLatin1String("Decoration position"), (int) QStyleOptionViewItem::Top);
     const bool decorationAtLeft = decorationPosition == QStyleOptionViewItem::Left;
     d->actionCollection->action("decorationAtLeft")->setChecked(decorationAtLeft);
@@ -2071,7 +2071,7 @@ void KDirOperator::writeConfig(KConfigGroup& configGroup)
     configGroup.writeEntry(QLatin1String("View Style"), style);
 
     configGroup.writeEntry(QLatin1String("Previews"), d->showPreviews);
-    configGroup.writeEntry(QLatin1String("Zoom"), d->iconZoom);
+    configGroup.writeEntry(QLatin1String("Zoom"), d->iconsZoom);
     configGroup.writeEntry(QLatin1String("Decoration position"), (int) decorationPosition);
 }
 
