@@ -1164,8 +1164,11 @@ void ComboBoxWidget::showPopup()
     KComboBox::showPopup();
 
     blocked = blockSignals(true);
-    if (v != parent)
+    if (v != parent) {
         setParent(parent);
+        // undo side effect of setParent()
+        show();
+    }
     move( p );
     blockSignals(blocked);
 }
