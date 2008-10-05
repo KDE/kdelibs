@@ -1521,11 +1521,22 @@ KUrl::List KFileWidgetPrivate::tokenize( const QString& line ) const
 
         // get everything between the " "
         name = line.mid( index1 + 1, index2 - index1 - 1 );
+
         // since we use setFileName we need to do this under a temporary url
         KUrl _u( u );
-        _u.setFileName( name );
-        if ( _u.isValid() )
+        KUrl currUrl( name );
+
+        if ( currUrl.isRelative() ) {
+            _u.setFileName( name );
+        } else {
+            // we allow to insert various absolute paths like:
+            // "/home/foo/bar.txt" "/boot/grub/menu.lst"
+            _u = currUrl;
+        }
+
+        if ( _u.isValid() ) {
             urls.append( _u );
+        }
 
         start = index2 + 1;
     }
