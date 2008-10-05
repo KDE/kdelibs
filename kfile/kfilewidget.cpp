@@ -93,6 +93,7 @@ public:
           inAccept(false),
           dummyAdded(false),
           confirmOverwrite(false),
+          differentHierarchyLevelItemsEntered(false),
           previewGenerator(0)
     {
     }
@@ -266,8 +267,8 @@ public:
     bool inAccept : 1; // true between beginning and end of accept()
     bool dummyAdded : 1; // if the dummy item has been added. This prevents the combo from having a
                      // blank item added when loaded
-
     bool confirmOverwrite : 1;
+    bool differentHierarchyLevelItemsEntered;
 
     KFilePreviewGenerator *previewGenerator;
 };
@@ -721,7 +722,7 @@ void KFileWidget::slotOk()
 
     const KFileItemList items = d->ops->selectedItems();
     const QString locationEditCurrentText(KShell::tildeExpand(d->locationEditCurrentText()));
-    const KUrl::List locationEditCurrentTextList(d->tokenize(locationEditCurrentText));
+    KUrl::List locationEditCurrentTextList(d->tokenize(locationEditCurrentText));
     KFile::Modes mode = d->ops->mode();
 
     // if there is nothing to do, just return from here
@@ -741,6 +742,85 @@ void KFileWidget::slotOk()
                                i18n("More than one file provided"));
             return;
         }
+
+        /**
+          * Logic of the next part of code (ends at "end multi relative urls").
+          *
+          * We allow for instance to be at "/" and insert '"home/foo/bar.txt" "boot/grub/menu.lst"'.
+          * Why we need to support this ? Because we provide tree views, which aren't plain.
+          *
+          * Now, how does this logic work. It will get the first element on the list (with no filename),
+          * following the previous example say "/home/foo" and set it as the top most url.
+          *
+          * After this, it will iterate over the rest of items and check if this URL (topmost url)
+          * contains the url being iterated.
+          *
+          * As you might have guessed it will do "/home/foo" against "/boot/grub" (again stripping
+          * filename), and a false will be returned. Then we upUrl the top most url, resulting in
+          * "/home" against "/boot/grub", what will again return false, so we upUrl again. Now we
+          * have "/" against "/boot/grub", what returns true for us, so we can say that the closest
+          * common ancestor of both is "/".
+          *
+          * This example has been written for 2 urls, but this works for any number of urls.
+          */
+        if (!d->differentHierarchyLevelItemsEntered) {     // avoid infinite recursion. running this
+            KUrl::List urlList;                            // one time is always enough.
+            int start = -1;
+            KUrl topMostUrl;
+            KIO::StatJob *statJob;
+            bool res = false;
+
+            // we need to check for a valid first url, so in theory we only iterate one time over
+            // this loop. However it can happen that the user did
+            // "home/foo/nonexistantfile" "boot/grub/menu.lst", so we look for a good first
+            // candidate.
+            while (!res) {
+                start++;
+                topMostUrl = locationEditCurrentTextList.at(start);
+                statJob = KIO::stat(topMostUrl, KIO::HideProgressInfo);
+                res = KIO::NetAccess::synchronousRun(statJob, 0);
+            }
+
+            // if this is not a dir, strip the filename. after this we have an existant and valid
+            // dir (if we stated correctly the file, setting a null filename won't make any bad).
+            if (!statJob->statResult().isDir()) {
+                topMostUrl.setFileName(QString());
+            }
+
+            // now the funny part. for the rest of filenames, go and look for the closest ancestor
+            // of all them.
+            for (int i = start + 1; i < locationEditCurrentTextList.count(); ++i) {
+                KUrl currUrl = locationEditCurrentTextList.at(i);
+                KIO::StatJob *statJob = KIO::stat(currUrl, KIO::HideProgressInfo);
+                bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+                if (res) {
+                    // again, we don't care about filenames
+                    if (!statJob->statResult().isDir()) {
+                        currUrl.setFileName(QString());
+                    }
+
+                    // iterate while this item is contained on the top most url
+                    while (!topMostUrl.isParentOf(currUrl)) {
+                        topMostUrl = topMostUrl.upUrl();
+                    }
+                }
+            }
+
+            // now recalculate all paths for them being relative in base of the top most url
+            for (int i = 0; i < locationEditCurrentTextList.count(); ++i) {
+                locationEditCurrentTextList[i] = KUrl::relativeUrl(topMostUrl, locationEditCurrentTextList[i]);
+            }
+
+            d->ops->setUrl(topMostUrl, true);
+            d->locationEdit->lineEdit()->setText(QString("\"%1\"").arg(locationEditCurrentTextList.toStringList().join("\" \"")));
+
+            d->differentHierarchyLevelItemsEntered = true;
+            slotOk();
+            return;
+        }
+        /**
+          * end multi relative urls
+          */
     } else if (locationEditCurrentTextList.count()) {
         // if we are on file or files mode, and we have an absolute url written by
         // the user, convert it to relative
@@ -999,9 +1079,11 @@ void KFileWidgetPrivate::removeDummyHistoryEntry()
 
 void KFileWidgetPrivate::setLocationText(const KUrl& url)
 {
+    const KUrl currUrl = ops->url();
+
     if (!url.isEmpty()) {
         QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( url ), KIconLoader::Small );
-        setDummyHistoryEntry( url.fileName(), mimeTypeIcon );
+        setDummyHistoryEntry( KUrl::relativeUrl(currUrl, url), mimeTypeIcon );
     } else {
         removeDummyHistoryEntry();
     }
@@ -1014,10 +1096,12 @@ void KFileWidgetPrivate::setLocationText(const KUrl& url)
 
 void KFileWidgetPrivate::setLocationText( const KUrl::List& urlList )
 {
+    const KUrl currUrl = ops->url();
+
     if ( urlList.count() > 1 ) {
         QString urls;
         foreach (const KUrl &url, urlList) {
-            urls += QString( "\"%1\"" ).arg( url.fileName() ) + ' ';
+            urls += QString( "\"%1\"" ).arg( KUrl::relativeUrl(currUrl, url) ) + ' ';
         }
         urls = urls.left( urls.size() - 1 );
 
