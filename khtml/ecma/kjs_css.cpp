@@ -69,7 +69,7 @@ using DOM::StyleSheetListImpl;
 
 namespace KJS {
 
-static QString cssPropertyName( const Identifier &p, bool& hadPixelPrefix )
+static QString cssPropertyName( const Identifier &p, bool* hadPixelPrefix )
 {
     // The point here is to provide compatibility with IE 
     // syntax for accessing properties, which camel-cases them
@@ -82,16 +82,16 @@ static QString cssPropertyName( const Identifier &p, bool& hadPixelPrefix )
     }
 
     prop = prop.toLower();
-    hadPixelPrefix = false;
+    *hadPixelPrefix = false;
 
     if (prop.startsWith(QLatin1String("css-"))) {
         prop = prop.mid(4);
     } else if (prop.startsWith(QLatin1String("pixel-"))) {
         prop = prop.mid(6);
-        hadPixelPrefix = true;
+        *hadPixelPrefix = true;
     } else if (prop.startsWith(QLatin1String("pos-"))) {
         prop = prop.mid(4);
-        hadPixelPrefix = true;
+        *hadPixelPrefix = true;
     }
 
     return prop;
@@ -108,8 +108,8 @@ static int cssPropertyId( const DOM::DOMString& name ) {
 static bool isCSSPropertyName(const Identifier &JSPropertyName)
 {
     bool dummy;
-    QString p = cssPropertyName(JSPropertyName, dummy);
-    return cssPropertyId(p);
+    QString p = cssPropertyName(JSPropertyName, &dummy);
+    return cssPropertyId(p) != 0;
 }
 
 
@@ -192,7 +192,7 @@ bool DOMCSSStyleDeclaration::getOwnPropertySlot(ExecState *exec, const Identifie
     // positioned element. if it is not a positioned element, return 0
     // from MSIE documentation ### IMPLEMENT THAT (Dirk)
     bool asNumber;
-    DOMString p   = cssPropertyName(propertyName, asNumber);
+    DOMString p   = cssPropertyName(propertyName, &asNumber);
 
     if (asNumber) {
       CSSValueImpl *v = m_impl->getPropertyCSSValue(p);
@@ -225,7 +225,7 @@ void DOMCSSStyleDeclaration::put(ExecState *exec, const Identifier &propertyName
   }
   else {
     bool pxSuffix;
-    QString prop = cssPropertyName(propertyName, pxSuffix);
+    QString prop = cssPropertyName(propertyName, &pxSuffix);
     QString propvalue = value->toString(exec).qstring();
 
     if (pxSuffix)
