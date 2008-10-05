@@ -765,7 +765,7 @@ void KFileWidget::slotOk()
           */
         if (!d->differentHierarchyLevelItemsEntered) {     // avoid infinite recursion. running this
             KUrl::List urlList;                            // one time is always enough.
-            int start = -1;
+            int start = 0;
             KUrl topMostUrl;
             KIO::StatJob *statJob;
             bool res = false;
@@ -774,11 +774,11 @@ void KFileWidget::slotOk()
             // this loop. However it can happen that the user did
             // "home/foo/nonexistantfile" "boot/grub/menu.lst", so we look for a good first
             // candidate.
-            while (!res) {
-                start++;
+            while (!res && start < locationEditCurrentTextList.count()) {
                 topMostUrl = locationEditCurrentTextList.at(start);
                 statJob = KIO::stat(topMostUrl, KIO::HideProgressInfo);
                 res = KIO::NetAccess::synchronousRun(statJob, 0);
+                start++;
             }
 
             // if this is not a dir, strip the filename. after this we have an existant and valid
@@ -789,7 +789,7 @@ void KFileWidget::slotOk()
 
             // now the funny part. for the rest of filenames, go and look for the closest ancestor
             // of all them.
-            for (int i = start + 1; i < locationEditCurrentTextList.count(); ++i) {
+            for (int i = start; i < locationEditCurrentTextList.count(); ++i) {
                 KUrl currUrl = locationEditCurrentTextList.at(i);
                 KIO::StatJob *statJob = KIO::stat(currUrl, KIO::HideProgressInfo);
                 bool res = KIO::NetAccess::synchronousRun(statJob, 0);
