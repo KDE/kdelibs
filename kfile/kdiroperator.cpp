@@ -1531,7 +1531,7 @@ void KDirOperator::setView(QAbstractItemView *view)
     // needs to be done here, and not in createView, since we can be set an external view
     d->decorationMenu->setEnabled(qobject_cast<QListView*>(d->itemView));
 
-    d->previewGenerator = new KFilePreviewGenerator(d->itemView, static_cast<QAbstractProxyModel*>(d->itemView->model()));
+    d->previewGenerator = new KFilePreviewGenerator(d->itemView);
     int maxSize = KIconLoader::SizeEnormous;
     int val = maxSize * d->iconsZoom / 100;
     val = qMax(val, (int) KIconLoader::SizeSmall);

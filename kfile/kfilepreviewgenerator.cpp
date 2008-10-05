@@ -811,11 +811,10 @@ bool KFilePreviewGenerator::Private::decodeIsCutSelection(const QMimeData* mimeD
     }
 }
 
-KFilePreviewGenerator::KFilePreviewGenerator(QAbstractItemView* parent, QAbstractProxyModel* model) :
+KFilePreviewGenerator::KFilePreviewGenerator(QAbstractItemView* parent) :
     QObject(parent),
     d(new Private(this, new KIO::DefaultViewAdapter(parent, this), parent->model()))
 {
-    Q_UNUSED(model); // TODO: remove parameter 'model' on Monday the 6th of October
     d->m_itemView = parent;
 }
 

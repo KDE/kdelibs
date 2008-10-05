@@ -59,7 +59,7 @@ public:
      *                no previews will be generated.
      * @param model   Model of the item view.
      */
-    KFilePreviewGenerator(QAbstractItemView* parent, QAbstractProxyModel* model);
+    KFilePreviewGenerator(QAbstractItemView* parent);
     
     /** @internal */
     KFilePreviewGenerator(KAbstractViewAdapter* parent, QAbstractProxyModel* model);
