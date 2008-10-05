@@ -770,7 +770,6 @@ void KFileWidget::slotOk()
     bool directoryMode = (mode & KFile::Directory);
     bool onlyDirectoryMode = directoryMode && !(mode & KFile::File) && !(mode & KFile::Files);
     foreach (const KUrl &url, locationEditCurrentTextList) {
-        d->url = url;
         KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
         bool res = KIO::NetAccess::synchronousRun(statJob, 0);
 
@@ -1429,12 +1428,15 @@ KUrl::List KFileWidgetPrivate::tokenize( const QString& line ) const
 
         // get everything between the " "
         name = line.mid( index1 + 1, index2 - index1 - 1 );
-        u.setFileName( name );
-        if ( u.isValid() )
-            urls.append( u );
+        // since we use setFileName we need to do this under a temporary url
+        KUrl _u( u );
+        _u.setFileName( name );
+        if ( _u.isValid() )
+            urls.append( _u );
 
         start = index2 + 1;
     }
+
     return urls;
 }
 
