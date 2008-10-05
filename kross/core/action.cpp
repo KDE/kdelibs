@@ -298,7 +298,7 @@ void Action::setInterpreter(const QString& interpretername)
         d->interpretername = interpretername;
         setEnabled( Manager::self().interpreters().contains(interpretername) );
         if (!isEnabled())
-            kWarning()<<"interpreter not found:"<<interpretername;
+            kWarning(410)<<"interpreter not found:"<<interpretername;
         emit updated();
     }
 }
