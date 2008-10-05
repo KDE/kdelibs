@@ -813,7 +813,11 @@ void KFileWidget::slotOk()
 
             d->ops->setUrl(topMostUrl, true);
             const bool signalsBlocked = d->locationEdit->lineEdit()->blockSignals(true);
-            d->locationEdit->lineEdit()->setText(QString("\"%1\"").arg(locationEditCurrentTextList.toStringList().join("\" \"")));
+            QStringList stringList;
+            foreach (const KUrl &url, locationEditCurrentTextList) {
+                stringList << url.prettyUrl();
+            }
+            d->locationEdit->lineEdit()->setText(QString("\"%1\"").arg(stringList.join("\" \"")));
             d->locationEdit->lineEdit()->blockSignals(signalsBlocked);
 
             d->differentHierarchyLevelItemsEntered = true;
