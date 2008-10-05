@@ -126,7 +126,6 @@ protected:
 
 private:
   class KColorPatchPrivate;
-  friend class KColorCellsPrivate;
   KColorPatchPrivate *const d;
   
   Q_DISABLE_COPY(KColorPatch)
@@ -286,7 +285,6 @@ class KDEUI_EXPORT KColorDialog : public KDialog
 
   private:
     class KColorDialogPrivate;
-    friend class KColorPatchPrivate;
     KColorDialogPrivate *const d;
     
     Q_DISABLE_COPY(KColorDialog)
