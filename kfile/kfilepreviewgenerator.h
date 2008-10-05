@@ -55,9 +55,9 @@ public:
     /**
      * @param parent  Item view containing the file items where previews should
      *                be generated. It is mandatory that the item view specifies
-     *                an icon size by QAbstractItemView::setIconSize(), otherwise
-     *                no previews will be generated.
-     * @param model   Model of the item view.
+     *                an icon size by QAbstractItemView::setIconSize() and that 
+     *                the model of the view (or the source model of the proxy model)
+     *                is an instance of KDirModel. Otherwise no previews will be generated.
      */
     KFilePreviewGenerator(QAbstractItemView* parent);
     
