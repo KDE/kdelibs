@@ -837,7 +837,7 @@ void KFileWidget::slotOk()
     }
 
     // restore it
-    differentHierarchyLevelItemsEntered = false;
+    d->differentHierarchyLevelItemsEntered = false;
 
     // if we are on local mode, make sure we haven't got a remote base url
     if ((mode & KFile::LocalOnly) && !d->mostLocalUrl(d->url).isLocalFile()) {
