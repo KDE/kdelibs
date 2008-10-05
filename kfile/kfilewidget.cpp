@@ -812,7 +812,9 @@ void KFileWidget::slotOk()
             }
 
             d->ops->setUrl(topMostUrl, true);
+            const bool signalsBlocked = d->locationEdit->lineEdit()->blockSignals(true);
             d->locationEdit->lineEdit()->setText(QString("\"%1\"").arg(locationEditCurrentTextList.toStringList().join("\" \"")));
+            d->locationEdit->lineEdit()->blockSignals(signalsBlocked);
 
             d->differentHierarchyLevelItemsEntered = true;
             slotOk();
@@ -830,7 +832,9 @@ void KFileWidget::slotOk()
             KUrl url(_url.path(KUrl::RemoveTrailingSlash));
             url.setFileName(QString());
             d->ops->setUrl(url, true);
+            const bool signalsBlocked = d->locationEdit->lineEdit()->blockSignals(true);
             d->locationEdit->lineEdit()->setText(_url.fileName());
+            d->locationEdit->lineEdit()->blockSignals(signalsBlocked);
             slotOk();
             return;
         }
@@ -869,7 +873,9 @@ void KFileWidget::slotOk()
         // if we are given a folder when not on directory mode, let's get into it
         if (res && !directoryMode && statJob->statResult().isDir()) {
             d->ops->setUrl(url, true);
+            const bool signalsBlocked = d->locationEdit->lineEdit()->blockSignals(true);
             d->locationEdit->lineEdit()->setText(QString());
+            d->locationEdit->lineEdit()->blockSignals(signalsBlocked);
             return;
         } else if (!(mode & KFile::ExistingOnly) || res) {
             // if we don't care about ExistingOnly flag, add the file even if
