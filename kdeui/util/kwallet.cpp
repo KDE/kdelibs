@@ -181,7 +181,8 @@ void Wallet::changePassword(const QString& name, WId w) {
 
 
 bool Wallet::isEnabled() {
-    return walletLauncher->getInterface().isEnabled();
+    QDBusReply<bool> r = walletLauncher->getInterface().isEnabled();
+    return (r.isValid() && r);
 }
 
 
@@ -226,6 +227,11 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
     } else if (ot == Path) {
         r = walletLauncher->getInterface().openPath(name, (qlonglong)w, appid());
     } else {
+        delete wallet;
+        return 0;
+    }
+    // error communicating with the daemon (maybe not running)
+    if (!r.isValid()) {
         delete wallet;
         return 0;
     }
