@@ -553,6 +553,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     QAction *emptyTrash = 0;
     QAction* eject = 0;
     QAction* teardown = 0;
+    QAction* add = 0;
 
     if (index.isValid()) {
         if (!placesModel->isDevice(index)) {
@@ -585,6 +586,8 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         hide = menu.addAction(i18n("&Hide '%1'", label));
         hide->setCheckable(true);
         hide->setChecked(placesModel->isHidden(index));
+    } else {
+        add = menu.addAction(KIcon("document-new"), i18n("Add Entry..."));
     }
 
     QAction *showAll = 0;
@@ -659,6 +662,19 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         placesModel->requestTeardown(index);
     } else if (eject != 0 && result == eject) {
         placesModel->requestEject(index);
+    } else if (add != 0 && result == add) {
+        KUrl url = QDir::homePath();
+        QString description = i18n("Enter a description");
+        QString iconName = "folder";
+        bool appLocal = true;
+        if (KFilePlaceEditDialog::getInformation(true, url, description,
+                                                 iconName, appLocal, 64, this))
+        {
+            QString appName;
+            if (appLocal) appName = KGlobal::mainComponent().componentName();
+
+            placesModel->addPlace(description, url, iconName, appName);
+        }
     }
 
     index = placesModel->closestItem(d->currentUrl);
