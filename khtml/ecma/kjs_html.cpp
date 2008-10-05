@@ -3368,7 +3368,7 @@ JSObject *ImageConstructorImp::construct(ExecState *exec, const List &list)
     height = h->toInt32(exec);
   }
 
-  HTMLImageElementImpl* image = static_cast<HTMLImageElementImpl*>(doc->createElement("image"));
+  HTMLImageElementImpl* image = static_cast<HTMLImageElementImpl*>(doc->createElement("img"));
 
   if (widthSet)
     image->setAttribute(ATTR_WIDTH, QString::number(width));
