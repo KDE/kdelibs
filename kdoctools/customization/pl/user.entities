@@ -101,6 +101,9 @@
 <!ENTITY klipper-miejscownik    '<application>Klipperze</application>'>
 <!ENTITY klipper    '&klipper-mianownik;'>
 
+<!ENTITY kleopatra-mianownik    '<application>Kleopatra</application>'>
+<!ENTITY kleopatra    '&kleopatra-mianownik;'>
+
 <!ENTITY kmail-mianownik    '<application>Kmail</application>'>
 <!ENTITY kmail-dopelniacz    '<application>Kmaila</application>'>
 <!ENTITY kmail-celownik    '<application>Kmailowi</application>'>
