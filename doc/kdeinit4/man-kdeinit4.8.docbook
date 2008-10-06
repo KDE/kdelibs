@@ -164,8 +164,7 @@ runs the programs without handling requests
 <para>
 A standard way to run this program is by simply specifying the following
 command at the prompt
-<userinput><command>kdeinit4</command> program or
-</userinput>
+<userinput><command>kdeinit4</command> program</userinput> or
 <userinput><command>kdeinit4</command> +program
 </userinput>
 </para>
@@ -224,7 +223,7 @@ command at the prompt
 <varlistentry>
 <term>$<envar>KDE_DISPLAY</envar></term>
 <listitem>
-<para>If set, tells kdeinit4 that the it is running on a &kde; desktop.</para>
+<para>If set, tells kdeinit4 that it is running on a &kde; desktop.</para>
 </listitem>
 </varlistentry>
 
