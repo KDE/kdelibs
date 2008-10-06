@@ -36,6 +36,48 @@
 
 #include <errno.h>
 
+#ifdef ONLY_KLEO
+
+//from kdelibs/kdoctools/kio_help.cpp
+QString langLookup(const QString &fname)
+{
+    QStringList search;
+
+    // assemble the local search paths
+    const QStringList localDoc = KGlobal::dirs()->resourceDirs("html");
+
+    QStringList langs = KGlobal::locale()->languageList();
+    langs.append( "en" );
+    langs.removeAll( "C" );
+
+    // this is kind of compat hack as we install our docs in en/ but the
+    // default language is en_US
+    for (QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
+        if ( *it == "en_US" )
+            *it = "en";
+
+    // look up the different languages
+    int ldCount = localDoc.count();
+    for (int id=0; id < ldCount; id++)
+    {
+        QStringList::ConstIterator lang;
+        for (lang = langs.begin(); lang != langs.end(); ++lang)
+            search.append(QString("%1%2/%3").arg(localDoc[id], *lang, fname));
+    }
+
+    // try to locate the file
+    for (QStringList::Iterator it = search.begin(); it != search.end(); ++it)
+    {
+        kDebug( 7119 ) << "Looking for help in: " << *it;
+
+        QFileInfo info(*it);
+        if (info.exists() && info.isFile() && info.isReadable())
+            return *it;
+    }
+    return QString();
+}
+
+#endif
 
 KToolInvocation *KToolInvocation::self()
 {
@@ -242,6 +284,12 @@ void KToolInvocation::invokeHelp( const QString& anchor,
                                   const QString& _appname,
                                   const QByteArray& startup_id )
 {
+#ifdef ONLY_KLEO
+    const QString appname = !_appname.isEmpty() ? _appname : QCoreApplication::applicationName();
+    KUrl url = KUrl::fromPath( langLookup( appname + "/index.html" ) );
+    url.setFragment( anchor );
+    invokeBrowser( url.url(), startup_id );
+#else // ONLY_KLEO
     if (!isMainThreadActive())
         return;
 
@@ -286,6 +334,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
 
     iface->call("openUrl", url, startup_id );
     delete iface;
+#endif // ONLY_KLEO
 }
 
 void KToolInvocation::invokeMailer(const QString &address, const QString &subject, const QByteArray& startup_id)
