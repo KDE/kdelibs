@@ -548,10 +548,10 @@ namespace Kross {
              */
             QWidget* activeWindow();
 
-/*
-            QString localized(const QString& str);
-            QString localizedSeparate(const QString& comment, const QString& str);
-*/
+
+            QString tr(const QString& str);
+            QString tr(const QString& str,const QString& comment);
+
 
             /**
              * Show a messagebox.
