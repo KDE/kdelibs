@@ -222,6 +222,7 @@ public:
     void _k_assureVisibleSelection();
     void _k_synchronizeSortingState(int, Qt::SortOrder);
     void _k_slotChangeDecorationPosition();
+    void _k_slotExpandToUrl(const QModelIndex&);
 
     void updateListViewGrid();
     int iconSizeForViewType(QAbstractItemView *itemView) const;
@@ -279,6 +280,7 @@ public:
 
     KActionMenu *decorationMenu;
     KToggleAction *leftAction;
+    KUrl::List itemsToBeSetAsCurrent;
 };
 
 KDirOperator::Private::Private(KDirOperator *_parent) :
@@ -1531,6 +1533,11 @@ void KDirOperator::setView(QAbstractItemView *view)
     // needs to be done here, and not in createView, since we can be set an external view
     d->decorationMenu->setEnabled(qobject_cast<QListView*>(d->itemView));
 
+    if (qobject_cast<QTreeView*>(view)) {
+        connect(d->dirModel, SIGNAL(expand(QModelIndex)), view, SLOT(expand(QModelIndex)));
+        connect(d->dirModel, SIGNAL(expand(QModelIndex)), this, SLOT(_k_slotExpandToUrl(QModelIndex)));
+    }
+
     d->previewGenerator = new KFilePreviewGenerator(d->itemView);
     int maxSize = KIconLoader::SizeEnormous;
     int val = maxSize * d->iconsZoom / 100;
@@ -1610,10 +1617,13 @@ void KDirOperator::setCurrentItem(const QString& url)
 {
     kDebug();
 
-    KFileItem item;
-    if ( !url.isNull() ) {
-        item = d->dirLister->findByUrl(url);
+    KFileItem item = d->dirLister->findByUrl(url);
+    if (item.isNull()) {
+        d->itemsToBeSetAsCurrent << url;
+        d->dirModel->expandToUrl(url);
+        return;
     }
+
     setCurrentItem(item);
 }
 
@@ -1621,7 +1631,7 @@ void KDirOperator::setCurrentItem(const KFileItem& item)
 {
     kDebug();
 
-    if (d->itemView == 0) {
+    if (!d->itemView) {
         return;
     }
 
@@ -1629,6 +1639,7 @@ void KDirOperator::setCurrentItem(const KFileItem& item)
     if (selModel) {
         selModel->clear();
         if (!item.isNull()) {
+            d->itemsToBeSetAsCurrent << item.url(); // do not lose it
             const QModelIndex dirIndex = d->dirModel->indexForItem(item);
             const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
             selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::SelectCurrent);
@@ -1641,10 +1652,21 @@ void KDirOperator::setCurrentItems(const QStringList& urls)
 {
     kDebug();
 
+    if (!d->itemView) {
+        return;
+    }
+
     KFileItemList itemList;
     foreach (const QString &url, urls) {
-        itemList << KFileItem(d->dirLister->findByUrl(url));
+        KFileItem item = d->dirLister->findByUrl(url);
+        if (item.isNull()) {
+            d->itemsToBeSetAsCurrent << url;
+            d->dirModel->expandToUrl(url);
+            continue;
+        }
+        itemList << item;
     }
+
     setCurrentItems(itemList);
 }
 
@@ -1661,6 +1683,7 @@ void KDirOperator::setCurrentItems(const KFileItemList& items)
         selModel->clear();
         foreach (const KFileItem &item, items) {
             if (!item.isNull()) {
+                d->itemsToBeSetAsCurrent << item.url(); // do not lose it
                 const QModelIndex dirIndex = d->dirModel->indexForItem(item);
                 const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
                 selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::Select);
@@ -2393,6 +2416,16 @@ void KDirOperator::Private::_k_slotChangeDecorationPosition()
     updateListViewGrid();
 
     itemView->update();
+}
+
+void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
+{
+    kDebug();
+
+    const KFileItem item = dirModel->itemForIndex(index);
+    Q_ASSERT(!item.isNull());
+    parent->setCurrentItems(itemsToBeSetAsCurrent.toStringList());
+    itemsToBeSetAsCurrent.clear();
 }
 
 void KDirOperator::Private::updateListViewGrid()
