@@ -2052,7 +2052,6 @@ bool KLocalePrivate::useDefaultLanguage() const
 
 void KLocalePrivate::initEncoding()
 {
-  const int mibDefault = 4; // ISO 8859-1
   codecForEncoding = 0;
 
   // This all made more sense when we still had the EncodingEnum config key.
@@ -2060,17 +2059,21 @@ void KLocalePrivate::initEncoding()
   // Qt since 4.2 always returns 'System' as codecForLocale and KDE (for example KEncodingFileDialog)
   // expects real encoding name. So on systems that have langinfo.h use nl_langinfo instead,
   // just like Qt compiled without iconv does. Windows already has its own workaround
+  QByteArray systemLocale = nl_langinfo(CODESET);
 
-  QTextCodec* codec = QTextCodec::codecForName( nl_langinfo(CODESET) );
+  if (systemLocale == "ANSI_X3.4-1968") // means ascii, "C"; QTextCodec doesn't know, so avoid warning
+    systemLocale = "ISO-8859-1";
+
+  QTextCodec* codec = QTextCodec::codecForName(systemLocale);
   if ( codec )
     setEncoding( codec->mibEnum() );
 #else
   setEncoding( QTextCodec::codecForLocale()->mibEnum() );
 #endif
 
-  if ( ! codecForEncoding )
-    {
+  if ( !codecForEncoding ) {
       kWarning() << "Cannot resolve system encoding, defaulting to ISO 8859-1.";
+      const int mibDefault = 4; // ISO 8859-1
       setEncoding(mibDefault);
     }
 
