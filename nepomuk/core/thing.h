@@ -85,6 +85,11 @@ namespace Nepomuk {
 
         /**
          * Copy constructor.
+         */
+        Thing( const Thing& other );
+
+        /**
+         * Copy constructor.
          *
          * \param other the resoruce to construct the Thing from.
          */
@@ -94,6 +99,21 @@ namespace Nepomuk {
          * Desctructor
          */
         ~Thing();
+
+        /**
+         * Assignment operator.
+         */
+        Thing& operator=( const Thing& res );
+
+        /**
+         * Assignment operator.
+         */
+        Thing& operator=( const Resource& res );
+
+        /**
+         * Assignment operator.
+         */
+        Thing& operator=( const QUrl& res );
 
         /**
          * Get the grounding occurrences for this Thing.

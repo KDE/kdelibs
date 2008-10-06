@@ -290,7 +290,7 @@ bool Nepomuk::ResourceData::store()
     // that m_types contains more than one element: if we loaded them)
     // The first type, however, can be set at creation time to any value
     if ( !m_initialTypeSaved ) {
-        MAINMODEL->ensureResource( m_uri, m_types.first() );
+        statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_types.first() ) );
     }
 
     if ( !exists() ) {
@@ -396,6 +396,7 @@ bool Nepomuk::ResourceData::load()
             m_cacheDirty = false;
 
             delete m_pimoThing;
+            m_pimoThing = 0;
             if( hasType( Vocabulary::PIMO::Thing() ) ) {
                 m_pimoThing = new Thing( m_uri );
             }

@@ -152,6 +152,8 @@ namespace Nepomuk {
 
         Resource& operator=( const Resource& );
 
+        Resource& operator=( const QUrl& );
+
         /**
          * The URI of the resource, uniquely identifying it. This URI in most
          * cases is a virtual one which has been created from a generic base

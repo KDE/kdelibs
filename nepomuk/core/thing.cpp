@@ -37,10 +37,38 @@ Nepomuk::Thing::Thing( const QString& uriOrName, const QUrl& pimoType )
 }
 
 
+Nepomuk::Thing::Thing( const Thing& other )
+    : Resource( other )
+{
+    // FIXME: s.o.
+}
+
+
 Nepomuk::Thing::Thing( const Resource& other )
     : Resource( other )
 {
     // FIXME: s.o.
+}
+
+
+Nepomuk::Thing& Nepomuk::Thing::operator=( const Thing& res )
+{
+    Resource::operator=( res );
+    return *this;
+}
+
+
+Nepomuk::Thing& Nepomuk::Thing::operator=( const Resource& res )
+{
+    Resource::operator=( res );
+    return *this;
+}
+
+
+Nepomuk::Thing& Nepomuk::Thing::operator=( const QUrl& res )
+{
+    Resource::operator=( res );
+    return *this;
 }
 
 

@@ -109,6 +109,12 @@ Nepomuk::Resource& Nepomuk::Resource::operator=( const Resource& res )
 }
 
 
+Nepomuk::Resource& Nepomuk::Resource::operator=( const QUrl& res )
+{
+    return operator=( Resource( res ) );
+}
+
+
 QString Nepomuk::Resource::uri() const
 {
     return resourceUri().toString();
@@ -370,8 +376,12 @@ QString Nepomuk::Resource::genericIcon() const
 
 Nepomuk::Thing Nepomuk::Resource::pimoThing()
 {
-    Thing thing = m_data->pimoThing();
-    return thing;
+    if( m_data ) {
+        return m_data->pimoThing();
+    }
+    else {
+        return Thing();
+    }
 }
 
 
