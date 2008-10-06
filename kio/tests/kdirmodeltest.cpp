@@ -453,13 +453,14 @@ void KDirModelTest::testExpandToUrl_data()
         << false << subsubdir << (QStringList()<<"subdir"<<subsubdir);
 
     // Must list root, emit expand for subdir, list subdir, emit expand for subsubdir, list subsubdir.
+    const QString subsubdirfile = subsubdir + "/testfile";
     QTest::newRow("subdir/subsubdir/testfile sync")
-        << false << subsubdir + "/testfile" << (QStringList()<<"subdir"<<subsubdir);
+        << false << subsubdirfile << (QStringList()<<"subdir"<<subsubdir<<subsubdirfile);
 
     // Do a cold-cache test too, but nowadays it doesn't change anything anymore,
     // apart from testing different code paths inside KDirLister.
     QTest::newRow("subdir/subsubdir/testfile with reload")
-        << true << subsubdir + "/testfile" << (QStringList()<<"subdir"<<subsubdir);
+        << true << subsubdirfile << (QStringList()<<"subdir"<<subsubdir<<subsubdirfile);
 }
 
 void KDirModelTest::testExpandToUrl()

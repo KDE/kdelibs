@@ -91,7 +91,7 @@ public:
      * the model will not immediately have this url available.
      * The model emits the signal expand() when an index has become available; this can be connected
      * to the treeview in order to let it open that index.
-     * @param url the url of a subdirectory of the directory model
+     * @param url the url of a subdirectory of the directory model (or a file in a subdirectory)
      */
     void expandToUrl(const KUrl& url);
 
@@ -176,6 +176,8 @@ Q_SIGNALS:
     /**
      * Emitted for each subdirectory that is a parent of a url passed to expandToUrl
      * This allows to asynchronously open a tree view down to a given directory.
+     * Also emitted for the final file, if expandToUrl is called with a file
+     * (for instance so that it can be selected).
      */
     void expand(const QModelIndex& index);
 

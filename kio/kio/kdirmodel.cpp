@@ -366,15 +366,15 @@ void KDirModelPrivate::_k_slotNewItems(const KFileItemList& items)
         dirNode->m_childNodesByName.insert(url.fileName(), node);
         //kDebug(7008) << url;
 
-        if (isDir && !urlsBeingFetched.isEmpty()) {
+        if (!urlsBeingFetched.isEmpty()) {
             const KUrl dirUrl = url;
             foreach(const KUrl& urlFetched, urlsBeingFetched) {
                 if (dirUrl.isParentOf(urlFetched)) {
-                    //kDebug(7008) << "Listing found" << dirUrl << "which is a parent of fetched url" << urlFetched;
+                    kDebug(7008) << "Listing found" << dirUrl << "which is a parent of fetched url" << urlFetched;
                     const QModelIndex parentIndex = indexForNode(node, dirNode->m_childNodes.count()-1);
                     Q_ASSERT(parentIndex.isValid());
                     emitExpandFor.append(parentIndex);
-                    if (dirUrl != urlFetched) {
+                    if (isDir && dirUrl != urlFetched) {
                         q->fetchMore(parentIndex);
                         m_urlsBeingFetched[node].append(urlFetched);
                     }
@@ -893,6 +893,7 @@ void KDirModel::setDropsAllowed(DropsAllowed dropsAllowed)
 void KDirModel::expandToUrl(const KUrl& url)
 {
     KDirModelNode* result = d->nodeForUrl(url, true /*return last parent*/); // O(depth)
+    kDebug(7008) << url << result;
 
     if (!result) // doesn't seem related to our base url?
         return;
