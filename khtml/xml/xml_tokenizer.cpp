@@ -43,7 +43,7 @@ using namespace khtml;
 
 XMLIncrementalSource::XMLIncrementalSource()
     : QXmlInputSource(), m_pos( 0 ), m_unicode( 0 ),
-      m_finished( false )
+      m_finished( false ), m_paused(false)
 {
 }
 
@@ -56,7 +56,7 @@ QChar XMLIncrementalSource::next()
 {
     if ( m_finished )
         return QXmlInputSource::EndOfDocument;
-    else if ( m_data.length() <= m_pos )
+    else if (m_paused ||  m_data.length() <= m_pos)
         return QXmlInputSource::EndOfData;
     else
         return m_unicode[m_pos++];
@@ -237,6 +237,10 @@ bool XMLHandler::endElement( const QString& /*namespaceURI*/, const QString& /*l
     } else
         return false;
 
+    // if the node is a script element try to execute it immediately
+    if ((node->id() == ID_SCRIPT) || (node->id() == makeId(xhtmlNamespace, ID_SCRIPT)))
+        static_cast<XMLTokenizer*>(m_doc->tokenizer())->executeScript(node);
+
     return true;
 }
 
@@ -403,9 +407,11 @@ XMLTokenizer::XMLTokenizer(DOM::DocumentImpl *_doc, KHTMLView *_view)
 {
     m_doc = _doc;
     m_view = _view;
-    m_scriptsIt = 0;
     m_cachedScript = 0;
     m_noErrors = true;
+    m_executingScript = false;
+    m_explicitFinishParsingNeeded = false;
+    m_insideWrite = false;
     m_reader.setContentHandler( &m_handler );
     m_reader.setLexicalHandler( &m_handler );
     m_reader.setErrorHandler( &m_handler );
@@ -416,8 +422,6 @@ XMLTokenizer::XMLTokenizer(DOM::DocumentImpl *_doc, KHTMLView *_view)
 
 XMLTokenizer::~XMLTokenizer()
 {
-    if (m_scriptsIt)
-        delete m_scriptsIt;
     if (m_cachedScript)
         m_cachedScript->deref(this);
 }
@@ -433,6 +437,14 @@ void XMLTokenizer::write( const TokenizerString &str, bool appendData )
 {
     if ( !m_noErrors && appendData )
         return;
+    // check if we try to re-enter inside write()
+    // if so buffer the data
+    if (m_insideWrite) {
+        m_bufferedData.append(str.toString());
+        return;
+    }
+    m_insideWrite = true;
+
     if ( appendData ) {
         m_source.appendXML( str.toString() );
 
@@ -440,6 +452,18 @@ void XMLTokenizer::write( const TokenizerString &str, bool appendData )
         m_source.setData( str.toString() );
     }
     m_noErrors = m_reader.parseContinue();
+
+    // check if while parsing we tried to re-enter write() method so now we have some buffered data we need to write to document
+    if (!m_bufferedData.isEmpty()) {
+        m_source.appendXML(m_bufferedData);
+        m_bufferedData.clear();
+        if (m_noErrors)
+            m_noErrors = m_reader.parseContinue();
+    }
+    // check if we need to call finish explicitly (see XMLTokenizer::finish() comment for details)
+    if (m_explicitFinishParsingNeeded)
+        finish();
+    m_insideWrite = false;
 }
 
 void XMLTokenizer::end()
@@ -452,6 +476,11 @@ void XMLTokenizer::end()
 
 void XMLTokenizer::finish()
 {
+    if (m_executingScript) {
+        // still executing script, it can happen because of reentrancy, e.g. when we have alert() inside script and we got the rest of the data
+        m_explicitFinishParsingNeeded = true;
+        return;
+    }
     m_source.setFinished( true );
     if (!m_noErrors) {
         // An error occurred during parsing of the code. Display an error page to the user (the DOM
@@ -517,98 +546,76 @@ void XMLTokenizer::finish()
 
         m_doc->recalcStyle( NodeImpl::Inherit );
         m_doc->updateRendering();
-
-        end();
     }
     else {
-        // Parsing was successful. Now locate all html <script> tags in the document and execute them
-        // one by one
-        addScripts(m_doc);
-        m_scriptsIt = new QLinkedListIterator<HTMLScriptElementImpl*>(m_scripts);
-        executeScripts();
+        // Parsing was successfull, all scripts have finished downloading and executing,
+        // calculating the style for the document and close the last element
+        m_doc->updateStyleSelector();
     }
 
-}
-
-void XMLTokenizer::addScripts(NodeImpl *n)
-{
-    // Recursively go through the entire document tree, looking for html <script> tags. For each of these
-    // that is found, add it to the m_scripts list from which they will be executed
-
-    if (n->id() == ID_SCRIPT || n->id() == makeId(xhtmlNamespace, ID_SCRIPT)) {
-        m_scripts.append(static_cast<HTMLScriptElementImpl*>(n));
-    }
-
-    NodeImpl *child;
-    for (child = n->firstChild(); child; child = child->nextSibling())
-        addScripts(child);
-}
-
-void XMLTokenizer::executeScripts()
-{
-    // Iterate through all of the html <script> tags in the document. For those that have a src attribute,
-    // start loading the script and return (executeScripts() will be called again once the script is loaded
-    // and continue where it left off). For scripts that don't have a src attribute, execute the code
-    // inside the tag
-    while (m_scriptsIt->hasNext()) {
-        HTMLScriptElementImpl* script = m_scriptsIt->next();
-        DOMString scriptSrc = script->getAttribute(ATTR_SRC);
-        QString charset = script->getAttribute(ATTR_CHARSET).string();
-
-        if (!scriptSrc.isEmpty()) {
-            // we have a src attribute
-            m_cachedScript = m_doc->docLoader()->requestScript(scriptSrc, charset);
-            if (m_cachedScript) {
-                m_cachedScript->ref(this); // will call executeScripts() again if already cached
-                return;
-            }
-        }
-        else {
-            // no src attribute - execute from contents of tag
-            QString scriptCode = "";
-            NodeImpl *child;
-            for (child = script->firstChild(); child; child = child->nextSibling()) {
-                if ( ( child->nodeType() == Node::TEXT_NODE || child->nodeType() == Node::CDATA_SECTION_NODE) &&
-                     static_cast<TextImpl*>(child)->string() )
-                    scriptCode += QString::fromRawData(static_cast<TextImpl*>(child)->string()->s,
-                                                       static_cast<TextImpl*>(child)->string()->l);
-            }
-            // the script cannot do document.write until we support incremental parsing
-            // ### handle the case where the script deletes the node or redirects to
-            // another page, etc. (also in notifyFinished())
-            // ### the script may add another script node after this one which should be executed
-            if (m_view) {
-                m_view->part()->executeScript(DOM::Node(), scriptCode);
-            }
-        }
-    }
-
-    // All scripts have finished executing, so calculate the style for the document and close
-    // the last element
-    m_doc->updateStyleSelector();
-
-    // We are now finished parsing
+    // finished parsing, call end()
     end();
 }
 
 void XMLTokenizer::notifyFinished(CachedObject *finishedObj)
 {
-    // This is called when a script has finished loading that was requested from executeScripts(). We execute
-    // the script, and then call executeScripts() again to continue iterating through the list of scripts in
-    // the document
+    // This is called when a script has finished loading that was requested from executeScript(). We execute
+    // the script, and then continue parsing of the document
     if (finishedObj == m_cachedScript) {
         DOMString scriptSource = m_cachedScript->script();
         m_cachedScript->deref(this);
         m_cachedScript = 0;
-        if (m_view)
+        if (m_view) {
+            m_executingScript = true;
             m_view->part()->executeScript(DOM::Node(), scriptSource.string());
-        executeScripts();
+            m_executingScript = false;
+        }
+        // should continue parsing here after we fetched and executed the script
+        m_source.setPaused(false);
+        m_reader.parseContinue();
     }
 }
 
 bool XMLTokenizer::isWaitingForScripts() const
 {
     return m_cachedScript != 0;
+}
+
+void XMLTokenizer::executeScript(NodeImpl* node)
+{
+    ElementImpl* script = static_cast<ElementImpl*>(node);
+    DOMString scriptSrc = script->getAttribute(ATTR_SRC);
+    QString charset = script->getAttribute(ATTR_CHARSET).string();
+
+    if (!scriptSrc.isEmpty()) {
+        // we have a src attribute
+        m_cachedScript = m_doc->docLoader()->requestScript(scriptSrc, charset);
+        if (m_cachedScript) {
+            // pause parsing until we got script
+            m_source.setPaused();
+            m_cachedScript->ref(this); // the parsing will be continued once the script is fetched and executed in notifyFinished()
+            return;
+        }
+    } else {
+        // no src attribute - execute from contents of tag
+        QString scriptCode = "";
+        NodeImpl *child;
+        for (child = script->firstChild(); child; child = child->nextSibling()) {
+            if ( ( child->nodeType() == Node::TEXT_NODE || child->nodeType() == Node::CDATA_SECTION_NODE) &&
+                static_cast<TextImpl*>(child)->string() )
+                scriptCode += QString::fromRawData(static_cast<TextImpl*>(child)->string()->s,
+                    static_cast<TextImpl*>(child)->string()->l);
+            }
+        // the script cannot do document.write until we support incremental parsing
+        // ### handle the case where the script deletes the node or redirects to
+        // another page, etc. (also in notifyFinished())
+        // ### the script may add another script node after this one which should be executed
+        if (m_view) {
+            m_executingScript = true;
+            m_view->part()->executeScript(DOM::Node(), scriptCode);
+            m_executingScript = false;
+        }
+    }
 }
 
 #include "xml_tokenizer.moc"

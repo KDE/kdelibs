@@ -153,11 +153,14 @@ public:
     void appendXML( const QString& str );
     void setFinished( bool );
 
+    inline void setPaused(bool paused = true) { m_paused = paused; }
+
 private:
     QString      m_data;
     int          m_pos;
     const QChar *m_unicode;
     bool         m_finished;
+    bool         m_paused; // if waiting for scripts
 };
 
 class XMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
@@ -175,23 +178,26 @@ public:
     void notifyFinished(khtml::CachedObject *finishedObj);
 
     virtual bool isWaitingForScripts() const;
-    virtual bool isExecutingScript() const { return false; }
+    virtual bool isExecutingScript() const { return m_executingScript; }
+
+    // execute script in place, if it contains src attribute we stop parsing till it's downloaded
+    void executeScript(DOM::NodeImpl *n);
 
 protected:
     DOM::DocumentImpl *m_doc;
     KHTMLView *m_view;
 
-    void executeScripts();
-    void addScripts(DOM::NodeImpl *n);
-
-    QLinkedList<DOM::HTMLScriptElementImpl*> m_scripts;
-    QLinkedListIterator<DOM::HTMLScriptElementImpl*> *m_scriptsIt;
     khtml::CachedScript *m_cachedScript;
+
+    QString m_bufferedData;
 
     XMLHandler m_handler;
     QXmlSimpleReader m_reader;
     XMLIncrementalSource m_source;
     bool m_noErrors;
+    bool m_executingScript;
+    bool m_explicitFinishParsingNeeded;
+    bool m_insideWrite;
 };
 
 } // end namespace
