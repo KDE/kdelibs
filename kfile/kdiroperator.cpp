@@ -902,11 +902,15 @@ void KDirOperator::trashSelected()
     }
 }
 
-void KDirOperator::setIconsZoom(int value)
+void KDirOperator::setIconsZoom(int _value)
 {
-    if (d->iconsZoom == value) {
+    if (d->iconsZoom == _value) {
         return;
     }
+
+    int value = _value;
+    value = qMin(100, value);
+    value = qMax(0, value);
 
     d->iconsZoom = value;
 
@@ -927,6 +931,8 @@ void KDirOperator::setIconsZoom(int value)
     d->itemView->setIconSize(QSize(val, val));
     d->updateListViewGrid();
     d->previewGenerator->updatePreviews();
+
+    emit currentIconSizeChanged(value);
 }
 
 void KDirOperator::close()
@@ -1268,37 +1274,59 @@ bool KDirOperator::eventFilter(QObject *watched, QEvent *event)
 
     // If we are not hovering any items, check if there is a current index
     // set. In that case, we show the preview of that item.
-    if ((event->type() == QEvent::MouseMove) && (d->preview != 0)) {
-        const QModelIndex hoveredIndex = d->itemView->indexAt(d->itemView->viewport()->mapFromGlobal(QCursor::pos()));
+    switch(event->type()) {
+        case QEvent::MouseMove: {
+                if (d->preview) {
+                    const QModelIndex hoveredIndex = d->itemView->indexAt(d->itemView->viewport()->mapFromGlobal(QCursor::pos()));
 
-        if (d->lastHoveredIndex == hoveredIndex)
-            return false;
+                    if (d->lastHoveredIndex == hoveredIndex)
+                        return false;
 
-        d->lastHoveredIndex = hoveredIndex;
+                    d->lastHoveredIndex = hoveredIndex;
 
-        const QModelIndex focusedIndex = d->itemView->selectionModel() ? d->itemView->selectionModel()->currentIndex()
-                                                                       : QModelIndex();
+                    const QModelIndex focusedIndex = d->itemView->selectionModel() ? d->itemView->selectionModel()->currentIndex()
+                                                                                : QModelIndex();
 
-        if (!hoveredIndex.isValid() && focusedIndex.isValid() &&
-            d->itemView->selectionModel()->isSelected(focusedIndex) &&
-            (d->lastHoveredIndex != focusedIndex)) {
-            const QModelIndex sourceFocusedIndex = d->proxyModel->mapToSource(focusedIndex);
-            const KFileItem item = d->dirModel->itemForIndex(sourceFocusedIndex);
-            if (!item.isNull()) {
-                d->preview->showPreview(item.url());
+                    if (!hoveredIndex.isValid() && focusedIndex.isValid() &&
+                        d->itemView->selectionModel()->isSelected(focusedIndex) &&
+                        (d->lastHoveredIndex != focusedIndex)) {
+                        const QModelIndex sourceFocusedIndex = d->proxyModel->mapToSource(focusedIndex);
+                        const KFileItem item = d->dirModel->itemForIndex(sourceFocusedIndex);
+                        if (!item.isNull()) {
+                            d->preview->showPreview(item.url());
+                        }
+                    }
+                }
             }
-        }
-    }
-    else if ((event->type() == QEvent::MouseButtonRelease) && (d->preview != 0)) {
-        const QModelIndex hoveredIndex = d->itemView->indexAt(d->itemView->viewport()->mapFromGlobal(QCursor::pos()));
-        const QModelIndex focusedIndex = d->itemView->selectionModel() ? d->itemView->selectionModel()->currentIndex()
-                                                                       : QModelIndex();
+            break;
+        case QEvent::MouseButtonRelease: {
+                if (d->preview != 0) {
+                    const QModelIndex hoveredIndex = d->itemView->indexAt(d->itemView->viewport()->mapFromGlobal(QCursor::pos()));
+                    const QModelIndex focusedIndex = d->itemView->selectionModel() ? d->itemView->selectionModel()->currentIndex()
+                                                                                : QModelIndex();
 
-        if (((!focusedIndex.isValid()) ||
-             !d->itemView->selectionModel()->isSelected(focusedIndex)) &&
-            (!hoveredIndex.isValid())) {
-            d->preview->clearPreview();
-        }
+                    if (((!focusedIndex.isValid()) ||
+                        !d->itemView->selectionModel()->isSelected(focusedIndex)) &&
+                        (!hoveredIndex.isValid())) {
+                        d->preview->clearPreview();
+                    }
+                }
+            }
+            break;
+        case QEvent::Wheel: {
+                QWheelEvent *evt = static_cast<QWheelEvent*>(event);
+                if (evt->modifiers() & Qt::ControlModifier) {
+                    if (evt->delta() > 0) {
+                        setIconsZoom(d->iconsZoom + 10);
+                    } else {
+                        setIconsZoom(d->iconsZoom - 10);
+                    }
+                    return true;
+                }
+            }
+            break;
+        default:
+            break;
     }
 
     return false;
@@ -1551,7 +1579,7 @@ void KDirOperator::setView(QAbstractItemView *view)
     emit viewChanged(view);
 
     const int zoom = d->iconSizeForViewType(view);
-    // this will make d->iconsZoom be updated, since changeIconsZoom slot will be called
+    // this will make d->iconsZoom be updated, since setIconsZoom slot will be called
     emit currentIconSizeChanged(zoom);
 }
 
