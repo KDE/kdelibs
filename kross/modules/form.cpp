@@ -730,7 +730,6 @@ QWidget* FormModule::createWidgetFromUI(QWidget* parent, const QString& xml)
     while(--i>=0)
     {
         QDomElement e=strings.at(i).toElement();
-        kWarning()<<e.text()<<e.attribute("comment");
         QString i18nd=e.attribute("comment").isEmpty()?QObject::tr(e.text().toUtf8()):QObject::tr(e.text().toUtf8(),e.attribute("comment").toUtf8());
         if (i18nd==e.text())
             continue;
