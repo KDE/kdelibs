@@ -2530,7 +2530,7 @@ JSValue* Location::getValueProperty(ExecState *exec, int token) const
   KUrl url = m_frame->m_part->url();
   switch(token) {
     case Hash:
-      return jsString( UString(url.ref().isNull() ? QString("") : '#' + url.ref()) );
+      return jsString( UString(url.htmlRef().isNull() ? QString("") : '#' + url.htmlRef()) );
     case Host: {
       UString str = url.host();
       if (url.port() > 0)
