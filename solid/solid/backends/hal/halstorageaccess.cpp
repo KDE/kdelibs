@@ -267,28 +267,27 @@ bool StorageAccess::callHalVolumeMount()
     QStringList options;
     QStringList halOptions = m_device->property("volume.mount.valid_options").toStringList();
 
-    if (halOptions.contains("uid=")) {
-        options << "uid="+QString::number(::getuid());
+#ifdef Q_OS_FREEBSD
+    QString uid="-u=";
+#else
+    QString uid="uid=";
+#endif
+    if (halOptions.contains(uid)) {
+        options << uid+QString::number(::getuid());
     }
+
+    QString fstype=m_device->property("volume.fstype").toString();
     //respect Microsoft Windows-enforced charsets for fat
-    if ( m_device->property("volume.fstype").toString()=="vfat" ) {
-        bool linuxMount=halOptions.contains("codepage=");
-        bool bsdMount=halOptions.contains("-D=");
+#ifdef Q_OS_FREEBSD
+    if ( fstype=="vfat" ) {
         QString codepage;
         QString iocharset;
-        if (linuxMount)
-        {
-            codepage="codepage=";
-            iocharset="iocharset=utf8";
-        }
-        else if (bsdMount)
-        {
+        if (halOptions.contains("-D=")) {
             codepage="-D=CP";
             iocharset="-L="+QLocale::system().name()+".UTF-8";
         }
 
-        if (linuxMount||bsdMount)
-        {
+        if (!codepage.isEmpty()) {
             switch (QLocale::system().language()) {
                 case QLocale::Russian:
                 case QLocale::Ukrainian:
@@ -343,10 +342,12 @@ bool StorageAccess::callHalVolumeMount()
                 options << iocharset;
             }
         }
+
     }
+#endif
 
     // pass our locale to the ntfs-3g driver so it can translate local characters
-    if ( m_device->property("volume.fstype").toString()=="ntfs-3g" && halOptions.contains("locale=") ) {
+    if ( fstype.startsWith("ntfs") && halOptions.contains("locale=") ) {
         // have to obtain LC_CTYPE as returned by the `locale` command
         // check in the same order as `locale` does
         char *cType;
@@ -354,6 +355,20 @@ bool StorageAccess::callHalVolumeMount()
             options << "locale="+QString(cType);
         }
     }
+
+#ifdef Q_OS_FREEBSD
+    if ( fstype.startsWith("ntfs") || fstype=="iso9660" || fstype=="udf" ) {
+        if (halOptions.contains("-C="))
+            options << "-C=UTF-8";
+    }
+#else
+    if ( /*fstype.startsWith("ntfs") ||*/ fstype=="iso9660" || fstype=="udf" || fstype=="vfat" ) {
+        if (halOptions.contains("utf8"))
+            options<<"utf8";
+        else if (halOptions.contains("iocharset="))
+            options<<"iocharset=utf8";
+    }
+#endif
 
     msg << "" << "" << options;
 
