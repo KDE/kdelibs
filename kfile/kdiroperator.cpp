@@ -2420,8 +2420,6 @@ void KDirOperator::Private::_k_slotChangeDecorationPosition()
 
 void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
 {
-    kDebug();
-
     const KFileItem item = dirModel->itemForIndex(index);
     Q_ASSERT(!item.isNull());
     parent->setCurrentItems(itemsToBeSetAsCurrent.toStringList());
