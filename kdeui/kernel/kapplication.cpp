@@ -582,7 +582,7 @@ void KApplicationPrivate::init(bool GUIenabled)
 
     KMessage::setMessageHandler( new KMessageBoxMessageHandler(0) );
 
-    new KCheckAccelerators( q );
+    KCheckAccelerators::initiateIfNeeded(q);
     KGestureMap::self()->installEventFilterOnMe( q );
 
     q->connect(KToolInvocation::self(), SIGNAL(kapplication_hook(QStringList&, QByteArray&)),

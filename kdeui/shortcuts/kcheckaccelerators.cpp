@@ -53,74 +53,38 @@
 #include "kacceleratormanager.h"
 #include <kconfiggroup.h>
 
-/**
-
- HOWTO:
-
- This class allows translators (and application developers) to check for accelerator
- conflicts in menu and widgets. Put the following in your kdeglobals (or the config
- file for the application you're testing):
-
- [Development]
- CheckAccelerators=F12
- AutoCheckAccelerators=false
- AlwaysShowCheckAccelerators=false
-
- The checking can be either manual or automatic. To perform manual check, press
- the keyboard shortcut set to 'CheckAccelerators' (here F12). If automatic checking
- is enabled by setting 'AutoCheckAccelerators' to true, check will be performed every
- time the GUI changes. It's possible that in certain cases the check will be
- done also when no visible changes in the GUI happen or the check won't be done
- even if the GUI changed (in the latter case, use manual check ). Automatic
- checks can be anytime disabled by the checkbox in the dialog presenting
- the results of the check. If you set 'AlwaysShowCheckAccelerators' to true,
- the dialog will be shown even if the automatic check didn't find any conflicts,
- and all submenus will be shown, even those without conflicts.
-
- The dialog first lists the name of the window, then all results for all menus
- (if the window has a menubar) and then result for all controls in the active
- window (if there are any checkboxes etc.). For every submenu and all controls
- there are shown all conflicts grouped by accelerator, and a list of all used
- accelerators.
-
-
- COPY WIDGET TEXT:
-
- You can copy widgets' texts to find them in translation files faster by middle-clicking them.
- Put the following lines in ~/.kde4/share/config/kdeglobals (or in rc file for specific app):
-
- [Development]
- CopyWidgetText=true
- CopyWidgetTextCommand=find_in_po_script "%1" "%2"
-
- Where %1 gets replaced with program name and %2 - with text.
- CopyWidgetTextCommand may be empty, in which case the text gets copied to clipboard.
- Press Ctrl+MMB to get widget text w/o accelerator mark (&)
-
-*/
-
-KCheckAccelerators::KCheckAccelerators( QObject* parent )
-    : QObject( parent ), key(0), block( false ), drklash(0)
+void KCheckAccelerators::initiateIfNeeded(QObject* parent)
 {
-    setObjectName( "kapp_accel_filter" );
-
     KConfigGroup cg( KGlobal::config(), "Development" );
     QString sKey = cg.readEntry( "CheckAccelerators" ).trimmed();
+    int key=0;
     if( !sKey.isEmpty() ) {
       KShortcut cuts( sKey );
       if( !cuts.isEmpty() )
         key = cuts.primary()[0];
     }
-    alwaysShow = cg.readEntry( "AlwaysShowCheckAccelerators", false );
-    autoCheck = cg.readEntry( "AutoCheckAccelerators", true );
-    copyWidgetText = cg.readEntry( "CopyWidgetText", false );
-    copyWidgetTextCommand = cg.readEntry( "CopyWidgetTextCommand", "" );
+    bool autoCheck = cg.readEntry( "AutoCheckAccelerators", true );
+    bool copyWidgetText = cg.readEntry( "CopyWidgetText", false );
 
     if (!copyWidgetText && key==0 && !autoCheck)
-    {
-        deleteLater();
         return;
-    }
+
+    new KCheckAccelerators(parent, key, autoCheck, copyWidgetText);
+}
+
+KCheckAccelerators::KCheckAccelerators(QObject* parent, int key_, bool autoCheck_, bool copyWidgetText_)
+    : QObject(parent)
+    , key(key_)
+    , block(false)
+    , autoCheck(autoCheck_)
+    , copyWidgetText(copyWidgetText_)
+    , drklash(0)
+{
+    setObjectName( "kapp_accel_filter" );
+
+    KConfigGroup cg( KGlobal::config(), "Development" );
+    alwaysShow = cg.readEntry( "AlwaysShowCheckAccelerators", false );
+    copyWidgetTextCommand = cg.readEntry( "CopyWidgetTextCommand", "" );
 
     parent->installEventFilter( this );
     connect( &autoCheckTimer, SIGNAL(timeout()), SLOT(autoCheckSlot()));
@@ -201,7 +165,7 @@ bool KCheckAccelerators::eventFilter(QObject* obj, QEvent* e)
             else
             {
                 QProcess* script=new QProcess(this);
-                script->start(copyWidgetTextCommand.arg(KGlobal::activeComponent().catalogName()).arg(text));
+                script->start(copyWidgetTextCommand.arg(text).arg(KGlobal::activeComponent().catalogName()));
                 connect(script,SIGNAL(finished(int,QProcess::ExitStatus)),script,SLOT(deleteLater()));
             }
             e->accept();
