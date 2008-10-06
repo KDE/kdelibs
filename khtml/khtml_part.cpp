@@ -6304,8 +6304,7 @@ void KHTMLPart::handleMousePressEventDoubleClick(khtml::MouseDoubleClickEvent *e
     }
 
     if (selection.state() != Selection::CARET) {
-        d->editor_context.m_selectionGranularity = Selection::WORD;
-        d->editor_context.m_beganSelectingText = true;
+        d->editor_context.beginSelectingText(Selection::WORD);
     }
 
     setCaret(selection);
@@ -6329,8 +6328,7 @@ void KHTMLPart::handleMousePressEventTripleClick(khtml::MouseDoubleClickEvent *e
     }
 
     if (selection.state() != Selection::CARET) {
-        d->editor_context.m_selectionGranularity = Selection::LINE;
-        d->editor_context.m_beganSelectingText = true;
+        d->editor_context.beginSelectingText(Selection::LINE);
     }
 
     setCaret(selection);
@@ -6469,7 +6467,9 @@ void KHTMLPart::extendSelectionTo(int x, int y, const DOM::Node &innerNode)
     Selection sel = caret();
     sel.clearModifyBias();
     if (!d->editor_context.m_beganSelectingText) {
-        d->editor_context.m_beganSelectingText = true;
+        // We are beginning a selection during press-drag, when the original click
+        // wasn't appropriate for one. Make sure to set the granularity.
+        d->editor_context.beginSelectingText(Selection::CHARACTER);
         sel.moveTo(pos);
     }
 
