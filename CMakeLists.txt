@@ -26,6 +26,10 @@ endif (KHTML_BUILD_TESTREGRESSION)
 
 ################# now find all used packages #################
 
+if(ONLY_KLEO)
+add_definitions( -DONLY_KLEO )
+endif(ONLY_KLEO)
+
 find_package(KDE4Internal REQUIRED)
 include(KDE4Defaults)
 include (MacroLibrary)
