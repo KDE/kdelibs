@@ -1573,6 +1573,11 @@ void KDirOperator::setDirLister(KDirLister *lister)
     d->dirModel->setDirLister(d->dirLister);
     d->dirModel->setDropsAllowed(KDirModel::DropOnDirectory);
 
+    if (qobject_cast<QTreeView*>(d->itemView)) {
+        connect(d->dirModel, SIGNAL(expand(QModelIndex)), d->itemView, SLOT(expand(QModelIndex)));
+        connect(d->dirModel, SIGNAL(expand(QModelIndex)), this, SLOT(_k_slotExpandToUrl(QModelIndex)));
+    }
+
     d->proxyModel = new KDirSortFilterProxyModel(this);
     d->proxyModel->setSourceModel(d->dirModel);
 
