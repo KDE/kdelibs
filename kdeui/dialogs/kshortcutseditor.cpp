@@ -99,6 +99,12 @@ void KShortcutsEditor::clearCollections()
 
 void KShortcutsEditor::addCollection(KActionCollection *collection, const QString &title)
 {
+    // KXmlGui add action collections unconditionally. If some plugin doesn't
+    // provide actions we don't want to create empty subgroups.
+    if (collection->isEmpty()) {
+        return;
+    }
+
     // We add a bunch of items. Prevent the treewidget from permanently
     // updating.
     setUpdatesEnabled(false);
@@ -107,11 +113,23 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
     // Forward our actionCollections to the delegate which does the conflict
     // checking.
     d->delegate->setCheckActionCollections(d->actionCollections);
-    enum hierarchyLevel {Root = 0, Program, Action};
-    KAction *kact;
+    QString displayTitle = title;
+
+    if (displayTitle.isEmpty()) {
+        // Use the programName (Translated).
+        if (const KAboutData *about = collection->componentData().aboutData()) {
+            displayTitle = about->programName();
+        }
+        // Yes it happens. Some apps don't set the programName.
+        if (displayTitle.isEmpty()) {
+            displayTitle = "Unknown";
+        }
+    }
+
     QTreeWidgetItem *hier[3];
-    hier[Root] = d->ui.list->invisibleRootItem();
-    hier[Program] = d->findOrMakeItem(hier[Root], title.isEmpty() ? i18n("Shortcuts") : title);
+    hier[KShortcutsEditorPrivate::Root] = d->ui.list->invisibleRootItem();
+    hier[KShortcutsEditorPrivate::Program] = d->findOrMakeItem( hier[KShortcutsEditorPrivate::Root], displayTitle);
+    hier[KShortcutsEditorPrivate::Action] = NULL;
 
     // Set to remember which actions we have seen.
     QSet<QAction*> actionsSeen;
@@ -119,30 +137,11 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
     // Add all categories in their own subtree below the collections root node
     QList<KActionCategory*> categories = collection->findChildren<KActionCategory*>();
     foreach (KActionCategory *category, categories) {
-        hier[Action] = d->findOrMakeItem(hier[Program], category->text());
+        hier[KShortcutsEditorPrivate::Action] = d->findOrMakeItem(hier[KShortcutsEditorPrivate::Program], category->text());
         foreach(QAction *action, category->actions()) {
-
-            QString actionName = action->objectName();
-            // If the action name starts with unnamed- spit out a warning and ignore
-            // it. That name will change at will and will break loading writing
-            if (actionName.isEmpty() || actionName.startsWith("unnamed-")) {
-                    kError() << "Skipping action without name " << action->text() << "," << actionName << "!";
-                continue;
-            }
-
             // Set a marker that we have seen this action
             actionsSeen.insert(action);
-            // This code doesn't allow editing of QAction. I have no idea why :-(
-            // But i guess it's for a good reason so i won't change that. If
-            // anyone know why please add a comment explaining the reason.
-            if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
-                // If the shortcut is not configurable skip it
-                if (!kact->isShortcutConfigurable()) {
-                    continue;
-                }
-                // Create the editor
-                new KShortcutsEditorItem((hier[Action]), kact);
-            }
+            d->addAction(action, hier, KShortcutsEditorPrivate::Action);
         }
     }
 
@@ -153,26 +152,7 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
             continue;
         }
 
-        // If the action name starts with unnamed- spit out a warning and ignore
-        // it. That name will change at will and will break loading writing
-        QString actionName = action->objectName();
-        if (actionName.isEmpty() || actionName.startsWith("unnamed-")) {
-            kError() << "Skipping action without name " << action->text() << "," << actionName << "!";
-            continue;
-        }
-
-        // This code doesn't allow editing of QAction. I have no idea why :-(
-        // But i guess it's for a good reason so i won't change that. If
-        // anyone know why please add a comment explaining the reason.
-        if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
-
-            // If the shortcut is not configurable skip it
-            if (!kact->isShortcutConfigurable()) {
-                continue;
-            }
-            // Create the editor
-            new KShortcutsEditorItem((hier[Program]), kact);
-        }
+        d->addAction(action, hier, KShortcutsEditorPrivate::Program);
     }
 
     // sort the list
@@ -239,10 +219,9 @@ void KShortcutsEditor::resizeColumns()
 void KShortcutsEditor::commit()
 {
     for (QTreeWidgetItemIterator it(d->ui.list); (*it); ++it) {
-        if ((*it)->childCount())
-            continue;
-
-        static_cast<KShortcutsEditorItem *>(*it)->commit();
+        if (KShortcutsEditorItem* item = dynamic_cast<KShortcutsEditorItem*>(*it)) {
+            item->commit();
+        }
     }
 }
 
@@ -265,10 +244,9 @@ void KShortcutsEditor::undoChanges()
     //with Qt 4.2.something. Apparently items were deleted too early by Qt.
     //It seems to work with 4.3-ish Qt versions. Keep an eye on this.
     for (QTreeWidgetItemIterator it(d->ui.list); (*it); ++it) {
-        if ((*it)->childCount())
-            continue;
-
-        static_cast<KShortcutsEditorItem *>(*it)->undo();
+        if (KShortcutsEditorItem* item = dynamic_cast<KShortcutsEditorItem*>(*it)) {
+            item->undo();
+        }
     }
 }
 
@@ -336,6 +314,30 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 
     ui.searchFilter->setFocus();
 }
+
+
+bool KShortcutsEditorPrivate::addAction(QAction *action, QTreeWidgetItem *hier[], hierarchyLevel level)
+{
+    // If the action name starts with unnamed- spit out a warning and ignore
+    // it. That name will change at will and will break loading and writing
+    QString actionName = action->objectName();
+    if (actionName.isEmpty() || actionName.startsWith("unnamed-")) {
+        kError() << "Skipping action without name " << action->text() << "," << actionName << "!";
+        return false;
+    }
+
+    // This code doesn't allow editing of QAction. It can not distinguish
+    // between default and active shortcuts. This breaks many assumptions the
+    // editor makes.
+    KAction *kact;
+    if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
+        new KShortcutsEditorItem((hier[level]), kact);
+        return true;
+    }
+
+    return false;
+}
+
 
 
 //a gross hack to make a protected method public. We should inherit instead

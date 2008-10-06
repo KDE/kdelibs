@@ -355,7 +355,16 @@ public:
     //this invokes the appropriate conflict resolution function
     void capturedShortcut(const QVariant &, const QModelIndex &);
 
-    void globalSettingsChangedSystemwide(int);
+    //! Represents the three hierarchies the dialog handles.
+    enum hierarchyLevel {Root = 0, Program, Action};
+
+    /**
+     * Add @a action at @a level. Checks for QActions and unnamed actions
+     * before adding.
+     *
+     * @return true if the actions was really added, false if not
+     */
+    bool addAction(QAction *action, QTreeWidgetItem *hier[], hierarchyLevel level);
 
     void printShortcuts() const;
 
@@ -367,6 +376,7 @@ public:
 
     KShortcutsEditor::ActionTypes actionTypes;
     KShortcutsEditorDelegate *delegate;
+
 };
 
 
