@@ -196,7 +196,16 @@ void KConfigDialogManager::setupWidget(QWidget *widget, KConfigSkeletonItem *ite
       widget->setWhatsThis(whatsThis );
     }
   }
-  
+
+  if (widget->toolTip().isEmpty())
+  {
+    QString toolTip = item->toolTip();
+    if ( !toolTip.isEmpty() )
+    {
+      widget->setToolTip(toolTip);
+    }
+  }
+
   if(!item->isEqual( property(widget) ))
     setProperty( widget, item->property() );
 }
