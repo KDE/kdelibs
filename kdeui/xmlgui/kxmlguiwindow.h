@@ -252,7 +252,7 @@ public:
      *       calling to this method. (This note is only applicable if you are using the Default or
      *       Save flag).
      * @warning If you are calling createGUI yourself, remember to remove the Create flag from
-     *          the @p options parameter. Also, call setupGUI always after you call createGUI.
+     *          the @p options parameter.
      *
      */
     void setupGUI( StandardWindowOptions options = Default, const QString& xmlfile = QString() );
