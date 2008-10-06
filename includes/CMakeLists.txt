@@ -895,6 +895,8 @@ install(FILES
   Nepomuk/Tools
   Nepomuk/Variant
   Nepomuk/Thing
+  Nepomuk/KRatingWidget
+  Nepomuk/KRatingPainter
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk )
 
 
