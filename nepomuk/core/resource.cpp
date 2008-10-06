@@ -371,10 +371,6 @@ QString Nepomuk::Resource::genericIcon() const
 Nepomuk::Thing Nepomuk::Resource::pimoThing()
 {
     Thing thing = m_data->pimoThing();
-    if( !thing.isValid() ) {
-        // make it valid
-        thing.setProperty( Vocabulary::PIMO::groundingOccurrence(), *this );
-    }
     return thing;
 }
 

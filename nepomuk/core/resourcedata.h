@@ -226,7 +226,11 @@ namespace Nepomuk {
         // used to prevent countless model operations in store()
         bool m_initialTypeSaved;
 
+        // using a pointer to avoid infinite creation loop
         Thing* m_pimoThing;
+
+        // only used for delayed storage of the pimo thing relation
+        ResourceData* m_groundingOccurence;
 
         friend class ResourceManager;
     };

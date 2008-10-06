@@ -78,7 +78,8 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QString& uriOrId, co
       m_ref(0),
       m_proxyData(0),
       m_cacheDirty(true),
-      m_pimoThing(0)
+      m_pimoThing(0),
+      m_groundingOccurence(0)
 {
     if( m_mainType.isEmpty() )
         m_mainType = Soprano::Vocabulary::RDFS::Resource();
@@ -309,6 +310,12 @@ bool Nepomuk::ResourceData::store()
             statements.append( Statement( m_uri,
                                           Soprano::Vocabulary::Xesam::url(),
                                           LiteralValue( m_uri.toLocalFile() ) ) );
+        }
+
+        // store our grounding occurrence in case we are a thing created by the pimoThing() method
+        if( m_groundingOccurence ) {
+            m_groundingOccurence->store();
+            statements.append( Statement( m_uri, Vocabulary::PIMO::groundingOccurrence(), m_groundingOccurence->uri() ) );
         }
     }
 
@@ -848,8 +855,10 @@ bool Nepomuk::ResourceData::dataCacheFull()
 Nepomuk::Thing Nepomuk::ResourceData::pimoThing()
 {
     load();
-    if( !m_pimoThing )
+    if( !m_pimoThing ) {
         m_pimoThing = new Thing();
+        m_pimoThing->m_data->m_groundingOccurence = this;
+    }
     return *m_pimoThing;
 }
 
