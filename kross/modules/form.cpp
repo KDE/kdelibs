@@ -708,12 +708,47 @@ QWidget* FormModule::createWidget(QWidget* parent, const QString& className, con
     return widget;
 }
 
+/*
+QString FormModule::localized(const QString& str)
+{
+    return i18n(str.toUtf8());
+}
+QString FormModule::localizedSeparate(const QString& comment, const QString& str)
+{
+    return i18nc(comment.toUtf8(),str.toUtf8());
+}
+*/
 QWidget* FormModule::createWidgetFromUI(QWidget* parent, const QString& xml)
 {
     QFormBuilder builder;
-    QByteArray ba = xml.toUtf8();
+
+    QDomDocument doc("mydocument");
+    doc.setContent(xml.toUtf8());
+
+    QDomNodeList strings=doc.elementsByTagName("string");
+    int i=strings.size();
+    while(--i>=0)
+    {
+        QDomElement e=strings.at(i).toElement();
+        kWarning()<<e.text()<<e.attribute("comment");
+        QString i18nd=e.attribute("comment").isEmpty()?i18n(e.text().toUtf8()):i18nc(e.attribute("comment").toUtf8(),e.text().toUtf8());
+        if (i18nd==e.text())
+            continue;
+        QDomNode n = e.firstChild();
+        while (!n.isNull())
+        {
+            QDomNode nn=n.nextSibling();
+            if (n.isCharacterData())
+                e.removeChild(n);
+            n = nn;
+        }
+        e.appendChild(e.ownerDocument().createTextNode(i18nd));
+    }
+
+    QByteArray ba = doc.toByteArray();
     QBuffer buffer(&ba);
     buffer.open(QIODevice::ReadOnly);
+
     QWidget* widget = builder.load(&buffer, parent);
     if( widget && parent && parent->layout() )
         parent->layout()->addWidget(widget);

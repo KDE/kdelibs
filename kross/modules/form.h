@@ -211,11 +211,18 @@ namespace Kross {
      * Example (in Python) :
      * \code
      * import Kross
+     * import sys,os
+     * ourPath=''
+     * for p in sys.path:
+     *     if os.path.exists(p+'/mywidget.ui'):
+     *         ourPath=p
+     *         break
      * forms = Kross.module("forms")
      * mydialog = forms.createDialog("MyDialog")
      * mydialog.setButtons("Ok|Cancel")
      * mydialog.setFaceType("Plain") #Auto Plain List Tree Tabbed
-     * mywidget = forms.createWidgetFromUIFile(mydialog, "./mywidget.ui")
+     * mypage = mydialog.addPage("name","header")
+     * mywidget = forms.createWidgetFromUIFile(mypage, p+'/mywidget.ui')
      * mywidget["lineEdit"].setText("some string")
      * if mydialog.exec_loop():
      *     if mydialog.result() == "Ok":
@@ -348,16 +355,22 @@ namespace Kross {
      * Example (in Python) :
      * \code
      * import Kross
+     * import sys,os
+     * ourPath=''
+     * for p in sys.path:
+     *     if os.path.exists(p+'/mywidget.ui'):
+     *         ourPath=p
+     *         break
      * forms = Kross.module("forms")
      * myassistant = forms.createAssistant("MyAssistant")
      * myassistant.showHelpButton(0)
-     * mywidget = myassistant.addPage("name","header")
-     * myoptions = forms.createWidgetFromUIFile(mywidget, "./mywidget.ui")
-     * mywidget2 = myassistant.addPage("name2","header2")
-     * myoptions2 = forms.createWidgetFromUIFile(mywidget2, "./mywidget.ui")
-     * mywidget3 = myassistant.addPage("name3","header3")
-     * myoptions3 = forms.createWidgetFromUIFile(mywidget3, "./mywidget.ui")
-     * myoptions["lineEdit"].setText("some string")
+     * mypage = myassistant.addPage("name","header")
+     * mywidget = forms.createWidgetFromUIFile(mypage, p+'/mywidget.ui')
+     * mypage2 = myassistant.addPage("name2","header2")
+     * mywidget2 = forms.createWidgetFromUIFile(mypage2, p+'/mywidget.ui')
+     * mypage3 = myassistant.addPage("name3","header3")
+     * mywidget3 = forms.createWidgetFromUIFile(mypage3, p+'/mywidget.ui')
+     * mywidget["lineEdit"].setText("some string")
      *
      * def nextClicked():
      *     myassistant.setAppropriate("name2",0)
@@ -513,7 +526,7 @@ namespace Kross {
      *     forms.showMessageBox("Information", "Okay...", "The Ok-button was pressed")
      * \endcode
      */
-    class FormModule : public QObject
+    class FormModule: public QObject
     {
             Q_OBJECT
 
@@ -534,6 +547,11 @@ namespace Kross {
              * focus, or NULL if no application window has the focus.
              */
             QWidget* activeWindow();
+
+/*
+            QString localized(const QString& str);
+            QString localizedSeparate(const QString& comment, const QString& str);
+*/
 
             /**
              * Show a messagebox.
