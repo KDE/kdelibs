@@ -454,11 +454,10 @@ void XMLTokenizer::write( const TokenizerString &str, bool appendData )
     m_noErrors = m_reader.parseContinue();
 
     // check if while parsing we tried to re-enter write() method so now we have some buffered data we need to write to document
-    if (!m_bufferedData.isEmpty()) {
+    while (m_noErrors && !m_bufferedData.isEmpty()) {
         m_source.appendXML(m_bufferedData);
         m_bufferedData.clear();
-        if (m_noErrors)
-            m_noErrors = m_reader.parseContinue();
+        m_noErrors = m_reader.parseContinue();
     }
     // check if we need to call finish explicitly (see XMLTokenizer::finish() comment for details)
     if (m_explicitFinishParsingNeeded)
