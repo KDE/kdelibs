@@ -341,6 +341,7 @@ FormDialog::FormDialog(const QString& caption)
 
 FormDialog::~FormDialog()
 {
+    kWarning()<<"dtor";
     delete d;
 }
 

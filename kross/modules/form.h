@@ -227,6 +227,7 @@ namespace Kross {
      * if mydialog.exec_loop():
      *     if mydialog.result() == "Ok":
      *         print mywidget["lineEdit"].text
+     * mydialog.deleteLater()
      * \endcode
      */
     class FormDialog: public KPageDialog
@@ -549,7 +550,14 @@ namespace Kross {
             QWidget* activeWindow();
 
 
+            /**
+             * \return i18n'ed version of the string
+             */
             QString tr(const QString& str);
+
+            /**
+             * \return i18n'ed version of the string, differentiated by the comment text (e.g. '@title:window')
+             */
             QString tr(const QString& str,const QString& comment);
 
 
