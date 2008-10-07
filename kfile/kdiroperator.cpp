@@ -281,6 +281,7 @@ public:
     KActionMenu *decorationMenu;
     KToggleAction *leftAction;
     KUrl::List itemsToBeSetAsCurrent;
+    bool shouldFetchForItems;
 };
 
 KDirOperator::Private::Private(KDirOperator *_parent) :
@@ -304,7 +305,8 @@ KDirOperator::Private::Private(KDirOperator *_parent) :
     configGroup(0),
     previewGenerator(0),
     decorationMenu(0),
-    leftAction(0)
+    leftAction(0),
+    shouldFetchForItems(false)
 {
 }
 
@@ -1562,8 +1564,11 @@ void KDirOperator::setView(QAbstractItemView *view)
     // needs to be done here, and not in createView, since we can be set an external view
     d->decorationMenu->setEnabled(qobject_cast<QListView*>(d->itemView));
 
-    if (qobject_cast<QTreeView*>(view)) {
+    d->shouldFetchForItems = qobject_cast<QTreeView*>(view);
+    if (d->shouldFetchForItems) {
         connect(d->dirModel, SIGNAL(expand(QModelIndex)), this, SLOT(_k_slotExpandToUrl(QModelIndex)));
+    } else {
+        d->itemsToBeSetAsCurrent.clear();
     }
 
     d->previewGenerator = new KFilePreviewGenerator(d->itemView);
@@ -1601,8 +1606,11 @@ void KDirOperator::setDirLister(KDirLister *lister)
     d->dirModel->setDirLister(d->dirLister);
     d->dirModel->setDropsAllowed(KDirModel::DropOnDirectory);
 
-    if (qobject_cast<QTreeView*>(d->itemView)) {
+    d->shouldFetchForItems = qobject_cast<QTreeView*>(d->itemView);
+    if (d->shouldFetchForItems) {
         connect(d->dirModel, SIGNAL(expand(QModelIndex)), this, SLOT(_k_slotExpandToUrl(QModelIndex)));
+    } else {
+        d->itemsToBeSetAsCurrent.clear();
     }
 
     d->proxyModel = new KDirSortFilterProxyModel(this);
@@ -1650,7 +1658,7 @@ void KDirOperator::setCurrentItem(const QString& url)
     kDebug();
 
     KFileItem item = d->dirLister->findByUrl(url);
-    if (item.isNull()) {
+    if (d->shouldFetchForItems && item.isNull()) {
         d->itemsToBeSetAsCurrent << url;
         d->dirModel->expandToUrl(url);
         return;
@@ -1689,7 +1697,7 @@ void KDirOperator::setCurrentItems(const QStringList& urls)
     KFileItemList itemList;
     foreach (const QString &url, urls) {
         KFileItem item = d->dirLister->findByUrl(url);
-        if (item.isNull()) {
+        if (d->shouldFetchForItems && item.isNull()) {
             d->itemsToBeSetAsCurrent << url;
             d->dirModel->expandToUrl(url);
             continue;
