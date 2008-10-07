@@ -2473,6 +2473,8 @@ void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
     }
 
     if (!item.isDir()) {
+        const QModelIndex proxyIndex = proxyModel->mapFromSource(index);
+
         KUrl::List::Iterator it = itemsToBeSetAsCurrent.begin();
         while (it != itemsToBeSetAsCurrent.end()) {
             const KUrl url = *it;
@@ -2480,13 +2482,11 @@ void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
                 const KFileItem _item = dirLister->findByUrl(url);
                 if (_item.isDir()) {
                     const QModelIndex _index = dirModel->indexForItem(_item);
-                    const QModelIndex proxyIndex = proxyModel->mapFromSource(_index);
-                    treeView->expand(proxyIndex);
+                    const QModelIndex _proxyIndex = proxyModel->mapFromSource(_index);
+                    treeView->expand(_proxyIndex);
 
                     // if we have expanded the last parent of this item, select it
-                    if (item.url().upUrl().equals(url, KUrl::CompareWithoutTrailingSlash)) {
-                        const QModelIndex index = dirModel->indexForItem(item);
-                        const QModelIndex proxyIndex = proxyModel->mapFromSource(index);
+                    if (item.url().directory() == url.path(KUrl::RemoveTrailingSlash)) {
                         treeView->selectionModel()->select(proxyIndex, QItemSelectionModel::Select);
                     }
                 }
