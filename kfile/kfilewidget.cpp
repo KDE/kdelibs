@@ -863,6 +863,7 @@ void KFileWidget::slotOk()
     bool directoryMode = (mode & KFile::Directory);
     bool onlyDirectoryMode = directoryMode && !(mode & KFile::File) && !(mode & KFile::Files);
     foreach (const KUrl &url, locationEditCurrentTextList) {
+        d->url = url;
         KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
         bool res = KIO::NetAccess::synchronousRun(statJob, 0);
 
