@@ -31,10 +31,12 @@
 
 #include <kicon.h>
 
+#ifndef _MSC_VER
 uint qHash( const QUrl& url )
 {
     return qHash( url.toString() );
 }
+#endif
 
 // uint qHash( const Nepomuk::Types::Entity& c )
 // {
