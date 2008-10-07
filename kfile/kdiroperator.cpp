@@ -1671,7 +1671,6 @@ void KDirOperator::setCurrentItem(const KFileItem& item)
     if (selModel) {
         selModel->clear();
         if (!item.isNull()) {
-            d->itemsToBeSetAsCurrent << item.url(); // do not lose it
             const QModelIndex dirIndex = d->dirModel->indexForItem(item);
             const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
             selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::Select);
@@ -1715,7 +1714,6 @@ void KDirOperator::setCurrentItems(const KFileItemList& items)
         QModelIndex proxyIndex;
         foreach (const KFileItem &item, items) {
             if (!item.isNull()) {
-                d->itemsToBeSetAsCurrent << item.url(); // do not lose it
                 const QModelIndex dirIndex = d->dirModel->indexForItem(item);
                 proxyIndex = d->proxyModel->mapFromSource(dirIndex);
                 selModel->select(proxyIndex, QItemSelectionModel::Select);
@@ -2454,13 +2452,43 @@ void KDirOperator::Private::_k_slotChangeDecorationPosition()
 
 void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
 {
-    if (QTreeView *treeView = qobject_cast<QTreeView*>(itemView)) {
-        treeView->expand(index);
+    QTreeView *treeView = qobject_cast<QTreeView*>(itemView);
+
+    if (!treeView) {
+        return;
     }
+
     const KFileItem item = dirModel->itemForIndex(index);
-    Q_ASSERT(!item.isNull());
-    parent->setCurrentItems(itemsToBeSetAsCurrent.toStringList());
-    itemsToBeSetAsCurrent.clear();
+
+    if (item.isNull()) {
+        return;
+    }
+
+    kDebug() << "RECEIVED EXPAND SIGNAL FOR URL: " << item.url() << " THE LIST OF ITEMS TO REVIEW IS: " << itemsToBeSetAsCurrent;
+
+    if (!item.isDir()) {
+        KUrl::List::Iterator it = itemsToBeSetAsCurrent.begin();
+        while (it != itemsToBeSetAsCurrent.end()) {
+            const KUrl url = *it;
+            if (url.isParentOf(item.url())) {
+                const KFileItem _item = dirLister->findByUrl(url);
+                if (_item.isDir()) {
+                    kDebug() << "EXPANDING NODE: " << _item.url();
+                    const QModelIndex _index = dirModel->indexForItem(_item);
+                    treeView->expand(_index);
+                } else {
+                    kDebug() << "IGNORING (AND REMOVING) NODE - IS NOT A DIR -: " << _item.url();
+                }
+                it = itemsToBeSetAsCurrent.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    } else if (!itemsToBeSetAsCurrent.contains(item.url())) {
+        itemsToBeSetAsCurrent << item.url();
+    }
+
+    kDebug() << "NOW LIST IS (SHOULD BE EMPTY): " << itemsToBeSetAsCurrent;
 }
 
 void KDirOperator::Private::updateListViewGrid()
