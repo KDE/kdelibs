@@ -1674,7 +1674,7 @@ void KDirOperator::setCurrentItem(const KFileItem& item)
             d->itemsToBeSetAsCurrent << item.url(); // do not lose it
             const QModelIndex dirIndex = d->dirModel->indexForItem(item);
             const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
-            selModel->select(proxyIndex, QItemSelectionModel::Select);
+            selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::Select);
         }
     }
 }
@@ -1722,7 +1722,7 @@ void KDirOperator::setCurrentItems(const KFileItemList& items)
             }
         }
         if (proxyIndex.isValid()) {
-            selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::Select);
+            selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::NoUpdate);
         }
     }
 }
