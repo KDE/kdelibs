@@ -1550,6 +1550,7 @@ void KDirOperator::setView(QAbstractItemView *view)
         d->itemView->setSelectionModel(selectionModel);
         QMetaObject::invokeMethod(this, "_k_assureVisibleSelection", Qt::QueuedConnection);
     }
+
     connect(d->itemView->selectionModel(),
             SIGNAL(currentChanged(const QModelIndex&,const QModelIndex&)),
             this, SLOT(_k_triggerPreview(const QModelIndex&)));
@@ -1562,7 +1563,6 @@ void KDirOperator::setView(QAbstractItemView *view)
     d->decorationMenu->setEnabled(qobject_cast<QListView*>(d->itemView));
 
     if (qobject_cast<QTreeView*>(view)) {
-        connect(d->dirModel, SIGNAL(expand(QModelIndex)), view, SLOT(expand(QModelIndex)));
         connect(d->dirModel, SIGNAL(expand(QModelIndex)), this, SLOT(_k_slotExpandToUrl(QModelIndex)));
     }
 
@@ -1602,7 +1602,6 @@ void KDirOperator::setDirLister(KDirLister *lister)
     d->dirModel->setDropsAllowed(KDirModel::DropOnDirectory);
 
     if (qobject_cast<QTreeView*>(d->itemView)) {
-        connect(d->dirModel, SIGNAL(expand(QModelIndex)), d->itemView, SLOT(expand(QModelIndex)));
         connect(d->dirModel, SIGNAL(expand(QModelIndex)), this, SLOT(_k_slotExpandToUrl(QModelIndex)));
     }
 
@@ -1675,8 +1674,7 @@ void KDirOperator::setCurrentItem(const KFileItem& item)
             d->itemsToBeSetAsCurrent << item.url(); // do not lose it
             const QModelIndex dirIndex = d->dirModel->indexForItem(item);
             const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
-            selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::SelectCurrent);
-            QMetaObject::invokeMethod(this, "_k_assureVisibleSelection", Qt::QueuedConnection);
+            selModel->select(proxyIndex, QItemSelectionModel::Select);
         }
     }
 }
@@ -1714,14 +1712,17 @@ void KDirOperator::setCurrentItems(const KFileItemList& items)
     QItemSelectionModel *selModel = d->itemView->selectionModel();
     if (selModel) {
         selModel->clear();
+        QModelIndex proxyIndex;
         foreach (const KFileItem &item, items) {
             if (!item.isNull()) {
                 d->itemsToBeSetAsCurrent << item.url(); // do not lose it
                 const QModelIndex dirIndex = d->dirModel->indexForItem(item);
-                const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
-                selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::Select);
-                QMetaObject::invokeMethod(this, "_k_assureVisibleSelection", Qt::QueuedConnection);
+                proxyIndex = d->proxyModel->mapFromSource(dirIndex);
+                selModel->select(proxyIndex, QItemSelectionModel::Select);
             }
+        }
+        if (proxyIndex.isValid()) {
+            selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::Select);
         }
     }
 }
@@ -2398,7 +2399,7 @@ void KDirOperator::Private::_k_assureVisibleSelection()
     QItemSelectionModel* selModel = itemView->selectionModel();
     if (selModel->hasSelection()) {
         const QModelIndex index = selModel->currentIndex();
-        itemView->scrollTo(index, QAbstractItemView::PositionAtCenter);
+        itemView->scrollTo(index, QAbstractItemView::EnsureVisible);
         _k_triggerPreview(index);
     }
 }
@@ -2453,6 +2454,9 @@ void KDirOperator::Private::_k_slotChangeDecorationPosition()
 
 void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
 {
+    if (QTreeView *treeView = qobject_cast<QTreeView*>(itemView)) {
+        treeView->expand(index);
+    }
     const KFileItem item = dirModel->itemForIndex(index);
     Q_ASSERT(!item.isNull());
     parent->setCurrentItems(itemsToBeSetAsCurrent.toStringList());
