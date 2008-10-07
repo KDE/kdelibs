@@ -48,6 +48,7 @@ void KDirModelTest::initTestCase()
 {
     qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
 
+    m_dirModelForExpand = 0;
     s_referenceTimeStamp = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
     m_tempDir = 0;
     m_topLevelFileNames << "toplevelfile_1"
@@ -442,8 +443,6 @@ void KDirModelTest::testExpandToUrl_data()
 
     QTest::newRow("the root, nothing to do")
         << false << QString() << QStringList();
-    // When KDirLister was sync, subdir would already be known by the time we call expand
-    // But now that listing is always async, we get a reliable result: expand(subdir) emitted.
     QTest::newRow("subdir")
         << false << "subdir" << (QStringList()<<"subdir");
 
@@ -476,32 +475,46 @@ void KDirModelTest::testExpandToUrl()
     }
 
     const QString path = m_tempDir->name();
-    KDirModel dirModelForExpand;
-    KDirLister* dirListerForExpand = dirModelForExpand.dirLister();
-    dirListerForExpand->openUrl(KUrl(path), KDirLister::NoFlags); // async
-    connect(&dirModelForExpand, SIGNAL(expand(QModelIndex)),
-            this, SLOT(slotExpand(QModelIndex)));
-    connect(&dirModelForExpand, SIGNAL(rowsInserted(QModelIndex,int,int)),
-            this, SLOT(slotRowsInserted(QModelIndex,int,int)));
+    if (!m_dirModelForExpand || newdir) {
+        delete m_dirModelForExpand;
+        m_dirModelForExpand = new KDirModel;
+        connect(m_dirModelForExpand, SIGNAL(expand(QModelIndex)),
+                this, SLOT(slotExpand(QModelIndex)));
+        connect(m_dirModelForExpand, SIGNAL(rowsInserted(QModelIndex,int,int)),
+                this, SLOT(slotRowsInserted(QModelIndex,int,int)));
+        KDirLister* dirListerForExpand = m_dirModelForExpand->dirLister();
+        dirListerForExpand->openUrl(KUrl(path), KDirLister::NoFlags); // async
+    }
     m_rowsInsertedEmitted = false;
     m_expectedExpandSignals = expectedExpandSignals;
-    m_dirModelForExpand = &dirModelForExpand;
     m_nextExpectedExpandSignals = 0;
-    QSignalSpy spyExpand(&dirModelForExpand, SIGNAL(expand(QModelIndex)));
-    dirModelForExpand.expandToUrl(KUrl(path + expandToPath));
-    QCOMPARE(spyExpand.count(), 0); // nothing emitted yet
+    QSignalSpy spyExpand(m_dirModelForExpand, SIGNAL(expand(QModelIndex)));
+    m_urlToExpandTo = KUrl(path + expandToPath);
+    // If KDirModel doesn't know this URL yet, then we want to see rowsInserted signals
+    // being emitted, so that the slots can get the index to that url then.
+    m_expectRowsInserted = !expandToPath.isEmpty() && !m_dirModelForExpand->indexForUrl(m_urlToExpandTo).isValid();
+    m_dirModelForExpand->expandToUrl(m_urlToExpandTo);
     if (expectedExpandSignals.isEmpty()) {
         QTest::qWait(20); // to make sure we process queued connection calls, otherwise spyExpand.count() is always 0 even if there's a bug...
         QCOMPARE(spyExpand.count(), 0);
     } else {
-        enterLoop();
-        QCOMPARE(spyExpand.count(), expectedExpandSignals.count());
-        QVERIFY(m_rowsInsertedEmitted);
+        if (spyExpand.count() < expectedExpandSignals.count()) {
+            enterLoop();
+            QCOMPARE(spyExpand.count(), expectedExpandSignals.count());
+        }
+        if (m_expectRowsInserted)
+            QVERIFY(m_rowsInsertedEmitted);
     }
-    m_dirModelForExpand = 0;
+
+    // Now it should exist
+    if (!expandToPath.isEmpty()) {
+        kDebug() << "Do I know" << m_urlToExpandTo << "?";
+        QVERIFY(m_dirModelForExpand->indexForUrl(m_urlToExpandTo).isValid());
+    }
 
     // recreateTestData was called -> fill again, for the next tests
-    fillModel(false);
+    if (newdir)
+        fillModel(false);
 }
 
 void KDirModelTest::slotExpand(const QModelIndex& index)
@@ -510,9 +523,16 @@ void KDirModelTest::slotExpand(const QModelIndex& index)
     const QString path = m_tempDir->name();
     KFileItem item = m_dirModelForExpand->itemForIndex(index);
     QVERIFY(!item.isNull());
+    kDebug() << item.url().path();
     QCOMPARE(item.url().path(), path + m_expectedExpandSignals[m_nextExpectedExpandSignals++]);
+
     // if rowsInserted wasn't emitted yet, then any proxy model would be unable to do anything with index at this point
-    QVERIFY(m_rowsInsertedEmitted);
+    if (item.url() == m_urlToExpandTo) {
+        QVERIFY(m_dirModelForExpand->indexForUrl(m_urlToExpandTo).isValid());
+        if (m_expectRowsInserted)
+            QVERIFY(m_rowsInsertedEmitted);
+    }
+
     if (m_nextExpectedExpandSignals == m_expectedExpandSignals.count())
         m_eventLoop.quit(); // done
 }

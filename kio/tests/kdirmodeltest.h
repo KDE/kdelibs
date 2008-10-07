@@ -79,7 +79,9 @@ private:
     QStringList m_expectedExpandSignals;
     int m_nextExpectedExpandSignals; // index into m_expectedExpandSignals
     KDirModel* m_dirModelForExpand;
+    KUrl m_urlToExpandTo;
     bool m_rowsInsertedEmitted;
+    bool m_expectRowsInserted;
 };
 
 

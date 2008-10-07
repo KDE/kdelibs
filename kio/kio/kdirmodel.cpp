@@ -125,9 +125,9 @@ public:
     // Find the row number and node for a given url.
     // This has to drill down from the root node.
     // Returns (0,0) if there is no node for this url.
-    // If returnLastParent is set, then return the last known parent if there is no node for this url
-    // (special case for expandToUrl)
-    KDirModelNode* nodeForUrl(const KUrl& url, bool returnLastParent = false) const;
+    // If expandAndReturnLastParent is set, then we emit expand for each parent and then return the
+    // last known parent if there is no node for this url (special case for expandToUrl)
+    KDirModelNode* nodeForUrl(const KUrl& url, bool expandAndReturnLastParent = false) const;
     KDirModelNode* nodeForIndex(const QModelIndex& index) const;
     QModelIndex indexForNode(KDirModelNode* node, int rowNumber = -1 /*unknown*/) const;
     bool isDir(KDirModelNode* node) const {
@@ -162,7 +162,7 @@ public:
 // we need to get the parent KFileItem in _k_slotNewItems, and then we can use a QHash<KFileItem,KDirModelNode*> cache.
 // (well there isn't a parent kfileitem, rather a parent url... hmm, back to square one with hashes-of-urls..)
 // For now we'll assume "child url = parent url + filename"
-KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url, bool returnLastParent) const // O(depth)
+KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url, bool expandAndReturnLastParent) const // O(depth)
 {
     KUrl url(_url);
     url.adjustPath(KUrl::RemoveTrailingSlash);
@@ -204,11 +204,15 @@ KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url, bool returnLastPar
         KDirModelNode* node = dirNode->m_childNodesByName.value(fileName);
         if (!node) {
             //kDebug(7008) << "child equal or starting with" << url << "not found";
-            if (returnLastParent)
+            if (expandAndReturnLastParent)
                 return dirNode;
             else
                 return 0;
         }
+
+        if (expandAndReturnLastParent)
+            emit q->expand(indexForNode(node));
+
         nodeUrl = urlForNode(node);
         //kDebug(7008) << " nodeUrl=" << nodeUrl;
         if (nodeUrl == url) {
@@ -892,7 +896,7 @@ void KDirModel::setDropsAllowed(DropsAllowed dropsAllowed)
 
 void KDirModel::expandToUrl(const KUrl& url)
 {
-    KDirModelNode* result = d->nodeForUrl(url, true /*return last parent*/); // O(depth)
+    KDirModelNode* result = d->nodeForUrl(url, true /*emit expand for each parent and return last parent*/); // O(depth)
     kDebug(7008) << url << result;
 
     if (!result) // doesn't seem related to our base url?
