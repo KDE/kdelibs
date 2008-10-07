@@ -227,6 +227,7 @@ install( FILES
   KLibrary
   KLineEdit
   KListWidget
+  KListWidgetSearchLine
   KLocale
   KLocalizedString
   KLockFile
