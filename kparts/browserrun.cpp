@@ -99,7 +99,7 @@ void BrowserRun::init()
       KDE_struct_stat buff;
       if ( KDE_stat( QFile::encodeName(KRun::url().toLocalFile()), &buff ) == -1 )
       {
-        kDebug(1000) << "BrowserRun::init:" << KRun::url().toLocalFile() << "doesn't exist.";
+        kDebug(1000) << KRun::url().toLocalFile() << "doesn't exist.";
         redirectToError( KIO::ERR_DOES_NOT_EXIST, KRun::url().toLocalFile() );
         return;
       }
@@ -111,7 +111,7 @@ void BrowserRun::init()
 
 void BrowserRun::scanFile()
 {
-  kDebug(1000) << "BrowserRun::scanfile" << KRun::url();
+  kDebug(1000) << KRun::url();
 
   // Let's check for well-known extensions
   // Not when there is a query in the URL, in any case.
@@ -122,7 +122,7 @@ void BrowserRun::scanFile()
     assert( mime );
     if ( mime->name() != "application/octet-stream" || isLocalFile() )
     {
-      kDebug(1000) << "Scanfile: MIME TYPE is" << mime->name();
+      kDebug(1000) << "MIME TYPE is" << mime->name();
       mimeTypeDetermined( mime->name() );
       return;
     }
@@ -170,7 +170,7 @@ void BrowserRun::scanFile()
 
 void BrowserRun::slotBrowserScanFinished(KJob *job)
 {
-  kDebug(1000) << "BrowserRun::slotBrowserScanFinished";
+  kDebug(1000) << job->error();
   if ( job->error() == KIO::ERR_IS_DIRECTORY )
   {
       // It is in fact a directory. This happens when HTTP redirects to FTP.
@@ -233,19 +233,19 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
     {
         if ( isTextExecutable(mimeType) )
             mimeType = QLatin1String("text/plain"); // view, don't execute
-        kDebug(1000) << "BrowserRun: ask for saving";
+        kDebug(1000) << "ask for saving";
         KService::Ptr offer = KMimeTypeTrader::self()->preferredService(mimeType, "Application");
         // ... -> ask whether to save
         KParts::BrowserRun::AskSaveResult res = askSave( KRun::url(), offer, mimeType, suggestedFileName() );
         if ( res == KParts::BrowserRun::Save ) {
             save( KRun::url(), suggestedFileName() );
-            kDebug(1000) << "BrowserRun::handleNonEmbeddable: Save: returning Handled";
+            kDebug(1000) << "Save: returning Handled";
             setFinished( true );
             return Handled;
         }
         else if ( res == KParts::BrowserRun::Cancel ) {
             // saving done or canceled
-            kDebug(1000) << "BrowserRun::handleNonEmbeddable: Cancel: returning Handled";
+            kDebug(1000) << "Cancel: returning Handled";
             setFinished( true );
             return Handled;
         }
@@ -255,7 +255,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
             // We must save the data to a tempfile first.
             if ( d->m_browserArgs.doPost() )
             {
-                kDebug(1000) << "BrowserRun: request comes from a POST, can't pass a URL to another app, need to save";
+                kDebug(1000) << "request comes from a POST, can't pass a URL to another app, need to save";
                 d->m_mimeType = mimeType;
                 QString extension;
                 QString fileName = suggestedFileName().isEmpty() ? KRun::url().fileName() : suggestedFileName();
@@ -460,7 +460,7 @@ void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFileName
 void BrowserRun::slotStatResult( KJob *job )
 {
     if ( job->error() ) {
-        kDebug(1000) << "BrowserRun::slotStatResult:" << job->errorString();
+        kDebug(1000) << job->errorString();
         handleError( job );
     } else
         KRun::slotStatResult( job );
@@ -469,7 +469,7 @@ void BrowserRun::slotStatResult( KJob *job )
 void BrowserRun::handleError( KJob * job )
 {
     if ( !job ) { // Shouldn't happen, see docu.
-        kWarning(1000) << "BrowserRun::handleError called with job=0! hideErrorDialog=" << d->m_bHideErrorDialog;
+        kWarning(1000) << "handleError called with job=0! hideErrorDialog=" << d->m_bHideErrorDialog;
         return;
     }
 
