@@ -566,7 +566,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
         coll->action("inline preview")->setChecked(pg->isPreviewShown());
     }
 
-    setSelection(d->selection);
     d->locationEdit->setFocus();
 }
 
