@@ -375,7 +375,7 @@ public:
      * get, aka read.
      * @param url the full url for this request. Host, port and user of the URL
      *        can be assumed to be the same as in the last setHost() call.
-     * The slave emits the data through data
+     * The slave should first emit mimeType(), and then emit the data using the data() method.
      */
     virtual void get( const KUrl& url );
 
