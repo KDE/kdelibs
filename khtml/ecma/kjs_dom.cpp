@@ -363,30 +363,30 @@ JSValue* DOMNode::getValueProperty(ExecState *exec, int token) const
 
     switch (token) {
     case OffsetLeft:
-      return rend ? jsNumber( rend->offsetLeft() ) : jsUndefined();
+      return rend ? jsNumber( rend->offsetLeft() ) : jsNumber(0);
     case OffsetTop:
-      return rend ? jsNumber( rend->offsetTop() ) : jsUndefined();
+      return rend ? jsNumber( rend->offsetTop() ) : jsNumber(0);
     case OffsetWidth:
-      return rend ? jsNumber( rend->offsetWidth() ) : jsUndefined();
+      return rend ? jsNumber( rend->offsetWidth() ) : jsNumber(0);
     case OffsetHeight:
-      return rend ? jsNumber( rend->offsetHeight() ) : jsUndefined();
+      return rend ? jsNumber( rend->offsetHeight() ) : jsNumber(0);
     case OffsetParent:
     {
       khtml::RenderObject* par = rend ? rend->offsetParent() : 0;
       return getDOMNode( exec, par ? par->element() : 0 );
     }
     case ClientWidth:
-      return rend ? jsNumber( rend->clientWidth() ) : jsUndefined();
+      return rend ? jsNumber( rend->clientWidth() ) : jsNumber(0);
     case ClientHeight:
-      return rend ? jsNumber( rend->clientHeight() ) : jsUndefined();
+      return rend ? jsNumber( rend->clientHeight() ) : jsNumber(0);
     case ClientLeft:
-      return rend ? jsNumber( rend->clientLeft() ) : jsUndefined();
+      return rend ? jsNumber( rend->clientLeft() ) : jsNumber(0);
     case ClientTop:
-      return rend ? jsNumber( rend->clientTop() ) : jsUndefined();
+      return rend ? jsNumber( rend->clientTop() ) : jsNumber(0);
     case ScrollWidth:
-      return rend ? jsNumber(rend->scrollWidth()) : jsUndefined();
+      return rend ? jsNumber(rend->scrollWidth()) : jsNumber(0);
     case ScrollHeight:
-      return rend ? jsNumber(rend->scrollHeight()) : jsUndefined();
+      return rend ? jsNumber(rend->scrollHeight()) : jsNumber(0);
     case ScrollLeft:
       if (rend && rend->layer()) {
           if (rend->isRoot() && !rend->hasOverflowClip())
