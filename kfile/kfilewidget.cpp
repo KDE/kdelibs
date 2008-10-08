@@ -1095,11 +1095,12 @@ void KFileWidgetPrivate::removeDummyHistoryEntry()
 
 void KFileWidgetPrivate::setLocationText(const KUrl& url)
 {
-    const KUrl currUrl = ops->url();
-
     if (!url.isEmpty()) {
         QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( url ), KIconLoader::Small );
-        setDummyHistoryEntry( KUrl::relativeUrl(currUrl, url), mimeTypeIcon );
+        if (url.hasPath()) {
+            q->setUrl(url.path(), false);
+        }
+        setDummyHistoryEntry(url.fileName() , mimeTypeIcon );
     } else {
         removeDummyHistoryEntry();
     }
@@ -1292,8 +1293,8 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
     selection.clear();
 
     KUrlComboBox* pathCombo = urlNavigator->editor();
-    if ( pathCombo->count() != 0 ) { // little hack
-        pathCombo->setUrl( url );
+    if (pathCombo->count() != 0) { // little hack
+        pathCombo->setUrl(url);
     }
 
     bool blocked = locationEdit->blockSignals(true);
@@ -1304,13 +1305,13 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
 
     locationEdit->blockSignals( blocked );
 
-    urlNavigator->setUrl(  url );
+    urlNavigator->setUrl(url);
 
-    QString dir = url.url(KUrl::AddTrailingSlash);
     // is trigged in ctor before completion object is set
-    KUrlCompletion *completion = dynamic_cast<KUrlCompletion*>( locationEdit->completionObject() );
-    if( completion )
-        completion->setDir( dir );
+    KUrlCompletion *completion = dynamic_cast<KUrlCompletion*>(locationEdit->completionObject());
+    if (completion) {
+        completion->setDir( url.path() );
+    }
 
     if (placesView) {
         placesView->setUrl( url );
@@ -1733,10 +1734,16 @@ void KFileWidgetPrivate::readRecentFiles(KConfigGroup &cg)
 {
 //     kDebug(kfile_area);
 
+    QObject::disconnect(locationEdit, SIGNAL(editTextChanged(QString)),
+                        q, SLOT(_k_slotLocationChanged(QString)));
+
     locationEdit->setMaxItems(cg.readEntry(RecentFilesNumber, DefaultRecentURLsNumber));
     locationEdit->setUrls(cg.readPathEntry(RecentFiles, QStringList()),
                           KUrlComboBox::RemoveBottom);
     locationEdit->setCurrentIndex(-1);
+
+    QObject::connect(locationEdit, SIGNAL(editTextChanged(QString)),
+                     q, SLOT(_k_slotLocationChanged(QString)));
 }
 
 void KFileWidgetPrivate::saveRecentFiles(KConfigGroup &cg)
