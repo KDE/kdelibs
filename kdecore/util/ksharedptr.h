@@ -186,13 +186,13 @@ protected:
 template <class T>
 Q_INLINE_TEMPLATE bool operator== (const T* p, const KSharedPtr<T>& o)
 {
-    return ( p == o.d );
+    return ( o == p );
 }
 
 template <class T>
 Q_INLINE_TEMPLATE bool operator!= (const T* p, const KSharedPtr<T>& o)
 {
-    return ( p != o.d );
+    return ( o != p );
 }
 
 template <class T>
