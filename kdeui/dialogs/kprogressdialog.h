@@ -172,12 +172,20 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
 
         /**
          * Set the minimum number of milliseconds to wait before
-         * actually showing the dialog
+         * actually showing the dialog.
+         *
+         * If the expected duration of the task is less than the minimumDuration, the dialog will
+         * not appear at all. This prevents the dialog popping up for tasks that are quickly over.
+         * For tasks that are expected to exceed the minimumDuration, the dialog will pop up after
+         * the minimumDuration time.
+         * If set to 0, the dialog is always shown immediately. The default is
+         * 2000 milliseconds.
          */
         void setMinimumDuration(int ms);
 
         /**
-         * Returns the wait duration in milliseconds
+         * Returns the time that must pass before the dialog appears.
+         * @see setMinimumDuration
          */
         int minimumDuration() const;
 
