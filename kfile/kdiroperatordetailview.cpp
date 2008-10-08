@@ -62,6 +62,8 @@ void KDirOperatorDetailView::setModel(QAbstractItemModel *model)
         resetResizing();
     }
 
+    connect(model, SIGNAL(layoutChanged()), this, SLOT(slotLayoutChanged()));
+
     QTreeView::setModel(model);
 }
 
@@ -122,26 +124,7 @@ void KDirOperatorDetailView::dragEnterEvent(QDragEnterEvent *event)
 void KDirOperatorDetailView::resizeEvent(QResizeEvent *event)
 {
     QTreeView::resizeEvent(event);
-
-    if (m_resizeColumns) {
-        QHeaderView *headerView = header();
-        headerView->resizeSections(QHeaderView::ResizeToContents);
-
-        // calculate the required width for all columns except the name column
-        int requiredWidth = 0;
-        const int count = headerView->count();
-        for (int i = 1; i < count; ++i) {
-            requiredWidth += headerView->sectionSize(i);
-        }
-
-        // try to stretch the name column if enough width is available
-        const int oldNameColumnWidth = headerView->sectionSize(KDirModel::Name);
-        int nameColumnWidth = viewport()->width() - requiredWidth;
-        if (nameColumnWidth < oldNameColumnWidth) {
-            nameColumnWidth = oldNameColumnWidth;
-        }
-        headerView->resizeSection(KDirModel::Name, nameColumnWidth);
-    }
+    slotLayoutChanged();
 }
 
 void KDirOperatorDetailView::mousePressEvent(QMouseEvent *event)
@@ -170,6 +153,29 @@ void KDirOperatorDetailView::resetResizing()
 void KDirOperatorDetailView::disableColumnResizing()
 {
     m_resizeColumns = false;
+}
+
+void KDirOperatorDetailView::slotLayoutChanged()
+{
+    if (m_resizeColumns) {
+        QHeaderView *headerView = header();
+        headerView->resizeSections(QHeaderView::ResizeToContents);
+
+        // calculate the required width for all columns except the name column
+        int requiredWidth = 0;
+        const int count = headerView->count();
+        for (int i = 1; i < count; ++i) {
+            requiredWidth += headerView->sectionSize(i);
+        }
+
+        // try to stretch the name column if enough width is available
+        int oldNameColumnWidth = headerView->sectionSize(KDirModel::Name);
+        int nameColumnWidth = viewport()->width() - requiredWidth;
+        if (nameColumnWidth < oldNameColumnWidth) {
+            nameColumnWidth = oldNameColumnWidth;
+        }
+        headerView->resizeSection(KDirModel::Name, nameColumnWidth);
+    }
 }
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

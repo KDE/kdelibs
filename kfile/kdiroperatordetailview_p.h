@@ -53,6 +53,7 @@ protected:
 private slots:
     void resetResizing();
     void disableColumnResizing();
+    void slotLayoutChanged();
 
 private:
     bool m_resizeColumns;
