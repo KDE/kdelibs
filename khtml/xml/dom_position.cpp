@@ -905,7 +905,8 @@ void Position::debugPosition(const char *msg) const
 #ifdef APPLE_CHANGES
         fprintf(stderr, "Position [%s]: %s [%p] at %ld\n", msg, getTagName(node()->id()).string().latin1(), node(), offset());
 #else
-        fprintf(stderr, "Position [%s]: %s [%p] at %ld\n", msg, getPrintableName(node()->id()), node(), offset());
+        fprintf(stderr, "Position [%s]: %s [%p] at %ld\n", msg,
+                qPrintable(getPrintableName(node()->id())), (void*) node(), offset());
 #endif
 }
 
