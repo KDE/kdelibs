@@ -519,24 +519,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->locationLabel->setBuddy(d->locationEdit);
 
     KUrlCompletion *fileCompletionObj = new KUrlCompletion( KUrlCompletion::FileCompletion );
-    KIO::StatJob *statJob = KIO::stat( d->url.url(), KIO::HideProgressInfo );
-    bool ok = KIO::NetAccess::synchronousRun( statJob, 0 );
-
-    KUrl dirUrl;
-    if (ok) {
-        if (statJob->statResult().isDir()) {
-            dirUrl = d->url;
-            dirUrl.adjustPath( KUrl::AddTrailingSlash );
-        } else {
-            dirUrl = d->url.upUrl();
-        }
-        d->urlNavigator->setUrl( dirUrl.url() );
-        fileCompletionObj->setDir( dirUrl.url() );
-    } else {
-        dirUrl = d->url.upUrl();
-        d->urlNavigator->setUrl( dirUrl.url() );
-        fileCompletionObj->setDir( dirUrl.url() );
-    }
     d->locationEdit->setCompletionObject( fileCompletionObj );
     d->locationEdit->setAutoDeleteCompletionObject( true );
     connect( fileCompletionObj, SIGNAL( match( const QString& ) ),
@@ -575,13 +557,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     KSharedConfig::Ptr config = KGlobal::config();
     KConfigGroup viewConfigGroup(config, ConfigGroup);
     d->readConfig(viewConfigGroup);
-
-    if (!ok || !statJob->statResult().isDir()) {
-        if (ok) {
-            d->selection = d->url.fileName();
-        }
-        d->locationEdit->setUrl(d->url.fileName());
-    }
 
     coll->action("inline preview")->setChecked(d->ops->isInlinePreviewShown());
     d->iconSizeSlider->setValue(d->ops->iconsZoom());
@@ -1505,6 +1480,7 @@ KUrl::List KFileWidgetPrivate::tokenize( const QString& line ) const
 
     KUrl::List urls;
     KUrl u( ops->url() );
+    u.adjustPath(KUrl::AddTrailingSlash);
     QString name;
 
     const int count = line.count( QLatin1Char( '"' ) );
