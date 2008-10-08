@@ -130,7 +130,7 @@ protected:
 };
 
 inline QDebug operator<<(QDebug stream, const DOMString &string) {
-	return (stream << (string.implementation() ? string.string() : "null"));
+	return (stream << (string.implementation() ? string.string() : QString::fromLatin1("null")));
 }
 
 KHTML_EXPORT bool operator==( const DOMString &a, const DOMString &b );
