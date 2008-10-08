@@ -227,7 +227,7 @@ bool KJavaProcess::invokeJVM()
     if ( !d->classArgs.isNull() )
         args << d->classArgs;
 
-    kDebug(6100) << "Invoking JVM now...with arguments = " << KShell::joinArgs(args);
+    kDebug(6100) << "Invoking JVM" << d->jvmPath << "now...with arguments = " << KShell::joinArgs(args);
 
     setOutputChannelMode(KProcess::SeparateChannels);
     setProgram( d->jvmPath, args );
