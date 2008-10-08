@@ -991,7 +991,7 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       return jsNumber(part->view()->contentsY());
     }
     case Scrollbars:
-      return jsUndefined(); // ###
+      return new JSObject(); // ###
     case _Screen:
       return screen ? screen :
                    (const_cast<Window*>(this)->screen = new Screen(exec));
