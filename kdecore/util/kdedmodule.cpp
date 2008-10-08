@@ -25,31 +25,16 @@
 #include <QtDBus/QtDBus>
 
 
-#if 0 // KDED_OBJECTS
-#include "kconfigdata.h"
-typedef QMap<KEntryKey, KSharedPtr<KShared> > KDEDObjectMap;
-#endif
 
 class KDEDModulePrivate
 {
 public:
   QString moduleName;
-#if 0 // KDED_OBJECTS
-  KDEDObjectMap *objMap;
-  int timeout;
-  QTimer timer;
-#endif
 };
 
 KDEDModule::KDEDModule(QObject* parent)
     : QObject(parent), d(new KDEDModulePrivate)
 {
-#if 0 // KDED_OBJECTS
-   d->objMap = 0;
-   d->timeout = 0;
-   d->timer.setSingleShot( true );
-   connect(&(d->timer), SIGNAL(timeout()), this, SLOT(idle()));
-#endif
 }
 
 KDEDModule::~KDEDModule()
@@ -70,86 +55,5 @@ QString KDEDModule::moduleName() const
 {
    return d->moduleName;
 }
-
-#if 0 // see header (grep keyword: KDED_OBJECTS)
-void KDEDModule::setIdleTimeout(int secs)
-{
-   d->timeout = secs*1000;
-}
-
-void KDEDModule::resetIdle()
-{
-   d->timer.stop();
-   if (!d->objMap || d->objMap->isEmpty())
-      d->timer.start(d->timeout);
-}
-
-void KDEDModule::insert(const DCOPCString &app, const DCOPCString &key, KShared *obj)
-{
-   if (!d->objMap)
-      d->objMap = new KDEDObjectMap;
-
-   // appKey acts as a placeholder
-   KEntryKey appKey(app, 0);
-   d->objMap->insert(appKey, 0);
-
-   KEntryKey indexKey(app, key);
-
-   // Prevent deletion in case the same object is inserted again.
-   KSharedPtr<KShared> _obj = obj;
-
-   d->objMap->insert(indexKey, _obj);
-   resetIdle();
-}
-
-KShared * KDEDModule::find(const DCOPCString &app, const DCOPCString &key)
-{
-   if (!d->objMap)
-      return 0;
-   KEntryKey indexKey(app, key);
-
-   KDEDObjectMap::ConstIterator it = d->objMap->find(indexKey);
-   if (it == d->objMap->end())
-      return 0;
-
-   return it.value().get();
-}
-
-void KDEDModule::remove(const DCOPCString &app, const DCOPCString &key)
-{
-   if (!d->objMap)
-      return;
-   KEntryKey indexKey(app, key);
-
-   d->objMap->remove(indexKey);
-   resetIdle();
-}
-
-void KDEDModule::removeAll(const DCOPCString &app)
-{
-   if (!d->objMap)
-      return;
-
-   KEntryKey indexKey(app, 0);
-   // Search for placeholder.
-
-   KDEDObjectMap::Iterator it = d->objMap->find(indexKey);
-   while (it != d->objMap->end())
-   {
-      if (it.key().mGroup != app)
-         break; // All keys for this app have been removed.
-      it = d->objMap->erase(it);
-   }
-   resetIdle();
-}
-#endif
-
-#if 0 // doesn't seem to be used. If this is needed we'll need an interface
-      // for kded that kded implements; or using dcop.
-bool KDEDModule::isWindowRegistered(long windowId) const
-{
-   return Kded::self()->isWindowRegistered(windowId);
-}
-#endif
 
 #include "kdedmodule.moc"
