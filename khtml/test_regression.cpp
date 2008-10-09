@@ -340,7 +340,6 @@ void PartMonitor::finishTimers()
 void PartMonitor::partCompleted()
 {
     m_completed = true;
-    RenderWidget::flushWidgetResizes();
     m_timeout_timer->stop();
     connect(m_timeout_timer, SIGNAL(timeout()),this, SLOT( timeout() ) );
 	m_timeout_timer->setSingleShot(true);

@@ -1556,10 +1556,6 @@ bool RenderTableSection::flexCellChildren(RenderObject* p) const
     bool didFlex = false;
     while (o) {
         if (!o->isText() && o->style()->height().isPercent()) {
-            if (o->isWidget()) {
-                // cancel resizes from transitory relayouts
-                static_cast<RenderWidget *>(o)->cancelPendingResize();
-            }
             o->setNeedsLayout(true, false);
             p->setChildNeedsLayout(true, false);
             didFlex = true;
