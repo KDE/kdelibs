@@ -158,6 +158,7 @@ public:
     /**
      * @internal
      */
+    KUrl baseUrl();
     bool isCSSStyleSheet() const;
     StyleSheetImpl *handle() const { return impl; }
     bool isNull() const { return !impl; }
@@ -296,6 +297,9 @@ public:
      *
      */
     void deleteRule ( unsigned long index );
+
+    /** @internal */
+    DOM::DOMString charset() const;
 };
 
 
