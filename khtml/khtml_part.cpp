@@ -2576,7 +2576,7 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   bool quirkyName = !n && !d->m_doc->inStrictMode() && (name.isEmpty() || name.toLower() == "top");
 
   if (quirkyName) {
-      d->m_view->setContentsPos(0, 0);
+      d->m_view->setContentsPos( d->m_view->contentsX(), 0);
       return true;
   } else if (!n) {
       kDebug(6050) << name << "not found";

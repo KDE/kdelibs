@@ -794,7 +794,8 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty, Q
             if (hbr.isValid() && !hbr.isEmpty())
                 copyWidget(hbr, p, v->horizontalScrollBar(), tx+ of.x(), ty+ of.y(), buffered, buffer[1]);
         }
-        QRect vr = (r & v->viewport()->rect());
+        QPoint of = v->viewport()->mapTo(v, QPoint(0,0));
+        QRect vr = (r & v->viewport()->rect().translated(of));
         if (vr.isValid() && !vr.isEmpty())
             v->render(p, vr, thePoint);
     } else {

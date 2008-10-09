@@ -843,15 +843,16 @@ void RenderLayer::positionScrollbars(const QRect& absBounds)
     if (!m_hBar)
 	b = m_vBar;
     int sw = b->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+    bool rtl = b->layoutDirection() == Qt::RightToLeft;
 
     if (m_vBar) {
-	QRect vBarRect = QRect(tx + w - sw, ty, sw, h - (m_hBar ? sw : 0));
+	QRect vBarRect = QRect(tx + (rtl ? 0 : w-sw), ty, sw, h - (m_hBar ? sw : 0));
         m_vBar->resize(vBarRect.width(), vBarRect.height());
         m_vBar->m_kwp->setPos(QPoint(vBarRect.x(), vBarRect.y()));
     }
 
     if (m_hBar) {
-	QRect hBarRect = QRect(tx, ty + h - sw, w - (m_vBar ? sw : 0), sw);
+	QRect hBarRect = QRect(tx + (rtl && m_vBar ? sw : 0), ty + h - sw, w - (!rtl && m_vBar ? sw : 0), sw);
         m_hBar->resize(hBarRect.width(), hBarRect.height());
         m_hBar->m_kwp->setPos(QPoint(hBarRect.x(), hBarRect.y()));
     }

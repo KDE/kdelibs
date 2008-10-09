@@ -786,7 +786,8 @@ int KHTMLView::visibleHeight() const
 
 void KHTMLView::setContentsPos( int x, int y)
 {
-   horizontalScrollBar()->setValue( x );
+   horizontalScrollBar()->setValue( QApplication::isRightToLeft() ?
+                           horizontalScrollBar()->maximum()-x : x );
    verticalScrollBar()->setValue( y );
 }
 
@@ -2382,6 +2383,13 @@ bool KHTMLView::widgetEvent(QEvent* e)
             }
         }
       }
+      case QEvent::Move: {
+          if (static_cast<QMoveEvent*>(e)->pos() != QPoint(0,0)) {
+              widget()->move(0,0);
+              updateScrollBars();
+              return true;
+          }
+      }
       default:
         break;
     }
@@ -3870,6 +3878,8 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
             unscheduleRelayout();
             layout();
         }
+        if (d->smoothScrollMode == KHTMLView::SSMWhenEfficient)
+            d->shouldSmoothScroll = false;
     }
 
     if ( d->smoothScrollMode != SSMDisabled &&
@@ -3887,6 +3897,9 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
 
     if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
         m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, false, false);
+
+    if (QApplication::isRightToLeft())
+        dx = -dx;
 
     if (!d->smoothScrolling) {
         d->updateContentsXY();
@@ -3907,6 +3920,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         KHTMLView* v = m_kwp->rootViewPos( off );
         if (v)
             w = v->widget();
+        off = viewport()->mapTo(this, off);
     }
 
 #ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
@@ -3967,8 +3981,6 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         }
         return;
     }
-    if (d->firstRepaintPending)
-        return;
 
 #ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
     if (hideScrollBars) {
@@ -4359,6 +4371,9 @@ void KHTMLView::updateScrollBars()
     horizontalScrollBar()->setPageStep(p.width());
     verticalScrollBar()->setRange(0, v.height() - p.height());
     verticalScrollBar()->setPageStep(p.height());
+    if (!d->smoothScrolling) {
+        d->updateContentsXY();
+    }
 }
 
 void KHTMLView::slotMouseScrollTimer()
