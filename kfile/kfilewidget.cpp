@@ -304,9 +304,12 @@ static bool containsProtocolSection( const QString& string )
     return false;
 }
 
-KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
+KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     : QWidget(parent), KAbstractFileWidget(), d(new KFileWidgetPrivate(this))
 {
+    KUrl startDir(_startDir);
+    QString filename;
+
     d->okButton = new KPushButton(KStandardGuiItem::ok(), this);
     d->okButton->setDefault(true);
     d->cancelButton = new KPushButton(KStandardGuiItem::cancel(), this);
@@ -363,6 +366,16 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     pathCombo->addDefaultUrl(u,
                              KIO::pixmapForUrl(u, 0, KIconLoader::Small),
                              u.path(KUrl::AddTrailingSlash));
+
+    KIO::StatJob *statJob = KIO::stat(startDir, KIO::HideProgressInfo);
+    bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+    if (res) {
+        if (!statJob->statResult().isDir()) {
+            startDir.adjustPath(KUrl::RemoveTrailingSlash);
+            filename = startDir.fileName();
+            startDir.setFileName(QString());
+        }
+    }
 
     d->url = getStartUrl( startDir, d->fileClass );
 
@@ -561,6 +574,11 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     KFilePreviewGenerator *pg = d->ops->previewGenerator();
     if (pg) {
         coll->action("inline preview")->setChecked(pg->isPreviewShown());
+    }
+
+    // we know it is not a dir, and we could stat it. Set it.
+    if (!filename.isEmpty()) {
+        d->locationEdit->lineEdit()->setText(filename);
     }
 
     d->locationEdit->setFocus();
