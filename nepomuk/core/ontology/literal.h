@@ -60,6 +60,11 @@ namespace Nepomuk {
 	     */
 	    QVariant::Type dataType() const;
 
+            /**
+             * Is this a valid Literal, i.e. has it a valid URI.
+             */
+            bool isValid() const;
+
 	private:
 	    class Private;
 	    QExplicitlySharedDataPointer<Private> d;

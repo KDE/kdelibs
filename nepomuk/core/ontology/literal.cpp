@@ -109,6 +109,12 @@ QVariant::Type Nepomuk::Types::Literal::dataType() const
 }
 
 
+bool Nepomuk::Types::Literal::isValid() const
+{
+    return d->dataTypeUri.isValid();
+}
+
+
 
 
 Nepomuk::Literal::Literal()
