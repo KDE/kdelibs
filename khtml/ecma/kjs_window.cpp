@@ -904,7 +904,6 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
     {
       if (!part->view())
         return jsUndefined();
-      khtml::RenderWidget::flushWidgetResizes(); // make sure frames have their final size
       int ret = part->view()->visibleHeight();
       // match Gecko which does not subtract the scrollbars
       if (part->view()->horizontalScrollBar()->isVisible()) {
@@ -919,7 +918,6 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
     {
       if (!part->view())
         return jsUndefined();
-      khtml::RenderWidget::flushWidgetResizes(); // make sure frames have their final size
       int ret = part->view()->visibleWidth();
       // match Gecko which does not subtract the scrollbars
       if (part->view()->verticalScrollBar()->isVisible()) {

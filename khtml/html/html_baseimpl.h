@@ -97,6 +97,7 @@ public:
 
     virtual void parseAttribute(AttributeImpl *);
     virtual void attach();
+    virtual void defaultEventHandler(EventImpl *evt);
 
     bool noResize() { return noresize; }
     void setLocation( const DOMString& str );
@@ -203,7 +204,6 @@ public:
 
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
-    virtual void defaultEventHandler(EventImpl *evt);
 
     virtual void computeContent();
     virtual void setWidgetNotify(QWidget *widget);
