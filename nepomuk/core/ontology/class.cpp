@@ -79,14 +79,11 @@ bool Nepomuk::Types::ClassPrivate::loadAncestors()
         //
         Soprano::QueryResultIterator it
             = ResourceManager::instance()->mainModel()->executeQuery( QString("select distinct ?s where { "
-                                                                              "graph ?g1 { ?s a <%1> . } . "
-                                                                              "OPTIONAL { graph ?g2 { ?s <%2> ?ss . } } . "
-                                                                              "?g1 a <%3> . "
-                                                                              "?g2 a <%3> . "
+                                                                              "?s a <%1> . "
+                                                                              "OPTIONAL { ?s <%2> ?ss . } . "
                                                                               "FILTER(!BOUND(?ss)) . }")
                                                                       .arg( Soprano::Vocabulary::RDFS::Class().toString() )
-                                                                      .arg( Soprano::Vocabulary::RDFS::subClassOf().toString() )
-                                                                      .arg( Soprano::Vocabulary::NRL::Ontology().toString() ),
+                                                                      .arg( Soprano::Vocabulary::RDFS::subClassOf().toString() ),
                                                                       Soprano::Query::QueryLanguageSparql );
         bool success = false;
         while ( it.next() ) {
@@ -134,15 +131,37 @@ void Nepomuk::Types::ClassPrivate::initProperties()
 
 bool Nepomuk::Types::ClassPrivate::loadProperties()
 {
-    // load domains
+    // load domains with a hack to get at least a subset of properties that inherit their domain from parents
     Soprano::QueryResultIterator it
         = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?p where { "
-                                                                          "graph ?g { ?p <%1> <%2> . } . "
-                                                                          "?g a <%3> . }")
+                                                                          "{ ?p <%1> <%2> . } "
+                                                                          "UNION "
+                                                                          "{ ?p <%3> ?p1 . "
+                                                                          "OPTIONAL { ?p <%1> ?undefdom . } . "
+                                                                          "?p1 <%1> <%2> . "
+                                                                          "FILTER(!bound(?undefdom)) . } "
+                                                                          "UNION "
+                                                                          "{ ?p <%3> ?p1 . "
+                                                                          "OPTIONAL { ?p <%1> ?undefdom1 . } . "
+                                                                          "?p1 <%3> ?p2 . "
+                                                                          "OPTIONAL { ?p1 <%1> ?undefdom2 . } . "
+                                                                          "?p2 <%1> <%2> . "
+                                                                          "FILTER(!bound(?undefdom1) && !bound(?undefdom2)) . } "
+                                                                          "}")
                                                                   .arg( Soprano::Vocabulary::RDFS::domain().toString() )
                                                                   .arg( QString::fromAscii( uri.toEncoded() ) )
-                                                                  .arg( Soprano::Vocabulary::NRL::Ontology().toString() ),
+                                                                  .arg( Soprano::Vocabulary::RDFS::subPropertyOf().toString() ),
                                                                   Soprano::Query::QueryLanguageSparql );
+
+    // redland cannot handle UNION queries! So fallback to the "old" query
+    if( it.lastError() ) {
+        it = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?p where { "
+                                                                             "?p <%1> <%2> . }")
+                                                                     .arg( Soprano::Vocabulary::RDFS::domain().toString() )
+                                                                     .arg( QString::fromAscii( uri.toEncoded() ) ),
+                                                                     Soprano::Query::QueryLanguageSparql );
+    }
+
     bool success = false;
     while ( it.next() ) {
         success = true;
@@ -152,11 +171,9 @@ bool Nepomuk::Types::ClassPrivate::loadProperties()
 
     // load ranges
     it = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?p where { "
-                                                                          "graph ?g { ?p <%1> <%2> . } . "
-                                                                          "?g a <%3> . }")
+                                                                          "?p <%1> <%2> . }")
                                                                   .arg( Soprano::Vocabulary::RDFS::range().toString() )
-                                                                 .arg( QString::fromAscii( uri.toEncoded() ) )
-                                                                  .arg( Soprano::Vocabulary::NRL::Ontology().toString() ),
+                                                                 .arg( QString::fromAscii( uri.toEncoded() ) ),
                                                                   Soprano::Query::QueryLanguageSparql );
     while ( it.next() ) {
         success = true;
