@@ -202,9 +202,6 @@ public:
     // the selected filenames in multiselection mode -- FIXME
     QString filenames;
 
-    // the name of the filename set by setSelection
-    QString selection;
-
     // now following all kind of widgets, that I need to rebuild
     // the geometry management
     QBoxLayout *boxLayout;
@@ -1252,9 +1249,8 @@ void KFileWidgetPrivate::_k_slotFilterChanged()
 
 void KFileWidget::setUrl(const KUrl& url, bool clearforward)
 {
-//     kDebug(kfile_area) << "setting url " << url;
+//     kDebug(kfile_area);
 
-    d->selection.clear();
     d->ops->setUrl(url, clearforward);
 }
 
@@ -1264,7 +1260,6 @@ void KFileWidgetPrivate::_k_urlEntered(const KUrl& url)
 //     kDebug(kfile_area);
 
     QString filename = locationEditCurrentText();
-    selection.clear();
 
     KUrlComboBox* pathCombo = urlNavigator->editor();
     if (pathCombo->count() != 0) { // little hack
@@ -1345,7 +1340,6 @@ void KFileWidget::setSelection(const QString& url)
 //     kDebug(kfile_area) << "setSelection " << url;
 
     if (url.isEmpty()) {
-        d->selection.clear();
         return;
     }
 
@@ -1364,10 +1358,16 @@ void KFileWidget::setSelection(const QString& url)
 
 void KFileWidgetPrivate::_k_slotLoadingFinished()
 {
-//     kDebug(kfile_area);
+    if (locationEdit->currentText().isEmpty()) {
+        return;
+    }
 
-    if ( !selection.isEmpty() )
-        ops->setCurrentItem( selection );
+    ops->blockSignals(true);
+    KUrl url = ops->url();
+    url.adjustPath(KUrl::AddTrailingSlash);
+    url.setFileName(locationEdit->currentText());
+    ops->setCurrentItem(url.url());
+    ops->blockSignals(false);
 }
 
 void KFileWidgetPrivate::_k_fileCompletion( const QString& match )
