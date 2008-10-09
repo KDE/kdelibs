@@ -58,6 +58,14 @@ public:
     void setActive(bool active);
     bool isActive() const;
 
+    /* Implementation note: QAbstractButton::setText() is not virtual,
+     * but KUrlNavigatorButton needs to adjust the minimum size when
+     * the text has been changed. KUrlNavigatorButton::setText() hides
+     * QAbstractButton::setText() which is not nice, but sufficient for
+     * the usage in KUrlNavigator.
+     */
+    void setText(const QString& text);
+
     /** @see QWidget::sizeHint() */
     virtual QSize sizeHint() const;
 

@@ -86,6 +86,12 @@ bool KUrlNavigatorButton::isActive() const
     return isDisplayHintEnabled(ActivatedHint);
 }
 
+void KUrlNavigatorButton::setText(const QString& text)
+{
+    KUrlButton::setText(text);
+    updateMinimumWidth();
+}
+
 QSize KUrlNavigatorButton::sizeHint() const
 {
     // the minimum size is textWidth + arrowWidth() + 2 * BorderWidth; for the
