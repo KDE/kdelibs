@@ -209,7 +209,27 @@ Nepomuk::Types::Class Nepomuk::Types::Property::range()
 {
     if ( d ) {
         D->init();
-        return D->range;
+
+        if( D->range.isValid() ) {
+            return D->range;
+        }
+        else if( !literalRangeType().isValid() ) {
+            // try getting a domain from one of the parent properties
+            for( int i = 0; i < D->parents.count(); ++i ) {
+                Class pr = D->parents[i].range();
+                if( pr.isValid() ) {
+                    return pr;
+                }
+            }
+
+            // if we have no literal range type, we fall back to rdfs:Resource
+            return Class( Soprano::Vocabulary::RDFS::Resource() );
+        }
+        else {
+            // other than domain() we do not use a general fallback since the range
+            // might be a literalRangeType()
+            return Class();
+        }
     }
     else {
         return Class();
@@ -221,7 +241,25 @@ Nepomuk::Types::Literal Nepomuk::Types::Property::literalRangeType()
 {
     if ( d ) {
         D->init();
-        return D->literalRange;
+
+        if( D->literalRange.isValid() ) {
+            return D->literalRange;
+        }
+        else {
+            // try getting a domain from one of the parent properties
+            // We cannot check the resource range here since that would
+            // result in an endless loop
+            for( int i = 0; i < D->parents.count(); ++i ) {
+                Literal pr = D->parents[i].literalRangeType();
+                if( pr.isValid() ) {
+                    return pr;
+                }
+            }
+
+            // fallback is an invalid range which will then result in
+            // range() returning a valid one
+            return Literal();
+        }
     }
     else {
         return Literal();
@@ -233,7 +271,22 @@ Nepomuk::Types::Class Nepomuk::Types::Property::domain()
 {
     if ( d ) {
         D->init();
-        return D->domain;
+
+        if( D->domain.isValid() ) {
+            return D->domain;
+        }
+        else {
+            // try getting a domain from one of the parent properties
+            for( int i = 0; i < D->parents.count(); ++i ) {
+                Class pd = D->parents[i].domain();
+                if( pd.isValid() ) {
+                    return pd;
+                }
+            }
+
+            // fallback: rdfs:Resource
+            return Class( Soprano::Vocabulary::RDFS::Resource() );
+        }
     }
     else {
         return Class();
