@@ -144,6 +144,9 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     }
 
     QStyleOptionViewItemV4 opt = option;
+    if (!m_showHoverIndication) {
+        opt.state &= ~QStyle::State_MouseOver;
+    }
     QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter);
     const KFilePlacesModel *placesModel = static_cast<const KFilePlacesModel*>(index.model());
     bool isRemovableDevice = false;
@@ -158,9 +161,6 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
              device.parent().is<Solid::StorageDrive>() && device.parent().as<Solid::StorageDrive>()->driveType() != Solid::StorageDrive::CdromDrive)) {
             isRemovableDevice = true;
         }
-    }
-    if (!m_showHoverIndication) {
-        opt.state &= ~QStyle::State_MouseOver;
     }
 
     bool isLTR = option.direction == Qt::LeftToRight;
