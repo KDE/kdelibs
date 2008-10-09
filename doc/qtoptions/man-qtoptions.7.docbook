@@ -206,12 +206,33 @@ visual on an 8-bit display.</para>
 <para>Disable XIM</para>
 </listitem>
 </varlistentry>
+
+<varlistentry>
+<term>
+<option>--reverse</option>
+</term>
+<listitem>
+<para>mirrors the whole layout of widgets</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--stylesheet</option> <replaceable>file.qss</replaceable>
+</term>
+<listitem>
+<para>applies the Qt stylesheet to the application widgets</para>
+</listitem>
+</varlistentry>
+
 </variablelist>
+
 </refsect1>
+
 
 <refsect1>
 <title>See Also</title>
-<para>kdeoptions(7)</para>
+<para><replaceable>kdeoptions</replaceable>(7)</para>
 
 </refsect1>
 

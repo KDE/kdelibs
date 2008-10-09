@@ -33,9 +33,6 @@
 <title>Options</title>
 
 <para>The following options apply to all &kde; applications:</para>
-
-
-<para>The following options apply to all &kde; applications:</para>
 <variablelist>
 <varlistentry>
 <term><option>--caption</option> <parameter>caption</parameter></term>
@@ -47,8 +44,8 @@ titlebar.</para></listitem>
 <listitem><para>Use <parameter>icon</parameter> as the application icon.</para></listitem>
 </varlistentry>
 <varlistentry>
-<term><option>--miniicon</option> <parameter>icon</parameter></term>
-<listitem><para>Use <parameter>icon</parameter> as the icon in the titlebar</para></listitem>
+<term><option>--config</option> <parameter>filename</parameter></term>
+<listitem><para>Use the alternative configuration <parameter>filename</parameter></para></listitem>
 </varlistentry>
 <varlistentry>
 <term><option>--nocrashhandler</option></term>
@@ -72,7 +69,7 @@ titlebar.</para></listitem>
 
 <refsect1>
 <title>See Also</title>
-<para>qtoptions(7)</para>
+<para><replaceable>qtoptions</replaceable>(7)</para>
 
 </refsect1>
 
