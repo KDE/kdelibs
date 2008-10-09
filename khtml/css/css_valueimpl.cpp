@@ -290,18 +290,16 @@ DOMString CSSStyleDeclarationImpl::getCommonValue(const int* properties, int num
 {
     DOMString res;
     for (int i = 0; i < number; ++i) {
-        if (!isPropertyImplicit(properties[i])) {
-            CSSValueImpl* value = getPropertyCSSValue(properties[i]);
-            if (!value)
-                return DOMString();
-            DOMString text = value->cssText();
-            if (text.isNull())
-                return DOMString();
-            if (res.isNull())
-                res = text;
-            else if (res != text)
-                return DOMString();
-        }
+        CSSValueImpl* value = getPropertyCSSValue(properties[i]);
+        if (!value)
+            return DOMString();
+        DOMString text = value->cssText();
+        if (text.isNull())
+            return DOMString();
+        if (res.isNull())
+            res = text;
+        else if (res != text)
+            return DOMString();
     }
     return res;
 }
@@ -386,13 +384,11 @@ DOMString CSSStyleDeclarationImpl::getShortHandValue( const int* properties, int
 {
     DOMString res;
     for ( int i = 0 ; i < number ; ++i ) {
-        if (!isPropertyImplicit(properties[i])) {
-            CSSValueImpl* value = getPropertyCSSValue( properties[i] );
-            if ( value ) { // TODO provide default value if !value
-                if ( !res.isNull() )
-                    res += " ";
-                res += value->cssText();
-            }
+        CSSValueImpl* value = getPropertyCSSValue( properties[i] );
+        if ( value ) { // TODO provide default value if !value
+            if ( !res.isNull() )
+                res += " ";
+            res += value->cssText();
         }
     }
     return res;
