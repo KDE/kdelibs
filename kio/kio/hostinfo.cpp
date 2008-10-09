@@ -33,6 +33,8 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef Q_OS_UNIX
 # include <QtCore/QFileInfo>
+# include <netinet/in.h>
+# include <arpa/nameser.h>
 # include <resolv.h>            // for _PATH_RESCONF
 # ifndef _PATH_RESCONF
 #  define _PATH_RESCONF         "/etc/resolv.conf"
