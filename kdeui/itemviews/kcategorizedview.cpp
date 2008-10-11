@@ -28,6 +28,8 @@
 #include <QScrollBar>
 #include <QPaintEvent>
 
+#include <kdebug.h>
+
 #include "kcategorydrawer.h"
 #include "kcategorizedsortfilterproxymodel.h"
 
@@ -249,7 +251,7 @@ QRect KCategorizedView::Private::visualRectInViewport(const QModelIndex &index) 
     else
     {
         const QSize sizeHint = listView->sizeHintForIndex(heightIndex);
-        if (sizeHint.width() < itemWidth) {
+        if (sizeHint.width() < itemWidth && listView->flow() == QListView::LeftToRight) {
             retRect.setWidth(sizeHint.width());
             retRect.moveLeft(retRect.left() + (itemWidth - sizeHint.width()) / 2);
         }
