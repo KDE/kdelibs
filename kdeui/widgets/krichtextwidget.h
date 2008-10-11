@@ -275,6 +275,7 @@ public:
      * <tr><td>manage_link</td><td>SupportHyperlinks</td></tr>
      * <tr><td>format_painter</td><td>SupportFormatPainting</td></tr>
      * <tr><td>action_to_plain_text</td><td>SupportToPlainText</td></tr>
+     * <tr><td>format_text_subscript & format_text_superscript</td><td>SupportSuperScriptAndSubScript</td></tr>
      * </table>
      *
      * @param actionCollection the actions will be added to this action collection
