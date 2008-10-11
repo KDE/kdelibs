@@ -413,6 +413,8 @@ public:
      * Finds all details for one file or directory.
      * The information returned is the same as what listDir returns,
      * but only for one file or directory.
+     * Call statEntry() after creating the appropriate UDSEntry for this
+     * url.
      */
     virtual void stat( const KUrl& url );
 
