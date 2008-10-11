@@ -33,15 +33,15 @@
 <listitem><para><action>Відкриває діалогове вікно звіту про помилку</action>, у якому ви можете повідомити про ваду або надіслати запит до <quote>списку побажань</quote> з пропозицією додати до програми нову можливість.</para></listitem>
 </varlistentry>
 
- <varlistentry>
- <term><menuchoice>
- <guimenu>Довідка</guimenu>
- <guimenuitem>Змінити мову програми...</guimenuitem>
- </menuchoice></term>
- <listitem><para><action>Відкриває вікно</action>, в якому можна
+<varlistentry>
+<term><menuchoice>
+<guimenu>Довідка</guimenu>
+<guimenuitem>Змінити мову програми...</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Відкриває вікно</action>, в якому можна
 змінити <guilabel>Головну мову</guilabel> і <guilabel>Запасну мову</guilabel>
 інтерфейсу цієї програми.</para></listitem>
- </varlistentry>
+</varlistentry>
 
 <varlistentry>
 <term><menuchoice>
