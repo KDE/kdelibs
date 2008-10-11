@@ -222,7 +222,7 @@ namespace Kross {
      * mydialog.setButtons("Ok|Cancel")
      * mydialog.setFaceType("Plain") #Auto Plain List Tree Tabbed
      * mypage = mydialog.addPage("name","header")
-     * mywidget = forms.createWidgetFromUIFile(mypage, p+'/mywidget.ui')
+     * mywidget = forms.createWidgetFromUIFile(mypage, ourPath+'/mywidget.ui')
      * mywidget["lineEdit"].setText("some string")
      * if mydialog.exec_loop():
      *     if mydialog.result() == "Ok":
@@ -366,11 +366,11 @@ namespace Kross {
      * myassistant = forms.createAssistant("MyAssistant")
      * myassistant.showHelpButton(0)
      * mypage = myassistant.addPage("name","header")
-     * mywidget = forms.createWidgetFromUIFile(mypage, p+'/mywidget.ui')
+     * mywidget = forms.createWidgetFromUIFile(mypage, ourPath+'/mywidget.ui')
      * mypage2 = myassistant.addPage("name2","header2")
-     * mywidget2 = forms.createWidgetFromUIFile(mypage2, p+'/mywidget.ui')
+     * mywidget2 = forms.createWidgetFromUIFile(mypage2, ourPath+'/mywidget.ui')
      * mypage3 = myassistant.addPage("name3","header3")
-     * mywidget3 = forms.createWidgetFromUIFile(mypage3, p+'/mywidget.ui')
+     * mywidget3 = forms.createWidgetFromUIFile(mypage3, ourPath+'/mywidget.ui')
      * mywidget["lineEdit"].setText("some string")
      *
      * def nextClicked():
@@ -556,7 +556,7 @@ namespace Kross {
             QString tr(const QString& str);
 
             /**
-             * \return i18n'ed version of the string, differentiated by the comment text (e.g. '@title:window')
+             * \return i18n'ed version of the string, differentiated by the comment text (like '\@title:window')
              */
             QString tr(const QString& str,const QString& comment);
 
