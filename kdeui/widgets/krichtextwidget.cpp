@@ -48,6 +48,7 @@ public:
     Private(KRichTextWidget *parent)
             :   q(parent),
             painterActive(false),
+            richTextEnabled(false), // It's only enabled when an action makes text rich.
             enableRichText(0),
             action_text_foreground_color(0),
             action_text_background_color(0),
@@ -75,7 +76,6 @@ public:
 
     KRichTextWidget *q;
 
-    bool richTextEnabled;
     RichTextSupport richTextSupport;
 
     QTextCharFormat painterFormat;
@@ -83,6 +83,7 @@ public:
 
     QList<KAction*> richTextActionList;
 
+    bool richTextEnabled;
     KToggleAction *enableRichText;
 
     KAction *action_text_foreground_color;
@@ -465,7 +466,6 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
     }
 
     if (d->richTextSupport & SupportSuperScriptAndSubScript) {
-        kDebug() << "s";
         d->action_text_subscript = new KToggleAction(KIcon("format-text-subscript"), i18nc("@action", "Subscript"), actionCollection);
         d->richTextActionList.append((d->action_text_subscript));
         actionCollection->addAction("format_text_subscript", d->action_text_subscript);
