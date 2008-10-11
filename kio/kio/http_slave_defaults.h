@@ -23,7 +23,7 @@
 #define DEFAULT_KEEP_ALIVE_TIMEOUT      60              // 60 seconds
 
 // CACHE SETTINGS
-#define DEFAULT_MAX_CACHE_SIZE          5120            // 5 MB
+#define DEFAULT_MAX_CACHE_SIZE          50*1024         // 50 MB
 #define DEFAULT_MAX_CACHE_AGE           60*60*24*14     // 14 DAYS
 #define DEFAULT_CACHE_EXPIRE            3*60            // 3 MINS
 #define DEFAULT_CLEAN_CACHE_INTERVAL    30*60           // 30 MINS
