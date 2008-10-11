@@ -125,8 +125,9 @@ QRect KCategorizedView::Private::visualRectInViewport(const QModelIndex &index) 
     QString curCategory = elementsInfo[index.row()].category;
 
     QRect retRect;
-
-    if (listView->flow() == QListView::LeftToRight)
+    const bool leftToRightFlow = (listView->flow() == QListView::LeftToRight);
+    
+    if (leftToRightFlow)
     {
         if (listView->layoutDirection() == Qt::LeftToRight)
         {
@@ -150,17 +151,17 @@ QRect KCategorizedView::Private::visualRectInViewport(const QModelIndex &index) 
     int itemHeight;
     int itemWidth;
 
-    if (listView->gridSize().isEmpty() && (listView->flow() == QListView::LeftToRight))
+    if (listView->gridSize().isEmpty() && leftToRightFlow)
     {
         itemHeight = biggestItemSize.height();
         itemWidth = biggestItemSize.width();
     }
-    else if (listView->flow() == QListView::LeftToRight)
+    else if (leftToRightFlow)
     {
         itemHeight = listView->gridSize().height();
         itemWidth = listView->gridSize().width();
     }
-    else if (listView->gridSize().isEmpty() && (listView->flow() == QListView::TopToBottom))
+    else if (listView->gridSize().isEmpty() && !leftToRightFlow)
     {
         itemHeight = biggestItemSize.height();
         itemWidth = listView->viewport()->width() - listView->spacing() * 2;
@@ -181,7 +182,7 @@ QRect KCategorizedView::Private::visualRectInViewport(const QModelIndex &index) 
     int column;
     int row;
 
-    if (listView->flow() == QListView::LeftToRight)
+    if (leftToRightFlow)
     {
         column = elementsInfo[index.row()].relativeOffsetToCategory % elementsPerRow;
         row = elementsInfo[index.row()].relativeOffsetToCategory / elementsPerRow;
@@ -251,7 +252,7 @@ QRect KCategorizedView::Private::visualRectInViewport(const QModelIndex &index) 
     else
     {
         const QSize sizeHint = listView->sizeHintForIndex(heightIndex);
-        if (sizeHint.width() < itemWidth && listView->flow() == QListView::LeftToRight) {
+        if (sizeHint.width() < itemWidth && leftToRightFlow) {
             retRect.setWidth(sizeHint.width());
             retRect.moveLeft(retRect.left() + (itemWidth - sizeHint.width()) / 2);
         }
@@ -1219,7 +1220,9 @@ void KCategorizedView::startDrag(Qt::DropActions supportedActions)
     //        ARGB window so it is no transparent. Use QAbstractItemView when
     //        this is fixed on Qt.
     // QAbstractItemView::startDrag(supportedActions);
-#if !defined(DOLPHIN_DRAGANDDROP)
+#if defined(DOLPHIN_DRAGANDDROP)
+    Q_UNUSED(supportedActions);
+#else
     QListView::startDrag(supportedActions);
 #endif
 
@@ -1580,6 +1583,9 @@ void KCategorizedView::rowsRemoved(const QModelIndex &parent,
                                    int start,
                                    int end)
 {
+    Q_UNUSED(parent);
+    Q_UNUSED(start);
+    Q_UNUSED(end);
     if (d->proxyModel && d->categoryDrawer && d->proxyModel->isCategorizedModel())
     {
         // Force the view to update all elements
