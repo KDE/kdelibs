@@ -33,6 +33,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#ifdef Q_OS_FREEBSD
+#include <langinfo.h>
+#endif
+
 using namespace Solid::Backends::Hal;
 
 StorageAccess::StorageAccess(HalDevice *device)
@@ -277,96 +281,31 @@ bool StorageAccess::callHalVolumeMount()
     }
 
     QString fstype=m_device->property("volume.fstype").toString();
-    //respect Microsoft Windows-enforced charsets for fat
 #ifdef Q_OS_FREEBSD
-    if ( fstype=="vfat" ) {
-        QString codepage;
-        QString iocharset;
-        if (halOptions.contains("-D=")) {
-            codepage="-D=CP";
-            iocharset="-L="+QLocale::system().name()+".UTF-8";
-        }
-
-        if (!codepage.isEmpty()) {
-            switch (QLocale::system().language()) {
-                case QLocale::Russian:
-                case QLocale::Ukrainian:
-                case QLocale::Byelorussian:
-                case QLocale::Bulgarian:
-                    codepage+="866";
-                    break;
-                case QLocale::German:
-                case QLocale::Italian:
-                case QLocale::Spanish:
-                case QLocale::French:
-                case QLocale::Dutch:
-                case QLocale::Danish:
-                case QLocale::Swedish:
-                case QLocale::Norwegian:
-                case QLocale::Icelandic:
-                case QLocale::English:
-                    codepage+="437";
-                    break;
-                case QLocale::Portuguese:
-                    codepage+="860";
-                    break;
-                case QLocale::Hebrew:
-                    codepage+="862";
-                    break;
-                case QLocale::Turkish:
-                    codepage+="857";
-                    break;
-                case QLocale::Chinese:
-                    if (QLocale::system().country()==QLocale::China)
-                        codepage+="936";
-                    else
-                        //case QLocale::Taiwan:
-                        //case QLocale::HongKong:
-                        //case QLocale::Macau:
-                        codepage+="950";
-                    break;
-                case QLocale::Japanese:
-                    codepage+="932";
-                    break;
-                case QLocale::Korean:
-                    codepage+="949";
-                    break;
-                case QLocale::Thai:
-                    codepage+="874";
-                    break;
-                default:
-                    codepage.clear();
-            }
-            if (!codepage.isEmpty()) {
-                options << codepage;
-                options << iocharset;
-            }
-        }
-
+    char *cType;
+    if ( fstype=="vfat" && halOptions.contains("-L=")) {
+        if ( (cType = getenv("LC_ALL")) || (cType = getenv("LC_CTYPE")) || (cType = getenv("LANG")) ) {
+              options << "-L="+QString(cType);
     }
-#endif
-
+    else if ( (fstype.startsWith("ntfs") || fstype=="iso9660" || fstype=="udf") && halOptions.contains("-C=") ) {
+        if ((cType = getenv("LC_ALL")) || (cType = getenv("LC_CTYPE")) || (cType = getenv("LANG")) )
+            options << "-C="+QString(nl_langinfo(CODESET));
+    }
+#else
+    if (fstype=="vfat" || /*fstype.startsWith("ntfs") ||*/ fstype=="iso9660" || fstype=="udf" ) {
+        if (halOptions.contains("utf8"))
+            options<<"utf8";
+        else if (halOptions.contains("iocharset="))
+            options<<"iocharset=utf8";
+    }
     // pass our locale to the ntfs-3g driver so it can translate local characters
-    if ( fstype.startsWith("ntfs") && halOptions.contains("locale=") ) {
+    else if ( fstype.startsWith("ntfs") && halOptions.contains("locale=") ) {
         // have to obtain LC_CTYPE as returned by the `locale` command
         // check in the same order as `locale` does
         char *cType;
         if ( (cType = getenv("LC_ALL")) || (cType = getenv("LC_CTYPE")) || (cType = getenv("LANG")) ) {
             options << "locale="+QString(cType);
         }
-    }
-
-#ifdef Q_OS_FREEBSD
-    if ( fstype.startsWith("ntfs") || fstype=="iso9660" || fstype=="udf" ) {
-        if (halOptions.contains("-C="))
-            options << "-C=UTF-8";
-    }
-#else
-    if ( /*fstype.startsWith("ntfs") ||*/ fstype=="iso9660" || fstype=="udf" || fstype=="vfat" ) {
-        if (halOptions.contains("utf8"))
-            options<<"utf8";
-        else if (halOptions.contains("iocharset="))
-            options<<"iocharset=utf8";
     }
 #endif
 
