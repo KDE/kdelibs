@@ -128,7 +128,7 @@ Click here if you consider that the unknown word is not misspelled and you want 
     </spacer>
    </item>
    <item row="3" column="0" colspan="5" >
-    <widget class="QListWidget" name="m_suggestions" >
+    <widget class="QListView" name="m_suggestions" >
      <property name="toolTip" >
       <string>Suggestion List</string>
      </property>

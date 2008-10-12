@@ -32,10 +32,12 @@
 #include <kdebug.h>
 
 #include <QtGui/QListView>
+#include <QtGui/QStringListModel>
 #include <QtGui/QPushButton>
 #include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtCore/QTimer>
+
 
 namespace Sonnet
 {
@@ -47,6 +49,7 @@ class Dialog::Private
 {
 public:
     Ui_SonnetUi ui;
+    QStringListModel *suggestionsModel;
     QWidget *wdg;
     QString   originalBuffer;
     BackgroundChecker *checker;
@@ -99,15 +102,13 @@ void Dialog::initConnections()
              SLOT(slotSuggest()) );
     connect( d->ui.m_language, SIGNAL(activated(const QString&)),
              SLOT(slotChangeLanguage(const QString&)) );
-    connect( d->ui.m_suggestions, SIGNAL(itemClicked(QListWidgetItem*)),
-	     SLOT(slotSelectionChanged(QListWidgetItem*)) );
-    connect( d->checker, SIGNAL(misspelling(const QString&, int)),
-             SIGNAL(misspelling(const QString&, int)) );
+    connect( d->ui.m_suggestions, SIGNAL(clicked(QModelIndex)),
+	     SLOT(slotSelectionChanged(QModelIndex)) );
     connect( d->checker, SIGNAL(misspelling(const QString&, int)),
              SLOT(slotMisspelling(const QString&, int)) );
     connect( d->checker, SIGNAL(done()),
              SLOT(slotDone()) );
-    connect( d->ui.m_suggestions, SIGNAL(itemDoubleClicked (QListWidgetItem *)),
+    connect( d->ui.m_suggestions, SIGNAL(doubleClicked(QModelIndex)),
              SLOT( slotReplaceWord() ) );
     connect( this, SIGNAL(user1Clicked()), this, SLOT(slotFinished()) );
     connect( this, SIGNAL(cancelClicked()),this, SLOT(slotCancel()) );
@@ -133,6 +134,9 @@ void Dialog::initGui()
     d->ui.m_language->setCurrentIndex(d->dictsMap.values().indexOf(
                                           speller.language()));
     d->restart = false;
+
+    d->suggestionsModel=new QStringListModel(this);
+    d->ui.m_suggestions->setModel(d->suggestionsModel);
 }
 
 void Dialog::activeAutoCorrect( bool _active )
@@ -262,21 +266,25 @@ void Dialog::slotChangeLanguage(const QString &lang)
     }
 }
 
-void Dialog::slotSelectionChanged( QListWidgetItem *item )
+void Dialog::slotSelectionChanged( QModelIndex item )
 {
-    d->ui.m_replacement->setText( item->text() );
+    d->ui.m_replacement->setText( item.data().toString() );
 }
 
 void Dialog::fillSuggestions( const QStringList& suggs )
 {
-    d->ui.m_suggestions->clear();
-    for ( QStringList::ConstIterator it = suggs.begin(); it != suggs.end(); ++it ) {
-	    d->ui.m_suggestions->addItem(*it );
-    }
+    d->suggestionsModel->setStringList(suggs);
 }
 
 void Dialog::slotMisspelling(const QString& word, int start)
 {
+    emit misspelling(word, start);
+    //NOTE this is HACK I had to introduce because BackgroundChecker lacks 'virtual' marks on methods
+    //this dramatically reduces spellchecking time in Lokalize
+    //as this doesn't fetch suggestions for words that are present in msgid
+    if (!updatesEnabled())
+        return;
+
     kDebug()<<"Dialog misspelling!!";
     d->currentWord = Word( word, start );
     if ( d->replaceAllMap.contains( word ) ) {

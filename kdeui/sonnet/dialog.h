@@ -24,7 +24,7 @@
 
 #include <kdialog.h>
 
-class QListWidgetItem;
+#include <QModelIndex>
 
 namespace Sonnet
 {
@@ -109,7 +109,7 @@ namespace Sonnet
         void slotSkipAll();
         void slotSuggest();
         void slotChangeLanguage( const QString& );
-        void slotSelectionChanged( QListWidgetItem * );
+        void slotSelectionChanged( QModelIndex );
         void slotAutocorrect();
 
     private:
