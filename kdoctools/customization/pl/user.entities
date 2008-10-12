@@ -47,6 +47,14 @@
 <!ENTITY GUI-biernik    'graficzny interfejs użytkownika'>
 <!ENTITY GUI-miejscownik    'graficznym interfejsie użytkownika'>
 
+<!ENTITY kalarm-mianownik    '<application>Kalarm</application>'>
+<!ENTITY kalarm-dopelniacz    '<application>Kalarmu</application>'>
+<!ENTITY kalarm-celownik    '<application>Kalarmowi</application>'>
+<!ENTITY kalarm-biernik    '<application>Kalarm</application>'>
+<!ENTITY kalarm-narzednik    '<application>Kalarmem</application>'>
+<!ENTITY kalarm-miejscownik    '<application>Kalarmie</application>'>
+<!ENTITY kalarm    '&kalarm-mianownik;'>
+
 <!ENTITY kappfinder-mianownik    '<application>Kappfinder</application>'>
 <!ENTITY kappfinder-dopelniacz    '<application>Kappfinder</application>'>
 <!ENTITY kappfinder-celownik    '<application>Kappfinder</application>'>
@@ -69,6 +77,14 @@
 <!ENTITY kcontrolcenter-celownik    '<application>Centrum sterowania &kde;</application>'>
 <!ENTITY kcontrolcenter-biernik    '<application>Centrum sterowania &kde;</application>'>
 <!ENTITY kcontrolcenter-miejscownik    '<application>Centrum sterowania &kde;</application>'>
+
+<!ENTITY kaddressbook-mianownik    '<application>Książka adresowa &kde;</application>'>
+<!ENTITY kaddressbook-dopelniacz    '<application>Książki adresowej &kde;</application>'>
+<!ENTITY kaddressbook-celownik    '<application>Książce adresowej &kde;</application>'>
+<!ENTITY kaddressbook-biernik    '<application>Książkę adresową &kde;</application>'>
+<!ENTITY kaddressbook-narzednik    '<application>Książką adresową &kde;</application>'>
+<!ENTITY kaddressbook-miejscownik    '<application>Książce adresowej &kde;</application>'>
+<!ENTITY kaddressbook    '&kalarm-mianownik;'>
 
 <!ENTITY kdm-mianownik    '<application>KDM</application>'>
 <!ENTITY kdm-dopelniacz    '<application>KDM</application>'>
@@ -156,6 +172,14 @@
 <!ENTITY kopete-narzednik    '<application>Kopete</application>'>
 <!ENTITY kopete-miejscownik    '<application>Kopete</application>'>
 <!ENTITY kopete    '&kopete-mianownik;'>
+
+<!ENTITY korganizer-mianownik    '<application>Korganizer</application>'>
+<!ENTITY korganizer-dopelniacz    '<application>Korganizera</application>'>
+<!ENTITY korganizer-celownik    '<application>Korganizerowi</application>'>
+<!ENTITY korganizer-biernik    '<application>Korganizera</application>'>
+<!ENTITY korganizer-narzednik    '<application>Korganizerem</application>'>
+<!ENTITY korganizer-miejscownik    '<application>Korganizerze</application>'>
+<!ENTITY korganizer    '&korganizer-mianownik;'>
 
 <!ENTITY kwallet-mianownik    '<application>Portfel &kde;</application>'>
 <!ENTITY kwallet-dopelniacz    '<application>Portfela &kde;</application>'>
