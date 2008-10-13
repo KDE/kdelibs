@@ -42,6 +42,7 @@ void initXmlSchemaTypes() {
         s_xmlSchemaTypes.insert( "unsignedLong", QVariant::ULongLong );
         s_xmlSchemaTypes.insert( "boolean", QVariant::Bool );
         s_xmlSchemaTypes.insert( "double", QVariant::Double );
+        s_xmlSchemaTypes.insert( "float", QVariant::Double );
         s_xmlSchemaTypes.insert( "string", QVariant::String );
         s_xmlSchemaTypes.insert( "date", QVariant::Date );
         s_xmlSchemaTypes.insert( "time", QVariant::Time );
