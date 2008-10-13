@@ -508,6 +508,7 @@ protected:
     bool m_htmlCompat : 1; // true if element was created in HTML compat mode
     bool m_hasClass : 1;   // true if element has a class property, as relevant to CSS
     bool m_hasCombinedStyle : 1; // true if element has inline styles and presentational styles
+    bool m_unused : 1; // free bit
 };
 
 // this is the full Node Implementation with parents and children.
