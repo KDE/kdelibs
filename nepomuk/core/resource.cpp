@@ -307,8 +307,12 @@ QString Nepomuk::Resource::genericLabel() const
                         QList<Resource> go = property( Vocabulary::PIMO::groundingOccurrence() ).toResourceList();
                         if( !go.isEmpty() ) {
                             label = go.first().genericLabel();
+                            if( label == go.first().resourceUri().toString() ) {
+                                label = QString();
+                            }
                         }
-                        else {
+
+                        if ( label.isEmpty() ) {
                             // ugly fallback
                             label = resourceUri().toString();
                         }
