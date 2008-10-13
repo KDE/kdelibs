@@ -51,6 +51,8 @@
  */
 namespace DOM {
   class DOMString;
+}
+namespace khtml {
   class AtomicString;
 }
 class QString;
@@ -235,7 +237,7 @@ namespace KJS {
     /**
      * Convenience declaration only ! See UString(const QString&).
      */
-    KJS_EXTERNAL_EXPORT UString(const DOM::AtomicString&);
+    KJS_EXTERNAL_EXPORT UString(const khtml::AtomicString&);
 
     /**
      * Concatenation constructor. Makes operator+ more efficient.
