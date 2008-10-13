@@ -76,7 +76,7 @@ void KDEDModule::setModuleName( const QString& name )
    if (!QDBusConnection::sessionBus().registerObject(realPath, this, regOptions))
       {
       // Happens for khotkeys but the module works. Need some time to investigate.
-      kDebug() << "registerObject() returned false for %s" << d->moduleName;
+      kDebug() << "registerObject() returned false for " << d->moduleName;
       }
 
 }
