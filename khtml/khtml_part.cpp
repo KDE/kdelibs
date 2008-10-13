@@ -3478,6 +3478,7 @@ QString KHTMLPart::selectedText() const
           case ID_DL:
           case ID_DT:
           case ID_PRE:
+          case ID_LISTING:
           case ID_BLOCKQUOTE:
           case ID_DIV:
             if (!hasNewLine)
@@ -3518,6 +3519,7 @@ QString KHTMLPart::selectedText() const
           case ID_DL:
           case ID_DT:
           case ID_PRE:
+          case ID_LISTING:
           case ID_BLOCKQUOTE:
           case ID_DIV:
             seenTDTag = false;

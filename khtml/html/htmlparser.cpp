@@ -1064,6 +1064,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_PRE:
     case ID_XMP:
     case ID_PLAINTEXT:
+    case ID_LISTING:
         n = new HTMLPreElementImpl(document, t->tid);
         break;
 
@@ -1366,6 +1367,7 @@ bool KHTMLParser::isAffectedByResidualStyle(int _id)
         case ID_DT:
         case ID_DD:
         case ID_PRE:
+        case ID_LISTING:
             return true;
         default:
             return false;

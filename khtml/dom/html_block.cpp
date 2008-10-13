@@ -317,7 +317,7 @@ HTMLPreElement::HTMLPreElement(HTMLPreElementImpl *impl)
 
 HTMLPreElement &HTMLPreElement::operator = (const Node &other)
 {
-    assignOther( other, ID_PRE );
+    assignOther( other, (impl ? impl->id() : ID_PRE) );
     return *this;
 }
 

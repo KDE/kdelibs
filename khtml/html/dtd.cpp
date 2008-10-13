@@ -106,6 +106,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriorityArray[] = {
     1, // ID_LEGEND
     5, // ID_LI
     0, // ID_LINK
+    5, // ID_LISTING
     1, // ID_MAP
     5, // ID_MARQUEE
     5, // ID_MENU
@@ -217,6 +218,7 @@ const tagStatus DOM::endTagArray[] = {
     REQUIRED,  // ID_LEGEND
     OPTIONAL,  // ID_LI
     FORBIDDEN, // ID_LINK
+    REQUIRED,  // ID_LISTING
     REQUIRED,  // ID_MAP
     REQUIRED,  // ID_MARQUEE
     REQUIRED,  // ID_MENU
@@ -349,6 +351,7 @@ static const ushort tag_list_block[] = {
     ID_DIR,         // legacy
     ID_MENU,        // legacy
     // %blocktext
+    ID_LISTING,
     ID_PRE,
     ID_HR,
     ID_BLOCKQUOTE,
@@ -554,6 +557,7 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
     case ID_PRE:
     case ID_XMP:
     case ID_PLAINTEXT:
+    case ID_LISTING:
         // PRE: %flow * - _5
         return check_flow(childID, true);
     case ID_DL:
@@ -665,8 +669,10 @@ void DOM::addForbidden(int tagId, ushort *forbiddenTags)
         break;
     case ID_NOBR:
         forbiddenTags[ID_PRE]++;
+        forbiddenTags[ID_LISTING]++;
         // fall through
     case ID_PRE:
+    case ID_LISTING:
     case ID_PLAINTEXT:
     case ID_XMP:
         //forbiddenTags[ID_IMG]++;
@@ -709,8 +715,10 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
         break;
     case ID_NOBR:
         forbiddenTags[ID_PRE]--;
+        forbiddenTags[ID_LISTING]--;
         // fall through
     case ID_PRE:
+    case ID_LISTING:
     case ID_XMP:
     case ID_PLAINTEXT:
         //forbiddenTags[ID_IMG]--;

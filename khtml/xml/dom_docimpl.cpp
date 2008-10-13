@@ -972,6 +972,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_PLAINTEXT:
     case ID_XMP:
     case ID_PRE:
+    case ID_LISTING:
         n = new HTMLPreElementImpl(docPtr(), id);
         break;
 

@@ -1530,6 +1530,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 discard = AllDiscard;
 
             switch( tagID ) {
+            case ID_LISTING:
             case ID_PRE:
                 pre = beginTag;
                 if (beginTag)

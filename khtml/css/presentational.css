@@ -24,7 +24,7 @@
  *
  */
 
-pre[wrap] {
+pre[wrap], listing[wrap] {
     white-space: pre-wrap
 }
 

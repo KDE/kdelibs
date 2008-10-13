@@ -459,6 +459,7 @@ samp {
 }
 
 pre,
+listing,
 xmp,
 plaintext {
 	display: block;
@@ -528,7 +529,7 @@ bdo[dir="rtl"]  {
       address, blockquote, body, dd, div, dl, dt, fieldset,
       form, frame, frameset, h1, h2, h3, h4, h5, h6, iframe,
       noscript, noframes, object, ol, p, ul, applet, center,
-      dir, hr, menu, pre, li, table, tr, thead, tbody, tfoot,
+      dir, hr, menu, pre, listing, li, table, tr, thead, tbody, tfoot,
       col, colgroup, td, th, caption
                       { unicode-bidi: embed }
 */

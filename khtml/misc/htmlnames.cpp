@@ -80,6 +80,7 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ID_LEGEND), "legend");
     s_idTable->addStaticMapping(localNamePart(ID_LI), "li");
     s_idTable->addStaticMapping(localNamePart(ID_LINK), "link");
+    s_idTable->addStaticMapping(localNamePart(ID_LISTING), "listing");
     s_idTable->addStaticMapping(localNamePart(ID_MAP), "map");
     s_idTable->addStaticMapping(localNamePart(ID_MARQUEE), "marquee");
     s_idTable->addStaticMapping(localNamePart(ID_MENU), "menu");
