@@ -328,6 +328,11 @@ Soprano::Error::ErrorCode Nepomuk::MainModel::updateModificationDate( const QUrl
 
 Soprano::Error::ErrorCode Nepomuk::MainModel::updateProperty( const QUrl& resource, const QUrl& property, const Node& value )
 {
+    if( !property.isValid() ) {
+        setError( "Cannot update invalid property", Error::ErrorInvalidArgument );
+        return Error::ErrorInvalidArgument;
+    }
+
     StatementIterator it = listStatements( Statement( resource, property, Node() ) );
     if ( it.next() ) {
         Statement s = it.current();
@@ -352,6 +357,11 @@ Soprano::Error::ErrorCode Nepomuk::MainModel::updateProperty( const QUrl& resour
 
 Soprano::Error::ErrorCode Nepomuk::MainModel::updateProperty( const QUrl& resource, const QUrl& property, const QList<Node>& values )
 {
+    if( !property.isValid() ) {
+        setError( "Cannot update invalid property", Error::ErrorInvalidArgument );
+        return Error::ErrorInvalidArgument;
+    }
+
     QList<Node> existingValues = listStatements( Statement( resource, property, Node() ) ).iterateObjects().allNodes();
 
     Error::ErrorCode c = Error::ErrorNone;
@@ -379,6 +389,11 @@ Soprano::Error::ErrorCode Nepomuk::MainModel::updateProperty( const QUrl& resour
 
 Soprano::Error::ErrorCode Nepomuk::MainModel::removeProperty( const QUrl& resource, const QUrl& property )
 {
+    if( !property.isValid() ) {
+        setError( "Cannot remove invalid property", Error::ErrorInvalidArgument );
+        return Error::ErrorInvalidArgument;
+    }
+
     Soprano::Error::ErrorCode c = removeAllStatements( Statement( resource, property, Node() ) );
     if ( c == Soprano::Error::ErrorNone )
         return updateModificationDate( resource );

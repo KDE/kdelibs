@@ -425,6 +425,8 @@ bool Nepomuk::ResourceData::load()
 
 void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant& value )
 {
+    Q_ASSERT( uri.isValid() );
+
     if( m_proxyData )
         return m_proxyData->setProperty( uri, value );
 
@@ -476,6 +478,8 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
 
 void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
 {
+    Q_ASSERT( uri.isValid() );
+
     if( m_proxyData )
         return m_proxyData->removeProperty( uri );
 
