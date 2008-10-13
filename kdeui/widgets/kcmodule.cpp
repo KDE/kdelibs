@@ -97,9 +97,9 @@ void KCModule::showEvent(QShowEvent *ev)
 {
     if (d->_firstshow) {
         d->_firstshow = false;
-        load();
-        emit( changed( false ));
+        QMetaObject::invokeMethod(this, "load", Qt::QueuedConnection);
     }
+
     QWidget::showEvent(ev);
 }
 
