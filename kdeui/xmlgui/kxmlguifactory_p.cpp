@@ -321,7 +321,7 @@ void ContainerNode::adjustMergingIndices( int offset,
     index += offset;
 }
 
-bool ContainerNode::destruct( QDomElement element, BuildState &state ) //krazy:exclude=passbyvalue (we need a copy for removeContainer)
+bool ContainerNode::destruct( QDomElement element, BuildState &state ) //krazy:exclude=passbyvalue (this is correct QDom usage, and a ref wouldn't allow passing doc.documentElement() as argument)
 {
     destructChildren( element, state );
 
