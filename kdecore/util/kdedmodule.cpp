@@ -1,3 +1,4 @@
+//! vim: ts=3 sw=3
 /*
    This file is part of the KDE libraries
 
@@ -49,16 +50,34 @@ void KDEDModule::setModuleName( const QString& name )
 {
    QString realPath = d->moduleName = name;
    realPath.prepend("/modules/");
-   // ExportSignals not used since it triggers a warning at this point
-   if (!QDBusConnection::sessionBus().registerObject(
-           realPath,
-           this,
-           QDBusConnection::ExportScriptableContents | QDBusConnection::ExportAdaptors))
-        {
-        // Happens for khotkeys but the module works. Need some time to
-        // investigate.
-        kDebug() << "registerObject() returned false for %s" << d->moduleName;
-        }
+
+   QDBusConnection::RegisterOptions regOptions;
+
+   if (this->metaObject()->indexOfClassInfo("D-Bus Interface")!=-1)
+      {
+      // 1. There are kded modules that don't have a dbus interface.
+      // 2. qt 4.4.3 crashes when trying to emit signals on class without
+      //    Q_CLASSINFO("D-Bus Interface", "<your interface>") but
+      //    ExportSignal set.
+      // We try to solve that for now with just registering Properties and
+      // Adaptors. But we should investigate where the sense is in registering
+      // the module at all. Just for autoload? Is there a better solution?
+      regOptions = QDBusConnection::ExportScriptableContents | QDBusConnection::ExportAdaptors;
+      }
+   else
+      {
+      // Full functional module. Register everything.
+      regOptions = QDBusConnection::ExportScriptableSlots
+                     | QDBusConnection::ExportScriptableProperties
+                     | QDBusConnection::ExportAdaptors;
+      kDebug() << "Registration of kded module " << d->moduleName << "without dbus interface.";
+      }
+
+   if (!QDBusConnection::sessionBus().registerObject(realPath, this, regOptions))
+      {
+      // Happens for khotkeys but the module works. Need some time to investigate.
+      kDebug() << "registerObject() returned false for %s" << d->moduleName;
+      }
 
 }
 
