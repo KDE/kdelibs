@@ -1275,7 +1275,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
 
             int pos = 0;
             for ( ;; ) {
-                pos = val_str.indexOf(sel_str, pos, strictParsing?Qt::CaseSensitive:Qt::CaseInsensitive);
+                pos = val_str.indexOf(sel_str, pos, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
                 if ( pos == -1 ) return false;
                 if ( pos == 0 || val_uc[pos-1].isSpace() ) {
                     int endpos = pos + sel_len;

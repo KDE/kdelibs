@@ -1666,8 +1666,8 @@ void NamedAttrMapImpl::setClass(const DOMString& string)
         return;
     }
 
-    // don't normalize strings here
-    m_classNames.parseClassAttribute(string, false/*m_element->document()->htmlCompat()*/);
+    m_classNames.parseClassAttribute(string, m_element->document()->htmlMode() != DocumentImpl::XHtml &&
+            m_element->document()->inCompatMode());
 }
 
 }
