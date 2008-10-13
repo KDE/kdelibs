@@ -106,9 +106,9 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 	if( !keyCodeX )
 		return false;
 
-    kDebug(125) << "grabKey keyQt " << (keyQt & ~Qt::KeyboardModifierMask)
-        << " mod " << (keyQt & Qt::KeyboardModifierMask) << " ( key: '" << QKeySequence(keyQt).toString()
-        << "', grab: " << grab << " ): keyCodeX: " << keyCodeX << " keyModX: " << keyModX << endl;
+    // kDebug(125) << "grabKey keyQt " << (keyQt & ~Qt::KeyboardModifierMask)
+    //    << " mod " << (keyQt & Qt::KeyboardModifierMask) << " ( key: '" << QKeySequence(keyQt).toString()
+    //    << "', grab: " << grab << " ): keyCodeX: " << keyCodeX << " keyModX: " << keyModX << endl;
 
 	KXErrorHandler handler( XGrabErrorHandler );
 
@@ -135,7 +135,7 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 	}
 
 #ifndef NDEBUG
-	kDebug(125) << sDebug;
+	// kDebug(125) << sDebug;
 #endif
 
 	bool failed = false;
@@ -188,6 +188,7 @@ void KGlobalAccelImpl::x11MappingNotify()
 
 bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 {
+    kDebug();
 	// Keyboard needs to be ungrabed after XGrabKey() activates the grab, otherwise
         // it becomes frozen. There is a chance this will ungrab even when it should
         // not, if some code calls XGrabKeyboard() directly, but doing so in kded

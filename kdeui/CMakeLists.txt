@@ -31,8 +31,18 @@ add_subdirectory( about )
 add_subdirectory( tests )
 add_subdirectory( sonnet/tests )
 
+# TODO: make it possible to generate kdedglobalaccel_interface from
+# the xml file
+
+#qt4_add_dbus_interface(
+#    kdeui_LIB_SRCS
+#    ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KdedGlobalAccel.xml
+#    kdedglobalaccel_interface)
+
 ########### next target ###############
 set(kdeui_LIB_SRCS
+ # ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KdedGlobalAccel.xml
+ shortcuts/kdedglobalaccel_interface.cpp
  actions/kactioncollection.cpp
  actions/kactioncategory.cpp
  actions/kaction.cpp
@@ -139,7 +149,6 @@ set(kdeui_LIB_SRCS
  shortcuts/kshortcutschemeshelper.cpp
  shortcuts/kstandardshortcut.cpp
  shortcuts/kglobalaccel.cpp
- shortcuts/kdedglobalaccel_interface.cpp
  shortcuts/kacceleratormanager.cpp
  shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
@@ -549,35 +558,7 @@ endif (Q_WS_MAC)
 install( FILES colors/40.colors colors/Oxygen.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors 
          DESTINATION ${CONFIG_INSTALL_DIR}/colors)
 
-set( kded_globalaccel_SRCS shortcuts/kdedglobalaccel.cpp )
-
-if ( Q_WS_X11 )
-  set( kded_globalaccel_SRCS ${kded_globalaccel_SRCS} shortcuts/kglobalaccel_x11.cpp )
-endif ( Q_WS_X11 )
-if ( Q_WS_MAC )
-  set( kded_globalaccel_SRCS ${kded_globalaccel_SRCS} shortcuts/kglobalaccel_mac.cpp )
-endif ( Q_WS_MAC )
-if ( Q_WS_WIN )
-  set( kded_globalaccel_SRCS ${kded_globalaccel_SRCS} shortcuts/kglobalaccel_win.cpp )
-endif ( Q_WS_WIN )
-if ( Q_WS_QWS )
-  set( kded_globalaccel_SRCS ${kded_globalaccel_SRCS} shortcuts/kglobalaccel_qws.cpp )
-endif ( Q_WS_QWS )
-
-kde4_add_plugin( kded_globalaccel ${kded_globalaccel_SRCS} )
-target_link_libraries(kded_globalaccel ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${X11_LIBRARIES})
-
-if(Q_WS_MAC)
-   target_link_libraries(kded_globalaccel ${CARBON_LIBRARY})
-endif(Q_WS_MAC)
-
-
-install( TARGETS kded_globalaccel DESTINATION ${PLUGIN_INSTALL_DIR} )
-
-install( FILES shortcuts/kdedglobalaccel.desktop DESTINATION ${SERVICES_INSTALL_DIR}/kded )
-
 install( FILES
   jobs/org.kde.JobViewServer.xml
   jobs/org.kde.JobView.xml
-  shortcuts/org.kde.KdedGlobalAccel.xml
   DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})

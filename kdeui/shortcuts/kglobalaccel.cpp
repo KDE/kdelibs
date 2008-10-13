@@ -21,8 +21,8 @@
 
 #include "kglobalaccel.h"
 #include "kglobalaccel_p.h"
-#include "kdedglobalaccel.h"
 
+#if 0
 // For KGlobalAccelImpl
 #ifdef Q_WS_X11
 #include "kglobalaccel_x11.h"
@@ -34,6 +34,7 @@
 #include "kglobalaccel_qws.h"
 #else
 #include "kglobalaccel_emb.h"
+#endif
 #endif
 
 #include <QtCore/QCoreApplication>
@@ -75,6 +76,8 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
        enabled(true),
        iface("org.kde.kded", "/modules/kdedglobalaccel", QDBusConnection::sessionBus())
 {
+    kDebug() << iface.isValid();
+
     // Make sure kded is running
     QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
     if (!bus->isServiceRegistered("org.kde.kded")) {
@@ -82,6 +85,8 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
     }
     QObject::connect(bus, SIGNAL(serviceOwnerChanged(QString, QString, QString)),
                      q, SLOT(_k_serviceOwnerChanged(QString, QString, QString)));
+
+    kDebug() << iface.isValid();
 }
 
 void KGlobalAccelPrivate::readComponentData(const KComponentData &componentData)
@@ -100,6 +105,8 @@ KGlobalAccel::KGlobalAccel()
 {
     qDBusRegisterMetaType<QList<int> >();
 
+    kDebug() << d->iface.isValid();
+
     connect(&d->iface, SIGNAL(invokeAction(const QStringList &, qlonglong)),
             SLOT(_k_invokeAction(const QStringList &, qlonglong)));
     connect(&d->iface, SIGNAL(yourShortcutGotChanged(const QStringList &, const QList<int> &)),
@@ -108,6 +115,8 @@ KGlobalAccel::KGlobalAccel()
     if (KGlobal::hasMainComponent()) {
         d->readComponentData( KGlobal::mainComponent() );
     }
+    kDebug() << d->iface.isValid();
+
 }
 
 
@@ -128,7 +137,7 @@ void KGlobalAccel::setEnabled(bool enabled)
 {
     d->enabled = enabled;
 
-//TODO: implement this in KdedGlobalAccel... or not at all
+//TODO: implement this in KdedGlobalAccelInterface... or not at all
 #if 0
     if (enabled) {
         foreach (KAction* action, d->actionsWithGlobalShortcuts)
@@ -225,7 +234,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 
     uint setterFlags = 0;
     if (flags & KAction::NoAutoloading) {
-        setterFlags |= KdedGlobalAccel::NoAutoloading;
+        setterFlags |= KdedGlobalAccelInterface::NoAutoloading;
     }
 
     if (flags & KAction::ActiveShortcut) {
@@ -235,7 +244,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 
         // setPresent tells kdedglobalaccel that the shortcut is active
         if (!isConfigurationAction) {
-            activeSetterFlags |= KdedGlobalAccel::SetPresent;
+            activeSetterFlags |= KdedGlobalAccelInterface::SetPresent;
         }
 
         // Sets the shortcut, returns the active/real keys
@@ -268,7 +277,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 
     if (flags & KAction::DefaultShortcut) {
         iface.setShortcut(actionId, intListFromShortcut(defaultShortcut),
-                          setterFlags | KdedGlobalAccel::IsDefault);
+                          setterFlags | KdedGlobalAccelInterface::IsDefault);
     }
 }
 
@@ -323,6 +332,8 @@ QString KGlobalAccelPrivate::componentFriendlyForAction(const KAction *action)
 
 void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId, qlonglong timestamp)
 {
+    kDebug() << "##########################################################";
+
     // If overrideMainComponentData() is active the app can only have
     // configuration actions.
     if (isUsingForeignComponentName ) {

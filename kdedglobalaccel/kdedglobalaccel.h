@@ -39,66 +39,87 @@ data per KAction:
 #include <kdedmodule.h>
 #include "kaction.h"
 #include <QtCore/QStringList>
+#include <QtCore/QList>
 
-struct actionData;
 class KdedGlobalAccelPrivate;
+
+Q_DECLARE_METATYPE(QList<QStringList>)
+Q_DECLARE_METATYPE(QList<int>)
 
 class KdedGlobalAccel : public KDEDModule
 {
     Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.kde.KdedGlobalAccel")
+    Q_ENUMS(SetShortcutFlag)
+
 public:
-    enum SetShortcutFlags
+
+    enum SetShortcutFlag
     {
         SetPresent = 2,
         NoAutoloading = 4,
         IsDefault = 8
     };
+    Q_FLAGS(SetShortcutFlags)
 
     KdedGlobalAccel(QObject*, const QList<QVariant>&);
     ~KdedGlobalAccel();
 
 //All of the following public methods and signals are part of the DBus interface
-    QList<QStringList> allComponents();
-    QList<QStringList> allActionsForComponent(const QStringList &actionId);
+public Q_SLOTS:
 
-    QList<int> allKeys();
-    QStringList allKeysAsString();
+    Q_SCRIPTABLE QList<QStringList> allMainComponents() const;
 
-    QStringList actionId(int key);
+    Q_SCRIPTABLE QList<QStringList> allActionsForComponent(const QStringList &actionId) const;
+
+    Q_SCRIPTABLE QStringList action(int key) const;
+
     //to be called by main components not owning the action
-    QList<int> shortcut(const QStringList &actionId);
+    Q_SCRIPTABLE QList<int> shortcut(const QStringList &actionId) const;
+
     //to be called by main components not owning the action
-    QList<int> defaultShortcut(const QStringList &actionId);
+    Q_SCRIPTABLE QList<int> defaultShortcut(const QStringList &actionId) const;
+
     //to be called by main components owning the action
-    QList<int> setShortcut(const QStringList &actionId,
+    Q_SCRIPTABLE QList<int> setShortcut(const QStringList &actionId,
                            const QList<int> &keys, uint flags);
+
     //this is used if application A wants to change shortcuts of application B
-    void setForeignShortcut(const QStringList &actionId, const QList<int> &keys);
+    Q_SCRIPTABLE void setForeignShortcut(const QStringList &actionId, const QList<int> &keys);
+
     //to be called when a KAction is destroyed. The shortcut stays in the data structures for
     //conflict resolution but won't trigger.
-    void setInactive(const QStringList &actionId);
+    Q_SCRIPTABLE void setInactive(const QStringList &actionId);
 
-    void doRegister(const QStringList &actionId);
+    Q_SCRIPTABLE void doRegister(const QStringList &actionId);
 
-    void unRegister(const QStringList &actionId);
+    Q_SCRIPTABLE void unRegister(const QStringList &actionId);
+
+Q_SIGNALS:
+
+    // this is qlonglong because manually written adaptor is used and just long doesn't work
+    Q_SCRIPTABLE void invokeAction(const QStringList &actionId, qlonglong timestamp);
+    Q_SCRIPTABLE void yourShortcutGotChanged(const QStringList &actionId, const QList<int> &newKeys);
+
+private Q_SLOTS:
+
+    void writeSettings() const;
+
+private:
+
+    void loadSettings();
+    void scheduleWriteSettings() const;
+
+    QList<int> keysFromString(const QString &str) const;
+    QString stringFromKeys(const QList<int> &keys) const;
+
+
+    friend class KGlobalAccelImpl;
 
     //called by the implementation to inform us about key presses
     //returns true if the key was handled
     bool keyPressed(int keyQt);
 
-Q_SIGNALS:
-    // this is qlonglong because manually written adaptor is used and just long doesn't work
-    void invokeAction(const QStringList &actionId, qlonglong timestamp);
-    void yourShortcutGotChanged(const QStringList &actionId, const QList<int> &newKeys);
-
-private Q_SLOTS:
-    void writeSettings();
-
-private:
-    void loadSettings();
-    void scheduleWriteSettings();
-    QList<int> keysFromString(const QString &str);
-    QString stringFromKeys(const QList<int> &keys);
 
     KdedGlobalAccelPrivate *const d;
 };

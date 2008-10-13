@@ -5,18 +5,13 @@
       <arg name="actionId" type="as" direction="out"/>
       <arg name="timestamp" type="x" direction="out"/>
     </signal>
+    <!--
     <signal name="yourShortcutGotChanged">
       <arg name="action" type="as" direction="out"/>
       <arg name="newShortcut" type="ai" direction="out"/>
       <annotation name="com.trolltech.QtDBus.QtTypeName.Out1" value="QList&lt;int&gt;"/>
     </signal>
-    <method name="allKeys">
-      <arg type="ai" direction="out"/>
-      <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="QList&lt;int&gt;"/>
-    </method>
-    <method name="allKeysAsString">
-      <arg type="as" direction="out"/>
-    </method>
+    -->
     <method name="action">
       <arg type="as" direction="out"/>
       <arg name="key" type="i" direction="in"/>

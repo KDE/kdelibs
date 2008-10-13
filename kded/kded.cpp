@@ -619,6 +619,7 @@ void Kded::registerWindowId(qlonglong windowId, const QString &sender)
 
   foreach( KDEDModule* module, m_modules )
   {
+     kDebug() << module->moduleName();
      emit module->windowRegistered(windowId);
   }
 }
@@ -638,6 +639,7 @@ void Kded::unregisterWindowId(qlonglong windowId, const QString &sender)
 
   foreach( KDEDModule* module, m_modules )
   {
+    kDebug() << module->moduleName();
     emit module->windowUnregistered(windowId);
   }
 }
