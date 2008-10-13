@@ -1878,6 +1878,11 @@ void KIO::CopyJob::setAutoSkip(bool autoSkip)
     d_func()->m_bAutoSkipDirs = autoSkip;
 }
 
+void KIO::CopyJob::setWriteIntoExistingDirectories(bool overwriteAll) // #65926
+{
+    d_func()->m_bOverwriteAllDirs = overwriteAll;
+}
+
 CopyJob *KIO::copy(const KUrl& src, const KUrl& dest, JobFlags flags)
 {
     //kDebug(7007) << "src=" << src << "dest=" << dest;

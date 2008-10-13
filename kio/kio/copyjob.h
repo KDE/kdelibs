@@ -111,6 +111,14 @@ namespace KIO {
         void setAutoSkip(bool autoSkip);
 
         /**
+         * Reuse any directory that already exists, instead of the default behavior
+         * (interactive mode: showing a dialog to the user,
+         * non-interactive mode: aborting with an error).
+         * \since 4.2
+         */
+        void setWriteIntoExistingDirectories(bool overwriteAllDirs);
+
+        /**
          * Reimplemented for internal reasons
          */
         virtual bool doSuspend();
