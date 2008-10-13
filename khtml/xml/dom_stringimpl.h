@@ -124,8 +124,8 @@ public:
 
     static DOMStringImpl* empty();
 
-    unsigned int l;
     QChar *s;
+    unsigned int l;
     mutable unsigned m_hash;
     bool m_inTable;
 };
