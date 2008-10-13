@@ -46,10 +46,8 @@
 #include <QtCore/QFile>
 #include <QtCore/QDate>
 #include <QtCore/QFileInfo>
-#include <QtCore/QTextStream>
 #include <QtCore/QRegExp>
 #include <QtGui/QFont>
-#include <QDir>
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kglobalsettings.h>
