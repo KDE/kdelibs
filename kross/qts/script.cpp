@@ -81,11 +81,23 @@ namespace Kross {
                 { // publish the local objects.
                     QHash< QString, QObject* > objects = m_script->action()->objects();
                     QHash< QString, QObject* >::Iterator it(objects.begin()), end(objects.end());
-                    for(; it != end; ++it)
+                    for(; it != end; ++it) {
+                        copyEnumsToProperties( it.value() );
                         global.setProperty(it.key(), m_engine->newQObject( it.value() ) );
+                    }
                 }
 
                 return ! m_engine->hasUncaughtException();
+            }
+
+            void copyEnumsToProperties(QObject* object) {
+                const QMetaObject* meta = object->metaObject();
+                for (int i = 0; i < meta->enumeratorCount(); ++i) {
+                    QMetaEnum metaenum = meta->enumerator(i);
+                    for (int j = 0; j < metaenum.keyCount(); ++j) {
+                        object->setProperty(metaenum.key(j), metaenum.value(j));
+                    }
+                }
             }
 
             void handleException() {
