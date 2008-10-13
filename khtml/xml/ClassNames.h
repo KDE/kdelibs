@@ -21,20 +21,22 @@
 #ifndef ClassNames_h
 #define ClassNames_h
 
-#include "dom/dom_string.h"
+#include "misc/AtomicString.h"
 #include <wtf/Vector.h>
 #include <wtf/OwnPtr.h>
+
+using khtml::AtomicString;
 
 namespace DOM {
 
     class ClassNames {
-        typedef Vector<QString, 8> ClassNameVector;
+        typedef Vector<AtomicString, 8> ClassNameVector;
     public:
         ClassNames()
         {
         }
 
-        bool contains(const QString& str) const
+        bool contains(const AtomicString& str) const
         {
             if (!m_nameVector)
                 return false;
@@ -52,7 +54,7 @@ namespace DOM {
 
         size_t size() const { return m_nameVector ? m_nameVector->size() : 0; }
         void clear() { if (m_nameVector) m_nameVector->clear(); }
-        const QString& operator[](size_t i) const { ASSERT(m_nameVector); return m_nameVector->at(i); }
+        const AtomicString& operator[](size_t i) const { ASSERT(m_nameVector); return m_nameVector->at(i); }
 
     private:
         OwnPtr<ClassNameVector> m_nameVector;

@@ -36,7 +36,6 @@
 #include <QList>
 
 namespace DOM {
-    class AtomicString;
     class CSSProperty;
     class CSSStyleDeclarationImpl;
     class DocumentImpl;

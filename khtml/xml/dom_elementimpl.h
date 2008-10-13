@@ -32,6 +32,7 @@
 #include "xml/dom_stringimpl.h"
 #include "misc/shared.h"
 #include "wtf/Vector.h"
+#include "xml/ClassNames.h"
 
 namespace khtml {
     class CSSStyleSelector;
@@ -243,6 +244,8 @@ public:
         parseAttribute(&aimpl);
     }
 
+    const ClassNames& classNames() const;
+
     // not part of the DOM
     void setAttributeMap ( NamedAttrMapImpl* list );
 
@@ -392,9 +395,14 @@ public:
 
     int find(NodeImpl::Id id, PrefixName prefix, bool nsAware) const;
 
+    void clearClass() { m_classNames.clear(); }
+    void setClass(const DOMString& string);
+    const ClassNames& classNames() const { return m_classNames; }
+
 protected:
     ElementImpl *m_element;
     WTF::Vector<AttributeImpl> m_attrs;
+    ClassNames m_classNames;
 };
 
 // ------------  inline DOM helper functions ---------------

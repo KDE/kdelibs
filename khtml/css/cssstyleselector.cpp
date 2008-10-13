@@ -1249,8 +1249,11 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
                    (!caseSensitive && !strcasecmp(sel->value, value));
             break;
         case CSSSelector::Class:
-            caseSensitive = caseSensitive_alt;
-            // no break
+            if (!e->hasClass())
+                return false;
+            if (!e->classNames().contains(caseSensitive_alt ? sel->value.string() : sel->value.string().lower()))
+                return false;
+            break;
         case CSSSelector::List:
         {
             int sel_len = sel->value.length();
@@ -1258,14 +1261,13 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             // Be smart compare on length first
             if ((!sel_len && !val_len) || sel_len > val_len) return false;
             // Selector string may not contain spaces
-            if ((selAttr != ATTR_CLASS || e->hasClassList()) && sel->value.find(' ') != -1) return false;
+            if ((selAttr != ATTR_CLASS || e->hasClass()) && sel->value.string().find(' ') != -1) return false;
             if (sel_len == val_len)
-                return (caseSensitive && !strcmp(sel->value, value)) ||
-		       (!caseSensitive && !strcasecmp(sel->value, value));
+                return (caseSensitive && !strcmp(sel->value.string(), value)) ||
+		       (!caseSensitive && !strcasecmp(sel->value.string(), value));
             // else the value is longer and can be a list
-            if ( sel->match == CSSSelector::Class && !e->hasClassList() ) return false;
-
-            QChar* sel_uc = sel->value.unicode();
+ 
+            QChar* sel_uc = sel->value.string().unicode();
             QChar* val_uc = value->unicode();
 
             QString sel_str = QString::fromRawData(sel_uc, sel_len);
@@ -1288,28 +1290,28 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         {
             //kDebug( 6080 ) << "checking for contains match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
-            QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
+            QString sel_str = QString::fromRawData(sel->value.string().unicode(), sel->value.length());
             return val_str.contains(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive) && !sel_str.isEmpty();
         }
         case CSSSelector::Begin:
         {
             //kDebug( 6080 ) << "checking for beginswith match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
-            QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
+            QString sel_str = QString::fromRawData(sel->value.string().unicode(), sel->value.length());
             return val_str.startsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive) && !sel_str.isEmpty();
         }
         case CSSSelector::End:
         {
             //kDebug( 6080 ) << "checking for endswith match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
-            QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
+            QString sel_str = QString::fromRawData(sel->value.string().unicode(), sel->value.length());
             return val_str.endsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive) && !sel_str.isEmpty();
         }
         case CSSSelector::Hyphen:
         {
             //kDebug( 6080 ) << "checking for hyphen match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
-            QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
+            QString sel_str = QString::fromRawData(sel->value.string().unicode(), sel->value.length());
             const QString& str = val_str;
             const QString& selStr = sel_str;
             if(str.length() < selStr.length()) return false;

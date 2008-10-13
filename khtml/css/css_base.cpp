@@ -131,7 +131,7 @@ StyleListImpl::~StyleListImpl()
 void CSSSelector::print(void)
 {
     kDebug( 6080 ) << "[Selector: tag = " <<       QString::number(makeId(tagNamespace.id(), tagLocalName.id()),16) << ", attr = \"" << makeId(attrNamespace.id(), attrLocalName.id()) << "\", match = \"" << match
-		    << "\" value = \"" << value.string().toLatin1().constData() << "\" relation = " << (int)relation
+		    << "\" value = \"" << value.string().string().toLatin1().constData() << "\" relation = " << (int)relation
 		    << "]" << endl;
     if ( tagHistory )
         tagHistory->print();
@@ -175,7 +175,7 @@ void CSSSelector::extractPseudoType() const
     bool element = false;
     bool compat = false;
     if (!value.isEmpty()) {
-        value = value.lower();
+        value = value.string().lower();
         switch (value[0].unicode()) {
             case '-':
                 if (value == "-khtml-replaced")

@@ -39,11 +39,11 @@ class DOMStringImpl : public khtml::Shared<DOMStringImpl>
 {
 private:
     DOMStringImpl(const DOMStringImpl&);
-    DOMStringImpl& operator=(const DOMStringImpl&);
+    //DOMStringImpl& operator=(const DOMStringImpl&);
 protected:
-    DOMStringImpl() { s = 0, l = 0; }
+    DOMStringImpl() { s = 0, l = 0; m_hash = 0; m_inTable = 0; }
 public:
-    DOMStringImpl(const QChar *str, unsigned int len) {
+    DOMStringImpl(const QChar *str, unsigned int len) : m_hash(0), m_inTable(0) {
 	bool havestr = str && len;
 	s = QT_ALLOC_QCHAR_VEC( havestr ? len : 1 );
 	if(str && len) {
@@ -58,14 +58,28 @@ public:
 
     explicit DOMStringImpl(const char *str);
     explicit DOMStringImpl(const char *str, uint len);
-    explicit DOMStringImpl(const QChar &ch) {
+    explicit DOMStringImpl(const QChar &ch) : m_hash(0), m_inTable(0) {
 	s = QT_ALLOC_QCHAR_VEC( 1 );
 	s[0] = ch;
 	l = 1;
     }
-    ~DOMStringImpl() {
-	if(s) QT_DELETE_QCHAR_VEC(s);
+
+    DOMStringImpl(const QChar* str, unsigned length, unsigned hash) : m_hash(hash), m_inTable(true) {
+	bool havestr = str && length;
+	s = QT_ALLOC_QCHAR_VEC( havestr ? length : 1 );
+	if(str && length) {
+	    memcpy( s, str, length * sizeof(QChar) );
+	    l = length;
+	} else {
+	    // crash protection
+	    s[0] = 0x0;
+	    l = 0;
+	}
     }
+
+    DOMStringImpl(const char* str, unsigned length, unsigned hash);
+
+    ~DOMStringImpl();
 
     void append(DOMStringImpl *str);
     void insert(DOMStringImpl *str, unsigned int pos);
@@ -106,15 +120,38 @@ public:
 
     // for WebCore API compatibility;
     static unsigned computeHash(const QChar* str, unsigned int length) { return DOMStringImpl(str, length).hash(); }
+    static unsigned computeHash(const char* str) { return DOMStringImpl(str).hash(); }
+
+    static DOMStringImpl* empty();
 
     unsigned int l;
     QChar *s;
+    mutable unsigned m_hash;
+    bool m_inTable;
 };
 
 inline unsigned int qHash(const DOMString& key) {
     // 82610334 - hash value for empty string ""
     return key.implementation() ? key.implementation()->hash() : 82610334;
 }
+
+}
+
+namespace khtml
+{
+    struct StringHash;
+}
+
+namespace WTF
+{
+    // WebCore::StringHash is the default hash for StringImpl* and RefPtr<StringImpl>
+    template<typename T> struct DefaultHash;
+    template<> struct DefaultHash<DOM::DOMStringImpl*> {
+        typedef khtml::StringHash Hash;
+    };
+    /*template<> struct DefaultHash<RefPtr<DOM::DOMStringImpl> > {
+        typedef khtml::StringHash Hash;
+    };*/
 
 }
 

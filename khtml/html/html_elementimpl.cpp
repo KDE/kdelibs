@@ -165,16 +165,15 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_CLASS:
         if (attr->val()) {
-          DOMString v = attr->value();
-          const QChar* s = v.unicode();
-          int l = v.length();
-          while( l && !s->isSpace() )
-            l--,s++;
-          setHasClassList(l);
-          setHasClass(true);
+            DOMString v = attr->value();
+            const QChar* characters = v.unicode();
+            unsigned length = v.length();
+            int i;
+            for (i = 0; i < length && characters[i].isSpace(); ++i) { }
+            setHasClass(i < length);
+            attributes()->setClass(v);
         } else {
-          setHasClassList(false);
-          setHasClass(false);
+            setHasClass(false);
         }
         break;
     case ATTR_NAME:

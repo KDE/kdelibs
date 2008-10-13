@@ -18,7 +18,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "config.h"
 #include "ClassNames.h"
 
 namespace DOM {
@@ -33,7 +32,7 @@ void ClassNames::parseClassAttribute(const DOMString& classStr, bool inCompatMod
     if (classStr.isEmpty())
         return;
 
-    QString classAttr = inCompatMode ? classStr.string().toLower() : classStr.string(); // ### fold
+    DOMString classAttr = inCompatMode ? classStr.lower() : classStr;
 
     const QChar* str = classAttr.unicode();
     const int length = classAttr.length();
@@ -47,7 +46,7 @@ void ClassNames::parseClassAttribute(const DOMString& classStr, bool inCompatMod
         while (end < length && !isClassWhitespace(str[end]))
             ++end;
 
-        m_nameVector->append(QString(str + start, end - start));
+        m_nameVector->append(AtomicString(str + start, end - start));
 
         start = end + 1;
     }

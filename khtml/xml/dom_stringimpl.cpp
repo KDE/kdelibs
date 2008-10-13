@@ -29,12 +29,12 @@
 
 #include <string.h>
 #include <QtCore/QMutableStringListIterator>
+#include "misc/AtomicString.h"
 
 using namespace DOM;
 using namespace khtml;
 
-
-DOMStringImpl::DOMStringImpl(const char *str)
+DOMStringImpl::DOMStringImpl(const char *str) : m_hash(0), m_inTable(0)
 {
     if(str && *str)
     {
@@ -53,7 +53,7 @@ DOMStringImpl::DOMStringImpl(const char *str)
     }
 }
 
-DOMStringImpl::DOMStringImpl(const char *str, uint len)
+DOMStringImpl::DOMStringImpl(const char *str, uint len) : m_hash(0), m_inTable(0)
 {
     if(str && *str)
     {
@@ -71,6 +71,34 @@ DOMStringImpl::DOMStringImpl(const char *str, uint len)
         l = 0;
     }
 }
+
+DOMStringImpl::DOMStringImpl(const char* str, unsigned len/*gth*/, unsigned hash) : m_hash(hash), m_inTable(true)
+{
+    if(str && *str)
+    {
+        l = len;
+        s = QT_ALLOC_QCHAR_VEC( l );
+        int i = l;
+        QChar* ptr = s;
+        while( i-- )
+            *ptr++ = *str++;
+    }
+    else
+    {
+        s = QT_ALLOC_QCHAR_VEC( 1 );  // crash protection
+        s[0] = 0x0; // == QChar::null;
+        l = 0;
+    }
+}
+
+DOMStringImpl::~DOMStringImpl()
+{
+    if (m_inTable)
+        khtml::AtomicString::remove(this);
+    if (s)
+        QT_DELETE_QCHAR_VEC(s);
+}
+
 
 // FIXME: should be a cached flag maybe.
 bool DOMStringImpl::containsOnlyWhitespace() const
@@ -504,6 +532,7 @@ const unsigned PHI = 0x9e3779b9U;
 // http://www.azillionmonkeys.com/qed/hash.html
 unsigned DOMStringImpl::hash() const
 {
+    if (m_hash != 0) return m_hash;
   // Note: this is originally from KJS>.
   unsigned l = this->l;
   QChar*   s = this->s;
@@ -542,6 +571,13 @@ unsigned DOMStringImpl::hash() const
   if (hash == 0)
     hash = 0x80000000;
 
-  return hash;
+  return m_hash = hash;
 }
+
+DOMStringImpl* DOMStringImpl::empty()
+{
+    static DOMStringImpl* e = new DOMStringImpl();
+    return e;
+}
+
 

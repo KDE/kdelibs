@@ -1135,6 +1135,11 @@ void ElementImpl::addId(const QString& id)
   document()->getElementByIdCache().add(id, this);
 }
 
+const ClassNames& ElementImpl::classNames() const
+{
+    return attributes()->classNames();
+}
+
 void ElementImpl::insertedIntoDocument()
 {
     // need to do superclass processing first so inDocument() is true
@@ -1649,6 +1654,20 @@ void NamedAttrMapImpl::detachFromElement()
     for (unsigned i = 0; i < m_attrs.size(); i++)
         m_attrs[i].free();
     m_attrs.clear();
+}
+
+void NamedAttrMapImpl::setClass(const DOMString& string)
+{
+    if (!m_element)
+        return;
+
+    if (!m_element->hasClass()) {
+        m_classNames.clear();
+        return;
+    }
+
+    // don't normalize strings here
+    m_classNames.parseClassAttribute(string, false/*m_element->document()->htmlCompat()*/);
 }
 
 }

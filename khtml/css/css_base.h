@@ -25,7 +25,7 @@
 #ifndef _CSS_BASE_H
 #define _CSS_BASE_H
 
-#include "dom/dom_string.h"
+#include "misc/AtomicString.h"
 #include "dom/dom_misc.h"
 #include "xml/dom_nodeimpl.h"
 #include "misc/shared.h"
@@ -175,7 +175,7 @@ namespace DOM {
             return KDE_CAST_BF_ENUM(PseudoType, _pseudoType);
         }
 
-        mutable DOM::DOMString value;
+        mutable khtml::AtomicString value;
 	CSSSelector *tagHistory;
         CSSSelector* simpleSelector; // Used by :not
         DOM::DOMString string_arg; // Used by :contains, :lang and :nth-*
