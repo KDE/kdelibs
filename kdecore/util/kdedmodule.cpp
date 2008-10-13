@@ -21,6 +21,8 @@
 */
 
 #include "kdedmodule.h"
+
+#include "kdebug.h"
 #include <QtCore/QTimer>
 #include <QtDBus/QtDBus>
 
@@ -48,7 +50,16 @@ void KDEDModule::setModuleName( const QString& name )
    QString realPath = d->moduleName = name;
    realPath.prepend("/modules/");
    // ExportSignals not used since it triggers a warning at this point
-   QDBusConnection::sessionBus().registerObject(realPath, this, QDBusConnection::ExportScriptableSlots | QDBusConnection::ExportScriptableProperties | QDBusConnection::ExportAdaptors);
+   if (!QDBusConnection::sessionBus().registerObject(
+           realPath,
+           this,
+           QDBusConnection::ExportScriptableContents | QDBusConnection::ExportAdaptors))
+        {
+        // Happens for khotkeys but the module works. Need some time to
+        // investigate.
+        kDebug() << "registerObject() returned false for %s" << d->moduleName;
+        }
+
 }
 
 QString KDEDModule::moduleName() const
