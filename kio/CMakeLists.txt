@@ -20,8 +20,8 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/solid
    ${CMAKE_BINARY_DIR}/solid
    ${KDE4_KDECORE_INCLUDES}/
-   ${ZLIB_INCLUDE_DIR}
    ${STRIGI_INCLUDE_DIR}
+   ${ZLIB_INCLUDE_DIR}
 )
 
 macro_bool_to_01(FAM_FOUND HAVE_FAM)
@@ -33,8 +33,6 @@ if(WIN32)
  OPTION(USE_QFILESYSTEMWATCHER "Use QFileSystemWatcher instead polling for KDirWatch" ON)
  macro_bool_to_01(USE_QFILESYSTEMWATCHER HAVE_QFILESYSTEMWATCHER)
 endif(WIN32)
-
-macro_bool_to_01(STRIGI_NEEDS_SIGNED_CHAR STRIGI_NEEDS_SIGNED_CHAR_01)
 
 configure_file(kio/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kdirwatch.h )
 configure_file(kio/config-strigi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-strigi.h )
