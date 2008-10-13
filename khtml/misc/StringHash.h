@@ -146,8 +146,8 @@ namespace khtml {
             
             // Main loop
             for (; l > 0; l--) {
-                hash += QChar::toCaseFolded((uint32_t)s[0]);
-                tmp = (QChar::toCaseFolded((uint32_t)s[1]) << 11) ^ hash;
+                hash += QChar::toCaseFolded((unsigned int)s[0]);
+                tmp = (QChar::toCaseFolded((unsigned int)s[1]) << 11) ^ hash;
                 hash = (hash << 16) ^ tmp;
                 s += 2;
                 hash += hash >> 11;
@@ -155,7 +155,7 @@ namespace khtml {
             
             // Handle end case
             if (rem) {
-                hash += QChar::toCaseFolded((uint32_t)s[0]);
+                hash += QChar::toCaseFolded((unsigned int)s[0]);
                 hash ^= hash << 11;
                 hash += hash >> 17;
             }
