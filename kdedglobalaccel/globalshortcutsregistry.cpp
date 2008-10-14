@@ -85,7 +85,6 @@ void GlobalShortcutsRegistry::loadSettings()
             {
             continue;
             }
-        kDebug() << groupName;
 
         KConfigGroup configGroup(&_config, groupName);
         Component *component = getComponent(groupName);
@@ -102,12 +101,15 @@ void GlobalShortcutsRegistry::loadSettings()
     }
 
 
-void GlobalShortcutsRegistry::registerKey(int key, GlobalShortcut *shortcut)
+bool GlobalShortcutsRegistry::registerKey(int key, GlobalShortcut *shortcut)
     {
-    kDebug() << shortcut->uniqueName() << QKeySequence(key).toString();
-    Q_ASSERT(!_active_keys.value(key));
+    if (_active_keys.value(key))
+        {
+        // Key is already taken
+        return false;
+        }
     _active_keys.insert(key, shortcut);
-    _manager->grabKey(key, true);
+    return _manager->grabKey(key, true);
     }
 
 
@@ -132,8 +134,6 @@ void GlobalShortcutsRegistry::setInactive()
 
 void GlobalShortcutsRegistry::unregisterKey(int key, GlobalShortcut *shortcut)
     {
-    kDebug() << shortcut->uniqueName() << QKeySequence(key).toString();
-
     Q_ASSERT(_active_keys.value(key)==shortcut);
 
     _manager->grabKey(key, false);

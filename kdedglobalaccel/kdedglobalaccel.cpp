@@ -2,6 +2,7 @@
     This file is part of the KDE libraries
 
     Copyright (c) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
+    Copyright (c) 2007 Michael Jansen <kde@michael-jansen.biz>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -33,8 +34,6 @@
 #include <QtGui/QApplication>
 #endif
 
-#include "kconfiggroup.h"
-#include "ksharedconfig.h"
 #include "kpluginfactory.h"
 #include "kpluginloader.h"
 
@@ -70,26 +69,30 @@ public:
 
 KdedGlobalAccelPrivate::KdedGlobalAccelPrivate()
     :   impl(NULL)
-    {
-    }
+    {}
 
 
 KdedGlobalAccelPrivate::~KdedGlobalAccelPrivate()
-    {
-    }
+    {}
 
 
 GlobalShortcut *KdedGlobalAccelPrivate::findAction(const QStringList &actionId) const
-{
-    if (actionId.size() < 4) {
+    {
+    // Check if actionId is valid
+    if (actionId.size() != 4)
+        {
         kDebug() << "Skipped because of invalid actionId";
-        return 0;
+        return NULL;
+        }
+
+    //! Get the component
+    Component *component = GlobalShortcutsRegistry::instance()->getComponent(
+            actionId.at(ComponentUnique));
+
+    return component
+        ? component->getShortcutByName(actionId.at(ActionUnique))
+        : NULL;
     }
-    Component *component = GlobalShortcutsRegistry::instance()->getComponent(actionId.at(ComponentUnique));
-    if (!component)
-        return 0;
-    return component->getShortcutByName(actionId.at(ActionUnique));
-}
 
 
 Component *KdedGlobalAccelPrivate::component(const QStringList &actionId) const
@@ -133,8 +136,6 @@ KdedGlobalAccel::KdedGlobalAccel(QObject* parent, const QList<QVariant>&)
     GlobalShortcutsRegistry::instance()->setAccelManager(d->impl);
     d->impl->setEnabled(true);
 
-    //TODO: Make this controllable from applications, for example to prevent
-    //shortcuts from triggering when the user is entering a shortcut
     connect(&d->writeoutTimer, SIGNAL(timeout()), SLOT(writeSettings()));
     d->writeoutTimer.setSingleShot(true);
     connect(this, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(writeSettings()));
@@ -145,7 +146,6 @@ KdedGlobalAccel::KdedGlobalAccel(QObject* parent, const QList<QVariant>&)
 
 KdedGlobalAccel::~KdedGlobalAccel()
 {
-    kDebug();
     // Unregister all currently registered actions. Enables the module to be
     // loaded / unloaded by kded.
     GlobalShortcutsRegistry::instance()->setInactive();
@@ -157,9 +157,6 @@ KdedGlobalAccel::~KdedGlobalAccel()
 
 QList<QStringList> KdedGlobalAccel::allMainComponents() const
 {
-    kDebug();
-
-    //### Would it be advantageous to sort the components by unique name?
     QList<QStringList> ret;
     QStringList emptyList;
     for (int i = 0; i < 4; i++) {
@@ -172,8 +169,6 @@ QList<QStringList> KdedGlobalAccel::allMainComponents() const
         actionId[ComponentFriendly] = component->friendlyName();
         ret.append(actionId);
     }
-
-    kDebug() << ret;
 
     return ret;
 }
@@ -274,8 +269,6 @@ void KdedGlobalAccel::setInactive(const QStringList &actionId)
 
 void KdedGlobalAccel::unRegister(const QStringList &actionId)
 {
-    kDebug() << actionId;
-
     Q_ASSERT(actionId.size()==4);
     if (actionId.size() < 4) {
         return;
@@ -291,16 +284,9 @@ void KdedGlobalAccel::unRegister(const QStringList &actionId)
 }
 
 
-//TODO: make sure and document that we don't want trailing zero shortcuts in the list
 QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
                                         const QList<int> &keys, uint flags)
 {
-    kDebug() << actionId;
-    Q_FOREACH(int key, keys)
-        {
-        kDebug() << QKeySequence(key).toString();
-        }
-
     //spare the DBus framework some work
     const bool setPresent = (flags & SetPresent);
     const bool isAutoloading = !(flags & NoAutoloading);
@@ -351,8 +337,6 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
 
 void KdedGlobalAccel::setForeignShortcut(const QStringList &actionId, const QList<int> &keys)
 {
-    kDebug() << actionId;
-
     GlobalShortcut *shortcut = d->findAction(actionId);
     if (!shortcut)
         return;
@@ -364,10 +348,10 @@ void KdedGlobalAccel::setForeignShortcut(const QStringList &actionId, const QLis
 
 
 void KdedGlobalAccel::scheduleWriteSettings() const
-{
+    {
     if (!d->writeoutTimer.isActive())
         d->writeoutTimer.start(500);
-}
+    }
 
 
 void KdedGlobalAccel::writeSettings() const
@@ -375,17 +359,16 @@ void KdedGlobalAccel::writeSettings() const
     GlobalShortcutsRegistry::instance()->writeSettings();
     }
 
-bool KdedGlobalAccel::keyPressed(int keyQt)
-{
-    kDebug() << keyQt;
 
+bool KdedGlobalAccel::keyPressed(int keyQt)
+    {
     GlobalShortcut *shortcut = GlobalShortcutsRegistry::instance()->getShortcutByKey(keyQt);
+    kDebug() << QKeySequence(keyQt).toString() << "=" << shortcut->uniqueName();
+
     if (!shortcut || !shortcut->isActive()) {
         kDebug() << "skipping because action is not active";
         return false;
     }
-
-    kDebug() << shortcut->uniqueName();
 
     QStringList data(shortcut->component()->uniqueName());
     data.append(shortcut->uniqueName());
@@ -401,7 +384,6 @@ bool KdedGlobalAccel::keyPressed(int keyQt)
 #else
     long timestamp = 0;
 #endif
-    kDebug() << data;
     emit invokeAction(data, timestamp);
     return true;
 }

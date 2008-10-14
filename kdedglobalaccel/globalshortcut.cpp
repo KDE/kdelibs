@@ -32,7 +32,6 @@ GlobalShortcut::GlobalShortcut(const QString &uniqueName, const QString &friendl
             ,_keys()
             ,_defaultKeys()
     {
-    kDebug() << component->uniqueName() << "#" << uniqueName;
     component->addShortcut(this);
     }
 
@@ -53,7 +52,6 @@ bool GlobalShortcut::isFresh() const
 void GlobalShortcut::setIsFresh(bool value)
     {
     _isFresh = value;
-    kDebug() << _isFresh;
     }
 
 
@@ -99,14 +97,13 @@ void GlobalShortcut::setKeys(const QList<int> newKeys)
 
     Q_FOREACH(int key, newKeys)
         {
-        kDebug() << _uniqueName << QKeySequence(key).toString();
         if (key!=0 && !GlobalShortcutsRegistry::instance()->getShortcutByKey(key))
             {
             _keys.append(key);
             }
         else
             {
-            kDebug() << _uniqueName << "skipping";
+            kDebug() << _uniqueName << "skipping because key is already taken";
             }
         }
 
@@ -132,8 +129,6 @@ void GlobalShortcut::setDefaultKeys(const QList<int> newKeys)
 
 void GlobalShortcut::setActive()
     {
-    kDebug() << _uniqueName;
-
     if (_isPresent)
         {
         return;
@@ -143,22 +138,13 @@ void GlobalShortcut::setActive()
 
     Q_FOREACH( int key, _keys)
         {
-        if (key==0)
-            {
-            kDebug() << "??????????????????????";
-            }
-        else
-            {
-            GlobalShortcutsRegistry::instance()->registerKey(key, this);
-            }
+        GlobalShortcutsRegistry::instance()->registerKey(key, this);
         }
     }
 
 
 void GlobalShortcut::setInactive()
     {
-    kDebug() << _uniqueName;
-
     if (!_isPresent)
         {
         return;
@@ -168,14 +154,7 @@ void GlobalShortcut::setInactive()
 
     Q_FOREACH( int key, _keys)
         {
-        if (key==0)
-            {
-            kDebug() << "??????????????????????";
-            }
-        else
-            {
-            GlobalShortcutsRegistry::instance()->unregisterKey(key, this);
-            }
+        GlobalShortcutsRegistry::instance()->unregisterKey(key, this);
         }
     }
 

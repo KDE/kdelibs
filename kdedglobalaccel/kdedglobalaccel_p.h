@@ -191,7 +191,7 @@ public:
 
     void setAccelManager(KGlobalAccelImpl *manager);
 
-    void registerKey(int key, GlobalShortcut *shortcut);
+    bool registerKey(int key, GlobalShortcut *shortcut);
 
     void setInactive();
 
