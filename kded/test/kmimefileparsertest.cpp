@@ -18,6 +18,7 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include <kdebug.h>
 #include <ktemporaryfile.h>
 #include <qtest_kde.h>
 #include "kmimefileparser.h"
@@ -48,34 +49,69 @@ private:
 class KMimeFileParserTest : public QObject
 {
     Q_OBJECT
-private Q_SLOTS:
-    void initTestCase()
+public:
+    KMimeFileParserTest() : m_factory(0) {}
+private:
+
+    FakeMimeTypeFactory* fakeMimeTypeFactory()
     {
         if ( !KSycoca::isAvailable() ) {
             // Create ksycoca4 in ~/.kde-unit-test
             QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME), QStringList() << "--noincremental" );
         }
-        // Create factory on the heap and don't delete it.
-        // It registers to KSycoca, which deletes it at end of program execution.
-        m_factory = new FakeMimeTypeFactory;
+        if (!m_factory) {
+            // Create factory on the heap and don't delete it.
+            // It registers to KSycoca, which deletes it at end of program execution.
+            m_factory = new FakeMimeTypeFactory;
+        }
+        return m_factory;
     }
 
-    void testParseGlobFile()
+private Q_SLOTS:
+    void initTestCase()
+    {
+    }
+
+    void testParseGlobsFile()
     {
         const QString ext1 = "*.kmimefileparserunittest";
         const QString ext2 = "*.kmimefileparserunittest2";
 
         QByteArray testFile = "# Test data\ntext/plain:*.kmimefileparserunittest\ntext/plain:*.kmimefileparserunittest2";
         QBuffer buf(&testFile);
-        const QHash<QString, QStringList> mimeTypeGlobs = KMimeFileParser::parseGlobFile(&buf);
+        const QHash<QString, KMimeFileParser::GlobList> mimeTypeGlobs =
+            KMimeFileParser::parseGlobFile(&buf, KMimeFileParser::OldGlobs);
         QCOMPARE(mimeTypeGlobs.count(), 1);
         QVERIFY(mimeTypeGlobs.contains("text/plain"));
-        QCOMPARE(mimeTypeGlobs.value("text/plain"), QStringList() << ext1 << ext2);
+        const KMimeFileParser::GlobList textGlobs = mimeTypeGlobs.value("text/plain");
+        QCOMPARE(textGlobs[0].pattern, ext1);
+        QCOMPARE(textGlobs[0].weight, 50);
+        QCOMPARE(textGlobs[1].pattern, ext2);
+        QCOMPARE(textGlobs[1].weight, 50);
+    }
+
+    void testParseGlobs2File()
+    {
+        const QString ext1 = "*.kmimefileparserunittest";
+        const QString ext2 = "*.kmimefileparserunittest2";
+
+        QByteArray testFile = "# Test data\n40:text/plain:*.kmimefileparserunittest\n20:text/plain:*.kmimefileparserunittest2";
+        QBuffer buf(&testFile);
+        const QHash<QString, KMimeFileParser::GlobList> mimeTypeGlobs =
+            KMimeFileParser::parseGlobFile(&buf, KMimeFileParser::Globs2WithWeight);
+        //kDebug() << mimeTypeGlobs.keys();
+        QCOMPARE(mimeTypeGlobs.count(), 1);
+        QVERIFY(mimeTypeGlobs.contains("text/plain"));
+        const KMimeFileParser::GlobList textGlobs = mimeTypeGlobs.value("text/plain");
+        QCOMPARE(textGlobs[0].pattern, ext1);
+        QCOMPARE(textGlobs[0].weight, 40);
+        QCOMPARE(textGlobs[1].pattern, ext2);
+        QCOMPARE(textGlobs[1].weight, 20);
     }
 
     void testParseGlobs()
     {
-        KMimeFileParser parser(m_factory);
+        KMimeFileParser parser(fakeMimeTypeFactory());
 
         const QString ext1 = "*.kmimefileparserunittest";
         const QString ext2 = "*.kmimefileparserunittest2";
@@ -100,7 +136,7 @@ private Q_SLOTS:
 
     void testDuplicateGlob()
     {
-        KMimeFileParser parser(m_factory);
+        KMimeFileParser parser(fakeMimeTypeFactory());
 
         const QString ext1 = "*.ext1";
         const QString ext2 = "*.ext2";
@@ -140,7 +176,7 @@ private Q_SLOTS:
     }
 
 private:
-    KMimeTypeFactory* m_factory;
+    FakeMimeTypeFactory* m_factory;
 };
 
 QTEST_KDEMAIN( KMimeFileParserTest, NoGUI )

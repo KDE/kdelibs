@@ -33,8 +33,6 @@ KMimeFileParser::KMimeFileParser(KMimeTypeFactory* mimeTypeFactory)
 
 void KMimeFileParser::parseGlobs()
 {
-    // TODO parse globs2 file instead if it exists.
-    // This will fix http://bugs.freedesktop.org/show_bug.cgi?id=15436
     const QStringList globFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "globs");
     //kDebug() << globFiles;
     parseGlobs(globFiles);
@@ -42,39 +40,53 @@ void KMimeFileParser::parseGlobs()
 
 void KMimeFileParser::parseGlobs(const QStringList& globFiles)
 {
+    QStringList parsedFiles;
     QListIterator<QString> globIter(globFiles);
     globIter.toBack();
     // At each level, we must be able to override (not just add to) the information that we read at higher levels.
     // This is why we don't directly call mimetype->addPattern, nor can we use the same qhash for everything.
-    QHash<QString, QStringList> mimeTypeGlobs;
     while (globIter.hasPrevious()) { // global first, then local
-        const QString fileName = globIter.previous();
+        Format format = OldGlobs;
+        QString fileName = globIter.previous();
+        QString fileNamev2 = fileName + '2'; // NOTE: this relies on u-m-d always generating the old globs file
+        if (QFile::exists(fileNamev2)) {
+            fileName = fileNamev2;
+            format = Globs2WithWeight;
+        }
+        parsedFiles << fileName;
         QFile globFile(fileName);
         kDebug(7021) << "Now parsing" << fileName;
-        const QHash<QString, QStringList> thisLevelGlobs = parseGlobFile(&globFile);
-        if (mimeTypeGlobs.isEmpty())
-            mimeTypeGlobs = thisLevelGlobs;
+        const QHash<QString, GlobList> thisLevelGlobs = parseGlobFile(&globFile, format);
+        if (m_mimeTypeGlobs.isEmpty())
+            m_mimeTypeGlobs = thisLevelGlobs;
         else {
             // We insert stuff multiple times into the hash, and we only look at the last inserted later on.
-            mimeTypeGlobs.unite(thisLevelGlobs);
+            m_mimeTypeGlobs.unite(thisLevelGlobs);
         }
     }
 
-    const QStringList allMimes = mimeTypeGlobs.uniqueKeys();
-    Q_FOREACH(const QString& mimeTypeName, allMimes) {
-        KMimeType::Ptr mimeType = m_mimeTypeFactory->findMimeTypeByName(mimeTypeName);
+    m_allMimeTypes = m_mimeTypeGlobs.uniqueKeys();
+
+    // This is just to fill in KMimeType::patterns. This has no real effect
+    // on the actual mimetype matching.
+    Q_FOREACH(const QString& mimeTypeName, m_allMimeTypes) {
+        KMimeType::Ptr mimeType = m_mimeTypeFactory->findMimeTypeByName(mimeTypeName, KMimeType::DontResolveAlias);
         if (!mimeType) {
-            kWarning(7012) << "one of glob files in" << globFiles << "refers to unknown mimetype" << mimeTypeName;
+            kWarning(7012) << "one of glob files in" << parsedFiles << "refers to unknown mimetype" << mimeTypeName;
         } else {
-            mimeType->setPatterns(mimeTypeGlobs.value(mimeTypeName));
+            const GlobList globs = m_mimeTypeGlobs.value(mimeTypeName);
+            QStringList patterns;
+            Q_FOREACH(const Glob& glob, globs)
+                patterns.append(glob.pattern);
+            mimeType->setPatterns(patterns);
         }
     }
 }
 
 // uses a QIODevice to make unit tests possible
-QHash<QString, QStringList> KMimeFileParser::parseGlobFile(QIODevice* file)
+QHash<QString, KMimeFileParser::GlobList> KMimeFileParser::parseGlobFile(QIODevice* file, Format format)
 {
-    QHash<QString, QStringList> globs;
+    QHash<QString, GlobList> globs;
     if (!file->open(QIODevice::ReadOnly))
         return globs;
     QTextStream stream(file);
@@ -84,17 +96,28 @@ QHash<QString, QStringList> KMimeFileParser::parseGlobFile(QIODevice* file)
         line = stream.readLine();
         if (line.isEmpty() || line.startsWith('#'))
             continue;
-        const int pos = line.indexOf(':');
+        int pos = line.indexOf(':');
         if (pos == -1) // syntax error
             continue;
+        int weight = 50;
+        if (format == Globs2WithWeight) {
+            weight = line.left(pos).toInt();
+            line = line.mid(pos+1);
+            pos = line.indexOf(':', pos + 1);
+            if (pos == -1) // syntax error
+                continue;
+        }
         const QString mimeTypeName = line.left(pos);
         const QString pattern = line.mid(pos+1);
         Q_ASSERT(!pattern.isEmpty());
-        //if (mimeTypeName == "text/plain")
-        //    kDebug() << "Adding pattern" << pattern << "to mimetype" << mimeTypeName << "from globs file";
-        QStringList& patterns = globs[mimeTypeName]; // find or create entry
-        if (!patterns.contains(pattern)) // ### I miss a QStringList::makeUnique or something...
-            patterns.append(pattern);
+        GlobList& globList = globs[mimeTypeName]; // find or create entry
+        // Check for duplicates, like when installing kde.xml and freedesktop.org.xml
+        // in the same prefix, and they both have text/plain:*.txt
+        if (!globList.containsPattern(pattern)) {
+            //if (mimeTypeName == "text/plain")
+            //    kDebug() << "Adding pattern" << pattern << "to mimetype" << mimeTypeName << "from globs file, with weight" << weight;
+            globList.append(Glob(weight, pattern));
+        }
     }
     return globs;
 }

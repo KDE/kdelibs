@@ -36,11 +36,39 @@ public:
 
     // Separate method, for unit test
     void parseGlobs(const QStringList&);
-    static QHash<QString, QStringList> parseGlobFile(QIODevice* file);
+
+    struct Glob {
+        Glob(int w = 50, const QString& pat = QString() ) : weight(w), pattern(pat) {}
+        int weight;
+        QString pattern;
+    };
+    class GlobList : public QList<Glob>
+    {
+    public:
+        bool containsPattern(const QString& pattern) const {
+            const_iterator it = begin();
+            const const_iterator myend = end();
+            for (; it != myend; ++it)
+                if ((*it).pattern == pattern)
+                    return true;
+            return false;
+        }
+    };
+    enum Format { OldGlobs, Globs2WithWeight };
+
+    typedef QHash<QString, GlobList> AllGlobs;
+    typedef QHashIterator<QString, GlobList> AllGlobsIterator;
+
+    static AllGlobs parseGlobFile(QIODevice* file, Format format);
+
+    // Retrieve the result of the parsing
+    const AllGlobs& mimeTypeGlobs() const { return m_mimeTypeGlobs; }
+    const QStringList& allMimeTypes() const { return m_allMimeTypes; }
 
 private:
     KMimeTypeFactory* m_mimeTypeFactory;
-
+    QHash<QString, GlobList> m_mimeTypeGlobs;
+    QStringList m_allMimeTypes;
 };
 
 #endif /* KMIMEFILEPARSER_H */

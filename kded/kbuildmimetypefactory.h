@@ -22,6 +22,7 @@
 
 #include <kmimetypefactory.h>
 #include <QtCore/QStringList>
+#include "kmimefileparser.h"
 
 /**
  * Mime-type factory for building ksycoca
@@ -80,6 +81,8 @@ private:
     void parseSubclassFile(const QString& fileName);
     void parseAliasFile(const QString& fileName);
     void savePatternLists(QDataStream &str);
+    KMimeFileParser m_parser;
+    int m_oldOtherPatternOffset;
 };
 
 #endif

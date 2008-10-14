@@ -31,17 +31,6 @@ class KSycocaFactoryList;
 class KSycocaPrivate;
 
 /**
- * Sycoca file version number.
- * If the existing file is outdated, it will not get read
- * but instead we'll ask kded to regenerate a new one...
- */
-#define KSYCOCA_VERSION 116
-
-/**
- * Sycoca file name, used internally (by kbuildsycoca)
- */
-#define KSYCOCA_FILENAME "ksycoca4"
-/**
  * Executable name of the kbuildsycoca program
  */
 #define KBUILDSYCOCA_EXENAME "kbuildsycoca4"
@@ -64,7 +53,7 @@ protected:
 
 public:
    /**
-    * type of database 
+    * type of database
     * @see absoluteFilePath()
     */
    typedef enum { LocalDatabase, GlobalDatabase } DatabaseType;
@@ -108,12 +97,12 @@ public:
    QString kfsstnd_prefixes();
    /**
     * @internal - returns absolute file path of the database
-    * 
-    * for global database type the database is searched under 
-    * the 'services' install path. 
-    * Otherwise, the value from the environment variable KDESYCOCA 
-    * is returned if set. If not set the path is build based on  
-    * KStandardDirs cache save location. 
+    *
+    * for global database type the database is searched under
+    * the 'services' install path.
+    * Otherwise, the value from the environment variable KDESYCOCA
+    * is returned if set. If not set the path is build based on
+    * KStandardDirs cache save location.
     */
    static QString absoluteFilePath(DatabaseType type=LocalDatabase);
    /**

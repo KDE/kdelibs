@@ -19,6 +19,7 @@
 #include <config.h>
 #include <kdefakes.h>
 #include "kmimetypetest.h"
+#include <kprocess.h>
 #include "kmimetypetest.moc"
 #include <kmimetype.h>
 #include <ksycoca.h>
@@ -33,7 +34,6 @@
 #include <kprotocolinfo.h>
 #include <kmimetypetrader.h>
 #include <kservicetypetrader.h>
-#include <QtCore/Q_PID>
 #include <kmimetypefactory.h>
 #include <ktemporaryfile.h>
 #include <kdesktopfile.h>
@@ -84,7 +84,11 @@ void KMimeTypeTest::cleanupTestCase()
     QFile::remove(fakePart);
     const QString fakePlugin = KStandardDirs::locateLocal("services", "faketextplugin.desktop");
     QFile::remove(fakePlugin);
-    QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
+    //QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
+    KProcess proc;
+    proc << KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+    proc.setOutputChannelMode(KProcess::MergedChannels); // silence kbuildsycoca output
+    proc.execute();
 }
 
 static void checkIcon( const KUrl& url, const QString& expectedIcon )
@@ -116,6 +120,9 @@ void KMimeTypeTest::testByName()
 
     KMimeType::Ptr krita = KMimeType::mimeType("application/x-krita");
     QVERIFY( krita );
+
+    KMimeType::Ptr bzip2 = KMimeType::mimeType("application/x-bzip2", KMimeType::ResolveAliases);
+    QVERIFY( bzip2 );
 }
 
 void KMimeTypeTest::testIcons()
@@ -160,10 +167,12 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
     QTest::newRow("glob that uses [] syntax, 2") << "makefile" << "text/x-makefile";
     QTest::newRow("glob that ends with *, no extension") << "README" << "text/x-readme";
     QTest::newRow("glob that ends with *, extension") << "README.foo" << "text/x-readme";
-    QTest::newRow("glob that ends with *, also matches *.txt. Longer match wins (is also a subclass).") << "README.txt" << "text/x-readme";
-    QTest::newRow("glob that ends with *, also matches *.doc. Longer match wins.") << "README.doc" << "text/x-readme";
-    // TODO QTest::newRow("glob that ends with *, also matches *.pdf. fdo bug 15436.") << "README.pdf" << "application/pdf";
-    QTest::newRow("glob that ends with *, double match for same mimetype") << "README.nfo" << "text/x-readme";
+    QTest::newRow("glob that ends with *, also matches *.txt. Higher weight wins.") << "README.txt" << "text/plain";
+    // This test has undefined results if we can't use sniffing to sort out whether it's word or text/plain.
+    //QTest::newRow("glob that ends with *, also matches *.doc, which is either word or text/plain.") << "README.doc" << "text/plain";
+    QTest::newRow("glob that ends with *, also matches *.nfo. Higher weight wins.") << "README.nfo" << "text/x-nfo";
+    // fdo bug 15436, needs shared-mime-info >= 0.40 (and this tests the globs2-parsing code).
+    QTest::newRow("glob that ends with *, also matches *.pdf. *.pdf has higher weight") << "README.pdf" << "application/pdf";
     QTest::newRow("directory") << "/" << "inode/directory";
     QTest::newRow("doesn't exist, no extension") << "IDontExist" << "application/octet-stream";
     QTest::newRow("doesn't exist but has known extension") << "IDontExist.txt" << "text/plain";
@@ -434,7 +443,7 @@ void KMimeTypeTest::testMimeTypeParent()
     // All file-like mimetypes inherit from octet-stream
     const KMimeType::Ptr wordperfect = KMimeType::mimeType("application/vnd.wordperfect");
     QVERIFY(wordperfect);
-    QCOMPARE(wordperfect->parentMimeType(), QString("application/octet-stream"));
+    QCOMPARE(wordperfect->parentMimeTypes().join(","), QString("application/octet-stream"));
     QVERIFY(wordperfect->is("application/octet-stream"));
 
     QVERIFY(KMimeType::mimeType("image/svg+xml-compressed")->is("application/x-gzip"));
@@ -449,14 +458,14 @@ void KMimeTypeTest::testMimeTypeParent()
 
     const KMimeType::Ptr directory = KMimeType::mimeType("inode/directory");
     QVERIFY(directory);
-    QCOMPARE(directory->parentMimeType(), QString());
+    QCOMPARE(directory->parentMimeTypes().count(), 0);
     QVERIFY(!directory->is("application/octet-stream"));
 
     // Check that text/x-patch knows that it inherits from text/plain (it says so explicitely)
     const KMimeType::Ptr plain = KMimeType::mimeType( "text/plain" );
     const KMimeType::Ptr derived = KMimeType::mimeType( "text/x-patch" );
     QVERIFY( derived );
-    QCOMPARE( derived->parentMimeType(), plain->name() );
+    QCOMPARE( derived->parentMimeTypes().join(","), plain->name() );
     QVERIFY( derived->is("text/plain") );
     QVERIFY( derived->is("application/octet-stream") );
 

@@ -32,10 +32,10 @@
 #include <QtCore/QHash>
 #include <QtCore/QFile>
 #include <QtXml/QDomAttr>
-#include "kmimefileparser.h"
 
 KBuildMimeTypeFactory::KBuildMimeTypeFactory() :
-    KMimeTypeFactory()
+    KMimeTypeFactory(), m_parser(this),
+    m_oldOtherPatternOffset(0)
 {
     m_resourceList = new KSycocaResourceList;
     // We want all xml files under xdgdata-mime - but not packages/*.xml
@@ -164,12 +164,14 @@ void KBuildMimeTypeFactory::saveHeader(QDataStream &str)
     KSycocaFactory::saveHeader(str);
     // This header is read by KMimeTypeFactory's constructor
     str << (qint32) m_fastPatternOffset;
-    str << (qint32) m_otherPatternOffset;
+    str << (qint32) m_oldOtherPatternOffset;
     const QMap<QString, QString>& aliasMap = aliases();
     str << (qint32) aliasMap.count();
     for (QMap<QString, QString>::const_iterator it = aliasMap.begin(); it != aliasMap.end(); ++it) {
         str << it.key() << it.value();
     }
+    str << (qint32) m_highWeightPatternOffset;
+    str << (qint32) m_lowWeightPatternOffset;
 }
 
 void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
@@ -187,7 +189,7 @@ void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
             if (pos == -1) // syntax error
                 continue;
             const QString derivedTypeName = line.left(pos);
-            KMimeType::Ptr derivedType = findMimeTypeByName(derivedTypeName);
+            KMimeType::Ptr derivedType = findMimeTypeByName(derivedTypeName, KMimeType::ResolveAliases);
             if (!derivedType)
                 kWarning(7012) << fileName << " refers to unknown mimetype " << derivedTypeName;
             else {
@@ -253,8 +255,7 @@ void KBuildMimeTypeFactory::parseSubclasses()
 
 void KBuildMimeTypeFactory::save(QDataStream &str)
 {
-    KMimeFileParser parser(this);
-    parser.parseGlobs();
+    m_parser.parseGlobs();
 
     KSycocaFactory::save(str);
 
@@ -280,52 +281,70 @@ static bool isFastPattern(const QString& pattern)
       ;
 }
 
-void
-KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
+
+
+void KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
 {
-    // Store each patterns into either m_fastPatternDict (*.txt, *.html etc.)
-    // or otherPatterns (for the rest, like core.*, *.tar.bz2, *~)
+    // Store each patterns into either m_fastPatternDict (*.txt, *.html etc. with default weight 50)
+    // or for the rest, like core.*, *.tar.bz2, *~, into highWeightPatternOffset (>50)
+    // or lowWeightPatternOffset (<=50)
 
-    // KMimeType::Ptr not needed here, this is short term
-    typedef QMultiMap<QString, const KMimeType*> PatternMap;
-    PatternMap otherPatterns;
+    OtherPatternList highWeightPatternOffset, lowWeightPatternOffset;
 
-    // For each mimetype in mimetypeFactory
-    for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
-        it != m_entryDict->end();
-        ++it)
-    {
-        const KSycocaEntry::Ptr& entry = (*it);
-        Q_ASSERT( entry->isType( KST_KMimeType ) );
-
-        const KMimeType::Ptr mimeType = KMimeType::Ptr::staticCast( entry );
-        const QStringList pat = mimeType->patterns();
-        QStringList::ConstIterator patit = pat.begin();
-        for ( ; patit != pat.end() ; ++patit )
-        {
-            const QString &pattern = *patit;
+    // For each entry in the globs list
+    const KMimeFileParser::AllGlobs& allGlobs = m_parser.mimeTypeGlobs();
+    Q_FOREACH(const QString& mimeTypeName, m_parser.allMimeTypes()) {
+        const KMimeType::Ptr mimeType = findMimeTypeByName(mimeTypeName, KMimeType::DontResolveAlias);
+        const KMimeFileParser::GlobList globs = allGlobs.value(mimeTypeName);
+        Q_FOREACH(const KMimeFileParser::Glob& glob, globs) {
+            const QString &pattern = glob.pattern;
             Q_ASSERT(!pattern.isEmpty());
-            if (isFastPattern(pattern))
-                m_fastPatternDict->add(pattern.mid(2) /* extension only*/, entry);
-            else
-                otherPatterns.insert(pattern, mimeType.constData());
+            if (glob.weight == 50 && isFastPattern(pattern)) {
+                // The bulk of the patterns is *.foo with weight 50 --> those go into the fast
+                // pattern dict.
+                m_fastPatternDict->add(pattern.mid(2) /* extension only*/, KSycocaEntry::Ptr::staticCast(mimeType));
+            } else if (glob.weight > 50) {
+                highWeightPatternOffset.append(OtherPattern(pattern, mimeType->offset(), glob.weight));
+            } else {
+                lowWeightPatternOffset.append(OtherPattern(pattern, mimeType->offset(), glob.weight));
+            }
         }
     }
 
     m_fastPatternOffset = str.device()->pos();
     m_fastPatternDict->save(str);
 
-    // For the other patterns
-    m_otherPatternOffset = str.device()->pos();
-    str.device()->seek(m_otherPatternOffset);
+    // The high and low weight pattern lists are already sorted by decreasing
+    // weight, this is done by update-mime-database.
 
-    for ( PatternMap::ConstIterator it = otherPatterns.begin(); it != otherPatterns.end() ; ++it )
-    {
-        //kDebug(7021) << "OTHER:" << it.key() << it.value()->name();
-        str << it.key();
-        str << it.value()->offset();
+    m_highWeightPatternOffset = str.device()->pos();
+    Q_FOREACH(const OtherPattern& op, highWeightPatternOffset) {
+        str << op.pattern;
+        str << (qint32)op.offset;
+        str << (qint32)op.weight;
     }
+    str << QString(""); // end of list marker (has to be a string !)
 
+    m_lowWeightPatternOffset = str.device()->pos();
+    Q_FOREACH(const OtherPattern& op, lowWeightPatternOffset) {
+        str << op.pattern;
+        str << (qint32)op.offset;
+        str << (qint32)op.weight;
+    }
+    str << QString(""); // end of list marker (has to be a string !)
+
+    // For compat with kde-4.1 kdecore: write the old "other patterns" thing
+    m_oldOtherPatternOffset = str.device()->pos();
+    // TODO: remove once 4.2 is released.
+    Q_FOREACH(const OtherPattern& op, highWeightPatternOffset) {
+        str << op.pattern;
+        str << (qint32)op.offset;
+    }
+    Q_FOREACH(const OtherPattern& op, lowWeightPatternOffset) {
+        str << op.pattern;
+        str << (qint32)op.offset;
+    }
+    // END TODO
     str << QString(""); // end of list marker (has to be a string !)
 }
 

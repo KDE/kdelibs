@@ -29,18 +29,21 @@
 
 KMimeTypeFactory::KMimeTypeFactory()
     : KSycocaFactory( KST_KMimeTypeFactory ),
+      m_highWeightPatternsLoaded(false),
+      m_lowWeightPatternsLoaded(false),
       m_magicFilesParsed(false)
 {
     _self = this;
     m_fastPatternOffset = 0;
-    m_otherPatternOffset = 0;
+    m_highWeightPatternOffset = 0;
+    m_lowWeightPatternOffset = 0;
     if (m_str) {
         // Read Header
         qint32 i;
         (*m_str) >> i;
         m_fastPatternOffset = i;
         (*m_str) >> i;
-        m_otherPatternOffset = i;
+        // that's the old m_otherPatternOffset, kept for compat but unused
 
         // alias map
         qint32 n;
@@ -51,6 +54,11 @@ KMimeTypeFactory::KMimeTypeFactory()
             KSycocaEntry::read(*m_str, str2);
             m_aliases.insert(str1, str2);
         }
+
+        (*m_str) >> i;
+        m_highWeightPatternOffset = i;
+        (*m_str) >> i;
+        m_lowWeightPatternOffset = i;
 
         const int saveOffset = m_str->device()->pos();
         // Init index tables
@@ -220,85 +228,104 @@ static bool matchFileName( const QString &filename, const QString &pattern )
     if (pattern.indexOf('[') == -1 && pattern.indexOf('*') == -1 && pattern.indexOf('?'))
         return (pattern == filename);
 
-    // Other patterns, like "[Mm]akefile": use slow but correct method
+    // Other (quite rare) patterns, like "*.anim[1-9j]": use slow but correct method
     QRegExp rx(pattern);
     rx.setPatternSyntax(QRegExp::Wildcard);
     return rx.exactMatch(filename);
 }
 
-QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper( const QString &_filename, QString *matchingExtension )
+void KMimeTypeFactory::findFromOtherPatternList(QList<KMimeType::Ptr>& matchingMimeTypes,
+                                                const QString &fileName,
+                                                QString& foundExt,
+                                                bool highWeight)
 {
-    QList<KMimeType::Ptr> matchingMimeTypes;
-
-    // Get stream to the header
-    QDataStream *str = m_str;
-
-    // Extract extension
-    const int lastDot = _filename.lastIndexOf('.');
-    int matchingPatternLength = 0;
-
-    if (lastDot != -1) { // if no '.', skip the extension lookup
-        const int ext_len = _filename.length() - lastDot - 1;
-        const QString simpleExtension = _filename.right( ext_len );
-
-        matchingMimeTypes = findFromFastPatternDict(simpleExtension);
-        if (!matchingMimeTypes.isEmpty()) {
-            matchingPatternLength = simpleExtension.length() + 2; // *.foo -> length=5
-            if (matchingExtension)
-                *matchingExtension = simpleExtension;
-            // Keep going, there might be some matches from the 'other' list, like *.tar.bz2
-        }
-    }
-
-    // Now try the "other" Pattern table
-    if ( m_otherPatterns.isEmpty() ) {
+    OtherPatternList& patternList = highWeight ? m_highWeightPatterns : m_lowWeightPatterns;
+    if ( highWeight ? !m_highWeightPatternsLoaded : !m_lowWeightPatternsLoaded ) {
         // Load it only once
-        str->device()->seek( m_otherPatternOffset );
+        QDataStream *str = m_str;
+        str->device()->seek( highWeight ? m_highWeightPatternOffset : m_lowWeightPatternOffset );
 
         QString pattern;
         qint32 mimetypeOffset;
-
-        while (true)
-        {
+        qint32 weight;
+        Q_FOREVER {
             KSycocaEntry::read(*str, pattern);
             if (pattern.isEmpty()) // end of list
                 break;
             (*str) >> mimetypeOffset;
-            m_otherPatterns.push_back( pattern );
-            m_otherPatterns_offsets.push_back( mimetypeOffset );
+            (*str) >> weight;
+            patternList.push_back(OtherPattern(pattern, mimetypeOffset, weight));
         }
     }
 
-    assert( m_otherPatterns.size() == m_otherPatterns_offsets.size() );
-
-    QStringList::const_iterator it = m_otherPatterns.begin();
-    const QStringList::const_iterator end = m_otherPatterns.end();
-    QList<qint32>::const_iterator it_offset = m_otherPatterns_offsets.begin();
-
-    for ( ; it != end; ++it, ++it_offset ) {
-        const QString pattern = *it;
-        if ( matchFileName( _filename, pattern ) ) {
+    int matchingPatternLength = 0;
+    qint32 lastMatchedWeight = 0;
+    if (!highWeight && !matchingMimeTypes.isEmpty()) {
+        // We found matches in the fast pattern dict already:
+        matchingPatternLength = foundExt.length() + 2; // *.foo -> length=5
+        lastMatchedWeight = 50;
+    }
+    OtherPatternList::const_iterator it = patternList.constBegin();
+    const OtherPatternList::const_iterator end = patternList.constEnd();
+    for ( ; it != end; ++it ) {
+        const OtherPattern op = *it;
+        if ( matchFileName( fileName, op.pattern ) ) {
+            // Is this a lower-weight pattern than the last match? Stop here then.
+            if (op.weight < lastMatchedWeight)
+                break;
+            if (lastMatchedWeight > 0 && op.weight > lastMatchedWeight) // can't happen
+                kWarning(7009) << "Assumption failed; globs2 weights not sorted correctly"
+                               << op.weight << ">" << lastMatchedWeight;
             // Is this a shorter or a longer match than an existing one, or same length?
-            if (pattern.length() < matchingPatternLength) {
+            if (op.pattern.length() < matchingPatternLength) {
                 continue; // too short, ignore
-            } else if (pattern.length() > matchingPatternLength) {
+            } else if (op.pattern.length() > matchingPatternLength) {
                 // longer: clear any previous match (like *.bz2, when pattern is *.tar.bz2)
                 matchingMimeTypes.clear();
                 // remember the new "longer" length
-                matchingPatternLength = pattern.length();
+                matchingPatternLength = op.pattern.length();
             }
-            KMimeType *newMimeType = createEntry( *it_offset );
+            KMimeType *newMimeType = createEntry( op.offset );
             assert (newMimeType && newMimeType->isType( KST_KMimeType ));
-            matchingMimeTypes.append( KMimeType::Ptr( newMimeType ) );
-            if (matchingExtension && pattern.startsWith("*."))
-                *matchingExtension = pattern.mid(2);
+            matchingMimeTypes.push_back( KMimeType::Ptr( newMimeType ) );
+            if (op.pattern.startsWith("*."))
+                foundExt = op.pattern.mid(2);
         }
     }
+}
 
+QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper(const QString &fileName, QString *pMatchingExtension)
+{
+    // First try the high weight matches (>50), if any.
+    QList<KMimeType::Ptr> matchingMimeTypes;
+    QString foundExt;
+    findFromOtherPatternList(matchingMimeTypes, fileName, foundExt, true);
+    if (matchingMimeTypes.isEmpty()) {
+
+        // Now use the "fast patterns" dict, for simple *.foo patterns with weight 50
+        // (which is most of them, so this optimization is definitely worth it)
+        const int lastDot = fileName.lastIndexOf('.');
+        if (lastDot != -1) { // if no '.', skip the extension lookup
+            const int ext_len = fileName.length() - lastDot - 1;
+            const QString simpleExtension = fileName.right( ext_len );
+
+            matchingMimeTypes = findFromFastPatternDict(simpleExtension);
+            if (!matchingMimeTypes.isEmpty()) {
+                foundExt = simpleExtension;
+                // Can't return yet; *.tar.bz2 has to win over *.bz2, so we need the low-weight mimetypes anyway,
+                // at least those with weight 50.
+            }
+        }
+
+        // Finally, try the low weight matches (<=50)
+        findFromOtherPatternList(matchingMimeTypes, fileName, foundExt, false);
+    }
+    if (pMatchingExtension)
+        *pMatchingExtension = foundExt;
     return matchingMimeTypes;
 }
 
-// TODO: remove unused whichPriority argument, once XDG shared-mime is updated
+// TODO: remove unused whichPriority argument
 KMimeType::Ptr KMimeTypeFactory::findFromContent(QIODevice* device, WhichPriority whichPriority, int* accuracy, QByteArray& beginning)
 {
     Q_ASSERT(device->isOpen());
@@ -367,10 +394,6 @@ QMap<QString, QString>& KMimeTypeFactory::aliases()
 }
 
 KMimeTypeFactory *KMimeTypeFactory::_self = 0;
-
-void KMimeTypeFactory::virtual_hook( int id, void* data )
-{ KSycocaFactory::virtual_hook( id, data ); }
-
 
 #include <arpa/inet.h> // for ntohs
 #include <kstandarddirs.h>

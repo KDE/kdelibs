@@ -152,7 +152,7 @@ void KBuildServiceFactory::collectInheritedServices()
         int mimeTypeInheritanceLevel = 0;
         while ( !parents.isEmpty() ) {
             const QString& parent = parents.takeFirst();
-            const KMimeType::Ptr parentMimeType = m_mimeTypeFactory->findMimeTypeByName( parent );
+            const KMimeType::Ptr parentMimeType = m_mimeTypeFactory->findMimeTypeByName(parent, KMimeType::ResolveAliases);
             if ( parentMimeType ) {
                 ++mimeTypeInheritanceLevel;
                 const QList<KServiceOffer>& offers = m_offerHash.offersFor(parent);

@@ -125,9 +125,21 @@ protected: // accessed by KBuildMimeTypeFactory
     /// @internal
     int m_fastPatternOffset;
     /// @internal
-    int m_otherPatternOffset;
+    int m_highWeightPatternOffset;
+    /// @internal
+    int m_lowWeightPatternOffset;
 
     KSycocaDict* m_fastPatternDict;
+
+    struct OtherPattern
+    {
+        OtherPattern(const QString& pat, qint32 off, qint32 w)
+            : pattern(pat), offset(off), weight(w) {}
+        QString pattern;
+        qint32 offset;
+        qint32 weight;
+    };
+    typedef QList<OtherPattern> OtherPatternList;
 
 private:
     // Read magic files
@@ -135,23 +147,35 @@ private:
 
     QList<KMimeType::Ptr> findFromFileNameHelper(const QString &filename, QString *matchingExtension);
     QList<KMimeType::Ptr> findFromFastPatternDict(const QString &extension);
+    /**
+     * Look into either the high-weight patterns or the low-weight patterns.
+     * @param matchingMimeTypes in/out parameter. In: the already found mimetypes;
+     * this is only set when the fast pattern dict found matches (i.e. weight 50)
+     * and we want to check if there are other, longer, weight 50 matches.
+     * @param filename the filename we are trying to match
+     * @param foundExt in/out parameter, the recognized extension of the match
+     * @param highWeight whether to look into >50 or <=50 patterns.
+     */
+    void findFromOtherPatternList(QList<KMimeType::Ptr>& matchingMimeTypes,
+                                  const QString &filename,
+                                  QString& foundExt,
+                                  bool highWeight);
 
-    // TODO combine both lists into a single QList<QPair<QString,qint32> >.
-    QStringList m_otherPatterns;
-    QList<qint32> m_otherPatterns_offsets;
+    OtherPatternList m_highWeightPatterns;
+    OtherPatternList m_lowWeightPatterns;
 
     QMap<QString, QString> m_aliases; // alias -> canonicalName
 
+    bool m_highWeightPatternsLoaded;
+    bool m_lowWeightPatternsLoaded;
     bool m_magicFilesParsed;
     QList<KMimeMagicRule> m_magicRules;
 
     static KMimeTypeFactory *_self;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     // d pointer: useless since this header is not installed
-    class KMimeTypeFactoryPrivate* d;
+    //class KMimeTypeFactoryPrivate* d;
 };
 
 #endif

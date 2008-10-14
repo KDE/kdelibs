@@ -38,11 +38,23 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
+/**
+ * Sycoca file version number.
+ * If the existing file is outdated, it will not get read
+ * but instead we'll ask kded to regenerate a new one...
+ */
+#define KSYCOCA_VERSION 117
+
+/**
+ * Sycoca file name, used internally (by kbuildsycoca)
+ */
+#define KSYCOCA_FILENAME "ksycoca4"
+
 #ifdef Q_OS_WIN
 /*
  on windows we use KMemFile (QSharedMemory) to avoid problems
  with mmap (can't delete a mmap'd file)
-*/ 
+*/
 #undef HAVE_MMAP
 #endif
 
