@@ -798,40 +798,38 @@ void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KD
 
 void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KDirNotify signals
 {
-  KUrl::List dirsToUpdate;
-  kDebug(7004) << "only half implemented";
-  QStringList::const_iterator it = fileList.begin();
-  for ( ; it != fileList.end() ; ++it )
-  {
-    KUrl url( *it );
-    if ( url.isLocalFile() )
-    {
-      KFileItem *fileitem = findByUrl( 0, url );
-      if ( fileitem )
-      {
-          // we need to refresh the item, because e.g. the permissions can have changed.
-          aboutToRefreshItem( *fileitem );
-          KFileItem oldItem = *fileitem;
-          fileitem->refresh();
-          emitRefreshItem( oldItem, *fileitem );
-      }
-      else
-          kDebug(7004) << "item not found";
-    } else {
-      // For remote files, refresh() won't be able to figure out the new information.
-      // Let's update the dir.
-      KUrl dir( url );
-      dir.setPath( dir.directory() );
-      if ( !dirsToUpdate.contains( dir ) )
-        dirsToUpdate.prepend( dir );
+    KUrl::List dirsToUpdate;
+    QStringList::const_iterator it = fileList.begin();
+    for (; it != fileList.end() ; ++it) {
+        KUrl url( *it );
+        KFileItem *fileitem = findByUrl(0, url);
+        if (!fileitem) {
+            kDebug(7004) << "item not found for" << url;
+            continue;
+        }
+        if (url.isLocalFile()) {
+            // we need to refresh the item, because e.g. the permissions can have changed.
+            aboutToRefreshItem(*fileitem);
+            KFileItem oldItem = *fileitem;
+            fileitem->refresh();
+            emitRefreshItem(oldItem, *fileitem);
+        } else {
+            // Forget any cached mimetype, it might have changed, and cmp() doesn't check that.
+            fileitem->refreshMimeType();
+            // For remote files, we won't be able to figure out the new information,
+            // we have to do a update (directory listing)
+            KUrl dir(url);
+            dir.setPath(dir.directory());
+            if (!dirsToUpdate.contains(dir))
+                dirsToUpdate.prepend(dir);
+        }
     }
-  }
 
-  KUrl::List::const_iterator itdir = dirsToUpdate.begin();
-  for ( ; itdir != dirsToUpdate.end() ; ++itdir )
-    updateDirectory( *itdir );
-  // ## TODO problems with current jobs listing/updating that dir
-  // ( see kde-2.2.2's kdirlister )
+    KUrl::List::const_iterator itdir = dirsToUpdate.begin();
+    for (; itdir != dirsToUpdate.end() ; ++itdir)
+        updateDirectory( *itdir );
+    // ## TODO problems with current jobs listing/updating that dir
+    // ( see kde-2.2.2's kdirlister )
 }
 
 void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst ) // from KDirNotify signals
@@ -1518,8 +1516,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
         }
 
         // Find this item
-        KFileItem *tmp = 0;
-        if ( (tmp = fileItems.value(item.name())) )
+        if (KFileItem* tmp = fileItems.value(item.name()))
         {
             // check if something changed for this file
             if ( !tmp->cmp( item ) )
