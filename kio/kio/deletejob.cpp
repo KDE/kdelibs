@@ -21,6 +21,7 @@
 
 #include "deletejob.h"
 
+#include "kdirlister.h"
 #include "kmimetype.h"
 #include "scheduler.h"
 #include "kdirwatch.h"
@@ -218,6 +219,17 @@ void DeleteJobPrivate::statNextSrc()
         // Stat it
         state = DELETEJOB_STATE_STATING;
 
+        // Fast path for KFileItems in directory views
+        while(m_currentStat != m_srcList.end()) {
+            m_currentURL = (*m_currentStat);
+            KFileItem cachedItem = KDirLister::cachedItemForUrl(m_currentURL);
+            if (cachedItem.isNull())
+                break;
+            //kDebug(7007) << "Found cached info about" << m_currentURL << "isDir=" << cachedItem.isDir() << "isLink=" << cachedItem.isLink();
+            currentSourceStated(cachedItem.isDir(), cachedItem.isLink());
+            ++m_currentStat;
+        }
+
         // Hook for unit test to disable the fast path.
         extern bool kio_resolve_local_urls; // from copyjob.cpp, abused here to save a symbol.
         if (!kio_resolve_local_urls) {
@@ -288,6 +300,7 @@ void DeleteJobPrivate::deleteNextFile()
                 }
             } else
             { // if remote - or if unlink() failed (we'll use the job's error handling in that case)
+                //kDebug(7007) << "calling file_delete on" << *it;
                 job = KIO::file_delete( *it, KIO::HideProgressInfo );
                 Scheduler::scheduleJob(job);
                 m_currentURL=(*it);
