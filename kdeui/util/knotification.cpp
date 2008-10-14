@@ -91,7 +91,7 @@ KNotification::KNotification(const QString& eventId, QWidget *parent, const Noti
 KNotification::~KNotification()
 {
 	kDebug( 299 ) << d->id;
-	if(d ->id != 0)
+	if(d ->id > 0)
 		KNotificationManager::self()->close( d->id );
 	delete d;
 }
@@ -340,7 +340,7 @@ void KNotification::sendEvent()
 
 void KNotification::slotReceivedId(int id)
 {
-	if(d->id == -2) //we are elready closed
+	if(d->id == -2) //we are already closed
 	{
 		KNotificationManager::self()->close( id, /*force=*/ true );
 		deleteLater();
@@ -362,7 +362,7 @@ void KNotification::slotReceivedId(int id)
 
 void KNotification::slotReceivedIdError(const QDBusError& error)
 {
-	if(d->id == -2) //we are elready closed
+	if(d->id == -2) //we are already closed
 	{
 		deleteLater();
 		return;
