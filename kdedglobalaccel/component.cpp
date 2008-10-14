@@ -66,7 +66,7 @@ Component::~Component()
 
 void Component::addShortcut(GlobalShortcut *shortcut)
     {
-    kDebug(125) << shortcut->uniqueName();
+    kDebug() << shortcut->uniqueName();
     _actions.insert(shortcut->uniqueName(), shortcut);
     }
 

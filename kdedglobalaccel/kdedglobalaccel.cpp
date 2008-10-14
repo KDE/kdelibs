@@ -92,7 +92,7 @@ GlobalShortcut *KdedGlobalAccelPrivate::findAction(int key) const
 GlobalShortcut *KdedGlobalAccelPrivate::findAction(const QStringList &actionId) const
 {
     if (actionId.size() < 4) {
-        kDebug(125) << "Skipped because of invalid actionId";
+        kDebug() << "Skipped because of invalid actionId";
         return 0;
     }
     Component *component = GlobalShortcutsRegistry::instance()->getComponent(actionId.at(ComponentUnique));
@@ -161,7 +161,7 @@ KdedGlobalAccel::KdedGlobalAccel(QObject* parent, const QList<QVariant>&)
 
 KdedGlobalAccel::~KdedGlobalAccel()
 {
-    kDebug(125);
+    kDebug();
     // Unregister all currently registered actions. Enables the module to be
     // loaded / unloaded by kded.
     GlobalShortcutsRegistry::instance()->setInactive();
@@ -290,7 +290,7 @@ void KdedGlobalAccel::setInactive(const QStringList &actionId)
 
 void KdedGlobalAccel::unRegister(const QStringList &actionId)
 {
-    kDebug(125) << actionId;
+    kDebug() << actionId;
 
     Q_ASSERT(actionId.size()==4);
     if (actionId.size() < 4) {
@@ -311,7 +311,7 @@ void KdedGlobalAccel::unRegister(const QStringList &actionId)
 QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
                                         const QList<int> &keys, uint flags)
 {
-    kDebug(125) << actionId;
+    kDebug() << actionId;
     Q_FOREACH(int key, keys)
         {
         kDebug() << QKeySequence(key).toString();
@@ -367,7 +367,7 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
 
 void KdedGlobalAccel::setForeignShortcut(const QStringList &actionId, const QList<int> &keys)
 {
-    kDebug(125) << actionId;
+    kDebug() << actionId;
 
     GlobalShortcut *shortcut = d->findAction(actionId);
     if (!shortcut)
@@ -393,11 +393,11 @@ void KdedGlobalAccel::writeSettings() const
 
 bool KdedGlobalAccel::keyPressed(int keyQt)
 {
-    kDebug(125) << keyQt;
+    kDebug() << keyQt;
 
     GlobalShortcut *shortcut = GlobalShortcutsRegistry::instance()->getShortcutByKey(keyQt);
     if (!shortcut || !shortcut->isActive()) {
-        kDebug(125) << "skipping because action is not active";
+        kDebug() << "skipping because action is not active";
         return false;
     }
 

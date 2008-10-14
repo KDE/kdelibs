@@ -106,7 +106,7 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 	if( !keyCodeX )
 		return false;
 
-    // kDebug(125) << "grabKey keyQt " << (keyQt & ~Qt::KeyboardModifierMask)
+    // kDebug() << "grabKey keyQt " << (keyQt & ~Qt::KeyboardModifierMask)
     //    << " mod " << (keyQt & Qt::KeyboardModifierMask) << " ( key: '" << QKeySequence(keyQt).toString()
     //    << "', grab: " << grab << " ): keyCodeX: " << keyCodeX << " keyModX: " << keyModX << endl;
 
@@ -135,14 +135,14 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 	}
 
 #ifndef NDEBUG
-	// kDebug(125) << sDebug;
+	// kDebug() << sDebug;
 #endif
 
 	bool failed = false;
 	if( grab ) {
 		failed = handler.error( true ); // sync now
 		if( failed ) {
-			kDebug(125) << "grab failed!\n";
+			kDebug() << "grab failed!\n";
 			for( uint m = 0; m <= 0xff; m++ ) {
 				if(( m & keyModMaskX ) == 0 )
 					XUngrabKey( QX11Info::display(), keyCodeX, keyModX | m, QX11Info::appRootWindow() );
@@ -171,7 +171,7 @@ bool KGlobalAccelImpl::x11Event( XEvent* event )
 
 void KGlobalAccelImpl::x11MappingNotify()
 {
-	kDebug(125) << "KGlobalAccelImpl::x11MappingNotify()";
+	kDebug() << "KGlobalAccelImpl::x11MappingNotify()";
 	// Maybe the X modifier map has been changed.
 	uint oldKeyModMaskXAccel = g_keyModMaskXAccel;
 	uint oldKeyModMaskXOnOrOff = g_keyModMaskXOnOrOff;
@@ -234,7 +234,7 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 	
 	int keyQt = keyCodeQt | keyModQt;
 	
-	kDebug(125) << "Qt " << keyQt << " [Key: " << keyCodeQt << " Mod: " << keyModQt << "] X [Key: " << keySymX << " Mod: " << keyModX << "]";
+	kDebug() << "Qt " << keyQt << " [Key: " << keyCodeQt << " Mod: " << keyModQt << "] X [Key: " << keySymX << " Mod: " << keyModX << "]";
 
 	// All that work for this hey... argh...
 	if (m_owner->keyPressed(keyQt))

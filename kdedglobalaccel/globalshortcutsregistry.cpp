@@ -104,7 +104,7 @@ void GlobalShortcutsRegistry::loadSettings()
 
 void GlobalShortcutsRegistry::registerKey(int key, GlobalShortcut *shortcut)
     {
-    kDebug(125) << shortcut->uniqueName() << QKeySequence(key).toString();
+    kDebug() << shortcut->uniqueName() << QKeySequence(key).toString();
     Q_ASSERT(!_active_keys.value(key));
     _active_keys.insert(key, shortcut);
     _manager->grabKey(key, true);
@@ -119,7 +119,7 @@ void GlobalShortcutsRegistry::setAccelManager(KGlobalAccelImpl *manager)
 
 void GlobalShortcutsRegistry::setInactive()
     {
-    kDebug(125);
+    kDebug();
 
     // Unregister all currently registered actions. Enables the module to be
     // loaded / unloaded by kded.
@@ -132,7 +132,7 @@ void GlobalShortcutsRegistry::setInactive()
 
 void GlobalShortcutsRegistry::unregisterKey(int key, GlobalShortcut *shortcut)
     {
-    kDebug(125) << shortcut->uniqueName() << QKeySequence(key).toString();
+    kDebug() << shortcut->uniqueName() << QKeySequence(key).toString();
 
     Q_ASSERT(_active_keys.value(key)==shortcut);
 

@@ -32,7 +32,7 @@ GlobalShortcut::GlobalShortcut(const QString &uniqueName, const QString &friendl
             ,_keys()
             ,_defaultKeys()
     {
-    kDebug(125) << component->uniqueName() << "#" << uniqueName;
+    kDebug() << component->uniqueName() << "#" << uniqueName;
     component->addShortcut(this);
     }
 
@@ -53,7 +53,7 @@ bool GlobalShortcut::isFresh() const
 void GlobalShortcut::setIsFresh(bool value)
     {
     _isFresh = value;
-    kDebug(125) << _isFresh;
+    kDebug() << _isFresh;
     }
 
 

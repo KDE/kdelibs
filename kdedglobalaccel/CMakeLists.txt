@@ -2,6 +2,7 @@ project(kdedglobalaccel)
 
 ###############################################################################
 ### KDED Global Accel Daemon
+add_definitions(-DKDE_DEFAULT_DEBUG_AREA=181)
 
 include_directories( ${KDE4_KDEUI_INCLUDES} )
 

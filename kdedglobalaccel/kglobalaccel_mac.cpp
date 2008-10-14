@@ -89,15 +89,15 @@ KGlobalAccelImpl::~KGlobalAccelImpl()
 bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 {
     if (grab) {
-        kDebug(125) << "Grabbing key " << keyQt;
+        kDebug() << "Grabbing key " << keyQt;
         QList<uint> keyCodes;
         uint mod;
         KKeyServer::keyQtToCodeMac( keyQt, keyCodes );
         KKeyServer::keyQtToModMac( keyQt, mod );
         
-        kDebug(125) << "keyQt: " << keyQt << " mod: " << mod;
+        kDebug() << "keyQt: " << keyQt << " mod: " << mod;
         foreach (uint keyCode, keyCodes) {
-            kDebug(125) << "  keyCode: " << keyCode;
+            kDebug() << "  keyCode: " << keyCode;
         }
         
         EventHotKeyID ehkid;
@@ -113,7 +113,7 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
         }
         refs->insert(keyQt, hotkeys);
     } else {
-        kDebug(125) << "Ungrabbing key " << keyQt;
+        kDebug() << "Ungrabbing key " << keyQt;
         if (refs->count(keyQt) == 0) kWarning(125) << "Trying to ungrab a key thas is not grabbed";
         foreach (const EventHotKeyRef &ref, refs->value(keyQt)) {
             if (UnregisterEventHotKey(ref) != noErr) {
