@@ -56,6 +56,7 @@ private Q_SLOTS:
     void moveDirectoryNoPermissions();
     void deleteFile();
     void deleteDirectory();
+    void deleteSymlink();
     void deleteManyDirs();
     void deleteManyFilesIndependently();
     void deleteManyFilesTogether();
@@ -91,6 +92,7 @@ private:
     void moveLocalFile( const QString& src, const QString& dest );
     void moveLocalDirectory( const QString& src, const QString& dest );
     //void copyFileToSystem( bool resolve_local_urls );
+    void deleteSymlink(bool using_fast_path);
     void deleteManyDirs(bool using_fast_path);
     void deleteManyFilesTogether(bool using_fast_path);
 

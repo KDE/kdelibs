@@ -1105,6 +1105,42 @@ void JobTest::deleteDirectory()
     QVERIFY(!QFile::exists(dest));
 }
 
+void JobTest::deleteSymlink(bool using_fast_path)
+{
+    extern KIO_EXPORT bool kio_resolve_local_urls;
+    kio_resolve_local_urls = !using_fast_path;
+
+#ifndef Q_WS_WIN
+    const QString src = homeTmpDir() + "dirFromHome";
+    createTestDirectory(src);
+    QVERIFY(QFile::exists(src));
+    const QString dest = homeTmpDir() + "/dirFromHome_link";
+    if (!QFile::exists(dest)) {
+        // Add a symlink to a dir, to make sure we don't recurse into those
+        bool symlinkOk = symlink(QFile::encodeName(src), QFile::encodeName(dest)) == 0;
+        QVERIFY( symlinkOk );
+        QVERIFY(QFile::exists(dest));
+    }
+    KIO::Job* job = KIO::del(KUrl(dest), KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    QVERIFY(!QFile::exists(dest));
+    QVERIFY(QFile::exists(src));
+#endif
+
+    kio_resolve_local_urls = true;
+}
+
+
+void JobTest::deleteSymlink()
+{
+#ifndef Q_WS_WIN
+    deleteSymlink(true);
+    deleteSymlink(false);
+#endif
+}
+
 void JobTest::deleteManyDirs(bool using_fast_path)
 {
     extern KIO_EXPORT bool kio_resolve_local_urls;
