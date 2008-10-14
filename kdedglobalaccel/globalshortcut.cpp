@@ -138,7 +138,10 @@ void GlobalShortcut::setActive()
 
     Q_FOREACH( int key, _keys)
         {
-        GlobalShortcutsRegistry::instance()->registerKey(key, this);
+        if (!GlobalShortcutsRegistry::instance()->registerKey(key, this))
+            {
+            kDebug() << uniqueName() << ": Failed to register " << QKeySequence(key).toString();
+            }
         }
     }
 
@@ -154,7 +157,10 @@ void GlobalShortcut::setInactive()
 
     Q_FOREACH( int key, _keys)
         {
-        GlobalShortcutsRegistry::instance()->unregisterKey(key, this);
+        if (!GlobalShortcutsRegistry::instance()->unregisterKey(key, this))
+            {
+            kDebug() << uniqueName() << ": Failed to unregister " << QKeySequence(key).toString();
+            }
         }
     }
 

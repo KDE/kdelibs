@@ -103,11 +103,19 @@ void GlobalShortcutsRegistry::loadSettings()
 
 bool GlobalShortcutsRegistry::registerKey(int key, GlobalShortcut *shortcut)
     {
-    if (_active_keys.value(key))
+    Q_ASSERT(_manager);
+    if (key == 0)
         {
-        // Key is already taken
+        kDebug() << shortcut->uniqueName() << ": Key '" << QKeySequence(key).toString()
+                 << "' already taken by " << _active_keys.value(key)->uniqueName() << ".";
         return false;
         }
+    else if (_active_keys.value(key))
+        {
+        kDebug() << shortcut->uniqueName() << ": Attempt to register key 0.";
+        return false;
+        }
+
     _active_keys.insert(key, shortcut);
     return _manager->grabKey(key, true);
     }
@@ -115,6 +123,7 @@ bool GlobalShortcutsRegistry::registerKey(int key, GlobalShortcut *shortcut)
 
 void GlobalShortcutsRegistry::setAccelManager(KGlobalAccelImpl *manager)
     {
+    Q_ASSERT(_manager==NULL);
     _manager = manager;
     }
 
@@ -132,12 +141,18 @@ void GlobalShortcutsRegistry::setInactive()
     }
 
 
-void GlobalShortcutsRegistry::unregisterKey(int key, GlobalShortcut *shortcut)
+bool GlobalShortcutsRegistry::unregisterKey(int key, GlobalShortcut *shortcut)
     {
-    Q_ASSERT(_active_keys.value(key)==shortcut);
+    Q_ASSERT(_manager);
+    if (_active_keys.value(key)!=shortcut)
+        {
+        // The shortcut doesn't own the key or the key isn't grabbed
+        return false;
+        }
 
     _manager->grabKey(key, false);
     _active_keys.take(key);
+    return true;
     }
 
 

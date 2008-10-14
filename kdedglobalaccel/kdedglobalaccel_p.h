@@ -195,7 +195,7 @@ public:
 
     void setInactive();
 
-    void unregisterKey(int key, GlobalShortcut *shortcut);
+    bool unregisterKey(int key, GlobalShortcut *shortcut);
 
     void writeSettings() const;
 
