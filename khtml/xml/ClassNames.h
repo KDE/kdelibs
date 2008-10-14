@@ -30,13 +30,13 @@ using khtml::AtomicString;
 namespace DOM {
 
     class ClassNames {
-        typedef Vector<AtomicString, 8> ClassNameVector;
+        typedef Vector<khtml::AtomicString, 8> ClassNameVector;
     public:
         ClassNames()
         {
         }
 
-        bool contains(const AtomicString& str) const
+        bool contains(const khtml::AtomicString& str) const
         {
             if (!m_nameVector)
                 return false;
@@ -54,7 +54,7 @@ namespace DOM {
 
         size_t size() const { return m_nameVector ? m_nameVector->size() : 0; }
         void clear() { if (m_nameVector) m_nameVector->clear(); }
-        const AtomicString& operator[](size_t i) const { ASSERT(m_nameVector); return m_nameVector->at(i); }
+        const khtml::AtomicString& operator[](size_t i) const { ASSERT(m_nameVector); return m_nameVector->at(i); }
 
     private:
         OwnPtr<ClassNameVector> m_nameVector;
