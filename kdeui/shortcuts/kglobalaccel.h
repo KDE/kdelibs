@@ -47,6 +47,7 @@ class KDEUI_EXPORT KGlobalAccel : public QObject
     Q_OBJECT
 
 public:
+
     /**
      * Returns (and creates if necessary) the singleton instance
      */
@@ -84,12 +85,22 @@ public:
      */
     KDE_DEPRECATED void overrideMainComponentData(const KComponentData &componentData);
 
-//TODO export the enum defining an actionId !
     /**
      * Return the unique and common names of all main components that have global shortcuts.
      * The action strings of the returned actionId stringlists will be empty.
      */
     QList<QStringList> allMainComponents();
+
+    /**
+     * Index for actionId QStringLists
+     */
+    enum actionIdFields
+    {
+        ComponentUnique = 0,        //!< Components Unique Name (ID)
+        ActionUnique = 1,           //!< Actions Unique Name(ID)
+        ComponentFriendly = 2,      //!< Components Friendly Translated Name
+        ActionFriendly = 3          //!< Actions Friendly Translated Name
+    };
 
     /**
      * Return the full actionIds of all actions with global shortcuts for the main component

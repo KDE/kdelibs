@@ -23,6 +23,7 @@
 
 #include "kdedglobalaccel.h"
 #include "kdedglobalaccel_p.h"
+#include "kglobalaccel.h"
 #include "kdebug.h"
 
 
@@ -41,14 +42,6 @@ K_PLUGIN_FACTORY(KdedGlobalAccelFactory,
                  registerPlugin<KdedGlobalAccel>();
     )
 K_EXPORT_PLUGIN(KdedGlobalAccelFactory("globalaccel"))
-
-enum actionIdFields
-{
-    ComponentUnique = 0,
-    ActionUnique = 1,
-    ComponentFriendly = 2,
-    ActionFriendly = 3
-};
 
 class KdedGlobalAccelPrivate
 {
@@ -87,10 +80,10 @@ GlobalShortcut *KdedGlobalAccelPrivate::findAction(const QStringList &actionId) 
 
     //! Get the component
     Component *component = GlobalShortcutsRegistry::self()->getComponent(
-            actionId.at(ComponentUnique));
+            actionId.at(KGlobalAccel::ComponentUnique));
 
     return component
-        ? component->getShortcutByName(actionId.at(ActionUnique))
+        ? component->getShortcutByName(actionId.at(KGlobalAccel::ActionUnique))
         : NULL;
     }
 
@@ -98,10 +91,10 @@ GlobalShortcut *KdedGlobalAccelPrivate::findAction(const QStringList &actionId) 
 Component *KdedGlobalAccelPrivate::component(const QStringList &actionId) const
 {
     // Get the component for the action. If we have none create a new one
-    Component *component = GlobalShortcutsRegistry::self()->getComponent(actionId.at(ComponentUnique));
+    Component *component = GlobalShortcutsRegistry::self()->getComponent(actionId.at(KGlobalAccel::ComponentUnique));
     if (!component)
         {
-        component = new Component(actionId.at(ComponentUnique), actionId.at(ComponentFriendly));
+        component = new Component(actionId.at(KGlobalAccel::ComponentUnique), actionId.at(KGlobalAccel::ComponentFriendly));
         GlobalShortcutsRegistry::self()->addComponent(component);
         Q_ASSERT(component);
         }
@@ -116,11 +109,11 @@ GlobalShortcut *KdedGlobalAccelPrivate::addAction(const QStringList &actionId)
     Component *component = this->component(actionId);
     Q_ASSERT(component);
 
-    Q_ASSERT(!component->getShortcutByName(actionId.at(ActionUnique)));
+    Q_ASSERT(!component->getShortcutByName(actionId.at(KGlobalAccel::ActionUnique)));
 
     return new GlobalShortcut(
-            actionId.at(ActionUnique),
-            actionId.at(ActionFriendly),
+            actionId.at(KGlobalAccel::ActionUnique),
+            actionId.at(KGlobalAccel::ActionFriendly),
             component);
 }
 
@@ -165,8 +158,8 @@ QList<QStringList> KdedGlobalAccel::allMainComponents() const
 
     foreach (const Component *component, GlobalShortcutsRegistry::self()->allMainComponents()) {
         QStringList actionId(emptyList);
-        actionId[ComponentUnique] = component->uniqueName();
-        actionId[ComponentFriendly] = component->friendlyName();
+        actionId[KGlobalAccel::ComponentUnique] = component->uniqueName();
+        actionId[KGlobalAccel::ComponentFriendly] = component->friendlyName();
         ret.append(actionId);
     }
 
@@ -178,16 +171,16 @@ QList<QStringList> KdedGlobalAccel::allActionsForComponent(const QStringList &ac
     //### Would it be advantageous to sort the actions by unique name?
     QList<QStringList> ret;
 
-    Component *const component = GlobalShortcutsRegistry::self()->getComponent(actionId[ComponentUnique]);
+    Component *const component = GlobalShortcutsRegistry::self()->getComponent(actionId[KGlobalAccel::ComponentUnique]);
     if (!component) {
         return ret;
     }
 
-    QStringList partialId(actionId[ComponentUnique]);   //ComponentUnique
-    partialId.append(QString());                        //ActionUnique
+    QStringList partialId(actionId[KGlobalAccel::ComponentUnique]);   //ComponentUnique
+    partialId.append(QString());                                      //ActionUnique
     //Use our internal friendlyName, not the one passed in. We should have the latest data.
-    partialId.append(component->friendlyName());                 //ComponentFriendly
-    partialId.append(QString());                        //ActionFriendly
+    partialId.append(component->friendlyName());                      //ComponentFriendly
+    partialId.append(QString());                                      //ActionFriendly
 
     foreach (const GlobalShortcut *const shortcut, component->allShortcuts()) {
         if (shortcut->isFresh()) {
@@ -195,8 +188,8 @@ QList<QStringList> KdedGlobalAccel::allActionsForComponent(const QStringList &ac
             continue;
         }
         QStringList actionId(partialId);
-        actionId[ActionUnique] = shortcut->uniqueName();
-        actionId[ActionFriendly] = shortcut->friendlyName();
+        actionId[KGlobalAccel::ActionUnique] = shortcut->uniqueName();
+        actionId[KGlobalAccel::ActionFriendly] = shortcut->friendlyName();
         ret.append(actionId);
     }
     return ret;
@@ -247,12 +240,12 @@ void KdedGlobalAccel::doRegister(const QStringList &actionId)
         shortcut = d->addAction(actionId);
     } else {
         //a switch of locales is one common reason for a changing friendlyName
-        if ((!actionId[ActionFriendly].isEmpty()) && shortcut->friendlyName() != actionId[ActionFriendly]) {
-            shortcut->setFriendlyName(actionId[ActionFriendly]);
+        if ((!actionId[KGlobalAccel::ActionFriendly].isEmpty()) && shortcut->friendlyName() != actionId[KGlobalAccel::ActionFriendly]) {
+            shortcut->setFriendlyName(actionId[KGlobalAccel::ActionFriendly]);
             scheduleWriteSettings();
         }
-        if ((!actionId[ComponentFriendly].isEmpty()) && shortcut->component()->friendlyName() != actionId[ComponentFriendly]) {
-            shortcut->component()->setFriendlyName(actionId[ComponentFriendly]);
+        if ((!actionId[KGlobalAccel::ComponentFriendly].isEmpty()) && shortcut->component()->friendlyName() != actionId[KGlobalAccel::ComponentFriendly]) {
+            shortcut->component()->setFriendlyName(actionId[KGlobalAccel::ComponentFriendly]);
             scheduleWriteSettings();
         }
     }
