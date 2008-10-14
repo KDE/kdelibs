@@ -40,16 +40,6 @@
 #include "kshortcut.h"
 
 
-//### copied over from kdedglobalaccel.cpp to avoid more includes
-enum actionIdFields
-{
-    ComponentUnique = 0,
-    ActionUnique = 1,
-    ComponentFriendly = 2,
-    ActionFriendly = 3
-};
-
-
 KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
      : isUsingForeignComponentName(false),
        enabled(true),
@@ -141,7 +131,7 @@ void KGlobalAccelPrivate::doRegister(KAction *action)
     }
     QStringList actionId = makeActionId(action);
 
-    nameToAction.insertMulti(actionId.at(ActionUnique), action);
+    nameToAction.insertMulti(actionId.at(KGlobalAccel::ActionUnique), action);
     actions.insert(action);
     iface.doRegister(actionId);
 }
@@ -160,7 +150,7 @@ void KGlobalAccelPrivate::remove(KAction *action, Removal removal)
 
     QStringList actionId = makeActionId(action);
 
-    nameToAction.remove(actionId.at(ActionUnique), action);
+    nameToAction.remove(actionId.at(KGlobalAccel::ActionUnique), action);
     actions.remove(action);
 
     if (removal == UnRegister) {
@@ -242,7 +232,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 QStringList KGlobalAccelPrivate::makeActionId(const KAction *action)
 {
     QStringList ret(componentUniqueForAction(action));  // Component Unique Id ( see actionIdFields )
-    Q_ASSERT(!ret.at(ComponentUnique).isEmpty());
+    Q_ASSERT(!ret.at(KGlobalAccel::ComponentUnique).isEmpty());
     Q_ASSERT(!action->objectName().isEmpty());
     ret.append(action->objectName());                   // Action Unique Name
     ret.append(componentFriendlyForAction(action));     // Component Friendly name
@@ -296,9 +286,9 @@ void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId, qlonglong
     }
 
     KAction *action = 0;
-    QList<KAction *> candidates = nameToAction.values(actionId.at(ActionUnique));
+    QList<KAction *> candidates = nameToAction.values(actionId.at(KGlobalAccel::ActionUnique));
     foreach (KAction *const a, candidates) {
-        if (componentUniqueForAction(a) == actionId.at(ComponentUnique)) {
+        if (componentUniqueForAction(a) == actionId.at(KGlobalAccel::ComponentUnique)) {
             action = a;
         }
     }
@@ -331,7 +321,7 @@ void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId, qlonglong
 void KGlobalAccelPrivate::_k_shortcutGotChanged(const QStringList &actionId,
                                                 const QList<int> &keys)
 {
-    KAction *action = nameToAction.value(actionId.at(ActionUnique));
+    KAction *action = nameToAction.value(actionId.at(KGlobalAccel::ActionUnique));
     if (!action)
         return;
 
@@ -399,8 +389,8 @@ bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QStringL
     QString message = i18n("The '%1' key combination has already been allocated "
                            "to the global action \"%2\" in %3.\n"
                            "Do you want to reassign it from that action to the current one?",
-                           seq.toString(), actionIdentifier.at(ActionFriendly),
-                           actionIdentifier.at(ComponentFriendly));
+                           seq.toString(), actionIdentifier.at(KGlobalAccel::ActionFriendly),
+                           actionIdentifier.at(KGlobalAccel::ComponentFriendly));
 
     return KMessageBox::warningContinueCancel(parent, message, title, KGuiItem(i18n("Reassign")))
            == KMessageBox::Continue;
