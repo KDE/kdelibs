@@ -44,6 +44,7 @@ public:
     bool settingsDirty:1;
     bool autoSaveWindowSize:1;
     bool care_about_geometry:1;
+    bool sizeApplied:1;
     bool shuttingDown:1;
     KConfigGroup autoSaveGroup;
     QTimer* settingsTimer;
