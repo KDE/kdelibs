@@ -76,8 +76,6 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
        enabled(true),
        iface("org.kde.kded", "/modules/kdedglobalaccel", QDBusConnection::sessionBus())
 {
-    kDebug() << iface.isValid();
-
     // Make sure kded is running
     QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
     if (!bus->isServiceRegistered("org.kde.kded")) {
@@ -85,8 +83,6 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
     }
     QObject::connect(bus, SIGNAL(serviceOwnerChanged(QString, QString, QString)),
                      q, SLOT(_k_serviceOwnerChanged(QString, QString, QString)));
-
-    kDebug() << iface.isValid();
 }
 
 void KGlobalAccelPrivate::readComponentData(const KComponentData &componentData)
@@ -105,8 +101,6 @@ KGlobalAccel::KGlobalAccel()
 {
     qDBusRegisterMetaType<QList<int> >();
 
-    kDebug() << d->iface.isValid();
-
     connect(&d->iface, SIGNAL(invokeAction(const QStringList &, qlonglong)),
             SLOT(_k_invokeAction(const QStringList &, qlonglong)));
     connect(&d->iface, SIGNAL(yourShortcutGotChanged(const QStringList &, const QList<int> &)),
@@ -115,14 +109,12 @@ KGlobalAccel::KGlobalAccel()
     if (KGlobal::hasMainComponent()) {
         d->readComponentData( KGlobal::mainComponent() );
     }
-    kDebug() << d->iface.isValid();
 
 }
 
 
 KGlobalAccel::~KGlobalAccel()
 {
-    //TODO *maybe* we need to ungrab/unregister all
     delete d;
 }
 
@@ -136,20 +128,6 @@ bool KGlobalAccel::isEnabled() const
 void KGlobalAccel::setEnabled(bool enabled)
 {
     d->enabled = enabled;
-
-//TODO: implement this in KdedGlobalAccelInterface... or not at all
-#if 0
-    if (enabled) {
-        foreach (KAction* action, d->actionsWithGlobalShortcuts)
-            checkAction(action);
-
-    } else {
-        foreach (int key, d->grabbedKeys.keys())
-            d->impl->grabKey(key, false);
-        d->grabbedActions.clear();
-        d->grabbedKeys.clear();
-    }
-#endif
 }
 
 
@@ -332,8 +310,6 @@ QString KGlobalAccelPrivate::componentFriendlyForAction(const KAction *action)
 
 void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId, qlonglong timestamp)
 {
-    kDebug() << "##########################################################";
-
     // If overrideMainComponentData() is active the app can only have
     // configuration actions.
     if (isUsingForeignComponentName ) {
