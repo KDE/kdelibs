@@ -54,6 +54,9 @@ public:
 
     /**
      * Checks whether the accelerators are enabled.
+     *
+     * @Bug: enabling / disabling has currently no effect.
+     *
      * @return true if the KGlobalAccel is enabled
      */
     bool isEnabled() const;
