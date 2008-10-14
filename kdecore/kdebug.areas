@@ -1,7 +1,7 @@
 #Debug areas for kdebug()
 # If you plan to add some areas, look at http://lists.kde.org/?l=kde-devel&m=106607933724723&w=2 first.
-# Applications of the kdenonbeta module (or similar) should not define any own area but use area 0.
-# When you add KDebug areas, email kde-devel@kde.org with the appropriate descriptions.
+# Applications of the playground module (or similar) should not define any own area but use area 0.
+# If you need a KDebug area and you don't have svn access, email kde-devel@kde.org with the appropriate descriptions.
 #
 #Format : number<tab>description
 
