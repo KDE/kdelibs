@@ -109,7 +109,7 @@ public:
      * provide, you'll need to use KIO::ERR_SLAVE_DEFINED.
      * For a complete list of what _text should contain for each error code,
      * look at the source of KIO::buildErrorString().
-     * 
+     *
      * You can add rich text markup to the message, the places where the
      * error message will be displayed are rich text aware.
      *
@@ -415,6 +415,14 @@ public:
      * but only for one file or directory.
      * Call statEntry() after creating the appropriate UDSEntry for this
      * url.
+     *
+     * You can use the "details" metadata to optimize this method to only
+     * do as much work as needed by the application.
+     * By default details is 2 (all details wanted, including modification time, size, etc.),
+     * details==1 is used when deleting: we don't need all the information if it takes
+     * too much time, no need to follow symlinks etc.
+     * details==0 is used for very simple probing: we'll only get the answer
+     * "it's a file or a directory (or a symlink), or it doesn't exist".
      */
     virtual void stat( const KUrl& url );
 
