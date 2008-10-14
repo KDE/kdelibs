@@ -717,7 +717,7 @@ KFileItem *KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u 
 
     // Maybe _u is a directory itself? (see KDirModelTest::testChmodDirectory)
     DirItem* dirItem = dirItemForUrl(url);
-    if (dirItem && dirItem->rootItem.url() == url) {
+    if (dirItem && !dirItem->rootItem.isNull() && dirItem->rootItem.url() == url) {
         // If lister is set, check that it contains this dir
         if (!lister || lister->d->lstDirs.contains(url))
             return &dirItem->rootItem;
@@ -1011,7 +1011,15 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
         if ( name == "." )
         {
             Q_ASSERT( dir->rootItem.isNull() );
-            dir->rootItem = KFileItem( *it, url, delayedMimeTypes, true  );
+            // Try to reuse an existing KFileItem (if we listed the parent dir)
+            // rather than creating a new one. There are many reasons:
+            // 1) renames and permission changes to the item would have to emit the signals
+            // twice, otherwise, so that both views manage to recognize the item.
+            // 2) with kio_ftp we can only know that something is a symlink when
+            // listing the parent, so prefer that item, which has more info.
+            dir->rootItem = itemForUrl(url);
+            if (dir->rootItem.isNull())
+                dir->rootItem = KFileItem( *it, url, delayedMimeTypes, true  );
 
             foreach ( KDirLister *kdl, dirData.listersCurrentlyListing )
                 if ( kdl->d->rootFileItem.isNull() && kdl->d->url == url )
@@ -2513,6 +2521,11 @@ void KDirListerCache::DirectoryData::moveListersWithoutCachedItemsJob()
             lister_it.remove();
         }
     }
+}
+
+KFileItem KDirLister::cachedItemForUrl(const KUrl& url)
+{
+    return kDirListerCache->itemForUrl(url);
 }
 
 #include "kdirlister.moc"

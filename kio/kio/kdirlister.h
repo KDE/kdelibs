@@ -427,6 +427,18 @@ public:
   KFileItemList itemsForDir( const KUrl& dir,
                              WhichItems which = FilteredItems ) const;
 
+    /**
+     * Return the KFileItem for the given URL, if we listed it recently
+     * and it's still in the cache - which is always the case if a directory
+     * view is currently showing this item. If not, then it might be in the
+     * cache, or it might not, in which case you get a null KFileItem.
+     * If you really need a KFileItem for this URL in all cases, then use
+     * KIO::stat() instead.
+     *
+     * @since 4.2
+     */
+    static KFileItem cachedItemForUrl(const KUrl& url);
+
 Q_SIGNALS:
 
   /**
@@ -511,7 +523,7 @@ Q_SIGNALS:
    *
    * @param _fileItem the fileItem to delete
    */
-  void deleteItem( const KFileItem &_fileItem ); // KDE5: remove, and port to deleteItems
+  void deleteItem( const KFileItem &_fileItem ); // KDE5: remove, and port to itemsDeleted
 
   /**
    * Signal that items have been deleted
