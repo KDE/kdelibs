@@ -69,6 +69,7 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ID_I), "i");
     s_idTable->addStaticMapping(localNamePart(ID_IFRAME), "iframe");
     s_idTable->addStaticMapping(localNamePart(ID_ILAYER), "ilayer");
+    s_idTable->addStaticMapping(localNamePart(ID_IMAGE), "image");
     s_idTable->addStaticMapping(localNamePart(ID_IMG), "img");
     s_idTable->addStaticMapping(localNamePart(ID_INPUT), "input");
     s_idTable->addStaticMapping(localNamePart(ID_INS), "ins");

@@ -698,6 +698,7 @@ void ProspectiveTokenizer::processAttribute()
     const DOMString value = DOMString(m_attributeValue.data(), m_attributeValue.size()); // ####
     switch (tag) {
       case ID_SCRIPT:
+      case ID_IMAGE:
       case ID_IMG:
           if (attribute == ATTR_SRC && m_urlToLoad.isEmpty())
               m_urlToLoad = parseURL(value);
@@ -845,7 +846,7 @@ void ProspectiveTokenizer::emitTag()
     CachedObject* o = 0;
     if (tag == ID_SCRIPT)
          o = m_document->docLoader()->requestScript( m_urlToLoad, m_document->view()->part()->encoding() );
-    else if (tag == ID_IMG) 
+    else if (tag == ID_IMAGE || tag == ID_IMG) 
          o = m_document->docLoader()->requestImage( m_urlToLoad );
     else if (tag == ID_LINK && m_linkIsStyleSheet) 
         o = m_document->docLoader()->requestStyleSheet( m_urlToLoad, m_document->view()->part()->encoding() );

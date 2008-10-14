@@ -1090,6 +1090,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         break;
 
 // images
+    case ID_IMAGE:
     case ID_IMG:
         if (t->attrs&&
             KHTMLGlobal::defaultHTMLSettings()->isAdFilterEnabled()&&

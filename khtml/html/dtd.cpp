@@ -95,6 +95,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriorityArray[] = {
     1, // ID_I
     1, // ID_IFRAME
     1, // ID_ILAYER
+    0, // ID_IMAGE
     0, // ID_IMG
     0, // ID_INPUT
     1, // ID_INS
@@ -207,6 +208,7 @@ const tagStatus DOM::endTagArray[] = {
     REQUIRED,  // ID_I
     REQUIRED,  // ID_IFRAME
     REQUIRED,  // ID_ILAYER
+    FORBIDDEN, // ID_IMAGE
     FORBIDDEN, // ID_IMG
     FORBIDDEN, // ID_INPUT
     REQUIRED,  // ID_INS
@@ -306,6 +308,7 @@ static const ushort tag_list_inline[] = {
     // %special
     ID_A,
     ID_OBJECT,
+    ID_IMAGE,
     ID_IMG,
     ID_APPLET,
     ID_IFRAME,
@@ -499,6 +502,7 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
     case ID_BR:
     case ID_AREA:
     case ID_LINK:
+    case ID_IMAGE:
     case ID_IMG:
     case ID_PARAM:
     case ID_HR:
@@ -675,6 +679,7 @@ void DOM::addForbidden(int tagId, ushort *forbiddenTags)
     case ID_LISTING:
     case ID_PLAINTEXT:
     case ID_XMP:
+        //forbiddenTags[ID_IMAGE]++;
         //forbiddenTags[ID_IMG]++;
         forbiddenTags[ID_OBJECT]++;
         forbiddenTags[ID_EMBED]++;
@@ -721,6 +726,7 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
     case ID_LISTING:
     case ID_XMP:
     case ID_PLAINTEXT:
+        //forbiddenTags[ID_IMAGE]--;
         //forbiddenTags[ID_IMG]--;
         forbiddenTags[ID_OBJECT]--;
         forbiddenTags[ID_EMBED]--;

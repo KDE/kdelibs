@@ -997,6 +997,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 
 // images
     case ID_IMG:
+    case ID_IMAGE: // legacy name
         n = new HTMLImageElementImpl(docPtr());
         break;
     case ID_CANVAS:
