@@ -119,7 +119,7 @@ void Component::loadSettings(KConfigGroup &configGroup)
 
             foreach (int key, keys) {
                 if (key != 0) {
-                    if (GlobalShortcutsRegistry::instance()->getShortcutByKey(key)) {
+                    if (GlobalShortcutsRegistry::self()->getShortcutByKey(key)) {
                         // The shortcut is already used. The config file is
                         // broken. Ignore the request.
                         keys.removeAll(key);

@@ -86,7 +86,7 @@ GlobalShortcut *KdedGlobalAccelPrivate::findAction(const QStringList &actionId) 
         }
 
     //! Get the component
-    Component *component = GlobalShortcutsRegistry::instance()->getComponent(
+    Component *component = GlobalShortcutsRegistry::self()->getComponent(
             actionId.at(ComponentUnique));
 
     return component
@@ -98,11 +98,11 @@ GlobalShortcut *KdedGlobalAccelPrivate::findAction(const QStringList &actionId) 
 Component *KdedGlobalAccelPrivate::component(const QStringList &actionId) const
 {
     // Get the component for the action. If we have none create a new one
-    Component *component = GlobalShortcutsRegistry::instance()->getComponent(actionId.at(ComponentUnique));
+    Component *component = GlobalShortcutsRegistry::self()->getComponent(actionId.at(ComponentUnique));
     if (!component)
         {
         component = new Component(actionId.at(ComponentUnique), actionId.at(ComponentFriendly));
-        GlobalShortcutsRegistry::instance()->addComponent(component);
+        GlobalShortcutsRegistry::self()->addComponent(component);
         Q_ASSERT(component);
         }
     return component;
@@ -133,14 +133,14 @@ KdedGlobalAccel::KdedGlobalAccel(QObject* parent, const QList<QVariant>&)
     qDBusRegisterMetaType<QList<int> >();
 
     d->impl = new KGlobalAccelImpl(this);
-    GlobalShortcutsRegistry::instance()->setAccelManager(d->impl);
+    GlobalShortcutsRegistry::self()->setAccelManager(d->impl);
     d->impl->setEnabled(true);
 
     connect(&d->writeoutTimer, SIGNAL(timeout()), SLOT(writeSettings()));
     d->writeoutTimer.setSingleShot(true);
     connect(this, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(writeSettings()));
 
-    GlobalShortcutsRegistry::instance()->loadSettings();
+    GlobalShortcutsRegistry::self()->loadSettings();
 }
 
 
@@ -148,7 +148,7 @@ KdedGlobalAccel::~KdedGlobalAccel()
 {
     // Unregister all currently registered actions. Enables the module to be
     // loaded / unloaded by kded.
-    GlobalShortcutsRegistry::instance()->setInactive();
+    GlobalShortcutsRegistry::self()->setInactive();
     d->impl->setEnabled(false);
 
     delete d->impl;
@@ -163,7 +163,7 @@ QList<QStringList> KdedGlobalAccel::allMainComponents() const
         emptyList.append(QString());
     }
 
-    foreach (const Component *component, GlobalShortcutsRegistry::instance()->allMainComponents()) {
+    foreach (const Component *component, GlobalShortcutsRegistry::self()->allMainComponents()) {
         QStringList actionId(emptyList);
         actionId[ComponentUnique] = component->uniqueName();
         actionId[ComponentFriendly] = component->friendlyName();
@@ -178,7 +178,7 @@ QList<QStringList> KdedGlobalAccel::allActionsForComponent(const QStringList &ac
     //### Would it be advantageous to sort the actions by unique name?
     QList<QStringList> ret;
 
-    Component *const component = GlobalShortcutsRegistry::instance()->getComponent(actionId[ComponentUnique]);
+    Component *const component = GlobalShortcutsRegistry::self()->getComponent(actionId[ComponentUnique]);
     if (!component) {
         return ret;
     }
@@ -204,7 +204,7 @@ QList<QStringList> KdedGlobalAccel::allActionsForComponent(const QStringList &ac
 
 QStringList KdedGlobalAccel::action(int key) const
 {
-    GlobalShortcut *shortcut = GlobalShortcutsRegistry::instance()->getShortcutByKey(key);
+    GlobalShortcut *shortcut = GlobalShortcutsRegistry::self()->getShortcutByKey(key);
     QStringList ret;
     if (shortcut) {
         ret.append(shortcut->component()->uniqueName());
@@ -356,13 +356,13 @@ void KdedGlobalAccel::scheduleWriteSettings() const
 
 void KdedGlobalAccel::writeSettings() const
     {
-    GlobalShortcutsRegistry::instance()->writeSettings();
+    GlobalShortcutsRegistry::self()->writeSettings();
     }
 
 
 bool KdedGlobalAccel::keyPressed(int keyQt)
     {
-    GlobalShortcut *shortcut = GlobalShortcutsRegistry::instance()->getShortcutByKey(keyQt);
+    GlobalShortcut *shortcut = GlobalShortcutsRegistry::self()->getShortcutByKey(keyQt);
     kDebug() << QKeySequence(keyQt).toString() << "=" << shortcut->uniqueName();
 
     if (!shortcut || !shortcut->isActive()) {

@@ -185,7 +185,7 @@ public:
      */
     GlobalShortcut *getShortcutByKey(int key) const;
 
-    static GlobalShortcutsRegistry *instance();
+    static GlobalShortcutsRegistry *self();
 
     void loadSettings();
 

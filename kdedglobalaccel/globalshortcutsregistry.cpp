@@ -69,7 +69,7 @@ GlobalShortcut *GlobalShortcutsRegistry::getShortcutByKey(int key) const
     }
 
 
-GlobalShortcutsRegistry * GlobalShortcutsRegistry::instance()
+GlobalShortcutsRegistry * GlobalShortcutsRegistry::self()
     {
     K_GLOBAL_STATIC( GlobalShortcutsRegistry, self );
     return self;
@@ -160,7 +160,7 @@ void GlobalShortcutsRegistry::writeSettings() const
     {
     Q_FOREACH(
             const Component *component,
-            GlobalShortcutsRegistry::instance()->allMainComponents()) 
+            GlobalShortcutsRegistry::self()->allMainComponents()) 
         {
         KConfigGroup configGroup(&_config, component->uniqueName());
         component->writeSettings(configGroup);
