@@ -57,14 +57,10 @@ public:
     KdedGlobalAccelPrivate();
     ~KdedGlobalAccelPrivate();
 
-    GlobalShortcut *findAction(int) const;
     GlobalShortcut *findAction(const QStringList &actionId) const;
     GlobalShortcut *addAction(const QStringList &actionId);
 
     Component *component(const QStringList &actionId) const;
-
-    //! Returns true if the list only contains zeros
-    static bool isEmpty(const QList<int>&);
 
     QTimer writeoutTimer;
 
@@ -80,12 +76,6 @@ KdedGlobalAccelPrivate::KdedGlobalAccelPrivate()
 
 KdedGlobalAccelPrivate::~KdedGlobalAccelPrivate()
     {
-    }
-
-
-GlobalShortcut *KdedGlobalAccelPrivate::findAction(int key) const
-    {
-    return GlobalShortcutsRegistry::instance()->getShortcutByKey(key);
     }
 
 
@@ -129,12 +119,6 @@ GlobalShortcut *KdedGlobalAccelPrivate::addAction(const QStringList &actionId)
             actionId.at(ActionUnique),
             actionId.at(ActionFriendly),
             component);
-}
-
-
-bool KdedGlobalAccelPrivate::isEmpty(const QList<int>& keys)
-{
-    return keys.count() == keys.count(0);
 }
 
 
