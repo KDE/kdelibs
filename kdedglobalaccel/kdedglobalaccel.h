@@ -107,19 +107,13 @@ private Q_SLOTS:
 
 private:
 
-    void loadSettings();
     void scheduleWriteSettings() const;
-
-    QList<int> keysFromString(const QString &str) const;
-    QString stringFromKeys(const QList<int> &keys) const;
-
 
     friend class KGlobalAccelImpl;
 
     //called by the implementation to inform us about key presses
     //returns true if the key was handled
     bool keyPressed(int keyQt);
-
 
     KdedGlobalAccelPrivate *const d;
 };

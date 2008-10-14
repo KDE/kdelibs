@@ -66,7 +66,6 @@ public:
     //! Returns true if the list only contains zeros
     static bool isEmpty(const QList<int>&);
 
-    KConfig config;
     QTimer writeoutTimer;
 
     KGlobalAccelImpl *impl;
@@ -74,8 +73,7 @@ public:
 
 
 KdedGlobalAccelPrivate::KdedGlobalAccelPrivate()
-    :   config("kglobalshortcutsrc", KConfig::SimpleConfig)
-        ,impl(NULL)
+    :   impl(NULL)
     {
     }
 
@@ -157,7 +155,7 @@ KdedGlobalAccel::KdedGlobalAccel(QObject* parent, const QList<QVariant>&)
     d->writeoutTimer.setSingleShot(true);
     connect(this, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(writeSettings()));
 
-    loadSettings();
+    GlobalShortcutsRegistry::instance()->loadSettings();
 }
 
 
@@ -388,122 +386,10 @@ void KdedGlobalAccel::scheduleWriteSettings() const
 }
 
 
-//slot
 void KdedGlobalAccel::writeSettings() const
-{
-        foreach (const Component *component, GlobalShortcutsRegistry::instance()->allMainComponents()) {
-        KConfigGroup configGroup(&d->config, component->uniqueName());
-
-        // If we don't delete the current content global shortcut
-        // registrations will never not deleted after forgetGlobalShortcut()
-        configGroup.deleteGroup();
-
-        KConfigGroup friendlyGroup(&configGroup, "Friendly Name");  // :)
-        friendlyGroup.writeEntry("Friendly Name", component->friendlyName());
-
-        foreach (const GlobalShortcut *shortcut, component->allShortcuts()) {
-            if (shortcut->isFresh()) {
-                //no shortcut assignement took place, the action was only registered
-                //(we could still write it out to document its existence, but the "fresh"
-                //state should be regarded as transitional *only*.)
-                continue;
-            }
-
-            // We do not write session shortcuts
-            if (!shortcut->uniqueName().startsWith("_k_session:")) {
-                QStringList entry(stringFromKeys(shortcut->keys()));
-                entry.append(stringFromKeys(shortcut->defaultKeys()));
-                entry.append(shortcut->friendlyName());
-
-                configGroup.writeEntry(shortcut->uniqueName(), entry);
-            }
-        }
+    {
+    GlobalShortcutsRegistry::instance()->writeSettings();
     }
-
-    d->config.sync();
-}
-
-
-void KdedGlobalAccel::loadSettings()
-{
-    kDebug();
-
-    QStringList lActionId;
-    for (int i = 0; i < 4; i++) {
-        lActionId.append(QString());
-    }
-
-    foreach (const QString &groupName, d->config.groupList()) {
-        KConfigGroup configGroup(&d->config, groupName);
-        lActionId[ComponentUnique] = groupName;
-
-        kDebug() << groupName;
-
-        KConfigGroup friendlyGroup(&configGroup, "Friendly Name");
-        lActionId[ComponentFriendly] = friendlyGroup.readEntry("Friendly Name");
-
-        foreach (const QString &confKey, configGroup.keyList()) {
-            const QStringList entry = configGroup.readEntry(confKey, QStringList());
-            if (entry.size() != 3) {
-                continue;
-            }
-            lActionId[ActionUnique] = confKey;
-            lActionId[ActionFriendly] = entry[2];
-
-            kDebug() << confKey;
-
-            GlobalShortcut *shortcut = d->addAction(lActionId);
-            QList<int> keys = keysFromString(entry[0]);
-            shortcut->setDefaultKeys(keysFromString(entry[1]));
-            shortcut->setIsFresh(false);
-
-            foreach (int key, keys) {
-                if (key != 0) {
-                    if (GlobalShortcutsRegistry::instance()->getShortcutByKey(key)) {
-                        // The shortcut is already used. The config file is
-                        // broken. Ignore the request.
-                        keys.removeAll(key);
-                        kWarning() << "Shortcut found twice in kglobalshortcutsrc.";
-                    }
-                }
-            }
-            shortcut->setKeys(keys);
-        }
-    }
-}
-
-
-QList<int> KdedGlobalAccel::keysFromString(const QString &str) const
-{
-    QList<int> ret;
-    if (str == "none") {
-        return ret;
-    }
-    QStringList strList = str.split('\t');
-    foreach (const QString &s, strList) {
-        int key = QKeySequence(s)[0];
-        if (key != -1) {     //sanity check just in case
-            ret.append(key);
-        }
-    }
-    return ret;
-}
-
-
-QString KdedGlobalAccel::stringFromKeys(const QList<int> &keys) const
-{
-    if (keys.isEmpty()) {
-        return "none";
-    }
-    QString ret;
-    foreach (int key, keys) {
-        ret.append(QKeySequence(key).toString());
-        ret.append('\t');
-    }
-    ret.chop(1);
-    return ret;
-}
-
 
 bool KdedGlobalAccel::keyPressed(int keyQt)
 {

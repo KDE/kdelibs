@@ -26,6 +26,7 @@ GlobalShortcutsRegistry::GlobalShortcutsRegistry()
     :   _active_keys()
         ,_components()
         ,_manager(NULL)
+        ,_config("kglobalshortcutsrc", KConfig::SimpleConfig)
     {}
 
 
@@ -75,6 +76,32 @@ GlobalShortcutsRegistry * GlobalShortcutsRegistry::instance()
     }
 
 
+void GlobalShortcutsRegistry::loadSettings()
+    {
+    foreach (const QString &groupName, _config.groupList())
+        {
+        // Skip the subgroups [Friendly Name]
+        if (groupName.indexOf('\x1d')!=-1)
+            {
+            continue;
+            }
+        kDebug() << groupName;
+
+        KConfigGroup configGroup(&_config, groupName);
+        Component *component = getComponent(groupName);
+
+        if (!component)
+            {
+            KConfigGroup friendlyGroup(&configGroup, "Friendly Name");
+            component = new Component(groupName, friendlyGroup.readEntry("Friendly Name"));
+            addComponent(component);
+            }
+
+        component->loadSettings(configGroup);
+        }
+    }
+
+
 void GlobalShortcutsRegistry::registerKey(int key, GlobalShortcut *shortcut)
     {
     kDebug(125) << shortcut->uniqueName() << QKeySequence(key).toString();
@@ -112,5 +139,20 @@ void GlobalShortcutsRegistry::unregisterKey(int key, GlobalShortcut *shortcut)
     _manager->grabKey(key, false);
     _active_keys.take(key);
     }
+
+
+void GlobalShortcutsRegistry::writeSettings() const
+    {
+    Q_FOREACH(
+            const Component *component,
+            GlobalShortcutsRegistry::instance()->allMainComponents()) 
+        {
+        KConfigGroup configGroup(&_config, component->uniqueName());
+        component->writeSettings(configGroup);
+
+    }
+
+    _config.sync();
+}
 
 

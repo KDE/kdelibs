@@ -19,6 +19,37 @@
 #include "kdedglobalaccel_p.h"
 #include <kdebug.h>
 
+static QList<int> keysFromString(const QString &str)
+{
+    QList<int> ret;
+    if (str == "none") {
+        return ret;
+    }
+    QStringList strList = str.split('\t');
+    foreach (const QString &s, strList) {
+        int key = QKeySequence(s)[0];
+        if (key != -1) {     //sanity check just in case
+            ret.append(key);
+        }
+    }
+    return ret;
+}
+
+
+static QString stringFromKeys(const QList<int> &keys)
+{
+    if (keys.isEmpty()) {
+        return "none";
+    }
+    QString ret;
+    foreach (int key, keys) {
+        ret.append(QKeySequence(key).toString());
+        ret.append('\t');
+    }
+    ret.chop(1);
+    return ret;
+}
+
 
 Component::Component( const QString &uniqueName, const QString &friendlyName)
         :   _uniqueName(uniqueName)
@@ -30,7 +61,6 @@ Component::Component( const QString &uniqueName, const QString &friendlyName)
 Component::~Component()
     {
     qDeleteAll(_actions);
-    Q_ASSERT(_actions.isEmpty());
     }
 
 
@@ -69,6 +99,40 @@ GlobalShortcut *Component::getShortcutByName(const QString &uniqueName)
     }
 
 
+void Component::loadSettings(KConfigGroup &configGroup)
+    {
+        foreach (const QString &confKey, configGroup.keyList()) 
+            {
+            const QStringList entry = configGroup.readEntry(confKey, QStringList());
+            if (entry.size() != 3) 
+                {
+                continue;
+                }
+
+            GlobalShortcut *shortcut = new GlobalShortcut(
+                    confKey,
+                    entry[2],
+                    this);
+
+            QList<int> keys = keysFromString(entry[0]);
+            shortcut->setDefaultKeys(keysFromString(entry[1]));
+            shortcut->setIsFresh(false);
+
+            foreach (int key, keys) {
+                if (key != 0) {
+                    if (GlobalShortcutsRegistry::instance()->getShortcutByKey(key)) {
+                        // The shortcut is already used. The config file is
+                        // broken. Ignore the request.
+                        keys.removeAll(key);
+                        kWarning() << "Shortcut found twice in kglobalshortcutsrc.";
+                    }
+                }
+            }
+            shortcut->setKeys(keys);
+        }
+    }
+
+
 void Component::setFriendlyName(const QString &name)
     {
     _friendlyName = name;
@@ -99,3 +163,29 @@ GlobalShortcut *Component::takeAction(GlobalShortcut *shortcut)
     return NULL;
     }
 
+
+void Component::writeSettings(KConfigGroup& configGroup) const
+    {
+    // If we don't delete the current content global shortcut
+    // registrations will never not deleted after forgetGlobalShortcut()
+    configGroup.deleteGroup();
+
+    KConfigGroup friendlyGroup(&configGroup, "Friendly Name");
+    friendlyGroup.writeEntry("Friendly Name", friendlyName());
+
+    foreach (const GlobalShortcut *shortcut, allShortcuts()) 
+        {
+        // We do not write fresh shortcuts.
+        // We do not write session shortcuts
+        if (shortcut->isFresh() || shortcut->uniqueName().startsWith("_k_session:"))
+            {
+            continue;
+            }
+
+        QStringList entry(stringFromKeys(shortcut->keys()));
+        entry.append(stringFromKeys(shortcut->defaultKeys()));
+        entry.append(shortcut->friendlyName());
+
+        configGroup.writeEntry(shortcut->uniqueName(), entry);
+        }
+    }

@@ -22,6 +22,9 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kconfiggroup.h"
+#include "ksharedconfig.h"
+
 #include <QtCore/QHash>
 #include <QtCore/QList>
 #include <QtCore/QString>
@@ -131,6 +134,8 @@ public:
 
     GlobalShortcut *getShortcutByName(const QString &uniqueName);
 
+    void loadSettings(KConfigGroup &config);
+
     void setInactive();
 
     void setUniqueName(const QString &);
@@ -140,6 +145,8 @@ public:
     GlobalShortcut *takeAction(GlobalShortcut *shortcut);
 
     QString uniqueName() const;
+
+    void writeSettings(KConfigGroup &config) const;
 
 private:
 
@@ -180,6 +187,8 @@ public:
 
     static GlobalShortcutsRegistry *instance();
 
+    void loadSettings();
+
     void setAccelManager(KGlobalAccelImpl *manager);
 
     void registerKey(int key, GlobalShortcut *shortcut);
@@ -187,6 +196,8 @@ public:
     void setInactive();
 
     void unregisterKey(int key, GlobalShortcut *shortcut);
+
+    void writeSettings() const;
 
 private:
 
@@ -198,6 +209,8 @@ private:
     QHash<QString, Component *> _components;
 
     KGlobalAccelImpl *_manager;
+
+    mutable KConfig _config;
     };
 
 #endif // KDEDGLOBALACCEL_P_H
