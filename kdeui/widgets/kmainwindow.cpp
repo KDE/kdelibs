@@ -284,6 +284,8 @@ void KMainWindowPrivate::init(KMainWindow *_q)
 
     dockResizeListener = new DockResizeListener(_q);
     letDirtySettings = true;
+
+    sizeApplied = false;
 }
 
 static bool endsWithHashNumber( const QString& s )
@@ -677,6 +679,8 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
 
 bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 {
+    K_D(KMainWindow);
+
     if ( number == 1 )
         readGlobalProperties( config );
 
@@ -691,6 +695,8 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
     if ( cg.hasKey(QLatin1String("ObjectName" )) )
         setObjectName( cg.readEntry("ObjectName").toLatin1()); // latin1 is right here
 
+    d->sizeApplied = false; // since we are changing config file, reload the size of the window
+                            // if necessary. Do it before the call to applyMainWindowSettings.
     applyMainWindowSettings(cg); // Menubar, statusbar and toolbar settings.
 
     s.setNum(number);
@@ -708,7 +714,10 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
 
     d->letDirtySettings = false;
 
-    restoreWindowSize(cg);
+    if (!d->sizeApplied) {
+        restoreWindowSize(cg);
+        d->sizeApplied = true;
+    }
 
     QStatusBar* sb = internalStatusBar(this);
     if (sb) {
