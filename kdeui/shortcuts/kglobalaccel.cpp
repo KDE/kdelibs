@@ -22,39 +22,17 @@
 #include "kglobalaccel.h"
 #include "kglobalaccel_p.h"
 
-#if 0
-// For KGlobalAccelImpl
-#ifdef Q_WS_X11
-#include "kglobalaccel_x11.h"
-#elif defined(Q_WS_MACX)
-#include "kglobalaccel_mac.h"
-#elif defined(Q_WS_WIN)
-#include "kglobalaccel_win.h"
-#elif defined(Q_WS_QWS)
-#include "kglobalaccel_qws.h"
-#else
-#include "kglobalaccel_emb.h"
-#endif
-#endif
-
-#include <QtCore/QCoreApplication>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusMetaType>
 #ifdef Q_WS_X11
 #include <QtGui/QX11Info>
 #include <netwm_def.h>
-#include <X11/X.h>
-#include <fixx11h.h>
 #endif
 
 #include <kdebug.h>
-#include <klocale.h>
 #include <ktoolinvocation.h>
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
-#include <kconfig.h>
-#include <kconfiggroup.h>
-#include <kglobal.h>
 #include "kaction.h"
 #include "kaction_p.h"
 #include "kmessagebox.h"
