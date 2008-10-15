@@ -881,6 +881,7 @@ void KFileWidget::slotOk()
                 d->urlList << url;
             }
         } else {
+            KMessageBox::sorry(this, i18n("The file %1 could not be found", url.url()), i18n("Cannot open file"));
             return; // do not emit accepted() if we had ExistingOnly flag and stat failed
         }
     }
