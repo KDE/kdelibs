@@ -18,6 +18,7 @@ KIO_EXECUTABLE_TESTS(
   kurlrequestertest
   kopenwithtest
   kicondialogtest
+  kfiledialogtest
 )
 
 ########### next target ###############
