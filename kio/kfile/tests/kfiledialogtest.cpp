@@ -123,5 +123,14 @@ int main (int argc, char **argv)
         KMessageBox::information(0, QString("Dialog for 'getSaveUrl' cancelled"));
     }
 
+    // Test for: getImageOpenUrl.
+    //     - Is the same as getOpenUrl but showing inline previews.
+    KUrl getImageOpenUrl = KFileDialog::getImageOpenUrl();
+    if (getImageOpenUrl.isValid()) {
+        KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getImageOpenUrl.url()), "Dialog for 'getImageOpenUrl' accepted");
+    } else {
+        KMessageBox::information(0, QString("Dialog for 'getImageOpenUrl' cancelled"));
+    }
+
     return 0;
 }
