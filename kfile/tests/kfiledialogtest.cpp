@@ -100,5 +100,28 @@ int main (int argc, char **argv)
         KMessageBox::information(0, QString("Dialog for 'getOpenUrls' cancelled"));
     }
 
+    // Test for: getSaveFileName.
+    //     - Should return the selected file (if any).
+    //     - Should return an empty string if 'Cancel' was pressed.
+    //     - Don't care about existing or non existing filenames.
+    QString getSaveFileName = KFileDialog::getSaveFileName();
+    if (!getSaveFileName.isEmpty()) {
+        KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getSaveFileName), "Dialog for 'getSaveFileName' accepted");
+    } else {
+        KMessageBox::information(0, QString("Dialog for 'getSaveFileName' cancelled"));
+    }
+
+    // Test for: getSaveUrl.
+    //     - Is a convenience method for getSaveFileName, that returns a KUrl object instead of a
+    //       QString object.
+    //     - From the previous point it is expectable that its behavior should be the same as
+    //       getSaveFileName
+    KUrl getSaveUrl = KFileDialog::getSaveUrl();
+    if (getSaveUrl.isValid()) {
+        KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getSaveUrl.url()), "Dialog for 'getSaveUrl' accepted");
+    } else {
+        KMessageBox::information(0, QString("Dialog for 'getSaveUrl' cancelled"));
+    }.
+
     return 0;
 }
