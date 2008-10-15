@@ -293,7 +293,7 @@ void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId, qlonglong
         }
     }
 
-    // We do not trigger if 
+    // We do not trigger if
     // - there is no action
     // - the action is not enabled
     // - the action is an configuration action

@@ -34,13 +34,13 @@ GlobalShortcutsRegistry::~GlobalShortcutsRegistry()
     {}
 
 
-Component *GlobalShortcutsRegistry::addComponent(Component *component)
+KdeDGlobalAccel::Component *GlobalShortcutsRegistry::addComponent(KdeDGlobalAccel::Component *component)
     {
     return *(_components.insert(component->uniqueName(), component));
     }
 
 
-QList<Component*> GlobalShortcutsRegistry::allMainComponents() const
+QList<KdeDGlobalAccel::Component*> GlobalShortcutsRegistry::allMainComponents() const
     {
     return _components.values();
     }
@@ -52,7 +52,7 @@ GlobalShortcut *GlobalShortcutsRegistry::getActiveShortcutByKey(int key) const
     }
 
 
-Component *GlobalShortcutsRegistry::getComponent(const QString &uniqueName)
+KdeDGlobalAccel::Component *GlobalShortcutsRegistry::getComponent(const QString &uniqueName)
     {
     return _components.value(uniqueName);
     }
@@ -60,7 +60,7 @@ Component *GlobalShortcutsRegistry::getComponent(const QString &uniqueName)
 
 GlobalShortcut *GlobalShortcutsRegistry::getShortcutByKey(int key) const
     {
-    Q_FOREACH (Component *component, _components)
+    Q_FOREACH (KdeDGlobalAccel::Component *component, _components)
         {
         GlobalShortcut *rc = component->getShortcutByKey(key);
         if (rc) return rc;
@@ -87,12 +87,12 @@ void GlobalShortcutsRegistry::loadSettings()
             }
 
         KConfigGroup configGroup(&_config, groupName);
-        Component *component = getComponent(groupName);
+        KdeDGlobalAccel::Component *component = getComponent(groupName);
 
         if (!component)
             {
             KConfigGroup friendlyGroup(&configGroup, "Friendly Name");
-            component = new Component(groupName, friendlyGroup.readEntry("Friendly Name"));
+            component = new KdeDGlobalAccel::Component(groupName, friendlyGroup.readEntry("Friendly Name"));
             addComponent(component);
             }
 
@@ -134,7 +134,7 @@ void GlobalShortcutsRegistry::setInactive()
 
     // Unregister all currently registered actions. Enables the module to be
     // loaded / unloaded by kded.
-    Q_FOREACH (Component *component, _components)
+    Q_FOREACH (KdeDGlobalAccel::Component *component, _components)
         {
         component->setInactive();
         }
@@ -159,8 +159,8 @@ bool GlobalShortcutsRegistry::unregisterKey(int key, GlobalShortcut *shortcut)
 void GlobalShortcutsRegistry::writeSettings() const
     {
     Q_FOREACH(
-            const Component *component,
-            GlobalShortcutsRegistry::self()->allMainComponents()) 
+            const KdeDGlobalAccel::Component *component,
+            GlobalShortcutsRegistry::self()->allMainComponents())
         {
         KConfigGroup configGroup(&_config, component->uniqueName());
         component->writeSettings(configGroup);

@@ -23,7 +23,7 @@
 
 
 
-GlobalShortcut::GlobalShortcut(const QString &uniqueName, const QString &friendlyName, Component *component)
+GlobalShortcut::GlobalShortcut(const QString &uniqueName, const QString &friendlyName, KdeDGlobalAccel::Component *component)
         :   _isPresent(false)
             ,_isFresh(true)
             ,_component(component)
@@ -55,7 +55,7 @@ void GlobalShortcut::setIsFresh(bool value)
     }
 
 
-Component *GlobalShortcut::component()
+KdeDGlobalAccel::Component *GlobalShortcut::component()
     {
     return _component;
     }

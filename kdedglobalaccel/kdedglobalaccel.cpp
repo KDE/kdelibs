@@ -21,12 +21,6 @@
 */
 
 
-#include "kdedglobalaccel.h"
-#include "kdedglobalaccel_p.h"
-#include "kglobalaccel.h"
-#include "kdebug.h"
-
-
 #include <QtCore/QTimer>
 #include <QtDBus/QDBusMetaType>
 
@@ -34,6 +28,11 @@
 #include <QtGui/QX11Info>
 #include <QtGui/QApplication>
 #endif
+
+#include "kdedglobalaccel.h"
+#include "kdedglobalaccel_p.h"
+#include "kglobalaccel.h"
+#include "kdebug.h"
 
 #include "kpluginfactory.h"
 #include "kpluginloader.h"
@@ -52,7 +51,7 @@ public:
     GlobalShortcut *findAction(const QStringList &actionId) const;
     GlobalShortcut *addAction(const QStringList &actionId);
 
-    Component *component(const QStringList &actionId) const;
+    KdeDGlobalAccel::Component *component(const QStringList &actionId) const;
 
     QTimer writeoutTimer;
 
@@ -79,7 +78,7 @@ GlobalShortcut *KdedGlobalAccelPrivate::findAction(const QStringList &actionId) 
         }
 
     //! Get the component
-    Component *component = GlobalShortcutsRegistry::self()->getComponent(
+    KdeDGlobalAccel::Component *component = GlobalShortcutsRegistry::self()->getComponent(
             actionId.at(KGlobalAccel::ComponentUnique));
 
     return component
@@ -88,13 +87,13 @@ GlobalShortcut *KdedGlobalAccelPrivate::findAction(const QStringList &actionId) 
     }
 
 
-Component *KdedGlobalAccelPrivate::component(const QStringList &actionId) const
+KdeDGlobalAccel::Component *KdedGlobalAccelPrivate::component(const QStringList &actionId) const
 {
     // Get the component for the action. If we have none create a new one
-    Component *component = GlobalShortcutsRegistry::self()->getComponent(actionId.at(KGlobalAccel::ComponentUnique));
+    KdeDGlobalAccel::Component *component = GlobalShortcutsRegistry::self()->getComponent(actionId.at(KGlobalAccel::ComponentUnique));
     if (!component)
         {
-        component = new Component(actionId.at(KGlobalAccel::ComponentUnique), actionId.at(KGlobalAccel::ComponentFriendly));
+        component = new KdeDGlobalAccel::Component(actionId.at(KGlobalAccel::ComponentUnique), actionId.at(KGlobalAccel::ComponentFriendly));
         GlobalShortcutsRegistry::self()->addComponent(component);
         Q_ASSERT(component);
         }
@@ -106,7 +105,7 @@ GlobalShortcut *KdedGlobalAccelPrivate::addAction(const QStringList &actionId)
 {
     Q_ASSERT(actionId.size() >= 4);
 
-    Component *component = this->component(actionId);
+    KdeDGlobalAccel::Component *component = this->component(actionId);
     Q_ASSERT(component);
 
     Q_ASSERT(!component->getShortcutByName(actionId.at(KGlobalAccel::ActionUnique)));
@@ -156,7 +155,7 @@ QList<QStringList> KdedGlobalAccel::allMainComponents() const
         emptyList.append(QString());
     }
 
-    foreach (const Component *component, GlobalShortcutsRegistry::self()->allMainComponents()) {
+    foreach (const KdeDGlobalAccel::Component *component, GlobalShortcutsRegistry::self()->allMainComponents()) {
         QStringList actionId(emptyList);
         actionId[KGlobalAccel::ComponentUnique] = component->uniqueName();
         actionId[KGlobalAccel::ComponentFriendly] = component->friendlyName();
@@ -171,7 +170,7 @@ QList<QStringList> KdedGlobalAccel::allActionsForComponent(const QStringList &ac
     //### Would it be advantageous to sort the actions by unique name?
     QList<QStringList> ret;
 
-    Component *const component = GlobalShortcutsRegistry::self()->getComponent(actionId[KGlobalAccel::ComponentUnique]);
+    KdeDGlobalAccel::Component *const component = GlobalShortcutsRegistry::self()->getComponent(actionId[KGlobalAccel::ComponentUnique]);
     if (!component) {
         return ret;
     }

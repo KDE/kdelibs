@@ -50,6 +50,7 @@ static QString stringFromKeys(const QList<int> &keys)
     return ret;
 }
 
+namespace KdeDGlobalAccel {
 
 Component::Component( const QString &uniqueName, const QString &friendlyName)
         :   _uniqueName(uniqueName)
@@ -100,10 +101,10 @@ GlobalShortcut *Component::getShortcutByName(const QString &uniqueName)
 
 void Component::loadSettings(KConfigGroup &configGroup)
     {
-        foreach (const QString &confKey, configGroup.keyList()) 
+        foreach (const QString &confKey, configGroup.keyList())
             {
             const QStringList entry = configGroup.readEntry(confKey, QStringList());
-            if (entry.size() != 3) 
+            if (entry.size() != 3)
                 {
                 continue;
                 }
@@ -172,7 +173,7 @@ void Component::writeSettings(KConfigGroup& configGroup) const
     KConfigGroup friendlyGroup(&configGroup, "Friendly Name");
     friendlyGroup.writeEntry("Friendly Name", friendlyName());
 
-    foreach (const GlobalShortcut *shortcut, allShortcuts()) 
+    foreach (const GlobalShortcut *shortcut, allShortcuts())
         {
         // We do not write fresh shortcuts.
         // We do not write session shortcuts
@@ -188,3 +189,5 @@ void Component::writeSettings(KConfigGroup& configGroup) const
         configGroup.writeEntry(shortcut->uniqueName(), entry);
         }
     }
+
+}

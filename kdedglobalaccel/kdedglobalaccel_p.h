@@ -40,7 +40,9 @@
 #include "kglobalaccel_qws.h"
 #endif
 
+namespace KdeDGlobalAccel {
 class Component;
+}
 
 /**
  * Represents a global shortcut.
@@ -55,12 +57,12 @@ class GlobalShortcut
     {
 public:
 
-    GlobalShortcut(const QString &uniqueName, const QString &friendlyName, Component *component);
+    GlobalShortcut(const QString &uniqueName, const QString &friendlyName, KdeDGlobalAccel::Component *component);
 
     ~GlobalShortcut();
 
     //! Returns the component the shortcuts belongs to
-    Component *component();
+    KdeDGlobalAccel::Component *component();
 
     //! Returns the default keys for this shortcut.
     QList<int> defaultKeys() const;
@@ -106,7 +108,7 @@ private:
     bool _isFresh:1;
 
     //! The Component the shortcut belongs to.
-    Component *_component;
+    KdeDGlobalAccel::Component *_component;
 
     QString _uniqueName;
     QString _friendlyName; //usually localized
@@ -115,6 +117,7 @@ private:
     QList<int> _defaultKeys;
     };
 
+namespace KdeDGlobalAccel {
 
 class Component
     {
@@ -157,6 +160,8 @@ private:
     QHash<QString, GlobalShortcut *> _actions;
     };
 
+}
+
 
 class KGlobalAccelImpl;
 
@@ -167,9 +172,9 @@ class GlobalShortcutsRegistry : public QObject
 
 public:
 
-    Component *addComponent(Component *component);
+    KdeDGlobalAccel::Component *addComponent(KdeDGlobalAccel::Component *component);
 
-    QList<Component *> allMainComponents() const;
+    QList<KdeDGlobalAccel::Component *> allMainComponents() const;
 
     /**
      * Get the shortcut corresponding to key. Only active shortcut are
@@ -177,7 +182,7 @@ public:
      */
     GlobalShortcut *getActiveShortcutByKey(int key) const;
 
-    Component *getComponent(const QString &uniqueName);
+    KdeDGlobalAccel::Component *getComponent(const QString &uniqueName);
 
     /**
      * Get the shortcut corresponding to key. All shortcuts are
@@ -206,7 +211,7 @@ private:
     ~GlobalShortcutsRegistry();
 
     QHash<int, GlobalShortcut*> _active_keys;
-    QHash<QString, Component *> _components;
+    QHash<QString, KdeDGlobalAccel::Component *> _components;
 
     KGlobalAccelImpl *_manager;
 
