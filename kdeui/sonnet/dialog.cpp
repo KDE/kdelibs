@@ -266,7 +266,7 @@ void Dialog::slotChangeLanguage(const QString &lang)
     }
 }
 
-void Dialog::slotSelectionChanged( QModelIndex item )
+void Dialog::slotSelectionChanged(const QModelIndex &item)
 {
     d->ui.m_replacement->setText( item.data().toString() );
 }
