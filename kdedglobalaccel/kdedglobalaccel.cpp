@@ -354,13 +354,19 @@ void KdedGlobalAccel::writeSettings() const
 
 bool KdedGlobalAccel::keyPressed(int keyQt)
     {
+    // Check if keyQt is one of out global shortcuts. Because other kded
+    // modules could receive key events too that is not guaranteed.
     GlobalShortcut *shortcut = GlobalShortcutsRegistry::self()->getShortcutByKey(keyQt);
-    kDebug() << QKeySequence(keyQt).toString() << "=" << shortcut->uniqueName();
-
-    if (!shortcut || !shortcut->isActive()) {
-        kDebug() << "skipping because action is not active";
+    if (!shortcut || !shortcut->isActive())
+        {
+        // Not one of ours. Or one of ours but not active. It's meant for some
+        // other kded module most likely.
         return false;
-    }
+        }
+
+    // Never print out the received key if it is not one of our active global
+    // shortcuts. We could end up printing out kpasswdservers password.
+    kDebug() << QKeySequence(keyQt).toString() << "=" << shortcut->uniqueName();
 
     QStringList data(shortcut->component()->uniqueName());
     data.append(shortcut->uniqueName());
