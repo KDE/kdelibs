@@ -715,9 +715,6 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repai
     for (RenderLayer* child = firstChild(); child; child = child->nextSibling())
         child->updateLayerPositions(rootLayer);
     
-    // Fire the scroll DOM event.
-    m_object->element()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
-
     // Just schedule a full repaint of our object.
     if (repaint)
         m_object->repaint(RealtimePriority);
@@ -728,6 +725,9 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repai
         if (m_vBar)
             m_vBar->setValue(m_scrollY);
     }
+
+    // Fire the scroll DOM event. Do this the very last thing, since the handler may kill us.
+    m_object->element()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);    
 }
 
 void RenderLayer::updateScrollPositionFromScrollbars()

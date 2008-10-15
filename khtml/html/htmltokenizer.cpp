@@ -479,11 +479,6 @@ void HTMLTokenizer::scriptExecution( const QString& str, const QString& scriptUR
 
 void HTMLTokenizer::parseComment(TokenizerString &src)
 {
-    // SGML strict
-    bool strict = parser->doc()->inStrictMode() && parser->doc()->htmlMode() != DocumentImpl::XHtml && !script && !style;
-    int delimiterCount = 0;
-    bool canClose = false;
-
     checkScriptBuffer(src.length());
     while ( src.length() ) {
         scriptCode[ scriptCodeSize++ ] = *src;
@@ -492,33 +487,17 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
         qDebug("comment is now: *%s*", src.toString().left(16).toLatin1().constData());
 #endif
 
-        if (strict)
-        {
-            if (src->unicode() == '-') {
-                delimiterCount++;
-                if (delimiterCount == 2) {
-                    delimiterCount = 0;
-                    canClose = !canClose;
-                }
-            }
-            else
-                delimiterCount = 0;
-        }
-
-        if ((!strict || canClose) && src->unicode() == '>')
+        if (src->unicode() == '>')
         {
             bool handleBrokenComments =  brokenComments && !( script || style );
             bool scriptEnd=false;
-            if (!strict)
+            if ( scriptCodeSize > 2 && scriptCode[scriptCodeSize-3] == '-' &&
+                  scriptCode[scriptCodeSize-2] == '-' )
             {
-                if ( scriptCodeSize > 2 && scriptCode[scriptCodeSize-3] == '-' &&
-                     scriptCode[scriptCodeSize-2] == '-' )
-                {
-                    scriptEnd=true;
-                }
+                scriptEnd=true;
             }
 
-            if (canClose || handleBrokenComments || scriptEnd ){
+            if (handleBrokenComments || scriptEnd ){
                 ++src;
                 if ( !( title || script || xmp || textarea || style) ) {
                     checkScriptBuffer();
@@ -1592,44 +1571,25 @@ void HTMLTokenizer::addPending()
     {
         *dest++ = ' ';
     }
-    else if ( textarea )
+    else
     {
         switch(pending) {
         case LFPending:  *dest++ = QLatin1Char('\n'); prePos = 0; break;
         case SpacePending: *dest++ = QLatin1Char(' '); ++prePos; break;
-        case TabPending: *dest++ = QLatin1Char('\t'); prePos += TAB_SIZE - (prePos % TAB_SIZE); break;
-        case NonePending:
-            assert(0);
-        }
-    }
-    else
-    {
-        int p;
-
-        switch (pending)
-        {
-        case SpacePending:
-            // Insert a breaking space
-            *dest++ = QLatin1Char(' ');
-            prePos++;
-            break;
-
-        case LFPending:
-            *dest = QLatin1Char('\n');
-            dest++;
-            prePos = 0;
-            break;
-
-        case TabPending:
-            p = TAB_SIZE - ( prePos % TAB_SIZE );
-            for ( int x = 0; x < p; x++ )
-                *dest++ = QLatin1Char(' ');
+        case TabPending: {
+            // Don't expand tabs inside <textarea> or script
+            int p = TAB_SIZE - ( prePos % TAB_SIZE );
+            if (textarea || script) {
+                *dest++ = QLatin1Char('\t');
+            } else {
+                for ( int x = 0; x < p; x++ )
+                    *dest++ = QLatin1Char(' ');
+            }
             prePos += p;
             break;
-
+        }
         case NonePending:
             assert(0);
-            break;
         }
     }
 
