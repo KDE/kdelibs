@@ -555,6 +555,9 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
         foreach (const KUrl &url, urls) {
             KMimeType::Ptr mimetype = KMimeType::mimeType(KIO::NetAccess::mimetype(url, 0));
 
+            if (!mimetype)
+                continue;
+
             if (!mimetype->is("inode/directory")) {
                 // Only directories are allowed
                 continue;
