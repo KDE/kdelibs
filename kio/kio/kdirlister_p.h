@@ -37,7 +37,6 @@ class KDirLister;
 namespace KIO { class Job; class ListJob; }
 class OrgKdeKDirNotifyInterface;
 
-
 class KDirLister::Private
 {
 public:
@@ -186,8 +185,9 @@ public:
 
     // Called by CachedItemsJob:
     // Emits those items, for this lister and this url
-    void emitItemsFromCache(KDirLister* lister, const KFileItemList& lst, const KFileItem& rootItem,
-                            const KUrl& _url, bool _reload, bool _emitCompleted);
+    void emitItemsFromCache( KDirLister* lister, const KFileItemList& lst, const KFileItem& rootItem,
+                             const KUrl& _url, bool _reload, bool _emitCompleted );
+    bool hasCachedItemJob( KDirLister* lister ) const;
 
 public Q_SLOTS:
   /**

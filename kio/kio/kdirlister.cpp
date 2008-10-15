@@ -263,6 +263,11 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
     return true;
 }
 
+bool KDirListerCache::hasCachedItemJob( KDirLister* lister ) const
+{
+    return (lister->d->m_cachedItemsJob != 0);
+}
+
 void KDirLister::Private::CachedItemsJob::done()
 {
     //kDebug() << "lister" << m_lister << "says" << m_lister->d->m_cachedItemsJob << "this=" << this;
@@ -2514,7 +2519,7 @@ void KDirListerCache::DirectoryData::moveListersWithoutCachedItemsJob()
     QMutableListIterator<KDirLister *> lister_it(listersCurrentlyListing);
     while (lister_it.hasNext()) {
         KDirLister* kdl = lister_it.next();
-        if (!kdl->d->m_cachedItemsJob) {
+        if (!kDirListerCache->hasCachedItemJob(kdl)) {
             Q_ASSERT(!listersCurrentlyHolding.contains(kdl));
             // OK, move this lister from "currently listing" to "currently holding".
             listersCurrentlyHolding.append(kdl);
