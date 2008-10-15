@@ -116,6 +116,9 @@ bool GlobalShortcutsRegistry::registerKey(int key, GlobalShortcut *shortcut)
         return false;
         }
 
+    kDebug() << "Registering key" << QKeySequence(key).toString() << "for"
+             << shortcut->component()->uniqueName() << ":" << shortcut->uniqueName();
+
     _active_keys.insert(key, shortcut);
     return _manager->grabKey(key, true);
     }
@@ -149,6 +152,9 @@ bool GlobalShortcutsRegistry::unregisterKey(int key, GlobalShortcut *shortcut)
         // The shortcut doesn't own the key or the key isn't grabbed
         return false;
         }
+
+    kDebug() << "Unregistering key" << QKeySequence(key).toString() << "for"
+             << shortcut->component()->uniqueName() << ":" << shortcut->uniqueName();
 
     _manager->grabKey(key, false);
     _active_keys.take(key);
