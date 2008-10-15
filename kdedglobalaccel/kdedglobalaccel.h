@@ -2,6 +2,7 @@
     This file is part of the KDE libraries
 
     Copyright (c) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
+    Copyright (c) 2008 Michael Jansen <kde@michael-jansen.biz>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,21 +19,6 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-
-/*
-data per main component:
--unique name
--i18n name
--(KActions)
-
-data per KAction:
--unique name
--i18n name
--shortcut
--default shortcut (special purpose API for KCMs)
-
- */
-
 #ifndef KDEDGLOBALACCEL_H
 #define KDEDGLOBALACCEL_H
 
