@@ -33,6 +33,7 @@
 #include <Soprano/Vocabulary/NRL>
 #include <Soprano/Vocabulary/RDFS>
 #include <Soprano/Vocabulary/RDF>
+#include <Soprano/Vocabulary/OWL>
 
 #undef D
 #define D static_cast<Nepomuk::Types::ClassPrivate*>( d.data() )
@@ -79,10 +80,11 @@ bool Nepomuk::Types::ClassPrivate::loadAncestors()
         //
         Soprano::QueryResultIterator it
             = ResourceManager::instance()->mainModel()->executeQuery( QString("select distinct ?s where { "
-                                                                              "?s a <%1> . "
-                                                                              "OPTIONAL { ?s <%2> ?ss . } . "
+                                                                              "{ ?s a <%1> . } UNION { ?s a <%2> . } "
+                                                                              "OPTIONAL { ?s <%3> ?ss . } . "
                                                                               "FILTER(!BOUND(?ss)) . }")
                                                                       .arg( Soprano::Vocabulary::RDFS::Class().toString() )
+                                                                      .arg( Soprano::Vocabulary::OWL::Class().toString() )
                                                                       .arg( Soprano::Vocabulary::RDFS::subClassOf().toString() ),
                                                                       Soprano::Query::QueryLanguageSparql );
         bool success = false;
