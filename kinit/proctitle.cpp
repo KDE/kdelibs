@@ -77,7 +77,10 @@ extern char *__progname_full;
 extern char **environ;
 
 static char **Argv = NULL;
+
+#if PF_ARGV_TYPE == PF_ARGV_WRITEABLE   /* Only this mode uses LastArgv */
 static char *LastArgv = NULL;
+#endif
 
 /**
  * Set up the memory space for setting the proctitle
@@ -105,22 +108,17 @@ void proctitle_init(int argc, char *argv[], char *envp[]) {
 
     Argv = argv;
 
+# if PF_ARGV_TYPE == PF_ARGV_WRITEABLE   /* Only this mode uses LastArgv */
     for (i = 0; i < argc; i++) {
         if (!i || (LastArgv + 1 == argv[i])) {
             LastArgv = argv[i] + strlen(argv[i]);
         }
     }
 
-
-    /*
-     * On linux, we don't want to reuse the memory allocated for
-     * the environment, as there are tools that try to read our environment
-     * variables while we're running (ConsoleKit does that).
-     * There is no way to move or resize it, so just not touchint it
-     * seems to be the only option
-     */
-#ifndef __linux__
     for (i = 0; envp[i] != NULL; i++) {
+        /* must not overwrite XDG_SESSION_COOKIE */
+        if (!strncmp(envp[i], "XDG_", 4))
+            break;
         if ((LastArgv + 1) == envp[i]) {
             LastArgv = envp[i] + strlen(envp[i]);
         }
@@ -148,7 +146,7 @@ void proctitle_set(const char *fmt, ...) {
     union pstun pst;
 # endif /* PF_ARGV_PSTAT */
     char *p;
-    int i, maxlen = (LastArgv - Argv[0]) - 2;
+    int i;
 #endif /* HAVE_SETPROCTITLE */
 
     if ( !fmt ) {
@@ -199,13 +197,21 @@ void proctitle_set(const char *fmt, ...) {
 # endif /* PF_ARGV_NEW */
 
 # if PF_ARGV_TYPE == PF_ARGV_WRITEABLE
+    const int maxlen = (LastArgv - Argv[0]) - 1;
     /* We can overwrite individual argv[] arguments.  Semi-nice. */
     snprintf(Argv[0], maxlen, "%s", statbuf);
     p = &Argv[0][i];
 
-    while ( p < LastArgv ) {
-        *p++ = '\0';
-    }
+    /* null terminate it, but don't clear the rest of the
+       memory that is usually used for environment variables. Some
+       tools, like ConsoleKit must have access to the process'es initial
+       environment (more exact, the XDG_SESSION_COOKIE variable stored there).
+       If this code causes another side effect, we have to specifically
+       always append those variables to our environment. */
+
+    if (p < LastArgv)
+        *p = '\0';
+
     Argv[1] = NULL;
 # endif /* PF_ARGV_WRITEABLE */
 

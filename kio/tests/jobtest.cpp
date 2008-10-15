@@ -590,6 +590,19 @@ void JobTest::listRecursive()
     QCOMPARE( joinedNames.toLatin1(), ref_names );
 }
 
+void JobTest::killJob()
+{
+    const QString src = homeTmpDir();
+    KIO::ListJob* job = KIO::listDir( KUrl(src), KIO::HideProgressInfo );
+    QVERIFY(job->isAutoDelete());
+    QPointer<KIO::ListJob> ptr(job);
+    job->setUiDelegate( 0 );
+    qApp->processEvents(); // let the job start, it's no fun otherwise
+    job->kill();
+    qApp->sendPostedEvents(0, QEvent::DeferredDelete); // process the deferred delete of the job
+    QVERIFY(ptr.isNull());
+}
+
 void JobTest::directorySize()
 {
     // Note: many other tests must have been run before since we rely on the files they created
@@ -613,7 +626,7 @@ void JobTest::directorySize()
     QVERIFY(job->totalSize() > 512);
 #endif
 
-    // TODO test error case
+    qApp->sendPostedEvents(0, QEvent::DeferredDelete);
 }
 
 void JobTest::directorySizeError()
@@ -622,6 +635,7 @@ void JobTest::directorySizeError()
     job->setUiDelegate( 0 );
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( !ok );
+    qApp->sendPostedEvents(0, QEvent::DeferredDelete);
 }
 
 void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )
@@ -1091,15 +1105,50 @@ void JobTest::deleteDirectory()
     QVERIFY(!QFile::exists(dest));
 }
 
-void JobTest::deleteManyFiles()
+void JobTest::deleteManyDirs(bool using_fast_path)
 {
-    const int numFiles = 100;
-    const QString baseDir = homeTmpDir();
+    extern KIO_EXPORT bool kio_resolve_local_urls;
+    kio_resolve_local_urls = !using_fast_path;
+
+    KUrl::List dirs;
+    for (int i = 0; i < 50; ++i) {
+        const QString dir = homeTmpDir() + "dir" + QString::number(i);
+        createTestDirectory(dir);
+        dirs << KUrl(dir);
+    }
+    KIO::Job* job = KIO::del(dirs, KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    Q_FOREACH(const KUrl& dir, dirs) {
+        QVERIFY(!QFile::exists(dir.path()));
+    }
+
+    kio_resolve_local_urls = true;
+}
+
+void JobTest::deleteManyDirs()
+{
+    deleteManyDirs(true);
+    deleteManyDirs(false);
+}
+
+static void createManyFiles(const QString& baseDir, int numFiles)
+{
     for (int i = 0; i < numFiles; ++i) {
         // create empty file
         QFile f(baseDir + QString::number(i));
         QVERIFY(f.open(QIODevice::WriteOnly));
     }
+}
+
+void JobTest::deleteManyFilesIndependently()
+{
+    QTime dt;
+    dt.start();
+    const int numFiles = 100; // Use 1000 for performance testing
+    const QString baseDir = homeTmpDir();
+    createManyFiles(baseDir, numFiles);
     for (int i = 0; i < numFiles; ++i) {
         // delete each file independently. lots of jobs. this stress-tests kio scheduling.
         const QString file = baseDir + QString::number(i);
@@ -1111,6 +1160,40 @@ void JobTest::deleteManyFiles()
         QVERIFY(ok);
         QVERIFY(!QFile::exists(file));
     }
+    kDebug() << "Deleted" << numFiles << "files in" << dt.elapsed() << "milliseconds";
+}
+
+void JobTest::deleteManyFilesTogether(bool using_fast_path)
+{
+    extern KIO_EXPORT bool kio_resolve_local_urls;
+    kio_resolve_local_urls = !using_fast_path;
+
+    QTime dt;
+    dt.start();
+    const int numFiles = 100; // Use 1000 for performance testing
+    const QString baseDir = homeTmpDir();
+    createManyFiles(baseDir, numFiles);
+    KUrl::List urls;
+    for (int i = 0; i < numFiles; ++i) {
+        const QString file = baseDir + QString::number(i);
+        QVERIFY(QFile::exists(file));
+        urls.append(KUrl(file));
+    }
+
+    //kDebug() << file;
+    KIO::Job* job = KIO::del(urls, KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(ok);
+    kDebug() << "Deleted" << numFiles << "files in" << dt.elapsed() << "milliseconds";
+
+    kio_resolve_local_urls = true;
+}
+
+void JobTest::deleteManyFilesTogether()
+{
+    deleteManyFilesTogether(true);
+    deleteManyFilesTogether(false);
 }
 
 void JobTest::stat()

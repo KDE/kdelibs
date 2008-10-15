@@ -190,6 +190,10 @@ void RenderInline::splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox
     RenderBlock* pre = 0;
     RenderBlock* block = containingBlock();
     bool madeNewBeforeBlock = false;
+
+    // Delete our line boxes before we do the inline split into continuations.
+    block->deleteLineBoxTree();
+
     if (block->isAnonymousBlock()) {
         // We can reuse this block and make it the preBlock of the next continuation.
         pre = block;
@@ -237,13 +241,13 @@ void RenderInline::splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox
     // XXXdwh is any of this even necessary? I don't think it is.
     pre->close();
     pre->setPos(0, -500000);
-    pre->setNeedsLayout(true);
+    pre->setNeedsLayoutAndMinMaxRecalc();
     newBlockBox->close();
     newBlockBox->setPos(0, -500000);
     newBlockBox->setNeedsLayout(true);
     post->close();
     post->setPos(0, -500000);
-    post->setNeedsLayout(true);
+    post->setNeedsLayoutAndMinMaxRecalc();
 
     updatePseudoChildren();
 

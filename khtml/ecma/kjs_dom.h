@@ -62,7 +62,7 @@ namespace KJS {
            OnAbort, OnBlur, OnChange, OnClick, OnDblClick, OnDragDrop, OnError,
            OnFocus, OnKeyDown, OnKeyPress, OnKeyUp, OnLoad, OnMouseDown,
            OnMouseMove, OnMouseOut, OnMouseOver, OnMouseUp, OnMove, OnReset,
-           OnResize, OnSelect, OnSubmit, OnUnload,
+           OnResize, OnScroll, OnSelect, OnSubmit, OnUnload,
            OffsetLeft, OffsetTop, OffsetWidth, OffsetHeight, OffsetParent,
            ClientLeft, ClientTop, ClientWidth, ClientHeight, ScrollLeft, ScrollTop,
 	   ScrollWidth, ScrollHeight, SourceIndex, TextContent };
@@ -170,7 +170,7 @@ namespace KJS {
            SetAttributeNode, RemoveAttributeNode, GetElementsByTagName,
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,
            SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS,
-           GetElementsByClassName };
+           GetElementsByClassName, Blur, Focus };
   private:
 #if 0
     static JSValue *attributeGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);

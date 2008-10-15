@@ -186,6 +186,15 @@ if (id == propID) \
     return;\
 }
 
+#define HANDLE_INHERIT_COND_WITH_BACKUP(propID, prop, propAlt, Prop) \
+if (id == propID) { \
+    if (parentStyle->prop().isValid()) \
+        style->set##Prop(parentStyle->prop()); \
+    else \
+        style->set##Prop(parentStyle->propAlt()); \
+    return; \
+}
+
 #define HANDLE_INITIAL_COND(propID, Prop) \
 if (id == propID) \
 {\
@@ -1279,21 +1288,21 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             //kDebug( 6080 ) << "checking for contains match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
-            return val_str.contains(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+            return val_str.contains(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive) && !sel_str.isEmpty();
         }
         case CSSSelector::Begin:
         {
             //kDebug( 6080 ) << "checking for beginswith match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
-            return val_str.startsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+            return val_str.startsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive) && !sel_str.isEmpty();
         }
         case CSSSelector::End:
         {
             //kDebug( 6080 ) << "checking for endswith match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
-            return val_str.endsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+            return val_str.endsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive) && !sel_str.isEmpty();
         }
         case CSSSelector::Hyphen:
         {
@@ -2091,6 +2100,16 @@ static inline int nextFontSize(const QVector<int>& a, int v, bool smaller)
     return smaller ? a[r] : a[l];
 }
 
+// If we're explicitly inheriting an initial border-color, its computed value is based
+// on the parents' computed value of color, not ours.
+static QColor inheritedBorderColor( RenderStyle* parentStyle, const QColor& value )
+{
+    if ( value.isValid() )
+       return value;
+    else
+       return parentStyle->color();
+}
+
 void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 {
 //     kDebug( 6080 ) << "applying property " << getPropertyName(id);
@@ -2719,12 +2738,12 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             if (id != CSS_PROP_COLOR)
                 style->setInheritedNoninherited(true);
             HANDLE_INHERIT_COND(CSS_PROP_BACKGROUND_COLOR, backgroundColor, BackgroundColor)
-            HANDLE_INHERIT_COND(CSS_PROP_BORDER_TOP_COLOR, borderTopColor, BorderTopColor)
-            HANDLE_INHERIT_COND(CSS_PROP_BORDER_BOTTOM_COLOR, borderBottomColor, BorderBottomColor)
-            HANDLE_INHERIT_COND(CSS_PROP_BORDER_RIGHT_COLOR, borderRightColor, BorderRightColor)
-            HANDLE_INHERIT_COND(CSS_PROP_BORDER_LEFT_COLOR, borderLeftColor, BorderLeftColor)
+            HANDLE_INHERIT_COND_WITH_BACKUP(CSS_PROP_BORDER_TOP_COLOR, borderTopColor, color, BorderTopColor)
+            HANDLE_INHERIT_COND_WITH_BACKUP(CSS_PROP_BORDER_BOTTOM_COLOR, borderBottomColor, color, BorderBottomColor)
+            HANDLE_INHERIT_COND_WITH_BACKUP(CSS_PROP_BORDER_RIGHT_COLOR, borderRightColor, color, BorderRightColor)
+            HANDLE_INHERIT_COND_WITH_BACKUP(CSS_PROP_BORDER_LEFT_COLOR, borderLeftColor, color, BorderLeftColor)
             HANDLE_INHERIT_COND(CSS_PROP_COLOR, color, Color)
-            HANDLE_INHERIT_COND(CSS_PROP_OUTLINE_COLOR, outlineColor, OutlineColor)
+            HANDLE_INHERIT_COND_WITH_BACKUP(CSS_PROP_OUTLINE_COLOR, outlineColor, color, OutlineColor)
             return;
         } else if (isInitial) {
             // The border/outline colors will just map to the invalid color |col| above.  This will have the
@@ -3608,10 +3627,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         if(id == CSS_PROP_BORDER || id == CSS_PROP_BORDER_COLOR)
         {
             if (isInherit) {
-                style->setBorderTopColor(parentStyle->borderTopColor());
-                style->setBorderBottomColor(parentStyle->borderBottomColor());
-                style->setBorderLeftColor(parentStyle->borderLeftColor());
-                style->setBorderRightColor(parentStyle->borderRightColor());
+                style->setBorderTopColor(inheritedBorderColor(parentStyle, parentStyle->borderTopColor()));
+                style->setBorderBottomColor(inheritedBorderColor(parentStyle, parentStyle->borderBottomColor()));
+                style->setBorderLeftColor(inheritedBorderColor(parentStyle, parentStyle->borderLeftColor()));
+                style->setBorderRightColor(inheritedBorderColor(parentStyle, parentStyle->borderRightColor()));
             }
             else if (isInitial) {
                 style->setBorderTopColor(QColor()); // Reset to invalid color so currentColor is used instead.
@@ -3654,7 +3673,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_BORDER_TOP:
         if ( isInherit ) {
             style->setInheritedNoninherited(true);
-            style->setBorderTopColor(parentStyle->borderTopColor());
+            style->setBorderTopColor(inheritedBorderColor(parentStyle, parentStyle->borderTopColor()));
             style->setBorderTopStyle(parentStyle->borderTopStyle());
             style->setBorderTopWidth(parentStyle->borderTopWidth());
         } else if (isInitial)
@@ -3663,7 +3682,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_BORDER_RIGHT:
         if (isInherit) {
             style->setInheritedNoninherited(true);
-            style->setBorderRightColor(parentStyle->borderRightColor());
+            style->setBorderRightColor(inheritedBorderColor(parentStyle,parentStyle->borderRightColor()));
             style->setBorderRightStyle(parentStyle->borderRightStyle());
             style->setBorderRightWidth(parentStyle->borderRightWidth());
         }
@@ -3673,7 +3692,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_BORDER_BOTTOM:
         if (isInherit) {
             style->setInheritedNoninherited(true);
-            style->setBorderBottomColor(parentStyle->borderBottomColor());
+            style->setBorderBottomColor(inheritedBorderColor(parentStyle, parentStyle->borderBottomColor()));
             style->setBorderBottomStyle(parentStyle->borderBottomStyle());
             style->setBorderBottomWidth(parentStyle->borderBottomWidth());
         }
@@ -3683,7 +3702,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_BORDER_LEFT:
         if (isInherit) {
             style->setInheritedNoninherited(true);
-            style->setBorderLeftColor(parentStyle->borderLeftColor());
+            style->setBorderLeftColor(inheritedBorderColor(parentStyle, parentStyle->borderLeftColor()));
             style->setBorderLeftStyle(parentStyle->borderLeftStyle());
             style->setBorderLeftWidth(parentStyle->borderLeftWidth());
         }

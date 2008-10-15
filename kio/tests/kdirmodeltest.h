@@ -41,9 +41,16 @@ private Q_SLOTS:
     void testCreateFile();
     void testModifyFile();
     void testRenameFile();
+    void testChmodDirectory();
     void testExpandToUrl_data();
     void testExpandToUrl();
+    void testFilter();
+    void testUrlWithRef();
+    void testUrlWithHost();
+    void testZipFile();
+    // These two must be done last
     void testDeleteFile();
+    void testDeleteFiles();
 
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
     void slotListingCompleted();
@@ -54,6 +61,7 @@ private:
     void recreateTestData();
     void enterLoop();
     void fillModel( bool reload );
+    void collectKnownIndexes();
 
 private:
     QEventLoop m_eventLoop;

@@ -124,6 +124,7 @@ void Solid::PowerManagementPrivate::slotCanHibernateChanged(bool newState)
 void Solid::PowerManagementPrivate::slotPowerSaveStatusChanged(bool newState)
 {
     powerSaveStatus = newState;
+    emit appShouldConserveResourcesChanged(powerSaveStatus);
 }
 
 #include "powermanagement_p.moc"

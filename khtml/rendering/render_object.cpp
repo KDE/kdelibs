@@ -572,15 +572,19 @@ RenderLayer* RenderObject::enclosingStackingContext() const
 
 int RenderObject::offsetLeft() const
 {
-    RenderObject* offsetPar = offsetParent();
-    if (!offsetPar)
+    if (isBody())
         return 0;
-    int x = xPos() -offsetPar->borderLeft();
+
+    RenderObject* offsetPar = offsetParent();
+    int x, dummy;
+    if (!offsetPar || offsetPar->isBody()) {
+        absolutePosition(x, dummy);
+        return x;
+    }
+
+    x = xPos() -offsetPar->borderLeft();
     if ( isPositioned() )
         return x;
-
-    if ( isBody() && style()->htmlHacks() )
-        return 0;
 
     if (isRelPositioned()) {
         int y = 0;
@@ -592,26 +596,27 @@ int RenderObject::offsetLeft() const
          curr = curr->parent() )
         x += curr->xPos();
 
-    if ( offsetPar && offsetPar->isBody() && style()->htmlHacks() )
-        x += offsetPar->xPos();
-
-    return x;
+     return x;
 }
 
 int RenderObject::offsetTop() const
 {
-    RenderObject* offsetPar = offsetParent();
-    if (!offsetPar)
+    if (isBody())
         return 0;
 
-    int y = yPos() -offsetPar->borderTop();
+    RenderObject* offsetPar = offsetParent();
+    int y, dummy;
+ 
+    if (!offsetPar || offsetPar->isBody()) {
+        absolutePosition(dummy, y);
+        return y;
+    }
+
+    y = yPos() -offsetPar->borderTop();
     if ( isPositioned() )
         return y;
 
-    if ( isBody() && style()->htmlHacks() )
-        return 0;
-
-    if (isRelPositioned()) {
+     if (isRelPositioned()) {
         int x = 0;
         static_cast<const RenderBox*>(this)->relativePositionOffset(x, y);
     }
@@ -620,15 +625,12 @@ int RenderObject::offsetTop() const
          curr = curr->parent() )
         y += curr->yPos();
 
-    if ( offsetPar && offsetPar->isBody() && style()->htmlHacks() )
-        y += offsetPar->yPos();
-
-    return y;
+     return y;
 }
 
 RenderObject* RenderObject::offsetParent() const
 {
-    if (isBody())
+    if (isBody() || style()->position() == FIXED)
         return 0;
 
     // can't really use containing blocks here (#113280)

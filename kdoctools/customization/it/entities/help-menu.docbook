@@ -41,6 +41,16 @@ puoi segnalare un bug oppure esprimere un <quote>desiderio</quote>.</para></list
 <varlistentry>
 <term><menuchoice>
 <guimenu>Aiuto</guimenu>
+<guimenuitem>Cambia la lingua dell'applicazione...</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Apre una finestra di dialogo</action> dove puoi
+scegliere la <guilabel>Lingua principale</guilabel> e la <guilabel>Lingua di
+ripiego</guilabel> per questa applicazione.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<guimenu>Aiuto</guimenu>
 <guimenuitem>Informazioni su &kappname;</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Mostra informazioni sulla versione e

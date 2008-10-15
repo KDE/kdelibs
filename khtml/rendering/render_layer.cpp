@@ -112,6 +112,8 @@ m_marquee( 0 )
         m_visibleContentStatusDirty = false;
         m_hasVisibleContent = object->style()->visibility() == VISIBLE;
     }
+    m_buffer[0] = 0;
+    m_buffer[1] = 0;
 }
 
 RenderLayer::~RenderLayer()
@@ -120,6 +122,8 @@ RenderLayer::~RenderLayer()
     // our destructor doesn't have to do anything.
     delete m_hBar;
     delete m_vBar;
+    delete m_buffer[0];
+    delete m_buffer[1];
     delete m_scrollMediator;
     delete m_posZOrderList;
     delete m_negZOrderList;
@@ -727,7 +731,7 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repai
     }
 
     // Fire the scroll DOM event. Do this the very last thing, since the handler may kill us.
-    m_object->element()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);    
+    m_object->element()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, false, false);    
 }
 
 void RenderLayer::updateScrollPositionFromScrollbars()
@@ -945,12 +949,22 @@ void RenderLayer::paintScrollbars(RenderObject::PaintInfo& pI)
        return;
 
     if (m_hBar) {
+        if (!m_buffer[0] || m_buffer[0]->size() != m_hBar->size()) {
+            delete m_buffer[0];
+            m_buffer[0] = new QPixmap( m_hBar->size() );
+        }
 	QPoint p = m_hBar->m_kwp->absolutePos();
-	RenderWidget::paintWidget(pI, m_hBar, p.x(), p.y());
+	RenderWidget::paintWidget(pI, m_hBar, p.x(), p.y(), m_buffer );
     }
     if (m_vBar) {
+        if (!m_buffer[1] || m_buffer[1]->size() != m_vBar->size()) {
+            delete m_buffer[1];
+            m_buffer[1] = new QPixmap( m_vBar->size() );
+        }
+        QPixmap* tmp[1];
+        tmp[0] = m_buffer[1];
         QPoint p = m_vBar->m_kwp->absolutePos();
-	RenderWidget::paintWidget(pI, m_vBar, p.x(), p.y());
+	RenderWidget::paintWidget(pI, m_vBar, p.x(), p.y(), tmp);
     }
 }
 

@@ -209,8 +209,6 @@ public:
     void activate();
     virtual void attach();
     void click();
-    void blur();
-    void focus();
 
 protected:
     DOMString             m_value;
@@ -282,9 +280,6 @@ public:
     void setValue(DOMString val);
 
     DOMString valueWithDefault() const;
-
-    void blur();
-    void focus();
 
     virtual bool maintainsState() { return true; }
     virtual QString state();
@@ -407,8 +402,6 @@ public:
 
     void add ( HTMLElementImpl* element, HTMLElementImpl* before, int& exceptioncode );
     void remove ( long index );
-    void blur();
-    void focus();
 
     DOMString value() const;
     void setValue(DOMStringImpl* value);
@@ -566,8 +559,6 @@ public:
     void setValue(DOMString _value);
     DOMString defaultValue();
     void setDefaultValue(DOMString _defaultValue);
-    void blur();
-    void focus();
 
     virtual bool isEditable();
     void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }

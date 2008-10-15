@@ -764,8 +764,8 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   onload        KJS::HTMLElement::BodyOnLoad     DontDelete
 @end
 @begin HTMLBodyElementProtoTable 2
-# Mozilla'ish extension. Ideally we would want to support this on all elements.
-# Not hard, but not an immediate need.
+# Even though we do blur/focus everywhere, we still handle body.focus()
+# specially for now
   focus         KJS::HTMLElement::BodyFocus      DontDelete|Function 0
 @end
 @begin HTMLFormElementTable 11
@@ -801,8 +801,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 @begin HTMLSelectElementProtoTable 4
   add		KJS::HTMLElement::SelectAdd	DontDelete|Function 2
   remove	KJS::HTMLElement::SelectRemove	DontDelete|Function 1
-  blur		KJS::HTMLElement::SelectBlur	DontDelete|Function 0
-  focus		KJS::HTMLElement::SelectFocus	DontDelete|Function 0
 @end
 @begin HTMLOptGroupElementTable 2
   disabled	KJS::HTMLElement::OptGroupDisabled	DontDelete
@@ -843,8 +841,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   selectionEnd   KJS::HTMLElement::InputSelectionEnd    DontDelete
 @end
 @begin HTMLInputElementProtoTable 5
-  blur		KJS::HTMLElement::InputBlur		DontDelete|Function 0
-  focus		KJS::HTMLElement::InputFocus		DontDelete|Function 0
   select	KJS::HTMLElement::InputSelect		DontDelete|Function 0
   click		KJS::HTMLElement::InputClick		DontDelete|Function 0
   setSelectionRange KJS::HTMLElement::InputSetSelectionRange DontDelete|Function 2
@@ -866,9 +862,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   textLength     KJS::HTMLElement::TextAreaTextLength     DontDelete|ReadOnly
 @end
 @begin HTMLTextAreaElementProtoTable 4
-  blur		KJS::HTMLElement::TextAreaBlur		DontDelete|Function 0
-  focus		KJS::HTMLElement::TextAreaFocus		DontDelete|Function 0
-  select	KJS::HTMLElement::TextAreaSelect	DontDelete|Function 0
+  select  KJS::HTMLElement::TextAreaSelect        DontDelete|Function 0
   setSelectionRange KJS::HTMLElement::TextAreaSetSelectionRange DontDelete|Function 2
 @end
 @begin HTMLButtonElementTable 9
@@ -881,8 +875,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   value		KJS::HTMLElement::ButtonValue		DontDelete
 @end
 @begin HTMLButtonElementProtoTable 3
-  blur		KJS::HTMLElement::ButtonBlur            DontDelete|Function 0
-  focus		KJS::HTMLElement::ButtonFocus           DontDelete|Function 0
   click		KJS::HTMLElement::ButtonClick           DontDelete|Function 0
 @end
 @begin HTMLLabelElementTable 3
@@ -984,8 +976,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   type		KJS::HTMLElement::AnchorType		DontDelete
 @end
 @begin HTMLAnchorElementProtoTable 3
-  blur		KJS::HTMLElement::AnchorBlur		DontDelete|Function 0
-  focus		KJS::HTMLElement::AnchorFocus		DontDelete|Function 0
   click		KJS::HTMLElement::AnchorClick		DontDelete|Function 0
 @end
 @begin HTMLImageElementTable 15
@@ -2164,27 +2154,11 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
         select.remove(int(args[0]->toNumber(exec)));
         return jsUndefined();
       }
-      else if (id == KJS::HTMLElement::SelectBlur) {
-        select.blur();
-        return jsUndefined();
-      }
-      else if (id == KJS::HTMLElement::SelectFocus) {
-        select.focus();
-        return jsUndefined();
-      }
     }
     break;
     case ID_INPUT: {
       DOM::HTMLInputElementImpl& input = static_cast<DOM::HTMLInputElementImpl&>(element);
-      if (id == KJS::HTMLElement::InputBlur) {
-        input.blur();
-        return jsUndefined();
-      }
-      else if (id == KJS::HTMLElement::InputFocus) {
-        input.focus();
-        return jsUndefined();
-      }
-      else if (id == KJS::HTMLElement::InputSelect) {
+      if (id == KJS::HTMLElement::InputSelect) {
         input.select();
         return jsUndefined();
       }
@@ -2200,14 +2174,7 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
     break;
     case ID_BUTTON: {
       DOM::HTMLButtonElementImpl& button = static_cast<DOM::HTMLButtonElementImpl&>(element);
-      if (id == KJS::HTMLElement::ButtonBlur) {
-        button.blur();
-        return jsUndefined();
-      }
-      else if (id == KJS::HTMLElement::ButtonFocus) {
-        button.focus();
-        return jsUndefined();
-      } else if (id == KJS::HTMLElement::ButtonClick) {
+      if (id == KJS::HTMLElement::ButtonClick) {
         button.click();
         return jsUndefined();      
       }
@@ -2215,15 +2182,7 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
     break;
     case ID_TEXTAREA: {
       DOM::HTMLTextAreaElementImpl& textarea = static_cast<DOM::HTMLTextAreaElementImpl&>(element);
-      if (id == KJS::HTMLElement::TextAreaBlur) {
-        textarea.blur();
-        return jsUndefined();
-      }
-      else if (id == KJS::HTMLElement::TextAreaFocus) {
-        textarea.focus();
-        return jsUndefined();
-      }
-      else if (id == KJS::HTMLElement::TextAreaSelect) {
+      if (id == KJS::HTMLElement::TextAreaSelect) {
         textarea.select();
         return jsUndefined();
       }
@@ -2236,15 +2195,7 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
     break;
     case ID_A: {
       DOM::HTMLAnchorElementImpl& anchor = static_cast<DOM::HTMLAnchorElementImpl&>(element);
-      if (id == KJS::HTMLElement::AnchorBlur) {
-        anchor.blur();
-        return jsUndefined();
-      }
-      else if (id == KJS::HTMLElement::AnchorFocus) {
-        anchor.focus();
-        return jsUndefined();
-      }
-      else if (id == KJS::HTMLElement::AnchorClick) {
+      if (id == KJS::HTMLElement::AnchorClick) {
         anchor.click();
         return jsUndefined();
       }

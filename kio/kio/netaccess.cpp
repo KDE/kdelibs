@@ -270,7 +270,15 @@ bool NetAccess::synchronousRun( Job* job, QWidget* window, QByteArray* data,
                                 KUrl* finalURL, QMap<QString, QString>* metaData )
 {
   NetAccess kioNet;
-  return kioNet.synchronousRunInternal( job, window, data, finalURL, metaData );
+  // Disable autodeletion until we are back from this event loop (#170963)
+  // We just have to hope people don't mess with setAutoDelete in slots connected to the job, though.
+  const bool wasAutoDelete = job->isAutoDelete();
+  job->setAutoDelete(false);
+  const bool ok = kioNet.synchronousRunInternal(job, window, data, finalURL, metaData);
+  if (wasAutoDelete) {
+    job->deleteLater();
+  }
+  return ok;
 }
 
 QString NetAccess::mimetype( const KUrl& url, QWidget* window )

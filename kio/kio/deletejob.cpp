@@ -21,6 +21,7 @@
 
 #include "deletejob.h"
 
+#include "kdirlister.h"
 #include "kmimetype.h"
 #include "scheduler.h"
 #include "kdirwatch.h"
@@ -48,7 +49,6 @@ namespace KIO
 {
     enum DeleteJobState {
         DELETEJOB_STATE_STATING,
-        DELETEJOB_STATE_LISTING,
         DELETEJOB_STATE_DELETING_FILES,
         DELETEJOB_STATE_DELETING_DIRS
     };
@@ -81,11 +81,13 @@ namespace KIO
         KUrl::List symlinks;
         KUrl::List dirs;
         KUrl::List m_srcList;
-        KUrl::List::Iterator m_currentStat;
-	QStringList m_parentDirs;
+        KUrl::List::iterator m_currentStat;
+	QSet<QString> m_parentDirs;
         QTimer *m_reportTimer;
 
         void statNextSrc();
+        void currentSourceStated(bool isDir, bool isLink);
+        void finishedStatPhase();
         void deleteNextFile();
         void deleteNextDir();
         /**
@@ -141,11 +143,12 @@ void DeleteJobPrivate::slotReport()
 {
    Q_Q(DeleteJob);
    emit q->deleting( q, m_currentURL );
+
+   // TODO: maybe we could skip everything else when (flags & HideProgressInfo) ?
    JobPrivate::emitDeleting( q, m_currentURL);
 
    switch( state ) {
         case DELETEJOB_STATE_STATING:
-        case DELETEJOB_STATE_LISTING:
             q->setTotalAmount(KJob::Bytes, m_totalSize);
             q->setTotalAmount(KJob::Files, files.count());
             q->setTotalAmount(KJob::Directories, dirs.count());
@@ -200,9 +203,8 @@ void DeleteJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
 void DeleteJobPrivate::statNextSrc()
 {
     Q_Q(DeleteJob);
-    //kDebug(7007) << "statNextSrc";
-    if ( m_currentStat != m_srcList.end() )
-    {
+    //kDebug(7007);
+    if (m_currentStat != m_srcList.end()) {
         m_currentURL = (*m_currentStat);
 
         // if the file system doesn't support deleting, we do not even stat
@@ -216,35 +218,70 @@ void DeleteJobPrivate::statNextSrc()
         }
         // Stat it
         state = DELETEJOB_STATE_STATING;
-        KIO::SimpleJob * job = KIO::stat( m_currentURL, StatJob::SourceSide, 1, KIO::HideProgressInfo );
-        Scheduler::scheduleJob(job);
-        //kDebug(7007) << "KIO::stat (DeleteJob) " << m_currentURL;
-        q->addSubjob(job);
-    } else
-    {
-        m_totalFilesDirs = files.count()+symlinks.count() + dirs.count();
-        slotReport();
-        // Now we know which dirs hold the files we're going to delete.
-        // To speed things up and prevent double-notification, we disable KDirWatch
-        // on those dirs temporarily (using KDirWatch::self, that's the instanced
-        // used by e.g. kdirlister).
-        for ( QStringList::Iterator it = m_parentDirs.begin() ; it != m_parentDirs.end() ; ++it )
-            KDirWatch::self()->stopDirScan( *it );
-        state = DELETEJOB_STATE_DELETING_FILES;
-        deleteNextFile();
+
+        // Fast path for KFileItems in directory views
+        while(m_currentStat != m_srcList.end()) {
+            m_currentURL = (*m_currentStat);
+            KFileItem cachedItem = KDirLister::cachedItemForUrl(m_currentURL);
+            if (cachedItem.isNull())
+                break;
+            //kDebug(7007) << "Found cached info about" << m_currentURL << "isDir=" << cachedItem.isDir() << "isLink=" << cachedItem.isLink();
+            currentSourceStated(cachedItem.isDir(), cachedItem.isLink());
+            ++m_currentStat;
+        }
+
+        // Hook for unit test to disable the fast path.
+        extern bool kio_resolve_local_urls; // from copyjob.cpp, abused here to save a symbol.
+        if (!kio_resolve_local_urls) {
+
+            // Fast path for local files
+            // (using a loop, instead of a huge recursion)
+            while(m_currentStat != m_srcList.end() && (*m_currentStat).isLocalFile()) {
+                m_currentURL = (*m_currentStat);
+                QFileInfo fileInfo(m_currentURL.path());
+                currentSourceStated(fileInfo.isDir(), fileInfo.isSymLink());
+                ++m_currentStat;
+            }
+        }
+        if (m_currentStat == m_srcList.end()) {
+            // Done, jump to the last else of this method
+            statNextSrc();
+        } else {
+            KIO::SimpleJob * job = KIO::stat( m_currentURL, StatJob::SourceSide, 0, KIO::HideProgressInfo );
+            Scheduler::scheduleJob(job);
+            //kDebug(7007) << "stat'ing" << m_currentURL;
+            q->addSubjob(job);
+        }
+    } else {
+        if (!q->hasSubjobs()) // don't go there yet if we're still listing some subdirs
+            finishedStatPhase();
     }
+}
+
+void DeleteJobPrivate::finishedStatPhase()
+{
+    m_totalFilesDirs = files.count() + symlinks.count() + dirs.count();
+    slotReport();
+    // Now we know which dirs hold the files we're going to delete.
+    // To speed things up and prevent double-notification, we disable KDirWatch
+    // on those dirs temporarily (using KDirWatch::self, that's the instanced
+    // used by e.g. kdirlister).
+    for ( QSet<QString>::const_iterator it = m_parentDirs.constBegin() ; it != m_parentDirs.constEnd() ; ++it )
+        KDirWatch::self()->stopDirScan( *it );
+    state = DELETEJOB_STATE_DELETING_FILES;
+    deleteNextFile();
 }
 
 void DeleteJobPrivate::deleteNextFile()
 {
     Q_Q(DeleteJob);
-    //kDebug(7007) << "deleteNextFile";
+    //kDebug(7007);
     if ( !files.isEmpty() || !symlinks.isEmpty() )
     {
         SimpleJob *job;
         do {
             // Take first file to delete out of list
-            KUrl::List::Iterator it = files.begin();
+            KUrl::List::iterator it = files.begin();
             bool isLink = false;
             if ( it == files.end() ) // No more files
             {
@@ -257,12 +294,13 @@ void DeleteJobPrivate::deleteNextFile()
                 //kdDebug(7007) << "DeleteJob deleted" << (*it).path();
                 job = 0;
                 m_processedFiles++;
-                if ( m_processedFiles % 300 == 0 || m_totalFilesDirs < 300) { // update progress info every 300 files
+                if ( m_processedFiles % 300 == 1 || m_totalFilesDirs < 300) { // update progress info every 300 files
                     m_currentURL = *it;
                     slotReport();
                 }
             } else
             { // if remote - or if unlink() failed (we'll use the job's error handling in that case)
+                //kDebug(7007) << "calling file_delete on" << *it;
                 job = KIO::file_delete( *it, KIO::HideProgressInfo );
                 Scheduler::scheduleJob(job);
                 m_currentURL=(*it);
@@ -289,12 +327,12 @@ void DeleteJobPrivate::deleteNextDir()
     {
         do {
             // Take first dir to delete out of list - last ones first !
-            KUrl::List::Iterator it = --dirs.end();
+            KUrl::List::iterator it = --dirs.end();
             // If local dir, try to rmdir it directly
             if ( (*it).isLocalFile() && ::rmdir( QFile::encodeName((*it).path()) ) == 0 ) {
 
                 m_processedDirs++;
-                if ( m_processedDirs % 100 == 0 ) { // update progress info every 100 dirs
+                if ( m_processedDirs % 100 == 1 ) { // update progress info every 100 dirs
                     m_currentURL = *it;
                     slotReport();
                 }
@@ -317,7 +355,7 @@ void DeleteJobPrivate::deleteNextDir()
     }
 
     // Re-enable watching on the dirs that held the deleted files
-    for ( QStringList::Iterator it = m_parentDirs.begin() ; it != m_parentDirs.end() ; ++it )
+    for (QSet<QString>::const_iterator it = m_parentDirs.constBegin() ; it != m_parentDirs.constEnd() ; ++it)
         KDirWatch::self()->restartDirScan( *it );
 
     // Finished - tell the world
@@ -353,78 +391,74 @@ void DeleteJobPrivate::slotProcessedSize( KJob*, qulonglong data_size )
       q->setPercent( (unsigned long)(( (float)(m_processedSize + m_fileProcessedSize) / (float)m_totalSize ) * 100.0) );
 }
 
+void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
+{
+    Q_Q(DeleteJob);
+    const KUrl url = (*m_currentStat);
+    if (isDir && !isLink) {
+        // Add toplevel dir in list of dirs
+        dirs.append( url );
+        if (url.isLocalFile()) {
+            const QString parentDir = url.path(KUrl::RemoveTrailingSlash);
+            m_parentDirs.insert(parentDir);
+        }
+        if (!KProtocolManager::canDeleteRecursive(url)) {
+            //kDebug(7007) << url << "is a directory, let's list it";
+            ListJob *newjob = KIO::listRecursive(url, KIO::HideProgressInfo);
+            newjob->setUnrestricted(true); // No KIOSK restrictions
+            Scheduler::scheduleJob(newjob);
+            QObject::connect(newjob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList&)),
+                             q, SLOT(slotEntries(KIO::Job*,const KIO::UDSEntryList&)));
+            q->addSubjob(newjob);
+            // Note that this listing job will happen in parallel with other stat jobs.
+        }
+    } else {
+        if (isLink) {
+            //kDebug(7007) << "Target is a symlink";
+            symlinks.append(url);
+        } else {
+            //kDebug(7007) << "Target is a file";
+            files.append(url);
+        }
+        if (url.isLocalFile()) {
+            const QString parentDir = url.directory(KUrl::ObeyTrailingSlash);
+            m_parentDirs.insert(parentDir);
+        }
+    }
+}
+
 void DeleteJob::slotResult( KJob *job )
 {
     Q_D(DeleteJob);
     switch ( d->state )
     {
     case DELETEJOB_STATE_STATING:
-    {
-        // Was there an error while stating ?
-        if (job->error() )
-        {
-            // Probably : doesn't exist
-            Job::slotResult( job ); // will set the error and emit result(this)
-            return;
-        }
-
-        const UDSEntry entry = static_cast<StatJob*>(job)->statResult();
-        const KUrl url = static_cast<SimpleJob*>(job)->url();
-        const bool isLink = entry.isLink();
-
         removeSubjob( job );
-        assert( !hasSubjobs() );
 
-        // Is it a file or a dir ?
-        if (entry.isDir() && !isLink)
-        {
-            // Add toplevel dir in list of dirs
-            d->dirs.append( url );
-            if ( url.isLocalFile() && !d->m_parentDirs.contains( url.path(KUrl::RemoveTrailingSlash) ) )
-              d->m_parentDirs.append( url.path(KUrl::RemoveTrailingSlash) );
+        // Was this a stat job or a list job? We do both in parallel.
+        if (StatJob* statJob = qobject_cast<StatJob*>(job)) {
+            // Was there an error while stating ?
+            if (job->error()) {
+                // Probably : doesn't exist
+                Job::slotResult(job); // will set the error and emit result(this)
+                return;
+            }
 
-            if ( !KProtocolManager::canDeleteRecursive( url ) ) {
-                //kDebug(7007) << " Target is a directory ";
-                // List it
-                d->state = DELETEJOB_STATE_LISTING;
-                ListJob *newjob = KIO::listRecursive( url, KIO::HideProgressInfo );
-                newjob->setUnrestricted(true); // No KIOSK restrictions
-                Scheduler::scheduleJob(newjob);
-                connect(newjob, SIGNAL(entries( KIO::Job *,
-                                                const KIO::UDSEntryList& )),
-                        SLOT( slotEntries( KIO::Job*,
-                                           const KIO::UDSEntryList& )));
-                addSubjob(newjob);
-            } else {
-                ++d->m_currentStat;
-                d->statNextSrc();
-            }
-        }
-        else
-        {
-            if ( isLink ) {
-                //kDebug(7007) << " Target is a symlink";
-                d->symlinks.append( url );
-            } else {
-                //kDebug(7007) << " Target is a file";
-                d->files.append( url );
-            }
-            if ( url.isLocalFile() && !d->m_parentDirs.contains( url.directory(KUrl::ObeyTrailingSlash) ) )
-                d->m_parentDirs.append( url.directory(KUrl::ObeyTrailingSlash) );
+            const UDSEntry entry = statJob->statResult();
+            // Is it a file or a dir ?
+            const bool isLink = entry.isLink();
+            const bool isDir = entry.isDir();
+            d->currentSourceStated(isDir, isLink);
+
             ++d->m_currentStat;
             d->statNextSrc();
+        } else {
+            if (job->error()) {
+                // Try deleting nonetheless, it may be empty (and non-listable)
+            }
+            if (!hasSubjobs())
+                d->finishedStatPhase();
         }
-    }
-        break;
-    case DELETEJOB_STATE_LISTING:
-        if ( job->error() )
-        {
-            // Try deleting nonetheless, it may be empty (and non-listable)
-        }
-        removeSubjob( job );
-        assert( !hasSubjobs() );
-        ++d->m_currentStat;
-        d->statNextSrc();
         break;
     case DELETEJOB_STATE_DELETING_FILES:
         if ( job->error() )

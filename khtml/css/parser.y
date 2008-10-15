@@ -169,6 +169,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %token <string> NTH
 
 %nonassoc <string> HASH
+%nonassoc <string> HEXCOLOR	
 %nonassoc ':'
 %nonassoc '.'
 %nonassoc '['
@@ -1177,7 +1178,7 @@ function:
  * after the "#"; e.g., "#000" is OK, but "#abcd" is not.
  */
 hexcolor:
-  HASH maybe_space { $$ = $1; }
+  HEXCOLOR maybe_space { $$ = $1; }
   ;
 
 

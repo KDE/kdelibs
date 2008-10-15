@@ -88,6 +88,7 @@ public:
   void addRefreshItem( const KFileItem& oldItem, const KFileItem& item );
   void emitItems();
   void emitDeleteItem( const KFileItem &item );
+  void emitItemsDeleted(const KFileItemList &items);
   void redirect( const KUrl& oldUrl, const KUrl& newUrl );
 
   KDirLister *m_parent;
@@ -163,7 +164,7 @@ public:
     void updateDirectory( const KUrl& dir );
 
     KFileItem itemForUrl( const KUrl& url ) const;
-    KFileItemList *itemsForDir( const KUrl& dir ) const;
+    KFileItemList *itemsForDir(const KUrl& dir) const;
 
     bool listDir( KDirLister *lister, const KUrl& _url, bool _keep, bool _reload );
 
@@ -177,9 +178,11 @@ public:
   void forgetDirs( KDirLister *lister );
   void forgetDirs( KDirLister *lister, const KUrl &_url, bool notify );
 
-  KFileItem findByName( const KDirLister *lister, const QString &_name ) const;
-  // if lister is set, it is checked that the url is held by the lister
-  KFileItem *findByUrl( const KDirLister *lister, const KUrl &_url ) const;
+    KFileItem findByName( const KDirLister *lister, const QString &_name ) const;
+    // findByUrl returns a pointer so that it's possible to modify the item.
+    // See itemForUrl for the version that returns a readonly kfileitem.
+    // @param lister can be 0. If set, it is checked that the url is held by the lister
+    KFileItem *findByUrl(const KDirLister *lister, const KUrl &url) const;
 
     // Called by CachedItemsJob:
     // Emits those items, for this lister and this url
@@ -213,14 +216,6 @@ public Q_SLOTS:
   void slotFilesChanged( const QStringList& fileList );
   void slotFileRenamed( const QString& srcUrl, const QString& dstUrl );
 
-private:
-
-    bool validUrl( const KDirLister *lister, const KUrl& _url ) const;
-
-    // helper for both stop methods
-    struct DirectoryData;
-    void stopLister(KDirLister* lister, const QString& url, DirectoryData& dirData);
-
 private Q_SLOTS:
   void slotFileDirty( const QString &_file );
   void slotFileCreated( const QString &_file );
@@ -235,11 +230,19 @@ private Q_SLOTS:
   void processPendingUpdates();
 
 private:
+    class DirItem;
+    DirItem* dirItemForUrl(const KUrl& dir) const;
 
-  KIO::ListJob *jobForUrl( const QString& url, KIO::ListJob *not_job = 0 );
-  const KUrl& joburl( KIO::ListJob *job );
+    bool validUrl( const KDirLister *lister, const KUrl& _url ) const;
 
-  void killJob( KIO::ListJob *job );
+    // helper for both stop methods
+    struct DirectoryData;
+    void stopLister(KDirLister* lister, const QString& url, DirectoryData& dirData);
+
+    KIO::ListJob *jobForUrl( const QString& url, KIO::ListJob *not_job = 0 );
+    const KUrl& joburl( KIO::ListJob *job );
+
+    void killJob( KIO::ListJob *job );
 
     // Called when something tells us that the directory @p url has changed.
     // Returns true if @p url is held by some lister (meaning: do the update now)
@@ -250,7 +253,9 @@ private:
   // the parent directory need to be notified, the unmarked items have to be deleted
   // and removed from the cache including all the children.
   void deleteUnmarkedItems( const QList<KDirLister *>&, KFileItemList & );
-  // common for slotRedirection and slotFileRenamed
+    // Helper method called when we know that a list of items was deleted
+    void itemsDeleted(const QList<KDirLister *>& listers, const KFileItemList& deletedItems);
+    // common for slotRedirection and slotFileRenamed
   void renameDir( const KUrl &oldUrl, const KUrl &url );
   // common for deleteUnmarkedItems and slotFilesRemoved
   void deleteDir( const KUrl& dirUrl );
@@ -376,6 +381,8 @@ private:
         QList<KDirLister *> listersCurrentlyListing;
         // Listers that are currently holding this url
         QList<KDirLister *> listersCurrentlyHolding;
+
+        void moveListersWithoutCachedItemsJob();
     };
 
     typedef QHash<QString /*url*/, DirectoryData> DirectoryDataHash;
@@ -400,15 +407,18 @@ class KDirLister::Private::CachedItemsJob : public KJob {
     Q_OBJECT
 public:
     CachedItemsJob(KDirLister* lister, const KFileItemList& items, const KFileItem& rootItem,
-                   const KUrl& url, bool reload, bool emitCompleted)
+                   const KUrl& url, bool reload)
         : KJob(lister),
           m_lister(lister), m_url(url),
           m_items(items), m_rootItem(rootItem),
-          m_reload(reload), m_emitCompleted(emitCompleted) {
+          m_reload(reload), m_emitCompleted(true) {
         setAutoDelete(true);
     }
 
     /*reimp*/ void start() { QMetaObject::invokeMethod(this, "done", Qt::QueuedConnection); }
+
+    // For updateDirectory() to cancel m_emitCompleted;
+    void setEmitCompleted(bool b) { m_emitCompleted = b; }
 
     KUrl url() const { return m_url; }
 

@@ -73,232 +73,6 @@ enum ComplType {CTNone=0, CTEnv, CTUser, CTMan, CTExe, CTFile, CTUrl, CTInfo};
 
 class CompletionThread;
 
-/**
- * A custom event type that is used to return a list of completion
- * matches from an asyncrynous lookup.
- */
-
-class CompletionMatchEvent : public QEvent
-{
-public:
-	CompletionMatchEvent( CompletionThread *thread ) :
-		QEvent( uniqueType() ),
-		m_completionThread( thread )
-	{}
-
-	CompletionThread *completionThread() const { return m_completionThread; }
-	static Type uniqueType() { return Type(User + 61080); }
-
-private:
-	CompletionThread *m_completionThread;
-};
-
-class CompletionThread : public QThread
-{
-protected:
-	CompletionThread( KUrlCompletion *receiver ) :
-		QThread(),
-		m_receiver( receiver ),
-		m_terminationRequested( false )
-	{}
-
-public:
-	void requestTermination() { m_terminationRequested = true; }
-	QStringList matches() const { return m_matches; }
-
-protected:
-	void addMatch( const QString &match ) { m_matches.append( match ); }
-	bool terminationRequested() const { return m_terminationRequested; }
-	void done()
-	{
-		if ( !m_terminationRequested )
-			qApp->postEvent( m_receiver, new CompletionMatchEvent( this ) );
-		else
-			deleteLater();
-	}
-
-private:
-	KUrlCompletion *m_receiver;
-	QStringList m_matches;
-	bool m_terminationRequested;
-};
-
-/**
- * A simple thread that fetches a list of tilde-completions and returns this
- * to the caller via a CompletionMatchEvent.
- */
-
-class UserListThread : public CompletionThread
-{
-public:
-    UserListThread( KUrlCompletion *receiver ) :
-		CompletionThread( receiver )
-	{}
-
-protected:
-	virtual void run()
-	{
-		static const QChar tilde = '~';
-
-		struct passwd *pw;
-		while ( ( pw = ::getpwent() ) && !terminationRequested() )
-			addMatch( tilde + QString::fromLocal8Bit( pw->pw_name ) );
-
-		::endpwent();
-
-		addMatch( QString( tilde ) );
-
-		done();
-	}
-};
-
-class DirectoryListThread : public CompletionThread
-{
-public:
-	DirectoryListThread( KUrlCompletion *receiver,
-	                     const QStringList &dirList,
-	                     const QString &filter,
-	                     bool onlyExe,
-	                     bool onlyDir,
-	                     bool noHidden,
-	                     bool appendSlashToDir ) :
-		CompletionThread( receiver ),
-		m_dirList( dirList ),
-		m_filter(  filter  ),
-		m_onlyExe( onlyExe ),
-		m_onlyDir( onlyDir ),
-		m_noHidden( noHidden ),
-		m_appendSlashToDir( appendSlashToDir )
-	{}
-
-	virtual void run();
-
-private:
-	QStringList m_dirList;
-	QString m_filter;
-	bool m_onlyExe;
-	bool m_onlyDir;
-	bool m_noHidden;
-	bool m_appendSlashToDir;
-};
-
-void DirectoryListThread::run()
-{
-	// Thread safety notes:
-	//
-	// There very possibly may be thread safety issues here, but I've done a check
-	// of all of the things that would seem to be problematic.  Here are a few
-	// things that I have checked to be safe here (some used indirectly):
-	//
-	// QDir::currentPath(), QDir::setCurrent(), QFile::decodeName(), QFile::encodeName()
-	// QString::fromLocal8Bit(), QString::toLocal8Bit(), QTextCodec::codecForLocale()
-	//
-	// Also see (for POSIX functions):
-	// http://www.opengroup.org/onlinepubs/009695399/functions/xsh_chap02_09.html
-
-	DIR *dir = 0;
-
-	for ( QStringList::ConstIterator it = m_dirList.begin();
-	      it != m_dirList.end() && !terminationRequested();
-	      ++it )
-	{
-		// Open the next directory
-
-		if ( !dir ) {
-			dir = ::opendir( QFile::encodeName( *it ) );
-			if ( ! dir ) {
-				kDebug() << "Failed to open dir:" << *it;
-				return;
-			}
-		}
-
-		// A trick from KIO that helps performance by a little bit:
-		// chdir to the directroy so we won't have to deal with full paths
-		// with stat()
-
-		QString path = QDir::currentPath();
-		QDir::setCurrent( *it );
-
-		// Loop through all directory entries
-		// Solaris and IRIX dirent structures do not allocate space for d_name. On
-		// systems that do (HP-UX, Linux, Tru64 UNIX), we overallocate space but
-		// that's ok.
-#ifndef HAVE_READDIR_R
-		KDE_struct_dirent *dirEntry = 0;
-		while ( !terminationRequested() &&
-		        (dirEntry = KDE_readdir( dir)))
-#else
-		struct dirent *dirPosition = (struct dirent *) malloc( sizeof( struct dirent ) + MAXPATHLEN + 1 );
-		struct dirent *dirEntry = 0;
-		while ( !terminationRequested() &&
-		        ::readdir_r( dir, dirPosition, &dirEntry ) == 0 && dirEntry )
-#endif
-
-		{
-			// Skip hidden files if m_noHidden is true
-
-			if ( dirEntry->d_name[0] == '.' && m_noHidden )
-				continue;
-
-			// Skip "."
-
-			if ( dirEntry->d_name[0] == '.' && dirEntry->d_name[1] == '\0' )
-				continue;
-
-			// Skip ".."
-
-			if ( dirEntry->d_name[0] == '.' && dirEntry->d_name[1] == '.' && dirEntry->d_name[2] == '\0' )
-				continue;
-
-			QString file = QFile::decodeName( dirEntry->d_name );
-
-			if ( m_filter.isEmpty() || file.startsWith( m_filter ) ) {
-
-				if ( m_onlyExe || m_onlyDir || m_appendSlashToDir ) {
-					KDE_struct_stat sbuff;
-
-					if ( KDE_stat( dirEntry->d_name, &sbuff ) == 0 ) {
-
-						// Verify executable
-
-						if ( m_onlyExe && ( sbuff.st_mode & MODE_EXE ) == 0 )
-							continue;
-
-						// Verify directory
-
-						if ( m_onlyDir && !S_ISDIR( sbuff.st_mode ) )
-							continue;
-
-						// Add '/' to directories
-
-						if ( m_appendSlashToDir && S_ISDIR( sbuff.st_mode ) )
-							file.append( QLatin1Char( '/' ) );
-
-					}
-					else {
-						kDebug() << "Could not stat file" << file;
-						continue;
-					}
-				}
-
-				addMatch( file );
-			}
-		}
-
-		// chdir to the original directory
-
-		QDir::setCurrent( path );
-
-		::closedir( dir );
-		dir = 0;
-#ifdef HAVE_READDIR_R
-		free( dirPosition );
-#endif
-	}
-
-	done();
-}
-
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
 // KUrlCompletionPrivate
@@ -396,6 +170,241 @@ public:
 	CompletionThread *dirListThread;
 };
 
+/**
+ * A custom event type that is used to return a list of completion
+ * matches from an asynchronous lookup.
+ */
+
+class CompletionMatchEvent : public QEvent
+{
+public:
+	CompletionMatchEvent( CompletionThread *thread ) :
+		QEvent( uniqueType() ),
+		m_completionThread( thread )
+	{}
+
+	CompletionThread *completionThread() const { return m_completionThread; }
+	static Type uniqueType() { return Type(User + 61080); }
+
+private:
+	CompletionThread *m_completionThread;
+};
+
+class CompletionThread : public QThread
+{
+protected:
+	CompletionThread( KUrlCompletionPrivate *receiver ) :
+		QThread(),
+		m_prepend( receiver->prepend ),
+		m_complete_url( receiver->complete_url ),
+		m_receiver( receiver ),
+		m_terminationRequested( false )
+	{}
+
+public:
+	void requestTermination() { m_terminationRequested = true; }
+	QStringList matches() const { return m_matches; }
+
+protected:
+	void addMatch( const QString &match ) { m_matches.append( match ); }
+	bool terminationRequested() const { return m_terminationRequested; }
+	void done()
+	{
+		if ( !m_terminationRequested )
+			qApp->postEvent( m_receiver->q, new CompletionMatchEvent( this ) );
+		else
+			deleteLater();
+	}
+
+	const QString m_prepend;
+	const bool m_complete_url; // if true completing a URL (i.e. 'm_prepend' is a URL), otherwise a path
+
+private:
+	KUrlCompletionPrivate *m_receiver;
+	QStringList m_matches;
+	bool m_terminationRequested;
+};
+
+/**
+ * A simple thread that fetches a list of tilde-completions and returns this
+ * to the caller via a CompletionMatchEvent.
+ */
+
+class UserListThread : public CompletionThread
+{
+public:
+    UserListThread( KUrlCompletionPrivate *receiver ) :
+		CompletionThread( receiver )
+	{}
+
+protected:
+	virtual void run()
+	{
+		static const QChar tilde = '~';
+
+		// we don't need to handle prepend here, right? ~user is always at pos 0
+		assert(m_prepend.isEmpty());
+		struct passwd *pw;
+		while ( ( pw = ::getpwent() ) && !terminationRequested() )
+			addMatch( tilde + QString::fromLocal8Bit( pw->pw_name ) );
+
+		::endpwent();
+
+		addMatch( QString( tilde ) );
+
+		done();
+	}
+};
+
+class DirectoryListThread : public CompletionThread
+{
+public:
+	DirectoryListThread( KUrlCompletionPrivate *receiver,
+	                     const QStringList &dirList,
+	                     const QString &filter,
+	                     bool onlyExe,
+	                     bool onlyDir,
+	                     bool noHidden,
+	                     bool appendSlashToDir ) :
+		CompletionThread( receiver ),
+		m_dirList( dirList ),
+		m_filter(  filter  ),
+		m_onlyExe( onlyExe ),
+		m_onlyDir( onlyDir ),
+		m_noHidden( noHidden ),
+		m_appendSlashToDir( appendSlashToDir )
+	{}
+
+	virtual void run();
+
+private:
+	QStringList m_dirList;
+	QString m_filter;
+	bool m_onlyExe;
+	bool m_onlyDir;
+	bool m_noHidden;
+	bool m_appendSlashToDir;
+};
+
+void DirectoryListThread::run()
+{
+	// Thread safety notes:
+	//
+	// There very possibly may be thread safety issues here, but I've done a check
+	// of all of the things that would seem to be problematic.  Here are a few
+	// things that I have checked to be safe here (some used indirectly):
+	//
+	// QDir::currentPath(), QDir::setCurrent(), QFile::decodeName(), QFile::encodeName()
+	// QString::fromLocal8Bit(), QString::toLocal8Bit(), QTextCodec::codecForLocale()
+	//
+	// Also see (for POSIX functions):
+	// http://www.opengroup.org/onlinepubs/009695399/functions/xsh_chap02_09.html
+
+	DIR *dir = 0;
+
+	for ( QStringList::ConstIterator it = m_dirList.begin();
+	      it != m_dirList.end() && !terminationRequested();
+	      ++it )
+	{
+		// Open the next directory
+
+		if ( !dir ) {
+			dir = ::opendir( QFile::encodeName( *it ) );
+			if ( ! dir ) {
+				kDebug() << "Failed to open dir:" << *it;
+				return;
+			}
+		}
+
+		// A trick from KIO that helps performance by a little bit:
+		// chdir to the directory so we won't have to deal with full paths
+		// with stat()
+
+		QString path = QDir::currentPath();
+		QDir::setCurrent( *it );
+
+		// Loop through all directory entries
+		// Solaris and IRIX dirent structures do not allocate space for d_name. On
+		// systems that do (HP-UX, Linux, Tru64 UNIX), we overallocate space but
+		// that's ok.
+#ifndef HAVE_READDIR_R
+		KDE_struct_dirent *dirEntry = 0;
+		while ( !terminationRequested() &&
+		        (dirEntry = KDE_readdir( dir)))
+#else
+		struct dirent *dirPosition = (struct dirent *) malloc( sizeof( struct dirent ) + MAXPATHLEN + 1 );
+		struct dirent *dirEntry = 0;
+		while ( !terminationRequested() &&
+		        ::readdir_r( dir, dirPosition, &dirEntry ) == 0 && dirEntry )
+#endif
+
+		{
+			// Skip hidden files if m_noHidden is true
+
+			if ( dirEntry->d_name[0] == '.' && m_noHidden )
+				continue;
+
+			// Skip "."
+
+			if ( dirEntry->d_name[0] == '.' && dirEntry->d_name[1] == '\0' )
+				continue;
+
+			// Skip ".."
+
+			if ( dirEntry->d_name[0] == '.' && dirEntry->d_name[1] == '.' && dirEntry->d_name[2] == '\0' )
+				continue;
+
+			QString file = QFile::decodeName( dirEntry->d_name );
+
+			if ( m_filter.isEmpty() || file.startsWith( m_filter ) ) {
+
+				QString toAppend = m_complete_url ? QUrl::toPercentEncoding(file) : file;
+
+				if ( m_onlyExe || m_onlyDir || m_appendSlashToDir ) {
+					KDE_struct_stat sbuff;
+
+					if ( KDE_stat( dirEntry->d_name, &sbuff ) == 0 ) {
+
+						// Verify executable
+
+						if ( m_onlyExe && ( sbuff.st_mode & MODE_EXE ) == 0 )
+							continue;
+
+						// Verify directory
+
+						if ( m_onlyDir && !S_ISDIR( sbuff.st_mode ) )
+							continue;
+
+						// Add '/' to directories
+
+						if ( m_appendSlashToDir && S_ISDIR( sbuff.st_mode ) )
+							toAppend.append( QLatin1Char( '/' ) );
+
+					}
+					else {
+						kDebug() << "Could not stat file" << file;
+						continue;
+					}
+				}
+
+				addMatch( m_prepend + toAppend );
+			}
+		}
+
+		// chdir to the original directory
+
+		QDir::setCurrent( path );
+
+		::closedir( dir );
+		dir = 0;
+#ifdef HAVE_READDIR_R
+		free( dirPosition );
+#endif
+	}
+
+	done();
+}
+
 KUrlCompletionPrivate::~KUrlCompletionPrivate()
 {
 	if ( userListThread )
@@ -471,41 +480,28 @@ void KUrlCompletionPrivate::MyURL::init(const QString &_url, const QString &cwd)
 	QRegExp protocol_regex = QRegExp( "^(?![A-Za-z]:)[^/\\s\\\\]*:" );
 
 	// Assume "file:" or whatever is given by 'cwd' if there is
-	// no protocol.  (KUrl does this only for absoute paths)
+	// no protocol.  (KUrl does this only for absolute paths)
 	if ( protocol_regex.indexIn( url_copy ) == 0 )
-    {
+	{
 		m_kurl = new KUrl( url_copy );
 		m_isURL = true;
 	}
 	else // relative path or ~ or $something
 	{
 		m_isURL = false;
-		if ( cwd.isEmpty() )
+		if ( !QDir::isRelativePath(url_copy) ||
+		     url_copy.startsWith( QLatin1Char('~') ) ||
+		     url_copy.startsWith( QLatin1Char('$') ))
 		{
 			m_kurl = new KUrl;
-			if ( !QDir::isRelativePath(url_copy) ||
-			     url_copy.at(0) == QLatin1Char('$') ||
-			     url_copy.at(0) == QLatin1Char('~') )
-				m_kurl->setPath( url_copy );
-			else
-				*m_kurl = url_copy;
+			m_kurl->setPath( url_copy );
 		}
 		else
 		{
-			KUrl base = cwd;
-			base.adjustPath(KUrl::AddTrailingSlash);
-
-			if ( !QDir::isRelativePath(url_copy) ||
-			     url_copy.at(0) == QLatin1Char('~') ||
-			     url_copy.at(0) == QLatin1Char('$') )
-			{
-				m_kurl = new KUrl;
-				m_kurl->setPath( url_copy );
-			}
-			else // relative path
-			{
-				//m_kurl = new KUrl( base, url_copy );
-				m_kurl = new KUrl( base );
+			if ( cwd.isEmpty() ) {
+				m_kurl = new KUrl( url_copy );
+			} else {
+				m_kurl = new KUrl( cwd );
 				m_kurl->addPath( url_copy );
 			}
 		}
@@ -785,14 +781,14 @@ bool KUrlCompletionPrivate::userCompletion(const KUrlCompletionPrivate::MyURL &u
 		q->clear();
 
 		if ( !userListThread ) {
-			userListThread = new UserListThread( q );
+			userListThread = new UserListThread( this );
 			userListThread->start();
 
 			// If the thread finishes quickly make sure that the results
 			// are added to the first matching case.
 
 			userListThread->wait( 200 );
-			QStringList l = userListThread->matches();
+			const QStringList l = userListThread->matches();
 			addMatches( l );
 		}
 	}
@@ -833,7 +829,7 @@ bool KUrlCompletionPrivate::envCompletion(const KUrlCompletionPrivate::MyURL &ur
 				pos = s.length();
 
 			if ( pos > 0 )
-				l.append( dollar + s.left(pos) );
+				l.append( prepend + dollar + s.left(pos) );
 
 			env++;
 		}
@@ -1078,15 +1074,7 @@ bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL &ur
  */
 void KUrlCompletionPrivate::addMatches( const QStringList &matchList )
 {
-	QStringList::ConstIterator it = matchList.begin();
-	QStringList::ConstIterator end = matchList.end();
-
-	if ( complete_url )
-		for ( ; it != end; ++it )
-			q->addItem( prepend + QUrl::toPercentEncoding(*it) );
-	else
-		for ( ; it != end; ++it )
-			q->addItem( prepend + (*it));
+	q->insertItems(matchList);
 }
 
 /*
@@ -1132,7 +1120,7 @@ QString KUrlCompletionPrivate::listDirectories(
 				dirs.append( *it );
 		}
 
-		dirListThread = new DirectoryListThread( q, dirs, filter, only_exe, only_dir,
+		dirListThread = new DirectoryListThread( this, dirs, filter, only_exe, only_dir,
 		                                         no_hidden, append_slash_to_dir );
 		dirListThread->start();
 		dirListThread->wait( 200 );
@@ -1234,12 +1222,17 @@ void KUrlCompletionPrivate::_k_slotEntries(KIO::Job*, const KIO::UDSEntryList& e
 			continue;
 
 		if ( filter_len == 0 || entry_name.left(filter_len) == filter ) {
-			if ( isDir )
-				entry_name.append( QLatin1Char( '/' ) );
 
-			const bool isExe = entry.numberValue( KIO::UDSEntry::UDS_ACCESS ) & MODE_EXE;
-			if ( isExe || !list_urls_only_exe )
-				matchList.append( entry_name );
+			QString toAppend = complete_url ? QUrl::toPercentEncoding(entry_name) : entry_name;
+
+			if (isDir)
+				toAppend.append( QLatin1Char( '/' ) );
+
+			if ( !list_urls_only_exe ||
+				 (entry.numberValue( KIO::UDSEntry::UDS_ACCESS ) & MODE_EXE) // true if executable
+				) {
+				matchList.append( prepend + toAppend );
+			}
 		}
 	}
 

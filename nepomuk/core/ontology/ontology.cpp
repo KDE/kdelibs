@@ -31,7 +31,7 @@
 #include <Soprano/Vocabulary/RDF>
 #include <Soprano/Vocabulary/XMLSchema>
 
-
+#undef D
 #define D static_cast<Nepomuk::Types::OntologyPrivate*>( d.data() )
 
 Nepomuk::Types::OntologyPrivate::OntologyPrivate( const QUrl& uri )

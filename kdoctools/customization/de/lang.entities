@@ -12,7 +12,7 @@
 <!-- Licence links -->
 <!ENTITY underGPL           PUBLIC "-//KDE//DOCUMENT GPL Licence Declaration//DE"
   "entities/underGPL.docbook"                       ><!-- level: para -->
-<!ENTITY underLGPL          PUBLIC "-//KDE//DOCUMENT LGPL Licence Declaration//EN"
+<!ENTITY underLGPL          PUBLIC "-//KDE//DOCUMENT LGPL Licence Declaration//DE"
   "entities/underLGPL.docbook"                       ><!-- level: para -->
 <!ENTITY underFDL           PUBLIC "-//KDE//DOCUMENT FDL Licence Declaration//DE"
   "entities/underFDL.docbook"                       ><!-- level: para -->

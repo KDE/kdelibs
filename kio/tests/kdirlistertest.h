@@ -37,8 +37,9 @@ private Q_SLOTS:
     void testDeleteItem();
     void testRenameItem();
     void testConcurrentListing();
+    void testConcurrentHoldingListing();
+    void testOpenUrlTwice();
     void testOpenAndStop();
-    // TODO test filtering
 
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
     void exitLoop();

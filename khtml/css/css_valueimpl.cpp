@@ -189,9 +189,30 @@ DOMString CSSStyleDeclarationImpl::getPropertyValue( int propertyID ) const
     }
     case CSS_PROP_BORDER:
     {
-        const int properties[3] = { CSS_PROP_BORDER_WIDTH, CSS_PROP_BORDER_STYLE,
-                                    CSS_PROP_BORDER_COLOR };
-        return getShortHandValue( properties, 3 );
+            const int properties[3][4] = {{ CSS_PROP_BORDER_TOP_WIDTH,
+                                            CSS_PROP_BORDER_RIGHT_WIDTH,
+                                            CSS_PROP_BORDER_BOTTOM_WIDTH,
+                                            CSS_PROP_BORDER_LEFT_WIDTH },
+                                          { CSS_PROP_BORDER_TOP_STYLE,
+                                            CSS_PROP_BORDER_RIGHT_STYLE,
+                                            CSS_PROP_BORDER_BOTTOM_STYLE,
+                                            CSS_PROP_BORDER_LEFT_STYLE },
+                                          { CSS_PROP_BORDER_TOP_COLOR,
+                                            CSS_PROP_BORDER_RIGHT_COLOR,
+                                            CSS_PROP_BORDER_LEFT_COLOR,
+                                            CSS_PROP_BORDER_BOTTOM_COLOR }};
+            DOMString res;
+            const int nrprops = sizeof(properties) / sizeof(properties[0]);
+            for (int i = 0; i < nrprops; ++i) {
+                DOMString value = getCommonValue(properties[i], 4);
+                if (!value.isNull()) {
+                    if (!res.isNull())
+                        res += " ";
+                    res += value;
+                }
+            }
+            return res;
+
     }
     case CSS_PROP_BORDER_TOP:
     {
@@ -262,6 +283,25 @@ DOMString CSSStyleDeclarationImpl::getPropertyValue( int propertyID ) const
     }
     //kDebug() << "property not found:" << propertyID;
     return DOMString();
+}
+ 
+// only returns a non-null value if all properties have the same, non-null value
+DOMString CSSStyleDeclarationImpl::getCommonValue(const int* properties, int number) const
+{
+    DOMString res;
+    for (int i = 0; i < number; ++i) {
+            CSSValueImpl* value = getPropertyCSSValue(properties[i]);
+            if (!value)
+                return DOMString();
+            DOMString text = value->cssText();
+            if (text.isNull())
+                return DOMString();
+            if (res.isNull())
+                res = text;
+            else if (res != text)
+                return DOMString();
+    }
+    return res;
 }
 
 DOMString CSSStyleDeclarationImpl::get4Values( const int* properties ) const

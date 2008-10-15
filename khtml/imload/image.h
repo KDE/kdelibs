@@ -30,6 +30,8 @@
 #include <QTimer>
 #include <QPair>
 #include <QMap>
+
+#include <khtml_settings.h>
  
 #include "imageformat.h"
 
@@ -92,6 +94,11 @@ public:
      (but see CanvasImage)
     */
     QImage* qimage()  const;
+
+    /**
+     Enables or disables animations
+    */
+    void setShowAnimations(KHTMLSettings::KAnimationAdvice);
 private:
     //Interface to the loader.
     friend class ImageLoader;
@@ -165,6 +172,7 @@ protected:
     int width, height;
     PixmapPlane* original;
     QMap<QPair<int, int>, PixmapPlane*> scaled;
+    KHTMLSettings::KAnimationAdvice animationAdvice;
 
 };
 

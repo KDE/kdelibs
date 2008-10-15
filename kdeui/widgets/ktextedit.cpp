@@ -82,12 +82,18 @@ class KTextEdit::Private
     void spellCheckerCorrected( const QString &, int,const QString &);
     void spellCheckerAutoCorrect(const QString&,const QString&);
     void spellCheckerCanceled();
+    void spellCheckerFinished();
+    void toggleAutoSpellCheck();
 
     void slotFindHighlight(const QString& text, int matchingIndex, int matchingLength);
     void slotReplaceText(const QString &text, int replacementIndex, int /*replacedLength*/, int matchedLength);
 
-    void spellCheckerFinished();
-    void toggleAutoSpellCheck();
+    /**
+     * Similar to QTextEdit::clear(), only that it is possible to undo this
+     * action.
+     */
+    void undoableClear();
+
     void slotAllowTab();
     void menuActivated( QAction* action );
 
@@ -158,6 +164,16 @@ void KTextEdit::Private::spellCheckerFinished()
 void KTextEdit::Private::toggleAutoSpellCheck()
 {
   parent->setCheckSpellingEnabled( !checkSpellingEnabled );
+}
+
+void KTextEdit::Private::undoableClear()
+{
+    QTextCursor cursor = parent->textCursor();
+    cursor.beginEditBlock();
+    cursor.movePosition(QTextCursor::Start);
+    cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+    cursor.removeSelectedText();
+    cursor.endEditBlock();
 }
 
 void KTextEdit::Private::slotAllowTab()
@@ -356,7 +372,7 @@ QMenu *KTextEdit::mousePopupMenu()
           separatorAction = actionList.at( idx );
       if ( separatorAction )
       {
-          KAction *clearAllAction = KStandardAction::clear( this, SLOT( clear() ), this) ;
+          KAction *clearAllAction = KStandardAction::clear(this, SLOT(undoableClear()), this);
           if ( emptyDocument )
               clearAllAction->setEnabled( false );
           popup->insertAction( separatorAction, clearAllAction );

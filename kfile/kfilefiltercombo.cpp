@@ -145,8 +145,7 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
     d->m_allTypes = defaultType.isEmpty() && (types.count() > 1);
 
     QString allComments, allTypes;
-    int i = 0;
-    for(QStringList::ConstIterator it = types.begin(); it != types.end(); ++it,  ++i)
+    for(QStringList::ConstIterator it = types.begin(); it != types.end(); ++it)
     {
         if ( d->m_allTypes && it != types.begin() ) {
             allComments += delim;
@@ -170,12 +169,12 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
         }
         addItem( type->comment() );
         if ( type->name() == defaultType )
-            setCurrentIndex( i );
+            setCurrentIndex( count() - 1 );
     }
 
     if ( d->m_allTypes )
     {
-        if ( i < 3 ) // show the mime-comments of at max 3 types
+        if ( count() <= 3 ) // show the mime-comments of at max 3 types
             insertItem(0, allComments);
         else {
             insertItem(0, i18n("All Supported Files"));

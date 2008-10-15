@@ -28,7 +28,7 @@
 #include <Soprano/Vocabulary/NRL>
 #include <Soprano/Vocabulary/XMLSchema>
 
-
+#undef D
 #define D static_cast<Nepomuk::Types::PropertyPrivate*>( d.data() )
 
 Nepomuk::Types::PropertyPrivate::PropertyPrivate( const QUrl& uri )

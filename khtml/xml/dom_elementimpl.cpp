@@ -1087,7 +1087,7 @@ void ElementImpl::createInlineDecl( )
     dcl->ref();
     dcl->setParent(document()->elementSheet());
     dcl->setNode(this);
-    dcl->setStrictParsing( false );
+    dcl->setStrictParsing( !document()->inCompatMode() );
     if (m_hasCombinedStyle)
         m_style.combinedDecls->inlineDecls = dcl;
     else
@@ -1267,6 +1267,17 @@ RenderStyle* ElementImpl::computedStyle()
         rd->m_computedStyle->ref();
     }
     return rd->m_computedStyle;
+}
+
+void ElementImpl::blur()
+{
+    if(document()->focusNode() == this)
+        document()->setFocusNode(0);
+}
+
+void ElementImpl::focus()
+{
+    document()->setFocusNode(this);
 }
 
 // -------------------------------------------------------------------------

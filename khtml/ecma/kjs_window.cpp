@@ -272,7 +272,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
 
 # Event handlers
 # IE also has: onactivate, onbefore/afterprint, onbeforedeactivate/unload, oncontrolselect,
-# ondeactivate, onhelp, onmovestart/end, onresizestart/end, onscroll.
+# ondeactivate, onhelp, onmovestart/end, onresizestart/end.
 # It doesn't have onabort, onchange, ondragdrop (but NS has that last one).
   onabort	Window::Onabort		DontDelete
   onblur	Window::Onblur		DontDelete
@@ -294,6 +294,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   onmove	Window::Onmove		DontDelete
   onreset	Window::Onreset		DontDelete
   onresize	Window::Onresize	DontDelete
+  onscroll      Window::Onscroll        DontDelete
   onselect	Window::Onselect	DontDelete
   onsubmit	Window::Onsubmit	DontDelete
   onunload	Window::Onunload	DontDelete
@@ -990,7 +991,7 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       return jsNumber(part->view()->contentsY());
     }
     case Scrollbars:
-      return jsUndefined(); // ###
+      return new JSObject(); // ###
     case _Screen:
       return screen ? screen :
                    (const_cast<Window*>(this)->screen = new Screen(exec));
@@ -1046,6 +1047,8 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       return getListener(exec,DOM::EventImpl::RESET_EVENT);
     case Onresize:
       return getListener(exec,DOM::EventImpl::RESIZE_EVENT);
+    case Onscroll:
+      return getListener(exec,DOM::EventImpl::SCROLL_EVENT);
     case Onselect:
       return getListener(exec,DOM::EventImpl::SELECT_EVENT);
     case Onsubmit:
@@ -1195,6 +1198,10 @@ void Window::put(ExecState* exec, const Identifier &propertyName, JSValue *value
     case Onresize:
       if (isSafeScript(exec))
         setListener(exec,DOM::EventImpl::RESIZE_EVENT,value);
+      return;
+    case Onscroll:
+      if (isSafeScript(exec))
+        setListener(exec,DOM::EventImpl::SCROLL_EVENT,value);
       return;
     case Onselect:
       if (isSafeScript(exec))
@@ -2522,7 +2529,7 @@ JSValue* Location::getValueProperty(ExecState *exec, int token) const
   KUrl url = m_frame->m_part->url();
   switch(token) {
     case Hash:
-      return jsString( UString(url.ref().isNull() ? QString("") : '#' + url.ref()) );
+      return jsString( UString(url.htmlRef().isNull() ? QString("") : '#' + url.htmlRef()) );
     case Host: {
       UString str = url.host();
       if (url.port() > 0)

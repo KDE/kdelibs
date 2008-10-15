@@ -318,7 +318,7 @@ NodeImpl *NodeImpl::addChild(NodeImpl *)
 void NodeImpl::getCaret(int offset, bool override, int &_x, int &_y, int &width, int &height)
 {
     if (m_render) {
-        RenderObject *r;
+        RenderObject *r = 0;
 	long r_ofs;
 	bool outside, outsideEnd;
 #if 0

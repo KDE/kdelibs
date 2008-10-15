@@ -82,8 +82,8 @@ void KRecentDocument::add(const KUrl& url)
 
 void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
 {
-	if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith('/'))
-		return;
+    if ( url.isLocalFile() && KGlobal::dirs()->relativeLocation( "tmp", url.path() ) != url.path() )
+      return; // inside tmp resource, do not save
 
     QString openStr = url.url();
     openStr.replace( QRegExp("\\$"), "$$" ); // Desktop files with type "Link" are $-variable expanded

@@ -315,6 +315,8 @@ protected:
     // For layers with overflow, we have a pair of scrollbars.
     ScrollBarWidget* m_hBar;
     ScrollBarWidget* m_vBar;
+    QPixmap* m_buffer[2];
+
     RenderScrollMediator* m_scrollMediator;
 
     // For layers that establish stacking contexts, m_posZOrderList holds a sorted list of all the

@@ -53,6 +53,11 @@ struct EditorContext {
 
   bool m_keyReleasePending:1;
 
+  void beginSelectingText(DOM::Selection::ETextGranularity granularity) {
+    m_beganSelectingText   = true;
+    m_selectionGranularity = granularity;
+  }
+
   int m_xPosForVerticalArrowNavigation;
   DOM::Editor *m_editor;
 

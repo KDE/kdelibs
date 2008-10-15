@@ -46,6 +46,7 @@
 #include <ktoolbar.h>
 #include <kdeversion.h>
 #include <kcombobox.h>
+#include <kmainwindow.h>
 
 #include "kaction.h"
 #include "kactioncollection.h"
@@ -763,7 +764,35 @@ bool KEditToolBarWidget::save()
   if ( !factory() )
     return true;
 
+  // Now we need to rebuild the XML GUI clients. Before we start this process that will remove
+  // and create all containers, we need to check which main windows had auto save enabled (for
+  // disabling it temporarily, while we rebuild the GUI). Why is this needed ? We remove the
+  // containers, let's say a KToolBar. KMainWindow is listening for changes on its childs (and
+  // a KToolBar is one of them). After loadState() has been called after calling to createContainer(),
+  // the appearance of the toolbar has probably changed. KMainWindow was listening to this change (if
+  // auto save was enabled) and will trigger a save. So, the rc file of the app will save what the XMLGUI
+  // file was describing, overriding the real settings.
+  //
+  // By temporarily disabling the auto save feature we are sure no writing will happen on the app rc file
+  // which has more priority than the XMLGUI file (global < xmlgui < rc file in terms of priority).
+  //
+  // After all the rebuild has finished we set back the auto save feature for all those main windows
+  // that had it enabled. (ereslibre)
+  QList<KMainWindow*> windowList;
+  QList<KConfigGroup> configGroupList;
+  foreach (KMainWindow *mw, KMainWindow::memberList()) {
+    if (mw->autoSaveSettings()) {
+        windowList << mw;
+        configGroupList << mw->autoSaveConfigGroup();
+        mw->resetAutoSaveSettings();
+    }
+  }
+
   rebuildKXMLGUIClients();
+
+  for (int i = 0; i < windowList.count(); ++i) {
+    windowList[i]->setAutoSaveSettings(configGroupList.at(i));
+  }
 
   return true;
 }

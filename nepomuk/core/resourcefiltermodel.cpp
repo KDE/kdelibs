@@ -138,8 +138,8 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::removeProperty( const QU
 Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::ensureResource( const QUrl& resource, const QUrl& type )
 {
     // FIXME: graph!
-    if ( !containsAnyStatement( Statement( resource, Vocabulary::RDF::type(), type ) ) ) {
-        return addStatement( Statement( resource, Vocabulary::RDF::type(), type ) );
+    if ( !containsAnyStatement( Statement( resource, Soprano::Vocabulary::RDF::type(), type ) ) ) {
+        return addStatement( Statement( resource, Soprano::Vocabulary::RDF::type(), type ) );
     }
     else {
         clearError();

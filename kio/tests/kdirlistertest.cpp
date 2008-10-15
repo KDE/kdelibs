@@ -252,6 +252,7 @@ void KDirListerTest::testDeleteItem()
     const QString path = m_tempDir.name();
     qRegisterMetaType<KFileItem>("KFileItem");
     QSignalSpy spyDeleteItem(&m_dirLister, SIGNAL(deleteItem(const KFileItem&)));
+    QSignalSpy spyItemsDeleted(&m_dirLister, SIGNAL(itemsDeleted(const KFileItemList&)));
     connect(&m_dirLister, SIGNAL(deleteItem(const KFileItem&)), this, SLOT(exitLoop()));
 
     //kDebug() << "Removing " << path+"toplevelfile_1";
@@ -263,6 +264,8 @@ void KDirListerTest::testDeleteItem()
         enterLoop();
     }
 
+    QCOMPARE(spyDeleteItem.count(), 1);
+    QCOMPARE(spyItemsDeleted.count(), 1);
     // OK now kdirlister told us the file was deleted, let's try a re-listing
     m_items.clear();
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
@@ -399,6 +402,118 @@ void KDirListerTest::testConcurrentListing()
     disconnect(&dirLister2, 0, this, 0);
 }
 
+void KDirListerTest::testConcurrentHoldingListing()
+{
+    // #167851.
+    // A dirlister holding the items, and a second dirlister does
+    // openUrl(reload) (which triggers updateDirectory())
+    // and the first lister immediately does openUrl() (which emits cached items).
+
+    testOpenUrl(); // ensure m_dirLister holds the items.
+    QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
+    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
+    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
+    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
+    QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
+    QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
+    QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
+    connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+    m_items.clear();
+    m_items2.clear();
+    const QString path = m_tempDir.name();
+    KDirLister dirLister2;
+    QSignalSpy spyStarted2(&dirLister2, SIGNAL(started(KUrl)));
+    QSignalSpy spyClear2(&dirLister2, SIGNAL(clear()));
+    QSignalSpy spyClearKUrl2(&dirLister2, SIGNAL(clear(KUrl)));
+    QSignalSpy spyCompleted2(&dirLister2, SIGNAL(completed()));
+    QSignalSpy spyCompletedKUrl2(&dirLister2, SIGNAL(completed(KUrl)));
+    QSignalSpy spyCanceled2(&dirLister2, SIGNAL(canceled()));
+    QSignalSpy spyCanceledKUrl2(&dirLister2, SIGNAL(canceled(KUrl)));
+    connect(&dirLister2, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems2(KFileItemList)));
+
+    dirLister2.openUrl(KUrl(path), KDirLister::Reload); // will start a list job
+    QCOMPARE(spyStarted2.count(), 1);
+    QCOMPARE(spyCompleted2.count(), 0);
+    QCOMPARE(m_items.count(), 0);
+    QCOMPARE(m_items2.count(), 0);
+
+    qDebug("calling m_dirLister.openUrl");
+    m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags); // should emit cached items, and then "join" the running listjob
+    QCOMPARE(spyStarted.count(), 1);
+    QCOMPARE(spyCompleted.count(), 0);
+    QCOMPARE(m_items.count(), 0);
+    QCOMPARE(m_items2.count(), 0);
+
+    qDebug("waiting for completed");
+    connect(&dirLister2, SIGNAL(completed()), this, SLOT(exitLoop()));
+    enterLoop();
+
+    QCOMPARE(spyStarted2.count(), 1);
+    QCOMPARE(spyCompleted2.count(), 1);
+    QCOMPARE(spyCompletedKUrl2.count(), 1);
+    QCOMPARE(spyCanceled2.count(), 0);
+    QCOMPARE(spyCanceledKUrl2.count(), 0);
+    QCOMPARE(spyClear2.count(), 1);
+    QCOMPARE(spyClearKUrl2.count(), 0);
+    QCOMPARE(m_items2.count(), 4);
+
+    if (spyCompleted.isEmpty()) {
+        connect(&m_dirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
+        enterLoop();
+    }
+
+    QCOMPARE(spyStarted.count(), 1);
+    QCOMPARE(spyCompleted.count(), 1);
+    QCOMPARE(spyCompletedKUrl.count(), 1);
+    QCOMPARE(spyCanceled.count(), 0);
+    QCOMPARE(spyCanceledKUrl.count(), 0);
+    QCOMPARE(spyClear.count(), 1);
+    QCOMPARE(spyClearKUrl.count(), 0);
+    QVERIFY(dirLister2.isFinished());
+    disconnect(&dirLister2, 0, this, 0);
+    QVERIFY(m_dirLister.isFinished());
+    disconnect(&m_dirLister, 0, this, 0);
+    QCOMPARE(m_items.count(), 4);
+}
+
+void KDirListerTest::testOpenUrlTwice()
+{
+    // Calling openUrl(reload)+openUrl(normal) before listing even starts.
+    m_items.clear();
+    const QString path = m_tempDir.name();
+    KDirLister secondDirLister;
+    QSignalSpy spyStarted(&secondDirLister, SIGNAL(started(KUrl)));
+    QSignalSpy spyClear(&secondDirLister, SIGNAL(clear()));
+    QSignalSpy spyClearKUrl(&secondDirLister, SIGNAL(clear(KUrl)));
+    QSignalSpy spyCompleted(&secondDirLister, SIGNAL(completed()));
+    QSignalSpy spyCompletedKUrl(&secondDirLister, SIGNAL(completed(KUrl)));
+    QSignalSpy spyCanceled(&secondDirLister, SIGNAL(canceled()));
+    QSignalSpy spyCanceledKUrl(&secondDirLister, SIGNAL(canceled(KUrl)));
+    connect(&secondDirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+
+    secondDirLister.openUrl(KUrl(path), KDirLister::Reload); // will start
+    QCOMPARE(spyStarted.count(), 1);
+    QCOMPARE(spyCompleted.count(), 0);
+
+    qDebug("calling openUrl again");
+    secondDirLister.openUrl(KUrl(path), KDirLister::NoFlags); // will stop + start
+
+    qDebug("waiting for completed");
+    connect(&secondDirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
+    enterLoop();
+
+    QCOMPARE(spyStarted.count(), 2);
+    QCOMPARE(spyCompleted.count(), 1);
+    QCOMPARE(spyCompletedKUrl.count(), 1);
+    QCOMPARE(spyCanceled.count(), 1); // first one was stopped
+    QCOMPARE(spyCanceledKUrl.count(), 1);
+    QCOMPARE(spyClear.count(), 2);
+    QCOMPARE(spyClearKUrl.count(), 0);
+    QCOMPARE(m_items.count(), 4);
+    QVERIFY(secondDirLister.isFinished());
+    disconnect(&secondDirLister, 0, this, 0);
+}
+
 void KDirListerTest::testOpenAndStop()
 {
     m_items.clear();
@@ -428,14 +543,14 @@ void KDirListerTest::testOpenAndStop()
 
 void KDirListerTest::enterLoop(int exitCount)
 {
-    qDebug("enterLoop");
+    //qDebug("enterLoop");
     m_exitCount = exitCount;
     m_eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
 void KDirListerTest::exitLoop()
 {
-    qDebug("exitLoop");
+    //qDebug("exitLoop");
     --m_exitCount;
     if (m_exitCount <= 0) {
         m_eventLoop.quit();
@@ -457,3 +572,4 @@ void KDirListerTest::slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > 
     m_refreshedItems += lst;
     emit refreshItemsReceived();
 }
+

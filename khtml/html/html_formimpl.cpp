@@ -664,7 +664,11 @@ void HTMLFormElementImpl::submit(  )
         }
 #endif // KHTML_NO_WALLET
 
-        const DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));
+        DOMString value = getAttribute(ATTR_ACTION);
+        DOMString url = khtml::parseURL(value);
+        // ignore base url if 'action' attribute is empty.
+        if (value.isEmpty())
+            url = formUrl.url();
         if(m_post) {
             view->part()->submitForm( "post", url.string(), form_data,
                                       m_target.string(),
@@ -1126,17 +1130,6 @@ DOMString HTMLButtonElementImpl::type() const
     return "";
 }
 
-void HTMLButtonElementImpl::blur()
-{
-    if(document()->focusNode() == this)
-        document()->setFocusNode(0);
-}
-
-void HTMLButtonElementImpl::focus()
-{
-    document()->setFocusNode(this);
-}
-
 void HTMLButtonElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch(attr->id())
@@ -1375,7 +1368,7 @@ QString HTMLInputElementImpl::state( )
             document()->view()->addFormCompletionItem(name().string(), value().string());
         /* nobreak */
     default:
-        return value().string() + (m_unsubmittedFormChange ? 'M' : '.');
+        return value().string() + (m_unsubmittedFormChange ? 'M' : '.') + (value().isNull() ? 'N' : '.');
     }
 }
 
@@ -1387,15 +1380,15 @@ void HTMLInputElementImpl::restoreState(const QString &state)
         setChecked((state == QLatin1String("on")));
         break;
     case FILE:
-        m_value = DOMString(state.left(state.length()-1));
+        m_value = DOMString(state.left(state.length()-2));
         setChanged();
         break;
     case HIDDEN:
         // Don't mess with those...
         break;
     default:
-        setValue(DOMString(state.left(state.length()-1)));
-        m_unsubmittedFormChange = state.endsWith('M');
+        setValue(state.endsWith('N') ? DOMString() : DOMString(state.left(state.length()-2)));
+        m_unsubmittedFormChange = (state.right(1) == "M");
         break;
     }
 }
@@ -1781,7 +1774,7 @@ DOMString HTMLInputElementImpl::value() const
     if (val.isNull() && m_type != FILE)
         val = getAttribute(ATTR_VALUE);
 
-    return val.isNull() ? DOMString("") : val;
+    return val;
 }
 
 
@@ -1789,7 +1782,7 @@ void HTMLInputElementImpl::setValue(DOMString val)
 {
     if (m_type == FILE) return;
 
-    m_value = (val.isNull() ? DOMString("") : val);
+    m_value = val;
     // ### set attribute for other types, too. no need for m_value
     // ### in those cases.
     if (m_type == RADIO || m_type == CHECKBOX)
@@ -1797,17 +1790,6 @@ void HTMLInputElementImpl::setValue(DOMString val)
     if (m_type == TEXT && m_render)
         m_render->updateFromElement();
     setChanged();
-}
-
-void HTMLInputElementImpl::blur()
-{
-    if(document()->focusNode() == this)
-	document()->setFocusNode(0);
-}
-
-void HTMLInputElementImpl::focus()
-{
-    document()->setFocusNode(this);
 }
 
 void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
@@ -2163,21 +2145,10 @@ void HTMLSelectElementImpl::remove( long index )
         setRecalcListItems();
 }
 
-void HTMLSelectElementImpl::blur()
-{
-    if(document()->focusNode() == this)
-	document()->setFocusNode(0);
-}
-
-void HTMLSelectElementImpl::focus()
-{
-    document()->setFocusNode(this);
-}
-
 DOMString HTMLInputElementImpl::valueWithDefault() const
 {
     DOMString v = value();
-    if (v.isEmpty()) {
+    if (v.isNull()) {
         switch (m_type) {
             case RESET:
 #ifdef APPLE_CHANGES
@@ -2944,17 +2915,6 @@ void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
     }
     insertBefore(document()->createTextNode(_defaultValue.implementation()),firstChild(), exceptioncode);
     setValue(_defaultValue);
-}
-
-void HTMLTextAreaElementImpl::blur()
-{
-    if(document()->focusNode() == this)
-	document()->setFocusNode(0);
-}
-
-void HTMLTextAreaElementImpl::focus()
-{
-    document()->setFocusNode(this);
 }
 
 bool HTMLTextAreaElementImpl::isEditable()

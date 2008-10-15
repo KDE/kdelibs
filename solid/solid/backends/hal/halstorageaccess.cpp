@@ -28,6 +28,11 @@
 #include <QtGui/QWidget>
 
 #include <unistd.h>
+#include <stdlib.h>
+
+#ifdef Q_OS_FREEBSD
+#include <langinfo.h>
+#endif
 
 #include "halfstabhandling.h"
 
@@ -231,46 +236,44 @@ bool StorageAccess::callHalVolumeMount()
     QStringList options;
     QStringList halOptions = m_device->property("volume.mount.valid_options").toStringList();
 
-    if (halOptions.contains("uid=")) {
-        options << "uid="+QString::number(::getuid());
+#ifdef Q_OS_FREEBSD
+    QString uid="-u=";
+#else
+    QString uid="uid=";
+#endif
+    if (halOptions.contains(uid)) {
+        options << uid+QString::number(::getuid());
     }
-    //respect window$-enforced charsets for fat
-    if ( m_device->property("volume.fstype").toString()=="vfat" && halOptions.contains("codepage=") ) {
-        QString codepage;
-        switch (QLocale::system().language()) {
-            case QLocale::Russian:
-            case QLocale::Ukrainian:
-            case QLocale::Byelorussian:
-            case QLocale::Bulgarian:
-                codepage = "codepage=855";
-                break;
-            case QLocale::German:
-            case QLocale::Italian:
-            case QLocale::Spanish:
-            case QLocale::French:
-            case QLocale::Dutch:
-            case QLocale::Danish:
-            case QLocale::Swedish:
-            case QLocale::Norwegian:
-            case QLocale::Icelandic:
-            case QLocale::English:
-                codepage = "codepage=850";
-                break;
-            case QLocale::Portuguese:
-                codepage = "codepage=860";
-                break;
-            case QLocale::Hebrew:
-                codepage = "codepage=1255";
-                break;
-            case QLocale::Turkish:
-                codepage = "codepage=857";
-                break;
-        }
-        if (!codepage.isEmpty()) {
-            options << codepage;
-            options << "iocharset=utf8";
+
+    QString fstype=m_device->property("volume.fstype").toString();
+#ifdef Q_OS_FREEBSD
+    char *cType;
+    if ( fstype=="vfat" && halOptions.contains("-L=")) {
+        if ( (cType = getenv("LC_ALL")) || (cType = getenv("LC_CTYPE")) || (cType = getenv("LANG")) )
+              options << "-L="+QString(cType);
+    }
+    else if ( (fstype.startsWith("ntfs") || fstype=="iso9660" || fstype=="udf") && halOptions.contains("-C=") ) {
+        if ((cType = getenv("LC_ALL")) || (cType = getenv("LC_CTYPE")) || (cType = getenv("LANG")) )
+            options << "-C="+QString(nl_langinfo(CODESET));
+    }
+#else
+    if (fstype=="vfat" || /*fstype.startsWith("ntfs") ||*/ fstype=="iso9660" || fstype=="udf" ) {
+        if (halOptions.contains("utf8"))
+            options<<"utf8";
+        else if (halOptions.contains("iocharset="))
+            options<<"iocharset=utf8";
+    }
+    // pass our locale to the ntfs-3g driver so it can translate local characters
+    else if ( fstype.startsWith("ntfs") && halOptions.contains("locale=") ) {
+        // have to obtain LC_CTYPE as returned by the `locale` command
+        // check in the same order as `locale` does
+        char *cType;
+        if ( (cType = getenv("LC_ALL")) || (cType = getenv("LC_CTYPE")) || (cType = getenv("LANG")) ) {
+            options << "locale="+QString(cType);
         }
     }
+#endif
+
 
     msg << "" << "" << options;
 

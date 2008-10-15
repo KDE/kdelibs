@@ -44,6 +44,7 @@ private Q_SLOTS:
     void copyFileToOtherPartition();
     void copyDirectoryToOtherPartition();
     void listRecursive();
+    void killJob();
     void directorySize();
     void directorySizeError();
     void moveFileToSamePartition();
@@ -55,7 +56,9 @@ private Q_SLOTS:
     void moveDirectoryNoPermissions();
     void deleteFile();
     void deleteDirectory();
-    void deleteManyFiles();
+    void deleteManyDirs();
+    void deleteManyFilesIndependently();
+    void deleteManyFilesTogether();
     void stat();
     void mimeType();
     //void newApiPerformance();
@@ -87,6 +90,8 @@ private:
     void moveLocalFile( const QString& src, const QString& dest );
     void moveLocalDirectory( const QString& src, const QString& dest );
     //void copyFileToSystem( bool resolve_local_urls );
+    void deleteManyDirs(bool using_fast_path);
+    void deleteManyFilesTogether(bool using_fast_path);
 
     int m_result;
     QByteArray m_data;

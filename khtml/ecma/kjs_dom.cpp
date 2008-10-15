@@ -168,6 +168,7 @@ bool DOMNode::toBoolean(ExecState *) const
   onmove	DOMNode::OnMove			DontDelete
   onreset	DOMNode::OnReset		DontDelete
   onresize	DOMNode::OnResize		DontDelete
+  onscroll      DOMNode::OnScroll               DontDelete
   onselect	DOMNode::OnSelect		DontDelete
   onsubmit	DOMNode::OnSubmit		DontDelete
   onunload	DOMNode::OnUnload		DontDelete
@@ -321,6 +322,8 @@ JSValue* DOMNode::getValueProperty(ExecState *exec, int token) const
     return getListener(DOM::EventImpl::RESET_EVENT);
   case OnResize:
     return getListener(DOM::EventImpl::RESIZE_EVENT);
+  case OnScroll:
+    return getListener(DOM::EventImpl::SCROLL_EVENT);
   case OnSelect:
     return getListener(DOM::EventImpl::SELECT_EVENT);
   case OnSubmit:
@@ -359,42 +362,42 @@ JSValue* DOMNode::getValueProperty(ExecState *exec, int token) const
 
     switch (token) {
     case OffsetLeft:
-      return rend ? jsNumber( rend->offsetLeft() ) : jsUndefined();
+      return rend ? jsNumber( rend->offsetLeft() ) : jsNumber(0);
     case OffsetTop:
-      return rend ? jsNumber( rend->offsetTop() ) : jsUndefined();
+      return rend ? jsNumber( rend->offsetTop() ) : jsNumber(0);
     case OffsetWidth:
-      return rend ? jsNumber( rend->offsetWidth() ) : jsUndefined();
+      return rend ? jsNumber( rend->offsetWidth() ) : jsNumber(0);
     case OffsetHeight:
-      return rend ? jsNumber( rend->offsetHeight() ) : jsUndefined();
+      return rend ? jsNumber( rend->offsetHeight() ) : jsNumber(0);
     case OffsetParent:
     {
       khtml::RenderObject* par = rend ? rend->offsetParent() : 0;
       return getDOMNode( exec, par ? par->element() : 0 );
     }
     case ClientWidth:
-      return rend ? jsNumber( rend->clientWidth() ) : jsUndefined();
+      return rend ? jsNumber( rend->clientWidth() ) : jsNumber(0);
     case ClientHeight:
-      return rend ? jsNumber( rend->clientHeight() ) : jsUndefined();
+      return rend ? jsNumber( rend->clientHeight() ) : jsNumber(0);
     case ClientLeft:
-      return rend ? jsNumber( rend->clientLeft() ) : jsUndefined();
+      return rend ? jsNumber( rend->clientLeft() ) : jsNumber(0);
     case ClientTop:
-      return rend ? jsNumber( rend->clientTop() ) : jsUndefined();
+      return rend ? jsNumber( rend->clientTop() ) : jsNumber(0);
     case ScrollWidth:
-      return rend ? jsNumber(rend->scrollWidth()) : jsUndefined();
+      return rend ? jsNumber(rend->scrollWidth()) : jsNumber(0);
     case ScrollHeight:
-      return rend ? jsNumber(rend->scrollHeight()) : jsUndefined();
+      return rend ? jsNumber(rend->scrollHeight()) : jsNumber(0);
     case ScrollLeft:
       if (rend && rend->layer()) {
-          if (rend->isRoot() && !rend->style()->hidesOverflow())
+          if (rend->isRoot() && !rend->hasOverflowClip())
               return jsNumber( node.document()->view() ? node.document()->view()->contentsX() : 0);
-          return jsNumber( rend->layer()->scrollXOffset() );
+          return jsNumber( rend->hasOverflowClip() ? rend->layer()->scrollXOffset() : 0 );
       }
       return jsNumber( 0 );
     case ScrollTop:
       if (rend && rend->layer()) {
-          if (rend->isRoot() && !rend->style()->hidesOverflow())
+          if (rend->isRoot() && !rend->hasOverflowClip())
               return jsNumber( node.document()->view() ? node.document()->view()->contentsY() : 0);
-          return jsNumber( rend->layer()->scrollYOffset() );
+          return jsNumber( rend->hasOverflowClip() ? rend->layer()->scrollYOffset() : 0 );
       }
       return jsNumber( 0 );
     default:
@@ -490,6 +493,9 @@ void DOMNode::putValueProperty(ExecState *exec, int token, JSValue* value, int /
   case OnResize:
     setListener(exec,DOM::EventImpl::RESIZE_EVENT,value);
     break;
+  case OnScroll:
+    setListener(exec,DOM::EventImpl::SCROLL_EVENT,value);
+    break;
   case OnSelect:
     setListener(exec,DOM::EventImpl::SELECT_EVENT,value);
     break;
@@ -513,7 +519,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, JSValue* value, int /
     switch (token) {
       case ScrollLeft:
         if (rend && rend->layer()) {
-          if (rend->style()->hidesOverflow())
+          if (rend->hasOverflowClip())
             rend->layer()->scrollToXOffset(value->toInt32(exec));
           else if (rend->isRoot()) {
             KHTMLView* sview = node.document()->view();
@@ -524,7 +530,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, JSValue* value, int /
         break;
       case ScrollTop:
         if (rend && rend->layer()) {
-          if (rend->style()->hidesOverflow())
+          if (rend->hasOverflowClip())
             rend->layer()->scrollToYOffset(value->toInt32(exec));
           else if (rend->isRoot()) {
             KHTMLView* sview = node.document()->view();
@@ -1177,6 +1183,9 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   getElementsByTagNameNS DOMElement::GetElementsByTagNameNS	DontDelete|Function 2
   hasAttributeNS	DOMElement::HasAttributeNS	DontDelete|Function 2
   getElementsByClassName DOMElement::GetElementsByClassName   DontDelete|Function 1
+# Extensions
+  blur          DOMElement::Blur    DontDelete|Function 0
+  focus         DOMElement::Focus   DontDelete|Function 0
 @end
 */
 KJS_IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
@@ -1299,7 +1308,7 @@ JSValue* DOMElementProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj,
     case DOMElement::RemoveAttributeNS: // DOM2
       element.removeAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(), exception);
       return jsUndefined();
-   case DOMElement::GetAttributeNodeNS: // DOM2
+    case DOMElement::GetAttributeNodeNS: // DOM2
       return getDOMNode(exec,element.getAttributeNodeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(),exception));
     case DOMElement::SetAttributeNodeNS: {
       DOM::Attr toRet = element.setAttributeNodeNS(KJS::toAttr(args[0]), exception);
@@ -1309,10 +1318,16 @@ JSValue* DOMElementProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj,
       return getDOMNodeList(exec,element.getElementsByTagNameNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
     case DOMElement::HasAttributeNS: // DOM2
       return jsBoolean(element.hasAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString()));
-  case DOMElement::GetElementsByClassName: // HTML 5
+    case DOMElement::GetElementsByClassName: // HTML 5
       return getDOMNodeList(exec, element.getElementsByClassName(args[0]->toString(exec).domString()));
-  default:
-    return jsUndefined();
+    case DOMElement::Focus:
+      element.focus();
+      return jsUndefined();
+    case DOMElement::Blur:
+      element.blur();
+      return jsUndefined();
+    default:
+      return jsUndefined();
   }
 }
 

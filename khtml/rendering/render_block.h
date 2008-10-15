@@ -201,6 +201,7 @@ public:
     virtual InlineFlowBox* getFirstLineBox();
 
     bool inRootBlockContext() const;
+    void deleteLineBoxTree();
 
 #ifdef ENABLE_DUMP
     virtual void printTree(int indent=0) const;
@@ -362,7 +363,6 @@ protected:
     void handleBottomOfBlock(int top, int bottom, MarginInfo& marginInfo);
     void setCollapsedBottomMargin(const MarginInfo& marginInfo);
     void clearChildOfPageBreaks(RenderObject* child, PageBreakInfo &pageBreakInfo, MarginInfo &marginInfo);
-    void deleteLineBoxTree();
     // End helper functions and structs used by layoutBlockChildren.
 
 protected:

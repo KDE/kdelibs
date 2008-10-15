@@ -879,7 +879,7 @@ StatJob *KIO::stat(const KUrl& url, JobFlags flags)
 
 StatJob *KIO::stat(const KUrl& url, bool sideIsSource, short int details, JobFlags flags )
 {
-    kDebug(7007) << "stat" << url;
+    //kDebug(7007) << "stat" << url;
     KIO_ARGS << url;
     StatJob * job = StatJobPrivate::newJob(url, CMD_STAT, packedArgs, flags);
     job->setSide( sideIsSource ? StatJob::SourceSide : StatJob::DestinationSide );
@@ -889,7 +889,7 @@ StatJob *KIO::stat(const KUrl& url, bool sideIsSource, short int details, JobFla
 
 StatJob *KIO::stat(const KUrl& url, KIO::StatJob::StatSide side, short int details, JobFlags flags )
 {
-    kDebug(7007) << "stat" << url;
+    //kDebug(7007) << "stat" << url;
     KIO_ARGS << url;
     StatJob * job = StatJobPrivate::newJob(url, CMD_STAT, packedArgs, flags);
     job->setSide( side );
@@ -2085,6 +2085,7 @@ void FileCopyJob::slotResult( KJob *job)
 {
    Q_D(FileCopyJob);
    //kDebug(7007) << "this=" << this << "job=" << job;
+   removeSubjob(job);
    // Did job have an error ?
    if ( job->error() )
    {
@@ -2092,14 +2093,12 @@ void FileCopyJob::slotResult( KJob *job)
       {
          d->m_moveJob = 0;
          d->startBestCopyMethod();
-         removeSubjob(job);
          return;
       }
       else if ((job == d->m_copyJob) && (job->error() == ERR_UNSUPPORTED_ACTION))
       {
          d->m_copyJob = 0;
          d->startDataPump();
-         removeSubjob(job);
          return;
       }
       else if (job == d->m_getJob)
@@ -2186,7 +2185,6 @@ void FileCopyJob::slotResult( KJob *job)
        d->m_chmodJob = 0; // Finished
    }
 
-   removeSubjob(job);
    if ( !hasSubjobs() )
        emitResult();
 }

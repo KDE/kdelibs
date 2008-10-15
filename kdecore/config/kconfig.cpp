@@ -296,11 +296,8 @@ void KConfig::sync()
     if (d->bDirty && d->mBackend) {
         const QByteArray utf8Locale(locale().toUtf8());
 
-        // Check if we can write to the local file.
-        if (!d->mBackend->isWritable()) {
-            // Create the containing dir, maybe it wasn't there
-            d->mBackend->createEnclosing();
-        }
+        // Create the containing dir, maybe it wasn't there
+        d->mBackend->createEnclosing();
 
         // lock the local file
         if (d->configState == ReadWrite && !d->lockLocal()) {
@@ -409,7 +406,7 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
                 fileName = appName + QLatin1String("rc");
                 if (type && *type)
                     resourceType = type; // only change it if it's not empty
-                file = KStandardDirs::locateLocal(resourceType, fileName, componentData);
+                file = KStandardDirs::locateLocal(resourceType, fileName, false, componentData);
             }
         } else if (wantGlobals()) { // accessing "kdeglobals"
             resourceType = "config";
@@ -421,7 +418,7 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
     else {
         if (type && *type)
             resourceType = type; // only change it if it's not empty
-        file = KStandardDirs::locateLocal(resourceType, fileName, componentData);
+        file = KStandardDirs::locateLocal(resourceType, fileName, false, componentData);
 
         if (fileName == QLatin1String("kdeglobals"))
             openFlags |= KConfig::IncludeGlobals;

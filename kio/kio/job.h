@@ -57,7 +57,7 @@ namespace KIO {
 
     /**
      * Changes permissions on a file or directory.
-     * See the other chmod below for changing many files
+     * See the other chmod in chmodjob.h for changing many files
      * or directories.
      *
      * @param url The URL of file or directory.
@@ -192,7 +192,7 @@ namespace KIO {
      * setDetails(1) is used when deleting: we don't need all the information if it takes
      * too much time, no need to follow symlinks etc.
      * setDetails(0) is used for very simple probing: we'll only get the answer
-     * "it's a file or a directory, or it doesn't exist". This is used by KRun.
+     * "it's a file or a directory or a symlink, or it doesn't exist". This is used by KRun and DeleteJob.
      * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */

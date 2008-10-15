@@ -422,7 +422,7 @@ CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl 
     m_status = Unknown;
     imgSource = 0;
     setAccept( acceptHeader );
-    m_showAnimations = dl->showAnimations();
+    i->setShowAnimations(dl->showAnimations());
     m_loading = true;
 
     if ( KHTMLGlobal::defaultHTMLSettings()->isAdFiltered( url.string() ) ) {
@@ -807,30 +807,8 @@ void CachedImage::movieStatus(int status)
 
 void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimations )
 {
-    (void) showAnimations;
-#if 0
-    m_showAnimations = showAnimations;
-    if ( (m_showAnimations == KHTMLSettings::KAnimationDisabled) && imgSource ) {
-#ifdef __GNUC__
-#warning QDataSource
-#endif
-        // imgSource->cleanBuffer();
-        delete p;
-        p = new QPixmap(m->framePixmap());
-#ifdef __GNUC__
-#warning QMovie requires different API now
-#endif
-        //m->disconnectUpdate( this, SLOT( movieUpdated( const QRect &) ));
-        //m->disconnectStatus( this, SLOT( movieStatus( int ) ));
-        // m->disconnectResize( this, SLOT( movieResize( const QSize& ) ) );
-        QTimer::singleShot(0, this, SLOT( deleteMovie()));
-        imgSource = 0;
-    }
-#endif
-
-#ifdef __GNUC__
-#warning "Use largeimagelib to disable animation"
-#endif
+    if (i)
+        i->setShowAnimations(showAnimations);
 }
 
 // void CachedImage::deleteMovie()

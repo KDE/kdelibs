@@ -113,6 +113,9 @@
 <!ENTITY traducteurLudovicGrossard    '<othercredit role="translator"><firstname>Ludovic</firstname><surname>Grossard</surname><affiliation><address><email>grossard@kde.org</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurLudovicGrossard     '<othercredit role="reviewer"><firstname>Ludovic</firstname><surname>Grossard</surname><affiliation><address><email>grossard@kde.org</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurStephaneGuedon    '<othercredit role="translator"><firstname>Stéphane</firstname><surname>Guedon</surname><affiliation><address><email>stephane@22decembre.fr.nf</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurStephaneGuedon     '<othercredit role="reviewer"><firstname>Stéphane</firstname><surname>Guedon</surname><affiliation><address><email>stephane@22decembre.fr.nf</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
 <!ENTITY traducteurJoelGuelluy    '<othercredit role="translator"><firstname>Joël</firstname><surname>Guelluy</surname><affiliation><address><email>jguelluy@chez.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurJoelGuelluy     '<othercredit role="reviewer"><firstname>Joël</firstname><surname>Guelluy</surname><affiliation><address><email>jguelluy@chez.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
@@ -261,6 +264,7 @@
 <!ENTITY JeanJacquesFreulon  'Jean-Jacques Freulon <email>jeanjacques.freulon@free.fr</email>'>
 <!ENTITY SylvainGarsault  'Sylvain Garsault <email>sylvain.garsault@freesbee.fr</email>'>
 <!ENTITY LudovicGrossard   'Ludovic Grossard <email>grossard@kde.org</email>'>
+<!ENTITY StephaneGuedon   'Stéphane Guedon <email>stephane@22decembre.fr.nf</email>'>
 <!ENTITY JoelGuelluy   'Joël Guelluy <email>jguelluy@chez.com</email>'>
 <!ENTITY YvesGuillou   'Yves Guillou <email>yv_guil@club-internet.fr</email>'>
 <!ENTITY PhilippeGuilbert  'Philippe Guilbert <email>guilbertph@wanadoo.fr</email>'>
@@ -310,6 +314,7 @@
 <!ENTITY cdrom          	'<hardware>lecteur de CD-ROM</hardware>'>
 <!ENTITY centreAide     	"<application>Centre d'aide de &kde;</application>">
 <!ENTITY centreConfiguration    '<application>Centre de configuration de &kde;</application>'>
+<!ENTITY configurationDuSysteme    '<application>configuration du système</application>'>
 <!ENTITY centreInformation    "<application>Centre d'information de &kde;</application>">
 <!ENTITY Ctrl        		"<keycap>Ctrl</keycap>">				  <!-- English: &Ctrl; -->
 <!ENTITY dpi            	'<acronym>dpi</acronym>'>
@@ -325,7 +330,6 @@
 <!ENTITY Maj            	'<keycap>Maj</keycap>'>                                   <!-- English: &Shift; -->
 <!ENTITY SE             	"système d'exploitation">                                <!-- English: &OS; -->
 <!ENTITY Tab                     "<keycap>Tab</keycap>">                                  <!-- English: Tab -->
-
 
 <!ENTITY iconek	"icône <guiicon>
 <inlinemediaobject>

@@ -95,6 +95,7 @@
 //#define DEBUG_FLICKER
 
 //#define DEBUG_PIXEL
+#define FIX_QT_BROKEN_QWIDGET_SCROLL
 
 #include <limits.h>
 #ifdef Q_WS_X11
@@ -226,7 +227,7 @@ public:
         scrollingFromWheel = QPoint(-1,-1);
 	borderX = 30;
 	borderY = 30;
-	dx = dy = ddx = ddy = rdx = rdy = dddx = dddy = rddx = rddy = 0;
+	dx = dy = ddx = ddy = rdx = rdy = dddx = dddy = 0;
         paged = false;
 	clickX = -1;
 	clickY = -1;
@@ -243,6 +244,14 @@ public:
         smoothScrolling = false;
         smoothScrollModeIsDefault = true;
         shouldSmoothScroll = false;
+#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
+        oldVScrollUpdatesEnabled = true;
+        oldHScrollUpdatesEnabled = true;
+        oldHScrollOpaquePE = false;
+        oldVScrollOpaquePE = false;
+        brokenQWidgetScroll = false;
+        shouldBeBlitting = false;
+#endif
         complete = false;
         firstLayoutPending = true;
         firstRepaintPending = true;
@@ -314,15 +323,44 @@ public:
         smoothScrolling = true;
         smoothScrollTimer.start(sSmoothScrollTick);
         shouldSmoothScroll = false;
+#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
+        if (view->horizontalScrollBar()->isVisible() && view->verticalScrollBar()->isVisible()) {
+            if (!dx) {
+                oldHScrollOpaquePE = view->horizontalScrollBar()->parentWidget()->testAttribute( Qt::WA_OpaquePaintEvent );
+                view->horizontalScrollBar()->parentWidget()->setAttribute( Qt::WA_OpaquePaintEvent );
+                oldHScrollUpdatesEnabled = view->horizontalScrollBar()->parentWidget()->updatesEnabled();
+                view->horizontalScrollBar()->parentWidget()->setUpdatesEnabled( false );            
+            }
+            if (!dy) {
+                oldVScrollOpaquePE = view->verticalScrollBar()->parentWidget()->testAttribute( Qt::WA_OpaquePaintEvent );
+                view->verticalScrollBar()->parentWidget()->setAttribute( Qt::WA_OpaquePaintEvent );
+                oldVScrollUpdatesEnabled = view->verticalScrollBar()->parentWidget()->updatesEnabled();
+                view->verticalScrollBar()->parentWidget()->setUpdatesEnabled( false );
+            }
+        }
+#endif
     }
 
     void stopScrolling()
     {
         smoothScrollTimer.stop();
         dx = dy = 0;
+        ddx = ddy = 0;
+        rdx = rdy = 0;
+        dddx = dddy = 0;
         updateContentsXY();
         smoothScrolling = false;
         shouldSmoothScroll = false;
+#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
+        if (!oldHScrollOpaquePE && view->horizontalScrollBar()->parentWidget()->testAttribute( Qt::WA_OpaquePaintEvent ))
+            view->horizontalScrollBar()->parentWidget()->setAttribute( Qt::WA_OpaquePaintEvent, false );
+        if (!oldVScrollOpaquePE && view->verticalScrollBar()->parentWidget()->testAttribute( Qt::WA_OpaquePaintEvent ))
+            view->verticalScrollBar()->parentWidget()->setAttribute( Qt::WA_OpaquePaintEvent, false );
+        if (!view->horizontalScrollBar()->parentWidget()->updatesEnabled() && oldHScrollUpdatesEnabled)
+            view->horizontalScrollBar()->parentWidget()->setUpdatesEnabled( true );
+        if (!view->verticalScrollBar()->parentWidget()->updatesEnabled() && oldVScrollUpdatesEnabled)
+            view->verticalScrollBar()->parentWidget()->setUpdatesEnabled( true );
+#endif
     }
 
     void updateContentsXY()
@@ -330,6 +368,18 @@ public:
         contentsX = QApplication::isRightToLeft() ?
                         view->horizontalScrollBar()->maximum()-view->horizontalScrollBar()->value() : view->horizontalScrollBar()->value();
         contentsY = view->verticalScrollBar()->value();
+    }
+
+    void scrollExternalWidgets(int dx, int dy)
+    {
+        if (visibleWidgets.isEmpty())
+            return;
+
+        QHashIterator<void*, QWidget*> it(visibleWidgets);
+        while (it.hasNext()) {
+            it.next();
+            it.value()->move( it.value()->pos() + QPoint(dx, dy) );
+        }
     }
 
 #ifdef DEBUG_PIXEL
@@ -361,7 +411,7 @@ public:
 
     int zoomLevel;
     int borderX, borderY;
-    int dx, dy, ddx, ddy, rdx, rdy, dddx, dddy, rddy, rddx;
+    int dx, dy, ddx, ddy, rdx, rdy, dddx, dddy;
     KConfig *formCompletions;
 
     int clickX, clickY, clickCount;
@@ -385,6 +435,14 @@ public:
     bool smoothScrolling                          :1;
     bool smoothScrollModeIsDefault                :1;
     bool shouldSmoothScroll                       :1;
+#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
+    bool oldHScrollUpdatesEnabled                 :1;
+    bool oldVScrollUpdatesEnabled                 :1;
+    bool oldHScrollOpaquePE                       :1;
+    bool oldVScrollOpaquePE                       :1;
+    bool brokenQWidgetScroll                      :1;
+    bool shouldBeBlitting                         :1;
+#endif
     bool complete				:1;
     bool firstLayoutPending			:1;
     bool firstRepaintPending                    :1;
@@ -671,6 +729,10 @@ void KHTMLView::resizeContents(int w, int h)
     widget()->resize(w, h);
     if (!widget()->isVisible())
         updateScrollBars();
+#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
+    if (!horizontalScrollBar()->isVisible() || !verticalScrollBar()->isVisible())
+        d->brokenQWidgetScroll = false;
+#endif
 }
 
 int KHTMLView::contentsX() const
@@ -858,6 +920,13 @@ void KHTMLView::paintEvent( QPaintEvent *e )
     r = r.intersect(v);
 
     if (!r.isValid() || r.isEmpty()) return;
+
+#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
+    if (d->shouldBeBlitting && r.width() == v.width() && r.height() == v.height()) {
+        d->brokenQWidgetScroll = true;
+    }
+    d->shouldBeBlitting = false;
+#endif
 
     if (d->haveZoom()) {
         p.scale( d->zoomLevel/100., d->zoomLevel/100.);
@@ -1469,7 +1538,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
             d->cursorIconWidget->setPixmap( icon_pixmap);
             d->cursorIconWidget->update();
         }
-        
+
         QPoint c_pos = QCursor::pos();
         d->cursorIconWidget->move( c_pos.x() + 15, c_pos.y() + 15 );
 #ifdef Q_WS_X11
@@ -2203,19 +2272,19 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    y += ap.y();
 
 		    QRect pr = isUpdate ? static_cast<QUpdateLaterEvent*>(e)->region().boundingRect() : static_cast<QPaintEvent*>(e)->rect();
-                    bool asap = !isUpdate && !d->contentsMoving && qobject_cast<QAbstractScrollArea*>(c);
+                    bool asap = !d->contentsMoving && qobject_cast<QAbstractScrollArea*>(c);
 
                     if (isUpdate) {
                         setInPaintEventFlag(w, false);
-                        w->update(static_cast<QUpdateLaterEvent*>(e)->region());
+                        if (asap)
+                            w->repaint(static_cast<QUpdateLaterEvent*>(e)->region());
+                        else
+                            w->update(static_cast<QUpdateLaterEvent*>(e)->region());
                         setInPaintEventFlag(w);
-                        // implicitly call qt_syncBackingStore(w)
-                        QEvent fakeEvent(QEvent::UpdateRequest);
-                        static_cast<KHTMLBackingStoreHackWidget *>(w)->publicEvent(&fakeEvent);
                     }
 
 		    // QScrollView needs fast repaints
-		    if ( asap && !d->painting && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
+		    if ( asap && !isUpdate && !d->painting && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
 		         !static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer())->needsLayout() ) {
 		        repaintContents(x + pr.x(), y + pr.y(),
 	                                        pr.width(), pr.height()+1); // ### investigate that +1 (shows up when
@@ -2915,8 +2984,8 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
                         default:
                             priority = 5;
                             break;
-                    break;
                     }
+                    break;
                 case ID_SELECT: // these don't have accesskey attribute, but quick access may be handy
                     text_before = true;
                     text_after = true;
@@ -3814,7 +3883,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
     }
 
     if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
-        m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
+        m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, false, false);
 
     if (!d->smoothScrolling) {
         d->updateContentsXY();
@@ -3837,6 +3906,17 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
             w = v->widget();
     }
 
+#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
+    bool hideScrollBars = false;
+    if (horizontalScrollBar()->isVisible() && verticalScrollBar()->isVisible()) {
+        if (!d->brokenQWidgetScroll) {
+            d->shouldBeBlitting = true;
+        } else {
+            hideScrollBars = true;
+        }
+    }
+#endif
+
     if ( d->staticWidget ) {
 
         // now remove from view the external widgets that must have completely
@@ -3846,10 +3926,20 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
 
         if ( d->staticWidget == KHTMLViewPrivate::SBPartial
                                 && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() ) {
+#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
+            if (hideScrollBars) {
+                horizontalScrollBar()->parentWidget()->lower();
+                verticalScrollBar()->parentWidget()->lower();
+            }
+#endif
             // static objects might be selectively repainted, like stones in flowing water
             QRegion r = static_cast<RenderCanvas*>(m_part->xmlDocImpl()->renderer())->staticRegion();
             r.translate( -contentsX(), -contentsY());
             QVector<QRect> ar = r.rects();
+#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
+            if (ar.size() == 1 && ar[0].width() >= visibleWidth() && ar[0].height() >= visibleHeight())
+                d->shouldBeBlitting = false;
+#endif
             for (int i = 0; i < ar.size() ; ++i) {
                 widget()->update( ar[i] );
             }
@@ -3858,26 +3948,46 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
             for (int i = 0; i < ar.size() ; ++i) {
                 w->scroll( dx, dy, ar[i].translated(off) );
             }
-            // scroll external widgets
-            if (!d->visibleWidgets.isEmpty()) {
-                QHashIterator<void*, QWidget*> it(d->visibleWidgets);
-                while (it.hasNext()) {
-                    it.next();
-                    it.value()->move( it.value()->pos() + QPoint(dx, dy) );
-                }
-            }
-        } else
+#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
+           if (hideScrollBars) {
+                horizontalScrollBar()->parentWidget()->raise();
+                verticalScrollBar()->parentWidget()->raise();
+           }
+#endif
+            d->scrollExternalWidgets(dx, dy);
+        } else {
+#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
+            d->shouldBeBlitting = false;
+#endif
             // we can't avoid a full update
             widget()->update();
+        }
         return;
     }
     if (d->firstRepaintPending)
         return;
+
+#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
+    if (hideScrollBars) {
+        horizontalScrollBar()->parentWidget()->lower();
+        verticalScrollBar()->parentWidget()->lower();
+    }
+#endif
+
     if (m_kwp->isRedirected()) {
         w->scroll(dx, dy, QRect(off.x(), off.y(), visibleWidth(), visibleHeight()));
     }  else {
-        widget()->scroll(dx, dy);
+        widget()->scroll(dx, dy, widget()->rect() & viewport()->rect());
     }
+
+#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
+    if (hideScrollBars) {
+        horizontalScrollBar()->parentWidget()->raise();
+        verticalScrollBar()->parentWidget()->raise();
+    }
+#endif
+
+    d->scrollExternalWidgets(dx, dy);
 }
 
 void KHTMLView::setupSmoothScrolling(int dx, int dy)
@@ -3912,8 +4022,8 @@ void KHTMLView::setupSmoothScrolling(int dx, int dy)
     d->ddy *= 2;
 
     // deacceleration speed
-    d->dddx = (d->ddx*16)/steps;
-    d->dddy = (d->ddy*16)/steps;
+    d->dddx = (d->ddx+1)/steps;
+    d->dddy = (d->ddy+1)/steps;
 
     if (!d->smoothScrolling) {
         d->startScrolling();
@@ -3945,25 +4055,29 @@ void KHTMLView::scrollTick() {
     d->rdy = tddy % 16;
 
     // limit step to requested scrolling distance
-    if (d->dx > 0 && ddx > d->dx) ddx = d->dx;
-    if (d->dx < 0 && ddx < d->dx) ddx = d->dx;
-    if (d->dy > 0 && ddy > d->dy) ddy = d->dy;
-    if (d->dy < 0 && ddy < d->dy) ddy = d->dy;
+    if (abs(ddx) > abs(d->dx)) ddx = d->dx;
+    if (abs(ddy) > abs(d->dy)) ddy = d->dy;
+
+    // Don't stop if deaccelerated too fast
+    if (!ddx) ddx = d->dx;
+    if (!ddy) ddy = d->dy;
 
     // update remaining scroll
     d->dx -= ddx;
     d->dy -= ddy;
 
-    int tdddx = d->dddx + d->rddx;
-    int tdddy = d->dddy + d->rddy;
-    // update scrolling speed
-    d->ddx = d->ddx - tdddx/16;
-    d->ddy = d->ddy - tdddy/16;
-    d->rddx = tdddx % 16;
-    d->rddy = tdddy % 16;
-
     d->shouldSmoothScroll = false;
     scrollContentsBy(ddx, ddy);
+
+    // update scrolling speed
+    int dddx = d->dddx;
+    int dddy = d->dddy;
+    // don't change direction
+    if (abs(dddx) > abs(d->ddx)) dddx = d->ddx;
+    if (abs(dddy) > abs(d->ddy)) dddy = d->ddy;
+
+    d->ddx -= dddx;
+    d->ddy -= dddy;
 }
 
 
