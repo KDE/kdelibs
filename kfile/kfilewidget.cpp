@@ -880,6 +880,8 @@ void KFileWidget::slotOk()
             if (!onlyDirectoryMode || (res && statJob->statResult().isDir())) {
                 d->urlList << url;
             }
+        } else {
+            return; // do not emit accepted() if we had ExistingOnly flag and stat failed
         }
     }
 

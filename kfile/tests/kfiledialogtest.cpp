@@ -115,7 +115,7 @@ int main (int argc, char **argv)
     //     - Is a convenience method for getSaveFileName, that returns a KUrl object instead of a
     //       QString object.
     //     - From the previous point it is expectable that its behavior should be the same as
-    //       getSaveFileName
+    //       getSaveFileName.
     KUrl getSaveUrl = KFileDialog::getSaveUrl();
     if (getSaveUrl.isValid()) {
         KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getSaveUrl.url()), "Dialog for 'getSaveUrl' accepted");

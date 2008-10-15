@@ -404,7 +404,7 @@ QString KFileDialog::getOpenFileName(const KUrl& startDir,
     KFileDialog dlg(startDir, filter, parent);
     dlg.setOperationMode( Opening );
 
-    dlg.setMode( KFile::File | KFile::LocalOnly );
+    dlg.setMode( KFile::File | KFile::LocalOnly | KFile::ExistingOnly );
     dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
 
     //dlg.d->ops->clearHistory();
@@ -426,7 +426,7 @@ QString KFileDialog::getOpenFileNameWId(const KUrl& startDir,
 
     dlg.setOperationMode( KFileDialog::Opening );
 
-    dlg.setMode( KFile::File | KFile::LocalOnly );
+    dlg.setMode( KFile::File | KFile::LocalOnly | KFile::ExistingOnly );
     dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
 
     //dlg.d->ops->clearHistory();
@@ -452,7 +452,7 @@ QStringList KFileDialog::getOpenFileNames(const KUrl& startDir,
     dlg.setOperationMode( Opening );
 
     dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
-    dlg.setMode(KFile::Files | KFile::LocalOnly);
+    dlg.setMode(KFile::Files | KFile::LocalOnly | KFile::ExistingOnly);
     //dlg.d->ops->clearHistory();
     dlg.exec();
 
@@ -471,7 +471,7 @@ KUrl KFileDialog::getOpenUrl(const KUrl& startDir, const QString& filter,
     dlg.setOperationMode( Opening );
 
     dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
-    dlg.setMode( KFile::File );
+    dlg.setMode( KFile::File | KFile::ExistingOnly );
     //dlg.d->ops->clearHistory();
     dlg.exec();
 
@@ -492,7 +492,7 @@ KUrl::List KFileDialog::getOpenUrls(const KUrl& startDir,
     dlg.setOperationMode( Opening );
 
     dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
-    dlg.setMode(KFile::Files);
+    dlg.setMode(KFile::Files | KFile::ExistingOnly);
     //dlg.d->ops->clearHistory();
     dlg.exec();
 
