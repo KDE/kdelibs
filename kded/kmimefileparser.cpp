@@ -73,6 +73,7 @@ void KMimeFileParser::parseGlobs(const QStringList& globFiles)
         KMimeType::Ptr mimeType = m_mimeTypeFactory->findMimeTypeByName(mimeTypeName, KMimeType::DontResolveAlias);
         if (!mimeType) {
             kWarning(7012) << "one of glob files in" << parsedFiles << "refers to unknown mimetype" << mimeTypeName;
+            m_mimeTypeGlobs.remove(mimeTypeName);
         } else {
             const GlobList globs = m_mimeTypeGlobs.value(mimeTypeName);
             QStringList patterns;
