@@ -121,7 +121,7 @@ int main (int argc, char **argv)
         KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getSaveUrl.url()), "Dialog for 'getSaveUrl' accepted");
     } else {
         KMessageBox::information(0, QString("Dialog for 'getSaveUrl' cancelled"));
-    }.
+    }
 
     return 0;
 }
