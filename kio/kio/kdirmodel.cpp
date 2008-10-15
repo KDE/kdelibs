@@ -826,7 +826,7 @@ Qt::ItemFlags KDirModel::flags( const QModelIndex & index ) const
                 if (d->m_dropsAllowed & DropOnAnyFile)
                     f |= Qt::ItemIsDropEnabled;
                 else if (d->m_dropsAllowed & DropOnLocalExecutable) {
-                    if (item.isLocalFile()) {
+                    if (!item.localPath().isEmpty()) {
                         // Desktop file?
                         if (item.mimeTypePtr()->is("application/x-desktop"))
                             f |= Qt::ItemIsDropEnabled;
