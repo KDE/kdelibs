@@ -85,7 +85,7 @@ namespace Nepomuk {
              *                 language configured in KDE.
              *
              * \return The label translated into \p language or the default fallback label
-             * if no translation is available or an empty string if no label could be found
+             * if no translation is available or the name() if no label could be found
              * at all.
              */
             QString label( const QString& language = KGlobal::locale()->language() );

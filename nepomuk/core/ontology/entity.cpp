@@ -192,8 +192,11 @@ QString Nepomuk::Types::Entity::label( const QString& language )
         if ( it != d->l10nLabels.constEnd() ) {
             return it.value();
         }
-        else {
+        else if( !d->label.isEmpty() ) {
             return d->label;
+        }
+        else {
+            return name();
         }
     }
     else {
