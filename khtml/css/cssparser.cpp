@@ -1500,10 +1500,12 @@ CSSValueImpl* CSSParser::parseBackgroundPositionXY(BackgroundPosKind& kindOut)
         }
         return new CSSPrimitiveValueImpl(percent, CSSPrimitiveValue::CSS_PERCENTAGE);
     }
-    kindOut = BgPos_NonKW;
-    if (validUnit(valueList->current(), FPercent|FLength, strict))
+
+    if (validUnit(valueList->current(), FPercent|FLength, strict)) {
+        kindOut = BgPos_NonKW;
         return new CSSPrimitiveValueImpl(valueList->current()->fValue,
                                          (CSSPrimitiveValue::UnitTypes)valueList->current()->unit);
+    }
 
     return 0;
 }

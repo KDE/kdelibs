@@ -62,7 +62,7 @@ bool KMimeAssociations::parseAllMimeAppsList()
         const QString mimeappsFile = mimeappsIter.previous();
         kDebug(7021) << "Parsing" << mimeappsFile;
         parseMimeAppsList(mimeappsFile, basePreference);
-        basePreference -= 50;
+        basePreference += 50;
     }
     return true;
 }

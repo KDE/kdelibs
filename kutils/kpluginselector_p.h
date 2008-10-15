@@ -58,7 +58,8 @@ public:
         WebsiteRole       = 0x13095A34,
         VersionRole       = 0x0A0CB450,
         LicenseRole       = 0x001F308A,
-        DependenciesRole  = 0x04CAB650
+        DependenciesRole  = 0x04CAB650,
+        IsCheckableRole   = 0x0AC2AFF8
     };
 
     Private(KPluginSelector *parent);
@@ -92,6 +93,7 @@ public:
     bool manuallyAdded;
     KConfigGroup cfgGroup;
     KPluginSelector::PluginLoadMethod pluginLoadMethod;
+    bool isCheckable;
 
     bool operator==(const PluginEntry &pe) const
     {

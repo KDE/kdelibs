@@ -492,7 +492,7 @@ QString KRichTextEdit::toCleanHtml() const
     static QString evilline = "<p style=\" margin-top:0px; margin-bottom:0px; "
                       "margin-left:0px; margin-right:0px; -qt-block-indent:0; "
                       "text-indent:0px; -qt-user-state:0;\">";
-        
+
     QString result;
     QStringList lines = toHtml().split("\n");
     foreach(QString tempLine, lines ) {
@@ -507,6 +507,33 @@ QString KRichTextEdit::toCleanHtml() const
             result += tempLine;
         }
     }
+
+    // ### HACK to fix bug 86925: A completely empty line is ignored in HTML-mode
+    int offset = 0;
+    QRegExp paragraphFinder("<p.*>(.*)</p>");
+    QRegExp paragraphEnd("</p>");
+    paragraphFinder.setMinimal(true);
+
+    while (offset != -1) {
+
+        // Find the next paragraph
+        offset = paragraphFinder.indexIn(result, offset);
+
+        if (offset != -1) {
+
+            // If the text in the paragraph is empty, add a &nbsp there.
+            if (paragraphFinder.capturedTexts().size() == 2 &&
+                paragraphFinder.capturedTexts()[1].isEmpty()) {
+                int end = paragraphEnd.indexIn(result, offset);
+                Q_ASSERT(end != -1 && end > offset);
+                result.replace(end, paragraphEnd.pattern().length(), "<br></p>");
+            }
+
+            // Avoid finding the same match again
+            offset++;
+        }
+    }
+
     return result;
 }
 

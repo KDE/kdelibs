@@ -153,18 +153,20 @@ private Q_SLOTS:
 
         m_mimeAppsFileContents = "[Added Associations]\n"
                                "image/jpeg=fakejpegapplication.desktop;\n"
+                               "text/html=kde4-kfmclient_html.desktop;\n"
                                // konsole.desktop is without kde4- to test fallback lookup
                                "text/plain=kde4-kate.desktop;kde4-kwrite.desktop;konsole.desktop;idontexist.desktop;\n"
                                "[Added KParts/ReadOnlyPart Associations]\n"
                                "text/plain=katepart.desktop;\n"
                                "[Removed Associations]\n"
                                "image/jpeg=firefox.desktop;\n"
-                               "text/html=firefox.desktop;kde4-kwrite.desktop;\n";
+                               "text/html=kde4-dolphin.desktop;kde4-kwrite.desktop;\n";
         // Expected results
         preferredApps["image/jpeg"] << "fakejpegapplication.desktop";
         preferredApps["text/plain"] << "kde4-kate.desktop" << "kde4-kwrite.desktop";
+        preferredApps["text/html"] << "kde4-kfmclient_html.desktop";
         removedApps["image/jpeg"] << "firefox.desktop";
-        removedApps["text/html"] << "firefox.desktop" << "kde4-kwrite.desktop";
+        removedApps["text/html"] << "kde4-dolphin.desktop" << "kde4-kwrite.desktop";
 
         // Clean-up non-existing apps
         removeNonExisting(preferredApps);
@@ -216,6 +218,49 @@ private Q_SLOTS:
         }
     }
 
+    void testGlobalAndLocalFiles()
+    {
+        KOfferHash offerHash;
+        KMimeAssociations parser(offerHash);
+
+        // Write global file
+        KTemporaryFile tempFileGlobal;
+        QVERIFY(tempFileGlobal.open());
+        QByteArray globalAppsFileContents = "[Added Associations]\n"
+                                            "image/jpeg=firefox.desktop;\n" // removed by local config
+                                            "text/html=firefox.desktop;\n" // mdv
+                                            "image/png=fakejpegapplication.desktop;\n";
+        tempFileGlobal.write(globalAppsFileContents);
+        const QString globalFileName = tempFileGlobal.fileName();
+        tempFileGlobal.close();
+
+        // We didn't keep it, so we need to write the local file again
+        KTemporaryFile tempFile;
+        QVERIFY(tempFile.open());
+        tempFile.write(m_mimeAppsFileContents);
+        const QString fileName = tempFile.fileName();
+        tempFile.close();
+
+        parser.parseMimeAppsList(globalFileName, 1000);
+        parser.parseMimeAppsList(fileName, 1050); // += 50 is correct.
+
+        QList<KServiceOffer> offers = offerHash.offersFor("image/jpeg");
+        qStableSort(offers); // like kbuildservicefactory.cpp does
+        const QStringList expectedJpegApps = preferredApps["image/jpeg"];
+        QCOMPARE(assembleOffers(offers), expectedJpegApps);
+
+        offers = offerHash.offersFor("text/html");
+        qStableSort(offers);
+        QStringList textHtmlApps = preferredApps["text/html"];
+        textHtmlApps.append("firefox.desktop");
+        qDebug() << assembleOffers(offers);
+        QCOMPARE(assembleOffers(offers), textHtmlApps);
+
+        offers = offerHash.offersFor("image/png");
+        qStableSort(offers);
+        QCOMPARE(assembleOffers(offers), QStringList() << "fakejpegapplication.desktop");
+    }
+
     void testSetupRealFile()
     {
         writeToMimeApps(m_mimeAppsFileContents);
@@ -234,14 +279,16 @@ private Q_SLOTS:
         for (ExpectedResultsMap::const_iterator it = preferredApps.begin(), end = preferredApps.end() ; it != end ; ++it) {
             const QString mime = it.key();
             const KService::List offers = KMimeTypeTrader::self()->query(mime);
-            //for (int i = 0; i < offers.count(); ++i) {
-            //    kDebug() << "offers for" << mime << ":" << i << offers[i]->storageId();
-            //}
-            const QStringList expectedPreferredServices = it.value();
-            for (int i = 0; i < expectedPreferredServices.count(); ++i) {
-                //kDebug() << mime << i << expectedPreferredServices[i];
-                QCOMPARE(expectedPreferredServices[i], offers[i]->storageId());
+            for (int i = 0; i < offers.count(); ++i) {
+                kDebug() << "offers for" << mime << ":" << i << offers[i]->storageId();
             }
+            QStringList offerIds = assembleServices(offers, it.value().count());
+            QCOMPARE(offerIds, it.value());
+            //const QStringList expectedPreferredServices = it.value();
+            //for (int i = 0; i < expectedPreferredServices.count(); ++i) {
+                //kDebug() << mime << i << expectedPreferredServices[i];
+            //    QCOMPARE(expectedPreferredServices[i], offers[i]->storageId());
+            //}
         }
     }
 
@@ -300,13 +347,29 @@ private:
         runKBuildSycoca();
     }
 
-    bool offersContains(const QList<KServiceOffer>& offers, KService::Ptr serv)
+    static bool offersContains(const QList<KServiceOffer>& offers, KService::Ptr serv)
     {
         Q_FOREACH(const KServiceOffer& offer, offers) {
             if (offer.service()->storageId() == serv->storageId())
                 return true;
         }
         return false;
+    }
+    static QStringList assembleOffers(const QList<KServiceOffer>& offers) {
+        QStringList lst;
+        Q_FOREACH(const KServiceOffer& offer, offers) {
+            lst.append(offer.service()->storageId());
+        }
+        return lst;
+    }
+    static QStringList assembleServices(const QList<KService::Ptr>& services, int maxCount = -1) {
+        QStringList lst;
+        Q_FOREACH(const KService::Ptr& service, services) {
+            lst.append(service->storageId());
+            if (maxCount > -1 && lst.count() == maxCount)
+                break;
+        }
+        return lst;
     }
 
     void removeNonExisting(ExpectedResultsMap& erm) {

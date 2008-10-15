@@ -408,9 +408,13 @@ void KPluginSelector::Private::PluginModel::addPlugins(const QList<KPluginInfo> 
             pluginEntry.cfgGroup = pluginInfo.config();
         }
 
+        // this is where kiosk will set if a plugin is checkable or not (pluginName + "Enabled")
+        pluginEntry.isCheckable = !pluginInfo.isValid() || !pluginEntry.cfgGroup.isEntryImmutable(pluginInfo.pluginName() + QLatin1String("Enabled"));
+
         if (!pluginEntryList.contains(pluginEntry) && !listToAdd.contains(pluginEntry) &&
              (!pluginInfo.property("X-KDE-PluginInfo-Category").isValid() ||
-              !pluginInfo.property("X-KDE-PluginInfo-Category").toString().compare(categoryKey, Qt::CaseInsensitive))) {
+              !pluginInfo.property("X-KDE-PluginInfo-Category").toString().compare(categoryKey, Qt::CaseInsensitive)) &&
+            (pluginInfo.service().isNull() || !pluginInfo.service()->noDisplay())) {
             listToAdd << pluginEntry;
 
             if (!pluginSelector_d->showIcons && !pluginInfo.icon().isEmpty()) {
@@ -470,6 +474,8 @@ QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, i
             return pluginEntry->pluginInfo.license();
         case DependenciesRole:
             return pluginEntry->pluginInfo.dependencies();
+        case IsCheckableRole:
+            return pluginEntry->isCheckable;
         case Qt::DecorationRole:
             return pluginEntry->pluginInfo.icon();
         case Qt::CheckStateRole:
@@ -563,6 +569,7 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
     }
 
     int xOffset = checkBox->sizeHint().width();
+    bool disabled = !index.model()->data(index, IsCheckableRole).toBool();
 
     painter->save();
 
@@ -571,7 +578,7 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
     int iconSize = option.rect.height() - MARGIN * 2;
     if (pluginSelector_d->showIcons) {
         QPixmap pixmap = KIconLoader::global()->loadIcon(index.model()->data(index, Qt::DecorationRole).toString(),
-                                                         KIconLoader::Desktop, iconSize);
+                                                         KIconLoader::Desktop, iconSize, disabled ? KIconLoader::DisabledState : KIconLoader::DefaultState);
 
         painter->drawPixmap(QRect(pluginSelector_d->dependantLayoutValue(MARGIN + option.rect.left() + xOffset, iconSize, option.rect.width()), MARGIN + option.rect.top(), iconSize, iconSize), pixmap, QRect(0, 0, iconSize, iconSize));
     } else {
@@ -596,6 +603,13 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
     }
 
     painter->save();
+    if (disabled) {
+        QPalette pal(option.palette);
+        pal.setCurrentColorGroup(QPalette::Disabled);
+        painter->setPen(pal.text().color());
+    }
+
+    painter->save();
     QFont font = titleFont(option.font);
     QFontMetrics fmTitle(font);
     painter->setFont(font);
@@ -604,6 +618,7 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
     painter->drawText(contentsRect, Qt::AlignLeft | Qt::AlignBottom, option.fontMetrics.elidedText(index.model()->data(index, CommentRole).toString(), Qt::ElideRight, contentsRect.width()));
 
+    painter->restore();
     painter->restore();
 
     KWidgetItemDelegate::paintWidgets(painter, option, index);
@@ -685,6 +700,7 @@ void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWi
         configurePushButton->setVisible(false);
     } else {
         checkBox->setChecked(index.model()->data(index, Qt::CheckStateRole).toBool());
+        checkBox->setEnabled(index.model()->data(index, IsCheckableRole).toBool());
         configurePushButton->setVisible(index.model()->data(index, ServicesCountRole).toBool());
         configurePushButton->setEnabled(index.model()->data(index, Qt::CheckStateRole).toBool());
     }

@@ -54,7 +54,7 @@ KCompletionBox::KCompletionBox( QWidget *parent )
     d->upwardBox       = false;
     d->emitSelected    = true;
 
-    setWindowFlags(Qt::Popup); // calls setVisible, so must be done after initializations
+    setWindowFlags( Qt::Popup ); // calls setVisible, so must be done after initializations
 
     setLineWidth( 1 );
     setFrameStyle( QFrame::Box | QFrame::Plain );
@@ -281,6 +281,12 @@ void KCompletionBox::popup()
             show();
         else if ( size().height() != sizeHint().height() )
             sizeAndPosition();
+    }
+
+    // Make sure we give the focus back to the parent widget (ereslibre)
+    if ( parentWidget() ) {
+        QFocusEvent focusEvent( QEvent::FocusIn );
+        QApplication::sendEvent( parentWidget(), &focusEvent );
     }
 }
 

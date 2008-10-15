@@ -96,7 +96,7 @@ QString Property::name() const
     // many predicates are named "hasSomething"
     // we remove the "has" becasue setHasSomething sounds weird
     //
-    QString n = uri.section( QRegExp( "[#:]" ), -1 );
+    QString n = uri.section( QRegExp( "[#/:]" ), -1 );
     if( n.toLower().startsWith( "has" ) )
         return n.mid( 3 );
     else
@@ -138,7 +138,7 @@ QString Property::typeString( bool simple, bool withNamespace ) const
         t = "QString";
     }
     else {
-        t = type.section( QRegExp( "[#:]" ), -1 );
+        t = type.section( QRegExp( "[#/:]" ), -1 );
         if( withNamespace )
             t.prepend( "Nepomuk::" );
     }
@@ -386,7 +386,7 @@ ResourceClass::~ResourceClass()
 
 QString ResourceClass::name( bool withNamespace ) const
 {
-    QString s = uri.section( QRegExp( "[#:]" ), -1 );
+    QString s = uri.section( QRegExp( "[#/:]" ), -1 );
     if( withNamespace )
         s.prepend( "Nepomuk::" );
     return s;

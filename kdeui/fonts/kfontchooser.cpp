@@ -444,6 +444,10 @@ void KFontChooser::setColor( const QColor & col )
     QPalette pal = d->sampleEdit->palette();
     pal.setColor( QPalette::Active, QPalette::Text, col );
     d->sampleEdit->setPalette( pal );
+    QTextCursor cursor = d->sampleEdit->textCursor();
+    d->sampleEdit->selectAll();
+    d->sampleEdit->setTextColor( col );
+    d->sampleEdit->setTextCursor( cursor );
 }
 
 QColor KFontChooser::color() const

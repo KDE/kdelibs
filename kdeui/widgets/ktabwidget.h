@@ -187,7 +187,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
      * Removes the widget, reimplemented for
      * internal reasons (keeping labels in sync).
      */
-    virtual void removeTab(int index);
+    virtual void removeTab(int index); // but it's not virtual in QTabWidget...
 
     /**
      * If \a enable is true, tab reordering with middle button will be enabled.

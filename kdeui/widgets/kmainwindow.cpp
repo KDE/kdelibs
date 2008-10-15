@@ -704,6 +704,8 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
     K_D(KMainWindow);
     kDebug(200) << "KMainWindow::applyMainWindowSettings " << cg.name();
 
+    QWidget *focusedWidget = QApplication::focusWidget();
+
     d->letDirtySettings = false;
 
     restoreWindowSize(cg);
@@ -752,6 +754,10 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
         state = QByteArray::fromBase64(state);
         // One day will need to load the version number, but for now, assume 0
         restoreState(state);
+    }
+
+    if (focusedWidget) {
+        focusedWidget->setFocus();
     }
 
     d->settingsDirty = false;

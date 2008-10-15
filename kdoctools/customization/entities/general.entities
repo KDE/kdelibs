@@ -128,6 +128,7 @@
 <!ENTITY cervisia	"<application>Cervisia</application>">
 <!ENTITY CSS	"<acronym>CSS</acronym>">
 <!ENTITY CUPS	"<acronym>CUPS</acronym>">
+<!ENTITY DBus	"<acronym>D-Bus</acronym>">
 <!ENTITY digikam	"<application>digiKam</application>">
 <!ENTITY dolphin "<application>Dolphin</application>">
 <!ENTITY drkonqi	"<application>DrKonqi</application>">
