@@ -368,15 +368,6 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     hMode = XHtml;
     m_htmlCompat = false;
     m_textColor = "#000000";
-    m_attrMap = new IdNameMapping(ATTR_LAST_ATTR+1);
-    m_elementMap = new IdNameMapping(ID_LAST_TAG+1);
-    m_namespaceMap = new IdNameMapping(1);
-    QString xhtml(XHTML_NAMESPACE);
-    m_namespaceMap->names.insert(emptyNamespace, new DOMStringImpl(""));
-    m_namespaceMap->names.insert(xhtmlNamespace, new DOMStringImpl(xhtml.unicode(), xhtml.length()));
-    m_namespaceMap->names[emptyNamespace]->ref();
-    m_namespaceMap->names[xhtmlNamespace]->ref();
-    m_namespaceMap->count+=2;
     m_focusNode = 0;
     m_hoverNode = 0;
     m_activeNode = 0;
@@ -482,9 +473,6 @@ DocumentImpl::~DocumentImpl()
     if (m_doctype)
         m_doctype->deref();
     m_implementation->deref();
-    delete m_elementMap;
-    delete m_attrMap;
-    delete m_namespaceMap;
     delete m_dynamicDomRestyler;
     delete m_jsEditor;
     m_defaultView->deref();
