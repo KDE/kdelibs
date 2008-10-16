@@ -80,22 +80,40 @@ void GlobalShortcutsRegistry::loadSettings()
     {
     foreach (const QString &groupName, _config.groupList())
         {
-        // Skip the subgroups [Friendly Name]
+        kDebug() << "Loading group " << groupName;
+
+        // Skip the subgroups [Friendly Name] and contexts
         if (groupName.indexOf('\x1d')!=-1)
             {
             continue;
             }
 
-        KConfigGroup configGroup(&_config, groupName);
-        KdeDGlobalAccel::Component *component = getComponent(groupName);
+        // loadSettings isn't designed to be called in between. Only at the
+        // beginning.
+        Q_ASSERT(!getComponent(groupName));
 
-        if (!component)
+        KConfigGroup configGroup(&_config, groupName);
+        KConfigGroup friendlyGroup(&configGroup, "Friendly Name");
+
+        KdeDGlobalAccel::Component *component = new KdeDGlobalAccel::Component(
+                groupName,
+                friendlyGroup.readEntry("Friendly Name"),
+                this);
+
+        // Now load the contexts
+        Q_FOREACH(QString context, configGroup.groupList())
             {
-            KConfigGroup friendlyGroup(&configGroup, "Friendly Name");
-            component = new KdeDGlobalAccel::Component(groupName, friendlyGroup.readEntry("Friendly Name"));
-            addComponent(component);
+            // Skip the friendly name group
+            if (context=="Friendly Name") continue;
+
+            KConfigGroup contextGroup(&configGroup, context);
+            component->createGlobalShortcutContext(context);
+            component->activateGlobalShortcutContext(context);
+            component->loadSettings(contextGroup);
             }
 
+        // Load the default context
+        component->activateGlobalShortcutContext("default");
         component->loadSettings(configGroup);
         }
     }
@@ -139,8 +157,14 @@ void GlobalShortcutsRegistry::setInactive()
     // loaded / unloaded by kded.
     Q_FOREACH (KdeDGlobalAccel::Component *component, _components)
         {
-        component->setInactive();
+        component->activateShortcuts();
         }
+    }
+
+
+KdeDGlobalAccel::Component *GlobalShortcutsRegistry::takeComponent(KdeDGlobalAccel::Component *component)
+    {
+    return _components.take(component->uniqueName());
     }
 
 
@@ -170,10 +194,9 @@ void GlobalShortcutsRegistry::writeSettings() const
         {
         KConfigGroup configGroup(&_config, component->uniqueName());
         component->writeSettings(configGroup);
-
-    }
+        }
 
     _config.sync();
-}
+    }
 
 

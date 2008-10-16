@@ -39,7 +39,7 @@ GlobalShortcut::GlobalShortcut(const QString &uniqueName, const QString &friendl
 GlobalShortcut::~GlobalShortcut()
     {
     setInactive();
-    component()->takeAction(this);
+    component()->takeShortcut(this);
     }
 
 
@@ -103,7 +103,8 @@ void GlobalShortcut::setKeys(const QList<int> newKeys)
             }
         else
             {
-            kDebug() << _uniqueName << "skipping because key is already taken";
+            kDebug() << _uniqueName << "skipping because key" << QKeySequence(key).toString() << "is already taken";
+            _keys.append(0);
             }
         }
 
@@ -138,7 +139,7 @@ void GlobalShortcut::setActive()
 
     Q_FOREACH( int key, _keys)
         {
-        if (!GlobalShortcutsRegistry::self()->registerKey(key, this))
+        if (key != 0 && !GlobalShortcutsRegistry::self()->registerKey(key, this))
             {
             kDebug() << uniqueName() << ": Failed to register " << QKeySequence(key).toString();
             }
@@ -157,7 +158,7 @@ void GlobalShortcut::setInactive()
 
     Q_FOREACH( int key, _keys)
         {
-        if (!GlobalShortcutsRegistry::self()->unregisterKey(key, this))
+        if (key != 0 && !GlobalShortcutsRegistry::self()->unregisterKey(key, this))
             {
             kDebug() << uniqueName() << ": Failed to unregister " << QKeySequence(key).toString();
             }

@@ -5,13 +5,11 @@
       <arg name="actionId" type="as" direction="out"/>
       <arg name="timestamp" type="x" direction="out"/>
     </signal>
-    <!--
     <signal name="yourShortcutGotChanged">
-      <arg name="action" type="as" direction="out"/>
-      <arg name="newShortcut" type="ai" direction="out"/>
-      <annotation name="com.trolltech.QtDBus.QtTypeName.Out1" value="QList&lt;int&gt;"/>
+      <arg name="actionId" type="as" direction="out"/>
+      <arg name="newKeys" type="ai" direction="out"/>
+      <annotation name="com.trolltech.QtDBus.QtTypeName.In1" value="QList&lt;int&gt;"/>
     </signal>
-    -->
     <method name="action">
       <arg type="as" direction="out"/>
       <arg name="key" type="i" direction="in"/>
@@ -47,6 +45,10 @@
     </method>
     <method name="unRegister">
       <arg name="actionId" type="as" direction="in"/>
+    </method>
+    <method name="activateGlobalShortcutContext">
+      <arg name="component" type="s" direction="in"/>
+      <arg name="context" type="s" direction="in"/>
     </method>
     <method name="allMainComponents">
       <arg type="aas" direction="out"/>

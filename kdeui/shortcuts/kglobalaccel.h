@@ -134,7 +134,21 @@ public:
      */
     static void stealShortcutSystemwide(const QKeySequence &seq);
 
+    /**
+     * Set global shortcut context.
+     *
+     * A global shortcut context allows an application to have different sets
+     * of global shortcuts and to switch between them. This is used by
+     * plasma to switch the active global shortcuts when switching between
+     * activities.
+     *
+     * @param component the name of the component. KComponentData::componentName
+     * @param context the name of the context.
+     */
+    void activateGlobalShortcutContext(const QString &component, const QString &context);
+
 private:
+
     friend class KAction;
 
     /// Creates a new KGlobalAccel object

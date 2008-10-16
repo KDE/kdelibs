@@ -19,6 +19,8 @@
 #include "kdedglobalaccel_p.h"
 #include <kdebug.h>
 
+#include "globalshortcutcontext.h"
+
 static QList<int> keysFromString(const QString &str)
 {
     QList<int> ret;
@@ -52,28 +54,88 @@ static QString stringFromKeys(const QList<int> &keys)
 
 namespace KdeDGlobalAccel {
 
-Component::Component( const QString &uniqueName, const QString &friendlyName)
-        :   _uniqueName(uniqueName)
-            ,_friendlyName(friendlyName)
-            ,_actions()
-    {}
+Component::Component(
+            const QString &uniqueName,
+            const QString &friendlyName,
+            GlobalShortcutsRegistry *registry)
+    :   _uniqueName(uniqueName)
+        ,_friendlyName(friendlyName)
+        ,_registry(registry)
+    {
+    // Register ourselve with the registry
+    if (_registry)
+        {
+        _registry->addComponent(this);
+        }
+
+    createGlobalShortcutContext("default");
+    _current = _contexts.value("default");
+    }
 
 
 Component::~Component()
     {
-    qDeleteAll(_actions);
+    // Remove ourselve from the registry
+    if (_registry)
+        {
+        _registry->takeComponent(this);
+        }
+
+    // We delete all shortcuts from all contexts
+    qDeleteAll(_contexts);
+    }
+
+
+bool Component::activateGlobalShortcutContext(const QString &context)
+    {
+    if (!_contexts.value(context))
+        {
+        createGlobalShortcutContext(context);
+        return false;
+        }
+
+    // Deactivate the current contexts shortcuts
+    deactivateShortcuts();
+    // Switch the context
+    _current = _contexts.value(context);
+    // Activate the new contexts
+    activateShortcuts();
+
+    kDebug() << "New active shortcut context" << context << "for" << _uniqueName;
+    return true;
+    }
+
+
+void Component::activateShortcuts()
+    {
+    Q_FOREACH (GlobalShortcut *shortcut, _current->_actions)
+        {
+        shortcut->setActive();
+        }
     }
 
 
 void Component::addShortcut(GlobalShortcut *shortcut)
     {
-    _actions.insert(shortcut->uniqueName(), shortcut);
+    _current->_actions.insert(shortcut->uniqueName(), shortcut);
     }
 
 
 QList<GlobalShortcut*> Component::allShortcuts() const
     {
-    return _actions.values();
+    return _current->_actions.values();
+    }
+
+
+bool Component::createGlobalShortcutContext(const QString &context)
+    {
+    if (_contexts.value(context))
+        {
+        kDebug() << "Shortcut Context " << context << "already exists for component " << _uniqueName;
+        return false;
+        }
+    _contexts.insert(context, new GlobalShortcutContext(context));
+    return true;
     }
 
 
@@ -85,7 +147,7 @@ QString Component::friendlyName() const
 
 GlobalShortcut *Component::getShortcutByKey(int key)
     {
-    Q_FOREACH(GlobalShortcut *sc, _actions)
+    Q_FOREACH(GlobalShortcut *sc, _current->_actions)
         {
         if (sc->keys().contains(key)) return sc;
         }
@@ -95,40 +157,48 @@ GlobalShortcut *Component::getShortcutByKey(int key)
 
 GlobalShortcut *Component::getShortcutByName(const QString &uniqueName)
     {
-    return _actions.value(uniqueName);
+    return _current->_actions.value(uniqueName);
     }
 
 
 void Component::loadSettings(KConfigGroup &configGroup)
     {
-        foreach (const QString &confKey, configGroup.keyList())
+    // GlobalShortcutsRegistry::loadSettings handles contexts.
+
+    kDebug() << "Loading context" << _current->name() << "for" << _uniqueName;
+
+    Q_FOREACH (const QString &confKey, configGroup.keyList())
+        {
+        const QStringList entry = configGroup.readEntry(confKey, QStringList());
+        if (entry.size() != 3)
             {
-            const QStringList entry = configGroup.readEntry(confKey, QStringList());
-            if (entry.size() != 3)
+            continue;
+            }
+
+        // The shortcut will register itself with us
+        GlobalShortcut *shortcut = new GlobalShortcut(
+                confKey,
+                entry[2],
+                this);
+
+        QList<int> keys = keysFromString(entry[0]);
+        shortcut->setDefaultKeys(keysFromString(entry[1]));
+        shortcut->setIsFresh(false);
+
+        Q_FOREACH (int key, keys)
+            {
+            if (key != 0) 
                 {
-                continue;
-                }
-
-            GlobalShortcut *shortcut = new GlobalShortcut(
-                    confKey,
-                    entry[2],
-                    this);
-
-            QList<int> keys = keysFromString(entry[0]);
-            shortcut->setDefaultKeys(keysFromString(entry[1]));
-            shortcut->setIsFresh(false);
-
-            foreach (int key, keys) {
-                if (key != 0) {
-                    if (GlobalShortcutsRegistry::self()->getShortcutByKey(key)) {
-                        // The shortcut is already used. The config file is
-                        // broken. Ignore the request.
-                        keys.removeAll(key);
-                        kWarning() << "Shortcut found twice in kglobalshortcutsrc.";
+                if (GlobalShortcutsRegistry::self()->getShortcutByKey(key)) 
+                    {
+                    // The shortcut is already used. The config file is
+                    // broken. Ignore the request.
+                    keys.removeAll(key);
+                    kWarning() << "Shortcut found twice in kglobalshortcutsrc.";
                     }
                 }
             }
-            shortcut->setKeys(keys);
+        shortcut->setKeys(keys);
         }
     }
 
@@ -145,22 +215,35 @@ QString Component::uniqueName() const
     }
 
 
-void Component::setInactive()
+void Component::deactivateShortcuts()
     {
-    Q_FOREACH (GlobalShortcut *shortcut, _actions)
+    Q_FOREACH (GlobalShortcut *shortcut, _current->_actions)
         {
         shortcut->setInactive();
         }
     }
 
 
-GlobalShortcut *Component::takeAction(GlobalShortcut *shortcut)
+GlobalShortcut *Component::takeShortcut(GlobalShortcut *shortcut)
     {
-    if (shortcut->component() == this)
+    // Try to take the shortcut. Result could be null if the shortcut doesn't
+    // belong ti this component.
+    shortcut = _current->_actions.take(shortcut->uniqueName());
+
+    // If this was the last shortcut in the context remove it.
+    if (_current->name() != "default" && _current->_actions.isEmpty())
         {
-        return _actions.take(shortcut->uniqueName());
+        QString toDelete = _current->name();
+        _current = _contexts.value("default");
+        delete _contexts.take(toDelete);
         }
-    return NULL;
+
+    // If only the empty default context is left. Remove the component.
+    if (_current->name() == "default" && _current->_actions.isEmpty() && _contexts.size() == 1)
+        {
+        delete this;
+        }
+    return shortcut;
     }
 
 
@@ -170,24 +253,42 @@ void Component::writeSettings(KConfigGroup& configGroup) const
     // registrations will never not deleted after forgetGlobalShortcut()
     configGroup.deleteGroup();
 
+    // Write the friendly name
     KConfigGroup friendlyGroup(&configGroup, "Friendly Name");
     friendlyGroup.writeEntry("Friendly Name", friendlyName());
 
-    foreach (const GlobalShortcut *shortcut, allShortcuts())
+    // Now wrote all contexts
+    Q_FOREACH( GlobalShortcutContext *context, _contexts)
         {
-        // We do not write fresh shortcuts.
-        // We do not write session shortcuts
-        if (shortcut->isFresh() || shortcut->uniqueName().startsWith("_k_session:"))
+        KConfigGroup contextGroup;
+
+        if (context->name() == "default")
             {
-            continue;
+            contextGroup = configGroup;
+            }
+        else
+            {
+            contextGroup = KConfigGroup(&configGroup, context->name());
             }
 
-        QStringList entry(stringFromKeys(shortcut->keys()));
-        entry.append(stringFromKeys(shortcut->defaultKeys()));
-        entry.append(shortcut->friendlyName());
+        kDebug() << "writing group " << _uniqueName << ":" << context->name();
 
-        configGroup.writeEntry(shortcut->uniqueName(), entry);
+        Q_FOREACH(const GlobalShortcut *shortcut, context->_actions)
+            {
+            // We do not write fresh shortcuts.
+            // We do not write session shortcuts
+            if (shortcut->isFresh() || shortcut->uniqueName().startsWith("_k_session:"))
+                {
+                continue;
+                }
+
+            QStringList entry(stringFromKeys(shortcut->keys()));
+            entry.append(stringFromKeys(shortcut->defaultKeys()));
+            entry.append(shortcut->friendlyName());
+
+            contextGroup.writeEntry(shortcut->uniqueName(), entry);
+            }
         }
     }
 
-}
+} // namespace KdeDGlobalAccel

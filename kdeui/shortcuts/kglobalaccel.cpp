@@ -88,6 +88,14 @@ KGlobalAccel::~KGlobalAccel()
 }
 
 
+void KGlobalAccel::activateGlobalShortcutContext(
+        const QString &component
+        ,const QString &context)
+{
+    d->iface.activateGlobalShortcutContext(component, context);
+}
+
+
 bool KGlobalAccel::isEnabled() const
 {
     return d->enabled;
@@ -181,7 +189,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 
     uint setterFlags = 0;
     if (flags & KAction::NoAutoloading) {
-        setterFlags |= KdedGlobalAccelInterface::NoAutoloading;
+        setterFlags |= org::kde::KdedGlobalAccel::NoAutoloading;
     }
 
     if (flags & KAction::ActiveShortcut) {
@@ -191,7 +199,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 
         // setPresent tells kdedglobalaccel that the shortcut is active
         if (!isConfigurationAction) {
-            activeSetterFlags |= KdedGlobalAccelInterface::SetPresent;
+            activeSetterFlags |= org::kde::KdedGlobalAccel::SetPresent;
         }
 
         // Sets the shortcut, returns the active/real keys
@@ -224,7 +232,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 
     if (flags & KAction::DefaultShortcut) {
         iface.setShortcut(actionId, intListFromShortcut(defaultShortcut),
-                          setterFlags | KdedGlobalAccelInterface::IsDefault);
+                          setterFlags | org::kde::KdedGlobalAccel::IsDefault);
     }
 }
 

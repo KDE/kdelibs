@@ -10,7 +10,8 @@ set(kded_globalaccel_SRCS
     kdedglobalaccel.cpp
     component.cpp
     globalshortcut.cpp
-    globalshortcutsregistry.cpp)
+    globalshortcutsregistry.cpp
+    globalshortcutcontext.cpp)
 
 if ( Q_WS_X11 )
   set( kded_globalaccel_SRCS ${kded_globalaccel_SRCS} kglobalaccel_x11.cpp )

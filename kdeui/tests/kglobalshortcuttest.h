@@ -48,7 +48,7 @@ public:
         {}
 
 private:
-    void setupTest();
+    void setupTest(QString id);
 
     KAction *m_actionA;
     KAction *m_actionB;

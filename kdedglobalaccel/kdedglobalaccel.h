@@ -51,7 +51,6 @@ public:
     KdedGlobalAccel(QObject*, const QList<QVariant>&);
     ~KdedGlobalAccel();
 
-//All of the following public methods and signals are part of the DBus interface
 public Q_SLOTS:
 
     Q_SCRIPTABLE QList<QStringList> allMainComponents() const;
@@ -80,6 +79,10 @@ public Q_SLOTS:
     Q_SCRIPTABLE void doRegister(const QStringList &actionId);
 
     Q_SCRIPTABLE void unRegister(const QStringList &actionId);
+
+    Q_SCRIPTABLE void activateGlobalShortcutContext(
+            const QString &component,
+            const QString &context);
 
 Q_SIGNALS:
 

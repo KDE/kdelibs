@@ -93,8 +93,10 @@ KdeDGlobalAccel::Component *KdedGlobalAccelPrivate::component(const QStringList 
     KdeDGlobalAccel::Component *component = GlobalShortcutsRegistry::self()->getComponent(actionId.at(KGlobalAccel::ComponentUnique));
     if (!component)
         {
-        component = new KdeDGlobalAccel::Component(actionId.at(KGlobalAccel::ComponentUnique), actionId.at(KGlobalAccel::ComponentFriendly));
-        GlobalShortcutsRegistry::self()->addComponent(component);
+        component = new KdeDGlobalAccel::Component(
+                actionId.at(KGlobalAccel::ComponentUnique),
+                actionId.at(KGlobalAccel::ComponentFriendly),
+                GlobalShortcutsRegistry::self());
         Q_ASSERT(component);
         }
     return component;
@@ -170,7 +172,8 @@ QList<QStringList> KdedGlobalAccel::allActionsForComponent(const QStringList &ac
     //### Would it be advantageous to sort the actions by unique name?
     QList<QStringList> ret;
 
-    KdeDGlobalAccel::Component *const component = GlobalShortcutsRegistry::self()->getComponent(actionId[KGlobalAccel::ComponentUnique]);
+    KdeDGlobalAccel::Component *const component =
+        GlobalShortcutsRegistry::self()->getComponent(actionId[KGlobalAccel::ComponentUnique]);
     if (!component) {
         return ret;
     }
@@ -205,6 +208,17 @@ QStringList KdedGlobalAccel::action(int key) const
         ret.append(shortcut->friendlyName());
     }
     return ret;
+}
+
+
+void KdedGlobalAccel::activateGlobalShortcutContext(
+            const QString &component,
+            const QString &context)
+{
+    KdeDGlobalAccel::Component *const comp =
+        GlobalShortcutsRegistry::self()->getComponent(component);
+
+    comp->activateGlobalShortcutContext(context);
 }
 
 
@@ -261,11 +275,6 @@ void KdedGlobalAccel::setInactive(const QStringList &actionId)
 
 void KdedGlobalAccel::unRegister(const QStringList &actionId)
 {
-    Q_ASSERT(actionId.size()==4);
-    if (actionId.size() < 4) {
-        return;
-    }
-
     // Stop grabbing the key
     GlobalShortcut *shortcut = d->findAction(actionId);
     if (shortcut) {

@@ -44,6 +44,8 @@ namespace KdeDGlobalAccel {
 class Component;
 }
 
+class GlobalShortcutContext;
+
 /**
  * Represents a global shortcut.
  *
@@ -117,19 +119,32 @@ private:
     QList<int> _defaultKeys;
     };
 
+class GlobalShortcutsRegistry;
+
 namespace KdeDGlobalAccel {
 
 class Component
     {
 public:
 
-    Component( const QString &uniqueName, const QString &friendlyName);
+    Component( 
+            const QString &uniqueName,
+            const QString &friendlyName,
+            GlobalShortcutsRegistry *registry = NULL);
 
     ~Component();
+
+    bool activateGlobalShortcutContext(const QString &context);
+
+    void activateShortcuts();
 
     void addShortcut(GlobalShortcut *shortcut);
 
     QList<GlobalShortcut *> allShortcuts() const;
+
+    bool createGlobalShortcutContext(const QString &context);
+
+    void deactivateShortcuts();
 
     QString friendlyName() const;
 
@@ -139,13 +154,11 @@ public:
 
     void loadSettings(KConfigGroup &config);
 
-    void setInactive();
-
     void setUniqueName(const QString &);
 
     void setFriendlyName(const QString &);
 
-    GlobalShortcut *takeAction(GlobalShortcut *shortcut);
+    GlobalShortcut *takeShortcut(GlobalShortcut *shortcut);
 
     QString uniqueName() const;
 
@@ -157,7 +170,11 @@ private:
     //the name as it would be found in a magazine article about the application,
     //possibly localized if a localized name exists.
     QString _friendlyName;
-    QHash<QString, GlobalShortcut *> _actions;
+
+    GlobalShortcutsRegistry *_registry;
+
+    GlobalShortcutContext *_current;
+    QHash<QString, GlobalShortcutContext *> _contexts;
     };
 
 }
@@ -171,8 +188,6 @@ class GlobalShortcutsRegistry : public QObject
     Q_OBJECT
 
 public:
-
-    KdeDGlobalAccel::Component *addComponent(KdeDGlobalAccel::Component *component);
 
     QList<KdeDGlobalAccel::Component *> allMainComponents() const;
 
@@ -198,6 +213,7 @@ public:
 
     bool registerKey(int key, GlobalShortcut *shortcut);
 
+
     void setInactive();
 
     bool unregisterKey(int key, GlobalShortcut *shortcut);
@@ -205,6 +221,12 @@ public:
     void writeSettings() const;
 
 private:
+
+    friend class KdeDGlobalAccel::Component;
+
+    KdeDGlobalAccel::Component *addComponent(KdeDGlobalAccel::Component *component);
+    KdeDGlobalAccel::Component *takeComponent(KdeDGlobalAccel::Component *component);
+
 
     GlobalShortcutsRegistry();
 

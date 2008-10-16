@@ -46,8 +46,10 @@ const QKeySequence sequenceF = QKeySequence(Qt::META + Qt::Key_F27);
 //we need a KComponentData and a GUI so that the implementation can grab keys
 QTEST_KDEMAIN( KGlobalShortcutTest, GUI )
 
-void KGlobalShortcutTest::setupTest()
+void KGlobalShortcutTest::setupTest(QString id)
 {
+    kDebug();
+
     if (m_actionA) {
         m_actionA->forgetGlobalShortcut();
         delete m_actionA;
@@ -66,14 +68,14 @@ void KGlobalShortcutTest::setupTest()
     // QVERIFY(!components.contains(componentId));
 
     m_actionA = new KAction("Text For Action A", this);
-    m_actionA->setObjectName("Action A");
+    m_actionA->setObjectName("Action A:" + id);
     m_actionA->setGlobalShortcut(
             KShortcut(sequenceA, sequenceB),
             KAction::ActiveShortcut|KAction::DefaultShortcut,
             KAction::NoAutoloading);
 
     m_actionB = new KAction("Text For Action B", this);
-    m_actionB->setObjectName("Action B");
+    m_actionB->setObjectName("Action B:" + id);
     m_actionB->setGlobalShortcut(
             KShortcut(),
             KAction::ActiveShortcut|KAction::DefaultShortcut,
@@ -84,7 +86,7 @@ void KGlobalShortcutTest::setupTest()
 
 void KGlobalShortcutTest::testSetShortcut()
 {
-    setupTest();
+    setupTest("testSetShortcut");
 
     // Just ensure that the desired values are set for both actions
     KShortcut cutA(sequenceA, sequenceB);
@@ -102,10 +104,10 @@ void KGlobalShortcutTest::testSetShortcut()
 void KGlobalShortcutTest::testFindActionByKey()
 {
     // Skip this. The above testcase hasn't changed the actions
-    // setupTest();
+    setupTest("testFindActionByKey");
 
     QStringList actionId = KGlobalAccel::self()->findActionNameSystemwide(sequenceB);
-    QStringList actionIdA; actionIdA << "qttest" << "Action A" << "KDE Test Program" << "Text For Action A";
+    QStringList actionIdA; actionIdA << "qttest" << "Action A:testFindActionByKey" << "KDE Test Program" << "Text For Action A";
     QCOMPARE(actionId, actionIdA);
     actionId = KGlobalAccel::self()->findActionNameSystemwide(sequenceA);
     QCOMPARE(actionId, actionIdA);
@@ -114,7 +116,7 @@ void KGlobalShortcutTest::testFindActionByKey()
 void KGlobalShortcutTest::testChangeShortcut()
 {
     // Skip this. The above testcase hasn't changed the actions
-    // setupTest();
+    setupTest("testChangeShortcut");
 
     // Change the shortcut
     KShortcut newCutA(sequenceC);
@@ -146,7 +148,7 @@ void KGlobalShortcutTest::testChangeShortcut()
 
 void KGlobalShortcutTest::testStealShortcut()
 {
-    setupTest();
+    setupTest("testStealShortcut");
 
     // Steal a shortcut from an action. First ensure the initial state is
     // correct
@@ -163,21 +165,28 @@ void KGlobalShortcutTest::testStealShortcut()
 
 void KGlobalShortcutTest::testSaveRestore()
 {
-    setupTest();
+    setupTest("testSaveRestore");
 
     //It /would be nice/ to test persistent storage. That is not so easy...
     KShortcut cutA = m_actionA->globalShortcut();
+    // Delete the action
     delete m_actionA;
+
+    // Recreate it
     m_actionA = new KAction("Text For Action A", this);
-    m_actionA->setObjectName("Action A");
+    m_actionA->setObjectName("Action A:testSaveRestore");
+
+    // Now it's empty
     QVERIFY(m_actionA->globalShortcut().isEmpty());
 
     m_actionA->setGlobalShortcut(KShortcut());
+    // Now it's restored
     QCOMPARE(m_actionA->globalShortcut(), cutA);
 
+    // And again
     delete m_actionA;
     m_actionA = new KAction("Text For Action A", this);
-    m_actionA->setObjectName("Action A");
+    m_actionA->setObjectName("Action A:testSaveRestore");
     m_actionA->setGlobalShortcut(KShortcut(QKeySequence(), cutA.primary()));
     QCOMPARE(m_actionA->globalShortcut(), cutA);
 
@@ -194,7 +203,7 @@ enum actionIdFields
 
 void KGlobalShortcutTest::testListActions()
 {
-    setupTest();
+    setupTest("testListActions");
 
     // As in kdebase/workspace/kcontrol/keys/globalshortcuts.cpp
     KGlobalAccel *kga = KGlobalAccel::self();
@@ -206,8 +215,8 @@ void KGlobalShortcutTest::testListActions()
 
     QList<QStringList> actions = kga->allActionsForComponent(componentId);
     QVERIFY(!actions.isEmpty());
-    QStringList actionIdA; actionIdA << "qttest" << "Action A" << "KDE Test Program" << "Text For Action A";
-    QStringList actionIdB; actionIdB << "qttest" << "Action B" << "KDE Test Program" << "Text For Action B";
+    QStringList actionIdA; actionIdA << "qttest" << "Action A:testListActions" << "KDE Test Program" << "Text For Action A";
+    QStringList actionIdB; actionIdB << "qttest" << "Action B:testListActions" << "KDE Test Program" << "Text For Action B";
     //qDebug() << actions;
     QVERIFY(actions.contains(actionIdA));
     QVERIFY(actions.contains(actionIdB));
@@ -254,11 +263,11 @@ void KGlobalShortcutTest::testComponentAssignment()
 
 void KGlobalShortcutTest::testConfigurationActions()
 {
-    setupTest();
+    setupTest("testConfigurationActions");
 
     // Create a configuration action
     KAction cfg_action("Text For Action A", NULL);
-    cfg_action.setObjectName("Action A");
+    cfg_action.setObjectName("Action A:testConfigurationActions");
     cfg_action.setProperty("isConfigurationAction", true);
     cfg_action.setGlobalShortcut(KShortcut());
 
@@ -275,7 +284,7 @@ void KGlobalShortcutTest::testConfigurationActions()
 
 void KGlobalShortcutTest::testOverrideMainComponentData()
 {
-    setupTest();
+    setupTest("testOverrideMainComponentData");
 
     KComponentData otherComponent("test_component1");
     KActionCollection coll((QObject*)NULL);
@@ -290,6 +299,7 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
     QVERIFY(action->d->componentData == KGlobal::mainComponent());
 
     // Action with action collection
+    action->forgetGlobalShortcut();
     delete action;
     action = coll.addAction("Text For Action A");
     QVERIFY(action->d->componentData == otherComponent);
@@ -316,6 +326,7 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
 
     // Action with action collection get the component of the collection until
     // a global shortcut is set when overrideMainComponentData is active
+    action->forgetGlobalShortcut();
     delete action;
     action = coll.addAction("Text For Action A");
     QVERIFY(action->d->componentData == otherComponent);
@@ -331,7 +342,7 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
 
 void KGlobalShortcutTest::testForgetGlobalShortcut()
 {
-    setupTest();
+    setupTest("testForgetGlobalShortcut");
 
     // Ensure that forgetGlobalShortcut can be called on any action.
     KAction a("Test", NULL);

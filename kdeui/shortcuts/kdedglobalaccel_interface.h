@@ -26,7 +26,7 @@ Q_DECLARE_METATYPE(QList<QStringList>)
 /*
  * Proxy class for interface org.kde.KdedGlobalAccel
  */
-class KdedGlobalAccelInterface: public QDBusAbstractInterface
+class OrgKdeKdedGlobalAccelInterface: public QDBusAbstractInterface
 {
     Q_OBJECT
 public:
@@ -34,9 +34,9 @@ public:
     { return "org.kde.KdedGlobalAccel"; }
 
 public:
-    KdedGlobalAccelInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0);
+    OrgKdeKdedGlobalAccelInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0);
 
-    ~KdedGlobalAccelInterface();
+    ~OrgKdeKdedGlobalAccelInterface();
 
     enum SetShortcutFlag
     {
@@ -51,6 +51,13 @@ public Q_SLOTS: // METHODS
         QList<QVariant> argumentList;
         argumentList << qVariantFromValue(key);
         return callWithArgumentList(QDBus::Block, QLatin1String("action"), argumentList);
+    }
+
+    inline QDBusReply<void> activateGlobalShortcutContext(const QString &component, const QString &context)
+    {
+        QList<QVariant> argumentList;
+        argumentList << qVariantFromValue(component) << qVariantFromValue(context);
+        return callWithArgumentList(QDBus::Block, QLatin1String("activateGlobalShortcutContext"), argumentList);
     }
 
     inline QDBusReply<QList<QStringList> > allActionsForComponent(const QStringList &actionId)
@@ -117,12 +124,12 @@ public Q_SLOTS: // METHODS
 
 Q_SIGNALS: // SIGNALS
     void invokeAction(const QStringList &actionId, qlonglong timestamp);
-    void yourShortcutGotChanged(const QStringList &action, const QList<int> &newShortcut);
+    void yourShortcutGotChanged(const QStringList &actionId, const QList<int> &newKeys);
 };
 
 namespace org {
   namespace kde {
-    typedef ::KdedGlobalAccelInterface KdedGlobalAccelInterface;
+    typedef ::OrgKdeKdedGlobalAccelInterface KdedGlobalAccel;
   }
 }
 #endif

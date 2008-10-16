@@ -72,7 +72,7 @@ public:
     bool isUsingForeignComponentName;
     bool enabled;
 
-    org::kde::KdedGlobalAccelInterface iface;
+    org::kde::KdedGlobalAccel iface;
 };
 
 #endif
