@@ -158,7 +158,7 @@ void JobPrivate::emitDeleting(KIO::Job *job, const KUrl &url)
 
 void JobPrivate::emitStating(KIO::Job *job, const KUrl &url)
 {
-    emit job->description(job, i18nc("@title job","Stating"),
+    emit job->description(job, i18nc("@title job","Examining"),
                           qMakePair(i18n("File"), url.prettyUrl()));
 }
 
