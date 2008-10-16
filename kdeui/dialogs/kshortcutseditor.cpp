@@ -280,6 +280,7 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
     actionTypes = types;
 
     ui.setupUi(q);
+    q->layout()->setMargin(0);
     ui.searchFilter->searchLine()->setTreeWidget(ui.list); // Plug into search line
     ui.list->header()->setResizeMode(QHeaderView::ResizeToContents);
     ui.list->header()->hideSection(GlobalAlternate);  //not expected to be very useful
