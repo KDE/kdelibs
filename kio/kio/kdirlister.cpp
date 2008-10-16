@@ -24,9 +24,7 @@
 #include "kdirlister_p.h"
 
 #include <QtCore/QRegExp>
-#include <QtCore/QTimer>
 
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kde_file.h>
 #include <klocale.h>
@@ -814,8 +812,7 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
             fileitem->refresh();
             emitRefreshItem(oldItem, *fileitem);
         } else {
-            // Forget any cached mimetype, it might have changed, and cmp() doesn't check that.
-            fileitem->refreshMimeType();
+            pendingRemoteUpdates.insert(fileitem);
             // For remote files, we won't be able to figure out the new information,
             // we have to do a update (directory listing)
             KUrl dir(url);
@@ -1518,9 +1515,15 @@ void KDirListerCache::slotUpdateResult( KJob * j )
         // Find this item
         if (KFileItem* tmp = fileItems.value(item.name()))
         {
-            // check if something changed for this file
-            if ( !tmp->cmp( item ) )
-            {
+            QSet<KFileItem*>::iterator pru_it = pendingRemoteUpdates.find(tmp);
+            const bool inPendingRemoteUpdates = (pru_it != pendingRemoteUpdates.end());
+
+            // check if something changed for this file, using KFileItem::cmp()
+            if (!tmp->cmp( item ) || inPendingRemoteUpdates) {
+
+                if (inPendingRemoteUpdates) {
+                    pendingRemoteUpdates.erase(pru_it);
+                }
                 foreach ( KDirLister *kdl, listers )
                     kdl->d->aboutToRefreshItem( *tmp );
 
