@@ -55,6 +55,8 @@ public:
 
     static bool _k_kjobUnitEnumRegistered;
 
+    bool isFinished;
+
     Q_DECLARE_PUBLIC(KJob)
 };
 

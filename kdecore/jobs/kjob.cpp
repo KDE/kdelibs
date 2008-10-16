@@ -35,7 +35,7 @@ KJobPrivate::KJobPrivate()
     : q_ptr(0), uiDelegate(0), error(KJob::NoError),
       progressUnit(KJob::Bytes), percentage(0),
       suspended(false), capabilities(KJob::NoCapabilities),
-      speedTimer(0), isAutoDelete(true)
+      speedTimer(0), isAutoDelete(true), isFinished(false)
 {
     if (!_k_kjobUnitEnumRegistered) {
         _k_kjobUnitEnumRegistered = qRegisterMetaType<KJob::Unit>("KJob::Unit");
@@ -191,7 +191,9 @@ bool KJob::exec()
     connect( this, SIGNAL( result( KJob* ) ),
              &loop, SLOT( quit() ) );
     start();
-    loop.exec();
+    if( !d->isFinished ) {
+        loop.exec();
+    }
 
     return ( d->error == NoError );
 }
@@ -284,6 +286,8 @@ void KJob::setPercent( unsigned long percentage )
 
 void KJob::emitResult()
 {
+    Q_D(KJob);
+    d->isFinished = true;
     // If we are displaying a progress dialog, remove it first.
     emit finished( this );
 
