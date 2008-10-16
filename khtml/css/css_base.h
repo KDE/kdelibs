@@ -183,8 +183,6 @@ namespace DOM {
         NamespaceName attrNamespace;
         LocalName tagLocalName;
         NamespaceName tagNamespace;
-        //DOM::NodeImpl::Id attr;
-        //DOM::NodeImpl::Id tag;
 
 	KDE_BF_ENUM(Relation) relation     : 3;
 	mutable KDE_BF_ENUM(Match) 	 match         : 4;
