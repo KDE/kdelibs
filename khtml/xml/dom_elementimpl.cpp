@@ -468,25 +468,12 @@ unsigned short ElementImpl::nodeType() const
     return Node::ELEMENT_NODE;
 }
 
-DOMStringImpl* ElementImpl::getAttributeImpl(NodeImpl::Id id, PrefixName prefix, bool nsAware) const
+/*DOMStringImpl* ElementImpl::getAttributeImpl(NodeImpl::Id id, PrefixName prefix, bool nsAware) const
 {
-    if (!namedAttrMap)
-	return 0;
+    return namedAttrMap ? namedAttrMap->getValue(id, prefix, nsAware) : 0;
+}*/
 
-    DOMStringImpl *value = namedAttrMap->getValue(id, prefix, nsAware);
-    if (value)
-	return value;
-
-    // then search in default attr in case it is not yet set
-    NamedAttrMapImpl* dm = defaultMap();
-    value = dm ? dm->getValue(id, prefix, nsAware) : 0;
-    if (value)
-	return value;
-
-    return 0;
-}
-
-void ElementImpl::setAttribute(NodeImpl::Id id, PrefixName prefix, bool nsAware, const DOMString &value, int &exceptioncode)
+void ElementImpl::setAttribute(NodeImpl::Id id, const PrefixName& prefix, bool nsAware, const DOMString &value, int &exceptioncode)
 {
     // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
     if (isReadOnly()) {
@@ -807,11 +794,6 @@ void ElementImpl::createAttributeMap() const
 {
     namedAttrMap = new NamedAttrMapImpl(const_cast<ElementImpl*>(this));
     namedAttrMap->ref();
-}
-
-NamedAttrMapImpl* ElementImpl::defaultMap() const
-{
-    return 0;
 }
 
 RenderStyle *ElementImpl::styleForRenderer(RenderObject * /*parentRenderer*/)
@@ -1135,11 +1117,6 @@ void ElementImpl::addId(const QString& id)
   document()->getElementByIdCache().add(id, this);
 }
 
-const ClassNames& ElementImpl::classNames() const
-{
-    return attributes()->classNames();
-}
-
 void ElementImpl::insertedIntoDocument()
 {
     // need to do superclass processing first so inDocument() is true
@@ -1388,12 +1365,12 @@ NamedAttrMapImpl::NamedAttrMapImpl(ElementImpl *element)
 
 NamedAttrMapImpl::~NamedAttrMapImpl()
 {
-    for (unsigned i = 0; i < length(); i++)
+    for (unsigned i = 0; i < m_attrs.size(); i++)
         m_attrs[i].free();
     m_attrs.clear();
 }
 
-NodeImpl *NamedAttrMapImpl::getNamedItem(NodeImpl::Id id, PrefixName prefix, bool nsAware)
+NodeImpl *NamedAttrMapImpl::getNamedItem(NodeImpl::Id id, const PrefixName& prefix, bool nsAware)
 {
     if (!m_element)
         return 0;
@@ -1402,7 +1379,7 @@ NodeImpl *NamedAttrMapImpl::getNamedItem(NodeImpl::Id id, PrefixName prefix, boo
     return (index < 0) ? 0 : m_attrs[index].createAttr(m_element, m_element->docPtr());
 }
 
-Node NamedAttrMapImpl::removeNamedItem(NodeImpl::Id id, PrefixName prefix, bool nsAware, int &exceptioncode )
+Node NamedAttrMapImpl::removeNamedItem(NodeImpl::Id id, const PrefixName& prefix, bool nsAware, int &exceptioncode )
 {
     if (!m_element) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
@@ -1431,7 +1408,7 @@ Node NamedAttrMapImpl::removeNamedItem(NodeImpl::Id id, PrefixName prefix, bool 
     return removed;
 }
 
-Node NamedAttrMapImpl::setNamedItem(NodeImpl* arg, PrefixName prefix, bool nsAware, int &exceptioncode )
+Node NamedAttrMapImpl::setNamedItem(NodeImpl* arg, const PrefixName& prefix, bool nsAware, int &exceptioncode )
 {
     if (!m_element) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
@@ -1523,13 +1500,13 @@ DOMStringImpl *NamedAttrMapImpl::valueAt(unsigned index) const
     return m_attrs[index].val();
 }
 
-DOMStringImpl *NamedAttrMapImpl::getValue(NodeImpl::Id id, PrefixName prefix, bool nsAware) const
+DOMStringImpl *NamedAttrMapImpl::getValue(NodeImpl::Id id, const PrefixName& prefix, bool nsAware) const
 {
     int index = find(id, prefix, nsAware);
     return index < 0 ? 0 : m_attrs[index].val();
 }
 
-void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value, PrefixName prefix, bool nsAware)
+void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value, const PrefixName& prefix, bool nsAware)
 {
     if (!id) return;
     // Passing in a null value here causes the attribute to be removed. This is a khtml extension
@@ -1597,7 +1574,7 @@ void NamedAttrMapImpl::copyAttributes(NamedAttrMapImpl *other)
 	m_attrs[i].free();
     }
     m_attrs.resize(other->length());
-    for (i = 0; i < length(); i++) {
+    for (i = 0; i < m_attrs.size(); i++) {
         m_attrs[i].m_localName = other->m_attrs[i].m_localName;
         m_attrs[i].m_prefix = other->m_attrs[i].m_prefix;
         m_attrs[i].m_namespace = other->m_attrs[i].m_namespace;
@@ -1618,7 +1595,7 @@ void NamedAttrMapImpl::copyAttributes(NamedAttrMapImpl *other)
     }
 }
 
-int NamedAttrMapImpl::find(NodeImpl::Id id, PrefixName prefix, bool nsAware) const
+int NamedAttrMapImpl::find(NodeImpl::Id id, const PrefixName& prefix, bool nsAware) const
 {
     //kDebug() << "In find:" << getPrintableName(id) << "[" << prefix.toString() << prefix.id() << "]" << nsAware << endl;
     //kDebug() << "m_attrs.size()" << m_attrs.size() << endl;

@@ -1223,11 +1223,6 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
     uint selAttr = makeId(sel->attrNamespace.id(), sel->attrLocalName.id());
     if(selAttr)
     {
-        quint16 selLocalName = localNamePart(selAttr);
-        quint16 selNS = namespacePart(selAttr);
-        DOMStringImpl* value = e->getAttributeImpl(makeId(selNS, selLocalName), emptyPrefixName, true/*nsAware*/);
-        if(!value) return false; // attribute is not set
-
         // attributes are always case-sensitive in XHTML
         // attributes are sometimes case-sensitive in HTML
         // we only treat id and class selectors as case-sensitive in HTML strict
@@ -1235,6 +1230,21 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         bool caseSensitive = e->document()->htmlMode() == DocumentImpl::XHtml;
         bool caseSensitive_alt = strictParsing || caseSensitive;
         caseSensitive |= caseSensitiveAttr(selAttr);
+
+        // "class" is special attribute which is pre-parsed for fast look-ups
+        // avoid ElementImpl::getAttributeImpl here, as we don't need it
+        if (sel->match == CSSSelector::Class) {
+            if (!e->hasClass())
+                return false;
+            if (!e->classNames().contains(sel->value))
+                return false;
+            return true;
+        }
+
+        quint16 selLocalName = localNamePart(selAttr);
+        quint16 selNS = namespacePart(selAttr);
+        DOMStringImpl* value = e->getAttributeImpl(makeId(selNS, selLocalName), emptyPrefixName, true/*nsAware*/);
+        if(!value) return false; // attribute is not set
 
         switch(sel->match)
         {
@@ -1247,12 +1257,6 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         case CSSSelector::Exact:
             return (caseSensitive && !strcmp(sel->value, value)) ||
                    (!caseSensitive && !strcasecmp(sel->value, value));
-            break;
-        case CSSSelector::Class:
-            if (!e->hasClass())
-                return false;
-            if (!e->classNames().contains(caseSensitive_alt ? sel->value.string() : sel->value.string().lower()))
-                return false;
             break;
         case CSSSelector::List:
         {

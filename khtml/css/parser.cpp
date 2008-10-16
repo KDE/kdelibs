@@ -741,15 +741,15 @@ static const yytype_uint16 yyrline[] =
      636,   640,   641,   645,   667,   680,   698,   707,   710,   724,
      731,   732,   733,   737,   742,   749,   756,   764,   774,   787,
      792,   799,   807,   820,   836,   842,   845,   855,   862,   869,
-     870,   871,   875,   885,   909,   915,   922,   931,   944,   947,
-     950,   953,   956,   959,   965,   966,   970,   976,   982,   989,
-     996,  1003,  1010,  1019,  1022,  1025,  1028,  1033,  1039,  1043,
-    1046,  1051,  1057,  1079,  1085,  1092,  1093,  1097,  1101,  1117,
-    1120,  1123,  1129,  1130,  1132,  1133,  1134,  1140,  1141,  1142,
-    1144,  1150,  1151,  1152,  1153,  1154,  1155,  1156,  1157,  1158,
-    1159,  1160,  1161,  1162,  1163,  1164,  1165,  1166,  1167,  1168,
-    1169,  1170,  1175,  1183,  1199,  1206,  1212,  1221,  1247,  1248,
-    1252,  1253
+     870,   871,   875,   892,   916,   922,   929,   938,   951,   954,
+     957,   960,   963,   966,   972,   973,   977,   983,   989,   996,
+    1003,  1010,  1017,  1026,  1029,  1032,  1035,  1040,  1046,  1050,
+    1053,  1058,  1064,  1086,  1092,  1099,  1100,  1104,  1108,  1124,
+    1127,  1130,  1136,  1137,  1139,  1140,  1141,  1147,  1148,  1149,
+    1151,  1157,  1158,  1159,  1160,  1161,  1162,  1163,  1164,  1165,
+    1166,  1167,  1168,  1169,  1170,  1171,  1172,  1173,  1174,  1175,
+    1176,  1177,  1182,  1190,  1206,  1213,  1219,  1228,  1254,  1255,
+    1259,  1260
 };
 #endif
 
@@ -2726,11 +2726,18 @@ yyreduce:
   case 112:
 
     {
+        CSSParser *p = static_cast<CSSParser *>(parser);
+
 	(yyval.selector) = new CSSSelector();
 	(yyval.selector)->match = CSSSelector::Class;
         (yyval.selector)->attrLocalName = LocalName::fromId(localNamePart(ATTR_CLASS));
         (yyval.selector)->attrNamespace = NamespaceName::fromId(namespacePart(ATTR_CLASS));
-	(yyval.selector)->value = domString((yyvsp[(2) - (2)].string));
+
+        bool caseSensitive = p->document()->htmlMode() == DocumentImpl::XHtml || !p->document()->inCompatMode();
+        if (caseSensitive)
+            (yyval.selector)->value = domString((yyvsp[(2) - (2)].string));
+        else
+            (yyval.selector)->value = domString((yyvsp[(2) - (2)].string)).lower();
     ;}
     break;
 

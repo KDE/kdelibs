@@ -873,11 +873,18 @@ specifier:
 
 class:
     '.' IDENT {
+        CSSParser *p = static_cast<CSSParser *>(parser);
+
 	$$ = new CSSSelector();
 	$$->match = CSSSelector::Class;
         $$->attrLocalName = LocalName::fromId(localNamePart(ATTR_CLASS));
         $$->attrNamespace = NamespaceName::fromId(namespacePart(ATTR_CLASS));
-	$$->value = domString($2);
+
+        bool caseSensitive = p->document()->htmlMode() == DocumentImpl::XHtml || !p->document()->inCompatMode();
+        if (caseSensitive)
+            $$->value = domString($2);
+        else
+            $$->value = domString($2).lower();
     }
   ;
 

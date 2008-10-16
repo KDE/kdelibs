@@ -82,7 +82,7 @@ public:
     virtual DOMString namespaceURI() const;
     virtual DOMString localName() const;
 
-    PrefixName prefixName() const { return m_prefix; }
+    inline const PrefixName& prefixName() const { return m_prefix; }
 
     virtual DOMString nodeValue() const;
     virtual void setNodeValue( const DOMString &, int &exceptioncode );
@@ -130,8 +130,7 @@ struct AttributeImpl
     DOMString namespaceURI() const { return m_localName.id() ? m_namespace.toString() : m_data.attr->namespaceURI(); }
     DOMString prefix() const { return m_localName.id() ? m_prefix.toString() : m_data.attr->prefix(); }
     DOMString localName() const { return m_localName.id() ? m_localName.toString() : m_data.attr->localName(); }
-    //DOMString name() const { return m_localName.id() ? DOMString() : m_data.attr->name(); }
-    PrefixName prefixName() const { return m_localName.id() ? m_prefix : m_data.attr->prefixName(); }
+    const PrefixName& prefixName() const { return m_localName.id() ? m_prefix : m_data.attr->prefixName(); }
 
     void setValue(DOMStringImpl *value, ElementImpl *element);
     AttrImpl *createAttr(ElementImpl *element, DocumentImpl *docPtr);
@@ -165,7 +164,7 @@ class ElementImpl : public NodeBaseImpl
 public:
     ElementImpl(DocumentImpl *doc);
     ~ElementImpl();
-    
+
     //Higher-level DOM stuff
     virtual bool hasAttributes() const;
     bool hasAttribute( const DOMString& name ) const;
@@ -188,17 +187,20 @@ public:
     void focus();
 
     //Lower-level implementation primitives
-    DOMString getAttribute(NodeImpl::Id id, PrefixName prefix = emptyPrefixName, bool nsAware = false) const { return DOMString(getAttributeImpl(id, prefix, nsAware)); }
-    DOMStringImpl* getAttributeImpl(const NodeImpl::Id id, PrefixName prefix = emptyPrefixName, bool nsAware = false) const;
-    void setAttribute(NodeImpl::Id id, PrefixName prefix, bool nsAware, const DOMString &value, int &exceptioncode);
+    inline DOMString getAttribute(NodeImpl::Id id, const PrefixName& prefix = emptyPrefixName, bool nsAware = false) const {
+        return DOMString(getAttributeImpl(id, prefix, nsAware));
+    }
+    inline DOMStringImpl* getAttributeImpl(NodeImpl::Id id, const PrefixName& prefix = emptyPrefixName, bool nsAware = false) const;
+    void setAttribute(NodeImpl::Id id, const PrefixName& prefix, bool nsAware, const DOMString &value, int &exceptioncode);
     void setAttributeNS(const DOMString &namespaceURI, const DOMString &localName, const DOMString& value, int &exceptioncode);
 
-    bool hasAttribute(NodeImpl::Id id, PrefixName prefix = emptyPrefixName, bool nsAware = false) const {
+    bool hasAttribute(NodeImpl::Id id, const PrefixName& prefix = emptyPrefixName, bool nsAware = false) const {
         return getAttributeImpl(id, prefix, nsAware) != 0;
     }
     virtual DOMString prefix() const { return m_prefix.toString(); }
     void setPrefix(const DOMString &_prefix, int &exceptioncode );
     virtual DOMString namespaceURI() const;
+    inline const PrefixName& prefixName() const { return m_prefix; }
 
     // DOM methods overridden from  parent classes
     virtual DOMString tagName() const = 0;
@@ -244,7 +246,7 @@ public:
         parseAttribute(&aimpl);
     }
 
-    const ClassNames& classNames() const;
+    inline const ClassNames& classNames() const;
 
     // not part of the DOM
     void setAttributeMap ( NamedAttrMapImpl* list );
@@ -315,11 +317,6 @@ protected:
     void finishCloneNode( ElementImpl *clone, bool deep );
 
 private:
-    // map of default attributes. derived element classes are responsible
-    // for setting this according to the corresponding element description
-    // in the DTD
-    virtual NamedAttrMapImpl* defaultMap() const;
-
     // There is some information such as computed style for display:none
     // elements that is needed only for a few elements. We store it
     // in one of these. 
@@ -369,9 +366,9 @@ public:
     virtual ~NamedAttrMapImpl();
 
     // DOM methods & attributes for NamedNodeMap
-    virtual NodeImpl *getNamedItem(NodeImpl::Id id, PrefixName prefix = emptyPrefixName, bool nsAware = false);
-    virtual Node removeNamedItem(NodeImpl::Id id, PrefixName prefix, bool nsAware, int &exceptioncode);
-    virtual Node setNamedItem(NodeImpl* arg, PrefixName prefix, bool nsAware, int &exceptioncode);
+    virtual NodeImpl *getNamedItem(NodeImpl::Id id, const PrefixName& prefix = emptyPrefixName, bool nsAware = false);
+    virtual Node removeNamedItem(NodeImpl::Id id, const PrefixName& prefix, bool nsAware, int &exceptioncode);
+    virtual Node setNamedItem(NodeImpl* arg, const PrefixName& prefix, bool nsAware, int &exceptioncode);
 
     virtual NodeImpl *item(unsigned index);
     virtual unsigned length() const { return m_attrs.size(); }
@@ -386,18 +383,18 @@ public:
     // ### replace idAt and getValueAt with attrAt
     NodeImpl::Id idAt(unsigned index) const;
     DOMStringImpl *valueAt(unsigned index) const;
-    DOMStringImpl *getValue(NodeImpl::Id id, PrefixName prefix = emptyPrefixName , bool nsAware = false) const;
-    void setValue(NodeImpl::Id id, DOMStringImpl *value, PrefixName prefix = emptyPrefixName, bool nsAware = false);
+    DOMStringImpl *getValue(NodeImpl::Id id, const PrefixName& prefix = emptyPrefixName , bool nsAware = false) const;
+    void setValue(NodeImpl::Id id, DOMStringImpl *value, const PrefixName& prefix = emptyPrefixName, bool nsAware = false);
     Attr removeAttr(AttrImpl *attr);
     void copyAttributes(NamedAttrMapImpl *other);
     void setElement(ElementImpl *element);
     void detachFromElement();
 
-    int find(NodeImpl::Id id, PrefixName prefix, bool nsAware) const;
+    int find(NodeImpl::Id id, const PrefixName& prefix, bool nsAware) const;
 
-    void clearClass() { m_classNames.clear(); }
+    inline void clearClass() { m_classNames.clear(); }
     void setClass(const DOMString& string);
-    const ClassNames& classNames() const { return m_classNames; }
+    inline const ClassNames& classNames() const { return m_classNames; }
 
 protected:
     ElementImpl *m_element;
@@ -493,6 +490,18 @@ inline void splitPrefixLocalName(const DOMString& qualifiedName, PrefixName& pre
     }
     prefix = PrefixName::fromString(prefixname);
     localName = LocalName::fromString(localname);
+}
+
+// methods that could be very hot they are need to be inlined
+inline DOMStringImpl* ElementImpl::getAttributeImpl(NodeImpl::Id id, const PrefixName& prefix, bool nsAware) const
+{
+    return namedAttrMap ? namedAttrMap->getValue(id, prefix, nsAware) : 0;
+}
+
+inline const ClassNames& ElementImpl::classNames() const
+{
+    // hasClass() should be called on element first as in CSSStyleSelector::checkSimpleSelector
+    return namedAttrMap->classNames();
 }
 
 } //namespace

@@ -26,6 +26,7 @@
 #include "xml/dom_stringimpl.h"
 #include <wtf/HashTraits.h>
 
+using DOM::DOMString;
 using DOM::DOMStringImpl;
 
 namespace khtml {

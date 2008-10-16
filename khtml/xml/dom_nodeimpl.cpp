@@ -2172,7 +2172,7 @@ bool TagNodeListImpl::nodeMatches(NodeImpl *testNode, bool& /*doRecurse*/) const
             (m_localName.id() == anyLocalName || m_localName.id() == localNamePart(testNode->id()));
     } else {
         return (m_localName.id() == anyLocalName) || (m_localName.id() == localNamePart(testNode->id()) &&
-            m_prefix.toString() == testNode->prefix());
+            m_prefix == static_cast<ElementImpl*>(testNode)->prefixName());
     }
 }
 
@@ -2269,7 +2269,7 @@ GenericRONamedNodeMapImpl::~GenericRONamedNodeMapImpl()
     delete m_contents;
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::getNamedItem(NodeImpl::Id id, PrefixName /*prefix*/, bool /*nsAware*/)
+NodeImpl *GenericRONamedNodeMapImpl::getNamedItem(NodeImpl::Id id, const PrefixName& /*prefix*/, bool /*nsAware*/)
 {
     // ## do we need namespace support in this class?
     QListIterator<NodeImpl*> it(*m_contents);
@@ -2279,7 +2279,7 @@ NodeImpl *GenericRONamedNodeMapImpl::getNamedItem(NodeImpl::Id id, PrefixName /*
     return 0;
 }
 
-Node GenericRONamedNodeMapImpl::setNamedItem(NodeImpl* /*arg*/, PrefixName /*prefix*/, bool /*nsAware*/, int &exceptioncode)
+Node GenericRONamedNodeMapImpl::setNamedItem(NodeImpl* /*arg*/, const PrefixName& /*prefix*/, bool /*nsAware*/, int &exceptioncode)
 {
     // can't modify this list through standard DOM functions
     // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly
@@ -2287,7 +2287,7 @@ Node GenericRONamedNodeMapImpl::setNamedItem(NodeImpl* /*arg*/, PrefixName /*pre
     return 0;
 }
 
-Node GenericRONamedNodeMapImpl::removeNamedItem(NodeImpl::Id /*id*/, PrefixName /*prefix*/, bool /*nsAware*/, int &exceptioncode)
+Node GenericRONamedNodeMapImpl::removeNamedItem(NodeImpl::Id /*id*/, const PrefixName& /*prefix*/, bool /*nsAware*/, int &exceptioncode)
 {
     // can't modify this list through standard DOM functions
     // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly

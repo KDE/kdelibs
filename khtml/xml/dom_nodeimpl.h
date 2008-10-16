@@ -710,9 +710,9 @@ public:
     virtual ~NamedNodeMapImpl();
 
     // DOM methods & attributes for NamedNodeMap
-    virtual NodeImpl *getNamedItem(NodeImpl::Id id, PrefixName prefix = emptyPrefixName, bool nsAware = false) = 0;
-    virtual Node removeNamedItem(NodeImpl::Id id, PrefixName prefix, bool nsAware, int &exceptioncode) = 0;
-    virtual Node setNamedItem(NodeImpl* arg, PrefixName prefix, bool nsAware, int &exceptioncode) = 0;
+    virtual NodeImpl *getNamedItem(NodeImpl::Id id, const PrefixName& prefix = emptyPrefixName, bool nsAware = false) = 0;
+    virtual Node removeNamedItem(NodeImpl::Id id, const PrefixName& prefix, bool nsAware, int &exceptioncode) = 0;
+    virtual Node setNamedItem(NodeImpl* arg, const PrefixName& prefix, bool nsAware, int &exceptioncode) = 0;
 
     //The DOM-style wrappers
     NodeImpl* getNamedItem( const DOMString &name );
@@ -740,9 +740,9 @@ public:
 
     // DOM methods & attributes for NamedNodeMap
 
-    virtual NodeImpl *getNamedItem(NodeImpl::Id id, PrefixName prefix = emptyPrefixName, bool nsAware = false);
-    virtual Node removeNamedItem(NodeImpl::Id id, PrefixName prefix, bool nsAware, int &exceptioncode);
-    virtual Node setNamedItem(NodeImpl* arg, PrefixName prefix, bool nsAware, int &exceptioncode);
+    virtual NodeImpl *getNamedItem(NodeImpl::Id id, const PrefixName& prefix = emptyPrefixName, bool nsAware = false);
+    virtual Node removeNamedItem(NodeImpl::Id id, const PrefixName& prefix, bool nsAware, int &exceptioncode);
+    virtual Node setNamedItem(NodeImpl* arg, const PrefixName& prefix, bool nsAware, int &exceptioncode);
 
     virtual NodeImpl *item(unsigned index);
     virtual unsigned length() const;

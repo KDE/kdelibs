@@ -34,7 +34,7 @@ public:
     static void init();
 
     AtomicString() { }
-    //AtomicString(const char* s) : m_string(add(s)) { }
+    AtomicString(const char* s) : m_string(add(s)) { }
     AtomicString(const QChar* s, int length) : m_string(add(s, length)) { }
     AtomicString(const QChar* s) : m_string(add(s)) { }
     //AtomicString(const KJS::UString& s) : m_string(add(s)) { }
