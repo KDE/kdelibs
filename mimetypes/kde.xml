@@ -415,6 +415,7 @@ Notes:
   </mime-type>
   
   <!-- Is the actual standard for rdf content encoded in XMl, as opposed to text/rdf: http://www.iana.org/assignments/media-types/application/ -->
+  <!-- http://bugs.freedesktop.org/show_bug.cgi?id=18088 -->
   <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/rdf+xml">
     <comment>RDF/XML document</comment>
     <sub-class-of type="application/xml"/>
@@ -424,14 +425,16 @@ Notes:
 
   <!-- http://www4.wiwiss.fu-berlin.de/bizer/TriG/ -->
   <!-- Used in Nepomuk to encode almost all ontologies -->
+  <!-- http://bugs.freedesktop.org/show_bug.cgi?id=18089 -->
   <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/x-trig">
     <comment>TriG RDF document</comment>
-    <alias type="text/rdf" />
+    <sub-class-of type="text/plain" />
     <glob pattern="*.trig" />
   </mime-type>
 
   <!-- http://www.dajobe.org/2004/01/turtle/#sec-mime -->
   <!-- Important: the SPARQL RDF query lanaguge uses turtle encoding for graph patterns. -->
+  <!-- http://bugs.freedesktop.org/show_bug.cgi?id=18089 -->
   <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/x-turtle">
     <comment>Turtle RDF document</comment>
     <sub-class-of type="text/plain" />
