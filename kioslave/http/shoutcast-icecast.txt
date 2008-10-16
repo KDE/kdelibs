@@ -31,7 +31,7 @@ Contents:
 
  2. What makes delivering audio so different?
 
- The biggest reason to what makes audio different then traditional
+ The biggest reason to what makes audio different than traditional
  web media such as graphics, text and HTML is the fact that timing
  is very important. This caused by the significant increase in size
  of the media and the different quality levels that exist.
@@ -155,7 +155,7 @@ Contents:
  backing and becoming more popular by the second. The specification
  was developed by the Internet Engineering Task Force Working Groups
  AVT [IETFAVT] and MMUSIC [IETFMMUSIC]. RTP the Realtime Transfer
- Protocol has been around longer then RTSP and originally came out
+ Protocol has been around longer than RTSP and originally came out
  of the work towards a better teleconferencing, mbone, type system.
  RTSP is the Real-Time Streaming Protocol that is used as a control
  protocol and acts similarily to HTTP except that it maintains state

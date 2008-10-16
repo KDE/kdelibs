@@ -228,7 +228,7 @@ KComponentData object, but everything else probably is a bug).</li>
 <li>startService*, kdeinitExec* have been moved to KToolInvocation </li>
 <li>static void addCmdLineOptions(); has moved to KCmdLineArgs::addStdCmdLineOptions </li>
 <li>getDisplay() has been removed, its functionality is now provided by QX11Info::display() </li>
-<li>cut(), copy(), paste(), clear() and selectAll() were moved to KStandardAction.  Rather then creating a copy action and connecting it to kapp just use the KStandardAction::copy </li>
+<li>cut(), copy(), paste(), clear() and selectAll() were moved to KStandardAction.  Rather than creating a copy action and connecting it to kapp just use the KStandardAction::copy </li>
 <li>guiEnabled() was removed, use QApplication::type() instead.  </li>
 <li>ref()/deref() was moved to KGlobal (as static methods) </li>
 <li>geometryArgument was removed, please use:
@@ -1549,7 +1549,7 @@ use( dlg.password() );
 
 <h4>KSeparator</h4>
 <ul>
-<li>KSeparator now uses Qt::Vertical and Qt::Horizontal rather then QFrame's HFrame and VFrame.</li>
+<li>KSeparator now uses Qt::Vertical and Qt::Horizontal rather than QFrame's HFrame and VFrame.</li>
 </ul>
 
 <h4>KSessionManager</h4>
@@ -1921,7 +1921,7 @@ just remove any instance of it.</li>
 
 <p>This class has been replaced by <a href="http://techbase.kde.org/Development/Tutorials/Writing_file_analyzers">Strigi analyzers</a> and KFileWritePlugin. The Strigi analyzer should be installed in the directory lib/strigi to be picked up. Introspection provided by the factories that are defined in the plugin helps in determining when a particular analyzer will be used.</p>
 
-<p>Strigi analyzer have the advantage that they are faster then KFilePlugins. In addition, having one mechanism for extracting metadata from files saves code and more importantly ensures consistency between the display of metadata and the ablility to search in it. Another advantage is that the way the metadata are described matches well with the methods employed in the semantic desktop, in particular Nepomuk.</p>
+<p>Strigi analyzer have the advantage that they are faster than KFilePlugins. In addition, having one mechanism for extracting metadata from files saves code and more importantly ensures consistency between the display of metadata and the ablility to search in it. Another advantage is that the way the metadata are described matches well with the methods employed in the semantic desktop, in particular Nepomuk.</p>
 
 <h3>How to convert a KFilePlugin?</h3>
 

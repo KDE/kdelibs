@@ -263,7 +263,7 @@ void SMTP::processLine(QString *line)
     i = line->indexOf(' ');
     tmpstr = line->left(i);
     if(i > 3)
-        kDebug() << "warning: SMTP status code longer then 3 digits: " << tmpstr;
+        kDebug() << "warning: SMTP status code longer than 3 digits: " << tmpstr;
     stat = tmpstr.toInt();
     serverState = (SMTPServerStatus)stat;
     lastState = state;

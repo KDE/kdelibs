@@ -63,7 +63,7 @@ static UString sanitizePattern(const UString &p)
         // we only care about \u
         if (c == 'u') {
 	  // standard unicode escape sequence looks like \uxxxx but
-	  // other browsers also accept less then 4 hex digits
+	  // other browsers also accept less than 4 hex digits
 	  unsigned short u = 0;
 	  int j = 0;
 	  for (j = 0; j < 4; ++j) {

@@ -39,7 +39,7 @@ template <typename T> class QList;
  * destroyed together. When used carefully for this purpose it is faster
  * and more memory efficient than malloc.  Additionally to a usual obstack
  * like allocator you can also free the objects individually.  Because it
- * does no compaction it still is faster then malloc()/free().  Depending
+ * does no compaction it still is faster than malloc()/free().  Depending
  * on the exact usage pattern that might come at the expense of some
  * memory though.
  * @author Waldo Bastian <bastian@kde.org>, Michael Matz <matz@kde.org>

@@ -200,7 +200,7 @@ tester.assertMap(testobj1.func_qvariantmap_qvariantmap([]), [])
 //TODO this seems to be a Kjs/WebKitScript/Qt related bug since both kjs from trunk and QtScript from Qt4.4 have that problem.
 //Problem: Seems a list in a list got flatten to one big list but for whatever reason it shows only up if wrapped in a QVariant :-/
 //var stringlist = self.callFunction("functionNames");
-//println( stringlist.length ); // numbers of chars in stringlist.toString() rather then number of items
+//println( stringlist.length ); // numbers of chars in stringlist.toString() rather than number of items
 //tester.assertArray(self.callFunction("functionNames"), self.functionNames()); //this fails
 //println(stringlist.prototype); //undefined
 //println(stringlist instanceof Object); //false

@@ -250,7 +250,7 @@ class OtherObjectWrapper : public QObject, public Kross::WrapperInterface
 * # turn should call our myFunction function.
 * mythread.emitStepDone(456)
 * # same as above but we emit the signal by our own
-* # rather then going through a helper-function.
+* # rather than going through a helper-function.
 * mythread.stepDone(789)
 * # now let's ask our thread to ask our action to execute
 * # our function to have one complete roundtrip :)
