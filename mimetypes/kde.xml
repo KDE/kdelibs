@@ -413,9 +413,6 @@ Notes:
     <comment>data for database server connection</comment>
     <glob pattern="*.kexic"/>
   </mime-type>
-  <mime-type type="application/x-nepomuk-resource">
-    <comment>Nepomuk Resource</comment>
-  </mime-type>
   
   <!-- Is the actual standard for rdf content encoded in XMl, as opposed to text/rdf: http://www.iana.org/assignments/media-types/application/ -->
   <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/rdf+xml">
