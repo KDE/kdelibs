@@ -644,9 +644,10 @@ void KConfig::deleteGroupImpl(const QByteArray &aGroup, WriteConfigFlags flags)
 
     foreach (const QByteArray& group, groups) {
         const QStringList keys = keyList(QString::fromUtf8(group));
-        foreach (const QString& key, keys) {
-            if (d->canWriteEntry(group, key.toUtf8().constData())) {
-                d->entryMap.setEntry(group, key.toUtf8(), QByteArray(), options);
+        foreach (const QString& _key, keys) {
+            const QByteArray &key = _key.toUtf8();
+            if (d->canWriteEntry(group, key.constData())) {
+                d->entryMap.setEntry(group, key, QByteArray(), options);
                 d->bDirty = true;
             }
         }
