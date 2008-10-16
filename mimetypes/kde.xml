@@ -413,5 +413,31 @@ Notes:
     <comment>data for database server connection</comment>
     <glob pattern="*.kexic"/>
   </mime-type>
+  <mime-type type="application/x-nepomuk-resource">
+    <comment>Nepomuk Resource</comment>
+  </mime-type>
+  
+  <!-- Is the actual standard for rdf content encoded in XMl, as opposed to text/rdf: http://www.iana.org/assignments/media-types/application/ -->
+  <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/rdf+xml">
+    <comment>RDF/XML document</comment>
+    <sub-class-of type="application/xml"/>
+    <glob pattern="*.rdf" />
+    <glob pattern="*.rdfs" />
+  </mime-type>
+
+  <!-- http://www4.wiwiss.fu-berlin.de/bizer/TriG/ -->
+  <!-- Used in Nepomuk to encode almost all ontologies -->
+  <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/x-trig">
+    <comment>TriG RDF document</comment>
+    <alias type="text/rdf" />
+    <glob pattern="*.trig" />
+  </mime-type>
+
+  <!-- http://www.dajobe.org/2004/01/turtle/#sec-mime -->
+  <!-- Important: the SPARQL RDF query lanaguge uses turtle encoding for graph patterns. -->
+  <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/x-turtle">
+    <comment>Turtle RDF document</comment>
+    <sub-class-of type="text/plain" />
+  </mime-type>
 
 </mime-info>
