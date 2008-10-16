@@ -93,11 +93,25 @@ void GlobalShortcutsRegistry::loadSettings()
         Q_ASSERT(!getComponent(groupName));
 
         KConfigGroup configGroup(&_config, groupName);
-        KConfigGroup friendlyGroup(&configGroup, "Friendly Name");
 
+        // We previously stored the friendly name in a separate group. migrate
+        // that
+        QString friendlyName;
+        KConfigGroup friendlyGroup(&configGroup, "Friendly Name");
+        if (friendlyGroup.isValid())
+            {
+            friendlyName = friendlyGroup.readEntry("Friendly Name");
+            friendlyGroup.deleteGroup();
+            }
+        else
+            {
+            friendlyName = configGroup.readEntry("_k_friendly_name");
+            }
+
+        // Create the component
         KdeDGlobalAccel::Component *component = new KdeDGlobalAccel::Component(
                 groupName,
-                friendlyGroup.readEntry("Friendly Name"),
+                friendlyName,
                 this);
 
         // Now load the contexts

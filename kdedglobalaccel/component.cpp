@@ -254,8 +254,7 @@ void Component::writeSettings(KConfigGroup& configGroup) const
     configGroup.deleteGroup();
 
     // Write the friendly name
-    KConfigGroup friendlyGroup(&configGroup, "Friendly Name");
-    friendlyGroup.writeEntry("Friendly Name", friendlyName());
+    configGroup.writeEntry("_k_friendly_name", friendlyName());
 
     // Now wrote all contexts
     Q_FOREACH( GlobalShortcutContext *context, _contexts)
