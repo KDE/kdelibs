@@ -45,7 +45,7 @@ class QStringList;
  *  {
  *    // inform the user that he should install konsole..
  *    return;
- *  };
+ *  }
  *  // fetch the part..
  *  KParts::Part* p = static_cast<KParts::Part*>(
  *      factory->create( this, "tralala", "QObject",
@@ -63,7 +63,7 @@ class QStringList;
  *    // that he needs a more recent konsole, or try to deliver the
  *    // functionality in some other way...
  *    return;
- *  };
+ *  }
  *  // now use the interface in all sorts of ways, e.g.
  *  //    t->showShellInDir( QDir::home().path() );
  *  // or:
