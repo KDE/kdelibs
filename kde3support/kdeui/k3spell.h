@@ -365,7 +365,7 @@ Q_SIGNALS:
    *  and replacement().
    *
    * Note, that when using checkList() this signal can occur
-   * more then once with same list position, when checking a word with
+   * more than once with same list position, when checking a word with
    * hyphens. In this case @p originalword is the last replacement.
    *
    * @see check()

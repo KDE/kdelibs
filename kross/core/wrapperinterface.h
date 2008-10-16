@@ -27,7 +27,7 @@ namespace Kross {
     /**
      * Wrapper-class used to provide handlers for custom types.
      *
-     * Custom types are types other then QObject*, QWidget* or one
+     * Custom types are types other than QObject*, QWidget* or one
      * of the base types supported by QVariant. By using the
      * Kross::registerMetaTypeHandler() method such custom handlers
      * can be registered and used to either translate various

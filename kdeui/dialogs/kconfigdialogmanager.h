@@ -189,7 +189,7 @@ protected:
    * @param widget - Parent of the children to look at.
    * @param trackChanges - If true then tracks any changes to the children of
    * widget that are known.
-   * @return bool - If a widget was set to something other then its default.
+   * @return bool - If a widget was set to something other than its default.
    */
   bool parseChildren(const QWidget *widget, bool trackChanges);
 

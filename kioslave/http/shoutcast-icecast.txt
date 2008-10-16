@@ -410,7 +410,7 @@ Contents:
  the MaxClients will need to be adjusted appropriatedly depending on
  the amount of time listeners end up tieing up a process. If you are
  serving high quality MP3 files at 128kbps for example you should
- expect more then 5 minute download times for most people.
+ expect more than 5 minute download times for most people.
 
  This will significantly impact your webserver since this means that
  that process is occupied for the entire time. Because of this you
