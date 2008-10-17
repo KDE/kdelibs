@@ -725,7 +725,6 @@ Qt::ToolButtonStyle KToolBar::toolButtonStyleSetting()
 void KToolBar::loadState(const QDomElement &element)
 {
   QMainWindow *mw = mainWindow();
-
   if (!mw)
     return;
 
@@ -806,8 +805,8 @@ void KToolBar::loadState(const QDomElement &element)
     if (!attrNewLine.isEmpty())
       newLine = attrNewLine == "true";
 
-    if (newLine && mainWindow())
-      mainWindow()->insertToolBarBreak(this);
+    if (newLine && mw)
+      mw->insertToolBarBreak(this);
   }
 
   {
@@ -823,7 +822,7 @@ void KToolBar::loadState(const QDomElement &element)
       pos = KToolBar::Private::positionFromString(attrPosition);
   }
   if (pos != Qt::NoToolBarArea)
-    mainWindow()->addToolBar(pos, this);
+    mw->addToolBar(pos, this);
 
   if (hidden)
     hide();
