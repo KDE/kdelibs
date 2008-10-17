@@ -57,6 +57,7 @@ class KIO_EXPORT KUrlRequester : public KHBox
     Q_PROPERTY( QString filter READ filter WRITE setFilter )
     Q_FLAGS( KFile::Modes )
     Q_PROPERTY( KFile::Modes mode READ mode WRITE setMode )
+    Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
 
 public:
     /**
@@ -161,6 +162,19 @@ public:
      * \endcode
      */
     const KEditListBox::CustomEditor &customEditor();
+
+    /**
+     * @returns the message set with setClickMessage
+     * @since 4.2
+     */
+    QString clickMessage() const;
+
+    /**
+     * Set a click message @p msg
+     * @since 4.2
+     */
+    void setClickMessage(const QString& msg);
+    
 
 public Q_SLOTS:
     /**

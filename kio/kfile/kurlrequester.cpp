@@ -403,6 +403,20 @@ KUrlCompletion *KUrlRequester::completionObject() const
     return d->myCompletion;
 }
 
+void KUrlRequester::setClickMessage(const QString& msg)
+{
+    if(d->edit)
+        d->edit->setClickMessage(msg);
+}
+
+QString KUrlRequester::clickMessage() const
+{
+    if(d->edit)
+        return d->edit->clickMessage();
+    else
+        return QString();
+}
+
 const KEditListBox::CustomEditor &KUrlRequester::customEditor()
 {
     setSizePolicy(QSizePolicy( QSizePolicy::Preferred,
