@@ -95,16 +95,17 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     QTabWidget *tabWidget = new QTabWidget;
     tabWidget->setUsesScrollButtons(false);
 
-    QString aboutPageText = aboutData->shortDescription() + "<br />";
+    QString aboutPageText = aboutData->shortDescription() + '\n';
 
     if (!aboutData->otherText().isEmpty())
-        aboutPageText += "<br />" + aboutData->otherText() + "<br />";
+        aboutPageText += '\n' + aboutData->otherText() + '\n';
 
     if (!aboutData->copyrightStatement().isEmpty())
-        aboutPageText += "<br />" + aboutData->copyrightStatement() + "<br />";
+        aboutPageText += '\n' + aboutData->copyrightStatement() + '\n';
 
     if (!aboutData->homepage().isEmpty())
-        aboutPageText += "<br />" + QString("<a href=\"%1\">%1</a>").arg(aboutData->homepage()) + "<br />";
+        aboutPageText += '\n' + QString("<a href=\"%1\">%1</a>").arg(aboutData->homepage()) + '\n';
+	aboutPageText = aboutPageText.trimmed();
 
     QLabel *aboutLabel = new QLabel;
     aboutLabel->setWordWrap(true);
@@ -177,7 +178,8 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
                 authorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"%3\">%3</a></p>").arg(lst.at(i).webAddress());
             if (!lst.at(i).task().isEmpty())
                 authorPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\">%4</p>").arg(lst.at(i).task());
-            authorPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
+			if (i < lst.size() - 1)
+				authorPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
         }
 
         KTextBrowser *authorTextBrowser = new KTextBrowser;
@@ -200,7 +202,8 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
                 creditsPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\"><a href=\"%3\">%3</a></p>").arg(lst.at(i).webAddress());
             if (!lst.at(i).task().isEmpty())
                 creditsPageText += QString("<p style=\"margin: 0px; margin-left: 15px;\">%4</p>").arg(lst.at(i).task());
-            creditsPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
+			if (i < lst.size() - 1)
+				creditsPageText += "<p style=\"margin: 0px;\">&nbsp;</p>";
         }
 
         KTextBrowser *creditsTextBrowser = new KTextBrowser;
