@@ -1686,10 +1686,14 @@ void KUrl::setPath( const QString& _path )
         setScheme( QLatin1String( "file" ) );
     QString path = KShell::tildeExpand( _path );
 #ifdef Q_WS_WIN
+    const int len = path.length();
+    if( len == 2 && IS_LETTER(path[0]) && path[1] == QLatin1Char(':') )
+        path += QLatin1Char('/');
     //This is necessary because QUrl has the "path" part including the first slash
     //Without this QUrl doesn't understand that this is a path, and some operations fail
     //e.g. C:/blah needs to become /C:/blah
-    if( !path.isEmpty() && path[0] != QLatin1Char('/') && scheme() == QLatin1String( "file" ) )
+    else
+    if( len > 0 && path[0] != QLatin1Char('/') && scheme() == QLatin1String( "file" ) )
         path = QLatin1Char('/') + path;
 #endif
     QUrl::setPath( path );
