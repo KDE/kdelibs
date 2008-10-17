@@ -141,10 +141,9 @@ KMenuBar::KMenuBar(QWidget *parent)
 
     connect( qApp->desktop(), SIGNAL( resized( int )), SLOT( updateFallbackSize()));
 
-    if ( kapp )
-        // toolbarAppearanceChanged(int) is sent when changing macstyle
-        connect( KGlobalSettings::self(), SIGNAL(toolbarAppearanceChanged(int)),
-            this, SLOT(slotReadConfig()));
+    // toolbarAppearanceChanged(int) is sent when changing macstyle
+    connect( KGlobalSettings::self(), SIGNAL(toolbarAppearanceChanged(int)),
+        this, SLOT(slotReadConfig()));
 
     slotReadConfig();
 }
