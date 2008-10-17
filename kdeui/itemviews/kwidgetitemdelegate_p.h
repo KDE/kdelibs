@@ -59,7 +59,6 @@ public:
     QAbstractItemView *itemView;
     KWidgetItemDelegatePool *widgetPool;
     QAbstractItemModel *model;
-    QPersistentModelIndex focusedIndex;
 
     KWidgetItemDelegate *q;
 };

@@ -55,7 +55,6 @@ KWidgetItemDelegatePrivate::KWidgetItemDelegatePrivate(KWidgetItemDelegate *q, Q
     , itemView(0)
     , widgetPool(new KWidgetItemDelegatePool(q))
     , model(0)
-    , focusedIndex(QPersistentModelIndex())
     , q(q)
 {
 }
@@ -183,7 +182,8 @@ QAbstractItemView *KWidgetItemDelegate::itemView() const
 
 QPersistentModelIndex KWidgetItemDelegate::focusedIndex() const
 {
-    return d->focusedIndex;
+    const QPoint pos = d->itemView->viewport()->mapFromGlobal(QCursor::pos());
+    return d->itemView->indexAt(pos);
 }
 
 void KWidgetItemDelegate::paintWidgets(QPainter *painter, const QStyleOptionViewItem &option,
@@ -227,12 +227,9 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
             itemView->viewport()->update();
             break;
         case QEvent::Leave:
-            focusedIndex = QModelIndex();
             itemView->viewport()->update();
             break;
         case QEvent::MouseMove: {
-                QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-                focusedIndex = itemView->indexAt(mouseEvent->pos());
                 itemView->viewport()->update(); // TODO: more granular update
             }
             break;
