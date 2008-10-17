@@ -453,7 +453,7 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
 
     // Only resize if greater than current file size, otherwise we may cause SIGBUS
     // errors from mmap().
-    if (info->file->size() > info->available && ftruncate(info->file->handle(), info->available) < 0) {
+    if (info->file->size() < info->available && ftruncate(info->file->handle(), info->available) < 0) {
         kError(264) << "Couldn't resize" << filename << "to" << newsize;
         delete info->file;
         info->file = 0;
