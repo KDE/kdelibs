@@ -453,7 +453,7 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
 
     // Only resize if greater than current file size, otherwise we may cause SIGBUS
     // errors from mmap().
-    if (info->file->size() < newsize && ftruncate(info->file->handle(), info->available) < 0) {
+    if (info->file->size() > info->available && ftruncate(info->file->handle(), info->available) < 0) {
         kError(264) << "Couldn't resize" << filename << "to" << newsize;
         delete info->file;
         info->file = 0;
@@ -509,7 +509,7 @@ QIODevice* KPixmapCache::Private::indexDevice()
         // Make sure the file still exists
         QFileInfo fi(mIndexFile);
 
-        if(!fi.exists() || fi.size() != mIndexMmapInfo.available) {
+        if (!fi.exists() || fi.size() != mIndexMmapInfo.available) {
             kDebug(264) << "File size has changed, re-initializing.";
             q->recreateCacheFiles(); // Recreates memory maps as well.
         }
@@ -574,7 +574,7 @@ QIODevice* KPixmapCache::Private::dataDevice()
         // Make sure the file still exists
         QFileInfo fi(mDataFile);
 
-        if(!fi.exists() || fi.size() != mDataMmapInfo.available) {
+        if (!fi.exists() || fi.size() != mDataMmapInfo.available) {
             kDebug(264) << "File size has changed, re-initializing.";
             q->recreateCacheFiles(); // Recreates memory maps as well.
 
@@ -584,7 +584,7 @@ QIODevice* KPixmapCache::Private::dataDevice()
         }
 
         fi.refresh();
-        if(fi.exists() && fi.size() == mDataMmapInfo.available) {
+        if (fi.exists() && fi.size() == mDataMmapInfo.available) {
             // Create the device
             return new KPCMemoryDevice(mDataMmapInfo.memory, &mDataMmapInfo.size, mDataMmapInfo.available);
         }

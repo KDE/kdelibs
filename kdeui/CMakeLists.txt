@@ -113,7 +113,6 @@ set(kdeui_LIB_SRCS
  icons/kiconloader.cpp
  icons/kicontheme.cpp
  icons/kiconcache.cpp
- icons/kpixmapcache.cpp
  itemviews/klistwidget.cpp
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
@@ -171,6 +170,7 @@ set(kdeui_LIB_SRCS
  util/knumvalidator.cpp
  util/kpassivepopup.cpp
  util/kpassivepopupmessagehandler.cpp
+ util/kpixmapcache.cpp
  util/kpixmapprovider.cpp
  util/kstandardguiitem.cpp
  util/ksvgrenderer.cpp
@@ -426,7 +426,6 @@ install( FILES
  icons/kiconloader.h
  icons/kicontheme.h
  icons/kiconcache.h
- icons/kpixmapcache.h
  itemviews/klistwidget.h
  itemviews/klistwidgetsearchline.h
  itemviews/ktreewidgetsearchline.h
@@ -472,6 +471,7 @@ install( FILES
  util/knumvalidator.h
  util/kpassivepopup.h
  util/kpassivepopupmessagehandler.h
+ util/kpixmapcache.h
  util/kpixmapprovider.h
  util/kstandardguiitem.h
  util/ksvgrenderer.h
