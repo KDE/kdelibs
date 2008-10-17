@@ -520,7 +520,7 @@ bool KCertPart::openFile() {
 				//		 x-509-ca-cert loading
 				/////////////////////////////////////////////////////////////////////////////
 				} else if (whatType == "application/x-x509-ca-cert" ||
-						   whatType == "application/binary-certificate") {
+						   whatType == "application/binary-certificate") { // DF: this mimetype does not exist
 			FILE *fp;
 			bool isPEM = false;
 
