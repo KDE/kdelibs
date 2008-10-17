@@ -190,7 +190,7 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFastPatternDict(const QString &e
     return mimeList;
 }
 
-static bool matchFileName( const QString &filename, const QString &pattern )
+bool KMimeTypeFactory::matchFileName( const QString &filename, const QString &pattern )
 {
     int pattern_len = pattern.length();
     if (!pattern_len)
@@ -240,7 +240,9 @@ void KMimeTypeFactory::findFromOtherPatternList(QList<KMimeType::Ptr>& matchingM
                                                 bool highWeight)
 {
     OtherPatternList& patternList = highWeight ? m_highWeightPatterns : m_lowWeightPatterns;
-    if ( highWeight ? !m_highWeightPatternsLoaded : !m_lowWeightPatternsLoaded ) {
+    bool& loaded = highWeight ? m_highWeightPatternsLoaded : m_lowWeightPatternsLoaded;
+    if ( !loaded ) {
+        loaded = true;
         // Load it only once
         QDataStream *str = m_str;
         str->device()->seek( highWeight ? m_highWeightPatternOffset : m_lowWeightPatternOffset );

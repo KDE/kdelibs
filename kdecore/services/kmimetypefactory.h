@@ -63,6 +63,7 @@ public:
 
 private: // only for KMimeType
     friend class KMimeType;
+    friend class KMimeFileParserTest;
     /**
      * Check if mime is an alias, and return the canonical name for it if it is.
      */
@@ -117,6 +118,11 @@ public:
      * @internal (public for unit tests only)
      */
     QList<KMimeMagicRule> parseMagicFile(QIODevice* file, const QString& fileName) const;
+
+    /**
+     * @internal (public for unit tests only)
+     */
+    static bool matchFileName( const QString &filename, const QString &pattern );
 
 protected:
     virtual KMimeType *createEntry(int offset) const;
