@@ -73,18 +73,21 @@ class KTabWidget::Private
 
 bool KTabWidget::Private::isEmptyTabbarSpace( const QPoint &point ) const
 {
+    if (m_parent->tabBar()->isHidden()) {
+        return false;
+    }
   QSize size( m_parent->tabBar()->sizeHint() );
   if ( ( m_parent->tabPosition() == QTabWidget::North && point.y() < size.height() ) ||
        ( m_parent->tabPosition() == QTabWidget::South && point.y() > (m_parent->height() - size.height() ) ) ) {
 
     QWidget *rightcorner = m_parent->cornerWidget( Qt::TopRightCorner );
-    if ( rightcorner ) {
+    if ( rightcorner && rightcorner->isVisible() ) {
       if ( point.x() >= m_parent->width()-rightcorner->width() )
         return false;
     }
 
     QWidget *leftcorner = m_parent->cornerWidget( Qt::TopLeftCorner );
-    if ( leftcorner ) {
+    if ( leftcorner && leftcorner->isVisible() ) {
       if ( point.x() <= leftcorner->width() )
         return false;
     }
