@@ -1136,6 +1136,11 @@ int KPixmapCache::cacheLimit() const
 
 void KPixmapCache::setCacheLimit(int kbytes)
 {
+    //FIXME: KDE5: this should be uint!
+    if (kbytes < 0) {
+        return;
+    }
+
     d->mCacheLimit = kbytes;
     // TODO: cleanup if size() > cacheLimit()
 }
