@@ -72,6 +72,7 @@ KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
   setHelp( QString(), KGlobal::mainComponent().componentName() );
   setDefaultButton( Ok );
   setObjectName( name );
+  showButtonSeparator( true );
 
   if ( !name.isEmpty() ) {
     KConfigDialogPrivate::openDialogs.insert(name, this);
