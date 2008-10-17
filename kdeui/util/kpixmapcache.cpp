@@ -403,8 +403,8 @@ bool KPixmapCache::Private::mmapFiles()
         return false;
     }
 
-    //TODO: 10MB limit if we have no cache limit, is that sensible?
-    int cacheLimit = mCacheLimit > 0 ? mCacheLimit : 10 * 1024;
+    //TODO: 100MB limit if we have no cache limit, is that sensible?
+    int cacheLimit = mCacheLimit > 0 ? mCacheLimit : 100 * 1024;
     if (!mmapFile(mIndexFile, &mIndexMmapInfo, (int)(cacheLimit * 0.4 + 100) * 1024)) {
         q->setValid(false);
         return false;
