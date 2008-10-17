@@ -403,11 +403,14 @@ bool KPixmapCache::Private::mmapFiles()
         return false;
     }
 
-    if (!mmapFile(mIndexFile, &mIndexMmapInfo, (int)(q->cacheLimit() * 0.4 + 100) * 1024)) {
+    //TODO: 10MB limit if we have no cache limit, is that sensible?
+    int cacheLimit = mCacheLimit > 0 ? mCacheLimit : 10 * 1024;
+    if (!mmapFile(mIndexFile, &mIndexMmapInfo, (int)(cacheLimit * 0.4 + 100) * 1024)) {
         q->setValid(false);
         return false;
     }
-    if (!mmapFile(mDataFile, &mDataMmapInfo, (int)(q->cacheLimit() * 1.5 + 500) * 1024)) {
+
+    if (!mmapFile(mDataFile, &mDataMmapInfo, (int)(cacheLimit * 1.5 + 500) * 1024)) {
         unmmapFile(&mIndexMmapInfo);
         q->setValid(false);
         return false;
@@ -1142,7 +1145,17 @@ void KPixmapCache::setCacheLimit(int kbytes)
     }
 
     d->mCacheLimit = kbytes;
-    // TODO: cleanup if size() > cacheLimit()
+
+    // if we are initialized, let's make sure that we are actually within
+    // our limits.
+    if (d->mInited && d->mCacheLimit && size() > d->mCacheLimit) {
+        if (size() > (int)(d->mCacheLimit * 1.2)) {
+            // Can't wait any longer, do it immediately
+            d->removeEntries(d->mCacheLimit * 0.75);
+        } else {
+            d->scheduleRemoveEntries(int(d->mCacheLimit * 0.75));
+        }
+    }
 }
 
 KPixmapCache::RemoveStrategy KPixmapCache::removeEntryStrategy() const
@@ -1253,7 +1266,12 @@ void KPixmapCache::discard()
 void KPixmapCache::removeEntries(int newsize)
 {
     if (!newsize) {
-        newsize = cacheLimit();
+        newsize = d->mCacheLimit;
+
+        if (!newsize) {
+            // nothing to do!
+            return;
+        }
     }
 
     d->removeEntries(newsize);
@@ -1382,13 +1400,13 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
     d->writeIndex(indexkey, offset);
 
     // Make sure the cache size stays within limits
-    if (size() > cacheLimit()) {
+    if (d->mCacheLimit && size() > d->mCacheLimit) {
         lock.unlock();
-        if (size() > (int)(cacheLimit() * 1.2)) {
+        if (size() > (int)(d->mCacheLimit * 1.2)) {
             // Can't wait any longer, do it immediately
-            d->removeEntries(int(cacheLimit() * 0.75));
+            d->removeEntries(d->mCacheLimit * 0.75);
         } else {
-            d->scheduleRemoveEntries(int(cacheLimit() * 0.75));
+            d->scheduleRemoveEntries(int(d->mCacheLimit * 0.75));
         }
     }
 }
