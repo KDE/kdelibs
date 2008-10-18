@@ -97,24 +97,19 @@ public:
                 RightSide, BottomLeftCorner, BottomSide, BottomRightCorner,
                 NumTiles };
 
-    TileSet(const QColor &frameColor)
+    TileSet()
     {
         QImage image(8 * 3, 8 * 3, QImage::Format_ARGB32_Premultiplied);
 
         QPainter p(&image);
         p.setCompositionMode(QPainter::CompositionMode_Source);
         p.fillRect(image.rect(), Qt::transparent);
-        p.fillRect(image.rect().adjusted(2, 2, -2, -2), frameColor);
+        p.fillRect(image.rect().adjusted(3, 3, -3, -3), Qt::black);
         p.end();
 
-        QImage temp = image;
-        KIO::ImageFilter::shadowBlur(temp, 2, Qt::black);
+        KIO::ImageFilter::shadowBlur(image, 3, Qt::black);
 
-        p.begin(&temp);
-        p.drawImage(0, 0, image);
-        p.end();
-
-        QPixmap pixmap = QPixmap::fromImage(temp);
+        QPixmap pixmap = QPixmap::fromImage(image);
         m_tiles[TopLeftCorner]     = pixmap.copy(0, 0, 8, 8);
         m_tiles[TopSide]           = pixmap.copy(8, 0, 8, 8);
         m_tiles[TopRightCorner]    = pixmap.copy(16, 0, 8, 8);
@@ -292,7 +287,7 @@ public:
 
     QStringList m_enabledPlugins;
 
-    QCache<quint32, TileSet> m_tileCache;
+    TileSet *m_tileSet;
 
 private:
     KFilePreviewGenerator* const q;
@@ -318,6 +313,7 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
     m_previews(),
     m_pendingItems(),
     m_dispatchedItems(),
+    m_tileSet(0),
     q(parent)
 {
     if (!m_viewAdapter->iconSize().isValid()) {
@@ -366,6 +362,7 @@ KFilePreviewGenerator::Private::~Private()
         m_mimeTypeResolver->deleteLater();
         m_mimeTypeResolver = 0;
     }
+    delete m_tileSet;
 }
 
 void KFilePreviewGenerator::Private::generatePreviews(const KFileItemList& items)
@@ -621,28 +618,26 @@ bool KFilePreviewGenerator::Private::applyImageFrame(QPixmap& icon)
         return false;
     }
 
-    const int frame = 4;
-    const int doubleFrame = frame * 2;
+    const int tloffset = 2;
+    const int broffset = 4;
+    const int doubleFrame = tloffset + broffset;
 
     // resize the icon to the maximum size minus the space required for the frame
     limitToSize(icon, QSize(maxSize.width() - doubleFrame, maxSize.height() - doubleFrame));
 
-    QPainter painter;
-    const QPalette palette = m_viewAdapter->palette();
-    const QColor color = palette.color(QPalette::Normal, QPalette::Base);
-    TileSet *tiles = m_tileCache.object(color.rgba());
-    if (!tiles) {
-        tiles = new TileSet(color);
-        m_tileCache.insert(color.rgba(), tiles);
+    if (!m_tileSet) {
+        m_tileSet = new TileSet;
     }
+
     QPixmap framedIcon(icon.size().width() + doubleFrame, icon.size().height() + doubleFrame);
     framedIcon.fill(Qt::transparent);
 
+    QPainter painter;
     painter.begin(&framedIcon);
     painter.setCompositionMode(QPainter::CompositionMode_Source);
-    tiles->paint(&painter, framedIcon.rect());
+    m_tileSet->paint(&painter, framedIcon.rect());
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-    painter.drawPixmap(frame, frame, icon);
+    painter.drawPixmap(tloffset, tloffset, icon);
     painter.end();
 
     icon = framedIcon;
