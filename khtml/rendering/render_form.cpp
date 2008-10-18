@@ -269,8 +269,7 @@ void RenderCheckBox::calcMinMaxWidth()
 void RenderCheckBox::updateFromElement()
 {
     if (widget()->isChecked() != element()->checked()) {
-        m_ignoreStateChanged = true; // We don't want an onchange here,
-                                     // or us getting yanked in a recalcStyle in the process, etc.
+        m_ignoreStateChanged = true;
         widget()->setChecked(element()->checked());
         m_ignoreStateChanged = false;
     }
@@ -282,10 +281,6 @@ void RenderCheckBox::slotStateChanged(int state)
 {
     if (m_ignoreStateChanged) return;
     element()->setChecked(state == Qt::Checked);
-
-    ref();
-    element()->onChange();
-    deref();
 }
 
 bool RenderCheckBox::handleEvent(const DOM::EventImpl& ev)
@@ -346,12 +341,6 @@ void RenderRadioButton::slotToggled(bool activated)
 {
     if (m_ignoreToggled)
       return;
-
-    if(activated) {
-      ref();
-      element()->onChange();
-      deref();
-    }
 }
 
 bool RenderRadioButton::handleEvent(const DOM::EventImpl& ev)
