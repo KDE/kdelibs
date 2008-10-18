@@ -329,7 +329,7 @@ void Highlighter::setMisspelled(int start, int count)
 
 void Highlighter::unsetMisspelled( int start, int count )
 {
-    setFormat(start, count, qApp->palette().color(QPalette::Text));
+    setFormat(start, count, QTextCharFormat());
 }
 
 bool Highlighter::eventFilter( QObject *o, QEvent *e)
