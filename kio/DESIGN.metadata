@@ -17,10 +17,12 @@ modified        string          The modification date of the document (set by ht
 
 accept          string          List of mimetypes to accept separated by a ", ". (read by http)
 
+responsecode    string          Original response code of the web server. (set by http)
+
 SendUserAgent   bool            Whether to send a User-Agent (read by http)
 UserAgent       string          The user agent name to send to remote host (read by http)
 
-content-type    string          The content type of the data to be uploaded (read by http)
+content-type    string          The content type of the data to be uploaded (read and set by http)
 media-*         string          Media-Parameter attributes (e.g. media-boundary)
 
 cache           "cache"         Use entry from cache if available.

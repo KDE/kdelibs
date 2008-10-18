@@ -560,6 +560,9 @@ bool HTTPProtocol::proceedUntilResponseHeader()
   kDebug(7113) << "Previous Response:" << m_request.prevResponseCode;
   kDebug(7113) << "Current Response:" << m_request.responseCode;
 
+  setMetaData("responsecode", QString::number(m_request.responseCode));
+  setMetaData("content-type", m_mimeType);
+
   if (m_request.responseCode < 400 &&
       (m_request.prevResponseCode == 401 || m_request.prevResponseCode == 407)) {
       saveAuthorization(m_request.prevResponseCode == 407);
@@ -1316,10 +1319,17 @@ void HTTPProtocol::del( const KUrl& url, bool )
 
   // The server returns a HTTP/1.1 200 Ok or HTTP/1.1 204 No Content
   // on successful completion
-  if ( m_request.responseCode == 200 || m_request.responseCode == 204 )
-    davFinished();
-  else
-    davError();
+  if ( m_protocol.startsWith( "webdav" ) ) {
+    if ( m_request.responseCode == 200 || m_request.responseCode == 204 )
+      davFinished();
+    else
+      davError();
+  } else {
+    if ( m_request.responseCode == 200 || m_request.responseCode == 204 )
+      finished();
+    else
+      error( ERR_SLAVE_DEFINED, i18n( "The resource cannot be deleted." ) );
+  }
 }
 
 void HTTPProtocol::post( const KUrl& url )
@@ -2295,7 +2305,8 @@ bool HTTPProtocol::sendQuery()
     }
 
     QString contentType = metaData("content-type");
-    if (m_request.method == HTTP_POST && !contentType.isEmpty())
+    if ((m_request.method == HTTP_POST || m_request.method == HTTP_PUT)
+    && !contentType.isEmpty())
     {
       header += contentType;
       header += "\r\n";
