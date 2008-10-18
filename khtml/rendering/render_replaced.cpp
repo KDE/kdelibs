@@ -888,6 +888,23 @@ void RenderWidget::EventPropagator::sendEvent(QEvent *e) {
     }
 }
 
+
+// send event to target and let it bubble up until it is accepted or
+// once it would go through a limiting widget level
+static bool bubblingSend(QWidget* target, QEvent* e, QWidget* stoppingParent)
+{
+    for (;;) {
+        static_cast<RenderWidget::EventPropagator *>(target)->sendEvent(e);
+        if (e->isAccepted())
+            return true;
+        if (target == stoppingParent)
+            return false;
+        // ### might want to shift Q*Event::pos() as we go up
+        target = target->parentWidget();
+        assert(target != 0);
+    }
+}
+
 bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 {
     bool ret = false;
@@ -1047,9 +1064,9 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         QEvent *e = isMouseWheel ?
                     static_cast<QEvent*>(new QWheelEvent(p, -me.detail()*40, buttons, state, orient)) :
                     static_cast<QEvent*>(new QMouseEvent(type,    p, button, buttons, state));
-        static_cast<EventPropagator *>(target)->sendEvent(e);
 
-        ret = e->isAccepted();
+
+        ret = bubblingSend(target, e, m_widget);
 
         if (needContextMenuEvent) {
             QContextMenuEvent cme(QContextMenuEvent::Mouse, p);
