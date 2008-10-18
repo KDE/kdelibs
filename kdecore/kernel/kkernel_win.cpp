@@ -299,4 +299,15 @@ static class kMessageOutputInstaller {
         }
 } kMessageOutputInstallerInstance;
 
+
+bool isExecutable(const QString &file)
+{
+  return ( file.endsWith( QLatin1String( ".exe" ) ) ||
+           file.endsWith( QLatin1String( ".com" ) ) ||
+           file.endsWith( QLatin1String( ".bat" ) ) ||
+           file.endsWith( QLatin1String( ".sln" ) ) ||
+           file.endsWith( QLatin1String( ".lnk" ) ) );
+
+}
+
 #endif  // Q_OS_WIN

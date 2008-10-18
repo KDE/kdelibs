@@ -53,5 +53,11 @@ KDECORE_EXPORT bool showWin32FilePropertyDialog(const QString& fileName);
 */
 KDECORE_EXPORT QByteArray getWin32LocaleName();
 
+/**
+ \return true when the file is an executable on windows.
+*/
+KDECORE_EXPORT bool isExecutable(const QString &filename);
+
+
 #endif  // Q_OS_WIN
 #endif  // KKERNEL_WIN_H

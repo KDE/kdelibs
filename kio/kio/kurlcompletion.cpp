@@ -59,6 +59,10 @@
 #include <sys/param.h>
 #include <kconfiggroup.h>
 
+#ifdef Q_WS_WIN
+#include <kkernel_win.h>
+#endif
+
 static bool expandTilde(QString &);
 static bool expandEnv(QString &);
 
@@ -286,6 +290,72 @@ private:
 	bool m_appendSlashToDir;
 };
 
+#ifdef Q_WS_WIN
+
+void DirectoryListThread::run()
+{
+  WIN32_FIND_DATAW find_data;
+
+  Q_FOREACH( const QString &dir_, m_dirList )
+  {
+    QString dir = dir_ + QLatin1String( "\\*.*" );
+    HANDLE hFind = FindFirstFileW( ( LPCWSTR ) dir.utf16(), &find_data );
+    if( hFind == INVALID_HANDLE_VALUE ) {
+      qDebug() << "Failed to open dir:" << dir;
+      return;
+    }
+    do {
+      // Skip hidden files if m_noHidden is true
+      if( ( find_data.cFileName[0] == '.' && m_noHidden ) ||
+          ( find_data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN ) == FILE_ATTRIBUTE_HIDDEN )
+        continue;
+
+      // Skip "."
+
+      if ( find_data.cFileName[0] == '.' && find_data.cFileName[1] == '\0' )
+        continue;
+
+      // Skip ".."
+
+      if ( find_data.cFileName[0] == '.' && find_data.cFileName[1] == '.' && find_data.cFileName[2] == '\0' )
+        continue;
+
+      QString file = QString::fromUtf16( ( const ushort * ) find_data.cFileName );
+
+      if ( m_filter.isEmpty() || file.startsWith( m_filter ) ) {
+
+        if ( m_onlyExe || m_onlyDir || m_appendSlashToDir ) {
+
+          // Verify executable
+
+          if ( m_onlyExe && !isExecutable( file ) )
+            continue;
+
+          // Verify directory
+
+          if ( m_onlyDir && ( find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 )
+            continue;
+
+          // Add '/' to directories
+
+          if ( m_appendSlashToDir && ( find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY )
+            file.append( QLatin1Char( '/' ) );
+        }
+
+        addMatch( file );
+
+      }
+
+    }
+
+    while( FindNextFileW( hFind, &find_data ) );
+
+  }
+
+}
+
+#else   // Q_WS_WIN
+
 void DirectoryListThread::run()
 {
 	// Thread safety notes:
@@ -404,6 +474,7 @@ void DirectoryListThread::run()
 
 	done();
 }
+#endif  // !Q_WS_WIN
 
 KUrlCompletionPrivate::~KUrlCompletionPrivate()
 {
@@ -1314,6 +1385,17 @@ void KUrlCompletion::postProcessMatch( QString *pMatch ) const
 
 			expandTilde( copy );
 			expandEnv( copy );
+#ifdef Q_WS_WIN
+			DWORD dwAttr = GetFileAttributesW( (LPCWSTR) copy.utf16() );
+			if ( dwAttr == INVALID_FILE_ATTRIBUTES ) {
+				kDebug() << "Could not get file attribs ( "
+					<< GetLastError()
+					<< " ) for "
+					<< copy;
+                        } else
+			if ( ( dwAttr & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY )
+				pMatch->append( QLatin1Char( '/' ) );
+#else
 			if ( QDir::isRelativePath(copy) )
 				copy.prepend( d->cwd + QLatin1Char('/') );
 
@@ -1330,6 +1412,7 @@ void KUrlCompletion::postProcessMatch( QString *pMatch ) const
 			else {
 				kDebug() << "Could not stat file" << copy;
 			}
+#endif
 		}
 	}
 }
