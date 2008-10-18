@@ -952,7 +952,10 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
     case EventImpl::DOMFOCUSIN_EVENT: 
     case EventImpl::DOMFOCUSOUT_EVENT: {
           QFocusEvent e(ev.id() == EventImpl::DOMFOCUSIN_EVENT ? QEvent::FocusIn : QEvent::FocusOut);
-          static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
+          // E.g. a KLineEdit child widget might be defined to receive
+          // focus instead
+          QWidget* fw = m_widget->focusProxy() ? m_widget->focusProxy() : m_widget;
+          static_cast<EventPropagator *>(fw)->sendEvent(&e);
           ret = e.isAccepted();
           break;
     }
