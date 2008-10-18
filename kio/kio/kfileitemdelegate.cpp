@@ -1372,6 +1372,47 @@ bool KFileItemDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, co
     return false;
 }
 
+QRegion KFileItemDelegate::shape(const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+    QStyleOptionViewItemV4 opt(option);
+    d->initStyleOption(&opt, index);
+
+    QTextLayout labelLayout;
+    QTextLayout infoLayout;
+    QRect textBoundingRect;
+    d->layoutTextItems(opt, index, &labelLayout, &infoLayout, &textBoundingRect);
+
+    const QPoint pos = d->iconPosition(opt);
+    QRect iconRect = QRect(pos, opt.icon.actualSize(opt.decorationSize));
+
+    // Extend the icon rect so it touches the text rect
+    switch (opt.decorationPosition)
+    {
+    case QStyleOptionViewItem::Top:
+        if (iconRect.width() < textBoundingRect.width())
+            iconRect.setBottom(textBoundingRect.top());
+        else
+            textBoundingRect.setTop(iconRect.bottom());
+        break;
+    case QStyleOptionViewItem::Bottom:
+        if (iconRect.width() < textBoundingRect.width())
+            iconRect.setTop(textBoundingRect.bottom());
+        else
+            textBoundingRect.setBottom(iconRect.top());
+        break;
+    case QStyleOptionViewItem::Left:
+        iconRect.setRight(textBoundingRect.left());
+        break;
+    case QStyleOptionViewItem::Right:
+        iconRect.setLeft(textBoundingRect.right());
+        break;
+    }
+
+    QRegion region;
+    region += iconRect;
+    region += textBoundingRect;
+    return region;
+}
 
 bool KFileItemDelegate::eventFilter(QObject *object, QEvent *event)
 {

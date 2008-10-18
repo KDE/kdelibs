@@ -389,6 +389,12 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
          */
         bool helpEvent(QHelpEvent * event, QAbstractItemView *view, const QStyleOptionViewItem &option, const QModelIndex &index);
 
+        /**
+         * Returns the shape of the item as a region.
+         * The returned region can be used for precise hit testing of the item.
+         */
+        QRegion shape(const QStyleOptionViewItem &option, const QModelIndex &index);
+
 
     private:
         class Private;
