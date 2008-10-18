@@ -460,7 +460,7 @@ void KFilePlacesView::setUrl(const KUrl &url)
     QModelIndex current = selectionModel()->currentIndex();
 
     if (index.isValid()) {
-        if (current!=index && placesModel->isHidden(current)) {
+        if (current!=index && placesModel->isHidden(current) && !d->showAll) {
             KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(itemDelegate());
             delegate->addDisappearingItem(current);
 
@@ -470,7 +470,7 @@ void KFilePlacesView::setUrl(const KUrl &url)
             }
         }
 
-        if (current!=index && placesModel->isHidden(index)) {
+        if (current!=index && placesModel->isHidden(index) && !d->showAll) {
             KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(itemDelegate());
             delegate->addAppearingItem(index);
 
