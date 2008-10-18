@@ -2424,6 +2424,12 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
                 oldFocusNode->setActive(false);
 
             oldFocusNode->setFocus(false);
+            if (oldFocusNode->renderer() && oldFocusNode->renderer()->isWidget()) {
+                // Editable widgets may need to dispatch CHANGE_EVENT
+                RenderWidget* rw = static_cast<RenderWidget*>(oldFocusNode->renderer());
+                if (rw->isRedirectedWidget())
+                    rw->handleFocusOut();
+            }
 
             oldFocusNode->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
             oldFocusNode->dispatchUIEvent(EventImpl::DOMFOCUSOUT_EVENT);
