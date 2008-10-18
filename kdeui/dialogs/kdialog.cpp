@@ -51,6 +51,7 @@
 
 int KDialogPrivate::mMarginSize = 9;
 int KDialogPrivate::mSpacingSize = 6;
+int KDialogPrivate::mGroupSpacingSize = 16;
 
 void KDialogPrivate::setupLayout()
 {
@@ -327,7 +328,7 @@ QWidget *KDialog::mainWidget()
 QSize KDialog::sizeHint() const
 {
     Q_D(const KDialog);
-   
+
     if (!d->mMinSize.isEmpty())
         return d->mMinSize.expandedTo( minimumSizeHint() ) + d->mIncSize;
     else {
@@ -340,7 +341,7 @@ QSize KDialog::sizeHint() const
 QSize KDialog::minimumSizeHint() const
 {
     Q_D(const KDialog);
- 
+
     if (d->dirty)
         const_cast<KDialogPrivate*>(d)->queuedLayoutUpdate();
     return QDialog::minimumSizeHint() + d->mIncSize;
@@ -400,6 +401,11 @@ int KDialog::marginHint()
 int KDialog::spacingHint()
 {
     return KDialogPrivate::mSpacingSize;
+}
+
+int KDialog::groupSpacingHint()
+{
+    return KDialogPrivate::mGroupSpacingSize;
 }
 
 QString KDialog::makeStandardCaption( const QString &userCaption,
@@ -999,13 +1005,13 @@ class KDialogQueue::Private
 {
   public:
     Private(KDialogQueue *q): q(q) {}
-  
-    void slotShowQueuedDialog(); 
+
+    void slotShowQueuedDialog();
 
     KDialogQueue *q;
     QList< QPointer<QDialog> > queue;
     bool busy;
-    
+
 };
 
 KDialogQueue* KDialogQueue::self()

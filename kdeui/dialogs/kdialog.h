@@ -397,16 +397,23 @@ class KDEUI_EXPORT KDialog : public QDialog
     KPushButton* button( ButtonCode id ) const;
 
     /**
-     * Return the number of pixels you shall use between a
+     * Returns the number of pixels that should be used between a
      * dialog edge and the outermost widget(s) according to the KDE standard.
      */
     static int marginHint();
 
     /**
-     * Return the number of pixels you shall use between
+     * Returns the number of pixels that should be used between
      * widgets inside a dialog according to the KDE standard.
      */
     static int spacingHint();
+
+    /**
+     * Returns the number of pixels that should be used to visually
+     * separate groups of related options in a dialog according to
+     * the KDE standard.
+     */
+    static int groupSpacingHint();
 
     /**
      * @enum StandardCaptionFlag

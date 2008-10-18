@@ -78,6 +78,7 @@ class KDialogPrivate
 
         static int mMarginSize;
         static int mSpacingSize;
+        static int mGroupSpacingSize;
 
     protected Q_SLOTS:
         void queuedLayoutUpdate();
