@@ -341,7 +341,7 @@ button {
         cursor: default;
 }
 
-button:active {
+button:enabled:active {
         border-style: inset;
 }
 
