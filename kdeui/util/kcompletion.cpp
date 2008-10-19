@@ -307,9 +307,9 @@ QStringList KCompletion::substringCompletion( const QString& string ) const
     }
 
     QStringList matches;
-    QStringList::ConstIterator it = list.begin();
+    QStringList::ConstIterator it = list.constBegin();
 
-    for( ; it != list.end(); ++it ) {
+    for( ; it != list.constEnd(); ++it ) {
         QString item = *it;
         if ( item.indexOf( string, 0, Qt::CaseInsensitive ) != -1 ) { // always case insensitive
             postProcessMatch( &item );
@@ -821,7 +821,7 @@ QStringList KCompletionMatchesWrapper::list() const
 
         // high weight == sorted last -> reverse the sorting here
         QList<KSortableItem<QString> >::const_iterator it;
-        for ( it = sortedList->begin(); it != sortedList->end(); ++it )
+        for ( it = sortedList->constBegin(); it != sortedList->constEnd(); ++it )
             stringList.prepend( (*it).value() );
     } else if ( compOrder == KCompletion::Sorted ) {
         qStableSort(stringList.begin(), stringList.end(), lessThan);

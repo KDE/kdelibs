@@ -61,7 +61,7 @@ QValidator::State KStringListValidator::validate( QString & input, int& ) const
     if ( d->mStringList.contains( input ) )
       return Acceptable;
     else
-      for ( QStringList::ConstIterator it = d->mStringList.begin(); it != d->mStringList.end() ; ++it )
+      for ( QStringList::ConstIterator it = d->mStringList.constBegin(); it != d->mStringList.constEnd() ; ++it )
         if ( (*it).startsWith( input ) || input.startsWith( *it ) )
           return Intermediate;
 

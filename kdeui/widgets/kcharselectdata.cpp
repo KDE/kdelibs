@@ -609,7 +609,7 @@ QSet<quint16> KCharSelectData::getMatchingChars(const QString& s)
     Index::const_iterator pos = index.lowerBound(s);
     QSet<quint16> result;
 
-    while (pos != index.end() && pos.key().startsWith(s)) {
+    while (pos != index.constEnd() && pos.key().startsWith(s)) {
         foreach (quint16 c, pos.value()) {
             result.insert(c);
         }
