@@ -99,7 +99,6 @@ public:
 
     void deref();
 
-    void cancelPendingResize();
     bool needsMask() const { return m_needsMask; }
 
     static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty, QPixmap* buffer[] = 0);
@@ -111,9 +110,6 @@ public:
 #ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
-
-    // for ECMA to flush all pending resizes
-    KHTML_EXPORT static void flushWidgetResizes();
 
 public Q_SLOTS:
     void slotWidgetDestructed();
@@ -156,8 +152,6 @@ protected:
     //so it doesn't get yanked from us, etc.
     SharedPtr<RenderArena> m_arena; 
 
-    bool m_resizePending;
-    bool m_discardResizes;
     bool m_needsMask;
     bool m_ownsWidget;
 
