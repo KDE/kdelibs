@@ -33,6 +33,8 @@ namespace khtml
      */
     DOM::DOMString parseURL(const DOM::DOMString &url);
 
+    const float cssPixelsPerInch = 96.0f;
+
 }
 
 
