@@ -1073,8 +1073,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             if (!target || (!::qobject_cast<QScrollBar*>(target) && 
                             !::qobject_cast<KUrlRequester*>(m_widget)))
                 target = m_widget;
-            if ( button == Qt::LeftButton )
-                view()->setMouseEventsTarget( target );
+            view()->setMouseEventsTarget( target );
         } else {
             target = view()->mouseEventsTarget();
             if (target) {
