@@ -2170,7 +2170,7 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
                 // abbreviation applies at the specified date/time.
                 bool useUtcOffset = false;
                 const KTimeZones::ZoneMap z = zones->zones();
-                for (KTimeZones::ZoneMap::ConstIterator it = z.begin();  it != z.end();  ++it)
+                for (KTimeZones::ZoneMap::ConstIterator it = z.constBegin();  it != z.constEnd();  ++it)
                 {
                     if (it.value().abbreviations().contains(zoneAbbrev))
                     {
@@ -2221,7 +2221,7 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
                 dtUTC.setTimeSpec(Qt::UTC);
                 dtUTC.addSecs(-utcOffset);
                 const KTimeZones::ZoneMap z = zones->zones();
-                for (KTimeZones::ZoneMap::ConstIterator it = z.begin();  it != z.end();  ++it)
+                for (KTimeZones::ZoneMap::ConstIterator it = z.constBegin();  it != z.constEnd();  ++it)
                 {
                     QList<int> offsets = it.value().utcOffsets();
                     if ((offsets.isEmpty() || offsets.contains(utcOffset))

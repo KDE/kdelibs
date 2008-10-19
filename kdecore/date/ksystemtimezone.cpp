@@ -382,7 +382,7 @@ void KSystemTimeZonesPrivate::readZoneTab(bool update)
     {
         // Remove any zones from the collection which no longer exist
         const ZoneMap oldZones = zones();
-        for (ZoneMap::const_iterator it = oldZones.begin();  it != oldZones.end();  ++it)
+        for (ZoneMap::ConstIterator it = oldZones.constBegin();  it != oldZones.constEnd();  ++it)
         {
             if (newZones.indexOf(it.key()) < 0)
                 remove(it.value());
