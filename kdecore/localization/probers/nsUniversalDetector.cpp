@@ -211,8 +211,8 @@ float nsUniversalDetector::GetConfidence()
     return MINIMUM_THRESHOLD;
   }
   if (mDetectedCharset)
-    return 0.99;
-switch (mInputState)
+    return 0.99f;
+  switch (mInputState)
   {
   case eHighbyte:
     {

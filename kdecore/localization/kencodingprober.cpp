@@ -133,7 +133,7 @@ public:
             if (encoding && strlen(encoding))
             {
                 proberState = KEncodingProber::FoundIt;
-                currentConfidence = 0.99;
+                currentConfidence = 0.99f;
             }
         }
     }
