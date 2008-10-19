@@ -92,10 +92,12 @@ KGlobalAccel::~KGlobalAccel()
 
 
 void KGlobalAccel::activateGlobalShortcutContext(
-        const QString &component
-        ,const QString &context)
+        const QString &contextUnique,
+        const QString &contextFriendly,
+        const KComponentData &component)
 {
-    d->iface.activateGlobalShortcutContext(component, context);
+    // TODO provide contextFriendly
+    d->iface.activateGlobalShortcutContext(component.aboutData()->programName(), contextUnique);
 }
 
 
