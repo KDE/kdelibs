@@ -43,6 +43,9 @@
 
 #include <kdebug.h>
 
+// SVG
+#include "svg/SVGNames.h"
+
 KHTMLGlobal *KHTMLGlobal::s_self = 0;
 unsigned long int KHTMLGlobal::s_refcnt = 0;
 KComponentData *KHTMLGlobal::s_componentData = 0;
@@ -60,6 +63,14 @@ KHTMLGlobal::KHTMLGlobal()
     ref();
 
     khtml::Cache::init();
+
+    khtml::NamespaceFactory::initIdTable();
+    khtml::PrefixFactory::initIdTable();
+    khtml::LocalNameFactory::initIdTable();
+    DOM::emptyLocalName = DOM::LocalName::fromId(0);
+    DOM::emptyPrefixName = DOM::PrefixName::fromId(0);
+    DOM::emptyNamespaceName = DOM::NamespaceName::fromId(0);
+    WebCore::SVGNames::init();
 }
 
 KHTMLGlobal::~KHTMLGlobal()
