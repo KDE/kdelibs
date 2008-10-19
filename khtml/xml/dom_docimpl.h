@@ -63,6 +63,12 @@ namespace khtml {
     class DynamicDomRestyler;
 }
 
+namespace WebCore
+{
+    class SVGDocumentExtensions;
+    class SVGDocument;
+} // namespace WebCore
+
 namespace DOM {
 
     class AbstractViewImpl;
@@ -232,6 +238,8 @@ public:
     virtual bool isHTMLDocument() const { return false; }
 
     virtual ElementImpl *createHTMLElement ( const DOMString &tagName );
+    // SVG
+    virtual ElementImpl *createSVGElement(const QualifiedName& name);
 
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
 
@@ -566,6 +574,10 @@ public:
     khtml::DynamicDomRestyler& dynamicDomRestyler() { return *m_dynamicDomRestyler; }
     const khtml::DynamicDomRestyler& dynamicDomRestyler() const { return *m_dynamicDomRestyler; }
 
+    // WebCore compatibility
+    const WebCore::SVGDocumentExtensions* svgExtensions();
+    WebCore::SVGDocumentExtensions* accessSVGExtensions();
+
 Q_SIGNALS:
     void finishedParsing();
 
@@ -638,9 +650,7 @@ protected:
 
     };
 
-    IdNameMapping *m_attrMap;
-    IdNameMapping *m_elementMap;
-    IdNameMapping *m_namespaceMap;
+    WebCore::SVGDocumentExtensions* m_svgExtensions;
 
     QList<NodeIteratorImpl*> m_nodeIterators;
     AbstractViewImpl *m_defaultView;

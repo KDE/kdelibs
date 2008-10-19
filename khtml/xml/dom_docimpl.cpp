@@ -86,6 +86,33 @@
 #include <editing/htmlediting.h>
 #include <editing/jsediting.h>
 
+// SVG (WebCore)
+#include <svg/SVGElement.h>
+#include <svg/SVGSVGElement.h>
+#include <svg/SVGNames.h>
+#include <svg/SVGDocumentExtensions.h>
+#include <svg/SVGRectElement.h>
+#include <svg/SVGDocument.h>
+#include <svg/SVGCircleElement.h>
+#include <svg/SVGStyleElement.h>
+#include <svg/SVGEllipseElement.h>
+#include <svg/SVGPolygonElement.h>
+#include <svg/SVGPolylineElement.h>
+#include <svg/SVGPathElement.h>
+#include <svg/SVGDefsElement.h>
+#include <svg/SVGLinearGradientElement.h>
+#include <svg/SVGRadialGradientElement.h>
+#include <svg/SVGStopElement.h>
+#include <svg/SVGClipPathElement.h>
+#include <svg/SVGGElement.h>
+#include <svg/SVGUseElement.h>
+#include <svg/SVGLineElement.h>
+#include <svg/SVGTextElement.h>
+#include <svg/SVGAElement.h>
+#include <svg/SVGScriptElement.h>
+#include <svg/SVGDescElement.h>
+#include <svg/SVGTitleElement.h>
+
 #include <kio/job.h>
 
 #include <stdlib.h>
@@ -702,6 +729,13 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
     DOMString prefix, localName;
     splitPrefixLocalName(_qualifiedName.implementation(), prefix, localName, colonPos);
 
+    if (_namespaceURI == SVG_NAMESPACE) {
+        e = createSVGElement(QualifiedName(prefix, localName, _qualifiedName));
+        if (e) return e;
+        if (!e)
+            kWarning() << "svg element" << localName << "either is not supported by khtml or it's not a proper svg element";
+    }
+
     if ((isHTMLDocument() && _namespaceURI.isNull()) ||
         (strcasecmp(_namespaceURI, XHTML_NAMESPACE) == 0 && localName == localName.lower())) {
         e = createHTMLElement(localName);
@@ -1116,6 +1150,99 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     default:
         break;
     }
+    return n;
+}
+
+// SVG
+ElementImpl *DocumentImpl::createSVGElement(const QualifiedName& name)
+{
+    uint id = name.localNameId().id();
+
+    ElementImpl *n = 0;
+    if (id == WebCore::SVGNames::svgTag.localNameId().id()) {
+        n = new WebCore::SVGSVGElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::rectTag.localNameId().id()) {
+        n = new WebCore::SVGRectElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::circleTag.localNameId().id()) {
+        n = new WebCore::SVGCircleElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::ellipseTag.localNameId().id()) {
+        n = new WebCore::SVGEllipseElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::polylineTag.localNameId().id()) {
+        n = new WebCore::SVGPolylineElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::polygonTag.localNameId().id()) {
+        n = new WebCore::SVGPolygonElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::pathTag.localNameId().id()) {
+        n = new WebCore::SVGPathElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::defsTag.localNameId().id()) {
+        n = new WebCore::SVGDefsElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::linearGradientTag.localNameId().id()) {
+        n = new WebCore::SVGLinearGradientElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::radialGradientTag.localNameId().id()) {
+        n = new WebCore::SVGRadialGradientElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::stopTag.localNameId().id()) {
+        n = new WebCore::SVGStopElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::clipPathTag.localNameId().id()) {
+        n = new WebCore::SVGClipPathElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::gTag.localNameId().id()) {
+        n = new WebCore::SVGGElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::useTag.localNameId().id()) {
+        n = new WebCore::SVGUseElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::lineTag.localNameId().id()) {
+        n = new WebCore::SVGLineElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::textTag.localNameId().id()) {
+        n = new WebCore::SVGTextElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::aTag.localNameId().id()) {
+        n = new WebCore::SVGAElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::scriptTag.localNameId().id()) {
+        n = new WebCore::SVGScriptElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::descTag.localNameId().id()) {
+        n = new WebCore::SVGDescElement(name, docPtr());
+    }
+
+    if (id == WebCore::SVGNames::titleTag.localNameId().id()) {
+        n = new WebCore::SVGTitleElement(name, docPtr());
+    }
+
+    if (id == makeId(svgNamespace, ID_STYLE)) {
+        n = new WebCore::SVGStyleElement(name, docPtr());
+    }
+
     return n;
 }
 
@@ -2759,6 +2886,19 @@ NodeListImpl::Cache* DOM::DocumentImpl::acquireCachedNodeListInfo(
 void DOM::DocumentImpl::releaseCachedNodeListInfo(NodeListImpl::Cache* entry)
 {
     entry->deref();
+}
+
+const WebCore::SVGDocumentExtensions* DOM::DocumentImpl::svgExtensions()
+{
+    return m_svgExtensions;
+}
+
+WebCore::SVGDocumentExtensions* DOM::DocumentImpl::accessSVGExtensions()
+{
+    if (!m_svgExtensions) {
+        m_svgExtensions = new WebCore::SVGDocumentExtensions(this);
+    }
+    return m_svgExtensions;
 }
 
 // ----------------------------------------------------------------------------
