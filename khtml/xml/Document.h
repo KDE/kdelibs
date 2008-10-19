@@ -27,6 +27,43 @@
 #ifndef Document_h
 #define Document_h
 
-#include "dom_docimpl.h"
+#include "xml/dom_docimpl.h"
+#include "Frame.h"
+#include "xml/dom_nodeimpl.h"
+#include "misc/htmlnames.h"
+//#include "wtf/PassRefPtr.h"
+#include "dom/QualifiedName.h"
+#include "css/css_valueimpl.h"
+#include "css/cssproperties.h"
+//#include "css/cssstyleselector.h"
+#include "css/css_stylesheetimpl.h"
+#include "dom/ExceptionCode.h"
+#include "xml/dom2_eventsimpl.h"
+
+#define CSSPropertyWidth CSS_PROP_WIDTH
+#define CSSPropertyHeight CSS_PROP_HEIGHT
+
+namespace WebCore
+{
+    using namespace khtml;
+    using namespace DOM;
+    typedef DocumentImpl Document;
+    typedef DOMImplementationImpl DOMImplementation;
+    typedef ElementImpl Element;
+    typedef ElementImpl StyledElement;
+    typedef DOMString String;
+    typedef DOMStringImpl StringImpl;
+    typedef NodeImpl Node;
+    typedef AttributeImpl Attribute;
+    typedef EventImpl Event;
+    typedef RegisteredListenerList RegisteredEventListenerList;
+    typedef CSSStyleDeclarationImpl CSSStyleDeclaration;
+    typedef QChar UChar;
+    typedef AttributeImpl MappedAttribute;
+    //typedef RenderCanvas RenderView;
+    typedef StyleSheetImpl StyleSheet;
+    //typedef QColor Color;
+    typedef NodeImpl EventTargetNode;
+}
 
 #endif
