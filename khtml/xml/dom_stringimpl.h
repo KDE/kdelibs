@@ -25,6 +25,8 @@
 
 #include <QtCore/QString>
 
+#include <limits.h>
+
 #include "dom/dom_string.h"
 #include "dom/dom_misc.h"
 #include "misc/khtmllayout.h"
@@ -114,6 +116,9 @@ public:
     QString string() const;
 
     bool endsWith(DOMStringImpl* str) const;
+    bool startsWith(DOMStringImpl* str) const;
+
+    DOMStringImpl* substring(unsigned pos, unsigned len = UINT_MAX) const;
 
     // Note: this actually computes the hash, so shouldn't be used lightly
     unsigned hash() const;

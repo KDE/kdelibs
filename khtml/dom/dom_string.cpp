@@ -22,6 +22,7 @@
 #include "dom/dom_string.h"
 #include "xml/dom_stringimpl.h"
 
+#include <wtf/Vector.h>
 
 using namespace DOM;
 
@@ -158,6 +159,25 @@ int DOMString::find(const QChar c, int start) const
     return -1;
 }
 
+int DOMString::reverseFind(const QChar c, int start) const
+{
+    unsigned int l = start;
+    if (!impl || l < -impl->l) return -1;
+    l += impl->l;
+    while (1) {
+        if (*(impl->s + l) == c) return l;
+        l--;
+        if (l == 0)
+            return -1;
+    }
+    return -1;
+}
+
+DOMString DOMString::substring(unsigned pos, unsigned len) const
+{
+    return (impl) ? impl->substring(pos, len) : DOMString();
+}
+
 uint DOMString::length() const
 {
     if(!impl) return 0;
@@ -260,6 +280,12 @@ bool DOMString::endsWith(const DOMString& str) const
     return impl->endsWith(str.implementation());
 }
 
+bool DOMString::startsWith(const DOMString& str) const 
+{
+    if (str.length() > length()) return false;
+    return impl->startsWith(str.implementation());
+}
+
 // ------------------------------------------------------------------------
 
 bool DOM::strcasecmp( const DOMString &as, const DOMString &bs )
@@ -296,6 +322,45 @@ bool DOM::strcasecmp( const DOMString &as, const char* bs )
 bool DOMString::isEmpty() const
 {
     return (!impl || impl->l == 0);
+}
+
+DOMString DOMString::format(const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+
+    Vector<char, 256> buffer;
+
+    // Do the format once to get the length.
+#if COMPILER(MSVC)
+    int result = _vscprintf(format, args);
+#else
+    char ch;
+    int result = vsnprintf(&ch, 1, format, args);
+    // We need to call va_end() and then va_start() again here, as the
+    // contents of args is undefined after the call to vsnprintf
+    // according to http://man.cx/snprintf(3)
+    //
+    // Not calling va_end/va_start here happens to work on lots of
+    // systems, but fails e.g. on 64bit Linux.
+    va_end(args);
+    va_start(args, format);
+#endif
+
+    if (result == 0)
+        return DOMString("");
+    if (result < 0)
+        return DOMString();
+    unsigned len = result;
+    buffer.grow(len + 1);
+    
+    // Now do the formatting again, guaranteed to fit.
+    vsnprintf(buffer.data(), buffer.size(), format, args);
+
+    va_end(args);
+
+    buffer[len] = 0; // we don't really need this I guess
+    return new DOMStringImpl(buffer.data()/*, len*/);
 }
 
 //-----------------------------------------------------------------------------

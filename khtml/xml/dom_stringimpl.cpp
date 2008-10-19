@@ -481,6 +481,28 @@ bool DOMStringImpl::endsWith(DOMStringImpl* str) const
     return true;
 }
 
+bool DOMStringImpl::startsWith(DOMStringImpl* str) const
+{
+    if (l < str->l) return false;
+    const QChar *a = s;
+    const QChar *b = str->s;
+    int i = str->l;
+    while (i--) {
+        if (*a != *b) return false;
+        a++, b++;
+    }
+    return true;
+}
+
+DOMStringImpl* DOMStringImpl::substring(unsigned pos, unsigned len) const
+{
+    if (pos >= l)
+        return 0;
+    if (len > l - pos)
+        len = l - pos;
+    return new DOMStringImpl(s + pos, len);
+}
+
 
 static const unsigned short amp[] = {'&', 'a', 'm', 'p', ';'};
 static const unsigned short lt[] =  {'&', 'l', 't', ';'};

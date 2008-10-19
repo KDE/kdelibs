@@ -25,6 +25,7 @@
 #include <khtml_export.h>
 #include <kdebug.h>
 #include <QtCore/QString>
+#include <limits.h>
 
 namespace DOM {
 
@@ -82,6 +83,9 @@ public:
     const QChar &operator [](unsigned int i) const;
 
     int find(const QChar c, int start = 0) const;
+    int reverseFind(const QChar c, int start = -1) const;
+
+    DOMString substring(unsigned pos, unsigned len = UINT_MAX) const;
 
     uint length() const;
     void truncate( unsigned int len );
@@ -118,12 +122,15 @@ public:
     bool isEmpty()  const;
 
     bool endsWith(const DOMString& str) const;
+    bool startsWith(const DOMString& str) const;
 
     /**
      * @internal get a handle to the imlementation of the DOMString
      * Use at own risk!!!
      */
     DOMStringImpl *implementation() const { return impl; }
+
+    static DOMString format(const char* format, ...);
 
 protected:
     DOMStringImpl *impl;
