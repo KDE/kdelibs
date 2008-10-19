@@ -16,22 +16,44 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kdedglobalaccel_p.h"
+#include "globalshortcutsregistry.h"
+#include "component.h"
+#include "globalshortcut.h"
+#include "globalshortcutcontext.h"
+
 #include "kdebug.h"
 #include "kglobal.h"
 
 #include <QtGui/QKeySequence>
+#include <QDBusConnection>
+
+#ifdef Q_WS_X11
+#include "kglobalaccel_x11.h"
+#include <QtGui/QX11Info>
+#include <QtGui/QApplication>
+#elif defined(Q_WS_MACX)
+#include "kglobalaccel_mac.h"
+#elif defined(Q_WS_WIN)
+#include "kglobalaccel_win.h"
+#else
+#include "kglobalaccel_qws.h"
+#endif
 
 GlobalShortcutsRegistry::GlobalShortcutsRegistry()
-    :   _active_keys()
+    :   QObject()
+        ,_active_keys()
         ,_components()
-        ,_manager(NULL)
+        ,_manager(new KGlobalAccelImpl(this))
         ,_config("kglobalshortcutsrc", KConfig::SimpleConfig)
-    {}
+    {
+    _manager->setEnabled(true);
+    }
 
 
 GlobalShortcutsRegistry::~GlobalShortcutsRegistry()
-    {}
+    {
+    _manager->setEnabled(false);
+    }
 
 
 KdeDGlobalAccel::Component *GlobalShortcutsRegistry::addComponent(KdeDGlobalAccel::Component *component)
@@ -74,6 +96,41 @@ GlobalShortcutsRegistry * GlobalShortcutsRegistry::self()
     K_GLOBAL_STATIC( GlobalShortcutsRegistry, self );
     return self;
     }
+
+
+bool GlobalShortcutsRegistry::keyPressed(int keyQt)
+    {
+    // Check if keyQt is one of out global shortcuts. Because other kded
+    // modules could receive key events too that is not guaranteed.
+    GlobalShortcut *shortcut = getShortcutByKey(keyQt);
+    if (!shortcut || !shortcut->isActive())
+        {
+        // Not one of ours. Or one of ours but not active. It's meant for some
+        // other kded module most likely.
+        return false;
+        }
+
+    // Never print out the received key if it is not one of our active global
+    // shortcuts. We could end up printing out kpasswdservers password.
+    kDebug() << QKeySequence(keyQt).toString() << "=" << shortcut->uniqueName();
+
+    QStringList data(shortcut->component()->uniqueName());
+    data.append(shortcut->uniqueName());
+    data.append(shortcut->component()->friendlyName());
+    data.append(shortcut->friendlyName());
+#ifdef Q_WS_X11
+    // pass X11 timestamp
+    long timestamp = QX11Info::appTime();
+    // Make sure kded has ungrabbed the keyboard after receiving the keypress,
+    // otherwise actions in application that try to grab the keyboard (e.g. in kwin)
+    // may fail to do so. There is still a small race condition with this being out-of-process.
+    qApp->syncX();
+#else
+    long timestamp = 0;
+#endif
+    emit invokeAction(data, timestamp);
+    return true;
+}
 
 
 void GlobalShortcutsRegistry::loadSettings()
@@ -135,7 +192,6 @@ void GlobalShortcutsRegistry::loadSettings()
 
 bool GlobalShortcutsRegistry::registerKey(int key, GlobalShortcut *shortcut)
     {
-    Q_ASSERT(_manager);
     if (key == 0)
         {
         kDebug() << shortcut->uniqueName() << ": Key '" << QKeySequence(key).toString()
@@ -158,7 +214,6 @@ bool GlobalShortcutsRegistry::registerKey(int key, GlobalShortcut *shortcut)
 
 void GlobalShortcutsRegistry::setAccelManager(KGlobalAccelImpl *manager)
     {
-    Q_ASSERT(_manager==NULL);
     _manager = manager;
     }
 
@@ -184,7 +239,6 @@ KdeDGlobalAccel::Component *GlobalShortcutsRegistry::takeComponent(KdeDGlobalAcc
 
 bool GlobalShortcutsRegistry::unregisterKey(int key, GlobalShortcut *shortcut)
     {
-    Q_ASSERT(_manager);
     if (_active_keys.value(key)!=shortcut)
         {
         // The shortcut doesn't own the key or the key isn't grabbed
@@ -214,3 +268,4 @@ void GlobalShortcutsRegistry::writeSettings() const
     }
 
 
+#include "moc_globalshortcutsregistry.cpp"

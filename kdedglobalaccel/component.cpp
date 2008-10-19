@@ -16,10 +16,16 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kdedglobalaccel_p.h"
+#include "component.h"
+
+#include "globalshortcut.h"
+#include "globalshortcutcontext.h"
+#include "globalshortcutsregistry.h"
+
 #include <kdebug.h>
 
-#include "globalshortcutcontext.h"
+#include <QtCore/QStringList>
+#include <QtGui/QKeySequence>
 
 static QList<int> keysFromString(const QString &str)
 {
@@ -161,6 +167,30 @@ GlobalShortcut *Component::getShortcutByName(const QString &uniqueName)
     }
 
 
+bool Component::isKeyAvailable(int key, const QString &component) const
+    {
+    // if this component asks for the key. only check the active keys
+    if (component==uniqueName())
+        {
+        Q_FOREACH(GlobalShortcut *sc, _current->_actions)
+            {
+            if (sc->keys().contains(key)) return false;
+            }
+        }
+    else
+        {
+        Q_FOREACH(GlobalShortcutContext *ctx, _contexts)
+            {
+            Q_FOREACH(GlobalShortcut *sc, ctx->_actions)
+                {
+                if (sc->keys().contains(key)) return false;
+                }
+            }
+        }
+    return true;
+    }
+
+
 void Component::loadSettings(KConfigGroup &configGroup)
     {
     // GlobalShortcutsRegistry::loadSettings handles contexts.
@@ -290,4 +320,7 @@ void Component::writeSettings(KConfigGroup& configGroup) const
         }
     }
 
+// #include "moc_component.cpp"
+
 } // namespace KdeDGlobalAccel
+

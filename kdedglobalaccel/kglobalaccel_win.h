@@ -22,7 +22,7 @@
 
 #include <QWidget>
 
-class KdedGlobalAccel;
+class GlobalShortcutsRegistry;
 /**
  * @internal
  *
@@ -34,7 +34,7 @@ class KGlobalAccelImpl : public QWidget
     Q_OBJECT
 
 public:
-    KGlobalAccelImpl(KdedGlobalAccel* owner);
+    KGlobalAccelImpl(GlobalShortcutsRegistry* owner);
 
 public:
     /**
@@ -57,7 +57,7 @@ public:
 private:
     bool winEvent(MSG * message, long * result);
 
-    KdedGlobalAccel* m_owner;
+    GlobalShortcutsRegistry* m_owner;
     bool m_enabled;
 };
 

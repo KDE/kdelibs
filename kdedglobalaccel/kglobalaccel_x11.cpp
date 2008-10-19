@@ -24,7 +24,7 @@
 #include <QtGui/QWidgetList>
 
 #include "kaction.h"
-#include "kdedglobalaccel.h"
+#include "globalshortcutsregistry.h"
 #include "kkeyserver_x11.h"
 
 #include <kapplication.h>
@@ -75,7 +75,7 @@ static void calculateGrabMasks()
 
 //----------------------------------------------------
 
-KGlobalAccelImpl::KGlobalAccelImpl(KdedGlobalAccel *owner)
+KGlobalAccelImpl::KGlobalAccelImpl(GlobalShortcutsRegistry *owner)
 	: m_owner(owner)
 {
 	calculateGrabMasks();
@@ -191,7 +191,7 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
     //
     // We are only allowed to print out the key received AFTER we made sure
     // it is a global shortcut. KGlobalAccelImpl cannot check this.
-    // KdedGlobalAccel will do that.
+    // GlobalShortcutsRegistry will do that.
 
     // Keyboard needs to be ungrabed after XGrabKey() activates the grab, otherwise
     // it becomes frozen. There is a chance this will ungrab even when it should

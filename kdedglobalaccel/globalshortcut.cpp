@@ -16,7 +16,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kdedglobalaccel_p.h"
+#include "globalshortcut.h"
+#include "component.h"
+#include "globalshortcutsregistry.h"
+
 #include <kdebug.h>
 
 #include <QtGui/QKeySequence>

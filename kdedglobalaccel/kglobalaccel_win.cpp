@@ -27,14 +27,14 @@
 #ifdef Q_WS_WIN
 
 #include "kglobalaccel.h"
-#include "kdedglobalaccel.h"
+#include "globalshortcutsregistry.h"
 
 #include <kapplication.h>
 #include <kdebug.h>
 
 #include <windows.h>
 
-KGlobalAccelImpl::KGlobalAccelImpl(KdedGlobalAccel* owner)
+KGlobalAccelImpl::KGlobalAccelImpl(GlobalShortcutsRegistry* owner)
     : m_owner(owner), m_enabled(false)
 {
 }

@@ -29,12 +29,12 @@
 template <class Key, class T> class QMap;
 template <class T> class QList;
 
-class KdedGlobalAccel;
+class GlobalShortcutsRegistry;
 class KGlobalAccelImpl: public QWidget
 {
 	Q_OBJECT
 public:
-	KGlobalAccelImpl(KdedGlobalAccel* owner);
+    KGlobalAccelImpl(GlobalShortcutsRegistry* owner);
     ~KGlobalAccelImpl();
 
 public:
@@ -61,7 +61,7 @@ private:
     /// Called by the carbon event handler when a key is pressed.
     bool keyPressed(int key);
 
-    KdedGlobalAccel* m_owner;
+    GlobalShortcutsRegistry* m_owner;
     EventTargetRef m_eventTarget;
     EventHandlerUPP m_eventHandler;
     EventTypeSpec m_eventType[2];

@@ -20,17 +20,16 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "globalshortcut.h"
+#include "component.h"
+#include "globalshortcutsregistry.h"
 
 #include <QtCore/QTimer>
+#include <QtCore/QMetaMethod>
 #include <QtDBus/QDBusMetaType>
 
-#ifdef Q_WS_X11
-#include <QtGui/QX11Info>
-#include <QtGui/QApplication>
-#endif
 
 #include "kdedglobalaccel.h"
-#include "kdedglobalaccel_p.h"
 #include "kglobalaccel.h"
 #include "kdebug.h"
 
@@ -42,30 +41,13 @@ K_PLUGIN_FACTORY(KdedGlobalAccelFactory,
     )
 K_EXPORT_PLUGIN(KdedGlobalAccelFactory("globalaccel"))
 
-class KdedGlobalAccelPrivate
+struct KdedGlobalAccelPrivate
 {
-public:
-    KdedGlobalAccelPrivate();
-    ~KdedGlobalAccelPrivate();
-
     GlobalShortcut *findAction(const QStringList &actionId) const;
     GlobalShortcut *addAction(const QStringList &actionId);
-
     KdeDGlobalAccel::Component *component(const QStringList &actionId) const;
-
     QTimer writeoutTimer;
-
-    KGlobalAccelImpl *impl;
 };
-
-
-KdedGlobalAccelPrivate::KdedGlobalAccelPrivate()
-    :   impl(NULL)
-    {}
-
-
-KdedGlobalAccelPrivate::~KdedGlobalAccelPrivate()
-    {}
 
 
 GlobalShortcut *KdedGlobalAccelPrivate::findAction(const QStringList &actionId) const
@@ -126,13 +108,19 @@ KdedGlobalAccel::KdedGlobalAccel(QObject* parent, const QList<QVariant>&)
     qDBusRegisterMetaType<QList<QStringList> >();
     qDBusRegisterMetaType<QList<int> >();
 
-    d->impl = new KGlobalAccelImpl(this);
-    GlobalShortcutsRegistry::self()->setAccelManager(d->impl);
-    d->impl->setEnabled(true);
+    GlobalShortcutsRegistry *reg = GlobalShortcutsRegistry::self();
 
-    connect(&d->writeoutTimer, SIGNAL(timeout()), SLOT(writeSettings()));
+    Q_ASSERT(reg);
+
+    connect(&d->writeoutTimer, SIGNAL(timeout()), 
+            reg, SLOT(writeSettings()));
+
     d->writeoutTimer.setSingleShot(true);
-    connect(this, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(writeSettings()));
+    connect(this, SIGNAL(moduleDeleted(KDEDModule *)), 
+            reg, SLOT(writeSettings()));
+
+    connect(reg, SIGNAL(invokeAction(const QStringList &, qlonglong)),
+            this, SIGNAL(invokeAction(const QStringList &, qlonglong)));
 
     GlobalShortcutsRegistry::self()->loadSettings();
 }
@@ -143,9 +131,6 @@ KdedGlobalAccel::~KdedGlobalAccel()
     // Unregister all currently registered actions. Enables the module to be
     // loaded / unloaded by kded.
     GlobalShortcutsRegistry::self()->setInactive();
-    d->impl->setEnabled(false);
-
-    delete d->impl;
     delete d;
 }
 
@@ -166,6 +151,7 @@ QList<QStringList> KdedGlobalAccel::allMainComponents() const
 
     return ret;
 }
+
 
 QList<QStringList> KdedGlobalAccel::allActionsForComponent(const QStringList &actionId) const
 {
@@ -196,6 +182,7 @@ QList<QStringList> KdedGlobalAccel::allActionsForComponent(const QStringList &ac
     }
     return ret;
 }
+
 
 QStringList KdedGlobalAccel::action(int key) const
 {
@@ -355,45 +342,4 @@ void KdedGlobalAccel::scheduleWriteSettings() const
     }
 
 
-void KdedGlobalAccel::writeSettings() const
-    {
-    GlobalShortcutsRegistry::self()->writeSettings();
-    }
-
-
-bool KdedGlobalAccel::keyPressed(int keyQt)
-    {
-    // Check if keyQt is one of out global shortcuts. Because other kded
-    // modules could receive key events too that is not guaranteed.
-    GlobalShortcut *shortcut = GlobalShortcutsRegistry::self()->getShortcutByKey(keyQt);
-    if (!shortcut || !shortcut->isActive())
-        {
-        // Not one of ours. Or one of ours but not active. It's meant for some
-        // other kded module most likely.
-        return false;
-        }
-
-    // Never print out the received key if it is not one of our active global
-    // shortcuts. We could end up printing out kpasswdservers password.
-    kDebug() << QKeySequence(keyQt).toString() << "=" << shortcut->uniqueName();
-
-    QStringList data(shortcut->component()->uniqueName());
-    data.append(shortcut->uniqueName());
-    data.append(shortcut->component()->friendlyName());
-    data.append(shortcut->friendlyName());
-#ifdef Q_WS_X11
-    // pass X11 timestamp
-    long timestamp = QX11Info::appTime();
-    // Make sure kded has ungrabbed the keyboard after receiving the keypress,
-    // otherwise actions in application that try to grab the keyboard (e.g. in kwin)
-    // may fail to do so. There is still a small race condition with this being out-of-process.
-    qApp->syncX();
-#else
-    long timestamp = 0;
-#endif
-    emit invokeAction(data, timestamp);
-    return true;
-}
-
 #include "kdedglobalaccel.moc"
-#include "kdedglobalaccel_p.moc"

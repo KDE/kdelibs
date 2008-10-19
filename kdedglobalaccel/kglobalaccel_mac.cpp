@@ -30,7 +30,7 @@
 #include <QList>
 
 #include "kglobalaccel.h"
-#include "kdedglobalaccel.h"
+#include "globalshortcutsregistry.h"
 #include "kkeyserver.h"
 
 OSStatus hotKeyEventHandler(EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void * inUserData)
@@ -59,7 +59,7 @@ void layoutChanged(CFNotificationCenterRef center, void *observer, CFStringRef n
     static_cast<KGlobalAccelImpl *>(observer)->keyboardLayoutChanged();
 }
 
-KGlobalAccelImpl::KGlobalAccelImpl(KdedGlobalAccel* owner)
+KGlobalAccelImpl::KGlobalAccelImpl(GlobalShortcutsRegistry* owner)
 	: m_owner(owner)
     , m_eventTarget(GetApplicationEventTarget())
     , m_eventHandler(NewEventHandlerUPP(hotKeyEventHandler))

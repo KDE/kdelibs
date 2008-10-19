@@ -88,21 +88,12 @@ Q_SIGNALS:
 
     // this is qlonglong because manually written adaptor is used and just long doesn't work
     Q_SCRIPTABLE void invokeAction(const QStringList &actionId, qlonglong timestamp);
+
     Q_SCRIPTABLE void yourShortcutGotChanged(const QStringList &actionId, const QList<int> &newKeys);
-
-private Q_SLOTS:
-
-    void writeSettings() const;
 
 private:
 
     void scheduleWriteSettings() const;
-
-    friend class KGlobalAccelImpl;
-
-    //called by the implementation to inform us about key presses
-    //returns true if the key was handled
-    bool keyPressed(int keyQt);
 
     KdedGlobalAccelPrivate *const d;
 };
