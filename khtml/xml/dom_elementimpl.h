@@ -34,6 +34,10 @@
 #include "wtf/Vector.h"
 #include "xml/ClassNames.h"
 
+// WebCore SVG
+#include "dom/QualifiedName.h"
+// End WebCore SVG
+
 namespace khtml {
     class CSSStyleSelector;
 }
@@ -171,6 +175,22 @@ public:
     ElementImpl(DocumentImpl *doc);
     ~ElementImpl();
 
+    // stuff for WebCore DOM & SVG api compatibility
+    virtual bool hasTagName(const QualifiedName& name) const { return qualifiedName() == name;/*should be matches here*/ }
+    QualifiedName qualifiedName() const { return QualifiedName(id(), m_prefix); }
+    CSSStyleDeclarationImpl* style() { return getInlineStyleDecls(); }
+    void setAttribute(const QualifiedName& name, const DOMString& value) {
+        setAttribute(name.id(), value); /* is it enough for SVG or should the full setAttribute() be called? */
+    }
+    bool hasAttribute(const QualifiedName& name) const { return hasAttribute(name.tagName()); }
+    DOMString getAttribute(const QualifiedName& name) const { int ec; return const_cast<ElementImpl*>(this)->getAttributeNS(name.namespaceURI(), name.localName(), ec); }
+    DOMString getAttributeNS(const DOMString& namespaceURI, const DOMString& localName, int& exceptionCode) const { return const_cast<ElementImpl*>(this)->getAttributeNS(namespaceURI, localName, exceptionCode); }
+    // FIXME: get rid of const_cast hacks (the const qualifiers of getAttribute should be reviewed 
+    // as for external API it should look like const,hower we can replace AttributeImpl (small version) 
+    // with normal AttrImpl (NodeImpl)
+    // END OF FIXME
+    // enf of WC api compatibility stuff
+    
     //Higher-level DOM stuff
     virtual bool hasAttributes() const;
     bool hasAttribute( const DOMString& name ) const;
@@ -274,6 +294,8 @@ public:
     virtual void structureChanged();
     virtual void backwardsStructureChanged();
     virtual void attributeChanged(NodeImpl::Id attrId);
+    // for WebCore API compatibility
+    virtual void attributeChanged(AttributeImpl* attribute, bool preserveDecls) { attributeChanged(attribute->id()); }
     
     virtual void defaultEventHandler(EventImpl *evt);
 
@@ -381,6 +403,9 @@ public:
     virtual NodeImpl *getNamedItem(NodeImpl::Id id, const PrefixName& prefix = emptyPrefixName, bool nsAware = false);
     virtual Node removeNamedItem(NodeImpl::Id id, const PrefixName& prefix, bool nsAware, int &exceptioncode);
     virtual Node setNamedItem(NodeImpl* arg, const PrefixName& prefix, bool nsAware, int &exceptioncode);
+
+    // for WebCore api compat
+    virtual NodeImpl *getNamedItem(const QualifiedName& name) { return getNamedItem(name.id(), name.prefixId(), true); }
 
     virtual NodeImpl *item(unsigned index);
     virtual unsigned length() const { return m_attrs.size(); }

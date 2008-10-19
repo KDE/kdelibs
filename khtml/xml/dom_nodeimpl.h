@@ -33,6 +33,7 @@
 #include "misc/idstring.h"
 #include "wtf/PassRefPtr.h"
 #include "misc/htmlnames.h"
+#include "dom/QualifiedName.h"
 
 template <class type> class QList;
 class KHTMLView;
@@ -87,6 +88,9 @@ public:
     NodeImpl(DocumentImpl *doc);
     virtual ~NodeImpl();
 
+    //stuff for WebCore DOM & SVG
+    virtual bool hasTagName(const QualifiedName& name) const { return false; }
+
     // DOM methods & attributes for Node
     virtual DOMString nodeName() const;
     virtual DOMString nodeValue() const;
@@ -136,6 +140,11 @@ public:
     virtual bool isGenericFormElement() const { return false; }
     virtual bool containsOnlyWhitespace() const { return false; }
     bool isBlockFlow() const;
+
+    // methods for WebCore api compat (SVG)
+    virtual bool isSVGElement() const { return false; }
+    virtual bool isShadowNode() const { return false; }
+    virtual NodeImpl* shadowParentNode() { return 0; }
 
     DOMString textContent() const;
     void setTextContent(const DOMString& text, int& ec);
@@ -260,6 +269,8 @@ public:
     virtual void setActive(bool b=true) { m_active = b; }
     virtual void setHovered(bool b=true) { m_hovered = b; }
     virtual void setChanged(bool b=true);
+    // for WebCore API compatibility
+    void setAttached(bool b=true) { m_attached = b; }
 
     // for descending restyle when ID or CLASS changes
     bool changedAscendentAttribute() const { return m_changedAscendentAttribute; }
@@ -479,6 +490,11 @@ public:
       Q_UNUSED(endOffset);
       Q_UNUSED(found);
       return toString();
+    }
+
+    // FOR SVG Events support (WebCore API compatibility)
+    QList<RegisteredEventListener>* localEventListeners() {
+        return m_regdListeners.listeners;
     }
 
 private: // members
