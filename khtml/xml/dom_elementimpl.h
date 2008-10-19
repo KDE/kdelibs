@@ -95,6 +95,9 @@ public:
     virtual NodeImpl::Id id() const { return makeId(m_namespace.id(), m_localName.id()); }
     virtual void childrenChanged();
 
+    // non-virtual id, for faster attribute look-ups
+    inline NodeImpl::Id fastId() const { return makeId(m_namespace.id(), m_localName.id()); }
+
     // This is used for when the value is normalized on setting by
     // parseAttribute; it silently updates it w/o issuing any events, etc.
     // Doesn't work for ATTR_ID!
@@ -123,7 +126,7 @@ protected:
 // FIXME: update comment - no longer create mini version for only html attributes
 struct AttributeImpl
 {
-    NodeImpl::Id id() const { return m_localName.id() ? makeId(m_namespace.id(), m_localName.id()) : m_data.attr->id(); }
+    inline NodeImpl::Id id() const { return m_localName.id() ? makeId(m_namespace.id(), m_localName.id()) : m_data.attr->fastId(); }
     DOMStringImpl *val() const { return m_localName.id() ? m_data.value : m_data.attr->val(); }
     DOMString value() const { return val(); }
     AttrImpl *attr() const { return m_localName.id() ? 0 : m_data.attr; }
@@ -131,6 +134,9 @@ struct AttributeImpl
     DOMString prefix() const { return m_localName.id() ? m_prefix.toString() : m_data.attr->prefix(); }
     DOMString localName() const { return m_localName.id() ? m_localName.toString() : m_data.attr->localName(); }
     const PrefixName& prefixName() const { return m_localName.id() ? m_prefix : m_data.attr->prefixName(); }
+
+    // for WebCore api compat
+    QualifiedName name() const { return m_localName.id() ? QualifiedName(m_prefix, m_localName, m_namespace) : QualifiedName(id(), PrefixName::fromString(prefix())); }
 
     void setValue(DOMStringImpl *value, ElementImpl *element);
     AttrImpl *createAttr(ElementImpl *element, DocumentImpl *docPtr);
@@ -193,6 +199,12 @@ public:
     inline DOMStringImpl* getAttributeImpl(NodeImpl::Id id, const PrefixName& prefix = emptyPrefixName, bool nsAware = false) const;
     void setAttribute(NodeImpl::Id id, const PrefixName& prefix, bool nsAware, const DOMString &value, int &exceptioncode);
     void setAttributeNS(const DOMString &namespaceURI, const DOMString &localName, const DOMString& value, int &exceptioncode);
+
+    inline DOMStringImpl* getAttributeImplById(NodeImpl::Id id) const;
+
+    // WebCore API
+    DOMString getIDAttribute() const { return getAttribute(ATTR_ID); }
+    // End
 
     bool hasAttribute(NodeImpl::Id id, const PrefixName& prefix = emptyPrefixName, bool nsAware = false) const {
         return getAttributeImpl(id, prefix, nsAware) != 0;
@@ -391,6 +403,7 @@ public:
     void detachFromElement();
 
     int find(NodeImpl::Id id, const PrefixName& prefix, bool nsAware) const;
+    inline DOMStringImpl* fastFind(NodeImpl::Id id) const;
 
     inline void clearClass() { m_classNames.clear(); }
     void setClass(const DOMString& string);
@@ -503,6 +516,25 @@ inline const ClassNames& ElementImpl::classNames() const
     // hasClass() should be called on element first as in CSSStyleSelector::checkSimpleSelector
     return namedAttrMap->classNames();
 }
+
+inline DOMStringImpl* ElementImpl::getAttributeImplById(NodeImpl::Id id) const
+{
+    return namedAttrMap ? namedAttrMap->fastFind(id) : 0;
+}
+
+inline DOMStringImpl* NamedAttrMapImpl::fastFind(NodeImpl::Id id) const
+{
+    unsigned mask = anyQName;
+    if (namespacePart(id) == anyNamespace) {
+        mask = anyLocalName;
+        id = localNamePart(id);
+    }
+    for (unsigned i = 0; i < m_attrs.size(); ++i)
+        if (id == (m_attrs[i].id() & mask))
+            return m_attrs[i].val();
+    return 0;
+}
+
 
 } //namespace
 

@@ -1223,14 +1223,6 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
     uint selAttr = makeId(sel->attrNamespace.id(), sel->attrLocalName.id());
     if(selAttr)
     {
-        // attributes are always case-sensitive in XHTML
-        // attributes are sometimes case-sensitive in HTML
-        // we only treat id and class selectors as case-sensitive in HTML strict
-        // for compatibility reasons
-        bool caseSensitive = e->document()->htmlMode() == DocumentImpl::XHtml;
-        bool caseSensitive_alt = strictParsing || caseSensitive;
-        caseSensitive |= caseSensitiveAttr(selAttr);
-
         // "class" is special attribute which is pre-parsed for fast look-ups
         // avoid ElementImpl::getAttributeImpl here, as we don't need it
         if (sel->match == CSSSelector::Class) {
@@ -1241,9 +1233,17 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             return true;
         }
 
+        // attributes are always case-sensitive in XHTML
+        // attributes are sometimes case-sensitive in HTML
+        // we only treat id and class selectors as case-sensitive in HTML strict
+        // for compatibility reasons
+        bool caseSensitive = e->document()->htmlMode() == DocumentImpl::XHtml;
+        bool caseSensitive_alt = strictParsing || caseSensitive;
+        caseSensitive |= caseSensitiveAttr(selAttr);
+
         quint16 selLocalName = localNamePart(selAttr);
         quint16 selNS = namespacePart(selAttr);
-        DOMStringImpl* value = e->getAttributeImpl(makeId(selNS, selLocalName), emptyPrefixName, true/*nsAware*/);
+        DOMStringImpl* value = e->getAttributeImplById(makeId(selNS, selLocalName));
         if(!value) return false; // attribute is not set
 
         switch(sel->match)
