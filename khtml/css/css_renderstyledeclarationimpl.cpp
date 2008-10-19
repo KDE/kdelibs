@@ -757,17 +757,21 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_LIST_STYLE_TYPE:
         return new CSSPrimitiveValueImpl(stringForListStyleType(style->listStyleType()), CSSPrimitiveValue::CSS_STRING);
     case CSS_PROP_MARGIN_TOP:
-        RETURN_NULL_ON_NULL(renderer);
-        return valueForLength(style->marginTop(), renderer->contentHeight());
+        if (renderer)
+            return new CSSPrimitiveValueImpl(renderer->marginTop(), CSSPrimitiveValue::CSS_PX);
+        return valueForLength2(style->marginTop());
     case CSS_PROP_MARGIN_RIGHT:
-        RETURN_NULL_ON_NULL(renderer);
-        return valueForLength(style->marginRight(), renderer->contentWidth());
+        if (renderer)
+            return new CSSPrimitiveValueImpl(renderer->marginRight(), CSSPrimitiveValue::CSS_PX);
+        return valueForLength2(style->marginRight());
     case CSS_PROP_MARGIN_BOTTOM:
-        RETURN_NULL_ON_NULL(renderer);
-        return valueForLength(style->marginBottom(), renderer->contentHeight());
+        if (renderer)
+            return new CSSPrimitiveValueImpl(renderer->marginBottom(), CSSPrimitiveValue::CSS_PX);
+        return valueForLength2(style->marginBottom());
     case CSS_PROP_MARGIN_LEFT:
-        RETURN_NULL_ON_NULL(renderer);
-        return valueForLength(style->marginLeft(), renderer->contentWidth());
+        if (renderer)
+            return new CSSPrimitiveValueImpl(renderer->marginLeft(), CSSPrimitiveValue::CSS_PX);
+        return valueForLength2(style->marginLeft());
     case CSS_PROP__KHTML_MARQUEE:
         // FIXME: unimplemented
         break;
