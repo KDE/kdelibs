@@ -93,12 +93,6 @@ void RenderReplaced::calcMinMaxWidth()
     setMinMaxKnown();
 }
 
-
-void RenderReplaced::position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/)
-{
-    setPos( box->xPos(), box->yPos() );
-}
-
 FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset, SelPointState &)
 {
 #if 0
