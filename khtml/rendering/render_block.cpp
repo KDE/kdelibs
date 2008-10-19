@@ -2617,7 +2617,8 @@ bool RenderBlock::isPointInScrollbar(int _x, int _y, int _tx, int _ty)
         return false;
 
     if (m_layer->verticalScrollbarWidth()) {
-        QRect vertRect(_tx + width() - borderRight() - m_layer->verticalScrollbarWidth(),
+        bool rtl = QApplication::isRightToLeft();
+        QRect vertRect(_tx + (rtl ? borderLeft() :  width() - borderRight() - m_layer->verticalScrollbarWidth()),
                        _ty + borderTop() - borderTopExtra(),
                        m_layer->verticalScrollbarWidth(),
                        height() + borderTopExtra() + borderBottomExtra()-borderTop()-borderBottom());
