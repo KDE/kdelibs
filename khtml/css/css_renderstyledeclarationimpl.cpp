@@ -137,6 +137,16 @@ static CSSValueImpl *valueForLength(const Length &length, int max)
     }
 }
 
+static CSSValueImpl *valueForLength2(const Length &length)
+{
+    if (length.isPercent()) {
+        return new CSSPrimitiveValueImpl(length.value(), CSSPrimitiveValue::CSS_PERCENTAGE);
+    }
+    else {
+        return new CSSPrimitiveValueImpl(length.value(), CSSPrimitiveValue::CSS_PX);
+    }
+}
+
 static CSSValueImpl *valueForBorderStyle(EBorderStyle style)
 {
     switch (style) {
@@ -702,8 +712,9 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
             return new CSSPrimitiveValueImpl(CSS_VAL_NORMAL);
     }
     case CSS_PROP_HEIGHT:
-        RETURN_NULL_ON_NULL(renderer);
-        return new CSSPrimitiveValueImpl(renderer->contentHeight(), CSSPrimitiveValue::CSS_PX);
+        if (renderer)
+            return new CSSPrimitiveValueImpl(renderer->contentHeight(), CSSPrimitiveValue::CSS_PX);
+        return valueForLength2(style->height());
     case CSS_PROP_LEFT:
         RETURN_NULL_ON_NULL(renderer);
         return getPositionOffsetValue(renderer, CSS_PROP_LEFT);
@@ -868,17 +879,21 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         return 0;
     }
     case CSS_PROP_PADDING_TOP:
-        RETURN_NULL_ON_NULL(renderer);
-        return valueForLength(style->paddingTop(), renderer->contentHeight());
+        if (renderer)
+            return new CSSPrimitiveValueImpl(renderer->paddingTop(), CSSPrimitiveValue::CSS_PX);
+        return valueForLength2(style->paddingTop());
     case CSS_PROP_PADDING_RIGHT:
-        RETURN_NULL_ON_NULL(renderer);
-        return valueForLength(style->paddingRight(), renderer->contentWidth());
+        if (renderer)
+            return new CSSPrimitiveValueImpl(renderer->paddingRight(), CSSPrimitiveValue::CSS_PX);
+        return valueForLength2(style->paddingRight());
     case CSS_PROP_PADDING_BOTTOM:
-        RETURN_NULL_ON_NULL(renderer);
-        return valueForLength(style->paddingBottom(), renderer->contentHeight());
+        if (renderer)
+            return new CSSPrimitiveValueImpl(renderer->paddingBottom(), CSSPrimitiveValue::CSS_PX);
+        return valueForLength2(style->paddingBottom());
     case CSS_PROP_PADDING_LEFT:
-        RETURN_NULL_ON_NULL(renderer);
-        return valueForLength(style->paddingLeft(), renderer->contentWidth());
+        if (renderer)
+            return new CSSPrimitiveValueImpl(renderer->paddingLeft(), CSSPrimitiveValue::CSS_PX);
+        return valueForLength2(style->paddingLeft());
     case CSS_PROP_PAGE_BREAK_AFTER:
         switch (style->pageBreakAfter()) {
         case PBAUTO:
@@ -1064,9 +1079,10 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_WIDOWS:
         return new CSSPrimitiveValueImpl(style->widows(), CSSPrimitiveValue::CSS_NUMBER);
     case CSS_PROP_WIDTH:
-        RETURN_NULL_ON_NULL(renderer);
-        return new CSSPrimitiveValueImpl( renderer->contentWidth(),
-                                         CSSPrimitiveValue::CSS_PX );
+        if (renderer)
+            return new CSSPrimitiveValueImpl(renderer->contentWidth(),
+                                             CSSPrimitiveValue::CSS_PX);
+        return valueForLength2(style->width());
     case CSS_PROP_WORD_SPACING:
         return new CSSPrimitiveValueImpl(style->wordSpacing(), CSSPrimitiveValue::CSS_PX);
     case CSS_PROP_Z_INDEX:
