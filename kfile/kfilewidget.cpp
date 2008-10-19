@@ -852,7 +852,10 @@ void KFileWidget::slotOk()
     // that the File mode will iterate only one time here
     bool directoryMode = (mode & KFile::Directory);
     bool onlyDirectoryMode = directoryMode && !(mode & KFile::File) && !(mode & KFile::Files);
-    foreach (const KUrl &url, locationEditCurrentTextList) {
+    KUrl::List::ConstIterator it = locationEditCurrentTextList.constBegin();
+    bool filesInList = false;
+    while (it != locationEditCurrentTextList.constEnd()) {
+        KUrl url(*it);
         d->url = url;
         KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
         bool res = KIO::NetAccess::synchronousRun(statJob, 0);
@@ -869,6 +872,24 @@ void KFileWidget::slotOk()
 
         // if we are given a folder when not on directory mode, let's get into it
         if (res && !directoryMode && statJob->statResult().isDir()) {
+            // check if we were given more than one folder, in that case we don't know to which one
+            // cd
+            ++it;
+            while (it != locationEditCurrentTextList.constEnd()) {
+                KUrl checkUrl(*it);
+                KIO::StatJob *checkStatJob = KIO::stat(checkUrl, KIO::HideProgressInfo);
+                bool res = KIO::NetAccess::synchronousRun(checkStatJob, 0);
+                if (res && checkStatJob->statResult().isDir()) {
+                    KMessageBox::sorry(this, i18n("More than one folder has been selected and this dialog does not accept folders, so it is not possible to decide in which one enter. Please select only one folder to list it"), i18n("More than one folder provided"));
+                    return;
+                } else if (res) {
+                    filesInList = true;
+                }
+                ++it;
+            }
+            if (filesInList) {
+                KMessageBox::information(this, i18n("At least one folder and one file has been selected. Selected files will be ignored and the selected folder will be listed"), i18n("Files and folders selected"));
+            }
             d->ops->setUrl(url, true);
             const bool signalsBlocked = d->locationEdit->lineEdit()->blockSignals(true);
             d->locationEdit->lineEdit()->setText(QString());
@@ -880,10 +901,12 @@ void KFileWidget::slotOk()
             if (!onlyDirectoryMode || (res && statJob->statResult().isDir())) {
                 d->urlList << url;
             }
+            filesInList = true;
         } else {
             KMessageBox::sorry(this, i18n("The file %1 could not be found", url.url()), i18n("Cannot open file"));
             return; // do not emit accepted() if we had ExistingOnly flag and stat failed
         }
+        ++it;
     }
 
     // if we have reached this point and we didn't return before, that is because
