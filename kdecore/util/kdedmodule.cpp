@@ -78,6 +78,11 @@ void KDEDModule::setModuleName( const QString& name )
       // Happens for khotkeys but the module works. Need some time to investigate.
       kDebug() << "registerObject() returned false for " << d->moduleName;
       }
+   else
+      {
+      kDebug() << "registerObject() successful for " << d->moduleName;
+      emit moduleRegistered(realPath);
+      }
 
 }
 

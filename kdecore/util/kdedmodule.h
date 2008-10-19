@@ -82,6 +82,11 @@ Q_SIGNALS:
    */
   void windowUnregistered(qlonglong windowId);
 
+  /**
+   * Emitted after the module is registered successfully with dbus
+   */
+  void moduleRegistered(const QString &path);
+
 private:
   KDEDModulePrivate* const d;
 };
