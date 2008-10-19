@@ -3899,7 +3899,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
             unscheduleRelayout();
             layout();
         }
-        if (d->smoothScrollMode == KHTMLView::SSMWhenEfficient)
+        if (d->smoothScrollMode == KHTMLView::SSMWhenEfficient && m_part->xmlDocImpl()->parsing())
             d->shouldSmoothScroll = false;
     }
 
