@@ -485,4 +485,6 @@ padding
 #
 #A code
 #A #none
-
+#svg
+evenodd
+nonzero

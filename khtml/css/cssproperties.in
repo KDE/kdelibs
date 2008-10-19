@@ -145,3 +145,14 @@ scrollbar-arrow-color
 # khtml internals
 -khtml-flow-mode
 -khtml-user-input
+# svg
+fill
+stroke
+stroke-width
+fill-opacity
+stroke-opacity
+stop-color
+stop-opacity
+clip-path
+clip-rule
+fill-rule

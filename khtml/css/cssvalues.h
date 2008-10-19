@@ -297,7 +297,9 @@ DOM::DOMString getValueName(unsigned short id) KDE_NO_EXPORT;
 #define CSS_VAL_BORDER 287
 #define CSS_VAL_CONTENT 288
 #define CSS_VAL_PADDING 289
+#define CSS_VAL_EVENODD 290
+#define CSS_VAL_NONZERO 291
 
-#define CSS_VAL_TOTAL 290
+#define CSS_VAL_TOTAL 292
 #endif
 

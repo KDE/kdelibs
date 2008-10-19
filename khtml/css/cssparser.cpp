@@ -1111,10 +1111,11 @@ bool CSSParser::parseValue( int propId, bool important )
         return parseShortHand(propId, properties, 3, important);
     }
     default:
+        return parseSVGValue(propId, important);
 // #ifdef CSS_DEBUG
 //         kDebug( 6080 ) << "illegal or CSS2 Aural property: " << val;
 // #endif
-        break;
+        //break;
     }
 
     if ( valid_primitive ) {

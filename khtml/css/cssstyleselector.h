@@ -318,6 +318,7 @@ public:
         QList<MediaQueryResult*> m_viewportDependentMediaQueryResults;
 
 	void applyRule(int id, DOM::CSSValueImpl *value);
+        void applySVGRule(int id, DOM::CSSValueImpl *value);
     };
 
     /*

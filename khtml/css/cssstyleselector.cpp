@@ -4024,6 +4024,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
     }
     default:
+        applySVGRule(id, value);
         return;
     }
 }
