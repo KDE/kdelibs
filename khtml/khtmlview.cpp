@@ -244,6 +244,7 @@ public:
         smoothScrolling = false;
         smoothScrollModeIsDefault = true;
         shouldSmoothScroll = false;
+        hasFrameset = false;
 #ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
         oldVScrollUpdatesEnabled = true;
         oldHScrollUpdatesEnabled = true;
@@ -435,6 +436,7 @@ public:
     bool smoothScrolling                          :1;
     bool smoothScrollModeIsDefault                :1;
     bool shouldSmoothScroll                       :1;
+    bool hasFrameset                              :1;
 #ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
     bool oldHScrollUpdatesEnabled                 :1;
     bool oldVScrollUpdatesEnabled                 :1;
@@ -642,6 +644,9 @@ void KHTMLView::init()
     if (!widget())
         setWidget( new QWidget(this) );
     widget()->setAttribute( Qt::WA_NoSystemBackground );
+
+    verticalScrollBar()->setCursor( Qt::ArrowCursor );
+    horizontalScrollBar()->setCursor( Qt::ArrowCursor );
 
     connect(&d->smoothScrollTimer, SIGNAL(timeout()), this, SLOT(scrollTick()));
 }
@@ -963,6 +968,14 @@ void KHTMLView::paintEvent( QPaintEvent *e )
 
     m_part->xmlDocImpl()->renderer()->layer()->paint(&p, r);
 
+    if (d->hasFrameset) {
+        NodeImpl *body = static_cast<HTMLDocumentImpl*>(m_part->xmlDocImpl())->body();
+        if(body && body->renderer() && body->id() == ID_FRAMESET)
+            static_cast<RenderFrameSet*>(body->renderer())->paintFrameSetRules(&p, r);
+        else
+            d->hasFrameset = false;
+    }
+
     khtml::DrawContentsEvent event( &p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
 
@@ -1009,6 +1022,7 @@ void KHTMLView::layout()
                  QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                  QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                  body->renderer()->setNeedsLayout(true);
+                 d->hasFrameset = true;
              }
              else if (root) // only apply body's overflow to canvas if root has a visible overflow
                      ref = (!body || root->style()->hidesOverflow()) ? root : body->renderer();
@@ -3217,7 +3231,6 @@ void KHTMLView::print(bool quick)
 
         root->setNeedsLayoutAndMinMaxRecalc();
         root->layout();
-        khtml::RenderWidget::flushWidgetResizes(); // make sure widgets have their final size
 
         // check sizes ask for action.. (scale or clip)
 

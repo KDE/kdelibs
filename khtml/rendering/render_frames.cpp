@@ -442,7 +442,7 @@ void RenderFrameSet::positionFrames()
 
 bool RenderFrameSet::userResize( MouseEventImpl *evt )
 {
-    if (needsLayout()) return false;
+  if (needsLayout()) return false;
 
   bool res = false;
   int _x = evt->clientX();
@@ -456,7 +456,6 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
 
     m_hSplit = -1;
     m_vSplit = -1;
-    //bool resizePossible = true;
 
     // check if we're over a horizontal or vertical boundary
     int pos = m_gridLayout[1][0] + xPos();
@@ -494,7 +493,6 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
 #endif
   }
 
-
   m_cursor = Qt::ArrowCursor;
   if(m_hSplit != -1 && m_vSplit != -1)
       m_cursor = Qt::SizeAllCursor;
@@ -513,10 +511,12 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
   }
 
   // ### check the resize is not going out of bounds.
-  if(m_resizing && evt->id() == EventImpl::MOUSEUP_EVENT)
+  if(m_resizing)
   {
-    setResizing(false);
-    QApplication::restoreOverrideCursor();
+    if (evt->id() == EventImpl::MOUSEUP_EVENT) {
+        setResizing(false);
+        QApplication::restoreOverrideCursor();
+    }
 
     if(m_vSplit != -1 )
     {
@@ -526,6 +526,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
       int delta = m_vSplitPos - _x;
       m_gridDelta[1][m_vSplit] -= delta;
       m_gridDelta[1][m_vSplit+1] += delta;
+      m_vSplitPos = _x;
     }
     if(m_hSplit != -1 )
     {
@@ -535,6 +536,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
       int delta = m_hSplitPos - _y;
       m_gridDelta[0][m_hSplit] -= delta;
       m_gridDelta[0][m_hSplit+1] += delta;
+      m_hSplitPos = _y;
     }
 
     // this just schedules the relayout
@@ -542,6 +544,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
     setNeedsLayout(true);
   }
 
+/*
   KHTMLView *view = canvas()->view();
   if ((m_resizing || evt->id() == EventImpl::MOUSEUP_EVENT) && view) {
       QPainter paint( view );
@@ -567,8 +570,25 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
       }
       m_oldpos = p;
   }
-
+*/
   return res;
+}
+
+void RenderFrameSet::paintFrameSetRules( QPainter *paint, const QRect& damageRect )
+{
+  KHTMLView *view = canvas()->view();
+  if (view && !noResize()) {
+      paint->setPen( Qt::gray );
+      paint->setBrush( Qt::gray );
+      const int rBord = 3;
+      int sw = element()->border();
+
+      // ### implement me
+
+      (void) rBord;
+      (void) sw;
+  }
+
 }
 
 void RenderFrameSet::setResizing(bool e)
