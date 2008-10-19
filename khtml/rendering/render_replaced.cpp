@@ -1123,7 +1123,8 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                                ke->text(), ke->isAutoRepeat(), ke->count() );
             static_cast<EventPropagator *>(m_widget)->sendEvent(&releaseEv);
         }
-        static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
+        QWidget *fw = m_widget->focusWidget() ? m_widget->focusWidget() : m_widget;
+        static_cast<EventPropagator *>(fw)->sendEvent(ke);
         ret = ke->isAccepted();
 	break;
     }
