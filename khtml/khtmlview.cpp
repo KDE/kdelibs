@@ -3919,8 +3919,12 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         scheduleRepaint(0, 0, 0, 0);
     }
 
-    if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
-        m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, false, false);
+    if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement()) {
+        // ### FIXME: there is something wrong with this event.
+        // With a capturing listener on document and window, window's should fire first, then document's.
+        // Also, this doesn't work: <body onload="document.onscroll=function() {alert('ok')}"><div style=height:2000>
+        m_part->xmlDocImpl()->documentElement()->dispatchWindowEvent(EventImpl::SCROLL_EVENT, false, false);
+    }
 
     if (QApplication::isRightToLeft())
         dx = -dx;
