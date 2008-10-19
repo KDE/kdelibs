@@ -175,6 +175,8 @@ public:
     virtual void defaultEventHandler(EventImpl *evt);
     virtual bool isEditable();
 
+    virtual bool unsubmittedFormChanges() const { return false; }
+
 protected:
     HTMLFormElementImpl *getForm() const;
 
@@ -309,6 +311,7 @@ public:
     void activate();
 
     void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }
+    virtual bool unsubmittedFormChanges() const { return m_unsubmittedFormChange; }
 
     //Mozilla extensions.
     long selectionStart();

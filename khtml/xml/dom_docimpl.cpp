@@ -1166,9 +1166,11 @@ QStringList DocumentImpl::docState()
 
 bool DocumentImpl::unsubmittedFormChanges()
 {
-    for (QListIterator<NodeImpl*> it(m_maintainsState); it.hasNext();)
-        if (it.next()->state().endsWith('M'))
+    for (QListIterator<NodeImpl*> it(m_maintainsState); it.hasNext();) {
+        NodeImpl* node = it.next();
+        if (node->isGenericFormElement() && static_cast<HTMLGenericFormElementImpl*>(node)->unsubmittedFormChanges())
             return true;
+    }
 
     return false;
 }
