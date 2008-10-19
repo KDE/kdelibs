@@ -1,0 +1,20 @@
+[Desktop Entry]
+X-KDE-Library=ktexteditor_autobrace
+X-KDE-PluginKeyword=ktexteditor_autobrace
+X-KDE-PluginInfo-Author=Jakob Petsovits
+X-KDE-PluginInfo-Email=jpetso@gmx.at
+X-KDE-PluginInfo-Name=ktexteditorautobrace
+X-KDE-PluginInfo-Version=0.1
+X-KDE-PluginInfo-Website=http://kate.kde.org
+X-KDE-PluginInfo-Category=Editor
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-EnabledByDefault=true
+X-KDE-ParentApp=kate
+X-KDE-Version=4.0
+X-KDE-ServiceTypes=KTextEditor/Plugin
+Type=Service
+Icon=insert-text
+Name=Automatic brace insertion
+Name[de]=Automatisches Einfügen geschwungener Klammern
+Comment[x-test]=xxAutomatic brace insertionxx
