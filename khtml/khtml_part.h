@@ -1659,7 +1659,7 @@ private:
   // Called when a child could not be loaded.
   void childLoadFailure( khtml::ChildFrame *child );
 
-  DOM::EventListener *createHTMLEventListener( QString code, QString name, DOM::NodeImpl *node );
+  DOM::EventListener *createHTMLEventListener( QString code, QString name, DOM::NodeImpl *node, bool svg = false );
 
   DOM::HTMLDocumentImpl *docImpl() const;
   DOM::DocumentImpl *xmlDocImpl() const;

@@ -55,7 +55,7 @@ public:
   virtual QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n,
 			    Completion *completion = 0);
   virtual void clear();
-  virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString name, QString code, DOM::NodeImpl *node);
+  virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString name, QString code, DOM::NodeImpl *node, bool svg = false);
   virtual void finishedWithEvent(const DOM::Event &event);
   virtual KJS::Interpreter *interpreter();
 
@@ -235,7 +235,7 @@ void KJSProxyImpl::clear() {
 #endif
 }
 
-DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QString name, QString code, DOM::NodeImpl *node)
+DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QString name, QString code, DOM::NodeImpl *node, bool svg)
 {
   initScript();
 
@@ -247,7 +247,7 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
 #endif
 
   return KJS::Window::retrieveWindow(m_frame->m_part)->getJSLazyEventListener(
-        code, sourceUrl, m_handlerLineno, name, node);
+        code, sourceUrl, m_handlerLineno, name, node, svg);
 }
 
 void KJSProxyImpl::finishedWithEvent(const DOM::Event &event)

@@ -7021,14 +7021,14 @@ DOM::Node KHTMLPart::activeNode() const
     return DOM::Node(d->m_doc?d->m_doc->focusNode():0);
 }
 
-DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code, QString name, NodeImpl* node )
+DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code, QString name, NodeImpl* node, bool svg )
 {
   KJSProxy *proxy = jScript();
 
   if (!proxy)
     return 0;
 
-  return proxy->createHTMLEventHandler( url().url(), name, code, node );
+  return proxy->createHTMLEventHandler( url().url(), name, code, node, svg );
 }
 
 KHTMLPart *KHTMLPart::opener()

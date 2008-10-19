@@ -135,9 +135,9 @@ JSObject *JSEventListener::listenerObj() const
 }
 
 JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_url, int _lineNum,
-                               const QString &_name, JSObject *_win, DOM::NodeImpl* _originalNode)
+                               const QString &_name, JSObject *_win, DOM::NodeImpl* _originalNode, bool _svg)
   : JSEventListener(0, 0, _win, true), code(_code), url(_url), lineNum(_lineNum), 
-    name(_name), parsed(false)
+    name(_name), parsed(false), svg(_svg)
 {
   // We don't retain the original node, because we assume it
   // will stay alive as long as this handler object is around
@@ -183,9 +183,11 @@ void JSLazyEventListener::parseCode() const
       KJS::FunctionObjectImp *constr = static_cast<KJS::FunctionObjectImp*>(interpreter->builtinFunction());
       KJS::List args;
 
-      static KJS::UString eventString("event");
+      if (svg)
+          args.append(jsString("evt"));
+      else
+          args.append(jsString("event"));
       
-      args.append(jsString(eventString));
       args.append(jsString(code));
       listener = constr->construct(exec, args, 
             Identifier(UString(name)), url, lineNum); // ### is globalExec ok ?

@@ -1410,9 +1410,9 @@ JSEventListener *Window::getJSEventListener(JSValue *val, bool html)
 }
 
 JSLazyEventListener *Window::getJSLazyEventListener(const QString& code, const QString& srcUrl, int line,
-                                                    const QString& name, DOM::NodeImpl *node)
+                                                    const QString& name, DOM::NodeImpl *node, bool svg)
 {
-  return new JSLazyEventListener(code, srcUrl, line, name, this, node);
+  return new JSLazyEventListener(code, srcUrl, line, name, this, node, svg);
 }
 
 void Window::clear( ExecState *exec )

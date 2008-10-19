@@ -126,7 +126,7 @@ namespace KJS {
     Location *location() const;
     JSEventListener *getJSEventListener(JSValue* val, bool html = false);
     JSLazyEventListener *getJSLazyEventListener(const QString &code, const QString& sourceUrl, int lineNo, 
-                                                const QString &name, DOM::NodeImpl* node);
+                                                const QString &name, DOM::NodeImpl* node, bool svg = false);
     void clear( ExecState *exec );
     virtual UString toString(ExecState *exec) const;
 

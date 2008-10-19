@@ -72,7 +72,7 @@ namespace KJS {
   class JSLazyEventListener : public JSEventListener {
   public:
     JSLazyEventListener(const QString &_code, const QString &_url, int _lineNum,
-                        const QString &_name, JSObject* _win, DOM::NodeImpl* node);
+                        const QString &_name, JSObject* _win, DOM::NodeImpl* node, bool _svg = false);
     ~JSLazyEventListener();
     virtual void handleEvent(DOM::Event &evt);
     JSObject* listenerObj() const;
@@ -86,6 +86,7 @@ namespace KJS {
     mutable QString name;
     mutable bool parsed;
     DOM::NodeImpl *originalNode;
+    bool svg;
   };
 
   // Constructor for Event - currently only used for some global vars
