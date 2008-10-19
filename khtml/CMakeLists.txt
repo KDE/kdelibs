@@ -2,6 +2,11 @@
 project(khtml)
 KDE4_NO_ENABLE_FINAL(khtml)
 
+########svg#########
+add_definitions(-DENABLE_SVG)
+add_definitions(-DWTF_PLATFORM_QT)
+########svg#########
+
 add_subdirectory( tests )
 
 find_package(JPEG REQUIRED)
@@ -21,6 +26,138 @@ endif (NOT PNG_FOUND)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 
 configure_file(config-khtml.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-khtml.h )
+
+set(khtmlgraphics_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/AffineTransform.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/FloatPoint.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/FloatRect.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/FloatSize.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/IntRect.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/Path.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/GraphicsTypes.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/PathTraversalState.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/Color.cpp
+  #${CMAKE_SOURCE_DIR}/khtml/platform/graphics/Image.cpp
+  #${CMAKE_SOURCE_DIR}/khtml/platform/MIMETypeRegistry.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/qt/AffineTransformQt.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/qt/FloatPointQt.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/qt/FloatRectQt.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/qt/IntPointQt.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/qt/IntRectQt.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/qt/IntSizeQt.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/qt/PathQt.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/platform/graphics/qt/ColorQt.cpp
+  #${CMAKE_SOURCE_DIR}/khtml/platform/qt/MIMETypeRegistryQt.cpp
+)
+
+set(khtmlsvg_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGDocument.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGSVGElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGStyledLocatableElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGLocatable.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGStyledElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGStylable.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGLength.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGTransformable.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGTransform.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGAngle.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGDocumentExtensions.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGParserUtilities.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGTransformDistance.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGTransformList.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGStringList.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGStyledTransformableElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGTests.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGLangSpace.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGExternalResourcesRequired.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGRectElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPreserveAspectRatio.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGFitToViewBox.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGCircleElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGStyleElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGColor.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPaint.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGEllipseElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPointList.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGAnimatedPoints.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPolyElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPolygonElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPolylineElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGAnimatedPathData.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPathSegArc.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPathSegClosePath.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPathSegCurvetoCubic.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPathSegCurvetoCubicSmooth.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPathSegCurvetoQuadratic.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPathSegCurvetoQuadraticSmooth.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPathSegLineto.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPathSegLinetoHorizontal.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPathSegLinetoVertical.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPathSegList.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPathSegMoveto.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGPathElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGURIReference.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGStopElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGGradientElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGLinearGradientElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGRadialGradientElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGDefsElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGClipPathElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGGElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGElementInstance.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGElementInstanceList.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGUseElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGLineElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGTextPathElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGTextContentElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGNumberList.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGTextPositioningElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGLengthList.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGTextElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGAElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGScriptElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGTitleElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGDescElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGNames.cpp
+#############################################################
+## GRAPHICS #################################################
+#############################################################
+  ${CMAKE_SOURCE_DIR}/khtml/svg/graphics/SVGResource.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/graphics/SVGPaintServer.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/graphics/qt/SVGPaintServerQt.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/graphics/SVGPaintServerSolid.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/graphics/qt/SVGPaintServerSolidQt.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/graphics/SVGResourceClipper.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/graphics/qt/SVGResourceClipperQt.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/graphics/SVGPaintServerGradient.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/graphics/SVGPaintServerLinearGradient.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/graphics/SVGPaintServerRadialGradient.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/graphics/qt/SVGPaintServerGradientQt.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/graphics/qt/SVGPaintServerLinearGradientQt.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/graphics/qt/SVGPaintServerRadialGradientQt.cpp
+#############################################################
+## RENDERING PART BELOW   ###################################
+#############################################################
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGRoot.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderPath.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/SVGRenderStyleDefs.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/SVGRenderStyle.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGGradientStop.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGContainer.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/SVGRenderSupport.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGHiddenContainer.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGTransformableContainer.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/SVGInlineFlowBox.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/SVGRootInlineBox.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGTextPath.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/SVGInlineTextBox.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/SVGCharacterLayoutInfo.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGInline.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGText.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGBlock.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGInlineText.cpp
+)
 
 # khtml/dom/Makefile.am: khtmldom
 
@@ -51,6 +188,7 @@ set(khtmldom_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/dom/dom2_traversal.cpp
   ${CMAKE_SOURCE_DIR}/khtml/dom/dom2_events.cpp
   ${CMAKE_SOURCE_DIR}/khtml/dom/dom2_views.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/dom/QualifiedName.cpp
 )
 
 #set_source_files_properties(${khtmldom_STAT_SRCS} PROPERTIES COMPILE_FLAGS ${KDE4_ENABLE_EXCEPTIONS})
@@ -197,6 +335,8 @@ set(khtmlcss_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/css/parser.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/css_renderstyledeclarationimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/css_mediaquery.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/css/SVGCSSParser.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/css/SVGCSSStyleSelector.cpp
 )
 
 # khtml/xml/Makefile.am: khtmlxml
@@ -263,6 +403,13 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/imload
   ${CMAKE_CURRENT_SOURCE_DIR}/imload/decoders
   ${CMAKE_CURRENT_SOURCE_DIR}/java
+  ${CMAKE_CURRENT_SOURCE_DIR}/svg
+  ${CMAKE_CURRENT_SOURCE_DIR}/svg/graphics
+  ${CMAKE_CURRENT_SOURCE_DIR}/platform/graphics
+  ${CMAKE_CURRENT_SOURCE_DIR}/platform/text
+  ${CMAKE_CURRENT_SOURCE_DIR}/platform
+  ${CMAKE_CURRENT_SOURCE_DIR}/compat
+  ${CMAKE_CURRENT_SOURCE_DIR}/css
 )
 include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/misc
@@ -274,6 +421,13 @@ include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/imload
   ${CMAKE_CURRENT_BINARY_DIR}/imload/decoders
   ${CMAKE_CURRENT_BINARY_DIR}/java
+  ${CMAKE_CURRENT_BINARY_DIR}/svg
+  ${CMAKE_CURRENT_BINARY_DIR}/svg/graphics
+  ${CMAKE_CURRENT_BINARY_DIR}/platform/graphics
+  ${CMAKE_CURRENT_BINARY_DIR}/platform/text
+  ${CMAKE_CURRENT_SOURCE_DIR}/platform
+  ${CMAKE_CURRENT_BINARY_DIR}/compat
+  ${CMAKE_CURRENT_BINARY_DIR}/css
 )
 
 include_directories(${JPEG_INCLUDE_DIR} ${GIF_INCLUDE_DIR} ${PNG_INCLUDE_DIR} )
@@ -309,6 +463,8 @@ set(khtml_LIB_SRCS
    ${khtmldom_STAT_SRCS}
    ${khtmlimload_STAT_SRCS}
    ${decoders_STAT_SRCS}
+   ${khtmlgraphics_STAT_SRCS} # for WebCore compatibility
+   ${khtmlsvg_STAT_SRCS} # for SVG
    )
 
 
@@ -404,6 +560,56 @@ create_js_binding(html/MediaError.idl)
 create_js_binding(html/HTMLMediaElement.idl)
 create_js_binding(html/HTMLAudioElement.idl)
 create_js_binding(html/HTMLVideoElement.idl)
+#create_js_binding(svg/SVGRectElement.idl)
+#create_js_binding(svg/SVGRect.idl)
+#create_js_binding(svg/SVGElement.idl)
+#create_js_binding(svg/SVGDocument.idl)
+#create_js_binding(svg/SVGAngle.idl)
+#create_js_binding(svg/SVGSVGElement.idl)
+#create_js_binding(svg/SVGLength.idl)
+#create_js_binding(svg/SVGNumber.idl)
+#create_js_binding(svg/SVGPoint.idl)
+#create_js_binding(svg/SVGMatrix.idl)
+#create_js_binding(svg/SVGTransform.idl)
+#create_js_binding(svg/SVGException.idl)
+#create_js_binding(svg/SVGPaint.idl)
+#create_js_binding(svg/SVGNumberList.idl)
+#create_js_binding(svg/SVGAnimatedLength.idl)
+#create_js_binding(svg/SVGRectElement.idl)
+#create_js_binding(svg/SVGTransformList.idl)
+#create_js_binding(svg/SVGAnimatedTransformList.idl)
+##create_js_binding(svg/SVGLocatable.idl)
+##create_js_binding(svg/SVGTransformable.idl)
+#create_js_binding(svg/SVGAnimatedString.idl)
+#create_js_binding(svg/SVGAnimatedBoolean.idl)
+#create_js_binding(svg/SVGStringList.idl)
+#create_js_binding(svg/SVGEllipseElement.idl)
+#create_js_binding(svg/SVGCircleElement.idl)
+#create_js_binding(svg/SVGLineElement.idl)
+#create_js_binding(svg/SVGScriptElement.idl)
+#create_js_binding(svg/SVGPathSeg.idl)
+#create_js_binding(svg/SVGPathElement.idl)
+#create_js_binding(svg/SVGAnimatedNumber.idl)
+#create_js_binding(svg/SVGPathSegArcAbs.idl)
+#create_js_binding(svg/SVGPathSegArcRel.idl)
+#create_js_binding(svg/SVGPathSegClosePath.idl)
+#create_js_binding(svg/SVGPathSegCurvetoCubicAbs.idl)
+#create_js_binding(svg/SVGPathSegCurvetoCubicRel.idl)
+#create_js_binding(svg/SVGPathSegCurvetoCubicSmoothAbs.idl)
+#create_js_binding(svg/SVGPathSegCurvetoCubicSmoothRel.idl)
+#create_js_binding(svg/SVGPathSegCurvetoQuadraticAbs.idl)
+#create_js_binding(svg/SVGPathSegCurvetoQuadraticRel.idl)
+#create_js_binding(svg/SVGPathSegCurvetoQuadraticSmoothAbs.idl)
+#create_js_binding(svg/SVGPathSegCurvetoQuadraticSmoothRel.idl)
+#create_js_binding(svg/SVGPathSegLinetoAbs.idl)
+#create_js_binding(svg/SVGPathSegLinetoHorizontalAbs.idl)
+#create_js_binding(svg/SVGPathSegLinetoHorizontalRel.idl)
+#create_js_binding(svg/SVGPathSegLinetoRel.idl)
+#create_js_binding(svg/SVGPathSegLinetoVerticalAbs.idl)
+#create_js_binding(svg/SVGPathSegLinetoVerticalRel.idl)
+#create_js_binding(svg/SVGPathSegList.idl)
+#create_js_binding(svg/SVGPathSegMovetoAbs.idl)
+#create_js_binding(svg/SVGPathSegMovetoRel.idl)
 
 install(TARGETS khtml ${INSTALL_TARGETS_DEFAULT_ARGS})
 
