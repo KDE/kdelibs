@@ -142,7 +142,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
        ( name == defaultThemeName() || name== "hicolor" || name == "locolor" ) )
     {
 	icnlibs = KGlobal::dirs()->resourceDirs("data");
-	for (it=icnlibs.begin(); it!=icnlibs.end(); ++it)
+	for (it=icnlibs.constBegin(); it!=icnlibs.constEnd(); ++it)
 	{
 	    cDir = *it + appName + "/icons/" + name;
 	    if (QFile::exists( cDir ))
@@ -156,7 +156,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
         << "/usr/share/pixmaps"
         // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
         << KGlobal::dirs()->resourceDirs("xdgdata-pixmap");
-    for (it=icnlibs.begin(); it!=icnlibs.end(); ++it)
+    for (it=icnlibs.constBegin(); it!=icnlibs.constEnd(); ++it)
     {
         cDir = *it + name + '/';
         if (KStandardDirs::exists(cDir))
@@ -207,7 +207,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     for (it=dirs.begin(); it!=dirs.end(); ++it)
     {
         KConfigGroup cg(d->sharedConfig, *it);
-	for (itDir=themeDirs.begin(); itDir!=themeDirs.end(); ++itDir)
+	for (itDir=themeDirs.constBegin(); itDir!=themeDirs.constEnd(); ++itDir)
 	{
 	    if (KStandardDirs::exists(*itDir + *it + '/'))
 	    {
@@ -245,10 +245,10 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     groups += "Dialog";
     const int defDefSizes[] = { 32, 22, 22, 16, 32, 32 };
     KConfigGroup cg(d->sharedConfig, mainSection);
-    for (it=groups.begin(), i=0; it!=groups.end(); ++it, i++)
+    for (it=groups.constBegin(), i=0; it!=groups.constEnd(); ++it, i++)
     {
         d->mDefSize[i] = cg.readEntry(*it + "Default", defDefSizes[i]);
-	const QList<int> lst = cg.readEntry(*it + "Sizes", QList<int>());
+        const QList<int> lst = cg.readEntry(*it + "Sizes", QList<int>());
         QList<int> exp;
         QList<int>::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); ++it2)

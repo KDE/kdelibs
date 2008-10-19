@@ -350,8 +350,8 @@ KPlotAxis* KPlotWidget::axis( Axis type )
 
 const KPlotAxis* KPlotWidget::axis( Axis type ) const
 {
-    QHash<Axis, KPlotAxis*>::ConstIterator it = d->axes.find( type );
-    return it != d->axes.end() ? it.value() : 0;
+    QHash<Axis, KPlotAxis*>::ConstIterator it = d->axes.constFind( type );
+    return it != d->axes.constEnd() ? it.value() : 0;
 }
 
 QRect KPlotWidget::pixRect() const

@@ -444,8 +444,8 @@ QFont KGlobalSettings::largeFont(const QString &text)
     if (_largeFont)
         fam.prepend(_largeFont->family());
 
-    for(QStringList::ConstIterator it = fam.begin();
-        it != fam.end(); ++it)
+    for(QStringList::ConstIterator it = fam.constBegin();
+        it != fam.constEnd(); ++it)
     {
         if (db.isSmoothlyScalable(*it) && !db.isFixedPitch(*it))
         {

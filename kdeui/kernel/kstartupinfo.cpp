@@ -432,8 +432,8 @@ void KStartupInfo::Private::remove_startup_pids( const KStartupInfoId& id_P,
         data = &uninited_startups[ id_P ];
     else
 	return;
-    for( QList< pid_t >::ConstIterator it2 = data_P.pids().begin();
-         it2 != data_P.pids().end();
+    for( QList< pid_t >::ConstIterator it2 = data_P.pids().constBegin();
+         it2 != data_P.pids().constEnd();
          ++it2 )
 	data->d->remove_pid( *it2 ); // remove all pids from the info
     if( data->pids().count() == 0 ) // all pids removed -> remove info
@@ -1301,8 +1301,8 @@ void KStartupInfoData::update( const KStartupInfoData& data_P )
         d->wmclass = data_P.d->wmclass;
     if( !data_P.d->hostname.isEmpty())
         d->hostname = data_P.d->hostname;
-    for( QList< pid_t >::ConstIterator it = data_P.d->pids.begin();
-         it != data_P.d->pids.end();
+    for( QList< pid_t >::ConstIterator it = data_P.d->pids.constBegin();
+         it != data_P.d->pids.constEnd();
          ++it )
         addPid( *it );
     if( data_P.silent() != Unknown )

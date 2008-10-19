@@ -993,8 +993,8 @@ void KEditToolBarWidgetPrivate::loadToolBarCombo( const QString& defaultToolBar 
   int defaultToolBarId = -1;
   int count = 0;
   // load in all of the toolbar names into this combo box
-  XmlDataList::const_iterator xit = m_xmlFiles.begin();
-  for ( ; xit != m_xmlFiles.end(); ++xit)
+  XmlDataList::const_iterator xit = m_xmlFiles.constBegin();
+  for ( ; xit != m_xmlFiles.constEnd(); ++xit)
   {
       // skip the merged one in favor of the local one,
       // so that we can change icons
@@ -1004,7 +1004,7 @@ void KEditToolBarWidgetPrivate::loadToolBarCombo( const QString& defaultToolBar 
 
     // each xml file may have any number of toolbars
     ToolBarList::const_iterator it = (*xit).barList().begin();
-    for ( ; it != (*xit).barList().end(); ++it)
+    for ( ; it != (*xit).barList().constEnd(); ++it)
     {
         const QString text = (*xit).toolBarText( *it );
         m_toolbarCombo->addItem( text );

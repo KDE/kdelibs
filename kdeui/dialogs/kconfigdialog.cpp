@@ -191,8 +191,8 @@ void KConfigDialog::onPageRemoved( KPageWidgetItem *item )
 
 KConfigDialog* KConfigDialog::exists(const QString& name)
 {
-  QHash<QString,KConfigDialog *>::const_iterator it = KConfigDialogPrivate::openDialogs.find( name );
-  if ( it != KConfigDialogPrivate::openDialogs.end() )
+  QHash<QString,KConfigDialog *>::const_iterator it = KConfigDialogPrivate::openDialogs.constFind( name );
+  if ( it != KConfigDialogPrivate::openDialogs.constEnd() )
       return *it;
   return 0;
 }

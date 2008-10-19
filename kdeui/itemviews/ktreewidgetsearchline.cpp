@@ -398,8 +398,8 @@ bool KTreeWidgetSearchLine::itemMatches( const QTreeWidgetItem *item, const QStr
   // specifified.  If it is empty default to searching all of the columns.
 
   if ( !d->searchColumns.isEmpty() ) {
-    QList<int>::ConstIterator it = d->searchColumns.begin();
-    for ( ; it != d->searchColumns.end(); ++it ) {
+    QList<int>::ConstIterator it = d->searchColumns.constBegin();
+    for ( ; it != d->searchColumns.constEnd(); ++it ) {
       if ( *it < item->treeWidget()->columnCount() &&
            item->text( *it ).indexOf( pattern, 0, d->caseSensitive ) >= 0 )
         return true;

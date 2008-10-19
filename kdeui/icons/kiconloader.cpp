@@ -479,7 +479,7 @@ bool KIconLoaderPrivate::initIconThemes()
     dirs += "/usr/share/pixmaps";
     // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
     dirs += mpDirs->resourceDirs("xdgdata-pixmap");
-    for (QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); ++it)
+    for (QStringList::ConstIterator it = dirs.constBegin(); it != dirs.constEnd(); ++it)
         mpDirs->addResourceDir("appicon", *it);
 
 #ifndef NDEBUG
@@ -628,7 +628,7 @@ void KIconLoader::addExtraDesktopThemes()
         }
     }
 
-    for (it = list.begin(); it != list.end(); ++it)
+    for (it = list.constBegin(); it != list.constEnd(); ++it)
     {
         // Don't add the KDE defaults once more, we have them anyways.
         if (*it == QLatin1String("default.kde")
@@ -1408,7 +1408,7 @@ QStringList KIconLoader::queryIconsByContext(int group_or_size,
     QString name;
     QStringList res2, entries;
     QStringList::ConstIterator it;
-    for (it=result.begin(); it!=result.end(); ++it)
+    for (it=result.constBegin(); it!=result.constEnd(); ++it)
     {
         int n = (*it).lastIndexOf('/');
         if (n == -1)
@@ -1449,7 +1449,7 @@ QStringList KIconLoader::queryIcons(int group_or_size, KIconLoader::Context cont
     QString name;
     QStringList res2, entries;
     QStringList::ConstIterator it;
-    for (it=result.begin(); it!=result.end(); ++it)
+    for (it=result.constBegin(); it!=result.constEnd(); ++it)
     {
         int n = (*it).lastIndexOf('/');
         if (n == -1)

@@ -240,21 +240,21 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
         setupWidget(childWidget, item);
 
         if ( d->trackChanges ) {
-	  QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap->find(childWidget->metaObject()->className());
+          QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap->constFind(childWidget->metaObject()->className());
 
-          if (changedIt == s_changedMap->end())
+          if (changedIt == s_changedMap->constEnd())
           {
 		   // If the class name of the widget wasn't in the monitored widgets map, then look for
 		   // it again using the super class name. This fixes a problem with using QtRuby/Korundum
 		   // widgets with KConfigXT where 'Qt::Widget' wasn't being seen a the real deal, even
 		   // though it was a 'QWidget'.
             if ( childWidget->metaObject()->superClass() )
-              changedIt = s_changedMap->find(childWidget->metaObject()->superClass()->className());
+              changedIt = s_changedMap->constFind(childWidget->metaObject()->superClass()->className());
             else
-              changedIt = s_changedMap->find(0);
+              changedIt = s_changedMap->constFind(0);
           }
 
-          if (changedIt == s_changedMap->end())
+          if (changedIt == s_changedMap->constEnd())
           {
             kWarning(178) << "Don't know how to monitor widget '" << childWidget->metaObject()->className() << "' for changes!";
           }
@@ -297,8 +297,8 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 #ifndef NDEBUG
     else if (!widgetName.isEmpty() && d->trackChanges)
     {
-      QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap->find(childWidget->metaObject()->className());
-      if (changedIt != s_changedMap->end())
+      QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap->constFind(childWidget->metaObject()->className());
+      if (changedIt != s_changedMap->constEnd())
       {
         if ((!d->insideGroupBox || !qobject_cast<QRadioButton*>(childWidget)) &&
             !qobject_cast<QGroupBox*>(childWidget) &&!qobject_cast<QTabWidget*>(childWidget) )

@@ -97,7 +97,7 @@ void KIconEffect::init()
     QString _none("none");
     QString _tomonochrome("tomonochrome");
 
-    for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
+    for (it=groups.constBegin(), i=0; it!=groups.constEnd(); ++it, ++i)
     {
 	// Default effects
 	d->effect[i][0] = NoEffect;
@@ -118,7 +118,7 @@ void KIconEffect::init()
         d->color2[i][2] = QColor(0,0,0);
 
 	KConfigGroup cg(config, *it + "Icons");
-	for (it2=states.begin(), j=0; it2!=states.end(); it2++, j++)
+	for (it2=states.constBegin(), j=0; it2!=states.constEnd(); ++it2, ++j)
 	{
 	    QString tmp = cg.readEntry(*it2 + "Effect", QString());
 	    if (tmp == _togray)

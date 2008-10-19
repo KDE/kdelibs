@@ -989,7 +989,7 @@ void KFontChooser::getFontList( QStringList &list, uint fontListCriteria)
     if (fontListCriteria)
     {
         QStringList lstFonts;
-        for (QStringList::const_iterator it = lstSys.begin(); it != lstSys.end(); ++it)
+        for (QStringList::const_iterator it = lstSys.constBegin(); it != lstSys.constEnd(); ++it)
         {
             if ((fontListCriteria & FixedWidthFonts) > 0 && !dbase.isFixedPitch(*it)) continue;
             if (((fontListCriteria & (SmoothScalableFonts | ScalableFonts)) == ScalableFonts) &&

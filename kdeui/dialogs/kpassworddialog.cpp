@@ -362,7 +362,7 @@ void KPasswordDialog::setKnownLogins( const QMap<QString, QString>& knownLogins 
 void KPasswordDialog::KPasswordDialogPrivate::activated( const QString& userName )
 {
     QMap<QString, QString>::ConstIterator it = knownLogins.find( userName );
-    if ( it != knownLogins.end() ) {
+    if ( it != knownLogins.constEnd() ) {
         q->setPassword( it.value() );
     }
 }
