@@ -367,19 +367,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
                              KIO::pixmapForUrl(u, 0, KIconLoader::Small),
                              u.path(KUrl::AddTrailingSlash));
 
-    KIO::StatJob *statJob = KIO::stat(startDir, KIO::HideProgressInfo);
-    bool res = KIO::NetAccess::synchronousRun(statJob, 0);
-    if (res) {
-        if (!statJob->statResult().isDir()) {
-            startDir.adjustPath(KUrl::RemoveTrailingSlash);
-            filename = startDir.fileName();
-            startDir.setFileName(QString());
-        }
-    }
-
-    d->url = getStartUrl( startDir, d->fileClass );
-
-    d->ops = new KDirOperator(d->url, d->opsWidget);
+    d->ops = new KDirOperator(KUrl(), d->opsWidget);
     d->ops->setObjectName( "KFileWidget::ops" );
     opsWidgetLayout->addWidget(d->ops);
     connect(d->ops, SIGNAL(urlEntered(const KUrl&)),
@@ -575,6 +563,18 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     if (pg) {
         coll->action("inline preview")->setChecked(pg->isPreviewShown());
     }
+
+    KIO::StatJob *statJob = KIO::stat(startDir, KIO::HideProgressInfo);
+    bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+    if (res) {
+        if (!statJob->statResult().isDir()) {
+            startDir.adjustPath(KUrl::RemoveTrailingSlash);
+            filename = startDir.fileName();
+            startDir.setFileName(QString());
+        }
+    }
+    d->url = getStartUrl( startDir, d->fileClass );
+    d->ops->setUrl(d->url, true);
 
     // we know it is not a dir, and we could stat it. Set it.
     if (!filename.isEmpty()) {
@@ -1614,6 +1614,8 @@ void KFileWidget::resizeEvent(QResizeEvent* event)
 void KFileWidget::showEvent(QShowEvent* event)
 {
     if ( !d->hasView ) { // delayed view-creation
+        Q_ASSERT( d );
+        Q_ASSERT( d->ops );
         d->ops->setView( KFile::Default );
         d->ops->view()->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum ) );
         d->hasView = true;
