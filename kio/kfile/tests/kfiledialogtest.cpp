@@ -39,6 +39,22 @@ int main (int argc, char **argv)
     KCmdLineArgs::init( argc, argv, &aboutData );
     KApplication app;
 
+    // bug 173137
+    KFileDialog dlg(KUrl(QString()), QString("*.*|"), 0);
+    dlg.setMode(KFile::Files | KFile::Directory);
+    dlg.exec();
+    KUrl::List selectedUrls = dlg.selectedUrls();
+    if (selectedUrls.count()) {
+        QString str("The listed files and folders below were asked to be opened:\n");
+        foreach (const KUrl &filename, selectedUrls) {
+            str += QString("\n%1").arg(filename.url());
+        }
+        KMessageBox::information(0, str, "Dialog for bug #173137 accepted");
+    } else {
+        KMessageBox::information(0, QString("Dialog for bug #173137 cancelled"));
+    }
+    // end bug 173137
+
     // Note: when I talk about 'filename' I mean also with path. For instance, a filename on this
     // context is 'foo.txt', but also '/home/foo/bar/bar.txt'.
 
