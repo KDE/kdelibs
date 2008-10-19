@@ -18,9 +18,18 @@
 
 #include "globalshortcutcontext.h"
 
+#include "globalshortcut.h"
 
-GlobalShortcutContext::GlobalShortcutContext(const QString &name)
-        :   _name(name)
+
+GlobalShortcutContext::GlobalShortcutContext(
+        const QString &uniqueName,
+        const QString &friendlyName,
+        KdeDGlobalAccel::Component *component)
+
+        :   _uniqueName(uniqueName),
+            _friendlyName(friendlyName),
+            _component(component),
+            _actions()
     {}
 
 
@@ -29,7 +38,39 @@ GlobalShortcutContext::~GlobalShortcutContext()
     }
 
 
-QString GlobalShortcutContext::name() const
+void GlobalShortcutContext::addShortcut(GlobalShortcut *shortcut)
     {
-    return _name;
+    _actions.insert(shortcut->uniqueName(), shortcut);
+    }
+
+
+KdeDGlobalAccel::Component const *GlobalShortcutContext::component() const
+    {
+    return _component;
+    }
+
+
+KdeDGlobalAccel::Component *GlobalShortcutContext::component()
+    {
+    return _component;
+    }
+
+
+QString GlobalShortcutContext::friendlyName() const
+    {
+    return _friendlyName;
+    }
+
+
+GlobalShortcut *GlobalShortcutContext::takeShortcut(GlobalShortcut *shortcut)
+    {
+    // Try to take the shortcut. Result could be null if the shortcut doesn't
+    // belong ti this component.
+    return _actions.take(shortcut->uniqueName());
+    }
+
+
+QString GlobalShortcutContext::uniqueName() const
+    {
+    return _uniqueName;
     }

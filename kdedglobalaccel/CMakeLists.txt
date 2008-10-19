@@ -26,10 +26,8 @@ if ( Q_WS_QWS )
   set( kded_globalaccel_SRCS ${kded_globalaccel_SRCS} kglobalaccel_qws.cpp )
 endif ( Q_WS_QWS )
 
-# qt4_generate_dbus_interface(kdedglobalaccel.h org.kde.KdedGlobalAccel.xml )
-
 kde4_add_plugin( kded_globalaccel ${kded_globalaccel_SRCS} )
-target_link_libraries(kded_globalaccel ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${X11_LIBRARIES})
+target_link_libraries(kded_globalaccel ${KDE4_KDEUI_LIBS} ${X11_LIBRARIES})
 
 if(Q_WS_MAC)
    target_link_libraries(kded_globalaccel ${CARBON_LIBRARY})

@@ -17,7 +17,9 @@
 */
 
 #include "globalshortcut.h"
+
 #include "component.h"
+#include "globalshortcutcontext.h"
 #include "globalshortcutsregistry.h"
 
 #include <kdebug.h>
@@ -25,26 +27,53 @@
 #include <QtGui/QKeySequence>
 
 
-
-GlobalShortcut::GlobalShortcut(const QString &uniqueName, const QString &friendlyName, KdeDGlobalAccel::Component *component)
+GlobalShortcut::GlobalShortcut()
         :   _isPresent(false)
-            ,_isFresh(true)
-            ,_component(component)
-            ,_uniqueName(uniqueName)
-            ,_friendlyName(friendlyName)
+            ,_isFresh(false)
+            ,_context(NULL)
+            ,_uniqueName()
+            ,_friendlyName()
             ,_keys()
             ,_defaultKeys()
+    {}
+
+
+GlobalShortcut::GlobalShortcut(
+        const QString &uniqueName,
+        const QString &friendlyName,
+        GlobalShortcutContext *context)
+            :   _isPresent(false)
+                ,_isFresh(true)
+                ,_context(context)
+                ,_uniqueName(uniqueName)
+                ,_friendlyName(friendlyName)
+                ,_keys()
+                ,_defaultKeys()
     {
-    component->addShortcut(this);
+    context->addShortcut(this);
     }
 
 
 GlobalShortcut::~GlobalShortcut()
     {
     setInactive();
-    component()->takeShortcut(this);
+    context()->takeShortcut(this);
     }
 
+
+GlobalShortcut::operator KGlobalShortcutInfo () const
+    {
+    KGlobalShortcutInfo info;
+    info.d->uniqueName = _uniqueName;
+    info.d->friendlyName = _friendlyName;
+    info.d->contextUniqueName = context()->uniqueName();
+    info.d->contextFriendlyName = context()->friendlyName();
+    info.d->componentUniqueName = context()->component()->uniqueName();
+    info.d->componentFriendlyName = context()->component()->friendlyName();
+    //info.d->keys = _keys;
+    //info.d->defaultKeys = _defaultKeys;
+    return info;
+    }
 
 bool GlobalShortcut::isFresh() const
     {
@@ -58,9 +87,15 @@ void GlobalShortcut::setIsFresh(bool value)
     }
 
 
-KdeDGlobalAccel::Component *GlobalShortcut::component()
+GlobalShortcutContext *GlobalShortcut::context()
     {
-    return _component;
+    return _context;
+    }
+
+
+GlobalShortcutContext const *GlobalShortcut::context() const
+    {
+    return _context;
     }
 
 
@@ -128,7 +163,6 @@ void GlobalShortcut::setDefaultKeys(const QList<int> newKeys)
     {
     _defaultKeys = newKeys;
     }
-
 
 
 void GlobalShortcut::setActive()

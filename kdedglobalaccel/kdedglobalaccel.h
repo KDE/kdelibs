@@ -29,9 +29,6 @@
 
 class KdedGlobalAccelPrivate;
 
-Q_DECLARE_METATYPE(QList<QStringList>)
-Q_DECLARE_METATYPE(QList<int>)
-
 class KdedGlobalAccel : public KDEDModule
 {
     Q_OBJECT
@@ -84,6 +81,22 @@ public Q_SLOTS:
             const QString &component,
             const QString &context);
 
+
+    /**
+     * Returns the shortcuts registered for @p key.
+     *
+     * If there is more that one shortcut they are guaranteed to be from the
+     * same component but different contexts. All shortcuts are searched.
+     */
+    Q_SCRIPTABLE QList<KGlobalShortcutInfo> getGlobalShortcutsByKey(int key) const;
+
+    /**
+     * Return true if the @p shortcut is available for @p component.
+     */
+    Q_SCRIPTABLE bool isGlobalShortcutAvailable(
+            int key,
+            const QString &component) const;
+
 Q_SIGNALS:
 
     // this is qlonglong because manually written adaptor is used and just long doesn't work
@@ -92,6 +105,8 @@ Q_SIGNALS:
     Q_SCRIPTABLE void yourShortcutGotChanged(const QStringList &actionId, const QList<int> &newKeys);
 
 private:
+
+    Q_PRIVATE_SLOT(d, void _k_initializeDBus(const QString&))
 
     void scheduleWriteSettings() const;
 

@@ -1,5 +1,5 @@
-#ifndef GLOBAL_SHORTCUTS_REGISTRY_H
-#define GLOBAL_SHORTCUTS_REGISTRY_H
+#ifndef GLOBALSHORTCUTSREGISTRY_H
+#define GLOBALSHORTCUTSREGISTRY_H
 /* Copyright (C) 2008 Michael Jansen <kde@michael-jansen.biz>
 
    This library is free software; you can redistribute it and/or
@@ -34,11 +34,25 @@ namespace KdeDGlobalAccel
 
 
 /**
+ * Global Shortcut Registry.
+ *
+ * Shortcuts are registered by component. A component is for example kmail or
+ * amarok.
+ *
+ * A component can have contexts. Currently on plasma is planned to support
+ * that feature. A context enables plasma to keep track of global shortcut
+ * settings when switching containments.
+ *
+ * A shortcut (WIN+x) can be registered by one component only. The component
+ * is allowed to register it more than once in different contexts.
+ *
  * @author Michael Jansen <kde@michael-jansen.biz>
  */
 class GlobalShortcutsRegistry : public QObject
     {
     Q_OBJECT
+
+    Q_CLASSINFO("D-Bus Interface", "org.kde.KdedGlobalAccel.GlobalShortcutsRegistry")
 
 public:
 
@@ -53,16 +67,37 @@ public:
     KdeDGlobalAccel::Component *getComponent(const QString &uniqueName);
 
     /**
-     * Get the shortcut corresponding to key. All shortcuts are
-     * considered.
+     * Get the shortcut corresponding to key. Active and inactive shortcuts
+     * are considered. But if the matching application uses contexts only one
+     * shortcut is returned.
+     *
+     * @see getShortcutsByKey(int key)
      */
     GlobalShortcut *getShortcutByKey(int key) const;
 
+    /**
+     * Get the shortcuts corresponding to key. Active and inactive shortcuts
+     * are considered.
+     *
+     * @see getShortcutsByKey(int key)
+     */
+    QList<GlobalShortcut*> getShortcutsByKey(int key) const;
+
+    /**
+     * Checks if @p shortcut is available for @p component.
+     *
+     * It is available if not used by another component in any context or used
+     * by @p component only in not active contexts.
+     */
+    bool isShortcutAvailable(int shortcut, const QString &component) const;
+
     static GlobalShortcutsRegistry *self();
+
+    bool registerKey(int key, GlobalShortcut *shortcut);
 
     void setAccelManager(KGlobalAccelImpl *manager);
 
-    bool registerKey(int key, GlobalShortcut *shortcut);
+    void setDBusPath(const QString &path);
 
     void setInactive();
 
@@ -100,7 +135,9 @@ private:
     KGlobalAccelImpl *_manager;
 
     mutable KConfig _config;
+
+    QString _dbusPath;
     };
 
 
-#endif /* #ifndef GLOBAL_SHORTCUTS_REGISTRY_H */
+#endif /* #ifndef GLOBALSHORTCUTSREGISTRY_H */

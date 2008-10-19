@@ -1,5 +1,5 @@
-#ifndef GLOBAL_SHORTCUT_H
-#define GLOBAL_SHORTCUT_H
+#ifndef GLOBALSHORTCUT_H
+#define GLOBALSHORTCUT_H
 /* Copyright (C) 2008 Michael Jansen <kde@michael-jansen.biz>
 
    This library is free software; you can redistribute it and/or
@@ -18,13 +18,12 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kglobalshortcutinfo_p.h"
+
 #include <QtCore/QObject>
 
-namespace KdeDGlobalAccel
-    {
-    class Component;
-    }
 
+class GlobalShortcutContext;
 
 /**
  * Represents a global shortcut.
@@ -41,12 +40,14 @@ class GlobalShortcut
     {
 public:
 
-    GlobalShortcut(const QString &uniqueName, const QString &friendlyName, KdeDGlobalAccel::Component *component);
+    GlobalShortcut(const QString &uniqueName, const QString &friendlyName, GlobalShortcutContext *context);
+    GlobalShortcut();
 
     ~GlobalShortcut();
 
-    //! Returns the component the shortcuts belongs to
-    KdeDGlobalAccel::Component *component();
+    //! Returns the context the shortcuts belongs to
+    GlobalShortcutContext *context();
+    GlobalShortcutContext const *context() const;
 
     //! Returns the default keys for this shortcut.
     QList<int> defaultKeys() const;
@@ -83,6 +84,8 @@ public:
     //! Returns the unique name aka id for the shortcuts.
     QString uniqueName() const;
 
+    operator KGlobalShortcutInfo () const;
+
 private:
 
     //! means the associated application is active.
@@ -91,8 +94,8 @@ private:
     //! means the shortcut is new
     bool _isFresh:1;
 
-    //! The Component the shortcut belongs to.
-    KdeDGlobalAccel::Component *_component;
+    //! The context the shortcut belongs too
+    GlobalShortcutContext *_context;
 
     QString _uniqueName;
     QString _friendlyName; //usually localized
@@ -102,4 +105,4 @@ private:
     };
 
 
-#endif /* #ifndef GLOBAL_SHORTCUT_H */
+#endif /* #ifndef GLOBALSHORTCUT_H */

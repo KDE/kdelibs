@@ -382,9 +382,11 @@ bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &
 		return false;
 	}
 
-	QStringList conflicting = KGlobalAccel::findActionNameSystemwide(keySequence);
-	if (!conflicting.isEmpty()) {
-		if (!KGlobalAccel::promptStealShortcutSystemwide(q, conflicting, keySequence)) {
+	if (!KGlobalAccel::isGlobalShortcutAvailable(keySequence)) {
+		QList<KGlobalShortcutInfo> others =
+			KGlobalAccel::getGlobalShortcutsByKey(keySequence);
+
+		if (!KGlobalAccel::promptStealShortcutSystemwide(q, others, keySequence)) {
 			return true;
 		}
 		// The user approved stealing the shortcut. We have to steal

@@ -1,5 +1,5 @@
-#ifndef GLOBAL_SHORTCUT_CONTEXT_H
-#define GLOBAL_SHORTCUT_CONTEXT_H
+#ifndef GLOBALSHORTCUTCONTEXT_H
+#define GLOBALSHORTCUTCONTEXT_H
 /* Copyright (C) 2008 Michael Jansen <kde@michael-jansen.biz>
 
    This library is free software; you can redistribute it and/or
@@ -37,29 +37,47 @@ public:
     /**
      * Default constructor
      */
-    GlobalShortcutContext(const QString &name);
+    GlobalShortcutContext(
+            const QString &uniqueName,
+            const QString &friendlyName,
+            KdeDGlobalAccel::Component *component );
 
     /**
      * Destructor
      */
     virtual ~GlobalShortcutContext();
 
+    //! Adds @p shortcut to the context
+    void addShortcut(GlobalShortcut *shortcut);
 
     /**
      * Get the name for the context
      */
-    QString name() const;
+    QString uniqueName() const;
+    QString friendlyName() const;
+
+    KdeDGlobalAccel::Component *component();
+    KdeDGlobalAccel::Component const *component() const;
+
+    //! Remove @p shortcut from the context. The shortcut is not deleted.
+    GlobalShortcut *takeShortcut(GlobalShortcut *shortcut);
 
 private:
 
     friend class KdeDGlobalAccel::Component;
 
     //! The unique name for this context
-    QString _name;
+    QString _uniqueName;
+
+    //! The unique name for this context
+    QString _friendlyName;
+
+    //! The component the context belongs too
+    KdeDGlobalAccel::Component *_component;
 
     //! The actions associated with this context
     QHash<QString, GlobalShortcut*> _actions;
 };
 
 
-#endif /* #ifndef GLOBAL_SHORTCUT_CONTEXT_H */
+#endif /* #ifndef GLOBALSHORTCUTCONTEXT_H */

@@ -18,6 +18,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "globalshortcut.h"
+#include "kglobalshortcutinfo.h"
+
 #include "kconfiggroup.h"
 
 #include <QtCore/QObject>
@@ -26,6 +29,9 @@
 class GlobalShortcut;
 class GlobalShortcutContext;
 class GlobalShortcutsRegistry;
+
+
+Q_DECLARE_METATYPE(QStringList)
 
 namespace KdeDGlobalAccel {
 
@@ -36,11 +42,15 @@ class Component : public QObject
     {
     Q_OBJECT
 
-    Q_PROPERTY( QString friendlyName READ friendlyName )
-    Q_PROPERTY( QString uniqueName READ uniqueName )
+    Q_CLASSINFO("D-Bus Interface", "org.kde.kdedglobalaccel.Component")
+
+    Q_SCRIPTABLE Q_PROPERTY( QString friendlyName READ friendlyName )
+    Q_SCRIPTABLE Q_PROPERTY( QString uniqueName READ uniqueName )
 
 public:
 
+    //! Creates a new component. The component will be registered with @p
+    //! registry if specified and registered with dbus.
     Component( 
             const QString &uniqueName,
             const QString &friendlyName,
@@ -48,39 +58,69 @@ public:
 
     ~Component();
 
-    bool activateGlobalShortcutContext(const QString &context);
+    bool activateGlobalShortcutContext(const QString &uniqueName);
 
     void activateShortcuts();
 
-    void addShortcut(GlobalShortcut *shortcut);
+    //! Returns all shortcuts in context @context
+    QList<GlobalShortcut *> allShortcuts(const QString &context = "default") const;
 
-    QList<GlobalShortcut *> allShortcuts() const;
+    //! Creates the new global shortcut context @p context
+    bool createGlobalShortcutContext(const QString &context, const QString &friendlyName);
 
-    bool createGlobalShortcutContext(const QString &context);
+    //! Return the current context
+    GlobalShortcutContext* currentContext();
 
+    //! Deactivate all currently active shortcuts
     void deactivateShortcuts();
 
+    //! Returns the friendly name
     QString friendlyName() const;
 
     //! Returns the currently active shortcut for key
-    GlobalShortcut *getShortcutByKey(int key);
+    GlobalShortcut *getShortcutByKey(int key) const;
 
-    GlobalShortcut *getShortcutByName(const QString &uniqueName);
+    /**
+     * Returns the list of shortcuts (different context) registered with @p
+     * key.
+     */
+    QList<GlobalShortcut *> getShortcutsByKey(int key) const;
 
-    //! Check if @a key is available for component @p component
-    bool isKeyAvailable(int key, const QString &component) const;
+    //! Returns the shortcut by unique name. Only the active context is
+    //! searched.
+    GlobalShortcut *getShortcutByName(const QString &uniqueName) const;
 
+    /**
+     * Check if @a key is available for component @p component
+     */
+    bool isShortcutAvailable(int key, const QString &component) const;
+
+    //! Load the settings from config group @p config
     void loadSettings(KConfigGroup &config);
 
-    void setUniqueName(const QString &);
-
+    //! Sets the human readable name for this component.
     void setFriendlyName(const QString &);
-
-    GlobalShortcut *takeShortcut(GlobalShortcut *shortcut);
 
     QString uniqueName() const;
 
     void writeSettings(KConfigGroup &config) const;
+
+public Q_SLOTS:
+    // For dbus Q_SCRIPTABLE has to be on slots. Scriptable methods are not
+    // exported.
+
+    Q_SCRIPTABLE QStringList shortcutNames(const QString &context = "default") const;
+
+    //! Returns all shortcut in context @context
+    Q_SCRIPTABLE QList<KGlobalShortcutInfo> allShortcutInfos(const QString &context = "default") const;
+
+#if 0
+    //! Returns all shortcut in context @context
+    Q_SCRIPTABLE KGlobalShortcutInfo shortcutInfo(const QString &name, const QString &context = "default") const;
+#endif
+
+    //! Returns the shortcut contexts available for the component.
+    Q_SCRIPTABLE QStringList getShortcutContexts() const;
 
 private:
 

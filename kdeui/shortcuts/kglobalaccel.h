@@ -22,8 +22,9 @@
 #ifndef _KGLOBALACCEL_H_
 #define _KGLOBALACCEL_H_
 
-#include <kdeui_export.h>
+#include "kdeui_export.h"
 #include "kaction.h"
+#include "kglobalshortcutinfo.h"
 
 #include <QtCore/QObject>
 
@@ -89,7 +90,7 @@ public:
      * Return the unique and common names of all main components that have global shortcuts.
      * The action strings of the returned actionId stringlists will be empty.
      */
-    QList<QStringList> allMainComponents();
+    KDE_DEPRECATED QList<QStringList> allMainComponents();
 
     /**
      * Index for actionId QStringLists
@@ -103,28 +104,19 @@ public:
     };
 
     /**
-     * Return the full actionIds of all actions with global shortcuts for the main component
-     * specified by actionId. Only the ComponentUnique part of actionId will be used;
-     * the other members of the actionId QStringList will be ignored.
+     * @see getGlobalShortcutsByComponent
      */
-    QList<QStringList> allActionsForComponent(const QStringList &actionId);
+    KDE_DEPRECATED QList<QStringList> allActionsForComponent(const QStringList &actionId);
 
     /**
-     * Return the name of the action that uses the given key sequence. This applies to
-     * all actions with global shortcuts in any KDE application.
-     *
-     * @see promptStealShortcutSystemwide(), stealShorctutSystemwide()
+     * @see getGlobalShortcutsByKey
      */
-    static QStringList findActionNameSystemwide(const QKeySequence &seq);
+    KDE_DEPRECATED static QStringList findActionNameSystemwide(const QKeySequence &seq);
 
     /**
-     * Show a messagebox to inform the user that a global shorcut is already occupied,
-     * and ask to take it away from its current action. This is GUI only, so nothing will
-     * be actually changed.
-     *
-     * @see stealShorctutSystemwide()
+     * @see promptStealShortcutSystemwide below
      */
-    static bool promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier, const QKeySequence &seq);
+    KDE_DEPRECATED static bool promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier, const QKeySequence &seq);
 
     /**
      * Take away the given shortcut from the named action it belongs to.
@@ -145,7 +137,41 @@ public:
      * @param component the name of the component. KComponentData::componentName
      * @param context the name of the context.
      */
-    void activateGlobalShortcutContext(const QString &component, const QString &context);
+    void activateGlobalShortcutContext(
+            const QString &contextUnique,
+            const QString &contextFriendly,
+            const KComponentData &component = KGlobal::mainComponent());
+
+    /**
+     * Returns a list of global shortcuts registered for the shortcut @seq.
+     *
+     * If the list contains more that one entry it means the component
+     * that registered the shortcuts uses global shortcut contexts. All
+     * returned shortcuts belong to the same component.
+     */
+    static QList<KGlobalShortcutInfo> getGlobalShortcutsByKey(const QKeySequence &seq);
+
+    /**
+     * Check if the shortcut @seq is available for the @p component. The
+     * component is only of interest if the current application uses global shortcut
+     * contexts. In that case a global shortcut by @p component in an inactive
+     * global shortcut contexts does not block the @p seq for us.
+     */
+    static bool isGlobalShortcutAvailable(
+            const QKeySequence &seq,
+            const KComponentData &component = KGlobal::mainComponent());
+
+    /**
+     * Show a messagebox to inform the user that a global shorcut is already occupied,
+     * and ask to take it away from its current action(s). This is GUI only, so nothing will
+     * be actually changed.
+     *
+     * @see stealShortcutSystemwide()
+     */
+    static bool promptStealShortcutSystemwide(
+            QWidget *parent,
+            const QList<KGlobalShortcutInfo> &shortcuts,
+            const QKeySequence &seq);
 
 private:
 

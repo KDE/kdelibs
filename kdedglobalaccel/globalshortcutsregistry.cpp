@@ -58,7 +58,20 @@ GlobalShortcutsRegistry::~GlobalShortcutsRegistry()
 
 KdeDGlobalAccel::Component *GlobalShortcutsRegistry::addComponent(KdeDGlobalAccel::Component *component)
     {
-    return *(_components.insert(component->uniqueName(), component));
+    if (_components.value(component->uniqueName()))
+        {
+        Q_ASSERT_X(false, "GlobalShortcutsRegistry::addComponent", "component already registered?!?!");
+        return _components.value(component->uniqueName());
+        }
+
+    _components.insert(component->uniqueName(), component);
+    QDBusConnection conn(QDBusConnection::sessionBus());
+    kDebug() << _dbusPath + "/component/" + component->uniqueName();
+    conn.registerObject(
+            _dbusPath + "/component/" + component->uniqueName(),
+            component,
+            QDBusConnection::ExportScriptableContents);
+    return component;
     }
 
 
@@ -91,6 +104,30 @@ GlobalShortcut *GlobalShortcutsRegistry::getShortcutByKey(int key) const
     }
 
 
+QList<GlobalShortcut*> GlobalShortcutsRegistry::getShortcutsByKey(int key) const
+    {
+    QList<GlobalShortcut *> rc;
+
+    Q_FOREACH (KdeDGlobalAccel::Component *component, _components)
+        {
+        rc = component->getShortcutsByKey(key);
+        if (!rc.isEmpty()) return rc;
+        }
+    return rc;
+    }
+
+
+bool GlobalShortcutsRegistry::isShortcutAvailable(int shortcut, const QString &componentName) const
+    {
+    Q_FOREACH (KdeDGlobalAccel::Component *component, _components)
+        {
+        if (!component->isShortcutAvailable(shortcut, componentName))
+            return false;
+        }
+    return true;
+    }
+
+
 GlobalShortcutsRegistry * GlobalShortcutsRegistry::self()
     {
     K_GLOBAL_STATIC( GlobalShortcutsRegistry, self );
@@ -114,9 +151,9 @@ bool GlobalShortcutsRegistry::keyPressed(int keyQt)
     // shortcuts. We could end up printing out kpasswdservers password.
     kDebug() << QKeySequence(keyQt).toString() << "=" << shortcut->uniqueName();
 
-    QStringList data(shortcut->component()->uniqueName());
+    QStringList data(shortcut->context()->component()->uniqueName());
     data.append(shortcut->uniqueName());
-    data.append(shortcut->component()->friendlyName());
+    data.append(shortcut->context()->component()->friendlyName());
     data.append(shortcut->friendlyName());
 #ifdef Q_WS_X11
     // pass X11 timestamp
@@ -178,7 +215,7 @@ void GlobalShortcutsRegistry::loadSettings()
             if (context=="Friendly Name") continue;
 
             KConfigGroup contextGroup(&configGroup, context);
-            component->createGlobalShortcutContext(context);
+            component->createGlobalShortcutContext(context, "TODO2");
             component->activateGlobalShortcutContext(context);
             component->loadSettings(contextGroup);
             }
@@ -205,7 +242,7 @@ bool GlobalShortcutsRegistry::registerKey(int key, GlobalShortcut *shortcut)
         }
 
     kDebug() << "Registering key" << QKeySequence(key).toString() << "for"
-             << shortcut->component()->uniqueName() << ":" << shortcut->uniqueName();
+             << shortcut->context()->component()->uniqueName() << ":" << shortcut->uniqueName();
 
     _active_keys.insert(key, shortcut);
     return _manager->grabKey(key, true);
@@ -215,6 +252,12 @@ bool GlobalShortcutsRegistry::registerKey(int key, GlobalShortcut *shortcut)
 void GlobalShortcutsRegistry::setAccelManager(KGlobalAccelImpl *manager)
     {
     _manager = manager;
+    }
+
+
+void GlobalShortcutsRegistry::setDBusPath(const QString &path)
+    {
+    _dbusPath = path;
     }
 
 
@@ -233,6 +276,8 @@ void GlobalShortcutsRegistry::setInactive()
 
 KdeDGlobalAccel::Component *GlobalShortcutsRegistry::takeComponent(KdeDGlobalAccel::Component *component)
     {
+    QDBusConnection conn(QDBusConnection::sessionBus());
+    conn.unregisterObject(_dbusPath + "/component/" + component->uniqueName());
     return _components.take(component->uniqueName());
     }
 
@@ -246,7 +291,7 @@ bool GlobalShortcutsRegistry::unregisterKey(int key, GlobalShortcut *shortcut)
         }
 
     kDebug() << "Unregistering key" << QKeySequence(key).toString() << "for"
-             << shortcut->component()->uniqueName() << ":" << shortcut->uniqueName();
+             << shortcut->context()->component()->uniqueName() << ":" << shortcut->uniqueName();
 
     _manager->grabKey(key, false);
     _active_keys.take(key);

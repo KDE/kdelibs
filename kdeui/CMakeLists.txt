@@ -31,18 +31,8 @@ add_subdirectory( about )
 add_subdirectory( tests )
 add_subdirectory( sonnet/tests )
 
-# TODO: make it possible to generate kdedglobalaccel_interface from
-# the xml file
-
-#qt4_add_dbus_interface(
-#    kdeui_LIB_SRCS
-#    ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KdedGlobalAccel.xml
-#    kdedglobalaccel_interface)
-
 ########### next target ###############
 set(kdeui_LIB_SRCS
- # ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KdedGlobalAccel.xml
- shortcuts/kdedglobalaccel_interface.cpp
  actions/kactioncollection.cpp
  actions/kactioncategory.cpp
  actions/kaction.cpp
@@ -148,6 +138,10 @@ set(kdeui_LIB_SRCS
  shortcuts/kshortcutschemeshelper.cpp
  shortcuts/kstandardshortcut.cpp
  shortcuts/kglobalaccel.cpp
+ shortcuts/kglobalshortcutinfo.cpp
+ shortcuts/kglobalshortcutinfo_dbus.cpp
+ shortcuts/kdedglobalaccel_interface.cpp
+ shortcuts/kdedglobalaccel_component_interface.cpp
  shortcuts/kacceleratormanager.cpp
  shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
@@ -457,6 +451,8 @@ install( FILES
  shortcuts/kshortcut.h
  shortcuts/kstandardshortcut.h
  shortcuts/kglobalaccel.h
+ shortcuts/kglobalshortcutinfo.h
+ shortcuts/kglobalshortcutinfo_p.h
  shortcuts/kacceleratormanager.h
  shortcuts/kgesture.h
  util/kaccelgen.h

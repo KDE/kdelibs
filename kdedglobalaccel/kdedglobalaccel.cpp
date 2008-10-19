@@ -20,8 +20,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "globalshortcut.h"
 #include "component.h"
+#include "globalshortcut.h"
+#include "globalshortcutcontext.h"
 #include "globalshortcutsregistry.h"
 
 #include <QtCore/QTimer>
@@ -31,6 +32,7 @@
 
 #include "kdedglobalaccel.h"
 #include "kglobalaccel.h"
+#include "kglobalshortcutinfo_p.h"
 #include "kdebug.h"
 
 #include "kpluginfactory.h"
@@ -47,7 +49,15 @@ struct KdedGlobalAccelPrivate
     GlobalShortcut *addAction(const QStringList &actionId);
     KdeDGlobalAccel::Component *component(const QStringList &actionId) const;
     QTimer writeoutTimer;
+
+    void _k_initializeDBus(const QString &path);
 };
+
+void KdedGlobalAccelPrivate::_k_initializeDBus(const QString &path)
+    {
+    GlobalShortcutsRegistry::self()->setDBusPath(path);
+    GlobalShortcutsRegistry::self()->loadSettings();
+    }
 
 
 GlobalShortcut *KdedGlobalAccelPrivate::findAction(const QStringList &actionId) const
@@ -97,7 +107,7 @@ GlobalShortcut *KdedGlobalAccelPrivate::addAction(const QStringList &actionId)
     return new GlobalShortcut(
             actionId.at(KGlobalAccel::ActionUnique),
             actionId.at(KGlobalAccel::ActionFriendly),
-            component);
+            component->currentContext());
 }
 
 
@@ -106,23 +116,27 @@ KdedGlobalAccel::KdedGlobalAccel(QObject* parent, const QList<QVariant>&)
    d(new KdedGlobalAccelPrivate)
 {
     qDBusRegisterMetaType<QList<QStringList> >();
+    qDBusRegisterMetaType<QStringList>();
     qDBusRegisterMetaType<QList<int> >();
+    qDBusRegisterMetaType<QList<KGlobalShortcutInfo> >();
+
+    qDBusRegisterMetaType<KGlobalShortcutInfo>();
 
     GlobalShortcutsRegistry *reg = GlobalShortcutsRegistry::self();
-
     Q_ASSERT(reg);
 
-    connect(&d->writeoutTimer, SIGNAL(timeout()), 
+    connect(&d->writeoutTimer, SIGNAL(timeout()),
             reg, SLOT(writeSettings()));
 
+    connect(this, SIGNAL(moduleRegistered(const QString &)),
+            this, SLOT(_k_initializeDBus(const QString &)));
+
     d->writeoutTimer.setSingleShot(true);
-    connect(this, SIGNAL(moduleDeleted(KDEDModule *)), 
+    connect(this, SIGNAL(moduleDeleted(KDEDModule *)),
             reg, SLOT(writeSettings()));
 
     connect(reg, SIGNAL(invokeAction(const QStringList &, qlonglong)),
             this, SIGNAL(invokeAction(const QStringList &, qlonglong)));
-
-    GlobalShortcutsRegistry::self()->loadSettings();
 }
 
 
@@ -189,9 +203,9 @@ QStringList KdedGlobalAccel::action(int key) const
     GlobalShortcut *shortcut = GlobalShortcutsRegistry::self()->getShortcutByKey(key);
     QStringList ret;
     if (shortcut) {
-        ret.append(shortcut->component()->uniqueName());
+        ret.append(shortcut->context()->component()->uniqueName());
         ret.append(shortcut->uniqueName());
-        ret.append(shortcut->component()->friendlyName());
+        ret.append(shortcut->context()->component()->friendlyName());
         ret.append(shortcut->friendlyName());
     }
     return ret;
@@ -200,12 +214,12 @@ QStringList KdedGlobalAccel::action(int key) const
 
 void KdedGlobalAccel::activateGlobalShortcutContext(
             const QString &component,
-            const QString &context)
+            const QString &uniqueName)
 {
     KdeDGlobalAccel::Component *const comp =
         GlobalShortcutsRegistry::self()->getComponent(component);
 
-    comp->activateGlobalShortcutContext(context);
+    comp->activateGlobalShortcutContext(uniqueName);
 }
 
 
@@ -244,12 +258,43 @@ void KdedGlobalAccel::doRegister(const QStringList &actionId)
             shortcut->setFriendlyName(actionId[KGlobalAccel::ActionFriendly]);
             scheduleWriteSettings();
         }
-        if ((!actionId[KGlobalAccel::ComponentFriendly].isEmpty()) && shortcut->component()->friendlyName() != actionId[KGlobalAccel::ComponentFriendly]) {
-            shortcut->component()->setFriendlyName(actionId[KGlobalAccel::ComponentFriendly]);
+        if ((!actionId[KGlobalAccel::ComponentFriendly].isEmpty())
+                && shortcut->context()->component()->friendlyName() != actionId[KGlobalAccel::ComponentFriendly]) {
+            shortcut->context()->component()->setFriendlyName(actionId[KGlobalAccel::ComponentFriendly]);
             scheduleWriteSettings();
         }
     }
 }
+
+
+QList<KGlobalShortcutInfo> KdedGlobalAccel::getGlobalShortcutsByKey(int key) const
+    {
+    QList<GlobalShortcut*> shortcuts =
+        GlobalShortcutsRegistry::self()->getShortcutsByKey(key);
+
+    QList<KGlobalShortcutInfo> rc;
+    Q_FOREACH(GlobalShortcut const*sc, shortcuts)
+        {
+        rc.append(static_cast<KGlobalShortcutInfo>(*sc));
+        }
+
+    Q_FOREACH(KGlobalShortcutInfo inf, rc)
+        {
+        kDebug() << inf.uniqueName();
+        kDebug() << inf.friendlyName();
+        kDebug() << inf.contextFriendlyName();
+        kDebug() << inf.contextUniqueName();
+        kDebug() << inf.componentUniqueName();
+        kDebug() << inf.componentFriendlyName();
+        }
+    return rc;
+    }
+
+
+bool KdedGlobalAccel::isGlobalShortcutAvailable(int shortcut, const QString &component) const
+    {
+    return GlobalShortcutsRegistry::self()->isShortcutAvailable(shortcut, component);
+    }
 
 
 void KdedGlobalAccel::setInactive(const QStringList &actionId)
@@ -342,4 +387,4 @@ void KdedGlobalAccel::scheduleWriteSettings() const
     }
 
 
-#include "kdedglobalaccel.moc"
+#include "moc_kdedglobalaccel.cpp"

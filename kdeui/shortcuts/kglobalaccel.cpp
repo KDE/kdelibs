@@ -69,6 +69,9 @@ KGlobalAccel::KGlobalAccel()
     : d(new KGlobalAccelPrivate(this))
 {
     qDBusRegisterMetaType<QList<int> >();
+    qDBusRegisterMetaType<QList<QStringList> >();
+    qDBusRegisterMetaType<KGlobalShortcutInfo>();
+    qDBusRegisterMetaType<QList<KGlobalShortcutInfo> >();
 
     connect(&d->iface, SIGNAL(invokeAction(const QStringList &, qlonglong)),
             SLOT(_k_invokeAction(const QStringList &, qlonglong)));
@@ -189,7 +192,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 
     uint setterFlags = 0;
     if (flags & KAction::NoAutoloading) {
-        setterFlags |= org::kde::KdedGlobalAccel::NoAutoloading;
+        setterFlags |= NoAutoloading;
     }
 
     if (flags & KAction::ActiveShortcut) {
@@ -199,7 +202,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 
         // setPresent tells kdedglobalaccel that the shortcut is active
         if (!isConfigurationAction) {
-            activeSetterFlags |= org::kde::KdedGlobalAccel::SetPresent;
+            activeSetterFlags |= SetPresent;
         }
 
         // Sets the shortcut, returns the active/real keys
@@ -232,7 +235,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 
     if (flags & KAction::DefaultShortcut) {
         iface.setShortcut(actionId, intListFromShortcut(defaultShortcut),
-                          setterFlags | org::kde::KdedGlobalAccel::IsDefault);
+                          setterFlags | IsDefault);
     }
 }
 
@@ -386,6 +389,27 @@ QStringList KGlobalAccel::findActionNameSystemwide(const QKeySequence &seq)
 }
 
 
+QList<KGlobalShortcutInfo> KGlobalAccel::getGlobalShortcutsByKey(const QKeySequence &seq)
+{
+    QList<KGlobalShortcutInfo> list = self()->d->iface.getGlobalShortcutsByKey(seq[0]);
+    kDebug() << list.size();
+    Q_FOREACH(KGlobalShortcutInfo inf, list)
+        {
+        kDebug() << inf.uniqueName();
+        kDebug() << inf.friendlyName();
+        kDebug() << inf.contextFriendlyName();
+        kDebug() << inf.contextUniqueName();
+        kDebug() << inf.componentUniqueName();
+        kDebug() << inf.componentFriendlyName();
+        }
+    return list;
+}
+
+
+bool KGlobalAccel::isGlobalShortcutAvailable(const QKeySequence &seq, const KComponentData &comp)
+{
+        return self()->d->iface.isGlobalShortcutAvailable(seq[0], comp.aboutData()->programName());
+}
 //static
 bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier,
                                                  const QKeySequence &seq)
@@ -399,6 +423,45 @@ bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QStringL
                            "Do you want to reassign it from that action to the current one?",
                            seq.toString(), actionIdentifier.at(KGlobalAccel::ActionFriendly),
                            actionIdentifier.at(KGlobalAccel::ComponentFriendly));
+
+    return KMessageBox::warningContinueCancel(parent, message, title, KGuiItem(i18n("Reassign")))
+           == KMessageBox::Continue;
+}
+
+
+//static
+bool KGlobalAccel::promptStealShortcutSystemwide(
+        QWidget *parent,
+        const QList<KGlobalShortcutInfo> &shortcuts,
+        const QKeySequence &seq)
+{
+    if (shortcuts.isEmpty()) {
+        // Usage error. Just say no
+        return false;
+    }
+
+    QString component = shortcuts[0].componentFriendlyName();
+
+    QString message;
+    if (shortcuts.size()==1) {
+        message = i18n("The '%1' key combination is registered by application %2 for action %3:",
+                seq.toString(),
+                component,
+                shortcuts[0].friendlyName());
+    } else {
+        QString actionList;
+        Q_FOREACH(const KGlobalShortcutInfo &info, shortcuts) {
+            actionList += i18n("In context '%1' for action '%2'\n",
+                    info.contextFriendlyName(),
+                    info.friendlyName());
+        }
+        message = i18n("The '%1' key combination is registered by application %2.\n%3",
+                           seq.toString(),
+                           component,
+                           actionList);
+    }
+
+    QString title = i18n("Conflict With Registered Global Shortcut");
 
     return KMessageBox::warningContinueCancel(parent, message, title, KGuiItem(i18n("Reassign")))
            == KMessageBox::Continue;
@@ -422,5 +485,4 @@ void KGlobalAccel::stealShortcutSystemwide(const QKeySequence &seq)
 }
 
 #include "kglobalaccel.moc"
-#include "kdedglobalaccel_interface.moc"
 
