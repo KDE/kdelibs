@@ -451,7 +451,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       cpp << "  QStringList default" << name << ";" << endl;
       const QStringList defaults = defaultValue.split( ',' );
       QStringList::ConstIterator it;
-      for( it = defaults.begin(); it != defaults.end(); ++it ) {
+      for( it = defaults.constBegin(); it != defaults.constEnd(); ++it ) {
         cpp << "  default" << name << ".append( QString::fromUtf8( \"" << *it << "\" ) );"
             << endl;
       }
@@ -470,7 +470,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
 
     } else if ( type == "Enum" ) {
       QList<CfgEntry::Choice>::ConstIterator it;
-      for( it = choices.choices.begin(); it != choices.choices.end(); ++it ) {
+      for( it = choices.choices.constBegin(); it != choices.choices.constEnd(); ++it ) {
         if ( (*it).name == defaultValue ) {
           if ( globalEnums && choices.name().isEmpty() )
             defaultValue.prepend( choices.prefix );
@@ -490,7 +490,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       {
         QStringList defaults = defaultValue.split( ',' );
         QStringList::ConstIterator it;
-        for( it = defaults.begin(); it != defaults.end(); ++it ) {
+        for( it = defaults.constBegin(); it != defaults.constEnd(); ++it ) {
           cpp << "  default" << name << ".append( " << *it << " );"
               << endl;
         }
@@ -970,8 +970,8 @@ QString paramString(const QString &group, const QList<Param> &parameters)
   QString paramString = group;
   QString arguments;
   int i = 1;
-  for (QList<Param>::ConstIterator it = parameters.begin();
-       it != parameters.end(); ++it)
+  for (QList<Param>::ConstIterator it = parameters.constBegin();
+       it != parameters.constEnd(); ++it)
   {
      if (paramString.contains("$("+(*it).name+')'))
      {
@@ -1360,7 +1360,7 @@ int main( int argc, char **argv )
 
   // Includes
   QStringList::ConstIterator it;
-  for( it = headerIncludes.begin(); it != headerIncludes.end(); ++it ) {
+  for( it = headerIncludes.constBegin(); it != headerIncludes.constEnd(); ++it ) {
     if ( (*it).startsWith('"') )
       h << "#include " << *it << endl;
     else
@@ -1376,7 +1376,7 @@ int main( int argc, char **argv )
   h << "#include <kdebug.h>" << endl << endl;
 
   // Includes
-  for( it = includes.begin(); it != includes.end(); ++it ) {
+  for( it = includes.constBegin(); it != includes.constEnd(); ++it ) {
     if ( (*it).startsWith('"') )
       h << "#include " << *it << endl;
     else
@@ -1401,13 +1401,13 @@ int main( int argc, char **argv )
 
   // enums
   QList<CfgEntry*>::ConstIterator itEntry;
-  for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+  for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
     const CfgEntry::Choices &choices = (*itEntry)->choices();
     QList<CfgEntry::Choice> chlist = choices.choices;
     if ( !chlist.isEmpty() ) {
       QStringList values;
       QList<CfgEntry::Choice>::ConstIterator itChoice;
-      for( itChoice = chlist.begin(); itChoice != chlist.end(); ++itChoice ) {
+      for( itChoice = chlist.constBegin(); itChoice != chlist.constEnd(); ++itChoice ) {
         values.append( choices.prefix + (*itChoice).name );
       }
       if ( choices.name().isEmpty() ) {
@@ -1478,10 +1478,10 @@ int main( int argc, char **argv )
             h << " KSharedConfig::Ptr config"
                 << (parameters.isEmpty() ? " = KGlobal::config()" : ", ");
     }
-    for (QList<Param>::ConstIterator it = parameters.begin();
-         it != parameters.end(); ++it)
+    for (QList<Param>::ConstIterator it = parameters.constBegin();
+         it != parameters.constEnd(); ++it)
     {
-       if (it != parameters.begin())
+       if (it != parameters.constBegin())
          h << ",";
        h << " " << param((*it).type) << " " << (*it).name;
     }
@@ -1503,7 +1503,7 @@ int main( int argc, char **argv )
   else
     Const = " const";
 
-  for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+  for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
     QString n = (*itEntry)->name();
     QString t = (*itEntry)->type();
 
@@ -1649,8 +1649,8 @@ int main( int argc, char **argv )
   }
 
   // Class Parameters
-  for (QList<Param>::ConstIterator it = parameters.begin();
-       it != parameters.end(); ++it)
+  for (QList<Param>::ConstIterator it = parameters.constBegin();
+       it != parameters.constEnd(); ++it)
   {
      h << "    " << cppType((*it).type) << " mParam" << (*it).name << ";" << endl;
   }
@@ -1658,7 +1658,7 @@ int main( int argc, char **argv )
   if ( memberVariables != "dpointer" )
   {
     QString group;
-    for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+    for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
       if ( (*itEntry)->group() != group ) {
         group = (*itEntry)->group();
         h << endl;
@@ -1674,7 +1674,7 @@ int main( int argc, char **argv )
 
     h << endl << "  private:" << endl;
     if ( itemAccessors ) {
-       for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+       for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
         h << "    Item" << itemType( (*itEntry)->type() ) << " *" << itemVar( *itEntry );
         if ( !(*itEntry)->param().isEmpty() ) h << QString("[%1]").arg( (*itEntry)->paramMax()+1 );
         h << ";" << endl;
@@ -1721,7 +1721,7 @@ int main( int argc, char **argv )
 
   cpp << "#include \"" << headerFileName << "\"" << endl << endl;
 
-  for( it = sourceIncludes.begin(); it != sourceIncludes.end(); ++it ) {
+  for( it = sourceIncludes.constBegin(); it != sourceIncludes.constEnd(); ++it ) {
     if ( (*it).startsWith('"') )
       cpp << "#include " << *it << endl;
     else
@@ -1751,7 +1751,7 @@ int main( int argc, char **argv )
     cpp << "class " << className << "Private" << endl;
     cpp << "{" << endl;
     cpp << "  public:" << endl;
-    for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+    for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
       if ( (*itEntry)->group() != group ) {
         group = (*itEntry)->group();
         cpp << endl;
@@ -1765,7 +1765,7 @@ int main( int argc, char **argv )
       cpp << ";" << endl;
     }
     cpp << endl << "    // items" << endl;
-    for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+    for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
       cpp << "    KConfigSkeleton::Item" << itemType( (*itEntry)->type() ) << " *" << itemVar( *itEntry );
       if ( !(*itEntry)->param().isEmpty() ) cpp << QString("[%1]").arg( (*itEntry)->paramMax()+1 );
         cpp << ";" << endl;
@@ -1834,10 +1834,10 @@ int main( int argc, char **argv )
     cpp << (parameters.isEmpty() ? " " : ", ");
   }
 
-  for (QList<Param>::ConstIterator it = parameters.begin();
-       it != parameters.end(); ++it)
+  for (QList<Param>::ConstIterator it = parameters.constBegin();
+       it != parameters.constEnd(); ++it)
   {
-     if (it != parameters.begin())
+     if (it != parameters.constBegin())
        cpp << ",";
      cpp << " " << param((*it).type) << " " << (*it).name;
   }
@@ -1850,8 +1850,8 @@ int main( int argc, char **argv )
   cpp << ")" << endl;
 
   // Store parameters
-  for (QList<Param>::ConstIterator it = parameters.begin();
-       it != parameters.end(); ++it)
+  for (QList<Param>::ConstIterator it = parameters.constBegin();
+       it != parameters.constEnd(); ++it)
   {
      cpp << "  , mParam" << (*it).name << "(" << (*it).name << ")" << endl;
   }
@@ -1869,7 +1869,7 @@ int main( int argc, char **argv )
 
   group.clear();
 
-  for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+  for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
     if ( (*itEntry)->group() != group ) {
       if ( !group.isEmpty() ) cpp << endl;
       group = (*itEntry)->group();
@@ -1885,7 +1885,7 @@ int main( int argc, char **argv )
           << (*itEntry)->name() << ";" << endl;
       QList<CfgEntry::Choice> choices = (*itEntry)->choices().choices;
       QList<CfgEntry::Choice>::ConstIterator it;
-      for( it = choices.begin(); it != choices.end(); ++it ) {
+      for( it = choices.constBegin(); it != choices.constEnd(); ++it ) {
         cpp << "  {" << endl;
         cpp << "    KConfigSkeleton::ItemEnum::Choice2 choice;" << endl;
         cpp << "    choice.name = QLatin1String(\"" << (*it).name << "\");" << endl;
@@ -1984,7 +1984,7 @@ int main( int argc, char **argv )
   if (dpointer)
   {
     // setters and getters go in Cpp if in dpointer mode
-    for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
+    for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
       QString n = (*itEntry)->name();
       QString t = (*itEntry)->type();
 

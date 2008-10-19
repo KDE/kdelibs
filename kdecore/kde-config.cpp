@@ -152,16 +152,16 @@ int main(int argc, char **argv)
             "socket", I18N_NOOP("UNIX Sockets (specific for both current host and current user)"),
             0, 0
         };
-        for (QStringList::ConstIterator it = types.begin(); it != types.end(); ++it)
+        Q_FOREACH(const QString &type, types)
         {
             int index = 0;
-            while (helptexts[index] && *it != helptexts[index]) {
+            while (helptexts[index] && type != helptexts[index]) {
                 index += 2;
             }
             if (helptexts[index]) {
                 printf("%s - %s\n", helptexts[index], i18n(helptexts[index+1]).toLocal8Bit().data());
             } else {
-                printf("%s", i18n("%1 - unknown type\n", *it).toLocal8Bit().data());
+                printf("%s", i18n("%1 - unknown type\n", type).toLocal8Bit().data());
             }
         }
         return 0;
