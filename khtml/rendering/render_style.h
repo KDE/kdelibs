@@ -49,6 +49,8 @@
 
 #include <assert.h>
 
+#include "SVGRenderStyle.h"
+
 #define SET_VAR(group,variable,value) \
     if (!(group->variable == value)) \
         group.access()->variable = value;
@@ -939,6 +941,9 @@ protected:
 // list of associated pseudo styles
     RenderStyle* pseudoStyle;
 
+// SVG Style
+    DataRef<WebCore::SVGRenderStyle> m_svgStyle;
+
 // !END SYNC!
 
 // static default style
@@ -1472,6 +1477,10 @@ public:
     static EMarqueeBehavior initialMarqueeBehavior() { return MSCROLL; }
     static EMarqueeDirection initialMarqueeDirection() { return MAUTO; }
     static bool initialTextOverflow() { return false; }
+
+    // SVG
+    const WebCore::SVGRenderStyle* svgStyle() const { return m_svgStyle.get(); }
+    WebCore::SVGRenderStyle* accessSVGStyle() { return m_svgStyle.access(); }
 };
 
 class RenderPageStyle {

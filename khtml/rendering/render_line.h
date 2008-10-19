@@ -70,6 +70,8 @@ public:
     virtual bool isContainer() const { return false; }
     virtual bool isInlineTextBox() const { return false; }
     virtual bool isRootInlineBox() const { return false; }
+    // SVG
+    virtual bool isSVGRootInlineBox() const { return false; }
 
     bool isConstructed() const { return m_constructed; }
     virtual void setConstructed() {

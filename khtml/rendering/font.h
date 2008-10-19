@@ -31,6 +31,11 @@
 #include <QtGui/QFontMetrics>
 #include <QtGui/QPainter>
 
+namespace DOM
+{
+    class DOMString;
+}
+
 namespace khtml
 {
 class RenderStyle;
@@ -160,6 +165,20 @@ public:
     /** returns word spacing
      */
     int getWordSpacing() const { return wordSpacing; }
+
+    // for SVG
+    //FIXME: IMPLEMENT ME
+    int ascent() const { return 0; }
+    int descent() const { return 0; }
+    int height() const { return ascent() + descent(); }
+    int lineSpacing() const { return 0; }
+    float xHeight() const { return 0; }
+    unsigned unitsPerEm() const { return 0; }
+    int spaceWidth() const { return 0; }
+    int tabWidth() const { return 8 * spaceWidth(); }
+
+    // SVG helper function
+    float floatWidth(QChar* str, int pos, int len, int extraCharsAvailable, int& charsConsumed, DOM::DOMString& glyphName) const;
 
 private:
     mutable FontDef fontDef;

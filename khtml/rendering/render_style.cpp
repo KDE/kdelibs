@@ -535,6 +535,8 @@ RenderStyle::RenderStyle()
 
     inherited = _default->inherited;
 
+    m_svgStyle = _default->m_svgStyle;
+
     setBitDefaults();
 
     pseudoStyle = 0;
@@ -557,6 +559,8 @@ RenderStyle::RenderStyle(bool)
     css3InheritedData.init();
     inherited.init();
 
+    m_svgStyle.init();
+
     pseudoStyle = 0;
 }
 
@@ -565,7 +569,7 @@ RenderStyle::RenderStyle(const RenderStyle& o)
       inherited_flags( o.inherited_flags ), noninherited_flags( o.noninherited_flags ),
       box( o.box ), visual( o.visual ), background( o.background ), surround( o.surround ), generated(o.generated),
       css3NonInheritedData( o.css3NonInheritedData ), css3InheritedData( o.css3InheritedData ),
-      inherited( o.inherited ), pseudoStyle( 0 )
+      inherited( o.inherited ), pseudoStyle( 0 ), m_svgStyle(o.m_svgStyle)
 {}
 
 void RenderStyle::inheritFrom(const RenderStyle* inheritParent)
@@ -573,6 +577,10 @@ void RenderStyle::inheritFrom(const RenderStyle* inheritParent)
     css3InheritedData = inheritParent->css3InheritedData;
     inherited = inheritParent->inherited;
     inherited_flags = inheritParent->inherited_flags;
+
+    // SVG
+    if (m_svgStyle != inheritParent->m_svgStyle)
+        m_svgStyle.access()->inheritFrom(inheritParent->m_svgStyle.get());
 
     // Simulate ":after,:before { white-space: pre-line }"
     if (styleType() == AFTER || styleType() == BEFORE)
@@ -607,7 +615,8 @@ bool RenderStyle::operator==(const RenderStyle& o) const
             generated == o.generated &&
             css3NonInheritedData == o.css3NonInheritedData &&
             css3InheritedData == o.css3InheritedData &&
-            inherited == o.inherited);
+            inherited == o.inherited &&
+            m_svgStyle == o.m_svgStyle); // SVG
 }
 
 enum EPseudoBit { NO_BIT = 0x0,
@@ -715,7 +724,8 @@ bool RenderStyle::inheritedNotEqual( RenderStyle *other ) const
 	(
 	    inherited_flags != other->inherited_flags ||
             inherited != other->inherited ||
-            css3InheritedData != other->css3InheritedData
+            css3InheritedData != other->css3InheritedData || 
+            m_svgStyle->inheritedNotEqual(other->m_svgStyle.get())
 	    );
 }
 
@@ -736,6 +746,8 @@ bool RenderStyle::inheritedNotEqual( RenderStyle *other ) const
 */
 RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 {
+    if (m_svgStyle != other->m_svgStyle)
+        return Layout;
     // we anyway assume they are the same
 // 	EDisplay _display : 5;
 

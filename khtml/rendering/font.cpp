@@ -45,6 +45,9 @@
 #include <QtGui/QPainter>
 #include <QtGui/QFontDatabase>
 
+// for SVG
+#include "dom/dom_string.h"
+
 using namespace khtml;
 
 /** closes the current word and returns its width in pixels
@@ -529,5 +532,13 @@ void Font::drawDecoration(QPainter *pt, int _tx, int _ty, int baseline, int widt
     if (deco & LINE_THROUGH) {
         pt->fillRect(_tx, _ty + 2*baseline/3, width + 1, thickness, brush );
     }
+}
+
+// WebCore SVG
+float Font::floatWidth(QChar* str, int pos, int len, int extraCharsAvailable, int& charsConsumed, DOM::DOMString& glyphName) const
+{
+    charsConsumed = len;
+    glyphName = "";
+    return width(str, 0, pos, len, 0, 0, 0);
 }
 

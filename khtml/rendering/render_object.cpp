@@ -769,7 +769,9 @@ RenderBlock *RenderObject::containingBlock() const
         }
     } else {
         while(o && ( ( o->isInline() && !o->isReplaced() ) || o->isTableRow() || o->isTableSection() ||
-                       o->isTableCol() || o->isFrameSet() ) )
+                       o->isTableCol() || o->isFrameSet() ||
+                       o->isSVGContainer() || o->isSVGRoot() ) ) // for svg
+
             o = o->parent();
     }
     // this is just to make sure we return a valid element.
@@ -2625,6 +2627,25 @@ QRegion RenderObject::visibleFlowRegion(int x, int y) const
     }
     return r;
 }
+
+// SVG
+FloatRect RenderObject::relativeBBox(bool includeStroke) const
+{
+    return FloatRect();
+}
+
+AffineTransform RenderObject::localTransform() const
+{
+    return AffineTransform(1, 0, 0, 1, xPos(), yPos());
+}
+
+AffineTransform RenderObject::absoluteTransform() const
+{
+    if (parent())
+        return localTransform() * parent()->absoluteTransform();
+    return localTransform();
+}
+// END SVG
 
 #undef RED_LUMINOSITY
 #undef GREEN_LUMINOSITY

@@ -41,6 +41,13 @@
 #include "rendering/render_style.h"
 #include <QtCore/QTextIStream>
 
+// svg
+#include "FloatRect.h"
+#include "AffineTransform.h"
+
+using WebCore::FloatRect;
+using WebCore::AffineTransform;
+
 class QPainter;
 class QTextStream;
 template<class Key, class T> class QCache;
@@ -289,6 +296,19 @@ public:
     virtual bool isApplet() const { return false; }
 
     virtual bool isEditable() const;
+
+    // svg
+    virtual bool isSVGRoot() const { return false; }
+    virtual bool isRenderPath() const { return false; }
+    virtual bool isSVGContainer() const { return false; }
+    virtual bool isSVGText() const { return false; }
+    virtual bool isSVGHiddenContainer() const { return false; }
+
+    virtual FloatRect relativeBBox(bool includeStroke = false) const;
+
+    virtual AffineTransform localTransform() const;
+    virtual AffineTransform absoluteTransform() const;
+    // end svg
 
     bool isHTMLMarquee() const;
     bool isWordBreak() const;
