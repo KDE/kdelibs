@@ -48,6 +48,11 @@ kde4_add_plugin(kformulawidgets ${kformulawidgets_PART_SRCS})
 target_link_libraries(kformulawidgets kdeui ${QT_QTXML_LIBRARY} kformulalib)
 install(TARGETS kformulawidgets DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/designer )
 
+install( FILES
+  KFormula.h
+  kformula_export.h
+  DESTINATION  ${INCLUDE_INSTALL_DIR})
+
 add_subdirectory( pics ) 
 add_subdirectory( fonts ) 
 add_subdirectory( templates )
