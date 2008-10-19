@@ -241,11 +241,9 @@ void KServiceGroupPrivate::load( QDataStream& s )
 
   if (m_bDeep)
   {
-     for(QStringList::ConstIterator it = groupList.begin();
-         it != groupList.end(); ++it)
+     Q_FOREACH(const QString &path, groupList)
      {
-        QString path = *it;
-        if (path[path.length()-1] == '/')
+        if ( path.endsWith( QLatin1Char( '/' ) ) )
         {
            KServiceGroup::Ptr serviceGroup;
            serviceGroup = KServiceGroupFactory::self()->findGroupByDesktopPath(path, false);
@@ -274,10 +272,8 @@ void KServiceGroupPrivate::save( QDataStream& s )
   KSycocaEntryPrivate::save( s );
 
   QStringList groupList;
-  for( KServiceGroup::List::ConstIterator it = m_serviceList.begin();
-       it != m_serviceList.end(); ++it)
+  Q_FOREACH(KSycocaEntry::Ptr p, m_serviceList)
   {
-     KSycocaEntry::Ptr p = *it;
      if (p->isType(KST_KService))
      {
         KService::Ptr service = KService::Ptr::staticCast( p );
@@ -398,9 +394,8 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
 
     KSortableList<KServiceGroup::SPtr,QByteArray> slist;
     KSortableList<KServiceGroup::SPtr,QByteArray> glist;
-    for (KServiceGroup::List::ConstIterator it(group->d_func()->m_serviceList.begin()); it != group->d_func()->m_serviceList.end(); ++it)
+    Q_FOREACH (KSycocaEntry::Ptr p, group->d_func()->m_serviceList)
     {
-        KSycocaEntry::Ptr p = (*it);
         bool noDisplay = p->isType(KST_KServiceGroup) ?
                                    static_cast<KServiceGroup *>(p.data())->noDisplay() :
                                    static_cast<KService *>(p.data())->noDisplay();
@@ -436,7 +431,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
         {
             key = name.toLocal8Bit();
         }
-        list.insert(key,KServiceGroup::SPtr(*it));
+        list.insert(key,KServiceGroup::SPtr(p));
     }
     // Now sort
     slist.sort();
@@ -454,9 +449,8 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
 
     // Iterate through the sort spec list.
     // If an entry gets mentioned explicitly, we remove it from the sorted list
-    for (QStringList::ConstIterator it(sortOrder.begin()); it != sortOrder.end(); ++it)
+    Q_FOREACH (const QString &item, sortOrder)
     {
-        const QString &item = *it;
         if (item.isEmpty()) continue;
         if (item[0] == '/')
         {
@@ -494,7 +488,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
     bool needSeparator = false;
     // Iterate through the sort spec list.
     // Add the entries to the list according to the sort spec.
-    for (QStringList::ConstIterator it(sortOrder.begin()); it != sortOrder.end(); ++it)
+    for (QStringList::ConstIterator it(sortOrder.constBegin()); it != sortOrder.constEnd(); ++it)
     {
         const QString &item = *it;
         if (item.isEmpty()) continue;
@@ -538,7 +532,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
           else if (item == ":M")
           {
             // Add sorted list of sub-menus
-            for(KSortableList<KServiceGroup::SPtr,QByteArray>::const_iterator it2 = glist.begin(); it2 != glist.end(); ++it2)
+            for(KSortableList<KServiceGroup::SPtr,QByteArray>::const_iterator it2 = glist.constBegin(); it2 != glist.constEnd(); ++it2)
             {
               addItem(sorted, (*it2).value(), needSeparator);
             }
@@ -546,7 +540,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
           else if (item == ":F")
           {
             // Add sorted list of services
-            for(KSortableList<KServiceGroup::SPtr,QByteArray>::const_iterator it2 = slist.begin(); it2 != slist.end(); ++it2)
+            for(KSortableList<KServiceGroup::SPtr,QByteArray>::const_iterator it2 = slist.constBegin(); it2 != slist.constEnd(); ++it2)
             {
               addItem(sorted, (*it2).value(), needSeparator);
             }
@@ -593,7 +587,8 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
         {
             QString groupPath = rp + item.mid(1) + '/';
 
-            for (KServiceGroup::List::ConstIterator it2(group->d_func()->m_serviceList.begin()); it2 != group->d_func()->m_serviceList.end(); ++it2)
+            for (KServiceGroup::List::ConstIterator it2(group->d_func()->m_serviceList.constBegin());
+                 it2 != group->d_func()->m_serviceList.constEnd(); ++it2)
             {
                 if (!(*it2)->isType(KST_KServiceGroup))
                     continue;
@@ -604,7 +599,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
                     {
                         ++it;
                         const QString &nextItem =
-                            (it == sortOrder.end()) ? QString() : *it;
+                            (it == sortOrder.constEnd()) ? QString() : *it;
 
                         if ( nextItem.startsWith( ":O" ) )
                         {
@@ -618,9 +613,9 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
                             bool bShowInlineHeader = false;
                             bool bShowInlineAlias = false;
                             int inlineValue = -1;
-                            for ( QStringList::Iterator it3 = optionAttribute.begin(); it3 != optionAttribute.end(); ++it3 )
+                            Q_FOREACH( const QString &opt_attr, optionAttribute )
                             {
-                                parseAttribute( *it3 , bShowEmptyMenu, bShowInline, bShowInlineHeader, bShowInlineAlias , inlineValue );
+                                parseAttribute( opt_attr, bShowEmptyMenu, bShowInline, bShowInlineHeader, bShowInlineAlias , inlineValue );
                                 group->setShowEmptyMenu( bShowEmptyMenu );
                                 group->setAllowInline( bShowInline );
                                 group->setShowInlineHeader( bShowInlineHeader );
@@ -639,7 +634,8 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
         }
         else
         {
-            for (KServiceGroup::List::ConstIterator it2(group->d_func()->m_serviceList.begin()); it2 != group->d_func()->m_serviceList.end(); ++it2)
+            for (KServiceGroup::List::ConstIterator it2(group->d_func()->m_serviceList.constBegin());
+                 it2 != group->d_func()->m_serviceList.constEnd(); ++it2)
             {
                 if (!(*it2)->isType(KST_KService))
                     continue;

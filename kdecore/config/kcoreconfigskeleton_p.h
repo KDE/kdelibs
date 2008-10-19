@@ -33,7 +33,7 @@ public:
   ~Private()
   {
     KConfigSkeletonItem::List::ConstIterator it;
-    for( it = mItems.begin(); it != mItems.end(); ++it )
+    for( it = mItems.constBegin(); it != mItems.constEnd(); ++it )
     {
       delete *it;
     }

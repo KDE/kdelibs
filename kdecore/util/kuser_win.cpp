@@ -179,10 +179,8 @@ QList<KUserGroup> KUser::groups() const
 {
     QList<KUserGroup> result;
 
-    QStringList names(groupNames());
-
-    for (QStringList::const_iterator it = names.begin(); it != names.end(); ++it) {
-        result.append(KUserGroup(*it));
+    Q_FOREACH (const QString &name, groupNames()) {
+        result.append(KUserGroup(name));
     }
 
     return result;
@@ -349,10 +347,8 @@ QList<KUser> KUserGroup::users() const
 {
     QList<KUser> Result;
 
-    QStringList Names(userNames());
-
-    for (QStringList::const_iterator it = Names.begin(); it != Names.end(); ++it) {
-        Result.append(KUser(*it));
+    Q_FOREACH(const QString &user, userNames()) {
+        Result.append(KUser(user));
     }
 
     return Result;

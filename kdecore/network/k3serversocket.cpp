@@ -384,8 +384,8 @@ bool KServerSocket::doBind()
   d->bindWhenFound = false;
   // loop through the results and bind to the first that works
 
-  KResolverResults::ConstIterator it = d->resolverResults.begin();
-  for ( ; it != d->resolverResults.end(); ++it)
+  KResolverResults::ConstIterator it = d->resolverResults.constBegin();
+  for ( ; it != d->resolverResults.constEnd(); ++it)
     if (bind(*it))
       {
 	if (d->listenWhenBound)

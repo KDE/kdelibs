@@ -38,9 +38,7 @@ class KServiceTypeProfiles : public QHash<QString, KServiceTypeProfileEntry *>
 public:
     ~KServiceTypeProfiles() { clear(); }
     void clear() {
-        const_iterator it = begin();
-        for ( ; it != end() ; ++it )
-            delete *it;
+        qDeleteAll( *this );
         QHash<QString, KServiceTypeProfileEntry *>::clear();
     }
 };
@@ -127,7 +125,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
         if ( profile )
         {
             QMap<QString,int>::ConstIterator it2 = profile->m_mapServices.find( servPtr->storageId() );
-            if( it2 != profile->m_mapServices.end() )
+            if( it2 != profile->m_mapServices.constEnd() )
             {
                 const int pref = it2.value();
                 //kDebug(7014) << "found in mapServices pref=" << pref;

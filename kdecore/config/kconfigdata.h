@@ -403,7 +403,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
 
         void setEntryOption(Iterator it, EntryOption option, bool bf)
         {
-            if (it != constEnd()) {
+            if (it != end()) {
                 switch (option) {
                     case EntryDirty:
                         it->bDirty = bf;
@@ -434,7 +434,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
         void revertEntry(const QByteArray& group, const QByteArray& key, SearchFlags flags=SearchFlags())
         {
             Iterator entry = findEntry(group, key, flags);
-            if (entry != constEnd()) {
+            if (entry != end()) {
 /*                qDebug() << "reverting" << QString("[%1,%2]").arg(group).arg(key).toLatin1().constData()
                         << '=' << entry->mValue
                         << entryDataToQString(*entry).toLatin1().constData();*/

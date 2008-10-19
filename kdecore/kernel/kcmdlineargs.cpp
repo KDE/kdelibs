@@ -1463,11 +1463,9 @@ KCmdLineArgs::getOptionList(const QByteArray &_opt) const
    // to the API like "you can only call this function once".
    // I can't access all items without taking them out of the list.
    // So taking them out and then putting them back is the only way.
-   for(QStringList::ConstIterator it=result.begin();
-       it != result.end();
-       ++it)
+   Q_FOREACH(const QString &str, result)
    {
-      d->parsedOptionList->insertMulti(opt, *it);
+      d->parsedOptionList->insertMulti(opt, str);
    }
    return result;
 }

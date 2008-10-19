@@ -260,8 +260,8 @@ void Loader::loadPlugins()
 {
     d->plugins = KServiceTypeTrader::self()->query("Sonnet/SpellClient");
 
-    for (KService::List::const_iterator itr = d->plugins.begin();
-         itr != d->plugins.end(); ++itr ) {
+    for (KService::List::const_iterator itr = d->plugins.constBegin();
+         itr != d->plugins.constEnd(); ++itr ) {
         loadPlugin((*itr));
     }
 }

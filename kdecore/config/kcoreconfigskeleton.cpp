@@ -462,8 +462,8 @@ void KCoreConfigSkeleton::ItemEnum::readConfig( KConfig *config )
     int i = 0;
     mReference = -1;
     QString tmp = cg.readEntry( mKey, QString() ).toLower();
-    for(QList<Choice2>::ConstIterator it = mChoices.begin();
-        it != mChoices.end(); ++it, ++i)
+    for(QList<Choice2>::ConstIterator it = mChoices.constBegin();
+        it != mChoices.constEnd(); ++it, ++i)
     {
       if ((*it).name.toLower() == tmp)
       {
@@ -1042,7 +1042,7 @@ bool KCoreConfigSkeleton::useDefaults(bool b)
 
   d->mUseDefaults = b;
   KConfigSkeletonItem::List::ConstIterator it;
-  for( it = d->mItems.begin(); it != d->mItems.end(); ++it )
+  for( it = d->mItems.constBegin(); it != d->mItems.constEnd(); ++it )
   {
     (*it)->swapDefault();
   }
@@ -1053,7 +1053,7 @@ bool KCoreConfigSkeleton::useDefaults(bool b)
 void KCoreConfigSkeleton::setDefaults()
 {
   KConfigSkeletonItem::List::ConstIterator it;
-  for( it = d->mItems.begin(); it != d->mItems.end(); ++it ) {
+  for( it = d->mItems.constBegin(); it != d->mItems.constEnd(); ++it ) {
     (*it)->setDefault();
   }
   usrSetDefaults();
@@ -1064,7 +1064,7 @@ void KCoreConfigSkeleton::readConfig()
     // kDebug(177);
   d->mConfig->reparseConfiguration();
   KConfigSkeletonItem::List::ConstIterator it;
-  for( it = d->mItems.begin(); it != d->mItems.end(); ++it )
+  for( it = d->mItems.constBegin(); it != d->mItems.constEnd(); ++it )
   {
     (*it)->readConfig( d->mConfig.data() );
   }
@@ -1075,7 +1075,7 @@ void KCoreConfigSkeleton::writeConfig()
 {
     kDebug(177);
   KConfigSkeletonItem::List::ConstIterator it;
-  for( it = d->mItems.begin(); it != d->mItems.end(); ++it )
+  for( it = d->mItems.constBegin(); it != d->mItems.constEnd(); ++it )
   {
     (*it)->writeConfig( d->mConfig.data() );
   }

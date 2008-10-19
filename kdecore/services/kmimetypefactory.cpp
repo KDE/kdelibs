@@ -92,7 +92,7 @@ KMimeType::Ptr KMimeTypeFactory::findMimeTypeByName(const QString &_name, KMimeT
     QString name = _name;
     if (options & KMimeType::ResolveAliases) {
         QMap<QString, QString>::const_iterator it = m_aliases.find(_name);
-        if (it != m_aliases.end())
+        if (it != m_aliases.constEnd())
             name = *it;
     }
 
@@ -342,9 +342,7 @@ KMimeType::Ptr KMimeTypeFactory::findFromContent(QIODevice* device, WhichPriorit
         m_magicFilesParsed = true;
     }
 
-    for ( QList<KMimeMagicRule>::const_iterator it = m_magicRules.begin(), end = m_magicRules.end();
-          it != end; ++it ) {
-        const KMimeMagicRule& rule = *it;
+    Q_FOREACH ( const KMimeMagicRule& rule, m_magicRules ) {
         // HighPriorityRules: select rules with priority >= 80
         // LowPriorityRules: select rules with priority < 80
         if ( ( whichPriority == AllRules ) ||

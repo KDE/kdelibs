@@ -969,8 +969,8 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
         {
             bool local = true;
 
-            for (QStringList::ConstIterator it = dirs.begin();
-                 it != dirs.end(); ++it)
+            for (QStringList::ConstIterator it = dirs.constBegin();
+                 it != dirs.constEnd(); ++it)
             {
                 if ( (*it).startsWith('%'))
                 {
@@ -1004,8 +1004,8 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
             {
 	        if((*pit)!=installprefix||installdir.isEmpty())
 	        {
-                    for (QStringList::ConstIterator it = dirs.begin();
-                         it != dirs.end(); ++it)
+                    for (QStringList::ConstIterator it = dirs.constBegin();
+                         it != dirs.constEnd(); ++it)
                     {
                         if ( (*it).startsWith('%'))
                             continue;
@@ -1043,8 +1043,8 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 
         dirs = d->absolutes.value(type);
         if (!dirs.isEmpty())
-            for (QStringList::ConstIterator it = dirs.begin();
-                 it != dirs.end(); ++it)
+            for (QStringList::ConstIterator it = dirs.constBegin();
+                 it != dirs.constEnd(); ++it)
             {
                 testdir.setPath(*it);
                 if (testdir.exists()) {
@@ -1529,8 +1529,8 @@ void KStandardDirs::addKDEDefaults()
 #endif
 
     QStringList::ConstIterator end(kdedirList.end());
-    for (QStringList::ConstIterator it = kdedirList.begin();
-         it != end; ++it)
+    for (QStringList::ConstIterator it = kdedirList.constBegin();
+         it != kdedirList.constEnd(); ++it)
     {
         const QString dir = KShell::tildeExpand(*it);
         addPrefix(dir);
@@ -1573,8 +1573,8 @@ void KStandardDirs::addKDEDefaults()
     localXdgDir = KShell::tildeExpand(localXdgDir);
     addXdgConfigPrefix(localXdgDir);
 
-    for (QStringList::ConstIterator it = xdgdirList.begin();
-         it != xdgdirList.end(); ++it)
+    for (QStringList::ConstIterator it = xdgdirList.constBegin();
+         it != xdgdirList.constEnd(); ++it)
     {
         QString dir = KShell::tildeExpand(*it);
         addXdgConfigPrefix(dir);
@@ -1583,8 +1583,8 @@ void KStandardDirs::addKDEDefaults()
 
     // begin XDG_DATA_XXX
     QStringList kdedirDataDirs;
-    for (QStringList::ConstIterator it = kdedirList.begin();
-         it != kdedirList.end(); ++it) {
+    for (QStringList::ConstIterator it = kdedirList.constBegin();
+         it != kdedirList.constEnd(); ++it) {
         QString dir = *it;
         if (!dir.endsWith('/'))
             dir += '/';
@@ -1603,8 +1603,10 @@ void KStandardDirs::addKDEDefaults()
         }
     } else {
         xdgdirList = kdedirDataDirs;
+#ifndef Q_WS_WIN
         xdgdirList.append("/usr/local/share/");
         xdgdirList.append("/usr/share/");
+#endif
     }
 
     localXdgDir = readEnvPath("XDG_DATA_HOME");
@@ -1621,8 +1623,8 @@ void KStandardDirs::addKDEDefaults()
     localXdgDir = KShell::tildeExpand(localXdgDir);
     addXdgDataPrefix(localXdgDir);
 
-    for (QStringList::ConstIterator it = xdgdirList.begin();
-         it != xdgdirList.end(); ++it)
+    for (QStringList::ConstIterator it = xdgdirList.constBegin();
+         it != xdgdirList.constEnd(); ++it)
     {
         QString dir = KShell::tildeExpand(*it);
         addXdgDataPrefix(dir);

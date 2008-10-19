@@ -142,11 +142,11 @@ KService::Ptr KMimeTypeTrader::preferredService( const QString & mimeType, const
     Q_ASSERT(!genericServiceType.isEmpty());
     filterMimeTypeOffers(offers, genericServiceType);
 
-    KServiceOfferList::const_iterator itOff = offers.begin();
+    KServiceOfferList::const_iterator itOff = offers.constBegin();
     // Look for the first one that is allowed as default.
     // Since the allowed-as-default are first anyway, we only have
     // to look at the first one to know.
-    if( itOff != offers.end() && (*itOff).allowAsDefault() )
+    if( itOff != offers.constEnd() && (*itOff).allowAsDefault() )
         return (*itOff).service();
 
     //kDebug(7014) << "No offers, or none allowed as default";

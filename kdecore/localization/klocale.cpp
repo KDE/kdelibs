@@ -2026,20 +2026,18 @@ QString KLocale::langLookup(const QString &fname, const char *rtype)
       QStringList langs = KGlobal::locale()->languageList();
       langs.append( "en" );
       langs.removeAll( defaultLanguage() );
-      QStringList::ConstIterator lang;
-      for (lang = langs.begin(); lang != langs.end(); ++lang)
-	search.append(QString("%1%2/%3").arg(localDoc[id]).arg(*lang).arg(fname));
+      Q_FOREACH(const QString &lang, langs)
+        search.append(QString("%1%2/%3").arg(localDoc[id]).arg(lang).arg(fname));
     }
 
   // try to locate the file
-  QStringList::Iterator it;
-  for (it = search.begin(); it != search.end(); ++it)
+  Q_FOREACH (const QString &file, search)
     {
-      kDebug(173) << "Looking for help in: " << *it;
+      kDebug(173) << "Looking for help in: " << file;
 
-      QFileInfo info(*it);
+      QFileInfo info(file);
       if (info.exists() && info.isFile() && info.isReadable())
-	return *it;
+        return file;
     }
 
   return QString();

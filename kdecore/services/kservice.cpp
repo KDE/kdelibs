@@ -260,8 +260,8 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     // A QMap<QString,QString> would be easier for this but we can't
     // break BC, so we have to store it in m_mapProps.
 //  qDebug("Path = %s", entryPath.toLatin1().constData());
-    QMap<QString,QString>::ConstIterator it = entryMap.begin();
-    for( ; it != entryMap.end();++it) {
+    QMap<QString,QString>::ConstIterator it = entryMap.constBegin();
+    for( ; it != entryMap.constEnd();++it) {
         const QString key = it.key();
         // do not store other translations like Name[fr]; kbuildsycoca will rerun if we change languages anyway
         if (!key.contains('[')) {
