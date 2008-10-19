@@ -2605,7 +2605,7 @@ int RenderBlock::getClearDelta(RenderObject *child)
         int lw = lineWidth(child->yPos(), &canClearLine);
         if (((child->style()->width().isPercent() && child->width() > lw) ||
             (child->style()->width().isFixed() && child->minWidth() > lw)) &&
-              child->minWidth() <= contentWidth() && canClearLine)
+              child->minWidth() <= availableWidth() && canClearLine)
             result = qMax(0, floatBottom() - child->yPos());
     }
     return result;
@@ -2951,7 +2951,6 @@ void RenderBlock::calcInlineMinMaxWidth()
     int inlineMin=0;
 
     int cw = containingBlock()->contentWidth();
-    int floatMaxWidth = 0;
 
     // If we are at the start of a line, we want to ignore all white-space.
     // Also strip spaces if we previously had text that ended in a trailing space.
@@ -2969,7 +2968,7 @@ void RenderBlock::calcInlineMinMaxWidth()
     RenderObject* prevFloat = 0;
     while (RenderObject* child = childIterator.next())
     {
-        autoWrap = child->style()->autoWrap();
+        autoWrap = child->isReplaced() ? child->parent()->style()->autoWrap() : child->style()->autoWrap();
 
         if( !child->isBR() )
         {
@@ -3032,46 +3031,46 @@ void RenderBlock::calcInlineMinMaxWidth()
                 else {
                     // Inline replaced elements add in their margins to their min/max values.
                     int margins = 0;
-                    LengthType type = cstyle->marginLeft().type();
-                    if ( type != Variable )
-                        margins += (type == Fixed ? cstyle->marginLeft().value() : child->marginLeft());
+                    LengthType type = cstyle->marginLeft().type();                  
+                    if ( type == Fixed )
+                        margins += cstyle->marginLeft().value();
                     type = cstyle->marginRight().type();
-                    if ( type != Variable )
-                        margins += (type == Fixed ? cstyle->marginRight().value() : child->marginRight());
+                    if ( type == Fixed )
+                        margins += cstyle->marginRight().value();
                     childMin += margins;
                     childMax += margins;
                 }
             }
 
             if (!child->isRenderInline() && !child->isText()) {
-
-                bool qBreak = isTcQuirk && !child->isFloatingOrPositioned();
                 // Case (2). Inline replaced elements and floats.
-                // Go ahead and terminate the current line as far as
-                // minwidth is concerned.
+
+                // Common wrapping quirk
+                bool qBreak = isTcQuirk && !child->isFloating();
+
                 childMin += child->minWidth();
                 childMax += child->maxWidth();
 
-                if (!qBreak && (autoWrap || oldAutoWrap)) {
+                // Check our "clear" setting.
+                bool clearPreviousFloat = false;
+                if (child->isFloating()) {
+                    if (prevFloat &&
+                         (((prevFloat->style()->floating() & FLEFT) && (child->style()->clear() & CLEFT)) ||
+                          ((prevFloat->style()->floating() & FRIGHT) && (child->style()->clear() & CRIGHT)))) {
+                        clearPreviousFloat = true;
+                    }
+                    prevFloat = child;
+                }
+
+                if (!qBreak && (autoWrap || oldAutoWrap) || clearPreviousFloat) {
                     if(m_minWidth < inlineMin) m_minWidth = inlineMin;
                     inlineMin = 0;
                 }
 
-                // Check our "clear" setting.  If we're supposed to clear the previous float, then
-                // go ahead and terminate maxwidth as well.
-                if (child->isFloating()) {
-                    if (prevFloat &&
-                        ((inlineMax + childMax > floatMaxWidth) ||
-                         ((prevFloat->style()->floating() & FLEFT) && (child->style()->clear() & CLEFT)) ||
-                         ((prevFloat->style()->floating() & FRIGHT) && (child->style()->clear() & CRIGHT)))) {
-                        m_maxWidth = qMax(inlineMax, (int)m_maxWidth);
-                        inlineMax = 0;
-                        m_minWidth = qMax(inlineMin, (int)m_minWidth);
-                        inlineMin = 0;
-                    }
-                    prevFloat = child;
-                    if (!floatMaxWidth)
-                        floatMaxWidth = availableWidth();
+                // If we're supposed to clear the previous float, then terminate maxwidth as well.
+                if (clearPreviousFloat) {
+                    m_maxWidth = qMax(inlineMax, m_maxWidth);
+                    inlineMax = 0;
                 }
 
                 // Add in text-indent.  This is added in only once.
@@ -3086,12 +3085,11 @@ void RenderBlock::calcInlineMinMaxWidth()
                 // Add our width to the max.
                 inlineMax += childMax;
 
-                if (!autoWrap||qBreak)
+                if ((!autoWrap && !child->isFloating())||qBreak) {
                     inlineMin += childMin;
-                else {
+                } else {
                     // Now check our line.
-                    inlineMin = childMin;
-                    if(m_minWidth < inlineMin) m_minWidth = inlineMin;
+                    m_minWidth = qMax(childMin, m_minWidth);
 
                     // Now start a new line.
                     inlineMin = 0;
@@ -3211,7 +3209,7 @@ void RenderBlock::calcBlockMinMaxWidth()
     bool nowrap = !style()->autoWrap();
 
     RenderObject *child = firstChild();
-    int floatLeftWidth = 0, floatRightWidth = 0, floatMaxWidth = 0;
+    int floatLeftWidth = 0, floatRightWidth = 0;
 
     while(child != 0)
     {
@@ -3286,22 +3284,10 @@ void RenderBlock::calcBlockMinMaxWidth()
          }
 
         if (child->isFloating()) {
-             if (!floatMaxWidth)
-                 floatMaxWidth = availableWidth();
-             if (style()->floating() & FLEFT) {
-                 if (floatLeftWidth + w > floatMaxWidth) {
-                     m_maxWidth = qMax(floatLeftWidth+floatRightWidth, m_maxWidth);
-                     floatLeftWidth = w;
-                 } else
-                     floatLeftWidth += w;
-
-             } else {
-                 if (floatRightWidth + w > floatMaxWidth) {
-                     m_maxWidth = qMax(floatLeftWidth+floatRightWidth, m_maxWidth);
-                     floatRightWidth = w;
-                 } else
-                     floatRightWidth += w;
-             }
+            if (style()->floating() & FLEFT)
+                floatLeftWidth += w;
+            else
+                floatRightWidth += w;
         } else if (m_maxWidth < w)
             m_maxWidth = w;
 
