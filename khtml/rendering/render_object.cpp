@@ -2606,7 +2606,7 @@ QRegion RenderObject::visibleFlowRegion(int x, int y) const
             // ### fix horizontal float extent
             const RenderStyle *s = ro->style();
             int ow = s->outlineSize();
-            if (ro->isInlineFlow()) {
+            if (ro->isInlineFlow() || ro->isText()) {
                 returnSelf = true;
                 break;
             }
