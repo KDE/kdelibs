@@ -3138,21 +3138,34 @@ bool KHTMLView::needsFullRepaint() const
     return d->needsFullRepaint;
 }
 
+namespace {
+   class QPointerDeleter
+   {
+   public:
+       explicit QPointerDeleter(QObject* o) : obj(o) {}
+       ~QPointerDeleter() { delete obj; }
+   private:
+       const QPointer<QObject> obj; 
+   }; 
+}
+
 void KHTMLView::print(bool quick)
 {
     if(!m_part->xmlDocImpl()) return;
     khtml::RenderCanvas *root = static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer());
     if(!root) return;
 
-    KHTMLPrintSettings printSettings; //XXX: doesn't save settings between prints like this
+    QPointer<KHTMLPrintSettings> printSettings(new KHTMLPrintSettings); //XXX: doesn't save settings between prints like this
+    const QPointerDeleter settingsDeleter(printSettings); //the printdialog takes ownership of the settings widget, thus this workaround to avoid double deletion
     QPrinter printer;
-    QPrintDialog *dialog = KdePrint::createPrintDialog(&printer, QList<QWidget*>() << &printSettings, this);
+    QPointer<QPrintDialog> dialog = KdePrint::createPrintDialog(&printer, QList<QWidget*>() << printSettings, this);
+    const QPointerDeleter dialogDeleter(dialog);
 
     QString docname = m_part->xmlDocImpl()->URL().prettyUrl();
     if ( !docname.isEmpty() )
         docname = KStringHandler::csqueeze(docname, 80);
 
-    if(quick || dialog->exec()) {
+    if(quick || (dialog->exec() && dialog)) { /*'this' and thus dialog might have been deleted while exec()!*/
         viewport()->setCursor( Qt::WaitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
         // set up KPrinter
         printer.setFullPage(false);
@@ -3169,7 +3182,7 @@ void KHTMLView::print(bool quick)
         // We ignore margin settings for html and body when printing
         // and use the default margins from the print-system
         // (In Qt 3.0.x the default margins are hardcoded in Qt)
-        m_part->xmlDocImpl()->setPrintStyleSheet( printSettings.printFriendly() ?
+        m_part->xmlDocImpl()->setPrintStyleSheet( printSettings->printFriendly() ?
                                                   "* { background-image: none !important;"
                                                   "    background-color: white !important;"
                                                   "    color: black !important; }"
@@ -3191,7 +3204,7 @@ void KHTMLView::print(bool quick)
 
         m_part->xmlDocImpl()->styleSelector()->computeFontSizes(printer.logicalDpiY(), 100);
         m_part->xmlDocImpl()->updateStyleSelector();
-        root->setPrintImages(printSettings.printImages());
+        root->setPrintImages(printSettings->printImages());
         root->makePageBreakAvoidBlocks();
 
         root->setNeedsLayoutAndMinMaxRecalc();
@@ -3200,7 +3213,7 @@ void KHTMLView::print(bool quick)
 
         // check sizes ask for action.. (scale or clip)
 
-        bool printHeader = printSettings.printHeader();
+        bool printHeader = printSettings->printHeader();
 
         int headerHeight = 0;
         QFont headerFont("Sans Serif", 8);
