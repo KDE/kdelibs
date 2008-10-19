@@ -297,7 +297,8 @@ void Image::notifyScanline(uchar version, uchar* data)
         //Will not actually look at the pixel.
         QRgb* dst = reinterpret_cast<QRgb*>(plane->image.scanLine(loaderScanline));
         QRgb* src = reinterpret_cast<QRgb*>(data);
-        for (int x = 0; x < plane->image.width(); ++x)
+        int planeImageWidth = plane->image.width();
+        for (int x = 0; x < planeImageWidth; ++x)
         {
             QRgb col = src[x];
             unsigned a = qAlpha(col);
