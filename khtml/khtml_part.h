@@ -71,6 +71,11 @@ namespace DOM
   class Editor;
 }
 
+namespace WebCore
+{
+    class SVGDocumentExtensions;
+}
+
 namespace KJS
 {
   class Interpreter;
@@ -234,6 +239,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLPartIface;
   friend class KHTMLPartFunction;
   friend class KHTMLPopupGUIClient;
+  friend class WebCore::SVGDocumentExtensions;
 
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE setJScriptEnabled )
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
