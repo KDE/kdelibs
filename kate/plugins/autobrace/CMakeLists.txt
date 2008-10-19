@@ -3,6 +3,8 @@ project(ktexteditor_autobrace)
 find_package(KDE4 REQUIRED)
 include(KDE4Defaults)
 
+cmake_minimum_required(VERSION 2.4)
+
 
 ########### next target ###############
 
