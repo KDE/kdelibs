@@ -39,6 +39,8 @@
 #include <kpagewidgetmodel.h>
 #include <kiconloader.h>
 
+#include <QtCore/QPointer>
+
 #include <QtGui/QBoxLayout>
 
 KateGlobal *KateGlobal::s_self = 0;
@@ -229,7 +231,7 @@ bool KateGlobal::configDialogSupported () const
 
 void KateGlobal::configDialog(QWidget *parent)
 {
-  KPageDialog *kd = new KPageDialog(parent);
+  QPointer<KPageDialog> kd = new KPageDialog(parent);
   kd->setCaption( i18n("Configure") );
   kd->setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Help );
   kd->setFaceType( KPageDialog::List );
@@ -255,7 +257,7 @@ void KateGlobal::configDialog(QWidget *parent)
     editorPages.append (cp);
   }
 
-  if (kd->exec())
+  if (kd->exec() && kd)
   {
     KateDocumentConfig::global()->configStart ();
     KateViewConfig::global()->configStart ();
