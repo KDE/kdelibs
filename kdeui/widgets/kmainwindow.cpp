@@ -681,6 +681,9 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 {
     K_D(KMainWindow);
 
+    const bool oldLetDirtySettings = d->letDirtySettings;
+    d->letDirtySettings = false;
+
     if ( number == 1 )
         readGlobalProperties( config );
 
@@ -702,6 +705,9 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
     s.setNum(number);
     KConfigGroup grp(config, s);
     readProperties(grp);
+
+    d->letDirtySettings = oldLetDirtySettings;
+
     return true;
 }
 
@@ -712,6 +718,7 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
 
     QWidget *focusedWidget = QApplication::focusWidget();
 
+    const bool oldLetDirtySettings = d->letDirtySettings;
     d->letDirtySettings = false;
 
     if (!d->sizeApplied) {
@@ -770,7 +777,7 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
     }
 
     d->settingsDirty = false;
-    d->letDirtySettings = true;
+    d->letDirtySettings = oldLetDirtySettings;
 }
 
 #ifdef Q_WS_WIN
@@ -1012,7 +1019,7 @@ bool KMainWindow::event( QEvent* ev )
 #endif
     case QEvent::Resize:
         if ( d->autoSaveWindowSize )
-        d->setSettingsDirty(KMainWindowPrivate::CompressCalls);
+            d->setSettingsDirty(KMainWindowPrivate::CompressCalls);
         break;
     case QEvent::Polish:
         d->polish(this);

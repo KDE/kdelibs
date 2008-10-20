@@ -76,7 +76,6 @@
 class KXmlGuiWindowPrivate : public KMainWindowPrivate {
 public:
     bool showHelpMenu:1;
-    bool saveFlag:1;
     QSize defaultSize;
 
     KDEPrivate::ToolBarHandler *toolBarHandler;
@@ -90,7 +89,6 @@ KXmlGuiWindow::KXmlGuiWindow( QWidget* parent, Qt::WFlags f )
 {
     K_D(KXmlGuiWindow);
     d->showHelpMenu = true;
-    d->saveFlag = false;
     d->toolBarHandler = 0;
     d->showStatusBarAction = 0;
     d->factory = 0;
@@ -200,11 +198,24 @@ void KXmlGuiWindow::setupGUI( const QSize & defaultSize, StandardWindowOptions o
                       SLOT(configureToolbars() ), actionCollection());
     }
 
-    d->saveFlag = bool(options & Save);
     d->defaultSize = defaultSize;
 
     if( options & Create ){
         createGUI(xmlfile);
+    }
+
+    if (initialGeometrySet()) {
+        // Do nothing...
+    }
+    else if (d->defaultSize.isValid()) {
+        resize(d->defaultSize);
+    }
+    else if (isHidden()) {
+        adjustSize();
+    }
+
+    if( options & Save ){
+        setAutoSaveSettings(autoSaveConfigGroup());
     }
 }
 void KXmlGuiWindow::createGUI( const QString &xmlfile )
@@ -310,26 +321,6 @@ void KXmlGuiWindow::createStandardStatusBarAction(){
 
 void KXmlGuiWindow::finalizeGUI( bool /*force*/ )
 {
-    K_D(KXmlGuiWindow);
-
-    if (d->saveFlag) {
-        if (initialGeometrySet()) {
-          // Do nothing...
-        }
-        else if (d->defaultSize.isValid()) {
-          resize(d->defaultSize);
-        }
-        else if (isHidden()) {
-          adjustSize();
-        }
-        setAutoSaveSettings();
-        // We only pretend to call this one time. If setupGUI(... | Save | ...) is called this will
-        // be set again to true.
-        d->saveFlag = false;
-        return; // no need to call to applyMainWindowSettings, since setAutoSaveSettings already
-                // does it
-    }
-
     // FIXME: this really needs to be removed with a code more like the one we had on KDE3.
     //        what we need to do here is to position correctly toolbars so they don't overlap.
     //        Also, take in count plugins could provide their own toolbars and those also need to
@@ -337,7 +328,6 @@ void KXmlGuiWindow::finalizeGUI( bool /*force*/ )
     if (autoSaveSettings() && autoSaveConfigGroup().isValid()) {
         applyMainWindowSettings(autoSaveConfigGroup());
     }
-    // END OF FIXME
 }
 
 void KXmlGuiWindow::applyMainWindowSettings(const KConfigGroup &config, bool force)
