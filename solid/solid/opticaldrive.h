@@ -66,7 +66,7 @@ namespace Solid
          * - Dvdplusdlrw : A Dual Layer Digital Versatile Disc (DVD+RW DL)
          * - Bd : A Blu-ray Disc (BD)
          * - Bdr : A Blu-ray Disc Recordable (BD-R)
-         * - Bdre : A Blu-ray Disc (BD-RE)
+         * - Bdre : A Blu-ray Disc Recordable and Eraseable (BD-RE)
          * - HdDvd : A High Density Digital Versatile Disc (HD DVD)
          * - HdDvdr : A High Density Digital Versatile Disc Recordable (HD DVD-R)
          * - HdDvdrw : A High Density Digital Versatile Disc ReWritable (HD DVD-RW)
