@@ -106,6 +106,7 @@ KDEUI_EXECUTABLE_TESTS(
   kiconeffecttest
   kwallettest
   kwidgetitemdelegatetest
+  kanimatedbuttontest
 )
 
 if (Q_WS_X11)
