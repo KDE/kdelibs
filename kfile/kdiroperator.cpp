@@ -304,6 +304,8 @@ KDirOperator::Private::Private(KDirOperator *_parent) :
     actionCollection(0),
     configGroup(0),
     previewGenerator(0),
+    showPreviews(false),
+    iconsZoom(0),
     decorationMenu(0),
     leftAction(0),
     shouldFetchForItems(false)
