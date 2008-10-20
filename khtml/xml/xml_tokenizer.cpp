@@ -38,6 +38,10 @@
 #include <kdebug.h>
 #include <klocale.h>
 
+// SVG includes
+#include "svg/SVGScriptElement.h"
+#include "svg/XLinkNames.h"
+
 using namespace DOM;
 using namespace khtml;
 
@@ -238,7 +242,7 @@ bool XMLHandler::endElement( const QString& /*namespaceURI*/, const QString& /*l
         return false;
 
     // if the node is a script element try to execute it immediately
-    if ((node->id() == ID_SCRIPT) || (node->id() == makeId(xhtmlNamespace, ID_SCRIPT)))
+    if ((node->id() == ID_SCRIPT) || (node->id() == makeId(xhtmlNamespace, ID_SCRIPT)) || node->id() == WebCore::SVGNames::scriptTag.id())
         static_cast<XMLTokenizer*>(m_doc->tokenizer())->executeScript(node);
 
     return true;
@@ -583,7 +587,12 @@ bool XMLTokenizer::isWaitingForScripts() const
 void XMLTokenizer::executeScript(NodeImpl* node)
 {
     ElementImpl* script = static_cast<ElementImpl*>(node);
-    DOMString scriptSrc = script->getAttribute(ATTR_SRC);
+    DOMString scriptSrc;
+    if (node->id() == WebCore::SVGNames::scriptTag.id())
+        scriptSrc = script->getAttribute(WebCore::XLinkNames::hrefAttr.id());
+    else
+        scriptSrc = script->getAttribute(ATTR_SRC);
+
     QString charset = script->getAttribute(ATTR_CHARSET).string();
 
     if (!scriptSrc.isEmpty()) {
