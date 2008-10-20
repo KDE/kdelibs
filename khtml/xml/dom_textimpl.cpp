@@ -36,6 +36,9 @@
 
 #include <kdebug.h>
 
+// for SVG
+#include <rendering/RenderSVGInlineText.h>
+
 using namespace DOM;
 using namespace khtml;
 
@@ -500,6 +503,9 @@ bool TextImpl::rendererIsNeeded(RenderStyle *style)
 
 RenderObject *TextImpl::createRenderer(RenderArena *arena, RenderStyle * /*style*/)
 {
+    // for SVG
+    if (parentNode()->isSVGElement())
+        return new (arena) WebCore::RenderSVGInlineText(this, str);
     return new (arena) RenderText(this, str);
 }
 
