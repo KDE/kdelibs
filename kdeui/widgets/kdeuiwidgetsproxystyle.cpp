@@ -26,40 +26,22 @@
 #include <QtGui/QWindowsStyle>
 
 KdeUiProxyStyle::KdeUiProxyStyle(QWidget *parent)
-    : QStyle(), parent(parent), lastResortStyle(0)
+    : QStyle(), parent(parent)
 {
 }
 
 KdeUiProxyStyle::~KdeUiProxyStyle()
 {
-    delete lastResortStyle;
 }
 
 QStyle *KdeUiProxyStyle::style() const
 {
     QStyle* baseStyle;
     if (parent && parent->parentWidget()) {
-        // Use parentWidget style, but only if it's not the stylesheet style,
-        // to avoid infinite recursion in pixelMetrics()
         baseStyle = parent->parentWidget()->style();
-        if (baseStyle->inherits("QStyleSheetStyle")) {
-            baseStyle = QApplication::style();
-        }
     } else {
         baseStyle = QApplication::style();
     }
-
-    if (baseStyle->inherits("QStyleSheetStyle")) {
-        // We may still get a QStyleSheetStyle based style if
-        // QApplication::style() is a QStyleSheetStyle. In this case, fallback
-        // to Windows style: since it's the base class of QStyleSheetStyle,
-        // it's probably the closest one.
-        if (!lastResortStyle) {
-            lastResortStyle = new QWindowsStyle;
-        }
-        baseStyle = lastResortStyle;
-    }
-
     return baseStyle;
 }
 

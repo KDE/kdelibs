@@ -63,9 +63,6 @@ public:
 
 protected:
     QWidget *parent;
-
-private:
-    mutable QStyle *lastResortStyle;
 };
 
 #endif
