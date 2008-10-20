@@ -730,7 +730,7 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
     splitPrefixLocalName(_qualifiedName.implementation(), prefix, localName, colonPos);
 
     if (_namespaceURI == SVG_NAMESPACE) {
-        e = createSVGElement(QualifiedName(prefix, localName, _qualifiedName));
+        e = createSVGElement(QualifiedName(prefix, localName, _namespaceURI));
         if (e) return e;
         if (!e)
             kWarning() << "svg element" << localName << "either is not supported by khtml or it's not a proper svg element";
