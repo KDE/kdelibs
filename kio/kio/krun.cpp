@@ -90,7 +90,11 @@ bool KRun::isExecutableFile( const KUrl& url, const QString &mimetype )
   QFileInfo file( url.path() );
   if ( file.isExecutable() ) {  // Got a prospective file to run
     KMimeType::Ptr mimeType = KMimeType::mimeType(mimetype, KMimeType::ResolveAliases);
-    if ( mimeType && (mimeType->is("application/x-executable") || mimeType->is("application/x-executable-script")) )
+    if ( mimeType && (mimeType->is( QLatin1String("application/x-executable")) ||
+#ifdef Q_WS_WIN
+        mimeType->is(QLatin1String("application/x-ms-dos-executable")) ||
+#endif
+        mimeType->is(QLatin1String("application/x-executable-script"))) )
       return true;
   }
   return false;
@@ -101,7 +105,7 @@ bool KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, boo
 {
   bool noRun = false;
   bool noAuth = false;
-  if ( _mimetype == "inode/directory-locked" )
+  if ( _mimetype == QLatin1String("inode/directory-locked") )
   {
     KMessageBoxWrapper::error( window,
             i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>", Qt::escape(u.prettyUrl())) );
@@ -126,7 +130,7 @@ bool KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, boo
         noAuth = true;
       }
     }
-    else if (_mimetype == "application/x-executable")
+    else if (_mimetype == QLatin1String("application/x-executable"))
       noRun = true;
   }
   else if ( isExecutable(_mimetype) )
