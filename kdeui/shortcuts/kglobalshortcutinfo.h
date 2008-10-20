@@ -80,7 +80,7 @@ private:
 
     friend class GlobalShortcut;
 
-    friend const QDBusArgument &operator>> (
+    friend KDEUI_EXPORT const QDBusArgument &operator>> (
             const QDBusArgument &argument,
             KGlobalShortcutInfo &shortcut);
 
