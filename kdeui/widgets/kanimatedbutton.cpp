@@ -117,6 +117,7 @@ void KAnimatedButtonPrivate::updateCurrentIcon()
   if (!frame)
   {
     frame = new QPixmap(w, h);
+    frame->fill(Qt::transparent);
     QPainter p(frame);
     p.drawPixmap(QPoint(0,0), pixmap, QRect(0, current_frame * h, w, h));
     p.end();
