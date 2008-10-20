@@ -374,9 +374,9 @@ SimpleJob::~SimpleJob()
         d->m_slave->kill();
         Scheduler::jobFinished( this, d->m_slave ); // deletes the slave
 #endif
-        Scheduler::cancelJob( this );
         d->m_slave = 0; // -> set to 0
     }
+    Scheduler::cancelJob( this );
 }
 
 void SimpleJobPrivate::start(Slave *slave)

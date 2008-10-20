@@ -25,6 +25,7 @@
 
 #include <kurl.h>
 #include <kio/netaccess.h>
+#include <kio/previewjob.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
@@ -601,6 +602,29 @@ void JobTest::killJob()
     job->kill();
     qApp->sendPostedEvents(0, QEvent::DeferredDelete); // process the deferred delete of the job
     QVERIFY(ptr.isNull());
+}
+
+void JobTest::killJobBeforeStart()
+{
+    const QString src = homeTmpDir();
+    KIO::Job* job = KIO::stat( KUrl(src), KIO::HideProgressInfo );
+    QVERIFY(job->isAutoDelete());
+    QPointer<KIO::Job> ptr(job);
+    job->setUiDelegate( 0 );
+    job->kill();
+    qApp->sendPostedEvents(0, QEvent::DeferredDelete); // process the deferred delete of the job
+    QVERIFY(ptr.isNull());
+    qApp->processEvents(); // does KIO scheduler crash here? nope.
+}
+
+void JobTest::deleteJobBeforeStart() // #163171
+{
+    const QString src = homeTmpDir();
+    KIO::Job* job = KIO::stat( KUrl(src), KIO::HideProgressInfo );
+    QVERIFY(job->isAutoDelete());
+    job->setUiDelegate( 0 );
+    delete job;
+    qApp->processEvents(); // does KIO scheduler crash here?
 }
 
 void JobTest::directorySize()
