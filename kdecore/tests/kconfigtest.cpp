@@ -255,8 +255,10 @@ void KConfigTest::testSimple()
   QCOMPARE(sc2.name(), QString("kconfigtest"));
 
   // make sure groupList() isn't returning something it shouldn't
-  foreach(const QString& group, sc2.groupList())
+  foreach(const QString& group, sc2.groupList()) {
       QVERIFY(!group.isEmpty() && group != "<default>");
+      QVERIFY(!group.contains(QChar(0x1d)));
+  }
 
   KConfigGroup sc3( &sc2, "AAA");
 
@@ -857,6 +859,14 @@ void KConfigTest::testSubGroup()
 
     QCOMPARE(QStringList(cg.entryMap().keys()), PARENTGROUPKEYS);
     QCOMPARE(QStringList(subcg3.entryMap().keys()), SUBGROUP3KEYS);
+
+    // make sure groupList() isn't returning something it shouldn't
+    foreach(const QString& group, sc.groupList()) {
+      QVERIFY(!group.isEmpty() && group != "<default>");
+      QVERIFY(!group.contains(QChar(0x1d)));
+      QVERIFY(!group.contains("subgroup"));
+      QVERIFY(!group.contains("SubGroup"));
+    }
 }
 
 void KConfigTest::testKdeglobals()

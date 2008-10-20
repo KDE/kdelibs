@@ -215,10 +215,12 @@ QStringList KConfig::groupList() const
     Q_D(const KConfig);
     QStringList groups;
 
-    for (KEntryMap::ConstIterator entryMapIt( d->entryMap.constBegin() ); entryMapIt != d->entryMap.constEnd(); ++entryMapIt)
-        if (entryMapIt.key().mKey.isNull() && !entryMapIt.key().mGroup.isEmpty() &&
-            entryMapIt.key().mGroup != "<default>" && entryMapIt.key().mGroup != "$Version")
-            groups << QString::fromUtf8(entryMapIt.key().mGroup);
+    for (KEntryMap::ConstIterator entryMapIt( d->entryMap.constBegin() ); entryMapIt != d->entryMap.constEnd(); ++entryMapIt) {
+        const QByteArray group = entryMapIt.key().mGroup;
+        if (entryMapIt.key().mKey.isNull() && !group.isEmpty() &&
+            group != "<default>" && group != "$Version" && !group.contains('\x1d'))
+            groups << QString::fromUtf8(group);
+    }
 
     return groups;
 }
