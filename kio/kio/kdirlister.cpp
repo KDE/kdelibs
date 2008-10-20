@@ -101,7 +101,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   KUrl _url(_u);
   _url.cleanPath(); // kill consecutive slashes
 
-  if (KProtocolInfo::protocolClass(_url.protocol()) == ":local") {
+  if (!_url.host().isEmpty() && KProtocolInfo::protocolClass(_url.protocol()) == ":local") {
       // ":local" protocols ignore the hostname, so strip it out preventively - #160057
       _url.setHost(QString());
       if (_keep == false)

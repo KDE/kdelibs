@@ -67,6 +67,7 @@ void KDirListerTest::testOpenUrl()
     QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
     QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
     QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
+    QSignalSpy spyRedirection(&m_dirLister, SIGNAL(redirection(KUrl)));
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
     // The call to openUrl itself, emits started
     m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags);
@@ -78,6 +79,7 @@ void KDirListerTest::testOpenUrl()
     QCOMPARE(spyCanceledKUrl.count(), 0);
     QCOMPARE(spyClear.count(), 1);
     QCOMPARE(spyClearKUrl.count(), 0);
+    QCOMPARE(spyRedirection.count(), 0);
     QCOMPARE(m_items.count(), 0);
     QVERIFY(!m_dirLister.isFinished());
 
@@ -92,6 +94,7 @@ void KDirListerTest::testOpenUrl()
     QCOMPARE(spyCanceledKUrl.count(), 0);
     QCOMPARE(spyClear.count(), 1);
     QCOMPARE(spyClearKUrl.count(), 0);
+    QCOMPARE(spyRedirection.count(), 0);
     QCOMPARE(m_items.count(), 4);
     QVERIFY(m_dirLister.isFinished());
     disconnect(&m_dirLister, 0, this, 0);
