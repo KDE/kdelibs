@@ -47,49 +47,57 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
    if (!codec)
       return;
 
-   int lineno = 0;
    QString url, name, type;
-   static const int g_lineLimit = 16*1024;
-   QByteArray line(g_lineLimit,0);
+   int lineno = 0, version = 0;
+   QTextStream stream(&file);
+   stream.setCodec(codec);
+   while(! stream.atEnd()) {
+        lineno++;
+        QString line = stream.readLine().trimmed();
 
-   while ( file.readLine(line.data(), g_lineLimit) >=0 ) {
-      lineno++;
-
-      // skip lines that didn't fit in buffer and first two headers lines
-      if ( line[line.length()-1] != '\n' || lineno <= 2 )
-          continue;
-
-      QString currentLine = codec->toUnicode(line).trimmed();
-
-      if (currentLine.isEmpty()) {
-         // end of data block
-         if (type.isNull())
+        // first two headers lines contain details about the format
+        if (lineno <= 2) {
+            if (line.toLower().startsWith("options:")) {
+                foreach(QString ba, line.mid(8).split(',')) {
+                    const int pos = ba.indexOf('=');
+                    if (pos < 1)
+                        continue;
+                    const QString key = ba.left(pos).trimmed().toLower();
+                    const QString value = ba.mid(pos+1).trimmed();
+                    if (key == "version")
+                        version = value.toInt();
+                }
+            }
             continue;
-         else if ( type == "URL")
-            emit newBookmark( name, url, "" );
-         else if (type == "FOLDER" )
-            emit newFolder( name, false, "" );
+        }
 
-         type.clear();
-         name.clear();
-         url.clear();
+        // at least up till version<=3 the following is valid
+        if (line.isEmpty()) {
+            // end of data block
+            if (type.isNull())
+                continue;
+            else if ( type == "URL")
+                emit newBookmark( name, url, "" );
+            else if (type == "FOLDER" )
+                emit newFolder( name, false, "" );
 
-      } else if (currentLine == "-") {
-         // end of folder
-         emit endFolder();
-
-      } else {
-         // data block line
-         QString tag;
-         if ( tag = "#", currentLine.startsWith( tag ) )
-            type = currentLine.remove( 0, tag.length() );
-         else if ( tag = "NAME=", currentLine.startsWith( tag ) )
-            name = currentLine.remove(0, tag.length());
-         else if ( tag = "URL=", currentLine.startsWith( tag ) )
-            url = currentLine.remove(0, tag.length());
-      }
+            type.clear();
+            name.clear();
+            url.clear();
+        } else if (line == "-") {
+            // end of folder
+            emit endFolder();
+        } else {
+            // data block line
+            QString tag;
+            if ( tag = "#", line.startsWith( tag ) )
+                type = line.remove( 0, tag.length() );
+            else if ( tag = "NAME=", line.startsWith( tag ) )
+                name = line.remove(0, tag.length());
+            else if ( tag = "URL=", line.startsWith( tag ) )
+                url = line.remove(0, tag.length());
+        }
    }
-
 }
 
 QString KOperaBookmarkImporter::operaBookmarksFile()
