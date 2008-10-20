@@ -20,7 +20,7 @@
 #ifndef KFORMULA_H
 #define KFORMULA_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 #include <kdemacros.h>
 #include <kcomponentdata.h>
 #include "kformula_export.h"
