@@ -26,18 +26,17 @@
 #include <QtGui/qlayout.h>
 #include <QtGui/QLineEdit>
 #include <QtGui/QPushButton>
+#include <QtGui/QSpinBox>
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 
 
-AnimationGroup::AnimationGroup(const QString &name, QWidget *parent)
+AnimationGroup::AnimationGroup(const QString &name, int size, QWidget *parent)
     : QGroupBox(parent)
 {
     QHBoxLayout *lay = new QHBoxLayout(this);
-    QLabel *label = new QLabel(name, this);
-    lay->addWidget(label);
     m_animButton = new KAnimatedButton(this);
     lay->addWidget(m_animButton);
     QPushButton *start = new QPushButton("Start", this);
@@ -45,7 +44,8 @@ AnimationGroup::AnimationGroup(const QString &name, QWidget *parent)
     QPushButton *stop = new QPushButton("Stop", this);
     lay->addWidget(stop);
 
-    setTitle(name);
+    setTitle(QString("%1 (%2)").arg(name).arg(size));
+    m_animButton->setIconSize(QSize(size, size));
     m_animButton->setIcons(name);
 
     connect(start, SIGNAL(clicked()), m_animButton, SLOT(start()));
@@ -60,15 +60,22 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout *lay = new QVBoxLayout(central);
     setCentralWidget(central);
 
-    m_name = new QLineEdit(central);
-    lay->addWidget(m_name);
+    QWidget *top = new QWidget(central);
+    lay->addWidget(top);
+    QHBoxLayout *lay2 = new QHBoxLayout(top);
+    m_name = new QLineEdit(top);
+    lay2->addWidget(m_name);
+    m_size = new QSpinBox(top);
+    lay2->addWidget(m_size);
+
+    m_size->setValue(22);
 
     connect(m_name, SIGNAL(returnPressed()), this, SLOT(slotAddNew()));
 }
 
 void MainWindow::slotAddNew()
 {
-    AnimationGroup *group = new AnimationGroup(m_name->text(), centralWidget());
+    AnimationGroup *group = new AnimationGroup(m_name->text(), m_size->value(), centralWidget());
     centralWidget()->layout()->addWidget(group);
 }
 

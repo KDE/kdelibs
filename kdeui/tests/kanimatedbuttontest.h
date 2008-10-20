@@ -25,6 +25,7 @@
 #include "kmainwindow.h"
 
 class QLineEdit;
+class QSpinBox;
 class KAnimatedButton;
 
 class AnimationGroup : public QGroupBox
@@ -32,7 +33,7 @@ class AnimationGroup : public QGroupBox
 Q_OBJECT
 
 public:
-    AnimationGroup(const QString &name, QWidget *parent = 0);
+    AnimationGroup(const QString &name, int size, QWidget *parent = 0);
 
 private:
     KAnimatedButton *m_animButton;
@@ -50,6 +51,7 @@ private slots:
 
 private:
     QLineEdit *m_name;
+    QSpinBox *m_size;
 };
 
 #endif
