@@ -78,36 +78,36 @@ void AutoBracePlugin::slotTextInserted(KTextEditor::Document *document,
 
     for (int i = range.start().line() + 1; i < document->lines(); ++i)
     {
-      line = document->line(i);
-      if (line.trimmed().isEmpty()) {
-        continue; // Empty lines are not a reliable source of information.
-      }
+        line = document->line(i);
+        if (line.trimmed().isEmpty()) {
+            continue; // Empty lines are not a reliable source of information.
+        }
 
-      rx.setPattern("^(?:"
-        // Inserting a brace is ok if there is a closing brace with
-        // less indentation than the opener line.
-        "[\\s]{0," + indentationLengthMinusOne + "}\\}"
-        "|"
-        // Inserting a brace is ok if there is a line (not starting with a
-        // brace) with less or similar indentation as the original line.
-        "[\\s]{0," + indentationLength + "}[^\\}\\s]"
-        ")"
-      );
-      if (rx.indexIn(line) == -1) {
-        // There is already a brace, or the line is indented more than the
-        // opener line (which means we expect a brace somewhere further down).
-        // So don't insert the brace, and just indent the line.
-        insertBrace = false;
-      }
-      // Quit the loop - a non-empty line always leads to a definitive decision.
-      break;
+        rx.setPattern("^(?:"
+            // Inserting a brace is ok if there is a closing brace with
+            // less indentation than the opener line.
+            "[\\s]{0," + indentationLengthMinusOne + "}\\}"
+            "|"
+            // Inserting a brace is ok if there is a line (not starting with a
+            // brace) with less or similar indentation as the original line.
+            "[\\s]{0," + indentationLength + "}[^\\}\\s]"
+            ")"
+        );
+        if (rx.indexIn(line) == -1) {
+            // There is already a brace, or the line is indented more than the
+            // opener line (which means we expect a brace somewhere further down).
+            // So don't insert the brace, and just indent the line.
+            insertBrace = false;
+        }
+        // Quit the loop - a non-empty line always leads to a definitive decision.
+        break;
     }
 
     // Insert the empty line + brace, and adjust the cursor position.
     if (insertBrace) {
-      document->insertText(range.end(), "\n" + indentation + "}");
+        document->insertText(range.end(), "\n" + indentation + "}");
     }
-    document->activeView()->setCursorPosition(document->endOfLine(range.end().line()));
+    document->activeView()->setCursorPosition(range.end());
 }
 
 #include "autobrace.moc"
