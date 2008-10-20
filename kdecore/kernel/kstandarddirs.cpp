@@ -1501,7 +1501,7 @@ void KStandardDirs::addKDEDefaults()
 #elif defined(Q_WS_WIN)
         WCHAR wPath[MAX_PATH+1];
         if ( SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, wPath) == S_OK) {
-          localKdeDir = QString::fromUtf16((const ushort *) wPath) + QLatin1Char('/') + KDE_DEFAULT_HOME + QLatin1Char('/');
+          localKdeDir = QDir::fromNativeSeparators(QString::fromUtf16((const ushort *) wPath)) + QLatin1Char('/') + KDE_DEFAULT_HOME + QLatin1Char('/');
         } else {
           localKdeDir =  QDir::homePath() + QLatin1Char('/') + KDE_DEFAULT_HOME + QLatin1Char('/');
         }
