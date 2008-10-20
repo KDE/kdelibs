@@ -125,6 +125,7 @@ public:
     // Other methods (not part of DOM)
     DocumentImpl *createDocument( KHTMLView *v = 0 );
     HTMLDocumentImpl *createHTMLDocument( KHTMLView *v = 0 );
+    WebCore::SVGDocument *createSVGDocument( KHTMLView *v = 0 );
 
     // Returns the static instance of this class - only one instance of this class should
     // ever be present, and is used as a factory method for creating DocumentImpl objects

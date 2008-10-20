@@ -128,6 +128,9 @@ using namespace DOM;
 
 #include "ecma/debugger/debugwindow.h"
 
+// SVG
+#include <svg/SVGDocument.h>
+
 namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
     {
@@ -1912,16 +1915,21 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   setUrl(url);
 
   bool servedAsXHTML = args.mimeType() == "application/xhtml+xml";
+  bool servedAsSVG = !servedAsXHTML && args.mimeType() == "image/svg+xml";
   KMimeType::Ptr mime = KMimeType::mimeType( args.mimeType(), KMimeType::ResolveAliases );
         // We want to make sure text/xml and application/xml are both handled right...
   bool servedAsXML = mime && mime->is( "text/xml" );
   // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
-  if ( servedAsXML && !servedAsXHTML ) { // any XML derivative, except XHTML
-    d->m_doc = DOMImplementationImpl::instance()->createDocument( d->m_view );
+  if ( servedAsSVG ) {
+    d->m_doc = DOMImplementationImpl::instance()->createSVGDocument( d->m_view );
   } else {
-    d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
-    // HTML or XHTML? (#86446)
-    static_cast<HTMLDocumentImpl *>(d->m_doc)->setHTMLRequested( !servedAsXHTML );
+    if ( servedAsXML && !servedAsXHTML ) { // any XML derivative, except XHTML
+      d->m_doc = DOMImplementationImpl::instance()->createDocument( d->m_view );
+    } else {
+      d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
+      // HTML or XHTML? (#86446)
+      static_cast<HTMLDocumentImpl *>(d->m_doc)->setHTMLRequested( !servedAsXHTML );
+    }
   }
 
   d->m_doc->ref();

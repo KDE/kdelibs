@@ -264,6 +264,14 @@ HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v )
     return doc;
 }
 
+// create SVG document
+WebCore::SVGDocument *DOMImplementationImpl::createSVGDocument( KHTMLView *v )
+{
+    WebCore::SVGDocument* doc = new WebCore::SVGDocument(this, v);
+
+    return doc;
+}
+
 HTMLDocumentImpl* DOMImplementationImpl::createHTMLDocument( const DOMString& title )
 {
     HTMLDocumentImpl* r = createHTMLDocument( 0 /* ### create a view otherwise it doesn't work */);
