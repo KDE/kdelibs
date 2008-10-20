@@ -97,7 +97,7 @@ void KGlobalAccel::activateGlobalShortcutContext(
         const KComponentData &component)
 {
     // TODO provide contextFriendly
-    d->iface.activateGlobalShortcutContext(component.aboutData()->programName(), contextUnique);
+    self()->d->iface.activateGlobalShortcutContext(component.aboutData()->programName(), contextUnique);
 }
 
 

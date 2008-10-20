@@ -44,7 +44,6 @@ class KComponentData;
  */
 class KDEUI_EXPORT KGlobalAccel : public QObject
 {
-    friend class KGlobalAccelImpl;
     Q_OBJECT
 
 public:
@@ -69,6 +68,61 @@ public:
      *  should be disabled.
      */
     void setEnabled(bool enabled);
+
+    /**
+     * Take away the given shortcut from the named action it belongs to.
+     * This applies to all actions with global shortcuts in any KDE application.
+     *
+     * @see promptStealShortcutSystemwide()
+     */
+    static void stealShortcutSystemwide(const QKeySequence &seq);
+
+    /**
+     * Set global shortcut context.
+     *
+     * A global shortcut context allows an application to have different sets
+     * of global shortcuts and to switch between them. This is used by
+     * plasma to switch the active global shortcuts when switching between
+     * activities.
+     *
+     * @param component the name of the component. KComponentData::componentName
+     * @param context the name of the context.
+     */
+    static void activateGlobalShortcutContext(
+            const QString &contextUnique,
+            const QString &contextFriendly,
+            const KComponentData &component = KGlobal::mainComponent());
+
+    /**
+     * Returns a list of global shortcuts registered for the shortcut @seq.
+     *
+     * If the list contains more that one entry it means the component
+     * that registered the shortcuts uses global shortcut contexts. All
+     * returned shortcuts belong to the same component.
+     */
+    static QList<KGlobalShortcutInfo> getGlobalShortcutsByKey(const QKeySequence &seq);
+
+    /**
+     * Check if the shortcut @seq is available for the @p component. The
+     * component is only of interest if the current application uses global shortcut
+     * contexts. In that case a global shortcut by @p component in an inactive
+     * global shortcut contexts does not block the @p seq for us.
+     */
+    static bool isGlobalShortcutAvailable(
+            const QKeySequence &seq,
+            const KComponentData &component = KGlobal::mainComponent());
+
+    /**
+     * Show a messagebox to inform the user that a global shorcut is already occupied,
+     * and ask to take it away from its current action(s). This is GUI only, so nothing will
+     * be actually changed.
+     *
+     * @see stealShortcutSystemwide()
+     */
+    static bool promptStealShortcutSystemwide(
+            QWidget *parent,
+            const QList<KGlobalShortcutInfo> &shortcuts,
+            const QKeySequence &seq);
 
     /**
      * Set the KComponentData for which to manipulate shortcuts. This is for exceptional
@@ -117,61 +171,6 @@ public:
      * @see promptStealShortcutSystemwide below
      */
     KDE_DEPRECATED static bool promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier, const QKeySequence &seq);
-
-    /**
-     * Take away the given shortcut from the named action it belongs to.
-     * This applies to all actions with global shortcuts in any KDE application.
-     *
-     * @see promptStealShortcutSystemwide()
-     */
-    static void stealShortcutSystemwide(const QKeySequence &seq);
-
-    /**
-     * Set global shortcut context.
-     *
-     * A global shortcut context allows an application to have different sets
-     * of global shortcuts and to switch between them. This is used by
-     * plasma to switch the active global shortcuts when switching between
-     * activities.
-     *
-     * @param component the name of the component. KComponentData::componentName
-     * @param context the name of the context.
-     */
-    void activateGlobalShortcutContext(
-            const QString &contextUnique,
-            const QString &contextFriendly,
-            const KComponentData &component = KGlobal::mainComponent());
-
-    /**
-     * Returns a list of global shortcuts registered for the shortcut @seq.
-     *
-     * If the list contains more that one entry it means the component
-     * that registered the shortcuts uses global shortcut contexts. All
-     * returned shortcuts belong to the same component.
-     */
-    static QList<KGlobalShortcutInfo> getGlobalShortcutsByKey(const QKeySequence &seq);
-
-    /**
-     * Check if the shortcut @seq is available for the @p component. The
-     * component is only of interest if the current application uses global shortcut
-     * contexts. In that case a global shortcut by @p component in an inactive
-     * global shortcut contexts does not block the @p seq for us.
-     */
-    static bool isGlobalShortcutAvailable(
-            const QKeySequence &seq,
-            const KComponentData &component = KGlobal::mainComponent());
-
-    /**
-     * Show a messagebox to inform the user that a global shorcut is already occupied,
-     * and ask to take it away from its current action(s). This is GUI only, so nothing will
-     * be actually changed.
-     *
-     * @see stealShortcutSystemwide()
-     */
-    static bool promptStealShortcutSystemwide(
-            QWidget *parent,
-            const QList<KGlobalShortcutInfo> &shortcuts,
-            const QKeySequence &seq);
 
 private:
 
