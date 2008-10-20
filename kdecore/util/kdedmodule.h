@@ -30,6 +30,8 @@
 class KDEDModulePrivate;
 class Kded;
 
+class QDBusObjectPath;
+
 /**
  * \class KDEDModule kdedmodule.h <KDEDModule>
  * 
@@ -84,8 +86,10 @@ Q_SIGNALS:
 
   /**
    * Emitted after the module is registered successfully with dbus
+   *
+   * @since 4.2
    */
-  void moduleRegistered(const QString &path);
+  void moduleRegistered(const QDBusObjectPath &path);
 
 private:
   KDEDModulePrivate* const d;

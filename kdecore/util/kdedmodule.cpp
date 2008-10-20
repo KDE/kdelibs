@@ -48,8 +48,15 @@ KDEDModule::~KDEDModule()
 
 void KDEDModule::setModuleName( const QString& name )
 {
-   QString realPath = d->moduleName = name;
-   realPath.prepend("/modules/");
+   d->moduleName = name;
+   QDBusObjectPath realPath( QString("/modules/") + d->moduleName);
+
+   if (realPath.path().isEmpty())
+      {
+      kError() << "The kded module name '" << name << "' is invalid!";
+      return;
+      }
+
 
    QDBusConnection::RegisterOptions regOptions;
 
@@ -73,7 +80,7 @@ void KDEDModule::setModuleName( const QString& name )
       kDebug() << "Registration of kded module " << d->moduleName << "without dbus interface.";
       }
 
-   if (!QDBusConnection::sessionBus().registerObject(realPath, this, regOptions))
+   if (!QDBusConnection::sessionBus().registerObject(realPath.path(), this, regOptions))
       {
       // Happens for khotkeys but the module works. Need some time to investigate.
       kDebug() << "registerObject() returned false for " << d->moduleName;
