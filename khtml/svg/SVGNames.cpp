@@ -422,7 +422,7 @@ namespace WebCore {
             svgTag = DOM::QualifiedName(makeId(DOM::svgNamespace, ID_SVG), DOM::emptyPrefixName);
             switchTag = DOM::QualifiedName(makeId(DOM::svgNamespace, ID_SWITCH), DOM::emptyPrefixName);
             symbolTag = DOM::QualifiedName(makeId(DOM::svgNamespace, ID_SYMBOL), DOM::emptyPrefixName);
-            textTag = DOM::QualifiedName(makeId(DOM::svgNamespace, ID_TEXT), DOM::emptyPrefixName);
+            textTag = DOM::QualifiedName(makeId(DOM::svgNamespace, localNamePart(ATTR_TEXT)), DOM::emptyPrefixName);
             textPathTag = DOM::QualifiedName(makeId(DOM::svgNamespace, ID_TEXTPATH), DOM::emptyPrefixName);
             titleTag = DOM::QualifiedName(makeId(DOM::svgNamespace, ID_TITLE), DOM::emptyPrefixName);
             trefTag = DOM::QualifiedName(makeId(DOM::svgNamespace, ID_TREF), DOM::emptyPrefixName);

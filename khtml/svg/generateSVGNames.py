@@ -39,7 +39,11 @@ definitionXLink = ""
 for i in tagsList:
     f.write(" " * 8 + "extern DOM::QualifiedName %sTag;\n" % (i.replace("-", "_")))
     definition = definition + (" " * 8 + "DOM::QualifiedName %sTag;\n" % (i.replace("-", "_")))
-    initString = initString + ("            %sTag = DOM::QualifiedName(makeId(DOM::svgNamespace, ID_%s), DOM::emptyPrefixName);\n" % (i.replace("-", "_"), i.upper().replace("-", "_")))
+    # ID_TEXT is hidden, we need to use ATTR_TEXT instead
+    if i == text:
+        initString = initString + ("            %sTag = DOM::QualifiedName(makeId(DOM::svgNamespace, localNamePart(ATTR_%s)), DOM::emptyPrefixName);\n" % (i.replace("-", "_"), i.upper().replace("-", "_")))
+    else:
+        initString = initString + ("            %sTag = DOM::QualifiedName(makeId(DOM::svgNamespace, ID_%s), DOM::emptyPrefixName);\n" % (i.replace("-", "_"), i.upper().replace("-", "_")))
 for i in attrsList:
     f.write(" " * 8 + "extern DOM::QualifiedName %sAttr;\n" % (i.replace("-", "_")))
     definition = definition + (" " * 8 + "DOM::QualifiedName %sAttr;\n" % (i.replace("-", "_")))
