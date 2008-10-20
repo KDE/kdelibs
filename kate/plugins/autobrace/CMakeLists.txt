@@ -3,17 +3,11 @@ project(ktexteditor_autobrace)
 find_package(KDE4 REQUIRED)
 include(KDE4Defaults)
 
-cmake_minimum_required(VERSION 2.4)
-
-# CMake said I should insert this stuff so here it goes.
-if(COMMAND cmake_policy)
-    cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
-
-
 ########### next target ###############
 
-include_directories( ${KDE4_INCLUDES} ${QT_INCLUDES}  )
+include_directories(${KDE4_INCLUDES} ${QT_INCLUDES})
+add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
+
 set(ktexteditor_autobrace_PART_SRCS autobrace.cpp )
 
 kde4_add_plugin(ktexteditor_autobrace ${ktexteditor_autobrace_PART_SRCS} )
