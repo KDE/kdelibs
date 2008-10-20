@@ -39,6 +39,12 @@
 
 #include <assert.h>
 
+// quick fix to get random numbers on win32
+#ifdef Q_OS_WIN32
+    #include <windows.h>
+    #include <wincrypt.h>
+#endif
+
 #define KWALLET_VERSION_MAJOR		0
 #define KWALLET_VERSION_MINOR		0
 
@@ -68,7 +74,7 @@ Backend::Backend(const QString& name, bool isPath) : d(0), _name(name), _ref(0) 
 	if (isPath) {
 		_path = name;
 	} else {
-		_path = KGlobal::dirs()->saveLocation("kwallet") + '/' + _name + ".kwl";
+		_path = KGlobal::dirs()->saveLocation("kwallet") + _name + ".kwl";
 	}
 
 	_open = false;
@@ -96,6 +102,25 @@ return 0;
 
 
 static int getRandomBlock(QByteArray& randBlock) {
+
+#ifdef Q_OS_WIN32
+
+    // use windows crypto API to get randomness on win32
+    // HACK: this should be done using qca
+    HCRYPTPROV hProv;
+    
+    if(!CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT | CRYPT_SILENT)) return -1; // couldn't get random data
+    
+    if(!CryptGenRandom(hProv, static_cast<DWORD>(randBlock.size()), (BYTE*)randBlock.data())) {
+        return -3; // read error
+    }
+    
+    // release the crypto context
+    CryptReleaseContext(hProv, 0);
+    
+    return randBlock.size();
+    
+#else
 	// First try /dev/urandom
 	if (QFile::exists("/dev/urandom")) {
 		QFile devrand("/dev/urandom");
@@ -115,8 +140,8 @@ static int getRandomBlock(QByteArray& randBlock) {
 	if (QFile::exists("/dev/random")) {
 		QFile devrand("/dev/random");
 		if (devrand.open(QIODevice::ReadOnly)) {
-		int rc = 0;
-		int cnt = 0;
+    		int rc = 0;
+    		int cnt = 0;
 
 			do {
 				int rc2 = devrand.read(randBlock.data() + rc, randBlock.size());
@@ -152,8 +177,10 @@ static int getRandomBlock(QByteArray& randBlock) {
 	}
 
 	// Couldn't get any random data!!
-
+    
 	return -1;
+
+#endif
 }
 
 
