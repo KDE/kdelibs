@@ -215,7 +215,12 @@ void KXmlGuiWindow::setupGUI( const QSize & defaultSize, StandardWindowOptions o
     }
 
     if( options & Save ){
-        setAutoSaveSettings(autoSaveConfigGroup());
+        const KConfigGroup cg(autoSaveConfigGroup());
+        if (cg.isValid()) {
+            setAutoSaveSettings(cg);
+        } else {
+            setAutoSaveSettings();
+        }
     }
 }
 void KXmlGuiWindow::createGUI( const QString &xmlfile )
