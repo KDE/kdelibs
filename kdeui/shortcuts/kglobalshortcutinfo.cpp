@@ -19,17 +19,32 @@
 #include "kglobalshortcutinfo.h"
 #include "kglobalshortcutinfo_p.h"
 
+#include <QtDBus/QDBusMetaType>
 
+static void init()
+    {
+    static bool initialized(false);
+    if (!initialized)
+        {
+        qDBusRegisterMetaType< KGlobalShortcutInfo >();
+        qDBusRegisterMetaType< QList<KGlobalShortcutInfo> >();
+        initialized = true;
+        }
+    }
 
 KGlobalShortcutInfo::KGlobalShortcutInfo()
         :   d(new KGlobalShortcutInfoPrivate)
-    {}
+    {
+    init();
+    }
 
 
 KGlobalShortcutInfo::KGlobalShortcutInfo(const KGlobalShortcutInfo &rhs)
     :   QObject()
         ,d(new KGlobalShortcutInfoPrivate)
     {
+    init();
+
     d->contextUniqueName     = rhs.d->contextUniqueName;
     d->contextFriendlyName   = rhs.d->contextFriendlyName;
     d->componentFriendlyName = rhs.d->componentFriendlyName;
