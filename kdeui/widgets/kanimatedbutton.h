@@ -99,6 +99,9 @@ protected Q_SLOTS:
 private:
   class KAnimatedButtonPrivate *const d;
 
+    Q_PRIVATE_SLOT(d, void _k_movieFrameChanged(int))
+    Q_PRIVATE_SLOT(d, void _k_movieFinished())
+
     Q_DISABLE_COPY(KAnimatedButton)
 };
 
