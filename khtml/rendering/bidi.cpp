@@ -36,6 +36,10 @@
 
 #include <limits.h>
 
+// SVG
+#include "rendering/SVGRootInlineBox.h"
+#include "rendering/SVGInlineTextBox.h"
+
 #define BIDI_DEBUG 0
 //#define DEBUG_LINEBREAKS
 //#define PAGE_DEBUG
@@ -1572,6 +1576,13 @@ redo_linebreak:
 
                         // Now position our text runs vertically.
                         computeVerticalPositionsForLine(lineBox);
+
+                        // SVG
+                        if (lineBox->isSVGRootInlineBox()) {
+                            //kDebug() << "svgrootinline box:" << endl;
+                            WebCore::SVGRootInlineBox* svgLineBox = static_cast<WebCore::SVGRootInlineBox*>(lineBox);
+                            svgLineBox->computePerCharacterLayoutInformation();
+                        }
 
                         deleteBidiRuns(renderArena());
 
