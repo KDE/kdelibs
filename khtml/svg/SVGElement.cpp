@@ -129,9 +129,9 @@ void SVGElement::addSVGEventListener(/*const AtomicString& eventType*/const Even
 void SVGElement::parseMappedAttribute(MappedAttribute* attr)
 {
     // standard events
-    if (/*attr->name() == onloadAttr*/localNamePart(attr->id()) == ATTR_ONLOAD)
+    if (/*attr->name() == onloadAttr*/attr->id() == ATTR_ONLOAD)
         addSVGEventListener(/*loadEvent*/EventImpl::LOAD_EVENT, attr);
-    else if (/*attr->name() == onclickAttr*/localNamePart(attr->id()) == ATTR_ONCLICK)
+    else if (/*attr->name() == onclickAttr*/attr->id() == ATTR_ONCLICK)
         addSVGEventListener(/*clickEvent*/EventImpl::CLICK_EVENT, attr);
     else /*if (attr->name() == onmousedownAttr)
         addSVGEventListener(mousedownEvent, attr);
@@ -150,7 +150,7 @@ void SVGElement::parseMappedAttribute(MappedAttribute* attr)
     else if (attr->name() == SVGNames::onactivateAttr)
         addSVGEventListener(DOMActivateEvent, attr);
     else*/
-    if (localNamePart(attr->id()) == ATTR_ID) {
+    if (attr->id() == ATTR_ID) {
         setHasID();
         document()->incDOMTreeVersion();
     } else
