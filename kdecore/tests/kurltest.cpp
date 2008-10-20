@@ -976,11 +976,19 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
      QCOMPARE( waba2.url(), QString("http://www.website.com/directory/relative.html") );
   }
   {
+     KUrl waba2( waba1, "./relative.html");
+     QCOMPARE( waba2.url(), QString("http://www.website.com/directory/relative.html") );
+  }
+  {
      KUrl waba2( waba1, "../relative.html");
      QCOMPARE( waba2.url(), QString("http://www.website.com/relative.html") );
   }
   {
      KUrl waba2( waba1, "down/relative.html");
+     QCOMPARE( waba2.url(), QString("http://www.website.com/directory/down/relative.html") );
+  }
+  {
+     KUrl waba2( waba1, "down/./relative.html");
      QCOMPARE( waba2.url(), QString("http://www.website.com/directory/down/relative.html") );
   }
   {
