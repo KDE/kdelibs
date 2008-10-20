@@ -455,7 +455,7 @@ void RenderFlow::repaint(Priority prior)
         RenderBlock* cb = containingBlock();
         for (RenderObject* inlineFlow = this; inlineFlow && inlineFlow->isInlineFlow() && inlineFlow != cb;
              inlineFlow = inlineFlow->parent()) {
-             if (inlineFlow->style() && inlineFlow->style()->position() == RELATIVE && inlineFlow->layer()) {
+             if (inlineFlow->style() && inlineFlow->style()->position() == PRELATIVE && inlineFlow->layer()) {
                 KHTMLAssert(inlineFlow->isBox());
                 static_cast<RenderBox*>(inlineFlow)->relativePositionOffset(left, top);
              }

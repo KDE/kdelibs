@@ -200,7 +200,7 @@ void RenderBlock::updateFirstLetter()
 
         // Force inline display (except for floating first-letters)
         pseudoStyle->setDisplay( pseudoStyle->isFloating() ? BLOCK : INLINE);
-        pseudoStyle->setPosition( STATIC ); // CSS2 says first-letter can't be positioned.
+        pseudoStyle->setPosition( PSTATIC ); // CSS2 says first-letter can't be positioned.
 
         if (firstLetterObject != 0) {
             firstLetterObject->setStyle( pseudoStyle );
@@ -312,7 +312,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
     if (!newChild->isInline())
         newChild->setPos(newChild->xPos(), -500000);
 
-    if (!newChild->isText() && newChild->style()->position() != STATIC)
+    if (!newChild->isText() && newChild->style()->position() != PSTATIC)
         setOverhangingContents();
 
     // A block has to either have all of its children inline, or all of its children as blocks.
@@ -2225,7 +2225,7 @@ int RenderBlock::lowestAbsolutePosition() const
     QListIterator<RenderObject*> it(*m_positionedObjects);
     while (it.hasNext()) {
         r = it.next();
-        if (r->style()->position() == FIXED)
+        if (r->style()->position() == PFIXED)
             continue;
         int lp = r->yPos() + r->lowestPosition(false);
         bottom = qMax(bottom, lp);
@@ -2273,7 +2273,7 @@ int RenderBlock::rightmostAbsolutePosition() const
     QListIterator<RenderObject*> it(*m_positionedObjects);
     while (it.hasNext()) {
         r = it.next();
-        if (r->style()->position() == FIXED)
+        if (r->style()->position() == PFIXED)
             continue;
         int rp = r->xPos() + r->rightmostPosition(false);
         right = qMax(right, rp);
@@ -2320,7 +2320,7 @@ int RenderBlock::leftmostAbsolutePosition() const
     QListIterator<RenderObject*> it(*m_positionedObjects);
     while (it.hasNext()) {
         r = it.next();
-        if (r->style()->position() == FIXED)
+        if (r->style()->position() == PFIXED)
             continue;
         int lp = r->xPos() + r->leftmostPosition(false);
         left = qMin(left, lp);
@@ -2366,7 +2366,7 @@ int RenderBlock::highestAbsolutePosition() const
     QListIterator<RenderObject*> it(*m_positionedObjects);
     while ( it.hasNext() ) {
         r = it.next();
-        if (r->style()->position() == FIXED)
+        if (r->style()->position() == PFIXED)
             continue;
         int hp = r->yPos() + r->highestPosition(false);
         hp = qMin(top, hp);

@@ -348,7 +348,7 @@ void RenderWidget::layout( )
             RenderLayer* rl = enclosingStackingContext();
             RenderLayer* el = enclosingLayer();
             while (rl && el && el != rl) {
-                if (el->renderer()->style()->position() != STATIC) {
+                if (el->renderer()->style()->position() != PSTATIC) {
                     m_needsMask = false;
                     break;
                 }

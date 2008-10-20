@@ -71,8 +71,8 @@ using namespace DOM;
 // keep in sync with html4.css'
 #define KHTML_STYLE_VERSION 1
 
-#undef RELATIVE
-#undef ABSOLUTE
+#undef PRELATIVE
+#undef PABSOLUTE
 
 // handle value "inherit" on a default inherited property
 #define HANDLE_INHERIT_ON_INHERITED_PROPERTY(prop, Prop) \
@@ -770,7 +770,7 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
         // may be needed for positioned elements that have to compute their static normal flow
         // positions.  We also force inline-level roots to be block-level.
         if (style->display() != BLOCK && style->display() != TABLE /*&& style->display() != BOX*/ &&
-            (style->position() == ABSOLUTE || style->position() == FIXED || style->floating() != FNONE ||
+            (style->position() == PABSOLUTE || style->position() == PFIXED || style->floating() != FNONE ||
              (e && e->document()->documentElement() == e))) {
              if (style->display() == INLINE_TABLE)
                  style->setDisplay(TABLE);
@@ -788,13 +788,13 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
 
         // After performing the display mutation, check our position.  We do not honor position:relative on
         // table rows and some other table displays. This is undefined behaviour in CSS2.1 (cf. 9.3.1)
-        if (style->position() == RELATIVE) {
+        if (style->position() == PRELATIVE) {
             switch (style->display()) {
               case TABLE_ROW_GROUP:
               case TABLE_HEADER_GROUP:
               case TABLE_FOOTER_GROUP:
               case TABLE_ROW:
-                style->setPosition(STATIC);
+                style->setPosition(PSTATIC);
               default:
                 break;
             }
@@ -806,11 +806,11 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
     if ( e ) {
         // ignore display: none for <frame>
         if ( e->id() == ID_FRAME ) {
-            style->setPosition( STATIC );
+            style->setPosition( PSTATIC );
             style->setDisplay( BLOCK );
         }
         else if ( e->id() == ID_FRAMESET ) {
-            style->setPosition( STATIC );
+            style->setPosition( PSTATIC );
         }
     }
 
@@ -2585,13 +2585,13 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         switch(primitiveValue->getIdent())
         {
         case CSS_VAL_STATIC:
-            p = STATIC; break;
+            p = PSTATIC; break;
         case CSS_VAL_RELATIVE:
-            p = RELATIVE; break;
+            p = PRELATIVE; break;
         case CSS_VAL_ABSOLUTE:
-            p = ABSOLUTE; break;
+            p = PABSOLUTE; break;
         case CSS_VAL_FIXED:
-            p = FIXED; break;
+            p = PFIXED; break;
         default:
             return;
         }

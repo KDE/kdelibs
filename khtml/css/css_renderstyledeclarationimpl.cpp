@@ -937,13 +937,13 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         break;
     case CSS_PROP_POSITION:
         switch (style->position()) {
-        case STATIC:
+        case PSTATIC:
             return new CSSPrimitiveValueImpl(CSS_VAL_STATIC);
-        case RELATIVE:
+        case PRELATIVE:
             return new CSSPrimitiveValueImpl(CSS_VAL_RELATIVE);
-        case ABSOLUTE:
+        case PABSOLUTE:
             return new CSSPrimitiveValueImpl(CSS_VAL_ABSOLUTE);
-        case FIXED:
+        case PFIXED:
             return new CSSPrimitiveValueImpl(CSS_VAL_FIXED);
         }
         Q_ASSERT(0);

@@ -141,7 +141,7 @@ static inline bool overflowAppliesTo(RenderObject* o)
 void RenderBox::setStyle(RenderStyle *_style)
 {
     bool affectsParent = style() && isFloatingOrPositioned() &&
-         (!_style->isFloating() && _style->position() != ABSOLUTE && _style->position() != FIXED) &&
+         (!_style->isFloating() && _style->position() != PABSOLUTE && _style->position() != PFIXED) &&
          parent() && (parent()->isBlockFlow() || parent()->isInlineFlow());
 
     RenderContainer::setStyle(_style);
@@ -166,8 +166,8 @@ void RenderBox::setStyle(RenderStyle *_style)
 
     switch(_style->position())
     {
-    case ABSOLUTE:
-    case FIXED:
+    case PABSOLUTE:
+    case PFIXED:
         setPositioned(true);
         break;
     default:
@@ -175,7 +175,7 @@ void RenderBox::setStyle(RenderStyle *_style)
         if( !isTableCell() && _style->isFloating() )
             setFloating(true);
 
-        if( _style->position() == RELATIVE )
+        if( _style->position() == PRELATIVE )
             setRelPositioned(true);
     }
 
@@ -760,7 +760,7 @@ QRect RenderBox::clipRect(int tx, int ty)
     int cliptop = 0;
     int clipbottom = cliph;
 
-    if ( style()->hasClip() && style()->position() == ABSOLUTE ) {
+    if ( style()->hasClip() && style()->position() == PABSOLUTE ) {
 	// the only case we use the clip property according to CSS 2.1
 	if (!style()->clipLeft().isVariable()) {
 	    int c = style()->clipLeft().width(clipw);
@@ -842,7 +842,7 @@ short RenderBox::containingBlockWidth(RenderObject* providedCB) const
 
 bool RenderBox::absolutePosition(int &_xPos, int &_yPos, bool f) const
 {
-    if ( style()->position() == FIXED )
+    if ( style()->position() == PFIXED )
 	f = true;
     RenderObject *o = container();
     if( o && o->absolutePosition(_xPos, _yPos, f))
@@ -925,10 +925,10 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, Priority p, bool f)
     // is translated, but the render box isn't, so we need to do this to get the
     // right dirty rect.  Since this is called from RenderObject::setStyle, the relative position
     // flag on the RenderObject has been cleared, so use the one on the style().
-    if (style()->position() == RELATIVE && m_layer)
+    if (style()->position() == PRELATIVE && m_layer)
         relativePositionOffset(x,y);
 
-    if (style()->position() == FIXED) f=true;
+    if (style()->position() == PFIXED) f=true;
 
     // kDebug( 6040 ) << "RenderBox(" <<this << ", " << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")";
     RenderObject *o = container();
@@ -936,7 +936,7 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, Priority p, bool f)
          if (o->layer()) {
              if (o->style()->hidesOverflow() && o->layer() && !o->isInlineFlow())
                  o->layer()->subtractScrollOffset(x,y); // For overflow:auto/scroll/hidden.
-             if (style()->position() == ABSOLUTE)
+             if (style()->position() == PABSOLUTE)
                  o->layer()->checkInlineRelOffset(this,x,y);
         }
         o->repaintRectangle(x, y, w, h, p, f);

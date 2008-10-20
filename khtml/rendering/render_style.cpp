@@ -769,7 +769,7 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
     if ( *box.get() != *other->box.get() ||
          *visual.get() != *other->visual.get() ||
          (*surround.get() != *other->surround.get()
-           && (other->position() == STATIC || other->position() != position())) ||
+           && (other->position() == PSTATIC || other->position() != position())) ||
          !(inherited->indent == other->inherited->indent) ||
          !(inherited->line_height == other->inherited->line_height) ||
          !(inherited->style_image == other->inherited->style_image) ||
@@ -838,9 +838,9 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 	    return Layout;
 
     if (*surround.get() != *other->surround.get()) {
-        assert( other->position() != STATIC );                      // this style is positioned or relatively positioned
+        assert( other->position() != PSTATIC );                      // this style is positioned or relatively positioned
         if ( surround->hasSamePBMData(*other->surround.get()) &&    // padding/border/margin are identical
-             (other->position() == RELATIVE ||
+             (other->position() == PRELATIVE ||
                !(other->left().isVariable() && other->right().isVariable()) &&  // X isn't static
                !(other->top().isVariable() && other->bottom().isVariable()) ))   // neither is Y
            // therefore only the offset is different

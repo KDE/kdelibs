@@ -630,7 +630,7 @@ int RenderObject::offsetTop() const
 
 RenderObject* RenderObject::offsetParent() const
 {
-    if (isBody() || style()->position() == FIXED)
+    if (isBody() || style()->position() == PFIXED)
         return 0;
 
     // can't really use containing blocks here (#113280)
@@ -729,7 +729,7 @@ void RenderObject::markContainingBlocksForLayout()
     RenderObject *last = this;
 
     while (o) {
-        if (!last->isText() && (last->style()->position() == FIXED || last->style()->position() == ABSOLUTE)) {
+        if (!last->isText() && (last->style()->position() == PFIXED || last->style()->position() == PABSOLUTE)) {
             if (o->m_posChildNeedsLayout)
                 return;
             o->m_posChildNeedsLayout = true;
@@ -755,15 +755,15 @@ RenderBlock *RenderObject::containingBlock() const
         return const_cast<RenderBlock*>( static_cast<const RenderBlock*>(this) );
 
     RenderObject *o = parent();
-    if(m_style->position() == FIXED) {
+    if(m_style->position() == PFIXED) {
         while ( o && !o->isCanvas() )
             o = o->parent();
     }
-    else if(m_style->position() == ABSOLUTE) {
+    else if(m_style->position() == PABSOLUTE) {
         while (o &&
-               ( o->style()->position() == STATIC || ( o->isInline() && !o->isReplaced() ) ) && !o->isCanvas()) {
+               ( o->style()->position() == PSTATIC || ( o->isInline() && !o->isReplaced() ) ) && !o->isCanvas()) {
                // for relpos inlines, return the nearest block - it will host the positioned objects list
-               if (o->isInline() && !o->isReplaced() && o->style()->position() == RELATIVE)
+               if (o->isInline() && !o->isReplaced() && o->style()->position() == PRELATIVE)
                    return o->containingBlock();
             o = o->parent();
         }
@@ -1536,7 +1536,7 @@ void RenderObject::setStyle(RenderStyle *style)
 
         if ( ( isFloating() && m_style->floating() != style->floating() ) ||
                ( isPositioned() && m_style->position() != style->position() &&
-                 style->position() != ABSOLUTE && style->position() != FIXED ) )
+                 style->position() != PABSOLUTE && style->position() != PFIXED ) )
             removeFromObjectLists();
 
         if ( layer() ) {
@@ -1566,7 +1566,7 @@ void RenderObject::setStyle(RenderStyle *style)
     }
 
     // only honor z-index for non-static objects and objects with opacity
-    if ( style->position() == STATIC && style->opacity() == 1.0f ) {
+    if ( style->position() == PSTATIC && style->opacity() == 1.0f ) {
         style->setHasAutoZIndex();
     }
     // force establishment of a stacking context by transparent objects, as those define
@@ -1576,14 +1576,14 @@ void RenderObject::setStyle(RenderStyle *style)
 
     if ( d > RenderStyle::Position &&
          (style->hasFixedBackgroundImage() != (m_style && m_style->hasFixedBackgroundImage())
-            || (style->position() == FIXED) != (m_style && (m_style->position() == FIXED)))
+            || (style->position() == PFIXED) != (m_style && (m_style->position() == PFIXED)))
             && canvas() && canvas()->view() ) {
        // some sort of fixed object is added or removed. Let's find out more and report to the canvas,
        // so that it does some bookkeeping and optimizes the view's background display mode accordingly.
        bool fixedBG = style->hasFixedBackgroundImage();
        bool oldFixedBG = m_style && m_style->hasFixedBackgroundImage();
-       bool fixedPos = (style->position() == FIXED);
-       bool oldFixedPos = m_style && (m_style->position() == FIXED);
+       bool fixedPos = (style->position() == PFIXED);
+       bool oldFixedPos = m_style && (m_style->position() == PFIXED);
        if (fixedBG != oldFixedBG) {
            if (fixedBG) {
                canvas()->addStaticObject(this);
@@ -1647,12 +1647,12 @@ bool RenderObject::attemptDirectLayerTranslation()
     // When the difference between two successive styles is only 'Position'
     // we may attempt to save a layout by directly updating the object position.
 
-    KHTMLAssert( m_style->position() != STATIC );
+    KHTMLAssert( m_style->position() != PSTATIC );
     if (!layer())
         return false;
     setInline(m_style->isDisplayInlineType());
-    setPositioned(m_style->position() != RELATIVE);
-    setRelPositioned(m_style->position() == RELATIVE);
+    setPositioned(m_style->position() != PRELATIVE);
+    setRelPositioned(m_style->position() == PRELATIVE);
     int oldXPos = xPos();
     int oldYPos = yPos();
     int oldWidth = width();
@@ -1668,7 +1668,7 @@ bool RenderObject::attemptDirectLayerTranslation()
         return false;
     }
     layer()->updateLayerPosition();
-    if (m_style->position() != FIXED) {
+    if (m_style->position() != PFIXED) {
         bool needsDocSizeUpdate = true;
         RenderObject *cb = container();
         while (cb) {
@@ -1694,7 +1694,7 @@ void RenderObject::dirtyFormattingContext( bool checkContainer )
     if (m_markedForRepaint && !checkContainer)
         return;
     m_markedForRepaint = true;
-    if (layer() && (style()->position() == FIXED || style()->position() == ABSOLUTE))
+    if (layer() && (style()->position() == PFIXED || style()->position() == PABSOLUTE))
         return;
     if (m_parent && (checkContainer || style()->width().isVariable() || style()->height().isVariable() ||
                     !(isFloating() || flowAroundFloats() || isTableCell())))
@@ -1853,7 +1853,7 @@ RenderObject *RenderObject::container() const
     // calcAbsoluteVertical have to use container().
     EPosition pos = m_style->position();
     RenderObject *o = 0;
-    if( pos == FIXED ) {
+    if( pos == PFIXED ) {
         // container() can be called on an object that is not in the
         // tree yet.  We don't call canvas() since it will assert if it
         // can't get back to the canvas.  Instead we just walk as high up
@@ -1863,12 +1863,12 @@ RenderObject *RenderObject::container() const
         o = parent();
         while ( o && o->parent() ) o = o->parent();
     }
-    else if ( pos == ABSOLUTE ) {
+    else if ( pos == PABSOLUTE ) {
         // Same goes here.  We technically just want our containing block, but
         // we may not have one if we're part of an uninstalled subtree.  We'll
         // climb as high as we can though.
         o = parent();
-        while (o && o->style()->position() == STATIC && !o->isCanvas())
+        while (o && o->style()->position() == PSTATIC && !o->isCanvas())
             o = o->parent();
     }
     else

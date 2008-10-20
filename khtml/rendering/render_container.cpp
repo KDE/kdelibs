@@ -185,10 +185,10 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
         oldChild->removeFromObjectLists();
 
         // keep our fixed object lists updated.
-        if (oldChild->style()->hasFixedBackgroundImage() || oldChild->style()->position() == FIXED) {
+        if (oldChild->style()->hasFixedBackgroundImage() || oldChild->style()->position() == PFIXED) {
             if (oldChild->style()->hasFixedBackgroundImage())
                 canvas()->removeStaticObject( oldChild );
-            if (oldChild->style()->position() == FIXED)
+            if (oldChild->style()->position() == PFIXED)
                 canvas()->removeStaticObject( oldChild, true );
         }
         
@@ -495,10 +495,10 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
         layer = enclosingLayer();
         newChild->addLayers(layer, newChild);
         // keep our fixed object lists updated.
-        if (newChild->style()&& (newChild->style()->hasFixedBackgroundImage() || newChild->style()->position() == FIXED)) {
+        if (newChild->style()&& (newChild->style()->hasFixedBackgroundImage() || newChild->style()->position() == PFIXED)) {
             if (newChild->style()->hasFixedBackgroundImage())
                 canvas()->addStaticObject( newChild );
-            if (newChild->style()->position() == FIXED)
+            if (newChild->style()->position() == PFIXED)
                 canvas()->addStaticObject( newChild, true );
         }
     }
@@ -555,10 +555,10 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
         layer = enclosingLayer();
         child->addLayers(layer, child);
         // keep our fixed object lists updated.
-        if (child->style() && (child->style()->hasFixedBackgroundImage() || child->style()->position() == FIXED)) {
+        if (child->style() && (child->style()->hasFixedBackgroundImage() || child->style()->position() == PFIXED)) {
             if (child->style()->hasFixedBackgroundImage())
                 canvas()->addStaticObject( child );
-            if (child->style()->position() == FIXED)
+            if (child->style()->position() == PFIXED)
                 canvas()->addStaticObject( child, true );
         }
 

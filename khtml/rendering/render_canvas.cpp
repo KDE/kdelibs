@@ -303,7 +303,7 @@ QRegion RenderCanvas::staticRegion() const
        QListIterator<RenderObject*> it(*m_positionedObjects);
         while (it.hasNext()) {
             obj = it.next();
-            if (obj->style()->position() == FIXED && obj->layer()) {
+            if (obj->style()->position() == PFIXED && obj->layer()) {
                 ret += obj->layer()->paintedRegion(layer());
                 assert( m_fixedPosition.contains(obj) );
             }

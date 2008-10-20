@@ -376,7 +376,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
             m_region = QRect(0,0,sa->contentsWidth(),sa->contentsHeight());
             for (uint i = 0; i < count; i++) {
                 RenderLayer* child = m_posZOrderList->at(i);
-                if (child->zIndex() == 0 && child->renderer()->style()->position() == STATIC)
+                if (child->zIndex() == 0 && child->renderer()->style()->position() == PSTATIC)
                     continue; // we don't know the widget's exact stacking position within flow
                 m_region -= child->paintedRegion(rootLayer);
             }
@@ -616,7 +616,7 @@ void RenderLayer::convertToLayerCoords(const RenderLayer* ancestorLayer, int& x,
     if (ancestorLayer == this)
         return;
 
-    if (m_object->style()->position() == FIXED) {
+    if (m_object->style()->position() == PFIXED) {
         // Add in the offset of the view.  We can obtain this by calling
         // absolutePosition() on the RenderCanvas.
         int xOff, yOff;
@@ -627,7 +627,7 @@ void RenderLayer::convertToLayerCoords(const RenderLayer* ancestorLayer, int& x,
     }
 
     RenderLayer* parentLayer;
-    if (m_object->style()->position() == ABSOLUTE)
+    if (m_object->style()->position() == PABSOLUTE)
         parentLayer = enclosingPositionedAncestor();
     else
         parentLayer = parent();
@@ -654,7 +654,7 @@ void RenderLayer::subtractScrollOffset(int& x, int& y)
 
 void RenderLayer::checkInlineRelOffset(const RenderObject* o, int& x, int& y)
 {
-    if(o->style()->position() != ABSOLUTE || !renderer()->isRelPositioned() || !renderer()->isInlineFlow())
+    if(o->style()->position() != PABSOLUTE || !renderer()->isRelPositioned() || !renderer()->isInlineFlow())
         return;
 
     // Our renderer is an enclosing relpositioned inline, we need to add in the offset of the first line
@@ -1243,14 +1243,14 @@ void RenderLayer::calculateClipRects(const RenderLayer* rootLayer, QRect& overfl
     switch (m_object->style()->position()) {
       // A fixed object is essentially the root of its containing block hierarchy, so when
       // we encounter such an object, we reset our clip rects to the fixedClipRect.
-      case FIXED:
+      case PFIXED:
          posClipRect = fixedClipRect;
          overflowClipRect = fixedClipRect;
         break;
-      case ABSOLUTE:
+      case PABSOLUTE:
         overflowClipRect = posClipRect;
         break;
-      case RELATIVE:
+      case PRELATIVE:
         posClipRect = overflowClipRect;
         break;
       default:
@@ -1293,7 +1293,7 @@ void RenderLayer::calculateRects(const RenderLayer* rootLayer, const QRect& pain
     convertToLayerCoords(rootLayer, x, y);
     layerBounds = QRect(x,y,width(),height());
 
-    backgroundRect = m_object->style()->position() == FIXED ? fixedClipRect :
+    backgroundRect = m_object->style()->position() == PFIXED ? fixedClipRect :
         (m_object->isPositioned() ? posClipRect : overflowClipRect);
     foregroundRect = backgroundRect;
 

@@ -898,8 +898,8 @@ NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle
 
     EDisplay display1 = s1 ? s1->display() : NONE;
     EDisplay display2 = s2 ? s2->display() : NONE;
-    EPosition position1 = s1 ? s1->position() : STATIC;
-    EPosition position2 = s2 ? s2->position() : STATIC;
+    EPosition position1 = s1 ? s1->position() : PSTATIC;
+    EPosition position2 = s2 ? s2->position() : PSTATIC;
 
     if (display1 != display2 || position1 != position2)
         ch = Detach;

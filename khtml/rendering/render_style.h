@@ -184,7 +184,7 @@ struct LengthBox
 
 
 enum EPosition {
-    STATIC, RELATIVE, ABSOLUTE, FIXED
+    PSTATIC, PRELATIVE, PABSOLUTE, PFIXED
 };
 
 enum EFloat {
@@ -1437,7 +1437,7 @@ public:
     static EOverflow initialOverflowY() { return OVISIBLE; }
     static EPageBreak initialPageBreak() { return PBAUTO; }
     static bool initialPageBreakInside() { return true; }
-    static EPosition initialPosition() { return STATIC; }
+    static EPosition initialPosition() { return PSTATIC; }
     static ETableLayout initialTableLayout() { return TAUTO; }
     static EUnicodeBidi initialUnicodeBidi() { return UBNormal; }
     static DOM::QuotesValueImpl* initialQuotes() { return 0; }
