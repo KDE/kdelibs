@@ -84,8 +84,8 @@ QStringList FakeManager::devicesFromQuery(const QString &parentUdi, Solid::Devic
 
         QStringList result;
 
-        QStringList::Iterator it = found.begin();
-        QStringList::ConstIterator end = found.end();
+        QStringList::ConstIterator it = found.constBegin();
+        QStringList::ConstIterator end = found.constEnd();
 
         for (; it!=end; ++it)
         {

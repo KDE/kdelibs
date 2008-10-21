@@ -110,8 +110,8 @@ QList<Plugin::PluginInfo> Plugin::pluginInfos(const KComponentData &componentDat
       mapIt.value().append( *pIt );
   }
 
-  QMap<QString,QStringList>::ConstIterator mapIt = sortedPlugins.begin();
-  QMap<QString,QStringList>::ConstIterator mapEnd = sortedPlugins.end();
+  QMap<QString,QStringList>::ConstIterator mapIt = sortedPlugins.constBegin();
+  QMap<QString,QStringList>::ConstIterator mapEnd = sortedPlugins.constEnd();
   for (; mapIt != mapEnd; ++mapIt )
   {
       PluginInfo info;

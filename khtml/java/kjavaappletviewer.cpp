@@ -157,8 +157,8 @@ AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
     tit = new QTableWidgetItem(applet->archives());
     tit->setFlags( tit->flags()|Qt::ItemIsEditable );
     table->setItem (2, 1, tit);
-    QMap<QString,QString>::const_iterator it = applet->getParams().begin();
-    const QMap<QString,QString>::const_iterator itEnd = applet->getParams().end();
+    QMap<QString,QString>::const_iterator it = applet->getParams().constBegin();
+    const QMap<QString,QString>::const_iterator itEnd = applet->getParams().constEnd();
     for (int count = 2; it != itEnd; ++it) {
         tit = new QTableWidgetItem (it.key ());
         tit->setFlags( tit->flags()|Qt::ItemIsEditable );
@@ -499,8 +499,8 @@ void KJavaAppletViewerBrowserExtension::saveState (QDataStream & stream) {
     stream << applet->baseURL();
     stream << applet->archives();
     stream << applet->getParams().size ();
-    QMap<QString,QString>::const_iterator it = applet->getParams().begin();
-    const QMap<QString,QString>::const_iterator itEnd = applet->getParams().end();
+    QMap<QString,QString>::const_iterator it = applet->getParams().constBegin();
+    const QMap<QString,QString>::const_iterator itEnd = applet->getParams().constEnd();
     for ( ; it != itEnd; ++it) {
         stream << it.key ();
         stream << it.value ();

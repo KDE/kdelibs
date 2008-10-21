@@ -198,8 +198,8 @@ bool KJavaProcess::invokeJVM()
     }
 
     //set the system properties, iterate through the qmap of system properties
-    QMap<QString,QString>::ConstIterator it = d->systemProps.begin();
-    const QMap<QString,QString>::ConstIterator itEnd = d->systemProps.end();
+    QMap<QString,QString>::ConstIterator it = d->systemProps.constBegin();
+    const QMap<QString,QString>::ConstIterator itEnd = d->systemProps.constEnd();
 
     for( ; it != itEnd; ++it )
     {

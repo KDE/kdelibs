@@ -682,7 +682,7 @@ BrowserInterface *BrowserExtension::browserInterface() const
 void BrowserExtension::slotEnableAction( const char * name, bool enabled )
 {
     //kDebug() << "BrowserExtension::slotEnableAction " << name << " " << enabled;
-    ActionNumberMap::ConstIterator it = s_actionNumberMap->find( name );
+    ActionNumberMap::ConstIterator it = s_actionNumberMap->constFind( name );
     if ( it != s_actionNumberMap->constEnd() )
     {
         d->m_actionStatus.setBit( it.value(), enabled );
@@ -701,7 +701,7 @@ bool BrowserExtension::isActionEnabled( const char * name ) const
 void BrowserExtension::slotSetActionText( const char * name, const QString& text )
 {
     kDebug() << "BrowserExtension::slotSetActionText " << name << " " << text;
-    ActionNumberMap::ConstIterator it = s_actionNumberMap->find( name );
+    ActionNumberMap::ConstIterator it = s_actionNumberMap->constFind( name );
     if ( it != s_actionNumberMap->constEnd() )
     {
         d->m_actionText[ it.value() ] = text;
@@ -713,8 +713,8 @@ void BrowserExtension::slotSetActionText( const char * name, const QString& text
 QString BrowserExtension::actionText( const char * name ) const
 {
     int actionNumber = (*s_actionNumberMap)[ name ];
-    QMap<int, QString>::ConstIterator it = d->m_actionText.find( actionNumber );
-    if ( it != d->m_actionText.end() )
+    QMap<int, QString>::ConstIterator it = d->m_actionText.constFind( actionNumber );
+    if ( it != d->m_actionText.constEnd() )
         return *it;
     return QString();
 }

@@ -165,8 +165,8 @@ bool PublicServicePrivate::fillEntryGroup()
     }
 	
     QList<QByteArray> txt;
-    QMap<QString,QByteArray>::ConstIterator itEnd = m_textData.end();
-    for (QMap<QString,QByteArray>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) 
+    QMap<QString,QByteArray>::ConstIterator itEnd = m_textData.constEnd();
+    for (QMap<QString,QByteArray>::ConstIterator it = m_textData.constBegin(); it!=itEnd ; ++it) 
     	if (it.value().isNull()) txt.append(it.key().toAscii());
 	else txt.append(it.key().toAscii()+'='+it.value());
     m_group->AddService(-1,-1, 0, m_serviceName, m_type , domainToDNS(m_domain) ,

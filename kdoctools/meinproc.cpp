@@ -56,7 +56,7 @@ void parseEntry(PairList &list, xmlNodePtr cur, int base)
 
         if ( cur->type == XML_TEXT_NODE ) {
             QString words = QString::fromUtf8( ( char* )cur->content );
-            QStringList wlist = words.simplified().split( ' ',QString::SkipEmptyParts );
+            const QStringList wlist = words.simplified().split( ' ',QString::SkipEmptyParts );
             for ( QStringList::ConstIterator it = wlist.begin();
                   it != wlist.end(); ++it )
             {
@@ -241,7 +241,7 @@ int main(int argc, char **argv) {
                 PairList list;
                 parseEntry( list, cur, 0 );
                 int wi = 0;
-                for ( PairList::ConstIterator it = list.begin(); it != list.end();
+                for ( PairList::ConstIterator it = list.constBegin(); it != list.constEnd();
                       ++it, ++wi )
                     fprintf( stdout, "w\t%s\t%d\t%d\n", ( *it ).word.toUtf8().data(),
                              1000*wi/list.count(), ( *it ).base );

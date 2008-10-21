@@ -83,12 +83,12 @@ QString HelpProtocol::langLookup(const QString &fname)
     for (int id=0; id < ldCount; id++)
     {
         QStringList::ConstIterator lang;
-        for (lang = langs.begin(); lang != langs.end(); ++lang)
+        for (lang = langs.constBegin(); lang != langs.constEnd(); ++lang)
             search.append(QString("%1%2/%3").arg(localDoc[id], *lang, fname));
     }
 
     // try to locate the file
-    for (QStringList::Iterator it = search.begin(); it != search.end(); ++it)
+    for (QStringList::ConstIterator it = search.constBegin(); it != search.constEnd(); ++it)
     {
         kDebug( 7119 ) << "Looking for help in: " << *it;
 
