@@ -32,6 +32,12 @@
 #include <wtf/Assertions.h>
 #include <wtf/MathExtras.h>
 
+#ifdef Q_CC_MSVC
+#include <float.h>
+#define nextafter(x,y) ((long double)_nextafter((double)(x), (double)(y)))
+#define nextafterf(x,y) _nextafter(x,y)
+#endif
+
 //#include "ColorData.c"
 
 using namespace std;
@@ -151,6 +157,7 @@ String Color::name() const
     /*if (alpha() < 0xFF)
         return String::format("#%02X%02X%02X%02X", red(), green(), blue(), alpha());
     return String::format("#%02X%02X%02X", red(), green(), blue());*/
+	return "";
 }
 
 /*static inline const NamedColor* findNamedColor(const String& name)
