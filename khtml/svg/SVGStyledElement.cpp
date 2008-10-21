@@ -304,6 +304,8 @@ PassRefPtr<CSSValue> SVGStyledElement::getPresentationAttribute(const String& na
     if (!cssSVGAttr || !cssSVGAttr->style())
         return 0;
     return cssSVGAttr->style()->getPropertyCSSValue(name);*/
+    Q_ASSERT(false);
+    return new CSSPrimitiveValueImpl(0);
 }
 
 void SVGStyledElement::detach()
