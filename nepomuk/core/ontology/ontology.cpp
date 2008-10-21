@@ -176,7 +176,7 @@ Nepomuk::Types::Class Nepomuk::Types::Ontology::findClassByLabel( const QString&
 {
     D->initEntities();
     for ( QList<Class>::iterator it = D->classes.begin();
-          it != D->classes.constEnd(); ++it ) {
+          it != D->classes.end(); ++it ) {
         Class& c = *it;
         if ( c.label( language ) == label ) {
             return c;
@@ -213,7 +213,7 @@ Nepomuk::Types::Property Nepomuk::Types::Ontology::findPropertyByLabel( const QS
 {
     D->initEntities();
     for ( QList<Property>::iterator it = D->properties.begin();
-          it != D->properties.constEnd(); ++it ) {
+          it != D->properties.end(); ++it ) {
         Property& p = *it;
         if ( p.label( language ) == label ) {
             return p;

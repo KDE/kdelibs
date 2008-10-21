@@ -50,9 +50,9 @@ int main( int argc, char** argv )
     if( args.count() < 2 )
         return usage();
 
-    QStringList::const_iterator argIt = args.begin();
+    QStringList::const_iterator argIt = args.constBegin();
     ++argIt; // skip the app name
-    while (argIt != args.end()) {
+    while (argIt != args.constEnd()) {
         const QString& arg = *argIt;
 
         // new parameter
@@ -60,7 +60,7 @@ int main( int argc, char** argv )
             // gather parameter arg
             QStringList paramArgs;
             ++argIt;
-            while ( argIt != args.end() &&
+            while ( argIt != args.constEnd() &&
                     !(*argIt).startsWith("--") ) {
                 paramArgs += *argIt;
                 ++argIt;

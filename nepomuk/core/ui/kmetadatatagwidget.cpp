@@ -72,8 +72,8 @@ public:
     QStringList extractTagNames( QList<Tag> tags ) {
         QStringList tagStrings;
         // convert the tag list to keywords
-        for( QList<Tag>::iterator it = tags.begin();
-             it != tags.end(); ++it ) {
+        for( QList<Tag>::const_iterator it = tags.constBegin();
+             it != tags.constEnd(); ++it ) {
             tagStrings += ( *it ).genericLabel();
         }
         return tagStrings;
@@ -86,8 +86,8 @@ public:
         else if ( !res.isEmpty() ) {
             // determine the tags used for all resources
             QSet<Tag> tags = QSet<Tag>::fromList( res.first().tags() );
-            QList<Resource>::const_iterator it = res.begin();
-            for ( ++it; it != res.end(); ++it ) {
+            QList<Resource>::const_iterator it = res.constBegin();
+            for ( ++it; it != res.constEnd(); ++it ) {
                 tags.intersect( QSet<Tag>::fromList( (*it).tags() ) );
             }
             return tags.values();

@@ -145,7 +145,7 @@ const Nepomuk::Ontology* Nepomuk::OntologyManager::getOntology( const QUrl& uri 
 {
     // if the ontology is already in the cache return it
     //
-    QHash<QUrl, Ontology>::const_iterator it = d->ontoCache.find( uri );
+    QHash<QUrl, Ontology>::const_iterator it = d->ontoCache.constFind( uri );
     if ( it != d->ontoCache.constEnd() ) {
         return &it.value();
     }

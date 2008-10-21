@@ -246,8 +246,8 @@ Nepomuk::Variant Nepomuk::ResourceData::property( const QUrl& uri )
         return m_proxyData->property( uri );
 
     if ( load() ) {
-        QHash<QUrl, Variant>::const_iterator it = m_cache.find( uri );
-        if ( it == m_cache.end() ) {
+        QHash<QUrl, Variant>::const_iterator it = m_cache.constFind( uri );
+        if ( it == m_cache.constEnd() ) {
             return Variant();
         }
         else {

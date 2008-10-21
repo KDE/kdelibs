@@ -188,7 +188,7 @@ QString Nepomuk::Types::Entity::label( const QString& language )
     if ( d ) {
         d->init();
 
-        QHash<QString, QString>::const_iterator it = d->l10nLabels.find( language );
+        QHash<QString, QString>::const_iterator it = d->l10nLabels.constFind( language );
         if ( it != d->l10nLabels.constEnd() ) {
             return it.value();
         }
@@ -210,7 +210,7 @@ QString Nepomuk::Types::Entity::comment( const QString& language )
     if ( d ) {
         d->init();
 
-        QHash<QString, QString>::const_iterator it = d->l10nComments.find( language );
+        QHash<QString, QString>::const_iterator it = d->l10nComments.constFind( language );
         if ( it != d->l10nComments.constEnd() ) {
             return it.value();
         }

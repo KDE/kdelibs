@@ -78,7 +78,7 @@ Nepomuk::Types::Literal::Literal( const QUrl& dataType )
         d->dataType = QVariant::String;
     }
     else {
-        QHash<QString, QVariant::Type>::const_iterator it = s_xmlSchemaTypes.find( dataType.fragment() );
+        QHash<QString, QVariant::Type>::const_iterator it = s_xmlSchemaTypes.constFind( dataType.fragment() );
         if ( it != s_xmlSchemaTypes.constEnd() ) {
             d->dataType = it.value();
         }
@@ -139,7 +139,7 @@ Nepomuk::Literal::Literal( const QUrl& dataType )
     initXmlSchemaTypes();
 
     // check if it is a known type, otherwise leave it as QVariant::Invalid
-    QHash<QString, QVariant::Type>::const_iterator it = s_xmlSchemaTypes.find( dataType.fragment() );
+    QHash<QString, QVariant::Type>::const_iterator it = s_xmlSchemaTypes.constFind( dataType.fragment() );
     if ( it != s_xmlSchemaTypes.constEnd() ) {
         d->dataType = it.value();
     }
