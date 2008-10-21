@@ -84,6 +84,8 @@ void SVGElement::setId(const String& value, ExceptionCode&)
 String SVGElement::xmlbase() const
 {
     //return getAttribute(XMLNames::baseAttr);
+	ASSERT(false);
+	return "";
 }
 
 void SVGElement::setXmlbase(const String& value, ExceptionCode&)
@@ -278,6 +280,8 @@ bool SVGElement::dispatchEvent(Event* e, ExceptionCode& ec, bool tempEvent)
 
     RefPtr<FrameView> view = document()->view();
     return EventTargetNode::dispatchGenericEvent(this, e, ec, tempEvent);*/
+	ASSERT(false);
+	return false;
 }
 
 void SVGElement::attributeChanged(Attribute* attr, bool preserveDecls)

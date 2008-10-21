@@ -137,6 +137,8 @@ bool SVGDocumentExtensions::isPendingResource(const AtomicString& id) const
         return false;
 
     return m_pendingResources.contains(id);*/
+	ASSERT(false);
+	return false;
 }
 
 std::auto_ptr<HashSet<SVGStyledElement*> > SVGDocumentExtensions::removePendingResource(const AtomicString& id)
@@ -146,6 +148,8 @@ std::auto_ptr<HashSet<SVGStyledElement*> > SVGDocumentExtensions::removePendingR
     std::auto_ptr<HashSet<SVGStyledElement*> > set(m_pendingResources.get(id));
     m_pendingResources.remove(id);
     return set;*/
+	ASSERT(false);
+	return std::auto_ptr<HashSet<SVGStyledElement*> >();
 }
 
 void SVGDocumentExtensions::mapInstanceToElement(SVGElementInstance* instance, SVGElement* element)

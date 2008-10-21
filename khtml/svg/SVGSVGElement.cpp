@@ -99,6 +99,8 @@ const AtomicString& SVGSVGElement::contentScriptType() const
     /*static const AtomicString defaultValue("text/ecmascript");
     const AtomicString& n = getAttribute(contentScriptTypeAttr);
     return n.isNull() ? defaultValue : n;*/
+	ASSERT(false);
+	return "";
 }
 
 void SVGSVGElement::setContentScriptType(const AtomicString& type)
@@ -111,6 +113,8 @@ const AtomicString& SVGSVGElement::contentStyleType() const
     /*static const AtomicString defaultValue("text/css");
     const AtomicString& n = getAttribute(contentStyleTypeAttr);
     return n.isNull() ? defaultValue : n;*/
+	ASSERT(false);
+	return "";
 }
 
 void SVGSVGElement::setContentStyleType(const AtomicString& type)
@@ -435,6 +439,8 @@ AffineTransform SVGSVGElement::getScreenCTM() const
     }
 
     return mat;*/
+	ASSERT(false);
+	return AffineTransform();
 }
 
 RenderObject* SVGSVGElement::createRenderer(RenderArena* arena, RenderStyle*)
@@ -474,11 +480,15 @@ void SVGSVGElement::unpauseAnimations()
 bool SVGSVGElement::animationsPaused() const
 {
     //return m_timeContainer->isPaused();
+	ASSERT(false);
+	return false;
 }
 
 float SVGSVGElement::getCurrentTime() const
 {
     //return narrowPrecisionToFloat(m_timeContainer->elapsed().value());
+	ASSERT(false);
+	return 0.0;
 }
 
 void SVGSVGElement::setCurrentTime(float /* seconds */)
@@ -517,6 +527,8 @@ AffineTransform SVGSVGElement::viewBoxToViewTransform(float viewWidth, float vie
         return currentView()->transform()->concatenate().matrix() * ctm;
 
     return ctm;*/
+	ASSERT(false);
+	return AffineTransform();
 }
 
 /*void SVGSVGElement::inheritViewAttributes(SVGViewElement* viewElement)

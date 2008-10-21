@@ -259,6 +259,8 @@ bool SVGLength::setValueAsString(const String& s)
 String SVGLength::valueAsString() const
 {
     //return String::number(m_valueInSpecifiedUnits) + lengthTypeToString(extractType(m_unit));
+	ASSERT(false);
+	return "";
 }
 
 void SVGLength::newValueSpecifiedUnits(unsigned short type, float value)

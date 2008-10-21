@@ -57,6 +57,8 @@ const AtomicString& SVGLangSpace::xmlspace() const
     }
 
     return m_space;*/
+	ASSERT(false);
+	return "";
 }
 
 void SVGLangSpace::setXmlspace(const AtomicString& xmlSpace)
