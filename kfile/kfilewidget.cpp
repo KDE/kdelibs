@@ -929,7 +929,7 @@ void KFileWidget::accept()
     // clear the topmost item, we insert it as full path later on as item 1
     d->locationEdit->setItemText( 0, QString() );
 
-    KUrl::List list = selectedUrls();
+    const KUrl::List list = selectedUrls();
     QList<KUrl>::const_iterator it = list.begin();
     int atmost = d->locationEdit->maxItems(); //don't add more items than necessary
     for ( ; it != list.end() && atmost > 0; ++it ) {
@@ -1600,7 +1600,7 @@ QStringList KFileWidget::selectedFiles() const
 
     if (d->inAccept) {
         if (d->ops->mode() & KFile::Files) {
-            KUrl::List urls = d->parseSelectedUrls();
+            const KUrl::List urls = d->parseSelectedUrls();
             QList<KUrl>::const_iterator it = urls.begin();
             while (it != urls.end()) {
                 KUrl url = d->mostLocalUrl(*it);
@@ -2222,7 +2222,7 @@ void KFileWidgetPrivate::addToRecentDocuments()
     }
 
     else { // urls
-        KUrl::List urls = q->selectedUrls();
+        const KUrl::List urls = q->selectedUrls();
         KUrl::List::ConstIterator it = urls.begin();
         for ( ; it != urls.end() && atmost > 0; ++it ) {
             if ( (*it).isValid() ) {

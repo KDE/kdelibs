@@ -728,9 +728,9 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
       // For the first file we launch the application in the
       // usual way. The reported result is based on this
       // application.
-      QStringList::ConstIterator it = urls.begin();
+      QStringList::ConstIterator it = urls.constBegin();
       for(++it;
-          it != urls.end();
+          it != urls.constEnd();
           ++it)
       {
          QStringList singleUrl;

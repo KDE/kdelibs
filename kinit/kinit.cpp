@@ -1387,7 +1387,8 @@ static void handle_requests(pid_t waitForPid)
       char c;
 
       /* Flush the pipe of death */
-      while( read(d.deadpipe[0], &c, 1) == 1);
+      while( read(d.deadpipe[0], &c, 1) == 1)
+        {}
 
       /* Handle dying children */
       do {
@@ -1494,7 +1495,7 @@ static void kdeinit_library_path()
 #endif
 
    QByteArray extra_path;
-   QStringList candidates = s_instance->dirs()->resourceDirs("lib");
+   const QStringList candidates = s_instance->dirs()->resourceDirs("lib");
    for (QStringList::ConstIterator it = candidates.begin();
         it != candidates.end();
         ++it)

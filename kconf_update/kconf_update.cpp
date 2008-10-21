@@ -147,12 +147,11 @@ KonfUpdate::KonfUpdate()
       updateAll = true;
    }
 
-   for(QStringList::ConstIterator it = updateFiles.begin();
-       it != updateFiles.end();
+   for(QStringList::ConstIterator it = updateFiles.constBegin();
+       it != updateFiles.constEnd();
        ++it)
    {
-      QString file = *it;
-      updateFile(file);
+      updateFile(*it);
    }
 
    if (updateAll && !cg.readEntry("updateInfoAdded", false))
@@ -160,12 +159,11 @@ KonfUpdate::KonfUpdate()
        cg.writeEntry("updateInfoAdded", true);
        updateFiles = findUpdateFiles(false);
 
-       for(QStringList::ConstIterator it = updateFiles.begin();
-           it != updateFiles.end();
+       for(QStringList::ConstIterator it = updateFiles.constBegin();
+           it != updateFiles.constEnd();
            ++it)
        {
-           QString file = *it;
-           checkFile(file);
+           checkFile(*it);
        }
        updateFiles.clear();
    }
@@ -204,8 +202,8 @@ KonfUpdate::log()
 QStringList KonfUpdate::findUpdateFiles(bool dirtyOnly)
 {
    QStringList result;
-   QStringList list = KGlobal::dirs()->findAllResources("data", "kconf_update/*.upd",
-                                                        KStandardDirs::NoDuplicates);
+   const QStringList list = KGlobal::dirs()->findAllResources("data", "kconf_update/*.upd",
+                                                              KStandardDirs::NoDuplicates);
    for(QStringList::ConstIterator it = list.begin();
        it != list.end();
        ++it)
@@ -690,7 +688,7 @@ void KonfUpdate::gotAllGroups()
       return;
    }
 
-   QStringList allGroups = oldConfig1->groupList();
+   const QStringList allGroups = oldConfig1->groupList();
    for(QStringList::ConstIterator it = allGroups.begin();
        it != allGroups.end(); ++it)
    {
@@ -702,7 +700,7 @@ void KonfUpdate::gotAllGroups()
 
 void KonfUpdate::gotOptions(const QString &_options)
 {
-   QStringList options = _options.split(',');
+   const QStringList options = _options.split(',');
    for(QStringList::ConstIterator it = options.begin();
        it != options.end();
        ++it)
@@ -808,7 +806,7 @@ void KonfUpdate::gotScript(const QString &_script)
        if (oldGroup.isEmpty())
        {
            // Write all entries to tmpFile;
-           QStringList grpList = oldConfig1->groupList();
+           const QStringList grpList = oldConfig1->groupList();
            for(QStringList::ConstIterator it = grpList.begin();
                it != grpList.end();
                ++it)
@@ -922,7 +920,7 @@ void KonfUpdate::gotScript(const QString &_script)
      oldConfig1 = new KConfig(tmp2.fileName(), KConfig::NoGlobals);
 
      // For all groups...
-     QStringList grpList = oldConfig1->groupList();
+     const QStringList grpList = oldConfig1->groupList();
      for(QStringList::ConstIterator it = grpList.begin();
          it != grpList.end();
          ++it)

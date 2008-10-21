@@ -925,7 +925,7 @@ void KCryptoConfig::load()
   QStringList groups = policies->groupList();
 
   otherSSLBox->clear();
-  for (QStringList::const_iterator i = groups.begin(); i != groups.end(); ++i) {
+  for (QStringList::const_iterator i = groups.constBegin(); i != groups.constEnd(); ++i) {
     if (*i == "General") continue;
     KConfigGroup _cg(policies, *i);
     KSSLCertificate *cert = KSSLCertificate::fromString(_cg.readEntry("Certificate", QString()).toLocal8Bit());
@@ -941,7 +941,7 @@ void KCryptoConfig::load()
   groups = pcerts->groupList();
 
   yourSSLBox->clear();
-  for (QStringList::const_iterator i = groups.begin(); i != groups.end(); ++i) {
+  for (QStringList::const_iterator i = groups.constBegin(); i != groups.constEnd(); ++i) {
     KConfigGroup _cg(pcerts, *i);
     YourCertItem *j = new YourCertItem(yourSSLBox,
                      _cg.readEntry("PKCS12Base64"),
@@ -971,8 +971,8 @@ void KCryptoConfig::load()
   }
   hostAuthList->clear();
   groups = authcfg->groupList();
-  for (QStringList::const_iterator i = groups.begin();
-                             i != groups.end();
+  for (QStringList::const_iterator i = groups.constBegin();
+                             i != groups.constEnd();
                              ++i) {
     KConfigGroup _cg(authcfg, *i);
     KSSLCertificateHome::KSSLAuthAction aa = KSSLCertificateHome::AuthDont;
@@ -991,8 +991,8 @@ void KCryptoConfig::load()
   groups = _signers->list();
   KConfig sigcfg( "ksslcalist", KConfig::NoGlobals );
   caList->clear();
-  for (QStringList::const_iterator i = groups.begin();
-                             i != groups.end();
+  for (QStringList::const_iterator i = groups.constBegin();
+                             i != groups.constEnd();
                              ++i) {
     if (!sigcfg.hasGroup(*i)) continue;
     KConfigGroup _cg(&sigcfg, *i);
@@ -2022,8 +2022,8 @@ void KCryptoConfig::slotCARestore() {
   QStringList groups = _signers->list();
   KConfig sigcfg( "ksslcalist", KConfig::NoGlobals );
 
-  for (QStringList::const_iterator i = groups.begin();
-                             i != groups.end();
+  for (QStringList::const_iterator i = groups.constBegin();
+                             i != groups.constEnd();
                              ++i) {
     if (!sigcfg.hasGroup(*i)) continue;
     KConfigGroup _cg(&sigcfg, *i);

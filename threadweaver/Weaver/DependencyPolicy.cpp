@@ -132,7 +132,7 @@ QList<Job*> DependencyPolicy::getDependencies( Job* job ) const
     JobMultiMap::const_iterator it;
     QMutexLocker l( & d->mutex() );
 
-    for ( it = d->dependencies().begin(); it != d->dependencies().end(); ++it )
+    for ( it = d->dependencies().constBegin(); it != d->dependencies().constEnd(); ++it )
     {
         if ( it.key() == job )
         {
@@ -191,7 +191,7 @@ void DependencyPolicy::dumpJobDependencies()
     QMutexLocker l( & d->mutex() );
 
     debug ( 0, "Job Dependencies (left depends on right side):\n" );
-    for ( JobMultiMap::const_iterator it = d->dependencies().begin(); it != d->dependencies().end(); ++it )
+    for ( JobMultiMap::const_iterator it = d->dependencies().constBegin(); it != d->dependencies().constEnd(); ++it )
     {
         debug( 0, "  : %p (%s%s) <-- %p (%s%s)\n",
                (void*)it.key(),
