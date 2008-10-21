@@ -27,14 +27,14 @@ K3BookmarkDrag * K3BookmarkDrag::newDrag( const Q3ValueList<KBookmark> & bookmar
 {
     KUrl::List urls;
 
-    for ( Q3ValueListConstIterator<KBookmark> it = bookmarks.begin(); it != bookmarks.end(); ++it ) {
+    for ( Q3ValueListConstIterator<KBookmark> it = bookmarks.constBegin(); it != bookmarks.constEnd(); ++it ) {
        urls.append( (*it).url() );
     }
 
     // See KURLDrag::newDrag
     Q3StrList uris;
-    KUrl::List::ConstIterator uit = urls.begin();
-    KUrl::List::ConstIterator uEnd = urls.end();
+    KUrl::List::ConstIterator uit = urls.constBegin();
+    KUrl::List::ConstIterator uEnd = urls.constEnd();
     // Get each URL encoded in utf8 - and since we get it in escaped
     // form on top of that, .toLatin1().constData() is fine.
     for ( ; uit != uEnd ; ++uit )
@@ -94,8 +94,8 @@ QByteArray K3BookmarkDrag::encodedData( const char* mime ) const
         if ( K3URLDrag::decode( this, m_lstDragURLs ) )
         {
             QStringList uris;
-            KUrl::List::ConstIterator uit = m_lstDragURLs.begin();
-            KUrl::List::ConstIterator uEnd = m_lstDragURLs.end();
+            KUrl::List::ConstIterator uit = m_lstDragURLs.constBegin();
+            KUrl::List::ConstIterator uEnd = m_lstDragURLs.constEnd();
             for ( ; uit != uEnd ; ++uit )
                 uris.append( (*uit).prettyUrl() );
 
@@ -136,8 +136,8 @@ Q3ValueList<KBookmark> K3BookmarkDrag::decode( const QMimeSource * e )
         //kDebug(7043) << "K3BookmarkDrag::decode uri-list";
         if ( K3URLDrag::decode( e, m_lstDragURLs ) )
         {
-            KUrl::List::ConstIterator uit = m_lstDragURLs.begin();
-            KUrl::List::ConstIterator uEnd = m_lstDragURLs.end();
+            KUrl::List::ConstIterator uit = m_lstDragURLs.constBegin();
+            KUrl::List::ConstIterator uEnd = m_lstDragURLs.constEnd();
             for ( ; uit != uEnd ; ++uit )
             {
                 //kDebug(7043) << "K3BookmarkDrag::decode url=" << (*uit).url();
@@ -155,8 +155,8 @@ Q3ValueList<KBookmark> K3BookmarkDrag::decode( const QMimeSource * e )
         {
             
             QStringList listDragURLs = s.split(QChar('\n'), QString::SkipEmptyParts);
-            QStringList::ConstIterator it = listDragURLs.begin();
-            QStringList::ConstIterator end = listDragURLs.end();
+            QStringList::ConstIterator it = listDragURLs.constBegin();
+            QStringList::ConstIterator end = listDragURLs.constEnd();
             for( ; it!=end; ++it)
             {
                 //kDebug(7043)<<"K3BookmarkDrag::decode string"<<(*it);

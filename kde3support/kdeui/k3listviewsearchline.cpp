@@ -258,8 +258,8 @@ bool K3ListViewSearchLine::itemMatches(const Q3ListViewItem *item, const QString
     // specifified.  If it is empty default to searching all of the columns.
 
     if(!d->searchColumns.isEmpty()) {
-        QList<int>::ConstIterator it = d->searchColumns.begin();
-        for(; it != d->searchColumns.end(); ++it) {
+        QList<int>::ConstIterator it = d->searchColumns.constBegin();
+        for(; it != d->searchColumns.constEnd(); ++it) {
             if(*it < item->listView()->columns() &&
                item->text(*it).indexOf(s, 0, d->caseSensitive) >= 0)
                 return true;

@@ -141,7 +141,7 @@ bool K3URLDrag::decode( const QMimeSource *e, KUrl::List &uris, QMap<QString,QSt
         if ( ba.size() )
         {
             QString s = ba.data();
-            QStringList l = s.split( "$@@$", QString::SkipEmptyParts );
+            const QStringList l = s.split( "$@@$", QString::SkipEmptyParts );
             QStringList::ConstIterator it = l.begin();
             bool readingKey = true; // true, then false, then true, etc.
             QString key;

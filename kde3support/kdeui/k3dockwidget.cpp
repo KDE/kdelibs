@@ -913,7 +913,7 @@ void K3DockWidget::applyToWidget( QWidget* s, const QPoint& p )
 
 void K3DockWidget::show()
 {
-  if ( parent() || manager->main->isVisible() )
+  if ( parent() || manager->main->isVisible() ) {
     if ( !parent() ){
      emit manager->setDockDefaultPos( this );
      emit setDockDefaultPos();
@@ -925,6 +925,7 @@ void K3DockWidget::show()
     } else {
      QWidget::show();
     }
+  }
 }
 
 #ifndef NO_KDE2
@@ -2877,7 +2878,7 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
 
     if ( type == "TAB_GROUP" ){
       K3DockWidget* tabDockGroup = 0L;
-      QStringList list = cg.readEntry( oname+":tabNames",QStringList() );
+      const QStringList list = cg.readEntry( oname+":tabNames",QStringList() );
       QStringList::const_iterator listit = list.begin();
       K3DockWidget* d1 = getDockWidgetFromName( *listit++ );
       K3DockWidget* d2 = getDockWidgetFromName( *listit++ );
