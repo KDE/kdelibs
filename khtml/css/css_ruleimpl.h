@@ -138,21 +138,23 @@ class MediaList;
 class CSSRuleListImpl : public khtml::Shared<CSSRuleListImpl>
 {
 public:
-    CSSRuleListImpl() {}
+    CSSRuleListImpl() : m_list(0) {}
     CSSRuleListImpl(StyleListImpl* const lst, bool omitCharsetRules = false);
 
     ~CSSRuleListImpl();
 
-    unsigned long length() const { return m_lstCSSRules.count(); }
-    CSSRuleImpl *item ( unsigned long index ) { return m_lstCSSRules.at( index ); }
+    unsigned long length() const;
+    CSSRuleImpl *item ( unsigned long index );
 
 
-    /* not part of the DOM */
+    // FIXME: Not part of the DOM.  Only used by CSSMediaRuleImpl.  We should be able to remove them if we changed media rules to work
+    // as StyleLists instead.
     unsigned long insertRule ( CSSRuleImpl *rule, unsigned long index );
     void deleteRule ( unsigned long index );
 
-    void append( CSSRuleImpl *rule ) { m_lstCSSRules.append( rule ); }
+    void append( CSSRuleImpl *rule );
 protected:
+    StyleListImpl* m_list;
     QList<CSSRuleImpl*> m_lstCSSRules;
 };
 

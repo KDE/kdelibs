@@ -22,6 +22,7 @@
 
 #include "kjs_css.h"
 #include "kjs_css.lut.h"
+#include "kjs_binding.h"
 
 #include "html/html_headimpl.h" // for HTMLStyleElementImpl
 
@@ -328,7 +329,7 @@ JSValue *DOMStyleSheet::getValueProperty(ExecState *exec, int token) const
   case ParentStyleSheet:
     return getDOMStyleSheet(exec,styleSheet.parentStyleSheet());
   case Href:
-    return jsString(styleSheet.href());
+    return getStringOrNull(styleSheet.href());
   case Title:
     return jsString(styleSheet.title());
   case Media:

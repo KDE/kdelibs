@@ -3,7 +3,7 @@
  *
  * Copyright 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright 2002-2003 Dirk Mueller (mueller@kde.org)
- * Copyright 2002 Apple Computer, Inc.
+ * Copyright 2002-2008 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -411,17 +411,21 @@ void CSSStyleRuleImpl::setDeclaration( CSSStyleDeclarationImpl *style)
 
 // --------------------------------------------------------------------
 
-CSSRuleListImpl::CSSRuleListImpl(StyleListImpl* const lst, bool omitCharsetRules)
+CSSRuleListImpl::CSSRuleListImpl(StyleListImpl* const list, bool omitCharsetRules)
 {
-     if (lst) {
-         unsigned len = lst->length();
+     m_list = list;
+     if (list && omitCharsetRules) {
+         m_list = 0;
+         unsigned len = list->length();
          for (unsigned i = 0; i < len; ++i) {
-             StyleBaseImpl* rule = lst->item(i);
-             if (rule->isRule() && !(omitCharsetRules && rule->isCharsetRule())) {
+             StyleBaseImpl* rule = list->item(i);
+             if (rule->isRule() && !rule->isCharsetRule()) {
                  append(static_cast<CSSRuleImpl*>(rule));
                  rule->ref();
              }
          }
+     } else if (m_list) {
+         m_list->ref();
      }
 }
 
@@ -430,10 +434,28 @@ CSSRuleListImpl::~CSSRuleListImpl()
     CSSRuleImpl* rule;
     while ( !m_lstCSSRules.isEmpty() && ( rule = m_lstCSSRules.takeFirst() ) )
         rule->deref();
+    if (m_list)
+        m_list->deref();
+}
+
+unsigned long CSSRuleListImpl::length() const
+{
+    return m_list ? m_list->length() : m_lstCSSRules.count();
+}
+
+CSSRuleImpl* CSSRuleListImpl::item(unsigned long index)
+{
+    if (m_list) {
+        StyleBaseImpl* rule = m_list->item(index);
+        assert(!rule || rule->isRule());
+        return static_cast<CSSRuleImpl*>(rule);
+    }
+    return m_lstCSSRules.at(index);
 }
 
 void CSSRuleListImpl::deleteRule ( unsigned long index )
 {
+    assert(!m_list);
     if (index+1 > (unsigned) m_lstCSSRules.size()) {
         return;
         // ### Throw INDEX_SIZE_ERR exception here (TODO)
@@ -442,9 +464,16 @@ void CSSRuleListImpl::deleteRule ( unsigned long index )
     rule->deref();
 }
 
+void CSSRuleListImpl::append(CSSRuleImpl* rule)
+{
+    assert(!m_list);
+    m_lstCSSRules.append( rule );
+}
+
 unsigned long CSSRuleListImpl::insertRule( CSSRuleImpl *rule,
                                            unsigned long index )
 {
+    assert(!m_list);
     if (index > (unsigned) m_lstCSSRules.size()) {
         return 0;
         // ### Throw INDEX_SIZE_ERR exception here (TODO)
