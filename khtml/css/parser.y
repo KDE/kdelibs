@@ -648,7 +648,7 @@ ruleset:
 	kDebug( 6080 ) << "got ruleset" << endl << "  selector:";
 #endif
 	CSSParser *p = static_cast<CSSParser *>(parser);
-	if ( $1 && $2 && p->numParsedProperties ) {
+	if ( $1  ) {
 	    CSSStyleRuleImpl *rule = new CSSStyleRuleImpl( p->styleElement );
 	    CSSStyleDeclarationImpl *decl = p->createStyleDeclaration( rule );
 	    rule->setSelector( $1 );

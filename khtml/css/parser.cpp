@@ -2427,7 +2427,7 @@ yyreduce:
 	kDebug( 6080 ) << "got ruleset" << endl << "  selector:";
 #endif
 	CSSParser *p = static_cast<CSSParser *>(parser);
-	if ( (yyvsp[(1) - (2)].selectorList) && (yyvsp[(2) - (2)].ok) && p->numParsedProperties ) {
+	if ( (yyvsp[(1) - (2)].selectorList)  ) {
 	    CSSStyleRuleImpl *rule = new CSSStyleRuleImpl( p->styleElement );
 	    CSSStyleDeclarationImpl *decl = p->createStyleDeclaration( rule );
 	    rule->setSelector( (yyvsp[(1) - (2)].selectorList) );

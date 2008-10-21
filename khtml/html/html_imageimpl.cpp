@@ -157,6 +157,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
             usemap = url;
         }
         m_hasAnchor = attr->val() != 0;
+        break;
     case ATTR_ISMAP:
         ismap = true;
         break;

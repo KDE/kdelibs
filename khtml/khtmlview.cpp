@@ -244,6 +244,7 @@ public:
         smoothScrolling = false;
         smoothScrollModeIsDefault = true;
         shouldSmoothScroll = false;
+        hasFrameset = false;
 #ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
         oldVScrollUpdatesEnabled = true;
         oldHScrollUpdatesEnabled = true;
@@ -435,6 +436,7 @@ public:
     bool smoothScrolling                          :1;
     bool smoothScrollModeIsDefault                :1;
     bool shouldSmoothScroll                       :1;
+    bool hasFrameset                              :1;
 #ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
     bool oldHScrollUpdatesEnabled                 :1;
     bool oldVScrollUpdatesEnabled                 :1;
@@ -643,6 +645,9 @@ void KHTMLView::init()
         setWidget( new QWidget(this) );
     widget()->setAttribute( Qt::WA_NoSystemBackground );
 
+    verticalScrollBar()->setCursor( Qt::ArrowCursor );
+    horizontalScrollBar()->setCursor( Qt::ArrowCursor );
+
     connect(&d->smoothScrollTimer, SIGNAL(timeout()), this, SLOT(scrollTick()));
 }
 
@@ -785,7 +790,8 @@ int KHTMLView::visibleHeight() const
 
 void KHTMLView::setContentsPos( int x, int y)
 {
-   horizontalScrollBar()->setValue( x );
+   horizontalScrollBar()->setValue( QApplication::isRightToLeft() ?
+                           horizontalScrollBar()->maximum()-x : x );
    verticalScrollBar()->setValue( y );
 }
 
@@ -962,6 +968,14 @@ void KHTMLView::paintEvent( QPaintEvent *e )
 
     m_part->xmlDocImpl()->renderer()->layer()->paint(&p, r);
 
+    if (d->hasFrameset) {
+        NodeImpl *body = static_cast<HTMLDocumentImpl*>(m_part->xmlDocImpl())->body();
+        if(body && body->renderer() && body->id() == ID_FRAMESET)
+            static_cast<RenderFrameSet*>(body->renderer())->paintFrameSetRules(&p, r);
+        else
+            d->hasFrameset = false;
+    }
+
     khtml::DrawContentsEvent event( &p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
 
@@ -1008,6 +1022,7 @@ void KHTMLView::layout()
                  QScrollArea::setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                  QScrollArea::setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
                  body->renderer()->setNeedsLayout(true);
+                 d->hasFrameset = true;
              }
              else if (root) // only apply body's overflow to canvas if root has a visible overflow
                      ref = (!body || root->style()->hidesOverflow()) ? root : body->renderer();
@@ -1303,8 +1318,6 @@ void KHTMLView::mouseDoubleClickEvent( QMouseEvent *_mouse )
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MouseDblClick);
 
     khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
-    if (r && r->isWidget() && !static_cast<RenderWidget*>(r)->isDisabled())
-	_mouse->ignore();
 
     if (!swallowEvent) {
 	khtml::MouseDoubleClickEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode, d->clickCount );
@@ -2379,6 +2392,13 @@ bool KHTMLView::widgetEvent(QEvent* e)
             }
         }
       }
+      case QEvent::Move: {
+          if (static_cast<QMoveEvent*>(e)->pos() != QPoint(0,0)) {
+              widget()->move(0,0);
+              updateScrollBars();
+              return true;
+          }
+      }
       default:
         break;
     }
@@ -3140,21 +3160,34 @@ bool KHTMLView::needsFullRepaint() const
     return d->needsFullRepaint;
 }
 
+namespace {
+   class QPointerDeleter
+   {
+   public:
+       explicit QPointerDeleter(QObject* o) : obj(o) {}
+       ~QPointerDeleter() { delete obj; }
+   private:
+       const QPointer<QObject> obj; 
+   }; 
+}
+
 void KHTMLView::print(bool quick)
 {
     if(!m_part->xmlDocImpl()) return;
     khtml::RenderCanvas *root = static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer());
     if(!root) return;
 
-    KHTMLPrintSettings printSettings; //XXX: doesn't save settings between prints like this
+    QPointer<KHTMLPrintSettings> printSettings(new KHTMLPrintSettings); //XXX: doesn't save settings between prints like this
+    const QPointerDeleter settingsDeleter(printSettings); //the printdialog takes ownership of the settings widget, thus this workaround to avoid double deletion
     QPrinter printer;
-    QPrintDialog *dialog = KdePrint::createPrintDialog(&printer, QList<QWidget*>() << &printSettings, this);
+    QPointer<QPrintDialog> dialog = KdePrint::createPrintDialog(&printer, QList<QWidget*>() << printSettings, this);
+    const QPointerDeleter dialogDeleter(dialog);
 
     QString docname = m_part->xmlDocImpl()->URL().prettyUrl();
     if ( !docname.isEmpty() )
         docname = KStringHandler::csqueeze(docname, 80);
 
-    if(quick || dialog->exec()) {
+    if(quick || (dialog->exec() && dialog)) { /*'this' and thus dialog might have been deleted while exec()!*/
         viewport()->setCursor( Qt::WaitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
         // set up KPrinter
         printer.setFullPage(false);
@@ -3171,7 +3204,7 @@ void KHTMLView::print(bool quick)
         // We ignore margin settings for html and body when printing
         // and use the default margins from the print-system
         // (In Qt 3.0.x the default margins are hardcoded in Qt)
-        m_part->xmlDocImpl()->setPrintStyleSheet( printSettings.printFriendly() ?
+        m_part->xmlDocImpl()->setPrintStyleSheet( printSettings->printFriendly() ?
                                                   "* { background-image: none !important;"
                                                   "    background-color: white !important;"
                                                   "    color: black !important; }"
@@ -3193,16 +3226,15 @@ void KHTMLView::print(bool quick)
 
         m_part->xmlDocImpl()->styleSelector()->computeFontSizes(printer.logicalDpiY(), 100);
         m_part->xmlDocImpl()->updateStyleSelector();
-        root->setPrintImages(printSettings.printImages());
+        root->setPrintImages(printSettings->printImages());
         root->makePageBreakAvoidBlocks();
 
         root->setNeedsLayoutAndMinMaxRecalc();
         root->layout();
-        khtml::RenderWidget::flushWidgetResizes(); // make sure widgets have their final size
 
         // check sizes ask for action.. (scale or clip)
 
-        bool printHeader = printSettings.printHeader();
+        bool printHeader = printSettings->printHeader();
 
         int headerHeight = 0;
         QFont headerFont("Sans Serif", 8);
@@ -3666,8 +3698,8 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 
     if (targetNode) {
 	// if the target node is a disabled widget, we don't want any full-blown mouse events
-	khtml::RenderObject* r = targetNode ? targetNode->renderer() : 0;
-	if (r && r->isWidget() && static_cast<RenderWidget*>(r)->isDisabled())
+	if (targetNode->isGenericFormElement()
+	     && static_cast<HTMLGenericFormElementImpl*>(targetNode)->disabled())
 	    return true;
 
         // send the actual event
@@ -3867,6 +3899,8 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
             unscheduleRelayout();
             layout();
         }
+        if (d->smoothScrollMode == KHTMLView::SSMWhenEfficient && m_part->xmlDocImpl()->parsing())
+            d->shouldSmoothScroll = false;
     }
 
     if ( d->smoothScrollMode != SSMDisabled &&
@@ -3882,8 +3916,15 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         scheduleRepaint(0, 0, 0, 0);
     }
 
-    if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
-        m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, false, false);
+    if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement()) {
+        // ### FIXME: there is something wrong with this event.
+        // With a capturing listener on document and window, window's should fire first, then document's.
+        // Also, this doesn't work: <body onload="document.onscroll=function() {alert('ok')}"><div style=height:2000>
+        m_part->xmlDocImpl()->documentElement()->dispatchWindowEvent(EventImpl::SCROLL_EVENT, false, false);
+    }
+
+    if (QApplication::isRightToLeft())
+        dx = -dx;
 
     if (!d->smoothScrolling) {
         d->updateContentsXY();
@@ -3904,6 +3945,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         KHTMLView* v = m_kwp->rootViewPos( off );
         if (v)
             w = v->widget();
+        off = viewport()->mapTo(this, off);
     }
 
 #ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
@@ -3964,8 +4006,6 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         }
         return;
     }
-    if (d->firstRepaintPending)
-        return;
 
 #ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
     if (hideScrollBars) {
@@ -4352,6 +4392,9 @@ void KHTMLView::updateScrollBars()
     horizontalScrollBar()->setPageStep(p.width());
     verticalScrollBar()->setRange(0, v.height() - p.height());
     verticalScrollBar()->setPageStep(p.height());
+    if (!d->smoothScrolling) {
+        d->updateContentsXY();
+    }
 }
 
 void KHTMLView::slotMouseScrollTimer()

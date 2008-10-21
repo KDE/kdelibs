@@ -57,8 +57,6 @@ public:
     void setIntrinsicWidth(int w) {  m_intrinsicWidth = w; }
     void setIntrinsicHeight(int h) { m_intrinsicHeight = h; }
 
-    virtual void position(InlineBox*, int, int, bool);
-
     // Return before, after (offset set to max), or inside the replaced element,
     // at @p offset
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
@@ -92,26 +90,24 @@ public:
     virtual void layout( );
 
     virtual void updateFromElement();
+    virtual void handleFocusOut() {}
 
     QWidget *widget() const { return m_widget; }
     KHTMLView* view() const { return m_view; }
 
     void deref();
 
-    void cancelPendingResize();
     bool needsMask() const { return m_needsMask; }
 
     static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty, QPixmap* buffer[] = 0);
     virtual bool handleEvent(const DOM::EventImpl& ev);
     bool isRedirectedWidget() const;
     bool isDisabled() const { return m_widget && !m_widget->isEnabled(); }
+    
 
 #ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
-
-    // for ECMA to flush all pending resizes
-    KHTML_EXPORT static void flushWidgetResizes();
 
 public Q_SLOTS:
     void slotWidgetDestructed();
@@ -137,7 +133,7 @@ protected:
     }
     virtual bool acceptsSyntheticEvents() const { return true; }
 
-    virtual void handleFocusOut() {}
+
     bool event( QEvent *e );
 
     bool eventFilter(QObject* /*o*/, QEvent* e);
@@ -154,8 +150,6 @@ protected:
     //so it doesn't get yanked from us, etc.
     SharedPtr<RenderArena> m_arena; 
 
-    bool m_resizePending;
-    bool m_discardResizes;
     bool m_needsMask;
     bool m_ownsWidget;
 

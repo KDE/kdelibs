@@ -101,7 +101,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   KUrl _url(_u);
   _url.cleanPath(); // kill consecutive slashes
 
-  if (KProtocolInfo::protocolClass(_url.protocol()) == ":local") {
+  if (!_url.host().isEmpty() && KProtocolInfo::protocolClass(_url.protocol()) == ":local") {
       // ":local" protocols ignore the hostname, so strip it out preventively - #160057
       _url.setHost(QString());
       if (_keep == false)
@@ -345,7 +345,7 @@ bool KDirListerCache::validUrl( const KDirLister *lister, const KUrl& url ) cons
 void KDirListerCache::stop( KDirLister *lister )
 {
 #ifdef DEBUG_CACHE
-    printDebug();
+    //printDebug();
 #endif
     //kDebug(7004) << "lister: " << lister;
     bool stopped = false;
@@ -412,23 +412,14 @@ void KDirListerCache::stop( KDirLister *lister, const KUrl& _u )
 // Helper for both stop() methods
 void KDirListerCache::stopLister(KDirLister* lister, const QString& url, DirectoryData& dirData)
 {
-    kDebug(7004) << "stopping lister" << lister << url;
-    KIO::ListJob *job = jobForUrl( url );
-    if ( job )
-        lister->d->jobDone( job );
+    // Let's just leave the job running.
+    // After all, update jobs do run for "listersCurrentlyHolding",
+    // so there's no reason to kill them just because @p lister is now a holder.
 
-    // move lister to listersCurrentlyHolding
+    // Move lister to listersCurrentlyHolding
     dirData.listersCurrentlyHolding.append(lister);
 
     emit lister->canceled( KUrl( url ) );
-
-    //kDebug(7004) << "remaining list: " << listers->count() << " listers";
-
-    if ( dirData.listersCurrentlyListing.isEmpty() ) {
-        // kill the job since it isn't used any more
-        if ( job )
-            killJob( job );
-    }
 }
 
 void KDirListerCache::setAutoUpdate( KDirLister *lister, bool enable )
@@ -492,6 +483,11 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
     DirectoryData& dirData = *dit;
     dirData.listersCurrentlyHolding.removeAll(lister);
 
+    // This lister doesn't care for updates running in <url> anymore
+    KIO::ListJob *job = jobForUrl(urlStr);
+    if (job)
+        lister->d->jobDone(job);
+
     DirItem *item = itemsInUse.value(urlStr);
     Q_ASSERT(item);
 
@@ -500,10 +496,8 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
         directoryData.erase(dit);
         itemsInUse.remove( urlStr );
 
-        // this job is a running update
-        KIO::ListJob *job = jobForUrl( urlStr );
+        // this job is a running update which nobody cares about anymore
         if ( job ) {
-            lister->d->jobDone( job );
             killJob( job );
             kDebug(7004) << "Killing update job for " << urlStr;
 
@@ -862,8 +856,13 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
 
   // Somehow this should only be called if src is a dir. But how could we know if it is?
   // (Note that looking into itemsInUse isn't good enough. One could rename a subdir in a view.)
-  if( !nameOnly )
+  // DF: well, findByUrl can find subdirs too...
+  if( !nameOnly ) {
         renameDir( src, dst );
+        // #172945 - if the fileitem was the root item of a DirItem that was just removed from the cache,
+        // then it's a dangling pointer now...
+        fileitem = findByUrl( 0, oldurl );
+  }
 
   // Now update the KFileItem representing that file or dir (not exclusive with the above!)
   if ( fileitem )
@@ -2406,6 +2405,17 @@ void KDirLister::Private::_k_slotSpeed( KJob *job, unsigned long spd )
 
 uint KDirLister::Private::numJobs()
 {
+#ifdef DEBUG_CACHE
+    // This code helps detecting stale entries in the jobData map.
+    qDebug() << m_parent << "numJobs:" << jobData.count();
+    QMapIterator<KIO::ListJob *, JobData> it(jobData);
+    while (it.hasNext()) {
+        it.next();
+        qDebug() << (void*)it.key();
+        qDebug() << it.key();
+    }
+#endif
+
   return jobData.count();
 }
 

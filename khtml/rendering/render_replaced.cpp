@@ -93,12 +93,6 @@ void RenderReplaced::calcMinMaxWidth()
     setMinMaxKnown();
 }
 
-
-void RenderReplaced::position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/)
-{
-    setPos( box->xPos(), box->yPos() );
-}
-
 FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset, SelPointState &)
 {
 #if 0
@@ -194,8 +188,6 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     assert(!isAnonymous());
     m_view  = node->document()->view();
     m_arena.reset(renderArena());
-    m_resizePending = false;
-    m_discardResizes = false;
     m_needsMask = false;
     m_ownsWidget = true;
 
@@ -262,58 +254,27 @@ void  RenderWidget::resizeWidget( int w, int h )
     w = qMin( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
-        if (isRedirectedWidget() && qobject_cast<KHTMLView*>(m_widget)) {
-             m_widget->resize( w, h);
-             if (!m_widget->isVisible()) {
-                 // Emission of Resize event is delayed.
-                 // we have to pre-call KHTMLView::resizeEvent
-                 // so that viewport size change and subsequent layout update
-                 // is effective synchronously, which is important for JS.
-                 // This only work because m_widget is a redirected view,
-                 // and thus has visibleWidth()/visibleHeight() that mirror this RenderWidget,
-                 // rather than the effective widget size. - gg.
-                 QResizeEvent e( QSize(w,h), QSize(m_widget->width(),m_widget->height()));
-                 static_cast<KHTMLView*>(m_widget)->resizeEvent( &e );
-             }
-        } else {
-            m_resizePending = isRedirectedWidget();
-            ref();
-            element()->ref();
-            QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
-            element()->deref();
-            deref();
-        }
-    }
-}
-
-void RenderWidget::cancelPendingResize()
-{
-    if (!m_widget)
-        return;
-    m_discardResizes = true;
-    QApplication::sendPostedEvents(this, QWidgetResizeEvent::Type);
-    m_discardResizes = false;
+        m_widget->resize( w, h);
+        if (isRedirectedWidget() && qobject_cast<KHTMLView*>(m_widget) && !m_widget->isVisible()) {
+             // Emission of Resize event is delayed.
+             // we have to pre-call KHTMLView::resizeEvent
+             // so that viewport size change and subsequent layout update
+             // is effective synchronously, which is important for JS.
+             // This only work because m_widget is a redirected view,
+             // and thus has visibleWidth()/visibleHeight() that mirror this RenderWidget,
+             // rather than the effective widget size. - gg.
+             QResizeEvent e( QSize(w,h), QSize(m_widget->width(),m_widget->height()));
+             static_cast<KHTMLView*>(m_widget)->resizeEvent( &e );
+         }
+     }
 }
 
 bool RenderWidget::event( QEvent *e )
 {
-    if ( m_widget && (e->type() == (QEvent::Type)QWidgetResizeEvent::Type) ) {
-        m_resizePending = false;
-        if (m_discardResizes)
-            return true;
-        QWidgetResizeEvent *re = static_cast<QWidgetResizeEvent *>(e);
-        m_widget->resize( re->w,  re->h );
-        repaint();
-    }
     // eat all events - except if this is a frame (in which case KHTMLView handles it all)
     if ( qobject_cast<KHTMLView*>( m_widget ) )
         return QObject::event( e );
     return true;
-}
-
-void RenderWidget::flushWidgetResizes() //static
-{
-    QApplication::sendPostedEvents( 0, QWidgetResizeEvent::Type );
 }
 
 bool RenderWidget::isRedirectedWidget() const
@@ -372,7 +333,6 @@ void RenderWidget::setQWidget(QWidget *widget)
             m_widget->move(0, -500000);
             m_widget->hide();
         }
-        m_resizePending = false;
     }
 }
 
@@ -591,7 +551,7 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
         return;
 
     // not visible or not even once layouted
-    if (style()->visibility() != VISIBLE || m_y <= -500000 || m_resizePending )
+    if (style()->visibility() != VISIBLE || m_y <= -500000)
         return;
 
     if ( (_ty > paintInfo.r.bottom()) || (_ty + m_height <= paintInfo.r.top()) ||
@@ -794,7 +754,8 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty, Q
             if (hbr.isValid() && !hbr.isEmpty())
                 copyWidget(hbr, p, v->horizontalScrollBar(), tx+ of.x(), ty+ of.y(), buffered, buffer[1]);
         }
-        QRect vr = (r & v->viewport()->rect());
+        QPoint of = v->viewport()->mapTo(v, QPoint(0,0));
+        QRect vr = (r & v->viewport()->rect().translated(of));
         if (vr.isValid() && !vr.isEmpty())
             v->render(p, vr, thePoint);
     } else {
@@ -927,6 +888,23 @@ void RenderWidget::EventPropagator::sendEvent(QEvent *e) {
     }
 }
 
+
+// send event to target and let it bubble up until it is accepted or
+// once it would go through a limiting widget level
+static bool bubblingSend(QWidget* target, QEvent* e, QWidget* stoppingParent)
+{
+    for (;;) {
+        static_cast<RenderWidget::EventPropagator *>(target)->sendEvent(e);
+        if (e->isAccepted())
+            return true;
+        if (target == stoppingParent)
+            return false;
+        // ### might want to shift Q*Event::pos() as we go up
+        target = target->parentWidget();
+        assert(target != 0);
+    }
+}
+
 bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 {
     bool ret = false;
@@ -935,7 +913,10 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
     case EventImpl::DOMFOCUSIN_EVENT: 
     case EventImpl::DOMFOCUSOUT_EVENT: {
           QFocusEvent e(ev.id() == EventImpl::DOMFOCUSIN_EVENT ? QEvent::FocusIn : QEvent::FocusOut);
-          static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
+          // E.g. a KLineEdit child widget might be defined to receive
+          // focus instead
+          QWidget* fw = m_widget->focusProxy() ? m_widget->focusProxy() : m_widget;
+          static_cast<EventPropagator *>(fw)->sendEvent(&e);
           ret = e.isAccepted();
           break;
     }
@@ -1053,8 +1034,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             if (!target || (!::qobject_cast<QScrollBar*>(target) && 
                             !::qobject_cast<KUrlRequester*>(m_widget)))
                 target = m_widget;
-            if ( button == Qt::LeftButton )
-                view()->setMouseEventsTarget( target );
+            view()->setMouseEventsTarget( target );
         } else {
             target = view()->mouseEventsTarget();
             if (target) {
@@ -1090,9 +1070,9 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         QEvent *e = isMouseWheel ?
                     static_cast<QEvent*>(new QWheelEvent(p, -me.detail()*40, buttons, state, orient)) :
                     static_cast<QEvent*>(new QMouseEvent(type,    p, button, buttons, state));
-        static_cast<EventPropagator *>(target)->sendEvent(e);
 
-        ret = e->isAccepted();
+
+        ret = bubblingSend(target, e, m_widget);
 
         if (needContextMenuEvent) {
             QContextMenuEvent cme(QContextMenuEvent::Mouse, p);
@@ -1146,7 +1126,8 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                                ke->text(), ke->isAutoRepeat(), ke->count() );
             static_cast<EventPropagator *>(m_widget)->sendEvent(&releaseEv);
         }
-        static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
+        QWidget *fw = m_widget->focusWidget() ? m_widget->focusWidget() : m_widget;
+        static_cast<EventPropagator *>(fw)->sendEvent(ke);
         ret = ke->isAccepted();
 	break;
     }

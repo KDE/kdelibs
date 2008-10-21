@@ -778,7 +778,7 @@ RenderBlock *RenderObject::containingBlock() const
         if(!isCanvas()) {
 #ifndef NDEBUG
             kDebug( 6040 ) << this << ": " << renderName() << "(RenderObject): No containingBlock!";
-            kDebug( 6040 ) << kBacktrace();
+//          kDebug( 6040 ) << kBacktrace();
             const RenderObject* p = this;
             while (p->parent()) p = p->parent();
             p->printTree();
@@ -2606,7 +2606,7 @@ QRegion RenderObject::visibleFlowRegion(int x, int y) const
             // ### fix horizontal float extent
             const RenderStyle *s = ro->style();
             int ow = s->outlineSize();
-            if (ro->isInlineFlow()) {
+            if (ro->isInlineFlow() || ro->isText()) {
                 returnSelf = true;
                 break;
             }

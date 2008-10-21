@@ -1023,6 +1023,9 @@ bool KEncodingDetector::analyze(const char *data, int len)
                 if( (pos = str.indexOf("=", pos)) == -1)
                     continue;
 
+                // skip '='
+                ++pos;
+
                 // skip whitespace before encoding itself
                 while (pos < (int)str.length() && str[pos] <= ' ')
                     ++pos;

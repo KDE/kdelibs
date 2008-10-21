@@ -38,9 +38,9 @@ private Q_SLOTS:
     void testIndexForItem();
     void testData();
     void testReload();
-    void testCreateFile();
     void testModifyFile();
     void testRenameFile();
+    void testRenameDirectory();
     void testChmodDirectory();
     void testExpandToUrl_data();
     void testExpandToUrl();
@@ -60,7 +60,7 @@ protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtest
 private:
     void recreateTestData();
     void enterLoop();
-    void fillModel( bool reload );
+    void fillModel(bool reload, bool expectAllIndexes = true);
     void collectKnownIndexes();
 
 private:

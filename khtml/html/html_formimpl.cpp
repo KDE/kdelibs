@@ -1801,8 +1801,16 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 	    MouseEventImpl* const me = static_cast<MouseEventImpl*>(evt);
             if ((m_type == RADIO || m_type == CHECKBOX)
 		&& me->id() == EventImpl::MOUSEUP_EVENT && me->detail() > 0) {
+
+		// Did we change? Always yes for checkboxes, and for radio buttons
+		// only if we're not already checked.
+		bool changed = m_type == CHECKBOX || !checked();
+		
 		// click will follow
 		setChecked(m_type == RADIO ? true : !checked());
+
+		if (changed)
+		    onChange();
 	    }
             if (evt->id() == EventImpl::CLICK_EVENT && m_type == IMAGE && m_render) {
 		// record the mouse position for when we get the DOMActivate event

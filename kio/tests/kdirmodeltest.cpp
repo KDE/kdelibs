@@ -18,6 +18,7 @@
 */
 
 #include "kdirmodeltest.h"
+#include <kdirnotify.h>
 #include <kio/chmodjob.h>
 #include <kprotocolinfo.h>
 #include "kdirmodeltest.moc"
@@ -93,7 +94,7 @@ void KDirModelTest::cleanupTestCase()
     m_tempDir = 0;
 }
 
-void KDirModelTest::fillModel( bool reload )
+void KDirModelTest::fillModel(bool reload, bool expectAllIndexes)
 {
     const QString path = m_tempDir->name();
     KDirLister* dirLister = m_dirModel.dirLister();
@@ -101,7 +102,8 @@ void KDirModelTest::fillModel( bool reload )
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
 
-    collectKnownIndexes();
+    if (expectAllIndexes)
+        collectKnownIndexes();
     disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
 }
 
@@ -114,8 +116,9 @@ void KDirModelTest::collectKnownIndexes()
     // The trouble is that the order of listing is undefined, one can get 1/2/3/subdir or subdir/3/2/1 for instance.
     for (int row = 0; row < m_topLevelFileNames.count() + 1 /*subdir*/; ++row) {
         QModelIndex idx = m_dirModel.index(row, 0, QModelIndex());
+        QVERIFY(idx.isValid());
         KFileItem item = m_dirModel.itemForIndex(idx);
-        kDebug() << item.url();
+        kDebug() << item.url() << "isDir=" << item.isDir();
         if (item.isDir())
             m_dirIndex = idx;
         else if (item.url().fileName() == "toplevelfile_1")
@@ -162,6 +165,7 @@ void KDirModelTest::enterLoop()
 
 void KDirModelTest::slotListingCompleted()
 {
+    kDebug();
     m_eventLoop.quit();
 }
 
@@ -316,12 +320,6 @@ void KDirModelTest::testReload()
     testItemForIndex();
 }
 
-void KDirModelTest::testCreateFile()
-{
-    // TODO
-    //createTestFile("toplevelfile_4");
-}
-
 Q_DECLARE_METATYPE(QModelIndex) // needed for .value<QModelIndex>()
 
 // We want more info than just "the values differ", if they do.
@@ -400,6 +398,11 @@ void KDirModelTest::testRenameFile()
 
     disconnect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                 &m_eventLoop, SLOT(quit()) );
+}
+
+void KDirModelTest::testRenameDirectory() // #172945
+{
+    // TODO !
 }
 
 void KDirModelTest::testChmodDirectory() // #53397
@@ -617,7 +620,8 @@ void KDirModelTest::testDeleteFile()
 
     QVERIFY(m_fileIndex.isValid());
     const int oldTopLevelRowCount = m_dirModel.rowCount();
-    const QString file = m_tempDir->name() + "toplevelfile_1";
+    const QString path = m_tempDir->name();
+    const QString file = path + "toplevelfile_1";
     const KUrl url(file);
 
     QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
@@ -641,8 +645,15 @@ void KDirModelTest::testDeleteFile()
                 &m_eventLoop, SLOT(quit()) );
 
     // Recreate the file, for consistency in the next tests
+    // So the second part of this test is a "testCreateFile"
     createTestFile(file);
-    fillModel(true);
+    // Tricky problem - KDirLister::openUrl will emit items from cache
+    // and then schedule an update; so just calling fillModel would
+    // not wait enough, it would abort due to not finding toplevelfile_1
+    // in the items from cache. This progressive-emitting behavior is fine
+    // for GUIs but not for unit tests ;-)
+    fillModel(true, false);
+    fillModel(false);
 }
 
 void KDirModelTest::testDeleteFiles()

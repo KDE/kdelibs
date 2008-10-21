@@ -52,6 +52,7 @@ public:
     virtual void layout();
 
     void positionFrames( );
+    void paintFrameSetRules( QPainter *paint, const QRect& damageRect );
 
     bool resizing() const { return m_resizing; }
     bool noResize() const { return element()->noResize(); }
@@ -87,6 +88,7 @@ private:
     int m_vSplitPos;
 
     bool m_resizing;
+    bool m_paint;
     bool m_clientresizing;
 };
 
