@@ -89,7 +89,6 @@ void RenderImage::setStyle(RenderStyle* _style)
 {
     RenderReplaced::setStyle(_style);
     // init RenderObject attributes
-    //setOverhangingContents(style()->height().isPercent());
     setShouldPaintBackgroundOrBorder(true);
 }
 

@@ -466,7 +466,7 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
 #ifdef TABLE_PRINT
     kDebug( 6040 ) << "RenderTable::paint() w/h = (" << width() << "/" << height() << ")";
 #endif
-    if (!overhangingContents() && !isRelPositioned() && !isPositioned())
+    if (!isRelPositioned() && !isPositioned())
     {
         int os = 2*maximalOutlineSize(pI.phase);
         if((_ty > pI.r.y() + pI.r.height() + os) || (_ty + height() < pI.r.y() - os)) return;
@@ -2852,8 +2852,8 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
 
     // check if we need to do anything at all...
     int os = qMax(tbl->currentBorderStyle() ? (tbl->currentBorderStyle()->border->width+1)/2 : 0, 2*maximalOutlineSize(pI.phase));
-    if (!overhangingContents() && ((_ty >= pI.r.y() + pI.r.height() + os)
-         || (_ty + _topExtra + m_height + _bottomExtra <= pI.r.y() - os))) return;
+    if ((_ty >= pI.r.y() + pI.r.height() + os)
+         || (_ty + _topExtra + m_height + _bottomExtra <= pI.r.y() - os)) return;
 
     if (pI.phase == PaintActionOutline) {
         paintOutline( pI.p, _tx, _ty, width(), height() + borderTopExtra() + borderBottomExtra(), style());

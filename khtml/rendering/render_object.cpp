@@ -173,7 +173,6 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
       m_floating( false ),
 
       m_positioned( false ),
-      m_overhangingContents( false ),
       m_relPositioned( false ),
       m_paintBackground( false ),
 
@@ -1346,7 +1345,6 @@ QString RenderObject::information() const
     if (isRelPositioned()) ts << "rp ";
     if (isPositioned()) ts << "ps ";
     if (isReplaced()) ts << "rp ";
-    if (overhangingContents()) ts << "oc ";
     if (needsLayout()) ts << "nl ";
     if (minMaxKnown()) ts << "mmk ";
     if (m_recalcMinMax) ts << "rmm ";
@@ -1472,7 +1470,6 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
     if (shouldPaintBackgroundOrBorder()) { ts << " paintBackground"; }
     if (needsLayout()) { ts << " needsLayout"; }
     if (minMaxKnown()) { ts << " minMaxKnown"; }
-    if (overhangingContents()) { ts << " overhangingContents"; }
     if (hasFirstLine()) { ts << " hasFirstLine"; }
     if (afterPageBreak()) { ts << " afterPageBreak"; }
 }
@@ -1710,42 +1707,6 @@ void RenderObject::repaintDuringLayout()
     } else {
        repaint();
        canvas()->deferredRepaint( this );
-    }
-}
-
-void RenderObject::setOverhangingContents(bool p)
-{
-    if (m_overhangingContents == p)
-        return;
-
-    RenderBlock *cb = containingBlock();
-    if (p)
-    {
-        m_overhangingContents = true;
-        KHTMLAssert( cb != this || isCanvas());
-        if (cb && cb != this)
-            cb->setOverhangingContents();
-    }
-    else
-    {
-        RenderObject *n;
-        bool c=false;
-
-        for( n = firstChild(); n != 0; n = n->nextSibling() )
-        {
-            if (n->isPositioned() || n->overhangingContents())
-                c=true;
-        }
-
-        if (c)
-            return;
-        else
-        {
-            m_overhangingContents = false;
-            KHTMLAssert( cb != this );
-            if (cb && cb != this)
-                cb->setOverhangingContents(false);
-        }
     }
 }
 
@@ -2070,7 +2031,7 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
     if (hitTestAction != HitTestSelfOnly &&
         (( !isRenderBlock() ||
            !static_cast<RenderBlock*>( this )->isPointInScrollbar( _x, _y, _tx, _ty )) &&
-        (overhangingContents() || inOverflowRect || isInline() || isRoot() || isCanvas() ||
+        (inOverflowRect || isInline() || isRoot() || isCanvas() ||
         isTableRow() || isTableSection() || inside || mouseInside() ))) {
         if ( hitTestAction == HitTestChildrenOnly )
             inside = false;

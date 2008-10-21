@@ -337,7 +337,6 @@ public:
     bool posChildNeedsLayout() const { return m_posChildNeedsLayout; }
     bool normalChildNeedsLayout() const { return m_normalChildNeedsLayout; }
     bool minMaxKnown() const{ return m_minMaxKnown; }
-    bool overhangingContents() const { return m_overhangingContents; }
     bool hasFirstLine() const { return m_hasFirstLine; }
     bool isSelectionBorder() const { return m_isSelectionBorder; }
     bool recalcMinMax() const { return m_recalcMinMax; }
@@ -356,7 +355,6 @@ public:
      */
     RenderObject *container() const;
 
-    void setOverhangingContents(bool p=true);
     void markContainingBlocksForLayout();
     void dirtyFormattingContext( bool checkContainer );
     void repaintDuringLayout();
@@ -864,7 +862,6 @@ private:
     bool m_floating                  : 1;
 
     bool m_positioned                : 1;
-    bool m_overhangingContents       : 1;
     bool m_relPositioned             : 1;
     bool m_paintBackground           : 1; // if the box has something to paint in the
                                           // background painting phase (background, border, etc)
@@ -893,7 +890,7 @@ private:
 
     bool m_doNotDelete 	             : 1; // This object should not be auto-deleted
 
-    // ### we have 16 + 27 bits.
+    // ### we have 16 + 26 bits.
 
     static QCache<quint64, QPixmap> *s_dashedLineCache;
 

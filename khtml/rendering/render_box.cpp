@@ -1184,9 +1184,6 @@ void RenderBox::calcHeight()
             height = h.value() + borderTop() + borderBottom() + paddingTop() + paddingBottom();
         }
 
-        if (height<m_height && !overhangingContents() && !hasOverflowClip())
-            setOverhangingContents();
-
         m_height = height;
     }
 
