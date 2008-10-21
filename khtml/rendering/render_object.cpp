@@ -778,7 +778,7 @@ RenderBlock *RenderObject::containingBlock() const
         if(!isCanvas()) {
 #ifndef NDEBUG
             kDebug( 6040 ) << this << ": " << renderName() << "(RenderObject): No containingBlock!";
-            kDebug( 6040 ) << kBacktrace();
+//          kDebug( 6040 ) << kBacktrace();
             const RenderObject* p = this;
             while (p->parent()) p = p->parent();
             p->printTree();
