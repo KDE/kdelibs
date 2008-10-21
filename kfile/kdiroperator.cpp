@@ -930,7 +930,6 @@ void KDirOperator::setIconsZoom(int _value)
 
     int maxSize = KIconLoader::SizeEnormous - KIconLoader::SizeSmall;
     int val = (maxSize * value / 100) + KIconLoader::SizeSmall;
-    // do not let the icon to be smaller than the smallest size on KIconLoader
     d->itemView->setIconSize(QSize(val, val));
     d->updateListViewGrid();
     d->previewGenerator->updatePreviews();
