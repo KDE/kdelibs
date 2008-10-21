@@ -167,7 +167,7 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KUrl& destU
   {
       QStringList formats;
       const QStringList allFormats = mimeData->formats();
-      for ( QStringList::const_iterator it = formats.begin(), end = formats.end() ;
+      for ( QStringList::const_iterator it = allFormats.constBegin(), end = allFormats.constEnd() ;
             it != end ; ++it ) {
           if ( (*it) == QLatin1String( "application/x-qiconlist" ) ) // see QIconDrag
               continue;
