@@ -91,7 +91,7 @@ KMimeType::Ptr KMimeTypeFactory::findMimeTypeByName(const QString &_name, KMimeT
 
     QString name = _name;
     if (options & KMimeType::ResolveAliases) {
-        QMap<QString, QString>::const_iterator it = m_aliases.find(_name);
+        QMap<QString, QString>::const_iterator it = m_aliases.constFind(_name);
         if (it != m_aliases.constEnd())
             name = *it;
     }

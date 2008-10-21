@@ -124,7 +124,7 @@ KTimeZone KTimeZones::zone(const QString &name) const
 #else
     if (!name.isEmpty())
     {
-        ZoneMap::ConstIterator it = d->zones.find(name);
+        ZoneMap::ConstIterator it = d->zones.constFind(name);
         if (it != d->zones.constEnd())
             return it.value();
         if (name == KTimeZone::utc().name())

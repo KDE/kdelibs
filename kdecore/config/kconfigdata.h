@@ -244,7 +244,8 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
                 e = *it;
             } else {
                 // make sure the group marker is in the map
-                ConstIterator cit = findEntry(group);
+                KEntryMap const *that = this;
+                ConstIterator cit = that->findEntry(group);
                 if (cit == constEnd())
                     insert(KEntryKey(group), KEntry());
                 else if (cit->bImmutable)

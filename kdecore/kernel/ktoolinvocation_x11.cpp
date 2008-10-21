@@ -175,19 +175,19 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
         QStringList tos = splitEmailAddressList( to );
         url.setPath( tos.first() );
         tos.erase( tos.begin() );
-        for (QStringList::ConstIterator it = tos.begin(); it != tos.end(); ++it)
+        for (QStringList::ConstIterator it = tos.constBegin(); it != tos.constEnd(); ++it)
             url.addQueryItem("to",*it);
         //qry.append( "to=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
     }
     const QStringList ccs = splitEmailAddressList( cc );
-    for (QStringList::ConstIterator it = ccs.begin(); it != ccs.end(); ++it)
+    for (QStringList::ConstIterator it = ccs.constBegin(); it != ccs.constEnd(); ++it)
         url.addQueryItem("cc",*it);
     //qry.append( "cc=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
     const QStringList bccs = splitEmailAddressList( bcc );
-    for (QStringList::ConstIterator it = bccs.begin(); it != bccs.end(); ++it)
+    for (QStringList::ConstIterator it = bccs.constBegin(); it != bccs.constEnd(); ++it)
         url.addQueryItem("bcc",*it);
     //qry.append( "bcc=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
-    for (QStringList::ConstIterator it = attachURLs.begin(); it != attachURLs.end(); ++it)
+    for (QStringList::ConstIterator it = attachURLs.constBegin(); it != attachURLs.constEnd(); ++it)
         url.addQueryItem("attach",*it);
     //qry.append( "attach=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
     if (!subject.isEmpty())

@@ -124,7 +124,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
         bool foundInProfile = false;
         if ( profile )
         {
-            QMap<QString,int>::ConstIterator it2 = profile->m_mapServices.find( servPtr->storageId() );
+            QMap<QString,int>::ConstIterator it2 = profile->m_mapServices.constFind( servPtr->storageId() );
             if( it2 != profile->m_mapServices.constEnd() )
             {
                 const int pref = it2.value();
