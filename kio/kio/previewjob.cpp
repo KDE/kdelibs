@@ -174,41 +174,41 @@ void PreviewJobPrivate::startPreview()
     const KService::List plugins = KServiceTypeTrader::self()->query("ThumbCreator");
     QMap<QString, KService::Ptr> mimeMap;
 
-    for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it) {
+    for (KService::List::ConstIterator it = plugins.constBegin(); it != plugins.constEnd(); ++it) {
         if (enabledPlugins.isEmpty() || enabledPlugins.contains((*it)->desktopEntryName()))
     {
         const QStringList mimeTypes = (*it)->serviceTypes();
-        for (QStringList::ConstIterator mt = mimeTypes.begin(); mt != mimeTypes.end(); ++mt)
+        for (QStringList::ConstIterator mt = mimeTypes.constBegin(); mt != mimeTypes.constEnd(); ++mt)
             mimeMap.insert(*mt, *it);
     }
     }
 
     // Look for images and store the items in our todo list :)
     bool bNeedCache = false;
-    KFileItemList::const_iterator kit = initialItems.begin();
-    const KFileItemList::const_iterator kend = initialItems.end();
+    KFileItemList::const_iterator kit = initialItems.constBegin();
+    const KFileItemList::const_iterator kend = initialItems.constEnd();
     for ( ; kit != kend; ++kit )
     {
         PreviewItem item;
         item.item = *kit;
         const QString mimeType = item.item.mimetype();
-        QMap<QString, KService::Ptr>::ConstIterator plugin = mimeMap.find(mimeType);
-        if (plugin == mimeMap.end())
+        QMap<QString, KService::Ptr>::ConstIterator plugin = mimeMap.constFind(mimeType);
+        if (plugin == mimeMap.constEnd())
 
         {
             QString groupMimeType = mimeType;
             groupMimeType.replace(QRegExp("/.*"), "/*");
-            plugin = mimeMap.find(groupMimeType);
+            plugin = mimeMap.constFind(groupMimeType);
 
-            if (plugin == mimeMap.end())
+            if (plugin == mimeMap.constEnd())
             {
                 // check mime type inheritance, resolve aliases
                 const KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
                 if (mimeInfo) {
                     const QStringList parentMimeTypes = mimeInfo->allParentMimeTypes();
                     Q_FOREACH(const QString& parentMimeType, parentMimeTypes) {
-                        plugin = mimeMap.find(parentMimeType);
-                        if (plugin != mimeMap.end()) break;
+                        plugin = mimeMap.constFind(parentMimeType);
+                        if (plugin != mimeMap.constEnd()) break;
                     }
                 }
             }
@@ -234,7 +234,7 @@ void PreviewJobPrivate::startPreview()
 #endif
         }
 
-        if (plugin != mimeMap.end())
+        if (plugin != mimeMap.constEnd())
         {
             item.plugin = *plugin;
             items.append(item);

@@ -169,9 +169,9 @@ void CommandRecorder::slotCopyingDone(KIO::Job *job, const KUrl &from, const KUr
   if (m_cmd.m_type == FileUndoManager::Trash)
   {
       Q_ASSERT(to.protocol() == "trash");
-      QMap<QString, QString> metaData = job->metaData();
+      const QMap<QString, QString> metaData = job->metaData();
       QMap<QString, QString>::ConstIterator it = metaData.find("trashURL-" + from.path());
-      if (it != metaData.end()) {
+      if (it != metaData.constEnd()) {
           // Update URL
           op.m_dst = it.value();
       }
@@ -586,8 +586,8 @@ void FileUndoManagerPrivate::stepRemovingDirectories()
             m_undoJob->emitResult();
             m_undoJob = 0;
         }
-        QList<KUrl>::ConstIterator it = m_dirsToUpdate.begin();
-        for(; it != m_dirsToUpdate.end(); ++it) {
+        QList<KUrl>::ConstIterator it = m_dirsToUpdate.constBegin();
+        for(; it != m_dirsToUpdate.constEnd(); ++it) {
             kDebug() << "Notifying FilesAdded for " << *it;
             org::kde::KDirNotify::emitFilesAdded((*it).url());
         }

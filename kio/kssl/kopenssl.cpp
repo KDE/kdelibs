@@ -379,11 +379,11 @@ KOpenSSLProxy::KOpenSSLProxy()
 	     ;
 #endif
 
-   for (QStringList::const_iterator it = libpaths.begin();
-                              it != libpaths.end();
+   for (QStringList::const_iterator it = libpaths.constBegin();
+                              it != libpaths.constEnd();
                               ++it) {
-      for (QStringList::const_iterator shit = libnamesc.begin();
-                                 shit != libnamesc.end();
+      for (QStringList::const_iterator shit = libnamesc.constBegin();
+                                 shit != libnamesc.constEnd();
                                  ++shit) {
          QString alib = *it;
          if (!alib.isEmpty() && !alib.endsWith('/'))
@@ -552,11 +552,11 @@ KOpenSSLProxy::KOpenSSLProxy()
    }
    }
 #else
-   for (QStringList::const_iterator it = libpaths.begin();
-                              it != libpaths.end();
+   for (QStringList::const_iterator it = libpaths.constBegin();
+                              it != libpaths.constEnd();
                               ++it) {
-      for (QStringList::const_iterator shit = libnamess.begin();
-                                 shit != libnamess.end();
+      for (QStringList::const_iterator shit = libnamess.constBegin();
+                                 shit != libnamess.constEnd();
                                  ++shit) {
          QString alib = *it;
          if (!alib.isEmpty() && !alib.endsWith('/'))

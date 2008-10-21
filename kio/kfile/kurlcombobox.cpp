@@ -207,11 +207,11 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
         Overload--;
     }
 
-    it = urls.begin();
+    it = urls.constBegin();
 
     KUrlComboBoxPrivate::KUrlComboItem *item = 0L;
 
-    while ( it != urls.end() ) {
+    while ( it != urls.constEnd() ) {
         if ( (*it).isEmpty() ) {
             ++it;
             continue;
@@ -246,9 +246,9 @@ void KUrlComboBox::setUrl( const KUrl& url )
     bool blocked = blockSignals( true );
 
     // check for duplicates
-    QMap<int,const KUrlComboBoxPrivate::KUrlComboItem*>::ConstIterator mit = d->itemMapper.begin();
+    QMap<int,const KUrlComboBoxPrivate::KUrlComboItem*>::ConstIterator mit = d->itemMapper.constBegin();
     QString urlToInsert = url.url(KUrl::RemoveTrailingSlash);
-    while ( mit != d->itemMapper.end() ) {
+    while ( mit != d->itemMapper.constEnd() ) {
       Q_ASSERT( mit.value() );
 
       if ( urlToInsert == mit.value()->url.url(KUrl::RemoveTrailingSlash) ) {
@@ -358,8 +358,8 @@ int KUrlComboBox::maxItems() const
 
 void KUrlComboBox::removeUrl( const KUrl& url, bool checkDefaultURLs )
 {
-    QMap<int,const KUrlComboBoxPrivate::KUrlComboItem*>::ConstIterator mit = d->itemMapper.begin();
-    while ( mit != d->itemMapper.end() ) {
+    QMap<int,const KUrlComboBoxPrivate::KUrlComboItem*>::ConstIterator mit = d->itemMapper.constBegin();
+    while ( mit != d->itemMapper.constEnd() ) {
       if ( url.url(KUrl::RemoveTrailingSlash) == mit.value()->url.url(KUrl::RemoveTrailingSlash) ) {
             if ( !d->itemList.removeAll( mit.value() ) && checkDefaultURLs )
                 d->defaultList.removeAll( mit.value() );

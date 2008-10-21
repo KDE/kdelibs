@@ -122,8 +122,8 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
     int i;
     QStringList::ConstIterator it;
     uint emitProgress = 10; // so we will emit it once in the beginning
-    QStringList::ConstIterator end(mFiles.end());
-    for (it=mFiles.begin(), i=0; it!=end; ++it, i++)
+    QStringList::ConstIterator end(mFiles.constEnd());
+    for (it=mFiles.constBegin(), i=0; it!=end; ++it, i++)
     {
 	if ( emitProgress >= 10 ) {
             emit q->progress(i);

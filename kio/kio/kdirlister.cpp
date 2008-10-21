@@ -524,8 +524,8 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
                     // Look for a manually-mounted directory inside
                     // If there's one, we can't keep a watch either, FAM would prevent unmounting the CDROM
                     // I hope this isn't too slow
-                    KFileItemList::const_iterator kit = item->lstItems.begin();
-                    const KFileItemList::const_iterator kend = item->lstItems.end();
+                    KFileItemList::const_iterator kit = item->lstItems.constBegin();
+                    KFileItemList::const_iterator kend = item->lstItems.constEnd();
                     for ( ; kit != kend && !containsManuallyMounted; ++kit )
                         if ( (*kit).isDir() && manually_mounted((*kit).url().path(), possibleMountPoints) )
                             containsManuallyMounted = true;
@@ -771,12 +771,12 @@ void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KD
     }
     }
 
-    QMap<QString, KFileItemList>::const_iterator rit = removedItemsByDir.begin();
-    for(; rit != removedItemsByDir.end(); ++rit) {
+    QMap<QString, KFileItemList>::const_iterator rit = removedItemsByDir.constBegin();
+    for(; rit != removedItemsByDir.constEnd(); ++rit) {
         // Tell the views about it before calling deleteDir.
         // They might need the subdirs' file items (see the dirtree).
-        DirectoryDataHash::const_iterator dit = directoryData.find(rit.key());
-        if (dit != directoryData.end()) {
+        DirectoryDataHash::const_iterator dit = directoryData.constFind(rit.key());
+        if (dit != directoryData.constEnd()) {
             itemsDeleted((*dit).listersCurrentlyHolding, rit.value());
         }
     }
@@ -816,8 +816,8 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
         }
     }
 
-    KUrl::List::const_iterator itdir = dirsToUpdate.begin();
-    for (; itdir != dirsToUpdate.end() ; ++itdir)
+    KUrl::List::const_iterator itdir = dirsToUpdate.constBegin();
+    for (; itdir != dirsToUpdate.constEnd() ; ++itdir)
         updateDirectory( *itdir );
     // ## TODO problems with current jobs listing/updating that dir
     // ( see kde-2.2.2's kdirlister )
@@ -1481,8 +1481,8 @@ void KDirListerCache::slotUpdateResult( KJob * j )
     }
 
     KIO::UDSEntryList buf = jobs.value( job );
-    KIO::UDSEntryList::const_iterator it = buf.begin();
-    const KIO::UDSEntryList::const_iterator end = buf.end();
+    KIO::UDSEntryList::const_iterator it = buf.constBegin();
+    const KIO::UDSEntryList::const_iterator end = buf.constEnd();
     for ( ; it != end; ++it )
     {
         // Form the complete url
@@ -1574,11 +1574,10 @@ void KDirListerCache::slotUpdateResult( KJob * j )
 
 KIO::ListJob *KDirListerCache::jobForUrl( const QString& url, KIO::ListJob *not_job )
 {
-  KIO::ListJob *job;
-  QMap< KIO::ListJob *, KIO::UDSEntryList >::const_iterator it = jobs.begin();
-  while ( it != jobs.end() )
+  QMap< KIO::ListJob *, KIO::UDSEntryList >::const_iterator it = jobs.constBegin();
+  while ( it != jobs.constEnd() )
   {
-    job = it.key();
+    KIO::ListJob *job = it.key();
     if ( joburl( job ).url(KUrl::RemoveTrailingSlash) == url && job != not_job )
        return job;
     ++it;
@@ -1724,8 +1723,8 @@ void KDirListerCache::processPendingUpdates()
 void KDirListerCache::printDebug()
 {
     kDebug(7004) << "Items in use:";
-    QHash<QString, DirItem *>::const_iterator itu = itemsInUse.begin();
-    const QHash<QString, DirItem *>::const_iterator ituend = itemsInUse.end();
+    QHash<QString, DirItem *>::const_iterator itu = itemsInUse.constBegin();
+    const QHash<QString, DirItem *>::const_iterator ituend = itemsInUse.constEnd();
     for ( ; itu != ituend ; ++itu ) {
         kDebug(7004) << "   " << itu.key() << "URL:" << itu.value()->url
                      << "rootItem:" << ( !itu.value()->rootItem.isNull() ? itu.value()->rootItem.url() : KUrl() )
@@ -1735,8 +1734,8 @@ void KDirListerCache::printDebug()
     }
 
     kDebug(7004) << "Directory data:";
-    DirectoryDataHash::const_iterator dit = directoryData.begin();
-    for ( ; dit != directoryData.end(); ++dit )
+    DirectoryDataHash::const_iterator dit = directoryData.constBegin();
+    for ( ; dit != directoryData.constEnd(); ++dit )
     {
         QString list;
         foreach ( KDirLister* listit, (*dit).listersCurrentlyListing )
@@ -2471,8 +2470,8 @@ KFileItemList KDirLister::itemsForDir( const KUrl& dir, WhichItems which ) const
     else // only items passing the filters
     {
         KFileItemList result;
-        KFileItemList::const_iterator kit = allItems->begin();
-        const KFileItemList::const_iterator kend = allItems->end();
+        KFileItemList::const_iterator kit = allItems->constBegin();
+        const KFileItemList::const_iterator kend = allItems->constEnd();
         for ( ; kit != kend; ++kit )
         {
             KFileItem item = *kit;

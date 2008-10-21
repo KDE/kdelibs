@@ -798,7 +798,7 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
 
   qSort( fileList.begin(), fileList.end(), sortByPosition );  // sort on d->pos, so we have a linear access
 
-  for ( QList<const KArchiveFile*>::const_iterator it = fileList.begin(), end = fileList.end() ;
+  for ( QList<const KArchiveFile*>::const_iterator it = fileList.constBegin(), end = fileList.constEnd() ;
         it != end ; ++it ) {
       const KArchiveFile* f = *it;
       qint64 pos = f->position();

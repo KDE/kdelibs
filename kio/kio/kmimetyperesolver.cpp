@@ -79,8 +79,8 @@ QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
     }
 
     const QRect visibleArea = m_adapter->visibleArea();
-    QList<QPersistentModelIndex>::const_iterator it = m_pendingIndexes.begin();
-    const QList<QPersistentModelIndex>::const_iterator end = m_pendingIndexes.end();
+    QList<QPersistentModelIndex>::const_iterator it = m_pendingIndexes.constBegin();
+    const QList<QPersistentModelIndex>::const_iterator end = m_pendingIndexes.constEnd();
     bool layoutDone = true;
     for ( ; it != end ; ++it ) {
         const QModelIndex index = m_proxyModel ? m_proxyModel->mapFromSource(*it) : QModelIndex(*it);

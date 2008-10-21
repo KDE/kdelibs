@@ -256,7 +256,7 @@ KFileMetaInfo::applyChanges() {
     // go through all editable fields and group them by writer
     QHash<KFileWritePlugin*, QVariantMap> data;
     QHash<QString, KFileMetaInfoItem>::const_iterator i;
-    for (i = p->items.begin(); i != p->items.end(); ++i) {
+    for (i = p->items.constBegin(); i != p->items.constEnd(); ++i) {
         if (i.value().isModified() && i.value().p->writer) {
             data[i.value().p->writer][i.key()] = i.value().value();
         }
@@ -267,7 +267,7 @@ KFileMetaInfo::applyChanges() {
     QHash<KFileWritePlugin*, QVariantMap>::const_iterator j;
     QFile file(p->kurl.path());
     file.open(QIODevice::ReadOnly);
-    for (j = data.begin(); j != data.end(); ++j) {
+    for (j = data.constBegin(); j != data.constEnd(); ++j) {
         ok &= j.key()->write(p->kurl, j.value());
     }
     return ok;
@@ -282,8 +282,8 @@ KFileMetaInfo::items() const {
 }
 const KFileMetaInfoItem&
 KFileMetaInfo::item(const QString& key) const {
-    QHash<QString, KFileMetaInfoItem>::const_iterator i = p->items.find(key);
-    return (i == p->items.end()) ?nullitem :i.value();
+    QHash<QString, KFileMetaInfoItem>::const_iterator i = p->items.constFind(key);
+    return (i == p->items.constEnd()) ?nullitem :i.value();
 }
 QStringList
 KFileMetaInfo::keys() const {

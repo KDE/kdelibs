@@ -396,8 +396,8 @@ void DirectoryListThread::run()
 
 	DIR *dir = 0;
 
-	for ( QStringList::ConstIterator it = m_dirList.begin();
-	      it != m_dirList.end() && !terminationRequested();
+	for ( QStringList::ConstIterator it = m_dirList.constBegin();
+	      it != m_dirList.constEnd() && !terminationRequested();
 	      ++it )
 	{
 		// Open the next directory

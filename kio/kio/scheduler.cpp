@@ -475,8 +475,8 @@ void SchedulerPrivate::setupSlave(KIO::Slave *slave, const KUrl &url, const QStr
                 if ( usern )
                 {
                     QString macdef;
-                    QMap<QString, QStringList>::ConstIterator it = l.macdef.begin();
-                    for ( ; it != l.macdef.end(); ++it )
+                    QMap<QString, QStringList>::ConstIterator it = l.macdef.constBegin();
+                    for ( ; it != l.macdef.constEnd(); ++it )
                         macdef += it.key() + '\\' + it.value().join( "\\" ) + '\n';
                     configData["autoLoginMacro"] = macdef;
                 }

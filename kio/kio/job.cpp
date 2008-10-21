@@ -1368,8 +1368,8 @@ static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, const QByteArray& p
             *overriden_ports = cfg.group(QString()).readEntry( "OverriddenPorts", QList<int>() );
             override_loaded = true;
         }
-        for( QList< int >::ConstIterator it = overriden_ports->begin();
-                it != overriden_ports->end();
+        for( QList< int >::ConstIterator it = overriden_ports->constBegin();
+                it != overriden_ports->constEnd();
                 ++it ) {
             if( overriden_ports->contains( url.port())) {
                 _error = 0;
