@@ -60,8 +60,8 @@ KMimeType::Ptr KBuildMimeTypeFactory::findMimeTypeByName(const QString &_name, K
 
     QString name = _name;
     if (options & KMimeType::ResolveAliases) {
-        QMap<QString, QString>::const_iterator it = aliases().find(_name);
-        if (it != aliases().end())
+        QMap<QString, QString>::const_iterator it = aliases().constFind(_name);
+        if (it != aliases().constEnd())
             name = *it;
     }
 

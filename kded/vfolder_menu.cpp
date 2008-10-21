@@ -323,8 +323,8 @@ VFolderMenu::~VFolderMenu()
    foreach (appsInfo *info, m_appsInfoStack) \
    { \
       KService::List *list = info->dictCategories[category]; \
-      if (list) for(KService::List::ConstIterator it = list->begin(); \
-             it != list->end(); ++it) \
+      if (list) for(KService::List::ConstIterator it = list->constBegin(); \
+             it != list->constEnd(); ++it) \
       {
 #define FOR_CATEGORY_END } }
 
@@ -366,7 +366,7 @@ VFolderMenu::buildApplicationIndex(bool unusedOnly)
             continue;
          }
 
-         QStringList cats = s->categories();
+         const QStringList cats = s->categories();
          for(QStringList::ConstIterator it2 = cats.begin();
              it2 != cats.end(); ++it2)
          {
@@ -637,7 +637,7 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
       else if( e.tagName() == "MergeDir") {
          QString dir = absoluteDir(e.text(), e.attribute("__BaseDir"), true);
 
-         QStringList dirs = KGlobal::dirs()->findDirs("xdgconf-menu", dir);
+         const QStringList dirs = KGlobal::dirs()->findDirs("xdgconf-menu", dir);
          for(QStringList::ConstIterator it=dirs.begin();
              it != dirs.end(); ++it)
          {
@@ -657,8 +657,8 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
                                                      KStandardDirs::NoDuplicates, fileList);
          }
 
-         for(QStringList::ConstIterator it=fileList.begin();
-             it != fileList.end(); ++it)
+         for(QStringList::ConstIterator it=fileList.constBegin();
+             it != fileList.constEnd(); ++it)
          {
             pushDocInfo(*it);
             mergeFile(docElem, n);
@@ -807,12 +807,11 @@ VFolderMenu::locateDirectoryFile(const QString &fileName)
    }
 
    // First location in the list wins
-   QString tmp;
-   for(QStringList::ConstIterator it = m_directoryDirs.begin();
-       it != m_directoryDirs.end();
+   for(QStringList::ConstIterator it = m_directoryDirs.constBegin();
+       it != m_directoryDirs.constEnd();
        ++it)
    {
-      tmp = (*it)+fileName;
+      QString tmp = (*it)+fileName;
       if (KStandardDirs::exists(tmp))
          return tmp;
    }
@@ -1044,8 +1043,8 @@ kDebug(7021) << "processKDELegacyDirs()";
                                              KStandardDirs::Recursive |
                                              KStandardDirs::NoDuplicates,
                                              relFiles);
-   for(QStringList::ConstIterator it = relFiles.begin();
-       it != relFiles.end(); ++it)
+   for(QStringList::ConstIterator it = relFiles.constBegin();
+       it != relFiles.constEnd(); ++it)
    {
       if (!m_forcedLegacyLoad && (*it).endsWith(".directory"))
       {
@@ -1638,7 +1637,7 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
    m_legacyLoaded = false;
    m_appsInfo = 0;
 
-   QStringList dirs = KGlobal::dirs()->resourceDirs("xdgconf-menu");
+   const QStringList dirs = KGlobal::dirs()->resourceDirs("xdgconf-menu");
    for(QStringList::ConstIterator it=dirs.begin();
        it != dirs.end(); ++it)
    {
