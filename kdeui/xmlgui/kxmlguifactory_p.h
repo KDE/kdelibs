@@ -150,7 +150,7 @@ struct ContainerNode
 
     ContainerClient *findChildContainerClient( KXMLGUIClient *currentGUIClient,
                                                const QString &groupName,
-                                               const MergingIndexList::ConstIterator &mergingIdx );
+                                               const MergingIndexList::Iterator &mergingIdx );
 
     void plugActionList( BuildState &state );
     void plugActionList( BuildState &state, const MergingIndexList::Iterator &mergingIdxIt );

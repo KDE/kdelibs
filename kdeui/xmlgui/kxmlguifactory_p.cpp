@@ -196,7 +196,7 @@ ContainerNode *ContainerNode::findContainer( const QString &name, const QString 
 
 ContainerClient *ContainerNode::findChildContainerClient( KXMLGUIClient *currentGUIClient,
                                                           const QString &groupName,
-                                                          const MergingIndexList::ConstIterator &mergingIdx )
+                                                          const MergingIndexList::Iterator &mergingIdx )
 {
     if ( !clients.isEmpty() )
     {
@@ -432,8 +432,8 @@ void ContainerNode::unplugClient( ContainerClient *client )
 
     // now quickly remove all custom elements (i.e. separators) and unplug all actions
 
-    QList<QAction*>::ConstIterator custIt = client->customElements.begin();
-    QList<QAction*>::ConstIterator custEnd = client->customElements.end();
+    QList<QAction*>::ConstIterator custIt = client->customElements.constBegin();
+    QList<QAction*>::ConstIterator custEnd = client->customElements.constEnd();
     for (; custIt != custEnd; ++custIt )
         builder->removeCustomElement( container, *custIt );
 

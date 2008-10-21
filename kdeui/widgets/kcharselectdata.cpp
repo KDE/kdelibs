@@ -576,7 +576,7 @@ QList<QChar> KCharSelectData::find(const QString& needle)
     }
 
     bool firstSubString = true;
-    foreach(QString s, searchStrings) {
+    foreach(const QString &s, searchStrings) {
         QSet<quint16> partResult = getMatchingChars(s.toLower());
         if (firstSubString) {
             result = partResult;
@@ -588,7 +588,7 @@ QList<QChar> KCharSelectData::find(const QString& needle)
 
     // remove results found by matching the code point to prevent duplicate results
     // while letting these characters stay at the beginning
-    foreach(QChar c, returnRes) {
+    foreach(const QChar &c, returnRes) {
         result.remove(c.unicode());
     }
 
@@ -605,7 +605,7 @@ QList<QChar> KCharSelectData::find(const QString& needle)
 QSet<quint16> KCharSelectData::getMatchingChars(const QString& s)
 {
     futureIndex.waitForFinished();
-    Index index = futureIndex;
+    const Index index = futureIndex;
     Index::const_iterator pos = index.lowerBound(s);
     QSet<quint16> result;
 
@@ -613,7 +613,7 @@ QSet<quint16> KCharSelectData::getMatchingChars(const QString& s)
         foreach (quint16 c, pos.value()) {
             result.insert(c);
         }
-        pos++;
+        ++pos;
     }
 
     return result;
@@ -643,8 +643,8 @@ QStringList KCharSelectData::splitString(const QString& s)
 
 void KCharSelectData::appendToIndex(Index *index, quint16 unicode, const QString& s)
 {
-    QStringList strings = splitString(s);
-    foreach(QString s, strings) {
+    const QStringList strings = splitString(s);
+    foreach(const QString &s, strings) {
         (*index)[s.toLower()].append(unicode);
     }
 }

@@ -792,7 +792,7 @@ QRect KWindowSystem::workArea( const QList<WId>& exclude, int desktop )
         desktop = s_d->currentDesktop();
 
     QList<WId>::ConstIterator it1;
-    for( it1 = s_d->windows.begin(); it1 != s_d->windows.end(); ++it1 ) {
+    for( it1 = s_d->windows.constBegin(); it1 != s_d->windows.constEnd(); ++it1 ) {
 
         if(exclude.contains(*it1))
             continue;

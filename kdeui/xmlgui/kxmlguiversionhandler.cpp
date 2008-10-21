@@ -243,11 +243,11 @@ KXmlGuiVersionHandler::KXmlGuiVersionHandler(const QStringList& files)
         allDocuments.append( d );
     }
 
-    QList<DocStruct>::const_iterator best = allDocuments.end();
+    QList<DocStruct>::iterator best = allDocuments.end();
     uint bestVersion = 0;
 
-    QList<DocStruct>::const_iterator docIt = allDocuments.begin();
-    const QList<DocStruct>::const_iterator docEnd = allDocuments.end();
+    QList<DocStruct>::iterator docIt = allDocuments.begin();
+    const QList<DocStruct>::iterator docEnd = allDocuments.end();
     for (; docIt != docEnd; ++docIt ) {
         const QString versionStr = findVersionNumber( (*docIt).data );
         if ( versionStr.isEmpty() ) {
