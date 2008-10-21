@@ -493,7 +493,7 @@ void DownloadDialog::slotComments(QStringList comments)
 {
     KDXSComments commentsdlg(this);
 
-    for (QStringList::const_iterator it = comments.begin(); it != comments.end(); it++) {
+    for (QStringList::const_iterator it = comments.constBegin(); it != comments.constEnd(); it++) {
         //kDebug() << "Comment: " << (*it);
         commentsdlg.addComment("foo", (*it));
     }

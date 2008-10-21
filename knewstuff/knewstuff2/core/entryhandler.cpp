@@ -136,25 +136,25 @@ QDomElement EntryHandler::serializeElement(const Entry& entry)
     QStringList langs;
 
     langs = name.languages();
-    for (it = langs.begin(); it != langs.end(); ++it) {
+    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
         e = addElement(doc, el, "name", name.translated(*it));
         e.setAttribute("lang", *it);
     }
 
     langs = summary.languages();
-    for (it = langs.begin(); it != langs.end(); ++it) {
+    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
         e = addElement(doc, el, "summary", summary.translated(*it));
         e.setAttribute("lang", *it);
     }
 
     langs = preview.languages();
-    for (it = langs.begin(); it != langs.end(); ++it) {
+    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
         e = addElement(doc, el, "preview", preview.translated(*it));
         e.setAttribute("lang", *it);
     }
 
     langs = payload.languages();
-    for (it = langs.begin(); it != langs.end(); ++it) {
+    for (it = langs.constBegin(); it != langs.constEnd(); ++it) {
         e = addElement(doc, el, "payload", payload.translated(*it));
         e.setAttribute("lang", *it);
     }
