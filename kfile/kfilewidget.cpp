@@ -582,7 +582,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
 
     // we know it is not a dir, and we could stat it. Set it.
     if (!filename.isEmpty()) {
-        d->locationEdit->lineEdit()->setText(filename);
+        d->setLocationText(filename);
         d->locationEdit->lineEdit()->selectAll();
     }
 
