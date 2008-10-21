@@ -928,10 +928,9 @@ void KDirOperator::setIconsZoom(int _value)
         return;
     }
 
-    int maxSize = KIconLoader::SizeEnormous;
-    int val = maxSize * value / 100;
+    int maxSize = KIconLoader::SizeEnormous - KIconLoader::SizeSmall;
+    int val = (maxSize * value / 100) + KIconLoader::SizeSmall;
     // do not let the icon to be smaller than the smallest size on KIconLoader
-    val = qMax(val, (int) KIconLoader::SizeSmall);
     d->itemView->setIconSize(QSize(val, val));
     d->updateListViewGrid();
     d->previewGenerator->updatePreviews();
@@ -1570,9 +1569,8 @@ void KDirOperator::setView(QAbstractItemView *view)
     }
 
     d->previewGenerator = new KFilePreviewGenerator(d->itemView);
-    int maxSize = KIconLoader::SizeEnormous;
-    int val = maxSize * d->iconsZoom / 100;
-    val = qMax(val, (int) KIconLoader::SizeSmall);
+    int maxSize = KIconLoader::SizeEnormous - KIconLoader::SizeSmall;
+    int val = (maxSize * d->iconsZoom / 100) + KIconLoader::SizeSmall;
     d->itemView->setIconSize(QSize(val, val));
     d->previewGenerator->setPreviewShown(d->showPreviews);
 
