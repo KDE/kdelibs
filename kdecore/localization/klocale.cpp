@@ -1080,14 +1080,14 @@ static void _round(QString &str, int precision)
 {
   int decimalSymbolPos = str.indexOf('.');
 
-  if (decimalSymbolPos == -1)
+  if (decimalSymbolPos == -1) {
     if (precision == 0)  return;
     else if (precision > 0) // add dot if missing (and needed)
       {
 	str.append('.');
 	decimalSymbolPos = str.length() - 1;
       }
-
+  }
   // fill up with more than enough zeroes (in case fractional part too short)
   str.reserve(str.length() + precision);
   for (int i = 0; i < precision; ++i)

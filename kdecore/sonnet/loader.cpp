@@ -196,11 +196,12 @@ QString Loader::languageNameForCode(const QString &langCode) const
     localizedLang = KGlobal::locale()->languageCodeToName(lISOName);
     if (localizedLang.isEmpty())
         localizedLang = lISOName;
-    if (!cISOName.isEmpty())
+    if (!cISOName.isEmpty()) {
         if (!KGlobal::locale()->countryCodeToName(cISOName).isEmpty())
             localizedCountry = KGlobal::locale()->countryCodeToName(cISOName);
         else
             localizedCountry = cISOName;
+    }
     if (!variantName.isEmpty()) {
         while (variantList[variantCount].variantShortName != 0)
             if (variantList[ variantCount ].variantShortName ==
