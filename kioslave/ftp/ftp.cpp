@@ -578,17 +578,17 @@ void Ftp::ftpAutoLoginMacro ()
   if ( macro.isEmpty() )
     return;
 
-  QStringList list = macro.split('\n',QString::SkipEmptyParts);
+  const QStringList list = macro.split('\n',QString::SkipEmptyParts);
 
   for(QStringList::const_iterator it = list.begin() ; it != list.end() ; ++it )
   {
     if ( (*it).startsWith("init") )
     {
-      list = macro.split( '\\',QString::SkipEmptyParts);
-      it = list.begin();
+      const QStringList list2 = macro.split( '\\',QString::SkipEmptyParts);
+      it = list2.begin();
       ++it;  // ignore the macro name
 
-      for( ; it != list.end() ; ++it )
+      for( ; it != list2.end() ; ++it )
       {
         // TODO: Add support for arbitrary commands
         // besides simply changing directory!!

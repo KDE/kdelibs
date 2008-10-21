@@ -514,8 +514,8 @@ KCookieServer::getDomainAdvice(const QString &url)
       QStringList domains;
       mCookieJar->extractDomains(fqdn, domains);
 
-      QStringList::ConstIterator it = domains.begin();
-      while ( (advice == KCookieDunno) && (it != domains.end()) )
+      QStringList::ConstIterator it = domains.constBegin();
+      while ( (advice == KCookieDunno) && (it != domains.constEnd()) )
       {
          // Always check advice in both ".domain" and "domain". Note
          // that we only want to check "domain" if it matches the

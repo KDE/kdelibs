@@ -313,12 +313,12 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
 
     KHttpCookieList allCookies;
 
-    for(QStringList::ConstIterator it = domains.begin();
+    for(QStringList::ConstIterator it = domains.constBegin();
         true;
         ++it)
     {
        KHttpCookieList *cookieList;
-       if (it == domains.end())
+       if (it == domains.constEnd())
        {
           cookieList = pendingCookies; // Add pending cookies
           pendingCookies = 0;
@@ -373,12 +373,12 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
              cookie.windowIds().append(windowId);
           }
 
-          if (it == domains.end()) // Only needed when processing pending cookies
+          if (it == domains.constEnd()) // Only needed when processing pending cookies
              removeDuplicateFromList(&allCookies, cookie);
 
           allCookies.append(cookie);
        }
-       if (it == domains.end())
+       if (it == domains.constEnd())
           break; // Finished.
     }
 
@@ -923,8 +923,8 @@ void KCookieJar::addCookie(KHttpCookie &cookie)
     // that cookies of type hostname == cookie-domainname
     // are properly removed and/or updated as necessary!
     extractDomains( cookie.host(), domains );
-    for ( QStringList::ConstIterator it = domains.begin();
-          (it != domains.end() && !cookieList);
+    for ( QStringList::ConstIterator it = domains.constBegin();
+          (it != domains.constEnd() && !cookieList);
           ++it )
     {
         QString key = (*it).isNull() ? QString::fromLatin1("") : (*it);
@@ -1175,19 +1175,18 @@ void KCookieJar::eatSessionCookies( long windowId )
     if (!windowId)
         return;
 
-    QStringList::const_iterator it=m_domainList.begin();
-    for ( ; it != m_domainList.end(); ++it )
+    QStringList::const_iterator it=m_domainList.constBegin();
+    for ( ; it != m_domainList.constEnd(); ++it )
         eatSessionCookies( *it, windowId, false );
 }
 
 void KCookieJar::eatAllCookies()
 {
-    for ( QStringList::const_iterator it=m_domainList.begin();
-          it != m_domainList.end();)
+    for ( QStringList::const_iterator it=m_domainList.constBegin();
+          it != m_domainList.constEnd(); ++it)
     {
-        QString domain = *it++;
         // This might remove domain from domainList!
-        eatCookiesForDomain(domain);
+        eatCookiesForDomain(*it);
     }
 }
 
@@ -1253,7 +1252,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
               "Name", "Sec", "Value");
     ts << s.toLatin1().constData();
 
-    for ( QStringList::const_iterator it=m_domainList.begin(); it != m_domainList.end();
+    for ( QStringList::const_iterator it=m_domainList.constBegin(); it != m_domainList.constEnd();
           it++ )
     {
         const QString &domain = *it;
@@ -1449,9 +1448,9 @@ void KCookieJar::saveConfig(KConfig *_config)
     policyGroup.writeEntry("CookieGlobalAdvice", adviceToStr( m_globalAdvice));
 
     QStringList domainSettings;
-    for ( QStringList::const_iterator it=m_domainList.begin();
-          it != m_domainList.end();
-          it++ )
+    for ( QStringList::const_iterator it=m_domainList.constBegin();
+          it != m_domainList.constEnd();
+          ++it )
     {
          const QString &domain = *it;
          KCookieAdvice advice = getDomainAdvice( domain);
@@ -1483,7 +1482,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     m_preferredPolicy = dlgGroup.readEntry( "PreferredPolicy", 0 );
 
     KConfigGroup policyGroup(_config,"Cookie Policy");
-    QStringList domainSettings = policyGroup.readEntry("CookieDomainAdvice", QStringList());
+    const QStringList domainSettings = policyGroup.readEntry("CookieDomainAdvice", QStringList());
     m_rejectCrossDomainCookies = policyGroup.readEntry("RejectCrossDomainCookies", true);
     m_autoAcceptSessionCookies = policyGroup.readEntry("AcceptSessionCookies", true);
     m_ignoreCookieExpirationDate = policyGroup.readEntry("IgnoreExpirationDate", false);

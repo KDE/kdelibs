@@ -1550,7 +1550,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
 
       errorString += "<ul>";
 
-      for ( QStringList::const_iterator it = errors.begin(); it != errors.end(); ++it )
+      for ( QStringList::const_iterator it = errors.constBegin(); it != errors.constEnd(); ++it )
         errorString += "<li>" + *it + "</li>";
 
       errorString += "</ul>";
