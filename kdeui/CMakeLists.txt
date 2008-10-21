@@ -339,8 +339,9 @@ install(TARGETS kdeui ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 if (Q_WS_MAC)
    install( FILES util/kkeyserver_mac.h DESTINATION ${INCLUDE_INSTALL_DIR} )
-else (Q_WS_MAC)
-   # maybe these shouldn't be installed on windows? they have been so far, so leaving it this way for now
+elseif (Q_WS_WIN)
+    install( FILES util/kkeyserver_win.h DESTINATION ${INCLUDE_INSTALL_DIR} )
+else(Q_WS_WIN)
    install( FILES util/fixx11h.h util/kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} )
 endif (Q_WS_MAC)
 
