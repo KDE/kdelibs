@@ -27,7 +27,7 @@
 #if ENABLE(SVG)
 #include "SVGLength.h"
 
-#include "CSSHelper.h"
+#include "css/csshelper.h"
 #include "FloatConversion.h"
 /*#include "FrameView.h"*/
 #include "RenderObject.h"
