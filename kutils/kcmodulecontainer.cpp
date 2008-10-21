@@ -90,7 +90,7 @@ void KCModuleContainer::init()
 	if ( !d->modules.isEmpty() )
 	{
 		/* Add our modules */
-		for ( QStringList::const_iterator it = d->modules.begin(); it != d->modules.end(); ++it )
+		for ( QStringList::const_iterator it = d->modules.constBegin(); it != d->modules.constEnd(); ++it )
 			addModule( (*it) );
 	}
 }

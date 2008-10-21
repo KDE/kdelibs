@@ -119,8 +119,8 @@ void ComponentsDialog::show()
     d->plugininfomap.clear();
 
     // construct the treelist
-    for( QList<KPluginInfo*>::ConstIterator it = d->plugininfolist.begin();
-            it != d->plugininfolist.end(); ++it )
+    for( QList<KPluginInfo*>::ConstIterator it = d->plugininfolist.constBegin();
+            it != d->plugininfolist.constEnd(); ++it )
     {
         ( *it )->load();
         QTreeWidgetItem * item = new QTreeWidgetItem( d->listview, QStringList( ( *it )->name() ) );
@@ -154,8 +154,8 @@ void ComponentsDialog::executed( QTreeWidgetItem * item, int )
 
 void ComponentsDialog::savePluginInfos()
 {
-    for( QList<KPluginInfo*>::ConstIterator it = d->plugininfolist.begin();
-            it != d->plugininfolist.end(); ++it )
+    for( QList<KPluginInfo*>::ConstIterator it = d->plugininfolist.constBegin();
+            it != d->plugininfolist.constEnd(); ++it )
     {
         if ((*it)->config().isValid()) {
             ( *it )->save();

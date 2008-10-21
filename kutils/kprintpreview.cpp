@@ -77,7 +77,7 @@ void KPrintPreviewPrivate::getPart()
     kDebug(500) << "querying trader for application/pdf service";
 
     KPluginFactory *factory(0);
-    KService::List offers =
+    const KService::List offers =
         KMimeTypeTrader::self()->query("application/pdf", "KParts/ReadOnlyPart");
 
     KService::List::ConstIterator it = offers.begin();
