@@ -575,6 +575,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     }
     d->url = getStartUrl( startDir, d->fileClass );
     d->ops->setUrl(d->url, true);
+    d->urlNavigator->setUrl(d->url);
 
     // we know it is not a dir, and we could stat it. Set it.
     if (!filename.isEmpty()) {
