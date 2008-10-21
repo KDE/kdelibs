@@ -1522,10 +1522,6 @@ void KDirOperator::setView(QAbstractItemView *view)
             this, SLOT(_k_slotActivated(const QModelIndex&)));
     connect(d->itemView, SIGNAL(pressed(const QModelIndex&)),
             this, SLOT(_k_slotPressed(const QModelIndex&)));
-    connect(d->itemView, SIGNAL(clicked(const QModelIndex&)),
-            this, SLOT(_k_slotClicked(const QModelIndex&)));
-    connect(d->itemView, SIGNAL(doubleClicked(const QModelIndex&)),
-            this, SLOT(_k_slotDoubleClicked(const QModelIndex&)));
     connect(d->itemView, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(_k_openContextMenu(const QPoint&)));
     connect(d->itemView, SIGNAL(entered(const QModelIndex&)),
