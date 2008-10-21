@@ -29,6 +29,7 @@
 #include "css/css_stylesheetimpl.h"
 #include "css/cssparser.h"
 #include "cssstyleselector.h"
+#include "css/cssvalues.h"
 #include "khtml_part.h"
 #include "khtmlview.h"
 #include "rendering/render_style.h"
@@ -110,6 +111,16 @@ MediaQueryExp::MediaQueryExp(const DOMString& mediaFeature, ValueList* valueList
     : m_mediaFeature(mediaFeature)
     , m_value(0)
 {
+    m_viewportDependent = ( m_mediaFeature == "width" || 
+                            m_mediaFeature == "height" ||
+                            m_mediaFeature == "min-width" ||
+                            m_mediaFeature == "min-height" ||
+                            m_mediaFeature == "max-width" ||
+                            m_mediaFeature == "max-height" ||
+                            m_mediaFeature == "orientation" ||
+                            m_mediaFeature == "aspect-ratio" ||
+                            m_mediaFeature == "min-aspect-ratio" ||
+                            m_mediaFeature == "max-aspect-ratio" );
     if (valueList) {
         if (valueList->size() == 1) {
             Value* value = valueList->current();
@@ -161,6 +172,7 @@ MediaQueryExp::~MediaQueryExp()
 
 //---------------------------------------------------------------------------
 
+// when adding features, update also m_viewportDependent test if applicable
 #define CSS_MEDIAQUERY_NAMES_FOR_EACH_MEDIAFEATURE(macro) \
     macro(color, "color") \
     macro(color_index, "color-index") \
@@ -172,6 +184,8 @@ MediaQueryExp::~MediaQueryExp()
     macro(device_pixel_ratio, "-khtml-device-pixel-ratio") \
     macro(device_height, "device-height") \
     macro(device_width, "device-width") \
+    macro(orientation, "orientation") \
+    macro(aspect_ratio, "aspect-ratio") \
     macro(resolution, "resolution") \
     macro(scan, "scan") \
     macro(max_color, "max-color") \
@@ -180,6 +194,7 @@ MediaQueryExp::~MediaQueryExp()
     macro(max_device_pixel_ratio, "-khtml-max-device-pixel-ratio") \
     macro(max_device_height, "max-device-height") \
     macro(max_device_width, "max-device-width") \
+    macro(max_aspect_ratio, "max-aspect-ratio") \
     macro(max_resolution, "max-resolution") \
     macro(max_height, "max-height") \
     macro(max_monochrome, "max-monochrome") \
@@ -191,6 +206,7 @@ MediaQueryExp::~MediaQueryExp()
     macro(min_device_height, "min-device-height") \
     macro(min_device_width, "min-device-width") \
     macro(min_resolution, "min-resolution") \
+    macro(min_aspect_ratio, "min-aspect-ratio") \
     macro(min_height, "min-height") \
     macro(min_monochrome, "min-monochrome") \
     macro(min_width, "min-width") \
@@ -437,6 +453,55 @@ static bool device_aspect_ratioMediaFeatureEval(CSSValueImpl* value, RenderStyle
     return true;
 }
 
+static bool aspect_ratioMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTMLPart* part,  MediaFeaturePrefix op)
+{
+    if (value) {
+        KHTMLPart* rootPart = part;
+        while (rootPart->parentPart()) rootPart = rootPart->parentPart();
+        DOM::DocumentImpl *doc =  static_cast<DOM::DocumentImpl*>(rootPart->document().handle());
+        QPaintDevice *pd = doc->paintDevice(); 
+        bool printing = pd ? (pd->devType() == QInternal::Printer) : false;
+        QSize vs;
+        int h = 0, v = 0;
+        if (printing) {
+            vs= QSize(pd->width(), pd->height());
+        } else {
+            vs= QSize(part->view()->visibleWidth(), part->view()->visibleHeight());
+        }
+        if (parseAspectRatio(value, h, v))
+            return v != 0  && compareValue(vs.width()*v, vs.height()*h, op);
+        return false;
+    }
+    // ({,min-,max-}aspect-ratio)
+    // assume if we have a viewport, its aspect ratio is non-zero
+    return true;
+}
+
+static bool orientationMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTMLPart* part,  MediaFeaturePrefix /*op*/)
+{
+    if (value) {
+       CSSPrimitiveValueImpl* pv = static_cast<CSSPrimitiveValueImpl*>(value);
+       if (!value->isPrimitiveValue() || pv->primitiveType() != CSSPrimitiveValue::CSS_IDENT ||
+           (pv->getIdent() != CSS_VAL_PORTRAIT && pv->getIdent() != CSS_VAL_LANDSCAPE))
+          return false;
+                                            
+        KHTMLPart* rootPart = part;
+        while (rootPart->parentPart()) rootPart = rootPart->parentPart();
+        DOM::DocumentImpl *doc =  static_cast<DOM::DocumentImpl*>(rootPart->document().handle());
+        QPaintDevice *pd = doc->paintDevice(); 
+        bool printing = pd ? (pd->devType() == QInternal::Printer) : false;
+        if (printing) {
+            if (pd->width() > pd->height())
+                return (pv->getIdent() == CSS_VAL_LANDSCAPE);
+        } else {
+            if (part->view()->visibleWidth() > part->view()->visibleHeight())
+               return (pv->getIdent() == CSS_VAL_LANDSCAPE);
+        }
+        return (pv->getIdent() == CSS_VAL_PORTRAIT);
+    }
+    return false;
+}
+
 static bool device_pixel_ratioMediaFeatureEval(CSSValueImpl *value, RenderStyle*, KHTMLPart* part, MediaFeaturePrefix op)
 {
     if (value)
@@ -445,7 +510,7 @@ static bool device_pixel_ratioMediaFeatureEval(CSSValueImpl *value, RenderStyle*
     return part->zoomFactor() != 0;
 }
 
-static bool gridMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTMLPart* part,  MediaFeaturePrefix op)
+static bool gridMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTMLPart* /*part*/,  MediaFeaturePrefix op)
 {
     // if output device is bitmap, grid: 0 == true
     // assume we have bitmap device
@@ -559,7 +624,7 @@ static bool resolutionMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTMLP
     return logicalDpiY != 0;
 }
 
-static bool scanMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTMLPart* part,  MediaFeaturePrefix)
+static bool scanMediaFeatureEval(CSSValueImpl* /*value*/, RenderStyle*, KHTMLPart* /*part*/,  MediaFeaturePrefix)
 {
     // no support for tv media type.
     return false;
@@ -567,12 +632,12 @@ static bool scanMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTMLPart* p
 
 // rest of the functions are trampolines which set the prefix according to the media feature expression used
 
-static bool min_color_indexMediaFeatureEval(CSSValueImpl* value, RenderStyle* style, KHTMLPart* part,  MediaFeaturePrefix op)
+static bool min_color_indexMediaFeatureEval(CSSValueImpl* value, RenderStyle* style, KHTMLPart* part,  MediaFeaturePrefix /*op*/)
 {
     return color_indexMediaFeatureEval(value, style, part, MinPrefix);
 }
 
-static bool max_color_indexMediaFeatureEval(CSSValueImpl* value, RenderStyle* style, KHTMLPart* part,  MediaFeaturePrefix op)
+static bool max_color_indexMediaFeatureEval(CSSValueImpl* value, RenderStyle* style, KHTMLPart* part,  MediaFeaturePrefix /*op*/)
 {
     return color_indexMediaFeatureEval(value, style, part, MinPrefix);
 }
@@ -605,6 +670,16 @@ static bool min_device_aspect_ratioMediaFeatureEval(CSSValueImpl* value, RenderS
 static bool max_device_aspect_ratioMediaFeatureEval(CSSValueImpl* value, RenderStyle* style, KHTMLPart* part,  MediaFeaturePrefix /*op*/)
 {
     return device_aspect_ratioMediaFeatureEval(value, style, part, MaxPrefix);
+}
+
+static bool min_aspect_ratioMediaFeatureEval(CSSValueImpl* value, RenderStyle* style, KHTMLPart* part,  MediaFeaturePrefix /*op*/)
+{
+    return aspect_ratioMediaFeatureEval(value, style, part, MinPrefix);
+}
+
+static bool max_aspect_ratioMediaFeatureEval(CSSValueImpl* value, RenderStyle* style, KHTMLPart* part,  MediaFeaturePrefix /*op*/)
+{
+    return aspect_ratioMediaFeatureEval(value, style, part, MaxPrefix);
 }
 
 static bool min_device_pixel_ratioMediaFeatureEval(CSSValueImpl* value, RenderStyle* style, KHTMLPart* part,  MediaFeaturePrefix /*op*/)

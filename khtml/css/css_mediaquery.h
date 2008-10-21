@@ -138,13 +138,10 @@ public:
                 || (other.m_value && m_value && other.m_value->cssText() == m_value->cssText()));
     }
 
-    bool isViewportDependent() const { return m_mediaFeature == "width" || 
-                                              m_mediaFeature == "height" ||
-                                              m_mediaFeature == "min-width" ||
-                                              m_mediaFeature == "min-height" ||
-                                              m_mediaFeature == "max-width" ||
-                                              m_mediaFeature == "max-height"; }
+    bool isViewportDependent() const { return m_viewportDependent; }
+
 private:
+    bool m_viewportDependent;
     DOM::DOMString m_mediaFeature;
     DOM::CSSValueImpl* m_value;
 };
