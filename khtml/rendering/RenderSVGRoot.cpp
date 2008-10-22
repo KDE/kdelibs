@@ -276,6 +276,8 @@ IntRect RenderSVGRoot::absoluteClippedOverflowRect()
 #endif
 
     return repaintRect;*/
+	ASSERT(false);
+	return IntRect();
 }
 
 /*void RenderSVGRoot::addFocusRingRects(GraphicsContext* graphicsContext, int, int)
@@ -298,6 +300,8 @@ AffineTransform RenderSVGRoot::absoluteTransform() const
     ctm.translate(svg->currentTranslate().x(), svg->currentTranslate().y());
     ctm.translate(viewport().x(), viewport().y());
     return svg->viewBoxToViewTransform(width(), height()) * ctm;*/
+	ASSERT(false);
+	return AffineTransform();
 }
 
 FloatRect RenderSVGRoot::relativeBBox(bool includeStroke) const

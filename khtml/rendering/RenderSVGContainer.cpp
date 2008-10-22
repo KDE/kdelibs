@@ -389,6 +389,8 @@ IntRect RenderSVGContainer::absoluteClippedOverflowRect()
         repaintRect.inflate(1); // inflate 1 pixel for antialiasing
 
     return enclosingIntRect(repaintRect);*/
+	ASSERT(false);
+	return IntRect();
 }
 
 void RenderSVGContainer::addFocusRingRects(GraphicsContext* graphicsContext, int tx, int ty)
