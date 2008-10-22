@@ -601,9 +601,7 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 
 		if (keyQt) {
 			if (d->nKey == 0) {
-				d->keySequence =
-				  KKeySequenceWidgetPrivate::appendToSequence(d->keySequence,
-				                                              keyQt | d->modifierKeys);
+				d->keySequence = QKeySequence(keyQt | d->modifierKeys);
 			} else {
 				d->keySequence =
 				  KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt);
