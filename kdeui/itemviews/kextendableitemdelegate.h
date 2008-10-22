@@ -73,14 +73,15 @@ public:
     virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
     /**
-     * Insert the @p extender that logically belongs to @p index into the view.
+     * Insert the @p extender for item at @p index into the view.
      * If you need a parent for the extender at construction time, use the itemview's viewport().
-     * The extender will be reparented and resized to the viewport by this function.
+     * The delegate takes ownership of the extender; the extender will also be reparented and
+     * resized to the viewport.
      */
     void extendItem(QWidget *extender, const QModelIndex &index);
 
     /**
-     * Close the extender that logically belongs to @p index from the view. The extender widget
+     * Remove the extender of item at @p index from the view. The extender widget
      * will be deleted.
      */
     void contractItem(const QModelIndex &index);
