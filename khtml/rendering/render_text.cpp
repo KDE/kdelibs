@@ -5,6 +5,7 @@
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 2003 Apple Computer, Inc.
  *           (C) 2004-2005 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2008 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -245,11 +246,11 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
    if (needClipping) {
        p->save();
 
-       int visualSelectionStart = f->width(text->str->s, text->str->l, m_start, startPos, m_start, m_start + m_len, m_toAdd);
-       int visualSelectionEnd = f->width(text->str->s, text->str->l, m_start, endPos, m_start, m_start + m_len, m_toAdd);
+       int visualSelectionStart = f->width(text->str->s, text->str->l, m_start, startPos, text->isSimpleText(), m_start, m_start + m_len, m_toAdd);
+       int visualSelectionEnd = f->width(text->str->s, text->str->l, m_start, endPos, text->isSimpleText(), m_start, m_start + m_len, m_toAdd);
        int visualSelectionWidth = visualSelectionEnd - visualSelectionStart;
        if (m_reversed) {
-           visualSelectionStart = f->width(text->str->s, text->str->l, m_start, m_len) - visualSelectionEnd;
+           visualSelectionStart = f->width(text->str->s, text->str->l, m_start, m_len, text->isSimpleText()) - visualSelectionEnd;
        }
 
        QRect selectionRect(m_x + tx + visualSelectionStart, m_y + ty, visualSelectionWidth, height());
@@ -469,7 +470,7 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
     if ( m_reversed ) {
 	delta -= m_width;
 	while(pos < m_len) {
-	    int w = f->width( text->str->s, text->str->l, m_start + pos);
+	    int w = f->width( text->str->s, text->str->l, m_start + pos, text->isSimpleText());
 	    if (justified && text->str->s[m_start + pos].category() == QChar::Separator_Space)
 	        w += justifyWidth(numSpaces, toAdd);
 	    int w2 = w/2;
@@ -481,7 +482,7 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
 	}
     } else {
 	while(pos < m_len) {
-	    int w = f->width( text->str->s, text->str->l, m_start + pos);
+	    int w = f->width( text->str->s, text->str->l, m_start + pos, text->isSimpleText());
 	    if (justified && text->str->s[m_start + pos].category() == QChar::Separator_Space)
 	        w += justifyWidth(numSpaces, toAdd);
 	    int w2 = w/2;
@@ -578,7 +579,7 @@ int InlineTextBox::widthFromStart(int pos) const
 
       // check run without spaces
       if ( current > start ) {
-          w += f->width(t->str->s + m_start, m_len, start, current - start);
+          w += f->width(t->str->s + m_start, m_len, start, current - start, t->isSimpleText());
           start = current;
       }
     }
@@ -589,7 +590,7 @@ int InlineTextBox::widthFromStart(int pos) const
 
   //kDebug(6000) << "default";
   // else use existing width function
-  return f->width(t->str->s + m_start, m_len, 0, pos);
+  return f->width(t->str->s + m_start, m_len, 0, pos, t->isSimpleText());
 
 }
 
@@ -1094,6 +1095,47 @@ bool RenderText::posOfChar(int chr, int &x, int &y) const
     return false;
 }
 
+static bool isSimpleChar( const unsigned short c )
+{
+    // Exclude ranges with many Mn/Me/Mc and the various combining diacriticals ranges.
+    // Unicode version used is 4.1.0
+
+    // General Combining Diacritical Marks
+    if (c < 0x300)  return true;
+    if (c <= 0x36F) return false;
+
+    // Cyrillic's
+    if (c < 0x483) return true;
+    if (c <= 0x489) return false;
+
+    // Hebrew's
+    if (c < 0x0591) return true;
+    if (c <= 0x05C7 && !(c == 0x05BE || c == 0x05C0 || c == 0x05C3 || c == 0x05C6)) return false;
+
+    // Unicode range 6 to 11 (Arabic to Korean Hangul)
+    if (c < 0x0600)  return true;
+    if (c <= 0x11F9) return false;
+
+    // Unicode range 17 to 1A (Tagalog to Buginese)
+    // (also excl. Ethiopic Combining Gemination Mark)
+    if (c < 0x1700 && c != 0x135F)  return true;
+    if (c <= 0x1A1F) return false;
+
+    // Combining Diacritical Marks Supplement
+    if (c < 0x1DC0) return true;
+    if (c <= 0x1DFF) return false;
+
+    // Diacritical Marks for Symbols 
+    if (c < 0x20D0)  return true;
+    if (c <= 0x20EB) return false;
+
+    // Combining Half Marks
+    if (c < 0xFE20)  return true;
+    if (c <= 0xFE2F) return false;
+
+    return true;
+}
+
 void RenderText::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
@@ -1107,6 +1149,7 @@ void RenderText::calcMinMaxWidth()
 
     int currMinWidth = 0;
     int currMaxWidth = 0;
+    m_isSimpleText = true;
     m_hasBreakableChar = m_hasBreak = m_hasBeginWS = m_hasEndWS = false;
 
     // ### not 100% correct for first-line
@@ -1139,16 +1182,15 @@ void RenderText::calcMinMaxWidth()
 
         int wordlen = 0;
         while( i+wordlen < len && (i+wordlen == 0 || str->s[i+wordlen].unicode() != SOFT_HYPHEN) &&
-               !(isBreakable( str->s, i+wordlen, str->l )) )
+               !(isBreakable( str->s, i+wordlen, str->l )) ) {
+            // check if we may use the simpler algorithm for estimating text width
+            m_isSimpleText = (m_isSimpleText && isSimpleChar(str->s[i+wordlen].unicode()));
             wordlen++;
+         }
 
         if (wordlen)
         {
-#ifndef APPLE_CHANGES
-            int w = f->width(str->s, str->l, i, wordlen);
-#else
-            int w = widthFromCache(f, i, wordlen);
-#endif
+            int w = f->width(str->s, str->l, i, wordlen, m_isSimpleText);
             currMinWidth += w;
             currMaxWidth += w;
 
@@ -1188,7 +1230,7 @@ void RenderText::calcMinMaxWidth()
             }
             else
             {
-                currMaxWidth += f->width( str->s, str->l, i + wordlen );
+                currMaxWidth += f->width( str->s, str->l, i + wordlen, m_isSimpleText);
             }
         }
     }
@@ -1376,7 +1418,7 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, const Font *
     if ( f == &style()->htmlFont() && from == 0 && len == str->l )
  	 return m_maxWidth;
     
-    int w = f->width(str->s, str->l, from, len );
+    int w = f->width(str->s, str->l, from, len, m_isSimpleText );
 
     //kDebug( 6040 ) << "RenderText::width(" << from << ", " << len << ") = " << w;
     return w;
@@ -1482,7 +1524,7 @@ void RenderText::trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
     if (stripFrontSpaces && (str->s[0].direction() == QChar::DirWS || (!preserveLF && str->s[0] == '\n'))) {
         const Font *f = htmlFont( false );
         QChar space[1]; space[0] = ' ';
-        int spaceWidth = f->width(space, 1, 0);
+        int spaceWidth = f->width(space, 1, 0, m_isSimpleText);
         maxW -= spaceWidth;
     }
 
@@ -1506,11 +1548,7 @@ void RenderText::trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
 
             if (linelen)
             {
-#ifndef APPLE_CHANGES
-                endMaxW = f->width(str->s, str->l, i, linelen);
-#else
-                endMaxW = widthFromCache(f, i, linelen);
-#endif
+                endMaxW = f->width(str->s, str->l, i, linelen, m_isSimpleText);
                 if (firstLine) {
                     firstLine = false;
                     beginMaxW = endMaxW;

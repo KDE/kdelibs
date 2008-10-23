@@ -525,7 +525,7 @@ struct SVGRootInlineBoxPaintWalker {
             // Paint decorations, that have to be drawn before the text gets drawn
             if (textDecorations != TDNONE /*FIXME khtml && m_paintInfo.phase != PaintPhaseSelection*/) {
                 //khtml textWidth = styleToUse->font().width(svgTextRunForInlineTextBox(stringStart, stringLength, styleToUse, textBox, (*it).x));
-                textWidth = styleToUse->htmlFont().width(stringStart, stringLength, 0);
+                textWidth = styleToUse->htmlFont().width(stringStart, stringLength, 0, stringLength, false /*fast algo*/);
                 decorationOrigin = IntPoint((int) (*it).x, (int) (*it).y - styleToUse->htmlFont().ascent());
                 info = m_rootBox->retrievePaintServersForTextDecoration(text);
             }

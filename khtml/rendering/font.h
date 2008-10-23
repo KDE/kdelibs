@@ -121,6 +121,7 @@ public:
      * @param slen total length of string
      * @param pos zero-based position in string where to start measuring
      * @param len count of characters up to which the width should be determined
+     * @param fast Use simplest/fastest algorithm (for e.g strings without special/combining chars)
      * @param start starting position of inline text box within str, only
      * used when toAdd is specified.
      * @param end ending position of inline text box within str, only
@@ -129,7 +130,7 @@ public:
      * str. Note that toAdd applies to all spaces within str, but only those
      * within [pos, pos+len) are counted towards the width.
      */
-    int width( QChar *str, int slen, int pos, int len, int start = 0, int end = 0, int toAdd = 0 ) const;
+    int width( QChar *str, int slen, int pos, int len, bool fast, int start=0, int end=0, int toAdd=0 ) const;
     /** return the width of the given char in pixels.
      *
      * The method also considers various styles like text-align and font-variant
@@ -137,7 +138,7 @@ public:
      * @param slen total length of string
      * @param pos zero-based position of char in string
      */
-    int width( QChar *str, int slen, int pos) const;
+    int width( QChar *str, int slen, int pos, bool fast ) const;
 
     /** Text decoration constants.
      *
@@ -166,13 +167,15 @@ public:
      */
     int getWordSpacing() const { return wordSpacing; }
 
+    void useFastAlgorithm( bool b ) { m_useFastAlgorithm = b; }
+
     // for SVG
+    int ascent() const { return fm.ascent(); }
+    int descent() const { return fm.descent(); }
+    int height() const { return fm.height(); }
+    int lineSpacing() const { return fm.lineSpacing(); }
+    float xHeight() const { return fm.xHeight(); }
     //FIXME: IMPLEMENT ME
-    int ascent() const { return 0; }
-    int descent() const { return 0; }
-    int height() const { return ascent() + descent(); }
-    int lineSpacing() const { return 0; }
-    float xHeight() const { return 0; }
     unsigned unitsPerEm() const { return 0; }
     int spaceWidth() const { return 0; }
     int tabWidth() const { return 8 * spaceWidth(); }
@@ -185,7 +188,8 @@ private:
     mutable QFont f;
     mutable QFontMetrics fm;
     mutable QFont *scFont;
-    short letterSpacing;
+    bool m_useFastAlgorithm : 1;
+    short letterSpacing       : 15;
     short wordSpacing;
 
         static bool isFontScalable(QFontDatabase& db, const QFont& font);

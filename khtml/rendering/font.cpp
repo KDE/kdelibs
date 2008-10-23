@@ -315,7 +315,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 }
 
 
-int Font::width( QChar *chs, int, int pos, int len, int start, int end, int toAdd ) const
+int Font::width( QChar *chs, int, int pos, int len, bool fast,int start, int end, int toAdd ) const
 {
     int w = 0;
 
@@ -329,21 +329,37 @@ int Font::width( QChar *chs, int, int pos, int len, int start, int end, int toAd
    // #### Qt 4.4 RC is now *40* times slower than Qt 3.3. This is a complete and utter disaster.
    // New issue about this as N203591, because the report from 2006 was apparently discarded.
    //
+   // This issue is now mostly adressed, by first scanning strings for complex/combining unicode characters,
+   // and using the much faster, non-context-aware QFontMetrics::width(QChar) when none has been found.
 
     const QString qstr = QString::fromRawData(chs+pos, len);
     if ( scFont ) {
 	const QString upper = qstr.toUpper();
 	const QChar *uc = qstr.unicode();
 	const QFontMetrics sc_fm( *scFont );
-	for ( int i = 0; i < len; ++i ) {
-	    if ( (uc+i)->category() == QChar::Letter_Lowercase )
-		w += sc_fm.charWidth( upper, i );
-	    else
-		w += fm.charWidth( qstr, i );
-	}
+	if (fast) {
+            for ( int i = 0; i < len; ++i ) {
+	        if ( (uc+i)->category() == QChar::Letter_Lowercase )
+		   w += sc_fm.width( upper[i] );
+	        else
+		    w += fm.width( qstr[i] );
+            }
+	} else {
+            for ( int i = 0; i < len; ++i ) {
+	        if ( (uc+i)->category() == QChar::Letter_Lowercase )
+		   w += sc_fm.charWidth( upper, i );
+	        else
+		    w += fm.charWidth( qstr, i );
+            }
+        }
     } else {
-	// ### might be a little inaccurate
-	w = fm.width( qstr );
+	if (fast) {
+            for ( int i = 0; i < len; ++i ) {
+                w += fm.width( qstr[i] );
+            }
+        } else {
+            w = fm.width( qstr );
+        }
     }
 
     if ( letterSpacing )
@@ -376,15 +392,21 @@ int Font::width( QChar *chs, int, int pos, int len, int start, int end, int toAd
     return w;
 }
 
-int Font::width( QChar *chs, int slen, int pos ) const
+int Font::width( QChar *chs, int slen, int pos, bool fast ) const
 {
     int w;
 	if ( scFont && chs[pos].category() == QChar::Letter_Lowercase ) {
 	    QString str( chs, slen );
 	    str[pos] = chs[pos].toUpper();
-	    w = QFontMetrics( *scFont ).charWidth( str, pos );
+	    if (fast)
+	        w = QFontMetrics( *scFont ).width( str[pos] );
+            else
+	        w = QFontMetrics( *scFont ).charWidth( str, pos );
 	} else {
-	    w = fm.charWidth( QString::fromRawData( chs, slen ), pos );
+	    if (fast)
+	        w = fm.width( chs[pos] );
+	    else
+	        w = fm.charWidth( QString::fromRawData( chs, slen ), pos );
 	}
     if ( letterSpacing )
 	w += letterSpacing;
@@ -539,6 +561,7 @@ float Font::floatWidth(QChar* str, int pos, int len, int extraCharsAvailable, in
 {
     charsConsumed = len;
     glyphName = "";
-    return width(str, 0, pos, len, 0, 0, 0);
+    // ### see if svg can scan the string (cf. render_text.cpp - isSimpleChar()) to determine if fast algo can be used.
+    return width(str, 0, pos, len, false /*fast algorithm*/);
 }
 

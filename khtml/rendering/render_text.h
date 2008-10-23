@@ -249,6 +249,7 @@ public:
     InlineTextBox* lastTextBox() const { return m_lastTextBox; }
 
     bool hasBreakableChar() const { return m_hasBreakableChar; }
+    bool isSimpleText() const { return m_isSimpleText; }
     const QFontMetrics &metrics(bool firstLine) const;
     const Font *htmlFont(bool firstLine) const;
 
@@ -298,6 +299,7 @@ protected: // members
     bool m_hasBreak : 1;
     bool m_hasBeginWS : 1;
     bool m_hasEndWS : 1;
+    bool m_isSimpleText : 1;
 
     ushort m_startMin : 8;
     ushort m_endMin : 8;
