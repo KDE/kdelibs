@@ -129,6 +129,7 @@ static const int sParsingLayoutsIncrement = 60;
 
 static const int sSmoothScrollTime = 140;
 static const int sSmoothScrollTick = 14;
+static const int sSmoothScrollMinStaticPixels = 320*200;
 
 class KHTMLViewPrivate {
     friend class KHTMLView;
@@ -3906,10 +3907,25 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
             d->shouldSmoothScroll = false;
     }
 
-    if ( d->smoothScrollMode != SSMDisabled &&
-          (!d->staticWidget||d->smoothScrollMode == SSMEnabled) && d->shouldSmoothScroll ) {
-        setupSmoothScrolling(dx, dy);
-        return;
+    if ( d->shouldSmoothScroll && d->smoothScrollMode != SSMDisabled && m_part->xmlDocImpl() &&
+          m_part->xmlDocImpl()->renderer()) {
+
+        bool doSmoothScroll = (!d->staticWidget || d->smoothScrollMode == SSMEnabled);
+
+        int numStaticPixels = 0;
+        QRegion r = static_cast<RenderCanvas*>(m_part->xmlDocImpl()->renderer())->staticRegion();
+
+        // only do smooth scrolling if static region is relatively small
+        if (!doSmoothScroll && d->staticWidget == KHTMLViewPrivate::SBPartial && r.rects().size() <= 10) {
+            foreach(QRect rr, r.rects())
+                numStaticPixels += rr.width()*rr.height();
+            if ((numStaticPixels < sSmoothScrollMinStaticPixels) || (numStaticPixels*8 < visibleWidth()*visibleHeight()))
+                doSmoothScroll = true;
+        }
+        if (doSmoothScroll) {
+            setupSmoothScrolling(dx, dy);
+            return;
+        }
     }
 
     if (!d->scrollingSelf) {
