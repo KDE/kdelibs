@@ -295,7 +295,7 @@ public:
     virtual void backwardsStructureChanged();
     virtual void attributeChanged(NodeImpl::Id attrId);
     // for WebCore API compatibility
-    virtual void attributeChanged(AttributeImpl* attribute, bool preserveDecls) { attributeChanged(attribute->id()); }
+    virtual void attributeChanged(AttributeImpl* attribute, bool /*preserveDecls*/) { attributeChanged(attribute->id()); }
     
     virtual void defaultEventHandler(EventImpl *evt);
 

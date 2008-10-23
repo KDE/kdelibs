@@ -89,7 +89,7 @@ public:
     virtual ~NodeImpl();
 
     //stuff for WebCore DOM & SVG
-    virtual bool hasTagName(const QualifiedName& name) const { return false; }
+    virtual bool hasTagName(const QualifiedName& /*name*/) const { return false; }
 
     // DOM methods & attributes for Node
     virtual DOMString nodeName() const;
