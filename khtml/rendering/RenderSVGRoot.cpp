@@ -96,7 +96,7 @@ void RenderSVGRoot::layout()
     calcWidth();
     calcHeight();
 
-    m_absoluteBounds = absoluteClippedOverflowRect();
+    //m_absoluteBounds = absoluteClippedOverflowRect();
     SVGSVGElement* svg = static_cast<SVGSVGElement*>(element());
     m_width = static_cast<int>(m_width * svg->currentScale());
     m_height = static_cast<int>(m_height * svg->currentScale());

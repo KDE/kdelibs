@@ -315,7 +315,7 @@ void RenderSVGContainer::calcBounds()
 {
     m_width = calcReplacedWidth();
     m_height = calcReplacedHeight();
-    m_absoluteBounds = absoluteClippedOverflowRect();
+    //m_absoluteBounds = absoluteClippedOverflowRect();
 }
 
 bool RenderSVGContainer::selfWillPaint() const
@@ -400,7 +400,7 @@ void RenderSVGContainer::addFocusRingRects(GraphicsContext* graphicsContext, int
 
 void RenderSVGContainer::absoluteRects(Vector<IntRect>& rects, int, int, bool)
 {
-    rects.append(absoluteClippedOverflowRect());
+    //FIXME rects.append(absoluteClippedOverflowRect());
 }
 
 FloatRect RenderSVGContainer::relativeBBox(bool includeStroke) const
