@@ -144,7 +144,7 @@ void Security::slotReadyReadStandardOutput()
                     key.secret = false;
                 else
                     key.secret = true;
-                QStringList line = data.split(":", QString::KeepEmptyParts);
+                QStringList line = data.split(':', QString::KeepEmptyParts);
                 key.id = line[4];
                 QString shortId = key.id.right(8);
                 QString trustStr = line[1];

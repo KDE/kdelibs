@@ -262,7 +262,7 @@ void KDXSButton::slotInfo(QString provider, QString server, QString version)
 
 void KDXSButton::slotCategories(QList<KNS::Category*> categories)
 {
-    for (QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++) {
+    for (QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it) {
         KNS::Category *category = (*it);
         //kDebug() << "Category: " << category->name().representation();
     }
@@ -270,7 +270,7 @@ void KDXSButton::slotCategories(QList<KNS::Category*> categories)
 
 void KDXSButton::slotEntries(KNS::Entry::List entries, Feed * feed)
 {
-    for (KNS::Entry::List::Iterator it = entries.begin(); it != entries.end(); it++) {
+    for (KNS::Entry::List::Iterator it = entries.begin(); it != entries.end(); ++it) {
         KNS::Entry *entry = (*it);
         //kDebug() << "Entry: " << entry->name().representation();
     }
@@ -280,7 +280,7 @@ void KDXSButton::slotComments(QStringList comments)
 {
     KDXSComments commentsdlg(this);
 
-    for (QStringList::const_iterator it = comments.begin(); it != comments.end(); it++) {
+    for (QStringList::const_iterator it = comments.begin(); it != comments.end(); ++it) {
         //kDebug() << "Comment: " << (*it);
         commentsdlg.addComment("foo", (*it));
     }
@@ -292,7 +292,7 @@ void KDXSButton::slotChanges(QStringList changes)
 {
     KDXSChanges changesdlg(this);
 
-    for (QStringList::const_iterator it = changes.begin(); it != changes.end(); it++) {
+    for (QStringList::const_iterator it = changes.begin(); it != changes.end(); ++it) {
         //kDebug() << "Changelog: " << (*it);
         changesdlg.addChangelog("v???", (*it));
     }
@@ -305,7 +305,7 @@ void KDXSButton::slotHistory(QStringList entries)
     m_history->clear();
 
     int i = 0;
-    for (QStringList::const_iterator it = entries.begin(); it != entries.end(); it++) {
+    for (QStringList::const_iterator it = entries.begin(); it != entries.end(); ++it) {
         //kDebug() << (*it);
 
         // FIXME KDE4PORT

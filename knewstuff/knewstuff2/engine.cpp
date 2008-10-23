@@ -296,7 +296,7 @@ void EnginePrivate::slotProvidersFinished()
     //fakeprovider->setUploadUrl(KUrl("webdav://localhost/uploads/"));
 
     ProviderDialog provdialog(0);
-    for (Provider::List::Iterator it = m_providers.begin(); it != m_providers.end(); it++) {
+    for (Provider::List::Iterator it = m_providers.begin(); it != m_providers.end(); ++it) {
         Provider *provider = (*it);
         provdialog.addProvider(provider);
     }

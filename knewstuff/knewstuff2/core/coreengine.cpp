@@ -560,7 +560,7 @@ void CoreEngine::loadRegistry()
 
     //kDebug() << "Loading registry of files for the component: " << m_componentname;
 
-    QString realAppName = m_componentname.split(":")[0];
+    QString realAppName = m_componentname.split(':')[0];
 
     // this must be same as in registerEntry()
     const QStringList dirs = d.findDirs("data", "knewstuff2-entries.registry");
@@ -583,7 +583,7 @@ void CoreEngine::loadRegistry()
 
             // NOTE: the ":" needs to always coincide with the separator character used in
             // the id(Entry*) method
-            thisAppName = thisAppName.split(":")[0];
+            thisAppName = thisAppName.split(':')[0];
 
             if (thisAppName != realAppName) {
                 continue;

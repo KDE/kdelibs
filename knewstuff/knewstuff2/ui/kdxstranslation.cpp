@@ -20,10 +20,10 @@
 
 #include "kdxstranslation.h"
 
-#include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 
+#include <kcombobox.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <ktextedit.h>
@@ -49,7 +49,7 @@ KDXSTranslation::KDXSTranslation(QWidget *parent)
     QLabel *ldescription = new QLabel(i18n("Description"), root);
     QLabel *lpayload = new QLabel(i18n("Payload"), root);
 
-    QComboBox *languagebox = new QComboBox(root);
+    KComboBox *languagebox = new KComboBox(root);
     languagebox->addItem("English");
     languagebox->addItem("German");
 
