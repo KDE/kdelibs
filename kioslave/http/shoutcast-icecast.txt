@@ -120,7 +120,7 @@ Contents:
  delivery high quality audio to visitors.
  
  (1) Microsoft Windows Media Player in conjunction with the Microsoft
-     Internet Explorer Browser will automaticly start playing the 
+     Internet Explorer Browser will automatically start playing the 
      audio stream after a sufficient amount of the file has been 
      downloaded. This can be accomplished because of the tight 
      integration of the Browser and Media Player. With most audio players
