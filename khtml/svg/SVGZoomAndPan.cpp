@@ -26,7 +26,7 @@
 #if ENABLE(SVG)
 #include "SVGZoomAndPan.h"
 
-#include "MappedAttribute.h"
+//#include "MappedAttribute.h"
 #include "SVGNames.h"
 #include "SVGParserUtilities.h"
 

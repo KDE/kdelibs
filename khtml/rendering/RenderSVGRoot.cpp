@@ -293,15 +293,13 @@ void RenderSVGRoot::absoluteRects(Vector<IntRect>& rects, int, int)
 
 AffineTransform RenderSVGRoot::absoluteTransform() const
 {
-    /*AffineTransform ctm = RenderContainer::absoluteTransform();
+    AffineTransform ctm = RenderContainer::absoluteTransform();
     ctm.translate(m_x, m_y);
     SVGSVGElement* svg = static_cast<SVGSVGElement*>(element());
     ctm.scale(svg->currentScale());
     ctm.translate(svg->currentTranslate().x(), svg->currentTranslate().y());
     ctm.translate(viewport().x(), viewport().y());
-    return svg->viewBoxToViewTransform(width(), height()) * ctm;*/
-	ASSERT(false);
-	return AffineTransform();
+    return svg->viewBoxToViewTransform(width(), height()) * ctm;
 }
 
 FloatRect RenderSVGRoot::relativeBBox(bool includeStroke) const

@@ -25,11 +25,12 @@
 
 #if ENABLE(SVG)
 #include "PlatformString.h"
+#include "xml/Document.h"
 
 namespace WebCore {
 
     //class MappedAttribute;
-    class QualifiedName;
+    //class QualifiedName;
 
     class SVGZoomAndPan {
     public:

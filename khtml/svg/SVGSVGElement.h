@@ -33,22 +33,22 @@
 #include "SVGLangSpace.h"
 #include "SVGStyledLocatableElement.h"
 #include "SVGTests.h"
-/*#include "SVGZoomAndPan.h"*/
+#include "SVGZoomAndPan.h"
 
 namespace WebCore
 {
     class SVGAngle;
     class SVGLength;
     class SVGTransform;
-    /*class SVGViewSpec;
-    class SVGViewElement;
+    class SVGViewSpec;
+    /*class SVGViewElement;
     class SMILTimeContainer;*/
     class SVGSVGElement : public SVGStyledLocatableElement,
                           public SVGTests,
                           public SVGLangSpace,
                           public SVGExternalResourcesRequired,
-                          public SVGFitToViewBox/*,
-                          public SVGZoomAndPan*/
+                          public SVGFitToViewBox,
+                          public SVGZoomAndPan
     {
     public:
         SVGSVGElement(const QualifiedName&, Document*);
@@ -81,7 +81,7 @@ namespace WebCore
         bool useCurrentView() const;
         void setUseCurrentView(bool currentView);
 
-        /*SVGViewSpec* currentView() const;*/
+        SVGViewSpec* currentView() const;
 
         float currentScale() const;
         void setCurrentScale(float scale);
@@ -169,7 +169,7 @@ namespace WebCore
         bool m_useCurrentView;
         /*RefPtr<SMILTimeContainer> m_timeContainer;*/
         FloatPoint m_translation;
-        /*mutable OwnPtr<SVGViewSpec> m_viewSpec;*/
+        mutable OwnPtr<SVGViewSpec> m_viewSpec;
         IntSize m_containerSize;
         bool m_hasSetContainerSize;
     };

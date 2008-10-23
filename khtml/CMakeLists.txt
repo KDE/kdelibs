@@ -120,6 +120,8 @@ set(khtmlsvg_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/svg/SVGTitleElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/svg/SVGDescElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/svg/SVGNames.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGZoomAndPan.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGViewSpec.cpp
 #############################################################
 ## GRAPHICS #################################################
 #############################################################

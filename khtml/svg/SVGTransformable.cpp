@@ -164,7 +164,7 @@ static const UChar rotateDesc[] =  {'r','o','t','a', 't', 'e'};
 static const UChar matrixDesc[] =  {'m','a','t','r', 'i', 'x'};
 
 // KHTML
-static inline bool skipString(const UChar*& currTransform, const UChar* end, const UChar* pattern, int len)
+/*static inline bool skipString(const UChar*& currTransform, const UChar* end, const UChar* pattern, int len)
 {
     int i = len;
     const UChar* curr = currTransform;
@@ -177,7 +177,7 @@ static inline bool skipString(const UChar*& currTransform, const UChar* end, con
         return false;
     currTransform += len;
     return true;
-}
+}*/
 
 static inline bool parseAndSkipType(const UChar*& currTransform, const UChar* end, unsigned short& type)
 {

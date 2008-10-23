@@ -47,9 +47,9 @@
 #include "SVGPreserveAspectRatio.h"
 #include "SVGTransform.h"
 #include "SVGTransformList.h"
-/*#include "SVGViewElement.h"
+/*#include "SVGViewElement.h"*/
 #include "SVGViewSpec.h"
-#include "SVGZoomEvent.h"
+/*#include "SVGZoomEvent.h"
 #include "SelectionController.h"
 #include "SMILTimeContainer.h"*/
 
@@ -65,13 +65,13 @@ SVGSVGElement::SVGSVGElement(const QualifiedName& tagName, Document* doc)
     , SVGLangSpace()
     , SVGExternalResourcesRequired()
     , SVGFitToViewBox()
-    /*, SVGZoomAndPan()*/
+    , SVGZoomAndPan()
     , m_x(this, LengthModeWidth)
     , m_y(this, LengthModeHeight)
     , m_width(this, LengthModeWidth)
     , m_height(this, LengthModeHeight)
-    /*, m_useCurrentView(false)
-    , m_timeContainer(SMILTimeContainer::create(this))
+    , m_useCurrentView(false)
+    /*, m_timeContainer(SMILTimeContainer::create(this))
     , m_viewSpec(0)*/
     , m_containerSize(300, 150)
     /*, m_hasSetContainerSize(false)*/
@@ -190,13 +190,13 @@ void SVGSVGElement::setUseCurrentView(bool currentView)
     m_useCurrentView = currentView;
 }
 
-/*SVGViewSpec* SVGSVGElement::currentView() const
+SVGViewSpec* SVGSVGElement::currentView() const
 {
     if (!m_viewSpec)
         m_viewSpec.set(new SVGViewSpec(this));
 
     return m_viewSpec.get();
-}*/
+}
 
 float SVGSVGElement::currentScale() const
 {
@@ -510,7 +510,7 @@ bool SVGSVGElement::isOutermostSVG() const
 
 AffineTransform SVGSVGElement::viewBoxToViewTransform(float viewWidth, float viewHeight) const
 {
-    /*FloatRect viewBoxRect;
+    FloatRect viewBoxRect;
     if (useCurrentView()) {
         if (currentView()) // what if we should use it but it is not set?
             viewBoxRect = currentView()->viewBox();
@@ -526,9 +526,7 @@ AffineTransform SVGSVGElement::viewBoxToViewTransform(float viewWidth, float vie
     if (useCurrentView() && currentView())
         return currentView()->transform()->concatenate().matrix() * ctm;
 
-    return ctm;*/
-	ASSERT(false);
-	return AffineTransform();
+    return ctm;
 }
 
 /*void SVGSVGElement::inheritViewAttributes(SVGViewElement* viewElement)

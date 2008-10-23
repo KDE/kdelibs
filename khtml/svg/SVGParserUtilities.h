@@ -22,7 +22,7 @@
 #define SVGParserUtilities_h
 #if ENABLE(SVG)
 
-//#include "ParserUtilities.h"
+#include "ParserUtilities.h"
 
 namespace WebCore {
 
