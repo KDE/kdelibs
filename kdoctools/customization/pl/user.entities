@@ -146,6 +146,7 @@
 <!ENTITY konqueror-dopelniacz    '<application>Konquerora</application>'>
 <!ENTITY konqueror-celownik    '<application>Konquerorowi</application>'>
 <!ENTITY konqueror-biernik    '<application>Konquerora</application>'>
+<!ENTITY konqueror-narzednik    '<application>Konquerorem</application>'>
 <!ENTITY konqueror-miejscownik    '<application>Konquerorze</application>'>
 <!ENTITY konqueror    '&konqueror-mianownik;'>
 
