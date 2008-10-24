@@ -18,6 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <kdebug.h>
 #include <qtest_kde.h>
 #include <qtestevent.h>
 #include <ktabwidget.h>
@@ -39,6 +40,32 @@ private Q_SLOTS:
         const int zero = w.insertTab(0, new QWidget, firstTitle); // calls slotCurrentChanged
         QCOMPARE(zero, 0);
         QCOMPARE(w.tabText(0), firstTitle);
+    }
+
+    void testCloseFirstTab()
+    {
+        // Test inspired by #170470, but the bug only happened when calling setTabText
+        // in slotCurrentChanged so the real unit test for that bug is in konqueror.
+        KTabWidget w;
+        w.setAutomaticResizeTabs(true);
+        w.resize(300, 400);
+        // Send the pending resize event (resize() only sets Qt::WA_PendingResizeEvent)
+        QResizeEvent e(w.size(), QSize());
+        QApplication::sendEvent(&w, &e);
+
+        QString prefix = "This is a long prefix for the tab title. ";
+        for (int i = 0; i < 6; ++i)
+            w.insertTab(i, new QWidget, prefix+QString::number(i));
+        w.removeTab(0);
+        for (int i = 0; i < 5; ++i) {
+            //kDebug() << i << w.tabText(i);
+            QCOMPARE(w.tabText(i), prefix+QString::number(i+1));
+        }
+        w.removeTab(0);
+        for (int i = 0; i < 4; ++i) {
+            //kDebug() << i << w.tabText(i);
+            QCOMPARE(w.tabText(i), prefix+QString::number(i+2));
+        }
     }
 
 private Q_SLOTS:
