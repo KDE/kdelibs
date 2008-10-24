@@ -521,17 +521,6 @@ KFileItemList KDirOperator::selectedItems() const
 
     const QItemSelection selection = d->proxyModel->mapSelectionToSource(d->itemView->selectionModel()->selection());
 
-    // FIXME: in theory selection should not contain duplicate entries, but it does. I have to
-    //        check deeper, since this could be a bug in QItemSelection. Under certain circumstances
-    //        QItemSelection contains two equal ranges. On the detailed view, drag from the bottom
-    //        (by clicking on the viewport) and select elements going up with the "rubberband" (there is
-    //        no visible rubberband). Note that if you do this by clicking on the right and dragging
-    //        down and left it doesn't happen. It seems that some set of calls to the selectionModel or
-    //        the QItemSelection makes it contain duplicate entries. This causes that the lineedit
-    //        contains duplicate "foo" "bar" "foo" "bar" and also that when you drag to somewhere else
-    //        you get the double of the expected elements. (ereslibre)
-    kDebug(kfile_area) << "FIXME: why this contains duplicate ranges?: " << selection;
-
     const QModelIndexList indexList = selection.indexes();
     foreach(const QModelIndex &index, indexList) {
         KFileItem item = d->dirModel->itemForIndex(index);

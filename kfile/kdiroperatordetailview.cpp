@@ -99,8 +99,7 @@ bool KDirOperatorDetailView::event(QEvent *event)
 
         setColumnHidden(KDirModel::Size, m_hideDetailColumns);
         setColumnHidden(KDirModel::ModifiedTime, m_hideDetailColumns);
-        setColumnHidden(KDirModel::Type, m_hideDetailColumns);
-
+        hideColumn(KDirModel::Type);
         hideColumn(KDirModel::Permissions);
         hideColumn(KDirModel::Owner);
         hideColumn(KDirModel::Group);
