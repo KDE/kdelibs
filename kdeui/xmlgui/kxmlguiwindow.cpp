@@ -213,6 +213,9 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
     // disabling the updates prevents unnecessary redraws
     //setUpdatesEnabled( false );
 
+    const bool oldLetDirtySettings = d->letDirtySettings;
+    d->letDirtySettings = false;
+
     // just in case we are rebuilding, let's remove our old client
     guiFactory()->removeClient( this );
 
@@ -249,6 +252,8 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
     guiFactory()->addClient( this );
 
     //  setUpdatesEnabled( true );
+
+    d->letDirtySettings = oldLetDirtySettings;
 }
 
 void KXmlGuiWindow::slotStateChanged(const QString &newstate)
