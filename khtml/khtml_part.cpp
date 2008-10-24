@@ -5744,7 +5744,6 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
       if ( (*childFrame)->m_part )
       {
-        if ( (*childFrame)->m_extension )
         if ( (*childFrame)->m_extension && !(*fBufferIt).isEmpty() )
         {
           QDataStream frameStream( *fBufferIt );
