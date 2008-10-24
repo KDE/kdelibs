@@ -2552,7 +2552,7 @@ JSValue* Location::getValueProperty(ExecState *exec, int token) const
 	return jsString("");
       return jsString( UString(url.path().isEmpty() ? QString("/") : url.path()) );
     case Port:
-      return jsString( UString(url.port() ? QString::number((int)url.port()) : QLatin1String("")) );
+      return jsString( UString(url.port() > 0 ? QString::number((int)url.port()) : QLatin1String("")) );
     case Protocol:
       return jsString( UString(url.protocol()+':') );
     case Search:
