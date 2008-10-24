@@ -139,6 +139,7 @@ void KExtendableItemDelegate::Private::_k_extenderDestructionHandler(QObject *de
       q->receivers(SIGNAL(extenderDestroyed(QWidget *, QModelIndex)))) {
         QModelIndex index = persistentIndex;
         emit q->extenderDestroyed(extender, index);
+    }
 
     if (extenders.isEmpty())
         hasExtenders = false;
