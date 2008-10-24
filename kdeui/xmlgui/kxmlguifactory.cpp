@@ -77,6 +77,8 @@ public:
         BuildState::operator=( m_stateStack.pop() );
     }
 
+    bool emptyState() const { return m_stateStack.isEmpty(); }
+
     QWidget *findRecursive( KXMLGUI::ContainerNode *node, bool tag );
     QList<QWidget*> findRecursive( KXMLGUI::ContainerNode *node, const QString &tagName );
     void applyActionProperties( const QDomElement &element,
@@ -212,6 +214,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
             client->factory()->removeClient( client ); //just in case someone does stupid things ;-)
     }
 
+    if (d->emptyState())
+        emit makingChanges(true);
     d->pushState();
 
 //    QTime dt; dt.start();
@@ -284,6 +288,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     foreach (KXMLGUIClient *child, client->childClients())
         addClient( child );
 
+    if (d->emptyState())
+        emit makingChanges(false);
 /*
     QString unaddedActions;
     foreach (KActionCollection* ac, KActionCollection::allCollections())
@@ -386,6 +392,9 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     if ( !client || client->factory() != this )
         return;
 
+    if (d->emptyState())
+        emit makingChanges(true);
+
     // remove this client from our client list
     d->m_clients.removeAll( client );
 
@@ -426,6 +435,9 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     client->prepareXMLUnplug( d->builder->widget() );
 
     d->popState();
+
+    if (d->emptyState())
+        emit makingChanges(false);
 
     emit clientRemoved( client );
 }
@@ -732,7 +744,7 @@ QDomElement KXMLGUIFactory::actionPropertiesElement( QDomDocument& doc )
 {
 	KConfigGroup cg = KGlobal::config()->group( "Shortcut Schemes" );
 	QString schemeName = cg.readEntry("Current Scheme", "Default");
-	
+
 	const QString tagActionProp = QLatin1String("ActionProperties");
 	// first, lets see if we have existing properties
 	QDomElement elem;
