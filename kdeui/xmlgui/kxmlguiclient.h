@@ -291,7 +291,6 @@ protected:
    *             the componentData.
    * @param merge Whether to merge with the global document.
    * @param setXMLDoc Specify whether to call setXML. Default is true.
-   *               and the DOM document at once.
    **/
   virtual void setXMLFile( const QString& file, bool merge = false, bool setXMLDoc = true );
 
