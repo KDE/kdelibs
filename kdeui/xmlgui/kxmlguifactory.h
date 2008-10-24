@@ -1,4 +1,3 @@
-// -*- mode: c++; c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Simon Hausmann <hausmann@kde.org>
    Copyright (C) 2000 Kurt Granroth <granroth@kde.org>
@@ -192,9 +191,21 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    */
   int configureShortcuts(bool bAllowLetterShortcuts = true, bool bSaveSettings = true);
 
- Q_SIGNALS:
+Q_SIGNALS:
   void clientAdded( KXMLGUIClient *client );
   void clientRemoved( KXMLGUIClient *client );
+
+    /**
+     * Emitted when the factory is currently making changes to the GUI,
+     * i.e. adding or removing clients.
+     * makingChanges(true) is emitted before any change happens, and
+     * makingChanges(false) is emitted after the change is done.
+     * This allows e.g. KMainWindow to know that the GUI is
+     * being changed programmatically and not by the user (so there is no reason to
+     * save toolbar settings afterwards).
+     * @since 4.1.3
+     */
+    void makingChanges(bool);
 
 private:
   KXMLGUIFactoryPrivate *const d;

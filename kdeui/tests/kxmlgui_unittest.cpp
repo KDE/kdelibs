@@ -20,8 +20,11 @@
 
 #include "qtest_kde.h"
 #include "kxmlgui_unittest.h"
+#include <QShowEvent>
+#include <kedittoolbar.h>
 #include <kaction.h>
 #include <kactioncollection.h>
+#include <kpushbutton.h>
 #include <QMenu>
 #include <kxmlguibuilder.h>
 #include <kxmlguiclient.h>
@@ -499,4 +502,12 @@ void KXmlGui_UnitTest::testHiddenToolBar()
     KToolBar* hiddenToolBar = qobject_cast<KToolBar *>(factory->container("hiddenToolBar", &mainWindow));
     kDebug() << hiddenToolBar;
     QVERIFY(hiddenToolBar->isHidden());
+
+    // Now open KEditToolBar (#105525)
+    KEditToolBar editToolBar(factory);
+    // KEditToolBar loads the stuff in showEvent...
+    QShowEvent ev; qApp->sendEvent(&editToolBar, &ev);
+    editToolBar.button(KDialog::Apply)->setEnabled(true);
+    editToolBar.button(KDialog::Apply)->click();
+    QVERIFY(qobject_cast<KToolBar *>(factory->container("hiddenToolBar", &mainWindow))->isHidden());
 }
