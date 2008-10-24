@@ -436,7 +436,7 @@ void RenderCanvas::scheduleDeferredRepaints()
 {
     if (!needsFullRepaint()) {
         QList<RenderObject*>::const_iterator it;
-        for ( it = m_dirtyChildren.begin(); it != m_dirtyChildren.end(); ++it )
+        for ( it = m_dirtyChildren.constBegin(); it != m_dirtyChildren.constEnd(); ++it )
             (*it)->repaint();
     }
     //kDebug(6040) << "scheduled deferred repaints: " << m_dirtyChildren.count() << " needed full repaint: " << needsFullRepaint();

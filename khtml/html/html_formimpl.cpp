@@ -280,9 +280,9 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
         if (!current->disabled() && current->encoding(codec, lst, m_multipart))
         {
             //kDebug(6030) << "adding name '" << current->name().string() << "'";
-            khtml::encodingList::ConstIterator it = lst.begin();
-            const khtml::encodingList::ConstIterator itEnd = lst.end();
-            for( it = lst.begin(); it != itEnd; ++it )
+            khtml::encodingList::ConstIterator it = lst.constBegin();
+            const khtml::encodingList::ConstIterator itEnd = lst.constEnd();
+            for( ; it != itEnd; ++it )
             {
                 if (!m_multipart)
                 {
@@ -607,8 +607,8 @@ void HTMLFormElementImpl::submit(  )
                     w->setFolder(KWallet::Wallet::FormDataFolder());
                     QMap<QString, QString> map;
                     if (!w->readMap(key, map)) {
-                        QMap<QString, QString>::const_iterator it = map.begin();
-                        const QMap<QString, QString>::const_iterator itEnd = map.end();
+                        QMap<QString, QString>::const_iterator it = map.constBegin();
+                        const QMap<QString, QString>::const_iterator itEnd = map.constEnd();
                         for ( ; it != itEnd; ++it )
                             if ( map[it.key()] != m_walletMap[it.key()] ) {
                                 login_changed = true;

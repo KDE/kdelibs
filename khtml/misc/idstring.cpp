@@ -36,7 +36,7 @@ unsigned short IDTableBase::grabId(const DOMString& name)
     unsigned short newId;
 
     // Check for existing one
-    QHash<DOMString, unsigned short>::const_iterator i = m_mappingLookup.find(name);
+    QHash<DOMString, unsigned short>::const_iterator i = m_mappingLookup.constFind(name);
     if (i != m_mappingLookup.constEnd()) {
         newId = *i;
         refId(newId);

@@ -2526,11 +2526,12 @@ bool KHTMLView::focusNextPrevNode(bool next)
 	else
 	    toFocus = doc->previousFocusNode(oldFocusNode);
 
-	if (!toFocus && oldFocusNode)
+	if (!toFocus && oldFocusNode) {
 	    if (next)
 		toFocus = doc->nextFocusNode(NULL);
 	    else
 		toFocus = doc->previousFocusNode(NULL);
+	}
 
 	while (toFocus && toFocus != oldFocusNode)
 	{
@@ -2778,7 +2779,7 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
             && m_part->parentPart()->view()->focusNodeWithAccessKey( c, this ))
             return true;
         if( caller == NULL ) { // the active frame (where the accesskey was pressed)
-            QMap< ElementImpl*, QChar > fallbacks = buildFallbackAccessKeys();
+            const QMap< ElementImpl*, QChar > fallbacks = buildFallbackAccessKeys();
             for( QMap< ElementImpl*, QChar >::ConstIterator it = fallbacks.begin();
                  it != fallbacks.end();
                  ++it )
@@ -3033,7 +3034,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
                 text = getElementText( element, true );
             text = text.trimmed();
             // increase priority of items which have explicitly specified accesskeys in the config
-            QList< QPair< QString, QChar > > priorities
+            const QList< QPair< QString, QChar > > priorities
                 = m_part->settings()->fallbackAccessKeysAssignments();
             for( QList< QPair< QString, QChar > >::ConstIterator it = priorities.begin();
                  it != priorities.end();
@@ -3078,7 +3079,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             QString text = (*it).text;
             QChar key;
             if( key.isNull() && !text.isEmpty()) {
-                QList< QPair< QString, QChar > > priorities
+                const QList< QPair< QString, QChar > > priorities
                     = m_part->settings()->fallbackAccessKeysAssignments();
                 for( QList< QPair< QString, QChar > >::ConstIterator it = priorities.begin();
                      it != priorities.end();
@@ -3747,7 +3748,8 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
             // is expected by some sites that rely on onChange handlers running
             // from form fields before the button click is processed.
             DOM::NodeImpl* nodeImpl = targetNode;
-            for ( ; nodeImpl && !nodeImpl->isFocusable(); nodeImpl = nodeImpl->parentNode());
+            for ( ; nodeImpl && !nodeImpl->isFocusable(); nodeImpl = nodeImpl->parentNode())
+                {}
             if (nodeImpl && nodeImpl->isMouseFocusable())
                 m_part->xmlDocImpl()->setFocusNode(nodeImpl);
             else if (!nodeImpl || !nodeImpl->focused())

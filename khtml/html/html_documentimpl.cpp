@@ -207,9 +207,9 @@ HTMLMapElementImpl* HTMLDocumentImpl::getMap(const DOMString& _url)
     //kDebug(0) << "map pos of #:" << pos;
     s = QString(_url.unicode() + pos + 1, _url.length() - pos - 1);
 
-    QMap<QString,HTMLMapElementImpl*>::const_iterator it = mapMap.find(s);
+    QMap<QString,HTMLMapElementImpl*>::const_iterator it = mapMap.constFind(s);
 
-    if (it != mapMap.end())
+    if (it != mapMap.constEnd())
         return *it;
     else
         return 0;

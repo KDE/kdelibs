@@ -448,8 +448,8 @@ bool Plugins::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName
 
 JSValue *Plugins::pluginByName( ExecState* exec, const QString& name )
 {
-  QList<const PluginInfo*>::const_iterator it, end = plugins->end();
-  for (it = plugins->begin(); it != end; ++it) {
+  QList<const PluginInfo*>::const_iterator it, end = plugins->constEnd();
+  for (it = plugins->constBegin(); it != end; ++it) {
     if ((*it)->name == name)
       return new Plugin(exec, *it);
   }
@@ -525,8 +525,8 @@ bool MimeTypes::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNa
     }
 
     // mimeTypes[name]
-    QList<const MimeClassInfo*>::const_iterator it, end = mimes->end();
-    for (it = mimes->begin(); it != end; ++it) {
+    QList<const MimeClassInfo*>::const_iterator it, end = mimes->constEnd();
+    for (it = mimes->constBegin(); it != end; ++it) {
       if ((*it)->type == propertyName.qstring()) {
         slot.setCustom(this, nameGetter);
         return true;
@@ -540,8 +540,8 @@ bool MimeTypes::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNa
 JSValue *MimeTypes::mimeTypeByName( ExecState* exec, const QString& name )
 {
   //kDebug(6070) << "MimeTypes[" << name << "]";
-  QList<const MimeClassInfo*>::const_iterator it, end = mimes->end();
-  for (it = mimes->begin(); it != end; ++it) {
+  QList<const MimeClassInfo*>::const_iterator it, end = mimes->constEnd();
+  for (it = mimes->constBegin(); it != end; ++it) {
     if ((*it)->type == name)
       return new MimeType(exec, (*it));
   }
@@ -627,8 +627,8 @@ bool Plugin::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
   }
 
   // plugin["name"]
-  QList<const MimeClassInfo*>::const_iterator it, end = mimes->end();
-  for (it = mimes->begin(); it != end; ++it) {
+  QList<const MimeClassInfo*>::const_iterator it, end = mimes->constEnd();
+  for (it = mimes->constBegin(); it != end; ++it) {
     if ((*it)->type == propertyName.qstring()) {
       slot.setCustom(this, nameGetter);
       return true;

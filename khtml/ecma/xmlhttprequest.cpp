@@ -441,8 +441,8 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
 
   if (!m_requestHeaders.isEmpty()) {
     QString rh;
-    HTTPHeaderMap::ConstIterator begin = m_requestHeaders.begin();
-    HTTPHeaderMap::ConstIterator end = m_requestHeaders.end();
+    HTTPHeaderMap::ConstIterator begin = m_requestHeaders.constBegin();
+    HTTPHeaderMap::ConstIterator end = m_requestHeaders.constEnd();
     for (HTTPHeaderMap::ConstIterator i = begin; i != end; ++i) {
       QString key = i.key().original();
       QString value = i.value();
