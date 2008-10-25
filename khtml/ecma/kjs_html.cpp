@@ -2074,42 +2074,35 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
       DOM::HTMLFormElementImpl& form = static_cast<DOM::HTMLFormElementImpl&>(element);
       if (id == KJS::HTMLElement::FormSubmit) {
 
-        KHTMLView *view = element.document()->view();
+        KHTMLPart *part = element.document()->part();
         KHTMLSettings::KJSWindowOpenPolicy policy = KHTMLSettings::KJSWindowOpenAllow;
-        if (view)
-            policy = view->part()->settings()->windowOpenPolicy(view->part()->url().host());
+        if (part)
+            policy = part->settings()->windowOpenPolicy(part->url().host());
 
         bool block = false;
-
         if ( policy != KHTMLSettings::KJSWindowOpenAllow ) {
           block = true;
 
-         // if this is a form without a target, or a special target, don't block
-          QString trg = form.target().lower().string();
-          if( trg.isEmpty() || trg == "_top" || trg == "_self" ||
-              trg == "_parent")
+          // if this is a form without a target, don't block
+          if ( form.target().isEmpty() )
             block = false;
 
           QString caption;
 
           // if there is a frame with the target name, don't block
-          if ( view && view->part() )  {
-            if (!view->part()->url().host().isEmpty())
-              caption = view->part()->url().host() + " - ";
-            // search all (possibly nested) framesets
-            KHTMLPart *currentPart = view->part()->parentPart();
-            while( currentPart != 0L ) {
-              if( currentPart->frameExists( form.target().string() ) )
-                block = false;
-              currentPart = currentPart->parentPart();
-            }
+          if ( part )  {
+            if (!part->url().host().isEmpty())
+              caption = part->url().host() + " - ";
+
+            if ( Window::targetIsExistingWindow(part, form.target().string()) )
+              block = false;
           }
 
-          if ( block && policy == KHTMLSettings::KJSWindowOpenAsk && view ) {
-            if (view && view->part())
-            emit view->part()->browserExtension()->requestFocus(view->part());
+          if ( block && policy == KHTMLSettings::KJSWindowOpenAsk && part ) {
+            if  (part )
+              emit part->browserExtension()->requestFocus(part);
             caption += i18n( "Confirmation: JavaScript Popup" );
-            if ( KMessageBox::questionYesNo(view, form.action().isEmpty() ?
+            if ( KMessageBox::questionYesNo(part->view(), form.action().isEmpty() ?
                    i18n( "This site is submitting a form which will open up a new browser "
                          "window via JavaScript.\n"
                          "Do you want to allow the form to be submitted?" ) :
