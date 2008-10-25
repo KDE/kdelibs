@@ -2,7 +2,7 @@ include_directories(${QT_INCLUDES} ${KDE4_KDECORE_INCLUDES} )
 
 ########### KFormula Library ###############
 
-set( kformulalib_PART_SRCS
+set( libkformula_PART_SRCS
    AttributeManager.cpp
    FormulaRenderer.cpp
    FormulaCursor.cpp 
@@ -39,13 +39,20 @@ set( kformulalib_PART_SRCS
    KFormula.cpp
 )
 
-kde4_add_library(kformulalib SHARED ${kformulalib_PART_SRCS})
-target_link_libraries(kformulalib kdeui ${QT_QTXML_LIBRARY})
-install(TARGETS kformulalib DESTINATION ${LIB_INSTALL_DIR})
+kde4_add_library(kformula SHARED ${libkformula_PART_SRCS})
+target_link_libraries(kformula kdeui ${QT_QTXML_LIBRARY})
+
+set_target_properties(kformula PROPERTIES
+   VERSION ${GENERIC_LIB_VERSION}
+   SOVERSION ${GENERIC_LIB_SOVERSION}
+   ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kdeui"
+)
+
+install(TARGETS kformula DESTINATION ${LIB_INSTALL_DIR})
 
 KDE4_ADD_WIDGET_FILES(kformulawidgets_PART_SRCS kformula.widgets)
 kde4_add_plugin(kformulawidgets ${kformulawidgets_PART_SRCS})
-target_link_libraries(kformulawidgets kdeui ${QT_QTXML_LIBRARY} kformulalib)
+target_link_libraries(kformulawidgets kdeui ${QT_QTXML_LIBRARY} kformula)
 install(TARGETS kformulawidgets DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/designer )
 
 install( FILES
