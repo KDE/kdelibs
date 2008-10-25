@@ -777,7 +777,7 @@ void KFileWidget::slotOk()
                 start++;
             }
 
-            // if this is not a dir, strip the filename. after this we have an existant and valid
+            // if this is not a dir, strip the filename. after this we have an existent and valid
             // dir (if we stated correctly the file, setting a null filename won't make any bad).
             if (!statJob->statResult().isDir()) {
                 topMostUrl.setFileName(QString());

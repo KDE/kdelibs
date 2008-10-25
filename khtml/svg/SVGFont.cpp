@@ -157,7 +157,7 @@ static inline bool isCompatibleGlyph(const SVGGlyphIdentifier& identifier, bool 
 {
     bool valid = true;
 
-    // Check wheter orientation if glyph fits within the request
+    // Check whether orientation if glyph fits within the request
     switch (identifier.orientation) {
     case SVGGlyphIdentifier::Vertical:
         valid = isVerticalText;
@@ -172,14 +172,14 @@ static inline bool isCompatibleGlyph(const SVGGlyphIdentifier& identifier, bool 
     if (!valid)
         return false;
 
-    // Check wheter languages are compatible
+    // Check whether languages are compatible
     if (!identifier.languages.isEmpty()) {
         // This glyph exists only in certain languages, if we're not specifying a
         // language on the referencing element we're unable to use this glyph.
         if (language.isEmpty())
             return false;
 
-        // Split subcode from language, if existant.
+        // Split subcode from language, if existent.
         String languagePrefix;
 
         int subCodeSeparator = language.find('-');
@@ -203,7 +203,7 @@ static inline bool isCompatibleGlyph(const SVGGlyphIdentifier& identifier, bool 
             return false;
     }
 
-    // Check wheter arabic form is compatible
+    // Check whether arabic form is compatible
     return isCompatibleArabicForm(identifier, chars, startPosition, endPosition);
 }
 
@@ -266,7 +266,7 @@ struct SVGTextRunWalker {
 
         for (int i = from; i < to; ++i) {
             // If characterLookupRange is > 0, then the font defined ligatures (length of unicode property value > 1).
-            // We have to check wheter the current character & the next character define a ligature. This needs to be
+            // We have to check whether the current character & the next character define a ligature. This needs to be
             // extended to the n-th next character (where n is 'characterLookupRange'), to check for any possible ligature.
             characterLookupRange = endOfScanRange - i;
 
@@ -517,7 +517,7 @@ void Font::drawTextUsingSVGFont(GraphicsContext* context, const TextRun& run,
         for (unsigned i = 0; i < numGlyphs; ++i) {
             const SVGGlyphIdentifier& identifier = data.glyphIdentifiers[run.rtl() ? numGlyphs - i - 1 : i];
             if (identifier.isValid) {
-                // FIXME: Support arbitary SVG content as glyph (currently limited to <glyph d="..."> situations).
+                // FIXME: Support arbitrary SVG content as glyph (currently limited to <glyph d="..."> situations).
                 if (!identifier.pathData.isEmpty()) {
                     context->save();
 

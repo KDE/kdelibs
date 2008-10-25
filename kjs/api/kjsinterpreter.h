@@ -64,7 +64,7 @@ public:
      */
     QString errorMessage() const;
     /*
-     * If the evaluation was successfull, i.e. isException() is false
+     * If the evaluation was successful, i.e. isException() is false
      * this function returns the value returned by the script. Can be
      * an "undefined" (isUndefined()) value.
      */

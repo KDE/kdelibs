@@ -97,7 +97,7 @@ public:
     static QString exceptionToString(KJS::ExecState* exec, KJS::JSValue* exception);
 public:
 
-    // All of the below are overriden from KJS::Debugger
+    // All of the below are overridden from KJS::Debugger
     bool sourceParsed(KJS::ExecState *exec, int sourceId, const KJS::UString &sourceURL,
                       const KJS::UString &source, int startingLineNumber, int errorLine, const KJS::UString &errorMsg);
     bool exception(KJS::ExecState *exec, int sourceId, int lineno, KJS::JSValue *exceptionObj);

@@ -382,7 +382,7 @@ namespace KJS {
      * which is what the default implementation delegates too, 
      * but in some cases compatibility dictates that the object both be callable
      * and call itself an object and not a function. In this case, this method should
-     * be overriden as well
+     * be overridden as well
     */
     virtual bool isFunctionType() const;
 

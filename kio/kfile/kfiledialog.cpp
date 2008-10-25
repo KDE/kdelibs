@@ -827,7 +827,7 @@ int KFileDialog::exec()
     if (!d->native)
       return KDialog::exec();
 
-// not clear here to let KFileDialogPrivate::Native::startDir() return a usefull value
+// not clear here to let KFileDialogPrivate::Native::startDir() return a useful value
 // d->native->selectedUrls.clear();
     switch (d->native->operationMode) {
     case KAbstractFileWidget::Opening:

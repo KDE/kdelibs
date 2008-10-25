@@ -264,7 +264,7 @@ bool SVGSMILElement::parseCondition(const String& value, BeginOrEnd beginOrEnd)
     int repeats = -1;
     if (nameString.startsWith("repeat(") && nameString.endsWith(")")) {
         // FIXME: For repeat events we just need to add the data carrying TimeEvent class and 
-        // fire the events at appropiate times.
+        // fire the events at appropriate times.
         repeats = nameString.substring(7, nameString.length() - 8).toUIntStrict(&ok);
         if (!ok)
             return false;

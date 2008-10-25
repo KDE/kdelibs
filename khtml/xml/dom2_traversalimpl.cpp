@@ -315,7 +315,7 @@ NodeImpl *TreeWalkerImpl::getCurrentNode() const
 
 void TreeWalkerImpl::setWhatToShow(long _whatToShow)
 {
-    // do some testing wether this is an accepted value
+    // do some testing whether this is an accepted value
     m_whatToShow = _whatToShow;
 }
 

@@ -329,7 +329,7 @@ int Font::width( QChar *chs, int, int pos, int len, bool fast,int start, int end
    // #### Qt 4.4 RC is now *40* times slower than Qt 3.3. This is a complete and utter disaster.
    // New issue about this as N203591, because the report from 2006 was apparently discarded.
    //
-   // This issue is now mostly adressed, by first scanning strings for complex/combining unicode characters,
+   // This issue is now mostly addressed, by first scanning strings for complex/combining unicode characters,
    // and using the much faster, non-context-aware QFontMetrics::width(QChar) when none has been found.
 
     const QString qstr = QString::fromRawData(chs+pos, len);

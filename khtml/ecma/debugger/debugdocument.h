@@ -102,7 +102,7 @@ private:
 
     // We store breakpoints differently for scopes with URL
     // and without it. Those that have it are stored globally,
-    // so that breakpoints persist accross multiple visits of the
+    // so that breakpoints persist across multiple visits of the
     // document. Those for eval, etc., are only associated with the
     // sid (and are likely useless :( )
     static QHash<QString, QVector<int> >* s_perUrlBreakPoints;

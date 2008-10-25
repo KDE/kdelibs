@@ -891,7 +891,7 @@ bool KFileItem::isWritable() const
 
 bool KFileItem::isHidden() const
 {
-    // The kioslave can specify explicitely that a file is hidden or shown
+    // The kioslave can specify explicitly that a file is hidden or shown
     if ( d->m_hidden != KFileItemPrivate::Auto )
         return d->m_hidden == KFileItemPrivate::Hidden;
 

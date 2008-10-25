@@ -145,7 +145,7 @@ public:
     QString& parameter( const QString& name );
 
     /**
-     * Get a reference to the Paramaters and their values
+     * Get a reference to the Parameters and their values
      */
     QMap<QString,QString>& getParams();
 

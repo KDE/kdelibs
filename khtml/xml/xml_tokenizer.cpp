@@ -551,7 +551,7 @@ void XMLTokenizer::finish()
         m_doc->updateRendering();
     }
     else {
-        // Parsing was successfull, all scripts have finished downloading and executing,
+        // Parsing was successful, all scripts have finished downloading and executing,
         // calculating the style for the document and close the last element
         m_doc->updateStyleSelector();
     }

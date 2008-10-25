@@ -88,7 +88,7 @@ public:
          m_rect = br;
          bool doFill = 1 || !px->hasAlphaChannel(); // shared pixmaps aren't properly cleared
                                                     // with Qt 4 + NVidia proprietary driver.
-                                                    // So we can't use this optimisation until
+                                                    // So we can't use this optimization until
                                                     // we can detect this defect. 
          if (doFill)
              px->fill(Qt::transparent);

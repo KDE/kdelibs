@@ -894,7 +894,7 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
             }
         }
 
-        // if an exception occurred, propogate it back to the previous execution object
+        // if an exception occurred, propagate it back to the previous execution object
         if (newExec.hadException())
           exec->setException(newExec.exception());
 

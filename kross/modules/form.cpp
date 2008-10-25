@@ -471,7 +471,7 @@ FormAssistant::FormAssistant(const QString& caption)
 
     connect(this, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)),
             this, SLOT(slotCurrentPageChanged(KPageWidgetItem*)));
-    /* unlike boost qt doesnt support defining of slot call order!
+    /* unlike boost qt does not support defining of slot call order!
     connect(this, SIGNAL(user2Clicked()), this, SIGNAL (nextClicked()));
     connect(this, SIGNAL(user3Clicked()), this, SIGNAL (backClicked()));
     */

@@ -30,7 +30,7 @@ class KCalendarSystemGregorianPrivate;
  * @internal
  * This is the Gregorian calendar implementation.
  *
- * The Gregorian calender is the most used calendar today. The first year in
+ * The Gregorian calendar is the most used calendar today. The first year in
  * the calendar is set to the birth of Christ.
  *
  * WARNING: This is not a pure Gregorian calendar, it copies the QDate method

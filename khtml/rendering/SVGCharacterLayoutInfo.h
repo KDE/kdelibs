@@ -231,10 +231,10 @@ struct SVGChar {
 
     RefPtr<SVGCharOnPath> pathData;
 
-    // Determines wheter this char needs to be drawn seperated
+    // Determines whether this char needs to be drawn separated
     bool drawnSeperated : 1;
 
-    // Determines wheter this char starts a new chunk
+    // Determines whether this char starts a new chunk
     bool newTextChunk : 1;
 
     // Helper methods

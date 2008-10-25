@@ -32,7 +32,7 @@ namespace Kross {
     /**
     * The EcmaInterpreter class implements a \a Kross::Interpreter to provide
     * a factory for \a EcmaScript instances. The interpreter is a singleton
-    * managed by Kross to share informations between different script instances.
+    * managed by Kross to share information between different script instances.
     */
     class EcmaInterpreter : public Kross::Interpreter
     {

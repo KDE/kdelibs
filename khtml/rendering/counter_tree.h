@@ -48,7 +48,7 @@ public:
     virtual CounterNode* lastChild() const { return 0; }
     virtual void insertAfter ( CounterNode *newChild, CounterNode *refChild );
     virtual void removeChild ( CounterNode *oldChild );
-    // Convenient self-refering version of the above
+    // Convenient self-referring version of the above
     void remove();
 
     int value() const { return m_value; }

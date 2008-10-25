@@ -31,7 +31,7 @@
 /**
  * @short A menu with keyboard searching and convenience methods for title items.
  *
- * K3PopupMenu is a compatability class for KPopupMenu from KDE 3.
+ * K3PopupMenu is a compatibility class for KPopupMenu from KDE 3.
  * It provides menus with standard title items and keyboard
  * accessibility for popups with many options and/or varying options. It acts
  * identically to QMenu, with the addition of insertTitle(),

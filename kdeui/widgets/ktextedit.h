@@ -25,7 +25,7 @@
 #include <QtGui/QTextEdit>
 
 /**
- * This interface is a workaround to keep binary compatibilty in KDE4, because
+ * This interface is a workaround to keep binary compatibility in KDE4, because
  * adding the virtual keyword to functions is not BC.
  *
  * Call KTextEdit::setSpellInterface() to set this interface to a KTextEdit,
@@ -218,7 +218,7 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
     /**
      * Sets the spell interface, which is used to delegate certain function
      * calls to the interface.
-     * This is a workaround for binary compatibilty and should be removed in
+     * This is a workaround for binary compatibility and should be removed in
      * KDE5.
      *
      * @since 4.2
@@ -261,7 +261,7 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
     /**
      * Set the spell check language which will be used for highlighting spelling
      * mistakes and for the spellcheck dialog.
-     * The languageChanged() signal will be emited when the new language is
+     * The languageChanged() signal will be emitted when the new language is
      * different from the old one.
      * 
      * @since 4.1

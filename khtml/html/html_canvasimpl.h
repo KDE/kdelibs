@@ -179,7 +179,7 @@ private:
 class CanvasImageDataImpl : public khtml::Shared<CanvasImageDataImpl>
 {
 public:
-    // Creates an unitialized image..
+    // Creates an uninitialized image..
     CanvasImageDataImpl(unsigned width, unsigned height);
 
     unsigned width()  const;

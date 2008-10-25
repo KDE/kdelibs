@@ -3849,13 +3849,13 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
 
 void KHTMLView::dragEnterEvent( QDragEnterEvent* ev )
 {
-    // Still overriden for BC reasons only...
+    // Still overridden for BC reasons only...
     QScrollArea::dragEnterEvent( ev );
 }
 
 void KHTMLView::dropEvent( QDropEvent *ev )
 {
-    // Still overriden for BC reasons only...
+    // Still overridden for BC reasons only...
     QScrollArea::dropEvent( ev );
 }
 

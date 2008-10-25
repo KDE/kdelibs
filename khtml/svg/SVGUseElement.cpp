@@ -284,7 +284,7 @@ void SVGUseElement::buildPendingResource()
         return;
     }
 
-    // Why a seperated instance/shadow tree? SVG demands it:
+    // Why a separated instance/shadow tree? SVG demands it:
     // The instance tree is accesable from JavaScript, and has to
     // expose a 1:1 copy of the referenced tree, whereas internally we need
     // to alter the tree for correct "use-on-symbol", "use-on-svg" support.  
@@ -308,7 +308,7 @@ void SVGUseElement::buildPendingResource()
         return;
     }
 
-    // Assure instance tree building was successfull
+    // Assure instance tree building was successful
     ASSERT(m_targetElementInstance);
     ASSERT(m_targetElementInstance->correspondingUseElement() == this);
 
@@ -340,7 +340,7 @@ void SVGUseElement::buildPendingResource()
 
 #endif
 
-    // Now that the shadow tree is completly expanded, we can associate
+    // Now that the shadow tree is completely expanded, we can associate
     // shadow tree elements <-> instances in the instance tree.
     associateInstancesWithShadowTreeElements(m_shadowTreeRootElement->firstChild(), m_targetElementInstance.get());
 

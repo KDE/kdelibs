@@ -297,7 +297,7 @@ void FixedTableLayout::layout()
 #endif
         for ( int i = 0; available > 0 && i < nEffCols; i++ ) {
             if ( width[i].isPercent() ) {
-                // totalPercent may be 0 below if all %-width specifed are 0%. (#172557)
+                // totalPercent may be 0 below if all %-width specified are 0%. (#172557)
                 int w = totalPercent ? base * width[i].value() / totalPercent : 0;
                 available -= w;
                 calcWidth[i] = w;

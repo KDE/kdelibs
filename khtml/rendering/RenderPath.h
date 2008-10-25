@@ -49,7 +49,7 @@ public:
     RenderPath(RenderStyle*, SVGStyledTransformableElement*);
     virtual ~RenderPath();
 
-    // Hit-detection seperated for the fill and the stroke
+    // Hit-detection separated for the fill and the stroke
     virtual bool fillContains(const FloatPoint&, bool requiresFill = true) const;
     /*virtual bool strokeContains(const FloatPoint&, bool requiresStroke = true) const;*/
 

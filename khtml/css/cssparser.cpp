@@ -648,7 +648,7 @@ bool CSSParser::parseValue( int propId, bool important )
     case CSS_PROP_FONT_WEIGHT:  // normal | bold | bolder | lighter | 100 | 200 | 300 | 400 |
         // 500 | 600 | 700 | 800 | 900 | inherit
         if (id >= CSS_VAL_NORMAL && id <= CSS_VAL_900) {
-            // Allready correct id
+            // Already correct id
             valid_primitive = true;
         } else if ( validUnit( value, FInteger|FNonNeg, false ) ) {
             int weight = (int)value->fValue;

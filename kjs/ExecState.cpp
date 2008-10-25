@@ -252,7 +252,7 @@ InterpreterExecState::InterpreterExecState(Interpreter* intp, JSObject* glob,
     m_codeType = GlobalCode;
     m_variable = glob;
     // Per 10.2.1, we should use the global object here, but
-    // Interpreter::evaluate permits it to be overriden, e.g. for LiveConnect.
+    // Interpreter::evaluate permits it to be overridden, e.g. for LiveConnect.
     m_thisVal  = thisObject;
 }
 

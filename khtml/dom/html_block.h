@@ -329,7 +329,7 @@ public:
 class HTMLLayerElementImpl;
 
 /**
- * Layer container for Netscape 4.x compatability.
+ * Layer container for Netscape 4.x compatibility.
  * Behaves mostly like absolute positioned DIV-blocks.
  *
  */

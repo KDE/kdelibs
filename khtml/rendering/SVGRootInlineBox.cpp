@@ -814,7 +814,7 @@ static void applyTextAnchorToTextChunk(SVGTextChunk& chunk)
 
 static float calculateTextLengthCorrectionForTextChunk(SVGTextChunk& chunk, ELengthAdjust lengthAdjust, float& computedLength)
 {
-    kDebug() << "text lenght" << endl;
+    kDebug() << "text length" << endl;
     if (chunk.textLength <= 0.0f)
         return 0.0f;
 
@@ -903,7 +903,7 @@ void SVGRootInlineBox::computePerCharacterLayoutInformation()
     kDebug() << "after layout text chunks" << endl;
 
     // Finally the top left position of our box is known.
-    // Propogate this knownledge to our RenderSVGText parent.
+    // Propagate this knownledge to our RenderSVGText parent.
     FloatPoint topLeft = topLeftPositionOfCharacterRange(m_svgChars);
     object()->setPos((int) floorf(topLeft.x()), (int) floorf(topLeft.y()));
 
@@ -1424,7 +1424,7 @@ void SVGRootInlineBox::buildTextChunks(Vector<SVGChar>& svgChars, InlineFlowBox*
             } else
                 ASSERT(!info.chunk.boxes.isEmpty());
 
-            // Walk string to find out new chunk positions, if existant
+            // Walk string to find out new chunk positions, if existent
             for (unsigned i = 0; i < length; ++i) {
                 ASSERT(info.it != svgChars.end());
 

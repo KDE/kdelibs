@@ -580,7 +580,7 @@ void TestRegressionWindow::saveLogButtonClicked()
 	QString fileName = m_saveLogUrl.path() + "/logOutput.html";
 	if(QFileInfo(fileName).exists())
 	{
-		// Remove file if already existant...
+		// Remove file if already existent...
 		QFile file(fileName);
 		if(!file.remove())
 		{

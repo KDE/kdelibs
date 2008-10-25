@@ -145,7 +145,7 @@ void KWidgetItemDelegatePrivate::initializeModel(const QModelIndex &parent)
                 widgetPool->findWidgets(index, optionView);
             }
         }
-        // Check if we need to go recursively through the childs of parent (if any) to initialize
+        // Check if we need to go recursively through the children of parent (if any) to initialize
         // all possible indexes that are shown.
         const QModelIndex index = model->index(i, 0, parent);
         if (index.isValid() && model->hasChildren(index)) {

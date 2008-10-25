@@ -111,7 +111,7 @@ namespace Kross {
 
             /**
              * \internal used virtual hook to easier the job to keep
-             * binary compatiblity.
+             * binary compatibility.
              */
             virtual void virtual_hook(int id, void* ptr);
 

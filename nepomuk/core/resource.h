@@ -366,7 +366,7 @@ namespace Nepomuk {
         /**
          * Get or create the PIMO thing that relates to this resource. If this resource
          * itself is a pimo:Thing, a reference to this is returned. If a pimo:Thing exists
-         * with has as occurence this resource, the thing is returned. Otherwise a new thing
+         * with has as occurrence this resource, the thing is returned. Otherwise a new thing
          * is created.
          *
          * \since 4.2
