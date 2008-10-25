@@ -4,13 +4,13 @@ docs we need to write (handbook and manpages):
 <DONE> kconfig_compiler
 <DONE> preparetips
 <DONE> makekdewidgets
-meinproc4
-<DONE> checkXML
-kcookiejar4
-kjs
+<DONE>meinproc4
+<DONE>checkXML
+<DONE>kcookiejar4
+<DONE>kjs
 kjsconsole
 embed
-kjscmd
+<DONE>kjscmd
 kross
 <DONE> kdeinit4
 
