@@ -159,6 +159,10 @@ Kded::~Kded()
 // calls are delivered to objects
 void Kded::messageFilter(const QDBusMessage &message)
 {
+  // This happens when kded goes down and some modules try to clean up.
+  if (!self())
+     return;
+
   if (message.type() != QDBusMessage::MethodCallMessage)
      return;
 
@@ -166,18 +170,24 @@ void Kded::messageFilter(const QDBusMessage &message)
   if (!obj.startsWith(MODULES_PATH))
      return;
 
+  // Remove the <MODULES_PATH> part
   obj = obj.mid(strlen(MODULES_PATH));
   if (obj == "ksycoca")
      return; // Ignore this one.
 
-  // This happens when kded goes down and some modules try to clean up.
-  if (!self())
-     return;
+  // Remove the part after the modules name
+  int index = obj.indexOf('/');
+  if (index!=-1) {
+      obj = obj.left(index);
+  }
 
   if (self()->m_dontLoad.value(obj, 0))
      return;
 
   KDEDModule *module = self()->loadModule(obj, true);
+  if (!module) {
+      kDebug(7020) << "Failed to load module for " << obj;
+  }
   Q_UNUSED(module);
 }
 
@@ -303,6 +313,9 @@ bool Kded::isModuleLoadedOnDemand(const KService::Ptr &module) const
 
 KDEDModule *Kded::loadModule(const QString &obj, bool onDemand)
 {
+  // Make sure this method is only called with valid module names.
+  Q_ASSERT(obj.indexOf('/')==-1);
+
   KDEDModule *module = m_modules.value(obj, 0);
   if (module)
      return module;
