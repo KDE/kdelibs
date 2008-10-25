@@ -525,6 +525,9 @@
 14318       kopete (otr)
 14400       kopete (Telepathy)
 
+# Python support, bindings and plugins.
+15000       python (plugin)
+
 # KDB
 20000        KDB (core)
 20001        KDB (ui)
