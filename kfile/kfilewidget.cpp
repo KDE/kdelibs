@@ -453,6 +453,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     d->iconSizeSlider->setOrientation(Qt::Horizontal);
     d->iconSizeSlider->setMinimum(0);
     d->iconSizeSlider->setMaximum(100);
+    d->iconSizeSlider->installEventFilter(this);
     connect(d->iconSizeSlider, SIGNAL(valueChanged(int)),
             d->ops, SLOT(setIconsZoom(int)));
     connect(d->iconSizeSlider, SIGNAL(sliderMoved(int)),
@@ -1655,6 +1656,21 @@ void KFileWidget::showEvent(QShowEvent* event)
     d->ops->clearHistory();
 
     QWidget::showEvent(event);
+}
+
+bool KFileWidget::eventFilter(QObject* watched, QEvent* event)
+{
+    const bool res = QWidget::eventFilter(watched, event);
+
+    QKeyEvent *keyEvent = dynamic_cast<QKeyEvent*>(event);
+    if (watched == d->iconSizeSlider && keyEvent) {
+        if (keyEvent->key() == Qt::Key_Left || keyEvent->key() == Qt::Key_Up ||
+            keyEvent->key() == Qt::Key_Right || keyEvent->key() == Qt::Key_Down) {
+            d->_k_slotIconSizeSliderMoved(d->iconSizeSlider->value());
+        }
+    }
+
+    return res;
 }
 
 void KFileWidget::setMode( KFile::Modes m )

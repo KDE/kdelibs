@@ -399,6 +399,7 @@ public Q_SLOTS:
 protected:
     virtual void resizeEvent(QResizeEvent* event);
     virtual void showEvent(QShowEvent* event);
+    virtual bool eventFilter(QObject* watched, QEvent* event);
 
 Q_SIGNALS:
     /**
