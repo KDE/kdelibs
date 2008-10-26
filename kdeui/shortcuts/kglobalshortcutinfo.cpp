@@ -58,7 +58,9 @@ KGlobalShortcutInfo &KGlobalShortcutInfo::operator=(const KGlobalShortcutInfo &r
 
 QString KGlobalShortcutInfo::contextFriendlyName() const
     {
-    return d->contextFriendlyName;
+    return d->contextFriendlyName.isEmpty()
+        ? d->contextUniqueName
+        : d->contextFriendlyName;
     }
 
 
@@ -70,7 +72,9 @@ QString KGlobalShortcutInfo::contextUniqueName() const
 
 QString KGlobalShortcutInfo::componentFriendlyName() const
     {
-    return d->componentFriendlyName;
+    return d->componentFriendlyName.isEmpty()
+        ? d->componentUniqueName
+        : d->componentFriendlyName;
     }
 
 
@@ -96,7 +100,6 @@ QList<QKeySequence> KGlobalShortcutInfo::keys() const
     {
     return d->keys;
     }
-
 
 QString KGlobalShortcutInfo::uniqueName() const
     {
