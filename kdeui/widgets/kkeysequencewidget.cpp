@@ -103,11 +103,13 @@ public:
 
     }
 
+
     void cancelRecording()
     {
         keySequence = oldKeySequence;
         doneRecording();
     }
+
 
     bool isShiftAsModifierAllowed(int keyQt)
     {
@@ -140,6 +142,38 @@ public:
                 return false;
         }
     }
+
+
+    bool promptStealShortcutSystemwide(
+            QWidget *parent,
+            const QHash<QKeySequence, QList<KGlobalShortcutInfo> > &shortcuts,
+            const QKeySequence &sequence)
+    {
+        if (shortcuts.isEmpty()) {
+            // Usage error. Just say no
+            return false;
+        }
+
+        QString clashingKeys = "";
+        Q_FOREACH (QKeySequence const &seq, shortcuts.keys()) {
+            Q_FOREACH (KGlobalShortcutInfo const &info, shortcuts[seq]) {
+                clashingKeys += i18n("Shortcut '%1' in Application %2 for action %3\n",
+                        seq.toString(),
+                        info.componentFriendlyName(),
+                        info.friendlyName());
+            }
+        }
+
+        QString message = i18n("The shortcut '%1' conflicts with the following key combinations:\n",
+                sequence.toString());
+        message+=clashingKeys;
+
+        QString title = i18n("Conflict With Registered Global Shortcut(s)");
+
+        return KMessageBox::warningContinueCancel(parent, message, title, KGuiItem(i18n("Reassign")))
+               == KMessageBox::Continue;
+    }
+
 
 //private slot
     void doneRecording(bool validate = true);
@@ -414,7 +448,7 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
     stealAction = NULL;
 
     if (validate && !q->isKeySequenceAvailable(keySequence)) {
-        keySequence == oldKeySequence;
+        keySequence = oldKeySequence;
         updateShortcutDisplay();
         return;
     }
@@ -433,20 +467,30 @@ bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &
         return false;
     }
 
-    if (!KGlobalAccel::isGlobalShortcutAvailable(keySequence)) {
-        QList<KGlobalShortcutInfo> others =
-            KGlobalAccel::getGlobalShortcutsByKey(keySequence);
+    // Global shortcuts are on key+modifier shortcuts. They can clash with
+    // each of the keys of a multi key shortcut.
+    QHash<QKeySequence, QList<KGlobalShortcutInfo> > others;
+    for (uint i=0; i<keySequence.count(); ++i) {
+        QKeySequence tmp(keySequence[i]);
 
-        if (!KGlobalAccel::promptStealShortcutSystemwide(q, others, keySequence)) {
-            return true;
+        if (!KGlobalAccel::isGlobalShortcutAvailable(tmp)) {
+                others.insert(tmp, KGlobalAccel::getGlobalShortcutsByKey(tmp));
         }
-        // The user approved stealing the shortcut. We have to steal
-        // it immediately because KAction::setGlobalShortcut() refuses
-        // to set a global shortcut that is already used. There is no
-        // error it just silently fails. So be nice because this is
-        // most likely the first action that is done in the slot
-        // listening to keySequenceChanged().
-        KGlobalAccel::stealShortcutSystemwide(keySequence);
+    }
+
+    if (!others.isEmpty()
+            && !promptStealShortcutSystemwide(q, others, keySequence)) {
+        return true;
+    }
+
+    // The user approved stealing the shortcut. We have to steal
+    // it immediately because KAction::setGlobalShortcut() refuses
+    // to set a global shortcut that is already used. There is no
+    // error it just silently fails. So be nice because this is
+    // most likely the first action that is done in the slot
+    // listening to keySequenceChanged().
+    for (uint i=0; i<keySequence.count(); ++i) {
+        KGlobalAccel::stealShortcutSystemwide(keySequence[i]);
     }
     return false;
 }
