@@ -35,13 +35,14 @@
  * (for instance when the presentation is complete) simply delete the
  * KNotificationRestrictions object.
  *
- * Example: to ensure the screensaver does not turn on during a presentation
- *
+ * Example: to ensure the screensaver does not turn on during a presentation:
+ * @code
  * void MyApp::doPresentation()
  * {
  *   KNotificationRestrictions restrict(KNotificationRestrictions::ScreenSaver);
  *   // show presentation
  * }
+ * @endcode
  */
 class KDEUI_EXPORT KNotificationRestrictions : public QObject
 {
@@ -50,23 +51,36 @@ class KDEUI_EXPORT KNotificationRestrictions : public QObject
     public:
         /**
          * @enum Service
-         * @value NoServices the baseline "don't disable anything" value
-         * @value ScreenSaver causes the screensaver to be prevented from
-         *        automatically turning on
-         * @value MessagingPopups (NOT IMPLEMENTED YET) causes instant messaging
-         *        and email notifications to not appear
-         * @value Notifications (NOT IMPLEMENTED YET) causes non-critical
-         *        desktop messages to be suppressed
-         * @value CriticalNotifications (NOT IMPLEMENTED YET) causes all desktop
-         *        notifications, including critical ones such as battery low
-         *        warnings to be suppressed
          */
         enum Service
         {
+            /**
+             * The baseline "don't disable anything" value.
+             */
             NoServices = 0,
+            /**
+             * Causes the screensaver to be prevented from automatically
+             * turning on.
+             */
             ScreenSaver = 1,
+            /**
+             * Causes instant messaging and email notifications to not appear.
+             *
+             * @note <b>not implemented yet</b>
+             */
             MessagingPopups = 2,
+            /**
+             * Causes non-critical desktop messages to be suppressed.
+             *
+             * @note <b>not implemented yet</b>
+             */
             Notifications = 4,
+            /**
+             * Causes all desktop notifications, including critical ones
+             * (such as as "battery low" warnings) to be suppressed.
+             *
+             * @note <b>not implemented yet</b>
+             */
             CriticalNotifications = 8,
             NonCriticalServices = ScreenSaver |
                                   MessagingPopups |
@@ -75,6 +89,12 @@ class KDEUI_EXPORT KNotificationRestrictions : public QObject
         };
         Q_DECLARE_FLAGS(Services, Service)
 
+        /**
+         * Constructs a new service for restrict some services.
+         *
+         * @param control the services to be restricted
+         * @param parent the parent of this object
+         */
         explicit KNotificationRestrictions(Services control = NonCriticalServices,
                                            QObject* parent = 0);
         virtual ~KNotificationRestrictions();
