@@ -38,7 +38,7 @@ XmppEmoticons::XmppEmoticons(QObject *parent, const QVariantList &args)
 
 bool XmppEmoticons::removeEmoticon(const QString &emo)
 {
-    QString emoticon = QFileInfo(emoticonsMap().key(emo.split(" "))).fileName();
+    QString emoticon = QFileInfo(emoticonsMap().key(emo.split(' '))).fileName();
     QDomElement fce = m_themeXml.firstChildElement("icondef");
 
     if (fce.isNull())
@@ -57,8 +57,8 @@ bool XmppEmoticons::removeEmoticon(const QString &emo)
 
                 if (!sde.isNull() && sde.tagName() == "object" && sde.text() == emoticon) {
                     fce.removeChild(de);
-                    removeEmoticonsMap(emoticonsMap().key(emo.split(" ")));
-                    removeEmoticonIndex(emoticon, emo.split(" "));
+                    removeEmoticonsMap(emoticonsMap().key(emo.split(' ')));
+                    removeEmoticonIndex(emoticon, emo.split(' '));
                     return true;
                 }
             }
@@ -71,7 +71,7 @@ bool XmppEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmot
 {
     KEmoticonsProvider::addEmoticon(emo, text, option);
 
-    const QStringList splitted = text.split(" ");
+    const QStringList splitted = text.split(' ');
     QDomElement fce = m_themeXml.firstChildElement("icondef");
 
     if (fce.isNull()) {
@@ -82,7 +82,7 @@ bool XmppEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmot
     fce.appendChild(emoticon);
     QStringList::const_iterator constIterator;
 
-    for (constIterator = splitted.begin(); constIterator != splitted.end(); constIterator++) {
+    for (constIterator = splitted.begin(); constIterator != splitted.end(); ++constIterator) {
         QDomElement emotext = m_themeXml.createElement("text");
         QDomText txt = m_themeXml.createTextNode((*constIterator).trimmed());
         emotext.appendChild(txt);

@@ -36,7 +36,7 @@ PidginEmoticons::PidginEmoticons(QObject *parent, const QVariantList &args)
 
 bool PidginEmoticons::removeEmoticon(const QString &emo)
 {
-    QString emoticon = QFileInfo(emoticonsMap().key(emo.split(" "))).fileName();
+    QString emoticon = QFileInfo(emoticonsMap().key(emo.split(' '))).fileName();
 
     bool start = false;
     for (int i = 0; i < m_text.size(); ++i) {
@@ -72,7 +72,7 @@ bool PidginEmoticons::removeEmoticon(const QString &emo)
 
         if (emoName == emoticon) {
             m_text.removeAt(i);
-            removeEmoticonIndex(emoticon, emo.split(" "));
+            removeEmoticonIndex(emoticon, emo.split(' '));
             return true;
         }
     }
@@ -84,7 +84,7 @@ bool PidginEmoticons::addEmoticon(const QString &emo, const QString &text, AddEm
 {
     KEmoticonsProvider::addEmoticon(emo, text, option);
 
-    QStringList splitted = text.split(" ");
+    const QStringList splitted = text.split(' ');
     int i = m_text.indexOf(QRegExp("^\\[default\\]$", Qt::CaseInsensitive));
 
     if (i == -1) {

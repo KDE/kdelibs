@@ -218,7 +218,7 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
     bool inHTMLEntity = false;
     QString needle; // search for this
 
-    for (pos = 0; pos < message.length(); pos++) {
+    for (pos = 0; pos < message.length(); ++pos) {
         c = message[pos];
 
         if (mode & SkipHTML) { // Shall we skip HTML ?

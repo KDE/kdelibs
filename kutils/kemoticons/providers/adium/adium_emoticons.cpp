@@ -37,7 +37,7 @@ AdiumEmoticons::AdiumEmoticons(QObject *parent, const QVariantList &args)
 
 bool AdiumEmoticons::removeEmoticon(const QString &emo)
 {
-    QString emoticon = QFileInfo(emoticonsMap().key(emo.split(" "))).fileName();
+    QString emoticon = QFileInfo(emoticonsMap().key(emo.split(' '))).fileName();
     QDomElement fce = m_themeXml.firstChildElement("plist").firstChildElement("dict").firstChildElement("dict");
 
     if (fce.isNull()) {
@@ -54,8 +54,8 @@ bool AdiumEmoticons::removeEmoticon(const QString &emo)
             }
 
             fce.removeChild(de);
-            removeEmoticonsMap(emoticonsMap().key(emo.split(" ")));
-            removeEmoticonIndex(emoticon, emo.split(" "));
+            removeEmoticonsMap(emoticonsMap().key(emo.split(' ')));
+            removeEmoticonIndex(emoticon, emo.split(' '));
             return true;
         }
     }
@@ -66,7 +66,7 @@ bool AdiumEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmo
 {
     KEmoticonsProvider::addEmoticon(emo, text, option);
 
-    QStringList splitted = text.split(" ");
+    const QStringList splitted = text.split(' ');
     QDomElement fce = m_themeXml.firstChildElement("plist").firstChildElement("dict").firstChildElement("dict");
 
     if (fce.isNull()) {
@@ -84,9 +84,10 @@ bool AdiumEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmo
 
     QDomElement arr = m_themeXml.createElement("array");
 
-    for (int i = 0; i < splitted.size(); ++i) {
+    QStringList::const_iterator constIterator;
+    for (constIterator = splitted.begin(); constIterator != splitted.end(); ++constIterator) {
         QDomElement emoText = m_themeXml.createElement("string");
-        QDomText txt = m_themeXml.createTextNode(splitted.at(i).trimmed());
+        QDomText txt = m_themeXml.createTextNode((*constIterator).trimmed());
         emoText.appendChild(txt);
         arr.appendChild(emoText);
     }

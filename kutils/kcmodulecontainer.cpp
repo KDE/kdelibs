@@ -119,7 +119,7 @@ void KCModuleContainer::addModule( const QString& module )
 
 	d->tabWidget->addTab( proxy, KIcon( proxy->moduleInfo().icon() ),
 			/* Qt eats ampersands for dinner. But not this time. */
-			proxy->moduleInfo().moduleName().replace( "&", "&&" ));
+			proxy->moduleInfo().moduleName().replace( '&', "&&" ));
 
 	d->tabWidget->setTabToolTip( d->tabWidget->indexOf( proxy ), proxy->moduleInfo().comment() );
 
