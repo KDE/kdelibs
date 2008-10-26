@@ -39,6 +39,10 @@ int main (int argc, char **argv)
     KCmdLineArgs::init( argc, argv, &aboutData );
     KApplication app;
 
+    KFileDialog keywordDlg(KUrl("kfiledialog://testKeyword"), QString("*.*|"), 0);
+    keywordDlg.setMode(KFile::Files);
+    keywordDlg.exec();
+
     // bug 173137
     KFileDialog dlg(KUrl(QString()), QString("*.*|"), 0);
     dlg.setMode(KFile::Files | KFile::Directory);
