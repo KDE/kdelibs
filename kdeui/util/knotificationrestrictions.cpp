@@ -23,9 +23,8 @@
 
 #include <config.h>
 
-#include <QTimer>
-
 #ifdef HAVE_XTEST
+#include <QTimer>
 #include <QX11Info>
 
 #include <X11/keysym.h>
@@ -52,8 +51,8 @@ class KNotificationRestrictions::Private
 
         KNotificationRestrictions* q;
         Services control;
-        QTimer* screensaverTimer;
 #ifdef HAVE_XTEST
+        QTimer* screensaverTimer;
         int haveXTest;
         int XTestKeyCode;
 #endif // HAVE_XTEST
@@ -80,7 +79,7 @@ KNotificationRestrictions::~KNotificationRestrictions()
 
 void KNotificationRestrictions::Private::screensaverFakeKeyEvent()
 {
-    kDebug(297) << "KNotificationRestrictions::screensaverFakeKeyEvent()";
+    kDebug(297);
 #ifdef HAVE_XTEST
     kDebug(297) << "---- using XTestFakeKeyEvent";
     Display* display = QX11Info::display();
@@ -92,7 +91,7 @@ void KNotificationRestrictions::Private::screensaverFakeKeyEvent()
 
 void KNotificationRestrictions::Private::startScreenSaverPrevention()
 {
-    kDebug(297) << "KNotificationRestrictions::startScreenSaverPrevention()";
+    kDebug(297);
 #ifdef HAVE_XTEST
     if ( !haveXTest ) {
         int a,b,c,e;
