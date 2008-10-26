@@ -58,7 +58,7 @@ public:
     virtual void layout();
     virtual void calcMinMaxWidth() { setMinMaxKnown( true ); }
 
-    virtual void removeLeftoverAnonymousBoxes();
+    virtual void removeSuperfluousAnonymousBlockChild( RenderObject* child );
 
     virtual void setStyle(RenderStyle* _style);
 

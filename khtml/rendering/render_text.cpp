@@ -674,6 +674,7 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 
     m_selectionState = SelectionNone;
     m_hasReturn = true;
+    m_isSimpleText = false;
     m_firstTextBox = m_lastTextBox = 0;
 
 #ifdef DEBUG_LAYOUT

@@ -374,8 +374,9 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
     RenderBox::addChild(newChild,beforeChild);
     // ### care about aligned stuff
 
-    if ( madeBoxesNonInline )
-        removeLeftoverAnonymousBoxes();
+    if ( madeBoxesNonInline && isAnonymousBlock() )
+        parent()->removeSuperfluousAnonymousBlockChild( this );
+    // we might be deleted now
 }
 
 static void getInlineRun(RenderObject* start, RenderObject* stop,
@@ -784,8 +785,15 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     int toAdd = borderBottom() + paddingBottom();
     if (m_layer && scrollsOverflowX() && style()->height().isVariable())
         toAdd += m_layer->horizontalScrollbarHeight();
-    if ( hasOverhangingFloats() && (isFloatingOrPositioned() || flowAroundFloats()) )
-        m_overflowHeight = m_height = floatBottom() + toAdd;
+
+    if ( hasOverhangingFloats() ) {
+          if (isFloatingOrPositioned() || flowAroundFloats()) {
+              if (floatBottom() + toAdd > m_height)
+                  m_overflowHeight = m_height = floatBottom() + toAdd;
+          else if (floatBottom() + toAdd > m_overflowHeight)
+              m_overflowHeight = qMax( m_overflowHeight, floatBottom() + toAdd );
+          }
+    }
 
     int oldHeight = m_height;
     calcHeight();

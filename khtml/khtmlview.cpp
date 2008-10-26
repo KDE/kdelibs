@@ -1321,8 +1321,6 @@ void KHTMLView::mouseDoubleClickEvent( QMouseEvent *_mouse )
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MouseDblClick);
 
-    khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
-
     if (!swallowEvent) {
 	khtml::MouseDoubleClickEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode, d->clickCount );
 	QApplication::sendEvent( m_part, &event );

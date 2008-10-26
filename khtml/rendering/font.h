@@ -130,7 +130,7 @@ public:
      * str. Note that toAdd applies to all spaces within str, but only those
      * within [pos, pos+len) are counted towards the width.
      */
-    int width( QChar *str, int slen, int pos, int len, bool fast, int start=0, int end=0, int toAdd=0 ) const;
+    int width( const QChar *str, int slen, int pos, int len, bool fast, int start=0, int end=0, int toAdd=0 ) const;
     /** return the width of the given char in pixels.
      *
      * The method also considers various styles like text-align and font-variant
@@ -138,7 +138,7 @@ public:
      * @param slen total length of string
      * @param pos zero-based position of char in string
      */
-    int width( QChar *str, int slen, int pos, bool fast ) const;
+    int width( const QChar *str, int slen, int pos, bool fast ) const;
 
     /** Text decoration constants.
      *

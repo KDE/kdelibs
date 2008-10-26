@@ -315,10 +315,10 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 }
 
 
-int Font::width( QChar *chs, int, int pos, int len, bool fast,int start, int end, int toAdd ) const
+int Font::width( const QChar *chs, int, int pos, int len, bool fast,int start, int end, int toAdd ) const
 {
-    int w = 0;
-
+   if (!len) return 0;
+   int w = 0;
 
    // #### Qt 4 has a major speed regression : QFontMetrics::width() is around 15 times slower than Qt 3's.
    // This is a great speed bottleneck as we are now spending up to 70% of the layout time in that method
@@ -331,9 +331,8 @@ int Font::width( QChar *chs, int, int pos, int len, bool fast,int start, int end
    //
    // This issue is now mostly addressed, by first scanning strings for complex/combining unicode characters,
    // and using the much faster, non-context-aware QFontMetrics::width(QChar) when none has been found.
-
-    const QString qstr = QString::fromRawData(chs+pos, len);
     if ( scFont ) {
+        const QString qstr = QString::fromRawData(chs+pos, len);
 	const QString upper = qstr.toUpper();
 	const QChar *uc = qstr.unicode();
 	const QFontMetrics sc_fm( *scFont );
@@ -355,9 +354,10 @@ int Font::width( QChar *chs, int, int pos, int len, bool fast,int start, int end
     } else {
 	if (fast) {
             for ( int i = 0; i < len; ++i ) {
-                w += fm.width( qstr[i] );
+                w += fm.width( chs[i+pos] );
             }
         } else {
+            const QString qstr = QString::fromRawData(chs+pos, len);
             w = fm.width( qstr );
         }
     }
@@ -392,7 +392,7 @@ int Font::width( QChar *chs, int, int pos, int len, bool fast,int start, int end
     return w;
 }
 
-int Font::width( QChar *chs, int slen, int pos, bool fast ) const
+int Font::width( const QChar *chs, int slen, int pos, bool fast ) const
 {
     int w;
 	if ( scFont && chs[pos].category() == QChar::Letter_Lowercase ) {

@@ -830,6 +830,8 @@ public:
 
     QRegion visibleFlowRegion(int x, int y) const;
 
+    virtual void removeSuperfluousAnonymousBlockChild( RenderObject* ) {}
+
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
@@ -839,8 +841,6 @@ protected:
     void invalidateVerticalPosition();
     bool attemptDirectLayerTranslation();
     void updateWidgetMasks();
-
-    virtual void removeLeftoverAnonymousBoxes();
 
     void arenaDelete(RenderArena *arena);
 

@@ -107,8 +107,13 @@ void RenderBox::restructureParentFlow() {
             parent()->removeChildNode(this);
             parentInline->splitFlow(beforeChild, newBox, this, oldContinuation);
         }
-        else if (parent()->isRenderBlock())
-            static_cast<RenderBlock*>(parent())->makeChildrenNonInline();
+        else if (parent()->isRenderBlock()) {
+            RenderBlock* p = static_cast<RenderBlock*>(parent());
+            p->makeChildrenNonInline();
+            if (p->isAnonymousBlock() && p->parent())
+                p->parent()->removeSuperfluousAnonymousBlockChild( p );
+            // we might be deleted now
+        }
     }
     else {
         // An anonymous block must be made to wrap this inline.

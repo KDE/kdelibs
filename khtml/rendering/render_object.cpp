@@ -2216,11 +2216,6 @@ void RenderObject::scheduleRelayout(RenderObject *clippedObj)
         view->scheduleRelayout(clippedObj);
 }
 
-
-void RenderObject::removeLeftoverAnonymousBoxes()
-{
-}
-
 InlineBox* RenderObject::createInlineBox(bool /*makePlaceHolderBox*/, bool /*isRootLineBox*/)
 {
     KHTMLAssert(false);
