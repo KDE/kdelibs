@@ -1,4 +1,4 @@
-// vim: noet ts=8 sw=8
+// vim: noet ts=4 sw=4
 /* This file is part of the KDE libraries
     Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
     Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
@@ -38,7 +38,8 @@
 #include <kshortcut.h>
 #include <kaction.h>
 #include <kactioncollection.h>
-#include <kdebug.h>
+
+#include "kdebug.h"
 
 class KKeySequenceWidgetPrivate
 {
@@ -89,6 +90,18 @@ public:
 	bool checkAgainstLocalShortcuts() const
 	{
 		return checkAgainstShortcutTypes & KKeySequenceWidget::LocalShortcuts;
+	}
+
+	void controlModifierlessTimout()
+	{
+		if (nKey != 0 && !modifierKeys) {
+			// No modifier key pressed currently. Start the timout
+			modifierlessTimeout.start(600);
+		} else {
+			// A modifier is pressed. Stop the timeout
+			modifierlessTimeout.stop();
+		}
+		
 	}
 
 //private slot
@@ -494,27 +507,28 @@ void KKeySequenceWidgetPrivate::updateShortcutDisplay()
 	s.replace('&', QLatin1String("&&"));
 
 	if (isRecording) {
-		// Display modifiers for the first key in the QKeySequence
-		if (nKey == 0) {
-			if (modifierKeys) {
-				if (modifierKeys & Qt::META)  s += KKeyServer::modToStringUser(Qt::META) + '+';
+		if (modifierKeys) {
+			if (!s.isEmpty()) s.append(",");
+			if (modifierKeys & Qt::META)  s += KKeyServer::modToStringUser(Qt::META) + '+';
 #if defined(Q_WS_MAC)
-                if (modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
-				if (modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
+			if (modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
+			if (modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
 #elif defined(Q_WS_X11)
-				if (modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
-				if (modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
+			if (modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
+			if (modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
 #endif
-				if (modifierKeys & Qt::SHIFT) s += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
-			} else
-				s = i18nc("What the user inputs now will be taken as the new shortcut", "Input");
+			if (modifierKeys & Qt::SHIFT) s += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
+
+		} else if (nKey == 0) {
+			s = i18nc("What the user inputs now will be taken as the new shortcut", "Input");
 		}
 		//make it clear that input is still going on
 		s.append(" ...");
 	}
 
-	if (s.isEmpty())
+	if (s.isEmpty()) {
 		s = i18nc("No shortcut defined", "None");
+	}
 
 	s.prepend(' ');
 	s.append(' ');
@@ -557,6 +571,7 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 		// and QKeySequence.toString() will also yield a garbage string.
 		return;
 	}
+
 	uint newModifiers = e->modifiers() & (Qt::SHIFT | Qt::CTRL | Qt::ALT | Qt::META);
 
 	//don't have the return or space key appear as first key of the sequence when they
@@ -568,13 +583,13 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 		return;
 	}
 
+	// We get events even if recording isn't active.
 	if (!d->isRecording)
 		return QPushButton::keyPressEvent(e);
 
 	e->accept();
+	d->modifierKeys = newModifiers;
 
-	if (d->nKey == 0)
-		d->modifierKeys = newModifiers;
 
 	switch(keyQt) {
 	case Qt::Key_AltGr: //or else we get unicode salad
@@ -584,24 +599,37 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 	case Qt::Key_Alt:
 	case Qt::Key_Meta:
 	case Qt::Key_Menu: //unused (yes, but why?)
-		// If we are editing the first key in the sequence,
-		// display modifier keys which are held down
-		if(d->nKey == 0)
-			d->updateShortcutDisplay();
+		d->controlModifierlessTimout();
+		d->updateShortcutDisplay();
 		break;
 	default:
-		//Shift is not a modifier in the sense of Ctrl/Alt/WinKey
-		if (!(d->modifierKeys & ~Qt::SHIFT)) {
-			if (!KKeySequenceWidgetPrivate::isOkWhenModifierless(keyQt) && !d->allowModifierless) {
+
+		if (d->nKey == 0 && !(d->modifierKeys & ~Qt::SHIFT)) {
+			// It's the first key and no modifier pressed. Check if this is
+			// allowed
+			if (!(KKeySequenceWidgetPrivate::isOkWhenModifierless(keyQt)
+							|| d->allowModifierless)) {
+				// No it's not
 				return;
-			} else {
-				d->modifierlessTimeout.start(600);
 			}
 		}
 
+		// We now have a valid key press.
 		if (keyQt) {
+			// We only allow the shift modifier for selected keys. It's not
+			// possible to enter the SHIFT+5 key sequence for me because
+			// this is handled as '%' by qt on my keyboard.
+			if (keyQt >= Qt::Key_F1 && keyQt <= Qt::Key_F35)
+				keyQt |= d->modifierKeys;
+			else if (keyQt == Qt::Key_Return || keyQt == Qt::Key_Space || keyQt == Qt::Key_Backspace)
+				keyQt |= d->modifierKeys;
+			else if (QChar(keyQt).isLetter())
+				keyQt |= d->modifierKeys;
+			else
+				keyQt |= (d->modifierKeys & ~Qt::SHIFT);
+
 			if (d->nKey == 0) {
-				d->keySequence = QKeySequence(keyQt | d->modifierKeys);
+				d->keySequence = QKeySequence(keyQt);
 			} else {
 				d->keySequence =
 				  KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt);
@@ -612,6 +640,7 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 				d->doneRecording();
 				return;
 			}
+			d->controlModifierlessTimout();
 			d->updateShortcutDisplay();
 		}
 	}
@@ -634,11 +663,9 @@ void KKeySequenceButton::keyReleaseEvent(QKeyEvent *e)
 
 	//if a modifier that belongs to the shortcut was released...
 	if ((newModifiers & d->modifierKeys) < d->modifierKeys) {
-		if (d->nKey == 0) {
-			d->modifierKeys = newModifiers;
-			d->updateShortcutDisplay();
-		} else
-			d->doneRecording();
+		d->modifierKeys = newModifiers;
+		d->controlModifierlessTimout();
+		d->updateShortcutDisplay();
 	}
 }
 
