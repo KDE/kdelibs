@@ -104,6 +104,12 @@ public:
 		
 	}
 
+	void cancelRecording()
+	{
+		keySequence = oldKeySequence;
+		updateShortcutDisplay();
+	}
+
 //private slot
 	void doneRecording(bool validate = true);
 
@@ -377,9 +383,7 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 	stealAction = NULL;
 
 	if (keySequence != oldKeySequence && validate && !q->isKeySequenceAvailable(keySequence)) {
-		keySequence = oldKeySequence;
-		updateShortcutDisplay();
-		return;
+		return cancelRecording();
 	}
 
 	updateShortcutDisplay();
@@ -569,7 +573,10 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 		// Qt sometimes returns garbage keycodes, I observed -1, if it doesn't know a key.
 		// We cannot do anything useful with those (several keys have -1, indistinguishable)
 		// and QKeySequence.toString() will also yield a garbage string.
-		return;
+		KMessageBox::sorry(this,
+				i18n("The key you just pressed isn't supported by qt."),
+				i18n("Unsupported Key"));
+		return d->cancelRecording();
 	}
 
 	uint newModifiers = e->modifiers() & (Qt::SHIFT | Qt::CTRL | Qt::ALT | Qt::META);
