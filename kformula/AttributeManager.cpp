@@ -94,8 +94,8 @@ QList<double> AttributeManager::doubleListOf( const QString& attribute,
                                               const BasicElement* element ) const
 {
     QList<double> doubleList;
-    QStringList tmp = findValue( attribute, element ).split( " " );
-    foreach( QString doubleValue, tmp )
+    QStringList tmp = findValue( attribute, element ).split( ' ' );
+    foreach( const QString &doubleValue, tmp )
         doubleList << lengthToPixels( parseUnit( doubleValue, element ), element, attribute);
 
     return doubleList;
@@ -124,9 +124,9 @@ QList<Align> AttributeManager::alignListOf( const QString& attribute,
                                             BasicElement* element ) const
 {
     QList<Align> alignList;
-    QStringList tmpList = findValue( attribute, element ).split( " " );
+    QStringList tmpList = findValue( attribute, element ).split( ' ' );
 
-    foreach( QString tmp, tmpList )
+    foreach( const QString &tmp, tmpList )
         alignList << parseAlign( tmp );
 
     return alignList;
@@ -142,9 +142,9 @@ QList<Qt::PenStyle> AttributeManager::penStyleListOf( const QString& attribute,
                                                       BasicElement* element ) const
 {
     QList<Qt::PenStyle> penStyleList;
-    QStringList tmpList = findValue( attribute, element ).split( " " );
+    QStringList tmpList = findValue( attribute, element ).split( ' ' );
 
-    foreach( QString tmp, tmpList )
+    foreach( const QString &tmp, tmpList )
         penStyleList << parsePenStyle( tmp );
 
     return penStyleList;

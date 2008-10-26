@@ -163,7 +163,7 @@ void BasicElement::writeMathML( QXmlStreamWriter* writer ) const
 
 void BasicElement::writeMathMLAttributes( QXmlStreamWriter* writer ) const
 {
-    foreach( QString value, m_attributes )
+    foreach( const QString &value, m_attributes )
         writer->writeAttribute( m_attributes.key( value ), value );
 }
 
