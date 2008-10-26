@@ -23,6 +23,10 @@
 
 #include <config.h>
 
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusMessage>
+#include <QtDBus/QDBusReply>
+
 #ifdef HAVE_XTEST
 #include <QTimer>
 #include <QX11Info>
@@ -37,6 +41,7 @@ class KNotificationRestrictions::Private
         Private( KNotificationRestrictions* qq, Services c )
             : q( qq ),
               control(c)
+            , screenSaverDbusCookie(-1)
 #ifdef HAVE_XTEST
              ,screensaverTimer(0),
               haveXTest(0),
@@ -51,6 +56,8 @@ class KNotificationRestrictions::Private
 
         KNotificationRestrictions* q;
         Services control;
+        int screenSaverDbusCookie;
+        QString reason;
 #ifdef HAVE_XTEST
         QTimer* screensaverTimer;
         int haveXTest;
@@ -92,6 +99,15 @@ void KNotificationRestrictions::Private::screensaverFakeKeyEvent()
 void KNotificationRestrictions::Private::startScreenSaverPrevention()
 {
     kDebug(297);
+    QDBusMessage message = QDBusMessage::createMethodCall(
+            "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "Inhibit");
+    message << QString("Okular");
+    message << reason;
+    QDBusReply<uint> reply = QDBusConnection::sessionBus().call(message);
+    if (reply.isValid()) {
+        screenSaverDbusCookie = reply.value();
+        return;
+    }
 #ifdef HAVE_XTEST
     if ( !haveXTest ) {
         int a,b,c,e;
@@ -128,9 +144,19 @@ void KNotificationRestrictions::Private::startScreenSaverPrevention()
 
 void KNotificationRestrictions::Private::stopScreenSaverPrevention()
 {
+    if (screenSaverDbusCookie != -1) {
+        QDBusMessage message = QDBusMessage::createMethodCall(
+                "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "UnInhibit");
+        message << static_cast<uint>(screenSaverDbusCookie);
+        screenSaverDbusCookie = -1;
+        if (QDBusConnection::sessionBus().send(message)) {
+            return;
+        }
+    }
 #ifdef HAVE_XTEST
     delete screensaverTimer;
     screensaverTimer = 0;
 #endif // HAVE_XTEST
 }
+
 #include "knotificationrestrictions.moc"
