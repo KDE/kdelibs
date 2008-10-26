@@ -114,7 +114,11 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
                 const QStringList mimeTypes = audioPreview->supportedMimeTypes();
                 QStringList::ConstIterator it = mimeTypes.begin();
                 for ( ; it != mimeTypes.end(); ++it )
-                    m_previewProviders.insert( *it, audioPreview );
+                {
+                    // only add non already handled mimetypes
+                    if ( m_previewProviders.constFind( *it ) == m_previewProviders.constEnd() )
+                        m_previewProviders.insert( *it, audioPreview );
+                }
             }
         }
     }
