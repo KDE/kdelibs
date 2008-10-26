@@ -19,13 +19,18 @@
 
 #include "knotificationrestrictions.h"
 
+#include <kaboutdata.h>
+#include <kcomponentdata.h>
 #include <kdebug.h>
+#include <kglobal.h>
+#include <klocale.h>
 
-#include <config.h>
-
+#include <QtGui/QApplication>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusReply>
+
+#include <config.h>
 
 #ifdef HAVE_XTEST
 #include <QTimer>
@@ -53,6 +58,8 @@ class KNotificationRestrictions::Private
         void screensaverFakeKeyEvent();
         void startScreenSaverPrevention();
         void stopScreenSaverPrevention();
+
+        static QString determineProgramName();
 
         KNotificationRestrictions* q;
         Services control;
@@ -101,7 +108,7 @@ void KNotificationRestrictions::Private::startScreenSaverPrevention()
     kDebug(297);
     QDBusMessage message = QDBusMessage::createMethodCall(
             "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "Inhibit");
-    message << QString("Okular");
+    message << determineProgramName();
     message << reason;
     QDBusReply<uint> reply = QDBusConnection::sessionBus().call(message);
     if (reply.isValid()) {
@@ -157,6 +164,21 @@ void KNotificationRestrictions::Private::stopScreenSaverPrevention()
     delete screensaverTimer;
     screensaverTimer = 0;
 #endif // HAVE_XTEST
+}
+
+QString KNotificationRestrictions::Private::determineProgramName()
+{
+    QString appName;
+    if (KGlobal::mainComponent().isValid()) {
+        appName = KGlobal::mainComponent().aboutData()->programName();
+    }
+    if (appName.isEmpty() && qApp) {
+        appName = QCoreApplication::applicationName();
+    }
+    if (appName.isEmpty()) {
+        appName = i18n("Unknown Application");
+    }
+    return appName;
 }
 
 #include "knotificationrestrictions.moc"
