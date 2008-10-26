@@ -213,7 +213,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
         messageScrollArea->setWidgetResizable(true);
         QPalette scrollPal(messageScrollArea->palette());
         scrollPal.setColor(QPalette::Window, Qt::transparent);
-        messageScrollArea->setPalette(scrollPal);
+        messageScrollArea->viewport()->setPalette(scrollPal);
         hLayout->addWidget(messageScrollArea,5);
     }
     else
