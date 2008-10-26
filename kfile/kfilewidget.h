@@ -464,6 +464,7 @@ private:
     Q_PRIVATE_SLOT(d, void _k_activateUrlNavigator())
     Q_PRIVATE_SLOT(d, void _k_zoomOutIconsSize())
     Q_PRIVATE_SLOT(d, void _k_zoomInIconsSize())
+    Q_PRIVATE_SLOT(d, void _k_slotIconSizeSliderMoved(int))
 };
 
 #endif /* KABSTRACTFILEWIDGET_H */

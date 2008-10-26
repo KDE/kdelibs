@@ -62,6 +62,8 @@
 #include <QtGui/QLineEdit>
 #include <QtGui/QSplitter>
 #include <QtGui/QAbstractProxyModel>
+#include <QtGui/QHelpEvent>
+#include <QtGui/QApplication>
 #include <QtCore/QFSFileEngine>
 #include <kshell.h>
 #include <kmessagebox.h>
@@ -182,6 +184,7 @@ public:
     void _k_activateUrlNavigator();
     void _k_zoomOutIconsSize();
     void _k_zoomInIconsSize();
+    void _k_slotIconSizeSliderMoved(int);
 
     void addToRecentDocuments();
 
@@ -452,6 +455,8 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     d->iconSizeSlider->setMaximum(100);
     connect(d->iconSizeSlider, SIGNAL(valueChanged(int)),
             d->ops, SLOT(setIconsZoom(int)));
+    connect(d->iconSizeSlider, SIGNAL(sliderMoved(int)),
+            this, SLOT(_k_slotIconSizeSliderMoved(int)));
     connect(d->ops, SIGNAL(currentIconSizeChanged(int)),
             d->iconSizeSlider, SLOT(setValue(int)));
 
@@ -1871,13 +1876,41 @@ void KFileWidgetPrivate::_k_activateUrlNavigator()
 void KFileWidgetPrivate::_k_zoomOutIconsSize()
 {
     const int currValue = ops->iconsZoom();
-    iconSizeSlider->setValue(qMax(0, currValue - 10));
+    const int futValue = qMax(0, currValue - 10);
+    iconSizeSlider->setValue(futValue);
+    _k_slotIconSizeSliderMoved(futValue);
 }
 
 void KFileWidgetPrivate::_k_zoomInIconsSize()
 {
     const int currValue = ops->iconsZoom();
-    iconSizeSlider->setValue(qMin(100, currValue + 10));
+    const int futValue = qMin(100, currValue + 10);
+    iconSizeSlider->setValue(futValue);
+    _k_slotIconSizeSliderMoved(futValue);
+}
+
+void KFileWidgetPrivate::_k_slotIconSizeSliderMoved(int _value)
+{
+    int maxSize = KIconLoader::SizeEnormous - KIconLoader::SizeSmall;
+    int value = (maxSize * _value / 100) + KIconLoader::SizeSmall;
+    switch (value) {
+        case KIconLoader::SizeSmall:
+        case KIconLoader::SizeSmallMedium:
+        case KIconLoader::SizeMedium:
+        case KIconLoader::SizeLarge:
+        case KIconLoader::SizeHuge:
+        case KIconLoader::SizeEnormous:
+            iconSizeSlider->setToolTip(i18n("Icon size: %1 pixels (standard size)", value));
+            break;
+        default:
+            iconSizeSlider->setToolTip(i18n("Icon size: %1 pixels", value));
+            break;
+    }
+
+    QPoint global(iconSizeSlider->rect().topLeft());
+    global.ry() += iconSizeSlider->height() / 2;
+    QHelpEvent toolTipEvent(QEvent::ToolTip, QPoint(0, 0), iconSizeSlider->mapToGlobal(global));
+    QApplication::sendEvent(iconSizeSlider, &toolTipEvent);
 }
 
 static QString getExtensionFromPatternList(const QStringList &patternList)
