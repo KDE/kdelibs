@@ -107,7 +107,39 @@ public:
 	void cancelRecording()
 	{
 		keySequence = oldKeySequence;
-		updateShortcutDisplay();
+		doneRecording();
+	}
+
+	bool isShiftAsModifierAllowed(int keyQt)
+	{
+		// Shift only works as a modifier with certain keys. It's not possible
+		// to enter the SHIFT+5 key sequence for me because this is handled as
+		// '%' by qt on my keyboard.
+		// The working keys are all hardcoded here :-(
+		if (keyQt >= Qt::Key_F1 && keyQt <= Qt::Key_F35)
+			return true;
+
+		if (QChar(keyQt).isLetter())
+			return true;
+
+		switch (keyQt) {
+			case Qt::Key_Return:
+			case Qt::Key_Space:
+			case Qt::Key_Backspace:
+			case Qt::Key_Escape:
+			case Qt::Key_Print:
+			case Qt::Key_ScrollLock:
+			case Qt::Key_Pause:
+			case Qt::Key_PageUp:
+			case Qt::Key_PageDown:
+			case Qt::Key_Delete:
+			case Qt::Key_Home:
+			case Qt::Key_End:
+				return true;
+
+			default:
+				return false;
+		}
 	}
 
 //private slot
@@ -382,13 +414,16 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 	keyButton->setDown(false);
 	stealAction = NULL;
 
-	if (keySequence != oldKeySequence && validate && !q->isKeySequenceAvailable(keySequence)) {
-		return cancelRecording();
+	if (validate && !q->isKeySequenceAvailable(keySequence)) {
+		keySequence == oldKeySequence;
+		updateShortcutDisplay();
+		return;
 	}
 
 	updateShortcutDisplay();
-	if (keySequence != oldKeySequence)
+	if (keySequence!=oldKeySequence) {
 		emit q->keySequenceChanged(keySequence);
+	}
 	return;
 }
 
@@ -623,15 +658,9 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 
 		// We now have a valid key press.
 		if (keyQt) {
-			// We only allow the shift modifier for selected keys. It's not
-			// possible to enter the SHIFT+5 key sequence for me because
-			// this is handled as '%' by qt on my keyboard.
-			if (keyQt >= Qt::Key_F1 && keyQt <= Qt::Key_F35)
+			if (d->isShiftAsModifierAllowed(keyQt)) {
 				keyQt |= d->modifierKeys;
-			else if (keyQt == Qt::Key_Return || keyQt == Qt::Key_Space || keyQt == Qt::Key_Backspace)
-				keyQt |= d->modifierKeys;
-			else if (QChar(keyQt).isLetter())
-				keyQt |= d->modifierKeys;
+			}
 			else
 				keyQt |= (d->modifierKeys & ~Qt::SHIFT);
 
