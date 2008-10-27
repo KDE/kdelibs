@@ -404,7 +404,7 @@ void SVGInlineTextBox::paintCharacters(RenderObject::PaintInfo& paintInfo, int t
 #if ENABLE(SVG_FONTS)
     // SVG Fonts need access to the paint server used to draw the current text chunk.
     // They need to be able to call renderPath() on a SVGPaintServer object.
-    run.setActivePaintServer(activePaintServer);
+    //FIXME khtml run.setActivePaintServer(activePaintServer);
 #endif
 
     //FIXME khtml paintInfo.context->drawText(run, origin);

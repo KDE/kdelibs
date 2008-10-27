@@ -112,6 +112,11 @@
 #include <svg/SVGScriptElement.h>
 #include <svg/SVGDescElement.h>
 #include <svg/SVGTitleElement.h>
+#include <svg/SVGTextPathElement.h>
+#include <svg/SVGTSpanElement.h>
+#include <svg/SVGHKernElement.h>
+#include <svg/SVGAltGlyphElement.h>
+#include <svg/SVGFontElement.h>
 
 #include <kio/job.h>
 
@@ -376,7 +381,7 @@ K_GLOBAL_STATIC(ChangedDocuments, s_changedDocuments)
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
-    : NodeBaseImpl( 0 ), m_domtree_version(0), m_counterDict(),
+    : NodeBaseImpl( 0 ), m_svgExtensions(0), m_domtree_version(0), m_counterDict(),
       m_imageLoadEventTimer(0)
 {
     m_document.resetSkippingRef(this); //Make document return us..
@@ -747,8 +752,9 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
     if (_namespaceURI == SVG_NAMESPACE) {
         e = createSVGElement(QualifiedName(prefix, localName, _namespaceURI));
         if (e) return e;
-        if (!e)
+        if (!e) {
             kWarning() << "svg element" << localName << "either is not supported by khtml or it's not a proper svg element";
+        }
     }
 
     if ((isHTMLDocument() && _namespaceURI.isNull()) ||
@@ -1172,8 +1178,29 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
 ElementImpl *DocumentImpl::createSVGElement(const QualifiedName& name)
 {
     uint id = name.localNameId().id();
+    kDebug() << getPrintableName(name.id()) << endl;
+    kDebug() << "svg text:   " << getPrintableName(WebCore::SVGNames::textTag.id()) << endl;
 
     ElementImpl *n = 0;
+    switch (id)
+    {
+    case ID_TEXTPATH:
+        n = new WebCore::SVGTextPathElement(name, docPtr());
+        break;
+    case ID_TSPAN:
+        n = new WebCore::SVGTSpanElement(name, docPtr());
+        break;
+    case ID_HKERN:
+        n = new WebCore::SVGHKernElement(name, docPtr());
+        break;
+    case ID_ALTGLYPH:
+        n = new WebCore::SVGAltGlyphElement(name, docPtr());
+        break;
+    case ID_FONT:
+        n = new WebCore::SVGFontElement(name, docPtr());
+        break;
+    }
+
     if (id == WebCore::SVGNames::svgTag.localNameId().id()) {
         n = new WebCore::SVGSVGElement(name, docPtr());
     }

@@ -48,6 +48,10 @@ namespace WebCore {
 
         SVGMissingGlyphElement* firstMissingGlyphElement() const;
 
+        // KHTML ElementImpl pure virtual method
+        virtual quint32 id() const { return SVGNames::textTag.id(); }
+        virtual DOMString tagName() const { return SVGNames::textTag.tagName(); }
+
     private:
         void ensureGlyphCache() const;
 

@@ -18,6 +18,7 @@
 */
 
 #include "config.h"
+#include "wtf/Platform.h"
 
 #if ENABLE(SVG_FONTS)
 #include "SVGMissingGlyphElement.h"

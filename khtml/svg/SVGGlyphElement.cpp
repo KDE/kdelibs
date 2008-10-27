@@ -19,17 +19,18 @@
 */
 
 #include "config.h"
+#include "wtf/Platform.h"
 
 #if ENABLE(SVG_FONTS)
 #include "SVGGlyphElement.h"
 
 #include "SVGFontElement.h"
-#include "SVGFontFaceElement.h"
+//FIXME khtml #include "SVGFontFaceElement.h"
 #include "SVGFontData.h"
 #include "SVGNames.h"
 #include "SVGParserUtilities.h"
-#include "SimpleFontData.h"
-#include "XMLNames.h"
+//FIXME khtml #include "SimpleFontData.h"
+//FIXME khtml #include "XMLNames.h"
 
 namespace WebCore {
 
@@ -117,7 +118,7 @@ static inline float parseSVGGlyphAttribute(const SVGElement* element, const WebC
     if (value.isEmpty())
         return SVGGlyphIdentifier::inheritedValue();
 
-    return value.toFloat();
+    return value.string().string().toFloat();
 }
 
 SVGGlyphIdentifier SVGGlyphElement::buildGenericGlyphIdentifier(const SVGElement* element)

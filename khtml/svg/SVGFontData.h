@@ -22,16 +22,16 @@
 #define SVGFontData_h
 
 #if ENABLE(SVG_FONTS)
-#include "SVGFontFaceElement.h"
+// FIXME khtml #include "SVGFontFaceElement.h"
 
 namespace WebCore {
 
 class SVGFontData {
 public:
-    SVGFontData(SVGFontFaceElement*);
+    SVGFontData(/*FIXME khtml SVGFontFaceElement**/);
     virtual ~SVGFontData();
 
-    SVGFontFaceElement* svgFontFaceElement() const { return m_svgFontFaceElement.get(); }
+    // FIXME khtml SVGFontFaceElement* svgFontFaceElement() const { return m_svgFontFaceElement.get(); }
 
     float horizontalOriginX() const { return m_horizontalOriginX; }
     float horizontalOriginY() const { return m_horizontalOriginY; }
@@ -42,7 +42,7 @@ public:
     float verticalAdvanceY() const { return m_verticalAdvanceY; }
 
 private:
-    RefPtr<SVGFontFaceElement> m_svgFontFaceElement;
+    //FIXME khtml RefPtr<SVGFontFaceElement> m_svgFontFaceElement;
 
     float m_horizontalOriginX;
     float m_horizontalOriginY;

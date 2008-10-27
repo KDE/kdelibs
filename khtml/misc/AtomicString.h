@@ -96,9 +96,9 @@ private:
 
 inline bool operator==(const AtomicString& a, const AtomicString& b) { return a.impl() == b.impl(); }
 bool operator==(const AtomicString& a, const char* b);
-/*inline bool operator==(const AtomicString& a, const DOMString& b) { return equal(a.impl(), b.implementation()); }
+//inline bool operator==(const AtomicString& a, const DOMString& b) { return equal(a.impl(), b.implementation()); }
 inline bool operator==(const char* a, const AtomicString& b) { return b == a; }
-inline bool operator==(const DOMString& a, const AtomicString& b) { return equal(a.implementation(), b.impl()); }
+/*inline bool operator==(const DOMString& a, const AtomicString& b) { return equal(a.implementation(), b.impl()); }
 
 inline bool operator!=(const AtomicString& a, const AtomicString& b) { return a.impl() != b.impl(); }
 inline bool operator!=(const AtomicString& a, const char *b) { return !(a == b); }

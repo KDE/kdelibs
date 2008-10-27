@@ -20,17 +20,18 @@
 */
 
 #include "config.h"
+#include "wtf/Platform.h"
 
 #if ENABLE(SVG_FONTS)
 #include "SVGHKernElement.h"
 
 #include "SVGFontElement.h"
-#include "SVGFontFaceElement.h"
+//FIXME khtml #include "SVGFontFaceElement.h"
 #include "SVGFontData.h"
 #include "SVGNames.h"
 #include "SVGParserUtilities.h"
-#include "SimpleFontData.h"
-#include "XMLNames.h"
+//FIXME khtml #include "SimpleFontData.h"
+//FIXME khtml #include "XMLNames.h"
 
 namespace WebCore {
 

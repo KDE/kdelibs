@@ -4,6 +4,7 @@ KDE4_NO_ENABLE_FINAL(khtml)
 
 ########svg#########
 add_definitions(-DENABLE_SVG)
+add_definitions(-DENABLE_SVG_FONTS)
 add_definitions(-DWTF_PLATFORM_QT)
 ########svg#########
 
@@ -122,6 +123,13 @@ set(khtmlsvg_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/svg/SVGNames.cpp
   ${CMAKE_SOURCE_DIR}/khtml/svg/SVGZoomAndPan.cpp
   ${CMAKE_SOURCE_DIR}/khtml/svg/SVGViewSpec.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGTSpanElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGGlyphElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGAltGlyphElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGHKernElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGMissingGlyphElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGFontElement.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/svg/SVGFontData.cpp
 #############################################################
 ## GRAPHICS #################################################
 #############################################################
@@ -159,6 +167,7 @@ set(khtmlsvg_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGText.cpp
   ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGBlock.cpp
   ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGInlineText.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/rendering/RenderSVGTSpan.cpp
 )
 
 # khtml/dom/Makefile.am: khtmldom

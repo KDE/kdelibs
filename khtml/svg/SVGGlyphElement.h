@@ -27,9 +27,14 @@
 #include <limits>
 #include "Path.h"
 
+namespace khtml
+{
+    class AtomicString;
+}
+
 namespace WebCore {
 
-    class AtomicString;
+    using khtml::AtomicString;
     struct SVGFontData;
 
     // Describe a SVG <glyph> element

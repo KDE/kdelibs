@@ -21,6 +21,7 @@
 */
 
 #include "config.h"
+#include "wtf/Platform.h"
 
 #if ENABLE(SVG)
 #include "SVGTSpanElement.h"

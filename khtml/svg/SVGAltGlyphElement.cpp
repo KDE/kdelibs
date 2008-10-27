@@ -20,6 +20,7 @@
 */
 
 #include "config.h"
+#include "wtf/Platform.h"
 
 #if ENABLE(SVG_FONTS)
 #include "SVGAltGlyphElement.h"
@@ -44,7 +45,7 @@ SVGAltGlyphElement::~SVGAltGlyphElement()
 
 void SVGAltGlyphElement::setGlyphRef(const AtomicString& type, ExceptionCode& ec)
 {
-    ec = NO_MODIFICATION_ALLOWED_ERR;
+    //FIXME khtml ec = NO_MODIFICATION_ALLOWED_ERR;
 }
 
 const AtomicString& SVGAltGlyphElement::glyphRef() const
@@ -54,7 +55,7 @@ const AtomicString& SVGAltGlyphElement::glyphRef() const
 
 void SVGAltGlyphElement::setFormat(const AtomicString& type, ExceptionCode& ec)
 {
-    ec = NO_MODIFICATION_ALLOWED_ERR;
+    //FIXME khtml ec = NO_MODIFICATION_ALLOWED_ERR;
 }
 
 const AtomicString& SVGAltGlyphElement::format() const

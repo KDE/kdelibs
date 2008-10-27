@@ -36,6 +36,10 @@ namespace WebCore
                 
         virtual RenderObject* createRenderer(RenderArena*, RenderStyle*);
         bool childShouldCreateRenderer(Node*) const;
+
+        // KHTML ElementImpl pure virtual method
+        virtual quint32 id() const { return SVGNames::tspanTag.id(); }
+        virtual DOMString tagName() const { return SVGNames::tspanTag.tagName(); }
     
     protected:
         virtual const SVGElement* contextElement() const { return this; }

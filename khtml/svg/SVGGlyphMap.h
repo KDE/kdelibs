@@ -23,12 +23,34 @@
 #if ENABLE(SVG_FONTS)
 #include "SVGGlyphElement.h"
 
+namespace WTF
+{
+    struct QCharHash
+    {
+        static unsigned hash(const QChar& c) { return c.unicode(); }
+        static bool equal(const QChar& a, const QChar& b) { return a == b; }
+        static const bool safeToCompareToEmptyOrDeleted = false;
+    };
+    template<> struct HashTraits<QChar> : public GenericHashTraits<QChar> {
+        static const bool emptyValueIsZero = true;
+        static const bool needsDestruction = false;
+        static const bool needsRef = false;
+        static QChar deletedValue() { return QChar(-1); }
+        static bool isDeletedValue(const QChar& c) { return false; }
+        static QChar constructDeletedValue(QChar*) { return QChar(-1); }
+    };
+    template<> struct DefaultHash<QChar>
+    {
+        typedef QCharHash Hash;
+    };
+}
 
 namespace WebCore {
 
     struct GlyphMapNode;
 
     typedef HashMap<UChar, RefPtr<GlyphMapNode> > GlyphMapLayer;
+    
 
     struct GlyphMapNode : public RefCounted<GlyphMapNode> {
     private:

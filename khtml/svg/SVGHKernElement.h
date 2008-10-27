@@ -28,9 +28,15 @@
 #include <limits>
 #include "Path.h"
 
+namespace khtml
+{
+    class AtomicString;
+}
+
 namespace WebCore {
 
-    class AtomicString;
+    //class AtomicString;
+    using khtml::AtomicString;
     struct SVGFontData;
 
     // Describe an SVG <hkern> element
@@ -58,6 +64,10 @@ namespace WebCore {
         virtual bool rendererIsNeeded(RenderStyle*) { return false; }
 
         SVGHorizontalKerningPair buildHorizontalKerningPair() const;
+
+        // KHTML ElementImpl pure virtual method
+        virtual quint32 id() const { return SVGNames::textTag.id(); }
+        virtual DOMString tagName() const { return SVGNames::textTag.tagName(); }
     };
 
 } // namespace WebCore

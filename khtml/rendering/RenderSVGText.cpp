@@ -195,13 +195,13 @@ FloatRect RenderSVGText::relativeBBox(bool includeStroke) const
         float strokeWidth = SVGRenderStyle::cssPrimitiveToLength(this, style()->svgStyle()->strokeWidth(), 0.0f);
 
 #if ENABLE(SVG_FONTS)
-        const Font& font = style()->font();
+        /*FIXME khtml const Font& font = style()->font();
         if (font.primaryFont()->isSVGFont()) {
             float scale = font.unitsPerEm() > 0 ? font.size() / font.unitsPerEm() : 0.0f;
 
             if (scale != 0.0f)
                 strokeWidth /= scale;
-        }
+        }*/
 #endif
 
         repaintRect.inflate(strokeWidth);

@@ -19,12 +19,13 @@
 */
 
 #include "config.h"
+#include "wtf/Platform.h"
 
 #if ENABLE(SVG_FONTS)
 #include "SVGFontElement.h"
 
-#include "Font.h"
-#include "GlyphPageTreeNode.h"
+//#include "Font.h"
+//FIXME khtml #include "GlyphPageTreeNode.h"
 #include "SVGGlyphElement.h"
 #include "SVGMissingGlyphElement.h"
 #include "SVGNames.h"
@@ -90,7 +91,9 @@ void SVGFontElement::ensureGlyphCache() const
 // Returns the number of characters consumed or 0 if no range was found.
 static unsigned parseUnicodeRange(const UChar* characters, unsigned length, pair<unsigned, unsigned>& range)
 {
-    if (length < 2)
+    // FIXME khtml
+    return 0;
+    /*if (length < 2)
         return 0;
     if (characters[0] != 'U')
         return 0;
@@ -148,7 +151,7 @@ static unsigned parseUnicodeRange(const UChar* characters, unsigned length, pair
     
     range.first = start;
     range.second = end;
-    return 2 + startLength;
+    return 2 + startLength;*/
 }
     
 static bool parseUnicodeRangeList(const UChar* characters, unsigned length, Vector<pair<unsigned, unsigned> >& ranges)
@@ -173,7 +176,7 @@ static bool parseUnicodeRangeList(const UChar* characters, unsigned length, Vect
             UChar character = remainingCharacters[0];
             if (character == ',')
                 return false;
-            ranges.append(make_pair(character, character));
+            ranges.append(make_pair(character.unicode(), character.unicode()));
             ++remainingCharacters;
             --remainingLength;
         }
