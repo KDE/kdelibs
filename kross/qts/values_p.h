@@ -71,7 +71,7 @@ namespace Kross {
                 }
                 QScriptValueList arguments;
                 foreach(const QVariant &v, args)
-                    arguments << engine()->newVariant(v);
+                    arguments << engine()->toScriptValue(v);
                 QScriptValue result = function.call(m_object, arguments);
                 return result.toVariant();
             }
