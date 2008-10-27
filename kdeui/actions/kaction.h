@@ -427,7 +427,7 @@ public:
      * so it will not be considered anymore for shortcut conflict resolution. It will also not be
      * visible anymore in the shortcuts KControl module.
      * This method should not be used unless these effects are explicitly desired.
-     * @since: 4.1
+     * @since 4.1
      */
     void forgetGlobalShortcut();
 
