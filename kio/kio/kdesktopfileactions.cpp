@@ -57,7 +57,8 @@ bool KDesktopFileActions::run( const KUrl& u, bool _is_local )
 
     if ( cfg.hasDeviceType() )
         return runFSDevice( u, cfg );
-    else if ( cfg.hasApplicationType() )
+    else if ( cfg.hasApplicationType()
+              || (cfg.readType() == "Service" && !cfg.desktopGroup().readEntry("Exec").isEmpty())) // for kio_settings
         return runApplication( u, u.path() );
     else if ( cfg.hasLinkType() )
         return runLink( u, cfg );
