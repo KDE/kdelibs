@@ -165,7 +165,7 @@ public:
 KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url, bool returnLastParent) const // O(depth)
 {
     KUrl url(_url);
-    url.adjustPath(KUrl::RemoveTrailingSlash);
+    url.adjustPath(KUrl::RemoveTrailingSlash); // KDirLister does this too, so we remove the slash before comparing with the root node url.
     url.setQuery(QString());
     url.setRef(QString());
 
@@ -186,7 +186,7 @@ KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url, bool returnLastPar
     if (url.protocol() != nodeUrl.protocol())
         return 0;
 
-    const QString pathStr = url.path();
+    const QString pathStr = url.path(); // no trailing slash
     KDirModelDirNode* dirNode = m_rootNode;
 
     if (!pathStr.startsWith(nodeUrl.path())) {
@@ -194,10 +194,15 @@ KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url, bool returnLastPar
     }
 
     for (;;) {
-        Q_ASSERT(pathStr.startsWith(nodeUrl.path()));
+        const QString nodePath = nodeUrl.path(KUrl::AddTrailingSlash);
+        if(!pathStr.startsWith(nodePath)) {
+            kError(7008) << "The kioslave for" << url.protocol() << "violates the hierarchy structure:"
+                         << "I arrived at node" << nodePath << ", but" << pathStr << "does not start with that path.";
+            return 0;
+        }
 
-        // E.g. pathStr is /a/b/c and nodeUrl is /a. We want to find the child "b" in dirNode.
-        const QString relativePath = pathStr.mid(nodeUrl.path(KUrl::AddTrailingSlash).length());
+        // E.g. pathStr is /a/b/c and nodePath is /a. We want to find the child "b" in dirNode.
+        const QString relativePath = pathStr.mid(nodePath.length());
         Q_ASSERT(!relativePath.startsWith('/')); // huh? we need double-slash simplification?
         const int nextSlash = relativePath.indexOf('/');
         const QString fileName = relativePath.left(nextSlash); // works even if nextSlash==-1
@@ -210,6 +215,7 @@ KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url, bool returnLastPar
                 return 0;
         }
         nodeUrl = urlForNode(node);
+        nodeUrl.adjustPath(KUrl::RemoveTrailingSlash); // #172508
         //kDebug(7008) << " nodeUrl=" << nodeUrl;
         if (nodeUrl == url) {
             //kDebug(7008) << "Found node" << node << "for" << url;
