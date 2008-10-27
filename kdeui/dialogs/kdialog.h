@@ -412,6 +412,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * Returns the number of pixels that should be used to visually
      * separate groups of related options in a dialog according to
      * the KDE standard.
+     * @since 4.2
      */
     static int groupSpacingHint();
 
