@@ -211,9 +211,9 @@ public:
     /**
      * The action to steal the shortcut from.
      */
-    KAction* stealAction;
+    QList<KAction*> stealActions;
 
-    bool stealShortcut(QAction *item, const QKeySequence &seq);
+    bool stealShortcuts(const QList<KAction *> &actions, const QKeySequence &seq);
     void wontStealShortcut(QAction *item, const QKeySequence &seq);
 
 };
@@ -230,19 +230,28 @@ KKeySequenceWidgetPrivate::KKeySequenceWidgetPrivate(KKeySequenceWidget *q)
      ,multiKeyShortcutsAllowed(true)
      ,componentName()
      ,checkAgainstShortcutTypes(KKeySequenceWidget::LocalShortcuts & KKeySequenceWidget::GlobalShortcuts)
-     ,stealAction(NULL)
+     ,stealActions()
 {}
 
 
-bool KKeySequenceWidgetPrivate::stealShortcut(QAction *item, const QKeySequence &seq)
+bool KKeySequenceWidgetPrivate::stealShortcuts(
+        const QList<KAction *> &actions,
+        const QKeySequence &seq)
 {
-    QString title = i18n("Key Conflict");
+    QString title = i18n("Shortcut Conflict(s)");
+
+    QString conflictingShortcuts;
+    Q_FOREACH(const KAction *action, actions) {
+        conflictingShortcuts += i18n("Shortcut(s) '%1' for action '%2'\n",
+                action->shortcut().toString(),
+                action->text().remove('&'));
+    }
     QString message = i18n(
-            "The \"%1\" key sequence conflicts with \"%2\" for the \"%3\" action.\n"
-            "Do you want to assign an empty shortcut to that action?",
+            "The \"%1\" shortcut is ambiguous with the following shortcuts.\n"
+            "Do you want to assign an empty shortcut to these actions?\n"
+            "%2",
             seq.toString(QKeySequence::NativeText),
-            item->shortcut().toString(),
-            item->text().remove('&'));
+            conflictingShortcuts);
 
     if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign"))) != KMessageBox::Continue)
         return false;
@@ -401,25 +410,34 @@ void KKeySequenceWidget::clearKeySequence()
 //slot
 void KKeySequenceWidget::applyStealShortcut()
 {
-    if(d->stealAction) {
+    QSet<KActionCollection *> changedCollections;
+
+    Q_FOREACH (KAction *stealAction, d->stealActions) {
 
         // Stealing a shortcut means setting it to an empty one.
-        d->stealAction->setShortcut(KShortcut(), KAction::ActiveShortcut);
+        stealAction->setShortcut(KShortcut(), KAction::ActiveShortcut);
 
         // The following code will find the action we are about to
         // steal from and save it's actioncollection.
-                KActionCollection* parentCollection = 0;
-                foreach(KActionCollection* collection, d->checkActionCollections) {
-                    if (collection->actions().contains(d->stealAction)) {
-                        parentCollection = collection;
-                        break;
-                    }
-                }
-                if (parentCollection) {
-            parentCollection->writeSettings();
+        KActionCollection* parentCollection = 0;
+        foreach(KActionCollection* collection, d->checkActionCollections) {
+            if (collection->actions().contains(stealAction)) {
+                parentCollection = collection;
+                break;
+            }
+        }
+
+        // Remember the changed collection
+        if (parentCollection) {
+            changedCollections.insert(parentCollection);
         }
     }
-    d->stealAction = NULL;
+
+    Q_FOREACH (KActionCollection *col, changedCollections) {
+            col->writeSettings();
+    }
+
+    d->stealActions.clear();
 }
 
 void KKeySequenceButton::setText(const QString &text)
@@ -453,7 +471,7 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
     isRecording = false;
     keyButton->releaseKeyboard();
     keyButton->setDown(false);
-    stealAction = NULL;
+    stealActions.clear();
 
     if (keySequence==oldKeySequence) {
         // The sequence hasn't changed
@@ -526,6 +544,25 @@ bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &k
         allActions += collection->actions();
     }
 
+    // Because of multikey shortcuts we can have clashes with many shortcuts.
+    //
+    // Example 1:
+    //
+    // Application currently uses 'CTRL-X,a', 'CTRL-X,f' and 'CTRL-X,CTRL-F'
+    // and the user wants to use 'CTRL-X'. 'CTRL-X' will only trigger as
+    // 'activatedAmbiguously()' for obvious reasons.
+    //
+    // Example 2:
+    //
+    // Application currently uses 'CTRL-X'. User wants to use 'CTRL-X,CTRL-F'.
+    // This will shadow 'CTRL-X' for the same reason as above.
+    //
+    // Example 3:
+    //
+    // Some weird combination of Example 1 and 2 with three shortcuts using
+    // 1/2/3 key shortcuts. I think you can imagine.
+    QList<KAction*> conflictingActions;
+
     //find conflicting shortcuts with existing actions
     foreach(QAction * qaction , allActions ) {
         KAction *kaction=qobject_cast<KAction*>(qaction);
@@ -534,17 +571,7 @@ bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &k
                 // A conflict with a KAction. If that action is configurable
                 // ask the user what to do. If not reject this keySequence.
                 if(kaction->isShortcutConfigurable ()) {
-                    if(stealShortcut(kaction, keySequence)) {
-                        stealAction = kaction;
-                        // Announce that the user
-                        // agreed
-                        emit q->stealShortcut(
-                            keySequence,
-                            stealAction);
-                        break;
-                    } else {
-                        return true;
-                    }
+                    conflictingActions.append(kaction);
                 } else {
                     wontStealShortcut(kaction, keySequence);
                     return true;
@@ -560,7 +587,24 @@ bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &k
         }
     }
 
-    return false;
+    if (conflictingActions.isEmpty()) {
+        // No conflicting shortcuts found.
+        return false;
+    }
+
+    if(stealShortcuts(conflictingActions, keySequence)) {
+        stealActions = conflictingActions;
+        // Announce that the user
+        // agreed
+        Q_FOREACH (KAction *stealAction, stealActions) {
+            emit q->stealShortcut(
+                keySequence,
+                stealAction);
+        }
+        return false;
+    } else {
+        return true;
+    }
 }
 
 
