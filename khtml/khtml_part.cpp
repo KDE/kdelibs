@@ -1924,7 +1924,7 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
     d->m_doc = DOMImplementationImpl::instance()->createSVGDocument( d->m_view );
   } else {
     if ( servedAsXML && !servedAsXHTML ) { // any XML derivative, except XHTML
-      d->m_doc = DOMImplementationImpl::instance()->createDocument( d->m_view );
+      d->m_doc = DOMImplementationImpl::instance()->createXMLDocument( d->m_view );
     } else {
       d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
       // HTML or XHTML? (#86446)

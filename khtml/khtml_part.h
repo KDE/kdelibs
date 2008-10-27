@@ -52,6 +52,7 @@ namespace DOM
   class HTMLDocumentImpl;
   class DocumentImpl;
   class Document;
+  class XMLDocumentImpl;
   class HTMLTitleElementImpl;
   class HTMLFrameElementImpl;
   class HTMLIFrameElementImpl;

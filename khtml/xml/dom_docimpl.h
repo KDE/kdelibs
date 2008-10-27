@@ -78,6 +78,7 @@ namespace DOM {
     class CommentImpl;
     class DocumentFragmentImpl;
     class DocumentImpl;
+    class XMLDocumentImpl;
     class DocumentType;
     class DocumentTypeImpl;
     class EditingTextImpl;
@@ -124,6 +125,7 @@ public:
 
     // Other methods (not part of DOM)
     DocumentImpl *createDocument( KHTMLView *v = 0 );
+    XMLDocumentImpl *createXMLDocument( KHTMLView *v = 0 );
     HTMLDocumentImpl *createHTMLDocument( KHTMLView *v = 0 );
     WebCore::SVGDocument *createSVGDocument( KHTMLView *v = 0 );
 
@@ -782,6 +784,14 @@ protected:
     DOMString m_publicId;
     DOMString m_systemId;
     DOMString m_subset;
+};
+
+class XMLDocumentImpl : public DocumentImpl
+{
+public:
+    XMLDocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v) : DocumentImpl(_implementation, v) { }
+
+    virtual void close (  );
 };
 
 } //namespace

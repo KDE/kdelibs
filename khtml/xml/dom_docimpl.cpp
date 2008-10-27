@@ -257,6 +257,13 @@ DocumentImpl *DOMImplementationImpl::createDocument( KHTMLView *v )
     return doc;
 }
 
+XMLDocumentImpl *DOMImplementationImpl::createXMLDocument( KHTMLView *v )
+{
+    XMLDocumentImpl* doc = new XMLDocumentImpl(this, v);
+
+    return doc;
+}
+
 HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v )
 {
     HTMLDocumentImpl* doc = new HTMLDocumentImpl(this, v);
@@ -3106,6 +3113,17 @@ NamedNodeMapImpl * DocumentTypeImpl::notations() const
         m_notations->ref();
     }
     return m_notations;
+}
+
+void XMLDocumentImpl::close()
+{
+    bool doload = !parsing() && m_tokenizer;
+
+    DocumentImpl::close();
+
+    if (doload) {
+        document()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+    }
 }
 
 #include "dom_docimpl.moc"
