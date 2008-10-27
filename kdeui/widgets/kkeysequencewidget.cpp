@@ -26,6 +26,7 @@
 
 #include <QKeyEvent>
 #include <QTimer>
+#include <QtCore/QHash>
 #include <QHBoxLayout>
 #include <QToolButton>
 #include <QApplication>
@@ -454,17 +455,20 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
     keyButton->setDown(false);
     stealAction = NULL;
 
-    if (validate && !q->isKeySequenceAvailable(keySequence)) {
-        keySequence = oldKeySequence;
+    if (keySequence==oldKeySequence) {
+        // The sequence hasn't changed
         updateShortcutDisplay();
         return;
     }
 
-    updateShortcutDisplay();
-    if (keySequence!=oldKeySequence) {
+    if (validate && !q->isKeySequenceAvailable(keySequence)) {
+        // The sequence had conflicts and the user said no to stealing it
+        keySequence = oldKeySequence;
+    } else {
         emit q->keySequenceChanged(keySequence);
     }
-    return;
+
+    updateShortcutDisplay();
 }
 
 
