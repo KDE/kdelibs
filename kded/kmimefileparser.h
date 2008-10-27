@@ -59,6 +59,7 @@ public:
     typedef QHash<QString, GlobList> AllGlobs;
     typedef QHashIterator<QString, GlobList> AllGlobsIterator;
 
+    static AllGlobs parseGlobFiles(const QStringList& globFiles, QStringList& parsedFiles);
     static AllGlobs parseGlobFile(QIODevice* file, Format format);
 
     // Retrieve the result of the parsing
@@ -67,7 +68,7 @@ public:
 
 private:
     KMimeTypeFactory* m_mimeTypeFactory;
-    QHash<QString, GlobList> m_mimeTypeGlobs;
+    AllGlobs m_mimeTypeGlobs;
     QStringList m_allMimeTypes;
 };
 

@@ -175,8 +175,109 @@ private Q_SLOTS:
         QVERIFY(!textPlain->patterns().contains("*.exttoberemoved"));
     }
 
+    void testGlobMatchingPerformance_data()
+    {
+        QTest::addColumn<QString>("fileName");
+        QTest::addColumn<QString>("expectedMimeType");
+
+        QTest::newRow("text") << "textfile.txt" << "text/plain";
+        QTest::newRow("case-insensitive search") << "textfile.TxT" << "text/plain";
+        QTest::newRow("glob that ends with *, extension") << "README.foo" << "text/x-readme";
+        QTest::newRow("doesn't exist, no extension") << "IDontExist" << "";
+        QTest::newRow("random other case") << "foo.wvc" << "audio/x-wavpack-correction";
+        QTest::newRow("the .tar.bz2 case; can't stop on short match") << "foo.tar.bz2" << "application/x-bzip-compressed-tar";
+        // DF: For repeat=100, on AMD Athlon(tm) 64 X2 Dual Core Processor 3800+, I get:
+        // (mimetype: time with ksycoca, time with linear search)
+        // text: 7, 10
+        // case-insensitive: 11, 34
+        // README*: 9, 9
+        // doesn't exist: 6, 44
+        // random other: 6, 10
+        // tar.bz2: 9, 9
+
+        // Prepare m_globList
+        QVERIFY(m_globList.isEmpty());
+        const QStringList globFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "globs");
+        QStringList parsedFiles;
+        KMimeFileParser::AllGlobs allGlobs = KMimeFileParser::parseGlobFiles(globFiles, parsedFiles);
+        // Turn into a linear list, faster than calling QHash::value() for each mime during matching
+        const QStringList allMimes = allGlobs.uniqueKeys();
+        Q_FOREACH(const QString& mime, allMimes) {
+            const KMimeFileParser::GlobList globs = allGlobs.value(mime);
+            KMimeType::Ptr mimeptr = KMimeType::mimeType(mime, KMimeType::ResolveAliases);
+            if (!mimeptr) {
+                kWarning() << "Unknown mimetype" << mime;
+                continue;
+            }
+            int offset = mimeptr->offset();
+            Q_FOREACH(const KMimeFileParser::Glob& glob, globs) {
+                m_globList.append(KMimeTypeFactory::OtherPattern(glob.pattern,
+                                                                 offset,
+                                                                 glob.weight));
+            }
+        }
+        kDebug() << allMimes.count() << "mimetypes," << m_globList.count() << "patterns";
+    }
+
+    void testGlobMatchingPerformance()
+    {
+        QFETCH(QString, fileName);
+        QFETCH(QString, expectedMimeType);
+
+        // Is the fast pattern dict worth it? (answer: yes)
+        QTime dt; dt.start();
+        const int repeat = 100;
+        // To investigate the difference if sycoca is slower than linear search,
+        // comment out one block, callgrind, comment out the other block, callgrind, and compare.
+#if 1
+        for (int i = 0; i < repeat; ++i) {
+            QList<KMimeType::Ptr> mimeList = KMimeTypeFactory::self()->findFromFileName(fileName);
+            QString mime = mimeList.isEmpty() ? QString() : mimeList.first()->name();
+            QCOMPARE(mime, expectedMimeType);
+        }
+        qDebug() << "Lookup using ksycoca:" << dt.elapsed();
+#endif
+#if 1
+        dt.start();
+        for (int i = 0; i < repeat; ++i) {
+            QString mime = matchGlobHelper(m_globList, fileName, i==0);
+            if (mime.isEmpty()) {
+                const QString lowerCase = fileName.toLower();
+                mime = matchGlobHelper(m_globList, lowerCase, i==0);
+            }
+            QCOMPARE(mime, expectedMimeType);
+        }
+        qDebug() << "Lookup using linear search:" << dt.elapsed();
+#endif
+    }
+
+private:
+    QString matchGlobHelper(const KMimeTypeFactory::OtherPatternList& globs, const QString& fileName, bool verbose)
+    {
+        QString mime;
+        bool found = false;
+        int numPatterns = 0;
+        Q_FOREACH(const KMimeTypeFactory::OtherPattern& glob, globs) {
+            ++numPatterns;
+            if (KMimeTypeFactory::matchFileName(fileName, glob.pattern)) {
+                found = true;
+                KMimeType* ptr = KMimeTypeFactory::self()->createEntry(glob.offset);
+                Q_ASSERT(ptr);
+                mime = ptr->name();
+                delete ptr;
+            }
+            if (found)
+                break;
+        }
+        Q_UNUSED(verbose);
+        //if (verbose)
+        //    kDebug() << "Tested" << numPatterns << "patterns, found" << mime;
+        return mime;
+    }
+
 private:
     FakeMimeTypeFactory* m_factory;
+    KMimeTypeFactory::OtherPatternList m_globList;
 };
 
 QTEST_KDEMAIN( KMimeFileParserTest, NoGUI )

@@ -41,30 +41,7 @@ void KMimeFileParser::parseGlobs()
 void KMimeFileParser::parseGlobs(const QStringList& globFiles)
 {
     QStringList parsedFiles;
-    QListIterator<QString> globIter(globFiles);
-    globIter.toBack();
-    // At each level, we must be able to override (not just add to) the information that we read at higher levels.
-    // This is why we don't directly call mimetype->addPattern, nor can we use the same qhash for everything.
-    while (globIter.hasPrevious()) { // global first, then local
-        Format format = OldGlobs;
-        QString fileName = globIter.previous();
-        QString fileNamev2 = fileName + '2'; // NOTE: this relies on u-m-d always generating the old globs file
-        if (QFile::exists(fileNamev2)) {
-            fileName = fileNamev2;
-            format = Globs2WithWeight;
-        }
-        parsedFiles << fileName;
-        QFile globFile(fileName);
-        kDebug(7021) << "Now parsing" << fileName;
-        const QHash<QString, GlobList> thisLevelGlobs = parseGlobFile(&globFile, format);
-        if (m_mimeTypeGlobs.isEmpty())
-            m_mimeTypeGlobs = thisLevelGlobs;
-        else {
-            // We insert stuff multiple times into the hash, and we only look at the last inserted later on.
-            m_mimeTypeGlobs.unite(thisLevelGlobs);
-        }
-    }
-
+    m_mimeTypeGlobs = parseGlobFiles(globFiles, parsedFiles);
     m_allMimeTypes = m_mimeTypeGlobs.uniqueKeys();
 
     // This is just to fill in KMimeType::patterns. This has no real effect
@@ -82,6 +59,35 @@ void KMimeFileParser::parseGlobs(const QStringList& globFiles)
             mimeType->setPatterns(patterns);
         }
     }
+}
+
+KMimeFileParser::AllGlobs KMimeFileParser::parseGlobFiles(const QStringList& globFiles, QStringList& parsedFiles)
+{
+    KMimeFileParser::AllGlobs allGlobs;
+    QListIterator<QString> globIter(globFiles);
+    globIter.toBack();
+    // At each level, we must be able to override (not just add to) the information that we read at higher levels.
+    // This is why we don't directly call mimetype->addPattern, nor can we use the same qhash for everything.
+    while (globIter.hasPrevious()) { // global first, then local
+        Format format = OldGlobs;
+        QString fileName = globIter.previous();
+        QString fileNamev2 = fileName + '2'; // NOTE: this relies on u-m-d always generating the old globs file
+        if (QFile::exists(fileNamev2)) {
+            fileName = fileNamev2;
+            format = Globs2WithWeight;
+        }
+        parsedFiles << fileName;
+        QFile globFile(fileName);
+        kDebug(7021) << "Now parsing" << fileName;
+        const QHash<QString, GlobList> thisLevelGlobs = parseGlobFile(&globFile, format);
+        if (allGlobs.isEmpty())
+            allGlobs = thisLevelGlobs;
+        else {
+            // We insert stuff multiple times into the hash, and we only look at the last inserted later on.
+            allGlobs.unite(thisLevelGlobs);
+        }
+    }
+    return allGlobs;
 }
 
 // uses a QIODevice to make unit tests possible
