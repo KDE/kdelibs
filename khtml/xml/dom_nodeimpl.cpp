@@ -37,6 +37,7 @@
 #include "xml/dom_selection.h"
 #include "dom_restyler.h"
 #include "ClassNodeList.h"
+#include "html/html_objectimpl.h"
 
 #include <kglobal.h>
 #include <kdebug.h>
@@ -564,25 +565,11 @@ void NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableAr
     if (!evt->defaultPrevented())
 	doc->defaultEventHandler(evt);
 
-    if (_id == EventImpl::LOAD_EVENT && !evt->propagationStopped()) {
-        // For onload events, send them to the enclosing frame only.
-        // This is a DOM extension and is independent of bubbling/capturing rules of
-        // the DOM.  You send the event only to the enclosing frame.  It does not
-        // bubble through the parent document.
-        DOM::ElementImpl* elt = doc->ownerElement();
-        if (elt && (elt->document()->domain().isNull() ||
-                    elt->document()->domain() == doc->domain())) {
-            // We also do a security check, since we don't want to allow the enclosing
-            // iframe to see loads of child documents in other domains.
-            evt->setCurrentTarget(elt);
-
-            // Capturing first.
-            elt->handleLocalEvents(evt,true);
-
-            // Bubbling second.
-            if (!evt->propagationStopped())
-                elt->handleLocalEvents(evt,false);
-        }
+    if (_id == EventImpl::LOAD_EVENT) {
+        // Trigger Load Event on the enclosing frame if there is one
+        DOM::HTMLPartContainerElementImpl* elt = doc->ownerElement();
+        if (elt)
+            elt->slotEmitLoadEvent();
     }
 
     doc->deref();

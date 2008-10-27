@@ -5206,6 +5206,9 @@ void KHTMLPart::slotChildCompleted( bool pendingAction )
     child->m_bPendingRedirection = pendingAction;
     child->m_args = KParts::OpenUrlArguments();
     child->m_browserArgs = KParts::BrowserArguments();
+    // dispatch load event
+    if (!qobject_cast<KHTMLPart*>(child->m_part))
+        QTimer::singleShot(0, child->m_partContainerElement, SLOT(slotEmitLoadEvent()));
   }
   checkCompleted();
 }

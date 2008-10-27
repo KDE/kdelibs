@@ -44,6 +44,7 @@ class HTMLEmbedElementImpl;
 // frames, objects, applets, etc.
 class HTMLPartContainerElementImpl : public QObject, public HTMLElementImpl
 {
+    Q_OBJECT
 public:
     HTMLPartContainerElementImpl(DocumentImpl *doc);
     ~HTMLPartContainerElementImpl();
@@ -74,6 +75,8 @@ public:
     void clearChildWidget();
     QWidget* childWidget() const { return m_childWidget; }
 
+public slots:
+    void slotEmitLoadEvent();
 private:
     friend class ::KHTMLPart;
     // This is called by KHTMLPart to notify us of the new widget.
@@ -130,7 +133,6 @@ public:
 protected slots:
     void slotRerender();
     void slotPartLoadingErrorNotify();
-    void slotEmitLoadEvent();
 protected:
     DOMString     m_name;
 };

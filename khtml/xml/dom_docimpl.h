@@ -88,6 +88,7 @@ namespace DOM {
     class EventListener;
     class HTMLDocumentImpl;
     class HTMLElementImpl;
+    class HTMLPartContainerElementImpl;
     class HTMLImageElementImpl;
     class JSEditor;
     class NodeFilter;
@@ -531,7 +532,7 @@ public:
 
     // Returns the owning element in the parent document.
     // Returns 0 if this is the top level document.
-    ElementImpl *ownerElement() const;
+    HTMLPartContainerElementImpl *ownerElement() const;
 
     DOMString domain() const;
     void setDomain( const DOMString &newDomain ); // not part of the DOM

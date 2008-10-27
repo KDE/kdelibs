@@ -2793,7 +2793,7 @@ void DocumentImpl::timerEvent(QTimerEvent *)
     m_decoderMibEnum = codec->mibEnum();
 }*/
 
-ElementImpl *DocumentImpl::ownerElement() const
+HTMLPartContainerElementImpl *DocumentImpl::ownerElement() const
 {
     KHTMLPart *childPart = part();
     if (!childPart)
@@ -2801,8 +2801,7 @@ ElementImpl *DocumentImpl::ownerElement() const
     ChildFrame *childFrame = childPart->d->m_frame;
     if (!childFrame)
         return 0;
-    ElementImpl *el = childFrame->m_partContainerElement;
-    return el;
+    return childFrame->m_partContainerElement;
 }
 
 DOMString DocumentImpl::domain() const
