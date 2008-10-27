@@ -1,0 +1,192 @@
+<?xml version="1.0" ?>
+<!DOCTYPE refentry PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
+  <!ENTITY % English "INCLUDE"><!-- change language only here -->
+]>
+
+<refentry>
+
+<refentryinfo>
+<title>&kde; User's Manual</title>
+
+<author>
+<firstname>Harri</firstname>
+<surname>Porten</surname>
+<affiliation>
+<address><email>porten@kde.org</email></address>
+</affiliation>
+</author>
+
+<date>2008-10-15</date>
+<releaseinfo>0.01.01</releaseinfo>
+
+</refentryinfo>
+
+<refmeta>
+<refentrytitle><command>kjs</command></refentrytitle>
+<manvolnum>1</manvolnum>
+</refmeta>
+
+<refnamediv>
+<refname><command>kjs</command></refname>
+<refpurpose>&kde; ECMAScript compatible interpreter</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<title>Synopsis</title>
+
+<cmdsynopsis>
+<command>kjs</command>
+
+<group>
+<arg choice="opt">--help</arg>
+<arg choice="opt">-help</arg>
+<arg choice="opt">-h</arg>
+</group>
+<!--
+<arg choice="opt">Generic-options</arg>
+<arg choice="opt">Qt-options</arg>
+<arg choice="opt">KDE-options</arg>
+-->
+<group>
+<arg choice="opt">-e<replaceable> statement</replaceable></arg>
+</group>
+<group>
+<arg choice="plain"><replaceable>script</replaceable></arg>
+</group>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1>
+<title>Description</title>
+
+<para><command>kjs</command> is KDE ECMAScript/JavaScript engine.
+</para>
+</refsect1>
+<!--
+<refsect1>
+<title>Generic Options</title>
+<para>
+<variablelist>
+
+<varlistentry>
+<term><option>- -author</option></term>
+<listitem>
+<para>
+Show author information.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>- -help</option></term>
+<listitem>
+<para>
+Show help about options.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>- -help-all</option></term>
+<listitem>
+<para>
+Show all options.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>- -help-kde</option></term>
+<listitem>
+<para>
+Show KDE specific options.
+</para>
+
+
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>- -help-qt</option></term>
+<listitem>
+<para>
+Show Qt specific options.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>- -license</option></term>
+<listitem>
+<para>
+Show license information.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>-v</option><option>- -version</option></term>
+<listitem>
+<para>
+Show version information
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</para>
+</refsect1>
+-->
+<refsect1>
+<title>Application Options</title>
+<variablelist>
+
+<varlistentry>
+<term><option>--help</option>,<option>-help</option>,<option>-h</option></term>
+<listitem>
+<para>
+Show <command>kjscmd</command> usage.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>-e</option><parameter> statement</parameter></term>
+<listitem>
+<para>Executes the statement and exits. For example:</para>
+<screen><command>kjs</command> -e "print('hello world')"</screen>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><parameter>script</parameter></term>
+<listitem>
+<para>Executes the statements included in file <parameter>script</parameter>.</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+
+</refsect1>
+
+<refsect1>
+<title>Usage</title>
+<para>
+<command>kjs</command> <parameter>file</parameter>, as many other interpreters, when called without parameters
+uses a line editor to enter statements, showing the prompt 
+<literallayout>JS></literallayout>
+To exit the line editor type <command>quit()</command> or press <command>Ctrl+D</command>.
+</para>
+</refsect1>
+
+<refsect1>
+<title>See Also</title>
+<para><replaceable>kjs</replaceable>(1)</para>
+</refsect1>
+
+<refsect1>
+<title>Bugs</title>
+<para>There are probably tons of bugs. Use http://bugs.kde.org to report them.</para>
+</refsect1>
+
+</refentry>

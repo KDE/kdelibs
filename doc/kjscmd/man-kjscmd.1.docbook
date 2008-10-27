@@ -1,0 +1,206 @@
+<?xml version="1.0" ?>
+<!DOCTYPE refentry PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
+  <!ENTITY % English "INCLUDE"><!-- change language only here -->
+]>
+
+<refentry>
+
+<refentryinfo>
+<title>&kde; User's Manual</title>
+
+<!-- with help from http://linuxcommand.org/man_pages/kjscmd1.html -->
+
+<author>
+<firstname>Harri</firstname>
+<surname>Porten</surname>
+<affiliation>
+<address><email>porten@kde.org</email></address>
+</affiliation>
+</author>
+
+<date>2008-10-16</date>
+<releaseinfo>0.01.01</releaseinfo>
+
+</refentryinfo>
+
+<refmeta>
+<refentrytitle><command>kjscmd</command></refentrytitle>
+<manvolnum>1</manvolnum>
+</refmeta>
+
+<refnamediv>
+<refname><command>kjscmd</command></refname>
+<refpurpose>&kde; translator for XML</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<title>Synopsis</title>
+
+<cmdsynopsis>
+<command>kjscmd</command>
+
+<arg choice="opt">--help</arg>
+<!--
+<arg choice="opt">Generic-options</arg>
+<arg choice="opt">Qt-options</arg>
+<arg choice="opt">KDE-options</arg>
+-->
+<group>
+<arg choice="opt">-e</arg>
+<arg choice="opt">--exec</arg>
+</group>
+<group>
+<arg choice="opt">-i</arg>
+<arg choice="opt">-interactive</arg>
+</group>
+<group>
+<arg choice="opt">-n</arg>
+<arg choice="opt">-no-kde</arg>
+</group>
+<arg choice="opt">file</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1>
+<title>Description</title>
+
+<para><command>kjscmd</command> is a tool for launching KJSEmbed scripts from the command line.
+It will run the scripts contained in the named <parameter>file</parameter> using KJSEmbed.
+It does not accept - (stdin) as a <parameter>file</parameter>.
+</para>
+</refsect1>
+<!--
+<refsect1>
+<title>Generic Options</title>
+<para>
+<variablelist>
+
+<varlistentry>
+<term><option>- -author</option></term>
+<listitem>
+<para>
+Show author information.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>- -help</option></term>
+<listitem>
+<para>
+Show help about options.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>- -help-all</option></term>
+<listitem>
+<para>
+Show all options.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>- -help-kde</option></term>
+<listitem>
+<para>
+Show KDE specific options.
+</para>
+
+
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>- -help-qt</option></term>
+<listitem>
+<para>
+Show Qt specific options.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>- -license</option></term>
+<listitem>
+<para>
+Show license information.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>-v</option><option>- -version</option></term>
+<listitem>
+<para>
+Show version information
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</para>
+</refsect1>
+-->
+
+<refsect1>
+<title>Application Options</title>
+<variablelist>
+
+<varlistentry>
+<term><option>-e</option>,<option>--exec</option></term>
+<listitem>
+<para>
+execute script in <parameter>file</parameter> without gui support.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>-i</option>,<option>--interactive</option></term>
+<listitem>
+<para>start interactive <command>kjs</command> interpreter.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>-n</option><option>--no-kde</option></term>
+<listitem>
+<para>start without &kde; KApplication support.</para>
+</listitem>
+</varlistentry>
+
+
+</variablelist>
+
+</refsect1>
+
+<refsect1>
+<title>Usage</title>
+<para>
+The most common way to run <command>kjscmd</command> is simply as
+<literallayout>
+<userinput><command>kjscmd</command> <parameter>file</parameter>
+</userinput>
+</literallayout>
+If no parameter <parameter>file</parameter> is used, it executes a predefined test 
+script that measures the start speed of <command>kjscmd</command>.
+</para>
+</refsect1>
+
+<refsect1>
+<title>See Also</title>
+<para><replaceable>kjs</replaceable>(1)</para>
+</refsect1>
+
+<refsect1>
+<title>Bugs</title>
+<para>There are probably tons of bugs. Use http://bugs.kde.org to report them.</para>
+</refsect1>
+
+</refentry>
+
+
+
