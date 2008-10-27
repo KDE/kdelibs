@@ -126,6 +126,9 @@
 <!ENTITY kicker-miejscownik    '<application>Kickerze</application>'>
 <!ENTITY kicker    '&kicker-mianownik;'>
 
+<!ENTITY kickoff-mianownik    '<application>Kickoff</application>'>
+<!ENTITY kickoff    '&kickoff-mianownik;'>
+
 <!ENTITY klipper-mianownik    '<application>Klipper</application>'>
 <!ENTITY klipper-dopelniacz    '<application>Klippera</application>'>
 <!ENTITY klipper-celownik    '<application>Klipperowi</application>'>
@@ -230,6 +233,14 @@
 <!ENTITY Linux-narzednik    'Linuksem'>
 <!ENTITY Linux-miejscownik    'Linuksie'>
 <!ENTITY Linux    '&Linux-mianownik;'>
+
+<!ENTITY Mozilla-mianownik    'Mozilla'>
+<!ENTITY Mozilla-dopelniacz    'Mozilli'>
+<!ENTITY Mozilla-celownik    'Mozilli'>
+<!ENTITY Mozilla-biernik    'Mozillę'>
+<!ENTITY Mozilla-narzednik    'Mozilli'>
+<!ENTITY Mozilla-miejscownik    'Mozilli'>
+<!ENTITY Mozilla    '&Mozilla-mianownik;'>
 
 <!ENTITY noatun-mianownik    '<application>Noatun</application>'>
 <!ENTITY noatun-dopelniacz    '<application>Noatuna</application>'>
