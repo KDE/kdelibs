@@ -2501,14 +2501,13 @@ void KDirLister::Private::redirect( const KUrl& oldUrl, const KUrl& newUrl )
         url = newUrl;
     }
 
-    kDebug() << "LSTDIRS" << lstDirs;
-    kDebug() << "OLD" << oldUrl;
-    kDebug() << "NEW" << newUrl;
-    kDebug() << "IDX" << lstDirs.indexOf( oldUrl );
-    kDebug() << "LSTCOUNT" << lstDirs.count();
-    kDebug() << oldUrl.toEncoded();
-    kDebug() << lstDirs.at(0).toEncoded();
-    lstDirs[ lstDirs.indexOf( oldUrl ) ] = newUrl;
+    const int idx = lstDirs.indexOf( oldUrl );
+    if (idx == -1) {
+        kWarning(7004) << "Unexpected redirection from" << oldUrl << "to" << newUrl
+                       << "but this dirlister is currently listing" << lstDirs;
+    } else {
+        lstDirs[ idx ] = newUrl;
+    }
 
     if ( lstDirs.count() == 1 ) {
         emit m_parent->clear();
