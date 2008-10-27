@@ -226,6 +226,13 @@ public:
      */
     KDE_DEPRECATED void setCheckActionList(const QList<QAction*> &checkList);
 
+	/**
+	 * If the component using this widget supports shortcuts contexts, it has
+	 * to set the it's component name so we can check conflicts correctly.
+	 */
+	void setComponentName(const QString &componentName);
+
+
 Q_SIGNALS:
 
 	/**

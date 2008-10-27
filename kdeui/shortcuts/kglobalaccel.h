@@ -87,6 +87,8 @@ public:
      *
      * @param component the name of the component. KComponentData::componentName
      * @param context the name of the context.
+     *
+     * @since 4.2
      */
     static void activateGlobalShortcutContext(
             const QString &contextUnique,
@@ -99,6 +101,8 @@ public:
      * If the list contains more that one entry it means the component
      * that registered the shortcuts uses global shortcut contexts. All
      * returned shortcuts belong to the same component.
+     *
+     * @since 4.2
      */
     static QList<KGlobalShortcutInfo> getGlobalShortcutsByKey(const QKeySequence &seq);
 
@@ -107,10 +111,12 @@ public:
      * component is only of interest if the current application uses global shortcut
      * contexts. In that case a global shortcut by @p component in an inactive
      * global shortcut contexts does not block the @p seq for us.
+     *
+     * @since 4.2
      */
     static bool isGlobalShortcutAvailable(
             const QKeySequence &seq,
-            const KComponentData &component = KGlobal::mainComponent());
+            const QString &component = QString());
 
     /**
      * Show a messagebox to inform the user that a global shorcut is already occupied,
@@ -118,6 +124,8 @@ public:
      * be actually changed.
      *
      * @see stealShortcutSystemwide()
+     *
+     * @since 4.2
      */
     static bool promptStealShortcutSystemwide(
             QWidget *parent,

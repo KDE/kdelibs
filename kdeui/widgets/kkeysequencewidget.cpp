@@ -192,6 +192,7 @@ public:
     uint modifierKeys;
     bool isRecording;
     bool multiKeyShortcutsAllowed;
+    QString componentName;
 
     //! Check the key sequence against KStandardShortcut::find()
     KKeySequenceWidget::ShortcutTypes checkAgainstShortcutTypes;
@@ -226,6 +227,7 @@ KKeySequenceWidgetPrivate::KKeySequenceWidgetPrivate(KKeySequenceWidget *q)
      ,modifierKeys(0)
      ,isRecording(false)
      ,multiKeyShortcutsAllowed(true)
+     ,componentName()
      ,checkAgainstShortcutTypes(KKeySequenceWidget::LocalShortcuts & KKeySequenceWidget::GlobalShortcuts)
      ,stealAction(NULL)
 {}
@@ -302,6 +304,11 @@ KKeySequenceWidget::ShortcutTypes KKeySequenceWidget::checkForConflictsAgainst()
     return d->checkAgainstShortcutTypes;
 }
 
+
+void KKeySequenceWidget::setComponentName(const QString &componentName)
+{
+    d->componentName = componentName;
+}
 
 bool KKeySequenceWidget::multiKeyShortcutsAllowed() const
 {
@@ -473,7 +480,7 @@ bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &
     for (uint i=0; i<keySequence.count(); ++i) {
         QKeySequence tmp(keySequence[i]);
 
-        if (!KGlobalAccel::isGlobalShortcutAvailable(tmp)) {
+        if (!KGlobalAccel::isGlobalShortcutAvailable(tmp, componentName)) {
                 others.insert(tmp, KGlobalAccel::getGlobalShortcutsByKey(tmp));
         }
     }

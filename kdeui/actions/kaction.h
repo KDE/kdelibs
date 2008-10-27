@@ -466,8 +466,9 @@ Q_SIGNALS:
     void globalShortcutChanged(const QKeySequence&);
 
 private:
-    friend class KGlobalAccelPrivate;
-    friend class KActionCollectionPrivate;
+    friend class KGlobalAccelPrivate; // Needs access to the component
+    friend class KActionCollectionPrivate; // Needs access to the component
+    friend class KShortcutsEditorDelegate; // Needs access to the component
     Q_PRIVATE_SLOT(d, void slotTriggered())
     class KActionPrivate* const d;
     friend class KActionPrivate;

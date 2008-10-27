@@ -26,6 +26,7 @@
 
 
 #include "kshortcutsdialog_p.h"
+#include "kaction_p.h"
 
 #include <QApplication>
 #include <QHeaderView>
@@ -168,8 +169,11 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
                     action, SIGNAL(globalShortcutChanged(QKeySequence)),
                     editor, SLOT(setKeySequence(QKeySequence)));
                 editor->setMultiKeyShortcutsAllowed(false);
+                KAction *kaction = qobject_cast<KAction*>(action);
+                if (kaction) {
+                    editor->setComponentName(kaction->d->componentData.componentName());
                 }
-
+            }
 
             m_editor = editor;
             // For global shortcuts check against the kde standard shortcuts

@@ -408,10 +408,12 @@ QList<KGlobalShortcutInfo> KGlobalAccel::getGlobalShortcutsByKey(const QKeySeque
 }
 
 
-bool KGlobalAccel::isGlobalShortcutAvailable(const QKeySequence &seq, const KComponentData &comp)
+bool KGlobalAccel::isGlobalShortcutAvailable(const QKeySequence &seq, const QString &comp)
 {
-        return self()->d->iface.isGlobalShortcutAvailable(seq[0], comp.aboutData()->programName());
+        return self()->d->iface.isGlobalShortcutAvailable(seq[0], comp);
 }
+
+
 //static
 bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier,
                                                  const QKeySequence &seq)

@@ -184,6 +184,9 @@ public:
     void setMultiKeyShortcutsAllowed(bool);
     //@}
 
+    //! @see KKeySequenceWidget::setComponentName
+    void setComponentName(const QString componentName);
+
 public Q_SLOTS:
 
     //! Set the displayed sequences

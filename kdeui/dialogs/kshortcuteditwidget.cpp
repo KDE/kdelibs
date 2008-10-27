@@ -126,6 +126,12 @@ void ShortcutEditWidget::setCheckForConflictsAgainst(KKeySequenceWidget::Shortcu
 }
 
 
+void ShortcutEditWidget::setComponentName(const QString componentName)
+{
+    m_customEditor->setComponentName(componentName);
+}
+
+
 void ShortcutEditWidget::setMultiKeyShortcutsAllowed(bool allowed)
 {
     // We just forward them to out KKeySequenceWidget.
