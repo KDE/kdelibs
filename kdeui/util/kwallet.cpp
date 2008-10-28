@@ -714,7 +714,7 @@ void Wallet::slotFolderListUpdated(const QString& wallet) {
 void Wallet::slotApplicationDisconnected(const QString& wallet, const QString& application) {
     if (d->handle >= 0
         && d->name == wallet
-        && application == QDBusConnection::sessionBus().baseService()) {
+        && application == appid()) {
         slotWalletClosed(d->handle);
     }
 }
