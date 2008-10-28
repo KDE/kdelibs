@@ -866,6 +866,11 @@ void KFileWidget::slotOk()
     bool filesInList = false;
     while (it != locationEditCurrentTextList.constEnd()) {
         KUrl url(*it);
+
+        if (d->operationMode == Saving && !directoryMode) {
+            d->appendExtension(url);
+        }
+
         d->url = url;
         KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
         bool res = KIO::NetAccess::synchronousRun(statJob, 0);
