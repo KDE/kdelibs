@@ -41,6 +41,11 @@
 <!ENTITY akregator-dopelniacz    '<application>Akregatora</application>'>
 <!ENTITY akregator    '&akregator-mianownik;'>
 
+<!ENTITY DBus-mianownik    '<application>D-Bus</application>'>
+<!ENTITY DBus-dopelniacz    '<application>D-Busa</application>'>
+<!ENTITY DBus-biernik    '<application>D-Bus</application>'>
+<!ENTITY DBus    '&DBus-mianownik;'>
+
 <!ENTITY gif        		'<literal role="extension">.gif</literal>'>
 
 <!ENTITY dolphin-mianownik    '<application>Dolphin</application>'>
