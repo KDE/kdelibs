@@ -334,7 +334,6 @@ void KSystemTimeZonesPrivate::updateTimezoneInformation(bool update)
     Q_FOREACH( const QString & tz, list_time_zones() ) {
        // const std::wstring wstr = tz.toStdWString();
        // const KTimeZone info = make_time_zone( wstr.c_str() );
-      qWarning() << "adding time zone(" << tz << ")";
       KSystemTimeZoneWindows stz(m_source, tz);
       if (update)
         {
