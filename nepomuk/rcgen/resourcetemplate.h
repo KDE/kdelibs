@@ -6,7 +6,7 @@
  * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  * See the file "COPYING.LIB" for the exact licensing terms.
@@ -21,7 +21,7 @@ static const QString gplTemplate =
 " * This file is part of the Nepomuk KDE project.\n"
 " *\n"
 " * This library is free software; you can redistribute it and/or modify\n"
-" * it under the terms of the GNU Lesser General Public License as published by\n"
+" * it under the terms of the GNU General Public License as published by\n"
 " * the Free Software Foundation; either version 2 of the License, or\n"
 " * (at your option) any later version.\n"
 " * See the file \"COPYING\" for the exact licensing terms.\n"
