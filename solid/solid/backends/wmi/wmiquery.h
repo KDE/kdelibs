@@ -57,6 +57,7 @@ public:
     
 private:
     bool m_failed;
+    bool m_bNeedUninit;
     IWbemLocator *pLoc;
     IWbemServices *pSvc;
     IEnumWbemClassObject* pEnumerator;

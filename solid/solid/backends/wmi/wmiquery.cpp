@@ -51,11 +51,12 @@ WmiQuery::WmiQuery()
     HRESULT hres;
 
     hres =  CoInitializeEx( 0, COINIT_MULTITHREADED ); 
-    if( FAILED(hres) )
+    if( FAILED(hres) && hres != S_FALSE && hres != RPC_E_CHANGED_MODE )
     {
         qCritical() << "Failed to initialize COM library.  Error code = 0x" << hex << quint32(hres) << endl;
         m_failed = true;
     }
+    m_bNeedUninit = ( hres != S_FALSE && hres != RPC_E_CHANGED_MODE );
     if( !m_failed )
     {
         hres =  CoInitializeSecurity( NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
@@ -111,11 +112,15 @@ WmiQuery::~WmiQuery()
 {
     if( m_failed )
       return; // already cleaned up properly
+/* This does crash because someone else already called
+   CoUninitialize()... :(
     if( pSvc )
       pSvc->Release();
     if( pLoc )
-      pLoc->Release();     
-    CoUninitialize();
+      pLoc->Release();
+*/
+    if( m_bNeedUninit )
+      CoUninitialize();
 }  
     
 QList<IWbemClassObject*> WmiQuery::sendQuery( const QString &wql )
