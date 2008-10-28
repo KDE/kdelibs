@@ -263,6 +263,10 @@
 <!ENTITY Sendmail-miejscownik    '<application>Sendmailu/application>'>
 <!ENTITY Sendmail    '&Sendmail-mianownik;'>
 
+<!ENTITY sonnet-mianownik    '<application>Sonnet</application>'>
+<!ENTITY sonnet-dopelniacz    '<application>Sonnetu</application>'>
+<!ENTITY sonnet    '&sonnet-mianownik;'>
+
 <!ENTITY UNIX-mianownik    'Unix'>
 <!ENTITY UNIX-dopelniacz    'Uniksa'>
 <!ENTITY UNIX-celownik    'Uniksowi'>
