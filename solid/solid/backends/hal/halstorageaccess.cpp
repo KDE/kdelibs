@@ -292,14 +292,14 @@ bool StorageAccess::callHalVolumeMount()
             options << "-C="+QString(nl_langinfo(CODESET));
     }
 #else
-    if (fstype=="vfat" || /*fstype.startsWith("ntfs") ||*/ fstype=="iso9660" || fstype=="udf" ) {
+    if (fstype=="vfat" || fstype=="ntfs" || fstype=="iso9660" || fstype=="udf" ) {
         if (halOptions.contains("utf8"))
             options<<"utf8";
         else if (halOptions.contains("iocharset="))
             options<<"iocharset=utf8";
     }
     // pass our locale to the ntfs-3g driver so it can translate local characters
-    else if ( fstype.startsWith("ntfs") && halOptions.contains("locale=") ) {
+    else if ( halOptions.contains("locale=") ) {
         // have to obtain LC_CTYPE as returned by the `locale` command
         // check in the same order as `locale` does
         char *cType;
