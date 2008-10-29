@@ -27,6 +27,9 @@
 using std::printf;
 #endif
 
+// Enable this to dump instruction selection instructions.
+// #define TRACE_INSTR_SELECT
+
 namespace KJS {
 
 const int Cost_NoConversion = -100000; // small enough so that adding actual costs doesn't
@@ -202,6 +205,10 @@ void CodeGen::emitRegStore(CompileState* comp, OpValue* regNum, OpValue* val)
     }
 }
 
+static void printType(const char* prefix, int pos, OpValue* v) {
+    printf("%s%d:%s/imm:%d\n", prefix, pos, OpTypeVals[v->type], v->immediate);
+}
+
 Addr CodeGen::emitOp(CompileState* comp, OpName baseInstr,
                      OpValue* retOut, OpValue* a0, OpValue* a1, OpValue* a2, OpValue* a3)
 {
@@ -234,6 +241,12 @@ Addr CodeGen::emitOp(CompileState* comp, OpName baseInstr,
     int numArgs = 0;
     while (numArgs < 4 && args[numArgs])
         ++numArgs;
+
+#ifdef TRACE_INSTR_SELECT
+    printf("\n\nTrying to select variant for:%s\n", OpNameVals[baseInstr]);
+    for (int i = 0; i < numArgs; ++i)
+        printType("\targ", i, args[i]);
+#endif
         
     // First, scan through, and determine the cheapest non-align variant.
     // We can't select whether to align or not, since we may have to emit
@@ -259,6 +272,13 @@ Addr CodeGen::emitOp(CompileState* comp, OpName baseInstr,
             totalCost += costs[i];
         }
 
+#ifdef TRACE_INSTR_SELECT
+        printf("Candidate:%s, totalCost:%d, variant cost:%d\n", OpByteCodeVals[cand->opCode], totalCost, cand->cost);
+        for (int i = 0; i < numArgs; ++i) {
+            printf("\tconv:%s, costs:%d\n", ConvOpVals[convOps[i]], costs[i]);
+        }
+#endif
+
         if (totalCost < 0) // Cost_NoConversion in the sum...
             continue;
 
@@ -274,14 +294,8 @@ Addr CodeGen::emitOp(CompileState* comp, OpName baseInstr,
 
     if (!cheapest) {
         printf("Unable to find an acceptable conversion for:%s\n", OpNameVals[baseInstr]);
-        if (a0)
-            printf("\ta0:%s/imm:%d\n", OpTypeVals[a0->type], a0->immediate);
-        if (a1)
-            printf("\ta1:%s/imm:%d\n", OpTypeVals[a1->type], a1->immediate);
-        if (a2)
-            printf("\ta2:%s/imm:%d\n", OpTypeVals[a2->type], a2->immediate);
-        if (a3)
-            printf("\ta3:%s/imm:%d\n", OpTypeVals[a3->type], a3->immediate);
+        for (int i = 0; i < numArgs; ++i)
+            printType("\ta", i, args[i]);
         CRASH(); // Should never happen!
     }
 
