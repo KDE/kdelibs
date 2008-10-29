@@ -43,6 +43,8 @@ public:
         RBrace, // }
         LParen, // (
         RParen, // )
+        LBracket, // [
+        RBracket, // ]
         Colon,  // :
         Scope,  // ::
         SemiColon, // ;
@@ -56,7 +58,6 @@ public:
         Conversion,
         Register,
         Immediate,
-        Checked,
         Operation,
         Jump,
         Costs,
@@ -66,7 +67,6 @@ public:
         As,
         Align8,
         Runtime,
-        MayThrow,
         NoImm
     };
 
@@ -87,6 +87,10 @@ public:
                 return "'{'";
             case RBrace:
                 return "'}'";
+            case LBracket:
+                return "'['";
+            case RBracket:
+                return "']'";
             case LParen:
                 return "'('";
             case RParen:

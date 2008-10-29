@@ -47,14 +47,13 @@ struct ConversionInfo
 {
     string name;
     string impl;
-    int  cost; // for w/in tile for immediate, for external for reg
-    bool checked;
-    bool mayThrow;
+    int  cost;   // for w/in tile for immediate, for external for reg
+    unsigned flags;
     Type from;
     Type to;
     int codeLine;
 
-    ConversionInfo(): cost(0), checked(false), mayThrow(false)
+    ConversionInfo(): cost(0), flags(Conv_NoFlags)
     {} //Can be called for trivial conversion
 };
 
@@ -97,9 +96,9 @@ private:
     void issueError(const string& err);
 
     virtual void handleType(const string& type, const string& nativeName, bool im, bool rg, bool al8);
-    virtual void handleConversion(const string& name, const string& runtimeRoutine, int codeLine,
-                                  bool immediate, bool checked, bool mayThrow,
-                                  const string& from, const string& to, int cost);
+    virtual void handleConversion(const string& runtimeRoutine, int codeLine,
+                                  unsigned flags, const string& from, const string& to,
+                                  int tileCost, int registerCost);
 
     virtual void handleOperation(const string& name, bool endsBB);
     virtual void handleImpl(const string& fnName, const string& code, bool overload,

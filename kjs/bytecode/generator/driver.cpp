@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
     if (!opcodesH.ok() || !opcodesCpp.ok() || !machineCpp.ok())
         return -1;
 
-    std::cout << "icemaker -40.9 for KJS/FrostByte\n";
+    std::cout << "icemaker -41.9 for KJS/FrostByte\n";
     std::cout << "Generating bytecode instruction selection tables and VM dispatcher...\n";
 
     TableBuilder build(&def, &opcodesH.out, &opcodesCpp.out, &machineCpp.out);

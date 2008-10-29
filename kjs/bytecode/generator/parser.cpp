@@ -44,15 +44,15 @@ string Parser::matchIdentifier()
     return "";
 }
 
-string Parser::matchCode(int& lineOut)
+void Parser::matchCode(std::string* strOut, int* lineOut)
 {
     Lexer::Token tok = getNext();
     if (tok.type == Lexer::Code) {
-        lineOut = tok.lineNum;
-        return tok.value;
+        *lineOut = tok.lineNum;
+        *strOut  = tok.value;
+        return;
     }
     issueError("Expected code, got:" + tok.toString(lexer));
-    return "";
 }
 
 int Parser::matchNumber()
@@ -71,6 +71,45 @@ void Parser::match(Lexer::TokenType t)
         issueError("Expected " + Lexer::Token(t).toString(lexer) + " got:" + tok.toString(lexer));
 }
 
+bool Parser::check(Lexer::TokenType t)
+{
+    if (peekNext().type == t) {
+        getNext(); // tasty!
+        return true;
+    } else {
+        return false;
+    }
+}
+
+unsigned Parser::matchFlags(const Flag* permittedFlags)
+{
+    unsigned flagsVal = 0;
+    if (check(Lexer::LBracket)) {
+        while (true) {
+            std::string flag = matchIdentifier();
+
+            // Lookup the name.
+            bool found = false;
+            for (int pos = 0; permittedFlags[pos].name; ++pos) {
+                if (flag == std::string(permittedFlags[pos].name)) {
+                    found = true;
+                    flagsVal |= permittedFlags[pos].value;
+                }
+            }
+
+            if (!found)
+                issueError("invalid flag:" + flag);
+
+            // Done or more?
+            if (check(Lexer::RBracket))
+                return flagsVal;
+            else
+                match(Lexer::Comma);
+        }
+    }
+    return 0;
+}
+
 bool Parser::checkFlag(Lexer::TokenType t)
 {
     if (peekNext().type == t) {
@@ -82,7 +121,7 @@ bool Parser::checkFlag(Lexer::TokenType t)
 
 void Parser::issueError(const string& msg)
 {
-    std::cerr << "Parse error:" << msg << "at about line:" << lexer->lineNumber();
+    std::cerr << "Parse error:" << msg << " at about line:" << lexer->lineNumber() << "\n";
     std::exit(-1);
 }
 
@@ -140,15 +179,11 @@ void Parser::parseType()
     if (nativeName == "const")
         nativeName += " " + matchIdentifier();
 
-    while (peekNext().type == Lexer::Scope) {
-        getNext();
+    while (check(Lexer::Scope))
         nativeName += "::" + matchIdentifier();
-    }
 
-    if (peekNext().type == Lexer::Star) {
+    if (check(Lexer::Star))
         nativeName += "*";
-        getNext();
-    }
 
     bool im = false, rg = false, al8 = false;
 
@@ -174,15 +209,10 @@ void Parser::parseType()
     handleType(name, nativeName, im, rg, al8);
 }
 
-static string capitalized(const string& in)
-{
-    return WTF::toASCIIUpper(in[0]) + in.substr(1);
-}
-
 void Parser::parseConversion()
 {
     // conversion from =>  to { clauses .. }
-    // clause := tile costs number; || impl checked? mayThrow? code; || register ident costs number;
+    // clause := tile costs number; || impl [checked?, mayThrow?]? code; || register ident costs number;
     match(Lexer::Conversion);
     string from = matchIdentifier();
     match(Lexer::Arrow);
@@ -191,53 +221,45 @@ void Parser::parseConversion()
     match(Lexer::LBrace);
 
     // impl clause info..
-    bool implMayThrow = false, immChecked = false;
+    const Flag conversionFlags[] = {
+        {"checked",  Conv_Checked},
+        {"mayThrow", Conv_MayThrow},
+        {0, 0}
+    };
+
+    unsigned flags = 0;
     string code;
-    int     codeLine;
+    int    codeLine = 0;
 
     // tile clause info
     int tileCost = 0;
 
     // register clause info
-    bool hasRegister = false;
     string registerIdent;
     int registerCost = 0;
 
-    while (peekNext().type != Lexer::RBrace) {
-        switch (peekNext().type) {
-        case Lexer::Impl:
-            match(Lexer::Impl);
-            immChecked   = checkFlag(Lexer::Checked);
-            implMayThrow = checkFlag(Lexer::MayThrow);
-            code = matchCode(codeLine);
-            break;
-        case Lexer::Tile:
-            match(Lexer::Tile);
+    while (!check(Lexer::RBrace)) {
+        if (check(Lexer::Impl)) {
+            // impl [[code]]
+            flags = matchFlags(conversionFlags);
+            matchCode(&code, &codeLine);
+        } else if (check(Lexer::Tile)) {
+            // tile costs number;
             match(Lexer::Costs);
             tileCost = matchNumber();
             match(Lexer::SemiColon);
-            break;
-        case Lexer::Register:
-            hasRegister = true;
-            match(Lexer::Register);
-            registerIdent = matchIdentifier();
+        } else if (check(Lexer::Register)) {
+            //register costs number;
+            flags |= Conv_HaveReg;
             match(Lexer::Costs);
             registerCost  = matchNumber();
             match(Lexer::SemiColon);
-            break;
-        default:
+        } else {
             issueError("Invalid start of a clause within conversion block:" + peekNext().toString(lexer));
         }
     }
 
-    match(Lexer::RBrace);
-
-    if (hasRegister)
-        handleConversion(registerIdent, code, codeLine, false, false, false, from, to, registerCost);
-
-    // Computer name, from type sig
-    string name = "I" + capitalized(from) + "_" + capitalized(to);
-    handleConversion(name, code, codeLine, true, immChecked, implMayThrow, from, to, tileCost);
+    handleConversion(code, codeLine, flags, from, to, tileCost, registerCost);
 }
 
 void Parser::parseOperation()
@@ -314,7 +336,8 @@ void Parser::parseImpl()
     }
 
     int codeLine;
-    string code = matchCode(codeLine);
+    string code;
+    matchCode(&code, &codeLine);
 
     handleImpl(fn, code, overload, codeLine, cost, ret, paramSigs, paramNames, paramHints);
 }

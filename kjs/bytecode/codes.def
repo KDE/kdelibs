@@ -79,8 +79,8 @@ conversion bool => int32 {
         return in ? 1 : 0;
     ]]
 
-    tile costs 0; //cost in tile..
-    register  RBool_Int32 costs 0; // we always store bool as 0/1, so this is free.
+    tile     costs 0; //cost in tile..
+    register costs 0; // we always store bool as 0/1, so this is free.
 }
 
 conversion bool => value {
@@ -88,8 +88,8 @@ conversion bool => value {
         return jsBoolean(in);
     ]]
 
-    tile costs 0;
-    register RBool_Value costs 10; // Separate jsBoolean instruction
+    tile     costs 0;
+    register costs 10; // Separate jsBoolean instruction
 }
 
 conversion bool => number {
@@ -97,8 +97,8 @@ conversion bool => number {
         return in ? 1.0 : 0.0;
     ]]
 
-    tile costs 0;
-    register RBool_Number costs 10;
+    tile     costs 0;
+    register costs 10;
 }
 
 /*
@@ -109,26 +109,26 @@ conversion value => bool {
         return in->toBoolean(exec);
     ]]
 
-    tile costs 5; // it is a virtual call
-    register RValue_Bool costs 15; // ToBoolean instr, includes a virtual call..
+    tile     costs 5; // it is a virtual call
+    register costs 15; // ToBoolean instr, includes a virtual call..
 }
 
 conversion value => int32 {
-    impl mayThrow [[
+    impl [mayThrow] [[
         return in->toInt32(exec);
     ]]
 
-    tile costs 40; // toInt32 uses toNumber --- expensive
-    register RValue_Int32 costs 50; // above, plus a separate instr
+    tile     costs 40; // toInt32 uses toNumber --- expensive
+    register costs 50; // above, plus a separate instr
 }
 
 conversion value => number {
-    impl mayThrow [[
+    impl [mayThrow] [[
         return in->toNumber(exec);
     ]]
 
-    tile costs 37;
-    register RValue_Number costs 49;
+    tile     costs 37;
+    register costs 49;
 }
 
 /*
@@ -139,17 +139,17 @@ conversion int32 => bool {
         return in ? true : false; // Expect stupid MSVC 0/1 warning
     ]]
 
-    tile costs 0;
-    register RInt32_Bool costs 10;
+    tile     costs 0;
+    register costs 10;
 }
 
 conversion int32 => value {
-    impl checked mayThrow /* due to OOM */ [[
+    impl [checked, mayThrow] /* due to OOM */ [[
         return jsNumber(in);
     ]]
 
-    tile costs 15;
-    register RInt32_Value costs 25;
+    tile     costs 15;
+    register costs 25;
 }
 
 conversion int32 => number {
@@ -157,8 +157,8 @@ conversion int32 => number {
         return in;
     ]]
 
-    tile costs 3;
-    register RInt32_Number costs 10;
+    tile     costs 3;
+    register costs 10;
 }
 
 /*
@@ -169,17 +169,17 @@ conversion number => bool {
         return in < 0.0 || in > 0.0; // false for NaN
     ]]
 
-    tile costs 15;
-    register RNumber_Bool costs 25;
+    tile     costs 15;
+    register costs 25;
 }
 
 conversion number => value {
-    impl checked mayThrow /* due to OOM */ [[
+    impl [checked, mayThrow] /* due to OOM */ [[
         return jsNumber(in);
     ]]
 
-    tile costs 15;
-    register RNumber_Value costs 35;
+    tile     costs 15;
+    register costs 35;
 }
 
 conversion number => int32 {
@@ -187,8 +187,8 @@ conversion number => int32 {
         return JSValue::toInt32(in);
     ]]
 
-    tile costs 10;
-    register RNumber_Int32 costs 20;
+    tile     costs 10;
+    register costs 20;
 }
 
 /*

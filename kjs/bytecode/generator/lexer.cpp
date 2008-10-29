@@ -39,7 +39,6 @@ Lexer::Lexer(istream* _stream): stream(_stream), charLoaded(false), lineNum(0)
     keywords["conversion" ] = Conversion;
     keywords["register"]    = Register;
     keywords["immediate"]   = Immediate;
-    keywords["checked"]     = Checked;
     keywords["operation"]   = Operation;
     keywords["jump"]        = Jump;
     keywords["costs"]       = Costs;
@@ -49,7 +48,6 @@ Lexer::Lexer(istream* _stream): stream(_stream), charLoaded(false), lineNum(0)
     keywords["as"]          = As;
     keywords["align8"]      = Align8;
     keywords["runtime"]     = Runtime;
-    keywords["mayThrow"]    = MayThrow;
     keywords["noimm"]       = NoImm;
     lineNum = 1;
 }
@@ -114,7 +112,10 @@ Lexer::Token Lexer::nextToken()
         return Token(Star);
     else if (begin == ',')
         return Token(Comma);
-
+    else if (begin == ']')
+        return Token(RBracket);
+    else if (begin == '[' && peekNext() != '[')
+        return Token(LBracket);
 
     // =>
     if (begin == '=') {

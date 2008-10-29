@@ -299,7 +299,7 @@ void TableBuilder::printConversionInfo(map<string, map<string, ConversionInfo> >
                     // we don't have exec there..
                     const ConversionInfo& inf = table[fromName][toName];
                     *cppStream << "    {Conv_" << inf.name << ",";
-                    if (inf.checked)
+                    if (inf.flags & Conv_Checked)
                         *cppStream << "Cost_Checked}";
                     else
                         *cppStream << (reg ? inf.cost : 0) << "}";
@@ -342,30 +342,46 @@ void TableBuilder::handleType(const string& type, const string& nativeName, bool
     types[type] = t;
 }
 
-void TableBuilder::handleConversion(const string& name, const string& code, int codeLine,
-                                    bool immediate, bool checked, bool mayThrow,
-                                    const string& from, const string& to, int cost)
+static string capitalized(const string& in)
 {
-    conversionNames.push_back(name);
+    return WTF::toASCIIUpper(in[0]) + in.substr(1);
+}
+
+void TableBuilder::handleConversion(const string& code, int codeLine,
+                                    unsigned flags, const string& from, const string& to,
+                                    int tileCost, int registerCost)
+{
+    // Compute the conversion names. The register one (if any) would also create an operation.
+    string immName = "I" + capitalized(from) + "_" + capitalized(to);
+    string regName = "R" + capitalized(from) + "_" + capitalized(to);
+
+    // Register immediate conversion
+    conversionNames.push_back(immName);
     ConversionInfo inf;
-    inf.name    = name;
-    assert(!name.empty());
-    inf.cost    = cost;
-    inf.checked = checked;
-    inf.mayThrow = mayThrow;
+    inf.name    = immName;
+    inf.cost    = tileCost;
+    inf.flags   = flags;
     inf.impl     = code;
     inf.codeLine = codeLine;
     inf.from     = types[from];
     inf.to       = types[to];
 
-    if (immediate) {
-        imConversions[from][to] = inf;
-        imConversionList.push_back(inf);
-    } else {
+    imConversions[from][to] = inf;
+    imConversionList.push_back(inf);
+
+    // ... and, if it exists, register one.
+    if (flags & Conv_HaveReg) {
+        conversionNames.push_back(regName);
+        inf.name = regName;
+        inf.cost = registerCost;
+        inf.flags &= ~Conv_Checked; // 'checked' makes no sense here
         rgConversions[from][to] = inf;
         rgConversionList.push_back(inf);
-        // Generate a corresponding bytecode routine; the helper used is the immediate one, though
-        handleOperation(inf.name, false);
+        
+        // We also generate the corresponding bytecode routine, using
+        // the immediate conversion helper we'll emit in it.
+        handleOperation(regName, false);
+
         StringList sig;
         sig.push_back(from);
         StringList names;
@@ -733,7 +749,7 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
             conv = imConversions[type.name][variant.op.implParams[p].name];
             *mStream << "convert" << conv.name << "(exec, " << accessString << ");\n";
 
-            if (conv.mayThrow) {
+            if (conv.flags & Conv_MayThrow) {
                 // Check for an exception being raised, or perhaps a reload request
                 mInd(16) << "if (pc != localPC) // {// Exception or reload\n";
                 //mInd(20) << "if (exec->h
