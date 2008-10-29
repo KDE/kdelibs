@@ -17,8 +17,10 @@ The KHexEdit interfaces - also called KHE interfaces - are a set of
 well-defined interfaces which a library can implement to provide
 byte level editing services.  Programs which utilise these interfaces
 can thus allow the user to choose which implementation of the hex editor component
-to use. At the time of KDE 4.1 the only implementation known is the Okteta Component
-(found in kdeutils/okteta/parts/kbytesedit).
+to use. At the time of KDE 4.2 the only implementation known is the
+<a href="http://utils.kde.org/projects/okteta">Okteta</a> Component
+(found in
+<a href="http://websvn.kde.org/trunk/KDE/kdeutils/okteta/parts/kbytesedit/">kdeutils/okteta/parts/kbytesedit</a>).
 
 
 @section khe_howto How to use the KHexEdit Interfaces
