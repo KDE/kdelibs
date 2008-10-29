@@ -197,6 +197,8 @@ public:
      */
     static KUrl mostLocalUrl(const KUrl &url);
 
+    void setInlinePreviewShown(bool show);
+
     KFileWidget* q;
 
     // the last selected url
@@ -2500,10 +2502,18 @@ void KFileWidget::virtual_hook( int id, void* data )
     // is going to become a virtual function for KDE5
 
     switch (id) {
-    case 0:
-        bool *enable = static_cast<bool*>(data);
-        d->confirmOverwrite = *enable;
-        break;
+        case 0: { // setConfirmOverwrite(bool)
+                bool *enable = static_cast<bool*>(data);
+                d->confirmOverwrite = *enable;
+            }
+            break;
+        case 1: { // setInlinePreviewShown(bool)
+                bool *show = static_cast<bool*>(data);
+                d->setInlinePreviewShown(*show);
+            }
+            break;
+        default:
+            break;
     }
 }
 
@@ -2533,6 +2543,11 @@ KUrl KFileWidgetPrivate::mostLocalUrl(const KUrl &url)
     }
 
     return url;
+}
+
+void KFileWidgetPrivate::setInlinePreviewShown(bool show)
+{
+    ops->setInlinePreviewShown(show);
 }
 
 #include "kfilewidget.moc"

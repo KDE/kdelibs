@@ -335,6 +335,14 @@ void KFileDialog::setPreviewWidget(KPreviewWidgetBase *w)
     d->w->setPreviewWidget(w);
 }
 
+void KFileDialog::setInlinePreviewShown(bool show)
+{
+    if (d->native) {
+        return;
+    }
+    d->w->setInlinePreviewShown(show);
+}
+
 QSize KFileDialog::sizeHint() const
 {
     return QSize(640, 400);
@@ -548,9 +556,8 @@ KUrl KFileDialog::getImageOpenUrl( const KUrl& startDir, QWidget *parent,
     dlg.setOperationMode( Opening );
     dlg.setCaption( caption.isEmpty() ? i18n("Open") : caption );
     dlg.setMode( KFile::File );
+    dlg.setInlinePreviewShown( true );
 
-    KImageFilePreview *ip = new KImageFilePreview( &dlg );
-    dlg.setPreviewWidget( ip );
     dlg.exec();
 
     return dlg.selectedUrl();

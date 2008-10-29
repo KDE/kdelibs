@@ -541,6 +541,14 @@ public:
     KFilePreviewGenerator *previewGenerator() const;
 
     /**
+     * Forces the inline previews to be shown or hidden, depending on @p show.
+     *
+     * @param show Whether to show inline previews or not.
+     * @since 4.2
+     */
+    void setInlinePreviewShown(bool show);
+
+    /**
      * Returns whether the inline previews are shown or not.
      * @since 4.2
      */

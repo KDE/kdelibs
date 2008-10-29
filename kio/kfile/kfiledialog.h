@@ -306,6 +306,14 @@ public:
     void setPreviewWidget(KPreviewWidgetBase *w);
 
     /**
+     * Forces the inline previews to be shown or hidden, depending on @p show.
+     *
+     * @param show Whether to show inline previews or not.
+     * @since 4.2
+     */
+    void setInlinePreviewShown(bool show);
+
+    /**
      * Sets whether the dialog should ask before accepting the selected file
      * when KFileDialog::OperationMode is set to Saving.
      *

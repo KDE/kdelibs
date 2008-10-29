@@ -368,6 +368,15 @@ public:
         virtual_hook(0, static_cast<void*>(&enable));
     }
 
+    /**
+     * Forces the inline previews to be shown or hidden, depending on @p show.
+     *
+     * @param show Whether to show inline previews or not.
+     * @since 4.2
+     */
+    void setInlinePreviewShown(bool show) { // KDE5 TODO: make this virtual
+        virtual_hook(1, static_cast<void*>(&show));
+    }
 };
 
 Q_DECLARE_INTERFACE(KAbstractFileWidget, "org.kde.KAbstractFileWidget")

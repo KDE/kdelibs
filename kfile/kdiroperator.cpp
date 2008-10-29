@@ -176,6 +176,12 @@ public:
     Private( KDirOperator *parent );
     ~Private();
 
+    enum InlinePreviewState {
+        ForcedToFalse = 0,
+        ForcedToTrue,
+        NotForced
+    };
+
     // private methods
     bool checkPreviewInternal() const;
     void checkPath(const QString &txt, bool takeFiles = false);
@@ -282,6 +288,7 @@ public:
     KToggleAction *leftAction;
     KUrl::List itemsToBeSetAsCurrent;
     bool shouldFetchForItems;
+    InlinePreviewState inlinePreviewState;
 };
 
 KDirOperator::Private::Private(KDirOperator *_parent) :
@@ -308,7 +315,8 @@ KDirOperator::Private::Private(KDirOperator *_parent) :
     iconsZoom(0),
     decorationMenu(0),
     leftAction(0),
-    shouldFetchForItems(false)
+    shouldFetchForItems(false),
+    inlinePreviewState(NotForced)
 {
 }
 
@@ -879,6 +887,11 @@ KFilePreviewGenerator *KDirOperator::previewGenerator() const
     return d->previewGenerator;
 }
 
+void KDirOperator::setInlinePreviewShown(bool show)
+{
+    d->inlinePreviewState = show ? Private::ForcedToTrue : Private::ForcedToFalse;
+}
+
 bool KDirOperator::isInlinePreviewShown() const
 {
     return d->showPreviews;
@@ -918,10 +931,12 @@ void KDirOperator::setIconsZoom(int _value)
 
     d->iconsZoom = value;
 
-    if (qobject_cast<QListView*>(d->itemView)) {
-        d->configGroup->writeEntry("listViewIconSize", d->iconsZoom);
-    } else {
-        d->configGroup->writeEntry("detailedViewIconSize", d->iconsZoom);
+    if (d->inlinePreviewState == Private::NotForced) {
+        if (qobject_cast<QListView*>(d->itemView)) {
+            d->configGroup->writeEntry("listViewIconSize", d->iconsZoom);
+        } else {
+            d->configGroup->writeEntry("detailedViewIconSize", d->iconsZoom);
+        }
     }
 
     if (!d->previewGenerator) {
@@ -1567,18 +1582,21 @@ void KDirOperator::setView(QAbstractItemView *view)
         d->itemsToBeSetAsCurrent.clear();
     }
 
+    const bool previewShown = d->inlinePreviewState == Private::NotForced ? d->showPreviews : d->inlinePreviewState;
+    const bool previewForcedToTrue = d->inlinePreviewState == Private::ForcedToTrue;
     d->previewGenerator = new KFilePreviewGenerator(d->itemView);
     int maxSize = KIconLoader::SizeEnormous - KIconLoader::SizeSmall;
     int val = (maxSize * d->iconsZoom / 100) + KIconLoader::SizeSmall;
-    d->itemView->setIconSize(QSize(val, val));
-    d->previewGenerator->setPreviewShown(d->showPreviews);
+    d->itemView->setIconSize(previewForcedToTrue ? QSize(KIconLoader::SizeHuge, KIconLoader::SizeHuge) : QSize(val, val));
+    d->previewGenerator->setPreviewShown(previewShown);
+    d->actionCollection->action("inline preview")->setChecked(previewShown);
 
     // ensure we change everything needed
     d->_k_slotChangeDecorationPosition();
 
     emit viewChanged(view);
 
-    const int zoom = d->iconSizeForViewType(view);
+    const int zoom = previewForcedToTrue ? (KIconLoader::SizeHuge - KIconLoader::SizeSmall + 1) * 100 / maxSize : d->iconSizeForViewType(view);
     // this will make d->iconsZoom be updated, since setIconsZoom slot will be called
     emit currentIconSizeChanged(zoom);
 }
@@ -2067,8 +2085,10 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
         d->sorting = d->sorting | QDir::Reversed;
     }
 
-    d->showPreviews = configGroup.readEntry(QLatin1String("Previews"), false);
-    d->iconsZoom = configGroup.readEntry(QLatin1String("Zoom"), 0);
+    if (d->inlinePreviewState == Private::NotForced) {
+        d->showPreviews = configGroup.readEntry(QLatin1String("Previews"), false);
+    }
+
     decorationPosition = (QStyleOptionViewItem::Position) configGroup.readEntry(QLatin1String("Decoration position"), (int) QStyleOptionViewItem::Top);
     const bool decorationAtLeft = decorationPosition == QStyleOptionViewItem::Left;
     d->actionCollection->action("decorationAtLeft")->setChecked(decorationAtLeft);
@@ -2128,8 +2148,10 @@ void KDirOperator::writeConfig(KConfigGroup& configGroup)
         style = QLatin1String("DetailTree");
     configGroup.writeEntry(QLatin1String("View Style"), style);
 
-    configGroup.writeEntry(QLatin1String("Previews"), d->showPreviews);
-    configGroup.writeEntry(QLatin1String("Zoom"), d->iconsZoom);
+    if (d->inlinePreviewState == Private::NotForced) {
+        configGroup.writeEntry(QLatin1String("Previews"), d->showPreviews);
+    }
+
     configGroup.writeEntry(QLatin1String("Decoration position"), (int) decorationPosition);
 }
 
@@ -2535,9 +2557,9 @@ int KDirOperator::Private::iconSizeForViewType(QAbstractItemView *itemView) cons
 
     int size;
     if (qobject_cast<QListView*>(itemView)) {
-        size = configGroup->readEntry("listViewIconSize", 0);
+        size = configGroup->readEntry("listViewIconSize", (int) KIconLoader::SizeMedium);
     } else {
-        size = configGroup->readEntry("detailedViewIconSize", 0);
+        size = configGroup->readEntry("detailedViewIconSize", (int) KIconLoader::SizeSmall);
     }
 
     return size;
