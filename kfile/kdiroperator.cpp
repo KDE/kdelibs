@@ -943,8 +943,8 @@ void KDirOperator::setIconsZoom(int _value)
         return;
     }
 
-    int maxSize = KIconLoader::SizeEnormous - KIconLoader::SizeSmall;
-    int val = (maxSize * value / 100) + KIconLoader::SizeSmall;
+    const int maxSize = KIconLoader::SizeEnormous - KIconLoader::SizeSmall;
+    const int val = (maxSize * value / 100) + KIconLoader::SizeSmall;
     d->itemView->setIconSize(QSize(val, val));
     d->updateListViewGrid();
     d->previewGenerator->updatePreviews();
@@ -1585,8 +1585,8 @@ void KDirOperator::setView(QAbstractItemView *view)
     const bool previewShown = d->inlinePreviewState == Private::NotForced ? d->showPreviews : d->inlinePreviewState;
     const bool previewForcedToTrue = d->inlinePreviewState == Private::ForcedToTrue;
     d->previewGenerator = new KFilePreviewGenerator(d->itemView);
-    int maxSize = KIconLoader::SizeEnormous - KIconLoader::SizeSmall;
-    int val = (maxSize * d->iconsZoom / 100) + KIconLoader::SizeSmall;
+    const int maxSize = KIconLoader::SizeEnormous - KIconLoader::SizeSmall;
+    const int val = (maxSize * d->iconsZoom / 100) + KIconLoader::SizeSmall;
     d->itemView->setIconSize(previewForcedToTrue ? QSize(KIconLoader::SizeHuge, KIconLoader::SizeHuge) : QSize(val, val));
     d->previewGenerator->setPreviewShown(previewShown);
     d->actionCollection->action("inline preview")->setChecked(previewShown);
@@ -1597,6 +1597,7 @@ void KDirOperator::setView(QAbstractItemView *view)
     emit viewChanged(view);
 
     const int zoom = previewForcedToTrue ? (KIconLoader::SizeHuge - KIconLoader::SizeSmall + 1) * 100 / maxSize : d->iconSizeForViewType(view);
+
     // this will make d->iconsZoom be updated, since setIconsZoom slot will be called
     emit currentIconSizeChanged(zoom);
 }
@@ -2555,14 +2556,12 @@ int KDirOperator::Private::iconSizeForViewType(QAbstractItemView *itemView) cons
         return 0;
     }
 
-    int size;
+    const int maxSize = KIconLoader::SizeEnormous - KIconLoader::SizeSmall;
     if (qobject_cast<QListView*>(itemView)) {
-        size = configGroup->readEntry("listViewIconSize", (int) KIconLoader::SizeMedium);
+        return configGroup->readEntry("listViewIconSize", (int) (KIconLoader::SizeMedium - KIconLoader::SizeSmall + 1) * 100 / maxSize);
     } else {
-        size = configGroup->readEntry("detailedViewIconSize", (int) KIconLoader::SizeSmall);
+        return configGroup->readEntry("detailedViewIconSize", 0);
     }
-
-    return size;
 }
 
 void KDirOperator::setViewConfig(KConfigGroup& configGroup)
