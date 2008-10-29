@@ -367,16 +367,6 @@ namespace KJS {
     virtual JSObject* construct(ExecState* exec, const List& args, const Identifier& functionName, const UString& sourceURL, int lineNumber);
 
     /**
-     * Whether or not the object implements the call() method. If this returns
-     * false you should not call the call() method on this object (typically,
-     * an assertion will fail to indicate this).
-     *
-     * @return true if this object implements the call() method, otherwise
-     * false
-     */
-    virtual bool implementsCall() const;
-
-    /**
      * Whether or not this object should be considered a function for the purpose
      * of the typeof operator. Normally this is the same as implementsCall(),
      * which is what the default implementation delegates too, 

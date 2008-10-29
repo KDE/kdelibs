@@ -172,6 +172,11 @@ const JSObject *JSCell::getObject() const
     return isObject() ? static_cast<const JSObject *>(this) : 0;
 }
 
+bool JSCell::implementsCall() const
+{
+  return false;
+}
+
 JSCell* jsString()
 {
     return new StringImp();

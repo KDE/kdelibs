@@ -482,11 +482,6 @@ JSObject* JSObject::construct(ExecState* exec, const List& args, const Identifie
   return construct(exec, args);
 }
 
-bool JSObject::implementsCall() const
-{
-  return false;
-}
-
 bool JSObject::isFunctionType() const
 {
   return implementsCall();

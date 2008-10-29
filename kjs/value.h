@@ -117,6 +117,18 @@ public:
     // Floating point conversions.
     float toFloat(ExecState*) const;
 
+    // Object-level properties...
+
+    /**
+     * Whether or not the value implements the call() method. If it does, this also 
+     * implies this is an object, and hence it can be cast to a JSObject
+     * and the call method can be invoked
+     *
+     * @return true if this is an object implementing the call() method, otherwise
+     * false
+     */
+    bool implementsCall() const;
+
     // Garbage collection.
     void mark();
     bool marked() const;
@@ -177,6 +189,9 @@ public:
     virtual double toNumber(ExecState *exec) const = 0;
     virtual UString toString(ExecState *exec) const = 0;
     virtual JSObject *toObject(ExecState *exec) const = 0;
+    
+    // Higher-level (object-like) properties:
+    virtual bool implementsCall() const;
 
     // Garbage collection.
     void *operator new(size_t);
@@ -534,6 +549,14 @@ inline uint32_t JSValue::toUInt32(ExecState* exec, bool& ok) const
         return i;
     }
     return toUInt32SlowCase(exec, ok);
+}
+
+inline bool JSValue::implementsCall() const
+{
+    if (JSImmediate::isImmediate(this))
+       return false; // immediate values are never calleable.
+    else
+       return asCell()->implementsCall();
 }
 
 } // namespace

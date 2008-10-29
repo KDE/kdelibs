@@ -1188,22 +1188,15 @@ operation FunctionCall {
         ASSERT(thisVal->isObject());
         ASSERT(!static_cast<JSObject*>(thisVal)->isActivation());
 
-        if (!v->isObject()) {
-            throwError(exec, TypeError, "Attempt to use a non-object as a function.");
+        if (!v->implementsCall()) {
+            throwError(exec, TypeError, "Attempt to use a non-function object or a value as a function.");
             //return throwError(exec, TypeError, notAnObjectMessage(), v, expr.get());
             break;
         }
 
         JSObject *func = static_cast<JSObject*>(v);
-
-        if (!func->implementsCall()) {
-            throwError(exec, TypeError, "Attempt to use a non-function object as a function.");
-            //return throwError(exec, TypeError, notCallableMessage(), v, expr.get());
-            break;
-        }
-
         JSValue* val;
-        val = static_cast<JSObject*>(func)->call(exec, static_cast<JSObject*>(thisVal), workList);
+        val = func->call(exec, static_cast<JSObject*>(thisVal), workList);
         $$  = val;
     ]]
 }
