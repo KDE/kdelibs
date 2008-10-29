@@ -379,15 +379,14 @@ inline bool JSValue::getBoolean() const
 inline bool JSValue::getNumber(double& v) const
 {
     if (JSImmediate::isImmediate(this)) {
-        v = JSImmediate::toDouble(this);
-        return true;
+        return JSImmediate::getNumber(this, v);
     }
     return asCell()->getNumber(v);
 }
 
 inline double JSValue::getNumber() const
 {
-    return JSImmediate::isImmediate(this) ? JSImmediate::toDouble(this) : asCell()->getNumber();
+    return JSImmediate::isImmediate(this) ? JSImmediate::getNumber(this) : asCell()->getNumber();
 }
 
 inline bool JSValue::getString(UString& s) const

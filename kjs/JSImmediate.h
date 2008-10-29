@@ -118,6 +118,11 @@ public:
     }
 
     static double toDouble(const JSValue*);
+
+    // Non-converting getters for Number's
+    static double getNumber(const JSValue*);     // This returns NaN if the value is not a Number.
+    static bool   getNumber(const JSValue*, double& valOut);
+    
     static bool toBoolean(const JSValue*);
     static JSObject* toObject(const JSValue*, ExecState*);
     static UString toString(const JSValue*);
@@ -264,6 +269,22 @@ ALWAYS_INLINE double JSImmediate::toDouble(const JSValue* v)
     if (JSImmediate::getTag(v) == UndefinedType && i)
         return NaN;
     return i;
+}
+
+ALWAYS_INLINE double JSImmediate::getNumber(const JSValue* v)
+{
+    ASSERT(isImmediate(v));
+    const int32_t i = static_cast<int32_t>(unTag(v)) >> 2;
+    if (JSImmediate::getTag(v) != NumberType)
+        return NaN;
+    return i;
+}
+
+ALWAYS_INLINE bool JSImmediate::getNumber(const JSValue* v, double& numberOut)
+{
+    ASSERT(isImmediate(v));
+    numberOut = static_cast<int32_t>(unTag(v)) >> 2;
+    return (JSImmediate::getTag(v) == NumberType);
 }
 
 ALWAYS_INLINE bool JSImmediate::getUInt32(const JSValue* v, uint32_t& i)
