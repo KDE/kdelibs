@@ -18,7 +18,7 @@ target_link_libraries(kdeinit_kded4  ${KDE4_KIO_LIBS} ${X11_LIBRARIES})
 install(TARGETS kdeinit_kded4 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 target_link_libraries( kded4 kdeinit_kded4 )
-install(TARGETS kded4 DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kded4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
 qt4_generate_dbus_interface( kdedadaptor.h org.kde.kded.xml )
@@ -52,7 +52,7 @@ target_link_libraries(kdeinit_kbuildsycoca4  ${KDE4_KIO_LIBS} )
 install(TARGETS kdeinit_kbuildsycoca4 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 target_link_libraries( kbuildsycoca4 kdeinit_kbuildsycoca4 )
-install(TARGETS kbuildsycoca4 DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kbuildsycoca4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 ########### next target ###############
 

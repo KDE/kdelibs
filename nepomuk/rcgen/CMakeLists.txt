@@ -18,4 +18,4 @@ target_link_libraries(nepomuk-rcgen
   ${QT_QTDBUS_LIBRARY}
 )
 
-install(TARGETS nepomuk-rcgen DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS nepomuk-rcgen ${INSTALL_TARGETS_DEFAULT_ARGS} )

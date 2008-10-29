@@ -215,7 +215,7 @@ set_target_properties(kjs_bin PROPERTIES OUTPUT_NAME kjs)
 
 target_link_libraries(kjs_bin ${KJSLIBNAME})
 
-install(TARGETS kjs_bin DESTINATION ${BIN_INSTALL_DIR})
+install(TARGETS kjs_bin ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### KDE-specific API ##############
 

@@ -55,7 +55,7 @@ else(KDE4_ENABLE_FINAL)
    set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 endif(KDE4_ENABLE_FINAL)
 
-install(TARGETS meinproc4 DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS meinproc4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
 ########### next target ###############

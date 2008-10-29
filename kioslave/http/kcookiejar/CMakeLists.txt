@@ -28,7 +28,7 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 target_link_libraries( kcookiejar4 ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS kcookiejar4 DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kcookiejar4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 ########### kded kcookiejar module ###############
 

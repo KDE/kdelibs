@@ -303,7 +303,7 @@ kde4_add_executable(kde4-config NOGUI kde-config.cpp )
 
 target_link_libraries(kde4-config ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS kde4-config DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kde4-config ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
 ########### next target ###############

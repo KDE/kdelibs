@@ -50,7 +50,7 @@ if (Q_WS_X11)
   target_link_libraries(kdeinit4 ${X11_X11_LIB})
 endif(Q_WS_X11)
 
-install(TARGETS kdeinit4 DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kdeinit4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 ########### kwrapper4 ###############
 if (WIN32)
@@ -67,7 +67,7 @@ else (WIN32)
   target_link_libraries(kwrapper4 ${KINIT_SOCKET_LIBRARY})
 endif (WIN32)
 
-install(TARGETS kwrapper4 DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kwrapper4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 if (NOT WIN32)
 
@@ -81,7 +81,7 @@ if (NOT WIN32)
     add_definitions(-DNO_DISPLAY)
   endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
-  install(TARGETS kdeinit4_wrapper DESTINATION ${BIN_INSTALL_DIR} )
+  install(TARGETS kdeinit4_wrapper ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
   ########### kshell4 ###############
 
@@ -89,7 +89,7 @@ if (NOT WIN32)
 
   target_link_libraries(kshell4 ${KINIT_SOCKET_LIBRARY})
 
-  install(TARGETS kshell4 DESTINATION ${BIN_INSTALL_DIR} )
+  install(TARGETS kshell4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
   ########### kdeinit4_shutdown ###############
 
@@ -97,7 +97,7 @@ if (NOT WIN32)
 
   target_link_libraries(kdeinit4_shutdown  ${KINIT_SOCKET_LIBRARY})
 
-  install(TARGETS kdeinit4_shutdown DESTINATION ${BIN_INSTALL_DIR} )
+  install(TARGETS kdeinit4_shutdown ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
   ########### lnusertemp ###############
 

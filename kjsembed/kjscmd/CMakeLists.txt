@@ -36,7 +36,7 @@ kde4_add_executable(${KJSCMDNAME} ${kjscmd_SRCS})
 
 target_link_libraries(${KJSCMDNAME} ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} ${KJSEMBEDLIBNAME} kjs )
 
-install(TARGETS ${KJSCMDNAME} DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS ${KJSCMDNAME} ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 ########### install files ###############
 

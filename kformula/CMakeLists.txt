@@ -48,7 +48,7 @@ set_target_properties(kformula PROPERTIES
    ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kdeui"
 )
 
-install(TARGETS kformula DESTINATION ${LIB_INSTALL_DIR})
+install(TARGETS kformula ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 KDE4_ADD_WIDGET_FILES(kformulawidgets_PART_SRCS kformula.widgets)
 kde4_add_plugin(kformulawidgets ${kformulawidgets_PART_SRCS})
