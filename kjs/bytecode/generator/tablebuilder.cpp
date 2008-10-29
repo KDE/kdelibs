@@ -30,40 +30,6 @@
 
 using namespace std;
 
-class Enum {
-public:
-    Enum(const string& name, const string& prefix, StringList values):
-        name(name), prefix(prefix), values(values)
-    {}
-
-    void printDeclaration(ostream* hStream)
-    {
-        *hStream << "enum " << name << " {\n";
-        for (unsigned p = 0; p < values.size(); ++p) {
-            *hStream << "    " << prefix << values[p] << ",\n";
-        }
-        *hStream << "    " << prefix << "NumValues\n";
-        *hStream << "};\n";
-        *hStream << "extern const char* const " << name << "Vals[];\n\n";
-    }
-
-    void printDefinition(ostream* hStream)
-    {
-        *hStream << "const char* const " << name << "Vals[] = {\n";
-        for (unsigned p = 0; p < values.size(); ++p) {
-            *hStream << "    \"" << prefix << values[p] << "\"";
-            if (p != (values.size() - 1))
-                *hStream << ",";
-            *hStream << "\n";
-        }
-        *hStream << "};\n\n";
-    }
-private:
-    string name;
-    string prefix;
-    StringList values;
-};
-
 static string strReplace(string where, string from, string to) {
     string res = where;
     size_t pos;
@@ -75,123 +41,19 @@ static string strReplace(string where, string from, string to) {
 
 TableBuilder::TableBuilder(istream* inStream, ostream* hStream,
                            ostream* cppStream, ostream* mStream):
-    Parser(inStream), hStream(hStream), cppStream(cppStream), mStream(mStream)
-{
-    // Builtin stuff...
-    conversionNames.push_back("NoConversion");
-    conversionNames.push_back("NoOp");
-
-    // Special ones for stuff that might not fit into immediate..
-    // ### TODO: eventually, auto-spills will be better, and will
-    // permit to throttle VM size
-    conversionNames.push_back("I_R_Int32_Value");
-    conversionNames.push_back("I_R_Number_Value");
-}
-
-// # of bits store 'vals' values, e.g. 3 for 8, etc.
-static unsigned neededBits(unsigned vals)
-{
-    unsigned bits = 1;
-    while ((1 << bits) < vals)
-        ++bits;
-    return bits;
-}
+    Parser(inStream), out(hStream, cppStream, mStream), types(this, out)
+{}
 
 void TableBuilder::generateCode()
 {
     parse();
 
-    // Types... First we just want to list them
-    Enum typesEnum("OpType", "OpType_", typeNames);
-    typesEnum.printDeclaration(hStream);
-    typesEnum.printDefinition (cppStream);
-
-    // Also, print out the width array...
-    *cppStream << "const bool opTypeIsAlign8[] = {\n";
-    for (unsigned t = 0; t < typeNames.size(); ++t) {
-        const Type& type = types[typeNames[t]];
-        *cppStream << (type.align8 ? "true": "false");
-        if (t != typeNames.size() - 1)
-            *cppStream << ",";
-        *cppStream << " //" << type.name << "\n";
-    }
-
-    *cppStream << "};\n\n";
-
-    // Conversion ops. Those go entirely in the .cpp
-    Enum convOps("ConvOp", "Conv_", conversionNames);
-    convOps.printDeclaration(hStream);
-    convOps.printDefinition (cppStream);
-
-    *cppStream << "struct ConvInfo {\n";
-    *cppStream << "    ConvOp routine;\n";
-    *cppStream << "    int    costCode;\n";
-    *cppStream << "};\n\n";
-
-    // For conversion info, we use upper bit for register/immediate (immediate is set),
-    // and then enough bits for the from/to types as the index.
-    *cppStream << "static const ConvInfo conversions[] = {\n";
-    printConversionInfo(rgConversions, true);
-    printConversionInfo(imConversions, false);
-    *cppStream << "};\n\n";
-
-    int numBits = neededBits(types.size());
-    *cppStream << "static inline const ConvInfo* getConversionInfo(bool immediate, OpType from, OpType to)\n{\n";
-    *cppStream << "    return &conversions[((int)immediate << " << (2 * numBits) << ")"
-               << " | ((int)from << " << numBits << ") | (int)to];\n";
-    *cppStream << "}\n\n";
-
-    // Conversion helpers..
-    for (unsigned c = 0; c < imConversionList.size(); ++c)
-        printConversionRoutine(imConversionList[c]);
-
-    *cppStream << "static bool emitImmediateConversion(ConvOp convType, OpValue* original, OpValue& out)\n{\n";
-    *cppStream << "    out.immediate = true;\n";
-    *cppStream << "    switch(convType) {\n";
-    *cppStream << "    case Conv_NoOp:\n";
-    *cppStream << "        out = *original;\n";
-    *cppStream << "        break;\n";
-    for (unsigned c = 0; c < imConversionList.size(); ++c) {
-        const ConversionInfo& inf = imConversionList[c];
-        *cppStream << "    case Conv_" << inf.name << ":\n";
-        *cppStream << "        out.type = OpType_" << inf.to.name << ";\n";
-        *cppStream << "        out.value." << (inf.to.align8 ? "wide" : "narrow")
-                   << "." << inf.to.name << "Val = "
-                   << "convert" << inf.name << "(0, "
-                   << "original->value." << (inf.from.align8 ? "wide" : "narrow")
-                   << "." << inf.from.name << "Val);\n";
-
-        *cppStream << "        break;\n";
-    }
-
-    *cppStream << "    default:\n";
-    *cppStream << "        return false;\n";
-    *cppStream << "    }\n";
-    *cppStream << "    return true;\n";    
-    *cppStream << "}\n\n";
-
-    // Similar helper for simple register conversions..
-    *cppStream << "static bool emitSimpleRegisterConversion(CompileState* comp, ConvOp convType, OpValue* original, OpValue& out)\n{\n";
-    *cppStream << "    switch(convType) {\n";
-    *cppStream << "    case Conv_NoOp:\n";
-    *cppStream << "        out = *original;\n";
-    *cppStream << "        break;\n";
-    for (unsigned c = 0; c < rgConversionList.size(); ++c) {
-        const ConversionInfo& inf = rgConversionList[c];
-        *cppStream << "    case Conv_" << inf.name << ":\n";
-        *cppStream << "        CodeGen::emitOp(comp, Op_" << inf.name << ", &out, original);\n";
-        *cppStream << "        break;\n";
-    }
-    *cppStream << "    default:\n";
-    *cppStream << "        return false;\n";
-    *cppStream << "    }\n";
-    *cppStream << "    return true;\n";
-    *cppStream << "}\n\n";
+    types.generateCode();
 
     // Operations
     Enum opNamesEnum("OpName", "Op_", operationNames);
-    opNamesEnum.printDeclaration(hStream);
-    opNamesEnum.printDefinition (cppStream);
+    opNamesEnum.printDeclaration(out(OpH));
+    opNamesEnum.printDefinition (out(OpCpp));
 
     // Enumerate all the variants..
     for (unsigned c = 0; c < operations.size(); ++c) {
@@ -200,52 +62,52 @@ void TableBuilder::generateCode()
     }
 
     // Return types for each..
-    *cppStream << "static const OpType opRetTypes[] = {\n";
+    out(OpCpp) << "static const OpType opRetTypes[] = {\n";
     for (unsigned c = 0; c < operationNames.size(); ++c) {
-        *cppStream << "     OpType_" << operationRetTypes[operationNames[c]];
+        out(OpCpp) << "     OpType_" << operationRetTypes[operationNames[c]];
         if (c  != operationNames.size() - 1)
-            *cppStream << ",";
-        *cppStream << " //" << operationNames[c] << "\n";
+            out(OpCpp) << ",";
+        out(OpCpp) << " //" << operationNames[c] << "\n";
     }
-    *cppStream << "};\n\n";
+    out(OpCpp) << "};\n\n";
 
     // Now we have all our bytecode names... Whee.
     Enum opByteCodesEnum("OpByteCode", "OpByteCode_", variantNames);
-    opByteCodesEnum.printDeclaration(hStream);
-    opByteCodesEnum.printDefinition (cppStream);
+    opByteCodesEnum.printDeclaration(out(OpH));
+    opByteCodesEnum.printDefinition (out(OpCpp));
 
     // We can now emit the actual tables...
 
     // ... first descriptors for each bytecode op..
-    *cppStream << "const Op opsForOpCodes[] = {\n";
+    out(OpCpp) << "const Op opsForOpCodes[] = {\n";
     for (unsigned c = 0; c < variants.size(); ++c) {
         const OperationVariant& variant = variants[c];
         if (variant.needsPadVariant)
             dumpOpStructForVariant(variant, true, variant.needsPadVariant, true);
         dumpOpStructForVariant(variant, false, variant.needsPadVariant, c != variants.size() - 1);
     }
-    *cppStream << "};\n\n";
+    out(OpCpp) << "};\n\n";
 
     // then variant tables for each main op..
     for (unsigned c = 0; c < operationNames.size(); ++c) {
         const string& opName = operationNames[c];
-        *cppStream << "static const Op* const op" << opName << "Variants[] = {";
+        out(OpCpp) << "static const Op* const op" << opName << "Variants[] = {";
         StringList variants = variantNamesForOp[opName];
         for (unsigned v = 0; v < variants.size(); ++v) {
-            *cppStream << "&opsForOpCodes[OpByteCode_" << variants[v] << "], ";
+            out(OpCpp) << "&opsForOpCodes[OpByteCode_" << variants[v] << "], ";
         }
-        *cppStream << "0};\n";
+        out(OpCpp) << "0};\n";
     }
-    *cppStream << "\n";
+    out(OpCpp) << "\n";
 
-    *cppStream << "const Op* const* const opSpecializations[] = {\n";
+    out(OpCpp) << "const Op* const* const opSpecializations[] = {\n";
     for (unsigned o = 0; o < operationNames.size(); ++o) {
-        *cppStream << "    op" << operationNames[o] << "Variants";
+        out(OpCpp) << "    op" << operationNames[o] << "Variants";
         if (o != (operationNames.size() - 1))
-            *cppStream << ",";
-        *cppStream << "\n";
+            out(OpCpp) << ",";
+        out(OpCpp) << "\n";
     }
-    *cppStream << "};\n\n";
+    out(OpCpp) << "};\n\n";
 
     // Now, generate the VM loop.
     mInd(8) << "OpByteCode op = *reinterpret_cast<const OpByteCode*>(pc);\n";
@@ -267,151 +129,22 @@ void TableBuilder::generateCode()
     mInd(8) << "}\n\n";
 }
 
-void TableBuilder::issueError(const string& err)
-{
-    std::cerr << err << "\n";
-    exit(-1);
-}
-
-void TableBuilder::printConversionInfo(map<string, map<string, ConversionInfo> >& table, bool reg)
-{
-    unsigned numBits = neededBits(types.size());
-    unsigned fullRange = 1 << numBits;
-    for (unsigned from = 0; from < fullRange; ++from) {
-        for (unsigned to = 0; to < fullRange; ++to) {
-            if (from < types.size() && to < types.size()) {
-                string fromName = typeNames[from];
-                string toName   = typeNames[to];
-
-                // For register conversion, we need it to be possible for source + dest to be in
-                // registers. For immediate, we only require source, since dest will just go
-                // into local value.
-                bool representable;
-                if (reg)
-                    representable = types[fromName].reg && types[toName].reg;
-                else
-                    representable = types[fromName].im;
-
-                if (from == to) {
-                    *cppStream << "    {Conv_NoOp, 0}";
-                } else if (table[fromName].find(toName) != table[fromName].end() && representable) {
-                    // We skip immediate conversions for things that can't be immediate, as
-                    // we don't have exec there..
-                    const ConversionInfo& inf = table[fromName][toName];
-                    *cppStream << "    {Conv_" << inf.name << ",";
-                    if (inf.flags & Conv_Checked)
-                        *cppStream << "Cost_Checked}";
-                    else
-                        *cppStream << (reg ? inf.cost : 0) << "}";
-                } else {
-                    *cppStream << "    {Conv_NoConversion, Cost_NoConversion}";
-                }
-
-                *cppStream << " /*" << fromName << " => " << toName << "*/";
-            } else {
-                *cppStream << "    {Conv_NoConversion, Cost_NoConversion}";
-            }
-
-            if (reg || from != (fullRange - 1) || to != (fullRange - 1))
-                *cppStream << ",";
-
-            *cppStream << "\n";
-        } // for to..
-    } // for from..
-}
-
-void TableBuilder::printConversionRoutine(const ConversionInfo& conversion)
-{
-    *hStream << "ALWAYS_INLINE " << conversion.to.nativeName << " convert" << conversion.name
-         << "(ExecState* exec, " << conversion.from.nativeName << " in)\n";
-    *hStream << "{\n";
-    *hStream << "    (void)exec;\n";
-    printCode(hStream, 4, conversion.impl, conversion.codeLine);
-    *hStream << "}\n\n";
-}
-
 void TableBuilder::handleType(const string& type, const string& nativeName, bool im, bool rg, bool al8)
 {
-    typeNames.push_back(type);
-    Type t;
-    t.name = type;
-    t.nativeName = nativeName;
-    t.im     = im;
-    t.reg    = rg;
-    t.align8 = al8;
-    types[type] = t;
-}
-
-static string capitalized(const string& in)
-{
-    return WTF::toASCIIUpper(in[0]) + in.substr(1);
+    types.handleType(type, nativeName, im, rg, al8);
 }
 
 void TableBuilder::handleConversion(const string& code, int codeLine,
                                     unsigned flags, const string& from, const string& to,
                                     int tileCost, int registerCost)
 {
-    // Compute the conversion names. The register one (if any) would also create an operation.
-    string immName = "I" + capitalized(from) + "_" + capitalized(to);
-    string regName = "R" + capitalized(from) + "_" + capitalized(to);
-
-    // Register immediate conversion
-    conversionNames.push_back(immName);
-    ConversionInfo inf;
-    inf.name    = immName;
-    inf.cost    = tileCost;
-    inf.flags   = flags;
-    inf.impl     = code;
-    inf.codeLine = codeLine;
-    inf.from     = types[from];
-    inf.to       = types[to];
-
-    imConversions[from][to] = inf;
-    imConversionList.push_back(inf);
-
-    // ... and, if it exists, register one.
-    if (flags & Conv_HaveReg) {
-        conversionNames.push_back(regName);
-        inf.name = regName;
-        inf.cost = registerCost;
-        inf.flags &= ~Conv_Checked; // 'checked' makes no sense here
-        rgConversions[from][to] = inf;
-        rgConversionList.push_back(inf);
-        
-        // We also generate the corresponding bytecode routine, using
-        // the immediate conversion helper we'll emit in it.
-        handleOperation(regName, false);
-
-        StringList sig;
-        sig.push_back(from);
-        StringList names;
-        names.push_back("in");
-        HintList hints;
-        hints.push_back(NoHint);
-
-        string code = inf.to.nativeName + " out = convertI" + inf.name.substr(1) + "(exec, in);\n";
-        code += "$$ = out;\n";
-        handleImpl("", code, false, codeLine, 0, to, sig, names, hints);
-    }
+    types.handleConversion(code, codeLine, flags, from, to, tileCost, registerCost);
 }
 
 void TableBuilder::handleOperation(const string& name, bool endsBB)
 {
     operationNames.push_back(name);
     operationEndBB.push_back(endsBB);
-}
-
-vector<Type> TableBuilder::resolveSignature(const StringList& in)
-{
-    vector<Type> sig;
-    for (unsigned c = 0; c < in.size(); ++c) {
-        const string& type = in[c];
-        if (types.find(type) != types.end())
-            sig.push_back(types[type]);
-        else
-            issueError("Unknown type:" + type);
-    }
-    return sig;
 }
 
 void TableBuilder::handleImpl(const string& fnName, const string& code, bool ol, int codeLine, int cost,
@@ -442,7 +175,7 @@ void TableBuilder::handleImpl(const string& fnName, const string& code, bool ol,
     op.isTile         = false;
     op.implementAs    = code;
     op.codeLine       = codeLine;
-    op.parameters     = resolveSignature(extSig);
+    op.parameters     = types.resolveSignature(extSig);
     op.implParams     = op.parameters;
     op.implParamNames = extParamNames;
     op.implHints      = extHints;
@@ -456,7 +189,7 @@ void TableBuilder::handleImpl(const string& fnName, const string& code, bool ol,
 void TableBuilder::handleTile(const string& fnName, StringList sig)
 {
     if (implementations.find(fnName) == implementations.end())
-        issueError("Unknown implementation name " + fnName + " in a tile definition");
+        out.issueError("Unknown implementation name " + fnName + " in a tile definition");
     const Operation& impl = implementations[fnName];
 
     // Add in a return reg if need be
@@ -474,7 +207,7 @@ void TableBuilder::handleTile(const string& fnName, StringList sig)
     op.codeLine    = impl.codeLine;
     op.retType     = impl.retType;
     op.overload    = impl.overload; // if original required precise matching, so did the tile.
-    op.parameters  = resolveSignature(extSig);
+    op.parameters  = types.resolveSignature(extSig);
     op.implParams     = impl.implParams;
     op.implParamNames = impl.implParamNames;
     // ### not sure we want this here
@@ -484,7 +217,7 @@ void TableBuilder::handleTile(const string& fnName, StringList sig)
     op.cost           = impl.cost;
     // Now also include the cost of inline conversions.
     for (unsigned p = 0; p < op.parameters.size(); ++p)
-        op.cost += imConversions[op.parameters[p].name][op.implParams[p].name].cost;
+        op.cost += types.immConv(op.parameters[p], op.implParams[p]).cost;
 
     operations.push_back(op);
 }
@@ -580,138 +313,65 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
 void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool doPad,
                                           bool hasPadVariant, bool needsComma)
 {
-    *cppStream << "    {";
-    *cppStream << "Op_" << variant.op.name << ", ";     // baseInstr..
-    *cppStream << "OpByteCode_" << (doPad ? variant.sig + "_Pad" : variant.sig) << ", "; // byteCode op
-    *cppStream << variant.op.cost << ", "; // uhm, cost. doh.
+    out(OpCpp) << "    {";
+    out(OpCpp) << "Op_" << variant.op.name << ", ";     // baseInstr..
+    out(OpCpp) << "OpByteCode_" << (doPad ? variant.sig + "_Pad" : variant.sig) << ", "; // byteCode op
+    out(OpCpp) << variant.op.cost << ", "; // uhm, cost. doh.
     int numParams = variant.op.parameters.size();
-    *cppStream << numParams << ", "; // # of params
+    out(OpCpp) << numParams << ", "; // # of params
 
     // Param types.
-    *cppStream << "{";
+    out(OpCpp) << "{";
     for (int p = 0; p < numParams; ++p) {
-        *cppStream << "OpType_" << variant.op.parameters[p].name;
+        out(OpCpp) << "OpType_" << variant.op.parameters[p].name;
         if (p != numParams - 1)
-            *cppStream << ", ";
+            out(OpCpp) << ", ";
     }
-    *cppStream << "}, ";
+    out(OpCpp) << "}, ";
 
     // Immediate flag..
-    *cppStream << "{";
+    out(OpCpp) << "{";
     for (int p = 0; p < numParams; ++p) {
-        *cppStream << (variant.paramIsIm[p] ? "true" : "false");
+        out(OpCpp) << (variant.paramIsIm[p] ? "true" : "false");
         if (p != numParams - 1)
-            *cppStream << ", ";
+            out(OpCpp) << ", ";
     }
-    *cppStream << "}, ";
+    out(OpCpp) << "}, ";
 
     // Return type.
-    *cppStream << "OpType_" << variant.op.retType << ", ";
+    out(OpCpp) << "OpType_" << variant.op.retType << ", ";
 
     int adjust = doPad ? 4 : 0; // padded version has 4 extra bytes,
                                 // between the opcode and the first arg.
     // Size..
-    *cppStream << (variant.size + adjust) << ", ";
+    out(OpCpp) << (variant.size + adjust) << ", ";
 
     // Offset table..
-    *cppStream << "{";
+    out(OpCpp) << "{";
     for (int p = 0; p < numParams; ++p) {
-        *cppStream << (variant.paramOffsets[p] + adjust);
+        out(OpCpp) << (variant.paramOffsets[p] + adjust);
         if (p != numParams - 1)
-            *cppStream << ", ";
+            out(OpCpp) << ", ";
     }
 
-    *cppStream << "}, ";
+    out(OpCpp) << "}, ";
 
     // Whether this is a padded version..
-    *cppStream << (doPad ? "true" : "false") << ", ";
+    out(OpCpp) << (doPad ? "true" : "false") << ", ";
 
     // And whether a padded version exists.
-    *cppStream << (hasPadVariant ? "true" : "false") << ", ";
+    out(OpCpp) << (hasPadVariant ? "true" : "false") << ", ";
 
     // Whether this is an overload, requiring precise matching
-    *cppStream << (variant.op.overload ? "true" : "false") << ", ";
+    out(OpCpp) << (variant.op.overload ? "true" : "false") << ", ";
 
     // Whether this ends a basic block.
-    *cppStream << (variant.op.endsBB ? "true" : "false");
+    out(OpCpp) << (variant.op.endsBB ? "true" : "false");
 
     if (needsComma)
-        *cppStream << "},\n";
+        out(OpCpp) << "},\n";
     else
-        *cppStream << "}\n";
-}
-
-ostream& TableBuilder::mInd(int ind)
-{
-    for (int i = 0; i < ind; ++i)
-        *mStream << ' ';
-    return *mStream;
-}
-
-static bool isWhitespaceString(const string& str)
-{
-    for (unsigned c = 0; c < str.length(); ++c) {
-        if (!WTF::isASCIISpace(str[c]))
-            return false;
-    }
-
-    return true;
-}
-
-StringList splitLines(const string& in)
-{
-    StringList lines;
-    string     curLine;
-    for (unsigned c = 0; c < in.length(); ++c) {
-        if (in[c] == '\n') {
-            lines.push_back(curLine);
-            curLine = "";
-        } else {
-            curLine += in[c];
-        }
-    }
-    return lines;
-}
-
-void TableBuilder::printCode(ostream* out, int baseIdent, const string& code, int baseLine)
-{
-    StringList lines = splitLines(code);
-
-    if (!lines.empty() && isWhitespaceString(lines.front())) {
-        ++baseLine;
-        lines.erase(lines.begin());
-    }
-
-    if (!lines.empty() && isWhitespaceString(lines.back()))
-        lines.pop_back();
-
-    *out << "#line " << baseLine << " \"codes.def\"\n";
-
-    // Compute "leading" whitespace.
-    unsigned minWhiteSpace = 100000;
-    for (unsigned c = 0; c < lines.size(); ++c) {
-        const string& line = lines[c];
-        if (isWhitespaceString(line))
-            continue;
-
-        unsigned ws = 0;
-        while (ws < line.length() && WTF::isASCIISpace(line[ws]))
-            ++ws;
-        if (ws < minWhiteSpace)
-            minWhiteSpace = ws;
-    }
-
-    // Print out w/it stripped..
-    for (unsigned c = 0; c < lines.size(); ++c) {
-        const string& line = lines[c];
-        if (line.length() < minWhiteSpace)
-            *out << "\n";
-        else {
-            for (int c = 0; c < baseIdent; ++c)
-                *out << ' ';
-            *out << line.substr(minWhiteSpace) << "\n";
-        }
-    }
+        out(OpCpp) << "}\n";
 }
 
 void TableBuilder::generateVariantImpl(const OperationVariant& variant)
@@ -743,11 +403,10 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
                      << " = ";
         if (type == variant.op.implParams[p]) {
             // We don't need a conversion, just fetch it directly into name..
-            *mStream << accessString << ";\n";
+            out(MaCpp) << accessString << ";\n";
         } else {
-            ConversionInfo conv;
-            conv = imConversions[type.name][variant.op.implParams[p].name];
-            *mStream << "convert" << conv.name << "(exec, " << accessString << ");\n";
+            ConversionInfo conv = types.immConv(type, variant.op.implParams[p]);
+            out(MaCpp) << "convert" << conv.name << "(exec, " << accessString << ");\n";
 
             if (conv.flags & Conv_MayThrow) {
                 // Check for an exception being raised, or perhaps a reload request
@@ -764,7 +423,7 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
     code = strReplace(code, "$$", storeCode);
 
     // Print out the impl code..
-    printCode(mStream, 16, code, variant.op.codeLine);
+    out.printCode(out(MaCpp), 16, code, variant.op.codeLine);
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

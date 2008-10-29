@@ -24,38 +24,9 @@
 #ifndef TABLE_BUILDER_H
 #define TABLE_BUILDER_H
 
+#include "codeprinter.h"
+#include "types.h"
 #include "parser.h"
-
-#include <iostream>
-#include <vector>
-
-using std::ostream;
-using std::vector;
-
-struct Type
-{
-    string name;
-    string nativeName;
-    bool im, reg, align8;
-
-    bool operator==(const Type& other) const {
-        return name == other.name;
-    }
-};
-
-struct ConversionInfo
-{
-    string name;
-    string impl;
-    int  cost;   // for w/in tile for immediate, for external for reg
-    unsigned flags;
-    Type from;
-    Type to;
-    int codeLine;
-
-    ConversionInfo(): cost(0), flags(Conv_NoFlags)
-    {} //Can be called for trivial conversion
-};
 
 // Actually, a specialization, but who cares?
 struct Operation
@@ -93,8 +64,10 @@ public:
 
     void generateCode();
 private:
-    void issueError(const string& err);
-
+    // Interface to the parser; also (ab)used by the type system to emit
+    // conversion ops.
+    friend class TypeTable;
+    
     virtual void handleType(const string& type, const string& nativeName, bool im, bool rg, bool al8);
     virtual void handleConversion(const string& runtimeRoutine, int codeLine,
                                   unsigned flags, const string& from, const string& to,
@@ -106,12 +79,6 @@ private:
                             StringList paramNames, HintList hints);
     virtual void handleTile(const string& fnName, StringList sig);
 
-    void printConversionInfo(map<string, map<string, ConversionInfo> >& table, bool last);
-
-    void printConversionRoutine(const ConversionInfo& conversion);
-
-    void printCode(ostream* out, int baseIdent, const string& code, int baseLine);
-
     // Enumerates all r/i/pad variants; plus computes the shuffle table.
     void expandOperationVariants(const Operation& op, vector<bool>& paramIsIm);
 
@@ -120,17 +87,12 @@ private:
 
     void generateVariantImpl(const OperationVariant& variant);
 
-    // issues error if there is a problem..
-    vector<Type> resolveSignature(const StringList& in);
+    CodePrinter  out;
+    TypeTable    types;
 
-    ostream* hStream;
-    ostream* cppStream;
-    ostream* mStream;
-
-    ostream& mInd(int ind);
-
-    map<string, Type> types;
-    StringList        typeNames;
+    ostream& mInd(int ind) {
+        return out.mInd(ind);
+    }
 
     StringList          operationNames;
     vector<bool>        operationEndBB;
@@ -141,13 +103,6 @@ private:
     StringList  variantNames;
     vector<OperationVariant> variants;
     map<string, StringList>  variantNamesForOp;
-
-    StringList conversionNames;
-    vector<ConversionInfo> imConversionList;
-    vector<ConversionInfo> rgConversionList;
-
-    map<string, map<string, ConversionInfo> > imConversions;
-    map<string, map<string, ConversionInfo> > rgConversions;
 };
 
 #endif

@@ -26,22 +26,15 @@
 
 #include "lexer.h"
 
-#include <vector>
+#include "types.h" // for various flags
 
-typedef std::vector<string> StringList;
+#include <vector>
 
 enum Hints {
     NoHint = 0,
     NoImm = 1,
     NoReg = 2,
     Limit = 0xFFFF
-};
-
-enum ConvFlags {
-    Conv_NoFlags,
-    Conv_HaveReg  = 2,
-    Conv_Checked  = 4,
-    Conv_MayThrow = 8
 };
 
 typedef std::vector<Hints> HintList;

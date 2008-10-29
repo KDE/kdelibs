@@ -83,6 +83,8 @@ endif(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
 ########### icemaker, generates some tables for kjs/frostbyte ###############
 set(icemaker_SRCS
     bytecode/generator/tablebuilder.cpp
+    bytecode/generator/types.cpp
+    bytecode/generator/codeprinter.cpp
     bytecode/generator/driver.cpp
     bytecode/generator/lexer.cpp
     bytecode/generator/parser.cpp
