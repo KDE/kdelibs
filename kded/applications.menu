@@ -237,6 +237,16 @@
 				</And>
 			</Include>
 		</Menu>
+		<Menu>
+			<Name>Logic</Name>
+			<Directory>kde-games-logic.directory</Directory>
+			<Include>
+				<And>
+					<Category>Game</Category>
+					<Category>LogicGame</Category>
+				</And>
+			</Include>
+		</Menu>
 		<Include>
 			<And>
 				<Category>Game</Category>
@@ -247,6 +257,7 @@
 					<Category>X-KDE-KidsGame</Category>
 					<Category>KidsGame</Category>
 					<Category>StrategyGame</Category>
+					<Category>LogicGame</Category>
 				</Not>
 			</And>
 		</Include>
