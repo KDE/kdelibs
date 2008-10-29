@@ -6148,7 +6148,7 @@ QList<KParts::ReadOnlyPart*> KHTMLPart::frames() const
   ConstFrameIt it = d->m_frames.constBegin();
   const ConstFrameIt end = d->m_frames.constEnd();
   for (; it != end; ++it )
-    if (!(*it)->m_bPreloaded)
+    if (!(*it)->m_bPreloaded && (*it)->m_part)
       res.append( (*it)->m_part );
 
   return res;
