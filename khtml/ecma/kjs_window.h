@@ -114,6 +114,8 @@ namespace KJS {
     void delayedGoHistory(int steps);
     void goHistory(int steps);
     void goURL(ExecState* exec, const QString& url, bool lockHistory);
+
+    static bool targetIsExistingWindow(KHTMLPart* part, const QString& frameName);
     JSValue* openWindow(ExecState *exec, const List &args);
     JSValue* executeOpenWindow(ExecState *exec, const KUrl& url, const QString& frameName, const QString& features);
     void resizeTo(QWidget* tl, int width, int height);

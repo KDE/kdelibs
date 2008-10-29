@@ -6135,7 +6135,7 @@ QStringList KHTMLPart::frameNames() const
   ConstFrameIt it = d->m_frames.constBegin();
   const ConstFrameIt end = d->m_frames.constEnd();
   for (; it != end; ++it )
-    if (!(*it)->m_bPreloaded)
+    if (!(*it)->m_bPreloaded && (*it)->m_part)
       res += (*it)->m_name;
 
   return res;
@@ -6148,7 +6148,8 @@ QList<KParts::ReadOnlyPart*> KHTMLPart::frames() const
   ConstFrameIt it = d->m_frames.constBegin();
   const ConstFrameIt end = d->m_frames.constEnd();
   for (; it != end; ++it )
-    if (!(*it)->m_bPreloaded && (*it)->m_part)
+    if (!(*it)->m_bPreloaded && (*it)->m_part) // ### TODO: make sure that we always create an empty
+                                               // KHTMLPart for frames so this never happens.
       res.append( (*it)->m_part );
 
   return res;
