@@ -82,16 +82,16 @@ IdleSlave::gotInput()
    {
       // Communication problem with slave.
       kError(7016) << "SlavePool: No communication with slave." << endl;
-      delete this;
+      deleteLater();
    }
    else if (cmd == MSG_SLAVE_ACK)
    {
-      delete this;
+      deleteLater();
    }
    else if (cmd != MSG_SLAVE_STATUS)
    {
       kError(7016) << "SlavePool: Unexpected data from slave." << endl;
-      delete this;
+      deleteLater();
    }
    else
    {
