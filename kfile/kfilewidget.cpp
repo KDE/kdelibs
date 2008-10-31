@@ -283,7 +283,7 @@ K_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
 static const char autocompletionWhatsThisText[] = I18N_NOOP("<qt>While typing in the text area, you may be presented "
                                                   "with possible matches. "
                                                   "This feature can be controlled by clicking with the right mouse button "
-                                                  "and selecting a preferred mode from the <b>Text Completion</b> menu.")  "</qt>";
+                                                  "and selecting a preferred mode from the <b>Text Completion</b> menu.</qt>");
 
 // returns true if the string contains "<a>:/" sequence, where <a> is at least 2 alpha chars
 static bool containsProtocolSection( const QString& string )
