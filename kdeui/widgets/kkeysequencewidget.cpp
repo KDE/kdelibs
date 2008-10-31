@@ -707,7 +707,7 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
         // We cannot do anything useful with those (several keys have -1, indistinguishable)
         // and QKeySequence.toString() will also yield a garbage string.
         KMessageBox::sorry(this,
-                i18n("The key you just pressed isn't supported by qt."),
+                i18n("The key you just pressed isn't supported by Qt."),
                 i18n("Unsupported Key"));
         return d->cancelRecording();
     }
