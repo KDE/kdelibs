@@ -337,6 +337,12 @@ int main(int argc, char **argv, char **envp)
 #endif            
         if (strcmp(safe_argv[i], "--verbose") == 0)
             verbose = 1;
+        if (strcmp(safe_argv[i], "--version") == 0) 
+        { 
+            printf("Qt: %s\n",qVersion()); 
+            printf("KDE: %s\n", KDE_VERSION_STRING); 
+            exit(0);
+        } 
         if (strcmp(safe_argv[i], "--help") == 0)
         {
            printf("Usage: kdeinit4 [options]\n");
@@ -357,6 +363,7 @@ int main(int argc, char **argv, char **envp)
 #endif
            printf("   --terminate                hard kill of *all* running kde processes\n");
            printf("   --verbose                  print verbose messages\n");
+	   printf("   --version                  Show version information\n");
            exit(0);
         }
         if (strcmp(safe_argv[i], "--list") == 0)

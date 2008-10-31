@@ -29,6 +29,7 @@
 #include <kapplication.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
+#include <kdeversion.h>
 #endif // QT_ONLY
 
 #include <kjs/interpreter.h>
@@ -101,6 +102,14 @@ int main( int argc, char **argv )
             QString arg = args.takeFirst();
             if (arg.contains('-'))
             {
+                if ((arg == "--version") || (arg == "-v"))
+		{
+		    printf("Qt: %s\n", qVersion()); 
+#ifndef QT_ONLY
+		    printf("KDE: %s\n", KDE_VERSION_STRING); 
+#endif
+		     return 0;
+		}
                 if ((arg == "--exec") || (arg == "-e"))
 		{
                     gui = false;

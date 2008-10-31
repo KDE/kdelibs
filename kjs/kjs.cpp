@@ -39,6 +39,8 @@
 #  include <unistd.h>
 #endif
 
+#include <kdeversion.h>
+
 enum ExitCode { ErrorNone,
                 ErrorUnknownSwitch,
                 ErrorMissingArg,
@@ -55,7 +57,8 @@ static void printUsage(const char *app)
     fprintf(stderr,
             "Usage: %s\n"
             "  [ -h | -help | --help ]\n"
-            "  [ -e <statement> | <script> ]\n",
+            "  [ -e <statement> | <script> ]\n"
+	    "  [-v | -version | --version]\n",
             app);
 }
 
@@ -230,7 +233,11 @@ static ExitCode parseArgs(int argc, char** argv)
     bool ranOtherScript = false;
     for (ai = 1; ai < argc; ++ai) {
         const char* a = argv[ai];
-        if (strcmp(a, "-h" ) == 0 || strcmp(a, "-help") == 0 ||
+        if (strcmp(a, "-v" ) == 0 || strcmp(a, "-version") == 0 ||
+            strcmp(a, "--version") == 0) {
+             printf("KDE: %s\n", KDE_VERSION_STRING); 
+             return ErrorNone;
+        } else if (strcmp(a, "-h" ) == 0 || strcmp(a, "-help") == 0 ||
             strcmp(a, "--help") == 0) {
             printUsage(argv[0]);
             return ErrorNone;

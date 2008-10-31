@@ -1741,6 +1741,12 @@ int main(int argc, char **argv, char **envp)
          d.suicide = true;
       if (strcmp(safe_argv[i], "--exit") == 0)
          keep_running = 0;
+      if (strcmp(safe_argv[i], "--version") == 0) 
+      { 
+	 printf("Qt: %s\n", qVersion()); 
+	 printf("KDE: %s\n", KDE_VERSION_STRING); 
+	 exit(0);
+      } 
       if (strcmp(safe_argv[i], "--help") == 0)
       {
         printf("Usage: kdeinit4 [options]\n");
@@ -1753,6 +1759,7 @@ int main(int argc, char **argv, char **envp)
      // printf("    --no-klauncher    Do not start klauncher\n");
         printf("    --no-kded         Do not start kded\n");
         printf("    --suicide         Terminate when no KDE applications are left running\n");
+	printf("    --version         Show version information\n");
      // printf("    --exit            Terminate when kded has run\n");
         exit(0);
       }
