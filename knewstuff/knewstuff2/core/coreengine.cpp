@@ -104,6 +104,7 @@ bool CoreEngine::init(const QString &configfile)
     m_installation->setUncompression(uncompresssetting);
 
     m_installation->setCommand(group.readEntry("InstallationCommand", QString()));
+    m_installation->setUninstallCommand(group.readEntry("UninstallCommand", QString()));
     m_installation->setStandardResourceDir(group.readEntry("StandardResource", QString()));
     m_installation->setTargetDir(group.readEntry("TargetDir", QString()));
     m_installation->setInstallPath(group.readEntry("InstallPath", QString()));
@@ -1530,6 +1531,27 @@ bool CoreEngine::install(const QString &payloadfile)
 bool CoreEngine::uninstall(KNS::Entry *entry)
 {
     entry->setStatus(Entry::Deleted);
+
+    if (!m_installation->uninstallCommand().isEmpty()) {
+        KProcess process;
+        foreach (const QString& file, entry->installedFiles()) {
+            QFileInfo info(file);
+            if (info.isFile()) {
+                QString fileArg(KShell::quoteArg(file));
+                QString command(m_installation->uninstallCommand());
+                command.replace("%f", fileArg);
+
+                process.setShellCommand(command);
+                int exitcode = process.execute();
+
+                if (exitcode) {
+                    kError() << "Command failed" << endl;
+                } else {
+                    //kDebug() << "Command executed successfully";
+                }
+            }
+        }
+    }
 
     foreach(const QString &file, entry->installedFiles()) {
         if (file.endsWith('/')) {

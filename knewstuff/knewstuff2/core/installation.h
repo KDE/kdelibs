@@ -69,6 +69,7 @@ public:
 
     void setUncompression(const QString& uncompression);
     void setCommand(const QString& command);
+    void setUninstallCommand(const QString& command);
 
     void setStandardResourceDir(const QString& dir);
     void setTargetDir(const QString& dir);
@@ -83,6 +84,7 @@ public:
 
     QString uncompression() const;
     QString command() const;
+    QString uninstallCommand() const;
 
     QString standardResourceDir() const;
     QString targetDir() const;

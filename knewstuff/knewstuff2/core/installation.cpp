@@ -29,6 +29,7 @@ struct KNS::InstallationPrivate {
     }
 
     QString m_command;
+    QString m_uninstallCommand;
     QString m_uncompression;
     QString m_standardresourcedir;
     QString m_targetdir;
@@ -60,6 +61,11 @@ void Installation::setUncompression(const QString& uncompression)
 void Installation::setCommand(const QString& command)
 {
     d->m_command = command;
+}
+
+void Installation::setUninstallCommand(const QString& command)
+{
+    d->m_uninstallCommand = command;
 }
 
 void Installation::setStandardResourceDir(const QString& dir)
@@ -110,6 +116,11 @@ QString Installation::uncompression() const
 QString Installation::command() const
 {
     return d->m_command;
+}
+
+QString Installation::uninstallCommand() const
+{
+    return d->m_uninstallCommand;
 }
 
 QString Installation::standardResourceDir() const
