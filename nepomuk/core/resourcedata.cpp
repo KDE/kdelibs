@@ -39,6 +39,7 @@
 #include "ontology/entity_p.h" // for qHash(QUrl)
 
 #include <QtCore/QFile>
+#include <QtCore/QFileInfo>
 #include <QtCore/QDateTime>
 
 #include <kdebug.h>
@@ -715,6 +716,19 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QUrl& uri, const QUrl&
         return data( fileUri, type );
     }
 
+    // if scheme is file, try to follow a symlink
+    if ( uri.scheme()=="file" ) {
+        QFileInfo fileInfo( uri.toLocalFile() );
+        if ( fileInfo.isSymLink() ) {
+            QString linkTarget = fileInfo.canonicalFilePath();
+            // linkTarget is empty for dangling symlinks 
+            if ( !linkTarget.isEmpty() ) {
+                QUrl targetUri( linkTarget );
+                targetUri.setScheme( "file" );
+                return data( targetUri, type );
+            }
+        }
+    }
     ResourceDataHash::iterator it = s_initializedData->find( uri.toString() );
 
     //
@@ -747,6 +761,15 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QString& uriOrId, cons
 
     // special case: files (only absolute paths for now)
     if ( uriOrId[0] == '/' ) {
+        // try to follow a symlink
+        QFileInfo fileInfo( uriOrId );
+        if ( fileInfo.isSymLink() ) {
+            QString linkTarget = fileInfo.canonicalFilePath();
+            // linkTarget is empty for dangling symlinks, use given url for those
+            if ( !linkTarget.isEmpty() ) {
+                return data( linkTarget, type );
+            }
+        }
         ResourceDataHash::iterator it = s_initializedData->find( "file://" + uriOrId );
         if ( it != s_initializedData->end() ) {
             return *it;
