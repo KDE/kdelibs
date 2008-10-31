@@ -137,7 +137,7 @@ class QDBusError;
 		   Sound=/usr/share/sounds/super.ogg
 
 		   [Event/contactOnline/group/1]
-		   Action=PassivePopup|Sound
+		   Action=Popup|Sound
  * </pre>
  * 
  * \section example Example of code
