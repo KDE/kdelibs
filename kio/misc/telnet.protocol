@@ -10,4 +10,4 @@ writing=false
 makedir=false
 deleting=false
 X-DocPath=kioslave/telnet.html
-Icon=konsole
+Icon=utilities-terminal
