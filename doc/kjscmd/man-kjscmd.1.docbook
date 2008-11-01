@@ -166,7 +166,7 @@ execute script in <parameter>file</parameter> without gui support.
 </varlistentry>
 
 <varlistentry>
-<term><option>-n</option><option>--no-kde</option></term>
+<term><option>-n</option>,<option>--no-kde</option></term>
 <listitem>
 <para>start without &kde; KApplication support.</para>
 </listitem>
