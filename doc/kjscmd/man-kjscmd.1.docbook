@@ -30,7 +30,7 @@
 
 <refnamediv>
 <refname><command>kjscmd</command></refname>
-<refpurpose>&kde; translator for XML</refpurpose>
+<refpurpose>&kde; KJSEmbed interpreter</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
