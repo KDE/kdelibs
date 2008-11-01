@@ -35,7 +35,13 @@
 class KFilterProxySearchLine::Private : public QObject {
 public:
     Private( KFilterProxySearchLine* parent) : QObject( parent ),
-                                q(parent), proxy(0), searchLine(0) {}
+                                q(parent), proxy(0), searchLine(0)
+    {
+    timer = new QTimer( this );
+    timer->setSingleShot( true );
+    connect( timer, SIGNAL( timeout() ), q, SLOT( slotSearchLineActivate() ) );
+    }
+    QTimer* timer;
     KFilterProxySearchLine* q;
     QSortFilterProxyModel* proxy;
     KLineEdit* searchLine;
@@ -46,13 +52,6 @@ public:
 
 void KFilterProxySearchLine::Private::slotSearchLineChange( const QString& )
 {
-    static QTimer* timer = new QTimer( this );
-    static bool first = true;
-    if ( first ) {
-        timer->setSingleShot( true );
-        connect( timer, SIGNAL( timeout() ), q, SLOT( slotSearchLineActivate() ) );
-        first=false;
-    }
     timer->start( 300 );
 }
 
