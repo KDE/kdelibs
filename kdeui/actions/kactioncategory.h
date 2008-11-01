@@ -178,6 +178,11 @@ private:
      */
     void unlistAction(QAction *action);
 
+    /**
+     * Add action to category
+     */
+    void addAction(QAction *action);
+
     //! KActionCollection needs access to some of our helper methods
     friend class KActionCollectionPrivate;
 

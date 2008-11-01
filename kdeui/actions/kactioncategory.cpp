@@ -110,6 +110,12 @@ KAction *KActionCategory::addAction(
     }
 
 
+void KActionCategory::addAction(QAction *action)
+    {
+    d->actions.append(action);
+    }
+
+
 KActionCollection * KActionCategory::collection() const
     {
     return qobject_cast<KActionCollection*>(parent());
