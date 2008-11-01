@@ -1,0 +1,81 @@
+/*
+   Copyright (C) 2007 Omat Holding B.V. <info@omat.nl>
+
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+*/
+
+#ifndef KFILTERPROXYSEARCHLINE_H
+#define KFILTERPROXYSEARCHLINE_H
+
+#include <kdeui_export.h>
+
+#include <QWidget>
+
+class KLineEdit;
+class QSortFilterProxyModel;
+
+/**
+ * @class KFilterProxySearchLine
+ *
+ * Responsible for the quick search when you are using a QSortFilterProxyModel.
+ * This will give you an widget which you can embed in your application, call
+ * the setProxy() function to indicate on which QSortFilterProxyModel this 
+ * search line should operate.
+ *
+ * @author Tom Albers <tomalbers@kde.nl>
+ */
+
+class KDEUI_EXPORT KFilterProxySearchLine
+    : public QWidget
+{
+    Q_OBJECT
+
+public:
+    /**
+     * Contructor
+     */
+    KFilterProxySearchLine( QWidget* );
+
+    /**
+     * Destructor
+     */
+    ~KFilterProxySearchLine();
+
+    /**
+     * Call this to re-execute the filtering on the proxy model.
+     * Usually you only need to do this to reply the filter when the data
+     * in the model has changed and want to reapply the filter.
+     */
+    void update();
+
+    /**
+     * Associate a proxy
+     * @param proxy The proxy to operate with.
+     */
+    void setProxy( QSortFilterProxyModel* proxy );
+
+    /**
+     * To set the search to a text.
+     */
+    void setText( const QString& text );
+
+private:
+    class Private;
+    Private* const d;
+    Q_PRIVATE_SLOT( d, void slotSearchLineChange( const QString& newText ) );
+    Q_PRIVATE_SLOT( d, void slotSearchLineActivate() );
+};
+
+#endif

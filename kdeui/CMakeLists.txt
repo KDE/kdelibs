@@ -106,6 +106,7 @@ set(kdeui_LIB_SRCS
  itemviews/klistwidget.cpp
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
+ itemviews/kfilterproxysearchline.cpp
  itemviews/kextendableitemdelegate.cpp
  itemviews/kcategorizedsortfilterproxymodel.cpp
  itemviews/kcategorizedview.cpp
@@ -424,6 +425,7 @@ install( FILES
  itemviews/klistwidget.h
  itemviews/klistwidgetsearchline.h
  itemviews/ktreewidgetsearchline.h
+ itemviews/kfilterproxysearchline.h
  itemviews/kextendableitemdelegate.h
  itemviews/kcategorizedsortfilterproxymodel.h
  itemviews/kcategorizedview.h
