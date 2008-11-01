@@ -74,8 +74,8 @@ public:
 private:
     class Private;
     Private* const d;
-    Q_PRIVATE_SLOT( d, void slotSearchLineChange( const QString& newText ) );
-    Q_PRIVATE_SLOT( d, void slotSearchLineActivate() );
+    Q_PRIVATE_SLOT( d, void slotSearchLineChange( const QString& newText ) )
+    Q_PRIVATE_SLOT( d, void slotSearchLineActivate() )
 };
 
 #endif
