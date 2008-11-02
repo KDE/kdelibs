@@ -61,7 +61,6 @@ Solid::DeviceInterface::Type Solid::DeviceInterface::stringToType(const QString 
 }
 
 Solid::DeviceInterfacePrivate::DeviceInterfacePrivate()
-    : m_backendObject(0)
 {
 
 }
