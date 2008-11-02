@@ -28,7 +28,7 @@
 #include <QMetaProperty>
 #include <QTimer>
 #include <QRadioButton>
-#include <QButtonGroup>
+//#include <QButtonGroup>
 
 #include <kconfigskeleton.h>
 #include <kdebug.h>
@@ -95,7 +95,7 @@ void KConfigDialogManager::initMaps()
     s_changedMap->insert("QRadioButton", SIGNAL(toggled(bool)));
     // We can only store one thing, so you can't have
     // a ButtonGroup that is checkable.
-    s_changedMap->insert("QButtonGroup", SIGNAL(buttonClicked(int)));
+//    s_changedMap->insert("QButtonGroup", SIGNAL(buttonClicked(int)));
     s_changedMap->insert("QGroupBox", SIGNAL(toggled(bool)));
     s_changedMap->insert("QComboBox", SIGNAL(activated (int)));
     //qsqlproperty map doesn't store the text, but the value!
@@ -412,14 +412,14 @@ QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget) const
 
 void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
 {
-  QButtonGroup *bg = qobject_cast<QButtonGroup *>(w);
+/*  QButtonGroup *bg = qobject_cast<QButtonGroup *>(w);
   if (bg)
   {
     QAbstractButton *b = bg->button(v.toInt());
     if (b)
         b->setDown(true);
     return;
-  }
+  }*/
 
   QByteArray userproperty = getUserProperty( w );
   if ( userproperty.isEmpty() ) {
@@ -445,9 +445,9 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
 
 QVariant KConfigDialogManager::property(QWidget *w) const
 {
-  QButtonGroup *bg = qobject_cast<QButtonGroup *>(w);
+/*  QButtonGroup *bg = qobject_cast<QButtonGroup *>(w);
   if (bg && bg->checkedButton())
-    return QVariant(bg->id(bg->checkedButton()));
+    return QVariant(bg->id(bg->checkedButton()));*/
 
   QByteArray userproperty = getUserProperty( w );
   if ( userproperty.isEmpty() ) {
