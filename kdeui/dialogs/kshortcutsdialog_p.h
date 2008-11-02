@@ -281,6 +281,7 @@ public:
     void commit();
 
     virtual QVariant data(int column, int role) const;
+    virtual bool operator<(const QTreeWidgetItem &other) const;
 
     QKeySequence keySequence(uint column) const;
     void setKeySequence(uint column, const QKeySequence &seq);

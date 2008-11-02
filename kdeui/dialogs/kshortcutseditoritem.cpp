@@ -27,6 +27,7 @@
 
 #include <kaction.h>
 #include <kdebug.h>
+#include <kstringhandler.h>
 
 #include <QTreeWidgetItem>
 
@@ -170,6 +171,13 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
     }
 
     return QVariant();
+}
+
+
+bool KShortcutsEditorItem::operator<(const QTreeWidgetItem &other) const
+{
+    const int column = treeWidget() ? treeWidget()->sortColumn() : 0;
+    return KStringHandler::naturalCompare(text(column), other.text(column)) < 0;
 }
 
 
