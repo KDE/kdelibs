@@ -61,6 +61,7 @@ Solid::DeviceInterface::Type Solid::DeviceInterface::stringToType(const QString 
 }
 
 Solid::DeviceInterfacePrivate::DeviceInterfacePrivate()
+    : m_backendObject(0)
 {
 
 }
@@ -72,7 +73,11 @@ Solid::DeviceInterfacePrivate::~DeviceInterfacePrivate()
 
 QObject *Solid::DeviceInterfacePrivate::backendObject() const
 {
-    return m_backendObject;
+    if (m_backendObject) {
+        return m_backendObject;
+    } else {
+        return 0;
+    }
 }
 
 void Solid::DeviceInterfacePrivate::setBackendObject(QObject *object)
