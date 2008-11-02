@@ -93,21 +93,19 @@ KFilterProxySearchLine::~KFilterProxySearchLine()
     delete d;
 }
 
-void KFilterProxySearchLine::update()
-{
-    if ( d->searchLine->text().isEmpty() )
-        return;
-
-    d->slotSearchLineActivate();
-}
-
 void KFilterProxySearchLine::setText( const QString& text )
 {
     d->searchLine->setText( text );
 }
 
-void KFilterProxySearchLine::setProxy( QSortFilterProxyModel* proxy ) {
+void KFilterProxySearchLine::setProxy( QSortFilterProxyModel* proxy ) 
+{
     d->proxy = proxy;
+}
+
+KLineEdit* KFilterProxySearchLine::lineEdit()
+{
+    return d->searchLine;
 }
 
 #include "kfilterproxysearchline.moc"

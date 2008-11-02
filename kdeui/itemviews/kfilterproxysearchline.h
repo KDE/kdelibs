@@ -47,19 +47,12 @@ public:
     /**
      * Contructor
      */
-    KFilterProxySearchLine( QWidget* );
+    explicit KFilterProxySearchLine( QWidget* );
 
     /**
      * Destructor
      */
     ~KFilterProxySearchLine();
-
-    /**
-     * Call this to re-execute the filtering on the proxy model.
-     * Usually you only need to do this to reply the filter when the data
-     * in the model has changed and want to reapply the filter.
-     */
-    void update();
 
     /**
      * Associate a proxy
@@ -71,6 +64,11 @@ public:
      * To set the search to a text.
      */
     void setText( const QString& text );
+
+    /**
+     * Returns the pointer of the lineedit..
+     */
+    KLineEdit* lineEdit();
 
 private:
     class Private;
