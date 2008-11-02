@@ -77,7 +77,7 @@ bool KAction::event(QEvent *event)
             KMessageBox::information(
                     NULL,  // No widget to be seen around here
                     i18n( "The key sequence '%1' is ambiguous. Use 'Configure Shortcuts'\n"
-                          "from the 'Settings' menu to solve the ambiguouity.\n"
+                          "from the 'Settings' menu to solve the ambiguity.\n"
                           "No action will be triggered.",
                                 se->key().toString()),
                     i18n("Ambiguous shortcut detected"));
