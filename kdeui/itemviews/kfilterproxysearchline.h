@@ -22,7 +22,7 @@
 
 #include <kdeui_export.h>
 
-#include <QWidget>
+#include <QtGui/QWidget>
 
 class KLineEdit;
 class QSortFilterProxyModel;
@@ -73,6 +73,7 @@ public:
 private:
     class Private;
     Private* const d;
+    Q_DISABLE_COPY( KFilterProxySearchLine )
     Q_PRIVATE_SLOT( d, void slotSearchLineChange( const QString& newText ) )
     Q_PRIVATE_SLOT( d, void slotSearchLineActivate() )
 };
