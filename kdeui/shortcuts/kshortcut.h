@@ -171,6 +171,16 @@ public:
      */
     QString toString() const;
 
+    /**
+     * Returns a description of the shortcut as a semicolon-separated
+     * list of key sequences, as returned by QKeySequence::toString().
+     * @return the string represenation of this shortcut
+     * @see QKeySequence::toString()
+     * @see KShortcut(const QString &description)
+     * @since KDE 4.2
+     */
+    QString toString(QKeySequence::SequenceFormat format) const;
+
     bool operator==(const KShortcut &other) const;
 
     bool operator!=(const KShortcut &other) const;

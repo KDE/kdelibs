@@ -246,9 +246,14 @@ QList<QKeySequence> KShortcut::toList(enum EmptyHandling handleEmpty) const
 
 QString KShortcut::toString() const
 {
+    return toString(QKeySequence::PortableText);
+}
+
+QString KShortcut::toString(QKeySequence::SequenceFormat format) const
+{
     QString ret;
     foreach(const QKeySequence &seq, toList()) {
-        ret.append(seq.toString());
+        ret.append(seq.toString(format));
         ret.append("; ");
     }
     ret.chop(2);
