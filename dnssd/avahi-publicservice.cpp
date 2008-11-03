@@ -169,8 +169,22 @@ bool PublicServicePrivate::fillEntryGroup()
     for (QMap<QString,QByteArray>::ConstIterator it = m_textData.constBegin(); it!=itEnd ; ++it) 
     	if (it.value().isNull()) txt.append(it.key().toAscii());
 	else txt.append(it.key().toAscii()+'='+it.value());
-    m_group->AddService(-1,-1, 0, m_serviceName, m_type , domainToDNS(m_domain) ,
-	m_hostName, m_port,txt);
+	
+	
+    for (;;) {
+        QDBusReply<void> ret = m_group->AddService(-1,-1, 0, m_serviceName, m_type , domainToDNS(m_domain) ,
+    	m_hostName, m_port,txt);
+        if (ret.isValid()) break;
+        
+        // serious error, bail out
+        if (ret.error().name()!=QLatin1String("org.freedesktop.Avahi.CollisionError")) return false;
+        
+        // name collision, try another
+        QDBusReply<QString> rep=m_server->GetAlternativeServiceName(m_serviceName);
+        if (rep.isValid()) m_serviceName = rep.value();
+        else return false;
+    }
+    
     Q_FOREACH(const QString &subtype, m_subtypes) 
 	m_group->AddServiceSubtype(-1,-1, 0, m_serviceName, m_type, domainToDNS(m_domain) , subtype);
     return true;
@@ -211,7 +225,6 @@ void PublicService::publishAsync()
 	QDBusReply<int> rep=d->m_server->GetState();
 	
 	if (rep.isValid()) state=rep.value();
-
 	d->m_running=true; 
 	d->m_collision=true; // make it look like server is getting out of collision to force registering
 	d->serverStateChanged(state, QString());
