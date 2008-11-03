@@ -451,7 +451,7 @@ The generated source code contains a class based on <command>KConfigSkeleton</co
 
 <refsect1>
 <title>Bugs</title>
-<para>Please use http://bugs.kde.org to report bugs, do not mail the authors directly.</para>
+<para>Please use <ulink url="http://bugs.kde.org">bugs.kde.org</ulink> to report bugs, do not mail the authors directly.</para>
 </refsect1>
 
 </refentry>

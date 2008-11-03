@@ -197,7 +197,7 @@ script that measures the start speed of <command>kjscmd</command>.
 
 <refsect1>
 <title>Bugs</title>
-<para>There are probably tons of bugs. Use http://bugs.kde.org to report them.</para>
+<para>There are probably tons of bugs. Use <ulink url="http://bugs.kde.org">bugs.kde.org</ulink> to report them.</para>
 </refsect1>
 
 </refentry>

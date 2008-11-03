@@ -441,7 +441,7 @@ Builds &Qt; widget plugins from an ini style description file.
 
 <refsect1>
 <title>Bugs</title>
-<para>Please use http://bugs.kde.org to report bugs, do not mail the authors directly.</para>
+<para>Please use <ulink url="http://bugs.kde.org">bugs.kde.org</ulink> to report bugs, do not mail the authors directly.</para>
 </refsect1>
 
 </refentry>
