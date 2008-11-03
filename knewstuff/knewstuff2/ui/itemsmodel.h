@@ -88,6 +88,8 @@ public:
 
     bool hasWebService() const;
 
+public slots:
+    void slotEntryChanged(KNS::Entry * entry);
 private slots:
     void slotEntryPreviewLoaded(const QString &url, const QPixmap & pix);
 private:

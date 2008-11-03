@@ -63,6 +63,7 @@ DownloadDialog::DownloadDialog(DxsEngine* _engine, QWidget * _parent)
     connect(m_engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
     connect(m_engine, SIGNAL(signalEntryChanged(KNS::Entry*)), SLOT(slotEntryChanged(KNS::Entry*)));
     connect(m_engine, SIGNAL(signalPayloadFailed(KNS::Entry*)), SLOT(slotPayloadFailed(KNS::Entry*)));
+    connect(m_engine, SIGNAL(signalPayloadLoaded(KUrl)), SLOT(slotPayloadLoaded(KUrl)));
     connect(m_engine, SIGNAL(signalProvidersFailed()), SLOT(slotProvidersFailed()));
     connect(m_engine, SIGNAL(signalEntriesFailed()), SLOT(slotEntriesFailed()));
 
@@ -205,10 +206,13 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
         break;
     case kUninstall:
         // uninstall
+        setCursor(Qt::WaitCursor);
         m_engine->uninstall(entry);
+        setCursor(Qt::ArrowCursor);
         break;
     case kInstall:
         // install
+        setCursor(Qt::WaitCursor);
         m_engine->downloadPayload(entry);
         break;
     case kCollabComment: {
@@ -409,6 +413,8 @@ void DownloadDialog::slotEntryLoaded(Entry *entry, const Feed *feed, const Provi
         // new feed
         kDebug(551) << "making a new model for this feed" << feed;
         m_models[feed] = new KNS::ItemsModel(this, provider->webService().isValid());
+        connect(m_engine, SIGNAL(signalEntryChanged(KNS::Entry*)),
+                m_models[feed], SLOT(slotEntryChanged(KNS::Entry*)));
         if (provider->name().representation() == m_sourceCombo->currentText()) {
             // this provider is selected, so refresh the feed combobox
             populateSortCombo(provider);
@@ -505,15 +511,21 @@ void DownloadDialog::slotComments(QStringList comments)
 
 void DownloadDialog::slotEntryChanged(KNS::Entry * entry)
 {
-    // FIXMEE: tell the model to emit dataChanged for this entry
-    Q_UNUSED(entry);
-    //m_list->updateItem(entry);
+    Q_UNUSED(entry)
+    setCursor(Qt::ArrowCursor);
 }
 
 void DownloadDialog::slotPayloadFailed(KNS::Entry * entry)
 {
+    setCursor(Qt::ArrowCursor);
     KMessageBox::error(this, i18n("Could not install %1", entry->name().representation()),
                        i18n("Get Hot New Stuff!"));
+}
+
+void DownloadDialog::slotPayloadLoaded(KUrl url)
+{
+    Q_UNUSED(url)
+    setCursor(Qt::ArrowCursor);
 }
 
 void DownloadDialog::slotProgress(const QString & text, int percentage)

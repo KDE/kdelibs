@@ -142,6 +142,13 @@ void ItemsModel::removeEntry(Entry * entry)
     }
 }
 
+void ItemsModel::slotEntryChanged(Entry * entry)
+{
+    int i = m_entries.indexOf(entry);
+    QModelIndex entryIndex = index(i, 0);
+    emit dataChanged(entryIndex, entryIndex);
+}
+
 void ItemsModel::slotEntryPreviewLoaded(const QString &url, const QPixmap & pix)
 {
     if( pix.isNull())

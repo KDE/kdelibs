@@ -286,13 +286,15 @@ void CoreEngine::downloadPreview(Entry *entry)
 
 void CoreEngine::downloadPayload(Entry *entry)
 {
-    if(!entry)
+    if(!entry) {
+        emit signalPayloadFailed(entry);
         return;
-
+    }
     KUrl source = KUrl(entry->payload().representation());
 
     if (!source.isValid()) {
         kError() << "The entry doesn't have a payload." << endl;
+        emit signalPayloadFailed(entry);
         return;
     }
 
@@ -1562,10 +1564,14 @@ bool CoreEngine::uninstall(KNS::Entry *entry)
                 continue;
             }
         } else {
-            bool worked = QFile::remove(file);
-            if (!worked) {
-                kWarning() << "unable to delete file " << file;
-                return false;
+            if (QFile::exists(file)) {
+                bool worked = QFile::remove(file);
+                if (!worked) {
+                    kWarning() << "unable to delete file " << file;
+                    return false;
+                }
+            } else {
+                kWarning() << "unable to delete file " << file << ". file does not exist.";
             }
         }
     }

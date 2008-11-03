@@ -60,6 +60,7 @@ ItemsViewDelegate::~ItemsViewDelegate()
 
 KMenu * ItemsViewDelegate::InstallMenu(const QToolButton* button, Entry::Status status) const
 {
+    Q_UNUSED(button)
     KMenu * installMenu = new KMenu(NULL);
     QAction * action_install = installMenu->addAction(m_statusicons[Entry::Installed], i18n("Install"));
     QAction * action_uninstall = installMenu->addAction(m_statusicons[Entry::Deleted], i18n("Uninstall"));
@@ -248,8 +249,6 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
     }
 
     painter->restore();
-
-    KWidgetItemDelegate::paintWidgets(painter, option, index);
 }
 
 //bool ItemsViewDelegate::eventFilter(QObject *watched, QEvent *event)
@@ -276,6 +275,7 @@ QSize ItemsViewDelegate::sizeHint(const QStyleOptionViewItem & option, const QMo
 
 void ItemsViewDelegate::slotLinkClicked(const QString & url)
 {
+    Q_UNUSED(url)
     QModelIndex index = focusedIndex();
     Q_ASSERT(index.isValid());
 

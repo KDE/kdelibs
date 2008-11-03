@@ -109,6 +109,7 @@ private Q_SLOTS:
     void slotEntryRemoved(KNS::Entry *entry, const KNS::Feed *feed);
     void slotEntriesFailed();
     void slotPayloadFailed(KNS::Entry * entry);
+    void slotPayloadLoaded(KUrl url);
 
     void slotResetMessage();
     void slotNetworkTimeout();
