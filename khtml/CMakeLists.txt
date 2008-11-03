@@ -14,16 +14,6 @@ find_package(JPEG REQUIRED)
 find_package(GIF  REQUIRED)
 find_package(PNG  REQUIRED)
 
-# not done by cmake's FindJPEG.cmake and FindPNG.cmake:
-# both can be removed once we require cmake 2.4.4, Alex
-if (NOT JPEG_FOUND)
-  message(FATAL_ERROR "JPEG library not found, required by KHTML - please install libjpeg")
-endif (NOT JPEG_FOUND)
-
-if (NOT PNG_FOUND)
-  message(FATAL_ERROR "PNG library not found, required by KHTML - please install libpng")
-endif (NOT PNG_FOUND)
-
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 
 configure_file(config-khtml.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-khtml.h )
