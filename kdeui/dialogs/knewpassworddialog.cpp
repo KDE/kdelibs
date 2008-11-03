@@ -212,7 +212,7 @@ void KNewPasswordDialog::accept()
         return;
     }
     if (d->ui.strengthBar && d->ui.strengthBar->value() < d->passwordStrengthWarningLevel) {
-        int retVal = KMessageBox::warningContinueCancel(this,
+        int retVal = KMessageBox::warningYesNo(this,
                 i18n(   "The password you have entered has a low strength. "
                         "To improve the strength of "
                         "the password, try:\n"
@@ -222,7 +222,7 @@ void KNewPasswordDialog::accept()
                         "\n"
                         "Would you like to use this password anyway?"),
                 i18n("Low Password Strength"));
-        if (retVal == KMessageBox::Cancel) return;
+        if (retVal == KMessageBox::No) return;
     }
     if ( !checkPassword(d->ui.linePassword->text()) ) {
         return;
