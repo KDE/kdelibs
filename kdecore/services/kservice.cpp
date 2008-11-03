@@ -694,6 +694,20 @@ QString KService::pluginKeyword() const
     return it->toString();
 }
 
+QString KService::docPath() const
+{
+    Q_D(const KService);
+    QMap<QString,QVariant>::ConstIterator it = d->m_mapProps.find("X-DocPath");
+    if ((it == d->m_mapProps.end()) || (!it->isValid())) {
+        it = d->m_mapProps.find("DocPath");
+        if ((it == d->m_mapProps.end()) || (!it->isValid())) {
+            return QString();
+        }
+    }
+    
+    return it->toString();
+}
+
 bool KService::allowMultipleFiles() const {
     Q_D(const KService);
     // Can we pass multiple files on the command line or do we have to start the application for every single file ?

@@ -345,6 +345,13 @@ public:
     QString pluginKeyword() const;
 
     /**
+     * The path to the documentation for this service.
+     * @since 4.2
+     * @return the documentation path, or QString() if not set
+     */
+    QString docPath() const;
+
+    /**
      * Returns the requested property.
      *
      * @param _name the name of the property
