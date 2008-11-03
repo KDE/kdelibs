@@ -131,7 +131,7 @@ public:
     static QString m_localZoneName;
     static QString m_zoneinfoDir;
     static QString m_zonetab;
-    static KTimeZoneSource *m_source;
+    static KSystemTimeZoneSource *m_source;
 
 private:
     KSystemTimeZonesPrivate() {}
@@ -151,7 +151,7 @@ KTimeZone                KSystemTimeZonesPrivate::m_localZone;
 QString                  KSystemTimeZonesPrivate::m_localZoneName;
 QString                  KSystemTimeZonesPrivate::m_zoneinfoDir;
 QString                  KSystemTimeZonesPrivate::m_zonetab;
-KTimeZoneSource         *KSystemTimeZonesPrivate::m_source = 0;
+KSystemTimeZoneSource   *KSystemTimeZonesPrivate::m_source = 0;
 KTzfileTimeZoneSource   *KSystemTimeZonesPrivate::m_tzfileSource = 0;
 KSystemTimeZones        *KSystemTimeZonesPrivate::m_parent = 0;
 KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::m_instance = 0;
