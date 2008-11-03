@@ -22,11 +22,12 @@
 
 #include <ktexteditor/plugin.h>
 #include <ktexteditor/view.h>
+#include <ktexteditor/document.h>
 #include <kpluginfactory.h>
 
 #include <QtCore/QEvent>
 #include <QtCore/QObject>
-#include <QtCore/QList>
+#include <QtCore/QHash>
 #include <QtCore/QVariantList>
 
 class AutoBracePlugin
@@ -35,8 +36,7 @@ class AutoBracePlugin
   Q_OBJECT
 
   public:
-    explicit AutoBracePlugin(QObject *parent = 0,
-                             const QVariantList &args = QVariantList());
+    explicit AutoBracePlugin(QObject *parent = 0, const QVariantList &args = QVariantList());
     virtual ~AutoBracePlugin();
 
     static AutoBracePlugin *self() { return plugin; }
@@ -47,14 +47,34 @@ class AutoBracePlugin
     virtual void readConfig (KConfig *) {}
     virtual void writeConfig (KConfig *) {}
 
+  private:
+    static AutoBracePlugin *plugin;
+    QHash<class KTextEditor::View*, class AutoBracePluginDocument*> m_docplugins;
+};
+
+class AutoBracePluginDocument
+   : public QObject, public KXMLGUIClient
+{
+  Q_OBJECT
+
+  public:
+    explicit AutoBracePluginDocument(KTextEditor::Document *document = 0);
+    ~AutoBracePluginDocument();
+
   private Q_SLOTS:
+    void slotTextChanged(KTextEditor::Document *document);
     void slotTextInserted(KTextEditor::Document *document, const KTextEditor::Range& range);
+
+  private:
+    bool isInsertionCandidate(KTextEditor::Document *document, int openingBraceLine);
 
   Q_SIGNALS:
     void indent();
 
   private:
-    static AutoBracePlugin *plugin;
+    KTextEditor::Document *m_document;
+    int m_insertionLine;
+    QString m_indentation;
 };
 
 K_PLUGIN_FACTORY_DECLARATION(AutoBracePluginFactory)
