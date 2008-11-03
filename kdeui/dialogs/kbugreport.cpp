@@ -343,7 +343,7 @@ void KBugReportPrivate::_k_appChanged(int i)
         m_strVersion = i18nc("unknown program name", "unknown");
 
     if ( !submitBugWeb )
-        m_strVersion += kde_version;
+        m_strVersion += ' ' + kde_version;
 
     m_version->setText(m_strVersion);
     if ( submitBugWeb )
