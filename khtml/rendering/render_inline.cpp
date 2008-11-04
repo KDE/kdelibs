@@ -536,6 +536,21 @@ static void collectVerticalBoxCoordinates(InlineRunBox *line,
  * the point-array (by changing the array's starting iterator), and
  * proper ones appended to the point-array's back.
  *
+ *   X---------------+               X------------------+
+ *   ^               |               ^                  |
+ *   |               |      ==>      |                  |
+ *   +.....       ...+               +.....          ...+
+ *
+ *   +----->X--------+               +----------------->X
+ *   |               |      ==>      |                  |
+ *   +.....       ...+               +.....          ...+
+ *
+ *         ^X
+ *         ||
+ *   +-----++--------+               +----------------->X
+ *   |               |      ==>      |                  |
+ *   +.....       ...+               +.....          ...+
+ *
  * @param pointArray point-array
  * @return actual begin of point array
  */
@@ -564,11 +579,30 @@ static QPoint *linkEndToBegin(QVector<QPoint> &pointArray)
         || plast.y() == pfirst.y() && pfirst.y() == pnext.y()) {
 
         ++index;
-        appendPoint(pointArray, pfirst);
+        appendPoint(pointArray, pfirst); // ### do we really need this point?
         appendPoint(pointArray, pnext);
+        // ended up at a segment separator? move one point forward
+        if (plast == pnext) {
+            ++index;
+            appendPoint(pointArray, *++it);
+        }
     } else if (linkup)
       pointArray.push_back(linkupPnt);
     return pointArray.begin() + index;
+}
+
+// assumes clock-wise orientation
+static RenderObject::BorderSide borderSide( const QPoint &first,
+                                            const QPoint &second )
+{
+    if (second.x() > first.x())
+        return RenderObject::BSTop;
+    else if (second.x() < first.x())
+        return RenderObject::BSBottom;
+    else if (second.y() > first.y())
+        return RenderObject::BSRight;
+    else // second.y() < first.y()
+        return RenderObject::BSLeft;
 }
 
 void RenderInline::paintOutlines(QPainter *p, int _tx, int _ty)
@@ -595,8 +629,17 @@ void RenderInline::paintOutlines(QPainter *p, int _tx, int _ty)
 
         const QPoint *begin = linkEndToBegin(path);
 
+        // initial borderside and direction values
+        QPoint pstart = *begin;
+        QPoint pprev = *(path.end() - 2);
+        RenderObject::BorderSide bs = borderSide(pprev, pstart);
+        QPoint diff = pstart - pprev;
+        int direction = diff.x() + diff.y();
+        RenderObject::BorderSide endingBS = borderSide(*begin, *(begin + 1));
+    
         // paint the outline
-        paintOutlinePath(p, _tx, _ty, begin, path.end(), BSLeft, -1, BSTop);
+        paintOutlinePath(p, _tx, _ty, begin, path.end(),
+                         bs, direction, endingBS);
     }
 }
 
@@ -630,7 +673,8 @@ inline BSOrientation bsOrientation(RenderObject::BorderSide bs)
  * by the given coordinates, the old border side, and the relative direction.
  *
  * The relative direction specifies whether the old border side meets with the
- * straight given by the coordinates from below (negative), or above (positive).
+ * straight given by the coordinates from below/right (negative), or
+ * above/left (positive).
  */
 inline RenderObject::BorderSide newBorderSide(RenderObject::BorderSide oldBS, int direction, const QPoint &last, const QPoint &cur)
 {
