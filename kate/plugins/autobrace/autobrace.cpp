@@ -43,19 +43,33 @@ AutoBracePlugin::~AutoBracePlugin()
 
 void AutoBracePlugin::addView(KTextEditor::View *view)
 {
-    AutoBracePluginDocument *docplugin = new AutoBracePluginDocument(view->document());
-    m_docplugins.insert(view, docplugin);
+    AutoBracePluginDocument *docplugin;
+
+    // We're not storing the brace inserter by view but by document,
+    // which makes signal connection and destruction a bit easier.
+    if (m_docplugins.contains(view->document())) {
+        docplugin = m_docplugins.value(view->document());
+    }
+    else {
+        docplugin = new AutoBracePluginDocument(view->document());
+        m_docplugins.insert(view->document(), docplugin);
+    }
+    // Shouldn't be necessary in theory, but for removeView() the document
+    // might already be destroyed and removed. Also used as refcounter.
+    m_documents.insert(view, view->document());
 }
 
 void AutoBracePlugin::removeView(KTextEditor::View *view)
 {
-    if (m_docplugins.contains(view))
+    if (m_documents.contains(view))
     {
-        AutoBracePluginDocument *docplugin = m_docplugins.value(view);
-        m_docplugins.remove(view);
+        KTextEditor::Document *document = m_documents.value(view);
+        m_documents.remove(view);
 
         // Only detach from the document if it was the last view pointing to that.
-        if (m_docplugins.keys(docplugin).empty()) {
+        if (m_documents.keys(document).empty()) {
+            AutoBracePluginDocument *docplugin = m_docplugins.value(document);
+            m_docplugins.remove(document);
             delete docplugin;
         }
     }
@@ -74,39 +88,53 @@ AutoBracePluginDocument::~AutoBracePluginDocument()
     disconnect(parent() /* == document */, 0, this, 0);
 }
 
+/**
+ * Connected to KTextEditor::Document::textChanged() once slotTextInserted()
+ * found a line with an opening brace. This takes care of inserting the new
+ * line with its closing counterpart.
+ */
 void AutoBracePluginDocument::slotTextChanged(KTextEditor::Document *document) {
-    if (m_insertionLine != 0) {
-        disconnect(document, 0, this, 0);
+    // Disconnect from all signals as we insert stuff by ourselves.
+    // In other words, this is in order to prevent infinite recursion.
+    disconnect(document, 0, this, 0);
 
-        if (isInsertionCandidate(document, m_insertionLine - 1)) {
-            KTextEditor::Cursor cursor = document->endOfLine(m_insertionLine);
+    // Make really sure that we want to insert the brace, paste guard and all.
+    if (m_insertionLine != 0 && document->line(m_insertionLine).trimmed().isEmpty()) {
+        KTextEditor::Cursor cursor = document->endOfLine(m_insertionLine);
 
+        document->startEditing();
+        document->insertText(cursor, "\n" + m_indentation + "}");
+        document->endEditing();
+
+        KTextEditor::View *view = document->activeView();
+        view->setCursorPosition(cursor);
+
+        /* [requires a config option, otherwise it clashes with the C indenter]
+        // If the document's View is a KateView then it's able to indent.
+        if (view->inherits("KateView")) {
             document->startEditing();
-            document->insertText(cursor, "\n" + m_indentation + "}");
+            connect(this, SIGNAL(indent()), view, SLOT(indent()));
+            emit indent();
+            disconnect(this, SIGNAL(indent()), view, SLOT(indent()));
             document->endEditing();
-
-            KTextEditor::View *view = document->activeView();
-            view->setCursorPosition(cursor);
-
-            /* [requires a config option, otherwise it clashes with the C indenter]
-            // If the document's View is a KateView then it's able to indent.
-            if (view->inherits("KateView")) {
-                document->startEditing();
-                connect(this, SIGNAL(indent()), view, SLOT(indent()));
-                emit indent();
-                disconnect(this, SIGNAL(indent()), view, SLOT(indent()));
-                document->endEditing();
-            }*/
-        }
+        }*/
         m_insertionLine = 0;
-
-        connect(document, SIGNAL(textInserted(KTextEditor::Document*, const KTextEditor::Range&)),
-                this, SLOT(slotTextInserted(KTextEditor::Document*, const KTextEditor::Range&)));
     }
+
+    // Re-enable the textInserted() slot again.
+    connect(document, SIGNAL(textInserted(KTextEditor::Document*, const KTextEditor::Range&)),
+            this, SLOT(slotTextInserted(KTextEditor::Document*, const KTextEditor::Range&)));
 }
 
+/**
+ * Connected to KTextEditor::Document::textInserted(), which is emitted on all
+ * insertion changes. Line text and line breaks are emitted separately by
+ * KatePart, and pasted text gets the same treatment as manually entered text.
+ * Because of that, we discard paste operations by only remembering the
+ * insertion status for the last line that was entered.
+ */
 void AutoBracePluginDocument::slotTextInserted(KTextEditor::Document *document,
-                                           const KTextEditor::Range& range)
+                                               const KTextEditor::Range& range)
 {
     // Make sure we don't even try to handle other events than brace openers.
     if (document->text(range) != "\n") {
@@ -123,8 +151,14 @@ void AutoBracePluginDocument::slotTextInserted(KTextEditor::Document *document,
         connect(document, SIGNAL(textChanged(KTextEditor::Document*)),
                 this, SLOT(slotTextChanged(KTextEditor::Document*)));
     }
+    else {
+        m_insertionLine = 0;
+    }
 }
 
+/**
+ *
+ */
 bool AutoBracePluginDocument::isInsertionCandidate(KTextEditor::Document *document, int openingBraceLine) {
     QString line = document->line(openingBraceLine);
     if (line.isEmpty() || !line.endsWith('{')) {
@@ -133,13 +167,13 @@ bool AutoBracePluginDocument::isInsertionCandidate(KTextEditor::Document *docume
 
     // Get the indentation prefix.
     QRegExp rx("^(\\s+)");
-    m_indentation = (rx.indexIn(line) == -1) ? "" : rx.cap(1);
+    QString indentation = (rx.indexIn(line) == -1) ? "" : rx.cap(1);
 
     // Determine whether to insert a brace or not, depending on the indentation
     // of the upcoming (non-empty) line.
     bool isCandidate = true;
-    QString indentationLength = QString::number(m_indentation.length());
-    QString indentationLengthMinusOne = QString::number(m_indentation.length() - 1);
+    QString indentationLength = QString::number(indentation.length());
+    QString indentationLengthMinusOne = QString::number(indentation.length() - 1);
 
     for (int i = openingBraceLine + 1; i < document->lines(); ++i)
     {
@@ -148,16 +182,24 @@ bool AutoBracePluginDocument::isInsertionCandidate(KTextEditor::Document *docume
             continue; // Empty lines are not a reliable source of information.
         }
 
-        rx.setPattern("^(?:"
-            // Inserting a brace is ok if there is a closing brace with
-            // less indentation than the opener line.
-            "[\\s]{0," + indentationLengthMinusOne + "}\\}"
-            "|"
+        if (indentation.length() == 0) {
             // Inserting a brace is ok if there is a line (not starting with a
-            // brace) with less or similar indentation as the original line.
-            "[\\s]{0," + indentationLength + "}[^\\}\\s]"
-            ")"
-        );
+            // brace) without indentation.
+            rx.setPattern("^[^\\}\\s]");
+        }
+        else {
+            rx.setPattern("^(?:"
+                // Inserting a brace is ok if there is a closing brace with
+                // less indentation than the opener line.
+                "[\\s]{0," + indentationLengthMinusOne + "}\\}"
+                "|"
+                // Inserting a brace is ok if there is a line (not starting with a
+                // brace) with less or similar indentation as the original line.
+                "[\\s]{0," + indentationLength + "}[^\\}\\s]"
+                ")"
+            );
+        }
+
         if (rx.indexIn(line) == -1) {
             // There is already a brace, or the line is indented more than the
             // opener line (which means we expect a brace somewhere further down).
@@ -168,6 +210,9 @@ bool AutoBracePluginDocument::isInsertionCandidate(KTextEditor::Document *docume
         break;
     }
 
+    if (isCandidate) {
+        m_indentation = indentation;
+    }
     return isCandidate;
 }
 

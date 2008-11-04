@@ -49,7 +49,8 @@ class AutoBracePlugin
 
   private:
     static AutoBracePlugin *plugin;
-    QHash<class KTextEditor::View*, class AutoBracePluginDocument*> m_docplugins;
+    QHash<class KTextEditor::View*, class KTextEditor::Document*> m_documents;
+    QHash<class KTextEditor::Document*, class AutoBracePluginDocument*> m_docplugins;
 };
 
 class AutoBracePluginDocument
