@@ -362,12 +362,13 @@ QString Nepomuk::Resource::genericIcon() const
         return symbol.toString();
     }
 
-    QString mimeType = property( Soprano::Vocabulary::Xesam::mimeType() ).toString();
-    if ( !mimeType.isEmpty() ) {
-        if ( KMimeType::Ptr m = KMimeType::mimeType( mimeType ) ) {
-            return m->iconName();
-        }
-    }
+    // strigi mimetypes are sadly not very reliable, I keep the code here for future use
+//     QString mimeType = property( Soprano::Vocabulary::Xesam::mimeType() ).toString();
+//     if ( !mimeType.isEmpty() ) {
+//         if ( KMimeType::Ptr m = KMimeType::mimeType( mimeType ) ) {
+//             return m->iconName();
+//         }
+//     }
 
     if ( hasType( Soprano::Vocabulary::Xesam::File() ) ||
          resourceUri().scheme() == "file" ) {
