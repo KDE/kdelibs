@@ -393,18 +393,7 @@ QStringList KGlobalAccel::findActionNameSystemwide(const QKeySequence &seq)
 
 QList<KGlobalShortcutInfo> KGlobalAccel::getGlobalShortcutsByKey(const QKeySequence &seq)
 {
-    QList<KGlobalShortcutInfo> list = self()->d->iface.getGlobalShortcutsByKey(seq[0]);
-    kDebug() << list.size();
-    Q_FOREACH(KGlobalShortcutInfo inf, list)
-        {
-        kDebug() << inf.uniqueName();
-        kDebug() << inf.friendlyName();
-        kDebug() << inf.contextFriendlyName();
-        kDebug() << inf.contextUniqueName();
-        kDebug() << inf.componentUniqueName();
-        kDebug() << inf.componentFriendlyName();
-        }
-    return list;
+    return self()->d->iface.getGlobalShortcutsByKey(seq[0]);
 }
 
 
