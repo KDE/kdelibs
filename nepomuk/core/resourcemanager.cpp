@@ -34,6 +34,9 @@
 #include <Soprano/StatementIterator>
 #include <Soprano/QueryResultIterator>
 
+#include <QtCore/QMutex>
+#include <QtCore/QMutexLocker>
+
 using namespace Soprano;
 
 
@@ -49,6 +52,8 @@ public:
 
     Nepomuk::MainModel* mainModel;
     Soprano::Model* overrideModel;
+
+    QMutex mutex;
 
 private:
     ResourceManager* m_parent;
@@ -82,6 +87,8 @@ Nepomuk::ResourceManager* Nepomuk::ResourceManager::instance()
 
 int Nepomuk::ResourceManager::init()
 {
+    QMutexLocker lock( &d->mutex );
+
     delete d->mainModel;
     d->mainModel = new MainModel( this );
     connect( d->mainModel, SIGNAL(statementsAdded()),
@@ -254,6 +261,8 @@ void Nepomuk::ResourceManager::slotStoreChanged()
 
 void Nepomuk::ResourceManager::setOverrideMainModel( Soprano::Model* model )
 {
+    QMutexLocker lock( &d->mutex );
+
     if ( d->overrideModel ) {
         d->overrideModel->disconnect( this );
     }
