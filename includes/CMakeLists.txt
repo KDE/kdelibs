@@ -440,7 +440,7 @@ install( FILES
   KEmoticons
   KEmoticonsProvider
   KEmoticonsTheme
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
 
 if (UNIX)
    install( FILES
@@ -451,14 +451,14 @@ if (UNIX)
      KPty
      KPtyDevice
      KPtyProcess
-   DESTINATION ${INCLUDE_INSTALL_DIR}/KDE )
+   DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
 endif (UNIX)
 
 install( FILES
   ConversionCheck/QVconvertible
   ConversionCheck/type_toQString
   ConversionCheck/type_toQVariant
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/ConversionCheck )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/ConversionCheck COMPONENT Devel)
 
 
 install( FILES
@@ -470,7 +470,7 @@ install( FILES
   DNSSD/ServiceBase
   DNSSD/ServiceBrowser
   DNSSD/ServiceModel
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DNSSD )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DNSSD COMPONENT Devel)
 
 
 install( FILES
@@ -590,13 +590,13 @@ install( FILES
   DOM/TextEvent
   DOM/TreeWalker
   DOM/UIEvent
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DOM )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DOM COMPONENT Devel)
 
 
 install( FILES
   KAccelGen/Deref
   KAccelGen/Deref_Key
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KAccelGen )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KAccelGen COMPONENT Devel)
 
 
 install( FILES
@@ -604,7 +604,7 @@ install( FILES
   KHE/ClipboardInterface
   KHE/ValueColumnInterface
   KHE/ZoomInterface
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KHE )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KHE COMPONENT Devel)
 
 
 install( FILES
@@ -647,7 +647,7 @@ install( FILES
   KIO/Task
   KIO/TransferJob
   KIO/UDSField
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO COMPONENT Devel)
 
 
 # 2008-02-15: kjs headers are apparently not installed, so also
@@ -707,7 +707,7 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO )
 install( FILES
   KMediaPlayer/Player
   KMediaPlayer/View
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KMediaPlayer )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KMediaPlayer COMPONENT Devel)
 
 
 install( FILES
@@ -717,7 +717,7 @@ install( FILES
   KNS/Entry
   KNS/Installation
   KNS/KTranslatable
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNS )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNS COMPONENT Devel)
 
 
 install( FILES
@@ -742,7 +742,7 @@ install( FILES
   KNetwork/KSocksSocketDevice
   KNetwork/KStreamSocket
   KNetwork/KUnixSocketAddress
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNetwork )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNetwork COMPONENT Devel)
 
 install( FILES
   KParts/BrowserExtension
@@ -771,14 +771,14 @@ install( FILES
   KParts/StatusBarExtension
   KParts/URLArgs
   KParts/WindowArgs
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KParts )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KParts COMPONENT Devel)
 
 
 install( FILES
   KSettings/Dialog
   KSettings/Dispatcher
   KSettings/PluginPage
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KSettings )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KSettings COMPONENT Devel)
 
 
 #install( FILES
@@ -821,7 +821,7 @@ install( FILES
   KTextEditor/TextHintInterface
   KTextEditor/VariableInterface
   KTextEditor/View
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KTextEditor )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KTextEditor COMPONENT Devel)
 
 
 install( FILES
@@ -829,12 +829,12 @@ install( FILES
   KUnitTest/SlotTester
   KUnitTest/TestResults
   KUnitTest/Tester
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KUnitTest )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KUnitTest COMPONENT Devel)
 
 
 install( FILES
   KWallet/Wallet
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KWallet )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KWallet COMPONENT Devel)
 
 
 install( FILES
@@ -860,7 +860,7 @@ install( FILES
   Solid/StorageAccess
   Solid/StorageDrive
   Solid/StorageVolume
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Solid )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Solid COMPONENT Devel)
 
 
 install( FILES
@@ -875,7 +875,7 @@ install( FILES
   ThreadWeaver/Weaver
   ThreadWeaver/WeaverInterface
   ThreadWeaver/WeaverObserver
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/ThreadWeaver )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/ThreadWeaver COMPONENT Devel)
 
 
 install( FILES
@@ -885,7 +885,7 @@ install( FILES
   khtml/MouseMoveEvent
   khtml/MousePressEvent
   khtml/MouseReleaseEvent
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/khtml )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/khtml COMPONENT Devel)
 
 
 install(FILES
@@ -898,7 +898,7 @@ install(FILES
   Nepomuk/Thing
   Nepomuk/KRatingWidget
   Nepomuk/KRatingPainter
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk COMPONENT Devel)
 
 
 install(FILES
@@ -906,7 +906,7 @@ install(FILES
   Nepomuk/Types/Literal
   Nepomuk/Types/Ontology
   Nepomuk/Types/Property
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Types )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Types COMPONENT Devel)
 
 
 install(FILES
@@ -975,3 +975,4 @@ if(QT_QTOPENGL_FOUND AND OPENGL_FOUND)
       Plasma/GLApplet
       DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Plasma COMPONENT Devel)
 endif(QT_QTOPENGL_FOUND AND OPENGL_FOUND)
+
