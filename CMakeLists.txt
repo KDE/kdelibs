@@ -218,6 +218,7 @@ add_subdirectory( dnssd )
 add_subdirectory( kross )
 add_subdirectory( kformula )
 add_subdirectory( security )
+add_subdirectory( plasma )
 add_subdirectory( includes )
 
 if(Soprano_FOUND)
