@@ -639,6 +639,10 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
             //kDebug(7040) << "cmethod: " << cmethod;
             //kDebug(7040) << "extralen: " << extralen;
 
+            // crc32 of the file
+            uint crc32 = (uchar)buffer[19] << 24 | (uchar)buffer[18] << 16 |
+                       (uchar)buffer[17] << 8 | (uchar)buffer[16];
+
             // uncompressed file size
             uint ucsize = (uchar)buffer[27] << 24 | (uchar)buffer[26] << 16 |
 	    		(uchar)buffer[25] << 8 | (uchar)buffer[24];
@@ -718,6 +722,7 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
 					symlink, name, dataoffset,
 					ucsize, cmethod, csize );
                 static_cast<KZipFileEntry *>(entry)->setHeaderStart( localheaderoffset );
+                static_cast<KZipFileEntry*>(entry)->setCRC32(crc32);
                 //kDebug(7040) << "KZipFileEntry created, entryName= " << entryName << ", name=" << name;
                 d->m_fileList.append( static_cast<KZipFileEntry *>( entry ) );
             }
