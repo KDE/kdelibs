@@ -1584,4 +1584,20 @@ void CanvasContext2DImpl::putImageData(CanvasImageDataImpl* id, float dx, float 
     p.drawImage(x, y, id->data);
 }
 
+CanvasImageDataImpl* CanvasContext2DImpl::createImageData(float sw, float sh, int& exceptionCode)
+{
+    int w = qRound(qAbs(sw));
+    int h = qRound(qAbs(sh));
+
+    if (w == 0 || h == 0) {
+        exceptionCode = DOMException::INDEX_SIZE_ERR;
+        return 0;
+    }
+
+    CanvasImageDataImpl* id = new CanvasImageDataImpl(w, h);
+    id->data.fill(Qt::transparent);
+
+    return id;
+}
+
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

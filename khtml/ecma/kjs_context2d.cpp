@@ -121,6 +121,7 @@ KJS_IMPLEMENT_PROTOTYPE("CanvasRenderingContext2DProto", Context2DProto, Context
    # pixel ops.
    getImageData             Context2D::GetImageData                DontDelete|Function 4
    putImageData             Context2D::PutImageData                DontDelete|Function 3
+   createImageData          Context2D::CreateImageData             DontDelete|Function 2
    @end
 */
 
@@ -472,6 +473,14 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
         SharedPtr<CanvasImageDataImpl> id = toCanvasImageData(exec, args[0]); // may need to delete..
         ctx->putImageData(id.get(), args[1]->toFloat(exec), args[2]->toFloat(exec), exception);
         break;
+    }
+    case Context2D::CreateImageData: {
+        KJS_REQUIRE_ARGS(2);
+        KJS_CHECK_FLOAT_ARGS(0, 1);
+        CanvasImageDataImpl* id = ctx->createImageData(args[0]->toFloat(exec),
+                                                       args[1]->toFloat(exec),
+                                                       exception);
+        return getWrapper<CanvasImageData>(exec, id);
     }
 
     }
