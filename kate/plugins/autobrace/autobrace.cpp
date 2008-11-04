@@ -99,27 +99,35 @@ void AutoBracePluginDocument::slotTextChanged(KTextEditor::Document *document) {
     disconnect(document, 0, this, 0);
 
     // Make really sure that we want to insert the brace, paste guard and all.
-    if (m_insertionLine != 0 && document->line(m_insertionLine).trimmed().isEmpty()) {
-        KTextEditor::Cursor cursor = document->endOfLine(m_insertionLine);
-
-        document->startEditing();
-        document->insertText(cursor, "\n" + m_indentation + "}");
-        document->endEditing();
-
+    if (m_insertionLine != 0
+        && m_insertionLine == document->activeView()->cursorPosition().line()
+        && document->line(m_insertionLine).trimmed().isEmpty())
+    {
         KTextEditor::View *view = document->activeView();
-        view->setCursorPosition(cursor);
+        document->startEditing();
 
-        /* [requires a config option, otherwise it clashes with the C indenter]
         // If the document's View is a KateView then it's able to indent.
+        // We hereby ignore the indenter and always indent correctly. (Sorry!)
         if (view->inherits("KateView")) {
-            document->startEditing();
+            // Correctly indent the empty line. Magic!
+            KTextEditor::Range lineRange(
+                m_insertionLine, 0,
+                m_insertionLine, document->lineLength(m_insertionLine)
+            );
+            document->replaceText(lineRange, m_indentation);
+
             connect(this, SIGNAL(indent()), view, SLOT(indent()));
             emit indent();
             disconnect(this, SIGNAL(indent()), view, SLOT(indent()));
-            document->endEditing();
-        }*/
-        m_insertionLine = 0;
+        }
+        // The line with the closing brace. (Inserted via insertLine() in order
+        // to avoid space removal by potential indenters.)
+        document->insertLine(m_insertionLine + 1, m_indentation + "}");
+
+        document->endEditing();
+        view->setCursorPosition(document->endOfLine(m_insertionLine));
     }
+    m_insertionLine = 0;
 
     // Re-enable the textInserted() slot again.
     connect(document, SIGNAL(textInserted(KTextEditor::Document*, const KTextEditor::Range&)),
