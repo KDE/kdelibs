@@ -46,7 +46,6 @@ set(nepomuk_LIB_SRCS
   pimo.cpp
   nepomukservice.cpp
   graphwrapper.cpp
-  datagraphmodel.cpp
 )
 
 
