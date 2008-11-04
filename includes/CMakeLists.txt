@@ -907,3 +907,71 @@ install(FILES
   Nepomuk/Types/Ontology
   Nepomuk/Types/Property
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Types )
+
+
+install(FILES
+  Plasma/AbstractRunner
+  Plasma/AnimationDriver
+  Plasma/Animator
+  Plasma/Applet
+  Plasma/AppletScript
+  Plasma/CheckBox
+  Plasma/ComboBox
+  Plasma/ConfigLoader
+  Plasma/Containment
+  Plasma/Context
+  Plasma/Corona
+  Plasma/DataContainer
+  Plasma/DataEngine
+  Plasma/DataEngineManager
+  Plasma/DataEngineScript
+  Plasma/Delegate
+  Plasma/Dialog
+  Plasma/Extender
+  Plasma/ExtenderItem
+  Plasma/FlashingLabel
+  Plasma/Frame
+  Plasma/FrameSvg
+  Plasma/GroupBox
+  Plasma/IconWidget
+  Plasma/Label
+  Plasma/LineEdit
+  Plasma/Meter
+  Plasma/Package
+  Plasma/PackageMetadata
+  Plasma/PackageStructure
+  Plasma/PaintUtils
+  Plasma/Plasma
+  Plasma/PopupApplet
+  Plasma/PushButton
+  Plasma/QueryMatch
+  Plasma/RadioButton
+  Plasma/RunnerContext
+  Plasma/RunnerManager
+  Plasma/RunnerScript
+  Plasma/ScriptEngine
+  Plasma/ScrollBar
+  Plasma/Service
+  Plasma/ServiceJob
+  Plasma/SignalPlotter
+  Plasma/Slider
+  Plasma/BusyWidget
+  Plasma/Svg
+  Plasma/SvgWidget
+  Plasma/TabBar
+  Plasma/TextEdit
+  Plasma/ToolTipManager
+  Plasma/Theme
+  Plasma/TreeView
+  Plasma/UiLoader
+  Plasma/View
+  Plasma/Version
+  Plasma/Wallpaper
+  Plasma/WebView
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Plasma COMPONENT Devel)
+
+if(QT_QTOPENGL_FOUND AND OPENGL_FOUND)
+   install(FILES
+      Plasma/GLApplet
+      DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Plasma COMPONENT Devel)
+endif(QT_QTOPENGL_FOUND AND OPENGL_FOUND)
