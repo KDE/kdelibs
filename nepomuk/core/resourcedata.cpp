@@ -493,7 +493,7 @@ void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
 void Nepomuk::ResourceData::remove( bool recursive )
 {
     if( m_proxyData )
-        return m_proxyData->remove();
+        return m_proxyData->remove( recursive );
 
     if ( determineUri() ) {
         MAINMODEL->removeAllStatements( Statement( m_uri, Node(), Node() ) );
@@ -504,6 +504,11 @@ void Nepomuk::ResourceData::remove( bool recursive )
         // the url is invalid now
         s_initializedData->remove( m_uri.toString() );
         m_uri = QUrl();
+        m_cache.clear();
+        m_cacheDirty = false;
+        m_initialTypeSaved = false;
+        m_types.clear();
+        m_mainType = Soprano::Vocabulary::RDFS::Resource();
     }
 }
 
@@ -717,11 +722,11 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QUrl& uri, const QUrl&
     }
 
     // if scheme is file, try to follow a symlink
-    if ( uri.scheme()=="file" ) {
+    if ( uri.scheme() == "file" ) {
         QFileInfo fileInfo( uri.toLocalFile() );
         if ( fileInfo.isSymLink() ) {
             QString linkTarget = fileInfo.canonicalFilePath();
-            // linkTarget is empty for dangling symlinks 
+            // linkTarget is empty for dangling symlinks
             if ( !linkTarget.isEmpty() ) {
                 QUrl targetUri( linkTarget );
                 targetUri.setScheme( "file" );
@@ -729,6 +734,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QUrl& uri, const QUrl&
             }
         }
     }
+
     ResourceDataHash::iterator it = s_initializedData->find( uri.toString() );
 
     //

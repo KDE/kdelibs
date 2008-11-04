@@ -20,6 +20,7 @@
 
 #include "nepomukmainmodel.h"
 #include "resourcemanager.h"
+#include "graphwrapper_p.h"
 
 #include <Soprano/Node>
 #include <Soprano/Statement>
@@ -77,7 +78,7 @@ public:
         delete dummyModel;
     }
 
-    QUrl mainContext;
+    Nepomuk::GraphWrapper graphWrapper;
 
     Soprano::Client::DBusClient dbusClient;
     Soprano::Client::LocalSocketClient localSocketClient;
@@ -288,31 +289,7 @@ Soprano::Node Nepomuk::MainModel::createBlankNode()
 
 QUrl Nepomuk::MainModel::mainContext()
 {
-    if ( !modelContainer()->mainContext.isValid() ) {
-        // let's find some MainDataGraph to put all our statements in
-        Soprano::QueryResultIterator it
-            = executeQuery( QString( "select ?c where { ?c a <%1> . "
-                                     "?c a <http://nepomuk.kde.org/ontologies/core#MainDataGraph> . }")
-                            .arg( Soprano::Vocabulary::NRL::InstanceBase().toString() ),
-                            Soprano::Query::QueryLanguageSparql );
-        if ( it.next() ) {
-            modelContainer()->mainContext = it.binding(0).uri();
-        }
-        else {
-            it.close();
-            modelContainer()->mainContext = ResourceManager::instance()->generateUniqueUri();
-            addStatement( modelContainer()->mainContext,
-                          Soprano::Vocabulary::RDF::type(),
-                          Soprano::Vocabulary::NRL::InstanceBase(),
-                          modelContainer()->mainContext );
-            addStatement( modelContainer()->mainContext,
-                          Soprano::Vocabulary::RDF::type(),
-                          QUrl::fromEncoded( "http://nepomuk.kde.org/ontologies/core#MainDataGraph" ),
-                          modelContainer()->mainContext );
-        }
-    }
-
-    return modelContainer()->mainContext;
+    return modelContainer()->graphWrapper.currentGraph();
 }
 
 

@@ -183,8 +183,6 @@ namespace Nepomuk {
          */
         void error( const QString& uri, int errorCode );
 
-        // FIXME: add a loggin mechanism that reports successfully and failed sync operations and so on
-
     private Q_SLOTS:
         void slotStoreChanged();
 
