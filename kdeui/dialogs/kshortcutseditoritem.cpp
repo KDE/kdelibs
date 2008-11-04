@@ -42,6 +42,10 @@ KShortcutsEditorItem::KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *act
 {
     // i18n filtering message requested by translators (scripting).
     m_actionNameInTable = i18nc("@item:intable Action name in shortcuts configuration", "%1", m_action->text().remove('&'));
+    if (m_actionNameInTable.isEmpty()) {
+        kWarning() << "Action without text!" << m_action->objectName();
+        m_actionNameInTable = m_action->objectName();
+    }
 }
 
 
