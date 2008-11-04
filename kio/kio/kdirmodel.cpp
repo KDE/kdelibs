@@ -166,6 +166,7 @@ KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url, bool expandAndRetu
 {
     KUrl url(_url);
     url.adjustPath(KUrl::RemoveTrailingSlash); // KDirLister does this too, so we remove the slash before comparing with the root node url.
+    url.cleanPath(); // remove double slashes in the path
     url.setQuery(QString());
     url.setRef(QString());
 
@@ -203,7 +204,7 @@ KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url, bool expandAndRetu
 
         // E.g. pathStr is /a/b/c and nodePath is /a. We want to find the child "b" in dirNode.
         const QString relativePath = pathStr.mid(nodePath.length());
-        Q_ASSERT(!relativePath.startsWith('/')); // huh? we need double-slash simplification?
+        Q_ASSERT(!relativePath.startsWith('/')); // check if multiple slashes have been removed
         const int nextSlash = relativePath.indexOf('/');
         const QString fileName = relativePath.left(nextSlash); // works even if nextSlash==-1
         KDirModelNode* node = dirNode->m_childNodesByName.value(fileName);

@@ -584,6 +584,20 @@ void KDirModelTest::testFilter()
     fillModel(true);
 }
 
+void KDirModelTest::testMultipleSlashes()
+{
+    const QString path = m_tempDir->name();
+
+    QModelIndex index = m_dirModel.indexForUrl(KUrl(path+"subdir//testfile"));
+    QVERIFY(index.isValid());
+
+    index = m_dirModel.indexForUrl(path+"subdir//subsubdir//");
+    QVERIFY(index.isValid());
+
+    index = m_dirModel.indexForUrl(path+"subdir///subsubdir////testfile");
+    QVERIFY(index.isValid());
+}
+
 void KDirModelTest::testUrlWithRef() // #171117
 {
     const QString path = m_tempDir->name();
