@@ -1182,11 +1182,9 @@ void KCookieJar::eatSessionCookies( long windowId )
 
 void KCookieJar::eatAllCookies()
 {
-    for ( QStringList::const_iterator it=m_domainList.constBegin();
-          it != m_domainList.constEnd(); ++it)
-    {
-        // This might remove domain from domainList!
-        eatCookiesForDomain(*it);
+    Q_FOREACH(const QString& domain, m_domainList) {
+        // This might remove domain from m_domainList!
+        eatCookiesForDomain(domain);
     }
 }
 
