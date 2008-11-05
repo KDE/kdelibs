@@ -64,11 +64,7 @@ void MainWindow::slotTest()
 
 void MainWindow::slotCreate()
 {
-#ifdef REPRODUCE_TOOLBAR_BUG
     setupGUI(ToolBar);
-#else
-    setupGUI(ToolBar | Save);
-#endif
     createGUI(xmlFile());
 }
 
