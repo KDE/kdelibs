@@ -794,10 +794,7 @@ void KCategorizedView::paintEvent(QPaintEvent *event)
                 option.state |= QStyle::State_Editing;
         }
 
-        // we are only interested to give the mouse over feedback when no
-        // dragging is happening (ereslibre)
-        if ((index == d->hovered) && !d->mouseButtonPressed &&
-            (this->state() == QAbstractItemView::NoState))
+        if (index == d->hovered)
             option.state |= QStyle::State_MouseOver;
         else
             option.state &= ~QStyle::State_MouseOver;
@@ -1258,8 +1255,12 @@ void KCategorizedView::dragMoveEvent(QDragMoveEvent *event)
     {
         return;
     }
+    
+    d->hovered = indexAt(event->pos());
 
+#if !defined(DOLPHIN_DRAGANDDROP)
     d->drawDraggedItems();
+#endif
 }
 
 void KCategorizedView::dragLeaveEvent(QDragLeaveEvent *event)
