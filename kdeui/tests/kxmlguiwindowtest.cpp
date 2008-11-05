@@ -58,17 +58,18 @@ void MainWindow::setupActions()
 
     KStandardAction::quit(kapp, SLOT(quit()), actionCollection());
 
-    setupGUI();
+    setAutoSaveSettings();
+
+    // BUG: if I call to setGUI with Create flag and setXMLFile was called, it is overriden.
+    setupGUI(ToolBar | Save);
+    createGUI(xmlFile());
 }
 
 MainWindow::MainWindow(QWidget *parent)
     : KXmlGuiWindow(parent)
 {
-//     setAutoSaveSettings();
-    kDebug() << KDESRCDIR;
-    setXMLFile(KDESRCDIR "/kxmlguiwindowtestui.rc");
+    setXMLFile(KDESRCDIR "/kxmlguiwindowtestui.rc", true);
     setCentralWidget(new QTextEdit(this));
-    kDebug() << "calling to setupActions";
     setupActions();
 }
 

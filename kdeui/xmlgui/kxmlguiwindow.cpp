@@ -236,6 +236,7 @@ void KXmlGuiWindow::setupGUI( const QSize & defaultSize, StandardWindowOptions o
 }
 void KXmlGuiWindow::createGUI( const QString &xmlfile )
 {
+    kDebug() << xmlfile;
     K_D(KXmlGuiWindow);
     // disabling the updates prevents unnecessary redraws
     //setUpdatesEnabled( false );

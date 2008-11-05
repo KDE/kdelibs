@@ -3,16 +3,16 @@
 <gui name="kxmlguiwindowtest" version="1">
   <ToolBar name="mainToolBar" >
     <text>Main Toolbar</text>
-    <Action name="quit" />
+    <Action name="test" />
   </ToolBar>
   <ToolBar name="otherToolBar" >
     <text>Other Toolbar</text>
-    <Action name="test" />
+    <Action name="file_quit" />
   </ToolBar>
   <MenuBar>
     <Menu name="file" >
       <Action name="test" />
-      <Action name="quit" />
+      <Action name="file_quit" />
     </Menu>
   </MenuBar>
 </gui>
