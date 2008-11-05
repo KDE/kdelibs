@@ -39,7 +39,7 @@
 //          - Move one toolbar to other place (bottom, left, right, or deattach it).
 //          - Close the test (so settings are saved).
 //          - Reopen the test. The toolbar you moved is not keeping the place you specified.
-#undef REPRODUCE_TOOLBAR_BUG
+#define REPRODUCE_TOOLBAR_BUG
 
 class MainWindow
     : public KXmlGuiWindow
