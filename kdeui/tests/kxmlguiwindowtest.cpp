@@ -16,11 +16,39 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QApplication>
+#include <QPushButton>
+
+#include <kapplication.h>
+#include <kxmlguiwindow.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
+
+class MainWindow
+    : public KXmlGuiWindow
+{
+public:
+    MainWindow(QWidget *parent = 0);
+};
+
+MainWindow::MainWindow(QWidget *parent)
+    : KXmlGuiWindow(parent)
+{
+    setCentralWidget(new QPushButton("Click me", this));
+    setupGUI();
+}
 
 int main(int argc, char **argv)
 {
-    QApplication app(argc, argv);
+    KAboutData aboutData("kxmlguiwindowtest", 0,
+        ki18n("kxmlguiwindowtest"), "0.1",
+        ki18n("kxmlguiwindowtest"),
+        KAboutData::License_LGPL,
+        ki18n("Copyright (c) 2008 Rafael Fernandez Lopez") );
+    KCmdLineArgs::init(argc, argv, &aboutData);
+    KApplication app;
+
+    MainWindow *mainWindow = new MainWindow;
+    mainWindow->show();
 
     return app.exec();
 }
