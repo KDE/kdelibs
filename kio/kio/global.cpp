@@ -119,14 +119,29 @@ KIO_EXPORT QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesi
 
 KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize)
 {
-    const QString itemsText = items == 0 ? i18n( "No Items" ) : i18np( "One Item", "%1 Items", items );
-    const QString filesText = files == 0 ? i18n( "No Files" ) : i18np( "One File", "%1 Files", files );
-    const QString foldersText = dirs == 0 ? i18n( "No Folders" ) : i18np("One Folder", "%1 Folders", dirs);
-    if ( showSize && files > 0 ) {
-        const QString sizeText = i18n("(%1 Total)", KIO::convertSize( size ) );
-        return i18nc("Items (Folders, Files), Size", "%1 (%2, %3), %4", itemsText, foldersText, filesText, sizeText);
+    if ( files == 0 && dirs == 0 && items == 0 ) {
+        return i18n( "0 Items" );
     }
-    return i18nc("Items (Folders, Files)", "%1 (%2, %3)", itemsText, foldersText, filesText);
+    
+    QString summary;
+    const QString foldersText = i18np( "1 Folder", "%1 Folders", dirs );
+    const QString filesText = i18np( "1 File", "%1 Files", files );
+    if ( files > 0 && dirs > 0 ) {
+        summary = showSize ?
+                  i18nc( "folders, files (size)", "%1, %2 (%3)", foldersText, filesText, KIO::convertSize( size ) ) :
+                  i18nc( "folders, files", "%1, %2", foldersText, filesText );
+    } else if ( files > 0 ) {
+        summary = showSize ? i18nc( "files (size)", "%1 (%2)", filesText, KIO::convertSize( size ) ) : filesText;
+    } else if ( dirs > 0 ) {
+        summary = foldersText;
+    }
+    
+    if ( items > dirs + files ) {
+        const QString itemsText = i18np( "1 Item", "%1 Items", items );
+        summary = summary.isEmpty() ? itemsText : i18nc( "items: folders, files (size)", "%1: %2", itemsText, summary );
+    }
+    
+    return summary;
 }
 
 KIO_EXPORT QString KIO::encodeFileName( const QString & _str )
