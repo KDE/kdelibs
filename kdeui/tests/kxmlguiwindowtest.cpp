@@ -60,7 +60,7 @@ void MainWindow::setupActions()
 
     setAutoSaveSettings();
 
-    // BUG: if I call to setGUI with Create flag and setXMLFile was called, it is overriden.
+    // BUG: if I call to setupGUI with Create flag and setXMLFile was called, it is overriden.
     setupGUI(ToolBar | Save);
     createGUI(xmlFile());
 }
