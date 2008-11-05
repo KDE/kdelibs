@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QPushButton>
+#include <QTextEdit>
 
 #include <kapplication.h>
 #include <kxmlguiwindow.h>
@@ -24,24 +24,36 @@
 #include <kcmdlineargs.h>
 #include <kactioncollection.h>
 #include <kstandarddirs.h>
+#include <kmessagebox.h>
 #include <kaction.h>
 
 class MainWindow
     : public KXmlGuiWindow
 {
+    Q_OBJECT
+
 public:
     MainWindow(QWidget *parent = 0);
+
+public Q_SLOTS:
+    void slotTest();
 
 private:
     void setupActions();
 };
 
+void MainWindow::slotTest()
+{
+    KMessageBox::information(0, "Test", "Test");
+}
+
 void MainWindow::setupActions()
 {
     KAction *testAction = new KAction(this);
     testAction->setText("Test");
-    testAction->setIcon(KIcon("document-new"));
+    testAction->setIcon(KIcon("kde"));
     actionCollection()->addAction("test", testAction);
+    connect(testAction, SIGNAL(triggered(bool)), this, SLOT(slotTest()));
 
     KStandardAction::quit(kapp, SLOT(quit()), actionCollection());
 
@@ -52,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent)
     : KXmlGuiWindow(parent)
 {
     setXMLFile(KDESRCDIR "/kxmlguiwindowtestui.rc");
-    setCentralWidget(new QPushButton("Click me", this));
+    setCentralWidget(new QTextEdit(this));
     setupActions();
 }
 
@@ -73,3 +85,5 @@ int main(int argc, char **argv)
 
     return app.exec();
 }
+
+#include "kxmlguiwindowtest.moc"
