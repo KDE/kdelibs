@@ -64,11 +64,12 @@ void MainWindow::setupActions()
 MainWindow::MainWindow(QWidget *parent)
     : KXmlGuiWindow(parent)
 {
+//     setAutoSaveSettings();
+    kDebug() << KDESRCDIR;
     setXMLFile(KDESRCDIR "/kxmlguiwindowtestui.rc");
     setCentralWidget(new QTextEdit(this));
     kDebug() << "calling to setupActions";
     setupActions();
-    setAutoSaveSettings();
 }
 
 int main(int argc, char **argv)

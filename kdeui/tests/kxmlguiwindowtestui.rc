@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
+<gui name="kxmlguiwindowtest" version="1">
+  <ToolBar name="mainToolBar" >
+    <text>Main Toolbar</text>
+    <Action name="quit" />
+  </ToolBar>
+  <ToolBar name="otherToolBar" >
+    <text>Other Toolbar</text>
+    <Action name="test" />
+  </ToolBar>
+  <MenuBar>
+    <Menu name="file" >
+      <Action name="test" />
+      <Action name="quit" />
+    </Menu>
+  </MenuBar>
+</gui>
