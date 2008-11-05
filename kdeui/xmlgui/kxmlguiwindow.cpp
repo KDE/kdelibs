@@ -236,7 +236,6 @@ void KXmlGuiWindow::setupGUI( const QSize & defaultSize, StandardWindowOptions o
 }
 void KXmlGuiWindow::createGUI( const QString &xmlfile )
 {
-    kDebug() << xmlfile;
     K_D(KXmlGuiWindow);
     // disabling the updates prevents unnecessary redraws
     //setUpdatesEnabled( false );
@@ -338,8 +337,6 @@ void KXmlGuiWindow::createStandardStatusBarAction(){
 
 void KXmlGuiWindow::finalizeGUI( bool /*force*/ )
 {
-    kDebug();
-
     // FIXME: this really needs to be removed with a code more like the one we had on KDE3.
     //        what we need to do here is to position correctly toolbars so they don't overlap.
     //        Also, take in count plugins could provide their own toolbars and those also need to
