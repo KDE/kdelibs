@@ -65,7 +65,7 @@ private Q_SLOTS:
 #endif
 
         cut = KShortcut("Meta+E");
-        QVERIFY(cut.primary()[0] == Qt::META | Qt::Key_E);
+        QVERIFY(cut.primary()[0] == (Qt::META | Qt::Key_E));
 
     }
 };
