@@ -17,6 +17,7 @@
 */
 
 #include <QTextEdit>
+#include <QTimer>
 
 #include <kapplication.h>
 #include <kxmlguiwindow.h>
@@ -28,6 +29,18 @@
 #include <kaction.h>
 #include <kdebug.h>
 
+// BUG: if this symbol is defined the problem consists on:
+//      - main window is created.
+//      - settings are saved (and applied), but in this case no toolbars exist yet, so they don't
+//        apply to any toolbar.
+//      - after 1 second the GUI is created.
+//
+//      How to reproduce ?
+//          - Move one toolbar to other place (bottom, left, right, or deattach it).
+//          - Close the test (so settings are saved).
+//          - Reopen the test. The toolbar you moved is not keeping the place you specified.
+#define REPRODUCE_TOOLBAR_BUG
+
 class MainWindow
     : public KXmlGuiWindow
 {
@@ -38,6 +51,7 @@ public:
 
 public Q_SLOTS:
     void slotTest();
+    void slotCreate();
 
 private:
     void setupActions();
@@ -46,6 +60,12 @@ private:
 void MainWindow::slotTest()
 {
     KMessageBox::information(0, "Test", "Test");
+}
+
+void MainWindow::slotCreate()
+{
+    setupGUI(ToolBar);
+    createGUI(xmlFile());
 }
 
 void MainWindow::setupActions()
@@ -60,9 +80,15 @@ void MainWindow::setupActions()
 
     setAutoSaveSettings();
 
-    // BUG: if I call to setupGUI with Create flag and setXMLFile was called, it is overriden.
-    setupGUI(ToolBar | Save);
-    createGUI(xmlFile());
+    // BUG: if the GUI is created after an amount of time (so settings have been saved), then toolbars
+    //      are shown misplaced. KMainWindow uses a 500 ms timer to save window settings.
+#ifdef REPRODUCE_TOOLBAR_BUG
+    QTimer::singleShot(1000, this, SLOT(slotCreate())); // more than 500 ms so the main window has saved settings.
+                                                        // We can think of this case on natural applications when they
+                                                        // load plugins and change parts. It can take 1 second perfectly.
+#else
+    QTimer::singleShot(0, this, SLOT(slotCreate()));
+#endif
 }
 
 MainWindow::MainWindow(QWidget *parent)
