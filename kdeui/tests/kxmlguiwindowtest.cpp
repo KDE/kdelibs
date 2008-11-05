@@ -22,19 +22,38 @@
 #include <kxmlguiwindow.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
+#include <kactioncollection.h>
+#include <kstandarddirs.h>
+#include <kaction.h>
 
 class MainWindow
     : public KXmlGuiWindow
 {
 public:
     MainWindow(QWidget *parent = 0);
+
+private:
+    void setupActions();
 };
+
+void MainWindow::setupActions()
+{
+    KAction *testAction = new KAction(this);
+    testAction->setText("Test");
+    testAction->setIcon(KIcon("document-new"));
+    actionCollection()->addAction("test", testAction);
+
+    KStandardAction::quit(kapp, SLOT(quit()), actionCollection());
+
+    setupGUI();
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : KXmlGuiWindow(parent)
 {
+    setXMLFile(KDESRCDIR "/kxmlguiwindowtestui.rc");
     setCentralWidget(new QPushButton("Click me", this));
-    setupGUI();
+    setupActions();
 }
 
 int main(int argc, char **argv)
@@ -46,6 +65,8 @@ int main(int argc, char **argv)
         ki18n("Copyright (c) 2008 Rafael Fernandez Lopez") );
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
+
+    KGlobal::dirs()->addResourceDir("data", KDESRCDIR);
 
     MainWindow *mainWindow = new MainWindow;
     mainWindow->show();
