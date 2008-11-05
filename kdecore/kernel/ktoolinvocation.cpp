@@ -115,8 +115,13 @@ int KToolInvocation::startServiceInternal(const char *_function,
     QDBusMessage reply = QDBusConnection::sessionBus().call(msg);
     if ( reply.type() != QDBusMessage::ReplyMessage )
     {
-        const QString rpl = reply.arguments().count() > 0 ? reply.arguments().at(0).toString() : reply.errorMessage();
-        printError(i18n("KLauncher could not be reached via D-Bus. Error when calling %1:\n%2\n",function, rpl), error);
+        QDBusReply<QString> replyObj(reply);
+        if (replyObj.error().type() == QDBusError::NoReply) {
+            printError(i18n("Error launching %1. Either KLauncher is not running anymore, or it failed to start the application.", _name), error);
+        } else {
+            const QString rpl = reply.arguments().count() > 0 ? reply.arguments().at(0).toString() : reply.errorMessage();
+            printError(i18n("KLauncher could not be reached via D-Bus. Error when calling %1:\n%2\n",function, rpl), error);
+        }
         //qDebug() << reply;
         return EINVAL;
     }
