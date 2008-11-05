@@ -475,7 +475,7 @@ int Lexer::lex()
     if (!done)
       shift(1);
 #ifndef KJS_PURE_ECMA
-    if (state != Start && state != InSingleLineComment)
+    if (state != Start && state != InMultiLineComment)
       bol = false;
 #endif
   }
