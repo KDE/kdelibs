@@ -28,6 +28,7 @@
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <kdebug.h>
+#include <kconfiggroup.h>
 
 // BUG: if this symbol is defined the problem consists on:
 //      - main window is created.
@@ -66,6 +67,10 @@ void MainWindow::slotCreate()
 {
     setupGUI(ToolBar);
     createGUI(xmlFile());
+
+    if (autoSaveConfigGroup().isValid()) {
+        applyMainWindowSettings(autoSaveConfigGroup());
+    }
 }
 
 void MainWindow::setupActions()
