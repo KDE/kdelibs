@@ -443,9 +443,19 @@ public:
      */
     void init(const QString &text, const QString &value);
 
+    /**
+     * Called by checkAccept() in order to save the history of the combobox
+     */
+    void saveComboboxHistory();
+
+    /**
+     * Process the choices made by the user, and return true if everything is OK.
+     * Called by KOpenWithDialog::accept(), i.e. when clicking on OK or typing Return.
+     */
+    bool checkAccept();
+
     // slots
     void _k_slotDbClick();
-    void _k_slotOK();
 
     bool saveNewApps;
     bool m_terminaldirty;
@@ -606,8 +616,6 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     edit->comboBox()->setAutoDeleteCompletionObject( true );
   }
 
-    QObject::connect(edit, SIGNAL(returnPressed()), q, SLOT(_k_slotOK()));
-    QObject::connect(q, SIGNAL(okClicked()), q, SLOT(_k_slotOK()));
     QObject::connect(edit, SIGNAL(textChanged(QString)), q, SLOT(slotTextChanged()));
 
     view = new KApplicationView(mainWidget);
@@ -730,7 +738,7 @@ void KOpenWithDialogPrivate::_k_slotDbClick()
     if (view->isDirSel()) {
         return;
     }
-    _k_slotOK();
+    q->accept();
 }
 
 void KOpenWithDialog::setSaveNewApplications(bool b)
@@ -774,11 +782,11 @@ void KOpenWithDialogPrivate::addToMimeAppsList(const QString& serviceId /*menu i
     Q_ASSERT( m_pService );
 }
 
-void KOpenWithDialogPrivate::_k_slotOK()
+bool KOpenWithDialogPrivate::checkAccept()
 {
     QString typedExec(edit->url().pathOrUrl());
     if (typedExec.isEmpty())
-        return;
+        return false;
     QString fullExec(typedExec);
 
     QString serviceName;
@@ -792,7 +800,7 @@ void KOpenWithDialogPrivate::_k_slotOK()
         serviceName = KRun::binaryName( typedExec, true );
         if (serviceName.isEmpty()) {
             KMessageBox::error(q, i18n("Could not extract executable name from '%1', please type a valid program name.", serviceName));
-            return;
+            return false;
         }
         initialServiceName = serviceName;
         kDebug(250) << "initialServiceName=" << initialServiceName;
@@ -826,6 +834,12 @@ void KOpenWithDialogPrivate::_k_slotOK()
         serviceName = m_pService->name();
         initialServiceName = serviceName;
         fullExec = m_pService->exec();
+    } else {
+        // Ensure that the typed binary name actually exists (#81190)
+        if (KStandardDirs::findExe(serviceName).isEmpty()) {
+            KMessageBox::error(q, i18n("'%1' not found, please type a valid program name.", serviceName));
+            return false;
+        }
     }
 
     if (terminal->isChecked()) {
@@ -887,7 +901,15 @@ void KOpenWithDialogPrivate::_k_slotOK()
             addToMimeAppsList(menuId);
         }
     }
-    q->accept();
+
+    saveComboboxHistory();
+    return true;
+}
+
+void KOpenWithDialog::accept()
+{
+    if (d->checkAccept())
+        KDialog::accept();
 }
 
 QString KOpenWithDialog::text() const
@@ -916,11 +938,11 @@ KService::Ptr KOpenWithDialog::service() const
     return d->m_pService;
 }
 
-void KOpenWithDialog::accept()
+void KOpenWithDialogPrivate::saveComboboxHistory()
 {
-    KHistoryComboBox *combo = static_cast<KHistoryComboBox*>(d->edit->comboBox());
-    if ( combo ) {
-        combo->addToHistory(d->edit->url().url());
+    KHistoryComboBox *combo = static_cast<KHistoryComboBox*>(edit->comboBox());
+    if (combo) {
+        combo->addToHistory(edit->url().url());
 
         KConfigGroup cg( KGlobal::config(), QString::fromLatin1("Open-with settings") );
         cg.writeEntry( "History", combo->historyItems() );
@@ -929,8 +951,6 @@ void KOpenWithDialog::accept()
         // executables
         cg.sync();
     }
-
-    QDialog::accept();
 }
 
 #include "kopenwithdialog.moc"
