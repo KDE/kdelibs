@@ -39,7 +39,7 @@
 //          - Move one toolbar to other place (bottom, left, right, or deattach it).
 //          - Close the test (so settings are saved).
 //          - Reopen the test. The toolbar you moved is not keeping the place you specified.
-#define REPRODUCE_TOOLBAR_BUG
+#undef REPRODUCE_TOOLBAR_BUG
 
 class MainWindow
     : public KXmlGuiWindow
@@ -64,7 +64,11 @@ void MainWindow::slotTest()
 
 void MainWindow::slotCreate()
 {
+#ifdef REPRODUCE_TOOLBAR_BUG
     setupGUI(ToolBar);
+#else
+    setupGUI(ToolBar | Save);
+#endif
     createGUI(xmlFile());
 }
 
@@ -78,11 +82,10 @@ void MainWindow::setupActions()
 
     KStandardAction::quit(kapp, SLOT(quit()), actionCollection());
 
-    setAutoSaveSettings();
-
     // BUG: if the GUI is created after an amount of time (so settings have been saved), then toolbars
     //      are shown misplaced. KMainWindow uses a 500 ms timer to save window settings.
 #ifdef REPRODUCE_TOOLBAR_BUG
+    setAutoSaveSettings();
     QTimer::singleShot(1000, this, SLOT(slotCreate())); // more than 500 ms so the main window has saved settings.
                                                         // We can think of this case on natural applications when they
                                                         // load plugins and change parts. It can take 1 second perfectly.
