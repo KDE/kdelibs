@@ -397,7 +397,7 @@ inline static bool reduceSegmentSeparator(QVector<QPoint> &pointArray)
  * Appends the given point to the point-array, doing necessary reductions to
  * produce a path without spikes and segment separators.
  */
-static void appendPoint(QVector<QPoint> &pointArray, QPoint &pnt)
+static void appendPoint(QVector<QPoint> &pointArray, const QPoint &pnt)
 {
   if (!appendIfNew(pointArray, pnt)) return;
 //   kDebug(6040) << "appendPoint: appended " << pnt;
