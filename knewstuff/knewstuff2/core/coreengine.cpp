@@ -430,8 +430,6 @@ void CoreEngine::slotPayloadResult(KJob *job)
             emit signalPayloadFailed(entry);
         } else {
             KIO::FileCopyJob *fcjob = static_cast<KIO::FileCopyJob*>(job);
-            // FIXME: this is only so exposing the KUrl suffices for downloaded entries
-            entry->setStatus(Entry::Installed);
             m_payloadfiles[entry] = fcjob->destUrl().path();
 
             install(fcjob->destUrl().pathOrUrl());
@@ -1321,6 +1319,10 @@ bool CoreEngine::install(const QString &payloadfile)
     }
     Entry *entry = entries.first();
 
+    bool update = (entry->status() == Entry::Updateable);
+    // FIXME: this is only so exposing the KUrl suffices for downloaded entries
+    entry->setStatus(Entry::Installed);
+
     // FIXME: first of all, do the security stuff here
     // this means check sum comparison and signature verification
     // signature verification might take a long time - make async?!
@@ -1476,8 +1478,14 @@ bool CoreEngine::install(const QString &payloadfile)
             //        - this might or might not need to take uncompression into account
             // FIXME: for updates, we might need to force an overwrite (that is, deleting before)
             QFile file(payloadfile);
+            bool success = true;
 
-            bool success = file.rename(installpath);
+            if (QFile::exists(installpath) && update) {
+                success = QFile::remove(installpath);
+            }
+            if (success) {
+                success = file.rename(installpath);
+            }
             if (!success) {
                 kError() << "Cannot move file '" << payloadfile << "' to destination '"  << installpath << "'";
                 return false;
