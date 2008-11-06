@@ -70,11 +70,6 @@ ToolTip=Extended List Widget (KDE)
 WhatsThis=An improved version of the QListWidget that follows KDE settings
 Group=Views (KDE)
 
-[K3ListView]
-ToolTip=Extended List View (KDE)
-WhatsThis=An improved version of the Q3ListView that allows certain KDE extensions
-Group=Views (KDE)
-
 [KLineEdit]
 ToolTip=Line Edit (KDE)
 Group=Input (KDE)
@@ -138,12 +133,6 @@ Group=Input (KDE)
 IncludeFile=kicondialog.h
 ToolTip=Button for selecting an icon (KDE)
 Group=Buttons (KDE)
-
-[K3IconView]
-IncludeFile=k3iconview.h
-ToolTip=Extended Icon View (KDE)
-WhatsThis=An improved version of Q3IconView that allows certain KDE extensions
-Group=Views (KDE)
 
 [KIntSpinBox]
 IncludeFile=knuminput.h

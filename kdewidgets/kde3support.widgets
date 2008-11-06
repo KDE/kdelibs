@@ -1,0 +1,16 @@
+[Global]
+PluginName=KDE3SupportWidgets
+Includes=kcomponentdata.h,classpreviews.h,ktimezone.h
+Init=new KComponentData("kdewidgets");
+
+[K3ListView]
+ToolTip=Extended List View (KDE)
+WhatsThis=An improved version of the Q3ListView that allows certain KDE extensions
+Group=Views (KDE)
+
+[K3IconView]
+IncludeFile=k3iconview.h
+ToolTip=Extended Icon View (KDE)
+WhatsThis=An improved version of Q3IconView that allows certain KDE extensions
+Group=Views (KDE)
+
