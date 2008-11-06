@@ -322,6 +322,9 @@ int main(int argc, char** argv)
 #ifdef THREAD_TEST
     QCoreApplication app(argc, argv);
     startThreads();
+#else
+    Q_UNUSED(argc);
+    Q_UNUSED(argv);
 #endif
     return 0;
 }
