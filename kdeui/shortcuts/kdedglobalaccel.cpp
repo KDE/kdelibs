@@ -513,6 +513,13 @@ void KdedGlobalAccel::setInactive(const QStringList &actionId)
     actionData *ad = d->findAction(actionId);
     if (!ad)
         return;
+    static bool norecurse = false;
+    if (ad->uniqueName.startsWith("_k_session:") && !norecurse) { // don't keep these
+        norecurse = true;
+        unRegister(actionId);
+        norecurse = false;
+        return;
+    }
     ad->isPresent = false;
 
     const int len = ad->keys.count();
@@ -539,7 +546,7 @@ void KdedGlobalAccel::writeSettings()
         friendlyGroup.writeEntry("Friendly Name", cd->friendlyName);
 
         foreach (const actionData *const ad, cd->actions) {
-            if (ad->isFresh) {
+            if (ad->isFresh || ad->uniqueName.startsWith("_k_session:")) {
                 //no shortcut assignement took place, the action was only registered
                 //(we could still write it out to document its existence, but the "fresh"
                 //state should be regarded as transitional *only*.)
