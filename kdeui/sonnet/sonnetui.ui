@@ -285,7 +285,6 @@ Click here if you consider that the unknown word is not misspelled and you want 
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11" />
- <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <tabstops>
   <tabstop>m_addBtn</tabstop>
   <tabstop>m_replacement</tabstop>

@@ -290,7 +290,6 @@ Following the command, you can have several place holders which will be replaced
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11" />
- <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
   <customwidget>
    <class>KLineEdit</class>
