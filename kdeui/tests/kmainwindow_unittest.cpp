@@ -109,6 +109,16 @@ public:
     }
     bool m_queryClosedCalled;
     bool m_queryExitCalled;
+
+    void reallyResize(int width, int height) {
+        const QSize oldSize = size();
+
+        resize(width, height);
+
+        // Send the pending resize event (resize() only sets Qt::WA_PendingResizeEvent)
+        QResizeEvent e(size(), oldSize);
+        QApplication::sendEvent(this, &e);
+    }
 };
 
 // Here we test
@@ -130,14 +140,10 @@ void KMainWindow_UnitTest::testDeleteOnClose()
 
 void KMainWindow_UnitTest::testSaveWindowSize()
 {
-    KMainWindow mw;
+    MyMainWindow mw;
     KToolBar* tb = new KToolBar(&mw); // we need a toolbar to trigger an old bug in saveMainWindowSettings
     tb->setObjectName("testtb");
-    mw.resize(800, 600);
-
-    // Send the pending resize event (resize() only sets Qt::WA_PendingResizeEvent)
-    QResizeEvent e(mw.size(), QSize());
-    QApplication::sendEvent(&mw, &e);
+    mw.reallyResize(800, 600);
 
     KConfigGroup cfg(KGlobal::config(), "TestWindowSize");
     mw.saveMainWindowSettings(cfg);
@@ -153,22 +159,32 @@ void KMainWindow_UnitTest::testSaveWindowSize()
 
 void KMainWindow_UnitTest::testAutoSaveSettings()
 {
-    KMainWindow mw;
+    MyMainWindow mw;
     KToolBar* tb = new KToolBar(&mw); // we need a toolbar to trigger an old bug in saveMainWindowSettings
     tb->setObjectName("testtb");
     const QString group("AutoSaveTestGroup");
     mw.setAutoSaveSettings(group);
-    mw.resize(800, 600);
-
-    // Send the pending resize event (resize() only sets Qt::WA_PendingResizeEvent)
-    QResizeEvent e(mw.size(), QSize());
-    QApplication::sendEvent(&mw, &e);
-
+    mw.reallyResize(800, 600);
     mw.close();
 
     KMainWindow mw2;
     tb = new KToolBar(&mw2);
     tb->setObjectName("testtb");
     mw2.setAutoSaveSettings(group);
+    QCOMPARE(mw2.size(), QSize(800, 600));
+}
+
+void KMainWindow_UnitTest::testNoAutoSave()
+{
+    // A mainwindow with autosaving, but not of the window size.
+    MyMainWindow mw;
+    const QString group("AutoSaveTestGroup");
+    mw.setAutoSaveSettings(group, false);
+    mw.reallyResize(750, 550);
+    mw.close();
+
+    KMainWindow mw2;
+    mw2.setAutoSaveSettings(group, false);
+    // NOT 750, 550! (the 800,600 comes from testAutoSaveSettings)
     QCOMPARE(mw2.size(), QSize(800, 600));
 }

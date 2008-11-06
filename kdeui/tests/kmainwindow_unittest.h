@@ -33,6 +33,7 @@ private Q_SLOTS:
     void testNameWithHash();
     void testSaveWindowSize();
     void testAutoSaveSettings();
+    void testNoAutoSave();
 
     void testDeleteOnClose();
 };
