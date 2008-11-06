@@ -638,6 +638,7 @@ KACLListView::KACLListView( QWidget* parent )
     setSortingEnabled( false );
     setSelectionMode( QAbstractItemView::ExtendedSelection );
     header()->setResizeMode( QHeaderView::ResizeToContents );
+    setRootIsDecorated( false );
 
     // Load the avatars
     for ( int i=0; i < LAST_IDX; ++i ) {
