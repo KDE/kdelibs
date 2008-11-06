@@ -443,8 +443,8 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
 	    pfi.extralen = extralen;
 	    int handledextralen = qMin(extralen, (int)sizeof buffer);
 
-            if ( handledextralen )
-                kDebug(7040) << "handledextralen: " << handledextralen;
+            //if ( handledextralen )
+            //    kDebug(7040) << "handledextralen: " << handledextralen;
 
 	    n = dev->read(buffer, handledextralen);
 	    // no error msg necessary as we deliberately truncate the extra field
