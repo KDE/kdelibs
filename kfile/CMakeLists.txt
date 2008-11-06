@@ -70,5 +70,5 @@ set(kfilemodule_SRCS
   kfilemodule.cpp
 )
 kde4_add_plugin(kfilemodule WITH_PREFIX ${kfilemodule_SRCS})
-target_link_libraries(kfilemodule ${KDE4_KFILE_LIBS})
+target_link_libraries(kfilemodule ${KDE4_KFILE_LIBS} ${KDE4_KIO_LIBS})
 install(TARGETS kfilemodule DESTINATION ${PLUGIN_INSTALL_DIR})
