@@ -113,7 +113,7 @@ void KTcpSocketTest::connectDisconnect()
 
     s->connectToHost("127.0.0.1", testPort);
     QCOMPARE(s->state(), KTcpSocket::ConnectingState);
-    QCOMPARE(s->openMode(), QIODevice::ReadWrite);
+    QVERIFY(s->openMode() & QIODevice::ReadWrite);
     const bool connected = s->waitForConnected(150);
     QVERIFY(connected);
     QCOMPARE(s->state(), KTcpSocket::ConnectedState);
