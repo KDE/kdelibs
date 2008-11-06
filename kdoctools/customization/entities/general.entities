@@ -258,7 +258,7 @@
 <!ENTITY kmahjongg	"<application>KMahjongg</application>">
 <!ENTITY kmail	"<application>KMail</application>">
 <!ENTITY kmathtool "<application>KMathTool</application>">
-<!ENTITY kmenuedit	"<application>kmenuedit</application>">
+<!ENTITY kmenuedit	"<application>KMenuEdit</application>">
 <!ENTITY kmessedwords	"<application>KMessedWords</application>">
 <!ENTITY kmid	"<application>KMid</application>">
 <!ENTITY kmidi	"<application>KMidi</application>">
