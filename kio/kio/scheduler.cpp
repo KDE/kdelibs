@@ -382,7 +382,7 @@ void SchedulerPrivate::doJob(SimpleJob *job) {
 }
 
 void SchedulerPrivate::scheduleJob(SimpleJob *job) {
-    newJobs.removeAll(job);
+    newJobs.removeOne(job);
     const JobData& jobData = extraJobData.value(job);
 
     QString protocol = jobData.protocol;
@@ -560,8 +560,8 @@ bool SchedulerPrivate::startJobScheduled(ProtocolInfo *protInfo)
 
     protInfo->activeSlaves.append(slave);
     idleSlaves.removeAll(slave);
-    protInfo->joblist.removeAll(job);
-//       kDebug(7006) << "scheduler: job started " << job;
+    protInfo->joblist.removeOne(job);
+//        kDebug(7006) << "scheduler: job started " << job;
 
 
     SchedulerPrivate::JobData jobData = extraJobData.value(job);
