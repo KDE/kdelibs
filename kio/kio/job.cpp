@@ -384,34 +384,34 @@ void SimpleJobPrivate::start(Slave *slave)
     Q_Q(SimpleJob);
     m_slave = slave;
 
-    q->connect( slave, SIGNAL( error( int , const QString & ) ),
-                SLOT( slotError( int , const QString & ) ) );
+    q->connect( slave, SIGNAL(error(int,QString)),
+                SLOT(slotError(int,QString)) );
 
-    q->connect( slave, SIGNAL( warning( const QString & ) ),
-                SLOT( slotWarning( const QString & ) ) );
+    q->connect( slave, SIGNAL(warning(QString)),
+                SLOT(slotWarning(QString)) );
 
-    q->connect( slave, SIGNAL( infoMessage( const QString & ) ),
-                SLOT( _k_slotSlaveInfoMessage( const QString & ) ) );
+    q->connect( slave, SIGNAL(infoMessage(QString)),
+                SLOT(_k_slotSlaveInfoMessage(QString)) );
 
-    q->connect( slave, SIGNAL( connected() ),
-                SLOT( slotConnected() ) );
+    q->connect( slave, SIGNAL(connected()),
+                SLOT(slotConnected()));
 
-    q->connect( slave, SIGNAL( finished() ),
-                SLOT( slotFinished() ) );
+    q->connect( slave, SIGNAL(finished()),
+                SLOT(slotFinished()) );
 
     if ((m_extraFlags & EF_TransferJobDataSent) == 0)
     {
-        q->connect( slave, SIGNAL( totalSize( KIO::filesize_t ) ),
-                    SLOT( slotTotalSize( KIO::filesize_t ) ) );
+        q->connect( slave, SIGNAL(totalSize(KIO::filesize_t)),
+                    SLOT(slotTotalSize(KIO::filesize_t)) );
 
-        q->connect( slave, SIGNAL( processedSize( KIO::filesize_t ) ),
-                    SLOT( slotProcessedSize( KIO::filesize_t ) ) );
+        q->connect( slave, SIGNAL(processedSize(KIO::filesize_t)),
+                    SLOT(slotProcessedSize(KIO::filesize_t)) );
 
-        q->connect( slave, SIGNAL( speed( unsigned long ) ),
-                    SLOT( slotSpeed( unsigned long ) ) );
+        q->connect( slave, SIGNAL(speed(ulong)),
+                    SLOT(slotSpeed(ulong)) );
     }
-    q->connect( slave, SIGNAL(metaData( const KIO::MetaData& ) ),
-                SLOT( slotMetaData( const KIO::MetaData& ) ) );
+    q->connect( slave, SIGNAL(metaData(KIO::MetaData)),
+                SLOT(slotMetaData(KIO::MetaData)) );
 
     if (ui() && ui()->window())
     {

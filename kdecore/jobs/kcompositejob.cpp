@@ -53,12 +53,12 @@ bool KCompositeJob::addSubjob( KJob *job )
 
     d->subjobs.append(job);
 
-    connect( job, SIGNAL( result( KJob* ) ),
-             SLOT( slotResult( KJob* ) ) );
+    connect( job, SIGNAL(result(KJob*)),
+             SLOT(slotResult(KJob*)) );
 
     // Forward information from that subjob.
-    connect( job, SIGNAL(infoMessage( KJob*, const QString &, const QString & )),
-             SLOT(slotInfoMessage( KJob*, const QString &, const QString & ) ) );
+    connect( job, SIGNAL(infoMessage(KJob*,QString,QString)),
+             SLOT(slotInfoMessage(KJob*,QString,QString)) );
 
     return true;
 }
