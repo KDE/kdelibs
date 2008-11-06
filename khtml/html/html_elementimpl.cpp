@@ -168,7 +168,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
             DOMString v = attr->value();
             const QChar* characters = v.unicode();
             unsigned length = v.length();
-            int i;
+            unsigned i;
             for (i = 0; i < length && characters[i].isSpace(); ++i) { }
             setHasClass(i < length);
             attributes()->setClass(v);
