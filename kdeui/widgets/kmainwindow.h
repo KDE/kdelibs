@@ -720,6 +720,7 @@ protected:
 private:
     Q_PRIVATE_SLOT(k_func(), void _k_shuttingDown())
     Q_PRIVATE_SLOT(k_func(), void _k_slotSettingsChanged(int))
+    Q_PRIVATE_SLOT(k_func(), void _k_slotSaveAutoSaveSize())
 };
 
 #define RESTORE(type) { int n = 1;\

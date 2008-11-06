@@ -47,7 +47,8 @@ public:
     bool sizeApplied:1;
     bool shuttingDown:1;
     KConfigGroup autoSaveGroup;
-    QTimer* settingsTimer;
+    QTimer *settingsTimer;
+    QTimer *sizeTimer;
     QRect defaultWindowSize;
     KHelpMenu *helpMenu;
     KMainWindow *q;
@@ -59,6 +60,7 @@ public:
     // This slot will be called when the style KCM changes settings that need
     // to be set on the already running applications.
     void _k_slotSettingsChanged(int category);
+    void _k_slotSaveAutoSaveSize();
 
     void init(KMainWindow *_q);
     void polish(KMainWindow *q);
@@ -67,6 +69,7 @@ public:
         CompressCalls
     };
     void setSettingsDirty(CallCompression callCompression = NoCompressCalls);
+    void setSizeDirty();
 };
 
 #endif

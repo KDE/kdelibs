@@ -100,7 +100,6 @@ KXmlGuiWindow::KXmlGuiWindow( QWidget* parent, Qt::WFlags f )
     d->toolBarHandler = 0;
     d->showStatusBarAction = 0;
     d->factory = 0;
-    d->letDirtySettings = false;
     new KMainWindowInterface(this);
 }
 

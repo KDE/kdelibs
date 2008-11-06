@@ -265,6 +265,7 @@ void KMainWindowPrivate::init(KMainWindow *_q)
     autoSaveWindowSize = true; // for compatibility
     //d->kaccel = actionCollection()->kaccel();
     settingsTimer = 0;
+    sizeTimer = 0;
     shuttingDown = false;
     if ((care_about_geometry = being_first)) {
         being_first = false;
@@ -395,6 +396,19 @@ void KMainWindowPrivate::setSettingsDirty(CallCompression callCompression)
         } else {
             q->saveAutoSaveSettings();
         }
+    }
+}
+
+void KMainWindowPrivate::setSizeDirty()
+{
+    if (autoSaveWindowSize) {
+        if (!sizeTimer) {
+            sizeTimer = new QTimer(q);
+            sizeTimer->setInterval(500);
+            sizeTimer->setSingleShot(true);
+            QObject::connect(sizeTimer, SIGNAL(timeout()), q, SLOT(_k_slotSaveAutoSaveSize()));
+        }
+        sizeTimer->start();
     }
 }
 
@@ -970,6 +984,10 @@ void KMainWindow::setAutoSaveSettings( const KConfigGroup & group,
     d->autoSaveGroup = group;
     d->autoSaveWindowSize = saveWindowSize;
 
+    if (!saveWindowSize && d->settingsTimer) {
+        d->settingsTimer->stop();
+    }
+
     // Now read the previously saved settings
     applyMainWindowSettings(d->autoSaveGroup);
 }
@@ -1019,8 +1037,7 @@ bool KMainWindow::event( QEvent* ev )
     case QEvent::Move:
 #endif
     case QEvent::Resize:
-        if ( d->autoSaveWindowSize )
-            d->setSettingsDirty(KMainWindowPrivate::CompressCalls);
+        d->setSizeDirty();
         break;
     case QEvent::Polish:
         d->polish(this);
@@ -1136,6 +1153,13 @@ void KMainWindowPrivate::_k_slotSettingsChanged(int category)
     // animations setting (whether the user wants builtin animations or not).
 
     q->setAnimated(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
+}
+
+void KMainWindowPrivate::_k_slotSaveAutoSaveSize()
+{
+    if (autoSaveGroup.isValid()) {
+        q->saveWindowSize(autoSaveGroup);
+    }
 }
 
 KToolBar *KMainWindow::toolBar( const QString& name )
