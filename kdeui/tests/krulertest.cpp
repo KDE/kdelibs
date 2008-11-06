@@ -331,6 +331,7 @@ KRulerTest::slotUpdateShowMarks()
 void 
 KRulerTest::slotCheckLength(bool fixlen)
 {
+  Q_UNUSED(fixlen);
   beginMark->setValue(hruler->offset());
   endMark->setValue(hruler->endOffset());
   lengthInput->setValue(hruler->length());
