@@ -984,8 +984,8 @@ void KMainWindow::setAutoSaveSettings( const KConfigGroup & group,
     d->autoSaveGroup = group;
     d->autoSaveWindowSize = saveWindowSize;
 
-    if (!saveWindowSize && d->settingsTimer) {
-        d->settingsTimer->stop();
+    if (!saveWindowSize && d->sizeTimer) {
+        d->sizeTimer->stop();
     }
 
     // Now read the previously saved settings
