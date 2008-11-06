@@ -749,8 +749,7 @@ void CopyJobPrivate::startRenameJob( const KUrl& slave_url )
     emit q->aboutToCreate( q, files );
 
     KIO_ARGS << m_currentSrcURL << dest << (qint8) false /*no overwrite*/;
-    SimpleJob * newJob = SimpleJobPrivate::newJob(slave_url, CMD_RENAME, packedArgs);
-    newJob->setUiDelegate(new JobUiDelegate());
+    SimpleJob * newJob = SimpleJobPrivate::newJobNoUi(slave_url, CMD_RENAME, packedArgs);
     Scheduler::scheduleJob(newJob);
     q->addSubjob( newJob );
     if ( m_currentSrcURL.directory() != dest.directory() ) // For the user, moving isn't renaming. Only renaming is.
@@ -763,10 +762,9 @@ void CopyJobPrivate::startListing( const KUrl & src )
     state = STATE_LISTING;
     m_bURLDirty = true;
     ListJob * newjob = listRecursive(src, KIO::HideProgressInfo);
-    newjob->setUiDelegate(new JobUiDelegate());
     newjob->setUnrestricted(true);
-    q->connect(newjob, SIGNAL(entries( KIO::Job *,const KIO::UDSEntryList& )),
-               SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& )));
+    q->connect(newjob, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
+               SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
     q->addSubjob( newjob );
 }
 
