@@ -894,7 +894,6 @@ SimpleJob *KIO::http_update_cache( const KUrl& url, bool no_cache, time_t expire
     // Send http update_cache command (2)
     KIO_ARGS << (int)2 << url << no_cache << qlonglong(expireDate);
     SimpleJob * job = SimpleJobPrivate::newJob(url, CMD_SPECIAL, packedArgs);
-    job->setUiDelegate(new JobUiDelegate());
     Scheduler::scheduleJob(job);
     return job;
 }
@@ -1865,7 +1864,7 @@ void FileCopyJobPrivate::startRenameJob(const KUrl &slave_url)
     Q_Q(FileCopyJob);
     m_mustChmod = true;  // CMD_RENAME by itself doesn't change permissions
     KIO_ARGS << m_src << m_dest << (qint8) (m_flags & Overwrite);
-    m_moveJob = SimpleJobPrivate::newJob(slave_url, CMD_RENAME, packedArgs);
+    m_moveJob = SimpleJobPrivate::newJobNoUi(slave_url, CMD_RENAME, packedArgs);
     q->addSubjob( m_moveJob );
     connectSubjob( m_moveJob );
 }
@@ -2268,6 +2267,11 @@ public:
             KIO::getJobTracker()->registerJob(job);
         return job;
     }
+    static inline ListJob *newJobNoUi(const KUrl& u, bool _recursive, const QString &_prefix,
+                                      bool _includeHidden)
+    {
+        return new ListJob(*new ListJobPrivate(u, _recursive, _prefix, _includeHidden));
+    }
 };
 
 ListJob::ListJob(ListJobPrivate &dd)
@@ -2317,11 +2321,10 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
                 const QString filename = itemURL.fileName();
                 // skip hidden dirs when listing if requested
                 if (filename != ".." && filename != "." && (includeHidden || filename[0] != '.')) {
-                    ListJob *job = ListJobPrivate::newJob(itemURL,
+                    ListJob *job = ListJobPrivate::newJobNoUi(itemURL,
                                                true /*recursive*/,
                                                prefix + filename + '/',
                                                includeHidden);
-                    job->setUiDelegate(new JobUiDelegate());
                     Scheduler::scheduleJob(job);
                     q->connect(job, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList& )),
                                SLOT( gotEntries( KIO::Job*, const KIO::UDSEntryList& )));
