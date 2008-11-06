@@ -166,7 +166,8 @@ Solid::AudioInterface::SoundcardType AudioInterface::soundcardType() const
     if (!parentUdi.isEmpty()) {
         QDBusInterface parentIface(QLatin1String("org.freedesktop.Hal"), m_device->parentUdi(), "org.freedesktop.Hal.Device", QDBusConnection::systemBus());
         const QDBusMessage &reply = parentIface.call("GetProperty", QLatin1String("info.subsystem"));
-        if (reply.type() != QDBusMessage::ReplyMessage && reply.errorName() == "org.freedesktop.Hal.NoSuchProperty") {
+        if ((reply.type() != QDBusMessage::ReplyMessage && reply.errorName() == "org.freedesktop.Hal.NoSuchProperty") ||
+                (reply.type() == QDBusMessage::ReplyMessage && reply.arguments().at(0) == "sound")) {
             const QDBusMessage &reply2 = parentIface.call("GetProperty", QLatin1String("info.parent"));
             if (reply2.type() == QDBusMessage::ReplyMessage) {
                 parentUdi = reply2.arguments().at(0).toString();
