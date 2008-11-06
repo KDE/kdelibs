@@ -20,11 +20,11 @@ int main( int argc, char **argv )
     action2->setText("test2");
     QAction* action3 = coll.addAction("test3");
     action3->setText("test3");
-    QAction* action4 = coll.addAction("test4");
+    coll.addAction("test4");
     action3->setText("test4");
-    QAction* action5 = coll.addAction("test5");
+    coll.addAction("test5");
     action3->setText("test5");
-    QAction* action6 = coll.addAction("test6");
+    coll.addAction("test6");
     action3->setText("test6");
     QAction* action7 = coll.addAction("test7");
     action3->setText("test7");
