@@ -512,3 +512,41 @@ void KXmlGui_UnitTest::testHiddenToolBar()
     editToolBar.button(KDialog::Apply)->click();
     QVERIFY(qobject_cast<KToolBar *>(factory->container("hiddenToolBar", &mainWindow))->isHidden());
 }
+
+// taken from KMainWindow_UnitTest::testAutoSaveSettings()
+void KXmlGui_UnitTest::testAutoSaveSettings()
+{
+    const QByteArray xml =
+        "<?xml version = '1.0'?>\n"
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"1\" name=\"foo\" >\n"
+        "<MenuBar>\n"
+        "</MenuBar>\n"
+        "<ToolBar hidden=\"true\" name=\"mainToolBar\">\n"
+        "  <Action name=\"go_up\"/>\n"
+        "</ToolBar>\n"
+        "</gui>\n";
+    TestXmlGuiWindow mw(xml);
+    mw.setAutoSaveSettings();
+
+    // Test resizing first (like show() does).
+    mw.resize(400, 400);
+    // Send the pending resize event (resize() only sets Qt::WA_PendingResizeEvent)
+    QResizeEvent e(mw.size(), QSize());
+    QApplication::sendEvent(&mw, &e);
+
+    createActions(mw.actionCollection(), QStringList() << "go_up");
+    mw.createGUI();
+
+    // Resize again, should be saved
+    mw.resize(800, 600);
+    // Send the pending resize event (resize() only sets Qt::WA_PendingResizeEvent)
+    QResizeEvent e2(mw.size(), QSize());
+    QApplication::sendEvent(&mw, &e2);
+
+    mw.close();
+
+    TestXmlGuiWindow mw2(xml);
+    mw2.setAutoSaveSettings();
+    QCOMPARE(mw2.size(), QSize(800, 600));
+}

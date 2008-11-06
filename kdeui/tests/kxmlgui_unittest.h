@@ -35,6 +35,7 @@ private Q_SLOTS:
     void testMergingSeparators();
     void testActionListAndSeparator();
     void testHiddenToolBar();
+    void testAutoSaveSettings();
 };
 
 #endif
