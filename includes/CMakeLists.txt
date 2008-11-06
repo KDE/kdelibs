@@ -1,3 +1,4 @@
+if (QT_QT3SUPPORT_FOUND)
 install( FILES
   K3BookmarkDrag
   K3ButtonBox
@@ -37,21 +38,30 @@ install( FILES
   K3Wizard
   K3Command
   K3CommandHistory
-  KACL
   K3AboutApplication
-  KAboutApplicationDialog
   K3AboutContainer
   K3AboutContributor
-  KAboutData
   K3AboutDialog
-  KAboutPerson
   K3AboutWidget
+  K3ActiveLabel
+  K3FileTreeView
+  K3FileTreeViewItem
+  K3MacroCommand
+  K3NamedCommand
+  K3RFCDate
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
+endif (QT_QT3SUPPORT_FOUND)
+
+install( FILES
+  KACL
+  KAboutApplicationDialog
+  KAboutData
+  KAboutPerson
   KAcceleratorManager
   KAction
   KActionCollection
   KActionMenu
   KActionSelector
-  K3ActiveLabel
   KAnimatedButton
   KApplication
   KAr
@@ -171,8 +181,6 @@ install( FILES
   KFileSharePropsPlugin
   KFileTreeBranch
   KFileTreeView
-  K3FileTreeView
-  K3FileTreeViewItem
   KFilterBase
   KFilterDev
   KFind
@@ -232,7 +240,6 @@ install( FILES
   KLocalizedString
   KLockFile
   KMD5
-  K3MacroCommand
   KMacroExpanderBase
   KMainWindow
   KMakeTypeList
@@ -258,7 +265,6 @@ install( FILES
   KNSBookmarkImporter
   KNSBookmarkImporterImpl
   KNTLM
-  K3NamedCommand
   KNotification
   KNotificationRestrictions
   KNotifyConfigWidget
@@ -299,7 +305,6 @@ install( FILES
   KProtocolInfo
   KProtocolManager
   KPushButton
-  K3RFCDate
   KRandom
   KRandomSequence
   KRecentDocument
@@ -443,11 +448,16 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
 
 if (UNIX)
+   if (QT_QT3SUPPORT_FOUND)
+      install( FILES
+        K3ProcIO
+        K3Process
+        K3ProcessController
+        K3ShellProcess
+      DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
+   endif (QT_QT3SUPPORT_FOUND) 
+
    install( FILES
-     K3ProcIO
-     K3Process
-     K3ProcessController
-     K3ShellProcess
      KPty
      KPtyDevice
      KPtyProcess
