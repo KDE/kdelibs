@@ -572,6 +572,8 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
     // Save settings if auto-save is enabled, and settings have changed
     if (d->settingsDirty && d->autoSaveSettings)
         saveAutoSaveSettings();
+    if (d->sizeTimer && d->sizeTimer->isActive())
+        d->_k_slotSaveAutoSaveSize();
 
     if (queryClose()) {
         e->accept();
