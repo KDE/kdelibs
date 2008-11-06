@@ -1007,15 +1007,17 @@ SchedulerPrivate::registerWindow(QWidget *wid)
    if (!wid)
       return;
 
-   QObject *obj = static_cast<QObject *>(wid);
+   QWidget* window = wid->window();
+
+   QObject *obj = static_cast<QObject *>(window);
    if (!m_windowList.contains(obj))
    {
       // We must store the window Id because by the time
       // the destroyed signal is emitted we can no longer
       // access QWidget::winId() (already destructed)
-      WId windowId = wid->winId();
+      WId windowId = window->winId();
       m_windowList.insert(obj, windowId);
-      q->connect(wid, SIGNAL(destroyed(QObject *)),
+      q->connect(window, SIGNAL(destroyed(QObject *)),
                  SLOT(slotUnregisterWindow(QObject*)));
       QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").
           call(QDBus::NoBlock, "registerWindowId", qlonglong(windowId));
