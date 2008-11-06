@@ -463,6 +463,16 @@ public:
     void createGUI() {
         KXmlGuiWindow::createGUI(m_fileName);
     }
+
+    // Same as in KMainWindow_UnitTest
+    void reallyResize(int width, int height) {
+        const QSize oldSize = size();
+        resize(width, height);
+        // Send the pending resize event (resize() only sets Qt::WA_PendingResizeEvent)
+        QResizeEvent e(size(), oldSize);
+        QApplication::sendEvent(this, &e);
+    }
+
 private:
     KTemporaryFile m_userFile;
     QString m_fileName;
@@ -522,31 +532,61 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
         "<gui version=\"1\" name=\"foo\" >\n"
         "<MenuBar>\n"
         "</MenuBar>\n"
-        "<ToolBar hidden=\"true\" name=\"mainToolBar\">\n"
+        "<ToolBar name=\"mainToolBar\">\n"
+        "  <Action name=\"go_up\"/>\n"
+        "</ToolBar>\n"
+        "<ToolBar name=\"secondToolBar\">\n"
         "  <Action name=\"go_up\"/>\n"
         "</ToolBar>\n"
         "</gui>\n";
-    TestXmlGuiWindow mw(xml);
-    mw.setAutoSaveSettings();
+    {
+        TestXmlGuiWindow mw(xml);
+        mw.setAutoSaveSettings();
 
-    // Test resizing first (like show() does).
-    mw.resize(400, 400);
-    // Send the pending resize event (resize() only sets Qt::WA_PendingResizeEvent)
-    QResizeEvent e(mw.size(), QSize());
-    QApplication::sendEvent(&mw, &e);
+        // Test resizing first (like show() does).
+        mw.reallyResize(400, 400);
 
-    createActions(mw.actionCollection(), QStringList() << "go_up");
-    mw.createGUI();
+        createActions(mw.actionCollection(), QStringList() << "go_up");
+        mw.createGUI();
+        KXMLGUIFactory* factory = mw.guiFactory();
 
-    // Resize again, should be saved
-    mw.resize(800, 600);
-    // Send the pending resize event (resize() only sets Qt::WA_PendingResizeEvent)
-    QResizeEvent e2(mw.size(), QSize());
-    QApplication::sendEvent(&mw, &e2);
+        // Resize again, should be saved
+        mw.reallyResize(800, 600);
 
-    mw.close();
+        QWidget* mainToolBarW = factory->container("mainToolBar", &mw);
+        QVERIFY(mainToolBarW);
+        QWidget* secondToolBarW = factory->container("secondToolBar", &mw);
+        QVERIFY(secondToolBarW);
+        kDebug() << mainToolBarW->geometry() << secondToolBarW->geometry();
 
-    TestXmlGuiWindow mw2(xml);
-    mw2.setAutoSaveSettings();
-    QCOMPARE(mw2.size(), QSize(800, 600));
+        // Swap toolbars -- TODO this does not work. Mail sent to TT support...
+        secondToolBarW->move(mainToolBarW->pos());
+        kDebug() << mainToolBarW->geometry() << secondToolBarW->geometry();
+
+        mw.close();
+    }
+
+    {
+        TestXmlGuiWindow mw2(xml);
+        mw2.setAutoSaveSettings();
+        // Check window size was restored
+        QCOMPARE(mw2.size(), QSize(800, 600));
+
+        createActions(mw2.actionCollection(), QStringList() << "go_up");
+        mw2.createGUI();
+
+        // Force window layout to happen
+        mw2.reallyResize(800, 600);
+
+        // Check toolbar positions were restored
+        KXMLGUIFactory* factory = mw2.guiFactory();
+        QWidget* mainToolBarW = factory->container("mainToolBar", &mw2);
+        QVERIFY(mainToolBarW);
+        QWidget* secondToolBarW = factory->container("secondToolBar", &mw2);
+        QVERIFY(secondToolBarW);
+        kDebug() << mainToolBarW->geometry() << secondToolBarW->geometry();
+        mw2.applyMainWindowSettings(mw2.autoSaveConfigGroup());
+        kDebug() << mainToolBarW->geometry() << secondToolBarW->geometry();
+        // TODO check toolbar positions, like QCOMPARE(secondToolBarW->x(), 0);
+    }
 }
