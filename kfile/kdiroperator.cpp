@@ -1669,7 +1669,7 @@ void KDirOperator::highlightFile(const KFileItem &item)
 
 void KDirOperator::setCurrentItem(const QString& url)
 {
-    kDebug();
+    kDebug(kfile_area);
 
     KFileItem item = d->dirLister->findByUrl(url);
     if (d->shouldFetchForItems && item.isNull()) {
@@ -1683,7 +1683,7 @@ void KDirOperator::setCurrentItem(const QString& url)
 
 void KDirOperator::setCurrentItem(const KFileItem& item)
 {
-    kDebug();
+    kDebug(kfile_area);
 
     if (!d->itemView) {
         return;
@@ -1702,7 +1702,7 @@ void KDirOperator::setCurrentItem(const KFileItem& item)
 
 void KDirOperator::setCurrentItems(const QStringList& urls)
 {
-    kDebug();
+    kDebug(kfile_area);
 
     if (!d->itemView) {
         return;
@@ -1724,7 +1724,7 @@ void KDirOperator::setCurrentItems(const QStringList& urls)
 
 void KDirOperator::setCurrentItems(const KFileItemList& items)
 {
-    kDebug();
+    kDebug(kfile_area);
 
     if (d->itemView == 0) {
         return;

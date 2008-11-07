@@ -906,7 +906,7 @@ bool KFileItem::isDir() const
 {
     if ( d->m_fileMode == KFileItem::Unknown )
     {
-        kDebug() << "can't say -> false";
+        kDebug(7101) << "can't say -> false";
         return false; // can't say for sure, so no
     }
     return (S_ISDIR(d->m_fileMode));

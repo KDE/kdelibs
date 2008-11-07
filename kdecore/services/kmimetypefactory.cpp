@@ -414,7 +414,7 @@ void KMimeTypeFactory::parseMagic()
     while (magicIter.hasPrevious()) { // global first, then local. Turns out it doesn't matter though.
         const QString fileName = magicIter.previous();
         QFile magicFile(fileName);
-        kDebug() << "Now parsing " << fileName;
+        kDebug(7009) << "Now parsing " << fileName;
         if (magicFile.open(QIODevice::ReadOnly))
             m_magicRules += parseMagicFile(&magicFile, fileName);
     }
