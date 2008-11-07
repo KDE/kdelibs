@@ -75,16 +75,16 @@ public Q_SLOTS:
     inline QList<int> setShortcut(const QStringList &actionId, const QList<int> &keys, uint flags)
         { return p()->setShortcut(actionId, keys, flags); }
     //this is used if application A wants to change shortcuts of application B
-    inline Q_NOREPLY void setForeignShortcut(const QStringList &actionId, const QList<int> &keys)
+    inline void setForeignShortcut(const QStringList &actionId, const QList<int> &keys)
         { return p()->setForeignShortcut(actionId, keys); }
     //to be called when a KAction is destroyed or setGlobalShortcutAllowed(false) is called.
     //The shortcut stays in our data structures for conflict resolution but won't trigger
     //until woken up again by calling setShortcut().
-    inline Q_NOREPLY void setInactive(const QStringList &actionId)
+    inline void setInactive(const QStringList &actionId)
         { return p()->setInactive(actionId); }
-    inline Q_NOREPLY void doRegister(const QStringList &actionId)
+    inline void doRegister(const QStringList &actionId)
         { return p()->doRegister(actionId); }
-    inline Q_NOREPLY void unRegister(const QStringList &actionId)
+    inline void unRegister(const QStringList &actionId)
         { return p()->unRegister(actionId); }
 
 Q_SIGNALS:

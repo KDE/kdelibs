@@ -83,36 +83,36 @@ public Q_SLOTS: // METHODS
                                     argumentList);
     }
 
-    Q_NOREPLY void setForeignShortcut(const QStringList &actionId,
+    void setForeignShortcut(const QStringList &actionId,
                                       const QList<int> &keys)
     {
         QList<QVariant> argumentList;
         argumentList << qVariantFromValue(actionId) << qVariantFromValue(keys);
-        callWithArgumentList(QDBus::NoBlock, QLatin1String("setForeignShortcut"),
+        callWithArgumentList(QDBus::Block, QLatin1String("setForeignShortcut"),
                              argumentList);
     }
 
-    Q_NOREPLY void setInactive(const QStringList &actionId)
+    void setInactive(const QStringList &actionId)
     {
         QList<QVariant> argumentList;
         argumentList << qVariantFromValue(actionId);
-        callWithArgumentList(QDBus::NoBlock, QLatin1String("setInactive"),
+        callWithArgumentList(QDBus::Block, QLatin1String("setInactive"),
                              argumentList);
     }
 
-    Q_NOREPLY void doRegister(const QStringList &actionId)
+    void doRegister(const QStringList &actionId)
     {
         QList<QVariant> argumentList;
         argumentList << qVariantFromValue(actionId);
-        callWithArgumentList(QDBus::NoBlock, QLatin1String("doRegister"),
+        callWithArgumentList(QDBus::Block, QLatin1String("doRegister"),
                              argumentList);
     }
 
-    Q_NOREPLY void unRegister(const QStringList &actionId)
+    void unRegister(const QStringList &actionId)
     {
         QList<QVariant> argumentList;
         argumentList << qVariantFromValue(actionId);
-        callWithArgumentList(QDBus::NoBlock, QLatin1String("unRegister"),
+        callWithArgumentList(QDBus::Block, QLatin1String("unRegister"),
                              argumentList);
     }
 
