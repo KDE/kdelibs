@@ -1256,6 +1256,13 @@ void RenderFileButton::updateFromElement()
 
 void RenderFileButton::slotReturnPressed()
 {
+    // don't submit the form when return was pressed in a completion-popup
+    KCompletionBox* box = widget()->lineEdit()->completionBox(false);
+    if (box && box->isVisible() && box->currentRow() != -1) {
+        box->hide();
+        return;
+    }
+
     handleFocusOut();
 
     if (element()->form())
