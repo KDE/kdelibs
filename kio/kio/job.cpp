@@ -113,8 +113,8 @@ bool Job::addSubjob(KJob *jobBase)
         job->mergeMetaData(d->m_outgoingMetaData);
 
         // Forward information from that subjob.
-        connect( job, SIGNAL(speed( KJob*, unsigned long )),
-                 SLOT(slotSpeed(KJob*, unsigned long)) );
+        connect(job, SIGNAL(speed(KJob*,ulong)),
+                SLOT(slotSpeed(KJob*,ulong)));
 
         if (ui() && job->ui()) {
             job->ui()->setWindow( ui()->window() );
