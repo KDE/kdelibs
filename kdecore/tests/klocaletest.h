@@ -36,6 +36,7 @@ private Q_SLOTS:
 	void readTime();
 	void prettyFormatDuration();
 	void bug95511();
+	void weekDays();
 };
 
 #endif // KLOCALETEST_H

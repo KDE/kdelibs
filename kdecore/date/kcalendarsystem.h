@@ -534,9 +534,13 @@ public:
     virtual int weekStartDay() const;
 
     /**
-     * Gets the day of the week traditionally associated with prayer.
+     * Returns the day of the week traditionally associated with religious
+     * observance for this calendar system.  Note this may not be accurate
+     * for the users locale, e.g. Gregorian calendar used in non-Christian
+     * countries, in use cases where this could be an issue it is recommended 
+     * to use KLocale::weekDayOfPray() instead.
      *
-     * @return day number (Monday = 1, ..., Sunday = 7)
+     * @return day number (None = 0, Monday = 1, ..., Sunday = 7)
      */
     virtual int weekDayOfPray() const = 0;
 

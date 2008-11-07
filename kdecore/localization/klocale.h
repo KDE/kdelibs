@@ -535,6 +535,30 @@ public:
   int weekStartDay() const;
 
   /**
+   * Use this to determine which day is the first working day of the week.
+   *
+   * @since 4.2
+   * @return an integer (Monday=1..Sunday=7)
+   */
+  int workingWeekStartDay() const;
+
+  /**
+   * Use this to determine which day is the last working day of the week.
+   *
+   * @since 4.2
+   * @return an integer (Monday=1..Sunday=7)
+   */
+  int workingWeekEndDay() const;
+
+  /**
+   * Use this to determine which day is reserved for religious observance
+   *
+   * @since 4.2
+   * @return day number (None = 0, Monday = 1, ..., Sunday = 7)
+   */
+  int weekDayOfPray() const;
+
+  /**
    * Returns a pointer to the calendar system object.
    *
    * @return the current calendar system instance
@@ -815,6 +839,31 @@ public:
    * @param day first day of the week (Monday=1..Sunday=7) as integer
    */
   void setWeekStartDay(int day);
+
+  /**
+   * Changes how KLocale defines the first working day in week.
+   *
+   * @since 4.2
+   * @param day first working day of the week (Monday=1..Sunday=7) as integer
+   */
+  void setWorkingWeekStartDay(int day);
+
+  /**
+   * Changes how KLocale defines the last working day in week.
+   *
+   * @since 4.2
+   * @param day last working day of the week (Monday=1..Sunday=7) as integer
+   */
+  void setWorkingWeekEndDay(int day);
+
+  /**
+   * Changes how KLocale defines the day reserved for religious observance.
+   *
+   * @since 4.2
+   * @param day day of the week for religious observance (None=0,Monday=1..Sunday=7) as integer
+   */
+  void setWeekDayOfPray(int day);
+
   /**
    * Returns the currently selected date format.
    *

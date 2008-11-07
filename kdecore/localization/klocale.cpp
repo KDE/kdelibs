@@ -198,6 +198,9 @@ public:
   QString dateFormat;
   QString dateFormatShort;
   int weekStartDay;
+  int workingWeekStartDay;
+  int workingWeekEndDay;
+  int weekDayOfPray;
 
   // Locale
   QString language;
@@ -429,7 +432,10 @@ void KLocalePrivate::initFormat(KConfig *config)
   readConfigEntry("TimeFormat", "%H:%M:%S", timeFormat);
   readConfigEntry("DateFormat", "%A %d %B %Y", dateFormat);
   readConfigEntry("DateFormatShort", "%Y-%m-%d", dateFormatShort);
-  readConfigNumEntry("WeekStartDay", 1, weekStartDay, int);
+  readConfigNumEntry("WeekStartDay", 1, weekStartDay, int);                //default to Monday
+  readConfigNumEntry("WorkingWeekStartDay", 1, workingWeekStartDay, int);  //default to Monday
+  readConfigNumEntry("WorkingWeekEndDay", 5, workingWeekEndDay, int);      //default to Friday
+  readConfigNumEntry("WeekDayOfPray", 7, weekDayOfPray, int);              //default to Sunday
 
   // other
   readConfigNumEntry("PageSize", QPrinter::A4, pageSize,
@@ -868,6 +874,21 @@ bool KLocale::dateMonthNamePossessive() const
 int KLocale::weekStartDay() const
 {
   return d->weekStartDay;
+}
+
+int KLocale::workingWeekStartDay() const
+{
+  return d->workingWeekStartDay;
+}
+
+int KLocale::workingWeekEndDay() const
+{
+  return d->workingWeekEndDay;
+}
+
+int KLocale::weekDayOfPray() const
+{
+  return d->weekDayOfPray;
 }
 
 
@@ -2124,10 +2145,26 @@ void KLocale::setTimeFormat(const QString & format)
 
 void KLocale::setWeekStartDay(int day)
 {
-  if (day>7 || day<1)
-    d->weekStartDay = 1; //Monday is default
-  else
+  if (day >= 1 && day <= calendar()->daysInWeek(QDate()))
     d->weekStartDay = day;
+}
+
+void KLocale::setWorkingWeekStartDay(int day)
+{
+  if (day >= 1 && day <= calendar()->daysInWeek(QDate()) && day <= workingWeekEndDay())
+    d->workingWeekStartDay = day;
+}
+
+void KLocale::setWorkingWeekEndDay(int day)
+{
+  if (day >= 1 && day <= calendar()->daysInWeek(QDate()) && day >= workingWeekStartDay())
+    d->workingWeekEndDay = day;
+}
+
+void KLocale::setWeekDayOfPray(int day)
+{
+  if (day >= 0 && day <= calendar()->daysInWeek(QDate()))  // 0 = None
+    d->weekDayOfPray = day;
 }
 
 QString KLocale::dateFormat() const
