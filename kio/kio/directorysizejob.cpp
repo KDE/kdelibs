@@ -114,7 +114,7 @@ void DirectorySizeJobPrivate::processNextItem()
 	{
             if ( item.isDir() )
             {
-                kDebug(7007) << "dir -> listing";
+                //kDebug(7007) << "dir -> listing";
                 KUrl url = item.url();
                 startNextJob( url );
                 return; // we'll come back later, when this one's finished
@@ -122,18 +122,18 @@ void DirectorySizeJobPrivate::processNextItem()
             else
             {
                 m_totalSize += item.size();
-                kDebug(7007) << "file -> " << m_totalSize;
+                //kDebug(7007) << "file -> " << m_totalSize;
             }
 	}
     }
-    kDebug(7007) << "finished";
+    //kDebug(7007) << "finished";
     q->emitResult();
 }
 
 void DirectorySizeJobPrivate::startNextJob( const KUrl & url )
 {
     Q_Q(DirectorySizeJob);
-    kDebug(7007) << url;
+    //kDebug(7007) << url;
     KIO::ListJob * listJob = KIO::listRecursive( url, KIO::HideProgressInfo );
     q->connect( listJob, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList& )),
                 SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& )));
@@ -167,7 +167,7 @@ void DirectorySizeJobPrivate::slotEntries( KIO::Job*, const KIO::UDSEntryList & 
 void DirectorySizeJob::slotResult( KJob * job )
 {
     Q_D(DirectorySizeJob);
-    kDebug(7007);
+    //kDebug(7007);
     removeSubjob(job);
     if (d->m_currentItem < d->m_lstItems.count())
     {
