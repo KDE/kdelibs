@@ -135,7 +135,7 @@ private Q_SLOTS:
     void slotProvidersFailed();
 
     void slotPerformAction(DownloadDialog::EntryAction action, KNS::Entry * entry);
-    void slotCollabAction(DownloadDialog::EntryAction action);
+    void slotCollabAction(QAction * action);
 
     void slotListIndexChanged(const QModelIndex &index, const QModelIndex &old);
 protected:
@@ -166,6 +166,7 @@ private:
     QMap<Entry*, const Provider*> m_providers;
 
     QMutex mMutex;
+    bool m_hasDxs;
 };
 
 }

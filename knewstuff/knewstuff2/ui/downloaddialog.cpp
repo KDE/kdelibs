@@ -143,6 +143,7 @@ DownloadDialog::DownloadDialog(DxsEngine* _engine, QWidget * _parent)
     QAction * action_comment = collabMenu->addAction(SmallIcon("help-about"), i18n("View Comments"));
     action_comment->setData(DownloadDialog::kComments);
 
+/* TODO: Re-enable when implemented
     QAction * action_collabtranslation = collabMenu->addAction(i18n("Translate"));
     action_collabtranslation->setData(DownloadDialog::kCollabTranslate);
 
@@ -151,8 +152,10 @@ DownloadDialog::DownloadDialog(DxsEngine* _engine, QWidget * _parent)
 
     QAction * action_collabremoval = collabMenu->addAction(i18n("Report bad entry"));
     action_collabremoval->setData(DownloadDialog::kCollabRemoval);
+*/
 
     m_collaborationButton->setMenu(collabMenu);
+    connect(m_collaborationButton, SIGNAL(triggered(QAction*)), this, SLOT(slotCollabAction(QAction*)));
 }
 
 DownloadDialog::~DownloadDialog()
@@ -168,9 +171,9 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
     Dxs * dxs = m_engine->dxsObject(provider);
     switch (action) {
     case kViewInfo:
-        if (provider != NULL) {
+        if (provider && dxs) {
             if (provider->webService().isValid()) {
-                m_engine->dxsObject(provider)->call_info();
+                dxs->call_info();
             } else {
                 slotInfo(provider->name().representation(),
                          provider->webAccess().pathOrUrl(),
@@ -180,7 +183,7 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
         break;
     case kComments:
         // show the entry's comments
-        if (provider != NULL) {
+        if (provider && dxs) {
             connect(dxs, SIGNAL(signalComments(QStringList)), this, SLOT(slotComments(QStringList)));
             dxs->call_comments(entry->idNumber());
         }
@@ -221,7 +224,7 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
         int ret = commentDialog->exec();
         if (ret == QDialog::Accepted) {
             QString s = commentDialog->comment();
-            if (!s.isEmpty()) {
+            if (dxs && !s.isEmpty()) {
                 dxs->call_comment(entry->idNumber(), s);
             }
         }
@@ -230,26 +233,33 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
     case kCollabRate: {
         // prompt for rating, and send to provider
         KDXSRating * ratingDialog = new KDXSRating(this);
-        ratingDialog->exec();
+        int ret = ratingDialog->exec();
+        if (ret == QDialog::Accepted) {
+            int rating = ratingDialog->rating();
+            if (dxs) {
+                dxs->call_rating(entry->idNumber(), rating);
+            }
+        }
     }
     break;
     }
 }
 
-void DownloadDialog::slotCollabAction(DownloadDialog::EntryAction action)
+void DownloadDialog::slotCollabAction(QAction * action)
 {
+    DownloadDialog::EntryAction entryAction = (DownloadDialog::EntryAction)action->data().toInt();
     QModelIndex currentIndex = m_listView->currentIndex();
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(m_filteredModel->sourceModel());
     QModelIndex index = m_filteredModel->mapToSource(currentIndex);
     KNS::Entry * entry = realmodel->entryForIndex(index);
-    slotPerformAction(action, entry);
+    slotPerformAction(entryAction, entry);
 }
 
 void DownloadDialog::slotListIndexChanged(const QModelIndex &index, const QModelIndex &/*old */)
 {
     //kDebug() << "slotListIndexChanged called";
 
-    m_collaborationButton->setEnabled(index.isValid());
+    m_collaborationButton->setEnabled(m_hasDxs && index.isValid());
 }
 
 void DownloadDialog::hideEvent(QHideEvent * event)
@@ -328,9 +338,11 @@ void DownloadDialog::slotLoadProviderDXS()
     QString providerName = m_sourceCombo->currentText();
 
     QList<const Provider*> providers = m_entriesByProvider.keys();
+    const Provider * provider = 0;
 
     for (int i = 0; i < providers.size(); ++i) {
         if (providers[i]->name().representation() == providerName) {
+            provider = providers[i];
             // update the sortCombo with this provider's feeds
             populateSortCombo(providers[i]);
 
@@ -341,6 +353,8 @@ void DownloadDialog::slotLoadProviderDXS()
             break;
         }
     }
+    m_hasDxs = (provider && m_engine->dxsObject(provider) != NULL);
+    m_collaborationButton->setEnabled(m_hasDxs);
 }
 
 void DownloadDialog::slotUpdateSearch()
