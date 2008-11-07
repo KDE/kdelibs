@@ -766,9 +766,10 @@ void KDateTimePrivate::newToZone(KDateTimePrivate *newd, const KTimeZone &zone, 
 
 
 /*----------------------------------------------------------------------------*/
+K_GLOBAL_STATIC_WITH_ARGS(QSharedDataPointer<KDateTimePrivate>, emptyDateTimePrivate, (new KDateTimePrivate))
 
 KDateTime::KDateTime()
-  : d(new KDateTimePrivate)
+  : d(*emptyDateTimePrivate)
 {
 }
 
