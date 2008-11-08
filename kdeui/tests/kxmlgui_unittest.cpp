@@ -555,13 +555,18 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
 
         QWidget* mainToolBarW = factory->container("mainToolBar", &mw);
         QVERIFY(mainToolBarW);
+        QToolBar* mainToolBar = qobject_cast<QToolBar *>(mainToolBarW);
+        QVERIFY(mainToolBar);
+        QCOMPARE(mw.toolBarArea(mainToolBar), Qt::TopToolBarArea);
         QWidget* secondToolBarW = factory->container("secondToolBar", &mw);
         QVERIFY(secondToolBarW);
-        kDebug() << mainToolBarW->geometry() << secondToolBarW->geometry();
+        QToolBar* secondToolBar = qobject_cast<QToolBar *>(secondToolBarW);
+        QVERIFY(secondToolBar);
+        QCOMPARE(mw.toolBarArea(secondToolBar), Qt::TopToolBarArea);
 
-        // Swap toolbars -- TODO this does not work. Mail sent to TT support...
-        secondToolBarW->move(mainToolBarW->pos());
-        kDebug() << mainToolBarW->geometry() << secondToolBarW->geometry();
+        // Move second toolbar to bottom
+        mw.addToolBar(Qt::BottomToolBarArea, secondToolBar);
+        QCOMPARE(mw.toolBarArea(secondToolBar), Qt::BottomToolBarArea);
 
         mw.close();
     }
@@ -582,11 +587,17 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
         KXMLGUIFactory* factory = mw2.guiFactory();
         QWidget* mainToolBarW = factory->container("mainToolBar", &mw2);
         QVERIFY(mainToolBarW);
+        QToolBar* mainToolBar = qobject_cast<QToolBar *>(mainToolBarW);
+        QVERIFY(mainToolBar);
+        QCOMPARE(mw2.toolBarArea(mainToolBar), Qt::TopToolBarArea);
         QWidget* secondToolBarW = factory->container("secondToolBar", &mw2);
         QVERIFY(secondToolBarW);
-        kDebug() << mainToolBarW->geometry() << secondToolBarW->geometry();
+        QToolBar* secondToolBar = qobject_cast<QToolBar *>(secondToolBarW);
+        QVERIFY(secondToolBar);
+        // TODO -- this should work already, right?
+        //QCOMPARE(mw2.toolBarArea(secondToolBar), Qt::BottomToolBarArea);
         mw2.applyMainWindowSettings(mw2.autoSaveConfigGroup());
-        kDebug() << mainToolBarW->geometry() << secondToolBarW->geometry();
-        // TODO check toolbar positions, like QCOMPARE(secondToolBarW->x(), 0);
+        // TODO at least this should work, but it doesn't either
+        //QCOMPARE(mw2.toolBarArea(secondToolBar), Qt::BottomToolBarArea);
     }
 }
