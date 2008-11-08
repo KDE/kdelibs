@@ -2151,13 +2151,13 @@ void KLocale::setWeekStartDay(int day)
 
 void KLocale::setWorkingWeekStartDay(int day)
 {
-  if (day >= 1 && day <= calendar()->daysInWeek(QDate()) && day <= workingWeekEndDay())
+  if (day >= 1 && day <= calendar()->daysInWeek(QDate()))
     d->workingWeekStartDay = day;
 }
 
 void KLocale::setWorkingWeekEndDay(int day)
 {
-  if (day >= 1 && day <= calendar()->daysInWeek(QDate()) && day >= workingWeekStartDay())
+  if (day >= 1 && day <= calendar()->daysInWeek(QDate()))
     d->workingWeekEndDay = day;
 }
 

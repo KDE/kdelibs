@@ -374,8 +374,6 @@ void  KLocaleTest::weekDays()
     QCOMPARE(locale.workingWeekStartDay(), 3);
     locale.setWorkingWeekStartDay(8);
     QCOMPARE(locale.workingWeekStartDay(), 3);
-    locale.setWorkingWeekStartDay(7);  //try set after working week end date
-    QCOMPARE(locale.workingWeekStartDay(), 3);
 
     //Test setting of workingWeekEndDay
     locale.setWorkingWeekStartDay(3);
@@ -384,8 +382,6 @@ void  KLocaleTest::weekDays()
     locale.setWorkingWeekEndDay(0);
     QCOMPARE(locale.workingWeekEndDay(), 6);
     locale.setWorkingWeekEndDay(8);
-    QCOMPARE(locale.workingWeekEndDay(), 6);
-    locale.setWorkingWeekEndDay(2);  //try set before working week start date
     QCOMPARE(locale.workingWeekEndDay(), 6);
 
     //Test setting of weekStartDay

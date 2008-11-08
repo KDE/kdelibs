@@ -342,15 +342,24 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
     if( row == 0 ) { // we are drawing the headline
         font.setBold( true );
         painter->setFont( font );
-        bool normalday = true;
+        bool workingDay = false;
         int daynum = ( col + calendar()->weekStartDay() <= d->numDayColumns ) ?
                            col + calendar()->weekStartDay() :
                            col + calendar()->weekStartDay() - d->numDayColumns;
-        //See if day falls in the weekend
-        if ( daynum < KGlobal::locale()->workingWeekStartDay() ||
-           ( daynum > KGlobal::locale()->workingWeekEndDay() ) ) {
-            normalday = false;
+
+        //See if day is a working day
+        if ( KGlobal::locale()->workingWeekStartDay() <= KGlobal::locale()->workingWeekEndDay() ) {
+            if ( daynum >= KGlobal::locale()->workingWeekStartDay() &&
+                 daynum <= KGlobal::locale()->workingWeekEndDay() ) {
+                    workingDay = true;
+            }
+        } else {
+            if ( daynum >= KGlobal::locale()->workingWeekStartDay() ||
+                 daynum <= KGlobal::locale()->workingWeekEndDay() ) {
+                    workingDay = true;
+            }
         }
+
 
         QBrush brushInvertTitle( palette().base() );
         QColor titleColor( isEnabled() ? ( KGlobalSettings::activeTitleColor() )
@@ -358,7 +367,7 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
         QColor textColor( isEnabled() ? ( KGlobalSettings::activeTextColor() )
                                       : ( KGlobalSettings::inactiveTextColor() ) );
 
-        if ( !normalday ) {
+        if ( !workingDay ) {
             painter->setPen( textColor );
             painter->setBrush( textColor );
             painter->drawRect( QRectF( 0, 0, w, h ) );
