@@ -1402,7 +1402,7 @@ void RenderObject::printTree(int indent) const
     QString ind;
     ind.fill(' ', indent);
 
-    kDebug() << ind << information();
+    kDebug() << (ind + information());
 
     RenderObject *child = firstChild();
     while( child != 0 )
