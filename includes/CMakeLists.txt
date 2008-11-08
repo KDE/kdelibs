@@ -59,6 +59,7 @@ install( FILES
   KAboutPerson
   KAcceleratorManager
   KAction
+  KActionCategory
   KActionCollection
   KActionMenu
   KActionSelector
