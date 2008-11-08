@@ -785,7 +785,7 @@ RenderBlock *RenderObject::containingBlock() const
             p->printTree();
 #endif
         }
-        return 0L;
+        return canvas(); // likely wrong, but better than a crash
     }
 
     return static_cast<RenderBlock*>( o );
