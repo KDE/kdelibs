@@ -32,12 +32,12 @@
  * @internal
  */
 //@cond PRIVATE
-class KFilterProxySearchLine::Private : public QObject {
+class KFilterProxySearchLine::Private {
 public:
-    Private( KFilterProxySearchLine* parent) : QObject( parent ),
+    Private( KFilterProxySearchLine* parent) :
                                 q(parent), proxy(0), searchLine(0)
     {
-    timer = new QTimer( this );
+    timer = new QTimer( q );
     timer->setSingleShot( true );
     connect( timer, SIGNAL( timeout() ), q, SLOT( slotSearchLineActivate() ) );
     }

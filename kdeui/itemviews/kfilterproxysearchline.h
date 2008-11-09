@@ -48,7 +48,7 @@ public:
     /**
      * Contructor
      */
-    explicit KFilterProxySearchLine( QWidget* );
+    explicit KFilterProxySearchLine( QWidget* parent = 0 );
 
     /**
      * Destructor
