@@ -76,7 +76,7 @@ public:
      */
     void setCurrentByDictionary( const QString & dictionary );
 
-signals:
+Q_SIGNALS:
     /**
      * @em Emitted whenever the current dictionary changes. Either
      * by user intervention or on setCurrentByDictionaryName() or on
