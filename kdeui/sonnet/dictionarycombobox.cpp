@@ -22,122 +22,92 @@
 #include <kdebug.h>
 #include <sonnet/speller.h>
 
-#include <QStringList>
+namespace Sonnet
+{
 
-namespace Sonnet {
+//@cond PRIVATE 
+class DictionaryComboBox::Private 
+{
+    public:
+        Private( DictionaryComboBox* combo ) : q( combo ) {};
+        DictionaryComboBox* q;
+        void slotDictionaryChanged( int idx );
+};
 
-  DictionaryComboBox::DictionaryComboBox( QWidget * parent )
-    : QComboBox( parent ),
-      mDefaultDictionary( 0 ),mspeller(0)
-  {
+void DictionaryComboBox::Private::slotDictionaryChanged( int idx )
+{
+    kDebug() << idx;
+    emit q->dictionaryChanged( q->itemData( idx ).toString() );
+    emit q->dictionaryNameChanged( q->itemText( idx ) );
+}
+//@endcon
+
+DictionaryComboBox::DictionaryComboBox( QWidget * parent )
+        : KComboBox( parent ), d( new DictionaryComboBox::Private( this ) )
+{
     reloadCombo();
     connect( this, SIGNAL( activated( int ) ),
-             this, SLOT( slotDictionaryChanged( int ) ) );
-  }
+             SLOT( slotDictionaryChanged( int ) ) );
+}
 
-  DictionaryComboBox::~DictionaryComboBox()
-  {
-    delete mspeller;
-  }
+DictionaryComboBox::~DictionaryComboBox()
+{
+    delete d;
+}
 
-  QString DictionaryComboBox::currentDictionaryName() const
-  {
+QString DictionaryComboBox::currentDictionaryName() const
+{
     return currentText();
-  }
+}
 
-  QString DictionaryComboBox::currentDictionary() const
-  {
-    if ( mDictionaries.empty() )
-      return "<default>";
-    QString dict = mDictionaries[ currentIndex() ];
-    if ( dict.isEmpty() )
-      return "<default>";
-    else
-      return dict;
-  }
+QString DictionaryComboBox::currentDictionary() const
+{
+    return itemData( currentIndex() ).toString();
+}
 
-  QString DictionaryComboBox::realDictionaryName() const
-  {
-    return mspeller->availableLanguages()[currentIndex()];
-  }
-
-  void DictionaryComboBox::setCurrentByDictionaryName( const QString & name )
-  {
-    if ( name.isEmpty() )
-      return;
-
-    for ( int i = 0; i < count(); ++i ) {
-      if ( itemText( i ) == name ) {
-        if ( i != currentIndex() ) {
-          setCurrentIndex( i );
-          slotDictionaryChanged( i );
-        }
+void DictionaryComboBox::setCurrentByDictionaryName( const QString & name )
+{
+    if ( name.isEmpty() || name == currentText() )
         return;
-      }
-    }
-  }
 
-  void DictionaryComboBox::setCurrentByDictionary( const QString & dictionary )
-  {
-    if ( !dictionary.isEmpty() ) {
-      // first handle the special case of the default dictionary
-      if ( dictionary == "<default>" ) {
-        if ( 0 != currentIndex() ) {
-          setCurrentIndex( 0 );
-          slotDictionaryChanged( 0 );
-        }
+    int idx = findText( name );
+    if ( idx == -1 ) {
+        kDebug() << "name not found" << name;
         return;
-      }
-
-      int i = 0;
-      for ( QStringList::ConstIterator it = mDictionaries.begin();
-            it != mDictionaries.end();
-            ++it, ++i ) {
-        if ( *it == dictionary ) {
-          if ( i != currentIndex() ) {
-            setCurrentIndex( i );
-            slotDictionaryChanged( i );
-          }
-          return;
-        }
-      }
     }
 
-    // If dictionary is empty or doesn't exist fall back to the global default
-    if ( mDefaultDictionary != currentIndex() ) {
-      setCurrentIndex( mDefaultDictionary );
-      slotDictionaryChanged( mDefaultDictionary );
+    setCurrentIndex( idx );
+    d->slotDictionaryChanged( idx );
+}
+
+void DictionaryComboBox::setCurrentByDictionary( const QString & dictionary )
+{
+    if ( dictionary.isEmpty() || dictionary == itemData( currentIndex() ).toString() )
+        return;
+
+    int idx = findData( dictionary );
+    if ( idx == -1 ) {
+        kDebug() << "dictionary not found" << dictionary;
+        return;
     }
-  }
 
-  void DictionaryComboBox::setCurrentByDictionaryCode( const QString &dictionaryCode )
-  {
-    int index = mspeller->availableLanguages().indexOf( dictionaryCode );
-    if ( index != -1 && index != currentIndex() ) {
-      setCurrentIndex( index );
-      slotDictionaryChanged( index );
+    setCurrentIndex( idx );
+    d->slotDictionaryChanged( idx );
+}
+
+void DictionaryComboBox::reloadCombo()
+{
+    clear();
+    Sonnet::Speller* speller = new Sonnet::Speller();
+    QMap<QString, QString> dictionaries = speller->availableDictionaries();
+    QMapIterator<QString, QString> i( dictionaries );
+    while ( i.hasNext() ) {
+        i.next();
+        kDebug() << "Populate combo:" << i.key() << ":" << i.value();
+        addItem( i.key(), i.value() );
     }
-  }
-
-  void DictionaryComboBox::reloadCombo()
-  {
-    mspeller = new Sonnet::Speller();
-    mDictionaries = mspeller->availableLanguageNames();
-    insertItems( 0, mDictionaries );
-    mDefaultDictionary = currentIndex();
-  }
-
-  void DictionaryComboBox::slotDictionaryChanged( int idx )
-  {
-    kDebug( 5006 ) << idx;
-    if( !mDictionaries.isEmpty())
-      {
-        emit dictionaryChanged( mspeller->availableLanguages()[idx] );
-        //kDebug(5006)<<"mDictionaries[idx]mDictionaries[idx] :"<<mDictionaries[idx];
-        //kDebug(5006)<<" mspeller->availableLanguages()[i]  :"<<mspeller->availableLanguages()[idx];
-      }
-    emit dictionaryChanged( idx );
-  }
+    delete speller;
+}
 
 }
 

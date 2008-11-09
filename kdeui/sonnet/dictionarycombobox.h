@@ -1,5 +1,6 @@
 /*
  *  Copyright (c) 2003 Ingo Kloecker <kloecker@kde.org>
+ *  Copyright (c) 2008 Tom Albers <tomalbers@kde.nl>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,28 +23,29 @@
 
 #include "kdeui_export.h"
 
-#include <QComboBox>
+#include <kcombobox.h>
 
-class QStringList;
-class QString;
+namespace Sonnet
+{
 
-namespace Sonnet {
+class Speller;
 
-  class Speller;
+/**
+ * @short A combo box for selecting the dictionary used for spell checking.
+ * @author Ingo Kloecker <kloecker@kde.org>
+ * @author Tom Albers <tomalbers@kde.nl>
+ * @since 4.2
+ **/
 
-  /**
-   * @short A combo box for selecting the dictionary used for spell checking.
-   * @author Ingo Kloecker <kloecker@kde.org>
-   **/
-
-  class KDEUI_EXPORT DictionaryComboBox : public QComboBox {
+class KDEUI_EXPORT DictionaryComboBox : public KComboBox
+{
     Q_OBJECT
-  public:
+public:
 
-    /** 
+    /**
      * Constructor
      */
-    DictionaryComboBox( QWidget * parent=0 );
+    explicit DictionaryComboBox( QWidget * parent=0 );
 
     /**
      * Destructor
@@ -51,43 +53,51 @@ namespace Sonnet {
     ~DictionaryComboBox();
 
     /**
+     * Clears the widget and reloads the dictionaries from Sonnet.
+     * Remember to set the dictionary you want selected after calling this function.
+     */
+    void reloadCombo();
+
+    /**
      * Returns the current dictionary name, for example "German (Switzerland)"
      */
     QString currentDictionaryName() const;
-    
+
     /**
-     * Returns the current dictionary name, for example "German (Switzerland)"
+     * Returns the current dictionary, for example "de_CH"
      */
     QString currentDictionary() const;
 
     /**
-     * Returns the current dictionary name, for example "de_CH"
+     * Sets the current dictionaryName to the given dictionaryName
      */
-    QString realDictionaryName() const;
-
     void setCurrentByDictionaryName( const QString & dictionaryName );
+
+    /**
+     * Sets the current dictionary to the given dictionary.
+     */
     void setCurrentByDictionary( const QString & dictionary );
-    void setCurrentByDictionaryCode( const QString &dictionaryCode );
 
-  signals:
-    /** @em Emitted whenever the current dictionary changes. Either
-     *  by user intervention or on setCurrentByDictionaryName() or on
-     *  setCurrentByDictionary().
-     **/
+signals:
+    /**
+     * @em Emitted whenever the current dictionary changes. Either
+     * by user intervention or on setCurrentByDictionaryName() or on
+     * setCurrentByDictionary(). For example "de_CH".
+     */
     void dictionaryChanged( const QString & dictionary );
-    void dictionaryChanged( int );
 
-  protected slots:
-    void slotDictionaryChanged( int );
+    /**
+     * @em Emitted whenever the current dictionary changes. Either
+     * by user intervention or on setCurrentByDictionaryName() or on
+     * setCurrentByDictionary(). For example "German (Switzerland)".
+     */
+    void dictionaryNameChanged( const QString & dictionaryName );
 
-  protected:
-    void reloadCombo();
-
-  protected:
-    QStringList mDictionaries;
-    int mDefaultDictionary;
-    Sonnet::Speller *mspeller;
-  };
+private:
+    class Private;
+    Private* const d;
+    Q_PRIVATE_SLOT(d, void slotDictionaryChanged( int ) )
+};
 
 }
 

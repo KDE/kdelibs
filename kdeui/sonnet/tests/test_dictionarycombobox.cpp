@@ -38,6 +38,7 @@ class DictionaryComboBoxTest : public QWidget
             dcb = new DictionaryComboBox( this );
             topLayout->addWidget( dcb );
             connect( dcb, SIGNAL(dictionaryChanged(QString)), SLOT(dictChanged(QString)) );
+            connect( dcb, SIGNAL(dictionaryNameChanged(QString)), SLOT(dictNameChanged(QString)) );
             QPushButton *btn = new QPushButton( "Dump", this );
             topLayout->addWidget( btn );
             connect( btn, SIGNAL(clicked()), SLOT(dump()) );
@@ -53,6 +54,11 @@ class DictionaryComboBoxTest : public QWidget
         void dictChanged( const QString &name )
         {
             kDebug() << "Current dictionary changed: " << name;
+        }
+        
+        void dictNameChanged( const QString &name )
+        {
+            kDebug() << "Current dictionary name changed: " << name;
         }
 
     private:
