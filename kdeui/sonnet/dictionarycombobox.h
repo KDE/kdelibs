@@ -28,8 +28,6 @@
 namespace Sonnet
 {
 
-class Speller;
-
 /**
  * @short A combo box for selecting the dictionary used for spell checking.
  * @author Ingo Kloecker <kloecker@kde.org>
