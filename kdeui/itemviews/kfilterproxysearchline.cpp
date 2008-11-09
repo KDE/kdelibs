@@ -103,7 +103,7 @@ void KFilterProxySearchLine::setProxy( QSortFilterProxyModel* proxy )
     d->proxy = proxy;
 }
 
-KLineEdit* KFilterProxySearchLine::lineEdit()
+KLineEdit* KFilterProxySearchLine::lineEdit() const
 {
     return d->searchLine;
 }

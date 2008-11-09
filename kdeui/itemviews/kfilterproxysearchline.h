@@ -36,6 +36,7 @@ class QSortFilterProxyModel;
  * search line should operate.
  *
  * @author Tom Albers <tomalbers@kde.nl>
+ * @since 4.2
  */
 
 class KDEUI_EXPORT KFilterProxySearchLine
@@ -68,7 +69,7 @@ public:
     /**
      * Returns the pointer of the lineedit..
      */
-    KLineEdit* lineEdit();
+    KLineEdit* lineEdit() const;
 
 private:
     class Private;
