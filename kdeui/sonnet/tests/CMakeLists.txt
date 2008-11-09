@@ -41,9 +41,7 @@ kde4_add_executable(test_configdialog TEST  ${test_configdialog_SRCS})
 
 target_link_libraries(test_configdialog ${KDE4_KDEUI_LIBS} )
 
-########### install files ###############
+########### next target ###############
 
-
-
-
-
+kde4_add_executable(test_dictionarycombobox TEST test_dictionarycombobox.cpp)
+target_link_libraries(test_dictionarycombobox ${KDE4_KDEUI_LIBS})
