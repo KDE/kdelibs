@@ -12,7 +12,7 @@ if(NOT CMAKE_SYSTEM)
    if(CMAKE_HOST_WIN32)
       include(Platform/WindowsPaths)
    endif(CMAKE_HOST_WIN32)
-endif(NOT_CMAKE_SYSTEM)
+endif(NOT CMAKE_SYSTEM)
 
 #############################
 
