@@ -1,3 +1,7 @@
+# This is a script for ctest for running a nightly build.
+# Still pre-alpha, don't run it if you not working on it.
+# Alex
+
 #############################
 # for cmake 2.6.[0..2]:
 if(NOT CMAKE_SYSTEM)
@@ -13,7 +17,7 @@ endif(NOT_CMAKE_SYSTEM)
 #############################
 
 set(CTEST_UPDATE_TYPE svn)
-set(SVN_REPOSITORY https://neundorf@svn.kde.org/home/kde/trunk/KDE/kdelibs )
+set(SVN_REPOSITORY https://svn.kde.org/home/kde/trunk/KDE/kdelibs )
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles" )
 
 # this is default, so it is not necessary
@@ -21,6 +25,7 @@ set(CTEST_CMAKE_GENERATOR "Unix Makefiles" )
 
 
 include (${CTEST_SCRIPT_DIRECTORY}/cmake/modules/KDE4CTestNightlySetup.cmake)
+
 
 ctest_empty_binary_directory("${CTEST_BINARY_DIRECTORY}")
 ctest_start(Experimental)
