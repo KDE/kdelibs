@@ -271,3 +271,15 @@ IncludeFile=kfontcombobox.h
 ToolTip=Font Combo Box (KDE)
 WhatsThis=A combo box for font selection with language-specific previews
 Group=Input (KDE)
+
+[KFilterProxySearchLine]
+IncludeFile=kfilterproxysearchline.h
+ToolTip=Filter proxy search line
+WhatsThis=A search line widget which works on a QSortFilterProxyModel
+Group=Input (KDE)
+
+[Sonnet::DictionaryComboBox]
+IncludeFile=sonnet/dictionarycombobox.h
+ToolTip=Dictionary Combobox
+WhatsThis=A combobox to select a dictionary for spellchecking
+Group=Sonnet (KDE)
