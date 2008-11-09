@@ -1954,7 +1954,7 @@ bool HTTPProtocol::httpOpenConnection()
   clearUnreadBuffer();
 
   bool connectOk = false;
-  if (m_request.proxyUrl.isValid() && !isAutoSsl() && m_request.proxyUrl.protocol() != "socks") {
+  if (m_request.proxyUrl.isValid() && m_request.proxyUrl.protocol() == "http" && !isAutoSsl()) {
       connectOk = connectToHost(m_request.proxyUrl.protocol(), m_request.proxyUrl.host(), m_request.proxyUrl.port());
   } else {
       connectOk = connectToHost(m_protocol, m_state.hostname, m_state.port);
@@ -2033,25 +2033,17 @@ bool HTTPProtocol::satisfyRequestFromCache(bool *success)
 
 QString HTTPProtocol::formatRequestUri() const
 {
-    // ### why the proxied / not proxied distinction?
-    if (m_request.proxyUrl.isValid() /* left as a hint && !m_isTunneled*/) {
+    // Only specify protocol, host and port when they are not already clear, i.e. when
+    // we handle HTTP proxying ourself and the proxy server needs to know them.
+    // Sending protocol/host/port in other cases confuses some servers, and it's not their fault.
+    if (m_request.proxyUrl.isValid() && m_request.proxyUrl.protocol() == "http" && !isAutoSsl()) {
         KUrl u;
 
-        if (m_protocol == "webdav") {
-            u.setProtocol("http");
-        } else if (m_protocol == "webdavs") {
-            u.setProtocol("https");
-        } else {
-            u.setProtocol(m_protocol);
+        QString protocol = m_protocol;
+        if (protocol.startsWith("webdav")) {
+            protocol.replace(0, strlen("webdav"), "http");
         }
-
-        // For all protocols other than the ones handled by this io-slave
-        // append the username.  This fixes a long standing bug of ftp io-slave
-        // logging in anonymously in proxied connections even when the username
-        // is explicitly specified.
-        if (m_protocol != "http" && m_protocol != "https" && !m_state.user.isEmpty()) {
-            u.setUser(m_state.user);
-        }
+        u.setProtocol(protocol);
 
         u.setHost( m_state.hostname );
         if (m_state.port != m_defaultPort) {
