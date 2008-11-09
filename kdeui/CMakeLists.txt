@@ -151,6 +151,7 @@ set(kdeui_LIB_SRCS
  sonnet/configwidget.cpp
  sonnet/highlighter.cpp
  sonnet/configdialog.cpp
+ sonnet/dictionarycombobox.cpp
  util/kckey.cpp
  util/kcompletion.cpp
  util/kcompletionbase.cpp
@@ -546,6 +547,7 @@ install( FILES
   sonnet/highlighter.h
   sonnet/configdialog.h
   sonnet/configwidget.h
+  sonnet/dictionarycombobox.h
   DESTINATION  ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel )
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
