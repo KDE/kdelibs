@@ -41,19 +41,7 @@ public:
     Ui_SonnetConfigUI ui;
     QWidget *wdg;
     KConfig *config;
-    void selectLanguage( const QStringList& langs, const QString &language );
 };
-
-void ConfigWidget::Private::selectLanguage( const QStringList& langs,
-                                            const QString &language )
-{
-    int idx = 0;
-    for ( QStringList::const_iterator itr = langs.begin();
-          itr != langs.end(); ++itr, ++idx ) {
-        if ( *itr == language )
-            ui.m_langCombo->setCurrentIndex( idx );
-    }
-}
 
 ConfigWidget::ConfigWidget(KConfig *config, QWidget *parent)
     : QWidget(parent),
@@ -81,8 +69,7 @@ void ConfigWidget::init(KConfig *config)
     d->ui.setupUi( d->wdg );
 
     //QStringList clients = d->loader->clients();
-    d->ui.m_langCombo->insertItems( 0, d->loader->languageNames() );
-    setCorrectLanguage( d->loader->languages() );
+    d->ui.m_langCombo->setCurrentByDictionary( d->loader->settings()->defaultLanguage() );
     //d->ui->m_clientCombo->insertStringList( clients );
     d->ui.m_skipUpperCB->setChecked( !d->loader->settings()->checkUppercase() );
     d->ui.m_skipRunTogetherCB->setChecked( d->loader->settings()->skipRunTogether() );
@@ -94,7 +81,7 @@ void ConfigWidget::init(KConfig *config)
     connect( d->ui.m_ignoreListBox, SIGNAL(changed()), SLOT(slotChanged()) );
 
     layout->addWidget( d->wdg );
-    connect(d->ui.m_langCombo, SIGNAL(currentIndexChanged(int)), this, SIGNAL(configChanged()));
+    connect(d->ui.m_langCombo, SIGNAL(dictionaryChanged(QString)), this, SIGNAL(configChanged()));
     connect(d->ui.m_bgSpellCB, SIGNAL(clicked(bool)),this,SIGNAL(configChanged()));
     connect(d->ui.m_skipUpperCB, SIGNAL(clicked(bool)), this, SIGNAL(configChanged()));
     connect(d->ui.m_skipRunTogetherCB, SIGNAL(clicked(bool)), this, SIGNAL(configChanged()));
@@ -110,10 +97,7 @@ void ConfigWidget::save()
 void ConfigWidget::setFromGui()
 {
     if (d->ui.m_langCombo->count() ) {
-        d->loader->settings()->setDefaultLanguage(
-                d->loader->languages()[
-                d->loader->languageNames().indexOf(
-                    d->ui.m_langCombo->currentText() ) ] );
+        d->loader->settings()->setDefaultLanguage( d->ui.m_langCombo->currentDictionaryName() );
     }
     d->loader->settings()->setCheckUppercase(
         !d->ui.m_skipUpperCB->isChecked() );
@@ -129,9 +113,9 @@ void ConfigWidget::slotChanged()
         d->ui.m_ignoreListBox->items() );
 }
 
-void ConfigWidget::setCorrectLanguage( const QStringList& langs)
+void ConfigWidget::setCorrectLanguage( const QStringList& )
 {
-    d->selectLanguage( langs, d->loader->settings()->defaultLanguage() );
+    // can be removed in KDE5.
 }
 
 void ConfigWidget::setBackgroundCheckingButtonShown( bool b )
@@ -154,14 +138,13 @@ void ConfigWidget::slotDefault()
 
 void ConfigWidget::setLanguage( const QString &language )
 {
-    d->selectLanguage( d->loader->languages(), language );
+    d->ui.m_langCombo->setCurrentByDictionary( language );
 }
 
 QString ConfigWidget::language() const
 {
     if ( d->ui.m_langCombo->count() ) {
-        return d->loader->languages()[ d->loader->languageNames().indexOf(
-                                         d->ui.m_langCombo->currentText() ) ];
+        return d->ui.m_langCombo->currentDictionary();
     } else {
         return QString();
     }
