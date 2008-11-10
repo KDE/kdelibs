@@ -10,8 +10,8 @@ will ever need. In fact, the %KDE file manager, Konqueror also uses
 this to provide its network-enabled file management.
 
 The easiest way to use this library from a %KDE application is via the
-@ref KIO::NetAccess class (for easy synchronous access) or via the
-@ref KIO::Job class (for more complex asynchronous jobs).
+KIO::NetAccess class (for easy synchronous access) or via the
+KIO::Job class (for more complex asynchronous jobs).
 
 This library also implements the System Configuration Cache (KSycoca),
 and the %KDE file selector widget (see
@@ -58,38 +58,38 @@ This library provides the KDE file selector widget, its building blocks
 and some other widgets that make use of the file selector.
 
 The file dialog provides different views: there is a vertically scrolling
-view based on @ref K3ListView, showing things like filename, file size,
+view based on K3ListView, showing things like filename, file size,
 permissions etc. in separate columns. And there is a horizontally scrolling
-view based on @ref K3IconView. Additionally, there are some compound views,
+view based on K3IconView. Additionally, there are some compound views,
 like a view using the icon-view for files on the right side and another
 view for directories on the left. A view, that shows a preview for the
-currently selected file (using @ref KIO::PreviewJob to generate previews)
+currently selected file (using KIO::PreviewJob to generate previews)
 and any other view to show the files is also available.
 
-All those views share a common baseclass, named @ref KFileView, which
+All those views share a common baseclass, named KFileView, which
 defines the interface for inserting files into a view, removing them,
 selecting etc.
 
 The one class encapsulating all those views and adding browsing capabilities
-to them is @ref KDirOperator. It allows the user to switch between different
+to them is KDirOperator. It allows the user to switch between different
 views.
 
-@ref KFileTreeView is a K3ListView based widget that displays files and/or
+KFileTreeView is a K3ListView based widget that displays files and/or
 directories as a tree. It does not implement the KFileView interface,
 however, so it can't be used with KDirOperator.
 
-Besides the filebrowsing widgets, there is the @ref KPropertiesDialog class,
+Besides the filebrowsing widgets, there is the KPropertiesDialog class,
 implementing a dialog showing the name, permissions, icons, meta
 information and all kinds of properties of a file, as well as providing a
 means to modify them.
 
 The KPropertiesDialog is extensible with plugin-pages via the
-@ref KPropsDlgPlugin class.
+KPropsDlgPlugin class.
 
-The @ref KIconDialog class shows a list of icons installed on the system (as
-accessible via @ref KIconLoader) and allows the user to select one.
+The KIconDialog class shows a list of icons installed on the system (as
+accessible via KIconLoader) and allows the user to select one.
 
-@ref KOpenWithDlg implements a dialog to choose an application from, that is
+KOpenWithDlg implements a dialog to choose an application from, that is
 to be run, e.g. to let the user choose an application to open a file/url
 with.
 
@@ -105,8 +105,8 @@ with.
 
 @see KUrlRequester:
   A widget to be used for asking for a filename/path/URL. It consists of a
-  @ref KLineEdit (or @ref KComboBox) and a button. Activating the button
-  will open a @ref KFileDialog. Typing in the lineedit is aided with
+  KLineEdit (or KComboBox) and a button. Activating the button
+  will open a KFileDialog. Typing in the lineedit is aided with
   filename completion.
 
 @see KUrlRequesterDlg:
@@ -130,15 +130,15 @@ with.
   aligned horizontally or vertically. The entries are customizable by the
   user both on a per application basis or for all applications (URLs, their
   icon and the description can be added, removed or edited by the user).
-  This is the widget used as "sidebar" in the @ref KFileDialog.
+  This is the widget used as "sidebar" in the KFileDialog.
 
 @see KFileMetaInfoWidget:
   A widget that allows viewing and editing of meta data of a file, utilizing
-  @ref KFileMetaInfo.
+   KFileMetaInfo.
 
 */
 
 // DOXYGEN_REFERENCES = kdecore kjs kdeui
 // DOXYGEN_EXCLUDE = kssl/kssl
-// DOXYGEN_SET_PROJECT_NAME = KIO
+// DOXYGEN_PROJECTNAME = KIO
 // vim:ts=4:sw=4:expandtab:filetype=doxygen
