@@ -49,6 +49,8 @@ void KDirModelTest::initTestCase()
 {
     qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
 
+    qRegisterMetaType<KFileItemList>("KFileItemList");
+
     m_dirModelForExpand = 0;
     s_referenceTimeStamp = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
     m_tempDir = 0;
@@ -72,6 +74,7 @@ void KDirModelTest::recreateTestData()
      * PATH/toplevelfile_2
      * PATH/toplevelfile_3
      * PATH/specialchars%:
+     * PATH/.hidden
      * PATH/subdir
      * PATH/subdir/testfile
      * PATH/subdir/subsubdir
@@ -81,6 +84,7 @@ void KDirModelTest::recreateTestData()
     foreach(const QString &f, m_topLevelFileNames) {
         createTestFile(path+f);
     }
+    createTestFile(path+".hidden");
     createTestDirectory(path+"subdir");
     createTestDirectory(path+"subdir/subsubdir", NoSymlink);
 
@@ -582,6 +586,26 @@ void KDirModelTest::testFilter()
     // The order of things changed because of filtering.
     // Fill again, so that m_fileIndex etc. are correct again.
     fillModel(true);
+}
+
+void KDirModelTest::testShowHiddenFiles() // #174788
+{
+    KDirLister* dirLister = m_dirModel.dirLister();
+
+    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex, int, int)));
+    QSignalSpy spyNewItems(dirLister, SIGNAL(newItems(KFileItemList)));
+    QSignalSpy spyRowsInserted(&m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)));
+    dirLister->setShowingDotFiles(true);
+    dirLister->emitChanges();
+    QCOMPARE(spyNewItems.count(), 1);
+    QCOMPARE(spyRowsInserted.count(), 1);
+    QCOMPARE(spyRowsRemoved.count(), 0);
+
+    dirLister->setShowingDotFiles(false);
+    dirLister->emitChanges();
+    QCOMPARE(spyNewItems.count(), 1);
+    QCOMPARE(spyRowsInserted.count(), 1);
+    QCOMPARE(spyRowsRemoved.count(), 1);
 }
 
 void KDirModelTest::testMultipleSlashes()
