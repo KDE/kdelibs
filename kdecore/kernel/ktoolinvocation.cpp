@@ -26,6 +26,7 @@
 #include "kcomponentdata.h"
 #include "kurl.h"
 #include "kmessage.h"
+#include "kservice.h"
 #include <klockfile.h>
 #include <klocale.h>
 
@@ -250,17 +251,35 @@ void KToolInvocation::invokeHelp( const QString& anchor,
     if (!isMainThreadActive())
         return;
 
-    QString url;
+    KUrl url;
     QString appname;
+    QString docPath;
     if (_appname.isEmpty()) {
         appname = QCoreApplication::instance()->applicationName();
     } else
         appname = _appname;
-
-    if (!anchor.isEmpty())
-        url = QString("help:/%1?anchor=%2").arg(appname).arg(anchor);
-    else
+    
+    KService::Ptr service(KService::serviceByDesktopName(appname));
+    if (service) {
+        docPath = service->docPath();
+    }
+    
+    if (!docPath.isEmpty()) {
+        url = KUrl(KUrl("help:/"), docPath);
+    } else {
         url = QString("help:/%1/index.html").arg(appname);
+    }
+    
+    if (!anchor.isEmpty()) {
+        url.addQueryItem("anchor", anchor);
+    }
+    
+    // launch a browser for URIs not handled by khelpcenter
+    // (following KCMultiDialog::slotHelpClicked())
+    if (!(url.protocol() == "help" || url.protocol() == "man" || url.protocol() == "info")) {
+        invokeBrowser(url.url());
+        return;
+    }
 
     QDBusInterface *iface = new QDBusInterface(QLatin1String("org.kde.khelpcenter"),
                                                QLatin1String("/KHelpCenter"),
@@ -271,9 +290,9 @@ void KToolInvocation::invokeHelp( const QString& anchor,
         QString error;
 #ifdef Q_WS_WIN
         // startServiceByDesktopName() does not work yet; KRun:processDesktopExec returned 'KRun: syntax error in command "khelpcenter %u" , service "KHelpCenter" '
-        if (kdeinitExec( "khelpcenter", QStringList() << url, &error, 0, startup_id ))
+        if (kdeinitExec( "khelpcenter", QStringList() << url.url(), &error, 0, startup_id ))
 #else
-        if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, false))
+        if (startServiceByDesktopName("khelpcenter", url.url(), &error, 0, 0, startup_id, false))
 #endif
         {
             KMessage::message(KMessage::Error,
@@ -289,7 +308,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
                                    QDBusConnection::sessionBus());
     }
 
-    iface->call("openUrl", url, startup_id );
+    iface->call("openUrl", url.url(), startup_id );
     delete iface;
 }
 
