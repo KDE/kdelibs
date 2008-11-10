@@ -116,7 +116,7 @@ public:
         QColor bgColor;
         BackgroundMode bgMode;
     };
-    QHash <QString, DatePaintingMode*> customPaintingModes;
+    QHash <int, DatePaintingMode*> customPaintingModes;
 
     KCalendarSystem *m_calendar;
 
@@ -325,173 +325,193 @@ void KDateTable::paintEvent( QPaintEvent *e )
 
 void KDateTable::paintCell( QPainter *painter, int row, int col )
 {
-    // JPL: I think this code is horribly over-complicated and could be expressed far
-    //      more simply, re-write after initial change is committed, use separate QPen's
-    //      for each element and decide values for each in a logical fashion, i.e. if 
-    //      drawing current date set textPen, borderPen and backgroundPen in one if statement
-
-    QRectF rect;
-    QString text;
+    double w = ( width() / ( double ) d->numDayColumns ) - 1;
+    double h = ( height() / ( double ) d->numWeekRows ) - 1;
+    QRectF cell = QRectF( 0, 0, w, h );
+    QString cellText;
     QPen pen;
-    double w = width() / ( double ) d->numDayColumns;
-    double h = height() / ( double ) d->numWeekRows;
-    w -= 1;
-    h -= 1;
-    QFont font = KGlobalSettings::generalFont();
+    QColor cellBorderColor, cellBaseLineColor, cellBackgroundColor, cellTextColor;
+    QFont cellFont = KGlobalSettings::generalFont();
+    bool workingDay = false;
+    bool drawCellBorder = false;
+    bool drawBaseLine = false;
+    int cellWeekDay, pos;
+    BackgroundMode cellBackgroundMode = RectangleMode;
 
-    if( row == 0 ) { // we are drawing the headline
-        font.setBold( true );
-        painter->setFont( font );
-        bool workingDay = false;
-        int daynum = ( col + calendar()->weekStartDay() <= d->numDayColumns ) ?
-                           col + calendar()->weekStartDay() :
-                           col + calendar()->weekStartDay() - d->numDayColumns;
+    //Calculate the position of the cell in the grid
+    pos = d->numDayColumns * ( row - 1 ) + col;
 
-        //See if day is a working day
-        if ( KGlobal::locale()->workingWeekStartDay() <= KGlobal::locale()->workingWeekEndDay() ) {
-            if ( daynum >= KGlobal::locale()->workingWeekStartDay() &&
-                 daynum <= KGlobal::locale()->workingWeekEndDay() ) {
-                    workingDay = true;
-            }
-        } else {
-            if ( daynum >= KGlobal::locale()->workingWeekStartDay() ||
-                 daynum <= KGlobal::locale()->workingWeekEndDay() ) {
-                    workingDay = true;
-            }
-        }
-
-
-        QBrush brushInvertTitle( palette().base() );
-        QColor titleColor( isEnabled() ? ( KGlobalSettings::activeTitleColor() )
-                                       : ( KGlobalSettings::inactiveTitleColor() ) );
-        QColor textColor( isEnabled() ? ( KGlobalSettings::activeTextColor() )
-                                      : ( KGlobalSettings::inactiveTextColor() ) );
-
-        if ( !workingDay ) {
-            painter->setPen( textColor );
-            painter->setBrush( textColor );
-            painter->drawRect( QRectF( 0, 0, w, h ) );
-            painter->setPen( titleColor );
-        } else {
-            painter->setPen( titleColor );
-            painter->setBrush( titleColor );
-            painter->drawRect( QRectF( 0, 0, w, h ) );
-            painter->setPen( textColor );
-        }
-
-        painter->drawText( QRectF( 0, 0, w, h ), Qt::AlignCenter,
-                           calendar()->weekDayName( daynum, KCalendarSystem::ShortDayName ), &rect );
-        painter->setPen( palette().color( QPalette::Text ) );
-        painter->drawLine( QPointF( 0, h ), QPointF( w, h ) );
-        // ----- draw the weekday:
+    //Calculate what day of the week the cell is
+    if ( col + calendar()->weekStartDay() <= d->numDayColumns ) {
+        cellWeekDay = col + calendar()->weekStartDay();
     } else {
-        bool paintRect = true;
-        painter->setFont( font );
-        int pos = d->numDayColumns * ( row - 1 ) + col;
+        cellWeekDay = col + calendar()->weekStartDay() - d->numDayColumns;
+    }
 
+    //See if cell day is normally a working day
+    if ( KGlobal::locale()->workingWeekStartDay() <= KGlobal::locale()->workingWeekEndDay() ) {
+        if ( cellWeekDay >= KGlobal::locale()->workingWeekStartDay() &&
+             cellWeekDay <= KGlobal::locale()->workingWeekEndDay() ) {
+                workingDay = true;
+        }
+    } else {
+        if ( cellWeekDay >= KGlobal::locale()->workingWeekStartDay() ||
+             cellWeekDay <= KGlobal::locale()->workingWeekEndDay() ) {
+                workingDay = true;
+        }
+    }
+
+    if( row == 0 ) {
+
+        //We are drawing a header cell
+
+        QColor titleColor, textColor;
+
+        if ( isEnabled() ) {
+            titleColor = KGlobalSettings::activeTitleColor();
+            textColor = KGlobalSettings::activeTextColor();
+        } else {
+            titleColor = KGlobalSettings::inactiveTitleColor();
+            textColor = KGlobalSettings::inactiveTextColor();
+        }
+
+        //If not a normal working day, then invert title/text colours
+        if ( workingDay ) {
+            cellBackgroundColor = titleColor;
+            cellTextColor = textColor;
+        } else {
+            cellBackgroundColor = textColor;
+            cellTextColor = titleColor;
+        }
+
+        //Set the text to the short day name and bold it
+        cellFont.setBold( true );
+        cellText = calendar()->weekDayName( cellWeekDay, KCalendarSystem::ShortDayName );
+
+        //Draw a baseline under the cell
+        drawBaseLine = true;
+        cellBaseLineColor = palette().color( QPalette::Text );
+
+    } else {
+
+        //We are drawing a day cell
+
+        //Calculate the date the cell represents
         QDate cellDate = dateFromPos( pos );
 
+        bool validDay = calendar()->isValid( cellDate );
+
         // Draw the day number in the cell, if the date is not valid then we don't want to show it
-        if ( calendar()->isValid( cellDate ) ) {
-            text = calendar()->dayString( cellDate, KCalendarSystem::ShortFormat );
+        if ( validDay ) {
+            cellText = calendar()->dayString( cellDate, KCalendarSystem::ShortFormat );
         } else {
-            text = "";
+            cellText = "";
         }
 
-        if( ! calendar()->isValid( cellDate ) ||
-            calendar()->month( cellDate ) != calendar()->month( d->mDate ) ) {
+        if( ! validDay || calendar()->month( cellDate ) != calendar()->month( d->mDate ) ) {
             // we are either
+            // ° painting an invalid day
             // ° painting a day of the previous month or
             // ° painting a day of the following month or
-            // ° painting an invalid day
-            // TODO: Use a color with less contrast to the background than normal text.
-            // JPL talk to accessability guys about this
-            painter->setPen( palette().color( QPalette::Mid ) );
+            cellBackgroundColor = palette().color( QPalette::Background );
+            cellTextColor = palette().color( QPalette::Mid );
         } else {
-            // paint a day of the current month
+            //Paint a day of the current month
 
-            // Lets set the default colour first before overriding with custom colours
+            // Background Colour priorities will be (high-to-low):
+            // * Selected Day Background Colour
+            // * Customised Day Background Colour
+            // * Normal Day Background Colour
 
-            // If today is the day of religious observance, then default day number text to red
-            if ( calendar()->dayOfWeek( cellDate ) == KGlobal::locale()->weekDayOfPray() ) {
-                painter->setPen( Qt::red );  //not ideal, should use some palette or scheme colour?
-            } else {
-                painter->setPen( palette().color( QPalette::Text ) );
+            // Background Shape priorities will be (high-to-low):
+            // * Customised Day Shape
+            // * Normal Day Shape
+
+            // Text Colour priorities will be (high-to-low):
+            // * Customised Day Colour
+            // * Day of Pray Colour (Red letter)
+            // * Selected Day Colour
+            // * Normal Day Colour
+
+            //Determine various characteristics of the cell date
+            bool selectedDay = ( cellDate == d->mDate );
+            bool currentDay = ( cellDate == QDate::currentDate() );
+            bool dayOfPray = ( calendar()->dayOfWeek( cellDate ) == KGlobal::locale()->weekDayOfPray() );
+            bool customDay = ( d->useCustomColors && d->customPaintingModes.contains(cellDate.toJulianDay()) );
+
+            //Default values for a normal cell
+            cellBackgroundColor = palette().color( QPalette::Background );
+            cellTextColor = palette().color( QPalette::Text );
+
+            // If we are drawing the current date, then draw a border
+            if ( currentDay ) {
+                drawCellBorder = true;
+                cellBorderColor = palette().color( QPalette::Text );
             }
 
-            if ( d->useCustomColors ) {
-                KDateTablePrivate::DatePaintingMode * mode = d->customPaintingModes[calendar()->formatDate(cellDate)];
-                if ( mode ) {
-                    if ( mode->bgMode != NoBgMode ) {
-                        QBrush oldbrush = painter->brush();
-                        painter->setBrush( mode->bgColor );
-                        switch( mode->bgMode ) {
-                        case( CircleMode ) : painter->drawEllipse( QRectF( 0, 0, w, h ) );break;
-                        case( RectangleMode ) : painter->drawRect( QRectF( 0, 0, w, h ) );break;
-                        case( NoBgMode ) : // Should never be here, but just to get one
-                                           // less warning when compiling
-                        default: break;
-                        }
-                        painter->setBrush( oldbrush );
-                        paintRect = false;
-                    }
-                    painter->setPen( mode->fgColor );
+            // if we are drawing the day cell currently selected in the table
+            if ( selectedDay ) {
+                // set the background to highlighted
+                if ( isEnabled() ) {
+                    cellBackgroundColor = palette().color( QPalette::Highlight );
+                } else {
+                    cellBackgroundColor = palette().color( QPalette::Text );
                 }
+                cellTextColor = palette().color( QPalette::HighlightedText );
             }
+
+            //If custom colors or shape are required for this date
+            if ( customDay ) {
+                KDateTablePrivate::DatePaintingMode * mode = d->customPaintingModes[cellDate.toJulianDay()];
+                if ( mode->bgMode != NoBgMode ) {
+                        cellBackgroundMode = mode->bgMode;
+                        if (!selectedDay) cellBackgroundColor = mode->bgColor;
+                }
+                cellTextColor = mode->fgColor;
+            }
+
+            //If the cell day is the day of religious observance, then always color text red unless Custom overrides
+            if ( ! customDay && dayOfPray ) {
+                cellTextColor = Qt::red;  //should use some user-configurable palette or scheme colour?
+            }
+
         }
+    }
 
-        //Save the day number text colour in case changed later
-        pen = painter->pen();
+    //Draw the background
+    painter->setPen( cellBackgroundColor );
+    painter->setBrush( cellBackgroundColor );
+    if ( cellBackgroundMode == CircleMode ) {
+        painter->drawEllipse( cell );
+    } else {
+        painter->drawRect( cell );
+    }
 
-        int offset = d->weekDayFirstOfMonth - calendar()->weekStartDay();
-        if( offset < 1 ) {
-            offset += d->numDayColumns;
-        }
-
-        int day = calendar()->day( d->mDate );
-
-        // if we are drawing the day cell currently selected in the table
-        if( ( offset + day ) == ( pos + 1 ) ) {
-
-            // set the background to highlighted
-            if ( isEnabled() ) {
-                painter->setPen( palette().color( QPalette::Highlight ) );
-                painter->setBrush( palette().color( QPalette::Highlight ) );
-            } else {
-                painter->setPen( palette().color( QPalette::Text ) );
-                painter->setBrush( palette().color( QPalette::Text ) );
-            }
-
-            // If selected day not day of religious observance then set the text to highlighted
-            if ( calendar()->dayOfWeek( cellDate ) != KGlobal::locale()->weekDayOfPray() ) {
-                pen = palette().color( QPalette::HighlightedText );
-            }
-
+    //Draw the border
+    if ( drawCellBorder ) {
+        painter->setPen( cellBorderColor );
+        if ( cellBackgroundMode == CircleMode ) {
+            painter->drawEllipse( cell );
         } else {
-            painter->setBrush( palette().color( QPalette::Background ) );
-            painter->setPen( palette().color( QPalette::Background ) );
+            painter->drawRect( cell );
         }
+    }
 
-        // If we are drawing the current date, then set the pen to the text colour
-        if ( cellDate == QDate::currentDate() ) {
-            painter->setPen( palette().color( QPalette::Text ) );
-        }
+    //Draw the text
+    painter->setPen( cellTextColor );
+    painter->setFont( cellFont );
+    painter->drawText( cell, Qt::AlignCenter, cellText, &cell );
 
-        // Paint the rectangle around the day cell, usually is same colour as background
-        // except when is current date when will be same as day number text
-        if ( paintRect ) painter->drawRect( QRectF( 0, 0, w, h ) );
-
-        // Reset the pen to the day number text colour
-        painter->setPen( pen );
-
-        // Paint the day number text in the day cell
-        painter->drawText( QRectF( 0, 0, w, h ), Qt::AlignCenter, text, &rect );
+    //Draw the base line
+    if (drawBaseLine) {
+        painter->setPen( cellBaseLineColor );
+        painter->drawLine( QPointF( 0, h ), QPointF( w, h ) );
     }
 
     // If the day cell we just drew is bigger than the current max cell sizes,
     // then adjust the max to the current cell
-    if( rect.width() > d->maxCell.width() ) d->maxCell.setWidth( rect.width() );
-    if( rect.height() > d->maxCell.height() ) d->maxCell.setHeight( rect.height() );
+    if ( cell.width() > d->maxCell.width() ) d->maxCell.setWidth( cell.width() );
+    if ( cell.height() > d->maxCell.height() ) d->maxCell.setHeight( cell.height() );
 }
 
 void KDateTable::KDateTablePrivate::nextMonth()
@@ -796,14 +816,16 @@ void KDateTable::setCustomDatePainting( const QDate &date, const QColor &fgColor
     mode->fgColor = fgColor;
     mode->bgColor = bgColor;
 
-    d->customPaintingModes.insert( calendar()->formatDate( date ), mode );
+    d->customPaintingModes.insert( date.toJulianDay(), mode );
     d->useCustomColors = true;
     update();
 }
 
 void KDateTable::unsetCustomDatePainting( const QDate &date )
 {
-    d->customPaintingModes.remove( calendar()->formatDate( date ) );
+    d->customPaintingModes.remove( date.toJulianDay() );
+    if ( d->customPaintingModes.isEmpty() ) d->useCustomColors = false;
+    update();
 }
 
 
