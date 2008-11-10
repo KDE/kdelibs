@@ -88,6 +88,7 @@ void KDateWidget::init( const QDate &date )
 	// be editted when the KDateWidget is constructed with an empty date
     d->m_day = new KDateWidgetSpinBox( 1, 31, this );
     d->m_month = new KComboBox( this );
+    d->m_month->setMaxVisibleItems( 12 );
 
     for ( int i = 1; ; ++i ) {
         const QString str = calendar()->monthName( i, calendar()->year( initDate ) );
