@@ -174,7 +174,10 @@ void KGlobalAccelPrivate::remove(KAction *action, Removal removal)
         // If the action is a configurationAction wen only remove it from our
         // internal registry. That happened above.
         if (!action->property("isConfigurationAction").toBool()) {
-            iface.setInactive(actionId);
+            // If it's a session shortcut unregister it.
+            action->objectName().startsWith("_k_session:")
+                ? iface.unRegister(actionId)
+                : iface.setInactive(actionId);
         }
     }
 }

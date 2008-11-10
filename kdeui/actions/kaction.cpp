@@ -119,11 +119,7 @@ KAction::~KAction()
     if (d->globalShortcutEnabled) {
         // - remove the action from KGlobalAccel
         d->globalShortcutEnabled = false;
-        if (this->objectName().startsWith("_k_session:")) {
-            KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::UnRegister);
-        } else {
-            KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::SetInactive);
-        }
+        KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::SetInactive);
     }
 
     KGestureMap::self()->removeGesture(d->shapeGesture, this);
