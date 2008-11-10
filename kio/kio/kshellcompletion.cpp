@@ -126,7 +126,7 @@ void KShellCompletion::postProcessMatches( QStringList *matches ) const
 	KUrlCompletion::postProcessMatches( matches );
 
 	for ( QStringList::Iterator it = matches->begin();
-		  it != matches->end(); it++ )
+		  it != matches->end(); ++it )
 	{
 		if ( !(*it).isNull() ) {
 			if ( (*it).endsWith( QLatin1Char( '/' ) ) )
@@ -144,7 +144,7 @@ void KShellCompletion::postProcessMatches( KCompletionMatches *matches ) const
 	KUrlCompletion::postProcessMatches( matches );
 
 	for ( KCompletionMatches::Iterator it = matches->begin();
-		  it != matches->end(); it++ )
+		  it != matches->end(); ++it )
 	{
 		if ( !(*it).value().isNull() ) {
 			if ( (*it).value().endsWith( QLatin1Char( '/' ) ) )

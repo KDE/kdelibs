@@ -196,7 +196,7 @@ HTTPFilterGZip::checkHeader()
     int c;
 
     /* Check the gzip magic header */
-    for (len = 0; len < 2; len++) {
+    for (len = 0; len < 2; ++len) {
 	c = get_byte();
 	if (c != gz_magic[len]) {
 	    if (len != 0) 
@@ -220,7 +220,7 @@ HTTPFilterGZip::checkHeader()
     }
 
     /* Discard time, xflags and OS code: */
-    for (len = 0; len < 6; len++) (void)get_byte();
+    for (len = 0; len < 6; ++len) (void)get_byte();
 
     if ((flags & EXTRA_FIELD) != 0) { /* skip the extra field */
 	len  =  (uInt)get_byte();
@@ -235,7 +235,7 @@ HTTPFilterGZip::checkHeader()
 	while ((c = get_byte()) != 0 && c != EOF) ;
     }
     if ((flags & HEAD_CRC) != 0) {  /* skip the header crc */
-	for (len = 0; len < 2; len++) (void)get_byte();
+	for (len = 0; len < 2; ++len) (void)get_byte();
     }
     
     return bEof ? 2 : 0;

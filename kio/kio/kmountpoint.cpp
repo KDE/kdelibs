@@ -340,7 +340,7 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
     {
         /* iterate through items in the vmount structure: */
         vm = (struct vmount *)mntctl_buffer;
-        for ( ; num > 0; num-- )
+        for ( ; num > 0; --num )
         {
             /* get the name of the mounted file systems: */
             fsname_len = vmt2datasize(vm, VMT_STUB);

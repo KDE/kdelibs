@@ -230,7 +230,7 @@ ntlm_des_set_key (DES_KEY * dkey, char *user_key, int /*len*/)
   /* Clear key schedule */
 
 
-  for (j = 0; j < 56; j++)
+  for (j = 0; j < 56; ++j)
     {				/* convert pc1 to bits of key */
       l = pc1[j] - 1;		/* integer bit location  */
       m = l & 07;		/* find bit              */
@@ -239,12 +239,12 @@ ntlm_des_set_key (DES_KEY * dkey, char *user_key, int /*len*/)
 	? 1 : 0;		/* and store 1-bit result */
 
     }
-  for (i = 0; i < 16; i++)
+  for (i = 0; i < 16; ++i)
     {				/* key chunk for each iteration */
-      for (j = 0; j < 56; j++)	/* rotate pc1 the right amount */
+      for (j = 0; j < 56; ++j)	/* rotate pc1 the right amount */
 	pcr[j] = pc1m[(l = j + totrot[i]) < (j < 28 ? 28 : 56) ? l : l - 28];
       /* rotate left and right halves independently */
-      for (j = 0; j < 48; j++)
+      for (j = 0; j < 48; ++j)
 	{			/* select bits individually */
 	  /* check bit that goes to kn[j] */
 	  if (pcr[pc2[j] - 1])
@@ -327,7 +327,7 @@ permute_ip (unsigned char *inblock, DES_KEY * key, unsigned char *outblock)
   memset(outblock, 0, 8);
 
   ib = inblock;
-  for (j = 0; j < 16; j += 2, ib++)
+  for (j = 0; j < 16; j += 2, ++ib)
     {				/* for each input nibble */
       ob = outblock;
       p = key->iperm[j][(*ib >> 4) & 0xf];
@@ -356,7 +356,7 @@ permute_fp (unsigned char *inblock, DES_KEY * key, unsigned char *outblock)
   memset(outblock, 0, 8);
 
   ib = inblock;
-  for (j = 0; j < 16; j += 2, ib++)
+  for (j = 0; j < 16; j += 2, ++ib)
     {				/* for each input nibble */
       ob = outblock;
       p = key->fperm[j][(*ib >> 4) & 0xf];
@@ -436,9 +436,9 @@ perminit_ip (DES_KEY * key)
   /* Clear the permutation array */
   memset(key->iperm, 0, 16 * 16 * 8);
 
-  for (i = 0; i < 16; i++)	/* each input nibble position */
-    for (j = 0; j < 16; j++)	/* each possible input nibble */
-      for (k = 0; k < 64; k++)
+  for (i = 0; i < 16; ++i)	/* each input nibble position */
+    for (j = 0; j < 16; ++j)	/* each possible input nibble */
+      for (k = 0; k < 64; ++k)
 	{			/* each output bit position */
 	  l = ip[k] - 1;	/* where does this bit come from */
 	  if ((l >> 2) != i)	/* does it come from input posn? */
@@ -459,9 +459,9 @@ perminit_fp (DES_KEY * key)
   /* Clear the permutation array */
   memset(key->fperm, 0, 16 * 16 * 8);
 
-  for (i = 0; i < 16; i++)	/* each input nibble position */
-    for (j = 0; j < 16; j++)	/* each possible input nibble */
-      for (k = 0; k < 64; k++)
+  for (i = 0; i < 16; ++i)	/* each input nibble position */
+    for (j = 0; j < 16; ++j)	/* each possible input nibble */
+      for (k = 0; k < 64; ++k)
 	{			/* each output bit position */
 	  l = fp[k] - 1;	/* where does this bit come from */
 	  if ((l >> 2) != i)	/* does it come from input posn? */
@@ -484,9 +484,9 @@ spinit (DES_KEY * key)
   /* Compute pbox, the inverse of p32i.
    * This is easier to work with
    */
-  for (p = 0; p < 32; p++)
+  for (p = 0; p < 32; ++p)
     {
-      for (i = 0; i < 32; i++)
+      for (i = 0; i < 32; ++i)
 	{
 	  if (p32i[i] - 1 == p)
 	    {
@@ -495,9 +495,9 @@ spinit (DES_KEY * key)
 	    }
 	}
     }
-  for (s = 0; s < 8; s++)
+  for (s = 0; s < 8; ++s)
     {				/* For each S-box */
-      for (i = 0; i < 64; i++)
+      for (i = 0; i < 64; ++i)
 	{			/* For each possible input */
 	  val = 0;
 	  /* The row number is formed from the first and last
@@ -523,7 +523,7 @@ ntlm_des_ecb_encrypt (const void *plaintext, int len, DES_KEY * akey,
   int j;
   const unsigned char *plain = (const unsigned char *) plaintext;
 
-  for (j = 0; j < len / 8; j++)
+  for (j = 0; j < len / 8; ++j)
     {
       memcpy (&output[j * 8], &plain[j * 8], 8);
       ntlm_des_encrypt (akey, &output[j * 8]);

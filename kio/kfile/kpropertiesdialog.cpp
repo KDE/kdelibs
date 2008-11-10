@@ -1743,7 +1743,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     KCompletion *kcom = d->usrEdit->completionObject();
     kcom->setOrder(KCompletion::Sorted);
     setpwent();
-    for (i=0; ((user = getpwent()) != 0L) && (i < maxEntries); i++)
+    for (i=0; ((user = getpwent()) != 0L) && (i < maxEntries); ++i)
       kcom->addItem(QString::fromLatin1(user->pw_name));
     endpwent();
     d->usrEdit->setCompletionMode((i < maxEntries) ? KGlobalSettings::CompletionAuto :
@@ -1769,7 +1769,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
 #ifdef Q_OS_UNIX
   setgrent();
-  for (i=0; ((ge = getgrent()) != 0L) && (i < maxEntries); i++)
+  for (i=0; ((ge = getgrent()) != 0L) && (i < maxEntries); ++i)
   {
     if (IamRoot)
       groupList += QString::fromLatin1(ge->gr_name);

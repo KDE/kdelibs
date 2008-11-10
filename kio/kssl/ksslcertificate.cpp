@@ -208,7 +208,7 @@ QString KSSLCertificate::getSignatureText() const {
     rc += i18n("Signature Contents:");
     n = d->m_cert->signature->length;
     s = (char *)d->m_cert->signature->data;
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n; ++i) {
         if (i%20 != 0) {
             rc += ':';
         }

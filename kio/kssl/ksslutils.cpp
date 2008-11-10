@@ -45,7 +45,7 @@ QTime qtime;
  
   if (i < 10) goto auq_err;
   if (v[i-1] == 'Z') gmt=1;
-  for (i=0; i<10; i++)
+  for (i=0; i<10; ++i)
           if ((v[i] > '9') || (v[i] < '0')) goto auq_err;
   y = (v[0]-'0')*10+(v[1]-'0');
   if (y < 50) y+=100;
