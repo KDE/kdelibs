@@ -45,11 +45,18 @@ namespace Sonnet
 //to initially disable sorting in the suggestions listview
 #define NONSORTINGCOLUMN 2
 
+class ReadOnlyStringListModel: public QStringListModel
+{
+public:
+    ReadOnlyStringListModel(QObject* parent):QStringListModel(parent){}
+    Qt::ItemFlags flags(const QModelIndex& index) const {return Qt::ItemIsEnabled | Qt::ItemIsSelectable;}
+};
+
 class Dialog::Private
 {
 public:
     Ui_SonnetUi ui;
-    QStringListModel *suggestionsModel;
+    ReadOnlyStringListModel *suggestionsModel;
     QWidget *wdg;
     QString   originalBuffer;
     BackgroundChecker *checker;
@@ -135,7 +142,7 @@ void Dialog::initGui()
                                           speller.language()));
     d->restart = false;
 
-    d->suggestionsModel=new QStringListModel(this);
+    d->suggestionsModel=new ReadOnlyStringListModel(this);
     d->ui.m_suggestions->setModel(d->suggestionsModel);
 }
 
