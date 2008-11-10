@@ -42,7 +42,7 @@ KServiceTypeFactory::KServiceTypeFactory()
       {
          QString str;
          qint32 i;
-         for(;n;n--)
+         for(;n;--n)
          {
             KSycocaEntry::read(*m_str, str);
             (*m_str) >> i;

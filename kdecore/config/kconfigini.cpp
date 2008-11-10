@@ -600,7 +600,7 @@ QByteArray KConfigIniBackend::stringToPrintable(const QByteArray& aString, Strin
         i++;
     }
 
-    for (; i < l; i++/*, r++*/) {
+    for (; i < l; ++i/*, r++*/) {
         switch (s[i]) {
             default:
             // The \n, \t, \r cases (all < 32) are handled below; we can ignore them here

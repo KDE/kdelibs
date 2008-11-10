@@ -104,7 +104,7 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, unsigned int aLen
   hptr = highbyteBuf = (char*)malloc(aLen);
   if (!hptr)
       return mState;
-  for (i = 0; i < aLen; i++)
+  for (i = 0; i < aLen; ++i)
   {
     if (aBuf[i] & 0x80)
     {
@@ -122,7 +122,7 @@ nsProbingState nsMBCSGroupProber::HandleData(const char* aBuf, unsigned int aLen
     }
   }
 
-  for (i = 0; i < NUM_OF_PROBERS; i++)
+  for (i = 0; i < NUM_OF_PROBERS; ++i)
   {
      if (!mIsActive[i])
        continue;
@@ -162,7 +162,7 @@ float nsMBCSGroupProber::GetConfidence(void)
   case eNotMe:
     return (float)0.01;
   default:
-    for (i = 0; i < NUM_OF_PROBERS; i++)
+    for (i = 0; i < NUM_OF_PROBERS; ++i)
     {
       if (!mIsActive[i])
         continue;

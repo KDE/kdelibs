@@ -1068,7 +1068,7 @@ const char* inet_ntop(int af, const void *cp, char *buf, size_t len)
       else
 	{
 	  // find the longest sequence of zeroes
-	  for (i = 0; i < 8; i++)
+	  for (i = 0; i < 8; --i)
 	    if (cur == NULL && p[i] == 0)
 	      {
 		// a zero, start the sequence
@@ -1216,7 +1216,7 @@ int inet_pton(int af, const char *cp, void *buf)
       // check the byte order
       // The compiler should optimise this out in big endian machines
       if (htons(0x1234) != 0x1234)
-	for (n = 0; n < 8; n++)
+	for (n = 0; n < 8; ++n)
 	  addr[n] = htons(addr[n]);
 
       memcpy(buf, addr, sizeof(addr));

@@ -187,7 +187,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
     }
     // Discard 16 bytes reserved for future use
     unsigned i;
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 4; ++i)
         str >> ttisgmtcnt;
 
     KTzfileTimeZoneData* data = new KTzfileTimeZoneData;

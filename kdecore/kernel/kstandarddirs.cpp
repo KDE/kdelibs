@@ -1259,7 +1259,7 @@ static int tokenize( QStringList& tokens, const QString& str,
         if ( delim.contains( str[ index ] ) )
         {
             tokens.append( equalizePath(token) );
-            token = QString();
+            token.clear();
         }
         else
         {
@@ -1788,7 +1788,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
             // to find entries that start with dir_$type
             const QMap<QString, QString> entries = config->entryMap(group);
             for (QMap<QString, QString>::ConstIterator it2 = entries.begin();
-                 it2 != entries.end(); it2++)
+                 it2 != entries.end(); ++it2)
             {
                 const QString key = it2.key();
                 if (key.startsWith("dir_")) {
@@ -1817,7 +1817,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
         KConfigGroup cg(config, "KDE Resource Restrictions");
         const QMap<QString, QString> entries = cg.entryMap();
         for (QMap<QString, QString>::ConstIterator it2 = entries.begin();
-             it2 != entries.end(); it2++)
+             it2 != entries.end(); ++it2)
         {
             const QString key = it2.key();
             if (!cg.readEntry(key, true))

@@ -573,7 +573,7 @@ public:
         for (; begin != end; ++begin) {
             KService::Ptr service = *begin;
             if (error) {
-                *error = QString();
+                error->clear();
             }
 
             T *component = createInstance<T>(service, parent, args, error);

@@ -236,7 +236,7 @@ bool KStringHandler::isUtf8( const char *buf )
   };
 
   /* *ulen = 0; */
-  for (i = 0; (c = buf[i]); i++) {
+  for (i = 0; (c = buf[i]); ++i) {
     if ((c & 0x80) == 0) {        /* 0xxxxxxx is plain ASCII */
       /*
        * Even if the whole file is valid UTF-8 sequences,
@@ -264,7 +264,7 @@ bool KStringHandler::isUtf8( const char *buf )
     } else
       return false;
 
-      for (n = 0; n < following; n++) {
+      for (n = 0; n < following; ++n) {
         i++;
         if (!(c = buf[i]))
           goto done;

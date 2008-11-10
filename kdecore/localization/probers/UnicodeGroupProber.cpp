@@ -98,8 +98,8 @@ nsProbingState UnicodeGroupProber::HandleData(const char* aBuf, unsigned int aLe
     }
   }
   
-  for (i = 0; i < aLen; i++) {
-    for (j = mActiveSM-1; j>= 0; j--)
+  for (i = 0; i < aLen; ++i) {
+    for (j = mActiveSM-1; j>= 0; --j)
     {
       //byte is feed to all active state machine 
       codingState = mCodingSM[j]->NextState(aBuf[i]);

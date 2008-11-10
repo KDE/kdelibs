@@ -27,7 +27,6 @@
 #include <QRegExp>
 
 #include <kdebug.h>
-#include <klocale.h>
 
 static QString insertIntegerSeparators (const QString &istr,
                                         const QChar &sep, int ngrp)

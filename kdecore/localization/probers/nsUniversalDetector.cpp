@@ -148,7 +148,7 @@ nsProbingState nsUniversalDetector::HandleData(const char* aBuf, unsigned int aL
     }
     break;
   case eHighbyte:
-    for (i = 0; i < NUM_OF_CHARSET_PROBERS; i++)
+    for (i = 0; i < NUM_OF_CHARSET_PROBERS; ++i)
     {
       st = mCharSetProbers[i]->HandleData(aBuf, aLen);
       if (st == eFoundIt) 

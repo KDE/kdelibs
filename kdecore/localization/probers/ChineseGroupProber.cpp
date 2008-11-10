@@ -100,7 +100,7 @@ nsProbingState ChineseGroupProber::HandleData(const char* aBuf, unsigned int aLe
   hptr = highbyteBuf = (char*)malloc(aLen);
   if (!hptr)
       return mState;
-  for (i = 0; i < aLen; i++)
+  for (i = 0; i < aLen; ++i)
   {
     if (aBuf[i] & 0x80)
     {
@@ -118,7 +118,7 @@ nsProbingState ChineseGroupProber::HandleData(const char* aBuf, unsigned int aLe
     }
   }
 
-  for (i = 0; i < CN_NUM_OF_PROBERS; i++)
+  for (i = 0; i < CN_NUM_OF_PROBERS; ++i)
   {
      if (!mIsActive[i])
        continue;
@@ -158,7 +158,7 @@ float ChineseGroupProber::GetConfidence(void)
   case eNotMe:
     return (float)0.01;
   default:
-    for (i = 0; i < CN_NUM_OF_PROBERS; i++)
+    for (i = 0; i < CN_NUM_OF_PROBERS; ++i)
     {
       if (!mIsActive[i])
         continue;

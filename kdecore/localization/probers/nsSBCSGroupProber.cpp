@@ -137,7 +137,7 @@ nsProbingState nsSBCSGroupProber::HandleData(const char* aBuf, unsigned int aLen
   if (newLen1 == 0)
     goto done; // Nothing to see here, move on.
 
-  for (i = 0; i < NUM_OF_SBCS_PROBERS; i++)
+  for (i = 0; i < NUM_OF_SBCS_PROBERS; ++i)
   {
      if (!mIsActive[i])
        continue;
@@ -178,7 +178,7 @@ float nsSBCSGroupProber::GetConfidence(void)
   case eNotMe:
     return (float)0.01;  //sure no
   default:
-    for (i = 0; i < NUM_OF_SBCS_PROBERS; i++)
+    for (i = 0; i < NUM_OF_SBCS_PROBERS; ++i)
     {
       if (!mIsActive[i])
         continue;
