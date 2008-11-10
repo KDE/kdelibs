@@ -45,6 +45,8 @@ QTEST_KDEMAIN( KDirModelTest, NoGUI )
 #define SPECIALCHARS "specialchars%"
 #endif
 
+Q_DECLARE_METATYPE(KFileItemList)
+
 void KDirModelTest::initTestCase()
 {
     qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
@@ -75,6 +77,7 @@ void KDirModelTest::recreateTestData()
      * PATH/toplevelfile_3
      * PATH/specialchars%:
      * PATH/.hidden
+     * PATH/.hidden2
      * PATH/subdir
      * PATH/subdir/testfile
      * PATH/subdir/subsubdir
@@ -85,6 +88,7 @@ void KDirModelTest::recreateTestData()
         createTestFile(path+f);
     }
     createTestFile(path+".hidden");
+    createTestFile(path+".hidden2");
     createTestDirectory(path+"subdir");
     createTestDirectory(path+"subdir/subsubdir", NoSymlink);
 
@@ -597,14 +601,18 @@ void KDirModelTest::testShowHiddenFiles() // #174788
     QSignalSpy spyRowsInserted(&m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)));
     dirLister->setShowingDotFiles(true);
     dirLister->emitChanges();
+    const int numberOfDotFiles = 2;
     QCOMPARE(spyNewItems.count(), 1);
+    QCOMPARE(spyNewItems[0][0].value<KFileItemList>().count(), numberOfDotFiles);
     QCOMPARE(spyRowsInserted.count(), 1);
     QCOMPARE(spyRowsRemoved.count(), 0);
+    spyNewItems.clear();
+    spyRowsInserted.clear();
 
     dirLister->setShowingDotFiles(false);
     dirLister->emitChanges();
-    QCOMPARE(spyNewItems.count(), 1);
-    QCOMPARE(spyRowsInserted.count(), 1);
+    QCOMPARE(spyNewItems.count(), 0);
+    QCOMPARE(spyRowsInserted.count(), 0);
     QCOMPARE(spyRowsRemoved.count(), 1);
 }
 
