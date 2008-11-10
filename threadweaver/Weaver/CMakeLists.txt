@@ -32,12 +32,13 @@ set(ThreadWeaver_LIB_SRCS
 
 kde4_add_library(threadweaver SHARED ${ThreadWeaver_LIB_SRCS})
 target_link_libraries(threadweaver ${QT_QTCORE_LIBRARY})
+target_link_libraries(threadweaver LINK_INTERFACE_LIBRARIES ${QT_QTCORE_LIBRARY} )
+
 set_target_properties(threadweaver PROPERTIES
     VERSION ${GENERIC_LIB_VERSION}
     SOVERSION ${GENERIC_LIB_SOVERSION}
-    ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "${QT_QTCORE_LIBRARY}"
 )
-install(TARGETS threadweaver ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS threadweaver EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     WeaverInterface.h

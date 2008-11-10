@@ -108,7 +108,7 @@ if (UNIX)
    if (NOT HAVE_TRUNC)
        target_link_libraries(kdefakes  m )
    endif (NOT HAVE_TRUNC)
-   install(TARGETS kdefakes ${INSTALL_TARGETS_DEFAULT_ARGS} )
+   install(TARGETS kdefakes EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 endif (UNIX)
 
@@ -277,23 +277,24 @@ kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
 if(WIN32)
-  set(kdecore_LINK_INTERFACE_LIBRARIES "${QT_QTDBUS_LIBRARY};${QT_QTCORE_LIBRARY};${KDEWIN32_LIBRARIES}")
+  set(kdecore_LINK_INTERFACE_LIBRARIES  ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY} ${KDEWIN32_LIBRARIES})
 else(WIN32)
   if(APPLE)
-    set(kdecore_LINK_INTERFACE_LIBRARIES "${QT_QTDBUS_LIBRARY};${QT_QTCORE_LIBRARY};${CARBON_LIBRARY}")
+    set(kdecore_LINK_INTERFACE_LIBRARIES ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY} ${CARBON_LIBRARY})
   else(APPLE)
-    set(kdecore_LINK_INTERFACE_LIBRARIES "${QT_QTDBUS_LIBRARY};${QT_QTCORE_LIBRARY}")
+    set(kdecore_LINK_INTERFACE_LIBRARIES ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY} )
   endif(APPLE)
 endif(WIN32)
+
+target_link_libraries(kdecore LINK_INTERFACE_LIBRARIES ${kdecore_LINK_INTERFACE_LIBRARIES} )
 
 set_target_properties(kdecore PROPERTIES 
                               VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
                               SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
-                              ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "${kdecore_LINK_INTERFACE_LIBRARIES}"
                      )
 
 
-install(TARGETS kdecore EXPORT kdelibs ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### next target ###############
 

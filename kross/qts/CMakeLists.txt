@@ -5,6 +5,7 @@ set(krossqtsplugin_LIB_SRCS plugin.cpp)
 kde4_add_library(krossqtsplugin SHARED ${krossqtsplugin_LIB_SRCS})
 target_link_libraries(krossqtsplugin ${QT_QTUITOOLS_LIBRARY} ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} krosscore ${QT_QTSCRIPT_LIBRARY})
 set_target_properties(krossqtsplugin PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
+
 install(TARGETS krossqtsplugin DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/script)
 
 ########### next target ###############
@@ -25,4 +26,5 @@ target_link_libraries(krossqtstest ${KDE4_KDEUI_LIBS} krossqtsplugin ${QT_QTSCRI
 set(krossqts_PART_SRCS interpreter.cpp script.cpp)
 kde4_add_plugin(krossqts ${krossqts_PART_SRCS})
 target_link_libraries(krossqts ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} krosscore ${QT_QTSCRIPT_LIBRARY})
+
 install(TARGETS krossqts DESTINATION ${PLUGIN_INSTALL_DIR})

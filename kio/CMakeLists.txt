@@ -30,7 +30,7 @@ check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
 macro_bool_to_01(SYS_INOTIFY_H_FOUND HAVE_SYS_INOTIFY_H)
 if(WIN32)
  # currently for win32 only --> enable it for all in 4.1?
- OPTION(USE_QFILESYSTEMWATCHER "Use QFileSystemWatcher instead polling for KDirWatch" ON)
+ option(USE_QFILESYSTEMWATCHER "Use QFileSystemWatcher instead polling for KDirWatch" ON)
  macro_bool_to_01(USE_QFILESYSTEMWATCHER HAVE_QFILESYSTEMWATCHER)
 endif(WIN32)
 
@@ -248,6 +248,7 @@ kde4_add_ui_files(kio_LIB_SRCS
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
 target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY} ${KDE4_SOLID_LIBS} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${X11_LIBRARIES})
+target_link_libraries(kio LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} )
 
 set(SYS_INOTIFY_H_FOUND 0)
 if(SYS_INOTIFY_H_FOUND)
@@ -271,12 +272,11 @@ endif(X11_Xrender_FOUND)
 
 set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
                                      SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} 
-                                     ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kdeui;kdecore;${QT_QTNETWORK_LIBRARY};${QT_QTXML_LIBRARY};${QT_QTGUI_LIBRARY}"
                      )
 
 
 ########### install files ###############
-install(TARGETS kio ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kio EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( PROGRAMS useragent.pl proxytype.pl  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
 

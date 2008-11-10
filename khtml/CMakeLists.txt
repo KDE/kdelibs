@@ -494,10 +494,10 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
 target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ktexteditor kjs ${KDE4_PHONON_LIBS} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES})
+target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts kjs kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} )
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
-                                       ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kparts;kjs;kio;kdeui;kdecore;${QT_QTCORE_LIBRARY};${QT_QTGUI_LIBRARY}"
                      )
 
 
@@ -612,7 +612,7 @@ create_js_binding(html/HTMLVideoElement.idl)
 #create_js_binding(svg/SVGPathSegMovetoAbs.idl)
 #create_js_binding(svg/SVGPathSegMovetoRel.idl)
 
-install(TARGETS khtml ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS khtml EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### khtmlpart ###############
 

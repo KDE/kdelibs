@@ -12,13 +12,13 @@ set(kpty_LIB_SRCS
 kde4_add_library(kpty SHARED ${kpty_LIB_SRCS})
 
 target_link_libraries(kpty ${KDE4_KDECORE_LIBS} ${UTIL_LIBRARY} ${UTEMPTER_LIBRARY})
+target_link_libraries(kpty LINK_INTERFACE_LIBRARIES kdecore ${QT_QTCORE_LIBRARY} )
 
 set_target_properties(kpty PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}
    SOVERSION ${GENERIC_LIB_SOVERSION}
-   ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kdecore;${QT_QTCORE_LIBRARY}"
 )
-install(TARGETS kpty ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kpty EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
    kpty_export.h

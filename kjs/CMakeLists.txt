@@ -204,7 +204,7 @@ if(PCRE_FOUND)
 endif(PCRE_FOUND)
 
 set_target_properties(${KJSLIBNAME} PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS ${KJSLIBNAME} ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS ${KJSLIBNAME} EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### kjs - basic shell ###############
 

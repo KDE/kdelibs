@@ -109,16 +109,3 @@ endif (NOT QT_INSTALL_DIR)
 endif(WIN32)
 
 
-# by exporting this into a separate file and including this file then, we can control where
-# in the generated file this code appears (export_library_dependencies() always writes at the end
-# of the file, since it is one of the few commands which does the work in ::FinalPass(), Alex
-export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependenciesInternal.cmake)
-
-file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake" "
-# include KDELibsDependenciesInternal.cmake, which is the file created by export_library_dependencies()
-get_filename_component( _kdelibsdeps_dir  \"\${CMAKE_CURRENT_LIST_FILE}\" PATH)
-include(\"\${_kdelibsdeps_dir}/KDELibsDependenciesInternal.cmake\")\n\n")
-
-# this is experimental for now, only export dependencies which were explicitely set using the LINK_INTERFACE_LIBRARIES target property, Alex
-_kde4_export_library_dependencies(APPEND "${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake")
-

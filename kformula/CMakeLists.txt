@@ -41,16 +41,16 @@ set( libkformula_PART_SRCS
 
 kde4_add_library(kformula SHARED ${libkformula_PART_SRCS})
 target_link_libraries(kformula kdeui ${QT_QTXML_LIBRARY})
+target_link_libraries(kformula LINK_INTERFACE_LIBRARIES kdeui )
 
 set_target_properties(kformula PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}
    SOVERSION ${GENERIC_LIB_SOVERSION}
-   ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kdeui"
 )
 
-install(TARGETS kformula ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kformula EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-KDE4_ADD_WIDGET_FILES(kformulawidgets_PART_SRCS kformula.widgets)
+kde4_add_widget_files(kformulawidgets_PART_SRCS kformula.widgets)
 kde4_add_plugin(kformulawidgets ${kformulawidgets_PART_SRCS})
 target_link_libraries(kformulawidgets kdeui ${QT_QTXML_LIBRARY} kformula)
 install(TARGETS kformulawidgets DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/designer )

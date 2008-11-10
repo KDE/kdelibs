@@ -25,14 +25,14 @@ set(kparts_LIB_SRCS
 kde4_add_library(kparts SHARED ${kparts_LIB_SRCS})
 
 target_link_libraries(kparts  ${KDE4_KDECORE_LIBS} kdeui kio)
+target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} )
 
 set_target_properties(kparts PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
                                         SOVERSION ${GENERIC_LIB_SOVERSION} 
-                                        ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kio;kdeui;kdecore;${QT_QTCORE_LIBRARY};${QT_QTGUI_LIBRARY}"
                      )
 
 
-install(TARGETS kparts ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kparts EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 

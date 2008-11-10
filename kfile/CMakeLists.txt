@@ -40,16 +40,18 @@ target_link_libraries(kfile
    ${KDE4_SOLID_LIBS}
    ${X11_LIBRARIES}
 )
+
 if(X11_Xrender_FOUND)
   target_link_libraries(kfile ${X11_Xrender_LIB} )
 endif(X11_Xrender_FOUND)
 
+target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY} )
+
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
                                        SOVERSION ${GENERIC_LIB_SOVERSION} 
-                                       ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kdeui;kdecore;${QT_QTGUI_LIBRARY}"
                      )
 
-install(TARGETS kfile ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kfile EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
   kdiroperator.h

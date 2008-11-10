@@ -54,12 +54,13 @@ kde4_add_ui_files(knewstuff2_ui_SRCS ui/DownloadDialog.ui)
 kde4_add_library(knewstuff2 SHARED ${knewstuff2_core_SRCS} ${knewstuff2_dxs_SRCS} ${knewstuff2_ui_SRCS} ${knewstuff2_SRCS})
 
 target_link_libraries(knewstuff2 ${KDE4_KIO_LIBS} ${QT_QTNETWORK_LIBRARY})
+target_link_libraries(knewstuff2 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY} )
+
 set_target_properties(knewstuff2 PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}
    SOVERSION ${GENERIC_LIB_SOVERSION}
-   ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kdeui;kdecore;${QT_QTGUI_LIBRARY}"
 )
-install(TARGETS knewstuff2 ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS knewstuff2 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   core/author.h

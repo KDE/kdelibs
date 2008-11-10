@@ -79,13 +79,13 @@ remove_definitions(-DQT3_SUPPORT_WARNINGS -DKDE_DEPRECATED_WARNINGS)
 kde4_add_library(kde3support SHARED ${kde3support_LIB_SRCS})
 
 target_link_libraries(kde3support  ${KDE4_KPARTS_LIBS} ${KDE4_KPTY_LIBS} ${QT_QTXML_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${KDE4_KFILE_LIBS} ${X11_LIBRARIES})
+target_link_libraries(kde3support  LINK_INTERFACE_LIBRARIES kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} )
 
 set_target_properties(kde3support PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
                                              SOVERSION ${GENERIC_LIB_SOVERSION} 
-                                             ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kio;kdeui;kdecore;${QT_QTCORE_LIBRARY};${QT_QTGUI_LIBRARY};${QT_QT3SUPPORT_LIBRARY}"
                      )
 
-install(TARGETS kde3support ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kde3support EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 

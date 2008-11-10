@@ -62,12 +62,13 @@ else (HAVE_DNSSD)
   target_link_libraries(kdnssd ${KDE4_KDEUI_LIBS})
 endif (HAVE_DNSSD)
 
+target_link_libraries(kdnssd  LINK_INTERFACE_LIBRARIES kdecore ${QT_QTCORE_LIBRARY} )
+
 set_target_properties(kdnssd PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}
    SOVERSION ${GENERIC_LIB_SOVERSION}
-   ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "kdecore;${QT_QTCORE_LIBRARY}"
 )
-install(TARGETS kdnssd ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdnssd EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 install( FILES dnssd_export.h domainbrowser.h remoteservice.h servicetypebrowser.h publicservice.h 

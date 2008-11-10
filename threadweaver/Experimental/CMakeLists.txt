@@ -10,7 +10,8 @@ include_directories( ../Weaver )
 kde4_add_library(ThreadWeaverExperimental SHARED ${ThreadWeaverExperimental_LIB_SRCS})
 target_link_libraries(ThreadWeaverExperimental threadweaver)
 set_target_properties(ThreadWeaverExperimental PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
-install(TARGETS ThreadWeaverExperimental ${INSTALL_TARGETS_DEFAULT_ARGS})
+
+install(TARGETS ThreadWeaverExperimental EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES FileLoaderJob.h
         DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver/ COMPONENT Devel )

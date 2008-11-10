@@ -103,7 +103,7 @@ set(solid_LIB_SRCS
 )
 
 if(NOT WIN32 AND NOT APPLE)
-   MESSAGE(STATUS "-- Building Solid HAL backend." )
+   message(STATUS "-- Building Solid HAL backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
 
    backends/hal/halacadapter.cpp
@@ -133,7 +133,7 @@ endif(NOT WIN32 AND NOT APPLE)
 
 # TODO: mingw
 if(MSVC)
-   MESSAGE(STATUS "-- Building Solid WMI backend." )
+   message(STATUS "-- Building Solid WMI backend." )
 
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
    backends/wmi/wmiacadapter.cpp
@@ -181,13 +181,13 @@ endif(WIN32)
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 
 target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS})
+target_link_libraries(solid LINK_INTERFACE_LIBRARIES ${QT_CORE_LIBRARY} )
 
 set_target_properties(solid PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}
    SOVERSION ${GENERIC_LIB_SOVERSION}
-   ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "${QT_CORE_LIBRARY}"
 )
-install(TARGETS solid ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS solid EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES org.kde.Solid.Networking.Client.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 install(FILES org.kde.Solid.PowerManagement.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})

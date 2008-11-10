@@ -15,13 +15,13 @@ kmediaplayeradaptor.cpp
 kde4_add_library(kmediaplayer SHARED ${kmediaplayer_LIB_SRCS})
 
 target_link_libraries(kmediaplayer  ${KDE4_KPARTS_LIBS} )
+target_link_libraries(kmediaplayer  LINK_INTERFACE_LIBRARIES ${KDE4_KPARTS_LIBS} ${QT_QTGUI_LIBRARY} )
 
 set_target_properties(kmediaplayer PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}
    SOVERSION ${GENERIC_LIB_SOVERSION}
-   ${KDE4_DISABLE_PROPERTY_}LINK_INTERFACE_LIBRARIES "${KDE4_KPARTS_LIBS};${QT_QTGUI_LIBRARY}"
 )
-install(TARGETS kmediaplayer ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kmediaplayer EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
 ########### install files ###############
