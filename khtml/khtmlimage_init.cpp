@@ -19,3 +19,11 @@
 
 #include <khtml_export.h>
 
+// Defined in libkhtml
+extern "C"  KDE_EXPORT void* init_khtmlimagefactory();
+
+// The real entry point for khtmlimagepart
+extern "C"  KDE_EXPORT void* init_khtmlimagepart() {
+    return init_khtmlimagefactory();
+}
+
