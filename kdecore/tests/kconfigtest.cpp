@@ -1129,3 +1129,29 @@ void KConfigTest::testSharedConfig()
     QCOMPARE(myConfigGroup.readEntry("stringEntry1"), QString(STRINGENTRY1));
 }
 
+void KConfigTest::testLocaleConfig()
+{
+    QDir dir;
+    QString subdir = QDir::home().canonicalPath() + "/.kde-unit-test/";
+    dir.mkpath(subdir);
+    QString file = subdir + "/localized.test";
+    QFile::remove(file);
+    QFile f(file);
+    QVERIFY(f.open(QIODevice::WriteOnly));
+    QTextStream ts(&f);
+    ts << "[Test]\n";
+    ts << "foo[ca]=5\n";
+    ts << "foostring[ca]=nice\n";
+    ts << "foobool[ca]=true\n";
+    f.close();
+    QVERIFY(QFile::exists(file));
+    KConfig config(file);
+    config.setLocale("ca");
+    KConfigGroup cg(&config, "Test");
+    QCOMPARE(cg.readEntry("foo"), QString("5"));
+    QCOMPARE(cg.readEntry("foo", 3), 5);
+    QCOMPARE(cg.readEntry("foostring"), QString("nice"));
+    QCOMPARE(cg.readEntry("foostring", "ugly"), QString("nice"));
+    QCOMPARE(cg.readEntry("foobool"), QString("true"));
+    QCOMPARE(cg.readEntry("foobool", false), true);
+}
