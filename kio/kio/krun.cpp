@@ -70,6 +70,10 @@
 #include <kwindowsystem.h>
 #endif
 
+#ifdef Q_WS_MACX
+#include <QDesktopServices>
+#endif
+
 KRun::KRunPrivate::KRunPrivate(KRun *parent)
   : q(parent),
     m_showingDialog(false)
@@ -155,6 +159,10 @@ bool KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, boo
         i18n("<qt>You do not have permission to run <b>%1</b>.</qt>", Qt::escape(u.prettyUrl())) );
     return false;
   }
+
+#ifdef Q_WS_MACX
+  return QDesktopServices::openUrl(u);
+#endif
 
   KUrl::List lst;
   lst.append( u );
