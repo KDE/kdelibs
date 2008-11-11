@@ -20,7 +20,7 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/solid
    ${CMAKE_BINARY_DIR}/solid
    ${KDE4_KDECORE_INCLUDES}/
-   ${STRIGI_INCLUDE_DIR}
+   ${STRIGI_INCLUDEDIR}
    ${ZLIB_INCLUDE_DIR}
 )
 
