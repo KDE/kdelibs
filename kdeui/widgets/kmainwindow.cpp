@@ -569,11 +569,16 @@ void KMainWindow::appHelpActivated( void )
 void KMainWindow::closeEvent ( QCloseEvent *e )
 {
     K_D(KMainWindow);
+
     // Save settings if auto-save is enabled, and settings have changed
-    if (d->settingsDirty && d->autoSaveSettings)
+    if (d->settingsTimer && d->settingsTimer->isActive()) {
+        d->settingsTimer->stop();
         saveAutoSaveSettings();
-    if (d->sizeTimer && d->sizeTimer->isActive())
+    }
+    if (d->sizeTimer && d->sizeTimer->isActive()) {
+        d->sizeTimer->stop();
         d->_k_slotSaveAutoSaveSize();
+    }
 
     if (queryClose()) {
         e->accept();
@@ -949,22 +954,7 @@ void KMainWindow::ignoreInitialGeometry()
 void KMainWindow::setSettingsDirty()
 {
     K_D(KMainWindow);
-    //kDebug(200) << "KMainWindow::setSettingsDirty";
-
-    if (!d->letDirtySettings) {
-        return;
-    }
-
-    d->settingsDirty = true;
-    if ( d->autoSaveSettings )
-    {
-        // Saving directly is safe here. Calls that will be donen very often in a short period of
-        // time will call to the private version of this method, that is KMainWindowPrivate::setSettingsDirty(CompressCalls).
-        // When working with toolbars, and restore/saveState mechanism from Qt is esential to save
-        // at the very moment, so no toolbars are removed and no information is lost/changed (like
-        // sizes of toolbars), in case we were compressing calls here (having a timer). (ereslibre)
-        saveAutoSaveSettings();
-    }
+    d->setSettingsDirty();
 }
 
 bool KMainWindow::settingsDirty() const
@@ -1061,11 +1051,6 @@ bool KMainWindow::event( QEvent* ev )
                 // hence install an event filter instead
                 dock->installEventFilter(k_ptr->dockResizeListener);
             } else if (toolbar) {
-                connect(toolbar, SIGNAL(iconSizeChanged(QSize)),
-                        this, SLOT(setSettingsDirty()));
-                connect(toolbar, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
-                        this, SLOT(setSettingsDirty()));
-
                 // there is no signal emitted if the size of the dock changes,
                 // hence install an event filter instead
                 toolbar->installEventFilter(k_ptr->dockResizeListener);
@@ -1086,10 +1071,6 @@ bool KMainWindow::event( QEvent* ev )
                            this, SLOT(setSettingsDirty()));
                 dock->removeEventFilter(k_ptr->dockResizeListener);
             } else if (toolbar) {
-                disconnect(toolbar, SIGNAL(iconSizeChanged(QSize)),
-                           this, SLOT(setSettingsDirty()));
-                disconnect(toolbar, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
-                           this, SLOT(setSettingsDirty()));
                 toolbar->removeEventFilter(k_ptr->dockResizeListener);
             }
         }
