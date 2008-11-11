@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
  *
  * Copyright (C) 2002-2004 George Staikos <staikos@kde.org>
+ * Copyright (C) 2008 Michael Leupold <lemma@confuego.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -216,16 +217,16 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
                                              
     // Use an eventloop for synchronous calls
     QEventLoop loop;
-    if (ot == Synchronous) {
+    if (ot == Synchronous || ot == Path) {
         connect(wallet, SIGNAL(walletOpened(bool)), &loop, SLOT(quit()));
     }
     
     // do the call
     QDBusReply<int> r;
     if (ot == Synchronous || ot == Asynchronous) {
-        r = walletLauncher->getInterface().openAsync(name, (qlonglong)w, appid());
+        r = walletLauncher->getInterface().openAsync(name, (qlonglong)w, appid(), true);
     } else if (ot == Path) {
-        r = walletLauncher->getInterface().openPath(name, (qlonglong)w, appid());
+        r = walletLauncher->getInterface().openPathAsync(name, (qlonglong)w, appid(), true);
     } else {
         delete wallet;
         return 0;
@@ -237,9 +238,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
     }
     wallet->d->transactionId = r.value();
     
-    switch (ot) {
-        
-    case Synchronous:
+    if (ot == Synchronous || ot == Path) {
         // check for an immediate error
         if (wallet->d->transactionId < 0) {
             delete wallet;
@@ -252,26 +251,11 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
                 return 0;
             }
         }
-        break;
-        
-    case Asynchronous:
+    } else if (ot == Asynchronous) {
         if (wallet->d->transactionId < 0) {
             QTimer::singleShot(0, wallet, SLOT(emitWalletAsyncOpenError()));
             // client code is responsible for deleting the wallet
         }
-        break;
-        
-    case Path:
-        if (wallet->d->transactionId < 0) {
-            delete wallet;
-            return 0;
-        } else {
-            wallet->d->handle = wallet->d->transactionId;
-        }
-        break;
-        
-    default:
-        break;
     }
 
     return wallet;

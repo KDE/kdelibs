@@ -55,6 +55,14 @@
       <arg name="wallet" type="s" direction="in"/>
       <arg name="wId" type="x" direction="in"/>
       <arg name="appid" type="s" direction="in"/>
+      <arg name="handleSession" type="b" direction="in"/>
+    </method>
+    <method name="openPathAsync">
+      <arg type="i" direction="out"/>
+      <arg name="path" type="s" direction="in"/>
+      <arg name="wId" type="x" direction="in"/>
+      <arg name="appid" type="s" direction="in"/>
+      <arg name="handleSession" type="b" direction="in"/>
     </method>
     <method name="close">
       <arg type="i" direction="out"/>
