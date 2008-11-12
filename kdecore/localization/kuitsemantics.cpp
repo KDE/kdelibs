@@ -35,6 +35,7 @@
 #include <kcatalog_p.h>
 #include <kuitformats_p.h>
 #include <ktranslit_p.h>
+#include <kconfiggroup.h>
 
 // Truncates string, for output of long messages.
 static QString shorten (const QString &str)
@@ -812,6 +813,46 @@ void KuitSemanticsPrivate::setFormattingPatterns ()
                            "%1<br/>"));
 }
 
+static Kuit::NumfmtVar parseNumberFormat (const QString &fmtstr)
+{
+    KuitSemanticsStaticData *s = staticData;
+
+    KConfigGroup cg(KGlobal::config().data(), "Locale");
+    QString currctry = cg.readEntry("Country");
+    Kuit::NumfmtVar currfmt = Kuit::Numfmt::Posix;
+    foreach (const QString ctryfmt, fmtstr.split(',')) {
+        QStringList lst = ctryfmt.split(':');
+        QString ctry, fmtname;
+        if (lst.size() == 2) {
+            ctry = lst[0];
+            fmtname = lst[1];
+        } else if (lst.size() == 1) {
+            fmtname = lst[0];
+        } else {
+            kDebug(173) << QString("Malformed number format specification "
+                                   "'%1' set in kdelibs4.po; "
+                                   "using POSIX format.").arg(ctryfmt);
+            return currfmt;
+        }
+        if (!s->knownNumfmts.contains(fmtname)) {
+            kDebug(173) << QString("Unknown number format '%1' set "
+                                   "in kdelibs4.po; "
+                                   "using POSIX format.").arg(fmtname);
+            return currfmt;
+        }
+        if (ctry == currctry) {
+            // Countries explicitly matched,
+            // use this format without futher lookup.
+            return s->knownNumfmts[fmtname];
+        } else if (ctry.isEmpty()) {
+            // Empty country states default format,
+            // unless an explicit country match is encountered later.
+            currfmt = s->knownNumfmts[fmtname];
+        }
+    }
+    return currfmt;
+}
+
 void KuitSemanticsPrivate::setTextTransformData ()
 {
     KuitSemanticsStaticData *s = staticData;
@@ -820,8 +861,7 @@ void KuitSemanticsPrivate::setTextTransformData ()
     #undef I18N_NOOP2
     #define I18N_NOOP2(ctxt, msg) metaTr(ctxt, msg)
 
-    m_numfmtInt = Kuit::Numfmt::Posix;
-    // i18n: Decide how integer-valued amounts will be formatted in your
+    // i18n: Decide how integer-valued amounts will be formatted in this
     // language. Currently available number formats are:
     //   posix   - decimal point
     //   us      - thousands separation by comma, decimal point
@@ -831,34 +871,25 @@ void KuitSemanticsPrivate::setTextTransformData ()
     //   system  - by locale settings (i.e. override language ortography)
     // If none of the existing formats is appropriate for your language,
     // write to kde-i18n-doc@kde.org to arrange for a new format.
-    QString fmtnameInt = I18N_NOOP2("number-format:integer", "us").toLower();
-    if (s->knownNumfmts.contains(fmtnameInt)) {
-        m_numfmtInt = s->knownNumfmts[fmtnameInt];
-    }
-    else {
-        kDebug(173) << QString("Format of integer numbers '%1', selected in "
-                               "kdelibs4.po, is not valid; using POSIX format.")
-                              .arg(fmtnameInt);
-    }
+    // If different formats are used in different countries in which
+    // this language is spoken, format may be set per country like this:
+    //   "fmt,ctry1:fmt1,ctry2:fmt2,..."
+    // where fmt is the default, ctry1 uses fmt1, ctry2 uses fmt2, etc.
+    // (countries are given by their ISO 3166-1 alpha-2 code,
+    // see http://en.wikipedia.org/wiki/ISO_3166-1 for list of codes).
+    QString fmtstrInt = I18N_NOOP2("number-format:integer", "us").toLower();
+    m_numfmtInt = parseNumberFormat(fmtstrInt);
 
-    m_numfmtReal = Kuit::Numfmt::Posix;
-    // i18n: Decide how real-valued amounts will be formatted in your
+    // i18n: Decide how real-valued amounts will be formatted in this
     // language. See the comment to previous entry.
-    QString fmtnameReal = I18N_NOOP2("number-format:real", "us").toLower();
-    if (s->knownNumfmts.contains(fmtnameReal)) {
-        m_numfmtReal = s->knownNumfmts[fmtnameReal];
-    }
-    else {
-        kDebug(173) << QString("Format of real numbers '%1', selected in "
-                               "kdelibs4.po, is not valid; using POSIX format.")
-                              .arg(fmtnameReal);
-    }
+    QString fmtstrReal = I18N_NOOP2("number-format:real", "us").toLower();
+    m_numfmtReal = parseNumberFormat(fmtstrReal);
 
     // If adherence to locale settings requested, set it globally.
-    if (s->knownNumfmts[fmtnameInt] == Kuit::Numfmt::System) {
+    if (m_numfmtInt == Kuit::Numfmt::System) {
         s->numfmtInt = Kuit::Numfmt::System;
     }
-    if (s->knownNumfmts[fmtnameReal] == Kuit::Numfmt::System) {
+    if (m_numfmtReal == Kuit::Numfmt::System) {
         s->numfmtReal = Kuit::Numfmt::System;
     }
 
