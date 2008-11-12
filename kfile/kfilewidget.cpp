@@ -697,7 +697,7 @@ KUrl KFileWidgetPrivate::getCompleteUrl(const QString &_url) const
     QString url = KShell::tildeExpand(_url);
     KUrl u;
 
-    if ( KUrl::isRelativeUrl(url) ) // only a full URL isn't relative. Even /path is.
+    if ( !QDir::isAbsolutePath(url) ) // only a full URL isn't relative. Even /path is.
     {
         if (!url.isEmpty() && !QDir::isRelativePath(url) ) // absolute path
             u.setPath( url );
@@ -834,8 +834,7 @@ void KFileWidget::slotOk()
     } else if (locationEditCurrentTextList.count()) {
         // if we are on file or files mode, and we have an absolute url written by
         // the user, convert it to relative
-        if (!(mode & KFile::Directory) && (!KUrl::isRelativeUrl(locationEditCurrentText) ||
-                                           QDir::isAbsolutePath(locationEditCurrentText))) {
+        if (!(mode & KFile::Directory) && QDir::isAbsolutePath(locationEditCurrentText)) {
             KUrl _url(locationEditCurrentText);
             KUrl url(_url.path(KUrl::RemoveTrailingSlash));
             url.setFileName(QString());
