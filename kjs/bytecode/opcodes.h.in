@@ -64,6 +64,8 @@ struct Op {
     int numParams;
     OpType paramTypes[4];
     bool   immediateParams[4];
+    bool   exactParams[4]; // if true, we should not perform any
+                           // (non-injective) conversions for the given parameter
 
     OpType retType; // type of this specialization
 
@@ -78,10 +80,6 @@ struct Op {
 
     // If this is true, this version has both padded and unpadded flavors
     bool hasPadVariant;
-
-    // If this is true, this is an overload specializations which
-    // should be matched exactly, w/o conversions
-    bool matchExactly;
 
     // If this is true, this instruction performs a jump, and hence
     // should flush per-BB info

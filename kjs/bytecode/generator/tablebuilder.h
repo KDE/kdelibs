@@ -37,7 +37,6 @@ struct Operation
     int          codeLine;
     bool         endsBB;
     bool         isTile;
-    bool         overload;
 
     string implementAs;
     vector<Type>      opParamTypes; // the types of params of the bytecode operation
@@ -72,8 +71,7 @@ private:
                                   int tileCost, int registerCost);
 
     virtual void handleOperation(const string& name, bool endsBB);
-    virtual void handleImpl(const string& fnName, const string& code, bool overload,
-                            int codeLine, int cost,
+    virtual void handleImpl(const string& fnName, const string& code, int codeLine, int cost,
                             const string& retType, vector<Parameter> sig);
     virtual void handleTile(const string& fnName, StringList sig);
 

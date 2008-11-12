@@ -147,7 +147,7 @@ void TableBuilder::handleOperation(const string& name, bool endsBB)
     operationEndBB.push_back(endsBB);
 }
 
-void TableBuilder::handleImpl(const string& fnName, const string& code, bool ol, int codeLine, int cost,
+void TableBuilder::handleImpl(const string& fnName, const string& code, int codeLine, int cost,
                               const string& retType, vector<Parameter> sig)
 {
     // If the return type isn't 'void', we prepend a destination register as a parameter in the encoding.
@@ -174,7 +174,6 @@ void TableBuilder::handleImpl(const string& fnName, const string& code, bool ol,
 
     op.name           = operationNames.back();
     op.retType        = retType;
-    op.overload       = ol;
     operationRetTypes[op.name] = retType;
     op.isTile         = false;
     op.implementAs    = code;
@@ -332,6 +331,15 @@ void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool 
     }
     out(OpCpp) << "}, ";
 
+    // Exact params flag.
+    out(OpCpp) << "{";
+    for (int p = 0; p < numParams; ++p) {
+        out(OpCpp) << ((variant.op.implParams[p].flags & Param_Exact) ? "true" : "false");
+        if (p != numParams - 1)
+            out(OpCpp) << ", ";
+    }
+    out(OpCpp) << "}, ";    
+
     // Return type.
     out(OpCpp) << "OpType_" << variant.op.retType << ", ";
 
@@ -355,9 +363,6 @@ void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool 
 
     // And whether a padded version exists.
     out(OpCpp) << (hasPadVariant ? "true" : "false") << ", ";
-
-    // Whether this is an overload, requiring precise matching
-    out(OpCpp) << (variant.op.overload ? "true" : "false") << ", ";
 
     // Whether this ends a basic block.
     out(OpCpp) << (variant.op.endsBB ? "true" : "false");

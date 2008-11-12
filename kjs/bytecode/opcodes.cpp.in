@@ -259,15 +259,13 @@ Addr CodeGen::emitOp(CompileState* comp, OpName baseInstr,
         if (cand->padAlign)
             continue;
 
-        bool exact = cand->matchExactly;
-
         int    costs[4];
         ConvOp convOps[4];
 
         int totalCost = cand->cost;
         for (int i = 0; i < numArgs; ++i) {
             convOps[i] = computeCast(args[i], cand->paramTypes[i],
-                                     cand->immediateParams[i], costs[i], exact);
+                                     cand->immediateParams[i], costs[i], cand->exactParams[i]);
 
             totalCost += costs[i];
         }

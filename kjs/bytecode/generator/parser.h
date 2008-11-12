@@ -63,8 +63,7 @@ private:
                                   int tileCost, int registerCost) = 0;
            
     virtual void handleOperation(const string& name, bool endsBB) = 0;
-    virtual void handleImpl(const string& fnName, const string& code, bool overload,
-                            int codeLine, int cost,
+    virtual void handleImpl(const string& fnName, const string& code, int codeLine, int cost,
                             const string& retType, vector<Parameter> sig) = 0;
     virtual void handleTile(const string& fnName, StringList sig) = 0;
 

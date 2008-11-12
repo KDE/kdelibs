@@ -42,7 +42,6 @@ Lexer::Lexer(istream* _stream): stream(_stream), charLoaded(false), lineNum(0)
     keywords["jump"]        = Jump;
     keywords["costs"]       = Costs;
     keywords["impl"]        = Impl;
-    keywords["overload"]    = Overload;
     keywords["tile"]        = Tile;
     keywords["as"]          = As;
     keywords["runtime"]     = Runtime;

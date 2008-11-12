@@ -247,11 +247,12 @@ void TypeTable::handleConversion(const string& code, int codeLine,
         Parameter param;
         param.name     = "in";
         param.typeName = from;
+        param.flags    = Param_Exact;
         sig.push_back(param);
         
         string code = inf.to.nativeName + " out = convertI" + inf.name.substr(1) + "(exec, in);\n";
         code += "$$ = out;\n";
-        instrBuilder->handleImpl("", code, true, codeLine, 0, to, sig);
+        instrBuilder->handleImpl("", code, codeLine, 0, to, sig);
     }
 }
 

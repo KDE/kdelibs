@@ -723,7 +723,7 @@ operation BracketGet {
         $$ = val;
     ]]
 
-    overload value (value [noimm] base, int32 prop) [[
+    impl value (value [noimm] base, int32 [exact] prop) [[
         $$ = base->getByIndex(exec, prop);
     ]]
 }
@@ -747,7 +747,7 @@ operation BracketGetAndBind {
         $$ = val;
     ]]
 
-    overload value (reg objDest, value [noimm] base, int32 prop) [[
+    impl value (reg objDest, value [noimm] base, int32 [exact] prop) [[
         JSObject* baseObj = base->toObject(exec);
         // toObject may fail and return an exception object, but get from it is harmless
         localStore[objDest].val.valueVal = baseObj;
@@ -769,7 +769,7 @@ operation BracketPutKnownObject {
             o->put(exec, Identifier(v2->toString(exec)), v3);
     ]]
 
-    overload void (value [noimm] base, int32 prop, value val) [[
+    impl void (value [noimm] base, int32 [exact] prop, value val) [[
         ASSERT(base->isObject());
         static_cast<JSObject*>(base)->put(exec, (uint32_t)prop, val);
     ]]
@@ -816,7 +816,7 @@ operation BracketDelete {
             $$ = o->deleteProperty(exec, Identifier(v2->toString(exec)));
     ]]
 
-    overload bool(value v1, int32 i) [[
+    impl bool(value v1, int32 [exact] i) [[
         JSObject *o = v1->toObject(exec);
         if (pc != localPC)
             break;
@@ -949,7 +949,7 @@ operation Add {
         }
     ]]
 
-    overload number(number n1, number n2) [[
+    impl number(number[exact] n1, number[exact] n2) [[
         $$ = n1 + n2;
     ]]
 }
@@ -985,12 +985,12 @@ operation Less {
         $$ = (relation(exec, v1, v2) == 1);
     ]]
 
-    overload bool(value v1, number n2) [[
+    impl bool(value v1, number[exact] n2) [[
         // As above..
         $$ = (relation(exec, v1, n2) == 1);
     ]]
 
-    overload bool(value v1, int32 n2) [[
+    impl bool(value v1, int32[exact] n2) [[
         // As above... 
         $$ = (relation(exec, v1, n2) == 1);
     ]]
@@ -1032,7 +1032,7 @@ operation EqEq {
         $$ = equal(exec, v1, v2);
     ]]
 
-    overload bool(value v1, int32 n2) [[
+    impl bool(value v1, int32[exact] n2) [[
         double n1;
         if (v1->getNumber(n1))
             $$ = (n1 == n2);
@@ -1047,7 +1047,7 @@ operation NotEq {
         $$ = !equal(exec,v1, v2);
     ]]
 
-    overload bool(value v1, int32 n2) [[
+    impl bool(value v1, int32[exact] n2) [[
         double n1;
         if (v1->getNumber(n1))
             $$ = (n1 != n2);

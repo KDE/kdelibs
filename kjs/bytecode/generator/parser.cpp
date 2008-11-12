@@ -265,7 +265,7 @@ void Parser::parseOperation()
 
     match(Lexer::LBrace);
     Lexer::Token tok = peekNext();
-    while (tok.type == Lexer::Tile || tok.type == Lexer::Impl || tok.type == Lexer::Overload) {
+    while (tok.type == Lexer::Tile || tok.type == Lexer::Impl) {
         if (tok.type == Lexer::Tile)
             parseTile();
         else
@@ -277,11 +277,10 @@ void Parser::parseOperation()
 
 void Parser::parseImpl()
 {
+    match(Lexer::Impl);
     // impl identifier identifier? ( paramList? ) code
     // paramList := ident ident
     // paramList := ident ident , paramList
-
-    bool overload = getNext().type == Lexer::Overload;
 
     string ret = matchIdentifier();
 
@@ -326,7 +325,7 @@ void Parser::parseImpl()
     string code;
     matchCode(&code, &codeLine);
 
-    handleImpl(fn, code, overload, codeLine, cost, ret, params);
+    handleImpl(fn, code, codeLine, cost, ret, params);
 }
 
 void Parser::parseTile()
