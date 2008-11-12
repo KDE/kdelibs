@@ -876,7 +876,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
                            const QString &dontAskAgainName )
 {
     kDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo;
-    KIO_DATA << (qint32)type << text << caption << buttonYes << buttonNo;
+    KIO_DATA << (qint32)type << text << caption << buttonYes << buttonNo << dontAskAgainName;
     send( INF_MESSAGEBOX, data );
     if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) != -1 )
     {
