@@ -117,13 +117,7 @@ void KWidgetItemDelegatePrivate::updateRowRange(const QModelIndex &parent, int s
                 widgetPool->d->allocatedWidgets.removeAll(widgetList);
                 foreach (QWidget *widget, widgetList) {
                     const QModelIndex idx = widgetPool->d->widgetInIndex[widget];
-                    QModelIndex index;
-                    if (const QAbstractProxyModel *proxyModel = qobject_cast<const QAbstractProxyModel*>(model)) {
-                        index = proxyModel->mapFromSource(idx);
-                    } else {
-                        index = idx;
-                    }
-                    widgetPool->d->usedWidgets.remove(index);
+                    widgetPool->d->usedWidgets.remove(idx);
                     widgetPool->d->widgetInIndex.remove(widget);
                     delete widget;
                 }
