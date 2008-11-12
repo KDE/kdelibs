@@ -40,8 +40,8 @@ static string strReplace(string where, string from, string to) {
 }
 
 TableBuilder::TableBuilder(istream* inStream, ostream* hStream,
-                           ostream* cppStream, ostream* mStream):
-    Parser(inStream), out(hStream, cppStream, mStream), types(this, out)
+                           ostream* cppStream, FileTemplate* fTemplate, ostream* mStream):
+    Parser(inStream), out(hStream, cppStream, mStream), types(this, out), fTemplate(fTemplate)
 {}
 
 void TableBuilder::generateCode()
@@ -109,21 +109,42 @@ void TableBuilder::generateCode()
     }
     out(OpCpp) << "};\n\n";
 
+    // Jump table, if needed
+    Array jumps(out(MaCpp), "static void*", "kjsVMOpHandlers");
+    for (unsigned c = 0; c < variants.size(); ++c) {
+        const OperationVariant& var = variants[c];
+        if (var.needsPadVariant)
+            jumps.item("&&l" + var.sig + "_Pad");
+
+        jumps.item("&&l" + var.sig);
+    }
+
+    jumps.endArray();
+
+    fTemplate->handleUntilGenerate();
+    
+
     // Now, generate the VM loop.
     mInd(8) << "OpByteCode op = *reinterpret_cast<const OpByteCode*>(pc);\n";
+    
+    mInd(0) << "#ifdef USE_LABEL_VALS\n";
+    mInd(8) << "goto *kjsVMOpHandlers[op];\n";
+    mInd(8) << "{\n";
+    mInd(0) << "#else\n";
     mInd(8) << "switch (op) {\n";
+    mInd(0) << "#endif\n";
     for (unsigned c = 0; c < variants.size(); ++c) {
         const OperationVariant& var = variants[c];
         if (var.needsPadVariant) {
-            mInd(12) << "case OpByteCode_" + var.sig + "_Pad:\n";
+            mInd(12) << "handler(" + var.sig + "_Pad):\n";
             mInd(16) << "pc += 4;\n";
             mInd(16) << "// Fallthrough\n";
         }
 
-        mInd(12) << "case OpByteCode_" + var.sig + ": {\n";
+        mInd(12) << "handler(" + var.sig + "): {\n";
         generateVariantImpl(var);
         mInd(12) << "}\n";
-        mInd(12) << "break;\n\n";
+        mInd(12) << "continue;\n\n";
     }
 
     mInd(8) << "}\n\n";

@@ -36,6 +36,18 @@
 
 namespace KJS {
 
+#ifdef __GNUC__
+#define USE_LABEL_VALS
+#endif
+
+// We can either do jumps via switch or a GCC extension
+#ifdef USE_LABEL_VALS
+    #define handler(X) l##X
+#else
+    #define handler(X) case OpByteCode_##X
+#endif
+
+
 // #define COUNT_INSTRS
 
 // A little profiling aid -- counts the # of dynamic instances of each instruction.
@@ -149,6 +161,11 @@ ALWAYS_INLINE void lookupScopeAndFetch(ExecState* exec, Identifier* varName, JSV
 ALWAYS_INLINE_INTO JSValue*
 Machine::runBlock(ExecState* exec, const CodeBlock& codeBlock, ExecState* parentExec) {
 
+#ifdef USE_LABEL_VALS
+    // Jump table, if needed
+    @generate
+#endif
+
     const unsigned char* base = codeBlock.data();
     const unsigned char* pc   = base;
     List workList;
@@ -157,6 +174,7 @@ Machine::runBlock(ExecState* exec, const CodeBlock& codeBlock, ExecState* parent
     JSObject* globalObject = exec->dynamicInterpreter()->globalObject();
 
     while (true) {
+    begin:
 #ifdef COUNT_INSTRS
         OpByteCode opCodeLog = *reinterpret_cast<const OpByteCode*>(pc);
         ++instrCounts[opCodeLog];

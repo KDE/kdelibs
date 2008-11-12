@@ -279,7 +279,7 @@ jump BeginForIn {
         if (!e->isUndefinedOrNull()) {
             JSObject* v = e->toObject(exec);
             // The above might raise an exception, which would cleanup the array!
-            if (pc != localPC) break;
+            if (pc != localPC) continue;
 
             v->getPropertyNames(exec, exec->activePropertyNameArray());
             $$ = v;
@@ -375,7 +375,7 @@ operation EnterCatch {
             // By this point, the previous handler has been popped, so we should have the
             // 'finally' bound as the handler. Hence, set the completion again to jump to it.
             exec->setAbruptCompletion(exec->abruptCompletion());
-            break;
+            continue;
         }
 
         // Now we have a plain, old exception. Grab & clear exception it exec state,
@@ -564,7 +564,7 @@ operation ScopeLookup {
 
         if (errorNode && iter == end) {
             $$ = errorNode->throwUndefinedVariableError(exec, *varName);
-            break;
+            continue;
         }
 
         $$ = scopeObj;
@@ -599,7 +599,7 @@ operation NonLocalScopeLookup {
 
         if (errorNode && iter == end) {
             $$ = errorNode->throwUndefinedVariableError(exec, *varName);
-            break;
+            continue;
         }
         $$ = scopeObj;
     ]]
@@ -710,13 +710,13 @@ operation BracketGet {
 
         if (v2->getUInt32(i)) {
     	   $$ = v1->getByIndex(exec, i);
-    	   break;
+    	   continue;
         }
 
         JSObject *o = v1->toObject(exec);
         // Make sure to  handle exception immediately, here, since toString might throw, too!
         if (exec->hadException())
-            break;
+            continue;
 
         // IMPORTANT: The call and store to $$ should be two steps, since ::get can tear off frames!
         JSValue* val = o->get(exec, Identifier(v2->toString(exec)));
@@ -735,7 +735,7 @@ operation BracketGetAndBind {
         JSObject *o = v1->toObject(exec);
         // Make sure to  handle exception immediately, here, since toString might throw, too!
         if (exec->hadException())
-            break;
+            continue;
 
         localStore[objDest].val.valueVal = o;
 
@@ -808,7 +808,7 @@ operation BracketDelete {
         uint32_t i;
         JSObject *o = v1->toObject(exec);
         if (pc != localPC)
-            break;
+            continue;
 
         if (v2->getUInt32(i))
             $$ = o->deleteProperty(exec, i);
@@ -819,7 +819,7 @@ operation BracketDelete {
     impl bool(value v1, int32 [exact] i) [[
         JSObject *o = v1->toObject(exec);
         if (pc != localPC)
-            break;
+            continue;
 
         $$ = o->deleteProperty(exec, (uint32_t)i);
     ]]
@@ -932,9 +932,9 @@ operation Add {
     impl value(value v1, value v2) costs 50 [[
         // exception for the Date exception in defaultValue()
         JSValue *p1 = v1->toPrimitive(exec, UnspecifiedType);
-        if (pc != localPC) break;
+        if (pc != localPC) continue;
         JSValue *p2 = v2->toPrimitive(exec, UnspecifiedType);
-        if (pc != localPC) break;
+        if (pc != localPC) continue;
 
         if (p1->isString() || p2->isString()) {
             UString value = p1->toString(exec) + p2->toString(exec);
@@ -1126,7 +1126,7 @@ operation In {
     impl bool (value v1, value v2) [[
         if (!v2->isObject()) {
             throwError(exec,  TypeError, "Value is not an object. Cannot be used with IN expression.");
-            break;
+            continue;
         }
         JSObject* o2 = static_cast<JSObject*>(v2);
         $$ = o2->hasProperty(exec, Identifier(v1->toString(exec)));
@@ -1137,7 +1137,7 @@ operation InstanceOf {
     impl bool (value v1, value v2) [[
         if (!v2->isObject()) {
             throwError(exec,  TypeError, "Value is not an object. Cannot be used with instanceof operator.");
-            break;
+            continue;
         }
 
         JSObject* o2 = static_cast<JSObject*>(v2);
@@ -1191,7 +1191,7 @@ operation FunctionCall {
         if (!v->implementsCall()) {
             throwError(exec, TypeError, "Attempt to use a non-function object or a value as a function.");
             //return throwError(exec, TypeError, notAnObjectMessage(), v, expr.get());
-            break;
+            continue;
         }
 
         JSObject *func = static_cast<JSObject*>(v);
@@ -1206,7 +1206,7 @@ operation CtorCall {
         if (!v->isObject()) {
             throwError(exec, TypeError, "Value is not an object. Cannot be used with new.");
             //return throwError(exec, TypeError, "Value %s (result of expression %s) is not an object. Cannot be used with new.", v, expr.get());
-            break;
+            continue;
         }
 
         JSObject *constr = static_cast<JSObject*>(v);
@@ -1214,7 +1214,7 @@ operation CtorCall {
             throwError(exec, TypeError, "Value is not a constructor. Cannot be used with new.");
             // ### TODO
             // return throwError(exec, TypeError, "Value %s (result of expression %s) is not a constructor. Cannot be used with new.", v, expr.get());
-            break;
+            continue;
         }
 
         JSValue* val = constr->construct(exec, workList);

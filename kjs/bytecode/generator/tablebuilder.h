@@ -24,6 +24,7 @@
 #ifndef TABLE_BUILDER_H
 #define TABLE_BUILDER_H
 
+#include "filetemplate.h"
 #include "codeprinter.h"
 #include "types.h"
 #include "parser.h"
@@ -57,7 +58,7 @@ class TableBuilder: public Parser
 {
 public:
     TableBuilder(istream* inStream, ostream* hStream, ostream* cppStream,
-                 ostream* mStream);
+                 FileTemplate* fTemplate, ostream* mStream);
 
     void generateCode();
 private:
@@ -99,6 +100,8 @@ private:
     StringList  variantNames;
     vector<OperationVariant> variants;
     map<string, StringList>  variantNamesForOp;
+
+    FileTemplate* fTemplate;
 };
 
 #endif
