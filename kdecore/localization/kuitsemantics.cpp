@@ -818,9 +818,9 @@ static Kuit::NumfmtVar parseNumberFormat (const QString &fmtstr)
     KuitSemanticsStaticData *s = staticData;
 
     KConfigGroup cg(KGlobal::config().data(), "Locale");
-    QString currctry = cg.readEntry("Country");
+    QString currctry = cg.readEntry("Country").toLower();
     Kuit::NumfmtVar currfmt = Kuit::Numfmt::Posix;
-    foreach (const QString ctryfmt, fmtstr.split(',')) {
+    foreach (const QString ctryfmt, fmtstr.toLower().split(',')) {
         QStringList lst = ctryfmt.split(':');
         QString ctry, fmtname;
         if (lst.size() == 2) {
@@ -877,12 +877,12 @@ void KuitSemanticsPrivate::setTextTransformData ()
     // where fmt is the default, ctry1 uses fmt1, ctry2 uses fmt2, etc.
     // (countries are given by their ISO 3166-1 alpha-2 code,
     // see http://en.wikipedia.org/wiki/ISO_3166-1 for list of codes).
-    QString fmtstrInt = I18N_NOOP2("number-format:integer", "us").toLower();
+    QString fmtstrInt = I18N_NOOP2("number-format:integer", "us");
     m_numfmtInt = parseNumberFormat(fmtstrInt);
 
     // i18n: Decide how real-valued amounts will be formatted in this
     // language. See the comment to previous entry.
-    QString fmtstrReal = I18N_NOOP2("number-format:real", "us").toLower();
+    QString fmtstrReal = I18N_NOOP2("number-format:real", "us");
     m_numfmtReal = parseNumberFormat(fmtstrReal);
 
     // If adherence to locale settings requested, set it globally.
