@@ -33,17 +33,15 @@ struct Operation
 {
     string name;
     string retType;
-    vector<Type> parameters;
     int          cost;
     int          codeLine;
-    bool         overload;
     bool         endsBB;
     bool         isTile;
+    bool         overload;
 
     string implementAs;
-    vector<Type> implParams;
-    StringList   implParamNames;
-    HintList     implHints;
+    vector<Type>      opParamTypes; // the types of params of the bytecode operation
+    vector<Parameter> implParams;   // the params the [[ code ]]  block takes
 };
 
 struct OperationVariant
@@ -75,8 +73,8 @@ private:
 
     virtual void handleOperation(const string& name, bool endsBB);
     virtual void handleImpl(const string& fnName, const string& code, bool overload,
-                            int codeLine, int cost, const string& retType, StringList sig,
-                            StringList paramNames, HintList hints);
+                            int codeLine, int cost,
+                            const string& retType, vector<Parameter> sig);
     virtual void handleTile(const string& fnName, StringList sig);
 
     // Enumerates all r/i/pad variants; plus computes the shuffle table.

@@ -148,37 +148,38 @@ void TableBuilder::handleOperation(const string& name, bool endsBB)
 }
 
 void TableBuilder::handleImpl(const string& fnName, const string& code, bool ol, int codeLine, int cost,
-                              const string& retType, StringList sig, StringList paramNames, HintList hints)
+                              const string& retType, vector<Parameter> sig)
 {
     // If the return type isn't 'void', we prepend a destination register as a parameter in the encoding.
     // emitOp will convert things as needed
-    StringList extSig;
-    StringList extParamNames;
-    HintList   extHints;
+    vector<Parameter> extSig;
     if (retType != "void") {
-        extSig.push_back("reg");
-        extParamNames.push_back("fbDestReg");
-        extHints.push_back(NoHint);
+        Parameter ret;
+        ret.typeName = "reg";
+        ret.name     = "fbDestReg";
+        ret.flags    = 0;
+        extSig.push_back(ret);
     }
 
-    for (unsigned c = 0; c < sig.size(); ++c) {
+    for (unsigned c = 0; c < sig.size(); ++c)
         extSig.push_back(sig[c]);
-        extParamNames.push_back(paramNames[c]);
-        extHints.push_back(hints[c]);
+
+    // Now go through and resolve each type. These are also
+    // the types of the params of this base op.
+    Operation op;
+    for (unsigned c = 0; c < extSig.size(); ++c) {
+        extSig[c].type = types.resolveType(extSig[c].typeName);
+        op.opParamTypes.push_back(extSig[c].type);
     }
 
-    Operation op;
     op.name           = operationNames.back();
     op.retType        = retType;
     op.overload       = ol;
     operationRetTypes[op.name] = retType;
     op.isTile         = false;
     op.implementAs    = code;
+    op.implParams     = extSig;
     op.codeLine       = codeLine;
-    op.parameters     = types.resolveSignature(extSig);
-    op.implParams     = op.parameters;
-    op.implParamNames = extParamNames;
-    op.implHints      = extHints;
     op.cost           = cost;
     op.endsBB         = operationEndBB.back();
     operations.push_back(op);
@@ -200,35 +201,28 @@ void TableBuilder::handleTile(const string& fnName, StringList sig)
     for (unsigned c = 0; c < sig.size(); ++c)
         extSig.push_back(sig[c]);
 
-    Operation op;
-    op.name        = operationNames.back();
-    op.isTile      = true;
-    op.implementAs = impl.implementAs;
-    op.codeLine    = impl.codeLine;
-    op.retType     = impl.retType;
-    op.overload    = impl.overload; // if original required precise matching, so did the tile.
-    op.parameters  = types.resolveSignature(extSig);
-    op.implParams     = impl.implParams;
-    op.implParamNames = impl.implParamNames;
-    // ### not sure we want this here
-    op.implHints     = impl.implHints;
-    op.endsBB        = impl.endsBB;
     
-    op.cost           = impl.cost;
+
+    // Most of the stuff is the same as in the base impl,
+    // but we have a different external signature, and are a tile.
+    Operation op = impl;
+    op.isTile       = true;
+    op.opParamTypes = types.resolveSignature(extSig);
+    
     // Now also include the cost of inline conversions.
-    for (unsigned p = 0; p < op.parameters.size(); ++p)
-        op.cost += types.immConv(op.parameters[p], op.implParams[p]).cost;
+    for (unsigned p = 0; p < op.opParamTypes.size(); ++p)
+        op.cost += types.immConv(op.opParamTypes[p], op.implParams[p].type).cost;
 
     operations.push_back(op);
 }
 
 void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& paramIsIm)
 {
-    int numParams = op.parameters.size();
+    int numParams = op.opParamTypes.size();
     if (paramIsIm.size() < numParams) {
         int paramPos = paramIsIm.size();
-        bool hasIm  = op.parameters[paramPos].flags & Type_HaveImm;
-        bool hasReg = op.parameters[paramPos].flags & Type_HaveReg;
+        bool hasIm  = op.opParamTypes[paramPos].flags & Type_HaveImm;
+        bool hasReg = op.opParamTypes[paramPos].flags & Type_HaveReg;
 
         bool genIm  = hasIm;
         bool genReg = hasReg;
@@ -238,12 +232,12 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
             genIm = false;
 
         // There may be hints saying not to generate some version
-        if (op.implHints[paramPos] & NoImm)
+        if (op.implParams[paramPos].flags & Param_NoImm)
             genIm = false;
 
-        if (op.implHints[paramPos] & NoReg)
+        if (op.implParams[paramPos].flags & Param_NoReg)
             genReg = false;
-        
+
         if (genIm) {
             paramIsIm.push_back(true);
             expandOperationVariants(op, paramIsIm);
@@ -264,13 +258,13 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
     for (int p = 0; p < numParams; ++p) {
         sig += "_";
         sig += paramIsIm[p] ? "I" : "R";
-        sig += op.parameters[p].name;
+        sig += op.opParamTypes[p].name;
     }
 
     // We may need padding if we have an immediate align8 param..
     bool needsPad = false;
     for (int c = 0; c < numParams; ++c)
-        needsPad |= (paramIsIm[c] & op.parameters[c].alignTo8());
+        needsPad |= (paramIsIm[c] & op.opParamTypes[c].alignTo8());
 
     OperationVariant var;
     var.sig = sig;
@@ -285,7 +279,7 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
     int pos = 4;
     // pad8/align ones go first.
     for (int c = 0; c < numParams; ++c) {
-        if (paramIsIm[c] & op.parameters[c].alignTo8()) {
+        if (paramIsIm[c] & op.opParamTypes[c].alignTo8()) {
             var.paramOffsets[c] = pos;
             pos += 8;
         }
@@ -293,7 +287,7 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
 
     // Then the rest..
     for (int c = 0; c < numParams; ++c) {
-        if (!paramIsIm[c] || !op.parameters[c].alignTo8()) {
+        if (!paramIsIm[c] || !op.opParamTypes[c].alignTo8()) {
             var.paramOffsets[c] = pos;
             pos += 4;
         }
@@ -317,13 +311,13 @@ void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool 
     out(OpCpp) << "Op_" << variant.op.name << ", ";     // baseInstr..
     out(OpCpp) << "OpByteCode_" << (doPad ? variant.sig + "_Pad" : variant.sig) << ", "; // byteCode op
     out(OpCpp) << variant.op.cost << ", "; // uhm, cost. doh.
-    int numParams = variant.op.parameters.size();
+    int numParams = variant.op.opParamTypes.size();
     out(OpCpp) << numParams << ", "; // # of params
 
     // Param types.
     out(OpCpp) << "{";
     for (int p = 0; p < numParams; ++p) {
-        out(OpCpp) << "OpType_" << variant.op.parameters[p].name;
+        out(OpCpp) << "OpType_" << variant.op.opParamTypes[p].name;
         if (p != numParams - 1)
             out(OpCpp) << ", ";
     }
@@ -380,7 +374,7 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
     mInd(16) << "const unsigned char* localPC = pc;\n";
     int numParams = variant.paramIsIm.size();
     for (int p = 0; p < numParams; ++p) {
-        const Type& type  = variant.op.parameters[p];
+        const Type& type  = variant.op.opParamTypes[p];
         bool        inReg = !variant.paramIsIm[p];
         int negPos = variant.paramOffsets[p] - variant.size;
 
@@ -399,13 +393,13 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
             accessString = "reinterpret_cast<const LocalStorageEntry*>(reinterpret_cast<const unsigned char*>(localStore) + " + accessString + ")->val." + type.name + "Val";
         }
 
-        mInd(16) << variant.op.implParams[p].nativeName << " " << variant.op.implParamNames[p]
+        mInd(16) << variant.op.implParams[p].type.nativeName << " " << variant.op.implParams[p].name
                      << " = ";
-        if (type == variant.op.implParams[p]) {
+        if (type == variant.op.implParams[p].type) {
             // We don't need a conversion, just fetch it directly into name..
             out(MaCpp) << accessString << ";\n";
         } else {
-            ConversionInfo conv = types.immConv(type, variant.op.implParams[p]);
+            ConversionInfo conv = types.immConv(type, variant.op.implParams[p].type);
             out(MaCpp) << "convert" << conv.name << "(exec, " << accessString << ");\n";
 
             if (conv.flags & Conv_MayThrow) {

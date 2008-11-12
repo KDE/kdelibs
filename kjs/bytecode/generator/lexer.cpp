@@ -46,7 +46,6 @@ Lexer::Lexer(istream* _stream): stream(_stream), charLoaded(false), lineNum(0)
     keywords["tile"]        = Tile;
     keywords["as"]          = As;
     keywords["runtime"]     = Runtime;
-    keywords["noimm"]       = NoImm;
     lineNum = 1;
 }
 

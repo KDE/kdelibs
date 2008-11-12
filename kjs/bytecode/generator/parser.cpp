@@ -212,6 +212,7 @@ void Parser::parseConversion()
         {"mayThrow", Conv_MayThrow},
         {0, 0}
     };
+                                                                                                                                               
 
     unsigned flags = 0;
     string code;
@@ -289,26 +290,26 @@ void Parser::parseImpl()
         fn = matchIdentifier();
     match(Lexer::LParen);
 
+    const Flag paramFlags[] = {
+        {"noimm", Param_NoImm},
+        {"noreg", Param_NoReg},
+        {"exact", Param_Exact},
+        {0, 0}
+    };
+
     // Parse parameter types and names, if any..
-    StringList paramSigs;
-    StringList paramNames;
-    HintList   paramHints;
+    vector<Parameter> params;
     while (peekNext().type != Lexer::RParen) {
-        paramSigs.push_back (matchIdentifier());
+        Parameter param;
+        param.typeName = matchIdentifier();
+        param.flags    = matchFlags(paramFlags);
+        param.name     = matchIdentifier();
 
-        if (peekNext().type == Lexer::NoImm) {
-            getNext();
-            paramHints.push_back(NoImm);
-        } else {
-            paramHints.push_back(NoHint);
-        }
-        
-        paramNames.push_back(matchIdentifier());
+        params.push_back(param);
 
-        
-        if (peekNext().type != Lexer::Comma)
+        if (!check(Lexer::Comma))
             break;
-        getNext(); // Eat the comma..
+            
         // Make sure we have an ident next, and not an rparen..
         if (peekNext().type != Lexer::Ident)
             issueError("Parameter signature in impl doesn't start with an identifier!");
@@ -325,7 +326,7 @@ void Parser::parseImpl()
     string code;
     matchCode(&code, &codeLine);
 
-    handleImpl(fn, code, overload, codeLine, cost, ret, paramSigs, paramNames, paramHints);
+    handleImpl(fn, code, overload, codeLine, cost, ret, params);
 }
 
 void Parser::parseTile()

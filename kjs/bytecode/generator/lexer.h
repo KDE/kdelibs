@@ -64,8 +64,7 @@ public:
         Overload,
         Tile,
         As,
-        Runtime,
-        NoImm
+        Runtime
     };
 
     struct Token {

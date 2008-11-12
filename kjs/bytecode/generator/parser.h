@@ -30,14 +30,21 @@
 
 #include <vector>
 
-enum Hints {
-    NoHint = 0,
-    NoImm = 1,
-    NoReg = 2,
-    Limit = 0xFFFF
+enum ParamFlags {
+    Param_NoImm = 1,
+    Param_NoReg = 2,
+    Param_Exact = 4
 };
 
-typedef std::vector<Hints> HintList;
+struct Parameter
+{
+    string   name;
+    string   typeName; // name of the type of the parameter, set by the parser
+    Type     type;     // the actual type of the parameter, resolved by the TableBuilder.
+    unsigned flags;
+
+    Parameter(): flags(0) {}
+};
 
 class Parser
 {
@@ -57,8 +64,8 @@ private:
            
     virtual void handleOperation(const string& name, bool endsBB) = 0;
     virtual void handleImpl(const string& fnName, const string& code, bool overload,
-                            int codeLine, int cost, const string& retType, StringList sig,
-                            StringList paramNames, HintList hints) = 0;
+                            int codeLine, int cost,
+                            const string& retType, vector<Parameter> sig) = 0;
     virtual void handleTile(const string& fnName, StringList sig) = 0;
 
     struct Flag {

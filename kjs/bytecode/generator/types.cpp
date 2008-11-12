@@ -243,29 +243,32 @@ void TypeTable::handleConversion(const string& code, int codeLine,
         // the immediate conversion helper we'll emit in it.
         instrBuilder->handleOperation(regName, false);
 
-        StringList sig;
-        sig.push_back(from);
-        StringList names;
-        names.push_back("in");
-        HintList hints;
-        hints.push_back(NoHint);
-
+        vector<Parameter> sig;
+        Parameter param;
+        param.name     = "in";
+        param.typeName = from;
+        sig.push_back(param);
+        
         string code = inf.to.nativeName + " out = convertI" + inf.name.substr(1) + "(exec, in);\n";
         code += "$$ = out;\n";
-        instrBuilder->handleImpl("", code, false, codeLine, 0, to, sig, names, hints);
+        instrBuilder->handleImpl("", code, true, codeLine, 0, to, sig);
     }
+}
+
+Type TypeTable::resolveType(const string& type)
+{
+    if (types.find(type) != types.end())
+        return types[type];
+    else
+        out.issueError("Unknown type:" + type);
 }
 
 vector<Type> TypeTable::resolveSignature(const StringList& in)
 {
     vector<Type> sig;
-    for (unsigned c = 0; c < in.size(); ++c) {
-        const string& type = in[c];
-        if (types.find(type) != types.end())
-            sig.push_back(types[type]);
-        else
-            out.issueError("Unknown type:" + type);
-    }
+    for (unsigned c = 0; c < in.size(); ++c)
+        sig.push_back(resolveType(in[c]));
+
     return sig;
 }
 

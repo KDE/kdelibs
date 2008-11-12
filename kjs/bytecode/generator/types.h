@@ -110,6 +110,7 @@ public:
 
     // issues error if there is a problem..
     vector<Type> resolveSignature(const StringList& in);
+    Type         resolveType(const string& type);
 
     ConversionInfo immConv(const Type& from, const Type& to);
 private:

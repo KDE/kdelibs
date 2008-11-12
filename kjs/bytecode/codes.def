@@ -662,7 +662,7 @@ operation ToObject {
 
 // Put for an object..
 operation SymPutKnownObject {
-    impl void symPutKnownObject(value noimm scope, ident varName, value val) [[
+    impl void symPutKnownObject(value [noimm] scope, ident varName, value val) [[
         ASSERT(scope->isObject());
         static_cast<JSObject*>(scope)->put(exec, *varName, val);
     ]]
@@ -693,7 +693,7 @@ operation SymGetKnownObject {
 
 // As above, but also stores the object
 operation SymGetAndBind {
-    impl value (reg objDest, value noimm base, ident varName) [[
+    impl value (reg objDest, value [noimm] base, ident varName) [[
         JSObject* baseObj = base->toObject(exec);
         // toObject may fail and return an exception object, but get from it is harmless
         localStore[objDest].val.valueVal = baseObj;
@@ -705,7 +705,7 @@ operation SymGetAndBind {
 }
 
 operation BracketGet {
-    impl value (value noimm v1, value v2) costs 50 [[
+    impl value (value [noimm] v1, value v2) costs 50 [[
         uint32_t i;
 
         if (v2->getUInt32(i)) {
@@ -723,14 +723,14 @@ operation BracketGet {
         $$ = val;
     ]]
 
-    overload value (value noimm base, int32 prop) [[
+    overload value (value [noimm] base, int32 prop) [[
         $$ = base->getByIndex(exec, prop);
     ]]
 }
 
 // Also computes the base object
 operation BracketGetAndBind {
-    impl value (reg objDest, value noimm v1, value v2) costs 50 [[
+    impl value (reg objDest, value [noimm] v1, value v2) costs 50 [[
         uint32_t i;
         JSObject *o = v1->toObject(exec);
         // Make sure to  handle exception immediately, here, since toString might throw, too!
@@ -747,7 +747,7 @@ operation BracketGetAndBind {
         $$ = val;
     ]]
 
-    overload value (reg objDest, value noimm base, int32 prop) [[
+    overload value (reg objDest, value [noimm] base, int32 prop) [[
         JSObject* baseObj = base->toObject(exec);
         // toObject may fail and return an exception object, but get from it is harmless
         localStore[objDest].val.valueVal = baseObj;
@@ -758,7 +758,7 @@ operation BracketGetAndBind {
 
 
 operation BracketPutKnownObject {
-    impl void (value noimm v1, value v2, value v3) costs 50 [[
+    impl void (value [noimm] v1, value v2, value v3) costs 50 [[
         ASSERT(v1->isObject());
         uint32_t i;
         JSObject *o = static_cast<JSObject*>(v1);
@@ -769,7 +769,7 @@ operation BracketPutKnownObject {
             o->put(exec, Identifier(v2->toString(exec)), v3);
     ]]
 
-    overload void (value noimm base, int32 prop, value val) [[
+    overload void (value [noimm] base, int32 prop, value val) [[
         ASSERT(base->isObject());
         static_cast<JSObject*>(base)->put(exec, (uint32_t)prop, val);
     ]]
@@ -804,7 +804,7 @@ operation SymDelete {
 }
 
 operation BracketDelete {
-    impl bool(value noimm v1, value v2) costs 50 [[
+    impl bool(value [noimm] v1, value v2) costs 50 [[
         uint32_t i;
         JSObject *o = v1->toObject(exec);
         if (pc != localPC)
@@ -859,7 +859,7 @@ operation NewRegExp {
 }
 
 operation DefineGetter {
-    impl void(value noimm base, ident name, value getter) [[
+    impl void(value [noimm] base, ident name, value getter) [[
         ASSERT(base->isObject());
         ASSERT(getter->isObject());
         static_cast<JSObject*>(base)->defineGetter(exec, *name, static_cast<JSObject*>(getter));
@@ -867,7 +867,7 @@ operation DefineGetter {
 }
 
 operation DefineSetter {
-    impl void(value noimm base, ident name, value setter) [[
+    impl void(value [noimm] base, ident name, value setter) [[
         ASSERT(base->isObject());
         ASSERT(setter->isObject());
         static_cast<JSObject*>(base)->defineSetter(exec, *name, static_cast<JSObject*>(setter));
