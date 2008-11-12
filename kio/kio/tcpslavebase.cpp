@@ -162,7 +162,7 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
 {
     ssize_t written = d->socket.write(data, len);
     if (written == -1) {
-        kDebug(7029) << "d->socket.write() returned -1! Socket error is"
+        kDebug(7027) << "d->socket.write() returned -1! Socket error is"
                      << d->socket.error() << ", Socket state is" << d->socket.state();
     }
 
@@ -180,7 +180,7 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
     d->socket.flush();  //this is supposed to get the data on the wire faster
 
     if (d->socket.state() != KTcpSocket::ConnectedState && !success) {
-        kDebug(7029) << "Write failed, will return -1! Socket error is"
+        kDebug(7027) << "Write failed, will return -1! Socket error is"
                      << d->socket.error() << ", Socket state is" << d->socket.state()
                      << "Return value of waitForBytesWritten() is" << success;
         return -1;
@@ -337,7 +337,7 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
 
 void TCPSlaveBase::disconnectFromHost()
 {
-    kDebug(7029);
+    kDebug(7027);
     d->host.clear();
     d->ip.clear();
     d->usingSSL = false;
