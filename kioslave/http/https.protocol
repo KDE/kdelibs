@@ -8,5 +8,5 @@ defaultMimetype=application/octet-stream
 determineMimetypeFromExtension=false
 Icon=text-html
 config=http
-X-DocPath=kioslave/https.html
+X-DocPath=kioslave/http/index.html
 Class=:internet

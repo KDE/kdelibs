@@ -14,5 +14,5 @@ moving=true
 ProxiedBy=http
 Icon=folder-remote
 maxInstances=2
-X-DocPath=kioslave/ftp.html
+X-DocPath=kioslave/ftp/index.html
 Class=:internet

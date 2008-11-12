@@ -14,5 +14,5 @@ defaultMimetype=application/octet-stream
 determineMimetypeFromExtension=false
 Icon=folder-remote
 config=webdav
-X-DocPath=kioslave/webdavs.html
+X-DocPath=kioslave/webdav/index.html
 Class=:internet

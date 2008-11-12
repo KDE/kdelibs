@@ -12,5 +12,5 @@ linking=true
 moving=true
 opening=true
 maxInstances=4
-X-DocPath=kioslave/file.html
+X-DocPath=kioslave/file/index.html
 Class=:local

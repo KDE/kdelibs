@@ -10,5 +10,5 @@ defaultMimetype=application/octet-stream
 determineMimetypeFromExtension=false
 Icon=text-html
 maxInstances=3
-X-DocPath=kioslave/http.html
+X-DocPath=kioslave/http/index.html
 Class=:internet
