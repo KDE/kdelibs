@@ -1516,16 +1516,16 @@ void TryNode::generateExecCode(CompileState* comp)
 
 void FunctionBodyNode::generateExecCode(CompileState* comp)
 {
-    // Load 'scope', global and 'this' pointers.
-    // ### probably want to do all of these direct, and skip a bunch of ops.
-    OpValue scopeVal;
-    CodeGen::emitOp(comp, Op_GetVariableObject, &scopeVal);
+    // Load scope, global and 'this' pointers.
+    OpValue scopeVal,  scopeReg,
+            globalVal, globalReg,
+            thisVal,   thisReg;
 
-    OpValue globalVal;
-    CodeGen::emitOp(comp, Op_GetGlobalObject, &globalVal);
+    comp->requestTemporary(OpType_value, &scopeVal,  &scopeReg);
+    comp->requestTemporary(OpType_value, &globalVal, &globalReg);
+    comp->requestTemporary(OpType_value, &thisVal,   &thisReg);
 
-    OpValue thisVal;
-    CodeGen::emitOp(comp, Op_This, &thisVal);
+    CodeGen::emitOp(comp, Op_Preamble, 0, &scopeReg, &globalReg, &thisReg);
 
     comp->setPreloadRegs(&scopeVal, &globalVal, &thisVal);
 
@@ -1534,8 +1534,7 @@ void FunctionBodyNode::generateExecCode(CompileState* comp)
         comp->requestTemporary(OpType_value, &evalResVal, &evalResReg);
         comp->setEvalResultRegister(&evalResReg);
 
-        OpValue und = OpValue::immValue(jsUndefined());
-        CodeGen::emitOp(comp, Op_RegPutValue, 0, &evalResReg, &und);
+        // There is no need to initialize this as everything will be set to undefined anyway
     }
 
     // Set unwind..

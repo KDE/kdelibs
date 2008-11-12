@@ -109,13 +109,9 @@ namespace KJS {
         Silent           ///< just update the exception object. For debugger-type use only
     };
 
-    void pushExceptionHandler(HandlerType type, Addr addr = 0) {
-        m_exceptionHandlers.append(ExceptionHandler(type, addr));
-    }
+    void pushExceptionHandler(HandlerType type, Addr addr = 0);
 
-    void popExceptionHandler() {
-        m_exceptionHandlers.removeLast();
-    }
+    void popExceptionHandler();
 
     // Cleanup depth entries from the stack, w/o running jumps
     void quietUnwind(int depth);

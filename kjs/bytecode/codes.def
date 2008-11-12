@@ -450,25 +450,18 @@ operation RaiseError {
     ]]
 }
 
+// Function entry: set things we cache in registers
+operation Preamble {
+    impl void(reg scopeReg, reg globalReg, reg thisReg) [[
+         localStore[scopeReg ].val.valueVal = exec->variableObject();
+         localStore[thisReg  ].val.valueVal = exec->thisValue();
+         localStore[globalReg].val.valueVal = globalObject;
+    ]]
+}
+
 // Variable stuff... Locals access can just use register addressing,
 // not specific get/put, but when we have to do symbolic lookup, we use these.
-operation This {
-    impl value getThis() [[
-        $$ = exec->thisValue();
-    ]]
-}
 
-operation GetVariableObject {
-    impl value getVariableObject() [[
-        $$ = exec->variableObject();
-    ]]
-}
-
-operation GetGlobalObject {
-    impl value() [[
-        $$ = globalObject;
-    ]]
-}
 
 operation FunctionLookupAndGet {
     impl value(reg thisOutReg, ident varName) [[

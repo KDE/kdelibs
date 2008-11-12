@@ -114,9 +114,20 @@ ExecState::ExecState(Interpreter* intp, ExecState* save) :
 ExecState::~ExecState()
 {
     for (size_t c = 0; c < m_activePropertyNameArrays.size(); ++c)
-	delete m_activePropertyNameArrays[c].array;
+        delete m_activePropertyNameArrays[c].array;
     m_interpreter->setExecState(m_savedExec);
 }
+
+void ExecState::pushExceptionHandler(HandlerType type, Addr addr)
+{
+    m_exceptionHandlers.append(ExceptionHandler(type, addr));
+}
+
+void ExecState::popExceptionHandler()
+{
+    m_exceptionHandlers.removeLast();
+}
+
 
 JSValue* ExecState::reactivateCompletion(bool insideTryFinally)
 {
