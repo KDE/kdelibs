@@ -9,5 +9,5 @@ reading=false
 writing=false
 makedir=false
 deleting=false
-X-DocPath=kioslave/telnet.html
+X-DocPath=kioslave/telnet/index.html
 Icon=utilities-terminal

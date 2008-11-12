@@ -9,5 +9,5 @@ reading=false
 writing=false
 makedir=false
 deleting=false
-X-DocPath=kioslave/rlogin.html
+X-DocPath=kioslave/rlogin/index.html
 Icon=utilities-terminal

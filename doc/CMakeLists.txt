@@ -1,5 +1,7 @@
 
 add_subdirectory( common )
+add_subdirectory( kioslave )
+
 if (NOT WIN32)
     add_subdirectory( checkXML )
     add_subdirectory( kbuildsycoca4 )
