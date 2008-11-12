@@ -64,7 +64,7 @@ void TypeTable::generateCode()
     Array widths(out(OpCpp), "bool", "opTypeIsAlign8");
     for (unsigned t = 0; t < typeNames.size(); ++t) {
         const Type& type = types[typeNames[t]];
-        widths.item(type.align8 ? "true": "false", type.name);
+        widths.item(type.alignTo8() ? "true": "false", type.name);
     }
     widths.endArray();
 
@@ -107,11 +107,9 @@ void TypeTable::generateCode()
         const ConversionInfo& inf = imConversionList[c];
         out(OpCpp) << "    case Conv_" << inf.name << ":\n";
         out(OpCpp) << "        out.type = OpType_" << inf.to.name << ";\n";
-        out(OpCpp) << "        out.value." << (inf.to.align8 ? "wide" : "narrow")
-                   << "." << inf.to.name << "Val = "
+        out(OpCpp) << "        out.value." << inf.to.field() << " = "
                    << "convert" << inf.name << "(0, "
-                   << "original->value." << (inf.from.align8 ? "wide" : "narrow")
-                   << "." << inf.from.name << "Val);\n";
+                   << "original->value." << inf.from.field() << ");\n";
 
         out(OpCpp) << "        break;\n";
     }
@@ -158,9 +156,9 @@ void TypeTable::printConversionInfo(Array& outArr, map<string, map<string, Conve
                 // into local value.
                 bool representable;
                 if (reg)
-                    representable = types[fromName].reg && types[toName].reg;
+                    representable = types[fromName].hasReg() && types[toName].hasReg();
                 else
-                    representable = types[fromName].im;
+                    representable = types[fromName].hasImm();
 
                 if (from == to) {
                     item = "{Conv_NoOp, 0}";
@@ -195,15 +193,13 @@ void TypeTable::printConversionRoutine(const ConversionInfo& conversion)
     out(OpH) << "}\n\n";
 }
 
-void TypeTable::handleType(const string& type, const string& nativeName, bool im, bool rg, bool al8)
+void TypeTable::handleType(const string& type, const string& nativeName, unsigned flags)
 {
     typeNames.push_back(type);
     Type t;
-    t.name = type;
+    t.name  = type;
     t.nativeName = nativeName;
-    t.im     = im;
-    t.reg    = rg;
-    t.align8 = al8;
+    t.flags = flags;
     types[type] = t;
 }
 

@@ -34,6 +34,11 @@ using std::ostream;
 using std::vector;
 using std::map;
 
+enum TypeFlags {
+    Type_HaveImm = 1,
+    Type_HaveReg = 2,
+    Type_Align8  = 4
+};
 
 enum ConvFlags {
     Conv_NoFlags,
@@ -46,7 +51,27 @@ struct Type
 {
     string name;
     string nativeName;
-    bool im, reg, align8;
+
+    unsigned flags;
+
+    // may not be the same as Type_Align8 in the feature..
+    bool alignTo8() const {
+        return flags & Type_Align8;
+    }
+
+    bool hasReg() const {
+        return flags & Type_HaveReg;
+    }
+
+    bool hasImm() const {
+        return flags & Type_HaveImm;
+    }
+
+    // field in store cells to access for this type
+    string field() const {
+        return ((flags & Type_Align8) ? "wide" : "narrow") +
+                std::string(".") + name + "Val";
+    }
 
     bool operator==(const Type& other) const {
         return name == other.name;
@@ -78,7 +103,7 @@ public:
 
     void generateCode();
     
-    void handleType(const string& type, const string& nativeName, bool im, bool rg, bool al8);
+    void handleType(const string& type, const string& nativeName, unsigned flags);
     void handleConversion(const string& runtimeRoutine, int codeLine,
                           unsigned flags, const string& from, const string& to,
                           int tileCost, int registerCost);

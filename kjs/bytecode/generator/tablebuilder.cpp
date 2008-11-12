@@ -129,9 +129,9 @@ void TableBuilder::generateCode()
     mInd(8) << "}\n\n";
 }
 
-void TableBuilder::handleType(const string& type, const string& nativeName, bool im, bool rg, bool al8)
+void TableBuilder::handleType(const string& type, const string& nativeName, unsigned flags)
 {
-    types.handleType(type, nativeName, im, rg, al8);
+    types.handleType(type, nativeName, flags);
 }
 
 void TableBuilder::handleConversion(const string& code, int codeLine,
@@ -227,8 +227,8 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
     int numParams = op.parameters.size();
     if (paramIsIm.size() < numParams) {
         int paramPos = paramIsIm.size();
-        bool hasIm  = op.parameters[paramPos].im;
-        bool hasReg = op.parameters[paramPos].reg;
+        bool hasIm  = op.parameters[paramPos].flags & Type_HaveImm;
+        bool hasReg = op.parameters[paramPos].flags & Type_HaveReg;
 
         bool genIm  = hasIm;
         bool genReg = hasReg;
@@ -270,7 +270,7 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
     // We may need padding if we have an immediate align8 param..
     bool needsPad = false;
     for (int c = 0; c < numParams; ++c)
-        needsPad |= (paramIsIm[c] & op.parameters[c].align8);
+        needsPad |= (paramIsIm[c] & op.parameters[c].alignTo8());
 
     OperationVariant var;
     var.sig = sig;
@@ -285,7 +285,7 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
     int pos = 4;
     // pad8/align ones go first.
     for (int c = 0; c < numParams; ++c) {
-        if (paramIsIm[c] & op.parameters[c].align8) {
+        if (paramIsIm[c] & op.parameters[c].alignTo8()) {
             var.paramOffsets[c] = pos;
             pos += 8;
         }
@@ -293,7 +293,7 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
 
     // Then the rest..
     for (int c = 0; c < numParams; ++c) {
-        if (!paramIsIm[c] || !op.parameters[c].align8) {
+        if (!paramIsIm[c] || !op.parameters[c].alignTo8()) {
             var.paramOffsets[c] = pos;
             pos += 4;
         }
@@ -384,7 +384,7 @@ void TableBuilder::generateVariantImpl(const OperationVariant& variant)
         bool        inReg = !variant.paramIsIm[p];
         int negPos = variant.paramOffsets[p] - variant.size;
 
-        bool wideArg = !inReg && type.align8;
+        bool wideArg = !inReg && type.alignTo8();
 
         char negPosStr[64];
         std::sprintf(negPosStr, "%d", negPos);

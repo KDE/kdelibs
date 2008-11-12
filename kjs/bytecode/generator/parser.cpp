@@ -86,7 +86,13 @@ unsigned Parser::matchFlags(const Flag* permittedFlags)
     unsigned flagsVal = 0;
     if (check(Lexer::LBracket)) {
         while (true) {
-            std::string flag = matchIdentifier();
+            std::string flag;
+
+            // We permit keywords to double as flags.
+            if (peekNext().isKeyword())
+                flag = getNext().toString(lexer);
+            else
+                flag = matchIdentifier();
 
             // Lookup the name.
             bool found = false;
@@ -108,15 +114,6 @@ unsigned Parser::matchFlags(const Flag* permittedFlags)
         }
     }
     return 0;
-}
-
-bool Parser::checkFlag(Lexer::TokenType t)
-{
-    if (peekNext().type == t) {
-        getNext();
-        return true;
-    }
-    return false;
 }
 
 void Parser::issueError(const string& msg)
@@ -169,7 +166,7 @@ void Parser::parse()
 
 void Parser::parseType()
 {
-    //type identifier:  nativeName *? (immediate | register | align8)*;
+    //type identifier:  nativeName *? [immediate?, register?, ?align8]?;
     match(Lexer::Type);
 
     string name = matchIdentifier();
@@ -185,28 +182,17 @@ void Parser::parseType()
     if (check(Lexer::Star))
         nativeName += "*";
 
-    bool im = false, rg = false, al8 = false;
+    const Flag typeFlags[] = {
+        {"immediate", Type_HaveImm},
+        {"register",  Type_HaveReg},
+        {"align8",    Type_Align8},
+        {0, 0}
+    };
 
-    Lexer::Token tok = getNext();
-    while (tok.type != Lexer::SemiColon) {
-        switch (tok.type) {
-        case Lexer::Immediate:
-            im = true;
-            break;
-        case Lexer::Register:
-            rg = true;
-            break;
-        case Lexer::Align8:
-            al8 = true;
-            break;
-        default:
-            issueError("Unexpected type decoration, got:" + tok.toString(lexer));
-        }
+    unsigned flags = matchFlags(typeFlags);
+    match(Lexer::SemiColon);
 
-        tok = getNext();
-    }
-
-    handleType(name, nativeName, im, rg, al8);
+    handleType(name, nativeName, flags);
 }
 
 void Parser::parseConversion()

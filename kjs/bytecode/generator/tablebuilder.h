@@ -68,7 +68,7 @@ private:
     // conversion ops.
     friend class TypeTable;
     
-    virtual void handleType(const string& type, const string& nativeName, bool im, bool rg, bool al8);
+    virtual void handleType(const string& type, const string& nativeName, unsigned flags);
     virtual void handleConversion(const string& runtimeRoutine, int codeLine,
                                   unsigned flags, const string& from, const string& to,
                                   int tileCost, int registerCost);

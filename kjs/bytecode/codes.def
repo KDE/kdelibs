@@ -24,41 +24,41 @@
  */
 
 // JS types.
-type bool: bool register immediate;
+type bool: bool [register, immediate];
 
 // We have to be careful about uint32/int32, as while number -> them behaves
 // transparently, the results may be converted back to a number, which may show
 // a sign
-type int32: int32_t register immediate;
+type int32: int32_t [register, immediate];
 
 // We provide immediate JSValue's, for the following:
 // 1) Small numeric constants
 // 2) undefined and null.
 // This relies on immediate value JSValue conversion rountines not touching exec!
-type value:  JSValue* register immediate align8;
+type value:  JSValue* [register, immediate, align8];
 
-type number: double register immediate align8;
+type number: double [register, immediate, align8];
 
 // Program types; these all represent stuff in source code and not actual program values
 // Hence, no conversions for them.
-type ident:  Identifier* immediate align8;
-type addr:  Addr        immediate;
-type reg:   Register    immediate; // an output register
+type ident:  Identifier* [immediate, align8];
+type addr:  Addr        [immediate];
+type reg:   Register    [immediate]; // an output register
 
 // We have to be careful with this type --- it only represents
 // string literals in the program, as we have no nice way of memory managing others..
 // ### we may want to use a register jsString type instead, in particular to
 // infer the proper overload of +, when appropriate
-type string: UString* immediate align8;
+type string: UString* [immediate, align8];
 
 // AST nodes passed to helpers... They may cast it further..
-type node: Node* immediate align8;
-type cstr: const char* immediate align8;
+type node: Node* [immediate, align8];
 
-// Used to store string representations bound by
+// for error messages and the like
+type cstr: const char* [immediate, align8];
 
 // Just for the return type...
-type void: void immediate;
+type void: void [immediate];
 
 /**
 Notes on the conversion rules from the spec:

@@ -57,7 +57,6 @@ public:
         Type,
         Conversion,
         Register,
-        Immediate,
         Operation,
         Jump,
         Costs,
@@ -65,7 +64,6 @@ public:
         Overload,
         Tile,
         As,
-        Align8,
         Runtime,
         NoImm
     };
@@ -79,6 +77,10 @@ public:
         Token() : type(Error), value("Uninitialized token") {}
         Token(TokenType t): type(t) {}
         Token(TokenType t, const string& v, int line = -1): type(t), value(v), lineNum(line) {}
+
+        bool isKeyword() const {
+            return type > EndOfFile;
+        }
 
         string toString(Lexer* lex)
         {

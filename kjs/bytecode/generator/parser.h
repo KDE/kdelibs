@@ -49,7 +49,7 @@ private:
     // Note: signatures here are just a list of strings;
     // the last one is the return type
 
-    virtual void handleType(const string& type, const string& nativeName, bool im, bool rg, bool al8) = 0;
+    virtual void handleType(const string& type, const string& nativeName, unsigned flags) = 0;
 
     virtual void handleConversion(const string& runtimeRoutine, int codeLine,
                                   unsigned flags, const string& from, const string& to,
@@ -80,9 +80,6 @@ private:
     // These conditionally consume given token if it's there,
     // and return true if so.
     bool check(Lexer::TokenType t);
-
-    // Checks whether an optional flag is next..
-    bool checkFlag(Lexer::TokenType t);
 
     void parseType();
     void parseConversion();

@@ -38,7 +38,6 @@ Lexer::Lexer(istream* _stream): stream(_stream), charLoaded(false), lineNum(0)
     keywords["type"]        = Type;
     keywords["conversion" ] = Conversion;
     keywords["register"]    = Register;
-    keywords["immediate"]   = Immediate;
     keywords["operation"]   = Operation;
     keywords["jump"]        = Jump;
     keywords["costs"]       = Costs;
@@ -46,7 +45,6 @@ Lexer::Lexer(istream* _stream): stream(_stream), charLoaded(false), lineNum(0)
     keywords["overload"]    = Overload;
     keywords["tile"]        = Tile;
     keywords["as"]          = As;
-    keywords["align8"]      = Align8;
     keywords["runtime"]     = Runtime;
     keywords["noimm"]       = NoImm;
     lineNum = 1;
