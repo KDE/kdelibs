@@ -61,8 +61,12 @@ ConvOp computeCast(const OpValue* in, OpType outType, bool outImmediate, int& co
             return Conv_NoOp;
         }
 
-        costOut = Cost_NoConversion;
-        return Conv_NoConversion;
+        // as a special case, int32 -> number conversion is always safe; otherwise
+        // exact matching can't happen
+        if (inType != OpType_int32 || outType != OpType_number) {
+            costOut = Cost_NoConversion;
+            return Conv_NoConversion;
+        }
     }
 
     // In general, if we're converting immediate to register, we first try to
