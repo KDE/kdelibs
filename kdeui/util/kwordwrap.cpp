@@ -61,11 +61,12 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
     bool wasBreakable = false; // value of isBreakable for last char (i-1)
     bool isParens = false; // true if one of ({[
     bool wasParens = false; // value of isParens for last char (i-1)
+    QString inputString = str;
 
     for ( int i = 0 ; i < len; ++i )
     {
-        QChar c = str.at(i);
-        int ww = fm.charWidth( str, i );
+        const QChar c = inputString.at(i);
+        const int ww = fm.charWidth(inputString, i);
 
         isParens = ( c == QLatin1Char('(') || c == QLatin1Char('[')
                      || c == QLatin1Char('{') );
@@ -74,7 +75,7 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
 
         // Special case for '(', '[' and '{': we want to break before them
         if ( !isBreakable && i < len-1 ) {
-            QChar nextc = str.at(i + 1); // look at next char
+            const QChar nextc = inputString.at(i + 1); // look at next char
             isBreakable = ( nextc == QLatin1Char('(')
                             || nextc == QLatin1Char('[')
                             || nextc == QLatin1Char('{') );
@@ -93,7 +94,7 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
             breakAt = lastBreak;
         if ( x + ww > w - 4 && lastBreak == -1 ) // time to break but found nowhere [-> break here]
             breakAt = i;
-        if ( i == len - 2 && x + ww + fm.charWidth( str, i+1 ) > w ) // don't leave the last char alone
+        if (i == len - 2 && x + ww + fm.charWidth(inputString, i+1) > w) // don't leave the last char alone
             breakAt = lastBreak == -1 ? i - 1 : lastBreak;
         if ( c == QLatin1Char('\n') ) // Forced break here
         {
@@ -104,6 +105,7 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
             }
             // remove the line feed from the string
             kw->d->m_text.remove(i, 1);
+            inputString.remove(i, 1);
             len--;
         }
         if ( breakAt != -1 )

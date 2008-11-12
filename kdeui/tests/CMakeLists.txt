@@ -36,6 +36,7 @@ KDEUI_UNIT_TESTS(
   kstandardactiontest
   kstandardshortcuttest
   kuniqueapptest
+  kwordwraptest
   kapplication_unittest
   kcolorutilstest
   kxmlgui_unittest
@@ -81,7 +82,6 @@ KDEUI_EXECUTABLE_TESTS(
   kdatetabletest
   kinputdialogtest
   ktabwidgettest
-  kwordwraptest
   ksqueezedtextlabeltest
   kpixmapregionselectordialogtest
   ktoolbarlabelactiontest
