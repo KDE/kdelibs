@@ -29,6 +29,7 @@
 #include <config.h>
 
 #include <QtCore/QPointer>
+#include <QtGui/QDesktopWidget>
 #include <QtGui/QFrame>
 #include <QtGui/QLayout>
 #include <QtGui/QMouseEvent>
@@ -67,7 +68,7 @@ class KToolBar::Private
         xmlguiClient(0),
         contextLockAction(0),
         IconSizeDefault(22),
-        ToolButtonStyleDefault(Qt::ToolButtonTextUnderIcon),
+        ToolButtonStyleDefault(Qt::ToolButtonTextBesideIcon),
         HiddenDefault(false),
         NewLineDefault(false),
         PositionDefault("Top"),
@@ -75,6 +76,20 @@ class KToolBar::Private
         context(0),
         dragAction(0)
     {
+        /**
+          TODO: if we get complaints about text beside icons on small screens,
+                try the following code out on such systems - aseigo.
+        // if we are on a small screen with a non-landscape ratio, then
+        // we revert to text under icons since width is probably not our
+        // friend in such cases
+        QDesktopWidget *desktop = QApplication::desktop();
+        QRect screenGeom = desktop->screenGeometry(desktop->primaryScreen());
+        qreal ratio = screenGeom.width() / qreal(screenGeom.height());
+
+        if (screenGeom.width() < 1024 && ratio <= 1.4) {
+            ToolButtonStyleDefault = Qt::ToolButtonTextUnderIcon;
+        }
+        **/
     }
 
     void slotReadConfig();
