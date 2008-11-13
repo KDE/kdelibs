@@ -552,10 +552,10 @@ public:
 
   /**
    * Adds to the current path.
-   * Assumes that the current path is a directory. @p _txt is appended to the
+   * Assumes that the current path is a directory. @p txt is appended to the
    * current path. The function adds '/' if needed while concatenating.
    * This means it does not matter whether the current path has a trailing
-   * '/' or not. If there is none, it becomes appended. If @p _txt
+   * '/' or not. If there is none, it becomes appended. If @p txt
    * has a leading '/' then this one is stripped.
    *
    * @param txt The text to add. It is considered to be decoded.
