@@ -846,7 +846,6 @@ void KApplicationPrivate::parseCommandLine( )
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
 
-#ifdef Q_WS_X11
     if (args && args->isSet("style"))
     {
         extern QString kde_overrideStyle; // see KGlobalSettings. Should we have a static setter?
@@ -856,7 +855,6 @@ void KApplicationPrivate::parseCommandLine( )
         else
             qWarning() << i18n("The style '%1' was not found", reqStyle);
     }
-#endif
 
     if ( q->type() != KApplication::Tty ) {
         if (args && args->isSet("icon"))
