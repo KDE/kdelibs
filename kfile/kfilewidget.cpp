@@ -694,27 +694,21 @@ KUrl KFileWidgetPrivate::getCompleteUrl(const QString &_url) const
 {
 //     kDebug(kfile_area) << "got url " << _url;
 
-    QString url = KShell::tildeExpand(_url);
+    const QString url = KShell::tildeExpand(_url);
     KUrl u;
 
-    if ( !QDir::isAbsolutePath(url) ) // only a full URL isn't relative. Even /path is.
-    {
-        if (!url.isEmpty() && !QDir::isRelativePath(url) ) // absolute path
-            u.setPath( url );
-        else
-        {
-            u = ops->url();
-//             kDebug(kfile_area) << "ops url " << u;
-            u.addPath( url ); // works for filenames and relative paths
-//             kDebug(kfile_area) << "after adding path " << u;
-            u.cleanPath(); // fix "dir/.."
-//             kDebug(kfile_area) << "after cleaning path " << u;
+    if (QDir::isAbsolutePath(url)) {
+        u = url;
+    } else {
+        KUrl relativeUrlTest(ops->url());
+        relativeUrlTest.addPath(url);
+        if (!ops->dirLister()->findByUrl(relativeUrlTest).isNull() ||
+            !KProtocolInfo::isKnownProtocol(relativeUrlTest)) {
+            u = relativeUrlTest;
+        } else {
+            u = url;
         }
     }
-    else // complete URL
-        u = url;
-
-//     kDebug(kfile_area) << "returning url " << u;
 
     return u;
 }
