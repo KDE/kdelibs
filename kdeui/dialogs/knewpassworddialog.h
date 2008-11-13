@@ -175,6 +175,9 @@ public:
 
     /**
      * Returns the password entered.
+     * @note Only has meaningful data after accept has been called
+     *       if you want to access the password from a subclass use
+     *       checkAndGetPassword()
      */
     QString password() const;
 
