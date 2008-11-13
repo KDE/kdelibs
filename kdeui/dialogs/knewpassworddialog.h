@@ -192,6 +192,15 @@ protected:
      */
     virtual bool checkPassword(const QString &) ;
 
+    /**
+     * Checks input password.
+     * If the password is right, returns true
+     * and fills pwd with the password.
+     * Otherwise returns false and pwd will be null.
+     * @since 4.2
+     */
+    bool checkAndGetPassword(QString *pwd);
+
 Q_SIGNALS:
 
     /**
