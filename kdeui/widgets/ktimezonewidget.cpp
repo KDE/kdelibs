@@ -75,8 +75,11 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
   const KTimeZones::ZoneMap zones = db->zones();
   for ( KTimeZones::ZoneMap::ConstIterator it = zones.begin(); it != zones.end(); ++it ) {
     KTimeZone zone = it.value();
-    const QStringList continentCity = displayName( zone ).split( '/' );
-    QString city = continentCity[ continentCity.count() - 1 ];
+    const QString continentCity = displayName( zone );
+    int separator = continentCity.lastIndexOf('/');
+    QString city = continentCity.right(continentCity.length() - separator - 1)
+                   + continentCity.left(separator);
+
     cities.append( city );
     zonesByCity.insert( city, zone );
   }
@@ -146,7 +149,7 @@ void KTimeZoneWidget::setSelected( const QString &zone, bool selected )
         const QModelIndex index = model()->index(row, Private::CityColumn );
         const QString tzName = index.data(Private::ZoneRole).toString();
         if (tzName == zone) {
-            selectionModel()->select(index, selected ? (QItemSelectionModel::Select | QItemSelectionModel::Rows) : QItemSelectionModel::Deselect);
+            selectionModel()->select(index, selected ? (QItemSelectionModel::Select | QItemSelectionModel::Rows) : (QItemSelectionModel::Deselect | QItemSelectionModel::Rows));
 
             // Ensure the selected item is visible as appropriate.
             scrollTo( index );
