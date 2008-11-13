@@ -48,6 +48,24 @@ endif(WIN32)
 
 target_link_libraries(solidhwtest ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${LIBS} solid_static)
 
+########### solidmttest ###############
+
+set(solidmttest_SRCS 
+   solidmttest.cpp )
+
+
+kde4_add_unit_test(solidmttest ${solidmttest_SRCS})
+add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw/fakecomputer.xml\\"")
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw )
+
+if(WIN32)
+  set_target_properties(solidmttest PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
+  set (LIBS ${KDEWIN32_LIBRARIES})
+endif(WIN32)
+
+target_link_libraries(solidmttest ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${LIBS} solid_static)
+
 ########### solidnettestdbusservice ###############
 
 #set(solidnettestdbusservice_SRCS
