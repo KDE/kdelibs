@@ -32,6 +32,7 @@
 #endif
 #include <wtf/Vector.h>
 #include <wtf/VectorTraits.h>
+#include "scope_chain.h" // for ScopeChainLink
 
 namespace KJS {
     class JSValue;
@@ -52,6 +53,7 @@ namespace KJS {
           JSValue* valueVal;
           bool     boolVal;
           int32_t  int32Val;
+	  ScopeChainLink scopeVal;
         } val;
         unsigned attributes;
     };

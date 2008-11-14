@@ -79,6 +79,7 @@ void FunctionImp::initialCompile(ExecState* newExec)
     // --- isCompiled() would return true even if debugging state changed
     body->reserveSlot(ActivationImp::LengthSlot, false);
     body->reserveSlot(ActivationImp::TearOffNeeded, false);
+    body->reserveSlot(ActivationImp::ScopeLink, false /* will mark via ScopeChain::mark() */);
     body->reserveSlot(ActivationImp::FunctionSlot, true);
     body->reserveSlot(ActivationImp::ArgumentsObjectSlot, true);
 
@@ -149,6 +150,8 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   } else {
     // Otherwise, we recycle the activation object; we must clear its
     // data pointer, though, since that may become dead.
+    // (we also unlink it from the scope chain at this time)
+    activation->scopeLink().deref();
     activation->localStorage = 0;
     exec->dynamicInterpreter()->recycleActivation(activation);
   }
@@ -450,6 +453,9 @@ void ActivationImp::setup(ExecState* exec, FunctionImp *function,
     size_t total = body->numLocalsAndRegisters();
     localStorage  = entries;
     lengthSlot()  = total;
+
+    // we can now link ourselves into the scope, which will also fix up our scopeLink().
+    exec->pushVariableObjectScope(this);
 
     const FunctionBodyNode::SymbolInfo* symInfo = body->getLocalInfo();
 

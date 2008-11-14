@@ -240,6 +240,7 @@ namespace KJS {
     FunctionBodyNode* currentBody() { return m_currentBody; }
     FunctionImp* function() const { return m_function; }
 
+    void pushVariableObjectScope(JSVariableObject* s) { scope.pushVariableObject(s); }
     void pushScope(JSObject* s) { scope.push(s); }
     void popScope() { scope.pop(); }
 
@@ -328,6 +329,8 @@ namespace KJS {
         EvalExecState(Interpreter* intp, JSObject* global, ProgramNode* body, ExecState* callingExecState);
     };
 
+    // Note: this does not push the activation on the scope chain,
+    // as the activation is not initialized at this point.
     class FunctionExecState : public ExecState {
     public:
         FunctionExecState(Interpreter* intp, JSObject* thisObject,
