@@ -72,7 +72,6 @@ namespace KJS {
             { if (_node) ++_node->refCount; }
         ScopeChain &operator=(const ScopeChain &);
 
-        bool isEmpty() const { return !_node; }
         JSObject *top() const { return _node->object; }
 
         JSObject *bottom() const;
@@ -80,13 +79,10 @@ namespace KJS {
         ScopeChainIterator begin() const { return ScopeChainIterator(_node); }
         ScopeChainIterator end() const { return ScopeChainIterator(0); }
 
-        void clear() { deref(); _node = 0; }
         void push(JSObject *);
-        void push(const ScopeChain &);
         void pop();
-        
         void mark();
-        
+
 #ifndef NDEBUG        
         void print();
 #endif

@@ -246,7 +246,6 @@ void ExecState::quietUnwind(int depth)
 
 GlobalExecState::GlobalExecState(Interpreter* intp, JSObject* glob): ExecState(intp, 0 /* nothing else constructed yet*/)
 {
-    scope.clear();
     scope.push(glob);
     m_codeType  = GlobalCode;
     m_variable = glob;
@@ -258,7 +257,6 @@ InterpreterExecState::InterpreterExecState(Interpreter* intp, JSObject* glob,
   ExecState(intp, intp->execState())
 {
     m_currentBody = body;
-    scope.clear();
     scope.push(glob);
     m_codeType = GlobalCode;
     m_variable = glob;
@@ -287,7 +285,6 @@ EvalExecState::EvalExecState(Interpreter* intp, JSObject* glob,
     // the JS debugger calling 'eval' itself, from globalExec
     m_thisVal  = glob;
     m_variable = glob;
-    scope.clear();
     scope.push(glob);
 }
 
