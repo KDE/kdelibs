@@ -113,7 +113,6 @@ SpellerPlugin *Loader::createSpeller(const QString& language,
             //the first one is the one with the highest
             //reliability
             SpellerPlugin *dict = item->createSpeller(plang);
-            Q_ASSERT(dict);
             return dict;
         }
     }
