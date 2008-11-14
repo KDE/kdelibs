@@ -29,12 +29,13 @@
 <!ENTITY kmenu	"Menú <guimenu>K</guimenu>">
 <!ENTITY BER	"botó <mousebutton>esquerra</mousebutton> del ratolí"><!-- English: &LMB; -->
 <!ENTITY BMR	"botó <mousebutton>mig</mousebutton> del ratolí"><!-- English: &MMB; -->
-<!ENTITY SO		"sistema operatiu"><!-- English: &OS; -->
+<!ENTITY SO	"sistema operatiu"><!-- English: &OS; -->
 <!ENTITY BDR	"botó <mousebutton>dret</mousebutton> del ratolí"><!-- English: &RMB; -->
 <!ENTITY Maj	"<keycap>Majús.</keycap>"><!-- English: &Shift; -->
 <!ENTITY safatasistema	"<application>safata del sistema</application>"><!-- English: &systemtray; -->
 <!ENTITY Tab	"<keycap>Tabulador</keycap>">
 <!ENTITY IGU	"<acronym>IGU</acronym>"><!-- English: &GUI; -->
+<!ENTITY systemsettings	"<application>Arranjament del sistema</application>"> <!-- English: &systemsettings; -->
 
 <!-- ROLES OF TRANSLATORS -->
 <!ENTITY traductor.Antoni.Bella		'<othercredit role="translator"><firstname>Antoni</firstname><surname>Bella</surname><affiliation><address><email>bella5@teleline.es</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
