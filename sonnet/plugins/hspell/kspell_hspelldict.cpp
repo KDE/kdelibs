@@ -31,16 +31,21 @@ HSpellDict::HSpellDict( const QString& lang )
     : SpellerPlugin( lang )
 {
    int int_error = hspell_init( &m_speller, HSPELL_OPT_DEFAULT );
-   if ( int_error == -1 )
+   if ( int_error == -1 ) {
       kDebug() << "HSpellDict::HSpellDict: Init failed";
     /* hspell understans only iso8859-8-i            */
     codec = QTextCodec::codecForName( "iso8859-8-i" );
+    initialized = false;
+  } else {
+    initialized = true;
+  }
 }
 
 HSpellDict::~HSpellDict()
 {
     /* It exists in =< hspell-0.8 */
-    hspell_uninit( m_speller );
+    if (initialized)
+      hspell_uninit( m_speller );
 }
 
 bool HSpellDict::isCorrect( const QString& word ) const

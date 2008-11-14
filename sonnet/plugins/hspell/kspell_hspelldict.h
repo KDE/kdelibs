@@ -45,6 +45,7 @@ public:
 private:
     struct dict_radix *m_speller;
     QTextCodec *codec;
+    bool initialized;
 };
 
 #endif
