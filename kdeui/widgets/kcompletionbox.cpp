@@ -266,12 +266,6 @@ void KCompletionBox::popup()
         else if ( size().height() != sizeHint().height() )
             sizeAndPosition();
     }
-
-    // Make sure we give the focus back to the parent widget (ereslibre)
-    if ( d->m_parent) {
-        QFocusEvent focusEvent( QEvent::FocusIn );
-        QApplication::sendEvent( d->m_parent, &focusEvent );
-    }
 }
 
 void KCompletionBox::sizeAndPosition()
