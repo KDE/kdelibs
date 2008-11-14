@@ -22,6 +22,7 @@
 #include "scope_chain.h"
 #include "PropertyNameArray.h"
 #include "object.h"
+#include "JSVariableObject.h"
 
 #include <config.h>
 
