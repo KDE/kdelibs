@@ -43,6 +43,7 @@
 <!ENTITY RMBn   "<mousebutton>rechten</mousebutton> Maustaste">
 <!ENTITY RMBr   "<mousebutton>rechter</mousebutton> Maustaste">
 <!ENTITY Shift  "<keycap>Umschalt</keycap>">
+<!ENTITY systemsettings	"<application>Systemeinstellungen</application>">
 <!ENTITY systemtray "<application>Systemabschnitt</application>">
 <!ENTITY Tab 	"<keycap>Tab</keycap>"> <!-- Tab -->
 

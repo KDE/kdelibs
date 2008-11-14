@@ -413,7 +413,6 @@
 <!ENTITY step "<application>Step</application>">
 <!ENTITY superkaramba	"<application>SuperKaramba</application>">
 <!ENTITY SuSE	'<acronym><trademark class="registered">SuSE</trademark></acronym>'>
-<!ENTITY systemsettings	"<application>System Settings</application>">
 <!ENTITY ThreeCom	'<trademark class="registered">3Com</trademark>'>
 <!ENTITY TrueType	'<trademark class="registered">TrueType</trademark>'>
 <!ENTITY ubuntu	"<trademark>Ubuntu</trademark>">
