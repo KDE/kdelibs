@@ -114,9 +114,9 @@ void TableBuilder::generateCode()
     for (unsigned c = 0; c < variants.size(); ++c) {
         const OperationVariant& var = variants[c];
         if (var.needsPadVariant)
-            jumps.item("&&l" + var.sig + "_Pad");
+            jumps.item("__extension__ &&l" + var.sig + "_Pad");
 
-        jumps.item("&&l" + var.sig);
+        jumps.item("__extension__ &&l" + var.sig);
     }
 
     jumps.endArray();
