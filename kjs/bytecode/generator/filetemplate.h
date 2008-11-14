@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 
 using std::ifstream;
 using std::ofstream;

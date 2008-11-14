@@ -241,8 +241,8 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
     int numParams = op.opParamTypes.size();
     if (paramIsIm.size() < numParams) {
         int paramPos = paramIsIm.size();
-        bool hasIm  = op.opParamTypes[paramPos].flags & Type_HaveImm;
-        bool hasReg = op.opParamTypes[paramPos].flags & Type_HaveReg;
+        bool hasIm  = (op.opParamTypes[paramPos].flags & Type_HaveImm) == Type_HaveImm;
+        bool hasReg = (op.opParamTypes[paramPos].flags & Type_HaveReg) == Type_HaveReg;
 
         bool genIm  = hasIm;
         bool genReg = hasReg;

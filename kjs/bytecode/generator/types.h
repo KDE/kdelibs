@@ -56,15 +56,15 @@ struct Type
 
     // may not be the same as Type_Align8 in the feature..
     bool alignTo8() const {
-        return flags & Type_Align8;
+        return (flags & Type_Align8) == Type_Align8;
     }
 
     bool hasReg() const {
-        return flags & Type_HaveReg;
+        return (flags & Type_HaveReg) == Type_HaveReg;
     }
 
     bool hasImm() const {
-        return flags & Type_HaveImm;
+        return (flags & Type_HaveImm) == Type_HaveImm;
     }
 
     // field in store cells to access for this type
