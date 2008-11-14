@@ -428,6 +428,8 @@ QFont KGlobalSettings::largeFont(const QString &text)
     // Move a bunch of preferred fonts to the front.
     if (fam.removeAll("Arial")>0)
        fam.prepend("Arial");
+    if (fam.removeAll("Sans Serif")>0)
+       fam.prepend("Sans Serif");
     if (fam.removeAll("Verdana")>0)
        fam.prepend("Verdana");
     if (fam.removeAll("Tahoma")>0)
