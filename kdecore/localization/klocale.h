@@ -415,9 +415,9 @@ public:
    * Given a number of milliseconds, converts that to a pretty string containing
    * the localized equivalent. 
    *
-   * e.g. given formatDuration(60001) returns "1 minute" 
-   *      given formatDuration(62005) returns "1 minute and 2 seconds"
-   *      given formatDuration(90060000) returns "1 day and 1 hour"
+   * e.g. given prettyFormatDuration(60001) returns "1 minute" 
+   *      given prettyFormatDuration(62005) returns "1 minute and 2 seconds"
+   *      given prettyFormatDuration(90060000) returns "1 day and 1 hour"
    *
    * @param mSec Time duration in milliseconds
    * @return converted duration as a string.
