@@ -114,6 +114,11 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
         return false;
     }
 
+    if (wid && (wid->windowFlags() & Qt::Window) && (type == QEvent::Move || type == QEvent::Resize)) {
+        hide();
+        return false;
+    }
+
     if (type == QEvent::MouseButtonPress && (wid && !isAncestorOf(wid))) {
         if (!d->emitSelected && currentItem() && !qobject_cast<QScrollBar*>(o)) {
           Q_ASSERT(currentItem());
