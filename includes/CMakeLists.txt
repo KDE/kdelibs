@@ -124,6 +124,7 @@ install( FILES
   KCompletionMatches
   KCompositeJob
   KConfig
+  KConfigBackend
   KConfigBase
   KConfigDialog
   KConfigDialogManager
@@ -971,6 +972,7 @@ install(FILES
   Plasma/SvgWidget
   Plasma/TabBar
   Plasma/TextEdit
+  Plasma/ToolTipContent
   Plasma/ToolTipManager
   Plasma/Theme
   Plasma/TreeView
