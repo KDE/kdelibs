@@ -190,7 +190,9 @@ void KDirSelectDialog::Private::_k_slotUrlActivated( const QString& text )
 
 void KDirSelectDialog::Private::_k_slotComboTextChanged( const QString& text )
 {
+    m_treeView->blockSignals(true);
     m_treeView->setCurrentUrl( KUrl( text ) );
+    m_treeView->blockSignals(false);
 }
 
 void KDirSelectDialog::Private::_k_slotContextMenu( const QPoint& pos )
