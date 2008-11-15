@@ -234,25 +234,25 @@ operation AtStatement {
 /**
  Control flow stuff
 */
-jump Exit {
+operation Exit[endsBB] {
     impl void exit() [[
         return jsUndefined();
     ]]
 }
 
-jump ExitEval {
+operation ExitEval[endsBB] {
     impl void(value val) [[
         return val;
     ]]
 }
 
-jump Jump {
+operation Jump[endsBB] {
     impl void jmp(addr dest) [[
         pc = base + dest;
     ]]
 }
 
-jump IfJump {
+operation IfJump[endsBB] {
     impl void executeIfJump(bool condResult, addr dest) [[
         if (condResult)
             pc = base + dest;
@@ -261,7 +261,7 @@ jump IfJump {
     tile (value, addr) as executeIfJump;
 }
 
-jump IfNotJump {
+operation IfNotJump[endsBB] {
     impl void executeIfNotJump(bool condResult, addr dest) [[
         if (!condResult)
             pc = base +dest;
@@ -272,7 +272,7 @@ jump IfNotJump {
 
 // Fetches the propertly list, if any, and sets up the iterator stack in execState appropriately
 // Returns the object to operate on
-jump BeginForIn {
+operation BeginForIn[endsBB] {
     impl value (value e) [[
         exec->pushPropertyNameArray();
 

@@ -58,7 +58,6 @@ public:
         Conversion,
         Register,
         Operation,
-        Jump,
         Costs,
         Impl,
         Tile,

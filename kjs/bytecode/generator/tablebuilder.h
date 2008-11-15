@@ -36,7 +36,7 @@ struct Operation
     string retType;
     int          cost;
     int          codeLine;
-    bool         endsBB;
+    unsigned     flags;
     bool         isTile;
 
     string implementAs;
@@ -71,7 +71,7 @@ private:
                                   unsigned flags, const string& from, const string& to,
                                   int tileCost, int registerCost);
 
-    virtual void handleOperation(const string& name, bool endsBB);
+    virtual void handleOperation(const string& name, unsigned flags);
     virtual void handleImpl(const string& fnName, const string& code, int codeLine, int cost,
                             const string& retType, vector<Parameter> sig);
     virtual void handleTile(const string& fnName, StringList sig);
@@ -92,7 +92,7 @@ private:
     }
 
     StringList          operationNames;
-    vector<bool>        operationEndBB;
+    unsigned            operationFlags;
     map<string, string> operationRetTypes; // uglily enough specified on the impl. I suck.
     vector<Operation>   operations;
     map<string, Operation> implementations;

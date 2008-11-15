@@ -162,10 +162,10 @@ void TableBuilder::handleConversion(const string& code, int codeLine,
     types.handleConversion(code, codeLine, flags, from, to, tileCost, registerCost);
 }
 
-void TableBuilder::handleOperation(const string& name, bool endsBB)
+void TableBuilder::handleOperation(const string& name, unsigned flags)
 {
     operationNames.push_back(name);
-    operationEndBB.push_back(endsBB);
+    operationFlags = flags;
 }
 
 void TableBuilder::handleImpl(const string& fnName, const string& code, int codeLine, int cost,
@@ -201,7 +201,7 @@ void TableBuilder::handleImpl(const string& fnName, const string& code, int code
     op.implParams     = extSig;
     op.codeLine       = codeLine;
     op.cost           = cost;
-    op.endsBB         = operationEndBB.back();
+    op.flags          = operationFlags;
     operations.push_back(op);
     if (!fnName.empty())
         implementations[fnName] = op;
@@ -386,7 +386,7 @@ void TableBuilder::dumpOpStructForVariant(const OperationVariant& variant, bool 
     out(OpCpp) << (hasPadVariant ? "true" : "false") << ", ";
 
     // Whether this ends a basic block.
-    out(OpCpp) << (variant.op.endsBB ? "true" : "false");
+    out(OpCpp) << (variant.op.flags & Op_EndsBB ? "true" : "false");
 
     if (needsComma)
         out(OpCpp) << "},\n";

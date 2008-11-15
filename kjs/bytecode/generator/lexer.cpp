@@ -39,7 +39,6 @@ Lexer::Lexer(istream* _stream): stream(_stream), charLoaded(false), lineNum(0)
     keywords["conversion" ] = Conversion;
     keywords["register"]    = Register;
     keywords["operation"]   = Operation;
-    keywords["jump"]        = Jump;
     keywords["costs"]       = Costs;
     keywords["impl"]        = Impl;
     keywords["tile"]        = Tile;

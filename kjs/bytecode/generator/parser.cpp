@@ -153,7 +153,7 @@ void Parser::parse()
     }
 
     // Now we may have conversions or operations
-    while (tok.type == Lexer::Conversion || tok.type == Lexer::Operation || tok.type == Lexer::Jump) {
+    while (tok.type == Lexer::Conversion || tok.type == Lexer::Operation) {
         if (tok.type == Lexer::Conversion)
             parseConversion();
         else
@@ -252,16 +252,18 @@ void Parser::parseConversion()
 void Parser::parseOperation()
 {
     // operation identifier { ... },  where ... is a list of impl or tile statements.
+    match(Lexer::Operation);
 
-    bool jump = false;
-    if (peekNext().type == Lexer::Operation) {
-        match(Lexer::Operation);
-    } else {
-        jump = true;
-        match(Lexer::Jump);
-    }
+    const Flag opFlags[] = {
+        {"endsBB", Op_EndsBB},
+        {"hint",   Op_Hint},
+        {0, 0}
+    };
+    
+    std::string name = matchIdentifier();
+    unsigned flags   = matchFlags(opFlags);    
 
-    handleOperation(matchIdentifier(), jump);
+    handleOperation(name, flags);
 
     match(Lexer::LBrace);
     Lexer::Token tok = peekNext();

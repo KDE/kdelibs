@@ -36,6 +36,11 @@ enum ParamFlags {
     Param_Exact = 4
 };
 
+enum OpFlags {
+    Op_EndsBB,
+    Op_Hint
+};
+
 struct Parameter
 {
     string   name;
@@ -62,7 +67,7 @@ private:
                                   unsigned flags, const string& from, const string& to,
                                   int tileCost, int registerCost) = 0;
            
-    virtual void handleOperation(const string& name, bool endsBB) = 0;
+    virtual void handleOperation(const string& name, unsigned flags) = 0;
     virtual void handleImpl(const string& fnName, const string& code, int codeLine, int cost,
                             const string& retType, vector<Parameter> sig) = 0;
     virtual void handleTile(const string& fnName, StringList sig) = 0;
