@@ -26,6 +26,7 @@
 #include "array_instance.h"
 
 #include "PropertyNameArray.h"
+#include "JSVariableObject.h"
 #include <wtf/Assertions.h>
 #include <wtf/HashMap.h>
 

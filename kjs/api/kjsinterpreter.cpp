@@ -24,6 +24,7 @@
 #include "kjs/interpreter.h"
 #include "kjs/completion.h"
 #include "kjs/object.h"
+#include "kjs/JSVariableObject.h"
 #include <QString>
 #include <stdio.h>
 
@@ -98,7 +99,8 @@ KJSInterpreter::KJSInterpreter(const KJSGlobalObject& global)
     JSValue* gv = JSVALUE(&global);
     assert(gv->isObject());
     JSObject* go = static_cast<JSObject*>(gv);
-    Interpreter* ip = new Interpreter(go);
+    assert(go->isGlobalObject());
+    Interpreter* ip = new Interpreter(static_cast<JSGlobalObject*>(go));
     ip->ref();
     assert(go->prototype()->isObject());
     JSObject* p =  static_cast<JSObject*>(go->prototype());

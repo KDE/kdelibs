@@ -158,6 +158,15 @@ namespace KJS {
         // new top!
         m_top.set(act);
     }
+
+
+    class KJS_EXPORT JSGlobalObject :  public JSObject // ### TODO: should inherit off JSVariableObject
+    {
+    public:
+        JSGlobalObject() {}
+        JSGlobalObject(JSValue* proto): JSObject(proto) {}
+        virtual bool isGlobalObject() const { return true; }
+    };
 } // namespace KJS
 
 #endif // JSVariableObject_h

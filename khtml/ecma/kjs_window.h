@@ -74,7 +74,7 @@ namespace KJS {
     static const ClassInfo info;
   };
 
-  class Window : public JSObject {
+  class Window : public JSGlobalObject {
     friend QPointer<KHTMLPart> getInstance();
     friend class KJS::Location;
     friend class KJS::WindowFunc;

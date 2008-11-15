@@ -42,18 +42,6 @@
 #define LIST_HANDLE(l) reinterpret_cast<const KJSArgumentsHandle*>(l)
 #define LIST(h) reinterpret_cast<const KJS::List*>((h)->hnd)
 
-// FIXME: duplicated in khtml/ecma/kjs_binding.h
-#define KJS_CHECK_THIS( ClassName, theObj ) \
-       if (!theObj || !theObj->inherits(&ClassName::info)) { \
-               KJS::UString errMsg = "Attempt at calling a function that expects a "; \
-               errMsg += ClassName::info.className; \
-               errMsg += " on a "; \
-               errMsg += theObj->className(); \
-               KJS::JSObject *err = KJS::Error::create(exec, KJS::TypeError, errMsg.ascii()); \
-               exec->setException(err); \
-               return err; \
-       }
-
 static inline KJS::UString toUString(const QString& s)
 {
     // ### can be done faster. see khtml/ecma/kjs_binding.cpp

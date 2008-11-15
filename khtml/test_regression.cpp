@@ -1610,7 +1610,7 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
     }
 }
 
-class GlobalImp : public JSObject {
+class GlobalImp : public JSGlobalObject {
 public:
   virtual UString className() const { return "global"; }
 };
@@ -1623,7 +1623,7 @@ void RegressionTest::testJSFile(const QString & filename )
     // create interpreter
     // note: this is different from the interpreter used by the part,
     // it contains regression test-specific objects & functions
-    ProtectedPtr<JSObject> global(new GlobalImp());
+    ProtectedPtr<JSGlobalObject> global(new GlobalImp());
     khtml::ChildFrame frame;
     frame.m_part = m_part;
     ScriptInterpreter interp(global,&frame);

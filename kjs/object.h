@@ -470,7 +470,8 @@ namespace KJS {
     void saveProperties(SavedProperties &p) const { _prop.save(p); }
     void restoreProperties(const SavedProperties &p) { _prop.restore(p); }
 
-    virtual bool isActivation() const { return false; }
+    virtual bool isActivation()   const { return false; }
+    virtual bool isGlobalObject() const { return false; }
 
     // This is used to keep track of whether scope object have local
     // variables introduced by something other than 'var'

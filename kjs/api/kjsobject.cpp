@@ -26,6 +26,7 @@
 #include "kjs/object.h"
 #include "kjs/protect.h"
 #include "kjs/ExecState.h"
+#include "kjs/JSVariableObject.h"
 
 #include <kdebug.h>
 #include <QDateTime>
@@ -240,6 +241,6 @@ void KJSObject::setProperty(KJSContext* ctx, const QString& name,
     setProperty(ctx, name, KJSString(value));
 }
 
-KJSGlobalObject::KJSGlobalObject()
+KJSGlobalObject::KJSGlobalObject(): KJSObject(JSVALUE_HANDLE(new JSGlobalObject()))
 {
 }

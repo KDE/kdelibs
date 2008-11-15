@@ -35,6 +35,7 @@ namespace KJS {
   class TimeoutChecker;
   class Package;
   class ActivationImp;
+  class JSGlobalObject;
 
 #if USE(BINDINGS)
   namespace Bindings {
@@ -68,7 +69,7 @@ namespace KJS {
      *
      * @param globalObject The object to use as the global object for this interpreter
      */
-    Interpreter(JSObject* globalObject);
+    Interpreter(JSGlobalObject* globalObject);
     /**
      * Creates a new interpreter. A global object will be created and
      * initialized with the standard global properties.
@@ -79,7 +80,7 @@ namespace KJS {
      * Returns the object that is used as the global object during all script
      * execution performed by this interpreter
      */
-    JSObject* globalObject() const;
+    JSGlobalObject* globalObject() const;
     void initGlobalObject();
 
     /**
@@ -312,15 +313,6 @@ namespace KJS {
     void restoreBuiltins (const SavedBuiltins&);
 
     /**
-     * Determine if the value is a global object (for any interpreter).  This may
-     * be difficult to determine for multiple uses of JSC in a process that are
-     * logically independent of each other.  In the case of a Web browser, this method
-     * is used to determine if an object is the Window object so we can perform
-     * security checks.
-     */
-    virtual bool isGlobalObject(JSValue*) { return false; }
-
-    /**
      * Find the interpreter for a particular global object.  This should really
      * be a static method, but we can't do that is C++.  Again, as with isGlobalObject()
      * implementation really need to know about all instances of Interpreter
@@ -422,7 +414,7 @@ private:
 
     int m_refCount;
 
-    JSObject* m_globalObject;
+    JSGlobalObject* m_globalObject;
     GlobalExecState m_globalExec;
     Package *globPkg;
 

@@ -25,6 +25,7 @@
 #include "kjsprivate.h"
 
 #include "kjs/object.h"
+#include "kjs/JSVariableObject.h"
 #include "kjs/context.h"
 #include "kjs/interpreter.h"
 
@@ -49,28 +50,37 @@ private:
     KJSPrototype::PropertySetter setter;
 };
 
-class CustomObject : public JSObject {
+class CustomObjectInfo {
+public:
+    CustomObjectInfo(void* v): iv(v) {}
+    virtual ~CustomObjectInfo() {} 
+    void* internalValue() { return iv; }
+protected:
+    void* iv;
+};
+
+template<class Base>
+class CustomObject : public Base, public CustomObjectInfo {
 public:
     CustomObject(JSValue* proto, void* v)
-        : JSObject(proto),
-          iv(v)
-    {
-    }
+        : Base(proto),
+          CustomObjectInfo(v)
+    {}
 
     void put(ExecState* exec, const Identifier& id,
              JSValue *value, int attr = None);
 
-    void* internalValue() { return iv; }
 
     // rtti
     static const ClassInfo info;
     const ClassInfo* classInfo() const { return &info; }
-
-private:
-    void* iv;
 };
 
-const ClassInfo CustomObject::info = { "CustomObject", 0, 0, 0 };
+template<>
+const ClassInfo CustomObject<JSObject>::info = { "CustomObject", 0, 0, 0 };
+
+template<>
+const ClassInfo CustomObject<JSGlobalObject>::info = { "CustomGlobalObject", 0, 0, 0 };
 
 class KJSCustomFunction : public JSObject {
 public:
@@ -92,10 +102,16 @@ JSValue* KJSCustomFunction::callAsFunction(ExecState* exec, JSObject* thisObj,
                                            const List &args)
 {
     // FIXME: does not protect against mixing custom objects
-    KJS_CHECK_THIS(CustomObject, thisObj);
+    CustomObjectInfo* inf = dynamic_cast<CustomObjectInfo*>(thisObj);
 
-    CustomObject* co = static_cast<CustomObject*>(thisObj);
-    void* thisValue = co->internalValue();
+    if (!inf) {
+        const char* errMsg = "Attempt at calling a function with an invalid receiver";
+        KJS::JSObject *err = KJS::Error::create(exec, KJS::TypeError, errMsg);
+        exec->setException(err);
+        return err;
+    }
+
+    void* thisValue = inf->internalValue();
 
     KJSContext ctx(EXECSTATE_HANDLE(exec));
     KJSArguments a(LIST_HANDLE(&args));
@@ -129,11 +145,14 @@ void KJSCustomProperty::write(ExecState* exec, void* object, JSValue* value)
 static JSValue* getPropertyValue(ExecState* exec, JSObject *originalObject,
                                  const Identifier&, const PropertySlot& sl)
 {
-    CustomObject* o = static_cast<CustomObject*>(originalObject);
+    CustomObjectInfo* inf = dynamic_cast<CustomObjectInfo*>(originalObject);
+    if (!inf)
+        return jsUndefined();
+
     KJSCustomProperty* p =
         reinterpret_cast<KJSCustomProperty*>(sl.customValue());
 
-    return p->read(exec, o->internalValue());
+    return p->read(exec, inf->internalValue());
 }
 
 // FIXME: or use Identifier?
@@ -175,7 +194,8 @@ public:
         putDirect(toIdentifier(name), new KJSCustomFunction(exec, f));
     }
 
-    bool setProperty(ExecState* exec, CustomObject* obj,
+    template<typename Base>
+    bool setProperty(ExecState* exec, CustomObject<Base>* obj,
                      const Identifier& id, JSValue* value)
     {
         CustomPropertyMap::iterator it = properties.find(id.ustring());
@@ -191,13 +211,14 @@ private:
     CustomPropertyMap properties;
 };
 
-void CustomObject::put(ExecState* exec, const Identifier& id,
+template<class Base>
+void CustomObject<Base>::put(ExecState* exec, const Identifier& id,
                        JSValue* value, int attr)
 {
-    CustomPrototype* p = static_cast<CustomPrototype*>(prototype());
+    CustomPrototype* p = static_cast<CustomPrototype*>(this->prototype());
 
     if (!p->setProperty(exec, this, id, value))
-        JSObject::put(exec, id, value, attr);
+        Base::put(exec, id, value, attr);
 }
 
 KJSPrototype::KJSPrototype()
@@ -248,7 +269,7 @@ KJSObject KJSPrototype::constructObject(KJSContext* ctx, void *internalValue)
         p->setPrototype(objectProto);
     }
 
-    CustomObject* newObj = new CustomObject(p, internalValue);
+    CustomObject<JSObject>* newObj = new CustomObject<JSObject>(p, internalValue);
     return KJSObject(JSVALUE_HANDLE(newObj));
 }
 
@@ -256,7 +277,7 @@ KJSGlobalObject KJSPrototype::constructGlobalObject(void *internalValue)
 {
     CustomPrototype* p = PROTOTYPE(this);
 
-    CustomObject* newObj = new CustomObject(p, internalValue);
+    CustomObject<JSGlobalObject>* newObj = new CustomObject<JSGlobalObject>(p, internalValue);
     return KJSGlobalObject(JSVALUE_HANDLE(newObj));
 }
 
@@ -284,3 +305,4 @@ void KJSPrototype::defineFunction(KJSContext* ctx,
 }
 
 
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

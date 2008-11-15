@@ -389,7 +389,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
 KJS_IMPLEMENT_PROTOFUNC(WindowFunc)
 
 Window::Window(khtml::ChildFrame *p)
-  : JSObject(/*no proto*/), m_frame(p), screen(0), history(0), external(0), loc(0), m_evt(0)
+  : JSGlobalObject(/*no proto*/), m_frame(p), screen(0), history(0), external(0), loc(0), m_evt(0)
 {
   winq = new WindowQObject(this);
   //kDebug(6070) << "Window::Window this=" << this << " part=" << m_part << " " << m_part->name();

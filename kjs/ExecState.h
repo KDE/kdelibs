@@ -40,6 +40,7 @@ namespace KJS {
     class FunctionImp;
     class FunctionBodyNode;
     class ProgramNode;
+    class JSGlobalObject;
 
     enum CodeType { GlobalCode, EvalCode, FunctionCode };
 
@@ -316,17 +317,17 @@ namespace KJS {
 
     class GlobalExecState : public ExecState {
     public:
-        GlobalExecState(Interpreter* intp, JSObject* global);
+        GlobalExecState(Interpreter* intp, JSGlobalObject* global);
     };
 
     class InterpreterExecState : public ExecState {
     public:
-        InterpreterExecState(Interpreter* intp, JSObject* global, JSObject* thisObject, ProgramNode*);
+        InterpreterExecState(Interpreter* intp, JSGlobalObject* global, JSObject* thisObject, ProgramNode*);
     };
 
     class EvalExecState : public ExecState {
     public:
-        EvalExecState(Interpreter* intp, JSObject* global, ProgramNode* body, ExecState* callingExecState);
+        EvalExecState(Interpreter* intp, JSGlobalObject* global, ProgramNode* body, ExecState* callingExecState);
     };
 
     // Note: this does not push the activation on the scope chain,

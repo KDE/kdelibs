@@ -212,7 +212,7 @@ static inline InterpreterMap &interpreterMap()
     return* map;
 }
 
-Interpreter::Interpreter(JSObject* globalObject)
+Interpreter::Interpreter(JSGlobalObject* globalObject)
     : m_globalObject(globalObject),
       m_globalExec(this, globalObject),
       globPkg(0)
@@ -221,7 +221,7 @@ Interpreter::Interpreter(JSObject* globalObject)
 }
 
 Interpreter::Interpreter()
-    : m_globalObject(new JSObject()),
+    : m_globalObject(new JSGlobalObject()),
       m_globalExec(this, m_globalObject),
       globPkg(0)
 {
@@ -341,7 +341,7 @@ void Interpreter::recycleActivation(ActivationImp* act)
     ++m_numCachedActivations;
 }
 
-JSObject* Interpreter::globalObject() const
+JSGlobalObject* Interpreter::globalObject() const
 {
   return m_globalObject;
 }
@@ -532,8 +532,8 @@ Completion Interpreter::evaluate(const UString& sourceURL, int startingLineNumbe
 
     m_recursion++;
 
-    JSObject* globalObj = m_globalObject;
-    JSObject* thisObj = globalObj;
+    JSGlobalObject* globalObj = m_globalObject;
+    JSObject*       thisObj   = globalObj;
 
     // "this" must be an object... use same rules as Function.prototype.apply()
     if (thisV && !thisV->isUndefinedOrNull())

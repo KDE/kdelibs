@@ -92,7 +92,7 @@ static UString readFile(const char* fileName)
 
 static ExitCode evaluateFile(Interpreter *interp, const char *fileName);
 
-class GlobalImp : public JSObject {
+class GlobalImp : public JSGlobalObject {
 public:
     virtual UString className() const { return "global"; }
 };

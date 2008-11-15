@@ -244,7 +244,7 @@ void ExecState::quietUnwind(int depth)
     }
 }
 
-GlobalExecState::GlobalExecState(Interpreter* intp, JSObject* glob): ExecState(intp, 0 /* nothing else constructed yet*/)
+GlobalExecState::GlobalExecState(Interpreter* intp, JSGlobalObject* glob): ExecState(intp, 0 /* nothing else constructed yet*/)
 {
     scope.push(glob);
     m_codeType  = GlobalCode;
@@ -252,7 +252,7 @@ GlobalExecState::GlobalExecState(Interpreter* intp, JSObject* glob): ExecState(i
     m_thisVal  = glob;
 }
 
-InterpreterExecState::InterpreterExecState(Interpreter* intp, JSObject* glob,
+InterpreterExecState::InterpreterExecState(Interpreter* intp, JSGlobalObject* glob,
                                            JSObject* thisObject, ProgramNode* body):
   ExecState(intp, intp->execState())
 {
@@ -265,7 +265,7 @@ InterpreterExecState::InterpreterExecState(Interpreter* intp, JSObject* glob,
     m_thisVal  = thisObject;
 }
 
-EvalExecState::EvalExecState(Interpreter* intp, JSObject* glob,
+EvalExecState::EvalExecState(Interpreter* intp, JSGlobalObject* glob,
                              ProgramNode* body, ExecState* callingExecState):
   ExecState(intp, intp->execState())
 {

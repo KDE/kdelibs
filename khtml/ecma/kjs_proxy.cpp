@@ -324,7 +324,7 @@ void KJSProxyImpl::initScript()
     return;
 
   // Build the global object - which is a Window instance
-  JSObject *globalObject( new Window(m_frame) );
+  JSGlobalObject *globalObject( new Window(m_frame) );
 
   // Create a KJS interpreter for this part
   m_script = new KJS::ScriptInterpreter(globalObject, m_frame);

@@ -65,7 +65,7 @@ HashMap<void*, DOMObject*>* ScriptInterpreter::s_allDomObjects;
 typedef QList<ScriptInterpreter*> InterpreterList;
 static InterpreterList *interpreterList;
 
-ScriptInterpreter::ScriptInterpreter( JSObject *global, khtml::ChildFrame* frame )
+ScriptInterpreter::ScriptInterpreter( JSGlobalObject *global, khtml::ChildFrame* frame )
   : Interpreter( global ), m_frame( frame ),
     m_evt( 0L ), m_inlineCode(false), m_timerCallback(false)
 {

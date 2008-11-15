@@ -34,6 +34,7 @@
 #include <kurl.h>
 #include <kjs/lookup.h>
 #include <kjs/function.h>
+#include <kjs/JSVariableObject.h>
 
 #include <stdlib.h> // for abort
 
@@ -79,7 +80,7 @@ namespace KJS {
   class ScriptInterpreter : public Interpreter
   {
   public:
-    ScriptInterpreter( JSObject *global, khtml::ChildFrame* frame );
+    ScriptInterpreter( JSGlobalObject *global, khtml::ChildFrame* frame );
     virtual ~ScriptInterpreter();
 
     // We need to keep track of wrappers in 2 ways:
