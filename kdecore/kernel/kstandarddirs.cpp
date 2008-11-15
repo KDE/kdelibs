@@ -911,7 +911,9 @@ void KStandardDirs::createSpecialResource(const char *type)
             srv = findExe(QLatin1String("lnusertemp"));
         if (!srv.isEmpty())
         {
-            system(QFile::encodeName(srv)+' '+type);
+            if (system(QFile::encodeName(srv) + ' ' + type) == -1) {
+                fprintf(stderr, "Error: unable to launch lnusertemp command" );
+            }
             result = readlink(QFile::encodeName(dir).constData(), link, 1023);
         }
     }
