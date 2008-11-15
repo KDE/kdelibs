@@ -162,12 +162,12 @@ if(MSVC)
    )   
 endif(MSVC)	
 
-set_source_files_properties( org.kde.Solid.PowerManagement.xml
-                             org.kde.Solid.PowerManagement.Inhibit.xml 
+set_source_files_properties( org.freedesktop.PowerManagement.xml
+                             org.freedesktop.PowerManagement.Inhibit.xml
                              PROPERTIES NO_NAMESPACE TRUE)
 
-qt4_add_dbus_interfaces(solid_LIB_SRCS org.kde.Solid.PowerManagement.xml
-                        org.kde.Solid.PowerManagement.Inhibit.xml )
+qt4_add_dbus_interfaces(solid_LIB_SRCS org.freedesktop.PowerManagement.xml
+                        org.freedesktop.PowerManagement.Inhibit.xml )
 
 qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
                        org_kde_solid_networking_client)
@@ -190,8 +190,8 @@ set_target_properties(solid PROPERTIES
 install(TARGETS solid EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES org.kde.Solid.Networking.Client.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-install(FILES org.kde.Solid.PowerManagement.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-install(FILES org.kde.Solid.PowerManagement.Inhibit.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+install(FILES org.freedesktop.PowerManagement.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+install(FILES org.freedesktop.PowerManagement.Inhibit.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 ########### static lib for tests  ###############
 

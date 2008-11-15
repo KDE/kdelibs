@@ -40,8 +40,8 @@ namespace Solid
         void slotPowerSaveStatusChanged(bool newState);
 
     public:
-        OrgKdeSolidPowerManagementInterface managerIface;
-        OrgKdeSolidPowerManagementInhibitInterface inhibitIface;
+        OrgFreedesktopPowerManagementInterface managerIface;
+        OrgFreedesktopPowerManagementInhibitInterface inhibitIface;
 
         bool powerSaveStatus;
         QSet<Solid::PowerManagement::SleepState> supportedSleepStates;

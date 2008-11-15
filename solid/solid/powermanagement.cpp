@@ -27,11 +27,11 @@
 SOLID_GLOBAL_STATIC(Solid::PowerManagementPrivate, globalPowerManager)
 
 Solid::PowerManagementPrivate::PowerManagementPrivate()
-    : managerIface("org.kde.Solid.PowerManagement",
-                   "/org/kde/Solid/PowerManagement",
+    : managerIface("org.freedesktop.PowerManagement",
+                   "/org/freedesktop/PowerManagement",
                    QDBusConnection::sessionBus()),
-      inhibitIface("org.kde.Solid.PowerManagement.Inhibit",
-                   "/org/kde/Solid/PowerManagement/Inhibit",
+      inhibitIface("org.freedesktop.PowerManagement.Inhibit",
+                   "/org/freedesktop/PowerManagement/Inhibit",
                    QDBusConnection::sessionBus())
 {
     powerSaveStatus = managerIface.GetPowerSaveStatus();
