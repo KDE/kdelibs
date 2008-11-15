@@ -28,6 +28,7 @@
 #include <wtf/Forward.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/RefPtr.h>
+#include <wtf/Vector.h>
 
 namespace KJS {
 
@@ -63,8 +64,15 @@ namespace KJS {
         static void noteNodeCycle(Node*);
         static void removeNodeCycle(Node*);
 
+        // We keep track of various flags about the function body we're
+        // tracking on a stack; the FunctionBody ctor pops them off
+        // when we're done parsing and are making the body node.
+        void pushFunctionContext(unsigned initialFlags);
+        void setFunctionFlags(unsigned newFlags);
+        unsigned popFunctionContext();
+
     private:
-	friend Parser& parser();
+        friend Parser& parser();
 
         Parser(); // Use parser() instead.
         void parse(const UString& sourceURL, int startingLineNumber,
@@ -73,10 +81,26 @@ namespace KJS {
 
         int m_sourceId;
         RefPtr<ProgramNode> m_progNode;
+        WTF::Vector<unsigned, 8> m_functionFlags;
     };
 
     Parser& parser(); // Returns the singleton JavaScript parser.
 
+    inline void Parser::pushFunctionContext(unsigned initialFlags) {
+        m_functionFlags.append(initialFlags);
+    }
+
+    inline void Parser::setFunctionFlags(unsigned newFlags) {
+        m_functionFlags.last() |= newFlags;
+    }
+
+    inline unsigned Parser::popFunctionContext() {
+        unsigned flags = m_functionFlags.last();
+        m_functionFlags.removeLast();
+        return flags;
+    }
+
 } // namespace KJS
 
 #endif // Parser_h
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

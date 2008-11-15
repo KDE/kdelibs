@@ -209,9 +209,14 @@ PropertyName:
 
 Property:
     PropertyName ':' AssignmentExpr     { $$ = new PropertyNode($1, $3, PropertyNode::Constant); }
-  | IDENT IDENT '(' ')' FunctionBody    { if (!makeGetterOrSetterPropertyNode($$, *$1, *$2, 0, $5)) YYABORT; }
-  | IDENT IDENT '(' FormalParameterList ')' FunctionBody
-                                        { if (!makeGetterOrSetterPropertyNode($$, *$1, *$2, $4, $6)) YYABORT; }
+  | IDENT IDENT '(' ')' {inFuncExpr()} FunctionBody  {
+          if (!makeGetterOrSetterPropertyNode($$, *$1, *$2, 0, $6))
+            YYABORT;
+        }
+  | IDENT IDENT '(' FormalParameterList ')' {inFuncExpr()} FunctionBody {
+          if (!makeGetterOrSetterPropertyNode($$, *$1, *$2, $4, $7))
+            YYABORT;
+        }
 ;
 
 PropertyList:
@@ -830,18 +835,22 @@ ImportStatement:
 ;
 
 FunctionDeclaration:
-    FUNCTION IDENT '(' ')' FunctionBody { $$ = new FuncDeclNode(*$2, $5); }
-  | FUNCTION IDENT '(' FormalParameterList ')' FunctionBody
-                                        { $$ = new FuncDeclNode(*$2, $4, $6); }
+    FUNCTION IDENT '(' ')' {inFuncDecl()} FunctionBody { $$ = new FuncDeclNode(*$2, $6); }
+  | FUNCTION IDENT '(' FormalParameterList ')' {inFuncDecl()} FunctionBody
+                                        { $$ = new FuncDeclNode(*$2, $4, $7); }
 ;
 
 FunctionExpr:
-    FUNCTION '(' ')' FunctionBody       { $$ = new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, $4); }
-  | FUNCTION '(' FormalParameterList ')' FunctionBody
-                                        { $$ = new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, $5, $3); }
-  | FUNCTION IDENT '(' ')' FunctionBody { $$ = new FuncExprNode(*$2, $5); }
-  | FUNCTION IDENT '(' FormalParameterList ')' FunctionBody
-                                        { $$ = new FuncExprNode(*$2, $6, $4); }
+    FUNCTION '(' ')' {inFuncExpr()} FunctionBody  {
+      $$ = new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, $5);
+    }
+  | FUNCTION '(' FormalParameterList ')' {inFuncExpr()} FunctionBody {
+      $$ = new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, $6, $3);
+    }
+  | FUNCTION IDENT '(' ')' {inFuncExpr()} FunctionBody { $$ = new FuncExprNode(*$2, $6); }
+  | FUNCTION IDENT '(' FormalParameterList ')' {inFuncExpr()} FunctionBody {
+      $$ = new FuncExprNode(*$2, $7, $4);
+    }
 ;
 
 FormalParameterList:
@@ -883,3 +892,5 @@ static bool allowAutomaticSemicolon()
 {
     return yychar == '}' || yychar == 0 || lexer().prevTerminator();
 }
+
+// kate: indent-width 2; replace-tabs on; tab-width 4; space-indent on;

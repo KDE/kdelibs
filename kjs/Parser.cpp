@@ -86,6 +86,8 @@ void Parser::parse(const UString& sourceURL, int startingLineNumber,
     const UChar* code, unsigned length,
     int* sourceId, int* errLine, UString* errMsg)
 {
+    pushFunctionContext(0);
+    
     ASSERT(!m_progNode);
 
     if (errLine)

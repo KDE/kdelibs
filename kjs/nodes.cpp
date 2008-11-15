@@ -828,8 +828,8 @@ FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
     , m_sourceURL(lexer().sourceURL())
     , m_sourceId(parser().sourceId())
     , m_compType(NotCompiled)
+    , m_flags(parser().popFunctionContext())
 {
-
   setLoc(-1, -1);
 }
 

@@ -30,6 +30,16 @@
 
 namespace KJS {
 
+// Shorthand wrappers for entering function contexts
+static void inFuncExpr() {
+    parser().pushFunctionContext(FuncFl_Expr);
+}
+
+static void inFuncDecl() {
+    parser().pushFunctionContext(FuncFl_Decl);
+}
+
+
 static Node* makeAssignNode(Node* loc, Operator op, Node* expr)
 {
     return new AssignNode(loc, op, expr);

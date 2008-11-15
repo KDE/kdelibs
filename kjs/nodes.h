@@ -4,7 +4,7 @@
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *  Copyright (C) 2003, 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
- *  Copyright (C) 2007 Maksim Orlovich (maksim@kde.org)
+ *  Copyright (C) 2007, 2008 Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -997,14 +997,23 @@ namespace KJS {
     ListRefPtr<ParameterNode> next;
   };
 
-  // inherited by ProgramNode
+  // Flags about function bodies we care about for codegen
+  enum FunctionBodyFlags {
+    // note: neither of the two below is set for things created via
+    // top-level, eval, or function ctor
+    FuncFl_Decl      = 1,
+    FuncFl_Expr      = 2, 
+    FuncFl_HasEvalOp = 4
+  };
 
   /**
-   This AST node corresponds to the function body in the AST, but is used to
+   This AST node corresponds to the function body or top-level code in the AST, but is used to
    keep track of much of the information relevant to the whole function,
    such as parameter names and symbol tables. This is because there are both function
    declarations and expressions, so there is no natural single place to put this stuff
    above the body
+
+   inherited by ProgramNode
   */
   class FunctionBodyNode : public BlockNode {
   public:
@@ -1022,7 +1031,6 @@ namespace KJS {
     void compileIfNeeded(CodeType ctype, CompileType compType);
     void compile(CodeType ctype, CompileType compType);
     CompileType compileState() const { return m_compType; }
-    
 
     virtual void generateExecCode(CompileState*);
 
@@ -1059,12 +1067,19 @@ namespace KJS {
     const CodeBlock& code() const { return m_compiledCode; }
     CodeBlock& code() { return m_compiledCode; }
 
+    // Collection of FuncFl_* flags describing information collected about this function
+    // during the parsing.
+    unsigned flags() const { return m_flags; }
+
   private:
     size_t addSymbol(const Identifier& ident, int attr, FuncDeclNode* funcDecl = 0);
     UString m_sourceURL;
     int m_sourceId : 31;
     bool m_tearOffAtEnd : 1;        
     CompileType m_compType;
+
+    // Flags 
+    unsigned m_flags;
 
     // This maps id -> attributes and function decl info
     WTF::Vector<SymbolInfo> m_symbolList;
@@ -1203,6 +1218,9 @@ namespace KJS {
       RefPtr<CaseBlockNode> block;
   };
 
+  // important: these are also built when compiling things via the Function constructor
+  // (see FunctionObjectImp::construct() and Parser::parseFunctionBody, so the existance
+  // of this class rather than the bare FunctionBodyNode does not care much information.
   class ProgramNode : public FunctionBodyNode {
   public:
     ProgramNode(SourceElementsNode *s);
@@ -1246,3 +1264,4 @@ namespace KJS {
 } // namespace
 
 #endif
+// kate: indent-width 2; replace-tabs on; tab-width 4; space-indent on;
