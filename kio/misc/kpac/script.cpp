@@ -39,6 +39,7 @@
 
 #include <kurl.h>
 #include <kjs/object.h>
+#include <kjs/JSVariableObject.h>
 
 using namespace KJS;
 
