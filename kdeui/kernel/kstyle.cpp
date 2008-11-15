@@ -96,6 +96,8 @@ struct SelectionTiles
 
 // ----------------------------------------------------------------------------
 
+static const QStyle::StyleHint SH_KCustomStyleElement = (QStyle::StyleHint)0xff000001;
+static const int X_KdeBase = 0xff000000;
 
 class KStylePrivate
 {
@@ -103,6 +105,9 @@ public:
     KStylePrivate();
     QCache<quint64, SelectionTiles> selectionCache;
     KComponentData m_componentData;
+
+    QHash<QString, int> styleElements;
+    int hintCounter, controlCounter, subElementCounter;
 };
 
 KStylePrivate::KStylePrivate() : m_componentData()
@@ -123,6 +128,8 @@ KStylePrivate::KStylePrivate() : m_componentData()
         m_componentData = KComponentData(name.toLatin1(), name.toLatin1(), KComponentData::SkipMainComponentRegistration);
     }
     selectionCache.setMaxCost(10);
+    controlCounter = subElementCounter = X_KdeBase;
+    hintCounter = X_KdeBase+1; //sic! X_KdeBase is covered by SH_KCustomStyleElement
 }
 
 
@@ -271,9 +278,115 @@ KStyle::~KStyle()
     delete d;
 }
 
+
+/*
+    Custom Style Element runtime extension:
+    We reserve one StyleHint to let the effective style inform widgets whether it supports certain
+    string based style elements.
+    As this could lead to number conflicts (i.e. an app utilizing one of the hints itself for other
+    purposes) there're various safety mechanisms to rule out such interference.
+
+    1) It's most unlikely that a widget in some 3rd party app will accidentally call a general
+    QStyle/KStyle styleHint() or draw*() and (unconditionally) expect a valid return, however:
+    a. The StyleHint is not directly above Qt's custom base, assuming most 3rd party apps would
+    - in case - make use of such
+    b. In order to be accepted, the StyleHint query must pass a widget with a perfectly matching
+    name, containing the typical element prefix ("CE_", etc.) and being supported by the current style
+    c. Instead using Qt's fragile qstyleoption_cast on the QStyleOption provided to the StyleHint
+    query, try to dump out a string and hope for the best, we now manipulate the widgets objectName().
+    Plain Qt dependent widgets can do that themselves and if a widget uses KStyle's convenience access
+    functions, it won't notice this at all
+
+    2) The key problem is that a common KDE widget will run into an apps custom style which will then
+    falsely respond to the styleHint() call with an invalid value.
+    To prevent this, supporting styles *must* set a Q_CLASSINFO "X-KDE-CustomElements".
+
+    3) If any of the above traps snaps, the returned id is 0 - the QStyle default, indicating
+    that this element is not supported by the current style.
+
+    Obviously, this contains the "diminished clean" action to (temporarily) manipulate the
+    objectName() of a const QWidget* - but this happens completely inside KStyle or the widget, if
+    it does not make use of KStyles static convenience functions.
+    My biggest worry here would be, that in a multithreaded environment a thread (usually not being
+    owner of the widget) does something crucially relying on the widgets name property...
+    This however would also have to happen during the widget construction or stylechanges, when
+    the functions in doubt will typically be called.
+    So this is imho unlikely causing any trouble, ever.
+*/
+
+/*
+    The functions called by the real style implementation to add support for a certain element.
+    Checks for well-formed string (containing the element prefix) and returns 0 otherwise.
+    Checks whether the element is already supported or inserts it otherwise; Returns the proper id
+    NOTICE: We could check for "X-KDE-CustomElements", but this would bloat style start up times
+    (if they e.g. register 100 elements or so)
+*/
+
+
+static inline int newStyleElement(const QString &element, const char *check, int &counter, QHash<QString, int> *elements)
+{
+    if (!element.contains(check))
+        return 0;
+    int id = elements->value(element, 0);
+    if (!id) {
+        ++counter;
+        id = counter;
+        elements->insert(element, id);
+    }
+    return id;
+}
+
+QStyle::StyleHint KStyle::newStyleHint(const QString &element)
+{
+    return (StyleHint)newStyleElement(element, "SH_", d->hintCounter, &d->styleElements);
+}
+
+QStyle::ControlElement KStyle::newControlElement(const QString &element)
+{
+    return (ControlElement)newStyleElement(element, "CE_", d->controlCounter, &d->styleElements);
+}
+
+KStyle::SubElement KStyle::newSubElement(const QString &element)
+{
+    return (SubElement)newStyleElement(element, "SE_", d->subElementCounter, &d->styleElements);
+}
+
+
 QString KStyle::defaultStyle()
 {
     return QString("oxygen");
+}
+
+/*
+    The functions called by widgets that request custom element support, passed to the effective style.
+    Collected in a static inline function due to similarity.
+*/
+
+static inline int customStyleElement(QStyle::StyleHint type, const QString &element, QWidget *widget)
+{
+    if (!widget || widget->style()->metaObject()->indexOfClassInfo("X-KDE-CustomElements") < 0)
+        return 0;
+
+    const QString originalName = widget->objectName();
+    widget->setObjectName(element);
+    const int id = widget->style()->styleHint(type, 0, widget);
+    widget->setObjectName(originalName);
+    return id;
+}
+
+QStyle::StyleHint KStyle::customStyleHint(const QString &element, const QWidget *widget)
+{
+    return (StyleHint) customStyleElement(SH_KCustomStyleElement, element, const_cast<QWidget*>(widget));
+}
+
+QStyle::ControlElement KStyle::customControlElement(const QString &element, const QWidget *widget)
+{
+    return (ControlElement) customStyleElement(SH_KCustomStyleElement, element, const_cast<QWidget*>(widget));
+}
+
+QStyle::SubElement KStyle::customSubElement(const QString &element, const QWidget *widget)
+{
+    return (SubElement) customStyleElement(SH_KCustomStyleElement, element, const_cast<QWidget*>(widget));
 }
 
 void KStyle::polish(QWidget *w)
@@ -2277,7 +2390,10 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
 
         case SH_ItemView_ActivateItemOnSingleClick:
             return d->m_componentData.config()->group("KDE").readEntry("SingleClick", KDE_DEFAULT_SINGLECLICK );
-
+        case SH_KCustomStyleElement:
+            if (!widget)
+                return 0;
+            return d->styleElements.value(widget->objectName(), 0);
         default:
             break;
     };
