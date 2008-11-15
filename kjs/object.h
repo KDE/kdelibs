@@ -417,7 +417,8 @@ namespace KJS {
      */
     virtual bool hasInstance(ExecState *exec, JSValue *value);
 
-    virtual void getPropertyNames(ExecState*, PropertyNameArray&);
+    void getPropertyNames(ExecState*, PropertyNameArray&);
+    virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&);
 
     virtual JSValue *toPrimitive(ExecState *exec, JSType preferredType = UnspecifiedType) const;
     virtual bool getPrimitiveNumber(ExecState*, double& number, JSValue*& value);
@@ -596,6 +597,12 @@ inline bool JSObject::getPropertySlot(ExecState *exec, const Identifier& propert
 
         object = static_cast<JSObject *>(proto);
     }
+}
+
+inline void JSObject::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
+{
+  for (JSObject* cur = this; cur; cur = cur->_proto->getObject())
+    cur->getOwnPropertyNames(exec, propertyNames);
 }
 
 inline JSValue* JSObject::toPrimitive(ExecState* exec, JSType preferredType) const

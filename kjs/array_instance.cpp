@@ -358,7 +358,7 @@ bool ArrayInstance::deleteProperty(ExecState* exec, unsigned i)
     return false;
 }
 
-void ArrayInstance::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
+void ArrayInstance::getOwnPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
 {
     // FIXME: Filling PropertyNameArray with an identifier for every integer
     // is incredibly inefficient for large arrays. We need a different approach.
@@ -377,7 +377,7 @@ void ArrayInstance::getPropertyNames(ExecState* exec, PropertyNameArray& propert
             propertyNames.add(Identifier::from(it->first));
     }
 
-    JSObject::getPropertyNames(exec, propertyNames);
+    JSObject::getOwnPropertyNames(exec, propertyNames);
 }
 
 void ArrayInstance::increaseVectorLength(unsigned newLength)

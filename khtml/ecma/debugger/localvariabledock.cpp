@@ -35,7 +35,6 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include "objectmodel.h"
 #include "value2string.h"
 
 namespace KJSDebugger {
@@ -102,7 +101,10 @@ void LocalVariablesDock::updateObjectProperties(KJS::ExecState* exec, KJS::JSVal
 
         obj = val->getObject();
         KJS::PropertyNameArray jsProps;
-        obj->getPropertyNames(exec, jsProps);
+
+        // We use getOwnPropertyNames and not getPropertyNames here
+        // to not include things from the prototype
+        obj->getOwnPropertyNames(exec, jsProps);
 
         for (int pos = 0; pos < jsProps.size(); ++pos) 
         {
@@ -114,6 +116,10 @@ void LocalVariablesDock::updateObjectProperties(KJS::ExecState* exec, KJS::JSVal
             props.append(jsProps[pos].ustring().qstring());
         }
     }
+
+    // If we're not an activation, also list the prototype, as __proto__
+    if (val && !val->getObject()->isActivation())
+        props << QLatin1String("__proto__");
 
     // If we're the root, also pretend 'this' is there.
     if (root && exec)

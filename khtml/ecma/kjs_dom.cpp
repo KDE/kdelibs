@@ -767,14 +767,14 @@ bool DOMNodeList::getOwnPropertySlot(ExecState *exec, const Identifier& property
   return DOMObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-void DOMNodeList::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
+void DOMNodeList::getOwnPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
 {
   for (unsigned i = 0; i < m_impl->length(); ++i)
       propertyNames.add(Identifier::from(i));
 
   propertyNames.add(exec->propertyNames().length);
 
-  JSObject::getPropertyNames(exec, propertyNames);
+  JSObject::getOwnPropertyNames(exec, propertyNames);
 }
 
 // Need to support both get and call, so that list[0] and list(0) work.

@@ -2930,14 +2930,14 @@ JSValue* HTMLCollection::indexGetter(ExecState *exec, unsigned index)
   return getDOMNode(exec, m_impl->item(index));
 }
 
-void KJS::HTMLCollection::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
+void KJS::HTMLCollection::getOwnPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
 {
   for (unsigned i = 0; i < m_impl->length(); ++i)
       propertyNames.add(Identifier::from(i));
 
   propertyNames.add(exec->propertyNames().length);
 
-  JSObject::getPropertyNames(exec, propertyNames);
+  JSObject::getOwnPropertyNames(exec, propertyNames);
 }
 
 JSValue *HTMLCollection::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)

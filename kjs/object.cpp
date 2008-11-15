@@ -542,7 +542,7 @@ bool JSObject::getPropertyAttributes(const Identifier& propertyName, unsigned& a
   return false;
 }
 
-void JSObject::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
+void JSObject::getOwnPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
 {
    _prop.getEnumerablePropertyNames(propertyNames);
 
@@ -559,8 +559,6 @@ void JSObject::getPropertyNames(ExecState* exec, PropertyNameArray& propertyName
     }
     info = info->parentClass;
   }
-  if (_proto->isObject())
-     static_cast<JSObject*>(_proto)->getPropertyNames(exec, propertyNames);
 }
 
 bool JSObject::toBoolean(ExecState * /*exec*/) const

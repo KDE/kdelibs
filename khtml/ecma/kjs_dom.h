@@ -88,7 +88,7 @@ namespace KJS {
     virtual JSValue* callAsFunction(ExecState *exec, JSObject* thisObj, const List& args);
     virtual bool implementsCall() const { return true; }
     virtual bool isFunctionType() const { return false; }
-    virtual void getPropertyNames(ExecState* exec, PropertyNameArray& names);
+    virtual void getOwnPropertyNames(ExecState* exec, PropertyNameArray& names);
 
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }

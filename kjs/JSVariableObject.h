@@ -59,7 +59,7 @@ namespace KJS {
     class JSVariableObject : public JSObject {
     public:
         virtual bool deleteProperty(ExecState*, const Identifier&);
-        virtual void getPropertyNames(ExecState*, PropertyNameArray&);
+        virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&);
 
         virtual void mark();
 

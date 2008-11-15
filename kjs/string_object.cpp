@@ -119,12 +119,12 @@ bool StringInstance::deleteProperty(ExecState *exec, const Identifier &propertyN
   return JSObject::deleteProperty(exec, propertyName);
 }
 
-void StringInstance::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
+void StringInstance::getOwnPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
 {
   int size = internalValue()->getString().size();
   for (int i = 0; i < size; i++)
     propertyNames.add(Identifier(UString::from(i)));
-  return JSObject::getPropertyNames(exec, propertyNames);
+  return JSObject::getOwnPropertyNames(exec, propertyNames);
 }
 
 UString StringInstance::toString(ExecState *exec) const
