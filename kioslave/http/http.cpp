@@ -4479,6 +4479,9 @@ void HTTPProtocol::cacheUpdate( const KUrl& url, bool no_cache, time_t expireDat
   if ( !checkRequestUrl( url ) )
       return;
 
+  // Make sure we read in the cache info.
+  resetSessionSettings();
+
   m_request.path = url.path();
   m_request.query = url.query();
   m_request.cache = CC_Reload;
