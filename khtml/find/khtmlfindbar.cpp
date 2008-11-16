@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
  *
  * Copyright (C) 2008 Bernhard Beschow <bbeschow cs tu berlin de>
+ *           (C) 2008 Germain Garand <germain@ebooksfrance.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -35,9 +36,7 @@ KHTMLFindBar::KHTMLFindBar( QWidget *parent ) :
     KHTMLViewBarWidget( true, parent ),
     m_enabled( KFind::WholeWordsOnly | KFind::FromCursor | KFind::SelectedText | KFind::CaseSensitive | KFind::FindBackwards | KFind::RegularExpression )
 {
-    QWidget *widget = new QWidget( this );
-    setupUi( widget );
-    layout()->addWidget( widget );
+    setupUi( centralWidget() );
 
     m_next->setIcon( KIcon( "go-down-search" ) );
     m_previous->setIcon( KIcon( "go-up-search" ) );
@@ -56,8 +55,13 @@ KHTMLFindBar::KHTMLFindBar( QWidget *parent ) :
     m_regExp = m_incMenu->addAction(i18n("Regular e&xpression"));
     m_regExp->setCheckable(true);
 
+    m_find->setDuplicatesEnabled( false );
+
     connect( m_selectedText, SIGNAL(toggled(bool)), this, SLOT(slotSelectedTextToggled(bool)) );
-    connect( m_find, SIGNAL(textChanged(const QString &)), this, SIGNAL(searchChanged()) );
+    connect( m_find, SIGNAL(editTextChanged(const QString &)), this, SIGNAL(searchChanged()) );
+    connect( m_find->lineEdit(), SIGNAL(clearButtonClicked()), this, SLOT(slotAddPatternToHistory()) );
+    connect( this, SIGNAL(hideMe()), this, SLOT(slotAddPatternToHistory()) );
+    connect( this, SIGNAL(searchChanged()), this, SLOT(slotSearchChanged()) );
     connect( m_next, SIGNAL(clicked()), this, SIGNAL(findNextClicked()) );
     connect( m_previous, SIGNAL(clicked()), this, SIGNAL(findPreviousClicked()) );
     new QShortcut(QKeySequence(Qt::Key_Escape), this, SIGNAL(hideMe()));
@@ -96,13 +100,23 @@ QString KHTMLFindBar::pattern() const
     return d->m_find->currentText();
 }
 
+void KHTMLFindBar::slotSearchChanged()
+{
+   // reset background color of the combo box
+   if (pattern().isEmpty()) {
+       d->m_find->setPalette(QPalette());
+   } else {
+       m_prevPattern = pattern();
+   }
+}
+
 void KHTMLFindBar::setFindHistory(const QStringList &strings)
 {
     if (strings.count() > 0)
     {
         d->m_find->setHistoryItems(strings, true);
-        d->m_find->lineEdit()->setText( strings.first() );
-        d->m_find->lineEdit()->selectAll();
+        //d->m_find->lineEdit()->setText( strings.first() );
+        //d->m_find->lineEdit()->selectAll();
     }
     else
         d->m_find->clearHistory();
@@ -117,6 +131,22 @@ void KHTMLFindBar::setHasSelection(bool hasSelection)
     {
         d->m_selectedText->setChecked( false );
         slotSelectedTextToggled( hasSelection );
+    }
+}
+
+void KHTMLFindBar::slotAddPatternToHistory()
+{
+    bool patternIsEmpty = pattern().isEmpty();
+    if (!patternIsEmpty || !m_prevPattern.isEmpty()) {
+        d->m_find->addToHistory(pattern().isEmpty() ? m_prevPattern : pattern());
+        if (patternIsEmpty && !pattern().isEmpty()) {
+            // ### Hack - addToHistory sometimes undo the clearing of the lineEdit
+            // with clear button. Clear it again.
+            bool sb = d->m_find->blockSignals(true);
+            d->m_find->lineEdit()->setText(QString());
+            d->m_find->blockSignals(sb);
+        }
+        m_prevPattern = QString();
     }
 }
 
@@ -147,18 +177,16 @@ void KHTMLFindBar::setOptions(long options)
 
 void KHTMLFindBar::setFoundMatch( bool match )
 {
-    if ( !match && !m_find->currentText().isEmpty() )
-    {
-        KStatefulBrush backgroundBrush( KColorScheme::View, KColorScheme::NegativeBackground );
-
-        QString styleSheet = QString( "KHistoryComboBox{ background-color:%1 }" )
-                             .arg( backgroundBrush.brush(m_find).color().name() );
-
-        m_find->setStyleSheet( styleSheet );
-    }
-    else
-    {
-        m_find->setStyleSheet( QString() );
+    if ( pattern().isEmpty() ) {
+        m_find->setPalette(QPalette());
+    } else if ( !match ) {
+        QPalette newPal( m_find->palette() );
+        KColorScheme::adjustBackground(newPal, KColorScheme::NegativeBackground);
+        m_find->setPalette(newPal);
+    } else {
+        QPalette newPal( m_find->palette() );
+        KColorScheme::adjustBackground(newPal, KColorScheme::PositiveBackground);
+        m_find->setPalette(newPal);
     }
 }
 

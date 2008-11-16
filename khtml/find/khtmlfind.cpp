@@ -146,7 +146,7 @@ bool KHTMLFind::initFindNode( bool selection, bool reverse, bool fromCursor )
 
 void KHTMLFind::deactivate()
 {
-  kDebug();
+  kDebug(6050);
   d->m_lastFindState.options = d->m_findDialog->options();
   d->m_lastFindState.history = d->m_findDialog->findHistory();
   d->m_findDialog->deleteLater();
@@ -212,6 +212,7 @@ void KHTMLFind::activate()
   // TODO? optionsDialog.setPattern( d->m_lastFindState.text );
   d->m_findDialog->setFindHistory( d->m_lastFindState.history );
   d->m_findDialog->setOptions( d->m_lastFindState.options );
+  d->m_findDialog->setFocus();
 
   d->m_lastFindState.options = -1; // force update in findTextNext
   d->m_lastFindState.last_dir = -1;
@@ -467,8 +468,7 @@ bool KHTMLFind::findTextNext( bool reverse )
 
   if ( res == KFind::NoMatch ) // i.e. we're done
   {
-    kDebug() << "No more matches.";
-    kDebug() << (options & KHTMLPart::FindNoPopups);
+    kDebug(6050) << "No more matches.";
     if ( !(options & KHTMLPart::FindNoPopups) && d->m_find->shouldRestart() )
     {
       kDebug(6050) << "Restarting";
@@ -484,7 +484,7 @@ bool KHTMLFind::findTextNext( bool reverse )
       initFindNode( false, options & KFind::FindBackwards, false );
       d->m_find->resetCounts();
     }
-    kDebug() << "Dialog closed.";
+    kDebug(6050) << "Dialog closed.";
   }
 
   if ( m_findDialog != 0 )

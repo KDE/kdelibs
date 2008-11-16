@@ -96,6 +96,8 @@ public:
 
 private slots:
     void slotSelectedTextToggled(bool selec);
+    void slotSearchChanged();
+    void slotAddPatternToHistory();
 
 signals:
     void searchChanged();
@@ -110,6 +112,7 @@ private:
     QAction *m_fromCursor;
     QAction *m_selectedText;
     QAction *m_regExp;
+    QString m_prevPattern;
 };
 
 #endif
