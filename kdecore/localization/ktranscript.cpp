@@ -118,6 +118,7 @@ class Scriptface : public JSObject
     JSValue *getPropf (ExecState *exec, JSValue *phrase, JSValue *prop);
     JSValue *setPropf (ExecState *exec, JSValue *phrase, JSValue *prop, JSValue *value);
     JSValue *toUpperFirstf (ExecState *exec, JSValue *str, JSValue *nalt);
+    JSValue *toLowerFirstf (ExecState *exec, JSValue *str, JSValue *nalt);
     JSValue *getConfStringf (ExecState *exec, JSValue *key, JSValue *dval);
     JSValue *getConfBoolf (ExecState *exec, JSValue *key, JSValue *dval);
     JSValue *getConfNumberf (ExecState *exec, JSValue *key, JSValue *dval);
@@ -144,6 +145,7 @@ class Scriptface : public JSObject
         GetProp,
         SetProp,
         ToUpperFirst,
+        ToLowerFirst,
         GetConfString,
         GetConfBool,
         GetConfNumber
@@ -695,6 +697,7 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
     getProp         Scriptface::GetProp         DontDelete|ReadOnly|Function 2
     setProp         Scriptface::SetProp         DontDelete|ReadOnly|Function 3
     toUpperFirst    Scriptface::ToUpperFirst    DontDelete|ReadOnly|Function 2
+    toLowerFirst    Scriptface::ToLowerFirst    DontDelete|ReadOnly|Function 2
     getConfString   Scriptface::GetConfString   DontDelete|ReadOnly|Function 2
     getConfBool     Scriptface::GetConfBool     DontDelete|ReadOnly|Function 2
     getConfNumber   Scriptface::GetConfNumber   DontDelete|ReadOnly|Function 2
@@ -795,6 +798,8 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
             return obj->setPropf(exec, CALLARG(0), CALLARG(1), CALLARG(2));
         case Scriptface::ToUpperFirst:
             return obj->toUpperFirstf(exec, CALLARG(0), CALLARG(1));
+        case Scriptface::ToLowerFirst:
+            return obj->toLowerFirstf(exec, CALLARG(0), CALLARG(1));
         case Scriptface::GetConfString:
             return obj->getConfStringf(exec, CALLARG(0), CALLARG(1));
         case Scriptface::GetConfBool:
@@ -1182,12 +1187,67 @@ JSValue *Scriptface::setPropf (ExecState *exec, JSValue *phrase, JSValue *prop, 
     return jsUndefined();
 }
 
-JSValue *Scriptface::toUpperFirstf (ExecState *exec,
-                                    JSValue *str, JSValue *nalt)
+static QString toCaseFirst (const QString &qstr, int qnalt, bool toupper)
 {
     static QString head("~@");
     static int hlen = head.length();
 
+    // If the first letter is found within an alternatives directive,
+    // change case of the first letter in each of the alternatives.
+    QString qstrcc = qstr;
+    int len = qstr.length();
+    QChar altSep;
+    int remainingAlts = 0;
+    bool checkCase = true;
+    int numChcased = 0;
+    int i = 0;
+    while (i < len) {
+        QChar c = qstr[i];
+
+        if (qnalt && !remainingAlts && qstr.mid(i, hlen) == head) {
+            // An alternatives directive is just starting.
+            i += 2;
+            if (i >= len) break; // malformed directive, bail out
+            // Record alternatives separator, set number of remaining
+            // alternatives, reactivate case checking.
+            altSep = qstrcc[i];
+            remainingAlts = qnalt;
+            checkCase = true;
+        }
+        else if (remainingAlts && c == altSep) {
+            // Alternative separator found, reduce number of remaining
+            // alternatives and reactivate case checking.
+            --remainingAlts;
+            checkCase = true;
+        }
+        else if (checkCase && c.isLetter()) {
+            // Case check is active and the character is a letter; change case.
+            if (toupper) {
+                qstrcc[i] = c.toUpper();
+            } else {
+                qstrcc[i] = c.toLower();
+            }
+            ++numChcased;
+            // No more case checks until next alternatives separator.
+            checkCase = false;
+        }
+
+        // If any letter has been changed, and there are no more alternatives
+        // to be processed, we're done.
+        if (numChcased > 0 && remainingAlts == 0) {
+            break;
+        }
+
+        // Go to next character.
+        ++i;
+    }
+
+    return qstrcc;
+}
+
+JSValue *Scriptface::toUpperFirstf (ExecState *exec,
+                                    JSValue *str, JSValue *nalt)
+{
     if (!str->isString()) {
         return throwError(exec, TypeError,
                           SPREF"toUpperFirst: expected string as first argument");
@@ -1200,54 +1260,29 @@ JSValue *Scriptface::toUpperFirstf (ExecState *exec,
     QString qstr = str->toString(exec).qstring();
     int qnalt = nalt->isNull() ? 0 : nalt->toInteger(exec);
 
-    // If the first letter is found within an alternatives directive,
-    // upcase the first letter in each of the alternatives in that directive.
-
-    QString qstruc = qstr;
-    int len = qstr.length();
-    QChar altSep;
-    int remainingAlts = 0;
-    bool checkCase = true;
-    int numUpcased = 0;
-    int i = 0;
-    while (i < len) {
-        QChar c = qstr[i];
-
-        if (qnalt && !remainingAlts && qstr.mid(i, hlen) == head) {
-            // An alternatives directive is just starting.
-            i += 2;
-            if (i >= len) break; // malformed directive, bail out
-            // Record alternatives separator, set number of remaining
-            // alternatives, reactivate case checking.
-            altSep = qstruc[i];
-            remainingAlts = qnalt;
-            checkCase = true;
-        }
-        else if (remainingAlts && c == altSep) {
-            // Alternative separator found, reduce number of remaining
-            // alternatives and reactivate case checking.
-            --remainingAlts;
-            checkCase = true;
-        }
-        else if (checkCase && c.isLetter()) {
-            // Case check is active and the character is a letter; upcase.
-            qstruc[i] = c.toUpper();
-            ++numUpcased;
-            // No more case checks until next alternatives separator.
-            checkCase = false;
-        }
-
-        // If any letter has been upcased, and there are no more alternatives
-        // to be processed, we're done.
-        if (numUpcased > 0 && remainingAlts == 0) {
-            break;
-        }
-
-        // Go to next character.
-        ++i;
-    }
+    QString qstruc = toCaseFirst(qstr, qnalt, true);
 
     return jsString(qstruc);
+}
+
+JSValue *Scriptface::toLowerFirstf (ExecState *exec,
+                                    JSValue *str, JSValue *nalt)
+{
+    if (!str->isString()) {
+        return throwError(exec, TypeError,
+                          SPREF"toLowerFirst: expected string as first argument");
+    }
+    if (!(nalt->isNumber() || nalt->isNull())) {
+        return throwError(exec, TypeError,
+                          SPREF"toLowerFirst: expected number as second argument");
+    }
+
+    QString qstr = str->toString(exec).qstring();
+    int qnalt = nalt->isNull() ? 0 : nalt->toInteger(exec);
+
+    QString qstrlc = toCaseFirst(qstr, qnalt, false);
+
+    return jsString(qstrlc);
 }
 
 JSValue *Scriptface::getConfStringf (ExecState *exec,
