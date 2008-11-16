@@ -26,6 +26,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QListWidget>
 #include <QtGui/QScrollArea>
+#include <QtGui/QScrollBar>
 #include <QtGui/QTextDocumentFragment>
 
 #include <kapplication.h>
@@ -225,8 +226,23 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
         // enable automatic wrapping since the listwidget has already a good initial width
         messageLabel->setWordWrap(true);
         QListWidget *listWidget = new QListWidget(mainWidget);
-        mainLayout->addWidget(listWidget,usingScrollArea?10:50);
         listWidget->addItems(strlist);
+
+        QStyleOptionViewItem styleOption;
+        styleOption.initFrom(listWidget);
+        QFontMetrics fm(styleOption.font);
+        int w = listWidget->width();
+        Q_FOREACH(const QString &str, strlist) {
+            w = qMax(w, fm.width(str));
+        }
+        const int borderWidth = listWidget->width() - listWidget->viewport()->width() + listWidget->verticalScrollBar()->height();
+        w += borderWidth;
+        if (qRound(desktop.width() / 2) < w) { // do not allow the listWidget to be bigger than half width of the current screen
+            w = qRound(desktop.width() / 2);
+        }
+        listWidget->setMinimumWidth(w);
+
+        mainLayout->addWidget(listWidget,usingScrollArea?10:50);
         listWidget->setSelectionMode(QListWidget::NoSelection);
         messageLabel->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Minimum);
     }
