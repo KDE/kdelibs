@@ -679,6 +679,7 @@ bool CSSParser::parseValue( int propId, bool important )
         CSSPrimitiveValueImpl* vert;
 
         if (num == 2) {
+            value = valueList->next();
             if (!validUnit( value, FLength|FNonNeg, strict)) {
                 delete horiz;
                 return false;
