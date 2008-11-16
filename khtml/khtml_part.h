@@ -367,16 +367,6 @@ public:
   KHTMLView *view() const;
 
   /**
-   * Returns a pointer to the top view bar.
-   */
-  KHTMLViewBar *topViewBar() const;
-
-  /**
-   * Returns a pointer to the bottom view bar.
-   */
-  KHTMLViewBar *bottomViewBar() const;
-
-  /**
    * Enable/disable Javascript support. Note that this will
    * in either case permanently override the default usersetting.
    * If you want to have the default UserSettings, don't call this
@@ -958,6 +948,7 @@ public:
    *
    *  Returns 0L otherwise.
    */
+   // ### KDE5 make const
   KHTMLPart *parentPart();
 
   /**
@@ -1673,6 +1664,16 @@ private:
   void dequeueWallet(DOM::HTMLFormElementImpl*);
 
   void enableFindAheadActions(bool);
+
+  /**
+   * Returns a pointer to the top view bar.
+   */
+  KHTMLViewBar *pTopViewBar() const;
+
+  /**
+   * Returns a pointer to the bottom view bar.
+   */
+  KHTMLViewBar *pBottomViewBar() const;
 
   /**
    * @internal

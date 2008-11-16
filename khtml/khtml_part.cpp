@@ -255,19 +255,23 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_view = view;
 
-  QWidget *widget = new QWidget( view->parentWidget() );
-  QVBoxLayout *layout = new QVBoxLayout( widget );
-  layout->setContentsMargins( 0, 0, 0, 0 );
-  layout->setSpacing( 0 );
-  widget->setLayout( layout );
+  if (!parentPart()) {
+      QWidget *widget = new QWidget( view->parentWidget() );
+      QVBoxLayout *layout = new QVBoxLayout( widget );
+      layout->setContentsMargins( 0, 0, 0, 0 );
+      layout->setSpacing( 0 );
+      widget->setLayout( layout );
 
-  d->m_topViewBar = new KHTMLViewBar( KHTMLViewBar::Top, d->m_view, widget );
-  d->m_bottomViewBar = new KHTMLViewBar( KHTMLViewBar::Bottom, d->m_view, widget );
+      d->m_topViewBar = new KHTMLViewBar( KHTMLViewBar::Top, d->m_view, widget );
+      d->m_bottomViewBar = new KHTMLViewBar( KHTMLViewBar::Bottom, d->m_view, widget );
 
-  layout->addWidget( d->m_topViewBar );
-  layout->addWidget( d->m_view );
-  layout->addWidget( d->m_bottomViewBar );
-  setWidget( widget );
+      layout->addWidget( d->m_topViewBar );
+      layout->addWidget( d->m_view );
+      layout->addWidget( d->m_bottomViewBar );
+      setWidget( widget );
+  } else {
+      setWidget( view );
+  }
 
   d->m_guiProfile = prof;
   d->m_extension = new KHTMLPartBrowserExtension( this );
@@ -1015,13 +1019,17 @@ KHTMLView *KHTMLPart::view() const
   return d->m_view;
 }
 
-KHTMLViewBar *KHTMLPart::topViewBar() const
+KHTMLViewBar *KHTMLPart::pTopViewBar() const
 {
+  if (const_cast<KHTMLPart*>(this)->parentPart())
+      return const_cast<KHTMLPart*>(this)->parentPart()->pTopViewBar();
   return d->m_topViewBar;
 }
 
-KHTMLViewBar *KHTMLPart::bottomViewBar() const
+KHTMLViewBar *KHTMLPart::pBottomViewBar() const
 {
+  if (const_cast<KHTMLPart*>(this)->parentPart())
+      return const_cast<KHTMLPart*>(this)->parentPart()->pBottomViewBar();
   return d->m_bottomViewBar;
 }
 
@@ -2982,17 +2990,23 @@ void KHTMLPart::slotFindDialogDestroyed()
 
 void KHTMLPart::findText()
 {
+  if (parentPart())
+      return parentPart()->findText();
   d->m_find.activate();
 }
 
 void KHTMLPart::findText( const QString &str, long options, QWidget *parent, KFindDialog *findDialog )
 {
-  d->m_find.createNewKFind( str, options, parent, findDialog );
+  if (parentPart())
+      return parentPart()->findText(str, options, parent, findDialog);
+  d->m_find.createNewKFind(str, options, parent, findDialog );
 }
 
 // New method
 bool KHTMLPart::findTextNext( bool reverse )
 {
+  if (parentPart())
+      return parentPart()->findTextNext( reverse );
   return d->m_find.findTextNext( reverse ); 
 }
 

@@ -191,7 +191,7 @@ void KHTMLFind::activate()
   // Raise if already opened
   if ( d->m_findDialog )
   {
-    m_part->bottomViewBar()->showBarWidget( d->m_findDialog );
+    m_part->pBottomViewBar()->showBarWidget( d->m_findDialog );
     return;
   }
 
@@ -216,8 +216,8 @@ void KHTMLFind::activate()
   d->m_lastFindState.options = -1; // force update in findTextNext
   d->m_lastFindState.last_dir = -1;
 
-  m_part->bottomViewBar()->addBarWidget( d->m_findDialog );
-  m_part->bottomViewBar()->showBarWidget( d->m_findDialog );
+  m_part->pBottomViewBar()->addBarWidget( d->m_findDialog );
+  m_part->pBottomViewBar()->showBarWidget( d->m_findDialog );
   connect( d->m_findDialog, SIGNAL(searchChanged()), this, SLOT(slotSearchChanged()) );
   connect( d->m_findDialog, SIGNAL(findNextClicked()), this, SLOT(slotFindNext()) );
   connect( d->m_findDialog, SIGNAL(findPreviousClicked()), this, SLOT(slotFindPrevious()) );
