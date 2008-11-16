@@ -107,7 +107,8 @@ ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/opcodes.h ${CMAKE_CURRENT_
 
 ########### next target ###############
 
-# We don't want -pedantic for KJS since we want to use GCC extension when available
+# We don't want -pedantic/--pedantic for KJS since we want to use GCC extension when available
+string(REPLACE "--pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 add_definitions(-DBUILDING_KDE__)
