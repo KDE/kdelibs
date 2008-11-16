@@ -692,7 +692,9 @@ bool CSSParser::parseValue( int propId, bool important )
         addProperty(propId, new CSSPrimitiveValueImpl(new PairImpl(horiz, vert)), important);
         return true;
     }
-    break;
+
+    case CSS_PROP__KHTML_BORDER_RADIUS:
+        return parseBorderRadius(important);
 
     case CSS_PROP_BORDER_SPACING:
     {
@@ -1279,6 +1281,88 @@ fail:
     delete positionYValue;
     return false;
 }
+
+static void completeMissingRadii(SharedPtr<CSSPrimitiveValueImpl>* array)
+{
+    if (!array[1])
+        array[1] = array[0]; // top-left => top-right
+    if (!array[2])
+        array[2] = array[0]; // top-left => bottom-right
+    if (!array[3])
+        array[3] = array[1]; // top-left => bottom-right
+}
+
+bool CSSParser::parseBorderRadius(bool important) {
+    const int properties[4] = { CSS_PROP__KHTML_BORDER_TOP_LEFT_RADIUS,
+                                CSS_PROP__KHTML_BORDER_TOP_RIGHT_RADIUS,
+                                CSS_PROP__KHTML_BORDER_BOTTOM_RIGHT_RADIUS,
+                                CSS_PROP__KHTML_BORDER_BOTTOM_LEFT_RADIUS };
+    SharedPtr<CSSPrimitiveValueImpl> horiz[4], vert[4];
+
+
+    for (int c = 0; c < 4; ++c) {
+        horiz[c] = 0;
+        vert [c] = 0;
+    }
+
+    Value* value;
+
+    // Parse horizontal ones until / or done.
+    for (int c = 0; c < 4; ++c) {
+        value = valueList->current();
+        if (!value || (value->unit == Value::Operator && value->iValue == '/'))
+            break; //Saw slash -- exit w/o consuming as we'll use it below.
+    
+        if (!validUnit(value, FLength|FNonNeg, strict))
+            return false;
+
+        horiz[c] = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
+        value = valueList->next();
+    }
+
+    if (!horiz[0])
+        return false;
+
+    completeMissingRadii(horiz);
+
+    // Do we have vertical radii afterwards?
+    if (value && value->unit == Value::Operator && value->iValue == '/') {
+        valueList->next();
+
+        for (int c = 0; c < 4; ++c) {
+            kDebug() << c;
+            value = valueList->current();
+            if (!value)
+                break; 
+
+            if (!validUnit(value, FLength|FNonNeg, strict))
+                return false;
+
+            vert[c] = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
+            value = valueList->next();
+        }
+
+        // If we didn't parse anything, or there is stuff remaining, this is malformed
+        if (!vert[0] || valueList->current())
+            return false;
+
+        completeMissingRadii(vert);
+    } else {
+        // Nope -- we better be at the end.
+        if (valueList->current())
+            return false;
+
+        for (int c = 0; c < 4; ++c)
+            vert[c] = horiz[c];
+    }
+
+    // All OK parsing, add properties
+    for (int c = 0; c < 4; ++c)
+        addProperty(properties[c], new CSSPrimitiveValueImpl(
+                                        new PairImpl(horiz[c].get(), vert[c].get())), important);
+    return true;
+}
+
 
 bool CSSParser::parseShortHand(int propId, const int *properties, int numProperties, bool important )
 {

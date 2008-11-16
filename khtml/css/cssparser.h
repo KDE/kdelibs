@@ -189,6 +189,7 @@ namespace DOM {
         };
 
         bool parseBorderImage(int propId, bool important);
+        bool parseBorderRadius(bool important);
 
         static bool validUnit( Value *value, int unitflags, bool strict );
 
