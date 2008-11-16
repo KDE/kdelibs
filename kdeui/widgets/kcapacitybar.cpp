@@ -19,6 +19,7 @@
  */
 
 #include "kcapacitybar.h"
+#include <kstyle.h>
 
 #include <math.h>
 
@@ -56,6 +57,7 @@ public:
     bool continuous;
     int barHeight;
     Qt::Alignment horizontalTextAlignment;
+    QStyle::ControlElement ce_capacityBar;
 
     const KCapacityBar::DrawTextMode drawTextMode;
 };
@@ -64,6 +66,7 @@ KCapacityBar::KCapacityBar(KCapacityBar::DrawTextMode drawTextMode, QWidget *par
     : QWidget(parent)
     , d(new Private(drawTextMode))
 {
+    d->ce_capacityBar = KStyle::customControlElement("CE_CapacityBar", this);
 }
 
 KCapacityBar::~KCapacityBar()
@@ -142,6 +145,21 @@ Qt::Alignment KCapacityBar::horizontalTextAlignment() const
 
 void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
 {
+    if (d->ce_capacityBar)
+    {
+        QStyleOptionProgressBar opt;
+        opt.initFrom(this);
+        opt.minimum = 0;
+        opt.maximum = 100;
+        opt.progress = d->value;
+        opt.text = d->text;
+        opt.textAlignment = Qt::AlignCenter;
+        opt.textVisible = true;
+        style()->drawControl(d->ce_capacityBar, &opt, p, this);
+
+        return;
+    }
+
     p->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
     p->save();
@@ -296,6 +314,15 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
     } else {
         p->drawText(rect, Qt::AlignBottom | d->horizontalTextAlignment, fontMetrics().elidedText(d->text, Qt::ElideRight, drawRect.width()));
     }
+}
+
+void KCapacityBar::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::StyleChange) {
+        d->ce_capacityBar = KStyle::customControlElement("CE_CapacityBar", this);
+    }
+
+    QWidget::changeEvent(event);
 }
 
 QSize KCapacityBar::minimumSizeHint() const

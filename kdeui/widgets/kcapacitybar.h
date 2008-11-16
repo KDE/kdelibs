@@ -186,6 +186,7 @@ public:
 protected:
     // Reimplemented from QWidget
     virtual void paintEvent(QPaintEvent *event);
+    virtual void changeEvent(QEvent *event);
 
 private:
     /**
