@@ -37,6 +37,7 @@ private Q_SLOTS:
 	void prettyFormatDuration();
 	void bug95511();
 	void weekDays();
+	void removeAcceleratorMarker();
 };
 
 #endif // KLOCALETEST_H
