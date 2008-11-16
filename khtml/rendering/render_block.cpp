@@ -2942,7 +2942,7 @@ static void stripTrailingSpace(bool preserveWS,
         RenderText* t = static_cast<RenderText *>(trailingSpaceChild);
         const Font *f = t->htmlFont( false );
         QChar space[1]; space[0] = ' ';
-        int spaceWidth = f->width(space, 1, 0, true/*fast algo*/);
+        int spaceWidth = f->charWidth(space, 1, 0, true/*fast algo*/);
         inlineMax -= spaceWidth;
         if (inlineMin > inlineMax)
             inlineMin = inlineMax;

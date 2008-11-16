@@ -149,8 +149,8 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 		    ++numSpaces;
 	}
 
-	const int totWidth = width( str, slen, pos, len );
 	if ( d == Qt::RightToLeft ) {
+	    const int totWidth = width( str, slen, pos, len, false /*fast algo*/ );
 	    x += totWidth + toAdd;
 	}
 	QString upper = qstr;
@@ -392,7 +392,7 @@ int Font::width( const QChar *chs, int, int pos, int len, bool fast,int start, i
     return w;
 }
 
-int Font::width( const QChar *chs, int slen, int pos, bool fast ) const
+int Font::charWidth( const QChar *chs, int slen, int pos, bool fast ) const
 {
     int w;
 	if ( scFont && chs[pos].category() == QChar::Letter_Lowercase ) {

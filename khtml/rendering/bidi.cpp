@@ -2475,8 +2475,8 @@ void RenderBlock::checkLinesForTextOverflow()
     static QString ellipsisStr(ellipsis);
     const Font& firstLineFont = style(true)->htmlFont();
     const Font& font = style()->htmlFont();
-    int firstLineEllipsisWidth = firstLineFont.width(&ellipsis, 1, 0, true /*fast algo*/);
-    int ellipsisWidth = (font == firstLineFont) ? firstLineEllipsisWidth : font.width(&ellipsis, 1, 0, true /*fast algo*/);
+    int firstLineEllipsisWidth = firstLineFont.charWidth(&ellipsis, 1, 0, true /*fast algo*/);
+    int ellipsisWidth = (font == firstLineFont) ? firstLineEllipsisWidth : font.charWidth(&ellipsis, 1, 0, true /*fast algo*/);
 
     // For LTR text truncation, we want to get the right edge of our padding box, and then we want to see
     // if the right edge of a line box exceeds that.  For RTL, we use the left edge of the padding box and

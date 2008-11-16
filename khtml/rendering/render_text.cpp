@@ -470,7 +470,7 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
     if ( m_reversed ) {
 	delta -= m_width;
 	while(pos < m_len) {
-	    int w = f->width( text->str->s, text->str->l, m_start + pos, text->isSimpleText());
+	    int w = f->charWidth( text->str->s, text->str->l, m_start + pos, text->isSimpleText());
 	    if (justified && text->str->s[m_start + pos].category() == QChar::Separator_Space)
 	        w += justifyWidth(numSpaces, toAdd);
 	    int w2 = w/2;
@@ -482,7 +482,7 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
 	}
     } else {
 	while(pos < m_len) {
-	    int w = f->width( text->str->s, text->str->l, m_start + pos, text->isSimpleText());
+	    int w = f->charWidth( text->str->s, text->str->l, m_start + pos, text->isSimpleText());
 	    if (justified && text->str->s[m_start + pos].category() == QChar::Separator_Space)
 	        w += justifyWidth(numSpaces, toAdd);
 	    int w2 = w/2;
@@ -1231,7 +1231,7 @@ void RenderText::calcMinMaxWidth()
             }
             else
             {
-                currMaxWidth += f->width( str->s, str->l, i + wordlen, m_isSimpleText);
+                currMaxWidth += f->charWidth( str->s, str->l, i + wordlen, m_isSimpleText);
             }
         }
     }
@@ -1525,7 +1525,7 @@ void RenderText::trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
     if (stripFrontSpaces && (str->s[0].direction() == QChar::DirWS || (!preserveLF && str->s[0] == '\n'))) {
         const Font *f = htmlFont( false );
         QChar space[1]; space[0] = ' ';
-        int spaceWidth = f->width(space, 1, 0, m_isSimpleText);
+        int spaceWidth = f->charWidth(space, 1, 0, m_isSimpleText);
         maxW -= spaceWidth;
     }
 

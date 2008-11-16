@@ -138,7 +138,7 @@ public:
      * @param slen total length of string
      * @param pos zero-based position of char in string
      */
-    int width( const QChar *str, int slen, int pos, bool fast ) const;
+    int charWidth( const QChar *str, int slen, int pos, bool fast ) const;
 
     /** Text decoration constants.
      *
@@ -167,8 +167,6 @@ public:
      */
     int getWordSpacing() const { return wordSpacing; }
 
-    void useFastAlgorithm( bool b ) { m_useFastAlgorithm = b; }
-
     // for SVG
     int ascent() const { return fm.ascent(); }
     int descent() const { return fm.descent(); }
@@ -188,8 +186,7 @@ private:
     mutable QFont f;
     mutable QFontMetrics fm;
     mutable QFont *scFont;
-    bool m_useFastAlgorithm : 1;
-    short letterSpacing       : 15;
+    short letterSpacing;
     short wordSpacing;
 
         static bool isFontScalable(QFontDatabase& db, const QFont& font);
