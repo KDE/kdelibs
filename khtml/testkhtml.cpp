@@ -119,8 +119,8 @@ int main(int argc, char *argv[])
 		     doc->widget()->topLevelWidget(), SLOT(setCaption(const QString &)));
     doc->widget()->show();
     toplevel->show();
-    ((QScrollArea *)doc->widget())->viewport()->show();
-    ((QScrollArea *)doc->widget())->widget()->show();
+    doc->view()->viewport()->show();
+    doc->view()->widget()->show();
 
 
     int ret = a.exec();
