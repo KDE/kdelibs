@@ -39,6 +39,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QTimer>
 #include <QtCore/QList>
+#include <QtCore/QQueue>
 
 #include "html/html_formimpl.h"
 #include "html/html_objectimpl.h"
@@ -135,6 +136,7 @@ typedef KHTMLFrameList::ConstIterator ConstFrameIt;
 typedef KHTMLFrameList::Iterator FrameIt;
 
 
+
 class KHTMLPartPrivate
 {
   KHTMLPartPrivate(const KHTMLPartPrivate & other);
@@ -189,6 +191,11 @@ public:
     m_bPluginsForce = false;
     m_bPluginsOverride = false;
     m_onlyLocalReferences = false;
+    m_bDNSPrefetch = KHTMLPart::DNSPrefetchDisabled;
+    m_bDNSPrefetchIsDefault = true;
+    m_DNSPrefetchTimer = -1;
+    m_DNSTTLTimer = -1;
+    m_numDNSPrefetchedNames = 0;
 
     m_caretMode = false;
     m_designMode = false;
@@ -214,6 +221,8 @@ public:
             m_bJavaOverride = part->d->m_bJavaOverride;
             m_bPluginsForce = part->d->m_bPluginsForce;
             m_bPluginsOverride = part->d->m_bPluginsOverride;
+            m_bDNSPrefetch = part->d->m_bDNSPrefetch;
+            m_bDNSPrefetchIsDefault = part->d->m_bDNSPrefetchIsDefault;
             // Same for SSL settings
             m_ssl_in_use = part->d->m_ssl_in_use;
             m_onlyLocalReferences = part->d->m_onlyLocalReferences;
@@ -301,6 +310,12 @@ public:
   bool m_statusMessagesEnabled;
   bool m_bWalletOpened;
   bool m_urlSelectedOpenedURL; // KDE4: remove
+  bool m_bDNSPrefetchIsDefault;
+  int m_DNSPrefetchTimer;
+  int m_DNSTTLTimer;
+  int m_numDNSPrefetchedNames;
+  QQueue<QString> m_DNSPrefetchQueue;
+  KHTMLPart::DNSPrefetch m_bDNSPrefetch;
   int m_frameNameId;
 
   KHTMLSettings *m_settings;
@@ -483,6 +498,9 @@ public:
   void setFlagRecursively(bool KHTMLPartPrivate::*flag, bool value);
 
   time_t m_userStyleSheetLastModified;
+  
+  QSet<QString> m_lookedupHosts;
+  static bool s_dnsInitialised;
 
 #ifndef KHTML_NO_WALLET
   KHTMLWalletQueue *m_wq;

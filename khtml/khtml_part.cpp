@@ -81,6 +81,7 @@ using namespace DOM;
 #include <kio/jobuidelegate.h>
 #include <kio/global.h>
 #include <kio/netaccess.h>
+#include <kio/hostinfo_p.h>
 #include <kprotocolmanager.h>
 #include <kdebug.h>
 #include <kicon.h>
@@ -131,7 +132,17 @@ using namespace DOM;
 // SVG
 #include <svg/SVGDocument.h>
 
+bool KHTMLPartPrivate::s_dnsInitialised = false;
+
+// DNS prefetch settings
+static const int sMaxDNSPrefetchPerPage = 42;
+static const int sDNSPrefetchTimerDelay = 200;
+static const int sDNSTTLSeconds = 400;
+static const int sDNSCacheSize = 500;
+
+
 namespace khtml {
+
     class PartStyleSheetLoader : public CachedObjectClient
     {
     public:
@@ -452,6 +463,22 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_view->setSmoothScrollingModeDefault(KHTMLView::SSMWhenEfficient);
   else
       d->m_view->setSmoothScrollingModeDefault(KHTMLView::SSMEnabled);
+
+  if (d->m_bDNSPrefetchIsDefault && !onlyLocalReferences()) {
+      KHTMLSettings::KDNSPrefetch dpm = d->m_settings->dnsPrefetch();
+      if (dpm == KHTMLSettings::KDNSPrefetchDisabled)
+          d->m_bDNSPrefetch = DNSPrefetchDisabled;
+      else if (dpm == KHTMLSettings::KDNSPrefetchOnlyWWWAndSLD)
+          d->m_bDNSPrefetch = DNSPrefetchOnlyWWWAndSLD;
+      else
+          d->m_bDNSPrefetch = DNSPrefetchEnabled;
+  }
+
+  if (!KHTMLPartPrivate::s_dnsInitialised && d->m_bDNSPrefetch != DNSPrefetchDisabled) {
+      KIO::HostInfo::setCacheSize( sDNSCacheSize );
+      KIO::HostInfo::setTTL( sDNSTTLSeconds );
+      KHTMLPartPrivate::s_dnsInitialised = true;
+  }
 
   actionCollection()->associateWidget(view);
 
@@ -1015,6 +1042,19 @@ bool KHTMLPart::jScriptEnabled() const
   return d->m_bJScriptEnabled;
 }
 
+void KHTMLPart::setDNSPrefetch( DNSPrefetch pmode )
+{
+  d->m_bDNSPrefetch = pmode;
+  d->m_bDNSPrefetchIsDefault = false;
+}
+
+KHTMLPart::DNSPrefetch KHTMLPart::dnsPrefetch() const
+{
+  if (onlyLocalReferences())
+      return DNSPrefetchDisabled;
+  return d->m_bDNSPrefetch;
+}
+
 void KHTMLPart::setMetaRefreshEnabled( bool enable )
 {
   d->m_metaRefreshEnabled = enable;
@@ -1535,6 +1575,17 @@ void KHTMLPart::clear()
 
   if ( !d->m_haveEncoding )
     d->m_encoding.clear();
+
+  d->m_DNSPrefetchQueue.clear();
+  if (d->m_DNSPrefetchTimer > 0)
+      killTimer(d->m_DNSPrefetchTimer);
+  d->m_DNSPrefetchTimer = -1;
+  d->m_lookedupHosts.clear();
+  if (d->m_DNSTTLTimer > 0)
+      killTimer(d->m_DNSTTLTimer);
+  d->m_DNSTTLTimer = -1;
+  d->m_numDNSPrefetchedNames = 0;
+
 #ifdef SPEED_DEBUG
   d->m_parsetime.restart();
 #endif
@@ -3769,7 +3820,48 @@ void KHTMLPart::timerEvent(QTimerEvent *e)
       d->editor_context.m_caretPaint = !d->editor_context.m_caretPaint;
       d->editor_context.m_selection.needsCaretRepaint();
     }
-  }
+  } else if (e->timerId() == d->m_DNSPrefetchTimer) {
+      kDebug() << "will lookup " << d->m_DNSPrefetchQueue.head() << d->m_bDNSPrefetch << d->m_numDNSPrefetchedNames;
+      KIO::HostInfo::prefetchHost( d->m_DNSPrefetchQueue.dequeue() );
+      if (d->m_DNSPrefetchQueue.isEmpty()) {
+          killTimer( d->m_DNSPrefetchTimer );
+          d->m_DNSPrefetchTimer = -1;
+      }
+  } else if (e->timerId() == d->m_DNSTTLTimer) {
+      foreach (QString name, d->m_lookedupHosts)
+          d->m_DNSPrefetchQueue.enqueue(name);
+      if (d->m_DNSPrefetchTimer <= 0)
+         d->m_DNSPrefetchTimer = startTimer( sDNSPrefetchTimerDelay );
+  }                            
+}
+
+bool KHTMLPart::mayPrefetchHostname( const QString& name )
+{
+    if (d->m_bDNSPrefetch == DNSPrefetchDisabled)
+        return false;
+
+    if (d->m_numDNSPrefetchedNames >= sMaxDNSPrefetchPerPage)
+        return false;
+
+    if (d->m_bDNSPrefetch == DNSPrefetchOnlyWWWAndSLD) {
+        int dots = name.count('.');
+        if (dots > 2 || (dots == 2 &&  !name.startsWith("www.")))
+            return false;
+    }
+
+    if ( d->m_lookedupHosts.contains( name ) )
+        return false;
+
+    d->m_DNSPrefetchQueue.enqueue( name );
+    d->m_lookedupHosts.insert( name );
+    d->m_numDNSPrefetchedNames++;
+
+    if (d->m_DNSPrefetchTimer < 1)
+        d->m_DNSPrefetchTimer = startTimer( sDNSPrefetchTimerDelay );
+    if (d->m_DNSTTLTimer < 1)
+        d->m_DNSTTLTimer = startTimer( sDNSTTLSeconds*1000 + 1 );
+
+    return true;
 }
 
 void KHTMLPart::paintCaret(QPainter *p, const QRect &rect) const

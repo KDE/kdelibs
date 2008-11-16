@@ -96,6 +96,7 @@ public:
     int m_maxFormCompletionItems;
     KHTMLSettings::KAnimationAdvice m_showAnimations;
     KHTMLSettings::KSmoothScrollingMode m_smoothScrolling;
+    KHTMLSettings::KDNSPrefetch m_dnsPrefetch;
 
     QString m_encoding;
     QString m_userSheet;
@@ -422,6 +423,18 @@ void KHTMLSettings::init( KConfig * config, bool reset )
          d->m_smoothScrolling = KSmoothScrollingWhenEfficient;
       else
          d->m_smoothScrolling = KSmoothScrollingEnabled;
+    }
+
+    if ( reset || cgHtml.hasKey( "DNSPrefetch" ) )
+    {
+      // Enabled, Disabled, OnlyWWWAndSLD
+      QString value = cgHtml.readEntry( "DNSPrefetch", "Enabled" ).toLower();
+      if (value == "enabled")
+         d->m_dnsPrefetch = KDNSPrefetchEnabled;
+      else if (value == "onlywwwandsld")
+         d->m_dnsPrefetch = KDNSPrefetchOnlyWWWAndSLD;
+      else
+         d->m_dnsPrefetch = KDNSPrefetchDisabled;
     }
 
     if ( cgHtml.readEntry( "UserStyleSheetEnabled", false ) == true ) {
@@ -1005,6 +1018,11 @@ KHTMLSettings::KAnimationAdvice KHTMLSettings::showAnimations() const
 KHTMLSettings::KSmoothScrollingMode KHTMLSettings::smoothScrolling() const
 {
   return d->m_smoothScrolling;
+}
+
+KHTMLSettings::KDNSPrefetch KHTMLSettings::dnsPrefetch() const
+{
+  return d->m_dnsPrefetch;
 }
 
 bool KHTMLSettings::isAutoDelayedActionsEnabled() const

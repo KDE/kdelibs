@@ -179,6 +179,11 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
         document()->incDOMTreeVersion();
         if (hadAnchor != m_hasAnchor)
             setChanged();
+        if (m_hasAnchor && document()->view()->part()->dnsPrefetch()) {
+            KUrl url( attr->value().string() );
+            if (url.hasHost())
+                document()->view()->part()->mayPrefetchHostname( url.host() );
+        }
     }
         break;
     case ATTR_TARGET:

@@ -62,6 +62,12 @@ public:
         KSmoothScrollingEnabled
     };
 
+    enum KDNSPrefetch {
+        KDNSPrefetchDisabled=0,
+        KDNSPrefetchOnlyWWWAndSLD,
+        KDNSPrefetchEnabled
+    };
+
     /**
      * This enum specifies the policy for window.open
      */
@@ -135,6 +141,7 @@ public:
     bool autoSpellCheck() const;
     KAnimationAdvice showAnimations() const;
     KSmoothScrollingMode smoothScrolling() const;
+    KDNSPrefetch dnsPrefetch() const;
 
     // Font settings
     QString stdFontName() const;

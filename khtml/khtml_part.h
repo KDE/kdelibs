@@ -246,6 +246,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
   Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
+  Q_PROPERTY( DNSPrefetch dnsPrefetch READ dnsPrefetch WRITE setDNSPrefetch )  
 
   /*
    *
@@ -260,6 +261,19 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
 public:
   enum GUIProfile { DefaultGUI, BrowserViewGUI /* ... */ };
 
+     /**
+     * DNS Prefetching Mode enumeration
+     * @li DNSPrefetchDisabled do not prefetch hostnames
+     * @li DNSPrefetchEnabled always prefetch hostnames
+     * @li DNSPrefetchOnlyWWWAndSLD only do DNS prefetching for bare SLD and www sub-domain
+     */
+
+  enum DNSPrefetch {
+       DNSPrefetchDisabled=0,
+       DNSPrefetchEnabled,
+       DNSPrefetchOnlyWWWAndSLD
+  };
+                           
   /**
    * Constructs a new KHTMLPart.
    *
@@ -483,6 +497,30 @@ public:
    * ( default @p false - everything is loaded unless forbidden by KApplication::authorizeURLAction).
    */
   void setOnlyLocalReferences( bool enable );
+
+  /**
+   * Sets whether DNS Names found in loaded documents'anchors should be pre-fetched (pre-resolved).
+   * Note that calling this function will permanently override the User settings about
+   * DNS prefetch support.
+   * Not calling this function is the only way to let the default settings apply.
+   *
+   * @note This setting has no effect if @ref setOnlyLocalReferences() mode is enabled. 
+   *
+   * @param pmode the mode to set. See @ref DNSPrefetch enum for explanation of values. 
+   *
+   * @since 4.2
+   */
+  void setDNSPrefetch( DNSPrefetch pmode );
+
+  /**
+   * Returns currently set DNS prefetching mode.
+   * See @p DNSPrefetch enum for explanation of values.
+   *
+   * @note Always returns  @p DNSPrefetchDisabled if @ref setOnlyLocalReferences() mode is enabled.
+   *
+   * @since 4.2
+   */
+  DNSPrefetch dnsPrefetch() const;
 
   /**
    * Returns whether only file:/ or data:/ references are allowed
@@ -1228,6 +1266,14 @@ protected:
    * @internal
    */
   virtual void timerEvent(QTimerEvent *);
+
+  /**
+   * Will pre-resolve @p name according to dnsPrefetch current settings
+   * Returns @p true if the name will be pre-resolved.
+   * Otherwise returns false.
+   */
+
+  bool mayPrefetchHostname( const QString& name );
 
 public Q_SLOTS:
 

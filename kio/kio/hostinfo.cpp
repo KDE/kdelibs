@@ -30,6 +30,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtCore/QFutureWatcher>
 #include <QtCore/QtConcurrentRun>
 #include <QtNetwork/QHostInfo>
+#include "kdebug.h"
 
 #ifdef Q_OS_UNIX
 # include <QtCore/QFileInfo>
@@ -52,6 +53,8 @@ namespace KIO
         HostInfoAgentPrivate(int cacheSize = 100);
         virtual ~HostInfoAgentPrivate() {};
         void lookupHost(const QString& hostName, QObject* receiver, const char* member);
+        void setCacheSize(int s) { dnsCache.setMaxCost(s); }
+        void setTTL(int _ttl) { ttl = _ttl; }
     private slots:
         void queryFinished(const QHostInfo&);
     private:
@@ -61,6 +64,7 @@ namespace KIO
         QHash<QString, Query*> openQueries;
         QCache<QString, QPair<QHostInfo, QTime> > dnsCache;
         time_t resolvConfMTime;
+        int ttl;
     };
 
     class HostInfoAgentPrivate::Result : public QObject
@@ -113,10 +117,26 @@ void HostInfo::lookupHost(const QString& hostName, QObject* receiver,
     hostInfoAgentPrivate->lookupHost(hostName, receiver, member);
 }
 
+void HostInfo::prefetchHost(const QString& hostName)
+{
+    hostInfoAgentPrivate->lookupHost(hostName, 0, 0);
+}
+
+void HostInfo::setCacheSize(int s)
+{
+    hostInfoAgentPrivate->setCacheSize(s);
+}
+
+void HostInfo::setTTL(int ttl)
+{
+    hostInfoAgentPrivate->setTTL(ttl);
+}
+
 HostInfoAgentPrivate::HostInfoAgentPrivate(int cacheSize)
     : openQueries(),
       dnsCache(cacheSize),
-      resolvConfMTime(0)
+      resolvConfMTime(0),
+      ttl(TTL)
 {}
 
 void HostInfoAgentPrivate::lookupHost(const QString& hostName,
@@ -134,24 +154,30 @@ void HostInfoAgentPrivate::lookupHost(const QString& hostName,
 #endif
 
     if (QPair<QHostInfo, QTime>* info = dnsCache.object(hostName)) {
-        if (QTime::currentTime() <= info->second.addSecs(TTL)) {
+        if (QTime::currentTime() <= info->second.addSecs(ttl)) {
             Result result;
-            QObject::connect(&result, SIGNAL(result(QHostInfo)),receiver, member);
-            emit result.result(info->first);
+            if (receiver) {
+                QObject::connect(&result, SIGNAL(result(QHostInfo)),receiver, member);
+                emit result.result(info->first);
+            }
             return;
         }
         dnsCache.remove(hostName);
     }
 
     if (Query* query = openQueries.value(hostName)) {
-        connect(query, SIGNAL(result(QHostInfo)), receiver, member);
+        if (receiver) {
+            connect(query, SIGNAL(result(QHostInfo)), receiver, member);
+        }
         return;
     }
 
     Query* query = new Query();
     openQueries.insert(hostName, query);
     connect(query, SIGNAL(result(QHostInfo)), this, SLOT(queryFinished(QHostInfo)));
-    connect(query, SIGNAL(result(QHostInfo)), receiver, member);
+    if (receiver) {
+        connect(query, SIGNAL(result(QHostInfo)), receiver, member);
+    }
     query->start(hostName);
 }
 
