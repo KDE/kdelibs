@@ -133,15 +133,15 @@ bool Job::removeSubjob( KJob *jobBase )
 void JobPrivate::emitMoving(KIO::Job * job, const KUrl &src, const KUrl &dest)
 {
     emit job->description(job, i18nc("@title job","Moving"),
-                          qMakePair(i18n("Source"), src.prettyUrl()),
-                          qMakePair(i18n("Destination"), dest.prettyUrl()));
+                          qMakePair(i18nc("The source of a file operation", "Source"), src.prettyUrl()),
+                          qMakePair(i18nc("The destination of a file operation", "Destination"), dest.prettyUrl()));
 }
 
 void JobPrivate::emitCopying(KIO::Job * job, const KUrl &src, const KUrl &dest)
 {
     emit job->description(job, i18nc("@title job","Copying"),
-                          qMakePair(i18n("Source"), src.prettyUrl()),
-                          qMakePair(i18n("Destination"), dest.prettyUrl()));
+                          qMakePair(i18nc("The source of a file operation", "Source"), src.prettyUrl()),
+                          qMakePair(i18nc("The destination of a file operation", "Destination"), dest.prettyUrl()));
 }
 
 void JobPrivate::emitCreatingDir(KIO::Job * job, const KUrl &dir)
@@ -165,7 +165,7 @@ void JobPrivate::emitStating(KIO::Job *job, const KUrl &url)
 void JobPrivate::emitTransferring(KIO::Job *job, const KUrl &url)
 {
     emit job->description(job, i18nc("@title job","Transferring"),
-                          qMakePair(i18n("Source"), url.prettyUrl()));
+                          qMakePair(i18nc("The source of a file operation", "Source"), url.prettyUrl()));
 }
 
 void JobPrivate::emitMounting(KIO::Job * job, const QString &dev, const QString &point)

@@ -117,8 +117,8 @@ public:
                        qMakePair(i18n("Directory"), dir.prettyUrl())); }
     void emitMoving(const KUrl &src, const KUrl &dest)
     { emit description(this, i18n("Moving"),
-                       qMakePair(i18n("Source"), src.prettyUrl()),
-                       qMakePair(i18n("Destination"), dest.prettyUrl())); }
+                       qMakePair(i18nc("The source of a file operation", "Source"), src.prettyUrl()),
+                       qMakePair(i18nc("The destination of a file operation", "Destination"), dest.prettyUrl())); }
     void emitDeleting(const KUrl &url)
     { emit description(this, i18n("Deleting"),
                        qMakePair(i18n("File"), url.prettyUrl())); }
