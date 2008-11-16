@@ -2112,6 +2112,23 @@ static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyl
     return l;
 }
 
+// Extracts out border radii lengths from a pair
+static BorderRadii convertToBorderRadii(CSSPrimitiveValueImpl *value, RenderStyle *style, int logicalDpiY)
+{
+    BorderRadii ret;
+    if (!value)
+        return ret;
+
+    PairImpl* p = value->getPairValue();
+    if (!p)
+        return ret;
+
+    assert(p->first()->isPrimitiveValue() && p->second()->isPrimitiveValue());
+    ret.horizontal = static_cast<CSSPrimitiveValueImpl*>(p->first())->computeLength(style, logicalDpiY);
+    ret.vertical   = static_cast<CSSPrimitiveValueImpl*>(p->second())->computeLength(style, logicalDpiY);
+    return ret;
+}
+
 static inline int nextFontSize(const QVector<int>& a, int v, bool smaller)
 {
     // return the nearest bigger/smaller value in scale a, when v is in range.
@@ -2736,6 +2753,20 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         style->setBorderVerticalSpacing(spacing);
         break;
     }
+
+    // ### should these handle initial & inherit?
+    case CSS_PROP__KHTML_BORDER_TOP_RIGHT_RADIUS:
+        style->setBorderTopRightRadius(convertToBorderRadii(primitiveValue, style, logicalDpiY));
+        break;
+    case CSS_PROP__KHTML_BORDER_TOP_LEFT_RADIUS:
+        style->setBorderTopLeftRadius(convertToBorderRadii(primitiveValue, style, logicalDpiY));
+        break;
+    case CSS_PROP__KHTML_BORDER_BOTTOM_RIGHT_RADIUS:
+        style->setBorderBottomRightRadius(convertToBorderRadii(primitiveValue, style, logicalDpiY));
+        break;
+    case CSS_PROP__KHTML_BORDER_BOTTOM_LEFT_RADIUS:
+        style->setBorderBottomLeftRadius(convertToBorderRadii(primitiveValue, style, logicalDpiY));
+        break;
 
     case CSS_PROP_CURSOR:
         HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(cursor, Cursor)

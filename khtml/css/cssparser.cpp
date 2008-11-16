@@ -3,7 +3,8 @@
  *
  * Copyright 2003 Lars Knoll (knoll@kde.org)
  * Copyright 2005 Allan Sandfeld Jensen (kde@carewolf.com)
- * Copyright (C) 2004, 2005, 2006 Apple Computer, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007 Apple Computer, Inc.
+ * Copyright (C) 2008 Maksim Orlovich <maksim@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -661,6 +662,36 @@ bool CSSParser::parseValue( int propId, bool important )
             }
         }
         break;
+
+    case CSS_PROP__KHTML_BORDER_TOP_RIGHT_RADIUS:
+    case CSS_PROP__KHTML_BORDER_BOTTOM_RIGHT_RADIUS:
+    case CSS_PROP__KHTML_BORDER_BOTTOM_LEFT_RADIUS:
+    case CSS_PROP__KHTML_BORDER_TOP_LEFT_RADIUS: {
+        //<length> <length>?
+        if (num < 1 || num > 2)
+            return false;
+
+        if (!validUnit( value, FLength|FNonNeg, strict))
+            return false;
+
+        CSSPrimitiveValueImpl* horiz = new CSSPrimitiveValueImpl( value->fValue,
+                                                     (CSSPrimitiveValue::UnitTypes) value->unit );
+        CSSPrimitiveValueImpl* vert;
+
+        if (num == 2) {
+            if (!validUnit( value, FLength|FNonNeg, strict)) {
+                delete horiz;
+                return false;
+            }
+            vert = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
+        } else {
+            vert = horiz;
+        }
+
+        addProperty(propId, new CSSPrimitiveValueImpl(new PairImpl(horiz, vert)), important);
+        return true;
+    }
+    break;
 
     case CSS_PROP_BORDER_SPACING:
     {
@@ -2701,3 +2732,4 @@ typedef unsigned int YY_CHAR;
 #define COMMENT 1
 
 #include "tokenizer.cpp"
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;

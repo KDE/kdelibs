@@ -403,6 +403,24 @@ bool StyleMarqueeData::operator==(const StyleMarqueeData& o) const
             behavior == o.behavior && loops == o.loops);
 }
 
+bool BorderRadii::operator==(const BorderRadii& o) const
+{
+    return horizontal == o.horizontal &&
+           vertical   == o.vertical;
+}
+
+bool BorderRadiusData::operator==(const BorderRadiusData& o) const
+{
+    return topRight == o.topRight && bottomRight == o.bottomRight
+         && bottomLeft == o.bottomLeft && topLeft == o.topLeft;
+}
+
+bool BorderRadiusData::hasBorderRadius() const
+{
+    return topRight.hasBorderRadius()   || bottomRight.hasBorderRadius() ||
+           bottomLeft.hasBorderRadius() || topLeft.hasBorderRadius();
+}
+
 StyleCSS3NonInheritedData::StyleCSS3NonInheritedData()
 :Shared<StyleCSS3NonInheritedData>()
 , opacity(RenderStyle::initialOpacity())
@@ -415,7 +433,8 @@ StyleCSS3NonInheritedData::StyleCSS3NonInheritedData(const StyleCSS3NonInherited
 #ifdef APPLE_CHANGES
  flexibleBox(o.flexibleBox),
 #endif
- marquee(o.marquee)
+ marquee(o.marquee),
+ borderRadius(o.borderRadius)
 {
 }
 
@@ -426,7 +445,8 @@ bool StyleCSS3NonInheritedData::operator==(const StyleCSS3NonInheritedData& o) c
 #ifdef APPLE_CHANGES
      flexibleBox == o.flexibleBox &&
 #endif
-     marquee == o.marquee;
+     marquee == o.marquee &&
+     borderRadius == o.borderRadius;
 }
 
 StyleCSS3InheritedData::StyleCSS3InheritedData()
@@ -556,6 +576,7 @@ RenderStyle::RenderStyle(bool)
     css3NonInheritedData.access()->flexibleBox.init();
 #endif
     css3NonInheritedData.access()->marquee.init();
+    css3NonInheritedData.access()->borderRadius.init();
     css3InheritedData.init();
     inherited.init();
 

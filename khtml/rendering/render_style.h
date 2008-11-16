@@ -4,7 +4,7 @@
  * Copyright (C) 2000-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2000 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2003-2005 Apple Computer, Inc.
+ *           (C) 2003-2007 Apple Computer, Inc.
  *           (C) 2004-2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -634,6 +634,38 @@ public:
     EMarqueeDirection direction : 3;
 };
 
+struct BorderRadii
+{
+    int horizontal;
+    int vertical;
+
+    BorderRadii(): horizontal(0), vertical(0) {}
+
+    bool hasBorderRadius() const {
+        return horizontal > 0 && vertical > 0;
+    }
+
+    bool operator==(const BorderRadii& o) const;
+    bool operator!=(const BorderRadii& o) const {
+        return !(*this == o);
+    }    
+};
+
+class BorderRadiusData : public Shared<BorderRadiusData>
+{
+public:
+    // default default & copy ctors are fine here.
+
+    bool operator==(const BorderRadiusData& o) const;
+    bool operator!=(const BorderRadiusData& o) const {
+        return !(*this == o);
+    }
+
+    bool hasBorderRadius() const;
+
+    BorderRadii topRight, bottomRight, bottomLeft, topLeft;
+};
+
 // This struct holds information about shadows for the text-shadow and box-shadow properties.
 struct ShadowData {
     ShadowData(int _x, int _y, int _blur, const QColor& _color)
@@ -674,6 +706,7 @@ public:
     DataRef<StyleFlexibleBoxData> flexibleBox; // Flexible box properties
 #endif
     DataRef<StyleMarqueeData> marquee; // Marquee properties
+    DataRef<BorderRadiusData> borderRadius;
 };
 
 // This struct is for rarely used inherited CSS3 properties.  By grouping them together,
@@ -1210,6 +1243,12 @@ public:
     EMarqueeBehavior marqueeBehavior() const { return css3NonInheritedData->marquee->behavior; }
     EMarqueeDirection marqueeDirection() const { return css3NonInheritedData->marquee->direction; }
     bool textOverflow() const { return noninherited_flags.f._textOverflow; }
+
+    bool hasBorderRadius() const { return css3NonInheritedData->borderRadius->hasBorderRadius(); }
+    BorderRadii borderTopRightRadius() const {  return css3NonInheritedData->borderRadius->topRight; }
+    BorderRadii borderTopLeftRadius () const {  return css3NonInheritedData->borderRadius->topLeft; }
+    BorderRadii borderBottomRightRadius() const {  return css3NonInheritedData->borderRadius->bottomRight; }
+    BorderRadii borderBottomLeftRadius () const {  return css3NonInheritedData->borderRadius->bottomLeft; }
     // End CSS3 Getters
 
 // attribute setter methods
@@ -1362,6 +1401,23 @@ public:
     void setMarqueeBehavior(EMarqueeBehavior b) { SET_VAR(css3NonInheritedData.access()->marquee, behavior, b); }
     void setMarqueeLoopCount(int i) { SET_VAR(css3NonInheritedData.access()->marquee, loops, i); }
     void setTextOverflow(bool b) { noninherited_flags.f._textOverflow = b; }
+
+    void setBorderTopRightRadius(const BorderRadii& r) {
+        SET_VAR(css3NonInheritedData.access()->borderRadius, topRight, r);
+    }
+
+    void setBorderTopLeftRadius(const BorderRadii& r) {
+        SET_VAR(css3NonInheritedData.access()->borderRadius, topLeft, r);
+    }
+
+    void setBorderBottomRightRadius(const BorderRadii& r) {
+        SET_VAR(css3NonInheritedData.access()->borderRadius, bottomRight, r);
+    }
+
+    void setBorderBottomLeftRadius(const BorderRadii& r) {
+        SET_VAR(css3NonInheritedData.access()->borderRadius, bottomLeft, r);
+    }
+
     // End CSS3 Setters
 
     QPalette palette() const { return visual->palette; }

@@ -575,7 +575,6 @@ static void initShorthandMap(QHash<int, PropertyLonghand>& shorthandMap)
     static const int overflowProperties[] = { CSS_PROP_OVERFLOW_X, CSS_PROP_OVERFLOW_Y };
     SET_SHORTHAND_MAP_ENTRY(shorthandMap, CSS_PROP_OVERFLOW, overflowProperties);
 
-#ifdef APPLE_CHANGES
     static const int borderRadiusProperties[] = {
         CSS_PROP__KHTML_BORDER_TOP_RIGHT_RADIUS,
         CSS_PROP__KHTML_BORDER_TOP_LEFT_RADIUS,
@@ -583,7 +582,6 @@ static void initShorthandMap(QHash<int, PropertyLonghand>& shorthandMap)
         CSS_PROP__KHTML_BORDER_BOTTOM_RIGHT_RADIUS
     };
     SET_SHORTHAND_MAP_ENTRY(shorthandMap, CSS_PROP__KHTML_BORDER_RADIUS, borderRadiusProperties);
-#endif
 
     #undef SET_SHORTHAND_MAP_ENTRY
 }
