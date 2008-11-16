@@ -55,6 +55,7 @@
 #include <wtf/Vector.h>
 
 namespace KJS {
+    class Interpreter;
 
     class JSVariableObject : public JSObject {
     public:
@@ -163,9 +164,14 @@ namespace KJS {
     class KJS_EXPORT JSGlobalObject :  public JSObject // ### TODO: should inherit off JSVariableObject
     {
     public:
-        JSGlobalObject() {}
-        JSGlobalObject(JSValue* proto): JSObject(proto) {}
+        JSGlobalObject(): m_interpreter(0) {}
+        JSGlobalObject(JSValue* proto): JSObject(proto), m_interpreter(0) {}
         virtual bool isGlobalObject() const { return true; }
+
+        void setInterpreter(Interpreter* intp) { m_interpreter = intp; }
+        Interpreter* interpreter() const { return m_interpreter; }
+    private:
+        Interpreter* m_interpreter;
     };
 } // namespace KJS
 

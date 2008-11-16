@@ -313,15 +313,6 @@ namespace KJS {
     void restoreBuiltins (const SavedBuiltins&);
 
     /**
-     * Find the interpreter for a particular global object.  This should really
-     * be a static method, but we can't do that is C++.  Again, as with isGlobalObject()
-     * implementation really need to know about all instances of Interpreter
-     * created in an application to correctly implement this method.  The only
-     * override of this method is currently in WebCore.
-     */
-    virtual Interpreter* interpreterForGlobalObject(const JSValue*) { return 0; }
-
-    /**
      * Determine if the it is 'safe' to execute code in the target interpreter from an
      * object that originated in this interpreter.  This check is used to enforce WebCore
      * cross frame security rules.  In particular, attempts to access 'bound' objects are
@@ -345,8 +336,6 @@ namespace KJS {
 
     // Note: may be 0, if in globalExec
     ExecState* execState() { return m_execState ? m_execState : &m_globalExec; }
-
-    static Interpreter* interpreterWithGlobalObject(JSObject*);
 
     void setTimeoutTime(unsigned timeoutTime) { m_timeoutTime = timeoutTime; }
 

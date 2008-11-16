@@ -205,12 +205,6 @@ void TimeoutChecker::resumeTimeoutCheck(Interpreter* interpreter)
 
 Interpreter* Interpreter::s_hook = 0;
 
-typedef HashMap<JSObject*, Interpreter*> InterpreterMap;
-static inline InterpreterMap &interpreterMap()
-{
-    static InterpreterMap* map = new InterpreterMap;
-    return* map;
-}
 
 Interpreter::Interpreter(JSGlobalObject* globalObject)
     : m_globalObject(globalObject),
@@ -250,7 +244,7 @@ void Interpreter::init()
 
     m_numCachedActivations = 0;
 
-    interpreterMap().set(m_globalObject, this);
+    m_globalObject->setInterpreter(this);
 
     if (s_hook) {
         prev = s_hook;
@@ -287,7 +281,7 @@ Interpreter::~Interpreter()
         s_hook = 0;
     }
 
-    interpreterMap().remove(m_globalObject);
+    m_globalObject->setInterpreter(0);
 }
 
 unsigned char* Interpreter::extendStack(size_t needed)
@@ -757,11 +751,6 @@ void Interpreter::mark(bool)
     // tendenacy to pin blocks, increasing their number and hence spreading out
     // the objects somewhat
     m_numCachedActivations = 0;
-}
-
-Interpreter* Interpreter::interpreterWithGlobalObject(JSObject* globalObject)
-{
-    return interpreterMap().get(globalObject);
 }
 
 #ifdef KJS_DEBUG_MEM

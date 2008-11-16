@@ -34,7 +34,10 @@ namespace KJS {
 
 Interpreter* ExecState::lexicalInterpreter() const
 {
-    Interpreter* result = Interpreter::interpreterWithGlobalObject(scopeChain().bottom());
+    JSObject* outerScope = scopeChain().bottom();
+    assert(outerScope->isGlobalObject());
+
+    Interpreter* result = static_cast<JSGlobalObject*>(outerScope)->interpreter();
 
     if (!result)
         return dynamicInterpreter();
