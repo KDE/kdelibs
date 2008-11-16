@@ -28,6 +28,7 @@
 #include <wtf/HashTraits.h>
 #include "JSLock.h"
 #include "object.h"
+#include "JSVariableObject.h"
 #include "Parser.h"
 
 #include <math.h>
@@ -101,7 +102,7 @@ long StopWatch::getElapsedMS()
 #endif
 }
 
-class GlobalImp : public JSObject {
+class GlobalImp : public JSGlobalObject {
 public:
   virtual UString className() const { return "global"; }
 };
