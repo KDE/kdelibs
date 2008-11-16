@@ -31,6 +31,7 @@
 
 #include "ui_htmlpageinfo.h"
 
+#include "khtmlviewbar.h"
 #include "khtml_pagecache.h"
 
 #include "dom/dom_string.h"
@@ -98,8 +99,6 @@ using namespace DOM;
 #include <kauthorized.h>
 #include <kparts/browserinterface.h>
 #include <kde_file.h>
-#include "kfinddialog.h"
-#include "kfind.h"
 #include <kactionmenu.h>
 #include <ktoggleaction.h>
 #include <kcodecaction.h>
@@ -255,7 +254,20 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d = new KHTMLPartPrivate(this, parent());
 
   d->m_view = view;
-  setWidget( d->m_view );
+
+  QWidget *widget = new QWidget( view->parentWidget() );
+  QVBoxLayout *layout = new QVBoxLayout( widget );
+  layout->setContentsMargins( 0, 0, 0, 0 );
+  layout->setSpacing( 0 );
+  widget->setLayout( layout );
+
+  d->m_topViewBar = new KHTMLViewBar( KHTMLViewBar::Top, d->m_view, widget );
+  d->m_bottomViewBar = new KHTMLViewBar( KHTMLViewBar::Bottom, d->m_view, widget );
+
+  layout->addWidget( d->m_topViewBar );
+  layout->addWidget( d->m_view );
+  layout->addWidget( d->m_bottomViewBar );
+  setWidget( widget );
 
   d->m_guiProfile = prof;
   d->m_extension = new KHTMLPartBrowserExtension( this );
@@ -536,8 +548,6 @@ KHTMLPart::~KHTMLPart()
     removeJSErrorExtension();
     delete d->m_statusBarPopupLabel;
   }
-
-  d->m_find = 0; // deleted by its parent, the view.
 
   if ( d->m_manager )
   {
@@ -1003,6 +1013,16 @@ KParts::BrowserHostExtension *KHTMLPart::browserHostExtension() const
 KHTMLView *KHTMLPart::view() const
 {
   return d->m_view;
+}
+
+KHTMLViewBar *KHTMLPart::topViewBar() const
+{
+  return d->m_topViewBar;
+}
+
+KHTMLViewBar *KHTMLPart::bottomViewBar() const
+{
+  return d->m_bottomViewBar;
 }
 
 void KHTMLPart::setStatusMessagesEnabled( bool enable )
@@ -2863,88 +2883,12 @@ void KHTMLPart::setCaretVisible(bool show)
 
 void KHTMLPart::findTextBegin()
 {
-  d->m_findPos = -1;
-  d->m_findNode = 0;
-  d->m_findPosEnd = -1;
-  d->m_findNodeEnd= 0;
-  d->m_findPosStart = -1;
-  d->m_findNodeStart = 0;
-  d->m_findNodePrevious = 0;
-  delete d->m_find;
-  d->m_find = 0L;
+  d->m_find.findTextBegin();
 }
 
 bool KHTMLPart::initFindNode( bool selection, bool reverse, bool fromCursor )
 {
-    if ( !d->m_doc )
-        return false;
-
-    DOM::NodeImpl* firstNode = 0L;
-    if (d->m_doc->isHTMLDocument())
-      firstNode = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
-    else
-      firstNode = d->m_doc;
-
-    if ( !firstNode )
-    {
-      //kDebug(6050) << "no first node (body or doc) -> return false";
-      return false;
-    }
-    if ( firstNode->id() == ID_FRAMESET )
-    {
-      //kDebug(6050) << "FRAMESET -> return false";
-      return false;
-    }
-
-    if ( selection && hasSelection() )
-    {
-      //kDebug(6050) << "using selection";
-      const Selection &sel = d->editor_context.m_selection;
-      if ( !fromCursor )
-      {
-        d->m_findNode = reverse ? sel.end().node() : sel.start().node();
-        d->m_findPos = reverse ? sel.end().offset() : sel.start().offset();
-      }
-      d->m_findNodeEnd = reverse ? sel.start().node() : sel.end().node();
-      d->m_findPosEnd = reverse ? sel.start().offset() : sel.end().offset();
-      d->m_findNodeStart = !reverse ? sel.start().node() : sel.end().node();
-      d->m_findPosStart = !reverse ? sel.start().offset() : sel.end().offset();
-      d->m_findNodePrevious = d->m_findNodeStart;
-    }
-    else // whole document
-    {
-      //kDebug(6050) << "whole doc";
-      if ( !fromCursor )
-      {
-        d->m_findNode = firstNode;
-        d->m_findPos = reverse ? -1 : 0;
-      }
-      d->m_findNodeEnd = reverse ? firstNode : 0;
-      d->m_findPosEnd = reverse ? 0 : -1;
-      d->m_findNodeStart = !reverse ? firstNode : 0;
-      d->m_findPosStart = !reverse ? 0 : -1;
-      d->m_findNodePrevious = d->m_findNodeStart;
-      if ( reverse )
-      {
-        // Need to find out the really last object, to start from it
-        khtml::RenderObject* obj = d->m_findNode ? d->m_findNode->renderer() : 0;
-        if ( obj )
-        {
-          // find the last object in the render tree
-          while ( obj->lastChild() )
-          {
-              obj = obj->lastChild();
-          }
-          // now get the last object with a NodeImpl associated
-          while ( !obj->element() && obj->objectAbove() )
-          {
-             obj = obj->objectAbove();
-          }
-          d->m_findNode = obj->element();
-        }
-      }
-    }
-    return true;
+  return d->m_find.initFindNode(selection, reverse, fromCursor);
 }
 
 void KHTMLPart::slotFind()
@@ -3033,431 +2977,23 @@ void KHTMLPart::enableFindAheadActions( bool enable )
 
 void KHTMLPart::slotFindDialogDestroyed()
 {
-  d->m_lastFindState.options = d->m_findDialog->options();
-  d->m_lastFindState.history = d->m_findDialog->findHistory();
-  d->m_findDialog->deleteLater();
-  d->m_findDialog = 0L;
+  // ### remove me 
 }
 
 void KHTMLPart::findText()
 {
-  // First do some init to make sure we can search in this frame
-  if ( !d->m_doc )
-    return;
-
-  // Raise if already opened
-  if ( d->m_findDialog )
-  {
-#ifdef Q_WS_X11
-    KWindowSystem::activateWindow( d->m_findDialog->winId() );
-#else
-    d->m_findDialog->activateWindow();
-#endif
-    return;
-  }
-
-  // The lineedit of the dialog would make khtml lose its selection, otherwise
-#ifndef QT_NO_CLIPBOARD
-  disconnect( qApp->clipboard(), SIGNAL(selectionChanged()), this, SLOT(slotClearSelection()) );
-#endif
-
-  // Now show the dialog in which the user can choose options.
-  d->m_findDialog = new KFindDialog( widget() );
-  d->m_findDialog->setHasSelection( hasSelection() );
-  d->m_findDialog->setHasCursor( d->m_findNode != 0 );
-  if ( d->m_findNode ) // has a cursor -> default to 'FromCursor'
-    d->m_lastFindState.options |= KFind::FromCursor;
-
-  // TODO? optionsDialog.setPattern( d->m_lastFindState.text );
-  d->m_findDialog->setFindHistory( d->m_lastFindState.history );
-  d->m_findDialog->setOptions( d->m_lastFindState.options );
-
-  d->m_lastFindState.options = -1; // force update in findTextNext
-  d->m_lastFindState.last_dir = -1;
-
-  d->m_findDialog->show();
-  connect( d->m_findDialog, SIGNAL(okClicked()), this, SLOT(slotFindNext()) );
-  connect( d->m_findDialog, SIGNAL(finished()), this, SLOT(slotFindDialogDestroyed()) );
-
-  findText( d->m_findDialog->pattern(), 0 /*options*/, widget(), d->m_findDialog );
+  d->m_find.activate();
 }
 
 void KHTMLPart::findText( const QString &str, long options, QWidget *parent, KFindDialog *findDialog )
 {
-  // First do some init to make sure we can search in this frame
-  if ( !d->m_doc )
-    return;
-
-#ifndef QT_NO_CLIPBOARD
-  connect( qApp->clipboard(), SIGNAL(selectionChanged()), SLOT(slotClearSelection()) );
-#endif
-
-  // Create the KFind object
-  delete d->m_find;
-  d->m_find = new KFind( str, options, parent, findDialog );
-  d->m_find->closeFindNextDialog(); // we use KFindDialog non-modal, so we don't want other dlg popping up
-  connect( d->m_find, SIGNAL( highlight( const QString &, int, int ) ),
-           this, SLOT( slotHighlight( const QString &, int, int ) ) );
-  //connect(d->m_find, SIGNAL( findNext() ),
-  //        this, SLOT( slotFindNext() ) );
-
-  if ( !findDialog )
-  {
-    d->m_lastFindState.options = options;
-    initFindNode( options & KFind::SelectedText,
-                  options & KFind::FindBackwards,
-                  options & KFind::FromCursor );
-  }
+  d->m_find.createNewKFind( str, options, parent, findDialog );
 }
 
 // New method
 bool KHTMLPart::findTextNext( bool reverse )
 {
-  if (!d->m_find)
-  {
-    // We didn't show the find dialog yet, let's do it then (#49442)
-    findText();
-    return false;
-  }
-
-  view()->updateFindAheadTimeout();
-  long options = 0;
-  if ( d->m_findDialog ) // 0 when we close the dialog
-  {
-    if ( d->m_find->pattern() != d->m_findDialog->pattern() ) {
-      d->m_find->setPattern( d->m_findDialog->pattern() );
-      d->m_find->resetCounts();
-    }
-    options = d->m_findDialog->options();
-    if ( d->m_lastFindState.options != options )
-    {
-      d->m_find->setOptions( options );
-
-      if ( options & KFind::SelectedText )
-        Q_ASSERT( hasSelection() );
-
-      long difference = d->m_lastFindState.options ^ options;
-      if ( difference & (KFind::SelectedText | KFind::FromCursor ) )
-      {
-          // Important options changed -> reset search range
-        (void) initFindNode( options & KFind::SelectedText,
-                             options & KFind::FindBackwards,
-                             options & KFind::FromCursor );
-      }
-      d->m_lastFindState.options = options;
-    }
-  } else
-    options = d->m_lastFindState.options;
-  if( reverse )
-    options = options ^ KFind::FindBackwards;
-  if( d->m_find->options() != options )
-    d->m_find->setOptions( options );
-
-  // Changing find direction. Start and end nodes must be switched.
-  // Additionally since d->m_findNode points after the last node
-  // that was searched, it needs to be "after" it in the opposite direction.
-  if( d->m_lastFindState.last_dir != -1
-      && bool( d->m_lastFindState.last_dir ) != bool( options & KFind::FindBackwards ))
-  {
-    qSwap( d->m_findNodeEnd, d->m_findNodeStart );
-    qSwap( d->m_findPosEnd, d->m_findPosStart );
-    qSwap( d->m_findNode, d->m_findNodePrevious );
-    // d->m_findNode now point at the end of the last searched line - advance one node
-    khtml::RenderObject* obj = d->m_findNode ? d->m_findNode->renderer() : 0;
-    khtml::RenderObject* end = d->m_findNodeEnd ? d->m_findNodeEnd->renderer() : 0;
-    if ( obj == end )
-      obj = 0L;
-    else if ( obj )
-    {
-      do {
-        obj = (options & KFind::FindBackwards) ? obj->objectAbove() : obj->objectBelow();
-      } while ( obj && ( !obj->element() || obj->isInlineContinuation() ) );
-    }
-    if ( obj )
-      d->m_findNode = obj->element();
-    else
-      d->m_findNode = 0;
-  }
-  d->m_lastFindState.last_dir = ( options & KFind::FindBackwards ) ? 1 : 0;
-
-  KFind::Result res = KFind::NoMatch;
-  khtml::RenderObject* obj = d->m_findNode ? d->m_findNode->renderer() : 0;
-  khtml::RenderObject* end = d->m_findNodeEnd ? d->m_findNodeEnd->renderer() : 0;
-  //kDebug(6050) << "obj=" << obj << " end=" << end;
-  while( res == KFind::NoMatch )
-  {
-    if ( d->m_find->needData() )
-    {
-      if ( !obj ) {
-        //kDebug(6050) << "obj=0 -> done";
-        break; // we're done
-      }
-      //kDebug(6050) << " gathering data";
-      // First make up the QString for the current 'line' (i.e. up to \n)
-      // We also want to remember the DOMNode for every portion of the string.
-      // We store this in an index->node list.
-
-      d->m_stringPortions.clear();
-      bool newLine = false;
-      QString str;
-      DOM::NodeImpl* lastNode = d->m_findNode;
-      while ( obj && !newLine )
-      {
-        // Grab text from render object
-        QString s;
-        if ( obj->renderName() == QLatin1String("RenderTextArea") )
-        {
-          s = static_cast<khtml::RenderTextArea *>(obj)->text();
-          s = s.replace(0xa0, ' ');
-        }
-        else if ( obj->renderName() ==  QLatin1String("RenderLineEdit") )
-        {
-          khtml::RenderLineEdit *parentLine= static_cast<khtml::RenderLineEdit *>(obj);
-          if (parentLine->widget()->echoMode() == QLineEdit::Normal)
-            s = parentLine->widget()->text();
-          s = s.replace(0xa0, ' ');
-        }
-        else if ( obj->isText() )
-        {
-          bool isLink = false;
-
-          // checks whether the node has a <A> parent
-          if ( options & FindLinksOnly )
-          {
-            DOM::NodeImpl *parent = obj->element();
-            while ( parent )
-            {
-              if ( parent->nodeType() == Node::ELEMENT_NODE && parent->id() == ID_A )
-              {
-                isLink = true;
-                break;
-              }
-              parent = parent->parentNode();
-            }
-          }
-          else
-          {
-            isLink = true;
-          }
-
-          if ( isLink )
-          {
-            s = static_cast<khtml::RenderText *>(obj)->data().string();
-            s = s.replace(0xa0, ' ');
-          }
-        }
-        else if ( obj->isBR() )
-          s = '\n';
-        else if ( !obj->isInline() && !str.isEmpty() )
-          s = '\n';
-
-        if ( lastNode == d->m_findNodeEnd )
-          s.truncate( d->m_findPosEnd );
-        if ( !s.isEmpty() )
-        {
-          newLine = s.indexOf( '\n' ) != -1; // did we just get a newline?
-          if( !( options & KFind::FindBackwards ))
-          {
-            //kDebug(6050) << "StringPortion: " << index << "-" << index+s.length()-1 << " -> " << lastNode;
-            d->m_stringPortions.append( KHTMLPartPrivate::StringPortion( str.length(), lastNode ) );
-            str += s;
-          }
-          else // KFind itself can search backwards, so str must not be built backwards
-          {
-            for( QList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
-                 it != d->m_stringPortions.end();
-                 ++it )
-                (*it).index += s.length();
-            d->m_stringPortions.prepend( KHTMLPartPrivate::StringPortion( 0, lastNode ) );
-            str.prepend( s );
-          }
-        }
-        // Compare obj and end _after_ we processed the 'end' node itself
-        if ( obj == end )
-          obj = 0L;
-        else
-        {
-          // Move on to next object (note: if we found a \n already, then obj (and lastNode)
-          // will point to the _next_ object, i.e. they are in advance.
-          do {
-            // We advance until the next RenderObject that has a NodeImpl as its element().
-            // Otherwise (if we keep the 'last node', and it has a '\n') we might be stuck
-            // on that object forever...
-            obj = (options & KFind::FindBackwards) ? obj->objectAbove() : obj->objectBelow();
-          } while ( obj && ( !obj->element() || obj->isInlineContinuation() ) );
-        }
-        if ( obj )
-          lastNode = obj->element();
-        else
-          lastNode = 0;
-      } // end while
-      //kDebug()<<" str : "<<str;
-      if ( !str.isEmpty() )
-      {
-        d->m_find->setData( str, d->m_findPos );
-      }
-
-      d->m_findPos = -1; // not used during the findnext loops. Only during init.
-      d->m_findNodePrevious = d->m_findNode;
-      d->m_findNode = lastNode;
-    }
-    if ( !d->m_find->needData() ) // happens if str was empty
-    {
-      // Let KFind inspect the text fragment, and emit highlighted if a match is found
-      res = d->m_find->find();
-    }
-  } // end while
-
-  if ( res == KFind::NoMatch ) // i.e. we're done
-  {
-    kDebug() << "No more matches.";
-    if ( !(options & FindNoPopups) && d->m_find->shouldRestart() )
-    {
-      //kDebug(6050) << "Restarting";
-      initFindNode( false, options & KFind::FindBackwards, false );
-      d->m_find->resetCounts();
-      findTextNext( reverse );
-    }
-    else // really done
-    {
-      //kDebug(6050) << "Finishing";
-      //delete d->m_find;
-      //d->m_find = 0L;
-      initFindNode( false, options & KFind::FindBackwards, false );
-      d->m_find->resetCounts();
-      slotClearSelection();
-    }
-    kDebug() << "Dialog closed.";
-  }
-
-  return res == KFind::Match;
-}
-
-void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
-{
-  //kDebug(6050) << "index=" << index << " length=" << length;
-  QList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
-  const QList<KHTMLPartPrivate::StringPortion>::Iterator itEnd = d->m_stringPortions.end();
-  QList<KHTMLPartPrivate::StringPortion>::Iterator prev = it;
-  // We stop at the first portion whose index is 'greater than', and then use the previous one
-  while ( it != itEnd && (*it).index <= index )
-  {
-    prev = it;
-    ++it;
-  }
-  Q_ASSERT ( prev != itEnd );
-  DOM::NodeImpl* node = (*prev).node;
-  Q_ASSERT( node );
-
-  Selection sel(Position(node, index - (*prev).index));
-
-  khtml::RenderObject* obj = node->renderer();
-  khtml::RenderTextArea *renderTextArea = 0L;
-  khtml::RenderLineEdit *renderLineEdit = 0L;
-
-  QRect highlightedRect;
-  Q_ASSERT( obj );
-  if ( obj )
-  {
-    int x = 0, y = 0;
-
-    if ( obj->renderName() == QLatin1String("RenderTextArea") )
-      renderTextArea = static_cast<khtml::RenderTextArea *>(obj);
-    if ( obj->renderName() == QLatin1String("RenderLineEdit") )
-      renderLineEdit = static_cast<khtml::RenderLineEdit *>(obj);
-    if ( !renderLineEdit && !renderTextArea )
-      //if (static_cast<khtml::RenderText *>(node->renderer())
-      //    ->posOfChar(d->m_startOffset, x, y))
-      {
-        int dummy;
-        static_cast<khtml::RenderText *>(node->renderer())
-          ->caretPos( sel.start().offset(), false, x, y, dummy, dummy ); // more precise than posOfChar
-        //kDebug(6050) << "topleft: " << x << "," << y;
-        if ( x != -1 || y != -1 )
-        {
-          int gox = d->m_view->contentsX();
-          if (x+50 > d->m_view->contentsX() + d->m_view->visibleWidth())
-              gox = x - d->m_view->visibleWidth() + 50;
-          if (x-10 < d->m_view->contentsX())
-              gox = x - d->m_view->visibleWidth() - 10;
-          if (gox < 0) gox = 0;
-          d->m_view->setContentsPos(gox, y-50);
-          highlightedRect.setTopLeft( d->m_view->mapToGlobal(QPoint(x, y)) );
-        }
-      }
-  }
-  // Now look for end node
-  it = prev; // no need to start from beginning again
-  while ( it != itEnd && (*it).index < index + length )
-  {
-    prev = it;
-    ++it;
-  }
-  Q_ASSERT ( prev != itEnd );
-
-  sel.moveTo(sel.start(), Position((*prev).node, index + length - (*prev).index));
-
-  // if the selection is limited to a single link, that link gets focus
-  if(sel.start().node() == sel.end().node())
-  {
-    bool isLink = false;
-
-    // checks whether the node has a <A> parent
-    DOM::NodeImpl *parent = sel.start().node();
-    while ( parent )
-    {
-      if ( parent->nodeType() == Node::ELEMENT_NODE && parent->id() == ID_A )
-      {
-        isLink = true;
-        break;
-      }
-      parent = parent->parentNode();
-    }
-
-    if(isLink == true)
-    {
-      d->m_doc->setFocusNode( parent );
-    }
-  }
-
-#if 0
-  kDebug(6050) << d->m_selectionStart.handle() << "," << d->m_startOffset << " - " <<
-    d->m_selectionEnd.handle() << "," << d->m_endOffset;
-  it = d->m_stringPortions.begin();
-  for ( ; it != d->m_stringPortions.end() ; ++it )
-    kDebug(6050) << "  StringPortion: from index=" << (*it).index << " -> node=" << (*it).node;
-#endif
-  if ( renderTextArea )
-    renderTextArea->highLightWord( length, sel.end().offset()-length );
-  else if ( renderLineEdit )
-    renderLineEdit->highLightWord( length, sel.end().offset()-length );
-  else
-  {
-    d->editor_context.m_selection = sel;
-    d->m_doc->updateSelection();
-    if (sel.end().node()->renderer() )
-    {
-      int x, y, height, dummy;
-      static_cast<khtml::RenderText *>(sel.end().node()->renderer())
-          ->caretPos( sel.end().offset(), false, x, y, dummy, height ); // more precise than posOfChar
-      //kDebug(6050) << "bottomright: " << x << "," << y+height;
-      if ( x != -1 || y != -1 )
-      {
-        // if ( static_cast<khtml::RenderText *>(d->m_selectionEnd.handle()->renderer())
-        //  ->posOfChar(d->m_endOffset-1, x, y))
-        highlightedRect.setBottomRight( d->m_view->mapToGlobal( QPoint(x, y+height) ) );
-      }
-    }
-  }
-  emitSelectionChanged();
-
-  // make the finddialog move away from the selected area
-  if ( d->m_findDialog && !highlightedRect.isNull() )
-  {
-    highlightedRect.translate( -d->m_view->contentsX(), -d->m_view->contentsY() );
-    //kDebug(6050) << "avoiding " << highlightedRect;
-    KDialog::avoidArea( d->m_findDialog, highlightedRect );
-  }
+  return d->m_find.findTextNext( reverse ); 
 }
 
 QString KHTMLPart::selectedTextAsHTML() const
@@ -5897,8 +5433,6 @@ DOM::Node KHTMLPart::nonSharedNodeUnderMouse() const
 void KHTMLPart::emitSelectionChanged()
 {
   emit d->m_extension->enableAction( "copy", hasSelection() );
-  if ( d->m_findDialog )
-       d->m_findDialog->setHasSelection( hasSelection() );
 
   emit d->m_extension->selectionInfo( selectedText() );
   emit selectionChanged();

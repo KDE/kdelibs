@@ -217,6 +217,15 @@ set(khtmlediting_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/editing/htmlediting_impl.cpp
 )
 
+set(khtmlfind_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/khtml/find/khtmlfind.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/find/khtmlfindbar.cpp
+)
+
+kde4_add_ui_files(khtmlfind_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/khtml/find/khtmlfindbar_base.ui
+)
+
 # khtml/html/Makefile.am: khtmlhtml
 
 set(khtmlhtml_STAT_SRCS
@@ -442,6 +451,8 @@ add_definitions(-DENABLE_VIDEO)
 
 set(khtml_LIB_SRCS
    khtmlview.cpp
+   khtmlviewbar.cpp
+   khtmlviewbarwidget.cpp
    khtml_part.cpp
    khtml_run.cpp
    khtml_global.cpp
@@ -454,6 +465,7 @@ set(khtml_LIB_SRCS
    khtml_iface.cc
    khtmlimage.cpp
    kjserrordlg.cpp
+   ${khtmlfind_STAT_SRCS}
    ${khtmlxml_STAT_SRCS}
    ${khtmlhtml_STAT_SRCS}
    ${khtmlrender_STAT_SRCS}

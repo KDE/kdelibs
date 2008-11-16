@@ -1,0 +1,122 @@
+<ui version="4.0" >
+ <class>KHTMLFindBarBase</class>
+ <widget class="QWidget" name="KHTMLFindBarBase" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>634</width>
+    <height>37</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout" >
+   <item>
+    <widget class="QLabel" name="label" >
+     <property name="text" >
+      <string>Find:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="KHistoryComboBox" name="m_find" />
+   </item>
+   <item>
+    <widget class="QToolButton" name="m_next" >
+     <property name="text" >
+      <string>Next</string>
+     </property>
+     <property name="toolButtonStyle" >
+      <enum>Qt::ToolButtonTextBesideIcon</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="m_previous" >
+     <property name="text" >
+      <string>Previous</string>
+     </property>
+     <property name="toolButtonStyle" >
+      <enum>Qt::ToolButtonTextBesideIcon</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="horizontalSpacer" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeType" >
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>16</width>
+       <height>26</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QToolButton" name="m_options" >
+     <property name="text" >
+      <string>Options</string>
+     </property>
+     <property name="checkable" >
+      <bool>false</bool>
+     </property>
+     <property name="popupMode" >
+      <enum>QToolButton::MenuButtonPopup</enum>
+     </property>
+     <property name="toolButtonStyle" >
+      <enum>Qt::ToolButtonTextOnly</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="horizontalSpacer_2" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>93</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QLabel" name="m_statusLabel" >
+     <property name="text" >
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="horizontalSpacer_3" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>93</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KHistoryComboBox</class>
+   <extends>KComboBox</extends>
+   <header>khistorycombobox.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

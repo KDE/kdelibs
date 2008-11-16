@@ -42,6 +42,7 @@ class KHTMLPartPrivate;
 class KHTMLPartBrowserExtension;
 class KJSProxy;
 class KHTMLView;
+class KHTMLViewBar;
 class KHTMLSettings;
 class KJavaAppletContext;
 class KJSErrorDlg;
@@ -240,6 +241,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLPartIface;
   friend class KHTMLPartFunction;
   friend class KHTMLPopupGUIClient;
+  friend class KHTMLFind;
   friend class WebCore::SVGDocumentExtensions;
 
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE setJScriptEnabled )
@@ -363,6 +365,16 @@ public:
    * Returns a pointer to the HTML document's view.
    */
   KHTMLView *view() const;
+
+  /**
+   * Returns a pointer to the top view bar.
+   */
+  KHTMLViewBar *topViewBar() const;
+
+  /**
+   * Returns a pointer to the bottom view bar.
+   */
+  KHTMLViewBar *bottomViewBar() const;
 
   /**
    * Enable/disable Javascript support. Note that this will
@@ -1455,7 +1467,7 @@ private Q_SLOTS:
 
   virtual void slotFind();
   virtual void slotFindDone(); // ### remove me
-  virtual void slotFindDialogDestroyed();
+  virtual void slotFindDialogDestroyed(); // ### remove me
   void slotFindNext();
   void slotFindPrev();
   void slotFindAheadText();
@@ -1568,11 +1580,6 @@ private Q_SLOTS:
    * @internal
    */
   void slotZoomView( int );
-
-  /**
-   * @internal
-   */
-  void slotHighlight( const QString &, int index, int length );
 
   /**
    * @internal

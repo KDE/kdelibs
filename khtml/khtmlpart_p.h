@@ -52,6 +52,7 @@
 #include "ecma/kjs_proxy.h"
 #include "xml/dom_nodeimpl.h"
 #include "editing/editing_p.h"
+#include "find/khtmlfind_p.h"
 
 class KFind;
 class KFindDialog;
@@ -60,6 +61,7 @@ class KUrlLabel;
 class KJavaAppletContext;
 class KJSErrorDlg;
 class KToggleAction;
+class KHTMLViewBar;
 
 namespace KIO
 {
@@ -142,7 +144,8 @@ class KHTMLPartPrivate
   KHTMLPartPrivate(const KHTMLPartPrivate & other);
   KHTMLPartPrivate& operator=(const KHTMLPartPrivate&);
 public:
-  KHTMLPartPrivate(KHTMLPart* part, QObject* parent)
+  KHTMLPartPrivate(KHTMLPart* part, QObject* parent) :
+    m_find( part )
   {
     q     = part;
     m_doc = 0L;
@@ -169,8 +172,6 @@ public:
     m_jobPercent = 0;
     m_haveEncoding = false;
     m_activeFrame = 0L;
-    m_find = 0;
-    m_findDialog = 0;
     m_ssl_in_use = false;
     m_jsedlg = 0;
     m_formNotification = KHTMLPart::NoNotification;
@@ -270,6 +271,8 @@ public:
   KHTMLFrameList m_objects;
 
   QPointer<KHTMLView> m_view;
+  QPointer<KHTMLViewBar> m_topViewBar;
+  QPointer<KHTMLViewBar> m_bottomViewBar;
   KHTMLPartBrowserExtension *m_extension;
   KParts::StatusBarExtension *m_statusBarExtension;
   KHTMLPartBrowserHostExtension *m_hostExtension;
@@ -443,51 +446,9 @@ public:
 
   QStringList m_pluginPageQuestionAsked;
 
-  /////////// 'Find' feature
-  struct StringPortion
-  {
-      // Just basic ref/deref on our node to make sure it doesn't get deleted
-      StringPortion( int i, DOM::NodeImpl* n ) : index(i), node(n) { if (node) node->ref(); }
-      StringPortion() : index(0), node(0) {} // for QValueList
-      StringPortion( const StringPortion& other ) : node(0) { operator=(other); }
-      StringPortion& operator=( const StringPortion& other ) {
-          index=other.index;
-          if (other.node) other.node->ref();
-          if (node) node->deref();
-          node=other.node;
-          return *this;
-      }
-      ~StringPortion() { if (node) node->deref(); }
-
-      int index;
-      DOM::NodeImpl *node;
-  };
-  QList<StringPortion> m_stringPortions;
-
-  KFind *m_find;
-  KFindDialog *m_findDialog;
-
-  struct findState
-  {
-    findState() : options( 0 ), last_dir( -1 ) {}
-    QStringList history;
-    QString text;
-    int options;
-    int last_dir; // -1=unknown,0=forward,1=backward
-  };
-
-  findState m_lastFindState;
+  KHTMLFind m_find;
 
   KJSErrorDlg *m_jsedlg;
-
-  DOM::NodeImpl *m_findNode; // current node
-  DOM::NodeImpl *m_findNodeEnd; // end node
-  DOM::NodeImpl *m_findNodeStart; // start node
-  DOM::NodeImpl *m_findNodePrevious; // previous node used for find
-  int m_findPos; // current pos in current node
-  int m_findPosEnd; // pos in end node
-  int m_findPosStart; // pos in start node
-  /////////
 
   //QGuardedPtr<KParts::Part> m_activeFrame;
   KParts::Part * m_activeFrame;
