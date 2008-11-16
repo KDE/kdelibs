@@ -361,6 +361,7 @@ void DownloadDialog::slotUpdateSearch()
 {
     m_searchTimer->stop();
     m_filteredModel->setFilterFixedString(m_searchEdit->text());
+    m_filteredModel->invalidate();
 }
 
 void DownloadDialog::slotLoadProvidersListDXS()
