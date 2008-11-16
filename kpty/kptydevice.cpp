@@ -270,6 +270,27 @@ bool KPtyDevicePrivate::_k_canRead()
 #else
     if (!::ioctl(q->masterFd(), FIONREAD, (char *) &available)) {
 #endif
+#ifdef Q_OS_SOLARIS
+        // A Pty is a STREAMS module, and those can be activated
+        // with 0 bytes available. This happens either when ^C is
+        // pressed, or when an application does an explicit write(a,b,0)
+        // which happens in experiments fairly often. When 0 bytes are
+        // available, you must read those 0 bytes to clear the STREAMS
+        // module, but we don't want to hit the !readBytes case further down.
+        if (!available) {
+            char c;
+            // Read the 0-byte STREAMS message
+            int r = read(q->masterFd(), &c, 0);
+            // Should return 0 bytes read; -1 is error
+            if (r < 0) {
+                readNotifier->setEnabled(false);
+                emit q->readEof();
+                return false;
+            }
+            return true;
+        }
+#endif
+
         char *ptr = readBuffer.reserve(available);
         NO_INTR(readBytes, read(q->masterFd(), ptr, available));
         if (readBytes < 0) {
