@@ -4308,6 +4308,9 @@ void HTTPProtocol::cacheUpdate( const KUrl& url, bool no_cache, time_t expireDat
   if (!maybeSetRequestUrl(url))
       return;
 
+  // Make sure we read in the cache info.
+  resetSessionSettings();
+
   m_request.cacheTag.policy= CC_Reload;
 
   if (no_cache)
