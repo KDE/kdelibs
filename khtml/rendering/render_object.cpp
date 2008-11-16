@@ -1358,7 +1358,7 @@ QString RenderObject::information() const
         ts << " <" << LocalName::fromId(localNamePart(element()->id())).toString().string() << ">";
 
     } else if (isPseudoAnonymous() && style() && style()->styleType() != RenderStyle::NOPSEUDO) {
-        ts << " <" << LocalName::fromId(localNamePart(element()->id())).toString().string();
+        ts << " <" << LocalName::fromId(localNamePart(node()->id())).toString().string();
         QString pseudo;
         switch (style()->styleType()) {
           case RenderStyle::FIRST_LETTER:
