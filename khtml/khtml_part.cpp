@@ -3821,7 +3821,7 @@ void KHTMLPart::timerEvent(QTimerEvent *e)
       d->editor_context.m_selection.needsCaretRepaint();
     }
   } else if (e->timerId() == d->m_DNSPrefetchTimer) {
-      kDebug() << "will lookup " << d->m_DNSPrefetchQueue.head() << d->m_bDNSPrefetch << d->m_numDNSPrefetchedNames;
+      // kDebug( 6050 ) << "will lookup " << d->m_DNSPrefetchQueue.head() << d->m_numDNSPrefetchedNames;
       KIO::HostInfo::prefetchHost( d->m_DNSPrefetchQueue.dequeue() );
       if (d->m_DNSPrefetchQueue.isEmpty()) {
           killTimer( d->m_DNSPrefetchTimer );
