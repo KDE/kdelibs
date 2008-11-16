@@ -413,6 +413,10 @@ public:
     };
     virtual void paint( PaintInfo& i, int tx, int ty);
 
+    void drawBorderArc(QPainter *p, int x, int y, float horThickness, float vertThickness,
+                       const BorderRadii &radius, int angleStart, int angleSpan, const QColor &color,
+                       const QColor &textColor, EBorderStyle style) const;
+
     void paintBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin=true, bool end=true);
     void paintOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style);
 

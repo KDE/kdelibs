@@ -4,8 +4,9 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2002-2006 Apple Computer, Inc.
+ *           (C) 2004-2008 Apple Computer, Inc.
  *           (C) 2006 Germain Garand <germain@ebooksfrance.org>
+ *           (C) 2008 Fredrik Höglund <fredrik@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1184,6 +1185,216 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         p->setCompositionMode(QPainter::CompositionMode_SourceOver);
 }
 
+static QImage blendCornerImages(const QImage &image1, const QImage &image2)
+{
+    QImage mask(image1.size(), QImage::Format_ARGB32_Premultiplied);
+    QImage composite = image1;
+    QImage temp = image2;
+
+    // Construct the mask image
+    QConicalGradient gradient(mask.width() / 2, mask.height() / 2, 0);
+    gradient.setColorAt(0.00, Qt::transparent);
+    gradient.setColorAt(0.25, Qt::black);
+    gradient.setColorAt(0.50, Qt::black);
+    gradient.setColorAt(0.75, Qt::transparent);
+    gradient.setColorAt(1.00, Qt::transparent);
+
+    QBrush gradientBrush = gradient;
+
+    if (mask.width() != mask.height()) {
+        int min = qMin(mask.width(), mask.height());
+        QTransform xform;
+        xform.translate(mask.width() / 2, mask.height() / 2);
+        xform.scale(min / mask.width(), min / mask.height());
+        gradientBrush.setTransform(xform);
+    }
+
+    QPainter p;
+    p.begin(&mask);
+    p.setCompositionMode(QPainter::CompositionMode_Source);
+    p.fillRect(mask.rect(), gradientBrush);
+    p.end();
+
+    p.begin(&temp);
+    p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    p.drawImage(0, 0, mask);
+    p.end();
+
+    p.begin(&composite);
+    p.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+    p.drawImage(0, 0, mask);
+    p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+    p.drawImage(0, 0, temp);
+    p.end();
+
+    return composite;
+}
+
+void RenderObject::drawBorderArc(QPainter *p, int x, int y, float horThickness, float vertThickness,
+                                 const BorderRadii &radius, int angleStart, int angleSpan, const QColor &color,
+                                 const QColor &textColor, EBorderStyle style) const
+{
+    QColor c = color;
+    if (!c.isValid()) {
+        if (style == INSET || style == OUTSET || style == RIDGE || style == GROOVE)
+            c = Qt::white;
+        else
+            c = textColor;
+    }
+
+    QColor light = c;
+    QColor dark = c;
+    calc3DColor(light, false);
+    calc3DColor(dark, true);
+
+    if (style == DOUBLE && horThickness < 3 && vertThickness < 3)
+        style = SOLID;
+
+    p->save();
+    p->setRenderHint(QPainter::Antialiasing);
+
+    switch (style)
+    {
+        case BNATIVE:
+        case BNONE:
+        case BHIDDEN:
+        {
+            // Should not happen
+            break;
+        }
+
+        case SOLID:
+        {
+            const QRect outerRect = QRect(x - radius.horizontal, y - radius.vertical, radius.horizontal * 2, radius.vertical * 2);
+            const QRect innerRect = outerRect.adjusted(horThickness, vertThickness, -horThickness, -vertThickness);
+            QPainterPath path;
+            path.arcMoveTo(outerRect, angleStart);
+            path.arcTo(outerRect, angleStart, angleSpan);
+            if (innerRect.isValid())
+                path.arcTo(innerRect, angleStart + angleSpan, -angleSpan);
+            else
+                path.lineTo(x, y);
+            path.closeSubpath();
+            p->fillPath(path, color);
+            break;
+        }
+
+        case DOUBLE:
+        {
+            const qreal hw = (horThickness + 1) / 3;
+            const qreal vw = (vertThickness + 1) / 3;
+
+            BorderRadii br;
+            br.horizontal = radius.horizontal - hw * 2 + 1;
+            br.vertical = radius.vertical - vw * 2 + 1;
+
+            drawBorderArc(p, x, y, hw, vw, radius, angleStart, angleSpan, color, textColor, SOLID);
+            drawBorderArc(p, x, y, hw, vw, br, angleStart, angleSpan, color, textColor, SOLID);
+            break;
+        }
+
+        case INSET:
+        case OUTSET:
+        {
+            QImage image1(radius.horizontal * 2, radius.vertical * 2, QImage::Format_ARGB32_Premultiplied);
+            image1.fill(0);
+
+            QImage image2 = image1;
+
+            const QRect outerRect  = image1.rect();
+            const QRect innerRect  = outerRect.adjusted(horThickness, vertThickness, -horThickness, -vertThickness);
+
+            const QColor c1 = style == OUTSET ? dark : light;
+            const QColor c2 = style == OUTSET ? light : dark;
+
+            QPainterPath path;
+            path.arcMoveTo(outerRect, angleStart);
+            path.arcTo(outerRect, angleStart, angleSpan);
+            if (innerRect.isValid())
+                path.arcTo(innerRect, angleStart + angleSpan, -angleSpan);
+            else
+                path.lineTo(radius.horizontal, radius.vertical);
+            path.closeSubpath();
+
+            QPainter p2;
+            p2.begin(&image1);
+            p2.setRenderHint(QPainter::Antialiasing);
+            p2.fillPath(path, c1);
+            p2.end();
+
+            p2.begin(&image2);
+            p2.setRenderHint(QPainter::Antialiasing);
+            p2.fillPath(path, c2);
+            p2.end();
+
+            p->drawImage(x - radius.horizontal, y - radius.vertical, blendCornerImages(image1, image2));
+            break;
+        }
+
+        // We could implement this by adjusting the coordinates and calling drawBorderArc() twice,
+        // with INSET and OUTSET, but this should be more efficient.
+        case RIDGE:
+        case GROOVE:
+        {
+            QImage image1(radius.horizontal * 2, radius.vertical * 2, QImage::Format_ARGB32_Premultiplied);
+            image1.fill(0);
+
+            QImage image2 = image1;
+
+            const QRect outerRect  = image1.rect();
+            const QRect centerRect = outerRect.adjusted(horThickness / 2, vertThickness / 2,
+                                                        -(horThickness / 2), -(vertThickness / 2));
+            const QRect innerRect  = outerRect.adjusted(horThickness, vertThickness, -horThickness, -vertThickness);
+
+            const QColor c1 = style == RIDGE ? dark : light;
+            const QColor c2 = style == RIDGE ? light : dark;
+
+            QPainterPath outer, inner;
+            outer.arcMoveTo(outerRect, angleStart);
+            outer.arcTo(outerRect, angleStart, angleSpan);
+            if (centerRect.isValid())
+                outer.arcTo(centerRect, angleStart + angleSpan, -angleSpan);
+            else
+                outer.lineTo(radius.horizontal, radius.vertical);
+            outer.closeSubpath();
+
+            if (centerRect.isValid()) {
+                inner.arcMoveTo(centerRect, angleStart);
+                inner.arcTo(centerRect, angleStart, angleSpan);
+                if (innerRect.isValid())
+                    inner.arcTo(innerRect, angleStart + angleSpan, -angleSpan);
+                else
+                    inner.lineTo(radius.horizontal, radius.vertical);
+                inner.closeSubpath();
+            }
+
+            QPainter p2;
+            p2.begin(&image1);
+            p2.setRenderHint(QPainter::Antialiasing);
+            p2.fillPath(outer, c1);
+            p2.fillPath(inner, c2);
+            p2.end();
+
+            p2.begin(&image2);
+            p2.setRenderHint(QPainter::Antialiasing);
+            p2.fillPath(outer, c2);
+            p2.fillPath(inner, c1);
+            p2.end();
+
+            p->drawImage(x - radius.horizontal, y - radius.vertical, blendCornerImages(image1, image2));
+            break;
+        }
+
+        case DOTTED:
+        case DASHED:
+        {
+            // TODO
+        }
+    }
+
+    p->restore();
+}
+
 void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin, bool end)
 {
     const QColor& tc = style->borderTopColor();
@@ -1206,70 +1417,213 @@ void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
     bool render_r = rs > BHIDDEN && end && !rt;
     bool render_b = bs > BHIDDEN && !bt;
 
+    // Need sufficient width and height to contain border radius curves.  Sanity check our border radii
+    // and our width/height values to make sure the curves can all fit. If not, then we won't paint
+    // any border radii.
+    bool renderRadii = false;
+    BorderRadii topLeft = style->borderTopLeftRadius();
+    BorderRadii topRight = style->borderTopRightRadius();
+    BorderRadii bottomLeft = style->borderBottomLeftRadius();
+    BorderRadii bottomRight = style->borderBottomRightRadius();
+
+    if (style->hasBorderRadius() &&
+        static_cast<unsigned>(w) >= static_cast<unsigned>(topLeft.horizontal) + static_cast<unsigned>(topRight.horizontal) &&
+        static_cast<unsigned>(w) >= static_cast<unsigned>(bottomLeft.horizontal) + static_cast<unsigned>(bottomRight.horizontal) &&
+        static_cast<unsigned>(h) >= static_cast<unsigned>(topLeft.vertical) + static_cast<unsigned>(bottomLeft.vertical) &&
+        static_cast<unsigned>(h) >= static_cast<unsigned>(topRight.vertical) + static_cast<unsigned>(bottomRight.vertical))
+        renderRadii = true;
+
+    bool upperLeftBorderStylesMatch = render_l && (ts == ls) && (tc == lc);
+    bool upperRightBorderStylesMatch = render_r && (ts == rs) && (tc == rc);
+    bool lowerLeftBorderStylesMatch = render_l && (bs == ls) && (bc == lc);
+    bool lowerRightBorderStylesMatch = render_r && (bs == rs) && (bc == rc);
+
     if(render_t) {
-        bool ignore_left =
-            (tc == lc) && (tt == lt) &&
-            (ts >= OUTSET) &&
-            (ls == DOTTED || ls == DASHED || ls == SOLID || ls == OUTSET);
+        bool ignore_left = (renderRadii && topLeft.horizontal > 0) ||
+            ((tc == lc) && (tt == lt) &&
+             (ts >= OUTSET) &&
+             (ls == DOTTED || ls == DASHED || ls == SOLID || ls == OUTSET));
 
-        bool ignore_right =
-            (tc == rc) && (tt == rt) &&
-            (ts >= OUTSET) &&
-            (rs == DOTTED || rs == DASHED || rs == SOLID || rs == INSET);
+        bool ignore_right = (renderRadii && topRight.horizontal > 0) ||
+            ((tc == rc) && (tt == rt) &&
+             (ts >= OUTSET) &&
+             (rs == DOTTED || rs == DASHED || rs == SOLID || rs == INSET));
 
-        drawBorder(p, _tx, _ty, _tx + w, _ty +  style->borderTopWidth(), BSTop, tc, style->color(), ts,
+        int x = _tx;
+        int x2 = _tx + w;
+        if (renderRadii) {
+            x += topLeft.horizontal;
+            x2 -= topRight.horizontal;
+        }
+
+        drawBorder(p, x, _ty, x2, _ty +  style->borderTopWidth(), BSTop, tc, style->color(), ts,
                    ignore_left?0:style->borderLeftWidth(),
                    ignore_right?0:style->borderRightWidth());
+
+        if (renderRadii) {
+            if (topLeft.hasBorderRadius()) {
+                int x = _tx + topLeft.horizontal;
+                int y = _ty + topLeft.vertical;
+                int startAngle = 90;
+                int span = upperLeftBorderStylesMatch ? 90 : 45;
+
+                // Draw the upper left arc
+                drawBorderArc(p, x, y, style->borderLeftWidth(), style->borderTopWidth(),
+                              topLeft, startAngle, span, tc, style->color(), ts);
+            }
+
+            if (topRight.hasBorderRadius()) {
+                int x = _tx + w - topRight.horizontal;
+                int y = _ty + topRight.vertical;
+                int startAngle = 90;
+                int span = upperRightBorderStylesMatch ? -90 : -45;
+
+                // Draw the upper right arc
+                drawBorderArc(p, x, y, style->borderRightWidth(), style->borderTopWidth(),
+                              topRight, startAngle, span, tc, style->color(), ts);
+            }
+        }
     }
 
     if(render_b) {
-        bool ignore_left =
-            (bc == lc) && (bt == lt) &&
-            (bs >= OUTSET) &&
-            (ls == DOTTED || ls == DASHED || ls == SOLID || ls == OUTSET);
+        bool ignore_left = (renderRadii && bottomLeft.horizontal > 0) ||
+            ((bc == lc) && (bt == lt) &&
+             (bs >= OUTSET) &&
+             (ls == DOTTED || ls == DASHED || ls == SOLID || ls == OUTSET));
 
-        bool ignore_right =
-            (bc == rc) && (bt == rt) &&
-            (bs >= OUTSET) &&
-            (rs == DOTTED || rs == DASHED || rs == SOLID || rs == INSET);
+        bool ignore_right = (renderRadii && bottomRight.horizontal > 0) ||
+            ((bc == rc) && (bt == rt) &&
+             (bs >= OUTSET) &&
+             (rs == DOTTED || rs == DASHED || rs == SOLID || rs == INSET));
 
-        drawBorder(p, _tx, _ty + h - style->borderBottomWidth(), _tx + w, _ty + h, BSBottom, bc, style->color(), bs,
+        int x = _tx;
+        int x2 = _tx + w;
+        if (renderRadii) {
+            x += bottomLeft.horizontal;
+            x2 -= bottomRight.horizontal;
+        }
+
+        drawBorder(p, x, _ty + h - style->borderBottomWidth(), x2, _ty + h, BSBottom, bc, style->color(), bs,
                    ignore_left?0:style->borderLeftWidth(),
                    ignore_right?0:style->borderRightWidth());
+
+         if (renderRadii) {
+            if (bottomLeft.hasBorderRadius()) {
+                int x = _tx + bottomLeft.horizontal;
+                int y = _ty + h - bottomLeft.vertical;
+                int startAngle = 270;
+                int span = lowerLeftBorderStylesMatch ? -90 : -45;
+
+                // Draw the bottom left arc
+                drawBorderArc(p, x, y, style->borderLeftWidth(), style->borderBottomWidth(),
+                              bottomLeft, startAngle, span, bc, style->color(), bs);
+            }
+
+            if (bottomRight.hasBorderRadius()) {
+                int x = _tx + w - bottomRight.horizontal;
+                int y = _ty + h - bottomRight.vertical;
+                int startAngle = 270;
+                int span = lowerRightBorderStylesMatch ? 90 : 45;
+
+                // Draw the bottom right arc
+                drawBorderArc(p, x, y, style->borderRightWidth(), style->borderBottomWidth(),
+                              bottomRight, startAngle, span, bc, style->color(), bs);
+            }
+        }
     }
 
     if(render_l)
     {
-	bool ignore_top =
-	  (tc == lc) && (tt == lt) &&
-	  (ls >= OUTSET) &&
-	  (ts == DOTTED || ts == DASHED || ts == SOLID || ts == OUTSET);
+	bool ignore_top = (renderRadii && topLeft.vertical > 0) ||
+	  ((tc == lc) && (tt == lt) &&
+	   (ls >= OUTSET) &&
+	   (ts == DOTTED || ts == DASHED || ts == SOLID || ts == OUTSET));
 
-	bool ignore_bottom =
-	  (bc == lc) && (bt == lt) &&
-	  (ls >= OUTSET) &&
-	  (bs == DOTTED || bs == DASHED || bs == SOLID || bs == INSET);
+	bool ignore_bottom = (renderRadii && bottomLeft.vertical > 0) ||
+	  ((bc == lc) && (bt == lt) &&
+	   (ls >= OUTSET) &&
+	   (bs == DOTTED || bs == DASHED || bs == SOLID || bs == INSET));
 
-        drawBorder(p, _tx, _ty, _tx + style->borderLeftWidth(), _ty + h, BSLeft, lc, style->color(), ls,
+        int y = _ty;
+        int y2 = _ty + h;
+        if (renderRadii) {
+            y += topLeft.vertical;
+            y2 -= bottomLeft.vertical;
+        }
+
+        drawBorder(p, _tx, y, _tx + style->borderLeftWidth(), y2, BSLeft, lc, style->color(), ls,
                    ignore_top?0:style->borderTopWidth(),
                    ignore_bottom?0:style->borderBottomWidth());
+
+        if (renderRadii && (!upperLeftBorderStylesMatch || !lowerLeftBorderStylesMatch)) {
+            if (!upperLeftBorderStylesMatch && topLeft.hasBorderRadius()) {
+                int x = _tx + topLeft.horizontal;
+                int y = _ty + topLeft.vertical;
+                int startAngle = 135;
+                int span = 45;
+
+                // Draw the upper left arc
+                drawBorderArc(p, x, y, style->borderLeftWidth(), style->borderTopWidth(),
+                              topLeft, startAngle, span, lc, style->color(), ls);
+            }
+            if (!lowerLeftBorderStylesMatch && bottomLeft.hasBorderRadius()) {
+                int x = _tx + bottomLeft.horizontal;
+                int y = _ty + h - bottomLeft.vertical;
+                int startAngle = 180;
+                int span = 45;
+
+                // Draw the bottom left arc
+                drawBorderArc(p, x, y, style->borderLeftWidth(), style->borderBottomWidth(),
+                              bottomLeft, startAngle, span, lc, style->color(), ls);
+            }
+        }
     }
 
     if(render_r)
     {
-	bool ignore_top =
-	  (tc == rc) && (tt == rt) &&
-	  (rs >= DOTTED || rs == INSET) &&
-	  (ts == DOTTED || ts == DASHED || ts == SOLID || ts == OUTSET);
+	bool ignore_top = (renderRadii && topRight.vertical > 0) ||
+	  ((tc == rc) && (tt == rt) &&
+	   (rs >= DOTTED || rs == INSET) &&
+	   (ts == DOTTED || ts == DASHED || ts == SOLID || ts == OUTSET));
 
-	bool ignore_bottom =
-	  (bc == rc) && (bt == rt) &&
-	  (rs >= DOTTED || rs == INSET) &&
-	  (bs == DOTTED || bs == DASHED || bs == SOLID || bs == INSET);
+	bool ignore_bottom = (renderRadii && bottomRight.vertical > 0) ||
+	  ((bc == rc) && (bt == rt) &&
+	   (rs >= DOTTED || rs == INSET) &&
+	   (bs == DOTTED || bs == DASHED || bs == SOLID || bs == INSET));
 
-        drawBorder(p, _tx + w - style->borderRightWidth(), _ty, _tx + w, _ty + h, BSRight, rc, style->color(), rs,
+        int y = _ty;
+        int y2 = _ty + h;
+        if (renderRadii) {
+            y += topRight.vertical;
+            y2 -= bottomRight.vertical;
+        }
+
+        drawBorder(p, _tx + w - style->borderRightWidth(), y, _tx + w, y2, BSRight, rc, style->color(), rs,
                    ignore_top?0:style->borderTopWidth(),
                    ignore_bottom?0:style->borderBottomWidth());
+
+        if (renderRadii && (!upperRightBorderStylesMatch || !lowerRightBorderStylesMatch)) {
+            if (!upperRightBorderStylesMatch && topRight.hasBorderRadius()) {
+                int x = _tx + w - topRight.horizontal;
+                int y = _ty + topRight.vertical;
+                int startAngle = 0;
+                int span = 45;
+
+                // Draw the upper right arc
+                drawBorderArc(p, x, y, style->borderRightWidth(), style->borderTopWidth(),
+                              topRight, startAngle, span, rc, style->color(), rs);
+            }
+            if (!lowerRightBorderStylesMatch && bottomRight.hasBorderRadius()) {
+                int x = _tx + w - bottomRight.horizontal;
+                int y = _ty + h - bottomRight.vertical;
+                int startAngle = 315;
+                int span = 45;
+
+                // Draw the bottom right arc
+                drawBorderArc(p, x, y, style->borderRightWidth(), style->borderBottomWidth(),
+                              bottomRight, startAngle, span, rc, style->color(), rs);
+            }
+        }
     }
 }
 
