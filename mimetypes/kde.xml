@@ -310,6 +310,10 @@ Notes:
     <expanded-acronym>Multimedia Retrieval Markup Language</expanded-acronym>
     <glob pattern="*.mrml"/>
   </mime-type>
+  <mime-type type="application/vnd.kde.okular-archive">
+    <comment>Okular document archive</comment>
+    <glob pattern="*.okular"/>
+  </mime-type>
 
   <mime-type type="application/x-cabri">
     <comment>Cabri figure</comment>
