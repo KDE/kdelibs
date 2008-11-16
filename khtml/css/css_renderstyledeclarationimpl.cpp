@@ -45,6 +45,10 @@ static const int computedProperties[] = {
     CSS_PROP_BORDER_SPACING,
     CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING,
     CSS_PROP__KHTML_BORDER_VERTICAL_SPACING,
+    CSS_PROP__KHTML_BORDER_TOP_RIGHT_RADIUS,
+    CSS_PROP__KHTML_BORDER_BOTTOM_RIGHT_RADIUS,
+    CSS_PROP__KHTML_BORDER_BOTTOM_LEFT_RADIUS,
+    CSS_PROP__KHTML_BORDER_TOP_LEFT_RADIUS,
     CSS_PROP_BORDER_TOP_COLOR,
     CSS_PROP_BORDER_RIGHT_COLOR,
     CSS_PROP_BORDER_BOTTOM_COLOR,
@@ -175,6 +179,13 @@ static CSSValueImpl *valueForBorderStyle(EBorderStyle style)
     }
     Q_ASSERT( 0 );
     return 0;
+}
+
+static CSSValueImpl *valueForBorderRadii(BorderRadii radii)
+{
+    CSSPrimitiveValueImpl* h = new CSSPrimitiveValueImpl(radii.horizontal, CSSPrimitiveValue::CSS_PX);
+    CSSPrimitiveValueImpl* v = new CSSPrimitiveValueImpl(radii.vertical, CSSPrimitiveValue::CSS_PX);
+    return new CSSPrimitiveValueImpl(new PairImpl(h, v));
 }
 
 static CSSValueImpl *valueForTextAlign(ETextAlign align)
@@ -465,6 +476,14 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP__KHTML_BORDER_VERTICAL_SPACING:
         return new CSSPrimitiveValueImpl(style->borderVerticalSpacing(),
                                          CSSPrimitiveValue::CSS_PX);
+    case CSS_PROP__KHTML_BORDER_TOP_RIGHT_RADIUS:
+	return valueForBorderRadii(style->borderTopRightRadius());
+    case CSS_PROP__KHTML_BORDER_BOTTOM_RIGHT_RADIUS:
+	return valueForBorderRadii(style->borderBottomRightRadius());
+    case CSS_PROP__KHTML_BORDER_BOTTOM_LEFT_RADIUS:
+	return valueForBorderRadii(style->borderBottomLeftRadius());
+    case CSS_PROP__KHTML_BORDER_TOP_LEFT_RADIUS:
+	return valueForBorderRadii(style->borderTopLeftRadius());
     case CSS_PROP_BORDER_TOP_COLOR:
         return valueForColor(style->borderTopColor());
     case CSS_PROP_BORDER_RIGHT_COLOR:
