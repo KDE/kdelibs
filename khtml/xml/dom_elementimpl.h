@@ -262,7 +262,7 @@ public:
 
     //This is always called, whenever an attribute changed
     virtual void parseAttribute(AttributeImpl*) {}
-    virtual void parseNullAttribute(NodeImpl::Id id, PrefixName prefix) {
+    void parseNullAttribute(NodeImpl::Id id, PrefixName prefix) {
         AttributeImpl aimpl;
         aimpl.m_localName = LocalName::fromId(localNamePart(id));
         aimpl.m_namespace = NamespaceName::fromId(namespacePart(id));
@@ -271,7 +271,7 @@ public:
         parseAttribute(&aimpl);
     }
 
-    virtual void parseAttribute(AttrImpl* fullAttr) {
+    void parseAttribute(AttrImpl* fullAttr) {
         AttributeImpl aimpl;
         aimpl.m_localName = emptyLocalName;
         aimpl.m_data.attr = fullAttr;
