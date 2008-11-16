@@ -1384,6 +1384,7 @@ void HTMLInputElementImpl::restoreState(const QString &state)
         setChanged();
         break;
     case HIDDEN:
+    case PASSWORD:
         // Don't mess with those...
         break;
     default:
