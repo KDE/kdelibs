@@ -58,7 +58,7 @@ public:
     virtual void setStyle(RenderStyle* _style);
     virtual void attach();
 
-    virtual void layout() {} // Do nothing for layout()
+    virtual void layout() { setNeedsLayout(false); } // Do nothing for layout()
 
     virtual void paint(PaintInfo&, int tx, int ty);
 
