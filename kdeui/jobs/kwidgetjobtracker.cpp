@@ -458,7 +458,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     topLayout->addLayout(grid);
     grid->addItem(new QSpacerItem(KDialog::spacingHint(),0),0,1); //addColSpacing(1, KDialog::spacingHint());
     // filenames or action name
-    sourceInvite = new QLabel(i18n("Source:"), this);
+    sourceInvite = new QLabel(i18nc("The source url of a job", "Source:"), this);
     grid->addWidget(sourceInvite, 0, 0);
 
     sourceEdit = new KSqueezedTextLabel(this);
@@ -466,7 +466,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     sourceEdit->installEventFilter(this);
     grid->addWidget(sourceEdit, 0, 2);
 
-    destInvite = new QLabel(i18n("Destination:"), this);
+    destInvite = new QLabel(i18nc("The destination url of a job", "Destination:"), this);
     grid->addWidget(destInvite, 1, 0);
 
     destEdit = new KSqueezedTextLabel(this);
