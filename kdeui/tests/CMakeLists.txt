@@ -36,7 +36,7 @@ KDEUI_UNIT_TESTS(
   kstandardactiontest
   kstandardshortcuttest
   kuniqueapptest
-  kwordwraptest
+#  kwordwraptest
   kapplication_unittest
   kcolorutilstest
   kxmlgui_unittest
