@@ -124,7 +124,7 @@ install( FILES
   KCompletionMatches
   KCompositeJob
   KConfig
-  KConfigBackend
+#  KConfigBackend # do not install until kconfigbackend.h is installed
   KConfigBase
   KConfigDialog
   KConfigDialogManager
