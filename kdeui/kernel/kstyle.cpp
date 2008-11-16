@@ -53,6 +53,7 @@
 #include <QtGui/QAbstractItemView>
 #include <QtGui/QApplication>
 #include <QtGui/QDialogButtonBox>
+#include <QtGui/QFormLayout>
 #include <QtGui/QIcon>
 #include <QtGui/QLabel>
 #include <QtGui/QKeyEvent>
@@ -2394,6 +2395,24 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
             if (!widget)
                 return 0;
             return d->styleElements.value(widget->objectName(), 0);
+
+        // per HIG, align the contents in a form layout to the left
+        case SH_FormLayoutFormAlignment:
+            return Qt::AlignLeft | Qt::AlignTop;
+
+        // per HIG, align the labels in a form layout to the right
+        case SH_FormLayoutLabelAlignment:
+            return Qt::AlignRight;
+
+        case SH_FormLayoutFieldGrowthPolicy:
+            return QFormLayout::ExpandingFieldsGrow;
+
+        case SH_FormLayoutWrapPolicy:
+            return QFormLayout::DontWrapRows;
+
+        case SH_MessageBox_TextInteractionFlags:
+            return true;
+
         default:
             break;
     };
