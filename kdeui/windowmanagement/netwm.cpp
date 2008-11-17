@@ -89,6 +89,7 @@ static Atom wm_window_role           = 0;
 static Atom net_frame_extents        = 0;
 static Atom net_wm_window_opacity    = 0;
 static Atom kde_net_wm_frame_strut   = 0;
+static Atom net_wm_fullscreen_monitors = 0;
 
 // KDE extensions
 static Atom kde_net_wm_window_type_override   = 0;
@@ -241,7 +242,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 84;
+static const int netAtomCount = 85;
 static void create_netwm_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -286,6 +287,7 @@ static void create_netwm_atoms(Display *d) {
             "WM_WINDOW_ROLE",
             "_NET_FRAME_EXTENTS",
             "_NET_WM_WINDOW_OPACITY",
+            "_NET_WM_FULLSCREEN_MONITORS",
 
 	    "_NET_WM_WINDOW_TYPE_NORMAL",
 	    "_NET_WM_WINDOW_TYPE_DESKTOP",
@@ -335,7 +337,7 @@ static void create_netwm_atoms(Display *d) {
 
 	    "WM_STATE",
 	    "WM_PROTOCOLS",
-            
+
             "_NET_WM_FULL_PLACEMENT"
 	    };
 
@@ -382,6 +384,7 @@ static void create_netwm_atoms(Display *d) {
             &wm_window_role,
             &net_frame_extents,
             &net_wm_window_opacity,
+            &net_wm_fullscreen_monitors,
 
 	    &net_wm_window_type_normal,
 	    &net_wm_window_type_desktop,
@@ -431,7 +434,7 @@ static void create_netwm_atoms(Display *d) {
 
 	    &xa_wm_state,
 	    &wm_protocols,
-            
+
             &net_wm_full_placement
 	    };
 
@@ -904,7 +907,7 @@ void NETRootInfo::setCurrentDesktop(int desktop, bool ignore_viewport) {
 	XChangeProperty(p->display, p->root, net_current_desktop, XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *) &d, 1);
     } else {
-    
+
         if( !ignore_viewport && KWindowSystem::mapViewport()) {
             KWindowSystem::setCurrentDesktop( desktop );
             return;
@@ -1226,6 +1229,9 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS2 ] & WM2Opacity)
 	atoms[pnum++] = net_wm_window_opacity;
 
+    if (p->properties[ PROTOCOLS2 ] & WM2FullscreenMonitors)
+        atoms[pnum++] = net_wm_fullscreen_monitors;
+
     if (p->properties[ PROTOCOLS2 ] & WM2AllowedActions) {
         atoms[pnum++] = net_wm_allowed_actions;
 
@@ -1456,6 +1462,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 
     else if( atom == net_wm_window_opacity )
         p->properties[ PROTOCOLS2 ] |= WM2Opacity;
+
+    else if( atom == net_wm_fullscreen_monitors )
+        p->properties[ PROTOCOLS2 ] |= WM2FullscreenMonitors;
 
     else if( atom == net_wm_allowed_actions )
         p->properties[ PROTOCOLS2 ] |= WM2AllowedActions;
@@ -2747,6 +2756,18 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 }
 
 
+NETWinInfo2::NETWinInfo2(Display *display, Window window, Window rootWindow,
+    const unsigned long properties[], int properties_size, Role role)
+    : NETWinInfo(display, window, rootWindow, properties, properties_size, role) {
+}
+
+
+NETWinInfo2::NETWinInfo2(Display *display, Window window, Window rootWindow,
+    unsigned long properties, Role role)
+    : NETWinInfo(display, window, rootWindow, properties, role) {
+}
+
+
 NETWinInfo::NETWinInfo(const NETWinInfo &wininfo) {
     p = wininfo.p;
     p->ref++;
@@ -2896,6 +2917,22 @@ void NETWinInfo::setStrut(NETStrut strut) {
 
     XChangeProperty(p->display, p->window, net_wm_strut, XA_CARDINAL, 32,
 		    PropModeReplace, (unsigned char *) data, 4);
+}
+
+
+void NETWinInfo2::setFullscreenMonitors(NETFullscreenMonitors topology) {
+    if (p->role != Client) return;
+
+    p->fullscreen_monitors = topology;
+
+    long data[4];
+    data[0] = topology.top;
+    data[1] = topology.bottom;
+    data[2] = topology.left;
+    data[3] = topology.right;
+
+    XChangeProperty(p->display, p->window, net_wm_fullscreen_monitors, XA_CARDINAL, 32,
+                    PropModeReplace, (unsigned char *) data, 4);
 }
 
 
@@ -3582,7 +3619,28 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 		changeDesktop( OnAllDesktops );
 	    else
     		changeDesktop(event->xclient.data.l[0] + 1);
-	}
+        } else if (event->xclient.message_type == net_wm_fullscreen_monitors) {
+            dirty2 = WM2FullscreenMonitors;
+
+            NETFullscreenMonitors topology;
+            topology.top =  event->xclient.data.l[0];
+            topology.bottom =  event->xclient.data.l[1];
+            topology.left =  event->xclient.data.l[2];
+            topology.right =  event->xclient.data.l[3];
+
+#ifdef    NETWMDEBUG
+            fprintf(stderr, "NETWinInfo2::event: calling changeFullscreenMonitors"
+                    "(%ld, %ld, %ld, %ld, %ld)\n",
+                    event->xclient.window,
+                    event->xclient.data.l[0],
+                    event->xclient.data.l[1],
+                    event->xclient.data.l[2],
+                    event->xclient.data.l[3]
+                    );
+#endif
+        if (NETWinInfo2* this2 = dynamic_cast< NETWinInfo2* >( this ))
+            this2->changeFullscreenMonitors(topology);
+        }
     }
 
     if (event->type == PropertyNotify) {
@@ -4013,6 +4071,25 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 	}
     }
 
+    if (dirty2 & WM2FullscreenMonitors) {
+        p->fullscreen_monitors = NETFullscreenMonitors();
+        if (XGetWindowProperty(p->display, p->window, net_wm_fullscreen_monitors, 0l, 4l,
+                               False, XA_CARDINAL, &type_ret, &format_ret,
+                               &nitems_ret, &unused, &data_ret)
+            == Success) {
+            if (type_ret == XA_CARDINAL && format_ret == 32 &&
+                nitems_ret == 4) {
+                long *d = (long *) data_ret;
+                p->fullscreen_monitors.top = d[0];
+                p->fullscreen_monitors.bottom = d[1];
+                p->fullscreen_monitors.left = d[2];
+                p->fullscreen_monitors.right = d[3];
+             }
+            if ( data_ret )
+                XFree(data_ret);
+        }
+    }
+
     if (dirty & WMIconGeometry) {
         p->icon_geom = NETRect();
 	if (XGetWindowProperty(p->display, p->window, net_wm_icon_geometry, 0l, 4l,
@@ -4200,7 +4277,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
             XFree( reinterpret_cast< char* >( hints ));
         }
     }
-    
+
     if( dirty2 & WM2WindowClass ) {
         delete[] p->class_class;
         delete[] p->class_name;
@@ -4263,6 +4340,10 @@ NETStrut NETWinInfo::strut() const {
 
 NETExtendedStrut NETWinInfo::extendedStrut() const {
     return p->extended_strut;
+}
+
+NETFullscreenMonitors NETWinInfo2::fullscreenMonitors() const {
+    return p->fullscreen_monitors;
 }
 
 bool NET::typeMatchesMask( WindowType type, unsigned long mask ) {

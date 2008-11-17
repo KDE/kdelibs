@@ -220,6 +220,55 @@ struct NETStrut {
 
 
 /**
+   Simple multiple monitor topology class for NET classes.
+
+   This class is a convenience class, defining a multiple monitor topology
+   for fullscreen applications that wish to be present on more than one
+   monitor/head. As per the _NET_WM_FULLSCREEN_MONITORS hint in the EWMH spec,
+   this topology consists of 4 monitor indices such that the bounding rectangle
+   is defined by the top edge of the top monitor, the bottom edge of the bottom
+   monitor, the left edge of the left monitor, and the right edge of the right
+   monitor. See the _NET_WM_FULLSCREEN_MONITORS hint in the EWMH spec.
+**/
+
+struct NETFullscreenMonitors {
+    /**
+       Constructor to initialize this struct to -1,0,0,0 (an initialized,
+       albeit invalid, topology).
+    **/
+    NETFullscreenMonitors() : top(-1), bottom(0), left(0), right(0) { }
+
+    /**
+       Monitor index whose top border defines the top edge of the topology.
+    **/
+    int top;
+
+    /**
+       Monitor index whose bottom border defines the bottom edge of the topology.
+    **/
+    int bottom;
+
+    /**
+       Monitor index whose left border defines the left edge of the topology.
+    **/
+    int left;
+
+    /**
+       Monitor index whose right border defines the right edge of the topology.
+    **/
+    int right;
+
+    /**
+       Convenience check to make sure that we are not holding the initial (invalid)
+       values. Note that we don't want to call this isValid() because we're not
+       actually validating the monitor topology here, but merely that our initial
+       values were overwritten at some point by real (non-negative) monitor indices.
+    **/
+    bool isSet() const { return (top != -1); };
+};
+
+
+/**
   Base namespace class.
 
   The NET API is an implementation of the NET Window Manager Specification.
@@ -617,6 +666,7 @@ public:
         @li WM2Opacity _NET_WM_WINDOW_OPACITY
         @li WM2DesktopLayout _NET_DESKTOP_LAYOUT
         @li WM2FullPlacement _NET_WM_FULL_PLACEMENT
+        @li WM2FullscreenMonitors _NET_WM_FULLSCREEN_MONITORS
     **/
     enum Property2 {
         WM2UserTime            = 1<<0,
@@ -635,7 +685,8 @@ public:
         WM2ShowingDesktop      = 1<<13,
         WM2Opacity             = 1<<14,
         WM2DesktopLayout       = 1<<15,        
-        WM2FullPlacement       = 1<<16
+        WM2FullPlacement       = 1<<16,
+        WM2FullscreenMonitors  = 1<<17
     };
 
     /**

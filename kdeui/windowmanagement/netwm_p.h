@@ -149,6 +149,7 @@ struct NETWinInfoPrivate {
     char* class_class, *class_name, *window_role, *client_machine;
 
     unsigned long properties[ 2 ];
+    NETFullscreenMonitors fullscreen_monitors;
     bool has_net_support;
 
     int ref;

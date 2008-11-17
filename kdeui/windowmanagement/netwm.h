@@ -1279,8 +1279,63 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     NETWinInfoPrivate *p; // krazy:exclude=dpointer (implicitly shared)
+    friend class NETWinInfo2;
 };
 
+
+/**
+ This class is an extension of the NETWinInfo class, and exists solely
+ for binary compatibility reasons (adds new virtual methods) until KDE5. Simply
+ use it instead of NETWinInfo and override also the added virtual methods.
+ @since 4.2
+*/
+class KDEUI_EXPORT NETWinInfo2 : public NETWinInfo {
+public:
+    NETWinInfo2(Display *display, Window window, Window rootWindow,
+                const unsigned long properties[], int properties_size,
+                Role role = Client);
+
+    NETWinInfo2(Display *display, Window window,
+                Window rootWindow, unsigned long properties,
+                Role role = Client);
+
+    /**
+       Sets the desired multiple-monitor topology (4 monitor indices indicating
+       the top, bottom, left, and right edges of the window) when the fullscreen
+       state is enabled. The indices are from the set returned by the Xinerama
+       extension.
+       See _NET_WM_FULLSCREEN_MONITORS for details.
+
+       @param topology A struct that models the desired monitor topology, namely:
+       top is the monitor whose top edge defines the top edge of the
+       fullscreen window, bottom is the monitor whose bottom edge defines
+       the bottom edge of the fullscreen window, left is the monitor whose
+       left edge defines the left edge of the fullscreen window, and right
+       is the monitor whose right edge defines the right edge of the fullscreen
+       window.
+
+    **/
+    void setFullscreenMonitors(NETFullscreenMonitors topology);
+
+    /**
+       Returns the desired fullscreen monitor topology for this client, should
+       it be in fullscreen state.
+       See _NET_WM_FULLSCREEN_MONITORS in the spec.
+    **/
+    NETFullscreenMonitors fullscreenMonitors() const;
+
+protected:
+    friend class NETWinInfo;
+    /**
+       A Window Manager should subclass NETWinInfo2 and reimplement this function
+       when it wants to know when a Client made a request to change the
+       fullscreen monitor topology for its fullscreen state.
+
+       @param topology A structure (top, bottom, left, right) representing the
+       fullscreen monitor topology.
+    **/
+    virtual void changeFullscreenMonitors(NETFullscreenMonitors topology) { Q_UNUSED(topology); }
+};
 
 //#define KWIN_FOCUS
 
