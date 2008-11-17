@@ -228,6 +228,8 @@ RenderWidget::~RenderWidget()
     KHTMLAssert( refCount() <= 0 );
 
     if(m_widget) {
+        if (m_widget->hasFocus ())
+            m_widget->clearFocus ();
         m_widget->hide();
         if (m_ownsWidget)
             m_widget->deleteLater();
