@@ -258,7 +258,7 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
     //connect(fileQWidget, SIGNAL(canceled()), SLOT(slotCancel()));
 
     if (customWidget)
-     d->w->setCustomWidget(customWidget);
+     d->w->setCustomWidget(QString(), customWidget);
 }
 
 
