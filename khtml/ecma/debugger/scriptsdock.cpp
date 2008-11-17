@@ -55,7 +55,10 @@ ScriptsDock::~ScriptsDock()
 
 void ScriptsDock::documentDestroyed(DebugDocument *document)
 {
-    assert (m_documents.contains(document));
+    // We may be asked to remove a document held for reload repeatedly;
+    // ignore later attempts
+    if (!m_documents.contains(document))
+        return; 
 
     QTreeWidgetItem* fragment = m_documents[document];
     m_documents.remove(document);    

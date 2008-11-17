@@ -441,9 +441,10 @@ void DebugWindow::clearInterpreter(KJS::Interpreter* interp)
         DebugDocument::Ptr doc = i.next();
         if (m_openDocuments.contains(doc.get()))
             doc->markReload();
+        else
+            i.remove();
             
         cleanupDocument(doc);
-        i.remove();
     }
 }
 
