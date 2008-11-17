@@ -93,7 +93,6 @@ Q_SIGNALS:
 private:
     Q_PRIVATE_SLOT(d, void adaptItemSize())
     Q_PRIVATE_SLOT(d, void _k_placeClicked(const QModelIndex &))
-    Q_PRIVATE_SLOT(d, void _k_placeActivated(const QModelIndex &))
     Q_PRIVATE_SLOT(d, void _k_placeEntered(const QModelIndex &))
     Q_PRIVATE_SLOT(d, void _k_placeLeft(const QModelIndex &))
     Q_PRIVATE_SLOT(d, void _k_storageSetupDone(const QModelIndex &, bool))

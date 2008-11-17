@@ -339,7 +339,6 @@ public:
     void fadeCapacityBar(const QModelIndex &index, FadeType fadeType);
 
     void _k_placeClicked(const QModelIndex &index);
-    void _k_placeActivated(const QModelIndex &index);
     void _k_placeEntered(const QModelIndex &index);
     void _k_placeLeft(const QModelIndex &index);
     void _k_storageSetupDone(const QModelIndex &index, bool success);
@@ -393,8 +392,6 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
 
     connect(this, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(_k_placeClicked(const QModelIndex&)));
-    connect(this, SIGNAL(activated(const QModelIndex&)),
-            this, SLOT(_k_placeActivated(const QModelIndex&)));
 
     connect(&d->adaptItemsTimeline, SIGNAL(valueChanged(qreal)),
             this, SLOT(_k_adaptItemsUpdate(qreal)));
@@ -1022,14 +1019,6 @@ void KFilePlacesView::Private::fadeCapacityBar(const QModelIndex &index, FadeTyp
 }
 
 void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
-{
-    if (!KGlobalSettings::singleClick()) {
-        // if double click is used, emulate a single click behavior
-        _k_placeActivated(index);
-    }
-}
-
-void KFilePlacesView::Private::_k_placeActivated(const QModelIndex &index)
 {
     KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
 
