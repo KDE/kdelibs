@@ -174,7 +174,7 @@ public:
     RenderWidget* renderWidget() const { return m_rw; }
     void setRenderWidget(RenderWidget* rw) { m_rw = rw; }
     bool isRedirected() const { return m_redirected; }
-    void setIsRedirected( bool b ) { m_redirected = b; }
+    void setIsRedirected( bool b );
     void setPos( const QPoint& p ) { m_pos = p; }
 private:
     QPoint m_pos;
