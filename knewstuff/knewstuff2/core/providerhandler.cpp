@@ -171,7 +171,9 @@ Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
     }
     if (!downloadurl.isEmpty()) {
         Feed *feedgeneric = new Feed();
-        feedgeneric->setName(i18n("Unsorted"));
+        // feedgeneric->setName(i18n("Unsorted"));
+        // Currently this is used for latest
+        feedgeneric->setName(i18nc("describes the feed of the latest posted entries", "Latest"));
         feedgeneric->setFeedUrl(downloadurl);
         provider.addDownloadUrlFeed(QString(), feedgeneric);
     }
