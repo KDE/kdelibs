@@ -60,7 +60,7 @@ namespace KJS {
 
     static const int kBufSize = 2048;
     typedef unsigned short UTF16;
-    SourceStream () : indent(0), bufUsed(0) {}
+    SourceStream () : indent(0), bufUsed(0), reindentLine(0), reindenting(false) {}
     const UString& toString() { flush(); return str; }
     SourceStream& operator<<(const Identifier& s) NOINLINE;
     SourceStream& operator<<(const UString& s) NOINLINE;
@@ -68,6 +68,7 @@ namespace KJS {
     SourceStream& operator<<(char s) NOINLINE;
     SourceStream& operator<<(eEndl) NOINLINE;
     SourceStream& operator<<(const Node* n) NOINLINE;
+    SourceStream& operator<<(const StatementNode* n) NOINLINE;
     SourceStream& operator<<(Operator op) NOINLINE;
     inline SourceStream& operator<<(eIndent)    { indent += 2; return *this; }
     inline SourceStream& operator<<(eUnindent)  { indent -= 2; return *this; }
@@ -77,6 +78,8 @@ namespace KJS {
     SourceStream& append(const UString& inStr, bool quote) NOINLINE;
     template <typename T>
     inline SourceStream& operator<<(const RefPtr<T>& n) { return this->operator<<(n.get()); }
+    
+    void setReindenting(int baseLine) { reindenting = true; reindentLine = baseLine; }
   private:
     UString str;
     int indent;
@@ -85,6 +88,9 @@ namespace KJS {
     void flush() NOINLINE;
     void put(UTF16 ch) { buffer[bufUsed++] = ch; }
     void put(char ch) { buffer[bufUsed++] = static_cast<unsigned char>(ch); }
+    
+    int  reindentLine;
+    bool reindenting;
   };
 }
 
@@ -139,6 +145,19 @@ SourceStream& SourceStream::operator<<(const Identifier &s)
   return append(s.ustring(), kDontQuote);
 }
 
+SourceStream& SourceStream::operator<<(const StatementNode *n)
+{
+  if (n) {
+    // Update debug info with new line numbers if needed.
+    int firstLine = reindentLine;
+    n->streamTo(*this);
+    if (reindenting)
+      n->setLoc(firstLine, reindentLine - 1);
+  }
+  return *this;
+}
+
+
 SourceStream& SourceStream::operator<<(const Node *n)
 {
   if (n)
@@ -151,6 +170,7 @@ SourceStream& SourceStream::operator<<(eEndl)
   if (bufUsed > kBufSize - 1 - indent)
     flush();
   put('\n');
+  ++reindentLine;
 
   if (indent > 0)
   {
@@ -252,6 +272,16 @@ UString FunctionImp::toSource() const
 UString Node::toString() const
 {
   SourceStream str;
+  streamTo(str);
+
+  return str.toString();
+}
+
+UString Node::reindent(int baseLine) const
+{
+  SourceStream str;
+  str.setReindenting(baseLine);
+  
   streamTo(str);
 
   return str.toString();

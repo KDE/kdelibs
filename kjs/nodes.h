@@ -89,6 +89,11 @@ namespace KJS {
     virtual NodeType type() const { return UnknownNodeType; }
 
     UString toString() const;
+    
+    // This updates line numbers to the pretty-printed version, and 
+    // returns it out.
+    UString reindent(int baseLine = 0) const;
+    
     virtual void streamTo(SourceStream&) const = 0;
     int lineNo() const { return m_line; }
 
@@ -152,7 +157,7 @@ namespace KJS {
 
     virtual OpValue generateEvalCode(CompileState* comp);
   protected:
-    int m_line;
+    mutable int m_line;
   private:
     virtual void processVarDecl (ExecState* state);
     virtual void processFuncDecl(ExecState* state);
@@ -194,7 +199,7 @@ namespace KJS {
   class StatementNode : public Node {
   public:
     StatementNode();
-    void setLoc(int line0, int line1);
+    void setLoc(int line0, int line1) const;
     int firstLine() const { return lineNo(); }
     int lastLine() const { return m_lastLine; }
     void hitStatement(ExecState*);
@@ -204,7 +209,7 @@ namespace KJS {
     virtual void generateExecCode(CompileState*);
   private:
     void generateDebugInfo(CompileState* comp);
-    int m_lastLine;
+    mutable int m_lastLine;
   };
 
   inline void StatementNode::generateDebugInfoIfNeeded(CompileState* comp)

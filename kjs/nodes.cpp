@@ -259,7 +259,7 @@ StatementNode::StatementNode()
     m_line = -1;
 }
 
-void StatementNode::setLoc(int firstLine, int lastLine)
+void StatementNode::setLoc(int firstLine, int lastLine) const
 {
     m_line = firstLine;
     m_lastLine = lastLine;
