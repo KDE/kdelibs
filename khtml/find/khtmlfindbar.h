@@ -49,6 +49,13 @@ public:
      */
     QStringList findHistory() const;
 
+    /*
+     *  makes the current pattern be the first entry of the find history.
+     *  Return false if the history was empty.
+     *
+     */
+    bool restoreLastPatternFromHistory();
+
     /**
      * Enable/disable the 'search in selection' option, depending
      * on whether there actually is a selection.
@@ -113,6 +120,7 @@ private:
     QAction *m_selectedText;
     QAction *m_regExp;
     QString m_prevPattern;
+    bool m_atEnd;
 };
 
 #endif

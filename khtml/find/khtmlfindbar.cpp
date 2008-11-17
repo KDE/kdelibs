@@ -40,6 +40,8 @@ KHTMLFindBar::KHTMLFindBar( QWidget *parent ) :
 
     m_next->setIcon( KIcon( "go-down-search" ) );
     m_previous->setIcon( KIcon( "go-up-search" ) );
+    m_next->setDisabled( true );
+    m_previous->setDisabled( true );
 
     // Fill options menu
     m_incMenu = new QMenu();
@@ -55,7 +57,10 @@ KHTMLFindBar::KHTMLFindBar( QWidget *parent ) :
     m_regExp = m_incMenu->addAction(i18n("Regular e&xpression"));
     m_regExp->setCheckable(true);
 
+    m_atEnd = false;
+
     m_find->setDuplicatesEnabled( false );
+    centralWidget()->setFocusProxy( m_find );
 
     connect( m_selectedText, SIGNAL(toggled(bool)), this, SLOT(slotSelectedTextToggled(bool)) );
     connect( m_find, SIGNAL(editTextChanged(const QString &)), this, SIGNAL(searchChanged()) );
@@ -105,9 +110,22 @@ void KHTMLFindBar::slotSearchChanged()
    // reset background color of the combo box
    if (pattern().isEmpty()) {
        d->m_find->setPalette(QPalette());
+       m_next->setDisabled( true );
+       m_previous->setDisabled( true );
+       m_statusLabel->clear();       
    } else {
        m_prevPattern = pattern();
+       m_next->setDisabled( false );
+       m_previous->setDisabled( false );
    }
+}
+
+bool KHTMLFindBar::restoreLastPatternFromHistory()
+{
+    if (d->m_find->historyItems().isEmpty())
+        return false;
+    d->m_find->lineEdit()->setText( d->m_find->historyItems().first() );
+    return true;
 }
 
 void KHTMLFindBar::setFindHistory(const QStringList &strings)
@@ -179,29 +197,38 @@ void KHTMLFindBar::setFoundMatch( bool match )
 {
     if ( pattern().isEmpty() ) {
         m_find->setPalette(QPalette());
+        m_next->setDisabled( true );
+        m_previous->setDisabled( true );
+        m_statusLabel->clear();
     } else if ( !match ) {
         QPalette newPal( m_find->palette() );
         KColorScheme::adjustBackground(newPal, KColorScheme::NegativeBackground);
         m_find->setPalette(newPal);
+        m_statusLabel->setText(i18n("Not found"));
     } else {
         QPalette newPal( m_find->palette() );
         KColorScheme::adjustBackground(newPal, KColorScheme::PositiveBackground);
         m_find->setPalette(newPal);
+        m_statusLabel->clear();
     }
 }
 
 void KHTMLFindBar::setAtEnd( bool atEnd )
 {
-    if ( atEnd )
+    if (atEnd == m_atEnd)
+        return;
+    if ( atEnd ) {
         m_statusLabel->setText( i18n( "No more matches for this search direction." ) );
-    else
+    } else {
         m_statusLabel->clear();
+    }
+    m_atEnd = atEnd;
 }
 
 void KHTMLFindBar::setVisible( bool visible )
 {
     KHTMLViewBarWidget::setVisible( visible );
 
-    if ( isVisible() )
+    if ( visible )
         m_find->setFocus( Qt::ActiveWindowFocusReason );
 }

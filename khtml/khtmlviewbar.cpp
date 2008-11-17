@@ -29,7 +29,8 @@
 
 KHTMLViewBar::KHTMLViewBar( Position position, KHTMLView *view, QWidget *parent ) :
     QWidget( parent ),
-    m_view( view )
+    m_view( view ),
+    m_permanentBarWidget( false )
 {
     const QBoxLayout::Direction direction = ( position == Top ? QBoxLayout::TopToBottom : QBoxLayout::BottomToTop );
 
@@ -41,7 +42,7 @@ KHTMLViewBar::KHTMLViewBar( Position position, KHTMLView *view, QWidget *parent 
 void KHTMLViewBar::addBarWidget (KHTMLViewBarWidget *newBarWidget)
 {
   if (hasWidget(newBarWidget)) {
-    kDebug() << "this bar widget is already added";
+    kDebug(6050) << "this bar widget is already added";
     return;
   }
   // add new widget, invisible...
@@ -49,7 +50,7 @@ void KHTMLViewBar::addBarWidget (KHTMLViewBarWidget *newBarWidget)
   layout()->addWidget( newBarWidget );
   connect(newBarWidget, SIGNAL(hideMe()), SLOT(hideCurrentBarWidget()));
 
-  kDebug() << "add barwidget " << newBarWidget;
+  kDebug(6050) << "add barwidget " << newBarWidget;
 }
 
 void KHTMLViewBar::addPermanentBarWidget (KHTMLViewBarWidget *barWidget)
@@ -70,7 +71,7 @@ void KHTMLViewBar::addPermanentBarWidget (KHTMLViewBarWidget *barWidget)
 void KHTMLViewBar::removePermanentBarWidget (KHTMLViewBarWidget *barWidget)
 {
   if (m_permanentBarWidget != barWidget) {
-    kDebug() << "no such permanent widget exists in bar";
+    kDebug(6050) << "no such permanent widget exists in bar";
     return;
   }
 
@@ -116,7 +117,7 @@ void KHTMLViewBar::hideCurrentBarWidget ()
   }
 
   m_view->setFocus();
-  kDebug()<<"hide barwidget";
+  kDebug(6050)<<"hide barwidget";
 }
 
 void KHTMLViewBar::setViewBarVisible (bool visible)

@@ -48,8 +48,6 @@ KHTMLFind::KHTMLFind( KHTMLPart *part ) :
   m_findDialog( 0 )
 {
   connect( part, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
-  connect( this, SIGNAL(finished()), part, SLOT(slotClearSelection()) );
-  connect( this, SIGNAL(foundMatch(const DOM::Selection&, int)), part, SLOT(slotHighlight(const DOM::Selection&, int)) );
 }
 
 
@@ -264,7 +262,10 @@ bool KHTMLFind::findTextNext( bool reverse )
   {
     // We didn't show the find dialog yet, let's do it then (#49442)
     activate();
-    return false;
+    // It also means the user is trying to match a previous pattern, so try and
+    // restore the last saved pattern.    
+    if (!d->m_findDialog || !d->m_findDialog->restoreLastPatternFromHistory())
+         return false;
   }
 
   m_part->view()->updateFindAheadTimeout();
@@ -483,6 +484,7 @@ bool KHTMLFind::findTextNext( bool reverse )
       //d->m_find = 0L;
       initFindNode( false, options & KFind::FindBackwards, false );
       d->m_find->resetCounts();
+      d->m_part->clearSelection();
     }
     kDebug(6050) << "Dialog closed.";
   }

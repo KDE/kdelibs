@@ -1856,6 +1856,7 @@ bool RegressionTest::svnIgnored( const QString &filename )
 void RegressionTest::resizeTopLevelWidget( int w, int h )
 {
     m_part->widget()->parentWidget()->resize( w, h );
+    m_part->widget()->resize( w, h );
     // Since we're not visible, this doesn't have an immediate effect, QWidget posts the event
     QApplication::sendPostedEvents( 0, QEvent::Resize );
 }
