@@ -191,11 +191,7 @@ JSObject* FunctionObjectImp::construct(ExecState* exec, const List& args, const 
   Debugger *dbg = exec->dynamicInterpreter()->debugger();
   if (dbg) {
     // make sure to pass in sourceURL, since it's useful for lazy event listeners, and empty for actual function ctor
-    bool cont = dbg->sourceParsed(exec, sourceId, sourceURL, body, lineNumber, errLine, errMsg);
-    if (!cont) {
-      dbg->imp()->abort();
-      return new JSObject();
-    }
+    dbg->reportSourceParsed(exec, functionBody.get(), body, lineNumber, errLine, errMsg);
   }
 
   // no program node == syntax error - throw a syntax error

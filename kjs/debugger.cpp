@@ -139,3 +139,21 @@ bool Debugger::exitContext(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*
   return true;
 }
 
+bool Debugger::shouldReindentSources() const
+{
+  return false;
+}
+
+bool Debugger::shouldReportCaught() const
+{
+  return false;
+}
+
+void Debugger::reportSourceParsed(ExecState *exec, FunctionBodyNode *body, const UString &source, 
+                                  int startingLineNumber, int errorLine, const UString &errorMsg)
+{
+  UString code = source;
+  if (shouldReindentSources())
+    code = body->reindent(startingLineNumber);
+  sourceParsed(exec, body->sourceId(), body->sourceURL(), code, startingLineNumber, errorLine, errorMsg);
+}

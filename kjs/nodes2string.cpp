@@ -29,6 +29,8 @@
 #include "function.h"
 #include "scriptfunction.h"
 
+#include <typeinfo>
+
 #define NOINLINE
 #if COMPILER(CWP)
 #pragma auto_inline off
@@ -149,7 +151,9 @@ SourceStream& SourceStream::operator<<(const StatementNode *n)
 {
   if (n) {
     // Update debug info with new line numbers if needed.
-    int firstLine = reindentLine;
+    // Note that streamTo will output endLine first thing,
+    // so we want the next line in the debug info
+    int firstLine = reindentLine + 1;
     n->streamTo(*this);
     if (reindenting)
       n->setLoc(firstLine, reindentLine - 1);
@@ -645,6 +649,12 @@ void BlockNode::streamTo(SourceStream &s) const
 {
   s << SourceStream::Endl << '{' << SourceStream::Indent
     << source << SourceStream::Unindent << SourceStream::Endl << '}';
+}
+
+void ProgramNode::streamTo(SourceStream &s) const
+{
+  // we don't want braces here, unlike in the above
+  s << source << SourceStream::Endl;
 }
 
 void EmptyStatementNode::streamTo(SourceStream &s) const

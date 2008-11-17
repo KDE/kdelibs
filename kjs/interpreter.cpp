@@ -509,9 +509,8 @@ Completion Interpreter::evaluate(const UString& sourceURL, int startingLineNumbe
 
     // notify debugger that source has been parsed
     if (m_debugger) {
-        bool cont = m_debugger->sourceParsed(&m_globalExec, sourceId, sourceURL, UString(code, codeLength), startingLineNumber, errLine, errMsg);
-        if (!cont)
-            return Completion(Break);
+        m_debugger->reportSourceParsed(&m_globalExec, progNode.get(), 
+                      UString(code, codeLength), startingLineNumber, errLine, errMsg);
     }
 
     // no program node means a syntax error occurred

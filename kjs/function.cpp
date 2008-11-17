@@ -856,9 +856,7 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
 
         Debugger *dbg = exec->dynamicInterpreter()->debugger();
         if (dbg) {
-          bool cont = dbg->sourceParsed(exec, sourceId, UString(), s, 0, errLine, errMsg);
-          if (!cont)
-            return jsUndefined();
+          dbg->reportSourceParsed(exec, progNode.get(), s, 0, errLine, errMsg);
         }
 
         // no program node means a syntax occurred

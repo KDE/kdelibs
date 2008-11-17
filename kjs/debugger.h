@@ -36,6 +36,7 @@ namespace KJS {
   class JSValue;
   class UString;
   class List;
+  class FunctionBodyNode;
 
   /**
    * @internal
@@ -206,10 +207,23 @@ namespace KJS {
     virtual bool exitContext(ExecState *exec, int sourceId, int lineno,
                              JSObject *function);
 
+ 
+    // Override this and return true if you want the debugger to report
+    // pretty-printed versions of the source.
+    virtual bool shouldReindentSources() const;
+    
+    // Override this to return true if the debugger should report 
+    // exceptions even if there is a try block waiting for it.
+    virtual bool shouldReportCaught()    const;
+
     // The two methods below call the events but also keep track/use of line # information
     // so we can associate it with exceptions
     void reportAtStatement(ExecState *exec, int sourceId, int firstLine, int lastLine);
     void reportException  (ExecState *exec, JSValue *exception);
+    
+    // This notifies the debugger of source being parsed, reindenting it if need be.
+    void reportSourceParsed(ExecState *exec, FunctionBodyNode *body,
+                              const UString &source, int startingLineNumber, int errorLine, const UString &errorMsg);
   private:
     DebuggerImp *rep;
     HashMap<Interpreter*, ProtectedPtr<JSValue> > latestExceptions;
@@ -221,3 +235,5 @@ namespace KJS {
 }
 
 #endif
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

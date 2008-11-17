@@ -1229,6 +1229,7 @@ namespace KJS {
   class ProgramNode : public FunctionBodyNode {
   public:
     ProgramNode(SourceElementsNode *s);
+    virtual void streamTo(SourceStream&) const;
   };
 
   class PackageNameNode : public Node {
