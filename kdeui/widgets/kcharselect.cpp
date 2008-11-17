@@ -363,6 +363,19 @@ void KCharSelect::init(const Controls controls, KActionCollection *collection)
     connect(d->backButton, SIGNAL(clicked()), this, SLOT(_k_back()));
     connect(d->forwardButton, SIGNAL(clicked()), this, SLOT(_k_forward()));
 
+    d->sectionCombo = new KComboBox(this);
+    d->sectionCombo->setToolTip(i18n("Select a category"));
+    comboLayout->addWidget(d->sectionCombo);
+    d->blockCombo = new KComboBox(this);
+    d->blockCombo->setToolTip(i18n("Select a block to be displayed"));
+    d->blockCombo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+    comboLayout->addWidget(d->blockCombo, 1);
+    d->sectionCombo->addItems(s_data->sectionList());
+    d->blockCombo->setMinimumWidth(QFontMetrics(QWidget::font()).averageCharWidth() * 25);
+
+    connect(d->sectionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(_k_sectionSelected(int)));
+    connect(d->blockCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(_k_blockSelected(int)));
+
     d->fontCombo = new KFontComboBox(this);
     comboLayout->addWidget(d->fontCombo);
     d->fontCombo->setEditable(true);
@@ -379,19 +392,6 @@ void KCharSelect::init(const Controls controls, KActionCollection *collection)
     connect(d->fontCombo, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(_k_fontSelected()));
     connect(d->fontSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(_k_fontSelected()));
 
-
-    d->sectionCombo = new KComboBox(this);
-    d->sectionCombo->setToolTip(i18n("Select a category"));
-    comboLayout->addWidget(d->sectionCombo);
-    d->blockCombo = new KComboBox(this);
-    d->blockCombo->setToolTip(i18n("Select a block to be displayed"));
-    d->blockCombo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-    comboLayout->addWidget(d->blockCombo, 1);
-    d->sectionCombo->addItems(s_data->sectionList());
-    d->blockCombo->setMinimumWidth(QFontMetrics(QWidget::font()).averageCharWidth() * 25);
-
-    connect(d->sectionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(_k_sectionSelected(int)));
-    connect(d->blockCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(_k_blockSelected(int)));
     if ((HistoryButtons & controls) || (FontCombo & controls) || (FontSize & controls) || (BlockCombos & controls)) {
         mainLayout->addLayout(comboLayout);
     }
