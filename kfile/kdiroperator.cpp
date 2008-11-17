@@ -1865,11 +1865,11 @@ void KDirOperator::setupActions()
     d->decorationMenu = new KActionMenu(i18n("Icon Position"), this);
     d->actionCollection->addAction("decoration menu", d->decorationMenu);
 
-    d->leftAction = new KToggleAction(i18n("Next to the filename"), this);
+    d->leftAction = new KToggleAction(i18n("Next to File Name"), this);
     d->actionCollection->addAction("decorationAtLeft", d->leftAction);
     connect(d->leftAction, SIGNAL(triggered(bool)), this, SLOT(_k_slotChangeDecorationPosition()));
 
-    KToggleAction *topAction = new KToggleAction(i18n("Above the filename"), this);
+    KToggleAction *topAction = new KToggleAction(i18n("Above File Name"), this);
     d->actionCollection->addAction("decorationAtTop", topAction);
     connect(topAction, SIGNAL(triggered(bool)), this, SLOT(_k_slotChangeDecorationPosition()));
 
