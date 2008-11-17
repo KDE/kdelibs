@@ -58,7 +58,7 @@ KShortcutSchemesEditor::KShortcutSchemesEditor(KShortcutsDialog *parent)
     l->setMargin(0);
     l->setSpacing(KDialog::spacingHint());
 
-    QLabel *schemesLabel = new QLabel(i18n("Current Scheme:"), this);
+    QLabel *schemesLabel = new QLabel(i18n("Current scheme:"), this);
     l->addWidget(schemesLabel);
 
     m_schemesList = new KComboBox(this);
@@ -78,7 +78,7 @@ KShortcutSchemesEditor::KShortcutSchemesEditor(KShortcutsDialog *parent)
     l->addWidget(moreActions);
 
     QMenu *moreActionsMenu = new QMenu(this);
-    moreActionsMenu->addAction(i18n("Save As Scheme Defaults"),
+    moreActionsMenu->addAction(i18n("Save as Scheme Defaults"),
         this, SLOT(saveAsDefaultsForScheme()));
     moreActionsMenu->addAction(i18n("Export Scheme..."),
         this, SLOT(exportShortcutsScheme()));
@@ -98,13 +98,13 @@ void KShortcutSchemesEditor::newScheme()
 {
     bool ok;
     QString newName = KInputDialog::getText(i18n("Name for New Scheme"),
-        i18n("Name for New Scheme:"), i18n("New Scheme"), &ok,this);
+        i18n("Name for new scheme:"), i18n("New Scheme"), &ok,this);
     if (!ok )
         return;
 
     if (m_schemesList->findText(newName) != -1)
     {
-        KMessageBox::sorry(this, i18n("The scheme with this name already exists"));
+        KMessageBox::sorry(this, i18n("A scheme with this name already exists."));
         return;
     }
 
@@ -161,7 +161,7 @@ QString KShortcutSchemesEditor::currentScheme()
 void KShortcutSchemesEditor::exportShortcutsScheme()
 {
     //ask user about dir
-    QString exportTo = QFileDialog::getExistingDirectory(this, i18n("Export To Location"),
+    QString exportTo = QFileDialog::getExistingDirectory(this, i18n("Export to Location"),
         QDir::currentPath());
     if (exportTo.isEmpty())
         return;
