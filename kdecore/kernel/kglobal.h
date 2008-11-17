@@ -31,11 +31,6 @@
 // Otherwise, it could break when a new version of Qt ships.
 //
 
-#if QT_VERSION < 0x040400
-# define Q_BASIC_ATOMIC_INITIALIZER     Q_ATOMIC_INIT
-# define testAndSetOrdered              testAndSet
-#endif
-
 class KComponentData;
 class KCharsets;
 class KConfig;

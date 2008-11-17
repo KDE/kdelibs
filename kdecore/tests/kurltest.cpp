@@ -1132,9 +1132,7 @@ void KUrlTest::testSetUser()
 
   KUrl emptyUserTest1( "http://www.foobar.com/");
   QVERIFY( emptyUserTest1.user().isEmpty() );
-#if QT_VERSION >= 0x040400
   QVERIFY( emptyUserTest1.user().isNull() ); // Expected result. This was fixed in Qt-4.4
-#endif
   KUrl emptyUserTest2( "http://www.foobar.com/");
   emptyUserTest2.setUser( "" );
   //QVERIFY( emptyUserTest2.user().isNull() );
@@ -1684,14 +1682,10 @@ void KUrlTest::testEncodeString()
   // Needed for #49616
   QCOMPARE( QUrl::toPercentEncoding( "C++" ), QByteArray("C%2B%2B") );
   QCOMPARE( QUrl::fromPercentEncoding( "C%2B%2B" ), QString("C++") );
-#if QT_VERSION < 0x040400
-  QCOMPARE( QUrl::fromPercentEncoding( "C%00%A" ), QString("C") ); // stop at %00, like in kde3
-#else
   QString output = QUrl::fromPercentEncoding( "C%00%0A" );
   QString expected = QString::fromLatin1("C\0\n", 3); // no reason to stop at %00, in fact
   QCOMPARE( output.size(), expected.size() );
   QCOMPARE( output, expected );
-#endif
   QCOMPARE( QUrl::fromPercentEncoding( "C%A" ), QString("C%A") ); // % A is not percent-encoding  (pct-encoded = "%" HEXDIG HEXDIG)
 
   QCOMPARE( QUrl::toPercentEncoding( "%" ), QByteArray("%25") );

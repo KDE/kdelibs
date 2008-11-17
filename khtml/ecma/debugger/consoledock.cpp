@@ -184,21 +184,10 @@ void ConsoleItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     // Draw the background
     bool selected = option.state & QStyle::State_Selected;
 
-#if QT_VERSION >= 0x040400
     QStyleOptionViewItemV4 opt(option);
 
     QStyle *style = opt.widget->style();
     style->drawPrimitive(QStyle::PE_PanelItemViewRow, &opt, painter, opt.widget);
-#else
-    QStyleOptionViewItemV3 opt(option);
-
-    QBrush background = selected ? option.palette.brush(QPalette::Highlight) :
-            (opt.features & QStyleOptionViewItemV2::Alternate ? option.palette.brush(QPalette::AlternateBase)
-            : QBrush(Qt::NoBrush));
-
-    if (background.style() != Qt::NoBrush)
-        painter->fillRect(option.rect, background);
-#endif
     if (selected)
         painter->setPen(option.palette.color(QPalette::HighlightedText));
 

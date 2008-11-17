@@ -45,20 +45,12 @@ struct MetricsInfo {
 };
 
 
-#if QT_VERSION >= 0x040100
 typedef QFixed QtFontDim;
 
 static int dimToInt(QtFontDim dim) {
     return dim.toInt();
 }
 
-#else 
-typedef qreal QtFontDim;
-
-static int dimToInt(QtFontDim dim) {
-    return (int)dim;
-}
-#endif
 
 static MetricsInfo compatMetrics[] = {
     {"-Adobe-Courier-Medium-R-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
