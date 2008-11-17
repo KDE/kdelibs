@@ -48,6 +48,7 @@
 #include "debugdocument.h"
 
 class KAction;
+class KToggleAction;
 class QTabWidget;
 class QFrame;
 class QEventLoop;
@@ -106,6 +107,8 @@ public:
     bool exitContext(KJS::ExecState *exec, int sourceId, int lineno, KJS::JSObject *function);
     void attach(KJS::Interpreter *interp);
     void detach(KJS::Interpreter *interp);
+    
+    bool shouldReindentSources() const;
 
     // Called by KJSProxy when we navigate away from a page
     void clearInterpreter(KJS::Interpreter* interp);
@@ -128,6 +131,8 @@ protected:
     void enableOtherWindows();
 
 private Q_SLOTS:
+    void settingsChanged();
+
     void displayScript(KJSDebugger::DebugDocument *document);
     void displayScript(KJSDebugger::DebugDocument *document, int line); // -1 denotes not focusing on the line
     void updateVarView();
@@ -171,6 +176,9 @@ private:
     KAction *m_stepIntoAct;
     KAction *m_stepOutAct;
     KAction *m_stepOverAct;
+    
+    KToggleAction *m_catchExceptionsAction;
+    KToggleAction *m_reindentAction;
 
 //     WatchesDock *m_watches;
     LocalVariablesDock *m_localVariables;
@@ -192,6 +200,11 @@ private:
     QStack<QEventLoop*> m_activeEventLoops;
 
     void resetTimeoutsIfNeeded();
+    
+    bool m_reindentSources;
+    bool m_catchExceptions;
+    void syncFromConfig();
+    void syncToConfig();
 
     // The handling of debugger modes is a bit funny.
     // essentially, we want normal step/stepOver/stepOut

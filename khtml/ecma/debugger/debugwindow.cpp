@@ -135,7 +135,8 @@ DebugWindow::DebugWindow(QWidget *parent)
 
     setCentralWidget(splitter);
     resize(800, 500);
-
+    
+    syncFromConfig(); // need to do it before creating actions to know their state
     createActions();
     createMenus();
     createToolBars();
@@ -152,6 +153,31 @@ DebugWindow::DebugWindow(QWidget *parent)
     m_breakAtNext = false;
     m_modalLevel  = 0;
     m_runningSessionCtx = 0;
+}
+
+void DebugWindow::syncFromConfig()
+{
+    m_reindentSources = false;
+    m_catchExceptions = true;
+    // m_catchExceptions = khtmlpart->settings()->isJavaScriptErrorReportingEnabled();
+    // m_reindentSources = 
+}
+
+void DebugWindow::syncToConfig()
+{
+    // ### FIXME
+}
+
+bool DebugWindow::shouldReindentSources() const
+{
+    return m_reindentSources;
+}
+
+void DebugWindow::settingsChanged()
+{
+    m_catchExceptions = m_catchExceptionsAction->isChecked();
+    m_reindentSources = m_reindentAction->isChecked();
+    syncToConfig();
 }
 
 void DebugWindow::createActions()
@@ -189,6 +215,16 @@ void DebugWindow::createActions()
     m_stepOutAct->setShortcut(Qt::Key_F12);
     m_stepOutAct->setEnabled(false);
     connect(m_stepOutAct, SIGNAL(triggered(bool)), this, SLOT(stepOut()) );
+    
+    m_reindentAction = new KToggleAction(i18n("Reindent Sources"), this);
+    actionCollection()->addAction( "reindent", m_reindentAction );
+    m_reindentAction->setChecked( m_reindentSources );
+    connect(m_reindentAction, SIGNAL(toggled(bool)), this, SLOT(settingsChanged()));
+    
+    m_catchExceptionsAction = new KToggleAction(i18n("Report Exceptions"), this);
+    actionCollection()->addAction( "except", m_catchExceptionsAction );
+    m_catchExceptionsAction->setChecked( m_catchExceptions );
+    connect(m_catchExceptionsAction, SIGNAL(toggled(bool)), this, SLOT(settingsChanged()));
 }
 
 void DebugWindow::createMenus()
@@ -200,6 +236,11 @@ void DebugWindow::createMenus()
     debugMenu->addAction(m_stepIntoAct);
     debugMenu->addAction(m_stepOutAct);
     menuBar()->addMenu(debugMenu);
+    
+    KMenu *settingsMenu = new KMenu(i18n("&Settings"), menuBar());
+    settingsMenu->addAction(m_catchExceptionsAction);
+    settingsMenu->addAction(m_reindentAction);
+    menuBar()->addMenu(settingsMenu);
 }
 
 void DebugWindow::createToolBars()
@@ -590,7 +631,8 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
     // Don't report it if error reporting is not on
     KParts::ReadOnlyPart *part = static_cast<ScriptInterpreter*>(exec->dynamicInterpreter())->part();
     KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(part);
-    if (khtmlpart && !khtmlpart->settings()->isJavaScriptErrorReportingEnabled())
+    
+    if (khtmlpart && !khtmlpart->settings()->isJavaScriptErrorReportingEnabled() || !m_catchExceptions)
         return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 
     QString exceptionMsg = exceptionToString(exec, exceptionObj);
@@ -614,6 +656,12 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
     dlg.exec();
     --m_modalLevel;
     resetTimeoutsIfNeeded();
+    
+    if (dlg.dontShowAgain()) {
+        m_catchExceptions = false;
+        m_catchExceptionsAction->setChecked(false);
+    }
+    
     if (dlg.debugSelected())
         // We want to stop at the current line, to see what's going on.
         enterDebugSession(exec, doc.get(), lineNo);
