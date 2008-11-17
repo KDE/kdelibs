@@ -244,13 +244,15 @@ void DebugWindow::updateStoppedMark(RunMode mode)
     {
         // No longer stopped there.
         if (imark)
-            imark->removeMark(ctx()->activeLine() - 1, KTextEditor::MarkInterface::Execution);
+            imark->removeMark(ctx()->activeLine() - doc->baseLine(),
+                                KTextEditor::MarkInterface::Execution);
     }
     else
     {
         displayScript(doc.get(), ctx()->activeLine());
         if (imark)
-            imark->addMark(ctx()->activeLine() - 1, KTextEditor::MarkInterface::Execution);
+            imark->addMark(ctx()->activeLine() - doc->baseLine(),
+                            KTextEditor::MarkInterface::Execution);
     }
 }
 
@@ -364,7 +366,6 @@ DebugWindow::~DebugWindow()
 {
     assert(m_docsForIntrp.isEmpty());
     assert(m_docForSid.isEmpty());
-    assert(m_docForIUKey.isEmpty());
     assert(m_activeSessionCtxs.isEmpty());
     s_debugger = 0;
 }
@@ -389,14 +390,7 @@ void DebugWindow::attach(Interpreter *interp)
 
 void DebugWindow::cleanupDocument(DebugDocument::Ptr doc)
 {
-    // Remove all fragments from the sid map
-    foreach (int sid, doc->fragments())
-    {
-        m_docForSid.remove(sid);
-        // Remove from the IU-key map if needed.
-        if (!doc->url().isEmpty())
-            m_docForIUKey.remove(doc->iuKey());
-    }
+    m_docForSid.remove(doc->sid());
     m_scripts->documentDestroyed(doc.get());
 }
 
@@ -439,21 +433,17 @@ void DebugWindow::clearInterpreter(KJS::Interpreter* interp)
 
     fatalAssert(!m_activeSessionCtxs.contains(ctx), "Interpreter clear on active session");
 
-    // Cleanup any docs that are not open, and mark others
-    // as having finished their current load incarnation
+    // Cleanup all documents; but we keep the open windows open so 
+    // they can be reused.
     QMutableListIterator<DebugDocument::Ptr> i(m_docsForIntrp[interp]);
     while (i.hasNext())
     {
         DebugDocument::Ptr doc = i.next();
         if (m_openDocuments.contains(doc.get()))
-        {
-            doc->requestDeferredClear(); // Any new fragments will be from a new load..
-        }
-        else
-        {
-            cleanupDocument(doc);
-            i.remove();
-        }
+            doc->markReload();
+            
+        cleanupDocument(doc);
+        i.remove();
     }
 }
 
@@ -470,12 +460,19 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
              << "*********************************************************************************************" << endl;
 
     QString sourceURL = jsSourceURL.qstring();
-    QString key       = QString("%1|%2").arg((long)exec->dynamicInterpreter()).arg(sourceURL);
+    // Tell it about this portion..
+    QString qsource =  source.qstring();
+    
 
     DebugDocument::Ptr document;
-    if (!sourceURL.isEmpty()) // Perhaps we already have a document for this url...
-        document = m_docForIUKey[key];
-
+    
+    // See if there is an open document window we can reuse... 
+    foreach (DebugDocument::Ptr cand, m_openDocuments) 
+    {
+        if (cand->isMarkedReload() && cand->url() == sourceURL && cand->baseLine() == startingLineNumber)
+            document = cand;
+    }
+    
     // If we don't have a document, make a new one.
     if (!document)
     {
@@ -497,26 +494,30 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
 
         }
 
-        document = new DebugDocument(exec->dynamicInterpreter(), uiURL, key);
+        document = new DebugDocument(exec->dynamicInterpreter(), uiURL, 
+                                     sourceId, startingLineNumber, qsource);
+
         connect(document.get(), SIGNAL(documentDestroyed(KJSDebugger::DebugDocument*)),
                 this, SLOT(documentDestroyed(KJSDebugger::DebugDocument*)));
-        m_docsForIntrp[exec->dynamicInterpreter()].append(document);
-
-        // Show it in the script list view
-        m_scripts->addDocument(document.get());
     }
+    else
+    {
+        // Otherwise, update.
+        document->reloaded(sourceId, qsource);
+    }
+    
+    m_docsForIntrp[exec->dynamicInterpreter()].append(document);
+    
+    // Show it in the script list view
+    m_scripts->addDocument(document.get());
+    
 
     // Memorize the document..
     m_docForSid[sourceId] = document;
-    if (!sourceURL.isEmpty())
-        m_docForIUKey[key] = document;
 
-    // Tell it about this portion..
-    QString qsource =  source.qstring();
     if (qsource.contains("function")) // Approximate knowledge of whether code has functions. Ewwww...
         document->setHasFunctions();
-    document->addCodeFragment(sourceId, startingLineNumber, qsource);
-
+        
     return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
 }
 
@@ -570,7 +571,7 @@ QString DebugWindow::exceptionToString(ExecState* exec, JSValue* exceptionObj)
         int      line = lineValue->toNumber(exec);
         QString  url  = urlValue->toString(exec).qstring();
         exceptionMsg = i18n("Parse error at %1 line %2",
-                            Qt::escape(url), line - 1);
+                            Qt::escape(url), line + 1);
     }
     else
     {
@@ -585,9 +586,6 @@ QString DebugWindow::exceptionToString(ExecState* exec, JSValue* exceptionObj)
 
 bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *exceptionObj)
 {
-    // Fixup the line..
-    lineNo = lineNo - 1;
-
     // Don't report it if error reporting is not on
     KParts::ReadOnlyPart *part = static_cast<ScriptInterpreter*>(exec->dynamicInterpreter())->part();
     KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(part);
@@ -625,10 +623,9 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
 
 bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine)
 {
-    // ### line number seems to be off-by-one here
     InterpreterContext* ctx = m_contexts[exec->dynamicInterpreter()];
-    ctx->updateCall(firstLine - 1);
-    return checkSourceLocation(exec, sourceId, firstLine - 1, lastLine);
+    ctx->updateCall(firstLine);
+    return checkSourceLocation(exec, sourceId, firstLine, lastLine);
 }
 
 bool DebugWindow::checkSourceLocation(KJS::ExecState *exec, int sourceId, int firstLine, int lastLine)
@@ -871,7 +868,7 @@ void DebugWindow::displayScript(DebugDocument* document, int line)
 
     // Go to line..
     if (line != -1)
-        view->setCursorPosition(KTextEditor::Cursor(line - 1, 0));
+        view->setCursorPosition(KTextEditor::Cursor(line - document->baseLine(), 0));
 }
 
 void DebugWindow::documentDestroyed(KJSDebugger::DebugDocument* doc)
@@ -907,7 +904,7 @@ void DebugWindow::markSet(KTextEditor::Document* document, KTextEditor::Mark mar
     DebugDocument* debugDocument = qobject_cast<DebugDocument*>(document->parent());
     assert(debugDocument);
 
-    int lineNumber = mark.line + 1;
+    int lineNumber = mark.line + debugDocument->baseLine();
     switch(action)
     {
         case KTextEditor::MarkInterface::MarkAdded:

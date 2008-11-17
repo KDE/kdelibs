@@ -80,7 +80,7 @@ void CallStackDock::displayStack(InterpreterContext* ic)
         QTableWidgetItem *function = new QTableWidgetItem(entry.name);
         function->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         m_view->setItem(displayRow, 0, function);
-        QTableWidgetItem *lineNumber = new QTableWidgetItem(QString::number(entry.lineNumber));
+        QTableWidgetItem *lineNumber = new QTableWidgetItem(QString::number(entry.lineNumber + 1));
         lineNumber->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         m_view->setItem(displayRow, 1, lineNumber);
         row++;

@@ -46,7 +46,6 @@ private Q_SLOTS:
     void scriptSelected(QTreeWidgetItem *item, int column);
 
 private:
-    void updateModel();
     QTreeWidget *m_widget;
     QHash<DebugDocument*, QTreeWidgetItem*> m_documents;
     QHash<QString, QTreeWidgetItem*> m_headers;

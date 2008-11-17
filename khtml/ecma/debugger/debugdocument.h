@@ -20,50 +20,28 @@ namespace KTextEditor {
 
 namespace KJSDebugger {
 
-struct SourceFragment
-{
-    int sourceId;
-    int baseLine; // Note: this is stored 0-based
-    QStringList sourceLines;
-
-    int lastLine() const
-    {
-        return baseLine + sourceLines.size() - 1;
-    }
-
-    bool inRange(int otherFirst, int otherLast) const
-    {
-        if (lastLine() < otherFirst)
-            return false;
-        if (baseLine > otherLast)
-            return false;
-        return true;
-    }
-};
-
 class DebugDocument : public QObject, public khtml::Shared<DebugDocument>
 {
     Q_OBJECT
 public:
     typedef SharedPtr<DebugDocument> Ptr;
 
-    DebugDocument(KJS::Interpreter* interp, const QString& url, const QString& iuKey);
+    DebugDocument(KJS::Interpreter* interp, const QString& url, 
+                  int sourceId, int baseLine, const QString &source);
     ~DebugDocument();
 
     QString name() const;
     QString url() const;
-    QString iuKey() const;
+    int     sid() const;
 
     KTextEditor::Document* viewerDocument();
     KTextEditor::View*     viewerView();
 
-    SourceFragment fragment(int sourceId);
-    void addCodeFragment(int sourceId, int baseLine, const QString &source);
-    QList<int> fragments() const;
-
-    // Tells the document that any new updates will come on a fresh
-    // load, so the fragments have to be discarded on a next addCodeFragment
-    void requestDeferredClear();
+    // Marks the document as being discarded for reload, so that new data should be set here.
+    void markReload();
+    bool isMarkedReload() const;
+    
+    void reloaded(int sourceId, const QString &source);
 
     void setBreakpoint(int lineNumber);
     void removeBreakpoint(int lineNumber);
@@ -75,12 +53,14 @@ public:
     void setHasFunctions();
     
     KJS::Interpreter* interpreter(); 
+    
+    int baseLine() const;
+    int length()   const;
 
 signals:
     void documentDestroyed(KJSDebugger::DebugDocument*);
 private:
     QString m_url;
-    QString m_iuKey;
     QString m_name;
     KJS::Interpreter* m_interpreter;
     
@@ -92,13 +72,14 @@ private:
     // on clear. 
     bool m_rebuilding;
 
-    // see requestDeferredClear
-    bool m_deferredClear;
+    bool m_reload;
+    
+    int m_firstLine;
+    int m_sourceId;
+    QStringList m_sourceLines;
 
-    void rebuildViewerDocument(int firstLine = 0, int lastLine = -1);
+    void rebuildViewerDocument();
     void setupViewerDocument();
-
-    QHash<int, SourceFragment> m_codeFragments;
 
     // We store breakpoints differently for scopes with URL
     // and without it. Those that have it are stored globally,

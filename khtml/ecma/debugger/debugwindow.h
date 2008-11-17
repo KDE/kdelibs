@@ -201,13 +201,7 @@ private:
 
     InterpreterContext* ctx() { return m_activeSessionCtxs.isEmpty() ? 0 : m_activeSessionCtxs.top(); }
 
-    // We look documents up 2 ways: by sourceId, and by interpreter + url key.
-    // The former is used when handling the various debugger events, and is the best
-    // we can do in that case. We need the later to combine the fragments into
-    // one view. Persistence of breakpoints/pending breakpoints
-    // are handled by DebugDocument itself.
     QHash<int,     DebugDocument::Ptr> m_docForSid;
-    QHash<QString, DebugDocument::Ptr> m_docForIUKey;
 
     // For each interpreter, we keep track of what documents belong to it
     // so we can discard them when needed, as well as flush for reload
