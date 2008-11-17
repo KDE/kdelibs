@@ -82,7 +82,7 @@ Lexer& lexer()
 }
 
 Lexer::Lexer()
-  : yylineno(1)
+  : yylineno(0)
   , restrKeyword(false)
   , eatNextIdentifier(false)
   , stackToken(-1)
@@ -106,7 +106,7 @@ Lexer::Lexer()
 
 void Lexer::setCode(const UString &sourceURL, int startingLineNumber, const KJS::UChar *c, unsigned int len)
 {
-  yylineno = 1 + startingLineNumber;
+  yylineno = startingLineNumber;
   m_sourceURL = sourceURL;
   restrKeyword = false;
   delimited = false;

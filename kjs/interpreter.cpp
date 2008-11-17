@@ -570,7 +570,7 @@ bool Interpreter::normalizeCode(const UString& codeIn, UString* codeOut,
 {
     assert(codeOut);
     RefPtr<ProgramNode> progNode = parser().parseProgram("", // sourceURL
-                                                         1, // line
+                                                         0, // line
                                                          codeIn.data(),
                                                          codeIn.size(),
                                                          0, // &sourceId
