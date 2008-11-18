@@ -229,7 +229,7 @@ void HTMLBRElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    if (parentNode()->renderer()) {
+    if (parentNode()->renderer() && parentNode()->renderer()->childAllowed()) {
         RenderStyle* style = document()->styleSelector()->styleForElement( this );
         style->ref();
         if( style->display() != NONE ) {
@@ -255,7 +255,7 @@ void HTMLWBRElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    if (parentNode()->renderer()) {
+    if (parentNode()->renderer() && parentNode()->renderer()->childAllowed()) {
         RenderStyle* style = document()->styleSelector()->styleForElement( this );
         style->ref();
         if( style->display() != NONE ) {
