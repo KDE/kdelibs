@@ -53,10 +53,10 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
     QGridLayout *layout = new QGridLayout(this);
 
     m_defaultRadio = new QRadioButton(i18n("Default:"), this);
-    m_defaultLabel = new QLabel(i18n("None"), this);
+    m_defaultLabel = new QLabel(i18nc("No shortcut defined", "None"), this);
     QString defaultText = defaultSeq.toString(QKeySequence::NativeText);
     if (defaultText.isEmpty()) 
-        defaultText = i18n("None");
+        defaultText = i18nc("No shortcut defined", "None");
     m_defaultLabel->setText(defaultText);
 
     m_customRadio = new QRadioButton(i18n("Custom:"), this);
