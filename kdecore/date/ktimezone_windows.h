@@ -321,7 +321,7 @@ public:
   const TIME_ZONE_INFORMATION & tzi( int year = 0 ) const { Q_UNUSED( year ); return _tzi; }
 };
 
-class KSystemTimeZoneSourceWindows : public KTimeZoneSource
+class KSystemTimeZoneSourceWindows : public KSystemTimeZoneSource
 {
 public:
   KSystemTimeZoneSourceWindows()
