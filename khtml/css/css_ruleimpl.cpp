@@ -419,10 +419,8 @@ CSSRuleListImpl::CSSRuleListImpl(StyleListImpl* const list, bool omitCharsetRule
          unsigned len = list->length();
          for (unsigned i = 0; i < len; ++i) {
              StyleBaseImpl* rule = list->item(i);
-             if (rule->isRule() && !rule->isCharsetRule()) {
+             if (rule->isRule() && !rule->isCharsetRule())
                  append(static_cast<CSSRuleImpl*>(rule));
-                 rule->ref();
-             }
          }
      } else if (m_list) {
          m_list->ref();
@@ -467,6 +465,7 @@ void CSSRuleListImpl::deleteRule ( unsigned long index )
 void CSSRuleListImpl::append(CSSRuleImpl* rule)
 {
     assert(!m_list);
+    rule->ref();
     m_lstCSSRules.append( rule );
 }
 
