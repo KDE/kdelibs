@@ -803,6 +803,8 @@ public:
     virtual void dirtyInlineBoxes(bool /*fullLayout*/, bool /*isRootLineBox*/ = false) {}
     virtual void dirtyLinesFromChangedChild(RenderObject*) {}
     virtual void detach( );
+
+    bool documentBeingDestroyed() const { return !document()->renderer(); }
     
     void setDoNotDelete(bool b) { m_doNotDelete = b; }
     bool doNotDelete() const { return m_doNotDelete; }

@@ -711,7 +711,7 @@ RenderText::~RenderText()
 
 void RenderText::detach()
 {
-    if (document()->renderer()) {
+    if (!documentBeingDestroyed()) {
         if (firstTextBox()) {
             if (isBR()) {
                 RootInlineBox* next = firstTextBox()->root()->nextRootBox();

@@ -147,7 +147,7 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
 RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 {
     KHTMLAssert(oldChild->parent() == this);
-    bool inCleanup = !document()->renderer();
+    bool inCleanup = documentBeingDestroyed();
 
     if ( !inCleanup ) {
         oldChild->setNeedsLayoutAndMinMaxRecalc(); // Dirty the containing block chain

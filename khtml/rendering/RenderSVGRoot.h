@@ -43,7 +43,7 @@ public:
 
     virtual short lineHeight(bool b, bool isRootLineBox = false) const;
     virtual short baselinePosition(bool b, bool isRootLineBox = false) const;
-    virtual void calcPrefWidths();
+    virtual void calcMinMaxWidth();
     
     virtual void layout();
     virtual void paint(PaintInfo&, int parentX, int parentY);

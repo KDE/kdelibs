@@ -92,26 +92,37 @@ void RenderSVGContainer::destroyLeftoverChildren()
 RenderObject* RenderSVGContainer::removeChildNode(RenderObject* oldChild, bool fullRemove)
 {
     ASSERT(oldChild->parent() == this);
+    bool inCleanup = documentBeingDestroyed();
 
     // So that we'll get the appropriate dirty bit set (either that a normal flow child got yanked or
     // that a positioned child got yanked).  We also repaint, so that the area exposed when the child
     // disappears gets repainted properly.
-    if (/*!documentBeingDestroyed() && */fullRemove) {
-        /*oldChild->setNeedsLayoutAndPrefWidthsRecalc();*/
-        oldChild->setNeedsLayout(true);
+    
+    if (!inCleanup && fullRemove) {
+        oldChild->setNeedsLayoutAndMinMaxRecalc(); // Dirty the containing block chain
+        oldChild->setNeedsLayout( false ); // The child itself does not need to layout - it's going away.
         oldChild->repaint();
     }
 
-    // If we have a line box wrapper, delete it.
-    /*oldChild->deleteLineBoxWrapper();*/
+    // detach the place holder box
+    if (oldChild->isBox()) {
+        RenderBox* rb = static_cast<RenderBox*>(oldChild);
+        InlineBox* ph = rb->placeHolderBox();
+        if (ph) {
+            ph->detach(rb->renderArena(), inCleanup /*NoRemove*/);
+            rb->setPlaceHolderBox( 0 );
+        }
+    }
 
-    if (/*!documentBeingDestroyed() && */fullRemove) {
+    if (!inCleanup && fullRemove) {
         // If oldChild is the start or end of the selection, then clear the selection to
         // avoid problems of invalid pointers.
         // FIXME: The SelectionController should be responsible for this when it
         // is notified of DOM mutations.
         /* FIXME if (oldChild->isSelectionBorder())
             view()->clearSelection();*/
+        if (oldChild->isSelectionBorder())
+            canvas()->clearSelection();
     }
 
     // remove the child
@@ -152,8 +163,7 @@ void RenderSVGContainer::appendChildNode(RenderObject* newChild, bool)
 
     m_lastChild = newChild;
 
-    /*newChild->setNeedsLayoutAndPrefWidthsRecalc(); // Goes up the containing block hierarchy.*/
-    newChild->setNeedsLayout(true);
+    newChild->setNeedsLayoutAndMinMaxRecalc(); // Goes up the containing block hierarchy.*/
     if (!normalChildNeedsLayout())
         setChildNeedsLayout(true); // We may supply the static position for an absolute positioned child.
 
@@ -184,8 +194,7 @@ void RenderSVGContainer::insertChildNode(RenderObject* child, RenderObject* befo
 
     child->setParent(this);
 
-    /*child->setNeedsLayoutAndPrefWidthsRecalc();*/
-    child->setNeedsLayout(true);
+    child->setNeedsLayoutAndMinMaxRecalc();
     if (!normalChildNeedsLayout())
         setChildNeedsLayout(true); // We may supply the static position for an absolute positioned child.
 
@@ -276,8 +285,8 @@ int RenderSVGContainer::calcReplacedWidth() const
         return qMax(0, style()->width().value());
     case Percent:
     {
-        /*FIXME const int cw = containingBlockWidth();
-        return cw > 0 ? max(0, style()->width().calcMinValue(cw)) : 0;*/
+        const int cw = containingBlockWidth();
+        return cw > 0 ? qMax(0, style()->width().minWidth(cw)) : 0;
     }
     default:
         return 0;
@@ -291,8 +300,8 @@ int RenderSVGContainer::calcReplacedHeight() const
         return qMax(0, style()->height().value());
     case Percent:
     {
-        /*FIXME RenderBlock* cb = containingBlock()
-        return style()->height().calcValue(cb->availableHeight());*/
+        RenderBlock* cb = containingBlock();
+        return style()->height().width(cb->availableHeight());
     }
     default:
         return 0;

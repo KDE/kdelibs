@@ -325,7 +325,7 @@ void RenderFlow::detach()
     // properly dirty line boxes that they are removed from.  Effects that do :before/:after only on hover could crash otherwise.
     detachRemainingChildren();
 
-    if (document()->renderer()) {
+    if (!documentBeingDestroyed()) {
         if (m_firstLineBox) {
             // We can't wait for RenderContainer::destroy to clear the selection,
             // because by then we will have nuked the line boxes.

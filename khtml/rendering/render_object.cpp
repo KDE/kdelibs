@@ -2199,7 +2199,7 @@ DOM::DocumentImpl* RenderObject::document() const
 void RenderObject::removeFromObjectLists()
 {
     // in destruction mode, don't care.
-    if ( !document()->renderer() ) return;
+    if ( documentBeingDestroyed() ) return;
 
     if (isFloating()) {
         RenderBlock* outermostBlock = containingBlock();
