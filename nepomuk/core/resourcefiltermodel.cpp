@@ -47,11 +47,13 @@ uint Soprano::qHash( const Soprano::Node& node )
     return qHash( node.toString() );
 }
 
+#ifndef Q_OS_WIN
 // @deprecated: just for keeping binary compatibility
 uint qHash( const Soprano::Node& node )
 {
     return Soprano::qHash( node );
 }
+#endif
 
 class Nepomuk::ResourceFilterModel::Private
 {
