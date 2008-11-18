@@ -50,7 +50,7 @@ int m_maxCacheSize;
 static const char appFullName[] = "org.kde.kio_http_cache_cleaner";
 static const char appName[] = "kio_http_cache_cleaner";
 
-static const char version[] = "1.0.0";
+static const char version[] = "9";
 
 struct FileInfo {
    QString name;
@@ -73,8 +73,8 @@ public:
 };
 
 // !START OF SYNC!
-// Keep the following in sync with the cache code in http.cc
-#define CACHE_REVISION "7\n"
+// Keep the following in sync with the cache code in http.cpp
+#define CACHE_REVISION "9\n"
 
 FileInfo *readEntry( const QString &filename)
 {

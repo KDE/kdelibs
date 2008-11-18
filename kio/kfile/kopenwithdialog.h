@@ -31,7 +31,7 @@ class KOpenWithDialogPrivate;
 /**
  * "Open With" dialog box.
  *
- * @note To let the user choose an application and run it immediately, 
+ * @note To let the user choose an application and run it immediately,
  *       use simpler KRun::displayOpenWithDialog().
  *
  * @author David Faure <faure@kde.org>
@@ -123,7 +123,7 @@ public Q_SLOTS:
 
 protected Q_SLOTS:
     /**
-     * Reimplemented from QDialog::accept() to save history of the combobox
+     * Reimplemented from QDialog::accept()
      */
     virtual void accept();
 
@@ -134,7 +134,6 @@ private:
     Q_DISABLE_COPY(KOpenWithDialog)
 
     Q_PRIVATE_SLOT(d, void _k_slotDbClick())
-    Q_PRIVATE_SLOT(d, void _k_slotOK())
 };
 
 #endif

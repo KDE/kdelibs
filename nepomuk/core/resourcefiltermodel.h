@@ -113,7 +113,9 @@ namespace Nepomuk {
     };
 }
 
+namespace Soprano {
+    uint qHash( const Node& node );
+}
 
-uint qHash( const Soprano::Node& node );
 
 #endif

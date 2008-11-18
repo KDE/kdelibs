@@ -1232,7 +1232,8 @@ void HTMLFieldSetElementImpl::attach()
 
     RenderStyle* const _style = document()->styleSelector()->styleForElement(this);
     _style->ref();
-    if (parentNode()->renderer() && _style->display() != NONE) {
+    if (parentNode()->renderer() && parentNode()->renderer()->childAllowed() &&
+        _style->display() != NONE) {
         m_render = new (document()->renderArena()) RenderFieldset(this);
         m_render->setStyle(_style);
     }
@@ -1384,6 +1385,7 @@ void HTMLInputElementImpl::restoreState(const QString &state)
         setChanged();
         break;
     case HIDDEN:
+    case PASSWORD:
         // Don't mess with those...
         break;
     default:
@@ -2328,7 +2330,8 @@ void HTMLSelectElementImpl::attach()
 
     RenderStyle* const _style = document()->styleSelector()->styleForElement(this);
     _style->ref();
-    if (parentNode()->renderer() && _style->display() != NONE) {
+    if (parentNode()->renderer() && parentNode()->renderer()->childAllowed() &&
+        _style->display() != NONE) {
         m_render = new (document()->renderArena()) RenderSelect(this);
         m_render->setStyle(_style);
     }

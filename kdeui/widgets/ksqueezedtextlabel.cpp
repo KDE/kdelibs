@@ -91,6 +91,11 @@ void KSqueezedTextLabel::setText( const QString &text ) {
   squeezeTextToLabel();
 }
 
+void KSqueezedTextLabel::clear() {
+  d->fullText = QString();
+  QLabel::clear();
+}
+
 void KSqueezedTextLabel::squeezeTextToLabel() {
   QFontMetrics fm(fontMetrics());
   int labelWidth = size().width();

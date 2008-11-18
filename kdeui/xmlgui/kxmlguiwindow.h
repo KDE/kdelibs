@@ -329,6 +329,9 @@ protected Q_SLOTS:
     * @see configureToolbars()
     */
    virtual void saveNewToolbarConfig();
+
+private:
+    Q_PRIVATE_SLOT(k_func(), void _k_slotFactoryMakingChanges(bool))
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KXmlGuiWindow::StandardWindowOptions)

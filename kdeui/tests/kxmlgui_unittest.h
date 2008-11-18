@@ -34,6 +34,7 @@ private Q_SLOTS:
     void testVersionHandlerNewVersionUserChanges();
     void testMergingSeparators();
     void testActionListAndSeparator();
+    void testHiddenToolBar();
 };
 
 #endif

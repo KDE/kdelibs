@@ -388,7 +388,7 @@ void K3PopupMenu::mouseReleaseEvent(QMouseEvent* e)
 {
 #ifdef QT3_SUPPORT
     // Save the button, and the modifiers from state()
-    d->state = Qt::ButtonState(e->button() | (e->state() & Qt::KeyboardModifierMask));
+    d->state = Qt::ButtonState(uint(e->button()) | (e->state() & Qt::KeyboardModifierMask));
 #endif
     // Save the button, and the modifiers
     d->keyboardModifiers = e->modifiers();

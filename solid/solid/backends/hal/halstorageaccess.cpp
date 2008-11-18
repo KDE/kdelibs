@@ -233,8 +233,26 @@ bool StorageAccess::callHalVolumeMount()
     QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Hal", udi,
                                                       "org.freedesktop.Hal.Device.Volume",
                                                       "Mount");
-    QStringList options;
+
+    // HAL 0.5.12 supports using alternative drivers for the same filesystem.
+    // This is mainly used to integrate the ntfs-3g driver.
+    // Unfortunately, the primary driver gets used unless we
+    // specify some other driver (fstype) to the Mount method.
+    // TODO: Allow the user to choose the driver.
+
+    QString fstype = m_device->property("volume.fstype").toString();
     QStringList halOptions = m_device->property("volume.mount.valid_options").toStringList();
+
+    QString alternativePreferred = m_device->property("volume.fstype.alternative.preferred").toString();
+    if (!alternativePreferred.isEmpty()) {
+        QStringList alternativeFstypes = m_device->property("volume.fstype.alternative").toStringList();
+        if (alternativeFstypes.contains(alternativePreferred)) {
+            fstype = alternativePreferred;
+            halOptions = m_device->property("volume.mount."+fstype+".valid_options").toStringList();
+        }
+    }
+
+    QStringList options;
 
 #ifdef Q_OS_FREEBSD
     QString uid="-u=";
@@ -245,7 +263,6 @@ bool StorageAccess::callHalVolumeMount()
         options << uid+QString::number(::getuid());
     }
 
-    QString fstype=m_device->property("volume.fstype").toString();
 #ifdef Q_OS_FREEBSD
     char *cType;
     if ( fstype=="vfat" && halOptions.contains("-L=")) {
@@ -257,14 +274,14 @@ bool StorageAccess::callHalVolumeMount()
             options << "-C="+QString(nl_langinfo(CODESET));
     }
 #else
-    if (fstype=="vfat" || /*fstype.startsWith("ntfs") ||*/ fstype=="iso9660" || fstype=="udf" ) {
+    if (fstype=="vfat" || fstype=="ntfs" || fstype=="iso9660" || fstype=="udf" ) {
         if (halOptions.contains("utf8"))
             options<<"utf8";
         else if (halOptions.contains("iocharset="))
             options<<"iocharset=utf8";
     }
     // pass our locale to the ntfs-3g driver so it can translate local characters
-    else if ( fstype.startsWith("ntfs") && halOptions.contains("locale=") ) {
+    else if ( halOptions.contains("locale=") ) {
         // have to obtain LC_CTYPE as returned by the `locale` command
         // check in the same order as `locale` does
         char *cType;
@@ -275,7 +292,7 @@ bool StorageAccess::callHalVolumeMount()
 #endif
 
 
-    msg << "" << "" << options;
+    msg << "" << fstype << options;
 
     return c.callWithCallback(msg, this,
                               SLOT(slotDBusReply(const QDBusMessage &)),

@@ -144,7 +144,7 @@ namespace khtml {
         {
             if ( m_cachedSheet ) m_cachedSheet->deref(this);
         }
-        virtual void setStyleSheet(const DOM::DOMString&, const DOM::DOMString &sheet, const DOM::DOMString &)
+        virtual void setStyleSheet(const DOM::DOMString&, const DOM::DOMString &sheet, const DOM::DOMString &, const DOM::DOMString &/*mimetype*/)
         {
           if ( m_part )
             m_part->setUserStyleSheet( sheet.string() );
@@ -6128,7 +6128,7 @@ QStringList KHTMLPart::frameNames() const
   ConstFrameIt it = d->m_frames.begin();
   const ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
-    if (!(*it)->m_bPreloaded)
+    if (!(*it)->m_bPreloaded && (*it)->m_part)
       res += (*it)->m_name;
 
   return res;
@@ -6141,7 +6141,8 @@ QList<KParts::ReadOnlyPart*> KHTMLPart::frames() const
   ConstFrameIt it = d->m_frames.begin();
   const ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
-    if (!(*it)->m_bPreloaded)
+    if (!(*it)->m_bPreloaded && (*it)->m_part) // ### TODO: make sure that we always create an empty
+                                               // KHTMLPart for frames so this never happens.
       res.append( (*it)->m_part );
 
   return res;

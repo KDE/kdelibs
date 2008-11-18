@@ -91,6 +91,11 @@ public Q_SLOTS:
    * @param mode The new text.
    */
   void setText( const QString &text );
+  /**
+   * Clears the text. Same remark as above.
+   *
+   */
+  void clear();
 
 protected:
   /**

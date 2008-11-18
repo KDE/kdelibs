@@ -150,51 +150,51 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     QToolButton * button = qobject_cast<QToolButton*>(widgets.at(kInstall));
     if (button != NULL) {
         Entry::Status status = Entry::Status(model->data(index, ItemsModel::kStatus).toUInt());
-        if (!button->menu()) {
-            button->setMenu(InstallMenu(button, status));
-            button->setIconSize(QSize(16, 16));
+        //if (!button->menu()) {
+        //    button->setMenu(InstallMenu(button, status));
+        //    button->setIconSize(QSize(16, 16));
             button->resize(size);
-        }
+        //}
         button->move(right - button->width() - margin, option.rect.height() / 2 - button->height() / 2);
         button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-        button->setPopupMode(QToolButton::MenuButtonPopup);
+        //button->setPopupMode(QToolButton::MenuButtonPopup);
 
         // validate our assumptions
-        Q_ASSERT(button->menu());
-        Q_ASSERT(button->menu()->actions().count() == 2);
+        //Q_ASSERT(button->menu());
+        //Q_ASSERT(button->menu()->actions().count() == 2);
 
         // get the two actions
-        QAction * action_install = button->menu()->actions()[0];
-        QAction * action_uninstall = button->menu()->actions()[1];
+        //QAction * action_install = button->menu()->actions()[0];
+        //QAction * action_uninstall = button->menu()->actions()[1];
         switch (status) {
         case Entry::Installed:
             button->setText(i18n("Uninstall"));
-            action_install->setVisible(false);
-            action_uninstall->setVisible(true);
+            //action_install->setVisible(false);
+            //action_uninstall->setVisible(true);
             button->setIcon(QIcon(m_statusicons[Entry::Deleted]));
             break;
         case Entry::Updateable:
             button->setText(i18n("Update"));
-            action_uninstall->setVisible(false);
-            action_install->setText(i18n("Update"));
-            action_install->setVisible(true);
-            action_install->setIcon(QIcon(m_statusicons[Entry::Updateable]));
+            //action_uninstall->setVisible(false);
+            //action_install->setText(i18n("Update"));
+            //action_install->setVisible(true);
+            //action_install->setIcon(QIcon(m_statusicons[Entry::Updateable]));
             button->setIcon(QIcon(m_statusicons[Entry::Updateable]));
             break;
         case Entry::Deleted:
             /// @todo Set different button text when string freeze is over? "Install again"
             button->setText(i18n("Install"));
-            action_uninstall->setVisible(false);
-            action_install->setText(i18n("Install"));
-            action_install->setVisible(true);
-            action_install->setIcon(QIcon(m_statusicons[Entry::Installed]));
+            //action_uninstall->setVisible(false);
+            //action_install->setText(i18n("Install"));
+            //action_install->setVisible(true);
+            //action_install->setIcon(QIcon(m_statusicons[Entry::Installed]));
             button->setIcon(QIcon(m_statusicons[Entry::Installed]));
             break;
         default:
             button->setText(i18n("Install"));
-            action_uninstall->setVisible(false);
-            action_install->setVisible(true);
-            action_install->setIcon(QIcon(m_statusicons[Entry::Installed]));
+            //action_uninstall->setVisible(false);
+            //action_install->setVisible(true);
+            //action_install->setIcon(QIcon(m_statusicons[Entry::Installed]));
             button->setIcon(QIcon(m_statusicons[Entry::Installed]));
         }
     }

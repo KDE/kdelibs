@@ -42,11 +42,16 @@
 using namespace Soprano;
 
 
-uint qHash( const Soprano::Node& node )
+uint Soprano::qHash( const Soprano::Node& node )
 {
     return qHash( node.toString() );
 }
 
+// @deprecated: just for keeping binary compatibility
+uint qHash( const Soprano::Node& node )
+{
+    return Soprano::qHash( node );
+}
 
 class Nepomuk::ResourceFilterModel::Private
 {

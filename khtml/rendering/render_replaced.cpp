@@ -228,6 +228,8 @@ RenderWidget::~RenderWidget()
     KHTMLAssert( refCount() <= 0 );
 
     if(m_widget) {
+        if (m_widget->hasFocus ())
+            m_widget->clearFocus ();
         m_widget->hide();
         if (m_ownsWidget)
             m_widget->deleteLater();
@@ -1221,6 +1223,16 @@ KHTMLView* KHTMLWidgetPrivate::rootViewPos(QPoint& pos)
         v = v->part()->parentPart() ? v->part()->parentPart()->view() : 0;
     }
     return last;
+}
+
+void KHTMLWidgetPrivate::setIsRedirected( bool b )
+{
+    m_redirected = b;
+    if (!b && m_rw && m_rw->widget()) {
+        setInPaintEventFlag( m_rw->widget(), false );
+        m_rw->widget()->setAttribute(Qt::WA_OpaquePaintEvent, false);
+        m_rw->widget()->removeEventFilter(m_rw->view());
+    }
 }
 
 // -----------------------------------------------------------------------------

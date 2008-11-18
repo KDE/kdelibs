@@ -169,6 +169,10 @@ void Kded::messageFilter(const QDBusMessage &message)
   if (obj == "ksycoca")
      return; // Ignore this one.
 
+  // This happens when kded goes down and some modules try to clean up.
+  if (!self())
+     return;
+
   if (self()->m_dontLoad.value(obj, 0))
      return;
 

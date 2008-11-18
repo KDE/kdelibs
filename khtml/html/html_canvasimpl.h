@@ -282,6 +282,7 @@ public:
     // Pixel ops
     CanvasImageDataImpl* getImageData(float sx, float sy, float sw, float sh, int& exceptionCode);
     void putImageData(CanvasImageDataImpl* data, float dx, float dy, int& exceptionCode);
+    CanvasImageDataImpl* createImageData(float sw, float sh, int& exceptionCode);
 
 private:
     friend class HTMLCanvasElementImpl;

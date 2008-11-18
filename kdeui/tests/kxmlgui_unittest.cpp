@@ -20,11 +20,16 @@
 
 #include "qtest_kde.h"
 #include "kxmlgui_unittest.h"
+#include <QShowEvent>
+#include <kedittoolbar.h>
+#include <kaction.h>
 #include <kactioncollection.h>
+#include <kpushbutton.h>
 #include <QMenu>
-#include <QMainWindow>
 #include <kxmlguibuilder.h>
 #include <kxmlguiclient.h>
+#include <ktoolbar.h>
+#include <kxmlguiwindow.h>
 #include <ktemporaryfile.h>
 #include "kxmlgui_unittest.moc"
 #include <kxmlguiversionhandler_p.h>
@@ -269,7 +274,7 @@ public:
 static void createActions(KActionCollection* collection, const QStringList& actionNames)
 {
     Q_FOREACH(const QString& actionName, actionNames) {
-        collection->addAction(actionName);
+        collection->addAction(actionName)->setText("Action");
     }
 }
 
@@ -442,4 +447,67 @@ void KXmlGui_UnitTest::testActionListAndSeparator()
                  << "action1"
                  << "separator"
                  << "view_add_to_new_group");
+}
+
+class TestXmlGuiWindow : public KXmlGuiWindow
+{
+public:
+    TestXmlGuiWindow(const QByteArray& xml) : KXmlGuiWindow() {
+        QVERIFY(m_userFile.open());
+        m_userFile.write(xml);
+        m_fileName = m_userFile.fileName(); // remember filename
+        Q_ASSERT(!m_fileName.isEmpty());
+        m_userFile.close(); // write to disk
+    }
+    void createGUI() {
+        KXmlGuiWindow::createGUI(m_fileName);
+    }
+private:
+    KTemporaryFile m_userFile;
+    QString m_fileName;
+};
+
+void KXmlGui_UnitTest::testHiddenToolBar()
+{
+    const QByteArray xml =
+        "<?xml version = '1.0'?>\n"
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"1\" name=\"foo\" >\n"
+        "<MenuBar>\n"
+        "</MenuBar>\n"
+        "<ToolBar hidden=\"true\" name=\"mainToolBar\">\n"
+        "  <Action name=\"go_up\"/>\n"
+        "</ToolBar>\n"
+        "<ToolBar name=\"visibleToolBar\">\n"
+        "  <Action name=\"go_up\"/>\n"
+        "</ToolBar>\n"
+        "<ToolBar hidden=\"true\" name=\"hiddenToolBar\">\n"
+        "  <Action name=\"go_up\"/>\n"
+        "</ToolBar>\n"
+        "</gui>\n";
+    TestXmlGuiWindow mainWindow(xml);
+    mainWindow.setAutoSaveSettings();
+    createActions(mainWindow.actionCollection(), QStringList() << "go_up");
+    mainWindow.createGUI();
+    KXMLGUIFactory* factory = mainWindow.guiFactory();
+
+    //qDebug() << "containers:" << factory->containers("ToolBar");
+    QWidget* mainToolBarW = factory->container("mainToolBar", &mainWindow);
+    QVERIFY(mainToolBarW);
+    KToolBar* mainToolBar = qobject_cast<KToolBar *>(mainToolBarW);
+    QVERIFY(mainToolBar);
+    QVERIFY(mainToolBar->isHidden());
+
+    QVERIFY(!factory->container("visibleToolBar", &mainWindow)->isHidden());
+    KToolBar* hiddenToolBar = qobject_cast<KToolBar *>(factory->container("hiddenToolBar", &mainWindow));
+    kDebug() << hiddenToolBar;
+    QVERIFY(hiddenToolBar->isHidden());
+
+    // Now open KEditToolBar (#105525)
+    KEditToolBar editToolBar(factory);
+    // KEditToolBar loads the stuff in showEvent...
+    QShowEvent ev; qApp->sendEvent(&editToolBar, &ev);
+    editToolBar.button(KDialog::Apply)->setEnabled(true);
+    editToolBar.button(KDialog::Apply)->click();
+    QVERIFY(qobject_cast<KToolBar *>(factory->container("hiddenToolBar", &mainWindow))->isHidden());
 }

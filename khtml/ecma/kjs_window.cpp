@@ -1546,6 +1546,20 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
     emit ext->moveTopLevelWidget( tl->x() + moveByX , tl->y() + moveByY );
 }
 
+bool Window::targetIsExistingWindow(KHTMLPart* ourPart, const QString& frameName)
+{
+  QString normalized = frameName.toLower();
+  if (normalized == "_top" || normalized == "_self" || normalized == "_parent")
+    return true;
+
+  // Find the highest parent part we can access.
+  KHTMLPart* p = ourPart;
+  while (p->parentPart() && p->parentPart()->checkFrameAccess(ourPart))
+    p = p->parentPart();
+
+  return p->findFrame(frameName);
+}
+
 JSValue *Window::openWindow(ExecState *exec, const List& args)
 {
   KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
@@ -1571,6 +1585,13 @@ JSValue *Window::openWindow(ExecState *exec, const List& args)
 
   KHTMLSettings::KJSWindowOpenPolicy policy =
 		part->settings()->windowOpenPolicy(part->url().host());
+
+  QString frameName = args.size() > 1 ? args[1]->toString(exec).qstring() : QString("_blank");
+
+  // Always permit opening in an exist frame (including _self, etc.)
+  if ( targetIsExistingWindow( part, frameName ) )
+    policy = KHTMLSettings::KJSWindowOpenAllow;
+    
   if ( policy == KHTMLSettings::KJSWindowOpenAsk ) {
     emit part->browserExtension()->requestFocus(part);
     QString caption;
@@ -1592,8 +1613,6 @@ JSValue *Window::openWindow(ExecState *exec, const List& args)
     if (static_cast<ScriptInterpreter *>(exec->dynamicInterpreter())->isWindowOpenAllowed())
       policy = KHTMLSettings::KJSWindowOpenAllow;
   }
-
-  QString frameName = args.size() > 1 ? args[1]->toString(exec).qstring() : QString("_blank");
 
   v = args[2];
   QString features;
@@ -2551,7 +2570,7 @@ JSValue* Location::getValueProperty(ExecState *exec, int token) const
 	return jsString("");
       return jsString( UString(url.path().isEmpty() ? QString("/") : url.path()) );
     case Port:
-      return jsString( UString(url.port() ? QString::number((int)url.port()) : QLatin1String("")) );
+      return jsString( UString(url.port() > 0 ? QString::number((int)url.port()) : QLatin1String("")) );
     case Protocol:
       return jsString( UString(url.protocol()+':') );
     case Search:

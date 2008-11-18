@@ -75,6 +75,14 @@
 
 class KXmlGuiWindowPrivate : public KMainWindowPrivate {
 public:
+    void _k_slotFactoryMakingChanges(bool b)
+    {
+        // While the GUI factory is adding/removing clients,
+        // don't let KMainWindow think those are changes made by the user
+        // #105525
+        letDirtySettings = !b;
+    }
+
     bool showHelpMenu:1;
     bool saveFlag:1;
     QSize defaultSize;
@@ -149,8 +157,11 @@ bool KXmlGuiWindow::isHelpMenuEnabled() const
 KXMLGUIFactory *KXmlGuiWindow::guiFactory()
 {
     K_D(KXmlGuiWindow);
-    if (!d->factory)
+    if (!d->factory) {
         d->factory = new KXMLGUIFactory( this, this );
+        connect(d->factory, SIGNAL(makingChanges(bool)),
+                this, SLOT(_k_slotFactoryMakingChanges(bool)));
+    }
     return d->factory;
 }
 

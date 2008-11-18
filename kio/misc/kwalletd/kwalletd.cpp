@@ -765,8 +765,9 @@ QStringList KWalletD::wallets() const {
 
 void KWalletD::sync(int handle, const QString& appid) {
 	KWallet::Backend *b;
-
-	if ((b = getWallet(appid, handle))) {
+	
+	// get the wallet and check if we have a password for it (safety measure)
+	if ((b = getWallet(appid, handle)) && _passwords.contains(b->walletName())) {
 		QByteArray p;
 		QString wallet = b->walletName();
 		p = QByteArray(_passwords[wallet].data(), _passwords[wallet].length());
@@ -781,7 +782,8 @@ void KWalletD::doTransactionSync(const QString& wallet) {
 	}
 	const QPair<int, KWallet::Backend*> walletInfo = findWallet(wallet);
 	
-	if (walletInfo.second) {
+	// check if we have a password for this wallet. discard if not.
+	if (walletInfo.second && _passwords.contains(wallet)) {
 		QByteArray p = QByteArray(_passwords[wallet].data(), _passwords[wallet].length());
 		walletInfo.second->sync(p);
 		p.fill(0);

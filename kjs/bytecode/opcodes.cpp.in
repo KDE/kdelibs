@@ -381,10 +381,11 @@ static void dumpParam(CodeBlock& block, size_t offset, OpType type, bool wasImm)
         std::printf("A%08x", reinterpret_cast<NarrowArg*>(block.data() + offset)->addrVal);
         break;
     case OpType_reg:
-        std::printf("r%d", reinterpret_cast<NarrowArg*>(block.data() + offset)->regVal / (wasImm ? 1 : sizeof(LocalStorageEntry)));
+        std::printf("r%lu", reinterpret_cast<NarrowArg*>(block.data() + offset)->regVal / (wasImm ?
+                    1lu : sizeof(LocalStorageEntry)));
         break;
     case OpType_node:
-        std::printf("N%p", reinterpret_cast<WideArg*>(block.data() + offset)->nodeVal);
+        std::printf("N%p", (void*)reinterpret_cast<WideArg*>(block.data() + offset)->nodeVal);
         break;
     case OpType_cstr:
         std::printf("c\"%s\"", reinterpret_cast<WideArg*>(block.data() + offset)->cstrVal);
@@ -402,7 +403,7 @@ void CodeGen::disassembleBlock(CodeBlock& block)
         OpByteCode opCode = *reinterpret_cast<OpByteCode*>(block.data() + pc);
         const Op& opDescr = opsForOpCodes[opCode];
 
-        std::printf("%08x %s ", pc, OpNameVals[opDescr.baseInstr]);
+        std::printf("%08lx %s ", (unsigned long) pc, OpNameVals[opDescr.baseInstr]);
         for (int p = 0; p < opDescr.numParams; ++p) {
             dumpParam(block, pc + opDescr.paramOffsets[p],
                       opDescr.immediateParams[p] ? opDescr.paramTypes[p] : OpType_reg, opDescr.immediateParams[p]);

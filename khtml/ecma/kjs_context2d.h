@@ -105,7 +105,7 @@ namespace KJS {
         BeginPath, ClosePath, MoveTo, LineTo, QuadraticCurveTo, BezierCurveTo, ArcTo, Rect, Arc,
         Fill, Stroke, Clip, IsPointInPath,        // paths
         DrawImage,  // do we want backwards compat for drawImageFromRect?
-        GetImageData, PutImageData // pixel ops. ewww.
+        GetImageData, PutImageData, CreateImageData // pixel ops. ewww.
     };
   };
 
