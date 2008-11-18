@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>38</height>
+    <height>32</height>
    </rect>
   </property>
   <property name="sizePolicy" >
@@ -17,13 +17,28 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout" >
    <property name="spacing" >
-    <number>6</number>
+    <number>4</number>
    </property>
-   <property name="margin" >
+   <property name="leftMargin" >
     <number>0</number>
+   </property>
+   <property name="topMargin" >
+    <number>0</number>
+   </property>
+   <property name="rightMargin" >
+    <number>0</number>
+   </property>
+   <property name="bottomMargin" >
+    <number>2</number>
    </property>
    <item>
     <widget class="QLabel" name="label" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Preferred" hsizetype="Fixed" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text" >
       <string>F&amp;ind:</string>
      </property>
@@ -35,15 +50,21 @@
    <item>
     <widget class="KHistoryComboBox" name="m_find" >
      <property name="sizePolicy" >
-      <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-       <horstretch>0</horstretch>
+      <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+       <horstretch>10</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize" >
       <size>
-       <width>180</width>
+       <width>60</width>
        <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize" >
+      <size>
+       <width>180</width>
+       <height>16777215</height>
       </size>
      </property>
     </widget>
@@ -78,7 +99,7 @@
      </property>
      <property name="sizeHint" stdset="0" >
       <size>
-       <width>16</width>
+       <width>14</width>
        <height>26</height>
       </size>
      </property>
@@ -107,7 +128,7 @@
      </property>
      <property name="sizeHint" stdset="0" >
       <size>
-       <width>20</width>
+       <width>16</width>
        <height>17</height>
       </size>
      </property>
@@ -123,7 +144,7 @@
      </property>
      <property name="sizeHint" stdset="0" >
       <size>
-       <width>20</width>
+       <width>16</width>
        <height>17</height>
       </size>
      </property>
@@ -131,6 +152,7 @@
    </item>
   </layout>
  </widget>
+ <layoutdefault spacing="0" margin="0" />
  <customwidgets>
   <customwidget>
    <class>KHistoryComboBox</class>
@@ -143,6 +165,7 @@
    <header>ksqueezedtextlabel.h</header>
   </customwidget>
  </customwidgets>
+ <includes/>
  <resources/>
  <connections/>
 </ui>
