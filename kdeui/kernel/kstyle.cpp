@@ -400,8 +400,10 @@ void KStyle::polish(QWidget *w)
     if (QAbstractItemView *itemView = qobject_cast<QAbstractItemView*>(w) ) {
         itemView->viewport()->setAttribute(Qt::WA_Hover);
 
-        if (QTreeView *treeView = qobject_cast<QTreeView*>(w)) {
-            treeView->setAnimated(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
+        if (KGlobal::hasMainComponent()) { // are we on a KDE app ?
+            if (QTreeView *treeView = qobject_cast<QTreeView*>(w)) {
+                treeView->setAnimated(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
+            }
         }
     }
 
