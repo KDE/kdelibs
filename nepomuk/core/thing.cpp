@@ -51,6 +51,12 @@ Nepomuk::Thing::Thing( const Resource& other )
 }
 
 
+Nepomuk::Thing::Thing( Nepomuk::ResourceData* data )
+    : Resource( data )
+{
+}
+
+
 Nepomuk::Thing& Nepomuk::Thing::operator=( const Thing& res )
 {
     Resource::operator=( res );

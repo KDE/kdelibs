@@ -31,7 +31,7 @@ using namespace Nepomuk;
 
 void ResourceTest::testResourceStates()
 {
-    QUrl someUri = ResourceManager::instance()->generateUniqueUri();
+    QUrl someUri = ResourceManager::instance()->generateUniqueUri( QString() );
 
     Resource r1( someUri );
     Resource r2( someUri );

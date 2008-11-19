@@ -96,6 +96,11 @@ namespace Nepomuk {
         Thing( const Resource& other );
 
         /**
+         * Constructor used internally.
+         */
+        Thing( ResourceData* );
+
+        /**
          * Desctructor
          */
         ~Thing();

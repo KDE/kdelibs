@@ -140,10 +140,12 @@ namespace Nepomuk {
         KDE_DEPRECATED QList<Resource> allResourcesWithProperty( const QString& uri, const Variant& v );
 
         /**
+         * \deprecated Use generateUniqueUri(const QString&)
+         *
          * Generates a unique URI that is not used in the store yet. This method ca be used to 
          * generate URIs for virtual types such as Tag.
          */
-        QString generateUniqueUri();
+        KDE_DEPRECATED QString generateUniqueUri();
 
         /**
          * Generates a unique URI that is not used in the store yet. This method ca be used to 

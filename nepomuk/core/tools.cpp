@@ -33,14 +33,6 @@
 #include <Soprano/Vocabulary/NAO>
 
 
-static QString getLocaleLang()
-{
-    if( KGlobal::locale() )
-        return KGlobal::locale()->language();
-    else
-        return QLocale::system().name(); // FIXME: does this make sense?
-}
-
 
 void Nepomuk::setDefaultRepository( const QString& )
 {

@@ -218,11 +218,8 @@ bool Nepomuk::ResourceData::hasType( const QUrl& uri )
     if( m_proxyData )
         return m_proxyData->hasType( uri );
 
-    if ( load() ) {
-        return constHasType( uri );
-    }
-
-    return false;
+    load();
+    return constHasType( uri );
 }
 
 
@@ -280,7 +277,7 @@ bool Nepomuk::ResourceData::store()
     if ( !determineUri() ) {
         // create a random URI and add us to the initialized data, i.e. make us "valid"
         m_modificationMutex.lock();
-        m_uri = ResourceManager::instance()->generateUniqueUri();
+        m_uri = ResourceManager::instance()->generateUniqueUri( QString() );
         s_initializedData->insert( m_uri.toString(), this );
         m_modificationMutex.unlock();
     }
@@ -890,8 +887,17 @@ Nepomuk::Thing Nepomuk::ResourceData::pimoThing()
 {
     load();
     if( !m_pimoThing ) {
-        m_pimoThing = new Thing();
-        m_pimoThing->m_data->m_groundingOccurence = this;
+        if( hasType( Vocabulary::PIMO::Thing() ) ) {
+            kDebug() << "we are already a thing. Creating link to ourself" << m_uri << this;
+            // we are out own thing
+            m_pimoThing = new Thing( this );
+        }
+        else {
+            kDebug() << "creating new thing for" << m_uri << m_types << this;
+            m_pimoThing = new Thing();
+            m_pimoThing->m_data->m_groundingOccurence = this;
+        }
+        kDebug() << "created thing" << m_pimoThing->m_data << "with grounding occurence" << m_pimoThing->m_data->m_groundingOccurence;
     }
     return *m_pimoThing;
 }
