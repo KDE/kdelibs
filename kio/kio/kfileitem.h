@@ -620,6 +620,7 @@ public:
   KUrl::List urlList() const;
 
   /// @return the list of target URLs that those items represent
+  /// @since 4.2
   KUrl::List targetUrlList() const;
 };
 
