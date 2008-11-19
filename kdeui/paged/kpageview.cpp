@@ -28,7 +28,6 @@
 #include <kdialog.h>
 #include <kiconloader.h>
 #include <ktitlewidget.h>
-#include <kfadewidgeteffect.h>
 
 #include <QAbstractItemView>
 #include <QGridLayout>
@@ -219,8 +218,6 @@ void KPageViewPrivate::_k_pageSelected(const QModelIndex &index, const QModelInd
   if (faceType != KPageView::Tabbed) {
   QWidget *widget = qvariant_cast<QWidget*>( model->data( index, KPageModel::WidgetRole ) );
 
-  KFadeWidgetEffect *effect = new KFadeWidgetEffect(stack);
-
   if ( widget ) {
     if ( stack->indexOf( widget ) == -1 ) { // not included yet
       stack->addWidget( widget );
@@ -232,7 +229,6 @@ void KPageViewPrivate::_k_pageSelected(const QModelIndex &index, const QModelInd
   }
 
   updateTitleWidget(index);
-  effect->start();
   }
 
   Q_Q(KPageView);
@@ -242,8 +238,6 @@ void KPageViewPrivate::_k_pageSelected(const QModelIndex &index, const QModelInd
 void KPageViewPrivate::updateTitleWidget(const QModelIndex& index)
 {
     Q_Q(KPageView);
-
-    KFadeWidgetEffect *effect = new KFadeWidgetEffect( titleWidget );
 
     QString header = model->data( index, KPageModel::HeaderRole ).toString();
     if ( header.isNull() ) { //TODO KDE5 remove that ugly logic, see also doxy-comments in KPageWidgetItem::setHeader()
@@ -255,8 +249,6 @@ void KPageViewPrivate::updateTitleWidget(const QModelIndex& index)
     const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
     titleWidget->setPixmap( icon.pixmap( 22, 22 ) );
     titleWidget->setVisible(q->showPageHeader());
-
-    effect->start();
 }
 
 void KPageViewPrivate::_k_dataChanged(const QModelIndex &, const QModelIndex &)

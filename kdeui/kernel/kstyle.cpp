@@ -50,7 +50,7 @@
 #include <QtCore/QCache>
 #include <QtCore/QEvent>
 #include <QtCore/QVariant>
-#include <QtGui/QAbstractItemView>
+#include <QtGui/QTreeView>
 #include <QtGui/QApplication>
 #include <QtGui/QDialogButtonBox>
 #include <QtGui/QFormLayout>
@@ -399,6 +399,10 @@ void KStyle::polish(QWidget *w)
     // Enable hover effects in all itemviews
     if (QAbstractItemView *itemView = qobject_cast<QAbstractItemView*>(w) ) {
         itemView->viewport()->setAttribute(Qt::WA_Hover);
+
+        if (QTreeView *treeView = qobject_cast<QTreeView*>(w)) {
+            treeView->setAnimated(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
+        }
     }
 
     QCommonStyle::polish(w);
