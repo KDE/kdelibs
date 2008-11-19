@@ -21,31 +21,46 @@
 #include "krun_p.h"
 
 #include <QDir>
-#include <QFile>
 #include <QWidget>
 
 #include <windows.h>
 
 // TODO move to a shared lib
-static int runDll(WId windowId, const QString& libraryName, const QString& functionName, 
-            const QString& arguments = QString())
+static int runDll(WId windowId, const QString& libraryName, const QByteArray& functionName, 
+            const QString& arguments)
 {
-  HMODULE libHandle = LoadLibraryA( QFile::encodeName(libraryName).constData() );
+  HMODULE libHandle = LoadLibraryW( (LPCWSTR)libraryName.utf16() );
   if (!libHandle)
-    return false;
+    return 0;
+  typedef int (WINAPI *FunctionType)(HWND, HMODULE, LPCWSTR, int);
+  FunctionType function 
+    = (FunctionType)GetProcAddress( libHandle, functionName.constData() );
+  if (!function)
+    return 0;
+  int result = function((HWND)windowId, libHandle, (LPCWSTR)arguments.utf16(), SW_SHOW);
+  FreeLibrary(libHandle);
+  return result;
+}
+
+static int runDll(WId windowId, const QString& libraryName, const QByteArray& functionName, 
+            const QByteArray& arguments)
+{
+  HMODULE libHandle = LoadLibraryW( (LPCWSTR)libraryName.utf16() );
+  if (!libHandle)
+    return 0;
   typedef int (WINAPI *FunctionType)(HWND, HMODULE, LPCSTR, int);
   FunctionType function 
-    = (FunctionType)GetProcAddress( libHandle, functionName.toLatin1().constData() );
+    = (FunctionType)GetProcAddress( libHandle, functionName.constData() );
   if (!function)
-    return false;
-  int result = function((HWND)windowId, libHandle, (LPCSTR)arguments.toLatin1().constData(), SW_SHOW);
+    return 0;
+  int result = function((HWND)windowId, libHandle, (LPCSTR)arguments.constData(), SW_SHOW);
   FreeLibrary(libHandle);
   return result;
 }
 
 // TODO move to a shared lib
-static int runDll(QWidget* parent, const QString& libraryName, const QString& functionName, 
-            const QString& arguments = QString())
+static int runDll(QWidget* parent, const QString& libraryName, const QByteArray& functionName, 
+            const QString& arguments)
 {
   return runDll(parent ? parent->winId() : 0, libraryName, functionName, arguments);
 }
@@ -62,10 +77,11 @@ bool KRun::KRunPrivate::displayNativeOpenWithDialog( const KUrl::List& lst, QWid
     QStringList fnames;
     foreach( const KUrl& url, lst )
     {
-      fnames += QFile::encodeName( 
-        QDir::toNativeSeparators( url.path() ) ); // QFile::encodeName() needed because we will use toLatin1()
+      fnames += QDir::toNativeSeparators( url.path() );
     }
-    int result = runDll( window, QLatin1String("shell32.dll"), QLatin1String("OpenAs_RunDLL"), 
-                         QFile::encodeName( fnames.join(" ") ) );
+    int result = runDll( window,
+                         QLatin1String("shell32.dll"),
+                         "OpenAs_RunDLLW", 
+                         fnames.join(QLatin1String(" ")) );
     return result == 0;
 }
