@@ -33,5 +33,6 @@
 <!ENTITY OS	"операційна система"><!-- <acronym>OS</acronym>-->
 <!ENTITY RMB    "<mousebutton>права</mousebutton> кнопка мишки">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY systemsettings	"<application>Системні параметри</application>">
 <!ENTITY systemtray "<application>системний лоток</application>">
 <!ENTITY Tab	"<keycap>Tab</keycap>">
