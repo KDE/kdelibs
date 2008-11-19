@@ -618,6 +618,9 @@ public:
 
   /// @return the list of URLs that those items represent
   KUrl::List urlList() const;
+
+  /// @return the list of target URLs that those items represent
+  KUrl::List targetUrlList() const;
 };
 
 KIO_EXPORT QDataStream & operator<< ( QDataStream & s, const KFileItem & a );

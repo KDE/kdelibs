@@ -1053,7 +1053,7 @@ QString KFileItem::getToolTipText(int maxcount) const
 
 void KFileItem::run( QWidget* parentWidget ) const
 {
-    (void) new KRun( d->m_url, parentWidget, d->m_fileMode, d->m_bIsLocalUrl );
+    (void) new KRun( targetUrl(), parentWidget, d->m_fileMode, d->m_bIsLocalUrl );
 }
 
 bool KFileItem::cmp( const KFileItem & item ) const
@@ -1359,6 +1359,16 @@ KUrl::List KFileItemList::urlList() const {
     const const_iterator itend = end();
     for ( ; it != itend ; ++it ) {
         lst.append( (*it).url() );
+    }
+    return lst;
+}
+
+KUrl::List KFileItemList::targetUrlList() const {
+    KUrl::List lst;
+    const_iterator it = begin();
+    const const_iterator itend = end();
+    for ( ; it != itend ; ++it ) {
+        lst.append( (*it).targetUrl() );
     }
     return lst;
 }
