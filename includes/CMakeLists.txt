@@ -972,6 +972,7 @@ install(FILES
   Plasma/SvgWidget
   Plasma/TabBar
   Plasma/TextEdit
+  Plasma/ToolButton
   Plasma/ToolTipContent
   Plasma/ToolTipManager
   Plasma/Theme
