@@ -265,7 +265,7 @@ bool KPtyDevicePrivate::_k_canRead()
 #else
     int available;
 #endif
-#ifdef Q_OS_FREEBSD
+#if defined(Q_OS_FREEBSD) || defined(Q_OS_MAC)
     if (!::ioctl(q->masterFd(), TIOCOUTQ, (char *) &available)) {
 #else
     if (!::ioctl(q->masterFd(), FIONREAD, (char *) &available)) {
