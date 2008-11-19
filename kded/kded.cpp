@@ -91,6 +91,10 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    else
    {
       KToolInvocation::kdeinitExecWait( exe, args );
+
+      if (callBackObj && callBackSlot) {
+          QTimer::singleShot(0, callBackObj, callBackSlot);
+      }
    }
 }
 
@@ -226,8 +230,11 @@ void Kded::initModules()
          }
 
         // Load the module if necessary and allowed
-         if (autoload && !prevent_autoload)
-            loadModule(service, false);
+         if (autoload && !prevent_autoload) {
+            if (!loadModule(service, false)) {
+                continue;
+            }
+         }
 
          // Remember if the module is allowed to load on demand
          bool loadOnDemand = isModuleLoadedOnDemand(service);
