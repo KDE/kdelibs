@@ -785,7 +785,7 @@ QVariant KConfigGroup::readEntry( const char* key, const QVariant &aDefault ) co
 {
     Q_ASSERT_X(isValid(), "KConfigGroup::readEntry", "accessing an invalid group");
 
-    const QByteArray data = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchFlags());
+    const QByteArray data = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchLocalized);
     if (data.isNull())
         return aDefault;
 
