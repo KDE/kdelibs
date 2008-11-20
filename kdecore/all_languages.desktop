@@ -784,6 +784,7 @@ Name[tg]=Белорусӣ (Лотинӣ)
 Name[tr]=Belarus Dili (Latin)
 Name[uk]=Білоруська (латиниця)
 Name[x-test]=xxBelarusian (Latin)xx
+Name[zh_CN]=白俄罗斯语(拉丁语系)
 Name[zh_TW]=白俄羅斯語（拉丁）
 [bg]
 Name=Bulgarian
@@ -2181,11 +2182,12 @@ Name[es]=Bajo sorabo
 Name[is]=Lág-sorbian
 Name[nds]=Neddersorbsch
 Name[pt]=Sérvio de Baixo
-Name[pt_BR]=Sérvio de Baixo
+Name[pt_BR]=Baixo Sorábio
 Name[sv]=Lågsorbiska
 Name[tr]=Aşağı Sırpça
 Name[uk]=Нижньолужицька
 Name[x-test]=xxLower Sorbianxx
+Name[zh_CN]=下索布语
 Name[zh_TW]=下塞爾維亞語
 [dz]
 Name=Dzongkha
