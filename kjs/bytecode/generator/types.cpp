@@ -262,6 +262,10 @@ Type TypeTable::resolveType(const string& type)
         return types[type];
     else
         out.issueError("Unknown type:" + type);
+
+    // return something in nonvoid function
+    Type t;
+    return t;
 }
 
 vector<Type> TypeTable::resolveSignature(const StringList& in)
