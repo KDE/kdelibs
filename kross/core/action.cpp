@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include "action.h"
+#include "actioncollection.h"
 #include "interpreter.h"
 #include "script.h"
 #include "manager.h"
@@ -139,6 +140,10 @@ Action::~Action()
         krossdebug( QString("Action::~Action() Dtor name='%1'").arg(objectName()) );
     #endif
     finalize();
+    ActionCollection *coll = qobject_cast<ActionCollection*>(parent());
+    if ( coll ) {
+        coll->removeAction(this);
+    }
     delete d;
 }
 
@@ -246,6 +251,7 @@ QString Action::description() const
 void Action::setDescription(const QString& description)
 {
     d->description = description;
+    emit dataChanged(this);
     emit updated();
 }
 
@@ -258,6 +264,7 @@ void Action::setIconName(const QString& iconname)
 {
     setIcon( KIcon(iconname) );
     d->iconname = iconname;
+    emit dataChanged(this);
     emit updated();
 }
 
@@ -269,6 +276,7 @@ bool Action::isEnabled() const
 void Action::setEnabled(bool enabled)
 {
     QAction::setEnabled(enabled);
+    emit dataChanged(this);
     emit updated();
 }
 
@@ -282,6 +290,7 @@ void Action::setCode(const QByteArray& code)
     if( d->code != code ) {
         finalize();
         d->code = code;
+        emit dataChanged(this);
         emit updated();
     }
 }
@@ -299,6 +308,7 @@ void Action::setInterpreter(const QString& interpretername)
         setEnabled( Manager::self().interpreters().contains(interpretername) );
         if (!isEnabled())
             kWarning(410)<<"interpreter not found:"<<interpretername;
+        emit dataChanged(this);
         emit updated();
     }
 }

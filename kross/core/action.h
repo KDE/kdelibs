@@ -319,6 +319,9 @@ namespace Kross {
              */
             void updated();
 
+            /// This signal is emitted when the data of the Action is changed
+            void dataChanged(Action*);
+
             /**
              * This signal is emitted before the script got executed.
              */

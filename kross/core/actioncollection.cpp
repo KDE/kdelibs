@@ -50,6 +50,7 @@ namespace Kross {
             QString description;
             QString iconname;
             bool enabled;
+            bool blockupdated;
 
             Private(ActionCollection* const p) : parent(p) {}
     };
@@ -57,41 +58,61 @@ namespace Kross {
 }
 
 ActionCollection::ActionCollection(const QString& name, ActionCollection* parent)
-    : QObject(parent)
-    , d( new Private(parent) )
+    : QObject(0)
+    , d( new Private(0) )
 {
     setObjectName(name);
     d->text = name;
     d->enabled = true;
-    if( d->parent )
-        d->parent->registerCollection(this);
+    d->blockupdated = false;
+
+    setParentCollection(parent);
 }
 
 ActionCollection::~ActionCollection()
 {
-    if( d->parent )
-        d->parent->unregisterCollection(objectName());
+    setParentCollection(0);
     delete d;
 }
 
 QString ActionCollection::name() const { return objectName(); }
 
 QString ActionCollection::text() const { return d->text; }
-void ActionCollection::setText(const QString& text) { d->text = text; emit updated(); }
+void ActionCollection::setText(const QString& text) { d->text = text; emit dataChanged(this); emitUpdated(); }
 
 QString ActionCollection::description() const { return d->description; }
-void ActionCollection::setDescription(const QString& description) { d->description = description; emit updated(); }
+void ActionCollection::setDescription(const QString& description) { d->description = description; emit dataChanged(this); emitUpdated(); }
 
 QString ActionCollection::iconName() const { return d->iconname; }
-void ActionCollection::setIconName(const QString& iconname) { d->iconname = iconname; }
+void ActionCollection::setIconName(const QString& iconname) { d->iconname = iconname; emit dataChanged(this); }
 QIcon ActionCollection::icon() const { return KIcon(d->iconname); }
 
 bool ActionCollection::isEnabled() const { return d->enabled; }
-void ActionCollection::setEnabled(bool enabled) { d->enabled = enabled; emit updated(); }
+void ActionCollection::setEnabled(bool enabled) { d->enabled = enabled; emit dataChanged(this); emitUpdated(); }
 
 ActionCollection* ActionCollection::parentCollection() const
 {
     return d->parent;
+}
+
+void ActionCollection::setParentCollection( ActionCollection *parent )
+{
+    if ( d->parent ) {
+        emit d->parent->collectionToBeRemoved(this, d->parent);
+        d->parent->unregisterCollection( objectName() );
+        setParent( 0 );
+        emit d->parent->collectionRemoved( this, d->parent );
+        d->parent = 0;
+    }
+    setParent(0);
+    if ( parent ) {
+        emit parent->collectionToBeInserted(this, parent);
+        setParent( parent );
+        d->parent = parent;
+        parent->registerCollection( this );
+        emit parent->collectionInserted( this, parent );
+    }
+    emitUpdated();
 }
 
 bool ActionCollection::hasCollection(const QString& name) const
@@ -116,8 +137,8 @@ void ActionCollection::registerCollection(ActionCollection* collection)
     //Q_ASSERT( !name.isNull() );
     d->collections.insert(name, collection);
     d->collectionnames.append(name);
-    connect(collection, SIGNAL(updated()), this, SIGNAL(updated()));
-    //emit updated();
+    connectSignals(collection, true);
+    emitUpdated();
 }
 
 void ActionCollection::unregisterCollection(const QString& name)
@@ -127,8 +148,8 @@ void ActionCollection::unregisterCollection(const QString& name)
     ActionCollection* collection = d->collections[name];
     d->collectionnames.removeAll(name);
     d->collections.remove(name);
-    disconnect(collection, SIGNAL(updated()), this, SIGNAL(updated()));
-    //emit updated();
+    connectSignals(collection, false);
+    emitUpdated();
 }
 
 QList<Action*> ActionCollection::actions() const
@@ -150,12 +171,15 @@ void ActionCollection::addAction(Action* action)
 void ActionCollection::addAction(const QString& name, Action* action)
 {
     Q_ASSERT( action && ! name.isEmpty() );
+    emit actionToBeInserted(action, this);
     if( d->actionMap.contains(name) )
         d->actionList.removeAll( d->actionMap[name] );
     d->actionMap.insert(name, action);
     d->actionList.append(action);
-    connect(action, SIGNAL(updated()), this, SIGNAL(updated()));
-    emit updated();
+    action->setParent(this); // in case it is not set
+    connectSignals(action, true);
+    emit actionInserted(action, this);
+    emitUpdated();
 }
 
 void ActionCollection::removeAction(const QString& name)
@@ -163,22 +187,72 @@ void ActionCollection::removeAction(const QString& name)
     if( ! d->actionMap.contains(name) )
         return;
     Action* action = d->actionMap[name];
+    connectSignals(action, false);
+    emit actionToBeRemoved(action, this);
     d->actionList.removeAll(action);
     d->actionMap.remove(name);
-    disconnect(action, SIGNAL(updated()), this, SIGNAL(updated()));
-    emit updated();
+    //krossdebug( QString("ActionCollection::removeAction: %1 %2").arg(action->name()).arg(action->parent()->objectName()) );
+    action->setParent( 0 );
+    emit actionRemoved(action, this);
+    emitUpdated();
 }
 
 void ActionCollection::removeAction(Action* action)
 {
     Q_ASSERT( action && ! action->objectName().isEmpty() );
-    const QString name = action->objectName();
-    if( ! d->actionMap.contains(name) )
+    if( ! d->actionMap.contains(action->objectName()) ) {
+        Q_ASSERT( ! d->actionList.contains(action) );
         return;
-    d->actionList.removeAll(action);
-    d->actionMap.remove(name);
-    disconnect(action, SIGNAL(updated()), this, SIGNAL(updated()));
-    emit updated();
+    }
+    removeAction( action->objectName() );
+}
+
+void ActionCollection::connectSignals(Action *action, bool conn)
+{
+    if ( conn ) {
+        connect(action, SIGNAL(dataChanged(Action*)), this, SIGNAL(dataChanged(Action*)));
+        connect(action, SIGNAL(updated()), this, SLOT(emitUpdated()));
+    } else {
+        disconnect(action, SIGNAL(dataChanged(Action*)), this, SIGNAL(dataChanged(Action*)));
+        disconnect(action, SIGNAL(updated()), this, SLOT(emitUpdated()));
+    }
+}
+
+void ActionCollection::connectSignals(ActionCollection *collection, bool conn)
+{
+    if ( conn ) {
+        connect(collection, SIGNAL(dataChanged(Action*)), this, SIGNAL(dataChanged(Action*)));
+        connect(collection, SIGNAL(dataChanged(ActionCollection*)), this, SIGNAL(dataChanged(ActionCollection*)));
+
+        connect(collection, SIGNAL(collectionToBeInserted(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionToBeInserted(ActionCollection*, ActionCollection*)));
+        connect(collection, SIGNAL(collectionInserted(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionInserted(ActionCollection*, ActionCollection*)));
+        connect(collection, SIGNAL(collectionToBeRemoved(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionToBeRemoved(ActionCollection*, ActionCollection*)));
+        connect(collection, SIGNAL(collectionRemoved(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionRemoved(ActionCollection*, ActionCollection*)));
+
+        connect(collection, SIGNAL(actionToBeInserted(Action*, ActionCollection*)), this, SIGNAL(actionToBeInserted(Action*, ActionCollection*)));
+        connect(collection, SIGNAL(actionInserted(Action*, ActionCollection*)), this, SIGNAL(actionInserted(Action*, ActionCollection*)));
+        connect(collection, SIGNAL(actionToBeRemoved(Action*, ActionCollection*)), this, SIGNAL(actionToBeRemoved(Action*, ActionCollection*)));
+        connect(collection, SIGNAL(actionRemoved(Action*, ActionCollection*)), this, SIGNAL(actionRemoved(Action*, ActionCollection*)));
+        connect(collection, SIGNAL(updated()), this, SLOT(emitUpdated()));
+    } else {
+        disconnect(collection, SIGNAL(dataChanged(ActionCollection*)), this, SIGNAL(dataChanged(ActionCollection*)));
+
+        disconnect(collection, SIGNAL(collectionToBeInserted(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionToBeInserted(ActionCollection*, ActionCollection*)));
+        disconnect(collection, SIGNAL(collectionInserted(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionInserted(ActionCollection*, ActionCollection*)));
+        disconnect(collection, SIGNAL(collectionToBeRemoved(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionToBeRemoved(ActionCollection*, ActionCollection*)));
+        disconnect(collection, SIGNAL(collectionRemoved(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionRemoved(ActionCollection*, ActionCollection*)));
+
+        disconnect(collection, SIGNAL(actionToBeInserted(Action*, ActionCollection*)), this, SIGNAL(actionToBeInserted(Action*, ActionCollection*)));
+        disconnect(collection, SIGNAL(actionInserted(Action*, ActionCollection*)), this, SIGNAL(actionInserted(Action*, ActionCollection*)));
+        disconnect(collection, SIGNAL(actionToBeRemoved(Action*, ActionCollection*)), this, SIGNAL(actionToBeRemoved(Action*, ActionCollection*)));
+        disconnect(collection, SIGNAL(actionRemoved(Action*, ActionCollection*)), this, SIGNAL(actionRemoved(Action*, ActionCollection*)));
+        disconnect(collection, SIGNAL(updated()), this, SLOT(emitUpdated()));
+    }
+}
+
+void ActionCollection::emitUpdated()
+{
+    if (!d->blockupdated) emit updated();
 }
 
 /*********************************************************************
@@ -192,7 +266,7 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
         krossdebug( QString("ActionCollection::readXml tagName=\"%1\"").arg(element.tagName()) );
     #endif
 
-    blockSignals(true); // block updated() signals and emit it only once if everything is done
+    d->blockupdated = true; // block updated() signals and emit it only once if everything is done
     bool ok = true;
     QDomNodeList list = element.childNodes();
     const int size = list.size();
@@ -213,6 +287,7 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
             ActionCollection* c = d->collections.contains(name) ? d->collections[name] : QPointer<ActionCollection>(0);
             if( ! c )
                 c = new ActionCollection(name, this);
+
             c->setText( text.isEmpty() ? name : text );
             c->setDescription( description.isEmpty() ? c->text() : description );
             c->setIconName( iconname );
@@ -245,8 +320,8 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
         //else if( ! fromXml(elem) ) ok = false;
     }
 
-    blockSignals(false); // unblock signals
-    emit updated();
+    d->blockupdated = false; // unblock signals
+    emitUpdated();
     return ok;
 }
 

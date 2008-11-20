@@ -30,11 +30,18 @@ namespace Kross {
     // Forward declarations.
     class Action;
     class ActionCollection;
+    class ActionCollectionModelItem;
 
     /**
      * The ActionCollectionModel class implements a QAbstractItemModel to provide
      * a model for views of a \a ActionCollection instance that manages a
      * collection of \a Action instances.
+     *
+     * Important implementation detatils:
+     * \li An action can not have children.
+     * \li A collection can have both collections and actions as children.
+     * \li This model lists actions before collections.
+     * \li The internalPointer() of QModelIndex is used to hold a pointer to the parent collection.
      */
     class KROSSUI_EXPORT ActionCollectionModel : public QAbstractItemModel
     {
@@ -71,6 +78,11 @@ namespace Kross {
 
             virtual Qt::DropActions supportedDropActions() const;
 
+            QModelIndex indexForCollection( ActionCollection *collection ) const;
+            QModelIndex indexForAction( Action *action ) const;
+            /// Return the root collection
+            ActionCollection *rootCollection() const;
+
             /**
             * \return the \a Action instance the as argument passed QModelIndex
             * represents or NULL if the QModelIndex is not a \a Action .
@@ -83,9 +95,25 @@ namespace Kross {
             */
             static ActionCollection* collection(const QModelIndex& index);
 
+        protected:
+            /// @returns the row number of the @p collection
+            int rowNumber( ActionCollection *collection ) const;
+
         private Q_SLOTS:
             void slotUpdated();
 
+            void slotDataChanged( ActionCollection* );
+            void slotDataChanged( Action* );
+
+            void slotCollectionToBeInserted( ActionCollection* child, ActionCollection* parent );
+            void slotCollectionInserted( ActionCollection* child, ActionCollection* parent );
+            void slotCollectionToBeRemoved( ActionCollection* child, ActionCollection* parent );
+            void slotCollectionRemoved( ActionCollection* child, ActionCollection* parent );
+
+            void slotActionToBeInserted( Action* child, ActionCollection* parent );
+            void slotActionInserted( Action* child, ActionCollection* parent );
+            void slotActionToBeRemoved( Action* child, ActionCollection* parent );
+            void slotActionRemoved( Action* child, ActionCollection* parent );
         private:
             /// \internal d-pointer class.
             class Private;

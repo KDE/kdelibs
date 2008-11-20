@@ -33,8 +33,15 @@ class QIODevice;
 namespace Kross {
 
     /**
-     * The ActionCollection class manages collections of \a Action
-     * instances.
+     * The ActionCollection class manages collections of \a Action instances.
+     * An ActionCollection can have both actions and other collections as children.
+     * Child actions can be accessed using actions() which returns a list of Action pointers.
+     * Child collections can be accessed using collections() which returns a list of collection names.
+     * The collection can then be accessed with collection(name).
+     * To add a child action, call addAction(), and to remove an action: removeAction().
+     * To add a child collection, call setParentCollection(parent) in the collection you want to add to parent.
+     * To remove a collection call setParentCollection(0).
+     * NOTE: Do not use setParent().
      */
     class KROSSCORE_EXPORT ActionCollection : public QObject
     {
@@ -50,7 +57,7 @@ namespace Kross {
              * ActionCollection will be child of. If parent is not
              * NULL, this \a ActionCollection instance will register
              * itself as child of the parent \p parent by using the
-             * \a registerCollection method.
+             * \a setParentCollection method.
              */
             explicit ActionCollection(const QString& name, ActionCollection* parent = 0);
 
@@ -111,11 +118,12 @@ namespace Kross {
 
             /**
              * \return the parent \a ActionCollection instance this
-             * \collection is child of or NULL oif this collection
+             * \collection is child of or NULL if this collection
              * does not have a parent.
              */
             ActionCollection* parentCollection() const;
-
+            /// Set the parent to @p parent. NOTE: Do not use setParent().
+            void setParentCollection( ActionCollection *parent );
             /**
              * \return true if this collection has a child \a ActionCollection
              * instance which objectName is \p name .
@@ -190,13 +198,37 @@ namespace Kross {
              */
             void updated();
 
-            //void inserted(ActionCollection* self, ActionCollection* into);
-            //void updated(ActionCollection* self);
-            //void removed(ActionCollection* self, ActionCollection* from);
+            /// This signal is emitted when the data of a child action is changed
+            void dataChanged(Action*);
+            /// This signal is emitted when the data of the ActionCollection is changed
+            void dataChanged(ActionCollection*);
+
+            /// This signal is emitted just before @p child is added to @p parent
+            void collectionToBeInserted(ActionCollection* child, ActionCollection* parent);
+            /// This signal is emitted after @p child has been added to @p parent
+            void collectionInserted(ActionCollection* child, ActionCollection* parent);
+            /// This signal is emitted before @p child is removed from @p parent
+            void collectionToBeRemoved(ActionCollection* child, ActionCollection* parent);
+            /// This signal is emitted after @p child has been removed from @p parent
+            void collectionRemoved(ActionCollection* child, ActionCollection* parent);
+
+            /// This signal is emitted just before @p child is added to @p parent
+            void actionToBeInserted(Action* child, ActionCollection* parent);
+            /// This signal is emitted after @p child has been added to @p parent
+            void actionInserted(Action* child, ActionCollection* parent);
+            /// This signal is emitted before @p child is removed from @p parent
+            void actionToBeRemoved(Action* child, ActionCollection* parent);
+            /// This signal is emitted after @p child has been removed from @p parent
+            void actionRemoved(Action* child, ActionCollection* parent);
 
         protected:
             void registerCollection(ActionCollection* collection);
             void unregisterCollection(const QString& name);
+            void connectSignals(ActionCollection* collection, bool conn);
+            void connectSignals(Action* collection, bool conn);
+
+        private Q_SLOTS:
+            void emitUpdated();
 
         private:
             /// \internal d-pointer class.
