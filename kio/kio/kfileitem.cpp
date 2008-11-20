@@ -982,8 +982,8 @@ QString KFileItem::getToolTipText(int maxcount) const
 
     // the font tags are a workaround for the fact that the tool tip gets
     // screwed if the color scheme uses white as default text color
-    const char* start = "<tr><td align=\"right\"><nobr><font color=\"black\">";
-    const char* mid   = "&nbsp;</font></nobr></td><td><nobr><font color=\"black\">";
+    const char* start = "<tr><td align=\"right\"><nobr><font color=\"black\"><b>";
+    const char* mid   = "&nbsp;</b></font></nobr></td><td><nobr><font color=\"black\">";
     const char* end   = "</font></nobr></td></tr>";
 
     tip = "<table cellspacing=0 cellpadding=0>";
@@ -999,8 +999,7 @@ QString KFileItem::getToolTipText(int maxcount) const
 
     if ( !S_ISDIR ( d->m_fileMode ) )
         tip += start + i18n("Size:") + mid +
-               QString("%1 (%2)").arg(KIO::convertSize(size()))
-               .arg(KGlobal::locale()->formatNumber(size(), 0)) +
+               QString("%1").arg(KIO::convertSize(size())) +
                end;
 
     tip += start + i18n("Modified:") + mid +
@@ -1014,13 +1013,17 @@ QString KFileItem::getToolTipText(int maxcount) const
 
     if (info.isValid())
     {
-        tip += "<tr><td colspan=2><center><s>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</s></center></td></tr>";
         const QStringList keys = info.preferredKeys();
 
         // now the rest
         QStringList::ConstIterator it = keys.begin();
         for (int count = 0; count<maxcount && it!=keys.end() ; ++it)
         {
+            if ( count == 0 )
+            {
+                tip += "<tr><td colspan=2><center><s>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</s></center></td></tr>";
+            }
+                
             KFileMetaInfoItem item = info.item( *it );
             if ( item.isValid() )
             {
