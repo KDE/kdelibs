@@ -404,16 +404,16 @@
 		<Name>Utilities</Name>
 		<Directory>kde-utilities.directory</Directory>
 		<Include>
-			<Or>
+			<And>
 				<Category>Utility</Category>
-				<Category>TextEditor</Category>
-				<Category>Accessibility</Category>
-				<Category>X-KDE-Utilities-Desktop</Category>
-				<Category>X-KDE-Utilities-File</Category>
-				<Category>X-KDE-Utilities-Peripherals</Category>
-				<Category>X-KDE-Utilities-PIM</Category>
-				<Category>X-KDE-More</Category>
-			</Or>
+				<Not><Category>X-KDE-More</Category></Not>
+			</And>
+			<Category>TextEditor</Category>
+			<Category>Accessibility</Category>
+			<Category>X-KDE-Utilities-Desktop</Category>
+			<Category>X-KDE-Utilities-File</Category>
+			<Category>X-KDE-Utilities-Peripherals</Category>
+			<Category>X-KDE-Utilities-PIM</Category>
 		</Include>
 		<Menu>
 			<Name>XUtilities</Name>
