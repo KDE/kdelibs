@@ -598,8 +598,8 @@ unsigned DOMStringImpl::hash() const
 
 DOMStringImpl* DOMStringImpl::empty()
 {
-    static DOMStringImpl* e = new DOMStringImpl();
-    return e;
+    static DOMString e;
+    return e.implementation();
 }
 
 
