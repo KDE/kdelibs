@@ -53,6 +53,7 @@ namespace WebCore {
 
         String toString() const {
             // FIXME not implemented
+            return String();
         }
 
     private:
