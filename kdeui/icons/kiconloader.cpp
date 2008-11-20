@@ -129,7 +129,6 @@ K3Icon KIconThemeNode::findIcon(const QString& name, int size,
 struct KIconGroup
 {
     int size;
-    bool dblPixels;
     bool alphaBlending;
 };
 
@@ -422,7 +421,6 @@ void KIconLoaderPrivate::init( const QString& _appname, KStandardDirs *_dirs )
 
         KConfigGroup cg(config, QLatin1String(groups[i]) + "Icons");
         mpGroups[i].size = cg.readEntry("Size", 0);
-        mpGroups[i].dblPixels = cg.readEntry("DoublePixels", false);
         if (QPixmap::defaultDepth()>8)
             mpGroups[i].alphaBlending = cg.readEntry("AlphaBlending", true);
         else
@@ -1032,8 +1030,6 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     if (group >= 0)
     {
         key.append(d->mpEffect.fingerprint(group, state));
-        if (d->mpGroups[group].dblPixels)
-            key.append(QLatin1String(":dblsize"));
     } else {
         key.append(QLatin1String("noeffect"));
     }
@@ -1177,10 +1173,6 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     {
         if ( abs(size-img->width())>iconThreshold )
             *img = img->scaled(size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    }
-    if (group >= 0 && d->mpGroups[group].dblPixels)
-    {
-        *img = d->mpEffect.doublePixels(*img);
     }
     if (group >= 0)
     {
