@@ -296,7 +296,7 @@ namespace KStandardAction
 
   /**
    * Clear selected area.  Calls clear() on the widget with the current focus.
-   * Note that for some widgets, this may not provide the intended bahavior.  For
+   * Note that for some widgets, this may not provide the intended behavior.  For
    * example if you make use of the code above and a K3ListView has the focus, clear()
    * will clear all of the items in the list.  If this is not the intened behavior
    * and you want to make use of this slot, you can subclass K3ListView and reimplement
