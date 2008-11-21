@@ -37,8 +37,8 @@ enum ParamFlags {
 };
 
 enum OpFlags {
-    Op_EndsBB,
-    Op_Hint
+    Op_EndsBB = 1,
+    Op_Hint   = 2
 };
 
 struct Parameter
