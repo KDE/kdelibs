@@ -71,7 +71,11 @@ ActionCollection::ActionCollection(const QString& name, ActionCollection* parent
 
 ActionCollection::~ActionCollection()
 {
-    setParentCollection(0);
+    if ( d->parent ) {
+        emit d->parent->collectionToBeRemoved(this, d->parent);
+        d->parent->unregisterCollection( objectName() );
+        emit d->parent->collectionRemoved( this, d->parent );
+    }
     delete d;
 }
 
