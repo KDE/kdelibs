@@ -48,6 +48,11 @@
 #include <QtXml/qdom.h>
 #include <QtCore/Q_PID>
 
+#if defined(Q_OS_WIN)
+#include <windows.h>
+#include <shlobj.h>
+#endif
+
 using namespace KNS;
 
 CoreEngine::CoreEngine(QObject* parent)
@@ -1385,7 +1390,16 @@ bool CoreEngine::install(const QString &payloadfile)
         }
         if (!m_installation->absoluteInstallPath().isEmpty()) {
             installdir = m_installation->absoluteInstallPath() + '/';
+#if defined(Q_WS_WIN)
+            WCHAR wPath[MAX_PATH+1];
+            if ( SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, wPath) == S_OK) {
+                installdir = QString::fromUtf16((const ushort *) wPath) + QLatin1Char('/') + m_installation->installPath() + QLatin1Char('/');
+            } else {
+                installdir =  QDir::home().path() + QLatin1Char('/') + m_installation->installPath() + QLatin1Char('/');
+            }
+#else
             pathcounter++;
+#endif
         }
         if (pathcounter != 1) {
             kError() << "Wrong number of installation directories given." << endl;
