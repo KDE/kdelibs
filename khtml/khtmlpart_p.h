@@ -487,6 +487,8 @@ public:
     else
       executeJavascriptURL(url);
   }
+
+  void propagateInitialDomainTo(KHTMLPart* kid);
 };
 
 #endif

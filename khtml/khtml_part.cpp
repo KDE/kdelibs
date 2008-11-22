@@ -4085,6 +4085,8 @@ bool KHTMLPart::requestFrame( DOM::HTMLPartContainerElementImpl *frame, const QS
                                        d->codeForJavaScriptURL(url) );
       if ( res.type() == QVariant::String && p->d->m_redirectURL.isEmpty() ) {
         p->begin();
+        // We recreated the document, so propagate domain again.
+        d->propagateInitialDomainTo( p );
         p->write( res.toString() );
         p->end();
       }
@@ -4389,6 +4391,10 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
       p->begin();
       if (d->m_doc && p->d->m_doc)
         p->d->m_doc->setBaseURL(d->m_doc->baseURL());
+
+      // We may have to re-propagate the domain here if we go here due to navigation
+      d->propagateInitialDomainTo(p);
+	
       if (!url.url().startsWith("about:")) {
         p->write(url.path());
       } else {
@@ -4857,22 +4863,24 @@ void KHTMLPart::slotChildCompleted( bool pendingAction )
 
 void KHTMLPart::slotChildDocCreated()
 {
-  const KHTMLPart* htmlFrame = static_cast<const KHTMLPart *>(sender());
   // Set domain to the frameset's domain
   // This must only be done when loading the frameset initially (#22039),
   // not when following a link in a frame (#44162).
-  if ( d->m_doc && d->m_doc->isHTMLDocument() )
-  {
-    if ( sender()->inherits("KHTMLPart") )
-    {
-      DOMString domain = static_cast<HTMLDocumentImpl*>(d->m_doc)->domain();
-      if (htmlFrame->d->m_doc && htmlFrame->d->m_doc->isHTMLDocument() )
-        //kDebug(6050) << "url:" << htmlFrame->url();
-        static_cast<HTMLDocumentImpl*>(htmlFrame->d->m_doc)->setDomain( domain );
-    }
-  }
+  if (KHTMLPart* htmlFrame = qobject_cast<KHTMLPart*>(sender()))
+    d->propagateInitialDomainTo( htmlFrame );
+    
   // So it only happens once
-  disconnect( htmlFrame, SIGNAL( docCreated() ), this, SLOT( slotChildDocCreated() ) );
+  disconnect( sender(), SIGNAL( docCreated() ), this, SLOT( slotChildDocCreated() ) );
+}
+
+void KHTMLPartPrivate::propagateInitialDomainTo(KHTMLPart* kid)
+{
+  // This method is used to propagate our domain information for
+  // child frames, potentially widening to have less periods, and also
+  // to provide a domain for about: or JavaScript: URLs altogether.
+  // Note that DocumentImpl:;setDomain does the checking.
+  if ( m_doc && kid->d->m_doc )
+    kid->d->m_doc->setDomain( m_doc->domain() );
 }
 
 void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs )
@@ -4964,7 +4972,7 @@ bool KHTMLPart::checkFrameAccess(KHTMLPart *callingHtmlPart)
   if (callingHtmlPart == this)
     return true; // trivial
 
-  if (htmlDocument().isNull()) {
+  if (!xmlDocImpl()) {
 #ifdef DEBUG_FINDFRAME
     kDebug(6050) << "Empty part" << this << "URL = " << url();
 #endif
@@ -4972,9 +4980,9 @@ bool KHTMLPart::checkFrameAccess(KHTMLPart *callingHtmlPart)
   }
 
   // now compare the domains
-  if (callingHtmlPart && callingHtmlPart->docImpl() && docImpl())  {
-    DOM::DOMString actDomain = callingHtmlPart->docImpl()->domain();
-    DOM::DOMString destDomain = docImpl()->domain();
+  if (callingHtmlPart && callingHtmlPart->xmlDocImpl() && xmlDocImpl())  {
+    DOM::DOMString actDomain = callingHtmlPart->xmlDocImpl()->domain();
+    DOM::DOMString destDomain = xmlDocImpl()->domain();
 
 #ifdef DEBUG_FINDFRAME
     kDebug(6050) << "actDomain =" << actDomain.string() << "destDomain =" << destDomain.string();

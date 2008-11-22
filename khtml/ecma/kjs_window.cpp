@@ -1313,17 +1313,13 @@ bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
   if ( !part->xmlDocImpl() )
     return true; // allow to access a window that was just created (e.g. with window.open("about:blank"))
 
-  DOM::HTMLDocumentImpl* thisDocument = part->docImpl();
-  if ( !thisDocument ) {
-    kDebug(6070) << "Window::isSafeScript: trying to access an XML document !?";
-    return false;
-  }
+  DOM::DocumentImpl* thisDocument = part->xmlDocImpl();
 
   KHTMLPart *activeKHTMLPart = qobject_cast<KHTMLPart*>(activePart);
   if (!activeKHTMLPart)
     return true; // not a KHTMLPart
 
-  DOM::HTMLDocumentImpl* actDocument = activeKHTMLPart->docImpl();
+  DOM::DocumentImpl* actDocument = activeKHTMLPart->xmlDocImpl();
   if ( !actDocument ) {
     kDebug(6070) << "Window::isSafeScript: active part has no document!";
     return false;
