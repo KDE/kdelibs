@@ -73,9 +73,10 @@ bool Nepomuk::Types::EntityPrivate::load()
     Soprano::QueryResultIterator it
         = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?p ?o where { "
                                                                           "graph ?g { <%1> ?p ?o . } . "
-                                                                          "?g a <%2> . }")
+                                                                          "{ ?g a <%2> . } UNION { ?g a <%3> . } . }")
                                                                   .arg( QString::fromAscii( uri.toEncoded() ) )
-                                                                  .arg( Soprano::Vocabulary::NRL::Ontology().toString() ),
+                                                                  .arg( Soprano::Vocabulary::NRL::Ontology().toString() )
+                                                                  .arg( Soprano::Vocabulary::NRL::KnowledgeBase().toString() ),
                                                                   Soprano::Query::QueryLanguageSparql );
     bool success = false;
     while ( it.next() ) {
@@ -119,9 +120,10 @@ bool Nepomuk::Types::EntityPrivate::loadAncestors()
     Soprano::QueryResultIterator it
         = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?s ?p where { "
                                                                           "graph ?g { ?s ?p <%1> . } . "
-                                                                          "?g a <%2> . }")
+                                                                          "{ ?g a <%2> . } UNION { ?g a <%3> . } . }")
                                                                   .arg( QString::fromAscii( uri.toEncoded() ) )
-                                                                  .arg( Soprano::Vocabulary::NRL::Ontology().toString() ),
+                                                                  .arg( Soprano::Vocabulary::NRL::Ontology().toString() )
+                                                                  .arg( Soprano::Vocabulary::NRL::KnowledgeBase().toString() ),
                                                                   Soprano::Query::QueryLanguageSparql );
     bool success = false;
     while ( it.next() ) {
