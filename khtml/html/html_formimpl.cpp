@@ -1724,8 +1724,21 @@ void HTMLInputElementImpl::reset()
 
 void HTMLInputElementImpl::setChecked(bool _checked)
 {
-    if (m_form && m_type == RADIO && _checked && !name().isEmpty())
-        m_form->radioClicked(this);
+    if (m_type == RADIO && _checked && !name().isEmpty()) {
+        // uncheck others in the group..
+        if (m_form) {
+            m_form->radioClicked(this);
+        } else {
+            // We're not in form, so we group with other formless radios with the same name
+            HTMLCollectionImpl candidates(document()->documentElement(), HTMLCollectionImpl::FORMLESS_INPUT);
+            unsigned long len = candidates.length();
+            for (unsigned long c = 0; c < len; ++c) {
+                HTMLInputElementImpl* current = static_cast<HTMLInputElementImpl*>(candidates.item(c));
+                if (current != this && current->name() == name() && current->inputType() == HTMLInputElementImpl::RADIO)
+                    current->setChecked(false);
+            }
+        }
+    }
 
     if (checked() == _checked) return;
     m_useDefaultChecked = false;
@@ -3032,3 +3045,5 @@ void HTMLIsIndexElementImpl::setPrompt(const DOMString& str)
 
 // -------------------------------------------------------------------------
 
+
+// kate: indent-width 4; replace-tabs on; tab-width 8; space-indent on;
