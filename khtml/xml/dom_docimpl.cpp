@@ -226,7 +226,8 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
         doc = new DocumentImpl(this, v);
 
     if (dtype) {
-        doc->setDocType(dtype);
+        dtype->setDocument(doc);
+        doc->appendChild(dtype,exceptioncode);
     }
 
     // the document must be created empty if all parameters are null
@@ -544,19 +545,6 @@ DocumentImpl::~DocumentImpl()
 }
 
 
-DocumentTypeImpl *DocumentImpl::doctype() const
-{
-    return m_doctype;
-}
-
-void DocumentImpl::setDocType(DocumentTypeImpl* dt)
-{
-    assert(m_doctype == 0 && dt != 0);
-    m_doctype = dt;
-    m_doctype->ref();
-    m_doctype->setDocument(this);
-}
-
 DOMImplementationImpl *DocumentImpl::implementation() const
 {
     return m_implementation;
@@ -568,6 +556,11 @@ void DocumentImpl::childrenChanged()
     if (m_documentElement)
         m_documentElement->deref();
     m_documentElement = 0;
+
+    // same for m_docType
+    if (m_doctype)
+        m_doctype->deref();
+    m_doctype = 0;
 }
 
 ElementImpl *DocumentImpl::documentElement() const
@@ -582,6 +575,20 @@ ElementImpl *DocumentImpl::documentElement() const
     }
     return m_documentElement;
 }
+
+DocumentTypeImpl *DocumentImpl::doctype() const
+{
+    if (!m_doctype) {
+        NodeImpl* n = firstChild();
+        while (n && n->nodeType() != Node::DOCUMENT_TYPE_NODE)
+            n = n->nextSibling();
+        m_doctype = static_cast<DocumentTypeImpl*>(n);
+        if (m_doctype)
+            m_doctype->ref();
+    }
+    return m_doctype;
+}
+
 
 ElementImpl *DocumentImpl::createElement( const DOMString &name, int* pExceptioncode )
 {
@@ -1614,7 +1621,7 @@ void DocumentImpl::open( bool clearEventListeners )
         detach();
 
     removeChildren();
-    childrenChanged(); // Reset m_documentElement
+    childrenChanged(); // Reset m_documentElement, m_doctype
     delete m_styleSelector;
     m_styleSelector = 0;
     m_view = view;
@@ -3153,3 +3160,5 @@ void XMLDocumentImpl::close()
 }
 
 #include "dom_docimpl.moc"
+
+// kate: indent-width 4; replace-tabs on; tab-width 8; space-indent on;

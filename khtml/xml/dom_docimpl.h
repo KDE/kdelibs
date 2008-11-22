@@ -203,7 +203,6 @@ public:
     // DOM methods & attributes for Document
 
     DocumentTypeImpl *doctype() const;
-    void setDocType(DocumentTypeImpl* dt);
 
     DOMImplementationImpl *implementation() const;
     ElementImpl *documentElement() const;
@@ -597,7 +596,7 @@ protected:
     KUrl m_baseURL;
     QString m_baseTarget;
 
-    DocumentTypeImpl *m_doctype;
+    mutable DocumentTypeImpl *m_doctype;
     DOMImplementationImpl *m_implementation;
 
     QString m_usersheet;

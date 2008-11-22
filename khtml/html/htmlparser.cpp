@@ -72,6 +72,16 @@
 using namespace DOM;
 using namespace khtml;
 
+#ifdef PARSER_DEBUG
+static QString getParserPrintableName(int id)
+{
+    if (id >= ID_CLOSE_TAG)
+	return "/" + getPrintableName(id - ID_CLOSE_TAG);
+    else
+	return getPrintableName(id);
+}
+#endif
+
 //----------------------------------------------------------------------------
 
 /**
@@ -230,8 +240,8 @@ void KHTMLParser::parseToken(Token *t)
     }
 
 #ifdef PARSER_DEBUG
-    kDebug( 6035 ) << "\n\n==> parser: processing token " << getTagName(t->tid) << "(" << t->tid << ")"
-                    << " current = " << getTagName(current->id()) << "(" << current->id() << ")" << endl;
+    kDebug( 6035 ) << "\n\n==> parser: processing token " << getParserPrintableName(t->tid) << "(" << t->tid << ")"
+                    << " current = " << getParserPrintableName(current->id()) << "(" << current->id() << ")" << endl;
     kDebug(6035) << "inline=" << m_inline << " inBody=" << inBody << " haveFrameSet=" << haveFrameSet << " haveContent=" << haveContent;
 #endif
 
@@ -342,7 +352,6 @@ void KHTMLParser::parseDoctypeToken(DoctypeToken* t)
         return;
     DOM::HTMLDocumentImpl* htmldoc = static_cast<DOM::HTMLDocumentImpl*> (document);
     if (t->name.toLower() == "html") {
-        document->setDocType(doctype);
         if (!t->internalSubset.isEmpty() || t->publicID.isEmpty()) {
             // Internal subsets always denote full standards, as does
             // a doctype without a public ID.
@@ -1650,9 +1659,9 @@ void KHTMLParser::popBlock( int _id )
     int maxLevel = 0;
 
 #ifdef PARSER_DEBUG
-    kDebug( 6035 ) << "popBlock(" << getTagName(_id) << ")";
+    kDebug( 6035 ) << "popBlock(" << getParserPrintableName(_id) << ")";
     while(Elem) {
-        kDebug( 6035) << "   > " << getTagName(Elem->id);
+        kDebug( 6035) << "   > " << getParserPrintableName(Elem->id);
         Elem = Elem->next;
     }
     Elem = blockStack;
@@ -1738,7 +1747,7 @@ void KHTMLParser::popOneBlock(bool delBlock)
 #ifndef PARSER_DEBUG
     if(!Elem) return;
 #else
-    kDebug( 6035 ) << "popping block: " << getTagName(Elem->id) << "(" << Elem->id << ")";
+    kDebug( 6035 ) << "popping block: " << getParserPrintableName(Elem->id) << "(" << Elem->id << ")";
 #endif
 
 #if SPEED_DEBUG < 1
