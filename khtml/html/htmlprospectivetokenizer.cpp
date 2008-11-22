@@ -845,11 +845,11 @@ void ProspectiveTokenizer::emitTag()
 
     CachedObject* o = 0;
     if (tag == ID_SCRIPT)
-         o = m_document->docLoader()->requestScript( m_urlToLoad, m_document->view()->part()->encoding() );
+         o = m_document->docLoader()->requestScript( m_urlToLoad, m_document->part()->encoding() );
     else if (tag == ID_IMAGE || tag == ID_IMG) 
          o = m_document->docLoader()->requestImage( m_urlToLoad );
     else if (tag == ID_LINK && m_linkIsStyleSheet) 
-        o = m_document->docLoader()->requestStyleSheet( m_urlToLoad, m_document->view()->part()->encoding() );
+        o = m_document->docLoader()->requestStyleSheet( m_urlToLoad, m_document->part()->encoding() );
 
     if (o)
         m_document->docLoader()->registerPreload( o );
@@ -865,7 +865,7 @@ void ProspectiveTokenizer::emitCSSRule()
         DOMString value = DOMString(m_cssRuleValue.data(), m_cssRuleValue.size());
         DOMString url = parseURL(value);
         if (!url.isEmpty())
-            m_document->docLoader()->registerPreload( m_document->docLoader()->requestStyleSheet( m_urlToLoad, m_document->view()->part()->encoding() ) ); // #### charset
+            m_document->docLoader()->registerPreload( m_document->docLoader()->requestStyleSheet( m_urlToLoad, m_document->part()->encoding() ) ); // #### charset
     }
     m_cssRule.clear();
     m_cssRuleValue.clear();

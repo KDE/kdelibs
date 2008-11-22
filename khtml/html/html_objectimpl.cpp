@@ -476,8 +476,8 @@ void HTMLObjectBaseElementImpl::computeContent()
 
     // If Java is off, render alternative as well...
     if (effectiveServiceType == "application/x-java-applet") {
-        KHTMLView* w = document()->view();
-        if (!w || !w->part()->javaEnabled())
+        KHTMLPart* p = document()->part();
+        if (!p || !p->javaEnabled())
             newRenderAlternative = true;
     }
 
@@ -710,9 +710,9 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLEmbedElementImpl::attach()
 {
-    KHTMLView* w = document()->view();
+    KHTMLPart* p = document()->part();
 
-    if (!w || !w->part()->pluginsEnabled())
+    if (!p || !p->pluginsEnabled())
         m_renderAlternative = true;
 
     if (parentNode()->id() == ID_OBJECT)
@@ -799,9 +799,9 @@ DocumentImpl* HTMLObjectElementImpl::contentDocument() const
 
 void HTMLObjectElementImpl::attach()
 {
-    KHTMLView* w = document()->view();
+    KHTMLPart* p = document()->part();
 
-    if (!w || !w->part()->pluginsEnabled())
+    if (!p || !p->pluginsEnabled())
         m_renderAlternative = true;
 
     HTMLObjectBaseElementImpl::attach();

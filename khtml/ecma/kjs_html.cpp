@@ -107,9 +107,9 @@ JSValue* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, JSObject *thisObj
   case HTMLDocument::Open:
     if (args.size() >= 3) // IE extension for document.open: it means window.open if it has 3 args or more
     {
-      KHTMLView *view = doc.view();
-      if ( view && view->part() ) {
-        Window* win = Window::retrieveWindow(view->part());
+      KHTMLPart* part = doc.part();
+      if ( part ) {
+        Window* win = Window::retrieveWindow(part);
         if( win ) {
           win->openWindow(exec, args);
         }
@@ -142,9 +142,9 @@ JSValue* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, JSObject *thisObj
   case HTMLDocument::GetSelection: {
     // NS4 and Mozilla specific. IE uses document.selection.createRange()
     // http://docs.sun.com/source/816-6408-10/document.htm#1195981
-    KHTMLView *view = doc.view();
-    if ( view && view->part() )
-       return jsString(view->part()->selectedText());
+    KHTMLPart *part = doc.part();
+    if ( part )
+       return jsString(part->selectedText());
     else
        return jsUndefined();
   }
@@ -228,9 +228,9 @@ bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &pr
 #endif
 
   DOM::DocumentImpl* docImpl = impl();
-  KHTMLView *view = docImpl->view();
+  KHTMLPart *part = docImpl->part();
 
-  Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
+  Window* win = part ? Window::retrieveWindow(part) : 0L;
   if ( !win || !win->isSafeScript(exec) ) {
     slot.setUndefined(this);
     return true;
@@ -263,8 +263,8 @@ bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &pr
   }
 
   // Check for frames/iframes with name==propertyName
-  if ( view && view->part() ) {
-    if (view->part()->findFrame( propertyQString )) {
+  if ( part ) {
+    if (part->findFrame( propertyQString )) {
       slot.setCustom(this, frameNameGetter);
       return true;
     }
@@ -323,9 +323,8 @@ JSValue *HTMLDocument::nameGetter(ExecState *exec, JSObject*, const Identifier& 
 JSValue *HTMLDocument::frameNameGetter(ExecState*, JSObject*, const Identifier& name, const PropertySlot& slot)
 {
   HTMLDocument *thisObj = static_cast<HTMLDocument*>(slot.slotBase());
-  KHTMLView *view      = thisObj->impl()->view();
   // Check for frames/iframes with name==propertyName
-  return Window::retrieve(view->part()->findFrame( name.qstring() ));
+  return Window::retrieve(thisObj->impl()->part()->findFrame( name.qstring() ));
 }
 
 JSValue *HTMLDocument::objectNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot)
@@ -345,8 +344,9 @@ JSValue *HTMLDocument::layerNameGetter(ExecState *exec, JSObject*, const Identif
 JSValue* HTMLDocument::getValueProperty(ExecState *exec, int token)
 {
   DOM::HTMLDocumentImpl& doc = *impl();
-  KHTMLView *view = doc.view();
-  Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
+  KHTMLView* view = doc.view();
+  KHTMLPart* part = doc.part();
+  Window* win = part ? Window::retrieveWindow(part) : 0L;
   DOM::HTMLElementImpl* body = doc.body();
 
   switch (token) {
@@ -427,8 +427,8 @@ void KJS::HTMLDocument::put(ExecState *exec, const Identifier &propertyName, JSV
 #ifdef KJS_VERBOSE
   kDebug(6070) << "KJS::HTMLDocument::out " << propertyName.qstring();
 #endif
-  KHTMLView *view = impl()->view();
-  Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
+  KHTMLPart* part = impl()->part();
+  Window* win = part ? Window::retrieveWindow(part) : 0L;
   if ( !win || !win->isSafeScript(exec) )
     return;
 
@@ -457,9 +457,9 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, JSValue *va
       return;
     case Location:
     {
-      KHTMLView *view = doc.view();
-      if ( view )
-        Window::retrieveWindow(view->part())->goURL(exec, value->toString(exec).qstring(), false /*don't lock history*/);
+      KHTMLPart *part = doc.part();
+      if ( part )
+        Window::retrieveWindow(part)->goURL(exec, value->toString(exec).qstring(), false /*don't lock history*/);
       return;
     }
     case DesignMode:
@@ -1210,9 +1210,8 @@ KJS_IMPLEMENT_PROTOFUNC(HTMLElementFunction)
 KParts::LiveConnectExtension *HTMLElement::getLiveConnectExtension(const DOM::HTMLElementImpl &element)
 {
   DOM::DocumentImpl* doc = element.document();
-  KHTMLView *view = doc->view();
-  if (view)
-    return view->part()->liveConnectExtension(&element);
+  if (doc->part())
+    return doc->part()->liveConnectExtension(&element);
   return 0L;
 }
 

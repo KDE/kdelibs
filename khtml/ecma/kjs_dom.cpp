@@ -980,9 +980,9 @@ JSValue* DOMDocument::getValueProperty(ExecState *exec, int token) const
     return getDOMStyleSheetList(exec, doc.styleSheets(), &doc);
   case DOMDocument::DefaultView: // DOM2
     {
-    KHTMLView *view = doc.view();
-    if (view)
-        return Window::retrieve(view->part());
+    KHTMLPart *part = doc.part();
+    if (part)
+        return Window::retrieve(part);
     return getDOMAbstractView(exec, doc.defaultView());
     }
   case PreferredStylesheetSet:
@@ -991,16 +991,13 @@ JSValue* DOMDocument::getValueProperty(ExecState *exec, int token) const
     return jsString(doc.selectedStylesheetSet());
   case ReadyState:
     {
-    if ( doc.view() )
+    if ( KHTMLPart* part = doc.part() )
     {
-      KHTMLPart* part = doc.view()->part();
-      if ( part ) {
-        if (part->d->m_bComplete) return jsString("complete");
+	if (part->d->m_bComplete) return jsString("complete");
         if (doc.parsing()) return jsString("loading");
         return jsString("loaded");
         // What does the interactive value mean ?
         // Missing support for "uninitialized"
-      }
     }
     return jsUndefined();
     }
@@ -1696,8 +1693,8 @@ bool KJS::checkNodeSecurity(ExecState *exec, const DOM::NodeImpl* n)
   // Check to see if the currently executing interpreter is allowed to access the specified node
   if (!n)
     return true;
-  KHTMLView *view = n->document()->view();
-  Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
+  KHTMLPart* part = n->document()->part();
+  Window* win = part ? Window::retrieveWindow(part) : 0L;
   if ( !win || !win->isSafeScript(exec) )
     return false;
   return true;

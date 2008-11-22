@@ -91,8 +91,8 @@ void HTMLBaseElementImpl::process()
     if (!inDocument())
 	return;
 
-    if(!m_href.isEmpty() && document()->view())
-	document()->setBaseURL( KUrl( document()->view()->part()->url(), m_href.string() ) );
+    if(!m_href.isEmpty() && document()->part())
+	document()->setBaseURL( KUrl( document()->part()->url(), m_href.string() ) );
 
     if(!m_target.isEmpty())
 	document()->setBaseTarget( m_target.string() );
@@ -178,7 +178,7 @@ void HTMLLinkElementImpl::process()
     QString type = getAttribute(ATTR_TYPE).string().toLower();
     QString rel = getAttribute(ATTR_REL).string().toLower();
 
-    KHTMLPart* part = document()->view() ? document()->view()->part() : 0;
+    KHTMLPart* part = document()->part();
 
     // IE extension: location of small icon for locationbar / bookmarks
     // Uses both "shortcut icon" and "icon"

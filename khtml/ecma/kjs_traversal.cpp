@@ -326,11 +326,10 @@ JSNodeFilter* JSNodeFilter::fromDOMFilter(DOM::NodeFilterImpl* nf)
 
 short JSNodeFilter::acceptNode(const DOM::Node &n, void*& bindingsException)
 {
-  KHTMLView *view = static_cast<DOM::DocumentImpl *>( n.handle()->docPtr() )->view();
-  if (!view)
+  KHTMLPart* part = n.handle()->document()->part();
+  if (!part)
       return DOM::NodeFilter::FILTER_REJECT;
 
-  KHTMLPart *part = view->part();
   KJSProxy *proxy = part->jScript();
   if (proxy) {
     ExecState *exec = proxy->interpreter()->globalExec();

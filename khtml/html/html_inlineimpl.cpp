@@ -149,11 +149,11 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 state |= Qt::ControlModifier;
 	    }
 
-	    if (document()->view() && !isContentEditable()) {
+	    if (document()->part() && !isContentEditable()) {
 	      if (k) 
 		click();
 	      else
-		document()->view()->part()->
+		document()->part()->
 		    urlSelected( url, button, state, utarget );
 	    }
         }

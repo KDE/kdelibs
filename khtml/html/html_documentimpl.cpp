@@ -82,15 +82,15 @@ HTMLDocumentImpl::~HTMLDocumentImpl()
 
 DOMString HTMLDocumentImpl::referrer() const
 {
-    if ( view() )
-        return view()->part()->pageReferrer();
+    if ( part() )
+        return part()->pageReferrer();
     return DOMString();
 }
 
 DOMString HTMLDocumentImpl::lastModified() const
 {
-    if ( view() )
-        return view()->part()->lastModified();
+    if ( part() )
+        return part()->lastModified();
     return DOMString();
 }
 
@@ -249,8 +249,8 @@ void HTMLDocumentImpl::close()
         document()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
 
         // don't update rendering if we're going to redirect anyway
-        if ( view() && ( view()->part()->d->m_redirectURL.isNull() ||
-                         view()->part()->d->m_delayRedirect > 1 ) )
+        if ( part()->d->m_redirectURL.isNull() ||
+             part()->d->m_delayRedirect > 1)
             updateRendering();
     }
 }
