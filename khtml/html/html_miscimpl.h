@@ -66,6 +66,7 @@ public:
         SELECT_OPTIONS,
         // from HTMLMap
         MAP_AREAS,
+        FORMLESS_INPUT, // input elements that do not have form associated w/them
         DOC_ALL,        // "all" elements (IE)
         NODE_CHILDREN,   // first-level children (IE)
         FORM_ELEMENTS,   // input elements in a form
