@@ -228,8 +228,9 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
                                     const KUrl &url, bool _strictParsing )
 {
     KHTMLView* view = doc->view();
+    KHTMLPart* part = doc->part();
 
-    init(view ? view->part()->settings() : 0, doc);
+    init(part ? part->settings() : 0, doc);
 
     strictParsing = _strictParsing;
 
@@ -241,7 +242,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     logicalDpiY = doc->logicalDpiY();
 
     if(logicalDpiY) // this may be null, not everyone uses khtmlview (Niko)
-        computeFontSizes(logicalDpiY, view ? view->part()->fontScaleFactor() : 100);
+        computeFontSizes(logicalDpiY, part ? part->fontScaleFactor() : 100);
 
     // build a limited default style suitable to evaluation of media queries
     // containing relative constraints, like "screen and (max-width: 10em)"
@@ -1700,8 +1701,10 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
              break;
 	case CSSSelector::PseudoChecked: {
            if (e->isHTMLElement() && e->id() == ID_INPUT) {
+               HTMLInputElementImpl* ie = static_cast<HTMLInputElementImpl*>(e);
                addDependency(OtherStateDependency, e);
-               return (static_cast<HTMLInputElementImpl*>(e)->checked());
+               return (ie->checked() &&
+                       (ie->inputType() == HTMLInputElementImpl::RADIO || ie->inputType() == HTMLInputElementImpl::CHECKBOX));
            }
            return false;
         }
