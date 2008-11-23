@@ -140,6 +140,15 @@ inline unsigned int qHash(const DOMString& key) {
     return key.implementation() ? key.implementation()->hash() : 82610334;
 }
 
+inline bool strcmp(const DOMStringImpl* a, const DOMStringImpl* b)
+{
+    if (!(a && b))
+        return (a && a->l) || (b && b->l);
+    return a->l != b->l || memcmp(a->s, b->s, a->l * sizeof(QChar));
+}
+
+bool strcasecmp(const DOMStringImpl* a, const DOMStringImpl* b);
+
 }
 
 namespace khtml

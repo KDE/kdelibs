@@ -290,18 +290,7 @@ bool DOMString::startsWith(const DOMString& str) const
 
 bool DOM::strcasecmp( const DOMString &as, const DOMString &bs )
 {
-    if ( as.length() != bs.length() ) return true;
-
-    const QChar *a = as.unicode();
-    const QChar *b = bs.unicode();
-    if ( a == b )  return false;
-    if ( !( a && b ) )  return true;
-    int l = as.length();
-    while ( l-- ) {
-        if ( *a != *b && a->toLower() != b->toLower() ) return true;
-	a++,b++;
-    }
-    return false;
+    return strcasecmp(as.implementation(), bs.implementation());
 }
 
 bool DOM::strcasecmp( const DOMString &as, const char* bs )
@@ -367,13 +356,7 @@ DOMString DOMString::format(const char *format, ...)
 
 bool DOM::operator==( const DOMString &a, const DOMString &b )
 {
-    unsigned int l = a.length();
-
-    if( l != b.length() ) return false;
-
-    if(!memcmp(a.unicode(), b.unicode(), l*sizeof(QChar)))
-	return true;
-    return false;
+    return !strcmp(a.implementation(), b.implementation());
 }
 
 bool DOM::operator==( const DOMString &a, const QString &b )
