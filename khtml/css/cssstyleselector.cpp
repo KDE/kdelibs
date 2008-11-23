@@ -68,6 +68,8 @@ using namespace DOM;
 #include <assert.h>
 #include <stdlib.h>
 
+#include <wtf/HashMap.h>
+
 // keep in sync with html4.css'
 #define KHTML_STYLE_VERSION 1
 
@@ -1990,33 +1992,29 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
     }
 }
 
-
 void CSSStyleSelectorList::collect( QList<CSSSelector*> *selectorList, CSSOrderedPropertyList *propList,
 				    Source regular, Source important )
 {
     CSSOrderedRule *r;
     QListIterator<CSSOrderedRule*> tIt(*this);
-    CSSSelector *sel;
+
+    WTF::HashMap<CSSSelector*, int> cache;
+    QListIterator<CSSSelector*> it(*selectorList);
+    int pos = 0;
+    while (it.hasNext())
+        cache.set(it.next(), pos++);
 
     while( tIt.hasNext() ) {
         r = tIt.next();
-	int selectorNum = 0;
-	sel = 0;
-        bool found = false;
-        // already in list?
-	QListIterator<CSSSelector*> it(*selectorList);
-	while( it.hasNext() ) {
-	    sel = it.next();
-	    if ( *sel == *(r->selector) ) {
-	        found = true;
-		break;
-            }
-	    selectorNum++;
-	}
-	if ( !found )
-	    // nope.
-	    selectorList->append( r->selector );
-	propList->append(r->rule->declaration(), selectorNum, r->selector->specificity(), regular, important );
+        WTF::HashMap<CSSSelector*, int>::iterator cacheIterator = cache.find(r->selector);
+        int selectorNum;
+        if (cacheIterator == cache.end()) {
+            selectorNum = cache.size();
+            cache.set(r->selector, selectorNum);
+            selectorList->append(r->selector);
+        } else
+            selectorNum = cacheIterator->second;
+        propList->append(r->rule->declaration(), selectorNum, r->selector->specificity(), regular, important );
     }
 }
 

@@ -273,6 +273,37 @@ namespace DOM {
 
     KDE_NO_EXPORT int getPropertyID(const char *tagStr, int len);
     KDE_NO_EXPORT int getValueID(const char *tagStr, int len);
+
+    struct SelectorHash
+    {
+        static unsigned hash(CSSSelector* selector)
+        {
+            unsigned result = 0;
+            while (selector) {
+                result ^= (unsigned)selector->value.impl();
+                result ^= (selector->attrLocalName.id() << 3);
+                result ^= (selector->attrNamespace.id() << 7);
+                result ^= (selector->tagLocalName.id() << 10);
+                result ^= (selector->tagNamespace.id() << 13);
+                result ^= (selector->relation << 17);
+                result ^= (selector->match << 20);
+                result ^= result << 5;
+                selector = selector->tagHistory;
+            }
+            return result;
+        }
+        static bool equal(CSSSelector* a, CSSSelector* b) { return a == b || *a == *b; }
+        static const bool safeToCompareToEmptyOrDeleted = false;
+    };
+
+}
+
+namespace WTF
+{
+    template<typename T> struct DefaultHash;
+    template<> struct DefaultHash<DOM::CSSSelector*> {
+        typedef DOM::SelectorHash Hash;
+    };
 }
 
 #endif
