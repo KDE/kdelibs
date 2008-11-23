@@ -113,7 +113,7 @@ KAction *KActionCategory::addAction(
 void KActionCategory::addAction(QAction *action)
     {
     // Only add the action if wasn't added earlier.
-    if (d->actions.count(action) == 0)
+    if (!d->actions.contains(action))
         {
         d->actions.append(action);
         }
