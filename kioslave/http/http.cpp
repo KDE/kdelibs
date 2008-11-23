@@ -2470,11 +2470,10 @@ bool HTTPProtocol::readHeaderFromCache() {
 
     if (!m_request.cacheTag.lastModified.isEmpty())
         setMetaData("modified", m_request.cacheTag.lastModified);
-    QString tmp;
-    tmp.setNum(m_request.cacheTag.expireDate);
-    setMetaData("expire-date", tmp);
-    tmp.setNum(m_request.cacheTag.creationDate);
-    setMetaData("cache-creation-date", tmp);
+
+    setMetaData("expire-date", QString::number(m_request.cacheTag.expireDate));
+    setMetaData("cache-creation-date", QString::number(m_request.cacheTag.creationDate));
+    
     mimeType(m_mimeType);
     return true;
 }
@@ -2567,7 +2566,6 @@ try_again:
     int maxAge = -1; // -1 = no max age, 0 already expired, > 0 = actual time
     static const int maxHeaderSize = 128 * 1024;
 
-    // read in 8192 bytes at a time (HTTP cookies can be quite large.)
     int len = 0;
     char buffer[maxHeaderSize];
     bool cont = false;
@@ -2624,9 +2622,6 @@ try_again:
     int headerSize = 0;
 
     int idx = 0;
-
-    // broken server compatibility
-    skipSpace(buffer, &idx, bufPos);
 
     if (idx != bufPos && buffer[idx] == '<') {
         kDebug(7103) << "No valid HTTP header found! Document starts with XML/HTML tag";
@@ -3606,41 +3601,33 @@ void HTTPProtocol::addEncoding(const QString &_encoding, QStringList &encs)
 
 bool HTTPProtocol::sendBody()
 {
-  int result=-1;
-  int length=0;
-
   infoMessage( i18n( "Requesting data to send" ) );
+  
+  int readFromApp = -1;
 
   // m_POSTbuf will NOT be empty iff authentication was required before posting
   // the data OR a re-connect is requested from ::readResponseHeader because the
   // connection was lost for some reason.
-  if ( !m_POSTbuf.isEmpty() )
-  {
-    kDebug(7113) << "POST'ing saved data...";
-
-    result = 0;
-    length = m_POSTbuf.size();
-  }
-  else
+  if (m_POSTbuf.isEmpty())
   {
     kDebug(7113) << "POST'ing live data...";
 
     QByteArray buffer;
 
-    m_POSTbuf.clear();
-    while(true) {
+    do {
+      m_POSTbuf.append(buffer);
+      buffer.clear();
       dataReq(); // Request for data
-      result = readData( buffer );
-      if ( result > 0 ) {
-        length += result;
-        m_POSTbuf.append(buffer);
-        buffer.clear();
-      } else
-        break;
-    }
+      readFromApp = readData(buffer);
+    } while (readFromApp > 0);
+  }
+  else
+  {
+    kDebug(7113) << "POST'ing saved data...";
+    readFromApp = 0;
   }
 
-  if ( result < 0 )
+  if (readFromApp < 0)
   {
     error(ERR_ABORTED, m_request.url.host());
     return false;
@@ -3648,11 +3635,11 @@ bool HTTPProtocol::sendBody()
 
   infoMessage(i18n("Sending data to %1" ,  m_request.url.host()));
 
-  QString size = QString ("Content-Length: %1\r\n\r\n").arg(length);
-  kDebug( 7113 ) << size;
+  QString cLength = QString("Content-Length: %1\r\n\r\n").arg(m_POSTbuf.size());
+  kDebug( 7113 ) << cLength;
 
   // Send the content length...
-  bool sendOk = (write(size.toLatin1(), size.length()) == (ssize_t) size.length());
+  bool sendOk = (write(cLength.toLatin1(), cLength.length()) == (ssize_t) cLength.length());
   if (!sendOk)
   {
     kDebug( 7113 ) << "Connection broken when sending "
