@@ -132,6 +132,14 @@ nsProbingState UnicodeGroupProber::HandleData(const char* aBuf, unsigned int aLe
   return mState;
 }
 
+float UnicodeGroupProber::GetConfidence()
+{
+  if (mState == eFoundIt)
+    return 0.99f;
+  else
+    return 0.0f;
+}
+
 #ifdef DEBUG_PROBE
 void UnicodeGroupProber::DumpStatus()
 {
