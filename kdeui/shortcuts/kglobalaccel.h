@@ -49,23 +49,20 @@ class KDEUI_EXPORT KGlobalAccel : public QObject
 public:
 
     /**
+     * Index for actionId QStringLists
+     */
+    enum actionIdFields
+    {
+        ComponentUnique = 0,        //!< Components Unique Name (ID)
+        ActionUnique = 1,           //!< Actions Unique Name(ID)
+        ComponentFriendly = 2,      //!< Components Friendly Translated Name
+        ActionFriendly = 3          //!< Actions Friendly Translated Name
+    };
+
+    /**
      * Returns (and creates if necessary) the singleton instance
      */
     static KGlobalAccel *self();
-
-    /**
-     * No effect.
-     *
-     * @deprecated
-     */
-    KDE_DEPRECATED bool isEnabled() const;
-
-    /**
-     * No effect.
-     *
-     * @deprecated
-     */
-    KDE_DEPRECATED void setEnabled(bool enabled);
 
     /**
      * Take away the given shortcut from the named action it belongs to.
@@ -131,6 +128,20 @@ public:
             const QKeySequence &seq);
 
     /**
+     * No effect.
+     *
+     * @deprecated
+     */
+    KDE_DEPRECATED bool isEnabled() const;
+
+    /**
+     * No effect.
+     *
+     * @deprecated
+     */
+    KDE_DEPRECATED void setEnabled(bool enabled);
+
+    /**
      * Set the KComponentData for which to manipulate shortcuts. This is for exceptional
      * situations, when you want to modify the shortcuts of another application
      * as if they were yours.
@@ -155,17 +166,6 @@ public:
      * @deprecated
      */
     KDE_DEPRECATED QList<QStringList> allMainComponents();
-
-    /**
-     * Index for actionId QStringLists
-     */
-    enum actionIdFields
-    {
-        ComponentUnique = 0,        //!< Components Unique Name (ID)
-        ActionUnique = 1,           //!< Actions Unique Name(ID)
-        ComponentFriendly = 2,      //!< Components Friendly Translated Name
-        ActionFriendly = 3          //!< Actions Friendly Translated Name
-    };
 
     /**
      * @see getGlobalShortcutsByComponent
