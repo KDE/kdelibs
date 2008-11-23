@@ -1365,7 +1365,8 @@ NamedAttrMapImpl::NamedAttrMapImpl(ElementImpl *element)
 
 NamedAttrMapImpl::~NamedAttrMapImpl()
 {
-    for (unsigned i = 0; i < m_attrs.size(); i++)
+    unsigned len = m_attrs.size();
+    for (unsigned i = 0; i < len; i++)
         m_attrs[i].free();
     m_attrs.clear();
 }
@@ -1546,7 +1547,8 @@ void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value, const Pre
 
 Attr NamedAttrMapImpl::removeAttr(AttrImpl *attr)
 {
-    for (unsigned i = 0; i < m_attrs.size(); i++) {
+    unsigned len = m_attrs.size();
+    for (unsigned i = 0; i < len; i++) {
 	if (m_attrs[i].attr() == attr) {
 	    NodeImpl::Id id = m_attrs[i].id();
 	    if (id == ATTR_ID)
@@ -1568,13 +1570,15 @@ void NamedAttrMapImpl::copyAttributes(NamedAttrMapImpl *other)
 {
     assert(m_element);
     unsigned i;
-    for (i = 0; i < m_attrs.size(); i++) {
+    unsigned len = m_attrs.size();
+    for (i = 0; i < len; i++) {
         if (m_attrs[i].id() == ATTR_ID)
             m_element->updateId(m_attrs[i].val(), 0);
 	m_attrs[i].free();
     }
     m_attrs.resize(other->length());
-    for (i = 0; i < m_attrs.size(); i++) {
+    len = m_attrs.size();
+    for (i = 0; i < len; i++) {
         m_attrs[i].m_localName = other->m_attrs[i].m_localName;
         m_attrs[i].m_prefix = other->m_attrs[i].m_prefix;
         m_attrs[i].m_namespace = other->m_attrs[i].m_namespace;
@@ -1599,7 +1603,8 @@ int NamedAttrMapImpl::find(NodeImpl::Id id, const PrefixName& prefix, bool nsAwa
 {
     //kDebug() << "In find:" << getPrintableName(id) << "[" << prefix.toString() << prefix.id() << "]" << nsAware << endl;
     //kDebug() << "m_attrs.size()" << m_attrs.size() << endl;
-    for (unsigned i = 0; i < m_attrs.size(); ++i) {
+    unsigned len = m_attrs.size();
+    for (unsigned i = 0; i < len; ++i) {
         //kDebug() << "check attr[" << i << "]" << getPrintableName(m_attrs[i].id()) << "prefix:" << m_attrs[i].prefix() << endl;
         if (nsAware && namespacePart(id) == anyNamespace && localNamePart(id) == localNamePart(m_attrs[i].id()))
             return i;
@@ -1617,7 +1622,8 @@ void NamedAttrMapImpl::setElement(ElementImpl *element)
     assert(!m_element);
     m_element = element;
 
-    for (unsigned i = 0; i < m_attrs.size(); i++)
+    unsigned len = m_attrs.size();
+    for (unsigned i = 0; i < len; i++)
 	if (m_attrs[i].attr())
 	    m_attrs[i].attr()->setElement(element);
 }
@@ -1628,7 +1634,8 @@ void NamedAttrMapImpl::detachFromElement()
     // associated with an element. But we have to keep it around in memory in case there
     // are still references to it.
     m_element = 0;
-    for (unsigned i = 0; i < m_attrs.size(); i++)
+    unsigned len = m_attrs.size();
+    for (unsigned i = 0; i < len; i++)
         m_attrs[i].free();
     m_attrs.clear();
 }

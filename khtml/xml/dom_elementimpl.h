@@ -554,7 +554,8 @@ inline DOMStringImpl* NamedAttrMapImpl::fastFind(NodeImpl::Id id) const
         mask = anyLocalName;
         id = localNamePart(id);
     }
-    for (unsigned i = 0; i < m_attrs.size(); ++i)
+    unsigned len = m_attrs.size();
+    for (unsigned i = 0; i < len; ++i)
         if (id == (m_attrs[i].id() & mask))
             return m_attrs[i].val();
     return 0;
