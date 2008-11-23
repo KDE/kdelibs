@@ -7,6 +7,8 @@ cover security aspects, thus replacing the KNewStuffSecure tutorial found at
 http://developer.kde.org/documentation/tutorials/knewstuffsecure/ as well.
 
 Techbase looks like the best place for it once it's done.
+In fact, there is now a tutorial and list of KNS2-using applications available at:
+http://techbase.kde.org/Development/Tutorials/K_Hot_New_Stuff2
 
 Revision 2.0.0preX (26.03.2007)
 
@@ -37,20 +39,20 @@ Both GHNS and DXS are described at http://ghns.freedesktop.org/.
 Vocabulary
 ----------
 
-A lot of specific terms have been created. The following list should eliminate the confusion. 
+A lot of specific terms have been created. The following list should eliminate the confusion.
 * Get Hot New Stuff:
-  The general framework which is involved client- and server-side. 
+  The general framework which is involved client- and server-side.
 * KNewStuff2:
   The KDE library written to use GHNS efficiently and easily.
-  An alternative library would be SDLNewStuff, for example. 
+  An alternative library would be SDLNewStuff, for example.
 * Hotstuff:
   Server-side scripts to allow for unattended data processing for traditional KNewStuff
   uploads/downloads and their new-style GHNS and DXS counterparts. No alternative is known,
-  although the kde-look family of sites also do data processing. 
+  although the kde-look family of sites also do data processing.
 * GHNS web frontend:
   A generic term for a web frontend to allow user ratings, reviews and data overviews.
   Cocodrilo is a freely available frontend, whereas the kde-look site family provides a nice
-  but not free alternative. 
+  but not free alternative.
 * Provider: Server provider hosting directory information and/or contributed data.
 
 Preparations
@@ -119,13 +121,13 @@ and further details such as data security policies.
 
 # # How to name the files?
   #doesn't use payload file name
-# CustomName=true 
+# CustomName=true
 
 # # What to do after installation? Any number of the lines below
 # # unpack the downloaded archive
 # Uncompress=true
-# # post-installation command 
-# InstallationCommand=dbus-send ... %f ... 
+# # post-installation command
+# InstallationCommand=dbus-send ... %f ...
 
 Downloading data
 ----------------
@@ -140,7 +142,7 @@ The download dialog can be opened in modal or non-modal mode. Example:
 # KNS::Entry::List entries = KNS::Engine::download()
 
 Please note that entry pointers in the returned list are allocated, and you should delete them
-with something like: 
+with something like:
 
 # qDeleteAll(entries);
 
@@ -172,9 +174,13 @@ So far this tutorial was all about the applications. But how to select a GHNS pr
 or even run one by oneself?
 
 There will be separate documentation on this topic. For the time being, there is
-GHNS hosting tested with KNewStuff2 being offered at new.kstuff.org, a server sponsored
-by OSU-OSL for the advancement of collaborative data sharing. The KDE-Look server
-also provides GHNS feeds.
+GHNS hosting suitable for KNewStuff2 being offered at newstuff.kde.org, a server
+sponsored by OSU-OSL for the advancement of collaborative data sharing. The KDE-Look
+server also provides GHNS feeds. Some KDE applications also host data on their
+own, e.g. on edu.kde.org. This is not recommended if you want to allow uploads
+- and you certainly want those to get more data!
+For hosting your data on newstuff.kde.org, please read the repository information
+at http://newstuff.kde.org/development.php.
 
 http://newstuff.kde.org/
 http://www.kde-look.org/help/ghns.php
