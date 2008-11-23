@@ -179,7 +179,7 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
 
     d->socket.flush();  //this is supposed to get the data on the wire faster
 
-    if (d->socket.state() != KTcpSocket::ConnectedState && !success) {
+    if (d->socket.state() != KTcpSocket::ConnectedState || !success) {
         kDebug(7027) << "Write failed, will return -1! Socket error is"
                      << d->socket.error() << ", Socket state is" << d->socket.state()
                      << "Return value of waitForBytesWritten() is" << success;
