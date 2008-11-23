@@ -54,20 +54,18 @@ public:
     static KGlobalAccel *self();
 
     /**
-     * Checks whether the accelerators are enabled.
+     * No effect.
      *
-     * @Bug: enabling / disabling has currently no effect.
-     *
-     * @return true if the KGlobalAccel is enabled
+     * @deprecated
      */
-    bool isEnabled() const;
+    KDE_DEPRECATED bool isEnabled() const;
 
     /**
-     * Enables or disables the KGlobalAccel
-     * @param enabled true if the KGlobalAccel should be enabled, false if it
-     *  should be disabled.
+     * No effect.
+     *
+     * @deprecated
      */
-    void setEnabled(bool enabled);
+    KDE_DEPRECATED void setEnabled(bool enabled);
 
     /**
      * Take away the given shortcut from the named action it belongs to.
@@ -145,12 +143,16 @@ public:
      *
      * @param componentData a KComponentData about the application for which you want to
      *                      manipulate shortcuts.
+     *
+     * @deprecated
      */
     KDE_DEPRECATED void overrideMainComponentData(const KComponentData &componentData);
 
     /**
      * Return the unique and common names of all main components that have global shortcuts.
      * The action strings of the returned actionId stringlists will be empty.
+     *
+     * @deprecated
      */
     KDE_DEPRECATED QList<QStringList> allMainComponents();
 
@@ -167,16 +169,22 @@ public:
 
     /**
      * @see getGlobalShortcutsByComponent
+     *
+     * @deprecated
      */
     KDE_DEPRECATED QList<QStringList> allActionsForComponent(const QStringList &actionId);
 
     /**
      * @see getGlobalShortcutsByKey
+     *
+     * @deprecated
      */
     KDE_DEPRECATED static QStringList findActionNameSystemwide(const QKeySequence &seq);
 
     /**
      * @see promptStealShortcutSystemwide below
+     *
+     * @deprecated
      */
     KDE_DEPRECATED static bool promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier, const QKeySequence &seq);
 
