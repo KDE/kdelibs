@@ -1198,10 +1198,6 @@ void CSSStyleSelector::addDependency(StructuralDependencyType dependencyType, El
 
 bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector)
 {
-    if(!e)
-        return false;
-
-
     uint selTag = makeId(sel->tagNamespace.id(), sel->tagLocalName.id());
     if (selTag != anyQName) {
         int eltID = e->id();
@@ -1209,11 +1205,6 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         quint16 ns = namespacePart(eltID);
         quint16 selLocalName = localNamePart(selTag);
         quint16 selNS = namespacePart(selTag);
-
-        /*if (localName <= ID_LAST_TAG && ns == defaultNamespace) {
-            assert(e->isHTMLElement());
-            ns = xhtmlNamespace;
-        }*/
 
         // match on local
         if (selLocalName != anyLocalName && localName != selLocalName) return false;
@@ -1226,26 +1217,15 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
     {
         // "class" is special attribute which is pre-parsed for fast look-ups
         // avoid ElementImpl::getAttributeImpl here, as we don't need it
-        if (sel->match == CSSSelector::Class) {
-            if (!e->hasClass())
-                return false;
-            if (!e->classNames().contains(sel->value))
-                return false;
-            return true;
-        }
+        if (sel->match == CSSSelector::Class)
+            return e->hasClass() && e->classNames().contains(sel->value);
+
+        DOMStringImpl* value = e->getAttributeImplById(selAttr);
+        if(!value) return false; // attribute is not set
 
         // attributes are always case-sensitive in XHTML
         // attributes are sometimes case-sensitive in HTML
-        // we only treat id and class selectors as case-sensitive in HTML strict
-        // for compatibility reasons
-        bool caseSensitive = e->document()->htmlMode() == DocumentImpl::XHtml;
-        bool caseSensitive_alt = strictParsing || caseSensitive;
-        caseSensitive |= caseSensitiveAttr(selAttr);
-
-        quint16 selLocalName = localNamePart(selAttr);
-        quint16 selNS = namespacePart(selAttr);
-        DOMStringImpl* value = e->getAttributeImplById(makeId(selNS, selLocalName));
-        if(!value) return false; // attribute is not set
+        bool caseSensitive = (e->document()->htmlMode() == DocumentImpl::XHtml) || caseSensitiveAttr(selAttr);
 
         switch(sel->match)
         {
@@ -1253,11 +1233,14 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             // True if we make it this far
             break;
         case CSSSelector::Id:
-            caseSensitive = caseSensitive_alt;
+            // treat id selectors as case-sensitive in HTML strict
+            // for compatibility reasons
+            caseSensitive |= strictParsing;
             // no break
         case CSSSelector::Exact:
-            return (caseSensitive && !strcmp(sel->value, value)) ||
-                   (!caseSensitive && !strcasecmp(sel->value, value));
+            return caseSensitive ?
+                !strcmp(sel->value.impl(), value) :
+                !strcasecmp(sel->value.impl(), value);
             break;
         case CSSSelector::List:
         {
@@ -1268,8 +1251,9 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             // Selector string may not contain spaces
             if ((selAttr != ATTR_CLASS || e->hasClass()) && sel->value.string().find(' ') != -1) return false;
             if (sel_len == val_len)
-                return (caseSensitive && !strcmp(sel->value.string(), value)) ||
-		       (!caseSensitive && !strcasecmp(sel->value.string(), value));
+                return caseSensitive ?
+                    !strcmp(sel->value.impl(), value) :
+                    !strcasecmp(sel->value.impl(), value);
             // else the value is longer and can be a list
  
             QChar* sel_uc = sel->value.string().unicode();
