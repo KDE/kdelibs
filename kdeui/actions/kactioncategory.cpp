@@ -63,7 +63,7 @@ const QList<QAction*> KActionCategory::actions() const
 QAction * KActionCategory::addAction(const QString &name, QAction *action)
     {
     collection()->addAction(name, action);
-    d->actions.append(action);
+    addAction(action);
     return action;
     }
 
@@ -71,7 +71,7 @@ QAction * KActionCategory::addAction(const QString &name, QAction *action)
 KAction * KActionCategory::addAction(const QString &name, KAction *action)
     {
     collection()->addAction(name, action);
-    d->actions.append(action);
+    addAction(action);
     return action;
     }
 
@@ -82,7 +82,7 @@ KAction * KActionCategory::addAction(
         const char *member)
     {
     KAction *action = collection()->addAction(actionType, receiver, member);
-    d->actions.append(action);
+    addAction(action);
     return action;
     }
 
@@ -94,7 +94,7 @@ KAction * KActionCategory::addAction(
         const char *member)
     {
     KAction *action = collection()->addAction(actionType, name, receiver, member);
-    d->actions.append(action);
+    addAction(action);
     return action;
     }
 
@@ -105,14 +105,18 @@ KAction *KActionCategory::addAction(
         const char *member)
     {
     KAction *action = collection()->addAction(name, receiver, member);
-    d->actions.append(action);
+    addAction(action);
     return action;
     }
 
 
 void KActionCategory::addAction(QAction *action)
     {
-    d->actions.append(action);
+    // Only add the action if wasn't added earlier.
+    if (d->actions.count(action) == 0)
+        {
+        d->actions.append(action);
+        }
     }
 
 
