@@ -1322,28 +1322,21 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
     {
 	switch (sel->pseudoType()) {
         // Pseudo classes:
-	case CSSSelector::PseudoEmpty:
+	case CSSSelector::PseudoEmpty: {
 	    addDependency(BackwardsStructuralDependency, e);
             // If e is not closed yet we don't know the number of children
-            if (!e->closed()) {
+            if (!e->closed())
                 return false;
-            }
-            if (!e->firstChild())
-                return true;
-            else {
-                NodeImpl *t = e->firstChild();
+            NodeImpl *t = e->firstChild();
 
-                // check for empty text nodes and comments
-                while (t && (t->nodeType() == Node::COMMENT_NODE ||
-                       (t->isTextNode() && static_cast<TextImpl*>(t)->length() == 0)))
-                    t = t->nextSibling();
+            // check for empty text nodes and comments
+            while (t && (t->nodeType() == Node::COMMENT_NODE ||
+                   (t->isTextNode() && static_cast<TextImpl*>(t)->length() == 0)))
+                t = t->nextSibling();
 
-                if (t == 0)
-                    return true;
-                else
-                    return false;
-            }
+            return !t;
             break;
+        }
 	case CSSSelector::PseudoFirstChild: {
 	    // first-child matches the first child that is an element!
             if (e->parentNode() && e->parentNode()->isElementNode()) {
