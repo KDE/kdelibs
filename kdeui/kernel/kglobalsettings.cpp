@@ -863,8 +863,7 @@ void KGlobalSettings::Private::applyGUIStyle()
             0 == (kde_overrideStyle + QLatin1String("Style")).compare(currentStyleName, Qt::CaseInsensitive)) {
         qApp->setStyle(kde_overrideStyle);
     }
-    // Reread palette from config file.
-    kdisplaySetPalette();
+    emit q->kdisplayStyleChanged();
 }
 
 QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &config)
@@ -951,9 +950,9 @@ void KGlobalSettings::Private::kdisplaySetStyle()
 {
     if (qApp && qApp->type() == QApplication::GuiClient) {
         applyGUIStyle();
-        emit q->kdisplayStyleChanged();
-        // already done by applyGUIStyle -> kdisplaySetPalette
-        //emit appearanceChanged();
+
+        // Reread palette from config file.
+        kdisplaySetPalette();
     }
 }
 
