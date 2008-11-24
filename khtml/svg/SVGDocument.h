@@ -51,6 +51,9 @@ namespace WebCore {
         void startPan(const FloatPoint& start);
         void updatePan(const FloatPoint& pos) const;
 
+        // KHTML
+        virtual void close();
+
     private:
         FloatPoint m_translate;
     };

@@ -101,6 +101,17 @@ void SVGDocument::updatePan(const FloatPoint& pos) const
     }
 }
 
+void SVGDocument::close()
+{
+     bool doload = !parsing() && m_tokenizer;
+
+     DocumentImpl::close();
+
+     if (doload) {
+         document()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+     }
+}
+
 }
 
 // vim:ts=4:noet
