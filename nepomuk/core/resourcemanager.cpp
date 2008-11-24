@@ -89,12 +89,13 @@ int Nepomuk::ResourceManager::init()
 {
     QMutexLocker lock( &d->mutex );
 
-    delete d->mainModel;
-    d->mainModel = new MainModel( this );
-    connect( d->mainModel, SIGNAL(statementsAdded()),
-             this, SLOT(slotStoreChanged()) );
-    connect( d->mainModel, SIGNAL(statementsRemoved()),
-             this, SLOT(slotStoreChanged()) );
+    if( !d->mainModel ) {
+        d->mainModel = new MainModel( this );
+        connect( d->mainModel, SIGNAL(statementsAdded()),
+                 this, SLOT(slotStoreChanged()) );
+        connect( d->mainModel, SIGNAL(statementsRemoved()),
+                 this, SLOT(slotStoreChanged()) );
+    }
     return d->mainModel->isValid() ? 0 : -1;
 }
 
