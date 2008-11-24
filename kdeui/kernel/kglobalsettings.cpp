@@ -828,21 +828,30 @@ QString kde_overrideStyle;
 
 void KGlobalSettings::Private::applyGUIStyle()
 {
-#ifdef Q_WS_X11
-    QString defaultStyle = KStyle::defaultStyle();
-#else
-    QString defaultStyle; // Mac, Windows: no change for style by default
-#endif
-    KConfigGroup pConfig (KGlobal::config(), "General");
-    QString styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
+    const QLatin1String currentStyleName(qApp->style()->metaObject()->className());
 
     if (kde_overrideStyle.isEmpty()) {
-        if (styleStr.isEmpty())
+#ifdef Q_WS_X11
+        const QString &defaultStyle = KStyle::defaultStyle();
+#else
+        const QString &defaultStyle; // Mac, Windows: no change for style by default
+#endif
+        const KConfigGroup pConfig(KGlobal::config(), "General");
+        const QString &styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
+
+        if (styleStr.isEmpty() ||
+                // check whether we already use the correct style to return then
+                // (workaround for Qt misbehavior to avoid double style initialization)
+                0 == (styleStr + QLatin1String("Style")).compare(currentStyleName, Qt::CaseInsensitive) ||
+                0 == styleStr.compare(currentStyleName, Qt::CaseInsensitive)) {
             return;
-        // ### add check whether we already use the correct style to return then
-        // (workaround for Qt misbehavior to avoid double style initialization)
+        }
 
         QStyle* sp = QStyleFactory::create( styleStr );
+        if (currentStyleName == sp->metaObject()->className()) {
+            delete sp;
+            return;
+        }
 
         // If there is no default style available, try falling back any available style
         if ( !sp && styleStr != defaultStyle)
@@ -850,9 +859,10 @@ void KGlobalSettings::Private::applyGUIStyle()
         if ( !sp )
             sp = QStyleFactory::create( QStyleFactory::keys().first() );
         qApp->setStyle(sp);
-    }
-    else
+    } else if (0 == kde_overrideStyle.compare(currentStyleName, Qt::CaseInsensitive) ||
+            0 == (kde_overrideStyle + QLatin1String("Style")).compare(currentStyleName, Qt::CaseInsensitive)) {
         qApp->setStyle(kde_overrideStyle);
+    }
     // Reread palette from config file.
     kdisplaySetPalette();
 }
