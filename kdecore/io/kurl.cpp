@@ -765,37 +765,29 @@ void KUrl::adjustPath( AdjustPathOption trailing )
 
 QString KUrl::encodedPathAndQuery( AdjustPathOption trailing , const EncodedPathAndQueryOptions &options) const
 {
-  QString tmp;
-#if 0
-  if (!m_strPath_encoded.isEmpty())
-  {
-     tmp = trailingSlash( _trailing, m_strPath_encoded );
-  }
-  else
+    QString encodedPath;
+#ifdef Q_OS_WIN
+    // see KUrl::path()
+    if (QUrl::isLocalFile()) {
+        // ### this is probably broken
+        encodedPath = trailingSlash(trailing, QUrl::toLocalFile());
+        encodedPath = QString::fromLatin1(QUrl::toPercentEncoding(encodedPath, "!$&'()*+,;=:@/"));
+    } else {
+        encodedPath = trailingSlash(trailing, QUrl::encodedPath());
+    }
+#else
+    encodedPath = trailingSlash(trailing, QUrl::encodedPath());
 #endif
-  {
-     tmp = path( trailing );
-     if ( (options & AvoidEmptyPath) && tmp.isEmpty() )
-        tmp = "/";
-#if 0
-     if (m_iUriMode == Mailto)
-     {
-       tmp = encode( tmp, 2 ); // encode neither @ nor /
-     }
-     else
-     {
-       tmp = encode( tmp, 1 ); // encode @ but not /
-     }
-#endif
-     // The list of chars to exclude comes from QUrlPrivate::toEncoded
-     tmp = QString::fromLatin1( QUrl::toPercentEncoding( tmp, "!$&'()*+,;=:@/" ) );
-  }
 
-  if (hasQuery())
-  {
-      tmp += query(); // includes the '?'
-  }
-  return tmp;
+    if ((options & AvoidEmptyPath) && encodedPath.isEmpty()) {
+        encodedPath.append('/');
+    }
+
+    if (hasQuery()) {
+        return encodedPath + '?' + encodedQuery();
+    } else {
+        return encodedPath;
+    }
 }
 
 #if 0
