@@ -534,6 +534,15 @@ void KUrlTest::testPathAndQuery()
 
   KUrl uloc( "file:///home/dfaure/konqtests/Mat%C3%A9riel" );
   QCOMPARE( uloc.encodedPathAndQuery(), QString( "/home/dfaure/konqtests/Mat%C3%A9riel" ) );
+
+  KUrl urlWithAccent( "file:///home/dfaure/konqtests/Matériel" );
+  QCOMPARE(urlWithAccent.encodedPathAndQuery(), QString("/home/dfaure/konqtests/Mat%C3%A9riel"));
+
+  KUrl urlWithUnicodeChar(QString::fromUtf8("file:///home/dfaure/konqtests/Matériel"));
+  QCOMPARE(urlWithUnicodeChar.encodedPathAndQuery(), QString("/home/dfaure/konqtests/Mat%C3%A9riel"));
+
+  KUrl maelcum(QString::fromUtf8("http://a.b.c/äöu"));
+  QCOMPARE(maelcum.encodedPathAndQuery(), QString("/%C3%A4%C3%B6u"));
 }
 
 void KUrlTest::testUpUrl()
@@ -1530,6 +1539,9 @@ void KUrlTest::testUtf8()
 
   KUrl umlaut2("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel"); // was ,106
   QCOMPARE(umlaut2.url(), QString("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel"));
+
+  KUrl urlWithUnicodeChar( QString::fromUtf8("file:///home/dfaure/Matériel") );
+  QCOMPARE( uloc.url(), QString("file:///home/dfaure/Mat%C3%A9riel") );
 }
 
 void KUrlTest::testOtherEncodings()
