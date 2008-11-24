@@ -4252,6 +4252,17 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
       }
     }
 
+    KMimeType::Ptr mime = KMimeType::mimeType(mimetype);
+    if (mime) {
+        // If KHTMLPart can handle the frame, then let's force using it, even
+        // if the normally preferred part is another one, so that cross-frame
+        // scripting can work.
+        if (mime->is("text/html")
+            || mime->is("application/xml")) { // this includes xhtml and svg
+            child->m_serviceName = "khtml";
+        }
+    }
+
     QStringList dummy; // the list of servicetypes handled by the part is now unused.
     KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), this, mimetype, child->m_serviceName, dummy, child->m_params );
 
@@ -4428,7 +4439,7 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget,
 {
   QString constr;
   if ( !serviceName.isEmpty() )
-    constr.append( QString::fromLatin1( "Name == '%1'" ).arg( serviceName ) );
+    constr.append( QString::fromLatin1( "DesktopEntryName == '%1'" ).arg( serviceName ) );
 
   KService::List offers = KMimeTypeTrader::self()->query( mimetype, "KParts/ReadOnlyPart", constr );
 
