@@ -842,7 +842,7 @@ void KGlobalSettings::Private::applyGUIStyle()
         }
 
         QStyle* sp = QStyleFactory::create( styleStr );
-        if (currentStyleName == sp->metaObject()->className()) {
+        if (sp && currentStyleName == sp->metaObject()->className()) {
             delete sp;
             return;
         }
