@@ -768,7 +768,7 @@ QString KUrl::encodedPathAndQuery( AdjustPathOption trailing , const EncodedPath
     QString encodedPath;
 #ifdef Q_OS_WIN
     // see KUrl::path()
-    if (QUrl::isLocalFile()) {
+    if (isLocalFile()) {
         // ### this is probably broken
         encodedPath = trailingSlash(trailing, QUrl::toLocalFile());
         encodedPath = QString::fromLatin1(QUrl::toPercentEncoding(encodedPath, "!$&'()*+,;=:@/"));
