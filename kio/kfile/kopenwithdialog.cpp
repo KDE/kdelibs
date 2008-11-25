@@ -812,15 +812,21 @@ bool KOpenWithDialogPrivate::checkAccept()
             KService::Ptr serv = KService::serviceByDesktopName( serviceName );
             ok = !serv; // ok if no such service yet
             // also ok if we find the exact same service (well, "kwrite" == "kwrite %U")
-            if (serv && serv->isApplication()) {
-                fullExec = serv->exec();
-                /*kDebug(250) << "typedExec=" << typedExec
-                         << "serv->exec=" << fullExec
-                         << "simplifiedExecLineFromService=" << simplifiedExecLineFromService(fullExec);*/
-                if (typedExec == simplifiedExecLineFromService(fullExec)) {
-                    ok = true;
-                    m_pService = serv;
-                    kDebug(250) << "OK, found identical service: " << serv->entryPath();
+            if (serv) {
+                if (serv->isApplication()) {
+                    fullExec = serv->exec();
+                    /*kDebug(250) << "typedExec=" << typedExec
+                      << "serv->exec=" << fullExec
+                      << "simplifiedExecLineFromService=" << simplifiedExecLineFromService(fullExec);*/
+                    if (typedExec == simplifiedExecLineFromService(fullExec)) {
+                        ok = true;
+                        m_pService = serv;
+                        kDebug(250) << "OK, found identical service: " << serv->entryPath();
+                    } else {
+                        kDebug(250) << "Exec line differs, service says:" << simplifiedExecLineFromService(fullExec);
+                    }
+                } else {
+                    kDebug(250) << "Found, but not an application:" << serv->entryPath();
                 }
             }
             if (!ok) { // service was found, but it was different -> keep looking
@@ -836,8 +842,8 @@ bool KOpenWithDialogPrivate::checkAccept()
         fullExec = m_pService->exec();
     } else {
         // Ensure that the typed binary name actually exists (#81190)
-        if (KStandardDirs::findExe(serviceName).isEmpty()) {
-            KMessageBox::error(q, i18n("'%1' not found, please type a valid program name.", serviceName));
+        if (KStandardDirs::findExe(initialServiceName).isEmpty()) {
+            KMessageBox::error(q, i18n("'%1' not found, please type a valid program name.", initialServiceName));
             return false;
         }
     }
