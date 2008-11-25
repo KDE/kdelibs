@@ -54,10 +54,15 @@ KCompletionBox::KCompletionBox( QWidget *parent )
     d->upwardBox       = false;
     d->emitSelected    = true;
 
-    setWindowFlags( Qt::ToolTip ); // calls setVisible, so must be done after initializations
+    setWindowFlags( Qt::Popup ); // calls setVisible, so must be done after initializations
 
     setLineWidth( 1 );
     setFrameStyle( QFrame::Box | QFrame::Plain );
+
+    if ( parent ) {
+        setFocusProxy( parent );
+    } else
+        setFocusPolicy( Qt::NoFocus );
 
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -108,29 +113,14 @@ void KCompletionBox::slotActivated( QListWidgetItem *item )
 bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 {
     int type = e->type();
-    QWidget *wid = qobject_cast<QWidget*>(o);
 
-    if (o == this) {
-        return false;
+    if ((o==this) && (type==QEvent::KeyPress)) {
+	//not sure if this is a work around for a Qt bug or a fix for changed qt behaviour, at least it makes the kcombobox work again for me
+	QApplication::sendEvent(d->m_parent,e);
+	return true;
     }
 
-    if (wid && (wid == d->m_parent || wid->windowFlags() & Qt::Window) && 
-               (type == QEvent::Move || type == QEvent::Resize)) {
-        hide();
-        return false;
-    }
-
-    if (type == QEvent::MouseButtonPress && (wid && !isAncestorOf(wid))) {
-        if (!d->emitSelected && currentItem() && !qobject_cast<QScrollBar*>(o)) {
-          Q_ASSERT(currentItem());
-          emit currentTextChanged(currentItem()->text() );
-        }
-        hide();
-        e->accept();
-        return true;
-    }
-
-    if (wid && wid->isAncestorOf(d->m_parent)) {
+    if ( o == d->m_parent ) {
         if ( isVisible() ) {
             if ( type == QEvent::KeyPress ) {
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
@@ -240,21 +230,42 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                         break;
                 }
             }
+
             // parent gets a click -> we hide
             else if ( type == QEvent::Resize ||
                       type == QEvent::Close || type == QEvent::Hide ) {
                 hide();
             }
+            
             else if ( type == QEvent::FocusOut ) {
                   QFocusEvent* event = static_cast<QFocusEvent*>( e );
                   if (event->reason() != Qt::PopupFocusReason)
                     hide();
             }
+            
+        }
+    }
+
+    // any mouse-click on something else than "this" makes us hide
+    else if ( type == QEvent::MouseButtonPress ) {
+        QMouseEvent *ev = static_cast<QMouseEvent *>( e );
+        if ( !rect().contains( ev->pos() )) // this widget
+            hide();
+
+        if ( !d->emitSelected && currentItem() && !qobject_cast<QScrollBar*>(o) )
+        {
+          Q_ASSERT( currentItem() );
+
+          emit currentTextChanged( currentItem()->text() );
+          hide();
+          ev->accept();  // Consume the mouse click event...
+          return true;
         }
     }
 
     return KListWidget::eventFilter( o, e );
 }
+
 
 void KCompletionBox::popup()
 {
@@ -271,6 +282,12 @@ void KCompletionBox::popup()
             show();
         else if ( size().height() != sizeHint().height() )
             sizeAndPosition();
+    }
+
+    // Make sure we give the focus back to the parent widget (ereslibre)
+    if ( parentWidget() ) {
+        QFocusEvent focusEvent( QEvent::FocusIn );
+        QApplication::sendEvent( parentWidget(), &focusEvent );
     }
 }
 
