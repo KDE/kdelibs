@@ -792,6 +792,7 @@ bool KOpenWithDialogPrivate::checkAccept()
     QString serviceName;
     QString initialServiceName;
     QString preferredTerminal;
+    QString binaryName;
     m_pService = curService;
     if (!m_pService) {
         // No service selected - check the command line
@@ -803,7 +804,10 @@ bool KOpenWithDialogPrivate::checkAccept()
             return false;
         }
         initialServiceName = serviceName;
-        kDebug(250) << "initialServiceName=" << initialServiceName;
+        // Also remember the binaryName with a path, if any, for the
+        // check that the binary exists.
+        binaryName = KRun::binaryName(typedExec, false);
+        kDebug(250) << "initialServiceName=" << initialServiceName << "binaryName=" << binaryName;
         int i = 1; // We have app, app-2, app-3... Looks better for the user.
         bool ok = false;
         // Check if there's already a service by that name, with the same Exec line
@@ -842,8 +846,8 @@ bool KOpenWithDialogPrivate::checkAccept()
         fullExec = m_pService->exec();
     } else {
         // Ensure that the typed binary name actually exists (#81190)
-        if (KStandardDirs::findExe(initialServiceName).isEmpty()) {
-            KMessageBox::error(q, i18n("'%1' not found, please type a valid program name.", initialServiceName));
+        if (KStandardDirs::findExe(binaryName).isEmpty()) {
+            KMessageBox::error(q, i18n("'%1' not found, please type a valid program name.", binaryName));
             return false;
         }
     }
