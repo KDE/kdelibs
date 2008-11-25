@@ -831,11 +831,7 @@ void KGlobalSettings::Private::applyGUIStyle()
     const QLatin1String currentStyleName(qApp->style()->metaObject()->className());
 
     if (kde_overrideStyle.isEmpty()) {
-#ifdef Q_WS_X11
         const QString &defaultStyle = KStyle::defaultStyle();
-#else
-        const QString defaultStyle; // Mac, Windows: no change for style by default
-#endif
         const KConfigGroup pConfig(KGlobal::config(), "General");
         const QString &styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
 

@@ -355,7 +355,11 @@ KStyle::SubElement KStyle::newSubElement(const QString &element)
 
 QString KStyle::defaultStyle()
 {
+#ifdef Q_WS_X11
     return QString("oxygen");
+#else
+    return QString(); // native style
+#endif
 }
 
 /*
