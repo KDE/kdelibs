@@ -34,6 +34,7 @@ void KUrlMimeTest::testURLList()
 
     KUrl::List urls;
     urls.append( KUrl( "http://www.kde.org" ) );
+    urls.append( KUrl( "http://wstephenson:secret@example.com/path" ) );
     urls.append( KUrl( "file:///home/dfaure/konqtests/Mat%C3%A9riel" ) );
     QMap<QString, QString> metaData;
     metaData["key"] = "value";
@@ -47,7 +48,9 @@ void KUrlMimeTest::testURLList()
     QMap<QString, QString> decodedMetaData;
     KUrl::List decodedURLs = KUrl::List::fromMimeData( mimeData, &decodedMetaData );
     QVERIFY( !decodedURLs.isEmpty() );
-    QCOMPARE( urls.toStringList().join(" "), decodedURLs.toStringList().join(" ") );
+    KUrl::List expectedUrls = urls;
+    expectedUrls[1] = KUrl("http://wstephenson@example.com/path"); // password removed
+    QCOMPARE( expectedUrls.toStringList().join(" "), decodedURLs.toStringList().join(" ") );
 
     QList<QUrl> qurls = mimeData->urls();
     QCOMPARE(qurls.count(), urls.count());
