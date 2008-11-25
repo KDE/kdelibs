@@ -253,7 +253,11 @@ void KCharSelectTablePrivate::_k_resizeCells()
     }
 
     hv = q->verticalHeader();
+#ifdef Q_WS_WIN
+    const int new_h = QFontMetrics(font).lineSpacing() + 1;
+#else
     const int new_h = QFontMetrics(font).xHeight() * 3;
+#endif
     for (int i = 0;i < rows;i++) {
         hv->resizeSection(i, new_h);
     }
