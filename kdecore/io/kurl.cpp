@@ -1104,7 +1104,12 @@ QString KUrl::toMimeDataString() const // don't fold this into populateMimeData,
 #endif
   }
 
-  return url(/*0 , 106*/); // 106 is mib enum for utf8 codec
+  if (hasPass()) {
+    KUrl safeUrl(*this);
+    safeUrl.setPassword(QString());
+    return safeUrl.url();
+  }
+  return url();
 }
 
 KUrl KUrl::fromMimeDataByteArray( const QByteArray& str )
