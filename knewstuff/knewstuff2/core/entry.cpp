@@ -28,9 +28,9 @@ struct KNS::EntryPrivate {
             , mRelease(0)
             , mRating(0)
             , mDownloads(0)
+            , mIdNumber(0)
             , mStatus(Entry::Invalid)
-            , mSource(Entry::Online)
-            , mIdNumber(0) {}
+            , mSource(Entry::Online) {}
 
     QString mCategory;
     QString mLicense;
