@@ -178,12 +178,13 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFastPatternDict(const QString &e
     if (!m_fastPatternDict) return mimeList; // Error!
 
     // Warning : this assumes we're NOT building a database
-
     const QList<int> offsetList = m_fastPatternDict->findMultiString(extension);
+    if (offsetList.isEmpty()) return mimeList;
+    const QString expectedPattern = "*."+extension;
     foreach(int offset, offsetList) {
         KMimeType::Ptr newMimeType(createEntry(offset));
         // Check whether the dictionary was right.
-        if (newMimeType && newMimeType->patterns().contains("*."+extension)) {
+        if (newMimeType && newMimeType->patterns().contains(expectedPattern)) {
             mimeList.append(newMimeType);
         }
     }
