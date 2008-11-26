@@ -205,6 +205,27 @@ void KMimeTypeTest::testFindByPathUsingFileName()
 
 }
 
+void KMimeTypeTest::testAdditionalGlobs_data()
+{
+    // Other globs that are not in shared-mime-info but which users could define themselves.
+    QTest::addColumn<QString>("filename");
+    QTest::addColumn<QString>("pattern");
+    QTest::addColumn<bool>("expected");
+
+    QTest::newRow("one star, match") << "foo.txt" << "*.txt" << true;
+    QTest::newRow("two stars, match") << "andre.ts.001" << "*.ts.0*" << true;
+    QTest::newRow("two stars, no match") << "andre.ts" << "*.ts.0*" << false;
+}
+
+void KMimeTypeTest::testAdditionalGlobs()
+{
+    QFETCH(QString, filename);
+    QFETCH(QString, pattern);
+    QFETCH(bool, expected);
+
+    QCOMPARE(KMimeTypeFactory::matchFileName(filename, pattern), expected);
+}
+
 // All the simple tests for findByPath are in testFindByPathUsingFileName_data.
 // In here we do the tests that need some content in a temporary file.
 void KMimeTypeTest::testFindByPathWithContent()

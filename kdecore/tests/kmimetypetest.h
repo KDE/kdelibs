@@ -33,6 +33,8 @@ private Q_SLOTS:
     void testFindByUrl();
     void testFindByPathUsingFileName_data();
     void testFindByPathUsingFileName();
+    void testAdditionalGlobs_data();
+    void testAdditionalGlobs();
     void testFindByPathWithContent();
     void testFindByNameAndContent();
     void testFindByContent();
