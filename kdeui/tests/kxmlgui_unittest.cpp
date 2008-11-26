@@ -574,11 +574,8 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
         mw.addToolBar(Qt::BottomToolBarArea, secondToolBar);
         const QPoint newPos = secondToolBar->pos();
         QCOMPARE(mw.toolBarArea(secondToolBar), Qt::BottomToolBarArea);
-        // Since we are listening for move events on the toolbar on the main window, only
-        // calling to addToolBar is not enough (since this will only remove and add the toolbar, not
-        // generating any move event). Since the user for moving a toolbar to other place (top,
-        // bottom, left or right) needs to generate move events, we generate a fake move event, so
-        // the main window listens to it as if the user had moved the toolbar.
+        // Calling to addToolBar is not enough to trigger the event filter for move events
+        // in KMainWindow, because there is no layouting happening in hidden mainwindows.
         QMoveEvent moveEvent(newPos, oldPos);
         QApplication::sendEvent(secondToolBar, &moveEvent);
 
@@ -586,7 +583,6 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
     }
 
     {
-        // do not interfere with the "toolbarVisibility" unit test
         KConfigGroup cg(KGlobal::config(), "testAutoSaveSettings");
         TestXmlGuiWindow mw2(xml);
         mw2.setAutoSaveSettings(cg);
@@ -613,18 +609,5 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
         QCOMPARE(mw2.toolBarArea(secondToolBar), Qt::BottomToolBarArea);
         mw2.applyMainWindowSettings(mw2.autoSaveConfigGroup());
         QCOMPARE(mw2.toolBarArea(secondToolBar), Qt::BottomToolBarArea);
-
-        // Move back secondToolBar to top at the end of the test. Otherwise check marked as
-        // REFERENCE #1 will fail when rerunning the test (since setAutoSaveSettings() is called
-        // before, placing the secondToolBar on the bottom of the window). This code aligns it again
-        // on the top, so rerunning the test won't fail at that compare.
-        const QPoint oldPos = secondToolBar->pos();
-        mw2.addToolBar(Qt::TopToolBarArea, secondToolBar);
-        const QPoint newPos = secondToolBar->pos();
-        QCOMPARE(mw2.toolBarArea(secondToolBar), Qt::TopToolBarArea);
-        QMoveEvent moveEvent(newPos, oldPos);
-        QApplication::sendEvent(secondToolBar, &moveEvent);
-
-        mw2.close();
     }
 }
