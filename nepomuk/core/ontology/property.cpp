@@ -108,6 +108,8 @@ void Nepomuk::Types::PropertyPrivate::reset( bool recursive )
 {
     EntityPrivate::reset( recursive );
 
+    QMutexLocker lock( &mutex );
+
     if ( available != -1 ) {
         if ( recursive ) {
             range.reset( true );

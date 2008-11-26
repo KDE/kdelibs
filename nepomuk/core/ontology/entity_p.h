@@ -27,6 +27,7 @@
 #include <QtCore/QUrl>
 #include <QtGui/QIcon>
 #include <QtCore/QSharedData>
+#include <QtCore/QMutex>
 
 namespace Nepomuk {
     namespace Types {
@@ -36,6 +37,8 @@ namespace Nepomuk {
             EntityPrivate( const QUrl& uri = QUrl() );
             virtual ~EntityPrivate() {}
 
+            QMutex mutex;
+            
             QUrl uri;
             QString label;
             QString comment;

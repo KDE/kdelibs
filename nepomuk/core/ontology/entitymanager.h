@@ -23,6 +23,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QUrl>
 #include <QtCore/QSharedData>
+#include <QtCore/QMutex>
 
 inline uint qHash( const QUrl& url ) {
     return qHash( url.toString() );
@@ -62,6 +63,8 @@ namespace Nepomuk {
             QHash<QUrl, QExplicitlySharedDataPointer<ClassPrivate> > m_classMap;
             QHash<QUrl, QExplicitlySharedDataPointer<PropertyPrivate> > m_propertyMap;
             QHash<QUrl, QExplicitlySharedDataPointer<OntologyPrivate> > m_ontologyMap;
+
+            QMutex m_mutex;
         };
     }
 }

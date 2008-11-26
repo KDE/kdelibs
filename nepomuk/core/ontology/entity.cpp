@@ -22,6 +22,7 @@
 #include "resourcemanager.h"
 
 #include <QtCore/QHash>
+#include <QtCore/QMutexLocker>
 
 #include <Soprano/QueryResultIterator>
 #include <Soprano/Model>
@@ -54,6 +55,8 @@ Nepomuk::Types::EntityPrivate::EntityPrivate( const QUrl& uri_ )
 
 void Nepomuk::Types::EntityPrivate::init()
 {
+    QMutexLocker lock( &mutex );
+
     if ( available < 0 ) {
         available = load() ? 1 : 0;
     }
@@ -62,6 +65,8 @@ void Nepomuk::Types::EntityPrivate::init()
 
 void Nepomuk::Types::EntityPrivate::initAncestors()
 {
+    QMutexLocker lock( &mutex );
+
     if ( ancestorsAvailable < 0 ) {
         ancestorsAvailable = loadAncestors() ? 1 : 0;
     }
@@ -138,6 +143,8 @@ bool Nepomuk::Types::EntityPrivate::loadAncestors()
 
 void Nepomuk::Types::EntityPrivate::reset( bool )
 {
+    QMutexLocker lock( &mutex );
+
     QString label;
     QString comment;
     l10nLabels.clear();

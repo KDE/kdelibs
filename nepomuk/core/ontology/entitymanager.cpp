@@ -24,6 +24,8 @@
 
 #include "../resourcemanager.h"
 
+#include <QtCore/QMutexLocker>
+
 Q_GLOBAL_STATIC( Nepomuk::Types::EntityManager, entityManager )
 
 Nepomuk::Types::EntityManager::EntityManager()
@@ -80,6 +82,8 @@ Nepomuk::Types::OntologyPrivate* Nepomuk::Types::EntityManager::findOntology( co
 
 Nepomuk::Types::ClassPrivate* Nepomuk::Types::EntityManager::getClass( const QUrl& uri )
 {
+    QMutexLocker lock( &m_mutex );
+
     if ( ClassPrivate* cp = findClass( uri ) ) {
         return cp;
     }
@@ -93,6 +97,8 @@ Nepomuk::Types::ClassPrivate* Nepomuk::Types::EntityManager::getClass( const QUr
 
 Nepomuk::Types::PropertyPrivate* Nepomuk::Types::EntityManager::getProperty( const QUrl& uri )
 {
+    QMutexLocker lock( &m_mutex );
+
     if ( PropertyPrivate* pp = findProperty( uri ) ) {
         return pp;
     }
@@ -106,6 +112,8 @@ Nepomuk::Types::PropertyPrivate* Nepomuk::Types::EntityManager::getProperty( con
 
 Nepomuk::Types::OntologyPrivate* Nepomuk::Types::EntityManager::getOntology( const QUrl& uri )
 {
+    QMutexLocker lock( &m_mutex );
+
     if ( OntologyPrivate* op = findOntology( uri ) ) {
         return op;
     }
