@@ -176,6 +176,10 @@ namespace Kross {
              */
             void setStrictTypesEnabled(bool enabled);
 
+            /**
+	     * \return whether \p typeName has a handler assigned or not.
+	     */
+            bool hasHandlerAssigned(const QByteArray& typeName) const;
         public Q_SLOTS:
 
             /**
