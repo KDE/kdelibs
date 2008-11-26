@@ -91,7 +91,7 @@ DownloadDialog::DownloadDialog(DxsEngine* _engine, QWidget * _parent)
     setupUi(_mainWidget);
 
     // create the delegate
-    mDelegate = new ItemsViewDelegate(m_listView);
+    mDelegate = new ItemsViewDelegate(m_listView, this);
     m_listView->setItemDelegate(mDelegate);
     connect(mDelegate, SIGNAL(performAction(DownloadDialog::EntryAction, KNS::Entry *)),
             SLOT(slotPerformAction(DownloadDialog::EntryAction, KNS::Entry *)));

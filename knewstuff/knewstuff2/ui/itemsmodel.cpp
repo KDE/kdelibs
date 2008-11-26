@@ -115,9 +115,7 @@ KNS::Entry* ItemsModel::entryForIndex(const QModelIndex & index) const
 void ItemsModel::addEntry(Entry * entry)
 {
     //kDebug(551) << "adding entry " << entry->name().representation() << " to the model";
-    int start = m_entries.count();
-    int end = start + 1;
-    beginInsertRows(QModelIndex(), start, end);
+    beginInsertRows(QModelIndex(), m_entries.count(), m_entries.count());
     m_entries.append(entry);
     endInsertRows();
 

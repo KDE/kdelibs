@@ -44,8 +44,6 @@ namespace KNS
 {
 
 class DownloadDialog;
-class EntryView;
-class ItemsView;
 class ItemsModel;
 class ItemsViewDelegate;
 

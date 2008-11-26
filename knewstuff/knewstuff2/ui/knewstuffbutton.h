@@ -65,7 +65,6 @@ public:
      * download is not known in advance of the button being created.
      *
      * @param parent the parent widget
-     * @param name the name to be used for this widget
      */
     Button(QWidget* parent);
 
