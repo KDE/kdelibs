@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Service
 Name=Kde Emoticons Theme
+Name[ar]=سمة رموز KDE
 Name[be@latin]=Matyŭ smajlikaŭ dla „KDE”
 Name[bg]=Тема с емоции за KDE
 Name[bn_IN]=Kde ইমো-আইকন থিম
@@ -50,6 +51,7 @@ Name[x-test]=xxKde Emoticons Themexx
 Name[zh_CN]=KDE 表情主题
 Name[zh_TW]=KDE 表情圖示主題
 Comment=Library to use KDE emoticons theme
+Comment[ar]=مكتبة لاستخدام سمة رموز KDE
 Comment[be@latin]=Biblijateka dla matyvaŭ smajlikaŭ „KDE”
 Comment[bg]=Библиотека за тема с емоции KDE
 Comment[bn_IN]=KDE ইমো-আইকন থিম প্রয়োগ করতে ব্যবহৃত লাইব্রেরি

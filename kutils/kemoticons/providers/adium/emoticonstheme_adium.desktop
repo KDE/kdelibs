@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Service
 Name=Adium Emoticons Theme
+Name[ar]=سمة  رموز Adium
 Name[be@latin]=Matyŭ smajlikaŭ dla „Adium”
 Name[bg]=Тема с емоции Adium
 Name[bn_IN]=Adium ইমো-আইকন থিম
@@ -50,6 +51,7 @@ Name[x-test]=xxAdium Emoticons Themexx
 Name[zh_CN]=Adium 表情主题
 Name[zh_TW]=Adium 表情圖示主題
 Comment=Library to use Adium emoticons theme
+Comment[ar]=مكتبة لاستخدام سمة رموز Adium
 Comment[be@latin]=Biblijateka dla matyvaŭ smajlikaŭ „Adium”
 Comment[bg]=Библиотека за темата с емоции Adium
 Comment[bn_IN]=Adium ইমো-আইকন থিম প্রয়োগ করতে ব্যবহৃত লাইব্রেরি

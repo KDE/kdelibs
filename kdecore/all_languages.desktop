@@ -764,6 +764,7 @@ Name[ca]=Bielorús (llatí)
 Name[de]=Weißrussisch (lat. Alphabet)
 Name[el]=Λευκορωσικά (Λατινικά)
 Name[es]=Bielorruso (Latino)
+Name[et]=Valgevene (ladina)
 Name[gl]=Bielorruso (Latino)
 Name[gu]=બેલારશિયન (લેટિન)
 Name[he]=בלרוסית (לטינית)
@@ -1035,6 +1036,7 @@ Name[zh_HK]=孟加拉語
 Name[zh_TW]=孟加拉語
 [bn_IN]
 Name=Bengali (India)
+Name[ar]=بنغالية (الهند)
 Name[be@latin]=Bengalskaja (Indyja)
 Name[bg]=Бенгали (Индия)
 Name[bn_IN]=বাংলা (ভারত)
@@ -1610,6 +1612,7 @@ Name[zh_HK]=科西嘉語
 Name[zh_TW]=科西嘉語
 [crh]
 Name=Crimean Tatar
+Name[ar]=تتارية القرم
 Name[be@latin]=Krymskich tataraŭ
 Name[bg]=Кримейски татарски
 Name[bn_IN]=ক্রিমিয়ান তাতার
@@ -1740,6 +1743,7 @@ Name[zh_HK]=捷克語
 Name[zh_TW]=捷克語
 [csb]
 Name=Kashubian
+Name[ar]=لغة الكاشبيان
 Name[be@latin]=Kašubskaja
 Name[bg]=Кашуби
 Name[bn_IN]=কাশুবিয়ান
@@ -2185,7 +2189,9 @@ Name[ca]=Baix sòrab
 Name[de]=Niedersorbisch
 Name[el]=Κάτω Σορβικά
 Name[es]=Bajo sorabo
+Name[et]=Alamsorbi
 Name[gu]=લોઅર સોર્બિયન
+Name[he]=סורבית תחתית
 Name[is]=Lág-sorbian
 Name[km]=សូបៀន ក្រោម
 Name[lv]=Apakšsorbu
@@ -11015,7 +11021,7 @@ Name[zh_TW]=維吾爾語
 [uk]
 Name=Ukrainian
 Name[af]=Ukraïnies
-Name[ar]=أكرانية
+Name[ar]=أوكرانية
 Name[be]=Украінская
 Name[be@latin]=Ukrainskaja
 Name[bg]=Украински
@@ -11142,7 +11148,7 @@ Name[zh_HK]=烏都語
 Name[zh_TW]=烏都語
 [uz]
 Name=Uzbek
-Name[ar]=أوزباكية
+Name[ar]=الأوزبكية
 Name[be]=Узбецкая
 Name[be@latin]=Uzbeckaja
 Name[bg]=Узбекски
@@ -11219,6 +11225,7 @@ Name[zh_HK]=烏茲別克語
 Name[zh_TW]=烏茲別克語
 [uz@cyrillic]
 Name=Uzbek (Cyrillic)
+Name[ar]=الأوزبكية (سريالية)
 Name[be@latin]=Uzbeckaja kirylica
 Name[bg]=Узбекски (кирилица)
 Name[bn_IN]=উজবেক (সিরিলিক)

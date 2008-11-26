@@ -1,6 +1,7 @@
 [Global]
 IconName=proxy
 Comment=Automatic Proxy Configuration
+Comment[ar]=إعدادات الوكيل الآلية
 Comment[be]=Аўтаматычнае настаўленне проксі
 Comment[be@latin]=Aŭtamatyčnaje naładžvańnie proxy
 Comment[bg]=Автоматично настройване на прокси сървъра
@@ -70,6 +71,7 @@ Comment[zh_TW]=自動代理組態
 
 [Event/script-error]
 Name=Invalid Proxy Script
+Name[ar]=مخطوطة الوكيل غير صالحة
 Name[be]=Няправільны сцэнар проксі
 Name[be@latin]=Niapravilny proksi-skrypt
 Name[bg]=Невалиден скрипт на прокси
@@ -136,6 +138,7 @@ Name[zh_CN]=无效的代理脚本
 Name[zh_TW]=不合法的代理文稿
 Comment=The downloaded proxy configuration script is invalid
 Comment[af]=Die proksie skrip wat afgelaai is, is ongeldig
+Comment[ar]=نص إعدادات وكيل التنزيل غير صالح
 Comment[be]=Сцягнуты сцэнар настаўлення проксі-сервера няправільны
 Comment[be@latin]=Atrymany niapravilny skrypt naładžvańnia proxy
 Comment[bg]=Сваленият скрипт за настройване на прокси е невалиден
@@ -215,6 +218,7 @@ Action=Popup
 [Event/download-error]
 Name=Script Download Error
 Name[af]=Skrip aflaaifout
+Name[ar]=خطأ في نص التنزيل
 Name[be]=Памылка сцягвання сцэнара
 Name[be@latin]=Pamyłka atrymańnia skrypta
 Name[bg]=Грешка при сваляне на скрипт
@@ -281,6 +285,7 @@ Name[zh_CN]=脚本下载错误
 Name[zh_TW]=文稿下載錯誤
 Comment=The proxy configuration script could not be downloaded
 Comment[af]=Die proksie opstellingskrip kon nie afgelaai word nie
+Comment[ar]=لا يمكن تنزيل نص إعدادات الوكيل
 Comment[be]=Немагчыма сцягнуць сцэнар настаўлення проксі
 Comment[be@latin]=Nie ŭdałosia atrymać skrypt naładžvańnia proxy
 Comment[bg]=Скриптът за настройване на прокси не беше свален
@@ -360,6 +365,7 @@ Action=Popup
 [Event/evaluation-error]
 Name=Script Evaluation Error
 Name[af]=Skrip evaluasiefout
+Name[ar]=خطأ في تقييم النص
 Name[be]=Памылка выканання сцэнару
 Name[be@latin]=Pamyłka ŭ vykanańni skrypta
 Name[bg]=Грешка при оценка на скрипт
@@ -425,6 +431,7 @@ Name[zh_CN]=脚本执行错误
 Name[zh_TW]=文稿執行錯誤
 Comment=There was an error executing the proxy configuration script
 Comment[af]=Daar was 'n fout met die uitvoer van die proksie opstelskrip
+Comment[ar]=يوجد خطأ في تنفيذ نص إعدادات الوكيل
 Comment[be]=Адбылася памылка выканання сцэнару настаўлення проксі
 Comment[be@latin]=Padčas vykanańnia skrypta naładžvańnia proxy ŭźnikła pamyłka.
 Comment[bg]=Възникна грешка при изпълнение на скрипта за настройка на прокси

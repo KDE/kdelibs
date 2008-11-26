@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Service
 Name=XMPP Emoticons Theme
+Name[ar]=سمة رموز XMPP
 Name[be@latin]=Matyŭ smajlikaŭ dla „XMPP”
 Name[bg]=Тема с емоции XMPP
 Name[bn_IN]=XMPP ইমো-আইকন থিম
@@ -49,6 +50,7 @@ Name[x-test]=xxXMPP Emoticons Themexx
 Name[zh_CN]=XMPP 表情主题
 Name[zh_TW]=XMPP 表情圖示主題
 Comment=Library to use XMPP emoticons theme
+Comment[ar]=مكتبة لاستخدام سمة رموز XMPP
 Comment[be@latin]=Biblijateka dla matyvaŭ smajlikaŭ „XMPP”
 Comment[bg]=Библиотека за темата с емоции XMPP
 Comment[bn_IN]=XMPP ইমো-আইকন থিম প্রয়োগ করতে ব্যবহৃত লাইব্রেরি
