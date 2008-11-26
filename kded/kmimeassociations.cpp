@@ -139,6 +139,7 @@ void KOfferHash::removeServiceOffer(const QString& serviceType, KService::Ptr se
     QHash<QString, ServiceTypeOffersData>::iterator it = m_serviceTypeData.find(serviceType);
     if (it != m_serviceTypeData.end()) {
         ServiceTypeOffersData& data = *it;
+        data.removedOffers.insert(service);
         data.offerSet.remove(service);
         QMutableListIterator<KServiceOffer> sfit(data.offers);
         while (sfit.hasNext()) {
@@ -146,4 +147,13 @@ void KOfferHash::removeServiceOffer(const QString& serviceType, KService::Ptr se
                 sfit.remove();
         }
     }
+}
+
+bool KOfferHash::hasRemovedOffer(const QString& serviceType, KService::Ptr service) const
+{
+    QHash<QString, ServiceTypeOffersData>::const_iterator it = m_serviceTypeData.find(serviceType);
+    if (it != m_serviceTypeData.end()) {
+        return (*it).removedOffers.contains(service);
+    }
+    return false;
 }
