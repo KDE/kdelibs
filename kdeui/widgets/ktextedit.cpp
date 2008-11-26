@@ -392,6 +392,7 @@ void KTextEdit::deleteWordForward()
 QMenu *KTextEdit::mousePopupMenu()
 {
   QMenu *popup = createStandardContextMenu();
+  if (!popup) return 0;
   connect( popup, SIGNAL( triggered ( QAction* ) ),
              this, SLOT( menuActivated( QAction* ) ) );
 
@@ -507,8 +508,10 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
     // words and words inside quotes.
     if (!wordIsMisspelled || selectedWordClicked || inQuote) {
         QMenu *popup = mousePopupMenu();
-        popup->exec( event->globalPos() );
-        delete popup;
+        if ( popup ) {
+            popup->exec( event->globalPos() );
+            delete popup;
+        }
     }
     else {
         KMenu suggestions;
