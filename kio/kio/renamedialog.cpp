@@ -283,11 +283,14 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
 
     d->m_pLineEdit = new KLineEdit( this );
     layout2->addWidget( d->m_pLineEdit );
-    QString fileName = d->dest.fileName();
+    if ( d->bRename ) {
+        const QString fileName = d->dest.fileName();
     d->m_pLineEdit->setText( KIO::decodeFileName( fileName ) );
-    if ( d->bRename || d->bOverwrite )
         connect(d->m_pLineEdit, SIGNAL(textChanged(const QString &)),
                 SLOT(enableRenameButton(const QString &)));
+    } else {
+        d->m_pLineEdit->hide();
+    }
     if ( d->bSuggestNewName )
     {
         layout2->addWidget( d->bSuggestNewName );
