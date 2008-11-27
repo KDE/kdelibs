@@ -296,6 +296,10 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
     if ( d->bRename || d->bOverwrite )
         connect(d->m_pLineEdit, SIGNAL(textChanged(const QString &)),
                 SLOT(enableRenameButton(const QString &)));
+    if ( !d->bRename )
+    {
+        d->m_pLineEdit->hide();
+    }
     if ( d->bSuggestNewName )
     {
         layout2->addWidget( d->bSuggestNewName );
