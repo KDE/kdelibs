@@ -41,7 +41,7 @@ class KUrlPrivate;
 
 /**
  * \class KUrl kurl.h <KUrl>
- * 
+ *
  * Represents and parses a URL.
  *
  * A prototypical URL looks like:
@@ -116,7 +116,7 @@ public:
 
   /**
    * \class List kurl.h <KUrl>
-   * 
+   *
    * KUrl::List is a QList that contains KUrls with a few
    * convenience methods.
    * @see KUrl
@@ -652,6 +652,7 @@ public:
     AppendTrailingSlash = 0x04,
     /**
      * Opposite of ObeyTrailingSlash  (default)
+     * fileName("file:/foo/") and fileName("file:/foo") is "foo" in both cases.
      */
     IgnoreTrailingSlash = 0x01
 
