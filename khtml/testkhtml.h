@@ -3,6 +3,8 @@
 
 #include <kdebug.h>
 #include <khtml_part.h>
+#include <QList>
+#include <QMap>
 
 /**
  * @internal
@@ -39,8 +41,18 @@ private Q_SLOTS:
       m_part->setEditable(s);
   }
 
+  void doBenchmark();
+
+  void handleDone();
+
+  void nextRun();
 private:
   KHTMLPart *m_part;
+  QList<QString> filesToBenchmark;
+  QMap<QString, QList<int> > results;
+  int                 benchmarkRun;
+  QTime               loadTimer;
+
 };
 
 #endif
