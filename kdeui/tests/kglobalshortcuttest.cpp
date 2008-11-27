@@ -30,6 +30,8 @@
 #include <kglobalaccel.h>
 #include <kdebug.h>
 
+#include <unistd.h>
+
 #include <QtDBus/QDBusConnectionInterface>
 
 const QKeySequence sequenceA = QKeySequence(Qt::SHIFT + Qt::META + Qt::CTRL + Qt::ALT + Qt::Key_F28 );
