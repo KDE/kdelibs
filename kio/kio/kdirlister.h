@@ -196,7 +196,7 @@ public:
 
   /**
    * Changes the "is viewing dot files" setting.
-   * Calls updateDirectory() if setting changed.
+   * You need to call emitChanges() afterwards.
    * By default this option is disabled (hidden files will not be shown).
    * @param _showDotFiles true to enable showing hidden files, false to
    *        disable
@@ -214,6 +214,7 @@ public:
 
   /**
    * Call this to list only directories.
+   * You need to call emitChanges() afterwards.
    * By default this option is disabled (all files will be shown).
    * @param dirsOnly true to list only directories
    */
@@ -292,6 +293,7 @@ public:
    * You can set more than one filter by separating them with whitespace, e.g
    * "*.cpp *.h".
    * Note: the directory is not automatically reloaded.
+   * You need to call emitChanges() afterwards.
    *
    * @param filter the new filter, QString() to disable filtering
    * @see matchesFilter
@@ -310,6 +312,8 @@ public:
    *
    * NOTE: setting the filter does not automatically reload directory.
    * Also calling this function will not affect any named filter already set.
+   *
+   * You need to call emitChanges() afterwards.
    *
    * @param mimeList a list of mime-types.
    *
@@ -337,6 +341,8 @@ public:
 
   /**
    * Clears the mime based filter.
+   *
+   * You need to call emitChanges() afterwards.
    *
    * @see setMimeFilter
    */
