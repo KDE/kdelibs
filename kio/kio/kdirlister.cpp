@@ -1526,7 +1526,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
                 foreach ( KDirLister *kdl, listers )
                     kdl->d->aboutToRefreshItem( *tmp );
 
-                // kDebug(7004) << "slotUpdateResult: file changed: " << tmp->name();
+                //kDebug(7004) << "file changed:" << tmp->name();
 
                 const KFileItem oldItem = *tmp;
                 *tmp = item;
@@ -1537,7 +1537,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
         }
         else // this is a new file
         {
-            // kDebug(7004) << "slotUpdateResult: new file: " << name;
+            //kDebug(7004) << "new file:" << name;
 
             KFileItem pitem(item);
             pitem.mark();
@@ -1608,7 +1608,7 @@ void KDirListerCache::deleteUnmarkedItems( const QList<KDirLister *>& listers, K
     while (kit.hasNext()) {
         const KFileItem item = kit.next();
         if (!item.isMarked()) {
-            //kDebug() << item->name();
+            //kDebug() << "deleted:" << item.name();
             deletedItems.append(item);
             kit.remove();
         }
@@ -2249,8 +2249,9 @@ void KDirLister::Private::addRefreshItem( const KFileItem& oldItem, const KFileI
 
     // notify the user that the mimetype of a file changed that doesn't match
     // a filter or does match an exclude filter
-    Q_ASSERT( !item.isNull() );
-    lstRemoveItems->append( item );
+    // This also happens when renaming foo to .foo and dot files are hidden (#174721)
+    Q_ASSERT(!oldItem.isNull());
+    lstRemoveItems->append(oldItem);
   }
 }
 
