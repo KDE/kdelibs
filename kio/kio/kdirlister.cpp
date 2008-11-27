@@ -1888,12 +1888,13 @@ void KDirLister::emitChanges()
   if ( d->changes == NONE )
     return;
 
-  for ( KUrl::List::Iterator it = d->lstDirs.begin();
-        it != d->lstDirs.end(); ++it )
-  {
+  const int changes = d->changes;
+  d->changes = NONE; // in case of recursion (testcase: enabling recursive scan in ktorrent, #174920)
+
+  Q_FOREACH(const KUrl& dir, d->lstDirs) {
     KFileItemList deletedItems;
 
-    const KFileItemList* itemList = kDirListerCache->itemsForDir( *it );
+    const KFileItemList* itemList = kDirListerCache->itemsForDir(dir);
     KFileItemList::const_iterator kit = itemList->begin();
     const KFileItemList::const_iterator kend = itemList->end();
     for ( ; kit != kend; ++kit )
@@ -1903,8 +1904,7 @@ void KDirLister::emitChanges()
 
       bool oldMime = true, newMime = true;
 
-      if ( d->changes & MIME_FILTER )
-      {
+      if (changes & MIME_FILTER) {
         const QString mimetype = (*kit).mimetype();
         oldMime = doMimeFilter( mimetype, d->oldMimeFilter )
                 && d->doMimeExcludeFilter( mimetype, d->oldMimeExcludeFilter );
@@ -1918,8 +1918,7 @@ void KDirLister::emitChanges()
         }
       }
 
-      if ( d->changes & DIR_ONLY_MODE )
-      {
+      if (changes & DIR_ONLY_MODE) {
         // the lister switched to dirOnlyMode
         if ( d->dirOnlyMode )
         {
@@ -1936,8 +1935,7 @@ void KDirLister::emitChanges()
 
       if ( (*kit).isHidden() )
       {
-        if ( d->changes & DOT_FILES )
-        {
+        if (changes & DOT_FILES) {
           // the lister switched to dot files mode
           if ( d->isShowingDotFiles )
             d->addNewItem( *kit );
@@ -1948,9 +1946,7 @@ void KDirLister::emitChanges()
 
           continue;
         }
-      }
-      else if ( d->changes & NAME_FILTER )
-      {
+      } else if (changes & NAME_FILTER) {
         bool oldName = (*kit).isDir() ||
                        d->oldFilters.isEmpty() ||
                        doNameFilter( (*kit).text(), d->oldFilters );
@@ -1968,7 +1964,7 @@ void KDirLister::emitChanges()
           d->addNewItem( *kit );
       }
 
-      if ( (d->changes & MIME_FILTER) && !oldMime && newMime )
+      if ((changes & MIME_FILTER) && !oldMime && newMime)
         d->addNewItem( *kit );
     }
 
@@ -1980,8 +1976,6 @@ void KDirLister::emitChanges()
     }
     d->emitItems();
   }
-
-  d->changes = NONE;
 }
 
 void KDirLister::updateDirectory( const KUrl& _u )
