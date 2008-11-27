@@ -580,7 +580,10 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
             filename = startDir.fileName();
             startDir.setFileName(QString());
         }
+    } else {
+        filename = startDir.fileName();
     }
+
     d->url = getStartUrl( startDir, d->fileClass );
     d->ops->setUrl(d->url, true);
     d->urlNavigator->setUrl(d->url);
@@ -590,7 +593,11 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
 
     // we know it is not a dir, and we could stat it. Set it.
     if (!filename.isEmpty()) {
-        d->setLocationText(filename);
+        if (res) {
+            d->setLocationText(filename);
+        } else {
+            d->locationEdit->lineEdit()->setText(filename);
+        }
         d->locationEdit->lineEdit()->selectAll();
     }
 
@@ -1405,7 +1412,7 @@ void KFileWidget::setSelection(const QString& url)
     }
 
     // Honor protocols that do not support directory listing
-    if (!KProtocolManager::supportsListing(u))
+    if (!u.isRelative() && !KProtocolManager::supportsListing(u))
         return;
 
     d->setLocationText(url);
