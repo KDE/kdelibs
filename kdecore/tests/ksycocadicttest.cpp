@@ -83,7 +83,7 @@ void KSycocaDictTest::testStandardDict()
     QCOMPARE(offset, 0); // could be non 0 according to the docs, too; if non 0, we should check that the pointed mimetype doesn't have this name.
 }
 
-// New use of KSycocaDict: mapping extension to mimetype; kinf of a qmultihash
+// New use of KSycocaDict: mapping extension to mimetype; kind of a qmultihash
 void KSycocaDictTest::testExtensionDict()
 {
     if ( !KSycoca::isAvailable() )
