@@ -68,8 +68,6 @@ using namespace DOM;
 #include <assert.h>
 #include <stdlib.h>
 
-#include <wtf/HashMap.h>
-
 // keep in sync with html4.css'
 #define KHTML_STYLE_VERSION 1
 
@@ -606,7 +604,51 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
     int smatch = 0;
     int schecked = 0;
 
-    for ( unsigned int i = 0; i < selectors_size; i++ ) {
+    // do aggressive selection of selectors to check
+    // instead of going over whole constructed list,
+    // skip selectors that won't match for sure (e.g. with different id or class)
+    QVector<int> selectorsForCheck;
+    selectorsForCheck.reserve(selectors_size);
+    // add unknown selectors to always be checked
+    for (unsigned int i = 0; i < otherSelectors.size(); ++i)
+        selectorsForCheck.append(otherSelectors[i]);
+    // check if we got class attribute on element: add selectors with it to the list
+    if (e->hasClass()) {
+        const ClassNames& classNames = element->classNames();
+        for (unsigned int i = 0; i < classNames.size(); ++i) {
+            WTF::HashMap<unsigned long, WTF::Vector<int> >::iterator it = classSelectors.find((unsigned long)classNames[i].impl());
+            if (it != classSelectors.end()) {
+                const Vector<int>& v = it->second;
+                for (unsigned int j = 0; j < v.size(); ++j)
+                    selectorsForCheck.append(v[j]);
+            }
+        }
+    }
+    // check if we got id attribute on element: add selectors with it to the list
+    DOMStringImpl* idValue = element->getAttributeImplById(ATTR_ID);
+    if (idValue && idValue->length()) {
+        AtomicString elementId = idValue;
+        WTF::HashMap<unsigned long, WTF::Vector<int> >::iterator it = idSelectors.find((unsigned long)elementId.impl());
+        if (it != idSelectors.end()) {
+            const Vector<int>& v = it->second;
+            for (unsigned int j = 0; j < v.size(); ++j)
+                selectorsForCheck.append(v[j]);
+        }
+    }
+    // add all selectors with given local tag
+    WTF::HashMap<unsigned, WTF::Vector<int> >::iterator it = tagSelectors.find(cssTagId);
+    if (it != tagSelectors.end()) {
+        const Vector<int>& v = it->second;
+        for (unsigned int j = 0; j < v.size(); ++j)
+            selectorsForCheck.append(v[j]);
+    }
+
+    // sort selectors indexes so we match them in increasing order
+    qSort(selectorsForCheck.begin(), selectorsForCheck.end());
+
+    // now go over selectors that we prepared for check
+    for (int k = 0; k < selectorsForCheck.size(); ++k) {
+        unsigned i = selectorsForCheck[k];
 	quint16 tag = selectors[i]->tagLocalName.id();
 	if ( cssTagId == tag || tag == anyLocalName ) {
 	    ++schecked;
@@ -1772,6 +1814,11 @@ void CSSStyleSelector::clearLists()
     selectors = 0;
     properties = 0;
     selectorCache = 0;
+
+    classSelectors.clear();
+    idSelectors.clear();
+    tagSelectors.clear();
+    otherSelectors.clear();
 }
 
 void CSSStyleSelector::setupDefaultRootStyle(DOM::DocumentImpl *d)
@@ -1839,6 +1886,40 @@ void CSSStyleSelector::buildLists()
         selectorCache[i].state = Unknown;
         selectorCache[i].props_size = 0;
         selectorCache[i].props = 0;
+    }
+
+    // do some pre-compution to make styleForElement faster:
+    // 1. class selectors: put in hash by selector value
+    // 2. the same goes for id selectors
+    // 3. put tag selectors in hash by id
+    // 4. other selectors (shouldn't be much) goes to plain list
+    for (unsigned int i = 0; i < selectors_size; ++i) {
+        if (selectors[i]->match == CSSSelector::Class) {
+            WTF::HashMap<unsigned long, WTF::Vector<int> >::iterator it = classSelectors.find((unsigned long)selectors[i]->value.impl());
+            if (it == classSelectors.end()) {
+                WTF::Vector<int> temp;
+                temp.append(i);
+                classSelectors.set((unsigned long)selectors[i]->value.impl(), temp);
+            } else
+                it->second.append(i);
+        } else if (selectors[i]->match == CSSSelector::Id) {
+            WTF::HashMap<unsigned long, WTF::Vector<int> >::iterator it = idSelectors.find((unsigned long)selectors[i]->value.impl());
+            if (it == idSelectors.end()) {
+                WTF::Vector<int> temp;
+                temp.append(i);
+                idSelectors.set((unsigned long)selectors[i]->value.impl(), temp);
+            } else
+                it->second.append(i);
+        } else if (selectors[i]->tagLocalName.id() && selectors[i]->tagLocalName.id() != anyLocalName) {
+            WTF::HashMap<unsigned, WTF::Vector<int> >::iterator it = tagSelectors.find(selectors[i]->tagLocalName.id());
+            if (it == tagSelectors.end()) {
+                WTF::Vector<int> temp;
+                temp.append(i);
+                tagSelectors.set(selectors[i]->tagLocalName.id(), temp);
+            } else
+                it->second.append(i);
+        } else
+            otherSelectors.append(i);
     }
 
     // presort properties. Should make the sort() calls in styleForElement faster.

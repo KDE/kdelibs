@@ -29,6 +29,8 @@
 #include "css/css_mediaquery.h"
 #include <QtCore/QVarLengthArray>
 #include <QtCore/QList>
+#include <wtf/HashMap.h>
+#include <wtf/Vector.h>
 
 class KHTMLSettings;
 class KHTMLView;
@@ -299,6 +301,10 @@ public:
 	unsigned int propsToApplySize;
 	unsigned int pseudoPropsSize;
 
+        // hashes for faster styleForElement
+        WTF::HashMap< unsigned long, WTF::Vector<int> > classSelectors, idSelectors;
+        WTF::HashMap< unsigned, WTF::Vector<int> > tagSelectors;
+        WTF::Vector<int> otherSelectors;
 
 	RenderStyle::PseudoId dynamicPseudo;
 
