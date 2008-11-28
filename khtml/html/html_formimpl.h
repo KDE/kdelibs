@@ -571,6 +571,7 @@ public:
 
     virtual bool isEditable();
     void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }
+    virtual bool unsubmittedFormChanges() const { return m_unsubmittedFormChange; }
 
     //Mozilla extensions.
     long selectionStart();
