@@ -411,10 +411,10 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
     Q_ASSERT(!item.isNull());
     KUrl url = item.url();
     KDirModelNode* node = nodeForUrl(url); // O(depth)
-    if (!node) {                                                          
+    if (!node) {
         kWarning(7008) << "No node found for item that was just removed:" << url;
         return;
-    }                                                                            
+    }
 
     KDirModelDirNode* dirNode = node->parent();
     if (!dirNode)
@@ -441,9 +441,9 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
         if (!node) { // don't lookup the first item twice
             url = item.url();
             node = nodeForUrl(url);
-            if (!node) {                                                         
+            if (!node) {
                 kWarning(7008) << "No node found for item that was just removed:" << url;
-            }                                                                            
+            }
             Q_ASSERT(node);
         }
         rowNumbers.setBit(node->rowNumber(), 1); // O(n)
