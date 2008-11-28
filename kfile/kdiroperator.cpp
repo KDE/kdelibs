@@ -1081,7 +1081,9 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
 
 void KDirOperator::updateDir()
 {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     d->dirLister->emitChanges();
+    QApplication::restoreOverrideCursor();
 }
 
 void KDirOperator::rereadDir()
