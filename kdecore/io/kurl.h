@@ -180,6 +180,19 @@ public:
                              MimeDataFlags flags = DefaultMimeDataFlags ) const;
 
       /**
+       * Adds URLs into the given QMimeData, both the "kde version" of the URLs
+       * (e.g. desktop:/foo) and the "most local" version of the URLs
+       * (e.g. file:///home/dfaure/Desktop/foo).
+       * Call this method on the "kde" URLs.
+       * @param mostLocalUrls the "most local" urls.
+       * @since 4.2
+       */
+      void populateMimeData(const KUrl::List& mostLocalUrls,
+                            QMimeData* mimeData,
+                            const KUrl::MetaDataMap& metaData = MetaDataMap(),
+                            MimeDataFlags flags = DefaultMimeDataFlags) const;
+
+      /**
        * Return true if @p mimeData contains URI data
        */
       static bool canDecode( const QMimeData *mimeData );

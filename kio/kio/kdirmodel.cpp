@@ -415,10 +415,10 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
     Q_ASSERT(!item.isNull());
     KUrl url = item.url();
     KDirModelNode* node = nodeForUrl(url); // O(depth)
-    if (!node) {                                                          
+    if (!node) {
         kWarning(7008) << "No node found for item that was just removed:" << url;
         return;
-    }                                                                            
+    }
 
     KDirModelDirNode* dirNode = node->parent();
     if (!dirNode)
@@ -445,9 +445,9 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
         if (!node) { // don't lookup the first item twice
             url = item.url();
             node = nodeForUrl(url);
-            if (!node) {                                                         
+            if (!node) {
                 kWarning(7008) << "No node found for item that was just removed:" << url;
-            }                                                                            
+            }
             Q_ASSERT(node);
         }
         rowNumbers.setBit(node->rowNumber(), 1); // O(n)
@@ -713,20 +713,21 @@ QModelIndex KDirModel::parent( const QModelIndex & index ) const
 
 QStringList KDirModel::mimeTypes( ) const
 {
-    return QStringList() << QLatin1String("text/uri-list")
-                         << QLatin1String( "application/x-kde-cutselection" ) // TODO
-                         << QLatin1String( "text/plain" )
-                         << QLatin1String( "application/x-kde-urilist" );
+    return KUrl::List::mimeDataTypes()
+        << QLatin1String( "application/x-kde-cutselection" ); // TODO
 }
 
 QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
 {
-    KUrl::List urls;
+    KUrl::List urls, mostLocalUrls;
     foreach ( const QModelIndex &index, indexes ) {
-        urls << d->nodeForIndex( index )->item().url();
+        const KFileItem& item = d->nodeForIndex( index )->item();
+        urls << item.url();
+        bool dummy;
+        mostLocalUrls << item.mostLocalUrl(dummy);
     }
     QMimeData *data = new QMimeData();
-    urls.populateMimeData( data );
+    urls.populateMimeData(mostLocalUrls, data);
     return data;
 }
 
