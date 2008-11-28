@@ -585,6 +585,9 @@ Q_SIGNALS:
   void speed( int bytes_per_second );
 
 protected:
+  /// @deprecated and unused, ignore this
+  enum Changes { NONE=0, NAME_FILTER=1, MIME_FILTER=2, DOT_FILES=4, DIR_ONLY_MODE=8 };
+
   /**
    * Called for every new item before emitting newItems().
    * You may reimplement this method in a subclass to implement your own
