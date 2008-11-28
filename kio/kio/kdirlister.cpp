@@ -1802,10 +1802,10 @@ KDirLister::~KDirLister()
 bool KDirLister::openUrl( const KUrl& _url, OpenUrlFlags _flags )
 {
     // emit the current changes made to avoid an inconsistent treeview
-    if ( d->changes != NONE && ( _flags & Keep ) )
+    if (d->hasPendingChanges && (_flags & Keep))
         emitChanges();
 
-    d->changes = NONE;
+    d->hasPendingChanges = false;
 
     return kDirListerCache->listDir( this, _url, _flags & Keep, _flags & Reload );
 }
@@ -1836,30 +1836,30 @@ void KDirLister::setAutoUpdate( bool _enable )
 
 bool KDirLister::showingDotFiles() const
 {
-  return d->isShowingDotFiles;
+  return d->settings.isShowingDotFiles;
 }
 
 void KDirLister::setShowingDotFiles( bool _showDotFiles )
 {
-  if ( d->isShowingDotFiles == _showDotFiles )
+  if ( d->settings.isShowingDotFiles == _showDotFiles )
     return;
 
-  d->isShowingDotFiles = _showDotFiles;
-  d->changes ^= DOT_FILES;
+  d->prepareForSettingsChange();
+  d->settings.isShowingDotFiles = _showDotFiles;
 }
 
 bool KDirLister::dirOnlyMode() const
 {
-  return d->dirOnlyMode;
+  return d->settings.dirOnlyMode;
 }
 
 void KDirLister::setDirOnlyMode( bool _dirsOnly )
 {
-  if ( d->dirOnlyMode == _dirsOnly )
+  if ( d->settings.dirOnlyMode == _dirsOnly )
     return;
 
-  d->dirOnlyMode = _dirsOnly;
-  d->changes ^= DIR_ONLY_MODE;
+  d->prepareForSettingsChange();
+  d->settings.dirOnlyMode = _dirsOnly;
 }
 
 bool KDirLister::autoErrorHandlingEnabled() const
@@ -1885,97 +1885,62 @@ KUrl::List KDirLister::directories() const
 
 void KDirLister::emitChanges()
 {
-  if ( d->changes == NONE )
-    return;
+    d->emitChanges();
+}
 
-  const int changes = d->changes;
-  d->changes = NONE; // in case of recursion (testcase: enabling recursive scan in ktorrent, #174920)
+void KDirLister::Private::emitChanges()
+{
+    if (!hasPendingChanges)
+        return;
 
-  Q_FOREACH(const KUrl& dir, d->lstDirs) {
-    KFileItemList deletedItems;
+    // reset 'hasPendingChanges' now, in case of recursion
+    // (testcase: enabling recursive scan in ktorrent, #174920)
+    hasPendingChanges = false;
 
-    const KFileItemList* itemList = kDirListerCache->itemsForDir(dir);
-    KFileItemList::const_iterator kit = itemList->begin();
-    const KFileItemList::const_iterator kend = itemList->end();
-    for ( ; kit != kend; ++kit )
-    {
-      if ( (*kit).text() == "." || (*kit).text() == ".." )
-        continue;
+    const Private::FilterSettings newSettings = settings;
+    settings = oldSettings; // temporarily
 
-      bool oldMime = true, newMime = true;
-
-      if (changes & MIME_FILTER) {
-        const QString mimetype = (*kit).mimetype();
-        oldMime = doMimeFilter( mimetype, d->oldMimeFilter )
-                && d->doMimeExcludeFilter( mimetype, d->oldMimeExcludeFilter );
-        newMime = doMimeFilter( mimetype, d->mimeFilter )
-                && d->doMimeExcludeFilter( mimetype, d->mimeExcludeFilter );
-
-        if ( oldMime && !newMime )
-        {
-          deletedItems.append(*kit);
-          continue;
+    // Mark all items that are currently visible
+    Q_FOREACH(const KUrl& dir, lstDirs) {
+        KFileItemList* itemList = kDirListerCache->itemsForDir(dir);
+        KFileItemList::iterator kit = itemList->begin();
+        const KFileItemList::iterator kend = itemList->end();
+        for (; kit != kend; ++kit) {
+            if (isItemVisible(*kit) && m_parent->matchesMimeFilter(*kit))
+                (*kit).mark();
+            else
+                (*kit).unmark();
         }
-      }
-
-      if (changes & DIR_ONLY_MODE) {
-        // the lister switched to dirOnlyMode
-        if ( d->dirOnlyMode )
-        {
-          if ( !(*kit).isDir() )
-          {
-              deletedItems.append(*kit);
-          }
-        }
-        else if ( !(*kit).isDir() )
-          d->addNewItem( *kit );
-
-        continue;
-      }
-
-      if ( (*kit).isHidden() )
-      {
-        if (changes & DOT_FILES) {
-          // the lister switched to dot files mode
-          if ( d->isShowingDotFiles )
-            d->addNewItem( *kit );
-          else
-          {
-              deletedItems.append(*kit);
-          }
-
-          continue;
-        }
-      } else if (changes & NAME_FILTER) {
-        bool oldName = (*kit).isDir() ||
-                       d->oldFilters.isEmpty() ||
-                       doNameFilter( (*kit).text(), d->oldFilters );
-
-        bool newName = (*kit).isDir() ||
-                       d->lstFilters.isEmpty() ||
-                       doNameFilter( (*kit).text(), d->lstFilters );
-
-        if ( oldName && !newName )
-        {
-          deletedItems.append(*kit);
-          continue;
-        }
-        else if ( !oldName && newName )
-          d->addNewItem( *kit );
-      }
-
-      if ((changes & MIME_FILTER) && !oldMime && newMime)
-        d->addNewItem( *kit );
     }
 
-    if (!deletedItems.isEmpty()) {
-        emit itemsDeleted(deletedItems);
-        // for compat
-        Q_FOREACH(const KFileItem& item, deletedItems)
-            emit deleteItem(item);
+    settings = newSettings;
+
+    Q_FOREACH(const KUrl& dir, lstDirs) {
+        KFileItemList deletedItems;
+
+        KFileItemList* itemList = kDirListerCache->itemsForDir(dir);
+        KFileItemList::iterator kit = itemList->begin();
+        const KFileItemList::iterator kend = itemList->end();
+        for (; kit != kend; ++kit) {
+            KFileItem& item = *kit;
+            const QString text = item.text();
+            if (text == "." || text == "..")
+                continue;
+            const bool nowVisible = isItemVisible(item) && m_parent->matchesMimeFilter(item);
+            if (nowVisible && !item.isMarked())
+                addNewItem(item); // takes care of emitting newItem or itemsFilteredByMime
+            else if (!nowVisible && item.isMarked())
+                deletedItems.append(*kit);
+        }
+        if (!deletedItems.isEmpty()) {
+            emit m_parent->itemsDeleted(deletedItems);
+            // for compat
+            Q_FOREACH(const KFileItem& item, deletedItems)
+                emit m_parent->deleteItem(item);
+        }
+        emitItems();
     }
-    d->emitItems();
-  }
+    oldSettings = settings;
 }
 
 void KDirLister::updateDirectory( const KUrl& _u )
@@ -2013,21 +1978,17 @@ KFileItem KDirLister::findByName( const QString& _name ) const
 
 void KDirLister::setNameFilter( const QString& nameFilter )
 {
-  if ( !(d->changes & NAME_FILTER) )
-  {
-    d->oldFilters = d->lstFilters;
-  }
+    if (d->nameFilter == nameFilter)
+        return;
 
-  d->lstFilters.clear();
+    d->prepareForSettingsChange();
 
-  d->nameFilter = nameFilter;
-
-  // Split on white space
-  const QStringList list = nameFilter.split( ' ', QString::SkipEmptyParts );
-  for ( QStringList::const_iterator it = list.begin(); it != list.end(); ++it )
-    d->lstFilters.append( QRegExp(*it, Qt::CaseInsensitive, QRegExp::Wildcard ) );
-
-  d->changes |= NAME_FILTER;
+    d->settings.lstFilters.clear();
+    d->nameFilter = nameFilter;
+    // Split on white space
+    const QStringList list = nameFilter.split( ' ', QString::SkipEmptyParts );
+    for (QStringList::const_iterator it = list.begin(); it != list.end(); ++it)
+        d->settings.lstFilters.append(QRegExp(*it, Qt::CaseInsensitive, QRegExp::Wildcard));
 }
 
 QString KDirLister::nameFilter() const
@@ -2037,52 +1998,47 @@ QString KDirLister::nameFilter() const
 
 void KDirLister::setMimeFilter( const QStringList& mimeFilter )
 {
-  if ( !(d->changes & MIME_FILTER) )
-    d->oldMimeFilter = d->mimeFilter;
+    if (d->settings.mimeFilter == mimeFilter)
+        return;
 
-  if ( mimeFilter.contains("application/octet-stream") ) // all files
-    d->mimeFilter.clear();
-  else
-    d->mimeFilter = mimeFilter;
-
-  d->changes |= MIME_FILTER;
+    d->prepareForSettingsChange();
+    if (mimeFilter.contains("application/octet-stream")) // all files
+        d->settings.mimeFilter.clear();
+    else
+        d->settings.mimeFilter = mimeFilter;
 }
 
 void KDirLister::setMimeExcludeFilter( const QStringList& mimeExcludeFilter )
 {
-  if ( !(d->changes & MIME_FILTER) )
-    d->oldMimeExcludeFilter = d->mimeExcludeFilter;
+    if (d->settings.mimeExcludeFilter == mimeExcludeFilter)
+        return;
 
-  d->mimeExcludeFilter = mimeExcludeFilter;
-  d->changes |= MIME_FILTER;
+    d->prepareForSettingsChange();
+    d->settings.mimeExcludeFilter = mimeExcludeFilter;
 }
 
 
 void KDirLister::clearMimeFilter()
 {
-  if ( !(d->changes & MIME_FILTER) )
-  {
-    d->oldMimeFilter = d->mimeFilter;
-    d->oldMimeExcludeFilter = d->mimeExcludeFilter;
-  }
-  d->mimeFilter.clear();
-  d->mimeExcludeFilter.clear();
-  d->changes |= MIME_FILTER;
+    d->prepareForSettingsChange();
+    d->settings.mimeFilter.clear();
+    d->settings.mimeExcludeFilter.clear();
 }
 
 QStringList KDirLister::mimeFilters() const
 {
-  return d->mimeFilter;
+  return d->settings.mimeFilter;
 }
 
 bool KDirLister::matchesFilter( const QString& name ) const
 {
-  return doNameFilter( name, d->lstFilters );
+    return doNameFilter(name, d->settings.lstFilters);
 }
 
 bool KDirLister::matchesMimeFilter( const QString& mime ) const
 {
-  return doMimeFilter( mime, d->mimeFilter ) && d->doMimeExcludeFilter(mime,d->mimeExcludeFilter);
+    return doMimeFilter(mime, d->settings.mimeFilter) &&
+        d->doMimeExcludeFilter(mime, d->settings.mimeExcludeFilter);
 }
 
 // ================ protected methods ================ //
@@ -2094,10 +2050,10 @@ bool KDirLister::matchesFilter( const KFileItem& item ) const
   if ( item.text() == ".." )
     return false;
 
-  if ( !d->isShowingDotFiles && item.isHidden() )
+  if ( !d->settings.isShowingDotFiles && item.isHidden() )
     return false;
 
-  if ( item.isDir() || d->lstFilters.isEmpty() )
+  if ( item.isDir() || d->settings.lstFilters.isEmpty() )
     return true;
 
   return matchesFilter( item.text() );
@@ -2105,11 +2061,11 @@ bool KDirLister::matchesFilter( const KFileItem& item ) const
 
 bool KDirLister::matchesMimeFilter( const KFileItem& item ) const
 {
-  Q_ASSERT( !item.isNull() );
-  // Don't lose time determining the mimetype if there is no filter
-  if ( d->mimeFilter.isEmpty() && d->mimeExcludeFilter.isEmpty() )
-      return true;
-  return matchesMimeFilter( item.mimetype() );
+    Q_ASSERT(!item.isNull());
+    // Don't lose time determining the mimetype if there is no filter
+    if (d->settings.mimeFilter.isEmpty() && d->settings.mimeExcludeFilter.isEmpty())
+        return true;
+    return matchesMimeFilter(item.mimetype());
 }
 
 bool KDirLister::doNameFilter( const QString& name, const QList<QRegExp>& filters ) const
@@ -2164,8 +2120,8 @@ void KDirLister::handleError( KIO::Job *job )
 
 void KDirLister::Private::addNewItem( const KFileItem &item )
 {
-  if ( ( dirOnlyMode && !item.isDir() ) || !m_parent->matchesFilter( item ) )
-    return; // No reason to continue... bailing out here prevents a mimetype scan.
+    if (!isItemVisible(item))
+        return; // No reason to continue... bailing out here prevents a mimetype scan.
 
   if ( m_parent->matchesMimeFilter( item ) )
   {
@@ -2201,21 +2157,12 @@ void KDirLister::Private::addNewItems( const KFileItemList& items )
 
 void KDirLister::Private::aboutToRefreshItem( const KFileItem &item )
 {
-  // The code here follows the logic in addNewItem
-  if ( ( dirOnlyMode && !item.isDir() ) || !m_parent->matchesFilter( item ) )
-    refreshItemWasFiltered = true;
-  else if ( !m_parent->matchesMimeFilter( item ) )
-    refreshItemWasFiltered = true;
-  else
-    refreshItemWasFiltered = false;
+    refreshItemWasFiltered = !isItemVisible(item) || !m_parent->matchesMimeFilter(item);
 }
 
 void KDirLister::Private::addRefreshItem( const KFileItem& oldItem, const KFileItem& item )
 {
-  bool isExcluded = (dirOnlyMode && !item.isDir()) || !m_parent->matchesFilter( item );
-
-  if ( !isExcluded && m_parent->matchesMimeFilter( item ) )
-  {
+  if (isItemVisible(item) && m_parent->matchesMimeFilter(item)) {
     if ( refreshItemWasFiltered )
     {
       if ( !lstNewItems ) {
@@ -2290,12 +2237,18 @@ void KDirLister::Private::emitItems()
 
 void KDirLister::Private::emitDeleteItem( const KFileItem &item )
 {
-  if ( ( dirOnlyMode && !item.isDir() ) || !m_parent->matchesFilter( item ) )
-    return; // No reason to continue... bailing out here prevents a mimetype scan.
-  if ( m_parent->matchesMimeFilter( item ) )
-  {
-    emit m_parent->deleteItem( item );
-  }
+    if (isItemVisible(item) && m_parent->matchesMimeFilter(item)) {
+        emit m_parent->deleteItem(item);
+    }
+}
+
+bool KDirLister::Private::isItemVisible(const KFileItem& item) const
+{
+    // Note that this doesn't include mime filters, because
+    // of the itemsFilteredByMime signal. Filtered-by-mime items are
+    // considered "visible", they are just visible via a different signal...
+    return (!settings.dirOnlyMode || item.isDir())
+        && m_parent->matchesFilter(item);
 }
 
 void KDirLister::Private::emitItemsDeleted(const KFileItemList &_items)
@@ -2304,13 +2257,11 @@ void KDirLister::Private::emitItemsDeleted(const KFileItemList &_items)
     QMutableListIterator<KFileItem> it(items);
     while (it.hasNext()) {
         const KFileItem& item = it.next();
-        if ((dirOnlyMode && !item.isDir())
-            || !m_parent->matchesFilter(item)
-            || !m_parent->matchesMimeFilter(item) ) { // do this one last
-            it.remove();
-        } else {
+        if (isItemVisible(item) && m_parent->matchesMimeFilter(item)) {
             // for compat
             emit m_parent->deleteItem(item);
+        } else {
+            it.remove();
         }
     }
     if (!items.isEmpty())
@@ -2469,10 +2420,10 @@ KFileItemList KDirLister::itemsForDir( const KUrl& dir, WhichItems which ) const
         const KFileItemList::const_iterator kend = allItems->constEnd();
         for ( ; kit != kend; ++kit )
         {
-            KFileItem item = *kit;
-            bool isExcluded = (d->dirOnlyMode && !item.isDir()) || !matchesFilter( item );
-            if ( !isExcluded && matchesMimeFilter( item ) )
-                result.append( item );
+            const KFileItem& item = *kit;
+            if (d->isItemVisible(item) && matchesMimeFilter(item)) {
+                result.append(item);
+            }
         }
         return result;
     }

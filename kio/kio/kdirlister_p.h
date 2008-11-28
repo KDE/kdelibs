@@ -47,8 +47,6 @@ public:
     complete = false;
 
     autoUpdate = false;
-    isShowingDotFiles = false;
-    dirOnlyMode = false;
 
     autoErrorHandling = false;
     errorParent = 0;
@@ -63,8 +61,7 @@ public:
     lstRemoveItems = 0;
 
     refreshItemWasFiltered = false;
-
-    changes = NONE;
+    hasPendingChanges = false;
 
     window = 0;
     m_cachedItemsJob = 0;
@@ -91,6 +88,21 @@ public:
   void emitItemsDeleted(const KFileItemList &items);
   void redirect( const KUrl& oldUrl, const KUrl& newUrl );
 
+    /**
+     * Should this item be visible according to the current filter settings?
+     */
+    bool isItemVisible(const KFileItem& item) const;
+
+    void prepareForSettingsChange() {
+        if (!hasPendingChanges) {
+            hasPendingChanges = true;
+            oldSettings = settings;
+        }
+    }
+
+    void emitChanges();
+
+
   KDirLister *m_parent;
 
   /**
@@ -105,12 +117,11 @@ public:
   bool complete:1;
 
   bool autoUpdate:1;
-  bool isShowingDotFiles:1;
-  bool dirOnlyMode:1;
 
   bool delayedMimeTypes:1;
 
   bool refreshItemWasFiltered:1;
+    bool hasPendingChanges:1; // i.e. settings != oldSettings
 
   bool autoErrorHandling:2;
   QWidget *errorParent;
@@ -129,17 +140,24 @@ public:
   QList<QPair<KFileItem,KFileItem> > *lstRefreshItems;
   KFileItemList *lstMimeFilteredItems, *lstRemoveItems;
 
-  int changes;
-
     QWidget *window; // Main window this lister is associated with
     class CachedItemsJob;
     CachedItemsJob* m_cachedItemsJob;
 
-  QString nameFilter;
-  QList<QRegExp> lstFilters, oldFilters;
-  QStringList mimeFilter, oldMimeFilter;
-  QStringList mimeExcludeFilter, oldMimeExcludeFilter;
-  friend class KDirListerCache;
+    QString nameFilter; // parsed into lstFilters
+
+    struct FilterSettings {
+        FilterSettings() : isShowingDotFiles(false), dirOnlyMode(false) {}
+        bool isShowingDotFiles;
+        bool dirOnlyMode;
+        QList<QRegExp> lstFilters;
+        QStringList mimeFilter;
+        QStringList mimeExcludeFilter;
+    };
+    FilterSettings settings;
+    FilterSettings oldSettings;
+
+    friend class KDirListerCache;
 };
 
 /**

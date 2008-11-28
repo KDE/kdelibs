@@ -46,6 +46,7 @@ private Q_SLOTS:
     void testExpandToUrl_data();
     void testExpandToUrl();
     void testFilter();
+    void testMimeFilter();
     void testShowHiddenFiles();
     void testMultipleSlashes();
     void testUrlWithRef();
