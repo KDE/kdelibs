@@ -707,20 +707,21 @@ QModelIndex KDirModel::parent( const QModelIndex & index ) const
 
 QStringList KDirModel::mimeTypes( ) const
 {
-    return QStringList() << QLatin1String("text/uri-list")
-                         << QLatin1String( "application/x-kde-cutselection" ) // TODO
-                         << QLatin1String( "text/plain" )
-                         << QLatin1String( "application/x-kde-urilist" );
+    return KUrl::List::mimeDataTypes()
+        << QLatin1String( "application/x-kde-cutselection" ); // TODO
 }
 
 QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
 {
-    KUrl::List urls;
+    KUrl::List urls, mostLocalUrls;
     foreach ( const QModelIndex &index, indexes ) {
-        urls << d->nodeForIndex( index )->item().url();
+        const KFileItem& item = d->nodeForIndex( index )->item();
+        urls << item.url();
+        bool dummy;
+        mostLocalUrls << item.mostLocalUrl(dummy);
     }
     QMimeData *data = new QMimeData();
-    urls.populateMimeData( data );
+    urls.populateMimeData(mostLocalUrls, data);
     return data;
 }
 
