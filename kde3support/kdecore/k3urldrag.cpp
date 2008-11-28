@@ -92,11 +92,11 @@ QMap<QString, QString> &K3URLDrag::metaData()
 
 bool K3URLDrag::decode( const QMimeSource *e, KUrl::List &uris )
 {
-    // x-kde-urilist is the same format as text/uri-list, but contains
+    // x-kde4-urilist is the same format as text/uri-list, but contains
     // KDE-aware urls, like media:/ and system:/, whereas text/uri-list is resolved to
     // local files.
-    if ( e->provides( "application/x-kde-urilist" ) ) {
-        QByteArray payload = e->encodedData( "application/x-kde-urilist" );
+    if ( e->provides( "application/x-kde4-urilist" ) ) {
+        QByteArray payload = e->encodedData( "application/x-kde4-urilist" );
         if ( payload.size() ) {
             int c=0;
             const char* d = payload.data();
