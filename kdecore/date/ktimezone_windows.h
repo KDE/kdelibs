@@ -23,7 +23,7 @@
 
 #include <QtCore>
 
-#include <Windows.h>
+#include <windows.h>
 
 #include <memory>
 #include <string>
