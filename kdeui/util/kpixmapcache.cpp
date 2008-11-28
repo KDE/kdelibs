@@ -56,6 +56,12 @@
 
 //#define DISABLE_PIXMAPCACHE
 
+#ifdef Q_OS_SOLARIS
+#ifndef _XPG_4_2
+extern "C" int madvise(caddr_t addr, size_t len, int advice);
+#endif
+#endif
+
 #define KPIXMAPCACHE_VERSION 0x000208
 
 namespace {
