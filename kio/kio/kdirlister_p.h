@@ -369,10 +369,17 @@ private:
     typedef QHash<QString /*url*/, KDirListerCacheDirectoryData> DirectoryDataHash;
     DirectoryDataHash directoryData;
 
-    // List of files that we have changed recently
+    // Set of local files that we have changed recently (according to KDirWatch)
+    // We temporize the notifications by keeping them 500ms in this list.
     QSet<QString /*url*/> pendingUpdates;
     // The timer for doing the delayed updates
     QTimer pendingUpdateTimer;
+
+    // Set of remote files that have changed recently -- but we can't emit those
+    // changes yet, we need to wait for the "update" directory listing.
+    // The cmp() call can't differ mimetypes since they are determined on demand,
+    // this is why we need to remember those files here.
+    QSet<KFileItem*> pendingRemoteUpdates;
 
     // the KDirNotify signals
     OrgKdeKDirNotifyInterface *kdirnotify;
