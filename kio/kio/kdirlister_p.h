@@ -270,8 +270,9 @@ private:
   void printDebug();
 #endif
 
-  struct DirItem
+  class DirItem
   {
+	public:
     DirItem( const KUrl &dir )
       : url(dir)
     {
