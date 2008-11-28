@@ -57,6 +57,7 @@ namespace KIO { class Job; class ListJob; }
 class KIO_EXPORT KDirLister : public QObject
 {
   friend class KDirListerCache;
+  friend struct KDirListerCacheDirectoryData;
 
   Q_OBJECT
   Q_PROPERTY( bool autoUpdate READ autoUpdate WRITE setAutoUpdate )

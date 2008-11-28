@@ -157,7 +157,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 
     DirItem *itemU = itemsInUse.value(urlStr);
 
-    DirectoryData& dirData = directoryData[urlStr]; // find or insert
+    KDirListerCacheDirectoryData& dirData = directoryData[urlStr]; // find or insert
 
     if (dirData.listersCurrentlyListing.isEmpty()) {
         // if there is an update running for _url already we get into
@@ -290,7 +290,7 @@ void KDirListerCache::emitItemsFromCache(KDirLister* lister, const KFileItemList
     kdl->addNewItems( items );
     kdl->emitItems();
 
-    DirectoryData& dirData = directoryData[urlStr];
+    KDirListerCacheDirectoryData& dirData = directoryData[urlStr];
     Q_ASSERT(dirData.listersCurrentlyListing.contains(lister));
 
     // Emit completed, unless we were told not to,
@@ -345,10 +345,10 @@ void KDirListerCache::stop( KDirLister *lister )
     //kDebug(7004) << "lister: " << lister;
     bool stopped = false;
 
-    QHash<QString,DirectoryData>::iterator dirit = directoryData.begin();
-    const QHash<QString,DirectoryData>::iterator dirend = directoryData.end();
+    QHash<QString,KDirListerCacheDirectoryData>::iterator dirit = directoryData.begin();
+    const QHash<QString,KDirListerCacheDirectoryData>::iterator dirend = directoryData.end();
     for( ; dirit != dirend ; ++dirit ) {
-        DirectoryData& dirData = dirit.value();
+        KDirListerCacheDirectoryData& dirData = dirit.value();
         if ( dirData.listersCurrentlyListing.removeAll(lister) ) { // contains + removeAll in one go
             // lister is listing url
             const QString url = dirit.key();
@@ -388,10 +388,10 @@ void KDirListerCache::stop( KDirLister *lister, const KUrl& _u )
     // TODO: consider to stop all the "child jobs" of url as well
     kDebug(7004) << lister << " url=" << url;
 
-    QHash<QString,DirectoryData>::iterator dirit = directoryData.find(urlStr);
+    QHash<QString,KDirListerCacheDirectoryData>::iterator dirit = directoryData.find(urlStr);
     if (dirit == directoryData.end())
         return;
-    DirectoryData& dirData = dirit.value();
+    KDirListerCacheDirectoryData& dirData = dirit.value();
     if ( dirData.listersCurrentlyListing.removeAll(lister) ) { // contains + removeAll in one go
 
         stopLister(lister, urlStr, dirData);
@@ -405,7 +405,7 @@ void KDirListerCache::stop( KDirLister *lister, const KUrl& _u )
 }
 
 // Helper for both stop() methods
-void KDirListerCache::stopLister(KDirLister* lister, const QString& url, DirectoryData& dirData)
+void KDirListerCache::stopLister(KDirLister* lister, const QString& url, KDirListerCacheDirectoryData& dirData)
 {
     // Let's just leave the job running.
     // After all, update jobs do run for "listersCurrentlyHolding",
@@ -475,7 +475,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
     DirectoryDataHash::iterator dit = directoryData.find(urlStr);
     if (dit == directoryData.end())
         return;
-    DirectoryData& dirData = *dit;
+    KDirListerCacheDirectoryData& dirData = *dit;
     dirData.listersCurrentlyHolding.removeAll(lister);
 
     // This lister doesn't care for updates running in <url> anymore
@@ -567,7 +567,7 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
     //   - only update a directory: the listers are in listersCurrentlyHolding
     //   - update a currently running listing: the listers are in both
 
-    DirectoryData& dirData = directoryData[urlStr];
+    KDirListerCacheDirectoryData& dirData = directoryData[urlStr];
     QList<KDirLister *> listers = dirData.listersCurrentlyListing;
     QList<KDirLister *> holders = dirData.listersCurrentlyHolding;
 
@@ -989,7 +989,7 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
 
     DirectoryDataHash::iterator dit = directoryData.find(urlStr);
     Q_ASSERT(dit != directoryData.end());
-    DirectoryData& dirData = *dit;
+    KDirListerCacheDirectoryData& dirData = *dit;
     Q_ASSERT( !dirData.listersCurrentlyListing.isEmpty() );
 
     // check if anyone wants the mimetypes immediately
@@ -1057,7 +1057,7 @@ void KDirListerCache::slotResult( KJob *j )
 
   DirectoryDataHash::iterator dit = directoryData.find(jobUrlStr);
   Q_ASSERT(dit != directoryData.end());
-  DirectoryData& dirData = *dit;
+  KDirListerCacheDirectoryData& dirData = *dit;
   Q_ASSERT( !dirData.listersCurrentlyListing.isEmpty() );
   QList<KDirLister *> listers = dirData.listersCurrentlyListing;
 
@@ -1144,7 +1144,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
 
     DirectoryDataHash::iterator dit = directoryData.find(oldUrlStr);
     Q_ASSERT(dit != directoryData.end());
-    DirectoryData oldDirData = *dit;
+    KDirListerCacheDirectoryData oldDirData = *dit;
     directoryData.erase(dit);
     Q_ASSERT( !oldDirData.listersCurrentlyListing.isEmpty() );
     const QList<KDirLister *> listers = oldDirData.listersCurrentlyListing;
@@ -1179,7 +1179,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
 
         // listers of newUrl with oldJob: forget about the oldJob and use the already running one
         // which will be converted to an updateJob
-        DirectoryData& newDirData = directoryData[newUrlStr];
+        KDirListerCacheDirectoryData& newDirData = directoryData[newUrlStr];
 
         QList<KDirLister *>& curListers = newDirData.listersCurrentlyListing;
         if ( !curListers.isEmpty() ) {
@@ -1236,7 +1236,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
 
         delete dir;
         itemsInUse.insert( newUrlStr, newDir );
-        DirectoryData& newDirData = directoryData[newUrlStr];
+        KDirListerCacheDirectoryData& newDirData = directoryData[newUrlStr];
         newDirData.listersCurrentlyListing = listers;
         newDirData.listersCurrentlyHolding = holders;
 
@@ -1255,7 +1255,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
         dir->lstItems.clear();
         dir->redirect( newUrl );
         itemsInUse.insert( newUrlStr, dir );
-        DirectoryData& newDirData = directoryData[newUrlStr];
+        KDirListerCacheDirectoryData& newDirData = directoryData[newUrlStr];
         newDirData.listersCurrentlyListing = listers;
         newDirData.listersCurrentlyHolding = holders;
 
@@ -1368,7 +1368,7 @@ void KDirListerCache::emitRedirections( const KUrl &oldUrl, const KUrl &newUrl )
     const QList<KDirLister *> listers = (*dit).listersCurrentlyListing;
     const QList<KDirLister *> holders = (*dit).listersCurrentlyHolding;
 
-    DirectoryData& newDirData = directoryData[newUrlStr];
+    KDirListerCacheDirectoryData& newDirData = directoryData[newUrlStr];
 
     // Tell the world that the job listing the old url is dead.
     foreach ( KDirLister *kdl, listers ) {
@@ -1434,7 +1434,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
 
     kDebug(7004) << "finished update" << jobUrl;
 
-    DirectoryData& dirData = directoryData[jobUrlStr];
+    KDirListerCacheDirectoryData& dirData = directoryData[jobUrlStr];
     // Collect the dirlisters which were listing the URL using that ListJob
     // plus those that were already holding that URL - they all get updated.
     dirData.moveListersWithoutCachedItemsJob();
@@ -2509,7 +2509,7 @@ void KDirLister::Private::redirect( const KUrl& oldUrl, const KUrl& newUrl )
     }
 }
 
-void KDirListerCache::DirectoryData::moveListersWithoutCachedItemsJob()
+void KDirListerCacheDirectoryData::moveListersWithoutCachedItemsJob()
 {
     // Move dirlisters from listersCurrentlyListing to listersCurrentlyHolding,
     // but not those that are still waiting on a CachedItemsJob...
