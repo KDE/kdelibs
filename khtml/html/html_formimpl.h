@@ -512,7 +512,11 @@ public:
 
     virtual bool isDefault() const { return m_defaultSelected; }    
 
-    bool selected() const { return m_selected; }
+	// For internal use --- just returns the bit
+    bool selectedBit() const { return m_selected; }
+
+	// DOM use --- may recompute information of a parent <select>
+	bool selected() const;
     void setSelected(bool _selected);
     void setDefaultSelected( bool _defaultSelected );
 

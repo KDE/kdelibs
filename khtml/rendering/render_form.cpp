@@ -1762,7 +1762,7 @@ void RenderSelect::updateSelection()
         KListWidget *listBox = static_cast<KListWidget*>(m_widget);
         for (i = 0; i < int(listItems.size()); i++)
             listBox->item(i)->setSelected(listItems[i]->id() == ID_OPTION &&
-                                 static_cast<HTMLOptionElementImpl*>(listItems[i])->selected());
+                                 static_cast<HTMLOptionElementImpl*>(listItems[i])->selectedBit());
     }
     else {
         bool found = false;
@@ -1771,7 +1771,7 @@ void RenderSelect::updateSelection()
             if (listItems[i]->id() == ID_OPTION) {
                 if (found)
                     static_cast<HTMLOptionElementImpl*>(listItems[i])->m_selected = false;
-                else if (static_cast<HTMLOptionElementImpl*>(listItems[i])->selected()) {
+                else if (static_cast<HTMLOptionElementImpl*>(listItems[i])->selectedBit()) {
                     static_cast<KComboBox*>( m_widget )->setCurrentIndex(i);
                     found = true;
                 }

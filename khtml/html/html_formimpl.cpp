@@ -2124,7 +2124,7 @@ long HTMLSelectElementImpl::selectedIndex() const
     const unsigned int itemsSize = items.size();
     for (unsigned int i = 0; i < itemsSize; ++i) {
         if (items[i]->id() == ID_OPTION) {
-            if (static_cast<HTMLOptionElementImpl*>(items[i])->selected())
+            if (static_cast<HTMLOptionElementImpl*>(items[i])->selectedBit())
                 return o;
             o++;
         }
@@ -2166,7 +2166,7 @@ void HTMLSelectElementImpl::add( HTMLElementImpl* element, HTMLElementImpl* befo
     //Fast path for appending an item. Can't be done if it is selected and
     //we're single-select, since we may need to drop an implicitly-selected item
     bool fastAppendLast = false;
-    if (before == 0 && (m_multiple || !option->selected()) && !m_recalcListItems)
+    if (before == 0 && (m_multiple || !option->selectedBit()) && !m_recalcListItems)
         fastAppendLast = true;
 
     insertBefore(option, before, exceptioncode );
@@ -2198,7 +2198,7 @@ void HTMLSelectElementImpl::remove( long index )
     //a different one
     bool fastRemoveLast = false;
     if ((listIndex == items.size() - 1) && !m_recalcListItems &&
-        (m_multiple || !static_cast<HTMLOptionElementImpl*>(items[listIndex])->selected()))
+        (m_multiple || !static_cast<HTMLOptionElementImpl*>(items[listIndex])->selectedBit()))
             fastRemoveLast = true;
 
     removeChild(items[listIndex], exceptioncode);
@@ -2218,7 +2218,7 @@ DOMString HTMLSelectElementImpl::value( ) const
     const uint itemsSize = items.size();
     for (i = 0; i < itemsSize; ++i) {
         if ( items[i]->id() == ID_OPTION
-            && static_cast<HTMLOptionElementImpl*>(items[i])->selected())
+            && static_cast<HTMLOptionElementImpl*>(items[i])->selectedBit())
             return static_cast<HTMLOptionElementImpl*>(items[i])->value();
     }
     return DOMString("");
@@ -2245,7 +2245,7 @@ QString HTMLSelectElementImpl::state( )
 
     state.fill('.', l);
     for(int i = 0; i < l; ++i)
-        if(items[i]->id() == ID_OPTION && static_cast<HTMLOptionElementImpl*>(items[i])->selected())
+        if(items[i]->id() == ID_OPTION && static_cast<HTMLOptionElementImpl*>(items[i])->selectedBit())
             state[i] = 'X';
 
     return state;
@@ -2367,7 +2367,7 @@ bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
     for (i = 0; i < itemsSize; ++i) {
         if (items[i]->id() == ID_OPTION) {
             HTMLOptionElementImpl* const option = static_cast<HTMLOptionElementImpl*>(items[i]);
-            if (option->selected()) {
+            if (option->selectedBit()) {
                 encoded_values += enc_name;
                 encoded_values += fixUpfromUnicode(codec, option->value().string());
                 successful = true;
@@ -2452,7 +2452,7 @@ void HTMLSelectElementImpl::recalcListItems() const
                 foundSelected = static_cast<HTMLOptionElementImpl*>(current);
                 foundSelected->m_selected = true;
             }
-            else if (foundSelected && !m_multiple && static_cast<HTMLOptionElementImpl*>(current)->selected()) {
+            else if (foundSelected && !m_multiple && static_cast<HTMLOptionElementImpl*>(current)->selectedBit()) {
                 foundSelected->m_selected = false;
                 foundSelected = static_cast<HTMLOptionElementImpl*>(current);
             }
@@ -2681,6 +2681,15 @@ void HTMLOptionElementImpl::setSelected(bool _selected)
     HTMLSelectElementImpl* const select = getSelect();
     if (select)
         select->notifyOptionSelected(this,_selected);
+}
+
+bool HTMLOptionElementImpl::selected() const
+{
+    // make sure our parent select is up-to-date, since that may update our selected bit
+    if (HTMLSelectElementImpl* select = getSelect())
+        (void)select->listItems();
+
+    return m_selected;
 }
 
 void HTMLOptionElementImpl::setDefaultSelected( bool _defaultSelected )
