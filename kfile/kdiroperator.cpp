@@ -901,7 +901,9 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
 
     if (!Private::isReadable(newurl)) {
         // maybe newurl is a file? check its parent directory
-        newurl.cd(QLatin1String(".."));
+        newurl.setPath(newurl.directory());
+        if (newurl.equals(d->currUrl, KUrl::CompareWithoutTrailingSlash))
+            return; // parent is current dir, nothing to do (fixes #173454, too)
         KIO::UDSEntry entry;
         bool res = KIO::NetAccess::stat(newurl, entry, this);
         KFileItem i(entry, newurl);
@@ -2017,7 +2019,6 @@ void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
 {
     const QModelIndex dirIndex = proxyModel->mapToSource(index);
     KFileItem item = dirModel->itemForIndex(dirIndex);
-    bool selectDir = false;
 
     const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
     if (item.isNull() || (modifiers & Qt::ShiftModifier) || (modifiers & Qt::ControlModifier))
