@@ -229,6 +229,8 @@ void KHTMLFindBar::setVisible( bool visible )
 {
     KHTMLViewBarWidget::setVisible( visible );
 
-    if ( visible )
+    if ( visible ) {
         m_find->setFocus( Qt::ActiveWindowFocusReason );
+        m_find->lineEdit()->selectAll();
+    }
 }

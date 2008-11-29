@@ -165,7 +165,23 @@
    <header>ksqueezedtextlabel.h</header>
   </customwidget>
  </customwidgets>
- <includes/>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>m_find</sender>
+   <signal>returnPressed()</signal>
+   <receiver>m_next</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>122</x>
+     <y>14</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>239</x>
+     <y>14</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
