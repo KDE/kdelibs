@@ -2019,6 +2019,7 @@ void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
 {
     const QModelIndex dirIndex = proxyModel->mapToSource(index);
     KFileItem item = dirModel->itemForIndex(dirIndex);
+    bool selectDir = false;
 
     const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
     if (item.isNull() || (modifiers & Qt::ShiftModifier) || (modifiers & Qt::ControlModifier))
