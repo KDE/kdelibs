@@ -2135,7 +2135,10 @@ void HTMLSelectElementImpl::add( HTMLElementImpl* element, HTMLElementImpl* befo
         m_listItems.resize(m_listItems.size() + 1);
         m_listItems[m_listItems.size() - 1] = option;
         ++m_length;
-        m_recalcListItems = false;
+        if (m_length == 1 && !m_multiple) //we added the first item in single-select --- select it.
+            option->setSelected(true);
+
+        m_recalcListItems = false; // was set by insertBefore
     } else if (!exceptioncode)
         setRecalcListItems();
 }
