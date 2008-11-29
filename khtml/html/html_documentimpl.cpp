@@ -249,8 +249,8 @@ void HTMLDocumentImpl::close()
         document()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
 
         // don't update rendering if we're going to redirect anyway
-        if ( part()->d->m_redirectURL.isNull() ||
-             part()->d->m_delayRedirect > 1)
+        if ( part() && (part()->d->m_redirectURL.isNull() ||
+                        part()->d->m_delayRedirect > 1) )
             updateRendering();
     }
 }
