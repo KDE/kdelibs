@@ -30,6 +30,8 @@
 #include <kdecore_export.h>
 
 /**
+ * @def KDE_VERSION_STRING
+ * @ingroup KDEMacros
  * @brief Version of KDE as string, at compile time
  *
  * This macro contains the KDE version in string form. As it is a macro,
@@ -44,14 +46,27 @@
  */
 #cmakedefine KDE_VERSION_STRING "@KDE_VERSION_STRING@"
 
-/// @brief Major version of KDE, at compile time
+/**
+ * @def KDE_VERSION_MAJOR
+ * @ingroup KDEMacros
+ * @brief Major version of KDE, at compile time
+ */
 #cmakedefine KDE_VERSION_MAJOR @KDE_VERSION_MAJOR@
-/// @brief Minor version of KDE, at compile time
+/**
+ * @def KDE_VERSION_MINOR
+ * @ingroup KDEMacros
+ * @brief Minor version of KDE, at compile time
+ */
 #cmakedefine KDE_VERSION_MINOR @KDE_VERSION_MINOR@
-/// @brief Release version of KDE, at compile time
+/**
+ * @def KDE_VERSION_RELEASE
+ * @ingroup KDEMacros
+ * @brief Release version of KDE, at compile time
+ */
 #cmakedefine KDE_VERSION_RELEASE @KDE_VERSION_RELEASE@
 
 /**
+ * @ingroup KDEMacros
  * @brief Make a number from the major, minor and release number of a KDE version
  *
  * This function can be used for preprocessing when KDE_IS_VERSION is not
@@ -60,6 +75,7 @@
 #define KDE_MAKE_VERSION( a,b,c ) (((a) << 16) | ((b) << 8) | (c))
 
 /**
+ * @ingroup KDEMacros
  * @brief Version of KDE as number, at compile time
  *
  * This macro contains the KDE version in number form. As it is a macro,
@@ -70,6 +86,7 @@
   KDE_MAKE_VERSION(KDE_VERSION_MAJOR,KDE_VERSION_MINOR,KDE_VERSION_RELEASE)
 
 /**
+ * @ingroup KDEMacros
  * @brief Check if the KDE version matches a certain version or is higher
  *
  * This macro is typically used to compile conditionally a part of code:
