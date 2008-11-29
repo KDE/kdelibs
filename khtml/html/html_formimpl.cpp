@@ -1770,6 +1770,46 @@ void HTMLInputElementImpl::setIndeterminate(bool _indeterminate)
     }
 }
 
+DOMString HTMLInputElementImpl::valueWithDefault() const
+{
+    DOMString v = value();
+    if (v.isNull()) {
+        switch (m_type) {
+            case RESET:
+#ifdef APPLE_CHANGES
+                v = resetButtonDefaultLabel();
+#else
+                v = i18n("Reset");
+#endif
+                break;
+
+            case SUBMIT:
+#ifdef APPLE_CHANGES
+                v = submitButtonDefaultLabel();
+#else
+                v = i18n("Submit");
+#endif
+                break;
+
+            case BUTTON:
+            case CHECKBOX:
+            case FILE:
+            case HIDDEN:
+            case IMAGE:
+            case ISINDEX:
+            case PASSWORD:
+            case RADIO:
+        #ifdef APPLE_CHANGES
+            case RANGE:
+            case SEARCH:
+        #endif
+            case TEXT:
+                break;
+        }
+    }
+    return v;
+}
+
 DOMString HTMLInputElementImpl::value() const
 {
     if (m_type == CHECKBOX || m_type == RADIO) {
@@ -2166,46 +2206,6 @@ void HTMLSelectElementImpl::remove( long index )
         m_recalcListItems = false;
     } else if( !exceptioncode)
         setRecalcListItems();
-}
-
-DOMString HTMLInputElementImpl::valueWithDefault() const
-{
-    DOMString v = value();
-    if (v.isNull()) {
-        switch (m_type) {
-            case RESET:
-#ifdef APPLE_CHANGES
-                v = resetButtonDefaultLabel();
-#else
-                v = i18n("Reset");
-#endif
-                break;
-
-            case SUBMIT:
-#ifdef APPLE_CHANGES
-                v = submitButtonDefaultLabel();
-#else
-                v = i18n("Submit");
-#endif
-                break;
-
-            case BUTTON:
-            case CHECKBOX:
-            case FILE:
-            case HIDDEN:
-            case IMAGE:
-            case ISINDEX:
-            case PASSWORD:
-            case RADIO:
-        #ifdef APPLE_CHANGES
-            case RANGE:
-            case SEARCH:
-        #endif
-            case TEXT:
-                break;
-        }
-    }
-    return v;
 }
 
 DOMString HTMLSelectElementImpl::value( ) const
