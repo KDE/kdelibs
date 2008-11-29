@@ -1968,7 +1968,7 @@ static QString stripUndisplayable (const QString &string)
     QString ret = string;
 
     ret.remove (':');
-    ret.remove ('&');
+    ret = KGlobal::locale()->removeAcceleratorMarker (ret);
 
     return ret;
 }

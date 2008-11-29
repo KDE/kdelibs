@@ -28,6 +28,8 @@
 #include <QMenuItem>
 
 #include <kdebug.h>
+#include <kglobal.h>
+#include <klocale.h>
 
 class K3PopupMenu::K3PopupMenuPrivate
 {
@@ -263,7 +265,7 @@ void K3PopupMenu::keyPressEvent(QKeyEvent* e)
             thisText = a->text();
 
         // if there is an accelerator present, remove it
-        thisText = thisText.remove("&");
+        thisText = KGlobal::locale()->removeAcceleratorMarker(thisText);
 
         // chop text to the search length
         thisText = thisText.left(seqLen);

@@ -37,6 +37,8 @@
 #include <QtGui/QWidgetAction>
 
 #include <kdebug.h>
+#include <kglobal.h>
+#include <klocale.h>
 
 class KMenu::KMenuPrivate
 {
@@ -308,7 +310,7 @@ void KMenu::keyPressEvent(QKeyEvent* e)
             thisText = a->text();
 
         // if there is an accelerator present, remove it
-        thisText = thisText.remove('&');
+        thisText = KGlobal::locale()->removeAcceleratorMarker(thisText);
 
         // chop text to the search length
         thisText = thisText.left(seqLen);

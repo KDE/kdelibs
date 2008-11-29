@@ -1022,7 +1022,7 @@ void KEditToolBarWidgetPrivate::loadActions(const QDomElement& elem)
   // store the names of our active actions
   QSet<QString> active_list;
 
-  // i18n filtering message for action names
+  // Filtering message requested by translators (scripting).
   KLocalizedString nameFilter = ki18nc("@item:intable Action name in toolbar editor", "%1");
 
   // see if our current action is in this toolbar
@@ -1069,7 +1069,7 @@ void KEditToolBarWidgetPrivate::loadActions(const QDomElement& elem)
       {
         // we have a match!
         ToolBarItem *act = new ToolBarItem(m_activeList, it.tagName(), action->objectName(), action->toolTip());
-        act->setText(nameFilter.subs(action->text().remove(QChar('&'))).toString());
+        act->setText(nameFilter.subs(KGlobal::locale()->removeAcceleratorMarker(action->text())).toString());
         act->setIcon(!action->icon().isNull() ? action->icon() : m_emptyIcon);
 
         active_list.insert(action->objectName());
@@ -1086,7 +1086,7 @@ void KEditToolBarWidgetPrivate::loadActions(const QDomElement& elem)
       continue;
 
     ToolBarItem *act = new ToolBarItem(m_inactiveList, tagAction, action->objectName(), action->toolTip());
-    act->setText(nameFilter.subs(action->text().remove(QChar('&'))).toString());
+    act->setText(nameFilter.subs(KGlobal::locale()->removeAcceleratorMarker(action->text())).toString());
     act->setIcon(!action->icon().isNull() ? action->icon() : m_emptyIcon);
   }
 

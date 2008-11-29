@@ -23,6 +23,9 @@
 #include <kross/core/actioncollection.h>
 #include <kross/core/manager.h>
 
+#include <kglobal.h>
+#include <klocale.h>
+
 #include <QtCore/QEvent>
 #include <QtCore/QMimeData>
 
@@ -273,7 +276,7 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
                             return act->icon();
                 } break;
                 case Qt::DisplayRole:
-                    return act->text().remove( '&' );
+                    return KGlobal::locale()->removeAcceleratorMarker( act->text() );
                 case Qt::ToolTipRole: // fall through
                 case Qt::WhatsThisRole: {
                     if( d->mode & ToolTips ) {
