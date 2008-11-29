@@ -40,6 +40,8 @@
 #include <rendering/font.h>
 #include <rendering/render_style.h>
 
+#include <wtf/ASCIICType.h>
+
 #include <kdebug.h>
 #include <QtCore/QRegExp>
 #include <QtGui/QPaintDevice>
@@ -50,6 +52,7 @@ extern DOM::DOMString getPropertyName(unsigned short id);
 using khtml::FontDef;
 
 using namespace DOM;
+using namespace WTF;
 
 static int propertyID(const DOMString &s)
 {
@@ -69,8 +72,31 @@ static int propertyID(const DOMString &s)
     return getPropertyID(buffer, len);
 }
 
-// Quotes the string if it needs quoting.
-static DOMString quoteStringIfNeeded(const DOMString &string)
+// "ident" from the CSS tokenizer, minus backslash-escape sequences
+static bool isCSSTokenizerIdentifier(const DOMString& string)
+{
+    const QChar* p = string.unicode();
+    const QChar* end = p + string.length();
+
+    // -?
+    if (p != end && p[0] == '-')
+        ++p;
+
+    // {nmstart}
+    if (p == end || !(p[0] == '_' || p[0] >= 128 || isASCIIAlpha(p->unicode())))
+        return false;
+    ++p;
+
+    // {nmchar}*
+    for (; p != end; ++p) {
+        if (!(p[0] == '_' || p[0] == '-' || p[0] >= 128 || isASCIIAlphanumeric(p->unicode())))
+            return false;
+    }
+
+    return true;
+}
+
+static DOMString quoteString(const DOMString &string)
 {
     // FIXME: Also need to transform control characters into \ sequences.
     QString s = string.string();
@@ -79,6 +105,11 @@ static DOMString quoteStringIfNeeded(const DOMString &string)
     return '\'' + s + '\'';
 }
 
+// Quotes the string if it needs quoting.
+static DOMString quoteStringIfNeeded(const DOMString &string)
+{
+    return isCSSTokenizerIdentifier(string) ? string : quoteString(string);
+}
 
 CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent)
     : StyleBaseImpl(parent)
