@@ -627,7 +627,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
     // check if we got id attribute on element: add selectors with it to the list
     DOMStringImpl* idValue = element->getAttributeImplById(ATTR_ID);
     if (idValue && idValue->length()) {
-        AtomicString elementId = idValue;
+        bool caseSensitive = (e->document()->htmlMode() == DocumentImpl::XHtml) || strictParsing;
+        AtomicString elementId = caseSensitive ? idValue : idValue->lower();
         WTF::HashMap<unsigned long, WTF::Vector<int> >::iterator it = idSelectors.find((unsigned long)elementId.impl());
         if (it != idSelectors.end()) {
             const Vector<int>& v = it->second;
@@ -1279,7 +1280,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         case CSSSelector::Id:
             // treat id selectors as case-sensitive in HTML strict
             // for compatibility reasons
-            caseSensitive |= strictParsing;
+            caseSensitive = (e->document()->htmlMode() == DocumentImpl::XHtml) || strictParsing;
             // no break
         case CSSSelector::Exact:
             return caseSensitive ?

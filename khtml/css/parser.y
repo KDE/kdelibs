@@ -860,11 +860,18 @@ specifier_list:
 
 specifier:
     HASH {
+        CSSParser *p = static_cast<CSSParser *>(parser);
+
 	$$ = new CSSSelector();
 	$$->match = CSSSelector::Id;
         $$->attrLocalName = LocalName::fromId(localNamePart(ATTR_ID));
         $$->attrNamespace = NamespaceName::fromId(namespacePart(ATTR_ID));
-	$$->value = domString($1);
+
+        bool caseSensitive = p->document()->htmlMode() == DocumentImpl::XHtml || !p->document()->inCompatMode();
+        if (caseSensitive)
+            $$->value = domString($1);
+        else
+            $$->value = domString($1).lower();
     }
   | class
   | attrib
