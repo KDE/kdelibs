@@ -982,9 +982,9 @@ QString KFileItem::getToolTipText(int maxcount) const
 
     // the font tags are a workaround for the fact that the tool tip gets
     // screwed if the color scheme uses white as default text color
-    const char* start = "<tr><td align=\"right\"><nobr><font color=\"black\"><b>";
-    const char* mid   = "&nbsp;</b></font></nobr></td><td><nobr><font color=\"black\">";
-    const char* end   = "</font></nobr></td></tr>";
+    const char* start = "<tr><td align=\"right\"><nobr><b>";
+    const char* mid   = "&nbsp;</b></nobr></td><td><nobr>";
+    const char* end   = "</nobr></td></tr>";
 
     tip = "<table cellspacing=0 cellpadding=0>";
 
