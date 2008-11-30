@@ -307,3 +307,8 @@ void FileProtocol::del( const KUrl& url, bool isfile )
     }
     finished();
 }
+
+void FileProtocol::chown( const KUrl& url, const QString&, const QString& )
+{
+    error( KIO::ERR_CANNOT_CHOWN, url.toLocalFile() );
+}

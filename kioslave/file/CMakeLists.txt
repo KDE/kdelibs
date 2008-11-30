@@ -9,7 +9,7 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 if(WIN32)
   set(kio_file_PART_SRCS file.cpp file_win.cpp )
 else(WIN32)
-  set(kio_file_PART_SRCS file.cpp )
+  set(kio_file_PART_SRCS file.cpp file_unix.cpp )
 endif(WIN32)
 
 
