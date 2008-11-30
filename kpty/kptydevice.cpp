@@ -42,8 +42,15 @@
 # include <sys/time.h>
 #endif
 
-#ifndef TIOCINQ
-# define TIOCINQ FIONREAD
+#if defined(Q_OS_FREEBSD) || defined(Q_OS_MAC)
+  // "the other end's output queue size" - kinda braindead, huh?
+# define PTY_BYTES_AVAILABLE TIOCOUTQ
+#elif defined(TIOCINQ)
+  // "our end's input queue size"
+# define PTY_BYTES_AVAILABLE TIOCINQ
+#else
+  // likewise. more generic ioctl (theoretically)
+# define PTY_BYTES_AVAILABLE FIONREAD
 #endif
 
 #define KMAXINT ((int)(~0U >> 1))
@@ -270,7 +277,7 @@ bool KPtyDevicePrivate::_k_canRead()
 #else
     int available;
 #endif
-    if (!::ioctl(q->masterFd(), TIOCINQ, (char *) &available)) {
+    if (!::ioctl(q->masterFd(), PTY_BYTES_AVAILABLE, (char *) &available)) {
 #ifdef Q_OS_SOLARIS
         // A Pty is a STREAMS module, and those can be activated
         // with 0 bytes available. This happens either when ^C is
