@@ -230,9 +230,9 @@ Manager::Manager()
 
 Manager::~Manager()
 {
-    qDeleteAll(d->wrappers.values());
-    qDeleteAll(d->interpreterinfos.values());
-    qDeleteAll(d->modules.values());
+    qDeleteAll(d->wrappers);
+    qDeleteAll(d->interpreterinfos);
+    qDeleteAll(d->modules);
     delete d->collection;
     delete d;
 }

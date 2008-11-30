@@ -42,7 +42,7 @@ public:
 
     KMultiMap() {}
     ~KMultiMap() {
-        qDeleteAll(map.values());
+        qDeleteAll(map);
         map.clear();
     }
 

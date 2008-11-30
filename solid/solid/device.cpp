@@ -243,7 +243,7 @@ Solid::DevicePrivate::DevicePrivate(const QString &udi)
 
 Solid::DevicePrivate::~DevicePrivate()
 {
-    qDeleteAll(m_ifaces.values());
+    qDeleteAll(m_ifaces);
 }
 
 void Solid::DevicePrivate::_k_destroyed(QObject *object)
