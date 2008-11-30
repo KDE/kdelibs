@@ -41,6 +41,10 @@
 # include <sys/time.h>
 #endif
 
+#ifndef TIOCINQ
+# define TIOCINQ FIONREAD
+#endif
+
 #define KMAXINT ((int)(~0U >> 1))
 
 /////////////////////////////////////////////////////
@@ -265,11 +269,7 @@ bool KPtyDevicePrivate::_k_canRead()
 #else
     int available;
 #endif
-#if defined(Q_OS_FREEBSD) || defined(Q_OS_MAC)
-    if (!::ioctl(q->masterFd(), TIOCOUTQ, (char *) &available)) {
-#else
-    if (!::ioctl(q->masterFd(), FIONREAD, (char *) &available)) {
-#endif
+    if (!::ioctl(q->masterFd(), TIOCINQ, (char *) &available)) {
 #ifdef Q_OS_SOLARIS
         // A Pty is a STREAMS module, and those can be activated
         // with 0 bytes available. This happens either when ^C is
