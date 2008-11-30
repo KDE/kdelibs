@@ -207,6 +207,13 @@ public:
     bool isCompressedPath(const KUrl& path) const;
     
     void removeTrailingSlash(QString& url);
+        
+    /**
+     * Returns a KUrl for the typed text \a typedUrl.
+     * '\' is replaced by '/', whitespaces at the begin
+     * and end of the typed text get removed.
+     */
+    KUrl adjustedUrl(const QString& typedUrl) const;
 
     bool m_editable : 1;
     bool m_active : 1;
@@ -330,11 +337,7 @@ void KUrlNavigator::Private::slotReturnPressed(const QString& text)
     // Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
     // Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
 
-    KUrl typedUrl(text.trimmed());
-    if (typedUrl.hasPass()) {
-        typedUrl.setPass(QString());
-    }
-
+    const KUrl typedUrl = adjustedUrl(text);
     QStringList urls = m_pathBox->urls();
     urls.removeAll(typedUrl.url());
     urls.prepend(typedUrl.url());
@@ -751,6 +754,18 @@ void KUrlNavigator::Private::removeTrailingSlash(QString& url)
     }
 }
 
+KUrl KUrlNavigator::Private::adjustedUrl(const QString& typedUrl) const
+{
+    QString text = typedUrl.trimmed();
+    text.replace(QChar('\\'), QChar('/'));
+    
+    KUrl url(text);
+    if (url.hasPass()) {
+        url.setPass(QString());
+    }
+    return url;
+}
+
 ////
 
 KUrlNavigator::KUrlNavigator(KFilePlacesModel* placesModel,
@@ -788,8 +803,7 @@ const KUrl& KUrlNavigator::url() const
 KUrl KUrlNavigator::uncommittedUrl() const
 {
     if (isUrlEditable()) {
-        const QString url = d->m_pathBox->currentText();        
-        return KUrl(url.trimmed());
+        return d->adjustedUrl(d->m_pathBox->currentText());
     } else {
         return KUrl(d->m_protocols->currentProtocol() + "://" + d->m_host->text());
     }
