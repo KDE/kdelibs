@@ -5,6 +5,7 @@
  * Copyright 2003-2004 Apple Computer, Inc.
  * Copyright 2004-2006 Allan Sandfeld Jensen (kde@carewolf.com)
  * Copyright 2004-2008 Germain Garand (germain@ebooksfrance.org)
+ * Copyright 2008 Vyacheslav Tokarev (tsjoker@gmail.com)
  *           (C) 2005, 2006, 2008 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -1035,6 +1036,7 @@ static bool matchNth(int count, const QString& nth)
     if (nth.isEmpty()) return false;
     int a = 0;
     int b = 0;
+    bool ok = true;
     if (nth == "odd") {
         a = 2;
         b = 1;
@@ -1044,45 +1046,67 @@ static bool matchNth(int count, const QString& nth)
         b = 0;
     }
     else {
-        int n = nth.indexOf('n');
+        int n = nth.indexOf('n'), l = nth.length();
         if (n != -1) {
-            if (nth[0] == '-')
-                if (n==1)
-                    a = -1;
-                else
-                    a = nth.mid(1,n-1).toInt();
-            else
-                if (n==0)
-                    a = 1;
-                else
-                    a = nth.left(n).toInt();
+            int i = 0, j, sgn = 0;
+            // skip trailing spaces
+            while (i < n && nth[i].isSpace()) ++i;
 
-            int p = nth.indexOf('+');
-            if (p != -1)
-                b = nth.mid(p+1).toInt();
-            else {
-                p = nth.indexOf('-');
-                b = -nth.mid(p+1).toInt();
+            // check sign
+            if (nth[i] == '-') { sgn = -1; ++i; }
+            else if (nth[i] == '+') { sgn = 1; ++i; }
+
+            // skip spaces between '-'/'+' and digits
+            while (i < n && nth[i].isSpace()) ++i;
+
+            // find the number before 'n'
+            for (j = i; j < n && nth[j].isDigit(); ++j) {}
+
+            // do we have number or it's assumed to be 1
+            a = (i < j) ? nth.mid(i, j - i).toInt(&ok) : 1;
+            if (!ok) return false;
+            if (sgn == -1) a = -a;
+
+            // should have nothing between a and n except spaces
+            for(; j < n; ++j) if (!nth[j].isSpace()) return false;
+
+            // skip spaces
+            for (i = n + 1; i < l && nth[i].isSpace(); ++i) {}
+
+            // parse b
+            if (i < l) {
+                // must have sign
+                if (nth[i] == '-') { sgn = -1; ++i; }
+                else if (nth[i] == '+') { sgn = 1; ++i; }
+                else return false;
+
+                // skip spaces
+                while (i < l && nth[i].isSpace()) ++i;
+
+                // find digits
+                for (j = i; j < l && nth[j].isDigit(); ++j) {}
+
+                // must have digits
+                if (j == i) return false;
+
+                b = sgn * nth.mid(i, j - i).toInt(&ok);
+                if (!ok) return false;
+
+                // should be nothing except spaces in the end
+                for (; j < l; ++j) if (!nth[j].isSpace()) return false;
             }
         }
         else {
-            b = nth.toInt();
+            b = nth.toInt(&ok);
+            if (!ok) return false;
         }
     }
     if (a == 0)
-        return count == b;
-    else if (a > 0)
-        if (count < b)
-            return false;
-        else
-            return (count - b) % a == 0;
-    else if (a < 0) {
-        if (count > b)
-            return false;
-        else
-            return (b - count) % (-a) == 0;
-    }
-    return false;
+        return b != 0 && count == b;
+    if (a > 0)
+        return (count < b) ? false : ((count - b) % a == 0);
+    // a < 0
+    return (count > b) ? false : ((b - count) % (-a) == 0);
 }
 
 
