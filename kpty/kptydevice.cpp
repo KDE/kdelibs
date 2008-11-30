@@ -33,6 +33,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <termios.h>
+#include <fcntl.h>
 #include <sys/ioctl.h>
 #ifdef HAVE_SYS_FILIO_H
 # include <sys/filio.h>
@@ -438,6 +439,7 @@ void KPtyDevicePrivate::finishOpen(QIODevice::OpenMode mode)
     Q_Q(KPtyDevice);
 
     q->QIODevice::open(mode);
+    fcntl(q->masterFd(), F_SETFL, O_NONBLOCK);
     readBuffer.clear();
     readNotifier = new QSocketNotifier(q->masterFd(), QSocketNotifier::Read, q);
     writeNotifier = new QSocketNotifier(q->masterFd(), QSocketNotifier::Write, q);
