@@ -429,6 +429,8 @@ public:
   QString prettyFormatDuration( unsigned long mSec ) const;
 
   /**
+   * @deprecated
+   *
    * Use this to determine whether nouns are declined in
    * locale's language. This property should remain
    * read-only (no setter function)
