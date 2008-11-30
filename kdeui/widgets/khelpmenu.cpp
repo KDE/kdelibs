@@ -170,7 +170,7 @@ KMenu* KHelpMenu::menu()
     {
       if (need_separator)
         d->mMenu->addSeparator();
-      d->mReportBugAction = d->mMenu->addAction( i18n( "&Report Bug..." ), this, SLOT(reportBug()) );
+      d->mReportBugAction = d->mMenu->addAction( KIcon("tools-report-bug"), i18n( "&Report Bug..." ), this, SLOT(reportBug()) );
       need_separator = true;
     }
 
