@@ -280,9 +280,9 @@ bool KPtyDevicePrivate::_k_canRead()
         if (!available) {
             char c;
             // Read the 0-byte STREAMS message
-            int r = read(q->masterFd(), &c, 0);
+            NO_INTR(readBytes, read(q->masterFd(), &c, 0));
             // Should return 0 bytes read; -1 is error
-            if (r < 0) {
+            if (readBytes < 0) {
                 readNotifier->setEnabled(false);
                 emit q->readEof();
                 return false;
@@ -294,6 +294,7 @@ bool KPtyDevicePrivate::_k_canRead()
         char *ptr = readBuffer.reserve(available);
         NO_INTR(readBytes, read(q->masterFd(), ptr, available));
         if (readBytes < 0) {
+            readBuffer.unreserve(available);
             q->setErrorString(I18N_NOOP("Error reading from PTY"));
             return false;
         }
