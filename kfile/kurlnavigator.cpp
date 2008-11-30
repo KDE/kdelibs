@@ -330,7 +330,7 @@ void KUrlNavigator::Private::slotReturnPressed(const QString& text)
     // Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
     // Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
 
-    KUrl typedUrl(text);
+    KUrl typedUrl(text.trimmed());
     if (typedUrl.hasPass()) {
         typedUrl.setPass(QString());
     }
@@ -788,7 +788,8 @@ const KUrl& KUrlNavigator::url() const
 KUrl KUrlNavigator::uncommittedUrl() const
 {
     if (isUrlEditable()) {
-        return KUrl(d->m_pathBox->currentText());
+        const QString url = d->m_pathBox->currentText();        
+        return KUrl(url.trimmed());
     } else {
         return KUrl(d->m_protocols->currentProtocol() + "://" + d->m_host->text());
     }
