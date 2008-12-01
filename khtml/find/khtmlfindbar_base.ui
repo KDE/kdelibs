@@ -108,7 +108,7 @@
    <item>
     <widget class="QToolButton" name="m_options" >
      <property name="text" >
-      <string>&amp;Options</string>
+      <string>Opt&amp;ions</string>
      </property>
      <property name="checkable" >
       <bool>false</bool>
