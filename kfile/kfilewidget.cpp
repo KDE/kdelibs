@@ -1547,9 +1547,13 @@ KUrl::List KFileWidgetPrivate::tokenize( const QString& line ) const
 
     const int count = line.count( QLatin1Char( '"' ) );
     if ( count == 0 ) { // no " " -> assume one single file
-        u.setFileName( line );
-        if ( u.isValid() )
-            urls.append( u );
+        if (!QDir::isAbsolutePath(line)) {
+            u.setFileName( line );
+            if ( u.isValid() )
+                urls.append( u );
+        } else {
+            urls << KUrl(line);
+        }
 
         return urls;
     }
@@ -1570,7 +1574,7 @@ KUrl::List KFileWidgetPrivate::tokenize( const QString& line ) const
         KUrl _u( u );
         KUrl currUrl( name );
 
-        if ( currUrl.isRelative() ) {
+        if ( !QDir::isAbsolutePath(currUrl.url()) ) {
             _u.setFileName( name );
         } else {
             // we allow to insert various absolute paths like:
