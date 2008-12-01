@@ -60,11 +60,11 @@ class KFileItemPrivate : public QSharedData
 public:
     KFileItemPrivate(const KIO::UDSEntry& entry,
                      mode_t mode, mode_t permissions,
-                     const KUrl& url, // item url if entry.isEmpty(), otherwise directory url
+                     const KUrl& itemOrDirUrl,
                      bool urlIsDirectory,
                      bool delayedMimeTypes)
         : m_entry( entry ),
-          m_url( url ),
+          m_url(itemOrDirUrl),
           m_strName(),
           m_strText(),
           m_iconName(),
@@ -74,7 +74,7 @@ public:
           m_permissions( permissions ),
           m_bMarked( false ),
           m_bLink( false ),
-          m_bIsLocalUrl( url.isLocalFile() ),
+          m_bIsLocalUrl(itemOrDirUrl.isLocalFile()),
           m_bMimeTypeKnown( false ),
           m_delayedMimeTypes( delayedMimeTypes ),
           m_useIconNameCache(false),
@@ -83,7 +83,8 @@ public:
         if (entry.count() != 0) {
             readUDSEntry( urlIsDirectory );
         } else {
-            m_strName = url.fileName();
+            Q_ASSERT(!urlIsDirectory);
+            m_strName = itemOrDirUrl.fileName();
             m_strText = KIO::decodeFileName( m_strName );
         }
         init();
@@ -433,10 +434,10 @@ KFileItem::KFileItem()
 {
 }
 
-KFileItem::KFileItem( const KIO::UDSEntry& entry, const KUrl& directoryUrl,
+KFileItem::KFileItem( const KIO::UDSEntry& entry, const KUrl& itemOrDirUrl,
                       bool delayedMimeTypes, bool urlIsDirectory )
     : d(new KFileItemPrivate(entry, KFileItem::Unknown, KFileItem::Unknown,
-                             directoryUrl, urlIsDirectory, delayedMimeTypes))
+                             itemOrDirUrl, urlIsDirectory, delayedMimeTypes))
 {
 }
 
@@ -983,7 +984,7 @@ QString KFileItem::getToolTipText(int maxcount) const
 
     // the font tags are a workaround for the fact that the tool tip gets
     // screwed if the color scheme uses white as default text color
-    const QString colorName = QApplication::palette().color(QPalette::ToolTipText).name(); 
+    const QString colorName = QApplication::palette().color(QPalette::ToolTipText).name();
     const QString start = "<tr><td align=\"right\"><nobr><font color=\"" + colorName + "\"><b>";
     const QString mid = "&nbsp;</b></font></nobr></td><td><nobr><font color=\"" + colorName + "\">";
     const char* end = "</font></nobr></td></tr>";
@@ -1025,7 +1026,7 @@ QString KFileItem::getToolTipText(int maxcount) const
             {
                 tip += "<tr><td colspan=2><center><s>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</s></center></td></tr>";
             }
-                
+
             KFileMetaInfoItem item = info.item( *it );
             if ( item.isValid() )
             {

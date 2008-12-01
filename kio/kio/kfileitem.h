@@ -74,15 +74,17 @@ public:
      * This is the preferred constructor when using KIO::listDir().
      *
      * @param entry the KIO entry used to get the file, contains info about it
-     * @param directoryUrl the URL of the directory containing this item. This is the URL
-     *            that was passed to the KIO list job which emitted this UDSEntry.
+     * @param itemOrDirUrl the URL of the item or of the directory containing this item (see urlIsDirectory).
      * @param delayedMimeTypes specifies if the mimetype of the given
      *       URL should be determined immediately or on demand.
      *       See the bool delayedMimeTypes in the KDirLister constructor.
      * @param urlIsDirectory specifies if the url is just the directory of the
      *       fileitem and the filename from the UDSEntry should be used.
+     *
+     * When creating KFileItems out of the UDSEntry emitted by a KIO list job,
+     * use KFileItem(entry, listjob->url(), delayedMimeTypes, true);
      */
-    KFileItem( const KIO::UDSEntry& entry, const KUrl& directoryUrl,
+    KFileItem( const KIO::UDSEntry& entry, const KUrl& itemOrDirUrl,
                bool delayedMimeTypes = false,
                bool urlIsDirectory = false );
 
