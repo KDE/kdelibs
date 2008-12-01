@@ -543,6 +543,7 @@ bool ReadOnlyPart::openUrl( const KUrl &url )
     {
         emit started( 0 );
         d->m_file = d->m_url.toLocalFile();
+        d->m_bTemp = false;
         // set the mimetype only if it was not already set (for example, by the host application)
         if (d->m_arguments.mimeType().isEmpty())
         {
