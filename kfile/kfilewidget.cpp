@@ -721,6 +721,7 @@ void KFileWidget::slotOk()
 
     const KFileItemList items = d->ops->selectedItems();
     const QString locationEditCurrentText(KShell::tildeExpand(d->locationEditCurrentText()));
+
     KUrl::List locationEditCurrentTextList(d->tokenize(locationEditCurrentText));
     KFile::Modes mode = d->ops->mode();
 
@@ -829,7 +830,8 @@ void KFileWidget::slotOk()
     } else if (locationEditCurrentTextList.count()) {
         // if we are on file or files mode, and we have an absolute url written by
         // the user, convert it to relative
-        if (!(mode & KFile::Directory) && QDir::isAbsolutePath(locationEditCurrentText)) {
+        if (!locationEditCurrentText.isEmpty() && !(mode & KFile::Directory) &&
+            QDir::isAbsolutePath(locationEditCurrentText)) {
             KUrl _url(locationEditCurrentText);
             KUrl url(_url.path(KUrl::RemoveTrailingSlash));
             url.setFileName(QString());
@@ -1024,7 +1026,11 @@ void KFileWidgetPrivate::_k_fileSelected(const KFileItem &i)
         emit q->selectionChanged();
     }
 
-    q->slotOk();
+    // if we are saving, let another chance to the user before accepting the dialog (or trying to
+    // accept). This way the user can choose a file and add a "_2" for instance to the filename
+    if (operationMode != KFileWidget::Saving) {
+        q->slotOk();
+    }
 }
 
 
