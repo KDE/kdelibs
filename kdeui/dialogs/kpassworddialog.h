@@ -33,7 +33,7 @@
  * 
  * \code
  *  KPasswordDialog *dlg = new KPasswordDialog( parent );
- *  dlg->setPrompt( i18n( "Enter a password" );
+ *  dlg->setPrompt(i18n("Enter a password"));
  *  connect( dlg, SIGNAL( gotPassword( const QString& , bool ) )  , this, SLOT( setPassword( const QString &) ) );
  *  connect( dlg, SIGNAL( rejected() )  , this, SLOT( slotCancel() ) );
  *  dlg->show();
@@ -42,8 +42,8 @@
  * Requesting a login and a password, synchronous
  * 
  * \code
- *  KPasswordDialog dlg( parent , KPasswordDialog::showUsername );
- *  dlg.setPrompt( i18n( "Enter a login and a password" );
+ *  KPasswordDialog dlg(parent, KPasswordDialog::ShowUsernameLine);
+ *  dlg.setPrompt(i18n("Enter a login and a password"));
  *  if( !dlg.exec() )
  *      return; //the user canceled
  *  use( dlg.username() , dlg.password() );
