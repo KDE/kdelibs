@@ -1737,6 +1737,13 @@ void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
     if ( cm != KGlobalSettings::completionMode() )
         locationEdit->setCompletionMode( cm );
 
+    // since we delayed this moment, initialize the directory of the completion object to
+    // our current directory (that was very probably set on the constructor)
+    KUrlCompletion *completion = dynamic_cast<KUrlCompletion*>(locationEdit->completionObject());
+    if (completion) {
+        completion->setDir(ops->url().url());
+    }
+
     // show or don't show the speedbar
     _k_toggleSpeedbar( configGroup.readEntry( ShowSpeedbar, true ) );
 
