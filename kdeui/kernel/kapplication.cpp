@@ -476,16 +476,6 @@ void KApplicationPrivate::init(bool GUIenabled)
   mac_initialize_dbus();
 #endif
 
-  if ( q->type() == KApplication::GuiClient )
-  {
-    const QStringList plugins = KGlobal::dirs()->resourceDirs( "qtplugins" );
-    QStringList::ConstIterator it = plugins.begin();
-    while (it != plugins.end()) {
-      q->addLibraryPath( *it );
-      ++it;
-    }
-  }
-
   KApplication::KApp = q;
 
   parseCommandLine();

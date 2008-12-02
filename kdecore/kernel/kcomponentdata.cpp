@@ -65,10 +65,22 @@ bool KComponentData::operator==(const KComponentData &rhs) const
     return d == rhs.d;
 }
 
+enum KdeLibraryPathsAdded {
+    NeedLazyInit,
+    LazyInitDone,
+    KdeLibraryPathsAddedDone
+};
+static KdeLibraryPathsAdded kdeLibraryPathsAdded = NeedLazyInit;
+
 KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog, MainComponentRegistration registerAsMain)
     : d(new KComponentDataPrivate(KAboutData(name, catalog, KLocalizedString(), "", KLocalizedString())))
 {
     Q_ASSERT(!name.isEmpty());
+
+    if (kdeLibraryPathsAdded == NeedLazyInit) {
+        kdeLibraryPathsAdded = LazyInitDone;
+        d->lazyInit(*this);
+    }
 
     if (registerAsMain == RegisterAsMainComponent) {
         KGlobal::newComponentData(*this);
@@ -80,6 +92,11 @@ KComponentData::KComponentData(const KAboutData *aboutData, MainComponentRegistr
 {
     Q_ASSERT(!aboutData->appName().isEmpty());
 
+    if (kdeLibraryPathsAdded == NeedLazyInit) {
+        kdeLibraryPathsAdded = LazyInitDone;
+        d->lazyInit(*this);
+    }
+
     if (registerAsMain == RegisterAsMainComponent) {
         KGlobal::newComponentData(*this);
     }
@@ -89,6 +106,11 @@ KComponentData::KComponentData(const KAboutData &aboutData, MainComponentRegistr
     : d(new KComponentDataPrivate(aboutData))
 {
     Q_ASSERT(!aboutData.appName().isEmpty());
+
+    if (kdeLibraryPathsAdded == NeedLazyInit) {
+        kdeLibraryPathsAdded = LazyInitDone;
+        d->lazyInit(*this);
+    }
 
     if (registerAsMain == RegisterAsMainComponent) {
         KGlobal::newComponentData(*this);
@@ -114,11 +136,22 @@ void KComponentDataPrivate::lazyInit(const KComponentData &component)
         dirs = new KStandardDirs();
         // install appdata resource type
         dirs->addResourceType("appdata", "data", aboutData.appName() + QLatin1Char('/'), true);
-        
+
         configInit(component);
 
         if (dirs->addCustomized(sharedConfig.data()))
             sharedConfig->reparseConfiguration();
+
+        // the first KComponentData sets the KDE Qt plugin paths
+        if (kdeLibraryPathsAdded != KdeLibraryPathsAddedDone) {
+            kdeLibraryPathsAdded = KdeLibraryPathsAddedDone;
+            const QStringList &plugins = dirs->resourceDirs("qtplugins");
+            QStringList::ConstIterator it = plugins.begin();
+            while (it != plugins.end()) {
+                QCoreApplication::addLibraryPath(*it);
+                ++it;
+            }
+        }
     }
 }
 
