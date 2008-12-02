@@ -750,25 +750,24 @@ void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KD
     QStringList deletedSubdirs;
 
     for (QStringList::const_iterator it = fileList.begin(); it != fileList.end() ; ++it) {
-    KUrl url( *it );
-    KUrl parentDir( url );
-    parentDir.setPath( parentDir.directory() );
-    KFileItemList *lstItems = itemsForDir( parentDir );
-    if ( lstItems )
-    {
-      for ( KFileItemList::iterator fit = lstItems->begin(), fend = lstItems->end() ; fit != fend ; ++fit ) {
-        if ( (*fit ).url() == url ) {
-          const KFileItem fileitem = *fit;
-          removedItemsByDir[parentDir.url()].append(fileitem);
-          // If we found a fileitem, we can test if it's a dir. If not, we'll go to deleteDir just in case.
-          if (fileitem.isNull() || fileitem.isDir()) {
-              deletedSubdirs.append(url.url());
-          }
-          lstItems->erase( fit ); // remove fileitem from list
-          break;
+        KUrl url(*it);
+        KUrl parentDir(url);
+        parentDir.setPath(parentDir.directory());
+        KFileItemList *lstItems = itemsForDir(parentDir);
+        if (lstItems) {
+            for (KFileItemList::iterator fit = lstItems->begin(), fend = lstItems->end(); fit != fend ; ++fit) {
+                if ((*fit).url() == url) {
+                    const KFileItem fileitem = *fit;
+                    removedItemsByDir[parentDir.url()].append(fileitem);
+                    // If we found a fileitem, we can test if it's a dir. If not, we'll go to deleteDir just in case.
+                    if (fileitem.isNull() || fileitem.isDir()) {
+                        deletedSubdirs.append(url.url());
+                    }
+                    lstItems->erase(fit); // remove fileitem from list
+                    break;
+                }
+            }
         }
-      }
-    }
     }
 
     QMap<QString, KFileItemList>::const_iterator rit = removedItemsByDir.constBegin();
