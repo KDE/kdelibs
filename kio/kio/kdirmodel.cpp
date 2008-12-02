@@ -680,7 +680,11 @@ bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int 
 
 int KDirModel::rowCount( const QModelIndex & parent ) const
 {
-    KDirModelDirNode* parentNode = static_cast<KDirModelDirNode *>(d->nodeForIndex(parent));
+    KDirModelNode* node = d->nodeForIndex(parent);
+    if (!node || !d->isDir(node)) // #176555
+        return 0;
+
+    KDirModelDirNode* parentNode = static_cast<KDirModelDirNode *>(node);
     Q_ASSERT(parentNode);
     const int count = parentNode->m_childNodes.count();
 #if 0
