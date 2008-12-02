@@ -883,7 +883,7 @@ inline uint qHash(const QUrl& qurl) {
 
 void KDirModelTest::testKUrlHash()
 {
-    const int count = 30000;
+    const int count = 3000;
     // Prepare an array of QUrls so that url constructing isn't part of the timing
     QVector<QUrl> urls;
     urls.resize(count);
@@ -896,22 +896,23 @@ void KDirModelTest::testKUrlHash()
     for (int i = 0; i < count; ++i) {
         qurlHash.insert(urls[i], i);
     }
-    kDebug() << "inserting" << count << "urls into QHash using old qHash:" << dt.elapsed() << "msecs";
+    //kDebug() << "inserting" << count << "urls into QHash using old qHash:" << dt.elapsed() << "msecs";
     dt.start();
     for (int i = 0; i < count; ++i) {
         kurlHash.insert(urls[i], i);
     }
-    kDebug() << "inserting" << count << "urls into QHash using new qHash:" << dt.elapsed() << "msecs";
-    // Nice results: for count=40000 I got 2684 with QUrl and 46 with KUrl :-)
+    //kDebug() << "inserting" << count << "urls into QHash using new qHash:" << dt.elapsed() << "msecs";
+    // Nice results: for count=30000 I got 4515 (before) and 103 (after)
 
     dt.start();
     for (int i = 0; i < count; ++i) {
         QCOMPARE(qurlHash.value(urls[i]), i);
     }
-    kDebug() << "looking up" << count << "urls into QHash using old qHash:" << dt.elapsed() << "msecs";
+    //kDebug() << "looking up" << count << "urls into QHash using old qHash:" << dt.elapsed() << "msecs";
     dt.start();
     for (int i = 0; i < count; ++i) {
         QCOMPARE(kurlHash.value(urls[i]), i);
     }
-    kDebug() << "looking up" << count << "urls into QHash using new qHash:" << dt.elapsed() << "msecs";
+    //kDebug() << "looking up" << count << "urls into QHash using new qHash:" << dt.elapsed() << "msecs";
+    // Nice results: for count=30000 I got 4296 (before) and 63 (after)
 }
