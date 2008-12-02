@@ -40,6 +40,7 @@ private Q_SLOTS:
     void testConcurrentHoldingListing();
     void testOpenUrlTwice();
     void testOpenAndStop();
+    void testDeleteCurrentDir(); // must be last!
 
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
     void exitLoop();
@@ -54,6 +55,7 @@ private:
     void enterLoop(int exitCount = 1);
 
 private:
+    QString path() const { return m_tempDir.name(); }
     int m_exitCount;
     QEventLoop m_eventLoop;
     KTempDir m_tempDir;

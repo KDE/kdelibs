@@ -26,6 +26,7 @@ QTEST_KDEMAIN( KDirListerTest, NoGUI )
 
 #include <kdebug.h>
 #include "kiotesthelper.h"
+#include <kio/deletejob.h>
 #include <kdirwatch.h>
 #include <kio/job.h>
 
@@ -574,5 +575,19 @@ void KDirListerTest::slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > 
 {
     m_refreshedItems += lst;
     emit refreshItemsReceived();
+}
+
+void KDirListerTest::testDeleteCurrentDir()
+{
+    testOpenUrl(); // ensure m_dirLister holds the items.
+    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
+    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
+    connect(&m_dirLister, SIGNAL(clear()), &m_eventLoop, SLOT(quit()));
+    KIO::DeleteJob* job = KIO::del(path(), KIO::HideProgressInfo);
+    bool ok = job->exec();
+    QVERIFY(ok);
+    enterLoop();
+    QCOMPARE(spyClear.count(), 1);
+    QCOMPARE(spyClearKUrl.count(), 0);
 }
 
