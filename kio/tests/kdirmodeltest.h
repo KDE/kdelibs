@@ -32,7 +32,6 @@ private Q_SLOTS:
     void initTestCase();
     void cleanupTestCase();
     void cleanup();
-    void testKUrlHash();
     void testRowCount();
     void testIndex();
     void testNames();
@@ -54,10 +53,14 @@ private Q_SLOTS:
     void testUrlWithHost();
     void testZipFile();
     void testSmb();
-    // These two must be done last
+
+    // These three must be done last
     void testDeleteFile();
     void testDeleteFiles();
     void testRenameFileToHidden();
+
+    // Somewhat unrelated
+    void testKUrlHash();
 
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
     void slotListingCompleted();
