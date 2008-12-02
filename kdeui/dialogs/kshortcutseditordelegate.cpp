@@ -30,6 +30,7 @@
 
 #include <QApplication>
 #include <QHeaderView>
+#include <QKeyEvent>
 #include <QLabel>
 #include <QPainter>
 #include <QTreeWidgetItemIterator>
@@ -61,6 +62,8 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QTreeWidget *parent, bool all
     pixmap.fill( QColor( Qt::transparent ) );
     QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowDown, &option, &p );
     setContractPixmap( pixmap );
+
+    parent->installEventFilter(this);
 
     // Listen to activiation signals
     // connect(parent, SIGNAL(activated(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
@@ -253,23 +256,56 @@ void KShortcutsEditorDelegate::hiddenBySearchLine(QTreeWidgetItem *item, bool hi
 }
 
 
-//Prevent clicks in the empty part of the editor widget from closing the editor
-//because they would propagate to the itemview and be interpreted as a click in
-//an item's rect. That in turn would lead to an itemActivated() call, closing
-//the current editor.
 bool KShortcutsEditorDelegate::eventFilter(QObject *o, QEvent *e)
 {
-    if (o != m_editor)
-        return false;
+    if (o == m_editor) {
+        //Prevent clicks in the empty part of the editor widget from closing the editor
+        //because they would propagate to the itemview and be interpreted as a click in
+        //an item's rect. That in turn would lead to an itemActivated() call, closing
+        //the current editor.
 
-    switch (e->type()) {
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
+        switch (e->type()) {
+        case QEvent::MouseButtonPress:
+        case QEvent::MouseButtonRelease:
+        case QEvent::MouseButtonDblClick:
+            return true;
+        default:
+            return false;
+        }
+    } else if (o == parent()) {
+        // Make left/right cursor keys switch items instead of operate the scroll bar
+        // (subclassing QtreeView/Widget would be cleaner but much more of a hassle)
+        // Note that in our case we know that the selection mode is SingleSelection,
+        // so we don't have to ask QAbstractItemView::selectionCommand() et al.
+
+        if (e->type() != QEvent::KeyPress) {
+            return false;
+        }
+        QKeyEvent *ke = static_cast<QKeyEvent *>(e);
+        QTreeWidget *view = static_cast<QTreeWidget *>(parent());
+        QItemSelectionModel *selection = view->selectionModel();
+        QModelIndex index = selection->currentIndex();
+
+        if (ke->key() == Qt::Key_Space || ke->key() == Qt::Key_Select) {
+            // we are not using the standard "open editor" mechanism of QAbstractItemView,
+            // so let's emulate that here.
+            itemActivated(index);
+            return true;
+        } else if (ke->key() == Qt::Key_Left) {
+            index = index.sibling(index.row(), index.column() - 1);
+        } else if (ke->key() == Qt::Key_Right) {
+            index = index.sibling(index.row(), index.column() + 1);
+        } else {
+            return false;
+        }
+        if (index.isValid()) {
+            selection->setCurrentIndex(index, QItemSelectionModel::ClearAndSelect);
+            //TODO using PositionAtCenter for testing; we really want EnsureVisible.
+            view->scrollTo(index, QAbstractItemView::PositionAtCenter);
+        }
         return true;
-    default:
-        return false;
     }
+    return false;
 }
 
 

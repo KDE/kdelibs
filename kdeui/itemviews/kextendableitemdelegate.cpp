@@ -313,16 +313,15 @@ QRect KExtendableItemDelegate::extenderRect(QWidget *extender, const QStyleOptio
     rect.setTop(rect.bottom() + 1 - extender->sizeHint().height());
 
     rect.setLeft(0);
-    QTreeView *tv = qobject_cast<QTreeView *>(parent());
-    if (tv) {
-        int indent = 0;
+    if (QTreeView *tv = qobject_cast<QTreeView *>(parent())) {
+        int indentSteps = 0;
         for (QModelIndex idx(index.parent()); idx.isValid(); idx = idx.parent()) {
-            indent += tv->indentation();
+            indentSteps++;
         }
         if (tv->rootIsDecorated()) {
-            indent += tv->indentation();
+            indentSteps++;
         }
-        rect.translate(indent, 0);
+        rect.setLeft(indentSteps * tv->indentation());
     }
 
     QAbstractScrollArea *container = qobject_cast<QAbstractScrollArea *>(parent());
