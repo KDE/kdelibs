@@ -30,6 +30,7 @@
 #include <QtXml/QDomAttr>
 
 #include <kicon.h>
+#include <klocalizedstring.h>
 
 using namespace Kross;
 
@@ -284,16 +285,16 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
 
         if( elem.tagName() == "collection") {
             const QString name = elem.attribute("name");
-            const QString text = elem.attribute("text");
-            const QString description = elem.attribute("comment");
+            const QByteArray text = elem.attribute("text").toUtf8();
+            const QByteArray description = elem.attribute("comment").toUtf8();
             const QString iconname = elem.attribute("icon");
             bool enabled = QVariant(elem.attribute("enabled","true")).toBool();
             ActionCollection* c = d->collections.contains(name) ? d->collections[name] : QPointer<ActionCollection>(0);
             if( ! c )
                 c = new ActionCollection(name, this);
 
-            c->setText( text.isEmpty() ? name : text );
-            c->setDescription( description.isEmpty() ? c->text() : description );
+            c->setText( text.isEmpty() ? name : i18n( text ) );
+            c->setDescription( description.isEmpty() ? c->text() : i18n( description ) );
             c->setIconName( iconname );
 
             if( ! enabled )
