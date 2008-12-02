@@ -67,6 +67,7 @@ public:
      *
      * NOTE: this list must be queried to see which ones were installed and which were uninstalled
      * since both are in the one list. i.e. (entry->status() == KNS::Entry::Installed)
+     * NOTE: the list returned is not a copy of each entry, so do not delete the entries returned here
      *
      * @return List of installed or deinstalled entries
      */
