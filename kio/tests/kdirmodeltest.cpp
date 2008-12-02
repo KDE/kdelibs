@@ -735,7 +735,6 @@ void KDirModelTest::testZipFile() // # 171721
 
 void KDirModelTest::testSmb()
 {
-#if 0 // unfinished
     const KUrl smbUrl("smb:/");
     // TODO: feed a KDirModel without using a KDirLister.
     // Calling the slots directly.
@@ -755,7 +754,6 @@ void KDirModelTest::testSmb()
     m_dirModel.fetchMore(index);
     enterLoop(); // wait for completed signal
     disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
-#endif
 }
 
 void KDirModelTest::testDeleteFile()

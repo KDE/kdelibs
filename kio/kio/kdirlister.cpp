@@ -285,7 +285,7 @@ void KDirListerCache::emitItemsFromCache(KDirLister* lister, const KFileItemList
         kdl->rootFileItem = rootItem;
 
     //kDebug(7004) << "emitting" << items.count() << "for lister" << lister;
-    kdl->addNewItems( items );
+    kdl->addNewItems(_url, items);
     kdl->emitItems();
 
     KDirListerCacheDirectoryData& dirData = directoryData[urlStr];
@@ -896,7 +896,7 @@ void KDirListerCache::aboutToRefreshItem( const KFileItem& fileitem )
         kdl->d->aboutToRefreshItem( fileitem );
 }
 
-void KDirListerCache::emitRefreshItem( const KFileItem& oldItem, const KFileItem& fileitem )
+void KDirListerCache::emitRefreshItem(const KFileItem& oldItem, const KFileItem& fileitem )
 {
     // Look whether this item was shown in any view, i.e. held by any dirlister
     KUrl parentDir( fileitem.url() );
@@ -918,7 +918,9 @@ void KDirListerCache::emitRefreshItem( const KFileItem& oldItem, const KFileItem
         if (oldItem.isDir() && kdl->d->rootFileItem == oldItem) {
             kdl->d->rootFileItem = fileitem;
         }
-        kdl->d->addRefreshItem( oldItem, fileitem );
+        KUrl directoryUrl(fileitem.url());
+        directoryUrl.setPath(directoryUrl.directory());
+        kdl->d->addRefreshItem(directoryUrl, oldItem, fileitem);
         kdl->d->emitItems();
     }
 }
@@ -1027,7 +1029,7 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
             dir->lstItems.append( item );
 
             foreach ( KDirLister *kdl, dirData.listersCurrentlyListing )
-                kdl->d->addNewItem( item );
+                kdl->d->addNewItem(url, item);
         }
     }
 
@@ -1223,7 +1225,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
             if ( kdl->d->rootFileItem.isNull() && kdl->d->url == newUrl )
                 kdl->d->rootFileItem = newDir->rootItem;
 
-            kdl->d->addNewItems( newDir->lstItems );
+            kdl->d->addNewItems(newUrl, newDir->lstItems);
             kdl->d->emitItems();
         }
     } else if ( (newDir = itemsCached.take( newUrlStr )) ) {
@@ -1240,7 +1242,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
             if ( kdl->d->rootFileItem.isNull() && kdl->d->url == newUrl )
                 kdl->d->rootFileItem = newDir->rootItem;
 
-            kdl->d->addNewItems( newDir->lstItems );
+            kdl->d->addNewItems(newUrl, newDir->lstItems);
             kdl->d->emitItems();
         }
     } else {
@@ -1531,7 +1533,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
                 const KFileItem oldItem = *tmp;
                 *tmp = item;
                 foreach ( KDirLister *kdl, listers )
-                    kdl->d->addRefreshItem( oldItem, *tmp );
+                    kdl->d->addRefreshItem(jobUrl, oldItem, *tmp);
             }
             tmp->mark();
         }
@@ -1544,7 +1546,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
             dir->lstItems.append( pitem );
 
             foreach ( KDirLister *kdl, listers )
-                kdl->d->addNewItem( pitem );
+                kdl->d->addNewItem(jobUrl, pitem);
         }
     }
 
@@ -1928,7 +1930,7 @@ void KDirLister::Private::emitChanges()
                 continue;
             const bool nowVisible = isItemVisible(item) && m_parent->matchesMimeFilter(item);
             if (nowVisible && !item.isMarked())
-                addNewItem(item); // takes care of emitting newItem or itemsFilteredByMime
+                addNewItem(dir, item); // takes care of emitting newItem or itemsFilteredByMime
             else if (!nowVisible && item.isMarked())
                 deletedItems.append(*kit);
         }
@@ -2118,7 +2120,7 @@ void KDirLister::handleError( KIO::Job *job )
 
 // ================= private methods ================= //
 
-void KDirLister::Private::addNewItem( const KFileItem &item )
+void KDirLister::Private::addNewItem(const KUrl& directoryUrl, const KFileItem &item)
 {
     if (!isItemVisible(item))
         return; // No reason to continue... bailing out here prevents a mimetype scan.
@@ -2127,11 +2129,11 @@ void KDirLister::Private::addNewItem( const KFileItem &item )
   {
     if ( !lstNewItems )
     {
-      lstNewItems = new KFileItemList;
+      lstNewItems = new NewItemsHash;
     }
 
     Q_ASSERT( !item.isNull() );
-    lstNewItems->append( item );            // items not filtered
+    (*lstNewItems)[directoryUrl].append( item );            // items not filtered
   }
   else
   {
@@ -2144,7 +2146,7 @@ void KDirLister::Private::addNewItem( const KFileItem &item )
   }
 }
 
-void KDirLister::Private::addNewItems( const KFileItemList& items )
+void KDirLister::Private::addNewItems(const KUrl& directoryUrl, const KFileItemList& items)
 {
   // TODO: make this faster - test if we have a filter at all first
   // DF: was this profiled? The matchesFoo() functions should be fast, w/o filters...
@@ -2152,7 +2154,7 @@ void KDirLister::Private::addNewItems( const KFileItemList& items )
   KFileItemList::const_iterator kit = items.begin();
   const KFileItemList::const_iterator kend = items.end();
   for ( ; kit != kend; ++kit )
-    addNewItem( *kit );
+    addNewItem(directoryUrl, *kit);
 }
 
 void KDirLister::Private::aboutToRefreshItem( const KFileItem &item )
@@ -2160,17 +2162,17 @@ void KDirLister::Private::aboutToRefreshItem( const KFileItem &item )
     refreshItemWasFiltered = !isItemVisible(item) || !m_parent->matchesMimeFilter(item);
 }
 
-void KDirLister::Private::addRefreshItem( const KFileItem& oldItem, const KFileItem& item )
+void KDirLister::Private::addRefreshItem(const KUrl& directoryUrl, const KFileItem& oldItem, const KFileItem& item)
 {
   if (isItemVisible(item) && m_parent->matchesMimeFilter(item)) {
     if ( refreshItemWasFiltered )
     {
       if ( !lstNewItems ) {
-        lstNewItems = new KFileItemList;
+        lstNewItems = new NewItemsHash;
       }
 
       Q_ASSERT( !item.isNull() );
-      lstNewItems->append( item );
+      (*lstNewItems)[directoryUrl].append( item );
     }
     else
     {
@@ -2198,7 +2200,7 @@ void KDirLister::Private::addRefreshItem( const KFileItem& oldItem, const KFileI
 
 void KDirLister::Private::emitItems()
 {
-  KFileItemList *tmpNew = lstNewItems;
+  NewItemsHash *tmpNew = lstNewItems;
   lstNewItems = 0;
 
   KFileItemList *tmpMime = lstMimeFilteredItems;
@@ -2210,11 +2212,15 @@ void KDirLister::Private::emitItems()
   KFileItemList *tmpRemove = lstRemoveItems;
   lstRemoveItems = 0;
 
-  if ( tmpNew )
-  {
-    emit m_parent->newItems( *tmpNew );
-    delete tmpNew;
-  }
+    if (tmpNew) {
+        QHashIterator<KUrl, KFileItemList> it(*tmpNew);
+        while (it.hasNext()) {
+            it.next();
+            emit m_parent->itemsAdded(it.key(), it.value());
+            emit m_parent->newItems(it.value()); // compat
+        }
+        delete tmpNew;
+    }
 
   if ( tmpMime )
   {

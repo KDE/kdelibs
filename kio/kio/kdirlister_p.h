@@ -79,10 +79,10 @@ public:
   void connectJob( KIO::ListJob * );
   void jobDone( KIO::ListJob * );
   uint numJobs();
-  void addNewItem( const KFileItem& item );
-  void addNewItems( const KFileItemList& items );
-  void aboutToRefreshItem( const KFileItem& item );
-  void addRefreshItem( const KFileItem& oldItem, const KFileItem& item );
+    void addNewItem(const KUrl& directoryUrl, const KFileItem& item);
+    void addNewItems(const KUrl& directoryUrl, const KFileItemList& items);
+    void aboutToRefreshItem(const KFileItem& item);
+    void addRefreshItem(const KUrl& directoryUrl, const KFileItem& oldItem, const KFileItem& item);
   void emitItems();
   void emitDeleteItem( const KFileItem &item );
   void emitItemsDeleted(const KFileItemList &items);
@@ -136,7 +136,8 @@ public:
   // file item for the root itself (".")
   KFileItem rootFileItem;
 
-  KFileItemList *lstNewItems;
+    typedef QHash<KUrl, KFileItemList> NewItemsHash;
+    NewItemsHash *lstNewItems;
   QList<QPair<KFileItem,KFileItem> > *lstRefreshItems;
   KFileItemList *lstMimeFilteredItems, *lstRemoveItems;
 

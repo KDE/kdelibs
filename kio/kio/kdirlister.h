@@ -500,7 +500,7 @@ Q_SIGNALS:
 
   /**
    * Signal to clear all items.
-   * It must always be connected to this signal to avoid doubled items!
+   * Make sure to connect to this signal to avoid doubled items.
    */
   void clear();
 
@@ -514,10 +514,19 @@ Q_SIGNALS:
   /**
    * Signal new items.
    *
-   * So use this signal only if you want to modify original KFileItems
    * @param items a list of new items
    */
   void newItems( const KFileItemList& items );
+
+  /**
+   * Signal that new items were found during directory listing.
+   * Alternative signal emitted at the same time as newItems(),
+   * but itemsAdded also passes the url of the parent directory.
+   *
+   * @param items a list of new items
+   * @since 4.2
+   */
+  void itemsAdded(const KUrl& directoryUrl, const KFileItemList& items);
 
   /**
    * Send a list of items filtered-out by mime-type.
