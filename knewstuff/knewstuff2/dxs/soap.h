@@ -83,7 +83,7 @@ public:
 
     /**
      * Find the text element to a xpath like expression
-     * @param node xml (<test>my_text</test>)
+     * @param node xml (&lt;test&gt;my_text&lt;/test&gt;)
      * @param expr /test
      * @return my_text
      */
