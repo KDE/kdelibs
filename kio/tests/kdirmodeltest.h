@@ -32,6 +32,7 @@ private Q_SLOTS:
     void initTestCase();
     void cleanupTestCase();
     void cleanup();
+    void testKUrlHash();
     void testRowCount();
     void testIndex();
     void testNames();
@@ -52,6 +53,7 @@ private Q_SLOTS:
     void testUrlWithRef();
     void testUrlWithHost();
     void testZipFile();
+    void testSmb();
     // These two must be done last
     void testDeleteFile();
     void testDeleteFiles();

@@ -729,6 +729,31 @@ void KDirModelTest::testZipFile() // # 171721
     QVERIFY(index.isValid());
 }
 
+void KDirModelTest::testSmb()
+{
+#if 0 // unfinished
+    const KUrl smbUrl("smb:/");
+    // TODO: feed a KDirModel without using a KDirLister.
+    // Calling the slots directly.
+    // This requires that KDirModel does not ask the KDirLister for its rootItem anymore,
+    // but that KDirLister emits the root item whenever it changes.
+    if (!KProtocolInfo::isKnownProtocol("smb")) {
+        QSKIP("kio_smb not installed", SkipAll);
+    }
+    KDirLister* dirLister = m_dirModel.dirLister();
+    dirLister->openUrl(smbUrl, KDirLister::NoFlags);
+    connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+    enterLoop(); // wait for completed signal
+
+    QModelIndex index = m_dirModel.index(0, 0);
+    QVERIFY(index.isValid());
+    QVERIFY(m_dirModel.canFetchMore(index));
+    m_dirModel.fetchMore(index);
+    enterLoop(); // wait for completed signal
+    disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+#endif
+}
+
 void KDirModelTest::testDeleteFile()
 {
     fillModel(false);
@@ -850,3 +875,43 @@ void KDirModelTest::testRenameFileToHidden() // #174721
     QCOMPARE(m_dirModel.itemForIndex( m_secondFileIndex ).url().url(), url.url());
 }
 
+// The old slow way. (this isn't QUrl's fault, I'm just using QUrl in order
+// to be able to test a different hashing function than the KUrl one).
+inline uint qHash(const QUrl& qurl) {
+    return qHash(qurl.toEncoded());
+}
+
+void KDirModelTest::testKUrlHash()
+{
+    const int count = 30000;
+    // Prepare an array of QUrls so that url constructing isn't part of the timing
+    QVector<QUrl> urls;
+    urls.resize(count);
+    for (int i = 0; i < count; ++i) {
+        urls[i] = QUrl("http://www.kde.org/path/"+QString::number(i));
+    }
+    QHash<QUrl, int> qurlHash;
+    QHash<KUrl, int> kurlHash;
+    QTime dt; dt.start();
+    for (int i = 0; i < count; ++i) {
+        qurlHash.insert(urls[i], i);
+    }
+    kDebug() << "inserting" << count << "urls into QHash using old qHash:" << dt.elapsed() << "msecs";
+    dt.start();
+    for (int i = 0; i < count; ++i) {
+        kurlHash.insert(urls[i], i);
+    }
+    kDebug() << "inserting" << count << "urls into QHash using new qHash:" << dt.elapsed() << "msecs";
+    // Nice results: for count=40000 I got 2684 with QUrl and 46 with KUrl :-)
+
+    dt.start();
+    for (int i = 0; i < count; ++i) {
+        QCOMPARE(qurlHash.value(urls[i]), i);
+    }
+    kDebug() << "looking up" << count << "urls into QHash using old qHash:" << dt.elapsed() << "msecs";
+    dt.start();
+    for (int i = 0; i < count; ++i) {
+        QCOMPARE(kurlHash.value(urls[i]), i);
+    }
+    kDebug() << "looking up" << count << "urls into QHash using new qHash:" << dt.elapsed() << "msecs";
+}
