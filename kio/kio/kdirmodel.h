@@ -172,6 +172,19 @@ public:
     /// Reimplemented from QAbstractItemModel. Not implemented. @see KDirSortFilterProxyModel
     virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder );
 
+
+    /**
+     * Remove urls from the list if an ancestor is present on the list. This can
+     * be used to delete only the ancestor url and skip a potential error of a non-existent url.
+     *
+     * For example, for a list of "/home/foo/a", "/home/foo/a/a.txt", "/home/foo/a/a/a.txt", "/home/foo/a/b/b.txt",
+     * "home/foo/b/b.txt", this method will return the list "/home/foo/a", "/home/foo/b/b.txt".
+     *
+     * @return the list @p urls without parented urls inside.
+     * @since 4.2
+     */
+    static KUrl::List simplifiedUrlList( const KUrl::List & urls );
+
 Q_SIGNALS:
     /**
      * Emitted for each subdirectory that is a parent of a url passed to expandToUrl

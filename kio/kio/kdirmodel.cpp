@@ -715,6 +715,35 @@ QModelIndex KDirModel::parent( const QModelIndex & index ) const
     return d->indexForNode(parentNode); // O(n)
 }
 
+static bool lessThan(const KUrl &left, const KUrl &right)
+{
+    return left.url().compare(right.url()) < 0;
+}
+
+KUrl::List KDirModel::simplifiedUrlList(const KUrl::List &urls)
+{
+    if (!urls.count()) {
+        return urls;
+    }
+
+    KUrl::List ret(urls);
+    qSort(ret.begin(), ret.end(), lessThan);
+
+    KUrl::List::iterator it = ret.begin();
+    KUrl url = *it;
+    ++it;
+    while (it != ret.end()) {
+        if (url.isParentOf(*it)) {
+            it = ret.erase(it);
+        } else {
+            url = *it;
+            ++it;
+        }
+    }
+
+    return ret;
+}
+
 QStringList KDirModel::mimeTypes( ) const
 {
     return KUrl::List::mimeDataTypes()
@@ -724,14 +753,21 @@ QStringList KDirModel::mimeTypes( ) const
 QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
 {
     KUrl::List urls, mostLocalUrls;
-    foreach ( const QModelIndex &index, indexes ) {
-        const KFileItem& item = d->nodeForIndex( index )->item();
+    foreach (const QModelIndex &index, indexes) {
+        const KFileItem& item = d->nodeForIndex(index)->item();
         urls << item.url();
         bool dummy;
         mostLocalUrls << item.mostLocalUrl(dummy);
     }
     QMimeData *data = new QMimeData();
-    urls.populateMimeData(mostLocalUrls, data);
+    const bool different = mostLocalUrls != urls;
+    urls = simplifiedUrlList(urls);
+    if (different) {
+        mostLocalUrls = simplifiedUrlList(mostLocalUrls);
+        urls.populateMimeData(mostLocalUrls, data);
+    } else {
+        urls.populateMimeData(data);
+    }
     return data;
 }
 
