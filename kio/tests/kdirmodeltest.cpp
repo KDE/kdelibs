@@ -194,6 +194,10 @@ void KDirModelTest::testRowCount()
     QCOMPARE(topLevelRowCount, m_topLevelFileNames.count() + 1 /*subdir*/);
     const int subdirRowCount = m_dirModel.rowCount(m_dirIndex);
     QCOMPARE(subdirRowCount, 3);
+
+    QVERIFY(m_fileIndex.isValid());
+    const int fileRowCount = m_dirModel.rowCount(m_fileIndex); // #176555
+    QCOMPARE(fileRowCount, 0);
 }
 
 void KDirModelTest::testIndex()
