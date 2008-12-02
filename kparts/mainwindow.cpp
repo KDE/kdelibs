@@ -78,20 +78,22 @@ MainWindow::~MainWindow()
 
 void MainWindow::createGUI( Part * part )
 {
-  kDebug(1000) << "MainWindow::createGUI, part=" << part << " "
+#if 0
+  kDebug(1000) << "part=" << part
                 << ( part ? part->metaObject()->className() : "" )
-                << " " << ( part ? part->objectName() : "" )
-                << endl;
-
+                << ( part ? part->objectName() : "" );
+#endif
   KXMLGUIFactory *factory = guiFactory();
 
   assert( factory );
 
   if ( d->m_activePart )
   {
-    kDebug(1000) << "deactivating GUI for " << d->m_activePart << " "
+#if 0
+    kDebug(1000) << "deactivating GUI for" << d->m_activePart
                   << d->m_activePart->metaObject()->className()
-                  << " " << d->m_activePart->objectName() << endl;
+                  << d->m_activePart->objectName();
+#endif
 
     GUIActivateEvent ev( false );
     QApplication::sendEvent( d->m_activePart, &ev );

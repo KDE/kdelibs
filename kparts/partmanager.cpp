@@ -410,7 +410,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
 {
     if ( part && !d->m_parts.contains( part ) )
     {
-        kWarning( 1000 ) << "PartManager::setActivePart : trying to activate a non-registered part! " << part->objectName();
+        kWarning(1000) << "trying to activate a non-registered part!" << part->objectName();
         return; // don't allow someone call setActivePart with a part we don't know about
     }
 
@@ -480,7 +480,9 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
     // Set the new active instance in KGlobal
     setActiveComponent(d->m_activePart ? d->m_activePart->componentData() : KGlobal::mainComponent());
 
+#ifdef DEBUG_PARTMANAGER
     kDebug(1000) << this << " emitting activePartChanged " << d->m_activePart;
+#endif
     emit activePartChanged( d->m_activePart );
 }
 
@@ -541,13 +543,13 @@ QWidget *PartManager::selectedWidget() const
 
 void PartManager::slotObjectDestroyed()
 {
-    kDebug(1000) << "KPartManager::slotObjectDestroyed()";
+    kDebug(1000);
     removePart( const_cast<Part *>( static_cast<const Part *>( sender() ) ) );
 }
 
 void PartManager::slotWidgetDestroyed()
 {
-    kDebug(1000) << "KPartsManager::slotWidgetDestroyed()";
+    kDebug(1000);
     if ( static_cast<const QWidget *>( sender() ) == d->m_activeWidget )
         setActivePart( 0 ); //do not remove the part because if the part's widget dies, then the
     //part will delete itself anyway, invoking removePart() in its destructor
