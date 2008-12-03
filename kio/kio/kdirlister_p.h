@@ -381,7 +381,7 @@ private:
 
     //static const unsigned short MAX_JOBS_PER_LISTER;
 
-    QMap<KIO::ListJob *, KIO::UDSEntryList> jobs;
+    QMap<KIO::ListJob *, KIO::UDSEntryList> runningListJobs;
 
     // an item is a complete directory
     QHash<QString /*url*/, DirItem*> itemsInUse;

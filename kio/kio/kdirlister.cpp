@@ -204,7 +204,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 //        else
             {
                 KIO::ListJob* job = KIO::listDir(_url, KIO::HideProgressInfo);
-                jobs.insert(job, KIO::UDSEntryList());
+                runningListJobs.insert(job, KIO::UDSEntryList());
 
                 lister->d->jobStarted(job);
                 lister->d->connectJob(job);
@@ -610,7 +610,7 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
     Q_ASSERT( listers.isEmpty() || killed );
 
     job = KIO::listDir( _dir, KIO::HideProgressInfo );
-    jobs.insert( job, KIO::UDSEntryList() );
+    runningListJobs.insert( job, KIO::UDSEntryList() );
 
     connect( job, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList & )),
              this, SLOT(slotUpdateEntries( KIO::Job *, const KIO::UDSEntryList & )) );
@@ -1051,7 +1051,7 @@ void KDirListerCache::slotResult( KJob *j )
 {
   Q_ASSERT( j );
   KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
-  jobs.remove( job );
+  runningListJobs.remove( job );
 
   KUrl jobUrl(joburl( job ));
   jobUrl.adjustPath(KUrl::RemoveTrailingSlash);  // need remove trailing slashes again, in case of redirections
@@ -1427,7 +1427,7 @@ void KDirListerCache::removeDirFromCache( const KUrl& dir )
 
 void KDirListerCache::slotUpdateEntries( KIO::Job* job, const KIO::UDSEntryList& list )
 {
-    jobs[static_cast<KIO::ListJob*>(job)] += list;
+    runningListJobs[static_cast<KIO::ListJob*>(job)] += list;
 }
 
 void KDirListerCache::slotUpdateResult( KJob * j )
@@ -1465,7 +1465,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
             }
         }
 
-        jobs.remove( job );
+        runningListJobs.remove( job );
 
         // TODO: if job is a parent of one or more
         // of the pending urls we should cancel them
@@ -1492,7 +1492,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
         fileItems.insert( (*kit).name(), &*kit );
     }
 
-    KIO::UDSEntryList buf = jobs.value( job );
+    const KIO::UDSEntryList& buf = runningListJobs.value( job );
     KIO::UDSEntryList::const_iterator it = buf.constBegin();
     const KIO::UDSEntryList::const_iterator end = buf.constEnd();
     for ( ; it != end; ++it )
@@ -1560,7 +1560,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
         }
     }
 
-    jobs.remove( job );
+    runningListJobs.remove( job );
 
     deleteUnmarkedItems( listers, dir->lstItems );
 
@@ -1586,8 +1586,8 @@ void KDirListerCache::slotUpdateResult( KJob * j )
 
 KIO::ListJob *KDirListerCache::jobForUrl( const QString& url, KIO::ListJob *not_job )
 {
-  QMap< KIO::ListJob *, KIO::UDSEntryList >::const_iterator it = jobs.constBegin();
-  while ( it != jobs.constEnd() )
+  QMap< KIO::ListJob *, KIO::UDSEntryList >::const_iterator it = runningListJobs.constBegin();
+  while ( it != runningListJobs.constEnd() )
   {
     KIO::ListJob *job = it.key();
     if ( joburl( job ).url(KUrl::RemoveTrailingSlash) == url && job != not_job )
@@ -1607,7 +1607,7 @@ const KUrl& KDirListerCache::joburl( KIO::ListJob *job )
 
 void KDirListerCache::killJob( KIO::ListJob *job )
 {
-  jobs.remove( job );
+  runningListJobs.remove( job );
   job->disconnect( this );
   job->kill();
 }
@@ -1765,9 +1765,9 @@ void KDirListerCache::printDebug()
         kDebug(7004) << "  " << dit.key() << (*dit).listersCurrentlyHolding.count() << "holders:" << list;
     }
 
-    QMap< KIO::ListJob *, KIO::UDSEntryList >::Iterator jit = jobs.begin();
+    QMap< KIO::ListJob *, KIO::UDSEntryList >::Iterator jit = runningListJobs.begin();
     kDebug(7004) << "Jobs:";
-    for ( ; jit != jobs.end() ; ++jit )
+    for ( ; jit != runningListJobs.end() ; ++jit )
         kDebug(7004) << "   " << jit.key() << "listing" << joburl( jit.key() ) << ":" << (*jit).count() << "entries.";
 
     kDebug(7004) << "Items in cache:";
