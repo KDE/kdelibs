@@ -41,6 +41,10 @@
 #include <utime.h>
 #include <pwd.h>
 
+#ifdef Q_OS_UNIX
+#include <limits.h>  // PATH_MAX
+#endif
+
 using namespace KIO;
 
 #define MAX_IPC_SIZE (1024*32)
