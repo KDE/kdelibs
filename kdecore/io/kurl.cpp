@@ -1828,3 +1828,12 @@ bool KUrl::isParentOf( const KUrl& u ) const
 {
   return QUrl::isParentOf( u ) || equals( u, CompareWithoutTrailingSlash );
 }
+
+uint qHash(const KUrl& kurl)
+{
+  // qHash(kurl.url()) was the worse implementation possible, since QUrl::toEncoded()
+  // had to concatenate the bits of the url into the full url every time.
+
+  return qHash(kurl.protocol()) ^ qHash(kurl.path()) ^ qHash(kurl.fragment()) ^ qHash(kurl.query());
+}
+

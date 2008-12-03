@@ -1053,16 +1053,6 @@ KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 );
  */
 KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options );
 
-/*
- * MSVC needs it.
- */
-Q_CORE_EXPORT uint qHash(const QString &key);
-// KDE5 TODO: de-inline this function
-inline uint qHash(const KUrl& kurl) {
-  // qHash(kurl.url()) was the worse implementation possible, since QUrl::toEncoded()
-  // had to concatenate the bits of the url into the full url every time.
-
-  return qHash(kurl.protocol()) ^ qHash(kurl.path()) ^ qHash(kurl.fragment()) ^ qHash(kurl.query());
-}
+KDECORE_EXPORT uint qHash(const KUrl& kurl);
 
 #endif
