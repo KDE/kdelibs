@@ -775,7 +775,7 @@ void KDirWatchPrivate::removeEntry(KDirWatch* instance,
                                    const QString& _path,
                                    Entry* sub_entry)
 {
-  kDebug(7001) << "path=" << _path << "sub_entry:" << sub_entry;
+  //kDebug(7001) << "path=" << _path << "sub_entry:" << sub_entry;
   Entry* e = entry(_path);
   if (!e) {
     kWarning(7001) << "doesn't know" << _path;
@@ -850,9 +850,9 @@ void KDirWatchPrivate::removeEntry(KDirWatch* instance,
     }
   }
 
-  kDebug(7001).nospace() << "Removed " << (e->isDir ? "Dir ":"File ") << e->path
-     << " for " << (sub_entry ? sub_entry->path : "")
-     << " [" << (instance ? instance->objectName() : "") << "]";
+  //kDebug(7001).nospace() << "Removed " << (e->isDir ? "Dir ":"File ") << e->path
+  //   << " for " << (sub_entry ? sub_entry->path : "")
+  //   << " [" << (instance ? instance->objectName() : "") << "]";
   m_mapEntries.remove( e->path ); // <e> not valid any more
 }
 

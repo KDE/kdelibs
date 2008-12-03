@@ -231,6 +231,8 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 
         emit lister->started( _url );
 
+        // Maybe listersCurrentlyListing/listersCurrentlyHolding should be QSets?
+        Q_ASSERT(!dirData.listersCurrentlyListing.contains(lister));
         dirData.listersCurrentlyListing.append( lister );
 
         KIO::ListJob *job = jobForUrl( urlStr );
@@ -297,6 +299,7 @@ void KDirListerCache::emitItemsFromCache(KDirLister* lister, const KFileItemList
     // not just a lister-specific CachedItemsJob (which wouldn't emit completed for us).
     if (_emitCompleted && jobForUrl( urlStr ) == 0) {
 
+        Q_ASSERT(!dirData.listersCurrentlyHolding.contains(lister));
         dirData.listersCurrentlyHolding.append( lister );
         dirData.listersCurrentlyListing.removeAll( lister );
 
@@ -2489,9 +2492,13 @@ void KDirListerCacheDirectoryData::moveListersWithoutCachedItemsJob()
     while (lister_it.hasNext()) {
         KDirLister* kdl = lister_it.next();
         if (!kdl->d->m_cachedItemsJob) {
-            Q_ASSERT(!listersCurrentlyHolding.contains(kdl));
             // OK, move this lister from "currently listing" to "currently holding".
-            listersCurrentlyHolding.append(kdl);
+
+            // Huh? The KDirLister was present twice in listersCurrentlyListing, or was in both lists?
+            Q_ASSERT(!listersCurrentlyHolding.contains(kdl));
+            if (!listersCurrentlyHolding.contains(kdl)) {
+                listersCurrentlyHolding.append(kdl);
+            }
             lister_it.remove();
         }
     }
