@@ -579,7 +579,6 @@
 30004        koffice (lib koguiutils)
 30005        koffice (lib kopainter)
 30006        koffice (lib flake)
-30007        koffice (lib koproperty)
 30008        koffice (lib pigment)
 30009        koffice (lib resources)
 30010        koffice (lib kopageapp)
@@ -652,9 +651,13 @@
 43000        kivio
 44000        KexiDB
 44001        KexiDB (driver impl)
-44010        Kexi (general)
-44020        Kexi (core)
-44021        Kexi (plugins)
+44010        kexi (general)
+44019        kexi (main)
+44020        kexi (core)
+44021        kexi (plugins)
+44022        kexi (property)
+44023        kexi (widgets)
+44024        kexi (utils)
 
 # kdeextragear
 50001   kfortune
