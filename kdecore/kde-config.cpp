@@ -35,6 +35,7 @@
 #include <kdeversion.h>
 #include <QDir>
 #include <QtCore/QLibraryInfo>
+#include <QtCore/QCoreApplication>
 #include <config.h>
 #include <config-prefix.h>
 #include <kconfiggroup.h>
@@ -53,6 +54,7 @@ static void printResult(const QString &s)
 
 int main(int argc, char **argv)
 {
+    QCoreApplication app(argc, argv);
     KAboutData about("kde4-config", "kdelibs4", ki18n("kde4-config"), "1.0",
                      ki18n("A little program to output installation paths"),
                      KAboutData::License_GPL,
