@@ -30,6 +30,8 @@ QTEST_KDEMAIN( KDirListerTest, NoGUI )
 #include <kdirwatch.h>
 #include <kio/job.h>
 
+Q_DECLARE_METATYPE(KFileItemList)
+
 void KDirListerTest::initTestCase()
 {
     m_exitCount = 1;
@@ -55,6 +57,7 @@ void KDirListerTest::initTestCase()
 
     // Hmmpf.
     qRegisterMetaType<KUrl>();
+    qRegisterMetaType<KFileItemList>();
 }
 
 void KDirListerTest::testOpenUrl()
@@ -531,6 +534,7 @@ void KDirListerTest::testOpenAndStop()
     QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
     m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags);
+    kDebug() << "Calling stop!";
     m_dirLister.stop(); // we should also test stop(KUrl(path))...
 
     QCOMPARE(spyStarted.count(), 1); // The call to openUrl itself, emits started
@@ -582,6 +586,7 @@ void KDirListerTest::testDeleteCurrentDir()
     testOpenUrl(); // ensure m_dirLister holds the items.
     QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
     QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
+    QSignalSpy spyItemsDeleted(&m_dirLister, SIGNAL(itemsDeleted(KFileItemList)));
     connect(&m_dirLister, SIGNAL(clear()), &m_eventLoop, SLOT(quit()));
     KIO::DeleteJob* job = KIO::del(path(), KIO::HideProgressInfo);
     bool ok = job->exec();
@@ -589,5 +594,7 @@ void KDirListerTest::testDeleteCurrentDir()
     enterLoop();
     QCOMPARE(spyClear.count(), 1);
     QCOMPARE(spyClearKUrl.count(), 0);
+    QCOMPARE(spyItemsDeleted.count(), 1);
+    QCOMPARE(spyItemsDeleted[0][0].value<KFileItemList>().count(), 1);
 }
 

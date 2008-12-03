@@ -497,10 +497,13 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
             killJob( job );
             kDebug(7004) << "Killing update job for " << urlStr;
 
-            emit lister->canceled( url );
+            // Well, the user of KDirLister doesn't really care that we're stopping
+            // a background-running job from a previous URL (in listDir) -> commented out.
+            // stop() already emitted canceled.
+            //emit lister->canceled( url );
             if ( lister->d->numJobs() == 0 ) {
                 lister->d->complete = true;
-                emit lister->canceled();
+                //emit lister->canceled();
             }
         }
 
