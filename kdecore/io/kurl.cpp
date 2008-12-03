@@ -68,6 +68,8 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
      }
   }
 
+  path.replace(QLatin1Char('\\'), QLatin1Char('/'));
+
   bool slash = (len && path[len-1] == QLatin1Char('/')) ||
                (len > 1 && path[len-2] == QLatin1Char('/') && path[len-1] == QLatin1Char('.'));
 
