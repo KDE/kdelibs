@@ -1301,38 +1301,24 @@ void RenderObject::drawBorderArc(QPainter *p, int x, int y, float horThickness, 
 
             QImage image2 = image1;
 
-            const QRect outerRect  = image1.rect();
-            const QRect innerRect  = outerRect.adjusted(horThickness, vertThickness, -horThickness, -vertThickness);
-
             const QColor c1 = style == OUTSET ? dark : light;
             const QColor c2 = style == OUTSET ? light : dark;
 
-            QPainterPath path;
-            path.arcMoveTo(outerRect, angleStart);
-            path.arcTo(outerRect, angleStart, angleSpan);
-            if (innerRect.isValid())
-                path.arcTo(innerRect, angleStart + angleSpan, -angleSpan);
-            else
-                path.lineTo(radius.horizontal, radius.vertical);
-            path.closeSubpath();
-
             QPainter p2;
             p2.begin(&image1);
-            p2.setRenderHint(QPainter::Antialiasing);
-            p2.fillPath(path, c1);
+            drawBorderArc(&p2, radius.horizontal, radius.vertical, horThickness, vertThickness,
+                          radius, angleStart, angleSpan, c1, textColor, SOLID);
             p2.end();
 
             p2.begin(&image2);
-            p2.setRenderHint(QPainter::Antialiasing);
-            p2.fillPath(path, c2);
+            drawBorderArc(&p2, radius.horizontal, radius.vertical, horThickness, vertThickness,
+                          radius, angleStart, angleSpan, c2, textColor, SOLID);
             p2.end();
 
             p->drawImage(x - radius.horizontal, y - radius.vertical, blendCornerImages(image1, image2));
             break;
         }
 
-        // We could implement this by adjusting the coordinates and calling drawBorderArc() twice,
-        // with INSET and OUTSET, but this should be more efficient.
         case RIDGE:
         case GROOVE:
         {
@@ -1341,44 +1327,27 @@ void RenderObject::drawBorderArc(QPainter *p, int x, int y, float horThickness, 
 
             QImage image2 = image1;
 
-            const QRect outerRect  = image1.rect();
-            const QRect centerRect = outerRect.adjusted(horThickness / 2, vertThickness / 2,
-                                                        -(horThickness / 2), -(vertThickness / 2));
-            const QRect innerRect  = outerRect.adjusted(horThickness, vertThickness, -horThickness, -vertThickness);
-
             const QColor c1 = style == RIDGE ? dark : light;
             const QColor c2 = style == RIDGE ? light : dark;
 
-            QPainterPath outer, inner;
-            outer.arcMoveTo(outerRect, angleStart);
-            outer.arcTo(outerRect, angleStart, angleSpan);
-            if (centerRect.isValid())
-                outer.arcTo(centerRect, angleStart + angleSpan, -angleSpan);
-            else
-                outer.lineTo(radius.horizontal, radius.vertical);
-            outer.closeSubpath();
+            const qreal hw = horThickness / 2;
+            const qreal vw = vertThickness / 2;
+            int cx = radius.horizontal;
+            int cy = radius.vertical;
 
-            if (centerRect.isValid()) {
-                inner.arcMoveTo(centerRect, angleStart);
-                inner.arcTo(centerRect, angleStart, angleSpan);
-                if (innerRect.isValid())
-                    inner.arcTo(innerRect, angleStart + angleSpan, -angleSpan);
-                else
-                    inner.lineTo(radius.horizontal, radius.vertical);
-                inner.closeSubpath();
-            }
+            BorderRadii innerRadius;
+            innerRadius.horizontal = radius.horizontal - hw;
+            innerRadius.vertical = radius.vertical - vw;
 
             QPainter p2;
             p2.begin(&image1);
-            p2.setRenderHint(QPainter::Antialiasing);
-            p2.fillPath(outer, c1);
-            p2.fillPath(inner, c2);
+            drawBorderArc(&p2, cx, cy, hw, vw, radius, angleStart, angleSpan, c1, textColor, SOLID);
+            drawBorderArc(&p2, cx, cy, hw, vw, innerRadius, angleStart, angleSpan, c2, textColor, SOLID);
             p2.end();
 
             p2.begin(&image2);
-            p2.setRenderHint(QPainter::Antialiasing);
-            p2.fillPath(outer, c2);
-            p2.fillPath(inner, c1);
+            drawBorderArc(&p2, cx, cy, hw, vw, radius, angleStart, angleSpan, c2, textColor, SOLID);
+            drawBorderArc(&p2, cx, cy, hw, vw, innerRadius, angleStart, angleSpan, c1, textColor, SOLID);
             p2.end();
 
             p->drawImage(x - radius.horizontal, y - radius.vertical, blendCornerImages(image1, image2));
