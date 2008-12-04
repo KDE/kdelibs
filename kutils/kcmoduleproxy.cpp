@@ -343,6 +343,7 @@ QString KCModuleProxy::dbusPath() const
 
 QSize KCModuleProxy::minimumSizeHint() const
 {
+	realModule();
 	return QWidget::minimumSizeHint();
 }
 
