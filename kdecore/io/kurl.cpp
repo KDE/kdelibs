@@ -380,9 +380,9 @@ KUrl::KUrl( const QString &str )
       // remember the possible query using _setEncodedUrl(), then set up the correct path without query protocol part
       int index = pathToSet.lastIndexOf('?');
       if (index == -1)
-        setPath( pathToSet );
+        setPath( QDir::fromNativeSeparators( pathToSet ) );
       else {
-        setPath( pathToSet.left( index ) );
+        setPath( QDir::fromNativeSeparators( pathToSet.left( index ) ) );
         _setQuery( pathToSet.mid( index + 1 ) );
       }
     }
@@ -1699,7 +1699,6 @@ void KUrl::setPath( const QString& _path )
         setScheme( QLatin1String( "file" ) );
     QString path = KShell::tildeExpand( _path );
 #ifdef Q_WS_WIN
-    path = QDir::fromNativeSeparators(path);
     const int len = path.length();
     if( len == 2 && IS_LETTER(path[0]) && path[1] == QLatin1Char(':') )
         path += QLatin1Char('/');

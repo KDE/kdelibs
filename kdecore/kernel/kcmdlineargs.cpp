@@ -1558,7 +1558,7 @@ KUrl KCmdLineArgs::makeURL(const QByteArray &_urlArg)
     QFileInfo fileInfo(urlArg);
     if (!fileInfo.isRelative()) { // i.e. starts with '/', on unix
         KUrl result;
-        result.setPath(urlArg);
+        result.setPath(QDir::fromNativeSeparators(urlArg));
         return result; // Absolute path.
     }
 
