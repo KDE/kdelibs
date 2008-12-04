@@ -652,7 +652,7 @@ void KFilePreviewGenerator::Private::limitToSize(QPixmap& icon, const QSize& max
     if ((icon.width() > maxSize.width()) || (icon.height() > maxSize.height())) {
 #ifdef Q_WS_X11
         // Assume that the texture size limit is 2048x2048
-        if ((icon.width() <= 2048) && (icon.height() <= 2048)) {
+        if ((icon.width() <= 2048) && (icon.height() <= 2048) && icon.x11PictureHandle()) {
             QSize size = icon.size();
             size.scale(maxSize, Qt::KeepAspectRatio);
 
