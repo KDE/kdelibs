@@ -7,6 +7,7 @@
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2006 Samuel Weinig (sam.weinig@gmail.com)
  *           (C) 2007 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2008 Fredrik Höglund (fredrik@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -514,6 +515,8 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
     if (!clipr.isValid())
 	return;
 
+    bool needRestore = false;
+
     if (bgLayer->backgroundClip() != BGBORDER) {
         // Clip to the padding or content boxes as necessary.
         bool includePadding = bgLayer->backgroundClip() == BGCONTENT;
@@ -523,6 +526,20 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
         int height = h - btop - bbottom - (includePadding ? ptop + pbottom : 0);
         p->save();
         p->setClipRect(QRect(x, y, width, height));
+        needRestore = true;
+    }
+
+    // Create the border-radius clip path
+    QPainterPath path;
+    if (style()->hasBorderRadius()) {
+        path = borderRadiusClipPath(bgLayer, _tx, _ty, w, h, bleft, bright, btop, bbottom);
+
+        // Avoid saving the painter state twice
+        if (!needRestore) {
+            p->save();
+            needRestore = true;
+        }
+        p->setRenderHint(QPainter::Antialiasing, true);
     }
 
     CachedImage* bg = bgLayer->backgroundImage();
@@ -551,8 +568,12 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
     }
 
     // Paint the color first underneath all images.
-    if (!bgLayer->next() && bgColor.isValid() && qAlpha(bgColor.rgba()) > 0)
-        p->fillRect(clipr.x(), clipr.y(), clipr.width(), clipr.height(), bgColor);
+    if (!bgLayer->next() && bgColor.isValid() && qAlpha(bgColor.rgba()) > 0) {
+        if (!path.isEmpty())
+            p->fillPath(path, bgColor);
+        else
+            p->fillRect(clipr.x(), clipr.y(), clipr.width(), clipr.height(), bgColor);
+    }
 
     // no progressive loading of the background image
     if (shouldPaintBackgroundImage) {
@@ -681,12 +702,22 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
         cw = qMin(cw, clipr.width());
 
 //         kDebug() << " drawTiledPixmap(" << cx << ", " << cy << ", " << cw << ", " << ch << ", " << sx << ", " << sy << ")";
-        if (cw>0 && ch>0)
-            p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c, scaledImageWidth, scaledImageHeight), sx, sy);
+        if (cw>0 && ch>0) {
+            // Note that the reason we don't simply set the path as the clip path here before calling
+            // p->drawTiledPixmap() is that QX11PaintEngine doesn't support anti-aliased clipping.
+            if (!path.isEmpty()) {
+                QBrush brush(bg->tiled_pixmap(c, scaledImageWidth, scaledImageHeight));
+                brush.setTransform(QTransform(1, 0, 0, 1, cx - sx, cy - sy));
+                QPainterPath cpath;
+                cpath.addRect(cx, cy, cw, ch);
+                p->fillPath(path.intersected(cpath), brush);
+            } else
+                p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c, scaledImageWidth, scaledImageHeight), sx, sy);
+        }
     }
 
-    if (bgLayer->backgroundClip() != BGBORDER)
-        p->restore(); // Undo the background clip
+    if (needRestore)
+        p->restore(); // Undo the background clip and/or the anti-aliasing hint
 
 }
 
@@ -730,6 +761,77 @@ void RenderBox::outlineBox(QPainter *p, int _tx, int _ty, const char *color)
     p->setPen(QPen(QColor(color), 1, Qt::DotLine));
     p->setBrush( Qt::NoBrush );
     p->drawRect(_tx, _ty, m_width, m_height);
+}
+
+QPainterPath RenderBox::borderRadiusClipPath(const BackgroundLayer *bgLayer, int _tx, int _ty, int w, int h,
+                                             int bleft, int bright, int btop, int bbottom) const
+{
+    QPainterPath path;
+
+    if (style()->hasBorderRadius()) {
+        BorderRadii tl = style()->borderTopLeftRadius();
+        BorderRadii tr = style()->borderTopRightRadius();
+        BorderRadii bl = style()->borderBottomLeftRadius();
+        BorderRadii br = style()->borderBottomRightRadius();
+
+        // Adjust the border radii so they don't overlap when taking the size of the box
+        // into account.
+        adjustBorderRadii(tl, tr, bl, br, w, h);
+
+        // CSS Backgrounds and Borders Module Level 3 (WD-css3-background-20080910), chapter 4.5:
+        // "  Backgrounds, but not the border-image, are clipped to the inner, resp., outer
+        // curve of the border if ‘background-clip’ is ‘padding-box’ resp., ‘border-box’."
+        bool clipInner = bgLayer->backgroundClip() == BGPADDING;
+
+        // The clip bounding rect
+        QRect rect(_tx, _ty, w, h);
+        if (clipInner) {
+            rect.adjust(bleft, btop, -bright, -bbottom);
+
+            tl.horizontal = qMax(0, tl.horizontal - bleft);
+            bl.horizontal = qMax(0, bl.horizontal - bleft);
+            tr.horizontal = qMax(0, tr.horizontal - bright);
+            br.horizontal = qMax(0, br.horizontal - bright);
+            tl.vertical = qMax(0, tl.vertical - btop);
+            tr.vertical = qMax(0, tr.vertical - btop);
+            bl.vertical = qMax(0, bl.vertical - bbottom);
+            br.vertical = qMax(0, br.vertical - bbottom);
+        }
+
+        // Top right corner
+        if (tr.hasBorderRadius()) {
+            const QRect r(rect.x() + rect.width() - tr.horizontal * 2, rect.y(), tr.horizontal * 2, tr.vertical * 2);
+            path.arcMoveTo(r, 0);
+            path.arcTo(r, 0, 90);
+        } else
+            path.moveTo(rect.topRight());
+
+        // Top left corner
+        if (tl.hasBorderRadius()) {
+            const QRect r(rect.x(), rect.y(), tl.horizontal * 2, tl.vertical * 2);
+            path.arcTo(r, 90, 90);
+        } else
+            path.lineTo(rect.topLeft());
+
+        // Bottom left corner
+        if (bl.hasBorderRadius()) {
+            const QRect r(rect.x(), rect.y() + rect.height() - bl.vertical * 2, bl.horizontal * 2, bl.vertical * 2);
+            path.arcTo(r, 180, 90);
+        } else
+            path.lineTo(rect.bottomLeft());
+
+        // Bottom right corner
+        if (br.hasBorderRadius()) {
+            const QRect r(rect.x() + rect.width() - br.horizontal * 2, rect.y() + rect.height() - br.vertical * 2,
+                          br.horizontal * 2, br.vertical * 2);
+            path.arcTo(r, 270, 90);
+        } else
+            path.lineTo(rect.bottomRight());
+
+        path.closeSubpath();
+    }
+
+    return path;
 }
 
 QRect RenderBox::overflowClipRect(int tx, int ty)
