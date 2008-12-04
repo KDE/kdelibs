@@ -73,6 +73,9 @@ class KTabWidget::Private
 
 bool KTabWidget::Private::isEmptyTabbarSpace( const QPoint &point ) const
 {
+    if (m_parent->count() == 0) {
+        return true;
+    }
     if (m_parent->tabBar()->isHidden()) {
         return false;
     }
