@@ -413,6 +413,8 @@ public:
     };
     virtual void paint( PaintInfo& i, int tx, int ty);
 
+    void adjustBorderRadii(BorderRadii &tl, BorderRadii &tr, BorderRadii &bl, BorderRadii &br, int w, int h) const;
+
     void drawBorderArc(QPainter *p, int x, int y, float horThickness, float vertThickness,
                        const BorderRadii &radius, int angleStart, int angleSpan, const QColor &color,
                        const QColor &textColor, EBorderStyle style) const;
