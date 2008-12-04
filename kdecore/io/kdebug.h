@@ -34,13 +34,13 @@
  * QT_NO_DEBUG when compiling your source. If QT_NO_DEBUG is defined then no debug
  * messages are printed.
  */
-/*
+
 #if !defined(KDE_NO_DEBUG_OUTPUT)
 # if defined(QT_NO_DEBUG) || defined(QT_NO_DEBUG_OUTPUT) || defined(QT_NO_DEBUG_STREAM)
 #  define KDE_NO_DEBUG_OUTPUT
 # endif
 #endif
-*/
+
 #if !defined(KDE_NO_WARNING_OUTPUT)
 # if defined(QT_NO_WARNING_OUTPUT)
 #  define KDE_NO_WARNING_OUTPUT
