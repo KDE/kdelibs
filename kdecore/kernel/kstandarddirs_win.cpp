@@ -102,7 +102,7 @@ QString KStandardDirs::installPath(const char *type)
             break;
         case 'x':
             if (strcmp("xdgconf-menu", type) == 0)
-                return share() + QLatin1String("xdg/menues");
+                return share() + QLatin1String("xdg/menus");
             if (strcmp("xdgdata-apps", type) == 0)
                 return share() + QLatin1String("applications/kde4/");
             if (strcmp("xdgdata-dirs", type) == 0)
