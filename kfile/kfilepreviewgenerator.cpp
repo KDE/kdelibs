@@ -90,6 +90,7 @@ private:
     QListView* m_view;
 };
 
+/** Helper class for drawing frames for image previews. */
 class TileSet
 {
 public:
@@ -121,22 +122,24 @@ public:
         m_tiles[BottomRightCorner] = pixmap.copy(16, 16, 8, 8);
     }
 
-    void paint(QPainter *p, const QRect &r)
+    void paint(QPainter* p, const QRect& r)
     {
         p->drawPixmap(r.topLeft(), m_tiles[TopLeftCorner]);
-        if (r.width() - 16 > 0)
+        if (r.width() - 16 > 0) {
             p->drawTiledPixmap(r.x() + 8, r.y(), r.width() - 16, 8, m_tiles[TopSide]);
+        }
         p->drawPixmap(r.right() - 8 + 1, r.y(), m_tiles[TopRightCorner]);
-        if (r.height() - 16 > 0)
-        {
+        if (r.height() - 16 > 0) {
             p->drawTiledPixmap(r.x(), r.y() + 8, 8, r.height() - 16,  m_tiles[LeftSide]);
-            if (r.width() - 16 > 0)
+            if (r.width() - 16 > 0) {
                 p->drawTiledPixmap(r.x() + 8, r.y() + 8, r.width() - 16, r.height() - 16, m_tiles[Center]);
+            }
             p->drawTiledPixmap(r.right() - 8 + 1, r.y() + 8, 8, r.height() - 16, m_tiles[RightSide]);
         }
         p->drawPixmap(r.x(), r.bottom() - 8 + 1, m_tiles[BottomLeftCorner]);
-        if (r.width() - 16 > 0)
+        if (r.width() - 16 > 0) {
             p->drawTiledPixmap(r.x() + 8, r.bottom() - 8 + 1, r.width() - 16, 8, m_tiles[BottomSide]);
+        }
         p->drawPixmap(r.right() - 8 + 1, r.bottom() - 8 + 1, m_tiles[BottomRightCorner]);
     }
 
@@ -287,7 +290,7 @@ public:
 
     QStringList m_enabledPlugins;
 
-    TileSet *m_tileSet;
+    TileSet* m_tileSet;
 
 private:
     KFilePreviewGenerator* const q;

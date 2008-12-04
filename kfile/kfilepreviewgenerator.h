@@ -71,7 +71,7 @@ public:
      * is false, the MIME type icon of the item is shown instead. Per default showing
      * the preview is turned on. Note that it is mandatory that the item view
      * specifies an icon size by QAbstractItemView::setIconSize(), otherwise
-     * KFilePreviewGenerator::showPreview() will always return false.
+     * KFilePreviewGenerator::isPreviewShown() will always return false.
      */
     void setPreviewShown(bool show);
     bool isPreviewShown() const;
