@@ -41,7 +41,7 @@
 #include <utime.h>
 #include <pwd.h>
 
-#ifdef Q_OS_UNIX
+#if defined(HAVE_LIMITS_H)
 #include <limits.h>  // PATH_MAX
 #endif
 
