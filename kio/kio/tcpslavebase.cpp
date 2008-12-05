@@ -143,7 +143,7 @@ TCPSlaveBase::TCPSlaveBase(const QByteArray &protocol,
    d(new TcpSlaveBasePrivate)
 {
     d->timeout = KProtocolManager::connectTimeout();
-    d->isBlocking = false;
+    d->isBlocking = true;
     d->port = 0;
     d->serviceName = protocol;
     d->usingSSL = false;
@@ -466,7 +466,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
             errorStr.chop(1);
         }
         errorStr += '\n';
-    };
+    }
     errorStr.chop(1);
     setMetaData("ssl_cert_errors", errorStr);
 
@@ -941,6 +941,10 @@ bool TCPSlaveBase::waitForResponse(int t)
 
 void TCPSlaveBase::setBlocking(bool b)
 {
+    if (!b) {
+        kWarning(7029) << "Caller requested non-blocking mode, but that doesn't work";
+        return;
+    }
     d->isBlocking = b;
 }
 
