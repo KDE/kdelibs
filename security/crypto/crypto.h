@@ -310,7 +310,6 @@ private:
   KLineEdit *macCert;
   KSslCertificateBox *oSubject, *oIssuer;
   KSslCertificateBox *ySubject, *yIssuer;
-  QGridLayout *oGrid;
 
   QButtonGroup *policyGroup;
   QGroupBox *policyGroupBox;
