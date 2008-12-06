@@ -72,8 +72,8 @@ void KX509Item::setup(KSSLCertificate *x) {
 		QString CN = "CN";
 		OU = xm.getValue(OU);
 		CN = xm.getValue(CN);
-		OU.replace(QRegExp("\n.*"), "");
-		CN.replace(QRegExp("\n.*"), "");
+		OU.remove(QRegExp("\n.*"));
+		CN.remove(QRegExp("\n.*"));
 
 		if (OU.length() > 0) {
 			_prettyName = OU;
@@ -106,7 +106,7 @@ KPKCS12Item::KPKCS12Item(QTreeWidgetItem *parent, KSSLPKCS12 *x) :
 		KSSLX509Map xm(x->getCertificate()->getSubject());
 		QString CN = "CN";
 		CN = xm.getValue(CN);
-		CN.replace(QRegExp("\n.*"), "");
+		CN.remove(QRegExp("\n.*"));
 		_prettyName = CN;
 		setText(0, _prettyName);
 	} else {

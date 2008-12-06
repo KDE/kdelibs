@@ -59,7 +59,7 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 
 	QRect rect=option.rect;
 
-	QStringList optionsList = prstring.split ("|");
+	QStringList optionsList = prstring.split ('|');
 	QList<KIcon> iconList;
 	iconList << ( optionsList.contains("Sound")   ? KIcon("media-playback-start") : KIcon() );
 	iconList << ( optionsList.contains("Popup")   ? KIcon("dialog-information")   : KIcon() );

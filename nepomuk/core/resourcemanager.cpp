@@ -218,7 +218,7 @@ QUrl Nepomuk::ResourceManager::generateUniqueUri( const QString& name )
 
     QUrl uri;
     QString normalizedName( name );
-    normalizedName.replace( QRegExp( "[^\\w\\.\\-_:]" ), "" );
+    normalizedName.remove( QRegExp( "[^\\w\\.\\-_:]" ) );
     if ( !normalizedName.isEmpty() ) {
         uri = "nepomuk:/" + normalizedName;
     }

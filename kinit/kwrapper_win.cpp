@@ -91,7 +91,7 @@ int main(int argc, char **argv)
         - all to client path environment 
         - pathes not ending with lib to application search path
     */
-    foreach(QString a, path.split(';'))
+    foreach(const QString &a, path.split(';'))
     {
         if (!envPath.contains(a))
             envPath << a;
@@ -139,7 +139,7 @@ int main(int argc, char **argv)
         kdedirsCacheList << rootPath + "/kdedirs.cache";
 
         bool found = false;
-        foreach(QString kdedirsCachePath,kdedirsCacheList) 
+        foreach(const QString &kdedirsCachePath,kdedirsCacheList)
         {
             QFile f(kdedirsCachePath);
             if (f.exists()) 
@@ -169,7 +169,7 @@ int main(int argc, char **argv)
     if (verbose)
         qDebug() << "found KDEDIRS\n\t" << kdedirs.join("\n\t");
     
-    foreach(QString a, kdedirs)
+    foreach(const QString &a, kdedirs)
     {
         if (!envPath.contains(a+"/bin"))
             envPath << a + "/bin";                
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
         qDebug() << "search " << exeToStart << "in";
     
     bool found = false;        
-    foreach(QString a, searchPath)
+    foreach(const QString &a, searchPath)
     {
         if (verbose)
             qDebug() << "\t" << a;

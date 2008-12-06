@@ -308,7 +308,7 @@ QString Nepomuk::Resource::genericLabel() const
                         if( !go.isEmpty() ) {
                             label = go.first().genericLabel();
                             if( label == go.first().resourceUri().toString() ) {
-                                label = QString();
+                                label.clear();
                             }
                         }
 

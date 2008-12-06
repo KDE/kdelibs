@@ -76,7 +76,7 @@ Solid::AudioInterface::AudioInterfaceTypes FakeAudioInterface::deviceType() cons
 {
     Solid::AudioInterface::AudioInterfaceTypes result;
 
-    QStringList type_list = fakeDevice()->property("type").toString().split(",");
+    QStringList type_list = fakeDevice()->property("type").toString().split(',');
 
     foreach (const QString &type_str, type_list)
     {

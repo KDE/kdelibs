@@ -259,7 +259,7 @@ const QString Manager::interpreternameForFile(const QString& file)
     for(QHash<QString, InterpreterInfo*>::Iterator it = d->interpreterinfos.begin(); it != d->interpreterinfos.end(); ++it) {
         if( ! it.value() )
             continue;
-        foreach(const QString &wildcard, it.value()->wildcard().split(" ", QString::SkipEmptyParts)) {
+        foreach(const QString &wildcard, it.value()->wildcard().split(' ', QString::SkipEmptyParts)) {
             rx.setPattern( wildcard );
             if( rx.exactMatch(file) )
                 return it.value()->interpreterName();

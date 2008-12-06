@@ -153,7 +153,7 @@ void StorageAccess::slotDBusReply(const QDBusMessage &/*reply*/)
             QStringList args;
             args << "-f" << devnode << "eject";
 #elif defined(Q_OS_FREEBSD) || defined(Q_OS_NETBSD)
-            devnode.replace("/dev/", "").replace("([0-9]).", "\\1");
+            devnode.remove("/dev/").replace("([0-9]).", "\\1");
             QString program = "cdcontrol";
             QStringList args;
             args << "-f" << devnode << "eject";

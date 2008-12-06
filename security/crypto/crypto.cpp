@@ -128,7 +128,7 @@ OtherCertItem::OtherCertItem( QTreeWidget *view, const QString& sub, const QStri
     m_module = module;
 KSSLX509Map cert(sub);
     setText(0, cert.getValue("O"));
-    setText(1, cert.getValue("CN").replace("\n", ", "));
+    setText(1, cert.getValue("CN").replace('\n', ", "));
 
     if (_exp.date().year() > 3000 || _exp.date().year() < 1900)
        _exp.setDate(QDate(3000,1,1));
@@ -150,8 +150,8 @@ YourCertItem::YourCertItem( QTreeWidget *view, QString pkcs, QString pass, QStri
 
 {
     m_module = module;
-KSSLX509Map cert(name);
-    QString tmp = cert.getValue("CN").replace("\n", ", ");
+    KSSLX509Map cert(name);
+    QString tmp = cert.getValue("CN").replace('\n', ", ");
     setText(0, tmp);
     setText(1, cert.getValue("Email"));
     _pkcs = pkcs;
@@ -180,10 +180,10 @@ KSSLX509Map mcert(name);
 QString tmp;
     setText(0, mcert.getValue("O"));
     tmp = mcert.getValue("OU");
-    tmp.replace("\n", ", ");
+    tmp.replace('\n', ", ");
     setText(1, tmp);
     tmp = mcert.getValue("CN");
-    tmp.replace("\n", ", ");
+    tmp.replace('\n', ", ");
     setText(2, tmp);
     _name = name;
     _cert = cert;
@@ -1909,10 +1909,10 @@ void KCryptoConfig::slotCAImport() {
 				QString xx = qf.readLine();
 				certtext += xx;
 			}
-			certtext = certtext.replace("-----BEGIN CERTIFICATE-----", QString());
-			certtext = certtext.replace("-----END CERTIFICATE-----", QString());
+			certtext = certtext.remove("-----BEGIN CERTIFICATE-----");
+			certtext = certtext.remove("-----END CERTIFICATE-----");
 			certtext = certtext.trimmed();
-			certtext = certtext.replace("\n", QString());
+			certtext = certtext.remove('\n');
 		} else {
 			// Must [could?] be DER
 			qf.close();

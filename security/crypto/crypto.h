@@ -173,7 +173,7 @@ public:
                                m_module = module;
                                setText(0, _host);
                                setText(1, _name);
-                               _oname = QString();
+                               _oname.clear();
                               }
     ~HostAuthItem() {}
 

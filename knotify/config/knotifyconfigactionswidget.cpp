@@ -61,7 +61,7 @@ void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config
 {
 	bool blocked = blockSignals(true); //to block the changed() signal
 	QString prstring=config->readEntry( "Action" );
-	QStringList actions=prstring.split ("|");
+	QStringList actions=prstring.split ('|');
 
 	m_ui.Sound_check->setChecked( actions.contains("Sound") );
 	m_ui.Popup_check->setChecked( actions.contains("Popup") );

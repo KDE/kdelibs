@@ -53,7 +53,7 @@ Solid::Processor::InstructionSets FakeProcessor::instructionSets() const
 
     QString str = fakeDevice()->property("instructionSets").toString();
 
-    QStringList extension_list = str.split(",");
+    QStringList extension_list = str.split(',');
 
     foreach (const QString &extension_str, extension_list) {
         if (extension_str == "mmx") {
