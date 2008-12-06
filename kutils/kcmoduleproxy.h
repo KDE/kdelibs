@@ -197,8 +197,6 @@ public:
      */
 	QString dbusPath() const;
 	
-	QSize minimumSizeHint() const;
-
 public Q_SLOTS:
 
 	/**
