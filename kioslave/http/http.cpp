@@ -318,7 +318,7 @@ void HTTPProtocol::resetSessionSettings()
                  << "Realm: " << m_proxyAuth.realm;
   }
 
-  if (m_request.proxyUrl.isValid()) {
+  if (m_request.proxyUrl.isValid() && m_request.proxyUrl.hasHost()) {
       if (m_request.proxyUrl.protocol() == "socks") {
           // Let Qt do SOCKS because it's already implemented there...
           proxyType = QNetworkProxy::Socks5Proxy;
