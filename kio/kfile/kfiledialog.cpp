@@ -50,12 +50,27 @@ const bool NATIVE_FILEDIALOGS_BY_DEFAULT = true;
 const bool NATIVE_FILEDIALOGS_BY_DEFAULT = false;
 #endif
 
+static QStringList mime2KdeFilter( const QStringList &mimeTypes )
+{
+  const KUrl emptyUrl;
+  QStringList kdeFilter;
+  foreach( const QString& mimeType, mimeTypes ) {
+    KMimeType::Ptr mime( KMimeType::mimeType(mimeType) );
+    if (mime)
+      kdeFilter.append(mime->patterns().join(QLatin1String(" ")) +
+                       QLatin1Char('|') +
+                       mime->comment(emptyUrl));
+  }
+  return kdeFilter;
+}
 /** @return File dialog filter in Qt format for @a filters
  *          or "All files (*)" for empty list.
  */
-static QString qtFilter(const QStringList& filters)
+static QString qtFilter(const QStringList& _filters)
 {
     QString converted;
+    QStringList filters = _filters;
+    qSort( filters );
     foreach (const QString& current, filters) {
         QString new_f; //filter part
         QString new_name; //filter name part
@@ -113,8 +128,14 @@ static QString qtFilter(const QString& filter)
     QStringList filters;
     if (filter.isEmpty())
         filters += i18n("*|All files");
-    else
-        filters = filter.split('\n', QString::SkipEmptyParts);
+    else {
+      // check if it's a mimefilter
+      int pos = filter.indexOf('/');
+      if (pos > 0 && filter[pos - 1] != '\\')
+          filters = mime2KdeFilter(filter.split(QLatin1Char(' '), QString::SkipEmptyParts));
+      else
+          filters = filter.split('\n', QString::SkipEmptyParts);
+    }
     return qtFilter(filters);
 }
 
@@ -277,7 +298,7 @@ void KFileDialog::setLocationLabel(const QString& text)
 void KFileDialog::setFilter(const QString& filter)
 {
     if (d->native) {
-        d->native->filter = qtFilter(filter);
+        d->native->filter = filter;
         return;
     }
     d->w->setFilter(filter);
@@ -295,18 +316,8 @@ void KFileDialog::setMimeFilter( const QStringList& mimeTypes,
 {
     d->w->setMimeFilter(mimeTypes, defaultType);
 
-    if (d->native) {
-        const KUrl emptyUrl;
-        QStringList kdeFilter;
-        foreach( const QString& mimeType, mimeTypes ) {
-            KMimeType::Ptr mime( KMimeType::mimeType(mimeType) );
-            if (mime)
-               kdeFilter.append(mime->patterns().join(QLatin1String(" ")) +
-                                QLatin1Char('|') +
-                                mime->comment(emptyUrl));
-        }
-        d->native->filter = qtFilter(kdeFilter);
-    }
+    if (d->native)
+        d->native->filter = mime2KdeFilter( mimeTypes ).join(QLatin1String("\n"));
 }
 
 void KFileDialog::clearFilter()
@@ -406,7 +417,7 @@ QString KFileDialog::getOpenFileName(const KUrl& startDir,
             parent,
             caption.isEmpty() ? i18n("Open") : caption,
             KFileDialogPrivate::Native::staticStartDir( startDir ).path(),
-            filter );
+            qtFilter(filter) );
 // TODO use extra args?     QString * selectedFilter = 0, Options options = 0
     }
     KFileDialog dlg(startDir, filter, parent);
@@ -453,7 +464,7 @@ QStringList KFileDialog::getOpenFileNames(const KUrl& startDir,
             parent,
             caption.isEmpty() ? i18n("Open") : caption,
             KFileDialogPrivate::Native::staticStartDir( startDir ).path(),
-            filter );
+            qtFilter( filter ) );
 // TODO use extra args?  QString * selectedFilter = 0, Options options = 0
     }
     KFileDialog dlg(startDir, filter, parent);
