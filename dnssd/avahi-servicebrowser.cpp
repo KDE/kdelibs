@@ -24,6 +24,7 @@
 #include "avahi_servicebrowser_interface.h"
 #include "avahi_server_interface.h"
 #include <QtCore/QHash>
+#include <QtNetwork/QHostAddress>
 #ifndef KDE_USE_FINAL
 Q_DECLARE_METATYPE(QList<QByteArray>)
 #endif
@@ -149,6 +150,35 @@ QList<RemoteService::Ptr> ServiceBrowser::services() const
 void ServiceBrowser::virtual_hook(int, void*)
 {}
 
+QHostAddress ServiceBrowser::resolveHostName(const QString &hostname)
+{
+	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
+
+	int protocol = 0;
+	QString name;
+	int aprotocol = 0;
+	QString address;
+	uint flags = 0;
+
+	QDBusReply<int> reply = s.ResolveHostName(-1, -1, hostname, 0, (unsigned int ) 0, protocol, name, aprotocol, address, flags);
+
+	if (reply.isValid())
+		return QHostAddress(address);
+	else
+		return QHostAddress();
+}
+
+QString ServiceBrowser::getLocalHostName()
+{
+	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
+
+	QDBusReply<QString> reply = s.GetHostName();
+
+	if (reply.isValid())
+		return reply.value();
+	else
+		return QString();
+}
 
 }
 

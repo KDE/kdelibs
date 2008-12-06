@@ -56,10 +56,12 @@ endif (HAVE_AVAHI)
 
 kde4_add_library(kdnssd SHARED ${kdnssd_LIB_SRCS})
 
+MESSAGE("QT_QTNETWORK_LIBRARY is" ${QT_QTNETWORK_LIBRARY})
+
 if (HAVE_DNSSD)
-  target_link_libraries(kdnssd ${KDE4_KDEUI_LIBS} ${DNSSD_LIBRARIES} )
+  target_link_libraries(kdnssd ${KDE4_KDEUI_LIBS} ${DNSSD_LIBRARIES} ${QT_QTNETWORK_LIBRARY})
 else (HAVE_DNSSD)
-  target_link_libraries(kdnssd ${KDE4_KDEUI_LIBS})
+  target_link_libraries(kdnssd ${KDE4_KDEUI_LIBS} ${QT_QTNETWORK_LIBRARY})
 endif (HAVE_DNSSD)
 
 target_link_libraries(kdnssd  LINK_INTERFACE_LIBRARIES kdecore ${QT_QTCORE_LIBRARY} )

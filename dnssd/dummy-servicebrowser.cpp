@@ -56,6 +56,16 @@ QList<RemoteService::Ptr> ServiceBrowser::services() const
 void ServiceBrowser::virtual_hook(int, void*)
 {}
 
+QHostAddress ServiceBrowser::resolveHostName(const QString &hostname)
+{
+	return QHostAddress();
+}
+
+QString ServiceBrowser::getLocalHostName()
+{
+	return QString();
+}
+
 }
 
 #include "servicebrowser.moc"

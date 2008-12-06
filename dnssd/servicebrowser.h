@@ -22,6 +22,7 @@
 #define DNSSDSERVICEBROWSER_H
 
 #include <QtCore/QObject>
+#include <QHostAddress>
 
 #include <dnssd/remoteservice.h>
 
@@ -126,6 +127,21 @@ public:
 	\since 4.1
 	 */
 	bool isAutoResolving() const;
+
+	/**
+	 * @brief Resolved a hostname via the dnssd service into a dotted decimal IP Address
+	 *
+	 * The can only be used to resolve an mdns hostname
+	 * @param hostname The hostname to be resolved
+	 * @return A QString containing the IP address. QString() returned if failed
+	 */
+	static QHostAddress resolveHostName(const QString &hostname);
+
+	/**
+	 * @brief This function simply returns the name of this machine's hostname
+	 * @return A QString representing the hostname. Returns QString() if failed
+	 */
+	static QString getLocalHostName();
 
 Q_SIGNALS:
 	/**
