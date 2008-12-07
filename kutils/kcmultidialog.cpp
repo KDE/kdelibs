@@ -123,7 +123,7 @@ void KCMultiDialogPrivate::init()
     q->connect(q, SIGNAL(helpClicked()), SLOT(slotHelpClicked()));
     q->connect(q, SIGNAL(user1Clicked()), SLOT(slotUser1Clicked()));
 
-    q->setInitialSize(QSize(800, 600));
+    q->setInitialSize(QSize(800, 550));
 }
 
 KCMultiDialog::KCMultiDialog( QWidget *parent )
