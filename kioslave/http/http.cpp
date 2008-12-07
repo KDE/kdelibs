@@ -548,10 +548,24 @@ bool HTTPProtocol::proceedUntilResponseHeader()
       }
       if (readResponseHeader()) {
           // Success, finish the request.
+
+          // Update our server connection state. Note that satisfying a request from cache
+          // does not even touch the server connection, hence we should only update the server
+          // connection state if not reading from cache.
+          if (!m_request.cacheTag.readFromCache) {
+              m_server.initFrom(m_request);
+          }
           break;
       } else if (m_isError) {
           // Hard error, abort everything.
           return false;
+      }
+
+      // update for the next go-around to have current information
+      Q_ASSERT_X(!m_request.cacheTag.readFromCache, "proceedUntilResponseHeader()",
+                 "retrying a request even though the result is cached?!");
+      if (!m_request.cacheTag.readFromCache) {
+          m_server.initFrom(m_request);
       }
   }
 
@@ -570,9 +584,6 @@ bool HTTPProtocol::proceedUntilResponseHeader()
 
   // At this point sendBody() should have delivered any POST data.
   m_POSTbuf.clear();
-
-  // Save the most interesting current state for keep-alive decisions
-  m_prevRequest.initFrom(m_request);
 
   return true;
 }
@@ -1778,9 +1789,11 @@ void HTTPProtocol::multiGet(const QByteArray &data)
             m_request = it.next();
             sendQuery();
             // save the request state so we can pick it up again in the collection phase
-            kDebug(7113) << "check one: isKeepAlive =" << m_request.isKeepAlive;
             it.setValue(m_request);
-            m_prevRequest.initFrom(m_request);
+            kDebug(7113) << "check one: isKeepAlive =" << m_request.isKeepAlive;
+            if (!m_request.cacheTag.readFromCache) {
+                m_server.initFrom(m_request);
+            }
         }
         // collect the responses
         //### for the moment we use a hack: instead of saving and restoring request-id
@@ -1798,7 +1811,6 @@ void HTTPProtocol::multiGet(const QByteArray &data)
             // readBody() sends without our intervention.
             kDebug(7113) << "check three: isKeepAlive =" << m_request.isKeepAlive;
             httpClose(m_request.isKeepAlive);  //actually keep-alive is mandatory for pipelining
-            m_prevRequest.initFrom(m_request);
         }
 
         finished();
@@ -1918,7 +1930,7 @@ bool HTTPProtocol::httpShouldCloseConnection()
       return true;
   }
 
-  if (m_request.proxyUrl != m_prevRequest.proxyUrl) {
+  if (m_request.proxyUrl != m_server.proxyUrl) {
       return true;
   }
 
@@ -1926,16 +1938,16 @@ bool HTTPProtocol::httpShouldCloseConnection()
   // *when* we actually have variable proxy settings!
 
   if (m_request.proxyUrl.isValid())  {
-      if (m_request.proxyUrl != m_prevRequest.proxyUrl ||
-          m_request.proxyUrl.user() != m_prevRequest.proxyUrl.user() ||
-          m_request.proxyUrl.pass() != m_prevRequest.proxyUrl.pass()) {
+      if (m_request.proxyUrl != m_server.proxyUrl ||
+          m_request.proxyUrl.user() != m_server.proxyUrl.user() ||
+          m_request.proxyUrl.pass() != m_server.proxyUrl.pass()) {
           return true;
       }
   } else {
-      if (m_request.url.host() != m_prevRequest.url.host() ||
-          m_request.url.port() != m_prevRequest.url.port() ||
-          m_request.url.user() != m_prevRequest.url.user() ||
-          m_request.url.pass() != m_prevRequest.url.pass()) {
+      if (m_request.url.host() != m_server.url.host() ||
+          m_request.url.port() != m_server.url.port() ||
+          m_request.url.user() != m_server.url.user() ||
+          m_request.url.pass() != m_server.url.pass()) {
           return true;
       }
   }
@@ -1945,6 +1957,7 @@ bool HTTPProtocol::httpShouldCloseConnection()
 bool HTTPProtocol::httpOpenConnection()
 {
   kDebug(7113);
+  m_server.clear();
 
   // Only save proxy auth information after proxy authentication has
   // actually taken place, which will set up exactly this connection.
@@ -1957,7 +1970,7 @@ bool HTTPProtocol::httpOpenConnection()
   if (m_request.proxyUrl.isValid() && m_request.proxyUrl.protocol() == "http" && !isAutoSsl()) {
       connectOk = connectToHost(m_request.proxyUrl.protocol(), m_request.proxyUrl.host(), m_request.proxyUrl.port());
   } else {
-      connectOk = connectToHost(m_protocol, m_state.hostname, m_state.port);
+      connectOk = connectToHost(m_protocol, m_request.url.host(), m_request.url.port());
   }
 
   if (!connectOk) {
@@ -2045,9 +2058,9 @@ QString HTTPProtocol::formatRequestUri() const
         }
         u.setProtocol(protocol);
 
-        u.setHost( m_state.hostname );
-        if (m_state.port != m_defaultPort) {
-            u.setPort( m_state.port );
+        u.setHost(m_request.url.host());
+        if (m_request.url.port() != m_defaultPort) {
+            u.setPort(m_request.url.port());
         }
         u.setEncodedPathAndQuery(m_request.url.encodedPathAndQuery(
                                     KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath));
@@ -2092,13 +2105,6 @@ bool HTTPProtocol::sendQuery()
 
   bool hasBodyData = false;
   bool hasDavData = false;
-
-  // Let's update our current state
-  m_state.hostname = m_request.url.host();
-  m_state.encoded_hostname = m_request.encoded_hostname;
-  m_state.port = m_request.url.port();
-  m_state.user = m_request.url.user();
-  m_state.passwd = m_request.url.pass();
 
   {
     header = methodString(m_request.method);
@@ -2190,9 +2196,9 @@ bool HTTPProtocol::sendQuery()
     header += formatRequestUri() + " HTTP/1.1\r\n"; /* start header */
     
     /* support for virtual hosts and required by HTTP 1.1 */
-    header += "Host: " + m_state.encoded_hostname;
-    if (m_state.port != m_defaultPort) {
-      header += QString(":%1").arg(m_state.port);
+    header += "Host: " + m_request.encoded_hostname;
+    if (m_request.url.port() != m_defaultPort) {
+      header += QString(":%1").arg(m_request.url.port());
     }
     header += "\r\n";
 
@@ -2370,7 +2376,7 @@ bool HTTPProtocol::sendQuery()
   bool sendOk = (written == (ssize_t) header.length());
   if (!sendOk)
   {
-    kDebug(7113) << "Connection broken! (" << m_state.hostname << ")"
+    kDebug(7113) << "Connection broken! (" << m_request.url.host() << ")"
                  << "  -- intended to write" << header.length()
                  << "bytes but wrote" << (int)written << ".";
 
@@ -2385,7 +2391,7 @@ bool HTTPProtocol::sendQuery()
     kDebug(7113) << "sendOk == false. Connection broken !"
                  << "  -- intended to write" << header.length()
                  << "bytes but wrote" << (int)written << ".";
-    error( ERR_CONNECTION_BROKEN, m_state.hostname );
+    error( ERR_CONNECTION_BROKEN, m_request.url.host() );
     return false;
   }
   else
@@ -2419,7 +2425,7 @@ bool HTTPProtocol::readHeaderFromCache() {
     {
         // Error, delete cache entry
         kDebug(7113) << "Could not access cache to obtain mimetype!";
-        error( ERR_CONNECTION_BROKEN, m_state.hostname );
+        error( ERR_CONNECTION_BROKEN, m_request.url.host() );
         return false;
     }
 
@@ -2432,7 +2438,7 @@ bool HTTPProtocol::readHeaderFromCache() {
     {
         // Error, delete cache entry
         kDebug(7113) << "Could not access cached data! ";
-        error( ERR_CONNECTION_BROKEN, m_state.hostname );
+        error( ERR_CONNECTION_BROKEN, m_request.url.host() );
         return false;
     }
     m_responseHeaders << buffer;
@@ -2442,7 +2448,7 @@ bool HTTPProtocol::readHeaderFromCache() {
         {
             // Error, delete cache entry
             kDebug(7113) << "Could not access cached data!";
-            error( ERR_CONNECTION_BROKEN, m_state.hostname );
+            error( ERR_CONNECTION_BROKEN, m_request.url.host() );
             return false;
         }
         m_responseHeaders << buffer;
@@ -2581,7 +2587,7 @@ try_again:
 
     if (!waitForResponse(m_remoteRespTimeout)) {
         // No response error
-        error(ERR_SERVER_TIMEOUT , m_state.hostname);
+        error(ERR_SERVER_TIMEOUT , m_request.url.host());
         return false;
     }
 
@@ -2606,7 +2612,7 @@ try_again:
         }
 
         kDebug(7113) << "Connection broken !";
-        error( ERR_CONNECTION_BROKEN, m_state.hostname );
+        error( ERR_CONNECTION_BROKEN, m_request.url.host() );
         return false;
     }
     if (!foundDelimiter) {
@@ -3643,8 +3649,8 @@ bool HTTPProtocol::sendBody()
   if (!sendOk)
   {
     kDebug( 7113 ) << "Connection broken when sending "
-                    << "content length: (" << m_state.hostname << ")";
-    error( ERR_CONNECTION_BROKEN, m_state.hostname );
+                    << "content length: (" << m_request.url.host() << ")";
+    error( ERR_CONNECTION_BROKEN, m_request.url.host() );
     return false;
   }
 
@@ -3654,8 +3660,8 @@ bool HTTPProtocol::sendBody()
   if (!sendOk)
   {
     kDebug(7113) << "Connection broken when sending message body: ("
-                  << m_state.hostname << ")";
-    error( ERR_CONNECTION_BROKEN, m_state.hostname );
+                  << m_request.url.host() << ")";
+    error( ERR_CONNECTION_BROKEN, m_request.url.host() );
     return false;
   }
 
@@ -3711,6 +3717,7 @@ void HTTPProtocol::httpCloseConnection()
 {
   kDebug(7113);
   m_request.isKeepAlive = false;
+  m_server.clear();
   disconnectFromHost();
   clearUnreadBuffer();
   setTimeoutSpecialCommand(-1); // Cancel any connection timeout
@@ -3723,7 +3730,7 @@ void HTTPProtocol::slave_status()
   if ( !isConnected() )
      httpCloseConnection();
 
-  slaveStatus( m_state.hostname, isConnected() );
+  slaveStatus( m_server.url.host(), isConnected() );
 }
 
 void HTTPProtocol::mimetype( const KUrl& url )
@@ -4176,7 +4183,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
       // Oh well... log an error and bug out
       kDebug(7113) << "bytesReceived==-1 sz=" << (int)sz
                     << " Connection broken !";
-      error(ERR_CONNECTION_BROKEN, m_state.hostname);
+      error(ERR_CONNECTION_BROKEN, m_request.url.host());
       return false;
     }
 
@@ -4233,10 +4240,10 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   if (sz <= 1)
   {
     if (m_request.responseCode >= 500 && m_request.responseCode <= 599) {
-      error(ERR_INTERNAL_SERVER, m_state.hostname);
+      error(ERR_INTERNAL_SERVER, m_request.url.host());
       return false;
     } else if (m_request.responseCode >= 400 && m_request.responseCode <= 499) {
-      error(ERR_DOES_NOT_EXIST, m_state.hostname);
+      error(ERR_DOES_NOT_EXIST, m_request.url.host());
       return false;
     }
   }
@@ -4823,8 +4830,8 @@ void HTTPProtocol::fillPromptInfo(AuthInfo *inf)
   if ( m_request.responseCode == 401 )
   {
     info.url = m_request.url;
-    if ( !m_state.user.isEmpty() )
-      info.username = m_state.user;
+    if ( !m_server.url.user().isEmpty() )
+      info.username = m_server.url.user();
     info.readOnly = !m_request.url.user().isEmpty();
     info.prompt = i18n( "You need to supply a username and a "
                         "password to access this site." );
@@ -5107,7 +5114,7 @@ QString HTTPProtocol::createNegotiateAuth()
 
   // the service name is "HTTP/f.q.d.n"
   servicename = "HTTP@";
-  servicename += m_state.hostname.toAscii();
+  servicename += m_server.url.host().toAscii();
 
   input_token.value = (void *)servicename.data();
   input_token.length = servicename.length() + 1;
@@ -5192,8 +5199,8 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
   else
   {
     auth = "Authorization: NTLM ";
-    user = m_state.user;
-    passwd = m_state.passwd;
+    user = m_server.url.user();
+    passwd = m_server.url.pass();
     strauth = m_auth.authorization.toLatin1();
     len = m_auth.authorization.length();
   }
@@ -5244,8 +5251,8 @@ QString HTTPProtocol::createBasicAuth( bool isForProxy )
   else
   {
     auth = "Authorization: Basic ";
-    user = m_state.user.toLatin1();
-    passwd = m_state.passwd.toLatin1();
+    user = m_server.url.user().toLatin1();
+    passwd = m_server.url.pass().toLatin1();
   }
 
   if (user.isEmpty() || passwd.isEmpty()) {
@@ -5342,8 +5349,8 @@ QString HTTPProtocol::createDigestAuth( bool isForProxy )
   else
   {
     auth = "Authorization: Digest ";
-    info.username = m_state.user.toLatin1();
-    info.password = m_state.passwd.toLatin1();
+    info.username = m_server.url.user().toLatin1();
+    info.password = m_server.url.pass().toLatin1();
     p = m_auth.authorization.toLatin1();
   }
   if (!p || !*p) {
@@ -5654,8 +5661,8 @@ QString HTTPProtocol::wwwAuthenticationHeader()
                 m_auth.scheme = AUTH_Negotiate;
             }
 
-            m_state.user = info.username;
-            m_state.passwd = info.password;
+            m_server.url.user() = info.username;
+            m_server.url.pass() = info.password;
             m_auth.realm = info.realmValue;
             if (m_auth.scheme != AUTH_NTLM && m_auth.scheme != AUTH_Negotiate) { // don't use the cached challenge
                 m_auth.authorization = info.digestInfo;
@@ -5667,9 +5674,9 @@ QString HTTPProtocol::wwwAuthenticationHeader()
 
     if (m_auth.scheme != AUTH_None) {
         kDebug(7113) << "Using Authentication: ";
-        kDebug(7113) << " HOST =" << m_state.hostname;
-        kDebug(7113) << " PORT =" << m_state.port;
-        kDebug(7113) << " USER =" << m_state.user;
+        kDebug(7113) << " HOST =" << m_server.url.host();
+        kDebug(7113) << " PORT =" << m_server.url.port();
+        kDebug(7113) << " USER =" << m_server.url.user();
         kDebug(7113) << " PASSWORD = [protected]";
         kDebug(7113) << " REALM =" << m_auth.realm;
         kDebug(7113) << " EXTRA =" << m_auth.authorization;

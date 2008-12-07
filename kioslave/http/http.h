@@ -65,21 +65,6 @@ public:
   /** Authorization method used **/
   enum AUTH_SCHEME   {AUTH_None, AUTH_Basic, AUTH_NTLM, AUTH_Digest, AUTH_Negotiate};
 
-  /** State of the current Connection **/
-  struct HTTPState
-  {
-    HTTPState ()
-    {
-      port = 0;
-    }
-
-    QString hostname;
-    QString encoded_hostname;
-    short unsigned int port;
-    QString user;
-    QString passwd;
-  };
-
   /** DAV-specific request elements for the current connection **/
   struct DAVRequest
   {
@@ -178,30 +163,6 @@ public:
     CacheTag cacheTag;
   };
 
-  // this is for anything from the previous connection that is interesting for
-  // some decision like whether to reuse a persistent connection.
-  struct PrevRequest
-  {
-    PrevRequest()
-    {
-      isKeepAlive = false;
-      isPersistentProxyConnection = false;
-    }
-    void initFrom(const HTTPRequest &request)
-    {
-      url = request.url;
-      isKeepAlive = request.isKeepAlive;
-      proxyUrl = request.proxyUrl;
-      isPersistentProxyConnection = request.isPersistentProxyConnection;
-    }
-    KUrl url;
-    bool isKeepAlive;
-    KUrl proxyUrl;
-    bool isPersistentProxyConnection;
-  };
-  
-  PrevRequest m_prevRequest;
-
   struct DigestAuthInfo
   {
     QByteArray nc;
@@ -215,6 +176,40 @@ public:
     KUrl::List digestURIs;
     QByteArray algorithm;
     QByteArray entityBody;
+  };
+
+  /** State of the current connection to the server **/
+  struct HTTPServerState
+  {
+    HTTPServerState()
+    {
+      isKeepAlive = false;
+      isPersistentProxyConnection = false;
+    }
+
+    void initFrom(const HTTPRequest &request)
+    {
+      url = request.url;
+      encoded_hostname = request.encoded_hostname;
+      isKeepAlive = request.isKeepAlive;
+      proxyUrl = request.proxyUrl;
+      isPersistentProxyConnection = request.isPersistentProxyConnection;
+    }
+
+    void clear()
+    {
+      url.clear();
+      encoded_hostname.clear();
+      proxyUrl.clear();
+      isKeepAlive = false;
+      isPersistentProxyConnection = false;
+    }
+
+    KUrl url;
+    QString encoded_hostname;
+    KUrl proxyUrl;
+    bool isKeepAlive;
+    bool isPersistentProxyConnection;
   };
 
 //---------------------- Re-implemented methods ----------------
@@ -371,7 +366,7 @@ protected:
   QString findCookies( const QString &url);
 
   /**
-   * Do a cache lookup for the current url. (m_state.url)
+   * Do a cache lookup for the current url. (m_server.url)
    *
    * @param readWrite If true, file is opened read/write.
    *                  If false, file is opened read-only.
@@ -384,7 +379,7 @@ protected:
   gzFile checkCacheEntry(bool readWrite = false);
 
   /**
-   * Create a cache entry for the current url. (m_state.url)
+   * Create a cache entry for the current url. (m_server.url)
    *
    * Set the contents type of the cache entry to 'mimetype'.
    */
@@ -501,7 +496,7 @@ protected:
   void fillPromptInfo(KIO::AuthInfo *info);
 
 protected:
-  HTTPState m_state;
+  HTTPServerState m_server;
   HTTPRequest m_request;
   QList<HTTPRequest> m_requestQueue;
   quint16 m_defaultPort;
