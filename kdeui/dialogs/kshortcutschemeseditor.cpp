@@ -32,7 +32,6 @@
 #include <kactioncollection.h>
 #include <kmessagebox.h>
 #include <kxmlguiclient.h>
-#include <kmessagebox.h>
 #include <kinputdialog.h>
 
 #include "kshortcutsdialog.h"

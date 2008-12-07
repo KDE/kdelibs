@@ -45,7 +45,6 @@
 #include <kwindowsystem.h>
 
 #ifdef Q_WS_X11
-#include <kwindowsystem.h>
 #include <qx11info_x11.h>
 
 #include <X11/Xlib.h>
