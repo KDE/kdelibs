@@ -1,5 +1,3 @@
-#ifndef KACTIONCATEGORY_H
-#define KACTIONCATEGORY_H
 /* This file is part of the KDE libraries
 
    Copyright (C) 2008 Michael Jansen <kde@michael-jansen.biz>
@@ -19,6 +17,9 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+
+#ifndef KACTIONCATEGORY_H
+#define KACTIONCATEGORY_H
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -187,7 +188,7 @@ private:
     friend class KActionCollectionPrivate;
 
     //! Implementation details
-    KActionCategoryPrivate *d;
+    KActionCategoryPrivate *const d;
 };
 
 

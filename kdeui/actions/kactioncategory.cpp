@@ -50,7 +50,7 @@ KActionCategory::KActionCategory(const QString &text, KActionCollection *parent)
 
 KActionCategory::~KActionCategory()
     {
-    delete d; d=0;
+    delete d;
     }
 
 
