@@ -66,7 +66,7 @@ public:
 #ifdef Q_WS_WIN
         // FIXME the below makes korgac ( the reminder daemon in kdepim) crash
         // on startup
-        // window->installEventFilter( this );
+        window->installEventFilter( this );
 #endif
     }
 
