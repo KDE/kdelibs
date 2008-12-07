@@ -46,6 +46,7 @@ class KRichTextWidget::Private
 public:
     Private(KRichTextWidget *parent)
             :   q(parent),
+            richTextEnabled(true),
             painterActive(false),
             enableRichText(0),
             action_text_foreground_color(0),
