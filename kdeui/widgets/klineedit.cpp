@@ -29,31 +29,25 @@
 #include "klineedit_p.h"
 #include "kdeuiwidgetsproxystyle_p.h"
 
-#include <kconfig.h>
-#include <QtGui/QToolTip>
-#include <kcursor.h>
-#include <klocale.h>
-#include <kstandardshortcut.h>
-#include <kmenu.h>
-#include <kdebug.h>
-#include <kcompletionbox.h>
-#include <kurl.h>
-#include <kiconloader.h>
-#include <kicontheme.h>
+#include <kaction.h>
 #include <kapplication.h>
 #include <kauthorized.h>
+#include <kconfig.h>
+#include <kconfiggroup.h>
+#include <kcursor.h>
+#include <kdebug.h>
+#include <kcompletionbox.h>
+#include <kicontheme.h>
 #include <kicon.h>
-#include <kaction.h>
+#include <klocale.h>
+#include <kmenu.h>
 #include <kstandardaction.h>
+#include <kstandardshortcut.h>
 
 #include <QtCore/QTimer>
 #include <QtGui/QClipboard>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QLabel>
-#include <QtGui/QPainter>
-#include <QtGui/QStyle>
 #include <QtGui/QStyleOption>
-#include <kconfiggroup.h>
+#include <QtGui/QToolTip>
 
 class KLineEditPrivate
 {
@@ -1597,9 +1591,9 @@ bool KLineEdit::autoSuggest() const
 void KLineEdit::paintEvent( QPaintEvent *ev )
 {
     if (echoMode() == Password && d->threeStars) {
-        QString oldText = text();
-        bool isModifiedState = isModified(); // save modified state because setText resets it
-        setText(text() + text() + text());
+        const QString oldText = text();
+        const bool isModifiedState = isModified(); // save modified state because setText resets it
+        setText(oldText + oldText + oldText);
         QLineEdit::paintEvent(ev);
         setText(oldText);
         setModified(isModifiedState);
