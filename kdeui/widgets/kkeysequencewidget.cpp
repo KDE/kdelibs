@@ -156,8 +156,8 @@ public:
         }
 
         QString clashingKeys = "";
-        Q_FOREACH (QKeySequence const &seq, shortcuts.keys()) {
-            Q_FOREACH (KGlobalShortcutInfo const &info, shortcuts[seq]) {
+        Q_FOREACH (const QKeySequence &seq, shortcuts.keys()) {
+            Q_FOREACH (const KGlobalShortcutInfo &info, shortcuts[seq]) {
                 clashingKeys += i18n("Shortcut '%1' in Application %2 for action %3\n",
                         seq.toString(),
                         info.componentFriendlyName(),

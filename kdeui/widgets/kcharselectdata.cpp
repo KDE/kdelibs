@@ -595,7 +595,7 @@ QList<QChar> KCharSelectData::find(const QString& needle)
     QList<quint16> sortedResult = result.toList();
     qSort(sortedResult);
 
-    foreach(quint16 c, sortedResult) {
+    foreach(const quint16 &c, sortedResult) {
         returnRes.append(c);
     }
 
@@ -610,7 +610,7 @@ QSet<quint16> KCharSelectData::getMatchingChars(const QString& s)
     QSet<quint16> result;
 
     while (pos != index.constEnd() && pos.key().startsWith(s)) {
-        foreach (quint16 c, pos.value()) {
+        foreach (const quint16 &c, pos.value()) {
             result.insert(c);
         }
         ++pos;
