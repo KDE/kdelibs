@@ -48,7 +48,7 @@ KReplaceNextDialog::KReplaceNextDialog(QWidget *parent) :
     setModal( false );
     setCaption( i18n("Replace") );
     setButtons( User3 | User2 | User1 | Close );
-    setButtonGuiItem( User1, KGuiItem(i18n("&All")) );
+    setButtonGuiItem( User1, KGuiItem(i18nc("@action:button Replace all occurences", "&All")) );
     setButtonGuiItem( User2, KGuiItem(i18n("&Skip")) );
     setButtonGuiItem( User3, KGuiItem(i18n("Replace")) );
     setDefaultButton( User3 );
@@ -350,7 +350,9 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
         i18n("Do you want to restart search from the end?")
         : i18n("Do you want to restart search at the beginning?");
 
-    int ret = KMessageBox::questionYesNo( parentWidget(), message, QString(), KGuiItem(i18n("Restart")), KGuiItem(i18n("Stop")) );
+    int ret = KMessageBox::questionYesNo( parentWidget(), message, QString(),
+                                          KGuiItem(i18nc("@action:button Restart find & replace", "Restart")),
+                                          KGuiItem(i18nc("@action:button Stop find & replace", "Stop")) );
     return( ret == KMessageBox::Yes );
 }
 
