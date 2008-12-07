@@ -68,9 +68,6 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="toolTip" >
-      <string>Select the sound to play</string>
-     </property>
     </widget>
    </item>
    <item row="3" column="0" colspan="4" >
