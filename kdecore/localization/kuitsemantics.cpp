@@ -820,7 +820,7 @@ static Kuit::NumfmtVar parseNumberFormat (const QString &fmtstr)
     KConfigGroup cg(KGlobal::config().data(), "Locale");
     QString currctry = cg.readEntry("Country").toLower();
     Kuit::NumfmtVar currfmt = Kuit::Numfmt::Posix;
-    foreach (const QString ctryfmt, fmtstr.toLower().split(',')) {
+    foreach (const QString &ctryfmt, fmtstr.toLower().split(',')) {
         QStringList lst = ctryfmt.split(':');
         QString ctry, fmtname;
         if (lst.size() == 2) {

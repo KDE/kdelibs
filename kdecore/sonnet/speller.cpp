@@ -274,8 +274,8 @@ QMap<QString, QString> Sonnet::Speller::availableDictionaries() const
     QMap<QString, QString> langs;
 
     foreach(QString tag, lst) {
-        tag = tag.mid(0, tag.indexOf("-"));
-        int underscorePos = tag.indexOf("_");
+        tag = tag.mid(0, tag.indexOf('-'));
+        int underscorePos = tag.indexOf('_');
         QString cIsoName, lIsoName;
 	if (underscorePos != -1 && underscorePos <= 3) {
             cIsoName = tag.mid(underscorePos + 1, 2);

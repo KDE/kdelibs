@@ -2448,7 +2448,7 @@ QString KLocale::localizedFilePath(const QString &filePath) const
     return filePath;
 }
 
-// If pos points to alphanumeric X in "...(X)...", which is preceeded or
+// If pos points to alphanumeric X in "...(X)...", which is preceded or
 // followed only by non-alphanumerics, then "(X)" gets removed.
 static QString removeReducedCJKAccMark (const QString &label, int pos)
 {
