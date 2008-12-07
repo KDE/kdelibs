@@ -40,6 +40,7 @@
 #include <QtGui/QFrame>
 #include <QLabel>
 #include <QLayout>
+#include <QFormLayout>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QRegExp>
@@ -412,10 +413,13 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   tabYourSSLCert = new QFrame(this);
 
+  QVBoxLayout *yourLay= new QVBoxLayout(tabYourSSLCert);
+  yourLay->setSpacing(KDialog::spacingHint());
+  yourLay->setMargin(KDialog::marginHint());
+
 #ifdef KSSL_HAVE_SSL
-  grid = new QGridLayout(tabYourSSLCert);
-  grid->setSpacing(KDialog::spacingHint());
-  grid->setMargin(KDialog::marginHint());
+  QHBoxLayout *treeLay=new QHBoxLayout();
+  yourLay->addLayout(treeLay,50);
 
   yourSSLBox = new QTreeWidget(tabYourSSLCert);
   yourSSLBox->setAllColumnsShowFocus(true);
@@ -423,64 +427,70 @@ QString whatstr;
                 " knows about. You can easily manage them from here.");
   yourSSLBox->setWhatsThis( whatstr);
   yourSSLBox->setRootIsDecorated(false);
-  grid->addWidget(yourSSLBox, 0, 0, 6, 5 );
+  treeLay->addWidget(yourSSLBox);
   yourSSLBox->setHeaderLabels(QStringList() << i18n("Common Name") << i18n("Email Address"));
   connect(yourSSLBox, SIGNAL(itemSelectionChanged()), SLOT(slotYourCertSelect()));
 
+
+  QVBoxLayout *btnsLay=new QVBoxLayout();
+  treeLay->addLayout(btnsLay);
+  treeLay->setSpacing(3);
+  treeLay->setMargin(0);
+
   yourSSLImport = new QPushButton(i18n("I&mport..."), tabYourSSLCert);
   connect(yourSSLImport, SIGNAL(clicked()), SLOT(slotYourImport()));
-  grid->addWidget(yourSSLImport, 0, 5);
+  btnsLay->addWidget(yourSSLImport);
 
   yourSSLExport = new QPushButton(i18n("&Export..."), tabYourSSLCert);
   yourSSLExport->setEnabled(false);
   connect(yourSSLExport, SIGNAL(clicked()), SLOT(slotYourExport()));
-  grid->addWidget(yourSSLExport, 1, 5);
+  btnsLay->addWidget(yourSSLExport);
 
   yourSSLRemove = new QPushButton(i18n("Remo&ve"), tabYourSSLCert);
   yourSSLRemove->setEnabled(false);
   connect(yourSSLRemove, SIGNAL(clicked()), SLOT(slotYourRemove()));
-  grid->addWidget(yourSSLRemove, 2, 5);
+  btnsLay->addWidget(yourSSLRemove);
 
   yourSSLUnlock = new QPushButton(i18n("&Unlock"), tabYourSSLCert);
   yourSSLUnlock->setEnabled(false);
   connect(yourSSLUnlock, SIGNAL(clicked()), SLOT(slotYourUnlock()));
-  grid->addWidget(yourSSLUnlock, 3, 5);
+  btnsLay->addWidget(yourSSLUnlock);
 
   yourSSLVerify = new QPushButton(i18n("Verif&y"), tabYourSSLCert);
   yourSSLVerify->setEnabled(false);
   connect(yourSSLVerify, SIGNAL(clicked()), SLOT(slotYourVerify()));
-  grid->addWidget(yourSSLVerify, 4, 5);
+  btnsLay->addWidget(yourSSLVerify);
 
   yourSSLPass = new QPushButton(i18n("Chan&ge Password..."), tabYourSSLCert);
   yourSSLPass->setEnabled(false);
   connect(yourSSLPass, SIGNAL(clicked()), SLOT(slotYourPass()));
-  grid->addWidget(yourSSLPass, 5, 5);
+  btnsLay->addWidget(yourSSLPass);
+  
+  btnsLay->addStretch(1);
 
-  grid->addWidget(new KSeparator(Qt::Horizontal, tabYourSSLCert), 6, 0, 1, 6);
+//   yourLay->addWidget(new KSeparator(Qt::Horizontal, tabYourSSLCert));
+  
+  QHBoxLayout* certLay=new QHBoxLayout();
+  yourLay->addLayout(certLay);
   ySubject = new KSslCertificateBox(tabYourSSLCert);
   yIssuer = new KSslCertificateBox(tabYourSSLCert);
-  grid->addWidget(ySubject, 7, 0, 5, 3);
-  grid->addWidget(yIssuer, 7, 3, 5, 3);
-  whatstr = i18n("This is the information known about the owner of the certificate.");
-  ySubject->setWhatsThis( whatstr);
-  whatstr = i18n("This is the information known about the issuer of the certificate.");
-  yIssuer->setWhatsThis( whatstr);
+  certLay->addWidget(ySubject);
+  certLay->addWidget(yIssuer);
+  ySubject->setWhatsThis( i18n("This is the information known about the owner of the certificate.") );
+  yIssuer->setWhatsThis(  i18n("This is the information known about the issuer of the certificate.") );
 
-  grid->addWidget(new QLabel(i18n("Valid from:"), tabYourSSLCert), 12, 0);
-  grid->addWidget(new QLabel(i18n("Valid until:"), tabYourSSLCert), 13, 0);
+  QFormLayout* fl=new QFormLayout();
+  yourLay->addLayout(fl);
   yValidFrom = new QLabel(tabYourSSLCert);
-  grid->addWidget(yValidFrom, 12, 1);
   yValidUntil = new QLabel(tabYourSSLCert);
-  grid->addWidget(yValidUntil, 13, 1);
-  whatstr = i18n("The certificate is valid starting at this date.");
-  yValidFrom->setWhatsThis( whatstr);
-  whatstr = i18n("The certificate is valid until this date.");
-  yValidUntil->setWhatsThis( whatstr);
-  grid->addWidget(new QLabel(i18n("MD5 digest:"), tabYourSSLCert), 14, 0);
+  fl->addRow(i18n("Valid from:"), yValidFrom);
+  fl->addRow(i18n("Valid until:"), yValidUntil);
+  yValidFrom->setWhatsThis( i18n("The certificate is valid starting at this date.") );
+  yValidUntil->setWhatsThis( i18n("The certificate is valid until this date.") );
+
   yHash = new QLabel(tabYourSSLCert);
-  grid->addWidget(yHash, 14, 1);
-  whatstr = i18n("A hash of the certificate used to identify it quickly.");
-  yHash->setWhatsThis( whatstr);
+  fl->addRow(i18n("MD5 digest:"),yHash);
+  yHash->setWhatsThis( i18n("A hash of the certificate used to identify it quickly.") );
 
 #if 0
   Q3HButtonGroup *ocbg = new Q3HButtonGroup(i18n("On SSL Connection..."), tabYourSSLCert);
@@ -493,7 +503,7 @@ QString whatstr;
   QLabel *nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
                                " because this module was not linked"
                                " with OpenSSL."), tabYourSSLCert);
-  grid->addWidget(nossllabel, 3, 0, 1, 6);
+  yourLay->addWidget(nossllabel);
 #endif
 
 
