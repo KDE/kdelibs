@@ -133,7 +133,7 @@ public:
 	 *
 	 * The can only be used to resolve an mdns hostname
 	 * @param hostname The hostname to be resolved
-	 * @return A QString containing the IP address. QString() returned if failed
+	 * @return A QHostAddress containing the IP address. QHostAddress() returned if failed
 	 */
 	static QHostAddress resolveHostName(const QString &hostname);
 
