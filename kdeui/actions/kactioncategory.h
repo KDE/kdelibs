@@ -103,7 +103,7 @@ public:
     /**
      * Default constructor
      */
-    KActionCategory(const QString &text, KActionCollection *parent=NULL);
+    explicit KActionCategory(const QString &text, KActionCollection *parent=NULL);
 
     /**
      * Destructor
