@@ -387,9 +387,10 @@ void KIntNumInput::setSliderEnabled(bool slider)
             priv->m_slider->setTickPosition(QSlider::TicksBelow);
         }
 
+        int value = d->m_spin->value();
         priv->m_slider->setRange(d->m_spin->minimum(), d->m_spin->maximum());
         priv->m_slider->setPageStep(d->m_spin->singleStep());
-        priv->m_slider->setValue(d->m_spin->value());
+        priv->m_slider->setValue(value);
 
         // calculate (upper-lower)/10 without overflowing int's:
         int major = calcDiffByTen( d->m_spin->maximum(), d->m_spin->minimum() );
