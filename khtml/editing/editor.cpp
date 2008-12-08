@@ -397,6 +397,10 @@ EditCommand Editor::lastEditCommand() const
 
 void Editor::appliedEditing(EditCommand &cmd)
 {
+  // make sure we have all the changes in rendering tree applied with relayout if needed before setting caret
+  // in particular that could be required for inline boxes recomputation when inserting text
+  m_part->xmlDocImpl()->updateLayout();
+
   m_part->setCaret(cmd.endingSelection(), false);
     // Command will be equal to last edit command only in the case of typing
   if (d->m_lastEditCommand == cmd) {
@@ -415,6 +419,9 @@ void Editor::appliedEditing(EditCommand &cmd)
 
 void Editor::unappliedEditing(EditCommand &cmd)
 {
+  // see comment in appliedEditing()
+  m_part->xmlDocImpl()->updateLayout();
+
   m_part->setCaret(cmd.startingSelection());
   d->registerRedo( cmd );
 #ifdef APPLE_CHANGES
@@ -429,6 +436,9 @@ void Editor::unappliedEditing(EditCommand &cmd)
 
 void Editor::reappliedEditing(EditCommand &cmd)
 {
+  // see comment in appliedEditing()
+  m_part->xmlDocImpl()->updateLayout();
+
   m_part->setCaret(cmd.endingSelection());
   d->registerUndo( cmd, false /*clearRedoStack*/ );
 #ifdef APPLE_CHANGES
