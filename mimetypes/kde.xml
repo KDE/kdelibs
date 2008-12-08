@@ -162,7 +162,7 @@ Notes:
     <glob pattern="*.pnx"/>
     <glob pattern="*.rdc"/>
   </mime-type>
-  <mime-type type="text/plain"> <!-- As discussed on xdg list, needed for disambiguation -->
+  <mime-type type="text/plain"> <!-- As discussed on xdg list, *.doc is needed here for disambiguation -->
     <glob pattern="*.asc"/>
     <glob pattern="*.txt"/>
     <glob pattern="*.doc"/>
