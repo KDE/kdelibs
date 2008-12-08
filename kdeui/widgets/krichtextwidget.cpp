@@ -46,7 +46,7 @@ class KRichTextWidget::Private
 public:
     Private(KRichTextWidget *parent)
             :   q(parent),
-            richTextEnabled(true),
+            richTextEnabled(false), // It's only enabled when an action makes text rich.
             painterActive(false),
             enableRichText(0),
             action_text_foreground_color(0),
