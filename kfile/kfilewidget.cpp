@@ -567,23 +567,21 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
         coll->action("inline preview")->setChecked(pg->isPreviewShown());
     }
 
+    d->url = getStartUrl( startDir, d->fileClass );
+    startDir = d->url;
+
     KIO::StatJob *statJob = KIO::stat(startDir, KIO::HideProgressInfo);
     bool res = KIO::NetAccess::synchronousRun(statJob, 0);
-    if (res) {
-        if (!statJob->statResult().isDir()) {
-            startDir.adjustPath(KUrl::RemoveTrailingSlash);
-            filename = startDir.fileName();
-            startDir.setFileName(QString());
-        }
-    } else {
+    if (!res || !statJob->statResult().isDir()) {
+        startDir.adjustPath(KUrl::RemoveTrailingSlash);
         filename = startDir.fileName();
+        startDir.setFileName(QString());
     }
 
-    d->url = getStartUrl( startDir, d->fileClass );
-    d->ops->setUrl(d->url, true);
-    d->urlNavigator->setUrl(d->url);
+    d->ops->setUrl(startDir, true);
+    d->urlNavigator->setUrl(startDir);
     if (d->placesView) {
-        d->placesView->setUrl(d->url);
+        d->placesView->setUrl(startDir);
     }
 
     // we know it is not a dir, and we could stat it. Set it.
