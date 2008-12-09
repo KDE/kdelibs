@@ -906,10 +906,6 @@ int KDirOperator::iconsZoom() const
 
 void KDirOperator::setIsSaving(bool isSaving)
 {
-    if (d->isSaving == isSaving) {
-        return;
-    }
-
     d->isSaving = isSaving;
 }
 
