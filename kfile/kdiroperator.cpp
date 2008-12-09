@@ -217,7 +217,6 @@ public:
     void _k_slotRedirected(const KUrl&);
     void _k_slotProperties();
     void _k_slotPressed(const QModelIndex&);
-    void _k_slotClicked(const QModelIndex&);
     void _k_slotActivated(const QModelIndex&);
     void _k_slotDoubleClicked(const QModelIndex&);
     void _k_slotSelectionChanged();
@@ -284,6 +283,8 @@ public:
     bool showPreviews;
     int iconsZoom;
 
+    bool isSaving;
+
     KActionMenu *decorationMenu;
     KToggleAction *leftAction;
     KUrl::List itemsToBeSetAsCurrent;
@@ -313,6 +314,7 @@ KDirOperator::Private::Private(KDirOperator *_parent) :
     previewGenerator(0),
     showPreviews(false),
     iconsZoom(0),
+    isSaving(false),
     decorationMenu(0),
     leftAction(0),
     shouldFetchForItems(false),
@@ -900,6 +902,20 @@ bool KDirOperator::isInlinePreviewShown() const
 int KDirOperator::iconsZoom() const
 {
     return d->iconsZoom;
+}
+
+void KDirOperator::setIsSaving(bool isSaving)
+{
+    if (d->isSaving == isSaving) {
+        return;
+    }
+
+    d->isSaving = isSaving;
+}
+
+bool KDirOperator::isSaving() const
+{
+    return d->isSaving;
 }
 
 void KDirOperator::trashSelected()
@@ -1537,6 +1553,8 @@ void KDirOperator::setView(QAbstractItemView *view)
 
     connect(d->itemView, SIGNAL(activated(const QModelIndex&)),
             this, SLOT(_k_slotActivated(const QModelIndex&)));
+    connect(d->itemView, SIGNAL(doubleClicked(const QModelIndex&)),
+            this, SLOT(_k_slotDoubleClicked(const QModelIndex&)));
     connect(d->itemView, SIGNAL(pressed(const QModelIndex&)),
             this, SLOT(_k_slotPressed(const QModelIndex&)));
     connect(d->itemView, SIGNAL(customContextMenuRequested(const QPoint&)),
@@ -2297,21 +2315,11 @@ void KDirOperator::Private::_k_slotProperties()
 void KDirOperator::Private::_k_slotPressed(const QModelIndex&)
 {
     // Remember whether the left mouse button has been pressed, to prevent
-    // that a right-click on an item opens an item (see _k_slotClicked(),
-    // _k_slotDoubleClicked() and _k_openContextMenu()).
+    // that a right-click on an item opens an item (see _k_slotDoubleClicked() and
+    // _k_openContextMenu()).
     const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
     leftButtonPressed = (QApplication::mouseButtons() & Qt::LeftButton) &&
                         !(modifiers & Qt::ShiftModifier) && !(modifiers & Qt::ControlModifier);
-}
-
-void KDirOperator::Private::_k_slotClicked(const QModelIndex& index)
-{
-    if (!leftButtonPressed || (index.column() != KDirModel::Name)) {
-        return;
-    }
-
-    if (!parent->onlyDoubleClickSelectsFiles())
-        _k_slotDoubleClicked(index);
 }
 
 void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
@@ -2323,10 +2331,11 @@ void KDirOperator::Private::_k_slotActivated(const QModelIndex& index)
     if (item.isNull() || (modifiers & Qt::ShiftModifier) || (modifiers & Qt::ControlModifier))
         return;
 
-    if (item.isDir())
+    if (item.isDir()) {
         parent->selectDir(item);
-    else
+    } else if (!isSaving) {
         parent->selectFile(item);
+    }
 }
 
 void KDirOperator::Private::_k_slotDoubleClicked(const QModelIndex& index)
@@ -2356,7 +2365,7 @@ void KDirOperator::Private::_k_slotSelectionChanged()
 
     // In the multiselection mode each selection change is indicated by
     // emitting a null item. Also when the selection has been cleared, a
-    // null item must be emitted (see _k_slotClicked()).
+    // null item must be emitted.
     const bool multiSelectionMode = (itemView->selectionMode() == QAbstractItemView::ExtendedSelection);
     const bool hasSelection = itemView->selectionModel()->hasSelection();
     if (multiSelectionMode || !hasSelection) {

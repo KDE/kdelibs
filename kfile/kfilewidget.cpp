@@ -375,6 +375,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
 
     d->ops = new KDirOperator(KUrl(), d->opsWidget);
     d->ops->setObjectName( "KFileWidget::ops" );
+    d->ops->setIsSaving(d->operationMode == Saving);
     opsWidgetLayout->addWidget(d->ops);
     connect(d->ops, SIGNAL(urlEntered(const KUrl&)),
             SLOT(_k_urlEntered(const KUrl&)));
@@ -1867,6 +1868,10 @@ void KFileWidget::setOperationMode( OperationMode mode )
        d->okButton->setGuiItem( KStandardGuiItem::ok() );
     d->updateLocationWhatsThis();
     d->updateAutoSelectExtension();
+
+    if (d->ops) {
+        d->ops->setIsSaving(mode == Saving);
+    }
 }
 
 KFileWidget::OperationMode KFileWidget::operationMode() const

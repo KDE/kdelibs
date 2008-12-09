@@ -560,6 +560,21 @@ public:
      */
     int iconsZoom() const;
 
+    /**
+     * If the system is set up to trigger items on single click, if @p isSaving
+     * is true, we will force to double click to accept.
+     * @note this is false by default
+     * @since 4.2
+     */
+    void setIsSaving(bool isSaving);
+
+    /**
+     * Returns whether KDirOperator will force a double click to accept.
+     * @note this is false by default
+     * @since 4.2
+     */
+    bool isSaving() const;
+
 protected:
     /**
      * A view factory for creating predefined fileviews. Called internally by setView,
@@ -848,7 +863,6 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotRedirected(const KUrl&) )
     Q_PRIVATE_SLOT( d, void _k_slotProperties() )
     Q_PRIVATE_SLOT( d, void _k_slotPressed(const QModelIndex&) )
-    Q_PRIVATE_SLOT( d, void _k_slotClicked(const QModelIndex&) )
     Q_PRIVATE_SLOT( d, void _k_slotActivated(const QModelIndex&) )
     Q_PRIVATE_SLOT( d, void _k_slotDoubleClicked(const QModelIndex&) )
     Q_PRIVATE_SLOT( d, void _k_slotSelectionChanged() )
