@@ -1304,7 +1304,7 @@ void KFilePropsPlugin::applyChanges()
   {
     QString n = ((QLineEdit *) d->nameArea)->text();
     // Remove trailing spaces (#4345)
-    while ( n[n.length()-1].isSpace() )
+    while ( ! n.isEmpty() && n[n.length()-1].isSpace() )
       n.truncate( n.length() - 1 );
     if ( n.isEmpty() )
     {
