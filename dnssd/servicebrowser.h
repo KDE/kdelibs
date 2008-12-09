@@ -22,7 +22,7 @@
 #define DNSSDSERVICEBROWSER_H
 
 #include <QtCore/QObject>
-#include <QHostAddress>
+#include <QtNetwork/QHostAddress>
 
 #include <dnssd/remoteservice.h>
 
