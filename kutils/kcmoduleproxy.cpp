@@ -341,6 +341,11 @@ QString KCModuleProxy::dbusPath() const
 	return d->dbusPath;
 }
 
+QSize KCModuleProxy::minimumSizeHint() const
+{
+	return QWidget::minimumSizeHint();
+}
+
 //X void KCModuleProxy::emitQuickHelpChanged()
 //X {
 //X     emit quickHelpChanged();
