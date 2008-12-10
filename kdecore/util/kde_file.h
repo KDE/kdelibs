@@ -36,7 +36,9 @@
 #include <kde_file_win.h>
 #endif
 
-#if (defined _LFS64_LARGEFILE) && (defined _LARGEFILE64_SOURCE) && (!defined _GNU_SOURCE)
+/* added not for Solaris and OpenSolaris platforms */
+
+#if (defined _LFS64_LARGEFILE) && (defined _LARGEFILE64_SOURCE) && (!defined _GNU_SOURCE) && (!defined __sun__)
 /*
  * This section provides portable defines for large file support.
  * To use this you must compile your code with _LARGEFILE64_SOURCE
@@ -76,6 +78,29 @@
 /*
  * This section defines portable defines for standard file support.
  */
+
+/*
+     Platform specific definitions for Solaris and OpenSolaris tested with gcc 4.3.2
+*/
+#if defined __sun__ 
+#define KDE_stat		::stat
+#define KDE_lstat		::lstat
+#define KDE_fstat		::fstat
+#define KDE_open		::open
+#define KDE_lseek		::lseek
+#define KDE_fseek		::fseek
+#define KDE_ftell		::ftell
+#define KDE_fgetpos		::fgetpos
+#define KDE_fsetpos		::fsetpos
+#define KDE_readdir		::readdir
+#define KDE_sendfile		::sendfile
+#define KDE_struct_stat 	struct stat
+#define KDE_struct_dirent	struct dirent
+#define KDE_rename		::rename
+#define KDE_mkdir		::mkdir
+
+#else
+
 #if defined _WIN32 || defined _WIN64
 #define KDE_stat		kdewin32_stat
 #define KDE_lstat		kdewin32_lstat
@@ -112,6 +137,7 @@
 #define KDE_freopen		kdewin32_freopen
 #else /* unix */
 #define KDE_fopen		::fopen
+#endif
 #endif
 #endif
 
