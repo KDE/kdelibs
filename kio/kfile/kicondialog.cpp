@@ -34,6 +34,51 @@
 #include <QtGui/QProgressBar>
 #include <QtGui/QPainter>
 
+
+/**
+ * Qt allocates very little horizontal space for the icon name,
+ * even if the gridSize width is large.  This delegate allocates
+ * the gridSize width (minus some padding) for the icon and icon name.
+ */
+class KIconCanvasDelegate : public QAbstractItemDelegate
+{
+public:
+    KIconCanvasDelegate(KIconCanvas *parent, QAbstractItemDelegate *defaultDelegate);
+    ~KIconCanvasDelegate() {};
+    void paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const; 
+    QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
+private:
+    KIconCanvas *m_iconCanvas;
+    QAbstractItemDelegate *m_defaultDelegate;
+    static const int HORIZONTAL_EDGE_PAD = 3;
+};
+
+KIconCanvasDelegate::KIconCanvasDelegate(KIconCanvas *parent, QAbstractItemDelegate *defaultDelegate)
+    : QAbstractItemDelegate(parent)
+{
+    m_iconCanvas = parent;
+    m_defaultDelegate = defaultDelegate;
+}
+
+void KIconCanvasDelegate::paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+{
+    const int GRID_WIDTH = m_iconCanvas->gridSize().width();
+    QStyleOptionViewItem newOption = option;
+    // Manipulate the width available.
+    newOption.rect.setX((option.rect.x() / GRID_WIDTH) * GRID_WIDTH + HORIZONTAL_EDGE_PAD);
+    newOption.rect.setWidth(GRID_WIDTH - 2 * HORIZONTAL_EDGE_PAD);
+
+    m_defaultDelegate->paint(painter, newOption, index);
+}
+
+QSize KIconCanvasDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
+{
+    QSize size = m_defaultDelegate->sizeHint(option, index);
+    const int GRID_WIDTH = m_iconCanvas->gridSize().width();
+    size.setWidth(GRID_WIDTH - 2 * HORIZONTAL_EDGE_PAD);
+    return size;
+}
+
 class KIconCanvas::KIconCanvasPrivate
 {
   public:
@@ -43,6 +88,7 @@ class KIconCanvas::KIconCanvasPrivate
     bool m_bLoading;
     QStringList mFiles;
     QTimer *mpTimer;
+    KIconCanvasDelegate *mpDelegate;
 
     // slots
     void _k_slotLoadFiles();
@@ -91,12 +137,16 @@ KIconCanvas::KIconCanvas(QWidget *parent)
     connect(d->mpTimer, SIGNAL(timeout()), this, SLOT(_k_slotLoadFiles()));
     connect(this, SIGNAL( currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
             this, SLOT(_k_slotCurrentChanged(QListWidgetItem *)));
-    setGridSize(QSize(80,80));
+    setGridSize(QSize(100,80));
+
+    d->mpDelegate = new KIconCanvasDelegate(this, itemDelegate());
+    setItemDelegate(d->mpDelegate);
 }
 
 KIconCanvas::~KIconCanvas()
 {
     delete d->mpTimer;
+    delete d->mpDelegate;
     delete d;
 }
 
@@ -117,6 +167,11 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
 
     // disable updates to not trigger paint events when adding child items
     q->setUpdatesEnabled(false);
+
+    // Cache these as we will call them frequently.
+    const int canvasIconWidth = q->iconSize().width();
+    const int canvasIconHeight = q->iconSize().width();
+    const bool uniformIconSize = q->uniformItemSizes();
 
     m_bLoading = true;
     int i;
@@ -145,7 +200,7 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
 	    img.load(*it);
 	else {
             // Special stuff for SVG icons
-            img = QImage(60, 60, QImage::Format_ARGB32_Premultiplied);
+            img = QImage(canvasIconWidth, canvasIconHeight, QImage::Format_ARGB32_Premultiplied);
             img.fill(0);
             KSvgRenderer renderer(*it);
             if (renderer.isValid()) {
@@ -156,18 +211,30 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
 
 	if (img.isNull())
 	    continue;
-	if (img.width() > 60 || img.height() > 60)
+	if (img.width() > canvasIconWidth || img.height() > canvasIconHeight)
 	{
-	    if (img.width() > img.height())
+	    if (img.width() / (float)canvasIconWidth  > img.height() / (float)canvasIconHeight)
 	    {
-		int height = (int) ((60.0 / img.width()) * img.height());
-		img = img.scaled(60, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+		int height = (int) (((float)canvasIconWidth / img.width()) * img.height());
+		img = img.scaled(canvasIconWidth, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 	    } else
 	    {
-		int width = (int) ((60.0 / img.height()) * img.width());
-		img = img.scaled(width, 60, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+		int width = (int) (((float)canvasIconHeight / img.height()) * img.width());
+		img = img.scaled(width, canvasIconHeight, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 	    }
 	}
+	
+	if (uniformIconSize && (img.width() != canvasIconWidth || img.height() != canvasIconHeight))
+	{
+	   // Image is smaller than desired.  Draw onto a transparent QImage of the required dimensions.
+	   // (Unpleasant glitches occur if we break the uniformIconSizes() contract).
+	   QImage paddedImage = QImage(canvasIconWidth, canvasIconHeight, QImage::Format_ARGB32_Premultiplied);
+	   paddedImage.fill(Qt::transparent); 
+	   QPainter painter(&paddedImage);
+	   painter.drawImage( (canvasIconWidth - img.width()) / 2, (canvasIconHeight - img.height()) / 2, img);
+	   img = paddedImage;
+	}
+	
 	QPixmap pm = QPixmap::fromImage(img);
 	QFileInfo fi(*it);
         QListWidgetItem *item = new QListWidgetItem(pm, fi.completeBaseName(), q);
@@ -337,7 +404,7 @@ void KIconDialog::KIconDialogPrivate::init()
 
     mpCanvas = new KIconCanvas(main);
     connect(mpCanvas, SIGNAL(itemActivated(QListWidgetItem *)), q, SLOT(_k_slotAcceptIcons()));
-    mpCanvas->setMinimumSize(400, 125);
+    mpCanvas->setMinimumSize(425, 125);
     top->addWidget(mpCanvas);
     searchLine->setListWidget(mpCanvas);
 
@@ -441,6 +508,23 @@ void KIconDialog::KIconDialogPrivate::showIcons()
     }
 
     searchLine->clear();
+
+    // The KIconCanvas has uniformItemSizes set which really expects
+    // all added icons to be the same size, otherwise weirdness ensues :)
+    // Ensure all SVGs are scaled to the desired size and that as few icons
+    // need to be padded as possible by specifying a sensible size.
+    if (mGroupOrSize < -1) // mGroupOrSize can be -1 if NoGroup is chosen.
+    {
+        // Explicit size.
+        mpCanvas->setIconSize(QSize(-mGroupOrSize, -mGroupOrSize));
+    }
+    else
+    {
+        // Icon group.
+        int groupSize = mpLoader->currentSize((KIconLoader::Group)mGroupOrSize);
+        mpCanvas->setIconSize(QSize(groupSize, groupSize));
+    }
+
     mpCanvas->loadFiles(filelist);
 }
 
@@ -477,7 +561,25 @@ void KIconDialog::setup(KIconLoader::Group group, KIconLoader::Context context,
     d->m_bStrictIconSize = strictIconSize;
     d->m_bLockUser = lockUser;
     d->m_bLockCustomDir = lockCustomDir;
-    d->mGroupOrSize = (iconSize == 0) ? group : -iconSize;
+    if (iconSize == 0)
+    {
+        if (group == KIconLoader::NoGroup)
+        {
+            // NoGroup has numeric value -1, which should
+            // not really be used with KIconLoader::queryIcons*(...);
+            // pick a proper group.
+            d->mGroupOrSize = KIconLoader::Small;
+        }
+        else
+        {
+            d->mGroupOrSize = group;
+        }
+    }
+    else
+    {
+        d->mGroupOrSize = -iconSize;
+    }
+    
     d->mpSystemIcons->setChecked(!user);
     d->mpSystemIcons->setEnabled(!lockUser || !user);
     d->mpOtherIcons->setChecked(user);
