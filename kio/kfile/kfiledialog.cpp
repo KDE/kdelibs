@@ -39,6 +39,8 @@
 #include <kpluginfactory.h>
 #include <kdebug.h>
 #include <kwindowsystem.h>
+#include <kcompletion.h>
+#include <kurlcombobox.h>
 #include "kabstractfilewidget.h"
 #include "kabstractfilemodule.h"
 #include "krecentdirs.h"
@@ -280,6 +282,11 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
 
     if (customWidget)
      d->w->setCustomWidget(QString(), customWidget);
+     
+    if (!d->native) {
+     KCompletion* comp = d->w->locationEdit()->completionObject();
+     comp->setIgnoreCase(true);
+    }
 }
 
 
