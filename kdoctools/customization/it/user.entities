@@ -33,6 +33,7 @@
 <!ENTITY OS     "sistema operativo"><!-- <acronym>OS</acronym>-->
 <!ENTITY RMB    "tasto <mousebutton>destro</mousebutton> del mouse">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY systemsettings   "<application>Impostazioni di sistema</application>">
 <!ENTITY systemtray "<application>vassoio di sistema</application>">
 <!ENTITY Tab	"<keycap>Tab</keycap>">
 <!--                                                     -->
