@@ -262,6 +262,11 @@ bool KHTMLFind::findTextNext( bool reverse )
   {
     // We didn't show the find dialog yet, let's do it then (#49442)
     activate();
+
+    // FIXME Ugly hack: activate() may not create KFind object, so check whether it was created
+    if (!d->m_find)
+      return false;
+
     // It also means the user is trying to match a previous pattern, so try and
     // restore the last saved pattern.    
     if (!d->m_findDialog || !d->m_findDialog->restoreLastPatternFromHistory())
