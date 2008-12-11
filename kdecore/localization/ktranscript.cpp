@@ -17,6 +17,7 @@
 */
 
 #include <ktranscript_p.h>
+#include <common_helpers_p.h>
 
 #include <config.h>
 
@@ -301,8 +302,8 @@ QByteArray normKeystr (const QString &raw)
     }
     key = nkey;
 
-    // Strip accelerator.
-    key.remove('&');
+    // Strip accelerator marker.
+    key = removeAcceleratorMarker(key);
 
     // Convert to lower case.
     key = key.toLower();

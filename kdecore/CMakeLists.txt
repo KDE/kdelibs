@@ -241,6 +241,7 @@ set(kdecore_LIB_SRCS
    localization/ktranslit.cpp
    localization/kuitsemantics.cpp
    localization/kuitformats.cpp
+   localization/common_helpers.cpp
    sycoca/ksycoca.cpp
    sycoca/ksycocadict.cpp
    sycoca/ksycocaentry.cpp
@@ -333,6 +334,7 @@ add_custom_command(
 # the transcript plugin
 set( ktranscript_LIB_SRCS
    localization/ktranscript.cpp
+   localization/common_helpers.cpp
 )
 
 kde4_add_plugin( ktranscript ${ktranscript_LIB_SRCS} )
