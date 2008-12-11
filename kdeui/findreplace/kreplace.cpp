@@ -278,7 +278,7 @@ void KReplacePrivate::_k_slotReplace()
 {
     doReplace();
     if ( q->KFind::d->dialogClosed ) {
-        delete q->KFind::d->dialog->deleteLater(); q->KFind::d->dialog = 0L; // hide it again
+        q->KFind::d->dialog->deleteLater(); q->KFind::d->dialog = 0L; // hide it again
     } else
         emit q->findNext();
 }
