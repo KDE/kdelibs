@@ -1126,12 +1126,19 @@ QMenu* KLineEdit::createStandardContextMenu()
 
         //subMenu->setAccel( KStandardShortcut::completion(), ShellCompletion );
 
-        d->shellCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionShell ] );
-        d->noCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionNone ] );
-        d->popupCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionPopup ] );
-        d->autoCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionAuto ] );
-        d->shortAutoCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionMan ] );
-        d->popupAutoCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionPopupAuto ] );
+        d->shellCompletionAction->setCheckable( true );
+        d->noCompletionAction->setCheckable( true );
+        d->popupCompletionAction->setCheckable( true );
+        d->autoCompletionAction->setCheckable( true );
+        d->shortAutoCompletionAction->setCheckable( true );
+        d->popupAutoCompletionAction->setCheckable( true );
+
+        d->shellCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionShell ] );
+        d->noCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionNone ] );
+        d->popupCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionPopup ] );
+        d->autoCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionAuto ] );
+        d->shortAutoCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionMan ] );
+        d->popupAutoCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionPopupAuto ] );
 
         KGlobalSettings::Completion mode = completionMode();
         d->noCompletionAction->setChecked( mode == KGlobalSettings::CompletionNone );
