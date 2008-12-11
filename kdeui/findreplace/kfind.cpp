@@ -395,8 +395,7 @@ void KFind::Private::startNewIncrementalSearch()
     }
     matchedLength = 0;
     incrementalPath.clear();
-    delete emptyMatch;
-    emptyMatch = 0;
+    delete emptyMatch; emptyMatch = 0;
     matchedPattern = pattern;
     pattern.clear();
 }
@@ -650,8 +649,7 @@ void KFind::setOptions( long options )
 
 void KFind::closeFindNextDialog()
 {
-    delete d->dialog;
-    d->dialog = 0L;
+    d->dialog->deleteLater(); d->dialog = 0L;
     d->dialogClosed = true;
 }
 
