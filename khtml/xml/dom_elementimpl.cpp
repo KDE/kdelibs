@@ -51,6 +51,9 @@
 #include <css/cssproperties.h>
 #include <khtml_part.h>
 
+#include <editing/editing_p.h>
+#include <editing/editor.h>
+
 #include <QtCore/QTextIStream>
 #include <QTextDocument>
 #include <kdebug.h>
@@ -773,6 +776,21 @@ void ElementImpl::setPrefix( const DOMString &_prefix, int &exceptioncode )
 
 void ElementImpl::defaultEventHandler(EventImpl *e)
 {
+    if (document()->part() && e->id() == EventImpl::KEYPRESS_EVENT && e->isKeyRelatedEvent()) {
+        const KHTMLPart* part = document()->part();
+        bool isContentEditableElement = part->isEditable() || (focused() && isContentEditable());
+        if (isContentEditableElement || part->isCaretMode()) {
+            if (document()->view() && document()->view()->caretKeyPressEvent(static_cast<KeyEventBaseImpl*>(e)->qKeyEvent())) {
+                e->setDefaultHandled();
+                return;
+            }
+            if (isContentEditableElement && part->editor()->handleKeyEvent(static_cast<KeyEventBaseImpl*>(e)->qKeyEvent())) {
+                e->setDefaultHandled();
+                return;
+            }
+        }
+    }
+
     if (m_render && m_render->scrollsOverflow()) {
         switch( e->id() ) {
           case EventImpl::KEYDOWN_EVENT:

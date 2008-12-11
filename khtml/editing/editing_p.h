@@ -51,8 +51,6 @@ struct EditorContext {
 
   bool m_beganSelectingText:1;
 
-  bool m_keyReleasePending:1;
-
   void beginSelectingText(DOM::Selection::ETextGranularity granularity) {
     m_beganSelectingText   = true;
     m_selectionGranularity = granularity;
@@ -67,7 +65,6 @@ struct EditorContext {
     m_caretBlinks(true),
     m_caretPaint(true),
     m_beganSelectingText(false),
-    m_keyReleasePending(false),
     m_editor(0)
   {
   }

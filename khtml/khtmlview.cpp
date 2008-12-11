@@ -1758,16 +1758,6 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	}
 #endif // KHTML_NO_TYPE_AHEAD_FIND
 
-
-    bool is_editable = m_part->isEditable() || (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()
-        && m_part->xmlDocImpl()->focusNode()->isContentEditable());
-    if (is_editable || m_part->isCaretMode()) {
-        m_part->d->editor_context.m_keyReleasePending = true;
-        if (caretKeyPressEvent(_ke)) return;
-        if (is_editable && m_part->editor()->handleKeyEvent(_ke))
-            return;
-    }
-
     // If CTRL was hit, be prepared for access keys
     if (d->accessKeysEnabled && _ke->key() == Qt::Key_Control && !(_ke->modifiers() & ~Qt::ControlModifier) && !d->accessKeysActivated)
     {
@@ -2002,11 +1992,6 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
         return;
     }
 #endif
-    if (m_part->d->editor_context.m_keyReleasePending) {
-        //caretKeyReleaseEvent(_ke);
-	m_part->d->editor_context.m_keyReleasePending = false;
-	return;
-    }
 
     if( d->scrollSuspendPreActivate && _ke->key() != Qt::Key_Shift )
         d->scrollSuspendPreActivate = false;
@@ -3859,10 +3844,11 @@ void KHTMLView::dropEvent( QDropEvent *ev )
 
 void KHTMLView::focusInEvent( QFocusEvent *e )
 {
-#ifndef KHTML_NO_TYPE_AHEAD_FIND
-    m_part->enableFindAheadActions( true );
-#endif
     DOM::NodeImpl* fn = m_part->xmlDocImpl() ? m_part->xmlDocImpl()->focusNode() : 0;
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
+    if (!fn || m_part->isCaretMode())
+        m_part->enableFindAheadActions( true );
+#endif
     if (fn && fn->renderer() && fn->renderer()->isWidget() &&
         (e->reason() != Qt::MouseFocusReason) &&
         static_cast<khtml::RenderWidget*>(fn->renderer())->widget())

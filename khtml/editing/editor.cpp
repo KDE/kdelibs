@@ -475,8 +475,14 @@ bool Editor::handleKeyEvent(QKeyEvent *_ke)
 {
   bool handled = false;
 
-  bool ctrl = _ke->modifiers() & Qt::ControlModifier;
+  bool ctrl  = _ke->modifiers() & Qt::ControlModifier;
+  bool alt   = _ke->modifiers() & Qt::AltModifier;
   bool shift = _ke->modifiers() & Qt::ShiftModifier;
+  bool meta  = _ke->modifiers() & Qt::MetaModifier;
+
+  if (ctrl || alt || meta) {
+      return false;
+  }
 
   switch(_ke->key()) {
 
@@ -510,6 +516,12 @@ bool Editor::handleKeyEvent(QKeyEvent *_ke)
       handled = true;
       break;
 
+    case Qt::Key_Escape:
+    case Qt::Key_Insert:
+      // FIXME implement me
+      handled = true;
+      break;
+    
     default:
 // handle_input:
       if (!_ke->text().isEmpty()) {
@@ -519,11 +531,10 @@ bool Editor::handleKeyEvent(QKeyEvent *_ke)
 
   }
 
-  if (handled) {
+  //if (handled) {
     // ### check when to emit it
 //     m_part->emitSelectionChanged();
-    _ke->accept();
-  }
+  //}
 
   return handled;
 

@@ -99,6 +99,7 @@ class KHTML_EXPORT KHTMLView : public QScrollArea, public khtml::KHTMLWidget
     friend class DOM::HTMLAnchorElementImpl;
     friend class DOM::HTMLInputElementImpl;
     friend class DOM::NodeImpl;
+    friend class DOM::ElementImpl;
     friend class DOM::DocumentImpl;
     friend class KHTMLPart;
     friend class KHTMLFind;

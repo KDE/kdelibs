@@ -42,6 +42,7 @@ namespace DOM {
 
 class Range;
 class NodeImpl;
+class ElementImpl;
 class DOMString;
 class CSSStyleDeclarationImpl;
 class EditorPrivate;
@@ -189,6 +190,7 @@ private:
   friend class ::KHTMLView;
   friend class ::KHTMLEditorPart;
   friend struct khtml::EditorContext;
+  friend class DOM::ElementImpl;
 };
 
 }/*namespace DOM*/

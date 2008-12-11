@@ -38,7 +38,6 @@ void EditorContext::reset() {
   m_caretBlinks = true;
   m_caretPaint = true;
   m_beganSelectingText = false;
-  m_keyReleasePending = false;
 
   delete m_editor;
   m_editor = 0;

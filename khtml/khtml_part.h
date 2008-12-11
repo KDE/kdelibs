@@ -62,6 +62,7 @@ namespace DOM
   class HTMLAnchorElementImpl;
   class HTMLMetaElementImpl;
   class NodeImpl;
+  class ElementImpl;
   class Node;
   class HTMLEventListener;
   class EventListener;
@@ -211,6 +212,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::HTMLAnchorElementImpl;
   friend class DOM::HTMLMetaElementImpl;
   friend class DOM::NodeImpl;
+  friend class DOM::ElementImpl;
   friend class KHTMLRun;
   friend class DOM::HTMLFormElementImpl;
   friend class KJS::Window;

@@ -2879,6 +2879,7 @@ void KHTMLPart::setCaretVisible(bool show)
     NodeImpl *caretNode = d->editor_context.m_selection.caretPos().node();
     if (isCaretMode() || (caretNode && caretNode->isContentEditable())) {
         invalidateSelection();
+        enableFindAheadActions(false);
     }
   } else {
 
