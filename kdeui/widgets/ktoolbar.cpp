@@ -744,12 +744,34 @@ void KToolBar::loadState(const QDomElement &element)
     return;
 
   {
-    QByteArray text = element.namedItem("text").toElement().text().toUtf8();
-    if (text.isEmpty())
-      text = element.namedItem("Text").toElement().text().toUtf8();
+    QDomNode textNode = element.namedItem("text");
+    QByteArray text;
+    QByteArray context;
+    if (textNode.isElement())
+    {
+      QDomElement textElement = textNode.toElement();
+      text = textElement.text().toUtf8();
+      context = textElement.attribute("context").toUtf8();
+    }
+    else
+    {
+      textNode = element.namedItem("Text");
+      if (textNode.isElement())
+      {
+        QDomElement textElement = textNode.toElement();
+        text = textElement.text().toUtf8();
+        context = textElement.attribute("context").toUtf8();
+      }
+    }
 
-    if (!text.isEmpty())
-      setWindowTitle(i18n(text));
+    QString i18nText;
+    if (!text.isEmpty() && !context.isEmpty())
+      i18nText = i18nc(context, text);
+    else if (!text.isEmpty())
+      i18nText = i18n(text);
+
+    if (!i18nText.isEmpty())
+      setWindowTitle(i18nText);
   }
 
   /*
