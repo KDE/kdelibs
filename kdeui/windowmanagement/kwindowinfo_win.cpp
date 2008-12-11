@@ -20,59 +20,114 @@
 
 #include "kwindowinfo.h"
 #include "kwindowsystem.h"
+#include <windows.h>
+
+class KWindowInfo::Private
+{
+    public:
+	Private()
+	: properties(0),properties2(0)
+	{}
+    
+	~Private() { }
+   
+	WId win_;
+	int ref;
+    unsigned long properties;
+    unsigned long properties2;
+    private:
+	Private( const Private& );
+	void operator=( const Private& );
+};
 
 #include <QRect>
 
-KWindowInfo::KWindowInfo( WId win, unsigned long, unsigned long )
+KWindowInfo::KWindowInfo( WId win, unsigned long properties, unsigned long properties2) : d ( new Private ) 
 {
+    d->ref = 1;
+    d->win_ = win;
+    d->properties  = properties;
+    d->properties2 = properties2;
 }
 
-// this one is only to make QList<> or similar happy
 KWindowInfo::KWindowInfo()
+    : d( NULL )
 {
+
 }
 
 KWindowInfo::~KWindowInfo()
 {
+    if( d != NULL ) {
+	if( --d->ref == 0 ) {
+	    delete d;
+	}
+    }
 }
 
-KWindowInfo::KWindowInfo( const KWindowInfo& )
+KWindowInfo::KWindowInfo( const KWindowInfo& wininfo )
+    : d( wininfo.d )
 {
+    if( d != NULL )
+	++d->ref;
 }
 
 KWindowInfo& KWindowInfo::operator=( const KWindowInfo& wininfo )
 {
+    if( d != wininfo.d ) {
+	if( d != NULL )
+	    if( --d->ref == 0 )
+		delete d;
+	d = wininfo.d;
+	if( d != NULL )
+	    ++d->ref;
+    }
     return *this;
 }
 
+
 bool KWindowInfo::valid( bool withdrawn_is_valid ) const
 {
-    return false;
+    return true;
 }
 
 WId KWindowInfo::win() const
 {
-    return WId(-1);
+    return d->win_;
 }
 
 unsigned long KWindowInfo::state() const
 {
-    return 0;
+    unsigned long state = 0;
+     if(IsZoomed(d->win_))
+        state |= NET::Max;
+     if(!IsWindowVisible(d->win_))
+        state |= NET::Hidden;
+        
+    LONG_PTR lp = GetWindowLongPtr(d->win_, GWL_EXSTYLE);
+    if(lp & WS_EX_TOOLWINDOW)
+        state |= NET::SkipTaskbar;
+        
+    return state;
 }
 
 bool KWindowInfo::hasState( unsigned long s ) const
 {
-    return false;
+    return (state() & s);
 }
 
 bool KWindowInfo::isMinimized() const
 {
-    return false;
+    return IsIconic(d->win_);
 }
 
 NET::MappingState KWindowInfo::mappingState() const
-{
-    return NET::MappingState();
+{    
+    if(IsIconic(d->win_))
+        return NET::Iconic;  
+    if(!IsWindowVisible(d->win_)) 
+        return NET::Withdrawn;
+    return NET::Visible;
 }
 
 NETExtendedStrut KWindowInfo::extendedStrut() const
@@ -82,22 +137,37 @@ NETExtendedStrut KWindowInfo::extendedStrut() const
 
 NET::WindowType KWindowInfo::windowType( int supported_types ) const
 {
-    return NET::WindowType(0);
+    NET::WindowType wt(NET::Normal);
+    
+    
+    long windowStyle   = GetWindowLong(d->win_,GWL_STYLE);
+    long windowStyleEx = GetWindowLong(d->win_,GWL_EXSTYLE);  
+
+    if(windowStyle & WS_POPUP && supported_types & NET::PopupMenuMask)
+        return NET::PopupMenu;
+    else if(windowStyleEx & WS_EX_TOOLWINDOW && supported_types & NET::TooltipMask)
+        return NET::Tooltip;
+    else if(!windowStyle & WS_CHILD  && supported_types & NET::NormalMask)
+        return NET::Normal;
+        
+    return wt;
 }
 
 QString KWindowInfo::visibleNameWithState() const
 {
-    return QString();
+    return name();
 }
 
 QString KWindowInfo::visibleName() const
 {
-    return QString();
+    return name();
 }
 
 QString KWindowInfo::name() const
 {
-    return QString();
+    QByteArray windowText = QByteArray ( GetWindowTextLength(d->win_)+1, 0 ) ;
+    GetWindowTextA(d->win_, windowText.data(), windowText.size());
+    return QString(windowText);
 }
 
 QString KWindowInfo::visibleIconNameWithState() const
@@ -117,11 +187,13 @@ QString KWindowInfo::iconName() const
 
 bool KWindowInfo::isOnCurrentDesktop() const
 {
-    return false;
+    return true;
 }
 
-bool KWindowInfo::isOnDesktop( int ) const
+bool KWindowInfo::isOnDesktop( int desk ) const
 {
+    if(desk == desktop())
+        return true;
     return false;
 }
 
@@ -137,11 +209,31 @@ int KWindowInfo::desktop() const
 
 QRect KWindowInfo::geometry() const
 {
+    RECT wndRect;
+    memset(&wndRect,0,sizeof(wndRect));
+    
+    //fetch the geometry INCLUDING the frames
+    if(GetWindowRect(d->win_,&wndRect)){
+    QRect result;
+    result.setCoords ( wndRect.left, wndRect.top, wndRect.right, wndRect.bottom );
+    return result;
+    }
+    
     return QRect();
 }
 
 QRect KWindowInfo::frameGeometry() const
 {
+    RECT wndRect;
+    memset(&wndRect,0,sizeof(wndRect));
+    
+    //fetch only client area geometries ... i hope thats right
+    if(GetClientRect(d->win_,&wndRect)){
+    QRect result;
+    result.setCoords ( wndRect.left, wndRect.top, wndRect.right, wndRect.bottom );
+    return result;
+    }
+    
     return QRect();
 }
 
