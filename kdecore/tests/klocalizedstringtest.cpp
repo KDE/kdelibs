@@ -131,6 +131,10 @@ void KLocalizedStringTest::correctSubs ()
              QString("E < *mc^2*"));
     QCOMPARE(i18nc("@info", "E &lt; <emphasis>mc^2</emphasis>"),
              QString("<html>E &lt; <i>mc^2</i></html>"));
+    QCOMPARE(i18n("E = mc^&#x0032;"),
+             QString("E = mc^2"));
+    QCOMPARE(i18n("E = mc^&#0050;"),
+             QString("E = mc^2"));
     // ...and some ill-formed i18n, to test markup salvage.
     // (prevent debug info about bad markup).
     KConfig dc( "kdebugrc", KConfig::SimpleConfig );

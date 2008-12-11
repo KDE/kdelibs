@@ -1194,6 +1194,8 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text_,
     }
 }
 
+#define ENTITY_SUBRX "[a-z]+|#[0-9]+|#x[0-9a-fA-F]+"
+
 QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
                                                     Kuit::FmtVar fmtExp_,
                                                     Kuit::FmtVar fmtImp_) const
@@ -1201,14 +1203,14 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
     KuitSemanticsStaticData *s = staticData;
 
     // Replace &-shortcut marker with "&amp;", not to confuse the parser;
-    // but do not touch & in "&[a-z]+;", which is an XML entity as it is.
+    // but do not touch & which forms an XML entity as it is.
     QString original = text_;
     QString text;
     int p = original.indexOf('&');
     while (p >= 0) {
         text.append(original.mid(0, p + 1));
         original.remove(0, p + 1);
-        static QRegExp restRx("^(?:[a-z]+|#[0-9]+);");
+        static QRegExp restRx("^("ENTITY_SUBRX");");
         if (original.indexOf(restRx) != 0) { // not an entity
             text.append("amp;");
         }
@@ -1551,7 +1553,7 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
     // and no HTML tag encountered.
     if (fmt != Kuit::Fmt::Rich && !hadAnyHtmlTag)
     {
-        static QRegExp staticEntRx("&([a-z]+);");
+        static QRegExp staticEntRx("&("ENTITY_SUBRX");");
         // We have to have a local copy here, otherwise this function
         // will not be thread safe because QRegExp is not thread safe.
         QRegExp entRx = staticEntRx;
@@ -1561,7 +1563,21 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
             QString ent = entRx.capturedTexts().at(1);
             plain.append(text.mid(0, p));
             text.remove(0, p + ent.length() + 2);
-            if (s->xmlEntities.contains(ent)) { // known entity
+            if (ent.startsWith('#')) { // numeric character entity
+                QChar c;
+                bool ok;
+                if (ent[1] == 'x') {
+                    c = ent.mid(2).toInt(&ok, 16);
+                } else {
+                    c = ent.mid(1).toInt(&ok, 10);
+                }
+                if (ok) {
+                    plain.append(c);
+                } else { // unknown Unicode point, leave as is
+                    plain.append('&' + ent + ';');
+                }
+            }
+            else if (s->xmlEntities.contains(ent)) { // known entity
                 plain.append(s->xmlEntities[ent]);
             } else { // unknown entity, just leave as is
                 plain.append('&' + ent + ';');
