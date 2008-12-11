@@ -47,7 +47,7 @@
 <refsect1>
 <title>Description</title>
 
-<para><command>kross</command> executes kross scripts writen in &kde; Javascript, Python, Ruby, Java and Falcon.
+<para><command>kross</command> executes kross scripts written in &kde; Javascript, Python, Ruby, Java and Falcon.
 </para>
 </refsect1>
 
