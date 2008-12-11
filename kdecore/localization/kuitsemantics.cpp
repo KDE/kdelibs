@@ -1567,9 +1567,9 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
                 QChar c;
                 bool ok;
                 if (ent[1] == 'x') {
-                    c = ent.mid(2).toInt(&ok, 16);
+                    c = QChar(ent.mid(2).toInt(&ok, 16));
                 } else {
-                    c = ent.mid(1).toInt(&ok, 10);
+                    c = QChar(ent.mid(1).toInt(&ok, 10));
                 }
                 if (ok) {
                     plain.append(c);
