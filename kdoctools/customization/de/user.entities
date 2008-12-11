@@ -39,6 +39,7 @@
 <!ENTITY MMBr   "<mousebutton>mittlerer</mousebutton> Maustaste">
 <!ENTITY mondphase "<application>Mondphase</application>"> <!-- kmoon -->
 <!ENTITY OS     "Betriebssystem">
+<!ENTITY partman "<application>KDE-Partitionsmanager</application>">
 <!ENTITY RMB    "<mousebutton>rechte</mousebutton> Maustaste">
 <!ENTITY RMBn   "<mousebutton>rechten</mousebutton> Maustaste">
 <!ENTITY RMBr   "<mousebutton>rechter</mousebutton> Maustaste">
