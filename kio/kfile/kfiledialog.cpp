@@ -959,6 +959,17 @@ public:
             qt_filedialog_save_filename_hook=&getSaveFileName;
     }
 
+    ~KFileDialogQtOverride() {
+        if(qt_filedialog_existing_directory_hook == &getExistingDirectory)
+            qt_filedialog_existing_directory_hook = 0;
+        if(qt_filedialog_open_filename_hook == &getOpenFileName)
+            qt_filedialog_open_filename_hook = 0;
+        if(qt_filedialog_open_filenames_hook == &getOpenFileNames)
+            qt_filedialog_open_filenames_hook=0;
+        if(qt_filedialog_save_filename_hook == &getSaveFileName)
+            qt_filedialog_save_filename_hook=0;
+    }
+
     /*
      * Map a Qt filter string into a KDE one.
      */
