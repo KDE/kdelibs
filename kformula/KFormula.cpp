@@ -16,17 +16,17 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+#include "KFormula.h"
 #include "FormulaElement.h"
 #include "FormulaRenderer.h"
+#include "AttributeManager.h"
+#include <kdebug.h>
 #include <QDomDocument>
 #include <QString>
 #include <QByteArray>
 #include <QPaintEvent>
 #include <QPainter>
 #include <QSize>
-#include "KFormula.h"
-#include "AttributeManager.h"
-#include <kdebug.h>
 
 class KFormulaPrivate {
 public:
