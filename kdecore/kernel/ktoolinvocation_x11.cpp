@@ -259,11 +259,43 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
     if (!isMainThreadActive())
         return;
 
-    QString error;
+    QStringList args;
+    args << url;
 
-    if (startServiceByDesktopName("kfmclient", url, &error, 0, 0, startup_id, false))
+    // This method should launch a webbrowser, preferrably without doing a mimetype
+    // check first, like KRun (i.e. kde-open) would do.
+
+    // In a KDE session, call kfmclient (which honours BrowserApplication) if present,
+    // otherwise xdg-open, otherwise kde-open (which does a mimetype check first though).
+
+    // Outside KDE, call xdg-open if present, otherwise fallback to the above logic.
+
+    QString exe; // the binary we are going to launch.
+
+    const QString xdg_open = KStandardDirs::findExe("xdg-open");
+    if (qgetenv("KDE_FULL_SESSION").isEmpty()) {
+        exe = xdg_open;
+    }
+
+    if (exe.isEmpty()) {
+        const QString kfmclient = KStandardDirs::findExe("kfmclient");
+        if (!kfmclient.isEmpty()) {
+            exe = kfmclient;
+            args.prepend("openURL");
+        } else
+            exe = xdg_open;
+    }
+
+    if (exe.isEmpty()) {
+        exe = "kde-open"; // it's from kdebase-runtime, it has to be there.
+    }
+
+    kDebug() << "Using" << exe << "to open" << url;
+    QString error;
+    if (kdeinitExec(exe, args, &error, NULL, startup_id ))
     {
         KMessage::message(KMessage::Error,
+                          // TODO: i18n("Could not launch %1:\n\n%2", exe, error),
                           i18n("Could not launch the browser:\n\n%1", error),
                           i18n("Could not Launch Browser"));
     }
