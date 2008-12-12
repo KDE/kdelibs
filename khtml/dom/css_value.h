@@ -216,7 +216,7 @@ public:
      *
      */
     DOM::DOMString item ( unsigned long index ) const;
-    DOM::DOMString item ( unsigned long index );
+    DOM::DOMString item ( unsigned long index ); // ### KDE5: remove
 
     /**
      * @internal
