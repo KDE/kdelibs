@@ -557,13 +557,15 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
 void KDirModelPrivate::_k_slotClear()
 {
     const int numRows = m_rootNode->m_childNodes.count();
-    q->beginRemoveRows( QModelIndex(), 0, numRows );
-    q->endRemoveRows();
+    if (numRows > 0) {
+        q->beginRemoveRows( QModelIndex(), 0, numRows - 1 );
+        q->endRemoveRows();
 
-    m_nodeHash.clear();
-    //emit layoutAboutToBeChanged();
-    clear();
-    //emit layoutChanged();
+        m_nodeHash.clear();
+        //emit layoutAboutToBeChanged();
+        clear();
+        //emit layoutChanged();
+    }
 }
 
 void KDirModel::itemChanged( const QModelIndex& index )
