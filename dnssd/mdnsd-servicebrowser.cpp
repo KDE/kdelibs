@@ -183,10 +183,9 @@ QHostAddress ServiceBrowser::resolveHostName(const QString &hostname)
 	return QHostAddress();
 }
 
-// TODO: Please Implement Me - using a system call (if not natively)
 QString ServiceBrowser::getLocalHostName()
 {
-	return QString();
+	return QHostInfo::localHostName();
 }
 
 }

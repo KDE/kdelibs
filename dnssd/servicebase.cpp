@@ -75,6 +75,11 @@ bool ServiceBase::operator==(const ServiceBase& o) const
     return d->m_domain==o.d->m_domain && d->m_serviceName==o.d->m_serviceName && d->m_type==o.d->m_type;
 }
 
+bool ServiceBase::operator!=(const ServiceBase& o) const 
+{
+    return !(*this == o);
+}
+
 void ServiceBase::virtual_hook(int, void*)
 {}
 

@@ -129,17 +129,22 @@ public:
 	bool isAutoResolving() const;
 
 	/**
-	 * @brief Resolved a hostname via the dnssd service into a dotted decimal IP Address
-	 *
-	 * The can only be used to resolve an mdns hostname
-	 * @param hostname The hostname to be resolved
-	 * @return A QHostAddress containing the IP address. QHostAddress() returned if failed
+	@brief Resolved a hostname using mDNS into IP address.
+	 
+	This function is very rarely useful - properly configured system is able to resolve mDNS-based host name
+	using system resolver. 
+	@param hostname The hostname to be resolved
+	@return A QHostAddress containing the IP address. QHostAddress() returned if failed
+	\since 4.2
 	 */
 	static QHostAddress resolveHostName(const QString &hostname);
 
 	/**
-	 * @brief This function simply returns the name of this machine's hostname
-	 * @return A QString representing the hostname. Returns QString() if failed
+	@brief This function simply returns the name of this machine's hostname as announced by mDNS protocol. 
+	Usually it will be the same as calling QHostInfo::localHostName(), however it may be changed to something different
+	in avahi configuration file (if using Avahi backend).
+	@return A QString representing the hostname. Returns QString() if failed
+	\since 4.2
 	 */
 	static QString getLocalHostName();
 
