@@ -892,6 +892,7 @@ QPixmap KIconLoader::loadMimeTypeIcon( const QString& iconName, KIconLoader::Gro
         // Icon not found, fallback to application/octet-stream
         return loadIcon("application-octet-stream", group, size, state, overlays, path_store, false);
     }
+    return pixmap;
 }
 
 QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, int size,
