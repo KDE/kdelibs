@@ -331,7 +331,7 @@ KLauncher::slotKDEInitData(int)
 
 void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
 {
-   if (status == LAUNCHER_DIED)
+   if (status == LAUNCHER_CHILD_DIED)
    {
      long *request_data;
      request_data = (long *) requestData.data();

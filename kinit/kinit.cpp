@@ -254,7 +254,7 @@ static void child_died(pid_t exit_pid, int exit_status)
          /* Send a message with the return value of the child on the control socket */
          klauncher_header request_header;
          long request_data[2];
-         request_header.cmd = LAUNCHER_DIED;
+         request_header.cmd = LAUNCHER_CHILD_DIED;
          request_header.arg_length = sizeof(long) * 2;
          request_data[0] = exit_pid;
          request_data[1] = exit_status;
@@ -434,7 +434,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
                     const char *tty=0, bool avoid_loops = false,
                     const char* startup_id_str = "0" )
 {
-  int launcher = 0;
+  int starting_klauncher = 0;
   QByteArray lib;
   QByteArray name;
   QByteArray exec;
@@ -448,7 +448,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
         perror("kdeinit4: socketpair() failed!\n");
         exit(255);
      }
-     launcher = 1;
+     starting_klauncher = 1;
   }
 
   QByteArray libpath;
@@ -511,7 +511,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      /** Child **/
      close(d.fd[0]);
      close_fds();
-     if (launcher)
+     if (starting_klauncher)
      {
         if (d.fd[1] == LAUNCHER_FD)
         {
@@ -604,7 +604,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      }
 
 
-     if ( !qgetenv("KDE_IS_PRELINKED").isEmpty() && !execpath.isEmpty() && !launcher)
+     if ( !qgetenv("KDE_IS_PRELINKED").isEmpty() && !execpath.isEmpty() && !starting_klauncher)
          libpath.truncate(0);
 
      QLibrary l(libpath);
@@ -694,7 +694,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
   default:
      /** Parent **/
      close(d.fd[1]);
-     if (launcher)
+     if (starting_klauncher)
      {
         close(d.launcher[1]);
         d.launcher_pid = d.fork;
@@ -756,9 +756,9 @@ static pid_t launch(int argc, const char *_name, const char *args,
        break;
      }
      close(d.fd[0]);
-     if (launcher && (d.result == 0))
+     if (starting_klauncher && (d.result == 0))
      {
-        // Trader launched successful
+        // klauncher launched successfully
         d.launcher_pid = d.fork;
      }
   }

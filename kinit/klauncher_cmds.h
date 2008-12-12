@@ -54,9 +54,9 @@ typedef struct
  * char *env_value;
  */
 
-#define LAUNCHER_DIED 3
+#define LAUNCHER_CHILD_DIED 3
 /*
- * LAUNCHER_DIED
+ * LAUNCHER_CHILD_DIED
  *
  * Notification A child of kdeinit died.
  *

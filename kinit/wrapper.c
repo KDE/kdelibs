@@ -300,7 +300,7 @@ static int kwrapper_run( pid_t wrapped, int sock )
 
     read_socket(sock, (char *)&header, sizeof(header));
 
-    if (header.cmd != LAUNCHER_DIED)
+    if (header.cmd != LAUNCHER_CHILD_DIED)
     {
        fprintf(stderr, "Unexpected response from KInit (response = %ld).\n", header.cmd);
        exit(255);
@@ -317,7 +317,7 @@ static int kwrapper_run( pid_t wrapped, int sock )
     pid = ((long *) buffer)[0];
     if( pid !=  kwrapper_pid)
     {
-       fprintf(stderr, "Unexpected LAUNCHER_DIED from KInit - pid = %ld\n", pid);
+       fprintf(stderr, "Unexpected LAUNCHER_CHILD_DIED from KInit - pid = %ld\n", pid);
        exit(255);
     }
 
