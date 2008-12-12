@@ -44,6 +44,7 @@ void KUrlMimeTest::testURLList()
 
     QVERIFY(KUrl::List::canDecode( mimeData ));
     QVERIFY(mimeData->hasUrls());
+    QVERIFY(mimeData->hasText());
 
     QMap<QString, QString> decodedMetaData;
     KUrl::List decodedURLs = KUrl::List::fromMimeData( mimeData, &decodedMetaData );
@@ -114,6 +115,7 @@ void KUrlMimeTest::testMostLocalUrlList()
 
     QVERIFY(KUrl::List::canDecode(mimeData));
     QVERIFY(mimeData->hasUrls());
+    QVERIFY(mimeData->hasText());
     QVERIFY(mimeData->hasFormat("text/plain"));
 
     // KUrl decodes the real "kde" urls
