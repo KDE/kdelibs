@@ -756,10 +756,7 @@ void KUrlNavigator::Private::removeTrailingSlash(QString& url)
 
 KUrl KUrlNavigator::Private::adjustedUrl(const QString& typedUrl) const
 {
-    QString text = typedUrl.trimmed();
-    text.replace(QChar('\\'), QChar('/'));
-
-    KUrl url(text);
+    KUrl url(typedUrl.trimmed());
     if (url.hasPass()) {
         url.setPass(QString());
     }
