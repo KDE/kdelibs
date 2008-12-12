@@ -126,6 +126,8 @@ private Q_SLOTS:
         QTest::newRow("existing icon") << "text-plain" << "text-plain.png";
         QTest::newRow("octet-stream icon") << "application-octet-stream" << "application-octet-stream.png";
         QTest::newRow("non-existing icon") << "foo-bar" << "application-octet-stream.png";
+        // Test this again, because now we won't go into the "fast path" of loadMimeTypeIcon anymore.
+        QTest::newRow("existing icon again") << "text-plain" << "text-plain.png";
     }
 
     void testLoadMimeTypeIcon()
@@ -139,6 +141,16 @@ private Q_SLOTS:
                                                   &path );
         QVERIFY(!pix.isNull());
         QVERIFY(path.endsWith(expectedFileName));
+
+        // do the same test using a global iconloader, so that
+        // we get into the final return statement, which can only happen
+        // if d->extraDesktopIconsLoaded becomes true first....
+        QString path2;
+        pix = KIconLoader::global()->loadMimeTypeIcon(iconName, KIconLoader::Desktop, 24,
+                                                      KIconLoader::DefaultState, QStringList(),
+                                                      &path2 );
+        QVERIFY(!pix.isNull());
+        QCOMPARE(path2, path);
     }
 };
 
