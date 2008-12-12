@@ -854,6 +854,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 }
 
 void RenderWidget::EventPropagator::sendEvent(QEvent *e) {
+    // ### why don't we just call event()? That would be the normal route.
     switch(e->type()) {
     case QEvent::Wheel:
         wheelEvent ( static_cast<QWheelEvent *> (e) );

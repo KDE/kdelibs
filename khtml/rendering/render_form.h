@@ -414,6 +414,7 @@ public:
 protected:
     virtual bool event(QEvent *);
     virtual bool eventFilter(QObject *dest, QEvent *e);
+    virtual void keyPressEvent(QKeyEvent *e);
     virtual void showPopup();
     virtual void hidePopup();
 };

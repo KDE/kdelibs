@@ -1392,6 +1392,7 @@ bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
 	{
 	case Qt::Key_Tab:
 	    forward=true;
+            // fall through
 	case Qt::Key_Backtab:
 	    // ugly hack. emulate popdownlistbox() (private in QComboBox)
 	    // we re-use ke here to store the reference to the generated event.
@@ -1405,6 +1406,20 @@ bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
 	}
     }
     return KComboBox::eventFilter(dest, e);
+}
+
+void ComboBoxWidget::keyPressEvent(QKeyEvent *e)
+{
+    // Normally, widgets are not sent Tab keys this way in the first
+    // place as they are handled by QWidget::event() for focus handling
+    // already. But we get our events via EventPropagator::sendEvent()
+    // directly. Ignore them so that HTMLGenericFormElementImpl::
+    // defaultEventHandler() can call focusNextPrev().
+    if (e->key() == Qt::Key_Tab || e->key() == Qt::Key_Backtab) {
+        e->ignore();
+        return;
+    }
+    KComboBox::keyPressEvent(e);
 }
 
 // -------------------------------------------------------------------------
