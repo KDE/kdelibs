@@ -105,7 +105,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     Q_UNUSED(event);
 
     QPainter painter(this);
-    
+
     int buttonWidth  = width();
     int preferredWidth = sizeHint().width();
     if (preferredWidth < minimumWidth()) {
@@ -115,7 +115,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
         buttonWidth = preferredWidth;
     }
     const int buttonHeight = height();
-    
+
     const QColor fgColor = foregroundColor();
     drawHoverBackground(&painter);
 
@@ -332,19 +332,13 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
         return;
     }
 
-    KIO::UDSEntryList::const_iterator it = entries.constBegin();
-    const KIO::UDSEntryList::const_iterator itEnd = entries.constEnd();
-
-    while (it != itEnd) {
-        const KIO::UDSEntry entry = *it;
+    foreach (const KIO::UDSEntry& entry, entries) {
         if (entry.isDir()) {
             const QString name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
             if ((name != ".") && (name != "..")) {
-                m_subdirs.append(KStringHandler::csqueeze(name, 60));
+                m_subdirs.append(name);
             }
         }
-
-        ++it;
     }
 }
 
@@ -374,14 +368,12 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
 
     KMenu* dirsMenu = new KMenu(this);
     dirsMenu->setLayoutDirection(Qt::LeftToRight);
-    QStringList::const_iterator it = m_subdirs.constBegin();
-    QStringList::const_iterator itEnd = m_subdirs.constEnd();
     int i = 0;
-    while (it != itEnd) {
-        QAction* action = new QAction(*it, this);
+    foreach (const QString& subdir, m_subdirs) {
+        const QString text = KStringHandler::csqueeze(subdir, 60);
+        QAction* action = new QAction(text, this);
         action->setData(i);
         dirsMenu->addAction(action);
-        ++it;
         ++i;
     }
 
@@ -434,7 +426,7 @@ bool KUrlNavigatorButton::isTextClipped() const
 void KUrlNavigatorButton::updateMinimumWidth()
 {
     const int oldMinWidth = minimumWidth();
-    
+
     int minWidth = sizeHint().width();
     if (minWidth < 40) {
         minWidth = 40;
