@@ -128,7 +128,7 @@ public:
         /// Toolbar icons
         Toolbar,
         /// Main toolbar icons
-         MainToolbar,
+        MainToolbar,
         /// Small icons, e.g. for buttons
         Small,
         /// Panel (Kicker) icons

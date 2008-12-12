@@ -98,11 +98,10 @@ private Q_SLOTS:
         // Now load kdialog again, to use the real kiconcache
         iconPath2 = appIconLoader.iconPath("kdialog", KIconLoader::User);
         QCOMPARE(iconPath, iconPath2);
-        
+
         appIconLoader.addAppDir( "khtml" );
         QString iconPathFail = appIconLoader.iconPath("fail", KIconLoader::User);
         QVERIFY( iconPathFail.endsWith( "khtml/pics/fail.xpm"));
-        
     }
 
     void testAppPicsDir_KIcon()
@@ -117,6 +116,29 @@ private Q_SLOTS:
         KIcon icon("kdialog", &appIconLoader);
         QPixmap pix = icon.pixmap(QSize(22, 22));
         QVERIFY(!pix.isNull());
+    }
+
+    void testLoadMimeTypeIcon_data()
+    {
+        QTest::addColumn<QString>("iconName");
+        QTest::addColumn<QString>("expectedFileName");
+
+        QTest::newRow("existing icon") << "text-plain" << "text-plain.png";
+        QTest::newRow("octet-stream icon") << "application-octet-stream" << "application-octet-stream.png";
+        QTest::newRow("non-existing icon") << "foo-bar" << "application-octet-stream.png";
+    }
+
+    void testLoadMimeTypeIcon()
+    {
+        QFETCH(QString, iconName);
+        QFETCH(QString, expectedFileName);
+        KIconLoader iconLoader;
+        QString path;
+        QPixmap pix = iconLoader.loadMimeTypeIcon(iconName, KIconLoader::Desktop, 24,
+                                                  KIconLoader::DefaultState, QStringList(),
+                                                  &path );
+        QVERIFY(!pix.isNull());
+        QVERIFY(path.endsWith(expectedFileName));
     }
 };
 

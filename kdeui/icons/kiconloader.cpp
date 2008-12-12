@@ -883,11 +883,15 @@ QPixmap KIconLoader::loadMimeTypeIcon( const QString& iconName, KIconLoader::Gro
 {
     if ( !d->extraDesktopIconsLoaded )
     {
-        QPixmap pixmap = loadIcon( iconName, group, size, state, overlays, path_store, true );
+        const QPixmap pixmap = loadIcon( iconName, group, size, state, overlays, path_store, true );
         if (!pixmap.isNull() ) return pixmap;
         const_cast<KIconLoader *>(this)->addExtraDesktopThemes();
     }
-    return loadIcon( iconName, group, size, state, overlays, path_store, false );
+    const QPixmap pixmap = loadIcon(iconName, group, size, state, overlays, path_store, true);
+    if (pixmap.isNull()) {
+        // Icon not found, fallback to application/octet-stream
+        return loadIcon("application-octet-stream", group, size, state, overlays, path_store, false);
+    }
 }
 
 QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, int size,
@@ -939,7 +943,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
             } else if (_name != str_unknown) {
                 return loadIcon(str_unknown, group, size, state,
                             overlays, path_store, canReturnNull);
-            } 
+            }
         }
         if (!d->initIconThemes()) {
             return pix;  // null pixmap
@@ -1043,7 +1047,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         } else if (_name != str_unknown) {
             return loadIcon(str_unknown, group, size, state,
                             overlays, path_store, canReturnNull);
-        } 
+        }
     }
     if (!d->initIconThemes()) {
         return pix; // null pixmap
