@@ -611,3 +611,51 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
         QCOMPARE(mw2.toolBarArea(secondToolBar), Qt::BottomToolBarArea);
     }
 }
+
+void KXmlGui_UnitTest::testDeletedContainers()
+{
+    const QByteArray xml =
+        "<?xml version = '1.0'?>\n"
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"1\" name=\"foo\" >\n"
+        "<MenuBar>\n"
+        "  <Menu deleted=\"true\" name=\"game\"/>\n"
+        "</MenuBar>\n"
+        "<ToolBar deleted=\"true\" name=\"mainToolBar\">\n"
+        "  <Action name=\"go_up\"/>\n"
+        "</ToolBar>\n"
+        "<ToolBar name=\"visibleToolBar\">\n"
+        "  <Action name=\"go_up\"/>\n"
+        "</ToolBar>\n"
+        "<ToolBar deleted=\"true\" name=\"deletedToolBar\">\n"
+        "  <Action name=\"go_up\"/>\n"
+        "</ToolBar>\n"
+        "</gui>\n";
+    KConfigGroup cg(KGlobal::config(), "testDeletedToolBar");
+    TestXmlGuiWindow mainWindow(xml);
+    mainWindow.setAutoSaveSettings(cg);
+    createActions(mainWindow.actionCollection(), QStringList() << "go_up" << "file_new" << "game_new");
+    mainWindow.createGUI();
+    KXMLGUIFactory* factory = mainWindow.guiFactory();
+
+    //qDebug() << "containers:" << factory->containers("ToolBar");
+    QVERIFY(!factory->container("mainToolBar", &mainWindow));
+    QVERIFY(!factory->container("visibleToolBar", &mainWindow)->isHidden());
+    QVERIFY(!factory->container("deletedToolBar", &mainWindow));
+    QVERIFY(factory->container("file", &mainWindow)); // File menu was created
+    QVERIFY(!factory->container("game", &mainWindow)); // Game menu was not created
+
+    // Now open KEditToolBar, just to check it doesn't crash.
+    KEditToolBar editToolBar(factory);
+    // KEditToolBar loads the stuff in showEvent...
+    QShowEvent ev; qApp->sendEvent(&editToolBar, &ev);
+    editToolBar.button(KDialog::Apply)->setEnabled(true);
+    editToolBar.button(KDialog::Apply)->click();
+    QVERIFY(!factory->container("mainToolBar", &mainWindow));
+    QVERIFY(!factory->container("visibleToolBar", &mainWindow)->isHidden());
+    QVERIFY(!factory->container("deletedToolBar", &mainWindow));
+    QVERIFY(factory->container("file", &mainWindow));
+    QVERIFY(!factory->container("game", &mainWindow));
+
+    mainWindow.close();
+}

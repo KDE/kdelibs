@@ -125,6 +125,11 @@ QStringList KXMLGUIBuilder::containerTags() const
 QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDomElement &element, QAction*& containerAction )
 {
     containerAction = 0;
+
+    if (element.attribute("deleted").toLower() == "true") {
+        return 0;
+    }
+
     const QString tagName = element.tagName().toLower();
     if ( tagName == d->tagMainWindow ) {
         KMainWindow *mainwindow = qobject_cast<KMainWindow*>( d->m_widget ); // could be 0
