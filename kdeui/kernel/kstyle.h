@@ -463,7 +463,9 @@ protected:
          */
         enum LayoutProp
         {
-            DefaultFrameWidth   ///< The FrameWidth used by LineEdit, etc..., default is \b 2 [sets QStyle::PM_DefaultFrameWidth]
+            DefaultFrameWidth,    ///< The FrameWidth used by LineEdit, etc..., default is \b 2 [sets QStyle::PM_DefaultFrameWidth]
+            DefaultLayoutSpacing, ///< The spacing used by layouts, unless the style implements layoutSpacingImplementation(), default is \b 6 [sets QStyle::PM_DefaultLayoutSpacing]
+            DefaultLayoutMargin   ///< The margin used by layouts, default is \b 9 [sets QStyle::PM_DefaultChildMargin and QStyle::PM_DefaultTopLevelMargin]
         };
 
         /**
@@ -1620,6 +1622,11 @@ public:
     QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap,
                                    const QStyleOption *opt) const;
     bool eventFilter(QObject *, QEvent *);
+
+protected Q_SLOTS:
+    int layoutSpacingImplementation(QSizePolicy::ControlType control1,
+                    QSizePolicy::ControlType control2, Qt::Orientation orientation,
+                    const QStyleOption *option, const QWidget *widget) const;
 //@}
 private:
     KStylePrivate * const d;

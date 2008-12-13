@@ -76,10 +76,6 @@ class KDialogPrivate
         QHash<int, KPushButton*> mButtonList;
         QSignalMapper mButtonSignalMapper;
 
-        static int mMarginSize;
-        static int mSpacingSize;
-        static int mGroupSpacingSize;
-
     protected Q_SLOTS:
         void queuedLayoutUpdate();
 

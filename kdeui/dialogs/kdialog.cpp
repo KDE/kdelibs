@@ -32,6 +32,7 @@
 #include <QHBoxLayout>
 #include <QHideEvent>
 #include <QPointer>
+#include <QStyle>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWhatsThis>
@@ -48,10 +49,6 @@
 #include <qx11info_x11.h>
 #include <netwm.h>
 #endif
-
-int KDialogPrivate::mMarginSize = 9;
-int KDialogPrivate::mSpacingSize = 6;
-int KDialogPrivate::mGroupSpacingSize = 16;
 
 void KDialogPrivate::setupLayout()
 {
@@ -77,9 +74,6 @@ void KDialogPrivate::queuedLayoutUpdate()
         mTopLayout = new QVBoxLayout(q);
   else
         mTopLayout = new QHBoxLayout(q);
-
-  mTopLayout->setMargin( KDialog::marginHint() );
-  mTopLayout->setSpacing( KDialog::spacingHint() );
 
   if ( mUrlHelp )
     mTopLayout->addWidget( mUrlHelp, 0, Qt::AlignRight );
@@ -169,7 +163,6 @@ void KDialogPrivate::init(KDialog *q)
     q->setButtons(KDialog::Ok | KDialog::Cancel);
     q->setDefaultButton(KDialog::Ok);
 
-    q->connect(q, SIGNAL(layoutHintChanged()), q, SLOT(updateGeometry()));
     q->connect(&mButtonSignalMapper, SIGNAL(mapped(int)), q, SLOT(slotButtonClicked(int)));
 
     q->setPlainCaption(KGlobal::caption()); // set appropriate initial window title for case it gets not set later
@@ -395,17 +388,17 @@ void KDialog::keyPressEvent( QKeyEvent *event )
 
 int KDialog::marginHint()
 {
-    return KDialogPrivate::mMarginSize;
+    return QApplication::style()->pixelMetric( QStyle::PM_DefaultChildMargin );
 }
 
 int KDialog::spacingHint()
 {
-    return KDialogPrivate::mSpacingSize;
+    return QApplication::style()->pixelMetric( QStyle::PM_DefaultLayoutSpacing );
 }
 
 int KDialog::groupSpacingHint()
 {
-    return KDialogPrivate::mGroupSpacingSize;
+    return QApplication::fontMetrics().lineSpacing();
 }
 
 QString KDialog::makeStandardCaption( const QString &userCaption,
@@ -950,10 +943,6 @@ QString KDialog::helpLinkText() const
 void KDialog::updateGeometry()
 {
     Q_D(KDialog);
-  if ( d->mTopLayout ) {
-    d->mTopLayout->setMargin( marginHint() );
-    d->mTopLayout->setSpacing( spacingHint() );
-  }
 }
 
 void KDialog::hideEvent( QHideEvent *event )

@@ -399,12 +399,18 @@ class KDEUI_EXPORT KDialog : public QDialog
     /**
      * Returns the number of pixels that should be used between a
      * dialog edge and the outermost widget(s) according to the KDE standard.
+     *
+     * @deprecated Use the style's pixelMetric() function to query individual margins.
+     * Different platforms may use different values for the four margins.
      */
     static int marginHint();
 
     /**
      * Returns the number of pixels that should be used between
      * widgets inside a dialog according to the KDE standard.
+     *
+     * @deprecated Use the style's layoutSpacing() function to query individual spacings.
+     * Different platforms may use different values depending on widget types and pairs.
      */
     static int spacingHint();
 
@@ -467,6 +473,10 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param widget The widget used.
      * @param margin The new layout margin.
      * @param spacing The new layout spacing.
+     *
+     * @deprecated Use QLayout functions where necessary. Setting margin and spacing
+     * values recursively for all children prevents QLayout from creating platform native
+     * layouts.
      */
     static void resizeLayout( QWidget *widget, int margin, int spacing );
 
@@ -476,6 +486,10 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param lay layout to be resized
      * @param margin The new layout margin
      * @param spacing The new layout spacing
+     *
+     * @deprecated Use QLayout functions where necessary. Setting margin and spacing
+     * values recursively for all children prevents QLayout from creating platform native
+     * layouts.
      */
     static void resizeLayout( QLayout *lay, int margin, int spacing );
 
@@ -655,6 +669,8 @@ class KDEUI_EXPORT KDialog : public QDialog
      *
      * Use marginHint() and spacingHint() in your slot
      * to get the new values.
+     *
+     * @deprecated This signal is not emitted. Listen to QEvent::StyleChange events instead.
      */
     void layoutHintChanged();
 
@@ -818,6 +834,9 @@ class KDEUI_EXPORT KDialog : public QDialog
 
     /**
      * Updates the margins and spacings.
+     *
+     * @deprecated KDialog respects the style's margins and spacings automatically. Calling
+     * this function has no effect.
      */
     void updateGeometry();
 

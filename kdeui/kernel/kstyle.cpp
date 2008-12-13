@@ -141,6 +141,8 @@ KStyle::KStyle() : clickedLabel(0), d(new KStylePrivate)
 {
     //Set up some default metrics...
     setWidgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth, 2);
+    setWidgetLayoutProp(WT_Generic, Generic::DefaultLayoutSpacing, 6);
+    setWidgetLayoutProp(WT_Generic, Generic::DefaultLayoutMargin, 9);
 
     setWidgetLayoutProp(WT_PushButton, PushButton::ContentsMargin, 5);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin,    3);
@@ -2434,6 +2436,33 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
             else
                 return widgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth, option, widget);
 
+        case PM_DefaultChildMargin:
+        case PM_DefaultTopLevelMargin:
+            return widgetLayoutProp(WT_Generic, Generic::DefaultLayoutMargin, option, widget);
+
+        case PM_LayoutHorizontalSpacing:
+        case PM_LayoutVerticalSpacing:
+            // use layoutSpacingImplementation
+            return -1;
+
+        case PM_DefaultLayoutSpacing:
+            return widgetLayoutProp(WT_Generic, Generic::DefaultLayoutSpacing, option, widget);
+
+        case PM_LayoutLeftMargin:
+        case PM_LayoutTopMargin:
+        case PM_LayoutRightMargin:
+        case PM_LayoutBottomMargin:
+        {
+            PixelMetric marginMetric;
+            if ((option && (option->state & QStyle::State_Window))
+                || (widget && widget->isWindow())) {
+                marginMetric = PM_DefaultTopLevelMargin;
+            } else {
+                marginMetric = PM_DefaultChildMargin;
+            }
+            return pixelMetric(marginMetric, option, widget);
+        }
+
         case PM_ButtonMargin:
             return 0; //Better not return anything here since we already
             //incorporated this into SE_PushButtonContents
@@ -2621,6 +2650,14 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
 
     return QCommonStyle::pixelMetric(metric, option, widget);
 }
+
+int KStyle::layoutSpacingImplementation(QSizePolicy::ControlType control1, QSizePolicy::ControlType control2, Qt::Orientation orientation, const QStyleOption *option, const QWidget *widget) const
+{
+    Q_UNUSED(control1); Q_UNUSED(control2); Q_UNUSED(orientation);
+
+    return pixelMetric(PM_DefaultLayoutSpacing, option, widget);
+}
+
 
 bool KStyle::isVerticalTab(const QStyleOptionTab* tbOpt) const
 {
