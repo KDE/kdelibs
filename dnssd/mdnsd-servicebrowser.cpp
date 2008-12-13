@@ -29,6 +29,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTimer>
+#include <QtNetwork/QHostInfo>
 
 #define TIMEOUT_WAN 2000
 #define TIMEOUT_LAN 200
