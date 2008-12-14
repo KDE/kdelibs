@@ -106,18 +106,29 @@ public:
     Q_DECLARE_FLAGS(Controls,
                     Control)
 
+    /** @deprecated */
+    KDE_CONSTRUCTOR_DEPRECATED explicit KCharSelect(
+            QWidget *parent,
+            const Controls controls = AllGuiElements);
+
     /**
      * Constructor. @p controls can be used to show a custom set of widgets.
      *
      * The widget uses the following actions:
-     *   - KStandardActions::find()
-     *   - KStandardActions::back()
-     *   - KStandardActions::forward()
+     *   - KStandardActions::find() (edit_find)
+     *   - KStandardActions::back() (go_back)
+     *   - KStandardActions::forward() (go_forward)
      *
-     * @param collection the widget will put its actions into.
+     * If you provide a KActionCollection, this will be populated with the above actions,
+     * which you can then manually trigger or place in menus and toolbars.
+     *
+     * @param parent     the parent widget for this KCharSelect (see QWidget documentation)
+     * @param collection if this is not @c null, KCharSelect will place its actions into this
+     *                   collection
+     * @param controls   selects the visible controls on the KCharSelect widget
+     *
+     * @since 4.2
      */
-    KDE_CONSTRUCTOR_DEPRECATED explicit KCharSelect(QWidget *parent, const Controls controls = AllGuiElements);
-
     explicit KCharSelect(
             QWidget *parent,
             KActionCollection *collection,
@@ -148,21 +159,29 @@ public:
 public Q_SLOTS:
     /**
      * Highlights the character @p c. If the character is not displayed, the block is changed.
+     *
+     * @param c the character to highlight
      */
     void setCurrentChar(const QChar &c);
 
     /**
      * Sets the font which is displayed to @p font
+     *
+     * @param font the display font for the widget
      */
     void setCurrentFont(const QFont &font);
 
 Q_SIGNALS:
     /**
      * A new font is selected or the font size changed.
+     *
+     * @param font the new font
      */
-    void currentFontChanged(const QFont &_font);
+    void currentFontChanged(const QFont &font);
     /**
      * The current character is changed.
+     *
+     * @param c the new character
      */
     void currentCharChanged(const QChar &c);
     /**
@@ -171,6 +190,8 @@ Q_SIGNALS:
     void displayedCharsChanged();
     /**
      * A character is selected to be inserted somewhere.
+     *
+     * @param c the selected character
      */
     void charSelected(const QChar &c);
 
