@@ -176,6 +176,7 @@ ALIASES = \
 	"licenses=\xrefitem licenses \"License(s)\" \"Licenses\"" \
 	"FIXME=\xrefitem fixme \"Fixme\" \"Fixme\"" \
 	"bc=\xrefitem bc \"Binary Compatible\" \"Binary Compatible\"" \
+	"threadsafe=\xrefitem threadsafe \"Threadsafe\" \"Threadsafe\"" \
 	"artistic=<a href=\"http://www.opensource.org/licenses/artistic-license.php\">Artistic</a>" \
 	"bsd=<a href=\"http://www.xfree86.org/3.3.6/COPYRIGHT2.html#5\">BSD</a>" \
 	"x11=<a href=\"http://www.xfree86.org/3.3.6/COPYRIGHT2.html#3\">X11</a>" \
