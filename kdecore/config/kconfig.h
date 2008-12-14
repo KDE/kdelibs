@@ -40,7 +40,7 @@ class KConfigPrivate;
 
 /**
  * \class KConfig kconfig.h <KConfig>
- * 
+ *
  * \brief The central class of the KDE configuration data system.
  *
  * Quickstart:
@@ -53,7 +53,7 @@ class KConfigPrivate;
  * \endcode
  *
  * Load the configuration of a specific component (taking into account
- * possible custom dirs in KStandardDirs):
+ * possible custom directories in KStandardDirs):
  * \code
  * KConfig config( componentData(), "pluginrc" );
  * \endcode
@@ -70,6 +70,21 @@ class KConfigPrivate;
 class KDECORE_EXPORT KConfig : public KConfigBase
 {
 public:
+    /**
+     * Determines how the system-wide and user's global settings will affect
+     * the reading of the configuration.
+     *
+     * If CascadeConfig is selected, system-wide configuration sources are used
+     * to provide defaults for the settings accessed through this object, or
+     * possibly to override those settings in certain cases.
+     *
+     * IncludeGlobals does the same, but with the global settings sources.
+     *
+     * Note that the main configuration source overrides the cascaded sources,
+     * which override those provided to addConfigSources(), which override the
+     * global sources.  The exception is that if a key or group is marked as
+     * being immutable, it will not be overridden.
+     */
     enum OpenFlag {
         IncludeGlobals  = 0x01, ///< Blend kdeglobals into the config object.
         CascadeConfig   = 0x02, ///< Cascade to system-wide config files.
@@ -83,16 +98,56 @@ public:
     };
     Q_DECLARE_FLAGS(OpenFlags, OpenFlag)
 
+    /**
+     * Creates a KConfig object to manipulate a configuration file for the
+     * current application.
+     *
+     * If an absolute path is specified for @file, that file will be used
+     * as the store for the configuration settings.  If a non-absolute path
+     * is provided, the file will be looked for in the standard directory
+     * specified by resourceType.  If no path is provided, a default
+     * configuration file will be used based on the name of the main
+     * application component.
+     *
+     * @p mode determines whether the user or global settings will be allowed
+     * to influence the values returned by this object.  See OpenFlags for
+     * more details.
+     *
+     * @param file         the name of the file
+     * @param mode         how global settings should affect the configuration
+     *                     options exposed by this KConfig object
+     * @param resourceType The standard directory to look for the configuration
+     *                     file in
+     */
     explicit KConfig(const QString& file = QString(), OpenFlags mode = FullConfig,
                      const char* resourceType = "config");
 
+    /**
+     * Creates a KConfig object to manipulate the configuration for a specific
+     * component.
+     *
+     * If an absolute path is specified for @file, that file will be used
+     * as the store for the configuration settings.  If a non-absolute path
+     * is provided, the file will be looked for in the standard directory
+     * specified by resourceType.  If no path is provided, a default
+     * configuration file will be used based on the component's name.
+     *
+     * @param componentData the component that you wish to load a configuration
+     *                      file for
+     * @param file          overrides the configuration file name if not empty
+     * @param mode          how global settings should affect the configuration
+     *                      options exposed by this KConfig object.
+     *                      See OpenFlags
+     * @param resourceType  The standard directory to look for the configuration
+     *                      file in
+     */
     explicit KConfig(const KComponentData& componentData, const QString& file = QString(),
                      OpenFlags mode = FullConfig, const char* resourceType = "config");
 
     /**
      * @internal
      *
-     * Creates a KConfig oject using the specified backend. If the backend can not
+     * Creates a KConfig object using the specified backend. If the backend can not
      * be found or loaded, then the standard configuration parser is used as a fallback.
      *
      * @arg file the file to be parsed
@@ -105,10 +160,13 @@ public:
 
     virtual ~KConfig();
 
+    /**
+     * Returns the component data this configuration is for.
+     */
     const KComponentData &componentData() const; // krazy:exclude=constref
 
     /**
-     * Returns the filename passed to the constructor.
+     * Returns the filename used to store the configuration.
      */
     QString name() const;
 
@@ -123,10 +181,22 @@ public:
     AccessMode accessMode() const;
 
     /**
-     * Return false if the user cannot write to this KConfig instance,
-     * for instance because of permission problems.
-     * @param warnUser if true, show a message box telling the user to
-     * contact his system administrator for getting this problem fixed.
+     * Whether the configuration can be written to.
+     *
+     * If @p warnUser is true and the configuration cannot be
+     * written to (ie: this method returns @c false), a warning
+     * message box will be shown to the user telling them to
+     * contact their system administrator to get the problem fixed.
+     *
+     * The most likely cause for this method returning @c false
+     * is that the user does not have write permission for the
+     * configuration file.
+     *
+     * @param warnUser whether to show a warning message to the user
+     *                 if the configuration cannot be written to
+     *
+     * @returns true if the configuration can be written to, false
+     *          if the configuration cannot be written to
      */
     bool isConfigWritable(bool warnUser);
     /// @}
@@ -135,54 +205,72 @@ public:
      * Copies all entries from this config object to a new config
      * object that will save itself to @p file.
      *
-     * Actual saving to @p file happens when the returned object is
-     * destructed or when sync() is called upon it.
+     * The configuration will not actually be saved to @p file
+     * until the returned object is destroyed, or sync() is called
+     * on it.
      *
-     * @param file the new config object will save itself to.
-     * @param config optional config object to reuse
+     * Do not forget to delete the returned KConfig object if
+     * @p config was 0.
      *
-     * @return the same as @p config if it was set, otherwise a new KConfig object.
-     * In that case, do not forget to delete it!
+     * @param file   the new config object will save itself to
+     * @param config if not 0, copy to the given KConfig object rather
+     *               than creating a new one
+     *
+     * @return @p config if it was set, otherwise a new KConfig object
      */
-    KConfig* copyTo(const QString &file, KConfig *config=0) const;
+    KConfig* copyTo(const QString &file, KConfig *config = 0) const;
 
     /**
-     * Checks whether the config file contains the update @p id
-     * as contained in @p updateFile. If not, it runs kconf_update
-     * to update the config file.
+     * Ensures that the configuration file contains a certain update.
+     *
+     * If the configuration file does not contain the update @p id
+     * as contained in @p updateFile, kconf_update is run to update
+     * the configuration file.
      *
      * If you install config update files with critical fixes
      * you may wish to use this method to verify that a critical
      * update has indeed been performed to catch the case where
      * a user restores an old config file from backup that has
      * not been updated yet.
+     *
      * @param id the update to check
      * @param updateFile the file containing the update
      */
     void checkUpdate(const QString &id, const QString &updateFile);
 
     /**
-     * Clears all internal data structures and then reread
-     * configuration information from persistent storage.
+     * Updates the state of this object to match the persistent storage.
      */
     void reparseConfiguration();
 
     /// @{ extra config files
     /**
-     * Sets the merge stack to the list of files. The stack is last in first out with
-     * the top of the stack being the most specific config file. The files in the merge
-     * stack will be read before the file passed to the constructor and any files that
-     * cascade from that file. This means that the entries read from the files in the
-     * merge stack will be treated as defaults. This function will automatically call
-     * reparseConfiguration() for you.
+     * Adds the list of configuration sources to the merge stack.
      *
-     * @note: Most specific config file is relative to this list, the overall
-     * most specific file of this KConfig object is still the file it was
-     * created with, no matter which file is passed last into this function.
-     * This means that writing always goes to the file which was used to
-     * create the KConfig object.
+     * Currently only files are accepted as configuration sources.
      *
-     * @param files A list of extra config files.
+     * The first entry in @p sources is treated as the most general and will
+     * be overridden by the second entry.  The settings in the final entry
+     * in @p sources will override all the other sources provided in the list.
+     *
+     * The settings in @p sources will also be overridden by the sources
+     * provided by any previous calls to addConfigSources().
+     *
+     * The settings in the global configuration sources will be overridden by
+     * the sources provided to this method (@see IncludeGlobals).
+     * All the sources provided to any call to this method will be overridden
+     * by any files that cascade from the source provided to the constructor
+     * (@see CascadeConfig), which will in turn be
+     * overridden by the source provided to the constructor (either explicitly
+     * or implicity via a KComponentData).
+     *
+     * Note that only the most specific file, ie: the file provided to the
+     * constructor, will be written to by this object.
+     *
+     * The state is automatically updated by this method, so there is no need to call
+     * reparseConfiguration().
+     *
+     * @param sources A list of extra config sources.
      */
     void addConfigSources(const QStringList &sources);
 
@@ -194,21 +282,34 @@ public:
     QString locale() const;
     /**
      * Sets the locale to @p aLocale.
+     *
      * The global locale is used by default.
+     *
      * @note If set to the empty string, @b no locale will be matched. This effectively disables
      * reading translated entries.
-     * @return @c true if locale was changed and configuration was reparsed.
+     *
+     * @return @c true if locale was changed, @c false if the call had no
+     *         effect (eg: @p aLocale was already the current locale for this
+     *         object)
      */
     bool setLocale(const QString& aLocale);
     /// @}
 
     /// @{ defaults
     /**
-     * When set, all readEntry calls return the system-wide (default) values instead of
-     * the user's preference.
+     * When set, all readEntry calls return the system-wide (default) values
+     * instead of the user's settings.
+     *
      * This is off by default.
+     *
+     * @param b whether to read the system-wide defaults instead of the
+     *          user's settings
      */
     void setReadDefaults(bool b);
+    /**
+     * @returns @c true if the system-wide defaults will be read instead of the
+     *          user's settings
+     */
     bool readDefaults() const;
     /// @}
 
@@ -219,14 +320,20 @@ public:
 
     /// @{ global
     /**
+     * @deprecated
+     *
      * Forces all following write-operations to be performed on @c kdeglobals,
      * independent of the @c Global flag in writeEntry().
+     *
      * @param force true to force writing to kdeglobals
      * @see forceGlobal
      */
     KDE_DEPRECATED void setForceGlobal(bool force);
     /**
+     * @deprecated
+     *
      * Returns whether all entries are being written to @c kdeglobals.
+     *
      * @return @c true if all entries are being written to @c kdeglobals
      * @see setForceGlobal
      * @deprecated
@@ -238,8 +345,9 @@ public:
     QStringList groupList() const;
 
     /**
-     * Returns a map (tree) of entries in a particular group.  Only the actual entry as a string
-     * is returned.
+     * Returns a map (tree) of entries in a particular group.
+     *
+     * The entries are all returned as strings.
      *
      * @param aGroup The group to get entries from.
      *
