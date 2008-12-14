@@ -40,21 +40,21 @@ typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
 
 /**
  * \class KConfigGroup kconfiggroup.h <KConfigGroup>
- * 
+ *
  * A class for one specific group in a KConfig object.
- * 
+ *
  * If you want to access the top-level entries of a KConfig
  * object, which are not associated with any group, use an
  * empty group name.
- * A KConfigGroup can be read-only if it is constructed from a const config object
- * or from another read-only group.
  *
+ * A KConfigGroup will be read-only if it is constructed from a
+ * const config object or from another read-only group.
  */
 class KDECORE_EXPORT KConfigGroup : public KConfigBase
 {
 public:
     /**
-     * Constructs a null group. A null group is invalid.
+     * Constructs an invalid group.
      *
      * \see isValid
      */
@@ -63,40 +63,54 @@ public:
     /**
      * Construct a config group corresponding to @p group in @p master.
      *
-     * This allows to create subgroups, by passing an existing group as @p master.
+     * This allows the creation of subgroups by passing another
+     * group as @p master.
      *
      * @p group is the group name encoded in UTF-8.
      */
     KConfigGroup(KConfigBase *master, const QString &group);
+    /** @overload "KConfigGroup(KConfigBase*, const QString &)" */
     KConfigGroup(KConfigBase *master, const char *group);
 
     /**
-     * Construct a read-only config group. A read-only group will silently ignore
-     * any attempts to write to it.
+     * Construct a read-only config group.
      *
-     * This allows to create subgroups, by passing an existing group as @p master.
+     * A read-only group will silently ignore any attempts to write to it.
+     *
+     * This allows the creation of subgroups by passing an existing group
+     * as @p master.
      */
     KConfigGroup(const KConfigBase *master, const QString &group);
+    /** @overload "KConfigGroup(const KConfigBase*, const QString &)" */
     KConfigGroup(const KConfigBase *master, const char *group);
 
+    /** @overload "KConfigGroup(const KConfigBase*, const QString &)" */
     KConfigGroup(const KSharedConfigPtr &master, const QString& group);
+    /** @overload "KConfigGroup(const KConfigBase*, const QString &)" */
     KConfigGroup(const KSharedConfigPtr &master, const char* group);
 
+    /**
+     * Creates a read-only copy of a read-only group.
+     */
     KConfigGroup(const KConfigGroup &);
     KConfigGroup &operator=(const KConfigGroup &);
 
     ~KConfigGroup();
 
     /**
-     * Returns \p true if the group is valid; otherwise returns \p false. A group is invalid if it
-     * was constructed without arguments.
+     * Whether the group is valid.
+     *
+     * A group is invalid if it was constructed without arguments.
      *
      * You should not call any functions on an invalid group.
+     *
+     * @return @c true if the group is valid, @c false if it is invalid.
      */
     bool isValid() const;
 
     /**
      * The name of this group.
+     *
      * The root group is named "<default>".
      */
     QString name() const;
@@ -120,43 +134,65 @@ public:
      * Return the config object that this group belongs to.
      */
     KConfig* config();
+    /**
+     * Return the config object that this group belongs to.
+     */
     const KConfig* config() const;
 
     /**
-     * Changes the group of the object. This is a convenience function and should
-     * not be overused. Prefer another object for another group to avoid mixture of
-     * groups. A subgroup can only change to another subgroup of the parent.
+     * @deprecated
+     *
+     * Changes the group of the object.
+     *
+     * Create another KConfigGroup from the parent of this group instead.
      */
     KDE_DEPRECATED void changeGroup( const QString &group );
+    /** @deprecated
+     * @overload "changeGroup(const QString &)"
+     */
     KDE_DEPRECATED void changeGroup( const char *group);
 
     /**
-     * Copies the entries in this group to another config object.
-     * @param other The other config object to copy this group's entries to. @note @p other
-     *        @em can be either another group or a different file.
+     * Copies the entries in this group to another configuration object.
+     *
+     * @note @p other can be either another group or a different file.
+     *
+     * @param other  the configuration object to copy this group's entries to
+     * @param pFlags the flags to use when writing the entries to the
+     *               other configuration object
      *
      * @since 4.1
      */
     void copyTo(KConfigBase *other, WriteConfigFlags pFlags = Normal) const;
 
     /**
-     * Changes the group that this group belongs to.
+     * Changes the configuration object that this group belongs to.
      *
-     * @param parent the config object to place this group under. If @p parent is a KConfig it will be
-     *               promoted to a top-level group.
+     * @note @p other can be another group, the top-level KConfig object or
+     * a different KConfig object entirely.
+     *
+     * If @p parent is already the parent of this group, this method will have
+     * no effect.
+     *
+     * @param parent the config object to place this group under
+     * @param pFlags the flags to use in determining which storage source to
+     *               write the data to
      *
      * @since 4.1
      */
     void reparent(KConfigBase* parent, WriteConfigFlags pFlags = Normal);
 
     /**
-     * Returns the group that this group belongs to, can be invalid if this is a top-level group.
+     * Returns the group that this group belongs to.
+     *
+     * @returns the parent group, or an invalid group if this is a top-level
+     *          group
      *
      * @since 4.1
      */
     KConfigGroup parent() const;
 
-    /** 
+    /**
      * @reimp
      */
     QStringList groupList() const;
@@ -195,6 +231,7 @@ public:
     template <typename T>
         inline T readEntry(const QString& key, const T& aDefault) const
             { return readCheck(key.toUtf8().constData(), aDefault); }
+    /** @overload "readEntry(const QString& const T&) const" */
     template <typename T>
         inline T readEntry(const char *key, const T& aDefault) const
             { return readCheck(key, aDefault); }
@@ -207,27 +244,25 @@ public:
      * @return The value for this key. Can be QVariant() if aDefault is null.
      */
     QVariant readEntry(const QString& key, const QVariant &aDefault) const;
+    /** @overload "readEntry(char*, const QVariant &) const" */
     QVariant readEntry(const char* key, const QVariant &aDefault) const;
 
     /**
-     * Reads the value of an entry specified by @p key in the current group.
+     * Reads the string value of an entry specified by @p key in the current group.
+     *
      * If you want to read a path, please use readPathEntry().
      *
      * @param key The key to search for.
      * @param aDefault A default value returned if the key was not found.
      * @return The value for this key. Can be QString() if aDefault is null.
      */
-    QString readEntry(const char* key, const QString& aDefault ) const;
     QString readEntry(const QString& key, const QString& aDefault) const;
+    /** @overload "readEntry(char*, const QString &) const" */
+    QString readEntry(const char* key, const QString& aDefault ) const;
 
-    /**
-     * Reads the value of an entry specified by @p key in the current group.
-     *
-     * @param key The key to search for.
-     * @param aDefault A default value returned if the key was not found.
-     * @return The value for this key. Can be QString() if aDefault is null.
-     */
+    /** @overload "readEntry(char*, const QString &) const" */
     QString readEntry(const QString &key, const char * aDefault = 0) const;
+    /** @overload "readEntry(char*, const QString &) const" */
     QString readEntry(const char *key, const char *aDefault = 0 ) const;
 
     /**
