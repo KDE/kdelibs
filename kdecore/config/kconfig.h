@@ -126,7 +126,7 @@ public:
      * Creates a KConfig object to manipulate the configuration for a specific
      * component.
      *
-     * If an absolute path is specified for @file, that file will be used
+     * If an absolute path is specified for @p file, that file will be used
      * as the store for the configuration settings.  If a non-absolute path
      * is provided, the file will be looked for in the standard directory
      * specified by resourceType.  If no path is provided, a default
