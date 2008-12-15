@@ -16,11 +16,11 @@ The structure of the .kcfg file is described by its DTD kcfg.xsd.
 
 The \<kcfgfile\> tag contains the name of the configuration file described.
 Omitting the name will make the generated class use the default configuration
-file ("<appname>rc").
+file ("\<appname\>rc").
 
 The \<include\> tags are optional and may contain C++ header files that
 are needed to compile the code needed to compute default values. To generate
-a #include "..." statement instead of #include <...>, enclose the header
+a \#include "..." statement instead of \#include \<...\>, enclose the header
 file name in double quotes (e.g. \<include\>"header.h"\</include\>).
 
 The remaining entries in the XML file are grouped by the tag \<group\> 
@@ -138,16 +138,16 @@ The following options are read from the kcfgc file:
   <td>comma separated list of strings</td>
   <td>-</td>
   <td>Names of files to be included in the header of the generated class. Enclose a
-  file name in (escaped) double quotes to generate #include "..." instead of
-  #include <...>.</td>
+  file name in (escaped) double quotes to generate \#include "..." instead of
+  \#include \<...\>.</td>
 </tr>
 <tr>
   <td><b>SourceIncludeFiles</b></td>
   <td>comma separated list of strings</td>
   <td>-</td>
   <td>Names of files to be included in the source file of the generated class. Enclose
-  a file name in (escaped) double quotes to generate #include "..." instead of
-  #include <...>.</td>
+  a file name in (escaped) double quotes to generate \#include "..." instead of
+  \#include \<...\>.</td>
 </tr>
 <tr>
   <td><b>Mutators</b></td>
