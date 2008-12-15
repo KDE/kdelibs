@@ -370,7 +370,8 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     dirsMenu->setLayoutDirection(Qt::LeftToRight);
     int i = 0;
     foreach (const QString& subdir, m_subdirs) {
-        const QString text = KStringHandler::csqueeze(subdir, 60);
+        QString text = KStringHandler::csqueeze(subdir, 60);
+        text.replace('&', "&&");
         QAction* action = new QAction(text, this);
         action->setData(i);
         dirsMenu->addAction(action);
