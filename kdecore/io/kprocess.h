@@ -63,7 +63,7 @@ public:
                  to the parent process' respective channel */
         OnlyStdoutChannel,
             /**< Only standard output is handled; standard error is forwarded */
-        OnlyStderrChannel  /**< ... and the other way round */
+        OnlyStderrChannel  /**< Only standard error is handled; standard output is forwarded */
     };
 
     /**
