@@ -189,9 +189,9 @@ public:
     bool listDir( KDirLister *lister, const KUrl& _url, bool _keep, bool _reload );
 
     // stop all running jobs for lister
-    void stop( KDirLister *lister );
+    void stop( KDirLister *lister, bool silent = false );
     // stop just the job listing url for lister
-    void stop( KDirLister *lister, const KUrl &_url );
+    void stop( KDirLister *lister, const KUrl &_url, bool silent = false );
 
   void setAutoUpdate( KDirLister *lister, bool enable );
 
@@ -256,7 +256,7 @@ private:
     bool validUrl( const KDirLister *lister, const KUrl& _url ) const;
 
     // helper for both stop methods
-    void stopLister(KDirLister* lister, const QString& url, KDirListerCacheDirectoryData& dirData);
+    void stopLister(KDirLister* lister, const QString& url, KDirListerCacheDirectoryData& dirData, bool silent);
 
     KIO::ListJob *jobForUrl( const QString& url, KIO::ListJob *not_job = 0 );
     const KUrl& joburl( KIO::ListJob *job );

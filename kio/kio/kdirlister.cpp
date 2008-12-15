@@ -119,32 +119,29 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 #endif
   //kDebug(7004) << lister << "url=" << _url << "keep=" << _keep << "reload=" << _reload;
 
-  if ( !_keep )
-  {
-    // stop any running jobs for lister
-    stop( lister );
+    if (!_keep) {
+        // stop any running jobs for lister
+        stop(lister, true /*silent*/);
 
-    // clear our internal list for lister
-    forgetDirs( lister );
+        // clear our internal list for lister
+        forgetDirs(lister);
 
-    lister->d->rootFileItem = KFileItem();
-  }
-  else if ( lister->d->lstDirs.contains( _url ) )
-  {
-    // stop the job listing _url for this lister
-    stop( lister, _url );
+        lister->d->rootFileItem = KFileItem();
+    } else if (lister->d->lstDirs.contains(_url)) {
+        // stop the job listing _url for this lister
+        stop(lister, _url, true /*silent*/);
 
-    // remove the _url as well, it will be added in a couple of lines again!
-    // forgetDirs with three args does not do this
-    // TODO: think about moving this into forgetDirs
-    lister->d->lstDirs.removeAll( _url );
+        // remove the _url as well, it will be added in a couple of lines again!
+        // forgetDirs with three args does not do this
+        // TODO: think about moving this into forgetDirs
+        lister->d->lstDirs.removeAll(_url);
 
-    // clear _url for lister
-    forgetDirs( lister, _url, true );
+        // clear _url for lister
+        forgetDirs(lister, _url, true);
 
-    if ( lister->d->url == _url )
-      lister->d->rootFileItem = KFileItem();
-  }
+        if (lister->d->url == _url)
+            lister->d->rootFileItem = KFileItem();
+    }
 
     lister->d->complete = false;
 
@@ -338,7 +335,7 @@ bool KDirListerCache::validUrl( const KDirLister *lister, const KUrl& url ) cons
   return true;
 }
 
-void KDirListerCache::stop( KDirLister *lister )
+void KDirListerCache::stop( KDirLister *lister, bool silent )
 {
 #ifdef DEBUG_CACHE
     //printDebug();
@@ -355,7 +352,7 @@ void KDirListerCache::stop( KDirLister *lister )
             const QString url = dirit.key();
 
             //kDebug(7004) << " found lister in list - for " << url;
-            stopLister(lister, url, dirData);
+            stopLister(lister, url, dirData, silent);
             stopped = true;
         }
     }
@@ -367,7 +364,9 @@ void KDirListerCache::stop( KDirLister *lister )
     }
 
     if ( stopped ) {
-        emit lister->canceled();
+        if (!silent) {
+            emit lister->canceled();
+        }
         lister->d->complete = true;
     }
 
@@ -375,7 +374,7 @@ void KDirListerCache::stop( KDirLister *lister )
     //Q_ASSERT( lister->d->complete );
 }
 
-void KDirListerCache::stop( KDirLister *lister, const KUrl& _u )
+void KDirListerCache::stop(KDirLister *lister, const KUrl& _u, bool silent)
 {
     KUrl url(_u);
     url.adjustPath( KUrl::RemoveTrailingSlash );
@@ -395,18 +394,20 @@ void KDirListerCache::stop( KDirLister *lister, const KUrl& _u )
     KDirListerCacheDirectoryData& dirData = dirit.value();
     if ( dirData.listersCurrentlyListing.removeAll(lister) ) { // contains + removeAll in one go
 
-        stopLister(lister, urlStr, dirData);
+        stopLister(lister, urlStr, dirData, silent);
 
         if ( lister->d->numJobs() == 0 ) {
             lister->d->complete = true;
             // we killed the last job for lister
-            emit lister->canceled();
+            if (!silent) {
+                emit lister->canceled();
+            }
         }
     }
 }
 
 // Helper for both stop() methods
-void KDirListerCache::stopLister(KDirLister* lister, const QString& url, KDirListerCacheDirectoryData& dirData)
+void KDirListerCache::stopLister(KDirLister* lister, const QString& url, KDirListerCacheDirectoryData& dirData, bool silent)
 {
     // Let's just leave the job running.
     // After all, update jobs do run for "listersCurrentlyHolding",
@@ -415,7 +416,8 @@ void KDirListerCache::stopLister(KDirLister* lister, const QString& url, KDirLis
     // Move lister to listersCurrentlyHolding
     dirData.listersCurrentlyHolding.append(lister);
 
-    emit lister->canceled( KUrl( url ) );
+    if (!silent)
+        emit lister->canceled(KUrl(url));
 }
 
 void KDirListerCache::setAutoUpdate( KDirLister *lister, bool enable )

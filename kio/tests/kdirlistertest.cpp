@@ -512,13 +512,59 @@ void KDirListerTest::testOpenUrlTwice()
     QCOMPARE(spyStarted.count(), 2);
     QCOMPARE(spyCompleted.count(), 1);
     QCOMPARE(spyCompletedKUrl.count(), 1);
-    QCOMPARE(spyCanceled.count(), 1); // first one was stopped
-    QCOMPARE(spyCanceledKUrl.count(), 1);
+    QCOMPARE(spyCanceled.count(), 0); // should not be emitted, see next test
+    QCOMPARE(spyCanceledKUrl.count(), 0);
     QCOMPARE(spyClear.count(), 2);
     QCOMPARE(spyClearKUrl.count(), 0);
     QCOMPARE(m_items.count(), 4);
     QVERIFY(secondDirLister.isFinished());
     disconnect(&secondDirLister, 0, this, 0);
+}
+
+void KDirListerTest::testOpenUrlTwiceWithKeep()
+{
+    // Calling openUrl(reload)+openUrl(keep) on a new dir,
+    // before listing even starts (#177387)
+    // Well, in 177387 the second openUrl call was made from within slotCanceled
+    // called by the first openUrl
+    // (slotLoadingFinished -> setCurrentItem -> expandToUrl -> listDir),
+    // which messed things up in kdirlister (unexpected reentrancy).
+    m_items.clear();
+    const QString path = m_tempDir.name() + "/newsubdir";
+    QDir().mkdir(path);
+    KDirLister secondDirLister;
+    QSignalSpy spyStarted(&secondDirLister, SIGNAL(started(KUrl)));
+    QSignalSpy spyClear(&secondDirLister, SIGNAL(clear()));
+    QSignalSpy spyClearKUrl(&secondDirLister, SIGNAL(clear(KUrl)));
+    QSignalSpy spyCompleted(&secondDirLister, SIGNAL(completed()));
+    QSignalSpy spyCompletedKUrl(&secondDirLister, SIGNAL(completed(KUrl)));
+    QSignalSpy spyCanceled(&secondDirLister, SIGNAL(canceled()));
+    QSignalSpy spyCanceledKUrl(&secondDirLister, SIGNAL(canceled(KUrl)));
+    connect(&secondDirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+
+    secondDirLister.openUrl(KUrl(path)); // will start a list job
+    QCOMPARE(spyStarted.count(), 1);
+    QCOMPARE(spyCompleted.count(), 0);
+
+    qDebug("calling openUrl again");
+    secondDirLister.openUrl(KUrl(path), KDirLister::Keep); // stops and restarts the job
+
+    qDebug("waiting for completed");
+    connect(&secondDirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
+    enterLoop();
+
+    QCOMPARE(spyStarted.count(), 2);
+    QCOMPARE(spyCompleted.count(), 1);
+    QCOMPARE(spyCompletedKUrl.count(), 1);
+    QCOMPARE(spyCanceled.count(), 0); // should not be emitted, it led to recursion
+    QCOMPARE(spyCanceledKUrl.count(), 0);
+    QCOMPARE(spyClear.count(), 1);
+    QCOMPARE(spyClearKUrl.count(), 1);
+    QCOMPARE(m_items.count(), 0);
+    QVERIFY(secondDirLister.isFinished());
+    disconnect(&secondDirLister, 0, this, 0);
+
+    QDir().remove(path);
 }
 
 void KDirListerTest::testOpenAndStop()

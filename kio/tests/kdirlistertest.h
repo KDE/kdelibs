@@ -39,6 +39,7 @@ private Q_SLOTS:
     void testConcurrentListing();
     void testConcurrentHoldingListing();
     void testOpenUrlTwice();
+    void testOpenUrlTwiceWithKeep();
     void testOpenAndStop();
     void testDeleteCurrentDir(); // must be last!
 
