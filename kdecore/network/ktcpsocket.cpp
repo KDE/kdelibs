@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
+    Copyright (C) 2007, 2008 Andreas Hartmetz <ahartmetz@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -80,7 +80,7 @@ static QSsl::SslProtocol qSslProtocolFromK(KTcpSocket::SslVersion sslVersion)
         return QSsl::AnyProtocol;
     }
     //does it contain any valid protocol?
-    if (!(sslVersion & (KTcpSocket::SslV2 | KTcpSocket::SslV2 | KTcpSocket::TlsV1))) {
+    if (!(sslVersion & (KTcpSocket::SslV2 | KTcpSocket::SslV3 | KTcpSocket::TlsV1))) {
         return QSsl::UnknownProtocol;
     }
 
