@@ -189,7 +189,7 @@ public:
     QDateTime lastModified() const;
     /** @return the absolute path to the object */
     QString filePath() const;
-    /** @Return the size of the object */
+    /** @return the size of the object */
     qint64 size() const;
 
 protected:
