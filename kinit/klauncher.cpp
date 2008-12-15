@@ -56,6 +56,8 @@
 // Dispose slaves after being idle for SLAVE_MAX_IDLE seconds
 #define SLAVE_MAX_IDLE	30
 
+// #define KLAUNCHER_VERBOSE_OUTPUT
+
 using namespace KIO;
 
 IdleSlave::IdleSlave(QObject *parent)
@@ -373,10 +375,19 @@ void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
 }
 
 void
-KLauncher::processDied(pid_t pid, long /* exitStatus */)
+KLauncher::processDied(pid_t pid, long exitStatus)
 {
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+    kDebug(7016) << pid << "exitStatus=" << exitStatus;
+#else
+    Q_UNUSED(exitStatus);
+    // We should probably check the exitStatus for the uniqueapp case?
+#endif
    foreach (KLaunchRequest *request, requestList)
    {
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+       kDebug(7016) << "  had pending request" << request->pid;
+#endif
       if (request->pid == pid)
       {
          if (request->dbus_startup_type == KService::DBusWait)
@@ -386,10 +397,16 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
             request->status = KLaunchRequest::Running;
          else
             request->status = KLaunchRequest::Error;
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+         kDebug(7016) << pid << "died, requestDone. status=" << request->status;
+#endif
          requestDone(request);
          return;
       }
    }
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+   kDebug(7016) << "found no pending requests for PID" << pid;
+#endif
 }
 
 void
@@ -416,13 +433,16 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
       }
 
       const QString rAppId = request->dbus_name;
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+      kDebug(7016) << "had pending request" << rAppId;
+#endif
       if (rAppId.isEmpty())
           return;
 
-      //int l = strlen(rAppId);
+      const int len = rAppId.length();
 
-      QChar c = appId.length() > rAppId.length() ? appId.at(rAppId.length()) : QChar();
-      if (appId.startsWith(rAppId) && ((appId.length() == rAppId.length()) ||
+      QChar c = appId.length() > len ? appId.at(len) : QChar();
+      if (appId.startsWith(rAppId) && ((appId.length() == len) ||
                   (c == QLatin1Char('-'))))
       {
          request->dbus_name = appId;
@@ -757,18 +777,27 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    }
 
    request->name = request->arg_list.takeFirst();
-   request->dbus_startup_type =  service->dbusStartupType();
 
-   if ((request->dbus_startup_type == KService::DBusUnique) ||
-       (request->dbus_startup_type == KService::DBusMulti))
-   {
-      QVariant v = service->property("X-DBUS-ServiceName");
-      if (v.isValid())
-         request->dbus_name = v.toString().toUtf8();
-      if (request->dbus_name.isEmpty())
-      {
-         request->dbus_name = "org.kde." + QFile::encodeName(KRun::binaryName(service->exec(), true));
-      }
+   if (request->name.endsWith("/kioexec")) {
+       // Special case for kioexec; if createArgs said we were going to use it,
+       // then we have to expect a kioexec-PID, not a org.kde.finalapp...
+       // Testcase: konqueror www.kde.org, RMB on link, open with, kruler.
+
+       request->dbus_startup_type = KService::DBusMulti;
+       request->dbus_name = "org.kde.kioexec";
+   } else {
+       request->dbus_startup_type = service->dbusStartupType();
+
+       if ((request->dbus_startup_type == KService::DBusUnique) ||
+           (request->dbus_startup_type == KService::DBusMulti)) {
+           const QVariant v = service->property("X-DBUS-ServiceName");
+           if (v.isValid()) {
+               request->dbus_name = v.toString().toUtf8();
+           }
+           if (request->dbus_name.isEmpty()) {
+               request->dbus_name = "org.kde." + QFile::encodeName(KRun::binaryName(service->exec(), true));
+           }
+       }
    }
 
    request->pid = 0;
@@ -1194,7 +1223,9 @@ KLauncher::slotFinished(int exitCode, QProcess::ExitStatus exitStatus )
     {
         if (request->process == p)
         {
-            kDebug() << "found process setting to done";
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+            kDebug(7016) << "found KProcess, request done";
+#endif
             if (exitCode == 0  && exitStatus == QProcess::NormalExit)
                 request->status = KLaunchRequest::Done;
             else
