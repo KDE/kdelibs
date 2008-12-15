@@ -30,7 +30,6 @@
 
 #include <QtGui/QLabel>
 #include <QtCore/QRegExp>
-#include <QtCore/QPointer>
 #include <QtCore/QHash>
 #include <QTextDocument>
 
