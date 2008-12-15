@@ -238,7 +238,7 @@ class KCleanUpGlobalStatic
  *     ...
  * };
  *
- * K_GLOBAL_STATIC_WITH_ARG(A, globalA, ("foo", 0))
+ * K_GLOBAL_STATIC_WITH_ARGS(A, globalA, ("foo", 0))
  * // The above creates a new globally static variable named 'globalA' which you
  * // can use as a pointer to an instance of A.
  *
