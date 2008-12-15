@@ -113,11 +113,15 @@ public:
      * to influence the values returned by this object.  See OpenFlags for
      * more details.
      *
+     * @note You probably want to use KSharedConfig::openConfig instead.
+     *
      * @param file         the name of the file
      * @param mode         how global settings should affect the configuration
      *                     options exposed by this KConfig object
      * @param resourceType The standard directory to look for the configuration
-     *                     file in
+     *                     file in (see KStandardDirs)
+     *
+     * @sa KSharedConfig::openConfig(const QString&, OpenFlags, const char*)
      */
     explicit KConfig(const QString& file = QString(), OpenFlags mode = FullConfig,
                      const char* resourceType = "config");
@@ -132,6 +136,12 @@ public:
      * specified by resourceType.  If no path is provided, a default
      * configuration file will be used based on the component's name.
      *
+     * @p mode determines whether the user or global settings will be allowed
+     * to influence the values returned by this object.  See KConfig::OpenFlags for
+     * more details.
+     *
+     * @note You probably want to use KSharedConfig::openConfig instead.
+     *
      * @param componentData the component that you wish to load a configuration
      *                      file for
      * @param file          overrides the configuration file name if not empty
@@ -140,6 +150,8 @@ public:
      *                      See OpenFlags
      * @param resourceType  The standard directory to look for the configuration
      *                      file in
+     *
+     * @sa KSharedConfig::openConfig(const KComponentData&, const QString&, OpenFlags, const char*)
      */
     explicit KConfig(const KComponentData& componentData, const QString& file = QString(),
                      OpenFlags mode = FullConfig, const char* resourceType = "config");

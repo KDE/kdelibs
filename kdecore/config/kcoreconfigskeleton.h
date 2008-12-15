@@ -154,15 +154,15 @@
     virtual void setProperty(const QVariant &p) = 0;
 
     /**
-     * Check whether the item is equal to v.
+     * Check whether the item is equal to p.
      *
      * Use this function to compare items that use custom types such as KUrl,
      * because QVariant::operator== will not work for those.
      *
-     * @param v QVariant to compare to
-     * @return true if the item is equal to v, false otherwise
+     * @param p QVariant to compare to
+     * @return true if the item is equal to p, false otherwise
      */
-    virtual bool isEqual(const QVariant &v) const = 0;
+    virtual bool isEqual(const QVariant &p) const = 0;
 
     /**
      * Return item as property
@@ -406,10 +406,10 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
-    /** @copydoc KConfigSkeletonItem::property() */
+    /** @copydoc KConfigSkeletonItem::property() const */
     QVariant property() const;
 
   private:
@@ -462,10 +462,10 @@ public:
         /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
         void setProperty(const QVariant & p);
 
-        /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+        /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
 	bool isEqual(const QVariant &p) const;
 
-        /** @copydoc KConfigSkeletonItem::property() */
+        /** @copydoc KConfigSkeletonItem::property() const */
         QVariant property() const;
     };
 
@@ -482,9 +482,10 @@ public:
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
+    /** @copydoc KConfigSkeletonItem::property() const */
     QVariant property() const;
   };
 
@@ -505,10 +506,10 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
-    /** @copydoc KConfigSkeletonItem::property() */
+    /** @copydoc KConfigSkeletonItem::property() const */
     QVariant property() const;
   };
 
@@ -529,7 +530,7 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
@@ -574,7 +575,7 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
@@ -664,7 +665,7 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
@@ -705,7 +706,7 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
@@ -747,7 +748,7 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
@@ -789,7 +790,7 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
@@ -813,7 +814,7 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
@@ -837,7 +838,7 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
@@ -862,7 +863,7 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
@@ -887,7 +888,7 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
@@ -932,7 +933,7 @@ public:
         /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
         void setProperty(const QVariant & p);
 
-        /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+        /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
 	bool isEqual(const QVariant &p) const;
 
         /** @copydoc KConfigSkeletonItem::property() */
@@ -956,7 +957,7 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
-    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) const */
     bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
@@ -969,21 +970,23 @@ public:
    * Constructor.
    *
    * @param configname name of config file. If no name is given, the default
-   * config file as returned by KGlobal::config() is used.
+   *                   config file as returned by KGlobal::config() is used
+   * @param parent the parent object (see QObject documentation)
    */
   explicit KCoreConfigSkeleton(const QString & configname = QString(), QObject* parent = 0);
 
   /**
    * Constructor.
    *
-   * @param config configuration object to use.
+   * @param config configuration object to use
+   * @param parent the parent object (see QObject documentation)
    */
   explicit KCoreConfigSkeleton(KSharedConfig::Ptr config, QObject* parent = 0);
 
   /**
    * Destructor
    */
-    virtual ~ KCoreConfigSkeleton();
+  virtual ~KCoreConfigSkeleton();
 
   /**
    * Set all registered items to their default values.
@@ -1164,6 +1167,10 @@ public:
                           qint64 defaultValue = 0,
                           const QString & key = QString());
 
+  /**
+   * @deprecated
+   * Use addItemLongLong().
+   */
   KDE_DEPRECATED ItemLongLong *addItemInt64( const QString& name, qint64 &reference,
                           qint64 defaultValue = 0,
                           const QString & key = QString());
@@ -1183,6 +1190,10 @@ public:
                             quint64 defaultValue = 0,
                             const QString & key = QString());
 
+  /**
+   * @deprecated
+   * Use addItemULongLong().
+   */
   KDE_DEPRECATED ItemULongLong *addItemUInt64(const QString & name, quint64 &reference,
                             quint64 defaultValue = 0,
                             const QString & key = QString());
