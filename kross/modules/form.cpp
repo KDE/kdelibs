@@ -100,6 +100,7 @@ namespace Kross {
     {
         public:
             KFileWidget* filewidget;
+            QString filename;
     };
 
 }
@@ -116,6 +117,9 @@ FormFileWidget::FormFileWidget(QWidget* parent, const QString& startDirOrVariabl
     layout->addWidget( d->filewidget );
     //QMetaObject::invokeMethod(d->filewidget, "toggleSpeedbar", Q_ARG(bool,false));
     //KFileDialog::setMode( KFile::File | KFile::LocalOnly );
+
+    // slotOk() emits accepted, accept() emits fileSelected()
+    QObject::connect(d->filewidget, SIGNAL(fileSelected(const QString&)), this, SLOT(slotFileSelected(const QString&)));
 
     QObject::connect(d->filewidget, SIGNAL(fileSelected(const QString&)), this, SIGNAL(fileSelected(const QString&)));
     QObject::connect(d->filewidget, SIGNAL(fileHighlighted(const QString&)), this, SIGNAL(fileHighlighted(const QString&)));
@@ -167,19 +171,28 @@ void FormFileWidget::setMimeFilter(const QStringList& filter)
     d->filewidget->setMimeFilter(filter);
 }
 
+void FormFileWidget::slotFileSelected( const QString & fn )
+{
+    //kDebug()<<fn;
+    d->filename = fn;
+}
+
 QString FormFileWidget::selectedFile() const
 {
-    KUrl selectedUrl;
-    QString locationText = d->filewidget->locationEdit()->currentText();
-    if( locationText.contains( '/' ) ) { // relative path? -> prepend the current directory
-        KUrl u( d->filewidget->baseUrl(), KShell::tildeExpand(locationText) );
-        selectedUrl = u.isValid() ? u : selectedUrl = d->filewidget->baseUrl();
+    if ( d->filewidget->operationMode() != KFileWidget::Saving ) {
+      d->filewidget->accept();
+    } else {
+      //kDebug()<<d->filename<<d->filewidget->operationMode();
+      if ( d->filename.isEmpty() ) {
+        // make KFileWidget create an url for us (including extension if neccessary)
+        QObject::connect(d->filewidget, SIGNAL(accepted()), d->filewidget, SLOT(accept()));
+        d->filewidget->slotOk();
+        QObject::disconnect(d->filewidget, SIGNAL(accepted()), d->filewidget, SLOT(accept()));
+      }
     }
-    else { // simple filename -> just use the current URL
-        selectedUrl = d->filewidget->baseUrl();
-    }
-    QFileInfo fi( selectedUrl.path(), d->filewidget->locationEdit()->currentText() );
-    return fi.absoluteFilePath();
+    //kDebug()<<d->filename;
+    KUrl url( d->filename );
+    return url.path(); // strip file:// at least python chokes on it
 }
 
 /*********************************************************************************
