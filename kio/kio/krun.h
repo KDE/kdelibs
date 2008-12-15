@@ -194,10 +194,13 @@ public:
       QByteArray() );
 
   /**
-   * Open a list of URLs with.
+   * Open a list of URLs with an executable.
    *
    * @param exec the name of the executable, for example
-   *        "/usr/bin/netscape".
+   *        "/usr/bin/netscape %u".
+   *        Don't forget to include the %u if you know that the applications
+   *        supports URLs. Otherwise, non-local urls will first be downloaded
+   *        to a temp file (using kioexec).
    * @param urls  the list of URLs to open, can be empty (app launched without argument)
    * @param window The top-level widget of the app that invoked this object.
    * @param name the logical name of the application, for example
@@ -206,10 +209,10 @@ public:
    * @param asn Application startup notification id, if any (otherwise "").
    * @return @c true on success, @c false on error
    */
-  static bool run( const QString& exec, const KUrl::List& urls, QWidget* window,
-                    const QString& name = QString(),
-                    const QString& icon = QString(),
-                    const QByteArray& asn = QByteArray() );
+  static bool run(const QString& exec, const KUrl::List& urls, QWidget* window,
+                  const QString& name = QString(),
+                  const QString& icon = QString(),
+                  const QByteArray& asn = QByteArray());
 
   /**
    * Open the given URL.
@@ -230,7 +233,7 @@ public:
    * @return @c true on success, @c false on error
    */
   static bool runUrl( const KUrl& url, const QString& mimetype, QWidget* window,
-      bool tempFile = false , bool runExecutables = true, 
+      bool tempFile = false , bool runExecutables = true,
       const QString& suggestedFileName = QString(), const QByteArray& asn = QByteArray() );
 
   /**
@@ -261,7 +264,7 @@ public:
    * @param asn Application startup notification id, if any (otherwise "").
    * @return @c true on success, @c false on error
    */
-  static bool runCommand( const QString& cmd, const QString & execName, 
+  static bool runCommand( const QString& cmd, const QString & execName,
           const QString & icon, QWidget* window, const QByteArray& asn = QByteArray() );
 
   /**
@@ -275,7 +278,7 @@ public:
    * @return false if the dialog was canceled
    */
   static bool displayOpenWithDialog( const KUrl::List& lst, QWidget* window,
-      bool tempFiles = false, const QString& suggestedFileName = QString(), 
+      bool tempFiles = false, const QString& suggestedFileName = QString(),
       const QByteArray& asn = QByteArray() );
 
   /**
