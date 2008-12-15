@@ -417,6 +417,9 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
    if (appId.isEmpty() || newOwner.isEmpty())
       return;
 
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+   kDebug(7016) << "new app" << appId;
+#endif
    foreach (KLaunchRequest *request, requestList)
    {
       if (request->status != KLaunchRequest::Launching)
@@ -437,7 +440,7 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
       kDebug(7016) << "had pending request" << rAppId;
 #endif
       if (rAppId.isEmpty())
-          return;
+          continue;
 
       const int len = rAppId.length();
 
