@@ -20,6 +20,7 @@
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
 <!ENTITY ie 	"isto é"> 
 <!ENTITY kcontrolcenter	"<application>Centro de Controlo &kde;</application>">
+<!ENTITY systemsettings	"<application>Configuração do Sistema</application>">
 <!ENTITY BER 	"botão <mousebutton>esquerdo</mousebutton> do rato">  <!-- English: &LMB; -->
 <!ENTITY LMB 	"botão <mousebutton>esquerdo</mousebutton> do rato">
 <!ENTITY BMR 	"botão <mousebutton>do meio</mousebutton> do rato">   <!-- English: &MMB; -->
