@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright (C) 2006 Davide Bettio <davide.bettio@kdemail.net>
     Copyright (C) 2007 Jeff Mitchell <kde-dev@emailgoeshere.com>
 
     This library is free software; you can redistribute it and/or
