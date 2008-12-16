@@ -687,7 +687,6 @@ KOpenWithDialog::~KOpenWithDialog()
 
 void KOpenWithDialog::slotSelected( const QString& /*_name*/, const QString& _exec )
 {
-    kDebug(250)<<"KOpenWithDialog::slotSelected";
     KService::Ptr pService = d->curService;
     d->edit->setPath(_exec); // calls slotTextChanged :(
     d->curService = pService;
@@ -715,10 +714,9 @@ void KOpenWithDialog::slotHighlighted( const QString& _name, const QString& )
 
 void KOpenWithDialog::slotTextChanged()
 {
-    kDebug(250)<<"KOpenWithDialog::slotTextChanged" << d->edit->url();
     // Forget about the service
     d->curService = 0L;
-    enableButton(Ok, !d->edit->url().isEmpty());
+    enableButton(Ok, !d->edit->text().isEmpty());
 }
 
 // ----------------------------------------------------------------------
@@ -784,7 +782,7 @@ void KOpenWithDialogPrivate::addToMimeAppsList(const QString& serviceId /*menu i
 
 bool KOpenWithDialogPrivate::checkAccept()
 {
-    QString typedExec(edit->url().pathOrUrl());
+    const QString typedExec(edit->text());
     if (typedExec.isEmpty())
         return false;
     QString fullExec(typedExec);
@@ -818,11 +816,10 @@ bool KOpenWithDialogPrivate::checkAccept()
             // also ok if we find the exact same service (well, "kwrite" == "kwrite %U")
             if (serv) {
                 if (serv->isApplication()) {
-                    fullExec = serv->exec();
                     /*kDebug(250) << "typedExec=" << typedExec
-                      << "serv->exec=" << fullExec
+                      << "serv->exec=" << serv->exec()
                       << "simplifiedExecLineFromService=" << simplifiedExecLineFromService(fullExec);*/
-                    if (typedExec == simplifiedExecLineFromService(fullExec)) {
+                    if (typedExec == simplifiedExecLineFromService(serv->exec())) {
                         ok = true;
                         m_pService = serv;
                         kDebug(250) << "OK, found identical service: " << serv->entryPath();
@@ -860,7 +857,7 @@ bool KOpenWithDialogPrivate::checkAccept()
         if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
             m_command += QString::fromLatin1(" --noclose");
         m_command += QString::fromLatin1(" -e ");
-        m_command += edit->url().pathOrUrl();
+        m_command += edit->text();
         kDebug(250) << "Setting m_command to" << m_command;
     }
     if ( m_pService && terminal->isChecked() != m_pService->terminal() )
@@ -927,7 +924,7 @@ QString KOpenWithDialog::text() const
     if (!d->m_command.isEmpty())
         return d->m_command;
     else
-        return d->edit->url().url();
+        return d->edit->text();
 }
 
 void KOpenWithDialog::hideNoCloseOnExit()
@@ -952,7 +949,7 @@ void KOpenWithDialogPrivate::saveComboboxHistory()
 {
     KHistoryComboBox *combo = static_cast<KHistoryComboBox*>(edit->comboBox());
     if (combo) {
-        combo->addToHistory(edit->url().url());
+        combo->addToHistory(edit->text());
 
         KConfigGroup cg( KGlobal::config(), QString::fromLatin1("Open-with settings") );
         cg.writeEntry( "History", combo->historyItems() );

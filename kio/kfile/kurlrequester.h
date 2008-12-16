@@ -90,6 +90,16 @@ public:
     KUrl url() const;
 
     /**
+     * @returns the current text in the lineedit or combobox.
+     * This does not do the URL expansion that url() does, it's only provided
+     * for cases where KUrlRequester is used to enter URL-or-something-else,
+     * like KOpenWithDialog where you can type a full command with arguments.
+     *
+     * @since 4.2
+     */
+    QString text() const;
+
+    /**
      * Sets the mode of the file dialog.
      * Note: you can only select one file with the filedialog,
      * so KFile::Files doesn't make much sense.
@@ -174,7 +184,7 @@ public:
      * @since 4.2
      */
     void setClickMessage(const QString& msg);
-    
+
 
 public Q_SLOTS:
     /**

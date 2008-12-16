@@ -144,11 +144,15 @@ public:
             edit->setCompletionObject( comp );
     }
 
+    QString text() const {
+        return combo ? combo->currentText() : edit->text();
+    }
+
     /**
      * replaces ~user or $FOO, if necessary
      */
-    KUrl url() {
-        QString txt = combo ? combo->currentText() : edit->text();
+    KUrl url() const {
+        const QString txt = text();
         KUrlCompletion *comp;
         if ( combo )
             comp = qobject_cast<KUrlCompletion*>(combo->completionObject());
@@ -275,6 +279,11 @@ void KUrlRequester::changeEvent(QEvent *e)
 KUrl KUrlRequester::url() const
 {
     return d->url();
+}
+
+QString KUrlRequester::text() const
+{
+    return d->text();
 }
 
 void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
