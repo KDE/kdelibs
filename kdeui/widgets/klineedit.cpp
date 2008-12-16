@@ -79,6 +79,14 @@ public:
         clickInClear = false;
         wideEnoughForClear = true;
         overlap = 0;
+
+        // i18n: Placeholder text in line edit widgets is the text appearing
+        // before any user input, briefly explaining to the user what to type
+        // (e.g. "Enter search pattern").
+        // By default the text is set in italic, which may not be appropriate
+        // for some languages and scripts (e.g. for CJK ideographs).
+        QString metaMsg = i18nc("Italic placeholder text in line edits: 0 no, 1 yes", "1");
+        italicizePlaceholder = (metaMsg.trimmed() != QString('0'));
     }
 
     ~KLineEditPrivate()
@@ -137,6 +145,8 @@ public:
     KCompletionBox *completionBox;
 
     int overlap;
+
+    bool italicizePlaceholder:1;
 
     QAction *noCompletionAction, *shellCompletionAction, *autoCompletionAction, *popupCompletionAction, *shortAutoCompletionAction, *popupAutoCompletionAction, *defaultAction;
 
@@ -1612,7 +1622,7 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
     if (d->enableClickMsg && d->drawClickMsg && !hasFocus() && text().isEmpty()) {
         QPainter p(this);
         QFont f = font();
-        f.setItalic(true);
+        f.setItalic(d->italicizePlaceholder);
         p.setFont(f);
 
         p.setPen(palette().color(QPalette::Disabled, QPalette::Text));
