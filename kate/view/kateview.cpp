@@ -1275,6 +1275,9 @@ void KateView::updateDocumentConfig()
 
   m_updatingDocumentConfig = false;
 
+  // maybe block selection or wrap-cursor mode changed
+  ensureCursorColumnValid();
+
   m_viewInternal->updateView (true);
 
   m_renderer->setTabWidth (m_doc->config()->tabWidth());
@@ -1320,6 +1323,21 @@ void KateView::updateFoldingConfig ()
   for (int z = 0; z < l.size(); z++)
     if ((a = actionCollection()->action( l[z].toAscii().constData() )))
       a->setEnabled (m_doc->highlight() && m_doc->highlight()->allowsFolding());
+}
+
+void KateView::ensureCursorColumnValid()
+{
+  KTextEditor::Cursor c = m_viewInternal->getCursor();
+
+  // make sure the cursor is valid:
+  // - in block selection mode or if wrap cursor is off, the colum is arbitrary
+  // - otherwise: it's bounded by the line length
+  if (!blockSelectionMode() && wrapCursor()
+      && (c.isValid() || c.column() > m_doc->lineLength(c.line())))
+  {
+    c.setColumn(m_doc->kateTextLine(cursorPosition().line())->length());
+    setCursorPosition(c);
+  }
 }
 
 //BEGIN EDIT STUFF
@@ -1893,17 +1911,9 @@ bool KateView::setBlockSelectionMode (bool on)
 
     m_toggleBlockSelection->setChecked( blockSelectionMode() );
 
-    KTextEditor::Cursor c = m_viewInternal->getCursor();
-
     // when leaving block selection mode, if cursor is at an invalid position or past the end of the
     // line, move the cursor to the last column of the current line unless cursor wrapping is off
-    if(!blockSelectionMode() && !wrapCursor() &&
-            (c.isValid() || c.column() > m_doc->lineLength(c.line())))
-    {
-      KTextEditor::Cursor cursorAtEndOfLine(cursorPosition());
-      cursorAtEndOfLine.setColumn(m_doc->kateTextLine(cursorPosition().line())->length());
-      setCursorPosition(cursorAtEndOfLine);
-    }
+    ensureCursorColumnValid();
   }
 
   return true;

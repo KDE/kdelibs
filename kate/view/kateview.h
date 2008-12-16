@@ -317,6 +317,8 @@ class KateView : public KTextEditor::View,
     bool lineHasSelected (int line);
     bool lineIsSelection (int line);
 
+    void ensureCursorColumnValid();
+
     void tagSelection (const KTextEditor::Range &oldSelection);
 
     void selectWord(   const KTextEditor::Cursor& cursor );

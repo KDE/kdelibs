@@ -859,12 +859,12 @@ public:
       return *this;
     }
 
-    const bool blockSelectionMode = m_vi->view()->blockSelection();
+    const bool noWrapCursor = m_vi->view()->blockSelection() || !m_vi->m_view->wrapCursor();
     int maxColumn = -1;
     if (n >= 0) {
       for (int i = 0; i < n; i++) {
         if (m_column >= thisLine->length()) {
-          if (!blockSelectionMode) {
+          if (!noWrapCursor) {
             break;
 
           } else if (m_vi->view()->dynWordWrap()) {
