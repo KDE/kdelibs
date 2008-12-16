@@ -981,8 +981,8 @@ bool KEncodingDetector::analyze(const char *data, int len)
 
             //look for <meta>, stop if we reach <body>
             while (
-                        !((*ptr >= 'a') && (*ptr <= 'z') ||
-                        (*ptr >= 'A') && (*ptr <= 'Z'))
+                        !(((*ptr >= 'a') && (*ptr <= 'z')) ||
+                        ((*ptr >= 'A') && (*ptr <= 'Z')))
                         && ptr < pEnd
                 )
                 ++ptr;
@@ -993,9 +993,9 @@ bool KEncodingDetector::analyze(const char *data, int len)
             if (pEnd<max)
                 max=pEnd;
             while (
-                        ((*ptr >= 'a') && (*ptr <= 'z') ||
-                        (*ptr >= 'A') && (*ptr <= 'Z') ||
-                        (*ptr >= '0') && (*ptr <= '9'))
+                        (((*ptr >= 'a') && (*ptr <= 'z')) ||
+                        ((*ptr >= 'A') && (*ptr <= 'Z')) ||
+                        ((*ptr >= '0') && (*ptr <= '9')))
                         && ptr < max
                 )
             {
