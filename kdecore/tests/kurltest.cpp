@@ -692,6 +692,12 @@ void KUrlTest::testPrettyURL()
 
   KUrl xmppUri("xmpp:ogoffart@kde.org");
   QCOMPARE( xmppUri.prettyUrl(), QString::fromLatin1( "xmpp:ogoffart@kde.org" ) );
+
+  KUrl openWithUrl("kate --use %25U");
+  QCOMPARE(openWithUrl.url(), QString::fromLatin1("kate%20--use%20%25U"));
+  QCOMPARE(openWithUrl.prettyUrl(), QString::fromLatin1("kate --use %25U"));
+  QCOMPARE(openWithUrl.path(), QString::fromLatin1("kate --use %U"));
+  QCOMPARE(openWithUrl.pathOrUrl(), QString::fromLatin1("kate --use %25U")); // alas...
 }
 
 void KUrlTest::testIsRelative()
