@@ -28,6 +28,7 @@
 <!ENTITY RMB 	"botón <mousebutton>dereito</mousebutton> do rato">
 <!ENTITY OS	"sistema operativo">
 <!ENTITY Shift	"<keycap>Maiúsc</keycap>">
+<!ENTITY systemsettings "<application>Configuración do Sistema</application>">
 <!ENTITY Tab	"<keycap>Tab</keycap>">
 <!ENTITY kicon  '<guiicon>
 <inlinemediaobject>
