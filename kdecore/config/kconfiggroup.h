@@ -209,8 +209,7 @@ public:
      *
      * @param pFlags flags passed to KConfig::deleteGroup
      *
-     * @see
-     * deleteEntry()
+     * @see deleteEntry()
      */
     void deleteGroup(WriteConfigFlags pFlags = Normal);
     using KConfigBase::deleteGroup;
@@ -235,10 +234,7 @@ public:
      * @param aDefault A default value returned if the key was not found
      * @return The value for this key, or @p aDefault.
      *
-     * @see
-     * writeEntry()
-     * deleteEntry()
-     * hasKey()
+     * @see writeEntry(), deleteEntry(), hasKey()
      */
     template <typename T>
         inline T readEntry(const QString &key, const T &aDefault) const
@@ -255,10 +251,7 @@ public:
      * @param aDefault a default value returned if the key was not found
      * @return the value for this key, or @p aDefault if the key was not found
      *
-     * @see
-     * writeEntry()
-     * deleteEntry()
-     * hasKey()
+     * @see writeEntry(), deleteEntry(), hasKey()
      */
     QVariant readEntry(const QString &key, const QVariant &aDefault) const;
     /** Overload for readEntry(const QString&, const QVariant&) */
@@ -273,11 +266,7 @@ public:
      * @param aDefault a default value returned if the key was not found
      * @return the value for this key, or @p aDefault if the key was not found
      *
-     * @see
-     * readPathEntry()
-     * writeEntry()
-     * deleteEntry()
-     * hasKey()
+     * @see readPathEntry(), writeEntry(), deleteEntry(), hasKey()
      */
     QString readEntry(const QString &key, const QString &aDefault) const;
     /** Overload for readEntry(const QString&, const QString&) */
@@ -307,11 +296,7 @@ public:
      * @param aDefault The default value to use if the key does not exist
      * @return The list, or @p aDefault if @p key does not exist
      *
-     * @see
-     * readXdgListEntry()
-     * writeEntry()
-     * deleteEntry()
-     * hasKey()
+     * @see readXdgListEntry(), writeEntry(), deleteEntry(), hasKey()
      */
     QStringList readEntry(const QString &key, const QStringList &aDefault) const;
     /** Overload for readEntry(const QString&, const QStringList&) */
@@ -324,11 +309,7 @@ public:
      * @param aDefault the default value to use if the key does not exist
      * @return the list, or @p aDefault if @p key does not exist
      *
-     * @see
-     * readXdgListEntry()
-     * writeEntry()
-     * deleteEntry()
-     * hasKey()
+     * @see readXdgListEntry(), writeEntry(), deleteEntry(), hasKey()
      */
     template<typename T>
         inline QList<T> readEntry(const QString &key, const QList<T> &aDefault) const
@@ -404,10 +385,7 @@ public:
      * @param value the value to write
      * @param pFlags the flags to use when writing this entry
      *
-     * @see
-     * readEntry()
-     * writeXdgListEntry()
-     * deleteEntry()
+     * @see readEntry(), writeXdgListEntry(), deleteEntry()
      */
     void writeEntry(const QString &key, const QVariant &value,
                     WriteConfigFlags pFlags = Normal);
@@ -474,9 +452,7 @@ public:
      * @param value the list to write
      * @param pFlags the flags to use when writing this entry
      *
-     * @see
-     * writeEntry()
-     * readXdgListEntry()
+     * @see writeEntry(), readXdgListEntry()
      */
     void writeXdgListEntry(const QString &pKey, const QStringList &value,
                            WriteConfigFlags pFlags = Normal);
@@ -495,9 +471,7 @@ public:
      * @param path the path to write
      * @param pFlags the flags to use when writing this entry
      *
-     * @see
-     * writeEntry()
-     * readPathEntry()
+     * @see writeEntry(), readPathEntry()
      */
     void writePathEntry(const QString &pKey, const QString &path,
                         WriteConfigFlags pFlags = Normal);
@@ -516,9 +490,7 @@ public:
      * @param value the list to write
      * @param pFlags the flags to use when writing this entry
      *
-     * @see
-     * writeEntry()
-     * readPathEntry()
+     * @see writeEntry(), readPathEntry()
      */
     void writePathEntry(const QString &pKey, const QStringList &value,
                         WriteConfigFlags pFlags = Normal);
@@ -534,10 +506,7 @@ public:
      * @param pKey the key to delete
      * @param pFlags the flags to use when deleting this entry
      *
-     * @see
-     * deleteGroup()
-     * readEntry()
-     * writeEntry()
+     * @see deleteGroup(), readEntry(), writeEntry()
      */
     void deleteEntry(const QString &pKey, WriteConfigFlags pFlags = Normal);
     /** Overload for deleteEntry(const QString&, WriteConfigFlags) */
@@ -556,8 +525,7 @@ public:
      * @return @c true if the key is defined in this group by any of the
      *         configuration sources, @c false otherwise
      *
-     * @see
-     * readEntry()
+     * @see readEntry()
      */
     bool hasKey(const QString &key) const;
     /** Overload for hasKey(const QString&) const */
@@ -629,7 +597,7 @@ public:
      *
      * @param key the key of the entry to check
      * @return @c true if the global or system settings files specify a default
-     *          for @p key in this group, @false otherwise
+     *          for @p key in this group, @c false otherwise
      */
     bool hasDefault(const QString &key) const;
     /** Overload for hasDefault(const QString&) const */
