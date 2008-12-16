@@ -156,6 +156,14 @@ Q_SIGNALS:
 
 public: // remote methods, called by KLauncherAdaptor
     void autoStart(int phase = 1);
+
+    /**
+     * Starts a program.
+     * 'envs' are environment variables that will be added
+     *   to this program's environment before starting it
+     * 'startup_id' is for application startup notification,
+     * "" is the default, "0" for none
+     */
     void exec_blind(const QString &name, const QStringList &arg_list, const QStringList &envs, const QString &startup_id);
     inline void exec_blind(const QString &name, const QStringList &arg_list)
     { exec_blind(name, arg_list, QStringList(), QLatin1String("0")); }
@@ -166,9 +174,65 @@ public: // remote methods, called by KLauncherAdaptor
 
     void reparseConfiguration();
     void setLaunchEnv(const QString &name, const QString &value);
+
+    /**
+     * Start a service by desktop name.
+     *
+     * 'serviceName' refers to a desktop file describing the service.
+     * The service is looked up anywhere in $KDEDIR/applnk and/or
+     * $KDEDIR/services.
+     * E.g. it should have the form "korganizer".
+     *
+     * 'url', if not empty, will be passed to the service as
+     * argument.
+     *
+     * 'envs' are environment variables that will be added
+     *   to this program's environment before starting it
+     *
+     * 'startup_id' is for application startup notification,
+     * "" is the default, "0" for none
+     */
     bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg);
+
+    /**
+     * Start a service by desktop path.
+     *
+     * 'serviceName' refers to a desktop file describing the service.
+     * This may be an absolute path or a path relative to $KDEDIRS/applnk
+     * and/or $KDEDIRS/services
+     * E.g. it should have the form "Applications/korganizer.desktop" or
+     * "/opt/kde/share/applnk/Applications/korganizer.desktop".
+     *
+     * 'url', if not empty, will be passed to the service as
+     * argument.
+     *
+     * 'envs' are environment variables that will be added
+     *   to this program's environment before starting it
+     *
+     * 'startup_id' is for application startup notification,
+     * "" is the default, "0" for none
+     */
     bool start_service_by_desktop_path(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg);
+
+    /**
+     * Start a service by (translated) name - deprecated
+     *
+     * 'serviceName' refers to the service name as given by·
+     * the Name field in the desktop file describing the service.
+     *
+     * 'url', if not empty, will be passed to the service as
+     * argument.
+     *
+     * 'envs' are environment variables that will be added
+     *   to this program's environment before starting it
+     *
+     * 'startup_id' is for application startup notification,
+     * "" is the default, "0" for none
+     *
+     * @deprecated use start_service_by_desktop_path
+     */
     bool start_service_by_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg); // KDE5: remove
+
     pid_t requestHoldSlave(const KUrl &url, const QString &app_socket);
 
     pid_t requestSlave(const QString &protocol, const QString &host,
