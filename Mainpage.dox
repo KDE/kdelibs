@@ -13,7 +13,7 @@ This is the online reference for developing with the KDE libraries
 The KDE libraries build on the
 <a href="http://www.trolltech.com/products/qt/">Qt</a> framework to
 provide a powerful framework to make writing applications easier,
-and provide consistency across the KDE desktop envionment.
+and provide consistency across the KDE desktop environment.
 
 Among other things, the KDE libraries provide:
 - standard user interface elements, on top of those provided by Qt
