@@ -130,7 +130,7 @@ QSize KFilePlacesViewDelegate::sizeHint(const QStyleOptionViewItem &option,
     const KFilePlacesModel *filePlacesModel = static_cast<const KFilePlacesModel*>(index.model());
     Solid::Device device = filePlacesModel->deviceForIndex(index);
 
-    return QSize(option.rect.width(), qMax(iconSize, option.fontMetrics.height()) + KDialog::marginHint());
+    return QSize(option.rect.width(), 2 * KDialog::marginHint() + qMax(iconSize, option.fontMetrics.height()));
 }
 
 void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -920,7 +920,7 @@ void KFilePlacesView::Private::adaptItemSize()
 
     const int margin = q->style()->pixelMetric(QStyle::PM_FocusFrameHMargin, 0, q) + 1;
     const int maxWidth = q->viewport()->width() - textWidth - 4 * margin - 1;
-    const int maxHeight = ((q->height() - KDialog::marginHint() * rowCount) / rowCount) - 1;
+    const int maxHeight = ((q->height() - 2 * KDialog::marginHint() * rowCount) / rowCount) - 1;
 
     int size = qMin(maxHeight, maxWidth);
 
