@@ -85,9 +85,9 @@ public:
     KConfigGroup(const KConfigBase *master, const char *group);
 
     /** Overload for KConfigGroup(const KConfigBase*,const QString&) */
-    KConfigGroup(const KSharedConfigPtr &master, const QString& group);
+    KConfigGroup(const KSharedConfigPtr &master, const QString &group);
     /** Overload for KConfigGroup(const KConfigBase*,const QString&) */
-    KConfigGroup(const KSharedConfigPtr &master, const char* group);
+    KConfigGroup(const KSharedConfigPtr &master, const char *group);
 
     /**
      * Creates a read-only copy of a read-only group.
@@ -182,7 +182,7 @@ public:
      *
      * @since 4.1
      */
-    void reparent(KConfigBase* parent, WriteConfigFlags pFlags = Normal);
+    void reparent(KConfigBase *parent, WriteConfigFlags pFlags = Normal);
 
     /**
      * Returns the group that this group belongs to
@@ -212,7 +212,7 @@ public:
      * @see
      * deleteEntry()
      */
-    void deleteGroup(WriteConfigFlags pFlags=Normal);
+    void deleteGroup(WriteConfigFlags pFlags = Normal);
     using KConfigBase::deleteGroup;
 
     /**
@@ -241,11 +241,11 @@ public:
      * hasKey()
      */
     template <typename T>
-        inline T readEntry(const QString& key, const T& aDefault) const
+        inline T readEntry(const QString &key, const T &aDefault) const
             { return readCheck(key.toUtf8().constData(), aDefault); }
     /** Overload for readEntry(const QString&, const T&) const */
     template <typename T>
-        inline T readEntry(const char *key, const T& aDefault) const
+        inline T readEntry(const char *key, const T &aDefault) const
             { return readCheck(key, aDefault); }
 
     /**
@@ -260,9 +260,9 @@ public:
      * deleteEntry()
      * hasKey()
      */
-    QVariant readEntry(const QString& key, const QVariant &aDefault) const;
+    QVariant readEntry(const QString &key, const QVariant &aDefault) const;
     /** Overload for readEntry(const QString&, const QVariant&) */
-    QVariant readEntry(const char* key, const QVariant &aDefault) const;
+    QVariant readEntry(const char *key, const QVariant &aDefault) const;
 
     /**
      * Reads the string value of an entry specified by @p key in the current group
@@ -279,14 +279,14 @@ public:
      * deleteEntry()
      * hasKey()
      */
-    QString readEntry(const QString& key, const QString& aDefault) const;
+    QString readEntry(const QString &key, const QString &aDefault) const;
     /** Overload for readEntry(const QString&, const QString&) */
-    QString readEntry(const char* key, const QString& aDefault ) const;
+    QString readEntry(const char *key, const QString &aDefault) const;
 
     /** Overload for readEntry(const QString&, const QString&) */
-    QString readEntry(const QString &key, const char * aDefault = 0) const;
+    QString readEntry(const QString &key, const char *aDefault = 0) const;
     /** Overload for readEntry(const QString&, const QString&) */
-    QString readEntry(const char *key, const char *aDefault = 0 ) const;
+    QString readEntry(const char *key, const char *aDefault = 0) const;
 
     /**
      * @copydoc readEntry(const char*, const QStringList&) const
@@ -296,9 +296,9 @@ public:
      *          want the items converted to a specific type use
      *          readEntry(const char*, const QList<T>&) const
      */
-    QVariantList readEntry( const QString &key, const QVariantList& aDefault ) const;
+    QVariantList readEntry(const QString &key, const QVariantList &aDefault) const;
     /** Overload for readEntry(const QString&, const QVariantList&) */
-    QVariantList readEntry( const char* key, const QVariantList& aDefault ) const;
+    QVariantList readEntry(const char *key, const QVariantList &aDefault) const;
 
     /**
      * Reads a list of strings from the config object
@@ -313,9 +313,9 @@ public:
      * deleteEntry()
      * hasKey()
      */
-    QStringList readEntry(const QString &key, const QStringList& aDefault) const;
+    QStringList readEntry(const QString &key, const QStringList &aDefault) const;
     /** Overload for readEntry(const QString&, const QStringList&) */
-    QStringList readEntry(const char* key, const QStringList& aDefault) const;
+    QStringList readEntry(const char *key, const QStringList &aDefault) const;
 
     /**
      * Reads a list of values from the config object
@@ -331,11 +331,11 @@ public:
      * hasKey()
      */
     template<typename T>
-        inline QList<T> readEntry(const QString& key, const QList<T> &aDefault) const
+        inline QList<T> readEntry(const QString &key, const QList<T> &aDefault) const
             { return readListCheck(key.toUtf8().constData(), aDefault); }
     /** Overload for readEntry(const QString&, const QList<T>&) */
     template<typename T>
-        inline QList<T> readEntry(const char* key, const QList<T> &aDefault) const
+        inline QList<T> readEntry(const char *key, const QList<T> &aDefault) const
             { return readListCheck(key, aDefault); }
 
     /**
@@ -348,9 +348,9 @@ public:
      *
      * @see readEntry(const QString&, const QStringList&) const
      */
-    QStringList readXdgListEntry(const QString& pKey, const QStringList& aDefault = QStringList()) const;
+    QStringList readXdgListEntry(const QString &pKey, const QStringList &aDefault = QStringList()) const;
     /** Overload for readXdgListEntry(const QString&, const QStringList&) */
-    QStringList readXdgListEntry(const char* pKey, const QStringList& aDefault = QStringList()) const;
+    QStringList readXdgListEntry(const char *pKey, const QStringList &aDefault = QStringList()) const;
 
     /**
      * Reads a path
@@ -363,9 +363,9 @@ public:
      * @param aDefault A default value returned if the key was not found.
      * @return The value for this key. Can be QString() if @p aDefault is null.
      */
-    QString readPathEntry( const QString& pKey, const QString & aDefault ) const;
+    QString readPathEntry(const QString &pKey, const QString &aDefault) const;
     /** Overload for readPathEntry(const QString&, const QString&) */
-    QString readPathEntry( const char *key, const QString & aDefault ) const;
+    QString readPathEntry(const char *key, const QString &aDefault) const;
 
     /**
      * Reads a list of paths
@@ -378,9 +378,9 @@ public:
      * @param aDefault a default value returned if the key was not found
      * @return the list, or @p aDefault if the key does not exist
      */
-    QStringList readPathEntry( const QString& pKey, const QStringList& aDefault ) const;
+    QStringList readPathEntry(const QString &pKey, const QStringList &aDefault) const;
     /** Overload for readPathEntry(const QString&, const QStringList&) */
-    QStringList readPathEntry( const char *key, const QStringList& aDefault ) const;
+    QStringList readPathEntry(const char *key, const QStringList &aDefault) const;
 
     /**
      * Reads an untranslated string entry
@@ -391,11 +391,11 @@ public:
      * @param aDefault a default value returned if the key was not found
      * @return the value for this key, or @p aDefault if the key does not exist
      */
-    QString readEntryUntranslated( const QString& pKey,
-                                   const QString& aDefault = QString() ) const;
+    QString readEntryUntranslated(const QString &pKey,
+                                  const QString &aDefault = QString()) const;
     /** Overload for readEntryUntranslated(const QString&, const QString&) */
-    QString readEntryUntranslated( const char *key,
-                                   const QString& aDefault = QString() ) const;
+    QString readEntryUntranslated(const char *key,
+                                  const QString &aDefault = QString()) const;
 
     /**
      * Writes a value to the configuration object.
@@ -409,25 +409,25 @@ public:
      * writeXdgListEntry()
      * deleteEntry()
      */
-    void writeEntry( const QString& key, const QVariant& value,
-                     WriteConfigFlags pFlags = Normal );
+    void writeEntry(const QString &key, const QVariant &value,
+                    WriteConfigFlags pFlags = Normal);
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
-    void writeEntry( const char *key, const QVariant& value,
-                     WriteConfigFlags pFlags = Normal );
+    void writeEntry(const char *key, const QVariant &value,
+                    WriteConfigFlags pFlags = Normal);
 
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
-    void writeEntry( const QString& key, const QString& value,
-                     WriteConfigFlags pFlags = Normal );
+    void writeEntry(const QString &key, const QString &value,
+                    WriteConfigFlags pFlags = Normal);
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
-    void writeEntry( const char *key, const QString& value,
-                     WriteConfigFlags pFlags = Normal );
+    void writeEntry(const char *key, const QString &value,
+                    WriteConfigFlags pFlags = Normal);
 
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
-    void writeEntry( const QString& key, const QByteArray& value,
-                     WriteConfigFlags pFlags = Normal );
+    void writeEntry(const QString &key, const QByteArray &value,
+                    WriteConfigFlags pFlags = Normal);
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
-    void writeEntry( const char *key, const QByteArray& value,
-                     WriteConfigFlags pFlags = Normal );
+    void writeEntry(const char *key, const QByteArray &value,
+                    WriteConfigFlags pFlags = Normal);
 
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
     void writeEntry(const QString &key, const char *value, WriteConfigFlags pFlags = Normal);
@@ -436,34 +436,34 @@ public:
 
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
     template <typename T>
-        inline void writeEntry( const char *key, const T& value, WriteConfigFlags pFlags = Normal )
+        inline void writeEntry(const char *key, const T &value, WriteConfigFlags pFlags = Normal)
             { writeCheck( key, value, pFlags ); }
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
     template <typename T>
-        inline void writeEntry( const QString& key, const T& value, WriteConfigFlags pFlags = Normal )
+        inline void writeEntry(const QString &key, const T &value, WriteConfigFlags pFlags = Normal)
             { writeCheck( key.toUtf8().constData(), value, pFlags ); }
 
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
-    void writeEntry( const QString& key, const QStringList &value,
-                     WriteConfigFlags pFlags = Normal );
+    void writeEntry(const QString &key, const QStringList &value,
+                    WriteConfigFlags pFlags = Normal);
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
-    void writeEntry( const char* key, const QStringList &value,
-                     WriteConfigFlags pFlags = Normal );
+    void writeEntry(const char *key, const QStringList &value,
+                    WriteConfigFlags pFlags = Normal);
 
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
-    void writeEntry( const QString& key, const QVariantList &value,
-                     WriteConfigFlags pFlags = Normal );
+    void writeEntry(const QString &key, const QVariantList &value,
+                    WriteConfigFlags pFlags = Normal);
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
-    void writeEntry( const char* key, const QVariantList &value,
-                     WriteConfigFlags pFlags = Normal );
+    void writeEntry(const char *key, const QVariantList &value,
+                    WriteConfigFlags pFlags = Normal);
 
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
     template <typename T>
-        inline void writeEntry(const QString& key, const QList<T> &value, WriteConfigFlags pFlags = Normal)
+        inline void writeEntry(const QString &key, const QList<T> &value, WriteConfigFlags pFlags = Normal)
             { writeListCheck( key.toUtf8().constData(), value, pFlags ); }
     /** Overload for writeEntry(const QString&, const QVariant&, WriteConfigFlags) */
     template <typename T>
-        inline void writeEntry(const char* key, const QList<T> &value, WriteConfigFlags pFlags = Normal)
+        inline void writeEntry(const char *key, const QList<T> &value, WriteConfigFlags pFlags = Normal)
             { writeListCheck( key, value, pFlags ); }
 
     /**
@@ -478,11 +478,11 @@ public:
      * writeEntry()
      * readXdgListEntry()
      */
-    void writeXdgListEntry( const QString& pKey, const QStringList &value,
-                            WriteConfigFlags pFlags = Normal );
+    void writeXdgListEntry(const QString &pKey, const QStringList &value,
+                           WriteConfigFlags pFlags = Normal);
     /** Overload for writeXdgListEntry(const QString&, const QStringList&, WriteConfigFlags) */
-    void writeXdgListEntry( const char *pKey, const QStringList &value,
-                            WriteConfigFlags pFlags = Normal );
+    void writeXdgListEntry(const char *pKey, const QStringList &value,
+                           WriteConfigFlags pFlags = Normal);
 
     /**
      * Writes a file path to the configuration
@@ -499,11 +499,11 @@ public:
      * writeEntry()
      * readPathEntry()
      */
-    void writePathEntry( const QString& pKey, const QString & path,
-                         WriteConfigFlags pFlags = Normal );
+    void writePathEntry(const QString &pKey, const QString &path,
+                        WriteConfigFlags pFlags = Normal);
     /** Overload for writePathEntry(const QString&, const QString&, WriteConfigFlags) */
-    void writePathEntry( const char *pKey, const QString & path,
-                         WriteConfigFlags pFlags = Normal );
+    void writePathEntry(const char *pKey, const QString &path,
+                        WriteConfigFlags pFlags = Normal);
 
     /**
      * Writes a list of paths to the configuration
@@ -520,11 +520,11 @@ public:
      * writeEntry()
      * readPathEntry()
      */
-    void writePathEntry( const QString& pKey, const QStringList &value,
-                         WriteConfigFlags pFlags = Normal );
+    void writePathEntry(const QString &pKey, const QStringList &value,
+                        WriteConfigFlags pFlags = Normal);
     /** Overload for writePathEntry(const QString&, const QStringList&, WriteConfigFlags) */
-    void writePathEntry( const char *pKey, const QStringList &value,
-                         WriteConfigFlags pFlags = Normal );
+    void writePathEntry(const char *pKey, const QStringList &value,
+                        WriteConfigFlags pFlags = Normal);
 
     /**
      * Deletes the entry specified by @p pKey in the current group
@@ -539,7 +539,7 @@ public:
      * readEntry()
      * writeEntry()
      */
-    void deleteEntry(const QString& pKey, WriteConfigFlags pFlags = Normal);
+    void deleteEntry(const QString &pKey, WriteConfigFlags pFlags = Normal);
     /** Overload for deleteEntry(const QString&, WriteConfigFlags) */
     void deleteEntry(const char *pKey, WriteConfigFlags pFlags = Normal);
 
@@ -633,7 +633,7 @@ public:
      */
     bool hasDefault(const QString &key) const;
     /** Overload for hasDefault(const QString&) const */
-    bool hasDefault(const char* key) const;
+    bool hasDefault(const char *key) const;
 
     /**
      * Returns a map (tree) of entries for all entries in this group
@@ -650,35 +650,35 @@ protected:
     KConfigGroup groupImpl(const QByteArray &b);
     const KConfigGroup groupImpl(const QByteArray &b) const;
     void deleteGroupImpl(const QByteArray &group, WriteConfigFlags flags);
-    bool isGroupImmutableImpl(const QByteArray& aGroup) const;
+    bool isGroupImmutableImpl(const QByteArray &aGroup) const;
 
 private:
     QExplicitlySharedDataPointer<KConfigGroupPrivate> d;
 
     template<typename T>
-    inline T readCheck(const char* key, const T &defaultValue) const;
+    inline T readCheck(const char *key, const T &defaultValue) const;
 
     template<typename T>
-    inline QList<T> readListCheck(const char* key, const QList<T> &defaultValue) const;
+    inline QList<T> readListCheck(const char *key, const QList<T> &defaultValue) const;
 
     template<typename T>
-    inline void writeCheck(const char* key, const T &value, WriteConfigFlags pFlags);
+    inline void writeCheck(const char *key, const T &value, WriteConfigFlags pFlags);
 
     template<typename T>
-    inline void writeListCheck(const char* key, const QList<T> &value, WriteConfigFlags pFlags);
+    inline void writeListCheck(const char *key, const QList<T> &value, WriteConfigFlags pFlags);
 
     friend class KConfigGroupPrivate;
 
     /**
-     * Return the data in @p value converted to a QVariant.
+     * Return the data in @p value converted to a QVariant
      *
-     * @param pKey The name of the entry being converted, this is only used for error
-     * reporting.
-     * @param value The UTF-8 data to be converted.
-     * @param aDefault The default value if @p pKey is not found.
+     * @param pKey the name of the entry being converted, this is only used for error
+     * reporting
+     * @param value the UTF-8 data to be converted
+     * @param aDefault the default value if @p pKey is not found
      * @return @p value converted to QVariant, or @p aDefault if @p value is invalid or cannot be converted.
      */
-    static QVariant convertToQVariant(const char* pKey, const QByteArray& value, const QVariant& aDefault);
+    static QVariant convertToQVariant(const char *pKey, const QByteArray &value, const QVariant &aDefault);
     friend class KServicePrivate; // XXX yeah, ugly^5
 };
 
@@ -727,14 +727,14 @@ group.writeEntry(key, QByteArray(M_enum.valueToKeys(value)), flags);            
 #include "conversion_check.h"
 
 template <typename T>
-T KConfigGroup::readCheck(const char* key, const T &defaultValue) const
+T KConfigGroup::readCheck(const char *key, const T &defaultValue) const
 {
   ConversionCheck::to_QVariant<T>();
   return qvariant_cast<T>(readEntry(key, qVariantFromValue(defaultValue)));
 }
 
 template <typename T>
-QList<T> KConfigGroup::readListCheck(const char* key, const QList<T> &defaultValue) const
+QList<T> KConfigGroup::readListCheck(const char *key, const QList<T> &defaultValue) const
 {
   ConversionCheck::to_QVariant<T>();
   ConversionCheck::to_QString<T>();
@@ -747,31 +747,32 @@ QList<T> KConfigGroup::readListCheck(const char* key, const QList<T> &defaultVal
   QList<T> list;
   Q_FOREACH (const QVariant &value, readEntry<QVariantList>(key, data)) {
     Q_ASSERT(qVariantCanConvert<T>(value));
-    list.append( qvariant_cast<T>(value) );
+    list.append(qvariant_cast<T>(value));
   }
 
   return list;
 }
 
 template <typename T>
-void KConfigGroup::writeCheck( const char* key, const T& value,
-                               WriteConfigFlags pFlags )
+void KConfigGroup::writeCheck(const char *key, const T &value,
+                              WriteConfigFlags pFlags)
 {
     ConversionCheck::to_QVariant<T>();
-    writeEntry( key, qVariantFromValue(value), pFlags );
+    writeEntry(key, qVariantFromValue(value), pFlags);
 }
 
 template <typename T>
-void KConfigGroup::writeListCheck( const char* key, const QList<T>& list,
-                                   WriteConfigFlags pFlags )
+void KConfigGroup::writeListCheck(const char *key, const QList<T> &list,
+                                  WriteConfigFlags pFlags)
 {
   ConversionCheck::to_QVariant<T>();
   ConversionCheck::to_QString<T>();
   QVariantList data;
-  Q_FOREACH(const T &value, list)
+  Q_FOREACH(const T &value, list) {
     data.append(qVariantFromValue(value));
+  }
 
-  writeEntry( key, data, pFlags );
+  writeEntry(key, data, pFlags);
 }
 
 #endif // KCONFIGGROUP_H
