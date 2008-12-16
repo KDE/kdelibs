@@ -62,7 +62,10 @@ class KToolInvocationPrivate;
  * Calls to members are only allowed if there is a Q(Core)Application object created
  * If you call the members with signal/slot connections across threads, you can't use the return values
  * If a function is called from the wrong thread and it has a return value -1 is returned
- * Investigate if this is really needed or if DCOP/DBUS is threadsafe anyway
+ * Investigate if this is really needed or if DBUS is threadsafe anyway
+ *
+ * For more details see <a
+ * href="http://techbase.kde.org/Development/Architecture/KDE4/Starting_Other_Programs#KToolInvocation::startServiceByDesktopPath">techbase</a>.
  *
  */
 class KDECORE_EXPORT KToolInvocation : public QObject
@@ -139,10 +142,14 @@ public Q_SLOTS:
                     const QByteArray& startup_id = QByteArray() );
 
   /**
-   * Invokes the standard browser.
+   * Invokes the user's preferred browser.
    * Note that you should only do this when you know for sure that the browser can
    * handle the URL (i.e. its mimetype). In doubt, if the URL can point to an image
-   * or anything else than directory or HTML, prefer to use new KRun( url ).
+   * or anything else than HTML, prefer to use new KRun( url ).
+   *
+   * See also <a
+   * href="http://techbase.kde.org/Development/Architecture/KDE4/Starting_Other_Programs#KToolInvocation::invokeBrowser>techbase</a>
+   * for a discussion of invokeBrowser vs KRun.
    *
    * @param url The destination address
    * @param startup_id for app startup notification, "0" for none,
