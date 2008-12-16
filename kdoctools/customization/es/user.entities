@@ -39,6 +39,7 @@
 <!ENTITY OS "Sistema operativo">
 <!ENTITY RMB    "<mousebutton>botón derecho</mousebutton>">
 <!ENTITY Shift "<keycap>Mayúsculas</keycap>">
+<!ENTITY systemsettings "<application>Preferencias del sistema</application>">
 <!ENTITY Tab  "<keycap>Tab</keycap>">
 <!ENTITY TODO "Pendiente">
 <!ENTITY X-Windows      "Sistema de ventanas X">
