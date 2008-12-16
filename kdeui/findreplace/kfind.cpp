@@ -648,7 +648,10 @@ void KFind::setOptions( long options )
 
 void KFind::closeFindNextDialog()
 {
-    d->dialog->deleteLater(); d->dialog = 0L;
+    if (d->dialog) {
+        d->dialog->deleteLater();
+        d->dialog = 0;
+    }
     d->dialogClosed = true;
 }
 
