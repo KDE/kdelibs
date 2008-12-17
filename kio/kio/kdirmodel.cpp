@@ -196,6 +196,7 @@ KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url) const // O(1), wel
     KUrl url = cleanupUrl(_url);
     if (url == urlForNode(m_rootNode))
         return m_rootNode;
+    kDebug() << "nodeForUrl(" << _url << ") = " << m_nodeHash.value(url);
     return m_nodeHash.value(url);
 }
 
@@ -205,10 +206,14 @@ void KDirModelPrivate::removeFromNodeHash(KDirModelNode* node, const KUrl& url)
         KUrl::List urls;
         static_cast<KDirModelDirNode *>(node)->collectAllChildUrls(urls);
         Q_FOREACH(const KUrl& u, urls) {
-            m_nodeHash.remove(u);
+            kDebug() << u << "(cleaned up=" << cleanupUrl(u) << ")";
+            int found = m_nodeHash.remove(u);
+            Q_ASSERT(found == 1);
         }
     } else {
-        m_nodeHash.remove(cleanupUrl(url));
+        kDebug() << url << "(removing cleaned up=" << cleanupUrl(url) << ")";
+        int found = m_nodeHash.remove(cleanupUrl(url));
+        Q_ASSERT(found == 1);
     }
 }
 
@@ -461,8 +466,12 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
     if (items.count() == 1) {
         const int r = node->rowNumber();
         q->beginRemoveRows(parentIndex, r, r);
+        kDebug() << "removing one item" << url << node;
         removeFromNodeHash(node, url);
-        delete dirNode->m_childNodes.takeAt(r);
+        KDirModelNode* takenNode = dirNode->m_childNodes.takeAt(r);
+        kDebug() << takenNode << takenNode->item().url();
+        Q_ASSERT(takenNode == node);
+        delete takenNode;
         q->endRemoveRows();
         Q_ASSERT(dirNode->m_childNodesByName.contains(url.fileName()));
         dirNode->m_childNodesByName.remove(url.fileName());
@@ -560,12 +569,12 @@ void KDirModelPrivate::_k_slotClear()
     if (numRows > 0) {
         q->beginRemoveRows( QModelIndex(), 0, numRows - 1 );
         q->endRemoveRows();
-
-        m_nodeHash.clear();
-        //emit layoutAboutToBeChanged();
-        clear();
-        //emit layoutChanged();
     }
+
+    m_nodeHash.clear();
+    //emit layoutAboutToBeChanged();
+    clear();
+    //emit layoutChanged();
 }
 
 void KDirModel::itemChanged( const QModelIndex& index )
