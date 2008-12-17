@@ -79,6 +79,25 @@ static KDirWatchPrivate* createPrivate() {
   return dwp_self;
 }
 
+
+// Convert a string into a WatchMethod
+static KDirWatchPrivate::WatchMethod methodFromString(const QString& method) {
+  if (method == "Fam") {
+    return KDirWatchPrivate::Fam;
+  } else if (method == "Stat") {
+    return KDirWatchPrivate::Stat;
+  } else if (method == "QFSWatch") {
+    return KDirWatchPrivate::QFSWatch;
+  } else {
+#ifdef Q_OS_WIN
+    return KDirWatchPrivate::QFSWatch;
+#else
+    return KDirWatchPrivate::INotify;
+#endif
+  } 
+}
+
+
 //
 // Class KDirWatchPrivate (singleton)
 //
@@ -124,23 +143,10 @@ KDirWatchPrivate::KDirWatchPrivate()
   m_PollInterval = config.readEntry("PollInterval", 500);
 
   QString method = config.readEntry("PreferredMethod", "inotify");
-  if (method == "Fam")
-  {
-    m_preferredMethod = Fam;
-  }else if (method == "Stat")
-  {
-    m_preferredMethod = Stat;
-  }else if (method == "QFSWatch") {
-    m_preferredMethod = QFSWatch;
-  }else
-  {
-#ifdef Q_OS_WIN
-    m_preferredMethod = QFSWatch;
-#else
-    m_preferredMethod = INotify;
-#endif
-  }
+  m_preferredMethod = methodFromString(method);
 
+  // The nfs method defaults to the normal (local) method
+  m_nfsPreferredMethod = methodFromString(config.readEntry("nfsPreferredMethod", method));
 
   QStringList availableMethods;
 
@@ -719,53 +725,55 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
       const QFileInfo &fileInfo = *iter;
       // treat symlinks as files--don't follow them.
       bool isDir = fileInfo.isDir() && !fileInfo.isSymLink();
-      
+
       addEntry (instance, fileInfo.absoluteFilePath(), 0, isDir,
                 isDir ? watchModes : KDirWatch::WatchDirOnly);
     }
   }
 
-  // Now I've put inotify check before famd one, otherwise famd will be used
-  // also when inotify is available. Since inotify works
-  // better than famd, it is preferred to the last one
+  // If the watch is on a network filesystem use the nfsPreferredMethod as the
+  // default, otherwise use preferredMethod as the default, if the methods are
+  // the same we can skip the mountpoint check
 
-  //First try to use the preferred method, if that fails use the usual order:
-  //inotify,fam,stat
-  bool entryAdded = false;
-  if (m_preferredMethod == Fam)
-  {
-#if defined(HAVE_FAM)
-    entryAdded = useFAM(e);
-#endif
-  }else if (m_preferredMethod == INotify)
-  {
-#if defined(HAVE_SYS_INOTIFY_H)
-    entryAdded = useINotify(e);
-#endif
-  }else if (m_preferredMethod == QFSWatch)
-  {
-#ifdef HAVE_QFILESYSTEMWATCHER
-    entryAdded = useQFSWatch(e);
-#endif
-  }else if (m_preferredMethod == Stat)
-  {
-    entryAdded = useStat(e);
+  // This allows to configure a different method for NFS mounts, since inotify
+  // cannot detect changes made by other machines. However as a default inotify
+  // is fine, since the most common case is a NFS-mounted home, where all changes
+  // are made locally. #177892.
+  WatchMethod preferredMethod = m_preferredMethod;
+  if (m_nfsPreferredMethod != m_preferredMethod) {
+    KMountPoint::Ptr mountPoint = KMountPoint::currentMountPoints().findByPath(e->path);
+    if (mountPoint && mountPoint->probablySlow()) {
+      preferredMethod = m_nfsPreferredMethod;
+    }
   }
 
-  if (!entryAdded)
-  {
+  // Try the appropriate preferred method from the config first
+  bool entryAdded = false;
+  switch (preferredMethod) {
+#if defined(HAVE_FAM)
+  case Fam: entryAdded = useFAM(e); break;
+#endif
+#if defined(HAVE_SYS_INOTIFY_H)
+  case INotify: entryAdded = useINotify(e); break;
+#endif
+#if defined(HAVE_QFILESYSTEMWATCHER)
+  case QFSWatch: entryAdded = useQFSWatch(e); break;
+#endif
+  case Stat: entryAdded = useStat(e); break;
+  default: break;
+  }
+
+  // Failing that try in order INotify, FAM, QFSWatch, Stat
+  if (!entryAdded) {
 #if defined(HAVE_SYS_INOTIFY_H)
     if (useINotify(e)) return;
 #endif
-
 #if defined(HAVE_FAM)
     if (useFAM(e)) return;
 #endif
-
 #if defined(HAVE_QFILESYSTEMWATCHER)
     if (useQFSWatch(e)) return;
 #endif
-
     useStat(e);
   }
 }

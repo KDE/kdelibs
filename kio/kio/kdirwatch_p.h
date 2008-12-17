@@ -204,7 +204,7 @@ public:
   QTimer timer;
   EntryMap m_mapEntries;
 
-  WatchMethod m_preferredMethod;
+  WatchMethod m_preferredMethod, m_nfsPreferredMethod;
   int freq;
   int statEntries;
   int m_nfsPollInterval, m_PollInterval;
