@@ -1221,7 +1221,7 @@ void KFileWidgetPrivate::initSpeedbar()
 
     // initialize the size of the splitter
     KConfigGroup configGroup(KGlobal::config(), ConfigGroup);
-    placesViewWidth = configGroup.readEntry(SpeedbarWidth, 0);
+    placesViewWidth = configGroup.readEntry(SpeedbarWidth, placesView->sizeHint().width());
 
     QList<int> sizes = placesViewSplitter->sizes();
     if (placesViewWidth > 0) {
