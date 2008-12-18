@@ -491,15 +491,7 @@ void KTabWidget::moveTab( int from, int to )
 
   bool blocked = blockSignals( true );
   removeTab( from );
-
-  // Work-around kmdi brain damage which calls showPage() in insertTab()
   insertTab( to, w, tablabel );
-  if ( d->m_automaticResizeTabs ) {
-    if ( to < 0 || to >= count() )
-      d->m_tabNames.append( QString() );
-    else
-      d->m_tabNames.insert( to, QString() );
-  }
 
   setTabIcon( to, tabiconset );
   setTabText( to, tablabel );
@@ -508,6 +500,9 @@ void KTabWidget::moveTab( int from, int to )
   if ( current )
     setCurrentIndex( to );
   setTabEnabled( to, enabled );
+  if ( d->m_automaticResizeTabs ) {
+    d->resizeTabs( to );
+  }
   blockSignals( blocked );
 
   setUpdatesEnabled(true);

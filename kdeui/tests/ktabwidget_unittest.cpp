@@ -67,6 +67,32 @@ private Q_SLOTS:
             QCOMPARE(w.tabText(i), prefix+QString::number(i+2));
         }
     }
+    void testMoveTab()
+    {
+        // Test inspired by #170470 and #177036
+        KTabWidget w;
+        w.setAutomaticResizeTabs(true);
+        w.resize(300, 400);
+        QResizeEvent e(w.size(), QSize());
+        QApplication::sendEvent(&w, &e);
+        QString prefix = "This is a long prefix for the tab title. ";
+        for (int i = 0; i < 4; ++i) {
+            w.insertTab(i, new QWidget, prefix+QString::number(i));
+        //kDebug() << i << w.tabText(i);
+        }
+        w.moveTab(0,3);
+        //for (int i = 0; i < 4; ++i)
+            //kDebug() << i << w.tabText(i);
+        QCOMPARE(w.tabText(0), prefix+QString::number(1));
+        QCOMPARE(w.tabText(1), prefix+QString::number(2));
+        QCOMPARE(w.tabText(2), prefix+QString::number(3));
+        QCOMPARE(w.tabText(3), prefix+QString::number(0));
+        w.moveTab(3,0);
+        for (int i = 0; i < 4; ++i) {
+            //kDebug() << i << w.tabText(i);
+            QCOMPARE(w.tabText(i), prefix+QString::number(i));
+        }
+     }
 
 private Q_SLOTS:
     void slotCurrentChanged(int index)
