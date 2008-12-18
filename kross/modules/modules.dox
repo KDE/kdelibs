@@ -13,4 +13,9 @@
  * The ScriptManagerModule provides access to the Script Manager
  * functionality like the "Script Manager" KDialog.
  *
+ * @subsection kdetranslation The KDE Translation module
+ *
+ * The TranslationModule provides access to the 
+ * KDE internationalization and translation facilities.
+ *
  */
