@@ -2108,7 +2108,7 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
         d->showPreviews = configGroup.readEntry(QLatin1String("Previews"), false);
     }
 
-    decorationPosition = (QStyleOptionViewItem::Position) configGroup.readEntry(QLatin1String("Decoration position"), (int) QStyleOptionViewItem::Top);
+    decorationPosition = (QStyleOptionViewItem::Position) configGroup.readEntry(QLatin1String("Decoration position"), (int) QStyleOptionViewItem::Left);
     const bool decorationAtLeft = decorationPosition == QStyleOptionViewItem::Left;
     d->actionCollection->action("decorationAtLeft")->setChecked(decorationAtLeft);
     d->actionCollection->action("decorationAtTop")->setChecked(!decorationAtLeft);
@@ -2564,9 +2564,8 @@ int KDirOperator::Private::iconSizeForViewType(QAbstractItemView *itemView) cons
         return 0;
     }
 
-    const int maxSize = KIconLoader::SizeEnormous - KIconLoader::SizeSmall;
     if (qobject_cast<QListView*>(itemView)) {
-        return configGroup->readEntry("listViewIconSize", (int) (KIconLoader::SizeMedium - KIconLoader::SizeSmall + 1) * 100 / maxSize);
+        return configGroup->readEntry("listViewIconSize", 0);
     } else {
         return configGroup->readEntry("detailedViewIconSize", 0);
     }
