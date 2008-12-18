@@ -626,9 +626,9 @@ void HTMLFormElementImpl::submit(  )
                 dialog->setObjectName( "questionYesNoCancel" );
                 dialog->setCaption( i18n("Save Login Information") );
                 dialog->setButtons( KDialog::Yes | KDialog::No | KDialog::Cancel );
-                dialog->setButtonGuiItem( KDialog::User1, KGuiItem(i18n("Store")) );
-                dialog->setButtonGuiItem( KDialog::User2, KGuiItem(i18n("Ne&ver for This Site")) );
-                dialog->setButtonGuiItem( KDialog::User3, KGuiItem(i18n("Do Not Store")) );
+                dialog->setButtonGuiItem( KDialog::Yes, KGuiItem(i18n("Store")) );
+                dialog->setButtonGuiItem( KDialog::No, KGuiItem(i18n("Ne&ver for This Site")) );
+                dialog->setButtonGuiItem( KDialog::Cancel, KGuiItem(i18n("Do Not Store")) );
                 dialog->setDefaultButton( KDialog::Yes );
                 dialog->setEscapeButton( KDialog::Cancel );
                 dialog->setModal( true );
