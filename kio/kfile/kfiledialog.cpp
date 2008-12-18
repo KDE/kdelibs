@@ -171,7 +171,7 @@ public:
             operationMode(KAbstractFileWidget::Opening)
         {
         }
-        /** @return previously set (global) start dir or the first url 
+        /** @return previously set (global) start dir or the first url
          selected using setSelection() or setUrl() if the start dir is empty. */
         KUrl startDir() const
         {
@@ -282,7 +282,7 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
 
     if (customWidget)
      d->w->setCustomWidget(QString(), customWidget);
-     
+
     if (!d->native) {
      KCompletion* comp = d->w->locationEdit()->completionObject();
      comp->setIgnoreCase(true);
@@ -363,7 +363,7 @@ void KFileDialog::setInlinePreviewShown(bool show)
 
 QSize KFileDialog::sizeHint() const
 {
-    return QSize(640, 400);
+    return QSize(700, 450);
 }
 
 // This slot still exists mostly for compat purposes; for subclasses which reimplement slotOk
@@ -420,7 +420,7 @@ QString KFileDialog::getOpenFileName(const KUrl& startDir,
                                      QWidget *parent, const QString& caption)
 {
     if (KFileDialogPrivate::isNative() && (!startDir.isValid() || startDir.isLocalFile())) {
-        return QFileDialog::getOpenFileName( 
+        return QFileDialog::getOpenFileName(
             parent,
             caption.isEmpty() ? i18n("Open") : caption,
             KFileDialogPrivate::Native::staticStartDir( startDir ).path(),
