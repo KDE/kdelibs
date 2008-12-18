@@ -179,7 +179,7 @@ void KDirSelectDialog::Private::_k_slotUrlActivated( const QString& text )
     m_urlCombo->addToHistory( url.prettyUrl() );
 
     if ( m_parent->localOnly() && !url.isLocalFile() )
-        return; // ### messagebox
+        return; //FIXME: messagebox for the user
 
     KUrl oldUrl = m_treeView->currentUrl();
     if ( oldUrl.isEmpty() )
@@ -323,9 +323,11 @@ KDirSelectDialog::~KDirSelectDialog()
 KUrl KDirSelectDialog::url() const
 {
     KUrl comboUrl(d->m_urlCombo->currentText());
+
     if (comboUrl.isValid()) {
         return comboUrl;
     }
+
     kDebug() << comboUrl.path() << " is not valid";
     return d->m_treeView->currentUrl();
 }
@@ -362,12 +364,12 @@ void KDirSelectDialog::setCurrentUrl( const KUrl& url )
 
 void KDirSelectDialog::accept()
 {
-    const KUrl selectedUrl = d->m_treeView->selectedUrl();
-    if (!selectedUrl.isValid())
+    KUrl selectedUrl = url();
+    if (!selectedUrl.isValid()) {
         return;
+    }
 
-    if ( !d->m_recentDirClass.isEmpty() )
-    {
+    if (!d->m_recentDirClass.isEmpty()) {
         KRecentDirs::add(d->m_recentDirClass, selectedUrl.url());
     }
 
