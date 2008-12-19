@@ -369,10 +369,16 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     KMenu* dirsMenu = new KMenu(this);
     dirsMenu->setLayoutDirection(Qt::LeftToRight);
     int i = 0;
+    QString selectedSubdir = urlNavigator()->url(m_index+1).fileName();
     foreach (const QString& subdir, m_subdirs) {
         QString text = KStringHandler::csqueeze(subdir, 60);
         text.replace('&', "&&");
         QAction* action = new QAction(text, this);
+        if (selectedSubdir == subdir) {
+            QFont fnt(action->font());
+            fnt.setBold(true);
+            action->setFont(fnt);
+        }
         action->setData(i);
         dirsMenu->addAction(action);
         ++i;
