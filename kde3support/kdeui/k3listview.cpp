@@ -74,12 +74,12 @@ void K3ListView::Tooltip::maybeTip (const QPoint&)
 class K3ListView::K3ListViewPrivate
 {
 public:
-  K3ListViewPrivate (K3ListView* listview)
+  K3ListViewPrivate ()
     : pCurrentItem (0),
       autoSelectDelay(0),
       dragOverItem(0),
       dragDelay (KGlobalSettings::dndEventDelay()),
-      editor (new K3ListViewLineEdit (listview)),
+      editor (0),
       cursorInExecuteArea(false),
       itemsMovable (true),
       selectedBySimpleMove(false),
@@ -109,12 +109,17 @@ public:
       shadeSortColumn(KGlobalSettings::shadeSortColumn())
   {
       renameable.append(0);
-      connect(editor, SIGNAL(done(Q3ListViewItem*,int)), listview, SLOT(doneEditing(Q3ListViewItem*,int)));
   }
 
   ~K3ListViewPrivate ()
   {
     delete editor;
+  }
+
+  void createEditor (K3ListView *listview)
+  {
+      editor = new K3ListViewLineEdit (listview);
+      connect(editor, SIGNAL(done(Q3ListViewItem*,int)), listview, SLOT(doneEditing(Q3ListViewItem*,int)));
   }
 
   Q3ListViewItem* pCurrentItem;
@@ -413,8 +418,9 @@ void K3ListViewLineEdit::slotSelectionChanged()
 
 K3ListView::K3ListView( QWidget *parent )
   : Q3ListView( parent ),
-        d (new K3ListViewPrivate (this))
+        d (new K3ListViewPrivate)
 {
+  d->createEditor(this);
   setDragAutoScroll(true);
 
   connect( this, SIGNAL( onViewport() ),
