@@ -91,7 +91,8 @@ static void initStatic()
 //static
 void KServiceTypeProfile::clearCache()
 {
-    s_serviceTypeProfiles->clear();
+    if (s_serviceTypeProfiles.exists())
+        s_serviceTypeProfiles->clear();
     s_profilesParsed = false;
 }
 
@@ -209,7 +210,7 @@ void KServiceTypeProfile::deleteServiceTypeProfile( const QString& serviceType)
     config.deleteGroup( serviceType );
     config.sync();
 
-    if (s_serviceTypeProfiles)
+    if (s_serviceTypeProfiles.exists())
         s_serviceTypeProfiles->remove( serviceType );
 }
 
