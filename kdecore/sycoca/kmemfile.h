@@ -49,26 +49,31 @@ public:
    */
   virtual ~KMemFile();
   /**
-   * closes the KMemFile QIODevice
+   * closes the KMemFile
+   *
+   * @reimp
    */
   virtual void close ();
   /**
-   * overload from QIODevice. As KMemFile is a random access device,
-   * it returns false
+   * As KMemFile is a random access device, it returns false
+   *
+   * @reimp
    */
   virtual bool isSequential () const;
   /**
-   * overload from QIODevice.
-   * @param: mode only QIODevice::ReadOnly is accepted
+   * @reimp
+   * @param mode only QIODevice::ReadOnly is accepted
    */
   virtual bool open ( OpenMode mode );
   /**
-   * overload from QIODevice. Sets the current read/write position to pos
-   * @param: pos the new read/write position
+   * Sets the current read/write position to pos
+   * @reimp
+   * @param pos the new read/write position
    */
   virtual bool seek ( qint64 pos );
   /**
-   * overload from QIODevice. Returns the size of the file.
+   * Returns the size of the file
+   * @reimp
    */
   virtual qint64 size () const;
   /**
@@ -78,7 +83,9 @@ public:
    */
   static void fileContentsChanged ( const QString &filename );
 protected:
+  /** @reimp */
   virtual qint64 readData ( char * data, qint64 maxSize );
+  /** @reimp */
   virtual qint64 writeData ( const char * data, qint64 maxSize );
 private:
   class Private;

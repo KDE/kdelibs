@@ -105,7 +105,7 @@ public:
     enum FindByNameOption { DontResolveAlias, ResolveAliases = 1 };
 
     /**
-     * Retrieve a pointer to the mime type @p name .
+     * Retrieve a pointer to the mime type @p name
      *
      * @em Very @em important: Don't store the result in a KMimeType* !
      *
@@ -113,6 +113,7 @@ public:
      * Don't ever write code that compares mimetype pointers, compare names instead.
      *
      * @param name the name of the mime type
+     * @param options controls how the mime type is searched for
      * @return the pointer to the KMimeType with the given @p name, or
      *         0 if not found
      * @see KServiceType::serviceType
@@ -360,16 +361,19 @@ protected:
     KMimeType( const QString& fullpath, const QString& name, const QString& comment );
 
     /**
-     * @internal Construct a service from a stream.
+     * Construct a mimetype from another mimetype's private object
      *
-     * The stream must already be positioned at the correct offset
+     * @param dd the private object
      */
     KMimeType( KMimeTypePrivate &dd);
 
     /**
-     * Construct a mimetype and take all information from an XML file.
-     * @param fullpath the path to the xml that describes the mime type
-     * @param name the name of the mimetype (usually the end of the path)
+     * Construct a mimetype based on another mimetype's private object
+     *
+     * Allows the name and comment to be overridden.
+     *
+     * @param dd the private object
+     * @param name the name of the mimetype
      * @param comment the comment associated with the mimetype
      */
     KMimeType( KMimeTypePrivate &dd, const QString& name, const QString& comment );

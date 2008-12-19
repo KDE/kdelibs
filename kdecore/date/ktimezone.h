@@ -1138,7 +1138,9 @@ public:
      *
      * @note Every inherited class must reimplement type().
      *
-     * @return "KTimeZone" for this base class.
+     * This base class returns "KTimeZone".
+     *
+     * @return the class name
      */
     virtual QByteArray type() const;
 

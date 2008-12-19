@@ -48,7 +48,7 @@ namespace KNetwork {
   namespace Internal { class KResolverManager; }
 
 class KResolverEntryPrivate;
-/** @class KResolverEntry kresolver.h kresolver.h
+/** @class KResolverEntry k3resolver.h k3resolver.h
  *  @brief One resolution entry.
  *
  * This class is one element in the resolution results list.
@@ -63,6 +63,7 @@ class KResolverEntryPrivate;
  * is quite efficient.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KResolverEntry
 {
@@ -190,11 +191,11 @@ KDE_DUMMY_QHASH_FUNCTION(KResolverEntry)
 
 class KResolverResultsPrivate;
 /**
- * @class KResolverResults kresolver.h kresolver.h
+ * @class KResolverResults k3resolver.h k3resolver.h
  * @brief Name and service resolution results.
  *
  * This object contains the results of a name and service resolution, as
- * those performed by @ref KResolver. It is also a descendant of QValueList, so
+ * those performed by KResolver. It is also a descendant of QValueList, so
  * you may use all its member functions here to access the elements.
  *
  * A KResolverResults object is associated with a resolution, so, in addition
@@ -206,6 +207,7 @@ class KResolverResultsPrivate;
  * you should test for failure.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KResolverResults: public QList<KResolverEntry>
 {
@@ -242,7 +244,7 @@ public:
 
   /**
    * Retrieves the error code associated with this resolution. The values
-   * here are the same as in @ref KResolver::ErrorCodes.
+   * here are the same as in KResolver::ErrorCodes.
    */
   int error() const;
 
@@ -255,7 +257,7 @@ public:
   /**
    * Sets the error codes
    *
-   * @param errorcode		the error code in @ref KResolver::ErrorCodes
+   * @param errorcode		the error code in KResolver::ErrorCodes
    * @param systemerror	the system error code associated, if any
    */
   void setError(int errorcode, int systemerror = 0);
@@ -284,7 +286,7 @@ private:
 
 class KResolverPrivate;
 /**
- * @class KResolver kresolver.h kresolver.h
+ * @class KResolver k3resolver.h k3resolver.h
  * @brief Name and service resolution class.
  *
  * This class provides support for doing name-to-binary resolution
@@ -305,6 +307,7 @@ class KResolverPrivate;
  * @li host and service: unset
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KResolver: public QObject
 {
@@ -374,7 +377,7 @@ public:
    * Error codes
    *
    * These are the possible error values that objects of this class
-   * may return. See \ref errorString() for getting a string representation
+   * may return. See errorString() for getting a string representation
    * for these errors.
    *
    * @li AddrFamily: Address family for the given nodename is not supported.
@@ -388,7 +391,7 @@ public:
    *		socket type (i.e., a datagram service in a streaming socket).
    * @li UnsupportedSocketType: The requested socket type is not supported.
    * @li UnknownError: An unknown, unexpected error occurred.
-   * @li SystemError: A system error occurred. See @ref systemError.
+   * @li SystemError: A system error occurred. See systemError().
    * @li Canceled: This request was canceled by the user.
    */
   enum ErrorCodes
@@ -446,8 +449,10 @@ public:
    * Creates an empty Resolver object. You should set the wanted
    * names and flags using the member functions before starting
    * the name resolution.
+   *
+   * @param parent the parent object (see QObject)
    */
-  KResolver(QObject * = 0L);
+  KResolver(QObject *parent = 0L);
 
   /**
    * Constructor with host and service names.
@@ -456,11 +461,12 @@ public:
    * service names. Flags are initialised to 0 and any address family
    * will be accepted.
    *
-   * @param nodename	The host name we want resolved.
-   * @param servicename	The service name associated, like "http".
+   * @param nodename    the host name we want resolved
+   * @param servicename the service name associated, like "http"
+   * @param parent      the parent object (see QObject)
    */
   explicit KResolver(const QString& nodename, const QString& servicename = QString(),
-	    QObject * = 0L);
+	    QObject *parent = 0L);
 
   /**
    * Destructor.
@@ -482,7 +488,7 @@ public:
    * Retrieve the error code in this object.
    *
    * This function will return NoError if we are not in
-   * an error condition. See @ref status and @ref StatusCodes to
+   * an error condition. See status() and StatusCodes to
    * find out what the current status is.
    *
    * @see errorString for getting a textual representation of
@@ -627,7 +633,7 @@ public:
    *
    * Note: if both the nodename and the servicename are unset, this function
    * will not queue, but will set a success state and emit the signal. Also
-   * note that in this case and maybe others, the signal @ref finished might
+   * note that in this case and maybe others, the signal finished() might
    * be emitted before this function returns.
    *
    * @return true if this request was successfully queued for asynchronous
@@ -646,7 +652,7 @@ public:
    * function is not thread-safe nor reentrant: i.e., only one thread can be
    * waiting on one given object.
    *
-   * Also note that this function ensures that the @ref finished signal is
+   * Also note that this function ensures that the finished() signal is
    * emitted before it returns. That means that, as a side-effect, whenever
    * wait() is called, the signal is emitted on the thread calling wait().
    *
@@ -667,7 +673,7 @@ public:
    * Note: if you tell the signal to be emitted, be aware that it might
    * or might not be emitted before this function returns.
    *
-   * @param emitSignal	whether to emit the @ref finished signal or not
+   * @param emitSignal	whether to emit the finished() signal or not
    */
   void cancel(bool emitSignal = true);
 
@@ -723,7 +729,7 @@ public:
   /**
    * Returns the string representation of this error code.
    *
-   * @param errorcode	the error code. See @ref ErrorCodes.
+   * @param errorcode	the error code. See ErrorCodes.
    * @param syserror	the system error code associated.
    * @return		the string representation. This is already
    *			i18n'ed.
@@ -761,7 +767,7 @@ public:
    *
    * This function is provided as a convenience to simplify the resolution
    * process. It creates an internal KResolver object, connects the
-   * @ref finished signal to the given slot and starts the resolution
+   * finished() signal to the given slot and starts the resolution
    * asynchronously. It is more or less equivalent to the following code:
    *
    * \b Note: this function may trigger the signal before it returns, so
@@ -813,7 +819,7 @@ public:
   static QByteArray domainToAscii(const QString& unicodeDomain);
 
   /**
-   * Does the inverse of @ref domainToAscii and return an Unicode domain
+   * Does the inverse of domainToAscii() and return an Unicode domain
    * name from the given ACE-encoded domain.
    *
    * This function may fail if the given domain cannot be successfully
@@ -823,7 +829,7 @@ public:
    * ASCII-compatible domain).
    *
    * It is, however, guaranteed that domains returned
-   * by @ref domainToAscii will work.
+   * by domainToAscii() will work.
    *
    * @param asciiDomain	the ACE-encoded domain name to be decoded
    * @return the Unicode representation of the given domain name

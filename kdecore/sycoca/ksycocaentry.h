@@ -48,7 +48,7 @@ public:
    KSycocaEntry();
 
    virtual ~KSycocaEntry();
-    
+
    /**
     * internal
     */
@@ -100,7 +100,7 @@ public:
      * have convenience access functions like exec(),
      * serviceTypes etc.
      *
-     * @param _name the name of the property
+     * @param name the name of the property
      * @return the property, or invalid if not found
      */
    QVariant property(const QString &name) const;

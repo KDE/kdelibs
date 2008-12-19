@@ -141,7 +141,7 @@ public:
      * This can be used to create a service instance from a mime type query
      *
      * @param mimeType A mime type like 'text/plain' or 'text/html'.
-     * @param genericServiceType a basic service type
+     * @param serviceType a basic service type
      * @param parent the parent object for the plugin itself
      * @param constraint  A constraint to limit the choices returned, QString() to
      *                    get all services that can handle the given @p mimetype

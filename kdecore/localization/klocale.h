@@ -68,10 +68,12 @@ class KDECORE_EXPORT KLocale
 {
 public:
   /**
-   * Constructs a KLocale with the given catalog name.
-   * The constructor looks for an entry Locale/Language in the
+   * Constructs a KLocale with the given catalog name
+   *
+   * The constructor looks for an entry Language in the group Locale in the
    * configuration file.
-   * If no config file is specified, it will also look for languages
+   *
+   * If no configuration file is specified, it will also look for languages
    * using the environment variables (KDE_LANG, LC_MESSAGES, LC_ALL, LANG),
    * as well as the global configuration file. If KLocale is not able to use
    * any of the specified languages, the default language (en_US) will be
@@ -80,33 +82,48 @@ public:
    * If you specify a configuration file, it has to be valid until
    * the KLocale object is destroyed.
    *
-   * @param catalog The name of the main language file
-   * @param config The configuration file to use.
+   * @param catalog the name of the main language file
+   * @param config  a configuration file with a Locale group detailing
+   *                locale-related preferences (such as language and
+   *                formatting options)
    */
   explicit KLocale(const QString& catalog, KSharedConfig::Ptr config = KSharedConfig::Ptr());
 
+  /**
+   * Constructs a KLocale with the given catalog name
+   *
+   * Allows you to override the language and, optionally, the
+   * country of this locale.
+   *
+   * @param catalog  the name of the main language file
+   * @param language the language for the locale
+   * @param country  the country for the locale
+   * @param config   a configuration file with a Locale group detailing
+   *                 locale-related preferences (such as date and time
+   *                 formatting options)
+   */
   KLocale(const QString& catalog, const QString &language, const QString &country = QString(), KConfig *config = 0);
 
   /**
-   * Copy constructor.
+   * Copy constructor
    */
   KLocale( const KLocale & rhs );
 
   /**
-   * Assignment operator.
+   * Assignment operator
    */
   KLocale& operator= ( const KLocale & rhs );
 
   /**
-   * Destructor.
+   * Destructor
    */
   virtual ~KLocale();
 
   /**
    * Raw translation from message catalogs.
    *
-   * Never use this directly to get message translations. See i18n* and ki18n*
-   * calls related to KLocalizedString.
+   * Never use this directly to get message translations. See the i18n and ki18n
+   * family of calls related to KLocalizedString.
    *
    * @param msg the message. Must not be null. Must be UTF-8 encoded.
    * @param lang language in which the translation was found. If no translation
@@ -457,10 +474,10 @@ public:
    * Returns a string formatted to the current locale's conventions
    * regarding dates.
    *
-   * @param date the date to be formatted.
+   * @param date the date to be formatted
    * @param format category of date format to use
    *
-   * @return The date as a string
+   * @return the date as a string
    */
   QString formatDate(const QDate &date, DateFormat format = LongDate) const;
 
@@ -470,9 +487,10 @@ public:
    *
    * @param dateTime the date and time to be formatted
    * @param format category of date format to use
-   * @param options additional output options
+   * @param includeSecs if @c true, the string will include the seconds part
+   *                    of the time; otherwise, the seconds will be omitted
    *
-   * @return The date and time as a string
+   * @return the date and time as a string
    */
   QString formatDateTime(const QDateTime &dateTime, DateFormat format = ShortDate,
                          bool includeSecs = false) const;
@@ -1081,11 +1099,12 @@ public:
 
   /**
    * Convert a known country code to a human readable, localized form.
+   *
    * If an unknown country code is supplied, empty string is returned;
    * this will never happen if the code has been obtained by one of the
    * KLocale methods.
    *
-   * @param code the country code
+   * @param country the country code
    *
    * @return the human readable and localized form of the country name
    *
@@ -1167,7 +1186,9 @@ public:
   bool isApplicationTranslatedInto( const QString & language);
 
   /**
-   * Copies the catalogs of this objct to an other KLocale object.
+   * Copies the catalogs of this object to an other KLocale object.
+   *
+   * @param locale the destination KLocale object
    */
   void copyCatalogsTo(KLocale *locale);
 
@@ -1176,9 +1197,12 @@ public:
    * unchanged if failed. It will force a reload of the country specific
    * configuration.
    *
-   * @param country The ISO 3166 country code.
+   * @param country the ISO 3166 country code
+   * @param config  a configuration file with a Locale group detailing
+   *                locale-related preferences (such as date and time
+   *                formatting)
    *
-   * @return True on success.
+   * @return @c true on success, @c false on failure
    */
   bool setCountry(const QString & country, KConfig *config);
  
@@ -1188,6 +1212,9 @@ public:
    * configuration as well.
    *
    * @param language the language code
+   * @param config  a configuration file with a Locale group detailing
+   *                locale-related preferences (such as date and time
+   *                formatting)
    *
    * @return true on success
    */

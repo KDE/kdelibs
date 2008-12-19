@@ -43,8 +43,8 @@
  * instances. Use self() to get a pointer to the loader.
  *
  * @deprecated You have two other possibilites:
- *       KPluginLoader or KService::createInstance for plugins
- *       KLibrary for other libraries
+ *  - KPluginLoader or KService::createInstance for plugins
+ *  - KLibrary for other libraries
  *
  * @see KLibrary
  * @see KPluginLoader
@@ -74,6 +74,7 @@ public:
      *                 You can, however, give a library name ending in ".so"
      *                 (or whatever is used on your platform), and the library
      *                 will be loaded without resolving dependencies. Use with caution.
+     * @param loadHint provides more control over how the library is loaded
      * @return the KPluginFactory, or 0 if the library does not exist or it does
      *         not have a factory
      * @see library
@@ -95,6 +96,7 @@ public:
      *                 You can, however, give a library name ending in ".so"
      *                 (or whatever is used on your platform), and the library
      *                 will be loaded without resolving dependencies. Use with caution.
+     * @param loadHint provides more control over how the library is loaded
      * @return KLibrary is invalid (0) when the library couldn't be dlopened. in such
      * a case you can retrieve the error message by calling KLibLoader::lastErrorMessage()
      *
@@ -128,12 +130,14 @@ public:
     void unloadLibrary( const QString &libname );
 
     /**
-     * Returns a pointer to the factory. Use this function to get an instance
-     * of KLibLoader.
+     * Returns a pointer to the factory.
+     *
+     * Use this function to get an instance of KLibLoader.
+     *
      * @return a pointer to the loader. If no loader exists until now
      *         then one is created.
      *
-     * @deprecated use KPluginLoader
+     * @deprecated use KPluginLoader instead
      */
     static KDE_DEPRECATED KLibLoader* self();
 
@@ -146,6 +150,7 @@ public:
      *                the "module" and "lib" resources. If there is no extension,
      *                ".la" will be appended.
      * @param cData a KComponentData used to get the standard paths
+     * @return the name of the library if it was found, an empty string otherwise
      */
     static QString findLibrary(const QString &libname, const KComponentData &cData = KGlobal::mainComponent());
 
@@ -153,30 +158,25 @@ public:
      * This enum type defines the possible error cases that can happen
      * when loading a component.
      *
-     * <ul>
-     *  <li><code>ErrNoLibrary</code> - the specified library could not be
-     *      loaded. Use KLibLoader::lastErrorMessage for details.</li>
-     *  <li><code>ErrNoFactory</code> - the library does not export a factory
-     *      for creating components</li>
-     *  <li><code>ErrNoComponent</code> - the factory does not support creating
-     *      components of the specified type</li>
-     *  <li><code>ErrServiceProvidesNoLibrary</code> - the specified service
-     *      provides no shared library (when using KService)</li>
-     *  <li><code>ErrNoServiceFound</code> - no service implementing the
-     *      given servicetype and fullfilling the given constraint expression
-     *      can be found (when using KServiceTypeTrader).</li>
-     * </ul>
+     * Use errorString() to convert the error code to a human-readable string
      */
-    enum ComponentLoadingError { ErrNoLibrary = 1,
-                                 ErrNoFactory,
-                                 ErrNoComponent,
-                                 ErrServiceProvidesNoLibrary,
-                                 ErrNoServiceFound };
+    enum ComponentLoadingError {
+        ErrNoLibrary = 1, /*< the specified library could not be loaded. Use KLibLoader::lastErrorMessage for details*/
+        ErrNoFactory, /*< the library does not export a factory */
+        ErrNoComponent, /*< the factory does not support creating components of the specified type */
+        ErrServiceProvidesNoLibrary, /*< the specified service provides no shared library (when using KService) */
+        ErrNoServiceFound /*< no service implementing the given servicetype and fullfilling the given constraint expression can be found (when using KServiceTypeTrader) */
+    };
 
     /**
-     * Returns a translated error message for @p componentLoadingError
-     * @param componentLoadingError the error code, as returned in the "error"
-     * output parameter of createInstance.
+     * Converts a numerical error code into a human-readable error message
+     *
+     * @param componentLoadingError the error code, as set using the @p error
+     *                              paramter of createInstance()
+     * @return the translated error message describing the error represented
+     *         by @p componentLoadingError
+     *
+     * @see ComponentLoadingError
      */
     static QString errorString( int componentLoadingError );
 
@@ -185,13 +185,16 @@ public:
      * This template allows to load the specified library and ask the
      * factory to create an instance of the given template type.
      *
-     * @param libraryName The library to open
-     * @param parent The parent object (see QObject constructor)
-     * @param args A list of string arguments, passed to the factory and possibly
+     * @param keyword the keyword for the plugin - see KPluginFactory::registerPlugin()
+     * @param libname the library to open
+     * @param parent the parent object (see QObject constructor)
+     * @param args a list of string arguments, passed to the factory and possibly
      *             to the component (see KPluginFactory)
-     * @param error
-     * @return A pointer to the newly created object or a null pointer if the
-     *         factory was unable to create an object of the given type.
+     * @param error if not null, the int will be set to 0 on success or one of the
+     *              error codes defined by ComponentLoadingError if there was an error
+     * @return a pointer to the newly created object or a null pointer if the
+     *         factory was unable to create an object of the given type
+     * @deprecated Use KService::createInstance() or KPluginFactory instead
      */
     template <typename T>
     static KDE_DEPRECATED T *createInstance(const QString &keyword, const QString &libname, QObject *parent = 0,
@@ -225,6 +228,20 @@ public:
         return res;
     }
 
+    /**
+     * This template allows to load the specified library and ask the
+     * factory to create an instance of the given template type.
+     *
+     * @param libname the library to open
+     * @param parent the parent object (see QObject constructor)
+     * @param args a list of string arguments, passed to the factory and possibly
+     *             to the component (see KPluginFactory)
+     * @param error if not null, the int will be set to 0 on success or one of the
+     *              error codes defined by ComponentLoadingError if there was an error
+     * @return a pointer to the newly created object or a null pointer if the
+     *         factory was unable to create an object of the given type
+     * @deprecated Use KService::createInstance() or KPluginFactory instead
+     */
     template <typename T>
     static KDE_DEPRECATED T *createInstance( const QString &libname, QObject *parent = 0,
                               const QVariantList &args = QVariantList(),

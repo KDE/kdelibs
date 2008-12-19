@@ -287,7 +287,7 @@ public:
      * \p T. If it has multiple choices, you will get a fatal error (kFatal()), so be creaful
      * to request a unique interface or use keywords.
      *
-     * \param T The interface for which an object should be created. The object will inherit \p T.
+     * \tparam T The interface for which an object should be created. The object will inherit \p T.
      * \param parent The parent of the object. If \p parent is a widget type, it will also passed
      *               to the parentWidget argument of the CreateInstanceFunction for the object.
      * \param args Additional arguments which will be passed to the object.
@@ -300,7 +300,7 @@ public:
      * Use this method to create an object. It will try to create an object which inherits
      * \p T and was registered with \p keyword.
      *
-     * \param T The interface for which an object should be created. The object will inherit \p T.
+     * \tparam T The interface for which an object should be created. The object will inherit \p T.
      * \param keyword The keyword of the object.
      * \param parent The parent of the object. If \p parent is a widget type, it will also passed
      *               to the parentWidget argument of the CreateInstanceFunction for the object.
@@ -315,7 +315,7 @@ public:
      * \p T and was registered with \p keyword.
      * This overload has an additional \p parentWidget argument, which is used by some plugins (e.g. Parts).
 
-     * \param T The interface for which an object should be created. The object will inherit \p T.
+     * \tparam T The interface for which an object should be created. The object will inherit \p T.
      * \param parentWidget An additional parent widget.
      * \param parent The parent of the object. If \p parent is a widget type, it will also passed
      *               to the parentWidget argument of the CreateInstanceFunction for the object.
@@ -364,7 +364,7 @@ protected:
      * the \p keyword makes it unique. E.g. it is possible to register a KCModule and a
      * KParts::Part without having to specify keywords since their interfaces differ.
      *
-     * \param T The name of the plugin class
+     * \tparam T the name of the plugin class
      *
      * \param keyword An optional keyword as unique identifier for the plugin. This allows you to
      * put more than one plugin with the same interface into the same library using the same

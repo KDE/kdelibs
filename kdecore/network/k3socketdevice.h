@@ -34,18 +34,19 @@ class KSocketDevice;
 class KSocketDeviceFactoryBase;
 
 class KSocketDevicePrivate;
-/** @class KSocketDevice ksocketdevice.h ksocketdevice.h
+/** @class KSocketDevice k3socketdevice.h k3socketdevice.h
  *  @brief Low-level socket functionality.
  *
  * This class provides low-level socket functionality. 
  *
- * Most users will prefer "cooked" interfaces like those of @ref KStreamSocket or
- * @ref KServerSocket.
+ * Most users will prefer "cooked" interfaces like those of KStreamSocket or
+ * KServerSocket.
  *
  * Descended classes from this one provide some other kinds of socket functionality,
  * like proxying or specific socket types.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KSocketDevice: public KActiveSocketBase, public KPassiveSocketBase
 {
@@ -63,11 +64,11 @@ public:
   enum Capabilities
     {
       /** Can connect to hostnames.
-       *  If this flag is present, the string form of @ref connect can be used. */
+       *  If this flag is present, the string form of connect() can be used. */
       CanConnectString = 0x01,
 
       /** Can bind to hostnames.
-       *  If this flag is present, the string form of @ref bind can be used */
+       *  If this flag is present, the string form of bind() can be used */
       CanBindString = 0x02,
 
       /** Can not bind.
@@ -129,7 +130,7 @@ public:
   /**
    * Returns the set of capabilities this socket class implements.
    * The set of capabilities is defined as an OR-ed mask of 
-   * @ref Capabilities bits.
+   * Capabilities bits.
    *
    * The default implementation is guaranteed to always return 0. That
    * is, derived implementations always return bits where they differ
@@ -201,7 +202,7 @@ public:
   /**
    * Waits up to @p msecs for more data to be available on this socket.
    *
-   * This function is a wrapper against @ref poll. This function will wait
+   * This function is a wrapper against poll(). This function will wait
    * for any read events.
    */
   virtual qint64 waitForMore(int msecs, bool *timeout = 0L);
@@ -221,12 +222,12 @@ public:
    * Returns this socket's externally visible local address.
    *
    * If this socket has a local address visible externally different
-   * from the normal local address (as returned by @ref localAddress), then
+   * from the normal local address (as returned by localAddress()), then
    * return it.
    *
    * Certain implementations will use proxies and thus have externally visible
    * addresses different from the local socket values. The default implementation
-   * returns the same value as @ref localAddress.
+   * returns the same value as localAddress().
    *
    * @note This function may return an empty KSocketAddress. In that case, the
    *       externally visible address could/can not be determined.
@@ -321,15 +322,15 @@ protected:
   /**
    * Creates a socket notifier of the given type.
    *
-   * This function is called by @ref readNotifier, @ref writeNotifier and
-   * @ref exceptionNotifier when they need to create a socket notifier
+   * This function is called by readNotifier(), writeNotifier() and
+   * exceptionNotifier() when they need to create a socket notifier
    * (i.e., the first call to those functions after the socket is open).
    * After that call, those functions cache the socket notifier and will
    * not need to call this function again.
    *
    * Reimplement this function in your derived class if your socket type
    * requires a different kind of QSocketNotifier. The return value should
-   * be deleteable with delete. (@ref close deletes them).
+   * be deleteable with delete. (close() deletes them).
    *
    * @param type	the socket notifier type
    */

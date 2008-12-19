@@ -97,7 +97,7 @@ class KCleanUpGlobalStatic
  *
  * If needed (If the destructor of the global object calls other functions that depend on other
  * global statics (e.g. KConfig::sync) your destructor has to be called before those global statics
- * are destroyed. A Qt post routine does that.) you can also install a post routine (@ref qAddPostRoutine) to clean up the object
+ * are destroyed. A Qt post routine does that.) you can also install a post routine (qAddPostRoutine) to clean up the object
  * using the destroy() method. If you registered a post routine and the object is destroyed because
  * of a lib unload you have to call qRemovePostRoutine!
  *

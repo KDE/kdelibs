@@ -35,17 +35,18 @@
 namespace KNetwork {
 
 class KReverseResolverPrivate;
-/** @class KReverseResolver kreverseresolver.h kreverseresolver.h
+/** @class KReverseResolver k3reverseresolver.h k3reverseresolver.h
  *  @brief Run a reverse-resolution on a socket address.
  *
  * This class is provided as a counterpart to KResolver in such a way
  * as it produces a reverse resolution: it resolves a socket address
  * from its binary representations into a textual representation.
  *
- * Most users will use the static functions @ref resolve, which work
+ * Most users will use the static functions resolve(), which work
  * both synchronously (blocking) and asynchronously (non-blocking).
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KReverseResolver: public QObject
 {
@@ -84,11 +85,12 @@ public:
   /**
    * Constructs this object to resolve the given socket address.
    *
-   * @param addr	the address to resolve
-   * @param flags	the flags to use, see @ref Flags
+   * @param addr        the address to resolve
+   * @param flags       the flags to use, see Flags
+   * @param parent      the parent object (see QObject)
    */
   explicit KReverseResolver(const KSocketAddress& addr, int flags = 0,
-		   QObject * = 0L);
+                            QObject *parent = 0L);
 
   /**
    * Destructor.

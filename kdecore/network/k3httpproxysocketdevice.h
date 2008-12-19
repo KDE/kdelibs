@@ -32,13 +32,14 @@ namespace KNetwork {
 class KHttpProxySocketDevicePrivate;
 
 /**
- * @class KHttpProxySocketDevice khttpproxysocketdevice.h khttproxysocketdevice.h
+ * @class KHttpProxySocketDevice k3httpproxysocketdevice.h k3httproxysocketdevice.h
  * @brief The low-level backend for HTTP proxying.
  *
- * This class derives from @ref KSocketDevice and implements the necessary
+ * This class derives from KSocketDevice and implements the necessary
  * calls to make a connection through an HTTP proxy.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KHttpProxySocketDevice: public KSocketDevice
 {
@@ -111,7 +112,7 @@ private:
 public:
   /**
    * This is the default proxy server to be used.
-   * Applications may want to set this value so that calling @ref setProxyServer
+   * Applications may want to set this value so that calling setProxyServer()
    * is unnecessary.
    */
   static KResolverEntry defaultProxy;

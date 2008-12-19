@@ -275,7 +275,7 @@ namespace KNetwork
 
       /*
        * This function is called by the manager to receive a new event. It operates
-       * on the @ref eventSemaphore semaphore, which means it will block till there
+       * on the eventSemaphore() semaphore, which means it will block till there
        * is at least one event to go.
        */
       void receiveEvent();

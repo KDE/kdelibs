@@ -35,12 +35,12 @@
 namespace KNetwork {
 
 class KBufferedSocketPrivate;
-/** @class KBufferedSocket kbufferedsocket.h kbufferedsocket.h
+/** @class KBufferedSocket k3bufferedsocket.h k3bufferedsocket.h
  *  @brief Buffered stream sockets.
  *
  * This class allows the user to create and operate buffered stream sockets
  * such as those used in most Internet connections. This class is
- * also the one that resembles the most to the old @ref QSocket
+ * also the one that resembles the most to the old QSocket
  * implementation.
  *
  * Objects of this type operate only in non-blocking mode. A call to
@@ -53,6 +53,7 @@ class KBufferedSocketPrivate;
  *
  * @see KNetwork::KStreamSocket, KNetwork::KServerSocket
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KBufferedSocket: public KStreamSocket
 {
@@ -87,7 +88,7 @@ protected:
 public:
   /**
    * Closes the socket for new data, but allow data that had been buffered
-   * for output with @ref writeData to be still be written.
+   * for output with writeData() to be still be written.
    *
    * @sa closeNow
    */
@@ -130,14 +131,14 @@ public:
 
   /**
    * Closes the socket and discards any output data that had been buffered
-   * with @ref writeData but that had not yet been written.
+   * with writeData() but that had not yet been written.
    *
    * @sa close
    */
   virtual void closeNow();
 
   /**
-   * Returns true if a line can be read with @ref readLine
+   * Returns true if a line can be read with readLine()
    */
   virtual bool canReadLine() const;
 
@@ -153,14 +154,14 @@ protected:
   /**
    * Reads data from a socket.
    *
-   * The @p from parameter is always set to @ref peerAddress()
+   * The @p from parameter is always set to peerAddress()
    */
   virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress *from);
 
   /**
    * Peeks data from the socket.
    *
-   * The @p from parameter is always set to @ref peerAddress()
+   * The @p from parameter is always set to peerAddress()
    */
   virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress *from);
 

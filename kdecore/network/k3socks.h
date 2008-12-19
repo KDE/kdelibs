@@ -47,6 +47,7 @@ typedef unsigned ksocklen_t;
  * self().
  *
  * @short Access to a SOCKS Proxy.
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KSocks {
 public:

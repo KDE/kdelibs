@@ -41,7 +41,7 @@ class KSocketAddress;
 class KInetSocketAddress;
 class KUnixSocketAddress;
 
-/** @class KIpAddress ksocketaddress.h ksocketaddress.h
+/** @class KIpAddress k3socketaddress.h k3socketaddress.h
  *  @brief An IP address.
  *
  * This class represents one IP address, version 4 or 6. This is only
@@ -49,7 +49,7 @@ class KUnixSocketAddress;
  *
  * It is not a good programming practice to create address from objects
  * like this. Instead, prefer a more thorough function like
- * @ref KResolver::resolve, which also handle extra information like scope
+ * KResolver::resolve(), which also handle extra information like scope
  * ids.
  *
  * This is a light-weight class. Most of the member functions are inlined and
@@ -57,6 +57,7 @@ class KUnixSocketAddress;
  * bytes. Also note that there is no sharing of data.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KIpAddress
 {
@@ -221,7 +222,7 @@ public:
 
   /**
    * This is a convenience function. Returns the IPv4 address in a
-   * 32-bit integer. The result is only valid if @ref isIPv4Addr returns
+   * 32-bit integer. The result is only valid if isIPv4Addr() returns
    * true. Alternatively, if the contained IPv6 address is a v4-mapped one
    * and the @p convertMapped parameter is true, the result will also be
    * valid.
@@ -252,7 +253,7 @@ public:
   { return version() == 0 ? false : (*this == localhostV4 || *this == localhostV6); }
 
   /**
-   * This is an alias for @ref isLocalhost.
+   * This is an alias for isLocalhost().
    */
   inline bool isLoopback() const
   { return isLocalhost(); }
@@ -287,7 +288,7 @@ public:
   /**
    * Returns true if this is an IPv4 class D (a.k.a. multicast) address.
    *
-   * Note: this function is not the same as @ref isMulticast. isMulticast also
+   * Note: this function is not the same as isMulticast(). isMulticast also
    * tests for IPv6 multicast addresses.
    */
   inline bool isClassD() const
@@ -402,12 +403,13 @@ public:
 
 
 class KSocketAddressData;
-/** @class KSocketAddress ksocketaddress.h ksocketaddress.h
+/** @class KSocketAddress k3socketaddress.h k3socketaddress.h
  *  @brief A generic socket address.
  *
  * This class holds one generic socket address.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KSocketAddress //krazy:exclude=dpointer (we got one, just not called Private)
 {
@@ -468,7 +470,7 @@ public:
    * so you may use to to test for validity.
    *
    * The returned value, if not NULL, is an internal buffer which is guaranteed
-   * to be at least @ref length() bytes long.
+   * to be at least length() bytes long.
    */
   sockaddr* address();
 
@@ -628,7 +630,7 @@ public:				// static
 };
 
 
-/** @class KInetSocketAddress ksocketaddress.h ksocketaddress.h
+/** @class KInetSocketAddress k3socketaddress.h k3socketaddress.h
  *  @brief an Internet socket address
  *
  * An Inet (IPv4 or IPv6) socket address
@@ -636,6 +638,7 @@ public:				// static
  * This is an IPv4 or IPv6 address of the Internet.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KInetSocketAddress: public KSocketAddress
 {
@@ -816,7 +819,7 @@ private:
  * External definition
  */
 
-/** @class KUnixSocketAddress ksocketaddress.h ksocketaddress.h
+/** @class KUnixSocketAddress k3socketaddress.h k3socketaddress.h
  *  @brief A Unix (local) socket address.
  *
  * This is a Unix socket address.
@@ -825,6 +828,7 @@ private:
  * the proper encoding is used to translate into valid filesystem file names.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KUnixSocketAddress: public KSocketAddress
 {

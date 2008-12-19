@@ -180,11 +180,37 @@ public:
                              MimeDataFlags flags = DefaultMimeDataFlags ) const;
 
       /**
-       * Adds URLs into the given QMimeData, both the "kde version" of the URLs
-       * (e.g. desktop:/foo) and the "most local" version of the URLs
-       * (e.g. file:///home/dfaure/Desktop/foo).
-       * Call this method on the "kde" URLs.
-       * @param mostLocalUrls the "most local" urls.
+       * Adds URLs into the given QMimeData.
+       *
+       * This should add both the KDE-style URLs (eg: desktop:/foo) and
+       * the "most local" version of the URLs (eg:
+       * file:///home/jbloggs/Desktop/foo) to the mimedata.
+       *
+       * This method should be called on the KDE-style URLs.
+       *
+       * @code
+       * QMimeData* mimeData = new QMimeData();
+       *
+       * KUrl::List kdeUrls;
+       * kdeUrls << "desktop:/foo";
+       * kdeUrls << "desktop:/bar";
+       *
+       * KUrl::List normalUrls;
+       * normalUrls << "file:///home/jbloggs/Desktop/foo";
+       * normalUrls << "file:///home/jbloggs/Desktop/bar";
+       *
+       * kdeUrls.populateMimeData(normalUrls, mimeData);
+       * @endcode
+       *
+       * @param mostLocalUrls the "most local" urls
+       * @param mimeData      the mime data object to populate
+       * @param metaData      KIO metadata shipped in the mime data, which is
+       *                      used for instance to set a correct HTTP referrer
+       *                      (some websites require it for downloading e.g. an
+       *                      image)
+       * @param flags         set NoTextExport to prevent setting plain/text
+       *                      data into @p mimeData. In such a case,
+       *                      <code>setExportAsText(false)</code> should be called.
        * @since 4.2
        */
       void populateMimeData(const KUrl::List& mostLocalUrls,

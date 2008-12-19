@@ -131,7 +131,7 @@ public:
     static KServiceTypeTrader* self();
 
     /**
-     * This method creates and returns a plugin, from the trader query for a given serviceType.
+     * Get a plugin from a trader query
      *
      * Example:
      * \code
@@ -158,12 +158,17 @@ public:
     }
 
     /**
-     * This method works like the previous one, but you can specify an additional parent widget.
-     * This is used for example for parts
+     * Get a plugin from a trader query
+     *
+     * This method works like
+     * createInstanceFromQuery(const QString&, const QString&, QObject*, const QVariantList&, QString*),
+     * but you can specify an additional parent widget.  This is important for
+     * a KPart, for example.
      *
      * @param serviceType the type of service for which to find a plugin
-     * @param constraint an optional constraint to pass to the trader (see KTrader)
+     * @param parentWidget the parent widget for the plugin
      * @param parent the parent object for the part itself
+     * @param constraint an optional constraint to pass to the trader (see KTrader)
      * @param args A list of arguments passed to the service component
      * @param error The string passed here will contain an error description.
      * @return A pointer to the newly created object or a null pointer if the
@@ -188,6 +193,11 @@ public:
         return 0;
     }
 
+    /**
+     * @deprecated Use
+     * createInstanceFromQuery(const QString&, const QString&, QObject*, const QVariantList&, QString*)
+     * instead
+     */
     template <class T>
     static KDE_DEPRECATED T *createInstanceFromQuery(const QString &serviceType, const QString &constraint,
             QObject *parent, const QStringList &args, int *error = 0)

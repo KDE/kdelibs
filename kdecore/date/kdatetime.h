@@ -1228,7 +1228,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
     /**
      * Returns the KDateTime represented by @p string, using the @p format given.
      *
-     * This method is the inverse of @ref toString(TimeFormat), except that it can
+     * This method is the inverse of toString(TimeFormat), except that it can
      * only return a time specification of UTC, OffsetFromUTC or ClockTime. An
      * actual named time zone cannot be returned since an offset from UTC only
      * partially specifies a time zone.
@@ -1523,9 +1523,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      */
     void detach();
 
-    /** Write @p dateTime to the datastream @p out, in binary format. */
     friend QDataStream &operator<<(QDataStream &out, const KDateTime &dateTime);
-    /** Read a KDateTime object into @p dateTime from @p in, in binary format. */
     friend QDataStream &operator>>(QDataStream &in, KDateTime &dateTime);
 
   private:
@@ -1537,9 +1535,9 @@ QDataStream &operator<<(QDataStream &out, const KDateTime::Spec &spec);
 /** Read a KDateTime::Spec object into @p spec from @p in, in binary format. */
 QDataStream &operator>>(QDataStream &in, KDateTime::Spec &spec);
 
-/** @copydoc  KDateTime::operator<< */
+/** Write @p dateTime to the datastream @p out, in binary format. */
 QDataStream &operator<<(QDataStream &out, const KDateTime &dateTime);
-/** @copydoc  KDateTime::operator>> */
+/** Read a KDateTime object into @p dateTime from @p in, in binary format. */
 QDataStream &operator>>(QDataStream &in, KDateTime &dateTime);
 
 #endif

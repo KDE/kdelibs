@@ -75,6 +75,7 @@ public:
      * If no codec could be found, the ISO 8859-1 codec will be returned an
      * and @p ok will be set to false.
      *
+     * @param n the name of the codec
      * @param ok true if a matching codec has been found, false if not
      * @return the QTextCodec. If the desired codec could not be found,
      *         it returns a default (ISO 8859-1) codec

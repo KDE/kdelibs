@@ -26,10 +26,10 @@ namespace KNetwork {
 
 class KSocksSocketDevicePrivate;
 /** 
- * @class KSocksSocketDevice ksockssocketdevice.h ksockssocketdevice.h
+ * @class KSocksSocketDevice k3sockssocketdevice.h k3sockssocketdevice.h
  * @brief The low-level class for SOCKS proxying.
  *
- * This class reimplements several functions from @ref KSocketDevice in order
+ * This class reimplements several functions from KSocketDevice in order
  * to implement SOCKS support.
  *
  * This works by using KSocks.
@@ -37,6 +37,7 @@ class KSocksSocketDevicePrivate;
  * @author Thiago Macieira <thiago@kde.org>
  *
  * @warning This code is untested!
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KSocksSocketDevice: public KSocketDevice
 {

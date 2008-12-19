@@ -30,15 +30,16 @@
 
 
 /**
- * @class KIOBufferBase kiobuffer.h kiobuffer.h
+ * @class KIOBufferBase k3iobuffer.h k3iobuffer.h
  * @brief base for I/O buffer implementation
  *
  * This class declares the base methods to interface with an I/O buffer.
  * Most applications will not need to access this class directly, since
- * it is all handled by @ref KNetwork::KBufferedSocket and other buffering
+ * it is all handled by KNetwork::KBufferedSocket and other buffering
  * classes.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KIOBufferBase //krazy:exclude=inline (mainly virtual; simple implementations; KDE3 compat)
 {

@@ -37,12 +37,13 @@ class KActiveSocketBase;
 
 /**
  * @internal
- * @class KSocketBuffer ksocketbuffer_p.h ksocketbuffer_p.h
+ * @class KSocketBuffer k3socketbuffer_p.h k3socketbuffer_p.h
  * @brief generic socket buffering code
  *
- * This class implements generic buffering used by @ref KBufferedSocket.
+ * This class implements generic buffering used by KBufferedSocket.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KSocketBuffer
 {

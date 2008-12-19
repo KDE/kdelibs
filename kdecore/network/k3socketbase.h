@@ -70,7 +70,7 @@ class KResolverEntry;
 class KSocketDevice;
 
 class KSocketBasePrivate;
-/** @class KSocketBase ksocketbase.h ksocketbase.h
+/** @class KSocketBase k3socketbase.h k3socketbase.h
  *  @brief Basic socket functionality.
  *
  * This class provides the basic socket functionlity for descended classes.
@@ -80,6 +80,7 @@ class KSocketBasePrivate;
  * @note This class is abstract.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KSocketBase
 {
@@ -90,13 +91,13 @@ public:
    * These are the options that may be set on a socket:
    *  - Blocking: whether the socket shall operate in blocking
    *    or non-blocking mode. This flag defaults to on.
-   *    See @ref setBlocking.
+   *    See setBlocking().
    *  - AddressReusable: whether the address used by this socket will
    *    be available for reuse by other sockets. This flag defaults to off.
-   *    See @ref setAddressReuseable.
+   *    See setAddressReuseable().
    *  - IPv6Only: whether an IPv6 socket will accept IPv4 connections
    *    through a mapped address. This flag defaults to off.
-   *    See @ref setIPv6Only.
+   *    See setIPv6Only().
    *  - KeepAlive: whether TCP should send keepalive probes when a connection
    *    has gone idle for far too long.
    *  - Broadcast: whether this socket is allowed to send broadcast packets
@@ -185,7 +186,7 @@ protected:
    * Descended classes must override this function to achieve functionality and
    * must also call this implementation.
    *
-   * @param opts	a mask of @ref SocketOptions or-ed bits of options to set
+   * @param opts	a mask of SocketOptions or-ed bits of options to set
    *			or unset
    * @returns true on success
    * @note this function sets the options corresponding to the bits enabled in @p opts
@@ -214,7 +215,7 @@ public:
    * and set the corresponding error code.
    *
    * The default implementation toggles the Blocking flag with the current
-   * socket options and calls @ref setSocketOptions.
+   * socket options and calls setSocketOptions().
    *
    * @param enable		whether to set this socket to blocking mode
    * @returns whether setting this value was successful; it is NOT the
@@ -239,7 +240,7 @@ public:
    * address.
    *
    * The default implementation toggles the AddressReuseable flag with the current
-   * socket options and calls @ref setSocketOptions.
+   * socket options and calls setSocketOptions().
    *
    * @param enable		whether to set the flag on or off
    * @returns true if setting this flag was successful
@@ -264,7 +265,7 @@ public:
    * This option has no effect on non-IPv6 sockets.
    *
    * The default implementation toggles the IPv6Only flag with the current
-   * socket options and calls @ref setSocketOptions.
+   * socket options and calls setSocketOptions().
    *
    * @param enable		whether to set the flag on or off
    * @returns true if setting this flag was successful
@@ -340,7 +341,7 @@ public:
    * the setting of a device and properly set their own states and internal
    * variables. The parent class must be called.
    *
-   * This function is called by @ref socketDevice above when the socket is
+   * This function is called by socketDevice() above when the socket is
    * first created.
    */
   virtual void setSocketDevice(KSocketDevice* device);
@@ -353,16 +354,16 @@ public:
    * implementation. By using this function, derived classes can request
    * that a backend with those capabilities be created when necessary.
    *
-   * For the possible flags, see @ref KSocketDevice::Capabilities. However, note
+   * For the possible flags, see KSocketDevice::Capabilities. However, note
    * that only the Can* flags make sense in this context.
    *
    * @note Since socketDevice must always return a valid backend object, it
    *       is is possible that the created device does not conform to all
    *       requirements requested. Implementations sensitive to this fact
-   *       should test the object returned by @ref socketDevice (through
-   *       @ref KSocketDevice::capabilities, for instance) the availability.
+   *       should test the object returned by socketDevice() (through
+   *       KSocketDevice::capabilities(), for instance) the availability.
    *
-   * @param add		mask of @ref KSocketDevice::Capabilities to add
+   * @param add		mask of KSocketDevice::Capabilities to add
    * @param remove	mask of bits to remove from the requirements
    * @return the current mask of requested capabilities
    */
@@ -371,7 +372,7 @@ public:
 protected:
   /**
    * Returns true if the socket device has been initialised in this
-   * object, either by calling @ref socketDevice() or @ref setSocketDevice
+   * object, either by calling socketDevice() or setSocketDevice()
    */
   bool hasDevice() const;
 
@@ -448,13 +449,14 @@ private:
 };
 
 /**
- * @class KActiveSocketBase ksocketbase.h ksocketbase.h
+ * @class KActiveSocketBase k3socketbase.h k3socketbase.h
  * @brief Abstract class for active sockets
  *
  * This class provides the standard interfaces for active sockets, i.e.,
  * sockets that are used to connect to external addresses.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KActiveSocketBase: public QIODevice, virtual public KSocketBase
 {
@@ -760,13 +762,14 @@ protected:
 };
 
 /**
- * @class KPassiveSocketBase ksocketbase.h ksocketbase.h
+ * @class KPassiveSocketBase k3socketbase.h k3socketbase.h
  * @brief Abstract base class for passive sockets.
  *
  * This socket provides the initial functionality for passive sockets,
  * i.e., sockets that accept incoming connections.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KPassiveSocketBase: virtual public KSocketBase
 {

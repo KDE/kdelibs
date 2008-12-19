@@ -377,7 +377,7 @@ RequestData* KResolverManager::requestData(KResolverThread *th, int maxWaitTime)
 RequestData* KResolverManager::findData(KResolverThread* th)
 {
   /////
-  // This function is called by @ref requestData above and must
+  // This function is called by requestData() above and must
   // always be called with a locked mutex
   /////
 

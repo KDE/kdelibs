@@ -35,18 +35,19 @@ namespace KNetwork {
 class KResolverEntry;
 
 /**
- * @class KDatagramPacket kdatagramsocket.h kdatagramsocket.h
+ * @class KDatagramPacket k3datagramsocket.h k3datagramsocket.h
  * @brief one datagram
  *
  * This object represents one datagram of data sent or received through
- * a datagram socket (as @ref KDatagramSocket or derived classes). A datagram
+ * a datagram socket (as KDatagramSocket or derived classes). A datagram
  * consists of data as well as a network address associated (whither to send
  * the data or whence it came).
  *
- * This is a lightweight class. Data is stored in a @ref QByteArray, which means
+ * This is a lightweight class. Data is stored in a QByteArray, which means
  * that it is explicitly shared.
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KDatagramPacket //krazy:exclude=dpointer,inline (lightweight; kde3)
 {
@@ -165,10 +166,10 @@ public:
 
 class KDatagramSocketPrivate;
 /**
- * @class KDatagramSocket kdatagramsocket.h kdatagramsocket.h
+ * @class KDatagramSocket k3datagramsocket.h k3datagramsocket.h
  * @brief A socket that operates on datagrams.
  *
- * Unlike @ref KStreamSocket, which operates on a connection-based stream
+ * Unlike KStreamSocket, which operates on a connection-based stream
  * socket (generally TCP), this class and its descendants operates on datagrams, 
  * which are normally connectionless.
  *
@@ -176,6 +177,7 @@ class KDatagramSocketPrivate;
  * SOCK_DGRAM sockets. 
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KDatagramSocket: public KClientSocketBase
 {
@@ -224,7 +226,7 @@ public:
    * (see write(const char*, qint64) ).
    *
    * @note Calling connect will not cause the socket to be bound. You have
-   *       to call @ref bind explicitly.
+   *       to call bind() explicitly.
    */
   virtual bool connect(const QString& node = QString(),
 		       const QString& service = QString(),
@@ -246,7 +248,7 @@ public:
 
   /**
    * Sends one datagram into the stream. The destination address must be
-   * set if this socket has not been connected (see @ref connect).
+   * set if this socket has not been connected (see connect()).
    *   
    * The data in this packet will be sent only in one single datagram. If the
    * system cannot send it like that, this function will fail. So, please take

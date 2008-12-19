@@ -39,7 +39,11 @@ namespace KNetwork {
     struct InputData;
   }
 
-/** @internal
+/**
+ * @class KResolverWorkerBase k3resolverworkerbase.h k3resolverworkerbase.h
+ *
+ * @internal
+ *
  * This class is the base functionality for a resolver worker. That is,
  * the class that does the actual work.
  *
@@ -49,13 +53,13 @@ namespace KNetwork {
  * Note that hostnames are still encoded in Unicode at this point. It's up to
  * the worker class to decide which encoding to use. In the case of DNS, 
  * an ASCII Compatible Encoding (ACE) must be used. 
- * See @ref KResolver::domainToAscii. 
+ * See KResolver::domainToAscii().
  *
  * Also specially note that the run method in this class is called in a
  * thread that is not the program's main thread. So do not do anything there
  * that you shouldn't!
  *
- * @class KResolverWorkerBase kresolverworkerbase.h kresolverworkerbase.h
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KResolverWorkerBase
 {
@@ -119,7 +123,7 @@ public:
    * leave it empty in case of error.
    *
    * Status and error codes should also be stored in this object (the
-   * @ref setError function does that).
+   * setError() function does that).
    */
   KResolverResults results;
 
@@ -168,7 +172,7 @@ public:
   /**
    * Call this function to indicate that processing
    * has finished. This is useful in the preprocessing
-   * stage, to indicate that @ref run doesn't have to be
+   * stage, to indicate that run() doesn't have to be
    * called.
    */
   void finished();
@@ -181,7 +185,7 @@ protected:
    * Derived classes will do their blocking job in this function and return
    * either success or failure to work (not the lookup). That is, whether the
    * lookup result was a domain found or not, if we got our answer, we should
-   * indicate success. The error itself must be set with @ref setError.
+   * indicate success. The error itself must be set with setError().
    *
    * \b Important: this function gets called in a separate thread!
    * 
@@ -202,7 +206,7 @@ protected:
    * handling this kind of data; false otherwise. Note that the return value
    * of 'true' means that the object's blocking answer will be considered authoritative.
    *
-   * This function MUST NOT queue further requests. Leave that to @ref run.
+   * This function MUST NOT queue further requests. Leave that to run().
    *
    * This function is pure virtual; you must override it.
    *
@@ -236,7 +240,7 @@ protected:
    * are done before calling the postprocessing function, which you should 
    * override.
    *
-   * \b Important: do use KResolver's own enqueueing functions (i.e., @ref KResolver::start). 
+   * \b Important: do use KResolver's own enqueueing functions (i.e., KResolver::start()). 
    * Instead, use this function.
    *
    * @returns true on successful queuing or false if a problem ocurred
@@ -268,17 +272,21 @@ protected:
   void acquireResolver();
 
   /**
-   * This function is the counterpart for @ref acquireResolver() - the worker
+   * This function is the counterpart for acquireResolver() - the worker
    * thread indicates that it's done with the resolver.
    */
   void releaseResolver();
 
 };
 
-/** @internal
+/**
+ * @class KResolverWorkerFactoryBase k3resolverworkerbase.h k3resolverworkerbase.h
+ *
+ * @internal
+ *
  * This class provides functionality for creating and registering worker classes.
  *
- * @class KResolverWorkerFactoryBase kresolverworkerbase.h kresolverworkerbase.h
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KResolverWorkerFactoryBase
 {
@@ -293,10 +301,14 @@ public:
   static void registerNewWorker(KResolverWorkerFactoryBase* factory);
 };
 
-/** @internal
+/**
+ * @class KResolverWorkerFactory k3resolverworkerbase.h k3resolverworkerbase.h
+ *
+ * @internal
+ *
  * This class provides functionality for creating and registering worker classes.
  *
- * @class KResolverWorkerFactory kresolverworkerbase.h kresolverworkerbase.h
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 template<class Worker>
 class KResolverWorkerFactory: public KResolverWorkerFactoryBase

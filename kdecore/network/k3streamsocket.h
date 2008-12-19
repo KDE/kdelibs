@@ -37,7 +37,7 @@ class KServerSocket;
 class KBufferedSocket;
 
 class KStreamSocketPrivate;
-/** @class KStreamSocket kstreamsocket.h kstreamsocket.h
+/** @class KStreamSocket k3streamsocket.h k3streamsocket.h
  *  @brief Simple stream socket
  *
  * This class provides functionality to creating unbuffered, stream
@@ -93,6 +93,7 @@ class KStreamSocketPrivate;
  * @see KNetwork::KBufferedSocket, KNetwork::KServerSocket
  * @author Thiago Macieira <thiago@kde.org>
  * @version 0.9
+ * @deprecated Use KSocketFactory or KLocalSocket instead
  */
 class KDECORE_EXPORT KStreamSocket: public KClientSocketBase
 {
@@ -121,7 +122,7 @@ public:
 
   /**
    * Retrieves the remaining timeout time (in milliseconds). This value
-   * equals @ref timeout() if there's no connection in progress.
+   * equals timeout() if there's no connection in progress.
    */
   int remainingTimeout() const;
 
@@ -145,14 +146,14 @@ public:
    * 
    * Reimplemented from KClientSocketBase.
    *
-   * Upon successful binding, the @ref bound signal will be
-   * emitted. If an error is found, the @ref gotError
+   * Upon successful binding, the bound() signal will be
+   * emitted. If an error is found, the gotError()
    * signal will be emitted.
    *
    * @note Due to the internals of the name lookup and binding
    *       mechanism, some (if not most) implementations of this function
    *       do not actually bind the socket until the connection
-   *       is requested (see @ref connect). They only set the values
+   *       is requested (see connect()). They only set the values
    *       for future reference.
    *
    * This function returns true on success.
@@ -167,8 +168,8 @@ public:
    * Reimplemented from KClientSocketBase. Connect this socket to this
    * specific address.
    *
-   * Unlike @ref bind(const QString&, const QString&) above, this function
-   * really does bind the socket. No lookup is performed. The @ref bound
+   * Unlike bind(const QString&, const QString&) above, this function
+   * really does bind the socket. No lookup is performed. The bound()
    * signal will be emitted.
    */
   virtual bool bind(const KResolverEntry& entry);
@@ -185,8 +186,8 @@ public:
    * return when all the resolved peer addresses have been tried or when
    * a connection is established.
    *
-   * Upon successfully connecting, the @ref connected signal 
-   * will be emitted. If an error is found, the @ref gotError
+   * Upon successfully connecting, the connected() signal
+   * will be emitted. If an error is found, the gotError()
    * signal will be emitted.
    *
    * This function also implements timeout handling.
