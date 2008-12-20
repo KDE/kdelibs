@@ -85,6 +85,7 @@ ktoolbar.cpp
 kurllabel.cpp
 kwindowlistmenu.cpp
 kassistantdialog.cpp
+kwallet.cpp		Michael Leupold <lemma@confuego.org>
 kwordwrap.cpp		David Faure <faure@kde.org>
 kxmlguibuilder.cpp
 kxmlguiclient.cpp
