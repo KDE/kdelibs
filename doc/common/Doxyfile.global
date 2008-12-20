@@ -132,9 +132,6 @@ ENABLE_PREPROCESSING   = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = 
-PREDEFINED             = QT_VERSION=320 \
-                         __cplusplus \
-                         Q_WS_X11
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 ALLEXTERNALS           = NO
