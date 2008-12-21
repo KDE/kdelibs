@@ -1373,7 +1373,7 @@ bool KDirOperator::Private::checkPreviewInternal() const
         return false;
 
     QStringList mimeTypes = dirLister->mimeFilters();
-    const QStringList nameFilter = dirLister->nameFilter().split(" ", QString::SkipEmptyParts);
+    const QStringList nameFilter = dirLister->nameFilter().split(' ', QString::SkipEmptyParts);
 
     if (mimeTypes.isEmpty() && nameFilter.isEmpty() && !supported.isEmpty())
         return true;

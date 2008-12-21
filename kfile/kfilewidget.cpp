@@ -619,7 +619,7 @@ void KFileWidget::setFilter(const QString& filter)
     // interpret as a MIME filter.
 
     if (pos > 0 && filter[pos - 1] != '\\') {
-        QStringList filters = filter.split(" ", QString::SkipEmptyParts);
+        QStringList filters = filter.split(' ', QString::SkipEmptyParts);
         setMimeFilter( filters );
         return;
     }
@@ -650,7 +650,7 @@ void KFileWidget::setMimeFilter( const QStringList& mimeTypes,
 {
     d->filterWidget->setMimeFilter( mimeTypes, defaultType );
 
-    QStringList types = d->filterWidget->currentFilter().split(" ",QString::SkipEmptyParts); //QStringList::split(" ", d->filterWidget->currentFilter());
+    QStringList types = d->filterWidget->currentFilter().split(' ', QString::SkipEmptyParts); //QStringList::split(" ", d->filterWidget->currentFilter());
     types.append( QLatin1String( "inode/directory" ));
     d->ops->clearFilter();
     d->ops->setMimeFilter( types );
@@ -2038,7 +2038,7 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
             // e.g. "*.cpp"
             if (filter.indexOf ('/') < 0)
             {
-                extension = getExtensionFromPatternList (filter.split(" ",QString::SkipEmptyParts)/*QStringList::split (" ", filter)*/).toLower();
+                extension = getExtensionFromPatternList (filter.split(' ', QString::SkipEmptyParts)/*QStringList::split (" ", filter)*/).toLower();
 //                 kDebug (kfile_area) << "\tsetFilter-style: pattern ext=\'"
 //                                     << extension << "\'" << endl;
             }
