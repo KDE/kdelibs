@@ -225,6 +225,12 @@ JSValue *FunctionImp::lengthGetter(ExecState*, JSObject*, const Identifier&, con
   return jsNumber(thisObj->body->numParams());
 }
 
+JSValue* FunctionImp::nameGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
+{
+    FunctionImp* thisObj = static_cast<FunctionImp*>(slot.slotBase());
+    return jsString(thisObj->functionName().ustring());
+}
+
 bool FunctionImp::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
 {
     // Find the arguments from the closest context.
@@ -239,8 +245,15 @@ bool FunctionImp::getOwnPropertySlot(ExecState* exec, const Identifier& property
         return true;
     }
 
+    // Calling function (Mozilla-extension)
     if (propertyName == exec->propertyNames().caller) {
         slot.setCustom(this, callerGetter);
+        return true;
+    }
+
+    // Function name (Mozilla-extension)
+    if (propertyName == exec->propertyNames().name) {
+        slot.setCustom(this, nameGetter);
         return true;
     }
 
@@ -249,14 +262,18 @@ bool FunctionImp::getOwnPropertySlot(ExecState* exec, const Identifier& property
 
 void FunctionImp::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
-    if (propertyName == exec->propertyNames().arguments || propertyName == exec->propertyNames().length)
+    if (propertyName == exec->propertyNames().arguments ||
+        propertyName == exec->propertyNames().length ||
+        propertyName == exec->propertyNames().name)
         return;
     InternalFunctionImp::put(exec, propertyName, value, attr);
 }
 
 bool FunctionImp::deleteProperty(ExecState *exec, const Identifier &propertyName)
 {
-    if (propertyName == exec->propertyNames().arguments || propertyName == exec->propertyNames().length)
+    if (propertyName == exec->propertyNames().arguments ||
+        propertyName == exec->propertyNames().length ||
+        propertyName == exec->propertyNames().name)
         return false;
     return InternalFunctionImp::deleteProperty(exec, propertyName);
 }
