@@ -1,14 +1,14 @@
 KNewStuff2 - the next generation GHNS
 =====================================
 
-This is the stating area which will lead to a much more powerful
-KNewStuff library for collaborative data sharing in KDE 4.
+The KNewStuff2 library implements collaborative data sharing for KDE 4
+applications.
 
 Read featureguide.txt for an introduction.
 
 Have a look at doc/*.txt for some documentation, especially the tutorial.
 
-There's also some ideas at http://techbase.kde.org/Projects/KNS2.
+There are also some ideas at http://techbase.kde.org/Projects/KNS2.
 
 Finally, some possible extensions to KNewStuff2 are still in
 /branches/work/knewstuff2.
