@@ -340,3 +340,4 @@
 </guiicon>"><!-- if image is localised, then entityref should be used
                       instead of fileref -->
 <!ENTITY menuk  "menu <guimenu>K</guimenu>">
+<!ENTITY partman "Gestionnaire de partitions de &kde;">  <!-- English: &partman; -->
