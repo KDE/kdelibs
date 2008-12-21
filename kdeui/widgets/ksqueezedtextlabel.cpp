@@ -92,7 +92,7 @@ void KSqueezedTextLabel::setText( const QString &text ) {
 }
 
 void KSqueezedTextLabel::clear() {
-  d->fullText = QString();
+  d->fullText.clear();
   QLabel::clear();
 }
 

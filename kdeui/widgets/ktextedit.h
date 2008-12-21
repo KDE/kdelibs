@@ -81,7 +81,7 @@ class KTextEditSpellInterface
  * @see QTextEdit
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KDEUI_EXPORT KTextEdit : public QTextEdit
+class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
 {
     Q_OBJECT
 

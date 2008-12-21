@@ -151,7 +151,7 @@ QValidator::State KMimeTypeValidator::validate( QString &input, int& ) const
 void KMimeTypeValidator::fixup( QString &input ) const
 {
   QRegExp invalidChars("[^/" ALLOWED_CHARS "]+");
-  input.replace( invalidChars, QString());
+  input.remove( invalidChars );
 }
 
 #include "kstringvalidator.moc"

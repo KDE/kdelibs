@@ -144,7 +144,7 @@ class KLineEditPrivate;
  * @author Dawit Alemayehu <adawit@kde.org>
  */
 
-class KDEUI_EXPORT KLineEdit : public QLineEdit, public KCompletionBase
+class KDEUI_EXPORT KLineEdit : public QLineEdit, public KCompletionBase //krazy:exclude=qclasses
 {
     friend class KComboBox;
     friend class KLineEditStyle;

@@ -53,7 +53,7 @@ class QMovie;
  *
  * @author Matthias Ettrich <ettrich@kde.org>
  **/
-class KDEUI_EXPORT KSystemTrayIcon : public QSystemTrayIcon
+class KDEUI_EXPORT KSystemTrayIcon : public QSystemTrayIcon //krazy:exclude=qclasses
 {
     Q_OBJECT
 public:

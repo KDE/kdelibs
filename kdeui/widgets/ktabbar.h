@@ -28,7 +28,7 @@
 /**
  * A QTabBar with extended features.
  */
-class KDEUI_EXPORT KTabBar: public QTabBar
+class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
 {
     Q_OBJECT
 

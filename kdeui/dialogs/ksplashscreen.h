@@ -37,7 +37,7 @@ class QPixmap;
  *
  *  @author Chris Howells (howells@kde.org)
  */
-class KDEUI_EXPORT KSplashScreen : public QSplashScreen
+class KDEUI_EXPORT KSplashScreen : public QSplashScreen //krazy:exclude=qclasses
 {
   Q_OBJECT
 

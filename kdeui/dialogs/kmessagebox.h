@@ -1096,7 +1096,7 @@ public:
      *         the @p dialog that is passed in is deleted by this
      *         function. Do not delete it yourself.
      */
-    static int createKMessageBox(KDialog *dialog, QMessageBox::Icon icon,
+    static int createKMessageBox(KDialog *dialog, QMessageBox::Icon icon, //krazy:exclude=qclasses
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString());
@@ -1131,7 +1131,7 @@ public:
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString(),
-                             QMessageBox::Icon notifyType=QMessageBox::Information);
+                             QMessageBox::Icon notifyType=QMessageBox::Information); //krazy:exclude=qclasses
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KMessageBox::Options)

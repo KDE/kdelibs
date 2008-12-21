@@ -48,7 +48,7 @@ KReplaceNextDialog::KReplaceNextDialog(QWidget *parent) :
     setModal( false );
     setCaption( i18n("Replace") );
     setButtons( User3 | User2 | User1 | Close );
-    setButtonGuiItem( User1, KGuiItem(i18nc("@action:button Replace all occurences", "&All")) );
+    setButtonGuiItem( User1, KGuiItem(i18nc("@action:button Replace all occurrences", "&All")) );
     setButtonGuiItem( User2, KGuiItem(i18n("&Skip")) );
     setButtonGuiItem( User3, KGuiItem(i18n("Replace")) );
     setDefaultButton( User3 );

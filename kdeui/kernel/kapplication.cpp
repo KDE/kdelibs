@@ -582,10 +582,10 @@ void KApplicationPrivate::init(bool GUIenabled)
 #ifdef Q_WS_MAC
   if (q->type() == KApplication::GuiClient) {
       // This is a QSystemTrayIcon instead of K* because we can't be sure q is a QWidget
-      QSystemTrayIcon *trayIcon;
-      if (QSystemTrayIcon::isSystemTrayAvailable())
+      QSystemTrayIcon *trayIcon; //krazy:exclude=qclasses
+      if (QSystemTrayIcon::isSystemTrayAvailable()) //krazy:exclude=qclasses
       {
-          trayIcon = new QSystemTrayIcon(q);
+          trayIcon = new QSystemTrayIcon(q); //krazy:exclude=qclasses
           trayIcon->setIcon(q->windowIcon());
           /* it's counter-intuitive, but once you do setIcon it's already set the
              dock icon... ->show actually shows an icon in the menu bar too  :P */

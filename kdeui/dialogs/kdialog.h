@@ -124,7 +124,7 @@ class KDialogPrivate;
  * @author Olivier Goffart <ogoffart at kde.org>
  * @author Tobias Koenig <tokoe@kde.org>
  */
-class KDEUI_EXPORT KDialog : public QDialog
+class KDEUI_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
 {
   Q_OBJECT
   Q_ENUMS(ButtonCode)

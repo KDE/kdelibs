@@ -38,7 +38,7 @@ class QTab;
  *
  * See also the QTabWidget documentation.
  */
-class KDEUI_EXPORT KTabWidget : public QTabWidget
+class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
 {
     Q_OBJECT
     Q_PROPERTY( bool tabReorderingEnabled READ isTabReorderingEnabled WRITE setTabReorderingEnabled )

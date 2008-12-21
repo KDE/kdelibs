@@ -44,7 +44,7 @@
  * @author Espen Sand (espensa@online.no)
  */
 
-class KDEUI_EXPORT KTextBrowser : public QTextBrowser
+class KDEUI_EXPORT KTextBrowser : public QTextBrowser //krazy:exclude=qclasses
 {
   Q_OBJECT
   Q_PROPERTY( bool notifyClick READ isNotifyClick WRITE setNotifyClick )

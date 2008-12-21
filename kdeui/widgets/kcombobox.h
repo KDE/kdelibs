@@ -143,7 +143,7 @@ class KUrl;
  *
  * @author Dawit Alemayehu <adawit@kde.org>
  */
-class KDEUI_EXPORT KComboBox : public QComboBox, public KCompletionBase
+class KDEUI_EXPORT KComboBox : public QComboBox, public KCompletionBase //krazy:exclude=qclasses
 {
   Q_OBJECT
   Q_PROPERTY( bool autoCompletion READ autoCompletion WRITE setAutoCompletion )

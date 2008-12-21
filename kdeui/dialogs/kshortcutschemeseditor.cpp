@@ -160,7 +160,7 @@ QString KShortcutSchemesEditor::currentScheme()
 void KShortcutSchemesEditor::exportShortcutsScheme()
 {
     //ask user about dir
-    QString exportTo = QFileDialog::getExistingDirectory(this, i18n("Export to Location"),
+    QString exportTo = QFileDialog::getExistingDirectory(this, i18n("Export to Location"), //krazy:exclude=qclasses it is not possible to use KDirSelectDialog here because kfile links against kdeui; the dialog gets replaced anyway with the KDE one at runtime
         QDir::currentPath());
     if (exportTo.isEmpty())
         return;
