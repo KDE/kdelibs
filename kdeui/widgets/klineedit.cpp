@@ -174,7 +174,7 @@ QRect KLineEditStyle::subElementRect(SubElement element, const QStyleOption *opt
   {
     QRect rect = style()->subElementRect(SE_LineEditContents, option, widget);
 
-    int overlap = lineEditPrivate->overlap;
+    const int overlap = lineEditPrivate->overlap;
     if (option->direction == Qt::LeftToRight) return rect.adjusted(0, 0, -overlap, 0);
     else return rect.adjusted(overlap, 0, 0, 0);
   }
@@ -221,7 +221,7 @@ void KLineEdit::init()
 
     connect(KGlobalSettings::self(), SIGNAL(settingsChanged(int)), this, SLOT(_k_slotSettingsChanged(int)));
 
-    QPalette p = palette();
+    const QPalette p = palette();
     if ( !d->previousHighlightedTextColor.isValid() )
       d->previousHighlightedTextColor=p.color(QPalette::Normal,QPalette::HighlightedText);
     if ( !d->previousHighlightColor.isValid() )
@@ -377,11 +377,11 @@ void KLineEdit::setCompletedText( const QString& t, bool marked )
     if ( !d->autoSuggest )
       return;
 
-    QString txt = text();
+    const QString txt = text();
 
     if ( t != txt )
     {
-        int start = marked ? txt.length() : t.length();
+        const int start = marked ? txt.length() : t.length();
         setText(t);
         setSelection(start, t.length());
         setUserSelection(false);
@@ -394,7 +394,7 @@ void KLineEdit::setCompletedText( const QString& t, bool marked )
 void KLineEdit::setCompletedText( const QString& text )
 {
     KGlobalSettings::Completion mode = completionMode();
-    bool marked = ( mode == KGlobalSettings::CompletionAuto ||
+    const bool marked = ( mode == KGlobalSettings::CompletionAuto ||
                     mode == KGlobalSettings::CompletionMan ||
                     mode == KGlobalSettings::CompletionPopup ||
                     mode == KGlobalSettings::CompletionPopupAuto );
@@ -538,10 +538,10 @@ void KLineEdit::setSqueezedText()
 {
     d->squeezedStart = 0;
     d->squeezedEnd = 0;
-    QString fullText = d->squeezedText;
-    QFontMetrics fm(fontMetrics());
-    int labelWidth = size().width() - 2*style()->pixelMetric(QStyle::PM_DefaultFrameWidth) - 2;
-    int textWidth = fm.width(fullText);
+    const QString fullText = d->squeezedText;
+    const QFontMetrics fm(fontMetrics());
+    const int labelWidth = size().width() - 2*style()->pixelMetric(QStyle::PM_DefaultFrameWidth) - 2;
+    const int textWidth = fm.width(fullText);
 
     if (textWidth > labelWidth)
     {
@@ -737,8 +737,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
          completionMode() != KGlobalSettings::CompletionNone )
     {
         const KeyBindingMap keys = getKeyBindings();
-        KGlobalSettings::Completion mode = completionMode();
-        bool noModifier = (e->modifiers() == Qt::NoButton ||
+        const KGlobalSettings::Completion mode = completionMode();
+        const bool noModifier = (e->modifiers() == Qt::NoButton ||
                            e->modifiers() == Qt::ShiftModifier ||
                            e->modifiers() == Qt::KeypadModifier);
 
@@ -750,13 +750,13 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                  ( e->key() == Qt::Key_Right || e->key() == Qt::Key_Left ) &&
                  e->modifiers()==Qt::NoButton )
             {
-                QString old_txt = text();
+                const QString old_txt = text();
                 d->disableRestoreSelection = true;
-                int start = selectionStart();
+                const int start = selectionStart();
 
                 deselect();
                 QLineEdit::keyPressEvent ( e );
-                int cPosition=cursorPosition();
+                const int cPosition=cursorPosition();
                 setText(old_txt);
                 setCursorPosition(cPosition);
                 if (e->key() ==Qt::Key_Right && cPosition > start )
@@ -787,17 +787,17 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         if ( (mode == KGlobalSettings::CompletionAuto ||
               mode == KGlobalSettings::CompletionMan) && noModifier )
         {
-            QString keycode = e->text();
+            const QString keycode = e->text();
             if ( !keycode.isEmpty() && (keycode.unicode()->isPrint() ||
                 e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete ) )
             {
-                bool hasUserSelection=d->userSelection;
-                bool hadSelection=hasSelectedText();
+                const bool hasUserSelection=d->userSelection;
+                const bool hadSelection=hasSelectedText();
 
                 bool cursorNotAtEnd=false;
 
-                int start = selectionStart();
-                int cPos = cursorPosition();
+                const int start = selectionStart();
+                const int cPos = cursorPosition();
 
                 // When moving the cursor, we want to keep the autocompletion as an
                 // autocompletion, so we want to process events at the cursor position
@@ -851,14 +851,14 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                    mode == KGlobalSettings::CompletionPopupAuto ) &&
                    noModifier && !e->text().isEmpty() )
         {
-            QString old_txt = text();
-            bool hasUserSelection=d->userSelection;
-            bool hadSelection=hasSelectedText();
+            const QString old_txt = text();
+            const bool hasUserSelection=d->userSelection;
+            const bool hadSelection=hasSelectedText();
             bool cursorNotAtEnd=false;
 
-            int start = selectionStart();
-            int cPos = cursorPosition();
-            QString keycode = e->text();
+            const int start = selectionStart();
+            const int cPos = cursorPosition();
+            const QString keycode = e->text();
 
             // When moving the cursor, we want to keep the autocompletion as an
             // autocompletion, so we want to process events at the cursor position
@@ -873,7 +873,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 cursorNotAtEnd=true;
             }
 
-            int selectedLength=selectedText().length();
+            const int selectedLength=selectedText().length();
 
             d->disableRestoreSelection = true;
             QLineEdit::keyPressEvent ( e );
@@ -934,8 +934,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             {
                 // Emit completion if the completion mode is CompletionShell
                 // and the cursor is at the end of the string.
-                QString txt = text();
-                int len = txt.length();
+                const QString txt = text();
+                const int len = txt.length();
                 if ( cursorPosition() == len && len != 0 )
                 {
                     d->doCompletion(txt);
@@ -1004,7 +1004,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         }
     }
 
-    int selectedLength = selectedText().length();
+    const int selectedLength = selectedText().length();
 
     // Let QLineEdit handle any other keys events.
     QLineEdit::keyPressEvent ( e );
@@ -1088,12 +1088,12 @@ QMenu* KLineEdit::createStandardContextMenu()
     if( !isReadOnly() )
     {
         // FIXME: This code depends on Qt's action ordering.
-        QList<QAction *> actionList = popup->actions();
+        const QList<QAction *> actionList = popup->actions();
         enum { UndoAct, RedoAct, Separator1, CutAct, CopyAct, PasteAct, DeleteAct, ClearAct,
                Separator2, SelectAllAct, NCountActs };
         QAction *separatorAction = 0L;
         // separator we want is right after Delete right now.
-        int idx = actionList.indexOf( actionList[DeleteAct] ) + 1;
+        const int idx = actionList.indexOf( actionList[DeleteAct] ) + 1;
         if ( idx < actionList.count() )
             separatorAction = actionList.at( idx );
         if ( separatorAction )
@@ -1265,9 +1265,9 @@ bool KLineEdit::event( QEvent* ev )
 
         if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
         {
-            bool trap = d->completionBox && d->completionBox->isVisible();
+            const bool trap = d->completionBox && d->completionBox->isVisible();
 
-            bool stopEvent = trap || (d->grabReturnKeyEvents &&
+            const bool stopEvent = trap || (d->grabReturnKeyEvents &&
                                       (e->modifiers() == Qt::NoButton ||
                                        e->modifiers() == Qt::KeypadModifier));
 
@@ -1365,8 +1365,8 @@ void KLineEdit::userCancelled(const QString & cancelText)
       else
       {
         d->autoSuggest=false;
-        int start = selectionStart() ;
-        QString s=text().remove(selectionStart(), selectedText().length());
+        const int start = selectionStart() ;
+        const QString s=text().remove(selectionStart(), selectedText().length());
         setText(s);
         setCursorPosition(start);
         d->autoSuggest=true;
@@ -1378,7 +1378,7 @@ bool KLineEditPrivate::overrideShortcut(const QKeyEvent* e)
 {
     KShortcut scKey;
 
-    int key = e->key() | e->modifiers();
+    const int key = e->key() | e->modifiers();
     const KLineEdit::KeyBindingMap keys = q->getKeyBindings();
 
     if (keys[KLineEdit::TextCompletion].isEmpty())
@@ -1432,7 +1432,7 @@ bool KLineEditPrivate::overrideShortcut(const QKeyEvent* e)
     if (completionBox && completionBox->isVisible ())
     {
         const int key = e->key();
-        Qt::KeyboardModifiers modifiers = e->modifiers();
+        const Qt::KeyboardModifiers modifiers = e->modifiers();
         if ((key == Qt::Key_Backtab || key == Qt::Key_Tab) &&
             (modifiers == Qt::NoModifier || (modifiers & Qt::ShiftModifier)))
         {
@@ -1488,7 +1488,7 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
             }
             if ( matchedItem )
             {
-                bool blocked = d->completionBox->blockSignals( true );
+                const bool blocked = d->completionBox->blockSignals( true );
                 d->completionBox->setCurrentItem( matchedItem );
                 matchedItem->setSelected(wasSelected);
                 d->completionBox->blockSignals( blocked );
@@ -1504,8 +1504,8 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
 
         if ( d->autoSuggest && autoSuggest )
         {
-            int index = items.first().indexOf( txt );
-            QString newText = items.first().mid( index );
+            const int index = items.first().indexOf( txt );
+            const QString newText = items.first().mid( index );
             setUserSelection(false);
             setCompletedText(newText,true);
         }

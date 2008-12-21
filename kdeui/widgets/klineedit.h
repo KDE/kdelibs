@@ -453,7 +453,7 @@ public Q_SLOTS:
      * Reimplemented to workaround a buggy QLineEdit::clear()
      * (changing the clipboard to the text we just had in the lineedit)
      */
-    virtual void clear();
+    virtual void clear(); // ### KDE 5: check if still required
 
     /**
      * Squeezes @p text into the line edit.

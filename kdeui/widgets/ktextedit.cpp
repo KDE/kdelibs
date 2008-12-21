@@ -396,7 +396,7 @@ QMenu *KTextEdit::mousePopupMenu()
   connect( popup, SIGNAL( triggered ( QAction* ) ),
              this, SLOT( menuActivated( QAction* ) ) );
 
-  bool emptyDocument = document()->isEmpty();
+  const bool emptyDocument = document()->isEmpty();
   if( !isReadOnly() )
   {
       QList<QAction *> actionList = popup->actions();
@@ -456,11 +456,11 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
 {
     // Obtain the cursor at the mouse position and the current cursor
     QTextCursor cursorAtMouse = cursorForPosition(event->pos());
-    int mousePos = cursorAtMouse.position();
+    const int mousePos = cursorAtMouse.position();
     QTextCursor cursor = textCursor();
 
     // Check if the user clicked a selected word
-    bool selectedWordClicked = cursor.hasSelection() &&
+    const bool selectedWordClicked = cursor.hasSelection() &&
                                mousePos >= cursor.selectionStart() &&
                                mousePos <= cursor.selectionEnd();
 
@@ -483,7 +483,7 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
     wordSelectCursor.movePosition(QTextCursor::NextCharacter,
                                   QTextCursor::KeepAnchor, selectedWord.size());
 
-    bool wordIsMisspelled = checkSpellingEnabled() &&
+    const bool wordIsMisspelled = checkSpellingEnabled() &&
                             !selectedWord.isEmpty() &&
                             highlighter() &&
                             highlighter()->isWordMisspelled(selectedWord);

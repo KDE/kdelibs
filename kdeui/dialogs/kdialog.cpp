@@ -430,7 +430,7 @@ QString KDialog::makeStandardCaption( const QString &userCaption,
 
 void KDialog::setCaption( const QString &_caption )
 {
-  QString caption = makeStandardCaption( _caption, this );
+  const QString caption = makeStandardCaption( _caption, this );
   setPlainCaption( caption );
 }
 
@@ -463,7 +463,7 @@ void KDialog::resizeLayout( QWidget *widget, int margin, int spacing ) //static
     resizeLayout( widget->layout(), margin, spacing );
 
   if ( widget->children().count() > 0 ) {
-    QList<QObject*> list = widget->children();
+    const QList<QObject*> list = widget->children();
     foreach ( QObject *object, list ) {
       if ( object->isWidgetType() )
         resizeLayout( (QWidget*)object, margin, spacing );
@@ -539,7 +539,7 @@ bool KDialog::avoidArea( QWidget *widget, const QRect& area, int screen )
   if ( !fg.intersects( area ) )
     return true; // nothing to do.
 
-  QRect scr = screenRect( widget, screen );
+  const QRect scr = screenRect( widget, screen );
   QRect avoid( area ); // let's add some margin
   avoid.translate( -5, -5 );
   avoid.setRight( avoid.right() + 10 );
@@ -563,8 +563,8 @@ bool KDialog::avoidArea( QWidget *widget, const QRect& area, int screen )
 
   if ( qMax( fg.left(), avoid.left() ) <= qMin( fg.right(), avoid.right() ) ) {
     // We need to move the widget left or right
-    int spaceLeft = qMax( 0, avoid.left() - scr.left() );
-    int spaceRight = qMax( 0, scr.right() - avoid.right() );
+    const int spaceLeft = qMax( 0, avoid.left() - scr.left() );
+    const int spaceRight = qMax( 0, scr.right() - avoid.right() );
     if ( spaceLeft > spaceRight ) // where's the biggest side?
       if ( fg.width() <= spaceLeft ) // big enough?
         fg.setX( avoid.left() - fg.width() );
@@ -983,7 +983,7 @@ void KDialog::saveDialogSize( KConfigGroup& config, KConfigGroup::WriteConfigFla
    int scnum = QApplication::desktop()->screenNumber( parentWidget() );
    QRect desk = QApplication::desktop()->screenGeometry( scnum );
 
-   QSize sizeToSave = size();
+   const QSize sizeToSave = size();
 
    config.writeEntry( QString::fromLatin1("Width %1").arg( desk.width() ), sizeToSave.width(), options );
    config.writeEntry( QString::fromLatin1("Height %1").arg( desk.height() ), sizeToSave.height(), options );

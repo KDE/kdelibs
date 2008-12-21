@@ -75,7 +75,7 @@ QSize KIconEngine::actualSize( const QSize & size, QIcon::Mode mode, QIcon::Stat
 {
     Q_UNUSED(state)
     const int kstate = qIconModeToKIconState(mode);
-    QPixmap pix = iconLoader()->loadIcon(d->iconName, KIconLoader::Desktop,
+    const QPixmap pix = iconLoader()->loadIcon(d->iconName, KIconLoader::Desktop,
                                          qMin(size.width(), size.height()),
                                          kstate, d->overlays);
     return pix.size();
@@ -96,7 +96,7 @@ void KIconEngine::paint( QPainter * painter, const QRect & rect, QIcon::Mode mod
     }
 
     const int iconSize = qMin(rect.width(), rect.height());
-    QPixmap pix = iconLoader()->loadIcon(d->iconName, group, iconSize, kstate, d->overlays);
+    const QPixmap pix = iconLoader()->loadIcon(d->iconName, group, iconSize, kstate, d->overlays);
     painter->drawPixmap(rect, pix);
 }
 

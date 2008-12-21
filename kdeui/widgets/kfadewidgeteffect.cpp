@@ -49,7 +49,7 @@ KFadeWidgetEffectPrivate::KFadeWidgetEffectPrivate(QWidget *_destWidget)
 // for further information on why not use setOpacity.
 QPixmap KFadeWidgetEffectPrivate::transition(const QPixmap &from, const QPixmap &to, qreal amount) const
 {
-    int value = int(0xff * amount);
+    const int value = int(0xff * amount);
 
     if (value == 0)
         return from;

@@ -337,7 +337,7 @@ void KMainWindowPrivate::polish(KMainWindow *q)
         s += '1';
 
     for(;;) {
-        QList<QWidget*> list = qApp->topLevelWidgets();
+        const QList<QWidget*> list = qApp->topLevelWidgets();
         bool found = false;
         foreach ( QWidget* w, list ) {
             if( w != q && w->objectName() == s )
@@ -428,8 +428,8 @@ void KMainWindow::parseGeometry(bool parsewidth)
     int w, h;
     int m = XParseGeometry( cmdlineGeometry.toLatin1(), &x, &y, (unsigned int*)&w, (unsigned int*)&h);
     if (parsewidth) {
-        QSize minSize = minimumSize();
-        QSize maxSize = maximumSize();
+        const QSize minSize = minimumSize();
+        const QSize maxSize = maximumSize();
         if ( !(m & WidthValue) )
             w = width();
         if ( !(m & HeightValue) )
@@ -498,7 +498,7 @@ bool KMainWindow::canBeRestored( int number )
         return false;
 
     KConfigGroup group( config, "Number" );
-    int n = group.readEntry( "NumberOfWindows", 1 );
+    const int n = group.readEntry( "NumberOfWindows", 1 );
     return number >= 1 && number <= n;
 }
 
@@ -623,7 +623,7 @@ void KMainWindow::showAboutApplication()
 void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 {
     K_D(KMainWindow);
-    bool oldASWS = d->autoSaveWindowSize;
+    const bool oldASWS = d->autoSaveWindowSize;
     d->autoSaveWindowSize = true; // make saveMainWindowSettings save the window size
 
     QString s;
@@ -658,7 +658,7 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
 
     // One day will need to save the version number, but for now, assume 0
     // Utilise the QMainWindow::saveState() functionality.
-    QByteArray state = saveState();
+    const QByteArray state = saveState();
     cg.writeEntry(QString("State"), state.toBase64());
 
     QStatusBar* sb = internalStatusBar(this);
@@ -671,7 +671,7 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
 
     QMenuBar* mb = internalMenuBar(this);
     if (mb) {
-       QString MenuBar = QLatin1String("MenuBar");
+       const QString MenuBar = QLatin1String("MenuBar");
        if(!cg.hasDefault("MenuBar") && !mb->isHidden() )
            cg.revertToDefault("MenuBar");
        else

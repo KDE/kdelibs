@@ -63,14 +63,14 @@ public:
             return;
         }
         // Don't check more often than every 5 secs
-        quint32 now = ::time(0);
+        const quint32 now = ::time(0);
         if (now < mUpdatesCheckedTime + 5) {
             return;
         }
 
         mUpdatesCheckedTime = now;
         // Perhaps another process has already checked for updates in last 5 secs
-        QFileInfo fi(mUpdatesFile);
+        const QFileInfo fi(mUpdatesFile);
         if (fi.exists() && fi.lastModified().toTime_t() + 5 > now) {
             return;
         }

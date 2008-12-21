@@ -73,7 +73,7 @@ void KPushButton::KPushButtonPrivate::slotPressedInternal()
             delayedMenuTimer->setSingleShot(true);
             connect(delayedMenuTimer,SIGNAL(timeout()),parent,SLOT(slotDelayedMenuTimeout()));
         }
-        int delay=parent->style()->styleHint(QStyle::SH_ToolButton_PopupDelay, 0, parent);
+        const int delay=parent->style()->styleHint(QStyle::SH_ToolButton_PopupDelay, 0, parent);
         delayedMenuTimer->start((delay<=0) ? 150:delay);
     }
 }

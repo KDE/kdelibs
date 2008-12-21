@@ -286,7 +286,7 @@ int KTabWidget::tabBarWidthForMaxChars( int maxLength )
   hframe  = tabBar()->style()->pixelMetric( QStyle::PM_TabBarTabHSpace, 0L, tabBar() );
   overlap = tabBar()->style()->pixelMetric( QStyle::PM_TabBarTabOverlap, 0L, tabBar() );
 
-  QFontMetrics fm = tabBar()->fontMetrics();
+  const QFontMetrics fm = tabBar()->fontMetrics();
   int x = 0;
   for ( int i = 0; i < count(); ++i ) {
     QString newTitle = d->m_tabNames[ i ];
@@ -481,15 +481,15 @@ void KTabWidget::moveTab( int from, int to )
 {
   setUpdatesEnabled(false);
 
-  QString tablabel = tabText( from );
+  const QString tablabel = tabText( from );
   QWidget *w = widget( from );
-  QColor color = tabTextColor( from );
-  QIcon tabiconset = tabIcon( from );
-  QString tabtooltip = tabToolTip( from );
-  bool current = ( from == currentIndex() );
-  bool enabled = isTabEnabled( from );
+  const QColor color = tabTextColor( from );
+  const QIcon tabiconset = tabIcon( from );
+  const QString tabtooltip = tabToolTip( from );
+  const bool current = ( from == currentIndex() );
+  const bool enabled = isTabEnabled( from );
 
-  bool blocked = blockSignals( true );
+  const bool blocked = blockSignals( true );
   removeTab( from );
   insertTab( to, w, tablabel );
 

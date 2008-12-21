@@ -141,7 +141,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     QPalette transparentBackgroundPalette;
     transparentBackgroundPalette.setColor(QPalette::Base, Qt::transparent);
 
-    int authorCount = aboutData->authors().count();
+    const int authorCount = aboutData->authors().count();
     if (authorCount) {
         QString authorPageText;
 
@@ -169,7 +169,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
         authorPageText += "<br />";
 
-        QList<KAboutPerson> lst = aboutData->authors();
+        const QList<KAboutPerson> lst = aboutData->authors();
         for (int i = 0; i < lst.size(); ++i) {
             authorPageText += QString("<p style=\"margin: 0px;\">%1</p>").arg(lst.at(i).name());
             if (!lst.at(i).emailAddress().isEmpty())
@@ -189,11 +189,11 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         tabWidget->addTab(authorTextBrowser, authorPageTitle);
     }
 
-    int creditsCount = aboutData->credits().count();
+    const int creditsCount = aboutData->credits().count();
     if (creditsCount) {
         QString creditsPageText;
 
-        QList<KAboutPerson> lst = aboutData->credits();
+        const QList<KAboutPerson> lst = aboutData->credits();
         for (int i = 0; i < lst.size(); ++i) {
             creditsPageText += QString("<p style=\"margin: 0px;\">%1</p>").arg(lst.at(i).name());
             if (!lst.at(i).emailAddress().isEmpty())
@@ -259,7 +259,7 @@ void KAboutApplicationDialog::Private::_k_showLicense( const QString &number )
     dialog->setButtons(KDialog::Close);
     dialog->setDefaultButton(KDialog::Close);
 
-    QFont font = KGlobalSettings::fixedFont();
+    const QFont font = KGlobalSettings::fixedFont();
     QFontMetrics metrics(font);
 
     const QString licenseText = aboutData->licenses().at(number.toInt()).text();
@@ -272,11 +272,11 @@ void KAboutApplicationDialog::Private::_k_showLicense( const QString &number )
 
     // try to set up the dialog such that the full width of the
     // document is visible without horizontal scroll-bars being required
-    qreal idealWidth = licenseBrowser->document()->idealWidth() + (2 * dialog->marginHint())
+    const qreal idealWidth = licenseBrowser->document()->idealWidth() + (2 * dialog->marginHint())
         + licenseBrowser->verticalScrollBar()->width() * 2;
 
     // try to allow enough height for a reasonable number of lines to be shown
-    int idealHeight = metrics.height() * 30;
+    const int idealHeight = metrics.height() * 30;
 
     dialog->setInitialSize(dialog->sizeHint().expandedTo(QSize((int)idealWidth,idealHeight)));
     dialog->show();

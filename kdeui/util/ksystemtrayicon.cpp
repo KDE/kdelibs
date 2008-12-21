@@ -358,7 +358,7 @@ KActionCollection* KSystemTrayIcon::actionCollection()
 QIcon KSystemTrayIcon::loadIcon(const QString &icon, const KComponentData &componentData)
 {
     KConfigGroup cg(componentData.config(), "System Tray");
-    int iconWidth = cg.readEntry("systrayIconWidth", 22);
+    const int iconWidth = cg.readEntry("systrayIconWidth", 22);
     return KIconLoader::global()->loadIcon( icon, KIconLoader::Panel, iconWidth );
 }
 

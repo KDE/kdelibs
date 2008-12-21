@@ -943,7 +943,7 @@ void KToolBar::applySettings(const KConfigGroup &cg, bool force)
       pos = Qt::RightToolBarArea;
 #endif
 
-    bool hidden = cg.readEntry("Hidden", d->HiddenDefault);
+    const bool hidden = cg.readEntry("Hidden", d->HiddenDefault);
     if (hidden)
       hide();
     else
@@ -960,7 +960,7 @@ void KToolBar::applyAppearanceSettings(const KConfigGroup &cg, bool forceGlobal)
   // we don't apply the global defaults, the XML ones are preferred
   // (see applySettings for a full explanation)
   // This is the reason for the xmlgui tests below.
-  bool xmlgui = d->xmlguiClient && !d->xmlguiClient->xmlFile().isEmpty();
+  const bool xmlgui = d->xmlguiClient && !d->xmlguiClient->xmlFile().isEmpty();
 
   KSharedConfig::Ptr gconfig = KGlobal::config();
 
@@ -1275,8 +1275,8 @@ bool KToolBar::eventFilter(QObject * watched, QEvent * event)
         if (event->type() == QEvent::Show || event->type() == QEvent::Paint || event->type() == QEvent::EnabledChange) {
             act = tb->defaultAction();
             if (act) {
-                QString text = KGlobal::locale()->removeAcceleratorMarker(act->iconText().isEmpty() ? act->text() : act->iconText());
-                QString toolTip = KGlobal::locale()->removeAcceleratorMarker(act->toolTip());
+                const QString text = KGlobal::locale()->removeAcceleratorMarker(act->iconText().isEmpty() ? act->text() : act->iconText());
+                const QString toolTip = KGlobal::locale()->removeAcceleratorMarker(act->toolTip());
                 // Filtering messages requested by translators (scripting).
                 tb->setText(i18nc("@action:intoolbar Text label of toolbar button", "%1", text));
                 tb->setToolTip(i18nc("@info:tooltip Tooltip of toolbar button", "%1", toolTip));

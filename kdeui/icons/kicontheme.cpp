@@ -692,10 +692,9 @@ QString KIconThemeDir::iconPath(const QString& name) const
 
 QStringList KIconThemeDir::iconList() const
 {
-    QDir icondir = dir();
+    const QDir icondir = dir();
 
-    QStringList formats;
-    formats << "*.png" << "*.svg" << "*.svgz" << "*.xpm";
+    const QStringList formats = QStringList() << "*.png" << "*.svg" << "*.svgz" << "*.xpm";
     const QStringList lst = icondir.entryList( formats, QDir::Files);
 
     QStringList result;

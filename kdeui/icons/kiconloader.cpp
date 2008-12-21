@@ -244,7 +244,7 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
         return;
     }
 
-    int iconSize = pix.size().width();
+    const int iconSize = pix.size().width();
     int overlaySize;
 
     if (iconSize < 32) {
@@ -274,7 +274,7 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
         //TODO: should we pass in the kstate? it results in a slower
         //      path, and perhaps emblems should remain in the default state
         //      anyways?
-        QPixmap pixmap = iconLoader->loadIcon(overlay, group, overlaySize, state, QStringList(), 0, true);
+        const QPixmap pixmap = iconLoader->loadIcon(overlay, group, overlaySize, state, QStringList(), 0, true);
 
         if (pixmap.isNull()) {
             continue;
@@ -512,7 +512,7 @@ void KIconLoader::addAppDir(const QString& appname)
     d->initIconThemes();
 
     d->mpDirs->addResourceType("appicon", "data", appname + "/pics/");
-    // ################## KDE4: consider removing the toolbar directory
+    // ################## KDE5: consider removing the toolbar directory
     d->mpDirs->addResourceType("appicon", "data", appname + "/toolbar/");
     d->addAppThemes(appname);
 }
@@ -617,7 +617,7 @@ void KIconLoader::addExtraDesktopThemes()
             if ( r>0 )
             {
                 buf[r]=0;
-                QDir dir2( buf );
+                const QDir dir2( buf );
                 QString themeName=dir2.dirName();
 
                 if (!list.contains(themeName))
@@ -1370,9 +1370,8 @@ int KIconLoader::currentSize(KIconLoader::Group group) const
 
 QStringList KIconLoader::queryIconsByDir( const QString& iconsDir ) const
 {
-    QDir dir(iconsDir);
-    QStringList formats;
-    formats << "*.png" << "*.xpm" << "*.svg" << "*.svgz";
+    const QDir dir(iconsDir);
+    const QStringList formats = QStringList() << "*.png" << "*.xpm" << "*.svg" << "*.svgz";
     const QStringList lst = dir.entryList(formats, QDir::Files);
     QStringList result;
     QStringList::ConstIterator it;
