@@ -172,7 +172,7 @@ public:
      * Converts a numerical error code into a human-readable error message
      *
      * @param componentLoadingError the error code, as set using the @p error
-     *                              paramter of createInstance()
+     *                              parameter of createInstance()
      * @return the translated error message describing the error represented
      *         by @p componentLoadingError
      *

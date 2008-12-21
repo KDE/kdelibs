@@ -108,7 +108,7 @@ class KUrlPrivate;
  * context.
  *
  */
-class KDECORE_EXPORT KUrl : public QUrl // krazy:exclude=dpointer (krazy can't deal with embedded classes)
+class KDECORE_EXPORT KUrl : public QUrl // krazy:exclude=dpointer,qclasses (krazy can't deal with embedded classes)
 {
 public:
   typedef QMap<QString, QString> MetaDataMap;
@@ -278,7 +278,7 @@ public:
    * Converts from a QUrl.
    * @param u the QUrl
    */
-  KUrl( const QUrl &u );
+  KUrl( const QUrl &u ); //krazy:exclude=qclasses
   /**
    * Constructor allowing relative URLs.
    *
@@ -969,7 +969,7 @@ public:
    * everything is 7 bit (ascii) after being percent-encoded.
    */
   static KDE_DEPRECATED QString encode_string(const QString &str) {
-      return QLatin1String( QUrl::toPercentEncoding( str ) );
+      return QLatin1String( QUrl::toPercentEncoding( str ) ); //krazy:exclude=qclasses
   }
 
   /**
@@ -984,7 +984,7 @@ public:
    *
    */
   static KDE_DEPRECATED QString encode_string_no_slash(const QString &str) {
-      return QString::fromLatin1( QUrl::toPercentEncoding( str, "/" ) );
+      return QString::fromLatin1( QUrl::toPercentEncoding( str, "/" ) ); //krazy:exclude=qclasses
   }
 
   /**
@@ -998,7 +998,7 @@ public:
    *
    */
   static KDE_DEPRECATED QString decode_string(const QString &str) {
-      return QUrl::fromPercentEncoding( str.toLatin1() );
+      return QUrl::fromPercentEncoding( str.toLatin1() ); //krazy:exclude=qclasses
   }
 
 

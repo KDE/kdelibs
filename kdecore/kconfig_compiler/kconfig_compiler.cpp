@@ -686,7 +686,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   {
     // Adjust name
     paramName = name;
-    name.replace("$("+param+')', QString());
+    name.remove("$("+param+')');
     // Lookup defaults for indexed entries
     for(int i = 0; i <= paramMax; i++)
     {

@@ -265,7 +265,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
     // This method should launch a webbrowser, preferrably without doing a mimetype
     // check first, like KRun (i.e. kde-open) would do.
 
-    // In a KDE session, call kfmclient (which honours BrowserApplication) if present,
+    // In a KDE session, call kfmclient (which honors BrowserApplication) if present,
     // otherwise xdg-open, otherwise kde-open (which does a mimetype check first though).
 
     // Outside KDE, call xdg-open if present, otherwise fallback to the above logic.
