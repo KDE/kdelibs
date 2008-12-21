@@ -1847,8 +1847,10 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             //Render the text, including any accel.
             QString text = miOpt->text;
             QRect   textRect = QRect(ir.x() + leftColW, ir.y(), ir.width() - leftColW - rightColW, ir.height());
+            QFont   font = miOpt->font;
+            const QFont oldFont = p->font();
 
-
+            p->setFont(font);
             int tabPos = miOpt->text.indexOf(QLatin1Char('\t'));
             if (tabPos != -1)
             {
@@ -1868,6 +1870,8 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             lbOpt.color = textColor;
             drawKStylePrimitive(WT_MenuItem, Generic::Text, option, handleRTL(option, textRect),
                                 pal, flags, p, widget, &lbOpt);
+
+            p->setFont(oldFont);
 
             //Render arrow, if need be.
             if (miOpt->menuItemType == QStyleOptionMenuItem::SubMenu)
