@@ -136,6 +136,7 @@ public:
     void _k_slotDeleteItems(const KFileItemList&);
     void _k_slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&);
     void _k_slotClear();
+    void _k_slotRedirection(const KUrl& oldUrl, const KUrl& newUrl);
 
     void clear() {
         delete m_rootNode;
@@ -353,6 +354,8 @@ void KDirModel::setDirLister(KDirLister* dirLister)
              this, SLOT(_k_slotRefreshItems(QList<QPair<KFileItem, KFileItem> >)) );
     connect( d->m_dirLister, SIGNAL(clear()),
              this, SLOT(_k_slotClear()) );
+    connect(d->m_dirLister, SIGNAL(redirection(KUrl, KUrl)),
+            this, SLOT(_k_slotRedirection(KUrl, KUrl)));
 }
 
 KDirLister* KDirModel::dirLister() const
@@ -530,12 +533,16 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
             node->setItem(fit->second);
 
             if (oldUrl != newUrl) {
+                Q_ASSERT(oldUrl.fileName() != newUrl.fileName()); // do we really get here when moving a file? Ouch
                 if (oldUrl.fileName() != newUrl.fileName()) {
+                    Q_ASSERT(oldUrl.directory() == newUrl.directory()); // file renamed, not moved.
                     KDirModelDirNode* parentNode = node->parent();
                     Q_ASSERT(parentNode);
                     parentNode->m_childNodesByName.remove(oldUrl.fileName());
                     parentNode->m_childNodesByName.insert(newUrl.fileName(), node);
                 }
+                // What if a renamed dir had children? The hash needs to be updated for them too...
+                Q_ASSERT(q->rowCount(index) == 0); // TODO
                 m_nodeHash.remove(cleanupUrl(oldUrl));
                 m_nodeHash.insert(cleanupUrl(newUrl), node);
             }
@@ -554,6 +561,15 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
     emit q->dataChanged(topLeft, bottomRight);
 }
 
+void KDirModelPrivate::_k_slotRedirection(const KUrl& oldUrl, const KUrl& newUrl)
+{
+    KDirModelNode* node = nodeForUrl(oldUrl);
+     // redirection is always emitted before listing, otherwise it's a kioslave bug.
+    Q_ASSERT(q->rowCount(indexForNode(node)) == 0);
+    m_nodeHash.remove(cleanupUrl(oldUrl));
+    m_nodeHash.insert(cleanupUrl(newUrl), node);
+}
+
 void KDirModelPrivate::_k_slotClear()
 {
     const int numRows = m_rootNode->m_childNodes.count();
@@ -562,10 +578,10 @@ void KDirModelPrivate::_k_slotClear()
         q->endRemoveRows();
     }
 
-        m_nodeHash.clear();
-        //emit layoutAboutToBeChanged();
-        clear();
-        //emit layoutChanged();
+    m_nodeHash.clear();
+    //emit layoutAboutToBeChanged();
+    clear();
+    //emit layoutChanged();
 }
 
 void KDirModel::itemChanged( const QModelIndex& index )

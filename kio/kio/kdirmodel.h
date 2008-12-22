@@ -209,6 +209,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotDeleteItems(const KFileItemList&) )
     Q_PRIVATE_SLOT( d, void _k_slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&) )
     Q_PRIVATE_SLOT( d, void _k_slotClear() )
+    Q_PRIVATE_SLOT( d, void _k_slotRedirection(const KUrl&, const KUrl&) )
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDirModel::DropsAllowed)
