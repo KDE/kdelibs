@@ -453,7 +453,8 @@ void KStyle::drawItemPixmap(QPainter *painter, const QRect &rect,
 }
 QPalette KStyle::standardPalette() const
 {
-    return QCommonStyle::standardPalette();
+    return KGlobalSettings::createApplicationPalette(
+        KSharedConfig::openConfig(d->m_componentData));
 }
 QPixmap KStyle::standardPixmap(StandardPixmap standardPixmap, const QStyleOption *opt,
                                const QWidget *widget) const
