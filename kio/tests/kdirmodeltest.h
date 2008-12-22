@@ -59,6 +59,7 @@ private Q_SLOTS:
     void testDeleteFiles();
     void testRenameFileToHidden();
     void testDeleteDirectory();
+    void testDeleteCurrentDirectory();
 
     // Somewhat unrelated
     void testKUrlHash();

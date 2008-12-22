@@ -786,6 +786,9 @@ void KDirModelTest::testDeleteFile()
     disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(quit()) );
 
+    QModelIndex fileIndex = m_dirModel.indexForUrl(path + "toplevelfile_1");
+    Q_ASSERT(!fileIndex.isValid());
+
     // Recreate the file, for consistency in the next tests
     // So the second part of this test is a "testCreateFile"
     createTestFile(file);
@@ -879,6 +882,33 @@ void KDirModelTest::testRenameFileToHidden() // #174721
 
 void KDirModelTest::testDeleteDirectory()
 {
+    const QString path = m_tempDir->name();
+    const KUrl url(path + "subdir/subsubdir");
+
+    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+             &m_eventLoop, SLOT(quit()) );
+
+    KIO::DeleteJob* job = KIO::del(url, KIO::HideProgressInfo);
+    bool ok = job->exec();
+    QVERIFY(ok);
+
+    // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
+    enterLoop();
+
+    // If we come here, then rowsRemoved() was emitted - all good.
+    QCOMPARE(spyRowsRemoved.count(), 1);
+    disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+                &m_eventLoop, SLOT(quit()) );
+
+    QModelIndex deletedDirIndex = m_dirModel.indexForUrl(path + "subdir/subsubdir");
+    Q_ASSERT(!deletedDirIndex.isValid());
+    QModelIndex dirIndex = m_dirModel.indexForUrl(path + "subdir");
+    Q_ASSERT(dirIndex.isValid());
+}
+
+void KDirModelTest::testDeleteCurrentDirectory()
+{
     const int oldTopLevelRowCount = m_dirModel.rowCount();
     const QString path = m_tempDir->name();
     const KUrl url(path);
@@ -903,6 +933,8 @@ void KDirModelTest::testDeleteDirectory()
     disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(quit()) );
 
+    QModelIndex fileIndex = m_dirModel.indexForUrl(path + "toplevelfile_1");
+    Q_ASSERT(!fileIndex.isValid());
 }
 
 // The old slow way. (this isn't QUrl's fault, I'm just using QUrl in order

@@ -208,9 +208,8 @@ void KDirModelPrivate::removeFromNodeHash(KDirModelNode* node, const KUrl& url)
         Q_FOREACH(const KUrl& u, urls) {
             m_nodeHash.remove(u);
         }
-    } else {
-        m_nodeHash.remove(cleanupUrl(url));
     }
+    m_nodeHash.remove(cleanupUrl(url));
 }
 
 KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const KUrl& _url) const // O(depth)
