@@ -460,7 +460,9 @@ QSize KFileItemDelegate::Private::decorationSizeHint(const QStyleOptionViewItemV
     Q_UNUSED(index)
 
     QSize iconSize = option.icon.actualSize(option.decorationSize);
-    if (iconSize.width() < option.decorationSize.width())
+    if (!verticalLayout(option))
+        iconSize.rwidth() = option.decorationSize.width();
+    else if (iconSize.width() < option.decorationSize.width())
         iconSize.rwidth() = qMin(iconSize.width() + 10, option.decorationSize.width());
     if (iconSize.height() < option.decorationSize.height())
         iconSize.rheight() = option.decorationSize.height();
