@@ -36,54 +36,56 @@
 class KServiceTypeProfiles : public QHash<QString, KServiceTypeProfileEntry *>
 {
 public:
+    KServiceTypeProfiles() { m_parsed = false; ensureParsed(); }
     ~KServiceTypeProfiles() { clear(); }
     void clear() {
         qDeleteAll( *this );
         QHash<QString, KServiceTypeProfileEntry *>::clear();
+        m_parsed = false;
     }
+    void ensureParsed();
+private:
+    bool m_parsed;
 };
 
 
 K_GLOBAL_STATIC(KServiceTypeProfiles, s_serviceTypeProfiles)
 
 static bool s_configurationMode = false;
-static bool s_profilesParsed = false;
 
-static void initStatic()
+void KServiceTypeProfiles::ensureParsed()
 {
-    if ( s_profilesParsed )
+    if (m_parsed)
         return;
-    s_profilesParsed = true;
+    m_parsed = true;
 
     // Make sure that a KServiceTypeFactory gets created.
     (void) KServiceTypeFactory::self();
 
-    {
-        // Read the service type profiles from servicetype_profilerc (new in kde4)
-        // See writeServiceTypeProfile for a description of the file format.
-        // ### Since this new format names groups after servicetypes maybe we can even
-        // avoid doing any init upfront, and just look up the group when asked...
-        KConfig configFile( "servicetype_profilerc", KConfig::NoGlobals );
-        const QStringList tmpList = configFile.groupList();
-        for (QStringList::const_iterator aIt = tmpList.begin();
-             aIt != tmpList.end(); ++aIt) {
-            const QString type = *aIt;
-            KConfigGroup config(&configFile, type);
-            const int count = config.readEntry( "NumberOfEntries", 0 );
-            KServiceTypeProfileEntry* p = s_serviceTypeProfiles->value( type, 0 );
-            if ( !p ) {
-                p = new KServiceTypeProfileEntry();
-                s_serviceTypeProfiles->insert( type, p );
-            }
+    // Read the service type profiles from servicetype_profilerc (new in kde4)
+    // See writeServiceTypeProfile for a description of the file format.
+    // ### Since this new format names groups after servicetypes maybe we can even
+    // avoid doing any init upfront, and just look up the group when asked...
+    KConfig configFile( "servicetype_profilerc", KConfig::NoGlobals );
+    const QStringList tmpList = configFile.groupList();
+    for (QStringList::const_iterator aIt = tmpList.begin();
+         aIt != tmpList.end(); ++aIt) {
+        const QString type = *aIt;
+        KConfigGroup config(&configFile, type);
+        const int count = config.readEntry( "NumberOfEntries", 0 );
+        KServiceTypeProfileEntry* p = this->value( type, 0 );
+        if ( !p ) {
+            p = new KServiceTypeProfileEntry();
+            this->insert( type, p );
+        }
 
-            for ( int i = 0; i < count; ++i ) {
-                const QString num = QString::number(i);
-                const QString serviceId = config.readEntry( "Entry" + num + "_Service", QString() );
-                Q_ASSERT(!serviceId.isEmpty());
-                const int pref = config.readEntry( "Entry" + num + "_Preference", 0 );
-                //kDebug(7014) << "KServiceTypeProfile::initStatic adding service " << serviceId << " to profile for " << type << " with preference " << pref;
-                p->addService( serviceId, pref );
-            }
+        for ( int i = 0; i < count; ++i ) {
+            const QString num = QString::number(i);
+            const QString serviceId = config.readEntry( "Entry" + num + "_Service", QString() );
+            Q_ASSERT(!serviceId.isEmpty());
+            const int pref = config.readEntry( "Entry" + num + "_Preference", 0 );
+            //kDebug(7014) << "KServiceTypeProfile::initStatic adding service " << serviceId << " to profile for " << type << " with preference " << pref;
+            p->addService( serviceId, pref );
         }
     }
 }
@@ -93,7 +95,6 @@ void KServiceTypeProfile::clearCache()
 {
     if (s_serviceTypeProfiles.exists())
         s_serviceTypeProfiles->clear();
-    s_profilesParsed = false;
 }
 
 /**
@@ -109,8 +110,7 @@ namespace KServiceTypeProfile {
 
 KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOfferList& list, const QString& serviceType )
 {
-    initStatic();
-
+    s_serviceTypeProfiles->ensureParsed();
     KServiceTypeProfileEntry* profile = s_serviceTypeProfiles->value(serviceType, 0);
 
     KServiceOfferList offers;
@@ -160,7 +160,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
 
 bool KServiceTypeProfile::hasProfile( const QString& serviceType )
 {
-    initStatic();
+    s_serviceTypeProfiles->ensureParsed();
     return s_serviceTypeProfiles->find( serviceType ) != s_serviceTypeProfiles->end();
 }
 
