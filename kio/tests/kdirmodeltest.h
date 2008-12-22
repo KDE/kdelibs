@@ -54,10 +54,11 @@ private Q_SLOTS:
     void testZipFile();
     void testSmb();
 
-    // These three must be done last
+    // These four tests must be done last
     void testDeleteFile();
     void testDeleteFiles();
     void testRenameFileToHidden();
+    void testDeleteDirectory();
 
     // Somewhat unrelated
     void testKUrlHash();

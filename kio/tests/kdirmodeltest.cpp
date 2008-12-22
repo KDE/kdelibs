@@ -877,6 +877,34 @@ void KDirModelTest::testRenameFileToHidden() // #174721
     QCOMPARE(m_dirModel.itemForIndex( m_secondFileIndex ).url().url(), url.url());
 }
 
+void KDirModelTest::testDeleteDirectory()
+{
+    const int oldTopLevelRowCount = m_dirModel.rowCount();
+    const QString path = m_tempDir->name();
+    const KUrl url(path);
+
+    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+             &m_eventLoop, SLOT(quit()) );
+
+    KIO::DeleteJob* job = KIO::del(url, KIO::HideProgressInfo);
+    bool ok = job->exec();
+    QVERIFY(ok);
+
+    // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
+    enterLoop();
+
+    // If we come here, then rowsRemoved() was emitted - all good.
+    const int topLevelRowCount = m_dirModel.rowCount();
+    QCOMPARE(topLevelRowCount, 0); // empty
+    QCOMPARE(spyRowsRemoved.count(), 1);
+    QCOMPARE(spyRowsRemoved[0][1].toInt(), 0);
+    QCOMPARE(spyRowsRemoved[0][2].toInt(), oldTopLevelRowCount - 1);
+    disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+                &m_eventLoop, SLOT(quit()) );
+
+}
+
 // The old slow way. (this isn't QUrl's fault, I'm just using QUrl in order
 // to be able to test a different hashing function than the KUrl one).
 inline uint qHash(const QUrl& qurl) {
