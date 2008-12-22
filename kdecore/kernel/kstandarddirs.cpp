@@ -1335,7 +1335,9 @@ QString KStandardDirs::saveLocation(const char *type,
     if (KDE_stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
         if(!create) {
 #ifndef NDEBUG
-            kDebug(180) << QString("save location %1 doesn't exist").arg(fullPath);
+            // Too much noise from kbuildsycoca4 -- it's fine if this happens from KConfig
+            // when parsing global files without a local equivalent.
+            //kDebug(180) << QString("save location %1 doesn't exist").arg(fullPath);
 #endif
             return fullPath;
         }
