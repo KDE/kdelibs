@@ -770,6 +770,7 @@ Name[zh_HK]=白俄羅斯語
 Name[zh_TW]=白俄羅斯語
 [be@latin]
 Name=Belarusian (Latin)
+Name[ar]=بلاروسية (لاتينية)
 Name[be@latin]=Biełaruskaja łacinka
 Name[bg]=Белоруски (латински)
 Name[bn]=বেলারুশিয় (লাতিন)
@@ -2234,6 +2235,7 @@ Name[zh_HK]=德語
 Name[zh_TW]=德語
 [dsb]
 Name=Lower Sorbian
+Name[ar]=صوربية منخفضة
 Name[be@latin]=Nižnie-łužyckaja
 Name[bg]=Долносорбийски
 Name[bn]=নিম্ন সার্বীয়
@@ -6325,6 +6327,7 @@ Name[zh_HK]=拉脫維亞語
 Name[zh_TW]=拉脫維亞語
 [mai]
 Name=Maithili
+Name[ar]=مايثيلي
 Name[bg]=Майтили
 Name[bn]=মৈথিলী
 Name[bn_IN]=মৈথিলী
