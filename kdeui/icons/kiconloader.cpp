@@ -884,7 +884,9 @@ QPixmap KIconLoader::loadMimeTypeIcon( const QString& iconName, KIconLoader::Gro
     if ( !d->extraDesktopIconsLoaded )
     {
         const QPixmap pixmap = loadIcon( iconName, group, size, state, overlays, path_store, true );
-        if (!pixmap.isNull() ) return pixmap;
+        if (!pixmap.isNull() ) {
+            return pixmap;
+        }
         const_cast<KIconLoader *>(this)->addExtraDesktopThemes();
     }
     const QPixmap pixmap = loadIcon(iconName, group, size, state, overlays, path_store, true);
