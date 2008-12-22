@@ -1044,19 +1044,6 @@ void KGlobalSettings::Private::propagateSettings(SettingsCategory arg)
     num = cg.readEntry("WheelScrollLines", QApplication::wheelScrollLines());
     QApplication::setWheelScrollLines(num);
 
-    bool b = cg.readEntry("EffectAnimateMenu", false);
-    QApplication::setEffectEnabled( Qt::UI_AnimateMenu, b);
-    b = cg.readEntry("EffectFadeMenu", false);
-    QApplication::setEffectEnabled( Qt::UI_FadeMenu, b);
-    b = cg.readEntry("EffectAnimateCombo", false);
-    QApplication::setEffectEnabled( Qt::UI_AnimateCombo, b);
-    b = cg.readEntry("EffectAnimateTooltip", false);
-    QApplication::setEffectEnabled( Qt::UI_AnimateTooltip, b);
-    b = cg.readEntry("EffectFadeTooltip", false);
-    QApplication::setEffectEnabled( Qt::UI_FadeTooltip, b);
-    //b = !cg.readEntry("EffectNoTooltip", false);
-    //QToolTip::setGloballyEnabled( b ); ###
-
     emit q->settingsChanged(arg);
 }
 
