@@ -1869,6 +1869,19 @@ bool TextAreaWidget::event( QEvent *e )
     return ret;
 }
 
+void TextAreaWidget::keyPressEvent(QKeyEvent *e)
+{
+    // The ComboBoxWidget::keyPressEvent() comment about having to
+    // deal with events coming from EventPropagator::sendEvent()
+    // directly applies here, too.
+    if ((e->key() == Qt::Key_Tab || e->key() == Qt::Key_Backtab) &&
+        tabChangesFocus()) {
+        e->ignore();
+        return;
+    }
+    KTextEdit::keyPressEvent(e);
+}
+
 // -------------------------------------------------------------------------
 
 RenderTextArea::RenderTextArea(HTMLTextAreaElementImpl *element)

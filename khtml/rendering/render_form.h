@@ -483,6 +483,7 @@ public:
 
 protected:
     virtual bool event (QEvent *e );
+    virtual void keyPressEvent(QKeyEvent *e);
     virtual void scrollContentsBy(int dx, int dy);
 
 };
