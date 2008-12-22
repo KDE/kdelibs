@@ -30,6 +30,7 @@
 #include <kprotocolinfo.h>
 #include <kcomponentdata.h>
 #include <kcolorscheme.h>
+#include <kapplication.h>
 
 #include <kstyle.h>
 
@@ -927,7 +928,7 @@ void KGlobalSettings::Private::kdisplaySetPalette()
     if (cg.readEntry("nopaletteChange", false))
         return;
 
-    if (qApp && qApp->type() == QApplication::GuiClient) {
+    if (qobject_cast<KApplication *>(qApp) && qApp->type() == QApplication::GuiClient) {
         QApplication::setPalette( q->createApplicationPalette() );
         emit q->kdisplayPaletteChanged();
         emit q->appearanceChanged();
@@ -964,7 +965,7 @@ void KGlobalSettings::Private::kdisplaySetFont()
 
 void KGlobalSettings::Private::kdisplaySetStyle()
 {
-    if (qApp && qApp->type() == QApplication::GuiClient) {
+    if (qobject_cast<KApplication *>(qApp) && qApp->type() == QApplication::GuiClient) {
         applyGUIStyle();
 
         // Reread palette from config file.
