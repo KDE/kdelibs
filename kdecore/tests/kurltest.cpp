@@ -693,11 +693,24 @@ void KUrlTest::testPrettyURL()
   KUrl xmppUri("xmpp:ogoffart@kde.org");
   QCOMPARE( xmppUri.prettyUrl(), QString::fromLatin1( "xmpp:ogoffart@kde.org" ) );
 
+  QUrl offEagleqUrl;
+  offEagleqUrl.setEncodedUrl("http://www.sejlsport.dk/Pr%F8v%20noget%20nyt%20dokumenter.pdf", QUrl::TolerantMode);
+  const QString offEaglePath = offEagleqUrl.path();
+  QCOMPARE((int)offEaglePath.at(2).unicode(), (int)'r');
+#if 0 // CURRENTLY BROKEN, PENDING PRETTYURL REWRITE AND QT-4.5 (in thiago's hands)
+  QCOMPARE((int)offEaglePath.at(3).unicode(), (int)0xf8);
+
+  KUrl offEagle("http://www.sejlsport.dk/graphics/ds/DSUngdom/PDF/Pr%F8v%20noget%20nyt%20dokumenter/Invitation_Kerteminde_11.07.08.pdf");
+  QCOMPARE(offEagle.path(), QString::fromLatin1("/graphics/ds/DSUngdom/PDF/Pr%F8v noget nyt dokumenter/Invitation_Kerteminde_11.07.08.pdf"));
+  QCOMPARE(offEagle.url(), QString::fromLatin1("http://www.sejlsport.dk/graphics/ds/DSUngdom/PDF/Pr%F8v%20noget%20nyt%20dokumenter/Invitation_Kerteminde_11.07.08.pdf"));
+  QCOMPARE(offEagle.prettyUrl(), QString::fromLatin1("http://www.sejlsport.dk/graphics/ds/DSUngdom/PDF/Pr%F8v noget nyt dokumenter/Invitation_Kerteminde_11.07.08.pdf"));
+#endif
+
   KUrl openWithUrl("kate --use %25U");
   QCOMPARE(openWithUrl.url(), QString::fromLatin1("kate%20--use%20%25U"));
   QCOMPARE(openWithUrl.prettyUrl(), QString::fromLatin1("kate --use %25U"));
   QCOMPARE(openWithUrl.path(), QString::fromLatin1("kate --use %U"));
-  QCOMPARE(openWithUrl.pathOrUrl(), QString::fromLatin1("kate --use %25U")); // alas...
+  QCOMPARE(openWithUrl.pathOrUrl(), QString::fromLatin1("kate --use %25U")); // caused #153894; better not use KUrl for this.
 }
 
 void KUrlTest::testIsRelative()
@@ -910,9 +923,6 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   baseURL = "http://www.foo.bar";
   KUrl rel_url2( baseURL, "mailto:bastian@kde.org" );
   QCOMPARE( rel_url2.url(), QString("mailto:bastian@kde.org" ));
-
-  baseURL = "mailto:bastian@kde.org?subject=hello";
-  QCOMPARE( baseURL.url(), QString("mailto:bastian@kde.org?subject=hello" ));
 
   baseURL = "file:/usr/local/src/kde2/kdelibs/kio/";
   KUrl url2( baseURL, "../../////kdebase/konqueror" );
@@ -1461,6 +1471,12 @@ void KUrlTest::testMailto()
   QCOMPARE( url1.url(), QString("mailto:user@host.com") );
   QCOMPARE( url1.url(KUrl::LeaveTrailingSlash), QString("mailto:user@host.com") );
 
+  KUrl mailtoUrl("mailto:null@kde.org?subject=hello");
+  QCOMPARE( mailtoUrl.url(), QString("mailto:null@kde.org?subject=hello" ));
+
+  QUrl qurl("mailto:null@kde.org?subject=hello#world"); // #80165: is #world part of fragment or query? RFC-3986 says: fragment.
+  QCOMPARE(QString::fromLatin1(qurl.encodedQuery()), QString("subject=hello"));
+
 #if 0
   // I wrote this test in the very first kurltest, but there's no proof that it's actually valid.
   // Andreas says this is broken, i.e. against rfc2368.
@@ -1486,6 +1502,13 @@ void KUrlTest::testSmb()
   smb = "smb:///";
   QVERIFY( smb.isValid() );
 
+  KUrl implicitSmb("file://host/path");
+  QVERIFY(!implicitSmb.isLocalFile()); // -> kio_file will redirect to smb (by default)
+  QCOMPARE(implicitSmb.host(), QString("host"));
+
+  KUrl noImplicitSmb("//path1/path2");
+  QVERIFY(noImplicitSmb.isLocalFile());
+  QCOMPARE(noImplicitSmb.path(), QString("//path1/path2"));
 }
 
 void KUrlTest::testOtherProtocols()
