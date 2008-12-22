@@ -416,6 +416,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
        {
           error_text = i18n("Can not find io-slave for protocol '%1'.", protocol);
           error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
+          delete slave;
           return 0;
        }
 
