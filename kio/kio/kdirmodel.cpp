@@ -724,7 +724,6 @@ bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int 
             Q_ASSERT(node);
             if (value.type() == QVariant::Icon) {
                 const QIcon icon(qvariant_cast<QIcon>(value));
-                Q_ASSERT(!icon.isNull());
                 node->setPreview(icon);
             } else if (value.type() == QVariant::Pixmap) {
                 node->addPreview(qvariant_cast<QPixmap>(value));
