@@ -833,11 +833,22 @@ void KFileWidget::slotOk()
         KUrl _url(locationEditCurrentText);
         if (!locationEditCurrentText.isEmpty() && !(mode & KFile::Directory) &&
             (QDir::isAbsolutePath(locationEditCurrentText) || !_url.protocol().isEmpty())) {
-            KUrl url(_url.path(KUrl::RemoveTrailingSlash));
-            url.setFileName(QString());
+            QString fileName;
+            KUrl url(_url);
+            KIO::StatJob *statJob = KIO::stat(_url, KIO::HideProgressInfo);
+            bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+            if (res) {
+                if (!statJob->statResult().isDir()) {
+                    url.adjustPath(KUrl::RemoveTrailingSlash);
+                    fileName = url.fileName();
+                    url.setFileName(QString());
+                } else {
+                    url.adjustPath(KUrl::AddTrailingSlash);
+                }
+            }
             d->ops->setUrl(url, true);
             const bool signalsBlocked = d->locationEdit->lineEdit()->blockSignals(true);
-            d->locationEdit->lineEdit()->setText(_url.fileName());
+            d->locationEdit->lineEdit()->setText(fileName);
             d->locationEdit->lineEdit()->blockSignals(signalsBlocked);
             slotOk();
             return;
