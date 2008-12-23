@@ -248,6 +248,7 @@ bool KFileShare::setShared( const QString& path, bool shared )
         args << "--add";
     else
         args << "--remove";
+    args << path ;
     int ec = QProcess::execute( exe, args ); // should be ok, the perl script terminates fast
     kDebug(7000) << "exitCode=" << ec;
     bool ok = !ec;
