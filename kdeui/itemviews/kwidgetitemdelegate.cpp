@@ -218,14 +218,6 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
             if (!qobject_cast<QAbstractItemView*>(watched)) {
                 QTimer::singleShot(0, this, SLOT(initializeModel()));
             }
-            itemView->viewport()->update();
-            break;
-        case QEvent::Leave:
-            itemView->viewport()->update();
-            break;
-        case QEvent::MouseMove: {
-                itemView->viewport()->update(); // TODO: more granular update
-            }
             break;
         default:
             break;
