@@ -335,7 +335,24 @@ private Q_SLOTS:
         writeToMimeApps(QByteArray("[Removed Associations]\n"
                                    "application/vnd.oasis.opendocument.text=fakearkapplication.desktop;\n"));
 
-        offers = KMimeTypeTrader::self()->query("application/vnd.oasis.opendocument.text");
+        offers = KMimeTypeTrader::self()->query(opendocument);
+        QVERIFY(!offerListHasService(offers, fakeArkApplication, false));
+
+        offers = KMimeTypeTrader::self()->query("application/zip");
+        QVERIFY(offerListHasService(offers, fakeArkApplication, true));
+    }
+
+    void testRemovedImplicitAssociation178560()
+    {
+        // #178560: Removing ark from interface/x-winamp-skin didn't work
+        const QString mime = "interface/x-winamp-skin";
+        KService::List offers = KMimeTypeTrader::self()->query(mime);
+        QVERIFY(offerListHasService(offers, fakeArkApplication, true));
+
+        writeToMimeApps(QByteArray("[Removed Associations]\n"
+                                   "interface/x-winamp-skin=fakearkapplication.desktop;\n"));
+
+        offers = KMimeTypeTrader::self()->query(mime);
         QVERIFY(!offerListHasService(offers, fakeArkApplication, false));
 
         offers = KMimeTypeTrader::self()->query("application/zip");
