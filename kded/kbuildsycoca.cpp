@@ -797,7 +797,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       g_ctimeDict = 0;
       if (incremental)
       {
-         kDebug() << "Reusing existing ksycoca";
+         kDebug(7021) << "Reusing existing ksycoca";
          KSycoca *oldSycoca = KSycoca::self();
          KSycocaFactoryList *factories = new KSycocaFactoryList;
          g_allEntries = new KSycocaEntryListList;
