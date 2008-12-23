@@ -102,6 +102,8 @@ void KDirListerTest::testOpenUrl()
     QCOMPARE(m_items.count(), 4);
     QVERIFY(m_dirLister.isFinished());
     disconnect(&m_dirLister, 0, this, 0);
+
+    QVERIFY(!m_dirLister.findByName("toplevelfile_3").isNull());
 }
 
 // This test assumes testOpenUrl was run before. So m_dirLister is holding the items already.

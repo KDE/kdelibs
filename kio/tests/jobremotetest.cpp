@@ -33,7 +33,6 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QEventLoop>
 #include <QtCore/QDir>
-#include <QtCore/QHash>
 #include <QtCore/QVariant>
 
 #include <stdio.h>

@@ -284,7 +284,11 @@ private:
   void emitRedirections( const KUrl &oldUrl, const KUrl &url );
 
   void aboutToRefreshItem( const KFileItem& fileitem );
-  void emitRefreshItem( const KFileItem& oldItem, const KFileItem& fileitem );
+
+    /**
+     * Emits refreshItem() in the directories that cared for oldItem.
+     */
+    void emitRefreshItem(const KFileItem& oldItem, const KFileItem& fileitem);
 
 #ifndef NDEBUG
   void printDebug();
@@ -404,6 +408,8 @@ private:
 
     // the KDirNotify signals
     OrgKdeKDirNotifyInterface *kdirnotify;
+
+    struct ItemInUseChange;
 };
 
 // Data associated with a directory url
@@ -439,7 +445,10 @@ public:
           m_lister(lister), m_url(url),
           m_items(items), m_rootItem(rootItem),
           m_reload(reload), m_emitCompleted(true) {
+        Q_ASSERT(lister->d->m_cachedItemsJob == 0);
+        lister->d->m_cachedItemsJob = this;
         setAutoDelete(true);
+        start();
     }
 
     /*reimp*/ void start() { QMetaObject::invokeMethod(this, "done", Qt::QueuedConnection); }

@@ -526,13 +526,13 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
         Q_ASSERT(!fit->second.isNull());
         const KUrl oldUrl = fit->first.url();
         const KUrl newUrl = fit->second.url();
-        const QModelIndex index = q->indexForUrl(oldUrl); // O(n); maybe we could look up to the parent only once
-        KDirModelNode* node = nodeForIndex(index);
+        KDirModelNode* node = nodeForUrl(oldUrl); // O(n); maybe we could look up to the parent only once
+        if (!node) // not found [can happen when renaming a dir, redirection was emitted already]
+            continue;
         if (node != m_rootNode) { // we never set an item in the rootnode, we use m_dirLister->rootItem instead.
             node->setItem(fit->second);
 
             if (oldUrl != newUrl) {
-                Q_ASSERT(oldUrl.fileName() != newUrl.fileName()); // do we really get here when moving a file? Ouch
                 if (oldUrl.fileName() != newUrl.fileName()) {
                     Q_ASSERT(oldUrl.directory() == newUrl.directory()); // file renamed, not moved.
                     KDirModelDirNode* parentNode = node->parent();
@@ -540,11 +540,12 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
                     parentNode->m_childNodesByName.remove(oldUrl.fileName());
                     parentNode->m_childNodesByName.insert(newUrl.fileName(), node);
                 }
-                // What if a renamed dir had children? The hash needs to be updated for them too...
-                Q_ASSERT(q->rowCount(index) == 0); // TODO
+                // What if a renamed dir had children? -> kdirlister takes care of emitting for each item
+                //kDebug(7008) << "Renaming" << oldUrl << "to" << newUrl << "in node hash";
                 m_nodeHash.remove(cleanupUrl(oldUrl));
                 m_nodeHash.insert(cleanupUrl(newUrl), node);
             }
+            const QModelIndex index = indexForNode(node);
             if (!topLeft.isValid() || index.row() < topLeft.row()) {
                 topLeft = index;
             }
@@ -554,19 +555,31 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
         }
     }
 #ifndef NDEBUG // debugIndex only defined in debug mode
-    kDebug(7008) << "slotRefreshItems: dataChanged(" << debugIndex(topLeft) << " - " << debugIndex(bottomRight);
+    kDebug(7008) << "dataChanged(" << debugIndex(topLeft) << " - " << debugIndex(bottomRight);
 #endif
     bottomRight = bottomRight.sibling(bottomRight.row(), q->columnCount(QModelIndex())-1);
     emit q->dataChanged(topLeft, bottomRight);
 }
 
+// Called when a kioslave redirects (e.g. smb:/Workgroup -> smb://workgroup)
+// and when renaming a directory.
 void KDirModelPrivate::_k_slotRedirection(const KUrl& oldUrl, const KUrl& newUrl)
 {
     KDirModelNode* node = nodeForUrl(oldUrl);
-     // redirection is always emitted before listing, otherwise it's a kioslave bug.
-    Q_ASSERT(q->rowCount(indexForNode(node)) == 0);
+    if (!node)
+        return;
     m_nodeHash.remove(cleanupUrl(oldUrl));
     m_nodeHash.insert(cleanupUrl(newUrl), node);
+
+    // Ensure the node's URL is updated. In case of a listjob redirection
+    // we won't get a refreshItem, and in case of renaming a directory
+    // we'll get it too late (so the hash won't find the old url anymore).
+    KFileItem item = node->item();
+    item.setUrl(newUrl);
+    node->setItem(item);
+
+    // The items inside the renamed directory have been handled before,
+    // KDirLister took care of emitting refreshItem for each of them.
 }
 
 void KDirModelPrivate::_k_slotClear()

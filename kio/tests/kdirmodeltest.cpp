@@ -421,9 +421,58 @@ void KDirModelTest::testRenameFile()
                 &m_eventLoop, SLOT(quit()) );
 }
 
-void KDirModelTest::testRenameDirectory() // #172945
+void KDirModelTest::testRenameDirectory() // #172945, #174703
 {
-    // TODO !
+    const QString path = m_tempDir->name();
+    const KUrl url(path + "subdir");
+    const KUrl newUrl(path + "subdir_renamed");
+
+    QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+             &m_eventLoop, SLOT(quit()) );
+
+    KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
+    bool ok = job->exec();
+    QVERIFY(ok);
+
+    // Wait for the DBUS signal from KDirNotify, it's the one the triggers dataChanged
+    enterLoop();
+
+    // If we come here, then dataChanged() was emitted - all good.
+    //QCOMPARE(spyDataChanged.count(), 1); // it was in fact emitted 5 times...
+    //COMPARE_INDEXES(spyDataChanged[0][0].value<QModelIndex>(), m_dirIndex);
+    //QModelIndex receivedIndex = spyDataChanged[0][1].value<QModelIndex>();
+    //QCOMPARE(receivedIndex.row(), m_dirIndex.row()); // only compare row; column is count-1
+
+    // check renaming happened
+    QCOMPARE(m_dirModel.itemForIndex(m_dirIndex).url().url(), newUrl.url());
+    QCOMPARE(m_dirModel.indexForUrl(newUrl), m_dirIndex);
+    QVERIFY(m_dirModel.indexForUrl(path + "subdir_renamed").isValid());
+    QVERIFY(m_dirModel.indexForUrl(path + "subdir_renamed/testfile").isValid());
+    QVERIFY(m_dirModel.indexForUrl(path + "subdir_renamed/subsubdir").isValid());
+    QVERIFY(m_dirModel.indexForUrl(path + "subdir_renamed/subsubdir/testfile").isValid());
+
+    // Put things back to normal
+    job = KIO::rename(newUrl, url, KIO::HideProgressInfo);
+    ok = job->exec();
+    QVERIFY(ok);
+    // Wait for the DBUS signal from KDirNotify, it's the one the triggers dataChanged
+    enterLoop();
+    QCOMPARE(m_dirModel.itemForIndex(m_dirIndex).url().url(), url.url());
+
+    disconnect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+                &m_eventLoop, SLOT(quit()) );
+
+    QCOMPARE(m_dirModel.itemForIndex(m_dirIndex).url().url(), url.url());
+    QCOMPARE(m_dirModel.indexForUrl(url), m_dirIndex);
+    QVERIFY(m_dirModel.indexForUrl(path + "subdir").isValid());
+    QVERIFY(m_dirModel.indexForUrl(path + "subdir/testfile").isValid());
+    QVERIFY(m_dirModel.indexForUrl(path + "subdir/subsubdir").isValid());
+    QVERIFY(m_dirModel.indexForUrl(path + "subdir/subsubdir/testfile").isValid());
+    QVERIFY(!m_dirModel.indexForUrl(path + "subdir_renamed").isValid());
+    QVERIFY(!m_dirModel.indexForUrl(path + "subdir_renamed/testfile").isValid());
+    QVERIFY(!m_dirModel.indexForUrl(path + "subdir_renamed/subsubdir").isValid());
+    QVERIFY(!m_dirModel.indexForUrl(path + "subdir_renamed/subsubdir/testfile").isValid());
 }
 
 void KDirModelTest::testChmodDirectory() // #53397
