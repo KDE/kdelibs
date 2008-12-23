@@ -206,7 +206,7 @@ public:
     void _k_slotSortBySize();
     void _k_slotSortByDate();
     void _k_slotSortByType();
-    void _k_slotSortReversed();
+    void _k_slotSortReversed(bool doReverse);
     void _k_slotToggleDirsFirst();
     void _k_slotToggleIgnoreCase();
     void _k_slotStarted();
@@ -687,9 +687,15 @@ void KDirOperator::Private::_k_slotSortByType()
     triggerSorting();
 }
 
-void KDirOperator::Private::_k_slotSortReversed()
+void KDirOperator::Private::_k_slotSortReversed(bool doReverse)
 {
-    parent->sortReversed();
+    if (doReverse) {
+        sorting |= QDir::Reversed;
+    }
+    else {
+        sorting &= ~QDir::Reversed;
+    }
+
     triggerSorting();
 }
 
@@ -1559,10 +1565,10 @@ void KDirOperator::setView(QAbstractItemView *view)
             this, SLOT(_k_triggerPreview(const QModelIndex&)));
     // assure that the sorting state d->sorting matches with the current action
     const bool descending = d->actionCollection->action("descending")->isChecked();
-    if (!descending && d->sorting & QDir::Reversed) {
-        d->sorting = d->sorting & ~QDir::Reversed;
-    } else if (descending && !(d->sorting & QDir::Reversed)) {
+    if (descending) {
         d->sorting = d->sorting | QDir::Reversed;
+    } else {
+        d->sorting = d->sorting & ~QDir::Reversed;
     }
     d->triggerSorting();
 
@@ -1872,7 +1878,7 @@ void KDirOperator::setupActions()
 
     KToggleAction *descendingAction = new KToggleAction(i18n("Descending"), this);
     d->actionCollection->addAction("descending", descendingAction);
-    connect(descendingAction, SIGNAL(triggered(bool)), this, SLOT(_k_slotSortReversed()));
+    connect(descendingAction, SIGNAL(toggled(bool)), this, SLOT(_k_slotSortReversed(bool)));
 
     QActionGroup* sortGroup = new QActionGroup(this);
     byNameAction->setActionGroup(sortGroup);
@@ -2090,7 +2096,6 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
     }
 
     d->sorting = sorting;
-    setSorting(d->sorting);
 
     if (configGroup.readEntry(QLatin1String("Show hidden files"),
                               DefaultShowHidden)) {
@@ -2104,6 +2109,7 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
         d->sorting = d->sorting | QDir::Reversed;
     }
 
+    setSorting(d->sorting);
     if (d->inlinePreviewState == Private::NotForced) {
         d->showPreviews = configGroup.readEntry(QLatin1String("Previews"), false);
     }
@@ -2446,12 +2452,7 @@ void KDirOperator::Private::_k_synchronizeSortingState(int logicalIndex, Qt::Sor
     case KDirModel::Type: parent->sortByType(); break;
     }
 
-    const bool descending = actionCollection->action("descending")->isChecked();
-    const bool reverseSorting = ((order == Qt::AscendingOrder) && descending) ||
-                                ((order == Qt::DescendingOrder) && !descending);
-    if (reverseSorting) {
-        parent->sortReversed();
-    }
+    actionCollection->action("descending")->setChecked(order == Qt::DescendingOrder);
 
     proxyModel->sort(sortColumn(), sortOrder());
     QMetaObject::invokeMethod(parent, "_k_assureVisibleSelection", Qt::QueuedConnection);

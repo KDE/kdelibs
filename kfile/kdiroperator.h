@@ -852,7 +852,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotSortBySize() )
     Q_PRIVATE_SLOT( d, void _k_slotSortByDate() )
     Q_PRIVATE_SLOT( d, void _k_slotSortByType() )
-    Q_PRIVATE_SLOT( d, void _k_slotSortReversed() )
+    Q_PRIVATE_SLOT( d, void _k_slotSortReversed(bool) )
     Q_PRIVATE_SLOT( d, void _k_slotToggleDirsFirst() )
     Q_PRIVATE_SLOT( d, void _k_slotToggleIgnoreCase() )
     Q_PRIVATE_SLOT( d, void _k_slotStarted() )
