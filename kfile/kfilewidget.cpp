@@ -830,9 +830,9 @@ void KFileWidget::slotOk()
     } else if (locationEditCurrentTextList.count()) {
         // if we are on file or files mode, and we have an absolute url written by
         // the user, convert it to relative
+        KUrl _url(locationEditCurrentText);
         if (!locationEditCurrentText.isEmpty() && !(mode & KFile::Directory) &&
-            QDir::isAbsolutePath(locationEditCurrentText)) {
-            KUrl _url(locationEditCurrentText);
+            (QDir::isAbsolutePath(locationEditCurrentText) || !_url.protocol().isEmpty())) {
             KUrl url(_url.path(KUrl::RemoveTrailingSlash));
             url.setFileName(QString());
             d->ops->setUrl(url, true);
