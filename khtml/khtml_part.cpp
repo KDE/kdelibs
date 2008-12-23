@@ -6336,7 +6336,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     d->m_bRightMousePressed = false;
     KParts::BrowserInterface *tmp_iface = d->m_extension->browserInterface();
     if( tmp_iface ) {
-      tmp_iface->callMethod( "goHistory(int)", -1 );
+      tmp_iface->callMethod( "goHistory", -1 );
     }
   }
 #ifndef QT_NO_CLIPBOARD

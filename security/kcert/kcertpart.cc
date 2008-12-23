@@ -780,7 +780,7 @@ void KCertPart::slotSave() {
 
 void KCertPart::slotDone() {
 	KParts::BrowserInterface *iface = d->browserExtension->browserInterface();
-	iface->callMethod("goHistory(int)", -1);
+	iface->callMethod("goHistory", -1);
 }
 
 

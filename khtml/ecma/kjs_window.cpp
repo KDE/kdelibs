@@ -1496,7 +1496,7 @@ void Window::goHistory( int steps )
   if ( !iface )
     return;
 
-  iface->callMethod( "goHistory(int)", steps );
+  iface->callMethod( "goHistory", steps );
   //emit ext->goHistory(steps);
 }
 

@@ -37,9 +37,6 @@ BrowserInterface::~BrowserInterface()
 
 void BrowserInterface::callMethod( const char *name, const QVariant &argument )
 {
-    if ( metaObject()->indexOfSlot( name ) == -1 )
-        return;
-
     switch ( argument.type() )
     {
         case QVariant::Invalid:

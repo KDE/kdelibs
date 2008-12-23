@@ -60,6 +60,8 @@ public:
     /**
      * Perform a dynamic invocation of a method in the BrowserInterface
      * implementation. Methods are to be implemented as simple Qt slots.
+     * You should only include the method name, and not the signature, 
+     * in the name argument.
      */
     void callMethod( const char *name, const QVariant &argument );
 };
