@@ -957,20 +957,6 @@ void FileProtocol::special( const QByteArray &data)
     }
 }
 
-// Connected to KShred
-void FileProtocol::slotProcessedSize( KIO::filesize_t bytes )
-{
-  kDebug(7101) << "FileProtocol::slotProcessedSize (" << (unsigned int) bytes << ")";
-  processedSize( bytes );
-}
-
-// Connected to KShred
-void FileProtocol::slotInfoMessage( const QString & msg )
-{
-  kDebug(7101) << "FileProtocol::slotInfoMessage (" << msg << ")";
-  infoMessage( msg );
-}
-
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
     kDebug(7101) << "FileProtocol::mount _fstype=" << _fstype;
