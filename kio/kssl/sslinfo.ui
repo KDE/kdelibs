@@ -27,7 +27,7 @@
    <item row="1" column="0" >
     <widget class="QLabel" name="addressTag" >
      <property name="text" >
-      <string>Address:</string>
+      <string comment="Web page address">Address:</string>
      </property>
      <property name="alignment" >
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
