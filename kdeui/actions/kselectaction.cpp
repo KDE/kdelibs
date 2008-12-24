@@ -500,10 +500,12 @@ bool KSelectAction::menuAccelsEnabled() const
 QWidget * KSelectAction::createWidget( QWidget * parent )
 {
   Q_D(KSelectAction);
-  QToolBar *toolBar = qobject_cast<QToolBar *>(parent);
-  if (!toolBar)
-    return 0;
-  switch (toolBarMode()) {
+    ToolBarMode mode = toolBarMode();
+    QToolBar *toolBar = qobject_cast<QToolBar *>(parent);
+    if (!toolBar && mode == MenuMode) { // at least return something
+        mode = ComboBoxMode;
+    }
+    switch (mode) {
     case MenuMode: {
       QToolButton* button = new QToolButton(toolBar);
       button->setAutoRaise(true);
@@ -526,7 +528,7 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
     }
 
     case ComboBoxMode: {
-      KComboBox* comboBox = new KComboBox(toolBar);
+        KComboBox* comboBox = new KComboBox(parent);
       comboBox->installEventFilter (this);
 
       if ( d->m_maxComboViewCount != -1 )
