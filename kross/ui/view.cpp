@@ -509,7 +509,7 @@ void ActionCollectionView::slotEdit()
     ActionCollectionEditor* editor =
         action ? new ActionCollectionEditor(action, dialog->mainWidget())
                : new ActionCollectionEditor(collection, dialog->mainWidget());
-    dialog->addPage(editor, i18n("General"));
+    dialog->addPage(editor, i18nc("@title:group Script properties", "General"));
     //dialog->addPage(new QWidget(this), i18n("Security"));
     dialog->resize( QSize(580, 200).expandedTo( dialog->minimumSizeHint() ) );
     int result = dialog->exec();
