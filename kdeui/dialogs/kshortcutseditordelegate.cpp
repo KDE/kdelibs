@@ -242,6 +242,16 @@ void KShortcutsEditorDelegate::itemCollapsed(QModelIndex index)
 }
 
 
+class QTreeWidgetHack : public QTreeWidget
+{
+public:
+    QTreeWidgetItem *itemFromIndex(const QModelIndex &index) const
+        { return QTreeWidget::itemFromIndex(index); }
+    QModelIndex indexFromItem(QTreeWidgetItem *item, int column) const
+        { return QTreeWidget::indexFromItem(item, column); }
+};
+
+
 //slot
 void KShortcutsEditorDelegate::hiddenBySearchLine(QTreeWidgetItem *item, bool hidden)
 {
@@ -286,18 +296,44 @@ bool KShortcutsEditorDelegate::eventFilter(QObject *o, QEvent *e)
         QItemSelectionModel *selection = view->selectionModel();
         QModelIndex index = selection->currentIndex();
 
-        if (ke->key() == Qt::Key_Space || ke->key() == Qt::Key_Select) {
+        switch (ke->key()) {
+        case Qt::Key_Space:
+        case Qt::Key_Select:
             // we are not using the standard "open editor" mechanism of QAbstractItemView,
             // so let's emulate that here.
             itemActivated(index);
             return true;
-        } else if (ke->key() == Qt::Key_Left) {
+        case Qt::Key_Left:
             index = index.sibling(index.row(), index.column() - 1);
-        } else if (ke->key() == Qt::Key_Right) {
+            break;
+        case Qt::Key_Right:
             index = index.sibling(index.row(), index.column() + 1);
-        } else {
+            break;
+        case Qt::Key_Up:
+        case Qt::Key_Down: {
+            // unfortunately Qt's implementation "forgets" the column we were in, so
+            // we have to save and restore it.
+
+            QTreeWidgetHack *hView = static_cast<QTreeWidgetHack *>(view);
+            QTreeWidgetItem *item = hView->itemFromIndex(index);
+            int column = index.column();
+            if (ke->key() == Qt::Key_Up) {
+                item = hView->itemAbove(item);
+            } else {
+                item = hView->itemBelow(item);
+            }
+            if (!item) {
+                break;
+            }
+            do {
+                index = hView->indexFromItem(item, column--);
+            } while (!index.isValid() && column >= 0);
+
+            break; }
+        default:
             return false;
         }
+        // a cursor key was pressed
         if (index.isValid()) {
             selection->setCurrentIndex(index, QItemSelectionModel::ClearAndSelect);
             //TODO using PositionAtCenter for testing; we really want EnsureVisible.
