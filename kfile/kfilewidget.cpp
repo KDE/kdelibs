@@ -1447,15 +1447,11 @@ void KFileWidgetPrivate::_k_fileCompletion( const QString& match )
 {
 //     kDebug(kfile_area);
 
-    if (locationEdit->currentText().contains('"')) {
+    if (match.isEmpty() || locationEdit->currentText().contains('"')) {
         return;
     }
 
-    if (match.isEmpty() && ops->view()) {
-        ops->view()->clearSelection();
-    } else if (!match.isEmpty()) {
-        setDummyHistoryEntry(locationEdit->currentText(), KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( match ), KIconLoader::Small), !locationEdit->currentText().isEmpty());
-    }
+    setDummyHistoryEntry(locationEdit->currentText(), KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( match ), KIconLoader::Small), !locationEdit->currentText().isEmpty());
 }
 
 void KFileWidgetPrivate::_k_slotLocationChanged( const QString& text )
