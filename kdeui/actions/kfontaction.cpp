@@ -110,14 +110,9 @@ QString KFontAction::font() const
     return currentText();
 }
 
-QWidget* KFontAction::createWidget(QWidget* _parent)
+QWidget* KFontAction::createWidget(QWidget* parent)
 {
     kDebug(129) << "KFontAction::createWidget()";
-
-    QToolBar *parent = qobject_cast<QToolBar *>(_parent);
-    if (!parent)
-        return KSelectAction::createWidget(_parent);
-
 #ifdef __GNUC__
 #warning FIXME: items need to be converted
 #endif
@@ -182,8 +177,5 @@ void KFontAction::setFont( const QString &family )
     //       but setCurrentAction() did not and vice-versa.
     kDebug(129) << "Font not found " << family.toLower();
 }
-
-/* vim: et sw=2 ts=2
- */
 
 #include "kfontaction.moc"
