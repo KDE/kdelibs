@@ -1168,11 +1168,13 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             }
 
             QRect r = option->rect;
-            if (roundedLeft) {
+            bool reverseLayout = option->direction == Qt::RightToLeft;
+
+            if (!reverseLayout ? roundedLeft : roundedRight) {
                 painter->drawPixmap(r.topLeft(), tiles->left);
                 r.adjust(8, 0, 0, 0);
             }
-            if (roundedRight) {
+            if (!reverseLayout ? roundedRight : roundedLeft) {
                 painter->drawPixmap(r.right() - 8 + 1, r.top(), tiles->right);
                 r.adjust(0, 0, -8, 0);
             }
