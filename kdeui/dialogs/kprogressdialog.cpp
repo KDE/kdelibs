@@ -216,7 +216,8 @@ QString KProgressDialog::buttonText() const
 
 void KProgressDialog::KProgressDialogPrivate::slotAutoActions(int percentage)
 {
-    if (percentage < mProgressBar->maximum())
+    if (percentage < mProgressBar->maximum() ||
+        (mProgressBar->minimum() == mProgressBar->maximum())) // progress dialogs with busy indicators (see #178648)
     {
         if (!cancelButtonShown)
         {
