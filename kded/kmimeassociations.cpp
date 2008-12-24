@@ -105,7 +105,7 @@ void KMimeAssociations::parseRemovedAssociations(const KConfigGroup& group, cons
             if (!pService) {
                 kDebug(7021) << file << "specifies unknown service" << service << "in" << group.name();
             } else {
-                //kDebug(7021) << "removing mime" << mime << "from service" << service;
+                //kDebug(7021) << "removing mime" << mime << "from service" << pService.data() << pService->entryPath();
                 m_offerHash.removeServiceOffer(mime, pService);
             }
         }
@@ -123,7 +123,7 @@ void KOfferHash::addServiceOffer(const QString& serviceType, const KServiceOffer
         offers.append( offer );
         offerSet.insert( service );
     } else {
-        // kDebug(7021) << service.offers() << service->entryPath() << "already in" << serviceType;
+        //kDebug(7021) << service->entryPath() << "already in" << serviceType;
         // This happens when mimeapps.list mentions a service (to make it preferred)
         // Update initialPreference to qMax(existing offer, new offer)
         QMutableListIterator<KServiceOffer> sfit(data.offers);
@@ -136,14 +136,21 @@ void KOfferHash::addServiceOffer(const QString& serviceType, const KServiceOffer
 
 void KOfferHash::removeServiceOffer(const QString& serviceType, KService::Ptr service)
 {
-    QHash<QString, ServiceTypeOffersData>::iterator it = m_serviceTypeData.find(serviceType);
-    if (it != m_serviceTypeData.end()) {
-        ServiceTypeOffersData& data = *it;
-        data.offerSet.remove(service);
-        QMutableListIterator<KServiceOffer> sfit(data.offers);
-        while (sfit.hasNext()) {
-            if (sfit.next().service()->storageId() == service->storageId())
-                sfit.remove();
-        }
+    ServiceTypeOffersData& data = m_serviceTypeData[serviceType]; // find or create
+    data.removedOffers.insert(service);
+    data.offerSet.remove(service);
+    QMutableListIterator<KServiceOffer> sfit(data.offers);
+    while (sfit.hasNext()) {
+        if (sfit.next().service()->storageId() == service->storageId())
+            sfit.remove();
     }
+}
+
+bool KOfferHash::hasRemovedOffer(const QString& serviceType, KService::Ptr service) const
+{
+    QHash<QString, ServiceTypeOffersData>::const_iterator it = m_serviceTypeData.find(serviceType);
+    if (it != m_serviceTypeData.end()) {
+        return (*it).removedOffers.contains(service);
+    }
+    return false;
 }

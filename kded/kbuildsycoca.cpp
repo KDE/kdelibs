@@ -222,8 +222,8 @@ bool KBuildSycoca::build()
     const KSycocaResourceList *list = (*factory)->resourceList();
     if (!list) continue;
 
-    for( KSycocaResourceList::ConstIterator it1 = list->begin();
-         it1 != list->end();
+    for( KSycocaResourceList::ConstIterator it1 = list->constBegin();
+         it1 != list->constEnd();
          ++it1 )
     {
       KSycocaResource res = (*it1);
@@ -235,8 +235,8 @@ bool KBuildSycoca::build()
   g_ctimeInfo = new KCTimeInfo(); // This is a build factory too, don't delete!!
   bool uptodate = true;
   // For all resources
-  for( QStringList::ConstIterator it1 = allResources.begin();
-       it1 != allResources.end();
+  for( QStringList::ConstIterator it1 = allResources.constBegin();
+       it1 != allResources.constEnd();
        ++it1 )
   {
      g_changed = false;
@@ -255,8 +255,8 @@ bool KBuildSycoca::build()
      // For each factory
      KBSEntryDictList::const_iterator ed_it = entryDictList.begin();
      const KBSEntryDictList::const_iterator ed_end = entryDictList.end();
-     KSycocaFactoryList::const_iterator it = factories()->begin();
-     const KSycocaFactoryList::const_iterator end = factories()->end();
+     KSycocaFactoryList::const_iterator it = factories()->constBegin();
+     const KSycocaFactoryList::const_iterator end = factories()->constEnd();
      for ( ; it != end; ++it, ++ed_it )
      {
         g_factory = (*it);
@@ -266,16 +266,16 @@ bool KBuildSycoca::build()
         const KSycocaResourceList *list = g_factory->resourceList();
         if (!list) continue;
 
-        for( KSycocaResourceList::ConstIterator it2 = list->begin();
-             it2 != list->end();
+        for( KSycocaResourceList::ConstIterator it2 = list->constBegin();
+             it2 != list->constEnd();
              ++it2 )
         {
            KSycocaResource res = (*it2);
            if (res.resource != (*it1)) continue;
 
            // For each file in the resource
-           for( QStringList::ConstIterator it3 = relFiles.begin();
-                it3 != relFiles.end();
+           for( QStringList::ConstIterator it3 = relFiles.constBegin();
+                it3 != relFiles.constEnd();
                 ++it3 )
            {
                // Check if file matches filter

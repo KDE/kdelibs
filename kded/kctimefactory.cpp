@@ -53,8 +53,8 @@ KCTimeInfo::save(QDataStream &str)
   KSycocaFactory::save(str);
 
   m_dictOffset = str.device()->pos();
-  Dict::const_iterator it = ctimeDict.begin();
-  const Dict::const_iterator end = ctimeDict.end();
+  Dict::const_iterator it = ctimeDict.constBegin();
+  const Dict::const_iterator end = ctimeDict.constEnd();
   for ( ; it != end; ++it )
   {
      str << it.key() << it.value();

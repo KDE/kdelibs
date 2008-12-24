@@ -23,7 +23,6 @@
 #include "ksycoca.h"
 #include "ksycocadict.h"
 #include "kresourcelist.h"
-#include "kmimetype.h"
 #include "kdesktopfile.h"
 
 #include <kglobal.h>
@@ -139,40 +138,58 @@ void KBuildServiceFactory::save(QDataStream &str)
 
 void KBuildServiceFactory::collectInheritedServices()
 {
-    // With multiple inheritance, the "mimeTypeInheritanceLevel" isn't exactly
-    // correct (it should only be increased when going up a level, not when iterating
-    // through the multiple parents at a given level). I don't think we care,
-    // but just in case we do, this is the reason I didn't port this to mimeType->allParentMimeTypes.
+    // For each mimetype, go up the parent-mimetype chains and collect offers.
+    // For "removed associations" to work, we can't just grab everything from all parents.
+    // We need to process parents before children, hence the recursive call in
+    // collectInheritedServices(mime) and the QSet to process a given parent only once.
+    QSet<KMimeType::Ptr> visitedMimes;
     const KMimeType::List allMimeTypes = m_mimeTypeFactory->allMimeTypes();
     KMimeType::List::const_iterator itm = allMimeTypes.begin();
     for( ; itm != allMimeTypes.end(); ++itm ) {
         const KMimeType::Ptr mimeType = *itm;
-        const QString mimeTypeName = mimeType->name();
-        QStringList parents = mimeType->parentMimeTypes();
-        int mimeTypeInheritanceLevel = 0;
-        while ( !parents.isEmpty() ) {
-            const QString& parent = parents.takeFirst();
-            const KMimeType::Ptr parentMimeType = m_mimeTypeFactory->findMimeTypeByName( parent );
-            if ( parentMimeType ) {
-                ++mimeTypeInheritanceLevel;
-                const QList<KServiceOffer>& offers = m_offerHash.offersFor(parent);
-                QList<KServiceOffer>::const_iterator itserv = offers.begin();
-                const QList<KServiceOffer>::const_iterator endserv = offers.end();
-                for ( ; itserv != endserv; ++itserv ) {
+        collectInheritedServices(mimeType, visitedMimes);
+    }
+    // TODO do the same for all/all and all/allfiles, if (!KServiceTypeProfile::configurationMode())
+}
+
+void KBuildServiceFactory::collectInheritedServices(KMimeType::Ptr mimeType, QSet<KMimeType::Ptr>& visitedMimes)
+{
+    if (visitedMimes.contains(mimeType))
+        return;
+    visitedMimes.insert(mimeType);
+
+    // With multiple inheritance, the "mimeTypeInheritanceLevel" isn't exactly
+    // correct (it should only be increased when going up a level, not when iterating
+    // through the multiple parents at a given level). I don't think we care, though.
+    int mimeTypeInheritanceLevel = 0;
+
+    const QString mimeTypeName = mimeType->name();
+    Q_FOREACH(const QString& parent, mimeType->parentMimeTypes()) {
+        const KMimeType::Ptr parentMimeType =
+            m_mimeTypeFactory->findMimeTypeByName(parent, KMimeType::ResolveAliases);
+
+        if ( parentMimeType ) {
+            collectInheritedServices(parentMimeType, visitedMimes);
+
+            ++mimeTypeInheritanceLevel;
+            const QList<KServiceOffer>& offers = m_offerHash.offersFor(parent);
+            QList<KServiceOffer>::const_iterator itserv = offers.begin();
+            const QList<KServiceOffer>::const_iterator endserv = offers.end();
+            for ( ; itserv != endserv; ++itserv ) {
+                if (!m_offerHash.hasRemovedOffer(mimeTypeName, (*itserv).service())) {
                     KServiceOffer offer(*itserv);
                     offer.setMimeTypeInheritanceLevel(mimeTypeInheritanceLevel);
                     //kDebug(7021) << "INHERITANCE: Adding service" << (*itserv).service()->entryPath() << "to" << mimeTypeName << "mimeTypeInheritanceLevel=" << mimeTypeInheritanceLevel;
                     m_offerHash.addServiceOffer( mimeTypeName, offer );
                 }
-                parents += parentMimeType->parentMimeTypes();
-            } else {
-                kWarning(7012) << "parent mimetype not found:" << parent;
-                break;
             }
+        } else {
+            kWarning(7012) << "parent mimetype not found:" << parent;
+            break;
         }
     }
-    // TODO do the same for all/all and all/allfiles, if (!KServiceTypeProfile::configurationMode())
 }
+
 
 void KBuildServiceFactory::populateServiceTypes()
 {
@@ -235,8 +252,8 @@ void KBuildServiceFactory::populateServiceTypes()
     int offersOffset = 0;
     const int offerEntrySize = sizeof( qint32 ) * 4; // four qint32s, see saveOfferList.
 
-    KSycocaEntryDict::const_iterator itstf = m_serviceTypeFactory->entryDict()->begin();
-    const KSycocaEntryDict::const_iterator endstf = m_serviceTypeFactory->entryDict()->end();
+    KSycocaEntryDict::const_iterator itstf = m_serviceTypeFactory->entryDict()->constBegin();
+    const KSycocaEntryDict::const_iterator endstf = m_serviceTypeFactory->entryDict()->constEnd();
     for( ; itstf != endstf; ++itstf ) {
         KServiceType::Ptr entry = KServiceType::Ptr::staticCast( *itstf );
         const int numOffers = m_offerHash.offersFor(entry->name()).count();
@@ -245,8 +262,8 @@ void KBuildServiceFactory::populateServiceTypes()
             offersOffset += offerEntrySize * numOffers;
         }
     }
-    KSycocaEntryDict::const_iterator itmtf = m_mimeTypeFactory->entryDict()->begin();
-    const KSycocaEntryDict::const_iterator endmtf = m_mimeTypeFactory->entryDict()->end();
+    KSycocaEntryDict::const_iterator itmtf = m_mimeTypeFactory->entryDict()->constBegin();
+    const KSycocaEntryDict::const_iterator endmtf = m_mimeTypeFactory->entryDict()->constEnd();
     for( ; itmtf != endmtf; ++itmtf )
     {
         KMimeType::Ptr entry = KMimeType::Ptr::staticCast( *itmtf );
@@ -263,8 +280,8 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
     m_offerListOffset = str.device()->pos();
 
     // For each entry in servicetypeFactory
-    KSycocaEntryDict::const_iterator itstf = m_serviceTypeFactory->entryDict()->begin();
-    const KSycocaEntryDict::const_iterator endstf = m_serviceTypeFactory->entryDict()->end();
+    KSycocaEntryDict::const_iterator itstf = m_serviceTypeFactory->entryDict()->constBegin();
+    const KSycocaEntryDict::const_iterator endstf = m_serviceTypeFactory->entryDict()->constEnd();
     for( ; itstf != endstf; ++itstf ) {
         // export associated services
         const KServiceType::Ptr entry = KServiceType::Ptr::staticCast( *itstf );
@@ -273,8 +290,8 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
         QList<KServiceOffer> offers = m_offerHash.offersFor(entry->name());
         qStableSort( offers ); // by initial preference
 
-        for(QList<KServiceOffer>::const_iterator it2 = offers.begin();
-            it2 != offers.end(); ++it2) {
+        for(QList<KServiceOffer>::const_iterator it2 = offers.constBegin();
+            it2 != offers.constEnd(); ++it2) {
             //kDebug(7021) << "servicetype offers list:" << entry->name() << "->" << (*it2).service()->entryPath();
 
             str << (qint32) entry->offset();
@@ -286,8 +303,8 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
     }
 
     // For each entry in mimeTypeFactory
-    KSycocaEntryDict::const_iterator itmtf = m_mimeTypeFactory->entryDict()->begin();
-    const KSycocaEntryDict::const_iterator endmtf = m_mimeTypeFactory->entryDict()->end();
+    KSycocaEntryDict::const_iterator itmtf = m_mimeTypeFactory->entryDict()->constBegin();
+    const KSycocaEntryDict::const_iterator endmtf = m_mimeTypeFactory->entryDict()->constEnd();
     for( ; itmtf != endmtf; ++itmtf ) {
         // export associated services
         const KMimeType::Ptr entry = KMimeType::Ptr::staticCast( *itmtf );
@@ -295,8 +312,8 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
         QList<KServiceOffer> offers = m_offerHash.offersFor(entry->name());
         qStableSort( offers ); // by initial preference
 
-        for(QList<KServiceOffer>::const_iterator it2 = offers.begin();
-            it2 != offers.end(); ++it2) {
+        for(QList<KServiceOffer>::const_iterator it2 = offers.constBegin();
+            it2 != offers.constEnd(); ++it2) {
             //kDebug(7021) << "mimetype offers list:" << entry->name() << "->" << (*it2).service()->entryPath() << "pref" << (*it2).preference();
             Q_ASSERT((*it2).service()->offset() != 0);
             str << (qint32) entry->offset();
