@@ -766,7 +766,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   uint iFileCount = 1-iDirCount;
 
   d->m_frame = new QFrame();
-  properties->addPage(d->m_frame, i18n("&General"));
+  properties->addPage(d->m_frame, i18nc("@title:tab File properties", "&General"));
 
   QVBoxLayout *vbl = new QVBoxLayout( d->m_frame );
   vbl->setMargin( 0 );
