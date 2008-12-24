@@ -125,17 +125,17 @@ void KAnimatedButtonPrivate::updateCurrentIcon()
   if (pixmap.isNull())
     return;
 
-  int w = pixmap.width();
-  int h = w;
-
-
   QPixmap* frame = framesCache[current_frame];
   if (!frame)
   {
-    frame = new QPixmap(w, h);
+        const int icon_size = q->iconDimensions();
+        const int row_size = pixmap.width() / icon_size;
+        const int row = current_frame / row_size;
+        const int column = current_frame % row_size;
+        frame = new QPixmap(icon_size, icon_size);
     frame->fill(Qt::transparent);
     QPainter p(frame);
-    p.drawPixmap(QPoint(0,0), pixmap, QRect(0, current_frame * h, w, h));
+        p.drawPixmap(QPoint(0, 0), pixmap, QRect(column * icon_size, row * icon_size, icon_size, icon_size));
     p.end();
     framesCache[current_frame] = frame;
   }
@@ -159,7 +159,8 @@ void KAnimatedButtonPrivate::_k_movieFinished()
 
 void KAnimatedButton::updateIcons()
 {
-    QMovie *movie = KIconLoader::global()->loadMovie(d->icon_name, KIconLoader::NoGroup, -iconDimensions());
+    const int icon_size = iconDimensions();
+    QMovie *movie = KIconLoader::global()->loadMovie(d->icon_name, KIconLoader::NoGroup, -icon_size);
     if (movie) {
         d->frames = 0;
         d->pixmap = QPixmap();
@@ -167,16 +168,15 @@ void KAnimatedButton::updateIcons()
         connect(movie, SIGNAL(frameChanged(int)), this, SLOT(_k_movieFrameChanged(int)));
         connect(movie, SIGNAL(finished()), this, SLOT(_k_movieFinished()));
     } else {
-        const QString path = KIconLoader::global()->iconPath(d->icon_name, -iconDimensions());
+        const QString path = KIconLoader::global()->iconPath(d->icon_name, -icon_size);
         QImage img(path);
         if (img.isNull())
             return;
 
-        d->frames = img.height() / img.width();
-        if (d->pixmap.width() != iconDimensions()) {
-            img = img.scaled(iconDimensions(), iconDimensions() * d->frames,
-                             Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        }
+        if ((img.width() % icon_size != 0) || (img.height() % icon_size != 0))
+            return;
+
+        d->frames = (img.height() / icon_size) * (img.width() / icon_size);
         d->pixmap = QPixmap::fromImage(img);
     }
 
