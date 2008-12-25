@@ -510,6 +510,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     // the Location label/edit
     d->locationLabel = new QLabel(i18n("&Name:"), this);
     d->locationEdit = new KUrlComboBox(KUrlComboBox::Files, true, this);
+    d->locationEdit->installEventFilter(this);
     // Properly let the dialog be resized (to smaller). Otherwise we could have
     // huge dialogs that can't be resized to smaller (it would be as big as the longest
     // item in this combo box). (ereslibre)
@@ -1687,6 +1688,22 @@ bool KFileWidget::eventFilter(QObject* watched, QEvent* event)
         if (keyEvent->key() == Qt::Key_Left || keyEvent->key() == Qt::Key_Up ||
             keyEvent->key() == Qt::Key_Right || keyEvent->key() == Qt::Key_Down) {
             d->_k_slotIconSizeSliderMoved(d->iconSizeSlider->value());
+        }
+    } else if (watched == d->locationEdit && event->type() == QEvent::KeyPress) {
+        if (keyEvent->modifiers() & Qt::AltModifier) {
+            switch (keyEvent->key()) {
+                case Qt::Key_Up:
+                    d->ops->actionCollection()->action("up")->trigger();
+                    break;
+                case Qt::Key_Left:
+                    d->ops->actionCollection()->action("back")->trigger();
+                    break;
+                case Qt::Key_Right:
+                    d->ops->actionCollection()->action("forward")->trigger();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
