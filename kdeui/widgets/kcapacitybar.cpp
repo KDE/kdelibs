@@ -149,6 +149,7 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
     {
         QStyleOptionProgressBar opt;
         opt.initFrom(this);
+        opt.rect = rect;
         opt.minimum = 0;
         opt.maximum = 100;
         opt.progress = d->value;
