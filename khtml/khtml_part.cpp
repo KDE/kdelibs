@@ -7134,7 +7134,7 @@ QString KHTMLPart::defaultExtension() const
 
 bool KHTMLPart::inProgress() const
 {
-    if (d->m_runningScripts || (d->m_doc && d->m_doc->parsing()))
+    if (!d->m_bComplete || d->m_runningScripts || (d->m_doc && d->m_doc->parsing()))
         return true;
 
     // Any frame that hasn't completed yet ?
