@@ -502,8 +502,8 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
   Q_D(KSelectAction);
     ToolBarMode mode = toolBarMode();
     QToolBar *toolBar = qobject_cast<QToolBar *>(parent);
-    if (!toolBar && mode == MenuMode) { // at least return something
-        mode = ComboBoxMode;
+    if (!toolBar && mode != ComboBoxMode) { // we can return a combobox just fine.
+        return 0;
     }
     switch (mode) {
     case MenuMode: {
