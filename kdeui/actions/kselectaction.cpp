@@ -500,6 +500,9 @@ bool KSelectAction::menuAccelsEnabled() const
 QWidget * KSelectAction::createWidget( QWidget * parent )
 {
   Q_D(KSelectAction);
+    QMenu *menu = qobject_cast<QMenu *>(parent);
+    if (menu) // If used in a menu want to return 0 and use only the text, not a widget
+        return 0;
     ToolBarMode mode = toolBarMode();
     QToolBar *toolBar = qobject_cast<QToolBar *>(parent);
     if (!toolBar && mode != ComboBoxMode) { // we can return a combobox just fine.
