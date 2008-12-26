@@ -91,6 +91,9 @@ KSycocaEntry* KBuildServiceFactory::createEntry( const QString& file, const char
     KDesktopFile desktopFile(resource, file);
 
     KService * serv = new KService(&desktopFile);
+    //kDebug(7021) << "Creating KService from" << file << "entryPath=" << serv->entryPath();
+    // Note that the menuId will be set by the vfolder_menu.cpp code just after
+    // createEntry returns.
 
     if ( serv->isValid() && !serv->isDeleted() ) {
         return serv;

@@ -300,7 +300,7 @@ bool KBuildSycoca::build()
      g_entryDict = serviceEntryDict;
      g_changed = false;
 
-     g_vfolder = new VFolderMenu;
+     g_vfolder = new VFolderMenu(g_bsf);
      if (!m_trackId.isEmpty())
         g_vfolder->setTrackId(m_trackId);
 
@@ -387,7 +387,6 @@ void KBuildSycoca::createMenu(const QString &caption_, const QString &name_, VFo
      }
      else
      {
-        g_bsf->addEntry( KSycocaEntry::Ptr::staticCast( p ) );
         g_bsgf->addNewEntryTo( name, p );
      }
   }

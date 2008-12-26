@@ -29,6 +29,8 @@
 
 #include <kservice.h>
 
+class KBuildServiceFactory;
+
 class VFolderMenu : public QObject
 {
   Q_OBJECT
@@ -52,7 +54,7 @@ public:
      AppsInfo *apps_info;
   };
 
-  VFolderMenu();
+  VFolderMenu(KBuildServiceFactory* serviceFactory);
   ~VFolderMenu();
 
   /**
@@ -83,9 +85,11 @@ public:
 
 Q_SIGNALS:
   /**
-     Emitted when a service description needs to be completed.
+     Emitted when a KService for an application needs to be created.
 
      \sa parseMenu
+
+     This is a callback for KBuildSycoca.
   */
   void newService(const QString &path, KService::Ptr *entry);
 
@@ -275,6 +279,9 @@ private:
   QString locateMenuFile(const QString &fileName);
   QString locateDirectoryFile(const QString &fileName);
   void loadApplications(const QString&, const QString&);
+
+private:
+    KBuildServiceFactory* m_serviceFactory;
 };
 
 #endif
