@@ -19,11 +19,12 @@
 #ifndef KKERNEL_MAC_H
 #define KKERNEL_MAC_H
 
+#include <QtCore/qglobal.h> // defines Q_OS_MACX
+
 #ifdef Q_OS_MACX
 
 #include <kdecore_export.h>
 #include <QtCore/QString>
-#include <CoreFoundation/CFString.h>
 
 /**
  * @short Mac-specific functions needed in kdecore

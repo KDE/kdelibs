@@ -20,7 +20,6 @@
 #include "kkernel_mac.h"
 
 #include <config.h>
-#include <QtCore/qglobal.h>
 
 #ifdef Q_OS_MACX
 
