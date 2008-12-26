@@ -65,6 +65,9 @@
 <!ENTITY traducteurCecileDelafond     '<othercredit role="translator"><firstname>Cécile</firstname><surname>Delafond</surname><affiliation><address><email>cecile@delafond.org</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurCecileDelafond      '<othercredit role="reviewer"><firstname>Cécile</firstname><surname>Delafond</surname><affiliation><address><email>cecile@delafond.org</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurOlivierDelaune     '<othercredit role="translator"><firstname>Olivier</firstname><surname>Delaune</surname><affiliation><address><email>olivier.delaune@wanadoo.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurOlivierDelaune      '<othercredit role="reviewer"><firstname>Olivier</firstname><surname>Delaune</surname><affiliation><address><email>olivier.delaune@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
 <!ENTITY traducteurCharlesDemartigny     '<othercredit role="translator"><firstname>Charles</firstname><surname>Demartigny</surname><affiliation><address><email>charles@demartigny.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurCharlesDemartigny      '<othercredit role="reviewer"><firstname>Charles</firstname><surname>Demartigny</surname><affiliation><address><email>charles@demartigny.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
@@ -248,6 +251,7 @@
 <!ENTITY GerardDelafond    'Gérard Delafond <email>gerard@delafond.org</email>'>
 <!ENTITY InesDelafond      'Ines Delafond <email>ines@delafond.org</email>'>
 <!ENTITY CecileDelafond    'Cécile Delafond <email>cecile@delafond.org</email>'>
+<!ENTITY OlivierDelaune    'Olivier Delaune <email>olivier.delaune@wanadoo.fr</email>'>
 <!ENTITY CharlesDemartigny 'Charles Demartigny <email>charles@demartigny.com</email>'>
 <!ENTITY SimonDepiets    'Simon Depiets <email>2df@tuxfamily.org</email>'>
 <!ENTITY YvesDessertine    'Yves Dessertine <email>kde@yvesd.net</email>'>
