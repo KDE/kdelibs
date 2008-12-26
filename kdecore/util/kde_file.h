@@ -38,7 +38,7 @@
 
 /* added not for Solaris and OpenSolaris platforms */
 
-#if (defined _LFS64_LARGEFILE) && (defined _LARGEFILE64_SOURCE) && (!defined _GNU_SOURCE) && (!defined __sun__)
+#if (defined _LFS64_LARGEFILE) && (defined _LARGEFILE64_SOURCE) && (!defined _GNU_SOURCE) && (!defined __sun)
 /*
  * This section provides portable defines for large file support.
  * To use this you must compile your code with _LARGEFILE64_SOURCE
