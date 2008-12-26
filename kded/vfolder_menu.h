@@ -24,6 +24,7 @@
 #include <QtXml/QDomDocument>
 #include <QtCore/QStringList>
 #include <QtCore/QHash>
+#include <QtCore/QSet>
 #include <QtCore/QStack>
 
 #include <kservice.h>
@@ -32,7 +33,7 @@ class VFolderMenu : public QObject
 {
   Q_OBJECT
 public:
-  class appsInfo;
+  class AppsInfo;
   class SubMenu {
   public:
      SubMenu() : isDeleted(false),apps_info(0) { items.reserve(43); }
@@ -48,7 +49,7 @@ public:
      QDomElement layoutNode;
      bool isDeleted;
      QStringList layoutList;
-     appsInfo *apps_info;
+     AppsInfo *apps_info;
   };
 
   VFolderMenu();
@@ -108,9 +109,9 @@ public:
 
   QStringList m_directoryDirs; // Current set of applicable <DirectoryDir> dirs
   QHash<QString, SubMenu*> m_legacyNodes; // Dictionary that stores Menu nodes
-                                // associated with legacy tree.
+                                          // associated with legacy tree.
 
-  class docInfo {
+  class DocInfo {
   public:
      QString baseDir; // Relative base dir of current menu file
      QString baseName; // Filename of current menu file without ".menu"
@@ -118,19 +119,19 @@ public:
   };
 
 
-  docInfo m_docInfo; // docInfo for current doc
-  QStack<VFolderMenu::docInfo> m_docInfoStack;
+  DocInfo m_docInfo; // DocInfo for current doc
+  QStack<VFolderMenu::DocInfo> m_docInfoStack;
 
-  class appsInfo {
+  class AppsInfo {
   public:
-     appsInfo()
+     AppsInfo()
      {
         dictCategories.reserve(53);
         applications.reserve(997);
         appRelPaths.reserve(997);
      }
 
-     ~appsInfo()
+     ~AppsInfo()
      {
      }
 
@@ -139,10 +140,10 @@ public:
      QHash<KService::Ptr,QString> appRelPaths; // service -> rel path
   };
 
-  appsInfo *m_appsInfo; // appsInfo for current menu
-  QList<appsInfo*> m_appsInfoStack; // All applicable appsInfo for current menu
-  QList<appsInfo*> m_appsInfoList; // List of all appsInfo objects.
-  QHash<QString,KService::Ptr> m_usedAppsDict; // all applications that have been allocated
+  AppsInfo *m_appsInfo; // AppsInfo for current menu
+  QList<AppsInfo*> m_appsInfoStack; // All applicable AppsInfo for current menu
+  QList<AppsInfo*> m_appsInfoList; // List of all AppsInfo objects.
+    QSet<QString /*menuId*/> m_usedAppsDict; // all applications that have been allocated
 
   QDomDocument m_doc;
   SubMenu *m_rootMenu;
@@ -174,17 +175,17 @@ private:
   void buildApplicationIndex(bool unusedOnly);
 
   /**
-   * Create a appsInfo frame for current menu
+   * Create a AppsInfo frame for current menu
    */
   void createAppsInfo();
 
   /**
-   * Load additional appsInfo frame for current menu
+   * Load additional AppsInfo frame for current menu
    */
   void loadAppsInfo();
 
   /**
-   * Unload additional appsInfo frame for current menu
+   * Unload additional AppsInfo frame for current menu
    */
   void unloadAppsInfo();
 

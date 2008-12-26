@@ -311,7 +311,7 @@ VFolderMenu::~VFolderMenu()
 }
 
 #define FOR_ALL_APPLICATIONS(it) \
-   foreach (appsInfo *info, m_appsInfoStack) \
+   foreach (AppsInfo *info, m_appsInfoStack) \
    { \
       QHashIterator<QString,KService::Ptr> it = info->applications; \
       while (it.hasNext()) \
@@ -320,7 +320,7 @@ VFolderMenu::~VFolderMenu()
 #define FOR_ALL_APPLICATIONS_END } }
 
 #define FOR_CATEGORY(category, it) \
-   foreach (appsInfo *info, m_appsInfoStack) \
+   foreach (AppsInfo *info, m_appsInfoStack) \
    { \
       const KService::List list = info->dictCategories.value(category); \
       for(KService::List::ConstIterator it = list.constBegin(); \
@@ -331,7 +331,7 @@ VFolderMenu::~VFolderMenu()
 KService::Ptr
 VFolderMenu::findApplication(const QString &relPath)
 {
-   foreach(appsInfo *info, m_appsInfoStack)
+   foreach(AppsInfo *info, m_appsInfoStack)
    {
       if (info->applications.contains(relPath)) {
          KService::Ptr s = info->applications[relPath];
@@ -352,7 +352,7 @@ VFolderMenu::addApplication(const QString &id, KService::Ptr service)
 void
 VFolderMenu::buildApplicationIndex(bool unusedOnly)
 {
-   foreach (appsInfo *info, m_appsInfoList)
+   foreach (AppsInfo *info, m_appsInfoList)
    {
       info->dictCategories.clear();
       QMutableHashIterator<QString,KService::Ptr> it = info->applications;
@@ -382,7 +382,7 @@ VFolderMenu::createAppsInfo()
 {
    if (m_appsInfo) return;
 
-   m_appsInfo = new appsInfo;
+   m_appsInfo = new AppsInfo;
    m_appsInfoStack.prepend(m_appsInfo);
    m_appsInfoList.append(m_appsInfo);
    m_currentMenu->apps_info = m_appsInfo;
@@ -1621,7 +1621,7 @@ void
 VFolderMenu::markUsedApplications(const QHash<QString,KService::Ptr>& items)
 {
    foreach(const KService::Ptr &p, items)
-      m_usedAppsDict.insert(p->menuId(), p);
+      m_usedAppsDict.insert(p->menuId());
 }
 
 VFolderMenu::SubMenu *
@@ -1647,13 +1647,20 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
 
    for (int pass = 0; pass <= 2; pass++)
    {
+       // pass 0: load application desktop files
+       // pass 1: the normal processing
+       // pass 2: process <OnlyUnallocated> to put unused files into "Lost & Found".
       processMenu(docElem, pass);
 
       switch (pass) {
       case 0:
+          // Fill the dictCategories for each AppsInfo in m_appsInfoList,
+          // in preparation for processMenu pass 1.
           buildApplicationIndex(false);
           break;
       case 1:
+          // Fill the dictCategories for each AppsInfo in m_appsInfoList,
+          // with only the unused apps, in preparation for processMenu pass 2.
           buildApplicationIndex(true /* unusedOnly */);
           break;
       case 2:
