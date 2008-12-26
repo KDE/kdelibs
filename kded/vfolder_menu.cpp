@@ -17,6 +17,7 @@
  **/
 
 #include "vfolder_menu.h"
+#include "kbuildservicefactory.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -297,7 +298,9 @@ VFolderMenu::insertService(SubMenu *parentMenu, const QString &name, KService::P
 }
 
 
-VFolderMenu::VFolderMenu() : m_track(false)
+VFolderMenu::VFolderMenu(KBuildServiceFactory* serviceFactory) :
+    m_track(false),
+    m_serviceFactory(serviceFactory)
 {
    m_usedAppsDict.reserve(797);
    m_rootMenu = 0;
@@ -347,6 +350,7 @@ VFolderMenu::addApplication(const QString &id, KService::Ptr service)
 {
    service->setMenuId(id);
    m_appsInfo->applications.insert(id, service);
+   m_serviceFactory->addEntry(KSycocaEntry::Ptr::staticCast(service));
 }
 
 void
