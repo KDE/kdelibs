@@ -132,10 +132,9 @@ public:
 
      ~appsInfo()
      {
-        qDeleteAll(dictCategories);
      }
 
-     QHash<QString,KService::List*> dictCategories; // category -> apps
+     QHash<QString,KService::List> dictCategories; // category -> apps
      QHash<QString,KService::Ptr> applications; // rel path -> service
      QHash<KService::Ptr,QString> appRelPaths; // service -> rel path
   };

@@ -322,9 +322,9 @@ VFolderMenu::~VFolderMenu()
 #define FOR_CATEGORY(category, it) \
    foreach (appsInfo *info, m_appsInfoStack) \
    { \
-      KService::List *list = info->dictCategories[category]; \
-      if (list) for(KService::List::ConstIterator it = list->constBegin(); \
-             it != list->constEnd(); ++it) \
+      const KService::List list = info->dictCategories.value(category); \
+      for(KService::List::ConstIterator it = list.constBegin(); \
+             it != list.constEnd(); ++it) \
       {
 #define FOR_CATEGORY_END } }
 
@@ -371,13 +371,7 @@ VFolderMenu::buildApplicationIndex(bool unusedOnly)
              it2 != cats.end(); ++it2)
          {
             const QString &cat = *it2;
-            KService::List *list = info->dictCategories[cat];
-            if (!list)
-            {
-               list = new KService::List();
-               info->dictCategories.insert(cat, list);
-            }
-            list->append(s);
+            info->dictCategories[cat].append(s); // find or insert entry in hash
          }
       }
    }
@@ -1655,20 +1649,23 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
    {
       processMenu(docElem, pass);
 
-      if (pass == 0)
-      {
-         buildApplicationIndex(false);
-      } else
-      if (pass == 1)
-      {
-         buildApplicationIndex(true);
-      } else
-      if (pass == 2)
+      switch (pass) {
+      case 0:
+          buildApplicationIndex(false);
+          break;
+      case 1:
+          buildApplicationIndex(true /* unusedOnly */);
+          break;
+      case 2:
       {
          QStringList defaultLayout;
          defaultLayout << ":M"; // Sub-Menus
          defaultLayout << ":F"; // Individual entries
          layoutMenu(m_rootMenu, defaultLayout);
+         break;
+      }
+      default:
+          break;
       }
    }
 
