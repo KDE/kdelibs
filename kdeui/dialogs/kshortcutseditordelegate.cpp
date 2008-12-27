@@ -336,7 +336,8 @@ bool KShortcutsEditorDelegate::eventFilter(QObject *o, QEvent *e)
         // a cursor key was pressed
         if (index.isValid()) {
             selection->setCurrentIndex(index, QItemSelectionModel::ClearAndSelect);
-            //TODO using PositionAtCenter for testing; we really want EnsureVisible.
+            //### using PositionAtCenter for now;
+            // EnsureVisible has no effect which seems to be a bug.
             view->scrollTo(index, QAbstractItemView::PositionAtCenter);
         }
         return true;
