@@ -8,6 +8,7 @@ Class=:internet
 Description=A kioslave for data URIs (rfc2397)
 Description[af]= ´n kioslave vir data URIs (rfc2397)
 Description[ar]=برنامج kioslave للمسالك البيانية (rfc2397)
+Description[as]=তথ্য URI সমূহৰ বাবে এটা kioslave (rfc2397)
 Description[be]=Модуль kioslave для URI з даннямі (rfc2397)
 Description[be@latin]=Modul „kioslave” dla adrasoŭ sa źviestkami (RFC-2397)
 Description[bg]=Kioslave за URI (rfc2397)

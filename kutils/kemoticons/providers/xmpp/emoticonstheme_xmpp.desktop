@@ -2,6 +2,7 @@
 Type=Service
 Name=XMPP Emoticons Theme
 Name[ar]=سمة رموز XMPP
+Name[as]=XMPP Emoticons থিম
 Name[be@latin]=Matyŭ smajlikaŭ dla „XMPP”
 Name[bg]=Тема с емоции XMPP
 Name[bn]=এক্স-এম-পি-পি ইমোট-আইকন থীম
@@ -58,6 +59,7 @@ Name[zh_CN]=XMPP 表情主题
 Name[zh_TW]=XMPP 表情圖示主題
 Comment=Library to use XMPP emoticons theme
 Comment[ar]=مكتبة لاستخدام سمة رموز XMPP
+Comment[as]=XMPP Emoticons থিম ব্যৱহাৰ কৰা লাইব্ৰেৰী
 Comment[be@latin]=Biblijateka dla matyvaŭ smajlikaŭ „XMPP”
 Comment[bg]=Библиотека за темата с емоции XMPP
 Comment[bn]=এক্স-এম-পি-পি ইমোট-আইকন থীম ব্যবহার করার লাইব্রেরী

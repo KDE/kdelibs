@@ -2,6 +2,7 @@
 Type=Service
 Name=Pidgin Emoticons Theme
 Name[ar]=سمة رموز Pidgin
+Name[as]=Pidgin Emoticons থিম
 Name[be@latin]=Matyŭ smajlikaŭ dla „Pidgin”
 Name[bg]=Тема с емоции Pidgin
 Name[bn]=পিজিন ইমোট-আইকন থীম
@@ -59,6 +60,7 @@ Name[zh_CN]=Pidgin 表情主题
 Name[zh_TW]=Pidgin 表情圖示主題
 Comment=Library to use Pidgin emoticons theme
 Comment[ar]=مكتبة لاستخدام سمة رموز Pidgin
+Comment[as]=Pidgin Emoticons থিম ব্যৱহাৰ কৰা লাইব্ৰেৰী
 Comment[be@latin]=Biblijateka dla matyvaŭ smajlikaŭ „Pidgin”
 Comment[bg]=Библиотека за темата с емоции Pidgin
 Comment[bn]=পিজিন ইমোট-আইকন থীম ব্যবহার করার লাইব্রেরী

@@ -2,6 +2,7 @@
 Type=Service
 Name=Adium Emoticons Theme
 Name[ar]=سمة  رموز Adium
+Name[as]=Adium Emoticons থিম
 Name[be@latin]=Matyŭ smajlikaŭ dla „Adium”
 Name[bg]=Тема с емоции Adium
 Name[bn]=অ্যাডিয়াম ইমোট-আইকন থীম
@@ -59,6 +60,7 @@ Name[zh_CN]=Adium 表情主题
 Name[zh_TW]=Adium 表情圖示主題
 Comment=Library to use Adium emoticons theme
 Comment[ar]=مكتبة لاستخدام سمة رموز Adium
+Comment[as]=Adium emoticons থিম ব্যৱহাৰ কৰা লাইব্ৰেৰী
 Comment[be@latin]=Biblijateka dla matyvaŭ smajlikaŭ „Adium”
 Comment[bg]=Библиотека за темата с емоции Adium
 Comment[bn]=অ্যাডিয়াম ইমোট-আইকন থীম ব্যবহার করার লাইব্রেরী

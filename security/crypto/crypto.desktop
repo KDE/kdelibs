@@ -68,6 +68,7 @@ Name[zh_CN]=加密算法
 Comment=Configure SSL, manage certificates, and other cryptography settings
 Comment[af]=Konfigureer SSL, hanteer sertifikate, en ander kriptografieverstellings
 Comment[ar]=اضبط SSL، أدر الشهادات وإعدادات تعمية أخرى
+Comment[as]=SSL বিন্যাস কৰক, প্ৰমাণপত্ৰ পৰিচালনা কৰক, আৰু অন্যান্য ক্ৰিপ্টোগ্ৰাফিৰ পছন্দ
 Comment[be@latin]=Naładžvaje SSL, kiruje sertyfikatami, inšyja nałady šyfravańnia
 Comment[bg]=SSL, управление на сертификати и други настройки за шифроване
 Comment[bn]=এস-এস-এল কনফিগারেশন, সার্টিফিকেট তত্বাবধান, এবং অন্যান্য ক্রিপ্টোগ্রাফি সেটিংস
