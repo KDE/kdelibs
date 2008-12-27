@@ -45,6 +45,8 @@
 
 #include "job_p.h"
 
+extern bool kio_resolve_local_urls; // from copyjob.cpp, abused here to save a symbol.
+
 namespace KIO
 {
     enum DeleteJobState {
@@ -231,7 +233,6 @@ void DeleteJobPrivate::statNextSrc()
         }
 
         // Hook for unit test to disable the fast path.
-        extern bool kio_resolve_local_urls; // from copyjob.cpp, abused here to save a symbol.
         if (!kio_resolve_local_urls) {
 
             // Fast path for local files
