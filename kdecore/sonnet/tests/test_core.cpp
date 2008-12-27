@@ -99,4 +99,72 @@ void SonnetCoreTest::testCore()
     kDebug()<<"\tlang is "<<Sonnet::detectLanguage(sentence);
 }
 
+void SonnetCoreTest::testCore2()
+{
+    Speller dict("de_DE");
+    if (!dict.availableDictionaries().contains("German")) {
+        QSKIP("This test requires a german spelling dictionary", SkipSingle);
+        return; 
+    }
+    kDebug()<< "Clients are "   << dict.availableBackends();
+    kDebug()<< "Languages are " << dict.availableLanguages();
+    kDebug()<< "Language names are " << dict.availableLanguageNames();
+    kDebug()<< "Language dicts " << dict.availableDictionaries();
+
+    QStringList words;
+
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+    words << "Hallo" << "halo" << "Umgebunp" << "Regirung" << "bet";
+
+    QTime mtime;
+    mtime.start();
+    for (QStringList::Iterator itr = words.begin();
+         itr != words.end(); ++itr) {
+        if (!dict.isCorrect(*itr)) {
+            //kDebug()<<"Word " << *itr <<" is misspelled";
+            QStringList sug = dict.suggest(*itr);
+            //kDebug()<<"Suggestions : "<<sug;
+        }
+    }
+    //mtime.stop();
+    kDebug()<<"Elapsed time is "<<mtime.elapsed();
+
+    kDebug()<<"Detecting language ...";
+    QString sentence = QString::fromLatin1("Die K Desktop Environment (KDE; auf Deutsch K-Arbeitsumgebung; früher: Kool Desktop Environment) ist eine frei verfügbare Arbeitsumgebung, das heißt eine grafische Benutzeroberfläche mit vielen Zusatzprogrammen für den täglichen Gebrauch.");
+    kDebug()<<"\tlang is "<<Sonnet::detectLanguage(sentence);
+}
+
 #include "test_core.moc"

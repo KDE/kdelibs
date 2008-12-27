@@ -24,6 +24,7 @@ class SonnetCoreTest : public QObject
     Q_OBJECT
 private Q_SLOTS:
     void testCore();
+    void testCore2();
 };
 
 #endif
