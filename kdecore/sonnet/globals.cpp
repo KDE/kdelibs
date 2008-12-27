@@ -74,13 +74,13 @@ QString detectLanguage(const QString &sentence)
         }
     }
 
-    QMap<QString, int>::const_iterator min = correctHits.constBegin();
+    QMap<QString, int>::const_iterator max = correctHits.constBegin();
     for (QMap<QString, int>::const_iterator itr = correctHits.constBegin();
          itr != correctHits.constEnd(); ++itr) {
-        if (itr.value() < min.value())
-            min = itr;
+        if (itr.value() > max.value())
+            max = itr;
     }
-    return min.key();
+    return max.key();
 }
 
 QString defaultLanguageName()
