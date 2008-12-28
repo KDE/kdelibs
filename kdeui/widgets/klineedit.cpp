@@ -464,17 +464,16 @@ void KLineEdit::makeCompletion( const QString& text )
 void KLineEdit::setReadOnly(bool readOnly)
 {
     // Do not do anything if nothing changed...
-    if (readOnly == isReadOnly ())
+    if (readOnly == isReadOnly ()) {
       return;
+    }
 
-    QLineEdit::setReadOnly (readOnly);
+    QLineEdit::setReadOnly(readOnly);
 
-    if (readOnly)
-    {
+    if (readOnly) {
         d->bgRole = backgroundRole();
         setBackgroundRole(QPalette::Window);
-        if (d->enableSqueezedText && d->squeezedText.isEmpty())
-        {
+        if (d->enableSqueezedText && d->squeezedText.isEmpty()) {
             d->squeezedText = text();
             setSqueezedText();
         }
@@ -483,21 +482,14 @@ void KLineEdit::setReadOnly(bool readOnly)
             d->clearButton->animateVisible(false);
             d->overlap = 0;
         }
-    }
-    else
-    {
-        if (!d->squeezedText.isEmpty())
-        {
+    } else {
+        if (!d->squeezedText.isEmpty()) {
            setText(d->squeezedText);
            d->squeezedText.clear();
         }
-        setBackgroundRole(d->bgRole);
 
-        if (d->clearButton && !text().isEmpty()) {
-            int buttonWidth = d->clearButton->sizeHint().width();
-            d->clearButton->animateVisible(true);
-            d->overlap = buttonWidth;
-        }
+        setBackgroundRole(d->bgRole);
+        updateClearButton();
     }
 }
 
