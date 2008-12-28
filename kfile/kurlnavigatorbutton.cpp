@@ -39,7 +39,6 @@ KUrlNavigatorButton::KUrlNavigatorButton(int index, KUrlNavigator* parent) :
     KUrlButton(parent),
     m_index(-1),
     m_hoverArrow(false),
-    m_popupPosition(0, 0),
     m_popupDelay(0),
     m_listJob(0)
 {
@@ -250,11 +249,6 @@ void KUrlNavigatorButton::mousePressEvent(QMouseEvent* event)
 {
     if (isAboveArrow(event->x()) && (event->button() == Qt::LeftButton)) {
         urlNavigator()->requestActivation();
-
-        // the mouse is pressed above the arrow, hence show all directories
-        const bool leftToRight = (layoutDirection() == Qt::LeftToRight);
-        const int popupX = leftToRight ? width() - arrowWidth() - BorderWidth : 0;
-        m_popupPosition = urlNavigator()->mapToGlobal(geometry().bottomLeft() + QPoint(popupX, 0));
         startListJob();
     } else {
         // the mouse is pressed above the text area
@@ -298,7 +292,6 @@ void KUrlNavigatorButton::startPopupDelay()
         return;
     }
 
-    m_popupPosition = urlNavigator()->mapToGlobal(geometry().bottomLeft());
     m_popupDelay->start(300);
 }
 
@@ -384,7 +377,11 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
         ++i;
     }
 
-    const QAction* action = dirsMenu->exec(m_popupPosition);
+    const bool leftToRight = (layoutDirection() == Qt::LeftToRight);
+    const int popupX = leftToRight ? width() - arrowWidth() - BorderWidth : 0;
+    const QPoint popupPos  = urlNavigator()->mapToGlobal(geometry().bottomLeft() + QPoint(popupX, 0));
+
+    const QAction* action = dirsMenu->exec(popupPos);
     if (action != 0) {
         const int result = action->data().toInt();
         KUrl url = urlNavigator()->url(m_index);

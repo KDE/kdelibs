@@ -104,7 +104,6 @@ private:
 private:
     int m_index;
     bool m_hoverArrow;
-    QPoint m_popupPosition;
     QTimer* m_popupDelay;
     KIO::Job* m_listJob;
     QStringList m_subdirs;
