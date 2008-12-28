@@ -201,14 +201,14 @@ KTipDialog *KTipDialog::Private::mInstance = 0;
 void KTipDialog::Private::_k_prevTip()
 {
   database->prevTip();
-  tipText->setHtml( QString::fromLatin1( "<html><center>%1</center></html>" )
+  tipText->setHtml( QString::fromLatin1( "<html><body>%1</body></html>" )
                   .arg( i18n( database->tip().toUtf8() ) ) );
 }
 
 void KTipDialog::Private::_k_nextTip()
 {
   database->nextTip();
-  tipText->setHtml( QString::fromLatin1( "<html><center>%1</center></html>" )
+  tipText->setHtml( QString::fromLatin1( "<html><body>%1</body></html>" )
                   .arg( i18n( database->tip().toUtf8() ) ) );
 }
 
