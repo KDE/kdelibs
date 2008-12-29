@@ -643,6 +643,11 @@ void KLineEdit::resizeEvent( QResizeEvent * ev )
     QLineEdit::resizeEvent(ev);
 }
 
+void KLineEdit::keyPressEvent(QKeyEvent *e)
+{
+    QLineEdit::keyPressEvent(e);
+}
+
 void KLineEdit::keyReleaseEvent( QKeyEvent *e )
 {
     const int key = e->key() | e->modifiers();
