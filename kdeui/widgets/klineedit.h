@@ -511,9 +511,9 @@ protected:
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
-    * See QLineEdit::keyPressEvent().
+    * See QLineEdit::keyReleaseEvent().
     */
-    virtual void keyPressEvent( QKeyEvent * );
+    virtual void keyReleaseEvent( QKeyEvent * );
 
     /**
     * Re-implemented for internal reasons.  API not affected.
