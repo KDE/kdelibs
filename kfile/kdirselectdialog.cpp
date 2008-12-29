@@ -36,6 +36,7 @@
 #include <kglobalsettings.h>
 #include <kicon.h>
 #include <kinputdialog.h>
+#include <kio/job.h>
 #include <kio/netaccess.h>
 #include <kio/renamedialog.h>
 #include <klocale.h>
@@ -324,11 +325,15 @@ KUrl KDirSelectDialog::url() const
 {
     KUrl comboUrl(d->m_urlCombo->currentText());
 
-    if (comboUrl.isValid()) {
-        return comboUrl;
+    if ( comboUrl.isValid() ) {
+       KIO::StatJob *statJob = KIO::stat(comboUrl, KIO::HideProgressInfo);
+       const bool ok = KIO::NetAccess::synchronousRun(statJob, 0);
+       if (ok && statJob->statResult().isDir()) {
+           return comboUrl;
+       }
     }
 
-    kDebug() << comboUrl.path() << " is not valid";
+    kDebug() << comboUrl.path() << " is not an accessible directory";
     return d->m_treeView->currentUrl();
 }
 
