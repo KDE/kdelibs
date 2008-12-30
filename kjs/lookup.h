@@ -267,10 +267,48 @@ namespace KJS {
   }
 } // namespace
 
+#if COMPILER(GCC)
+// Work around a bug in GCC 4.1. The original code was
+//	#if !COMPILER(GCC)
+//	#define KJS_GCC_ROOT_NS_HACK ::
+//	#else
+//	#define KJS_GCC_ROOT_NS_HACK
+//	#endif
+// We separate use and declaration here; the define KJS_OBJECTCAHE_IN_KJS
+// distinguishes if the cache is in KJS (value 1) or not (value 0).
+#define KJS_OBJECTCACHE_IN_KJS (0)
+#define KJS_CACHEGLOBALOBJECT_NS
+#define KJS_CACHEGLOBALOBJECT_NS_USE ::
+#else
+#if COMPILER(SUNPRO)
+// SunPro puts the whole thing in namespace KJS::, no linking problems.
+#define KJS_OBJECTCACHE_IN_KJS (1)
+#define KJS_CACHEGLOBALOBJECT_NS KJS::
+#define KJS_CACHEGLOBALOBJECT_NS_USE KJS::
+#else
+// All other non-Studio, non-GCC compilers are forced to put the
+// object cache outside the KJS namespace, and don't use the GCC
+// hack to do so.
+#define KJS_OBJECTCACHE_IN_KJS (0)
+#define KJS_CACHEGLOBALOBJECT_NS ::
+#define KJS_CACHEGLOBALOBJECT_NS_USE ::
+#endif
+#endif
+
+#if KJS_OBJECTCACHE_IN_KJS
+namespace KJS {
+#endif
 /*
  * The template method below can't be in the KJS namespace because it's used in
- * KJS_DEFINE_PROPERTY which can be used outside of the KJS namespace. It can be moved back
- * when a gcc with http://gcc.gnu.org/bugzilla/show_bug.cgi?id=8355 is mainstream enough.
+ * KJS_DEFINE_PROPERTY which can be used outside of the KJS namespace. It can 
+ * be moved back when a gcc with a fix for
+ *     http://gcc.gnu.org/bugzilla/show_bug.cgi?id=8355 
+ * is mainstream enough.
+ *
+ * This note applies only to GCC and other non-Studio12 compilers. Studio12
+ * does support having this template in namespace KJS. The macro
+ * KJS_OBJECTCACHE_IN_KJS expands to 1 when it is safe to put the template
+ * in the KJS namespace.
  */
 
 /**
@@ -293,6 +331,9 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
   globalObject->put(exec, propertyName, newObject, KJS::Internal | KJS::DontEnum);
   return newObject;
 }
+#if KJS_OBJECTCACHE_IN_KJS
+}
+#endif
 
 /**
  * Helpers to define prototype objects (each of which simply implements
@@ -311,17 +352,10 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
  * then the first line will use KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE, with DOMNodeProto as the second argument.
  */
 
-// Work around a bug in GCC 4.1
-#if !COMPILER(GCC)
-#define KJS_GCC_ROOT_NS_HACK ::
-#else
-#define KJS_GCC_ROOT_NS_HACK
-#endif
-
 // These macros assume that a prototype's only properties are functions
 #define KJS_DEFINE_PROTOTYPE(ClassProto) \
   class ClassProto : public KJS::JSObject { \
-    friend KJS::JSObject *KJS_GCC_ROOT_NS_HACK cacheGlobalObject<ClassProto>(KJS::ExecState *exec, const KJS::Identifier &propertyName); \
+    friend KJS::JSObject* KJS_CACHEGLOBALOBJECT_NS cacheGlobalObject<ClassProto>(KJS::ExecState *exec, const KJS::Identifier &propertyName); \
   public: \
     static KJS::JSObject *self(KJS::ExecState *exec); \
     virtual const KJS::ClassInfo *classInfo() const { return &info; } \
@@ -337,7 +371,7 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
 
 #define KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(ClassProto, ClassProtoProto) \
     class ClassProto : public KJS::JSObject { \
-        friend KJS::JSObject* KJS_GCC_ROOT_NS_HACK cacheGlobalObject<ClassProto>(KJS::ExecState* exec, const KJS::Identifier& propertyName); \
+        friend KJS::JSObject* KJS_CACHEGLOBALOBJECT_NS cacheGlobalObject<ClassProto>(KJS::ExecState* exec, const KJS::Identifier& propertyName); \
     public: \
         static KJS::JSObject* self(KJS::ExecState* exec); \
         virtual const KJS::ClassInfo* classInfo() const { return &info; } \
@@ -357,7 +391,7 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
     KJS::Identifier* ClassProto::s_name = 0; \
     KJS::JSObject *ClassProto::self(KJS::ExecState *exec) \
     { \
-      return ::cacheGlobalObject<ClassProto>(exec, *name()); \
+      return KJS_CACHEGLOBALOBJECT_NS cacheGlobalObject<ClassProto>(exec, *name()); \
     } \
     bool ClassProto::getOwnPropertySlot(KJS::ExecState *exec, const KJS::Identifier& propertyName, KJS::PropertySlot& slot) \
     { \
