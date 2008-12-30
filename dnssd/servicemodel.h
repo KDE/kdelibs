@@ -33,66 +33,87 @@ class ServiceBrowser;
 
 
 /**
-\class ServiceModel servicemodel.h DNSSD/ServiceModel
-
-ServiceModel implements Qt Model interface around ServiceBrowser to allow easy integration
-of service discovery into GUI.
-Example of combo box showing list of HTTP servers on local network:
-\code
-DNSSD::ServiceModel* m=new ServiceModel(new DNSSD::ServiceBrowser("_http._tcp"));
-QComboBox *c=new QComboBox();
-c->setModel(m);
-\endcode
-
-After user makes the selection, application typically needs pointer to selected service
-in order to get host name and port. RemoteService::Ptr can be obtained from QModelIndex
-using:
-\code
-void onSelected(const QModelIndex& selection) {
-DNSSD::RemoteService::Ptr service=selection.data(DNSSD::ServiceModel::ServicePtrRole).
-    value<DNSSD::RemoteService::Ptr>();
-\endcode
-
-\since 4.1
-@short Model for list of Zeroconf services
-@author Jakub Stachowski
-*/
+ * @class ServiceModel servicemodel.h DNSSD/ServiceModel
+ * @short Model for list of Zeroconf services
+ *
+ * This class provides a Qt Model for ServiceBrowser to allow easy
+ * integration of service discovery into a GUI.  For example, to
+ * show the HTTP servers published on the local network, you can do:
+ * @code
+ * DNSSD::ServiceModel *serviceModel = new ServiceModel(
+ *     new DNSSD::ServiceBrowser("_http._tcp")
+ *     );
+ * QComboBox *serviceCombo = new QComboBox();
+ * serviceCombo->setModel(serviceModel);
+ * @endcode
+ *
+ * After the user makes a selection, the application typically needs
+ * to get a pointer to the selected service in order to get the host
+ * name and port.  A RemoteService::Ptr can be obtained from
+ * a QModelIndex using:
+ * @code
+ * void onSelected(const QModelIndex &selection) {
+ *     DNSSD::RemoteService::Ptr service =
+ *         selection.data(DNSSD::ServiceModel::ServicePtrRole)
+ *                  .value<DNSSD::RemoteService::Ptr>();
+ * }
+ * @endcode
+ *
+ * @since 4.1
+ * @author Jakub Stachowski
+ */
 
 class KDNSSD_EXPORT ServiceModel : public QAbstractItemModel
 {
-Q_OBJECT
+	Q_OBJECT
 
 public:
-	
+
+	/** The additional data roles provided by this model */
 	enum AdditionalRoles {
-	    ServicePtrRole = 0xA06519DE  ///< returns pointer to service (RemoteService::Ptr type)
+		ServicePtrRole = 0xA06519DE  ///< gets a RemoteService::Ptr for the service
 	};
 
 	/**
-	Default columns for this model. If service browser is not set to resolve automatically, then the model
-	 has only one column (service name).
-	 */	
-	enum ModelColumns {
-	    ServiceName = 0,
-	    Host = 1,
-	    Port = 2
-	};
-	
-	/**
-	Creates model for given service browses and starts browsing for services. The model becomes parent of the
-	browser so there is no need to delete it afterwards.
+	 * The default columns for this model.
+	 *
+	 * If service browser is not set to resolve automatically,
+	 * then the model will only ever have one column (the service name).
 	 */
-	explicit ServiceModel(ServiceBrowser* browser, QObject* parent=0);
-	virtual ~ServiceModel();
-	
-	virtual int columnCount(const QModelIndex& parent = QModelIndex() ) const;
-	virtual int rowCount(const QModelIndex& parent = QModelIndex() ) const;
-	virtual QModelIndex parent(const QModelIndex& index ) const;
-	virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex() ) const;
-	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole ) const;
-	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-	virtual bool hasIndex(int row, int column, const QModelIndex &parent) const;
+	enum ModelColumns {
+		ServiceName = 0,
+		Host = 1,
+		Port = 2
+	};
 
+	/**
+	 * Creates a model for the given service browser and starts browsing
+	 * for services.
+	 *
+	 * The model takes ownership of the browser,
+	 * so there is no need to delete it afterwards.
+	 *
+	 * You should @b not call ServiceBrowser::startBrowse() on @p browser
+	 * before passing it to ServiceModel.
+	 */
+	explicit ServiceModel(ServiceBrowser* browser, QObject* parent = 0);
+
+	virtual ~ServiceModel();
+
+	/** @reimp */
+	virtual int columnCount(const QModelIndex& parent = QModelIndex() ) const;
+	/** @reimp */
+	virtual int rowCount(const QModelIndex& parent = QModelIndex() ) const;
+	/** @reimp */
+	virtual QModelIndex parent(const QModelIndex& index ) const;
+	/** @reimp */
+	virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex() ) const;
+	/** @reimp */
+	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole ) const;
+	/** @reimp */
+	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+	/** @reimp */
+	virtual bool hasIndex(int row, int column, const QModelIndex &parent) const;
 
 private:
 	ServiceModelPrivate* const d;

@@ -32,41 +32,59 @@ class DomainBrowser;
 
 
 /**
-\class DomainModel domainmodel.h DNSSD/DomainModel
-
-DomainModel implements Qt Model interface around DomainBrowser to allow easy integration
-of domain discovery into GUI.
-Example of combo box showing list of browsing domains:
-\code
-DNSSD::DomainModel* m=new DomainModel(new DNSSD::DomainBrowser(DNSSD::DomainBrowser::Browsing));
-QComboBox *c=new QComboBox();
-c->setModel(m);
-\endcode
-
-\since 4.1
-@short Model for list of Zeroconf domains
-@author Jakub Stachowski
-*/
+ * @class DomainModel domainmodel.h DNSSD/DomainModel
+ * @short Model for list of Zeroconf domains
+ *
+ * This class provides a Qt Model for DomainBrowser to allow easy
+ * integration of domain discovery into a GUI.  For example, to
+ * provide a combo box listing available domains, you can do:
+ * @code
+ * DNSSD::DomainModel *domainModel = new DomainModel(
+ *     new DNSSD::DomainBrowser(DNSSD::DomainBrowser::Browsing)
+ *     );
+ * QComboBox *domainCombo = new QComboBox();
+ * domainCombo->setModel(domainModel);
+ * @endcode
+ *
+ * @since 4.1
+ * @author Jakub Stachowski
+ */
 
 class KDNSSD_EXPORT DomainModel : public QAbstractItemModel
 {
-Q_OBJECT
+	Q_OBJECT
 
 public:
 	/**
-	Creates model for given domain browses and starts browsing for domain. The model becomes parent of the
-	browser so there is no need to delete it afterwards.
- 	 */ 
-	explicit DomainModel(DomainBrowser* browser, QObject* parent=0);
-	virtual ~DomainModel();
-	
-	virtual int columnCount(const QModelIndex& parent = QModelIndex() ) const;
-	virtual int rowCount(const QModelIndex& parent = QModelIndex() ) const;
-	virtual QModelIndex parent(const QModelIndex& index ) const;
-	virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex() ) const;
-	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole ) const;
-	virtual bool hasIndex(int row, int column, const QModelIndex &parent) const;
+	 * Creates a model for given domain browser and starts
+	 * browsing for domains.
+	 *
+	 * The model takes ownership of the browser,
+	 * so there is no need to delete it afterwards.
+	 *
+	 * You should @b not call DomainBrowser::startBrowse() on @p browser
+	 * before passing it to DomainModel.
+	 *
+	 * @param browser the domain browser that will provide the domains
+	 *                to be listed by the model
+	 * @param parent  the parent object (see QObject documentation)
+	 */
+	explicit DomainModel(DomainBrowser* browser, QObject* parent = 0);
 
+	virtual ~DomainModel();
+
+	/** @reimp */
+	virtual int columnCount(const QModelIndex& parent = QModelIndex() ) const;
+	/** @reimp */
+	virtual int rowCount(const QModelIndex& parent = QModelIndex() ) const;
+	/** @reimp */
+	virtual QModelIndex parent(const QModelIndex& index ) const;
+	/** @reimp */
+	virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex() ) const;
+	/** @reimp */
+	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole ) const;
+	/** @reimp */
+	virtual bool hasIndex(int row, int column, const QModelIndex &parent) const;
 
 private:
 	DomainModelPrivate* const d;

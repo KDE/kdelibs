@@ -30,55 +30,101 @@ namespace DNSSD
 class RemoteServicePrivate;
 
 /**
-\class RemoteService remoteservice.h DNSSD/RemoteService
-
-RemoteService class allows to resolve service announced on remote machine. In most cases objects
-of this class are created by ServiceBrowser, but it is not required. Only fields valid before 
-service is resolved are name, type.and domain. 
- 
- 
-@short class representing service announced on remote machine.
-@author Jakub Stachowski
+ * @class RemoteService remoteservice.h DNSSD/RemoteService
+ * @short Describes a service published over DNS-SD,
+ *        typically on a remote machine
+ *
+ * This class allows delayed or asynchronous resolution of
+ * services.  As the name suggests, the service is normally
+ * on a remote machine, but the service could just as easily
+ * be published on the local machine.
+ *
+ * RemoteService instances are normally provided by ServiceBrowser,
+ * but can be used to resolve any service if you know the name, type
+ * and domain for it.
+ *
+ * @author Jakub Stachowski
+ *
+ * @see ServiceBrowser
  */
 class KDNSSD_EXPORT RemoteService : public QObject, public ServiceBase
 {
 	Q_OBJECT
+
 public:
 	typedef KSharedPtr<RemoteService> Ptr;
-	
+
 	/**
-	Creates unresolved remote service with given name, type and domain.
+	 * Creates an unresolved RemoteService representing the service with
+	 * the given name, type and domain
+	 *
+	 * @param name   the name of the service
+	 * @param type   the type of the service (see ServiceBrowser::ServiceBrowser())
+	 * @param domain the domain of the service
+	 *
+	 * @see ServiceBrowser::isAvailable()
 	 */
-	RemoteService(const QString& name,const QString& type,const QString& domain);
-	
+	RemoteService(const QString& name, const QString& type, const QString& domain);
+
 	virtual ~RemoteService();
-	
+
 	/**
-	Resolves host name and port of service. Host name is not resolved into numeric
-	address - use KResolver for that. Signal resolved(bool) will be emitted 
-	when finished or even before return of this function - in case of immediate failure.
+	 * Resolves the host name and port of service asynchronously
+	 *
+	 * The host name is not resolved into an IP address - use KResolver
+	 * for that.
+	 *
+	 * The resolved(bool) signal will be emitted when the
+	 * resolution is complete, or when it fails.
+	 *
+	 * Note that resolved(bool) may be emitted before this function
+	 * returns in case of immediate failure.
+	 *
+	 * RemoteService will keep monitoring the service for
+	 * changes in hostname and port, and re-emit resolved(bool)
+	 * when either changes.
+	 *
+	 * @see resolve(), hostName(), port()
 	 */
 	void resolveAsync();
-	
+
 	/**
-	Synchronous version of resolveAsync(). Note that resolved(bool) is emitted 
-	before this function returns, 
-	@return true is successful
+	 * Resolves the host name and port of service asynchronously
+	 *
+	 * The host name is not resolved into an IP address - use KResolver
+	 * for that.
+	 *
+	 * resolved(bool) is emitted before this function is returned.
+	 *
+	 * resolve() will not cause RemoteService to monitor for changes
+	 * in the hostname or port of the service.
+	 *
+	 * @return @c true if successful, @c false on failure
+	 *
+	 * @see resolveAsync(), hostName(), port()
 	 */
 	bool resolve();
-	
+
 	/**
-	Returns true if service has been successfully resolved
+	 * Whether the service has been successfully resolved
+	 *
+	 * @return @c true if hostName() and port() will return
+	 *         valid values, @c false otherwise
 	 */
 	bool isResolved() const;
-	
+
 Q_SIGNALS:
 	/**
-	Emitted when resolving is complete. Parameter is set to true if it was successful.
-	If operating in asynchronous mode this signal can be emitted several times (when 
-	service change)
+	 * Emitted when resolving is complete
+	 *
+	 * If operating in asynchronous mode this signal can be
+	 * emitted several times (when the hostName or port of
+	 * the service changes).
+	 *
+	 * @param successful @c true if the hostName and port were
+	 *                   successfully resolved, @c false otherwise
 	 */
-	void resolved(bool);
+	void resolved(bool successful);
 
 protected:
 	virtual void virtual_hook(int id, void *data);

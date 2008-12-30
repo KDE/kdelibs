@@ -30,50 +30,110 @@ namespace DNSSD
 class DomainBrowserPrivate;
 
 /**
-\class DomainBrowser domainbrowser.h DNSSD/DomainBrowser
-
-@short Class used to provide  list of additional domains for browsing or publishing.
-@author Jakub Stachowski
-*/
+ * @class DomainBrowser domainbrowser.h DNSSD/DomainBrowser
+ * @short Browses recommended domains for browsing or publishing to.
+ *
+ * Usage of this class is very simple.  If you are interested in
+ * browsing for services, simple do
+ * @code
+ * DNSSD::DomainBrowser *browser =
+ *     new DNSSD::DomainBrowser(DNSSD::DomainBrowser::Browsing, this);
+ * connect(browser, SIGNAL(domainAdded(QString)),
+ *         this, SLOT(browsingDomainAdded(QString));
+ * connect(browser, SIGNAL(domainRemoved(QString)),
+ *         this, SLOT(browsingDomainRemove(QString));
+ * browser->startBrowse();
+ * @endcode
+ *
+ * If you are interested in domains where you can register services,
+ * usage is identical except that you should pass
+ * <tt>DNSSD::DomainBrowser::Registering</tt> to the constructor.
+ *
+ * @author Jakub Stachowski
+ */
 class KDNSSD_EXPORT DomainBrowser : public QObject
 {
 	Q_OBJECT
 public:
-	enum DomainType { Browsing, Publishing };
 	/**
-	Standard constructor. It takes all parameters from global configuration.
-	All changes in configuration are applied immediately.
-	@param parent Parent object.
+	 * A type of domain recommendation
 	 */
-	explicit DomainBrowser(DomainType type, QObject *parent=0);
+	enum DomainType
+	{
+		/** Domains recommended for browsing for services on (using ServiceBrowser) */
+		Browsing,
+		/** Domains recommended for publishing to (using PublicService) */
+		Publishing
+	};
+	/**
+	 * Standard constructor
+	 *
+	 * The global DNS-SD configuration (for example, the global Avahi
+	 * configuration for the Avahi backend) will be used.
+	 *
+	 * @param type   the type of domain to search for
+	 * @param parent parent object (see QObject documentation)
+	 *
+	 * @see startBrowse() and ServiceBrowser::isAvailable()
+	 */
+	explicit DomainBrowser(DomainType type, QObject* parent = 0);
 
 	~DomainBrowser();
 
 	/**
-	Current list of domains to browse.
+	 * The current known list of domains of the requested DomainType
+	 *
+	 * @return a list of currently known domain names
 	 */
 	QStringList domains() const;
 
 	/**
-	Starts browsing. To stop destroy this object. domainAdded signals may be emitted before this function returns.
+	 * Starts browsing
+	 *
+	 * Only the first call to this function will have any effect.
+	 *
+	 * Browsing stops when the DomainBrowser object is destroyed.
+	 *
+	 * @warning The domainAdded() signal may be emitted before this
+	 *          function returns.
+	 *
+	 * @see domainAdded() and domainRemoved()
 	 */
-	void startBrowse() ;
+	void startBrowse();
 
 	/**
-	Returns true when browse has already started
+	 * Whether the browsing has been started
+	 *
+	 * @return @c true if startBrowse() has been called, @c false otherwise
 	 */
 	bool isRunning() const;
 
 Q_SIGNALS:
 	/**
-	Emitted when domain has been removed from browsing list
+	 * A domain has disappeared from the browsed list
+	 *
+	 * Emitted when domain has been removed from browsing list
+	 * or the publishing list (depending on which list was
+	 * requested in the constructor).
+	 *
+	 * @param domain the name of the domain
+	 *
+	 * @see domainAdded()
 	 */
-	void domainRemoved(const QString&);
+	void domainRemoved(const QString& domain);
+
 	/**
-	New domain has been discovered. Also emitted for domain specified in constructor
-	and in global configuration
+	 * A new domain has been discovered
+	 *
+	 * If the requested DomainType is Browsing, this will
+	 * also be emitted for the domains specified in the
+	 * global configuration.
+	 *
+	 * @param domain the name of the domain
+	 *
+	 * @see domainRemoved()
 	 */
-	void domainAdded(const QString&);
+	void domainAdded(const QString& domain);
 
 private:
 	friend class DomainBrowserPrivate;

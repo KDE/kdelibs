@@ -33,147 +33,255 @@ class DomainBrowser;
 class ServiceBrowserPrivate;
 
 /**
-\class ServiceBrowser servicebrowser.h DNSSD/ServiceBrowser
-
-Most important class for applications that want to discover specific services on network.
-Suppose that you need list of web servers running. Example:
- 
-\code
-DNSSD::ServiceBrowser* browser = new DNSSD::ServiceBrowser("_http._tcp");
-connect(browser,SIGNAL(serviceAdded(RemoteService::Ptr)),this,SLOT(addService(RemoteService::Ptr)));
-connect(browser,SIGNAL(serviceRemoved(RemoteService::Ptr)),this,SLOT(delService(RemoteService::Ptr)));
-browser->startBrowse();
-\endcode
- 
-In above example addService will be called for every web server already running or just appearing 
-on network and delService will be called when server is stopped. Because no domain was passed 
-to constructor, default domain will be searched.
- 
- 
-@author Jakub Stachowski
-@short Browsing for specific type of services or all available service types
+ * @class ServiceBrowser servicebrowser.h DNSSD/ServiceBrowser
+ * @short Browses for network services advertised over DNS-SD
+ *
+ * This is the central class in the DNSSD library for applications
+ * that want to discover services on network.
+ *
+ * Suppose that you need list of web servers running.  Then you
+ * might do something like
+ * @code
+ * DNSSD::ServiceBrowser* browser = new DNSSD::ServiceBrowser("_http._tcp");
+ * connect(browser, SIGNAL(serviceAdded(RemoteService::Ptr)),
+ *         this,    SLOT(addService(RemoteService::Ptr)));
+ * connect(browser, SIGNAL(serviceRemoved(RemoteService::Ptr)),
+ *         this,    SLOT(delService(RemoteService::Ptr)));
+ * browser->startBrowse();
+ * @endcode
+ *
+ * In above example addService() will be called for every web server
+ * already running and for every web service that subsequently
+ * appears on the network and delService() will be called when
+ * a server previously advertised is stopped.
+ *
+ * Because no domain was passed to constructor, the default domain
+ * will be searched.  To find other domains to browse for services on,
+ * use DomainBrowser.
+ *
+ * @author Jakub Stachowski
  */
 class KDNSSD_EXPORT ServiceBrowser : public QObject
 {
 	Q_OBJECT
+
 public:
 	/**
-	Availability of DNS-SD services.
-	@li Working - available
-	@li Stopped - not available because mdnsd daemon is not running. This flag is currently unused
-	@li Unsupported - not available because KDE was compiled without DNS-SD support	
-	*/
-	enum State { Working, Stopped, Unsupported };
-
-	
-	/**
-	ServiceBrowser constructor.
-	 
-	@param type Service types to browse for (example: "_http._tcp"). 
-	@param autoResolve - after disovering new service it will be resolved and then 
-	reported with serviceAdded() signal. It raises network usage by resolving all services, 
-	so use it only when necessary.
-	@param domain Domain name. Can be left as null string to use default domain
-	@param subtype Set it to browse only for specific subtype
+	 * Availability of DNS-SD services
 	 */
-	explicit ServiceBrowser(const QString& type, bool autoResolve=false, const QString& domain=QString(), 
-	    const QString& subtype=QString());
-	
+	enum State {
+		/** the service is available */
+		Working,
+		/** not available because mDnsd or Avahi daemon is not running */
+		Stopped,
+		/** not available because KDE was compiled without DNS-SD support */
+		Unsupported
+	};
+
+	/**
+	 * Create a ServiceBrowser for a particular service type
+	 *
+	 * DomainBrowser can be used to find other domains to browse on.
+	 * If no domain is given, the default domain is used.
+	 *
+	 * The service type is the high-level protocol type, followed by a dot,
+	 * followed by the transport protocol type (@c _tcp or @c _udp).
+	 * The <a href="http://www.dns-sd.org">DNS-SD website</a> maintains
+	 * <a href="http://www.dns-sd.org/ServiceTypes.html">a full list</a>
+	 * of service types.
+	 *
+	 * The @p subtype parameter allows you to do more fine-grained filtering
+	 * on the services you are interested in.  So you might request only
+	 * FTP servers that allow anonymous access by passing "_ftp._tcp" as the
+	 * @p type and "_anon" as the @p subtype.  Subtypes are particularly
+	 * important for types like _soap and _upnp, which are far too generic
+	 * for most applications.  In these cases, the subtype can be used to
+	 * specify the particular SOAP or UPnP protocol they want.
+	 *
+	 * @warning
+	 * Enabling @p autoResolve will increase network usage by resolving
+	 * all services, so this feature should be used only when necessary.
+	 *
+	 * @param type        service types to browse for (example: "_http._tcp")
+	 * @param autoResolve discovered services will be resolved before being
+	 *                    reported with the serviceAdded() signal
+	 * @param domain      a domain to search on instead of the default one
+	 * @param subtype     only browse for a specific subtype
+	 *
+	 * @see startBrowse() and isAvailable()
+	 */
+	explicit ServiceBrowser(const QString& type,
+	                        bool autoResolve = false,
+	                        const QString& domain = QString(),
+	                        const QString& subtype = QString());
+
 	~ServiceBrowser();
 
 	/**
-	Returns list of services 
+	 * The currently known services of the specified type
+	 *
+	 * @returns a list of RemoteService pointers
+	 *
+	 * @see serviceAdded() and serviceRemoved()
 	 */
 	QList<RemoteService::Ptr> services() const;
 
 	/**
-	Starts browsing for services.
-	To stop it just destroy the object.
+	 * Starts browsing for services
+	 *
+	 * Only the first call to this function will have any effect.
+	 *
+	 * Browsing stops when the ServiceBrowser object is destroyed.
+	 *
+	 * @warning The serviceAdded() signal may be emitted before this
+	 *          function returns.
+	 *
+	 * @see serviceAdded(), serviceRemoved() and finished()
 	 */
 	virtual void startBrowse();
 
 	/**
-	Checks availability of DNS-SD services (this also covers publishing).
-
-	If you use this function to report an error to the user, below is a suggestion
-	on how to word the errors:
-	
-	\code
-	switch(DNSSD::ServiceBrowser::isAvailable()) {	    
-	  case DNSSD::ServiceBrowser::Working:
-	    return "";
-          case DNSSD::ServiceBrowser::Stopped:
-            return i18n("<p>The Zeroconf daemon is not running. See the Service Discovery Handbook"
-                        " for more information.<br/>"
-	                "Other users will not see this system when browsing"
-	                " the network via zeroconf, but normal access will still work.</p>");
-          case DNSSD::ServiceBrowser::Unsupported:
-            return i18n("<p>Zeroconf support is not available in this version of KDE."
-                        " See the Service Discovery Handbook for more information.<br/>"
-                        "Other users will not see this system when browsing"
-                        " the network via zeroconf, but normal access will still work.</p>");
-          default:
-            return i18n("<p>Unknown error with Zeroconf.<br/>"
-                        "Other users will not see this system when browsing"
-                        " the network via zeroconf, but normal access will still work.</p>");
-        }
-	\endcode
-
+	 * Checks availability of DNS-SD services
+	 *
+	 * Although this method is part of ServiceBrowser, none of the classes
+	 * in this library will be able to perform their intended function
+	 * if this method does not return Working.
+	 *
+	 * If this method does not return Working, it is still safe to call
+	 * any of the methods in this library.  However, no services will be
+	 * found or published and no domains will be found.
+	 *
+	 * If you use this function to report an error to the user, below
+	 * is a suggestion on how to word the errors when publishing a
+	 * service.  The first line of each error message can also be
+	 * used for reporting errors when browsing for services.
+	 *
+	 * @code
+	 * switch(DNSSD::ServiceBrowser::isAvailable()) {
+	 * case DNSSD::ServiceBrowser::Working:
+	 *     return "";
+	 * case DNSSD::ServiceBrowser::Stopped:
+	 *     return i18n("<p>The Zeroconf daemon is not running. See the Service"
+	 *                 " Discovery Handbook for more information.<br/>"
+	 *                 "Other users will not see the services provided by this
+	 *                 " system when browsing the network via zeroconf, but "
+	 *                 " normal access will still work.</p>");
+	 * case DNSSD::ServiceBrowser::Unsupported:
+	 *     return i18n("<p>Zeroconf support is not available in this version of KDE."
+	 *                 " See the Service Discovery Handbook for more information.<br/>"
+	 *                 "Other users will not see the services provided by this
+	 *                 " application when browsing the network via zeroconf, but "
+	 *                 " normal access will still work.</p>");
+	 * default:
+	 *     return i18n("<p>Unknown error with Zeroconf.<br/>"
+	 *                 "Other users will not see the services provided by this
+	 *                 " application when browsing the network via zeroconf, but "
+	 *                 " normal access will still work.</p>");
+	 * }
+	 * @endcode
+	 *
 	 */
 	static State isAvailable();
-	
+
 	/**
-	Returns true if newly discovered services are resolved before being reported with serviceAdded()
-	\since 4.1
+	 * Whether discovered services are resolved before being reported
+	 *
+	 * @return the value of the @p autoResolve parameter passed to the constructor
+	 *
+	 * @since 4.1
 	 */
 	bool isAutoResolving() const;
 
 	/**
-	@brief Resolved a hostname using mDNS into IP address.
-	 
-	This function is very rarely useful - properly configured system is able to resolve mDNS-based host name
-	using system resolver. 
-	@param hostname The hostname to be resolved
-	@return A QHostAddress containing the IP address. QHostAddress() returned if failed
-	\since 4.2
+	 * Resolves an mDNS hostname into an IP address
+	 *
+	 * This function is very rarely useful, since a properly configured
+	 * system is able to resolve an mDNS-based host name using the system
+	 * resolver (ie: you can just pass the mDNS hostname to KIO or other
+	 * library).
+	 *
+	 * @param hostname the hostname to be resolved
+	 * @return a QHostAddress containing the IP address, or QHostAddress() if
+	 *         resolution failed
+	 * @since 4.2
 	 */
-	static QHostAddress resolveHostName(const QString &hostname);
+	static QHostAddress resolveHostName(const QString& hostname);
 
 	/**
-	@brief This function simply returns the name of this machine's hostname as announced by mDNS protocol. 
-	Usually it will be the same as calling QHostInfo::localHostName(), however it may be changed to something different
-	in avahi configuration file (if using Avahi backend).
-	@return A QString representing the hostname. Returns QString() if failed
-	\since 4.2
+	 * The mDNS hostname of the local machine
+	 *
+	 * Usually this will return the same as QHostInfo::localHostName(),
+	 * but it may be changed to something different
+	 * in the Avahi configuration file (if using the Avahi backend).
+	 *
+	 * @return the hostname, or an empty string on failure
+	 * @since 4.2
 	 */
 	static QString getLocalHostName();
 
 Q_SIGNALS:
 	/**
-	Emitted when new service is discovered (or resolved
-	if autoresolve is set
+	 * Emitted when new service is discovered
+	 *
+	 * If isAutoResolving() returns @c true, this will not be emitted
+	 * until the service has been resolved.
+	 *
+	 * @param service a RemoteService object describing the service
+	 *
+	 * @see serviceRemoved() and finished()
 	 */
-	void serviceAdded(DNSSD::RemoteService::Ptr);
-	/**
-	Emitted when service is no longer announced. RemoteService object
-	is deleted from services list and destroyed immediately after this
-	signal returns.
-	 */
-	void serviceRemoved(DNSSD::RemoteService::Ptr);
+	void serviceAdded(DNSSD::RemoteService::Ptr service);
 
 	/**
-	Emitted when all services has been reported. This signal can be used
-	by application that just want to get list of currently available services
-	(similar to directory listing) and do not care about dynamic adding/removing
-	services later. This signal can be emitted many time: for example if new host 
-	has been connected to network and is announcing some services interesting to
-	this ServiceBrowser, they will be reported by several serviceAdded() signals and
-	whole batch will be concluded by finished(). 
+	 * Emitted when a service is no longer published over DNS-SD
+	 *
+	 * The RemoteService object is removed from the services() list
+	 * and deleted immediately after this signal returns.
+	 *
+	 * @warning
+	 * Do @b not use a delayed connection with this signal
+	 *
+	 * @param service a RemoteService object describing the service
+	 *
+	 * @see serviceAdded() and finished()
+	 */
+	void serviceRemoved(DNSSD::RemoteService::Ptr service);
+
+	/**
+	 * Emitted when the list of published services has settled
+	 *
+	 * This signal is emitted once after startBrowse() is called
+	 * when all the services of the requested type that are
+	 * currently published have been reported (even if none
+	 * are available or the DNS-SD service is not available).
+	 * It is emitted again when a new batch of services become
+	 * available or disappear.
+	 *
+	 * For example, if a new host is connected to network and
+	 * announces some services watched for by this ServiceBrowser,
+	 * they will be reported by one or more serviceAdded() signals
+	 * and the whole batch will be concluded by finished().
+	 *
+	 * This signal can be used by applications that just want to
+	 * get a list of the currently available services
+	 * (similar to a directory listing) and do not care about
+	 * adding or removing services that appear or disappear later.
+	 *
+	 * @warning
+	 * There is no guarantee any RemoteService
+	 * pointers received by serviceAdded() will be valid
+	 * by the time this signal is emitted, so you should either
+	 * do all your work involving them in the slot receiving
+	 * the serviceAdded() signal, or you should listen to
+	 * serviceRemoved() as well.
+	 *
+	 * @see serviceAdded() and serviceRemoved()
 	 */
 	void finished();
 
 protected:
 	virtual void virtual_hook(int, void*);
+
 private:
 	friend class ServiceBrowserPrivate;
 	ServiceBrowserPrivate* const d;
