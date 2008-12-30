@@ -12,10 +12,11 @@ About kdelibs
 -------------
 This is version 4.2 of the KDE libraries.
 
-This package includes libraries that are central to the development and 
-execution of a KDE program, as well as internationalization files for these 
-libraries, misc HTML documentation, theme modules, and regression tests. 
-Here is an alphabetical list:
+This package includes libraries that are central to the development and
+execution of a KDE program, as well as internationalization files for these
+libraries, misc HTML documentation, theme modules, and regression tests.
+
+Here is an alphabetical list of all individual libraries:
 
 * dnssd
     Interface to the DNS-SD (Zeroconf) support.
@@ -29,15 +30,6 @@ Here is an alphabetical list:
 * kate
     KPart for 'kate', the KDE advanced text editor.
 
-* kcert
-    Personal certification manager.
-
-* kcmshell
-    KControl Module interface
-
-* kconf_update
-    Auto-Updater for config files.
-
 * kde3support
     This contains libraries that were part of KDE3, but have been replaced for KDE4
 
@@ -48,9 +40,6 @@ Here is an alphabetical list:
     The KDE daemon checks for newly installed software, update files
     or hostname changes and takes according actions.
 
-* kdeprint
-    The very versatile printing subsystem of KDE.
-
 * kdesu
     Library for password entering and handling
 
@@ -60,9 +49,11 @@ Here is an alphabetical list:
 * kdewidgets
     For developers: KDE's custom widgets for Qt Designer.
 
-* kdoctools
-    Contains mostly stuff convert XML docbook files via XSLT into
-    human readable stuff.
+* kfile
+    File management widgets and dialogs.
+
+* kformula
+    Formula handling.
 
 * khtml
     The next generation HTML rendering widget designed for Konqueror.  This
@@ -72,16 +63,10 @@ Here is an alphabetical list:
     An all purpose extension to the qimgio class that supports various
     image formats.
 
-* kinit
-    Process launcher (kdeinit), used for fast KDE startup and to launch kioslaves.
-
 * kio
     Classes that fetch and decode URLs are contained here. This library also
     contains "ksycoca", the system configure cache containing services,
     applications, servicetypes and mimetypes.
-
-* kioslave
-    I/O subprocesses to handle files, ftp, http, gzip and bzip2 streams.
 
 * kjs
     Implementation of ECMAScript (aka JavaScript).
@@ -99,37 +84,66 @@ Here is an alphabetical list:
 * kparts
     KDE component model.
 
-* kresources
-    KDE Resource management framework.  Used for Address Book for example.
+* kpty
+    Abstraction layer for virtual consoles.
 
-* kstyles
-    The theme engine lies within. It handles nearly anything relating to
-    customizing the appearance of widgets.
+* kross
+    Scripting host for KDE applications.
 
-* kwallet
-    Client and backend to store values in encrypted files.
+* kutils
+    Utility library for printing, chatting and more.
 
-* libltdl
-    System independent dlopen() handler.
+* nepomuk
+    Semantic information retrieval and tagging.
+
+* plasma
+    Framework for the KDE 4 desktop shell and its widgets.
+
+* security
+    Certificate management and cryptography settings.
+
+* solid
+    Hardware detection.
+
+* sonnet
+    Tools for natural language processing, including spell and grammar check.
+    Includes gui widgets.
+
+* threadweaver
+    Job-based threading library.
+
+And here is an alphabetical list of all further parts of kdelibs:
+
+* cmake
+    Build system used throughout KDE.
+
+* doc
+    Documentation in docbook format.
+
+* includes
+    Qt-style include file wrappers.
+
+* kconf_update
+    Auto-Updater for config files.
+
+* kdoctools
+    Contains mostly stuff convert XML docbook files via XSLT into
+    human readable stuff.
+
+* kioslave
+    I/O subprocesses to handle files, ftp, http, gzip and bzip2 streams.
+
+* kinit
+    Process launcher (kdeinit), used for fast KDE startup and to launch kioslaves.
+
+* kmetadata
+    Meta data handling, part of Nepomuk.
 
 * licenses
     Contains texts of all used licenses.
 
 * mimetypes
     Database of mime types.
-
-* phonon
-    KDE 4 Multimedia Framework.
-
-* pics
-    Database of icons.
-
-* sonnet
-    Tools for natural language processing, including spell and grammar check.
-    Includes gui widgets.
-
-* win
-    Support code for KDE on Win32.
 
 Licensing
 ---------
@@ -189,7 +203,7 @@ Compile Problems
 Often, KDE compile failures are not KDE's fault, but the fault of the
 compiler or the distribution used. For that reason, please have a look at
 http://developer.kde.org/build/compilationfaq.html for known issues in certain
-OS environments before reporting bugs or going mad :). 
+OS environments before reporting bugs or going mad :).
 
 KDE 4 requires gcc 3.3 or better as the compiler.
 
