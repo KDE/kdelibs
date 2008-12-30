@@ -54,10 +54,7 @@ QStringList KTranslit::fallbackList (const QString &lang)
 {
     QStringList fallbacks;
 
-    if (   lang == QString::fromAscii("sr@latin")
-        || lang == QString::fromAscii("sr@Latn")
-        || lang == QString::fromAscii("sr@ije")
-        || lang == QString::fromAscii("sr@ijelatin")) {
+    if (lang.startsWith(QString::fromAscii("sr@"))) {
         fallbacks += QString::fromAscii("sr");
     }
 
@@ -201,7 +198,7 @@ class KTranslitSerbianPrivate
 {
     public:
     QHash<QString, bool> latinNames;
-    QHash<QString, bool> iyekavianNames;
+    QHash<QString, bool> yekavianNames;
     QHash<QChar, QString> dictC2L;
     QHash<QString, QString> dictI2E;
     int maxReflexLen;
@@ -211,11 +208,26 @@ class KTranslitSerbianPrivate
 KTranslitSerbian::KTranslitSerbian ()
 : d(new KTranslitSerbianPrivate())
 {
-    d->latinNames[QString::fromAscii("latin")] = true;
-    d->latinNames[QString::fromAscii("Latn")] = true;
-    d->latinNames[QString::fromAscii("ijelatin")] = true;
-    d->iyekavianNames[QString::fromAscii("ije")] = true;
-    d->iyekavianNames[QString::fromAscii("ijelatin")] = true;
+    #define SR_NAME_ENTRY(hash, name) do { \
+        hash[QString::fromAscii(name)] = true; \
+    } while (0)
+    SR_NAME_ENTRY(d->latinNames, "latin");
+    SR_NAME_ENTRY(d->latinNames, "Latn");
+    SR_NAME_ENTRY(d->latinNames, "ijelatin");
+    SR_NAME_ENTRY(d->latinNames, "jekavianlatin");
+    SR_NAME_ENTRY(d->latinNames, "ijekavianlatin");
+    SR_NAME_ENTRY(d->latinNames, "yekavianlatin");
+    SR_NAME_ENTRY(d->latinNames, "iyekavianlatin");
+    SR_NAME_ENTRY(d->yekavianNames, "ije");
+    SR_NAME_ENTRY(d->yekavianNames, "ijelatin");
+    SR_NAME_ENTRY(d->yekavianNames, "jekavian");
+    SR_NAME_ENTRY(d->yekavianNames, "jekavianlatin");
+    SR_NAME_ENTRY(d->yekavianNames, "ijekavian");
+    SR_NAME_ENTRY(d->yekavianNames, "ijekavianlatin");
+    SR_NAME_ENTRY(d->yekavianNames, "yekavian");
+    SR_NAME_ENTRY(d->yekavianNames, "yekavianlatin");
+    SR_NAME_ENTRY(d->yekavianNames, "iyekavian");
+    SR_NAME_ENTRY(d->yekavianNames, "iyekavianlatin");
 
     #define SR_DICTC2L_ENTRY(a, b) do { \
         d->dictC2L[QString::fromUtf8(a)[0]] = QString::fromUtf8(b); \
@@ -320,8 +332,8 @@ QString KTranslitSerbian::transliterate (const QString &str_,
 
     QString str = str_;
 
-    // Resolve Ekavian/Iyekavian (must come before Cyrillic/Latin).
-    if (d->iyekavianNames.contains(script)) {
+    // Resolve Ekavian/Yekavian (must come before Cyrillic/Latin).
+    if (d->yekavianNames.contains(script)) {
         // Just remove reflex marks.
         str.remove(d->reflexMark);
         str = resolveInserts(str, 2, 1, insHeadIje);
