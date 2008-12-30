@@ -74,7 +74,7 @@ public:
 	reported with serviceAdded() signal. It raises network usage by resolving all services, 
 	so use it only when necessary.
 	@param domain Domain name. Can be left as null string to use default domain
-	@param subtypes Set it to browse only for specific subtype
+	@param subtype Set it to browse only for specific subtype
 	 */
 	explicit ServiceBrowser(const QString& type, bool autoResolve=false, const QString& domain=QString(), 
 	    const QString& subtype=QString());
