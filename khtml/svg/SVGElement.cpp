@@ -207,7 +207,7 @@ void SVGElement::sendSVGLoadEventIfPossible(bool sendParentLoadEvents)
             //dispatchGenericEvent(/*currentTarget.get(), */event, ignored/*, false*/);
             dispatchHTMLEvent(EventImpl::LOAD_EVENT, false, false);
         }
-        currentTarget = (parent && parent->isSVGElement()) ? static_pointer_cast<SVGElement>(parent) : 0;
+        currentTarget = (parent && parent->isSVGElement()) ? static_pointer_cast<SVGElement>(parent) : RefPtr<SVGElement>();
     }
 }
 
