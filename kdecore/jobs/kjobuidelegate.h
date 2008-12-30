@@ -30,7 +30,7 @@ class KJob;
 /**
  * The base class for all KJob UI delegate.
  *
- * An UI delegate is responsible for events of a 
+ * A UI delegate is responsible for the events of a 
  * job and provides a UI for them (an error message
  * box or warning etc.).
  *
