@@ -89,7 +89,6 @@ void KNotifyConfigWidget::save( )
 	if(d->currentElement)
 		d->actionsconfig->save( d->currentElement );
 	
-	d->currentElement=0l;
 
 	d->eventList->save();
 	emit changed(false);
