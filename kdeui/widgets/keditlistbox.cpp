@@ -74,11 +74,9 @@ void KEditListBoxPrivate::init( bool checkAtEntering, KEditListBox::Buttons newB
 
     servNewButton = servRemoveButton = servUpButton = servDownButton = 0L;
     q->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding,
-                                 QSizePolicy::MinimumExpanding));
+                                 QSizePolicy::Preferred));
 
     mainLayout = new QVBoxLayout(q);
-    mainLayout->setMargin( KDialog::marginHint() );
-    mainLayout->setSpacing( KDialog::spacingHint() );
 
     QHBoxLayout* subLayout = new QHBoxLayout;
     btnsLayout = new QVBoxLayout;
