@@ -30,10 +30,9 @@ class KJob;
 /**
  * The base class for all KJob UI delegate.
  *
- * An UI delegate is responsible for tracking the progress and the
- * events of a job and provides a UI for them (a dialog with a
- * progress bar, text on the standard output, an error message
- * box etc.).
+ * An UI delegate is responsible for events of a 
+ * job and provides a UI for them (an error message
+ * box or warning etc.).
  *
  * @see KJob
  */
