@@ -24,9 +24,6 @@ Here is an alphabetical list of all individual libraries:
 * interfaces
     kparts interface for text editors, mediaplayer and scripting.
 
-* kabc
-    The address book library.
-
 * kate
     KPart for 'kate', the KDE advanced text editor.
 
@@ -35,10 +32,6 @@ Here is an alphabetical list of all individual libraries:
 
 * kdecore
     This is the core collection of KDE stuff. Non GUI classes reside here.
-
-* kded
-    The KDE daemon checks for newly installed software, update files
-    or hostname changes and takes according actions.
 
 * kdesu
     Library for password entering and handling
@@ -125,6 +118,10 @@ And here is an alphabetical list of all further parts of kdelibs:
 
 * kconf_update
     Auto-Updater for config files.
+
+* kded
+    The KDE daemon checks for newly installed software, update files
+    or hostname changes and takes according actions.
 
 * kdoctools
     Contains mostly stuff convert XML docbook files via XSLT into
