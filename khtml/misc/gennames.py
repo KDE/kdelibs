@@ -1,88 +1,74 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 cache = {}
 namesList = []
 
-svgTags = []
-svgAttrs = []
-xlinkAttrs = []
+additionalCaseSensitiveAttrs = []
+lastCaseInsensitiveAttr      = 0
 
-# parse htmltags.in file
-f = open("htmltags.in", "r")
-for i in f.xreadlines():
-    i = i.strip()
-    if i.startswith("#") or i == "": continue
-    if i == "": continue
-    key = cache.get(i, len(cache) + 1)
-    cache[i] = key
-    namesList.append([key, i, "ID_%s" % i.upper().replace("-", "_")])
-f.close()
 
+def constName(prefix, i):
+    return (prefix + "_%s") % i.upper().replace("-", "_");
+
+def parseFile(fname, isAttrs, isHtmlAttrs):
+    global cache
+    global namesList
+
+    global additionalCaseSensitiveAttrs
+    global lastCaseInsensitiveAttr
+
+    prefix = "ID"
+    if isAttrs:
+        prefix = "ATTR"
+
+    f = open(fname, "r")
+    for i in f.xreadlines():
+        i = i.strip()
+        if i.startswith("#") or i == "": continue
+        if isHtmlAttrs and i.startswith("END_CI"):
+            lastCaseInsensitiveAttr = len(cache)
+            continue
+
+        # don't add it twice to names list
+        cons = constName(prefix, i)
+        alreadyDefined = [k for k in namesList if k[2] == cons]
+        if len(alreadyDefined) > 0:
+            continue
+
+        if i.upper() == "TEXT" and isAttrs: # hack to get ID_TEXT and ATTR_TEXT be different
+            key = len(cache) + 1
+            cache["TEXT#"] = -1
+        else:
+            key = cache.get(i, len(cache) + 1)
+
+        if isHtmlAttrs and lastCaseInsensitiveAttr > 0 and key <= len(cache):
+            additionalCaseSensitiveAttrs.append(cons)
+
+        cache[i] = key
+        namesList.append([key, i, cons])
+    f.close();
+
+def parseTags(fname):
+    parseFile(fname, False, False)
+
+def parseAttrs(fname, isHtml):
+    parseFile(fname, True, isHtml)
+
+# parse htmltags.in
+parseTags("htmltags.in");
 lastTagId = len(cache)
 
 # parse htmlattrs.in file
-f = open("htmlattrs.in", "r")
-lastCaseInsensitiveAttr = 0
-additionalCaseSensitiveAttrs = []
-for i in f.xreadlines():
-    i = i.strip()
-    if i.startswith("#") or i == "": continue
-    if i.startswith("END_CI"):
-        lastCaseInsensitiveAttr = len(cache)
-        continue
-    if i.upper() == "TEXT":
-        key = len(cache) + 1
-        cache["TEXT#"] = -1 # hack to get ID_TEXT and ATTR_TEXT be different
-    else:
-        key = cache.get(i, len(cache) + 1)
-    if lastCaseInsensitiveAttr > 0 and key <= len(cache):
-        additionalCaseSensitiveAttrs.append("ATTR_%s" % i.upper().replace("-", "_"))
-    cache[i] = key
-    namesList.append([key, i, "ATTR_%s" % i.upper().replace("-", "_")])
-f.close()
+parseAttrs("htmlattrs.in", True)
 lastAttrId = len(cache)
 
-# parse svgtags.in file
-f = open("../svg/svgtags.in", "r")
-for i in f.xreadlines():
-    i = i.strip()
-    if i == "" or i.startswith("#"): continue
-    svgTags.append(i)
-    key = cache.get(i, len(cache) + 1)
-    # don't add it twice to names list
-    alreadyDefined = [k for k in namesList if k[2] == "ID_%s" % i.upper().replace("-", "_")]
-    if len(alreadyDefined) > 0: continue
-    cache[i] = key
-    namesList.append([key, i, "ID_%s" % i.upper().replace("-", "_")])
-f.close()
+# parse SVG tags, attrs
+parseTags("../svg/svgtags.in")
+parseAttrs("../svg/svgattrs.in", False)
 
-# parse svgattrs.in file
-f = open("../svg/svgattrs.in", "r")
-for i in f.xreadlines():
-    i = i.strip()
-    if i == "" or i.startswith("#"): continue
-    svgAttrs.append(i)
-    key = cache.get(i, len(cache) + 1)
-    cache[i] = key
-    # don't add it twice to names list
-    alreadyDefined = [k for k in namesList if k[2] == "ATTR_%s" % i.upper().replace("-", "_")]
-    if len(alreadyDefined) > 0: continue
-    namesList.append([key, i, "ATTR_%s" % i.upper().replace("-", "_")])
-f.close()
-
-# parse svgattrs.in file
-f = open("../svg/xlinkattrs.in", "r")
-for i in f.xreadlines():
-    i = i.strip()
-    if i == "" or i.startswith("#"): continue
-    xlinkAttrs.append(i)
-    key = cache.get(i, len(cache) + 1)
-    cache[i] = key
-    # don't add it twice to names list
-    alreadyDefined = [k for k in namesList if k[2] == "ATTR_%s" % i.upper().replace("-", "_")]
-    if len(alreadyDefined) > 0: continue
-    namesList.append([key, i, "ATTR_%s" % i.upper().replace("-", "_")])
-f.close()
+# parse XLink attrs
+parseAttrs("../svg/xlinkattrs.in", False)
 
 # sort the list
 def func(a, b):
@@ -237,9 +223,9 @@ IDTable<PrefixFactory>* PrefixFactory::initIdTable()\n\
 out.write("\n}\n")
 out.write("\n")
 out.write("namespace DOM {\n\n")
-out.write("//LocalName emptyLocalName = LocalName::fromId(0);\n")
-out.write("//PrefixName emptyPrefixName = PrefixName::fromId(0);\n")
-out.write("//NamespaceName emptyNamespaceName = NamespaceName::fromId(0);\n")
+out.write("LocalName emptyLocalName;// = LocalName::fromId(0);\n")
+out.write("PrefixName emptyPrefixName;// = PrefixName::fromId(0);\n")
+out.write("NamespaceName emptyNamespaceName;// = NamespaceName::fromId(0);\n")
 out.write("\n")
 out.write("""QString getPrintableName(int id) {
     QString local = QString("null");
@@ -264,4 +250,6 @@ out.write("""QString getPrintableName(int id) {
 }\n""")
 out.write("\n}\n")
 out.close()
+
+# kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
 
