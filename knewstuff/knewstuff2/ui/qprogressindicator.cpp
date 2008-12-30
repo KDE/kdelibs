@@ -42,7 +42,7 @@ QProgressIndicator::QProgressIndicator(QWidget *parent)
     m_pbdetails->setEnabled(false);
 
     QHBoxLayout *hbox = new QHBoxLayout(this);
-    hbox->setSpacing(0);
+    hbox->setMargin(0);
     hbox->addWidget(m_pbdetails);
     hbox->addWidget(m_pb);
 
