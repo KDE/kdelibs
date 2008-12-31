@@ -97,7 +97,7 @@ void ConfigWidget::save()
 void ConfigWidget::setFromGui()
 {
     if (d->ui.m_langCombo->count() ) {
-        d->loader->settings()->setDefaultLanguage( d->ui.m_langCombo->currentDictionaryName() );
+        d->loader->settings()->setDefaultLanguage( d->ui.m_langCombo->currentDictionary() );
     }
     d->loader->settings()->setCheckUppercase(
         !d->ui.m_skipUpperCB->isChecked() );
