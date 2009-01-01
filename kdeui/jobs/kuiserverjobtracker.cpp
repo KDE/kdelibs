@@ -65,8 +65,14 @@ void KUiServerJobTracker::registerJob(KJob *job)
 
     KComponentData componentData = KGlobal::mainComponent();
 
+    QString programIconName = componentData.aboutData()->programIconName();
+
+    if (programIconName.isEmpty()) {
+        programIconName = componentData.aboutData()->appName();
+    }
+
     QDBusReply<QDBusObjectPath> reply = serverProxy->uiserver().requestView(componentData.aboutData()->programName(),
-                                                                            componentData.aboutData()->appName(),
+                                                                            programIconName,
                                                                             job->capabilities());
 
     // If we got a valid reply, register the interface for later usage.
