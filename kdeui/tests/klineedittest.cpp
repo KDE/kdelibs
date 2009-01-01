@@ -148,11 +148,10 @@ void KLineEditTest::slotHide()
 int main ( int argc, char **argv)
 {
     KAboutData aboutData( "klineedittest", 0, ki18n("klineedittest"), "1.0" );
-    KComponentData i( &aboutData );
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineArgs::addStdCmdLineOptions();
 
-    QApplication a( argc, argv );
+    KApplication a;
     KLineEditTest *t = new KLineEditTest();
     //t->lineEdit()->setTrapReturnKey( true );
     //t->lineEdit()->completionBox()->setTabHandling( false );
