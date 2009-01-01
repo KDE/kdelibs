@@ -50,6 +50,7 @@ TopLevel::TopLevel(QWidget *parent)
     i2->setLabel("percentage of usage (with slider)");
     i2->setRange(0, 100, 5);
     i2->setSuffix(" %");
+    i2->setSliderEnabled(true);
     conn(i2,int);
     b1->layout()->addWidget(i2);
 
@@ -64,6 +65,7 @@ TopLevel::TopLevel(QWidget *parent)
     i4 = new KIntNumInput(i3, 0xfe,  b1, 16);
     i4->setLabel("Hex byte (with slider)");
     i4->setRange(0, 255, 1);
+    i4->setSliderEnabled(true);
     conn(i4,int);
     b1->layout()->addWidget(i4);
 
@@ -77,7 +79,7 @@ TopLevel::TopLevel(QWidget *parent)
 
 
     i6 = new KIntNumInput(i5, 20, b1, 10);
-    i6->setLabel("Height (should be 2xWidth):");
+    i6->setLabel("Height (should be 2xWidth value):");
     i6->setRange(0, 200);
     i6->setReferencePoint( 10 );
     i6->setSliderEnabled(false);
@@ -107,7 +109,7 @@ TopLevel::TopLevel(QWidget *parent)
 
     d2 = new KDoubleNumInput(d1, 0,20,0.422,b2,0.1,3/*, "perc_double_with_slider"*/);
     d2->setLabel("percentage of usage (with slider)", Qt::AlignBottom | Qt::AlignLeft);
-    d2->setRange(0, 1.0, 0.005);
+    d2->setRange(0, 0.05, 0.005);
     d2->setSuffix("%");
     conn(d2,double);
     b2->layout()->addWidget(d2);
