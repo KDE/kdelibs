@@ -854,10 +854,14 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
     if (slider) {
         // upcast to base type to get the minimum/maximum in int form:
         QDoubleSpinBox * spin = d->spin;
-        const int slmax = qRound(spin->maximum());
-        const int slmin = qRound(spin->minimum());
-        const int slvalue = qRound(spin->value());
-        const int slstep = qRound(spin->singleStep());
+        double multiplicator = 1.0;
+        if (spin->maximum() - spin->minimum() < 10.0) { // if the range is to small, the slider would not be usable (see #168022)
+            multiplicator = 10 / (spin->maximum() - spin->minimum());
+        }
+        const int slmax = qRound(spin->maximum() * multiplicator);
+        const int slmin = qRound(spin->minimum() * multiplicator);
+        const int slvalue = qRound(spin->value() * multiplicator);
+        const int slstep = qRound(spin->singleStep() * multiplicator);
         if (!priv->slider) {
             priv->slider = new QSlider(Qt::Horizontal, this);
             priv->slider->setTickPosition(QSlider::TicksBelow);
