@@ -1614,12 +1614,14 @@ bool KLineEdit::autoSuggest() const
 void KLineEdit::paintEvent( QPaintEvent *ev )
 {
     if (echoMode() == Password && d->threeStars) {
+        blockSignals(true);
         const QString oldText = text();
         const bool isModifiedState = isModified(); // save modified state because setText resets it
         setText(oldText + oldText + oldText);
         QLineEdit::paintEvent(ev);
         setText(oldText);
         setModified(isModifiedState);
+        blockSignals(false);
         return;
     }
 
