@@ -212,6 +212,8 @@ QString KSambaShare::smbConfPath() const
 
 bool KSambaShare::isDirectoryShared( const QString & path ) const
 {
+  if(path.isEmpty())
+    return false;
   QString fixedPath = path;
   if ( path[path.length()-1] != '/' )
        fixedPath += '/';
