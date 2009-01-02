@@ -338,7 +338,7 @@ QAction* KActionCollection::takeAction(QAction *action)
 KAction *KActionCollection::addAction(KStandardAction::StandardAction actionType, const QObject *receiver, const char *member)
 {
   KAction *action = KStandardAction::create(actionType, receiver, member, this);
-  return addAction(action->objectName(), action);
+  return action;
 }
 
 KAction *KActionCollection::addAction(KStandardAction::StandardAction actionType, const QString &name,
