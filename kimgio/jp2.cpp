@@ -219,6 +219,7 @@ convert_colorspace( gs_t& gs )
 static bool
 render_view( gs_t& gs, QImage* outImage )
 {
+    if ( !gs.altimage ) return false;
     QImage qti;
     if((gs.cmptlut[0] = jas_image_getcmptbytype(gs.altimage,
                                                 JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_R))) < 0 ||
