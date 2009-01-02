@@ -1140,14 +1140,16 @@ QMenu* KLineEdit::createStandardContextMenu()
         d->shortAutoCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionMan ] );
         d->popupAutoCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionPopupAuto ] );
 
-        KGlobalSettings::Completion mode = completionMode();
+        const KGlobalSettings::Completion mode = completionMode();
         d->noCompletionAction->setChecked( mode == KGlobalSettings::CompletionNone );
         d->shellCompletionAction->setChecked( mode == KGlobalSettings::CompletionShell );
         d->popupCompletionAction->setChecked( mode == KGlobalSettings::CompletionPopup );
         d->autoCompletionAction->setChecked(  mode == KGlobalSettings::CompletionAuto );
         d->shortAutoCompletionAction->setChecked( mode == KGlobalSettings::CompletionMan );
         d->popupAutoCompletionAction->setChecked( mode == KGlobalSettings::CompletionPopupAuto );
-        if ( mode != KGlobalSettings::completionMode() )
+
+        const KGlobalSettings::Completion defaultMode = KGlobalSettings::completionMode();
+        if ( mode != defaultMode && !d->disableCompletionMap[ defaultMode ] )
         {
             subMenu->addSeparator();
             d->defaultAction = subMenu->addAction( i18nc("@item:inmenu Text Completion", "Default") );
