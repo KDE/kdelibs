@@ -31,6 +31,10 @@
 #include <QtCore/QAtomicPointer>
 #include <kdemacros.h>
 
+/**
+ * @deprecated
+ * Use QSharedData instead.
+ */
 typedef QSharedData KShared;
 
 /**
