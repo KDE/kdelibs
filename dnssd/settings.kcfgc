@@ -1,6 +1,7 @@
 ClassName=Configuration
 File=kcm_kdnssd.kcfg
 GlobalEnums=false
+#KDE5: inherit KCoreConfigSkeleton
 Inherits=KConfigSkeleton
 ItemAccessors=false
 MemberVariables=private

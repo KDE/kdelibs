@@ -20,7 +20,7 @@
 
 #include <netinet/in.h>
 #include <QtCore/QEventLoop>
-#include <QtGui/QApplication>
+#include <QtCore/QCoreApplication>
 #include <kdebug.h>
 #include "remoteservice.h"
 #include "servicebase_p.h"
@@ -129,7 +129,7 @@ void resolve_callback    (    DNSServiceRef,
 	QObject *obj = reinterpret_cast<QObject*>(context);
 	if (errorCode != kDNSServiceErr_NoError) {
 		ErrorEvent err;
-		QApplication::sendEvent(obj, &err);	
+		QCoreApplication::sendEvent(obj, &err);	
 		return;
 	}
 	char key[256];
@@ -145,7 +145,7 @@ void resolve_callback    (    DNSServiceRef,
 			else map[QString::fromUtf8(key)].clear();
         }
 	ResolveEvent rev(DNSToDomain(hosttarget),ntohs(port),map);
-	QApplication::sendEvent(obj, &rev);
+	QCoreApplication::sendEvent(obj, &rev);
 }
 
 

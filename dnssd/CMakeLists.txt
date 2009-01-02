@@ -56,6 +56,7 @@ endif (HAVE_AVAHI)
 
 kde4_add_library(kdnssd SHARED ${kdnssd_LIB_SRCS})
 
+# KDE 5: don't link against KDEUI_LIBS (when settings.kfgc is changed)
 if (HAVE_DNSSD)
   target_link_libraries(kdnssd ${KDE4_KDEUI_LIBS} ${DNSSD_LIBRARIES} ${QT_QTNETWORK_LIBRARY})
 else (HAVE_DNSSD)

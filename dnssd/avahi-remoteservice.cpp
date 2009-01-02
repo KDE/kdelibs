@@ -21,7 +21,7 @@
 #include "avahi-remoteservice_p.h"
 #include <netinet/in.h>
 #include <QtCore/QEventLoop>
-#include <QtGui/QApplication>
+#include <QtCore/QCoreApplication>
 #include <kdebug.h>
 #include "remoteservice.h"
 #include "avahi_server_interface.h"

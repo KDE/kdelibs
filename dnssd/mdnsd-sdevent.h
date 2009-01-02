@@ -21,7 +21,7 @@
 #ifndef MDNSD_SDEVENT_H
 #define MDNSD_SDEVENT_H
 
-#include <QtGui/QKeyEvent>
+#include <QtCore/QEvent>
 #include <QtCore/QString>
 #include <QtCore/QMap>
 

@@ -48,7 +48,7 @@ class ServiceBasePrivate;
  *
  * @see PublicService
  */
-class KDNSSD_EXPORT ServiceBase : public KShared //krazy:exclude=dpointer (protected)
+class KDNSSD_EXPORT ServiceBase : public QSharedData //krazy:exclude=dpointer (protected)
 {
 public:
 	typedef KSharedPtr<ServiceBase> Ptr;
