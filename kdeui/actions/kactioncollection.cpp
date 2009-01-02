@@ -344,7 +344,10 @@ KAction *KActionCollection::addAction(KStandardAction::StandardAction actionType
 KAction *KActionCollection::addAction(KStandardAction::StandardAction actionType, const QString &name,
                                       const QObject *receiver, const char *member)
 {
-  KAction *action = KStandardAction::create(actionType, receiver, member, this);
+  // pass 0 as parent, because if the parent is a KActionCollection KStandardAction::create automatically
+  // adds the action to it, but using the default name, so the action would exist two times in the collection.
+  KAction *action = KStandardAction::create(actionType, receiver, member, 0);
+  action->setParent(this);
   // Reset the objectName so we don't trigger the warning about changing a
   // objectName. It's safe here
   action->setObjectName(name);
