@@ -497,6 +497,11 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
 #endif
         thumb.loadFromData(data);
 
+    if (thumb.isNull()) {
+        QDataStream s(data);
+        s >> thumb;
+    }
+
     if (save)
     {
         thumb.setText("Thumb::URI", origName);
