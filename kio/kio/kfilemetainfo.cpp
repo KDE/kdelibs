@@ -220,7 +220,10 @@ KFileMetaInfo::KFileMetaInfo(const QString& path, const QString& /*mimetype*/,
 {
     QFileInfo fileinfo(path);
     QFile file(path);
-    if (file.open(QIODevice::ReadOnly)) {
+    // only open the file if it is a filetype Qt understands
+    // if e.g. the path points to a pipe, it is not opened
+    if ((fileinfo.isFile() || fileinfo.isDir() || fileinfo.isSymLink())
+            && file.open(QIODevice::ReadOnly)) {
         KUrl u(path);
         p->init(file, u, fileinfo.lastModified().toTime_t());
         if (fileinfo.isWritable()) {
