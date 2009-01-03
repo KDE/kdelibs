@@ -807,6 +807,7 @@ install( FILES
   KTextEditor/ContainerInterface
   KTextEditor/CodeCompletionInterface
   KTextEditor/CodeCompletionModel
+  KTextEditor/CodeCompletionModelControllerInterface
   KTextEditor/Command
   KTextEditor/CommandExtension
   KTextEditor/CommandInterface
