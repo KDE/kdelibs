@@ -55,7 +55,9 @@ else(KDE4_ENABLE_FINAL)
    set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 endif(KDE4_ENABLE_FINAL)
 
-install(TARGETS meinproc4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
+# "export" this target too so we can use the LOCATION property of the imported target in
+# FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex
+install(TARGETS meinproc4  EXPORT kdelibsToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
 ########### next target ###############

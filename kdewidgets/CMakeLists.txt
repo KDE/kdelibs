@@ -18,7 +18,9 @@ kde4_add_executable(makekdewidgets NOGUI RUN_UNINSTALLED ${makekdewidgets_SRCS})
 
 target_link_libraries(makekdewidgets  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS makekdewidgets ${INSTALL_TARGETS_DEFAULT_ARGS} )
+# "export" this target too so we can use the LOCATION property of the imported target in
+# FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex
+install(TARGETS makekdewidgets  EXPORT kdelibsToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
 ########### next target ###############

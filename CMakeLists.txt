@@ -231,13 +231,16 @@ macro_optional_add_subdirectory( doc  )
 
 ################# write dependency file which will be installed #################
 
+# Used in configure_file() and install(EXPORT)
+set(KDE4_TARGET_PREFIX KDE4__)
 include(CreateKDELibsDependenciesFile.cmake)
 
 ################# install files #################
 
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
-install( EXPORT kdelibsLibraryTargets DESTINATION ${DATA_INSTALL_DIR}/cmake/modules FILE KDELibsLibraryTargets.cmake )
+install( EXPORT kdelibsLibraryTargets DESTINATION ${DATA_INSTALL_DIR}/cmake/modules NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibsLibraryTargets.cmake )
+install( EXPORT kdelibsToolsTargets   DESTINATION ${DATA_INSTALL_DIR}/cmake/modules NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibsToolsTargets.cmake )
 # the following will be the correct locations once cmake has the improved FIND_PACKAGE() 
 # install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${PLUGIN_INSTALL_DIR}/cmake RENAME KDE4Config.cmake)
 
