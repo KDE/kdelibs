@@ -184,6 +184,10 @@ void tst_KActionCollection::insertReplaces1()
     delete b;
 }
 
+/**
+ * Check that a action added twice under different names only ends up once in
+ * the collection
+ */
 void tst_KActionCollection::insertReplaces2()
 {
     KAction *a = new KAction(0);
@@ -192,10 +196,19 @@ void tst_KActionCollection::insertReplaces2()
     QVERIFY(collection->actions().contains(a));
     QVERIFY(collection->action("a") == a);
 
+    // Simple test: Just add it twice
     collection->addAction("b", a);
     QVERIFY(collection->actions().contains(a));
     QVERIFY(!collection->action("a"));
     QVERIFY(collection->action("b") == a);
+
+    // Complex text: Mesh with the objectname
+    a->setObjectName("c");
+    collection->addAction("d", a);
+    QVERIFY(collection->actions().contains(a));
+    QVERIFY(!collection->action("b"));
+    QVERIFY(!collection->action("c"));
+    QVERIFY(collection->action("d") == a);
 
     delete a;
 }

@@ -285,7 +285,7 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     // and because it has the new name already.
     const int oldIndex = d->actions.indexOf(action);
     if (oldIndex != -1) {
-        d->actionByName.remove(objectName);
+        d->actionByName.remove(d->actionByName.key(action));
         d->actions.removeAt(oldIndex);
     }
 
@@ -345,12 +345,12 @@ KAction *KActionCollection::addAction(KStandardAction::StandardAction actionType
                                       const QObject *receiver, const char *member)
 {
   // pass 0 as parent, because if the parent is a KActionCollection KStandardAction::create automatically
-  // adds the action to it, but using the default name, so the action would exist two times in the collection.
+  // adds the action to it under the default name. We would trigger the
+  // warning about renaming the action then.
   KAction *action = KStandardAction::create(actionType, receiver, member, 0);
+  // Give it a parent for gc.
   action->setParent(this);
-  // Reset the objectName so we don't trigger the warning about changing a
-  // objectName. It's safe here
-  action->setObjectName(name);
+  // And now add it with the desired name.
   return addAction(name, action);
 }
 
