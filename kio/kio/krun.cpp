@@ -1460,7 +1460,7 @@ KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
     kDebug(7010) << "exitCode " << exitCode;
     bool showErr = exitStatus == QProcess::NormalExit
                    && (exitCode == 127 || exitCode == 1);
-    if (!binName.isEmpty() && (showErr || pid() == 0 )) {
+    if (!binName.isEmpty() && showErr) {
         // Often we get 1 (zsh, csh) or 127 (ksh, bash) because the binary doesn't exist.
         // We can't just rely on that, but it's a good hint.
         // Before assuming its really so, we'll try to find the binName
