@@ -59,45 +59,73 @@ public:
     * This allows kpasswdserver and kcookiejar to delete authentication
     * and cookies that are local to a particular window when closing it.
     */
+   //@{
+   /**
+    * Register a window with KDED
+    */
    void registerWindowId(qlonglong windowId, const QString &sender);
+   /**
+    * Unregister a window previously registered with KDED
+    */
    void unregisterWindowId(qlonglong windowId, const QString &sender);
+   //@}
    void recreate(const QDBusMessage&);
    void recreate(bool initial);
    void loadSecondPhase();
 
+   //@{
    /**
     * Check if a module should be loaded on startup.
     *
-    * @param module Name of the module to configure
+    * @param module the name of the desktop file for the module, without the .desktop extension
+    * @return @c true if the module will be loaded at startup, @c false otherwise
     */
-   //@{
    bool isModuleAutoloaded(const QString &module) const;
+   /**
+    * Check if a module should be loaded on startup.
+    *
+    * @param module a service description for the module
+    * @return @c true if the module will be loaded at startup, @c false otherwise
+    */
    bool isModuleAutoloaded(const KService::Ptr &module) const;
    //@}
 
-   /**
-    * Check if module @module should be loaded on demand.
-    *
-    * @param module Name of the module to configure
-    */
    //@{
+   /**
+    * Check if a module should be loaded on demand
+    *
+    * @param module the name of the desktop file for the module, without the .desktop extension
+    * @return @c true if the module will be loaded when its D-Bus interface
+    *         is requested, @c false otherwise
+    */
    bool isModuleLoadedOnDemand(const QString &module) const;
+   /**
+    * Check if a module should be loaded on demand
+    *
+    * @param module a service description for the module
+    * @return @c true if the module will be loaded when its D-Bus interface
+    *         is requested, @c false otherwise
+    */
    bool isModuleLoadedOnDemand(const KService::Ptr &module) const;
    //@}
 
    /**
-    * Configure if module @module should be loaded on startup.
+    * Configure whether a module should be loaded on startup
     *
-    * @param module Name of the module to configure
-    * @param autoload Load/Don't load the module
+    * If a module is set to be auto-loaded, it will be loaded at the start of a KDE
+    * session.  Depending on the phase it is set to load in, it may also be loaded
+    * when the first KDE application is run outside of a KDE session.
+    *
+    * @param module the name of the desktop file for the module, without the .desktop extension
+    * @param autoload if @c true, the module will be loaded at startup,
+    *                 otherwise it will not
     */
    void setModuleAutoloading(const QString &module, bool autoload);
 
 
-
 public Q_SLOTS:
    /**
-    * Loads / unloads modules according to config.
+    * Loads / unloads modules according to config
     */
    void initModules();
 
