@@ -160,27 +160,23 @@ void mac_initialize_dbus()
 		}
 	}
 
-	QString line;
-	QProcess qp;
-	qp.setTextModeEnabled(true);
-
 	if (!externalProc.isEmpty()) {
+                QProcess qp;
+                qp.setTextModeEnabled(true);
+
 		qp.start(externalProc, QStringList() << "getenv" << "DBUS_LAUNCHD_SESSION_BUS_SOCKET");
-		if (!qp.waitForStarted(timeout)) {
-			kDebug() << externalProc << "never started";
-		} else {
-			if (!qp.waitForReadyRead(timeout)) {
-				kDebug() << externalProc << "never wrote anything";
-			} else {
-				while (qp.atEnd() == false) {
-					line = qp.readLine().trimmed();
-					if (mac_set_dbus_address(line)) {
-						dbus_initialized = true;
-					}
-				}
-			}
-			qp.waitForFinished(timeout);
-		}
+                if (!qp.waitForFinished(timeout)) {
+                    kDebug() << "error running" << externalProc << qp.errorString();
+                    return;
+                }
+                if (qp.exitCode() != 0) {
+                    kDebug() << externalProc << "unsuccessful:" << qp.readAllStandardError();
+                    return;
+                }
+
+                QString line = qp.readLine().trimmed(); // read the first line
+                if (mac_set_dbus_address(line))
+                    dbus_initialized = true; // hooray
 	}
 
 	if (dbus_initialized == false) {
