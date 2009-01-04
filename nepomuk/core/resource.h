@@ -134,7 +134,7 @@ namespace Nepomuk {
         /**
          * Creates a new Resource object.
          *
-         * \param url The URI of the resource. If no resource with this URI exists, a new one is
+         * \param uri The URI of the resource. If no resource with this URI exists, a new one is
          * created.
          * \param type The URI identifying the type of the resource. If it is empty
          *             Resource falls back to http://www.w3.org/2000/01/rdf-schema\#Resource or

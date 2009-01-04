@@ -119,12 +119,12 @@ namespace Nepomuk {
          *
          * Most services do not need to call this method.
          *
-         * \param success Set to \p true if initialization was
-         * successful, \p false otherwise.
+         * \param success Set to \c true if initialization was
+         * successful, \c false otherwise.
          *
          * \sa Service::Service
          */
-        void setServiceInitialized( bool succcess );
+        void setServiceInitialized( bool success );
 
     private:
         class Private;

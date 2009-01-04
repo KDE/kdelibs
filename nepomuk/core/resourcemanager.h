@@ -77,12 +77,12 @@ namespace Nepomuk {
          * Retrieve the main data storage model.
          */
         Soprano::Model* mainModel();
-        
+
         /**
          * Override the main model used for all storage. By default the main model
          * used is the Nepomuk server main model.
          *
-         * \param The model to use instead of the Nepomuk server or 0 to reset.
+         * \param model The model to use instead of the Nepomuk server or 0 to reset.
          *
          * \since 4.1
          */
