@@ -447,6 +447,11 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
                                          "Some pages have several frames. To print only a single frame, click "
                                          "on it and then use this function." ) );
 
+  // Warning: The name selectAll is used hardcoded by some 3rd parties to remove the
+  // shortcut for selectAll so they do not get ambigous shortcuts. Renaming it
+  // will either crash or render useless that workaround. It would be better
+  // to use the name KStandardAction::name(KStandardAction::SelectAll) but we 
+  // can't for the same reason.
   d->m_paSelectAll = actionCollection()->addAction( KStandardAction::SelectAll, "selectAll",
                                                     this, SLOT( slotSelectAll() ) );
   d->m_paSelectAll->setShortcutContext( Qt::WidgetShortcut );
