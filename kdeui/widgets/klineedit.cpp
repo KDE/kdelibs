@@ -144,8 +144,6 @@ public:
 
     KCompletionBox *completionBox;
 
-    QString m_oldText;
-
     int overlap;
 
     bool italicizePlaceholder:1;
@@ -643,12 +641,7 @@ void KLineEdit::resizeEvent( QResizeEvent * ev )
     QLineEdit::resizeEvent(ev);
 }
 
-void KLineEdit::keyPressEvent(QKeyEvent *e)
-{
-    QLineEdit::keyPressEvent(e);
-}
-
-void KLineEdit::keyReleaseEvent( QKeyEvent *e )
+void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     const int key = e->key() | e->modifiers();
 
@@ -749,12 +742,12 @@ void KLineEdit::keyReleaseEvent( QKeyEvent *e )
                  ( e->key() == Qt::Key_Right || e->key() == Qt::Key_Left ) &&
                  e->modifiers()==Qt::NoButton )
             {
-                const QString old_txt = d->m_oldText;
+                const QString old_txt = text();
                 d->disableRestoreSelection = true;
                 const int start = selectionStart();
 
                 deselect();
-                QLineEdit::keyReleaseEvent ( e );
+                QLineEdit::keyPressEvent ( e );
                 const int cPosition=cursorPosition();
                 setText(old_txt);
                 setCursorPosition(cPosition);
@@ -764,7 +757,6 @@ void KLineEdit::keyReleaseEvent( QKeyEvent *e )
                     setSelection(start, old_txt.length());
 
                 d->disableRestoreSelection = false;
-                d->m_oldText = text();
                 return;
             }
 
@@ -811,7 +803,7 @@ void KLineEdit::keyReleaseEvent( QKeyEvent *e )
                 }
 
                 d->disableRestoreSelection = true;
-                QLineEdit::keyReleaseEvent ( e );
+                QLineEdit::keyPressEvent ( e );
                 d->disableRestoreSelection = false;
 
                 QString txt = text();
@@ -842,7 +834,6 @@ void KLineEdit::keyReleaseEvent( QKeyEvent *e )
                     e->accept();
                 }
 
-                d->m_oldText = text();
                 return;
             }
 
@@ -850,9 +841,9 @@ void KLineEdit::keyReleaseEvent( QKeyEvent *e )
 
         else if (( mode == KGlobalSettings::CompletionPopup ||
                    mode == KGlobalSettings::CompletionPopupAuto ) &&
-                   noModifier )
+                   noModifier && !e->text().isEmpty() )
         {
-            const QString old_txt = d->m_oldText;
+            const QString old_txt = text();
             const bool hasUserSelection=d->userSelection;
             const bool hadSelection=hasSelectedText();
             bool cursorNotAtEnd=false;
@@ -866,8 +857,8 @@ void KLineEdit::keyReleaseEvent( QKeyEvent *e )
             // as if there was no selection. After processing the key event, we
             // can set the new autocompletion again.
             if (hadSelection && !hasUserSelection && start>cPos &&
-               ( !keycode.isEmpty() && (keycode.unicode()->isPrint() ||
-                 e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete ) ) )
+               ( (!keycode.isEmpty() && keycode.unicode()->isPrint()) ||
+                 e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete ) )
             {
                 del();
                 setCursorPosition(cPos);
@@ -877,9 +868,8 @@ void KLineEdit::keyReleaseEvent( QKeyEvent *e )
             const int selectedLength=selectedText().length();
 
             d->disableRestoreSelection = true;
-            QLineEdit::keyReleaseEvent ( e );
+            QLineEdit::keyPressEvent ( e );
             d->disableRestoreSelection = false;
-
 
             if (( selectedLength != selectedText().length() ) && !hasUserSelection )
                 slotRestoreSelectionColors(); // and set userSelection to true
@@ -887,9 +877,8 @@ void KLineEdit::keyReleaseEvent( QKeyEvent *e )
             QString txt = text();
             int len = txt.length();
             if ( ( txt != old_txt || txt != e->text() ) && len/* && ( cursorPosition() == len || force )*/ &&
-                 ( !keycode.isEmpty() && (keycode.unicode()->isPrint() ||
-                   e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete) ) &&
-                 ( keycode.unicode()->category() != QChar::Symbol_Modifier || txt != old_txt ) )
+                 ( (!keycode.isEmpty() && keycode.unicode()->isPrint()) ||
+                   e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete) )
             {
                 if ( e->key() == Qt::Key_Backspace )
                 {
@@ -921,7 +910,6 @@ void KLineEdit::keyReleaseEvent( QKeyEvent *e )
             else if (!len && d->completionBox && d->completionBox->isVisible())
                 d->completionBox->hide();
 
-            d->m_oldText = text();
             return;
         }
 
@@ -1011,12 +999,10 @@ void KLineEdit::keyReleaseEvent( QKeyEvent *e )
     const int selectedLength = selectedText().length();
 
     // Let QLineEdit handle any other keys events.
-    QLineEdit::keyReleaseEvent ( e );
+    QLineEdit::keyPressEvent ( e );
 
     if ( selectedLength != selectedText().length() )
         slotRestoreSelectionColors(); // and set userSelection to true
-
-    d->m_oldText = text();
 }
 
 void KLineEdit::mouseDoubleClickEvent( QMouseEvent* e )

@@ -518,13 +518,6 @@ protected:
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
-    * See QLineEdit::keyReleaseEvent().
-    */
-    virtual void keyReleaseEvent( QKeyEvent * );
-
-    /**
-    * Re-implemented for internal reasons.  API not affected.
-    *
     * See QLineEdit::mousePressEvent().
     */
     virtual void mousePressEvent( QMouseEvent * );
