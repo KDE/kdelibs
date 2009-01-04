@@ -20,6 +20,7 @@
 #include "kacceleratormanager.h"
 
 #include <QtGui/QApplication>
+#include <QtGui/QMainWindow>
 #include <QtGui/QCheckBox>
 #include <QtGui/QComboBox>
 #include <QtGui/QGroupBox>
@@ -393,6 +394,18 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
 
 void KAcceleratorManagerPrivate::manageTabBar(QTabBar *bar, Item *item)
 {
+  // ignore QTabBar for QDockWidgets, because QDockWidget on its title change
+  // also updates its tabbar entry, so on the next run of KCheckAccelerators
+  // this looks like a conflict and triggers a new reset of the shortcuts -> endless loop
+  QWidget* parentWidget = bar->parentWidget();
+  if( parentWidget )
+  {
+    QMainWindow* mainWindow = qobject_cast<QMainWindow*>(parentWidget);
+    // TODO: find better hints that this is a QTabBar for QDockWidgets
+    if( mainWindow ) // && (mainWindow->layout()->indexOf(bar) != -1)) QMainWindowLayout lacks proper support 
+      return;
+  }
+
   for (int i=0; i<bar->count(); i++)
   {
     QString content = bar->tabText(i);
@@ -409,6 +422,16 @@ void KAcceleratorManagerPrivate::manageTabBar(QTabBar *bar, Item *item)
 
 void KAcceleratorManagerPrivate::manageDockWidget(QDockWidget *dock, Item *item)
 {
+    // As of Qt 4.4.3 setting a shortcut to a QDockWidget has no effect,
+    // because a QDockWidget does not grab it, even while displaying an underscore
+    // in the title for the given shortcut letter.
+    // Still it is useful to set the shortcut, because if QDockWidgets are tabbed,
+    // the tab automatically gets the same text as the QDockWidget title, including the shortcut.
+    // And for the QTabBar the shortcut does work, it gets grabbed as usual.
+    // Having the QDockWidget without a shortcut and resetting the tab text with a title including
+    // the shortcut does not work, the tab text is instantly reverted to the QDockWidget title
+    // (see also manageTabBar()).
+    // All in all QDockWidgets and shortcuts are a little broken for now.
     QString content = dock->windowTitle();
     if (content.isEmpty())
         return;
@@ -416,7 +439,7 @@ void KAcceleratorManagerPrivate::manageDockWidget(QDockWidget *dock, Item *item)
     Item *it = new Item;
     item->addChild(it);
     it->m_widget = dock;
-    it->m_content = KAccelString(content);
+    it->m_content = KAccelString(content, KAccelManagerAlgorithm::STANDARD_ACCEL);
 }
 
 
