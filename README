@@ -45,9 +45,6 @@ Here is an alphabetical list of all individual libraries:
 * kfile
     File management widgets and dialogs.
 
-* kformula
-    Formula handling.
-
 * khtml
     The next generation HTML rendering widget designed for Konqueror.  This
     supports HTML 4, CSS, and a variety of other web related standards.
