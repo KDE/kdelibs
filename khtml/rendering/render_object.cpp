@@ -1040,12 +1040,12 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
                 p->drawRect(x1, y2-third, x2-x1, third);
                 break;
             case BSLeft:
-                p->drawRect(x1      , y1+1, third, y2-y1-1);
-                p->drawRect(x2-third, y1+1, third, y2-y1-1);
+                p->drawRect(x1      , y1, third, y2-y1);
+                p->drawRect(x2-third, y1, third, y2-y1);
                 break;
             case BSRight:
-                p->drawRect(x1      , y1+1, third, y2-y1-1);
-                p->drawRect(x2-third, y1+1, third, y2-y1-1);
+                p->drawRect(x1      , y1, third, y2-y1);
+                p->drawRect(x2-third, y1, third, y2-y1);
                 break;
             }
         }
