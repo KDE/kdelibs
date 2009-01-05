@@ -200,7 +200,7 @@ void KFileShare::readShareList()
 
     // Reading code shamelessly stolen from khostname.cpp ;)
     while (!proc.atEnd()) {
-        QString line = proc.readLine();
+        QString line = proc.readLine().trimmed();
         int length = line.length();
 	if ( length > 0 )
 	{
