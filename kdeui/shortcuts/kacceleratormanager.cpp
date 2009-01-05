@@ -173,6 +173,10 @@ void KAcceleratorManagerPrivate::manage(QWidget *widget)
         return;
     }
 
+    if (KAcceleratorManagerPrivate::ignored_widgets.contains(widget)) {
+        return;
+    }
+
     if (qobject_cast<QMenu*>(widget))
     {
         // create a popup accel manager that can deal with dynamic menus
