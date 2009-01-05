@@ -186,7 +186,7 @@ bool KNFSShare::isDirectoryShared( const QString & path ) const
   if( path.isEmpty())
       return false;
   QString fixedPath = path;
-  if ( path[path.length()-1] != '/' )
+  if ( !path.isEmpty() && path[path.length()-1] != '/' ) 
        fixedPath += '/';
 
   return d->sharedPaths.contains(fixedPath);
