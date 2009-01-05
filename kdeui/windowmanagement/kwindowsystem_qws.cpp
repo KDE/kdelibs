@@ -30,6 +30,20 @@
 #include <QtDBus/QtDBus>
 #include <kdebug.h>
 
+class KWindowSystemStaticContainer {
+public:
+    KWindowSystemStaticContainer() : d(0) {}
+    KWindowSystem kwm;
+    KWindowSystemPrivate* d;
+};
+
+K_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
+
+KWindowSystem* KWindowSystem::self()
+{
+    return &(g_kwmInstanceContainer->kwm);
+}
+
 int KWindowSystem::currentDesktop()
 {
     return 1;
@@ -237,6 +251,12 @@ void KWindowSystem::setType( WId win, NET::WindowType windowType )
 {
  //TODO
  kDebug() << "setType( WId win, NET::WindowType windowType ) isn't yet implemented!";
+}
+
+void KWindowSystem::setMainWindow( QWidget* subwindow, WId id )
+{
+ //TODO
+ kDebug(240) << "KWindowSystem::setMainWindow( QWidget*, WId ) isn't yet implemented!";
 }
 
 #include "kwindowsystem.moc"
