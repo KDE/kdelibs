@@ -1507,6 +1507,10 @@ void KUrlTest::testUtf8()
 
   KUrl umlaut2("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel"); // was ,106
   QCOMPARE(umlaut2.url(), QString("http://www.clever-tanken.de/liste.asp?ort=N%FCrnberg&typ=Diesel"));
+
+  KUrl wkai(QString::fromUtf8("/tmp/魔"));
+  QCOMPARE(wkai.url(), QString("file:///tmp/%E9%AD%94"));
+  QCOMPARE(wkai.prettyUrl(), QString::fromUtf8("file:///tmp/魔"));
 }
 
 void KUrlTest::testOtherEncodings()
