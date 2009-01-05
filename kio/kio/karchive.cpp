@@ -693,7 +693,7 @@ QStringList KArchiveDirectory::entries() const
 
 const KArchiveEntry* KArchiveDirectory::entry( const QString& _name ) const
 {
-  QString name = _name;
+    QString name = QDir::cleanPath(_name);
   int pos = name.indexOf( '/' );
   if ( pos == 0 ) // ouch absolute path (see also KArchive::findOrCreate)
   {
@@ -713,8 +713,8 @@ const KArchiveEntry* KArchiveDirectory::entry( const QString& _name ) const
   }
   if ( pos != -1 )
   {
-    QString left = name.left( pos );
-    QString right = name.mid( pos + 1 );
+    const QString left = name.left(pos);
+    const QString right = name.mid(pos + 1);
 
     //kDebug() << "left=" << left << "right=" << right;
 
