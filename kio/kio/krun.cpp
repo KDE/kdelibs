@@ -1438,7 +1438,7 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KSt
 
     process->start();
     if (!process->waitForStarted()) {
-        slotProcessExited(127, QProcess::CrashExit);
+        slotProcessExited(127, QProcess::NormalExit);
     }
 }
 
@@ -1455,9 +1455,8 @@ int KProcessRunner::pid() const
 void
 KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    kDebug(7010) << "slotProcessExited " << binName;
+    kDebug(7010) << "slotProcessExited " << binName << "exitCode=" << exitCode << "exitStatus=" << exitStatus;
     kDebug(7010) << "normalExit " << (exitStatus == QProcess::NormalExit);
-    kDebug(7010) << "exitCode " << exitCode;
     bool showErr = exitStatus == QProcess::NormalExit
                    && (exitCode == 127 || exitCode == 1);
     if (!binName.isEmpty() && showErr) {
