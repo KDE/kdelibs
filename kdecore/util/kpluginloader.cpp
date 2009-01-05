@@ -127,7 +127,7 @@ KPluginLoader::KPluginLoader(const KService &service, const KComponentData &comp
     Q_D(KPluginLoader);
     Q_ASSERT(service.isValid());
 
-    if (service.isApplication()) {
+    if (service.library().isEmpty()) {
         d->errorString = i18n("The service '%1' provides no library or the Library key is missing in the .desktop file.", service.name());
         return;
     }
@@ -177,6 +177,7 @@ bool KPluginLoader::load()
         return false;
     }
 
+    Q_ASSERT(!fileName().isEmpty());
     QLibrary lib(fileName());
     lib.load();
     Q_ASSERT(lib.isLoaded());
