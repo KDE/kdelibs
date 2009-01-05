@@ -979,7 +979,6 @@ install(FILES
   Plasma/ToolTipManager
   Plasma/Theme
   Plasma/TreeView
-  Plasma/UiLoader
   Plasma/View
   Plasma/Version
   Plasma/Wallpaper
