@@ -504,7 +504,8 @@ void KIconEffect::semiTransparent(QImage &img)
         int width  = img.width();
 	int height = img.height();
 
-        if(QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing)){
+        QPaintEngine* pe = QApplication::desktop()->paintEngine();
+        if(pe && pe->hasFeature(QPaintEngine::Antialiasing)){
             unsigned char *line;
             for(y=0; y<height; y++){
                 if(QSysInfo::ByteOrder == QSysInfo::BigEndian)
