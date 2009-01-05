@@ -1571,6 +1571,10 @@ void KUrlTest::testUtf8()
 
   KUrl urlWithUnicodeChar( QString::fromUtf8("file:///home/dfaure/Matériel") );
   QCOMPARE( uloc.url(), QString("file:///home/dfaure/Mat%C3%A9riel") );
+
+  KUrl wkai(QString::fromUtf8("/tmp/魔"));
+  QCOMPARE(wkai.url(), QString("file:///tmp/%E9%AD%94"));
+  QCOMPARE(wkai.prettyUrl(), QString::fromUtf8("file:///tmp/魔"));
 }
 
 void KUrlTest::testOtherEncodings()

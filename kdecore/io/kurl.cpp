@@ -998,7 +998,7 @@ static QString toPrettyPercentEncoding(const QString &input)
   QString result;
   for (int i = 0; i < input.length(); ++i) {
     QChar c = input.at(i);
-    register short u = c.unicode();
+    register ushort u = c.unicode();
     if (u < 0x20 || u == '?' || u == '#' || u == '%'
         || (u == ' ' && (i+1 == input.length() || input.at(i+1) == ' '))) {
       static const char hexdigits[] = "0123456789ABCDEF";
