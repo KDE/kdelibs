@@ -121,27 +121,10 @@ int main(int argc, char **argv)
     if (args->isSet("types"))
     {
         QStringList types = KGlobal::dirs()->allTypes();
-        // The list returned by allTypes() doesn't contain the lib, include,
-        // tmp and socket directories. I don't know if it should:
-        // http://lists.kde.org/?l=kde-core-devel&m=123088427220820&w=2
-        // But we have documentation for them, so insert these manually into this lists
-        // so the documentation printed is complete. Alex
-        if(!types.contains("lib")) {
-            types << "lib";
-        }
-        if(!types.contains("include")) {
-            types << "include";
-        }
-        if(!types.contains("tmp")) {
-            types << "tmp";
-        }
-        if(!types.contains("socket")) {
-            types << "socket";
-        }
-
         types.sort();
         const char *helptexts[] = {
             "apps", I18N_NOOP("Applications menu (.desktop files)"),
+            "cache", I18N_NOOP("Cached information (e.g. favicons, web-pages)"),
             "cgi", I18N_NOOP("CGIs to run from kdehelp"),
             "config", I18N_NOOP("Configuration files"),
             "data", I18N_NOOP("Where applications store data"),
@@ -165,7 +148,7 @@ int main(int argc, char **argv)
             "xdgdata-apps", I18N_NOOP("XDG Application menu (.desktop files)"),
             "xdgdata-dirs", I18N_NOOP("XDG Menu descriptions (.directory files)"),
             "xdgdata-icon", I18N_NOOP("XDG Icons"),
-            "xdgdata-pixmaps", I18N_NOOP("Legacy pixmaps"),
+            "xdgdata-pixmap", I18N_NOOP("Legacy pixmaps"),
             "xdgdata-mime", I18N_NOOP("XDG Mime Types"),
             "xdgconf-menu", I18N_NOOP("XDG Menu layout (.menu files)"),
             "tmp", I18N_NOOP("Temporary files (specific for both current host and current user)"),

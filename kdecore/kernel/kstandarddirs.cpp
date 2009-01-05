@@ -97,7 +97,7 @@ public:
  * 2) update the KStandardDirs class documentation
  * 3) update the kde_default code
  * 4) update the kde_default documentation
- * 5) update the list in kde-config.cpp.in
+ * 5) update the list in kde-config.cpp
 
  data
  share/apps
@@ -266,6 +266,19 @@ QStringList KStandardDirs::allTypes() const
     QStringList list;
     for (int i = 0; types_indices[i] != -1; i += 2)
         list.append(QLatin1String(types_string + types_indices[i]));
+    // Those are added manually by addKDEDefaults
+    list.append("lib");
+    //list.append("home"); // undocumented on purpose, said Waldo in r113855.
+
+    // Those are handled by resourceDirs() itself
+    list.append("socket");
+    list.append("tmp");
+    list.append("cache");
+    // Those are handled by installPath()
+    list.append("include");
+
+    // If you add anything here, make sure kde-config.cpp has a description for it.
+
     return list;
 }
 
@@ -1126,7 +1139,7 @@ static QString checkExecutable( const QString& path, bool ignoreExecBit )
 #endif
     QFileInfo info( path );
     QFileInfo orig = info;
-    if( info.exists() && info.isSymLink() ) 
+    if( info.exists() && info.isSymLink() )
         info = QFileInfo( info.canonicalFilePath() );
     if( info.exists() && ( ignoreExecBit || info.isExecutable() ) && info.isFile() ) {
         // return absolute path, but without symlinks resolved in order to prevent
