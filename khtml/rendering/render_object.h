@@ -417,7 +417,7 @@ public:
 
     void drawBorderArc(QPainter *p, int x, int y, float horThickness, float vertThickness,
                        const BorderRadii &radius, int angleStart, int angleSpan, const QColor &color,
-                       const QColor &textColor, EBorderStyle style) const;
+                       const QColor &textColor, EBorderStyle style, qreal *dashOffset = 0) const;
 
     void paintBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin=true, bool end=true);
     void paintOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style);
@@ -718,7 +718,7 @@ public:
     };
     void drawBorder(QPainter *p, int x1, int y1, int x2, int y2, BorderSide s,
                     QColor c, const QColor& textcolor, EBorderStyle style,
-                    int adjbw1, int adjbw2, bool invalidisInvert = false);
+                    int adjbw1, int adjbw2, bool invalidisInvert = false, qreal *dashOffset = 0);
 
     // Used by collapsed border tables.
     virtual void collectBorders(QList<CollapsedBorderValue>& borderStyles);
