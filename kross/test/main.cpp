@@ -60,7 +60,7 @@ QString getInterpreterName(const QString& scriptfile)
 
 int readFile(const QString& scriptfile, QByteArray& content)
 {
-    QFile f(QFile::encodeName(scriptfile));
+    QFile f(scriptfile);
     if(! f.exists()) {
         std::cerr << "No such scriptfile: " << scriptfile.toLatin1().data() << std::endl;
         return ERROR_NOSUCHFILE;

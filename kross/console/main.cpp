@@ -47,7 +47,7 @@ KApplication* app = 0;
 int runScriptFile(const QString& scriptfile)
 {
     // Read the scriptfile
-    QFile f(QFile::encodeName(scriptfile));
+    QFile f(scriptfile);
     if(! f.exists()) {
         std::cerr << "No such scriptfile: " << scriptfile.toLatin1().data() << std::endl;
         return ERROR_NOSUCHFILE;
