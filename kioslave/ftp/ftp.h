@@ -26,13 +26,10 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-
-#include <QtCore/QByteRef>
-
-#include <QtNetwork/QTcpSocket>
-
 #include <kurl.h>
 #include <kio/slavebase.h>
+class QTcpServer;
+class QTcpSocket;
 
 struct FtpEntry
 {
@@ -417,6 +414,11 @@ private: // data members
    * data connection socket
    */
   QTcpSocket  *m_data;
+
+  /**
+   * active mode server socket
+   */
+  QTcpServer *m_server;
 };
 
 #endif // KDELIBS_FTP_H

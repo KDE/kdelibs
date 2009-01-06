@@ -59,6 +59,7 @@
 
 #include <QtCore/QDir>
 #include <QtNetwork/QHostAddress>
+#include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QTcpServer>
 
 #include <kdebug.h>
@@ -168,6 +169,7 @@ Ftp::Ftp( const QByteArray &pool, const QByteArray &app )
 {
   // init the socket data
   m_data = m_control = NULL;
+  m_server = NULL;
   ftpCloseControlConnection();
 
   // init other members
@@ -186,8 +188,10 @@ Ftp::~Ftp()
  */
 void Ftp::ftpCloseDataConnection()
 {
-  delete m_data;
-  m_data = NULL;
+    delete m_data;
+    m_data = NULL;
+    delete m_server;
+    m_server = NULL;
 }
 
 /**
@@ -869,14 +873,15 @@ int Ftp::ftpOpenPortDataConnection()
   if (m_extControl & eprtUnknown)
     return ERR_INTERNAL;
 
-  QTcpServer *server = KSocketFactory::listen("ftp-data");
-  if (!server->isListening())
-  {
-    delete server;
+  if (!m_server)
+    m_server = KSocketFactory::listen("ftp-data");
+
+  if (!m_server->isListening()) {
+    delete m_server;
     return ERR_COULD_NOT_LISTEN;
   }
 
-  server->setMaxPendingConnections(1);
+  m_server->setMaxPendingConnections(1);
 
   QString command;
   QHostAddress localAddress = m_control->localAddress();
@@ -888,25 +893,22 @@ int Ftp::ftpOpenPortDataConnection()
       quint16 port;
     } data;
     data.ip4 = localAddress.toIPv4Address();
-    data.port = server->serverPort();
+    data.port = m_server->serverPort();
 
     unsigned char *pData = reinterpret_cast<unsigned char*>(&data);
-    command.sprintf("PORT %d,%d,%d,%d,%d,%d",pData[0],pData[1],pData[2],pData[3],pData[4],pData[5]);
+    command.sprintf("PORT %d,%d,%d,%d,%d,%d",pData[3],pData[2],pData[1],pData[0],pData[5],pData[4]);
   }
   else if (localAddress.protocol() == QAbstractSocket::IPv6Protocol)
   {
-    command = QString("EPRT |2|%2|%3|").arg(localAddress.toString()).arg(server->serverPort());
+    command = QString("EPRT |2|%2|%3|").arg(localAddress.toString()).arg(m_server->serverPort());
   }
 
   if( ftpSendCmd(command.toLatin1()) && (m_iRespType == 2) )
   {
-    server->waitForNewConnection(connectTimeout() * 1000);
-    m_data = server->nextPendingConnection();
-    delete server;
-    return m_data ? 0 : ERR_COULD_NOT_CONNECT;
+    return 0;
   }
 
-  delete server;
+  delete m_server;
   return ERR_INTERNAL;
 }
 
@@ -960,8 +962,22 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
     if ( _offset > 0 && strcmp(_command, "retr") == 0 )
       canResume();
 
-    m_bBusy = true;              // cleared in ftpCloseCommand
-    return true;
+    if(m_server && !m_data) {
+      kDebug(7102) << "waiting for connection from remote.";
+      m_server->waitForNewConnection(connectTimeout() * 1000);
+      m_data = m_server->nextPendingConnection();
+    }
+
+    if(m_data) {
+      kDebug(7102) << "connected with remote.";
+      m_bBusy = true;              // cleared in ftpCloseCommand
+      return true;
+    }
+
+    kDebug(7102) << "no connection received from remote.";
+    errorcode=ERR_COULD_NOT_ACCEPT;
+    errormessage=m_host;
+    return false;
   }
 
   error(errorcode, errormessage);
@@ -971,13 +987,13 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
 
 bool Ftp::ftpCloseCommand()
 {
-  // first close data sockets (if opened), then read response that
-  // we got for whatever was used in ftpOpenCommand ( should be 226 )
-  if(m_data)
-  {
-    delete  m_data;
+    // first close data sockets (if opened), then read response that
+    // we got for whatever was used in ftpOpenCommand ( should be 226 )
+    delete m_data;
     m_data = NULL;
-  }
+    delete m_server;
+    m_server = NULL;
+
   if(!m_bBusy)
     return true;
 
