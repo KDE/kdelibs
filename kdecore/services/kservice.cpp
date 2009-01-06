@@ -188,6 +188,13 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     // which makes user-preference handling difficult.
     m_strLibrary = desktopGroup.readEntry( "X-KDE-Library" );
     entryMap.remove("X-KDE-Library");
+    if (!m_strLibrary.isEmpty() && m_strType == "Application") {
+        kWarning(7012) << "The desktop entry file" << entryPath
+                       << "has Type=" << m_strType
+                       << "but also has a X-KDE-Library key. This works for now,"
+                          " but makes user-preference handling difficult, so support for this might"
+                          " be removed at some point. Consider splitting it into two desktop files.";
+    }
 
     QStringList lstServiceTypes = desktopGroup.readEntry( "ServiceTypes", QStringList() );
     entryMap.remove("ServiceTypes");
