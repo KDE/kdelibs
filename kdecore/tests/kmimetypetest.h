@@ -43,6 +43,7 @@ private Q_SLOTS:
     void testAllMimeTypes();
     void testAlias();
     void testMimeTypeParent();
+    void testMimeTypeInheritancePerformance();
     void testMimeTypeTraderForTextPlain();
     void testMimeTypeTraderForDerivedMimeType();
     void testMimeTypeTraderForAlias();

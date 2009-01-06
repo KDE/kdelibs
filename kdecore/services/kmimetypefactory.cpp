@@ -149,7 +149,7 @@ KMimeType * KMimeTypeFactory::createEntry(int offset) const
 }
 
 
-QString KMimeTypeFactory::resolveAlias(const QString& mime)
+QString KMimeTypeFactory::resolveAlias(const QString& mime) const
 {
     return m_aliases.value(mime);
 }

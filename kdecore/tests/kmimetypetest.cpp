@@ -516,6 +516,34 @@ void KMimeTypeTest::testMimeTypeParent()
     QVERIFY(mrml->is("application/octet-stream"));
 }
 
+void KMimeTypeTest::testMimeTypeInheritancePerformance()
+{
+    // Check performance of is(). In kde3 the list of mimetypes with previews had 63 items...
+    // We could get it with KServiceTypeTrader::self()->query("ThumbCreator") and the "MimeTypes"
+    // property, but this would give variable results and requires other modules installed.
+    QStringList mimeTypes; mimeTypes << "image/jpeg" << "image/png" << "image/tiff" << "text/plain" << "text/html";
+    mimeTypes += mimeTypes;
+    mimeTypes += mimeTypes;
+    mimeTypes += mimeTypes;
+    QCOMPARE(mimeTypes.count(), 40);
+    KMimeType::Ptr mime = KMimeType::mimeType("text/x-chdr");
+    QVERIFY(mime);
+    QTime dt; dt.start();
+    const int numIterations = 2000;
+    for (int i = 0; i < numIterations; ++i) {
+        QString match;
+        foreach (const QString& mt, mimeTypes) {
+            if (mime->is(mt)) {
+                match = mt;
+                // of course there would normally be a "break" here, but we're testing worse-case
+                // performance here
+            }
+        }
+        QCOMPARE(match, QString("text/plain"));
+    }
+    qDebug() << "Calling is()" << mimeTypes.count() * numIterations << "times took" << dt.elapsed() << "msecs";
+}
+
 // Helper method for all the trader tests
 static bool offerListHasService( const KService::List& offers,
                                  const QString& entryPath )

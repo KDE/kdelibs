@@ -61,13 +61,14 @@ public:
      */
     virtual KMimeType::Ptr findMimeTypeByName(const QString &_name, KMimeType::FindByNameOption options = KMimeType::DontResolveAlias);
 
-private: // only for KMimeType
-    friend class KMimeType;
-    friend class KMimeFileParserTest;
     /**
      * Check if mime is an alias, and return the canonical name for it if it is.
      */
-    QString resolveAlias(const QString& mime);
+    QString resolveAlias(const QString& mime) const;
+
+private: // only for KMimeType
+    friend class KMimeType;
+    friend class KMimeFileParserTest;
 
     /**
      * Find a mimetype from a filename (using the pattern list)

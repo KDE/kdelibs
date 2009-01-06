@@ -49,7 +49,7 @@ public:
     return icon;
   }
 
-    bool inherits(KMimeType::Ptr mime) const;
+    bool inherits(const QString& mime) const;
     QString fallbackParent() const;
     QStringList parentMimeTypes() const;
     void collectParentMimeTypes(QStringList&) const;

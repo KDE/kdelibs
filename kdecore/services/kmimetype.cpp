@@ -597,9 +597,9 @@ QString KMimeTypePrivate::fallbackParent() const
     return QString();
 }
 
-bool KMimeTypePrivate::inherits(KMimeType::Ptr mime) const
+bool KMimeTypePrivate::inherits(const QString& mime) const
 {
-    if (mime && m_strName == mime->d_func()->m_strName) {
+    if (m_strName == mime) {
         return true;
     }
     foreach( const QString& parent, parentMimeTypes() ) {
@@ -617,7 +617,9 @@ bool KMimeType::is( const QString& mimeTypeName ) const
     Q_D(const KMimeType);
     if (name() == mimeTypeName)
         return true;
-    KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName(mimeTypeName, KMimeType::ResolveAliases);
+    QString mime = KMimeTypeFactory::self()->resolveAlias(mimeTypeName);
+    if (mime.isEmpty())
+        mime = mimeTypeName;
     return d->inherits(mime);
 }
 
