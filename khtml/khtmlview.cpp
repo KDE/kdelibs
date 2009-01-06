@@ -584,6 +584,9 @@ bool KHTMLView::event( QEvent* e )
          updateScrollBars();
          return QAbstractScrollArea::event(e);
     }
+    case QEvent::PaletteChange:
+      slotPaletteChanged();
+      return QScrollArea::event(e);
     default:
       return QScrollArea::event(e);
     }
@@ -599,7 +602,6 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent )
 
     QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
     QScrollArea::setHorizontalScrollBarPolicy(d->hpolicy);
-    connect(KGlobalSettings::self(), SIGNAL(kdisplayPaletteChanged()), this, SLOT(slotPaletteChanged()));
 
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     connect(&d->timer, SIGNAL(timeout()), this, SLOT(findTimeout()));
