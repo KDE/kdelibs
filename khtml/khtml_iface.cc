@@ -27,7 +27,7 @@
 #include <QtCore/QVariant>
 
 KHTMLPartIface::KHTMLPartIface( KHTMLPart *_part )
-    : QObject( _part ), part(_part)
+    : QDBusAbstractAdaptor( _part ), part(_part)
 {
 }
 
@@ -35,9 +35,9 @@ KHTMLPartIface::~KHTMLPartIface()
 {
 }
 
-KUrl KHTMLPartIface::url() const
+QString KHTMLPartIface::url() const
 {
-    return part->url();
+    return part->url().url();
 }
 
 void KHTMLPartIface::setJScriptEnabled( bool enable )
@@ -60,7 +60,7 @@ bool KHTMLPartIface::metaRefreshEnabled() const
     return part->metaRefreshEnabled();
 }
 
-void KHTMLPartIface::setDNDEnabled( bool b )
+void KHTMLPartIface::setDndEnabled( bool b )
 {
     part->setDNDEnabled(b);
 }

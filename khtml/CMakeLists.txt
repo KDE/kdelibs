@@ -478,10 +478,11 @@ set(khtml_LIB_SRCS
    ${decoders_STAT_SRCS}
    ${khtmlgraphics_STAT_SRCS} # for WebCore compatibility
    ${khtmlsvg_STAT_SRCS} # for SVG
+   ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KHTMLPart.xml # just so that it gets generated
    )
 
 
-qt4_add_dbus_adaptor(khtml_LIB_SRCS org.kde.KHTMLPart.xml khtml_iface.h KHTMLPartIface)
+qt4_generate_dbus_interface(khtml_iface.h org.kde.KHTMLPart.xml)
 
 # TODO re-enable when cmake-2.6 is required
 # For now kcookiejar_interface.{cpp,h} is in svn.
@@ -734,6 +735,6 @@ install( FILES khtml.desktop khtmlimage.desktop
          khtmladaptorpart.desktop DESTINATION  ${SERVICES_INSTALL_DIR} )
 install( FILES khtml.rc khtml_browser.rc  DESTINATION  ${DATA_INSTALL_DIR}/khtml )
 
-install( FILES org.kde.KHTMLPart.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR} )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KHTMLPart.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR} )
 
 install( FILES error.html DESTINATION ${DATA_INSTALL_DIR}/khtml )

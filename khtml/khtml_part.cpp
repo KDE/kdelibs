@@ -119,7 +119,7 @@ using namespace DOM;
 #include <QtNetwork/QSslCertificate>
 
 #include "khtmlpart_p.h"
-#include "khtmlpartadaptor.h"
+#include "khtml_iface.h"
 #include "kpassivepopup.h"
 #include "kmenu.h"
 #include "rendering/render_form.h"
@@ -450,7 +450,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   // Warning: The name selectAll is used hardcoded by some 3rd parties to remove the
   // shortcut for selectAll so they do not get ambigous shortcuts. Renaming it
   // will either crash or render useless that workaround. It would be better
-  // to use the name KStandardAction::name(KStandardAction::SelectAll) but we 
+  // to use the name KStandardAction::name(KStandardAction::SelectAll) but we
   // can't for the same reason.
   d->m_paSelectAll = actionCollection()->addAction( KStandardAction::SelectAll, "selectAll",
                                                     this, SLOT( slotSelectAll() ) );
@@ -527,8 +527,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
            this, SLOT( slotRedirect() ) );
 
   if (QDBusConnection::sessionBus().isConnected()) {
-    KHTMLPartIface* iface = new KHTMLPartIface(this);
-    (void)new KHTMLPartAdaptor(iface);
+      new KHTMLPartIface(this); // our "adaptor"
     for (int i = 1; ; ++i)
       if (QDBusConnection::sessionBus().registerObject(QString("/KHTML/%1/widget").arg(i), this))
         break;
@@ -2991,7 +2990,7 @@ void KHTMLPart::enableFindAheadActions( bool enable )
 
 void KHTMLPart::slotFindDialogDestroyed()
 {
-  // ### remove me 
+  // ### remove me
 }
 
 void KHTMLPart::findText()
@@ -3013,7 +3012,7 @@ bool KHTMLPart::findTextNext( bool reverse )
 {
   if (parentPart())
       return parentPart()->findTextNext( reverse );
-  return d->m_find.findTextNext( reverse ); 
+  return d->m_find.findTextNext( reverse );
 }
 
 QString KHTMLPart::selectedTextAsHTML() const
@@ -3388,7 +3387,7 @@ void KHTMLPart::timerEvent(QTimerEvent *e)
           d->m_DNSPrefetchQueue.enqueue(name);
       if (d->m_DNSPrefetchTimer <= 0)
          d->m_DNSPrefetchTimer = startTimer( sDNSPrefetchTimerDelay );
-  }                            
+  }
 }
 
 bool KHTMLPart::mayPrefetchHostname( const QString& name )
@@ -4411,7 +4410,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
 
       // We may have to re-propagate the domain here if we go here due to navigation
       d->propagateInitialDomainTo(p);
-	
+
       if (!url.url().startsWith("about:")) {
         p->write(url.path());
       } else {
@@ -4885,7 +4884,7 @@ void KHTMLPart::slotChildDocCreated()
   // not when following a link in a frame (#44162).
   if (KHTMLPart* htmlFrame = qobject_cast<KHTMLPart*>(sender()))
     d->propagateInitialDomainTo( htmlFrame );
-    
+
   // So it only happens once
   disconnect( sender(), SIGNAL( docCreated() ), this, SLOT( slotChildDocCreated() ) );
 }

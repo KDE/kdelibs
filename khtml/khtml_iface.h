@@ -29,9 +29,20 @@ class KHTMLPart;
 /**
  * D-BUS interface for KHTML
  */
-class KHTMLPartIface : public QObject
+class KHTMLPartIface : public QDBusAbstractAdaptor
 {
     Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.kde.KHTMLPart")
+    Q_PROPERTY(bool autoloadImages READ autoloadImages WRITE setAutoloadImages)
+    Q_PROPERTY(bool dndEnabled READ dndEnabled WRITE setDndEnabled)
+    Q_PROPERTY(QString encoding READ encoding WRITE setEncoding)
+    Q_PROPERTY(bool jScriptEnabled READ jScriptEnabled WRITE setJScriptEnabled)
+    Q_PROPERTY(bool javaEnabled READ javaEnabled WRITE setJavaEnabled)
+    Q_PROPERTY(QString lastModified READ lastModified)
+    Q_PROPERTY(bool metaRefreshEnabled READ metaRefreshEnabled WRITE setMetaRefreshEnabled)
+    Q_PROPERTY(bool onlyLocalReferences READ onlyLocalReferences WRITE setOnlyLocalReferences)
+    Q_PROPERTY(bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled)
+    Q_PROPERTY(QString url READ url)
 
 public:
 
@@ -42,7 +53,7 @@ public Q_SLOTS:
     /**
      * @return the current URL
      */
-    KUrl url() const;
+    QString url() const;
 
     bool closeUrl();
 
@@ -74,7 +85,7 @@ public Q_SLOTS:
      * Enables or disables Drag'n'Drop support. A drag operation is started if
      * the users drags a link.
      */
-    void setDNDEnabled( bool b );
+    void setDndEnabled( bool b );
 
     /**
      * Returns whether Dragn'n'Drop support is enabled or not.
@@ -228,9 +239,12 @@ public Q_SLOTS:
     QString evalJS(const QString &script);
 
     /**
-     * Stops display of animated images 
+     * Stops display of animated images
      */
     void stopAnimations();
+
+Q_SIGNALS:
+    void configurationChanged();
 
 private:
     KHTMLPart *part;
