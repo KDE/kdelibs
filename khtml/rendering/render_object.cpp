@@ -45,6 +45,7 @@
 #include "dom/dom_doc.h"
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
+#include "misc/borderarcstroker.h"
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -1439,7 +1440,44 @@ void RenderObject::drawBorderArc(QPainter *p, int x, int y, float horThickness, 
         case DOTTED:
         case DASHED:
         {
-            // TODO
+            const QRectF rect = QRectF(x - radius.horizontal, y - radius.vertical, radius.horizontal * 2, radius.vertical * 2);
+            int width;
+
+            // Figure out which border we're starting from
+            angleStart = angleStart % 360;
+            if (angleStart < 0)
+                angleStart += 360;
+
+            if ((angleStart > 45 && angleStart <= 135) || (angleStart > 225 && angleStart <= 315))
+                width = vertThickness;
+            else
+                width = horThickness;
+
+            int onLen  = width;
+            int offLen = width;
+
+            if (style == DASHED)
+            {
+                if (width == 1)
+                {
+                    onLen  = 3;
+                    offLen = 3;
+                }
+                else
+                {
+                    onLen  = width  * 3;
+                    offLen = width;
+                }
+            }
+
+            BorderArcStroker stroker;
+            stroker.setArc(rect, angleStart, angleSpan);
+            stroker.setPenWidth(horThickness, vertThickness);
+            stroker.setDashPattern(onLen, offLen);
+            stroker.setDashOffset(*nextDashOffset);
+
+            const QPainterPath path = stroker.createStroke(nextDashOffset);
+            p->fillPath(path, color);
         }
     }
 
