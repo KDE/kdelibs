@@ -122,6 +122,12 @@ bool StyleSheet::isCSSStyleSheet() const
     return ((StyleSheetImpl *)impl)->isCSSStyleSheet();
 }
 
+KUrl StyleSheet::baseUrl() {
+    if(!impl) return KUrl();
+    return ((StyleSheetImpl *)impl)->baseURL();
+}
+
+
 CSSStyleSheet::CSSStyleSheet() : StyleSheet()
 {
 }
@@ -199,6 +205,10 @@ void CSSStyleSheet::deleteRule( unsigned long index )
         throw DOMException( exceptioncode );
 }
 
+DOM::DOMString CSSStyleSheet::charset() const {
+    if(!impl) return DOMString();
+    return static_cast<CSSStyleSheetImpl *>(impl)->charset();
+}
 
 
 StyleSheetList::StyleSheetList()
