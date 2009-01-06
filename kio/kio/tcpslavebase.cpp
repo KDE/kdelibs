@@ -954,4 +954,3 @@ void TCPSlaveBase::virtual_hook(int id, void* data)
 }
 
 
-#include "tcpslavebase.moc"
