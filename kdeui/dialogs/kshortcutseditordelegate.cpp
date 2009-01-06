@@ -1,4 +1,5 @@
-/* This file is part of the KDE libraries Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
+/* This file is part of the KDE libraries
+    Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
     Copyright (C) 1997 Nicolas Hadacek <hadacek@kde.org>
     Copyright (C) 1998 Matthias Ettrich <ettrich@kde.org>
     Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
@@ -240,16 +241,6 @@ void KShortcutsEditorDelegate::itemCollapsed(QModelIndex index)
     }
 
 }
-
-
-class QTreeWidgetHack : public QTreeWidget
-{
-public:
-    QTreeWidgetItem *itemFromIndex(const QModelIndex &index) const
-        { return QTreeWidget::itemFromIndex(index); }
-    QModelIndex indexFromItem(QTreeWidgetItem *item, int column) const
-        { return QTreeWidget::indexFromItem(item, column); }
-};
 
 
 //slot

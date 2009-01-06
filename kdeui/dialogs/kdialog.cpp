@@ -942,7 +942,6 @@ QString KDialog::helpLinkText() const
 
 void KDialog::updateGeometry()
 {
-    Q_D(KDialog);
 }
 
 void KDialog::hideEvent( QHideEvent *event )

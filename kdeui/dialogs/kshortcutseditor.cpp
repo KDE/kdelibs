@@ -25,7 +25,7 @@
 
 #include "kshortcutseditor.h"
 
-// The following is needed for KShortcutsEditorPrivate
+// The following is needed for KShortcutsEditorPrivate and QTreeWidgetHack
 #include "kshortcutsdialog_p.h"
 
 #include <QHeaderView>
@@ -340,19 +340,6 @@ bool KShortcutsEditorPrivate::addAction(QAction *action, QTreeWidgetItem *hier[]
     return false;
 }
 
-
-
-//a gross hack to make a protected method public. We should inherit instead
-//and move some KShortcutsEditorPrivate method there. or even better use
-//QTreeView
-class QTreeWidgetHack : public QTreeWidget
-{
-public:
-    QTreeWidgetItem *itemFromIndex(const QModelIndex &index) const
-        { return QTreeWidget::itemFromIndex(index); }
-};
-
-
 void KShortcutsEditorPrivate::allDefault()
 {
     for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
@@ -572,7 +559,7 @@ void KShortcutsEditorPrivate::printShortcuts() const
     QTextBlockFormat componentBlockFormat = cursor.blockFormat();
     componentBlockFormat.setTopMargin(16);
     componentBlockFormat.setBottomMargin(16);
-    
+
     QTextTableFormat tableformat;
     tableformat.setHeaderRowCount(1);
     tableformat.setCellPadding(4.0);
@@ -584,12 +571,12 @@ void KShortcutsEditorPrivate::printShortcuts() const
     shortcutTitleToColumn << qMakePair(i18n("Main:"), LocalPrimary);
     shortcutTitleToColumn << qMakePair(i18n("Alternate:"), LocalAlternate);
     shortcutTitleToColumn << qMakePair(i18n("Global:"), GlobalPrimary);
-    
+
     for (int i = 0; i < root->childCount(); i++) {
         QTreeWidgetItem* item = root->child(i);
         cursor.insertBlock(componentBlockFormat, componentFormat);
         cursor.insertText(item->text(0));
-        
+
         QTextTable* table = cursor.insertTable(1,3);
         table->setFormat(tableformat);
         int currow = 0;
@@ -603,15 +590,15 @@ void KShortcutsEditorPrivate::printShortcuts() const
         cell = table->cellAt(currow,1);
         cell.setFormat(format);
         cell.firstCursorPosition().insertText(i18n("Shortcuts"));
-    
+
         cell = table->cellAt(currow,2);
         cell.setFormat(format);
         cell.firstCursorPosition().insertText(i18n("Description"));
         currow++;
-      
+
         for (int j = 0; j < item->childCount(); j++) {
             QTreeWidgetItem* actionitem = item->child(j);
-            KShortcutsEditorItem* editoritem = 
+            KShortcutsEditorItem* editoritem =
                     dynamic_cast<KShortcutsEditorItem*>(actionitem);
             table->insertRows(table->rows(),1);
             QVariant data = editoritem->data(Name,Qt::DisplayRole);
@@ -650,7 +637,7 @@ void KShortcutsEditorPrivate::printShortcuts() const
         cursor.movePosition(QTextCursor::End);
     }
     cursor.endEditBlock();
-    
+
     QPrinter printer;
     QPrintDialog *dlg = KdePrint::createPrintDialog(&printer, q);
     if (dlg->exec() == QDialog::Accepted) {

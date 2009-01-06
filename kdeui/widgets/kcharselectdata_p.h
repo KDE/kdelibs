@@ -29,7 +29,6 @@
 
 // Internal class used by KCharSelect
 
-class QVarLengthArray;
 typedef QMap<QString, QVector<quint16> > Index;
 
 class KCharSelectData

@@ -183,6 +183,9 @@ QPersistentModelIndex KWidgetItemDelegate::focusedIndex() const
 void KWidgetItemDelegate::paintWidgets(QPainter *painter, const QStyleOptionViewItem &option,
                                        const QPersistentModelIndex &index) const
 {
+    Q_UNUSED(painter);
+    Q_UNUSED(option);
+    Q_UNUSED(index);
 }
 
 //@cond PRIVATE

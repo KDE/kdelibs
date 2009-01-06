@@ -104,6 +104,7 @@ void KCupsOptionsWidget::setupPrinter()
 
 void KCupsOptionsWidget::setupCupsOptions( QStringList &cupsOptions )
 {
+    Q_UNUSED(cupsOptions);
 }
 
 void KCupsOptionsWidget::setCupsOption( QStringList &cupsOptions, const QString option, const QString value )

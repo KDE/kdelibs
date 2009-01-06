@@ -323,6 +323,16 @@ private:
 #include "ui_kshortcutsdialog.h"
 #include "kstandardshortcut.h"
 
+// Hack to make two protected methods public.
+// Used by both KShortcutsEditorPrivate and KShortcutsEditorDelegate
+class QTreeWidgetHack : public QTreeWidget
+{
+public:
+    QTreeWidgetItem *itemFromIndex(const QModelIndex &index) const
+        { return QTreeWidget::itemFromIndex(index); }
+    QModelIndex indexFromItem(QTreeWidgetItem *item, int column) const
+        { return QTreeWidget::indexFromItem(item, column); }
+};
 
 /**
  * This class should belong into kshortcutseditor.cpp. But kshortcutseditordelegate uses a static

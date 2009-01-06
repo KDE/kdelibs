@@ -422,6 +422,7 @@ void KMainWindow::parseGeometry(bool parsewidth)
 
     assert ( !cmdlineGeometry.isNull() );
     assert ( d->care_about_geometry );
+    Q_UNUSED(d); // fix compiler warning in release mode
 
 #if defined Q_WS_X11
     int x, y;
