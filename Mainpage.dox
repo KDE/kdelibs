@@ -198,7 +198,7 @@ Note: only enter the class name, without any namespace qualifiers.
 <input type="text" name="class" value="[classname]" style="width:100%;" onClick="this.value='';"/>
 <input type="submit" name="go" value="Go" />
 <input type=hidden name="module" value="kdelibs">
-<input type=hidden name="version" value="4.2">
+<input type=hidden name="version" value="4.3">
 </form>
 @endhtmlonly
 
@@ -208,7 +208,7 @@ in the KDE SVN repository), you can do so using the
 
 */
 
-// DOXYGEN_VERSION=4.2
+// DOXYGEN_VERSION=4.3
 // DOXYGEN_NAME=kdelibs
 // DOXYGEN_ENABLE=YES
 // vim:ts=4:sw=4:expandtab:filetype=doxygen
