@@ -299,6 +299,8 @@ void KSycocaPrivate::closeDatabase()
 {
    QDataStream* &m_str = KSycocaPrivate::_self->m_str;
    QIODevice *device = 0;
+   if (m_str)
+      device = m_str->device();
 #ifdef HAVE_MMAP
    if (device && sycoca_mmap)
    {
@@ -311,15 +313,14 @@ void KSycocaPrivate::closeDatabase()
    }
 #endif
 
-   delete m_str;
-   m_str = 0;
    delete m_dummyBuffer;
    m_dummyBuffer = 0;
-   delete device;
    if (m_database != device)
       delete m_database;
    device = 0;
    m_database = 0;
+   delete m_str;
+   m_str = 0;
    // It is very important to delete all factories here
    // since they cache information about the database file
    if ( lstFactories )
