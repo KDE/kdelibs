@@ -32,7 +32,7 @@ KApplication* app = 0;
 bool runScriptFile(QScriptEngine* engine, const QString& scriptfile)
 {
     // Read the scriptfile
-    QFile f(QFile::encodeName(scriptfile));
+    QFile f(scriptfile);
     if(! f.exists()) {
         qWarning() << "No such scriptfile:" << scriptfile;
         return false;
