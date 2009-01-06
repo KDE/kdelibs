@@ -85,7 +85,7 @@ void KHTMLRun::foundMimeType( const QString &_type )
     static_cast<KHTMLPart *>(part())->checkCompleted();
 }
 
-void KHTMLRun::handleError(KJob* job)
+void KHTMLRun::handleError(KJob*)
 {
     // Tell KHTML that loading failed.
     static_cast<KHTMLPart *>(part())->processObjectRequest( m_child, KUrl(), QString() );
