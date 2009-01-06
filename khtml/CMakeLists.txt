@@ -204,6 +204,7 @@ set(khtmlmisc_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/misc/stringit.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/paintbuffer.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/imagefilter.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/misc/borderarcstroker.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/idstring.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/htmlnames.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/AtomicString.cpp
