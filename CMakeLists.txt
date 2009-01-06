@@ -238,6 +238,17 @@ include(CreateKDELibsDependenciesFile.cmake)
 
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
+
+
+# run a script before installing the exports files which deletes previously installed
+# configuration specific export files KDELibs4(Library|Tools)Targets-<config>.cmake
+# if the main exports file KDELibs4(Library|Tools)Targets.cmake has changed. This makes sure
+# that this main file doesn't include older and different configuration specific exports files,
+# which might have a different set of targets or targets with different names. 
+# The code for installing the exports files will soon go into a macro. Alex
+install(CODE "set(EXPORT_FILES KDELibs4LibraryTargets.cmake KDELibs4ToolsTargets.cmake)"
+        CODE "set(EXPORT_INSTALL_DIR \"${DATA_INSTALL_DIR}/cmake/modules\")"
+        SCRIPT "${CMAKE_SOURCE_DIR}/cmake/modules/check_installed_exports_file.cmake" )
 install( EXPORT kdelibsLibraryTargets DESTINATION ${DATA_INSTALL_DIR}/cmake/modules NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4LibraryTargets.cmake )
 install( EXPORT kdelibsToolsTargets   DESTINATION ${DATA_INSTALL_DIR}/cmake/modules NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4ToolsTargets.cmake )
 # the following will be the correct locations once cmake has the improved FIND_PACKAGE() 
