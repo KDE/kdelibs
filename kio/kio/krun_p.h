@@ -61,6 +61,8 @@ class KProcessRunner : public QObject
     KProcessRunner(KProcess *, const QString & binName, const KStartupInfoId& id);
 #endif
 
+    void terminateStartupNotification();
+
     KProcess *process;
     QString binName;
     KStartupInfoId id;

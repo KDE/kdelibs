@@ -173,12 +173,12 @@ bool KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, boo
   return KRun::run( *offer, lst, window, tempFile, suggestedFileName, asn );
 }
 
-bool KRun::displayOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles, 
+bool KRun::displayOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles,
                                   const QString& suggestedFileName, const QByteArray& asn )
 {
     if (!KAuthorized::authorizeKAction("openwith"))
     {
-       KMessageBox::sorry(window, 
+       KMessageBox::sorry(window,
          i18n("You are not authorized to select an application to open this file."));
        return false;
     }
@@ -1438,7 +1438,20 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KSt
 
     process->start();
     if (!process->waitForStarted()) {
-        slotProcessExited(127, QProcess::NormalExit);
+        // Note that exitCode is 255 here.
+        //kDebug(7010) << binName << "exitCode=" << process->exitCode() << "exitStatus=" << process->exitStatus();
+        terminateStartupNotification(); // do this before the messagebox
+        if (!binName.isEmpty()) {
+            // Let's see if the error is because the exe doesn't exist
+            // We'll try to find the binName relatively to current directory,
+            // and then in the PATH.
+            if (!QFile(binName).exists() && KStandardDirs::findExe(binName).isEmpty()) {
+                KGlobal::ref();
+                KMessageBox::sorry(0L, i18n("Could not find the program '%1'", binName));
+                KGlobal::deref();
+            }
+         }
+        deleteLater();
     }
 }
 
@@ -1452,24 +1465,8 @@ int KProcessRunner::pid() const
     return process ? process->pid() : 0;
 }
 
-void
-KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
+void KProcessRunner::terminateStartupNotification()
 {
-    kDebug(7010) << "slotProcessExited " << binName << "exitCode=" << exitCode << "exitStatus=" << exitStatus;
-    kDebug(7010) << "normalExit " << (exitStatus == QProcess::NormalExit);
-    bool showErr = exitStatus == QProcess::NormalExit
-                   && (exitCode == 127 || exitCode == 1);
-    if (!binName.isEmpty() && showErr) {
-        // Often we get 1 (zsh, csh) or 127 (ksh, bash) because the binary doesn't exist.
-        // We can't just rely on that, but it's a good hint.
-        // Before assuming its really so, we'll try to find the binName
-        // relatively to current directory,  and then in the PATH.
-        if (!QFile(binName).exists() && KStandardDirs::findExe(binName).isEmpty()) {
-            KGlobal::ref();
-            KMessageBox::sorry(0L, i18n("Could not find the program '%1'", binName));
-            KGlobal::deref();
-        }
-    }
 #ifdef Q_WS_X11
     if (!id.none()) {
         KStartupInfoData data;
@@ -1478,6 +1475,16 @@ KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
         KStartupInfo::sendFinish(id, data);
     }
 #endif
+
+}
+
+void
+KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    kDebug(7010) << binName << "exitCode=" << exitCode << "exitStatus=" << exitStatus;
+    Q_UNUSED(exitCode);
+    Q_UNUSED(exitStatus);
+    terminateStartupNotification();
     deleteLater();
 }
 
