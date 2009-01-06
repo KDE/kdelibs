@@ -48,6 +48,8 @@
 #include <QtGui/QBoxLayout>
 #include <QtGui/QLabel>
 
+#include <fixx11h.h>
+
 /**
  * @brief Represents the history element of an URL.
  *

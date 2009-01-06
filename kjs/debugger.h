@@ -158,7 +158,7 @@ namespace KJS {
     /**
      * Called when the interpreter enters a new execution context (stack
      * frame). This can happen in three situations:
-     * 
+     *
      * <ul>
      *   <li>A call to Interpreter::evaluate(). This has a codeType of
      *   GlobalCode </li>
@@ -176,7 +176,7 @@ namespace KJS {
      *
      * enterContext() is not called for functions implemented in the native
      * code, since these do not use an execution context.
-     * 
+     *
      * @param exec The current execution state (corresponding to the new stack
      * @param sourceId The ID of the source code being executed
      * @param lineno The line that is about to be executed
@@ -207,12 +207,12 @@ namespace KJS {
     virtual bool exitContext(ExecState *exec, int sourceId, int lineno,
                              JSObject *function);
 
- 
+
     // Override this and return true if you want the debugger to report
     // pretty-printed versions of the source.
     virtual bool shouldReindentSources() const;
-    
-    // Override this to return true if the debugger should report 
+
+    // Override this to return true if the debugger should report
     // exceptions even if there is a try block waiting for it.
     virtual bool shouldReportCaught()    const;
 
@@ -220,7 +220,7 @@ namespace KJS {
     // so we can associate it with exceptions
     void reportAtStatement(ExecState *exec, int sourceId, int firstLine, int lastLine);
     void reportException  (ExecState *exec, JSValue *exception);
-    
+
     // This notifies the debugger of source being parsed, reindenting it if need be.
     void reportSourceParsed(ExecState *exec, FunctionBodyNode *body,
                               const UString &source, int startingLineNumber, int errorLine, const UString &errorMsg);

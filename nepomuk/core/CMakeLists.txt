@@ -1,5 +1,8 @@
 project(nepomukcore)
 
+# Some problems with conflicting qHash implementations
+KDE4_NO_ENABLE_FINAL(nepomukcore)
+
 include_directories(
   ${nepomuk_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}/nepomuk/

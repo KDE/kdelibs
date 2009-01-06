@@ -212,6 +212,7 @@ KAction *KActionCollection::addAction(const QString &name, KAction *action)
 {
     QAction* ret = addAction(name, static_cast<QAction*>(action));
     Q_ASSERT(ret == action);
+    Q_UNUSED(ret); // fix compiler warning in release mode
     return action;
 }
 
