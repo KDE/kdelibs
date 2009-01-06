@@ -1310,11 +1310,32 @@ static QImage blendCornerImages(const QImage &image1, const QImage &image2)
     return composite;
 }
 
+static QBrush cornerGradient(int cx, int cy, const BorderRadii &radius, int angleStart, int angleSpan,
+                             const QColor &startColor, const QColor &finalColor)
+{
+    QConicalGradient g(0, 0, angleStart);
+    g.setColorAt(0, startColor);
+    g.setColorAt(angleSpan / 360.0, finalColor);
+
+    QBrush brush(g);
+
+    QTransform xform;
+    xform.translate(cx, cy);
+
+    if (radius.horizontal < radius.vertical)
+        xform.scale(radius.horizontal / radius.vertical, 1);
+    else if (radius.vertical < radius.horizontal)
+        xform.scale(1, radius.vertical / radius.horizontal);
+
+    brush.setTransform(xform);
+    return brush;
+}
+
 void RenderObject::drawBorderArc(QPainter *p, int x, int y, float horThickness, float vertThickness,
-                                 const BorderRadii &radius, int angleStart, int angleSpan, const QColor &color,
+                                 const BorderRadii &radius, int angleStart, int angleSpan, const QBrush &brush,
                                  const QColor &textColor, EBorderStyle style, qreal *nextDashOffset) const
 {
-    QColor c = color;
+    QColor c = brush.color();
     if (!c.isValid()) {
         if (style == INSET || style == OUTSET || style == RIDGE || style == GROOVE)
             c = Qt::white;
@@ -1358,7 +1379,7 @@ void RenderObject::drawBorderArc(QPainter *p, int x, int y, float horThickness, 
             else
                 path.lineTo(x, y);
             path.closeSubpath();
-            p->fillPath(path, color);
+            p->fillPath(path, brush);
             break;
         }
 
@@ -1371,8 +1392,8 @@ void RenderObject::drawBorderArc(QPainter *p, int x, int y, float horThickness, 
             br.horizontal = radius.horizontal - hw * 2 + 1;
             br.vertical = radius.vertical - vw * 2 + 1;
 
-            drawBorderArc(p, x, y, hw, vw, radius, angleStart, angleSpan, color, textColor, SOLID);
-            drawBorderArc(p, x, y, hw, vw, br, angleStart, angleSpan, color, textColor, SOLID);
+            drawBorderArc(p, x, y, hw, vw, radius, angleStart, angleSpan, brush, textColor, SOLID);
+            drawBorderArc(p, x, y, hw, vw, br, angleStart, angleSpan, brush, textColor, SOLID);
             break;
         }
 
@@ -1477,7 +1498,7 @@ void RenderObject::drawBorderArc(QPainter *p, int x, int y, float horThickness, 
             stroker.setDashOffset(*nextDashOffset);
 
             const QPainterPath path = stroker.createStroke(nextDashOffset);
-            p->fillPath(path, color);
+            p->fillPath(path, brush);
         }
     }
 
@@ -1522,6 +1543,13 @@ void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
     bool lowerLeftBorderStylesMatch = render_l && (bs == ls) && (bc == lc);
     bool lowerRightBorderStylesMatch = render_r && (bs == rs) && (bc == rc);
 
+    // We do a gradient transition for dotted, dashed, solid and double lines
+    // when the styles match but the colors differ.
+    bool upperLeftGradient = render_t && render_l && ts == ls && tc != lc && ts > OUTSET;
+    bool upperRightGradient = render_t && render_r && ts == rs && tc != rc && ts > OUTSET;
+    bool lowerLeftGradient = render_b && render_l && bs == ls && bc != lc && bs > OUTSET;
+    bool lowerRightGradient = render_b && render_r && bs == rs && bc != rc && bs > OUTSET;
+
     qreal nextDashOffset = 0;
 
     // Draw the borders counter-clockwise starting with the upper right corner
@@ -1544,7 +1572,7 @@ void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
             int y = _ty + topRight.vertical;
             int startAngle, span;
 
-            if (upperRightBorderStylesMatch) {
+            if (upperRightBorderStylesMatch || upperRightGradient) {
                 startAngle = 0;
                 span = 90;
             } else {
@@ -1552,9 +1580,12 @@ void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
                 span = 45;
             }
 
+            const QBrush brush = upperRightGradient ?
+                    cornerGradient(x, y, topRight, startAngle, span, rc, tc) : tc;
+
             // Draw the upper right arc
             drawBorderArc(p, x, y, style->borderRightWidth(), style->borderTopWidth(),
-                          topRight, startAngle, span, tc, style->color(), ts, &nextDashOffset);
+                          topRight, startAngle, span, brush, style->color(), ts, &nextDashOffset);
         }
 
         drawBorder(p, x, _ty, x2, _ty + style->borderTopWidth(), BSTop, tc, style->color(), ts,
@@ -1565,11 +1596,13 @@ void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
             int x = _tx + topLeft.horizontal;
             int y = _ty + topLeft.vertical;
             int startAngle = 90;
-            int span = upperLeftBorderStylesMatch ? 90 : 45;
+            int span = (upperLeftBorderStylesMatch || upperLeftGradient) ? 90 : 45;
+            const QBrush brush = upperLeftGradient ?
+                    cornerGradient(x, y, topLeft, startAngle, span, tc, lc) : tc;
 
             // Draw the upper left arc
             drawBorderArc(p, x, y, style->borderLeftWidth(), style->borderTopWidth(),
-                          topLeft, startAngle, span, tc, style->color(), ts, &nextDashOffset);
+                          topLeft, startAngle, span, brush, style->color(), ts, &nextDashOffset);
         } else if (ls == DASHED || ls == DOTTED)
             nextDashOffset = 0; // Reset the offset to avoid partially overlapping dashes
     }
@@ -1589,7 +1622,7 @@ void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
         int y = _ty + topLeft.vertical;
         int y2 = _ty + h - bottomLeft.vertical;
 
-        if (!upperLeftBorderStylesMatch && topLeft.hasBorderRadius()) {
+        if (!upperLeftBorderStylesMatch && !upperLeftGradient && topLeft.hasBorderRadius()) {
             int x = _tx + topLeft.horizontal;
             int y = _ty + topLeft.vertical;
             int startAngle = 135;
@@ -1604,7 +1637,7 @@ void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
                    ignore_top?0:style->borderTopWidth(),
                    ignore_bottom?0:style->borderBottomWidth(), false, &nextDashOffset);
 
-       if (!lowerLeftBorderStylesMatch && bottomLeft.hasBorderRadius()) {
+       if (!lowerLeftBorderStylesMatch && !lowerLeftGradient && bottomLeft.hasBorderRadius()) {
             int x = _tx + bottomLeft.horizontal;
             int y = _ty + h - bottomLeft.vertical;
             int startAngle = 180;
@@ -1639,7 +1672,7 @@ void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
             int y = _ty + h - bottomLeft.vertical;
             int startAngle, span;
 
-            if (lowerLeftBorderStylesMatch) {
+            if (lowerLeftBorderStylesMatch || lowerLeftGradient) {
                 startAngle = 180;
                 span = 90;
             } else {
@@ -1647,9 +1680,12 @@ void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
                 span = 45;
             }
 
+            const QBrush brush = lowerLeftGradient ?
+                    cornerGradient(x, y, bottomLeft, startAngle, span, lc, bc) : bc;
+
             // Draw the bottom left arc
             drawBorderArc(p, x, y, style->borderLeftWidth(), style->borderBottomWidth(),
-                          bottomLeft, startAngle, span, bc, style->color(), bs, &nextDashOffset);
+                          bottomLeft, startAngle, span, brush, style->color(), bs, &nextDashOffset);
         }
 
         drawBorder(p, x, _ty + h - style->borderBottomWidth(), x2, _ty + h, BSBottom, bc, style->color(), bs,
@@ -1660,11 +1696,13 @@ void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
             int x = _tx + w - bottomRight.horizontal;
             int y = _ty + h - bottomRight.vertical;
             int startAngle = 270;
-            int span = lowerRightBorderStylesMatch ? 90 : 45;
+            int span = (lowerRightBorderStylesMatch || lowerRightGradient) ? 90 : 45;
+            const QBrush brush = lowerRightGradient ?
+                    cornerGradient(x, y, bottomRight, startAngle, span, bc, rc) : bc;
 
             // Draw the bottom right arc
             drawBorderArc(p, x, y, style->borderRightWidth(), style->borderBottomWidth(),
-                          bottomRight, startAngle, span, bc, style->color(), bs, &nextDashOffset);
+                          bottomRight, startAngle, span, brush, style->color(), bs, &nextDashOffset);
         }
         else if (rs == DASHED || rs == DOTTED)
             nextDashOffset = 0; // Reset the offset to avoid partially overlapping dashes
@@ -1685,7 +1723,7 @@ void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
         int y = _ty + topRight.vertical;
         int y2 = _ty + h - bottomRight.vertical;
 
-        if (!lowerRightBorderStylesMatch && bottomRight.hasBorderRadius()) {
+        if (!lowerRightBorderStylesMatch && !lowerRightGradient && bottomRight.hasBorderRadius()) {
             int x = _tx + w - bottomRight.horizontal;
             int y = _ty + h - bottomRight.vertical;
             int startAngle = 315;
@@ -1700,7 +1738,7 @@ void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, cons
                    ignore_top?0:style->borderTopWidth(),
                    ignore_bottom?0:style->borderBottomWidth(), false, &nextDashOffset);
 
-        if (!upperRightBorderStylesMatch && topRight.hasBorderRadius()) {
+        if (!upperRightBorderStylesMatch && !upperRightGradient && topRight.hasBorderRadius()) {
             int x = _tx + w - topRight.horizontal;
             int y = _ty + topRight.vertical;
             int startAngle = 0;
