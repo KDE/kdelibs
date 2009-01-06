@@ -533,6 +533,10 @@ Q_SIGNALS:
      *
      * Normally, widgets will update their palette automatically, but you
      * should connect to this to program special behavior.
+     *
+     * Note: If you derive from a QWidget-based class, a faster method is to
+     *       reimplement QWidget::changeEvent() and catch QEvent::PaletteChange.
+     *       This is the preferred way to get informed about font updates.
      */
     void kdisplayPaletteChanged();
 
@@ -542,6 +546,10 @@ Q_SIGNALS:
      * Normally, widgets will update their styles automatically (as they would
      * respond to an explicit setGUIStyle() call), but you should connect to
      * this to program special behavior.
+     *
+     * Note: If you derive from a QWidget-based class, a faster method is to
+     *       reimplement QWidget::changeEvent() and catch QEvent::StyleChange.
+     *       This is the preferred way to get informed about font updates.
      */
     void kdisplayStyleChanged();
 
@@ -553,8 +561,8 @@ Q_SIGNALS:
      * using explicit fonts.
      *
      * Note: If you derive from a QWidget-based class, a faster method is to
-     *       reimplement QWidget::changeEvent(). This is the preferred way
-     *       to get informed about font updates.
+     *       reimplement QWidget::changeEvent() and catch QEvent::FontChange.
+     *       This is the preferred way to get informed about font updates.
      */
     void kdisplayFontChanged();
 

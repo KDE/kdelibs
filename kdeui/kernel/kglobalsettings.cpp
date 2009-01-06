@@ -935,15 +935,15 @@ void KGlobalSettings::Private::kdisplaySetPalette()
 
     if (qobject_cast<KApplication *>(qApp) && qApp->type() == QApplication::GuiClient) {
         QApplication::setPalette( q->createApplicationPalette() );
-        emit q->kdisplayPaletteChanged();
-        emit q->appearanceChanged();
     }
+    emit q->kdisplayPaletteChanged();
+    emit q->appearanceChanged();
 }
 
 
 void KGlobalSettings::Private::kdisplaySetFont()
 {
-    if (qApp && qApp->type() == QApplication::GuiClient) {
+    if (qobject_cast<KApplication *>(qApp) && qApp->type() == QApplication::GuiClient) {
         KGlobalSettingsData* data = KGlobalSettingsData::self();
 
         QApplication::setFont( data->font(KGlobalSettingsData::GeneralFont) );
@@ -961,10 +961,9 @@ void KGlobalSettings::Private::kdisplaySetFont()
         sheet->item( QLatin1String("code"))->setFontFamily(fixedFont.family() );
         sheet->item( QLatin1String("tt"))->setFontFamily(fixedFont.family() );
 #endif
-
-        emit q->kdisplayFontChanged();
-        emit q->appearanceChanged();
     }
+    emit q->kdisplayFontChanged();
+    emit q->appearanceChanged();
 }
 
 
