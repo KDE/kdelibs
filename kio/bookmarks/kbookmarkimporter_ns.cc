@@ -204,5 +204,3 @@ QString KNSBookmarkExporterImpl::folderAsString(const KBookmarkGroup &parent) co
 }
 
 ////
-
-#include "kbookmarkimporter_ns.moc"
