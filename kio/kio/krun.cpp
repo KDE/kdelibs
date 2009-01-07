@@ -1439,19 +1439,7 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KSt
     process->start();
     if (!process->waitForStarted()) {
         // Note that exitCode is 255 here.
-        //kDebug(7010) << binName << "exitCode=" << process->exitCode() << "exitStatus=" << process->exitStatus();
-        terminateStartupNotification(); // do this before the messagebox
-        if (!binName.isEmpty()) {
-            // Let's see if the error is because the exe doesn't exist
-            // We'll try to find the binName relatively to current directory,
-            // and then in the PATH.
-            if (!QFile(binName).exists() && KStandardDirs::findExe(binName).isEmpty()) {
-                KGlobal::ref();
-                KMessageBox::sorry(0L, i18n("Could not find the program '%1'", binName));
-                KGlobal::deref();
-            }
-         }
-        deleteLater();
+        slotProcessExited(process->exitCode(), process->exitStatus());
     }
 }
 
@@ -1484,7 +1472,23 @@ KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
     kDebug(7010) << binName << "exitCode=" << exitCode << "exitStatus=" << exitStatus;
     Q_UNUSED(exitCode);
     Q_UNUSED(exitStatus);
-    terminateStartupNotification();
+
+    terminateStartupNotification(); // do this before the messagebox
+    if (!binName.isEmpty()) {
+        // Let's see if the error is because the exe doesn't exist.
+        // When this happens, waitForStarted returns false, but not if kioexec
+        // was involved, then we come here, that's why the code is here.
+        //
+        // We'll try to find the binName relatively to current directory,
+        // and then in the PATH.
+        if (!QFile(binName).exists() && KStandardDirs::findExe(binName).isEmpty()) {
+            KGlobal::ref();
+            KMessageBox::sorry(0L, i18n("Could not find the program '%1'", binName));
+            KGlobal::deref();
+        } else {
+            kDebug() << process->readAllStandardError();
+        }
+    }
     deleteLater();
 }
 
