@@ -347,7 +347,7 @@ QPainterPath BorderArcStroker::createStroke(qreal *nextOffset) const
     const KCubicBezier inner(innerPath.elementAt(0), innerPath.elementAt(1), innerPath.elementAt(2), innerPath.elementAt(3));
     const KCubicBezier outer(outerPath.elementAt(0), outerPath.elementAt(1), outerPath.elementAt(2), outerPath.elementAt(3));
 
-    qreal a = std::fmod(angle, 360.0);
+    qreal a = std::fmod(angle, qreal(360.0));
     if (a < 0)
         a += 360.0;
 
