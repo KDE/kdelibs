@@ -536,7 +536,7 @@ Q_SIGNALS:
      *
      * Note: If you derive from a QWidget-based class, a faster method is to
      *       reimplement QWidget::changeEvent() and catch QEvent::PaletteChange.
-     *       This is the preferred way to get informed about font updates.
+     *       This is the preferred way to get informed about palette updates.
      */
     void kdisplayPaletteChanged();
 
@@ -549,7 +549,7 @@ Q_SIGNALS:
      *
      * Note: If you derive from a QWidget-based class, a faster method is to
      *       reimplement QWidget::changeEvent() and catch QEvent::StyleChange.
-     *       This is the preferred way to get informed about font updates.
+     *       This is the preferred way to get informed about style updates.
      */
     void kdisplayStyleChanged();
 
