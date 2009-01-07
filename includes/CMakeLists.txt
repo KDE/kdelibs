@@ -969,6 +969,7 @@ install(FILES
   Plasma/ServiceJob
   Plasma/SignalPlotter
   Plasma/Slider
+  Plasma/SpinBox
   Plasma/BusyWidget
   Plasma/Svg
   Plasma/SvgWidget
