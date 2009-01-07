@@ -459,7 +459,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   // can't for the same reason.
   d->m_paSelectAll = actionCollection()->addAction( KStandardAction::SelectAll, "selectAll",
                                                     this, SLOT( slotSelectAll() ) );
-  d->m_paSelectAll->setShortcutContext( Qt::WidgetShortcut );
+  d->m_paSelectAll->setShortcutContext( Qt::WidgetWithChildrenShortcut );
   if ( parentPart() )
       d->m_paSelectAll->setShortcuts( KShortcut() ); // avoid clashes
 
