@@ -238,7 +238,7 @@ KDirWatchPrivate::~KDirWatchPrivate()
 
 void KDirWatchPrivate::inotifyEventReceived()
 {
-  //kDebug(7001);
+  //kDebug(7001);  
 #ifdef HAVE_SYS_INOTIFY_H
   if ( !supports_inotify )
     return;
@@ -322,9 +322,14 @@ void KDirWatchPrivate::inotifyEventReceived()
               int counter = 0;
               Q_FOREACH(Client *client, e->m_clients) {
                   if (client->m_watchModes & flag) {
-                      addEntry (client->instance, tpath, 0, isDir,
-                                isDir ? client->m_watchModes : KDirWatch::WatchDirOnly);
                       counter++;
+                      // See discussion in addEntry for why we don't addEntry for individual
+                      // files in WatchFiles mode with inotify.
+                      if (isDir)
+                      {
+                        addEntry (client->instance, tpath, 0, isDir,
+                                isDir ? client->m_watchModes : KDirWatch::WatchDirOnly);
+                      }
                     }
               }
 
@@ -333,6 +338,54 @@ void KDirWatchPrivate::inotifyEventReceived()
 
               kDebug(7001).nospace() << counter << " instance(s) monitoring the new "
                 << (isDir ? "dir " : "file ") << tpath;
+            }
+          }
+          if (event->mask & (IN_DELETE|IN_MOVED_FROM)) {
+            if ((e->isDir) && (!e->m_clients.empty())) {
+                Client* client = 0;
+              // A file in this directory has been removed.  It wasn't an explicitly
+              // watched file as it would have its own watch descriptor, so
+              // no addEntry/ removeEntry bookkeeping should be required.  Emit
+              // the event immediately if any clients are interested.
+              KDE_struct_stat stat_buf;
+              QByteArray tpath = QFile::encodeName(e->path+'/'+path);
+              KDE_stat(tpath, &stat_buf);
+              bool isDir = S_ISDIR(stat_buf.st_mode);
+
+              KDirWatch::WatchModes flag;
+              flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
+
+              int counter = 0;
+              Q_FOREACH(client, e->m_clients) {
+                  if (client->m_watchModes & flag) {
+                      counter++;
+                   }
+              }
+              if (counter != 0)
+              {
+                emitEvent (e, Deleted, e->path+'/'+path);
+              }
+            }
+          }
+          if (event->mask & (IN_MODIFY|IN_ATTRIB)) {
+            if ((e->isDir) && (!e->m_clients.empty())) {
+              Client* client = 0;
+              // A file in this directory has been changed.  No
+              // addEntry/ removeEntry bookkeeping should be required.
+              // Add the path to the list of pending file changes if
+              // there are any interested clients.
+              KDE_struct_stat stat_buf;
+              QByteArray tpath = QFile::encodeName(e->path+'/'+path);
+              KDE_stat(tpath, &stat_buf);
+              bool isDir = S_ISDIR(stat_buf.st_mode);
+
+              // The API doc is somewhat vague as to whether we should emit
+              // dirty() for implicitly watched files when WatchFiles has
+              // not been specified - we'll assume they are always interested,
+              // regardless.
+              // Don't worry about duplicates for the time
+              // being; this is handled in slotRescan.
+              e->m_pendingFileChanges.append(e->path+'/'+path);
             }
           }
 
@@ -529,16 +582,8 @@ bool KDirWatchPrivate::useINotify( Entry* e )
     return true;
   }
 
-  int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF|IN_DONT_FOLLOW;
-  if(!e->isDir)
-    mask |= IN_MODIFY|IN_ATTRIB;
-  else
-    mask |= IN_ONLYDIR;
-
-  // if dependant is a file watch, we check for MODIFY & ATTRIB too
-  foreach(Entry *dep, e->m_entries) {
-    if (!dep->isDir) { mask |= IN_MODIFY|IN_ATTRIB; break; }
-  }
+  // May as well register for almost everything - it's free!
+  int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF|IN_DONT_FOLLOW|IN_MOVED_FROM|IN_MODIFY|IN_ATTRIB;
 
   if ( ( e->wd = inotify_add_watch( m_inotify_fd,
                                     QFile::encodeName( e->path ), mask) ) > 0)
@@ -716,6 +761,17 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     } else if (watchModes & KDirWatch::WatchFiles) {
       filters |= QDir::Files;
     }
+ 
+#if defined(HAVE_SYS_INOTIFY_H)
+    if (e->m_mode == INotifyMode || (e->m_mode == UnknownMode && m_preferredMethod == INotify)  )
+    {
+        kDebug (7001) << "Ignoring WatchFiles directive - this is implicit with inotify";
+        // Placing a watch on individual files is redundant with inotify
+        // (inotify gives us WatchFiles functionality "for free") and indeed
+        // actively harmful, so prevent it.  WatchSubDirs is necessary, though.
+        filters &= ~QDir::Files;
+    }
+#endif
 
     QDir basedir (e->path);
     const QFileInfoList contents = basedir.entryInfoList(filters);
@@ -1225,12 +1281,25 @@ void KDirWatchPrivate::slotRescan()
         useStat( &(*it) );
       }
     }
+
+    if ((*it).isDir)
+    {
+      // Report and clear the the list of files that have changed in this directory.
+      // Remove duplicates by changing to set and back again:
+      // we don't really care about preserving the order of the
+      // original changes.
+      QList<QString> pendingFileChanges = (*it).m_pendingFileChanges.toSet().toList();
+      Q_FOREACH(QString changedFilename, pendingFileChanges )
+      {
+        emitEvent(&(*it), Changed, changedFilename);
+      }      
+      (*it).m_pendingFileChanges.clear();
+    }
 #endif
 
     if ( ev != NoChange )
       emitEvent( &(*it), ev);
   }
-
 
   if ( timerRunning )
     timer.start(freq);

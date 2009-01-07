@@ -161,6 +161,12 @@ public:
 
 #ifdef HAVE_SYS_INOTIFY_H
     int wd;
+    // Creation and Deletion of files happens infrequently, so
+    // can safely be reported as they occur.  File changes i.e. those that emity "dirty()" can
+    // happen many times per second, though, so maintain a list of files in this directory
+    // that can be emitted and flushed at the next slotRescan(...).
+    // This will be unused if the Entry is not a directory.
+    QList<QString> m_pendingFileChanges;
 #endif
   };
 
