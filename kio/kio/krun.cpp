@@ -173,12 +173,12 @@ bool KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, boo
   return KRun::run( *offer, lst, window, tempFile, suggestedFileName, asn );
 }
 
-bool KRun::displayOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles, 
+bool KRun::displayOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles,
                                   const QString& suggestedFileName, const QByteArray& asn )
 {
     if (!KAuthorized::authorizeKAction("openwith"))
     {
-       KMessageBox::sorry(window, 
+       KMessageBox::sorry(window,
          i18n("You are not authorized to select an application to open this file."));
        return false;
     }
@@ -1455,8 +1455,17 @@ int KProcessRunner::pid() const
 void
 KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    kDebug(7010) << "slotProcessExited " << binName << "exitCode=" << exitCode << "exitStatus=" << exitStatus;
-    kDebug(7010) << "normalExit " << (exitStatus == QProcess::NormalExit);
+    kDebug(7010) << binName << "exitCode=" << exitCode << "exitStatus=" << exitStatus;
+
+#ifdef Q_WS_X11
+    if (!id.none()) {
+        KStartupInfoData data;
+        data.addPid(pid()); // announce this pid for the startup notification has finished
+        data.setHostname();
+        KStartupInfo::sendFinish(id, data);
+    }
+#endif
+
     bool showErr = exitStatus == QProcess::NormalExit
                    && (exitCode == 127 || exitCode == 1);
     if (!binName.isEmpty() && showErr) {
@@ -1470,14 +1479,6 @@ KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
             KGlobal::deref();
         }
     }
-#ifdef Q_WS_X11
-    if (!id.none()) {
-        KStartupInfoData data;
-        data.addPid(pid()); // announce this pid for the startup notification has finished
-        data.setHostname();
-        KStartupInfo::sendFinish(id, data);
-    }
-#endif
     deleteLater();
 }
 
