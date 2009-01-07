@@ -18,6 +18,7 @@
  */
 
 #include "kruntest.h"
+#include <QLabel>
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -44,27 +45,70 @@ void testKRun::foundMimeType( const QString& _type )
   return;
 }
 
+static const char* testFile = KDESRCDIR "/kruntest.cpp";
+
+static const struct {
+    const char* text;
+    const char* expectedResult;
+    const char* exec;
+    const char* url;
+} s_tests[] = {
+    { "run(kwrite, no url)", "should work normally", "kwrite", 0 },
+    { "run(kwrite, file url)", "should work normally", "kwrite", testFile },
+    { "run(kwrite, remote url)", "should work normally", "kwrite", "http://www.kde.org" },
+    { "run(doesnotexit, no url)", "should show error message", "doesnotexist", 0 },
+    { "run(doesnotexit, file url)", "should show error message", "doesnotexist", testFile },
+    { "run(doesnotexit, remote url)", "should use kioexec and show error message", "doesnotexist", "http://www.kde.org" },
+    { "run(missing lib, no url)", "should show error message (remove libqca.so.2 for this, e.g. by editing LD_LIBRARY_PATH if qca is in its own prefix)", "qcatool", 0 },
+    { "run(missing lib, file url)", "should show error message (remove libqca.so.2 for this, e.g. by editing LD_LIBRARY_PATH if qca is in its own prefix)", "qcatool", testFile },
+    { "run(missing lib, remote url)", "should show error message (remove libqca.so.2 for this, e.g. by editing LD_LIBRARY_PATH if qca is in its own prefix)", "qcatool", "http://www.kde.org" }
+};
+
 Receiver::Receiver()
 {
     QVBoxLayout *lay = new QVBoxLayout(this);
     QPushButton * h = new QPushButton( "Press here to terminate", this );
     lay->addWidget( h );
+    connect(h, SIGNAL(clicked()), qApp, SLOT(quit()));
+
     start = new QPushButton( "Launch KRuns", this );
     lay->addWidget( start );
+    connect(start, SIGNAL(clicked()), this, SLOT(slotStart()));
+
     stop = new QPushButton( "Stop those KRuns", this );
     stop->setEnabled(false);
     lay->addWidget( stop );
+    connect(stop, SIGNAL(clicked()), this, SLOT(slotStop()));
 
     QPushButton* launchOne = new QPushButton( "Launch one http KRun", this );
     lay->addWidget(launchOne);
-
-    connect(h, SIGNAL(clicked()), qApp, SLOT(quit()));
-    connect(start, SIGNAL(clicked()), this, SLOT(slotStart()));
-    connect(stop, SIGNAL(clicked()), this, SLOT(slotStop()));
     connect(launchOne, SIGNAL(clicked()), this, SLOT(slotLaunchOne()));
+
+    for (uint i = 0; i < sizeof(s_tests)/sizeof(*s_tests); ++i) {
+        QHBoxLayout* hbox = new QHBoxLayout;
+        lay->addLayout(hbox);
+        QPushButton* button = new QPushButton(s_tests[i].text, this);
+        button->setProperty("testNumber", i);
+        hbox->addWidget(button);
+        QLabel* label = new QLabel(s_tests[i].expectedResult, this);
+        hbox->addWidget(label);
+        connect(button, SIGNAL(clicked()), this, SLOT(slotLaunchTest()));
+        hbox->addStretch();
+    }
 
     adjustSize();
     show();
+}
+
+void Receiver::slotLaunchTest()
+{
+    QPushButton* button = qobject_cast<QPushButton *>(sender());
+    Q_ASSERT(button);
+    const int testNumber = button->property("testNumber").toInt();
+    KUrl::List urls;
+    if (s_tests[testNumber].url)
+        urls << KUrl(s_tests[testNumber].url);
+    KRun::run(s_tests[testNumber].exec, urls, this);
 }
 
 void Receiver::slotStop()

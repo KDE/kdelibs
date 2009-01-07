@@ -50,6 +50,7 @@ public Q_SLOTS:
     void slotStart();
     void slotStop();
     void slotLaunchOne();
+    void slotLaunchTest();
 private:
     QPushButton * start;
     QPushButton * stop;
