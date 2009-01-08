@@ -672,7 +672,7 @@ bool KConfig::isConfigWritable(bool warnUser)
         if (!cmdToExec.isEmpty() && componentData().isValid())
         {
             QProcess::execute(cmdToExec,QStringList() << "--title" << componentData().componentName()
-                    << "--msgbox" << errorMsg.toLocal8Bit());
+                    << "--msgbox" << errorMsg);
         }
     }
 
