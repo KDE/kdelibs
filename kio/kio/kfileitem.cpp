@@ -650,7 +650,7 @@ KMimeType::Ptr KFileItem::determineMimeType() const
 
         d->m_pMimeType = KMimeType::findByUrl( url, d->m_fileMode, isLocalUrl );
         Q_ASSERT(d->m_pMimeType);
-        //kDebug() << "finding mimetype for " << url.url() << " : " << d->m_pMimeType->name();
+        //kDebug() << d << "finding final mimetype for" << url << ":" << d->m_pMimeType->name();
         d->m_bMimeTypeKnown = true;
     }
 
@@ -747,9 +747,9 @@ QString KFileItem::iconName() const
         }
     }
 
-    //kDebug() << "finding icon for " << url.url() << " : " << mimeTypePtr()->name();
     d->m_iconName = mime->iconName(url);
     d->m_useIconNameCache = d->m_bMimeTypeKnown;
+    //kDebug() << "finding icon for" << url << ":" << d->m_iconName;
     return d->m_iconName;
 }
 
@@ -795,9 +795,9 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     if ( !iconName.isEmpty() )
         return DesktopIcon(iconName, _size, _state);
 
-    if ( !d->m_pMimeType )
-    {
-        if ( S_ISDIR( d->m_fileMode ) ) {
+    if (!d->m_pMimeType) {
+        // No mimetype determined yet, go for a fast default icon
+        if (S_ISDIR(d->m_fileMode)) {
             static const QString * defaultFolderIcon = 0;
             if ( !defaultFolderIcon ) {
                 const KMimeType::Ptr mimeType = KMimeType::mimeType( "inode/directory" );
@@ -1290,7 +1290,7 @@ KMimeType::Ptr KFileItem::mimeTypePtr() const
         // If we used the "fast mode" (no sniffing), and we didn't get a perfect (extension-based) match,
         // then determineMimeType will be able to do better.
         const bool canDoBetter = d->m_delayedMimeTypes && accuracy < 100;
-        //kDebug() << "finding mimetype for" << url() << ":" << m_pMimeType->name();
+        //kDebug() << "finding mimetype for" << url << ":" << d->m_pMimeType->name() << "canDoBetter=" << canDoBetter;
         d->m_bMimeTypeKnown = !canDoBetter;
     }
     return d->m_pMimeType;
