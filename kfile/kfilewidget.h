@@ -55,17 +55,8 @@ public:
       *             in the directory last used by a filedialog in any application that specified the
       *             same keyword.
       *
-      * @param filter A shell glob or a mime-type-filter that specifies
-      *               which files to display.
-      * See setFilter() and setMimeFilter() for details on how to use this argument.
-      *
       * @param parent The parent widget of this widget
       *
-      * @param widget A widget, or a widget of widgets, for displaying custom
-      *               data in the file widget. This can be used, for example, to
-      *               display a check box with the caption "Open as read-only".
-      *               When creating this widget, you don't need to specify a parent,
-      *               since the widget's parent will be set automatically by KFileWidget.
       */
     KFileWidget(const KUrl& startDir, QWidget *parent);
 
