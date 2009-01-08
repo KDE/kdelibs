@@ -473,10 +473,9 @@ int main(int argc, char **argv) {
   options.add("d");
   options.add("dest <dest>", ki18n("Destination URL"), QByteArray());
   options.add("o");
-  options.add("operation <operation>", ki18n("Operation (list,listrecursive,stat,get,put,copy,move,del,mkdir)"), QByteArray("copy"));
+  options.add("operation <operation>", ki18n("Operation (list,listrecursive,stat,get,put,copy,move,del,mkdir)"));
   options.add("p");
-  options.add("progress <progress>", ki18n("Progress Type (none,default,status)"),
-          QByteArray("default"));
+  options.add("progress <progress>", ki18n("Progress Type (none,default,status)"), QByteArray("default"));
 
   const char version[] = "v0.0.0 0000";   // :-)
   KLocalizedString description = ki18n("Test for kioslaves");
@@ -490,45 +489,46 @@ int main(int argc, char **argv) {
   QString src = args->getOption("src");
   QString dest = args->getOption("dest");
 
-  uint op = 0;
+  uint op = KioslaveTest::Copy;
   uint pr = 0;
 
-  QString tmps;
-
-  tmps = args->getOption("operation");
-  if ( tmps == "list") {
+  QString operation = args->getOption("operation");
+  if ( operation == "list") {
     op = KioslaveTest::List;
-  } else if ( tmps == "listrecursive") {
+  } else if ( operation == "listrecursive") {
     op = KioslaveTest::ListRecursive;
-  } else if ( tmps == "stat") {
+  } else if ( operation == "stat") {
     op = KioslaveTest::Stat;
-  } else if ( tmps == "get") {
+  } else if ( operation == "get") {
     op = KioslaveTest::Get;
-  } else if ( tmps == "put") {
+  } else if ( operation == "put") {
     op = KioslaveTest::Put;
-  } else if ( tmps == "copy") {
+  } else if ( operation == "copy") {
     op = KioslaveTest::Copy;
-  } else if ( tmps == "move") {
+  } else if ( operation == "move") {
     op = KioslaveTest::Move;
-  } else if ( tmps == "del") {
+  } else if ( operation == "del") {
     op = KioslaveTest::Delete;
-  } else if ( tmps == "mkdir") {
+  } else if ( operation == "mkdir") {
     op = KioslaveTest::Mkdir;
-  } else KCmdLineArgs::usage(QByteArray("unknown operation"));
+  } else if (!operation.isEmpty()) {
+    KCmdLineArgs::usage(QByteArray("unknown operation"));
+  }
 
-  tmps = args->getOption("progress");
-  if ( tmps == "none") {
+  QString progress = args->getOption("progress");
+  if ( progress == "none") {
     pr = KioslaveTest::ProgressNone;
-  } else if ( tmps == "default") {
+  } else if ( progress == "default") {
     pr = KioslaveTest::ProgressDefault;
-  } else if ( tmps == "status") {
+  } else if ( progress == "status") {
     pr = KioslaveTest::ProgressStatus;
   } else KCmdLineArgs::usage(QByteArray("unknown progress mode"));
 
   args->clear(); // Free up memory
 
   KioslaveTest test( src, dest, op, pr );
-  QTimer::singleShot(100, &test, SLOT(startJob()));
+  if (!operation.isEmpty())
+      QTimer::singleShot(100, &test, SLOT(startJob()));
   test.show();
   // Bug in KTMW / Qt / layouts ?
   test.resize( test.sizeHint() );
