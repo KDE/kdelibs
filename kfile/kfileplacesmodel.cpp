@@ -27,6 +27,7 @@
 #include <QtGui/QColor>
 #include <QtGui/QAction>
 
+#include <kfileitem.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kuser.h>
@@ -565,9 +566,11 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
                 continue;
             }
 
+            KFileItem item(KFileItem::Unknown, KFileItem::Unknown, url);
+
             KBookmark bookmark = KFilePlacesItem::createBookmark(d->bookmarkManager,
                                                                  url.fileName(), url,
-                                                                 mimetype->iconName());
+                                                                 item.iconName());
             group.moveBookmark(bookmark, afterBookmark);
             afterBookmark = bookmark;
         }
