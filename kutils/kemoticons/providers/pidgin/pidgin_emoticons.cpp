@@ -167,7 +167,7 @@ bool PidginEmoticons::loadTheme(const QString &path)
             continue;
         }
 
-        QStringList splitted = line.split(' ');
+        QStringList splitted = line.split(QRegExp("\\s+"));
         QString emo;
         int i = 1;
         if (splitted.at(0) == "!") {
