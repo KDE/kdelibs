@@ -101,7 +101,7 @@ public:
    * @see flags()
    */
     enum Flags { None = 0, DrawFrame = 1, BlendIcon = 2 };
-    virtual ~ThumbCreator() {}
+    virtual ~ThumbCreator();
 
     /**
      * Creates a thumbnail
