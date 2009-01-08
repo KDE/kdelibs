@@ -545,6 +545,9 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
                 m_nodeHash.remove(cleanupUrl(oldUrl));
                 m_nodeHash.insert(cleanupUrl(newUrl), node);
             }
+            // Mimetype changed -> forget cached icon (e.g. from "cut", #164185 comment #13)
+            if (fit->first.mimeTypePtr() != fit->second.mimeTypePtr())
+                node->setPreview(QIcon());
             const QModelIndex index = indexForNode(node);
             if (!topLeft.isValid() || index.row() < topLeft.row()) {
                 topLeft = index;
@@ -598,6 +601,16 @@ void KDirModelPrivate::_k_slotClear()
 
 void KDirModel::itemChanged( const QModelIndex& index )
 {
+    // This method is really a itemMimeTypeChanged(), it's mostly called by KMimeTypeResolver.
+    // When the mimetype is determined, clear the old "preview" (could be
+    // mimetype dependent like when cutting files, #164185)
+    KDirModelNode* node = d->nodeForIndex(index);
+    if (node)
+        node->setPreview(QIcon());
+
+#ifndef NDEBUG // debugIndex only defined in debug mode
+    //kDebug(7008) << "dataChanged(" << debugIndex(index);
+#endif
     emit dataChanged(index, index);
 }
 
