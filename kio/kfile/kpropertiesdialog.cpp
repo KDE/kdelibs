@@ -2185,6 +2185,9 @@ bool KFilePermissionsPropsPlugin::supports( const KFileItemList& /*_items*/ )
 void KFilePermissionsPropsPlugin::setComboContent(QComboBox *combo, PermissionsTarget target,
 						  mode_t permissions, mode_t partial) {
   combo->clear();
+  if (d->isIrregular) //#176876
+      return;
+
   if (d->pmode == PermissionsOnlyLinks) {
     combo->addItem(i18n("Link"));
     combo->setCurrentIndex(0);
@@ -2193,9 +2196,10 @@ void KFilePermissionsPropsPlugin::setComboContent(QComboBox *combo, PermissionsT
 
   mode_t tMask = permissionsMasks[target];
   int textIndex;
-  for (textIndex = 0; standardPermissions[textIndex] != (mode_t)-1; textIndex++)
+  for (textIndex = 0; standardPermissions[textIndex] != (mode_t)-1; textIndex++) {
     if ((standardPermissions[textIndex]&tMask) == (permissions&tMask&(UniRead|UniWrite)))
       break;
+  }
   Q_ASSERT(standardPermissions[textIndex] != (mode_t)-1); // must not happen, would be irreglar
 
   for (int i = 0; permissionsTexts[(int)d->pmode][i]; i++)
@@ -2205,8 +2209,9 @@ void KFilePermissionsPropsPlugin::setComboContent(QComboBox *combo, PermissionsT
     combo->addItem(i18n("Varying (No Change)"));
     combo->setCurrentIndex(3);
   }
-  else
+  else {
     combo->setCurrentIndex(textIndex);
+  }
 }
 
 // permissions are irregular if they cant be displayed in a combo box.
