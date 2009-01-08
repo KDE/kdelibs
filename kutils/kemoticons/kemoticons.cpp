@@ -59,10 +59,16 @@ KEmoticonsPrivate::~KEmoticonsPrivate()
     delete m_dirwatch;
 }
 
+bool priorityLessThan(const KService::Ptr &s1, const KService::Ptr &s2)
+{
+    return (s1->property("X-KDE-Priority").toInt() > s2->property("X-KDE-Priority").toInt());
+}
+
 void KEmoticonsPrivate::loadServiceList()
 {
     QString constraint("(exist Library)");
     m_loaded = KServiceTypeTrader::self()->query("KEmoticons", constraint);
+    qSort(m_loaded.begin(), m_loaded.end(), priorityLessThan);
 }
 
 KEmoticonsProvider *KEmoticonsPrivate::loadProvider(const KService::Ptr &service)
