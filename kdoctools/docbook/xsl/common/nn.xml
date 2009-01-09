@@ -35,7 +35,7 @@
    <l:gentext key="Equation" text="Formel"/>
    <l:gentext key="equation" text="formel"/>
    <l:gentext key="Example" text="Eksempel"/>
-   <l:gentext key="example" text="eksempel/>
+   <l:gentext key="example" text="eksempel"/>
    <l:gentext key="Figure" text="Figur"/>
    <l:gentext key="figure" text="figur"/>
    <l:gentext key="Glossary" text="Ordliste"/>
