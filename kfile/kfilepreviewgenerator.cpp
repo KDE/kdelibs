@@ -154,11 +154,17 @@ public:
             KAbstractViewAdapter* viewAdapter,
             QAbstractItemModel* model);
     ~Private();
-    
+
     /**
      * Generates previews for the items \a items asynchronously.
      */
     void generatePreviews(const KFileItemList& items);
+
+    /**
+     * Generates previews for the indices within \a topLeft
+     * and \a bottomRight asynchronously.
+     */
+    void generatePreviews(const QModelIndex& topLeft, const QModelIndex& bottomRight);
 
     /**
      * Adds the preview \a pixmap for the item \a item to the preview
@@ -195,7 +201,7 @@ public:
      * generated first.
      */
     void resumePreviews();
-    
+
     /**
      * Returns true, if the item \a item has been cut into
      * the clipboard.
@@ -240,12 +246,26 @@ public:
      * been cut.
      */
     bool decodeIsCutSelection(const QMimeData* mimeData);
-    
+
     /** Remembers the pixmap for an item specified by an URL. */
     struct ItemInfo
     {
         KUrl url;
         QPixmap pixmap;
+    };
+
+    /**
+     * During the lifetime of a DataChangeObtainer instance changing
+     * the data of the model won't trigger generating a preview.
+     */
+    class DataChangeObtainer
+    {
+    public:
+        DataChangeObtainer(KFilePreviewGenerator::Private* generator) :
+            m_gen(generator)  { ++m_gen->m_internalDataChange; }
+        ~DataChangeObtainer() { --m_gen->m_internalDataChange; }
+    private:
+        KFilePreviewGenerator::Private* m_gen;
     };
 
     bool m_previewShown;
@@ -260,6 +280,13 @@ public:
      * True if a selection has been done which should cut items.
      */
     bool m_hasCutSelection;
+
+    /**
+     * If the value is 0, the slot
+     * generatePreviews(const QModelIndex&, const QModelIndex&) has
+     * been triggered by an external data change.
+     */
+    int m_internalDataChange;
 
     int m_pendingVisiblePreviews;
 
@@ -303,6 +330,7 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
     m_previewShown(true),
     m_clearItemQueues(true),
     m_hasCutSelection(false),
+    m_internalDataChange(0),
     m_pendingVisiblePreviews(0),
     m_viewAdapter(viewAdapter),
     m_itemView(0),
@@ -322,7 +350,7 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
     if (!m_viewAdapter->iconSize().isValid()) {
         m_previewShown = false;
     }
-    
+
     m_proxyModel = qobject_cast<QAbstractProxyModel*>(model);
     m_dirModel = (m_proxyModel == 0) ?
                  qobject_cast<KDirModel*>(model) :
@@ -333,6 +361,8 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
     } else {
         connect(m_dirModel->dirLister(), SIGNAL(newItems(const KFileItemList&)),
                 q, SLOT(generatePreviews(const KFileItemList&)));
+        connect(m_dirModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
+                q, SLOT(generatePreviews(const QModelIndex&, const QModelIndex&)));
     }
 
     QClipboard* clipboard = QApplication::clipboard();
@@ -357,7 +387,7 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
 }
 
 KFilePreviewGenerator::Private::~Private()
-{        
+{
     killPreviewJobs();
     m_pendingItems.clear();
     m_dispatchedItems.clear();
@@ -384,6 +414,25 @@ void KFilePreviewGenerator::Private::generatePreviews(const KFileItemList& items
     }
 
     startPreviewJob(orderedItems);
+}
+
+void KFilePreviewGenerator::Private::generatePreviews(const QModelIndex& topLeft,
+                                                      const QModelIndex& bottomRight)
+{
+    if (m_internalDataChange > 0) {
+        // QAbstractItemModel::setData() has been invoked internally by the KFilePreviewGenerator.
+        // The signal dataChanged() is connected with this method, but previews only need
+        // to be generated when an external data change has occured.
+        return;
+    }
+
+    KFileItemList itemList;
+    for (int row = topLeft.row(); row <= bottomRight.row(); ++row) {
+        const QModelIndex index = m_dirModel->index(row, 0);
+        const KFileItem item = m_dirModel->itemForIndex(index);
+        itemList.append(item);
+    }
+    generatePreviews(itemList);
 }
 
 void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, const QPixmap& pixmap)
@@ -462,6 +511,8 @@ void KFilePreviewGenerator::Private::slotPreviewJobFinished(KJob* job)
 
 void KFilePreviewGenerator::Private::updateCutItems()
 {
+    DataChangeObtainer obt(this);
+
     // restore the icons of all previously selected items to the
     // original state...
     foreach (const ItemInfo& cutItem, m_cutItemsCache) {
@@ -485,6 +536,7 @@ void KFilePreviewGenerator::Private::dispatchPreviewQueue()
         // 'gotPreview()' from the PreviewJob is too expensive, as a relayout
         // of the view would be triggered for each single preview.
         LayoutBlocker blocker(m_itemView);
+        DataChangeObtainer obt(this);
         for (int i = 0; i < previewsCount; ++i) {
             const ItemInfo& preview = m_previews.first();
 
@@ -584,6 +636,7 @@ void KFilePreviewGenerator::Private::applyCutItemEffect()
         items << dirLister->itemsForDir(url);
     }
 
+    DataChangeObtainer obt(this);
     foreach (const KFileItem& item, items) {
         if (isCutItem(item)) {
             const QModelIndex index = m_dirModel->indexForItem(item);
@@ -694,7 +747,7 @@ void KFilePreviewGenerator::Private::startPreviewJob(const KFileItemList& items)
     const QSize size = m_viewAdapter->iconSize();
 
     // PreviewJob internally caches items always with the size of
-    // 128 x 128 pixels or 256 x 256 pixels. A downscaling is done 
+    // 128 x 128 pixels or 256 x 256 pixels. A downscaling is done
     // by PreviewJob if a smaller size is requested. As the KFilePreviewGenerator must
     // do a downscaling anyhow because of the frame, only the provided
     // cache sizes are requested.
@@ -729,7 +782,6 @@ void KFilePreviewGenerator::Private::orderItems(KFileItemList& items)
     // when having quite less items in comparison to the number of rows in
     // the model. Choosing the right algorithm is important when having directories
     // with several hundreds or thousands of items.
-
 
     const bool hasProxy = (m_proxyModel != 0);
     const int itemCount = items.count();
@@ -834,7 +886,7 @@ void KFilePreviewGenerator::setPreviewShown(bool show)
         // otherwise the showing the previews will get ignored
         return;
     }
-    
+
     if (d->m_previewShown != show) {
         d->m_previewShown = show;
         d->m_cutItemsCache.clear();
