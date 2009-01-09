@@ -734,7 +734,7 @@ void KFileItemDelegate::Private::drawTextItems(QPainter *painter, const QTextLay
         int blurFactor = qRound(shadowBlur);
 
         QImage image(boundingRect.size() + QSize(padding * 2, padding * 2), QImage::Format_ARGB32_Premultiplied);
-        image.fill(Qt::transparent);
+        image.fill(0);
         p.begin(&image);
         p.drawImage(padding, padding, pixmap.toImage());
         p.end();
