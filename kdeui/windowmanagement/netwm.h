@@ -1110,6 +1110,13 @@ public:
     void setFrameExtents(NETStrut strut);
 
     /**
+       Returns the frame decoration strut, i.e. the width of the decoration borders.
+
+       @since 4.3
+    **/
+    NETStrut frameExtents() const;
+
+    /**
        Returns an icon.  If width and height are passed, the icon returned will be
        the closest it can find (the next biggest).  If width and height are omitted,
        then the largest icon in the list is returned.

@@ -3445,6 +3445,9 @@ void NETWinInfo::setFrameExtents(NETStrut strut) {
 		    PropModeReplace, (unsigned char *) d, 4);
 }
 
+NETStrut NETWinInfo::frameExtents() const {
+    return p->frame_strut;
+}
 
 void NETWinInfo::kdeGeometry(NETRect& frame, NETRect& window) {
     if (p->win_geom.size.width == 0 || p->win_geom.size.height == 0) {
