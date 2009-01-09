@@ -7,7 +7,7 @@ COPYING.
 -->
 <!--
 Notes:
-- the mime types in this file are valid with the version 0.20 of the
+- the mime types in this file are valid with the version 0.23 of the
   shared-mime-info package.
 - the "fdo #xxxxx" are the wish in the freedesktop.org bug database to include
   the mime type there.
@@ -129,7 +129,7 @@ Notes:
   <mime-type type="audio/x-pn-realaudio-plugin">
     <comment>RealAudio plugin file</comment>
   </mime-type>
-  <mime-type type="image/x-exr"> <!-- fdo #6488, FIXED 0.24 -->
+  <mime-type type="image/x-exr"> <!-- fdo #6488, FIXED 0.30 -->
     <comment>EXR image</comment>
     <magic priority="50">
       <match type="little32" value="20000630" offset="0"/>
@@ -189,15 +189,16 @@ Notes:
     </magic>
     <glob pattern="*.abc"/>
   </mime-type>
-  <mime-type type="application/x-fictionbook"> <!-- TODO fdo report -->
-    <sub-class-of type="application/xml"/>
+  <mime-type type="application/x-fictionbook"> <!-- fdo #17553, FIXED 0.52 -->
     <comment>FictionBook document</comment>
+    <sub-class-of type="application/xml"/>
     <glob pattern="*.fb2"/>
     <magic priority="80">
       <match type="string" value="&lt;FictionBook" offset="0:256"/>
     </magic>
+    <root-XML namespaceURI="http://www.gribuser.ru/xml/fictionbook/2.0" localName="FictionBook"/>
   </mime-type>
-  <mime-type type="application/epub+zip"> <!-- fdo #12625, FIXED 0.24 -->
+  <mime-type type="application/epub+zip"> <!-- fdo #12625, FIXED 0.30 -->
     <comment>Electronic book document</comment>
     <magic priority="50">
       <match type="string" value="PK\003\004" offset="0">
@@ -208,7 +209,7 @@ Notes:
     </magic>
     <glob pattern="*.epub"/>
   </mime-type>
-  <mime-type type="text/x-cmake"> <!-- fdo #15561, FIXED 0.24 -->
+  <mime-type type="text/x-cmake"> <!-- fdo #15561, FIXED 0.30 -->
     <comment>CMake source code</comment>
     <glob pattern="*.cmake"/>
     <glob pattern="CMakeLists.txt"/>
@@ -419,27 +420,22 @@ Notes:
   </mime-type>
   
   <!-- Is the actual standard for rdf content encoded in XMl, as opposed to text/rdf: http://www.iana.org/assignments/media-types/application/ -->
-  <!-- http://bugs.freedesktop.org/show_bug.cgi?id=18088 -->
-  <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/rdf+xml">
+  <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/rdf+xml"> <!-- fdo #18088, FIXED 0.52 -->
     <comment>RDF/XML document</comment>
     <sub-class-of type="application/xml"/>
     <glob pattern="*.rdf" />
     <glob pattern="*.rdfs" />
   </mime-type>
-
   <!-- http://www4.wiwiss.fu-berlin.de/bizer/TriG/ -->
   <!-- Used in Nepomuk to encode almost all ontologies -->
-  <!-- http://bugs.freedesktop.org/show_bug.cgi?id=18089 -->
-  <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/x-trig">
+  <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/x-trig"> <!-- fdo #18089 -->
     <comment>TriG RDF document</comment>
     <sub-class-of type="text/plain" />
     <glob pattern="*.trig" />
   </mime-type>
-
   <!-- http://www.dajobe.org/2004/01/turtle/#sec-mime -->
   <!-- Important: the SPARQL RDF query lanaguge uses turtle encoding for graph patterns. -->
-  <!-- http://bugs.freedesktop.org/show_bug.cgi?id=18089 -->
-  <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/x-turtle">
+  <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/x-turtle"> <!-- fdo #18089 -->
     <comment>Turtle RDF document</comment>
     <sub-class-of type="text/plain" />
   </mime-type>
