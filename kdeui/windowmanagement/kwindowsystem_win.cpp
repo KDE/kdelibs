@@ -245,7 +245,7 @@ bool CALLBACK KWindowSystemPrivate::EnumWindProc(WId hWnd, LPARAM lparam)
     if( !QString(windowText).trimmed().isEmpty() && IsWindowVisible( hWnd ) && !(ex_style&WS_EX_TOOLWINDOW) 
        && !GetParent(hWnd) && !GetWindow(hWnd,GW_OWNER) && !p->winInfos.contains(hWnd) ) {
        
-        kDebug()<<"Adding window to windowList " << add + QString(windowText).trimmed();
+//        kDebug()<<"Adding window to windowList " << add + QString(windowText).trimmed();
         
         InternalWindowInfo winfo;
         KWindowSystemPrivate::readWindowInfo(hWnd,&winfo);
