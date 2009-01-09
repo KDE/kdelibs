@@ -594,7 +594,7 @@ QString KGlobalSettings::desktopPath()
     return path.isEmpty() ? QDir::homePath() : path;
 }
 
-// Autostart is not a XDG path, so we keep with old kdelibs code code
+// Autostart is not a XDG path, so we have our own code for it.
 QString KGlobalSettings::autostartPath()
 {
     QString s_autostartPath;
@@ -619,7 +619,7 @@ QString KGlobalSettings::downloadPath()
     // Qt 4.4.1 does not have DOWNLOAD, so we based on old code for now
     QString downloadPath = QDir::homePath();
 #ifndef Q_WS_WIN
-    QString xdgUserDirs = QDir::homePath() + QLatin1String( "/.config/user-dirs.dirs" );
+    const QString xdgUserDirs = KGlobal::dirs()->localxdgconfdir() + QLatin1String( "user-dirs.dirs" );
     if( QFile::exists( xdgUserDirs ) ) {
         KConfig xdgUserConf( xdgUserDirs, KConfig::SimpleConfig );
         KConfigGroup g( &xdgUserConf, "" );
