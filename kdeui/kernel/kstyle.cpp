@@ -1111,7 +1111,7 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             if (!tiles && hasSolidBackground)
             {
                 QImage image(32 + 16, option->rect.height(), QImage::Format_ARGB32_Premultiplied);
-                image.fill(Qt::transparent);
+                image.fill(0);
 
                 QRect r = image.rect().adjusted(0, 0, -1, -1);
 
