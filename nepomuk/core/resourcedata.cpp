@@ -287,6 +287,7 @@ bool Nepomuk::ResourceData::store()
     // save type (There should be no need to save all the types since there is only one way
     // that m_types contains more than one element: if we loaded them)
     // The first type, however, can be set at creation time to any value
+    // FIXME: save all unsaved types here and do not directly save tem above in setTypes
     if ( !m_initialTypeSaved ) {
         statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_types.first() ) );
     }
@@ -305,9 +306,7 @@ bool Nepomuk::ResourceData::store()
         if ( ( m_uri.scheme() == "file" ||
                constHasType( Soprano::Vocabulary::Xesam::File() ) ) &&
              QFile::exists( m_uri.toLocalFile()) ) {
-            statements.append( Statement( m_uri,
-                                          Soprano::Vocabulary::Xesam::url(),
-                                          LiteralValue( m_uri.toLocalFile() ) ) );
+            statements.append( Statement( m_uri, Soprano::Vocabulary::Xesam::url(), m_uri ) ) );
         }
 
         // store our grounding occurrence in case we are a thing created by the pimoThing() method
