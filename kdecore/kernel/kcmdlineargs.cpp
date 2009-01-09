@@ -301,9 +301,11 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
 #endif
     qt_options.add("reverse", ki18n("mirrors the whole layout of widgets"));
     qt_options.add("stylesheet <file.qss>", ki18n("applies the Qt stylesheet to the application widgets"));
-#if QT_VERSION >= 0x040500
-    qt_options.add("graphicssystem <system>", ki18n("use a different graphics system instead of the default one, options are raster and opengl (experimental)"));
+#if QT_VERSION >= 0x040a00
+# error Qt version larger than 4.9, please fix me
 #endif
+    if (qVersion()[2] >= '5')
+        qt_options.add("graphicssystem <system>", ki18n("use a different graphics system instead of the default one, options are raster and opengl (experimental)"));
     // KDE options
     kde_options.add("caption <caption>",   ki18n("Use 'caption' as name in the titlebar"));
     kde_options.add("icon <icon>",         ki18n("Use 'icon' as the application icon"));
