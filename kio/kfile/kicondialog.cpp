@@ -229,7 +229,7 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
 	   // Image is smaller than desired.  Draw onto a transparent QImage of the required dimensions.
 	   // (Unpleasant glitches occur if we break the uniformIconSizes() contract).
 	   QImage paddedImage = QImage(canvasIconWidth, canvasIconHeight, QImage::Format_ARGB32_Premultiplied);
-	   paddedImage.fill(Qt::transparent); 
+	   paddedImage.fill(0);
 	   QPainter painter(&paddedImage);
 	   painter.drawImage( (canvasIconWidth - img.width()) / 2, (canvasIconHeight - img.height()) / 2, img);
 	   img = paddedImage;
