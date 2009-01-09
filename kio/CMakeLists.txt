@@ -116,6 +116,7 @@ set(kiocore_STAT_SRCS
   kio/slavebase.cpp
   kio/slaveconfig.cpp
   kio/slaveinterface.cpp
+  kio/thumbcreator.cpp
   kio/tcpslavebase.cpp
   kio/udsentry.cpp
   kio/hostinfo.cpp

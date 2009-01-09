@@ -18,8 +18,6 @@
 
 #include "global.h"
 #include "job.h"
-#include "thumbcreator.h"   // needed to create a reference to ThumbCreator class in the export lib
-                            // other solution: don't use KIO_EXPORT there...
 
 #include <config.h>
 
