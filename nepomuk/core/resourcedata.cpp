@@ -305,9 +305,7 @@ bool Nepomuk::ResourceData::store()
         if ( ( m_uri.scheme() == "file" ||
                constHasType( Soprano::Vocabulary::Xesam::File() ) ) &&
              QFile::exists( m_uri.toLocalFile()) ) {
-            statements.append( Statement( m_uri,
-                                          Soprano::Vocabulary::Xesam::url(),
-                                          LiteralValue( m_uri.toLocalFile() ) ) );
+            statements.append( Statement( m_uri, Soprano::Vocabulary::Xesam::url(), m_uri ) );
         }
 
         // store our grounding occurrence in case we are a thing created by the pimoThing() method
