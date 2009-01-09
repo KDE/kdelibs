@@ -27,7 +27,6 @@
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 
-#include <kapplication.h>
 #include <kpluginloader.h>
 #include <kdebug.h>
 #include <klocale.h>

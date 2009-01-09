@@ -35,7 +35,6 @@
 
 #include <QtDBus/QtDBus>
 
-#include <kapplication.h>
 #include <kaboutdata.h>
 #include <kcmodule.h>
 #include <kcmoduleinfo.h>
@@ -216,7 +215,7 @@ void KCModuleProxy::deleteClient()
 	delete d->kcm;
 	d->kcm = 0;
 
-	kapp->syncX();
+	qApp->syncX();
 }
 
 void KCModuleProxyPrivate::_k_moduleChanged(bool c)
