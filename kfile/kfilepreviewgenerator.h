@@ -55,17 +55,17 @@ public:
     /**
      * @param parent  Item view containing the file items where previews should
      *                be generated. It is mandatory that the item view specifies
-     *                an icon size by QAbstractItemView::setIconSize() and that 
+     *                an icon size by QAbstractItemView::setIconSize() and that
      *                the model of the view (or the source model of the proxy model)
      *                is an instance of KDirModel. Otherwise no previews will be generated.
      */
     KFilePreviewGenerator(QAbstractItemView* parent);
-    
+
     /** @internal */
     KFilePreviewGenerator(KAbstractViewAdapter* parent, QAbstractProxyModel* model);
-    
+
     virtual ~KFilePreviewGenerator();
-    
+
     /**
      * If \a show is set to true, a preview is generated for each item. If \a show
      * is false, the MIME type icon of the item is shown instead. Per default showing
@@ -112,8 +112,9 @@ private:
     class Private;
     Private* const d; /// @internal
     Q_DISABLE_COPY(KFilePreviewGenerator)
-    
+
     Q_PRIVATE_SLOT(d, void generatePreviews(const KFileItemList&))
+    Q_PRIVATE_SLOT(d, void generatePreviews(const QModelIndex&, const QModelIndex&))
     Q_PRIVATE_SLOT(d, void addToPreviewQueue(const KFileItem&, const QPixmap&))
     Q_PRIVATE_SLOT(d, void slotPreviewJobFinished(KJob*))
     Q_PRIVATE_SLOT(d, void updateCutItems())
