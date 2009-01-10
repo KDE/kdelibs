@@ -71,7 +71,7 @@ void KPluginSelector::Private::updateDependencies(PluginEntry *pluginEntry, bool
         }
 
         for (int i = 0; i < pluginModel->rowCount(); i++) {
-            QModelIndex index = pluginModel->index(i, 0);
+            const QModelIndex index = pluginModel->index(i, 0);
             PluginEntry *pe = static_cast<PluginEntry*>(index.internalPointer());
 
             if ((pe->pluginInfo.pluginName() != pluginEntry->pluginInfo.pluginName()) &&
@@ -83,7 +83,7 @@ void KPluginSelector::Private::updateDependencies(PluginEntry *pluginEntry, bool
         }
     } else {
         for (int i = 0; i < pluginModel->rowCount(); i++) {
-            QModelIndex index = pluginModel->index(i, 0);
+            const QModelIndex index = pluginModel->index(i, 0);
             PluginEntry *pe = static_cast<PluginEntry*>(index.internalPointer());
 
             if ((pe->pluginInfo.pluginName() != pluginEntry->pluginInfo.pluginName()) &&
@@ -335,7 +335,7 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo> &pluginInfoList,
 void KPluginSelector::load()
 {
     for (int i = 0; i < d->pluginModel->rowCount(); i++) {
-        QModelIndex index = d->pluginModel->index(i, 0);
+        const QModelIndex index = d->pluginModel->index(i, 0);
         PluginEntry *pluginEntry = static_cast<PluginEntry*>(index.internalPointer());
         pluginEntry->pluginInfo.load(pluginEntry->cfgGroup);
         d->pluginModel->setData(index, pluginEntry->pluginInfo.isPluginEnabled(), Qt::CheckStateRole);
@@ -347,7 +347,7 @@ void KPluginSelector::load()
 void KPluginSelector::save()
 {
     for (int i = 0; i < d->pluginModel->rowCount(); i++) {
-        QModelIndex index = d->pluginModel->index(i, 0);
+        const QModelIndex index = d->pluginModel->index(i, 0);
         PluginEntry *pluginEntry = static_cast<PluginEntry*>(index.internalPointer());
         pluginEntry->pluginInfo.setPluginEnabled(pluginEntry->checked);
         pluginEntry->pluginInfo.save(pluginEntry->cfgGroup);
@@ -360,7 +360,7 @@ void KPluginSelector::save()
 void KPluginSelector::defaults()
 {
     for (int i = 0; i < d->pluginModel->rowCount(); i++) {
-        QModelIndex index = d->pluginModel->index(i, 0);
+        const QModelIndex index = d->pluginModel->index(i, 0);
         PluginEntry *pluginEntry = static_cast<PluginEntry*>(index.internalPointer());
         d->pluginModel->setData(index, pluginEntry->pluginInfo.isPluginEnabledByDefault(), Qt::CheckStateRole);
     }
@@ -368,10 +368,23 @@ void KPluginSelector::defaults()
     emit changed(true);
 }
 
+bool KPluginSelector::isDefault() const
+{
+    for (int i = 0; i < d->pluginModel->rowCount(); i++) {
+        const QModelIndex index = d->pluginModel->index(i, 0);
+        PluginEntry *pluginEntry = static_cast<PluginEntry*>(index.internalPointer());
+        if (d->pluginModel->data(index, Qt::CheckStateRole).toBool() != pluginEntry->pluginInfo.isPluginEnabledByDefault()) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void KPluginSelector::updatePluginsState()
 {
     for (int i = 0; i < d->pluginModel->rowCount(); i++) {
-        QModelIndex index = d->pluginModel->index(i, 0);
+        const QModelIndex index = d->pluginModel->index(i, 0);
         PluginEntry *pluginEntry = static_cast<PluginEntry*>(index.internalPointer());
         if (pluginEntry->manuallyAdded) {
             pluginEntry->pluginInfo.setPluginEnabled(pluginEntry->checked);
@@ -620,8 +633,6 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
     painter->restore();
     painter->restore();
-
-    KWidgetItemDelegate::paintWidgets(painter, option, index);
 }
 
 QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

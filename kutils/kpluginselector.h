@@ -180,8 +180,16 @@ public:
 
     /**
       * Change to applications defaults
+      * @see isDefault()
       */
     void defaults();
+
+    /**
+      * Returns true if the plugin selector does not have any changes to application defaults
+      * @see defaults()
+      * @since 4.3
+      */
+    bool isDefault() const;
 
     /**
       * Updates plugins state (enabled or not)
