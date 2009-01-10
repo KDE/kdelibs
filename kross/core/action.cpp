@@ -127,10 +127,10 @@ Action::Action(QObject* parent, const QUrl& url)
     #ifdef KROSS_ACTION_DEBUG
         krossdebug( QString("Action::Action(QObject*,QUrl) Ctor name='%1'").arg(objectName()) );
     #endif
-    QFileInfo fi( url.path() );
+    QFileInfo fi( url.toLocalFile() );
     setText( fi.fileName() );
     setIconName( KMimeType::iconNameForUrl(url) );
-    setFile( url.path() );
+    setFile( url.toLocalFile() );
     connect(this, SIGNAL(triggered(bool)), this, SLOT(slotTriggered()));
 }
 
