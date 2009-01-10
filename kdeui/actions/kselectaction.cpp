@@ -533,6 +533,9 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
     case ComboBoxMode: {
         KComboBox* comboBox = new KComboBox(parent);
       comboBox->installEventFilter (this);
+      // hack for the fact that QWidgetAction does not sync all its created widgets
+      // to its enabled state, just QToolButtons (Qt 4.4.3)
+      installEventFilter( comboBox );
 
       if ( d->m_maxComboViewCount != -1 )
         comboBox->setMaxVisibleItems( d->m_maxComboViewCount );
