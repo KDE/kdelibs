@@ -179,6 +179,7 @@ install( FILES
   KFileMetaInfo
   KFileMetaInfoGroup
   KFileMetaInfoItem
+  KFilePlacesModel
   KFileShare
   KFileSharePropsPlugin
   KFileTreeBranch
