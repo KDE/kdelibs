@@ -269,6 +269,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       layout->addWidget( d->m_view );
       layout->addWidget( d->m_bottomViewBar );
       setWidget( widget );
+      widget->setFocusProxy( d->m_view );
   } else {
       setWidget( view );
   }
