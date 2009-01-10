@@ -390,6 +390,10 @@ input[type="file"] {
         color: windowtext;
 }
 
+input[type="image"] {
+       background-color: transparent;
+}
+
 isindex { color: windowtext; font-size: small; }
 
 
