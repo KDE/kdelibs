@@ -25,10 +25,12 @@
 #include <kdeui_export.h>
 #include <QtGui/QGroupBox>
 
+class QAbstractButton;
+
 /**
- * @short Group box with index of the selected radio button
+ * @short Group box with index of the selected button
  * KGroupBox is a simple group box that can keep track of the current selected
- * radio button of the ones added to it.
+ * button of the ones added to it.
  *
  * Use normally as you would with a QGroupBox.
  *
@@ -52,35 +54,41 @@ class KDEUI_EXPORT KButtonGroup
     ~KButtonGroup();
 
     /**
-     * Return the index of the selected QRadioButton, among the QRadioButton's
+     * Return the index of the selected QAbstractButton, among the QAbstractButton's
      * added to the widget.
-     * @return the index of the selected radio button
+     * @return the index of the selected button
      */
     int selected() const;
 
+    /**
+     * @return the index of @p button.
+     * @since 4.3
+     */
+    int id( QAbstractButton* button ) const;
+
   public Q_SLOTS:
     /**
-     * Select the \p id -th radio button
+     * Select the \p id -th button
      */
     void setSelected( int id );
 
   Q_SIGNALS:
     /**
-     * The radio button with index \p id was clicked
+     * The button with index \p id was clicked
      */
     void clicked( int id );
     /**
-     * The radio button with index \p id was pressed
+     * The button with index \p id was pressed
      */
     void pressed( int id );
     /**
-     * The radio button with index \p id was released
+     * The button with index \p id was released
      */
     void released( int id );
     /**
-     * Emitted when anything (a click on a radio button, or calling setSelected())
+     * Emitted when anything (a click on a button, or calling setSelected())
      * change the id of the current selected. \p id is the index of the new
-     * selected radio button.
+     * selected button.
      */
     void changed( int id );
 

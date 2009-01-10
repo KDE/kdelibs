@@ -23,7 +23,7 @@
 
 #include <QChildEvent>
 #include <QHash>
-#include <QRadioButton>
+#include <QAbstractButton>
 #include <QSignalMapper>
 
 class KButtonGroup::Private
@@ -72,12 +72,12 @@ void KButtonGroup::setSelected( int id )
   
   QHash<QObject*, int>::Iterator it = d->btnMap.begin();
   QHash<QObject*, int>::Iterator itEnd = d->btnMap.end();
-  QRadioButton* radio = 0;
+  QAbstractButton* button = 0;
   for ( ; it != itEnd; ++it )
   {
-    if ( ( it.value() == id ) && ( radio = qobject_cast<QRadioButton*>( it.key() ) ) )
+    if ( ( it.value() == id ) && ( button = qobject_cast<QAbstractButton*>( it.key() ) ) )
     {
-      radio->setChecked( true );
+      button->setChecked( true );
       d->currentId = id;
       emit changed( id );
       d->wantToBeId = -1;
@@ -95,25 +95,25 @@ void KButtonGroup::childEvent( QChildEvent* event )
 {
   if ( event->polished() )
   {
-    QRadioButton* radio = qobject_cast<QRadioButton*>( event->child() );
-    if ( !d->btnMap.contains( event->child() ) && radio )
+    QAbstractButton* button = qobject_cast<QAbstractButton*>( event->child() );
+    if ( !d->btnMap.contains( event->child() ) && button )
     {
-      connect( radio, SIGNAL( clicked() ), &d->clickedMapper, SLOT( map() ) );
-      d->clickedMapper.setMapping( radio, d->nextId );
+      connect( button, SIGNAL( clicked() ), &d->clickedMapper, SLOT( map() ) );
+      d->clickedMapper.setMapping( button, d->nextId );
 
-      connect( radio, SIGNAL( pressed() ), &d->pressedMapper, SLOT( map() ) );
-      d->pressedMapper.setMapping( radio, d->nextId );
+      connect( button, SIGNAL( pressed() ), &d->pressedMapper, SLOT( map() ) );
+      d->pressedMapper.setMapping( button, d->nextId );
 
-      connect( radio, SIGNAL( released() ), &d->releasedMapper, SLOT( map() ) );
-      d->releasedMapper.setMapping( radio, d->nextId );
+      connect( button, SIGNAL( released() ), &d->releasedMapper, SLOT( map() ) );
+      d->releasedMapper.setMapping( button, d->nextId );
 
-      d->btnMap[ radio ] = d->nextId;
+      d->btnMap[ button ] = d->nextId;
      
       if ( d->nextId == d->wantToBeId )
       {
         d->currentId = d->wantToBeId;
         d->wantToBeId = -1;
-        radio->setChecked( true );
+        button->setChecked( true );
         emit changed( d->currentId );
       }
 
@@ -123,7 +123,7 @@ void KButtonGroup::childEvent( QChildEvent* event )
   else if ( event->removed() )
   {
     QObject* obj = event->child();
-    QHash<QObject*, int>::Iterator it = d->btnMap.find( obj );
+    QHash<QObject*, int>::ConstIterator it = d->btnMap.constFind( obj );
     if ( it != d->btnMap.end() )
     {
       d->clickedMapper.removeMappings( obj );
@@ -139,6 +139,16 @@ void KButtonGroup::childEvent( QChildEvent* event )
 
   // be transparent
   QGroupBox::childEvent( event );
+}
+
+int KButtonGroup::id( QAbstractButton* button ) const
+{
+  QHash<QObject*, int>::ConstIterator it = d->btnMap.constFind( button );
+  if ( it != d->btnMap.end() )
+  {
+    return it.value();
+  }
+  return -1;
 }
 
 void KButtonGroup::Private::slotClicked( int id )
