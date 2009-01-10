@@ -37,6 +37,7 @@
 <!ENTITY Natalie.Koning      '<othercredit role="translator"><firstname>Natalie</firstname><surname>Koning</surname><affiliation><address><email>nat@switch.demon.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Antoon.Tolboom      '<othercredit role="translator"><firstname>Antoon</firstname><surname>Tolboom</surname><affiliation><address><email>atolboo@casema.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Jordy.Ritico      '<othercredit role="translator"><firstname>Jordy</firstname><surname>Ritico</surname><affiliation><address><email>jordyritico@hotmail.com</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Kristof.Bal      '<othercredit role="translator"><firstname>Kristof</firstname><surname>Bal</surname><affiliation><address><email>kristof.bal@gmail.com</email></address></affiliation><contrib>Vertaler</contrib></othercredit>'>
 <!ENTITY kde.nl.groep       "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
@@ -72,6 +73,7 @@
 <!ENTITY vertaling.natalie      "<para>Dit document is vertaald in het Nederlands door &Natalie.Koning;.</para>">
 <!ENTITY vertaling.antoon       "<para>Dit document is vertaald in het Nederlands door &Antoon.Tolboom;.</para>">
 <!ENTITY vertaling.jordy        "<para>Dit document is vertaald in het Nederlands door &Jordy.Ritico;.</para>">
+<!ENTITY vertaling.kristof      "<para>Dit document is vertaald in het Nederlands door &Kristof.Bal;.</para>">
 
 
 <!-- Gebruiken als template voor nieuwe vertalers/nalezers
