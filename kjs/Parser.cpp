@@ -123,7 +123,7 @@ void Parser::parse(const UString& sourceURL, int startingLineNumber,
     }
 
 #ifdef KJS_VERBOSE
-  fprintf( stderr, "%s\n", prog->toString().ascii() );
+  fprintf( stderr, "%s\n", m_progNode->toString().ascii() );
 #endif
 }
 
