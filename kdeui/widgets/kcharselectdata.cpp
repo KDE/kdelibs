@@ -627,14 +627,14 @@ QStringList KCharSelectData::splitString(const QString& s)
     int end = 0;
     int length = s.length();
     while (end < length) {
-        while (end < length && s[end].isLetterOrNumber()) {
+        while (end < length && (s[end].isLetterOrNumber() || s[end] == '+')) {
             end++;
         }
         if (start != end) {
             result.append(s.mid(start, end - start));
         }
         start = end;
-        while (end < length && !s[end].isLetterOrNumber()) {
+        while (end < length && !(s[end].isLetterOrNumber() || s[end] == '+')) {
             end++;
             start++;
         }
