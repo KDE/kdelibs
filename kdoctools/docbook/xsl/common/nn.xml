@@ -73,8 +73,8 @@
    <l:gentext key="pubdate" text="publiseringsdato"/>
    <l:gentext key="Published" text="Utgjeven"/>
    <l:gentext key="published" text="utgjeven"/>
-   <l:gentext key="Qandadiv" text="Spørsmål og svar"/>
-   <l:gentext key="qandadiv" text="spørsmål og svar"/>
+   <l:gentext key="Qandadiv" text="Sp&#248;rsm&#229;l og svar"/>
+   <l:gentext key="qandadiv" text="sp&#248;rsm&#229;l og svar"/>
    <l:gentext key="Question" text="Sp&#248;rsm&#229;l"/>
    <l:gentext key="question" text="sp&#248;rsm&#229;l"/>
    <l:gentext key="RefEntry" text=""/>
@@ -168,8 +168,8 @@
    <l:gentext key="below" text="under"/>
    <l:gentext key="sectioncalled" text="avsnittet"/>
    <l:gentext key="index symbols" text="Symbol"/>
-   <l:gentext key="lowercase.alpha" text="abcdefghijklmnopqrstuvwxyzæøå"/>
-   <l:gentext key="uppercase.alpha" text="ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ"/>
+   <l:gentext key="lowercase.alpha" text="abcdefghijklmnopqrstuvwxyz&#230;&#248;&#229;"/>
+   <l:gentext key="uppercase.alpha" text="ABCDEFGHIJKLMNOPQRSTUVWXYZ&#198;&#216;&#197;"/>
    <l:dingbat key="startquote" text="&#171;"/>
    <l:dingbat key="endquote" text="&#187;"/>
    <l:dingbat key="nestedstartquote" text="&#8216;"/>
@@ -180,7 +180,7 @@
    <l:gentext key="hyphenation-character" text="-" lang="en"/>
    <l:gentext key="hyphenation-push-character-count" text="2" lang="en"/>
    <l:gentext key="hyphenation-remain-character-count" text="2" lang="en"/>
-   <l:gentext key="footer-doc-comment" text="Ønskjer du å kommentera eller komma med ei oppdatera til denne sida?"/>
+   <l:gentext key="footer-doc-comment" text="&#216;nskjer du &#229; kommentera eller komma med ei oppdatera til denne sida?"/>
    <l:gentext key="footer-doc-feedback" text="Send tilbakemelding til "/>
    <l:gentext key="footer-doc-teamname" text="KDE-dokumentasjonsgruppa"/>
    <l:context name="styles">
@@ -429,7 +429,7 @@
       <l:template name="part" text="Del&#160;%n"/>
       <l:template name="procedure" text="Prosedyre&#160;%n"/>
       <l:template name="productionset" text="Produksjon&#160;%n"/>
-      <l:template name="qandadiv" text="Spørsmål og svar&#160;%n"/>
+      <l:template name="qandadiv" text="Sp&#248;rsm&#229;l og svar&#160;%n"/>
       <l:template name="qandaentry" text="Sp&#248;rsm&#229;l:&#160;%n"/>
       <l:template name="question" text="Sp&#248;rsm&#229;l:&#160;%n"/>
       <l:template name="sect1" text="Del&#160;%n"/>
@@ -451,7 +451,7 @@
       <l:template name="part" text="Del&#160;%n, &#171;%t&#187;"/>
       <l:template name="procedure" text="Prosedyre&#160;%n, &#171;%t&#187;"/>
       <l:template name="productionset" text="Produksjon&#160;%n, &#171;%t&#187;"/>
-      <l:template name="qandadiv" text="Spørsmål og svar&#160;%n, &#171;%t&#187;"/>
+      <l:template name="qandadiv" text="Sp&#248;rsm&#229;l og svar&#160;%n, &#171;%t&#187;"/>
       <l:template name="refsect1" text="avsnittet &#171;%t&#187;"/>
       <l:template name="refsect2" text="avsnittet &#171;%t&#187;"/>
       <l:template name="refsect3" text="avsnittet &#171;%t&#187;"/>
