@@ -546,14 +546,15 @@ QList<QChar> KCharSelectData::find(const QString& needle)
     QSet<quint16> result;
 
     QList<QChar> returnRes;
+    QString simplified = needle.simplified();
     QStringList searchStrings = splitString(needle.simplified());
 
-    if (searchStrings.count() == 0) {
-        return returnRes;
+    if(simplified.length() == 1) {
+        // search for hex representation of the character
+        searchStrings = QStringList(formatCode(simplified.at(0).unicode()));
     }
 
-    if(searchStrings.count() == 1 && searchStrings[0].length() == 1) {
-        returnRes.append(searchStrings[0].at(0));
+    if (searchStrings.count() == 0) {
         return returnRes;
     }
 
