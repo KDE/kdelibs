@@ -558,7 +558,6 @@ QList<QChar> KCharSelectData::find(const QString& needle)
         return returnRes;
     }
 
-    //TODO: U+ doesn't make sense here, because splitStrings splits it, so this should be checked and removed before
     QRegExp regExp("^(|u\\+|U\\+|0x|0X)([A-Fa-f0-9]{4})$");
     foreach(const QString &s, searchStrings) {
         if(regExp.exactMatch(s)) {
