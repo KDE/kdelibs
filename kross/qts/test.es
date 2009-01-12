@@ -1,7 +1,7 @@
 // #!/usr/bin/env kross
 
 /*
-    This function does print some general informations about
+    This function does print some general information about
     Kross to stdout.
 */
 function printInfos()

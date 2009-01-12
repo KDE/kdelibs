@@ -159,7 +159,7 @@ del: deletes a file or directory, recursively if the latter
 
 PROGRESS DISPLAYING : [this is outdated, and describes the kde3 situation]
 =====================
-Taj brought up the idea of delegating all progress informations to an extern
+Taj brought up the idea of delegating all progress information to an extern
 GUI daemon which could be provided in several implementations - examples
 are popup dialogs (most are annoyed by them, like me :) or a kicker applet
 or something completely different. This would also remove the dependency on

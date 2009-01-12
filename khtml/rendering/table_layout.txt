@@ -29,7 +29,7 @@ NS & Mozilla compliant table layouting algorithm (AutoTableLayout)
 ------------------------------------------------------------------
 
 The table layout algorithm computes a set of layout hints from the
-informations in the table cells, <col> elements and style
+information in the table cells, <col> elements and style
 sheets. Hints from different sources are treated a bit differently in
 the collection stage.
 
