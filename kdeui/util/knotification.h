@@ -75,8 +75,12 @@ class QDBusError;
 		   [Global]
 		   IconName=Filename
 		   Comment=Friendly Name of app
+		   Name=Name of app
  * </pre>
- *   The icon filename is just the name, without extension,  it's found with the KIconLoader
+ *   The icon filename is just the name, without extension,  it's found with the KIconLoader.
+ *   The Comment field will be used in KControl to describe the application.
+ *   The Name field is optional and may be used as the application name for popup,
+ *   if Name is not present, Comment is used instead
  * 
  * \subsection context Context information
  * 
