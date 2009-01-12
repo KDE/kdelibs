@@ -150,6 +150,10 @@ void KSaveFile::setFileName(const QString &filename)
 
     // follow symbolic link, if any
     d->realFileName = KStandardDirs::realFilePath( d->realFileName );
+
+#ifdef Q_WS_WIN
+    d->realFileName.replace(QString::fromLatin1("//"), QString::fromLatin1("/"));
+#endif
     return;
 }
 
