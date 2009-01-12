@@ -313,9 +313,9 @@ void KHistoryComboBox::rotateDown()
         }
         else { // bottom of history
             if ( d->myIterateIndex == -2 ) {
-                KNotification::event( KNotification::Notification ,
+                KNotification::event( "Textcompletion: No Match" ,
                                       i18n("No further item in the history."),
-                                       QPixmap() , this);
+                                       QPixmap() , this, KNotification::DefaultEvent);
             }
 
             d->myIterateIndex = -1;
