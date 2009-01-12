@@ -147,19 +147,19 @@ void DirectorySizeJobPrivate::slotEntries( KIO::Job*, const KIO::UDSEntryList & 
     for (; it != end; ++it) {
 
         const KIO::UDSEntry& entry = *it;
-        const KIO::filesize_t size = entry.numberValue( KIO::UDSEntry::UDS_SIZE, -1 );
+        const KIO::filesize_t size = entry.numberValue(KIO::UDSEntry::UDS_SIZE, 0);
         const QString name = entry.stringValue( KIO::UDSEntry::UDS_NAME );
-        if ( name == "." )
+        if (name == ".") {
             m_totalSize += size;
-        else if ( name != ".." )
-        {
+            //kDebug(7007) << "'.': added" << size << "->" << m_totalSize;
+        } else if (name != "..") {
             if (!entry.isLink())
               m_totalSize += size;
             if (!entry.isDir())
               m_totalFiles++;
             else
               m_totalSubdirs++;
-            //kDebug(7007) << name << ":" << size;
+            //kDebug(7007) << name << ":" << size << "->" << m_totalSize;
         }
     }
 }
@@ -167,7 +167,7 @@ void DirectorySizeJobPrivate::slotEntries( KIO::Job*, const KIO::UDSEntryList & 
 void DirectorySizeJob::slotResult( KJob * job )
 {
     Q_D(DirectorySizeJob);
-    //kDebug(7007);
+    //kDebug(7007) << d->m_totalSize;
     removeSubjob(job);
     if (d->m_currentItem < d->m_lstItems.count())
     {
