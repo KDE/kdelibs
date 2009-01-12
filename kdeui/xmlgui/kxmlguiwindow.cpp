@@ -257,6 +257,13 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
         d->helpMenu = new KHelpMenu(this, componentData().aboutData(), true, actionCollection());
     }
 
+    // Help beginners who call setXMLFile and then setupGUI...
+    if (!xmlFile().isEmpty()) {
+        kWarning() << "You called setXMLFile(" << xmlFile() << ") and then createGUI or setupGUI,"
+                   << "which also calls setXMLFile and will overwrite the file you have previously set.\n"
+                   << "You should call createGUI("<<xmlFile()<<") or setupGUI(<options>,"<<xmlFile()<<") instead.";
+    }
+
     // we always want to load in our global standards file
     setXMLFile(KStandardDirs::locate("config", "ui/ui_standards.rc", componentData()));
 
