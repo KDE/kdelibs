@@ -66,6 +66,10 @@ Kded *Kded::_self = 0;
 
 static bool checkStamps = true;
 static bool delayedCheck = false;
+static int HostnamePollInterval;
+static bool bCheckSycoca;
+static bool bCheckUpdates;
+static bool bCheckHostname;
 
 extern QDBUS_EXPORT void qDBusAddSpyHook(void (*)(const QDBusMessage&));
 
@@ -798,7 +802,64 @@ public:
     {
        if (startup) {
           startup = false;
-          Kded::self()->initModules();
+
+          // This long initialization has to be here, not in kdemain.
+          // If it was in main, it would cause a dbus timeout when
+          // our parent from KUniqueApplication tries to call our
+          // newInstance method.
+
+          Kded *kded = Kded::self();
+
+          if (bCheckSycoca)
+              runBuildSycoca();
+
+          kded->recreate(true); // initial
+
+          if (bCheckUpdates)
+            (void) new KUpdateD; // Watch for updates
+
+#ifdef Q_WS_X11
+          XEvent e;
+          e.xclient.type = ClientMessage;
+          e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
+          e.xclient.display = QX11Info::display();
+          e.xclient.window = QX11Info::appRootWindow();
+          e.xclient.format = 8;
+          strcpy( e.xclient.data.b, "kded" );
+          XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
+#endif
+
+          runKonfUpdate(); // Run it once.
+
+#ifdef Q_WS_X11
+          e.xclient.type = ClientMessage;
+          e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
+          e.xclient.display = QX11Info::display();
+          e.xclient.window = QX11Info::appRootWindow();
+          e.xclient.format = 8;
+          strcpy( e.xclient.data.b, "confupdate" );
+          XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
+#endif
+
+          if (bCheckHostname)
+            (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
+
+          QObject::connect(QDBusConnection::sessionBus().interface(),
+                          SIGNAL(serviceOwnerChanged(QString,QString,QString)),
+                          kded, SLOT(slotApplicationRemoved(QString,QString,QString)));
+
+          // During startup kdesktop waits for KDED to finish.
+          // Send a notifyDatabaseChanged signal even if the database hasn't
+          // changed.
+          // If the database changed, kbuildsycoca's signal didn't go anywhere
+          // anyway, because it was too early, so let's send this signal
+          // unconditionnally (David)
+
+          QDBusMessage msg = QDBusMessage::createSignal("/kbuildsycoca", "org.kde.KSycoca", "notifyDatabaseChanged" );
+          msg << QStringList();
+          QDBusConnection::sessionBus().send(msg);
+
+          kded->initModules();
        } else
           runBuildSycoca();
 
@@ -853,14 +914,14 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      // Thiago: reenable if such a thing exists in QtDBus in the future
      //KUniqueApplication::dcopClient()->setQtBridgeEnabled(false);
 
-     int HostnamePollInterval = cg.readEntry("HostnamePollInterval", 5000);
-     bool bCheckSycoca = cg.readEntry("CheckSycoca", true);
-     bool bCheckUpdates = cg.readEntry("CheckUpdates", true);
-     bool bCheckHostname = cg.readEntry("CheckHostname", true);
+     HostnamePollInterval = cg.readEntry("HostnamePollInterval", 5000);
+     bCheckSycoca = cg.readEntry("CheckSycoca", true);
+     bCheckUpdates = cg.readEntry("CheckUpdates", true);
+     bCheckHostname = cg.readEntry("CheckHostname", true);
      checkStamps = cg.readEntry("CheckFileStamps", true);
      delayedCheck = cg.readEntry("DelayedCheck", false);
 
-     Kded *kded = new Kded(bCheckSycoca); // Build data base
+     Kded *kded = new Kded(false); // Build data base
 
      KDE_signal(SIGTERM, sighandler);
      KDE_signal(SIGHUP, sighandler);
@@ -874,51 +935,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      // before it can use timers (DF)
      kded->moveToThread( k.thread() );
 
-     kded->recreate(true); // initial
-
-     if (bCheckUpdates)
-        (void) new KUpdateD; // Watch for updates
-
-#ifdef Q_WS_X11
-     XEvent e;
-     e.xclient.type = ClientMessage;
-     e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
-     e.xclient.display = QX11Info::display();
-     e.xclient.window = QX11Info::appRootWindow();
-     e.xclient.format = 8;
-     strcpy( e.xclient.data.b, "kded" );
-     XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
-#endif
-
-     runKonfUpdate(); // Run it once.
-
-#ifdef Q_WS_X11
-     e.xclient.type = ClientMessage;
-     e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
-     e.xclient.display = QX11Info::display();
-     e.xclient.window = QX11Info::appRootWindow();
-     e.xclient.format = 8;
-     strcpy( e.xclient.data.b, "confupdate" );
-     XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
-#endif
-
-     if (bCheckHostname)
-        (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
-
-     QObject::connect(QDBusConnection::sessionBus().interface(),
-                      SIGNAL(serviceOwnerChanged(QString,QString,QString)),
-                      kded, SLOT(slotApplicationRemoved(QString,QString,QString)));
-
-     // During startup kdesktop waits for KDED to finish.
-     // Send a notifyDatabaseChanged signal even if the database hasn't
-     // changed.
-     // If the database changed, kbuildsycoca's signal didn't go anywhere
-     // anyway, because it was too early, so let's send this signal
-     // unconditionnally (David)
-
-     QDBusMessage msg = QDBusMessage::createSignal("/kbuildsycoca", "org.kde.KSycoca", "notifyDatabaseChanged" );
-     msg << QStringList();
-     QDBusConnection::sessionBus().send(msg);
      int result = k.exec(); // keep running
 
      delete kded;
