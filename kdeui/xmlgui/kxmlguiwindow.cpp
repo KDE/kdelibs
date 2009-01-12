@@ -257,8 +257,10 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
         d->helpMenu = new KHelpMenu(this, componentData().aboutData(), true, actionCollection());
     }
 
+    const QString windowXmlFile = xmlfile.isNull() ? componentData().componentName() + "ui.rc" : xmlfile;
+
     // Help beginners who call setXMLFile and then setupGUI...
-    if (!xmlFile().isEmpty()) {
+    if (!xmlFile().isEmpty() && xmlFile() != windowXmlFile) {
         kWarning() << "You called setXMLFile(" << xmlFile() << ") and then createGUI or setupGUI,"
                    << "which also calls setXMLFile and will overwrite the file you have previously set.\n"
                    << "You should call createGUI("<<xmlFile()<<") or setupGUI(<options>,"<<xmlFile()<<") instead.";
@@ -267,14 +269,8 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
     // we always want to load in our global standards file
     setXMLFile(KStandardDirs::locate("config", "ui/ui_standards.rc", componentData()));
 
-    // now, merge in our local xml file.  if this is null, then that
-    // means that we will be only using the global file
-    if ( !xmlfile.isNull() ) {
-        setXMLFile( xmlfile, true );
-    } else {
-        QString auto_file(componentData().componentName() + "ui.rc");
-        setXMLFile( auto_file, true );
-    }
+    // now, merge in our local xml file.
+    setXMLFile(windowXmlFile, true);
 
     // make sure we don't have any state saved already
     setXMLGUIBuildDocument( QDomDocument() );
