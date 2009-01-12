@@ -166,15 +166,6 @@ public:
             url.setQuery(QString());
             url.setRef(QString()); // kill ref (#171117)
         }
-        if (node == m_rootNode) {
-            // For a URL without a path, like "applications:" or "settings://",
-            // we want to resolve here "no path" to "/ assumed".
-            // We don't do it before (e.g. in KDirLister) because we want to
-            // give the ioslave a chance for a redirect (e.g. kio_ftp redirects "no path"
-            // to the user's home dir)
-            if (url.path().isEmpty())
-                url.setPath("/");
-        }
         return url;
     }
     void removeFromNodeHash(KDirModelNode* node, const KUrl& url);

@@ -50,7 +50,8 @@ private Q_SLOTS:
     void testShowHiddenFiles();
     void testMultipleSlashes();
     void testUrlWithRef();
-    void testUrlWithHost();
+    void testFontUrlWithHost();
+    void testRemoteUrlWithHost();
     void testZipFile();
     void testSmb();
 
