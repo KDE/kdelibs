@@ -180,7 +180,9 @@
    <l:gentext key="hyphenation-character" text="-"/>
    <l:gentext key="hyphenation-push-character-count" text="3"/>
    <l:gentext key="hyphenation-remain-character-count" text="2"/>
-
+   <l:gentext key="footer-doc-comment" text="Bu sayfa hakkında bir yorum yapmak ya da katkıda bulunmak ister misniz?"/>
+   <l:gentext key="footer-doc-feedback" text="Geribildirimlerinizi gönderin "/>
+   <l:gentext key="footer-doc-teamname" text="KDE Belgelendirme Ekibi"/>
    <l:context name="styles">
       <l:template name="person-name" text="first-last"/>
    </l:context>
