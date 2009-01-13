@@ -47,6 +47,7 @@ endif(UNIX AND Q_WS_X11)
 
 #required features
 find_package(ZLIB REQUIRED)
+set(STRIGI_MIN_VERSION 0.6.3)
 find_package(Strigi REQUIRED)
 
 #optional features
