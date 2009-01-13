@@ -21,12 +21,12 @@
 #include "khtmladaptorpart.h"
 #include <kjs/object.h>
 #include <QLabel>
-
+#include <klocale.h>
 AdaptorView::AdaptorView(QWidget* wparent, QObject* parent,
                          const QStringList& /*args*/)
     : KParts::ReadOnlyPart(parent)
 {
-    QLabel *placeHolder = new QLabel("Inactive", wparent);
+    QLabel *placeHolder = new QLabel(i18n("Inactive"), wparent);
     placeHolder->setAlignment(Qt::AlignCenter);
     placeHolder->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 
