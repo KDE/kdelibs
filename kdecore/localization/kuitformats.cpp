@@ -28,6 +28,34 @@
 
 #include <kdebug.h>
 
+class KuitFormatsStaticData
+{
+    public:
+
+    KuitFormatsStaticData ();
+
+    QHash<QChar, QChar> westToEastArabicDigit;
+};
+
+KuitFormatsStaticData::KuitFormatsStaticData ()
+{
+    #define WEA_ENTRY(a, b) do { \
+        westToEastArabicDigit[a] = QString::fromUtf8(b)[0]; \
+    } while (0)
+    WEA_ENTRY('1', "١");
+    WEA_ENTRY('2', "٢");
+    WEA_ENTRY('3', "٣");
+    WEA_ENTRY('4', "٤");
+    WEA_ENTRY('5', "٥");
+    WEA_ENTRY('6', "٦");
+    WEA_ENTRY('7', "٧");
+    WEA_ENTRY('8', "٨");
+    WEA_ENTRY('9', "٩");
+    WEA_ENTRY('0', "٠");
+}
+
+K_GLOBAL_STATIC(KuitFormatsStaticData, staticData)
+
 static QString insertIntegerSeparators (const QString &istr,
                                         const QChar &sep, int ngrp)
 {
@@ -101,6 +129,58 @@ QString KuitFormats::toNumberEuro2 (const QString &numstr)
 QString KuitFormats::toNumberEuro2ct (const QString &numstr)
 {
     return toNumberGeneric(numstr, ' ', ',', 10000);
+}
+
+// Translated from a Pascal implementation provided
+// by Youssef Chahibi <chahibi@gmail.com>
+QString KuitFormats::toNumberEArab (const QString &numstr)
+{
+    KuitFormatsStaticData *s = staticData;
+
+    const char thsep = '.';
+    const char dcsep = ',';
+    const int power = 3;
+
+    // Construct string with proper separators, but Western Arabic digits.
+    QString sepnum;
+
+    // Find decimal separator in input.
+    int i = 0;
+    while ((i < numstr.length()) && (numstr[i] != '.')) {
+        ++i;
+    }
+
+    // Add thousand separators to integer part.
+    int j = power;
+    while (j < i) {
+        sepnum = thsep + numstr.mid(i - j, power) + sepnum;
+        j += power;
+    }
+    sepnum = numstr.left(i + power - j) + sepnum;
+
+    // Add decimal part, with thousand separators in it in reverse.
+    if (i < numstr.length()) {
+        sepnum += dcsep;
+        j = 0;
+        while (i + j + 1 + power < numstr.length()) {
+            sepnum += numstr.mid(i + j + 1, power) + thsep;
+            j += power;
+        }
+        sepnum += numstr.mid(i + j + 1);
+    }
+
+    // Add leading 0 if by any chance the input starts with decimal separator.
+    if (numstr.length() > 1 && numstr[0] == '.') {
+        sepnum = '0' + sepnum;
+    }
+
+    // Replace Western with Eastern Arabic digits in the separated string.
+    QString arnum;
+    for (int i = 0; i < sepnum.length(); ++i) {
+        arnum += s->westToEastArabicDigit.value(sepnum[i], sepnum[i]);
+    }
+
+    return arnum;
 }
 
 QString KuitFormats::toKeyCombo (const QString &shstr, const QString &delim,

@@ -96,7 +96,7 @@ namespace Kuit {
 
     namespace Numfmt { // number formats
         typedef enum {
-            System, Posix, US, Euro, Euro2, Euro2ct
+            System, Posix, US, Euro, Euro2, Euro2ct, EArab
         } Var;
     }
 
@@ -320,6 +320,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_NUMFMT(Euro, "euro");
     SETUP_NUMFMT(Euro2, "euro2");
     SETUP_NUMFMT(Euro2ct, "euro2ct");
+    SETUP_NUMFMT(EArab, "earab");
 
     // Known XML entities, direct/inverse mapping.
     xmlEntities["lt"] = '<';
@@ -868,6 +869,7 @@ void KuitSemanticsPrivate::setTextTransformData ()
     //   euro    - thousands separation by point, decimal comma
     //   euro2   - thousands separation by space, decimal comma
     //   euro2ct - as euro2, except thousand not separated when <10000
+    //   earab   - Eastern Arabic digits, th. sep. by point, dec. comma
     //   system  - by locale settings (i.e. override language ortography)
     // If none of the existing formats is appropriate for your language,
     // write to kde-i18n-doc@kde.org to arrange for a new format.
@@ -1522,6 +1524,8 @@ QString KuitSemanticsPrivate::modifyTagText (Kuit::TagVar tag,
             return KuitFormats::toNumberEuro2(text);
         case Kuit::Numfmt::Euro2ct:
             return KuitFormats::toNumberEuro2ct(text);
+        case Kuit::Numfmt::EArab:
+            return KuitFormats::toNumberEArab(text);
         default:
             return text;
         }

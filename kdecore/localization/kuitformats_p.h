@@ -60,6 +60,13 @@ namespace KuitFormats {
     QString toNumberEuro2ct (const QString &numstr);
 
     /**
+     * Reformat raw number string to Eastern Arabic standard.
+     * @param numstr raw number string
+     * @returns number string in proper format
+     */
+    QString toNumberEArab (const QString &numstr);
+
+    /**
      * Reformat keyboard shortcut. The first of encountered of '+' or '-'
      * is taken for key delimiter, and the supplied delimiter is used instead.
      * A dictionary of replacement key names can also be provided, which can
