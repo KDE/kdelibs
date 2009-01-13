@@ -288,7 +288,7 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
             lookupHost(host);
             waitForHostInfo(info);
             if (info.error() != QHostInfo::NoError) {
-                error(ERR_UNKNOWN_HOST, info.errorString());
+                error(ERR_UNKNOWN_HOST, host);
                 return false;
             }
             addresses = info.addresses();
