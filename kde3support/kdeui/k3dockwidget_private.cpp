@@ -351,7 +351,7 @@ void K3DockSplitter::resizeEvent(QResizeEvent *ev)
         ( (m_orientation==Qt::Horizontal)  &&((fixedHeight0==-1) && (fixedHeight1==-1)) ) ) {
       if ((c0->getWidget()) && (dc=dynamic_cast<K3DockContainer*>(c0->getWidget()))
            && (dc->isOverlapMode())) {
-        // child0 ist a K3DockContainer
+        // child0 is a K3DockContainer
         int position;
         child0->show();
         child0->raise();
@@ -370,7 +370,7 @@ void K3DockSplitter::resizeEvent(QResizeEvent *ev)
       } else {
         if ((c1->getWidget()) && (dc=dynamic_cast<K3DockContainer*>(c1->getWidget()))
              && (dc->isOverlapMode())) {
-          // child1 ist a K3DockContainer
+          // child1 is a K3DockContainer
           int position;
           child1->show();
           child1->raise();

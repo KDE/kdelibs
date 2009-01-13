@@ -116,7 +116,7 @@ template<class type> class KDE_DEPRECATED K3StaticDeleter : public K3StaticDelet
 public:
     /**
      * Constructor. Initializes the K3StaticDeleter. Note that the static
-     * deleter ist not registered by the constructor.
+     * deleter is not registered by the constructor.
      */
     K3StaticDeleter() { deleteit = 0; globalReference = 0; array = false; }
 
