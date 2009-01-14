@@ -949,7 +949,7 @@ void KDirOperator::setIconsZoom(int _value)
 
     d->iconsZoom = value;
 
-    if (d->inlinePreviewState == Private::NotForced) {
+    if (d->configGroup && d->inlinePreviewState == Private::NotForced) {
         if (qobject_cast<QListView*>(d->itemView)) {
             d->configGroup->writeEntry("listViewIconSize", d->iconsZoom);
         } else {
