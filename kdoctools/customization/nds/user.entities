@@ -17,8 +17,8 @@
 <!-- Entities voer Oevesetters (voer CREDITS_FOR_TRANSLATORS)-->
 <!ENTITY oeversetten.SoeDib "<para>Dit Dokment hett &Soenke.Dibbern; na't Neddersass'sche &ouml;versett.</para>">
 <!ENTITY oeversetten.ManWie "<para>Dit Dokment hett &Manfred.Wiese; na't Neddersass'sche &ouml;versett.</para>">
-<!ENTITY nalesen.SoeDib "<para>&Soenke.Dibbern; hett de &Ouml;versetten naleest.</para>">
-<!ENTITY nalesen.ManWie "<para>&Manfred.Wiese; hett de &Ouml;versetten naleest.</para>">
+<!ENTITY nakiek.SoeDib "<para>&Soenke.Dibbern; hett de &Ouml;versetten nakeken.</para>">
+<!ENTITY nakiek.ManWie "<para>&Manfred.Wiese; hett de &Ouml;versetten nakeken.</para>">
 
 <!ENTITY Alt    "<keycap>Alt</keycap>">
 <!ENTITY Backspace	"<keycap>Tor&uuml;chtast</keycap>">

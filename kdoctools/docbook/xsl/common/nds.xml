@@ -181,8 +181,8 @@
    <l:gentext key="hyphenation-push-character-count" text="2"/>
    <l:gentext key="hyphenation-remain-character-count" text="2"/>
    <l:gentext key="footer-doc-comment" text="Wullt Du wat to disse Siet seggen oder ehr verbetern?"/>
-   <l:gentext key="footer-doc-feedback" text="Stüer Dien Vörslääg to den"/>
-   <l:gentext key="footer-doc-teamname" text="KDE Dokmentatschoonkoppel"/>
+   <l:gentext key="footer-doc-feedback" text="Denn stüer Dien Vörslääg to den "/>
+   <l:gentext key="footer-doc-teamname" text="KDE-Dokmentatschoonkoppel!"/>
 
    <l:context name="styles">
       <l:template name="person-name" text="first-last"/>
