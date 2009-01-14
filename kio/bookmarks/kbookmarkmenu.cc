@@ -490,6 +490,8 @@ void KBookmarkMenu::addAddBookmark()
                 m_bIsRoot ? "add_bookmark" : 0,
                 this,
                 SLOT(slotAddBookmark()));
+        if (!m_bIsRoot)
+            d->addAddBookmark->setShortcut( QKeySequence() );
     }
 
     m_parentMenu->addAction(d->addAddBookmark);
