@@ -258,8 +258,13 @@ void KXmlGui_UnitTest::testVersionHandlerNewVersionUserChanges()
 class TestGuiClient : public KXMLGUIClient
 {
 public:
-    TestGuiClient(const QByteArray& xml, bool withUiStandards = false)
+    TestGuiClient(const QByteArray& xml = QByteArray())
         : KXMLGUIClient()
+    {
+        if (!xml.isNull())
+            setXML(QString::fromLatin1(xml));
+    }
+    void createGUI(const QByteArray& xml, bool withUiStandards = false)
     {
         if (withUiStandards) {
             QString uis = KStandardDirs::locate("config", "ui/ui_standards.rc", componentData());
@@ -276,6 +281,16 @@ static void createActions(KActionCollection* collection, const QStringList& acti
     Q_FOREACH(const QString& actionName, actionNames) {
         collection->addAction(actionName)->setText("Action");
     }
+}
+
+static QStringList collectMenuNames(KXMLGUIFactory& factory)
+{
+    QList<QWidget*> containers = factory.containers("Menu");
+    QStringList containerNames;
+    Q_FOREACH(QWidget* w, containers) {
+        containerNames << w->objectName();
+    }
+    return containerNames;
 }
 
 #if 0
@@ -305,11 +320,7 @@ void KXmlGui_UnitTest::testMergingSeparators()
         "<gui version=\"1\" name=\"foo\" >\n"
         "<MenuBar>\n"
         " <Menu name=\"go\"><text>&amp;Go</text>\n"
-//        "  <!-- TODO: go_up, go_back, go_forward, go_home: coming from ui_standards.rc -->\n"
-        "  <Action name=\"go_up\"/>\n"
-        "  <Action name=\"go_back\"/>\n"
-        "  <Action name=\"go_forward\"/>\n"
-        "  <Action name=\"go_home\"/>\n"
+        "  <!-- go_up, go_back, go_forward, go_home: coming from ui_standards.rc -->\n"
         "  <Merge/>\n"
         "  <Action name=\"go_history\"/>\n"
         "  <Action name=\"go_most_often\"/>\n"
@@ -321,10 +332,11 @@ void KXmlGui_UnitTest::testMergingSeparators()
         "</gui>\n";
 
 
-    TestGuiClient hostClient(hostXml, true /*ui_standards.rc*/);
+    TestGuiClient hostClient;
     createActions(hostClient.actionCollection(),
                   QStringList() << "go_up" << "go_back" << "go_forward" << "go_home"
                   << "go_history" << "go_most_often");
+    hostClient.createGUI(hostXml, true /*ui_standards.rc*/);
     QMainWindow mainWindow;
     KXMLGUIBuilder builder(&mainWindow);
     KXMLGUIFactory factory(&builder);
@@ -341,6 +353,7 @@ void KXmlGui_UnitTest::testMergingSeparators()
                  << "go_back"
                  << "go_forward"
                  << "go_home"
+                 << "separator"
                  << "go_history"
                  << "go_most_often"
                  << "separator");
@@ -377,10 +390,70 @@ void KXmlGui_UnitTest::testMergingSeparators()
                  << "go_back"
                  << "go_forward"
                  << "go_home"
+                 << "separator"
                  << "go_previous"
                  << "go_next"
                  << "separator"
                  << "first_page");
+}
+
+void KXmlGui_UnitTest::testUiStandardsMerging_data()
+{
+    QTest::addColumn<QByteArray>("xml");
+    QTest::addColumn<QStringList>("actions");
+    QTest::addColumn<QStringList>("expectedMenus");
+
+    const QByteArray xmlBegin =
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"1\" name=\"foo\" >\n"
+        "<MenuBar>\n";
+    const QByteArray xmlEnd =
+        "</MenuBar>\n"
+        "</gui>";
+
+    // Merging an empty menu (or a menu with only non-existing actions) would make
+    // the empty menu appear at the end after all other menus (fixed for KDE-4.2)
+    QTest::newRow("empty file menu, implicit settings menu")
+        << xmlBegin + "<Menu name=\"file\"/>\n" + xmlEnd
+        << (QStringList() << "options_configure_toolbars")
+        << (QStringList() << "settings");
+    QTest::newRow("file menu with non existing action, implicit settings menu")
+        << xmlBegin + "<Menu name=\"file\"><Action name=\"foo\"/></Menu>\n" + xmlEnd
+        << (QStringList() << "options_configure_toolbars")
+        << (QStringList() << "settings");
+    QTest::newRow("file menu with existing action, implicit settings menu")
+        << xmlBegin + "<Menu name=\"file\"><Action name=\"open\"/></Menu>\n" + xmlEnd
+        << (QStringList() << "open" << "options_configure_toolbars")
+        << (QStringList() << "file" << "settings");
+    QTest::newRow("implicit file and settings menu")
+        << xmlBegin + xmlEnd
+        << (QStringList() << "file_open" << "options_configure_toolbars")
+        << (QStringList() << "file" << "settings"); // we could check that file_open is in the mainToolBar, too
+
+    // Check that unknown non-empty menus are added at the "MergeLocal" position (before settings).
+    QTest::newRow("foo menu added at the end")
+        << xmlBegin + "<Menu name=\"foo\"><Action name=\"foo_action\"/></Menu>\n" + xmlEnd
+        << (QStringList() << "file_open" << "options_configure_toolbars" << "foo_action")
+        << (QStringList() << "file" << "foo" << "settings");
+}
+
+void KXmlGui_UnitTest::testUiStandardsMerging()
+{
+    QFETCH(QByteArray, xml);
+    QFETCH(QStringList, actions);
+    QFETCH(QStringList, expectedMenus);
+
+    TestGuiClient client;
+    createActions(client.actionCollection(), actions);
+    client.createGUI(xml, true /*ui_standards.rc*/);
+    QMainWindow mainWindow;
+    KXMLGUIBuilder builder(&mainWindow);
+    KXMLGUIFactory factory(&builder);
+    factory.addClient(&client);
+
+    const QStringList containerNames = collectMenuNames(factory);
+    //kDebug() << containerNames;
+    QCOMPARE(containerNames, expectedMenus);
 }
 
 void KXmlGui_UnitTest::testActionListAndSeparator()

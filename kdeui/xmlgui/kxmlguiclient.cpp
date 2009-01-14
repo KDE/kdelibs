@@ -53,7 +53,7 @@ public:
   {
   }
 
-  bool mergeXML( QDomElement &base, const QDomElement &additive,
+  bool mergeXML( QDomElement &base, QDomElement &additive,
                  KActionCollection *actionCollection );
 
   QDomElement findMatchingElement( const QDomElement &base,
@@ -258,6 +258,8 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
     // strange to it
     base = d->m_doc.documentElement();
 
+    //kDebug(260) << "Result of xmlgui merging:" << d->m_doc.toString();
+
     // we want some sort of failsafe.. just in case
     if ( base.isNull() )
       d->m_doc = document;
@@ -270,7 +272,7 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
   setXMLGUIBuildDocument( QDomDocument() );
 }
 
-bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, const QDomElement &additive, KActionCollection *actionCollection )
+bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, KActionCollection *actionCollection )
 {
   static const QString &tagAction = KGlobal::staticQString( "Action" );
   static const QString &tagMerge = KGlobal::staticQString( "Merge" );
@@ -399,6 +401,7 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, const QDomElement &addit
         if ( mergeXML( e, matchingElement, actionCollection ) )
         {
           base.removeChild( e );
+          additive.removeChild(matchingElement); // make sure we don't append it below
           continue;
         }
 
@@ -421,7 +424,8 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, const QDomElement &addit
         // this container. However we have to call mergeXML recursively
         // and make it check if there are actions implemented for this
         // container. *If* none, then we can remove this container now
-        if ( mergeXML( e, QDomElement(), actionCollection ) )
+        QDomElement dummy;
+        if ( mergeXML( e, dummy, actionCollection ) )
           base.removeChild( e );
         continue;
       }

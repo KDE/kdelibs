@@ -33,6 +33,8 @@ private Q_SLOTS:
     void testVersionHandlerNewVersionNothingKept();
     void testVersionHandlerNewVersionUserChanges();
     void testMergingSeparators();
+    void testUiStandardsMerging_data();
+    void testUiStandardsMerging();
     void testActionListAndSeparator();
     void testHiddenToolBar();
     void testDeletedContainers();
