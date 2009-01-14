@@ -1196,6 +1196,7 @@ const char *footer = "-----END CERTIFICATE-----\n";
 
 #define NETSCAPE_CERT_HDR     "certificate"
 
+#ifdef KSSL_HAVE_SSL
 #if OPENSSL_VERSION_NUMBER < 0x00909000L
 
 typedef struct NETSCAPE_X509_st
@@ -1203,6 +1204,7 @@ typedef struct NETSCAPE_X509_st
     ASN1_OCTET_STRING *header;
     X509 *cert;
 } NETSCAPE_X509;
+#endif
 #endif
 
 // what a piece of crap this is
