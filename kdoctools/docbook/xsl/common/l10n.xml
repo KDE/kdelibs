@@ -28,6 +28,7 @@
 <!ENTITY la SYSTEM "la.xml">
 <!ENTITY lit SYSTEM "lt.xml">
 <!ENTITY nb SYSTEM "nb.xml">
+<!ENTITY nds SYSTEM "nds.xml">
 <!ENTITY nl SYSTEM "nl.xml">
 <!ENTITY nn SYSTEM "nn.xml">
 <!ENTITY pl SYSTEM "pl.xml">
@@ -76,6 +77,7 @@
 &la;
 &lit;
 &nb;
+&nds;
 &nl;
 &nn;
 &pl;
