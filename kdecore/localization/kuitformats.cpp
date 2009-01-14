@@ -35,6 +35,8 @@ class KuitFormatsStaticData
     KuitFormatsStaticData ();
 
     QHash<QChar, QChar> westToEastArabicDigit;
+    QChar easternArabicThSep;
+    QChar easternArabicDecSep;
 };
 
 KuitFormatsStaticData::KuitFormatsStaticData ()
@@ -52,6 +54,9 @@ KuitFormatsStaticData::KuitFormatsStaticData ()
     WEA_ENTRY('8', "٨");
     WEA_ENTRY('9', "٩");
     WEA_ENTRY('0', "٠");
+
+    easternArabicThSep = QString::fromUtf8(".")[0];
+    easternArabicDecSep = QString::fromUtf8(",")[0];
 }
 
 K_GLOBAL_STATIC(KuitFormatsStaticData, staticData)
@@ -137,8 +142,6 @@ QString KuitFormats::toNumberEArab (const QString &numstr)
 {
     KuitFormatsStaticData *s = staticData;
 
-    const char thsep = '.';
-    const char dcsep = ',';
     const int power = 3;
 
     // Construct string with proper separators, but Western Arabic digits.
@@ -153,20 +156,14 @@ QString KuitFormats::toNumberEArab (const QString &numstr)
     // Add thousand separators to integer part.
     int j = power;
     while (j < i) {
-        sepnum = thsep + numstr.mid(i - j, power) + sepnum;
+        sepnum = s->easternArabicThSep + numstr.mid(i - j, power) + sepnum;
         j += power;
     }
     sepnum = numstr.left(i + power - j) + sepnum;
 
-    // Add decimal part, with thousand separators in it in reverse.
-    if (i < numstr.length()) {
-        sepnum += dcsep;
-        j = 0;
-        while (i + j + 1 + power < numstr.length()) {
-            sepnum += numstr.mid(i + j + 1, power) + thsep;
-            j += power;
-        }
-        sepnum += numstr.mid(i + j + 1);
+    // Add decimal part.
+    if (i + 1 < numstr.length()) {
+        sepnum += s->easternArabicDecSep + numstr.mid(i + 1);
     }
 
     // Add leading 0 if by any chance the input starts with decimal separator.
