@@ -430,6 +430,9 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
           ((appId == request->dbus_name) ||
            QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name)))
       {
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+         kDebug(7016) << "ok, request (for unique app) done";
+#endif
          request->status = KLaunchRequest::Running;
          requestDone(request);
          continue;
@@ -448,6 +451,9 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
       if (appId.startsWith(rAppId) && ((appId.length() == len) ||
                   (c == QLatin1Char('-'))))
       {
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+         kDebug(7016) << "ok, request done";
+#endif
          request->dbus_name = appId;
          request->status = KLaunchRequest::Running;
          requestDone(request);
@@ -559,6 +565,10 @@ KLauncher::requestDone(KLaunchRequest *request)
                                      << requestResult.error
                                      << stream_pid));
    }
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+   kDebug(7016) << "removing done request" << request->name << "PID" << request->pid;
+#endif
+
    requestList.removeAll( request );
    delete request;
 }
@@ -968,6 +978,9 @@ KLauncher::slotDequeue()
       if (request->status != KLaunchRequest::Launching)
       {
          // Request handled.
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+         kDebug(7016) << "Request handled already";
+#endif
          requestDone( request );
          continue;
       }
