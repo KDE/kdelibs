@@ -1606,8 +1606,8 @@ void KDirOperator::setView(QAbstractItemView *view)
         d->itemsToBeSetAsCurrent.clear();
     }
 
-    const bool previewShown = d->inlinePreviewState == Private::NotForced ? d->showPreviews : d->inlinePreviewState;
     const bool previewForcedToTrue = d->inlinePreviewState == Private::ForcedToTrue;
+    const bool previewShown = d->inlinePreviewState == Private::NotForced ? d->showPreviews : previewForcedToTrue;
     d->previewGenerator = new KFilePreviewGenerator(d->itemView);
     const int maxSize = KIconLoader::SizeEnormous - KIconLoader::SizeSmall;
     const int val = (maxSize * d->iconsZoom / 100) + KIconLoader::SizeSmall;
