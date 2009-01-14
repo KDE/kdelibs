@@ -1961,7 +1961,7 @@ void KDirOperator::setupActions()
     // TODO: QAbstractItemView does not offer an action collection. Provide
     // an interface to add a custom action collection.
 
-    d->actionCollection->addAssociatedWidget(parentWidget());
+    d->actionCollection->addAssociatedWidget(this);
     foreach (QAction* action, d->actionCollection->actions())
       action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 }

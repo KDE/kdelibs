@@ -39,10 +39,15 @@ private Q_SLOTS:
 
     void testNoViewConfig()
     {
+        KDirOperator dirOp;
+        // setIconsZoom tries to write config.
+        // Make sure it won't crash if setViewConfig() isn't called
+        dirOp.setIconsZoom(5);
+        QCOMPARE(dirOp.iconsZoom(), 5);
     }
 
 };
 
-QTEST_KDEMAIN_CORE( KDirOperatorTest )
+QTEST_KDEMAIN( KDirOperatorTest, GUI )
 
 #include "kdiroperatortest.moc"
