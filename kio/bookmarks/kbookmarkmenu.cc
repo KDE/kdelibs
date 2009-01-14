@@ -485,7 +485,6 @@ void KBookmarkMenu::addAddBookmark()
     return;
 
     if (d->addAddBookmark == 0) {
-        QString title = i18n( "Add Bookmark" );
         d->addAddBookmark = m_actionCollection->addAction(
                 KStandardAction::AddBookmark,
                 m_bIsRoot ? "add_bookmark" : 0,
