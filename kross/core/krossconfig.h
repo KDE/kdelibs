@@ -58,7 +58,7 @@ namespace Kross {
     // The version number of Kross. For example the interpreters use
     // it do be sure there are linked against the correct core version
     // and if the numbers don't match, the interpreter is not loaded.
-    #define KROSS_VERSION 11
+    #define KROSS_VERSION 12
 
     // The export macro for interpreter plugins.
     #define KROSS_EXPORT_INTERPRETER( InterpreterImpl ) \
