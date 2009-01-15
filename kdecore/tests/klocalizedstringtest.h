@@ -29,6 +29,8 @@ private Q_SLOTS:
     void correctSubs ();
     void wrongSubs ();
     void miscMethods ();
+
+    void testThreads();
 };
 
 #endif // KLOCALIZEDSTRINGTEST_H

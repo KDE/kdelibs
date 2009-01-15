@@ -177,4 +177,19 @@ void KLocalizedStringTest::miscMethods ()
     QVERIFY(k.isEmpty());
 }
 
+#include <QThreadPool>
+#include <qtconcurrentrun.h>
+
+void KLocalizedStringTest::testThreads()
+{
+    QThreadPool::globalInstance()->setMaxThreadCount(5);
+    QFuture<void> f1 = QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
+    QFuture<void> f2 = QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
+    QFuture<void> f3 = QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
+    f1.waitForFinished();
+    f2.waitForFinished();
+    f3.waitForFinished();
+}
+
 QTEST_KDEMAIN_CORE(KLocalizedStringTest)
+

@@ -32,6 +32,7 @@
 #include <kuitsemantics_p.h>
 #include "kcatalogname_p.h"
 
+#include <QMutexLocker>
 #include <QStringList>
 #include <QByteArray>
 #include <QChar>
@@ -122,6 +123,8 @@ class KLocalizedStringPrivateStatics
 
     QHash<QString, KuitSemantics*> formatters;
 
+    QMutex mutex;
+
     KLocalizedStringPrivateStatics () :
         theFence("|/|"),
         startInterp("$["),
@@ -138,7 +141,9 @@ class KLocalizedStringPrivateStatics
 
         translits(),
 
-        formatters()
+        formatters(),
+
+        mutex(QMutex::Recursive)
     {}
 
     ~KLocalizedStringPrivateStatics ()
@@ -208,6 +213,7 @@ QString KLocalizedString::toString (const KLocale *locale) const
 QString KLocalizedStringPrivate::toString (const KLocale *locale) const
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP;
+    QMutexLocker lock(&s->mutex);
 
     // Assure the message has been supplied.
     if (msg.isEmpty())
@@ -462,6 +468,7 @@ QString KLocalizedStringPrivate::postFormat (const QString &text,
                                              const QString &ctxt) const
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP;
+    QMutexLocker lock(&s->mutex);
 
     QString final = text;
 
@@ -485,6 +492,7 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
                                                        bool &fallback) const
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP;
+    QMutexLocker lock(&s->mutex);
 
     if (s->ktrs == NULL)
         // Scripting engine not available.
@@ -548,6 +556,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
     // fallback is set to true if Transcript evaluation requested so.
 
     KLocalizedStringPrivateStatics *s = staticsKLSP;
+    QMutexLocker lock(&s->mutex);
 
     result.clear();
     fallback = false;
@@ -698,6 +707,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
 QVariant KLocalizedStringPrivate::segmentToValue (const QString &seg) const
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP;
+    QMutexLocker lock(&s->mutex);
 
     // Return invalid variant if segment is either not a proper
     // value reference, or the reference is out of bounds.
@@ -731,6 +741,7 @@ QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
                                                  const QString &final) const
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP;
+    QMutexLocker lock(&s->mutex);
 
     if (s->ktrs == NULL)
         // Scripting engine not available.
@@ -929,6 +940,7 @@ extern "C"
 void KLocalizedStringPrivate::loadTranscript ()
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP;
+    QMutexLocker lock(&s->mutex);
 
     s->loadTranscriptCalled = true;
     s->ktrs = NULL; // null indicates that Transcript is not available
@@ -962,6 +974,7 @@ void KLocalizedStringPrivate::notifyCatalogsUpdated (const QStringList &language
         return;
     }
     KLocalizedStringPrivateStatics *s = staticsKLSP;
+    QMutexLocker lock(&s->mutex);
 
     // Find script modules for all included language/catalogs that have them,
     // and remember their paths.
