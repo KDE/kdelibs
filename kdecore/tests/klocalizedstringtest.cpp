@@ -135,6 +135,10 @@ void KLocalizedStringTest::correctSubs ()
              QString("E = mc^2"));
     QCOMPARE(i18n("E = mc^&#0050;"),
              QString("E = mc^2"));
+}
+
+void KLocalizedStringTest::correctButIllFormed()
+{
     // ...and some ill-formed i18n, to test markup salvage.
     // (prevent debug info about bad markup).
     KConfig dc( "kdebugrc", KConfig::SimpleConfig );
