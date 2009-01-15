@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="US-ASCII"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <l:l10n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0" language="ru" english-language-name="Russian">
 
 <!-- This file is generated automatically. -->
@@ -180,7 +180,9 @@
    <l:gentext key="hyphenation-character" text="-" lang="en"/>
    <l:gentext key="hyphenation-push-character-count" text="2" lang="en"/>
    <l:gentext key="hyphenation-remain-character-count" text="2" lang="en"/>
-
+   <l:gentext key="footer-doc-comment" text="Вам есть что добавить на эту страницу?"/>
+   <l:gentext key="footer-doc-feedback" text="Напишите "/>
+   <l:gentext key="footer-doc-teamname" text="команде документации KDE"/>
    <l:context name="styles">
       <l:template name="person-name" text="first-last"/>
    </l:context>
