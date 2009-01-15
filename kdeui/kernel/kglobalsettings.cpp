@@ -877,8 +877,8 @@ void KGlobalSettings::Private::applyGUIStyle()
         if ( !sp )
             sp = QStyleFactory::create( QStyleFactory::keys().first() );
         qApp->setStyle(sp);
-    } else if (0 == kde_overrideStyle.compare(currentStyleName, Qt::CaseInsensitive) ||
-            0 == (kde_overrideStyle + QLatin1String("Style")).compare(currentStyleName, Qt::CaseInsensitive)) {
+    } else if (0 != kde_overrideStyle.compare(currentStyleName, Qt::CaseInsensitive) &&
+            0 != (kde_overrideStyle + QLatin1String("Style")).compare(currentStyleName, Qt::CaseInsensitive)) {
         qApp->setStyle(kde_overrideStyle);
     }
     emit q->kdisplayStyleChanged();
