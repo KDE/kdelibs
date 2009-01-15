@@ -291,6 +291,10 @@ class TestKross(unittest.TestCase):
 		self.assert_( l[0].objectName == "OtherObject1_wrapper" )
 		self.assert_( l[1].parentObject().objectName == "OtherObject2" )
 
+	def testEvaluation(self):
+		self.assert_( KrossAction.evaluate("1+2") == 3 )
+		self.assert_( KrossAction.evaluate("testFunction(None,99)") == [None,99] )
+
 print "__name__ = %s" % __name__
 #print "__main__ = %s %s" % (__main__,dir(__main__))
 #print "TestObject3.name = %s" % TestObject3.name()

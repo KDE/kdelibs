@@ -243,6 +243,25 @@ QVariant EcmaScript::callFunction(const QString& name, const QVariantList& args)
     foreach(const QVariant &v, args)
         arguments << d->m_engine->toScriptValue(v);
     QScriptValue result = function.call(obj, arguments);
+    if( d->m_engine->hasUncaughtException() ) {
+        d->handleException();
+        return QVariant();
+    }
+    return result.toVariant();
+}
+
+QVariant EcmaScript::evaluate(const QByteArray& code)
+{
+    if( ! d->m_engine && ! d->init() ) {
+        d->handleException();
+        return QVariant();
+    }
+
+    QScriptValue result = d->m_engine->evaluate(code);
+    if( d->m_engine->hasUncaughtException() ) {
+        d->handleException();
+        return QVariant();
+    }
     return result.toVariant();
 }
 

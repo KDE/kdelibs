@@ -91,6 +91,14 @@ namespace Kross {
              */
             virtual QVariant callFunction(const QString& name, const QVariantList& args = QVariantList()) = 0;
 
+            /**
+             * Evaluate some scripting code.
+             *
+             * \param code The scripting code to evaluate.
+             * \return The return value of the evaluation.
+             */
+            virtual QVariant evaluate(const QByteArray& code) = 0;
+
         private:
             /// \internal d-pointer class.
             class Private;

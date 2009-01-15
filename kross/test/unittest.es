@@ -227,5 +227,11 @@ function MyClass(result) {
 var myclass = new MyClass("my string");
 tester.assert(TestObject1.call_krossobject_method(myclass,"myMethod"), "my string");
 
+// test evaluate functionality
+tester.assert(self.evaluate("1+2"), 3);
+function evalCalc(arg) { return arg; }
+tester.assert(self.evaluate("evalCalc(null)"), "QVariant()"); //TODO imho a bug in QtScript cause it should be null like at kjs
+tester.assert(self.evaluate("evalCalc(99)"), 99);
+
 // print the test-results
 tester.printResult();

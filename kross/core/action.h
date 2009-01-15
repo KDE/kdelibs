@@ -309,6 +309,24 @@ namespace Kross {
              */
             QVariant callFunction(const QString& name, const QVariantList& args = QVariantList());
 
+            /**
+             * Evaluate some scripting code.
+             *
+             * Example how this can be used:
+             * \code
+             * Kross::Action* a = new Kross::Action(0, "MyScript");
+             * a->setInterpreter("python");
+             * a->setCode("def myFunc(x): return x");
+             * a->execute();
+             * int three = a->evaluate("1+2").toInt(); // returns 3
+             * int nine = a->evaluate("myFunc(9)").toInt(); // returns 9
+             * \endcode
+             *
+             * \param code The scripting code to evaluate.
+             * \return The return value of the evaluation.
+             */
+            QVariant evaluate(const QByteArray& code);
+
         Q_SIGNALS:
 
             /**

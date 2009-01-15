@@ -329,8 +329,8 @@ var testobj2 = TestObject2
 
     obj = TestObject1.func_qvariantlist2qobject( TestObject1.func_qobject2qvariantlist(TestObject2) )
     tester.assert(obj.name(), TestObject2.name());
-    obj = TestObject1.func_qvariantlist2qobject( TestObject1.func_qobject2qvariantlist(TestObject2.self()) )
-    tester.assert(obj.name(), TestObject2.self().name());
+    obj = TestObject1.func_qvariantlist2qobject( TestObject1.func_qobject2qvariantlist(TestObject2.myself()) )
+    tester.assert(obj.name(), TestObject2.myself().name());
 }
 
 // variantmap
@@ -419,6 +419,14 @@ var testobj2 = TestObject2
     connect(testobj1, "signalObject(QObject*)", this, "mySlotFunction(QObject*)");
     testobj1.signalObject(testobj2);
     tester.assert(slottestresult.objectName, testobj2.objectName);
+}
+
+// evaluate functionality
+{
+    tester.assert(self.evaluate("1+2"), 3);
+    function evalCalc(arg) { return arg; }
+    tester.assert(self.evaluate("evalCalc(null)"), null);
+    tester.assert(self.evaluate("evalCalc(99)"), 99);
 }
 
 // print the test-results

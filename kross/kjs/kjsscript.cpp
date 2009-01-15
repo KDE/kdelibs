@@ -431,3 +431,25 @@ QVariant KjsScript::callFunction(const QString& name, const QVariantList& args)
     return result;
 }
 
+QVariant KjsScript::evaluate(const QByteArray& code)
+{
+    QTextCodec *codec = QTextCodec::codecForLocale();
+    KJS::UString c = codec ? KJS::UString(codec->toUnicode(code)) : KJS::UString(code.data(), code.size());
+
+    KJSEmbed::Engine::ExitStatus exitstatus = d->m_engine->execute(c);
+
+    KJS::Completion completion = d->m_engine->completion();
+    KJS::Interpreter* kjsinterpreter = d->m_engine->interpreter();
+    KJS::ExecState* exec = kjsinterpreter->globalExec();
+
+    if(exitstatus != KJSEmbed::Engine::Success) {
+        ErrorInterface error = extractError(completion, exec);
+        setError(&error);
+        return QVariant();
+    }
+
+    KJS::JSValue *retValue = completion.value();
+    QVariant result = retValue ? KJSEmbed::convertToVariant(exec, retValue) : QVariant();
+    Q_ASSERT( ! exec->hadException() );
+    return result;
+}

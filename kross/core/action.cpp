@@ -402,6 +402,15 @@ QVariant Action::callFunction(const QString& name, const QVariantList& args)
     return d->script->callFunction(name, args);
 }
 
+QVariant Action::evaluate(const QByteArray& code)
+{
+    if(! d->script) {
+        if(! initialize())
+            return QVariant();
+    }
+    return d->script->evaluate(code);
+}
+
 bool Action::initialize()
 {
     finalize();
