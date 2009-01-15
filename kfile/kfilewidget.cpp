@@ -2566,6 +2566,11 @@ void KFileWidget::virtual_hook( int id, void* data )
     }
 }
 
+KDirOperator* KFileWidget::dirOperator()
+{
+    return d->ops;
+}
+
 QString KFileWidgetPrivate::locationEditCurrentText() const
 {
     return QDir::fromNativeSeparators(locationEdit->currentText().trimmed());

@@ -34,6 +34,7 @@
 
 class KJob;
 class KFileItem;
+class KDirOperator;
 
 class KFILE_EXPORT KFileWidget : public QWidget, public KAbstractFileWidget
 {
@@ -434,6 +435,13 @@ Q_SIGNALS:
      * been done. Should be used by the caller to call accept().
      */
     void accepted();
+
+public:
+    /**
+     * @returns the KDirOperator used to navigate the filesystem
+     * @since 4.3
+     */
+    KDirOperator* dirOperator();
 
 private:
     friend class KFileWidgetPrivate;
