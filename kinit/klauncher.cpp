@@ -409,6 +409,25 @@ KLauncher::processDied(pid_t pid, long exitStatus)
 #endif
 }
 
+static bool matchesPendingRequest(const QString& appId, const QString& pendingAppId)
+{
+    // appId just registered, e.g. org.koffice.kword-12345
+    // Let's see if this is what pendingAppId (e.g. org.koffice.kword or *.kword) was waiting for.
+
+    const QString newAppId = appId.left(appId.lastIndexOf('-')); // strip out the -12345 if present.
+
+    //kDebug() << "appId=" << appId << "newAppId=" << newAppId << "pendingAppId=" << pendingAppId;
+
+    if (pendingAppId.startsWith("*.")) {
+        const QString pendingName = pendingAppId.mid(2);
+        const QString appName = newAppId.mid(newAppId.lastIndexOf('.')+1);
+        //kDebug() << "appName=" << appName;
+        return appName == pendingName;
+    }
+
+    return newAppId == pendingAppId;
+}
+
 void
 KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
                                 const QString &newOwner)
@@ -445,12 +464,7 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
       if (rAppId.isEmpty())
           continue;
 
-      const int len = rAppId.length();
-
-      QChar c = appId.length() > len ? appId.at(len) : QChar();
-      if (appId.startsWith(rAppId) && ((appId.length() == len) ||
-                  (c == QLatin1Char('-'))))
-      {
+      if (matchesPendingRequest(appId, rAppId)) {
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
          kDebug(7016) << "ok, request done";
 #endif
@@ -808,7 +822,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
                request->dbus_name = v.toString().toUtf8();
            }
            if (request->dbus_name.isEmpty()) {
-               request->dbus_name = "org.kde." + QFile::encodeName(KRun::binaryName(service->exec(), true));
+               request->dbus_name = "*." + QFile::encodeName(KRun::binaryName(service->exec(), true));
            }
        }
    }
