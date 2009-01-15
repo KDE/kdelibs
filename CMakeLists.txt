@@ -8,9 +8,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 set (KDE_VERSION_MAJOR 4)
 set (KDE_VERSION_MINOR 1)
-set (KDE_VERSION_RELEASE 3)
+set (KDE_VERSION_RELEASE 4)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
-set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.1.3)")
+set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.1.4)")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 set (KDE_DEFAULT_HOME ".kde" CACHE STRING "The default KDE home directory" )

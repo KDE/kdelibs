@@ -184,13 +184,15 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFastPatternDict(const QString &e
 
 static bool matchFileName( const QString &filename, const QString &pattern )
 {
-    int pattern_len = pattern.length();
+    const int pattern_len = pattern.length();
     if (!pattern_len)
         return false;
-    int len = filename.length();
+    const int len = filename.length();
+
+    const int starCount = pattern.count('*');
 
     // Patterns like "*~", "*.extension"
-    if (pattern[0] == '*'  && pattern.indexOf('[') == -1)
+    if (pattern[0] == '*'  && pattern.indexOf('[') == -1 && starCount == 1)
     {
         if ( len + 1 < pattern_len ) return false;
 
@@ -203,7 +205,7 @@ static bool matchFileName( const QString &filename, const QString &pattern )
     }
 
     // Patterns like "README*" (well this is currently the only one like that...)
-    if (pattern[pattern_len - 1] == '*') {
+    if (starCount == 1 && pattern[pattern_len - 1] == '*') {
         if ( len + 1 < pattern_len ) return false;
         if (pattern[0] == '*')
             return filename.indexOf(pattern.mid(1, pattern_len - 2)) != -1;
@@ -217,7 +219,7 @@ static bool matchFileName( const QString &filename, const QString &pattern )
     }
 
     // Names without any wildcards like "README"
-    if (pattern.indexOf('[') == -1 && pattern.indexOf('*') == -1 && pattern.indexOf('?'))
+    if (pattern.indexOf('[') == -1 && starCount == 0 && pattern.indexOf('?'))
         return (pattern == filename);
 
     // Other patterns, like "[Mm]akefile": use slow but correct method

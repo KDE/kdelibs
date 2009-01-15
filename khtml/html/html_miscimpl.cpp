@@ -127,6 +127,10 @@ bool HTMLCollectionImpl::nodeMatches(NodeImpl *current, bool& deep) const
         if(e->id() == ID_AREA)
             check = true;
         break;
+    case FORMLESS_INPUT:
+        if(e->id() == ID_INPUT && !static_cast<HTMLInputElementImpl*>(e)->form())
+            check = true;
+        break;
     case DOC_APPLETS:   // all OBJECT and APPLET elements
         if(e->id() == ID_OBJECT || e->id() == ID_APPLET || e->id() == ID_EMBED)
             check = true;
@@ -441,3 +445,5 @@ bool HTMLMappedNameCollectionImpl::matchesName( ElementImpl* el, int type, const
         return false;
     }
 }
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

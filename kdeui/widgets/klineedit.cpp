@@ -1126,21 +1126,30 @@ QMenu* KLineEdit::createStandardContextMenu()
 
         //subMenu->setAccel( KStandardShortcut::completion(), ShellCompletion );
 
-        d->shellCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionShell ] );
-        d->noCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionNone ] );
-        d->popupCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionPopup ] );
-        d->autoCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionAuto ] );
-        d->shortAutoCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionMan ] );
-        d->popupAutoCompletionAction->setCheckable( !d->disableCompletionMap[ KGlobalSettings::CompletionPopupAuto ] );
+        d->shellCompletionAction->setCheckable( true );
+        d->noCompletionAction->setCheckable( true );
+        d->popupCompletionAction->setCheckable( true );
+        d->autoCompletionAction->setCheckable( true );
+        d->shortAutoCompletionAction->setCheckable( true );
+        d->popupAutoCompletionAction->setCheckable( true );
 
-        KGlobalSettings::Completion mode = completionMode();
+        d->shellCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionShell ] );
+        d->noCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionNone ] );
+        d->popupCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionPopup ] );
+        d->autoCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionAuto ] );
+        d->shortAutoCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionMan ] );
+        d->popupAutoCompletionAction->setEnabled( !d->disableCompletionMap[ KGlobalSettings::CompletionPopupAuto ] );
+
+        const KGlobalSettings::Completion mode = completionMode();
         d->noCompletionAction->setChecked( mode == KGlobalSettings::CompletionNone );
         d->shellCompletionAction->setChecked( mode == KGlobalSettings::CompletionShell );
         d->popupCompletionAction->setChecked( mode == KGlobalSettings::CompletionPopup );
         d->autoCompletionAction->setChecked(  mode == KGlobalSettings::CompletionAuto );
         d->shortAutoCompletionAction->setChecked( mode == KGlobalSettings::CompletionMan );
         d->popupAutoCompletionAction->setChecked( mode == KGlobalSettings::CompletionPopupAuto );
-        if ( mode != KGlobalSettings::completionMode() )
+
+        const KGlobalSettings::Completion defaultMode = KGlobalSettings::completionMode();
+        if ( mode != defaultMode && !d->disableCompletionMap[ defaultMode ] )
         {
             subMenu->addSeparator();
             d->defaultAction = subMenu->addAction( i18nc("@item:inmenu Text Completion", "Default") );

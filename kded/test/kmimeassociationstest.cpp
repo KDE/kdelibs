@@ -84,14 +84,14 @@ static bool offerListHasService( const KService::List& offers,
     return found;
 }
 
-static void writeAppDesktopFile(const QString& path, const char* mimetype)
+static void writeAppDesktopFile(const QString& path, const QStringList& mimeTypes)
 {
     KDesktopFile file(path);
     KConfigGroup group = file.desktopGroup();
     group.writeEntry("Name", "FakeApplication");
     group.writeEntry("Type", "Application");
     group.writeEntry("Exec", "ls");
-    group.writeEntry("MimeType", QString(mimetype) + ';');
+    group.writeXdgListEntry("MimeType", mimeTypes);
 }
 
 /**
@@ -125,14 +125,21 @@ private Q_SLOTS:
         fakeTextApplication = m_localApps + "faketextapplication.desktop";
         if (!QFile::exists(fakeTextApplication)) {
             mustUpdateKSycoca = true;
-            writeAppDesktopFile(fakeTextApplication, "text/plain");
+            writeAppDesktopFile(fakeTextApplication, QStringList() << "text/plain");
         }
 
         fakeJpegApplication = m_localApps + "fakejpegapplication.desktop";
         if (!QFile::exists(fakeJpegApplication)) {
             mustUpdateKSycoca = true;
-            writeAppDesktopFile(fakeJpegApplication, "image/jpeg");
+            writeAppDesktopFile(fakeJpegApplication, QStringList() << "image/jpeg");
         }
+
+        fakeArkApplication = m_localApps + "fakearkapplication.desktop";
+        if (!QFile::exists(fakeArkApplication)) {
+            mustUpdateKSycoca = true;
+            writeAppDesktopFile(fakeArkApplication, QStringList() << "application/zip");
+        }
+
 
         if ( mustUpdateKSycoca ) {
             // Update ksycoca in ~/.kde-unit-test after creating the above
@@ -299,7 +306,7 @@ private Q_SLOTS:
         QVERIFY(offerListHasService(offers, fakeTextApplication, true));
     }
 
-    void testRemovedAssociation()
+    void testRemoveAssociationFromParent()
     {
         // I removed kate from text/plain, and it would still appear in text/x-java.
 
@@ -314,6 +321,61 @@ private Q_SLOTS:
         QVERIFY(!offerListHasService(offers, fakeTextApplication, false));
 
         offers = KMimeTypeTrader::self()->query("text/x-java");
+        QVERIFY(!offerListHasService(offers, fakeTextApplication, false));
+    }
+
+    void testRemovedImplicitAssociation() // remove (implicit) assoc from derived mimetype
+    {
+        // #164584: Removing ark from opendocument.text didn't work
+        const QString opendocument = "application/vnd.oasis.opendocument.text";
+        KService::List offers = KMimeTypeTrader::self()->query(opendocument);
+        QVERIFY(offerListHasService(offers, fakeArkApplication, true));
+
+        writeToMimeApps(QByteArray("[Removed Associations]\n"
+                                   "application/vnd.oasis.opendocument.text=fakearkapplication.desktop;\n"));
+
+        offers = KMimeTypeTrader::self()->query(opendocument);
+        QVERIFY(!offerListHasService(offers, fakeArkApplication, false));
+
+        offers = KMimeTypeTrader::self()->query("application/zip");
+        QVERIFY(offerListHasService(offers, fakeArkApplication, true));
+    }
+
+    void testRemovedImplicitAssociation178560()
+    {
+        // #178560: Removing ark from interface/x-winamp-skin didn't work
+        const QString mime = "interface/x-winamp-skin";
+        KService::List offers = KMimeTypeTrader::self()->query(mime);
+        QVERIFY(offerListHasService(offers, fakeArkApplication, true));
+
+        writeToMimeApps(QByteArray("[Removed Associations]\n"
+                                   "interface/x-winamp-skin=fakearkapplication.desktop;\n"));
+
+        offers = KMimeTypeTrader::self()->query(mime);
+        QVERIFY(!offerListHasService(offers, fakeArkApplication, false));
+
+        offers = KMimeTypeTrader::self()->query("application/zip");
+        QVERIFY(offerListHasService(offers, fakeArkApplication, true));
+    }
+
+    // remove assoc from a mime which is both a parent and a derived mimetype
+    void testRemovedMiddleAssociation()
+    {
+        // More tricky: x-theme inherits x-desktop inherits text/plain,
+        // if we remove an association for x-desktop then x-theme shouldn't
+        // get it from text/plain...
+
+        KService::List offers;
+        writeToMimeApps(QByteArray("[Removed Associations]\n"
+                                   "application/x-desktop=faketextapplication.desktop;\n"));
+
+        offers = KMimeTypeTrader::self()->query("text/plain");
+        QVERIFY(offerListHasService(offers, fakeTextApplication, true));
+
+        offers = KMimeTypeTrader::self()->query("application/x-desktop");
+        QVERIFY(!offerListHasService(offers, fakeTextApplication, false));
+
+        offers = KMimeTypeTrader::self()->query("application/x-theme");
         QVERIFY(!offerListHasService(offers, fakeTextApplication, false));
     }
 
@@ -387,6 +449,7 @@ private:
     QByteArray m_mimeAppsFileContents;
     QString fakeTextApplication;
     QString fakeJpegApplication;
+    QString fakeArkApplication;
 
     ExpectedResultsMap preferredApps;
     ExpectedResultsMap removedApps;

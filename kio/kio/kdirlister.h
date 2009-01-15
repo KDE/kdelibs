@@ -57,6 +57,7 @@ namespace KIO { class Job; class ListJob; }
 class KIO_EXPORT KDirLister : public QObject
 {
   friend class KDirListerCache;
+  friend struct KDirListerCacheDirectoryData;
 
   Q_OBJECT
   Q_PROPERTY( bool autoUpdate READ autoUpdate WRITE setAutoUpdate )
@@ -578,9 +579,8 @@ Q_SIGNALS:
   void speed( int bytes_per_second );
 
 protected:
-  enum Changes {
-    NONE=0, NAME_FILTER=1, MIME_FILTER=2, DOT_FILES=4, DIR_ONLY_MODE=8
-  };
+  /// @deprecated and unused, ignore this
+  enum Changes { NONE=0, NAME_FILTER=1, MIME_FILTER=2, DOT_FILES=4, DIR_ONLY_MODE=8 };
 
   /**
    * Called for every new item before emitting newItems().

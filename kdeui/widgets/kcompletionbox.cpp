@@ -114,7 +114,8 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
         return false;
     }
 
-    if (wid && (wid->windowFlags() & Qt::Window) && (type == QEvent::Move || type == QEvent::Resize)) {
+    if (wid && (wid == d->m_parent || wid->windowFlags() & Qt::Window) && 
+               (type == QEvent::Move || type == QEvent::Resize)) {
         hide();
         return false;
     }
@@ -201,8 +202,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     default:
                         break;
                 }
-            }
-            else if ( type == QEvent::ShortcutOverride ) {
+            } else if ( type == QEvent::ShortcutOverride ) {
                 // Override any accelerators that match
                 // the key sequences we use here...
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
@@ -237,13 +237,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     default:
                         break;
                 }
-            }
-            // parent gets a click -> we hide
-            else if ( type == QEvent::Resize ||
-                      type == QEvent::Close || type == QEvent::Hide ) {
-                hide();
-            }
-            else if ( type == QEvent::FocusOut ) {
+            } else if ( type == QEvent::FocusOut ) {
                   QFocusEvent* event = static_cast<QFocusEvent*>( e );
                   if (event->reason() != Qt::PopupFocusReason)
                     hide();
@@ -344,14 +338,12 @@ void KCompletionBox::setVisible( bool visible )
 
 QRect KCompletionBox::calculateGeometry() const
 {
-    if (count() == 0)
+    QRect visualRect;
+    if (count() == 0 || !(visualRect = visualItemRect(item(0))).isValid())
         return QRect();
 
     int x = 0, y = 0;
-
-    Q_ASSERT( visualItemRect(item(0)).isValid() );
-
-    int ih = visualItemRect(item(0)).height();
+    int ih = visualRect.height();
     int h = qMin( 15 * ih, (int) count() * ih ) + 2*frameWidth();
 
     int w = (d->m_parent) ? d->m_parent->width() : KListWidget::minimumSizeHint().width();

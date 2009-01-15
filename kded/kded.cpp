@@ -190,7 +190,7 @@ void Kded::initModules()
     if( !sessionUID.isEmpty() && uid_t( sessionUID.toInt() ) != getuid())
         kde_running = false;
      // Preload kded modules.
-     KService::List kdedModules = KServiceTypeTrader::self()->query("KDEDModule");
+     const KService::List kdedModules = KServiceTypeTrader::self()->query("KDEDModule");
      for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
      {
          KService::Ptr service = *it;
@@ -234,7 +234,7 @@ void Kded::loadSecondPhase()
      kDebug(7020) << "Loading second phase autoload";
      KSharedConfig::Ptr config = KGlobal::config();
      KService::List kdedModules = KServiceTypeTrader::self()->query("KDEDModule");
-     for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
+     for(KService::List::ConstIterator it = kdedModules.constBegin(); it != kdedModules.constEnd(); ++it)
      {
          KService::Ptr service = *it;
          bool autoload = service->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
@@ -386,8 +386,8 @@ void Kded::updateDirWatch()
            this, SLOT(dirDeleted(const QString&)));
 
   // For each resource
-  for( QStringList::ConstIterator it = m_allResourceDirs.begin();
-       it != m_allResourceDirs.end();
+  for( QStringList::ConstIterator it = m_allResourceDirs.constBegin();
+       it != m_allResourceDirs.constEnd();
        ++it )
   {
      readDirectory( *it );
@@ -609,7 +609,7 @@ KUpdateD::KUpdateD()
     QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
            this, SLOT(slotNewUpdateFile()));
 
-    QStringList dirs = KGlobal::dirs()->findDirs("data", "kconf_update");
+    const QStringList dirs = KGlobal::dirs()->findDirs("data", "kconf_update");
     for( QStringList::ConstIterator it = dirs.begin();
          it != dirs.end();
          ++it )

@@ -27,11 +27,13 @@
 </inlinemediaobject>
 </guiicon> icon"><!-- if image is localised, then entityref should be used 
                       instead of fileref -->
-<!ENTITY kmenu  "<guimenu>K-меню</guimenu> menu">
+<!ENTITY kmenu  "<guimenu>K-меню</guimenu>">
 <!ENTITY LMB    "<mousebutton>ліва</mousebutton> кнопка мишки">
 <!ENTITY MMB    "<mousebutton>середня</mousebutton> кнопка мишки">
 <!ENTITY OS	"операційна система"><!-- <acronym>OS</acronym>-->
+<!ENTITY partman "<application>Інструмент керування розділами KDE</application>">
 <!ENTITY RMB    "<mousebutton>права</mousebutton> кнопка мишки">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY systemsettings	"<application>Системні параметри</application>">
 <!ENTITY systemtray "<application>системний лоток</application>">
 <!ENTITY Tab	"<keycap>Tab</keycap>">

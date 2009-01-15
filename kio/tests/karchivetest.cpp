@@ -179,6 +179,20 @@ static void testFileData( KArchive* archive )
     QVERIFY(e->isFile());
     QCOMPARE(e->symLinkTarget(), QString("test3"));
 #endif
+
+    // Test "./" prefix for KOffice (xlink:href="./ObjectReplacements/Object 1")
+    e = dir->entry( "./hugefile" );
+    QVERIFY( e && e->isFile() );
+    e = dir->entry( "./my/dir/test3" );
+    QVERIFY( e && e->isFile() );
+
+    // Test directory entries
+    e = dir->entry( "my" );
+    QVERIFY(e && e->isDirectory());
+    e = dir->entry( "my/" );
+    QVERIFY(e && e->isDirectory());
+    e = dir->entry( "./my/" );
+    QVERIFY(e && e->isDirectory());
 }
 
 static void testCopyTo( KArchive* archive )

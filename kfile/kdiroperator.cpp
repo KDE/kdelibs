@@ -901,7 +901,9 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
 
     if (!Private::isReadable(newurl)) {
         // maybe newurl is a file? check its parent directory
-        newurl.cd(QLatin1String(".."));
+        newurl.setPath(newurl.directory());
+        if (newurl.equals(d->currUrl, KUrl::CompareWithoutTrailingSlash))
+            return; // parent is current dir, nothing to do (fixes #173454, too)
         KIO::UDSEntry entry;
         bool res = KIO::NetAccess::stat(newurl, entry, this);
         KFileItem i(entry, newurl);
@@ -944,7 +946,9 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
 
 void KDirOperator::updateDir()
 {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     d->dirLister->emitChanges();
+    QApplication::restoreOverrideCursor();
 }
 
 void KDirOperator::rereadDir()

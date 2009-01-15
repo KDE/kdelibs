@@ -34,6 +34,7 @@ void KUrlMimeTest::testURLList()
 
     KUrl::List urls;
     urls.append( KUrl( "http://www.kde.org" ) );
+    urls.append( KUrl( "http://wstephenson:secret@example.com/path" ) );
     urls.append( KUrl( "file:///home/dfaure/konqtests/Mat%C3%A9riel" ) );
     QMap<QString, QString> metaData;
     metaData["key"] = "value";
@@ -47,9 +48,11 @@ void KUrlMimeTest::testURLList()
     QMap<QString, QString> decodedMetaData;
     KUrl::List decodedURLs = KUrl::List::fromMimeData( mimeData, &decodedMetaData );
     QVERIFY( !decodedURLs.isEmpty() );
-    QCOMPARE( urls.toStringList().join(" "), decodedURLs.toStringList().join(" ") );
+    KUrl::List expectedUrls = urls;
+    expectedUrls[1] = KUrl("http://wstephenson@example.com/path"); // password removed
+    QCOMPARE( expectedUrls.toStringList().join(" "), decodedURLs.toStringList().join(" ") );
 
-    QList<QUrl> qurls = mimeData->urls();
+    const QList<QUrl> qurls = mimeData->urls();
     QCOMPARE(qurls.count(), urls.count());
     for (int i = 0; i < qurls.count(); ++i )
         QCOMPARE(qurls[i], static_cast<QUrl>(decodedURLs[i]));
@@ -95,4 +98,33 @@ void KUrlMimeTest::testFromQUrl()
     QCOMPARE( static_cast<QUrl>(decodedURLs[1]), qurls[1] );
     QVERIFY( decodedMetaData.isEmpty() );
     delete mimeData;
+}
+
+void KUrlMimeTest::testMostLocalUrlList()
+{
+    QMimeData* mimeData = new QMimeData;
+    KUrl::List urls;
+    urls.append(KUrl("desktop:/foo"));
+    urls.append(KUrl("desktop:/bar"));
+    KUrl::List localUrls;
+    localUrls.append(KUrl("file:/home/dfaure/Desktop/foo"));
+    localUrls.append(KUrl("file:/home/dfaure/Desktop/bar"));
+
+    urls.populateMimeData(localUrls, mimeData);
+
+    QVERIFY(KUrl::List::canDecode(mimeData));
+    QVERIFY(mimeData->hasUrls());
+    QVERIFY(mimeData->hasFormat("text/plain"));
+
+    // KUrl decodes the real "kde" urls
+    const KUrl::List decodedURLs = KUrl::List::fromMimeData(mimeData);
+    QVERIFY(!decodedURLs.isEmpty());
+    QCOMPARE(decodedURLs.toStringList().join(" "), urls.toStringList().join(" ") );
+
+    // QMimeData decodes the "most local" urls
+    const QList<QUrl> qurls = mimeData->urls();
+    QCOMPARE(qurls.count(), localUrls.count());
+    for (int i = 0; i < qurls.count(); ++i )
+        QCOMPARE(qurls[i], static_cast<QUrl>(localUrls[i]));
+
 }

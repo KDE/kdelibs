@@ -626,9 +626,9 @@ void HTMLFormElementImpl::submit(  )
                 dialog->setObjectName( "questionYesNoCancel" );
                 dialog->setCaption( i18n("Save Login Information") );
                 dialog->setButtons( KDialog::Yes | KDialog::No | KDialog::Cancel );
-                dialog->setButtonGuiItem( KDialog::User1, KGuiItem(i18n("Store")) );
-                dialog->setButtonGuiItem( KDialog::User2, KGuiItem(i18n("Ne&ver for This Site")) );
-                dialog->setButtonGuiItem( KDialog::User3, KGuiItem(i18n("Do Not Store")) );
+                dialog->setButtonGuiItem( KDialog::Yes, KGuiItem(i18n("Store")) );
+                dialog->setButtonGuiItem( KDialog::No, KGuiItem(i18n("Ne&ver for This Site")) );
+                dialog->setButtonGuiItem( KDialog::Cancel, KGuiItem(i18n("Do Not Store")) );
                 dialog->setDefaultButton( KDialog::Yes );
                 dialog->setEscapeButton( KDialog::Cancel );
                 dialog->setModal( true );
@@ -1724,8 +1724,21 @@ void HTMLInputElementImpl::reset()
 
 void HTMLInputElementImpl::setChecked(bool _checked)
 {
-    if (m_form && m_type == RADIO && _checked && !name().isEmpty())
-        m_form->radioClicked(this);
+    if (m_type == RADIO && _checked && !name().isEmpty()) {
+        // uncheck others in the group..
+        if (m_form) {
+            m_form->radioClicked(this);
+        } else {
+            // We're not in form, so we group with other formless radios with the same name
+            HTMLCollectionImpl candidates(document()->documentElement(), HTMLCollectionImpl::FORMLESS_INPUT);
+            unsigned long len = candidates.length();
+            for (unsigned long c = 0; c < len; ++c) {
+                HTMLInputElementImpl* current = static_cast<HTMLInputElementImpl*>(candidates.item(c));
+                if (current != this && current->name() == name() && current->inputType() == HTMLInputElementImpl::RADIO)
+                    current->setChecked(false);
+            }
+        }
+    }
 
     if (checked() == _checked) return;
     m_useDefaultChecked = false;
@@ -2122,7 +2135,10 @@ void HTMLSelectElementImpl::add( HTMLElementImpl* element, HTMLElementImpl* befo
         m_listItems.resize(m_listItems.size() + 1);
         m_listItems[m_listItems.size() - 1] = option;
         ++m_length;
-        m_recalcListItems = false;
+        if (m_length == 1 && !m_multiple) //we added the first item in single-select --- select it.
+            option->setSelected(true);
+
+        m_recalcListItems = false; // was set by insertBefore
     } else if (!exceptioncode)
         setRecalcListItems();
 }
@@ -3030,3 +3046,5 @@ void HTMLIsIndexElementImpl::setPrompt(const DOMString& str)
 
 // -------------------------------------------------------------------------
 
+
+// kate: indent-width 4; replace-tabs on; tab-width 8; space-indent on;

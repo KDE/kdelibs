@@ -37,8 +37,6 @@
 # endif
 #endif
 
-static const QByteArray GLUE = GETTEXT_CONTEXT_GLUE;
-
 class KCatalogPrivate
 {
 public:
@@ -46,10 +44,13 @@ public:
   QByteArray name;
   QByteArray localeDir;
 
+  QByteArray systemLanguage;
+
   static int localeSet;
   static QByteArray currentLanguage;
 
-  void changeBindings () const;
+  void setupGettextEnv ();
+  void resetSystemLanguage ();
 };
 
 QDebug operator<<(QDebug debug, const KCatalog &c)
@@ -93,10 +94,11 @@ KCatalog & KCatalog::operator=(const KCatalog & rhs)
 {
   *d = *rhs.d;
 
-  // Update bindings.
+  // Update Gettext environment.
   // (Sometimes Gettext picks up wrong locale directory if bindings are not
   // updated here. No idea why that happens.)
-  d->changeBindings();
+  d->setupGettextEnv();
+  d->resetSystemLanguage();
 
   return *this;
 }
@@ -129,16 +131,20 @@ QString KCatalog::localeDir() const
   return d->localeDir;
 }
 
-void KCatalogPrivate::changeBindings () const
+void KCatalogPrivate::setupGettextEnv ()
 {
+  // Point Gettext to current language, recording system value for recovery.
+  systemLanguage = qgetenv("LANGUAGE");
+  if (systemLanguage != language) {
+    qputenv("LANGUAGE", language);
+  }
+
+  // Rebind text domain if language actually changed from the last time,
+  // as locale directories may differ for different languages of same catalog.
   if (language != currentLanguage) {
 
     currentLanguage = language;
 
-    // Point Gettext to new language.
-    setenv("LANGUAGE", language, 1);
-
-    // Locale directories may differ for different languages of same catalog.
     bindtextdomain(name, localeDir);
 
     // // Magic to make sure Gettext doesn't use stale cached translation
@@ -151,59 +157,78 @@ void KCatalogPrivate::changeBindings () const
   }
 }
 
+void KCatalogPrivate::resetSystemLanguage ()
+{
+  if (language != systemLanguage) {
+    qputenv("LANGUAGE", systemLanguage);
+  }
+}
+
 QString KCatalog::translate(const char * msgid) const
 {
-  d->changeBindings();
-  return QString::fromUtf8(dgettext(d->name, msgid));
+  d->setupGettextEnv();
+  const char *msgstr = dgettext(d->name, msgid);
+  d->resetSystemLanguage();
+  return QString::fromUtf8(msgstr);
 }
 
 QString KCatalog::translate(const char * msgctxt, const char * msgid) const
 {
-  d->changeBindings();
-  return QString::fromUtf8(dpgettext_expr(d->name, msgctxt, msgid));
+  d->setupGettextEnv();
+  const char *msgstr = dpgettext_expr(d->name, msgctxt, msgid);
+  d->resetSystemLanguage();
+  return QString::fromUtf8(msgstr);
 }
 
 QString KCatalog::translate(const char * msgid, const char * msgid_plural,
                             unsigned long n) const
 {
-  d->changeBindings();
-  return QString::fromUtf8(dngettext(d->name, msgid, msgid_plural, n));
+  d->setupGettextEnv();
+  const char *msgstr = dngettext(d->name, msgid, msgid_plural, n);
+  d->resetSystemLanguage();
+  return QString::fromUtf8(msgstr);
 }
 
 QString KCatalog::translate(const char * msgctxt, const char * msgid,
                             const char * msgid_plural, unsigned long n) const
 {
-  d->changeBindings();
-  return QString::fromUtf8(dnpgettext_expr(d->name, msgctxt, msgid, msgid_plural, n));
+  d->setupGettextEnv();
+  const char *msgstr = dnpgettext_expr(d->name, msgctxt, msgid, msgid_plural, n);
+  d->resetSystemLanguage();
+  return QString::fromUtf8(msgstr);
 }
 
 QString KCatalog::translateStrict(const char * msgid) const
 {
-  d->changeBindings();
+  d->setupGettextEnv();
   const char *msgstr = dgettext(d->name, msgid);
+  d->resetSystemLanguage();
   return msgstr != msgid ? QString::fromUtf8(msgstr) : QString();
 }
 
 QString KCatalog::translateStrict(const char * msgctxt, const char * msgid) const
 {
-  d->changeBindings();
+  d->setupGettextEnv();
   const char *msgstr = dpgettext_expr(d->name, msgctxt, msgid);
+  d->resetSystemLanguage();
   return msgstr != msgid ? QString::fromUtf8(msgstr) : QString();
 }
 
 QString KCatalog::translateStrict(const char * msgid, const char * msgid_plural,
                                   unsigned long n) const
 {
-  d->changeBindings();
+  d->setupGettextEnv();
   const char *msgstr = dngettext(d->name, msgid, msgid_plural, n);
+  d->resetSystemLanguage();
   return msgstr != msgid && msgstr != msgid_plural ? QString::fromUtf8(msgstr) : QString();
 }
 
 QString KCatalog::translateStrict(const char * msgctxt, const char * msgid,
                                   const char * msgid_plural, unsigned long n) const
 {
-  d->changeBindings();
+  d->setupGettextEnv();
   const char *msgstr = dnpgettext_expr(d->name, msgctxt, msgid, msgid_plural, n);
+  d->resetSystemLanguage();
   return msgstr != msgid && msgstr != msgid_plural ? QString::fromUtf8(msgstr) : QString();
 }
 

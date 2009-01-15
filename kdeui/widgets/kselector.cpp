@@ -147,7 +147,10 @@ void KSelector::paintEvent( QPaintEvent * )
       opt.rect.adjust( 0, iw - w, -5, w - iw );
     else
       opt.rect.adjust(iw - w, 0, w - iw, -5);
+    QBrush oldBrush = painter.brush();
+    painter.setBrush( Qt::NoBrush );
     style()->drawPrimitive( QStyle::PE_Frame, &opt, &painter, this );
+    painter.setBrush( oldBrush );
   }
 
 

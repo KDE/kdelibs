@@ -256,6 +256,7 @@ bool KSaveFile::simpleBackupFile( const QString& qFilename,
     }
 
 //    kDebug(180) << "KSaveFile copying " << qFilename << " to " << backupFileName;
+    QFile::remove(backupFileName);
     return QFile::copy(qFilename, backupFileName);
 }
 

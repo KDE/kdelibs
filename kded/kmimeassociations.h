@@ -30,6 +30,7 @@ class KConfigGroup;
 struct ServiceTypeOffersData {
     QList<KServiceOffer> offers; // service + initial preference + allow as default
     QSet<KService::Ptr> offerSet; // for quick contains() check
+    QSet<KService::Ptr> removedOffers; // remember removed offers explicitely
 };
 
 class KOfferHash
@@ -44,6 +45,7 @@ public:
     }
     void addServiceOffer(const QString& serviceType, const KServiceOffer& offer);
     void removeServiceOffer(const QString& serviceType, KService::Ptr service);
+    bool hasRemovedOffer(const QString& serviceType, KService::Ptr service) const;
 
 private:
     KOfferHash(const KOfferHash&); // forbidden
