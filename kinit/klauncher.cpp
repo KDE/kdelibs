@@ -409,6 +409,25 @@ KLauncher::processDied(pid_t pid, long exitStatus)
 #endif
 }
 
+static bool matchesPendingRequest(const QString& appId, const QString& pendingAppId)
+{
+    // appId just registered, e.g. org.koffice.kword-12345
+    // Let's see if this is what pendingAppId (e.g. org.koffice.kword or *.kword) was waiting for.
+
+    const QString newAppId = appId.left(appId.lastIndexOf('-')); // strip out the -12345 if present.
+
+    //kDebug() << "appId=" << appId << "newAppId=" << newAppId << "pendingAppId=" << pendingAppId;
+
+    if (pendingAppId.startsWith("*.")) {
+        const QString pendingName = pendingAppId.mid(2);
+        const QString appName = newAppId.mid(newAppId.lastIndexOf('.')+1);
+        //kDebug() << "appName=" << appName;
+        return appName == pendingName;
+    }
+
+    return newAppId == pendingAppId;
+}
+
 void
 KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
                                 const QString &newOwner)
@@ -798,7 +817,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
                request->dbus_name = v.toString().toUtf8();
            }
            if (request->dbus_name.isEmpty()) {
-               request->dbus_name = "org.kde." + QFile::encodeName(KRun::binaryName(service->exec(), true));
+               request->dbus_name = "*." + QFile::encodeName(KRun::binaryName(service->exec(), true));
            }
        }
    }
