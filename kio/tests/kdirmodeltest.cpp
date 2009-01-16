@@ -421,16 +421,25 @@ void KDirModelTest::testRenameFile()
                 &m_eventLoop, SLOT(quit()) );
 }
 
-void KDirModelTest::testRenameDirectory() // #172945, #174703
+void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
 {
     const QString path = m_tempDir->name();
     const KUrl url(path + "subdir");
     const KUrl newUrl(path + "subdir_renamed");
 
+    // For #180156 we need a second kdirmodel, viewing the subdir being renamed.
+    // I'm abusing m_dirModelForExpand for that purpose.
+    delete m_dirModelForExpand;
+    m_dirModelForExpand = new KDirModel;
+    KDirLister* dirListerForExpand = m_dirModelForExpand->dirLister();
+    connect(dirListerForExpand, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
+    dirListerForExpand->openUrl(url); // async
+    enterLoop();
+
+    // Now do the renaming
     QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
     connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(quit()) );
-
     KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
     bool ok = job->exec();
     QVERIFY(ok);
@@ -451,6 +460,9 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703
     QVERIFY(m_dirModel.indexForUrl(path + "subdir_renamed/testfile").isValid());
     QVERIFY(m_dirModel.indexForUrl(path + "subdir_renamed/subsubdir").isValid());
     QVERIFY(m_dirModel.indexForUrl(path + "subdir_renamed/subsubdir/testfile").isValid());
+
+    // Check the other kdirmodel got redirected
+    QCOMPARE(dirListerForExpand->url(), KUrl(path+"subdir_renamed"));
 
     // Put things back to normal
     job = KIO::rename(newUrl, url, KIO::HideProgressInfo);
@@ -473,6 +485,10 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703
     QVERIFY(!m_dirModel.indexForUrl(path + "subdir_renamed/testfile").isValid());
     QVERIFY(!m_dirModel.indexForUrl(path + "subdir_renamed/subsubdir").isValid());
     QVERIFY(!m_dirModel.indexForUrl(path + "subdir_renamed/subsubdir/testfile").isValid());
+    QCOMPARE(dirListerForExpand->url(), KUrl(path+"subdir"));
+
+    delete m_dirModelForExpand;
+    m_dirModelForExpand = 0;
 }
 
 void KDirModelTest::testChmodDirectory() // #53397
