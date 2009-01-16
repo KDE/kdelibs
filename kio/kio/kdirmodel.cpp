@@ -569,8 +569,10 @@ void KDirModelPrivate::_k_slotRedirection(const KUrl& oldUrl, const KUrl& newUrl
     // we won't get a refreshItem, and in case of renaming a directory
     // we'll get it too late (so the hash won't find the old url anymore).
     KFileItem item = node->item();
-    item.setUrl(newUrl);
-    node->setItem(item);
+    if (!item.isNull()) { // null if root item, #180156
+        item.setUrl(newUrl);
+        node->setItem(item);
+    }
 
     // The items inside the renamed directory have been handled before,
     // KDirLister took care of emitting refreshItem for each of them.
