@@ -176,7 +176,7 @@
       <item row="2" column="0" >
        <widget class="QLabel" name="textLabel12" >
         <property name="text" >
-         <string>&amp;DBUS registration:</string>
+         <string>&amp;D-Bus registration:</string>
         </property>
         <property name="buddy" >
          <cstring>dbusCombo</cstring>

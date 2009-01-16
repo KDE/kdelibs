@@ -280,7 +280,7 @@ Following the command, you can have several place holders which will be replaced
    <item row="8" column="5" colspan="2" >
     <widget class="QPushButton" name="advancedButton" >
      <property name="whatsThis" >
-      <string>Click here to modify the way this application will run, launch feedback, DBUS options or to run it as a different user.</string>
+      <string>Click here to modify the way this application will run, launch feedback, D-Bus options or to run it as a different user.</string>
      </property>
      <property name="text" >
       <string>Ad&amp;vanced Options</string>
