@@ -3861,17 +3861,19 @@ void KHTMLView::focusInEvent( QFocusEvent *e )
 
 void KHTMLView::focusOutEvent( QFocusEvent *e )
 {
-    m_part->stopAutoScroll();
+    if (m_part) {
+        m_part->stopAutoScroll();
+        m_part->setSelectionVisible(false);
+    }
 
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     if(d->typeAheadActivated)
     {
         findTimeout();
     }
-    m_part->enableFindAheadActions( false );
+    if (m_part)
+        m_part->enableFindAheadActions( false );
 #endif // KHTML_NO_TYPE_AHEAD_FIND
-
-    m_part->setSelectionVisible(false);
 
     if ( d->cursorIconWidget )
         d->cursorIconWidget->hide();
