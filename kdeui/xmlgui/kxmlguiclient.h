@@ -282,18 +282,26 @@ protected:
   /**
    * Sets the name of the rc file containing the XML for the part.
    *
-   * Call this in the Part-inherited class constructor.
-   * If you're writing usual application, use KXmlGuiWindow::setupGUI() with non-default arguments
+   * Call this in the inherited class constructor, for parts and plugins.
+   * NOTE: for mainwindows, don't call this, pass the name of the xml file
+   * to KXmlGuiWindow::setupGUI() or KXmlGuiWindow::createGUI().
    *
    * @param file Either an absolute path for the file, or simply the
    *             filename, which will then be assumed to be installed
    *             in the "data" resource, under a directory named like
    *             the componentData.
+   *             If you pass an absolute path here, make sure to also call
+   *             setLocalXMLFile, otherwise toolbar editing won't work.
    * @param merge Whether to merge with the global document.
    * @param setXMLDoc Specify whether to call setXML. Default is true.
    **/
   virtual void setXMLFile( const QString& file, bool merge = false, bool setXMLDoc = true );
 
+  /**
+   * Set the full path to the "local" xml file, the one used for saving
+   * toolbar and shortcut changes. You normally don't need to call this,
+   * if you pass a simple filename to setXMLFile.
+   */
   virtual void setLocalXMLFile( const QString &file );
 
   /**
