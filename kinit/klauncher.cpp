@@ -461,12 +461,7 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
       if (rAppId.isEmpty())
           continue;
 
-      const int len = rAppId.length();
-
-      QChar c = appId.length() > len ? appId.at(len) : QChar();
-      if (appId.startsWith(rAppId) && ((appId.length() == len) ||
-                  (c == QLatin1Char('-'))))
-      {
+      if (matchesPendingRequest(appId, rAppId)) {
          request->dbus_name = appId;
          request->status = KLaunchRequest::Running;
          requestDone(request);
