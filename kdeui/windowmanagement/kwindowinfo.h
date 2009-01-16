@@ -27,8 +27,6 @@
 #include <kdeui_export.h>
 #include <QtGui/QWidgetList> //For WId
 
-#if defined(Q_WS_X11) || defined(Q_WS_MAC)
-
 #include <netwm_def.h>
 
 /**
@@ -225,7 +223,6 @@ private:
     friend class KWindowSystemPrivate;
 #endif
 };
-#endif //Q_WS_X11 || Q_WS_MAC
 
 #endif // multiple inclusion guard
 
