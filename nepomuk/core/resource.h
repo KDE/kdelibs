@@ -37,7 +37,7 @@ namespace Nepomuk {
 
     enum ErrorCode {
         NoError = 0,
-        CommunicationError, /**< A commication error, i.e. connection failure */
+        CommunicationError, /**< A communication error, i.e. connection failure */
         InvalidType,
         UnknownError
     };
@@ -101,9 +101,9 @@ namespace Nepomuk {
          *                        by the framework and can only be accessed in a read-only
          *                        fashion.
          *                        \li An identifier in combination with the resource type (Be
-         *                        aware that this identification can only be guranteed if identifiers
+         *                        aware that this identification can only be guaranteed if identifiers
          *                        are never set manually via addIdentifier but only through the
-         *                        constructor.
+         *                        constructor.)
          *
          * \param type The URI identifying the type of the resource. If it is empty
          *             Resource falls back to http://www.w3.org/2000/01/rdf-schema\#Resource or
@@ -159,7 +159,7 @@ namespace Nepomuk {
          * cases is a virtual one which has been created from a generic base
          * namespace and some identifier.
          *
-         * the most important thing to remember is that the URI of for example
+         * The most important thing to remember is that the URI of for example
          * a file does not necessarily have a relation to its local path.
          * (Although Nepomuk tries to keep the URI of file resources in sync
          * with the file URL for convenience.)
@@ -178,7 +178,7 @@ namespace Nepomuk {
          * cases is a virtual one which has been created from a generic base
          * namespace and some identifier.
          *
-         * the most important thing to remember is that the URI of for example
+         * The most important thing to remember is that the URI of for example
          * a file does not necessarily have a relation to its local path.
          * (Although Nepomuk tries to keep the URI of file resources in sync
          * with the file URL for convenience.)
