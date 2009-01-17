@@ -662,7 +662,7 @@ void KConfigTest::testDefaultGroup()
 
 #ifdef Q_OS_UNIX
     QList<QByteArray> lines = readLines();
-    QVERIFY(!lines.contains("[]"));
+    QVERIFY(!lines.contains("[]\n"));
     QCOMPARE(lines.first(), QByteArray("TestKey=defaultGroup\n"));
 #endif
 
@@ -706,7 +706,7 @@ void KConfigTest::testEmptyGroup()
 
 #ifdef Q_OS_UNIX
     QList<QByteArray> lines = readLines();
-    QVERIFY(!lines.contains("[]")); // there's no support for the [] group, in fact.
+    QVERIFY(!lines.contains("[]\n")); // there's no support for the [] group, in fact.
     QCOMPARE(lines.first(), QByteArray("TestKey=emptyGroup\n"));
 #endif
 
@@ -815,7 +815,7 @@ void KConfigTest::testOptionOrder()
     {
         QList<QByteArray> lines;
         // this is what the file should look like
-        lines << "[group3]\n" 
+        lines << "[group3]\n"
               << "entry2=modified\n"
               << "entry2[de_DE][$i]=t2\n";
 
@@ -1078,9 +1078,9 @@ void KConfigTest::testWriteOnSync()
     QCOMPARE(newStamp, oldStamp);
 }
 
-QList<QByteArray> KConfigTest::readLines()
+QList<QByteArray> KConfigTest::readLines(const char* fileName)
 {
-    const QString path = KStandardDirs::locateLocal("config", "kconfigtest");
+    const QString path = KStandardDirs::locateLocal("config", fileName);
     Q_ASSERT(!path.isEmpty());
     QFile file(path);
     Q_ASSERT(file.open(QIODevice::ReadOnly));
@@ -1154,4 +1154,42 @@ void KConfigTest::testLocaleConfig()
     QCOMPARE(cg.readEntry("foostring", "ugly"), QString("nice"));
     QCOMPARE(cg.readEntry("foobool"), QString("true"));
     QCOMPARE(cg.readEntry("foobool", false), true);
+}
+
+void KConfigTest::testKdeGlobals()
+{
+    {
+        KConfig glob("kdeglobals");
+        KConfigGroup general(&glob, "General");
+        general.writeEntry("testKG", "1");
+        glob.sync();
+    }
+
+    KConfig globRead("kdeglobals");
+    const KConfigGroup general(&globRead, "General");
+    QCOMPARE(general.readEntry("testKG"), QString("1"));
+
+    // Check we wrote into kdeglobals
+    const QList<QByteArray> lines = readLines("kdeglobals");
+    QVERIFY(lines.contains("[General]\n"));
+    QVERIFY(lines.contains("testKG=1\n"));
+
+    // Writing using NoGlobals
+    {
+        KConfig glob("kdeglobals", KConfig::NoGlobals);
+        KConfigGroup general(&glob, "General");
+        general.writeEntry("testKG", "2");
+        glob.sync();
+    }
+    globRead.reparseConfiguration();
+    QCOMPARE(general.readEntry("testKG"), QString("2"));
+
+    // Reading using NoGlobals
+    {
+        KConfig globReadNoGlob("kdeglobals", KConfig::NoGlobals);
+        const KConfigGroup generalNoGlob(&globReadNoGlob, "General");
+        // TODO QCOMPARE(generalNoGlob.readEntry("testKG"), QString("2"));
+    }
+
+    // TODO now use kconfigtest and writeEntry(,Global) -> should go into kdeglobals
 }

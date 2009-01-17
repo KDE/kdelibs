@@ -65,6 +65,7 @@ private Q_SLOTS:
     void testSharedConfig();
     void testOptionOrder();
     void testLocaleConfig();
+    void testKdeGlobals();
 
     // unrelated
     void testKAboutDataOrganizationDomain();
@@ -73,7 +74,7 @@ private Q_SLOTS:
     void testSyncOnExit();
 private:
     void revertEntries();
-    QList<QByteArray> readLines();
+    QList<QByteArray> readLines(const char* fileName = "kconfigtest");
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigTest::Flags)
 
