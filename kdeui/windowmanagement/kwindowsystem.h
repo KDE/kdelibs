@@ -30,10 +30,7 @@
 #include <netwm_def.h>
 #include <kwindowinfo.h>
 
-#if defined(Q_WS_X11) || defined(Q_WS_MAC)
 class KWindowSystemPrivate;
-#endif
-
 
 /**
  *
@@ -60,12 +57,11 @@ class KDEUI_EXPORT KWindowSystem : public QObject, public NET
     Q_OBJECT
 
 public:
-#if defined(Q_WS_X11) || defined(Q_WS_MAC)
     /**
      * Access to the singleton instance. Useful mainly for connecting to signals.
      */
     static KWindowSystem* self();
-#endif
+
    /**
      * Returns the list of all toplevel windows currently managed by the
      * window manager in the order of creation. Please do not rely on
@@ -85,7 +81,7 @@ public:
      * @return the list of all toplevel windows
      */
     static const QList<WId>& windows();
-#if defined(Q_WS_X11) || defined(Q_WS_MAC)
+
     /**
      * Test to see if @p id still managed at present.
      * @param id the window id to test
@@ -104,7 +100,7 @@ public:
      * @return the window information
      */
     static KWindowInfo windowInfo( WId win, unsigned long properties, unsigned long properties2 = 0 );
-#endif
+
     /**
      * Returns the list of all toplevel windows currently managed by the
      * window manager in the current stacking order (from lower to
@@ -521,7 +517,7 @@ Q_SIGNALS:
 
     /**
      * A window has been added.
-     * @param id the id of the the window
+     * @param id the id of the window
      */
     void windowAdded(WId id);
 
@@ -604,19 +600,17 @@ protected:
     virtual void connectNotify( const char* signal );
 
 private:
-#if defined(Q_WS_X11) || defined(Q_WS_MAC)
     friend class KWindowSystemStaticContainer;
-#endif
+
     KWindowSystem() {}
 
     enum { INFO_BASIC=1, // desktop info, not per-window
            INFO_WINDOWS=2 }; // also per-window info
-#if defined(Q_WS_X11) || defined(Q_WS_MAC)
+
     static void init(int);
 
     friend class KWindowSystemPrivate;
     static KWindowSystemPrivate* s_d_func();
-#endif
 };
 
 #endif
