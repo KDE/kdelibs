@@ -274,255 +274,251 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
 
 bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, KActionCollection *actionCollection )
 {
-  static const QString &tagAction = KGlobal::staticQString( "Action" );
-  static const QString &tagMerge = KGlobal::staticQString( "Merge" );
-  static const QString &tagSeparator = KGlobal::staticQString( "Separator" );
-  static const QString &attrName = KGlobal::staticQString( "name" );
-  static const QString &attrAppend = KGlobal::staticQString( "append" );
-  static const QString &attrWeakSeparator = KGlobal::staticQString( "weakSeparator" );
-  static const QString &tagMergeLocal = KGlobal::staticQString( "MergeLocal" );
-  static const QString &tagText = KGlobal::staticQString( "text" );
-  static const QString &attrAlreadyVisited = KGlobal::staticQString( "alreadyVisited" );
-  static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
-  static const QString &attrOne = KGlobal::staticQString( "1" );
+    static const QString &tagAction = KGlobal::staticQString( "Action" );
+    static const QString &tagMerge = KGlobal::staticQString( "Merge" );
+    static const QString &tagSeparator = KGlobal::staticQString( "Separator" );
+    static const QString &attrName = KGlobal::staticQString( "name" );
+    static const QString &attrAppend = KGlobal::staticQString( "append" );
+    static const QString &attrWeakSeparator = KGlobal::staticQString( "weakSeparator" );
+    static const QString &tagMergeLocal = KGlobal::staticQString( "MergeLocal" );
+    static const QString &tagText = KGlobal::staticQString( "text" );
+    static const QString &attrAlreadyVisited = KGlobal::staticQString( "alreadyVisited" );
+    static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
+    static const QString &attrOne = KGlobal::staticQString( "1" );
 
-  // there is a possibility that we don't want to merge in the
-  // additive.. rather, we might want to *replace* the base with the
-  // additive.  this can be for any container.. either at a file wide
-  // level or a simple container level.  we look for the 'noMerge'
-  // tag, in any event and just replace the old with the new
-  if ( additive.attribute(attrNoMerge) == attrOne ) // ### use toInt() instead? (Simon)
-  {
-    base.parentNode().replaceChild(additive, base);
-    return true;
-  }
-
-  QString tag;
-
-  // iterate over all elements in the container (of the global DOM tree)
-  QDomNode n = base.firstChild();
-  while ( !n.isNull() )
-  {
-    QDomElement e = n.toElement();
-    n = n.nextSibling(); // Advance now so that we can safely delete e
-    if (e.isNull())
-       continue;
-
-    tag = e.tagName();
-
-    // if there's an action tag in the global tree and the action is
-    // not implemented, then we remove the element
-    if ( tag == tagAction )
+    // there is a possibility that we don't want to merge in the
+    // additive.. rather, we might want to *replace* the base with the
+    // additive.  this can be for any container.. either at a file wide
+    // level or a simple container level.  we look for the 'noMerge'
+    // tag, in any event and just replace the old with the new
+    if ( additive.attribute(attrNoMerge) == attrOne ) // ### use toInt() instead? (Simon)
     {
-      QByteArray name =  e.attribute( attrName ).toUtf8(); // WABA
-      if ( !actionCollection->action( name.constData() ) ||
-           (!KAuthorized::authorizeKAction(name)))
-      {
-        // remove this child as we aren't using it
-        base.removeChild( e );
-        continue;
-      }
-    }
+        base.parentNode().replaceChild(additive, base);
+        base = additive;
+    } else {
+        QString tag;
 
-    // if there's a separator defined in the global tree, then add an
-    // attribute, specifying that this is a "weak" separator
-    else if ( tag == tagSeparator )
-    {
-      e.setAttribute( attrWeakSeparator, (uint)1 );
-
-      // okay, hack time. if the last item was a weak separator OR
-      // this is the first item in a container, then we nuke the
-      // current one
-      QDomElement prev = e.previousSibling().toElement();
-      if ( prev.isNull() ||
-	 ( prev.tagName() == tagSeparator && !prev.attribute( attrWeakSeparator ).isNull() ) ||
-	 ( prev.tagName() == tagText ) )
-      {
-        // the previous element was a weak separator or didn't exist
-        base.removeChild( e );
-        continue;
-      }
-    }
-
-    // the MergeLocal tag lets us specify where non-standard elements
-    // of the local tree shall be merged in.  After inserting the
-    // elements we delete this element
-    else if ( tag == tagMergeLocal )
-    {
-      QDomNode it = additive.firstChild();
-      while ( !it.isNull() )
-      {
-        QDomElement newChild = it.toElement();
-        it = it.nextSibling();
-        if (newChild.isNull() )
-          continue;
-
-        if ( newChild.tagName() == tagText )
-          continue;
-
-        if ( newChild.attribute( attrAlreadyVisited ) == attrOne )
-          continue;
-
-        QString itAppend( newChild.attribute( attrAppend ) );
-        QString elemName( e.attribute( attrName ) );
-
-        if ( ( itAppend.isNull() && elemName.isEmpty() ) ||
-             ( itAppend == elemName ) )
+        // iterate over all elements in the container (of the global DOM tree)
+        QDomNode n = base.firstChild();
+        while ( !n.isNull() )
         {
-          // first, see if this new element matches a standard one in
-          // the global file.  if it does, then we skip it as it will
-          // be merged in, later
-          QDomElement matchingElement = findMatchingElement( newChild, base );
-          if ( matchingElement.isNull() || newChild.tagName() == tagSeparator )
-            base.insertBefore( newChild, e );
+            QDomElement e = n.toElement();
+            n = n.nextSibling(); // Advance now so that we can safely delete e
+            if (e.isNull())
+                continue;
+
+            tag = e.tagName();
+
+            // if there's an action tag in the global tree and the action is
+            // not implemented, then we remove the element
+            if ( tag == tagAction )
+            {
+                const QString name =  e.attribute(attrName);
+                if (!actionCollection->action(name) ||
+                    !KAuthorized::authorizeKAction(name))
+                {
+                    // remove this child as we aren't using it
+                    base.removeChild( e );
+                    continue;
+                }
+            }
+
+            // if there's a separator defined in the global tree, then add an
+            // attribute, specifying that this is a "weak" separator
+            else if ( tag == tagSeparator )
+            {
+                e.setAttribute( attrWeakSeparator, (uint)1 );
+
+                // okay, hack time. if the last item was a weak separator OR
+                // this is the first item in a container, then we nuke the
+                // current one
+                QDomElement prev = e.previousSibling().toElement();
+                if ( prev.isNull() ||
+                     ( prev.tagName() == tagSeparator && !prev.attribute( attrWeakSeparator ).isNull() ) ||
+                     ( prev.tagName() == tagText ) )
+                {
+                    // the previous element was a weak separator or didn't exist
+                    base.removeChild( e );
+                    continue;
+                }
+            }
+
+            // the MergeLocal tag lets us specify where non-standard elements
+            // of the local tree shall be merged in.  After inserting the
+            // elements we delete this element
+            else if ( tag == tagMergeLocal )
+            {
+                QDomNode it = additive.firstChild();
+                while ( !it.isNull() )
+                {
+                    QDomElement newChild = it.toElement();
+                    it = it.nextSibling();
+                    if (newChild.isNull() )
+                        continue;
+
+                    if ( newChild.tagName() == tagText )
+                        continue;
+
+                    if ( newChild.attribute( attrAlreadyVisited ) == attrOne )
+                        continue;
+
+                    QString itAppend( newChild.attribute( attrAppend ) );
+                    QString elemName( e.attribute( attrName ) );
+
+                    if ( ( itAppend.isNull() && elemName.isEmpty() ) ||
+                         ( itAppend == elemName ) )
+                    {
+                        // first, see if this new element matches a standard one in
+                        // the global file.  if it does, then we skip it as it will
+                        // be merged in, later
+                        QDomElement matchingElement = findMatchingElement( newChild, base );
+                        if ( matchingElement.isNull() || newChild.tagName() == tagSeparator )
+                            base.insertBefore( newChild, e );
+                    }
+                }
+
+                base.removeChild( e );
+                continue;
+            }
+
+            // in this last case we check for a separator tag and, if not, we
+            // can be sure that its a container --> proceed with child nodes
+            // recursively and delete the just proceeded container item in
+            // case its empty (if the recursive call returns true)
+            else if ( tag != tagMerge )
+            {
+                // handle the text tag
+                if ( tag == tagText )
+                    continue;
+
+                QDomElement matchingElement = findMatchingElement( e, additive );
+
+                if ( !matchingElement.isNull() )
+                {
+                    matchingElement.setAttribute( attrAlreadyVisited, (uint)1 );
+
+                    if ( mergeXML( e, matchingElement, actionCollection ) )
+                    {
+                        base.removeChild( e );
+                        additive.removeChild(matchingElement); // make sure we don't append it below
+                        continue;
+                    }
+
+                    // Merge attributes
+                    const QDomNamedNodeMap attribs = matchingElement.attributes();
+                    const uint attribcount = attribs.count();
+
+                    for(uint i = 0; i < attribcount; ++i)
+                    {
+                        const QDomNode node = attribs.item(i);
+                        e.setAttribute(node.nodeName(), node.nodeValue());
+                    }
+
+                    continue;
+                }
+                else
+                {
+                    // this is an important case here! We reach this point if the
+                    // "local" tree does not contain a container definition for
+                    // this container. However we have to call mergeXML recursively
+                    // and make it check if there are actions implemented for this
+                    // container. *If* none, then we can remove this container now
+                    QDomElement dummy;
+                    if ( mergeXML( e, dummy, actionCollection ) )
+                        base.removeChild( e );
+                    continue;
+                }
+            }
         }
-      }
 
-      base.removeChild( e );
-      continue;
-    }
-
-    // in this last case we check for a separator tag and, if not, we
-    // can be sure that its a container --> proceed with child nodes
-    // recursively and delete the just proceeded container item in
-    // case its empty (if the recursive call returns true)
-    else if ( tag != tagMerge )
-    {
-      // handle the text tag
-      if ( tag == tagText )
-        continue;
-
-      QDomElement matchingElement = findMatchingElement( e, additive );
-
-      if ( !matchingElement.isNull() )
-      {
-        matchingElement.setAttribute( attrAlreadyVisited, (uint)1 );
-
-        if ( mergeXML( e, matchingElement, actionCollection ) )
+        //here we append all child elements which were not inserted
+        //previously via the LocalMerge tag
+        n = additive.firstChild();
+        while ( !n.isNull() )
         {
-          base.removeChild( e );
-          additive.removeChild(matchingElement); // make sure we don't append it below
-          continue;
+            QDomElement e = n.toElement();
+            n = n.nextSibling(); // Advance now so that we can safely delete e
+            if (e.isNull())
+                continue;
+
+            QDomElement matchingElement = findMatchingElement( e, base );
+
+            if ( matchingElement.isNull() )
+            {
+                base.appendChild( e );
+            }
         }
 
-        // Merge attributes
-        const QDomNamedNodeMap attribs = matchingElement.attributes();
-        const uint attribcount = attribs.count();
-
-        for(uint i = 0; i < attribcount; ++i)
+        // do one quick check to make sure that the last element was not
+        // a weak separator
+        QDomElement last = base.lastChild().toElement();
+        if ( (last.tagName() == tagSeparator) && (!last.attribute( attrWeakSeparator ).isNull()) )
         {
-          const QDomNode node = attribs.item(i);
-          e.setAttribute(node.nodeName(), node.nodeValue());
+            base.removeChild( last );
+        }
+    }
+
+    // now we check if we are empty (in which case we return "true", to
+    // indicate the caller that it can delete "us" (the base element
+    // argument of "this" call)
+    bool deleteMe = true;
+
+    QDomNode n = base.firstChild();
+    while ( !n.isNull() )
+    {
+        QDomElement e = n.toElement();
+        n = n.nextSibling(); // Advance now so that we can safely delete e
+        if (e.isNull())
+            continue;
+
+        const QString tag = e.tagName();
+
+        if ( tag == tagAction )
+        {
+            // if base contains an implemented action, then we must not get
+            // deleted (note that the actionCollection contains both,
+            // "global" and "local" actions
+            if (actionCollection->action(e.attribute(attrName))) {
+                deleteMe = false;
+                break;
+            }
+        }
+        else if ( tag == tagSeparator )
+        {
+            // if we have a separator which has *not* the weak attribute
+            // set, then it must be owned by the "local" tree in which case
+            // we must not get deleted either
+            QString weakAttr = e.attribute( attrWeakSeparator );
+            if ( weakAttr.isEmpty() || weakAttr.toInt() != 1 )
+            {
+                deleteMe = false;
+                break;
+            }
         }
 
-        continue;
-      }
-      else
-      {
-        // this is an important case here! We reach this point if the
-        // "local" tree does not contain a container definition for
-        // this container. However we have to call mergeXML recursively
-        // and make it check if there are actions implemented for this
-        // container. *If* none, then we can remove this container now
-        QDomElement dummy;
-        if ( mergeXML( e, dummy, actionCollection ) )
-          base.removeChild( e );
-        continue;
-      }
-    }
-  }
+        else if ( tag == tagMerge )
+        {
+            continue;
+        }
 
-  //here we append all child elements which were not inserted
-  //previously via the LocalMerge tag
-  n = additive.firstChild();
-  while ( !n.isNull() )
-  {
-    QDomElement e = n.toElement();
-    n = n.nextSibling(); // Advance now so that we can safely delete e
-    if (e.isNull())
-       continue;
+        // a text tag is NOT enough to spare this container
+        else if ( tag == tagText )
+        {
+            continue;
+        }
 
-    QDomElement matchingElement = findMatchingElement( e, base );
-
-    if ( matchingElement.isNull() )
-    {
-      base.appendChild( e );
-    }
-  }
-
-  // do one quick check to make sure that the last element was not
-  // a weak separator
-  QDomElement last = base.lastChild().toElement();
-  if ( (last.tagName() == tagSeparator) && (!last.attribute( attrWeakSeparator ).isNull()) )
-  {
-    base.removeChild( last );
-  }
-
-  // now we check if we are empty (in which case we return "true", to
-  // indicate the caller that it can delete "us" (the base element
-  // argument of "this" call)
-  bool deleteMe = true;
-
-  n = base.firstChild();
-  while ( !n.isNull() )
-  {
-    QDomElement e = n.toElement();
-    n = n.nextSibling(); // Advance now so that we can safely delete e
-    if (e.isNull())
-       continue;
-
-    tag = e.tagName();
-
-    if ( tag == tagAction )
-    {
-      // if base contains an implemented action, then we must not get
-      // deleted (note that the actionCollection contains both,
-      // "global" and "local" actions
-      if ( actionCollection->action( e.attribute( attrName ).toUtf8().constData() ) )
-      {
-        deleteMe = false;
-        break;
-      }
-    }
-    else if ( tag == tagSeparator )
-    {
-      // if we have a separator which has *not* the weak attribute
-      // set, then it must be owned by the "local" tree in which case
-      // we must not get deleted either
-      QString weakAttr = e.attribute( attrWeakSeparator );
-      if ( weakAttr.isEmpty() || weakAttr.toInt() != 1 )
-      {
-        deleteMe = false;
-        break;
-      }
+        // what's left are non-empty containers! *don't* delete us in this
+        // case (at this position we can be *sure* that the container is
+        // *not* empty, as the recursive call for it was in the first loop
+        // which deleted the element in case the call returned "true"
+        else
+        {
+            deleteMe = false;
+            break;
+        }
     }
 
-    // in case of a merge tag we have unlimited lives, too ;-)
-    else if ( tag == tagMerge )
-    {
-//      deleteMe = false;
-//      break;
-        continue;
-    }
-
-    // a text tag is NOT enough to spare this container
-    else if ( tag == tagText )
-    {
-      continue;
-    }
-
-    // what's left are non-empty containers! *don't* delete us in this
-    // case (at this position we can be *sure* that the container is
-    // *not* empty, as the recursive call for it was in the first loop
-    // which deleted the element in case the call returned "true"
-    else
-    {
-      deleteMe = false;
-      break;
-    }
-  }
-
-  return deleteMe;
+    return deleteMe;
 }
 
 QDomElement KXMLGUIClientPrivate::findMatchingElement( const QDomElement &base, const QDomElement &additive )
