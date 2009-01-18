@@ -114,12 +114,15 @@ DockResizeListener::~DockResizeListener()
 
 bool DockResizeListener::eventFilter(QObject *watched, QEvent *event)
 {
-    if (event->type() == QEvent::Resize) {
+    switch( event->type() ) {
+    case QEvent::Resize:
+    case QEvent::Move:
+    case QEvent::Hide:
         m_win->k_ptr->setSettingsDirty(KMainWindowPrivate::CompressCalls);
-    }
+        break;
 
-    if (event->type() == QEvent::Move) {
-        m_win->k_ptr->setSettingsDirty(KMainWindowPrivate::CompressCalls);
+    default:
+        break;
     }
 
     return QObject::eventFilter(watched, event);
@@ -1040,6 +1043,7 @@ bool KMainWindow::event( QEvent* ev )
             QChildEvent *event = static_cast<QChildEvent*>(ev);
             QDockWidget *dock = qobject_cast<QDockWidget*>(event->child());
             KToolBar *toolbar = qobject_cast<KToolBar*>(event->child());
+            QMenuBar *menubar = qobject_cast<QMenuBar*>(event->child());
             if (dock) {
                 connect(dock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)),
                         this, SLOT(setSettingsDirty()));
@@ -1052,9 +1056,13 @@ bool KMainWindow::event( QEvent* ev )
                 // hence install an event filter instead
                 dock->installEventFilter(k_ptr->dockResizeListener);
             } else if (toolbar) {
-                // there is no signal emitted if the size of the dock changes,
+                // there is no signal emitted if the size of the toolbar changes,
                 // hence install an event filter instead
                 toolbar->installEventFilter(k_ptr->dockResizeListener);
+            } else if (menubar) {
+                // there is no signal emitted if the size of the menubar changes,
+                // hence install an event filter instead
+                menubar->installEventFilter(k_ptr->dockResizeListener);
             }
         }
         break;
