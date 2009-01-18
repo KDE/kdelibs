@@ -1057,7 +1057,7 @@ bool KMainWindow::event( QEvent* ev )
                 // hence install an event filter instead
                 dock->installEventFilter(k_ptr->dockResizeListener);
             } else if (toolbar) {
-                // there is no signal emitted if the size of the dock changes,
+                // there is no signal emitted if the size of the toolbar changes,
                 // hence install an event filter instead
                 toolbar->installEventFilter(k_ptr->dockResizeListener);
             } else if (menubar) {
