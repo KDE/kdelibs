@@ -443,6 +443,8 @@ void HTTPProtocol::resetSessionSettings()
 
   delete m_wwwAuth;
   m_wwwAuth = 0;
+  delete m_socketProxyAuth;
+  m_socketProxyAuth = 0;
 
   // Obtain timeout values
   m_remoteRespTimeout = responseTimeout();
@@ -2375,7 +2377,11 @@ bool HTTPProtocol::sendQuery()
   // Now that we have our formatted header, let's send it!
   // Create a new connection to the remote machine if we do
   // not already have one...
-  if ( !isConnected() )
+  // NB: the !m_socketProxyAuth condition is a workaround for a proxied Qt socket sometimes
+  // looking disconnected after receiving the initial 407 response.
+  // I guess the Qt socket fails to hide the effect of  proxy-connection: close after receiving
+  // the 407 header.
+  if ((!isConnected() && !m_socketProxyAuth))
   {
     if (!httpOpenConnection())
     {
@@ -3267,6 +3273,11 @@ try_again:
         tIt = tokenizer.iterator("www-authenticate");
         KUrl resource = m_request.url;
         if (m_request.responseCode == 407) {
+            // make sure that the 407 header hasn't escaped a lower layer when it shouldn't.
+            // this may break proxy chains which were never tested anyway, and AFAIK they are
+            // rare to nonexistent in the wild.
+            Q_ASSERT(QNetworkProxy::applicationProxy().type() == QNetworkProxy::NoProxy);
+
             auth = &m_proxyAuth;
             tIt = tokenizer.iterator("proxy-authenticate");
             resource = m_request.proxyUrl;
@@ -3319,6 +3330,12 @@ try_again:
                                   i18n("Proxy Authentication Failed.");
                 obtained = openPasswordDialog(authi, msg);
                 if (!obtained) {
+                    kDebug(7103) << "looks like the user canceled"
+                                 << (m_request.responseCode == 401 ? "WWW" : "proxy")
+                                 << "authentication.";
+                    kDebug(7113) << "obtained =" << obtained << "probablyWrong =" << probablyWrong
+                                 << "authInfo username =" << authi.username
+                                 << "authInfo realm =" << authi.realmValue;
                     error(ERR_USER_CANCELED, resource.host());
                     return false;
                 }
@@ -5004,7 +5021,6 @@ void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAut
     info.realmValue = authenticator->realm();
     info.verifyPath = true;    //### whatever
     info.username = authenticator->user();
-    info.password = authenticator->password();  // well...
 
     const bool haveCachedCredentials = checkCachedAuthentication(info);
 
@@ -5024,6 +5040,7 @@ void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAut
         info.comment = i18n("<b>%1</b> at <b>%2</b>", info.realmValue, m_request.proxyUrl.host());
         const bool dataEntered = openPasswordDialog(info, i18n("Proxy Authentication Failed."));
         if (!dataEntered) {
+            kDebug(7103) << "looks like the user canceled proxy authentication.";
             error(ERR_USER_CANCELED, m_request.proxyUrl.host());
         }
     }
