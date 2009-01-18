@@ -836,10 +836,10 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
     QDBusMessage reply;
 
     if (metaData("no-auth-prompt").toLower() == "true")
-       reply = kps.call("queryAuthInfo", data, QString(QLatin1String("<NoAuthPrompt>")),
+       reply = kps.call(QDBus::Block, "queryAuthInfo", data, QString(QLatin1String("<NoAuthPrompt>")),
                          qlonglong(windowId), SlaveBasePrivate::s_seqNr, qlonglong(userTimestamp));
     else
-       reply = kps.call("queryAuthInfo", data, errorMsg, qlonglong(windowId),
+       reply = kps.call(QDBus::Block, "queryAuthInfo", data, errorMsg, qlonglong(windowId),
                         SlaveBasePrivate::s_seqNr, qlonglong(userTimestamp));
 
     bool callOK = reply.type() == QDBusMessage::ReplyMessage;
@@ -1203,7 +1203,8 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
        QDataStream stream(&data, QIODevice::WriteOnly);
        stream << info;
     }
-    QDBusReply<QByteArray> reply = kps.call("checkAuthInfo", data, qlonglong(windowId), qlonglong(userTimestamp));
+    QDBusReply<QByteArray> reply = kps.call(QDBus::Block, "checkAuthInfo", data, qlonglong(windowId),
+                                            qlonglong(userTimestamp));
 
     if ( !reply.isValid() )
     {
@@ -1267,7 +1268,7 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
     stream << info;
 
     QDBusInterface( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" ).
-       call("addAuthInfo", params, windowId);
+       call(QDBus::Block, "addAuthInfo", params, windowId);
 
     return true;
 }
