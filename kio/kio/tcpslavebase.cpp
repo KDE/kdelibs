@@ -177,6 +177,8 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
         success = d->socket.waitForBytesWritten(0);
     }
 
+    d->socket.flush();  //this is supposed to get the data on the wire faster
+
     if (d->socket.state() != KTcpSocket::ConnectedState || !success) {
         kDebug(7027) << "Write failed, will return -1! Socket error is"
                      << d->socket.error() << ", Socket state is" << d->socket.state()
@@ -202,6 +204,11 @@ ssize_t TCPSlaveBase::read(char* data, ssize_t len)
         } else {
             d->socket.waitForReadyRead(0);
         }
+    } else if (d->socket.encryptionMode() != KTcpSocket::SslClientMode ||
+               QNetworkProxy::applicationProxy().type() == QNetworkProxy::NoProxy) {
+        // we only do this when it doesn't trigger Qt socket bugs. When it doesn't break anything
+        // it seems to help performance.
+        d->socket.waitForReadyRead(0);
     }
 
     return d->socket.read(data, len);
