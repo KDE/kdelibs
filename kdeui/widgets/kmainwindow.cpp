@@ -114,16 +114,15 @@ DockResizeListener::~DockResizeListener()
 
 bool DockResizeListener::eventFilter(QObject *watched, QEvent *event)
 {
-    if (event->type() == QEvent::Resize) {
+    switch( event->type() ) {
+    case QEvent::Resize:
+    case QEvent::Move:
+    case QEvent::Hide:
         m_win->k_ptr->setSettingsDirty(KMainWindowPrivate::CompressCalls);
-    }
+        break;
 
-    if (event->type() == QEvent::Move) {
-        m_win->k_ptr->setSettingsDirty(KMainWindowPrivate::CompressCalls);
-    }
-
-    if (event->type() == QEvent::Hide) {
-        m_win->k_ptr->setSettingsDirty(KMainWindowPrivate::CompressCalls);
+    default:
+        break;
     }
 
     return QObject::eventFilter(watched, event);
