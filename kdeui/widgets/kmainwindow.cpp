@@ -1071,6 +1071,7 @@ bool KMainWindow::event( QEvent* ev )
             QChildEvent *event = static_cast<QChildEvent*>(ev);
             QDockWidget *dock = qobject_cast<QDockWidget*>(event->child());
             KToolBar *toolbar = qobject_cast<KToolBar*>(event->child());
+            QMenuBar *menubar = qobject_cast<QMenuBar*>(event->child());
             if (dock) {
                 disconnect(dock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)),
                            this, SLOT(setSettingsDirty()));
@@ -1081,6 +1082,8 @@ bool KMainWindow::event( QEvent* ev )
                 dock->removeEventFilter(k_ptr->dockResizeListener);
             } else if (toolbar) {
                 toolbar->removeEventFilter(k_ptr->dockResizeListener);
+            } else if (menubar) {
+                menubar->removeEventFilter(k_ptr->dockResizeListener);
             }
         }
         break;
