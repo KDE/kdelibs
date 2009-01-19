@@ -21,12 +21,8 @@
 #ifndef _TAG_H_
 #define _TAG_H_
 
-namespace Nepomuk {
-        class Resource;
-}
-
 #include "resource.h"
-#include <nepomuk/nepomuk_export.h>
+#include "nepomuk_export.h"
 
 namespace Nepomuk {
 
@@ -131,18 +127,18 @@ namespace Nepomuk {
         static QString resourceTypeUri();
 
     protected:
-       Tag( const QString& uri, const QUrl& type );
-       Tag( const QUrl& uri, const QUrl& type );
+        Tag( const QString& uri, const QUrl& type );
+        Tag( const QUrl& uri, const QUrl& type );
 
-       /**
-        * \since 4.3
-        */
-       Tag( const QString& uri, const QUrl& type, ResourceManager* manager );
+        /**
+         * \since 4.3
+         */
+        Tag( const QString& uri, const QUrl& type, ResourceManager* manager );
 
-       /**
-        * \since 4.3
-        */
-       Tag( const QUrl& uri, const QUrl& type, ResourceManager* manager );
+        /**
+         * \since 4.3
+         */
+        Tag( const QUrl& uri, const QUrl& type, ResourceManager* manager );
    };
 }
 
