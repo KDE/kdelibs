@@ -582,29 +582,29 @@ void KIconEffect::semiTransparent(QImage &img)
 
 void KIconEffect::semiTransparent(QPixmap &pix)
 {
-    if (QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing))
+    if (QApplication::desktop()->paintEngine() && QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing))
     {
-	QImage img=pix.toImage();
-	semiTransparent(img);
-	pix = QPixmap::fromImage(img);
-	return;
+        QImage img=pix.toImage();
+        semiTransparent(img);
+        pix = QPixmap::fromImage(img);
+        return;
     }
 
     QImage img;
     if (!pix.mask().isNull())
-	img = pix.mask().toImage();
+      img = pix.mask().toImage();
     else
     {
-	img = QImage(pix.size(), QImage::Format_Mono);
-	img.fill(1);
+        img = QImage(pix.size(), QImage::Format_Mono);
+        img.fill(1);
     }
 
     for (int y=0; y<img.height(); y++)
     {
-	QRgb* line = (QRgb*)img.scanLine(y);
-	QRgb pattern = (y % 2) ? 0x55555555 : 0xaaaaaaaa;
-	for (int x=0; x<(img.width()+31)/32; x++)
-	    line[x] &= pattern;
+        QRgb* line = (QRgb*)img.scanLine(y);
+        QRgb pattern = (y % 2) ? 0x55555555 : 0xaaaaaaaa;
+        for (int x=0; x<(img.width()+31)/32; x++)
+            line[x] &= pattern;
     }
     QBitmap mask;
     mask = QBitmap::fromImage(img);
