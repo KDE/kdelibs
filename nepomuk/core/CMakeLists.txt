@@ -46,7 +46,6 @@ set(nepomuk_LIB_SRCS
   ontology/desktopontologyloader.cpp
   ontology/global.cpp
   ontology/entitymanager.cpp
-  ontology/nrdo.cpp
   nie.cpp
   pimo.cpp
   nepomukservice.cpp
