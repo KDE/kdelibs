@@ -145,8 +145,7 @@ class ToolBarHandler::Private
 
     void clientAdded( KXMLGUIClient *client )
     {
-      if ( client == parent )
-        parent->setupActions();
+      parent->setupActions();
     }
 
     void init( KXmlGuiWindow *mainWindow );
