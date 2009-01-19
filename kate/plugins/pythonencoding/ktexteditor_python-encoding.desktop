@@ -91,6 +91,7 @@ Comment[pt_BR]=Ao salvar, verifica a codificação dos arquivos em python e adic
 Comment[ro]=Verifică codarea fișierelor python în timpul salvării și adaugă o linie de codare
 Comment[ru]=Добавление строки с кодировкой при записи файлов с кодом Python
 Comment[sk]=Pri ukladaní kontroluje kódovanie pythonových súborov a pridáva záznam o kódovaní
+Comment[sl]=Med shranjevanje datotek pythona preveri kodiranje in doda kodno vrstico
 Comment[sr]=При уписивању питонских фајлова, проверава и додаје ред о кодирању
 Comment[sr@latin]=Pri upisivanju python fajlova, proverava i dodaje red o kodiranju
 Comment[sv]=När Python-filer sparas, kontrollera kodning och lägg till en kodningsrad
