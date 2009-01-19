@@ -497,6 +497,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     d->toolbar->setMovable(false);
 
     KUrlCompletion *pathCompletionObj = new KUrlCompletion( KUrlCompletion::DirCompletion );
+    pathCompletionObj->setIgnoreCase(true);
     pathCombo->setCompletionObject( pathCompletionObj );
     pathCombo->setAutoDeleteCompletionObject( true );
 
@@ -522,6 +523,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     d->locationLabel->setBuddy(d->locationEdit);
 
     KUrlCompletion *fileCompletionObj = new KUrlCompletion( KUrlCompletion::FileCompletion );
+    fileCompletionObj->setIgnoreCase(true);
     d->locationEdit->setCompletionObject( fileCompletionObj );
     d->locationEdit->setAutoDeleteCompletionObject( true );
     connect( fileCompletionObj, SIGNAL( match( const QString& ) ),

@@ -282,11 +282,6 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
 
     if (customWidget)
      d->w->setCustomWidget(QString(), customWidget);
-
-    if (!d->native) {
-     KCompletion* comp = d->w->locationEdit()->completionObject();
-     comp->setIgnoreCase(true);
-    }
 }
 
 
