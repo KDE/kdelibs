@@ -19,6 +19,7 @@ set(nepomuk_LIB_SRCS
   variant.cpp
   resourcedata.cpp
   resourcemanager.cpp
+  resourcefiltermodel.cpp
   nepomukmainmodel.cpp
   tools.cpp
   ui/kratingwidget.cpp
@@ -45,6 +46,7 @@ set(nepomuk_LIB_SRCS
   ontology/desktopontologyloader.cpp
   ontology/global.cpp
   ontology/entitymanager.cpp
+  ontology/nrdo.cpp
   nie.cpp
   pimo.cpp
   nepomukservice.cpp

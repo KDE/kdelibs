@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2008-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,15 +19,33 @@
  */
 
 #include "graphwrapper_p.h"
-#include "resourcemanager.h"
 
 #include <Soprano/Model>
 #include <Soprano/Node>
+#include <Soprano/QueryResultIterator>
 #include <Soprano/Vocabulary/RDF>
 #include <Soprano/Vocabulary/NRL>
 #include <Soprano/Vocabulary/NAO>
 
 #include <QtCore/QDateTime>
+#include <QtCore/QUuid>
+#include <QtCore/QRegExp>
+
+namespace {
+    QUrl createGraphUri() {
+        return QUrl( "urn:nepomuk:local:" + QUuid::createUuid().toString().remove( QRegExp( "[\\{\\}]" ) ) );
+    }
+
+    QUrl createUniqueGraphUri( Soprano::Model* model ) {
+        while( 1 ) {
+            QUrl uri = createGraphUri();
+            if ( !model->executeQuery( QString("ask where { { <%1> ?p1 ?o1 . } UNION { ?r2 <%1> ?o2 . } UNION { ?r3 ?p3 <%1> . } }")
+                                       .arg( QString::fromAscii( uri.toEncoded() ) ), Soprano::Query::QueryLanguageSparql ).boolValue() ) {
+                return uri;
+            }
+        }
+    }
+}
 
 
 Nepomuk::GraphWrapper::GraphWrapper( QObject* parent )
@@ -42,6 +60,15 @@ Nepomuk::GraphWrapper::GraphWrapper( QObject* parent )
 
 Nepomuk::GraphWrapper::~GraphWrapper()
 {
+}
+
+
+void Nepomuk::GraphWrapper::setModel( Soprano::Model* model )
+{
+    if( m_model != model ) {
+        m_model = model;
+        m_currentGraph = QUrl();
+    }
 }
 
 
@@ -76,32 +103,31 @@ void Nepomuk::GraphWrapper::slotTimeout()
 
 void Nepomuk::GraphWrapper::createNewGraph()
 {
-    m_currentGraph = ResourceManager::instance()->generateUniqueUri( "nepomukgraph" );
+    m_currentGraph = createUniqueGraphUri( m_model );
     m_currentGraphStored = false;
 }
 
 
 void Nepomuk::GraphWrapper::storeGraph( const QUrl& graph )
 {
-    Soprano::Model* model = ResourceManager::instance()->mainModel();
-    QUrl metadataGraph = ResourceManager::instance()->generateUniqueUri( "nepomukgraph-metadata" );
+    QUrl metadataGraph = createUniqueGraphUri( m_model );
 
-    model->addStatement( graph,
-                         Soprano::Vocabulary::RDF::type(),
-                         Soprano::Vocabulary::NRL::InstanceBase(),
-                         metadataGraph );
-    model->addStatement( graph,
-                         Soprano::Vocabulary::NAO::created(),
-                         Soprano::LiteralValue( QDateTime::currentDateTime() ),
-                         metadataGraph );
-    model->addStatement( metadataGraph,
-                         Soprano::Vocabulary::RDF::type(),
-                         Soprano::Vocabulary::NRL::GraphMetadata(),
-                         metadataGraph );
-    model->addStatement( metadataGraph,
-                         Soprano::Vocabulary::NRL::coreGraphMetadataFor(),
-                         graph,
-                         metadataGraph );
+    m_model->addStatement( graph,
+                           Soprano::Vocabulary::RDF::type(),
+                           Soprano::Vocabulary::NRL::InstanceBase(),
+                           metadataGraph );
+    m_model->addStatement( graph,
+                           Soprano::Vocabulary::NAO::created(),
+                           Soprano::LiteralValue( QDateTime::currentDateTime() ),
+                           metadataGraph );
+    m_model->addStatement( metadataGraph,
+                           Soprano::Vocabulary::RDF::type(),
+                           Soprano::Vocabulary::NRL::GraphMetadata(),
+                           metadataGraph );
+    m_model->addStatement( metadataGraph,
+                           Soprano::Vocabulary::NRL::coreGraphMetadataFor(),
+                           graph,
+                           metadataGraph );
 
     //
     // We update the graph every 200 mseconds but only when entering

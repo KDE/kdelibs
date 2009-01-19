@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,6 +21,7 @@
 #include "resource.h"
 #include "resourcedata.h"
 #include "resourcemanager.h"
+#include "resourcemanager_p.h"
 #include "tools.h"
 #include "tag.h"
 #include "pimo.h"
@@ -38,7 +39,14 @@
 
 Nepomuk::Resource::Resource()
 {
-    m_data = ResourceData::data( QUrl(), QUrl() );
+    m_data = ResourceManager::instance()->d->data( QUrl(), QUrl() );
+    m_data->ref();
+}
+
+
+Nepomuk::Resource::Resource( ResourceManager* manager )
+{
+    m_data = manager->d->data( QUrl(), QUrl() );
     m_data->ref();
 }
 
@@ -53,7 +61,15 @@ Nepomuk::Resource::Resource( const Nepomuk::Resource& res )
 
 Nepomuk::Resource::Resource( const QString& uri, const QUrl& type )
 {
-    m_data = ResourceData::data( uri, type );
+    m_data = ResourceManager::instance()->d->data( uri, type );
+    if ( m_data )
+        m_data->ref();
+}
+
+
+Nepomuk::Resource::Resource( const QString& uri, const QUrl& type, ResourceManager* manager )
+{
+    m_data = manager->d->data( uri, type );
     if ( m_data )
         m_data->ref();
 }
@@ -61,7 +77,7 @@ Nepomuk::Resource::Resource( const QString& uri, const QUrl& type )
 
 Nepomuk::Resource::Resource( const QString& uri, const QString& type )
 {
-    m_data = ResourceData::data( uri, type );
+    m_data = ResourceManager::instance()->d->data( uri, type );
     if ( m_data )
         m_data->ref();
 }
@@ -69,7 +85,15 @@ Nepomuk::Resource::Resource( const QString& uri, const QString& type )
 
 Nepomuk::Resource::Resource( const QUrl& uri, const QUrl& type )
 {
-    m_data = ResourceData::data( uri, type );
+    m_data = ResourceManager::instance()->d->data( uri, type );
+    if ( m_data )
+        m_data->ref();
+}
+
+
+Nepomuk::Resource::Resource( const QUrl& uri, const QUrl& type, ResourceManager* manager )
+{
+    m_data = manager->d->data( uri, type );
     if ( m_data )
         m_data->ref();
 }
@@ -88,7 +112,7 @@ Nepomuk::Resource::~Resource()
     // FIXME: ResourceData instances having a proxy also need to be deleted, maybe extend deref
     if( m_data &&
         m_data->deref() == 0 &&
-        ( !m_data->isValid() || ResourceData::dataCacheFull() ) ) {
+        ( !m_data->isValid() || m_data->rm()->dataCacheFull() ) ) {
         m_data->deleteData();
     }
 }
@@ -112,6 +136,12 @@ Nepomuk::Resource& Nepomuk::Resource::operator=( const Resource& res )
 Nepomuk::Resource& Nepomuk::Resource::operator=( const QUrl& res )
 {
     return operator=( Resource( res ) );
+}
+
+
+Nepomuk::ResourceManager* Nepomuk::Resource::manager() const
+{
+    return m_data->rm()->m_manager;
 }
 
 
@@ -748,16 +778,17 @@ QString Nepomuk::Resource::symbolUri()
 
 QList<Nepomuk::Resource> Nepomuk::Resource::annotationOf() const
 {
-    return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( Soprano::Vocabulary::NAO::annotation(), *this ) );
+    return convertResourceList<Resource>( manager()->allResourcesWithProperty( Soprano::Vocabulary::NAO::annotation(), *this ) );
 }
 
 
 QList<Nepomuk::Resource> Nepomuk::Resource::isRelatedOf() const
 {
-    return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( Soprano::Vocabulary::NAO::isRelated(), *this ) );
+    return convertResourceList<Resource>( manager()->allResourcesWithProperty( Soprano::Vocabulary::NAO::isRelated(), *this ) );
 }
 
 
+// static
 QList<Nepomuk::Resource> Nepomuk::Resource::allResources()
 {
     return Nepomuk::convertResourceList<Resource>( ResourceManager::instance()->allResourcesOfType( Soprano::Vocabulary::RDFS::Resource() ) );

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2008-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,6 +24,10 @@
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
 #include <QtCore/QUrl>
+
+namespace Soprano {
+    class Model;
+}
 
 namespace Nepomuk {
     /**
@@ -62,6 +66,8 @@ namespace Nepomuk {
          */
         QUrl currentGraph();
 
+        void setModel( Soprano::Model* model );
+
     private Q_SLOTS:
         void slotTimeout();
 
@@ -72,6 +78,8 @@ namespace Nepomuk {
         QUrl m_currentGraph;
         bool m_currentGraphStored;
         QTimer m_timer;
+
+        Soprano::Model* m_model;
     };
 }
 

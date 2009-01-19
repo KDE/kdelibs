@@ -1,6 +1,6 @@
 /* 
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -39,6 +39,7 @@ namespace Nepomuk {
     class Resource;
     class Variant;
     class ResourceManagerHelper;
+    class ResourceManagerPrivate;
 
     /**
      * \class ResourceManager resourcemanager.h Nepomuk/ResourceManager
@@ -53,6 +54,17 @@ namespace Nepomuk {
 
     public:
         static ResourceManager* instance();
+
+        /**
+         * In KDE 4.3 support for multiple ResourceManager instances
+         * has been introduced. To keep binary compatibility both the constructor's
+         * and destructor's access visibility could not be changed. Thus, instead of deleting
+         * a custom ResourceManager instance the standard way, one has to call this
+         * method or use QObject::deleteLater.
+         *
+         * \since 4.3
+         */
+        void deleteInstance();
 
         /**
          * Initialize the Nepomuk framework. This method will initialize the communication with
@@ -107,6 +119,13 @@ namespace Nepomuk {
          * is the same.
          */
         void removeResource( const QString& uri );
+
+        /**
+         * Retrieve a list of all resource managed by this manager.
+         *
+         * \since 4.3
+         */
+        QList<Resource> allResources();
 
         /**
          * Retrieve a list of all resources of the specified \a type.
@@ -164,6 +183,18 @@ namespace Nepomuk {
          */
         void notifyError( const QString& uri, int errorCode );
 
+        /**
+         * Create a new ResourceManager instance which uses model as its
+         * override model. This allows to use multiple instances of ResourceManager
+         * at the same time. Normally one does not need this method as the singleton
+         * accessed via instance() should be enough.
+         *
+         * \param model The model to read and write data from and to.
+         *
+         * \since 4.3
+         */
+        static ResourceManager* createManagerForModel( Soprano::Model* model );
+
     Q_SIGNALS:
         /**
          * This signal gets emitted whenever a Resource changes due to a sync procedure.
@@ -190,11 +221,11 @@ namespace Nepomuk {
 
     private:
         friend class Nepomuk::ResourceManagerHelper;
+        friend class Nepomuk::Resource;
         ResourceManager();
         ~ResourceManager();
 
-        class Private;
-        Private* const d;
+        ResourceManagerPrivate* const d;
     };
 }
 

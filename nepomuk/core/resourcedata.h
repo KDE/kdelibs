@@ -1,6 +1,6 @@
 /* 
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -33,12 +33,15 @@
 
 
 namespace Nepomuk {
+
+    class ResourceManagerPrivate;
+
     class ResourceData : public QObject
     {
         Q_OBJECT
 
     public:
-        explicit ResourceData( const QUrl& uri = QUrl(), const QString& kickoffId_ = QString(), const QUrl& type_ = QString() );
+        explicit ResourceData( const QUrl& uri, const QString& kickoffId_, const QUrl& type_, ResourceManagerPrivate* rm );
         ~ResourceData();
 
         /**
@@ -157,35 +160,7 @@ namespace Nepomuk {
          */
         bool operator==( const ResourceData& other ) const;
 
-        /**
-         * The Nepomuk lib is based on the fact that for each uri only one ResourceData object is
-         * created at all times. This method searches for an existing data object to reuse or creates
-         * a new one if none exists.
-         *
-         * \param uriOrId The URI or identifier of the resource is question.
-         * \type The type of the resource.
-         *
-         * The Resource constructors use this method in combination with ref()
-         */
-        static ResourceData* data( const QString& uriOrId, const QUrl& type );
-
-        /**
-         * The Nepomuk lib is based on the fact that for each uri only one ResourceData object is
-         * created at all times. This method searches for an existing data object to reuse or creates
-         * a new one if none exists.
-         *
-         * \param uri The URI of the resource is question.
-         * \type The type of the resource.
-         *
-         * The Resource constructors use this method in combination with ref()
-         */
-        static ResourceData* data( const QUrl& uri, const QUrl& type );
-
-        static bool dataCacheFull();
-
-        static QList<ResourceData*> allResourceData();
-        static QList<ResourceData*> allResourceDataOfType( const QUrl& type );
-        static QList<ResourceData*> allResourceDataWithProperty( const QUrl& _uri, const Variant& v );
+        ResourceManagerPrivate* rm() const { return m_rm; }
 
     private:
         bool constHasType( const QUrl& type ) const;
@@ -197,7 +172,6 @@ namespace Nepomuk {
          */
         QString m_kickoffUriOrId;
         QUrl m_uri;
-
 
         /**
          * The kickoffIdentifier is the identifier used to construct the resource object.
@@ -232,7 +206,7 @@ namespace Nepomuk {
         // only used for delayed storage of the pimo thing relation
         ResourceData* m_groundingOccurence;
 
-        friend class ResourceManager;
+        ResourceManagerPrivate* m_rm;
     };
 }
 

@@ -27,7 +27,7 @@ static int usage()
 {
     QTextStream( stderr, QIODevice::WriteOnly )
         << "Usage:" << endl
-        << "   " << QCoreApplication::instance()->arguments()[0] << " --writeall [--templates <tmpl1> [<tmpl2> [<tmpl3> ...]]] --target <sourcefolder> --ontologies <ontologyfile(s)>" << endl
+        << "   " << QCoreApplication::instance()->arguments()[0] << " --writeall [--templates <tmpl1> [<tmpl2> [<tmpl3> ...]]] [--no-external-refs] --target <sourcefolder> --ontologies <ontologyfile(s)>" << endl
         << "   " << QCoreApplication::instance()->arguments()[0] << " --listincludes --ontologies <ontologyfile(s)>" << endl
         << "   " << QCoreApplication::instance()->arguments()[0] << " --listheaders [--prefix <listprefix>] --ontologies <ontologyfile(s)>" << endl
         << "   " << QCoreApplication::instance()->arguments()[0] << " --listsources [--prefix <listprefix>] --ontologies <ontologyfile(s)>" << endl;
@@ -41,7 +41,7 @@ int main( int argc, char** argv )
     // stuff. If not, who cares, we don't do anything time relevant here
     QCoreApplication app( argc, argv );
 
-    bool writeAll = false, listHeader = false, listSource = false, listIncludes = false;
+    bool writeAll = false, listHeader = false, listSource = false, listIncludes = false,  externalRefs = true;
     QStringList ontoFiles;
     QString targetDir, prefix;
     QStringList templates;
@@ -78,6 +78,9 @@ int main( int argc, char** argv )
             }
             else if ( arg == "--listsources" ) {
                 listSource = true;
+            }
+            else if ( arg == "--no-external-refs" ) {
+                externalRefs = false;
             }
             else if ( arg == "--templates" ) {
                 templates = paramArgs;
@@ -138,7 +141,7 @@ int main( int argc, char** argv )
             return -1;
         }
 
-        if( !prsr.writeSources( targetDir ) ) {
+        if( !prsr.writeSources( targetDir, externalRefs ) ) {
             qDebug() << "Writing sources to " << targetDir << " failed." << endl;
             return -1;
         }

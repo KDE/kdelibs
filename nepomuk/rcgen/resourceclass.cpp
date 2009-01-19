@@ -354,7 +354,7 @@ QString Property::reversePropertyGetterDefinition( const ResourceClass* rc ) con
     QString s = reversePropertyGetterDeclaration( rc, true ) + '\n';
 
     s += QString( "{\n"
-                  "    return convertResourceList<%2>( ResourceManager::instance()->allResourcesWithProperty( QUrl(\"%1\"), *this ) );\n"
+                  "    return convertResourceList<%2>( manager()->allResourcesWithProperty( QUrl(\"%1\"), *this ) );\n"
                   "}\n" )
          .arg( uri )
          .arg( domain->name() );

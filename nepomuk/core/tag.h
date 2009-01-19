@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2007-2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2007-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -46,40 +46,83 @@ namespace Nepomuk {
          * Create a new empty and invalid Tag instance
          */
         Tag();
+
+        /**
+         * Create a new empty and invalid Tag instance
+         *
+         * \param manager The resource manager to use. This allows to mix resources from different
+         * managers and, thus, different models.
+         *
+         * \since 4.3
+         */
+        Tag( ResourceManager* manager );
+
         /**
          * Default copy constructor
          */
         Tag( const Tag& );
+
+        /**
+         * \overload
+         */
         Tag( const Resource& );
+
         /**
          * Create a new Tag instance representing the resource
          * referenced by \a uriOrIdentifier.
          */
         Tag( const QString& uriOrIdentifier );
+
+        /**
+         * Create a new Tag instance representing the resource
+         * referenced by \a uriOrIdentifier.
+         *
+         * \param manager The resource manager to use. This allows to mix resources from different
+         * managers and, thus, different models.
+         *
+         * \since 4.3
+         */
+        Tag( const QString& uriOrIdentifier, ResourceManager* manager );
+
         /**
          * Create a new Tag instance representing the resource
          * referenced by \a uri.
          */
         Tag( const QUrl& uri );
+
+        /**
+         * Create a new Tag instance representing the resource
+         * referenced by \a uri.
+         *
+         * \param manager The resource manager to use. This allows to mix resources from different
+         * managers and, thus, different models.
+         *
+         * \since 4.3
+         */
+        Tag( const QUrl& uri, ResourceManager* manager );
+
+        /**
+         * Destructor
+         */
         ~Tag();
 
         Tag& operator=( const Tag& );
 
-            /**
-             * Get all resources that have this resource set as property 'Tag'. 
-             * Each Resource can be tagged with an arbitrary number of Tags. 
-             * This allows a simple grouping of resources. \sa ResourceManager::allResourcesWithProperty 
-             */
-            QList<Resource> tagOf() const;
+        /**
+         * Get all resources that have this resource set as property 'Tag'. 
+         * Each Resource can be tagged with an arbitrary number of Tags. 
+         * This allows a simple grouping of resources. \sa ResourceManager::allResourcesWithProperty 
+         */
+        QList<Resource> tagOf() const;
 
-            /**
-             * Retrieve a list of all available Tag resources. This list consists 
-             * of all resource of type Tag that are stored in the local Nepomuk 
-             * meta data storage and any changes made locally. Be aware that 
-             * in some cases this list can get very big. Then it might be better 
-             * to use libKNep directly. 
-             */
-            static QList<Tag> allTags();
+        /**
+         * Retrieve a list of all available Tag resources. This list consists 
+         * of all resource of type Tag that are stored in the local Nepomuk 
+         * meta data storage and any changes made locally. Be aware that 
+         * in some cases this list can get very big. Then it might be better 
+         * to use libKNep directly. 
+         */
+        static QList<Tag> allTags();
 
 
         /**
@@ -90,6 +133,16 @@ namespace Nepomuk {
     protected:
        Tag( const QString& uri, const QUrl& type );
        Tag( const QUrl& uri, const QUrl& type );
+
+       /**
+        * \since 4.3
+        */
+       Tag( const QString& uri, const QUrl& type, ResourceManager* manager );
+
+       /**
+        * \since 4.3
+        */
+       Tag( const QUrl& uri, const QUrl& type, ResourceManager* manager );
    };
 }
 

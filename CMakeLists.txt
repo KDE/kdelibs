@@ -63,7 +63,7 @@ macro_log_feature(LIBINTL_FOUND "Libintl" "Library for message translation" "htt
 macro_optional_find_package(OpenGL)
 macro_log_feature(OPENGL_FOUND "OpenGL" "API for developing portable, interactive 2D and 3D graphics applications" "http://mesa3d.sourceforge.net" FALSE "" "STRONGLY RECOMMENDED: The 3D hardware acceleration available through the OpenGL API is used in applications ranging from graphics and modellers to screensavers and video players.")
 
-set(SOPRANO_MIN_VERSION "2.1.0")
+set(SOPRANO_MIN_VERSION "2.1.67")
 macro_optional_find_package(Soprano)
 macro_log_feature(Soprano_FOUND "Soprano" "Soprano Libraries" "kdesupport" FALSE "${SOPRANO_MIN_VERSION}" "Provide metadata support (for semantic desktop).")
 
@@ -182,6 +182,11 @@ check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
 check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 
+if(Soprano_FOUND)
+  set(HAVE_NEPOMUK true)
+  macro_optional_add_subdirectory(nepomuk)
+endif(Soprano_FOUND)
+
 ################# list the subdirectories #################
 
 add_subdirectory( cmake )
@@ -222,10 +227,6 @@ add_subdirectory( kross )
 add_subdirectory( security )
 add_subdirectory( plasma )
 add_subdirectory( includes )
-
-if(Soprano_FOUND)
-  add_subdirectory(nepomuk)
-endif(Soprano_FOUND)
 
 macro_optional_add_subdirectory( doc  )
 

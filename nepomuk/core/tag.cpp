@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2007-2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2007-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -34,6 +34,12 @@ Nepomuk::Tag::Tag()
 }
 
 
+Nepomuk::Tag::Tag( ResourceManager* manager )
+    : Resource( manager )
+{
+}
+
+
 Nepomuk::Tag::Tag( const Tag& res )
     : Resource( res )
 {
@@ -51,20 +57,48 @@ Nepomuk::Tag::Tag( const QString& uri )
 {
 }
 
+
+Nepomuk::Tag::Tag( const QString& uri, ResourceManager* manager )
+    : Resource( uri, Soprano::Vocabulary::NAO::Tag(), manager )
+{
+}
+
+
 Nepomuk::Tag::Tag( const QUrl& uri )
     : Resource( uri, Soprano::Vocabulary::NAO::Tag() )
 {
 }
+
+
+Nepomuk::Tag::Tag( const QUrl& uri, ResourceManager* manager )
+    : Resource( uri, Soprano::Vocabulary::NAO::Tag(), manager )
+{
+}
+
 
 Nepomuk::Tag::Tag( const QString& uri, const QUrl& type )
     : Resource( uri, type )
 {
 }
 
+
+Nepomuk::Tag::Tag( const QString& uri, const QUrl& type, ResourceManager* manager )
+    : Resource( uri, type, manager )
+{
+}
+
+
 Nepomuk::Tag::Tag( const QUrl& uri, const QUrl& type )
     : Resource( uri, type )
 {
 }
+
+
+Nepomuk::Tag::Tag( const QUrl& uri, const QUrl& type, ResourceManager* manager )
+    : Resource( uri, type, manager )
+{
+}
+
 
 Nepomuk::Tag::~Tag()
 {
@@ -83,11 +117,14 @@ QString Nepomuk::Tag::resourceTypeUri()
     return Soprano::Vocabulary::NAO::Tag().toString();
 }
 
+
 QList<Nepomuk::Resource> Nepomuk::Tag::tagOf() const
 {
-    return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( Soprano::Vocabulary::NAO::hasTag(), *this ) );
+    return convertResourceList<Resource>( manager()->allResourcesWithProperty( Soprano::Vocabulary::NAO::hasTag(), *this ) );
 }
 
+
+// static
 QList<Nepomuk::Tag> Nepomuk::Tag::allTags()
 {
     return Nepomuk::convertResourceList<Tag>( ResourceManager::instance()->allResourcesOfType( Soprano::Vocabulary::NAO::Tag() ) );

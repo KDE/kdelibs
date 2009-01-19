@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2008-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -70,6 +70,16 @@ namespace Nepomuk {
         Thing( const QUrl& uri = QUrl(), const QUrl& pimoType = QUrl() );
 
         /**
+         * \overload
+         *
+         * \param manager The resource manager to use. This allows to mix resources from different
+         * managers and, thus, different models.
+         *
+         * \since 4.3
+         */
+        Thing( const QUrl& uri, const QUrl& pimoType, ResourceManager* manager );
+
+        /**
          * Create a new Thing with label or URI \p uriOrName
          *
          * \param uriOrName The URI or the label of the Thing. The constructor
@@ -82,6 +92,16 @@ namespace Nepomuk {
          * the URI of the Thing is known.
          */
         Thing( const QString& uriOrName, const QUrl& pimoType = QUrl() );
+
+        /**
+         * \overload
+         *
+         * \param manager The resource manager to use. This allows to mix resources from different
+         * managers and, thus, different models.
+         *
+         * \since 4.3
+         */
+        Thing( const QString& uriOrName, const QUrl& pimoType, ResourceManager* manager );
 
         /**
          * Copy constructor.

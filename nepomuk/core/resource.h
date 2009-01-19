@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,9 +27,9 @@
 
 #include "nepomuk_export.h"
 
-
 namespace Nepomuk {
 
+    class ResourceManager;
     class ResourceData;
     class Variant;
     class Tag;
@@ -77,6 +77,21 @@ namespace Nepomuk {
          */
         Resource();
 
+        /**
+         * Creates an empty invalid Resource.
+         * An invalid resource will become valid (i.e. get a new random URI) once setProperty
+         * is called.
+         *
+         * \param manager The resource manager to use. This allows to mix resources from different
+         * managers and, thus, different models.
+         *
+         * \since 4.3
+         */
+        Resource( ResourceManager* manager );
+
+        /**
+         * Copy constructor
+         */
         Resource( const Resource& );
 
         /**
@@ -127,6 +142,16 @@ namespace Nepomuk {
         Resource( const QString& uriOrIdentifier, const QUrl& type = QUrl() );
 
         /**
+         * \overload
+         *
+         * \param manager The resource manager to use. This allows to mix resources from different
+         * managers and, thus, different models.
+         *
+         * \since 4.3
+         */
+        Resource( const QString& uriOrIdentifier, const QUrl& type, ResourceManager* manager );
+
+        /**
          * \deprecated use Resource( const QString&, const QUrl& )
          */
         KDE_DEPRECATED Resource( const QString& uriOrIdentifier, const QString& type );
@@ -144,15 +169,41 @@ namespace Nepomuk {
         Resource( const QUrl& uri, const QUrl& type = QUrl() );
 
         /**
+         * \overload
+         *
+         * \param manager The resource manager to use. This allows to mix resources from different
+         * managers and, thus, different models.
+         *
+         * \since 4.3
+         */
+        Resource( const QUrl& uri, const QUrl& type, ResourceManager* manager );
+
+        /**
          * Constructor used internally.
          */
         Resource( ResourceData* );
 
+        /**
+         * Destructor
+         */
         virtual ~Resource();
 
-        Resource& operator=( const Resource& );
+        /**
+         * Makes this instance of Resource a copy of other.
+         */
+        Resource& operator=( const Resource& other );
 
-        Resource& operator=( const QUrl& );
+        /**
+         * Same as operator=( Resource( uri ) )
+         */
+        Resource& operator=( const QUrl& uri );
+
+        /**
+         * The Resource manager that manages this resource.
+         *
+         * \since 4.3
+         */
+        ResourceManager* manager() const;
 
         /**
          * The URI of the resource, uniquely identifying it. This URI in most
@@ -617,9 +668,10 @@ namespace Nepomuk {
          * the local Nepomuk meta data storage and any changes made locally. 
          * Be aware that in some cases this list can get very big. Then it 
          * might be better to use libKNep directly. 
+         *
+         * \sa ResourceManager::allResources
          */
         static QList<Resource> allResources();
-
 
     private:
         ResourceData* m_data;

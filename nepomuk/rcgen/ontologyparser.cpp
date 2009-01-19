@@ -236,7 +236,7 @@ bool OntologyParser::parse( const QString& filename )
 }
 
 
-bool OntologyParser::writeSources( const QString& dir )
+bool OntologyParser::writeSources( const QString& dir, bool externalRefs )
 {
     bool success = true;
 

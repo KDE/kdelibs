@@ -20,7 +20,6 @@
 
 #include "nepomukmainmodel.h"
 #include "resourcemanager.h"
-#include "graphwrapper_p.h"
 
 #include <Soprano/Node>
 #include <Soprano/Statement>
@@ -51,12 +50,6 @@
 
 using namespace Soprano;
 
-namespace Soprano {
-uint qHash( const Soprano::Node& node )
-{
-    return qHash( node.toString() );
-}
-}
 
 namespace {
 class GlobalModelContainer
@@ -77,8 +70,6 @@ public:
         delete localSocketModel;
         delete dummyModel;
     }
-
-    Nepomuk::GraphWrapper graphWrapper;
 
     Soprano::Client::DBusClient dbusClient;
     Soprano::Client::LocalSocketClient localSocketClient;
@@ -253,11 +244,7 @@ int Nepomuk::MainModel::statementCount() const
 
 Soprano::Error::ErrorCode Nepomuk::MainModel::addStatement( const Statement& statement )
 {
-    Statement s( statement );
-    if( s.context().isEmpty() ) {
-        s.setContext( mainContext() );
-    }
-    Soprano::Error::ErrorCode c = modelContainer()->model()->addStatement( s );
+    Soprano::Error::ErrorCode c = modelContainer()->model()->addStatement( statement );
     setError( modelContainer()->model()->lastError() );
     return c;
 }
@@ -284,114 +271,6 @@ Soprano::Node Nepomuk::MainModel::createBlankNode()
     Soprano::Node n = modelContainer()->model()->createBlankNode();
     setError( modelContainer()->model()->lastError() );
     return n;
-}
-
-
-QUrl Nepomuk::MainModel::mainContext()
-{
-    return modelContainer()->graphWrapper.currentGraph();
-}
-
-
-Soprano::Error::ErrorCode Nepomuk::MainModel::updateModificationDate( const QUrl& resource, const QDateTime& date )
-{
-    Error::ErrorCode c = removeAllStatements( resource, Soprano::Vocabulary::NAO::lastModified(), Soprano::Node() );
-    if ( c != Error::ErrorNone )
-        return c;
-    else
-        return addStatement( resource, Soprano::Vocabulary::NAO::lastModified(), LiteralValue( date ), mainContext() );
-}
-
-
-Soprano::Error::ErrorCode Nepomuk::MainModel::updateProperty( const QUrl& resource, const QUrl& property, const Node& value )
-{
-    if( !property.isValid() ) {
-        setError( "Cannot update invalid property", Error::ErrorInvalidArgument );
-        return Error::ErrorInvalidArgument;
-    }
-
-    StatementIterator it = listStatements( Statement( resource, property, Node() ) );
-    if ( it.next() ) {
-        Statement s = it.current();
-        it.close();
-        if ( s.object() == value ) {
-            // nothing to do. Yey!
-            return Error::ErrorNone;
-        }
-        else {
-            removeStatement( s );
-        }
-    }
-
-    // update property
-    Error::ErrorCode c = addStatement( resource, property, value, mainContext() );
-    if ( c != Error::ErrorNone )
-        return updateModificationDate( resource );
-
-    return c;
-}
-
-
-Soprano::Error::ErrorCode Nepomuk::MainModel::updateProperty( const QUrl& resource, const QUrl& property, const QList<Node>& values )
-{
-    if( !property.isValid() ) {
-        setError( "Cannot update invalid property", Error::ErrorInvalidArgument );
-        return Error::ErrorInvalidArgument;
-    }
-
-    QList<Node> existingValues = listStatements( Statement( resource, property, Node() ) ).iterateObjects().allNodes();
-
-    Error::ErrorCode c = Error::ErrorNone;
-    foreach( const Node &node, existingValues.toSet() - values.toSet() ) {
-        if ( ( c = removeAllStatements( Statement( resource, property, node ) ) ) != Error::ErrorNone ) {
-            return c;
-        }
-    }
-
-    QSet<Node> newNodes = values.toSet() - existingValues.toSet();
-    if ( !newNodes.isEmpty() ) {
-        QUrl context = mainContext();
-        foreach( const Node &node, newNodes ) {
-            if ( ( c = addStatement( Statement( resource, property, node, context ) ) ) != Error::ErrorNone ) {
-                return c;
-            }
-        }
-
-        c = updateModificationDate( resource );
-    }
-
-    return c;
-}
-
-
-Soprano::Error::ErrorCode Nepomuk::MainModel::removeProperty( const QUrl& resource, const QUrl& property )
-{
-    if( !property.isValid() ) {
-        setError( "Cannot remove invalid property", Error::ErrorInvalidArgument );
-        return Error::ErrorInvalidArgument;
-    }
-
-    Soprano::Error::ErrorCode c = removeAllStatements( Statement( resource, property, Node() ) );
-    if ( c == Soprano::Error::ErrorNone )
-        return updateModificationDate( resource );
-    else
-        return c;
-}
-
-
-Soprano::Error::ErrorCode Nepomuk::MainModel::ensureResource( const QUrl& resource, const QUrl& type )
-{
-    if ( !containsAnyStatement( Statement( resource, Vocabulary::RDF::type(), type ) ) ) {
-         Soprano::Error::ErrorCode c = addStatement( Statement( resource, Vocabulary::RDF::type(), type, mainContext() ) );
-         if ( c == Soprano::Error::ErrorNone )
-             return updateModificationDate( resource );
-         else
-             return c;
-    }
-    else {
-        clearError();
-        return Error::ErrorNone;
-    }
 }
 
 #include "nepomukmainmodel.moc"

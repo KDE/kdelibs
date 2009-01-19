@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2008 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2009 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,10 +19,14 @@
  */
 
 #include "resourcemanager.h"
+#include "resourcemanager_p.h"
 #include "resourcedata.h"
 #include "tools.h"
 #include "nepomukmainmodel.h"
 #include "resource.h"
+#include "resourcefiltermodel.h"
+
+#include "ontology/class.h"
 
 #include <kglobal.h>
 #include <kdebug.h>
@@ -34,43 +38,241 @@
 #include <Soprano/StatementIterator>
 #include <Soprano/QueryResultIterator>
 
+#include <QtCore/QFileInfo>
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
 
 using namespace Soprano;
 
 
-
-class Nepomuk::ResourceManager::Private
+Nepomuk::ResourceManagerPrivate::ResourceManagerPrivate( ResourceManager* manager )
+    : mainModel( 0 ),
+      overrideModel( 0 ),
+      dataCnt( 0 ),
+      m_manager( manager )
 {
-public:
-    Private( ResourceManager* manager )
-        : mainModel( 0 ),
-          overrideModel( 0 ),
-          m_parent(manager) {
+}
+
+
+Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QUrl& uri, const QUrl& type )
+{
+    if ( uri.isEmpty() ) {
+        // return an invalid resource which may be activated by calling setProperty
+        return new ResourceData( uri, QString(), type, this );
     }
 
-    Nepomuk::MainModel* mainModel;
-    Soprano::Model* overrideModel;
+    // default to "file" scheme, i.e. we do not allow an empty scheme
+    if ( uri.scheme().isEmpty() ) {
+        QUrl fileUri( uri );
+        fileUri.setScheme( "file" );
+        return data( fileUri, type );
+    }
 
-    QMutex mutex;
+    // if scheme is file, try to follow a symlink
+    if ( uri.scheme() == "file" ) {
+        QFileInfo fileInfo( uri.toLocalFile() );
+        if ( fileInfo.isSymLink() ) {
+            QString linkTarget = fileInfo.canonicalFilePath();
+            // linkTarget is empty for dangling symlinks
+            if ( !linkTarget.isEmpty() ) {
+                QUrl targetUri( linkTarget );
+                targetUri.setScheme( "file" );
+                return data( targetUri, type );
+            }
+        }
+    }
 
-private:
-    ResourceManager* m_parent;
-};
+    ResourceDataHash::iterator it = m_initializedData.find( uri.toString() );
+
+    //
+    // The uriOrId has no local representation yet -> create one
+    //
+    if( it == m_initializedData.end() ) {
+//        kDebug(300004) << "No existing ResourceData instance found for uri " << uri;
+        //
+        // The actual URI is already known here
+        //
+        ResourceData* d = new ResourceData( uri, QString(), type, this );
+        m_initializedData.insert( uri.toString(), d );
+
+        return d;
+    }
+    else {
+        //
+        // Reuse the already existing ResourceData object
+        //
+        return it.value();
+    }
+}
+
+
+Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uriOrId, const QUrl& type )
+{
+    if ( uriOrId.isEmpty() ) {
+        return new ResourceData( QUrl(), QString(), type, this );
+    }
+
+    // special case: files (only absolute paths for now)
+    if ( uriOrId[0] == '/' ) {
+        // try to follow a symlink
+        QFileInfo fileInfo( uriOrId );
+        if ( fileInfo.isSymLink() ) {
+            QString linkTarget = fileInfo.canonicalFilePath();
+            // linkTarget is empty for dangling symlinks, use given url for those
+            if ( !linkTarget.isEmpty() ) {
+                return data( linkTarget, type );
+            }
+        }
+        ResourceDataHash::iterator it = m_initializedData.find( "file://" + uriOrId );
+        if ( it != m_initializedData.end() ) {
+            return *it;
+        }
+    }
+
+    ResourceDataHash::iterator it = m_initializedData.find( uriOrId );
+
+    bool resFound = ( it != m_initializedData.end() );
+
+    //
+    // The uriOrId is not a known local URI. Might be a kickoff value though
+    //
+    if( it == m_initializedData.end() ) {
+        it = m_kickoffData.find( uriOrId );
+
+        // check if the type matches (see determineUri for details)
+        if ( !type.isEmpty() && type != Soprano::Vocabulary::RDFS::Resource() ) {
+            Types::Class wantedType = type;
+            while ( it != m_kickoffData.end() &&
+                    it.key() == uriOrId ) {
+                if ( it.value()->hasType( type ) ) {
+                    break;
+                }
+                ++it;
+            }
+        }
+
+        resFound = ( it != m_kickoffData.end() && it.key() == uriOrId );
+    }
+
+    //
+    // The uriOrId has no local representation yet -> create one
+    //
+    if( !resFound ) {
+//        kDebug(300004) << "No existing ResourceData instance found for uriOrId " << uriOrId;
+        //
+        // Every new ResourceData object ends up in the kickoffdata since its actual URI is not known yet
+        //
+        ResourceData* d = new ResourceData( QUrl(), uriOrId, type, this );
+        m_kickoffData.insert( uriOrId, d );
+
+        return d;
+    }
+    else {
+        //
+        // Reuse the already existing ResourceData object
+        //
+        return it.value();
+    }
+}
+
+
+QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataOfType( const QUrl& type )
+{
+    QList<ResourceData*> l;
+
+    if( !type.isEmpty() ) {
+        for( ResourceDataHash::iterator rdIt = m_kickoffData.begin();
+             rdIt != m_kickoffData.end(); ++rdIt ) {
+            if( rdIt.value()->type() == type ) {
+                l.append( rdIt.value() );
+            }
+        }
+    }
+
+    return l;
+}
+
+
+QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceDataWithProperty( const QUrl& uri, const Variant& v )
+{
+    QList<ResourceData*> l;
+
+    for( ResourceDataHash::iterator rdIt = m_kickoffData.begin();
+         rdIt != m_kickoffData.end(); ++rdIt ) {
+
+        if( rdIt.value()->hasProperty( uri ) &&
+            rdIt.value()->property( uri ) == v ) {
+            l.append( rdIt.value() );
+        }
+    }
+
+    return l;
+}
+
+
+QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceData()
+{
+    QList<ResourceData*> l;
+
+    for( ResourceDataHash::iterator rdIt = m_kickoffData.begin();
+         rdIt != m_kickoffData.end(); ++rdIt ) {
+        l.append( rdIt.value() );
+    }
+    for( ResourceDataHash::iterator rdIt = m_initializedData.begin();
+         rdIt != m_initializedData.end(); ++rdIt ) {
+        l.append( rdIt.value() );
+    }
+
+    return l;
+}
+
+
+bool Nepomuk::ResourceManagerPrivate::dataCacheFull()
+{
+    return dataCnt >= 1000;
+}
+
+
+void Nepomuk::ResourceManagerPrivate::cleanupCache()
+{
+    if ( dataCnt >= 1000 ) {
+        for( ResourceDataHash::iterator rdIt = m_initializedData.begin();
+             rdIt != m_initializedData.end(); ++rdIt ) {
+            ResourceData* data = rdIt.value();
+            if ( !data->cnt() ) {
+                data->deleteData();
+                return;
+            }
+        }
+    }
+}
 
 
 Nepomuk::ResourceManager::ResourceManager()
     : QObject(),
-      d( new Private( this ) )
+      d( new ResourceManagerPrivate( this ) )
 {
+    d->resourceFilterModel = new ResourceFilterModel();
+    connect( d->resourceFilterModel, SIGNAL(statementsAdded()),
+             this, SLOT(slotStoreChanged()) );
+    connect( d->resourceFilterModel, SIGNAL(statementsRemoved()),
+             this, SLOT(slotStoreChanged()) );
 }
 
 
 Nepomuk::ResourceManager::~ResourceManager()
 {
+    delete d->resourceFilterModel;
+    delete d->mainModel;
     delete d;
 }
+
+
+void Nepomuk::ResourceManager::deleteInstance()
+{
+    delete this;
+}
+
 
 class Nepomuk::ResourceManagerHelper
 {
@@ -91,11 +293,10 @@ int Nepomuk::ResourceManager::init()
 
     if( !d->mainModel ) {
         d->mainModel = new MainModel( this );
-        connect( d->mainModel, SIGNAL(statementsAdded()),
-                 this, SLOT(slotStoreChanged()) );
-        connect( d->mainModel, SIGNAL(statementsRemoved()),
-                 this, SLOT(slotStoreChanged()) );
     }
+
+    d->resourceFilterModel->setParentModel( d->mainModel );
+
     return d->mainModel->isValid() ? 0 : -1;
 }
 
@@ -136,7 +337,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUr
 
     if( !type.isEmpty() ) {
         // check local data
-        QList<ResourceData*> localData = ResourceData::allResourceDataOfType( type );
+        QList<ResourceData*> localData = d->allResourceDataOfType( type );
         for( QList<ResourceData*>::iterator rdIt = localData.begin();
              rdIt != localData.end(); ++rdIt ) {
             l.append( Resource( *rdIt ) );
@@ -176,7 +377,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
     }
     else {
         // check local data
-        QList<ResourceData*> localData = ResourceData::allResourceDataWithProperty( uri, v );
+        QList<ResourceData*> localData = d->allResourceDataWithProperty( uri, v );
         for( QList<ResourceData*>::iterator rdIt = localData.begin();
              rdIt != localData.end(); ++rdIt ) {
             l.append( Resource( *rdIt ) );
@@ -238,23 +439,19 @@ QUrl Nepomuk::ResourceManager::generateUniqueUri( const QString& name )
 
 Soprano::Model* Nepomuk::ResourceManager::mainModel()
 {
-    if ( d->overrideModel ) {
-        return d->overrideModel;
-    }
-
     // make sure we are initialized
-    if ( !initialized() ) {
+    if ( !d->overrideModel && !initialized() ) {
         init();
     }
 
-    return d->mainModel;
+    return d->resourceFilterModel;
 }
 
 
 void Nepomuk::ResourceManager::slotStoreChanged()
 {
 //    kDebug();
-    Q_FOREACH( ResourceData* data, ResourceData::allResourceData()) {
+    Q_FOREACH( ResourceData* data, d->allResourceData()) {
         data->invalidateCache();
     }
 }
@@ -264,27 +461,21 @@ void Nepomuk::ResourceManager::setOverrideMainModel( Soprano::Model* model )
 {
     QMutexLocker lock( &d->mutex );
 
-    if ( d->overrideModel ) {
-        d->overrideModel->disconnect( this );
-    }
-
     d->overrideModel = model;
-
-    if ( model ) {
-        connect( model, SIGNAL(statementsAdded()),
-                 this, SLOT(slotStoreChanged()) );
-        connect( model, SIGNAL(statementsRemoved()),
-                 this, SLOT(slotStoreChanged()) );
-    }
-
-    if ( d->mainModel ) {
-        d->mainModel->blockSignals( model != 0 );
-    }
+    d->resourceFilterModel->setParentModel( model ? model : d->mainModel );
 
     // clear cache to make sure we do not mix data
-    Q_FOREACH( ResourceData* data, ResourceData::allResourceData()) {
+    Q_FOREACH( ResourceData* data, d->allResourceData()) {
         data->invalidateCache();
     }
+}
+
+
+Nepomuk::ResourceManager* Nepomuk::ResourceManager::createManagerForModel( Soprano::Model* model )
+{
+    ResourceManager* manager = new ResourceManager();
+    manager->setOverrideMainModel( model );
+    return manager;
 }
 
 #include "resourcemanager.moc"
