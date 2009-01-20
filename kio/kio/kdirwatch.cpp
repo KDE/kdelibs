@@ -94,7 +94,7 @@ static KDirWatchPrivate::WatchMethod methodFromString(const QString& method) {
 #else
     return KDirWatchPrivate::INotify;
 #endif
-  } 
+  }
 }
 
 
@@ -297,9 +297,9 @@ void KDirWatchPrivate::inotifyEventReceived()
 
             if (sub_entry /*&& sub_entry->isDir*/) {
               removeEntry(0, e, sub_entry);
-              KDE_struct_stat stat_buf;
-              QByteArray tpath = QFile::encodeName(path);
-              KDE_stat(tpath, &stat_buf);
+              //KDE_struct_stat stat_buf;
+              //QByteArray tpath = QFile::encodeName(path);
+              //KDE_stat(tpath, &stat_buf);
 
               //sub_entry->isDir = S_ISDIR(stat_buf.st_mode);
               //sub_entry->m_ctime = stat_buf.st_ctime;
@@ -312,27 +312,29 @@ void KDirWatchPrivate::inotifyEventReceived()
             }
             else if ((e->isDir) && (!e->m_clients.empty())) {
               KDE_struct_stat stat_buf;
-              QByteArray tpath = QFile::encodeName(e->path+'/'+path);
-              KDE_stat(tpath, &stat_buf);
-              bool isDir = S_ISDIR(stat_buf.st_mode);
+              const QByteArray tpath = QFile::encodeName(e->path+'/'+path);
+              if (KDE_stat(tpath, &stat_buf) == 0) {
+                const bool isDir = S_ISDIR(stat_buf.st_mode);
+                const KDirWatch::WatchModes flag =
+                  isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
 
-              KDirWatch::WatchModes flag;
-              flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
-
-              int counter = 0;
-              Q_FOREACH(Client *client, e->m_clients) {
+                int counter = 0;
+                Q_FOREACH(Client *client, e->m_clients) {
                   if (client->m_watchModes & flag) {
                       addEntry (client->instance, tpath, 0, isDir,
                                 isDir ? client->m_watchModes : KDirWatch::WatchDirOnly);
                       counter++;
                     }
+                }
+
+                if (counter != 0)
+                  emitEvent (e, Created, e->path+'/'+path);
+
+                kDebug(7001).nospace() << counter << "instance(s) monitoring the new"
+                                       << (isDir ? "dir " : "file ") << tpath;
+              } else {
+                kDebug(7001) << "ERROR: couldn't stat the new item" << tpath;
               }
-
-              if (counter != 0)
-                emitEvent (e, Created, e->path+'/'+path);
-
-              kDebug(7001).nospace() << counter << " instance(s) monitoring the new "
-                << (isDir ? "dir " : "file ") << tpath;
             }
           }
 
@@ -1386,28 +1388,29 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
         }
         else if ((sub_entry == 0) && (!e->m_clients.empty())) {
           KDE_struct_stat stat_buf;
-          KDE_stat(tpath, &stat_buf);
-          bool isDir = S_ISDIR(stat_buf.st_mode);
-
-          KDirWatch::WatchModes flag;
-          flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
-
-          int counter = 0;
-          Q_FOREACH(Client *client, e->m_clients) {
-            if (client->m_watchModes & flag) {
-              addEntry (client->instance, tpath, 0, isDir,
-                        isDir ? client->m_watchModes : KDirWatch::WatchDirOnly);
-              counter++;
+          if (KDE_stat(tpath, &stat_buf) == 0) {
+            const bool isDir = S_ISDIR(stat_buf.st_mode);
+            const KDirWatch::WatchModes flag =
+              isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
+            int counter = 0;
+            Q_FOREACH(Client *client, e->m_clients) {
+              if (client->m_watchModes & flag) {
+                addEntry (client->instance, tpath, 0, isDir,
+                          isDir ? client->m_watchModes : KDirWatch::WatchDirOnly);
+                counter++;
+              }
             }
+
+            if (counter != 0)
+              emitEvent (e, Created, tpath);
+
+            QString msg (QString::number(counter));
+            msg += " instance/s monitoring the new ";
+            msg += (isDir ? "dir " : "file ") + tpath;
+            kDebug(7001) << msg;
+          } else {
+            kDebug(7001) << "ERROR: couldn't stat the new item" << tpath;
           }
-
-          if (counter != 0)
-            emitEvent (e, Created, tpath);
-
-          QString msg (QString::number(counter));
-          msg += " instance/s monitoring the new ";
-          msg += (isDir ? "dir " : "file ") + tpath;
-          kDebug(7001) << msg;
         }
       }
         break;
@@ -1499,9 +1502,9 @@ void KDirWatchPrivate::fswEventReceived(const QString &path)
       }
       if (sub_entry) {
         removeEntry(0, e, sub_entry);
-        KDE_struct_stat stat_buf;
-        QByteArray tpath = QFile::encodeName(path);
-        KDE_stat(tpath, &stat_buf);
+        //KDE_struct_stat stat_buf;
+        //QByteArray tpath = QFile::encodeName(path);
+        //KDE_stat(tpath, &stat_buf);
 
         if(!useQFSWatch(sub_entry))
 #ifdef HAVE_SYS_INOTIFY_H
