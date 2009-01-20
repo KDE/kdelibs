@@ -88,7 +88,6 @@ public:
         qDeleteAll(m_childNodes);
     }
     QList<KDirModelNode *> m_childNodes; // owns the nodes
-    QHash<QString, KDirModelNode *> m_childNodesByName; // key = filename
 
     // If we listed the directory, the child count is known. Otherwise it can be set via setChildCount.
     int childCount() const { return m_childNodes.isEmpty() ? m_childCount : m_childNodes.count(); }
@@ -231,12 +230,12 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const KUrl& _url) const /
             return 0;
         }
 
-        // E.g. pathStr is /a/b/c and nodePath is /a. We want to find the child "b" in dirNode.
-        const QString relativePath = pathStr.mid(nodePath.length());
-        Q_ASSERT(!relativePath.startsWith('/')); // check if multiple slashes have been removed
-        const int nextSlash = relativePath.indexOf('/');
-        const QString fileName = relativePath.left(nextSlash); // works even if nextSlash==-1
-        KDirModelNode* node = dirNode->m_childNodesByName.value(fileName);
+        // E.g. pathStr is /a/b/c and nodePath is /a/. We want to find the node with url /a/b
+        const int nextSlash = pathStr.indexOf('/', nodePath.length());
+        const QString newPath = pathStr.left(nextSlash); // works even if nextSlash==-1
+        nodeUrl.setPath(newPath);
+        nodeUrl.adjustPath(KUrl::RemoveTrailingSlash); // #172508
+        KDirModelNode* node = nodeForUrl(nodeUrl);
         if (!node) {
             //kDebug(7008) << "child equal or starting with" << url << "not found";
             // return last parent found:
@@ -245,8 +244,6 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const KUrl& _url) const /
 
         emit q->expand(indexForNode(node));
 
-        nodeUrl = urlForNode(node);
-        nodeUrl.adjustPath(KUrl::RemoveTrailingSlash); // #172508
         //kDebug(7008) << " nodeUrl=" << nodeUrl;
         if (nodeUrl == url) {
             //kDebug(7008) << "Found node" << node << "for" << url;
@@ -397,7 +394,6 @@ void KDirModelPrivate::_k_slotNewItems(const KUrl& directoryUrl, const KFileItem
                               : new KDirModelNode( dirNode, *it );
         dirNode->m_childNodes.append(node);
         const KUrl url = it->url();
-        dirNode->m_childNodesByName.insert(url.fileName(), node);
         m_nodeHash.insert(cleanupUrl(url), node);
         //kDebug(7008) << url;
 
@@ -457,8 +453,6 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
         removeFromNodeHash(node, url);
         delete dirNode->m_childNodes.takeAt(r);
         q->endRemoveRows();
-        Q_ASSERT(dirNode->m_childNodesByName.contains(url.fileName()));
-        dirNode->m_childNodesByName.remove(url.fileName());
         return;
     }
 
@@ -476,8 +470,6 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
             Q_ASSERT(node);
         }
         rowNumbers.setBit(node->rowNumber(), 1); // O(n)
-        Q_ASSERT(dirNode->m_childNodesByName.contains(url.fileName()));
-        dirNode->m_childNodesByName.remove(url.fileName());
         removeFromNodeHash(node, url);
         node = 0;
     }
@@ -518,19 +510,13 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
         const KUrl oldUrl = fit->first.url();
         const KUrl newUrl = fit->second.url();
         KDirModelNode* node = nodeForUrl(oldUrl); // O(n); maybe we could look up to the parent only once
+        //kDebug(7008) << "in model for" << m_dirLister->url() << ":" << oldUrl << "->" << newUrl << "node=" << node;
         if (!node) // not found [can happen when renaming a dir, redirection was emitted already]
             continue;
         if (node != m_rootNode) { // we never set an item in the rootnode, we use m_dirLister->rootItem instead.
             node->setItem(fit->second);
 
             if (oldUrl != newUrl) {
-                if (oldUrl.fileName() != newUrl.fileName()) {
-                    Q_ASSERT(oldUrl.directory() == newUrl.directory()); // file renamed, not moved.
-                    KDirModelDirNode* parentNode = node->parent();
-                    Q_ASSERT(parentNode);
-                    parentNode->m_childNodesByName.remove(oldUrl.fileName());
-                    parentNode->m_childNodesByName.insert(newUrl.fileName(), node);
-                }
                 // What if a renamed dir had children? -> kdirlister takes care of emitting for each item
                 //kDebug(7008) << "Renaming" << oldUrl << "to" << newUrl << "in node hash";
                 m_nodeHash.remove(cleanupUrl(oldUrl));
