@@ -94,7 +94,7 @@ static KDirWatchPrivate::WatchMethod methodFromString(const QString& method) {
 #else
     return KDirWatchPrivate::INotify;
 #endif
-  } 
+  }
 }
 
 
@@ -238,7 +238,7 @@ KDirWatchPrivate::~KDirWatchPrivate()
 
 void KDirWatchPrivate::inotifyEventReceived()
 {
-  //kDebug(7001);  
+  //kDebug(7001);
 #ifdef HAVE_SYS_INOTIFY_H
   if ( !supports_inotify )
     return;
@@ -349,36 +349,32 @@ void KDirWatchPrivate::inotifyEventReceived()
               // the event immediately if any clients are interested.
               KDE_struct_stat stat_buf;
               QByteArray tpath = QFile::encodeName(e->path+'/'+path);
+              KDirWatch::WatchModes flag = KDirWatch::WatchSubDirs | KDirWatch::WatchFiles;
               if (KDE_stat(tpath, &stat_buf) == 0) {
                 bool isDir = S_ISDIR(stat_buf.st_mode);
-
-                KDirWatch::WatchModes flag;
                 flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
-
-                int counter = 0;
-                Q_FOREACH(client, e->m_clients) {
-                    if (client->m_watchModes & flag) {
+              }
+              int counter = 0;
+              Q_FOREACH(client, e->m_clients) {
+                  if (client->m_watchModes & flag) {
                         counter++;
-                    }
-                }
-                if (counter != 0)
-                {
+                  }
+              }
+              if (counter != 0) {
                   emitEvent (e, Deleted, e->path+'/'+path);
-                }
               }
             }
           }
           if (event->mask & (IN_MODIFY|IN_ATTRIB)) {
             if ((e->isDir) && (!e->m_clients.empty())) {
-              Client* client = 0;
               // A file in this directory has been changed.  No
               // addEntry/ removeEntry bookkeeping should be required.
               // Add the path to the list of pending file changes if
               // there are any interested clients.
-              KDE_struct_stat stat_buf;
-              QByteArray tpath = QFile::encodeName(e->path+'/'+path);
-              KDE_stat(tpath, &stat_buf);
-              bool isDir = S_ISDIR(stat_buf.st_mode);
+              //KDE_struct_stat stat_buf;
+              //QByteArray tpath = QFile::encodeName(e->path+'/'+path);
+              //KDE_stat(tpath, &stat_buf);
+              //bool isDir = S_ISDIR(stat_buf.st_mode);
 
               // The API doc is somewhat vague as to whether we should emit
               // dirty() for implicitly watched files when WatchFiles has
@@ -762,7 +758,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     } else if (watchModes & KDirWatch::WatchFiles) {
       filters |= QDir::Files;
     }
- 
+
 #if defined(HAVE_SYS_INOTIFY_H)
     if (e->m_mode == INotifyMode || (e->m_mode == UnknownMode && m_preferredMethod == INotify)  )
     {
@@ -1293,7 +1289,7 @@ void KDirWatchPrivate::slotRescan()
       Q_FOREACH(QString changedFilename, pendingFileChanges )
       {
         emitEvent(&(*it), Changed, changedFilename);
-      }      
+      }
       (*it).m_pendingFileChanges.clear();
     }
 #endif
