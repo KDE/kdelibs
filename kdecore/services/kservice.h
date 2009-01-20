@@ -387,16 +387,16 @@ public:
     void setTerminalOptions(const QString &options);
 
     /**
-     * Find a service by name, i.e. the translated Name field. You should
-     * never use this method with a literal name as argument, since the name
-     * is translated Name field of the desktop file. See serviceByStorageId instead.
+     * Find a service by name, i.e. the translated Name field. Don't use this.
+     * Use serviceByDesktopPath or serviceByStorageId instead.
      *
      * @param _name the name to search
      * @return a pointer to the requested service or 0 if the service is
      *         unknown.
      * @em Very @em important: Don't store the result in a KService* !
+     * @deprecated there is never a good reason to use this method.
      */
-    static Ptr serviceByName( const QString& _name );
+    static Ptr serviceByName( const QString& _name ); // KDE5: remove
 
     /**
      * Find a service based on its path as returned by entryPath().
