@@ -47,7 +47,7 @@ class KApplicationModel : public QAbstractItemModel
         virtual QModelIndex parent(const QModelIndex &index) const;
         virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
-        QString nameFor(const QModelIndex &index) const;
+        QString entryPathFor(const QModelIndex &index) const;
         QString execFor(const QModelIndex &index) const;
         bool isDirectory(const QModelIndex &index) const;
 

@@ -115,7 +115,7 @@ public:
      */
     void setSaveNewApplications(bool b);
 
-public Q_SLOTS:
+public Q_SLOTS: // TODO KDE5: move all those slots to the private class!
     void slotSelected( const QString&_name, const QString& _exec );
     void slotHighlighted( const QString& _name, const QString& _exec );
     void slotTextChanged();
