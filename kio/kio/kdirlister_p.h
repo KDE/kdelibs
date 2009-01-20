@@ -86,7 +86,13 @@ public:
   void emitItems();
   void emitDeleteItem( const KFileItem &item );
   void emitItemsDeleted(const KFileItemList &items);
-  void redirect( const KUrl& oldUrl, const KUrl& newUrl );
+
+    /**
+     * Redirect this dirlister from oldUrl to newUrl.
+     * @param keepItems if true, keep the fileitems (e.g. when renaming an existing dir);
+     * if false, clear out everything (e.g. when redirecting during listing).
+     */
+    void redirect(const KUrl& oldUrl, const KUrl& newUrl, bool keepItems);
 
     /**
      * Should this item be visible according to the current filter settings?
