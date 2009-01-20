@@ -75,7 +75,7 @@ public:
 
     QString icon;
     QString text;
-    QString relPath;
+    QString entryPath;
     QString exec;
     bool isDir;
 
@@ -118,16 +118,16 @@ public:
         delete root;
     }
 
-    void fillNode(const QString &relPath, KDEPrivate::AppNode *node);
+    void fillNode(const QString &entryPath, KDEPrivate::AppNode *node);
 
     KApplicationModel *q;
 
     KDEPrivate::AppNode *root;
 };
 
-void KApplicationModelPrivate::fillNode(const QString &_relPath, KDEPrivate::AppNode *node)
+void KApplicationModelPrivate::fillNode(const QString &_entryPath, KDEPrivate::AppNode *node)
 {
-   KServiceGroup::Ptr root = KServiceGroup::group(_relPath);
+   KServiceGroup::Ptr root = KServiceGroup::group(_entryPath);
    if (!root || !root->isValid()) return;
 
    const KServiceGroup::List list = root->entries();
@@ -137,7 +137,7 @@ void KApplicationModelPrivate::fillNode(const QString &_relPath, KDEPrivate::App
    {
       QString icon;
       QString text;
-      QString relPath = _relPath;
+      QString entryPath;
       QString exec;
       bool isDir = false;
       const KSycocaEntry::Ptr p = (*it);
@@ -151,6 +151,7 @@ void KApplicationModelPrivate::fillNode(const QString &_relPath, KDEPrivate::App
          icon = service->icon();
          text = service->name();
          exec = service->exec();
+         entryPath = service->entryPath();
       }
       else if (p->isType(KST_KServiceGroup))
       {
@@ -161,7 +162,7 @@ void KApplicationModelPrivate::fillNode(const QString &_relPath, KDEPrivate::App
 
          icon = serviceGroup->icon();
          text = serviceGroup->caption();
-         relPath = serviceGroup->relPath();
+         entryPath = serviceGroup->entryPath();
          isDir = true;
       }
       else
@@ -173,7 +174,7 @@ void KApplicationModelPrivate::fillNode(const QString &_relPath, KDEPrivate::App
       KDEPrivate::AppNode *newnode = new KDEPrivate::AppNode();
       newnode->icon = icon;
       newnode->text = text;
-      newnode->relPath = relPath;
+      newnode->entryPath = entryPath;
       newnode->exec = exec;
       newnode->isDir = isDir;
       newnode->parent = node;
@@ -242,7 +243,7 @@ void KApplicationModel::fetchMore(const QModelIndex &parent)
         return;
 
     emit layoutAboutToBeChanged();
-    d->fillNode(node->relPath, node);
+    d->fillNode(node->entryPath, node);
     node->fetched = true;
     emit layoutChanged();
 }
@@ -312,13 +313,13 @@ int KApplicationModel::rowCount(const QModelIndex &parent) const
     return node->children.count();
 }
 
-QString KApplicationModel::nameFor(const QModelIndex &index) const
+QString KApplicationModel::entryPathFor(const QModelIndex &index) const
 {
     if (!index.isValid())
         return QString();
 
     KDEPrivate::AppNode *node = static_cast<KDEPrivate::AppNode*>(index.internalPointer());
-    return node->text;
+    return node->entryPath;
 }
 
 QString KApplicationModel::execFor(const QModelIndex &index) const
@@ -392,7 +393,7 @@ void KApplicationView::currentChanged(const QModelIndex &current, const QModelIn
     if (d->appModel && !d->appModel->isDirectory(current)) {
         QString exec = d->appModel->execFor(current);
         if (!exec.isEmpty()) {
-            emit highlighted(d->appModel->nameFor(current), exec);
+            emit highlighted(d->appModel->entryPathFor(current), exec);
         }
     }
 }
@@ -405,7 +406,7 @@ void KApplicationView::slotSelectionChanged(const QItemSelection &selected, cons
     if (indexes.count() == 1 && !d->appModel->isDirectory(indexes.at(0))) {
         QString exec = d->appModel->execFor(indexes.at(0));
         if (!exec.isEmpty()) {
-            emit this->selected(d->appModel->nameFor(indexes.at(0)), exec);
+            emit this->selected(d->appModel->entryPathFor(indexes.at(0)), exec);
         }
     }
 }
@@ -464,7 +465,6 @@ public:
     KUrlRequester *edit;
     QString m_command;
     QLabel *label;
-    QString qName;
     QString qMimeType;
     QCheckBox *terminal;
     QCheckBox *remember;
@@ -556,8 +556,8 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
   bool bReadOnly = !KAuthorized::authorize("shell_access");
   m_terminaldirty = false;
     view = 0;
-  m_pService = 0L;
-    curService = 0L;
+    m_pService = 0;
+    curService = 0;
 
     q->setButtons(KDialog::Ok | KDialog::Cancel);
 
@@ -695,11 +695,9 @@ void KOpenWithDialog::slotSelected( const QString& /*_name*/, const QString& _ex
 
 // ----------------------------------------------------------------------
 
-void KOpenWithDialog::slotHighlighted( const QString& _name, const QString& )
+void KOpenWithDialog::slotHighlighted(const QString& entryPath, const QString&)
 {
-    kDebug(250)<<"KOpenWithDialog::slotHighlighted";
-    d->qName = _name;
-    d->curService = KService::serviceByName(d->qName);
+    d->curService = KService::serviceByDesktopPath(entryPath);
     if (!d->m_terminaldirty)
     {
         // ### indicate that default value was restored
