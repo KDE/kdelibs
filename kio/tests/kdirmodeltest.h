@@ -41,6 +41,7 @@ private Q_SLOTS:
     void testReload();
     void testModifyFile();
     void testRenameFile();
+    void testMoveDirectory();
     void testRenameDirectory();
     void testChmodDirectory();
     void testExpandToUrl_data();
@@ -75,6 +76,7 @@ private:
     void enterLoop();
     void fillModel(bool reload, bool expectAllIndexes = true);
     void collectKnownIndexes();
+    void testMoveDirectory(const QString& srcdir);
 
 private:
     QEventLoop m_eventLoop;
