@@ -34,6 +34,9 @@
 #include <QtCore/QDir>
 #include <QtCore/QString>
 
+#ifdef Q_CC_MINGW
+#define _WIN32_WINNT 0x500
+#endif
 #include <windows.h>
 #include <shellapi.h>
 #include <process.h>
@@ -261,9 +264,11 @@ static void kMessageConsoleOutput(QtMsgType type, const char *msg)
     }
 }
 
+#ifndef Q_CC_MINGW
 extern "C" BOOL WINAPI AttachConsole(
   __in  DWORD dwProcessId
 );
+#endif
 
 /** 
   try to attach to the parents console
