@@ -203,6 +203,7 @@ void KDirListerTest::testRefreshItems()
     const QString path = m_tempDir.name();
     const QString fileName = path+"toplevelfile_2";
     KFileItem cachedItem = m_dirLister.findByUrl(KUrl(fileName));
+    QVERIFY(!cachedItem.isNull());
     QCOMPARE(cachedItem.mimetype(), QString("application/octet-stream"));
 
     QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
@@ -241,11 +242,11 @@ void KDirListerTest::testRefreshItems()
     QCOMPARE(spyClearKUrl.count(), 0);
     QCOMPARE(m_refreshedItems.count(), 1);
     QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
-    QCOMPARE(entry.first.size(), KIO::filesize_t(11));
     QCOMPARE(entry.first.url().path(), fileName);
+    QCOMPARE(entry.first.size(), KIO::filesize_t(11));
     QCOMPARE(entry.first.mimetype(), QString("application/octet-stream"));
-    QCOMPARE(entry.second.size(), KIO::filesize_t(11 /*Hello world*/ + 6 /*<html>*/));
     QCOMPARE(entry.second.url().path(), fileName);
+    QCOMPARE(entry.second.size(), KIO::filesize_t(11 /*Hello world*/ + 6 /*<html>*/));
     QCOMPARE(entry.second.mimetype(), QString("text/html"));
     disconnect(&m_dirLister, 0, this, 0);
 

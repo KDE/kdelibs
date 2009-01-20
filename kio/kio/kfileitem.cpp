@@ -106,6 +106,8 @@ public:
     KDateTime time( KFileItem::FileTimes which ) const;
     void setTime(KFileItem::FileTimes which, long long time_t_val) const;
     bool cmp( const KFileItemPrivate & item ) const;
+    QString user() const;
+    QString group() const;
 
     /**
      * Extracts the data from the UDSEntry member and updates the KFileItem
@@ -343,12 +345,29 @@ KDateTime KFileItemPrivate::time( KFileItem::FileTimes mappedWhich ) const
 inline //because it is used only in one place
 bool KFileItemPrivate::cmp( const KFileItemPrivate & item ) const
 {
+#if 0
+    kDebug() << "Comparing" << m_url << "and" << item.m_url;
+    kDebug() << " name" << (m_strName == item.m_strName);
+    kDebug() << " local" << (m_bIsLocalUrl == item.m_bIsLocalUrl);
+    kDebug() << " mode" << (m_fileMode == item.m_fileMode);
+    kDebug() << " perm" << (m_permissions == item.m_permissions);
+    kDebug() << " UDS_USER" << (user() == item.user());
+    kDebug() << " UDS_GROUP" << (group() == item.group());
+    kDebug() << " UDS_EXTENDED_ACL" << (m_entry.stringValue( KIO::UDSEntry::UDS_EXTENDED_ACL ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_EXTENDED_ACL ));
+    kDebug() << " UDS_ACL_STRING" << (m_entry.stringValue( KIO::UDSEntry::UDS_ACL_STRING ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_ACL_STRING ));
+    kDebug() << " UDS_DEFAULT_ACL_STRING" << (m_entry.stringValue( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING ));
+    kDebug() << " m_bLink" << (m_bLink == item.m_bLink);
+    kDebug() << " m_hidden" << (m_hidden == item.m_hidden);
+    kDebug() << " size" << (size() == item.size());
+    kDebug() << " ModificationTime" << (time(KFileItem::ModificationTime) == item.time(KFileItem::ModificationTime));
+    kDebug() << " UDS_ICON_NAME" << (m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME ));
+#endif
     return ( m_strName == item.m_strName
              && m_bIsLocalUrl == item.m_bIsLocalUrl
              && m_fileMode == item.m_fileMode
              && m_permissions == item.m_permissions
-             && m_entry.stringValue( KIO::UDSEntry::UDS_USER ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_USER )
-             && m_entry.stringValue( KIO::UDSEntry::UDS_GROUP ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_GROUP )
+             && user() == item.user()
+             && group() == item.group()
              && m_entry.stringValue( KIO::UDSEntry::UDS_EXTENDED_ACL ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_EXTENDED_ACL )
              && m_entry.stringValue( KIO::UDSEntry::UDS_ACL_STRING ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_ACL_STRING )
              && m_entry.stringValue( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING )
@@ -585,21 +604,25 @@ time_t KFileItem::time( unsigned int which ) const
 
 QString KFileItem::user() const
 {
-    QString userName = d->m_entry.stringValue( KIO::UDSEntry::UDS_USER );
-    if ( userName.isEmpty() && d->m_bIsLocalUrl )
-    {
+    return d->user();
+}
+
+QString KFileItemPrivate::user() const
+{
+    QString userName = m_entry.stringValue(KIO::UDSEntry::UDS_USER);
+    if (userName.isEmpty() && m_bIsLocalUrl) {
 #ifdef Q_WS_WIN
-        QFileInfo a(d->m_url.path( KUrl::RemoveTrailingSlash ));
+        QFileInfo a(m_url.path( KUrl::RemoveTrailingSlash ));
         userName = a.owner();
-        d->m_entry.insert( KIO::UDSEntry::UDS_USER, userName );
+        m_entry.insert( KIO::UDSEntry::UDS_USER, userName );
 #else
         KDE_struct_stat buff;
-        if ( KDE_lstat( QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
+        if ( KDE_lstat( QFile::encodeName(m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
         {
             struct passwd *pwuser = getpwuid( buff.st_uid );
             if ( pwuser != 0 ) {
                 userName = QString::fromLocal8Bit(pwuser->pw_name);
-                d->m_entry.insert( KIO::UDSEntry::UDS_USER, userName );
+                m_entry.insert( KIO::UDSEntry::UDS_USER, userName );
             }
         }
 #endif
@@ -609,16 +632,21 @@ QString KFileItem::user() const
 
 QString KFileItem::group() const
 {
-    QString groupName = d->m_entry.stringValue( KIO::UDSEntry::UDS_GROUP );
-    if (groupName.isEmpty() && d->m_bIsLocalUrl )
+    return d->group();
+}
+
+QString KFileItemPrivate::group() const
+{
+    QString groupName = m_entry.stringValue( KIO::UDSEntry::UDS_GROUP );
+    if (groupName.isEmpty() && m_bIsLocalUrl )
     {
 #ifdef Q_WS_WIN
-        QFileInfo a(d->m_url.path( KUrl::RemoveTrailingSlash ));
+        QFileInfo a(m_url.path( KUrl::RemoveTrailingSlash ));
         groupName = a.group();
-        d->m_entry.insert( KIO::UDSEntry::UDS_GROUP, groupName );
+        m_entry.insert( KIO::UDSEntry::UDS_GROUP, groupName );
 #else
         KDE_struct_stat buff;
-        if ( KDE_lstat( QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
+        if ( KDE_lstat( QFile::encodeName(m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
         {
             struct group *ge = getgrgid( buff.st_gid );
             if ( ge != 0 ) {
@@ -628,7 +656,7 @@ QString KFileItem::group() const
             }
             else
                 groupName.sprintf("%d",buff.st_gid);
-            d->m_entry.insert( KIO::UDSEntry::UDS_GROUP, groupName );
+            m_entry.insert( KIO::UDSEntry::UDS_GROUP, groupName );
         }
 #endif
     }
