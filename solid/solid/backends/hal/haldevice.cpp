@@ -45,6 +45,7 @@
 #include "halaudiointerface.h"
 #include "haldvbinterface.h"
 #include "halvideo.h"
+#include "halserialinterface.h"
 
 using namespace Solid::Backends::Hal;
 
@@ -246,6 +247,10 @@ QString HalDevice::icon() const
         case Solid::AudioInterface::Modem:
             return QLatin1String("modem");
         }
+    } else if (category == "serial") {
+        // TODO - a serial device can be a modem, or just
+        // a COM port - need a new icon?
+        return QLatin1String("modem");
     }
 
     return QString();
@@ -343,7 +348,6 @@ bool HalDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
     }
 
     QStringList cap_list = DeviceInterface::toStringList(type);
-    QStringList result;
 
     foreach (const QString &cap, cap_list)
     {
@@ -421,6 +425,9 @@ QObject *HalDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
         break;
     case Solid::DeviceInterface::Video:
         iface = new Video(this);
+        break;
+    case Solid::DeviceInterface::SerialInterface:
+        iface = new SerialInterface(this);
         break;
     case Solid::DeviceInterface::Unknown:
     case Solid::DeviceInterface::Last:

@@ -38,6 +38,7 @@ namespace Ifaces
         virtual ~NetworkInterface();
 
 
+        /* TODO for KDE 5 - rename ifaceName() to interfaceName() */
         /**
          * Retrieves the name of the interface in the system.
          * This name is system dependent, it allows to identify the interface

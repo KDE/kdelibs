@@ -102,6 +102,9 @@ public:
         case Solid::DeviceInterface::Video:
             list << "video4linux";
             break;
+        case Solid::DeviceInterface::SerialInterface:
+            list << "serial";
+            break;
         case Solid::DeviceInterface::Unknown:
             break;
         case Solid::DeviceInterface::Last:
@@ -143,6 +146,8 @@ public:
             return Solid::DeviceInterface::DvbInterface;
         else if (capability == "video4linux")
             return Solid::DeviceInterface::Video;
+        else if (capability == "serial")
+            return Solid::DeviceInterface::SerialInterface;
         else
             return Solid::DeviceInterface::Unknown;
     }

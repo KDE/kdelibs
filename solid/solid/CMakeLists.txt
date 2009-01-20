@@ -46,6 +46,7 @@ set(solid_LIB_SRCS
    camera.cpp 
    portablemediaplayer.cpp 
    networkinterface.cpp 
+   serialinterface.cpp
    acadapter.cpp 
    battery.cpp 
    button.cpp
@@ -72,6 +73,7 @@ set(solid_LIB_SRCS
    ifaces/dvbinterface.cpp
    ifaces/genericinterface.cpp
    ifaces/networkinterface.cpp
+   ifaces/serialinterface.cpp
    ifaces/opticaldisc.cpp
    ifaces/portablemediaplayer.cpp
    ifaces/processor.cpp
@@ -120,6 +122,7 @@ if(NOT WIN32 AND NOT APPLE)
    backends/hal/haldevice.cpp
    backends/hal/halmanager.cpp
    backends/hal/halnetworkinterface.cpp
+   backends/hal/halserialinterface.cpp
    backends/hal/halopticaldisc.cpp
    backends/hal/halportablemediaplayer.cpp
    backends/hal/halprocessor.cpp
@@ -209,7 +212,7 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h devic
                storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h 
                camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h 
                button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h 
-               networking.h video.h 
+               networking.h video.h serialinterface.h
                DESTINATION ${INCLUDE_INSTALL_DIR}/solid COMPONENT Devel)
 
 ########### parser build ###############
