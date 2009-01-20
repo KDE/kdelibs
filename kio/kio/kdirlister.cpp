@@ -1159,7 +1159,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
     Q_ASSERT( !listers.isEmpty() );
 
     foreach ( KDirLister *kdl, listers ) {
-        kdl->d->redirect(oldUrlStr, newUrl);
+        kdl->d->redirect(oldUrlStr, newUrl, false /*clear items*/);
     }
 
     // when a lister was stopped before the job emits the redirection signal, the old url will
@@ -1171,7 +1171,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
         // TODO: maybe don't emit started if there's an update running for newUrl already?
         emit kdl->started( oldUrl );
 
-        kdl->d->redirect(oldUrl, newUrl);
+        kdl->d->redirect(oldUrl, newUrl, false /*clear items*/);
     }
 
     DirItem *newDir = itemsInUse.value(newUrlStr);
@@ -1416,14 +1416,7 @@ void KDirListerCache::emitRedirections( const KUrl &oldUrl, const KUrl &newUrl )
 
     // And notify the dirlisters of the redirection
     foreach ( KDirLister *kdl, holders ) {
-        // ### consider replacing this block with kdl->redirect(oldUrl, newUrl)...
-        KUrl::List& lstDirs = kdl->d->lstDirs;
-        lstDirs[ lstDirs.indexOf( oldUrl ) ] = newUrl;
-
-        if ( lstDirs.count() == 1 )
-            emit kdl->redirection( newUrl );
-
-        emit kdl->redirection( oldUrl, newUrl );
+        kdl->d->redirect(oldUrl, newUrl, true /*keep items*/);
     }
 }
 
@@ -2466,29 +2459,31 @@ void KDirLister::setDelayedMimeTypes( bool delayedMimeTypes )
 }
 
 // called by KDirListerCache::slotRedirection
-void KDirLister::Private::redirect( const KUrl& oldUrl, const KUrl& newUrl )
+void KDirLister::Private::redirect(const KUrl& oldUrl, const KUrl& newUrl, bool keepItems)
 {
     if ( url.equals( oldUrl, KUrl::CompareWithoutTrailingSlash ) ) {
-        rootFileItem = KFileItem();
+        if (!keepItems)
+            rootFileItem = KFileItem();
         url = newUrl;
     }
 
     const int idx = lstDirs.indexOf( oldUrl );
     if (idx == -1) {
         kWarning(7004) << "Unexpected redirection from" << oldUrl << "to" << newUrl
-                       << "but this dirlister is currently listing" << lstDirs;
+                       << "but this dirlister is currently listing/holding" << lstDirs;
     } else {
         lstDirs[ idx ] = newUrl;
     }
 
     if ( lstDirs.count() == 1 ) {
-        emit m_parent->clear();
+        if (!keepItems)
+            emit m_parent->clear();
         emit m_parent->redirection( newUrl );
-        emit m_parent->redirection( oldUrl, newUrl );
     } else {
-        emit m_parent->clear( oldUrl );
-        emit m_parent->redirection( oldUrl, newUrl );
+        if (!keepItems)
+            emit m_parent->clear( oldUrl );
     }
+    emit m_parent->redirection( oldUrl, newUrl );
 }
 
 void KDirListerCacheDirectoryData::moveListersWithoutCachedItemsJob()
