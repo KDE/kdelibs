@@ -342,28 +342,29 @@ void KDirWatchPrivate::inotifyEventReceived()
           }
           if (event->mask & (IN_DELETE|IN_MOVED_FROM)) {
             if ((e->isDir) && (!e->m_clients.empty())) {
-                Client* client = 0;
+              Client* client = 0;
               // A file in this directory has been removed.  It wasn't an explicitly
               // watched file as it would have its own watch descriptor, so
               // no addEntry/ removeEntry bookkeeping should be required.  Emit
               // the event immediately if any clients are interested.
               KDE_struct_stat stat_buf;
               QByteArray tpath = QFile::encodeName(e->path+'/'+path);
-              KDE_stat(tpath, &stat_buf);
-              bool isDir = S_ISDIR(stat_buf.st_mode);
+              if (KDE_stat(tpath, &stat_buf) == 0) {
+                bool isDir = S_ISDIR(stat_buf.st_mode);
 
-              KDirWatch::WatchModes flag;
-              flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
+                KDirWatch::WatchModes flag;
+                flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
 
-              int counter = 0;
-              Q_FOREACH(client, e->m_clients) {
-                  if (client->m_watchModes & flag) {
-                      counter++;
-                   }
-              }
-              if (counter != 0)
-              {
-                emitEvent (e, Deleted, e->path+'/'+path);
+                int counter = 0;
+                Q_FOREACH(client, e->m_clients) {
+                    if (client->m_watchModes & flag) {
+                        counter++;
+                    }
+                }
+                if (counter != 0)
+                {
+                  emitEvent (e, Deleted, e->path+'/'+path);
+                }
               }
             }
           }
