@@ -460,6 +460,26 @@ int KDirWatchPrivate::Entry::clients()
   return clients;
 }
 
+QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::clientsForFileOrDir(const QByteArray& tpath, bool* isDir) const
+{
+  QList<Client *> ret;
+  KDE_struct_stat stat_buf;
+  if (KDE_stat(tpath, &stat_buf) == 0) {
+    *isDir = S_ISDIR(stat_buf.st_mode);
+    const KDirWatch::WatchModes flag =
+      *isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
+    Q_FOREACH(Client *client, this->m_clients) {
+      if (client->m_watchModes & flag) {
+        ret.append(client);
+      }
+    }
+  } else {
+    kDebug(7001) << "ERROR: couldn't stat" << tpath;
+  }
+  // If KDE_stat fails then isDir is not set, but ret is empty anyway
+  // so isDir won't be used.
+  return ret;
+}
 
 KDirWatchPrivate::Entry* KDirWatchPrivate::entry(const QString& _path)
 {
@@ -1347,27 +1367,6 @@ void KDirWatchPrivate::famEventReceived()
   }
 
   QTimer::singleShot(0, this, SLOT(slotRemoveDelayed()));
-}
-
-QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::clientsForFileOrDir(const QByteArray& tpath, bool* isDir) const
-{
-  QList<Client *> ret;
-  KDE_struct_stat stat_buf;
-  if (KDE_stat(tpath, &stat_buf) == 0) {
-    *isDir = S_ISDIR(stat_buf.st_mode);
-    const KDirWatch::WatchModes flag =
-      *isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
-    Q_FOREACH(Client *client, this->m_clients) {
-      if (client->m_watchModes & flag) {
-        ret.append(client);
-      }
-    }
-  } else {
-    kDebug(7001) << "ERROR: couldn't stat" << tpath;
-  }
-  // If KDE_stat fails then isDir is not set, but ret is empty anyway
-  // so isDir won't be used.
-  return ret;
 }
 
 void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
