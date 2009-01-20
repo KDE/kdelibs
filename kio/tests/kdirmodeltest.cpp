@@ -926,7 +926,7 @@ void KDirModelTest::testDeleteFile()
                 &m_eventLoop, SLOT(quit()) );
 
     QModelIndex fileIndex = m_dirModel.indexForUrl(path + "toplevelfile_1");
-    Q_ASSERT(!fileIndex.isValid());
+    QVERIFY(!fileIndex.isValid());
 
     // Recreate the file, for consistency in the next tests
     // So the second part of this test is a "testCreateFile"
@@ -1028,6 +1028,8 @@ void KDirModelTest::testDeleteDirectory()
     connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
              &m_eventLoop, SLOT(quit()) );
 
+    QSignalSpy spyDirWatchDeleted(KDirWatch::self(), SIGNAL(deleted(QString)));
+
     KIO::DeleteJob* job = KIO::del(url, KIO::HideProgressInfo);
     bool ok = job->exec();
     QVERIFY(ok);
@@ -1041,9 +1043,11 @@ void KDirModelTest::testDeleteDirectory()
                 &m_eventLoop, SLOT(quit()) );
 
     QModelIndex deletedDirIndex = m_dirModel.indexForUrl(path + "subdir/subsubdir");
-    Q_ASSERT(!deletedDirIndex.isValid());
+    QVERIFY(!deletedDirIndex.isValid());
     QModelIndex dirIndex = m_dirModel.indexForUrl(path + "subdir");
-    Q_ASSERT(dirIndex.isValid());
+    QVERIFY(dirIndex.isValid());
+
+    QCOMPARE(spyDirWatchDeleted.count(), 1);
 }
 
 void KDirModelTest::testDeleteCurrentDirectory()
@@ -1073,7 +1077,7 @@ void KDirModelTest::testDeleteCurrentDirectory()
                 &m_eventLoop, SLOT(quit()) );
 
     QModelIndex fileIndex = m_dirModel.indexForUrl(path + "toplevelfile_1");
-    Q_ASSERT(!fileIndex.isValid());
+    QVERIFY(!fileIndex.isValid());
 }
 
 // The old slow way. (this isn't QUrl's fault, I'm just using QUrl in order
