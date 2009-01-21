@@ -407,9 +407,6 @@ Notes:
     <comment>Microsoft Media Format</comment>
     <sub-class-of type="video/x-ms-wmv"/>
   </mime-type>
-  <mime-type type="application/x-kmplayer"> <!-- fdo #19671 -->
-    <comment>KMPlayer Format</comment>
-  </mime-type>
   <mime-type type="application/x-ogg"> <!-- fdo #19671 -->
     <comment>Ogg multimedia file</comment>
     <sub-class-of type="application/ogg"/>
