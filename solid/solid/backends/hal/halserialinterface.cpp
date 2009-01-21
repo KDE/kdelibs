@@ -47,7 +47,7 @@ Solid::SerialInterface::SerialType SerialInterface::serialType() const
     if (type == QLatin1String("platform"))
         return Solid::SerialInterface::Platform;
     if (type == QLatin1String("usb"))
-        return Solid::SerialInterface::USB;
+        return Solid::SerialInterface::Usb;
     return Solid::SerialInterface::Unknown;
 }
 

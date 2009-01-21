@@ -92,7 +92,8 @@ namespace Solid
          *
          * @since 4.3
          */
-        enum SerialType { Unknown = 0, Platform, USB };
+        enum SerialType { Unknown = 0, Platform, Usb };
+
         /**
          * Retrieves the type of the serial device.
          * Examples for Linux are "usb" for USB based serial devices,
