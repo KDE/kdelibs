@@ -395,6 +395,51 @@ Notes:
     <glob pattern="*.wsz"/>
   </mime-type>
 
+  <mime-type type="application/x-mplayer2"> <!-- fdo #19671 -->
+    <comment>Microsoft Media Format</comment>
+    <sub-class-of type="video/x-ms-wmv"/>
+    <alias type="video/mediaplayer"/>
+    <alias type="video/x-ms-wmp"/>
+    <glob pattern="*.wmp"/>
+  </mime-type>
+  <mime-type type="application/vnd.ms-asf"> <!-- fdo #19671 -->
+    <comment>Microsoft Media Format</comment>
+    <sub-class-of type="video/x-ms-wmv"/>
+  </mime-type>
+  <mime-type type="application/x-kmplayer"> <!-- fdo #19671 -->
+    <comment>KMPlayer Format</comment>
+  </mime-type>
+  <mime-type type="application/x-ogg"> <!-- fdo #19671 -->
+    <comment>Ogg multimedia file</comment>
+    <sub-class-of type="application/ogg"/>
+  </mime-type>
+  <mime-type type="audio/m3u"> <!-- fdo #19671 -->
+    <comment>MP3 audio</comment>
+    <sub-class-of type="audio/x-mpegurl"/>
+    <alias type="audio/x-m3u"/>
+  </mime-type>
+  <mime-type type="audio/vorbis"> <!-- fdo #19671 -->
+    <comment>Vorbis audio</comment>
+    <sub-class-of type="audio/ogg"/>
+    <alias type="audio/x-vorbis"/>
+  </mime-type>
+  <mime-type type="audio/x-mp2"> <!-- fdo #19671 -->
+    <comment>MP2 audio</comment>
+    <sub-class-of type="audio/mp2"/>
+  </mime-type>
+  <mime-type type="audio/x-oggflac"> <!-- fdo #19671 -->
+    <comment>MP2 audio</comment>
+    <sub-class-of type="audio/x-flac+ogg"/>
+  </mime-type>
+  <mime-type type="video/x-ogm"> <!-- fdo #19671 -->
+    <comment>Ogg/Ogm Video</comment>
+    <sub-class-of type="video/x-ogm+ogg"/>
+  </mime-type>
+  <mime-type type="video/x-theora"> <!-- fdo #19671 -->
+    <comment>Ogg/Ogm Video</comment>
+    <sub-class-of type="video/x-theora+ogg"/>
+  </mime-type>
+
   <mime-type type="application/x-kexiproject-shortcut">
     <comment>shortcut to Kexi project on database server</comment>
     <glob pattern="*.kexis"/>
