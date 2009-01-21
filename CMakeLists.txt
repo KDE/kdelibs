@@ -7,10 +7,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 ################# set KDE specific information #################
 
 set (KDE_VERSION_MAJOR 4)
-set (KDE_VERSION_MINOR 1)
-set (KDE_VERSION_RELEASE 96)
+set (KDE_VERSION_MINOR 2)
+set (KDE_VERSION_RELEASE 00)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
-set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.1.96 (KDE 4.2 RC1))")
+set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.2.0)")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
