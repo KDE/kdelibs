@@ -25,9 +25,11 @@
 #include <QtCore/QSharedData>
 #include <QtCore/QMutex>
 
+#ifndef Q_WS_WIN
 inline uint qHash( const QUrl& url ) {
     return qHash( url.toString() );
 }
+#endif
 
 namespace Soprano {
     class Statement;
