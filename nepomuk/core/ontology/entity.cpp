@@ -32,7 +32,7 @@
 
 #include <kicon.h>
 
-#ifndef _MSC_VER
+#ifndef Q_WS_WIN
 uint qHash( const QUrl& url )
 {
     return qHash( url.toString() );
