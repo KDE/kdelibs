@@ -107,11 +107,17 @@ static QByteArray valueForKey(const QList<QByteArray> &ba, const QByteArray &key
 QByteArray KAbstractHttpAuthentication::bestOffer(const QList<QByteArray> &offers)
 {
     // choose the most secure auth scheme offered
+    QByteArray negotiateOffer;
     QByteArray digestOffer;
     QByteArray ntlmOffer;
     QByteArray basicOffer;
     foreach (const QByteArray &offer, offers) {
         QByteArray scheme = offer.mid(0, 10).toLower();
+#ifdef HAVE_LIBGSSAPI
+        if (scheme.startsWith("negotiate")) {
+            negotiateOffer = offer;
+        } else
+#endif
         if (scheme.startsWith("digest")) {
             digestOffer = offer;
         } else if (scheme.startsWith("ntlm")) {
@@ -121,7 +127,9 @@ QByteArray KAbstractHttpAuthentication::bestOffer(const QList<QByteArray> &offer
         }
     }
 
-    if (!digestOffer.isEmpty()) {
+    if (!negotiateOffer.isEmpty()) {
+        return negotiateOffer;
+    } else if (!digestOffer.isEmpty()) {
         return digestOffer;
     } else if (!ntlmOffer.isEmpty()) {
         return ntlmOffer;
@@ -133,6 +141,11 @@ QByteArray KAbstractHttpAuthentication::bestOffer(const QList<QByteArray> &offer
 KAbstractHttpAuthentication *KAbstractHttpAuthentication::newAuth(const QByteArray &offer)
 {
     QByteArray scheme = offer.mid(0, 10).toLower();
+#ifdef HAVE_LIBGSSAPI
+    if (scheme.startsWith("negotiate")) {
+        return new KHttpNegotiateAuthentication();
+    } else
+#endif
     if (scheme.startsWith("digest")) {
         return new KHttpDigestAuthentication();
     } else if (scheme.startsWith("ntlm")) {
@@ -151,7 +164,7 @@ void KAbstractHttpAuthentication::reset()
     m_resource.clear();
     m_httpMethod.clear();
     m_isError = false;
-    m_retryWithSameCredentials = false;
+    m_needCredentials = true;
     m_forceKeepAlive = false;
     m_forceDisconnect = false;
     m_headerFragment.clear();
@@ -194,15 +207,19 @@ void KAbstractHttpAuthentication::authInfoBoilerplate(KIO::AuthInfo *a) const
 
 void KAbstractHttpAuthentication::generateResponseCommon(const QString &user, const QString &password)
 {
-    if (user.isEmpty() || password.isEmpty() || m_scheme.isEmpty() || m_httpMethod.isEmpty()) {
+    if ((m_needCredentials && (user.isEmpty() || password.isEmpty())) ||
+        m_scheme.isEmpty() || m_httpMethod.isEmpty()) {
         m_isError = true;
         return;
     }
 
-    m_username = user;
-    m_password = password;
+    if (m_needCredentials) {
+        m_username = user;
+        m_password = password;
+    }
     m_isError = false;
-    m_retryWithSameCredentials = false;
+    // we could leave m_needCredentials value alone; this is just defensive coding.
+    m_needCredentials = true;
     m_forceKeepAlive = false;
     m_forceDisconnect = false;
 }
@@ -228,7 +245,7 @@ void KHttpBasicAuthentication::generateResponse(const QString &user, const QStri
     }
 
     m_headerFragment = "Basic ";
-    m_headerFragment += KCodecs::base64Encode(user.toLatin1() + ':' + password.toLatin1());
+    m_headerFragment += KCodecs::base64Encode(m_username.toLatin1() + ':' + m_password.toLatin1());
     m_headerFragment += "\r\n";
     return;
 }
@@ -237,6 +254,27 @@ void KHttpBasicAuthentication::generateResponse(const QString &user, const QStri
 QByteArray KHttpDigestAuthentication::scheme() const
 {
     return "Digest";
+}
+
+
+void KHttpDigestAuthentication::setChallenge(const QByteArray &c, const KUrl &resource,
+                                             const QByteArray &httpMethod)
+{
+    QString oldUsername;
+    QString oldPassword;
+    if (valueForKey(m_challenge, "stale").toLower() == "true") {
+        // stale nonce: the auth failure that triggered this round of authentication is an artifact
+        // of digest authentication. the credentials are probably still good, so keep them.
+        oldUsername = m_username;
+        oldPassword = m_password;
+    }
+    KAbstractHttpAuthentication::setChallenge(c, resource, httpMethod);
+    if (!oldUsername.isEmpty() && !oldPassword.isEmpty()) {
+        // keep credentials *and* don't ask for new ones
+        m_needCredentials = false;
+        m_username = oldUsername;
+        m_password = oldPassword;
+    }
 }
 
 
@@ -348,8 +386,8 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
 
     DigestAuthInfo info;
 
-    info.username = user.toLatin1();        //### charset breakage
-    info.password = password.toLatin1();    //###
+    info.username = m_username.toLatin1();  //### charset breakage
+    info.password = m_password.toLatin1();  //###
 
     // info.entityBody = p;  // FIXME: send digest of data for POST action ??
     info.realm = "";
@@ -366,10 +404,6 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
     info.method = m_httpMethod;
 
     // Parse the Digest response....
-    if (valueForKey(m_challenge, "stale").toLower() == "true") {
-        m_retryWithSameCredentials = true;
-    }
-
     info.realm = valueForKey(m_challenge, "realm");
 
     info.algorithm = valueForKey(m_challenge, "algorith");
@@ -500,11 +534,24 @@ QByteArray KHttpNtlmAuthentication::scheme() const
 }
 
 
+void KHttpNtlmAuthentication::setChallenge(const QByteArray &c, const KUrl &resource,
+                                             const QByteArray &httpMethod)
+{
+    KAbstractHttpAuthentication::setChallenge(c, resource, httpMethod);
+    if (m_challenge.isEmpty()) {
+        // The type 1 message we're going to send needs no credentials;
+        // they come later in the type 3 message.
+        m_needCredentials = false;
+    }
+}
+
+
 void KHttpNtlmAuthentication::fillKioAuthInfo(KIO::AuthInfo *ai) const
 {
     authInfoBoilerplate(ai);
     // Every auth scheme is supposed to supply a realm according to the RFCs. Of course this doesn't
     // prevent Microsoft from not doing it... Dummy value!
+    // we don't have the username yet which may (may!) contain a domain, so we really have no choice
     ai->realmValue = "NTLM";
 }
 
@@ -517,8 +564,7 @@ void KHttpNtlmAuthentication::generateResponse(const QString &_user, const QStri
     }
 
     QByteArray buf;
-    
-    // ### double check if forceDisconnect and forceKeepAlive are a) necessary b) set correctly here
+
     if (m_challenge.isEmpty()) {
         // first, send type 1 message (with empty domain, workstation..., but it still works)
         m_forceDisconnect = true;
@@ -526,21 +572,164 @@ void KHttpNtlmAuthentication::generateResponse(const QString &_user, const QStri
     } else {
         // we've (hopefully) received a valid type 2 message: send type 3 message as last step
         QString domain;
-        QString user = _user;
+        QString user = m_username;
         if (user.contains('\\')) {
             domain = user.section('\\', 0, 0);
             user = user.section('\\', 1);
         }
 
-        m_retryWithSameCredentials = true;
         m_forceKeepAlive = true;
         QByteArray challenge;
         KCodecs::base64Decode(m_challenge[0], challenge);
         KNTLM::getAuth(buf, challenge, user, password, domain, QHostInfo::localHostName());
     }
 
+    m_headerFragment = "NTLM ";
     m_headerFragment += KCodecs::base64Encode(buf);
     m_headerFragment += "\r\n";
 
     return;
 }
+
+
+//////////////////////////
+#ifdef HAVE_LIBGSSAPI
+
+// just an error message formatter
+static QByteArray gssError(int major_status, int minor_status)
+{
+    OM_uint32 new_status;
+    OM_uint32 msg_ctx = 0;
+    gss_buffer_desc major_string;
+    gss_buffer_desc minor_string;
+    OM_uint32 ret;
+    QByteArray errorstr;
+
+    do {
+        ret = gss_display_status(&new_status, major_status, GSS_C_GSS_CODE, GSS_C_NULL_OID, &msg_ctx, &major_string);
+        errorstr += (const char *)major_string.value;
+        errorstr += ' ';
+        ret = gss_display_status(&new_status, minor_status, GSS_C_MECH_CODE, GSS_C_NULL_OID, &msg_ctx, &minor_string);
+        errorstr += (const char *)minor_string.value;
+        errorstr += ' ';
+    } while (!GSS_ERROR(ret) && msg_ctx != 0);
+
+    return errorstr;
+}
+
+
+QByteArray KHttpNegotiateAuthentication::scheme() const
+{
+    return "Negotiate";
+}
+
+
+void KHttpNegotiateAuthentication::setChallenge(const QByteArray &c, const KUrl &resource,
+                                                const QByteArray &httpMethod)
+{
+    KAbstractHttpAuthentication::setChallenge(c, resource, httpMethod);
+    // GSSAPI knows how to get the credentials on its own
+    m_needCredentials = false;
+}
+
+
+void KHttpNegotiateAuthentication::fillKioAuthInfo(KIO::AuthInfo *ai) const
+{
+    authInfoBoilerplate(ai);
+    //### does GSSAPI supply anything realm-like? dummy value for now.
+    ai->realmValue = "Negotiate";
+}
+
+
+void KHttpNegotiateAuthentication::generateResponse(const QString &user, const QString &password)
+{
+    generateResponseCommon(user, password);
+    if (m_isError) {
+        return;
+    }
+
+    OM_uint32 major_status, minor_status;
+    gss_buffer_desc input_token = GSS_C_EMPTY_BUFFER;
+    gss_buffer_desc output_token = GSS_C_EMPTY_BUFFER;
+    gss_name_t server;
+    gss_ctx_id_t ctx;
+    gss_OID mech_oid;
+    static gss_OID_desc krb5_oid_desc = {9, (void *) "\x2a\x86\x48\x86\xf7\x12\x01\x02\x02"};
+    static gss_OID_desc spnego_oid_desc = {6, (void *) "\x2b\x06\x01\x05\x05\x02"};
+    gss_OID_set mech_set;
+    gss_OID tmp_oid;
+
+    ctx = GSS_C_NO_CONTEXT;
+    mech_oid = &krb5_oid_desc;
+
+    // see whether we can use the SPNEGO mechanism
+    major_status = gss_indicate_mechs(&minor_status, &mech_set);
+    if (GSS_ERROR(major_status)) {
+        kDebug(7113) << "gss_indicate_mechs failed: " << gssError(major_status, minor_status);
+    } else {
+        for (uint i = 0; i < mech_set->count; i++) {
+            tmp_oid = &mech_set->elements[i];
+            if (tmp_oid->length == spnego_oid_desc.length &&
+                !memcmp(tmp_oid->elements, spnego_oid_desc.elements, tmp_oid->length)) {
+                kDebug(7113) << "found SPNEGO mech";
+                mech_oid = &spnego_oid_desc;
+                break;
+            }
+        }
+        gss_release_oid_set(&minor_status, &mech_set);
+    }
+
+    // the service name is "HTTP/f.q.d.n"
+    QByteArray servicename = "HTTP@";
+    servicename += m_resource.host().toAscii();
+
+    input_token.value = (void *)servicename.data();
+    input_token.length = servicename.length() + 1;
+
+    major_status = gss_import_name(&minor_status, &input_token,
+                                   GSS_C_NT_HOSTBASED_SERVICE, &server);
+
+    input_token.value = NULL;
+    input_token.length = 0;
+
+    if (GSS_ERROR(major_status)) {
+        kDebug(7113) << "gss_import_name failed: " << gssError(major_status, minor_status);
+        m_isError = true;
+        return;
+    }
+
+    OM_uint32 req_flags = 0;
+    // GSSAPI knows how to get the credentials its own way, so don't ask for any
+    major_status = gss_init_sec_context(&minor_status, GSS_C_NO_CREDENTIAL,
+                                        &ctx, server, mech_oid,
+                                        req_flags, GSS_C_INDEFINITE,
+                                        GSS_C_NO_CHANNEL_BINDINGS,
+                                        GSS_C_NO_BUFFER, NULL, &output_token,
+                                        NULL, NULL);
+
+    if (GSS_ERROR(major_status) || (output_token.length == 0)) {
+        kDebug(7113) << "gss_init_sec_context failed: " << gssError(major_status, minor_status);
+        gss_release_name(&minor_status, &server);
+        if (ctx != GSS_C_NO_CONTEXT) {
+            gss_delete_sec_context(&minor_status, &ctx, GSS_C_NO_BUFFER);
+            ctx = GSS_C_NO_CONTEXT;
+        }
+        m_isError = true;
+        return;
+    }
+
+    m_headerFragment = "Negotiate ";
+    m_headerFragment += QByteArray::fromRawData((const char *)output_token.value,
+                                                output_token.length).toBase64();
+    m_headerFragment += "\r\n";
+
+    // free everything
+    gss_release_name(&minor_status, &server);
+    if (ctx != GSS_C_NO_CONTEXT) {
+        gss_delete_sec_context(&minor_status, &ctx, GSS_C_NO_BUFFER);
+        ctx = GSS_C_NO_CONTEXT;
+    }
+    gss_release_buffer(&minor_status, &output_token);
+}
+
+#endif // HAVE_LIBGSSAPI

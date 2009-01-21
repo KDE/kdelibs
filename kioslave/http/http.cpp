@@ -27,7 +27,6 @@
 #include "http.h"
 
 #include <config.h>
-#include <config-gssapi.h>
 
 #include <fcntl.h>
 #include <utime.h>
@@ -2645,7 +2644,6 @@ try_again:
     kDebug(7103) << "============ Received Status Response:";
     kDebug(7103) << QByteArray(buffer, bufPos);
 
-    bool noHeader = true;
     HTTP_REV httpRev = HTTP_None;
     int headerSize = 0;
 
@@ -3316,9 +3314,7 @@ try_again:
         //### (or somehow weave AuthInfo handling into the auth classes!)
         QString username;
         QString password;
-        if ((*auth)->retryWithSameCredentials()) {
-            //.... user = ...
-        } else {
+        if ((*auth)->needCredentials()) {
             // try to get credentials from kpasswdserver's cache, then try asking the user.
             KIO::AuthInfo authi;
             fillPromptInfo(&authi);
@@ -3346,11 +3342,10 @@ try_again:
             username = authi.username;
             password = authi.password;
         }
-        
         (*auth)->generateResponse(username, password);
 
         kDebug(7113) << "auth state: isError" << (*auth)->isError() 
-                     << "retryWithSameCredentials" << (*auth)->retryWithSameCredentials()
+                     << "needCredentials" << (*auth)->needCredentials()
                      << "forceKeepAlive" << (*auth)->forceKeepAlive()
                      << "forceDisconnect" << (*auth)->forceDisconnect()
                      << "headerFragment" << (*auth)->headerFragment();
@@ -4850,173 +4845,15 @@ QString HTTPProtocol::authenticationHeader()
     return ret;
 }
 
-#if 0
-QString HTTPProtocol::proxyAuthenticationHeader()
-{
-    kDebug(7113) << m_proxyAuth.authorization << m_proxyAuth.scheme
-                 << m_proxyAuth.realm << m_proxyAuth.authCount;
-    // We keep proxy authentication locally until they are changed.
-    // Thus, no need to check with the password manager for every
-    // connection.
 
-    if (m_proxyAuth.realm.isEmpty()) {
-        AuthInfo info;
-        info.url = m_request.proxyUrl;
-        info.username = m_request.proxyUrl.user();
-        info.password = m_request.proxyUrl.pass();
-        info.verifyPath = true;
-        kDebug(7113) << info.url.url() << info.username << info.password
-                     << info.digestInfo << info.realmValue;
-
-
-        // If the proxy URL already contains username
-        // and password simply attempt to retrieve it
-        // without prompting the user...
-        if (!info.username.isEmpty() && !info.password.isEmpty()) {
-            if( m_proxyAuth.authorization.isEmpty() )
-                m_proxyAuth.scheme = AUTH_None;
-            else if( m_proxyAuth.authorization.startsWith("Basic") )
-                m_proxyAuth.scheme = AUTH_Basic;
-            else if( m_proxyAuth.authorization.startsWith("NTLM") )
-                m_proxyAuth.scheme = AUTH_NTLM;
-            else
-                m_proxyAuth.scheme = AUTH_Digest;
-        } else {
-            const bool ccaRes = checkCachedAuthentication(info);
-            kDebug(7113) << info.url.url() << info.username << info.password
-                         << info.digestInfo << info.realmValue;
-            kDebug(7113) << ccaRes;
-            kDebug(7113) << info.url.url() << info.username << info.password
-                         << info.digestInfo << info.realmValue;
-            //if (checkCachedAuthentication(info) && !info.digestInfo.isEmpty()) {
-            if (ccaRes && !info.digestInfo.isEmpty()) {
-                m_request.proxyUrl.setUser(info.username);
-                m_request.proxyUrl.setPass(info.password);
-                m_proxyAuth.realm = info.realmValue;
-                m_proxyAuth.authorization = info.digestInfo;
-                if (m_proxyAuth.authorization.startsWith("Basic")) {
-                    m_proxyAuth.scheme = AUTH_Basic;
-                } else if (m_proxyAuth.authorization.startsWith("NTLM")) {
-                    m_proxyAuth.scheme = AUTH_NTLM;
-                } else {
-                    m_proxyAuth.scheme = AUTH_Digest;
-                }
-            } else {
-                m_proxyAuth.scheme = AUTH_None;
-            }
-        }
-    }
-
-    if (m_proxyAuth.scheme != AUTH_None) {
-        kDebug(7113) << "Using Proxy Authentication: ";
-        kDebug(7113) << " HOST =" << m_request.proxyUrl.host();
-        kDebug(7113) << " PORT =" << m_request.proxyUrl.port();
-        kDebug(7113) << " USER =" << m_request.proxyUrl.user();
-        kDebug(7113) << " PASSWORD = [protected]";
-        kDebug(7113) << " REALM =" << m_proxyAuth.realm;
-        kDebug(7113) << " EXTRA =" << m_proxyAuth.authorization;
-    } else {
-        kDebug(7113) << "m_proxyAuth.scheme = AUTH_None.";
-    }
-
-    switch (m_proxyAuth.scheme) {
-    case AUTH_Basic:
-        return createBasicAuth(true);
-        break;
-    case AUTH_Digest:
-        return createDigestAuth(true);
-        break;
-    case AUTH_NTLM:
-        if (m_isFirstRequest) {
-            return createNTLMAuth(true);
-        }
-        break;
-    case AUTH_None:
-    default:
-        break;
-    }
-    return QString();
-}
-
-QString HTTPProtocol::wwwAuthenticationHeader()
-{
-    kDebug(7113);
-    // Only check for cached authentication if the previous response was NOT a 401 or 407.
-    // In that case we have already tried the cached authentication in a previous attempt
-    // (because it's the first thing we try) and it did not work.
-    // Also no caching for schemes where challenges become stale.
-    
-    // m_wwwAuth *might* already contain useful values from getAuthorization(), continue
-    // and try them in any case.
-    
-    if (!m_request.doNotAuthenticate && m_request.responseCode != 401
-        && m_request.responseCode != 407
-        && m_wwwAuth.scheme != AUTH_Negotiate) {
-
-        AuthInfo info;
-        info.url = m_request.url;
-        info.verifyPath = true;
-        if (!m_request.url.user().isEmpty()) {
-            info.username = m_request.url.user();
-        }
-
-        kDebug(7113) << "Calling checkCachedAuthentication";
-        
-        if (checkCachedAuthentication(info) && !info.digestInfo.isEmpty()) {
-            m_wwwAuth.scheme = AUTH_Digest;
-            if (info.digestInfo.startsWith("Basic")) {
-                m_wwwAuth.scheme = AUTH_Basic;
-            } else if (info.digestInfo.startsWith("NTLM")) {
-                m_wwwAuth.scheme = AUTH_NTLM;
-            } else if (info.digestInfo.startsWith("Negotiate")) {
-                m_wwwAuth.scheme = AUTH_Negotiate;
-            }
-
-            m_server.url.user() = info.username;
-            m_server.url.pass() = info.password;
-            m_wwwAuth.realm = info.realmValue;
-            if (m_wwwAuth.scheme != AUTH_NTLM && m_wwwAuth.scheme != AUTH_Negotiate) { // don't use the cached challenge
-                m_wwwAuth.authorization = info.digestInfo;
-            }
-        }
-    } else {
-        kDebug(7113) << "Not calling checkCachedAuthentication";
-    }
-
-    if (m_wwwAuth.scheme != AUTH_None) {
-        kDebug(7113) << "Using Authentication: ";
-        kDebug(7113) << " HOST =" << m_server.url.host();
-        kDebug(7113) << " PORT =" << m_server.url.port();
-        kDebug(7113) << " USER =" << m_server.url.user();
-        kDebug(7113) << " PASSWORD = [protected]";
-        kDebug(7113) << " REALM =" << m_wwwAuth.realm;
-        kDebug(7113) << " EXTRA =" << m_wwwAuth.authorization;
-    }
-
-    switch (m_wwwAuth.scheme) {
-    case AUTH_Basic:
-        return createBasicAuth();
-    case AUTH_Digest:
-        return createDigestAuth();
-#ifdef HAVE_LIBGSSAPI
-    case AUTH_Negotiate:
-        return createNegotiateAuth();
-#endif
-    case AUTH_NTLM:
-        return createNTLMAuth();
-    case AUTH_None:
-    default:
-        break;
-    }
-    return QString();
-}
-#endif
 void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAuthenticator *authenticator)
 {
+    Q_UNUSED(proxy);
     kDebug(7113) << "Authenticator received -- realm: " << authenticator->realm() << "user:"
                  << authenticator->user();
 
     AuthInfo info;
+    Q_ASSERT(proxy.hostName() == m_request.proxyUrl.host() && proxy.port() == m_request.proxyUrl.port());
     info.url = m_request.proxyUrl;
     info.realmValue = authenticator->realm();
     info.verifyPath = true;    //### whatever

@@ -20,6 +20,8 @@
 #ifndef HTTPAUTHENTICATION_H
 #define HTTPAUTHENTICATION_H
 
+#include <config-gssapi.h>
+
 #ifndef HTTP_H_ // if we're included from http.cpp all necessary headers are already included
 #include <QtCore/QByteArray>
 #include <QtCore/QString>
@@ -44,12 +46,15 @@ public:
 
     virtual ~KAbstractHttpAuthentication() {}
 
-    // reset to state after default construction
+    // reset to state after default construction.
     void reset();
-    // the authentication scheme: "Digest", "Basic", "NTLM"
+    // the authentication scheme: "Negotiate", "Digest", "Basic", "NTLM"
     virtual QByteArray scheme() const = 0;
-    // initiate next step with challenge string c
-    void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
+    // initiate authentication with challenge string (from HTTP header) c
+    virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
+    // return value updated by setChallenge(); if this is false user and password passed
+    // to generateResponse will be ignored and may be empty.
+    bool needCredentials() const { return m_needCredentials; }
     // KIO compatible data to find cached credentials. Note that username and/or password
     // as well as UI text will NOT be filled in.
     virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const = 0;
@@ -57,14 +62,11 @@ public:
     virtual void generateResponse(const QString &user,
                                   const QString &password) = 0;
 
-    // the following accessors contain useful data after 
+    // the following accessors return useful data after generateResponse() has been called.
     // clients process the following fields top to bottom: highest priority is on top
 
     // malformed challenge and similar problems - it is advisable to reconnect
     bool isError() const { return m_isError; }
-    // do not assume wrong credentials if authentication does not succeed.
-    // another roundtrip is needed for internal reasons.
-    bool retryWithSameCredentials() const { return m_retryWithSameCredentials; }
     // force keep-alive connection because the authentication method requires it
     bool forceKeepAlive() const { return m_forceKeepAlive; }
     // force disconnection because the authentication method requires it
@@ -85,7 +87,7 @@ protected:
     QByteArray m_httpMethod;
 
     bool m_isError;
-    bool m_retryWithSameCredentials;
+    bool m_needCredentials;
     bool m_forceKeepAlive;
     bool m_forceDisconnect;
     QString m_headerFragment;
@@ -112,6 +114,7 @@ class KHttpDigestAuthentication : public KAbstractHttpAuthentication
 {
 public:
     virtual QByteArray scheme() const;
+    virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
     virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const;
     virtual void generateResponse(const QString &user, const QString &password);
 private:
@@ -125,6 +128,7 @@ class KHttpNtlmAuthentication : public KAbstractHttpAuthentication
 {
 public:
     virtual QByteArray scheme() const;
+    virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
     virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const;
     virtual void generateResponse(const QString &user, const QString &password);
 private:
@@ -132,5 +136,21 @@ private:
     KHttpNtlmAuthentication()
      : KAbstractHttpAuthentication() {}
 };
+
+
+#ifdef HAVE_LIBGSSAPI
+class KHttpNegotiateAuthentication : public KAbstractHttpAuthentication
+{
+public:
+    virtual QByteArray scheme() const;
+    virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
+    virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const;
+    virtual void generateResponse(const QString &user, const QString &password);
+private:
+    friend class KAbstractHttpAuthentication;
+    KHttpNegotiateAuthentication()
+     : KAbstractHttpAuthentication() {}
+};
+#endif // HAVE_LIBGSSAPI
 
 #endif // HTTPAUTHENTICATION_H
