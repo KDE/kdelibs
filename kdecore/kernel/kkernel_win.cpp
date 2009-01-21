@@ -212,9 +212,9 @@ QString getWin32ShellFoldersPath ( const QString& folder )
 }
 
 /** 
-  kde and qt debug message printer for win32 gui applications 
+  kde and qt debug message printer using windows debug message port
  */ 
-static void kMessageGuiOutput(QtMsgType type, const char *msg)
+static void kMessageOutputDebugString(QtMsgType type, const char *msg)
 {
     int BUFSIZE=4096;
     char *buf = new char[BUFSIZE];
@@ -243,11 +243,10 @@ static void kMessageGuiOutput(QtMsgType type, const char *msg)
 }
 
 /** 
-  kde and qt debug message printer for win32 console applications 
+  kde and qt debug message printer using FILE pointer based output
  */ 
-static void kMessageConsoleOutput(QtMsgType type, const char *msg)
+static void kMessageOutputFileIO(QtMsgType type, const char *msg)
 {
-    kMessageGuiOutput(type,msg);
     switch (type) {
     case QtDebugMsg:
         fprintf(stderr, "Debug: %s\n", msg);
@@ -377,8 +376,8 @@ static int subSystem()
  application  console    ------------------ output -----------------
     type     available   qt/kde-debug         ios             FILE *   
 
-    cui        yes         console          console         console
-    cui        no        no output yet[1]   win32debug      no output[1]
+    cui        yes        console           console         console
+    cui        no        win32debug         win32debug      no output[1]
 
     gui        yes       win32debug         console         console
     gui        no        win32debug         win32debug      win32debug 
@@ -397,16 +396,29 @@ static class kMessageOutputInstaller {
         kMessageOutputInstaller() : stdoutBuffer("stdout:"), stderrBuffer("stderr:"), oldStdoutBuffer(0), oldStderrBuffer(0)
         {
             if (subSystem() == IMAGE_SUBSYSTEM_WINDOWS_CUI) {
-                qInstallMsgHandler(kMessageConsoleOutput);
+                if (attachToConsole()) {
+                    // setup kde and qt level 
+                    qInstallMsgHandler(kMessageOutputFileIO);
+                    // redirect ios and file io to console
+                    redirectToConsole();
+                }
+                else {
+                    // setup kde and qt level 
+                    qInstallMsgHandler(kMessageOutputDebugString);
+                    // redirect ios to debug message port 
+                    oldStdoutBuffer = std::cout.rdbuf(&stdoutBuffer);
+                    oldStderrBuffer = std::cerr.rdbuf(&stderrBuffer);
+                }
             }
             else if (subSystem() == IMAGE_SUBSYSTEM_WINDOWS_GUI) {
                 // setup kde and qt level 
-                qInstallMsgHandler(kMessageGuiOutput);
-                // try to redirect ios + fprintf level to console 
-                if (attachToConsole())
+                qInstallMsgHandler(kMessageOutputDebugString);
+                // try to get a console
+                if (attachToConsole()) {
                     redirectToConsole();
-                // if no console is available redirect ios to debug window
+                }
                 else {
+                    // redirect ios to debug message port
                     oldStdoutBuffer = std::cout.rdbuf(&stdoutBuffer);
                     oldStderrBuffer = std::cerr.rdbuf(&stderrBuffer);
                     // TODO: redirect FILE * level to console, no idea how to do yet
