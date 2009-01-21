@@ -396,29 +396,29 @@ Notes:
     <glob pattern="*.wsz"/>
   </mime-type>
 
-  <mime-type type="application/x-kexiproject-shortcut">
+  <mime-type type="application/x-kexiproject-shortcut"> <!-- inclusion in fdo depends on fdo #18109 -->
     <comment>shortcut to Kexi project on database server</comment>
     <glob pattern="*.kexis"/>
   </mime-type>
-  <mime-type type="application/x-kexiproject-sqlite">
+  <mime-type type="application/x-kexiproject-sqlite"> <!-- inclusion in fdo depends on fdo #18109 -->
     <comment>Kexi database file-based project</comment>
     <glob pattern="*.kexi"/>
   </mime-type>
-  <mime-type type="application/x-kexiproject-sqlite2">
+  <mime-type type="application/x-kexiproject-sqlite2"> <!-- inclusion in fdo depends on fdo #18109 -->
     <sub-class-of type="application/x-sqlite2"/>
     <comment>Kexi database file-based project</comment>
     <glob pattern="*.kexi"/>
   </mime-type>
-  <mime-type type="application/x-kexiproject-sqlite3">
+  <mime-type type="application/x-kexiproject-sqlite3"> <!-- inclusion in fdo depends on fdo #18109 -->
     <sub-class-of type="application/x-sqlite3"/>
     <comment>Kexi database file-based project</comment>
     <glob pattern="*.kexi"/>
   </mime-type>
-  <mime-type type="application/x-kexi-connectiondata">
+  <mime-type type="application/x-kexi-connectiondata"> <!-- inclusion in fdo depends on fdo #18109 -->
     <comment>data for database server connection</comment>
     <glob pattern="*.kexic"/>
   </mime-type>
-  
+
   <!-- Is the actual standard for rdf content encoded in XMl, as opposed to text/rdf: http://www.iana.org/assignments/media-types/application/ -->
   <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/rdf+xml"> <!-- fdo #18088, FIXED 0.52 -->
     <comment>RDF/XML document</comment>
