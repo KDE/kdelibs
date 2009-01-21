@@ -89,6 +89,13 @@ namespace Nepomuk {
         Variant( const QList<QUrl>& url );
         Variant( const QList<Resource>& r );
 
+        /**
+         * Create a new Variant from a list of Variants.
+         *
+         * \since 4.3
+         */
+        Variant( const QList<Variant>& vl );
+
         Variant& operator=( const Variant& );
         Variant& operator=( int i );
         Variant& operator=( qlonglong i );
@@ -248,6 +255,13 @@ namespace Nepomuk {
         QList<QDateTime> toDateTimeList() const;
         QList<QUrl> toUrlList() const;
         QList<Resource> toResourceList() const;
+
+        /**
+         * Convert a Variant to a list of Variants.
+         *
+         * \since 4.3
+         */
+        QList<Variant> toVariantList() const;
 
         /**
          * Create a Variant object by parsing string \a value based on \a type.

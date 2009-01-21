@@ -276,6 +276,14 @@ void Nepomuk::Resource::setProperty( const QString& uri, const Nepomuk::Variant&
 }
 
 
+void Nepomuk::Resource::addProperty( const QUrl& uri, const Variant& value )
+{
+    Variant v = property( uri );
+    v.append( value );
+    setProperty( uri, v );
+}
+
+
 void Nepomuk::Resource::setProperty( const QUrl& uri, const Nepomuk::Variant& value )
 {
     if ( m_data ) {
@@ -294,6 +302,18 @@ void Nepomuk::Resource::removeProperty( const QUrl& uri )
 {
     if ( m_data ) {
         m_data->removeProperty( uri );
+    }
+}
+
+
+void Nepomuk::Resource::removeProperty( const QUrl& uri, const Variant& value )
+{
+    if ( m_data ) {
+        QList<Variant> vl = property( uri ).toVariantList();
+        foreach( const Variant& v, value.toVariantList() ) {
+            vl.removeAll( v );
+        }
+        setProperty( uri, Variant( vl ) );
     }
 }
 

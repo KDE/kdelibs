@@ -350,6 +350,16 @@ namespace Nepomuk {
         void setProperty( const QUrl& uri, const Variant& value );
 
         /**
+         * Add a property value to the existing values.
+         *
+         * \param uri The URI identifying the property.
+         * \param value The value of the property (i.e. the object of the RDF triple(s))
+         *
+         * \since 4.3
+         */
+        void addProperty( const QUrl& uri, const Variant& value );
+
+        /**
          * \deprecated use setProperty( const QUrl& )
          */
         KDE_DEPRECATED void setProperty( const QString& uri, const Variant& value );
@@ -360,6 +370,16 @@ namespace Nepomuk {
          * \param uri The URI identifying the property.
          */
         void removeProperty( const QUrl& uri );
+
+        /**
+         * Remove \a value from property \a uri of this resource object.
+         *
+         * \param uri The URI identifying the property.
+         * \param value The value to remove
+         *
+         * \since 4.3
+         */
+        void removeProperty( const QUrl& uri, const Variant& value );
 
         /**
          * \deprecated use removeProperty( const QUrl& )

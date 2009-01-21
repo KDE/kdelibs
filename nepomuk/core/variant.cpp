@@ -273,6 +273,15 @@ Nepomuk::Variant::Variant( const QList<Resource>& r )
 }
 
 
+Nepomuk::Variant::Variant( const QList<Variant>& vl )
+    : d( new Private )
+{
+    foreach( const Variant& v, vl ) {
+        append( v );
+    }
+}
+
+
 Nepomuk::Variant& Nepomuk::Variant::operator=( const Variant& v )
 {
     d->value = v.d->value;
@@ -1072,6 +1081,75 @@ QList<Nepomuk::Resource> Nepomuk::Variant::toResourceList() const
     }
     else
         return d->value.value<QList<Resource> >();
+}
+
+
+QList<Nepomuk::Variant> Nepomuk::Variant::toVariantList() const
+{
+    QList<Variant> l;
+
+    if( isIntList() ) {
+        foreach( int i, toIntList() ) {
+            l.append( Variant(i) );
+        }
+    }
+    else if( isInt64List() ) {
+        foreach( qlonglong i, toInt64List() ) {
+            l.append( Variant(i) );
+        }
+    }
+    else if( isUnsignedIntList() ) {
+        foreach( uint i, toUnsignedIntList() ) {
+            l.append( Variant(i) );
+        }
+    }
+    else if( isUnsignedInt64List() ) {
+        foreach( qulonglong i, toUnsignedInt64List() ) {
+            l.append( Variant(i) );
+        }
+    }
+    else if( isBoolList() ) {
+        foreach( bool i, toBoolList() ) {
+            l.append( Variant(i) );
+        }
+    }
+    else if( isDoubleList() ) {
+        foreach( double i, toDoubleList() ) {
+            l.append( Variant(i) );
+        }
+    }
+    else if( isDateList() ) {
+        foreach( const QDate& i, toDateList() ) {
+            l.append( Variant(i) );
+        }
+    }
+    else if( isTimeList() ) {
+        foreach( const QTime& i, toTimeList() ) {
+            l.append( Variant(i) );
+        }
+    }
+    else if( isDateTimeList() ) {
+        foreach( const QDateTime& i, toDateTimeList() ) {
+            l.append( Variant(i) );
+        }
+    }
+    else if( isUrlList() ) {
+        foreach( const QUrl& i, toUrlList() ) {
+            l.append( Variant(i) );
+        }
+    }
+    else if( isResourceList() ) {
+        foreach( const Resource& i, toResourceList() ) {
+            l.append( Variant(i) );
+        }
+    }
+    else {
+        foreach( const QString& i, toStringList() ) {
+            l.append( Variant(i) );
+        }
+    }
+
+    return l;
 }
 
 
