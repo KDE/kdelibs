@@ -145,7 +145,8 @@ HeaderTokenizer::HeaderTokenizer(char *buffer)
         {"location", false},
         {"p3p", true}, // http://www.w3.org/TR/P3P/
         {"pragma", true},
-        {"proxy-authenticate", true},
+        {"proxy-authenticate", false}, //complicated multi-valuedness: quoted commas don't separate
+                                       //multiple values. we handle this at a higher level.
         {"proxy-connection", true}, //inofficial but well-known; to avoid misunderstandings
                                     //when using "connection" when talking to a proxy.
         {"refresh", false}, //not sure, only found some mailing list posts mentioning it
@@ -155,7 +156,7 @@ HeaderTokenizer::HeaderTokenizer(char *buffer)
         {"transfer-encoding", true},
         {"upgrade", true},
         {"warning", true},
-        {"www-authenticate", true}
+        {"www-authenticate", false} //see proxy-authenticate
     };
 
     for (uint i = 0; i < sizeof(headerFieldTemplates) / sizeof(HeaderFieldTemplate); i++) {

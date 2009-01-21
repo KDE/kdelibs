@@ -4,7 +4,7 @@
    Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
    Copyright (C) 2001,2002 Hamish Rodda <rodda@kde.org>
    Copyright (C) 2007      Daniel Nicoletti <mirttex@users.sourceforge.net>
-   Copyright (C) 2008      Andreas Hartmetz <ahartmetz@gmail.com>
+   Copyright (C) 2008,2009 Andreas Hartmetz <ahartmetz@gmail.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -44,6 +44,8 @@
 
 // HeaderTokenizer declarations
 #include "parsinghelpers.h"
+// KHttpAuthentication & KHttpAuthenticationOutcome declarations
+#include "httpauthentication.h"
 
 class QDomNodeList;
 
@@ -161,21 +163,6 @@ public:
     enum { CookiesAuto, CookiesManual, CookiesNone } cookieMode;
 
     CacheTag cacheTag;
-  };
-
-  struct DigestAuthInfo
-  {
-    QByteArray nc;
-    QByteArray qop;
-    QByteArray realm;
-    QByteArray nonce;
-    QByteArray method;
-    QByteArray cnonce;
-    QByteArray username;
-    QByteArray password;
-    KUrl::List digestURIs;
-    QByteArray algorithm;
-    QByteArray entityBody;
   };
 
   /** State of the current connection to the server **/
@@ -299,8 +286,7 @@ protected:
     */
   void addEncoding(const QString &, QStringList &);
 
-  void configAuth(const QList<QByteArray> &headerLine, bool isProxyAuth);
-
+  //void processAuthenticationRequest();
 
   // The methods between here and sendQuery() are helpers for sendQuery().
 
@@ -308,7 +294,8 @@ protected:
   // *sucesss will be set to true if the page was found, false otherwise.
   bool satisfyRequestFromCache(bool *success);
   QString formatRequestUri() const;
-  QString wwwAuthenticationHeader();
+  // create HTTP authentications response(s), if any
+  QString authenticationHeader();
   bool sendQuery();
   
   void httpClose(bool keepAlive);  // Close transfer
@@ -440,37 +427,6 @@ protected:
   void resetConnectionSettings();
 
   /**
-   * Returns any pre-cached proxy authentication info
-   * info in HTTP header format.
-   */
-  QString proxyAuthenticationHeader();
-
-  /**
-   * Retrieves authorization info from cache or user.
-   */
-  bool getAuthorization();
-
-  /**
-   * Saves valid authorization info in the cache daemon.
-   */
-  void saveAuthorization(bool isForProxy);
-
-  /**
-   * Creates the entity-header for Basic authentication.
-   */
-  QString createBasicAuth( bool isForProxy = false );
-
-  /**
-   * Creates the entity-header for Digest authentication.
-   */
-  QString createDigestAuth( bool isForProxy = false );
-
-  /**
-   * Creates the entity-header for NTLM authentication.
-   */
-  QString createNTLMAuth( bool isForProxy = false );
-
-  /**
    * Creates the entity-header for Negotiate authentication.
    */
   QString createNegotiateAuth();
@@ -479,16 +435,6 @@ protected:
    * create GSS error string
    */
   QByteArray gssError( int major_status, int minor_status );
-
-  /**
-   * Calcualtes the message digest response based on RFC 2617.
-   */
-  void calculateResponse( DigestAuthInfo &info, QByteArray &Response );
-
-  /**
-   * Prompts the user for authorization retry.
-   */
-  bool retryPrompt();
 
   /**
    * Creates authorization prompt info.
@@ -558,12 +504,9 @@ protected:
   // Operation mode
   QByteArray m_protocol;
 
-  // Authentication
-  bool m_isUnauthorized;
-
   //TODO use PrevRequest fully
   //TODO isAuthValid/m_isUnauthorized -> auth.scheme != AUTH_None ?
-
+#if 0
   struct AuthState
   {
     AUTH_SCHEME scheme;
@@ -571,9 +514,12 @@ protected:
     QString authorization;
     int authCount;
   };
+#endif
 
-  AuthState m_auth;
-  AuthState m_proxyAuth;
+  KAbstractHttpAuthentication *m_wwwAuth;
+  KAbstractHttpAuthentication *m_proxyAuth;
+  // For proxy auth when it's handled by the Qt/KDE socket classes
+  QAuthenticator *m_socketProxyAuth;
 
   // Indicates whether there was some connection error.
   bool m_isError;
