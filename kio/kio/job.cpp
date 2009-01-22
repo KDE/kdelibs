@@ -399,7 +399,7 @@ void SimpleJobPrivate::start(Slave *slave)
     q->connect( slave, SIGNAL(finished()),
                 SLOT(slotFinished()) );
 
-    if ((m_extraFlags & EF_TransferJobDataSent) == 0)
+    if ((m_extraFlags & EF_TransferJobDataSent) == 0) // this is a "get" job
     {
         q->connect( slave, SIGNAL(totalSize(KIO::filesize_t)),
                     SLOT(slotTotalSize(KIO::filesize_t)) );
@@ -903,6 +903,10 @@ SimpleJob *KIO::http_update_cache( const KUrl& url, bool no_cache, time_t expire
 TransferJob::TransferJob(TransferJobPrivate &dd)
     : SimpleJob(dd)
 {
+    Q_D(TransferJob);
+    if (d->m_command == CMD_PUT) {
+        d->m_extraFlags |= JobPrivate::EF_TransferJobDataSent;
+    }
 }
 
 TransferJob::~TransferJob()
@@ -915,6 +919,11 @@ void TransferJob::slotData( const QByteArray &_data)
     Q_D(TransferJob);
     if(d->m_redirectionURL.isEmpty() || !d->m_redirectionURL.isValid() || error())
       emit data( this, _data);
+}
+
+void KIO::TransferJob::setTotalSize(KIO::filesize_t bytes)
+{
+    setTotalAmount(KJob::Bytes, bytes);
 }
 
 // Slave got a redirection request
@@ -1026,7 +1035,7 @@ void TransferJob::sendAsyncData(const QByteArray &dataForSlave)
     if (d->m_extraFlags & JobPrivate::EF_TransferJobNeedData)
     {
        d->m_slave->send( MSG_DATA, dataForSlave );
-       if (d->m_extraFlags & JobPrivate::EF_TransferJobDataSent)
+       if (d->m_extraFlags & JobPrivate::EF_TransferJobDataSent) // put job -> emit progress
        {
            KIO::filesize_t size = processedAmount(KJob::Bytes)+dataForSlave.size();
            setProcessedAmount(KJob::Bytes, size);
