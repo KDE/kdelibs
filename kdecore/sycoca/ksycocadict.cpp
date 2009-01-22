@@ -482,7 +482,7 @@ KSycocaDict::save(QDataStream &str)
                // save() must have been called on the entry
                Q_ASSERT_X( offset, "KSycocaDict::save",
                            QByteArray("entry offset is 0, save() was not called on ")
-                           + (*dup)->payload->name().toLatin1() );
+                           + (*dup)->payload->storageId().toLatin1() );
                str << offset ;                       // Positive ID
                str << (*dup)->keyStr;                // Key (QString)
             }
