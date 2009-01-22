@@ -23,7 +23,7 @@
 
 #define K_SYCOCATYPE( type, baseclass ) \
  virtual bool isType(KSycocaType t) const { if (t == type) return true; return baseclass::isType(t);} \
- virtual KSycocaType sycocaType() const { return type; } 
+ virtual KSycocaType sycocaType() const { return type; }
 
 
 class KSycocaEntryPrivate
@@ -67,6 +67,8 @@ public:
     }
 
     virtual QString name() const = 0;
+
+    virtual QString storageId() const { return name(); }
 
     int offset;
     bool deleted;

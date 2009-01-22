@@ -349,7 +349,7 @@ void
 VFolderMenu::addApplication(const QString &id, KService::Ptr service)
 {
    service->setMenuId(id);
-   m_appsInfo->applications.insert(id, service);
+   m_appsInfo->applications.insert(id, service); // replaces, if already there
    m_serviceFactory->addEntry(KSycocaEntry::Ptr::staticCast(service));
 }
 
@@ -1029,7 +1029,7 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
 void
 VFolderMenu::processKDELegacyDirs()
 {
-kDebug(7021) << "processKDELegacyDirs()";
+    kDebug(7021);
 
    QHash<QString,KService::Ptr> items;
    QString prefix = "kde4-";
@@ -1091,7 +1091,7 @@ kDebug(7021) << "processKDELegacyDirs()";
 void
 VFolderMenu::processLegacyDir(const QString &dir, const QString &relDir, const QString &prefix)
 {
-kDebug(7021).nospace() << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix << ")";
+    kDebug(7021).nospace() << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix << ")";
 
    QHash<QString,KService::Ptr> items;
    // We look for a set of files.

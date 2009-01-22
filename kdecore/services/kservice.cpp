@@ -711,7 +711,7 @@ QString KService::docPath() const
             return QString();
         }
     }
-    
+
     return it->toString();
 }
 
@@ -743,9 +743,7 @@ void KService::setMenuId(const QString &_menuId)
 QString KService::storageId() const
 {
     Q_D(const KService);
-    if (!d->menuId.isEmpty())
-        return d->menuId;
-    return entryPath();
+    return d->storageId();
 }
 
 QString KService::locateLocal() const

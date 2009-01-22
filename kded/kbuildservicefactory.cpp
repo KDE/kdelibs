@@ -336,10 +336,24 @@ void KBuildServiceFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
     if (m_dupeDict.contains(newEntry))
         return;
 
-    KSycocaFactory::addEntry(newEntry);
-
     const KService::Ptr service = KService::Ptr::staticCast( newEntry );
     m_dupeDict.insert(newEntry);
+
+    KSycocaEntry::Ptr oldEntry = m_entryDict->value(newEntry->storageId());
+    if (oldEntry) {
+        // Already exists -> replace
+        KService::Ptr oldService = KService::Ptr::staticCast(oldEntry);
+        // We found a more-local override, e.g. ~/.local/share/applications/kde4/foo.desktop
+        // So forget about the more global file.
+        //kDebug(7021) << "removing" << oldService->entryPath() << "because of" << service->entryPath();
+        m_nameDict->remove(oldService->desktopEntryName());
+        m_relNameDict->remove(oldService->entryPath());
+        if (!oldService->menuId().isEmpty())
+            m_menuIdDict->remove(oldService->menuId());
+        KSycocaFactory::removeEntry(newEntry->storageId());
+    }
+
+    KSycocaFactory::addEntry(newEntry);
 
     if (!service->isDeleted()) {
         const QString parent = service->parentApp();
@@ -357,7 +371,7 @@ void KBuildServiceFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
     m_relNameMemoryHash.insert(relName, service); // for KMimeAssociations
 
     const QString menuId = service->menuId();
-    if (!menuId.isEmpty()) {
+    if (!menuId.isEmpty()) { // empty for services, non-empty for applications
         m_menuIdDict->add( menuId, newEntry );
         m_menuIdMemoryHash.insert(menuId, service); // for KMimeAssociations
     }

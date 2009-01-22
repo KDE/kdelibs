@@ -150,12 +150,8 @@ KSycocaFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 
     if (!d->m_sycocaDict) return; // Error!
 
-    // Note that we use a QMultiHash since there can be several entries
-    // with the same name (e.g. kfmclient.desktop and konqbrowser.desktop both
-    // have Name=Konqueror).
-
-    const QString name = newEntry->name();
-    m_entryDict->insertMulti( name, newEntry );
+    const QString name = newEntry->storageId();
+    m_entryDict->insert( name, newEntry );
     d->m_sycocaDict->add( name, newEntry );
 }
 
