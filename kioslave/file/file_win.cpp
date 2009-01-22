@@ -154,7 +154,7 @@ void FileProtocol::listDir( const KUrl& url )
 
         entry.insert( KIO::UDSEntry::UDS_NAME, it.fileName() );
         if( fileInfo.isSymLink() ) {
-            entry.insert( KIO::UDSEntry::UDS_LINK_DEST, fileInfo.symLinkTarget() );
+            entry.insert( KIO::UDSEntry::UDS_TARGET_URL, fileInfo.symLinkTarget() );
 /* TODO - or not useful on windows?
             if ( details > 1 ) {
                 // It is a link pointing to nowhere
