@@ -104,7 +104,7 @@ void KSSLD::setRule(const KSslCertificateRule &rule)
     if (rule.hostName().isEmpty()) {
         return;
     }
-    KConfigGroup group = d->config.group(rule.certificate().digest());
+    KConfigGroup group = d->config.group(rule.certificate().digest().toHex());
 
     QStringList sl;
 
@@ -139,7 +139,7 @@ void KSSLD::clearRule(const KSslCertificateRule &rule)
 
 void KSSLD::clearRule(const QSslCertificate &cert, const QString &hostName)
 {
-    KConfigGroup group = d->config.group(cert.digest());
+    KConfigGroup group = d->config.group(cert.digest().toHex());
     group.deleteEntry(hostName);
     if (group.keyList().size() < 2) {
         group.deleteGroup();
@@ -150,7 +150,7 @@ void KSSLD::clearRule(const QSslCertificate &cert, const QString &hostName)
 
 KSslCertificateRule KSSLD::rule(const QSslCertificate &cert, const QString &hostName) const
 {
-    KConfigGroup group = d->config.group(cert.digest());
+    KConfigGroup group = d->config.group(cert.digest().toHex());
 
     //Find a rule for the hostname, either directly or with wildcards
     QString key = hostName;
