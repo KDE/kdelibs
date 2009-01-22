@@ -814,8 +814,10 @@ QString Nepomuk::Variant::toString() const
         Resource r = toResource();
         if( !r.resourceUri().isEmpty() )
             return r.resourceUri().toString();
-        else
+        else if( !r.identifiers().isEmpty() )
             return r.identifiers().first();
+        else
+            return QString();
     }
     else
         return d->value.value<QString>();
