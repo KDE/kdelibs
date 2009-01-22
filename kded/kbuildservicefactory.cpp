@@ -346,6 +346,9 @@ void KBuildServiceFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
         // We found a more-local override, e.g. ~/.local/share/applications/kde4/foo.desktop
         // So forget about the more global file.
         //kDebug(7021) << "removing" << oldService->entryPath() << "because of" << service->entryPath();
+
+        Q_ASSERT(oldEntry->storageId() == newEntry->storageId());
+
         m_nameDict->remove(oldService->desktopEntryName());
         m_relNameDict->remove(oldService->entryPath());
         if (!oldService->menuId().isEmpty())
