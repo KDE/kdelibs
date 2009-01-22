@@ -173,7 +173,9 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   if (st_buf != st_buf2 || S_ISLNK(st_buf.st_mode) || S_ISLNK(st_buf2.st_mode))
   {
      // SMBFS supports hardlinks by copying the file, as a result the above test will always fail
-     if ((st_buf.st_nlink == 1) && (st_buf2.st_nlink == 1) && (st_buf.st_ino != st_buf2.st_ino))
+     // cifs increases link count artifically but the inodes are still different
+     if ((st_buf2.st_nlink > 1 ||
+         ((st_buf.st_nlink == 1) && (st_buf2.st_nlink == 1))) && (st_buf.st_ino != st_buf2.st_ino))
      {
         linkCountSupport = testLinkCountSupport(uniqueName);
         if (!linkCountSupport)
