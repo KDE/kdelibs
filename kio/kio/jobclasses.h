@@ -546,15 +546,19 @@ namespace KIO {
          * instead of the amount of data that that has been received.
          * @see slotProcessedSize
          * @see slotSpeed
+         * @deprecated not needed, this is false for KIO::get and true for KIO::put,
+         *             automatically since KDE-4.2.1
          */
-        void setReportDataSent(bool enabled);
+        KDE_DEPRECATED void setReportDataSent(bool enabled);
 
         /**
          *  Returns whether the job reports the amount of data that has been
          *  sent (true), or whether the job reports the amount of data that
          * has been received (false)
+         * @deprecated not needed, this is false for KIO::get and true for KIO::put,
+         *             automatically since KDE-4.2.1 (and not useful as public API)
          */
-        bool reportDataSent() const;
+        KDE_DEPRECATED bool reportDataSent() const;
 
         /**
          * Call this in the slot connected to result,
@@ -562,6 +566,13 @@ namespace KIO {
          * @return the mimetype of the URL
          */
         QString mimetype() const;
+
+        /**
+         * Set the total size of data that we are going to send
+         * in a put job. Helps getting proper progress information.
+         * @since 4.2.1
+         */
+        void setTotalSize(KIO::filesize_t bytes);
 
     protected:
         /**

@@ -14,6 +14,7 @@
 #include <QtCore/QDir>
 #include <QtGui/QGroupBox>
 
+#include <unistd.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
@@ -259,11 +260,15 @@ void KioslaveTest::startJob() {
     break;
 
   case Put:
+  {
     putBuffer = 0;
-    myJob = KIO::put( src, -1, KIO::Overwrite );
-    connect(myJob, SIGNAL( dataReq( KIO::Job*, QByteArray &)),
+    KIO::TransferJob* tjob = KIO::put( src, -1, KIO::Overwrite );
+    tjob->setTotalSize(48*1024*1024);
+    myJob = tjob;
+    connect(tjob, SIGNAL( dataReq( KIO::Job*, QByteArray &)),
             SLOT( slotDataReq( KIO::Job*, QByteArray &)));
     break;
+  }
 
   case Copy:
     job = KIO::copy( src, dest, observe );
@@ -440,6 +445,11 @@ void KioslaveTest::slotDataReq(KIO::Job*, QByteArray &data)
          "This is a test file\n",
          "You can safely delete it.\n",
 	 "BIG\n",
+	 "BIG1\n",
+	 "BIG2\n",
+	 "BIG3\n",
+	 "BIG4\n",
+	 "BIG5\n",
          0
        };
     const char *fileData = fileDataArray[putBuffer++];
@@ -449,11 +459,12 @@ void KioslaveTest::slotDataReq(KIO::Job*, QByteArray &data)
        kDebug(0) << "DataReq: <End>";
        return;
     }
-    if (!strcmp(fileData, "BIG\n"))
-	data.fill(0, 29*1024*1024);
+    if (!strncmp(fileData, "BIG", 3))
+	data.fill(0, 8*1024*1024);
     else
 	data = QByteArray(fileData, strlen(fileData));
     kDebug(0) << "DataReq: \"" << fileData << "\"";
+    sleep(1); // want to see progress info...
 }
 
 void KioslaveTest::stopJob() {
@@ -526,12 +537,11 @@ int main(int argc, char **argv) {
 
   args->clear(); // Free up memory
 
-  KioslaveTest test( src, dest, op, pr );
+  KioslaveTest* test = new KioslaveTest( src, dest, op, pr );
   if (!operation.isEmpty())
-      QTimer::singleShot(100, &test, SLOT(startJob()));
-  test.show();
-  // Bug in KTMW / Qt / layouts ?
-  test.resize( test.sizeHint() );
+      QTimer::singleShot(100, test, SLOT(startJob()));
+  test->show();
+  test->resize( test->sizeHint() );
 
   app.exec();
 }
