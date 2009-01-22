@@ -433,6 +433,8 @@
 
 <!ENTITY Jan-Pascal.vanBest '<personname><firstname>Jan-Pascal</firstname><surname>van Best</surname></personname>'>
 <!ENTITY Jan-Pascal.vanBest.mail '<email>janpascal@vanbest.org</email>'>
+<!ENTITY Stas.Verberkt '<personname><firstname>Stas</firstname><surname>Verberkt</surname></personname>'>
+<!ENTITY Stas.Verberkt.mail '<email>legolas@legolasweb.nl</email>'>
 <!ENTITY Stanislav.Visnovsky '<personname><firstname>Stanislav</firstname><surname>Visnovsky</surname></personname>'>
 <!ENTITY Stanislav.Visnovsky.mail '<email>visnovsky@nenya.ms.mff.cuni.cz</email>'>
 <!ENTITY Sean.Vyain '<personname><firstname>Sean</firstname><surname>Vyain</surname></personname>'>
