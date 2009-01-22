@@ -200,7 +200,18 @@ void KBuildServiceFactory::populateServiceTypes()
     KSycocaEntryDict::Iterator itserv = m_entryDict->begin();
     const KSycocaEntryDict::Iterator endserv = m_entryDict->end();
     for( ; itserv != endserv ; ++itserv ) {
+
         KService::Ptr service = KService::Ptr::staticCast(*itserv);
+
+        // While we're here (unrelated to the rest), let's add to parent service
+        // By doing it here rather than in addEntry (and removing when replacing
+        // with local override), we only do it for the final applications.
+        if (!service->isDeleted()) {
+            const QString parent = service->parentApp();
+            if (!parent.isEmpty())
+                m_serviceGroupFactory->addNewChild(parent, KSycocaEntry::Ptr::staticCast(service));
+        }
+
         QVector<KService::ServiceTypeAndPreference> serviceTypeList = service->_k_accessServiceTypes();
         //bool hasAllAll = false;
         //bool hasAllFiles = false;
@@ -353,16 +364,11 @@ void KBuildServiceFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
         m_relNameDict->remove(oldService->entryPath());
         if (!oldService->menuId().isEmpty())
             m_menuIdDict->remove(oldService->menuId());
+
         KSycocaFactory::removeEntry(newEntry->storageId());
     }
 
     KSycocaFactory::addEntry(newEntry);
-
-    if (!service->isDeleted()) {
-        const QString parent = service->parentApp();
-        if (!parent.isEmpty())
-            m_serviceGroupFactory->addNewChild(parent, KSycocaEntry::Ptr::staticCast(service));
-    }
 
     const QString name = service->desktopEntryName();
     m_nameDict->add( name, newEntry );
@@ -379,4 +385,3 @@ void KBuildServiceFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
         m_menuIdMemoryHash.insert(menuId, service); // for KMimeAssociations
     }
 }
-
