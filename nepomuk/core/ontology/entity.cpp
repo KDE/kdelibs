@@ -32,18 +32,6 @@
 
 #include <kicon.h>
 
-#ifndef Q_WS_WIN
-uint qHash( const QUrl& url )
-{
-    return qHash( url.toString() );
-}
-#endif
-
-// uint qHash( const Nepomuk::Types::Entity& c )
-// {
-//     return (uint)(ulong)c.d.data();
-// }
-
 
 Nepomuk::Types::EntityPrivate::EntityPrivate( const QUrl& uri_ )
     : uri( uri_ ),
