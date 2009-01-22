@@ -409,6 +409,7 @@
 <!ENTITY Sendmail	'<application><trademark class="registered">sendmail</trademark></application>'>
 <!ENTITY SMTP	"<acronym>SMTP</acronym>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
+<!ENTITY snake	"<application>SnaKe</application>">
 <!ENTITY Solaris	"<trademark>Solaris</trademark>">
 <!ENTITY step "<application>Step</application>">
 <!ENTITY superkaramba	"<application>SuperKaramba</application>">
