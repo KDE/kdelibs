@@ -6,7 +6,7 @@
 <!-- See http://docbook.sourceforge.net/ -->
 <!-- To update this file: edit the corresponding document at -->
 <!-- http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/docbook/gentext/locale/ -->
-
+ 
    <l:gentext key="Abstract" text="Resum"/>
    <l:gentext key="abstract" text="Resum"/>
    <l:gentext key="Answer" text="Resposta"/>
