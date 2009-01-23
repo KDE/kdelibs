@@ -1323,6 +1323,13 @@ QString KUrl::directory( const DirectoryOptions& options ) const
     return result;
   }
 
+#ifdef Q_WS_WIN
+  if ( i == 2 && result[1] == QLatin1Char(':') )
+  {
+    return result.left(3);
+  }
+#endif
+
   if ( options & AppendTrailingSlash )
     result = result.left( i + 1 );
   else
