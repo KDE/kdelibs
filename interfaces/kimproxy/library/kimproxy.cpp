@@ -225,16 +225,16 @@ bool KIMProxy::initialize()
 				//for each offer
 				for ( offer = offers.begin(); offer != offers.end(); ++offer )
 				{
-					QString dcopService = (*offer)->property("X-DBUS-ServiceName").toString();
-					if ( !dcopService.isEmpty() )
+					QString dbusService = (*offer)->property("X-DBUS-ServiceName").toString();
+					if ( !dbusService.isEmpty() )
 					{
-						//kDebug( 790 ) << " is it: " << dcopService << "?";
+						//kDebug( 790 ) << " is it: " << dbusService << "?";
 						// if the application implements the dcop service, add it
-						if ( app.startsWith( dcopService ) )
+						if ( app.startsWith( dbusService ) )
 						{
 							m_apps_available = true;
-							//kDebug( 790 ) << " app name: " << (*offer)->name() << ", has instance " << *app << ", dcopService: " << dcopService;
-							if ( !m_im_client_stubs.contains( dcopService ) )
+							//kDebug( 790 ) << " app name: " << (*offer)->name() << ", has instance " << *app << ", dbusService: " << dbusService;
+							if ( !m_im_client_stubs.contains( dbusService ) )
 							{
 								kDebug( 790 ) << "App " << app << ", found, using it for presence info.";
 								m_im_client_stubs.insert( app, findInterface( app ) );
@@ -285,14 +285,14 @@ void KIMProxy::nameOwnerChanged( const QString & appId, const QString &, const Q
 		KService::List::const_iterator it;
 		for ( it = offers.begin(); it != offers.end(); ++it )
 		{
-			QString dcopService = (*it)->property("X-DBUS-ServiceName").toString();
-			if ( appId.startsWith( dcopService ) )
+			QString dbusService = (*it)->property("X-DBUS-ServiceName").toString();
+			if ( appId.startsWith( dbusService ) )
 			{
 				// if it's not already known, insert it
 				if ( !m_im_client_stubs.contains( appId ) )
 				{
 					newApp = true;
-					kDebug( 790 ) << "App: " << appId << ", dcopService: " << dcopService << " started, using it for presence info.";
+					kDebug( 790 ) << "App: " << appId << ", dbusService: " << dbusService << " started, using it for presence info.";
 					m_im_client_stubs.insert( appId, findInterface( appId ) );
 				}
 			}
