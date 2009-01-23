@@ -25,10 +25,6 @@
 #include <QtCore/QSharedData>
 #include <QtCore/QMutex>
 
-inline uint qHash( const QUrl& url ) {
-    return qHash( url.toString() );
-}
-
 namespace Soprano {
     class Statement;
 }
