@@ -147,7 +147,7 @@ NET::WindowType KWindowInfo::windowType( int supported_types ) const
         return NET::PopupMenu;
     else if(windowStyleEx & WS_EX_TOOLWINDOW && supported_types & NET::TooltipMask)
         return NET::Tooltip;
-    else if(!windowStyle & WS_CHILD  && supported_types & NET::NormalMask)
+    else if(!(windowStyle & WS_CHILD) && supported_types & NET::NormalMask)
         return NET::Normal;
         
     return wt;
