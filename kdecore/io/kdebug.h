@@ -31,12 +31,13 @@
  *  @{
  * KDE debug message streams let you and the user control just how many debug
  * messages you see. Debug message printing is controlled by (un)defining
- * QT_NO_DEBUG when compiling your source. If QT_NO_DEBUG is defined then no debug
- * messages are printed.
+ * QT_NO_DEBUG when compiling your source. If QT_NO_DEBUG is defined then debug
+ * messages are not printed by default but can still be enabled by runtime
+ * configuration, e.g. via kdebugdialog or by editing kdebugrc.
  */
 
 #if !defined(KDE_NO_DEBUG_OUTPUT)
-# if defined(QT_NO_DEBUG) || defined(QT_NO_DEBUG_OUTPUT) || defined(QT_NO_DEBUG_STREAM)
+# if defined(QT_NO_DEBUG_OUTPUT) || defined(QT_NO_DEBUG_STREAM)
 #  define KDE_NO_DEBUG_OUTPUT
 # endif
 #endif
