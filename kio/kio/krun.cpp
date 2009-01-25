@@ -1197,7 +1197,7 @@ void KRun::foundMimeType( const QString& type )
   if ( !mime )
       kWarning(7010) << "Unknown mimetype " << type;
 
-  // Suport for preferred service setting, see setPreferredService
+  // Support for preferred service setting, see setPreferredService
   if ( !d->m_preferredService.isEmpty() ) {
       kDebug(7010) << "Attempting to open with preferred service: " << d->m_preferredService;
       KService::Ptr serv = KService::serviceByDesktopName( d->m_preferredService );

@@ -166,7 +166,7 @@ Contents:
  Apple's Darwin Streaming server is also RTSP/RTP compliant.
 
  The RTSP/RTP protocol suite is very powerful and flexable in regards
- to your streaming needs. It has the ability to suport "server-push"
+ to your streaming needs. It has the ability to support "server-push"
  style stream redirects and has the ability to throttle streams to
  ensure the stream can sustain the limited bandwidth over the network.
 
