@@ -32,6 +32,13 @@ class KDirModelPrivate;
  * KDirModel implements the QAbstractItemModel interface (for use with Qt's model/view widgets)
  * around the directory listing for one directory or a tree of directories.
  *
+ * Note that there are some cases when using QPersistentModelIndexes from this model will not give
+ * expected results. QPersistentIndexes will remain valid and updated if its siblings are added or 
+ * removed. However, if the QPersistentIndex or one of its ancestors is moved, the QPersistentIndex will become 
+ * invalid. For example, if a file or directory is renamed after storing a QPersistentModelIndex for it, 
+ * the index (along with any stored children) will become invalid even though it is still in the model. The reason 
+ * for this is that moves of files and directories are treated as separate insert and remove actions.
+ *
  * @see KDirSortFilterProxyModel
  *
  * @author David Faure
