@@ -148,6 +148,10 @@ KPtyPrivate::KPtyPrivate(KPty* parent) :
 {
 }
 
+KPtyPrivate::~KPtyPrivate()
+{
+}
+
 #ifndef HAVE_OPENPTY
 bool KPtyPrivate::chownpty(bool grant)
 {
