@@ -40,11 +40,11 @@ class KStatusBarPrivate;
  *
  *  A special type of item is a message which is a temporary text-message
  *  displayed on top of other items in full-width. Messages are visible for
- *  specified time, or until you call the slot QStatusBar::clear(). See
- *  QStatusBar::message for details.
+ *  specified time, or until you call the slot QStatusBar::clearMessage(). See
+ *  QStatusBar::showMessage for details.
  *
  *  It is useful to connect the KActionCollection signals to the
- *  QStatusBar::message slots.
+ *  QStatusBar::showMessage slots.
  *
  *  KStatusBar inherits QStatusBar, you can freely use all QStatusBar
  *  methods.
