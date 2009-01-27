@@ -1672,7 +1672,7 @@ void KateViewEncodingAction::setEncoding (const QString &e)
 {
   doc->setEncoding(e);
   //this is done in setEncoding()
-  //doc->setScriptForEncodingAutoDetection(KEncodingDetector::None);
+  //doc->setProberTypeForEncodingAutoDetection(KEncodingProber::None);
   view->reloadFile();
 
 }
