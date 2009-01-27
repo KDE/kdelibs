@@ -259,7 +259,6 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     d->m_urlCombo->setPixmapProvider( new KUrlPixmapProvider() );
     KUrlCompletion *comp = new KUrlCompletion();
     comp->setMode( KUrlCompletion::DirCompletion );
-    comp->setIgnoreCase(true);
     d->m_urlCombo->setCompletionObject( comp, true );
     d->m_urlCombo->setAutoDeleteCompletionObject( true );
     d->m_urlCombo->setDuplicatesEnabled( false );

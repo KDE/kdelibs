@@ -642,7 +642,6 @@ KUrlCompletion::~KUrlCompletion()
 
 void KUrlCompletionPrivate::init()
 {
-
 	cwd = QDir::homePath();
 
 	replace_home = true;
@@ -658,6 +657,8 @@ void KUrlCompletionPrivate::init()
 	url_auto_completion = cg.readEntry("alwaysAutoComplete", true);
 	popup_append_slash = cg.readEntry("popupAppendSlash", true);
 	onlyLocalProto = cg.readEntry("LocalProtocolsOnly", false);
+
+    q->setIgnoreCase(true);
 }
 
 void KUrlCompletion::setDir(const QString &_dir)

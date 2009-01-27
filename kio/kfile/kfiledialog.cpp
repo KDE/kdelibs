@@ -39,8 +39,6 @@
 #include <kpluginfactory.h>
 #include <kdebug.h>
 #include <kwindowsystem.h>
-#include <kcompletion.h>
-#include <kurlcombobox.h>
 #include "kabstractfilewidget.h"
 #include "kabstractfilemodule.h"
 #include "krecentdirs.h"
