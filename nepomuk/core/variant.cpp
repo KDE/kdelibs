@@ -1090,64 +1090,78 @@ QList<Nepomuk::Variant> Nepomuk::Variant::toVariantList() const
 {
     QList<Variant> l;
 
-    if( isIntList() ) {
+    switch( simpleType() ) {
+    case QVariant::Int:
         foreach( int i, toIntList() ) {
             l.append( Variant(i) );
         }
-    }
-    else if( isInt64List() ) {
+        break;
+
+    case QVariant::LongLong:
         foreach( qlonglong i, toInt64List() ) {
             l.append( Variant(i) );
         }
-    }
-    else if( isUnsignedIntList() ) {
+        break;
+
+    case QVariant::UInt:
         foreach( uint i, toUnsignedIntList() ) {
             l.append( Variant(i) );
         }
-    }
-    else if( isUnsignedInt64List() ) {
+        break;
+
+    case QVariant::ULongLong:
         foreach( qulonglong i, toUnsignedInt64List() ) {
             l.append( Variant(i) );
         }
-    }
-    else if( isBoolList() ) {
+        break;
+
+    case QVariant::Bool:
         foreach( bool i, toBoolList() ) {
             l.append( Variant(i) );
         }
-    }
-    else if( isDoubleList() ) {
+        break;
+
+    case QVariant::Double:
         foreach( double i, toDoubleList() ) {
             l.append( Variant(i) );
         }
-    }
-    else if( isDateList() ) {
+        break;
+
+    case QVariant::Date:
         foreach( const QDate& i, toDateList() ) {
             l.append( Variant(i) );
         }
-    }
-    else if( isTimeList() ) {
+        break;
+
+    case QVariant::Time:
         foreach( const QTime& i, toTimeList() ) {
             l.append( Variant(i) );
         }
-    }
-    else if( isDateTimeList() ) {
+        break;
+
+    case QVariant::DateTime:
         foreach( const QDateTime& i, toDateTimeList() ) {
             l.append( Variant(i) );
         }
-    }
-    else if( isUrlList() ) {
+        break;
+
+    case QVariant::Url:
         foreach( const QUrl& i, toUrlList() ) {
             l.append( Variant(i) );
         }
-    }
-    else if( isResourceList() ) {
-        foreach( const Resource& i, toResourceList() ) {
-            l.append( Variant(i) );
+        break;
+
+    default:
+        if( simpleType() == qMetaTypeId<Resource>()) {
+            foreach( const Resource& i, toResourceList() ) {
+                l.append( Variant(i) );
+            }
         }
-    }
-    else {
-        foreach( const QString& i, toStringList() ) {
-            l.append( Variant(i) );
+        else {
+            foreach( const QString& i, toStringList() ) {
+                l.append( Variant(i) );
+            }
+            break;
         }
     }
 
@@ -1281,8 +1295,10 @@ bool Nepomuk::Variant::isValid() const
 QDebug operator<<( QDebug dbg, const Nepomuk::Variant& v )
 {
     if( v.isList() )
-        dbg << v.toStringList();
+        dbg.nospace() << "Nepomuk::Variant(" << v.toStringList() << "@list)";
+    else if( v.isResource() )
+        dbg.nospace() << "Nepomuk::Variant(Nepomuk::Resource(" << v.toString() << "))";
     else
-        dbg << v.toString();
+        dbg.nospace() << "Nepomuk::Variant(" << v.variant() << ")";
     return dbg;
 }
