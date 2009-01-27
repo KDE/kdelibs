@@ -655,15 +655,15 @@ JSValue* DOMNodeProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, co
       static_cast<DOM::DocumentFragmentImpl*>(range->createContextualFragment(args[1]->toString(exec).domString(), exception).handle());
       if (exception.triggered()) return jsUndefined();
 
-      DOMString where = args[0]->toString(exec).domString();
+      DOMString where = args[0]->toString(exec).domString().lower();
 
-      if (where == "beforeBegin" || where == "BeforeBegin")
+      if (where == "beforebegin")
         node.parentNode()->insertBefore(docFrag.get(), &node, exception);
-      else if (where == "afterBegin" || where == "AfterBegin")
+      else if (where == "afterbegin")
         node.insertBefore(docFrag.get(), node.firstChild(), exception);
-      else if (where == "beforeEnd" || where == "BeforeEnd")
+      else if (where == "beforeend")
         return getDOMNode(exec, node.appendChild(docFrag.get(), exception));
-      else if (where == "afterEnd" || where == "AfterEnd")
+      else if (where == "afterend")
         if (node.nextSibling())
 	  node.parentNode()->insertBefore(docFrag.get(), node.nextSibling(),exception);
 	else
