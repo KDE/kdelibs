@@ -17,6 +17,7 @@
  **/
 
 #include "ksycocadict.h"
+#include <kservice.h>
 #include "ksycocaentry.h"
 #include "ksycoca.h"
 #include "kdebug.h"
@@ -123,16 +124,22 @@ KSycocaDict::add(const QString &key, const KSycocaEntry::Ptr& payload)
 void
 KSycocaDict::remove(const QString &key)
 {
-   if ( !d || !d->stringlist )
-      return;
+    if (!d || !d->stringlist) {
+        return;
+    }
 
+   bool found = false;
    for(KSycocaDictStringList::Iterator it = d->stringlist->begin(); it != d->stringlist->end(); ++it) {
       string_entry* entry = *it;
       if (entry->keyStr == key) {
          d->stringlist->erase(it);
          delete entry;
+         found = true;
          break;
       }
+   }
+   if (!found) {
+       kWarning(7011) << "key not found:" << key;
    }
 }
 
@@ -422,6 +429,7 @@ KSycocaDict::save(QDataStream &str)
    for(KSycocaDictStringList::Iterator it = d->stringlist->begin(); it != d->stringlist->end(); ++it)
    {
       string_entry* entry = *it;
+      //kDebug(7011) << "entry keyStr=" << entry->keyStr << entry->payload.data() << entry->payload->entryPath();
       int hash = entry->hash % sz;
       if (!hashTable[hash].entry)
       { // First entry
@@ -479,10 +487,21 @@ KSycocaDict::save(QDataStream &str)
 	    for(QList<string_entry*>::ConstIterator dup = dups->begin(); dup != dups->end(); ++dup)
             {
                const qint32 offset = (*dup)->payload->offset();
-               // save() must have been called on the entry
-               Q_ASSERT_X( offset, "KSycocaDict::save",
-                           QByteArray("entry offset is 0, save() was not called on ")
-                           + (*dup)->payload->storageId().toLatin1() );
+               if (!offset) {
+                   const QString storageId = (*dup)->payload->storageId();
+                   kDebug() << "about to assert! dict=" << this << "storageId=" << storageId << (*dup)->payload.data();
+                   if ((*dup)->payload->isType(KST_KService)) {
+                       KService::Ptr service = KService::Ptr::staticCast((*dup)->payload);
+                       kDebug() << service->storageId() << service->entryPath();
+                   }
+                   // save() must have been called on the entry
+                   Q_ASSERT_X( offset, "KSycocaDict::save",
+                               QByteArray("entry offset is 0, save() was not called on ")
+                               + (*dup)->payload->storageId().toLatin1()
+                               + " entryPath="
+                               + (*dup)->payload->entryPath().toLatin1()
+                       );
+               }
                str << offset ;                       // Positive ID
                str << (*dup)->keyStr;                // Key (QString)
             }
