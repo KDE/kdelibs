@@ -245,6 +245,7 @@ namespace KIO {
 
     protected:
         CopyJob(CopyJobPrivate &dd);
+        void emitResult();
 
     private:
         Q_PRIVATE_SLOT(d_func(), void slotStart())
