@@ -31,10 +31,10 @@ endif(HAVE_SOCKET_LIBRARY)
 
 ########### kdeinit4 ###############
 if (WIN32)
-  set(kdeinit_SRCS kinit_win.cpp  )
+  set(kdeinit_SRCS kinit_win.cpp klauncher_cmds.cpp )
   set(kdeinit_LIBS kparts psapi)
 else (WIN32)
-  set(kdeinit_SRCS kinit.cpp proctitle.cpp )
+  set(kdeinit_SRCS kinit.cpp proctitle.cpp klauncher_cmds.cpp )
   set(kdeinit_LIBS kparts)
 endif (WIN32)
 
@@ -130,6 +130,7 @@ set(klauncher_KDEINIT_SRCS
    klauncher_main.cpp
    klauncher_adaptor.cpp
    autostart.cpp
+   klauncher_cmds.cpp
    ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KLauncher.xml # just so that it gets generated
    )
 

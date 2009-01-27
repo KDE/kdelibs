@@ -1187,11 +1187,8 @@ static void handle_launcher_request(int sock = -1)
 
 #ifndef NDEBUG
      fprintf(stderr, "kdeinit4: Got %s '%s' from %s.\n",
-        (request_header.cmd == LAUNCHER_EXEC ? "EXEC" :
-        (request_header.cmd == LAUNCHER_EXT_EXEC ? "EXT_EXEC" :
-        (request_header.cmd == LAUNCHER_EXEC_NEW ? "EXEC_NEW" :
-        (request_header.cmd == LAUNCHER_SHELL ? "SHELL" : "KWRAPPER" )))),
-         name, launcher ? "launcher" : "socket" );
+             commandToString(request_header.cmd),
+             name, launcher ? "launcher" : "socket");
 #endif
 
       const char *arg_n = args;

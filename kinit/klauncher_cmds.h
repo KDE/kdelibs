@@ -184,4 +184,7 @@ typedef struct
  * File descriptor to use for communication with kdeinit.
  */
 
+
+const char* commandToString(int command);
+
 #endif
