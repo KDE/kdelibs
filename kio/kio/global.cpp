@@ -118,7 +118,7 @@ KIO_EXPORT QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesi
 KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize)
 {
     if ( files == 0 && dirs == 0 && items == 0 ) {
-        return i18n( "0 Items" );
+        return i18np( "%1 Item", "%1 Items", 0 );
     }
     
     QString summary;
@@ -135,7 +135,7 @@ KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KI
     }
     
     if ( items > dirs + files ) {
-        const QString itemsText = i18np( "1 Item", "%1 Items", items );
+        const QString itemsText = i18np( "%1 Item", "%1 Items", items );
         summary = summary.isEmpty() ? itemsText : i18nc( "items: folders, files (size)", "%1: %2", itemsText, summary );
     }
     
