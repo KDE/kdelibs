@@ -194,13 +194,13 @@ public:
     void deleteButtons();
 
     /**
-     * Retrieves the place path for the path \a path.
+     * Retrieves the place path for the current path.
      * E. g. for the path "fish://root@192.168.0.2/var/lib" the string
-     * "fish://root@192.168.0.2/" will be returned, which leads to the
+     * "fish://root@192.168.0.2" will be returned, which leads to the
      * navigation indication 'Custom Path > var > lib". For e. g.
-     * "settings:///System/" the path "settings:///" will be returned.
+     * "settings:///System/" the path "settings://" will be returned.
      */
-    QString retrievePlacePath(const QString& path) const;
+    QString retrievePlacePath() const;
 
     /**
      * Returns true, if the MIME type of the path represents a
@@ -208,7 +208,7 @@ public:
      */
     bool isCompressedPath(const KUrl& path) const;
 
-    void removeTrailingSlash(QString& url);
+    void removeTrailingSlash(QString& url) const;
 
     /**
      * Returns a KUrl for the typed text \a typedUrl.
@@ -428,12 +428,11 @@ void KUrlNavigator::Private::openPathSelectorMenu()
     KMenu* popup = new KMenu(q);
     popup->setLayoutDirection(Qt::LeftToRight);
 
-    const QString path = q->url().pathOrUrl();
-    QString placePath = retrievePlacePath(path);
-    removeTrailingSlash(placePath);
+    const QString placePath = retrievePlacePath();
     int idx = placePath.count('/'); // idx points to the first directory
                                     // after the place path
 
+    const QString path = q->url().pathOrUrl();
     QString dirName = path.section('/', idx, idx);
     if (dirName.isEmpty()) {
         dirName = QChar('/');
@@ -523,12 +522,8 @@ void KUrlNavigator::Private::updateContent()
             placeUrl = m_placesSelector->selectedPlaceUrl();
         }
 
-        QString placePath = placeUrl.isValid() ? placeUrl.pathOrUrl() : retrievePlacePath(path);
+        QString placePath = placeUrl.isValid() ? placeUrl.pathOrUrl() : retrievePlacePath();
         removeTrailingSlash(placePath);
-
-        // calculate the start point for the URL navigator buttons by counting
-        // the slashs inside the place URL
-        const int slashCount = placePath.count('/');
 
         const KUrl currentUrl = q->url();
         if (currentUrl.isLocalFile() || placeUrl.isValid()) {
@@ -554,7 +549,7 @@ void KUrlNavigator::Private::updateContent()
                                (KProtocolInfo::protocolClass(protocol) != ":local"));
         }
 
-        updateButtons(path, slashCount);
+        updateButtons(path, placePath.count('/'));
     }
 }
 
@@ -704,9 +699,10 @@ void KUrlNavigator::Private::updateButtonVisibility()
         button->show();
     }
 
-    if (m_showFullPath) {
-        m_dropDownButton->setVisible(hasHiddenButtons);
-    }
+    const int startIndex = retrievePlacePath().count('/');
+    const bool showDropDownButton = hasHiddenButtons ||
+                                    (!hasHiddenButtons && (m_navButtons.front()->index() > startIndex));
+    m_dropDownButton->setVisible(showDropDownButton);
 }
 
 void KUrlNavigator::Private::switchToBreadcrumbMode()
@@ -723,8 +719,9 @@ void KUrlNavigator::Private::deleteButtons()
     m_navButtons.clear();
 }
 
-QString KUrlNavigator::Private::retrievePlacePath(const QString& path) const
+QString KUrlNavigator::Private::retrievePlacePath() const
 {
+    const QString path = q->url().pathOrUrl();
     int idx = path.indexOf(QLatin1String("///"));
     if (idx >= 0) {
         idx += 3;
@@ -732,7 +729,10 @@ QString KUrlNavigator::Private::retrievePlacePath(const QString& path) const
         idx = path.indexOf(QLatin1String("//"));
         idx = path.indexOf(QLatin1Char('/'), (idx < 0) ? 0 : idx + 2);
     }
-    return (idx < 0) ? path : path.left(idx);
+    
+    QString placePath = (idx < 0) ? path : path.left(idx);
+    removeTrailingSlash(placePath);
+    return placePath;
 }
 
 bool KUrlNavigator::Private::isCompressedPath(const KUrl& url) const
@@ -748,7 +748,7 @@ bool KUrlNavigator::Private::isCompressedPath(const KUrl& url) const
             mime->is("application/x-archive");
 }
 
-void KUrlNavigator::Private::removeTrailingSlash(QString& url)
+void KUrlNavigator::Private::removeTrailingSlash(QString& url) const
 {
     const int length = url.length();
     if ((length > 0) && (url.at(length - 1) == QChar('/'))) {
