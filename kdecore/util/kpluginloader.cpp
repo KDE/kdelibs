@@ -77,7 +77,7 @@ inline QString makeLibName( const QString &libname )
 extern QString fixLibPrefix(const QString& libname);
 #endif
 
-inline QString findLibraryInternal(const QString &name, const KComponentData &cData)
+QString findLibraryInternal(const QString &name, const KComponentData &cData)
 {
     QString libname = makeLibName(name);
 
