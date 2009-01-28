@@ -1423,6 +1423,16 @@ bool KLineEditPrivate::overrideShortcut(const QKeyEvent* e)
     else if (KStandardShortcut::endOfLine().contains( key ))
         return true;
 
+    // Shortcut overrides for shortcuts that QLineEdit handles
+    // but doesn't dare force as "stronger than kaction shortcuts"...
+    else if (e->matches(QKeySequence::SelectAll)) {
+        return true;
+    }
+#ifdef Q_WS_X11
+    else if (key == Qt::CTRL + Qt::Key_E || key == Qt::CTRL + Qt::Key_U)
+        return true;
+#endif
+
     if (completionBox && completionBox->isVisible ())
     {
         const int key = e->key();
