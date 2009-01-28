@@ -498,6 +498,10 @@ void KWindowSystem::setState( WId win, unsigned long state )
         got = true;
         SetWindowPos(win, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     }
+    if(state & NET::Max){
+        got = true;
+        ShowWindow( win, SW_MAXIMIZE );
+    }
     if (!got)
         kDebug() << "KWindowSystem::setState( WId win, unsigned long state ) isn't yet implemented for the state you requested!";
 }
@@ -505,8 +509,24 @@ void KWindowSystem::setState( WId win, unsigned long state )
 void KWindowSystem::clearState( WId win, unsigned long state )
 {
     KWindowSystem::init(INFO_WINDOWS);
-    //TODO
-    kDebug() << "KWindowSystem::clearState( WId win, unsigned long state ) isn't yet implemented!";
+    bool got = false;
+    
+    if (state & NET::SkipTaskbar) {
+        got = true;
+        LONG_PTR lp = GetWindowLongPtr(win, GWL_EXSTYLE);
+        SetWindowLongPtr(win, GWL_EXSTYLE, lp & ~WS_EX_TOOLWINDOW);
+    }
+    if (state & NET::KeepAbove) {
+        got = true;
+        //lets hope this remove the topmost
+        SetWindowPos(win, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    }
+    if(state & NET::Max){
+        got = true;
+        ShowWindow( win, SW_RESTORE );
+    }
+    if (!got)    
+        kDebug() << "KWindowSystem::clearState( WId win, unsigned long state ) isn't yet implemented!";
 }
 
 void KWindowSystem::minimizeWindow( WId win, bool animation)
