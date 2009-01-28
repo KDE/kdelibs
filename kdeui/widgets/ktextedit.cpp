@@ -909,6 +909,8 @@ bool KTextEdit::Private::overrideShortcut(const QKeyEvent* event)
     return true;
   } else if ( KStandardShortcut::pasteSelection().contains( key ) ) {
     return true;
+  } else if (event->matches(QKeySequence::SelectAll)) { // currently missing in QTextEdit
+      return true;
   } else if (event->modifiers() == Qt::ControlModifier &&
             (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) &&
               qobject_cast<KDialog*>(parent->window()) ) {
