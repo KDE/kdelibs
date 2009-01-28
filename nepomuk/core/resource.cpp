@@ -170,8 +170,11 @@ void Nepomuk::Resource::setTypes( const QList<QUrl>& types )
 
 void Nepomuk::Resource::addType( const QUrl& type )
 {
-    if ( m_data )
-        setTypes( types() << type );
+    if ( m_data ) {
+        QList<QUrl> tl = types();
+        if( !tl.contains( type ) )
+            setTypes( tl << type );
+    }
 }
 
 
