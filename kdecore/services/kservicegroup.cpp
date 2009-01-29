@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 3 -*-
 /*  This file is part of the KDE libraries
  *  Copyright (C) 2000 Waldo Bastian <bastian@kde.org>
  *
@@ -411,25 +410,28 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
         else
           name = p->name() + ' ' + static_cast<KService *>(p.data())->genericName();
 
+        const QByteArray nameStr = name.toLocal8Bit();
+
         QByteArray key;
         // strxfrm() crashes on Solaris
 #ifndef USE_SOLARIS
         // maybe it'd be better to use wcsxfrm() where available
         key.resize( name.length() * 4 + 1 );
-        size_t ln = strxfrm( key.data(), name.toLocal8Bit().data(), key.size());
+        size_t ln = strxfrm(key.data(), nameStr.constData(), key.size());
         if( ln != size_t( -1 ))
         {
+            key.resize(ln);
             if( (int)ln >= key.size())
             { // didn't fit?
-                key.resize( ln + 1 );
-                if( strxfrm( key.data(), name.toLocal8Bit().data(), key.size()) == size_t( -1 ))
-                    key = name.toLocal8Bit();
+                ln = strxfrm( key.data(), nameStr.constData(), key.size());
+                if( ln == size_t( -1 ))
+                    key = nameStr;
             }
         }
         else
 #endif
         {
-            key = name.toLocal8Bit();
+            key = nameStr;
         }
         list.insert(key,KServiceGroup::SPtr(p));
     }
