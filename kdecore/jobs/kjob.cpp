@@ -192,7 +192,7 @@ bool KJob::exec()
              &loop, SLOT( quit() ) );
     start();
     if( !d->isFinished ) {
-        loop.exec();
+        loop.exec(QEventLoop::ExcludeUserInputEvents);
     }
 
     return ( d->error == NoError );
