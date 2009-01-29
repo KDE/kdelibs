@@ -93,6 +93,7 @@ RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
 
 RenderFormElement::~RenderFormElement()
 {
+    delete proxyStyle;
 }
 
 void RenderFormElement::setStyle(RenderStyle *style)
