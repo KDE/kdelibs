@@ -291,16 +291,26 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   if ( prof == BrowserViewGUI ) {
     d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), this );
     actionCollection()->addAction( "viewDocumentSource", d->m_paViewDocument );
-    d->m_paViewDocument->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_U) );
     connect( d->m_paViewDocument, SIGNAL( triggered( bool ) ), this, SLOT( slotViewDocumentSource() ) );
+    if (!parentPart()) {
+        d->m_paViewDocument->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_U) );
+        d->m_paViewDocument->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+    }
 
     d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), this );
     actionCollection()->addAction( "viewFrameSource", d->m_paViewFrame );
     connect( d->m_paViewFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotViewFrameSource() ) );
+    if (!parentPart()) {
+        d->m_paViewFrame->setShortcut( QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_U) );
+        d->m_paViewFrame->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+    }
 
     d->m_paViewInfo = new KAction( i18n( "View Document Information" ), this );
     actionCollection()->addAction( "viewPageInfo", d->m_paViewInfo );
-    d->m_paViewInfo->setShortcut( QKeySequence(Qt::CTRL+Qt::Key_I) );
+    if (!parentPart()) {
+        d->m_paViewInfo->setShortcut( QKeySequence(Qt::CTRL+Qt::Key_I) );
+        d->m_paViewInfo->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+    }
     connect( d->m_paViewInfo, SIGNAL( triggered( bool ) ), this, SLOT( slotViewPageInfo() ) );
 
     d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), this );
@@ -461,7 +471,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSelectAll = actionCollection()->addAction( KStandardAction::SelectAll, "selectAll",
                                                     this, SLOT( slotSelectAll() ) );
   d->m_paSelectAll->setShortcutContext( Qt::WidgetWithChildrenShortcut );
-  if ( parentPart() )
+  if ( parentPart() ) // Only the frameset has the shortcut, but the slot uses the current frame.
       d->m_paSelectAll->setShortcuts( KShortcut() ); // avoid clashes
 
   d->m_paToggleCaretMode = new KToggleAction(i18n("Toggle Caret Mode"), this );
