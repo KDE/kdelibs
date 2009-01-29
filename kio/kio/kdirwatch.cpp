@@ -91,6 +91,8 @@ static KDirWatchPrivate::WatchMethod methodFromString(const QString& method) {
   } else {
 #ifdef Q_OS_WIN
     return KDirWatchPrivate::QFSWatch;
+#elif defined(Q_OS_FREEBSD)
+    return KDirWatchPrivate::Stat;
 #else
     return KDirWatchPrivate::INotify;
 #endif
