@@ -253,7 +253,7 @@ namespace KStandardShortcut
   KDEUI_EXPORT const KShortcut &pasteSelection();
 
   /**
-   * Reload. Default: Ctrl-A
+   * Select all. Default: Ctrl-A
    * @return the shortcut of the standard accelerator
    **/
   KDEUI_EXPORT const KShortcut &selectAll();
