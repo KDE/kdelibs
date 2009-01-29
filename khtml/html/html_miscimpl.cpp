@@ -64,6 +64,11 @@ struct CollectionCache: public NodeListImpl::Cache
         qDeleteAll(nameCache);
         nameCache.clear();
     }
+
+    virtual ~CollectionCache()
+    {
+        qDeleteAll(nameCache);
+    }
 };
 
 HTMLCollectionImpl::HTMLCollectionImpl(NodeImpl *_base, int _type):
