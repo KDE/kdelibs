@@ -51,6 +51,11 @@ set(STRIGI_MIN_VERSION 0.6.3)
 find_package(Strigi REQUIRED)
 
 #optional features
+if(X11_FOUND)
+  #X11_Xrender discovery is done by FindX11
+  macro_log_feature(X11_Xrender_FOUND "X Rendering extension" "an X Window System extension for image compositing" "http://www.x.org" FALSE "" "STRONGLY RECOMMENDED: For compositing, rendering operations, and alpha-blending.")
+endif(X11_FOUND)
+
 macro_optional_find_package(BZip2)
 macro_log_feature(BZIP2_FOUND "BZip2" "A high-quality data compressor" "http://www.bzip.org" FALSE "" "STRONGLY RECOMMENDED: Provides the ability to read and write bzip2 compressed data files.")
 
