@@ -39,6 +39,7 @@ private Q_SLOTS:
     void testDBUSStartupType();
     void testByStorageId();
     void testActionsAndDataStream();
+    void testServiceGroups();
 
 private:
     QString m_firstOffer;

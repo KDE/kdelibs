@@ -29,6 +29,7 @@
 
 #include <kprotocolinfo.h>
 #include <kdebug.h>
+#include <kservicegroup.h>
 #include <kservicetypetrader.h>
 #include <kservicetype.h>
 #include <kservicetypeprofile.h>
@@ -389,4 +390,25 @@ void KServiceTest::testActionsAndDataStream()
     QCOMPARE(loadedService.name(), service.name());
     QCOMPARE(loadedService.exec(), service.exec());
     QCOMPARE(loadedService.actions().count(), 3);
+}
+
+void KServiceTest::testServiceGroups()
+{
+    KServiceGroup::Ptr root = KServiceGroup::root();
+    QVERIFY(root);
+    qDebug() << root->groupEntries().count();
+
+    KServiceGroup::Ptr group = root;
+    QVERIFY(group);
+    const KServiceGroup::List list = group->entries(true /* sorted */,
+                                                   true /* exclude no display entries */,
+                                                   false /* allow separators */,
+                                                   true /* sort by generic name */);
+
+    kDebug() << list.count();
+    Q_FOREACH(KServiceGroup::SPtr s, list) {
+        qDebug() << s->name() << s->entryPath();
+    }
+
+    // No unit test here yet, but at least this can be valgrinded for errors.
 }
