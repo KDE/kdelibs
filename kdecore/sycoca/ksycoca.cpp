@@ -164,6 +164,7 @@ KSycoca::KSycoca()
 
 bool KSycocaPrivate::openDatabase( bool openDummyIfNotFound )
 {
+    Q_ASSERT(databaseStatus == DatabaseNotOpen);
    bool result = true;
 
    sycoca_mmap = 0;
