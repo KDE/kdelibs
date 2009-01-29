@@ -93,7 +93,7 @@ void BackgroundEngine::checkNext()
         return;
     }
 
-    if (m_dict.isMisspelled(w.word)) {
+    if (KDE_ISUNLIKELY( m_dict.isMisspelled(w.word) )) {
         //kDebug()<<"found misspelling "<< w.word;
         emit misspelling(w.word, w.start);
         //wait for the handler. the parent will decide itself when to continue

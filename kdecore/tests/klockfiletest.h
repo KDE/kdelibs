@@ -32,6 +32,7 @@ private Q_SLOTS:
 	void testLock();
 	void testStale();
 	void testUnlock();
+        void testStaleNoBlockFlag();
 };
 
 #endif

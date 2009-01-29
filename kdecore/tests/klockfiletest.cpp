@@ -37,7 +37,7 @@ static const char *const lockName = "klockfiletest.lock";
 void
 Test_KLockFile::initTestCase()
 {
-	QFile::remove( QFile::encodeName( lockName ) );
+	QFile::remove( lockName );
 	lockFile = new KLockFile(QLatin1String(lockName));
 }
 
@@ -92,5 +92,32 @@ Test_KLockFile::testUnlock()
 	lockFile->unlock();
 	QVERIFY(!lockFile->isLocked());
 }
+
+
+void
+Test_KLockFile::testStaleNoBlockFlag()
+{
+#ifdef Q_WS_WIN
+    QSKIP("lockfile on windows has different format",QTest::SkipSingle);
+#else
+    char hostname[256];
+    ::gethostname(hostname, sizeof(hostname));
+    
+    QFile f(lockName);
+    f.open(QIODevice::WriteOnly);
+    QTextStream stream(&f);
+    stream << QString::number(111222) << endl << QLatin1String("qttest") << endl << hostname << endl;
+    stream.flush();
+    f.close();
+
+    lockFile = new KLockFile(QLatin1String(lockName));
+    QVERIFY(!lockFile->isLocked());
+    QCOMPARE(lockFile->lock(KLockFile::NoBlockFlag), KLockFile::LockStale);
+    QCOMPARE(lockFile->lock(KLockFile::NoBlockFlag|KLockFile::ForceFlag), KLockFile::LockOK);
+
+    QVERIFY(lockFile->isLocked());
+#endif
+}
+
 
 QTEST_KDEMAIN_CORE(Test_KLockFile)
