@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
+    Copyright (c) 2009 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -30,15 +31,19 @@ main(int argc, char *argv[])
    //KCmdLineArgs::init(argc, argv, &about);
    //KApplication a;
 
-   const char* serviceId = "kwrite.desktop";
+   QString serviceId = "kwrite.desktop";
    if (argc > 1) {
-       serviceId = argv[1];
+       serviceId = QString::fromLocal8Bit(argv[1]);
+   }
+   QString url;
+   if (argc > 2) {
+       url = QString::fromLocal8Bit(argv[2]);
    }
 
    QString error;
    QString dbusService;
    int pid;
-   KToolInvocation::startServiceByDesktopPath( serviceId, QString(), &error, &dbusService, &pid );
+   KToolInvocation::startServiceByDesktopPath( serviceId, url, &error, &dbusService, &pid );
    kDebug() << "Started. error=" << error << " dbusService=" << dbusService << " pid=" << pid;
 
    return 0;
