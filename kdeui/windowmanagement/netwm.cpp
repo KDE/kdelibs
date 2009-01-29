@@ -233,6 +233,7 @@ static void refdec_nwi(NETWinInfoPrivate *p) {
 	int i;
 	for (i = 0; i < p->icons.size(); i++)
 	    delete [] p->icons[i].data;
+        delete [] p->icon_sizes;
     }
 }
 
@@ -2674,6 +2675,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->class_name = (char*) 0;
     p->window_role = (char*) 0;
     p->client_machine = (char*) 0;
+    p->icon_sizes = NULL;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -2735,6 +2737,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->class_name = (char*) 0;
     p->window_role = (char*) 0;
     p->client_machine = (char*) 0;
+    p->icon_sizes = NULL;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
@@ -2857,6 +2860,8 @@ void NETWinInfo::setIconInternal(NETRArray<NETIcon>& icons, int& icon_count, Ato
 		    PropModeReplace, (unsigned char *) prop, proplen);
 
     delete [] prop;
+    delete [] p->icon_sizes;
+    p->icon_sizes = NULL;
 }
 
 
@@ -3476,6 +3481,21 @@ void NETWinInfo::kdeGeometry(NETRect& frame, NETRect& window) {
 
 NETIcon NETWinInfo::icon(int width, int height) const {
     return iconInternal( p->icons, p->icon_count, width, height );
+}
+
+const int* NETWinInfo::iconSizes() const {
+    if( p->icon_sizes == NULL ) {
+        p->icon_sizes = new int[ p->icon_count * 2 + 2 ];
+        for( int i = 0;
+             i < p->icon_count;
+             ++i ) {
+            p->icon_sizes[ i * 2 ] = p->icons[ i ].size.width;
+            p->icon_sizes[ i * 2 + 1 ] = p->icons[ i ].size.height;
+        }
+        p->icon_sizes[ p->icon_count * 2 ] = 0; // terminator
+        p->icon_sizes[ p->icon_count * 2 + 1 ] = 0;
+    }
+    return p->icon_sizes;
 }
 
 NETIcon NETWinInfo::iconInternal(NETRArray<NETIcon>& icons, int icon_count, int width, int height) const {
@@ -4114,6 +4134,8 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 
     if (dirty & WMIcon) {
 	readIcon(p->display,p->window,net_wm_icon,p->icons,p->icon_count);
+        delete[] p->icon_sizes;
+        p->icon_sizes = NULL;
     }
 
     if (dirty & WMFrameExtents) {

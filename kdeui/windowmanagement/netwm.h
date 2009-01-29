@@ -1128,6 +1128,13 @@ public:
        @return the icon
     **/
     NETIcon icon(int width = -1, int height = -1) const;
+    
+    /**
+      Returns a list of provided icon sizes. Each size is pair width,height, terminated
+      with pair 0,0.
+      @since 4.3
+    **/
+    const int* iconSizes() const;
 
     /**
      * Sets user timestamp @p time on the window (property _NET_WM_USER_TIME).

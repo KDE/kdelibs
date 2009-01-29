@@ -130,6 +130,7 @@ struct NETWinInfoPrivate {
 
     NETRArray<NETIcon> icons;
     int icon_count;
+    int* icon_sizes; // for iconSizes() only
 
     NETRect icon_geom, win_geom;
     unsigned long state;
