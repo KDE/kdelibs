@@ -16,6 +16,7 @@
  *   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,      *
  *   Boston, MA 02110-1301, USA.                                               *
  *******************************************************************************/
+#include <config.h> // for HAVE_XRENDER
 
 #include "kfilepreviewgenerator.h"
 
@@ -40,7 +41,7 @@
 #include <QScrollBar>
 #include <QIcon>
 
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11) && defined(HAVE_XRENDER)
 #  include <QX11Info>
 #  include <X11/Xlib.h>
 #  include <X11/extensions/Xrender.h>
@@ -703,7 +704,7 @@ bool KFilePreviewGenerator::Private::applyImageFrame(QPixmap& icon)
 void KFilePreviewGenerator::Private::limitToSize(QPixmap& icon, const QSize& maxSize)
 {
     if ((icon.width() > maxSize.width()) || (icon.height() > maxSize.height())) {
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11) && defined(HAVE_XRENDER)
         // Assume that the texture size limit is 2048x2048
         if ((icon.width() <= 2048) && (icon.height() <= 2048) && icon.x11PictureHandle()) {
             QSize size = icon.size();
