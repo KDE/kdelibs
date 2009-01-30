@@ -96,8 +96,8 @@ public:
    bool autoStart;
    QString errorMsg;
 #ifdef Q_WS_X11
-   QString startup_id; // "" is the default, "0" for none
-   QString startup_dpy; // Display to send startup notification to.
+   QByteArray startup_id; // "" is the default, "0" for none
+   QByteArray startup_dpy; // Display to send startup notification to.
 #endif
    QStringList envs; // env. variables to be app's environment
    QString cwd;
@@ -137,7 +137,7 @@ protected:
    void requestDone(KLaunchRequest *request);
 
    bool start_service(KService::Ptr service, const QStringList &urls,
-       const QStringList &envs, const QString &startup_id,
+       const QStringList &envs, const QByteArray &startup_id,
        bool blind, bool autoStart, const QDBusMessage &msg );
 
    void createArgs( KLaunchRequest *request, const KService::Ptr service,
@@ -145,9 +145,9 @@ protected:
 
    void queueRequest(KLaunchRequest *);
 
-   void send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const QString &startup_id,
+   void send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const QByteArray &startup_id,
        const QStringList &envs );
-   void cancel_service_startup_info( KLaunchRequest *request, const QString& startup_id,
+   void cancel_service_startup_info( KLaunchRequest *request, const QByteArray& startup_id,
        const QStringList &envs );
 
 Q_SIGNALS:

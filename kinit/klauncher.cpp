@@ -17,6 +17,8 @@
   Boston, MA 02110-1301, USA.
 */
 
+#define QT_NO_CAST_FROM_ASCII
+
 #include "klauncher.h"
 #include "klauncher_cmds.h"
 #include "klauncher_adaptor.h"
@@ -180,7 +182,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
 
    mAutoTimer.setSingleShot(true);
    new KLauncherAdaptor(this);
-   QDBusConnection::sessionBus().registerObject("/KLauncher", this); // same as ktoolinvocation.cpp
+   QDBusConnection::sessionBus().registerObject(QLatin1String("/KLauncher"), this); // same as ktoolinvocation.cpp
 
    connect(&mAutoTimer, SIGNAL(timeout()), this, SLOT(slotAutoStart()));
    connect(QDBusConnection::sessionBus().interface(),
@@ -423,13 +425,13 @@ static bool matchesPendingRequest(const QString& appId, const QString& pendingAp
     // appId just registered, e.g. org.koffice.kword-12345
     // Let's see if this is what pendingAppId (e.g. org.koffice.kword or *.kword) was waiting for.
 
-    const QString newAppId = appId.left(appId.lastIndexOf('-')); // strip out the -12345 if present.
+    const QString newAppId = appId.left(appId.lastIndexOf(QLatin1Char('-'))); // strip out the -12345 if present.
 
     //kDebug() << "appId=" << appId << "newAppId=" << newAppId << "pendingAppId=" << pendingAppId;
 
-    if (pendingAppId.startsWith("*.")) {
+    if (pendingAppId.startsWith(QLatin1String("*."))) {
         const QString pendingName = pendingAppId.mid(2);
-        const QString appName = newAppId.mid(newAppId.lastIndexOf('.')+1);
+        const QString appName = newAppId.mid(newAppId.lastIndexOf(QLatin1Char('.'))+1);
         //kDebug() << "appName=" << appName;
         return appName == pendingName;
     }
@@ -545,16 +547,16 @@ KLauncher::requestDone(KLaunchRequest *request)
    {
       requestResult.result = 0;
       requestResult.dbusName = request->dbus_name;
-      requestResult.error = "";
+      requestResult.error = QString::fromLatin1(""); // not null, cf assert further down
       requestResult.pid = request->pid;
    }
    else
    {
       requestResult.result = 1;
-      requestResult.dbusName = "";
+      requestResult.dbusName = QString();
       requestResult.error = i18n("KDEInit could not launch '%1'.", request->name);
       if (!request->errorMsg.isEmpty())
-         requestResult.error += ":\n" + request->errorMsg;
+          requestResult.error += QString::fromLatin1(":\n") + request->errorMsg;
       requestResult.pid = 0;
 
 #ifdef Q_WS_X11
@@ -565,11 +567,11 @@ KLauncher::requestDone(KLaunchRequest *request)
               (request->startup_dpy == XDisplayString( mCached_dpy )))
             dpy = mCached_dpy;
          if( dpy == NULL )
-            dpy = XOpenDisplay( request->startup_dpy.toLocal8Bit() );
+            dpy = XOpenDisplay(request->startup_dpy);
          if( dpy )
          {
             KStartupInfoId id;
-            id.initId( request->startup_id.toLocal8Bit() );
+            id.initId(request->startup_id);
             KStartupInfo::sendFinishX( dpy, id );
             if( mCached_dpy != dpy && mCached_dpy != NULL )
                XCloseDisplay( mCached_dpy );
@@ -587,7 +589,7 @@ KLauncher::requestDone(KLaunchRequest *request)
    if (request->transaction.type() != QDBusMessage::InvalidMessage)
    {
       if ( requestResult.dbusName.isNull() ) // null strings can't be sent
-          requestResult.dbusName = "";
+          requestResult.dbusName = QString();
       Q_ASSERT( !requestResult.error.isNull() );
       PIDType<sizeof(pid_t)>::PID_t stream_pid = requestResult.pid;
       QDBusConnection::sessionBus().send(request->transaction.createReply(QVariantList() << requestResult.result
@@ -662,10 +664,10 @@ KLauncher::requestStart(KLaunchRequest *request)
 #ifdef Q_WS_X11
    bool startup_notify = !request->startup_id.isNull() && request->startup_id != "0";
    if( startup_notify )
-       requestData.append(request->startup_id.toLocal8Bit()).append('\0');
+       requestData.append(request->startup_id).append('\0');
 #endif
    if (!request->cwd.isEmpty())
-       requestData.append(request->cwd.toLocal8Bit()).append('\0');
+       requestData.append(QFile::encodeName(request->cwd)).append('\0');
 
 #ifdef Q_WS_X11
    request_header.cmd = startup_notify ? LAUNCHER_EXT_EXEC : LAUNCHER_EXEC_NEW;
@@ -702,11 +704,11 @@ void KLauncher::exec_blind(const QString &name, const QStringList &arg_list, con
    request->status = KLaunchRequest::Launching;
    request->envs = envs;
    // Find service, if any - strip path if needed
-   KService::Ptr service = KService::serviceByDesktopName( name.mid( name.lastIndexOf( '/' ) + 1 ));
+   KService::Ptr service = KService::serviceByDesktopName( name.mid( name.lastIndexOf(QLatin1Char('/')) + 1 ));
    if (service)
-       send_service_startup_info( request, service, startup_id, QStringList());
+       send_service_startup_info(request, service, startup_id.toLocal8Bit(), QStringList());
    else // no .desktop file, no startup info
-       cancel_service_startup_info( request, startup_id, envs );
+       cancel_service_startup_info( request, startup_id.toLocal8Bit(), envs );
 
    requestStart(request);
    // We don't care about this request any longer....
@@ -726,10 +728,10 @@ KLauncher::start_service_by_name(const QString &serviceName, const QStringList &
    {
       requestResult.result = ENOENT;
       requestResult.error = i18n("Could not find service '%1'.", serviceName);
-      cancel_service_startup_info( NULL, startup_id, envs ); // cancel it if any
+      cancel_service_startup_info( NULL, startup_id.toLocal8Bit(), envs ); // cancel it if any
       return false;
    }
-   return start_service(service, urls, envs, startup_id, blind, false, msg);
+   return start_service(service, urls, envs, startup_id.toLocal8Bit(), blind, false, msg);
 }
 
 bool
@@ -751,10 +753,10 @@ KLauncher::start_service_by_desktop_path(const QString &serviceName, const QStri
    {
       requestResult.result = ENOENT;
       requestResult.error = i18n("Could not find service '%1'.", serviceName);
-      cancel_service_startup_info( NULL, startup_id, envs ); // cancel it if any
+      cancel_service_startup_info( NULL, startup_id.toLocal8Bit(), envs ); // cancel it if any
       return false;
    }
-   return start_service(service, urls, envs, startup_id, blind, false, msg);
+   return start_service(service, urls, envs, startup_id.toLocal8Bit(), blind, false, msg);
 }
 
 bool
@@ -766,16 +768,16 @@ KLauncher::start_service_by_desktop_name(const QString &serviceName, const QStri
    {
       requestResult.result = ENOENT;
       requestResult.error = i18n("Could not find service '%1'.", serviceName);
-      cancel_service_startup_info( NULL, startup_id, envs ); // cancel it if any
+      cancel_service_startup_info( NULL, startup_id.toLocal8Bit(), envs ); // cancel it if any
       return false;
    }
-   return start_service(service, urls, envs, startup_id, blind, false, msg);
+   return start_service(service, urls, envs, startup_id.toLocal8Bit(), blind, false, msg);
 }
 
 bool
 KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
-    const QStringList &envs, const QString &startup_id,
-    bool blind, bool autoStart, const QDBusMessage &msg)
+                         const QStringList &envs, const QByteArray &startup_id,
+                         bool blind, bool autoStart, const QDBusMessage &msg)
 {
    QStringList urls = _urls;
    if (!service->isValid())
@@ -802,7 +804,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
       {
          QStringList singleUrl;
          singleUrl.append(*it);
-         QString startup_id2 = startup_id;
+         QByteArray startup_id2 = startup_id;
          if( !startup_id2.isEmpty() && startup_id2 != "0" )
              startup_id2 = "0"; // can't use the same startup_id several times
          start_service( service, singleUrl, envs, startup_id2, true, false, msg);
@@ -825,26 +827,26 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
 
    request->name = request->arg_list.takeFirst();
 
-   if (request->name.endsWith("/kioexec")) {
+   if (request->name.endsWith(QLatin1String("/kioexec"))) {
        // Special case for kioexec; if createArgs said we were going to use it,
        // then we have to expect a kioexec-PID, not a org.kde.finalapp...
        // Testcase: konqueror www.kde.org, RMB on link, open with, kruler.
 
        request->dbus_startup_type = KService::DBusMulti;
-       request->dbus_name = "org.kde.kioexec";
+       request->dbus_name = QString::fromLatin1("org.kde.kioexec");
    } else {
        request->dbus_startup_type = service->dbusStartupType();
 
        if ((request->dbus_startup_type == KService::DBusUnique) ||
            (request->dbus_startup_type == KService::DBusMulti)) {
-           const QVariant v = service->property("X-DBUS-ServiceName");
+           const QVariant v = service->property(QLatin1String("X-DBUS-ServiceName"));
            if (v.isValid()) {
-               request->dbus_name = v.toString().toUtf8();
+               request->dbus_name = v.toString();
            }
            if (request->dbus_name.isEmpty()) {
                const QString binName = KRun::binaryName(service->exec(), true);
-               request->dbus_name = "org.kde." + binName;
-               request->tolerant_dbus_name = "*." + binName;
+               request->dbus_name = QString::fromLatin1("org.kde.") + binName;
+               request->tolerant_dbus_name = QString::fromLatin1("*.") + binName;
            }
        }
    }
@@ -869,33 +871,31 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
 }
 
 void
-KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const QString& startup_id,
+KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const QByteArray& startup_id,
     const QStringList &envs )
 {
 #ifdef Q_WS_X11
     request->startup_id = "0";
-    if( startup_id == "0" )
+    if (startup_id == "0")
         return;
     bool silent;
     QByteArray wmclass;
     if( !KRun::checkStartupNotify( QString(), service.data(), &silent, &wmclass ))
         return;
     KStartupInfoId id;
-    id.initId( startup_id.toLatin1() );
-    QString dpy_str;
+    id.initId(startup_id);
+    QByteArray dpy_str;
     foreach (const QString &env, envs) {
         if (env.startsWith(QLatin1String("DISPLAY=")))
-            dpy_str = env.mid(8);
+            dpy_str = env.mid(8).toLocal8Bit();
     }
     Display* dpy = NULL;
-    if( !dpy_str.isEmpty() && mCached_dpy != NULL
-        && dpy_str != QLatin1String(XDisplayString(mCached_dpy)) )
+    if (!dpy_str.isEmpty() && mCached_dpy != NULL && dpy_str != XDisplayString(mCached_dpy))
         dpy = mCached_dpy;
-    if( dpy == NULL )
-        dpy = XOpenDisplay( dpy_str.toLatin1().constData() );
+    if (dpy == NULL)
+        dpy = XOpenDisplay(dpy_str);
     request->startup_id = id.id();
-    if( dpy == NULL )
-    {
+    if (dpy == NULL) {
         cancel_service_startup_info( request, startup_id, envs );
         return;
     }
@@ -922,7 +922,7 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
 }
 
 void
-KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QString& startup_id,
+KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QByteArray& startup_id,
     const QStringList &envs )
 {
 #ifdef Q_WS_X11
@@ -944,7 +944,7 @@ KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QString& 
         if( dpy == NULL )
             return;
         KStartupInfoId id;
-        id.initId( startup_id.toLatin1() );
+        id.initId(startup_id);
         KStartupInfo::sendFinishX( dpy, id );
         if( mCached_dpy != dpy && mCached_dpy != NULL )
            XCloseDisplay( mCached_dpy );
@@ -960,36 +960,27 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
 {
    KLaunchRequest *request = new KLaunchRequest;
    request->autoStart = false;
-
-   for(QStringList::ConstIterator it = args.begin();
-       it != args.end();
-       ++it)
-   {
-       QString arg = *it;
-       request->arg_list.append(arg.toLocal8Bit());
-   }
-
+   request->arg_list = args;
    request->name = app;
-
    if (wait)
       request->dbus_startup_type = KService::DBusWait;
    else
       request->dbus_startup_type = KService::DBusNone;
    request->pid = 0;
 #ifdef Q_WS_X11
-   request->startup_id = startup_id;
+   request->startup_id = startup_id.toLocal8Bit();
 #endif
    request->envs = envs;
    request->cwd = workdir;
-   if( !app.endsWith("kbuildsycoca4") ) // avoid stupid loop
-   {
+   if (!app.endsWith(QLatin1String("kbuildsycoca4"))) { // avoid stupid loop
        // Find service, if any - strip path if needed
-       KService::Ptr service = KService::serviceByDesktopName( app.mid( app.lastIndexOf( '/' ) + 1 ));
+       const QString desktopName = app.mid(app.lastIndexOf(QLatin1Char('/')) + 1);
+       KService::Ptr service = KService::serviceByDesktopName(desktopName);
        if (service)
-           send_service_startup_info( request,  service,
-               startup_id, QStringList());
+           send_service_startup_info(request, service,
+                                     request->startup_id, QStringList());
        else // no .desktop file, no startup info
-           cancel_service_startup_info( request, startup_id, envs );
+           cancel_service_startup_info(request, request->startup_id, envs);
    }
    msg.setDelayedReply(true);
    request->transaction = msg;
@@ -1147,9 +1138,9 @@ KLauncher::requestSlave(const QString &protocol,
     }
     if (mSlaveValgrind == arg1)
     {
-       arg_list.prepend(QFile::encodeName(KLibLoader::findLibrary(name)));
-       arg_list.prepend(QFile::encodeName(KStandardDirs::locate("exe", "kioslave")));
-       name = "valgrind";
+       arg_list.prepend(KLibLoader::findLibrary(name));
+       arg_list.prepend(KStandardDirs::locate("exe", QString::fromLatin1("kioslave")));
+       name = QString::fromLatin1("valgrind");
        if (!mSlaveValgrindSkin.isEmpty()) {
            arg_list.prepend(QLatin1String("--tool=") + mSlaveValgrindSkin);
        } else
@@ -1244,7 +1235,7 @@ KLauncher::idleTimeout()
     time_t now = time(0);
     foreach (IdleSlave *slave, mSlaveList)
     {
-        if ((slave->protocol()=="file") && (keepOneFileSlave))
+        if ((slave->protocol()==QLatin1String("file")) && (keepOneFileSlave))
            keepOneFileSlave=false;
         else if (slave->age(now) > SLAVE_MAX_IDLE)
         {
