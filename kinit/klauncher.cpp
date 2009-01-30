@@ -58,6 +58,9 @@
 
 // #define KLAUNCHER_VERBOSE_OUTPUT
 
+static const char* const s_DBusStartupTypeToString[] =
+    { "DBusNone", "DBusUnique", "DBusMulti", "DBusWait", "ERROR" };
+
 using namespace KIO;
 
 IdleSlave::IdleSlave(QObject *parent)
@@ -393,15 +396,19 @@ KLauncher::processDied(pid_t pid, long exitStatus)
       if (request->pid == pid)
       {
          if (request->dbus_startup_type == KService::DBusWait)
-            request->status = KLaunchRequest::Done;
+             request->status = KLaunchRequest::Done;
          else if ((request->dbus_startup_type == KService::DBusUnique)
-                  && QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name))
-            request->status = KLaunchRequest::Running;
-         else
-            request->status = KLaunchRequest::Error;
+                  && QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name)) {
+             request->status = KLaunchRequest::Running;
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-         kDebug(7016) << pid << "died, requestDone. status=" << request->status;
+             kDebug(7016) << pid << "running as a unique app";
 #endif
+         } else {
+             request->status = KLaunchRequest::Error;
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+             kDebug(7016) << pid << "died, requestDone. status=" << request->status;
+#endif
+         }
          requestDone(request);
          return;
       }
@@ -446,22 +453,29 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
       if (request->status != KLaunchRequest::Launching)
          continue;
 
-      // For unique services check the requested service name first
-      if ((request->dbus_startup_type == KService::DBusUnique) &&
-          ((appId == request->dbus_name) ||
-           QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name)))
-      {
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-         kDebug(7016) << "ok, request (for unique app) done";
+      kDebug(7016) << "had pending request" << request->name << s_DBusStartupTypeToString[request->dbus_startup_type] << "dbus_name" << request->dbus_name << request->tolerant_dbus_name;
 #endif
-         request->status = KLaunchRequest::Running;
-         requestDone(request);
-         continue;
+      // For unique services check the requested service name first
+      if (request->dbus_startup_type == KService::DBusUnique) {
+          if ((appId == request->dbus_name) || // just started
+              QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name)) { // was already running
+              request->status = KLaunchRequest::Running;
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+              kDebug(7016) << "OK, unique app" << request->dbus_name << "is running";
+#endif
+              requestDone(request);
+              continue;
+          } else {
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+              kDebug(7016) << "unique app" << request->dbus_name << "not running yet";
+#endif
+          }
       }
 
-      const QString rAppId = request->dbus_name;
+      const QString rAppId = !request->tolerant_dbus_name.isEmpty() ? request->tolerant_dbus_name : request->dbus_name;
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-      kDebug(7016) << "had pending request" << rAppId;
+      //kDebug(7016) << "using" << rAppId << "for matching";
 #endif
       if (rAppId.isEmpty())
           continue;
@@ -828,10 +842,17 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
                request->dbus_name = v.toString().toUtf8();
            }
            if (request->dbus_name.isEmpty()) {
-               request->dbus_name = "*." + QFile::encodeName(KRun::binaryName(service->exec(), true));
+               const QString binName = KRun::binaryName(service->exec(), true);
+               request->dbus_name = "org.kde." + binName;
+               request->tolerant_dbus_name = "*." + binName;
            }
        }
    }
+
+#ifdef KLAUNCHER_VERBOSE_OUTPUT
+   kDebug(7016) << "name=" << request->name << "dbus_name=" << request->dbus_name
+                << "startup type=" << s_DBusStartupTypeToString[request->dbus_startup_type];
+#endif
 
    request->pid = 0;
    request->envs = envs;
@@ -948,7 +969,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
        request->arg_list.append(arg.toLocal8Bit());
    }
 
-   request->name = app.toLocal8Bit();
+   request->name = app;
 
    if (wait)
       request->dbus_startup_type = KService::DBusWait;
@@ -1126,7 +1147,7 @@ KLauncher::requestSlave(const QString &protocol,
     }
     if (mSlaveValgrind == arg1)
     {
-       arg_list.prepend(QFile::encodeName(KLibLoader::findLibrary(name.toLocal8Bit())));
+       arg_list.prepend(QFile::encodeName(KLibLoader::findLibrary(name)));
        arg_list.prepend(QFile::encodeName(KStandardDirs::locate("exe", "kioslave")));
        name = "valgrind";
        if (!mSlaveValgrindSkin.isEmpty()) {
