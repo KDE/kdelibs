@@ -41,7 +41,7 @@ class Kded : public QObject
 {
   Q_OBJECT
 public:
-   Kded(bool checkUpdates);
+   Kded();
    virtual ~Kded();
 
    static Kded *self() { return _self;}
@@ -185,8 +185,6 @@ protected:
     * Slower polling for remote file systems is now done in KDirWatch (JW).
     */
    KDirWatch* m_pDirWatch;
-
-   bool b_checkUpdates;
 
    /**
     * When a desktop file is updated, a timer is started (5 sec)
