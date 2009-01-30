@@ -314,6 +314,8 @@ bool StorageAccess::callHalVolumeMount()
             options<<"utf8";
         else if (halOptions.contains("iocharset="))
             options<<"iocharset=utf8";
+        if (halOptions.contains("shortname="))
+            options<<"shortname=mixed";
     }
     // pass our locale to the ntfs-3g driver so it can translate local characters
     else if ( halOptions.contains("locale=") ) {
