@@ -87,6 +87,7 @@ public:
    QString name;
    QStringList arg_list;
    QString dbus_name;
+   QString tolerant_dbus_name;
    enum status_t { Init = 0, Launching, Running, Error, Done };
    pid_t pid;
    status_t status;
