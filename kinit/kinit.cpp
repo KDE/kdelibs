@@ -19,6 +19,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#define QT_NO_CAST_FROM_ASCII
+
 #include <config.h>
 
 #include <sys/types.h>
@@ -373,7 +375,7 @@ static void init_startup_info( KStartupInfoId& id, const char* bin,
     KStartupInfoData data;
     int desktop = get_current_desktop( X11_startup_notify_display );
     data.setDesktop( desktop );
-    data.setBin( bin );
+    data.setBin(QFile::decodeName(bin));
     KStartupInfo::sendChangeX( X11_startup_notify_display, id, data );
     XFlush( X11_startup_notify_display );
 }
@@ -400,32 +402,31 @@ static void complete_startup_info( KStartupInfoId& id, pid_t pid )
 QByteArray execpath_avoid_loops( const QByteArray& exec, int envc, const char* envs, bool avoid_loops )
 {
      QStringList paths;
+     const QRegExp pathSepRegExp(QString::fromLatin1("[:\b]"));
      if( envc > 0 ) /* use the passed environment */
      {
          const char* path = get_env_var( "PATH=", envc, envs );
          if( path != NULL )
-             paths = QString(path).split( QRegExp( "[:\b]" ));
+             paths = QFile::decodeName(path).split(pathSepRegExp);
+     } else {
+         paths = QString::fromLocal8Bit(qgetenv("PATH")).split(pathSepRegExp, QString::KeepEmptyParts);
      }
-     else
-         paths = QString::fromLocal8Bit( qgetenv("PATH") ).split( QRegExp( "[:\b]" ), QString::KeepEmptyParts );
-     QByteArray execpath = QFile::encodeName(
-         s_instance->dirs()->findExe( exec, paths.join( QLatin1String( ":" ))));
-     if( avoid_loops && !execpath.isEmpty())
-     {
-         int pos = execpath.lastIndexOf( '/' );
-         QString bin_path = execpath.left( pos );
+     QString execpath =
+         s_instance->dirs()->findExe(QFile::decodeName(exec), paths.join(QLatin1String(":")));
+     if (avoid_loops && !execpath.isEmpty()) {
+         const int pos = execpath.lastIndexOf(QLatin1Char('/'));
+         const QString bin_path = execpath.left(pos);
          for( QStringList::Iterator it = paths.begin();
               it != paths.end();
-              ++it )
-             if( ( *it ) == bin_path || ( *it ) == bin_path + '/' )
-             {
+              ++it ) {
+             if( *it == bin_path || *it == bin_path + QLatin1Char('/')) {
                  paths.erase( it );
                  break; // -->
              }
-         execpath = QFile::encodeName(
-             s_instance->dirs()->findExe( exec, paths.join( QString( ":" ))));
+         }
+         execpath = s_instance->dirs()->findExe(QFile::decodeName(exec), paths.join(QLatin1String(":")));
      }
-     return execpath;
+     return QFile::encodeName(execpath);
 }
 
 static pid_t launch(int argc, const char *_name, const char *args,
@@ -435,7 +436,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
                     const char* startup_id_str = "0" )
 {
   int starting_klauncher = 0;
-  QByteArray lib;
+  QString lib;
   QByteArray name;
   QByteArray exec;
 
@@ -451,31 +452,28 @@ static pid_t launch(int argc, const char *_name, const char *args,
      starting_klauncher = 1;
   }
 
-  QByteArray libpath;
-  QByteArray execpath;
-  if (_name[0] != '/')
-  {
-     lib = name = _name;
-     exec = name;
-     libpath = QFile::encodeName(KLibLoader::findLibrary(lib.constData(), *s_instance));
-     execpath = execpath_avoid_loops( exec, envc, envs, avoid_loops );
-  }
-  else
-  {
-     lib = _name;
-     name = _name;
-     name = name.mid( name.lastIndexOf('/') + 1);
-     exec = _name;
-     if (lib.endsWith(".la"))
-        libpath = lib;
-     else
-        execpath = exec;
-  }
-  fprintf(stderr,"kdeinit4: preparing to launch %s\n", execpath.constData());
-  if (!args)
-  {
-    argc = 1;
-  }
+    QString libpath;
+    QByteArray execpath;
+    if (_name[0] != '/') {
+        name = _name;
+        lib = QFile::decodeName(name);
+        exec = name;
+        libpath = KLibLoader::findLibrary(lib, *s_instance);
+        execpath = execpath_avoid_loops(exec, envc, envs, avoid_loops);
+    } else {
+        name = _name;
+        lib = QFile::decodeName(name);
+        name = name.mid(name.lastIndexOf('/') + 1);
+        exec = _name;
+        if (lib.endsWith(QLatin1String(".la")))
+            libpath = lib;
+        else
+            execpath = exec;
+    }
+    fprintf(stderr,"kdeinit4: preparing to launch %s\n", execpath.constData());
+    if (!args) {
+        argc = 1;
+    }
 
   if (0 > pipe(d.fd))
   {
@@ -617,13 +615,13 @@ static pid_t launch(int argc, const char *_name, const char *args,
           if (execpath.isEmpty())
           {
              // Error
-             QString errorMsg = i18n("Could not open library '%1'.\n%2", QFile::decodeName(libpath), ltdlError);
+             QString errorMsg = i18n("Could not open library '%1'.\n%2", libpath, ltdlError);
              exitWithErrorMsg(errorMsg);
           }
           else
           {
              // Print warning
-             fprintf(stderr, "Could not open library %s: %s\n", lib.data(),
+             fprintf(stderr, "Could not open library %s: %s\n", qPrintable(lib),
                      qPrintable(ltdlError) );
           }
        }
@@ -664,7 +662,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
             QString ltdlError = l.errorString();
             fprintf(stderr, "Could not find kdemain: %s\n", qPrintable(ltdlError) );
               QString errorMsg = i18n("Could not find 'kdemain' in '%1'.\n%2",
-                    QLatin1String(libpath), ltdlError);
+                                      libpath, ltdlError);
               exitWithErrorMsg(errorMsg);
            }
         }
@@ -1484,15 +1482,15 @@ static void handle_requests(pid_t waitForPid)
 
 static void kdeinit_library_path()
 {
-   QStringList ltdl_library_path =
-     QFile::decodeName(qgetenv("LTDL_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
+   const QStringList ltdl_library_path =
+     QFile::decodeName(qgetenv("LTDL_LIBRARY_PATH")).split(QLatin1Char(':'),QString::SkipEmptyParts);
 #ifdef Q_OS_DARWIN
-   QStringList ld_library_path =
-     QFile::decodeName(qgetenv("DYLD_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
+   const QByteArray ldlibpath = qgetenv("DYLD_LIBRARY_PATH");
 #else
-   QStringList ld_library_path =
-     QFile::decodeName(qgetenv("LD_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
+   const QByteArray ldlibpath = qgetenv("LD_LIBRARY_PATH");
 #endif
+   const QStringList ld_library_path =
+     QFile::decodeName(ldlibpath).split(QLatin1Char(':'),QString::SkipEmptyParts);
 
    QByteArray extra_path;
    const QStringList candidates = s_instance->dirs()->resourceDirs("lib");
@@ -1505,7 +1503,7 @@ static void kdeinit_library_path()
           continue;
       if (ld_library_path.contains(d))
           continue;
-      if (d[d.length()-1] == '/')
+      if (d[d.length()-1] == QLatin1Char('/'))
       {
          d.truncate(d.length()-1);
          if (ltdl_library_path.contains(d))
@@ -1513,7 +1511,7 @@ static void kdeinit_library_path()
          if (ld_library_path.contains(d))
             continue;
       }
-      if ((d == "/lib") || (d == "/usr/lib"))
+      if ((d == QLatin1String("/lib")) || (d == QLatin1String("/usr/lib")))
          continue;
 
       QByteArray dir = QFile::encodeName(d);
@@ -1558,7 +1556,8 @@ static void kdeinit_library_path()
 
    display.replace(':','_');
    // WARNING, if you change the socket name, adjust kwrapper too
-   QByteArray socketName = QFile::encodeName(KStandardDirs::locateLocal("socket", QString("kdeinit4_%1").arg(QLatin1String(display)), *s_instance));
+   const QString socketFileName = QString::fromLatin1("kdeinit4_%1").arg(QLatin1String(display));
+   QByteArray socketName = QFile::encodeName(KStandardDirs::locateLocal("socket", socketFileName, *s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
    {
      fprintf(stderr, "kdeinit4: Aborting. Socket name will be too long:\n");
@@ -1741,12 +1740,12 @@ int main(int argc, char **argv, char **envp)
          d.suicide = true;
       if (strcmp(safe_argv[i], "--exit") == 0)
          keep_running = 0;
-      if (strcmp(safe_argv[i], "--version") == 0) 
-      { 
-	 printf("Qt: %s\n", qVersion()); 
-	 printf("KDE: %s\n", KDE_VERSION_STRING); 
+      if (strcmp(safe_argv[i], "--version") == 0)
+      {
+	 printf("Qt: %s\n", qVersion());
+	 printf("KDE: %s\n", KDE_VERSION_STRING);
 	 exit(0);
-      } 
+      }
       if (strcmp(safe_argv[i], "--help") == 0)
       {
         printf("Usage: kdeinit4 [options]\n");
@@ -1846,7 +1845,7 @@ int main(int argc, char **argv, char **envp)
 #ifdef Q_WS_X11
    if (!d.suicide && qgetenv("KDE_IS_PRELINKED").isEmpty())
    {
-       QString konq = KStandardDirs::locate("lib", "libkonq.so.5", *s_instance);
+       QString konq = KStandardDirs::locate("lib", QLatin1String("libkonq.so.5"), *s_instance);
        // can't use KLibLoader here as it would unload the library
        // again
        if (!konq.isEmpty()) {
