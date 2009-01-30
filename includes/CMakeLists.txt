@@ -484,6 +484,7 @@ install( FILES
   DNSSD/ServiceBase
   DNSSD/ServiceBrowser
   DNSSD/ServiceModel
+  DNSSD/ServiceTypeBrowser
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DNSSD COMPONENT Devel)
 
 
