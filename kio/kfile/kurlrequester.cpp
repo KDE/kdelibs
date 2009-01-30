@@ -289,10 +289,10 @@ QString KUrlRequester::text() const
 void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
 {
     KUrl newurl;
-    if ( (fileDialogMode & KFile::Directory) && !(fileDialogMode & KFile::File) ||
+    if ( ((fileDialogMode & KFile::Directory) && !(fileDialogMode & KFile::File)) ||
          /* catch possible fileDialog()->setMode( KFile::Directory ) changes */
-         (myFileDialog && ((myFileDialog->mode() & KFile::Directory) &&
-         (myFileDialog->mode() & (KFile::File | KFile::Files)) == 0 ) ) )
+         (myFileDialog && (myFileDialog->mode() & KFile::Directory) &&
+                          (myFileDialog->mode() & (KFile::File | KFile::Files)) == 0) )
     {
         if (fileDialogMode & KFile::LocalOnly)
             newurl = KFileDialog::getExistingDirectory(m_parent->url(), m_parent);
