@@ -52,6 +52,9 @@ TestWindow::TestWindow (QWidget *parent)
 
     KAction* filePrintAction = new KAction(KIcon("document-print"), "Print (enables/disables open)", this);
     actionCollection()->addAction("fileprint", filePrintAction);
+    filePrintAction->setToolTip("This tooltip does not work for menu items");
+    filePrintAction->setWhatsThis("This is the longer explanation of the action");
+    filePrintAction->setStatusTip("This action is supposed to print, but in fact enables/disables open");
     connect(filePrintAction, SIGNAL(triggered(bool)), SLOT(slotPrint()));
 
     // And a combobox
@@ -132,8 +135,8 @@ TestWindow::TestWindow (QWidget *parent)
     /*Now, we setup statusbar; order is not important. */
     /**************************************************/
     statusBar = new KStatusBar (this);
-    statusBar->insertItem("Hi there!                         ", 0);
-    statusBar->insertItem("Look for tooltips to see functions", 1);
+    //statusBar->insertItem("Hi there!                         ", 0);
+    //statusBar->insertItem("Look for tooltips to see functions", 1);
     setStatusBar(statusBar);
 
     //DigitalClock *clk = new DigitalClock (statusBar);
