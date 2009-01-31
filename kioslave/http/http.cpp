@@ -1918,6 +1918,8 @@ bool HTTPProtocol::readDelimitedText(char *buf, int *idx, int end, int numNewlin
         size_t bufferFill = readBuffered(mybuf, step);
 
         for (int i = 0; i < bufferFill ; i++, pos++) {
+            // we copy the data from mybuf to buf immediately and look for the newlines in buf.
+            // that way we don't miss newlines split over several invocations of this method.
             char c = mybuf[i];
             buf[pos] = c;
             
