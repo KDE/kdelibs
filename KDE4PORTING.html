@@ -893,6 +893,7 @@ This class has been renamed KWindowInfo and moved to its own header: KWindowInfo
 <p>QAction in Qt4 is a true first-class citizen - all QWidgets now have a list of associated actions, and QToolBar, QMenu etc. all use this list directly to show the graphical items (widgets, entries in the menu, etc).  This has replaced all usage of integers as "id"s.  There is also a new QEvent (QActionEvent), and the corresponding virtual protected function in QWidget, actionEvent().</p>
 <ul>
 <li>KAction is now a subclass of QWidgetAction.</li>
+<li>For actions that are mostly in menus, you should port setToolTip to setStatusTip. The goal in kde3 was mostly to see the help text in the status bar, while in Qt4 setToolTip has no effect on menu items.<li>
 <li>Don't use setIconSet() anymore, use setIcon(KIcon(iconName)) instead</li>
 <li>activated(), activated(int) signals deprecated - use triggered() signal instead</li>
 <li>activate() is now trigger(), as in QAction</li>
