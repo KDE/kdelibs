@@ -89,7 +89,7 @@ public:
 	void resolveAsync();
 
 	/**
-	 * Resolves the host name and port of service asynchronously
+	 * Resolves the host name and port of service synchronously
 	 *
 	 * The host name is not resolved into an IP address - use KResolver
 	 * for that.
