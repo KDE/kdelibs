@@ -143,7 +143,7 @@ class KRockerGesture;
  * KStandardAction. KStandardAction ensures your application complies to the
  * platform standards. When triggered the \c fileNew() slot will be called.
  *
- * @see KStandardAction for more information. 
+ * @see KStandardAction for more information.
  *
  * If you want to create your own actions use
  * \code
@@ -277,6 +277,25 @@ public:
     virtual ~KAction();
 
     /**
+     * Sets the help text for the action.
+     * This help text will be set for all help mechanisms:
+     *  - the status-bar help text
+     *  - the tooltip (for toolbar buttons)
+     *  - the "WhatsThis" help text (unless one was already set)
+     *
+     * This is more convenient than calling all three methods with the
+     * same text, and this level of abstraction can allow to change
+     * the default implementation of help one day more easily.
+     * Of course you can also call setStatusTip, setToolTip and setWhatsThis
+     * separately for more flexibility.
+     *
+     * This method is also the easiest way to port from KDE3's KAction::setToolTip.
+     *
+     * @since 4.3
+     */
+    void setHelpText(const QString& text);
+
+    /**
      * Get the shortcut for this action.
      *
      * This is preferred over QAction::shortcut(), as it allows for multiple shortcuts
@@ -363,11 +382,11 @@ public:
      *
      * The action must have a per main component unique
      * objectName() to enable cross-application bookeeping. If the objectName() is empty this method will
-     * do nothing, otherwise the isGlobalShortcutEnabled() property will be set to true and the 
+     * do nothing, otherwise the isGlobalShortcutEnabled() property will be set to true and the
      * shortcut will be enabled.
      * It is mandatory that the objectName() doesn't change once isGlobalshortcutEnabled()
      * has become true.
-     * 
+     *
      * \note KActionCollection::insert(name, action) will set action's objectName to name so you often
      * don't have to set an objectName explicitly.
      *
@@ -388,7 +407,7 @@ public:
      *                   You should only do this if the user wants to change the shortcut or if you have
      *                   another very good reason. Key combinations that clash with other shortcuts will be
      *                   dropped.
-     *                   
+     *
      * \note the default shortcut will never be influenced by autoloading - it will be set as given.
      * \sa globalShortcut()
      */

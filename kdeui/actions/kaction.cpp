@@ -198,7 +198,7 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
 {
   Q_ASSERT(type);
   bool changed = false;
-  
+
   // protect against garbage keycode -1 that Qt sometimes produces for exotic keys;
   // at the moment (~mid 2008) Multimedia PlayPause is one of those keys.
   int shortcutKeys[8];
@@ -325,6 +325,14 @@ void KAction::setRockerGesture( const KRockerGesture& gest,  ShortcutTypes type 
     KGestureMap::self()->addGesture( gest, this );
     d->rockerGesture = gest;
   }
+}
+
+void KAction::setHelpText(const QString& text)
+{
+    setStatusTip(text);
+    setToolTip(text);
+    if (whatsThis().isEmpty())
+        setWhatsThis(text);
 }
 
 /* vim: et sw=2 ts=2
