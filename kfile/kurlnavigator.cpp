@@ -509,13 +509,19 @@ void KUrlNavigator::Private::updateContent()
         m_dropDownButton->setVisible(!m_showFullPath);
         m_pathBox->hide();
 
-        QString path = q->url().pathOrUrl();
+        const KUrl currentUrl = q->url();
+        QString path = currentUrl.pathOrUrl();
         removeTrailingSlash(path);
 
         m_toggleEditableMode->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-        // get the data from the currently selected place
+        // The URL consists of a protocol, a host and a variable number of directories.
+        // The directories are mapped to URL navigator buttons represented by m_buttons.
+        // - If a part of the URL is represented by a Places bookmark, this part will
+        //   be also represented as button if m_showFullPath is false.
+        // - If no part of the URL is represented by a Places bookmark, a protocols-combo
+        //   and a host-editor will be shown if no subdirectories are available.
         KUrl placeUrl;
         if ((m_placesSelector != 0) && !m_showFullPath) {
             placeUrl = m_placesSelector->selectedPlaceUrl();
@@ -524,31 +530,36 @@ void KUrlNavigator::Private::updateContent()
         QString placePath = placeUrl.isValid() ? placeUrl.pathOrUrl() : retrievePlacePath();
         removeTrailingSlash(placePath);
 
-        const KUrl currentUrl = q->url();
-        if (currentUrl.isLocalFile() || placeUrl.isValid()) {
-            m_protocols->hide();
-            m_host->hide();
-        } else {
-            // The URL is invalid or is a non local file. In this
-            // case the protocol combo is shown.
-            const QString protocol = currentUrl.scheme();
-            m_protocols->setProtocol(protocol);
-            m_protocols->show();
+        // update the protocol-combo
+        const QString protocol = currentUrl.scheme();
+        m_protocols->setProtocol(protocol);
 
-            // set the text for the host widget
-            QString hostText = currentUrl.host();
-            if (!currentUrl.user().isEmpty()) {
-                hostText = currentUrl.user() + '@' + hostText;
-            }
-            if (currentUrl.port() != -1) {
-                hostText = hostText + ':' + QString::number(currentUrl.port());
-            }
-            m_host->setText(hostText);
-            m_host->setVisible((placePath == path) &&
-                               (KProtocolInfo::protocolClass(protocol) != ":local"));
+        // update the host-editor
+        QString hostText = currentUrl.host();
+        if (!currentUrl.user().isEmpty()) {
+            hostText = currentUrl.user() + '@' + hostText;
         }
+        if (currentUrl.port() != -1) {
+            hostText = hostText + ':' + QString::number(currentUrl.port());
+        }
+        m_host->setText(hostText);
 
-        updateButtons(path, placePath.count('/'));
+        // check whether the protocol-combo and the host-editor should be shown
+        const bool hasPlaceItem = currentUrl.isLocalFile() || placeUrl.isValid();
+        const bool isVisible = !hasPlaceItem &&
+                               (placePath == path) &&
+                               (KProtocolInfo::protocolClass(protocol) != ":local");
+
+        m_host->setVisible(isVisible);
+        m_protocols->setVisible(isVisible);
+
+        // calculate the start index for the directories that should be shown as buttons
+        // and create the buttons
+        int startIndex = placePath.count('/');
+        if (!isVisible && !hasPlaceItem && hostText.isEmpty()) {
+            --startIndex;
+        }
+        updateButtons(path, startIndex);
     }
 }
 
