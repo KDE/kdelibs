@@ -89,7 +89,6 @@ KSSLD::KSSLD(QObject* parent, const QVariantList&)
    d(new KSSLDPrivate())
 {
     new KSSLDAdaptor(this);
-    QDBusConnection::sessionBus().registerObject("/KdedKssl", this);
 }
 
 
