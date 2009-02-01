@@ -976,11 +976,13 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
        // Find service, if any - strip path if needed
        const QString desktopName = app.mid(app.lastIndexOf(QLatin1Char('/')) + 1);
        KService::Ptr service = KService::serviceByDesktopName(desktopName);
+#ifdef Q_WS_X11
        if (service)
            send_service_startup_info(request, service,
                                      request->startup_id, QStringList());
        else // no .desktop file, no startup info
            cancel_service_startup_info(request, request->startup_id, envs);
+#endif
    }
    msg.setDelayedReply(true);
    request->transaction = msg;
