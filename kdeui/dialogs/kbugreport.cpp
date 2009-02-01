@@ -127,7 +127,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
   {
     // From
     QString qwtstr = i18n( "Your email address. If incorrect, use the Configure Email button to change it" );
-    tmpLabel = new QLabel( i18n("From:"), parent );
+    tmpLabel = new QLabel( i18nc("Email sender address", "From:"), parent );
     glay->addWidget( tmpLabel, row,0 );
     tmpLabel->setWhatsThis(qwtstr );
     d->m_from = new QLabel( parent );
@@ -144,7 +144,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
 
     // To
     qwtstr = i18n( "The email address this bug report is sent to." );
-    tmpLabel = new QLabel( i18n("To:"), parent );
+    tmpLabel = new QLabel( i18nc("Email receiver address", "To:"), parent );
     glay->addWidget( tmpLabel, ++row,0 );
     tmpLabel->setWhatsThis(qwtstr );
     tmpLabel = new QLabel( d->m_aboutData->bugAddress(), parent );
