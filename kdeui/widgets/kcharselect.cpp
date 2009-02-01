@@ -351,14 +351,14 @@ void KCharSelect::init(const Controls controls, KActionCollection *collection)
     d->backButton = new QToolButton(this);
     comboLayout->addWidget(d->backButton);
     d->backButton->setEnabled(false);
-    d->backButton->setText(i18n("Back"));
+    d->backButton->setText(i18nc("Goes to previous character", "Back"));
     d->backButton->setIcon(KIcon("go-previous"));
     d->backButton->setToolTip(i18n("Previous Character"));
 
     d->forwardButton = new QToolButton(this);
     comboLayout->addWidget(d->forwardButton);
     d->forwardButton->setEnabled(false);
-    d->forwardButton->setText(i18n("Forward"));
+    d->forwardButton->setText(i18nc("Goes to next character", "Forward"));
     d->forwardButton->setIcon(KIcon("go-next"));
     d->forwardButton->setToolTip(i18n("Next Character"));
 
