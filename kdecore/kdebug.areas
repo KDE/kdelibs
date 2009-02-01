@@ -428,6 +428,7 @@
 9526        kdevelop (mercurial)
 9527        kdevelop (bazaar)
 9528        kdevplatform (vcscommon)
+9529        kdevplatform (documentation)
 
 # toys and games
 10000        amor
