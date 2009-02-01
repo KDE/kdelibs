@@ -184,7 +184,7 @@ install_customize_dir( ${expr} customization/)
 set(expr "customization/catalog.xml")
 install_customize_dir( ${expr} customization/)
 
-set(customizedir af bg ca cs da de dtd el en-GB en entities eo es et fi fo fr gl he hu id it ja ko lt nl nn no obsolete pl pt-BR pt ro ru sk sl sr sr@latin sv th tr uk wa xh xsl xx zh-CN zh-TW)
+set(customizedir af bg ca cs da de dtd el en-GB en entities eo es et fi fo fr gl he hu id it ja ko lt nds nl nn no obsolete pl pt-BR pt ro ru sk sl sr sr@latin sv th tr uk wa xh xsl xx zh-CN zh-TW)
  
 foreach (_currentcustomizedir ${customizedir})
 	set(expr "customization/${_currentcustomizedir}/README")

@@ -13,14 +13,14 @@
 <!ENTITY FDLInvariantSections "ahn liekbleven Afsneed">
 <![%FDLFCT;[
 <!ENTITY FDLFCTTitles "OPLISTEN"><!-- keep capitals -->
-<!ENTITY FDLFrontCoverText "mit de Texten &FDLFCTTitles; op de Ümslagsiet vörn">
+<!ENTITY FDLFrontCoverText "mit de Texten &FDLFCTTitles; op de &#220;mslagsiet v&#246;rn">
  ]]>
-<!ENTITY FDLFrontCoverText "ahn Texten op de Ümslagsiet vörn">
+<!ENTITY FDLFrontCoverText "ahn Texten op de &#220;mslagsiet v&#246;rn">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "TITELN OPLISTEN"><!-- keep capitals -->
-<!ENTITY FDLBackCoverText "mit de Texten &FDLBCTTitles; op de Ümslagsiet achtern">
+<!ENTITY FDLBackCoverText "mit de Texten &FDLBCTTitles; op de &#220;mslagsiet achtern">
  ]]>
-<!ENTITY FDLBackCoverText "ahn Texten op de Ümslagsiet achtern">
+<!ENTITY FDLBackCoverText "ahn Texten op de &#220;mslagsiet achtern">
 
 <!ENTITY kde.modespec '
  <modespec id="kdems-help">help:</modespec>
