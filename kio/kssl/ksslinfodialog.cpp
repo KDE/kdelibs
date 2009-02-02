@@ -75,6 +75,7 @@ KSSLInfoDialog::KSSLInfoDialog(QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
 
     d->ui.setupUi(mainWidget());
+    setButtons(KDialog::Close);
 
     d->subject = new KSslCertificateBox(d->ui.certParties);
     d->issuer = new KSslCertificateBox(d->ui.certParties);
