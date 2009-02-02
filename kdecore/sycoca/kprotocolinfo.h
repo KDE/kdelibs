@@ -187,7 +187,7 @@ public:
    * This corresponds to the "Icon=" field in the protocol description file.
    *
    * @param protocol the protocol to check
-   * @return the icon of the protocol, or null if unknown
+   * @return the icon of the protocol, or an empty string if unknown
    */
   static QString icon( const QString& protocol );
 
@@ -200,7 +200,7 @@ public:
    * The default is the protocol name, see name()
    *
    * @param protocol the protocol to check
-   * @return the config file, or null if unknown
+   * @return the config file, or an empty string if unknown
    */
   static QString config( const QString& protocol );
 
@@ -237,7 +237,7 @@ public:
    * This corresponds to the "X-DocPath=" or "DocPath=" field in the protocol description file.
    *
    * @param protocol the protocol to check
-   * @return the docpath of the protocol, or null if unknown
+   * @return the docpath of the protocol, or an empty string if unknown
    */
   static QString docPath( const QString& protocol );
 
@@ -254,7 +254,7 @@ public:
    * the protocols themselves.
    *
    * @param protocol the protocol to check
-   * @return the class of the protocol, or null if unknown
+   * @return the class of the protocol, or an empty string if unknown
    */
   static QString protocolClass( const QString& protocol );
 
