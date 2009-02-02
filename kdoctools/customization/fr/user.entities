@@ -212,6 +212,10 @@
 <!ENTITY traducteurArnaudMuchembled   '<othercredit role="translator"><firstname>Arnaud</firstname><surname>Muchembled</surname><affiliation><address><email>arno.muchembled@orange.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurArnaudMuchembled    '<othercredit role="reviewer"><firstname>Arnaud</firstname><surname>Muchembled</surname><affiliation><address><email>arno.muchembled@orange.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurMathieuSchopfer   '<othercredit role="translator"><firstname>Mathieu</firstname><surname>Schopfer</surname><affiliation><address><email>mat.schopfer@bluewin.ch</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurMathieuSchopfer    '<othercredit role="reviewer"><firstname>Mathieu</firstname><surname>Schopfer</surname><affiliation><address><email>mat.schopfer@bluewin.ch</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
+
 <!ENTITY traducteurPenelopeSorveyron   '<othercredit role="translator"><firstname>Pénélope</firstname><surname>Sorveyron</surname><affiliation><address><email></email>goneri@free.fr</address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurPenelopeSorveyron    '<othercredit role="reviewer"><firstname>Pénélope</firstname><surname>Sorveyron</surname><affiliation><address><email>goneri@free.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
@@ -303,6 +307,7 @@
 <!ENTITY BriceRothschild 'Brice Rothschild <email>brice.rothschild@gmail.com</email>'>
 <!ENTITY MickaelSibelle 'Mickaël Sibelle <email>kimael@gmail.com</email>'>
 <!ENTITY ArnaudMuchembled 'Arnaud Muchembled <email>arno.muchembled@orange.fr</email>'>
+<!ENTITY MathieuSchopfer 'Mathieu Schopfer <email>mat.schopfer@bluewin.ch</email>'>
 <!ENTITY PenelopeSorveyron 'Pénélope Sorveyron <email>goneri@free.fr</email>'>
 <!ENTITY NicolasTernissien   'Nicolas Ternissien <email>nicolast@libertysurf.fr</email>'>
 <!ENTITY GillesThioliere   'Gilles Thiolière <email>zhovirax@wanadoo.fr</email>'>
