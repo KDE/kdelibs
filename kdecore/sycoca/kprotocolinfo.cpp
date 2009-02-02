@@ -66,7 +66,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   m_defaultMimetype = config.readEntry( "defaultMimetype" );
   m_determineMimetypeFromExtension = config.readEntry( "determineMimetypeFromExtension", true );
   d->archiveMimetype = config.readEntry("archiveMimetype", QStringList());
-  m_icon = config.readEntry( "Icon", "unknown" );
+  m_icon = config.readEntry( "Icon" );
   m_config = config.readEntry( "config", m_name );
   m_maxSlaves = config.readEntry( "maxInstances", 1);
 
@@ -258,7 +258,7 @@ QString KProtocolInfo::icon( const QString& _protocol )
   // We call the findProtocol directly (not via KProtocolManager) to bypass any proxy settings.
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
-    return QLatin1String("unknown");
+    return QString();
 
   return prot->m_icon;
 }
