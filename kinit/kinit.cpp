@@ -637,9 +637,9 @@ static pid_t launch(int argc, const char *_name, const char *args,
 
         setup_tty( tty );
 
-        QByteArray executable = execpath.data();
+        QByteArray executable = execpath;
 #ifdef Q_WS_MAC
-        QString bundlepath = s_instance->dirs()->findExe( execpath.data() );
+        QString bundlepath = s_instance->dirs()->findExe(QFile::decodeName(executable));
         if (!bundlepath.isEmpty())
            executable = QFile::encodeName(bundlepath);
 #endif
