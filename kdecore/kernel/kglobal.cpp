@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Sirtaj Singh Kanq <taj@kde.org>
    Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
+   Copyright (C) 2009 Olivier Goffart <ogoffart@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -93,31 +94,44 @@ class KGlobalPrivate
         KStringDict *stringDict;
         KLocale *locale;
         KCharsets *charsets;
+
+        /**
+         * This componenent may be used instead of the main component for application
+         * That doesn't have a main componennt such as pure Qt application.
+         */
+        static KComponentData initFakeComponent()
+        {
+            QString name = QCoreApplication::applicationName();
+            if(name.isEmpty())
+                name = qAppName();
+            if(name.isEmpty())
+                name = QString::fromLatin1("kde");
+            return KComponentData(name.toLatin1(), name.toLatin1(),
+                                  KComponentData::SkipMainComponentRegistration);
+        }
 };
 
 K_GLOBAL_STATIC(KGlobalPrivate, globalData)
+K_GLOBAL_STATIC_WITH_ARGS(KComponentData, fakeComponent, (KGlobalPrivate::initFakeComponent()))
 
 #define PRIVATE_DATA KGlobalPrivate *d = globalData
 
 KStandardDirs *KGlobal::dirs()
 {
     PRIVATE_DATA;
-    MYASSERT(d->mainComponent.isValid());
-    return d->mainComponent.dirs();
+    return d->mainComponent.isValid() ? d->mainComponent.dirs() : fakeComponent->dirs();
 }
 
 KSharedConfig::Ptr KGlobal::config()
 {
     PRIVATE_DATA;
-    MYASSERT(d->mainComponent.isValid());
-    return d->mainComponent.config();
+    return d->mainComponent.isValid() ? d->mainComponent.config() : fakeComponent->config();
 }
 
 const KComponentData &KGlobal::mainComponent()
 {
     PRIVATE_DATA;
-    MYASSERT(d->mainComponent.isValid());
-    return d->mainComponent;
+    return d->mainComponent.isValid() ? d->mainComponent : *fakeComponent;
 }
 
 bool KGlobal::hasMainComponent()
@@ -240,7 +254,7 @@ QString KGlobal::caption()
         return args->getOption("caption");
     } else {
         // We have some about data ?
-        if (d->mainComponent.aboutData()) {
+        if (d->mainComponent.isValid() && d->mainComponent.aboutData()) {
             return d->mainComponent.aboutData()->programName();
         } else {
             // Last resort : application name
