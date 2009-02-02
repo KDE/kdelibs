@@ -96,8 +96,8 @@ class KGlobalPrivate
         KCharsets *charsets;
 
         /**
-         * This componenent may be used instead of the main component for application
-         * That doesn't have a main componennt such as pure Qt application.
+         * This component may be used in applications that doesn't have a 
+         * main component (such as pure Qt applications).
          */
         static KComponentData initFakeComponent()
         {
