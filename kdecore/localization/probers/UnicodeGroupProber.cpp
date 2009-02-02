@@ -77,7 +77,7 @@ nsProbingState UnicodeGroupProber::HandleData(const char* aBuf, unsigned int aLe
     }      
     weight_BOM = (uint)(sqrt((double)aLen) + aLen/10.0);
     for (uint i = 0; i < 5; i++) 
-        qCount(aBuf, aBuf+aLen, i, counts[i]);
+        qCount(aBuf, aBuf+aLen, char(i), counts[i]);
     weight_zero = (2.0*(counts[0] + counts[1] + counts[2] + counts[3] + counts[4]) + weight_BOM)/aLen;
     if (weight_zero < log(1.4142)) {
         disableUTF16LE = true;
