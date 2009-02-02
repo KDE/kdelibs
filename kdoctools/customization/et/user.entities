@@ -50,6 +50,7 @@
 <!ENTITY dpi    '<acronym>dpi</acronym>'>
 <!ENTITY FAQ    '<acronym>KKK</acronym>'>
 <!ENTITY OS     "operatsioonisüsteem">		<!-- <acronym>OS</acronym>-->
+<!ENTITY systemsettings	"<application>Süsteemi seadistused</application>">
 <!ENTITY kcontrolcenter	    "KDE juhtimiskeskus">
 
 <!-- Custom entities -->
