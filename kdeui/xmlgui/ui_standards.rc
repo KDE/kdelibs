@@ -107,7 +107,7 @@
     <Action name="view_zoom_in"/>
     <Action name="view_zoom_out"/>
     <Action name="view_zoom"/>
-    <WeakSeparator/>
+    <Separator/>
     <Action name="view_redisplay"/>
     <Separator/>
     <MergeLocal/>

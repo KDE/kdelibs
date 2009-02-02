@@ -74,18 +74,9 @@
         </xsd:annotation>
         <xsd:complexType>
             <xsd:attribute name="lineSeparator" default="true" type="xsd:boolean"/>
+            <xsd:attribute name="weakSeparator" default="true" type="xsd:boolean"/>
             <xsd:attribute name="group" type="identifier"/>
         </xsd:complexType>
-    </xsd:element>
-    
-    <xsd:element name="WeakSeparator">
-        <xsd:annotation>
-            <xsd:documentation>
-                
-                TODO Docs. What am I?
-                
-            </xsd:documentation>
-        </xsd:annotation>
     </xsd:element>
     
     <xsd:element name="Merge">
@@ -233,7 +224,6 @@
                     </xsd:complexType>
                 </xsd:element>
                 <xsd:element minOccurs="0" maxOccurs="unbounded" ref="Separator" />
-                <xsd:element minOccurs="0" maxOccurs="unbounded" ref="WeakSeparator" />
                 <xsd:element minOccurs="0" maxOccurs="unbounded" ref="Menu" />
                 <xsd:element minOccurs="0" maxOccurs="unbounded" name="Merge" />
                 
@@ -332,7 +322,6 @@
                             <xsd:element ref="Action" minOccurs="0" maxOccurs="unbounded" />
 			    <!-- Should 0 ActionS really be allowed? konqueror.rc does it.. -->
                             <xsd:element ref="Separator" minOccurs="0" maxOccurs="unbounded" />
-                            <xsd:element ref="WeakSeparator" minOccurs="0" maxOccurs="unbounded" />
                             <xsd:element ref="ActionList" minOccurs="0" maxOccurs="unbounded" />
                             <xsd:element ref="Merge" minOccurs="0" />
                             <xsd:element ref="MergeLocal" minOccurs="0" />

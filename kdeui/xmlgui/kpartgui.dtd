@@ -57,7 +57,7 @@
   -             noMerge: if true, the standard toolbar layout from ui_standards.rc won't be used.
   -             deleted: if true, the toolbar will not be created, even if ui_standards.rc mentions it
   -->
-<!ELEMENT ToolBar (text?, (Action | Separator | WeakSeparator | ActionList | Merge | MergeLocal | DefineGroup)*)>
+<!ELEMENT ToolBar (text?, (Action | Separator | ActionList | Merge | MergeLocal | DefineGroup)*)>
 <!ATTLIST ToolBar
   name CDATA #REQUIRED
   fullWidth (true|false) "true"
@@ -78,7 +78,7 @@
   -             noMerge: if true, the standard toolbar layout from ui_standards.rc won't be used.
   -             deleted: if true, the toolbar will not be created, even if ui_standards.rc mentions it
 -->
-<!ELEMENT Menu (text?, (title | Action | ActionList | Separator | WeakSeparator | TearOffHandle | Merge | MergeLocal | DefineGroup | Menu )*)>
+<!ELEMENT Menu (text?, (title | Action | ActionList | Separator | TearOffHandle | Merge | MergeLocal | DefineGroup | Menu )*)>
 <!ATTLIST Menu
   append CDATA #IMPLIED
   name CDATA #REQUIRED
@@ -119,10 +119,9 @@
 <!ELEMENT Separator EMPTY>
 <!ATTLIST Separator
   lineSeparator (true|false) "true"
+  weakSeparator (true|false) "true"
   group CDATA #IMPLIED
 >
-
-<!ELEMENT WeakSeparator EMPTY>
 
 <!-- Inserts a tear-off handle into a menu -->
 <!ELEMENT TearOffHandle EMPTY>
