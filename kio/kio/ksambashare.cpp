@@ -70,36 +70,36 @@ bool KSambaShare::KSambaSharePrivate::load()
  **/
 bool KSambaShare::KSambaSharePrivate::findSmbConf()
 {
-  KConfig config(QLatin1String(FILESHARECONF));
-  const KConfigGroup group(&config, QString());
-  smbConf = group.readEntry("SMBCONF");
+  KConfig config( QLatin1String( FILESHARECONF ) );
+  const KConfigGroup group( &config, QString() );
+  smbConf = group.readEntry( "SMBCONF" );
 
-  if ( QFile::exists(smbConf) )
+  if ( QFile::exists( smbConf ) )
     return true;
 
-  if ( QFile::exists("/etc/samba/smb.conf") )
-    smbConf = "/etc/samba/smb.conf";
-  else
-  if ( QFile::exists("/etc/smb.conf") )
-    smbConf = "/etc/smb.conf";
-  else
-  if ( QFile::exists("/usr/local/samba/lib/smb.conf") )
-    smbConf = "/usr/local/samba/lib/smb.conf";
-  else
-  if ( QFile::exists("/usr/samba/lib/smb.conf") )
-    smbConf = "/usr/samba/lib/smb.conf";
-  else
-  if ( QFile::exists("/usr/lib/smb.conf") )
-    smbConf = "/usr/lib/smb.conf";
-  else
-  if ( QFile::exists("/usr/local/lib/smb.conf") )
-    smbConf = "/usr/local/lib/smb.conf";
-  else {
-    kDebug(7000) << "KSambaShare: Could not found smb.conf!";
-    return false;
+  //Default locations of "smb.conf" file
+  QList<QLatin1String> files;
+  files << QLatin1String( "/etc/samba/smb.conf" );
+  files << QLatin1String( "/etc/smb.conf" );
+  files << QLatin1String( "/usr/local/etc/smb.conf " );
+  files << QLatin1String( "/usr/local/samba/lib/smb.conf" );
+  files << QLatin1String( "/usr/samba/lib/smb.conf" );
+  files << QLatin1String( "/usr/lib/smb.conf" );
+  files << QLatin1String( "/usr/local/lib/smb.conf" );
+  
+  while( !files.isEmpty() )
+  {
+    QLatin1String filePath = files.takeFirst();
+    if ( QFile::exists( filePath ) )
+    {
+      smbConf = filePath;
+      return true;
+    }
   }
-
-  return true;
+  
+  kDebug(7000) << "KSambaShare: Could not found smb.conf!";
+  return false;
+  
 }
 
 
