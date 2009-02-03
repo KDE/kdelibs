@@ -29,6 +29,19 @@
 #include <kconfiggroup.h>
 #include <kglobal.h>
 
+// Default smb.conf locations
+static const char * DefaultSambaConfigFilePathList[] =
+{
+  "/etc/samba/smb.conf",
+  "/etc/smb.conf",
+  "/usr/local/etc/smb.conf",
+  "/usr/local/samba/lib/smb.conf",
+  "/usr/samba/lib/smb.conf",
+  "/usr/lib/smb.conf",
+  "/usr/local/lib/smb.conf"
+};
+static const int DefaultSambaConfigFilePathListSize = sizeof( DefaultSambaConfigFilePathList ) / sizeof(char*);
+
 class KSambaShare::KSambaSharePrivate
 {
 public:
@@ -77,28 +90,22 @@ bool KSambaShare::KSambaSharePrivate::findSmbConf()
   if ( QFile::exists( smbConf ) )
     return true;
 
-  //Default locations of "smb.conf" file
-  QList<QLatin1String> files;
-  files << QLatin1String( "/etc/samba/smb.conf" );
-  files << QLatin1String( "/etc/smb.conf" );
-  files << QLatin1String( "/usr/local/etc/smb.conf " );
-  files << QLatin1String( "/usr/local/samba/lib/smb.conf" );
-  files << QLatin1String( "/usr/samba/lib/smb.conf" );
-  files << QLatin1String( "/usr/lib/smb.conf" );
-  files << QLatin1String( "/usr/local/lib/smb.conf" );
-  
-  while( !files.isEmpty() )
+  bool success = false;
+  for( int i = 0; i<DefaultSambaConfigFilePathListSize; ++i )
   {
-    QLatin1String filePath = files.takeFirst();
-    if ( QFile::exists( filePath ) )
+    const QString filePath( DefaultSambaConfigFilePathList[i] );
+    if( QFile::exists( filePath ) )
     {
-      smbConf = filePath;
-      return true;
+        smbConf = filePath;
+        success = true;
+        break;
     }
   }
   
-  kDebug(7000) << "KSambaShare: Could not found smb.conf!";
-  return false;
+  if( ! success )
+    kDebug(7000) << "KSambaShare: Could not find smb.conf!";
+
+  return success;
   
 }
 
