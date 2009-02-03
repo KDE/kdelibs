@@ -340,12 +340,21 @@ public:
      * @return whether or not the clear button is shown
      **/
     bool isClearButtonShown() const;
-    
+
     /**
      * @return the size used by the clear button
      * @since KDE 4.1
      **/
     QSize clearButtonUsedSize() const;
+
+    /**
+     * Do completion now. This is called automatically when typing a key for instance.
+     * Emits completion() and/or calls makeCompletion(), depending on
+     * emitSignals and handleSignals.
+     *
+     * @since 4.3
+     */
+    void doCompletion(const QString& txt);
 
 Q_SIGNALS:
 

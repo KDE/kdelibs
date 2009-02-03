@@ -104,8 +104,6 @@ public:
         }
     }
 
-    void doCompletion(const QString& txt);
-
     /**
      * Checks whether we should/should not consume a key used as a shortcut.
      * This makes it possible to handle shortcuts in the focused widget before any
@@ -826,7 +824,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     if (e->key() == Qt::Key_Delete )
                         d->autoSuggest=false;
 
-                    d->doCompletion(txt);
+                    doCompletion(txt);
 
                     if(  (e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete) )
                         d->autoSuggest=true;
@@ -899,7 +897,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 if ( d->completionBox )
                   d->completionBox->setCancelledText( txt );
 
-                d->doCompletion(txt);
+                doCompletion(txt);
 
                 if ( (e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete ) &&
                     mode == KGlobalSettings::CompletionPopupAuto )
@@ -930,7 +928,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 const int len = txt.length();
                 if ( cursorPosition() == len && len != 0 )
                 {
-                    d->doCompletion(txt);
+                    doCompletion(txt);
                     return;
                 }
             }
@@ -995,7 +993,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             }
         }
     }
-
     const int selectedLength = selectedText().length();
 
     // Let QLineEdit handle any other keys events.
@@ -1284,17 +1281,6 @@ bool KLineEdit::event( QEvent* ev )
             // Eat the event if the user asked for it, or if a completionbox was visible
             if (stopEvent)
                 return true;
-        } else if (e->key() == Qt::Key_Tab && e->modifiers() == Qt::NoButton ) {
-            // #65877: Key_Tab should complete using the first (or selected) item, and then offer completions again
-            const bool tabHandling = d->completionBox && d->completionBox->isVisible() && d->completionBox->count() > 0;
-            if (tabHandling) {
-                QListWidgetItem* currentItem = d->completionBox->currentItem();
-                const QString txt = currentItem ? currentItem->text() : d->completionBox->item(0)->text();
-                setTextWorkaround(txt);
-                d->doCompletion(txt);
-                e->accept();
-                return true;
-            }
         }
     }
     return QLineEdit::event( ev );
@@ -1710,14 +1696,14 @@ bool KLineEdit::passwordMode() const
     return echoMode() == NoEcho || echoMode() == Password;
 }
 
-void KLineEditPrivate::doCompletion(const QString& txt)
+void KLineEdit::doCompletion(const QString& txt)
 {
-    if (q->emitSignals()) {
-        emit q->completion(txt); // emit when requested...
+    if (emitSignals()) {
+        emit completion(txt); // emit when requested...
     }
 
-    if (q->handleSignals()) {
-        q->makeCompletion(txt);  // handle when requested...
+    if (handleSignals()) {
+        makeCompletion(txt);  // handle when requested...
     }
 }
 
