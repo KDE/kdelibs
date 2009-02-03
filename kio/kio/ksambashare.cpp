@@ -18,7 +18,7 @@
 
 #include "ksambashare.h"
 
-#include <QSet>
+#include <QtCore/QSet>
 #include <QtCore/QFile>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QTextIStream>
@@ -30,7 +30,8 @@
 #include <kglobal.h>
 
 // Default smb.conf locations
-static const char * DefaultSambaConfigFilePathList[] =
+// sorted by priority, most priority first
+static const char * const DefaultSambaConfigFilePathList[] =
 {
   "/etc/samba/smb.conf",
   "/etc/smb.conf",
