@@ -34,7 +34,7 @@
 
 namespace kencodingprober {
 #ifdef DEBUG_PROBE
-static char *ProberName[] = 
+static const char* const ProberName[] =
 {
   "Unicode",
   "GB18030",

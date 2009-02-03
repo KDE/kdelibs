@@ -60,7 +60,7 @@
 namespace
 {
     // Borrowed from xc/lib/Xcursor/library.c
-    static const char *standard_names[] = {
+    static const char * const standard_names[] = {
         /* 0 */
         "X_cursor",         "arrow",            "based_arrow_down",     "based_arrow_up",
         "boat",             "bogosity",         "bottom_left_corner",   "bottom_right_corner",

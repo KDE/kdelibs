@@ -589,7 +589,7 @@ void KDatePicker::uncheckYearSelector()
 // Better reimplement changeEvent() instead.
 void KDatePicker::setEnabled( bool enable )
 {
-    QWidget * widgets[] = {
+    QWidget * const widgets[] = {
                               d->yearForward, d->yearBackward, d->monthForward, d->monthBackward,
                               d->selectMonth, d->selectYear,
                               d->line, d->table, d->selectWeek, d->todayButton
@@ -634,7 +634,7 @@ QSize KDatePicker::sizeHint() const
 
 void KDatePicker::setFontSize( int s )
 {
-    QWidget * buttons[] = {
+    QWidget * const buttons[] = {
                               d->selectMonth,
                               d->selectYear,
                           };
