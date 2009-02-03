@@ -352,7 +352,7 @@ public:
      * Emits completion() and/or calls makeCompletion(), depending on
      * emitSignals and handleSignals.
      *
-     * @since 4.3
+     * @since 4.2.1
      */
     void doCompletion(const QString& txt);
 
