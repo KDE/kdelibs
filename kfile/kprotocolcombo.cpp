@@ -50,7 +50,6 @@ void KProtocolCombo::setCustomProtocols(const QStringList& protocols)
     m_protocols = protocols;
     m_menu->clear();
 
-    int i = 0;
     foreach (const QString& protocol, protocols) {
         QAction* action = m_menu->addAction(protocol);
         action->setData(protocol);
@@ -155,7 +154,6 @@ void KProtocolCombo::updateMenu()
     // Create the menu that includes all entries from 'items'. The categories
     // CoreCategory and PlacesCategory are placed at the top level, the remaining
     // categories are placed in sub menus.
-    int i = 0;
     QMenu* menu = m_menu;
     for (int category = 0; category < CategoryCount; ++category) {
         if (items[category].count() > 0) {
