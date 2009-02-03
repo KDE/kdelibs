@@ -38,9 +38,11 @@
 #include <kconfiggroup.h>
 
 // Truncates string, for output of long messages.
+// (But don't truncate too much otherwise it's impossible to determine
+// which message is faulty if many messages start with the same beginning).
 static QString shorten (const QString &str)
 {
-    const int maxlen = 50;
+    const int maxlen = 80;
     if (str.length() <= maxlen)
         return str;
     else
@@ -1040,7 +1042,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
         }
 
         // Possible interface subcue.
-        int pcue = ctxmark.indexOf(':'); 
+        int pcue = ctxmark.indexOf(':');
         if (pcue >= 0) {
             cuename = ctxmark.mid(pcue + 1);
             ctxmark = ctxmark.left(pcue);
@@ -1227,11 +1229,14 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
     bool hadAnyHtmlTag = false;
     QStack<OpenEl> openEls;
     QXmlStreamReader xml(text);
+    QStringRef lastElementName;
 
     while (!xml.atEnd()) {
         xml.readNext();
 
         if (xml.isStartElement()) {
+            lastElementName = xml.name();
+
             // Find first proper enclosing element tag.
             Kuit::TagVar etag = Kuit::Tag::None;
             for (int i = openEls.size() - 1; i >= 0; --i) {
@@ -1303,8 +1308,8 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
     }
 
     if (xml.hasError()) {
-        kDebug(173) << QString("Markup error in message {%1}: %2")
-                              .arg(shorten(text), xml.errorString());
+        kDebug(173) << QString("Markup error in message {%1}: %2. Last tag parsed: %3")
+                              .arg(shorten(text), xml.errorString(), lastElementName.toString());
         return QString();
     }
 
