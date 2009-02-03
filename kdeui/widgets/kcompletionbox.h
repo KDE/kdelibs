@@ -228,7 +228,6 @@ protected Q_SLOTS:
     virtual void slotActivated( QListWidgetItem * );
 
 private Q_SLOTS:
-    void slotSetCurrentItem( QListWidgetItem *i ); // grrr
     void slotCurrentChanged();
     void canceled();
     void slotItemClicked( QListWidgetItem * );
