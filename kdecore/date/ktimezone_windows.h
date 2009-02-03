@@ -337,15 +337,19 @@ public:
     path += zone.name().toLocal8Bit().data();
 
     HKEY key;
-    if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, path.c_str(), 0, KEY_READ, &key ) != ERROR_SUCCESS )
+    if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, path.c_str(), 0, KEY_READ, &key ) != ERROR_SUCCESS ) {
+        delete data;
         return 0; // FIXME what's the right error handling here?
+    }
 
     const HKeyCloser closer( key );
 
     TZI tzi = { 0 };
 
-    if ( !get_binary_value( key, TEXT( "TZI" ), &tzi, sizeof( TZI ) ) )
+    if ( !get_binary_value( key, TEXT( "TZI" ), &tzi, sizeof( TZI ) ) ) {
+        delete data;
         return 0; // ?
+    }
 
     get_string_value( key, L"Std", data->_tzi.StandardName, sizeof( data->_tzi.StandardName ) );
     get_string_value( key, L"Dlt", data->_tzi.DaylightName, sizeof( data->_tzi.DaylightName ) );
@@ -367,7 +371,7 @@ public:
 };
 
 Transitions transitions( const KTimeZone * caller, int year ) {
-    return transitions( static_cast<const KSystemTimeZoneDataWindows*>( caller->data() )->tzi( year ), year );
+    return transitions( static_cast<const KSystemTimeZoneDataWindows*>( caller->data(true) )->tzi( year ), year );
 }
 
 static bool is_dst( const TIME_ZONE_INFORMATION & tzi, const QDateTime & utc, int year ) {
@@ -384,7 +388,7 @@ static bool is_dst( const KTimeZone * caller, const QDateTime & utc ) {
     assert( caller );
     assert( caller->isValid() );
     const int year = utc.date().year();
-    const TIME_ZONE_INFORMATION & tzi = static_cast<const KSystemTimeZoneDataWindows*>( caller->data() )->tzi( year );
+    const TIME_ZONE_INFORMATION & tzi = static_cast<const KSystemTimeZoneDataWindows*>( caller->data(true) )->tzi( year );
     return is_dst( tzi, utc, year );
 }
 
@@ -402,7 +406,7 @@ static int offset_at_utc( const KTimeZone * caller, const QDateTime & utc ) {
     assert( caller );
     assert( caller->isValid() );
     const int year = utc.date().year();
-    const TIME_ZONE_INFORMATION & tz = static_cast<const KSystemTimeZoneDataWindows*>( caller->data() )->tzi( year );
+    const TIME_ZONE_INFORMATION & tz = static_cast<const KSystemTimeZoneDataWindows*>( caller->data(true) )->tzi( year );
     return effective_offset( tz, is_dst( tz, utc, year ) );
 }
 
@@ -415,7 +419,8 @@ static int difference( const SYSTEMTIME & st1, const SYSTEMTIME & st2 ) {
 static int offset_at_zone_time( const KTimeZone * caller, const SYSTEMTIME & zone, int * secondOffset ) {
     assert( caller );
     assert( caller->isValid() );
-    const KSystemTimeZoneDataWindows * const data = static_cast<const KSystemTimeZoneDataWindows*>( caller->data() );
+    assert(caller->data(true));
+    const KSystemTimeZoneDataWindows * const data = static_cast<const KSystemTimeZoneDataWindows*>( caller->data(true) );
     const TIME_ZONE_INFORMATION & tz = data->tzi( zone.wYear );
     SYSTEMTIME utc;
     if ( !TzSpecificLocalTimeToSystemTime_Portable( const_cast<LPTIME_ZONE_INFORMATION>( &tz ), const_cast<LPSYSTEMTIME>( &zone ), &utc ) )
