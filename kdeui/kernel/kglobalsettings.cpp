@@ -453,7 +453,7 @@ QFont KGlobalSettingsData::largeFont( const QString& text )
 
     // Move a bunch of preferred fonts to the front.
     // most preferred last
-    static const char* PreferredFontNames[] =
+    static const char* const PreferredFontNames[] =
     {
         "Arial",
         "Sans Serif",
