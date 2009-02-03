@@ -118,10 +118,6 @@ void KTimeZones::clear()
 
 KTimeZone KTimeZones::zone(const QString &name) const
 {
-#ifdef Q_WS_WIN
-    // return always the utc for now
-    return KTimeZone::utc();
-#else
     if (!name.isEmpty())
     {
         ZoneMap::ConstIterator it = d->zones.find(name);
@@ -131,7 +127,6 @@ KTimeZone KTimeZones::zone(const QString &name) const
             return KTimeZone::utc();
     }
     return KTimeZone();    // error
-#endif
 }
 
 
@@ -249,7 +244,7 @@ KTimeZone::Transition::Transition()
 {
 }
 
-KTimeZone::Transition::Transition(const QDateTime &t, const KTimeZone::Phase &p) 
+KTimeZone::Transition::Transition(const QDateTime &t, const KTimeZone::Phase &p)
     : d(new KTimeZoneTransitionPrivate)
 {
     d->time  = t;
@@ -419,7 +414,7 @@ KTimeZoneBackend::KTimeZoneBackend(const KTimeZoneBackend &other)
 {
     ++d->refCount;
 }
-  
+
 KTimeZoneBackend::~KTimeZoneBackend()
 {
     if (d && --d->refCount == 0)
