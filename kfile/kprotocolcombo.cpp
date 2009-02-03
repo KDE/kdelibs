@@ -32,31 +32,17 @@
 
 KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent)
     : KUrlButton(parent),
-      m_protocols(KProtocolInfo::protocols())
+      m_protocols()
 {
-    qSort(m_protocols);
-    QStringList::iterator it = m_protocols.begin();
-    menu = new QMenu(this);
-    while (it != m_protocols.end()) {
-        const KUrl url(*it + "://");
-        if (!KProtocolManager::supportsListing(url)) {
-            it = m_protocols.erase(it);
-        } else {
-            ++it;
-        }
-    }
-
-    updateMenu();
-
-    connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(setProtocol(QAction*)));
+    m_menu = new QMenu(this);
+    connect(m_menu, SIGNAL(triggered(QAction*)), this, SLOT(setProtocol(QAction*)));
     setText(protocol);
-    setMenu(menu);
+    setMenu(m_menu);
 }
 
 void KProtocolCombo::setCustomProtocols(const QStringList &protocols)
 {
     m_protocols = protocols;
-
     updateMenu();
 }
 
@@ -81,8 +67,32 @@ QString KProtocolCombo::currentProtocol() const
     return text();
 }
 
+bool KProtocolCombo::event(QEvent* event)
+{
+    if ((event->type() == QEvent::Polish) && m_protocols.isEmpty()) {
+        m_protocols = KProtocolInfo::protocols();
+        qSort(m_protocols);
+
+        QStringList::iterator it = m_protocols.begin();
+        while (it != m_protocols.end()) {
+            const KUrl url(*it + "://");
+            if (!KProtocolManager::supportsListing(url)) {
+                it = m_protocols.erase(it);
+            } else {
+                ++it;
+            }
+        }
+
+        updateMenu();
+    }
+
+    return KUrlButton::event(event);
+}
+
 void KProtocolCombo::paintEvent(QPaintEvent* event)
 {
+    Q_UNUSED(event);
+
     QPainter painter(this);
     const int buttonWidth  = width();
     const int buttonHeight = height();
@@ -120,11 +130,11 @@ void KProtocolCombo::setProtocol(QAction* action)
 
 void KProtocolCombo::updateMenu()
 {
-    menu->clear();
+    m_menu->clear();
 
     int i = 0;
     foreach (const QString &protocol, m_protocols) {
-        QAction *action = menu->addAction(protocol);
+        QAction *action = m_menu->addAction(protocol);
         action->setData(i++);
     }
 }

@@ -53,6 +53,7 @@ Q_SIGNALS:
     void activated(const QString& protocol);
 
 protected:
+    virtual bool event(QEvent* event);
     virtual void paintEvent(QPaintEvent* event);
 
 private Q_SLOTS:
@@ -64,8 +65,7 @@ private:
     enum { ArrowSize = 10 };
 
     QStringList m_protocols;
-
-    QMenu *menu;
+    QMenu* m_menu;
 };
 
 #endif
