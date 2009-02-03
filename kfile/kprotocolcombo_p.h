@@ -1,5 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2006 by Aaron J. Seigo (<aseigo@kde.org>)               *
+ *   Copyright (C) 2009 by Peter Penz (<peter.penz@kde.org>)               *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU Lesser General Public            *
@@ -21,8 +22,9 @@
 
 #include "kurlbutton_p.h"
 
-class KUrlNavigator;
+#include <QtCore/QHash>
 
+class KUrlNavigator;
 class QMenu;
 
 /**
@@ -53,7 +55,7 @@ Q_SIGNALS:
     void activated(const QString& protocol);
 
 protected:
-    virtual bool event(QEvent* event);
+    virtual void showEvent(QShowEvent* event);
     virtual void paintEvent(QPaintEvent* event);
 
 private Q_SLOTS:
@@ -61,11 +63,21 @@ private Q_SLOTS:
 
 private:
     void updateMenu();
+    void initializeCategories();
 
-    enum { ArrowSize = 10 };
+    enum ProtocolCategory
+    {
+        CoreCategory,
+        PlacesCategory,
+        DevicesCategory,
+        SubversionCategory,
+        OtherCategory,
+        CategoryCount // mandatory last entry
+    };
 
-    QStringList m_protocols;
     QMenu* m_menu;
+    QStringList m_protocols;
+    QHash<QString, ProtocolCategory> m_categories;
 };
 
 #endif

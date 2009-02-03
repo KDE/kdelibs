@@ -1,5 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2006 by Aaron J. Seigo (<aseigo@kde.org>)               *
+ *   Copyright (C) 2009 by Peter Penz (<peter.penz@kde.org>)               *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU Lesser General Public            *
@@ -25,14 +26,18 @@
 #include <QtGui/QPaintEvent>
 #include <QtGui/QStyleOption>
 
-#include <kdebug.h>
+#include <klocale.h>
 #include <kprotocolinfo.h>
 #include <kprotocolmanager.h>
 #include <kurlnavigator.h>
 
-KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent)
-    : KUrlButton(parent),
-      m_protocols()
+const int ARROW_SIZE = 10;
+
+KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent) :
+    KUrlButton(parent),
+    m_menu(0),
+    m_protocols(),
+    m_categories()
 {
     m_menu = new QMenu(this);
     connect(m_menu, SIGNAL(triggered(QAction*)), this, SLOT(setProtocol(QAction*)));
@@ -40,10 +45,16 @@ KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent)
     setMenu(m_menu);
 }
 
-void KProtocolCombo::setCustomProtocols(const QStringList &protocols)
+void KProtocolCombo::setCustomProtocols(const QStringList& protocols)
 {
     m_protocols = protocols;
-    updateMenu();
+    m_menu->clear();
+
+    int i = 0;
+    foreach (const QString& protocol, protocols) {
+        QAction* action = m_menu->addAction(protocol);
+        action->setData(protocol);
+    }
 }
 
 QSize KProtocolCombo::sizeHint() const
@@ -52,7 +63,7 @@ QSize KProtocolCombo::sizeHint() const
 
     QFontMetrics fontMetrics(font());
     int width = fontMetrics.width(text());
-    width += (3 * BorderWidth) + ArrowSize;
+    width += (3 * BorderWidth) + ARROW_SIZE;
 
     return QSize(width, size.height());
 }
@@ -67,9 +78,10 @@ QString KProtocolCombo::currentProtocol() const
     return text();
 }
 
-bool KProtocolCombo::event(QEvent* event)
+void KProtocolCombo::showEvent(QShowEvent* event)
 {
-    if ((event->type() == QEvent::Polish) && m_protocols.isEmpty()) {
+    KUrlButton::showEvent(event);
+    if (!event->spontaneous() && m_protocols.isEmpty()) {
         m_protocols = KProtocolInfo::protocols();
         qSort(m_protocols);
 
@@ -85,8 +97,6 @@ bool KProtocolCombo::event(QEvent* event)
 
         updateMenu();
     }
-
-    return KUrlButton::event(event);
 }
 
 void KProtocolCombo::paintEvent(QPaintEvent* event)
@@ -103,11 +113,11 @@ void KProtocolCombo::paintEvent(QPaintEvent* event)
     painter.setPen(fgColor);
 
     // draw arrow
-    const int arrowX = buttonWidth - ArrowSize - BorderWidth;
-    const int arrowY = (buttonHeight - ArrowSize) / 2;
+    const int arrowX = buttonWidth - ARROW_SIZE - BorderWidth;
+    const int arrowY = (buttonHeight - ARROW_SIZE) / 2;
 
     QStyleOption option;
-    option.rect = QRect(arrowX, arrowY, ArrowSize, ArrowSize);
+    option.rect = QRect(arrowX, arrowY, ARROW_SIZE, ARROW_SIZE);
     option.palette = palette();
     option.palette.setColor(QPalette::Text, fgColor);
     option.palette.setColor(QPalette::WindowText, fgColor);
@@ -121,21 +131,91 @@ void KProtocolCombo::paintEvent(QPaintEvent* event)
 
 void KProtocolCombo::setProtocol(QAction* action)
 {
-    const int index = action->data().toInt();
-    Q_ASSERT((index >= 0) && (index < m_protocols.count()));
-    const QString protocol = m_protocols[index];
+    const QString protocol = action->data().toString();
     setText(protocol);
     emit activated(protocol);
 }
 
 void KProtocolCombo::updateMenu()
 {
-    m_menu->clear();
+    initializeCategories();
+    qSort(m_protocols);
 
+    // move all protocols into the corresponding category of 'items'
+    QList<QString> items[CategoryCount];
+    foreach (const QString& protocol, m_protocols) {
+        if (m_categories.contains(protocol)) {
+            const ProtocolCategory category = m_categories.value(protocol);
+            items[category].append(protocol);
+        } else {
+            items[OtherCategory].append(protocol);
+        }
+    }
+
+    // Create the menu that includes all entries from 'items'. The categories
+    // CoreCategory and PlacesCategory are placed at the top level, the remaining
+    // categories are placed in sub menus.
     int i = 0;
-    foreach (const QString &protocol, m_protocols) {
-        QAction *action = m_menu->addAction(protocol);
-        action->setData(i++);
+    QMenu* menu = m_menu;
+    for (int category = 0; category < CategoryCount; ++category) {
+        if (items[category].count() > 0) {
+            switch (category) {
+            case DevicesCategory:
+                menu = m_menu->addMenu(i18nc("@item:inmenu", "Devices"));
+                break;
+
+            case SubversionCategory:
+                menu = m_menu->addMenu(i18nc("@item:inmenu", "Subversion"));
+                break;
+
+            case OtherCategory:
+                menu = m_menu->addMenu(i18nc("@item:inmenu", "Other"));
+                break;
+
+            case CoreCategory:
+            case PlacesCategory:
+            default:
+                break;
+            }
+
+            foreach (const QString& protocol, items[category]) {
+                QAction* action = menu->addAction(protocol);
+                action->setData(protocol);
+            }
+
+            if (menu == m_menu) {
+                menu->addSeparator();
+            }
+        }
+    }
+}
+
+void KProtocolCombo::initializeCategories()
+{
+    if (m_categories.isEmpty()) {
+        m_categories.insert("file", CoreCategory);
+        m_categories.insert("ftp", CoreCategory);
+        m_categories.insert("fish", CoreCategory);
+        m_categories.insert("nfs", CoreCategory);
+        m_categories.insert("sftp", CoreCategory);
+        m_categories.insert("smb", CoreCategory);
+        m_categories.insert("webdav", CoreCategory);
+
+        m_categories.insert("desktop", PlacesCategory);
+        m_categories.insert("fonts", PlacesCategory);
+        m_categories.insert("programs", PlacesCategory);
+        m_categories.insert("settings", PlacesCategory);
+        m_categories.insert("trash", PlacesCategory);
+
+        m_categories.insert("floppy", DevicesCategory);
+        m_categories.insert("camera", DevicesCategory);
+        m_categories.insert("remote", DevicesCategory);
+
+        m_categories.insert("svn", SubversionCategory);
+        m_categories.insert("svn+file", SubversionCategory);
+        m_categories.insert("svn+http", SubversionCategory);
+        m_categories.insert("svn+https", SubversionCategory);
+        m_categories.insert("svn+ssh", SubversionCategory);
     }
 }
 
