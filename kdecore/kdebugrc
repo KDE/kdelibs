@@ -72,10 +72,6 @@ InfoOutput=4
 [1002]
 InfoOutput=4
 
-# KDesktop icons
-[1214]
-InfoOutput=4
-
 # KHotKeys
 [1217]
 InfoOutput=4
@@ -106,6 +102,10 @@ InfoOutput=4
 
 # kalarmd check
 [5901]
+InfoOutput=4
+
+# KDirWatch is quite verbose
+[7001]
 InfoOutput=4
 
 # kio_http_debug debug info off
