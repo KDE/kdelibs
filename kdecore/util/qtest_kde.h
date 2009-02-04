@@ -66,16 +66,16 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(KDEMainFlags)
 int main(int argc, char *argv[]) \
 { \
     setenv("LC_ALL", "C", 1); \
-    setenv("KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test" ), 1); \
-    setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test/xdg/local" ), 1); \
-    setenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test/xdg/config" ), 1); \
+    setenv("KDEHOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test") ), 1); \
+    setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/local") ), 1); \
+    setenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config") ), 1); \
     unsetenv("KDE_COLOR_DEBUG"); \
-    QFile::remove(QDir::homePath() + "/.kde-unit-test/share/config/qttestrc");  \
+    QFile::remove(QDir::homePath() + QLatin1String("/.kde-unit-test/share/config/qttestrc"));  \
     KAboutData aboutData( QByteArray(componentName), QByteArray(), ki18n("KDE Test Program"), QByteArray("version") );  \
     KDEMainFlags mainFlags = flags;                         \
     KComponentData cData(&aboutData); \
     QApplication app( argc, argv, (mainFlags & GUI) != 0 ); \
-    app.setApplicationName( "qttest" ); \
+    app.setApplicationName( QLatin1String("qttest") ); \
     qRegisterMetaType<KUrl>(); /*as done by kapplication*/ \
     qRegisterMetaType<KUrl::List>(); \
     TestObject tc; \
