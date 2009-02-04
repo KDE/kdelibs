@@ -95,7 +95,6 @@
 
 //#define DEBUG_FLICKER
 
-//#define DEBUG_PIXEL
 #define FIX_QT_BROKEN_QWIDGET_SCROLL
 
 #include <limits.h>
@@ -217,11 +216,6 @@ public:
 #else
         vpolicy = ScrollBarAlwaysOff;
         hpolicy = ScrollBarAlwaysOff;
-#endif
-#ifdef DEBUG_PIXEL
-        timer.start();
-        pixelbooth = 0;
-        repaintbooth = 0;
 #endif
         scrollBarMoved = false;
         contentsMoving = false;
@@ -385,12 +379,6 @@ public:
         }
     }
 
-#ifdef DEBUG_PIXEL
-    QTime timer;
-    unsigned int pixelbooth;
-    unsigned int repaintbooth;
-#endif
-
     NodeImpl *underMouse;
     NodeImpl *underMouseNonShared;
     NodeImpl *oldUnderMouse;
@@ -461,6 +449,7 @@ public:
     int scheduledLayoutCounter;
     QRegion updateRegion;
     QTimer smoothScrollTimer;
+    QTime smoothScrollStopwatch;
     QHash<void*, QWidget*> visibleWidgets;
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     QString findString;
@@ -3893,8 +3882,6 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
             unscheduleRelayout();
             layout();
         }
-        if (d->smoothScrollMode == KHTMLView::SSMWhenEfficient && m_part->xmlDocImpl()->parsing())
-            d->shouldSmoothScroll = false;
     }
 
     if ( d->shouldSmoothScroll && d->smoothScrollMode != SSMDisabled && m_part->xmlDocImpl() &&
@@ -4082,6 +4069,7 @@ void KHTMLView::setupSmoothScrolling(int dx, int dy)
         d->startScrolling();
         scrollTick();
     }
+    d->smoothScrollStopwatch.start();
 }
 
 void KHTMLView::scrollTick() {
@@ -4122,15 +4110,19 @@ void KHTMLView::scrollTick() {
     d->shouldSmoothScroll = false;
     scrollContentsBy(ddx, ddy);
 
-    // update scrolling speed
-    int dddx = d->dddx;
-    int dddy = d->dddy;
-    // don't change direction
-    if (abs(dddx) > abs(d->ddx)) dddx = d->ddx;
-    if (abs(dddy) > abs(d->ddy)) dddy = d->ddy;
+    // only consider decelerating if we aren't too far behind schedule
+    if (d->smoothScrollStopwatch.elapsed() < 2*sSmoothScrollTick) { 
+        // update scrolling speed
+        int dddx = d->dddx;
+        int dddy = d->dddy;
+        // don't change direction
+        if (abs(dddx) > abs(d->ddx)) dddx = d->ddx;
+        if (abs(dddy) > abs(d->ddy)) dddy = d->ddy;
 
-    d->ddx -= dddx;
-    d->ddy -= dddy;
+        d->ddx -= dddx;
+        d->ddy -= dddy;
+    }
+    d->smoothScrollStopwatch.start();
 }
 
 
