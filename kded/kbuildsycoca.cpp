@@ -514,7 +514,7 @@ void KBuildSycoca::save()
 
    // Calculate per-servicetype/mimetype data
    mimeTypeFactory->parseSubclasses();
-   serviceFactory->populateServiceTypes();
+   serviceFactory->postProcessServices();
 
    // Write factory data....
    for(KSycocaFactoryList::Iterator factory = factories()->begin();

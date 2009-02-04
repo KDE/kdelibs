@@ -83,9 +83,10 @@ public:
      */
     static QStringList resourceTypes();
 
-    void populateServiceTypes();
+    void postProcessServices();
 
 private:
+    void populateServiceTypes();
     void saveOfferList(QDataStream &str);
     void collectInheritedServices();
     void collectInheritedServices(KMimeType::Ptr mime, QSet<KMimeType::Ptr>& visitedMimes);

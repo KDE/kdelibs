@@ -51,6 +51,13 @@ public:
         return m_strName;
     }
 
+    virtual QString storageId() const
+    {
+        if (!menuId.isEmpty())
+            return menuId;
+        return path;
+    }
+
     virtual bool isValid() const
     {
         return m_bValid;

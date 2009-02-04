@@ -106,6 +106,12 @@ QString KSycocaEntry::entryPath() const
     return d->path;
 }
 
+QString KSycocaEntry::storageId() const
+{
+    Q_D(const KSycocaEntry);
+    return d->storageId();
+}
+
 bool KSycocaEntry::isDeleted() const
 {
     Q_D(const KSycocaEntry);
@@ -164,5 +170,3 @@ QVariant KSycocaEntry::property(const QString &name) const
     Q_D(const KSycocaEntry);
     return d->property(name);
 }
-
-

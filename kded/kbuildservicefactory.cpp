@@ -193,6 +193,42 @@ void KBuildServiceFactory::collectInheritedServices(KMimeType::Ptr mimeType, QSe
     }
 }
 
+void KBuildServiceFactory::postProcessServices()
+{
+    // By doing all this here rather than in addEntry (and removing when replacing
+    // with local override), we only do it for the final applications.
+
+    // For every service...
+    KSycocaEntryDict::Iterator itserv = m_entryDict->begin();
+    const KSycocaEntryDict::Iterator endserv = m_entryDict->end();
+    for( ; itserv != endserv ; ++itserv ) {
+
+        KSycocaEntry::Ptr entry = *itserv;
+        KService::Ptr service = KService::Ptr::staticCast(entry);
+
+        if (!service->isDeleted()) {
+            const QString parent = service->parentApp();
+            if (!parent.isEmpty())
+                m_serviceGroupFactory->addNewChild(parent, KSycocaEntry::Ptr::staticCast(service));
+        }
+
+        const QString name = service->desktopEntryName();
+        m_nameDict->add(name, entry);
+        m_nameMemoryHash.insert(name, service);
+
+        const QString relName = service->entryPath();
+        //kDebug(7021) << "adding service" << service.data() << service->menuId() << "name=" << name << "relName=" << relName;
+        m_relNameDict->add(relName, entry);
+        m_relNameMemoryHash.insert(relName, service); // for KMimeAssociations
+
+        const QString menuId = service->menuId();
+        if (!menuId.isEmpty()) { // empty for services, non-empty for applications
+            m_menuIdDict->add(menuId, entry);
+            m_menuIdMemoryHash.insert(menuId, service); // for KMimeAssociations
+        }
+    }
+    populateServiceTypes();
+}
 
 void KBuildServiceFactory::populateServiceTypes()
 {
@@ -200,6 +236,7 @@ void KBuildServiceFactory::populateServiceTypes()
     KSycocaEntryDict::Iterator itserv = m_entryDict->begin();
     const KSycocaEntryDict::Iterator endserv = m_entryDict->end();
     for( ; itserv != endserv ; ++itserv ) {
+
         KService::Ptr service = KService::Ptr::staticCast(*itserv);
         QVector<KService::ServiceTypeAndPreference> serviceTypeList = service->_k_accessServiceTypes();
         //bool hasAllAll = false;
@@ -336,30 +373,18 @@ void KBuildServiceFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
     if (m_dupeDict.contains(newEntry))
         return;
 
-    KSycocaFactory::addEntry(newEntry);
-
     const KService::Ptr service = KService::Ptr::staticCast( newEntry );
     m_dupeDict.insert(newEntry);
 
-    if (!service->isDeleted()) {
-        const QString parent = service->parentApp();
-        if (!parent.isEmpty())
-            m_serviceGroupFactory->addNewChild(parent, KSycocaEntry::Ptr::staticCast(service));
+    KSycocaEntry::Ptr oldEntry = m_entryDict->value(newEntry->storageId());
+    if (oldEntry) {
+        // Already exists -> replace
+        //KService::Ptr oldService = KService::Ptr::staticCast(oldEntry);
+        // We found a more-local override, e.g. ~/.local/share/applications/kde4/foo.desktop
+        // So forget about the more global file.
+        //kDebug(7021) << "removing" << oldService.data() << oldService->entryPath() << "because of" << service->entryPath();
+        KSycocaFactory::removeEntry(newEntry->storageId());
     }
 
-    const QString name = service->desktopEntryName();
-    m_nameDict->add( name, newEntry );
-    m_nameMemoryHash.insert(name, service);
-
-    const QString relName = service->entryPath();
-    //kDebug(7021) << "adding service" << service->menuId() << "name=" << name << "relName=" << relName;
-    m_relNameDict->add( relName, newEntry );
-    m_relNameMemoryHash.insert(relName, service); // for KMimeAssociations
-
-    const QString menuId = service->menuId();
-    if (!menuId.isEmpty()) {
-        m_menuIdDict->add( menuId, newEntry );
-        m_menuIdMemoryHash.insert(menuId, service); // for KMimeAssociations
-    }
+    KSycocaFactory::addEntry(newEntry);
 }
-

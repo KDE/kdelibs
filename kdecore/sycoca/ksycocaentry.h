@@ -86,6 +86,13 @@ public:
    QString entryPath() const;
 
    /**
+    * @return the unique ID for this entry
+    * In practice, this is storageId() for KService and name() for everything else.
+    * \since 4.2.1
+    */
+   QString storageId() const;
+
+    /**
     * @return true if valid
     */
    bool isValid() const;
@@ -117,7 +124,7 @@ public:
     */
    void setDeleted( bool deleted );
 
-   
+
    /*
     * @returns true, if this is a separator
     */
