@@ -42,7 +42,6 @@
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QFile>
-#include <QtCore/QTextStream>
 #include <QtCore/QRegExp>
 #include <QtCore/QTextCodec>
 #include <QtGui/QTextDocument>

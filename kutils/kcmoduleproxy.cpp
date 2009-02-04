@@ -29,7 +29,6 @@
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtCore/QPoint>
-#include <QtCore/QTextStream>
 
 #include <QtGui/QImage>
 

@@ -23,7 +23,6 @@
 #include <stdio.h>
 
 #include <QtCore/QFile>
-#include <QtCore/QTextStream>
 #include <QtCore/QRegExp>
 #include <QtCore/Q_PID>
 
