@@ -5,7 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000 Dirk Mueller (mueller@kde.org)
  *           (C) 2006 Maksim Orlovich (maksim@kde.org)
- *           (C) 2007 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2007-2009 Germain Garand (germain@ebooksfrance.org)
  *           (C) 2007 Mitz Pettel (mitz@webkit.org)
  *           (C) 2007 Charles Samuels (charles@kde.org)
  *
@@ -81,10 +81,52 @@
 using namespace khtml;
 using namespace DOM;
 
+// ----------------- proxy style used to apply some CSS properties to native Qt widgets -----------------
+
+    struct KHTMLProxyStyle : public KdeUiProxyStyle
+    {
+        KHTMLProxyStyle(QWidget *parent)
+            : KdeUiProxyStyle(parent)
+        { noBorder = false; left = right = top = bottom = 0;}
+        QSize sizeFromContents(
+                ContentsType type, const QStyleOption * option, const QSize &contentsSize,
+                const QWidget * widget
+            ) const
+        {
+            QSize s = KdeUiProxyStyle::sizeFromContents(type, option, contentsSize, widget);
+            return s + QSize(left+right, top+bottom);
+        }
+        QRect subElementRect(
+                SubElement element, const QStyleOption *option, const QWidget *widget
+            ) const
+        {
+            QRect r = KdeUiProxyStyle::subElementRect(element, option, widget);
+            r.adjust(left, top, -right, -bottom);
+            return r;
+        }
+        void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+        {
+            if ( noBorder && element == QStyle::CE_PushButton ) {
+               const QStyleOptionButton *o = qstyleoption_cast<const QStyleOptionButton *>(option);
+               if (o) {
+                   QStyleOptionButton opt = *o;
+                   opt.rect = subElementRect(SE_PushButtonContents, &opt, widget);
+                   KdeUiProxyStyle::drawControl(CE_PushButtonLabel, &opt, painter, widget);
+               }
+               return;
+            }
+            KdeUiProxyStyle::drawControl(element,option,painter,widget);
+        }
+        int left, right, top, bottom;
+        bool noBorder;
+    };
+
+// ---------------------------------------------------------------------
+
 RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
     : RenderWidget(element)
 //     , m_state(0)
-    , proxyStyle(0)
+    , m_proxyStyle(0)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline
@@ -93,7 +135,7 @@ RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
 
 RenderFormElement::~RenderFormElement()
 {
-    delete proxyStyle;
+    delete m_proxyStyle;
 }
 
 void RenderFormElement::setStyle(RenderStyle *style)
@@ -124,47 +166,26 @@ bool RenderFormElement::includesPadding() const
     return style()->boxSizing() == BORDER_BOX;
 }
 
-
 void RenderFormElement::setPadding()
 {
     if (!includesPadding())
         return;
 
-    struct AddPadding : public KdeUiProxyStyle
-    {
-        AddPadding(QWidget *parent)
-            : KdeUiProxyStyle(parent)
-        { }
-        QSize sizeFromContents(
-                ContentsType type, const QStyleOption * option, const QSize &contentsSize,
-                const QWidget * widget
-            ) const
-        {
-            QSize s = KdeUiProxyStyle::sizeFromContents(type, option, contentsSize, widget);
-            return s + QSize(left+right, top+bottom);
-        }
-        QRect subElementRect(
-                SubElement element, const QStyleOption *option, const QWidget *widget
-            ) const
-        {
-            QRect r = KdeUiProxyStyle::subElementRect(element, option, widget);
-            r.adjust(left, top, -right, -bottom);
-            return r;
-        }
-
-        int left, right, top, bottom;
-    };
-
-
-    AddPadding *style = new AddPadding(widget());
+    KHTMLProxyStyle *style = static_cast<KHTMLProxyStyle*>(getProxyStyle());
     style->left = RenderWidget::paddingLeft();
     style->right = RenderWidget::paddingRight();
     style->top = RenderWidget::paddingTop();
     style->bottom = RenderWidget::paddingBottom();
+}
 
-    widget()->setStyle(style);
-    delete proxyStyle;
-    proxyStyle = style;
+KdeUiProxyStyle* RenderFormElement::getProxyStyle()
+{
+    assert(widget());
+    if (m_proxyStyle)
+        return m_proxyStyle;
+    m_proxyStyle = new KHTMLProxyStyle(widget());
+    widget()->setStyle( m_proxyStyle );
+    return m_proxyStyle;
 }
 
 short RenderFormElement::baselinePosition( bool f ) const
@@ -241,11 +262,42 @@ Qt::AlignmentFlag RenderFormElement::textAlignment() const
 RenderButton::RenderButton(HTMLGenericFormElementImpl *element)
     : RenderFormElement(element)
 {
+    m_hasTextIndentHack = false;
 }
 
 short RenderButton::baselinePosition( bool f ) const
 {
     return RenderWidget::baselinePosition( f ) - 2;
+}
+
+void RenderButton::layout()
+{
+    RenderFormElement::layout();
+    bool needsTextIndentHack = false;
+    if (!style()->width().isVariable()) {
+        // check if we need to simulate the effect of a popular
+        // button text hiding 'trick' that makes use of negative text-indent,
+        // which we do not support on form widgets.
+        int ti = style()->textIndent().minWidth( containingBlockWidth() );
+        if (m_widget->width() <= qAbs(ti)) {
+            needsTextIndentHack = true;
+        }
+    }
+    if (m_hasTextIndentHack != needsTextIndentHack) {
+        m_hasTextIndentHack = needsTextIndentHack;
+        updateFromElement();
+    }
+}
+
+void RenderButton::setStyle(RenderStyle *style)
+{
+    RenderFormElement::setStyle(style);
+    if (shouldPaintBorder()) {
+        // we paint the borders ourselves on this button,
+        // remove the widget's native ones.
+        KHTMLProxyStyle* style = static_cast<KHTMLProxyStyle*>(getProxyStyle());
+        style->noBorder = true;
+    }
 }
 
 // -------------------------------------------------------------------------------
@@ -430,9 +482,10 @@ void RenderSubmitButton::calcMinMaxWidth()
     // add 30% margins to the width (heuristics to make it look similar to IE)
     w = w*13/10;
 
-    // the crazy heuristic code overrides some changes made by the
-    // AddPadding proxy style, so reapply them
-    w += RenderWidget::paddingLeft() + RenderWidget::paddingRight();
+    // ### the crazy heuristic code overrides some changes made by the
+    // KHTMLProxyStyle, so reapply them
+    if (includesPadding())
+        w += RenderWidget::paddingLeft() + RenderWidget::paddingRight();
 
     s = QSize(w,h).expandedTo(QApplication::globalStrut());
 

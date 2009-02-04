@@ -371,10 +371,12 @@ void RenderWidget::updateFromElement()
     if (m_widget && !qobject_cast<KHTMLView*>(m_widget)) {
         // Color:
         QColor color = style()->color();
+        if (forceTransparentText())
+            color = Qt::transparent;
         QColor backgroundColor = style()->backgroundColor();
 
         if (!backgroundColor.isValid() && !style()->htmlHacks())
-            backgroundColor = QColor(0,0,0,0);
+            backgroundColor = Qt::transparent;
 
         // check if we have to paint our background and let it show through the widget
         bool trans = ( isRedirectedWidget() && style()->backgroundLayers() && 

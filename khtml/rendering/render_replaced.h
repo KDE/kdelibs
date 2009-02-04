@@ -67,6 +67,7 @@ public:
     virtual long caretMaxOffset() const;
     virtual unsigned long caretMaxRenderedOffset() const;
     virtual DOM::Position positionForCoordinates(int x, int y);
+    virtual bool forceTransparentText() const { return false; }
 
 protected:
     short m_intrinsicWidth;
