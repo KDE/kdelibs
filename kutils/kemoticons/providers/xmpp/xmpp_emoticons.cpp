@@ -117,6 +117,7 @@ void XmppEmoticons::save()
     }
 
     QTextStream emoStream(&fp);
+    emoStream.setCodec( "UTF-8" );
     emoStream << m_themeXml.toString(4);
     fp.close();
 }
@@ -208,6 +209,7 @@ void XmppEmoticons::createNew()
     doc.appendChild(doc.createElement("icondef"));
 
     QTextStream emoStream(&fp);
+    emoStream.setCodec( "UTF-8" );
     emoStream << doc.toString(4);
     fp.close();
 }

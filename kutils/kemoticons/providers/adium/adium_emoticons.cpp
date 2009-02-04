@@ -124,6 +124,7 @@ void AdiumEmoticons::save()
     }
 
     QTextStream emoStream(&fp);
+    emoStream.setCodec( "UTF-8" );
     emoStream << m_themeXml.toString(4);
     fp.close();
 }
@@ -232,6 +233,7 @@ void AdiumEmoticons::createNew()
 
 
     QTextStream emoStream(&fp);
+    emoStream.setCodec( "UTF-8" );
     emoStream << doc.toString(4);
     fp.close();
 }

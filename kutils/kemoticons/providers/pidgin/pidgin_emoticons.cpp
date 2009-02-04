@@ -205,6 +205,7 @@ void PidginEmoticons::createNew()
     }
 
     QTextStream out(&fp);
+    out.setCodec( "UTF-8" );
 
     out << "Name=" + themeName() << endl;
     out << "Description=" + themeName() << endl;

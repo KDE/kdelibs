@@ -98,6 +98,7 @@ void KdeEmoticons::save()
     }
 
     QTextStream emoStream(&fp);
+    emoStream.setCodec( "UTF-8" );
     emoStream << m_themeXml.toString(4);
     fp.close();
 }
@@ -194,6 +195,7 @@ void KdeEmoticons::createNew()
     doc.appendChild(doc.createElement("messaging-emoticon-map"));
 
     QTextStream emoStream(&fp);
+    emoStream.setCodec( "UTF-8" );
     emoStream << doc.toString(4);
     fp.close();
 }

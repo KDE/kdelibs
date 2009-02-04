@@ -93,6 +93,7 @@ bool NotepadPart::saveFile()
   QString s;
   if ( f.open(QIODevice::WriteOnly) ) {
     QTextStream t( &f );
+    t.setCodec( "UTF-8" );
     t << m_edit->toPlainText();
     f.close();
     return true;
