@@ -283,6 +283,7 @@ KPluginSelector::KPluginSelector(QWidget *parent)
 
 KPluginSelector::~KPluginSelector()
 {
+    delete d->listView; // depends on some other things in d, make sure this dies first.
     delete d;
 }
 
