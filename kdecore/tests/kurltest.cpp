@@ -1066,6 +1066,20 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   //QEXPECT_FAIL("","Issue N183630, task ID 183874", Continue); // Fixed by _setEncodedUrl
   QCOMPARE(dxOffEagle.url(), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D") );
 
+#if 0 // QtSw issue 243557
+  QByteArray tsdgeos("http://google.com/c?c=Translation+%C2%BB+trunk|");
+  QUrl tsdgeosQUrl;
+  tsdgeosQUrl.setEncodedUrl(tsdgeos, QUrl::TolerantMode);
+  //QVERIFY(tsdgeosQUrl.isValid()); // fails
+  tsdgeosQUrl.setUrl(tsdgeos, QUrl::TolerantMode);
+  //QCOMPARE(tsdgeosQUrl.toEncoded(), tsdgeos); // unusable output from qtestlib...
+  QCOMPARE(QString(tsdgeosQUrl.toEncoded()), QString(tsdgeos));
+
+  QString tsdgeosGoogle("http://google.com/c?c=Translation+%C2%BB+trunk|");
+  KUrl tsdgeosUrl(tsdgeosGoogle);
+  QCOMPARE(tsdgeosUrl.url(), tsdgeosGoogle);
+#endif
+
   // Shows up in nspluginviewer/flash
   QString flashRel = "javascript:window.location+\"__flashplugin_unique__\"";
   KUrl flashUrl(flashRel);
