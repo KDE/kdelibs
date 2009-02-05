@@ -106,9 +106,9 @@ void KAutoSaveFile::releaseLock()
 {
     if (d->lock && d->lock->isLocked()) {
         d->lock.clear();
-    }
-    if (!fileName().isEmpty()) {
+        if (!fileName().isEmpty()) {
         remove();
+        }
     }
 }
 
@@ -179,6 +179,8 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename, const QSt
 
     // contruct a KAutoSaveFile for each stale file
     foreach(const QString &file, files) {
+        if (file.endsWith(".lock"))
+            continue;
         // sets managedFile
         asFile = new KAutoSaveFile(filename);
         asFile->setFileName(file);
@@ -209,6 +211,8 @@ QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationNa
 
     // contruct a KAutoSaveFile for each stale file
     foreach(file, files) {
+        if (file.endsWith(".lock"))
+            continue;
         sep = file.right(3);
         file.chop(KAutoSaveFilePrivate::padding);
 
