@@ -476,7 +476,8 @@ QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::clientsForFileOrDir(c
       }
     }
   } else {
-    kDebug(7001) << "ERROR: couldn't stat" << tpath;
+    // Happens frequently, e.g. ERROR: couldn't stat "/home/dfaure/.viminfo.tmp"
+    //kDebug(7001) << "ERROR: couldn't stat" << tpath;
   }
   // If KDE_stat fails then isDir is not set, but ret is empty anyway
   // so isDir won't be used.
