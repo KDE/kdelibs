@@ -1127,7 +1127,11 @@ void KUrlTest::testSubURL()
   QString u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref";
   KUrl url1(u1);
   // KDE3: was #,#,#, Qt-4.0 to 4.4: #,%23,%23 . 4.5: #,#,#, good
+#if QT_VERSION < 0x040500
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/%23myref") );
+#else
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref") );
+#endif
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.isLocalFile() );  // Not strictly local!
   QVERIFY( url1.hasSubUrl() );
