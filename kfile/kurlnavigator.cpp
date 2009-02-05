@@ -956,6 +956,10 @@ bool KUrlNavigator::isPlacesSelectorVisible() const
 
 void KUrlNavigator::setUrl(const KUrl& url)
 {
+    if (url == this->url()) {
+        return;
+    }    
+
     QString urlStr(KUrlCompletion::replacedPath(url.pathOrUrl(), true, true));
 
     if (urlStr.length() > 0 && urlStr.at(0) == '~') {
