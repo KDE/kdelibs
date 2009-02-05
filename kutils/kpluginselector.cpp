@@ -304,10 +304,10 @@ void KPluginSelector::addPlugins(const QString &componentName,
     if (!config)
         config = KSharedConfig::openConfig(componentName);
 
-    KConfigGroup *cfgGroup = new KConfigGroup(config, "KParts Plugins");
-    kDebug( 702 ) << "cfgGroup = " << cfgGroup;
+    KConfigGroup cfgGroup(config, "KParts Plugins");
+    kDebug( 702 ) << "cfgGroup = " << &cfgGroup;
 
-    d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey, *cfgGroup);
+    d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey, cfgGroup);
 }
 
 void KPluginSelector::addPlugins(const KComponentData &instance,
@@ -327,10 +327,10 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo> &pluginInfoList,
     if (pluginInfoList.isEmpty())
         return;
 
-    KConfigGroup *cfgGroup = new KConfigGroup(config ? config : KGlobal::config(), "Plugins");
-    kDebug( 702 ) << "cfgGroup = " << cfgGroup;
+    KConfigGroup cfgGroup(config ? config : KGlobal::config(), "Plugins");
+    kDebug( 702 ) << "cfgGroup = " << &cfgGroup;
 
-    d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey, *cfgGroup, pluginLoadMethod, true /* manually added */);
+    d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey, cfgGroup, pluginLoadMethod, true /* manually added */);
 }
 
 void KPluginSelector::load()
