@@ -1183,18 +1183,14 @@ KUrl KUrl::join( const KUrl::List & lst )
   if (lst.isEmpty()) return KUrl();
   KUrl tmp;
 
-
   bool first = true;
   QListIterator<KUrl> it(lst);
   it.toBack();
   while (it.hasPrevious())
   {
      KUrl u(it.previous());
-     if (!first)
-     {
-         // ##### problem: this encodes the '#' into %23 every time,
-         // so at the 2nd level we get %2523, etc...
-         u.setFragment( tmp.url() );
+     if (!first) {
+         u.setEncodedFragment(tmp.url().toLatin1() /* TODO double check encoding */);
      }
      tmp = u;
 
@@ -1430,7 +1426,7 @@ KUrl KUrl::upUrl( ) const
      const QString old = u.path();
      u.cd("../");
      if (u.path() != old)
-         break; // Finshed.
+         break; // Finished.
      if (lst.count() == 1)
          break; // Finished.
      lst.removeLast();

@@ -234,8 +234,12 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
 
   u1 = "file:///home/dfaure/my#%2f";
   url1 = u1;
-  // KDE3: was %2f, but this is OK too
+  // KDE3: was %2f, Qt-4.0 to 4.4: #/, bad. 4.5: %2f again, good
+#if QT_VERSION < 0x040500
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my#/") );
+#else
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my#%2f") );
+#endif
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
@@ -1089,11 +1093,41 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   QCOMPARE(flashComposed.url(), QString("javascript:window.location+%22__flashplugin_unique__%22"));
 }
 
+void KUrlTest::testSetEncodedFragment_data()
+{
+    QTest::addColumn<QByteArray>("base");
+    QTest::addColumn<QByteArray>("fragment");
+    QTest::addColumn<QByteArray>("expected");
+    typedef QByteArray BA;
+    QTest::newRow("basic test") << BA("http://www.kde.org") << BA("abc") << BA("http://www.kde.org#abc");
+    QTest::newRow("initial url has fragment") << BA("http://www.kde.org#old") << BA("new") << BA("http://www.kde.org#new");
+    QTest::newRow("fragment without #, invalid") << BA("http://www.kde.org") << BA("abc") << BA("http://www.kde.org");
+    QTest::newRow("encoded fragment") << BA("http://www.kde.org") << BA("a%20c") << BA("http://www.kde.org#a%20c");
+    QTest::newRow("with #") << BA("http://www.kde.org") << BA("a#b") << BA("http://www.kde.org#a#b");
+}
+
+void KUrlTest::testSetEncodedFragment()
+{
+    // QtSw task number: TODO (mail sent)
+    QSKIP("Bug in Qt-4.4/4.5-rc1: setEncodedFragment doesn't work if the initial url has no fragment", SkipAll);
+
+    QFETCH(QByteArray, base);
+    QFETCH(QByteArray, fragment);
+    QFETCH(QByteArray, expected);
+    QUrl u;
+    u.setEncodedUrl(base, QUrl::TolerantMode);
+    QVERIFY(u.isValid());
+    u.setEncodedFragment(fragment);
+    QVERIFY(u.isValid());
+    QCOMPARE(QString::fromLatin1(u.toEncoded()), QString::fromLatin1(expected));
+}
+
 void KUrlTest::testSubURL()
 {
   QString u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref";
   KUrl url1(u1);
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/%23myref") ); // KDE3 would say # 3 times
+  // KDE3: was #,#,#, Qt-4.0 to 4.4: #,%23,%23 . 4.5: #,#,#, good
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref") );
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.isLocalFile() );  // Not strictly local!
   QVERIFY( url1.hasSubUrl() );
@@ -1107,12 +1141,11 @@ void KUrlTest::testSubURL()
   QCOMPARE( splitted[1].url(), QString("gzip:/#myref") );
   QCOMPARE( splitted[2].url(), QString("tar:/#myref") );
 
-  QSKIP( "Multiple sub urls not supported at the moment, due to #-escaping", SkipSingle );
-
-  // FAILS, due to the #->%23 escaping, see the comment in KUrl::join.
-  // But do we really want to keep the suburl stuff?
-  KUrl rejoined = KUrl::join( splitted );
-  QCOMPARE( rejoined.url(), url1.url() );
+#if QT_VERSION < 0x040500
+  QSKIP( "Multiple sub urls not supported with Qt < 4.5", SkipSingle );
+#endif
+  KUrl rejoined = KUrl::join(splitted);
+  QCOMPARE(rejoined.url(), url1.url());
 
   u1 = "error:/?error=14&errText=Unknown%20host%20asdfu.adgi.sdfgoi#http://asdfu.adgi.sdfgoi";
   url1 = u1;
@@ -1124,7 +1157,7 @@ void KUrlTest::testSubURL()
 
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/";
   url1 = u1;
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/") ); // KDE3: #tar
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/") );
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
   QVERIFY( url1.hasSubUrl() );
@@ -1133,7 +1166,7 @@ void KUrlTest::testSubURL()
 
   u1 = "file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/";
   url1 = u1;
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/") ); // KDE3: #tar
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/") );
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
   QVERIFY( url1.hasSubUrl() );
@@ -1154,12 +1187,21 @@ void KUrlTest::testSubURL()
 
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README";
   url1 = u1;
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/README") );
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README") );
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
   QVERIFY( url1.hasSubUrl() );
   QCOMPARE( url1.htmlRef(), QString("") );
-  QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/") );
+  const KUrl::List url1Splitted = KUrl::split( url1 );
+  QCOMPARE( url1Splitted.count(), 3 );
+  kDebug() << url1Splitted.toStringList();
+  QCOMPARE(url1Splitted[0].url(), QString("file:///home/dfaure/my%20tar%20file.tgz"));
+  QCOMPARE(url1Splitted[1].url(), QString("gzip:/"));
+  QCOMPARE(url1Splitted[2].url(), QString("tar:/README"));
+  const KUrl url1Rejoined = KUrl::join(url1Splitted);
+  QSKIP("Bug in Qt-4.4/4.5-rc1: setEncodedFragment doesn't work if the initial url has no fragment", SkipAll);
+  QCOMPARE(url1Rejoined.url(), url1.url());
+  QCOMPARE(url1.upUrl().url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/"));
 }
 
 void KUrlTest::testSetUser()
@@ -1444,16 +1486,21 @@ void KUrlTest::testMoreBrokenStuff()
 
   QUrl dxOffEagle3;
   dxOffEagle3.setEncodedUrl( "http://something/newpage.html?[{\"foo: bar\"}]", QUrl::TolerantMode);
+#if QT_VERSION < 0x040500
   QEXPECT_FAIL("","Issue N183630, task ID 183874; works with setUrl so we do that in _setEncodedUrl now", Continue);
+#endif
   QVERIFY(dxOffEagle3.isValid());
-  //QEXPECT_FAIL("","Issue N183630, task ID 183874", Continue);
-  //QCOMPARE(dxOffEagle.toEncoded(), dxOffEagle3.toEncoded());
+#if QT_VERSION >= 0x040500
+  QCOMPARE(dxOffEagle.toEncoded(), dxOffEagle3.toEncoded());
+#endif
 
   QUrl javascript;
   javascript.setUrl("javascript:window.location+\"__flashplugin_unique__\"", QUrl::TolerantMode);
   QVERIFY(javascript.isValid());
   javascript.setEncodedUrl("javascript:window.location+\"__flashplugin_unique__\"", QUrl::TolerantMode);
+#if QT_VERSION < 0x040500
   QEXPECT_FAIL("","Issue N183630, task ID 183874", Continue);
+#endif
   QVERIFY(javascript.isValid());
 }
 

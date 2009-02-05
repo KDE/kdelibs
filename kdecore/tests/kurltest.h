@@ -52,6 +52,8 @@ private Q_SLOTS:
     void testIPV6();
     void testBaseURL();
     void testSetUser();
+    void testSetEncodedFragment_data();
+    void testSetEncodedFragment();
     void testSubURL();
     void testComparisons();
     void testStreaming();
