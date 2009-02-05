@@ -103,7 +103,7 @@ void KNotifyConfigActionsWidget::save( KNotifyConfigElement * config )
 
 	config->writeEntry( "Sound" , m_ui.Sound_select->url().url() );
 	config->writeEntry( "Logfile" , m_ui.Logfile_select->url().url() );
-	config->writeEntry( "Execute" , m_ui.Execute_select->url().url() );
+	config->writeEntry( "Execute" , m_ui.Execute_select->url().path() );
 	switch(m_ui.KTTS_combo->currentIndex())
 	{
 		case 0:
