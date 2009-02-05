@@ -396,11 +396,11 @@ Notes:
     <glob pattern="*.wsz"/>
   </mime-type>
 
-  <mime-type type="application/x-mplayer2"> <!-- fdo #19671 -->
+  <mime-type type="video/x-ms-wmp"> <!-- fdo #19671 -->
     <comment>Microsoft Media Format</comment>
     <sub-class-of type="video/x-ms-wmv"/>
     <alias type="video/mediaplayer"/>
-    <alias type="video/x-ms-wmp"/>
+    <alias type="application/x-mplayer2"/>
     <glob pattern="*.wmp"/>
   </mime-type>
   <mime-type type="application/vnd.ms-asf"> <!-- fdo #19671 -->
