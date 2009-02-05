@@ -134,8 +134,8 @@ bool KNotificationManager::notify( KNotification* n, const QPixmap &pix,
 
     QList<QVariant>  args;
     args << n->eventId() << (appname.isEmpty() ? KGlobal::mainComponent().componentName() : appname);
-    args.append( contextList); // not the operator<< or it will concatenate the two list.
-    args << n->text() <<  pixmapData << actions << qlonglong(winId) ;
+    args.append(QVariant(contextList)); 
+    args << n->text() <<  pixmapData << QVariant(actions) << qlonglong(winId) ;
     return d->knotify->callWithCallback( "event", args, n, SLOT(slotReceivedId(int)), SLOT(slotReceivedIdError(QDBusError)));
 }
 
