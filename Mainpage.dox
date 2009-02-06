@@ -208,7 +208,6 @@ in the KDE SVN repository), you can do so using the
 
 */
 
-// DOXYGEN_VERSION=4.3
 // DOXYGEN_NAME=kdelibs
 // DOXYGEN_ENABLE=YES
 // vim:ts=4:sw=4:expandtab:filetype=doxygen
