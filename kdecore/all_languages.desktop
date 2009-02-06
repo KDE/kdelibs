@@ -1494,10 +1494,12 @@ Name[zh_HK]=嘉泰羅尼亞語
 Name[zh_TW]=嘉泰羅尼亞語
 [ca@valencia]
 Name=Valencian (southern Catalan)
+Name[ca]=Valencià (català meridional)
+Name[ca@valencia]=Valencià (català meridional)
 Name[ga]=Vaileinsis (Catalóinis an Deiscirt)
 Name[nds]=Valenziaansch (Söödkatalaansch)
 Name[pt]=Valenciano (sul da Catalunha)
-Name[pt_BR]=Valenciano (sul da Catalunha)
+Name[pt_BR]=Valenciano (Catalão meridional)
 Name[uk]=Валенсійська (південна каталонська)
 Name[x-test]=xxValencian (southern Catalan)xx
 [ce]
@@ -9632,6 +9634,8 @@ Name[zh_HK]=Sango語
 Name[zh_TW]=Sango語
 [si]
 Name=Sinhala
+Name[ca]=Singalès
+Name[ca@valencia]=Singalès
 Name[et]=Singali
 Name[ga]=Siolóinis
 Name[nds]=Singaleesch
