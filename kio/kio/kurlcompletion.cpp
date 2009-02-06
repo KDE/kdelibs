@@ -35,6 +35,7 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QTimer>
 #include <QtCore/QDir>
+#include <QtCore/QDirIterator>
 #include <QtCore/QFile>
 #include <QtCore/QTextIStream>
 #include <QtCore/QThread>
@@ -292,6 +293,8 @@ private:
 
 #ifdef Q_WS_WIN
 
+// ############### TODO : get rid of this code path and adapt the #else part now that it got ported to QDirIterator
+
 void DirectoryListThread::run()
 {
   WIN32_FIND_DATAW find_data;
@@ -394,21 +397,13 @@ void DirectoryListThread::run()
 	// Also see (for POSIX functions):
 	// http://www.opengroup.org/onlinepubs/009695399/functions/xsh_chap02_09.html
 
-	DIR *dir = 0;
+    // kDebug() << "Entered DirectoryListThread::run(), m_filter=" << m_filter << ", m_onlyExe=" << m_onlyExe << ", m_onlyDir=" << m_onlyDir << ", m_appendSlashToDir=" << m_appendSlashToDir << ", m_dirList.size()=" << m_dirList.size();
 
 	for ( QStringList::ConstIterator it = m_dirList.constBegin();
 	      it != m_dirList.constEnd() && !terminationRequested();
 	      ++it )
 	{
-		// Open the next directory
-
-		if ( !dir ) {
-			dir = ::opendir( QFile::encodeName( *it ) );
-			if ( ! dir ) {
-				kDebug() << "Failed to open dir:" << *it;
-				return;
-			}
-		}
+		// kDebug() << "Scanning directory" << *it;
 
 		// A trick from KIO that helps performance by a little bit:
 		// chdir to the directory so we won't have to deal with full paths
@@ -417,83 +412,40 @@ void DirectoryListThread::run()
 		QString path = QDir::currentPath();
 		QDir::setCurrent( *it );
 
-		// Loop through all directory entries
-		// Solaris and IRIX dirent structures do not allocate space for d_name. On
-		// systems that do (HP-UX, Linux, Tru64 UNIX), we overallocate space but
-		// that's ok.
-#ifndef HAVE_READDIR_R
-		KDE_struct_dirent *dirEntry = 0;
-		while ( !terminationRequested() &&
-		        (dirEntry = KDE_readdir( dir)))
-#else
-		struct dirent *dirPosition = (struct dirent *) malloc( sizeof( struct dirent ) + MAXPATHLEN + 1 );
-		struct dirent *dirEntry = 0;
-		while ( !terminationRequested() &&
-		        ::readdir_r( dir, dirPosition, &dirEntry ) == 0 && dirEntry )
-#endif
+		QDir::Filters iterator_filter = (m_noHidden ? QDir::Filter(0) : QDir::Hidden) | QDir::Readable | QDir::NoDotAndDotDot;
 
+		if ( m_onlyExe )
+			iterator_filter |= (QDir::Dirs | QDir::Files | QDir::Executable);
+		else if ( m_onlyDir )
+			iterator_filter |= QDir::Dirs;
+		else
+			iterator_filter |= (QDir::Dirs | QDir::Files);
+
+		QDirIterator current_dir_iterator( *it, iterator_filter);
+		int i = 0;
+
+		while (current_dir_iterator.hasNext())
 		{
-			// Skip hidden files if m_noHidden is true
+			current_dir_iterator.next();
 
-			if ( dirEntry->d_name[0] == '.' && m_noHidden )
-				continue;
+			QFileInfo file_info = current_dir_iterator.fileInfo();
+			const QString file_name = file_info.fileName();
 
-			// Skip "."
+			kDebug() << "Found file (#" << i++ << ") " << file_name;
 
-			if ( dirEntry->d_name[0] == '.' && dirEntry->d_name[1] == '\0' )
-				continue;
+			if ( m_filter.isEmpty() || file_name.startsWith( m_filter ) ) {
 
-			// Skip ".."
-
-			if ( dirEntry->d_name[0] == '.' && dirEntry->d_name[1] == '.' && dirEntry->d_name[2] == '\0' )
-				continue;
-
-			QString file = QFile::decodeName( dirEntry->d_name );
-
-			if ( m_filter.isEmpty() || file.startsWith( m_filter ) ) {
-
-				QString toAppend = m_complete_url ? QUrl::toPercentEncoding(file) : file;
-
-				if ( m_onlyExe || m_onlyDir || m_appendSlashToDir ) {
-					KDE_struct_stat sbuff;
-
-					if ( KDE_stat( dirEntry->d_name, &sbuff ) == 0 ) {
-
-						// Verify executable
-
-						if ( m_onlyExe && ( sbuff.st_mode & MODE_EXE ) == 0 )
-							continue;
-
-						// Verify directory
-
-						if ( m_onlyDir && !S_ISDIR( sbuff.st_mode ) )
-							continue;
-
-						// Add '/' to directories
-
-						if ( m_appendSlashToDir && S_ISDIR( sbuff.st_mode ) )
-							toAppend.append( QLatin1Char( '/' ) );
-
-					}
-					else {
-						kDebug() << "Could not stat file" << file;
-						continue;
-					}
-				}
+				QString toAppend = m_complete_url ? QUrl::toPercentEncoding(file_name) : file_name;
+				// Add '/' to directories
+				if ( m_appendSlashToDir && file_info.isDir() )
+					toAppend.append( QLatin1Char( '/' ) );
 
 				addMatch( m_prepend + toAppend );
 			}
 		}
 
 		// chdir to the original directory
-
 		QDir::setCurrent( path );
-
-		::closedir( dir );
-		dir = 0;
-#ifdef HAVE_READDIR_R
-		free( dirPosition );
-#endif
 	}
 
 	done();
