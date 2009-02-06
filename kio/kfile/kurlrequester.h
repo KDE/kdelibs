@@ -90,6 +90,12 @@ public:
     KUrl url() const;
 
     /**
+     * @returns the current start dir
+     * @since 4.3
+     */
+    KUrl startDir() const;
+    
+    /**
      * @returns the current text in the lineedit or combobox.
      * This does not do the URL expansion that url() does, it's only provided
      * for cases where KUrlRequester is used to enter URL-or-something-else,
@@ -191,7 +197,14 @@ public Q_SLOTS:
      * Sets the url in the lineedit to @p url.
      */
     void setUrl( const KUrl& url );
-
+    
+    /**
+     * Sets the start dir @p startDir.
+     * The start dir is only used when the URL isn't setted.
+     * @since 4.3
+     */
+    void setStartDir( const KUrl& startDir );
+    
     /**
      * Sets the url in the lineedit to @p KUrl::fromPath(path).
      * This is only for local paths; do not pass a url here.

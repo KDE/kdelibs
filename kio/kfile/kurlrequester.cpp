@@ -165,10 +165,19 @@ public:
             return KUrl( txt );
     }
 
+    void setStartDir( KUrl url ){
+        m_startDir = url;
+    }
+    
+    KUrl startDir() const {
+        return m_startDir;
+    }
+    
     // slots
     void _k_slotUpdateUrl();
     void _k_slotOpenDialog();
 
+    KUrl m_startDir;
     KUrlRequester *m_parent;
     KLineEdit *edit;
     KComboBox *combo;
@@ -210,7 +219,6 @@ KUrlRequester::KUrlRequester( const KUrl& url, QWidget *parent)
     d->init();
     setUrl( url );
 }
-
 
 KUrlRequester::~KUrlRequester()
 {
@@ -266,6 +274,11 @@ void KUrlRequester::setPath( const QString& path )
     d->setText( path );
 }
 
+void KUrlRequester::setStartDir(const KUrl& startDir)
+{
+    d->setStartDir( startDir );
+}
+
 void KUrlRequester::changeEvent(QEvent *e)
 {
    if (e->type()==QEvent::WindowTitleChange) {
@@ -279,6 +292,11 @@ void KUrlRequester::changeEvent(QEvent *e)
 KUrl KUrlRequester::url() const
 {
     return d->url();
+}
+
+KUrl KUrlRequester::startDir() const
+{
+    return d->startDir();
 }
 
 QString KUrlRequester::text() const
@@ -295,9 +313,9 @@ void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
                           (myFileDialog->mode() & (KFile::File | KFile::Files)) == 0) )
     {
         if (fileDialogMode & KFile::LocalOnly)
-            newurl = KFileDialog::getExistingDirectory(m_parent->url(), m_parent);
+            newurl = KFileDialog::getExistingDirectory(!m_parent->url().isEmpty() ? m_parent->url() : m_startDir, m_parent);
         else
-            newurl = KFileDialog::getExistingDirectoryUrl(m_parent->url(), m_parent);
+            newurl = KFileDialog::getExistingDirectoryUrl(!m_parent->url().isEmpty() ? m_parent->url() : m_startDir, m_parent);
         if ( !newurl.isValid() )
         {
             return;
@@ -313,7 +331,10 @@ void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
           // If we won't be able to list it (e.g. http), then don't try :)
           if ( KProtocolManager::supportsListing( u ) )
               dlg->setSelection( u.url() );
+      } else {
+          dlg->setUrl(m_startDir);
       }
+        
 
       if ( dlg->exec() != QDialog::Accepted )
       {
