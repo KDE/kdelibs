@@ -1287,18 +1287,20 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
             }
         }
         else if (xml.isCharacters()) {
-            // Stream reader will automatically reslove entities, which is
-            // not desired in this case, as the final text may be rich.
-            // The text element will be broken at the resolved entity, so
-            // the first character may be one of those resolved.
-            // Convert it back into an entity.
+            // Stream reader will automatically resolve default XML entities,
+            // which is not desired in this case, as the final text may
+            // be rich. Convert them back into entities.
             QString text = xml.text().toString();
-            QString firstChar = text.left(1);
-            if (s->xmlEntitiesInverse.contains(firstChar)) {
-                QString entname = s->xmlEntitiesInverse[firstChar];
-                text = '&' + entname + ';' + text.mid(1);
+            QString ntext;
+            foreach (const QChar &c, text) {
+                if (s->xmlEntitiesInverse.contains(c)) {
+                    QString entname = s->xmlEntitiesInverse[c];
+                    ntext += '&' + entname + ';';
+                } else {
+                    ntext += c;
+                }
             }
-            openEls.top().formattedText += text;
+            openEls.top().formattedText += ntext;
         }
     }
 
