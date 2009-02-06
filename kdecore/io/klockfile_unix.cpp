@@ -173,7 +173,9 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   if (st_buf != st_buf2 || S_ISLNK(st_buf.st_mode) || S_ISLNK(st_buf2.st_mode))
   {
      // SMBFS supports hardlinks by copying the file, as a result the above test will always fail
-     if ((st_buf.st_nlink == 1) && (st_buf2.st_nlink == 1) && (st_buf.st_ino != st_buf2.st_ino))
+     // cifs increases link count artifically but the inodes are still different
+     if ((st_buf2.st_nlink > 1 ||
+         ((st_buf.st_nlink == 1) && (st_buf2.st_nlink == 1))) && (st_buf.st_ino != st_buf2.st_ino))
      {
         linkCountSupport = testLinkCountSupport(uniqueName);
         if (!linkCountSupport)
@@ -228,13 +230,16 @@ static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct
       linkCountSupport = testLinkCountSupport(tmpFile);
    }
 
-   if (!linkCountSupport &&
-       (KDE_lstat(lckFile, &st_buf2) == 0) && st_buf == st_buf2)
+   if (!linkCountSupport)
    {
       // Without support for link counts we will have a little race condition
       qWarning("WARNING: deleting stale lockfile %s", lckFile.data());
-      ::unlink(lckFile);
       ::unlink(tmpFile);
+      if (::unlink(lckFile) < 0) {
+          qWarning("WARNING: Problem deleting stale lockfile %s: %s", lckFile.data(),
+                  strerror(errno));
+          return KLockFile::LockFail;
+      }
       return KLockFile::LockOK;
    }
 
