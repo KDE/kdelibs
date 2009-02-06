@@ -41,6 +41,8 @@ KGuiItem guiItem( StandardItem ui_enum )
   case Clear    : return clear();
   case Help     : return help();
   case Close    : return close();
+  case CloseWindow : return closeWindow();
+  case CloseDocument : return closeDocument();
   case Defaults : return defaults();
   case Back     : return back();
   case Forward  : return forward();
@@ -78,6 +80,8 @@ QString standardItem( StandardItem ui_enum )
   case Apply    : return QLatin1String("apply");
   case Help     : return QLatin1String("help");
   case Close    : return QLatin1String("close");
+  case CloseWindow : return QLatin1String("closeWindow");
+  case CloseDocument : return QLatin1String("closeDocument");
   case Defaults : return QLatin1String("defaults");
   case Back     : return QLatin1String("back");
   case Forward  : return QLatin1String("forward");
@@ -179,6 +183,18 @@ KGuiItem close()
 {
   return KGuiItem( i18n( "&Close" ), "window-close",
                    i18n( "Close the current window or document" ) );
+}
+
+KGuiItem closeWindow()
+{
+  return KGuiItem( i18n( "&Close Window" ), "window-close",
+		   i18n( "Close the current window." ) );
+}
+
+KGuiItem closeDocument()
+{
+  return KGuiItem( i18n( "&Close Document" ), "document-close",
+		   i18n( "Close the current document." ) );
 }
 
 KGuiItem defaults()

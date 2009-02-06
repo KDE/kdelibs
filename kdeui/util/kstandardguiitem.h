@@ -47,10 +47,10 @@ namespace KStandardGuiItem
 
     enum StandardItem
     {
-        Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
-        Apply, Clear, Help, Defaults, Close, Back, Forward, Print,
-        Continue, Open, Quit, AdminMode, Reset, Delete, Insert,
-        Configure, Find, Stop, Add, Remove, Test, Properties, Overwrite
+        Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs, Apply, Clear,
+        Help, Defaults, Close, Back, Forward, Print, Continue, Open, Quit,
+        AdminMode, Reset, Delete, Insert, Configure, Find, Stop, Add, Remove,
+        Test, Properties, Overwrite, CloseWindow, CloseDocument
     };
 
     /**
@@ -136,6 +136,18 @@ namespace KStandardGuiItem
      * Returns the 'Close' gui item.
      */
     KDEUI_EXPORT KGuiItem close();
+
+    /**
+     * Returns the 'CloseWindow' gui item.
+     * @since 4.3
+     */
+    KDEUI_EXPORT KGuiItem closeWindow();
+
+    /**
+     * Returns the 'CloseDocument' gui item.
+     * @since 4.3
+     */
+    KDEUI_EXPORT KGuiItem closeDocument();
 
     /**
      * Returns the 'Print' gui item.
