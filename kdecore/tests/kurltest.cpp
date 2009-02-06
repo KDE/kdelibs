@@ -1108,6 +1108,7 @@ void KUrlTest::testSetEncodedFragment_data()
 void KUrlTest::testSetEncodedFragment()
 {
     // QtSw task number: TODO (mail sent)
+    // Bug fixed in 4.5.1 by Thiago
     QSKIP("Bug in Qt-4.4/4.5-rc1: setEncodedFragment doesn't work if the initial url has no fragment", SkipAll);
 
     QFETCH(QByteArray, base);
@@ -1202,6 +1203,7 @@ void KUrlTest::testSubURL()
   QCOMPARE(url1Splitted[1].url(), QString("gzip:/"));
   QCOMPARE(url1Splitted[2].url(), QString("tar:/README"));
   const KUrl url1Rejoined = KUrl::join(url1Splitted);
+  // Bug fixed in 4.5.1 by Thiago
   QSKIP("Bug in Qt-4.4/4.5-rc1: setEncodedFragment doesn't work if the initial url has no fragment", SkipAll);
   QCOMPARE(url1Rejoined.url(), url1.url());
   QCOMPARE(url1.upUrl().url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/"));
