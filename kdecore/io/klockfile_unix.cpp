@@ -230,13 +230,16 @@ static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct
       linkCountSupport = testLinkCountSupport(tmpFile);
    }
 
-   if (!linkCountSupport &&
-       (KDE_lstat(lckFile, &st_buf2) == 0) && st_buf == st_buf2)
+   if (!linkCountSupport)
    {
       // Without support for link counts we will have a little race condition
       qWarning("WARNING: deleting stale lockfile %s", lckFile.data());
-      ::unlink(lckFile);
       ::unlink(tmpFile);
+      if (::unlink(lckFile) < 0) {
+          qWarning("WARNING: Problem deleting stale lockfile %s: %s", lckFile.data(),
+                  strerror(errno));
+          return KLockFile::LockFail;
+      }
       return KLockFile::LockOK;
    }
 
