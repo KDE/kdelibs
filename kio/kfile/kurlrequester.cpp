@@ -165,14 +165,6 @@ public:
             return KUrl( txt );
     }
 
-    void setStartDir( KUrl url ){
-        m_startDir = url;
-    }
-    
-    KUrl startDir() const {
-        return m_startDir;
-    }
-    
     // slots
     void _k_slotUpdateUrl();
     void _k_slotOpenDialog();
@@ -276,7 +268,7 @@ void KUrlRequester::setPath( const QString& path )
 
 void KUrlRequester::setStartDir(const KUrl& startDir)
 {
-    d->setStartDir( startDir );
+    d->m_startDir = startDir;
 }
 
 void KUrlRequester::changeEvent(QEvent *e)
@@ -296,7 +288,7 @@ KUrl KUrlRequester::url() const
 
 KUrl KUrlRequester::startDir() const
 {
-    return d->startDir();
+    return d->m_startDir;
 }
 
 QString KUrlRequester::text() const
