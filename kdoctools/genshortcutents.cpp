@@ -69,6 +69,9 @@ static QString entityForAccel( KStandardShortcut::StandardShortcut accel )
 		case KStandardShortcut::Open:
 			markup += "Open";
 			break;
+		case KStandardShortcut::OpenRecent:
+			markup += "OpenRecent";
+			break;
 		case KStandardShortcut::New:
 			markup += "New";
 			break;
@@ -77,6 +80,9 @@ static QString entityForAccel( KStandardShortcut::StandardShortcut accel )
 			break;
 		case KStandardShortcut::Save:
 			markup += "Save";
+			break;
+		case KStandardShortcut::SaveAs:
+			markup += "SaveAs";
 			break;
 		case KStandardShortcut::Print:
 			markup += "Print";
@@ -212,6 +218,87 @@ static QString entityForAccel( KStandardShortcut::StandardShortcut accel )
 			break;
 		case KStandardShortcut::PasteSelection:
 			markup += "PastSelection";
+			break;
+		case KStandardShortcut::Revert:
+			markup += "Revert";
+			break;
+		case KStandardShortcut::PrintPreview:
+			markup += "PrintPreview";
+			break;
+		case KStandardShortcut::Mail:
+			markup += "Mail";
+			break;
+		case KStandardShortcut::Clear:
+			markup += "Clear";
+			break;
+		case KStandardShortcut::ActualSize:
+			markup += "ActualSize";
+			break;
+		case KStandardShortcut::FitToPage:
+			markup += "FitToPage";
+			break;
+		case KStandardShortcut::FitToWidth:
+			markup += "FitToWidth";
+			break;
+		case KStandardShortcut::FitToHeight:
+			markup += "FitToHeight";
+			break;
+		case KStandardShortcut::Zoom:
+			markup += "Zoom";
+			break;
+		case KStandardShortcut::Goto:
+			markup += "Goto";
+			break;
+		case KStandardShortcut::GotoPage:
+			markup += "GotoPage";
+			break;
+		case KStandardShortcut::DocumentBack:
+			markup += "DocumentBack";
+			break;
+		case KStandardShortcut::DocumentForward:
+			markup += "DocumentForward";
+			break;
+		case KStandardShortcut::EditBookmarks:
+			markup += "EditBookmarks";
+			break;
+		case KStandardShortcut::Spelling:
+			markup += "Spelling";
+			break;
+		case KStandardShortcut::ShowToolbar:
+			markup += "ShowToolbar";
+			break;
+		case KStandardShortcut::ShowStatusbar:
+			markup += "ShowStatusbar";
+			break;
+		case KStandardShortcut::SaveOptions:
+			markup += "SaveOptions";
+			break;
+		case KStandardShortcut::KeyBindings:
+			markup += "KeyBindings";
+			break;
+		case KStandardShortcut::Preferences:
+			markup += "Preferences";
+			break;
+		case KStandardShortcut::ConfigureToolbars:
+			markup += "ConfigureToolbars";
+			break;
+		case KStandardShortcut::ConfigureNotifications:
+			markup += "ConfigureNotifications";
+			break;
+		case KStandardShortcut::TipofDay:
+			markup += "TipofDay";
+			break;
+		case KStandardShortcut::ReportBug:
+			markup += "ReportBug";
+			break;
+		case KStandardShortcut::SwitchApplicationLanguage:
+			markup += "SwitchApplicationLanguage";
+			break;
+		case KStandardShortcut::AboutApp:
+			markup += "AboutApp";
+			break;
+		case KStandardShortcut::AboutKDE:
+			markup += "AboutKDE";
 			break;
 		case KStandardShortcut::StandardShortcutCount:
 			break;
