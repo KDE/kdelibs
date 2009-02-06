@@ -1070,18 +1070,18 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   //QEXPECT_FAIL("","Issue N183630, task ID 183874", Continue); // Fixed by _setEncodedUrl
   QCOMPARE(dxOffEagle.url(), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D") );
 
-#if 0 // QtSw issue 243557
+#if QT_VERSION >= 0x040500 // QtSw issue 243557
   QByteArray tsdgeos("http://google.com/c?c=Translation+%C2%BB+trunk|");
   QUrl tsdgeosQUrl;
   tsdgeosQUrl.setEncodedUrl(tsdgeos, QUrl::TolerantMode);
-  //QVERIFY(tsdgeosQUrl.isValid()); // fails
-  tsdgeosQUrl.setUrl(tsdgeos, QUrl::TolerantMode);
-  //QCOMPARE(tsdgeosQUrl.toEncoded(), tsdgeos); // unusable output from qtestlib...
-  QCOMPARE(QString(tsdgeosQUrl.toEncoded()), QString(tsdgeos));
+  QVERIFY(tsdgeosQUrl.isValid()); // failed in Qt-4.4, works in Qt-4.5
+  QByteArray tsdgeosExpected("http://google.com/c?c=Translation+%C2%BB+trunk%7C");
+  //QCOMPARE(tsdgeosQUrl.toEncoded(), tsdgeosExpected); // unusable output from qtestlib...
+  QCOMPARE(QString(tsdgeosQUrl.toEncoded()), QString(tsdgeosExpected));
 
   QString tsdgeosGoogle("http://google.com/c?c=Translation+%C2%BB+trunk|");
   KUrl tsdgeosUrl(tsdgeosGoogle);
-  QCOMPARE(tsdgeosUrl.url(), tsdgeosGoogle);
+  QCOMPARE(tsdgeosUrl.url(), QString(tsdgeosExpected));
 #endif
 
   // Shows up in nspluginviewer/flash
