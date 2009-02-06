@@ -1101,7 +1101,6 @@ void KUrlTest::testSetEncodedFragment_data()
     typedef QByteArray BA;
     QTest::newRow("basic test") << BA("http://www.kde.org") << BA("abc") << BA("http://www.kde.org#abc");
     QTest::newRow("initial url has fragment") << BA("http://www.kde.org#old") << BA("new") << BA("http://www.kde.org#new");
-    QTest::newRow("fragment without #, invalid") << BA("http://www.kde.org") << BA("abc") << BA("http://www.kde.org");
     QTest::newRow("encoded fragment") << BA("http://www.kde.org") << BA("a%20c") << BA("http://www.kde.org#a%20c");
     QTest::newRow("with #") << BA("http://www.kde.org") << BA("a#b") << BA("http://www.kde.org#a#b");
 }
