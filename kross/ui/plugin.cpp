@@ -19,6 +19,7 @@
 
 #include "plugin.h"
 
+#include <kaction.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <krun.h>
@@ -109,7 +110,7 @@ void ScriptingPlugin::buildDomDocument(QDomDocument& document,
             i.next();
             action->addObject(i.value(), i.key());
         }
-        
+
         // Create and append new Menu element if doesn't exist
         if(menuElement.isNull()) {
             menuElement = document.createElement("Menu");
@@ -142,7 +143,12 @@ void ScriptingPlugin::buildDomDocument(QDomDocument& document,
 
         menuElement.appendChild(newActionElement);
 
-        actionCollection()->addAction(action->name(), action);
+
+        KAction* adaptor=new KAction(action->text(), action);
+        connect (adaptor,SIGNAL(triggered()),action,SLOT(trigger()));
+        adaptor->setEnabled(action->isEnabled());
+        adaptor->setIcon(action->icon());
+        actionCollection()->addAction(action->name(), adaptor);
     }
 
     foreach(const QString &collectionname, collection->collections()) {
