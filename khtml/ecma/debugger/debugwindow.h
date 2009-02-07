@@ -113,6 +113,9 @@ public:
     // Called by KJSProxy when we navigate away from a page
     void clearInterpreter(KJS::Interpreter* interp);
 
+    // Hook for activating the debugger from gdb or such
+    static void forceStopAtNext();
+
 public Q_SLOTS:
     void stopAtNext();
     void continueExecution();

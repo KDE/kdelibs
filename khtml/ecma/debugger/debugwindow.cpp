@@ -350,6 +350,12 @@ void DebugWindow::resetTimeoutsIfNeeded()
     }
 }
 
+void DebugWindow::forceStopAtNext()
+{
+    DebugWindow* self = window();
+    self->m_breakAtNext = true;
+}
+
 void DebugWindow::stopAtNext()
 {
     m_breakAtNext = m_stopAct->isChecked();
