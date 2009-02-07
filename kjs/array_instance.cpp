@@ -254,6 +254,13 @@ void ArrayInstance::put(ExecState* exec, unsigned i, JSValue* value, int attribu
         if (!map) {
             map = new SparseArrayValueMap;
             storage->m_sparseValueMap = map;
+
+            // If we create a sparse map, we need to ensure that there is at least one spot
+            // in the vector map, however, since the sparse map can't put/get key 0.
+            // It's safe to do it here, since put(0) will always put it in the vector part,
+            // but we have to do it before a get(0) or it will crash
+            if (!m_vectorLength)
+                increaseVectorLength(1);
         }
         map->add(i, value);
         return;
