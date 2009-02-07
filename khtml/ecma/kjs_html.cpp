@@ -73,9 +73,9 @@ using namespace DOM;
 
 namespace KJS {
 
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLDocumentProto, DOMDocumentProto)
+KJS_DEFINE_PROTOTYPE(HTMLDocumentProto)
 KJS_IMPLEMENT_PROTOFUNC(HTMLDocFunction)
-KJS_IMPLEMENT_PROTOTYPE("HTMLDocument", HTMLDocumentProto, HTMLDocFunction)
+KJS_IMPLEMENT_PROTOTYPE("HTMLDocument", HTMLDocumentProto, HTMLDocFunction, DOMDocumentProto)
 
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLDocumentPseudoCtor, "HTMLDocument", HTMLDocumentProto)
 
@@ -2575,8 +2575,8 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
 
 
 //Prototype mess for this...
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLElementProto, DOMElementProto)
-KJS_IMPLEMENT_PROTOTYPE("HTMLElement", HTMLElementProto, HTMLElementFunction)
+KJS_DEFINE_PROTOTYPE(HTMLElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLElement", HTMLElementProto, HTMLElementFunction, DOMElementProto )
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLElementPseudoCtor, "HTMLElement", HTMLElementProto)
 
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLHtmlElement", HTMLHtmlElementProto, HTMLElementProto)
@@ -2603,16 +2603,16 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLIsIndexElementPseudoCtor, "HTMLIsIndexElement",
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLStyleElement", HTMLStyleElementProto, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLStyleElementPseudoCtor, "HTMLStyleElement", HTMLStyleElementProto)
 
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLBodyElementProto, HTMLElementProto)
-KJS_IMPLEMENT_PROTOTYPE("HTMLBodyElement", HTMLBodyElementProto, HTMLElementFunction)
+KJS_DEFINE_PROTOTYPE(HTMLBodyElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLBodyElement", HTMLBodyElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLBodyElementPseudoCtor, "HTMLBodyElement", HTMLBodyElementProto)
 
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLFormElementProto, HTMLElementProto)
-KJS_IMPLEMENT_PROTOTYPE("HTMLFormElement", HTMLFormElementProto, HTMLElementFunction)
+KJS_DEFINE_PROTOTYPE(HTMLFormElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLFormElement", HTMLFormElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLFormElementPseudoCtor, "HTMLFormElement", HTMLFormElementProto)
 
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLSelectElementProto, HTMLElementProto)
-KJS_IMPLEMENT_PROTOTYPE("HTMLSelectElement", HTMLSelectElementProto, HTMLElementFunction)
+KJS_DEFINE_PROTOTYPE(HTMLSelectElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLSelectElement", HTMLSelectElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLSelectElementPseudoCtor, "HTMLSelectElement", HTMLSelectElementProto)
 
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLOptGroupElement", HTMLOptGroupElementProto, HTMLElementProto)
@@ -2621,16 +2621,16 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLOptGroupElementPseudoCtor, "HTMLOptGroupElement
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLOptionElement", HTMLOptionElementProto, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLOptionElementPseudoCtor, "HTMLOptionElement", HTMLOptionElementProto)
 
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLInputElementProto, HTMLElementProto)
-KJS_IMPLEMENT_PROTOTYPE("HTMLInputElement", HTMLInputElementProto, HTMLElementFunction)
+KJS_DEFINE_PROTOTYPE(HTMLInputElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLInputElement", HTMLInputElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLInputElementPseudoCtor, "HTMLInputElement", HTMLInputElementProto)
 
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLTextAreaElementProto, HTMLElementProto)
-KJS_IMPLEMENT_PROTOTYPE("HTMLTextAreaElement", HTMLTextAreaElementProto, HTMLElementFunction)
+KJS_DEFINE_PROTOTYPE(HTMLTextAreaElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLTextAreaElement", HTMLTextAreaElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTextAreaElementPseudoCtor, "HTMLTextAreaElement", HTMLTextAreaElementProto)
 
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLButtonElementProto, HTMLElementProto)
-KJS_IMPLEMENT_PROTOTYPE("HTMLButtonElement", HTMLButtonElementProto, HTMLElementFunction)
+KJS_DEFINE_PROTOTYPE(HTMLButtonElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLButtonElement", HTMLButtonElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLButtonElementPseudoCtor, "HTMLButtonElement", HTMLButtonElementProto)
 
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLLabelElement", HTMLLabelElementProto, HTMLElementProto)
@@ -2693,8 +2693,8 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLHRElementPseudoCtor, "HTMLHRElement", HTMLHREle
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLModElement", HTMLModElementProto, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLModElementPseudoCtor, "HTMLModElement", HTMLModElementProto)
 
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLAnchorElementProto, HTMLElementProto)
-KJS_IMPLEMENT_PROTOTYPE("HTMLAnchorElement", HTMLAnchorElementProto, HTMLElementFunction)
+KJS_DEFINE_PROTOTYPE(HTMLAnchorElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLAnchorElement", HTMLAnchorElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLAnchorElementPseudoCtor, "HTMLAnchorElement", HTMLAnchorElementProto)
 
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLImageElement", HTMLImageElementProto, HTMLElementProto)
@@ -2718,8 +2718,8 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLAreaElementPseudoCtor, "HTMLAreaElement", HTMLA
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLScriptElement", HTMLScriptElementProto, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLScriptElementPseudoCtor, "HTMLScriptElement", HTMLScriptElementProto)
 
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLTableElementProto, HTMLElementProto)
-KJS_IMPLEMENT_PROTOTYPE("HTMLTableElement", HTMLTableElementProto, HTMLElementFunction)
+KJS_DEFINE_PROTOTYPE(HTMLTableElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLTableElement", HTMLTableElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTableElementPseudoCtor, "HTMLTableElement", HTMLTableElementProto)
 
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLTableCaptionElement", HTMLTableCaptionElementProto, HTMLElementProto)
@@ -2728,12 +2728,12 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTableCaptionElementPseudoCtor, "HTMLTableCaptio
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLTableColElement", HTMLTableColElementProto, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTableColElementPseudoCtor, "HTMLTableColElement", HTMLTableColElementProto)
 
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLTableSectionElementProto, HTMLElementProto)
-KJS_IMPLEMENT_PROTOTYPE("HTMLTableSectionElement", HTMLTableSectionElementProto, HTMLElementFunction)
+KJS_DEFINE_PROTOTYPE(HTMLTableSectionElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLTableSectionElement", HTMLTableSectionElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTableSectionElementPseudoCtor, "HTMLTableSectionElement", HTMLTableSectionElementProto)
 
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLTableRowElementProto, HTMLElementProto)
-KJS_IMPLEMENT_PROTOTYPE("HTMLTableRowElement", HTMLTableRowElementProto, HTMLElementFunction)
+KJS_DEFINE_PROTOTYPE(HTMLTableRowElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLTableRowElement", HTMLTableRowElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLTableRowElementPseudoCtor, "HTMLTableRowElement", HTMLTableRowElementProto)
 
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLTableCellElement", HTMLTableCellElementProto, HTMLElementProto)
@@ -2751,12 +2751,12 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLFrameElementPseudoCtor, "HTMLFrameElement", HTM
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLIFrameElement", HTMLIFrameElementProto, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLIFrameElementPseudoCtor, "HTMLIFrameElement", HTMLIFrameElementProto)
 
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLMarqueeElementProto, HTMLElementProto)
-KJS_IMPLEMENT_PROTOTYPE("HTMLMarqueeElement", HTMLMarqueeElementProto, HTMLElementFunction)
+KJS_DEFINE_PROTOTYPE(HTMLMarqueeElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLMarqueeElement", HTMLMarqueeElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLMarqueeElementPseudoCtor, "HTMLMarqueeElement", HTMLMarqueeElementProto)
 
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLCanvasElementProto, HTMLElementProto)
-KJS_IMPLEMENT_PROTOTYPE("HTMLCanvasElement", HTMLCanvasElementProto, HTMLElementFunction)
+KJS_DEFINE_PROTOTYPE(HTMLCanvasElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLCanvasElement", HTMLCanvasElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLCanvasElementPseudoCtor, "HTMLCanvasElement", HTMLCanvasElementProto)
 
 
@@ -2900,7 +2900,7 @@ static JSObject* prototypeForID(ExecState* exec, DOM::NodeImpl::Id id) {
 */
 KJS_DEFINE_PROTOTYPE(HTMLCollectionProto)
 KJS_IMPLEMENT_PROTOFUNC(HTMLCollectionProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("HTMLCollection", HTMLCollectionProto,HTMLCollectionProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("HTMLCollection", HTMLCollectionProto, HTMLCollectionProtoFunc, ObjectPrototype)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLCollectionPseudoCtor, "HTMLCollection", HTMLCollectionProto)
 
 const ClassInfo KJS::HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
@@ -3130,9 +3130,9 @@ JSValue* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, JSObject 
   add		HTMLSelectCollection::Add		DontDelete|Function 2
 @end
 */
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLSelectCollectionProto, HTMLCollectionProto)
+KJS_DEFINE_PROTOTYPE(HTMLSelectCollectionProto)
 KJS_IMPLEMENT_PROTOFUNC(HTMLSelectCollectionProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("HTMLOptionsCollection", HTMLSelectCollectionProto, HTMLSelectCollectionProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("HTMLOptionsCollection", HTMLSelectCollectionProto, HTMLSelectCollectionProtoFunc, HTMLCollectionProto)
 
 const ClassInfo KJS::HTMLSelectCollection::info = { "HTMLOptionsCollection", &HTMLCollection::info, 0, 0 };
 

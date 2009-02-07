@@ -65,7 +65,7 @@ namespace KJS {
            OnResize, OnScroll, OnSelect, OnSubmit, OnUnload,
            OffsetLeft, OffsetTop, OffsetWidth, OffsetHeight, OffsetParent,
            ClientLeft, ClientTop, ClientWidth, ClientHeight, ScrollLeft, ScrollTop,
-	   ScrollWidth, ScrollHeight, SourceIndex, TextContent };
+           ScrollWidth, ScrollHeight, SourceIndex, TextContent };
 
     //### toNode? virtual
     DOM::NodeImpl* impl() const { return m_impl.get(); }
@@ -74,7 +74,7 @@ namespace KJS {
   };
 
   DEFINE_CONSTANT_TABLE(DOMNodeConstants)
-  KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMNodeProto, DOMNodeConstants)
+  KJS_DEFINE_PROTOTYPE(DOMNodeProto)
   DEFINE_PSEUDO_CONSTRUCTOR(NodeConstructor)
 
   class DOMNodeList : public DOMObject {
@@ -137,7 +137,7 @@ namespace KJS {
     DOM::DocumentImpl* impl() { return static_cast<DOM::DocumentImpl*>(m_impl.get()); }
   };
   
-  KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMDocumentProto, DOMNodeProto)
+  KJS_DEFINE_PROTOTYPE(DOMDocumentProto)
 
   DEFINE_PSEUDO_CONSTRUCTOR(DocumentPseudoCtor)
 
@@ -181,7 +181,7 @@ namespace KJS {
   DOM::AttrImpl    *toAttr   (JSValue *); // returns 0 if passed-in value is not a DOMAtt object
   DOM::ElementImpl *toElement(JSValue *); // returns 0 if passed-in value is not a DOMElement object
 
-  KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMElementProto, DOMNodeProto)
+  KJS_DEFINE_PROTOTYPE(DOMElementProto)
   DEFINE_PSEUDO_CONSTRUCTOR(ElementPseudoCtor)
 
   class DOMDOMImplementation : public DOMObject {

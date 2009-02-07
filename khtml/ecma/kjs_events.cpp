@@ -255,7 +255,7 @@ const ClassInfo DOMEvent::info = { "Event", 0, &DOMEventTable, 0 };
 */
 KJS_DEFINE_PROTOTYPE(DOMEventProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMEventProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMEvent", DOMEventProto, DOMEventProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMEvent", DOMEventProto, DOMEventProtoFunc,ObjectPrototype)
 
 DOMEvent::DOMEvent(ExecState *exec, DOM::EventImpl* e)
   : m_impl(e) {
@@ -476,9 +476,9 @@ const ClassInfo DOMUIEvent::info = { "UIEvent", &DOMEvent::info, &DOMUIEventTabl
   initUIEvent	DOMUIEvent::InitUIEvent	DontDelete|Function 5
 @end
 */
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMUIEventProto,DOMEventProto)
+KJS_DEFINE_PROTOTYPE(DOMUIEventProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMUIEventProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMUIEvent",DOMUIEventProto,DOMUIEventProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMUIEvent",DOMUIEventProto,DOMUIEventProtoFunc,DOMEventProto)
 
 DOMUIEvent::DOMUIEvent(ExecState *exec, DOM::UIEventImpl* ue) :
   DOMEvent(DOMUIEventProto::self(exec), ue) {}
@@ -575,9 +575,9 @@ const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, &DOMMou
   initMouseEvent	DOMMouseEvent::InitMouseEvent	DontDelete|Function 15
 @end
 */
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMMouseEventProto,DOMUIEventProto)
+KJS_DEFINE_PROTOTYPE(DOMMouseEventProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMMouseEventProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMMouseEvent",DOMMouseEventProto,DOMMouseEventProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMMouseEvent",DOMMouseEventProto,DOMMouseEventProtoFunc,DOMUIEventProto)
 
 DOMMouseEvent::DOMMouseEvent(ExecState *exec, DOM::MouseEventImpl* me) :
   DOMUIEvent(DOMMouseEventProto::self(exec), me) {}
@@ -765,9 +765,9 @@ const ClassInfo DOMTextEvent::info = { "TextEvent", &DOMKeyEventBase::info, &DOM
   # Missing: initTextEventNS
 @end
 */
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMTextEventProto,DOMUIEventProto)//Note: no proto in KeyBase
+KJS_DEFINE_PROTOTYPE(DOMTextEventProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMTextEventProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMTextEvent", DOMTextEventProto,DOMTextEventProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMTextEvent", DOMTextEventProto,DOMTextEventProtoFunc,DOMUIEventProto)//Note: no proto in KeyBase
 
 DOMTextEvent::DOMTextEvent(ExecState *exec, DOM::TextEventImpl* ke) :
   DOMKeyEventBase(DOMTextEventProto::self(exec), ke) {}
@@ -826,9 +826,9 @@ const ClassInfo DOMKeyboardEvent::info = { "KeyboardEvent", &DOMKeyEventBase::in
   getModifierState      DOMKeyboardEvent::GetModifierState      DontDelete|Function 1
 @end
 */
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMKeyboardEventProto, DOMUIEventProto) //Note: no proto in
+KJS_DEFINE_PROTOTYPE(DOMKeyboardEventProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMKeyboardEventProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMKeyboardEvent",DOMKeyboardEventProto,DOMKeyboardEventProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMKeyboardEvent",DOMKeyboardEventProto,DOMKeyboardEventProtoFunc, DOMUIEventProto) //Note: no proto in KeyBase
 
 DOMKeyboardEvent::DOMKeyboardEvent(ExecState *exec, DOM::KeyboardEventImpl* ke) :
   DOMKeyEventBase(DOMKeyboardEventProto::self(exec), ke) {}
@@ -959,9 +959,9 @@ const ClassInfo DOMMutationEvent::info = { "MutationEvent", &DOMEvent::info, &DO
   initMutationEvent	DOMMutationEvent::InitMutationEvent	DontDelete|Function 8
 @end
 */
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMMutationEventProto,DOMEventProto)
+KJS_DEFINE_PROTOTYPE(DOMMutationEventProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMMutationEventProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMMutationEvent",DOMMutationEventProto,DOMMutationEventProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMMutationEvent",DOMMutationEventProto,DOMMutationEventProtoFunc,DOMEventProto)
 
 DOMMutationEvent::DOMMutationEvent(ExecState *exec, DOM::MutationEventImpl* me) :
   DOMEvent(DOMMutationEventProto::self(exec), me) {}

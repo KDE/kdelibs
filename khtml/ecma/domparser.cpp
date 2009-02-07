@@ -44,7 +44,7 @@ namespace KJS {
 
 KJS_DEFINE_PROTOTYPE(DOMParserProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMParserProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMParser",DOMParserProto,DOMParserProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMParser",DOMParserProto,DOMParserProtoFunc,ObjectPrototype)
 
 
 DOMParserConstructorImp::DOMParserConstructorImp(ExecState* exec, DOM::DocumentImpl *d)

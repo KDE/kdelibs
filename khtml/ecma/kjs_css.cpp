@@ -135,7 +135,7 @@ static bool isCSSPropertyName(const Identifier &JSPropertyName)
 */
 KJS_DEFINE_PROTOTYPE(DOMCSSStyleDeclarationProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMCSSStyleDeclarationProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMCSSStyleDeclaration", DOMCSSStyleDeclarationProto, DOMCSSStyleDeclarationProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMCSSStyleDeclaration", DOMCSSStyleDeclarationProto, DOMCSSStyleDeclarationProtoFunc, ObjectPrototype)
 
 IMPLEMENT_PSEUDO_CONSTRUCTOR(CSSStyleDeclarationPseudoCtor, "DOMCSSStyleDeclaration",DOMCSSStyleDeclarationProto)
 
@@ -495,7 +495,7 @@ const ClassInfo DOMMediaList::info = { "MediaList", 0, &DOMMediaListTable, 0 };
 */
 KJS_DEFINE_PROTOTYPE(DOMMediaListProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMMediaListProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMMediaList", DOMMediaListProto, DOMMediaListProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMMediaList", DOMMediaListProto, DOMMediaListProtoFunc, ObjectPrototype)
 
 DOMMediaList::DOMMediaList(ExecState *exec, DOM::MediaListImpl* ml)
   : m_impl(ml)
@@ -593,7 +593,7 @@ const ClassInfo DOMCSSStyleSheet::info = { "CSSStyleSheet", 0, &DOMCSSStyleSheet
 */
 KJS_DEFINE_PROTOTYPE(DOMCSSStyleSheetProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMCSSStyleSheetProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMCSSStyleSheet",DOMCSSStyleSheetProto,DOMCSSStyleSheetProtoFunc) // warning, use _WITH_PARENT if DOMStyleSheet gets a proto
+KJS_IMPLEMENT_PROTOTYPE("DOMCSSStyleSheet",DOMCSSStyleSheetProto,DOMCSSStyleSheetProtoFunc, ObjectPrototype) // warning, give a parent if DOMStyleSheet gets a proto
 
 DOMCSSStyleSheet::DOMCSSStyleSheet(ExecState *exec, DOM::CSSStyleSheetImpl* ss): DOMStyleSheet(exec, ss)
 {
@@ -1119,7 +1119,7 @@ const ClassInfo DOMCSSPrimitiveValue::info = { "CSSPrimitiveValue", 0, &DOMCSSPr
 */
 KJS_DEFINE_PROTOTYPE(DOMCSSPrimitiveValueProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMCSSPrimitiveValueProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMCSSPrimitiveValue",DOMCSSPrimitiveValueProto,DOMCSSPrimitiveValueProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMCSSPrimitiveValue",DOMCSSPrimitiveValueProto,DOMCSSPrimitiveValueProtoFunc,ObjectPrototype)
 
 DOMCSSPrimitiveValue::DOMCSSPrimitiveValue(ExecState *exec, DOM::CSSPrimitiveValueImpl* v)
   : DOMCSSValue(exec, v) {

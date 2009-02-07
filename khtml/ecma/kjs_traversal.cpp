@@ -61,7 +61,7 @@ const ClassInfo DOMNodeIterator::info = { "NodeIterator", 0, &DOMNodeIteratorTab
 */
 KJS_DEFINE_PROTOTYPE(DOMNodeIteratorProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMNodeIteratorProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMNodeIterator",DOMNodeIteratorProto,DOMNodeIteratorProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMNodeIterator",DOMNodeIteratorProto,DOMNodeIteratorProtoFunc,ObjectPrototype)
 
 DOMNodeIterator::DOMNodeIterator(ExecState *exec, DOM::NodeIteratorImpl* ni)
   : DOMObject(DOMNodeIteratorProto::self(exec)), m_impl(ni) {}
@@ -194,7 +194,7 @@ const ClassInfo DOMTreeWalker::info = { "TreeWalker", 0, &DOMTreeWalkerTable, 0 
 */
 KJS_DEFINE_PROTOTYPE(DOMTreeWalkerProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMTreeWalkerProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMTreeWalker",DOMTreeWalkerProto,DOMTreeWalkerProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMTreeWalker",DOMTreeWalkerProto,DOMTreeWalkerProtoFunc,ObjectPrototype)
 
 DOMTreeWalker::DOMTreeWalker(ExecState *exec, DOM::TreeWalkerImpl* tw)
   : m_impl(tw) {

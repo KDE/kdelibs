@@ -34,9 +34,14 @@ namespace KJS {
    * The initial value of Object.prototype (and thus all objects created
    * with the Object constructor
    */
-  class ObjectPrototype : public JSObject {
+  class KJS_EXPORT ObjectPrototype : public JSObject {
   public:
     ObjectPrototype(ExecState *exec, FunctionPrototype *funcProto);
+    
+    // Returns the lexical default object prototype for the given interpreter.
+    // This is just an alias for exec->lexicalInterpreter()->builtinObjectPrototype() 
+    // for uniformity with custom prototypes.
+    static JSObject* self(ExecState* exec);
   };
 
   /**

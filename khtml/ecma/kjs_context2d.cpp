@@ -74,7 +74,7 @@ namespace KJS {
 
 KJS_DEFINE_PROTOTYPE(Context2DProto)
 KJS_IMPLEMENT_PROTOFUNC(Context2DFunction)
-KJS_IMPLEMENT_PROTOTYPE("CanvasRenderingContext2DProto", Context2DProto, Context2DFunction)
+KJS_IMPLEMENT_PROTOTYPE("CanvasRenderingContext2DProto", Context2DProto, Context2DFunction, ObjectPrototype)
 
 /*
    @begin Context2DProtoTable 48
@@ -658,7 +658,7 @@ const ClassInfo KJS::CanvasGradient::info = { "CanvasGradient", 0, 0, 0 };
 
 KJS_DEFINE_PROTOTYPE(CanvasGradientProto)
 KJS_IMPLEMENT_PROTOFUNC(CanvasGradientFunction)
-KJS_IMPLEMENT_PROTOTYPE("CanvasGradientProto", CanvasGradientProto, CanvasGradientFunction)
+KJS_IMPLEMENT_PROTOTYPE("CanvasGradientProto", CanvasGradientProto, CanvasGradientFunction, ObjectPrototype)
 
 /*
    @begin CanvasGradientProtoTable 1
@@ -696,7 +696,7 @@ const ClassInfo CanvasPattern::info = { "CanvasPattern", 0, 0, 0 };
 // Provide an empty prototype in case people want to hack it
 KJS_DEFINE_PROTOTYPE(CanvasPatternProto)
 KJS_IMPLEMENT_PROTOFUNC(CanvasPatternFunction)
-KJS_IMPLEMENT_PROTOTYPE("CanvasPatternProto", CanvasPatternProto, CanvasPatternFunction)
+KJS_IMPLEMENT_PROTOTYPE("CanvasPatternProto", CanvasPatternProto, CanvasPatternFunction, ObjectPrototype)
 
 /*
    @begin CanvasPatternProtoTable 0
