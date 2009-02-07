@@ -27,6 +27,7 @@
 #include "css/css_base.h"
 #include "misc/loader_client.h"
 #include "xml/dom_docimpl.h"
+#include <QPointer>
 
 namespace khtml {
     class CachedCSSStyleSheet;
@@ -133,7 +134,9 @@ protected:
 class StyleSheetListImpl : public khtml::Shared<StyleSheetListImpl>
 {
 public:
-    StyleSheetListImpl() {}
+    // the manager argument should be passed only when this is 
+    // document.styleSheets.
+    StyleSheetListImpl(DocumentImpl* manager = 0): managerDocument(manager) {}
     ~StyleSheetListImpl();
 
     // the following two ignore implicit stylesheets
@@ -144,6 +147,11 @@ public:
     void remove(StyleSheetImpl* s);
 
     QList<StyleSheetImpl*> styleSheets;
+    
+    // we need the document pointer to make it update the stylesheet list
+    // if needed for the global list. Luckily, we don't care about that if the 
+    // document dies, so we use QPointer to break the cycle
+    QPointer<DocumentImpl> managerDocument;
 };
 
 // ----------------------------------------------------------------------------

@@ -349,6 +349,12 @@ StyleSheetListImpl::~StyleSheetListImpl()
 
 void StyleSheetListImpl::add( StyleSheetImpl* s )
 {
+    if (managerDocument)
+        managerDocument->ensureStyleSheetListUpToDate();
+
+    // ### in cases this is document.styleSheets, maybe 
+    // we should route to DocumentImpl::addStyleSheets?
+
     if ( !styleSheets.contains( s ) ) {
         s->ref();
         styleSheets.append( s );
@@ -357,12 +363,18 @@ void StyleSheetListImpl::add( StyleSheetImpl* s )
 
 void StyleSheetListImpl::remove( StyleSheetImpl* s )
 {
+    if (managerDocument)
+        managerDocument->ensureStyleSheetListUpToDate();
+
     if ( styleSheets.removeAll( s ) )
         s->deref();
 }
 
 unsigned long StyleSheetListImpl::length() const
 {
+    if (managerDocument)
+        managerDocument->ensureStyleSheetListUpToDate();
+
     // hack so implicit BODY stylesheets don't get counted here
     unsigned long l = 0;
     foreach (StyleSheetImpl* sh, styleSheets) {
@@ -374,6 +386,9 @@ unsigned long StyleSheetListImpl::length() const
 
 StyleSheetImpl *StyleSheetListImpl::item ( unsigned long index )
 {
+    if (managerDocument)
+        managerDocument->ensureStyleSheetListUpToDate();
+
     unsigned long l = 0;
     foreach (StyleSheetImpl* sh, styleSheets) {
         if (!sh->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(sh)->implicit()) {
