@@ -50,16 +50,23 @@ const bool NATIVE_FILEDIALOGS_BY_DEFAULT = true;
 const bool NATIVE_FILEDIALOGS_BY_DEFAULT = false;
 #endif
 
-static QStringList mime2KdeFilter( const QStringList &mimeTypes )
+static QStringList mime2KdeFilter( const QStringList &mimeTypes, QString *allExtensions = 0 )
 {
   const KUrl emptyUrl;
   QStringList kdeFilter;
+  QStringList allExt;
   foreach( const QString& mimeType, mimeTypes ) {
     KMimeType::Ptr mime( KMimeType::mimeType(mimeType) );
-    if (mime)
+    if (mime) {
+      allExt += mime->patterns();
       kdeFilter.append(mime->patterns().join(QLatin1String(" ")) +
                        QLatin1Char('|') +
                        mime->comment(emptyUrl));
+    }
+  }
+  if (allExtensions) {
+      allExt.sort();
+      *allExtensions = allExt.join(QLatin1String(" "));
   }
   return kdeFilter;
 }
@@ -316,8 +323,14 @@ void KFileDialog::setMimeFilter( const QStringList& mimeTypes,
 {
     d->w->setMimeFilter(mimeTypes, defaultType);
 
-    if (d->native)
-        d->native->filter = mime2KdeFilter( mimeTypes ).join(QLatin1String("\n"));
+    if (d->native) {
+        QString allExtensions;
+        QStringList filters = mime2KdeFilter(mimeTypes, &allExtensions);
+        if (defaultType.isEmpty() && (mimeTypes.count() > 1)) {
+            filters.prepend(allExtensions + QLatin1Char('|') + i18n("All Supported Files"));
+        }
+        d->native->filter = filters.join(QLatin1String("\n"));
+    }
 }
 
 void KFileDialog::clearFilter()
