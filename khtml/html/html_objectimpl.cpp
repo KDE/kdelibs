@@ -789,9 +789,7 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
 
 DocumentImpl* HTMLObjectElementImpl::contentDocument() const
 {
-    if ( !m_render ) return 0;
-    if ( !m_render->isWidget() ) return 0;
-    QWidget* widget = static_cast<RenderWidget*>( m_render )->widget();
+    QWidget* widget = childWidget();
     if( widget && qobject_cast<KHTMLView*>( widget ) )
         return static_cast<KHTMLView*>( widget )->part()->xmlDocImpl();
     return 0;
