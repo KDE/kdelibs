@@ -56,6 +56,10 @@ ObjectPrototype::ObjectPrototype(ExecState* exec, FunctionPrototype* funcProto)
     putDirectFunction(new ObjectProtoFunc(exec, funcProto, ObjectProtoFunc::LookupSetter, 1, *lookupSetterPropertyName), DontEnum);
 }
 
+JSObject* ObjectPrototype::self(ExecState* exec)
+{
+    return exec->lexicalInterpreter()->builtinObjectPrototype();
+}
 
 // ------------------------------ ObjectProtoFunc --------------------------------
 

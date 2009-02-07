@@ -39,7 +39,7 @@ using namespace KJS;
 namespace KJS {
 KJS_DEFINE_PROTOTYPE(XMLSerializerProto)
 KJS_IMPLEMENT_PROTOFUNC(XMLSerializerProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("XMLSerializer", XMLSerializerProto,XMLSerializerProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("XMLSerializer", XMLSerializerProto,XMLSerializerProtoFunc, ObjectPrototype)
 
 XMLSerializerConstructorImp::XMLSerializerConstructorImp(ExecState* exec)
     : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype())

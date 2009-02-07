@@ -362,31 +362,12 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
     static const KJS::ClassInfo info; \
     bool getOwnPropertySlot(KJS::ExecState *, const KJS::Identifier&, KJS::PropertySlot&); \
   protected: \
-    ClassProto(KJS::ExecState *exec) \
-      : KJS::JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()) { } \
-    \
+    ClassProto(KJS::ExecState *exec);\
     static KJS::Identifier* s_name;           \
     static KJS::Identifier* name(); \
   };
 
-#define KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(ClassProto, ClassProtoProto) \
-    class ClassProto : public KJS::JSObject { \
-        friend KJS::JSObject* KJS_CACHEGLOBALOBJECT_NS cacheGlobalObject<ClassProto>(KJS::ExecState* exec, const KJS::Identifier& propertyName); \
-    public: \
-        static KJS::JSObject* self(KJS::ExecState* exec); \
-        virtual const KJS::ClassInfo* classInfo() const { return &info; } \
-        static const KJS::ClassInfo info; \
-        bool getOwnPropertySlot(KJS::ExecState*, const KJS::Identifier&, KJS::PropertySlot&); \
-    protected: \
-        ClassProto(KJS::ExecState* exec) \
-            : KJS::JSObject(ClassProtoProto::self(exec)) { } \
-    \
-    static KJS::Identifier* s_name; \
-    static KJS::Identifier* name(); \
-    };
-
-
-#define KJS_IMPLEMENT_PROTOTYPE(ClassName, ClassProto,ClassFunc) \
+#define KJS_IMPLEMENT_PROTOTYPE_IMP(ClassName,ClassProto,ClassFunc,ClassProtoProto) \
     const KJS::ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
     KJS::Identifier* ClassProto::s_name = 0; \
     KJS::JSObject *ClassProto::self(KJS::ExecState *exec) \
@@ -401,9 +382,12 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
     { \
       if (!s_name) s_name = new KJS::Identifier("[[" ClassName ".prototype]]"); \
       return s_name; \
-    }
+    }\
+    ClassProto::ClassProto(KJS::ExecState *exec): KJS::JSObject(ClassProtoProto::self(exec))
 
-
+#define KJS_IMPLEMENT_PROTOTYPE(ClassName,ClassProto,ClassFunc,ClassProtoProto) \
+    KJS_IMPLEMENT_PROTOTYPE_IMP(ClassName,ClassProto,ClassFunc,ClassProtoProto) {}
+    
 #define KJS_IMPLEMENT_PROTOFUNC(ClassFunc) \
   class ClassFunc : public KJS::InternalFunctionImp {   \
   public: \

@@ -711,7 +711,7 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
 
 KJS_DEFINE_PROTOTYPE(ScriptfaceProto)
 KJS_IMPLEMENT_PROTOFUNC(ScriptfaceProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("Scriptface", ScriptfaceProto, ScriptfaceProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("Scriptface", ScriptfaceProto, ScriptfaceProtoFunc, ObjectPrototype)
 
 const ClassInfo Scriptface::info = {"Scriptface", 0, &ScriptfaceTable, 0};
 

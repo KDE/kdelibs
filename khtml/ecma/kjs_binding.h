@@ -35,6 +35,7 @@
 #include <kjs/lookup.h>
 #include <kjs/function.h>
 #include <kjs/JSVariableObject.h>
+#include <kjs/object_object.h>
 
 #include <stdlib.h> // for abort
 
@@ -358,6 +359,8 @@ namespace KJS {
 #define IMPLEMENT_PSEUDO_CONSTRUCTOR_IMP(Class,ClassName,ProtoClass,ParentProto) \
     const ClassInfo Class::info = { ClassName, 0, 0, 0 }; \
     Class::Class(ExecState* exec): DOMObject(ParentProto) {\
+        /* Since ProtoClass ctor might need us, make sure we're registered */ \
+        exec->lexicalInterpreter()->globalObject()->put(exec, "[[" ClassName ".constructor]]", this, KJS::Internal | KJS::DontEnum); \
         JSObject* proto = ProtoClass::self(exec); \
         putDirect(exec->propertyNames().prototype, proto, DontDelete|ReadOnly); \
     }\

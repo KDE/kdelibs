@@ -64,7 +64,7 @@ JSObject *AudioConstructorImp::construct(ExecState *exec, const List &list)
 
 KJS_DEFINE_PROTOTYPE(AudioProto)
 KJS_IMPLEMENT_PROTOFUNC(AudioProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("Audio", AudioProto, AudioProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("Audio", AudioProto, AudioProtoFunc, ObjectPrototype)
 
 const ClassInfo Audio::info = { "Audio", 0, &AudioTable, 0 };
 

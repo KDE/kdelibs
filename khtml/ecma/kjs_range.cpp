@@ -61,7 +61,7 @@ setStart		    DOMRange::SetStart			DontDelete|Function 2
 */
 KJS_DEFINE_PROTOTYPE(DOMRangeProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMRangeProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMRange",DOMRangeProto,DOMRangeProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMRange",DOMRangeProto,DOMRangeProtoFunc,ObjectPrototype)
 
 DOMRange::DOMRange(ExecState *exec, DOM::RangeImpl* r)
  : m_impl(r)

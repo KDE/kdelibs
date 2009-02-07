@@ -101,7 +101,16 @@ IMPLEMENT_CONSTANT_TABLE(DOMNodeConstants,"DOMNodeConstants")
 @end
 */
 KJS_IMPLEMENT_PROTOFUNC(DOMNodeProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMNode", DOMNodeProto, DOMNodeProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE_IMP("DOMNode", DOMNodeProto, DOMNodeProtoFunc, DOMNodeConstants)
+{
+    // We need to setup the constructor property to the ctor here, but NodeConstructor::self
+    // will try to make us again, since we're in the middle of cacheGlobalObject.
+    // To workaround that, register ourselves so the re-entry of cacheGlobalObject
+    // will pick us. NodeCtor ctor does the same already, to fix the problem 
+    // in the other direction.
+    exec->lexicalInterpreter()->globalObject()->put(exec, *name(), this, KJS::Internal | KJS::DontEnum);
+    putDirect(exec->propertyNames().constructor, NodeConstructor::self(exec), DontEnum);
+}
 
 const ClassInfo DOMNode::info = { "Node", 0, &DOMNodeTable, 0 };
 
@@ -691,7 +700,7 @@ JSValue* DOMNodeProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, co
 */
 KJS_DEFINE_PROTOTYPE(DOMNodeListProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMNodeListProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMNodeList",DOMNodeListProto,DOMNodeListProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMNodeList",DOMNodeListProto,DOMNodeListProtoFunc, ObjectPrototype)
 
 IMPLEMENT_PSEUDO_CONSTRUCTOR(NodeListPseudoCtor, "NodeList", DOMNodeListProto)
 
@@ -917,7 +926,7 @@ AttrImpl *toAttr(JSValue *val)
 */
 
 KJS_IMPLEMENT_PROTOFUNC(DOMDocumentProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMDocument",DOMDocumentProto, DOMDocumentProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMDocument",DOMDocumentProto, DOMDocumentProtoFunc, DOMNodeProto)
 
 IMPLEMENT_PSEUDO_CONSTRUCTOR(DocumentPseudoCtor, "Document", DOMDocumentProto)
 
@@ -1187,7 +1196,7 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
 @end
 */
 KJS_IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMElement",DOMElementProto,DOMElementProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMElement",DOMElementProto,DOMElementProtoFunc,DOMNodeProto)
 
 IMPLEMENT_PSEUDO_CONSTRUCTOR(ElementPseudoCtor, "Element", DOMElementProto)
 
@@ -1376,7 +1385,7 @@ DOM::AttrImpl *KJS::toAttr(JSValue *v)
 */
 KJS_DEFINE_PROTOTYPE(DOMDOMImplementationProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMDOMImplementationProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMImplementation",DOMDOMImplementationProto,DOMDOMImplementationProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMImplementation",DOMDOMImplementationProto,DOMDOMImplementationProtoFunc,ObjectPrototype)
 
 const ClassInfo DOMDOMImplementation::info = { "DOMImplementation", 0, 0, 0 };
 
@@ -1508,7 +1517,7 @@ JSValue* DOMDocumentType::getValueProperty(ExecState *exec, int token) const
 */
 KJS_DEFINE_PROTOTYPE(DOMNamedNodeMapProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMNamedNodeMapProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("NamedNodeMap",DOMNamedNodeMapProto,DOMNamedNodeMapProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("NamedNodeMap",DOMNamedNodeMapProto,DOMNamedNodeMapProtoFunc,ObjectPrototype)
 
 const ClassInfo DOMNamedNodeMap::info = { "NamedNodeMap", 0, &DOMNamedNodeMapTable, 0 };
 
@@ -1903,9 +1912,9 @@ const ClassInfo DOMCharacterData::info = { "CharacterImp",
   replaceData	DOMCharacterData::ReplaceData	DontDelete|Function 2
 @end
 */
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMCharacterDataProto, DOMNodeProto)
+KJS_DEFINE_PROTOTYPE(DOMCharacterDataProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMCharacterDataProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMCharacterData",DOMCharacterDataProto,DOMCharacterDataProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMCharacterData",DOMCharacterDataProto,DOMCharacterDataProtoFunc,DOMNodeProto)
 
 DOMCharacterData::DOMCharacterData(ExecState *exec, DOM::CharacterDataImpl* d)
  : DOMNode(exec, d)
@@ -1987,9 +1996,9 @@ const ClassInfo DOMText::info = { "Text", &DOMCharacterData::info,
   replaceWholeText DOMText::ReplaceWholeText DontDelete|Function 1
 @end
 */
-KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMTextProto, DOMCharacterDataProto)
+KJS_DEFINE_PROTOTYPE(DOMTextProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMTextProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMText",DOMTextProto,DOMTextProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMText",DOMTextProto,DOMTextProtoFunc,DOMCharacterDataProto)
 
 DOMText::DOMText(ExecState *exec, DOM::TextImpl* t)
   : DOMCharacterData(exec, t)
