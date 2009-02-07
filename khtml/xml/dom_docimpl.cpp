@@ -422,12 +422,13 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_defaultView = new AbstractViewImpl(this);
     m_defaultView->ref();
     m_listenerTypes = 0;
-    m_styleSheets = new StyleSheetListImpl;
+    m_styleSheets = new StyleSheetListImpl(this);
     m_styleSheets->ref();
     m_addedStyleSheets = 0;
     m_inDocument = true;
     m_styleSelectorDirty = false;
     m_styleSelector = 0;
+    m_styleSheetListDirty = true;
 
     m_inStyleRecalc = false;
     m_pendingStylesheets = 0;
@@ -2205,13 +2206,19 @@ void DocumentImpl::updateStyleSelector(bool shallow)
 //    kDebug() << "PENDING " << m_pendingStylesheets;
 
     // Don't bother updating, since we haven't loaded all our style info yet.
-    if (m_pendingStylesheets > 0)
+    if (m_pendingStylesheets > 0) {
+        // ... however, if the list of stylesheets changed, mark it as dirty
+        // so DOM ops can get an up-to-date version.
+        if (!shallow)
+            m_styleSheetListDirty = true;
         return;
+    }
+    
+    if (!shallow)
+        rebuildStyleSheetList();
 
-    if (shallow)
-        rebuildStyleSelector();
-    else
-        recalcStyleSelector();
+    rebuildStyleSelector();
+    
     recalcStyle(Force);
 #if 0
 
@@ -2226,12 +2233,17 @@ bool DocumentImpl::readyForLayout() const
     return renderer() && haveStylesheetsLoaded() && (!isHTMLDocument() || (body() && body()->renderer()));
 }
 
-void DocumentImpl::recalcStyleSelector()
+void DocumentImpl::rebuildStyleSheetList(bool force)
 {
-    if ( !m_render || !attached() ) return;
-
-    assert(m_pendingStylesheets==0);
-
+    if ( !m_render || !attached() ) {
+        // Unless we're forced due to CSS DOM ops, we don't have to compute info
+        // when there is nothing to display
+        if (!force) {
+            m_styleSheetListDirty = true;
+            return;
+        }
+    }
+    
     QList<StyleSheetImpl*> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
     QString sheetUsed = view() ? view()->part()->d->m_sheetUsed.replace("&&", "&") : QString();
@@ -2371,11 +2383,14 @@ void DocumentImpl::recalcStyleSelector()
     foreach ( StyleSheetImpl* sh, oldStyleSheets)
         sh->deref();
 
-    rebuildStyleSelector();
+    m_styleSheetListDirty = false;
 }
 
 void DocumentImpl::rebuildStyleSelector()
 {
+    if ( !m_render || !attached() )
+        return;
+
     // Create a new style selector
     delete m_styleSelector;
     QString usersheet = m_usersheet;

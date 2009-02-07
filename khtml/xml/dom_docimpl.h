@@ -282,10 +282,16 @@ public:
      * in existing sheets, then set this argument to true for efficiency.
      */
     void updateStyleSelector(bool shallow=false);
+    
+    void ensureStyleSheetListUpToDate() { if (m_styleSheetListDirty) rebuildStyleSheetList(true); }
 
     bool readyForLayout() const;
-    void recalcStyleSelector();
-    void rebuildStyleSelector();
+    
+private:    
+    void rebuildStyleSheetList(bool force = false);
+    void rebuildStyleSelector ();
+    bool m_styleSheetListDirty;
+public:
 
     // Tries to restore the elements value from the doc state,
     // if it seems like the same thing

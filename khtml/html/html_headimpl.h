@@ -205,6 +205,8 @@ public:
     virtual bool checkRemovePendingSheet();
 
 protected:
+    void parseText();
+    
     CSSStyleSheetImpl *m_sheet;
     DOMString m_type;
     QString m_media;

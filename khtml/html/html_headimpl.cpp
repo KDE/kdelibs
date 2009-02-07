@@ -604,6 +604,12 @@ void HTMLStyleElementImpl::parseAttribute(AttributeImpl *attr)
 void HTMLStyleElementImpl::insertedIntoDocument()
 {
     HTMLElementImpl::insertedIntoDocument();
+    
+    // If we're empty, we have to call parseText here, since we won't get childrenChanged();
+    // but we still want a CSSOM object
+    if (!firstChild())
+        parseText();
+    
     if (m_sheet)
         document()->updateStyleSelector();
 }
@@ -619,6 +625,11 @@ void HTMLStyleElementImpl::childrenChanged()
 {
     HTMLElementImpl::childrenChanged();
 
+    parseText();
+}
+
+void HTMLStyleElementImpl::parseText()
+{
     DOMString text = "";
 
     for (NodeImpl *c = firstChild(); c != 0; c = c->nextSibling()) {
