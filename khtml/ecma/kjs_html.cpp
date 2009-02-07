@@ -444,7 +444,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, JSValue *va
   switch (token) {
     case Body: {
       DOM::NodeImpl* body = toNode(value);
-      if (body->isHTMLElement())
+      if (body && body->isHTMLElement())
         doc.setBody(static_cast<DOM::HTMLElementImpl*>(body), exception);
       return;
     }
