@@ -2811,7 +2811,7 @@ bool History::getOwnPropertySlot(ExecState *exec, const Identifier &p, PropertyS
 
 JSValue *History::getValueProperty(ExecState *, int token) const
 {
-  // if previous or next is implemented, make sure its not a major
+  // if previous or next is implemented, make sure it is not a major
   // privacy leak (see i.e. http://security.greymagic.com/adv/gm005-op/)
   switch (token) {
   case Length:

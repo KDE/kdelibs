@@ -1493,7 +1493,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
 
     // A special hack for "/dev". A listing may look like this:
     // crw-rw-rw-   1 root     root       1,   5 Jun 29  1997 zero
-    // So we just ignore the number in front of the ",". Ok, its a hack :-)
+    // So we just ignore the number in front of the ",". Ok, it is a hack :-)
     if ( strchr( p_size, ',' ) != 0L )
     {
       //kDebug(7102) << "Size contains a ',' -> reading size again (/dev hack)";

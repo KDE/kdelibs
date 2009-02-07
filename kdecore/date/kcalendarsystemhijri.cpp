@@ -482,7 +482,7 @@ int KCalendarSystemHijri::weekNumber( const QDate &date, int *yearNum ) const
         return weeksInYear( y - 1 );
     }
 
-    // let' check if its last week belongs to next year
+    // let's check if its last week belongs to next year
     setYMD( lastDayOfYear, y, 12, lastDayOfIslamicMonth( 12, y ) );
     // our date is in last week && 1st week in next year has thursday
     if ( ( dayOfYear( date ) >= daysInYear( date ) - dayOfWeek( lastDayOfYear ) + 1 )

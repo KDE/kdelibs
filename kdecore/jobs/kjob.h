@@ -295,7 +295,7 @@ public:
 
     /**
      * set the auto-delete property of the job. If @p autodelete is
-     * set to false the job will not delete itself once its finished.
+     * set to false the job will not delete itself once it is finished.
      *
      * The default for any KJob is to automatically delete itself.
      *

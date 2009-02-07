@@ -357,7 +357,7 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
     m_orientation = orient;
 
 
-    // ### make this on-demand. its soo sloooow
+    // ### make this on-demand. it is soo sloooow
     computeLayerPos();
     m_qevent = 0;
 }

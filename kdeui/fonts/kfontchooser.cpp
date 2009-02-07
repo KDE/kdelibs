@@ -595,7 +595,7 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
     QFontDatabase dbase;
     QStringList styles = dbase.styles(currentFamily);
     if (styles.isEmpty()) {
-        // Avoid extraction, its in kdeqt.po
+        // Avoid extraction, it is in kdeqt.po
         styles.append(I18NC_NOX("QFontDatabase", "Normal"));
     }
 

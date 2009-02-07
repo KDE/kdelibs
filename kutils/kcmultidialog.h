@@ -62,7 +62,7 @@ class KUTILS_EXPORT KCMultiDialog : public KPageDialog
      * @param module Specify the name of the module that is to be added
      *               to the list of modules the dialog will show.
      *
-     * @param args The arguments that should be given to the KCModule when its created
+     * @param args The arguments that should be given to the KCModule when it is created
      *
      * @returns The @see KPageWidgetItem associated with the new dialog page.
      **/
@@ -82,7 +82,7 @@ class KUTILS_EXPORT KCMultiDialog : public KPageDialog
      * @param parent The @see KPageWidgetItem that should appear as parents
      *               in the tree view or a 0 pointer if there is no parent.
      *
-     * @param args The arguments that should be given to the KCModule when its created
+     * @param args The arguments that should be given to the KCModule when it is created
      **/
     KPageWidgetItem* addModule( const KCModuleInfo& moduleinfo, KPageWidgetItem *parent = 0, 
                                 const QStringList& args = QStringList() );

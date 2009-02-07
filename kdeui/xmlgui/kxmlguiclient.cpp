@@ -382,9 +382,9 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
             }
 
             // in this last case we check for a separator tag and, if not, we
-            // can be sure that its a container --> proceed with child nodes
+            // can be sure that it is a container --> proceed with child nodes
             // recursively and delete the just proceeded container item in
-            // case its empty (if the recursive call returns true)
+            // case it is empty (if the recursive call returns true)
             else if ( tag != tagMerge )
             {
                 // handle the text tag

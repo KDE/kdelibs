@@ -194,7 +194,7 @@ void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
 {
     exceptioncode = 0;
 
-    // do not interprete entities in the string, its literal!
+    // do not interpret entities in the string, it is literal!
 
     // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
     if (isReadOnly()) {

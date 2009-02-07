@@ -717,7 +717,7 @@
       <xsl:value-of select="."/>
     </xsl:when>
     <xsl:otherwise>
-      <!-- its a relative uri -->
+      <!-- it is a relative uri -->
       <xsl:call-template name="relative-uri">
         <xsl:with-param name="destdir">
           <xsl:call-template name="dbhtml-dir">

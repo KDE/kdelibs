@@ -105,7 +105,7 @@ protected:
     NodeImpl *m_node;
 
 private:
-    // currently not needed - make sure its not used
+    // currently not needed - make sure it is not used
     CSSStyleDeclarationImpl(const CSSStyleDeclarationImpl& o);
 };
 

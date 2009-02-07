@@ -484,7 +484,7 @@ void CSSStyleSelector::clear()
 
 void CSSStyleSelector::reparseConfiguration()
 {
-    // nice leak, but best we can do right now. hopefully its only rare.
+    // nice leak, but best we can do right now. hopefully it is only rare.
     s_defaultStyle = 0;
     s_defaultQuirksStyle = 0;
     s_defaultPrintStyle = 0;

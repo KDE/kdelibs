@@ -1803,7 +1803,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   bool isMyGroup = groupList.contains(d->strGroup);
 
   /* add the group the file currently belongs to ..
-   * .. if its not there already
+   * .. if it is not there already
    */
   if (!isMyGroup)
     groupList += d->strGroup;

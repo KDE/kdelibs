@@ -768,7 +768,7 @@ KJS::JSObject* KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJS
             returnValue = StaticConstructor::construct( exec, parent, toUString(clazz) );
             if( returnValue )
             {
-                // If its a value type setValue
+                // If it is a value type setValue
                 KJSEmbed::QObjectBinding *imp = extractBindingImp<QObjectBinding>(exec, returnValue );
                 if( imp )
                 {

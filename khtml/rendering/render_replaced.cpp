@@ -191,7 +191,7 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     m_needsMask = false;
     m_ownsWidget = true;
 
-    // this is no real reference counting, its just there
+    // this is no real reference counting, it is just there
     // to make sure that we're not deleted while we're recursed
     // in an eventFilter of the widget
     ref();
@@ -251,7 +251,7 @@ public:
 void  RenderWidget::resizeWidget( int w, int h )
 {
     // ugly hack to limit the maximum size of the widget ( as X11 has problems if
-    // its bigger )
+    // it is bigger )
     h = qMin( h, 3072 );
     w = qMin( w, 2000 );
 

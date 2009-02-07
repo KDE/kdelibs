@@ -1956,7 +1956,7 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     break;
   }
   } // xemacs (or arnt) could be a bit smarter when it comes to indenting switch()es ;)
-  // its not arnt to blame - its the original Stroustrup style we like :) (Dirk)
+  // it is not arnt to blame - it is the original Stroustrup style we like :) (Dirk)
 
   // generic properties
   switch (token) {

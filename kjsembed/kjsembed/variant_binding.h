@@ -189,7 +189,7 @@ namespace KJSEmbed
         KJS::JSObject *returnValue = StaticConstructor::construct( exec, parent, className );
         if( returnValue )
         {
-            // If its a value type setValue
+            // If it is a value type setValue
             KJSEmbed::VariantBinding *imp = extractBindingImp<KJSEmbed::VariantBinding>(exec, returnValue );
             if( imp )
                 imp->setValue( qVariantFromValue( value ) );

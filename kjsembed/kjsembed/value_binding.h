@@ -198,7 +198,7 @@ namespace KJSEmbed
         KJS::JSObject *returnValue = StaticConstructor::construct( exec, parent, className );
         if( returnValue )
         {
-            // If its a value type setValue
+            // If it is a value type setValue
             KJSEmbed::ValueBinding *imp =
                     extractBindingImp<KJSEmbed::ValueBinding>(exec, returnValue );
             if( imp )

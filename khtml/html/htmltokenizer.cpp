@@ -1165,7 +1165,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 // Accept empty xml tags like <br/>
                 if(len > 1 && ptr[len-1] == '/' ) {
                     ptr[--len] = '\0';
-                    // if its like <br/> and not like <input/ value=foo>, take it as flat
+                    // if it is like <br/> and not like <input/ value=foo>, take it as flat
                     if (*src == '>')
                         currToken.flat = true;
                 }
