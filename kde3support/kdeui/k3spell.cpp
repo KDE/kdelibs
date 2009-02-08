@@ -588,7 +588,7 @@ bool K3Spell::checkWord( const QString & buffer, bool _usedialog, bool suggest )
   }
 
   QByteArray data;
-  while (proc->readLine( data.data(), data.count() ) != -1 ); // eat spurious blanks
+  while (proc->readLine( data.data(), data.count() ) != -1 ) ; // eat spurious blanks
 
   OUTPUT(checkWord2);
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
@@ -615,7 +615,7 @@ void K3Spell::checkWord2(  )
    </sanders>
 */
   QByteArray data;
-  while (proc->readLine( data.data(), data.count() ) != -1 ); // eat spurious blanks
+  while (proc->readLine( data.data(), data.count() ) != -1 ) ; // eat spurious blanks
   NOOUTPUT(checkWord2);
 
   bool mistake = ( parseOneResponse(line, word, sugg) == MISTAKE );
@@ -666,7 +666,7 @@ void K3Spell::suggestWord()
    additional blank line,  indicating that ispell has completed processing
    the input line." */
   QByteArray data;
-  while (proc->readLine( data.data(), data.count() ) != -1 ); // eat spurious blanks
+  while (proc->readLine( data.data(), data.count() ) != -1 ) ; // eat spurious blanks
 
   NOOUTPUT(checkWord2);
 

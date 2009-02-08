@@ -1121,7 +1121,7 @@ Q3ListViewItem* K3ListView::lastChild () const
   Q3ListViewItem* lastchild = firstChild();
 
   if (lastchild)
-        for (; lastchild->nextSibling(); lastchild = lastchild->nextSibling());
+        for (; lastchild->nextSibling(); lastchild = lastchild->nextSibling()) ;
 
   return lastchild;
 }
@@ -1859,7 +1859,7 @@ int K3ListView::itemIndex( const Q3ListViewItem *item ) const
     else {
         Q3ListViewItemIterator it(firstChild());
         uint j = 0;
-        for (; it.current() && it.current() != item; ++it, ++j );
+        for (; it.current() && it.current() != item; ++it, ++j ) ;
 
         if( !it.current() )
           return -1;
