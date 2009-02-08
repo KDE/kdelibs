@@ -646,7 +646,7 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
             parent,
             caption.isEmpty() ? i18n("Save As") : caption,
             KFileDialogPrivate::Native::staticStartDir( startDir ).path(),
-            filter );
+            qtFilter(filter) );
 // TODO use extra args?     QString * selectedFilter = 0, Options options = 0
         if (!result.isEmpty()) {
             if (!recentDirClass.isEmpty())
