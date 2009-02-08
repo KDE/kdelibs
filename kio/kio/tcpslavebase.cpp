@@ -365,7 +365,7 @@ bool TCPSlaveBase::connectToHost(const QString &/*protocol*/,
             timeout -= time.elapsed();
             if (!it.hasNext() || (timeout < 0)) {
                 error(ERR_COULD_NOT_CONNECT,
-                    host + QLatin1String(": ") + d->socket.errorString());
+                      host + QLatin1String(": ") + d->socket.errorString());
                 return false;
             }
         }
@@ -471,7 +471,6 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
 
     if (!encryptionStarted || d->socket.encryptionMode() != KTcpSocket::SslClientMode
         || cipher.isNull() || cipher.usedBits() == 0) {
-         //TODO error(foo, bar);
         d->usingSSL = false;
         setMetaData("ssl_in_use", "FALSE");
         kDebug(7029) << "Initial SSL handshake failed. encryptionStarted is"
@@ -747,13 +746,11 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
                            d->host);
 
     foreach (const KSslError &err, d->sslErrors) {
-        //### use our own wording that is "closer to the user"
         message.append(err.errorString());
         message.append('\n');
     }
 
     //### Consider that hostname mismatch and e.g. an expired certificate are very different.
-    //    Maybe there should be no option to acceptForever a cert with bad hostname.
 
     /* We need a list of ignorable errors. I don't think it makes sense to ignore
        malformed certificates, for example, as other environments probably don't do
