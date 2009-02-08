@@ -85,6 +85,8 @@
 
 #include "blocked_icon.cpp"
 
+#include <QPaintEngine>
+
 using namespace khtml;
 using namespace DOM;
 using namespace khtmlImLoad;
@@ -613,18 +615,20 @@ QPixmap CachedImage::pixmap( ) const
     int w = i->size().width();
     int h = i->size().height();
 
-    if (i->hasAlpha()) {
+    QPixmap pm(w, h);
+    if (i->hasAlpha() && !pm.paintEngine()->hasFeature(QPaintEngine::PorterDuff)) {
         QImage im(w, h, QImage::Format_ARGB32_Premultiplied);
 
         QPainter paint(&im);
-        paint.setCompositionMode(QPainter::CompositionMode_Source);
         ImagePainter pi(i);
         pi.paint(0, 0, &paint);
         paint.end();
         return QPixmap::fromImage( im );
     } else {
-        QPixmap pm(w, h);
+        pm.fill(Qt::transparent);
         QPainter paint(&pm);
+        if (i->hasAlpha())
+             paint.setCompositionMode(QPainter::CompositionMode_Source);
         ImagePainter pi(i);
         pi.paint(0, 0, &paint);
         paint.end();
