@@ -606,6 +606,17 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
     // we don't need to emit canceled signals since we only replaced the job,
     // the listing is continuing.
 
+    if (!(listers.isEmpty() || killed)) {
+        kWarning() << "The unexpected happened.";
+        kWarning() << "listers=" << listers;
+        kWarning() << "job=" << job;
+        Q_FOREACH(KDirLister *kdl, listers) {
+            kDebug() << "lister" << kdl << "m_cachedItemsJob=" << kdl->d->m_cachedItemsJob;
+        }
+#ifndef NDEBUG
+        printDebug();
+#endif
+    }
     Q_ASSERT( listers.isEmpty() || killed );
 
     job = KIO::listDir( _dir, KIO::HideProgressInfo );
