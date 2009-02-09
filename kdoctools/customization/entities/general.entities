@@ -170,7 +170,7 @@
 <!ENTITY kapptemplate	"<application>KAppTemplate</application>">
 <!ENTITY kaphorism	"<application>KAphorism</application>">
 <!ENTITY karbon14	"<application>Karbon14</application>">
-<!ENTITY karm	"<application>ktimetracker</application>">
+<!ENTITY karm	"<application>KTimetracker</application>">
 <!ENTITY kasteroids	"<application>KAsteroids</application>">
 <!ENTITY kate	"<application>Kate</application>">
 <!ENTITY katomic	"<application>KAtomic</application>">
@@ -343,7 +343,7 @@
 <!ENTITY kthesaurus	"<application>KThesaurus</application>">
 <!ENTITY ktimemon	"<application>KTimemon</application>">
 <!ENTITY ktimer	"<application>KTimer</application>">
-<!ENTITY ktimetracker	"<application>ktimetracker</application>">
+<!ENTITY ktimetracker	"<application>KTimetracker</application>">
 <!ENTITY ktip	"<application>KTip</application>">
 <!ENTITY ktouch	"<application>KTouch</application>">
 <!ENTITY ktron	"<application>KTron</application>">
