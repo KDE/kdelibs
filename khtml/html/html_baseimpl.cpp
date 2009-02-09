@@ -542,22 +542,10 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
     noresize = false;
 
     m_resizing = false;
-
-    m_onLoad = m_onUnLoad = 0;
 }
 
 HTMLFrameSetElementImpl::~HTMLFrameSetElementImpl()
 {
-    //### this is likely not quite right since we may be effectively "overriding" some old value,
-    //which needs to be recomputed, but this is better than crashing...
-    if (document()) {
-        if (m_onLoad && document()->getHTMLEventListener(EventImpl::LOAD_EVENT) == m_onLoad)
-            document()->setHTMLEventListener(EventImpl::LOAD_EVENT, 0);
-
-        if (m_onUnLoad && document()->getHTMLEventListener(EventImpl::UNLOAD_EVENT) == m_onUnLoad)
-            document()->setHTMLEventListener(EventImpl::UNLOAD_EVENT, 0);
-    }
-
     delete [] m_rows;
     delete [] m_cols;
 }
@@ -600,12 +588,12 @@ void HTMLFrameSetElementImpl::parseAttribute(AttributeImpl *attr)
             frameborder = false;
         break;
     case ATTR_ONLOAD:
-        m_onLoad = document()->createHTMLEventListener(attr->value().string(), "onload", this);
-        document()->setHTMLEventListener(EventImpl::LOAD_EVENT, m_onLoad);
+        document()->setHTMLWindowEventListener(EventImpl::LOAD_EVENT,
+            document()->createHTMLEventListener(attr->value().string(), "onload", NULL));
         break;
     case ATTR_ONUNLOAD:
-        m_onUnLoad = document()->createHTMLEventListener(attr->value().string(), "onunload", this);
-        document()->setHTMLEventListener(EventImpl::UNLOAD_EVENT, m_onUnLoad);
+        document()->setHTMLWindowEventListener(EventImpl::UNLOAD_EVENT,
+            document()->createHTMLEventListener(attr->value().string(), "onunload", NULL));
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
