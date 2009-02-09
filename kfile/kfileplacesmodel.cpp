@@ -566,11 +566,9 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
                 continue;
             }
 
-            KFileItem item(KFileItem::Unknown, KFileItem::Unknown, url);
-
             KBookmark bookmark = KFilePlacesItem::createBookmark(d->bookmarkManager,
                                                                  url.fileName(), url,
-                                                                 item.iconName());
+                                                                 mimetype->iconName(url));
             group.moveBookmark(bookmark, afterBookmark);
             afterBookmark = bookmark;
         }
