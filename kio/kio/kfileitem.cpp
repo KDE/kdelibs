@@ -235,6 +235,8 @@ void KFileItemPrivate::init()
                     m_fileMode = mode & S_IFMT; // extract file type
                 if ( m_permissions == KFileItem::Unknown )
                     m_permissions = mode & 07777; // extract permissions
+            } else {
+                kDebug() << path << "does not exist anymore";
             }
         }
     }
@@ -934,20 +936,12 @@ bool KFileItem::isHidden() const
 
 bool KFileItem::isDir() const
 {
-    if ( d->m_fileMode == KFileItem::Unknown )
-    {
-        kDebug(7101) << "can't say -> false";
+    if (d->m_fileMode == KFileItem::Unknown) {
+        // Probably the file was deleted already, and KDirLister hasn't told the world yet.
+        //kDebug() << d << url() << "can't say -> false";
         return false; // can't say for sure, so no
     }
     return (S_ISDIR(d->m_fileMode));
-/*
-  if  (!S_ISDIR(d->m_fileMode)) {
-  if (d->m_url.isLocalFile()) {
-  KMimeType::Ptr ptr=KMimeType::findByUrl(d->m_url,0,true,true);
-  if ((ptr!=0) && (ptr->is("directory/inode"))) return true;
-  }
-  return false
-  } else return true;*/
 }
 
 bool KFileItem::isFile() const
