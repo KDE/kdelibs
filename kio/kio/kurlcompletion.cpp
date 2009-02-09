@@ -431,7 +431,7 @@ void DirectoryListThread::run()
 			QFileInfo file_info = current_dir_iterator.fileInfo();
 			const QString file_name = file_info.fileName();
 
-			kDebug() << "Found file (#" << i++ << ") " << file_name;
+			//kDebug() << "Found file (#" << i++ << ") " << file_name;
 
 			if ( m_filter.isEmpty() || file_name.startsWith( m_filter ) ) {
 
