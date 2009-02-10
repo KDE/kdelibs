@@ -28,7 +28,6 @@
 
 #include <QtGui/QMenu>
 #include <QtGui/QLineEdit>
-#include <QtGui/QShortcut>
 
 #define d this
 
@@ -69,7 +68,6 @@ KHTMLFindBar::KHTMLFindBar( QWidget *parent ) :
     connect( this, SIGNAL(searchChanged()), this, SLOT(slotSearchChanged()) );
     connect( m_next, SIGNAL(clicked()), this, SIGNAL(findNextClicked()) );
     connect( m_previous, SIGNAL(clicked()), this, SIGNAL(findPreviousClicked()) );
-    new QShortcut(QKeySequence(Qt::Key_Escape), this, SIGNAL(hideMe()));
     connect( m_caseSensitive, SIGNAL(changed()), this, SIGNAL(searchChanged()) );
     connect( m_wholeWordsOnly, SIGNAL(changed()), this, SIGNAL(searchChanged()) );
     connect( m_fromCursor, SIGNAL(changed()), this, SIGNAL(searchChanged()) );
@@ -112,7 +110,7 @@ void KHTMLFindBar::slotSearchChanged()
        d->m_find->setPalette(QPalette());
        m_next->setDisabled( true );
        m_previous->setDisabled( true );
-       m_statusLabel->clear();       
+       m_statusLabel->clear();
    } else {
        m_prevPattern = pattern();
        m_next->setDisabled( false );
@@ -233,4 +231,21 @@ void KHTMLFindBar::setVisible( bool visible )
         m_find->setFocus( Qt::ActiveWindowFocusReason );
         m_find->lineEdit()->selectAll();
     }
+}
+
+bool KHTMLFindBar::event(QEvent* e)
+{
+    // Close the bar when pressing Escape.
+    // Not using a QShortcut for this because it could conflict with
+    // window-global actions (e.g. Emil Sedgh binds Esc to "close tab").
+    // With a shortcut override we can catch this before it gets to kactions.
+    if (e->type() == QEvent::ShortcutOverride) {
+        QKeyEvent* kev = static_cast<QKeyEvent* >(e);
+        if (kev->key() == Qt::Key_Escape) {
+            e->accept();
+            emit hideMe();
+            return true;
+        }
+    }
+    return KHTMLViewBarWidget::event(e);
 }

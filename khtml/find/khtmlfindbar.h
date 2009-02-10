@@ -101,6 +101,9 @@ public:
     void setAtEnd( bool atEnd );
     virtual void setVisible( bool visible );
 
+protected:
+    virtual bool event(QEvent* e);
+
 private slots:
     void slotSelectedTextToggled(bool selec);
     void slotSearchChanged();
