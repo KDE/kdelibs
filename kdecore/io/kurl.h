@@ -1007,6 +1007,17 @@ public:
    *
    * Returns whether '_url' is likely to be a "relative" URL instead of
    * an "absolute" URL.
+   *
+   * This is mostly meant for KUrl(url, relativeUrl).
+   *
+   * If you are looking for the notion of "relative path" (foo) vs "absolute path" (/foo),
+   * use QUrl::isRelative() instead.
+   * Indeed, isRelativeUrl() returns false for the string "/foo" since it doesn't contain a protocol,
+   * while KUrl("/foo").isRelative() is true since the KUrl constructor turns it into file:///foo.
+   * The two methods basically test the same thing, but this one takes a string (which is faster)
+   * while the class method requires a QUrl/KUrl which gives a more expected result, given
+   * the "magic" in the KUrl constructor.
+   *
    * @param _url URL to examine
    * @return true when the URL is likely to be "relative", false otherwise.
    */

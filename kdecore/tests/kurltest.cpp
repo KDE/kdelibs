@@ -730,6 +730,13 @@ void KUrlTest::testIsRelative()
   QCOMPARE(something.url(), QString("something"));
   QCOMPARE(something.protocol(), QString());
   QVERIFY(!something.isLocalFile());
+
+  // Now let's test QUrl::isRelative.
+  QVERIFY(!KUrl("file:///blah").isRelative());
+  QVERIFY(!KUrl("/blah").isRelative());
+  QVERIFY(KUrl("blah").isRelative());
+  QVERIFY(!KUrl("http://www.kde.org").isRelative());
+  QVERIFY(KUrl("foo/bar").isRelative());
 }
 
 void KUrlTest::testRelativePath()

@@ -156,10 +156,6 @@ static QString removeSlashOrFilePrefix(const QString& str)
 
 bool KUrl::isRelativeUrl(const QString &_url)
 {
-#if 0
-  // would this work?
-  return QUrl( _url ).isRelative();
-#endif
   int len = _url.length();
   if (!len) return true; // Very short relative URL.
   const QChar *str = _url.unicode();
