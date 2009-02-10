@@ -100,6 +100,7 @@ extern "C" {
 #include <kio/directorysizejob.h>
 #include <kio/renamedialog.h>
 #include <kio/netaccess.h>
+#include <kio/jobuidelegate.h>
 #include <kfiledialog.h>
 #include <kmimetype.h>
 #include <kmountpoint.h>
@@ -688,6 +689,7 @@ public:
     dirSizeUpdateTimer = 0L;
     m_lined = 0;
     m_capacityBar = 0;
+    m_linkTargetLineEdit = 0;
   }
   ~KFilePropsPluginPrivate()
   {
@@ -713,6 +715,7 @@ public:
   QLabel *m_sizeLabel;
   QPushButton *m_sizeDetermineButton;
   QPushButton *m_sizeStopButton;
+  KLineEdit* m_linkTargetLineEdit;
 
   QString m_sRelativePath;
   bool m_bFromTemplate;
@@ -1046,9 +1049,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     l = new QLabel(i18n("Points to:"), d->m_frame );
     grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
-    l = new KSqueezedTextLabel(item.linkDest(), d->m_frame );
-    l->setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard);
-    grid->addWidget(l, curRow++, 2);
+    d->m_linkTargetLineEdit = new KLineEdit(item.linkDest(), d->m_frame );
+    grid->addWidget(d->m_linkTargetLineEdit, curRow++, 2);
   }
 
   if (!d->bMultiple) // Dates for multiple don't make much sense...
@@ -1399,6 +1401,17 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
           QString nameStr = nameFromFileName(properties->kurl().fileName());
           cg.writeEntry( "Name", nameStr );
           cg.writeEntry( "Name", nameStr, KConfigGroup::Persistent|KConfigGroup::Localized);
+      }
+  }
+
+  if (d->m_linkTargetLineEdit && !d->bMultiple) {
+      const KFileItem item = properties->item();
+      const QString newTarget = d->m_linkTargetLineEdit->text();
+      if (newTarget != item.linkDest()) {
+          kDebug(250) << "Updating target of symlink to" << newTarget;
+          KIO::Job* job = KIO::symlink(newTarget, item.url(), KIO::Overwrite);
+          job->ui()->setAutoErrorHandlingEnabled(true);
+          job->exec();
       }
   }
 }
