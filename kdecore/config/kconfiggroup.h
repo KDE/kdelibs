@@ -654,6 +654,17 @@ private:
 "The Qt MetaObject system does not seem to know about \"" ENUM \
 "\" please use Q_ENUMS or Q_FLAGS to register it."
 
+/**
+ * To add support for your own enums in KConfig, you can declare them with Q_ENUMS()
+ * in a QObject subclass (which will make moc generate the code to turn the
+ * enum into a string and vice-versa), and then (in the cpp code)
+ * use the macro
+ * <code>KCONFIGGROUP_DECLARE_ENUM_QOBJECT(MyClass, MyEnum)</code>
+ *
+ * After that, you can use readEntry(group, key, value) and writeEntry(group, key, value[, flags]).
+ * Note that those are global functions, NOT member functions of KConfigGroup.
+ *
+ */
 #define KCONFIGGROUP_DECLARE_ENUM_QOBJECT(Class, Enum)                     \
 inline Class::Enum readEntry(const KConfigGroup& group, const char* key, const Class::Enum& def) \
 {                                                                          \
@@ -673,6 +684,10 @@ const QMetaEnum M_enum = M_obj->enumerator(M_index);                       \
 group.writeEntry(key, QByteArray(M_enum.valueToKey(value)), flags);              \
 }
 
+/**
+ * Similar to KCONFIGGROUP_DECLARE_ENUM_QOBJECT but for flags declared with Q_FLAGS()
+ * (where multiple values can be set at the same time)
+ */
 #define KCONFIGGROUP_DECLARE_FLAGS_QOBJECT(Class, Flags)                    \
 inline Class::Flags readEntry(const KConfigGroup& group, const char* key, const Class::Flags& def) \
 {                                                                           \
