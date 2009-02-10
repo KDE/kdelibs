@@ -304,10 +304,13 @@ void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
          (myFileDialog && (myFileDialog->mode() & KFile::Directory) &&
                           (myFileDialog->mode() & (KFile::File | KFile::Files)) == 0) )
     {
+        const KUrl openUrl = (!m_parent->url().isEmpty() && !m_parent->url().isRelative() )
+          ? m_parent->url() : m_startDir;
+      
         if (fileDialogMode & KFile::LocalOnly)
-            newurl = KFileDialog::getExistingDirectory(!m_parent->url().isEmpty() ? m_parent->url() : m_startDir, m_parent);
+            newurl = KFileDialog::getExistingDirectory( openUrl, m_parent);
         else
-            newurl = KFileDialog::getExistingDirectoryUrl(!m_parent->url().isEmpty() ? m_parent->url() : m_startDir, m_parent);
+            newurl = KFileDialog::getExistingDirectoryUrl( openUrl, m_parent);
         if ( !newurl.isValid() )
         {
             return;
@@ -318,7 +321,7 @@ void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
       emit m_parent->openFileDialog( m_parent );
 
       KFileDialog *dlg = m_parent->fileDialog();
-      if ( !url().isEmpty() ) {
+      if ( !url().isEmpty() && !url().isRelative() ) {
           KUrl u( url() );
           // If we won't be able to list it (e.g. http), then don't try :)
           if ( KProtocolManager::supportsListing( u ) )
