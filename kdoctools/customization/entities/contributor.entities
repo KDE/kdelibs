@@ -385,6 +385,8 @@
 <!ENTITY Cornelius.Schumacher.mail '<email>schumacher@kde.org</email>'>
 <!ENTITY Guenter.Schwann '<personname><firstname>Günter</firstname><surname>Schwann</surname></personname>'>
 <!ENTITY Guenter.Schwann.mail '<email>vogel@sbox.tugraz.at</email>'>
+<!ENTITY Frederik.Schwarzer '<personname><firstname>Frederik</firstname><surname>Schwarzer</surname></personname>'>
+<!ENTITY Frederik.Schwarzer.mail '<email>schwarzerf@gmail.com</email>'>
 <!ENTITY Aaron.J.Seigo '<personname><firstname>Aaron</firstname><othername>J.</othername><surname>Seigo</surname></personname>'>
 <!ENTITY Aaron.J.Seigo.mail '<email>aseigo@kde.org</email>'>
 <!ENTITY Jonathan.Singer '<personname><firstname>Jonathan</firstname><surname>Singer</surname></personname>'>
