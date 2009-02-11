@@ -27,8 +27,14 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 	: QWidget(parent)
 {
 	m_ui.setupUi(this);
-	m_ui.Sound_play->setIcon(KIcon("media-playback-start"));
 
+	//Show sounds directory by default
+	KStandardDirs standardDirs;
+	QStringList soundDirs = standardDirs.resourceDirs( "sound" );
+	if ( !soundDirs.isEmpty() )
+		m_ui.Sound_select->setStartDir( KUrl( soundDirs.last() ) );
+
+	m_ui.Sound_play->setIcon(KIcon("media-playback-start"));
 	m_ui.Sound_check->setIcon(KIcon("media-playback-start"));
 	m_ui.Popup_check->setIcon(KIcon("dialog-information"));
 	m_ui.Logfile_check->setIcon(KIcon("text-x-generic"));
