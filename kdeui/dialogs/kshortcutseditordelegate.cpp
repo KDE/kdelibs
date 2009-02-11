@@ -66,7 +66,7 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QTreeWidget *parent, bool all
 
     parent->installEventFilter(this);
 
-    // Listen to activiation signals
+    // Listen to activation signals
     // connect(parent, SIGNAL(activated(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
     connect(parent, SIGNAL(clicked(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
 
@@ -222,24 +222,22 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 //slot
 void KShortcutsEditorDelegate::itemCollapsed(QModelIndex index)
 {
-    if (!m_editingIndex.isValid())
+    if (!m_editingIndex.isValid()) {
         return;
+    }
 
     const QAbstractItemModel *model = index.model();
-    for (int row=0; row<model->rowCount(index);++row) {
-        QModelIndex rowIndex = model->index(row,0,index);
+    for (int row = 0; row < model->rowCount(index); ++row) {
+        QModelIndex rowIndex = model->index(row, 0, index);
 
-        for (int col=0; col<index.model()->columnCount(index);++col) {
-            QModelIndex colIndex = model->index(row,col,index);
+        for (int col = 0; col < index.model()->columnCount(index); ++col) {
+            QModelIndex colIndex = model->index(row, col, index);
 
             if (colIndex == m_editingIndex) {
                 itemActivated(m_editingIndex); //this will *close* the item's editor because it's already open
             }
-
         }
-
     }
-
 }
 
 
