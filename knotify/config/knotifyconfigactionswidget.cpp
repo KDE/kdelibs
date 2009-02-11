@@ -29,8 +29,7 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 	m_ui.setupUi(this);
 
 	//Show sounds directory by default
-	KStandardDirs standardDirs;
-	QStringList soundDirs = standardDirs.resourceDirs( "sound" );
+	QStringList soundDirs = KGlobal::dirs()->resourceDirs( "sound" );
 	if ( !soundDirs.isEmpty() )
 		m_ui.Sound_select->setStartDir( KUrl( soundDirs.last() ) );
 
