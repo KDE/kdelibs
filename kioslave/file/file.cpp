@@ -241,7 +241,7 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
     kDebug(7101) << "mkdir(): " << _path << ", permission = " << permissions;
 
     KDE_struct_stat buff;
-    if ( KDE_stat( _path.data(), &buff ) == -1 ) {
+    if ( KDE_lstat( _path.data(), &buff ) == -1 ) {
         if ( KDE_mkdir( _path.data(), 0777 /*umask will be applied*/ ) != 0 ) {
             if ( errno == EACCES ) {
           error( KIO::ERR_ACCESS_DENIED, _path );
