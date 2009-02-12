@@ -405,14 +405,20 @@ int main(int argc, char **argv, char **envp)
     /** Create our instance **/
     s_instance = new KComponentData("kdeinit4", QByteArray(), KComponentData::SkipMainComponentRegistration);
 
-    if (launch_dbus && !processList.hasProcessInList("dbus-daemon"))
-    {
 #ifdef _DEBUG
+    // first try to launch dbus-daemond in debug mode
+    if (launch_dbus && processList.hasProcessInList("dbus-daemond"))
+          launch_dbus = false;
+    if (launch_dbus)
+    {
           pid = launch("dbus-launchd.exe");
           if (!pid)
               pid = launch("dbus-launchd.bat");
-          if (!pid)
+          launch_dbus = (pid == 0);
+    }
 #endif
+    if (launch_dbus && !processList.hasProcessInList("dbus-daemon"))
+    {
           if (!pid)
               pid = launch("dbus-launch.exe");
           if (!pid)
