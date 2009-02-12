@@ -173,7 +173,7 @@ namespace Kross {
             /**
              * Read the XML from the file \p file .
              *
-             * \param file The existing XML file that should be readed.
+             * \param file The existing XML file that should be read.
              * \return true if reading was successful else false.
              */
             bool readXmlFile(const QString& file);

@@ -23,6 +23,7 @@
 #include <kparts/plugin.h>
 
 #include <kross/core/krossconfig.h>
+#include <kross/core/childreninterface.h>
 
 namespace Kross {
     class ActionCollection;
@@ -35,17 +36,13 @@ namespace Kross
 
 /** 
  * The ScriptingPlugin class loads additional actions stored in rc files with the 
- * KrossScripting format, e.g.:
+ * KrossScripting format:
  * 
  * \code
  * <KrossScripting>
  *     <collection name="file" text="File">
- *         <script
- *             name="dummy_script"
- *             text="Dummy Script"
- *             comment="Dummy Script example"
- *             interpreter="python"
- *             file="dummy_script.py" />
+ *         <script name="dummy_script" text="Dummy Script" comment="Dummy Script example"
+ *                 file="dummy_script.py" interpreter="python" />
  *     </collection>
  * </KrossScripting>
  * \endcode
@@ -71,6 +68,13 @@ public:
     explicit ScriptingPlugin(QObject* parent = 0);
 
     /**
+     * Lets having actions defined in a custom location, for example for project-specific actions
+     *
+     * \param userActionsFile scripts.rc filepath
+     */
+    ScriptingPlugin(const QString& userActionsFile, const QString& collectionName, QObject* parent=0);
+
+    /**
      * Destructor.
      */
     virtual ~ScriptingPlugin();
@@ -86,6 +90,9 @@ public:
      * \param name The name the QObject should be known under. If not defined, the
      * QObject's objectName is used.
      */
+    void addObject(QObject* object, const QString& name/* = QString()*/, ChildrenInterface::Options options/* = ChildrenInterface::NoOption*/);
+    
+    ///\deprecated use another addObject overload
     void addObject(QObject* object, const QString& name = QString());
 
 protected Q_SLOTS:

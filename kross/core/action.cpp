@@ -307,7 +307,7 @@ void Action::setInterpreter(const QString& interpretername)
         d->interpretername = interpretername;
         setEnabled( Manager::self().interpreters().contains(interpretername) );
         if (!isEnabled())
-            kWarning(410)<<"interpreter not found:"<<interpretername;
+            krosswarning("Action::setInterpreter: interpreter not found: "+interpretername);
         emit dataChanged(this);
         emit updated();
     }

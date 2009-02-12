@@ -33,12 +33,21 @@
 
 using namespace Kross;
 
+struct Object
+{
+    QPointer<QObject> object;
+    ChildrenInterface::Options options;
+    Object(QObject* obj, ChildrenInterface::Options opt):object(obj),options(opt){}
+};
+
+
 /// \internal d-pointer class
 class ScriptingPlugin::ScriptingPluginPrivate
 {
 public:
     QString userActionsFile;
-    QHash<QString, QPointer<QObject> > objects;
+    QString collectionName;
+    QHash<QString, Object> objects;
 
     QDomElement menuFromName(QString const& name, const QDomDocument& document)
     {
@@ -58,10 +67,25 @@ ScriptingPlugin::ScriptingPlugin(QObject* parent)
     , d(new ScriptingPluginPrivate())
 {
     d->userActionsFile = KGlobal::dirs()->locateLocal("appdata", "scripts/scriptactions.rc");
+    d->collectionName="scripting-plugin";
+}
+
+ScriptingPlugin::ScriptingPlugin(const QString& userActionsFile, const QString& collectionName, QObject* parent)
+    : KParts::Plugin(parent)
+    , d(new ScriptingPluginPrivate())
+{
+    d->userActionsFile = userActionsFile;
+    d->collectionName=collectionName;
 }
 
 ScriptingPlugin::~ScriptingPlugin()
 {
+    Kross::ActionCollection* collection=Kross::Manager::self().actionCollection()->collection(d->collectionName);
+    if (collection) {
+        collection->setParentCollection(0);
+        collection->deleteLater();
+    }
+
     delete d;
 }
 
@@ -74,27 +98,34 @@ void ScriptingPlugin::setDOMDocument(const QDomDocument &document, bool merge)
 void ScriptingPlugin::addObject(QObject* object, const QString& name)
 {
     QString n = name.isNull() ? object->objectName() : name;
-    d->objects.insert(n, object);
+    d->objects.insert(n, Object(object,ChildrenInterface::NoOption));
+}
+
+void ScriptingPlugin::addObject(QObject* object, const QString& name, ChildrenInterface::Options options)
+{
+    QString n = name.isNull() ? object->objectName() : name;
+    d->objects.insert(n, Object(object,options));
 }
 
 QDomDocument ScriptingPlugin::buildDomDocument(const QDomDocument& document)
 {
-    QStringList allActionFiles = KGlobal::dirs()->findAllResources("appdata", "scripts/*.rc");
-
-    Kross::Manager::self().setProperty("configfile", d->userActionsFile);
-    Kross::Manager::self().setProperty("configfiles", allActionFiles);
-
+    Kross::ActionCollection* collection=Kross::Manager::self().actionCollection()->collection(d->collectionName);
+    if (!collection) {
+        collection=new Kross::ActionCollection(d->collectionName, Kross::Manager::self().actionCollection());
+    }
+    
     if(KIO::NetAccess::exists(KUrl(d->userActionsFile), KIO::NetAccess::SourceSide, 0)) {
-        Kross::Manager::self().actionCollection()->readXmlFile(d->userActionsFile);
+        collection->readXmlFile(d->userActionsFile);
     }
     else {
+        QStringList allActionFiles = KGlobal::dirs()->findAllResources("appdata", "scripts/*.rc");
         foreach(const QString &f, allActionFiles) {
-            Kross::Manager::self().actionCollection()->readXmlFile(f);
+            collection->readXmlFile(f);
         }
     }
 
     QDomDocument doc(document);
-    buildDomDocument(doc, Kross::Manager::self().actionCollection());
+    buildDomDocument(doc, collection);
 
     return doc;
 }
@@ -105,10 +136,10 @@ void ScriptingPlugin::buildDomDocument(QDomDocument& document,
     QDomElement menuElement = d->menuFromName(collection->name(), document);
 
     foreach(Kross::Action* action, collection->actions()) {
-        QHashIterator<QString, QPointer<QObject> > i(d->objects);
+        QHashIterator<QString, Object> i(d->objects);
         while(i.hasNext()) {
             i.next();
-            action->addObject(i.value(), i.key());
+            action->addObject(i.value().object, i.key(), i.value().options);
         }
 
         // Create and append new Menu element if doesn't exist
@@ -122,19 +153,15 @@ void ScriptingPlugin::buildDomDocument(QDomDocument& document,
             menuElement.appendChild(textElement);
 
             Kross::ActionCollection* parentCollection = collection->parentCollection();
-            if(!parentCollection) {
-                document.documentElement().firstChildElement("MenuBar").appendChild(menuElement);
-            }
-            else {
+            QDomElement root;
+            if(parentCollection) {
                 QDomElement parentMenuElement = d->menuFromName(parentCollection->name(), document);
-
-                if(!parentMenuElement.isNull()) {
-                    parentMenuElement.appendChild(menuElement);
-                }
-                else {
-                    document.documentElement().firstChildElement("MenuBar").appendChild(menuElement);
-                }
+                if(!parentMenuElement.isNull())
+                    root=parentMenuElement;
             }
+            if (root.isNull())
+                root=document.documentElement().firstChildElement("MenuBar");
+            root.appendChild(menuElement);
         }
 
         // Create and append new Action element
@@ -168,38 +195,36 @@ void ScriptingPlugin::slotEditScriptActions()
         QFile f(d->userActionsFile);
         if(f.open(QIODevice::WriteOnly)) {
 
-            bool collectionEmpty = true;
-            if(!Kross::Manager::self().actionCollection()->actions().empty()
-                || !Kross::Manager::self().actionCollection()->collections().empty()) {
-                collectionEmpty = false;
-            }
+            Kross::ActionCollection* collection=Kross::Manager::self().actionCollection()->collection(d->collectionName);
+            bool collectionEmpty = !collection||collection->actions().empty()||collection->collections().empty();
 
             if( !collectionEmpty ) {
-                if( Kross::Manager::self().actionCollection()->writeXml(&f) ) {
+                if( collection->writeXml(&f) ) {
                     kDebug() << "Successfully saved file: " << d->userActionsFile;
                 }
             }
             else {
                 QTextStream out(&f);
-                QString xml("<!-- ");
-                xml.append("\n");
-                xml.append("Collection name attribute represents the name of the menu, e.g., to use menu \"File\" use \"file\" or \"Help\" use \"help\". One can add new menus also.");
-                xml.append("\n\n\n");
-                xml.append("If you type a relative script file beware the this script is located in  $KDEHOME/share/apps/applicationname/");
-                xml.append("\n\n");
-                xml.append("The following example add an action with the text \"Export...\" into the \"File\" menu");
-                xml.append("\n");
-                xml.append("-->");
-                xml.append("\n\n");
-                xml.append("<KrossScripting>");
-                xml.append("\n");
-                xml.append("<collection name=\"file\" text=\"File\" comment=\"File menu\">");
-                xml.append("\n");
-                xml.append("<script name=\"export\" text=\"Export...\" comment=\"Export content\" file=\"export.py\" />");
-                xml.append("\n");
-                xml.append("</collection>");
-                xml.append("\n");
-                xml.append("</KrossScripting>");;
+                QString xml=
+                "<!-- "
+                "\n"
+                "Collection name attribute represents the name of the menu, e.g., to use menu \"File\" use \"file\" or \"Help\" use \"help\". One can add new menus also."
+                "\n\n\n"
+                "If you type a relative script file beware the this script is located in  $KDEHOME/share/apps/applicationname/"
+                "\n\n"
+                "The following example add an action with the text \"Export...\" into the \"File\" menu"
+                "\n"
+                "-->"
+                "\n\n"
+                "<KrossScripting>"
+                "\n"
+                "<collection name=\"file\" text=\"File\" comment=\"File menu\">"
+                "\n"
+                "<script name=\"export\" text=\"Export...\" comment=\"Export content\" file=\"export.py\" />"
+                "\n"
+                "</collection>"
+                "\n"
+                "</KrossScripting>";
 
                 out << xml;
             }
