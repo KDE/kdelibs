@@ -307,7 +307,7 @@ void quitApplicationsOverDBus()
 
 int main(int argc, char **argv, char **envp)
 {
-    pid_t pid;
+    pid_t pid = 0;
     bool launch_dbus = true;
     bool launch_klauncher = true;
     bool launch_kded = true;
@@ -407,7 +407,14 @@ int main(int argc, char **argv, char **envp)
 
     if (launch_dbus && !processList.hasProcessInList("dbus-daemon"))
     {
-          pid = launch("dbus-launch.exe");
+#ifdef _DEBUG
+          pid = launch("dbus-launchd.exe");
+          if (!pid)
+              pid = launch("dbus-launchd.bat");
+          if (!pid)
+#endif
+          if (!pid)
+              pid = launch("dbus-launch.exe");
           if (!pid)
               pid = launch("dbus-launch.bat");
           if (!pid)
