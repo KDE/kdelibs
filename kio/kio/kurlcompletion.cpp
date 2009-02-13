@@ -422,16 +422,14 @@ void DirectoryListThread::run()
 			iterator_filter |= (QDir::Dirs | QDir::Files);
 
 		QDirIterator current_dir_iterator( *it, iterator_filter);
-		int i = 0;
 
-		while (current_dir_iterator.hasNext())
-		{
+		while (current_dir_iterator.hasNext()) {
 			current_dir_iterator.next();
 
 			QFileInfo file_info = current_dir_iterator.fileInfo();
 			const QString file_name = file_info.fileName();
 
-			//kDebug() << "Found file (#" << i++ << ") " << file_name;
+			//kDebug() << "Found" << file_name;
 
 			if ( m_filter.isEmpty() || file_name.startsWith( m_filter ) ) {
 
