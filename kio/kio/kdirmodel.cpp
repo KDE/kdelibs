@@ -374,10 +374,11 @@ void KDirModelPrivate::_k_slotNewItems(const KUrl& directoryUrl, const KFileItem
     const int newRowCount = dirNode->m_childNodes.count() + newItemsCount;
 #if 0
 #ifndef NDEBUG // debugIndex only defined in debug mode
-    kDebug(7008) << items.count() << "in" << dir
+    kDebug(7008) << items.count() << "in" << directoryUrl
              << "index=" << debugIndex(index) << "newRowCount=" << newRowCount;
 #endif
 #endif
+
     q->beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 ); // parent, first, last
 
     const KUrl::List urlsBeingFetched = m_urlsBeingFetched.value(dirNode);
@@ -392,6 +393,14 @@ void KDirModelPrivate::_k_slotNewItems(const KUrl& directoryUrl, const KFileItem
         KDirModelNode* node = isDir
                               ? new KDirModelDirNode( dirNode, *it )
                               : new KDirModelNode( dirNode, *it );
+#ifndef NDEBUG
+        // Test code for possible duplication of items in the childnodes list,
+        // not sure if/how it ever happened.
+        //if (dirNode->m_childNodes.count() &&
+        //    dirNode->m_childNodes.last()->item().name() == (*it).name())
+        //    kFatal() << "Already having" << (*it).name() << "in" << directoryUrl
+        //             << "url=" << dirNode->m_childNodes.last()->item().url();
+#endif
         dirNode->m_childNodes.append(node);
         const KUrl url = it->url();
         m_nodeHash.insert(cleanupUrl(url), node);
@@ -523,8 +532,9 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
                 m_nodeHash.insert(cleanupUrl(newUrl), node);
             }
             // Mimetype changed -> forget cached icon (e.g. from "cut", #164185 comment #13)
-            if (fit->first.mimeTypePtr() != fit->second.mimeTypePtr())
+            if (fit->first.mimeTypePtr()->name() != fit->second.mimeTypePtr()->name()) {
                 node->setPreview(QIcon());
+            }
             const QModelIndex index = indexForNode(node);
             if (!topLeft.isValid() || index.row() < topLeft.row()) {
                 topLeft = index;
