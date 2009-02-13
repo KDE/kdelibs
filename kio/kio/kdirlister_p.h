@@ -84,7 +84,6 @@ public:
     void aboutToRefreshItem(const KFileItem& item);
     void addRefreshItem(const KUrl& directoryUrl, const KFileItem& oldItem, const KFileItem& item);
   void emitItems();
-  void emitDeleteItem( const KFileItem &item );
   void emitItemsDeleted(const KFileItemList &items);
 
     /**
@@ -280,6 +279,7 @@ private:
   void deleteUnmarkedItems( const QList<KDirLister *>&, KFileItemList & );
     // Helper method called when we know that a list of items was deleted
     void itemsDeleted(const QList<KDirLister *>& listers, const KFileItemList& deletedItems);
+    void slotFilesRemoved(const KUrl::List& urls);
     // common for slotRedirection and slotFileRenamed
   void renameDir( const KUrl &oldUrl, const KUrl &url );
   // common for deleteUnmarkedItems and slotFilesRemoved
