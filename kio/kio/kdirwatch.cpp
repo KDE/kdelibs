@@ -1145,7 +1145,14 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 #endif
     if ( (e->m_ctime != invalid_ctime) &&
           ((stat_buf.st_ctime != e->m_ctime) ||
-          (stat_buf.st_nlink != (nlink_t) e->m_nlink)) ) {
+          (stat_buf.st_nlink != (nlink_t) e->m_nlink))
+#if defined( HAVE_QFILESYSTEMWATCHER )
+          // we trust QFSW to get it right, the ctime comparisons above
+          // fail for example when adding files to directories on Windows
+          // which doesn't change the mtime of the directory
+        ||(e->m_mode == QFSWatchMode )
+#endif
+    ) {
       e->m_ctime = stat_buf.st_ctime;
       e->m_nlink = stat_buf.st_nlink;
       return Changed;
