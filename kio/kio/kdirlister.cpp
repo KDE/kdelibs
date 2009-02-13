@@ -1004,10 +1004,18 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
     //kDebug(7004) << "new entries for " << url;
 
     DirItem *dir = itemsInUse.value(urlStr);
-    Q_ASSERT( dir );
+    if (!dir) {
+        kError(7004) << "Internal error: job is listing" << url << "but itemsInUse only knows about" << itemsInUse.keys();
+        Q_ASSERT( dir );
+        return;
+    }
 
     DirectoryDataHash::iterator dit = directoryData.find(urlStr);
-    Q_ASSERT(dit != directoryData.end());
+    if (dit == directoryData.end()) {
+        kError(7004) << "Internal error: job is listing" << url << "but directoryData doesn't know about that url, only about:" << directoryData.keys();
+        Q_ASSERT(dit != directoryData.end());
+        return;
+    }
     KDirListerCacheDirectoryData& dirData = *dit;
     Q_ASSERT( !dirData.listersCurrentlyListing.isEmpty() );
 
