@@ -866,15 +866,12 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
   nameOnly &= src.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash ) ==
                 dst.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash );
 
-  // Somehow this should only be called if src is a dir. But how could we know if it is?
-  // (Note that looking into itemsInUse isn't good enough. One could rename a subdir in a view.)
-  // DF: well, findByUrl can find subdirs too...
-  if( !nameOnly ) {
+    if (!nameOnly && (!fileitem || fileitem->isDir())) {
         renameDir( src, dst );
         // #172945 - if the fileitem was the root item of a DirItem that was just removed from the cache,
         // then it's a dangling pointer now...
         fileitem = findByUrl( 0, oldurl );
-  }
+    }
 
   // Now update the KFileItem representing that file or dir (not exclusive with the above!)
   if ( fileitem )
