@@ -27,7 +27,7 @@
 namespace DNSSD
 {
 
-class DomainModelPrivate;
+struct DomainModelPrivate;
 class DomainBrowser;
 
 

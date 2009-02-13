@@ -24,8 +24,9 @@
 
 #include "kglobalshortcutinfo.h"
 
-struct KGlobalShortcutInfoPrivate
+class KGlobalShortcutInfoPrivate
     {
+    public:
     QString contextUniqueName;
     QString contextFriendlyName;
     QString componentUniqueName;
