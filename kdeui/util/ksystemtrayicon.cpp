@@ -64,17 +64,18 @@ public:
         window = parent;
         movie = 0;
 #ifdef Q_WS_WIN
-        // FIXME the below makes korgac ( the reminder daemon in kdepim) crash
-        // on startup
-        window->installEventFilter( this );
+		if ( window ) {
+            window->installEventFilter( this );
+		}
 #endif
     }
 
     ~KSystemTrayIconPrivate()
     {
 #ifdef Q_WS_WIN
-     // FIXME makes korgac crash, see above
-     //   window->removeEventFilter( this );
+		if ( window ) {
+            window->removeEventFilter( this );
+		}
 #endif
         delete actionCollection;
         delete menu;
