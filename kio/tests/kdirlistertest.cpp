@@ -326,6 +326,55 @@ void KDirListerTest::testRenameItem()
     m_refreshedItems.clear();
 }
 
+void KDirListerTest::testRenameAndOverwrite() // has to be run after testRenameItem
+{
+    // Rename toplevelfile_2.renamed.html to toplevelfile_2, overwriting it.
+    const QString dirPath = m_tempDir.name();
+    const QString path = dirPath+"toplevelfile_2";
+    createTestFile(path);
+    KFileItem existingItem;
+    while (existingItem.isNull()) {
+        QTest::qWait(100);
+        existingItem = m_dirLister.findByUrl(KUrl(path));
+    };
+    QCOMPARE(existingItem.url().path(), path);
+
+    m_refreshedItems.clear();
+    qRegisterMetaType<KFileItem>("KFileItem");
+    connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
+            this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
+    QSignalSpy spyItemsDeleted(&m_dirLister, SIGNAL(itemsDeleted(KFileItemList)));
+    const QString newPath = dirPath+"toplevelfile_2.renamed.html";
+
+    KIO::SimpleJob* job = KIO::rename(newPath, path, KIO::Overwrite | KIO::HideProgressInfo);
+    bool ok = job->exec();
+    QVERIFY(ok);
+
+    if (m_refreshedItems.isEmpty()) {
+        // Wait for refreshItems. Could come from KDirWatch or KDirNotify.
+        //qDebug("waiting for refreshItems");
+        connect(this, SIGNAL(refreshItemsReceived()), this, SLOT(exitLoop()));
+        enterLoop();
+    }
+
+    // Check that itemsDeleted was emitted -- preferrably BEFORE refreshItems,
+    // but we can't easily check that with QSignalSpy...
+    QCOMPARE(spyItemsDeleted.count(), 1);
+
+    QCOMPARE(m_refreshedItems.count(), 1);
+    QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
+    QCOMPARE(entry.first.url().path(), newPath);
+    QCOMPARE(entry.second.url().path(), path);
+    disconnect(&m_dirLister, 0, this, 0);
+
+    // Let's see what KDirLister has in cache now
+    KFileItem cachedItem = m_dirLister.findByUrl(KUrl(path));
+    QCOMPARE(cachedItem.url().path(), path);
+    KFileItem oldCachedItem = m_dirLister.findByUrl(KUrl(newPath));
+    QVERIFY(oldCachedItem.isNull());
+    m_refreshedItems.clear();
+}
+
 void KDirListerTest::testConcurrentListing()
 {
     m_items.clear();

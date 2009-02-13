@@ -36,6 +36,7 @@ private Q_SLOTS:
     void testRefreshItems();
     void testDeleteItem();
     void testRenameItem();
+    void testRenameAndOverwrite();
     void testConcurrentListing();
     void testConcurrentHoldingListing();
     void testOpenUrlTwice();

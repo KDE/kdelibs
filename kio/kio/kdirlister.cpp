@@ -758,18 +758,23 @@ void KDirListerCache::slotFilesAdded( const QString &dir ) // from KDirNotify si
 
 void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KDirNotify signals
 {
-    kDebug(7004) << fileList.count();
+    slotFilesRemoved(KUrl::List(fileList));
+}
+
+void KDirListerCache::slotFilesRemoved(const KUrl::List& fileList)
+{
+    //kDebug(7004) << fileList.count();
     // Group notifications by parent dirs (usually there would be only one parent dir)
     QMap<QString, KFileItemList> removedItemsByDir;
-    QStringList deletedSubdirs;
+    KUrl::List deletedSubdirs;
 
-    for (QStringList::const_iterator it = fileList.begin(); it != fileList.end() ; ++it) {
-        KUrl url(*it);
+    for (KUrl::List::const_iterator it = fileList.begin(); it != fileList.end() ; ++it) {
+        const KUrl url(*it);
         DirItem* dirItem = dirItemForUrl(url); // is it a listed directory?
         if (dirItem) {
-            deletedSubdirs.append(*it);
+            deletedSubdirs.append(url);
             if (!dirItem->rootItem.isNull()) {
-                removedItemsByDir[*it].append(dirItem->rootItem);
+                removedItemsByDir[url.url()].append(dirItem->rootItem);
             }
         }
 
@@ -784,7 +789,7 @@ void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KD
                 removedItemsByDir[parentDir.url()].append(fileitem);
                 // If we found a fileitem, we can test if it's a dir. If not, we'll go to deleteDir just in case.
                 if (fileitem.isNull() || fileitem.isDir()) {
-                    deletedSubdirs.append(*it);
+                    deletedSubdirs.append(url);
                 }
                 dirItem->lstItems.erase(fit); // remove fileitem from list
                 break;
@@ -802,7 +807,7 @@ void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KD
         }
     }
 
-    Q_FOREACH(const QString& url, deletedSubdirs) {
+    Q_FOREACH(const KUrl& url, deletedSubdirs) {
         // in case of a dir, check if we have any known children, there's much to do in that case
         // (stopping jobs, removing dirs from cache etc.)
         deleteDir(url);
@@ -864,7 +869,7 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
   // only update the name and not the underlying URL.
   bool nameOnly = fileitem && !fileitem->entry().stringValue( KIO::UDSEntry::UDS_URL ).isEmpty();
   nameOnly &= src.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash ) ==
-                dst.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash );
+              dst.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash );
 
     if (!nameOnly && (!fileitem || fileitem->isDir())) {
         renameDir( src, dst );
@@ -880,6 +885,16 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
         slotFilesChanged( QStringList() << src.url() );
     else
     {
+        // Dest already exists? Was overwritten then (testcase: #151851)
+        // We better emit it as deleted -before- doing the renaming, otherwise
+        // the "update" mechanism will emit the old one as deleted and
+        // kdirmodel will delete the new (renamed) one!
+        KFileItem* existingDestItem = findByUrl(0, dst);
+        if (existingDestItem) {
+            //kDebug() << dst << "already existed, let's delete it";
+            slotFilesRemoved(dst);
+        }
+
         aboutToRefreshItem( *fileitem );
         const KFileItem oldItem = *fileitem;
         if( nameOnly )
@@ -962,15 +977,23 @@ void KDirListerCache::slotFileDirty( const QString& path )
         // A dir: launch an update job if anyone cares about it
         updateDirectory(url);
     } else {
-        // A file: delay updating it, FAM is flooding us with events
-        const QString urlStr = url.url(KUrl::RemoveTrailingSlash);
-        if (!pendingUpdates.contains(urlStr)) {
-            KUrl dir(url);
-            dir.setPath(dir.directory());
-            if (checkUpdate(dir.url())) {
-                pendingUpdates.insert(urlStr);
-                if (!pendingUpdateTimer.isActive())
-                    pendingUpdateTimer.start( 500 );
+        // A file: do we know about it already?
+        KFileItem* existingItem = findByUrl(0, url);
+        if (!existingItem) {
+            // No - update the parent dir then
+            url.setPath(url.directory());
+            updateDirectory(url);
+        } else {
+            // A known file: delay updating it, FAM is flooding us with events
+            const QString urlStr = url.url(KUrl::RemoveTrailingSlash);
+            if (!pendingUpdates.contains(urlStr)) {
+                KUrl dir(url);
+                dir.setPath(dir.directory());
+                if (checkUpdate(dir.url())) {
+                    pendingUpdates.insert(urlStr);
+                    if (!pendingUpdateTimer.isActive())
+                        pendingUpdateTimer.start( 500 );
+                }
             }
         }
     }
@@ -1566,6 +1589,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
                 foreach ( KDirLister *kdl, listers )
                     kdl->d->addRefreshItem(jobUrl, oldItem, *tmp);
             }
+            //kDebug(7004) << "marking" << tmp;
             tmp->mark();
         }
         else // this is a new file
@@ -1639,9 +1663,9 @@ void KDirListerCache::deleteUnmarkedItems( const QList<KDirLister *>& listers, K
     // Find all unmarked items and delete them
     QMutableListIterator<KFileItem> kit(lstItems);
     while (kit.hasNext()) {
-        const KFileItem item = kit.next();
+        const KFileItem& item = kit.next();
         if (!item.isMarked()) {
-            //kDebug() << "deleted:" << item.name();
+            //kDebug() << "deleted:" << item.name() << &item;
             deletedItems.append(item);
             kit.remove();
         }
@@ -2268,13 +2292,6 @@ void KDirLister::Private::emitItems()
       emit m_parent->itemsDeleted( *tmpRemove );
       delete tmpRemove;
   }
-}
-
-void KDirLister::Private::emitDeleteItem( const KFileItem &item )
-{
-    if (isItemVisible(item) && m_parent->matchesMimeFilter(item)) {
-        emit m_parent->deleteItem(item);
-    }
 }
 
 bool KDirLister::Private::isItemVisible(const KFileItem& item) const
