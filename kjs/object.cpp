@@ -33,6 +33,8 @@
 #include "PropertyNameArray.h"
 #include <math.h>
 
+#include <typeinfo>
+
 // maximum global call stack size. Protects against accidental or
 // malicious infinite recursions. Define to -1 if you want no limit.
 #if PLATFORM(DARWIN)
@@ -43,24 +45,8 @@
 #define KJS_MAX_STACK 900
 #endif
 
-#define JAVASCRIPT_CALL_TRACING 0
+
 #define JAVASCRIPT_MARK_TRACING 0
-
-#if JAVASCRIPT_CALL_TRACING
-static bool _traceJavaScript = false;
-
-extern "C" {
-    void setTraceJavaScript(bool f)
-    {
-        _traceJavaScript = f;
-    }
-
-    static bool traceJavaScript()
-    {
-        return _traceJavaScript;
-    }
-}
-#endif
 
 namespace KJS {
 
@@ -73,22 +59,6 @@ JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
 #if KJS_MAX_STACK > 0
   static int depth = 0; // sum of all concurrent interpreters
 
-#if JAVASCRIPT_CALL_TRACING
-    static bool tracing = false;
-    if (traceJavaScript() && !tracing) {
-        tracing = true;
-        for (int i = 0; i < depth; i++)
-            putchar (' ');
-        printf ("*** calling:  %s\n", toString(exec).ascii());
-        for (int j = 0; j < args.size(); j++) {
-            for (int i = 0; i < depth; i++)
-                putchar (' ');
-            printf ("*** arg[%d] = %s\n", j, args[j]->toString(exec).ascii());
-        }
-        tracing = false;
-    }
-#endif
-
   if (++depth > KJS_MAX_STACK) {
     depth -= 11; //Give the debugger some room..
     return throwError(exec, RangeError, "Maximum call stack size exceeded.");
@@ -97,20 +67,16 @@ JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
 #endif
 
   JSValue *ret = callAsFunction(exec,thisObj,args);
-  assert(ret);
+
+#ifndef NDEBUG
+  if (!ret) {
+    fprintf(stderr, "callAsFunction returned 0 on:%s\n", typeid(*this).name());
+    assert(ret);
+  }
+#endif
 
 #if KJS_MAX_STACK > 0
   --depth;
-#endif
-
-#if JAVASCRIPT_CALL_TRACING
-    if (traceJavaScript() && !tracing) {
-        tracing = true;
-        for (int i = 0; i < depth; i++)
-            putchar (' ');
-        printf ("*** returning:  %s\n", ret->toString(exec).ascii());
-        tracing = false;
-    }
 #endif
 
   return ret;
