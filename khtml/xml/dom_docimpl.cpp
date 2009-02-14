@@ -2243,7 +2243,10 @@ void DocumentImpl::rebuildStyleSheetList(bool force)
             return;
         }
     }
-    
+
+    // Mark us as clean, as we can call add on the list below, forcing us to re-enter
+    m_styleSheetListDirty = false;
+
     QList<StyleSheetImpl*> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
     QString sheetUsed = view() ? view()->part()->d->m_sheetUsed.replace("&&", "&") : QString();
@@ -2382,8 +2385,6 @@ void DocumentImpl::rebuildStyleSheetList(bool force)
     // De-reference all the stylesheets in the old list
     foreach ( StyleSheetImpl* sh, oldStyleSheets)
         sh->deref();
-
-    m_styleSheetListDirty = false;
 }
 
 void DocumentImpl::rebuildStyleSelector()
