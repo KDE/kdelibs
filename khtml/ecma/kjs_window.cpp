@@ -725,12 +725,6 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
     case Status:
       return jsString(UString(part->jsStatusBarText()));
     case Document:
-      if (!part->xmlDocImpl()) {
-        kDebug(6070) << "Document.write: adding <HTML><BODY> to create document";
-        part->begin();
-        part->write("<HTML><BODY>");
-        part->end();
-      }
       return getDOMNode(exec, part->xmlDocImpl());
     case FrameElement:
       if (m_frame->m_partContainerElement)
