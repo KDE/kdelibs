@@ -72,6 +72,8 @@ struct InterpreterContext
     DebugDocument::Ptr activeDocument();
     int                activeLine();
 
+    bool hasActiveDocument() const;
+
     InterpreterContext() : mode(Normal), depthAtSkip(0)
     {}
 

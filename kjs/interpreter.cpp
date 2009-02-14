@@ -509,16 +509,19 @@ Completion Interpreter::evaluate(const UString& sourceURL, int startingLineNumbe
 
     // notify debugger that source has been parsed
     if (m_debugger) {
-        m_debugger->reportSourceParsed(&m_globalExec, progNode.get(), 
+        m_debugger->reportSourceParsed(&m_globalExec, progNode.get(), sourceId, sourceURL, 
                       UString(code, codeLength), startingLineNumber, errLine, errMsg);
     }
 
     // no program node means a syntax error occurred
     if (!progNode) {
         Completion res(Throw, Error::create(&m_globalExec, SyntaxError, errMsg, errLine, sourceId, sourceURL));
-	if (shouldPrintExceptions())
-	  printException(res, sourceURL);
-	return res;
+        if (m_debugger)
+            m_debugger->reportException(&m_globalExec, res.value());
+
+        if (shouldPrintExceptions())
+            printException(res, sourceURL);
+        return res;
     }
 
     m_globalExec.clearException();
@@ -963,3 +966,5 @@ void UnicodeSupport::setToUpperFunction(StringConversionFunction f)
 }
 
 }
+
+// kate: indent-width 2; replace-tabs on; tab-width 4; space-indent on;

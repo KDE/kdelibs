@@ -222,12 +222,13 @@ namespace KJS {
     void reportException  (ExecState *exec, JSValue *exception);
 
     // This notifies the debugger of source being parsed, reindenting it if need be.
-    void reportSourceParsed(ExecState *exec, FunctionBodyNode *body,
+    void reportSourceParsed(ExecState *exec, FunctionBodyNode *body, int sourceId, UString sourceURL, 
                               const UString &source, int startingLineNumber, int errorLine, const UString &errorMsg);
   private:
     DebuggerImp *rep;
     HashMap<Interpreter*, ProtectedPtr<JSValue> > latestExceptions;
     int lastLineRan;
+    int lastSourceParsed; // Needed for attributing syntax exceptions at top-level
   public:
     static int debuggersPresent;
   };

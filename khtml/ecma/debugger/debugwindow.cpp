@@ -634,12 +634,14 @@ QString DebugWindow::exceptionToString(ExecState* exec, JSValue* exceptionObj)
 
 bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *exceptionObj)
 {
+    InterpreterContext* ic = m_contexts[exec->dynamicInterpreter()];
+
     // Don't report it if error reporting is not on
     KParts::ReadOnlyPart *part = static_cast<ScriptInterpreter*>(exec->dynamicInterpreter())->part();
     KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(part);
     
     if (khtmlpart && !khtmlpart->settings()->isJavaScriptErrorReportingEnabled() || !m_catchExceptions)
-        return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
+        return shouldContinue(ic);
 
     QString exceptionMsg = exceptionToString(exec, exceptionObj);
 
@@ -668,11 +670,16 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
         m_catchExceptionsAction->setChecked(false);
     }
     
-    if (dlg.debugSelected())
-        // We want to stop at the current line, to see what's going on.
-        enterDebugSession(exec, doc.get(), lineNo);
+    if (dlg.debugSelected()) {
+        // We generally want to stop at the current line, to see what's going on... There is one exception, though:
+        // in case we've got a parse error, we can't actually stop, but we want to still display stuff.
+        if (ic->hasActiveDocument())
+            enterDebugSession(exec, doc.get(), lineNo);
+        else
+            displayScript(doc.get(), lineNo);
+    }
 
-    return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
+    return shouldContinue(ic);
 }
 
 
@@ -906,6 +913,9 @@ void DebugWindow::displayScript(DebugDocument* document)
 
 void DebugWindow::displayScript(DebugDocument* document, int line)
 {
+    if (!isVisible())
+        show();
+
     if (m_tabWidget->isHidden())
         m_tabWidget->show();
 
