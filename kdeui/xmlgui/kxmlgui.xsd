@@ -30,7 +30,7 @@
             This is the XML Schema for KDE's XMLGUI framework, a way of describing a 
 	    application's Graphical User Interface in an XML file.
             
-            A document componentData of this Schema should have a declaration
+            A document of this Schema should have a declaration
             looking like this:
             
             <![CDATA[
@@ -39,9 +39,9 @@
 		<gui name=""
 		     version=""
 		     xmlns="http://www.kde.org/standards/kxmlgui/1.0"
-		     xmlns:xsi="http://www.w3.org/2001/XMLSchema-componentData"
+		     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		     xsi:schemaLocation="http://www.kde.org/standards/kxmlgui/1.0
-		                          http://www.kde.org/standards/kxmlgui/1.0/kxmlgui.xsd" >
+		                         http://www.kde.org/standards/kxmlgui/1.0/kxmlgui.xsd" >
 		<!-- the content -->
 		</gui>
 
