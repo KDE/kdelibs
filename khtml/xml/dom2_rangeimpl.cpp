@@ -1181,16 +1181,21 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 DocumentFragment RangeImpl::createContextualFragment ( const DOMString &html, int &exceptioncode )
 {
    if (m_detached) {
-        exceptioncode = DOMException::INVALID_STATE_ERR;
-        return DocumentFragment();
+	exceptioncode = DOMException::INVALID_STATE_ERR;
+	return DocumentFragment();
     }
 
-    if (! m_startContainer->isHTMLElement()) {
+    DOM::NodeImpl* start = m_startContainer;
+
+    if (start->isDocumentNode())
+	start = static_cast<DocumentImpl*>(start)->documentElement();
+
+    if (!start || !start->isHTMLElement()) {
 	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
 	return DocumentFragment();
     }
 
-    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(m_startContainer);
+    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(start);
     DocumentFragment fragment = e->createContextualFragment(html);
     if (fragment.isNull()) {
 	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
@@ -1685,10 +1690,4 @@ bool RangeImpl::containedByReadOnly() {
     return false;
 }
 
-
-
-
-
-
-
-
+// kate: indent-width 4; replace-tabs off; tab-width 8; space-indent off;
