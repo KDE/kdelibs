@@ -48,6 +48,7 @@ Debugger::Debugger()
 {
   lastLineRan = 0;
   rep = new DebuggerImp();
+  lastSourceParsed = -1;
 }
 
 Debugger::~Debugger()
@@ -124,7 +125,7 @@ void Debugger::reportAtStatement(ExecState *exec, int sourceId, int firstLine, i
 void Debugger::reportException(ExecState *exec, JSValue *exceptionVal)
 {
   if (!hasHandledException(exec, exceptionVal))
-      exception(exec, exec->currentBody()->sourceId(), lastLineRan, exceptionVal);
+      exception(exec, exec->currentBody() ? exec->currentBody()->sourceId() : lastSourceParsed, lastLineRan, exceptionVal);
 }
 
 bool Debugger::enterContext(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
@@ -149,11 +150,13 @@ bool Debugger::shouldReportCaught() const
   return false;
 }
 
-void Debugger::reportSourceParsed(ExecState *exec, FunctionBodyNode *body, const UString &source, 
+void Debugger::reportSourceParsed(ExecState *exec, FunctionBodyNode *body,
+                                  int sourceId, UString sourceURL, const UString &source, 
                                   int startingLineNumber, int errorLine, const UString &errorMsg)
 {
+  lastSourceParsed = sourceId;
   UString code = source;
-  if (shouldReindentSources())
+  if (shouldReindentSources() && body)
     code = body->reindent(startingLineNumber);
-  sourceParsed(exec, body->sourceId(), body->sourceURL(), code, startingLineNumber, errorLine, errorMsg);
+  sourceParsed(exec, sourceId, sourceURL, code, startingLineNumber, errorLine, errorMsg);
 }

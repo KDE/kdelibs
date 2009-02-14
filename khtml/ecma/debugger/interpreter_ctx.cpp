@@ -54,6 +54,11 @@ DebugDocument::Ptr InterpreterContext::activeDocument()
     return callStack.top().doc;
 }
 
+bool InterpreterContext::hasActiveDocument() const
+{
+    return !callStack.isEmpty();
+}
+
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

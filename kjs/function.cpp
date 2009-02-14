@@ -873,7 +873,7 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
 
         Debugger *dbg = exec->dynamicInterpreter()->debugger();
         if (dbg) {
-          dbg->reportSourceParsed(exec, progNode.get(), s, 0, errLine, errMsg);
+          dbg->reportSourceParsed(exec, progNode.get(), sourceId, UString(), s, 0, errLine, errMsg);
         }
 
         // no program node means a syntax occurred
