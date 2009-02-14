@@ -266,7 +266,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
 # IE extension
   navigate	Window::Navigate	DontDelete|Function 1
 # Mozilla extension
-  sidebar	Window::SideBar		DontDelete|ReadOnly
+  sidebar	Window::SideBar		DontDelete|DontEnum
   getComputedStyle	Window::GetComputedStyle	DontDelete|Function 2
 
 # Warning, when adding a function to this object you need to add a case in Window::get
