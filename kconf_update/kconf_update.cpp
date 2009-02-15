@@ -204,13 +204,13 @@ QStringList KonfUpdate::findUpdateFiles(bool dirtyOnly)
    QStringList result;
    const QStringList list = KGlobal::dirs()->findAllResources("data", "kconf_update/*.upd",
                                                               KStandardDirs::NoDuplicates);
-   for(QStringList::ConstIterator it = list.begin();
-       it != list.end();
+   for(QStringList::ConstIterator it = list.constBegin();
+       it != list.constEnd();
        ++it)
    {
       QString file = *it;
       KDE_struct_stat buff;
-      if (KDE_stat( QFile::encodeName(file), &buff) == 0)
+      if (KDE::stat(file, &buff) == 0)
       {
          int i = file.lastIndexOf('/');
          if (i != -1)
@@ -378,7 +378,7 @@ bool KonfUpdate::updateFile(const QString &filename)
    gotId(QString());
 
    KDE_struct_stat buff;
-   KDE_stat( QFile::encodeName(filename), &buff);
+   KDE::stat(filename, &buff);
    KConfigGroup cg(config, currentFilename);
    cg.writeEntry("ctime", int(buff.st_ctime));
    cg.writeEntry("mtime", int(buff.st_mtime));
@@ -454,12 +454,12 @@ void KonfUpdate::gotFile(const QString &_file)
 
       QString file = KStandardDirs::locateLocal("config", oldFile);
       KDE_struct_stat s_buf;
-      if (KDE_stat(QFile::encodeName(file), &s_buf) == 0)
+      if (KDE::stat(file, &s_buf) == 0)
       {
          if (s_buf.st_size == 0)
          {
             // Delete empty file.
-            unlink(QFile::encodeName(file));
+            QFile::remove(file);
          }
       }
 

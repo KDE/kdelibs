@@ -244,7 +244,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
              * to work in dir-only mode */
             kDebug(250) << "Doing stat on " << filename;
             KDE_struct_stat statBuf;
-            if( KDE_stat( QFile::encodeName( filename ), &statBuf ) == 0 )
+            if( KDE::stat( filename , &statBuf ) == 0 )
             {
                 int hardLinks = statBuf.st_nlink;  /* Count of dirs */
                 kDebug(250) << "stat succeeded, hardlinks: " << hardLinks;

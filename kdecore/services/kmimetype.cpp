@@ -185,7 +185,7 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
 {
     if ( is_local_file && (mode == 0 || mode == (mode_t)-1) ) {
         KDE_struct_stat buff;
-        if ( KDE_stat( QFile::encodeName(path), &buff ) != -1 )
+        if ( KDE::stat( path, &buff ) != -1 )
             mode = buff.st_mode;
     }
 
