@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2007 Urs Wolfer <uwolfer @ kde.org>
+   Copyright (C) 2007-2009 Urs Wolfer <uwolfer @ kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -40,7 +40,7 @@ titleWidget->setText(i18n("Title"));
 titleWidget->setPixmap(KIcon("screen").pixmap(22, 22), KTitleWidget::ImageLeft);
  * @endcode
  *
- * Use it with a own widget:
+ * Use it with an own widget:
  * @code
 KTitleWidget *checkboxTitleWidget = new KTitleWidget(this);
 
@@ -63,6 +63,7 @@ class KDEUI_EXPORT KTitleWidget : public QWidget
     Q_OBJECT
     Q_ENUMS(ImageAlignment)
     Q_PROPERTY(QString text READ text WRITE setText)
+    Q_PROPERTY(QString comment READ comment WRITE setComment)
     Q_PROPERTY(QPixmap pixmap READ pixmap WRITE setPixmap)
     Q_PROPERTY(int autoHideTimeout READ autoHideTimeout WRITE setAutoHideTimeout)
 
