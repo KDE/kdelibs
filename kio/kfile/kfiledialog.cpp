@@ -250,6 +250,7 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
     d->w = ::qobject_cast<KAbstractFileWidget *>(fileQWidget);
 
     if (d->native) {
+        KFileDialogPrivate::Native::s_startDir = startDir;
         // check if it's a mimefilter
         int pos = filter.indexOf('/');
         if (pos > 0 && filter[pos - 1] != '\\')

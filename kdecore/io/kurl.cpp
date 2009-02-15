@@ -376,9 +376,9 @@ KUrl::KUrl( const QString &str )
       // remember the possible query using _setEncodedUrl(), then set up the correct path without query protocol part
       int index = pathToSet.lastIndexOf('?');
       if (index == -1)
-        setPath( QDir::fromNativeSeparators( pathToSet ) );
+        setPath( pathToSet );
       else {
-        setPath( QDir::fromNativeSeparators( pathToSet.left( index ) ) );
+        setPath( pathToSet.left( index ) );
         _setQuery( pathToSet.mid( index + 1 ) );
       }
     }
