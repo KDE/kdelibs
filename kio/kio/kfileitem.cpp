@@ -216,14 +216,14 @@ void KFileItemPrivate::init()
              * This is the reason for the -1
              */
             KDE_struct_stat buf;
-            const QString path = m_url.path( KUrl::RemoveTrailingSlash );
-            if ( KDE::lstat( path, &buf ) == 0 )
+            const QByteArray path = QFile::encodeName(m_url.path( KUrl::RemoveTrailingSlash ));
+            if ( KDE_lstat( path.data(), &buf ) == 0 )
             {
                 mode = buf.st_mode;
                 if ( S_ISLNK( mode ) )
                 {
                     m_bLink = true;
-                    if ( KDE::stat( path, &buf ) == 0 )
+                    if ( KDE_stat( path.data(), &buf ) == 0 )
                         mode = buf.st_mode;
                     else // link pointing to nowhere (see kio/file/file.cc)
                         mode = (S_IFMT-1) | S_IRWXU | S_IRWXG | S_IRWXO;
@@ -294,7 +294,7 @@ KIO::filesize_t KFileItemPrivate::size() const
     // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
     if ( m_bIsLocalUrl ) {
         KDE_struct_stat buf;
-        if ( KDE::stat( m_url.path(KUrl::RemoveTrailingSlash), &buf ) == 0 )
+        if ( KDE_stat( QFile::encodeName(m_url.path(KUrl::RemoveTrailingSlash)), &buf ) == 0 )
             return buf.st_size;
     }
     return 0;
@@ -333,7 +333,7 @@ KDateTime KFileItemPrivate::time( KFileItem::FileTimes mappedWhich ) const
     if ( m_bIsLocalUrl )
     {
         KDE_struct_stat buf;
-        if ( KDE::stat( m_url.path(KUrl::RemoveTrailingSlash), &buf ) == 0 )
+        if ( KDE_stat( QFile::encodeName(m_url.path(KUrl::RemoveTrailingSlash)), &buf ) == 0 )
         {
             setTime(KFileItem::ModificationTime, buf.st_mtime);
             setTime(KFileItem::AccessTime, buf.st_atime);
@@ -619,7 +619,7 @@ QString KFileItemPrivate::user() const
         m_entry.insert( KIO::UDSEntry::UDS_USER, userName );
 #else
         KDE_struct_stat buff;
-        if ( KDE::lstat( m_url.path( KUrl::RemoveTrailingSlash ), &buff ) == 0) // get uid/gid of the link, if it's a link
+        if ( KDE_lstat( QFile::encodeName(m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
         {
             struct passwd *pwuser = getpwuid( buff.st_uid );
             if ( pwuser != 0 ) {
@@ -648,7 +648,7 @@ QString KFileItemPrivate::group() const
         m_entry.insert( KIO::UDSEntry::UDS_GROUP, groupName );
 #else
         KDE_struct_stat buff;
-        if ( KDE::lstat( m_url.path( KUrl::RemoveTrailingSlash ), &buff ) == 0) // get uid/gid of the link, if it's a link
+        if ( KDE_lstat( QFile::encodeName(m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
         {
             struct group *ge = getgrgid( buff.st_gid );
             if ( ge != 0 ) {

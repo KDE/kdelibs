@@ -35,7 +35,6 @@
 #if defined _WIN32 || defined _WIN64
 #include <kde_file_win.h>
 #endif
-#include <kdecore_export.h>
 
 /* added not for Solaris and OpenSolaris platforms */
 
@@ -151,42 +150,6 @@
 #define KDE_signal	::signal
 #endif
 
-class QString;
-namespace KDE
-{
-  /** replacement for ::lstat()/::lstat64() to handle filenames in a platform independent way */
-  KDECORE_EXPORT int lstat(const QString &path, KDE_struct_stat *buf);
-  /** replacement for ::mkdir() to handle pathnames in a platform independent way */
-  KDECORE_EXPORT int mkdir(const QString &pathname, mode_t mode);
-  /** replacement for ::open()/::open64() to handle filenames in a platform independent way */
-  KDECORE_EXPORT int open(const QString &pathname, int flags, mode_t mode = 0);
-  /** replacement for ::rename() to handle pathnames in a platform independent way */
-  KDECORE_EXPORT int rename(const QString &in, const QString &out);
-  /** replacement for ::stat()/::stat64() to handle filenames in a platform independent way */
-  KDECORE_EXPORT int stat(const QString &path, KDE_struct_stat *buf);
-#ifndef Q_WS_WIN
-  inline int lstat(const QString &path, KDE_struct_stat *buf)
-  {
-    return KDE_lstat( QFile::encodeName(path), buf );
-  }
-  inline int mkdir(const QString &pathname, mode_t mode)
-  {
-    return KDE_mkdir( QFile::encodeName(pathname), mode );
-  }
-  inline int open(const QString &pathname, int flags, mode_t mode)
-  {
-    return KDE_open( QFile::encodeName(pathname), flags, mode );
-  }
-  inline int rename(const QString &in, const QString &out)
-  {
-    return KDE_rename( QFile::encodeName(in), QFile::encodeName(out) );
-  }
-  inline int stat(const QString &path, KDE_struct_stat *buf)
-  {
-    return KDE_stat( QFile::encodeName(path), buf );
-  }
-#endif
-};
 
 #if defined _WIN32 || defined _WIN64
 #define KPATH_SEPARATOR ';'

@@ -26,6 +26,7 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <kprotocolmanager.h>
+#include <kde_file.h>
 #include <kmimetype.h>
 #include <kdynamicjobtracker_p.h>
 
@@ -1242,3 +1243,9 @@ KJobTrackerInterface *KIO::getJobTracker()
 {
     return globalJobTracker;
 }
+
+
+
+
+
+

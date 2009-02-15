@@ -59,21 +59,20 @@ if (APPLE)
 endif (APPLE)
 
 if (WIN32)
-   LIST(APPEND kdecore_OPTIONAL_SRCS
+   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/kkernel_win.cpp
       kernel/ktoolinvocation_win.cpp
       kernel/kstandarddirs_win.cpp
       network/klocalsocket_win.cpp
       io/klockfile_win.cpp
-      util/kde_file_win.cpp
-      util/kmacroexpander_win.cpp
       util/kshell_win.cpp
+      util/kmacroexpander_win.cpp
       util/kuser_win.cpp
    )
    if(NOT MSVC)
-      LIST(APPEND kdecore_OPTIONAL_SRCS
-         network/netsupp.cpp
-      )
+   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+      network/netsupp.cpp
+   )
    endif(NOT MSVC)
 endif (WIN32)
 
@@ -91,7 +90,7 @@ if (UNIX)
       util/kshell_unix.cpp
       util/kuser_unix.cpp
       util/kmacroexpander_unix.cpp
-      fakes.c
+      fakes.c 
    )
 endif (UNIX)
 
@@ -204,7 +203,6 @@ set(kdecore_LIB_SRCS
    network/k3socketbuffer.cpp
    network/klocalsocket.cpp
    network/ksocketfactory.cpp
-   network/ktcpsocket.cpp
    localization/kcatalog.cpp
    localization/kcharsets.cpp
    localization/kencodingdetector.cpp
@@ -268,6 +266,7 @@ set(kdecore_LIB_SRCS
    util/qtest_kde.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
+
 
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
    add_definitions(-DNO_DISPLAY)
