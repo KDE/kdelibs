@@ -18,12 +18,16 @@
    Boston, MA 02110-1301, USA.
 */
 
+// needed for _wstat64
+#define __MSVCRT_VERSION__ 0x601
+
 #include "kde_file.h"
 
 #include <QtCore/QFile>
 #include <errno.h>
 
 #include <sys/utime.h>
+#include <sys/stat.h>
 #include <wchar.h>
 #define CONV(x) ((wchar_t*)x.utf16())
 
@@ -87,7 +91,11 @@ namespace KDE
   int stat(const QString &path, KDE_struct_stat *buf)
   {
     int result;
+#ifdef Q_CC_MSVC
     struct _stat64 s64;
+#else
+    struct __stat64 s64;
+#endif
     const int len = path.length();
     if ( (len==2 || len==3) && path[1]==':' && path[0].isLetter() ) {
     	/* 1) */

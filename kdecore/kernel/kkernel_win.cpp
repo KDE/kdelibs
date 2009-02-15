@@ -275,7 +275,7 @@ extern "C" BOOL WINAPI AttachConsole(
 */
 static bool attachToConsole()
 {
-    return AttachConsole(-1) != 0;
+    return AttachConsole(~0U) != 0;
 }
 
 /**
