@@ -59,20 +59,21 @@ if (APPLE)
 endif (APPLE)
 
 if (WIN32)
-   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+   LIST(APPEND kdecore_OPTIONAL_SRCS
       kernel/kkernel_win.cpp
       kernel/ktoolinvocation_win.cpp
       kernel/kstandarddirs_win.cpp
       network/klocalsocket_win.cpp
       io/klockfile_win.cpp
-      util/kshell_win.cpp
+      util/kde_file_win.cpp
       util/kmacroexpander_win.cpp
+      util/kshell_win.cpp
       util/kuser_win.cpp
    )
    if(NOT MSVC)
-   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-      network/netsupp.cpp
-   )
+      LIST(APPEND kdecore_OPTIONAL_SRCS
+         network/netsupp.cpp
+      )
    endif(NOT MSVC)
 endif (WIN32)
 
@@ -90,7 +91,7 @@ if (UNIX)
       util/kshell_unix.cpp
       util/kuser_unix.cpp
       util/kmacroexpander_unix.cpp
-      fakes.c 
+      fakes.c
    )
 endif (UNIX)
 

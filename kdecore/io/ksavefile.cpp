@@ -211,8 +211,7 @@ bool KSaveFile::finalize()
         //to the temp file without creating a small race condition. So we use
         //the standard rename call instead, which will do the copy without the
         //race condition.
-        else if (0 == KDE_rename(QFile::encodeName(d->tempFileName),
-                      QFile::encodeName(d->realFileName))) {
+        else if (0 == KDE::rename(d->tempFileName,d->realFileName)) {
             d->error=QFile::NoError;
             d->errorString.clear();
             success = true;
