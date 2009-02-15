@@ -516,7 +516,7 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
         if (temp.open()) //Only try to write out the thumbnail if we
         {                //actually created the temp file.
             thumb.save(temp.fileName(), "PNG");
-            KDE_rename(QFile::encodeName(temp.fileName()), QFile::encodeName(thumbPath + thumbName));
+            KDE::rename(temp.fileName(), thumbPath + thumbName);
         }
     }
     emitPreview( thumb );
