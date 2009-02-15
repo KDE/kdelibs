@@ -83,6 +83,7 @@ void KIconEffect::init()
     groups += "MainToolbar";
     groups += "Small";
     groups += "Panel";
+    groups += "Dialog";
 
     QStringList states;
     states += "Default";
