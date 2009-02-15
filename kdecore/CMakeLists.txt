@@ -203,6 +203,7 @@ set(kdecore_LIB_SRCS
    network/k3socketbuffer.cpp
    network/klocalsocket.cpp
    network/ksocketfactory.cpp
+   network/ktcpsocket.cpp
    localization/kcatalog.cpp
    localization/kcharsets.cpp
    localization/kencodingdetector.cpp
