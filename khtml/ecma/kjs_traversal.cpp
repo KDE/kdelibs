@@ -208,6 +208,7 @@ DOMTreeWalker::~DOMTreeWalker()
 
 void DOMTreeWalker::mark()
 {
+  JSObject::mark();
   JSNodeFilter* filt = JSNodeFilter::fromDOMFilter(impl()->getFilter());
   if (filt)
     filt->mark();
