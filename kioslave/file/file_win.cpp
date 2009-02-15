@@ -56,6 +56,52 @@ static DWORD CALLBACK CopyProgressRoutine(
     return PROGRESS_CONTINUE;
 }
 
+static UDSEntry createUDSEntryWin( const QFileInfo &fileInfo )
+{
+    UDSEntry entry;
+
+    entry.insert( KIO::UDSEntry::UDS_NAME, fileInfo.fileName() );
+    if( fileInfo.isSymLink() ) {
+        entry.insert( KIO::UDSEntry::UDS_TARGET_URL, fileInfo.symLinkTarget() );
+/* TODO - or not useful on windows?
+        if ( details > 1 ) {
+            // It is a link pointing to nowhere
+            type = S_IFMT - 1;
+            access = S_IRWXU | S_IRWXG | S_IRWXO;
+
+            entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, type );
+            entry.insert( KIO::UDSEntry::UDS_ACCESS, access );
+            entry.insert( KIO::UDSEntry::UDS_SIZE, 0LL );
+            goto notype;
+
+        }
+*/
+    }
+    int type = S_IFREG;
+    int access = 0;
+    if( fileInfo.isDir() )
+        type = S_IFDIR;
+    else if( fileInfo.isSymLink() )
+        type = S_IFLNK;
+    if( fileInfo.isReadable() )
+        access |= S_IRUSR;
+    if( fileInfo.isWritable() )
+        access |= S_IWUSR;
+    if( fileInfo.isExecutable() )
+        access |= S_IXUSR;
+
+    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, type );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS, access );
+    entry.insert( KIO::UDSEntry::UDS_SIZE, fileInfo.size() );
+
+    entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, fileInfo.lastModified().toTime_t() );
+    entry.insert( KIO::UDSEntry::UDS_USER, fileInfo.owner() );
+    entry.insert( KIO::UDSEntry::UDS_GROUP, fileInfo.group() );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, fileInfo.lastRead().toTime_t() );
+
+    return entry;
+}
+
 void FileProtocol::copy( const KUrl &src, const KUrl &dest,
                          int _mode, JobFlags _flags )
 {
@@ -150,46 +196,7 @@ void FileProtocol::listDir( const KUrl& url )
     UDSEntry entry;
     while( it.hasNext() ) {
         it.next();
-        QFileInfo fileInfo = it.fileInfo();
-
-        entry.insert( KIO::UDSEntry::UDS_NAME, it.fileName() );
-        if( fileInfo.isSymLink() ) {
-            entry.insert( KIO::UDSEntry::UDS_TARGET_URL, fileInfo.symLinkTarget() );
-/* TODO - or not useful on windows?
-            if ( details > 1 ) {
-                // It is a link pointing to nowhere
-                type = S_IFMT - 1;
-                access = S_IRWXU | S_IRWXG | S_IRWXO;
-
-                entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, type );
-                entry.insert( KIO::UDSEntry::UDS_ACCESS, access );
-                entry.insert( KIO::UDSEntry::UDS_SIZE, 0LL );
-                goto notype;
-
-            }
-*/
-        }
-        int type = S_IFREG;
-        int access = 0;
-        if( fileInfo.isDir() )
-            type = S_IFDIR;
-        else if( fileInfo.isSymLink() )
-            type = S_IFLNK;
-        if( fileInfo.isReadable() )
-            access |= S_IRUSR;
-        if( fileInfo.isWritable() )
-            access |= S_IWUSR;
-        if( fileInfo.isExecutable() )
-            access |= S_IXUSR;
-
-        entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, type );
-        entry.insert( KIO::UDSEntry::UDS_ACCESS, access );
-        entry.insert( KIO::UDSEntry::UDS_SIZE, fileInfo.size() );
-
-        entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, fileInfo.lastModified().toTime_t() );
-        entry.insert( KIO::UDSEntry::UDS_USER, fileInfo.owner() );
-        entry.insert( KIO::UDSEntry::UDS_GROUP, fileInfo.group() );
-        entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, fileInfo.lastRead().toTime_t() );
+        UDSEntry entry = createUDSEntryWin( it.fileInfo() );
 
         listEntry( entry, false );
         entry.clear();
@@ -311,4 +318,26 @@ void FileProtocol::del( const KUrl& url, bool isfile )
 void FileProtocol::chown( const KUrl& url, const QString&, const QString& )
 {
     error( KIO::ERR_CANNOT_CHOWN, url.toLocalFile() );
+}
+
+void FileProtocol::stat( const KUrl & url )
+{
+    if (!url.isLocalFile()) {
+        KUrl redir(url);
+        redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
+        redirection(redir);
+        kDebug(7101) << "redirecting to " << redir.url();
+        finished();
+        return;
+    }
+
+    const QString sDetails = metaData(QLatin1String("details"));
+    int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
+    kDebug(7101) << "FileProtocol::stat details=" << details;
+
+    UDSEntry entry = createUDSEntryWin( QFileInfo(url.toLocalFile()) );
+
+    statEntry( entry );
+
+    finished();
 }

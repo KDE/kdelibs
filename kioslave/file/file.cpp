@@ -721,7 +721,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
         if (::chmod(_dest_orig.data(), _mode) != 0)
         {
             // couldn't chmod. Eat the error if the filesystem apparently doesn't support it.
-            KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(_dest_orig);
+            KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(dest_orig);
             if (mp && mp->testFileSystemFlag(KMountPoint::SupportsChmod))
                  warning( i18n( "Could not change permissions for\n%1" ,  dest_orig ) );
         }
@@ -848,52 +848,6 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
     // "file status" change time, which we don't care about.
 
     return true;
-}
-
-void FileProtocol::stat( const KUrl & url )
-{
-    if (!url.isLocalFile()) {
-        KUrl redir(url);
-	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
-	redirection(redir);
-	kDebug(7101) << "redirecting to " << redir.url();
-	finished();
-	return;
-    }
-
-    /* directories may not have a slash at the end if
-     * we want to stat() them; it requires that we
-     * change into it .. which may not be allowed
-     * stat("/is/unaccessible")  -> rwx------
-     * stat("/is/unaccessible/") -> EPERM            H.Z.
-     * This is the reason for the -1
-     */
-#ifdef Q_WS_WIN
-    QByteArray _path( QFile::encodeName(url.toLocalFile()) );
-#else
-    QByteArray _path( QFile::encodeName(url.path(KUrl::RemoveTrailingSlash)));
-#endif
-    QString sDetails = metaData(QLatin1String("details"));
-    int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
-    kDebug(7101) << "FileProtocol::stat details=" << details;
-
-    UDSEntry entry;
-    if ( !createUDSEntry( url.fileName(), _path, entry, details, true /*with acls*/ ) )
-    {
-        error( KIO::ERR_DOES_NOT_EXIST, _path );
-        return;
-    }
-#if 0
-///////// debug code
-    MetaData::iterator it1 = mOutgoingMetaData.begin();
-    for ( ; it1 != mOutgoingMetaData.end(); it1++ ) {
-        kDebug(7101) << it1.key() << " = " << it1.data();
-    }
-/////////
-#endif
-    statEntry( entry );
-
-    finished();
 }
 
 /*
