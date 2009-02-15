@@ -173,12 +173,12 @@ void KWindowSystemPrivate::activate ( )
     if(WM_SHELLHOOK==-1) WM_SHELLHOOK  = RegisterWindowMessage(TEXT("SHELLHOOK"));
 
     bool shellHookRegistered = false;
-    if(pRegisterShellHook)
+    if(pRegisterShellHook) {
         kDebug()<<"use RegisterShellHook";
         shellHookRegistered = pRegisterShellHook(winId(),RSH_REGISTER);
         if(!shellHookRegistered)
             shellHookRegistered = pRegisterShellHook(winId(),RSH_TASKMGR);
-    else{
+    } else {
         kDebug()<<"use RegisterShellHookWindow";
         //i'm not sure if i have to do this, and what happens if some other process uses KWindowSystem
         //if(pSetTaskmanWindow)
