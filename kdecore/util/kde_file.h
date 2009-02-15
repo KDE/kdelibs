@@ -188,7 +188,7 @@ namespace KDE
     return KDE_stat( QFile::encodeName(path), buf );
   }
 #endif
-};
+}
 
 #if defined _WIN32 || defined _WIN64
 #define KPATH_SEPARATOR ';'
