@@ -143,7 +143,6 @@ class KUrlNavigator::Private
 public:
     Private(KUrlNavigator* q, KFilePlacesModel* placesModel);
 
-    void slotReturnPressed(const QString&);
     void slotReturnPressed();
     void slotRemoteHostActivated();
     void slotProtocolChanged(const QString&);
@@ -301,8 +300,6 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     m_pathBox->setCompletionObject(kurlCompletion);
     m_pathBox->setAutoDeleteCompletionObject(true);
 
-    connect(m_pathBox, SIGNAL(returnPressed(QString)),
-            q, SLOT(slotReturnPressed(QString)));
     connect(m_pathBox, SIGNAL(returnPressed()),
             q, SLOT(slotReturnPressed()));
     connect(m_pathBox, SIGNAL(urlActivated(KUrl)),
@@ -329,7 +326,7 @@ void KUrlNavigator::Private::appendWidget(QWidget* widget, int stretch)
     m_layout->insertWidget(m_layout->count() - 1, widget, stretch);
 }
 
-void KUrlNavigator::Private::slotReturnPressed(const QString& text)
+void KUrlNavigator::Private::slotReturnPressed()
 {
     // Parts of the following code have been taken
     // from the class KateFileSelector located in
@@ -338,7 +335,7 @@ void KUrlNavigator::Private::slotReturnPressed(const QString& text)
     // Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
     // Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
 
-    const KUrl typedUrl = adjustedUrl(text);
+    const KUrl typedUrl = q->uncommittedUrl();
     QStringList urls = m_pathBox->urls();
     urls.removeAll(typedUrl.url());
     urls.prepend(typedUrl.url());
@@ -357,12 +354,6 @@ void KUrlNavigator::Private::slotReturnPressed(const QString& text)
         // editor.
         QMetaObject::invokeMethod(q, "switchToBreadcrumbMode", Qt::QueuedConnection);
     }
-}
-
-void KUrlNavigator::Private::slotReturnPressed()
-{
-    const QString text = q->uncommittedUrl().prettyUrl();
-    slotReturnPressed(text);
 }
 
 void KUrlNavigator::Private::slotRemoteHostActivated()
