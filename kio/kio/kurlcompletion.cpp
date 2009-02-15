@@ -291,98 +291,6 @@ private:
 	bool m_appendSlashToDir;
 };
 
-#ifdef Q_WS_WIN
-
-// ############### TODO : get rid of this code path and adapt the #else part now that it got ported to QDirIterator
-
-void DirectoryListThread::run()
-{
-  WIN32_FIND_DATAW find_data;
-
-  QString prepend_slash;
-// TODO: doesn't work yet in kurlcombobox yet
-//  QString prepend_backslash;
-
-  if( !m_prepend.isEmpty() ) {
-    prepend_slash = m_prepend;
-    if( !prepend_slash.endsWith( QLatin1Char( '/' ) ) )
-      prepend_slash += QLatin1Char( '/' );
-  }
-//  prepend_backslash = prepend_slash;
-//  prepend_backslash.replace( '/', '\\' );
-
-  Q_FOREACH( const QString &dir_, m_dirList )
-  {
-    QString dir = dir_;
-    if( !dir.endsWith( '/' ) )
-      dir += QLatin1Char( '/' );
-    dir += QLatin1String( "*.*" );
-    HANDLE hFind = FindFirstFileW( ( LPCWSTR ) dir.utf16(), &find_data );
-    if( hFind == INVALID_HANDLE_VALUE ) {
-      qDebug() << "Failed to open dir:" << dir;
-      return;
-    }
-    do {
-      // Skip hidden files if m_noHidden is true
-      if( ( find_data.cFileName[0] == '.' && m_noHidden ) ||
-          ( find_data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN ) == FILE_ATTRIBUTE_HIDDEN )
-        continue;
-
-      // Skip "."
-
-      if ( find_data.cFileName[0] == '.' && find_data.cFileName[1] == '\0' )
-        continue;
-
-      // Skip ".."
-
-      if ( find_data.cFileName[0] == '.' && find_data.cFileName[1] == '.' && find_data.cFileName[2] == '\0' )
-        continue;
-
-      // Verify directory
-
-      if ( m_onlyDir && ( find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 )
-        continue;
-
-      QString file = QString::fromUtf16( ( const ushort * ) find_data.cFileName );
-
-      bool appendSlash = false;
-
-      if ( m_filter.isEmpty() || file.startsWith( m_filter ) ) {
-
-        if ( m_onlyExe || m_onlyDir || m_appendSlashToDir ) {
-
-          // Verify executable
-
-          if ( m_onlyExe && !isExecutable( file ) )
-            continue;
-
-          // Add '/' to directories
-
-          if ( m_appendSlashToDir && ( find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY )
-            appendSlash = true;
-        }
-
-        if( appendSlash ) {
-          addMatch( prepend_slash + file + QLatin1Char( '/' ) );
-//          addMatch( prepend_backslash + file + QLatin1Char( '\\' ));
-        } else {
-          addMatch( prepend_slash + file );
-//          addMatch( prepend_backslash + file );
-        }
-
-      }
-
-    }
-
-    while( FindNextFileW( hFind, &find_data ) );
-
-  }
-
-  done();
-}
-
-#else   // Q_WS_WIN
-
 void DirectoryListThread::run()
 {
 	// Thread safety notes:
@@ -399,8 +307,9 @@ void DirectoryListThread::run()
 
     // kDebug() << "Entered DirectoryListThread::run(), m_filter=" << m_filter << ", m_onlyExe=" << m_onlyExe << ", m_onlyDir=" << m_onlyDir << ", m_appendSlashToDir=" << m_appendSlashToDir << ", m_dirList.size()=" << m_dirList.size();
 
+	QStringList::ConstIterator end = m_dirList.constEnd();
 	for ( QStringList::ConstIterator it = m_dirList.constBegin();
-	      it != m_dirList.constEnd() && !terminationRequested();
+	      it != end && !terminationRequested();
 	      ++it )
 	{
 		// kDebug() << "Scanning directory" << *it;
@@ -448,7 +357,6 @@ void DirectoryListThread::run()
 
 	done();
 }
-#endif  // !Q_WS_WIN
 
 KUrlCompletionPrivate::~KUrlCompletionPrivate()
 {
@@ -1156,8 +1064,9 @@ QString KUrlCompletionPrivate::listDirectories(
 
 		QStringList dirs;
 
-		for ( QStringList::ConstIterator it = dirList.begin();
-		      it != dirList.end();
+                QStringList::ConstIterator end = dirList.constEnd();
+		for ( QStringList::ConstIterator it = dirList.constBegin();
+		      it != end;
 		      ++it )
 		{
 			KUrl url;
@@ -1180,9 +1089,10 @@ QString KUrlCompletionPrivate::listDirectories(
 
 	QList<KUrl*> url_list;
 
-	QStringList::ConstIterator it = dirList.begin();
+	QStringList::ConstIterator it = dirList.constBegin();
+	QStringList::ConstIterator end = dirList.constEnd();
 
-	for ( ; it != dirList.end(); ++it ) {
+	for ( ; it != end; ++it ) {
 		url_list.append( new KUrl( *it ) );
 	}
 
@@ -1233,8 +1143,8 @@ void KUrlCompletionPrivate::_k_slotEntries(KIO::Job*, const KIO::UDSEntryList& e
 {
 	QStringList matchList;
 
-	KIO::UDSEntryList::ConstIterator it = entries.begin();
-	const KIO::UDSEntryList::ConstIterator end = entries.end();
+	KIO::UDSEntryList::ConstIterator it = entries.constBegin();
+	const KIO::UDSEntryList::ConstIterator end = entries.constEnd();
 
 	QString filter = list_urls_filter;
 
