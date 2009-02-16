@@ -141,8 +141,8 @@ set(kdeui_LIB_SRCS
  shortcuts/kglobalaccel.cpp
  shortcuts/kglobalshortcutinfo.cpp
  shortcuts/kglobalshortcutinfo_dbus.cpp
- shortcuts/kdedglobalaccel_interface.cpp
- shortcuts/kdedglobalaccel_component_interface.cpp
+ shortcuts/kglobalaccel_interface.cpp
+ shortcuts/kglobalaccel_component_interface.cpp
  shortcuts/kacceleratormanager.cpp
  shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp

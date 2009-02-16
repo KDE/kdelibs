@@ -26,7 +26,7 @@
 #include <QtCore/QStringList>
 
 #include "kcomponentdata.h"
-#include "kdedglobalaccel_interface.h"
+#include "kglobalaccel_interface.h"
 
 class KAction;
 class KShortcut;
@@ -80,7 +80,7 @@ public:
     bool isUsingForeignComponentName;
     bool enabled;
 
-    org::kde::KdedGlobalAccel iface;
+    org::kde::KGlobalAccel iface;
 };
 
 #endif

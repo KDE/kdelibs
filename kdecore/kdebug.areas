@@ -27,7 +27,7 @@
 178        kdecore (KConfigDialogManager)
 179        kdecore (KNetwork resolver)
 180        kdecore (kdelibs)
-181        kdecore (kdedglobalaccel)
+181        kdecore (kglobalaccel)
 200        kdeui (KMainWindow)
 220        kdeui (KToolBar)
 230        kdeui (KCommand)

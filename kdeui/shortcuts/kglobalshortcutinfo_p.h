@@ -46,7 +46,7 @@ KDEUI_EXPORT const QDBusArgument &operator>> (
         KGlobalShortcutInfo &shortcut);
 
 
-// these should be in kdedglobalaccel_interface.h. But this way it's easier to
+// these should be in kglobalaccel_interface.h. But this way it's easier to
 // regenerate that file.
 Q_DECLARE_METATYPE(QList<int>)
 Q_DECLARE_METATYPE(QList<QStringList>)

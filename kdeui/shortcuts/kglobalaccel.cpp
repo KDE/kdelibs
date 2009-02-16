@@ -43,12 +43,15 @@
 KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
      : isUsingForeignComponentName(false),
        enabled(true),
-       iface("org.kde.kded", "/modules/kdedglobalaccel", QDBusConnection::sessionBus())
+        iface("org.kde.kglobalaccel", "/kglobalaccel", QDBusConnection::sessionBus())
 {
     // Make sure kded is running
     QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
-    if (!bus->isServiceRegistered("org.kde.kded")) {
+    if (!bus->isServiceRegistered("org.kde.kglobalaccel")) {
+#if 0
         KToolInvocation::klauncher(); // this calls startKdeinit
+        qWarning() << "no way to start kglobalaccel currently";
+#endif
     }
     QObject::connect(bus, SIGNAL(serviceOwnerChanged(QString, QString, QString)),
                      q, SLOT(_k_serviceOwnerChanged(QString, QString, QString)));
@@ -205,7 +208,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
             || action->property("isConfigurationAction").toBool();
         uint activeSetterFlags = setterFlags;
 
-        // setPresent tells kdedglobalaccel that the shortcut is active
+        // setPresent tells kglobalaccel that the shortcut is active
         if (!isConfigurationAction) {
             activeSetterFlags |= SetPresent;
         }
@@ -232,7 +235,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
             iface.setForeignShortcut(actionId, result);
         }
         if (scResult != activeShortcut) {
-            // If kdedglobalaccel returned a shortcut that differs from the one we
+            // If kglobalaccel returned a shortcut that differs from the one we
             // sent, use that one. There must have been clashes or some other problem.
             action->d->setActiveGlobalShortcutNoEnable(scResult);
         }
@@ -348,7 +351,7 @@ void KGlobalAccelPrivate::_k_serviceOwnerChanged(const QString &name, const QStr
                                                  const QString &newOwner)
 {
     Q_UNUSED(oldOwner);
-    if (name == QLatin1String("org.kde.kded") && !newOwner.isEmpty()) {
+    if (name == QLatin1String("org.kde.kglobalaccel") && !newOwner.isEmpty()) {
         // kded was restarted (what? you mean it crashes sometimes?)
         reRegisterAll();
     }

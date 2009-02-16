@@ -36,7 +36,7 @@ class KDEUI_EXPORT KGlobalShortcutInfo : public QObject
     {
     Q_OBJECT
 
-    Q_CLASSINFO("D-Bus Interface", "org.kde.kdedglobalaccel.KShortcutInfo")
+    Q_CLASSINFO("D-Bus Interface", "org.kde.kglobalaccel.KShortcutInfo")
 
     Q_SCRIPTABLE Q_PROPERTY(QString uniqueName READ uniqueName)
     Q_SCRIPTABLE Q_PROPERTY(QString friendlyName READ friendlyName)

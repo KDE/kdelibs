@@ -13,7 +13,6 @@ information that, for some reason, cannot be kept in any other process.
 Here are examples of KDED modules:
  kdelibs/kioslave/http/kcookiejar/kcookieserver.cpp  Cookie-handling module (including GUI)
  kdelibs/kio/misc/kwalletd/kwalletd.cpp              KWallet module, handles the wallet file
- kdelibs/kdeui/shortcuts/kdedglobalaccel.cpp         Global-shortcuts module, for desktop-wide key shortcuts like Alt+F2
  kdebase/apps/lib/konq/favicons/favicons.cpp         Favicons module, for downloading favicon.ico files when browsing
  kdebase/runtime/kpasswdserver/kpasswdserver.cpp     Password-caching module
 

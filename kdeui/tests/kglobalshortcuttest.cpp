@@ -356,7 +356,7 @@ void KGlobalShortcutTest::testForgetGlobalShortcut()
     // shortcut behind.
     m_actionB->forgetGlobalShortcut();
     m_actionA->forgetGlobalShortcut();
-    // kdedglobalaccel writes asynchronous.
+    // kglobalaccel writes asynchronous.
     sleep(1);
 
     KGlobalAccel *kga = KGlobalAccel::self();

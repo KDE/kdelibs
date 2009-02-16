@@ -43,9 +43,9 @@ component and the action text (this is bound to cause trouble with i18n)
 kded4 process.
 
 KGlobalAccel::updateGlobalShortcutsAllowed(true) sets the "SetPresent" flag when calling
-kdedglobalaccel, which makes kdedglobalaccel actually grab the key shortcut
+kglobalaccel, which makes kglobalaccel actually grab the key shortcut
 (so that the grab is done after the action has been defined, and only if it is enabled).
-kdedglobalaccel must know about inactive global shortcuts too (e.g. those defined in
+kglobalaccel must know about inactive global shortcuts too (e.g. those defined in
 applications not running at the moment), for conflict resolution.
 
 ## kdebase side: keyboard shortcuts KCM
