@@ -485,23 +485,10 @@ set(khtml_LIB_SRCS
 
 qt4_generate_dbus_interface(khtml_iface.h org.kde.KHTMLPart.xml)
 
-# TODO re-enable when cmake-2.6 is required
-# For now kcookiejar_interface.{cpp,h} is in svn.
-#set(kcookiejar_XML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
-#qt4_generate_dbus_interface(${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookiejar/kcookieserver.h org.kde.KCookieServer.xml)
-
-#set_source_files_properties(${kcookiejar_XML} PROPERTIES INCLUDE "html/kcookiejar_include.h")
-#if (cmake_version GREATER 20500)
-   # The following requires CMake 2.6.
-   # See: http://www.cmake.org/Bug/view.php?id=1729
-#   qt4_add_dbus_interface(khtml_LIB_SRCS ${kcookiejar_XML} kcookiejar_interface)
-#else (cmake_version GREATER 20500)
-   # workaround:
-   #set(khtml_LIB_SRCS ${khtml_LIB_SRCS} kcookiejar_interface.cpp kcookiejar_interface.h)
-#endif (cmake_version GREATER 20500)
-
-set(khtml_LIB_SRCS ${khtml_LIB_SRCS} kcookiejar_interface.cpp kcookiejar_interface.h)
-
+set(kcookiejar_XML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
+qt4_generate_dbus_interface(${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookiejar/kcookieserver.h org.kde.KCookieServer.xml)
+set_source_files_properties(${kcookiejar_XML} PROPERTIES INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookiejar/kcookiejar_include.h")
+qt4_add_dbus_interface(khtml_LIB_SRCS ${kcookiejar_XML} kcookiejar_interface)
 
 kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
