@@ -166,7 +166,7 @@ class KateCompletionModel : public ExpandingWidgetModel
     void debugStats();
 
   protected:
-    virtual int contextMatchQuality(const QModelIndex& row) const;
+    virtual int contextMatchQuality(const QModelIndex & index) const;
 
   Q_SIGNALS:
     void expandIndex(const QModelIndex& index);
@@ -189,10 +189,13 @@ class KateCompletionModel : public ExpandingWidgetModel
     void updateBestMatches();
 
   private:
+    
+    typedef QPair<KTextEditor::CodeCompletionModel*, QModelIndex> ModelRow;
+    virtual int contextMatchQuality(const ModelRow& sourceRow) const;
+    
     QTreeView* treeView() const;
 
     friend class KateArgumentHintModel;
-    typedef QPair<KTextEditor::CodeCompletionModel*, QModelIndex> ModelRow;
     ModelRow modelRowPair(const QModelIndex& index) const;
 
     // Represents a source row; provides sorting method
