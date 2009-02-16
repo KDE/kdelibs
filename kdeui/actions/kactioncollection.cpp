@@ -351,6 +351,8 @@ KAction *KActionCollection::addAction(KStandardAction::StandardAction actionType
   KAction *action = KStandardAction::create(actionType, receiver, member, 0);
   // Give it a parent for gc.
   action->setParent(this);
+  // Remove the name to get rid of the "rename action" warning above
+  action->setObjectName(name);
   // And now add it with the desired name.
   return addAction(name, action);
 }
