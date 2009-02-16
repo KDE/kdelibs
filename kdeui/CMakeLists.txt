@@ -141,8 +141,6 @@ set(kdeui_LIB_SRCS
  shortcuts/kglobalaccel.cpp
  shortcuts/kglobalshortcutinfo.cpp
  shortcuts/kglobalshortcutinfo_dbus.cpp
- shortcuts/kglobalaccel_interface.cpp
- shortcuts/kglobalaccel_component_interface.cpp
  shortcuts/kacceleratormanager.cpp
  shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
@@ -299,9 +297,16 @@ set(kwallet_xml util/org.kde.KWallet.xml)
 install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 qt4_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
-
 qt4_add_dbus_interfaces(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobViewServer.xml )
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobView.xml jobviewiface )
+
+set(kglobalaccel_xml ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts/org.kde.KGlobalAccel.xml)
+set_source_files_properties(${kglobalaccel_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
+qt4_add_dbus_interface(kdeui_LIB_SRCS ${kglobalaccel_xml} kglobalaccel_interface )
+
+set(kglobalaccel_component_xml ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts/org.kde.kglobalaccel.Component.xml)
+set_source_files_properties(${kglobalaccel_component_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
+qt4_add_dbus_interface(kdeui_LIB_SRCS ${kglobalaccel_component_xml} kglobalaccel_component_interface )
 
 kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
