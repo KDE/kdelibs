@@ -1390,6 +1390,9 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
     if (QDir::isRelativePath(dir))
         return false;
 
+#ifdef Q_WS_WIN
+    return QDir().mkpath(dir);
+#else
     QString target = dir;
     uint len = target.length();
 
@@ -1423,6 +1426,7 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
         i = pos + 1;
     }
     return true;
+#endif
 }
 
 static QString readEnvPath(const char *env)
