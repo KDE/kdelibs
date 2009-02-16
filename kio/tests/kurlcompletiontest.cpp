@@ -53,11 +53,12 @@ void KUrlCompletionTest::setup( bool setDirAsURL )
     m_completion = new KUrlCompletion;
     m_tempDir = new KTempDir;
     m_dir = m_tempDir->name();
-    kDebug() << "m_dir=" << m_dir;
     Q_ASSERT( m_dir.endsWith( "/" ) );
+    m_dir += "Dir With#Spaces/";
+    QDir().mkdir(m_dir);
+    kDebug() << "m_dir=" << m_dir;
     if ( setDirAsURL ) {
-        KUrl d; d.setPath( m_dir );
-        m_completion->setDir( d.url() );
+        m_completion->setDir( KUrl(m_dir).url() );
     } else {
         m_completion->setDir( m_dir );
     }
@@ -155,9 +156,10 @@ void KUrlCompletionTest::testLocalURL()
     QStringList comp1all = m_completion->allMatches();
     kDebug() << comp1all;
     assert( comp1all.count() == 3 );
-    assert( comp1all.contains( m_dirURL.url() + "file1" ) );
-    assert( comp1all.contains( m_dirURL.url() + "file_subdir/" ) );
-    QString filehash = m_dirURL.url() + "file%23a";
+    kDebug() << "Looking for" << m_dirURL.prettyUrl() + "file1";
+    assert( comp1all.contains( m_dirURL.prettyUrl() + "file1" ) );
+    assert( comp1all.contains( m_dirURL.prettyUrl() + "file_subdir/" ) );
+    QString filehash = m_dirURL.prettyUrl() + "file%23a";
     assert( comp1all.contains( filehash ) );
     QString filehashPath = m_completion->replacedPath( filehash ); // note that it returns a path!!
     kDebug() << filehashPath;
