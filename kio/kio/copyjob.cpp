@@ -1637,7 +1637,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
             kDebug(7007) << "KTemporaryFile using" << _tmp << "as intermediary";
             if ( KDE_rename( _src, _tmp ) == 0 )
             {
-                if ( !QFile::exists( _dest ) && KDE_rename( _tmp, _dest ) == 0 )
+                if ( !QFile::exists( dest.path() ) && KDE_rename( _tmp, _dest ) == 0 )
                 {
                     kDebug(7007) << "Success.";
                     err = 0;
