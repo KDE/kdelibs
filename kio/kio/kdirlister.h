@@ -44,12 +44,12 @@ namespace KIO { class Job; class ListJob; }
  *
  * Typical usage :
  * @li Create an instance.
- * @li Connect to at least update, clear, newItem, and deleteItem.
+ * @li Connect to at least update, clear, itemsAdded, and itemsDeleted.
  * @li Call openUrl - the signals will be called.
  * @li Reuse the instance when opening a new url (openUrl).
  * @li Destroy the instance when not needed anymore (usually destructor).
  *
- * Advanced usage : call openUrl with _keep = true to list directories
+ * Advanced usage : call openUrl with OpenUrlFlag::Keep to list directories
  * without forgetting the ones previously read (e.g. for a tree view)
  *
  * @author Michael Brade <brade@kde.org>
@@ -100,7 +100,7 @@ public:
    * Run the directory lister on the given url.
    *
    * This method causes KDirLister to emit _all_ the items of @p _url, in any case.
-   * Depending on @p _keep either clear() or clear(const KUrl &) will be
+   * Depending on _flags, either clear() or clear(const KUrl &) will be
    * emitted first.
    *
    * The newItems() signal may be emitted more than once to supply you
@@ -223,7 +223,7 @@ public:
   /**
    * Returns the top level URL that is listed by this KDirLister.
    * It might be different from the one given with openUrl() if there was a
-   * redirection. If you called openUrl() with @p _keep == true this is the
+   * redirection. If you called openUrl() with OpenUrlFlag::Keep this is the
    * first url opened (e.g. in a treeview this is the root).
    *
    * @return the url used by this instance to list the files.
@@ -232,7 +232,7 @@ public:
 
   /**
    * Returns all URLs that are listed by this KDirLister. This is only
-   * useful if you called openUrl() with @p _keep == true, as it happens in a
+   * useful if you called openUrl() with OpenUrlFlag::Keep, as it happens in a
    * treeview, for example. (Note that the base url is included in the list
    * as well, of course.)
    *
@@ -423,7 +423,7 @@ public:
    *
    * @param dir specifies the url for which the items should be returned. This
    *            is only useful if you use KDirLister with multiple URLs
-   *            i.e. using bool keep = true in openUrl().
+   *            i.e. using bool OpenUrlFlag::Keep in openUrl().
    * @param which specifies whether the returned list will contain all entries
    *              or only the ones that passed the nameFilter, mimeFilter, etc.
    *              Note that the latter causes iteration over all the items,
@@ -486,7 +486,7 @@ Q_SIGNALS:
   /**
    * Signal a redirection.
    * Only emitted if there's just one directory to list, i.e. most
-   * probably openUrl() has been called with @p _keep == @p false.
+   * probably openUrl() has been called without OpenUrlFlag::Keep.
    * @param _url the new URL
    */
   void redirection( const KUrl& _url );
@@ -536,6 +536,8 @@ Q_SIGNALS:
 
   /**
    * Signals that an item has been deleted
+   *
+   * @deprecated Don't connect to this signal. Use itemsDeleted instead.
    *
    * @param _fileItem the fileItem to delete
    */
