@@ -19,9 +19,7 @@
 
 #include "autostart.h"
 
-#include <kconfig.h>
-#include <kconfiggroup.h>
-#include <kdesktopfile.h>
+#include <kautostart.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
@@ -76,25 +74,6 @@ static QString extractName(QString path) // krazy:exclude=passbyvalue
   return path;
 }
 
-static bool startCondition(const QString &condition)
-{
-  if (condition.isEmpty())
-     return true;
-
-  QStringList list = condition.split(':');
-  if (list.count() < 4)
-     return true;
-  if (list[0].isEmpty() || list[2].isEmpty())
-     return true;
-
-  KConfig config(list[0], KConfig::NoGlobals);
-  KConfigGroup cg(&config, list[1]);
-
-  bool defaultValue = (list[3].toLower() == "true");
-
-  return cg.readEntry(list[2], defaultValue);
-}
-
 void
 AutoStart::loadAutoStartList()
 {
@@ -104,22 +83,15 @@ AutoStart::loadAutoStartList()
        it != files.end();
        ++it)
    {
-       KDesktopFile config(*it);
-       const KConfigGroup grp = config.desktopGroup();
-       if (!startCondition(grp.readEntry("X-KDE-autostart-condition")))
-          continue;
-       if (!config.tryExec())
-          continue;
-       if (grp.readEntry("Hidden", false))
-          continue;
-       if (config.noDisplay()) // handles OnlyShowIn, NotShowIn (and NoDisplay, but that's not used here)
+       KAutostart config(*it);
+       if( !config.autostarts( "KDE", KAutostart::CheckAll))
            continue;
 
        AutoStartItem *item = new AutoStartItem;
        item->name = extractName(*it);
        item->service = *it;
-       item->startAfter = grp.readEntry("X-KDE-autostart-after");
-       item->phase = grp.readEntry("X-KDE-autostart-phase", 2);
+       item->startAfter = config.startAfter();
+       item->phase = config.startPhase();
        if (item->phase < 0)
           item->phase = 0;
        m_startList->append(item);

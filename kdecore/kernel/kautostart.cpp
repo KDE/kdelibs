@@ -89,19 +89,54 @@ bool KAutostart::autostarts(const QString& environment,
     bool starts = d->df->desktopGroup().exists();
 
     // check the hidden field
-    starts &= !d->df->desktopGroup().readEntry("Hidden", false);
+    starts = starts && !d->df->desktopGroup().readEntry("Hidden", false);
 
     if (!environment.isEmpty())
     {
-        starts &= (allowedEnvironments().indexOf(environment) != -1);
+        starts = starts && checkAllowedEnvironment(environment);
     }
 
-    if (check == CheckCommand)
+    if (check & CheckCommand)
     {
-        starts &= d->df->tryExec();
+        starts = starts && d->df->tryExec();
+    }
+    if (check & CheckCondition)
+    {
+        starts = starts && checkStartCondition();
     }
 
     return starts;
+}
+
+bool KAutostart::checkStartCondition() const
+{
+    QString condition = d->df->desktopGroup().readEntry("X-KDE-autostart-condition");
+    if (condition.isEmpty())
+        return true;
+
+    QStringList list = condition.split(':');
+    if (list.count() < 4)
+        return true;
+    if (list[0].isEmpty() || list[2].isEmpty())
+        return true;
+
+    KConfig config(list[0], KConfig::NoGlobals);
+    KConfigGroup cg(&config, list[1]);
+
+    bool defaultValue = (list[3].toLower() == "true");
+
+    return cg.readEntry(list[2], defaultValue);
+}
+
+bool KAutostart::checkAllowedEnvironment( const QString& environment ) const
+{
+    QStringList allowed = allowedEnvironments();
+    if( !allowed.isEmpty())
+        return allowed.contains( environment );
+    QStringList excluded = excludedEnvironments();
+    if( !excluded.isEmpty())
+        return !excluded.contains( environment );
+    return true;
 }
 
 QString KAutostart::command() const
@@ -252,6 +287,11 @@ void KAutostart::removeFromExcludedEnvironments(const QString& environment)
 
     envs.removeAt(index);
     setExcludedEnvironments(envs);
+}
+
+QString KAutostart::startAfter() const
+{
+    return d->df->desktopGroup().readEntry("X-KDE-autostart-after");
 }
 
 #include "kautostart.moc"

@@ -79,11 +79,21 @@ class KDECORE_EXPORT KAutostart : public QObject
          */
         enum Condition
         {
-            NoConditions = 0,
+            NoConditions = 0x0,
             /**
              * an executable that is checked for existence by name
              */
-            CheckCommand = 1
+            CheckCommand = 0x1,
+            /**
+             * autostart condition will be checked too (KDE-specific)
+             * @since 4.3
+             */
+            CheckCondition = 0x2,
+            /**
+             * all necessary conditions will be checked
+             * @since 4.3
+             */
+            CheckAll = 0xff
         };
         Q_DECLARE_FLAGS(Conditions, Condition)
 
@@ -195,13 +205,14 @@ class KDECORE_EXPORT KAutostart : public QObject
 
         /**
          * Returns the list of environments (e.g. "KDE") this service is allowed
-         * to start in.
+         * to start in. Use checkAllowedEnvironment() or autostarts() for actual
+         * checks.
          *
          * This does not take other autostart conditions
          * into account. If any environment is added to the allowed environments
          * list, then only those environments will be allowed to
-         * autoload the service. If an environment is marked as both allowed
-         * and excluded, it will be excluded.
+         * autoload the service. It is not allowed to specify both allowed and excluded
+         * environments at the same time.
          * @see setAllowedEnvironments()
          */
         QStringList allowedEnvironments() const;
@@ -225,11 +236,12 @@ class KDECORE_EXPORT KAutostart : public QObject
 
         /**
          * Returns the list of environments this service is explicitly not
-         * allowed to start in.
+         * allowed to start in. Use checkAllowedEnvironment() or autostarts() for actual
+         * checks.
          *
          * This does not take other autostart conditions
-         * such as into account. If the same environment is also marked as
-         * allowed, it will still be excluded.
+         * such as into account. It is not allowed to specify both allowed and excluded
+         * environments at the same time.
          * @see setExcludedEnvironments()
          */
         QStringList excludedEnvironments() const;
@@ -251,7 +263,23 @@ class KDECORE_EXPORT KAutostart : public QObject
          */
         void removeFromExcludedEnvironments(const QString& environment);
 
+        /**
+         * Returns the name of another service that should be autostarted
+         * before this one (if that service would be autostarted).
+         * @internal
+         * @since 4.3
+         */
+        QString startAfter() const;
+
+        /**
+         * Checks whether autostart is allowed in the given environment,
+         * depending on allowedEnvironments() and excludedEnvironments().
+         * @since 4.3
+         */
+        bool checkAllowedEnvironment( const QString& environment ) const;
+
     private:
+        bool checkStartCondition() const;
         class Private;
         Private* const d;
 };
