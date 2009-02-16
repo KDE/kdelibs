@@ -29,6 +29,8 @@ class DirectorySizeJobPrivate;
 /**
  * Computes a directory size (similar to "du", but doesn't give the same results
  * since we simply sum up the dir and file sizes, whereas du speaks disk blocks)
+ *
+ * Usage: see KIO::directorySize.
  */
 class KIO_EXPORT DirectorySizeJob : public KIO::Job
 {
@@ -70,7 +72,8 @@ private:
 
 /**
  * Computes a directory size (by doing a recursive listing).
- * Connect to the result signal. Use NetAccess::synchronousRun for a synchronous version.
+ * Connect to the result signal (this is the preferred solution to avoid blocking the GUI),
+ * or use exec() for a synchronous (blocking) calculation.
  *
  * This one lists a single directory.
  */
@@ -78,7 +81,8 @@ KIO_EXPORT DirectorySizeJob * directorySize( const KUrl & directory );
 
 /**
  * Computes a directory size (by doing a recursive listing).
- * Connect to the result signal. Use NetAccess::synchronousRun for a synchronous version.
+ * Connect to the result signal (this is the preferred solution to avoid blocking the GUI),
+ * or use exec() for a synchronous (blocking) calculation.
  *
  * This one lists the items from @p lstItems.
  * The reason we asks for items instead of just urls, is so that
