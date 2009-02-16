@@ -487,8 +487,9 @@ QString KRun::binaryName( const QString & execLine, bool removePath )
   return QString();
 }
 
-static bool runCommandInternal( KProcess* proc, const KService* service, const QString& binName,
-    const QString &execName, const QString & iconName, QWidget* window, const QByteArray& asn )
+static bool runCommandInternal(KProcess* proc, const KService* service, const QString& executable,
+                               const QString &userVisibleName, const QString & iconName, QWidget* window,
+                               const QByteArray& asn)
 {
   if( window != NULL )
       window = window->topLevelWidget();
@@ -500,12 +501,12 @@ static bool runCommandInternal( KProcess* proc, const KService* service, const Q
      delete proc;
      return false;
   }
-  QString bin = KRun::binaryName( binName, true );
+  QString bin = KRun::binaryName( executable, true );
 #ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
   bool silent;
   QByteArray wmclass;
   KStartupInfoId id;
-  bool startup_notify = ( asn != "0" && KRun::checkStartupNotify( binName, service, &silent, &wmclass ));
+  bool startup_notify = (asn != "0" && KRun::checkStartupNotify(QString() /*unused*/, service, &silent, &wmclass));
   if( startup_notify )
   {
       id.initId( asn );
@@ -513,8 +514,8 @@ static bool runCommandInternal( KProcess* proc, const KService* service, const Q
       KStartupInfoData data;
       data.setHostname();
       data.setBin( bin );
-      if( !execName.isEmpty())
-          data.setName( execName );
+      if (!userVisibleName.isEmpty())
+          data.setName(userVisibleName);
       else if( service && !service->name().isEmpty())
           data.setName( service->name());
       data.setDescription( i18n( "Launching %1" ,  data.name()));
@@ -531,7 +532,7 @@ static bool runCommandInternal( KProcess* proc, const KService* service, const Q
           data.setLaunchedBy( window->winId());
       KStartupInfo::sendStartup( id, data );
   }
-  int pid = KProcessRunner::run( proc, binName, id );
+  int pid = KProcessRunner::run(proc, executable, id);
   if( startup_notify && pid )
   {
       KStartupInfoData data;
@@ -541,7 +542,7 @@ static bool runCommandInternal( KProcess* proc, const KService* service, const Q
   }
   return pid != 0;
 #else
-  Q_UNUSED( execName );
+  Q_UNUSED(userVisibleName);
   Q_UNUSED( iconName );
   return KProcessRunner::run( proc, bin ) != 0;
 #endif
@@ -763,8 +764,8 @@ bool KRun::run( const QString& _exec, const KUrl::List& _urls, QWidget* window, 
 
 bool KRun::runCommand( const QString &cmd, QWidget* window )
 {
-  QString bin = binaryName( cmd, true );
-  return KRun::runCommand( cmd, bin, bin, window, QByteArray() );
+    const QString bin = KShell::splitArgs(cmd).first();
+    return KRun::runCommand(cmd, bin, bin /*iconName*/, window, QByteArray());
 }
 
 bool KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName, QWidget* window, const QByteArray& asn )
@@ -774,7 +775,10 @@ bool KRun::runCommand( const QString& cmd, const QString &execName, const QStrin
   proc->setShellCommand( cmd );
   QString bin = binaryName( execName, true );
   KService::Ptr service = KService::serviceByDesktopName( bin );
-  return runCommandInternal( proc, service.data(), bin, execName, iconName, window, asn );
+  return runCommandInternal( proc, service.data(),
+                             execName /*executable to check for in slotProcessExited*/,
+                             execName /*user-visible name*/,
+                             iconName, window, asn );
 }
 
 KRun::KRun( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
@@ -1197,7 +1201,7 @@ void KRun::foundMimeType( const QString& type )
   if ( !mime )
       kWarning(7010) << "Unknown mimetype " << type;
 
-  // Suport for preferred service setting, see setPreferredService
+  // Support for preferred service setting, see setPreferredService
   if ( !d->m_preferredService.isEmpty() ) {
       kDebug(7010) << "Attempting to open with preferred service: " << d->m_preferredService;
       KService::Ptr serv = KService::serviceByDesktopName( d->m_preferredService );
@@ -1413,32 +1417,35 @@ mode_t KRun::mode() const
 /****************/
 
 #ifndef Q_WS_X11
-int KProcessRunner::run(KProcess * p, const QString & binName)
+int KProcessRunner::run(KProcess * p, const QString & executable)
 {
-    return (new KProcessRunner(p, binName))->pid();
+    return (new KProcessRunner(p, executable))->pid();
 }
 #else
-int KProcessRunner::run(KProcess * p, const QString & binName, const KStartupInfoId& id)
+int KProcessRunner::run(KProcess * p, const QString & executable, const KStartupInfoId& id)
 {
-    return (new KProcessRunner(p, binName, id))->pid();
+    return (new KProcessRunner(p, executable, id))->pid();
 }
 #endif
 
 #ifndef Q_WS_X11
-KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName)
+KProcessRunner::KProcessRunner(KProcess * p, const QString & executable)
 #else
-KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KStartupInfoId& _id) :
+KProcessRunner::KProcessRunner(KProcess * p, const QString & executable, const KStartupInfoId& _id) :
     id(_id)
 #endif
 {
     process = p;
-    binName = _binName;
+    m_executable = executable;
     connect(process, SIGNAL(finished(int, QProcess::ExitStatus)),
             this, SLOT(slotProcessExited(int, QProcess::ExitStatus)));
 
     process->start();
     if (!process->waitForStarted()) {
-        slotProcessExited(127, QProcess::NormalExit);
+        //kDebug() << "wait for started failed, exitCode=" << process->exitCode()
+        //         << "exitStatus=" << process->exitStatus();
+        // Note that exitCode is 255 here (the first time), and 0 later on (bug?).
+        slotProcessExited(255, process->exitStatus());
     }
 }
 
@@ -1452,11 +1459,8 @@ int KProcessRunner::pid() const
     return process ? process->pid() : 0;
 }
 
-void
-KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
+void KProcessRunner::terminateStartupNotification()
 {
-    kDebug(7010) << binName << "exitCode=" << exitCode << "exitStatus=" << exitStatus;
-
 #ifdef Q_WS_X11
     if (!id.none()) {
         KStartupInfoData data;
@@ -1465,18 +1469,28 @@ KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
         KStartupInfo::sendFinish(id, data);
     }
 #endif
+}
 
-    bool showErr = exitStatus == QProcess::NormalExit
-                   && (exitCode == 127 || exitCode == 1);
-    if (!binName.isEmpty() && showErr) {
-        // Often we get 1 (zsh, csh) or 127 (ksh, bash) because the binary doesn't exist.
-        // We can't just rely on that, but it's a good hint.
-        // Before assuming its really so, we'll try to find the binName
-        // relatively to current directory,  and then in the PATH.
-        if (!QFile(binName).exists() && KStandardDirs::findExe(binName).isEmpty()) {
+void
+KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    kDebug(7010) << m_executable << "exitCode=" << exitCode << "exitStatus=" << exitStatus;
+    Q_UNUSED(exitStatus);
+
+    terminateStartupNotification(); // do this before the messagebox
+    if (exitCode != 0 && !m_executable.isEmpty()) {
+        // Let's see if the error is because the exe doesn't exist.
+        // When this happens, waitForStarted returns false, but not if kioexec
+        // was involved, then we come here, that's why the code is here.
+        //
+        // We'll try to find the executable relatively to current directory,
+        // (or with a full path, if m_executable is absolute), and then in the PATH.
+        if (!QFile(m_executable).exists() && KStandardDirs::findExe(m_executable).isEmpty()) {
             KGlobal::ref();
-            KMessageBox::sorry(0L, i18n("Could not find the program '%1'", binName));
+            KMessageBox::sorry(0L, i18n("Could not find the program '%1'", m_executable));
             KGlobal::deref();
+        } else {
+            kDebug() << process->readAllStandardError();
         }
     }
     deleteLater();
