@@ -163,8 +163,8 @@ Notes:
     <glob pattern="*.rdc"/>
   </mime-type>
   <mime-type type="text/plain"> <!-- As discussed on xdg list, *.doc is needed here for disambiguation -->
-    <glob pattern="*.asc"/>
     <glob pattern="*.txt"/>
+    <glob pattern="*.asc"/>
     <glob pattern="*.doc"/>
   </mime-type>
   <mime-type type="text/x-hex">
