@@ -1435,6 +1435,7 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & executable, const K
     id(_id)
 #endif
 {
+    m_pid = 0;
     process = p;
     m_executable = executable;
     connect(process, SIGNAL(finished(int, QProcess::ExitStatus)),
@@ -1446,6 +1447,10 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & executable, const K
         //         << "exitStatus=" << process->exitStatus();
         // Note that exitCode is 255 here (the first time), and 0 later on (bug?).
         slotProcessExited(255, process->exitStatus());
+    } else {
+#ifdef Q_WS_X11
+        m_pid = process->pid();
+#endif
     }
 }
 
@@ -1456,7 +1461,7 @@ KProcessRunner::~KProcessRunner()
 
 int KProcessRunner::pid() const
 {
-    return process ? process->pid() : 0;
+    return m_pid;
 }
 
 void KProcessRunner::terminateStartupNotification()
@@ -1464,7 +1469,7 @@ void KProcessRunner::terminateStartupNotification()
 #ifdef Q_WS_X11
     if (!id.none()) {
         KStartupInfoData data;
-        data.addPid(pid()); // announce this pid for the startup notification has finished
+        data.addPid(m_pid); // announce this pid for the startup notification has finished
         data.setHostname();
         KStartupInfo::sendFinish(id, data);
     }

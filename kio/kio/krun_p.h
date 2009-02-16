@@ -66,6 +66,7 @@ class KProcessRunner : public QObject
     KProcess *process;
     QString m_executable; // can be a full path
     KStartupInfoId id;
+    int m_pid;
 
     Q_DISABLE_COPY(KProcessRunner)
 };
