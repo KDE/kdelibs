@@ -41,9 +41,9 @@ class KProcessRunner : public QObject
   public:
 
 #ifndef Q_WS_X11
-    static int run(KProcess *, const QString & binName);
+    static int run(KProcess *, const QString & executable);
 #else
-    static int run(KProcess *, const QString & binName, const KStartupInfoId& id);
+    static int run(KProcess *, const QString & executable, const KStartupInfoId& id);
 #endif
 
     virtual ~KProcessRunner();
@@ -64,7 +64,7 @@ class KProcessRunner : public QObject
     void terminateStartupNotification();
 
     KProcess *process;
-    QString binName;
+    QString m_executable; // can be a full path
     KStartupInfoId id;
 
     Q_DISABLE_COPY(KProcessRunner)
