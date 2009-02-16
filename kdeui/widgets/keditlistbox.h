@@ -278,7 +278,7 @@ public:
        */
       void removed( const QString & text );
 
-   protected Q_SLOTS:
+   protected Q_SLOTS: // KDE5: make private?
       void moveItemUp();
       void moveItemDown();
       void addItem();

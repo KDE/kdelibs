@@ -519,7 +519,7 @@ void KEditListBox::addItem()
             d->model->setStringList(lst);
         }
         emit changed();
-        emit added( currentTextLE );
+        emit added( currentTextLE ); // TODO: pass the index too
     }
 
     d->updateButtonState();
