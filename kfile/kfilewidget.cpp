@@ -185,6 +185,7 @@ public:
     void _k_zoomOutIconsSize();
     void _k_zoomInIconsSize();
     void _k_slotIconSizeSliderMoved(int);
+    void _k_slotIconSizeChanged(int);
     void _k_slotViewDoubleClicked(const QModelIndex&);
 
     void addToRecentDocuments();
@@ -460,6 +461,8 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     d->iconSizeSlider->installEventFilter(this);
     connect(d->iconSizeSlider, SIGNAL(valueChanged(int)),
             d->ops, SLOT(setIconsZoom(int)));
+    connect(d->iconSizeSlider, SIGNAL(valueChanged(int)),
+            this, SLOT(_k_slotIconSizeChanged(int)));
     connect(d->iconSizeSlider, SIGNAL(sliderMoved(int)),
             this, SLOT(_k_slotIconSizeSliderMoved(int)));
     connect(d->ops, SIGNAL(currentIconSizeChanged(int)),
@@ -1955,7 +1958,7 @@ void KFileWidgetPrivate::_k_zoomInIconsSize()
     _k_slotIconSizeSliderMoved(futValue);
 }
 
-void KFileWidgetPrivate::_k_slotIconSizeSliderMoved(int _value)
+void KFileWidgetPrivate::_k_slotIconSizeChanged(int _value)
 {
     int maxSize = KIconLoader::SizeEnormous - KIconLoader::SizeSmall;
     int value = (maxSize * _value / 100) + KIconLoader::SizeSmall;
@@ -1972,6 +1975,13 @@ void KFileWidgetPrivate::_k_slotIconSizeSliderMoved(int _value)
             iconSizeSlider->setToolTip(i18n("Icon size: %1 pixels", value));
             break;
     }
+}
+
+void KFileWidgetPrivate::_k_slotIconSizeSliderMoved(int _value)
+{
+    // Force this to be called in case this slot is called first on the
+    // slider move.
+    _k_slotIconSizeChanged(_value);
 
     QPoint global(iconSizeSlider->rect().topLeft());
     global.ry() += iconSizeSlider->height() / 2;
