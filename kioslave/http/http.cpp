@@ -1861,6 +1861,8 @@ void HTTPProtocol::clearUnreadBuffer()
     m_unreadBuf.clear();
 }
 
+// Note: the implementation of unread/readBuffered assumes that unread will only
+// be used when there is extra data we don't want to handle, and not to wait for more data.
 void HTTPProtocol::unread(char *buf, size_t size)
 {
     // implement LIFO (stack) semantics
@@ -1886,6 +1888,10 @@ size_t HTTPProtocol::readBuffered(char *buf, size_t size)
             buf[i] = m_unreadBuf.constData()[bufSize - i - 1];
         }
         m_unreadBuf.truncate(bufSize - bytesRead);
+
+        // if we have an unread buffer, return here, since we may already have enough data to
+        // complete the response, so we don't want to wait for more.
+        return bytesRead;
     }
     if (bytesRead < size) {
         int rawRead = TCPSlaveBase::read(buf + bytesRead, size - bytesRead);
