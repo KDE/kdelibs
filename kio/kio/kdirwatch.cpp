@@ -519,7 +519,7 @@ bool KDirWatchPrivate::useFAM(Entry* e)
 // setup INotify notification, returns false if not possible
 bool KDirWatchPrivate::useINotify( Entry* e )
 {
-  kDebug (7001) << "trying to use inotify for monitoring";
+  //kDebug (7001) << "trying to use inotify for monitoring";
 
   e->wd = 0;
   e->dirty = false;
@@ -547,7 +547,7 @@ bool KDirWatchPrivate::useINotify( Entry* e )
   if ( ( e->wd = inotify_add_watch( m_inotify_fd,
                                     QFile::encodeName( e->path ), mask) ) > 0)
   {
-    kDebug (7001) << "inotify successfully used for monitoring";
+    //kDebug (7001) << "inotify successfully used for monitoring";
     return true;
   }
 
