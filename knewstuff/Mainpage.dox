@@ -16,13 +16,14 @@ and the creation of a <b>*.knsrc</b> file which will determine all aspects of th
 application's \b KNewStuff2 usage.
 
 All of the related information such as <b>*.knsrc</b> files, repositories and security
-can be found in the <a href="http://techbase.kde.org/Development/Tutorials/Introduction_to_Get_Hot_New_Stuff">KNewStuff2 tutorial</a>.
+can be found in the <a href="http://techbase.kde.org/Development/Tutorials/K_Hot_New_Stuff2">KNewStuff2 tutorial</a>.
 
 @authors
 Josef Spillner \<spillner@kde.org\>
+Jeremy Whiting \<jeremy@scitools.com\>
 
 @maintainers
-Josef Spillner \<spillner@kde.org\>
+Jeremy Whiting \<jeremy@scitools.com\>
 
 @licenses
 @lgpl
