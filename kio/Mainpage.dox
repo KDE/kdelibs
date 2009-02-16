@@ -13,28 +13,8 @@ The easiest way to use this library from a %KDE application is via the
 KIO::NetAccess class (for easy synchronous access) or via the
 KIO::Job class (for more complex asynchronous jobs).
 
-This library also implements the System Configuration Cache (KSycoca),
-and the %KDE file selector widget (see
+This library also implements the %KDE file selector widget (see
 @ref filedialog "the page on the file selector widget").
-
-@see KMimeType:
-  Represents the type of a file.
-
-@see KService:
-  A service is a library or application that can deal with a certain
-  set of mimetypes.
-
-@see KServiceType:
-  A service type is a group of services with similar functionality.  For
-  example, KOffice's filters have the service type KOfficeFilter.
-
-@see KServiceTypeTrader:
-  Can be used to query for which services implement a given servicetype.
-  Has its own language, in order to allow complex queries.
-
-@see KMimeTypeTrader:
-  Can be used to query for which services can handle a given mimetype.
-  Has its own language, in order to allow complex queries.
 
 @authors
 Various: see copyright headers in individual files
