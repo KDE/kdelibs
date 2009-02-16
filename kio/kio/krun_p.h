@@ -64,7 +64,7 @@ class KProcessRunner : public QObject
     void terminateStartupNotification();
 
     KProcess *process;
-    QString binName;
+    QString m_executable;
     KStartupInfoId id;
 
     Q_DISABLE_COPY(KProcessRunner)
