@@ -178,10 +178,11 @@ namespace KIO {
         KDE_DEPRECATED void showErrorDialog( QWidget *parent = 0 );
 
         /**
-         * Returns whether message display is enabled or disabled.
-         * See also setInteractive .
-         * @return true if message display is enabled
-         * @see setInteractive()
+         * Returns whether the user should be asked about things when the job
+         * is unsure, like whether to overwrite existing files etc.
+         * @return true if user interactions are enabled (true by default),
+         *         false if setUiDelegate(0) was called.
+         * @see setUiDelegate()
          */
         bool isInteractive() const;
 
