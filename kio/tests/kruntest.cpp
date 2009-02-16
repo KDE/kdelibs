@@ -61,7 +61,8 @@ static const struct {
     { "run(doesnotexit, remote url)", "should use kioexec and show error message", "doesnotexist", "http://www.kde.org" },
     { "run(missing lib, no url)", "should show error message (remove libqca.so.2 for this, e.g. by editing LD_LIBRARY_PATH if qca is in its own prefix)", "qcatool", 0 },
     { "run(missing lib, file url)", "should show error message (remove libqca.so.2 for this, e.g. by editing LD_LIBRARY_PATH if qca is in its own prefix)", "qcatool", testFile },
-    { "run(missing lib, remote url)", "should show error message (remove libqca.so.2 for this, e.g. by editing LD_LIBRARY_PATH if qca is in its own prefix)", "qcatool", "http://www.kde.org" }
+    { "run(missing lib, remote url)", "should show error message (remove libqca.so.2 for this, e.g. by editing LD_LIBRARY_PATH if qca is in its own prefix)", "qcatool", "http://www.kde.org" },
+    { "runCommand(full path)", "should work normally", "../../kdecore/tests/kurltest", "" }
 };
 
 Receiver::Receiver()
@@ -106,9 +107,13 @@ void Receiver::slotLaunchTest()
     Q_ASSERT(button);
     const int testNumber = button->property("testNumber").toInt();
     KUrl::List urls;
-    if (s_tests[testNumber].url)
-        urls << KUrl(s_tests[testNumber].url);
-    KRun::run(s_tests[testNumber].exec, urls, this);
+    if (QByteArray(s_tests[testNumber].text).startsWith("runCommand")) {
+        KRun::runCommand(s_tests[testNumber].exec, this);
+    } else {
+        if (s_tests[testNumber].url)
+            urls << KUrl(s_tests[testNumber].url);
+        KRun::run(s_tests[testNumber].exec, urls, this);
+    }
 }
 
 void Receiver::slotStop()
