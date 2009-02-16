@@ -1492,9 +1492,8 @@ void CopyJobPrivate::setNextDirAttribute()
         for ( ; it != m_directoriesCopied.constEnd() ; ++it ) {
             const KUrl& url = (*it).uDest;
             if ( url.isLocalFile() && (*it).mtime != (time_t)-1 ) {
-                const QByteArray path = QFile::encodeName( url.path() );
                 KDE_struct_stat statbuf;
-                if (KDE_lstat(path, &statbuf) == 0) {
+                if (KDE::lstat(url.path(), &statbuf) == 0) {
                     struct utimbuf utbuf;
                     utbuf.actime = statbuf.st_atime; // access time, unchanged
                     utbuf.modtime = (*it).mtime; // modification time
@@ -1627,17 +1626,17 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                err == ERR_IDENTICAL_FILES ) )
         {
             kDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls";
-            QByteArray _src( QFile::encodeName(m_currentSrcURL.path()) );
-            QByteArray _dest( QFile::encodeName(dest.path()) );
+            const QString _src( m_currentSrcURL.path() );
+            const QString _dest( dest.path() );
             KTemporaryFile tmpFile;
             tmpFile.setPrefix(m_currentSrcURL.directory(KUrl::ObeyTrailingSlash));
             tmpFile.setAutoRemove(false);
             tmpFile.open();
-            QByteArray _tmp( QFile::encodeName(tmpFile.fileName()) );
+            const QString _tmp( tmpFile.fileName() );
             kDebug(7007) << "KTemporaryFile using" << _tmp << "as intermediary";
-            if ( KDE_rename( _src, _tmp ) == 0 )
+            if ( KDE::rename( _src, _tmp ) == 0 )
             {
-                if ( !QFile::exists( _dest ) && KDE_rename( _tmp, _dest ) == 0 )
+                if ( !QFile::exists( _dest ) && KDE::rename( _tmp, _dest ) == 0 )
                 {
                     kDebug(7007) << "Success.";
                     err = 0;
@@ -1645,8 +1644,8 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 else
                 {
                     // Revert back to original name!
-                    if ( KDE_rename( _tmp, _src ) != 0 ) {
-                        kError(7007) << "Couldn't rename" << tmpFile.fileName() << "back to" << _src << '!';
+                    if ( KDE::rename( _tmp, _src ) != 0 ) {
+                        kError(7007) << "Couldn't rename" << _tmp << "back to" << _src << '!';
                         // Severe error, abort
                         q->Job::slotResult( job ); // will set the error and emit result(this)
                         return;
@@ -1696,14 +1695,14 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
 
                 KDE_struct_stat stat_buf;
                 if ( m_currentSrcURL.isLocalFile() &&
-                    KDE_stat(QFile::encodeName(m_currentSrcURL.path()), &stat_buf) == 0 ) {
+                    KDE::stat(m_currentSrcURL.path(), &stat_buf) == 0 ) {
                     sizeSrc = stat_buf.st_size;
                     ctimeSrc = stat_buf.st_ctime;
                     mtimeSrc = stat_buf.st_mtime;
                     isDir = S_ISDIR(stat_buf.st_mode);
                 }
                 if ( dest.isLocalFile() &&
-                    KDE_stat(QFile::encodeName(dest.path()), &stat_buf) == 0 ) {
+                    KDE::stat(dest.path(), &stat_buf) == 0 ) {
                     sizeDest = stat_buf.st_size;
                     ctimeDest = stat_buf.st_ctime;
                     mtimeDest = stat_buf.st_mtime;

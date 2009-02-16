@@ -212,7 +212,7 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     }
 
     KDE_struct_stat fi;
-    if (KDE_lstat(QFile::encodeName(fileName),&fi) == -1) {
+    if (KDE::lstat(fileName,&fi) == -1) {
         kWarning() << "stat'ing" << fileName
         	<< "failed:" << strerror(errno);
         return false;
