@@ -63,7 +63,7 @@ void KCheckAccelerators::initiateIfNeeded(QObject* parent)
       if( !cuts.isEmpty() )
         key = cuts.primary()[0];
     }
-    bool autoCheck = cg.readEntry( "AutoCheckAccelerators", true );
+    bool autoCheck = cg.readEntry( "AutoCheckAccelerators", false );
     bool copyWidgetText = cg.readEntry( "CopyWidgetText", false );
 
     if (!copyWidgetText && key==0 && !autoCheck)
