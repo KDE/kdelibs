@@ -357,10 +357,10 @@ protected Q_SLOTS:
    */
 
   /**
-   * This slot is called whenever the internal time has
-   * a timeout.
+   * This slot is called whenever the internal timer fired,
+   * in order to move on to the next step.
    */
-  void slotTimeout();
+  void slotTimeout(); // KDE5: rename to slotNextStep() or something like that
 
   /**
    * This slot is called when the scan job is finished.
