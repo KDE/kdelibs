@@ -46,6 +46,24 @@ private Q_SLOTS:
         QVERIFY(!cut.isEmpty());
     }
 
+    void checkQKeySequence()
+    {
+        // The famous "KDE4 eats my E key" bug: Win+E isn't parsed anymore.
+        QKeySequence seq("Win+E");
+        QEXPECT_FAIL("", "Qt Bug 205255 - QKeySequence silently discards unknown key modifiers", Continue);
+        QVERIFY(seq.isEmpty());
+        // And what really happens
+        QCOMPARE(seq.toString(), QLatin1String("e"));
+
+        // KDE3 -> KDE4 migration. KDE3 used xKeycodeToKeysym or something and
+        // stored the result
+        QKeySequence seq2("Meta+Alt+Period");
+        QEXPECT_FAIL("", "Qt Bug 205255 - QKeySequence silently discards unknown key modifiers", Continue);
+        QVERIFY(seq2.isEmpty());
+        // And what really happens
+        QCOMPARE(seq2.toString(), QLatin1String("Meta+Alt+"));
+    }
+
     void parsing()
     {
         KShortcut cut;
@@ -53,13 +71,9 @@ private Q_SLOTS:
         QVERIFY(cut.primary() == QKeySequence::fromString(";, Alt+;"));
         QVERIFY(cut.alternate() == QKeySequence::fromString(";, Alt+A, ;"));
 
-        // The famous "KDE4 eats my E key" bug: Win+E isn't parsed anymore.
-        QKeySequence seq("Win+E");
-        QTest::ignoreMessage(QtWarningMsg, "QKeySequence::fromString: Unknown modifier 'win+'");
-        QVERIFY(seq.isEmpty());
-
         cut = KShortcut("Win+E");
         //QTest::ignoreMessage(QtWarningMsg, "QKeySequence::fromString: Unknown modifier 'win+'");
+        QEXPECT_FAIL("", "Qt Bug 205255 - QKeySequence silently discards unknown key modifiers", Continue);
         QVERIFY(cut.isEmpty());
 
         cut = KShortcut("Meta+E");
