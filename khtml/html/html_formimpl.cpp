@@ -625,7 +625,7 @@ void HTMLFormElementImpl::submit(  )
                 KDialog* const dialog = new KDialog();
                 dialog->setObjectName( "questionYesNoCancel" );
                 dialog->setCaption( i18n("Save Login Information") );
-                dialog->setButtons( KDialog::Yes | KDialog::No | KDialog::Cancel );
+                dialog->setButtons( KDialog::Yes | KDialog::No | KDialog::Cancel | KDialog::Details);
                 dialog->setButtonGuiItem( KDialog::Yes, KGuiItem(i18n("Store")) );
                 dialog->setButtonGuiItem( KDialog::No, KGuiItem(i18n("Ne&ver for This Site")) );
                 dialog->setButtonGuiItem( KDialog::Cancel, KGuiItem(i18n("Do Not Store")) );
@@ -637,17 +637,14 @@ void HTMLFormElementImpl::submit(  )
                 bool checkboxResult = false;
                 const int savePassword = KMessageBox::createKMessageBox(dialog, QMessageBox::Information,
                                                                             formUrl.host().isEmpty() ? // e.g. local file
+                                                                            i18n("Do you want to store this password?") :
+                                                                            i18n("Do you want to store this password for %1?",
+                                                                                 formUrl.host()),
+                                                                            QStringList(), QString(), &checkboxResult, KMessageBox::Notify,
                                                                             i18n("Konqueror has the ability to store the password "
                                                                                  "in an encrypted wallet. When the wallet is unlocked, it "
                                                                                  "can then automatically restore the login information "
-                                                                                 "next time you submit this form. Do you want to store "
-                                                                                 "the information now?") :
-                                                                            i18n("Konqueror has the ability to store the password "
-                                                                                 "in an encrypted wallet. When the wallet is unlocked, it "
-                                                                                 "can then automatically restore the login information "
-                                                                                 "next time you visit %1. Do you want to store "
-                                                                                 "the information now?", formUrl.host()),
-                                                                            QStringList(), QString(), &checkboxResult, KMessageBox::Notify);
+                                                                                 "next time you submit this form."));
 
                 if ( savePassword == KDialog::Yes ) {
                     // ensure that we have the user / password inside the url
