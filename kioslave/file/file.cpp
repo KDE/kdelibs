@@ -240,6 +240,10 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
 
     kDebug(7101) << "mkdir(): " << _path << ", permission = " << permissions;
 
+    // Remove existing file or symlink, if requested (#151851)
+    if (metaData("overwrite") == "true")
+        unlink(_path.data());
+
     KDE_struct_stat buff;
     if ( KDE_lstat( _path.data(), &buff ) == -1 ) {
         if ( KDE_mkdir( _path.data(), 0777 /*umask will be applied*/ ) != 0 ) {
