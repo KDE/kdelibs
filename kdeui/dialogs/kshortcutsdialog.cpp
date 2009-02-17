@@ -128,7 +128,7 @@ KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortc
 KShortcutsDialog::~KShortcutsDialog()
 {
     KConfigGroup group( KGlobal::config(), "KShortcutsDialog Settings" );
-    group.writeEntry( "Dialog Size", size(), KConfigGroup::Global );
+    group.writeEntry( "Dialog Size", size(), KConfigGroup::Persistent|KConfigGroup::Global );
     delete d;
 }
 
