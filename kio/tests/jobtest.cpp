@@ -591,6 +591,23 @@ void JobTest::listRecursive()
     QCOMPARE( joinedNames.toLatin1(), ref_names );
 }
 
+void JobTest::listFile()
+{
+    const QString filePath = homeTmpDir() + "fileFromHome";
+    createTestFile( filePath );
+    KIO::ListJob* job = KIO::listDir(KUrl(filePath), KIO::HideProgressInfo);
+    job->setUiDelegate( 0 );
+    QVERIFY(!job->exec());
+    QCOMPARE(job->error(), static_cast<int>(KIO::ERR_IS_FILE));
+
+    // And list something that doesn't exist
+    const QString path = homeTmpDir() + "fileFromHomeDoesNotExist";
+    job = KIO::listDir(KUrl(path), KIO::HideProgressInfo);
+    job->setUiDelegate( 0 );
+    QVERIFY(!job->exec());
+    QCOMPARE(job->error(), static_cast<int>(KIO::ERR_DOES_NOT_EXIST));
+}
+
 void JobTest::killJob()
 {
     const QString src = homeTmpDir();
