@@ -442,7 +442,7 @@ struct KDebugPrivate
         return QDebug(&lineendstrippingwriter);
     }
 
-    QDebug printHeader(QDebug s, const QByteArray &areaName, const char *, int, const char *funcinfo, bool colored)
+    QDebug printHeader(QDebug s, const QByteArray &areaName, const char *, int, const char *funcinfo, QtMsgType type, bool colored)
     {
 #ifdef KDE_EXTENDED_DEBUG_OUTPUT
         static bool printProcessInfo = (qgetenv("KDE_DEBUG_NOPROCESSINFO").isEmpty());
@@ -463,8 +463,12 @@ struct KDebugPrivate
         }
 
         if (funcinfo && printMethodName) {
-            if(colored)
-                s << "\033[0;34m"; //blue
+            if (colored) {
+                if (type <= QtDebugMsg)
+                    s << "\033[0;34m"; //blue
+                else
+                    s << "\033[0;31m"; //red
+            }
 # ifdef Q_CC_GNU
             // strip the function info down to the base function name
             // note that this throws away the template definitions,
@@ -559,7 +563,7 @@ struct KDebugPrivate
             break;
         }
 
-        return printHeader(s, areaName, debugFile, line, funcinfo, colored);
+        return printHeader(s, areaName, debugFile, line, funcinfo, type, colored);
     }
 
     QMutex mutex;
