@@ -1666,9 +1666,6 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                err == ERR_FILE_ALREADY_EXIST ||
                err == ERR_IDENTICAL_FILES )
         {
-            if (m_reportTimer)
-                m_reportTimer->stop();
-
             // Should we skip automatically ?
             bool isDir = (err == ERR_DIR_ALREADY_EXIST); // ## technically, isDir means "source is dir", not "dest is dir" #######
             if ((isDir && m_bAutoSkipDirs) || (!isDir && m_bAutoSkipFiles)) {
@@ -1691,6 +1688,9 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
 
                 bool destIsDir = err == ERR_DIR_ALREADY_EXIST;
 
+                // ## TODO we need to stat the source using KIO::stat
+                // so that this code is properly network-transparent.
+
                 KDE_struct_stat stat_buf;
                 if ( m_currentSrcURL.isLocalFile() &&
                     KDE::stat(m_currentSrcURL.path(), &stat_buf) == 0 ) {
@@ -1709,11 +1709,18 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
 
                 // If src==dest, use "overwrite-itself"
                 RenameDialog_Mode mode = ( m_currentSrcURL == dest ) ? M_OVERWRITE_ITSELF : M_OVERWRITE;
+                if (!isDir && destIsDir) {
+                    // We can't overwrite a dir with a file.
+                    mode = (RenameDialog_Mode) 0;
+                }
 
                 if ( m_srcList.count() > 1 )
                     mode = (RenameDialog_Mode) ( mode | M_MULTI | M_SKIP );
                 if (destIsDir)
                     mode = (RenameDialog_Mode) ( mode | M_ISDIR );
+
+                if (m_reportTimer)
+                    m_reportTimer->stop();
 
                 RenameDialog_Result r = q->ui()->askFileRename(
                     q,
@@ -1724,6 +1731,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                     sizeSrc, sizeDest,
                     ctimeSrc, ctimeDest,
                     mtimeSrc, mtimeDest );
+
                 if (m_reportTimer)
                     m_reportTimer->start(REPORT_TIMEOUT);
 
