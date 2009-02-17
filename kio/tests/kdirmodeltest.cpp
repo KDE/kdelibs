@@ -940,6 +940,44 @@ void KDirModelTest::testDeleteFile()
     fillModel(false);
 }
 
+
+void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
+{
+    fillModel(false);
+    const QString path = m_tempDir->name();
+    const QString dir = path + "subdir";
+    const QString file = path + "toplevelfile_1";
+    const int oldTopLevelRowCount = m_dirModel.rowCount();
+
+    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+             &m_eventLoop, SLOT(quit()) );
+
+    KIO::Job* job = KIO::move(dir, file, KIO::Overwrite | KIO::HideProgressInfo);
+    PredefinedAnswerJobUiDelegate* delegate = new PredefinedAnswerJobUiDelegate;
+    delegate->m_renameResult = KIO::R_OVERWRITE;
+    job->setUiDelegate(delegate);
+    QVERIFY(job->exec());
+
+    QCOMPARE(delegate->m_askFileRenameCalled, 1);
+
+    // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
+    enterLoop();
+
+    // If we come here, then rowsRemoved() was emitted - all good.
+    const int topLevelRowCount = m_dirModel.rowCount();
+    QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 1); // one less than before
+
+    QVERIFY(!m_dirModel.indexForUrl(dir).isValid());
+    QModelIndex newIndex = m_dirModel.indexForUrl(path + "toplevelfile_1");
+    QVERIFY(newIndex.isValid());
+    KFileItem newItem = m_dirModel.itemForIndex(newIndex);
+    QVERIFY(newItem.isDir()); // yes, the file is a dir now ;-)
+
+    recreateTestData();
+    fillModel(false);
+}
+
 void KDirModelTest::testDeleteFiles()
 {
     const int oldTopLevelRowCount = m_dirModel.rowCount();

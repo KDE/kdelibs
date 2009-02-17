@@ -354,7 +354,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     // There 6 cases, and all end up calling slotEntries(job, lst) first :
     // 1 - src is a dir, destination is a directory,
     // slotEntries will append the source-dir-name to the destination
-    // 2 - src is a dir, destination is a file, ERROR (done later on)
+    // 2 - src is a dir, destination is a file -- will offer to overwrite, later on.
     // 3 - src is a dir, destination doesn't exist, then it's the destination dirname,
     // so slotEntries will use it as destination.
 
@@ -395,13 +395,6 @@ void CopyJobPrivate::slotResultStating( KJob *job )
                 }
                 m_currentDest.addPath( directory );
             }
-        }
-        else if ( destinationState == DEST_IS_FILE ) // (case 2)
-        {
-            q->setError( ERR_IS_FILE );
-            q->setErrorText( m_dest.prettyUrl() );
-            q->emitResult();
-            return;
         }
         else // (case 3)
         {
@@ -1018,6 +1011,9 @@ void CopyJobPrivate::createNextDir()
         // TODO : change permissions once all is finished; but for stuff coming from CDROM it sucks...
         KIO::SimpleJob *newjob = KIO::mkdir( udir, -1 );
         Scheduler::scheduleJob(newjob);
+        if (shouldOverwriteFile(udir.path())) { // if we are overwriting an existing file or symlink
+            newjob->addMetaData("overwrite", "true");
+        }
 
         m_currentDestURL = udir;
         m_bURLDirty = true;
@@ -1674,7 +1670,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 m_reportTimer->stop();
 
             // Should we skip automatically ?
-            bool isDir = (err == ERR_DIR_ALREADY_EXIST);
+            bool isDir = (err == ERR_DIR_ALREADY_EXIST); // ## technically, isDir means "source is dir", not "dest is dir" #######
             if ((isDir && m_bAutoSkipDirs) || (!isDir && m_bAutoSkipFiles)) {
                 // Move on to next source url
                 skipSrc();
@@ -1693,6 +1689,8 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 time_t mtimeSrc = (time_t) -1;
                 time_t mtimeDest = (time_t) -1;
 
+                bool destIsDir = err == ERR_DIR_ALREADY_EXIST;
+
                 KDE_struct_stat stat_buf;
                 if ( m_currentSrcURL.isLocalFile() &&
                     KDE::stat(m_currentSrcURL.path(), &stat_buf) == 0 ) {
@@ -1706,6 +1704,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                     sizeDest = stat_buf.st_size;
                     ctimeDest = stat_buf.st_ctime;
                     mtimeDest = stat_buf.st_mtime;
+                    destIsDir = S_ISDIR(stat_buf.st_mode);
                 }
 
                 // If src==dest, use "overwrite-itself"
@@ -1713,7 +1712,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
 
                 if ( m_srcList.count() > 1 )
                     mode = (RenameDialog_Mode) ( mode | M_MULTI | M_SKIP );
-                if ( isDir )
+                if (destIsDir)
                     mode = (RenameDialog_Mode) ( mode | M_ISDIR );
 
                 RenameDialog_Result r = q->ui()->askFileRename(
@@ -1758,7 +1757,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                     skipSrc();
                     return;
                 case R_OVERWRITE_ALL:
-                    if (isDir)
+                    if (destIsDir)
                         m_bOverwriteAllDirs = true;
                     else
                         m_bOverwriteAllFiles = true;

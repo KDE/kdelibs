@@ -56,8 +56,9 @@ private Q_SLOTS:
     void testZipFile();
     void testSmb();
 
-    // These four tests must be done last
+    // These tests must be done last
     void testDeleteFile();
+    void testOverwriteFileWithDir();
     void testDeleteFiles();
     void testRenameFileToHidden();
     void testDeleteDirectory();

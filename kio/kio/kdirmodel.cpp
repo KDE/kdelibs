@@ -523,9 +523,23 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
         if (!node) // not found [can happen when renaming a dir, redirection was emitted already]
             continue;
         if (node != m_rootNode) { // we never set an item in the rootnode, we use m_dirLister->rootItem instead.
-            node->setItem(fit->second);
+            bool hasNewNode = false;
+            // A file became directory (well, it was overwritten)
+            if (fit->first.isDir() != fit->second.isDir()) {
+                //kDebug(7008) << "DIR/FILE STATUS CHANGE";
+                const int r = node->rowNumber();
+                removeFromNodeHash(node, oldUrl);
+                KDirModelDirNode* dirNode = node->parent();
+                delete dirNode->m_childNodes.takeAt(r); // i.e. "delete node"
+                node = fit->second.isDir() ? new KDirModelDirNode(dirNode, fit->second)
+                       : new KDirModelNode(dirNode, fit->second);
+                dirNode->m_childNodes.insert(r, node); // same position!
+                hasNewNode = true;
+            } else {
+                node->setItem(fit->second);
+            }
 
-            if (oldUrl != newUrl) {
+            if (oldUrl != newUrl || hasNewNode) {
                 // What if a renamed dir had children? -> kdirlister takes care of emitting for each item
                 //kDebug(7008) << "Renaming" << oldUrl << "to" << newUrl << "in node hash";
                 m_nodeHash.remove(cleanupUrl(oldUrl));
@@ -535,6 +549,7 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
             if (fit->first.mimeTypePtr()->name() != fit->second.mimeTypePtr()->name()) {
                 node->setPreview(QIcon());
             }
+
             const QModelIndex index = indexForNode(node);
             if (!topLeft.isValid() || index.row() < topLeft.row()) {
                 topLeft = index;
