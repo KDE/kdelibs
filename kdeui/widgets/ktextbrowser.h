@@ -35,7 +35,7 @@
  * invoke the system mailer or the system browser when a link is
  * activated, or it can emit the signal urlClick() or mailClick()
  * when a link is activated.
- * 
+ *
  * If the link starts with the text "whatsthis:" a QWhatsThis
  * box will appear and then display the rest of the text.
  *
@@ -44,7 +44,7 @@
  * @author Espen Sand (espensa@online.no)
  */
 
-class KDEUI_EXPORT KTextBrowser : public QTextBrowser //krazy:exclude=qclasses
+class KDEUI_EXPORT KTextBrowser : public QTextBrowser
 {
   Q_OBJECT
   Q_PROPERTY( bool notifyClick READ isNotifyClick WRITE setNotifyClick )
@@ -79,8 +79,12 @@ class KDEUI_EXPORT KTextBrowser : public QTextBrowser //krazy:exclude=qclasses
 
   protected:
     /**
-     * Reimplemented to NOT set the source but to do the special handling.
-     * Do not call.
+     * Reimplemented to NOT set the source but to do the special handling
+     * of links being clicked. Do not call this.
+     *
+     * If you need to set an initial source url in the text browser, call
+     * the QTextBrowser method explicitely, like this:
+     * <code>myTextBrowser->QTextBrowser::setSource(url)</code>
      */
     void setSource( const QUrl& name );
 

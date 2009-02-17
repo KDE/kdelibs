@@ -75,6 +75,7 @@ KDEUI_EXECUTABLE_TESTS(
   ksystemtraytest
   ktreewidgetsearchlinetest
   ktextedittest
+  ktextbrowsertest
   kmainwindowtest
   kmainwindowrestoretest
   kcodecactiontest
