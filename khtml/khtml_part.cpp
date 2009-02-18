@@ -257,6 +257,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   if (!parentPart()) {
       QWidget *widget = new QWidget( view->parentWidget() );
+      widget->setObjectName("khtml_part_widget");
       QVBoxLayout *layout = new QVBoxLayout( widget );
       layout->setContentsMargins( 0, 0, 0, 0 );
       layout->setSpacing( 0 );
