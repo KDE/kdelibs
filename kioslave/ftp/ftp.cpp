@@ -2205,8 +2205,7 @@ Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, const QString &sCop
 {
   // check if source is ok ...
   KDE_struct_stat buff;
-  const QByteArray sSrc( QFile::encodeName(sCopyFile) );
-  bool bSrcExists = (KDE_stat( sSrc.data(), &buff ) != -1);
+  bool bSrcExists = (KDE::stat( sCopyFile, &buff ) != -1);
   if(bSrcExists)
   { if(S_ISDIR(buff.st_mode))
     {
@@ -2220,7 +2219,7 @@ Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, const QString &sCop
     return statusClientError;
   }
 
-  iCopyFile = KDE_open( sSrc.data(), O_RDONLY );
+  iCopyFile = KDE::open( sCopyFile, O_RDONLY );
   if(iCopyFile == -1)
   {
     iError = ERR_CANNOT_OPEN_FOR_READING;
@@ -2242,8 +2241,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
 {
   // check if destination is ok ...
   KDE_struct_stat buff;
-  const QByteArray sDest( QFile::encodeName(sCopyFile) );
-  bool bDestExists = (KDE_stat( sDest.data(), &buff ) != -1);
+  bool bDestExists = (KDE::stat( sCopyFile, &buff ) != -1);
   if(bDestExists)
   { if(S_ISDIR(buff.st_mode))
     {
@@ -2258,9 +2256,9 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   }
 
   // do we have a ".part" file?
-  const QByteArray sPart = QFile::encodeName(sCopyFile + ".part");
+  const QString sPart = sCopyFile + QLatin1String(".part");
   bool bResume = false;
-  bool bPartExists = (KDE_stat( sPart.data(), &buff ) != -1);
+  bool bPartExists = (KDE::stat( sPart, &buff ) != -1);
   bool bMarkPartial = config()->readEntry("MarkPartial", true);
   if(bMarkPartial && bPartExists && buff.st_size > 0)
   { // must not be a folder! please fix a similar bug in kio_file!!
@@ -2278,12 +2276,12 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   }
 
   if(bPartExists && !bResume)                  // get rid of an unwanted ".part" file
-    remove(sPart.data());
+    QFile::remove(sPart);
 
   // JPF: in kio_file overwrite disables ".part" operations. I do not believe
   // JPF: that this is a good behaviour!
   if(bDestExists)                             // must delete for overwrite
-    remove(sDest.data());
+    QFile::remove(sCopyFile);
 
   // WABA: Make sure that we keep writing permissions ourselves,
   // otherwise we can be in for a surprise on NFS.
@@ -2297,7 +2295,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   KIO::fileoffset_t hCopyOffset = 0;
   if(bResume)
   {
-    iCopyFile = KDE_open( sPart.data(), O_RDWR );  // append if resuming
+    iCopyFile = KDE::open( sPart, O_RDWR );  // append if resuming
     hCopyOffset = KDE_lseek(iCopyFile, 0, SEEK_END);
     if(hCopyOffset < 0)
     {
@@ -2307,7 +2305,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
     kDebug(7102) << "copy: resuming at " << hCopyOffset;
   }
   else
-    iCopyFile = KDE_open(sPart.data(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
+    iCopyFile = KDE::open(sPart, O_CREAT | O_TRUNC | O_WRONLY, initialMode);
 
   if(iCopyFile == -1)
   {
@@ -2331,24 +2329,18 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   {
     if(iRes == statusSuccess)
     { // rename ".part" on success
-#ifdef Q_OS_WIN
-        if ( MoveFileExA( sPart.data(),
-                          sDest.data(),
-                          MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED ) == 0 )
-#else
-      if ( KDE_rename( sPart.data(), sDest.data() ) )
-#endif
+      if ( KDE::rename( sPart, sCopyFile ) )
       {
-        kDebug(7102) << "copy: cannot rename " << sPart << " to " << sDest;
+        kDebug(7102) << "copy: cannot rename " << sPart << " to " << sCopyFile;
         iError = ERR_CANNOT_RENAME_PARTIAL;
         iRes = statusClientError;
       }
     }
-    else if(KDE_stat( sPart.data(), &buff ) == 0)
+    else if(KDE::stat( sPart, &buff ) == 0)
     { // should a very small ".part" be deleted?
       int size = config()->readEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
       if (buff.st_size <  size)
-        remove(sPart.data());
+        QFile::remove(sPart);
     }
   }
   return iRes;

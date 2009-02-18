@@ -1868,7 +1868,7 @@ void HTTPProtocol::unread(char *buf, size_t size)
     // implement LIFO (stack) semantics
     const int newSize = m_unreadBuf.size() + size;
     m_unreadBuf.resize(newSize);
-    for (int i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++) {
         m_unreadBuf.data()[newSize - i - 1] = buf[i];
     }
     if (size) {
@@ -1884,7 +1884,7 @@ size_t HTTPProtocol::readBuffered(char *buf, size_t size)
         const int bufSize = m_unreadBuf.size();
         bytesRead = qMin((int)size, bufSize);
 
-        for (int i = 0; i < bytesRead; i++) {
+        for (size_t i = 0; i < bytesRead; i++) {
             buf[i] = m_unreadBuf.constData()[bufSize - i - 1];
         }
         m_unreadBuf.truncate(bufSize - bytesRead);
@@ -1923,7 +1923,7 @@ bool HTTPProtocol::readDelimitedText(char *buf, int *idx, int end, int numNewlin
         }
         size_t bufferFill = readBuffered(mybuf, step);
 
-        for (int i = 0; i < bufferFill ; i++, pos++) {
+        for (size_t i = 0; i < bufferFill ; i++, pos++) {
             // we copy the data from mybuf to buf immediately and look for the newlines in buf.
             // that way we don't miss newlines split over several invocations of this method.
             buf[pos] = mybuf[i];
@@ -3561,7 +3561,7 @@ try_again:
   // Do we want to cache this request?
   if (m_request.cacheTag.useCache)
   {
-    ::unlink(QFile::encodeName(m_request.cacheTag.file));
+    QFile::remove(m_request.cacheTag.file);
     if ( m_request.cacheTag.writeToCache && !m_mimeType.isEmpty() )
     {
       kDebug(7113) << "Cache, adding" << m_request.url.url();
@@ -3779,7 +3779,7 @@ void HTTPProtocol::httpClose( bool keepAlive )
      if (m_request.cacheTag.writeToCache)
      {
         QString filename = m_request.cacheTag.file + ".new";
-        ::unlink( QFile::encodeName(filename) );
+        QFile::remove( filename );
      }
   }
 
@@ -4412,7 +4412,7 @@ void HTTPProtocol::cacheUpdate( const KUrl& url, bool no_cache, time_t expireDat
      {
        gzclose(m_request.cacheTag.gzs);
        m_request.cacheTag.gzs = 0;
-       ::unlink( QFile::encodeName(m_request.cacheTag.file) );
+       QFile::remove( m_request.cacheTag.file );
      }
   }
   else
@@ -4585,7 +4585,7 @@ gzFile HTTPProtocol::checkCacheEntry( bool readWrite)
    }
 
    gzclose(fs);
-   unlink( QFile::encodeName(CEF));
+   QFile::remove( CEF );
    return 0;
 }
 
@@ -4655,7 +4655,7 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    dir.truncate(p);
 
    // Create file
-   KDE_mkdir( QFile::encodeName(dir), 0700 );
+   KDE::mkdir( dir, 0700 );
 
    QString filename = m_request.cacheTag.file + ".new";  // Create a new cache entryexpireDate
 
@@ -4718,7 +4718,7 @@ void HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
       gzclose(m_request.cacheTag.gzs);
       m_request.cacheTag.gzs = 0;
       QString filename = m_request.cacheTag.file + ".new";
-      ::unlink( QFile::encodeName(filename) );
+      QFile::remove( filename );
       return;
    }
    m_request.cacheTag.bytesCached+=nbytes;
@@ -4729,7 +4729,7 @@ void HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
       gzclose(m_request.cacheTag.gzs);
       m_request.cacheTag.gzs = 0;
       QString filename = m_request.cacheTag.file + ".new";
-      ::unlink( QFile::encodeName(filename) );
+      QFile::remove( filename );
       return;
    }
 }
@@ -4741,15 +4741,8 @@ void HTTPProtocol::closeCacheEntry()
    m_request.cacheTag.gzs = 0;
    if (result == 0)
    {
-#ifdef Q_OS_WIN
-      if ( MoveFileExW( (LPCWSTR)filename.utf16(),
-                        (LPCWSTR)m_request.cacheTag.file.utf16(),
-                        MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED ) != 0 )
-        return;
-#else
-      if (KDE_rename( QFile::encodeName(filename), QFile::encodeName(m_request.cacheTag.file)) == 0)
+      if (KDE::rename( filename, m_request.cacheTag.file) == 0)
          return; // Success
-#endif
       kWarning(7113) << "closeCacheEntry: error renaming "
                       << "cache entry. (" << filename << " -> " << m_request.cacheTag.file
                       << ")";
@@ -4770,10 +4763,10 @@ void HTTPProtocol::cleanCache()
 
    KDE_struct_stat stat_buf;
 
-   int result = KDE_stat(QFile::encodeName(cleanFile), &stat_buf);
+   int result = KDE::stat(cleanFile, &stat_buf);
    if (result == -1)
    {
-      int fd = creat( QFile::encodeName(cleanFile), 0600);
+      int fd = KDE::open( cleanFile, O_WRONLY|O_CREAT|O_TRUNC, 0600);
       if (fd != -1)
       {
          doClean = true;
@@ -4789,7 +4782,7 @@ void HTTPProtocol::cleanCache()
    if (doClean)
    {
       // Touch file.
-      utime(QFile::encodeName(cleanFile), 0);
+      KDE::utime(cleanFile, 0);
       KToolInvocation::startServiceByDesktopPath("http_cache_cleaner.desktop");
    }
 }
