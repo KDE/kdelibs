@@ -24,6 +24,7 @@
 #include <kdebug.h>
 #include <kdeversion.h>
 #include <QtGui/QApplication>
+#include <QtCore/QPointer>
 #include <QtGui/QWidget>
 #include <QtDBus/QtDBus>
 #include <ktoolinvocation.h>
@@ -114,6 +115,7 @@ public:
     QString folder;
     int handle;
     int transactionId;
+    QPointer<QEventLoop> loop;
 };
 
 class KWalletDLauncher
@@ -245,6 +247,8 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
             wallet = 0;
         } else {
             // wait for the daemon's reply
+            // store a pointer to the event loop so it can be quit in error case
+            wallet->d->loop = &loop;
             loop.exec();
             if (wallet->d->handle < 0) {
                 delete wallet;
@@ -675,8 +679,12 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 
 void Wallet::slotServiceOwnerChanged(const QString& name,const QString& oldOwner,const QString& newOwner) {
     Q_UNUSED(oldOwner);
-    if (d->handle >= 0 && newOwner.isEmpty() && name == "org.kde.kwalletd") {
-        slotWalletClosed(d->handle);
+    if (newOwner.isEmpty() && name == "org.kde.kwalletd") {
+        // if openWallet() waits for the DBUS reply, prevent it from waiting forever: 
+        if ( d->loop )
+            d->loop->quit();
+        if( d->handle >= 0 )
+            slotWalletClosed(d->handle);
     }
 }
 
