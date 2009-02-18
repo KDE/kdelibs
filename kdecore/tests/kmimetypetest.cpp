@@ -19,8 +19,8 @@
 #include <config.h>
 #include <kdefakes.h>
 #include "kmimetypetest.h"
+#include <kde_file.h>
 #include <kprocess.h>
-#include "kmimetypetest.moc"
 #include <kmimetype.h>
 #include <ksycoca.h>
 #include <kglobal.h>
@@ -813,3 +813,5 @@ void KMimeTypeTest::testParseMagicFile()
     QCOMPARE(found, expected);
     testBuffer.close();
 }
+
+#include "kmimetypetest.moc"
