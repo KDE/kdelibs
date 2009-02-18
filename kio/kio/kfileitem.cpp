@@ -418,10 +418,10 @@ QString KFileItemPrivate::parsePermissions(mode_t perm) const
 
     // Include the type in the first char like kde3 did; people are more used to seeing it,
     // even though it's not really part of the permissions per se.
-    if (m_fileMode != KFileItem::Unknown && S_ISDIR(m_fileMode))
-        buffer[0] = 'd';
-    else if (m_bLink)
+    if (m_bLink)
         buffer[0] = 'l';
+    else if (m_fileMode != KFileItem::Unknown && S_ISDIR(m_fileMode))
+        buffer[0] = 'd';
     else
         buffer[0] = '-';
 
