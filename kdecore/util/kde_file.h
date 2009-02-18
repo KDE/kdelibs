@@ -33,6 +33,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <utime.h>
 #if defined _WIN32 || defined _WIN64
 #include <kde_file_win.h>
 #endif

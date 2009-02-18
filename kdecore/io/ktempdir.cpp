@@ -103,7 +103,7 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
 #else
    QByteArray nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
    char *realName;
-   if((realName=_wmkdtemp(nme.data())) == 0)
+   if((realName=mkdtemp(nme.data())) == 0)
    {
        // Recreate it for the warning, mkdtemps emptied it
        nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
