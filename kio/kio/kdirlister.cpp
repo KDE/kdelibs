@@ -606,6 +606,17 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
     // we don't need to emit canceled signals since we only replaced the job,
     // the listing is continuing.
 
+    if (!(listers.isEmpty() || killed)) {
+        kWarning() << "The unexpected happened.";
+        kWarning() << "listers=" << listers;
+        kWarning() << "job=" << job;
+        Q_FOREACH(KDirLister *kdl, listers) {
+            kDebug() << "lister" << kdl << "m_cachedItemsJob=" << kdl->d->m_cachedItemsJob;
+        }
+#ifndef NDEBUG
+        printDebug();
+#endif
+    }
     Q_ASSERT( listers.isEmpty() || killed );
 
     job = KIO::listDir( _dir, KIO::HideProgressInfo );
@@ -860,15 +871,12 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
   nameOnly &= src.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash ) ==
               dst.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash );
 
-  // Somehow this should only be called if src is a dir. But how could we know if it is?
-  // (Note that looking into itemsInUse isn't good enough. One could rename a subdir in a view.)
-  // DF: well, findByUrl can find subdirs too...
-  if( !nameOnly ) {
+    if (!nameOnly && (!fileitem || fileitem->isDir())) {
         renameDir( src, dst );
         // #172945 - if the fileitem was the root item of a DirItem that was just removed from the cache,
         // then it's a dangling pointer now...
         fileitem = findByUrl( 0, oldurl );
-  }
+    }
 
   // Now update the KFileItem representing that file or dir (not exclusive with the above!)
   if ( fileitem )
@@ -1016,10 +1024,18 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
     //kDebug(7004) << "new entries for " << url;
 
     DirItem *dir = itemsInUse.value(urlStr);
-    Q_ASSERT( dir );
+    if (!dir) {
+        kError(7004) << "Internal error: job is listing" << url << "but itemsInUse only knows about" << itemsInUse.keys();
+        Q_ASSERT( dir );
+        return;
+    }
 
     DirectoryDataHash::iterator dit = directoryData.find(urlStr);
-    Q_ASSERT(dit != directoryData.end());
+    if (dit == directoryData.end()) {
+        kError(7004) << "Internal error: job is listing" << url << "but directoryData doesn't know about that url, only about:" << directoryData.keys();
+        Q_ASSERT(dit != directoryData.end());
+        return;
+    }
     KDirListerCacheDirectoryData& dirData = *dit;
     Q_ASSERT( !dirData.listersCurrentlyListing.isEmpty() );
 
