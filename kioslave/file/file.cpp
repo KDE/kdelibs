@@ -25,6 +25,7 @@
 #define QT_NO_CAST_FROM_ASCII
 
 #include "file.h"
+#include <QDirIterator>
 
 #include <config.h>
 #include <config-acl.h>
@@ -1305,5 +1306,35 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry, mode_t typ
     if ( defaultAcl ) acl_free( defaultAcl );
 }
 #endif
+
+bool FileProtocol::deleteRecursive(const QString& path)
+{
+    //kDebug() << path;
+    QDirIterator it(path, QDir::AllEntries | QDir::NoDotAndDotDot | QDir::System | QDir::Hidden,
+                    QDirIterator::Subdirectories);
+    QStringList dirsToDelete;
+    while ( it.hasNext() ) {
+        const QString itemPath = it.next();
+        const QFileInfo info = it.fileInfo();
+        if (info.isDir())
+            dirsToDelete.prepend(itemPath);
+        else {
+            //kDebug() << "QFile::remove" << itemPath;
+            if (!QFile::remove(itemPath)) {
+                error(KIO::ERR_CANNOT_DELETE, itemPath);
+                return false;
+            }
+        }
+    }
+    QDir dir;
+    Q_FOREACH(const QString& itemPath, dirsToDelete) {
+        //kDebug() << "QDir::rmdir" << itemPath;
+        if (!dir.rmdir(itemPath)) {
+            error(KIO::ERR_CANNOT_DELETE, itemPath);
+            return false;
+        }
+    }
+    return true;
+}
 
 #include "file.moc"

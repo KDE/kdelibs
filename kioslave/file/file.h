@@ -78,14 +78,15 @@ public:
   bool pumount( const QString &point );
   bool pmount( const QString &dev );
 
-protected:
-
+private:
   bool createUDSEntry( const QString & filename, const QByteArray & path, KIO::UDSEntry & entry,
                        short int details, bool withACL );
   int setACL( const char *path, mode_t perm, bool _directoryDefault );
 
   QString getUserName( uid_t uid ) const;
   QString getGroupName( gid_t gid ) const;
+
+    bool deleteRecursive(const QString& path);
 
 private:
   mutable QHash<uid_t, QString> mUsercache;

@@ -1138,7 +1138,15 @@ void JobTest::deleteFile()
 void JobTest::deleteDirectory()
 {
     const QString dest = otherTmpDir() + "dirFromHome_copied";
-    QVERIFY(QFile::exists(dest));
+    if (!QFile::exists(dest))
+        createTestDirectory(dest);
+    // Let's put a few things in there to see if the recursive deletion works correctly
+    // A hidden file:
+    createTestFile(dest + "/.hidden");
+#ifndef Q_WS_WIN
+    // A broken symlink:
+    createTestSymlink(dest+"/broken_symlink");
+#endif
     KIO::Job* job = KIO::del(KUrl(dest), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);

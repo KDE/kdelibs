@@ -333,14 +333,9 @@ void DeleteJobPrivate::deleteNextDir()
                     slotReport();
                 }
             } else {
-                SimpleJob* job;
-                if ( KProtocolManager::canDeleteRecursive( *it ) ) {
-                    // If the ioslave supports recursive deletion of a directory, then
-                    // we only need to send a single CMD_DEL command, so we use file_delete :)
-                    job = KIO::file_delete( *it, KIO::HideProgressInfo );
-                } else {
-                    job = KIO::rmdir( *it );
-                }
+                // Call rmdir - works for kioslaves with canDeleteRecursive too,
+                // CMD_DEL will trigger the recursive deletion in the slave.
+                SimpleJob* job = KIO::rmdir( *it );
                 Scheduler::scheduleJob(job);
                 dirs.erase(it);
                 q->addSubjob( job );

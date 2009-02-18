@@ -239,7 +239,7 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
            error( KIO::ERR_FILE_ALREADY_EXIST, _dest.filePath() );
            return;
         }
-        
+
         dwFlags = MOVEFILE_REPLACE_EXISTING;
     }
 
@@ -280,7 +280,7 @@ void FileProtocol::del( const KUrl& url, bool isfile )
 
     if (isfile) {
         kDebug( 7101 ) << "Deleting file " << _path;
-        
+
         if( DeleteFileW( ( LPCWSTR ) _path.utf16() ) == 0 ) {
             DWORD dwLastErr = GetLastError();
             if ( dwLastErr == ERROR_PATH_NOT_FOUND )
@@ -296,7 +296,9 @@ void FileProtocol::del( const KUrl& url, bool isfile )
             }
         }
     } else {
-        kDebug( 7101 ) << "Deleting directory " << url.url();
+        kDebug( 7101 ) << "Deleting directory " << _path;
+        if (!deleteRecursive(_path))
+            return;
         if( RemoveDirectoryW( ( LPCWSTR ) _path.utf16() ) == 0 ) {
             DWORD dwLastErr = GetLastError();
             if ( dwLastErr == ERROR_FILE_NOT_FOUND )
