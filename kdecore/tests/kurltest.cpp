@@ -1086,9 +1086,14 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   //QCOMPARE(tsdgeosQUrl.toEncoded(), tsdgeosExpected); // unusable output from qtestlib...
   QCOMPARE(QString(tsdgeosQUrl.toEncoded()), QString(tsdgeosExpected));
 
-  QString tsdgeosGoogle("http://google.com/c?c=Translation+%C2%BB+trunk|");
-  KUrl tsdgeosUrl(tsdgeosGoogle);
+  KUrl tsdgeosUrl(tsdgeos);
   QCOMPARE(tsdgeosUrl.url(), QString(tsdgeosExpected));
+
+  QByteArray pipesAgain("http://translate.google.com/translate_t#en|uk|demo");
+  QUrl pipesUrl;
+  pipesUrl.setEncodedUrl(pipesAgain, QUrl::TolerantMode);
+  QVERIFY(pipesUrl.isValid());
+  QCOMPARE(QString(pipesUrl.toEncoded()), QString("http://translate.google.com/translate_t#en%7Cuk%7Cdemo"));
 #endif
 
   // Shows up in nspluginviewer/flash
