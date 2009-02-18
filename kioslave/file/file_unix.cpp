@@ -23,6 +23,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#define QT_NO_CAST_FROM_ASCII
+
 #include "file.h"
 
 #include <config.h>
@@ -269,7 +271,7 @@ void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
 #endif
         )
        {
-           KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(_dest);
+           KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(dest);
            // Eat the error if the filesystem apparently doesn't support chmod.
            if ( mp && mp->testFileSystemFlag( KMountPoint::SupportsChmod ) )
                warning(i18n("Could not change permissions for\n%1", dest));
@@ -285,7 +287,7 @@ void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
     ut.modtime = buff_src.st_mtime;
     if ( ::utime( _dest.data(), &ut ) != 0 )
     {
-        kWarning() << QString::fromLatin1("Couldn't preserve access and modification time for\n%1").arg( _dest.data() );
+        kWarning() << QString::fromLatin1("Couldn't preserve access and modification time for\n%1").arg(dest);
     }
 
     processedSize( buff_src.st_size );
@@ -347,7 +349,7 @@ void FileProtocol::listDir( const KUrl& url)
             if (ep->d_type & DT_LNK) {
                 // for symlinks obey the UDSEntry contract and provide UDS_LINK_DEST
                 // even if we don't know the link dest (and DeleteJob doesn't care...)
-                entry.insert(KIO::UDSEntry::UDS_LINK_DEST, "Dummy Link Target");
+                entry.insert(KIO::UDSEntry::UDS_LINK_DEST, QLatin1String("Dummy Link Target"));
             }
             listEntry(entry, false);
         }

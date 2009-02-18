@@ -22,6 +22,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#define QT_NO_CAST_FROM_ASCII
+
 #include "file.h"
 
 #include <config.h>
@@ -144,12 +146,12 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
     int ret = 0;
 #ifdef HAVE_POSIX_ACL
 
-    const QString ACLString = metaData( "ACL_STRING" );
-    const QString defaultACLString = metaData( "DEFAULT_ACL_STRING" );
+    const QString ACLString = metaData(QLatin1String("ACL_STRING"));
+    const QString defaultACLString = metaData(QLatin1String("DEFAULT_ACL_STRING"));
     // Empty strings mean leave as is
     if ( !ACLString.isEmpty() ) {
         acl_t acl = 0;
-        if ( ACLString == "ACL_DELETE" ) {
+        if (ACLString == QLatin1String("ACL_DELETE")) {
             // user told us to delete the extended ACL, so let's write only
             // the minimal (UNIX permission bits) part
             acl = acl_from_mode( perm );
@@ -165,7 +167,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
     }
 
     if ( directoryDefault && !defaultACLString.isEmpty() ) {
-        if ( defaultACLString == "ACL_DELETE" ) {
+        if ( defaultACLString == QLatin1String("ACL_DELETE") ) {
             // user told us to delete the default ACL, do so
             ret += acl_delete_def_file( path );
         } else {
@@ -244,7 +246,7 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
     kDebug(7101) << "mkdir(): " << path << ", permission = " << permissions;
 
     // Remove existing file or symlink, if requested (#151851)
-    if (metaData("overwrite") == "true")
+    if (metaData(QLatin1String("overwrite")) == QLatin1String("true"))
         unlink(_path.data());
 
     KDE_struct_stat buff;
@@ -330,7 +332,7 @@ void FileProtocol::get( const KUrl& url )
 
     KIO::filesize_t processed_size = 0;
 
-    QString resumeOffset = metaData("resume");
+    QString resumeOffset = metaData(QLatin1String("resume"));
     if ( !resumeOffset.isEmpty() )
     {
         bool ok;
@@ -737,7 +739,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
     }
 
     // set modification time
-    const QString mtimeStr = metaData( "modified" );
+    const QString mtimeStr = metaData(QLatin1String("modified"));
     if ( !mtimeStr.isEmpty() ) {
         QDateTime dt = QDateTime::fromString( mtimeStr, Qt::ISODate );
         if ( dt.isValid() ) {
@@ -940,11 +942,11 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     tmpFile.open();
     QByteArray tmpFileName = QFile::encodeName(tmpFile.fileName());
     QByteArray dev;
-    if ( _dev.startsWith( "LABEL=" ) ) { // turn LABEL=foo into -L foo (#71430)
+    if (_dev.startsWith(QLatin1String("LABEL="))) { // turn LABEL=foo into -L foo (#71430)
         QString labelName = _dev.mid( 6 );
         dev = "-L ";
         dev += QFile::encodeName( KShell::quoteArg( labelName ) ); // is it correct to assume same encoding as filesystem?
-    } else if ( _dev.startsWith( "UUID=" ) ) { // and UUID=bar into -U bar
+    } else if (_dev.startsWith(QLatin1String("UUID="))) { // and UUID=bar into -U bar
         QString uuidName = _dev.mid( 5 );
         dev = "-U ";
         dev += QFile::encodeName( KShell::quoteArg( uuidName ) );
@@ -954,13 +956,13 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 
     QByteArray point = QFile::encodeName( KShell::quoteArg(_point) );
     bool fstype_empty = !_fstype || !*_fstype;
-    QByteArray fstype = KShell::quoteArg(_fstype).toLatin1(); // good guess
+    QByteArray fstype = KShell::quoteArg(QString::fromLatin1(_fstype)).toLatin1(); // good guess
     QByteArray readonly = _ro ? "-r" : "";
     QString epath = QString::fromLocal8Bit(qgetenv("PATH"));
     QString path = QLatin1String("/sbin:/bin");
     if(!epath.isEmpty())
         path += QLatin1String(":") + epath;
-    QByteArray mountProg = KGlobal::dirs()->findExe("mount", path).toLocal8Bit();
+    QByteArray mountProg = KGlobal::dirs()->findExe(QLatin1String("mount"), path).toLocal8Bit();
     if (mountProg.isEmpty()){
       error( KIO::ERR_COULD_NOT_MOUNT, i18n("Could not find program \"mount\""));
       return;
@@ -1137,8 +1139,8 @@ void FileProtocol::unmount( const QString& _point )
     QString epath = QString::fromLocal8Bit(qgetenv("PATH"));
     QString path = QLatin1String("/sbin:/bin");
     if (!epath.isEmpty())
-       path += ':' + epath;
-    QByteArray umountProg = KGlobal::dirs()->findExe("umount", path).toLocal8Bit();
+       path += QLatin1Char(':') + epath;
+    QByteArray umountProg = KGlobal::dirs()->findExe(QLatin1String("umount"), path).toLocal8Bit();
 
     if (umountProg.isEmpty()) {
         error( KIO::ERR_COULD_NOT_UNMOUNT, i18n("Could not find program \"umount\""));
@@ -1166,8 +1168,8 @@ bool FileProtocol::pmount(const QString &dev)
     QString epath = QString::fromLocal8Bit(qgetenv("PATH"));
     QString path = QLatin1String("/sbin:/bin");
     if (!epath.isEmpty())
-        path += ':' + epath;
-    QString pmountProg = KGlobal::dirs()->findExe("pmount", path);
+        path += QLatin1Char(':') + epath;
+    QString pmountProg = KGlobal::dirs()->findExe(QLatin1String("pmount"), path);
 
     if (pmountProg.isEmpty())
         return false;
@@ -1191,8 +1193,8 @@ bool FileProtocol::pumount(const QString &point)
     QString epath = QString::fromLocal8Bit(qgetenv("PATH"));
     QString path = QLatin1String("/sbin:/bin");
     if (!epath.isEmpty())
-        path += ':' + epath;
-    QString pumountProg = KGlobal::dirs()->findExe("pumount", path);
+        path += QLatin1Char(':') + epath;
+    QString pumountProg = KGlobal::dirs()->findExe(QLatin1String("pumount"), path);
 
     if (pumountProg.isEmpty())
         return false;
@@ -1233,7 +1235,7 @@ static QString testLogFile( const QByteArray& _filename )
 	return result;
     }
 
-    result = "";
+    result.clear();
     const char *p = "";
     while ( p != 0L ) {
 	p = fgets( buffer, sizeof(buffer)-1, f );
