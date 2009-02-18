@@ -292,7 +292,6 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 
 void FileProtocol::listDir( const KUrl& url)
 {
-    kDebug(7101) << "========= LIST " << url.url() << " =========";
     if (!url.isLocalFile()) {
         KUrl redir(url);
 	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
@@ -301,32 +300,22 @@ void FileProtocol::listDir( const KUrl& url)
 	finished();
 	return;
     }
-    QByteArray _path( QFile::encodeName(url.toLocalFile()) );
-    KDE_struct_stat buff;
-    if ( KDE_stat( _path.data(), &buff ) == -1 ) {
-	error( KIO::ERR_DOES_NOT_EXIST, _path );
-	return;
-    }
-
-    if ( !S_ISDIR( buff.st_mode ) ) {
-	error( KIO::ERR_IS_FILE, _path );
-	return;
-    }
-
-    DIR *dp = 0L;
-    KDE_struct_dirent *ep;
-
-    dp = opendir( _path.data() );
+    const QString path(url.toLocalFile());
+    const QByteArray _path(QFile::encodeName(path));
+    DIR* dp = opendir(_path.data());
     if ( dp == 0 ) {
-        switch (errno)
-        {
+        switch (errno) {
+        case ENOENT:
+            error( KIO::ERR_DOES_NOT_EXIST, _path );
+            return;
+        case ENOTDIR:
+            error( KIO::ERR_IS_FILE, _path );
+            break;
 #ifdef ENOMEDIUM
 	case ENOMEDIUM:
             error( ERR_SLAVE_DEFINED,
                    i18n( "No media in device for %1", url.toLocalFile() ) );
             break;
-#else
-        case ENOENT: // just to avoid the warning
 #endif
         default:
             error( KIO::ERR_CANNOT_ENTER_DIRECTORY, _path );
@@ -335,49 +324,74 @@ void FileProtocol::listDir( const KUrl& url)
 	return;
     }
 
+    const QString sDetails = metaData(QLatin1String("details"));
+    const int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
+    //kDebug(7101) << "========= LIST " << url << "details=" << details << " =========";
+    UDSEntry entry;
+
     // Don't make this a QStringList. The locale file name we get here
     // should be passed intact to createUDSEntry to avoid problems with
     // files where QFile::encodeName(QFile::decodeName(a)) != a.
     QList<QByteArray> entryNames;
-    while ( ( ep = KDE_readdir( dp ) ) != 0L )
-	entryNames.append( ep->d_name );
+    KDE_struct_dirent *ep;
+    if (details == 0) {
+        // Fast path (for recursive deletion, mostly)
+        // Simply emit the name and file type, nothing else.
+        while ( ( ep = KDE_readdir( dp ) ) != 0 ) {
+            entry.clear();
+            entry.insert(KIO::UDSEntry::UDS_NAME, QFile::decodeName(ep->d_name));
+            entry.insert(KIO::UDSEntry::UDS_FILE_TYPE,
+                         (ep->d_type & DT_DIR) ? S_IFDIR : S_IFREG );
+            if (ep->d_type & DT_LNK) {
+                // for symlinks obey the UDSEntry contract and provide UDS_LINK_DEST
+                // even if we don't know the link dest (and DeleteJob doesn't care...)
+                entry.insert(KIO::UDSEntry::UDS_LINK_DEST, "Dummy Link Target");
+            }
+            listEntry(entry, false);
+        }
+        closedir( dp );
+        listEntry( entry, true ); // ready
+    } else {
+        while ( ( ep = KDE_readdir( dp ) ) != 0 ) {
+            entryNames.append( ep->d_name );
+        }
 
-    closedir( dp );
-    totalSize( entryNames.count() );
+        closedir( dp );
+        totalSize( entryNames.count() );
 
-    /* set the current dir to the path to speed up
-       in not having to pass an absolute path.
-       We restore the path later to get out of the
-       path - the kernel wouldn't unmount or delete
-       directories we keep as active directory. And
-       as the slave runs in the background, it's hard
-       to see for the user what the problem would be */
-    char path_buffer[PATH_MAX];
-    getcwd(path_buffer, PATH_MAX - 1);
-    if ( chdir( _path.data() ) )  {
-        if (errno == EACCES)
-            error(ERR_ACCESS_DENIED, _path);
-        else
-            error(ERR_CANNOT_ENTER_DIRECTORY, _path);
-        finished();
+        /* set the current dir to the path to speed up
+           in not having to pass an absolute path.
+           We restore the path later to get out of the
+           path - the kernel wouldn't unmount or delete
+           directories we keep as active directory. And
+           as the slave runs in the background, it's hard
+           to see for the user what the problem would be */
+        char path_buffer[PATH_MAX];
+        getcwd(path_buffer, PATH_MAX - 1);
+        if ( chdir( _path.data() ) )  {
+            if (errno == EACCES)
+                error(ERR_ACCESS_DENIED, _path);
+            else
+                error(ERR_CANNOT_ENTER_DIRECTORY, _path);
+            finished();
+        }
+
+        QList<QByteArray>::ConstIterator it = entryNames.constBegin();
+        QList<QByteArray>::ConstIterator end = entryNames.constEnd();
+        for (; it != end; ++it) {
+            entry.clear();
+            if ( createUDSEntry( QFile::decodeName(*it),
+                                 *it /* we can use the filename as relative path*/,
+                                 entry, details, true ) )
+                listEntry( entry, false);
+        }
+
+        listEntry( entry, true ); // ready
+
+        //kDebug(7101) << "============= COMPLETED LIST ============";
+
+        chdir(path_buffer);
     }
-
-    UDSEntry entry;
-    QList<QByteArray>::ConstIterator it = entryNames.constBegin();
-    QList<QByteArray>::ConstIterator end = entryNames.constEnd();
-    for (; it != end; ++it) {
-        entry.clear();
-        if ( createUDSEntry( QFile::decodeName(*it),
-                             *it /* we can use the filename as relative path*/,
-                             entry, 2, true ) )
-          listEntry( entry, false);
-    }
-
-    listEntry( entry, true ); // ready
-
-    kDebug(7101) << "============= COMPLETED LIST ============";
-
-    chdir(path_buffer);
     finished();
 }
 

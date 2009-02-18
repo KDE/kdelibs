@@ -835,17 +835,21 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
     entry.insert( KIO::UDSEntry::UDS_SIZE, buff.st_size );
 
 #ifdef HAVE_POSIX_ACL
-    /* Append an atom indicating whether the file has extended acl information
-     * and if withACL is specified also one with the acl itself. If it's a directory
-     * and it has a default ACL, also append that. */
-    appendACLAtoms( path, entry, type, withACL );
+    if (details > 0) {
+        /* Append an atom indicating whether the file has extended acl information
+         * and if withACL is specified also one with the acl itself. If it's a directory
+         * and it has a default ACL, also append that. */
+        appendACLAtoms( path, entry, type, withACL );
+    }
 #endif
 
  notype:
-    entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, buff.st_mtime );
-    entry.insert( KIO::UDSEntry::UDS_USER, getUserName( buff.st_uid ) );
-    entry.insert( KIO::UDSEntry::UDS_GROUP, getGroupName( buff.st_gid ) );
-    entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, buff.st_atime );
+    if (details > 0) {
+        entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, buff.st_mtime );
+        entry.insert( KIO::UDSEntry::UDS_USER, getUserName( buff.st_uid ) );
+        entry.insert( KIO::UDSEntry::UDS_GROUP, getGroupName( buff.st_gid ) );
+        entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, buff.st_atime );
+    }
 
     // Note: buff.st_ctime isn't the creation time !
     // We made that mistake for KDE 2.0, but it's in fact the

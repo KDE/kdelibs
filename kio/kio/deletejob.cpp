@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright 2000       Stephan Kulow <coolo@kde.org>
-    Copyright 2000-2006  David Faure <faure@kde.org>
+    Copyright 2000-2009  David Faure <faure@kde.org>
     Copyright 2000       Waldo Bastian <bastian@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -55,14 +55,19 @@ namespace KIO
         DELETEJOB_STATE_DELETING_DIRS
     };
 
+    /*
+    static const char* s_states[] = {
+        "DELETEJOB_STATE_STATING",
+        "DELETEJOB_STATE_DELETING_FILES",
+        "DELETEJOB_STATE_DELETING_DIRS"
+    };
+    */
+
     class DeleteJobPrivate: public KIO::JobPrivate
     {
     public:
         DeleteJobPrivate(const KUrl::List& src)
             : state( DELETEJOB_STATE_STATING )
-            , m_totalSize( 0 )
-            , m_processedSize( 0 )
-            , m_fileProcessedSize( 0 )
             , m_processedFiles( 0 )
             , m_processedDirs( 0 )
             , m_totalFilesDirs( 0 )
@@ -72,9 +77,6 @@ namespace KIO
         {
         }
         DeleteJobState state;
-        KIO::filesize_t m_totalSize;
-        KIO::filesize_t m_processedSize;
-        KIO::filesize_t m_fileProcessedSize;
         int m_processedFiles;
         int m_processedDirs;
         int m_totalFilesDirs;
@@ -92,10 +94,6 @@ namespace KIO
         void finishedStatPhase();
         void deleteNextFile();
         void deleteNextDir();
-        /**
-         * Forward signal from subjob
-         */
-        void slotProcessedSize( KJob*, qulonglong data_size );
         void slotReport();
         void slotStart();
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
@@ -151,7 +149,6 @@ void DeleteJobPrivate::slotReport()
 
    switch( state ) {
         case DELETEJOB_STATE_STATING:
-            q->setTotalAmount(KJob::Bytes, m_totalSize);
             q->setTotalAmount(KJob::Files, files.count());
             q->setTotalAmount(KJob::Directories, dirs.count());
             break;
@@ -187,8 +184,6 @@ void DeleteJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
                 url = ((SimpleJob *)job)->url(); // assumed to be a dir
                 url.addPath( displayName );
             }
-
-            m_totalSize += (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
 
             //kDebug(7007) << displayName << "(" << url << ")";
             if ( entry.isLink() )
@@ -370,28 +365,6 @@ void DeleteJobPrivate::deleteNextDir()
     q->emitResult();
 }
 
-// Note: I don't think this slot is connected to anywhere! -thiago
-void DeleteJobPrivate::slotProcessedSize( KJob*, qulonglong data_size )
-{
-   Q_Q(DeleteJob);
-   // Note: this is the same implementation as CopyJob::slotProcessedSize but
-   // it's different from FileCopyJob::slotProcessedSize - which is why this
-   // is not in Job.
-
-   m_fileProcessedSize = data_size;
-   q->setProcessedAmount(KJob::Bytes, m_processedSize + m_fileProcessedSize);
-
-   //kDebug(7007) << (unsigned int) (m_processedSize + m_fileProcessedSize);
-
-   q->setProcessedAmount(KJob::Bytes, m_processedSize + m_fileProcessedSize);
-
-   // calculate percents
-   if ( m_totalSize == 0 )
-      q->setPercent( 100 );
-   else
-      q->setPercent( (unsigned long)(( (float)(m_processedSize + m_fileProcessedSize) / (float)m_totalSize ) * 100.0) );
-}
-
 void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
 {
     Q_Q(DeleteJob);
@@ -406,6 +379,7 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
         if (!KProtocolManager::canDeleteRecursive(url)) {
             //kDebug(7007) << url << "is a directory, let's list it";
             ListJob *newjob = KIO::listRecursive(url, KIO::HideProgressInfo);
+            newjob->addMetaData("details", "0");
             newjob->setUnrestricted(true); // No KIOSK restrictions
             Scheduler::scheduleJob(newjob);
             QObject::connect(newjob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList&)),
