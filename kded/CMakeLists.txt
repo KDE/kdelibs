@@ -1,6 +1,8 @@
 project(kded)
 
+if(NOT ONLY_KLEO)
 add_subdirectory( test )
+endif(NOT ONLY_KLEO)
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 
