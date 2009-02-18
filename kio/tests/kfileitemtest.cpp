@@ -50,7 +50,7 @@ void KFileItemTest::testPermissionsString()
     QCOMPARE(fileItem.permissionsString(), QString("-rw----r--"));
     QVERIFY(fileItem.isReadable());
 
-    // Symlink
+    // Symlink to file
     QString symlink = tempDir.name() + "asymlink";
     QVERIFY( file.link( symlink ) );
     KUrl symlinkUrl(symlink);
@@ -60,6 +60,12 @@ void KFileItemTest::testPermissionsString()
     // This is actually useful though; the user sees it's a link, and can check if he can read the [target] file.
     QCOMPARE(symlinkItem.permissionsString(), QString("lrw----r--"));
     QVERIFY(symlinkItem.isReadable());
+
+    // Symlink to directory (#162544)
+    QVERIFY(QFile::remove(symlink));
+    QVERIFY(QFile(tempDir.name()).link(symlink));
+    KFileItem symlinkToDirItem(symlinkUrl, QString(), KFileItem::Unknown);
+    QCOMPARE(symlinkToDirItem.permissionsString(), QString("lrwx------"));
 }
 
 void KFileItemTest::testNull()
