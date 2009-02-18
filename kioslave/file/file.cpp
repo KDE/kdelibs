@@ -188,7 +188,8 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
 
 void FileProtocol::chmod( const KUrl& url, int permissions )
 {
-    QByteArray _path( QFile::encodeName(url.toLocalFile()) );
+    const QString path(url.toLocalFile());
+    const QByteArray _path( QFile::encodeName(path) );
     /* FIXME: Should be atomic */
     if ( ::chmod( _path.data(), permissions ) == -1 ||
         ( setACL( _path.data(), permissions, false ) == -1 ) ||
@@ -198,18 +199,18 @@ void FileProtocol::chmod( const KUrl& url, int permissions )
         switch (errno) {
             case EPERM:
             case EACCES:
-                error( KIO::ERR_ACCESS_DENIED, _path );
+                error(KIO::ERR_ACCESS_DENIED, path);
                 break;
 #if defined(ENOTSUP)
             case ENOTSUP: // from setACL since chmod can't return ENOTSUP
-                error( KIO::ERR_UNSUPPORTED_ACTION, i18n( "Setting ACL for %1" ,  url.path() ) );
+                error(KIO::ERR_UNSUPPORTED_ACTION, i18n("Setting ACL for %1", path));
                 break;
 #endif
             case ENOSPC:
-                error( KIO::ERR_DISK_FULL, _path );
+                error(KIO::ERR_DISK_FULL, path);
                 break;
             default:
-        error( KIO::ERR_CANNOT_CHMOD, _path );
+                error(KIO::ERR_CANNOT_CHMOD, path);
         }
     } else
         finished();
@@ -217,28 +218,30 @@ void FileProtocol::chmod( const KUrl& url, int permissions )
 
 void FileProtocol::setModificationTime( const KUrl& url, const QDateTime& mtime )
 {
-    const QByteArray path = QFile::encodeName(url.toLocalFile());
+    const QString path(url.toLocalFile());
+    const QByteArray _path( QFile::encodeName(path) );
     KDE_struct_stat statbuf;
-    if (KDE_lstat(path, &statbuf) == 0) {
+    if (KDE_lstat(_path, &statbuf) == 0) {
         struct utimbuf utbuf;
         utbuf.actime = statbuf.st_atime; // access time, unchanged
         utbuf.modtime = mtime.toTime_t(); // modification time
-        if (utime(path, &utbuf) != 0) {
+        if (utime(_path, &utbuf) != 0) {
             // TODO: errno could be EACCES, EPERM, EROFS
             error(KIO::ERR_CANNOT_SETTIME, path);
         } else {
             finished();
         }
     } else {
-        error( KIO::ERR_DOES_NOT_EXIST, path );
+        error(KIO::ERR_DOES_NOT_EXIST, path);
     }
 }
 
 void FileProtocol::mkdir( const KUrl& url, int permissions )
 {
-    QByteArray _path( QFile::encodeName(url.toLocalFile()));
+    const QString path(url.toLocalFile());
+    const QByteArray _path( QFile::encodeName(path) );
 
-    kDebug(7101) << "mkdir(): " << _path << ", permission = " << permissions;
+    kDebug(7101) << "mkdir(): " << path << ", permission = " << permissions;
 
     // Remove existing file or symlink, if requested (#151851)
     if (metaData("overwrite") == "true")
@@ -248,14 +251,14 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
     if ( KDE_lstat( _path.data(), &buff ) == -1 ) {
         if ( KDE_mkdir( _path.data(), 0777 /*umask will be applied*/ ) != 0 ) {
             if ( errno == EACCES ) {
-          error( KIO::ERR_ACCESS_DENIED, _path );
-          return;
+                error(KIO::ERR_ACCESS_DENIED, path);
+                return;
             } else if ( errno == ENOSPC ) {
-          error( KIO::ERR_DISK_FULL, _path );
-          return;
+                error(KIO::ERR_DISK_FULL, path);
+                return;
             } else {
-          error( KIO::ERR_COULD_NOT_MKDIR, _path );
-          return;
+                error(KIO::ERR_COULD_NOT_MKDIR, path);
+                return;
             }
         } else {
             if ( permissions != -1 )
@@ -268,10 +271,10 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
 
     if ( S_ISDIR( buff.st_mode ) ) {
         kDebug(7101) << "ERR_DIR_ALREADY_EXIST";
-        error( KIO::ERR_DIR_ALREADY_EXIST, _path );
+        error(KIO::ERR_DIR_ALREADY_EXIST, path);
         return;
     }
-    error( KIO::ERR_FILE_ALREADY_EXIST, _path );
+    error(KIO::ERR_FILE_ALREADY_EXIST, path);
     return;
 }
 
@@ -285,28 +288,29 @@ void FileProtocol::get( const KUrl& url )
 	return;
     }
 
-    QByteArray _path( QFile::encodeName(url.toLocalFile()));
+    const QString path(url.toLocalFile());
+    const QByteArray _path( QFile::encodeName(path) );
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
         if ( errno == EACCES )
-           error( KIO::ERR_ACCESS_DENIED, _path );
+           error(KIO::ERR_ACCESS_DENIED, path);
         else
-           error( KIO::ERR_DOES_NOT_EXIST, _path );
+           error(KIO::ERR_DOES_NOT_EXIST, path);
         return;
     }
 
     if ( S_ISDIR( buff.st_mode ) ) {
-        error( KIO::ERR_IS_DIRECTORY, _path );
+        error(KIO::ERR_IS_DIRECTORY, path);
         return;
     }
     if ( !S_ISREG( buff.st_mode ) ) {
-        error( KIO::ERR_CANNOT_OPEN_FOR_READING, _path );
+        error(KIO::ERR_CANNOT_OPEN_FOR_READING, path);
         return;
     }
 
     int fd = KDE_open( _path.data(), O_RDONLY);
     if ( fd < 0 ) {
-        error( KIO::ERR_CANNOT_OPEN_FOR_READING, _path );
+        error(KIO::ERR_CANNOT_OPEN_FOR_READING, path);
         return;
     }
 
@@ -352,7 +356,7 @@ void FileProtocol::get( const KUrl& url )
        {
           if (errno == EINTR)
               continue;
-          error( KIO::ERR_COULD_NOT_READ, _path );
+          error(KIO::ERR_COULD_NOT_READ, path);
           ::close(fd);
           return;
        }
@@ -398,22 +402,23 @@ void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
 {
     kDebug(7101) << "FileProtocol::open " << url.url();
 
-    openPath = QFile::encodeName(url.toLocalFile());
+    openPath = url.toLocalFile();
+    const QByteArray _openPath = QFile::encodeName(openPath);
     KDE_struct_stat buff;
-    if ( KDE_stat( openPath.data(), &buff ) == -1 ) {
+    if (KDE_stat(_openPath.data(), &buff) == -1) {
         if ( errno == EACCES )
-           error( KIO::ERR_ACCESS_DENIED, openPath );
+           error(KIO::ERR_ACCESS_DENIED, openPath);
         else
-           error( KIO::ERR_DOES_NOT_EXIST, openPath );
+           error(KIO::ERR_DOES_NOT_EXIST, openPath);
         return;
     }
 
     if ( S_ISDIR( buff.st_mode ) ) {
-        error( KIO::ERR_IS_DIRECTORY, openPath );
+        error(KIO::ERR_IS_DIRECTORY, openPath);
         return;
     }
     if ( !S_ISREG( buff.st_mode ) ) {
-        error( KIO::ERR_CANNOT_OPEN_FOR_READING, openPath );
+        error(KIO::ERR_CANNOT_OPEN_FOR_READING, openPath);
         return;
     }
 
@@ -434,9 +439,9 @@ void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
         flags |= O_TRUNC;
     }
 
-    int fd = KDE_open( openPath.data(), flags);
+    const int fd = KDE_open(_openPath.data(), flags);
     if ( fd < 0 ) {
-        error( KIO::ERR_CANNOT_OPEN_FOR_READING, openPath );
+        error(KIO::ERR_CANNOT_OPEN_FOR_READING, openPath);
         return;
     }
     // Determine the mimetype of the file to be retrieved, and emit it.
@@ -468,7 +473,7 @@ void FileProtocol::read(KIO::filesize_t bytes)
         } while (res == -1 && errno == EINTR);
 
         if (res > 0) {
-            QByteArray array = array.fromRawData(buffer.data(), res);
+            QByteArray array = QByteArray::fromRawData(buffer.data(), res);
             data( array );
             bytes -= res;
         } else {
@@ -491,11 +496,11 @@ void FileProtocol::write(const QByteArray &data)
 
     if (write_all(openFd, data.constData(), data.size())) {
         if (errno == ENOSPC) { // disk full
-            error( KIO::ERR_DISK_FULL, openPath );
+            error(KIO::ERR_DISK_FULL, openPath);
             close();
         } else {
             kWarning(7101) << "Couldn't write. Error:" << strerror(errno);
-            error( KIO::ERR_COULD_NOT_WRITE, openPath );
+            error(KIO::ERR_COULD_NOT_WRITE, openPath);
             close();
         }
     } else {
@@ -512,7 +517,7 @@ void FileProtocol::seek(KIO::filesize_t offset)
     if (res != -1) {
         position( offset );
     } else {
-        error(KIO::ERR_COULD_NOT_SEEK, openPath );
+        error(KIO::ERR_COULD_NOT_SEEK, openPath);
         close();
     }
 }
@@ -531,19 +536,19 @@ void FileProtocol::close()
 
 void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
 {
-    QString dest_orig = url.toLocalFile();
-    QByteArray _dest_orig( QFile::encodeName(dest_orig));
+    const QString dest_orig = url.toLocalFile();
+    const QByteArray _dest_orig( QFile::encodeName(dest_orig));
 
     kDebug(7101) << "put(): " << dest_orig << ", mode=" << _mode;
 
-    QString dest_part( dest_orig );
+    QString dest_part(dest_orig);
     dest_part += QLatin1String(".part");
-    QByteArray _dest_part( QFile::encodeName(dest_part));
+    const QByteArray _dest_part(QFile::encodeName(dest_part));
 
     KDE_struct_stat buff_orig;
-    bool bOrigExists = (KDE_lstat( _dest_orig.data(), &buff_orig ) != -1);
+    const bool bOrigExists = (KDE_lstat(_dest_orig.data(), &buff_orig) != -1);
     bool bPartExists = false;
-    bool bMarkPartial = config()->readEntry("MarkPartial", true);
+    const bool bMarkPartial = config()->readEntry("MarkPartial", true);
 
     if (bMarkPartial)
     {
@@ -637,9 +642,9 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
                     kDebug(7101) << "####################### COULD NOT WRITE " << dest << " _mode=" << _mode;
                     kDebug(7101) << "errno==" << errno << "(" << strerror(errno) << ")";
                     if ( errno == EACCES )
-                        error( KIO::ERR_WRITE_ACCESS_DENIED, dest );
+                        error(KIO::ERR_WRITE_ACCESS_DENIED, dest);
                     else
-                        error( KIO::ERR_CANNOT_OPEN_FOR_WRITING, dest );
+                        error(KIO::ERR_CANNOT_OPEN_FOR_WRITING, dest);
                     return;
                 }
             }
@@ -648,13 +653,13 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
             {
                 if ( errno == ENOSPC ) // disk full
                 {
-                  error( KIO::ERR_DISK_FULL, dest_orig);
+                  error(KIO::ERR_DISK_FULL, dest_orig);
                   result = -2; // means: remove dest file
                 }
                 else
                 {
                   kWarning(7101) << "Couldn't write. Error:" << strerror(errno);
-                  error( KIO::ERR_COULD_NOT_WRITE, dest_orig);
+                  error(KIO::ERR_COULD_NOT_WRITE, dest_orig);
                   result = -1;
                 }
             }
@@ -692,7 +697,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
     if ( ::close(fd) )
     {
         kWarning(7101) << "Error when closing file descriptor:" << strerror(errno);
-        error( KIO::ERR_COULD_NOT_WRITE, dest_orig);
+        error(KIO::ERR_COULD_NOT_WRITE, dest_orig);
         return;
     }
 
@@ -714,7 +719,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
 #endif
         {
             kWarning(7101) << " Couldn't rename " << _dest << " to " << _dest_orig;
-            error( KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig );
+            error(KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig);
             return;
         }
     }
@@ -853,25 +858,6 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
 
     return true;
 }
-
-/*
-void FileProtocol::testDir( const QString& path )
-{
-    QByteArray _path( QFile::encodeName(path));
-    KDE_struct_stat buff;
-    if ( KDE_stat( _path.data(), &buff ) == -1 ) {
-	error( KIO::ERR_DOES_NOT_EXIST, path );
-	return;
-    }
-
-    if ( S_ISDIR( buff.st_mode ) )
-	isDirectory();
-    else
-	isFile();
-
-    finished();
-}
-*/
 
 void FileProtocol::special( const QByteArray &data)
 {

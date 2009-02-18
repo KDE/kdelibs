@@ -91,7 +91,7 @@ private:
   mutable QHash<uid_t, QString> mUsercache;
   mutable QHash<gid_t, QString> mGroupcache;
   int openFd;
-  QByteArray openPath;
+  QString openPath;
 };
 
 #endif
