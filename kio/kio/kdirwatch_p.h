@@ -155,7 +155,7 @@ public:
     bool dirty;
     void propagate_dirty();
 
-    QList<Client *> clientsForFileOrDir(const QByteArray& tpath, bool* isDir) const;
+    QList<Client *> clientsForFileOrDir(const QString& tpath, bool* isDir) const;
 
 #ifdef HAVE_FAM
     FAMRequest fr;

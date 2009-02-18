@@ -261,7 +261,7 @@ void KSSLSettings::save() {
 	// insure proper permissions -- contains sensitive data
 	QString cfgName(KGlobal::dirs()->findResource("config", "cryptodefaults"));
 	if (!cfgName.isEmpty())
-		::chmod(QFile::encodeName(cfgName), 0600);
+		KDE::chmod(cfgName, 0600);
 #endif
 }
 

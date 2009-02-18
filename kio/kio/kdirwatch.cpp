@@ -314,7 +314,7 @@ void KDirWatchPrivate::inotifyEventReceived()
             }
             else if ((e->isDir) && (!e->m_clients.empty())) {
 
-              const QByteArray tpath = QFile::encodeName(e->path+'/'+path);
+              const QString tpath = e->path + QLatin1Char('/') + path;
               bool isDir = false;
               const QList<Client *> clients = e->clientsForFileOrDir(tpath, &isDir);
               Q_FOREACH(Client *client, clients) {
@@ -340,11 +340,11 @@ void KDirWatchPrivate::inotifyEventReceived()
               // no addEntry/ removeEntry bookkeeping should be required.  Emit
               // the event immediately if any clients are interested.
               KDE_struct_stat stat_buf;
-              QByteArray tpath = QFile::encodeName(e->path+'/'+path);
+              QString tpath = e->path + QLatin1Char('/') + path;
               // Unlike clientsForFileOrDir, the stat can fail here (item deleted),
               // so in that case we'll just take both kinds of clients and emit Deleted.
               KDirWatch::WatchModes flag = KDirWatch::WatchSubDirs | KDirWatch::WatchFiles;
-              if (KDE_stat(tpath, &stat_buf) == 0) {
+              if (KDE::stat(tpath, &stat_buf) == 0) {
                 bool isDir = S_ISDIR(stat_buf.st_mode);
                 flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
               }
@@ -462,11 +462,11 @@ int KDirWatchPrivate::Entry::clients()
   return clients;
 }
 
-QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::clientsForFileOrDir(const QByteArray& tpath, bool* isDir) const
+QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::clientsForFileOrDir(const QString& tpath, bool* isDir) const
 {
   QList<Client *> ret;
   KDE_struct_stat stat_buf;
-  if (KDE_stat(tpath, &stat_buf) == 0) {
+  if (KDE::stat(tpath, &stat_buf) == 0) {
     *isDir = S_ISDIR(stat_buf.st_mode);
     const KDirWatch::WatchModes flag =
       *isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
@@ -702,8 +702,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   // we have a new path to watch
 
   KDE_struct_stat stat_buf;
-  QByteArray tpath (QFile::encodeName(path));
-  bool exists = (KDE_stat(tpath, &stat_buf) == 0);
+  bool exists = (KDE::stat(path, &stat_buf) == 0);
 
   EntryMap::iterator newIt = m_mapEntries.insert( path, Entry() );
   // the insert does a copy, so we have to use <e> now
@@ -713,7 +712,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     e->isDir = S_ISDIR(stat_buf.st_mode);
 
     if (e->isDir && !isDir) {
-      KDE_lstat(tpath, &stat_buf);
+      KDE::lstat(path, &stat_buf);
       if (S_ISLNK(stat_buf.st_mode))
         // if it's a symlink, don't follow it
         e->isDir = false;
@@ -759,7 +758,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   e->m_mode = UnknownMode;
   e->msecLeft = 0;
 
-  if ( isNoisyFile( tpath ) )
+  if ( isNoisyFile( QFile::encodeName( path ) ) )
     return;
 
   if (exists && e->isDir && (watchModes != KDirWatch::WatchDirOnly)) {
@@ -1022,7 +1021,7 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
   if (wasWatching == 0) {
     if (!notify) {
       KDE_struct_stat stat_buf;
-      bool exists = (KDE_stat(QFile::encodeName(e->path), &stat_buf) == 0);
+      bool exists = (KDE::stat(e->path, &stat_buf) == 0);
       if (exists) {
 #ifdef Q_OS_WIN
         // ctime is the 'creation time' on windows - use mtime instead
@@ -1125,7 +1124,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
   }
 
   KDE_struct_stat stat_buf;
-  bool exists = (KDE_stat(QFile::encodeName(e->path), &stat_buf) == 0);
+  bool exists = (KDE::stat(e->path, &stat_buf) == 0);
   if (exists) {
 
     if (e->m_status == NonExistent) {
@@ -1455,8 +1454,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 
       case FAMCreated: {
           // check for creation of a directory we have to watch
-        QByteArray tpath(QFile::encodeName(e->path + '/' +
-                                           fe->filename));
+        QString tpath(e->path + QLatin1Char('/') + fe->filename);
 
         Entry* sub_entry = 0;
         foreach(sub_entry, e->m_entries)
