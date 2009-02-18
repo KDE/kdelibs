@@ -50,6 +50,10 @@
 #include <kdebug.h>
 #include "kde_file.h"
 
+#ifdef Q_WS_WIN
+extern QString mkdtemp_QString (const QString &_template);
+#endif
+
 class KTempDir::Private
 {
 public:
@@ -73,12 +77,33 @@ KTempDir::KTempDir(const QString &directoryPrefix, int mode) : d(new Private)
 
 bool KTempDir::create(const QString &directoryPrefix, int mode)
 {
-   // make sure the random seed is randomized
    (void) KRandom::random();
 
+#ifdef Q_WS_WIN
+   const QString nme = directoryPrefix + "XXXXXX";
+   const QString realName = mkdtemp_QString(nme);
+   if(realName.isEmpty())
+   {
+       kWarning(180) << "KTempDir: Error trying to create " << nme
+		      << ": " << ::strerror(errno) << endl;
+       d->error = errno;
+       d->tmpName.clear();
+       return false;
+   }
+
+   // got a return value != 0
+   d->tmpName = realName + '/';
+   kDebug(180) << "KTempDir: Temporary directory created :" << d->tmpName
+	        << endl;
+   mode_t umsk = KGlobal::umask();
+   KDE::chmod(nme, mode&(~umsk));
+
+   // Success!
+   d->exists = true;
+#else
    QByteArray nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
    char *realName;
-   if((realName=mkdtemp(nme.data())) == 0)
+   if((realName=_wmkdtemp(nme.data())) == 0)
    {
        // Recreate it for the warning, mkdtemps emptied it
        nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
@@ -102,6 +127,7 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
 
    // Set uid/gid (necessary for SUID programs)
    chown(nme, getuid(), getgid());
+#endif
    return true;
 }
 

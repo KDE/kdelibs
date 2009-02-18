@@ -156,6 +156,8 @@
 class QString;
 namespace KDE
 {
+  /** replacement for ::chmod() to handle filenames in a platform independent way */
+  KDECORE_EXPORT int chmod(const QString &path, mode_t mode);
   /** replacement for ::lstat()/::lstat64() to handle filenames in a platform independent way */
   KDECORE_EXPORT int lstat(const QString &path, KDE_struct_stat *buf);
   /** replacement for ::mkdir() to handle pathnames in a platform independent way */
@@ -167,6 +169,10 @@ namespace KDE
   /** replacement for ::stat()/::stat64() to handle filenames in a platform independent way */
   KDECORE_EXPORT int stat(const QString &path, KDE_struct_stat *buf);
 #ifndef Q_WS_WIN
+  inline int chmod(const QString &path, mode_t mode)
+  {
+    return ::chmod( QFile::encodeName(path), mode );
+  }
   inline int lstat(const QString &path, KDE_struct_stat *buf)
   {
     return KDE_lstat( QFile::encodeName(path), buf );

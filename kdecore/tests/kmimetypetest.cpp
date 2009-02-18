@@ -139,9 +139,7 @@ void KMimeTypeTest::testIcons()
         tmp.setAutoRemove( true );
         KUrl url( tmp.name() );
         checkIcon( url, "inode-directory" ); // was folder_locked, but we don't have that anymore - TODO
-#ifndef Q_WS_WIN
-        chmod( QFile::encodeName( tmp.name() ), 0500 ); // so we can 'rm -rf' it
-#endif
+        KDE::chmod( tmp.name(), 0500 ); // so we can 'rm -rf' it
     }
 }
 
