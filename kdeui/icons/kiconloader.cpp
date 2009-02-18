@@ -29,6 +29,8 @@
 
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
+#include <QtCore/QMap>
+#include <QtCore/QSet>
 #include <QtGui/QPixmap>
 #include <QtGui/QPixmapCache>
 #include <QtGui/QImage>
@@ -889,6 +891,53 @@ QPixmap KIconLoader::loadMimeTypeIcon( const QString& iconName, KIconLoader::Gro
     return loadIcon( iconName, group, size, state, overlays, path_store, false );
 }
 
+static bool kil_log_icon_use = false;
+typedef QMap<QString,QSet<int> > KilIconLog;
+Q_GLOBAL_STATIC( KilIconLog, kil_icon_log );
+
+static QSet<int> kil_default_sizes() {
+    QSet<int> result;
+    result.insert( 8 );
+    result.insert( 16 );
+    result.insert( 22 );
+    result.insert( 32 );
+    result.insert( 48 );
+    result.insert( 64 );
+    result.insert( 128 );
+    return result;
+}
+
+static QString format_kil_log_entry( const QString & name, const QSet<int> & sizes ) {
+    static const QSet<int> default_sizes = kil_default_sizes();
+    return QString().sprintf( "%40s: %3s %3s %3s %3s %3s %3s %3s%s",
+                              name.left(40).toUtf8().constData(),
+                              sizes.contains( 8 )   ?   "8" : "",
+                              sizes.contains( 16 )  ?  "16" : "",
+                              sizes.contains( 22 )  ?  "22" : "",
+                              sizes.contains( 32 )  ?  "32" : "",
+                              sizes.contains( 48 )  ?  "48" : "",
+                              sizes.contains( 64 )  ?  "64" : "",
+                              sizes.contains( 128 ) ? "128" : "",
+                              ( sizes - default_sizes ).empty() ? "" : " ..." );
+}
+
+// static
+QString KIconLoader::iconUsageLog()
+{
+    QStringList result;
+    const KilIconLog & kil = *kil_icon_log();
+    for ( KilIconLog::const_iterator it = kil.begin(), end = kil.end() ; it != end ; ++it )
+        result.push_back( format_kil_log_entry( it.key(), it.value() ) );
+    if ( result.empty() )
+        result.push_back( QLatin1String( "<no icons logged>" ) );
+    return result.join("\n"); //krazy:exclude=doublequote_chars
+}
+
+void KIconLoader::setLogIconUse( bool on )
+{
+    kil_log_icon_use = on;
+}
+
 QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, int size,
                               int state, const QStringList& overlays,
                               QString *path_store, bool canReturnNull) const
@@ -902,6 +951,9 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 
     if (size < 0)
         return pix;
+
+    if ( kil_log_icon_use )
+        (*kil_icon_log())[name].insert( size );
 
     // Special case for absolute path icons.
     if (name.startsWith("favicons/"))

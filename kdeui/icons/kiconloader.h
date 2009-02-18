@@ -413,6 +413,20 @@ public:
     static QPixmap unknown();
 
     /**
+     * Determines whether KIconLoader logs icon use internally. If
+     * enabled, KIconLoader logs names and sizes of all icons
+     * requested, through all KIconLoader instances. The log can be
+     * retrieved in formatted form using the iconUsageLog() function below.
+     */
+    static void setLogIconUse( bool on );
+
+    /**
+     * @return the formatted icon usage log, one icon name per line.
+     * @sa setLogIconUse
+     */
+    static QString iconUsageLog();
+
+    /**
      * Checks whether the user wants to blend the icons with the background
      *  using the alpha channel information for a given group.
      * @param group the group to check
