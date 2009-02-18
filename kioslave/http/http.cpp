@@ -1926,16 +1926,24 @@ bool HTTPProtocol::readDelimitedText(char *buf, int *idx, int end, int numNewlin
         for (int i = 0; i < bufferFill ; i++, pos++) {
             // we copy the data from mybuf to buf immediately and look for the newlines in buf.
             // that way we don't miss newlines split over several invocations of this method.
-            char c = mybuf[i];
-            buf[pos] = c;
-            
-            // did we just copy one or two times the \r\n delimiter?
-            if (c == '\n' && pos > (2 * numNewlines - 2) && buf[pos - 1] == '\r' &&
-                ((numNewlines == 1) || (buf[pos - 3] == '\r' && buf [pos - 2] == '\n'))) {
-                i++;    // unget bytes *after* CRLF
-                unread(&mybuf[i], bufferFill - i);
-                *idx = pos + 1;
-                return true;
+            buf[pos] = mybuf[i];
+
+            // did we just copy one or two times the (usually) \r\n delimiter?
+            // until we find even more broken webservers in the wild let's assume that they either
+            // send \r\n (RFC compliant) or \n (broken) as delimiter...
+            if (buf[pos] == '\n') {
+                bool found = numNewlines == 1;
+                if (!found) {   // looking for two newlines
+                    found = ((pos >= 1 && buf[pos - 1] == '\n') ||
+                             (pos >= 3 && buf[pos - 3] == '\r' && buf[pos - 2] == '\n' &&
+                                          buf[pos - 1] == '\r'));
+                }
+                if (found) {
+                    i++;    // unread bytes *after* CRLF
+                    unread(&mybuf[i], bufferFill - i);
+                    *idx = pos + 1;
+                    return true;
+                }
             }
         }
     }
@@ -2450,9 +2458,9 @@ bool HTTPProtocol::readHeaderFromCache() {
     m_responseHeaders.clear();
 
     // Read header from cache...
-    char buffer[4097];
-    if (!gzgets(m_request.cacheTag.gzs, buffer, 4096) )
-    {
+    static const int bufSize = 8192;
+    char buffer[bufSize + 1];
+    if (!gzgets(m_request.cacheTag.gzs, buffer, bufSize)) {
         // Error, delete cache entry
         kDebug(7113) << "Could not access cache to obtain mimetype!";
         error( ERR_CONNECTION_BROKEN, m_request.url.host() );
@@ -2464,8 +2472,7 @@ bool HTTPProtocol::readHeaderFromCache() {
     kDebug(7113) << "cached data mimetype: " << m_mimeType;
 
     // read http-headers, first the response code
-    if (!gzgets(m_request.cacheTag.gzs, buffer, 4096) )
-    {
+    if (!gzgets(m_request.cacheTag.gzs, buffer, bufSize)) {
         // Error, delete cache entry
         kDebug(7113) << "Could not access cached data! ";
         error( ERR_CONNECTION_BROKEN, m_request.url.host() );
@@ -2474,8 +2481,7 @@ bool HTTPProtocol::readHeaderFromCache() {
     m_responseHeaders << buffer;
     // then the headers
     while(true) {
-        if (!gzgets(m_request.cacheTag.gzs, buffer, 8192) )
-        {
+        if (!gzgets(m_request.cacheTag.gzs, buffer, bufSize)) {
             // Error, delete cache entry
             kDebug(7113) << "Could not access cached data!";
             error( ERR_CONNECTION_BROKEN, m_request.url.host() );
@@ -2493,12 +2499,10 @@ bool HTTPProtocol::readHeaderFromCache() {
                 m_request.cacheTag.charset = charset;
                 setMetaData("charset", charset);
             }
-        } else
-        if (header.startsWith("content-language: ")) {
+        } else if (header.startsWith("content-language: ")) {
             QString language = header.mid(18);
             setMetaData("content-language", language);
-        } else
-        if (header.startsWith("content-disposition:")) {
+        } else if (header.startsWith("content-disposition:")) {
             parseContentDisposition(header.mid(20));
         }
     }
