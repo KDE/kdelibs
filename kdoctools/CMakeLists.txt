@@ -47,7 +47,7 @@ set(meinproc_SRCS meinproc.cpp xslt.cpp )
 
 kde4_add_executable(meinproc4 NOGUI RUN_UNINSTALLED ${meinproc_SRCS})
 
-target_link_libraries(meinproc4 kio ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
+target_link_libraries(meinproc4 ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
 
 if(KDE4_ENABLE_FINAL)
    set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/meinproc4_final_cpp.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )

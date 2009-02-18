@@ -13,7 +13,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
 #include <kcomponentdata.h>
-#include "kio_help.h"
 #include <klocale.h>
 #include <assert.h>
 #include <kfilterbase.h>
