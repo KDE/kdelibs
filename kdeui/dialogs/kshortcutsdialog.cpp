@@ -158,7 +158,7 @@ bool KShortcutsDialog::configure(bool saveSettings)
 
 QSize KShortcutsDialog::sizeHint() const
 {
-    return QSize(500, 400);
+    return QSize(600, 480);
 }
 
 int KShortcutsDialog::configure(KActionCollection *collection, KShortcutsEditor::LetterShortcuts allowLetterShortcuts,
