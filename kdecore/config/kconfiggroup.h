@@ -49,6 +49,9 @@ typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
  *
  * A KConfigGroup will be read-only if it is constructed from a
  * const config object or from another read-only group.
+ *
+ * Changes to a KConfigGroup need to be synced back to the 
+ * parent config via sync().
  */
 class KDECORE_EXPORT KConfigGroup : public KConfigBase
 {
@@ -121,7 +124,13 @@ public:
      */
     bool exists() const;
 
-    /// @reimp
+    /**
+     * @reimp
+     *
+     * Syncs the group back to the parent config. Without calling this
+     * method changes to the group will not appear in the parent config
+     * and thus, will never be written back to disk.
+     */
     void sync();
 
     /// @reimp
