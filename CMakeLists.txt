@@ -186,9 +186,14 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 ################# list the subdirectories #################
 
+if(CROSS_COMPILATION_TOOLS_ONLY)
+  add_definitions( cmake )
+  add_definitions( kdecore )
+  add_definitions( kdoctools )
+else(CROSS_COMPILATION_TOOLS_ONLY)
+
 add_subdirectory( cmake )
 add_subdirectory( kdecore )
-if(NOT CROSS_COMPILATION_TOOLS_ONLY)
 add_subdirectory( kdeui )
 add_subdirectory( kutils )
 add_subdirectory( kded       )
@@ -208,7 +213,9 @@ add_subdirectory( solid )
 add_subdirectory( kde3support  )
 add_subdirectory( kfile )
 add_subdirectory( kconf_update )
+endif(NOT ONLY_KLEO)
 add_subdirectory( kdoctools  )
+if(NOT ONLY_KLEO)
 add_subdirectory( kioslave   )
 add_subdirectory( knewstuff  )
 add_subdirectory( kparts     )
@@ -248,4 +255,4 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake ${CMAKE_CUR
 
 macro_display_feature_log()
 
-endif(NOT CROSS_COMPILATION_TOOLS_ONLY)
+endif(CROSS_COMPILATION_TOOLS_ONLY)

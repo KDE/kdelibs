@@ -11,7 +11,7 @@ configure_file(checkXML.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 configure_file(config-kdoctools.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdoctools.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 
-
+if(NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY)
 ########### next target ###############
 
 set(kio_help_PART_SRCS
@@ -39,6 +39,7 @@ target_link_libraries(kio_ghelp  ${KDE4_KDECORE_LIBS} kio ${LIBXML2_LIBRARIES} $
 
 install(TARGETS kio_ghelp  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
+endif(NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY)
 
 ########### next target ###############
 
@@ -70,15 +71,17 @@ target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS})
 
 ########### install files ###############
 
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/checkXML DESTINATION ${BIN_INSTALL_DIR} )
+
+if(NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY)
 install( FILES help.protocol ghelp.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
 install( FILES kio_help.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
-
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/checkXML DESTINATION ${BIN_INSTALL_DIR} )
 
 if(NOT WIN32)
   install( FILES kio_help.upd  DESTINATION  ${KCONF_UPDATE_INSTALL_DIR} )
   install( PROGRAMS move_kio_help_cache.sh  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
 endif(NOT WIN32)
+endif(NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY)
 
 macro(INSTALL_CUSTOMIZE_DIR _expr _directory)
     FILE(GLOB _file_CUST "${_expr}" )
