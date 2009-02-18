@@ -648,7 +648,9 @@ void KHTMLPopupGUIClient::addSearchActions(QList<QAction *>& editActions)
     }
 
     // default search provider
-    KService::Ptr service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(defaultEngine));
+    KService::Ptr service;
+    if( !defaultEngine.isEmpty())
+        service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(defaultEngine));
 
     // search provider icon
     KIcon icon;
