@@ -147,6 +147,11 @@
 <!ENTITY kwallet-biernik    '<application>Portfel &kde;</application>'>
 <!ENTITY kwallet    '&kwallet-mianownik;'>
 
+<!ENTITY ksnapshot-mianownik    '<application>Zrzuty ekranu</application>'>
+<!ENTITY ksnapshot-dopelniacz    '<application>Zrzutów ekranu</application>'>
+<!ENTITY ksnapshot-biernik    '<application>Zrzutom ekranu</application>'>
+<!ENTITY ksnapshot    '&kwallet-mianownik;'>
+
 <!ENTITY kwalletmanager-mianownik    '<application>Menedżer portfeli &kde;</application>'>
 <!ENTITY kwalletmanager-dopelniacz    '<application>Menedżera portfeli &kde;</application>'>
 <!ENTITY kwalletmanager    '&kwalletmanager-mianownik;'>
