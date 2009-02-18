@@ -168,6 +168,8 @@ namespace KDE
   KDECORE_EXPORT int rename(const QString &in, const QString &out);
   /** replacement for ::stat()/::stat64() to handle filenames in a platform independent way */
   KDECORE_EXPORT int stat(const QString &path, KDE_struct_stat *buf);
+  /** replacement for ::utime() to handle filenames in a platform independent way */
+  KDECORE_EXPORT int utime(const QString &filename, struct utimbuf *buf);
 #ifndef Q_WS_WIN
   inline int chmod(const QString &path, mode_t mode)
   {
@@ -192,6 +194,10 @@ namespace KDE
   inline int stat(const QString &path, KDE_struct_stat *buf)
   {
     return KDE_stat( QFile::encodeName(path), buf );
+  }
+  inline int utime(const QString &filename, struct utimbuf *buf)
+  {
+    return ::utime( QFile::encodeName(filename), buf );
   }
 #endif
 }

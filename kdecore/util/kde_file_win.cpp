@@ -142,10 +142,10 @@ namespace KDE
 
   int rename(const QString &in, const QString &out)
   {
-	if ((0 == _waccess( CONV(out), 0)) &&
-        (0 != _wremove( CONV(out) )))
-		return -1;
-	return _wrename( CONV(in), CONV(out) );
+    // better than :waccess/_wunlink/_wrename
+    bool ok = ( MoveFileExW( CONV(in), CONV(out),
+                             MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED ) != 0 );
+	return ok ? 0 : 1;
   }
 
   int stat(const QString &path, KDE_struct_stat *buf)
@@ -187,5 +187,9 @@ namespace KDE
     buf->st_mtime = s64.st_mtime;
     buf->st_ctime = s64.st_ctime;
     return result;
+  }
+  int utime(const QString &filename, struct utimbuf *buf)
+  {
+    return _wutime( CONV(filename), (struct _utimbuf*)buf );
   }
 };
