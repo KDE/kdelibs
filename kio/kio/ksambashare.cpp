@@ -169,7 +169,7 @@ bool KSambaShare::KSambaSharePrivate::readSmbConf()
       QString name = completeLine.left(i).trimmed().toLower();
       QString value = completeLine.mid(i+1).trimmed();
 
-      if (name == KGlobal::staticQString("path")) {
+      if (name == KGlobal::staticQString("path") && !value.isEmpty()) {
         // Handle quotation marks
         if ( value[0] == '"' )
           value.remove(0,1);
