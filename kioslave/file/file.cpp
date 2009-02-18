@@ -194,7 +194,7 @@ void FileProtocol::chmod( const KUrl& url, int permissions )
     const QString path(url.toLocalFile());
     const QByteArray _path( QFile::encodeName(path) );
     /* FIXME: Should be atomic */
-    if ( ::chmod( _path.data(), permissions ) == -1 ||
+    if ( KDE::chmod( path, permissions ) == -1 ||
         ( setACL( _path.data(), permissions, false ) == -1 ) ||
         /* if not a directory, cannot set default ACLs */
         ( setACL( _path.data(), permissions, true ) == -1 && errno != ENOTDIR ) ) {
@@ -222,13 +222,12 @@ void FileProtocol::chmod( const KUrl& url, int permissions )
 void FileProtocol::setModificationTime( const KUrl& url, const QDateTime& mtime )
 {
     const QString path(url.toLocalFile());
-    const QByteArray _path( QFile::encodeName(path) );
     KDE_struct_stat statbuf;
-    if (KDE_lstat(_path, &statbuf) == 0) {
+    if (KDE::lstat(path, &statbuf) == 0) {
         struct utimbuf utbuf;
         utbuf.actime = statbuf.st_atime; // access time, unchanged
         utbuf.modtime = mtime.toTime_t(); // modification time
-        if (utime(_path, &utbuf) != 0) {
+        if (KDE::utime(path, &utbuf) != 0) {
             // TODO: errno could be EACCES, EPERM, EROFS
             error(KIO::ERR_CANNOT_SETTIME, path);
         } else {
@@ -242,17 +241,16 @@ void FileProtocol::setModificationTime( const KUrl& url, const QDateTime& mtime 
 void FileProtocol::mkdir( const KUrl& url, int permissions )
 {
     const QString path(url.toLocalFile());
-    const QByteArray _path( QFile::encodeName(path) );
 
     kDebug(7101) << "mkdir(): " << path << ", permission = " << permissions;
 
     // Remove existing file or symlink, if requested (#151851)
     if (metaData(QLatin1String("overwrite")) == QLatin1String("true"))
-        unlink(_path.data());
+        QFile::remove(path);
 
     KDE_struct_stat buff;
-    if ( KDE_lstat( _path.data(), &buff ) == -1 ) {
-        if ( KDE_mkdir( _path.data(), 0777 /*umask will be applied*/ ) != 0 ) {
+    if ( KDE::lstat( path, &buff ) == -1 ) {
+        if ( KDE::mkdir( path, 0777 /*umask will be applied*/ ) != 0 ) {
             if ( errno == EACCES ) {
                 error(KIO::ERR_ACCESS_DENIED, path);
                 return;
@@ -292,9 +290,8 @@ void FileProtocol::get( const KUrl& url )
     }
 
     const QString path(url.toLocalFile());
-    const QByteArray _path( QFile::encodeName(path) );
     KDE_struct_stat buff;
-    if ( KDE_stat( _path.data(), &buff ) == -1 ) {
+    if ( KDE::stat( path, &buff ) == -1 ) {
         if ( errno == EACCES )
            error(KIO::ERR_ACCESS_DENIED, path);
         else
@@ -311,7 +308,7 @@ void FileProtocol::get( const KUrl& url )
         return;
     }
 
-    int fd = KDE_open( _path.data(), O_RDONLY);
+    int fd = KDE::open( path, O_RDONLY);
     if ( fd < 0 ) {
         error(KIO::ERR_CANNOT_OPEN_FOR_READING, path);
         return;
@@ -333,7 +330,7 @@ void FileProtocol::get( const KUrl& url )
 
     KIO::filesize_t processed_size = 0;
 
-    QString resumeOffset = metaData(QLatin1String("resume"));
+    const QString resumeOffset = metaData(QLatin1String("resume"));
     if ( !resumeOffset.isEmpty() )
     {
         bool ok;
@@ -406,9 +403,8 @@ void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
     kDebug(7101) << "FileProtocol::open " << url.url();
 
     openPath = url.toLocalFile();
-    const QByteArray _openPath = QFile::encodeName(openPath);
     KDE_struct_stat buff;
-    if (KDE_stat(_openPath.data(), &buff) == -1) {
+    if (KDE::stat(openPath, &buff) == -1) {
         if ( errno == EACCES )
            error(KIO::ERR_ACCESS_DENIED, openPath);
         else
@@ -442,7 +438,7 @@ void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
         flags |= O_TRUNC;
     }
 
-    const int fd = KDE_open(_openPath.data(), flags);
+    const int fd = KDE::open(openPath, flags);
     if ( fd < 0 ) {
         error(KIO::ERR_CANNOT_OPEN_FOR_READING, openPath);
         return;
@@ -540,23 +536,20 @@ void FileProtocol::close()
 void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
 {
     const QString dest_orig = url.toLocalFile();
-    const QByteArray _dest_orig( QFile::encodeName(dest_orig));
 
     kDebug(7101) << "put(): " << dest_orig << ", mode=" << _mode;
 
-    QString dest_part(dest_orig);
-    dest_part += QLatin1String(".part");
-    const QByteArray _dest_part(QFile::encodeName(dest_part));
+    QString dest_part(dest_orig + QLatin1String(".part"));
 
     KDE_struct_stat buff_orig;
-    const bool bOrigExists = (KDE_lstat(_dest_orig.data(), &buff_orig) != -1);
+    const bool bOrigExists = (KDE::lstat(dest_orig, &buff_orig) != -1);
     bool bPartExists = false;
     const bool bMarkPartial = config()->readEntry("MarkPartial", true);
 
     if (bMarkPartial)
     {
         KDE_struct_stat buff_part;
-        bPartExists = (KDE_stat( _dest_part.data(), &buff_part ) != -1);
+        bPartExists = (KDE::stat( dest_part, &buff_part ) != -1);
 
         if (bPartExists && !(_flags & KIO::Resume) && !(_flags & KIO::Overwrite) && buff_part.st_size > 0 && S_ISREG(buff_part.st_mode))
         {
@@ -605,7 +598,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
                     if ( bPartExists && !(_flags & KIO::Resume) )
                     {
                         kDebug(7101) << "Deleting partial file " << dest_part;
-                        remove( _dest_part.data() );
+                        QFile::remove( dest_part );
                         // Catch errors when we try to open the file.
                     }
                 }
@@ -615,16 +608,14 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
                     if ( bOrigExists && !(_flags & KIO::Resume) )
                     {
                         kDebug(7101) << "Deleting destination file " << dest_orig;
-                        remove( _dest_orig.data() );
+                        QFile::remove( dest_orig );
                         // Catch errors when we try to open the file.
                     }
                 }
 
-                _dest = QFile::encodeName(dest);
-
                 if ( (_flags & KIO::Resume) )
                 {
-                    fd = KDE_open( _dest.data(), O_RDWR );  // append if resuming
+                    fd = KDE::open( dest, O_RDWR );  // append if resuming
                     KDE_lseek(fd, 0, SEEK_END); // Seek to end
                 }
                 else
@@ -637,7 +628,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
                     else
                         initialMode = 0666;
 
-                    fd = KDE_open(_dest.data(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
+                    fd = KDE::open(dest, O_CREAT | O_TRUNC | O_WRONLY, initialMode);
                 }
 
                 if ( fd < 0 )
@@ -680,7 +671,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
           ::close(fd);
 
           KDE_struct_stat buff;
-          if (bMarkPartial && KDE_stat( _dest.data(), &buff ) == 0)
+          if (bMarkPartial && KDE::stat( dest, &buff ) == 0)
           {
             int size = config()->readEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
             if (buff.st_size <  size)
@@ -711,17 +702,10 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
         // remove the symlink first. This ensures that we do not overwrite the
         // current source if the symlink points to it.
         if( (_flags & KIO::Overwrite) && S_ISLNK( buff_orig.st_mode ) )
-          remove( _dest_orig.data() );
-
-#ifdef Q_OS_WIN
-        if ( MoveFileExA( _dest.data(),
-                          _dest_orig.data(),
-                          MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED ) == 0 )
-#else
-        if ( KDE_rename( _dest.data(), _dest_orig.data() ) )
-#endif
+          QFile::remove( dest_orig );
+        if ( KDE::rename( dest, dest_orig ) )
         {
-            kWarning(7101) << " Couldn't rename " << _dest << " to " << _dest_orig;
+            kWarning(7101) << " Couldn't rename " << _dest << " to " << dest_orig;
             error(KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig);
             return;
         }
@@ -730,7 +714,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
     // set final permissions
     if ( _mode != -1 && !(_flags & KIO::Resume) )
     {
-        if (::chmod(_dest_orig.data(), _mode) != 0)
+        if (KDE::chmod(dest_orig, _mode) != 0)
         {
             // couldn't chmod. Eat the error if the filesystem apparently doesn't support it.
             KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(dest_orig);
@@ -745,11 +729,11 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
         QDateTime dt = QDateTime::fromString( mtimeStr, Qt::ISODate );
         if ( dt.isValid() ) {
             KDE_struct_stat dest_statbuf;
-            if (KDE_stat( _dest_orig.data(), &dest_statbuf ) == 0) {
+            if (KDE::stat( dest_orig, &dest_statbuf ) == 0) {
                 struct utimbuf utbuf;
                 utbuf.actime = dest_statbuf.st_atime; // access time, unchanged
                 utbuf.modtime = dt.toTime_t(); // modification time
-                utime( _dest_orig.data(), &utbuf );
+                KDE::utime( dest_orig, &utbuf );
             }
         }
 
