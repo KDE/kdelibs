@@ -786,10 +786,6 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
     assert(entry.count() == 0); // by contract :-)
     // entry.reserve( 8 ); // speed up QHash insertion
 
-    // Note: details = 0 (only "file or directory or symlink or doesn't exist") isn't implemented
-    // because there's no real performance penalty in kio_file for returning the complete
-    // details. Please consider doing it in your kioslave if you're using this one as a model :)
-
     entry.insert( KIO::UDSEntry::UDS_NAME, filename );
 
     mode_t type;
