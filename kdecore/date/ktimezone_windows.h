@@ -29,22 +29,6 @@
 #include <string>
 #include <cassert>
 
-/*
-struct KTimeZone {
-
-    TIME_ZONE_INFORMATION _tzi;
-    QString displayName;
-
-    const TIME_ZONE_INFORMATION & tzi( int year = 0 ) const { Q_UNUSED( year ); return _tzi; }
-
-    static const time_t InvalidTime_t = ( time_t )-1;
-
-    bool isValid() const { return true; }
-    static time_t toTime_t( const QDateTime & dt );
-    static QDateTime fromTime_t( time_t t );
-};
-*/
-
 static const int MAX_KEY_LENGTH = 255;
 
 // TCHAR can be either uchar, or wchar_t:
@@ -269,44 +253,7 @@ Transitions transitions( const TIME_ZONE_INFORMATION & tz, int year ) {
     return t;
 }
 
-
-
-/*
-int main( int argc, char* argv[] ) {
-
-    QCoreApplication app( argc, argv );
-
-    const QDateTime now = QDateTime::currentDateTime();
-    qDebug() << list_time_zones();
-    Q_FOREACH( const QString & tz, list_time_zones() ) {
-        const std::wstring wstr = tz.toStdWString();
-        const KTimeZone info = make_time_zone( wstr.c_str() );
-        if ( !info.isValid() )
-            qDebug() << tz << "error";
-        else
-            qDebug() << tz
-               << "\nBias        : " << info._tzi.Bias
-                     << "\nStandardName: " << tchar_to_qstring( info._tzi.StandardName )
-                     << "\nStandardBias: " << info._tzi.StandardBias
-                     << "\nStandardDate: " << systemtime_to_qdatetime( info._tzi.StandardDate )
-                     << "\nDaylightName: " << tchar_to_qstring( info._tzi.DaylightName )
-                     << "\nDaylightBias: " << info._tzi.DaylightBias
-                     << "\nDaylightDate: " << systemtime_to_qdatetime( info._tzi.DaylightDate )
-                ;
-        qDebug() << "offsetAtZoneTime" << offsetAtZoneTime( &info, now, 0 )/60;
-        qDebug() << "isDstAtUtc" << isDstAtUtc( &info, now );
-    }
-    return 0;
-
-}
-
-*/
-
-
-
 /******************************************************************************/
-
-
 class KSystemTimeZoneDataWindows : public KTimeZoneData
 {
 public:
