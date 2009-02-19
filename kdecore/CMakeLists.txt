@@ -137,6 +137,7 @@ set(kdecore_LIB_SRCS
    date/kcalendarsystemjalali.cpp
    date/kdatetime.cpp
    date/ktimezone.cpp
+   date/ktimezone_windows.cpp
    date/ksystemtimezone.cpp
    date/ktzfiletimezone.cpp
    io/kautosavefile.cpp
