@@ -637,7 +637,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
 #endif
             {
                 KDE_struct_stat buff;
-                if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
+                if ( KDE::stat( pathfn, &buff ) != 0 ) {
                     kDebug(180) << "Error stat'ing " << pathfn << " : " << perror;
                     continue; // Couldn't stat (e.g. no read permissions)
                 }
@@ -669,7 +669,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
         QString fn = pattern;
         QString pathfn = path + fn;
         KDE_struct_stat buff;
-        if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 )
+        if ( KDE::stat( pathfn, &buff ) != 0 )
             return; // File not found
         if ( S_ISREG( buff.st_mode))
         {
@@ -745,7 +745,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
             {
                 QString pathfn = path + fn;
                 KDE_struct_stat buff;
-                if ( KDE_stat( QFile::encodeName(fn), &buff ) != 0 ) {
+                if ( KDE::stat( fn, &buff ) != 0 ) {
                     kDebug(180) << "Error stat'ing " << fn << " : " << perror;
                     continue; // Couldn't stat (e.g. no read permissions)
                 }
@@ -891,7 +891,7 @@ void KStandardDirs::createSpecialResource(const char *type)
         if (!QDir::isRelativePath(link))
         {
             KDE_struct_stat stat_buf;
-            int res = KDE_lstat(link, &stat_buf);
+            int res = KDE::lstat(link, &stat_buf);
             if ((res == -1) && (errno == ENOENT))
             {
                 relink = true;
@@ -1345,7 +1345,7 @@ QString KStandardDirs::saveLocation(const char *type,
     QString fullPath = path + suffix;
 
     KDE_struct_stat st;
-    if (KDE_stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
+    if (KDE::stat(fullPath, &st) != 0 || !(S_ISDIR(st.st_mode))) {
         if(!create) {
 #ifndef NDEBUG
             // Too much noise from kbuildsycoca4 -- it's fine if this happens from KConfig

@@ -2606,7 +2606,7 @@ bool KDirOperator::Private::isReadable(const KUrl& url)
 #else
     QString ts = url.path(KUrl::AddTrailingSlash);
 #endif
-    bool readable = (KDE_stat(QFile::encodeName(ts), &buf) == 0);
+    bool readable = (KDE::stat(ts, &buf) == 0);
     if (readable) { // further checks
         DIR *test;
         test = opendir(QFile::encodeName(ts));    // we do it just to test here

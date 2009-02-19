@@ -66,10 +66,6 @@ extern "C" {
 #include <kdirnotify.h>
 #include <ktemporaryfile.h>
 
-#ifdef Q_OS_UNIX
-#include <utime.h>
-#endif
-
 using namespace KIO;
 
 static inline Slave *jobSlave(SimpleJob *job)

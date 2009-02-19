@@ -33,6 +33,7 @@
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kdesktopfile.h>
+#include <kde_file.h>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QTextIStream>
@@ -40,7 +41,6 @@
 #include <QtCore/QRegExp>
 
 #include <sys/types.h>
-#include <utime.h>
 #include <kconfiggroup.h>
 
 QString KRecentDocument::recentDocumentDirectory()
@@ -108,7 +108,7 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
         // see if it points to the same file and application
         KDesktopFile tmp(ddesktop);
         if ( tmp.desktopGroup().readEntry("X-KDE-LastOpenedWith") == desktopEntryName ) {
-            utime(QFile::encodeName(ddesktop), NULL);
+            KDE::utime(ddesktop, NULL);
             return;
         }
         // if not append a (num) to it

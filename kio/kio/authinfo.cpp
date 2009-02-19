@@ -298,8 +298,7 @@ void NetRC::reload()
 int NetRC::openf( const QString& f )
 {
   KDE_struct_stat sbuff;
-  QByteArray ef = QFile::encodeName(f);
-  if ( KDE_stat(ef, &sbuff) != 0 )
+  if ( KDE::stat(f, &sbuff) != 0 )
     return -1;
 
   // Security check!!
@@ -307,7 +306,7 @@ int NetRC::openf( const QString& f )
        sbuff.st_uid != geteuid() )
     return -1;
 
-  return KDE_open( ef, O_RDONLY );
+  return KDE::open( f, O_RDONLY );
 }
 
 QString NetRC::extract( const char* buf, const char* key, int& pos )

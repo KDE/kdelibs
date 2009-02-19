@@ -275,7 +275,7 @@ bool KDesktopFile::tryExec() const
     if (!QDir::isRelativePath(te)) {
 #ifdef Q_WS_WIN /* FIXME read below (js) */
         struct stat st;
-        if (KDE_stat(QFile::encodeName(te), &st) == 0
+        if (KDE::stat(te, &st) == 0
           && (st.st_mode & S_IXUSR))
 #else
       if (::access(QFile::encodeName(te), X_OK))
@@ -296,7 +296,7 @@ bool KDesktopFile::tryExec() const
 */
 #ifdef Q_WS_WIN
         struct stat st;
-        if (KDE_stat(QFile::encodeName(fName), &st) == 0
+        if (KDE::stat(fName, &st) == 0
           && (st.st_mode & S_IXUSR))
 #else
         if (::access(QFile::encodeName(fName).constData(), X_OK) == 0)

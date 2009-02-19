@@ -405,7 +405,7 @@ bool KDEsuClient::isServerSGID()
        return false;
 
     KDE_struct_stat sbuf;
-    if (KDE_stat(QFile::encodeName(d->daemon), &sbuf) < 0)
+    if (KDE::stat(d->daemon, &sbuf) < 0)
     {
 	kWarning(900) << k_lineinfo << "stat(): " << perror << "\n";
 	return false;

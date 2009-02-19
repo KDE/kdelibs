@@ -859,7 +859,7 @@ void KRun::init()
     if ( d->m_mode == 0 )
     {
       KDE_struct_stat buff;
-      if ( KDE_stat( QFile::encodeName(d->m_strURL.path()), &buff ) == -1 )
+      if ( KDE::stat( d->m_strURL.path(), &buff ) == -1 )
       {
         d->m_showingDialog = true;
         KMessageBoxWrapper::error( d->m_window, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ,  Qt::escape(d->m_strURL.prettyUrl()) ) );

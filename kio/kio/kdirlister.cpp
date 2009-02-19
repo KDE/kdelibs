@@ -970,7 +970,7 @@ void KDirListerCache::slotFileDirty( const QString& path )
     kDebug(7004) << path;
     // File or dir?
     KDE_struct_stat buff;
-    if ( KDE_stat( QFile::encodeName(path), &buff ) != 0 )
+    if ( KDE::stat( path, &buff ) != 0 )
         return; // error
     const bool isDir = S_ISDIR(buff.st_mode);
     KUrl url(path);
