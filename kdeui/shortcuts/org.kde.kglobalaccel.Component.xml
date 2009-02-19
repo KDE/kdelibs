@@ -4,6 +4,9 @@
   <interface name="org.kde.kglobalaccel.Component">
     <property name="friendlyName" type="s" access="read"/>
     <property name="uniqueName" type="s" access="read"/>
+    <method name="cleanUp">
+      <arg type="b" direction="out"/>
+    </method>
     <method name="shortcutNames">
       <arg type="as" direction="out"/>
       <arg name="context" type="s" direction="in"/>

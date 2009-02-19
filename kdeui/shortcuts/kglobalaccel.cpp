@@ -38,6 +38,7 @@
 #include "kaction_p.h"
 #include "kmessagebox.h"
 #include "kshortcut.h"
+#include "kglobalaccel_component_interface.h"
 
 
 KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
@@ -104,8 +105,26 @@ void KGlobalAccel::activateGlobalShortcutContext(
         const QString &contextFriendly,
         const KComponentData &component)
 {
-    // TODO provide contextFriendly
+    Q_UNUSED(contextFriendly);
+    // TODO: provide contextFriendly
     self()->d->iface.activateGlobalShortcutContext(component.aboutData()->programName(), contextUnique);
+}
+
+
+bool KGlobalAccel::cleanComponent(const QString &componentUnique)
+{
+    // Get the component
+    org::kde::kglobalaccel::Component component(
+            "org.kde.kglobalaccel",
+            QString("/component/") + componentUnique,
+            QDBusConnection::sessionBus());
+
+    // No component no cleaning
+    if (!component.isValid()) {
+        return false;
+    }
+
+    return component.cleanUp();
 }
 
 

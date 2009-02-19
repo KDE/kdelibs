@@ -91,6 +91,30 @@ public:
             const KComponentData &component = KGlobal::mainComponent());
 
     /**
+     * Clean the shortcuts for component @a componentUnique.
+     *
+     * If the component is not active all global shortcut registrations are
+     * purged and the component is removed completely.
+     *
+     * If the component is active all global shortcut registrations not in use
+     * will be purged. If there is no shortcut registration left the component
+     * is purged too.
+     *
+     * If a purged component or shortcut is actived the next time it will
+     * reregister itself. All you probably will loose on wrong usage are the
+     * user set shortcuts.
+     *
+     * If you make sure your component is running and all global shortcuts it
+     * has are active this function can be used to clean up the registry.
+     *
+     * Handle with care!
+     *
+     * If the method return @c true at least one shortcut was purged so handle
+     * all previously acquired information with care.
+     */
+    static bool cleanComponent(const QString &componentUnique);
+
+    /**
      * Returns a list of global shortcuts registered for the shortcut @seq.
      *
      * If the list contains more that one entry it means the component
