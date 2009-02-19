@@ -81,6 +81,12 @@ private Q_SLOTS:
         QCOMPARE(comboActivatedSpy[0][0].toString(), QString("Hello world"));
     }
 
+    void testHistoryComboInsertItems()
+    {
+        KHistoryComboBox combo;
+        // uic generates code like this, let's make sure it compiles
+        combo.insertItems(0, QStringList() << "foo");
+    }
 };
 
 QTEST_KDEMAIN(KComboBox_UnitTest, GUI)

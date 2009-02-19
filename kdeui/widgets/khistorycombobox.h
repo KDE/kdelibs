@@ -179,6 +179,8 @@ public:
      */
     void reset();
 
+    using QComboBox::insertItems;
+
 public Q_SLOTS:
     /**
      * Adds an item to the end of the history list and to the completion list.
