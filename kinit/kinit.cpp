@@ -89,6 +89,8 @@
 #endif
 #endif
 
+// #define SKIP_PROCTITLE 1
+
 extern char **environ;
 
 #ifdef Q_WS_X11
@@ -582,6 +584,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
        }
        d.argv[argc] = 0;
 
+#ifndef SKIP_PROCTITLE
        /** Give the process a new name **/
 #ifdef Q_OS_LINUX
        /* set the process name, so that killall works like intended */
@@ -592,6 +595,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
            proctitle_set( "kdeinit4: %s%s", name.data(), procTitle.data() ? procTitle.data() : "" );
 #else
        proctitle_set( "kdeinit4: %s%s", name.data(), procTitle.data() ? procTitle.data() : "" );
+#endif
 #endif
      }
 
@@ -1157,6 +1161,7 @@ static void handle_launcher_request(int sock = -1)
        }
    }
 
+   //kDebug() << "Got cmd" << request_header.cmd << commandToString(request_header.cmd);
    if (request_header.cmd == LAUNCHER_OK)
    {
       d.launcher_ok = true;
@@ -1624,11 +1629,14 @@ int kdeinit_x_errhandler( Display *dpy, XErrorEvent *err )
     char errstr[256];
     // kdeinit almost doesn't use X, and therefore there shouldn't be any X error
     XGetErrorText( dpy, err->error_code, errstr, 256 );
-    fprintf(stderr, "kdeinit4: KDE detected X Error: %s %d\n"
+    fprintf(stderr, "kdeinit4(%d) : KDE detected X Error: %s %d\n"
                     "         Major opcode: %d\n"
                     "         Minor opcode: %d\n"
                     "         Resource id:  0x%lx\n",
-            errstr, err->error_code, err->request_code, err->minor_code, err->resourceid );
+            getpid(), errstr, err->error_code, err->request_code, err->minor_code, err->resourceid );
+
+    //kDebug() << kBacktrace();
+
 #else
     Q_UNUSED(dpy);
     Q_UNUSED(err);
@@ -1709,7 +1717,9 @@ static void secondary_child_handler(int)
 
 int main(int argc, char **argv, char **envp)
 {
-   int i;
+    setlocale (LC_ALL, "");
+    setlocale (LC_NUMERIC, "C");
+
    pid_t pid;
    bool do_fork = true;
    int launch_klauncher = 1;
@@ -1719,7 +1729,7 @@ int main(int argc, char **argv, char **envp)
 
    /** Save arguments first... **/
    char **safe_argv = (char **) malloc( sizeof(char *) * argc);
-   for(i = 0; i < argc; i++)
+   for(int i = 0; i < argc; i++)
    {
       safe_argv[i] = strcpy((char*)malloc(strlen(argv[i])+1), argv[i]);
       if (strcmp(safe_argv[i], "--no-klauncher") == 0)
@@ -1806,7 +1816,10 @@ int main(int argc, char **argv, char **envp)
    s_instance = new KComponentData("kdeinit4", QByteArray(), KComponentData::SkipMainComponentRegistration);
 
    /** Prepare to change process name **/
+#ifndef SKIP_PROCTITLE
    proctitle_init(argc, argv, envp);
+#endif
+
    kdeinit_library_path();
    // Don't make our instance the global instance
    // (do it only after kdeinit_library_path, that one indirectly uses KConfig,
@@ -1867,8 +1880,6 @@ int main(int argc, char **argv, char **envp)
 
    {
       QFont::initialize();
-      setlocale (LC_ALL, "");
-      setlocale (LC_NUMERIC, "C");
 #ifdef Q_WS_X11
       if (XSupportsLocale ())
       {
@@ -1889,7 +1900,7 @@ int main(int argc, char **argv, char **envp)
       handle_requests(pid);
    }
 
-   for(i = 1; i < argc; i++)
+   for(int i = 1; i < argc; i++)
    {
       if (safe_argv[i][0] == '+')
       {
@@ -1913,13 +1924,15 @@ int main(int argc, char **argv, char **envp)
    }
 
    /** Free arguments **/
-   for(i = 0; i < argc; i++)
+   for(int i = 0; i < argc; i++)
    {
       free(safe_argv[i]);
    }
    free (safe_argv);
 
+#ifndef SKIP_PROCTITLE
    proctitle_set("kdeinit4 Running...");
+#endif
 
    if (!keep_running)
       return 0;

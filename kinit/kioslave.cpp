@@ -19,11 +19,13 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include <kdebug.h>
 #include <config.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#include <locale.h>
 
 #include <QtCore/QString>
 #include <QtCore/QLibrary>
@@ -50,7 +52,8 @@ int main(int argc, char **argv)
         fprintf(stderr, "Usage: kioslave <slave-lib> <protocol> <klauncher-socket> <app-socket>\n\nThis program is part of KDE.\n");
         exit(1);
      }
-     QString libpath = QFile::decodeName(argv[1]);
+     setlocale(LC_ALL, "");
+     QString libpath = QFile::encodeName(argv[1]);
 
      if (libpath.isEmpty())
      {
