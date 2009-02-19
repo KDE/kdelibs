@@ -9,5 +9,5 @@ add_subdirectory(Weaver)
  add_subdirectory(Tests)
 # add_subdirectory(Examples)
 
-install(FILES threadweaver_export.h DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver)
+install(FILES threadweaver_export.h DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver COMPONENT Devel)
 
