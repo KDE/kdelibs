@@ -22,6 +22,27 @@
 #define _KTIMEZONE_WINDOWS_H
 
 #include <ktimezone.h>
+#include <windows.h>
+
+namespace {
+    class HKeyCloser {
+        const HKEY hkey;
+        Q_DISABLE_COPY( HKeyCloser )
+    public:
+        explicit HKeyCloser( HKEY hk ) : hkey( hk ) {}
+        ~HKeyCloser() { RegCloseKey(  hkey ); }
+    };
+
+    struct TZI {
+        LONG Bias;
+        LONG StandardBias;
+        LONG DaylightBias;
+        SYSTEMTIME StandardDate;
+        SYSTEMTIME DaylightDate;
+    };
+}
+
+
 
 class KSystemTimeZoneDataWindows : public KTimeZoneData
 {

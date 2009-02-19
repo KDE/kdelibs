@@ -28,16 +28,6 @@
 #include <string>
 #include <cassert>
 
-static const int MAX_KEY_LENGTH = 255;
-
-// TCHAR can be either uchar, or wchar_t:
-static inline QString tchar_to_qstring( TCHAR * ustr ) {
-    const char * str = reinterpret_cast<const char*>( ustr );
-    return QString::fromLocal8Bit( str );
-}
-static inline QString tchar_to_qstring( const wchar_t * str ) {
-    return QString::fromWCharArray( str );
-}
 
 static inline QDateTime systemtime_to_qdatetime( const SYSTEMTIME & st ) {
     return QDateTime( QDate( st.wYear, st.wMonth, st.wDay ),
@@ -115,50 +105,8 @@ static bool TzSpecificLocalTimeToSystemTime_Portable( TIME_ZONE_INFORMATION* tz,
     return true;
 }
 
-namespace {
-    class HKeyCloser {
-        const HKEY hkey;
-        Q_DISABLE_COPY( HKeyCloser )
-    public:
-        explicit HKeyCloser( HKEY hk ) : hkey( hk ) {}
-        ~HKeyCloser() { RegCloseKey(  hkey ); }
-    };
 
-    struct TZI {
-        LONG Bias;
-        LONG StandardBias;
-        LONG DaylightBias;
-        SYSTEMTIME StandardDate;
-        SYSTEMTIME DaylightDate;
-    };
-}
 
-static QStringList list_key( HKEY key ) {
-
-    DWORD numSubKeys = 0;
-    QStringList result;
-
-    if ( RegQueryInfoKey( key, 0, 0, 0, &numSubKeys, 0, 0, 0, 0, 0, 0, 0 ) == ERROR_SUCCESS )
-        for ( DWORD i = 0 ; i < numSubKeys ; ++i ) {
-            TCHAR name[MAX_KEY_LENGTH+1];
-            DWORD nameLen = MAX_KEY_LENGTH;
-            if ( RegEnumKeyEx( key, i, name, &nameLen, 0, 0, 0, 0 ) == ERROR_SUCCESS )
-                result.push_back( tchar_to_qstring( name ) );
-        }
-
-    return result;
-}
-
-static const TCHAR timeZonesKey[] = TEXT("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Time Zones");
-
-static QStringList list_time_zones() {
-
-    HKEY timeZones;
-    if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, timeZonesKey, 0, KEY_READ, &timeZones ) != ERROR_SUCCESS )
-        return QStringList();
-    const HKeyCloser closer( timeZones );
-    return list_key( timeZones );
-}
 
 static bool get_binary_value( HKEY key, const TCHAR * value, void * data, DWORD numData, DWORD * outNumData=0 ) {
     DWORD size = numData;
