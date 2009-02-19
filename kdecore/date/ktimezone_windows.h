@@ -86,32 +86,32 @@ static bool TzSpecificLocalTimeToSystemTime_Portable( TIME_ZONE_INFORMATION* tz,
     TIME_ZONE_INFORMATION currentTimeZone;
     result = GetTimeZoneInformation(&currentTimeZone);
     if ( result == TIME_ZONE_ID_INVALID ) {
-        qWarning() << "Getting time zone information failed";
+        kWarning(161) << "Getting time zone information failed";
         return false;
     }
     result = SetTimeZoneInformation(tz);
     if ( result == 0 ) {
-        qWarning() << "Setting temporary time zone failed";
+        kWarning(161) << "Setting temporary time zone failed";
         return false;
     }
     result = SystemTimeToFileTime(i_stLocal, &ft);
     if ( result == 0 ) {
-        qWarning() << "SysteTimeToFileTime failed";
+        kWarning(161) << "SysteTimeToFileTime failed";
         return false;
     }
     result = LocalFileTimeToFileTime(&ft, &ft_utc);
     if ( result == 0 ) {
-        qWarning() << "LocalFileTimeToFileTime failed";
+        kWarning(161) << "LocalFileTimeToFileTime failed";
         return false;
     }
     result = FileTimeToSystemTime(&ft_utc,o_stUniversal);
     if ( result == 0 ) {
-        qWarning() << "FileTimeToSystemTime failed";
+        kWarning(161) << "FileTimeToSystemTime failed";
         return false;
     }
     result = SetTimeZoneInformation(&currentTimeZone);
     if ( result == 0 ) {
-        qWarning() << "Re-setting time zone information failed";
+        kWarning(161) << "Re-setting time zone information failed";
         return false;
     }
     return true;

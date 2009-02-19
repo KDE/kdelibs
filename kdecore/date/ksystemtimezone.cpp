@@ -327,7 +327,6 @@ void KSystemTimeZonesPrivate::cleanup()
 
 void KSystemTimeZonesPrivate::updateTimezoneInformation(bool update)
 {
-    qWarning() << "updateTimezoneInformation(" << update << ")";
     if (!m_source)
         m_source = new KSystemTimeZoneSourceWindows;
     QStringList newZones;
