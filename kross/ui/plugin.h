@@ -51,10 +51,12 @@ namespace Kross
  * If no menu already exists with this name, a new one is created. In this example, the user will 
  * see a menu item with the text "Dummy Script" in "File" menu, which will execute the dummy_script.py script.
  * 
- * By default it tries to find kross rc files in appdata "scripts" subdirectory.
+ * By default it tries to find kross rc files in %APPDATA%/scripts directory.
  * Clients of this class can use slotEditScriptActions() as a way to override and/or extend the
  * default script actions (if they exist at all).
- */
+ *
+ * You may create multiple instances of ScriptingPlugin by using alternative c'tor.
+  */
 class KROSSUI_EXPORT ScriptingPlugin : public KParts::Plugin
 {
     Q_OBJECT
@@ -68,11 +70,12 @@ public:
     explicit ScriptingPlugin(QObject* parent = 0);
 
     /**
-     * Lets having actions defined in a custom location, for example for project-specific actions
+     * Allows having actions defined in a custom location, eg for project-specific actions
      *
-     * \param userActionsFile scripts.rc filepath
+     * \param userActionsFile scripts.rc filepath -- file may be modified by user
+     * \param referenceActionsDir dir -- %APPDATA%/scripts/%referenceActionsDir% contains standard actions for this plugin instance; has a lower priority than \a userActionsFile.
      */
-    ScriptingPlugin(const QString& userActionsFile, const QString& collectionName, QObject* parent=0);
+    ScriptingPlugin(const QString& collectionName, const QString& userActionsFile, const QString& referenceActionsDir=QString(), QObject* parent=0);
 
     /**
      * Destructor.
@@ -93,7 +96,7 @@ public:
     void addObject(QObject* object, const QString& name/* = QString()*/, ChildrenInterface::Options options/* = ChildrenInterface::NoOption*/);
     
     ///\deprecated use another addObject overload
-    void addObject(QObject* object, const QString& name = QString());
+    void addObject(QObject* object, const QString& name = QString()); //BIC
 
 protected Q_SLOTS:
 
@@ -111,6 +114,7 @@ protected Q_SLOTS:
 private:
     QDomDocument buildDomDocument(const QDomDocument& document);
     void buildDomDocument(QDomDocument& document, Kross::ActionCollection* collection);
+    void save();
 
 private:
     class ScriptingPluginPrivate;

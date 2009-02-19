@@ -267,6 +267,11 @@ void ActionCollection::emitUpdated()
 
 bool ActionCollection::readXml(const QDomElement& element, const QDir& directory)
 {
+    return readXml(element, QStringList(directory.absolutePath()));
+}
+
+bool ActionCollection::readXml(const QDomElement& element, const QStringList& searchPath)
+{
     #ifdef KROSS_ACTIONCOLLECTION_DEBUG
         krossdebug( QString("ActionCollection::readXml tagName=\"%1\"").arg(element.tagName()) );
     #endif
@@ -299,7 +304,7 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
 
             if( ! enabled )
                 c->setEnabled(false);
-            if( ! c->readXml(elem, directory) )
+            if( ! c->readXml(elem, searchPath) )
                 ok = false;
         }
         else if( elem.tagName() == "script") {
@@ -315,7 +320,7 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
                     krossdebug( QString("  ActionCollection::readXml Creating Action \"%1\"").arg(name) );
                 #endif
 
-                a = new Action(this, name, directory);
+                a = new Action(this, name, searchPath);
                 addAction(name, a);
                 connect(a, SIGNAL( started(Kross::Action*) ), &Manager::self(), SIGNAL( started(Kross::Action*)) );
                 connect(a, SIGNAL( finished(Kross::Action*) ), &Manager::self(), SIGNAL( finished(Kross::Action*) ));
@@ -332,6 +337,11 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
 
 bool ActionCollection::readXml(QIODevice* device, const QDir& directory)
 {
+    return readXml(device, QStringList(directory.absolutePath()));
+}
+
+bool ActionCollection::readXml(QIODevice* device, const QStringList& searchPath)
+{
     QString errMsg;
     int errLine, errCol;
     QDomDocument document;
@@ -342,7 +352,7 @@ bool ActionCollection::readXml(QIODevice* device, const QDir& directory)
         #endif
         return false;
     }
-    return readXml(document.documentElement(), directory);
+    return readXml(document.documentElement(), searchPath);
 }
 
 bool ActionCollection::readXmlFile(const QString& file)

@@ -164,11 +164,13 @@ namespace Kross {
              * \return true on success else false.
              */
             bool readXml(const QDomElement& element, const QDir& directory = QDir());
+            bool readXml(const QDomElement& element, const QStringList& searchPath/* = QStringList()*/);
 
             /**
              * Read XML from the QIODevice \p device .
              */
             bool readXml(QIODevice* device, const QDir& directory = QDir());
+            bool readXml(QIODevice* device, const QStringList& searchPath/* = QStringList()*/);
 
             /**
              * Read the XML from the file \p file .

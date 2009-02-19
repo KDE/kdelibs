@@ -521,15 +521,11 @@ bool ActionCollectionProxyModel::filterAcceptsRow(int source_row, const QModelIn
 
     Action *action = ActionCollectionModel::action( index );
     if ( action ) {
-        if( ! action->isEnabled() )
-            return false;
-        return QSortFilterProxyModel::filterAcceptsRow( source_row, source_parent );
+        return action->isEnabled() && QSortFilterProxyModel::filterAcceptsRow( source_row, source_parent );
     }
     ActionCollection *collection = ActionCollectionModel::collection( index );
     if( collection ) {
-        if ( ! collection->isEnabled() ) {
-            return false;
-        }
+        return collection->isEnabled();
     }
     return true;
 }

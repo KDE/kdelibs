@@ -109,7 +109,20 @@ namespace Kross {
              * e.g. at the \a Manager to identify the Action. The
              * name is accessible via \a QObject::objectName .
              */
-            Action(QObject* parent, const QString& name, const QDir& packagepath = QDir());
+            Action(QObject* parent, const QString& name, const QDir& packagepath = QDir()); //BIC may be removed in favour of the next c'tor
+
+
+           /**
+             * Constructor.
+             *
+             * \param parent The parent QObject this \a Action is a child of.
+             * \param name The unique name this Action has. It's used
+             * e.g. at the \a Manager to identify the Action. The
+             * name is accessible via \a QObject::objectName .
+             * \param searchPath List of directories where to search the script if it's path is relative
+             * First item is given the highest priority.
+             */
+            Action(QObject* parent, const QString& name, const QStringList& searchPath/* = QStringList()*/);
 
             /**
              * Constructor.

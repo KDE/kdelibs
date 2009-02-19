@@ -85,10 +85,9 @@ namespace Kross {
             QString scriptfile;
 
             /**
-            * The current path the \a Script is running in or
-            * an empty string if there is no path current defined.
+            * The path list where the \a Script may be located.
             */
-            QString currentpath;
+            QStringList searchpath;
 
             /**
             * Map of options that overwritte the \a InterpreterInfo::Option::Map
@@ -97,8 +96,27 @@ namespace Kross {
             QMap< QString, QVariant > options;
 
             Private() : script(0), version(0) {}
+            
+            QString activesearchpath(){return searchpath.isEmpty()?QString():searchpath.first();}
+            void setactivesearchpath(const QString& p)
+            {
+                searchpath.removeAll(p);
+                searchpath.prepend(p);
+            }
+
     };
 
+}
+
+enum InitOptions{Enable=1};
+void static init(Action* th, const QString& name, int options=0)
+{
+    th->setEnabled(options&Enable);
+    th->setObjectName(name);
+    #ifdef KROSS_ACTION_DEBUG
+        krossdebug( QString("Action::Action(QObject*,QString,QDir) Ctor name='%1'").arg(th->objectName()) );
+    #endif
+    QObject::connect(th, SIGNAL(triggered(bool)), th, SLOT(slotTriggered()));
 }
 
 Action::Action(QObject* parent, const QString& name, const QDir& packagepath)
@@ -108,14 +126,21 @@ Action::Action(QObject* parent, const QString& name, const QDir& packagepath)
     , ErrorInterface()
     , d( new Private() )
 {
-    setObjectName(name);
-    #ifdef KROSS_ACTION_DEBUG
-        krossdebug( QString("Action::Action(QObject*,QString,QDir) Ctor name='%1'").arg(objectName()) );
-    #endif
-    setEnabled( false );
-    d->currentpath = packagepath.absolutePath();
-    connect(this, SIGNAL(triggered(bool)), this, SLOT(slotTriggered()));
+    init(this,name);
+    d->setactivesearchpath(packagepath.absolutePath());
 }
+
+Action::Action(QObject* parent, const QString& name, const QStringList& searchPath)
+    : QAction(parent)
+    , QScriptable()
+    , ChildrenInterface()
+    , ErrorInterface()
+    , d( new Private() )
+{
+    init(this,name);
+    d->searchpath=searchPath;
+}
+
 
 Action::Action(QObject* parent, const QUrl& url)
     : QAction(parent)
@@ -123,15 +148,11 @@ Action::Action(QObject* parent, const QUrl& url)
     , ErrorInterface()
     , d( new Private() )
 {
-    setObjectName( url.path() /*url.fileName()*/ );
-    #ifdef KROSS_ACTION_DEBUG
-        krossdebug( QString("Action::Action(QObject*,QUrl) Ctor name='%1'").arg(objectName()) );
-    #endif
+    init(this,url.path(),Enable);
     QFileInfo fi( url.toLocalFile() );
     setText( fi.fileName() );
     setIconName( KMimeType::iconNameForUrl(url) );
     setFile( url.toLocalFile() );
-    connect(this, SIGNAL(triggered(bool)), this, SLOT(slotTriggered()));
 }
 
 Action::~Action()
@@ -152,16 +173,20 @@ void Action::fromDomElement(const QDomElement& element)
     if( element.isNull() )
         return;
 
-    QDir packagepath( d->currentpath );
     QString file = element.attribute("file");
     if( ! file.isEmpty() ) {
         if( QFileInfo(file).exists() ) {
             setFile(file);
         }
         else {
-            QFileInfo fi(packagepath, file);
-            if( fi.exists() )
-                setFile( fi.absoluteFilePath() );
+            foreach (const QString& packagepath, d->searchpath) {
+                QFileInfo fi(QDir(packagepath), file);
+                if( fi.exists() ) {
+                    setFile( fi.absoluteFilePath() );
+                    d->setactivesearchpath(packagepath);
+                    break;
+                }
+            }
         }
     }
 
@@ -217,7 +242,15 @@ QDomElement Action::toDomElement() const
         e.setAttribute("interpreter", interpreter());
 
     if( ! file().isNull() ) {
-        e.setAttribute("file", file());
+        e.setAttribute("file", QDir(d->activesearchpath()).relativeFilePath(file()));
+    }
+    
+    QList<QByteArray> props=dynamicPropertyNames();
+    foreach(const QByteArray& prop, props) {
+        QDomElement p = doc.createElement("property");
+        p.setAttribute("name", QString::fromLatin1(prop));
+        p.appendChild(doc.createTextNode(property(prop.constData()).toString()));
+        e.appendChild(p);
     }
     /*
     else if( ! code().isNull() ) {
@@ -326,11 +359,10 @@ bool Action::setFile(const QString& scriptfile)
             if( ! d->scriptfile.isNull() )
                 d->interpretername.clear();
             d->scriptfile.clear();
-            d->currentpath.clear();
+            d->searchpath.clear();
         }
         else {
             d->scriptfile = scriptfile;
-            d->currentpath = QFileInfo(scriptfile).absolutePath();
             d->interpretername = Manager::self().interpreternameForFile(scriptfile);
             if( d->interpretername.isNull() )
                 return false;
@@ -341,7 +373,7 @@ bool Action::setFile(const QString& scriptfile)
 
 QString Action::currentPath() const
 {
-    return d->currentpath;
+    return file().isEmpty()?QString():QFileInfo(file()).absolutePath();//obey Qt docs and don't cheat
 }
 
 QVariantMap Action::options() const

@@ -45,8 +45,9 @@ struct Object
 class ScriptingPlugin::ScriptingPluginPrivate
 {
 public:
-    QString userActionsFile;
     QString collectionName;
+    QString userActionsFile;
+    QString referenceActionsDir;
     QHash<QString, Object> objects;
 
     QDomElement menuFromName(QString const& name, const QDomDocument& document)
@@ -70,16 +71,20 @@ ScriptingPlugin::ScriptingPlugin(QObject* parent)
     d->collectionName="scripting-plugin";
 }
 
-ScriptingPlugin::ScriptingPlugin(const QString& userActionsFile, const QString& collectionName, QObject* parent)
+ScriptingPlugin::ScriptingPlugin(const QString& collectionName, const QString& userActionsFile, const QString& referenceActionsDir, QObject* parent)
     : KParts::Plugin(parent)
     , d(new ScriptingPluginPrivate())
 {
-    d->userActionsFile = userActionsFile;
     d->collectionName=collectionName;
+    d->userActionsFile = userActionsFile;
+    d->referenceActionsDir = referenceActionsDir;
 }
 
 ScriptingPlugin::~ScriptingPlugin()
 {
+    if (QFile::exists(d->userActionsFile))
+        save();
+
     Kross::ActionCollection* collection=Kross::Manager::self().actionCollection()->collection(d->collectionName);
     if (collection) {
         collection->setParentCollection(0);
@@ -113,15 +118,24 @@ QDomDocument ScriptingPlugin::buildDomDocument(const QDomDocument& document)
     if (!collection) {
         collection=new Kross::ActionCollection(d->collectionName, Kross::Manager::self().actionCollection());
     }
-    
-    if(KIO::NetAccess::exists(KUrl(d->userActionsFile), KIO::NetAccess::SourceSide, 0)) {
-        collection->readXmlFile(d->userActionsFile);
-    }
-    else {
-        QStringList allActionFiles = KGlobal::dirs()->findAllResources("appdata", "scripts/*.rc");
-        foreach(const QString &f, allActionFiles) {
-            collection->readXmlFile(f);
-        }
+
+    QStringList allActionFiles = KGlobal::dirs()->findAllResources("appdata", "scripts/"+d->referenceActionsDir+"/*.rc");
+    //move userActionsFile to the end so that it updates existing actions and adds new ones.
+    int pos=allActionFiles.indexOf(d->userActionsFile);
+    if (pos!=-1)
+        allActionFiles.append(allActionFiles.takeAt(pos));
+    else if (QFile::exists(d->userActionsFile)) //in case d->userActionsFile isn't in the standard local dir
+        allActionFiles.append(d->userActionsFile);
+
+    QStringList searchPath=KGlobal::dirs()->findDirs("appdata", "scripts/"+d->referenceActionsDir);
+    foreach(const QString &file, allActionFiles) {
+        QFile f(file);
+        if (!f.open(QIODevice::ReadOnly))
+            continue;
+
+        collection->readXml(&f, searchPath+QStringList(QFileInfo(f).absolutePath()));
+        f.close();
+
     }
 
     QDomDocument doc(document);
@@ -186,52 +200,59 @@ void ScriptingPlugin::buildDomDocument(QDomDocument& document,
     }
 }
 
+void ScriptingPlugin::save()
+{
+    QFile f(d->userActionsFile);
+    if(!f.open(QIODevice::WriteOnly))
+        return;
+
+    Kross::ActionCollection* collection=Kross::Manager::self().actionCollection()->collection(d->collectionName);
+    bool collectionEmpty = !collection||(collection->actions().empty()&&collection->collections().empty());
+
+    if( !collectionEmpty ) {
+        if( collection->writeXml(&f) ) {
+            kDebug() << "Successfully saved file: " << d->userActionsFile;
+        }
+    }
+    else {
+        QTextStream out(&f);
+        QString xml=
+        "<!-- "
+        "\n"
+        "Collection name attribute represents the name of the menu, e.g., to use menu \"File\" use \"file\" or \"Help\" use \"help\". You can add new menus."
+        "\n\n\n"
+        "If you type a relative script file beware the this script is located in  $KDEHOME/share/apps/applicationname/"
+        "\n\n"
+        "The following example adds an action with the text \"Export...\" into the \"File\" menu"
+        "\n\n"
+        "<KrossScripting>"
+        "\n"
+        "<collection name=\"file\" text=\"File\" comment=\"File menu\">"
+        "\n"
+        "<script name=\"export\" text=\"Export...\" comment=\"Export content\" file=\"export.py\" />"
+        "\n"
+        "</collection>"
+        "\n"
+        "</KrossScripting>"
+        "\n"
+        "-->";
+
+
+        out << xml;
+    }
+    f.close();
+}
+
 void ScriptingPlugin::slotEditScriptActions()
 {
     if(!KIO::NetAccess::exists(KUrl(d->userActionsFile), KIO::NetAccess::SourceSide, 0)) {
         KUrl dir = KUrl(d->userActionsFile).directory();
         KIO::NetAccess::mkdir(dir, 0);
 
-        QFile f(d->userActionsFile);
-        if(f.open(QIODevice::WriteOnly)) {
-
-            Kross::ActionCollection* collection=Kross::Manager::self().actionCollection()->collection(d->collectionName);
-            bool collectionEmpty = !collection||collection->actions().empty()||collection->collections().empty();
-
-            if( !collectionEmpty ) {
-                if( collection->writeXml(&f) ) {
-                    kDebug() << "Successfully saved file: " << d->userActionsFile;
-                }
-            }
-            else {
-                QTextStream out(&f);
-                QString xml=
-                "<!-- "
-                "\n"
-                "Collection name attribute represents the name of the menu, e.g., to use menu \"File\" use \"file\" or \"Help\" use \"help\". One can add new menus also."
-                "\n\n\n"
-                "If you type a relative script file beware the this script is located in  $KDEHOME/share/apps/applicationname/"
-                "\n\n"
-                "The following example add an action with the text \"Export...\" into the \"File\" menu"
-                "\n"
-                "-->"
-                "\n\n"
-                "<KrossScripting>"
-                "\n"
-                "<collection name=\"file\" text=\"File\" comment=\"File menu\">"
-                "\n"
-                "<script name=\"export\" text=\"Export...\" comment=\"Export content\" file=\"export.py\" />"
-                "\n"
-                "</collection>"
-                "\n"
-                "</KrossScripting>";
-
-                out << xml;
-            }
-        }
-        f.close();
+        save();
     }
 
+    //TODO very funny! this should use ui/view.h instead --Nick
     KRun::runUrl(KUrl(d->userActionsFile), QString("text/plain"), 0, false);
 }
 
