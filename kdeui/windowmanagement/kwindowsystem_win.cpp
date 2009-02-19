@@ -148,6 +148,9 @@ static QPixmap HIcon2QPixmap( HICON hIcon )
     QPixmap pix  = QPixmap::fromWinHBITMAP( ii.hbmColor );
     pix.setMask( QPixmap::fromWinHBITMAP( ii.hbmMask ) );
 
+    DeleteObject( ii.hbmMask );
+    DeleteObject( ii.hbmColor );
+
     return pix;
 }
 
