@@ -48,10 +48,15 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
     // Make sure kded is running
     QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
     if (!bus->isServiceRegistered("org.kde.kglobalaccel")) {
-#if 0
-        KToolInvocation::klauncher(); // this calls startKdeinit
-        qWarning() << "no way to start kglobalaccel currently";
-#endif
+        QString error;
+        int ret = KToolInvocation::startServiceByDesktopPath(
+                "kglobalaccel.desktop",
+                QStringList(),
+                &error);
+
+        if (ret > 0) {
+            kError() << "Couldn't start kglobalaccel from kglobalaccel.desktop: " << error << endl;
+        }
     }
     QObject::connect(bus, SIGNAL(serviceOwnerChanged(QString, QString, QString)),
                      q, SLOT(_k_serviceOwnerChanged(QString, QString, QString)));
