@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
    Copyright (c) 1997,2001 Stephan Kulow <coolo@kde.org>
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
@@ -1601,148 +1600,140 @@ QDate KLocale::readDate(const QString &intstr, ReadDateFlags flags, bool* ok) co
 
 QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) const
 {
-  //kDebug(173) << "KLocale::readDate intstr=" << intstr << " fmt=" << fmt;
-  QString str = intstr.simplified().toLower();
-  int day = -1, month = -1;
-  // allow the year to be omitted if not in the format
-  int year = calendar()->year(QDate::currentDate());
-  int strpos = 0;
-  int fmtpos = 0;
+    //kDebug(173) << "KLocale::readDate intstr=" << intstr << " fmt=" << fmt;
+    QString str = intstr.simplified().toLower();
+    int day = -1, month = -1;
+    // allow the year to be omitted if not in the format
+    int year = calendar()->year(QDate::currentDate());
+    int strpos = 0;
+    int fmtpos = 0;
 
-  int iLength; // Temporary variable used when reading input
+    int iLength; // Temporary variable used when reading input
 
-  bool error = false;
+    bool error = false;
 
-  while (fmt.length() > fmtpos && str.length() > strpos && !error)
-  {
+    while (fmt.length() > fmtpos && str.length() > strpos && !error) {
 
-    QChar c = fmt.at(fmtpos++);
+        QChar c = fmt.at(fmtpos++);
+        if (c != '%') {
+            if (c.isSpace() && str.at(strpos).isSpace())
+                strpos++;
+            else if (c != str.at(strpos++))
+                error = true;
+        } else {
+            int j;
+            // remove space at the beginning
+            if (str.length() > strpos && str.at(strpos).isSpace())
+                strpos++;
 
-    if (c != '%') {
-      if (c.isSpace() && str.at(strpos).isSpace())
-        strpos++;
-      else if (c != str.at(strpos++))
-        error = true;
+            c = fmt.at(fmtpos++);
+            switch (c.unicode())
+            {
+            case 'a':
+            case 'A':
+                error = true;
+                j = 1;
+                while (error && (j < 8)) {
+                    QString s;
+                    if ( c == 'a') {
+                        s = calendar()->weekDayName(j, KCalendarSystem::ShortDayName).toLower();
+                    } else {
+                        s = calendar()->weekDayName(j, KCalendarSystem::LongDayName).toLower();
+                    }
+                    int len = s.length();
+                    if (str.mid(strpos, len) == s)
+                    {
+                        strpos += len;
+                        error = false;
+                    }
+                    j++;
+                }
+                break;
+            case 'b':
+            case 'B':
+                error = true;
+                if (d->dateMonthNamePossessive) {
+                    j = 1;
+                    while (error && (j < 13)) {
+                        QString s;
+                        if ( c == 'b' ) {
+                            s = calendar()->monthName(j, year, KCalendarSystem::ShortNamePossessive).toLower();
+                        } else {
+                            s = calendar()->monthName(j, year, KCalendarSystem::LongNamePossessive).toLower();
+                        }
+                        int len = s.length();
+                        if (str.mid(strpos, len) == s) {
+                            month = j;
+                            strpos += len;
+                            error = false;
+                        }
+                        j++;
+                    }
+                }
+                j = 1;
+                while (error && (j < 13)) {
+                    QString s;
+                    if ( c == 'b' ) {
+                        s = calendar()->monthName(j, year, KCalendarSystem::ShortName).toLower();
+                    } else {
+                        s = calendar()->monthName(j, year, KCalendarSystem::LongName).toLower();
+                    }
+                    int len = s.length();
+                    if (str.mid(strpos, len) == s) {
+                        month = j;
+                        strpos += len;
+                        error = false;
+                    }
+                    j++;
+                }
+                break;
+            case 'd':
+            case 'e':
+                day = calendar()->dayStringToInteger(str.mid(strpos), iLength);
+                strpos += iLength;
+
+                error = iLength <= 0;
+                break;
+
+            case 'n':
+            case 'm':
+                month = calendar()->monthStringToInteger(str.mid(strpos), iLength);
+                strpos += iLength;
+
+                error = iLength <= 0;
+                break;
+
+            case 'Y':
+            case 'y':
+                year = calendar()->yearStringToInteger(str.mid(strpos), iLength);
+                strpos += iLength;
+                if (c == 'y' && year < 100)
+                    year += 2000; // QDate assumes 19xx by default, but this isn't what users want...
+
+                error = iLength <= 0;
+                break;
+            }
+        }
     }
-    else
-    {
-      int j;
-      // remove space at the beginning
-      if (str.length() > strpos && str.at(strpos).isSpace())
-        strpos++;
-
-      c = fmt.at(fmtpos++);
-      switch (c.unicode())
-          {
-    case 'a':
-    case 'A':
-
-            error = true;
-      j = 1;
-      while (error && (j < 8)) {
-        QString s;
-        if ( c == 'a') {
-            s = calendar()->weekDayName(j, KCalendarSystem::ShortDayName).toLower();
-        } else {
-            s = calendar()->weekDayName(j, KCalendarSystem::LongDayName).toLower();
-        }
-        int len = s.length();
-        if (str.mid(strpos, len) == s)
-              {
-          strpos += len;
-                error = false;
-              }
-        j++;
-      }
-      break;
-    case 'b':
-    case 'B':
-
-      error = true;
-      if (d->dateMonthNamePossessive) {
-        j = 1;
-        while (error && (j < 13)) {
-          QString s;
-          if ( c == 'b' ) {
-              s = calendar()->monthName(j, year, KCalendarSystem::ShortNamePossessive).toLower();
-          } else {
-              s = calendar()->monthName(j, year, KCalendarSystem::LongNamePossessive).toLower();
-          }
-          int len = s.length();
-          if (str.mid(strpos, len) == s) {
-              month = j;
-              strpos += len;
-              error = false;
-          }
-          j++;
-        }
-      }
-      j = 1;
-      while (error && (j < 13)) {
-        QString s;
-        if ( c == 'b' ) {
-            s = calendar()->monthName(j, year, KCalendarSystem::ShortName).toLower();
-        } else {
-            s = calendar()->monthName(j, year, KCalendarSystem::LongName).toLower();
-        }
-        int len = s.length();
-        if (str.mid(strpos, len) == s) {
-            month = j;
-            strpos += len;
-            error = false;
-        }
-        j++;
-      }
-      break;
-    case 'd':
-    case 'e':
-      day = calendar()->dayStringToInteger(str.mid(strpos), iLength);
-      strpos += iLength;
-
-      error = iLength <= 0;
-      break;
-
-    case 'n':
-    case 'm':
-      month = calendar()->monthStringToInteger(str.mid(strpos), iLength);
-      strpos += iLength;
-
-      error = iLength <= 0;
-      break;
-
-    case 'Y':
-    case 'y':
-      year = calendar()->yearStringToInteger(str.mid(strpos), iLength);
-      strpos += iLength;
-      if (c == 'y' && year < 100)
-        year += 2000; // QDate assumes 19xx by default, but this isn't what users want...
-
-      error = iLength <= 0;
-      break;
-        }
-      }
-  }
 
     /* for a match, we should reach the end of both strings, not just one of
        them */
-    if ( fmt.length() > fmtpos || str.length() > strpos )
-    {
-      error = true;
+    if (fmt.length() > fmtpos || str.length() > strpos) {
+        error = true;
     }
 
     //kDebug(173) << "KLocale::readDate day=" << day << " month=" << month << " year=" << year;
-    if ( year != -1 && month != -1 && day != -1 && !error)
-    {
-      if (ok) *ok = true;
+    if (year != -1 && month != -1 && day != -1 && !error) {
+        if (ok) *ok = true;
 
-      QDate result;
-      calendar()->setYMD(result, year, month, day);
+        QDate result;
+        calendar()->setYMD(result, year, month, day);
 
-      return result;
+        return result;
     }
 
-  if (ok) *ok = false;
-  return QDate(); // invalid date
+    if (ok) *ok = false;
+    return QDate(); // invalid date
 }
 
 QTime KLocale::readTime(const QString &intstr, bool *ok) const
@@ -1758,7 +1749,7 @@ QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) co
     QString str = intstr.simplified().toLower();
     QString Format = timeFormat().simplified();
     if (flags & WithoutSeconds)
-      Format.remove(QRegExp(".%S"));
+        Format.remove(QRegExp(".%S"));
 
     int hour = -1, minute = -1;
     int second = ( (flags & WithoutSeconds) == 0 ) ? -1 : 0; // don't require seconds
@@ -1767,96 +1758,89 @@ QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) co
     int strpos = 0;
     int Formatpos = 0;
 
-  while (Format.length() > Formatpos || str.length() > strpos)
-    {
-      if ( !(Format.length() > Formatpos && str.length() > strpos) ) goto error;
+    while (Format.length() > Formatpos || str.length() > strpos) {
+        if ( !(Format.length() > Formatpos && str.length() > strpos) )
+            goto error;
 
-      QChar c = Format.at(Formatpos++);
+        QChar c = Format.at(Formatpos++);
 
-      if (c != '%')
-	{
-	  if (c.isSpace())
-	    strpos++;
-	  else if (c != str.at(strpos++))
-	    goto error;
-	  continue;
+        if (c != '%') {
+            if (c.isSpace())
+                strpos++;
+            else if (c != str.at(strpos++))
+                goto error;
+            continue;
 	}
 
-      // remove space at the beginning
-      if (str.length() > strpos && str.at(strpos).isSpace())
-	strpos++;
+        // remove space at the beginning
+        if (str.length() > strpos && str.at(strpos).isSpace())
+            strpos++;
 
-      c = Format.at(Formatpos++);
-      switch (c.unicode())
-	{
+        c = Format.at(Formatpos++);
+        switch (c.unicode()) {
 	case 'p':
-	  {
-	    QString s;
-	    s = i18n("pm").toLower();
+        {
+	    QString s = i18n("pm").toLower();
 	    int len = s.length();
-	    if (str.mid(strpos, len) == s)
-	      {
+	    if (str.mid(strpos, len) == s) {
 		pm = true;
 		strpos += len;
-	      }
-	    else
-	      {
+            } else {
 		s = i18n("am").toLower();
 		len = s.length();
 		if (str.mid(strpos, len) == s) {
-		  pm = false;
-		  strpos += len;
-		}
-		else
-		  goto error;
-	      }
-	  }
-	  break;
+                    pm = false;
+                    strpos += len;
+		} else
+                    goto error;
+            }
+        }
+        break;
 
 	case 'k':
 	case 'H':
-	  g_12h = false;
-	  hour = readInt(str, strpos);
-	  if (hour < 0 || hour > 23)
-	    goto error;
+            g_12h = false;
+            hour = readInt(str, strpos);
+            if (hour < 0 || hour > 23)
+                goto error;
 
-	  break;
+            break;
 
 	case 'l':
 	case 'I':
-	  g_12h = true;
-	  hour = readInt(str, strpos);
-	  if (hour < 1 || hour > 12)
-	    goto error;
+            g_12h = true;
+            hour = readInt(str, strpos);
+            if (hour < 1 || hour > 12)
+                goto error;
 
-	  break;
+            break;
 
 	case 'M':
-	  minute = readInt(str, strpos);
-	  if (minute < 0 || minute > 59)
-	    goto error;
+            minute = readInt(str, strpos);
+            if (minute < 0 || minute > 59)
+                goto error;
 
-	  break;
+            break;
 
 	case 'S':
-	  second = readInt(str, strpos);
-	  if (second < 0 || second > 59)
-	    goto error;
+            second = readInt(str, strpos);
+            if (second < 0 || second > 59)
+                goto error;
 
-	  break;
+            break;
 	}
     }
-  if (g_12h) {
-    hour %= 12;
-    if (pm) hour += 12;
-  }
+    if (g_12h) {
+        hour %= 12;
+        if (pm) hour += 12;
+    }
 
-  if (ok) *ok = true;
-  return QTime(hour, minute, second);
+    if (ok) *ok = true;
+    return QTime(hour, minute, second);
 
- error:
-  if (ok) *ok = false;
-  return QTime(); // return invalid date if it didn't work
+error:
+    if (ok) *ok = false;
+    return QTime(); // return invalid date if it didn't work
 }
 
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuration) const
