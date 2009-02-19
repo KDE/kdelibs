@@ -1658,7 +1658,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
     case 'b':
     case 'B':
 
-            error = true;
+      error = true;
       if (d->dateMonthNamePossessive) {
         j = 1;
         while (error && (j < 13)) {
@@ -1670,9 +1670,9 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
           }
           int len = s.length();
           if (str.mid(strpos, len) == s) {
-            month = j;
-            strpos += len;
-                  error = false;
+              month = j;
+              strpos += len;
+              error = false;
           }
           j++;
         }
@@ -1687,9 +1687,9 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
         }
         int len = s.length();
         if (str.mid(strpos, len) == s) {
-          month = j;
-          strpos += len;
-                error = false;
+            month = j;
+            strpos += len;
+            error = false;
         }
         j++;
       }
@@ -1714,6 +1714,8 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
     case 'y':
       year = calendar()->yearStringToInteger(str.mid(strpos), iLength);
       strpos += iLength;
+      if (c == 'y' && year < 100)
+        year += 2000; // QDate assumes 19xx by default, but this isn't what users want...
 
       error = iLength <= 0;
       break;

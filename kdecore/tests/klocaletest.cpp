@@ -35,7 +35,7 @@ void
 KLocaleTest::initTestCase()
 {
     KGlobal::setLocale(new KLocale(QString(), QLatin1String("en_US"), QLatin1String("C")));
-	KGlobal::locale()->setThousandsSeparator(QLatin1String(","));
+    KGlobal::locale()->setThousandsSeparator(QLatin1String(","));
 }
 
 void
@@ -161,7 +161,11 @@ KLocaleTest::readDate()
 	locale.readDate(date.toString(full), KLocale::ShortFormat, &ok);
 	QVERIFY(!ok);
 
-	date = QDate::currentDate();
+        QString twoDigitYear("dd-MM-yy");
+        QCOMPARE(date.toString(twoDigitYear), QString("03-05-02"));
+        QCOMPARE(locale.readDate("03-05-02", "%d-%m-%y"), date);
+
+        date = QDate::currentDate();
 	QCOMPARE(locale.readDate(date.toString(small)), date);
 	QCOMPARE(locale.readDate(date.toString(full)), date);
 	locale.readDate(date.toString(small), KLocale::NormalFormat, &ok);

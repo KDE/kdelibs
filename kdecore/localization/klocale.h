@@ -430,9 +430,9 @@ public:
 
   /**
    * Given a number of milliseconds, converts that to a pretty string containing
-   * the localized equivalent. 
+   * the localized equivalent.
    *
-   * e.g. given prettyFormatDuration(60001) returns "1 minute" 
+   * e.g. given prettyFormatDuration(60001) returns "1 minute"
    *      given prettyFormatDuration(62005) returns "1 minute and 2 seconds"
    *      given prettyFormatDuration(90060000) returns "1 day and 1 hour"
    *
@@ -784,12 +784,12 @@ public:
    *
    * The format of the date is a string which contains variables that will
    * be replaced:
-   * @li %Y with the whole year (e.g. "1984" for "1984")
-   * @li %y with the lower 2 digits of the year (e.g. "84" for "1984")
+   * @li %Y with the whole year (e.g. "2004" for "2004")
+   * @li %y with the lower 2 digits of the year (e.g. "04" for "2004")
    * @li %n with the month (January="1", December="12")
    * @li %m with the month with two digits (January="01", December="12")
    * @li %e with the day of the month (e.g. "1" on the first of march)
-   * @li %d with the day of the month with two digits(e.g. "01" on the first of march)
+   * @li %d with the day of the month with two digits (e.g. "01" on the first of march)
    * @li %b with the short form of the month (e.g. "Jan" for January)
    * @li %B with the long form of the month (e.g. "January")
    * @li %a with the short form of the weekday (e.g. "Wed" for Wednesday)
@@ -1205,7 +1205,7 @@ public:
    * @return @c true on success, @c false on failure
    */
   bool setCountry(const QString & country, KConfig *config);
- 
+
   /**
    * Changes the current language. The current language will be left
    * unchanged if failed. It will force a reload of the country specific
