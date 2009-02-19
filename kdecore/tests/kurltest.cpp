@@ -1299,6 +1299,7 @@ void KUrlTest::testStreaming()
 {
   // Streaming operators
   KUrl origURL( "http://www.website.com/directory/?#ref" );
+  KUrl accentuated(QString::fromUtf8("trash:/été"));
   KUrl empty( "" );
   KUrl invalid( "ptal://mlc:usb" );
   QVERIFY( !invalid.isValid() );
@@ -1307,6 +1308,7 @@ void KUrlTest::testStreaming()
   {
       QDataStream stream( &buffer, QIODevice::WriteOnly );
       stream << origURL
+             << accentuated
              << empty
              << invalid
              << waba1; // the IPv6 one
@@ -1316,6 +1318,8 @@ void KUrlTest::testStreaming()
       KUrl restoredURL;
       stream >> restoredURL; // streaming valid url
       QCOMPARE( restoredURL.url(), origURL.url() );
+      stream >> restoredURL; // streaming valid url with accents
+      QCOMPARE( restoredURL.url(), accentuated.url() );
       stream >> restoredURL; // streaming empty url
       QVERIFY( !restoredURL.isValid() );
       QVERIFY( restoredURL.isEmpty() );
