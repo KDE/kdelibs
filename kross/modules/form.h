@@ -215,11 +215,7 @@ namespace Kross {
      * \code
      * import Kross
      * import sys,os
-     * ourPath=''
-     * for p in sys.path:
-     *     if os.path.exists(p+'/mywidget.ui'):
-     *         ourPath=p
-     *         break
+     * ourPath=(filter(lambda p: os.path.exists(p+'/mywidget.ui'),sys.path)+[''])[0]
      * forms = Kross.module("forms")
      * mydialog = forms.createDialog("MyDialog")
      * mydialog.setButtons("Ok|Cancel")
@@ -360,11 +356,7 @@ namespace Kross {
      * \code
      * import Kross
      * import sys,os
-     * ourPath=''
-     * for p in sys.path:
-     *     if os.path.exists(p+'/mywidget.ui'):
-     *         ourPath=p
-     *         break
+     * ourPath=(filter(lambda p: os.path.exists(p+'/mywidget.ui'),sys.path)+[''])[0]
      * forms = Kross.module("forms")
      * myassistant = forms.createAssistant("MyAssistant")
      * myassistant.showHelpButton(0)
