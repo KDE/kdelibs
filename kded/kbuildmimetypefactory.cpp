@@ -111,18 +111,22 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
     if (name.isEmpty())
         return 0;
 
+    QString userIcon;
     QString comment;
     QMap<QString, QString> commentsByLanguage;
     for ( QDomElement e = mimeTypeElement.firstChildElement();
           !e.isNull();
           e = e.nextSiblingElement() ) {
-        if(e.tagName() == "comment") {
+        const QString tag = e.tagName();
+        if (tag == "comment") {
             const QString lang = e.attribute("xml:lang");
             if (lang.isEmpty())
                 comment = e.text();
             else
                 commentsByLanguage.insert(lang, e.text());
-        } // TODO handle "icon" and "generic-icon"
+        } else if (tag == "icon") { // as written out by shared-mime-info >= 0.40
+            userIcon = e.attribute("name");
+        }
     }
     if (comment.isEmpty()) {
         kWarning() << "Missing <comment> field in " << fullPath;
@@ -156,6 +160,10 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
         return 0;
     }
 
+    if (!userIcon.isEmpty()) {
+        e->setUserSpecifiedIcon(userIcon);
+    }
+
     return e;
 }
 
@@ -177,10 +185,10 @@ void KBuildMimeTypeFactory::saveHeader(QDataStream &str)
 void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
 {
     QFile qfile( fileName );
-    kDebug(7021) << "Now parsing" << fileName;
+    //kDebug(7021) << "Now parsing" << fileName;
     if (qfile.open(QIODevice::ReadOnly)) {
         QTextStream stream(&qfile);
-        stream.setCodec("UTF-8");
+        stream.setCodec("ISO 8859-1");
         while (!stream.atEnd()) {
             const QString line = stream.readLine();
             if (line.isEmpty() || line[0] == '#')
@@ -204,10 +212,10 @@ void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
 void KBuildMimeTypeFactory::parseAliasFile(const QString& fileName)
 {
     QFile qfile( fileName );
-    kDebug(7021) << "Now parsing" << fileName;
+    //kDebug(7021) << "Now parsing" << fileName;
     if (qfile.open(QIODevice::ReadOnly)) {
         QTextStream stream(&qfile);
-        stream.setCodec("UTF-8");
+        stream.setCodec("ISO 8859-1");
         while (!stream.atEnd()) {
             const QString line = stream.readLine();
             if (line.isEmpty() || line[0] == '#')

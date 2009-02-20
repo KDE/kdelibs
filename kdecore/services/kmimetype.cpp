@@ -62,7 +62,7 @@ static void errorMissingMimeTypes( const QStringList& _types )
 void KMimeTypePrivate::loadInternal( QDataStream& _str )
 {
     QString oldParentMimeTypeString;
-    _str >> m_lstPatterns >> oldParentMimeTypeString >> m_parentMimeTypes;
+    _str >> m_lstPatterns >> oldParentMimeTypeString >> m_parentMimeTypes >> m_iconName;
 
     // kde-4.0 compatibility. Remove in kde5.
     if (!oldParentMimeTypeString.isEmpty() && m_parentMimeTypes.isEmpty())
@@ -492,7 +492,7 @@ void KMimeTypePrivate::save( QDataStream& _str )
     KServiceTypePrivate::save( _str );
     // Warning adding/removing fields here involves a binary incompatible change - update version
     // number in ksycoca.h
-    _str << m_lstPatterns << QString() << m_parentMimeTypes;
+    _str << m_lstPatterns << QString() << m_parentMimeTypes << m_iconName;
 }
 
 QVariant KMimeTypePrivate::property( const QString& _name ) const
@@ -705,4 +705,16 @@ void KMimeType::internalClearData()
     // Clear the data that KBuildMimeTypeFactory is going to refill - and only that data.
     d->m_parentMimeTypes.clear();
     d->m_lstPatterns.clear();
+}
+
+void KMimeType::setUserSpecifiedIcon(const QString& icon)
+{
+    Q_D(KMimeType);
+    d->m_iconName = icon;
+}
+
+QString KMimeType::userSpecifiedIconName() const
+{
+    Q_D(const KMimeType);
+    return d->m_iconName;
 }

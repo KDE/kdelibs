@@ -39,25 +39,34 @@ public:
 
   virtual QStringList propertyNames() const;
 
-  virtual QString iconName(const KUrl &) const
-  {
-    QString icon = name();
-    int slashindex = icon.indexOf( QLatin1Char( '/' ) );
-    if ( slashindex != -1 ) {
-        icon[ slashindex ] = QLatin1Char( '-' );
+    // virtual because reimplemented in KFolderMimeType
+    virtual QString iconName(const KUrl &) const
+    {
+        if (!m_iconName.isEmpty())
+            return m_iconName;
+
+        // Make default icon name from the mimetype name
+        // Don't store this in m_iconName, it would make the filetype editor
+        // write out icon names in every local mimetype definition file.
+        QString icon = name();
+        const int slashindex = icon.indexOf(QLatin1Char('/'));
+        if (slashindex != -1) {
+            icon[slashindex] = QLatin1Char('-');
+        }
+        return icon;
     }
-    return icon;
-  }
 
     bool inherits(const QString& mime) const;
     QString fallbackParent() const;
     QStringList parentMimeTypes() const;
     void collectParentMimeTypes(QStringList&) const;
 
-  QStringList m_lstPatterns;
-  QStringList m_parentMimeTypes; // shared-mime-info supports multiple inheritance
+    QStringList m_lstPatterns;
+    QStringList m_parentMimeTypes; // shared-mime-info supports multiple inheritance
+    QString m_iconName; // user-specified
+    // For any new field here, add it to loadInternal() and save(), for persistence.
 
-  void loadInternal( QDataStream& _str );
+    void loadInternal(QDataStream& _str);
 };
 
 #endif // __kmimetype_p_h__

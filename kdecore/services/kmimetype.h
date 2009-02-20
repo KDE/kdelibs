@@ -56,10 +56,10 @@ public:
      * Return the filename of the icon associated with the mimetype.
      * Use KIconLoader::loadMimeTypeIcon to load the icon.
      *
-     * The url argument is unused, but is provided so that KMimeType-derived classes
-     * can use it (e.g. KFolderType uses the URL to return one out of 2 icons)
+     * @param url argument only used for directories, where the icon
+     * can be specified in the .directory file.
      *
-     * @return The path to the icon associated with this MIME type.
+     * @return The name of the icon associated with this MIME type.
      */
     QString iconName( const KUrl &url = KUrl()) const;
 
@@ -333,6 +333,13 @@ public:
     bool is( const QString& mimeTypeName ) const;
 
     /**
+     * Returns the user-specified icon for this mimetype. This is empty most of the time,
+     * you probably want to use iconName() instead. This method is for the mimetype editor.
+     * @since 4.3
+     */
+    QString userSpecifiedIconName() const;
+
+    /**
      * Determines the extension from a filename (or full path) using the mimetype database.
      * This allows to extract "tar.bz2" for foo.tar.bz2
      * but still return "txt" for my.doc.with.dots.txt
@@ -342,7 +349,7 @@ public:
 protected:
 
     friend class KMimeTypeFactory; // for KMimeType(QDataStream&,int)
-    friend class KBuildMimeTypeFactory; // for KMimeType(QDataStream&,int)
+    friend class KBuildMimeTypeFactory; // for KMimeType(QDataStream&,int), setUserSpecifiedIcon etc.
     friend class KMimeFileParser; // for addPattern and addMagicRule
 
     /**
@@ -378,15 +385,15 @@ protected:
      */
     KMimeType( KMimeTypePrivate &dd, const QString& name, const QString& comment );
 
-    /// @internal for kbuildsycoca. Don't ever use this, or else...
-    void setPatterns(const QStringList& patterns);
-    /// @internal for kbuildsycoca. Don't ever use this, or else...
-    void setParentMimeType(const QString& parent);
-    /// @internal for kbuildsycoca. Don't ever use this, or else...
-    void internalClearData();
-
 private:
-
+    /// @internal for kbuildsycoca
+    void setPatterns(const QStringList& patterns);
+    /// @internal for kbuildsycoca
+    void setParentMimeType(const QString& parent);
+    /// @internal for kbuildsycoca
+    void internalClearData();
+    /// @internal for kbuildsycoca
+    void setUserSpecifiedIcon(const QString& icon);
     void loadInternal( QDataStream& _str);
     static void buildDefaultType();
     static void checkEssentialMimeTypes();

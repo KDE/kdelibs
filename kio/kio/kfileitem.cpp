@@ -777,6 +777,9 @@ QString KFileItem::iconName() const
         }
     }
 
+    // KDE5: handle .directory files here too, and get rid of
+    // KFolderMimeType and the url argument in KMimeType::iconName().
+
     d->m_iconName = mime->iconName(url);
     d->m_useIconNameCache = d->m_bMimeTypeKnown;
     //kDebug() << "finding icon for" << url << ":" << d->m_iconName;
@@ -819,6 +822,7 @@ QStringList KFileItem::overlays() const
     return names;
 }
 
+// ## where is this used?
 QPixmap KFileItem::pixmap( int _size, int _state ) const
 {
     const QString iconName = d->m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME );
