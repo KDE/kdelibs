@@ -53,7 +53,7 @@ private Q_SLOTS:
         QEXPECT_FAIL("", "Qt Bug 205255 - QKeySequence silently discards unknown key modifiers", Continue);
         QVERIFY(seq.isEmpty());
         // And what really happens
-        QCOMPARE(seq.toString(), QLatin1String("e"));
+        QCOMPARE(seq.toString(), QLatin1String("E"));
 
         // KDE3 -> KDE4 migration. KDE3 used xKeycodeToKeysym or something and
         // stored the result
