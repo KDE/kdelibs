@@ -78,7 +78,8 @@ public:
 
      /**
       * Automatically remove a lock when a lock is detected that is stale
-      * for more than staleTime() seconds.
+      * for more than staleTime() seconds, or if the process that created it
+      * is not running anymore.
       */
      ForceFlag = 2
    };

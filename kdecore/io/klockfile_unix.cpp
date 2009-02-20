@@ -275,53 +275,12 @@ KLockFile::LockResult KLockFile::lock(LockFlags options)
            break;
         }
      }
-     else // KLockFile::Fail
+     else // KLockFile::Fail -- there is already such a file present (e.g. left by a crashed app)
      {
         if (!d->staleTimer.isNull() && d->statBuf != st_buf)
            d->staleTimer = QTime();
 
-        if (!d->staleTimer.isNull())
-        {
-           bool isStale = false;
-           if ((d->pid > 0) && !d->hostname.isEmpty())
-           {
-              // Check if hostname is us
-              char hostname[256];
-              hostname[0] = 0;
-              gethostname(hostname, 255);
-              hostname[255] = 0;
-
-              if (d->hostname == QLatin1String(hostname))
-              {
-                 // Check if pid still exists
-                 int res = ::kill(d->pid, 0);
-                 if ((res == -1) && (errno == ESRCH))
-                    isStale = true;
-              }
-           }
-           if (d->staleTimer.elapsed() > (d->staleTime*1000))
-              isStale = true;
-
-           if (isStale)
-           {
-              if ((options & ForceFlag) == 0)
-                 return KLockFile::LockStale;
-
-              result = deleteStaleLock(d->file, d->statBuf, d->linkCountSupport, d->componentData);
-
-              if (result == KLockFile::LockOK)
-              {
-                 // Lock deletion successful
-                 d->staleTimer = QTime();
-                 continue; // Now try to get the new lock
-              }
-              else if (result != KLockFile::LockFail)
-              {
-                 return result;
-              }
-           }
-        }
-        else
+        if (d->staleTimer.isNull())
         {
            memcpy(&(d->statBuf), &st_buf, sizeof(KDE_struct_stat));
            d->staleTimer.start();
@@ -342,9 +301,48 @@ KLockFile::LockResult KLockFile::lock(LockFlags options)
                  d->hostname = ts.readLine();
            }
         }
+
+        bool isStale = false;
+        if ((d->pid > 0) && !d->hostname.isEmpty())
+        {
+           // Check if hostname is us
+           char hostname[256];
+           hostname[0] = 0;
+           gethostname(hostname, 255);
+           hostname[255] = 0;
+
+           if (d->hostname == QLatin1String(hostname))
+           {
+              // Check if pid still exists
+              int res = ::kill(d->pid, 0);
+              if ((res == -1) && (errno == ESRCH))
+                 isStale = true;
+           }
+        }
+        if (d->staleTimer.elapsed() > (d->staleTime*1000))
+           isStale = true;
+
+        if (isStale)
+        {
+           if ((options & ForceFlag) == 0)
+              return KLockFile::LockStale;
+
+           result = deleteStaleLock(d->file, d->statBuf, d->linkCountSupport, d->componentData);
+
+           if (result == KLockFile::LockOK)
+           {
+              // Lock deletion successful
+              d->staleTimer = QTime();
+              continue; // Now try to get the new lock
+           }
+           else if (result != KLockFile::LockFail)
+           {
+              return result;
+           }
+        }
      }
 
-     if ((options & NoBlockFlag) != 0)
+     if (options & NoBlockFlag)
         break;
 
      struct timeval tv;
