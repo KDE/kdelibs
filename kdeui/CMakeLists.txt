@@ -346,11 +346,11 @@ install(TARGETS kdeui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARG
 ########### install files ###############
 
 if (Q_WS_MAC)
-   install( FILES util/kkeyserver_mac.h DESTINATION ${INCLUDE_INSTALL_DIR} )
+   install( FILES util/kkeyserver_mac.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 elseif (Q_WS_WIN)
-    install( FILES util/kkeyserver_win.h DESTINATION ${INCLUDE_INSTALL_DIR} )
+    install( FILES util/kkeyserver_win.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 else(Q_WS_WIN)
-   install( FILES util/fixx11h.h util/kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} )
+   install( FILES util/fixx11h.h util/kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 endif (Q_WS_MAC)
 
 install( FILES
