@@ -703,15 +703,15 @@ public:
         /**
           @internal indicates that the source of the request is unknown
         **/
-        FromUnknown, // internal
+        FromUnknown = 0, // internal
         /**
            indicates that the request comes from a normal application
         **/
-        FromApplication,
+        FromApplication = 1,
         /**
            indicated that the request comes from pager or similar tool
         **/
-        FromTool
+        FromTool = 2
     };
     
     /**

@@ -502,7 +502,7 @@ void KWindowSystem::setOnDesktop( WId win, int desktop )
         x -= w / 2; // from center back to topleft
         y -= h / 2;
         p = constrainViewportRelativePosition( QPoint( x, y ));
-        int flags = ( 0x20 << 12 ) | ( 0x03 << 8 ) | 10; // from tool(?), x/y, static gravity
+        int flags = ( 0x02 << 12 ) | ( 0x03 << 8 ) | 10; // from tool(?), x/y, static gravity
         KWindowSystemPrivate* const s_d = s_d_func();
         s_d->moveResizeWindowRequest( win, flags, p.x(), p.y(), w, h );
         return;
