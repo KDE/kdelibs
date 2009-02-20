@@ -49,6 +49,7 @@
 #include <kcomponentdata.h>
 #include <ksvgrenderer.h>
 #include <kde_file.h>
+#include <kmimetype.h>
 
 #include <sys/types.h>
 #include <stdlib.h>     //for abs
@@ -175,6 +176,14 @@ public:
 
     /**
      * @internal
+     * tries to find an icon with the name.
+     * This is one layer above findMatchingIcon -- it also implements generic fallbacks
+     * such as generic icons for mimetypes.
+     */
+    K3Icon findMatchingIconWithGenericFallbacks(const QString& name, int size) const;
+
+    /**
+     * @internal
      * Adds themes installed in the application's directory.
      **/
     void addAppThemes(const QString& appname);
@@ -237,6 +246,53 @@ public:
 
     void drawOverlays(const KIconLoader *loader, KIconLoader::Group group, int state, QPixmap& pix, const QStringList& overlays);
 };
+
+class KIconLoaderGlobalData
+{
+public:
+    KIconLoaderGlobalData() {
+        const QStringList genericIconsFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "generic-icons");
+        //kDebug() << genericIconsFiles;
+        Q_FOREACH(const QString& file, genericIconsFiles) {
+            parseGenericIconsFiles(file);
+        }
+    }
+
+    QString genericIconFor(const QString& icon) const {
+        return m_genericIcons.value(icon);
+    }
+
+private:
+    void parseGenericIconsFiles(const QString& fileName);
+    QHash<QString, QString> m_genericIcons;
+};
+
+void KIconLoaderGlobalData::parseGenericIconsFiles(const QString& fileName)
+{
+    QFile file(fileName);
+    if (file.open(QIODevice::ReadOnly)) {
+        QTextStream stream(&file);
+        stream.setCodec("ISO 8859-1");
+        while (!stream.atEnd()) {
+            const QString line = stream.readLine();
+            if (line.isEmpty() || line[0] == '#')
+                continue;
+            const int pos = line.indexOf(':');
+            if (pos == -1) // syntax error
+                continue;
+            QString mimeIcon = line.left(pos);
+            const int slashindex = mimeIcon.indexOf(QLatin1Char('/'));
+            if (slashindex != -1) {
+                mimeIcon[slashindex] = QLatin1Char('-');
+            }
+
+            const QString genericIcon = line.mid(pos+1);
+            m_genericIcons.insert(mimeIcon, genericIcon);
+            //kDebug(264) << mimeIcon << "->" << genericIcon;
+        }
+    }
+}
+K_GLOBAL_STATIC(KIconLoaderGlobalData, s_globalData)
 
 void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader::Group group, int state, QPixmap& pix, const QStringList& overlays)
 {
@@ -657,6 +713,41 @@ QString KIconLoaderPrivate::removeIconExtension(const QString &name) const
 }
 
 
+K3Icon KIconLoaderPrivate::findMatchingIconWithGenericFallbacks(const QString& name, int size) const
+{
+    K3Icon icon = findMatchingIcon(name, size);
+    if (icon.isValid())
+        return icon;
+
+    const QString genericIcon = s_globalData->genericIconFor(name);
+    if (!genericIcon.isEmpty()) {
+        icon = findMatchingIcon(genericIcon, size);
+        if (icon.isValid())
+            return icon;
+    }
+
+    // From update-mime-database.c
+    static const char* media_types[] = {
+        "text", "application", "image", "audio",
+        "inode", "video", "message", "model", "multipart",
+        "x-content", "x-epoc"
+    };
+    // Shared-mime-info spec says:
+    // "If [generic-icon] is not specified then the mimetype is used to generate the
+    // generic icon by using the top-level media type (e.g. "video" in "video/ogg")
+    // and appending "-x-generic" (i.e. "video-x-generic" in the previous example)."
+    for (uint i = 0 ; i < sizeof(media_types)/sizeof(*media_types) ; i++) {
+        if (name.startsWith(QLatin1String(media_types[i]))) {
+            icon = findMatchingIcon(QString::fromLatin1(media_types[i]) + "-x-generic", size);
+            if (icon.isValid())
+                return icon;
+            break;
+        }
+    }
+    // not found
+    return icon;
+}
+
 K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
 {
     const_cast<KIconLoaderPrivate*>(this)->initIconThemes();
@@ -751,6 +842,9 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
 
         while (!nameParts.isEmpty())
         {
+
+            //kDebug(264) << "Looking up" << currentName;
+
 // The following code has been commented out because the Qt SVG renderer needs
 // to be improved. If you are going to change/remove some code from this part,
 // please contact me before (ereslibre@kde.org), or kde-core-devel@kde.org. (ereslibre)
@@ -864,7 +958,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
             return d->unknownIconPath(size);
     }
 
-    K3Icon icon = d->findMatchingIcon(name, size);
+    K3Icon icon = d->findMatchingIconWithGenericFallbacks(name, size);
 
     if (!icon.isValid())
     {
@@ -1075,7 +1169,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         else
         {
             if (!name.isEmpty())
-                icon = d->findMatchingIcon(favIconOverlay ? QString("text-html") : name, size);
+                icon = d->findMatchingIconWithGenericFallbacks(favIconOverlay ? QString("text-html") : name, size);
 
             if (!icon.isValid())
             {

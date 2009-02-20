@@ -128,6 +128,12 @@ private Q_SLOTS:
         QTest::newRow("non-existing icon") << "foo-bar" << "application-octet-stream.png";
         // Test this again, because now we won't go into the "fast path" of loadMimeTypeIcon anymore.
         QTest::newRow("existing icon again") << "text-plain" << "text-plain.png";
+        QTest::newRow("generic fallback") << "image-foo-bar" << "image-x-generic.png";
+        QTest::newRow("image-x-generic itself") << "image-x-generic" << "image-x-generic.png";
+        QTest::newRow("x-office-document icon") << "x-office-document" << "x-office-document.png";
+        QTest::newRow("mimetype generic icon") << "application-x-fluid" << "x-office-document.png";
+        QTest::newRow("unavailable generic icon") << "application/x-font-vfont" << "application-octet-stream.png";
+
     }
 
     void testLoadMimeTypeIcon()
