@@ -727,7 +727,7 @@ K3Icon KIconLoaderPrivate::findMatchingIconWithGenericFallbacks(const QString& n
     }
 
     // From update-mime-database.c
-    static const char* media_types[] = {
+    static const char* const media_types[] = {
         "text", "application", "image", "audio",
         "inode", "video", "message", "model", "multipart",
         "x-content", "x-epoc"
