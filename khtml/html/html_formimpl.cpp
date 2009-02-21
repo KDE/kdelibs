@@ -196,22 +196,46 @@ static QByteArray encodeCString(const QByteArray& e)
     return encoded;
 }
 
-// ### This function only encodes to numeric ampersand escapes,
-// ### we could use standard ampersand values as well.
+inline static QString ampersandEscape(unsigned val)
+{
+    QString out;
+    out.sprintf("&#%u;", val);
+    return out;
+}
+
 inline static QString escapeUnencodeable(const QTextCodec* codec, const QString& s) {
-    QString enc_string;
+    QString encString;
     const int len = s.length();
-    for(int i=0; i <len; ++i) {
-        const QChar c = s[i];
-        if (codec->canEncode(c))
-            enc_string.append(c);
-        else {
-            QString ampersandEscape;
-            ampersandEscape.sprintf("&#%u;", c.unicode());
-            enc_string.append(ampersandEscape);
+
+    for (int i = 0; i < len; ++i) {
+        QChar c = s[i];
+
+        // We need to hand surrogate pairs to the codec at once;
+        // also do validity checking on those
+        if (c.isLowSurrogate()) {
+            c = QChar::ReplacementCharacter;
+        } else if (c.isHighSurrogate()) {
+            if ((i + 1) < len && s[i + 1].isLowSurrogate()) {
+                // A valid SP..
+                ++i;
+                QString pair = QString(c) + s[i];
+                if (codec->canEncode(pair))
+                    encString += pair;
+                else
+                    encString += ampersandEscape(QChar::surrogateToUcs4(c, s[i]));
+                continue;
+            } else {
+                c  = QChar::ReplacementCharacter;
+            }
         }
+
+        // Normal characters.
+        if (codec->canEncode(c))
+            encString.append(c);
+        else
+            encString.append(ampersandEscape(c.unicode()));
     }
-    return enc_string;
+    return encString;
 }
 
 inline static QByteArray fixUpfromUnicode(const QTextCodec* codec, const QString& s)
