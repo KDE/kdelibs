@@ -338,8 +338,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                     // if the current type is FILE, then we also need to
                     // include the filename
                     if (current->id() == ID_INPUT &&
-                        static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE &&
-                        current->renderer())
+                        static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE)
                     {
                         KUrl path;
                         QString val = static_cast<HTMLInputElementImpl*>(current)->value().string().trimmed();
@@ -1678,10 +1677,6 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
 	case FILE: // hmm, we have the type FILE also.  bad choice here...
         {
-            // don't submit if display: none or display: hidden
-            if(!renderer() || renderer()->style()->visibility() != khtml::VISIBLE)
-                return false;
-
             QString local;
             KUrl fileurl;
             QString val = value().string();
@@ -1696,7 +1691,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             KIO::UDSEntry filestat;
 
             // can't submit file in www-url-form encoded
-            QWidget* const toplevel = static_cast<RenderSubmitButton*>(m_render)->widget()->topLevelWidget();
+            QWidget* const toplevel = document()->view() ? document()->view()->topLevelWidget() : 0;
             if (multipart) {
                 QByteArray filearray;
                 if ( KIO::NetAccess::stat(fileurl, filestat, toplevel)) {
