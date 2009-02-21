@@ -1618,7 +1618,7 @@ public:
                                 int alignment, const QPixmap &pixmap) const;
     QPalette standardPalette() const;
     QPixmap standardPixmap(StandardPixmap standardPixmap, const QStyleOption *opt,
-                                   const QWidget *widget = 0) const;
+                                   const QWidget *widget = 0) const; //### kde5 remove
     QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap,
                                    const QStyleOption *opt) const;
     bool eventFilter(QObject *, QEvent *);
@@ -1627,6 +1627,9 @@ protected Q_SLOTS:
     int layoutSpacingImplementation(QSizePolicy::ControlType control1,
                     QSizePolicy::ControlType control2, Qt::Orientation orientation,
                     const QStyleOption *option, const QWidget *widget) const;
+
+    QIcon standardIconImplementation(StandardPixmap standardIcon, const QStyleOption *option = 0,
+                                     const QWidget *widget = 0) const;
 //@}
 private:
     KStylePrivate * const d;

@@ -64,10 +64,10 @@
 #include <kcomponentdata.h>
 #include <kglobal.h>
 #include <kconfiggroup.h>
+#include <kdebug.h>
+#include <kicon.h>
 
 #include "kglobalsettings.h"
-
-#include <QDebug>
 
 //### FIXME: Who to credit these to?
 static const qint32 u_arrow[]={-1,-3, 0,-3, -2,-2, 1,-2, -3,-1, 2,-1, -4,0, 3,0, -4,1, 3,1};
@@ -456,6 +456,47 @@ QPalette KStyle::standardPalette() const
     return KGlobalSettings::createApplicationPalette(
         KSharedConfig::openConfig(d->m_componentData));
 }
+
+QIcon KStyle::standardIconImplementation(StandardPixmap standardIcon, const QStyleOption *option,
+                                         const QWidget *widget) const
+{
+    kDebug() << "###################" << standardIcon;
+    switch (standardIcon) {
+        case QStyle::SP_MessageBoxInformation:
+            return KIcon("dialog-information");
+        case QStyle::SP_MessageBoxWarning:
+            return KIcon("dialog-warning");
+        case QStyle::SP_MessageBoxCritical:
+            return KIcon("dialog-error");
+        case QStyle::SP_MessageBoxQuestion:
+            return KIcon("dialog-information");
+        case QStyle::SP_DialogOkButton:
+            return KIcon("dialog-ok");
+        case QStyle::SP_DialogCancelButton:
+            return KIcon("dialog-cancel");
+        case QStyle::SP_DialogHelpButton:
+            return KIcon("help-contents");
+        case QStyle::SP_DialogOpenButton:
+            return KIcon("document-open");
+        case QStyle::SP_DialogSaveButton:
+            return KIcon("document-save");
+        case QStyle::SP_DialogCloseButton:
+            return KIcon("dialog-close");
+        case QStyle::SP_DialogApplyButton:
+            return KIcon("dialog-ok-apply");
+        case QStyle::SP_DialogResetButton:
+            return KIcon("document-revert");
+        case QStyle::SP_DialogDiscardButton:
+            return KIcon("dialog-cancel");
+        case QStyle::SP_DialogYesButton:
+            return KIcon("dialog-ok-apply");
+        case QStyle::SP_DialogNoButton:
+            return KIcon("dialog-cancel");
+        default:
+            return QStyle::standardIconImplementation(standardIcon, option, widget);
+    }
+}
+
 QPixmap KStyle::standardPixmap(StandardPixmap standardPixmap, const QStyleOption *opt,
                                const QWidget *widget) const
 {
@@ -2425,6 +2466,9 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
 
         case SH_MessageBox_TextInteractionFlags:
             return true;
+
+        case SH_DialogButtonBox_ButtonsHaveIcons:
+            return KGlobalSettings::showIconsOnPushButtons();
 
         default:
             break;
