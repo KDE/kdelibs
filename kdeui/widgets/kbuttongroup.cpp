@@ -124,7 +124,7 @@ void KButtonGroup::childEvent( QChildEvent* event )
   {
     QObject* obj = event->child();
     QHash<QObject*, int>::ConstIterator it = d->btnMap.constFind( obj );
-    if ( it != d->btnMap.end() )
+    if ( it != d->btnMap.constEnd() )
     {
       d->clickedMapper.removeMappings( obj );
       d->pressedMapper.removeMappings( obj );
@@ -144,7 +144,7 @@ void KButtonGroup::childEvent( QChildEvent* event )
 int KButtonGroup::id( QAbstractButton* button ) const
 {
   QHash<QObject*, int>::ConstIterator it = d->btnMap.constFind( button );
-  if ( it != d->btnMap.end() )
+  if ( it != d->btnMap.constEnd() )
   {
     return it.value();
   }
