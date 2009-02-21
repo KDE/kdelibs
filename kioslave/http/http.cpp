@@ -3318,7 +3318,7 @@ try_again:
             }
         }
 
-        // auth may still be null due to errorPage().
+        // *auth may still be null due to errorPage().
 
         if (*auth) {
             // remove trailing space from the method string, or digest auth will fail
