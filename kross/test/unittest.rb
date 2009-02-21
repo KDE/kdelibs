@@ -354,6 +354,23 @@ class TestKross < Test::Unit::TestCase
 		assert( TestObject1.listProperty == [ true, [2464, -8295], -572.07516, "test", [] ] )
 	end
 
+	def testPropertyMethods
+		TestObject1.setProperty("boolProperty", false)
+		assert( TestObject1.boolProperty == false )
+		TestObject1.setProperty("boolProperty", true)
+		assert( TestObject1.property("boolProperty") == true )
+		TestObject1.setProperty("intProperty", -75825)
+		assert( TestObject1.property("intProperty") == -75825 )
+		TestObject1.setProperty("doubleProperty", -9373.8721)
+		assert( TestObject1.property("doubleProperty") == -9373.8721 )
+		TestObject1.setProperty("stringProperty", " AnOtHeR sTrInG ")
+		assert( TestObject1.property("stringProperty") == " AnOtHeR sTrInG " )
+		TestObject1.setProperty("stringListProperty", ["s1","s2",""])
+		assert( TestObject1.property("stringListProperty") == ["s1","s2",""] )
+		TestObject1.setProperty("listProperty", [[true,false],"abc",[846,-573.02],[]])
+		assert( TestObject1.property("listProperty") == [[true,false],"abc",[846,-573.02],[]] )
+	end
+
 	def testEnumerations
 		assert( TestObject1.TESTENUM1 == 1 )
 		assert( TestObject1.TESTENUM2 == 2 )
