@@ -3316,73 +3316,75 @@ try_again:
                 error(ERR_UNSUPPORTED_ACTION, "Unknown Authorization method!");
                 return false;
             }
-            //### return false; ?
         }
 
-        // remove trailing space from the method string, or digest auth will fail :)
-        QByteArray requestMethod = methodString(m_request.method).toLatin1().trimmed();
-        (*auth)->setChallenge(bestOffer, resource, requestMethod);
+        // auth may still be null due to errorPage().
 
-        //### (or somehow weave AuthInfo handling into the auth classes!)
-        QString username;
-        QString password;
-        if ((*auth)->needCredentials()) {
-            // try to get credentials from kpasswdserver's cache, then try asking the user.
-            KIO::AuthInfo authi;
-            fillPromptInfo(&authi);
-            bool obtained = checkCachedAuthentication(authi);
-            const bool probablyWrong = m_request.responseCode == m_request.prevResponseCode;
-            if (!obtained || probablyWrong) {
-                QString msg = (m_request.responseCode == 401) ? 
-                                  i18n("Authentication Failed.") :
-                                  i18n("Proxy Authentication Failed.");
-                obtained = openPasswordDialog(authi, msg);
+        if (*auth) {
+            // remove trailing space from the method string, or digest auth will fail
+            QByteArray requestMethod = methodString(m_request.method).toLatin1().trimmed();
+            (*auth)->setChallenge(bestOffer, resource, requestMethod);
+
+            QString username;
+            QString password;
+            if ((*auth)->needCredentials()) {
+                // try to get credentials from kpasswdserver's cache, then try asking the user.
+                KIO::AuthInfo authi;
+                fillPromptInfo(&authi);
+                bool obtained = checkCachedAuthentication(authi);
+                const bool probablyWrong = m_request.responseCode == m_request.prevResponseCode;
+                if (!obtained || probablyWrong) {
+                    QString msg = (m_request.responseCode == 401) ? 
+                                    i18n("Authentication Failed.") :
+                                    i18n("Proxy Authentication Failed.");
+                    obtained = openPasswordDialog(authi, msg);
+                    if (!obtained) {
+                        kDebug(7103) << "looks like the user canceled"
+                                    << (m_request.responseCode == 401 ? "WWW" : "proxy")
+                                    << "authentication.";
+                        kDebug(7113) << "obtained =" << obtained << "probablyWrong =" << probablyWrong
+                                    << "authInfo username =" << authi.username
+                                    << "authInfo realm =" << authi.realmValue;
+                        error(ERR_USER_CANCELED, resource.host());
+                        return false;
+                    }
+                }
                 if (!obtained) {
-                    kDebug(7103) << "looks like the user canceled"
-                                 << (m_request.responseCode == 401 ? "WWW" : "proxy")
-                                 << "authentication.";
-                    kDebug(7113) << "obtained =" << obtained << "probablyWrong =" << probablyWrong
-                                 << "authInfo username =" << authi.username
-                                 << "authInfo realm =" << authi.realmValue;
-                    error(ERR_USER_CANCELED, resource.host());
+                    kDebug(7103) << "could not obtain authentication credentials from cache or user!";
+                }
+                username = authi.username;
+                password = authi.password;
+            }
+            (*auth)->generateResponse(username, password);
+
+            kDebug(7113) << "auth state: isError" << (*auth)->isError() 
+                        << "needCredentials" << (*auth)->needCredentials()
+                        << "forceKeepAlive" << (*auth)->forceKeepAlive()
+                        << "forceDisconnect" << (*auth)->forceDisconnect()
+                        << "headerFragment" << (*auth)->headerFragment();
+
+            if ((*auth)->isError()) {
+                if (m_request.preferErrorPage) {
+                    errorPage();
+                } else {
+                    error(ERR_UNSUPPORTED_ACTION, "Authorization failed!");
                     return false;
                 }
+                //### return false; ?
+            } else if ((*auth)->forceKeepAlive()) {
+                //### think this through for proxied / not proxied
+                m_request.isKeepAlive = true;
+            } else if ((*auth)->forceDisconnect()) {
+                //### think this through for proxied / not proxied
+                m_request.isKeepAlive = false;
+                httpCloseConnection();
             }
-            if (!obtained) {
-                kDebug(7103) << "could not obtain authentication credentials from cache or user!";
-            }
-            username = authi.username;
-            password = authi.password;
         }
-        (*auth)->generateResponse(username, password);
 
-        kDebug(7113) << "auth state: isError" << (*auth)->isError() 
-                     << "needCredentials" << (*auth)->needCredentials()
-                     << "forceKeepAlive" << (*auth)->forceKeepAlive()
-                     << "forceDisconnect" << (*auth)->forceDisconnect()
-                     << "headerFragment" << (*auth)->headerFragment();
-
-        if ((*auth)->isError()) {
-            if (m_request.preferErrorPage) {
-                errorPage();
-            } else {
-                error(ERR_UNSUPPORTED_ACTION, "Authorization failed!");
-                return false;
-            }
-            //### return false; ?
-        } else if ((*auth)->forceKeepAlive()) {
-            //### think this through for proxied / not proxied
-            m_request.isKeepAlive = true;
-        } else if ((*auth)->forceDisconnect()) {
-            //### think this through for proxied / not proxied
-            m_request.isKeepAlive = false;
-            httpCloseConnection();
-        }
         if (m_request.isKeepAlive) {
             // Important: trash data until the next response header starts.
             readBody(true);
         }
-
     }
 
   // We need to do a redirect
