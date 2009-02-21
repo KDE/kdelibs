@@ -44,6 +44,6 @@
 #define DEFAULT_MIME_TYPE               "text/html"
 #define DEFAULT_PARTIAL_CHARSET_HEADER   ", utf-8;q=0.5, *;q=0.5"
 
-#define DEFAULT_ACCEPT_HEADER           "text/html, image/jpeg, image/png, text/*, image/*, */*"
+#define DEFAULT_ACCEPT_HEADER           "text/html, image/jpeg;q=0.9, image/png;q=0.9, text/*;q=0.9, image/*;q=0.9, */*;q=0.8"
 
 #endif
