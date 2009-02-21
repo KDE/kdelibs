@@ -1924,16 +1924,24 @@ bool HTTPProtocol::readDelimitedText(char *buf, int *idx, int end, int numNewlin
         size_t bufferFill = readBuffered(mybuf, step);
 
         for (int i = 0; i < bufferFill ; i++, pos++) {
-            char c = mybuf[i];
-            buf[pos] = c;
-            
-            // did we just copy one or two times the \r\n delimiter?
-            if (c == '\n' && pos > (2 * numNewlines - 2) && buf[pos - 1] == '\r' &&
-                ((numNewlines == 1) || (buf[pos - 3] == '\r' && buf [pos - 2] == '\n'))) {
-                i++;    // unget bytes *after* CRLF
-                unread(&mybuf[i], bufferFill - i);
-                *idx = pos + 1;
-                return true;
+            buf[pos] = mybuf[i];
+
+            // did we just copy one or two times the (usually) \r\n delimiter?
+            // until we find even more broken webservers in the wild let's assume that they either
+            // send \r\n (RFC compliant) or \n (broken) as delimiter...
+            if (buf[pos] == '\n') {
+                bool found = numNewlines == 1;
+                if (!found) {   // looking for two newlines
+                    found = ((pos >= 1 && buf[pos - 1] == '\n') ||
+                             (pos >= 3 && buf[pos - 3] == '\r' && buf[pos - 2] == '\n' &&
+                                          buf[pos - 1] == '\r'));
+                }
+                if (found) {
+                    i++;    // unread bytes *after* CRLF
+                    unread(&mybuf[i], bufferFill - i);
+                    *idx = pos + 1;
+                    return true;
+                }
             }
         }
     }
@@ -2448,9 +2456,9 @@ bool HTTPProtocol::readHeaderFromCache() {
     m_responseHeaders.clear();
 
     // Read header from cache...
-    char buffer[4097];
-    if (!gzgets(m_request.cacheTag.gzs, buffer, 4096) )
-    {
+    static const int bufSize = 8192;
+    char buffer[bufSize + 1];
+    if (!gzgets(m_request.cacheTag.gzs, buffer, bufSize)) {
         // Error, delete cache entry
         kDebug(7113) << "Could not access cache to obtain mimetype!";
         error( ERR_CONNECTION_BROKEN, m_request.url.host() );
@@ -2462,8 +2470,7 @@ bool HTTPProtocol::readHeaderFromCache() {
     kDebug(7113) << "cached data mimetype: " << m_mimeType;
 
     // read http-headers, first the response code
-    if (!gzgets(m_request.cacheTag.gzs, buffer, 4096) )
-    {
+    if (!gzgets(m_request.cacheTag.gzs, buffer, bufSize)) {
         // Error, delete cache entry
         kDebug(7113) << "Could not access cached data! ";
         error( ERR_CONNECTION_BROKEN, m_request.url.host() );
@@ -2472,8 +2479,7 @@ bool HTTPProtocol::readHeaderFromCache() {
     m_responseHeaders << buffer;
     // then the headers
     while(true) {
-        if (!gzgets(m_request.cacheTag.gzs, buffer, 8192) )
-        {
+        if (!gzgets(m_request.cacheTag.gzs, buffer, bufSize)) {
             // Error, delete cache entry
             kDebug(7113) << "Could not access cached data!";
             error( ERR_CONNECTION_BROKEN, m_request.url.host() );
@@ -2491,12 +2497,10 @@ bool HTTPProtocol::readHeaderFromCache() {
                 m_request.cacheTag.charset = charset;
                 setMetaData("charset", charset);
             }
-        } else
-        if (header.startsWith("content-language: ")) {
+        } else if (header.startsWith("content-language: ")) {
             QString language = header.mid(18);
             setMetaData("content-language", language);
-        } else
-        if (header.startsWith("content-disposition:")) {
+        } else if (header.startsWith("content-disposition:")) {
             parseContentDisposition(header.mid(20));
         }
     }
@@ -3310,73 +3314,75 @@ try_again:
                 error(ERR_UNSUPPORTED_ACTION, "Unknown Authorization method!");
                 return false;
             }
-            //### return false; ?
         }
 
-        // remove trailing space from the method string, or digest auth will fail :)
-        QByteArray requestMethod = methodString(m_request.method).toLatin1().trimmed();
-        (*auth)->setChallenge(bestOffer, resource, requestMethod);
+        // auth may still be null due to errorPage().
 
-        //### (or somehow weave AuthInfo handling into the auth classes!)
-        QString username;
-        QString password;
-        if ((*auth)->needCredentials()) {
-            // try to get credentials from kpasswdserver's cache, then try asking the user.
-            KIO::AuthInfo authi;
-            fillPromptInfo(&authi);
-            bool obtained = checkCachedAuthentication(authi);
-            const bool probablyWrong = m_request.responseCode == m_request.prevResponseCode;
-            if (!obtained || probablyWrong) {
-                QString msg = (m_request.responseCode == 401) ? 
-                                  i18n("Authentication Failed.") :
-                                  i18n("Proxy Authentication Failed.");
-                obtained = openPasswordDialog(authi, msg);
+        if (*auth) {
+            // remove trailing space from the method string, or digest auth will fail
+            QByteArray requestMethod = methodString(m_request.method).toLatin1().trimmed();
+            (*auth)->setChallenge(bestOffer, resource, requestMethod);
+
+            QString username;
+            QString password;
+            if ((*auth)->needCredentials()) {
+                // try to get credentials from kpasswdserver's cache, then try asking the user.
+                KIO::AuthInfo authi;
+                fillPromptInfo(&authi);
+                bool obtained = checkCachedAuthentication(authi);
+                const bool probablyWrong = m_request.responseCode == m_request.prevResponseCode;
+                if (!obtained || probablyWrong) {
+                    QString msg = (m_request.responseCode == 401) ? 
+                                    i18n("Authentication Failed.") :
+                                    i18n("Proxy Authentication Failed.");
+                    obtained = openPasswordDialog(authi, msg);
+                    if (!obtained) {
+                        kDebug(7103) << "looks like the user canceled"
+                                    << (m_request.responseCode == 401 ? "WWW" : "proxy")
+                                    << "authentication.";
+                        kDebug(7113) << "obtained =" << obtained << "probablyWrong =" << probablyWrong
+                                    << "authInfo username =" << authi.username
+                                    << "authInfo realm =" << authi.realmValue;
+                        error(ERR_USER_CANCELED, resource.host());
+                        return false;
+                    }
+                }
                 if (!obtained) {
-                    kDebug(7103) << "looks like the user canceled"
-                                 << (m_request.responseCode == 401 ? "WWW" : "proxy")
-                                 << "authentication.";
-                    kDebug(7113) << "obtained =" << obtained << "probablyWrong =" << probablyWrong
-                                 << "authInfo username =" << authi.username
-                                 << "authInfo realm =" << authi.realmValue;
-                    error(ERR_USER_CANCELED, resource.host());
+                    kDebug(7103) << "could not obtain authentication credentials from cache or user!";
+                }
+                username = authi.username;
+                password = authi.password;
+            }
+            (*auth)->generateResponse(username, password);
+
+            kDebug(7113) << "auth state: isError" << (*auth)->isError() 
+                        << "needCredentials" << (*auth)->needCredentials()
+                        << "forceKeepAlive" << (*auth)->forceKeepAlive()
+                        << "forceDisconnect" << (*auth)->forceDisconnect()
+                        << "headerFragment" << (*auth)->headerFragment();
+
+            if ((*auth)->isError()) {
+                if (m_request.preferErrorPage) {
+                    errorPage();
+                } else {
+                    error(ERR_UNSUPPORTED_ACTION, "Authorization failed!");
                     return false;
                 }
+                //### return false; ?
+            } else if ((*auth)->forceKeepAlive()) {
+                //### think this through for proxied / not proxied
+                m_request.isKeepAlive = true;
+            } else if ((*auth)->forceDisconnect()) {
+                //### think this through for proxied / not proxied
+                m_request.isKeepAlive = false;
+                httpCloseConnection();
             }
-            if (!obtained) {
-                kDebug(7103) << "could not obtain authentication credentials from cache or user!";
-            }
-            username = authi.username;
-            password = authi.password;
         }
-        (*auth)->generateResponse(username, password);
 
-        kDebug(7113) << "auth state: isError" << (*auth)->isError() 
-                     << "needCredentials" << (*auth)->needCredentials()
-                     << "forceKeepAlive" << (*auth)->forceKeepAlive()
-                     << "forceDisconnect" << (*auth)->forceDisconnect()
-                     << "headerFragment" << (*auth)->headerFragment();
-
-        if ((*auth)->isError()) {
-            if (m_request.preferErrorPage) {
-                errorPage();
-            } else {
-                error(ERR_UNSUPPORTED_ACTION, "Authorization failed!");
-                return false;
-            }
-            //### return false; ?
-        } else if ((*auth)->forceKeepAlive()) {
-            //### think this through for proxied / not proxied
-            m_request.isKeepAlive = true;
-        } else if ((*auth)->forceDisconnect()) {
-            //### think this through for proxied / not proxied
-            m_request.isKeepAlive = false;
-            httpCloseConnection();
-        }
         if (m_request.isKeepAlive) {
             // Important: trash data until the next response header starts.
             readBody(true);
         }
-
     }
 
   // We need to do a redirect
