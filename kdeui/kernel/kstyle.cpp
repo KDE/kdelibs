@@ -3035,6 +3035,9 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
             const QStyleOptionTabWidgetFrame* tabOpt = qstyleoption_cast<const QStyleOptionTabWidgetFrame*>(option);
             if (!tabOpt) break;
 
+            // Don't apply the custom margin when documentMode is enabled.
+            if (tabOpt->lineWidth == 0) break;
+
             // use QCommonStyle's SE_TabWidgetTabPane, and adjust the result
             // according to the custom frame width.
             QRect pane = QCommonStyle::subElementRect(SE_TabWidgetTabPane, option, widget);
