@@ -462,6 +462,53 @@ QIcon KStyle::standardIconImplementation(StandardPixmap standardIcon, const QSty
 {
     kDebug() << "###################" << standardIcon;
     switch (standardIcon) {
+        case QStyle::SP_DesktopIcon:
+            return KIcon("user-desktop");
+        case QStyle::SP_TrashIcon: 
+            return KIcon("user-trash");
+        case QStyle::SP_ComputerIcon:
+            return KIcon("computer");
+        case QStyle::SP_DriveFDIcon:
+            return KIcon("media-floppy");
+        case QStyle::SP_DriveHDIcon:
+            return KIcon("drive-harddisk");
+        case QStyle::SP_DriveCDIcon:
+        case QStyle::SP_DriveDVDIcon:
+            return KIcon("drive-optical");
+        case QStyle::SP_DriveNetIcon:
+            return KIcon("folder-remote");
+        case QStyle::SP_DirHomeIcon:
+            return KIcon("user-home");
+        case QStyle::SP_DirOpenIcon:
+            return KIcon("document-open-folder");
+        case QStyle::SP_DirClosedIcon:
+            return KIcon("folder");
+        case QStyle::SP_DirIcon:
+            return KIcon("folder");
+        case QStyle::SP_DirLinkIcon:
+            return KIcon("folder"); //TODO: generate (!?) folder with link emblem
+        case QStyle::SP_FileIcon:
+            return KIcon("text-plain"); //TODO: look for a better icon
+        case QStyle::SP_FileLinkIcon:
+            return KIcon("text-plain"); //TODO: generate (!?) file with link emblem
+        case QStyle::SP_FileDialogStart:
+            return KIcon("media-playback-start"); //TODO: find correct icon
+        case QStyle::SP_FileDialogEnd:
+            return KIcon("media-playback-stop"); //TODO: find correct icon
+        case QStyle::SP_FileDialogToParent:
+            return KIcon("go-up");
+        case QStyle::SP_FileDialogNewFolder:
+            return KIcon("folder-new");
+        case QStyle::SP_FileDialogDetailedView:
+            return KIcon("view-list-details");
+        case QStyle::SP_FileDialogInfoView:
+            return KIcon("document-properties");
+        case QStyle::SP_FileDialogContentsView:
+            return KIcon("view-list-icons");
+        case QStyle::SP_FileDialogListView:
+            return KIcon("view-list-text");
+        case QStyle::SP_FileDialogBack:
+            return KIcon("go-previous");
         case QStyle::SP_MessageBoxInformation:
             return KIcon("dialog-information");
         case QStyle::SP_MessageBoxWarning:
@@ -492,6 +539,41 @@ QIcon KStyle::standardIconImplementation(StandardPixmap standardIcon, const QSty
             return KIcon("dialog-ok-apply");
         case QStyle::SP_DialogNoButton:
             return KIcon("dialog-cancel");
+        case QStyle::SP_ArrowUp:
+            return KIcon("go-up");
+        case QStyle::SP_ArrowDown:
+            return KIcon("go-down");
+        case QStyle::SP_ArrowLeft:
+            return KIcon("go-previous-view");
+        case QStyle::SP_ArrowRight:
+            return KIcon("go-next-view");
+        case QStyle::SP_ArrowBack:
+            return KIcon("go-previous");
+        case QStyle::SP_ArrowForward:
+            return KIcon("go-next");
+        case QStyle::SP_BrowserReload:
+            return KIcon("view-refresh");
+        case QStyle::SP_BrowserStop:
+            return KIcon("process-stop");
+        case QStyle::SP_MediaPlay:
+            return KIcon("media-playback-start");
+        case QStyle::SP_MediaStop:
+            return KIcon("media-playback-stop");
+        case QStyle::SP_MediaPause:
+            return KIcon("media-playback-pause");
+        case QStyle::SP_MediaSkipForward:
+            return KIcon("media-skip-forward");
+        case QStyle::SP_MediaSkipBackward:
+            return KIcon("media-skip-backward");
+        case QStyle::SP_MediaSeekForward:
+            return KIcon("media-seek-forward");
+        case QStyle::SP_MediaSeekBackward:
+            return KIcon("media-seek-backward");
+        case QStyle::SP_MediaVolume:
+            return KIcon("audio-volume-medium");
+        case QStyle::SP_MediaVolumeMuted:
+            return KIcon("audio-volume-muted");
+
         default:
             return QStyle::standardIconImplementation(standardIcon, option, widget);
     }
