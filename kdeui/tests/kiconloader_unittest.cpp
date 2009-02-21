@@ -22,10 +22,15 @@
 #include "qtest_kde.h"
 #include <kiconloader.h>
 #include <kstandarddirs.h>
+#include <kdeversion.h>
+#include <qprocess.h>
+#include <qregexp.h>
 
 class KIconLoader_UnitTest : public QObject
 {
     Q_OBJECT
+
+    uint sharedMimeInfoVersion;
 
 private Q_SLOTS:
     void initTestCase()
@@ -35,6 +40,20 @@ private Q_SLOTS:
         const QString dataFile = KGlobal::dirs()->locateLocal("cache", "kpc/kde-icon-cache.data");
         QFile::remove(indexFile);
         QFile::remove(dataFile);
+
+        {
+            sharedMimeInfoVersion = 0;
+
+            QProcess smi;
+            smi.start(QString::fromLatin1("update-mime-database"), QStringList() << QString::fromLatin1("-v"));
+            smi.waitForStarted();
+            smi.waitForFinished();
+            QString out = QString::fromLocal8Bit(smi.readAllStandardError());
+            QRegExp versionRe(QString::fromLatin1("update-mime-database \\(shared-mime-info\\) (\\d+)\\.(\\d+)(\\.(\\d+))?"));
+            if (versionRe.indexIn(out) > -1) {
+                sharedMimeInfoVersion = KDE_MAKE_VERSION(versionRe.cap(1).toInt(), versionRe.cap(2).toInt(), versionRe.cap(4).toInt());
+            }
+        }
     }
 
     void testLoadIconCanReturnNull()
@@ -131,10 +150,12 @@ private Q_SLOTS:
         QTest::newRow("generic fallback") << "image-foo-bar" << "image-x-generic.png";
         QTest::newRow("image-x-generic itself") << "image-x-generic" << "image-x-generic.png";
         QTest::newRow("x-office-document icon") << "x-office-document" << "x-office-document.png";
-        QTest::newRow("mimetype generic icon") << "application-x-fluid" << "x-office-document.png";
         QTest::newRow("unavailable generic icon") << "application/x-font-vfont" << "application-octet-stream.png";
         QTest::newRow("#184852") << "audio/x-tuxguitar" << "audio-x-generic.png";
 
+        if (sharedMimeInfoVersion >= KDE_MAKE_VERSION(0, 40, 0)) {
+            QTest::newRow("mimetype generic icon") << "application-x-fluid" << "x-office-document.png";
+        }
     }
 
     void testLoadMimeTypeIcon()
