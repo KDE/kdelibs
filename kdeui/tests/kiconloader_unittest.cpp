@@ -152,6 +152,7 @@ private Q_SLOTS:
         QTest::newRow("x-office-document icon") << "x-office-document" << "x-office-document.png";
         QTest::newRow("unavailable generic icon") << "application/x-font-vfont" << "application-octet-stream.png";
         QTest::newRow("#184852") << "audio/x-tuxguitar" << "audio-x-generic.png";
+        QTest::newRow("#178847") << "image/x-compressed-xcf" << "image-x-generic.png";
 
         if (sharedMimeInfoVersion >= KDE_MAKE_VERSION(0, 40, 0)) {
             QTest::newRow("mimetype generic icon") << "application-x-fluid" << "x-office-document.png";
