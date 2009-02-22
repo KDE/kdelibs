@@ -871,6 +871,9 @@ void KFilePlacesView::Private::setCurrentIndex(const QModelIndex &index)
         currentUrl = url;
         updateHiddenRows();
         emit q->urlChanged(url);
+        if (showAll) {
+            q->setShowAll(false);
+        }
     } else {
         q->setUrl(currentUrl);
     }
