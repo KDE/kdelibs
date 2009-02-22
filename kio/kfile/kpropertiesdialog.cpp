@@ -1414,6 +1414,27 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
           job->exec();
       }
   }
+
+  // "Link to Application" templates need to be made executable
+  // Instead of matching against a filename we check if the destination
+  // is an Application now.
+  if ( d->m_bFromTemplate ) {
+    // destination is not necessarily local, use the src template
+    KDesktopFile templateResult ( static_cast<KIO::CopyJob*>(job)->srcUrls().first().toLocalFile() );
+    if ( templateResult.hasApplicationType() ) {
+      // We can either stat the file and add the +x bit or use the larger chmod() job
+      // with a umask designed to only touch u+x.  This is only one KIO job, so let's
+      // do that.
+
+      KFileItem appLink ( properties->item() );
+      KFileItemList fileItemList;
+      fileItemList << appLink;
+
+      // first 0100 adds u+x, second 0100 only allows chmod to change u+x
+      KIO::Job* chmodJob = KIO::chmod( fileItemList, 0100, 0100, QString(), QString(), KIO::HideProgressInfo );
+      chmodJob->exec();
+    }
+  }
 }
 
 void KFilePropsPlugin::applyIconChanges()
