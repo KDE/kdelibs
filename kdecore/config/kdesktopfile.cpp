@@ -155,12 +155,13 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
      return true; // Relative paths are ok.
 
   KStandardDirs *dirs = KGlobal::dirs();
-  if (QDir::isRelativePath( dirs->relativeLocation("apps", path) ))
-     return true;
-  if (QDir::isRelativePath( dirs->relativeLocation("xdgdata-apps", path) ))
-     return true;
-  if (QDir::isRelativePath( dirs->relativeLocation("services", path) ))
-     return true;
+  QStringList kdePrefixes ( dirs->kfsstnd_prefixes().split(QDir::separator()) );
+
+  // Check if the .desktop file is installed as part of KDE.
+  foreach (const QString &prefix, kdePrefixes) {
+    if (path.startsWith(prefix))
+      return true;
+  }
 
   // Not otherwise permitted, so only allow if the file is executable, or if
   // owned by root (uid == 0)
