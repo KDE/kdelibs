@@ -726,13 +726,14 @@ QAction *KFilePlacesModel::ejectActionForIndex(const QModelIndex &index) const
 void KFilePlacesModel::requestTeardown(const QModelIndex &index)
 {
     Solid::Device device = deviceForIndex(index);
-
     Solid::StorageAccess *access = device.as<Solid::StorageAccess>();
 
-    connect(access, SIGNAL(teardownDone(Solid::ErrorType, QVariant, const QString &)),
-            this, SLOT(_k_storageTeardownDone(Solid::ErrorType, QVariant)));
+    if (access!=0) {
+        connect(access, SIGNAL(teardownDone(Solid::ErrorType, QVariant, const QString &)),
+                this, SLOT(_k_storageTeardownDone(Solid::ErrorType, QVariant)));
 
-    device.as<Solid::StorageAccess>()->teardown();
+        access->teardown();
+    }
 }
 
 void KFilePlacesModel::requestEject(const QModelIndex &index)
