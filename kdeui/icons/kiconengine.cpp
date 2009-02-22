@@ -114,18 +114,20 @@ QPixmap KIconEngine::pixmap( const QSize & size, QIcon::Mode mode, QIcon::State 
 {
     Q_UNUSED(state)
 
-    QPixmap pix(size);
-    pix.fill(QColor(0,0,0,0));
-
-    QPainter painter(&pix);
-
     const int kstate = qIconModeToKIconState(mode);
     const int iconSize = qMin(size.width(), size.height());
+    QPixmap pix = iconLoader()->loadIcon(d->iconName, KIconLoader::Desktop, iconSize, kstate, d->overlays);
 
-    painter.drawPixmap(QPoint(), iconLoader()->loadIcon(d->iconName, KIconLoader::Desktop,
-                                                        iconSize, kstate, d->overlays));
+    if(pix.size() == size)
+        return pix;
 
-    return pix;
+    QPixmap pix2(size);
+    pix2.fill(QColor(0,0,0,0));
+
+    QPainter painter(&pix);
+    painter.drawPixmap(QPoint(), pix);
+
+    return pix2;
 }
 
 QString KIconEngine::key() const
