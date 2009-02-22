@@ -118,7 +118,7 @@ void KTabBar::mousePressEvent( QMouseEvent *event )
 
 void KTabBar::mouseMoveEvent( QMouseEvent *event )
 {
-  if ( event->buttons() == Qt::LeftButton ) {
+  if ( event->buttons() == Qt::LeftButton && !isMovable() ) {
     int tab = selectTab( event->pos() );
     if ( d->mDragSwitchTab && tab != d->mDragSwitchTab ) {
       d->mActivateDragSwitchTabTimer->stop();
