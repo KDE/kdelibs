@@ -158,10 +158,11 @@ void Solid::DeviceManagerPrivate::_k_deviceAdded(const QString &udi)
     if (m_devicesMap.contains(udi)) {
         DevicePrivate *dev = m_devicesMap[udi];
 
-        if (dev->backendObject()==0)
-            // Ok, this one was requested somewhere was invalid
-            // and now becomes magically valid!
-            dev->setBackendObject(createBackendObject(udi));
+        // Ok, this one was requested somewhere was invalid
+        // and now becomes magically valid!
+
+        Q_ASSERT(dev->backendObject()==0);
+        dev->setBackendObject(createBackendObject(udi));
         Q_ASSERT(dev->backendObject()!=0);
     }
 
