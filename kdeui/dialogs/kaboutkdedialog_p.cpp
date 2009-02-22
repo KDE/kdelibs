@@ -117,7 +117,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
         "contributing to KDE. You are encouraged to support KDE through a financial "
         "donation, using one of the ways described at "
         "<a href=\"http://www.kde.org/support/\">http://www.kde.org/support/</a>."
-        "<br /><br />Thank you very much in advance for your support.</html>") + "<br />"); // FIXME: ugly <br /> at the end...
+        "<br /><br />Thank you very much in advance for your support.</html>") + "<br /><br />"); // FIXME: ugly <br /> at the end...
 
     QTabWidget *tabWidget = new QTabWidget;
     tabWidget->setUsesScrollButtons(false);
