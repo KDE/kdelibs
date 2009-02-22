@@ -25,6 +25,7 @@
 #include <kbookmarkmanager.h>
 #include <kiconloader.h>
 #include <kdirlister.h>
+#include <solid/opticaldisc.h>
 #include <solid/storageaccess.h>
 #include <solid/storagevolume.h>
 
@@ -140,6 +141,7 @@ QVariant KFilePlacesItem::deviceData(int role) const
     if (d.isValid()) {
         const Solid::StorageAccess *access = d.as<Solid::StorageAccess>();
         const Solid::StorageVolume *volume = d.as<Solid::StorageVolume>();
+        const Solid::OpticalDisc *disc = d.as<Solid::OpticalDisc>();
         QStringList overlays;
 
         switch (role)
@@ -159,6 +161,8 @@ QVariant KFilePlacesItem::deviceData(int role) const
         case KFilePlacesModel::UrlRole:
             if (access) {
                 return QUrl(KUrl(access->filePath()));
+            } else if (disc && (disc->availableContent() & Solid::OpticalDisc::Audio)!=0) {
+                return QUrl("audiocd:/");
             } else {
                 return QVariant();
             }
