@@ -9,6 +9,7 @@
 <!ENTITY Alt        		"<keycap>Alt</keycap>">
 <!ENTITY Ctrl        		"<keycap>Ctrl</keycap>">				  <!-- English: &Ctrl; -->
 <!ENTITY Enter        		"<keycap>Enter</keycap>">				  <!-- English: &Enter; -->
+<!ENTITY Esc        		"<keycap>Esc</keycap>">
 <!ENTITY etc        		"itp.">
 <!ENTITY Shift        		"<keycap>Shift</keycap>">				  <!-- English: &Shift; -->
 <!ENTITY Tab        		"<keycap>Tab</keycap>">
