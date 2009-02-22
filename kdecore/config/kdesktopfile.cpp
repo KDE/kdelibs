@@ -24,6 +24,7 @@
 #include <unistd.h>
 
 #include <QtCore/QDir>
+#include <QtCore/QFileInfo>
 
 #include <config.h>
 #include "kconfig_p.h"
@@ -139,8 +140,13 @@ bool KDesktopFile::isDesktopFile(const QString& path)
 
 bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
 {
-  if (KAuthorized::authorize("run_desktop_files"))
-     return true;
+  // Explicitly forbid desktop files if Kiosk does not allow.  There
+  // may be other reasons that desktop files are forbidden so keep
+  // checking otherwise.
+  if (!KAuthorized::authorize("run_desktop_files")) {
+     kWarning() << "Access to '" << path << "' denied because of 'run_desktop_files' restriction." << endl;
+     return false;
+  }
 
   if (path.isEmpty())
      return false; // Empty paths are not ok.
@@ -155,10 +161,14 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
      return true;
   if (QDir::isRelativePath( dirs->relativeLocation("services", path) ))
      return true;
-  if (dirs->relativeLocation("data", path).startsWith("kdesktop/Desktop"))
-     return true;
 
-  kWarning() << "Access to '" << path << "' denied because of 'run_desktop_files' restriction." << endl;
+  // Not otherwise permitted, so only allow if the file is executable, or if
+  // owned by root (uid == 0)
+  QFileInfo entryInfo( path );
+  if (entryInfo.isExecutable() || entryInfo.ownerId() == 0)
+      return true;
+
+  kWarning() << "Access to '" << path << "' denied because of 'non_executable_desktop_file' restriction." << endl;
   return false;
 }
 

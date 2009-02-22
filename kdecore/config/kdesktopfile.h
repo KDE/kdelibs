@@ -86,6 +86,13 @@ public:
    * By default users are authorized to run all desktop files but
    * the KIOSK framework can be used to activate certain restrictions.
    * See README.kiosk for more information.
+   *
+   * Note: Since KDE 4.3, there are more restrictions on authorized
+   * desktop files to prevent users from inadvertently running trojan
+   * desktop files.  Your application launchers should have the executable
+   * bit set to prevent issues.  To see if a restriction is due to
+   * KIOSK, see KAuthorized.
+   *
    * @param path the file to check
    * @return true if the user is authorized to run the file
    */
