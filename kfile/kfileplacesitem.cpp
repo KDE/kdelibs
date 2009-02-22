@@ -144,7 +144,7 @@ QVariant KFilePlacesItem::deviceData(int role) const
         case Qt::DisplayRole:
             return d.product();
         case Qt::DecorationRole:
-            if (access->isAccessible()) {
+            if (access && access->isAccessible()) {
                 overlays << "emblem-mounted";
             } else {
                 overlays << QString(); // We have to guarantee the placement of the next emblem
