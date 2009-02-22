@@ -98,7 +98,7 @@ void
 Test_KLockFile::testStaleNoBlockFlag()
 {
 #ifdef Q_WS_WIN
-    QSKIP("lockfile on windows has different format",QTest::SkipSingle);
+    QSKIP("lockfile on windows has different format",SkipSingle);
 #else
     char hostname[256];
     ::gethostname(hostname, sizeof(hostname));

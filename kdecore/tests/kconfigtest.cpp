@@ -1171,8 +1171,13 @@ void KConfigTest::testKdeGlobals()
 
     // Check we wrote into kdeglobals
     const QList<QByteArray> lines = readLines("kdeglobals");
-    QVERIFY(lines.contains("[General]\n"));
-    QVERIFY(lines.contains("testKG=1\n"));
+#ifdef Q_WS_WIN
+#define LINEENDING "\r\n"
+#else
+#define LINEENDING "\n"
+#endif
+    QVERIFY(lines.contains("[General]"LINEENDING));
+    QVERIFY(lines.contains("testKG=1"LINEENDING));
 
     // Writing using NoGlobals
     {

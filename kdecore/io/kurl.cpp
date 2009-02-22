@@ -370,7 +370,11 @@ KUrl::KUrl( const QString &str )
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
     kDebug(126) << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
-    QString pathToSet( removeSlashOrFilePrefix( QDir::fromNativeSeparators(str) ) );
+    QString pathToSet;
+    // when it starts with file:// it's a url and must be valid. we don't care if the
+    // path exist/ is valid or not
+    if (!str.startsWith(QLatin1String("file://")))
+      pathToSet = removeSlashOrFilePrefix( QDir::fromNativeSeparators(str) );
     if ( !pathToSet.isEmpty() ) {
       // we have a prefix indicating this is a local URL
       // remember the possible query using _setEncodedUrl(), then set up the correct path without query protocol part
