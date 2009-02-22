@@ -18,10 +18,13 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifdef Q_OS_WIN
 
-#include <QtCore>
+#include "ktimezone_windows.h"
+#include <config.h>
 
+#include <kdebug.h>
+
+#include <QStringList>
 #include <windows.h>
 
 #include <memory>
@@ -29,6 +32,26 @@
 #include <cassert>
 
 
+namespace {
+    class HKeyCloser {
+        const HKEY hkey;
+        Q_DISABLE_COPY( HKeyCloser )
+    public:
+        explicit HKeyCloser( HKEY hk ) : hkey( hk ) {}
+        ~HKeyCloser() { RegCloseKey(  hkey ); }
+    };
+
+    struct TZI {
+        LONG Bias;
+        LONG StandardBias;
+        LONG DaylightBias;
+        SYSTEMTIME StandardDate;
+        SYSTEMTIME DaylightDate;
+    };
+}
+
+
+static const TCHAR timeZonesKey[] = TEXT("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Time Zones");
 static inline QDateTime systemtime_to_qdatetime( const SYSTEMTIME & st ) {
     return QDateTime( QDate( st.wYear, st.wMonth, st.wDay ),
                       QTime( st.wHour, st.wMinute, st.wSecond, st.wMilliseconds ) );
@@ -57,7 +80,8 @@ static bool TzSpecificLocalTimeToSystemTime_Portable( TIME_ZONE_INFORMATION* tz,
 
     // the method below was introduced in XP. If it's there, use it, otherwise
     // fall back to doing things manually
-#if Q_OS_VERSION > 5.0
+//#if Q_OS_VERSION > 5.0
+#if 0
     if ( QSysInfo::windowsVersion() > QSysInfo::WV_2000 )
     {
         return TzSpecificLocalTimeToSystemTime( &tz, i_stLocal , o_stUniversal ) != 0;
@@ -199,6 +223,39 @@ Transitions transitions( const TIME_ZONE_INFORMATION & tz, int year ) {
     return t;
 }
 
+class KSystemTimeZoneBackendWindows : public KTimeZoneBackend
+{
+public:
+  KSystemTimeZoneBackendWindows(KTimeZoneSource *source, const QString &name)
+  : KTimeZoneBackend(source, name) {}
+
+  ~KSystemTimeZoneBackendWindows() {}
+
+  KSystemTimeZoneBackendWindows *clone() const;
+
+  QByteArray type() const;
+
+  int offsetAtZoneTime(const KTimeZone *caller, const QDateTime &zoneDateTime, int *secondOffset) const;
+  int offsetAtUtc(const KTimeZone *caller, const QDateTime &utcDateTime) const;
+  int offset(const KTimeZone *caller, time_t t) const;
+  bool isDstAtUtc(const KTimeZone *caller, const QDateTime &utcDateTime) const;
+  bool isDst(const KTimeZone *caller, time_t t) const;
+};
+
+class KSystemTimeZoneDataWindows : public KTimeZoneData
+{
+public:
+  KSystemTimeZoneDataWindows()
+  :KTimeZoneData()
+  {
+
+  }
+  TIME_ZONE_INFORMATION _tzi;
+  QString displayName;
+
+  const TIME_ZONE_INFORMATION & tzi( int year = 0 ) const { Q_UNUSED( year ); return _tzi; }
+};
+
 
 KTimeZoneData* KSystemTimeZoneSourceWindows::parse(const KTimeZone &zone) const
 {
@@ -316,6 +373,35 @@ static int offset_at_zone_time( const KTimeZone * caller, const SYSTEMTIME & zon
     return result;
 }
 
+
+static const int MAX_KEY_LENGTH = 255;
+
+// TCHAR can be either uchar, or wchar_t:
+static inline QString tchar_to_qstring( TCHAR * ustr ) {
+    const char * str = reinterpret_cast<const char*>( ustr );
+    return QString::fromLocal8Bit( str );
+}
+static inline QString tchar_to_qstring( const wchar_t * str ) {
+    return QString::fromWCharArray( str );
+}
+
+static QStringList list_key( HKEY key ) {
+
+    DWORD numSubKeys = 0;
+    QStringList result;
+
+    if ( RegQueryInfoKey( key, 0, 0, 0, &numSubKeys, 0, 0, 0, 0, 0, 0, 0 ) == ERROR_SUCCESS )
+        for ( DWORD i = 0 ; i < numSubKeys ; ++i ) {
+            TCHAR name[MAX_KEY_LENGTH+1];
+            DWORD nameLen = MAX_KEY_LENGTH;
+            if ( RegEnumKeyEx( key, i, name, &nameLen, 0, 0, 0, 0 ) == ERROR_SUCCESS )
+                result.push_back( tchar_to_qstring( name ) );
+        }
+
+    return result;
+}
+
+
 KSystemTimeZoneBackendWindows * KSystemTimeZoneBackendWindows::clone() const
 {
     return new KSystemTimeZoneBackendWindows(*this);
@@ -363,5 +449,16 @@ bool KSystemTimeZoneBackendWindows::isDst(const KTimeZone *caller, time_t t) con
     return isDstAtUtc( caller, KTimeZone::fromTime_t( t ) );
 }
 
-#endif
+KSystemTimeZoneWindows::KSystemTimeZoneWindows(KTimeZoneSource *source, const QString &name)
+: KTimeZone(new KSystemTimeZoneBackendWindows(source, name))
+{}
+
+QStringList KSystemTimeZoneWindows::listTimeZones() 
+{
+    HKEY timeZones;
+    if ( RegOpenKeyEx( HKEY_LOCAL_MACHINE, timeZonesKey, 0, KEY_READ, &timeZones ) != ERROR_SUCCESS )
+        return QStringList();
+    const HKeyCloser closer( timeZones );
+    return list_key( timeZones );
+}
 

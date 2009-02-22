@@ -21,76 +21,27 @@
 #ifndef _KTIMEZONE_WINDOWS_H
 #define _KTIMEZONE_WINDOWS_H
 
+#include <kdecore_export.h>
+
 #include <ktimezone.h>
+#include <ksystemtimezone.h>
 #include <windows.h>
 
-namespace {
-    class HKeyCloser {
-        const HKEY hkey;
-        Q_DISABLE_COPY( HKeyCloser )
-    public:
-        explicit HKeyCloser( HKEY hk ) : hkey( hk ) {}
-        ~HKeyCloser() { RegCloseKey(  hkey ); }
-    };
-
-    struct TZI {
-        LONG Bias;
-        LONG StandardBias;
-        LONG DaylightBias;
-        SYSTEMTIME StandardDate;
-        SYSTEMTIME DaylightDate;
-    };
-}
-
-
-
-class KSystemTimeZoneDataWindows : public KTimeZoneData
-{
-public:
-  KSystemTimeZoneDataWindows()
-  :KTimeZoneData()
-  {
-
-  }
-  TIME_ZONE_INFORMATION _tzi;
-  QString displayName;
-
-  const TIME_ZONE_INFORMATION & tzi( int year = 0 ) const { Q_UNUSED( year ); return _tzi; }
-};
-
-class KSystemTimeZoneSourceWindows : public KSystemTimeZoneSource
+class KDECORE_EXPORT KSystemTimeZoneSourceWindows : public KSystemTimeZoneSource
 {
 public:
   KSystemTimeZoneSourceWindows() {}
   KTimeZoneData* parse(const KTimeZone &zone) const;
 };
 
-class KSystemTimeZoneBackendWindows : public KTimeZoneBackend
+
+class KDECORE_EXPORT KSystemTimeZoneWindows : public KTimeZone
 {
 public:
-  KSystemTimeZoneBackendWindows(KTimeZoneSource *source, const QString &name)
-  : KTimeZoneBackend(source, name) {}
-
-  ~KSystemTimeZoneBackendWindows() {}
-
-  KSystemTimeZoneBackendWindows *clone() const;
-
-  QByteArray type() const;
-
-  int offsetAtZoneTime(const KTimeZone *caller, const QDateTime &zoneDateTime, int *secondOffset) const;
-  int offsetAtUtc(const KTimeZone *caller, const QDateTime &utcDateTime) const;
-  int offset(const KTimeZone *caller, time_t t) const;
-  bool isDstAtUtc(const KTimeZone *caller, const QDateTime &utcDateTime) const;
-  bool isDst(const KTimeZone *caller, time_t t) const;
-};
-
-class KSystemTimeZoneWindows : public KTimeZone
-{
-public:
-  KSystemTimeZoneWindows(KTimeZoneSource *source, const QString &name)
-    : KTimeZone(new KSystemTimeZoneBackendWindows(source, name)) {}
-
+  KSystemTimeZoneWindows(KTimeZoneSource *source, const QString &name);
+    
   ~KSystemTimeZoneWindows() {}
+  static QStringList listTimeZones();
 };
 
 #endif // _KTIMEZONE_WINDOWS_H

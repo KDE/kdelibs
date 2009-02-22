@@ -68,6 +68,7 @@ if (WIN32)
       util/kshell_win.cpp
       util/kmacroexpander_win.cpp
       util/kuser_win.cpp
+      date/ktimezone_windows.cpp
    )
    if(NOT MSVC)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
@@ -137,7 +138,7 @@ set(kdecore_LIB_SRCS
    date/kcalendarsystemjalali.cpp
    date/kdatetime.cpp
    date/ktimezone.cpp
-   date/ktimezone_windows.cpp
+
    date/ksystemtimezone.cpp
    date/ktzfiletimezone.cpp
    io/kautosavefile.cpp
@@ -298,7 +299,6 @@ kde4_add_executable(kde4-config NOGUI kde-config.cpp
    date/kcalendarsystemjalali.cpp
    date/kdatetime.cpp
    date/ktimezone.cpp
-   date/ktimezone_windows.cpp
    date/ksystemtimezone.cpp
    date/ktzfiletimezone.cpp
    io/kdebug.cpp
@@ -435,7 +435,6 @@ install( FILES
    date/kdatetime.h
    date/ksystemtimezone.h
    date/ktimezone.h
-   date/ktimezone_windows.h
    date/ktzfiletimezone.h
    io/kautosavefile.h
    io/kdebug.h
