@@ -385,11 +385,11 @@ KUrl::KUrl( const QString &str )
         setPath( pathToSet.left( index ) );
         _setQuery( pathToSet.mid( index + 1 ) );
       }
+      return;
     }
-#else
+#endif
     if ( str[0] == QLatin1Char('/') || str[0] == QLatin1Char('~') )
       setPath( str );
-#endif
     else {
       _setEncodedUrl( str.toUtf8() );
     }
@@ -420,11 +420,11 @@ KUrl::KUrl( const char * str )
       setPath( QString::fromUtf8( str+1 ) );
     else if ( IS_DRIVE_OR_DOUBLESLASH_0 )
       setPath( QString::fromUtf8( str ) );
-#else
+  }
+#endif
   if ( str && str[0] ) {
     if ( str[0] == '/' || str[0] == '~' )
       setPath( QString::fromUtf8( str ) );
-#endif
     else
       _setEncodedUrl( str );
   }
@@ -841,12 +841,7 @@ void KUrl::setEncodedPathAndQuery( const QString& _txt )
 
 QString KUrl::path( AdjustPathOption trailing ) const
 {
-#ifdef Q_OS_WIN
-  // throw away the first '/' when it's a local file
-  return trailingSlash( trailing, isLocalFile() ? QUrl::toLocalFile() : QUrl::path() );
-#else
   return trailingSlash( trailing, QUrl::path() );
-#endif
 }
 
 QString KUrl::toLocalFile( AdjustPathOption trailing ) const
