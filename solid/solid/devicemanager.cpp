@@ -161,9 +161,10 @@ void Solid::DeviceManagerPrivate::_k_deviceAdded(const QString &udi)
         // Ok, this one was requested somewhere was invalid
         // and now becomes magically valid!
 
-        Q_ASSERT(dev->backendObject()==0);
-        dev->setBackendObject(createBackendObject(udi));
-        Q_ASSERT(dev->backendObject()!=0);
+        if (dev->backendObject() == 0) {
+            dev->setBackendObject(createBackendObject(udi));
+            Q_ASSERT(dev->backendObject()!=0);
+        }
     }
 
     emit deviceAdded(udi);
