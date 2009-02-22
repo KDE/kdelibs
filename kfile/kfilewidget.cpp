@@ -735,7 +735,10 @@ void KFileWidget::slotOk()
     }
 
     // Make sure that one of the modes was provided
-    Q_ASSERT((mode & KFile::File) || (mode & KFile::Directory) || (mode & KFile::Files));
+    if (!((mode & KFile::File) || (mode & KFile::Directory) || (mode & KFile::Files))) {
+        mode = KFile::File;
+        kDebug() << "No mode() provided";
+    }
 
     // if we are on file mode, and the list of provided files/folder is greater than one, inform
     // the user about it
