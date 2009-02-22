@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2003 Stephan Binner <binner@kde.org>
     Copyright (C) 2003 Zack Rusin <zack@kde.org>
+    Copyright (C) 2009 Urs Wolfer <uwolfer @ kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -49,13 +50,17 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      * Sets the tab reordering enabled or disabled. If enabled,
      * the user can reorder the tabs by drag and drop the tab
      * headers.
+     *
+     * @deprecated Use QTabBar::setMovable() instead.
      */
-    void setTabReorderingEnabled( bool enable );
+    KDE_DEPRECATED void setTabReorderingEnabled( bool enable );
 
     /**
      * Returns whether tab reordering is enabled.
+     *
+     * @deprecated Use QTabBar::isMovable() instead.
      */
-    bool isTabReorderingEnabled() const;
+    KDE_DEPRECATED bool isTabReorderingEnabled() const;
 
     /**
      * If enabled, a close button is shown above the tab icon.
@@ -63,11 +68,11 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      * close button has been clicked. Note that the tab must have
      * an icon to use this feature.
      *
-     * @deprecated Use KTabBar::setCloseButtonEnabled() instead.
+     * @deprecated Use QTabBar::setTabsClosable() instead.
      */
     KDE_DEPRECATED void setHoverCloseButton( bool );
 
-    /** @deprecated Use KTabBar::isCloseButtonEnabled() instead. */
+    /** @deprecated Use QTabBar::tabsClosable() instead. */
     KDE_DEPRECATED bool hoverCloseButton() const;
 
     /**
@@ -75,11 +80,11 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      * minor delay has been passed. This prevents that user
      * accidentally closes a tab.
      *
-     * @deprecated Use KTabBar::setCloseButtonEnabled() instead.
+     * @deprecated Use QTabBar::setTabsClosable() instead.
      */
     KDE_DEPRECATED void setHoverCloseButtonDelayed( bool );
 
-    /** @deprecated Use KTabBar::isCloseButtonEnabled() instead. */
+    /** @deprecated Use QTabBar::tabsClosable() instead. */
     KDE_DEPRECATED bool hoverCloseButtonDelayed() const;
 
     /**
@@ -88,28 +93,36 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      * has been clicked.
      *
      * @since 4.1
+     *
+     * @deprecated Use QTabBar::setTabsClosable() instead.
      */
-    void setCloseButtonEnabled( bool );
+    KDE_DEPRECATED void setCloseButtonEnabled( bool );
 
     /**
      * Returns true if the close button is shown on tabs.
      *
      * @since 4.1
+     *
+     * @deprecated Use QTabBar::tabsClosable() instead.
      */
-    bool isCloseButtonEnabled() const;
+    KDE_DEPRECATED bool isCloseButtonEnabled() const;
 
     /**
      * Sets the 'activate previous tab on close' feature enabled
      * or disabled. If enabled, as soon as you close a tab, the
      * previously selected tab is activated again.
+     *
+     * @deprecated Use QTabBar::setSelectionBehaviorOnRemove() instead.
      */
-    void setTabCloseActivatePrevious( bool );
+    KDE_DEPRECATED void setTabCloseActivatePrevious( bool );
 
     /**
      * Returns whether the 'activate previous tab on close' feature
      * is enabled.
+     *
+     * @deprecated Use QTabBar::selectionBehaviorOnRemove() instead.
      */
-    bool tabCloseActivatePrevious() const;
+    KDE_DEPRECATED bool tabCloseActivatePrevious() const;
 
     /**
      * Selects the tab which has a tab header at
@@ -135,8 +148,8 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
     void initiateDrag( int );
     void testCanDecode( const QDragMoveEvent*, bool& );
     void receivedDropEvent( int, QDropEvent* );
-    void moveTab( int, int );
-    void closeRequest( int );
+    QT_MOC_COMPAT void moveTab( int, int );
+    QT_MOC_COMPAT void closeRequest( int );
 #ifndef QT_NO_WHEELEVENT
     void wheelDelta( int );
 #endif

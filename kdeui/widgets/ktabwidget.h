@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2003 Stephan Binner <binner@kde.org>
     Copyright (C) 2003 Zack Rusin <zack@kde.org>
+    Copyright (C) 2009 Urs Wolfer <uwolfer @ kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -78,6 +79,8 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
     /**
      * Returns true if tab ordering with the middle mouse button
      * has been enabled.
+     *
+     * @deprecated Use QTabWidget::isMovable() instead.
      */
     bool isTabReorderingEnabled() const;
 
@@ -85,7 +88,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * Returns true if the close button is shown on tabs
      * when mouse is hovering over them.
      *
-     * @deprecated Use KTabWidget::isCloseButtonEnabled() instead.
+     * @deprecated Use QTabWidget::tabsClosable() instead.
      */
     KDE_DEPRECATED bool hoverCloseButton() const;
 
@@ -93,7 +96,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * Returns true if the close button is shown on tabs
      * after a delay.
      *
-     * @deprecated Use KTabWidget::isCloseButtonEnabled() instead.
+     * @deprecated Use QTabWidget::setTabsClosable() instead.
      */
     KDE_DEPRECATED bool hoverCloseButtonDelayed() const;
 
@@ -101,14 +104,18 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * Returns true if the close button is shown on tabs.
      *
      * @since 4.1
+     *
+     * @deprecated Use QTabWidget::tabsClosable() instead.
      */
-    bool isCloseButtonEnabled() const;
+    KDE_DEPRECATED bool isCloseButtonEnabled() const;
 
     /**
      * Returns true if closing the current tab activates the previous
      * actice tab instead of the one to the right.
+     *
+     * @deprecated Use QTabBar::selectionBehaviorOnRemove() instead.
      */
-    bool tabCloseActivatePrevious() const;
+    KDE_DEPRECATED bool tabCloseActivatePrevious() const;
 
     /**
      * Returns true if calling setTitle() will resize tabs
@@ -197,15 +204,17 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      *
      * You can connect to signal movedTab(int, int) which will notify
      * you from which index to which index a tab has been moved.
+     *
+     * @deprecated Use QTabWidget::setMovable() instead.
      */
-    void setTabReorderingEnabled( bool enable );
+    QT_MOC_COMPAT void setTabReorderingEnabled( bool enable );
 
     /**
      * If \a enable is true, a close button will be shown on mouse hover
      * over tab icons which will emit signal closeRequest( QWidget * )
      * when pressed.
      *
-     * @deprecated Use KTabWidget::setCloseButtonEnabled() instead.
+     * @deprecated Use QTabWidget::setTabsClosable() instead.
      */
     QT_MOC_COMPAT void setHoverCloseButton( bool enable );
 
@@ -213,7 +222,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * If \a delayed is true, a close button will be shown on mouse hover
      * over tab icons after mouse double click delay else immediately.
      *
-     * @deprecated Use KTabWidget::setCloseButtonEnabled() instead.
+     * @deprecated Use QTabWidget::setTabsClosable() instead.
      */
     QT_MOC_COMPAT void setHoverCloseButtonDelayed( bool delayed );
 
@@ -223,14 +232,18 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * has been clicked.
      *
      * @since 4.1
+     *
+     * @deprecated Use QTabWidget::setTabsClosable() instead.
      */
-    void setCloseButtonEnabled( bool );
+    QT_MOC_COMPAT void setCloseButtonEnabled( bool );
 
     /**
      * If \a previous is true, closing the current tab activates the
      * previous active tab instead of the one to the right.
+     *
+     * @deprecated Use QTabWidget::setSelectionBehaviorOnRemove() instead.
      */
-    void setTabCloseActivatePrevious( bool previous );
+    QT_MOC_COMPAT void setTabCloseActivatePrevious( bool previous );
 
     /**
      * If \a enable is true, tabs will be resized to the width of the tab bar.

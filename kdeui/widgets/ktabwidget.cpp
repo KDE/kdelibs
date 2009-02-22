@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
   Copyright (C) 2003 Stephan Binner <binner@kde.org>
   Copyright (C) 2003 Zack Rusin <zack@kde.org>
+  Copyright (C) 2009 Urs Wolfer <uwolfer @ kde.org>
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -192,7 +193,7 @@ KTabWidget::KTabWidget( QWidget *parent, Qt::WFlags flags )
   connect(tabBar(), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )));
   connect(tabBar(), SIGNAL(receivedDropEvent( int, QDropEvent * )), SLOT(receivedDropEvent( int, QDropEvent * )));
   connect(tabBar(), SIGNAL(moveTab( int, int )), SLOT(moveTab( int, int )));
-  connect(tabBar(), SIGNAL(closeRequest( int )), SLOT(closeRequest( int )));
+  connect(tabBar(), SIGNAL(tabCloseRequested( int )), SLOT(closeRequest( int )));
   connect(tabBar(), SIGNAL(currentChanged( int )), SLOT(currentChanged( int )));
 #ifndef QT_NO_WHEELEVENT
   connect(tabBar(), SIGNAL(wheelDelta( int )), SLOT(wheelDelta( int )));
@@ -545,7 +546,7 @@ void KTabWidget::removeTab( int index )
 void KTabWidget::setHoverCloseButton( bool button )
 {
   // deprecated
-  setCloseButtonEnabled( button );
+  setTabsClosable( button );
 }
 
 bool KTabWidget::hoverCloseButton() const
@@ -563,17 +564,17 @@ void KTabWidget::setHoverCloseButtonDelayed( bool delayed )
 bool KTabWidget::hoverCloseButtonDelayed() const
 {
   // deprecated
-  return isCloseButtonEnabled();
+  return tabsClosable();
 }
 
 void KTabWidget::setCloseButtonEnabled( bool enable )
 {
-  static_cast<KTabBar*>( tabBar() )->setCloseButtonEnabled( enable );
+  static_cast<KTabBar*>( tabBar() )->setTabsClosable( enable );
 }
 
 bool KTabWidget::isCloseButtonEnabled() const
 {
-  return static_cast<KTabBar*>( tabBar() )->isCloseButtonEnabled();
+  return static_cast<KTabBar*>( tabBar() )->tabsClosable();
 }
 
 void KTabWidget::setAutomaticResizeTabs( bool enabled )
