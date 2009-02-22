@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2000 Torben Weis <weis@kde.org>
     Copyright (C) 2006 David Faure <faure@kde.org>
+    Copyright (C) 2009 Michael Pyne <michael.pyne@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -44,6 +45,7 @@
 #include "kfile/krecentdocument.h"
 #include "kdesktopfileactions.h"
 
+#include <kauthorized.h>
 #include <kmessageboxwrapper.h>
 #include <kurl.h>
 #include <kglobal.h>
@@ -65,6 +67,10 @@
 #include <QTextDocument>
 #include <kde_file.h>
 #include <kconfiggroup.h>
+#include <kdialog.h>
+#include <kstandardguiitem.h>
+#include <kguiitem.h>
+#include <ksavefile.h>
 
 #ifdef Q_WS_X11
 #include <kwindowsystem.h>
@@ -684,14 +690,176 @@ static KUrl::List resolveURLs( const KUrl::List& _urls, const KService& _service
   return urls;
 }
 
+// Helper function to make the given .desktop file executable by ensuring
+// that a #!/usr/bin/env xdg-open line is added if necessary and the file has
+// the +x bit set for the user.  Returns false if either fails.
+static bool makeFileExecutable( const QString &fileName )
+{
+  // Open the file and read the first two characters, check if it's
+  // #!.  If not, create a new file, prepend appropriate lines, and copy
+  // over.
+  QFile desktopFile( fileName );
+  if (!desktopFile.open( QFile::ReadOnly )) {
+    kError(7010) << "Error opening service" << fileName << desktopFile.errorString();
+    return false;
+  }
+
+  QByteArray header = desktopFile.peek( 2 ); // First two chars of file
+  if (header.size() == 0) {
+    kError(7010) << "Error inspecting service" << fileName << desktopFile.errorString();
+    return false; // Some kind of error
+  }
+
+  if (header != "#!")
+  {
+    // Add header
+    KSaveFile saveFile;
+    saveFile.setFileName( fileName );
+    if (!saveFile.open()) {
+      kError(7010) << "Unable to open replacement file for" << fileName << saveFile.errorString();
+      return false;
+    }
+
+    QByteArray shebang("#!/usr/bin/env xdg-open\n");
+    if (saveFile.write( shebang ) != shebang.size())
+    {
+      kError(7010) << "Error occurred adding header for" << fileName << saveFile.errorString();
+      saveFile.abort();
+      return false;
+    }
+
+    // Now copy the one into the other and then close and reopen desktopFile
+    QByteArray desktopData( desktopFile.readAll() );
+    if (desktopData.isEmpty())
+    {
+      kError(7010) << "Unable to read service" << fileName << desktopFile.errorString();
+      saveFile.abort();
+      return false;
+    }
+
+    if (saveFile.write( desktopData ) != desktopData.size())
+    {
+      kError(7010) << "Error copying service" << fileName << saveFile.errorString();
+      saveFile.abort();
+      return false;
+    }
+
+    desktopFile.close();
+    if (!saveFile.finalize())
+    { // Figures....
+      kError(7010) << "Error committing changes to service" << fileName << saveFile.errorString();
+      return false;
+    }
+
+    if (!desktopFile.open( QFile::ReadOnly ))
+    {
+      kError(7010) << "Error re-opening service" << fileName << desktopFile.errorString();
+      return false;
+    }
+  } // Add header
+
+  // corresponds to owner on unix, which will have to do since if the user
+  // isn't the owner we can't change perms anyways.
+  if (!desktopFile.setPermissions( QFile::ExeUser | desktopFile.permissions() ))
+  {
+    kError(7010) << "Unable to change permissions for" << fileName << desktopFile.errorString();
+    return false;
+  }
+
+  // whew
+  return true;
+}
+
+// Helper function to make a .desktop file executable if prompted by the user.
+// returns true if KRun::run() should continue with execution, false if user declined
+// to make the file executable or we failed to make it executable.
+static bool makeServiceExecutable( const KService& service, QWidget* window )
+{
+  if (!KAuthorized::authorize("run_desktop_files"))
+  {
+    kWarning() << "No authorization to execute " << service.entryPath();
+    KMessageBox::sorry( window, i18n("You are not authorized to execute this service.") );
+    return false; // Don't circumvent the Kiosk
+  }
+
+  QString serviceName = service.genericName();
+  if (serviceName.isEmpty())
+    serviceName = service.desktopEntryName();
+  QString continueStr = i18nc("@action:button",
+            "Make program executable and continue");
+
+  QString warningMessage = i18nc("@info",
+    "<para><b>Warning</b>: The program you are trying to run, \"<application>%1</application>\", is not "
+    "marked as an executable program.  This could be due to a mistake in the system "
+    "configuration, but could also be a malicious program attempting to run.</para>"
+    "<para>Click <interface>%2</interface> to make the program executable and run if:</para>"
+    "• You know this is a program (for example, if you created the shortcut), or<br/>"
+    "• You downloaded the program and know that it is safe."
+    "<para>Click <interface>Cancel</interface> to cancel execution if:</para>"
+    "• You did not know you were about to run a program, or<br/>"
+    "• You downloaded or were emailed this program and are not sure it's safe"
+    ,serviceName, continueStr);
+
+  QString details = i18n("This program will run the following command: %1", service.exec() );
+
+  if (!service.path().isEmpty())
+    details += i18n("\nThe command will run in: %1", service.path());
+
+  KGuiItem continueItem = KStandardGuiItem::cont();
+  continueItem.setText( continueStr );
+
+  // We want to be able to provide the details window but only "sorry" message boxes have
+  // a static method so we need to use createKMessageBox, which means we need to provide
+  // the KDialog.  We'll change the Continue to have a more descriptive button but otherwise
+  // be the standard continue button.
+
+  KDialog *baseDialog = new KDialog( window );
+  baseDialog->setButtons( KDialog::Ok | KDialog::Cancel );
+  baseDialog->setButtonGuiItem( KDialog::Ok, continueItem );
+  baseDialog->setDefaultButton( KDialog::Cancel ); // NoDefault doesn't work?
+  baseDialog->setCaption( i18nc("Warning about executing unknown .desktop file", "Warning") );
+
+  // We must use NoExec because otherwise the message box will be queued and the function will
+  // instead return immediately with no result code.
+  KMessageBox::createKMessageBox(
+         baseDialog, QMessageBox::Warning, warningMessage, QStringList(),
+         QString(), 0 /* bool* */, KMessageBox::NoExec, details);
+
+  baseDialog->setMinimumSize(400, 270); // Long text Qt bug still exists...
+  baseDialog->setDetailsWidgetVisible(true);
+
+  int result = baseDialog->exec();
+  kDebug(7010) << "result:" << result;
+  if (result != KDialog::Accepted)
+  {
+    return false;
+  }
+
+  // Assume that service is an absolute path since we're being called (relative paths
+  // would have been allowed unless Kiosk said no, therefore we already know where the
+  // .desktop file is.  Now add a header to it if it doesn't already have one
+  // and add the +x bit.
+
+  if (!::makeFileExecutable( service.entryPath() ))
+  {
+    KMessageBox::sorry(
+      window,
+      i18n("Unable to make the service %1 executable, aborting execution", serviceName)
+    );
+
+    return false;
+  }
+
+  return true;
+}
+
 bool KRun::run( const KService& _service, const KUrl::List& _urls, QWidget* window,
     bool tempFiles, const QString& suggestedFileName, const QByteArray& asn )
 {
   if (!_service.entryPath().isEmpty() &&
-      !KDesktopFile::isAuthorizedDesktopFile( _service.entryPath()))
+      !KDesktopFile::isAuthorizedDesktopFile( _service.entryPath()) &&
+      !::makeServiceExecutable( _service, window ))
   {
-     kWarning() << "No authorization to execute " << _service.entryPath();
-     KMessageBox::sorry( window, i18n("You are not authorized to execute this service.") );
      return false;
   }
 
