@@ -50,8 +50,11 @@ KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
         }
     } else if (!udi.isEmpty()) {
         Solid::Device dev(udi);
-        connect(dev.as<Solid::StorageAccess>(), SIGNAL(accessibilityChanged(bool, const QString &)),
-                this, SLOT(onAccessibilityChanged()));
+        Solid::StorageAccess *access = dev.as<Solid::StorageAccess>();
+        if (access!=0) {
+            connect(access, SIGNAL(accessibilityChanged(bool, const QString &)),
+                    this, SLOT(onAccessibilityChanged()));
+        }
     }
 }
 
