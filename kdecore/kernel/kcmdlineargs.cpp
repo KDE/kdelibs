@@ -656,7 +656,7 @@ KCmdLineArgsStatic::findOption(const KCmdLineOptions &options, QString &opt,
    {
       result = 0;
       inverse = false;
-      opt_name = options.d->names[i].toUtf8();
+      opt_name = options.d->names[i];
       if (opt_name.startsWith(':') || opt_name.isEmpty())
       {
          continue;
@@ -686,7 +686,7 @@ KCmdLineArgsStatic::findOption(const KCmdLineOptions &options, QString &opt,
                i++;
                if (i >= options.d->names.size())
                   return result+0;
-               QString nextOption = options.d->names[i].toUtf8();
+               QString nextOption = options.d->names[i];
                int p = nextOption.indexOf(' ');
                if (p > 0)
                   nextOption = nextOption.left(p);
@@ -708,7 +708,7 @@ KCmdLineArgsStatic::findOption(const KCmdLineOptions &options, QString &opt,
          if (opt_name.startsWith(' '))
          {
             opt_name = opt_name.mid(1);
-            def = options.d->defaults[i].toUtf8();
+            def = options.d->defaults[i];
             return result+3;
          }
       }
