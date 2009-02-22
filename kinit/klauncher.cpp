@@ -49,6 +49,7 @@
 #include <krun.h>
 #include <kstandarddirs.h>
 #include <ktemporaryfile.h>
+#include <kdesktopfile.h>
 #include <kurl.h>
 
 #include <kio/global.h>
@@ -780,10 +781,15 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
                          bool blind, bool autoStart, const QDBusMessage &msg)
 {
    QStringList urls = _urls;
-   if (!service->isValid())
+   bool runPermitted = KDesktopFile::isAuthorizedDesktopFile(service->entryPath());
+
+   if (!service->isValid() || !runPermitted)
    {
       requestResult.result = ENOEXEC;
-      requestResult.error = i18n("Service '%1' is malformatted.", service->entryPath());
+      if (service->isValid())
+         requestResult.error = i18n("Service '%1' must be executable to run.", service->entryPath());
+      else
+         requestResult.error = i18n("Service '%1' is malformatted.", service->entryPath());
       cancel_service_startup_info( NULL, startup_id, envs ); // cancel it if any
       return false;
    }

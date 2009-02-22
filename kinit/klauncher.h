@@ -203,6 +203,8 @@ public: // remote methods, called by KLauncherAdaptor
      * and/or $KDEDIRS/services
      * E.g. it should have the form "Applications/korganizer.desktop" or
      * "/opt/kde/share/applnk/Applications/korganizer.desktop".
+     * Note that for absolute paths the restrictions of
+     * KDesktopFile::isAuthorizedDesktopFile() are obeyed for security.
      *
      * 'url', if not empty, will be passed to the service as
      * argument.
