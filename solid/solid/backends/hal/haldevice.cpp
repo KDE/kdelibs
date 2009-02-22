@@ -339,7 +339,7 @@ bool HalDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
     if (type==Solid::DeviceInterface::GenericInterface) {
         return true;
     } else if (type==Solid::DeviceInterface::StorageAccess) {
-        return property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume")
+        return property("org.freedesktop.Hal.Device.Volume.method_names").toStringList().contains("Mount")
             || property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto");
     }
     else if (type==Solid::DeviceInterface::Video) {
