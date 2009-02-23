@@ -100,9 +100,9 @@ public:
      * will be purged. If there is no shortcut registration left the component
      * is purged too.
      *
-     * If a purged component or shortcut is actived the next time it will
+     * If a purged component or shortcut is activated the next time it will
      * reregister itself. All you probably will loose on wrong usage are the
-     * user set shortcuts.
+     * users set shortcuts.
      *
      * If you make sure your component is running and all global shortcuts it
      * has are active this function can be used to clean up the registry.
@@ -113,6 +113,15 @@ public:
      * all previously acquired information with care.
      */
     static bool cleanComponent(const QString &componentUnique);
+
+
+    /**
+     * Check if @a component is active.
+     *
+     * @param componentUnique the components unique identifier
+     * @return @c true if active, @false if not
+     */
+    static bool isComponentActive(const QString &componentName);
 
     /**
      * Returns a list of global shortcuts registered for the shortcut @seq.

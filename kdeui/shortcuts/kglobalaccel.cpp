@@ -23,6 +23,8 @@
 #include "kglobalaccel.h"
 #include "kglobalaccel_p.h"
 
+#include <memory>
+
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusMetaType>
 #ifdef Q_WS_X11
@@ -39,14 +41,51 @@
 #include "kmessagebox.h"
 #include "kshortcut.h"
 #include "kglobalaccel_component_interface.h"
+#include "kglobalaccel_interface.h"
+
+static org::kde::kglobalaccel::Component *getComponent(const QString &componentUnique)
+    {
+    // Connect to the kglobalaccel daemon
+    org::kde::KGlobalAccel kglobalaccel(
+            "org.kde.kglobalaccel",
+            "/kglobalaccel",
+            QDBusConnection::sessionBus());
+    if (!kglobalaccel.isValid()) {
+        kDebug() << "Failed to connect to the kglobalaccel daemon" << QDBusConnection::sessionBus().lastError();
+        return NULL;
+    }
+
+    // Get the path for our component. We have to do that because
+    // componentUnique is probably not a valid dbus object path
+    QDBusReply<QDBusObjectPath> reply = kglobalaccel.getComponent(componentUnique);
+    if (!reply.isValid()) {
+        kDebug() << "Failed to get dbus path for component " << componentUnique << reply.error();
+    }
+
+    // Now get the component
+    org::kde::kglobalaccel::Component *component = new org::kde::kglobalaccel::Component(
+        "org.kde.kglobalaccel",
+        reply.value().path(),
+        QDBusConnection::sessionBus());
+
+    // No component no cleaning
+    if (!component->isValid()) {
+        kDebug() << "Failed to get component" << componentUnique << QDBusConnection::sessionBus().lastError();
+        return NULL;
+    }
+
+    return component;
+}
+
 
 
 KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
-     : isUsingForeignComponentName(false),
-       enabled(true),
+     :  isUsingForeignComponentName(false),
+        enabled(true),
         iface("org.kde.kglobalaccel", "/kglobalaccel", QDBusConnection::sessionBus())
 {
-    // Make sure kded is running
+    // Make sure kded is running. The iface declaration above somehow
+    // works anyway.
     QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
     if (!bus->isServiceRegistered("org.kde.kglobalaccel")) {
         QString error;
@@ -62,6 +101,7 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
     QObject::connect(bus, SIGNAL(serviceOwnerChanged(QString, QString, QString)),
                      q, SLOT(_k_serviceOwnerChanged(QString, QString, QString)));
 }
+
 
 void KGlobalAccelPrivate::readComponentData(const KComponentData &componentData)
 {
@@ -111,20 +151,23 @@ void KGlobalAccel::activateGlobalShortcutContext(
 }
 
 
+// static
 bool KGlobalAccel::cleanComponent(const QString &componentUnique)
 {
-    // Get the component
-    org::kde::kglobalaccel::Component component(
-            "org.kde.kglobalaccel",
-            QString("/component/") + componentUnique,
-            QDBusConnection::sessionBus());
+    std::auto_ptr<org::kde::kglobalaccel::Component> component(getComponent(componentUnique));
+    if (!component.get()) return false;
 
-    // No component no cleaning
-    if (!component.isValid()) {
-        return false;
-    }
+    return component->cleanUp();
+}
 
-    return component.cleanUp();
+
+// static
+bool KGlobalAccel::isComponentActive(const QString &componentUnique)
+{
+    std::auto_ptr<org::kde::kglobalaccel::Component> component(getComponent(componentUnique));
+    if (!component.get()) return false;
+
+    return component->isActive();
 }
 
 
