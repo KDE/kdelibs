@@ -150,6 +150,19 @@ KSycocaFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 
     if (!d->m_sycocaDict) return; // Error!
 
+    KSycocaEntry::Ptr oldEntry = m_entryDict->value(newEntry->storageId());
+    if (oldEntry) {
+        // Already exists -> replace
+        // We found a more-local override, e.g. ~/.local/share/applications/kde4/foo.desktop
+        // So forget about the more global file.
+        //
+        // This can also happen with two .protocol files using the same protocol= entry.
+        // If we didn't remove one here, we would end up asserting because save()
+        // wasn't called on one of the entries.
+        //kDebug(7021) << "removing" << oldEntry.data() << oldEntry->entryPath() << "because of" << newEntry->entryPath() << "they have the same storageId" << newEntry->storageId();
+        removeEntry(newEntry->storageId());
+    }
+
     const QString name = newEntry->storageId();
     m_entryDict->insert( name, newEntry );
     d->m_sycocaDict->add( name, newEntry );

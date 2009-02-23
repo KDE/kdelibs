@@ -54,11 +54,6 @@ public:
   virtual KMimeType * createEntry( int ) const { assert(0); return 0L; }
 
   /**
-   * Add entry
-   */
-  virtual void addEntry(const KSycocaEntry::Ptr& newEntry);
-
-  /**
    * Write out mime type specific index files.
    */
   virtual void save(QDataStream &str);

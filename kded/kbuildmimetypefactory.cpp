@@ -355,15 +355,3 @@ void KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
     // END TODO
     str << QString(""); // end of list marker (has to be a string !)
 }
-
-void
-KBuildMimeTypeFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
-{
-   KMimeType::Ptr mimeType = KMimeType::Ptr::staticCast( newEntry );
-   if ( m_entryDict->value( newEntry->name() ) )
-   {
-     // Already exists -> replace
-     KSycocaFactory::removeEntry(newEntry->name());
-   }
-   KSycocaFactory::addEntry(newEntry);
-}

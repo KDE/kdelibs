@@ -132,12 +132,9 @@ KBuildServiceTypeFactory::save(QDataStream &str)
 void
 KBuildServiceTypeFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 {
-    KServiceType::Ptr serviceType = KServiceType::Ptr::staticCast( newEntry );
-    if ( m_entryDict->value( newEntry->name() ) ) {
-        // Already exists -> replace
-        KSycocaFactory::removeEntry(newEntry->name());
-    }
     KSycocaFactory::addEntry(newEntry);
+
+    KServiceType::Ptr serviceType = KServiceType::Ptr::staticCast( newEntry );
 
     const QMap<QString,QVariant::Type>& pd = serviceType->propertyDefs();
     QMap<QString,QVariant::Type>::ConstIterator pit = pd.begin();

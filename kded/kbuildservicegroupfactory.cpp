@@ -142,6 +142,7 @@ void
 KBuildServiceGroupFactory::addEntry( const KSycocaEntry::Ptr& newEntry)
 {
    KSycocaFactory::addEntry(newEntry);
+
    KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast( newEntry );
    serviceGroup->d_func()->m_serviceList.clear();
 

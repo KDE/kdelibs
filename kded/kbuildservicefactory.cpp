@@ -375,19 +375,5 @@ void KBuildServiceFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 
     const KService::Ptr service = KService::Ptr::staticCast( newEntry );
     m_dupeDict.insert(newEntry);
-
-    KSycocaEntry::Ptr oldEntry = m_entryDict->value(newEntry->storageId());
-    if (oldEntry) {
-        // Already exists -> replace
-        //KService::Ptr oldService = KService::Ptr::staticCast(oldEntry);
-        // We found a more-local override, e.g. ~/.local/share/applications/kde4/foo.desktop
-        // So forget about the more global file.
-        //kDebug(7021) << "removing" << oldService.data() << oldService->entryPath() << "because of" << service->entryPath();
-
-        Q_ASSERT(oldEntry->storageId() == newEntry->storageId());
-
-        KSycocaFactory::removeEntry(newEntry->storageId());
-    }
-
     KSycocaFactory::addEntry(newEntry);
 }
