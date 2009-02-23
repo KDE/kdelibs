@@ -124,7 +124,7 @@ QPixmap KIconEngine::pixmap( const QSize & size, QIcon::Mode mode, QIcon::State 
     QPixmap pix2(size);
     pix2.fill(QColor(0,0,0,0));
 
-    QPainter painter(&pix);
+    QPainter painter(&pix2);
     painter.drawPixmap(QPoint(), pix);
 
     return pix2;
