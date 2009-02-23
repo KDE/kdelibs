@@ -187,9 +187,9 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 ################# list the subdirectories #################
 
 if(CROSS_COMPILATION_TOOLS_ONLY)
-  add_definitions( cmake )
-  add_definitions( kdecore )
-  add_definitions( kdoctools )
+  add_subdirectory( cmake )
+  add_subdirectory( kdecore )
+  add_subdirectory( kdoctools )
 else(CROSS_COMPILATION_TOOLS_ONLY)
 
 add_subdirectory( cmake )
