@@ -736,7 +736,7 @@ void KFileWidget::slotOk()
 
     // Make sure that one of the modes was provided
     if (!((mode & KFile::File) || (mode & KFile::Directory) || (mode & KFile::Files))) {
-        mode = KFile::File;
+        mode |= KFile::File;
         kDebug() << "No mode() provided";
     }
 
