@@ -156,8 +156,9 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
 
   KStandardDirs *dirs = KGlobal::dirs();
   QStringList kdePrefixes ( dirs->kfsstnd_prefixes().split(QDir::separator()) );
+  kdePrefixes += dirs->resourceDirs ("xdgdata-apps");
 
-  // Check if the .desktop file is installed as part of KDE.
+  // Check if the .desktop file is installed as part of KDE or XDG.
   foreach (const QString &prefix, kdePrefixes) {
     if (!prefix.isEmpty() && path.startsWith(prefix))
       return true;
