@@ -159,7 +159,7 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
 
   // Check if the .desktop file is installed as part of KDE.
   foreach (const QString &prefix, kdePrefixes) {
-    if (path.startsWith(prefix))
+    if (!prefix.isEmpty() && path.startsWith(prefix))
       return true;
   }
 
