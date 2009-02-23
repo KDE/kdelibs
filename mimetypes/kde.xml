@@ -189,7 +189,7 @@ Notes:
     </magic>
     <glob pattern="*.abc"/>
   </mime-type>
-  <mime-type type="application/x-fictionbook"> <!-- fdo #17553, FIXED 0.52 -->
+  <mime-type type="application/x-fictionbook"> <!-- fdo #17553, FIXED 0.60 -->
     <comment>FictionBook document</comment>
     <sub-class-of type="application/xml"/>
     <glob pattern="*.fb2"/>
@@ -403,37 +403,37 @@ Notes:
     <alias type="application/x-mplayer2"/>
     <glob pattern="*.wmp"/>
   </mime-type>
-  <mime-type type="application/vnd.ms-asf"> <!-- fdo #19671 -->
+  <mime-type type="application/vnd.ms-asf"> <!-- fdo #19671, FIXED 0.60 -->
     <comment>Microsoft Media Format</comment>
     <sub-class-of type="video/x-ms-wmv"/>
   </mime-type>
-  <mime-type type="application/x-ogg"> <!-- fdo #19671 -->
+  <mime-type type="application/x-ogg"> <!-- fdo #19671, FIXED 0.60 -->
     <comment>Ogg multimedia file</comment>
     <sub-class-of type="application/ogg"/>
   </mime-type>
-  <mime-type type="audio/m3u"> <!-- fdo #19671 -->
+  <mime-type type="audio/m3u"> <!-- fdo #19671, FIXED 0.60 -->
     <comment>MP3 audio</comment>
     <sub-class-of type="audio/x-mpegurl"/>
     <alias type="audio/x-m3u"/>
   </mime-type>
-  <mime-type type="audio/vorbis"> <!-- fdo #19671 -->
+  <mime-type type="audio/vorbis"> <!-- fdo #19671, FIXED 0.60 -->
     <comment>Vorbis audio</comment>
     <sub-class-of type="audio/ogg"/>
     <alias type="audio/x-vorbis"/>
   </mime-type>
-  <mime-type type="audio/x-mp2"> <!-- fdo #19671 -->
+  <mime-type type="audio/x-mp2"> <!-- fdo #19671, FIXED 0.60 -->
     <comment>MP2 audio</comment>
     <sub-class-of type="audio/mp2"/>
   </mime-type>
-  <mime-type type="audio/x-oggflac"> <!-- fdo #19671 -->
+  <mime-type type="audio/x-oggflac"> <!-- fdo #19671, FIXED 0.60 -->
     <comment>MP2 audio</comment>
     <sub-class-of type="audio/x-flac+ogg"/>
   </mime-type>
-  <mime-type type="video/x-ogm"> <!-- fdo #19671 -->
+  <mime-type type="video/x-ogm"> <!-- fdo #19671, FIXED 0.60 -->
     <comment>Ogg/Ogm Video</comment>
     <sub-class-of type="video/x-ogm+ogg"/>
   </mime-type>
-  <mime-type type="video/x-theora"> <!-- fdo #19671 -->
+  <mime-type type="video/x-theora"> <!-- fdo #19671, FIXED 0.60 -->
     <comment>Ogg/Ogm Video</comment>
     <sub-class-of type="video/x-theora+ogg"/>
   </mime-type>
@@ -462,7 +462,7 @@ Notes:
   </mime-type>
 
   <!-- Is the actual standard for rdf content encoded in XMl, as opposed to text/rdf: http://www.iana.org/assignments/media-types/application/ -->
-  <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/rdf+xml"> <!-- fdo #18088, FIXED 0.52 -->
+  <mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/rdf+xml"> <!-- fdo #18088, FIXED 0.60 -->
     <comment>RDF/XML document</comment>
     <sub-class-of type="application/xml"/>
     <glob pattern="*.rdf" />
