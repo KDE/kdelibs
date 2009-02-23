@@ -16,6 +16,7 @@
  *  Boston, MA 02110-1301, USA.
  */
 #include "kdesktopfiletest.h"
+#include <kautostart.h>
 #include <kconfiggroup.h>
 #include <ktemporaryfile.h>
 #include <kstandarddirs.h>
@@ -81,4 +82,13 @@ void KDesktopFileTest::testIsAuthorizedDesktopFile()
     } else {
         qWarning("Skipping test for http_cache_cleaner.desktop, not found. kdelibs not installed?");
     }
+
+    KAutostart dummy; // create "autostart" resource
+    const QString autostartFile = KStandardDirs::locate("autostart", "plasma-desktop.desktop");
+    if (!autostartFile.isEmpty()) {
+        QVERIFY(KDesktopFile::isAuthorizedDesktopFile(autostartFile));
+    } else {
+        qWarning("Skipping test for plasma-desktop.desktop, not found. kdebase not installed?");
+    }
+
 }
