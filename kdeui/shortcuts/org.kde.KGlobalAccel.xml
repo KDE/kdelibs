@@ -27,6 +27,10 @@
       <arg type="as" direction="out"/>
       <arg name="key" type="i" direction="in"/>
     </method>
+    <method name="getComponent">
+      <arg type="o" direction="out"/>
+      <arg name="componentUnique" type="s" direction="in"/>
+    </method>
     <method name="shortcut">
       <arg type="ai" direction="out"/>
       <annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="QList&lt;int&gt;"/>

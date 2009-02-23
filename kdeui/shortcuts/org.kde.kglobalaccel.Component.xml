@@ -7,6 +7,9 @@
     <method name="cleanUp">
       <arg type="b" direction="out"/>
     </method>
+    <method name="isActive">
+      <arg type="b" direction="out"/>
+    </method>
     <method name="shortcutNames">
       <arg type="as" direction="out"/>
       <arg name="context" type="s" direction="in"/>
