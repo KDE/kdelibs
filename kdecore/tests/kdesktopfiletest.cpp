@@ -18,6 +18,7 @@
 #include "kdesktopfiletest.h"
 #include <kconfiggroup.h>
 #include <ktemporaryfile.h>
+#include <kstandarddirs.h>
 #include "kdesktopfiletest.moc"
 
 #include "kdesktopfile.h"
@@ -66,4 +67,18 @@ void KDesktopFileTest::testActionGroup()
     KConfigGroup cg = df.actionGroup("encrypt");
     QVERIFY(cg.hasKey("Name"));
     QCOMPARE(cg.readEntry("Name"), QString("Encrypt file"));
+}
+
+void KDesktopFileTest::testIsAuthorizedDesktopFile()
+{
+    const QString fileName = QFile::decodeName(KDESRCDIR "../../kioslave/http/http_cache_cleaner.desktop");
+    QVERIFY(QFile::exists(fileName));
+    QVERIFY(!KDesktopFile::isAuthorizedDesktopFile(fileName));
+
+    const QString installedFile = KGlobal::dirs()->locate("services", "http_cache_cleaner.desktop");
+    if (!installedFile.isEmpty()) {
+        QVERIFY(KDesktopFile::isAuthorizedDesktopFile(installedFile));
+    } else {
+        qWarning("Skipping test for http_cache_cleaner.desktop, not found. kdelibs not installed?");
+    }
 }

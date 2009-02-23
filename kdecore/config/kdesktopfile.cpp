@@ -155,12 +155,12 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
      return true; // Relative paths are ok.
 
   KStandardDirs *dirs = KGlobal::dirs();
-  QStringList kdePrefixes ( dirs->kfsstnd_prefixes().split(QDir::separator()) );
+  QStringList kdePrefixes( dirs->kfsstnd_prefixes().split(KPATH_SEPARATOR) );
   kdePrefixes += dirs->resourceDirs ("xdgdata-apps");
 
   // Check if the .desktop file is installed as part of KDE or XDG.
   foreach (const QString &prefix, kdePrefixes) {
-    if (!prefix.isEmpty() && path.startsWith(prefix))
+    if (path.startsWith(prefix))
       return true;
   }
 
