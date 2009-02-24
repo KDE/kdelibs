@@ -25,11 +25,11 @@
 #include <kconfiggroup.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
+
 #include <QtGui/QStyledItemDelegate>
 #include <QtGui/QPainter>
 #include <QtGui/QHeaderView>
-
-#include <QFontMetrics>
+#include <QtGui/FontMetrics>
 
 //BEGIN KNotifyEventListDelegate
 
