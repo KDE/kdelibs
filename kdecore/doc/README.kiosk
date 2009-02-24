@@ -1,4 +1,4 @@
-In KDE3 a kiosk-framework has been introduced.
+In KDE-3 a kiosk-framework has been introduced.
 
 One of the driving forces behind KDE is to put the user in control and
 give him or her a large amount of possibilities to adjust KDE to his or her 
@@ -16,8 +16,8 @@ for certain operations.
 The KDE kiosk-framework should be used IN ADDITION to the standard UNIX
 security measures. 
 
-The configuration framework in KDE3
-===================================
+The configuration framework in KDE
+==================================
 
 Since the very beginning KDE makes use of file-hierarchy to store resources
 for its applications. Resources range from icons, wallpapers, fonts to 
@@ -56,12 +56,12 @@ if its value differs from the value read from the other file.
 
 This counters the problem that changing default configuration files under 
 $KDEDIR would not take effect for users, since these users would most likely
-have their own copy of these settings under $KDEHOME. KDE3 will make sure 
+have their own copy of these settings under $KDEHOME. KDE will make sure 
 not to copy these settings so changes made under $KDEDIR will affect all users
 that haven't explicitly changed the affected settings to something else.
 
 * Configuration entries can be marked "immutable".
-Starting with KDE3, configuration entries can be marked "immutable". When a
+Starting with KDE-3, configuration entries can be marked "immutable". When a
 configuration entry is immutable it means that configuration files that are
 read later will not be able to override its value. Immutable entries cannot
 be changed via KConfig and if the entry is present under $KDEHOME it will 
@@ -117,8 +117,8 @@ Note that the avove example is not fool-proof, the user can potentially still
 rename either the root-owned kickerrc file or any of the directories in 
 the path to another name and create a new kickerrc _with_ write-access.
 
-KDE3 Action Restrictions
-========================
+KDE Action Restrictions
+=======================
 
 Most functionality within KDE is coupled to so called actions. For example when a user
 selects the File->Open option in the menubar of a KDE application, the "file_open"
@@ -499,8 +499,8 @@ To force an update of the ksycoca database touch the file
 .../share/services/update_ksycoca. This will force a user's sycoca database
 to be rebuild the next time the user logs in.
 
-KDE3 URL Restrictions
-=====================
+KDE URL Restrictions
+====================
 
 It is also possible to restrict URL related actions. The restriction framework 
 can disable URL actions based on the action, the URL in question and in some cases 
@@ -550,7 +550,7 @@ Some remarks:
   matches "/srv" and not "/srv/www".
 
 
-KDE3 Resource Restrictions
+KDE Resource Restrictions
 ==========================
 Most KDE applications make use of additional resource files that are typically
 located in directories under $KDEDIR/share. By default KDE allows users to
@@ -559,7 +559,7 @@ under $KDEHOME/share. For example, Konsole stores profiles under
 $KDEDIR/share/apps/konsole and users can add additional profiles by 
 installing files in $KDEHOME/share/apps/konsole.
 
-KDE3 Resource Restrictions make it possible to restrict the lookup of files
+KDE Resource Restrictions make it possible to restrict the lookup of files
 to directories outside of $KDEHOME only.
 
 The following resources are defined:
@@ -581,6 +581,9 @@ wallpaper - share/wallpapers
 templates - share/templates
 exe - bin
 lib - lib
+
+See http://api.kde.org/4.x-api/kdelibs-apidocs/kdecore/html/classKStandardDirs.html
+for a more up-to-date list of resources.
 
 For the purpose of resource restrictions there are two special resources:
 all - covers all resources
@@ -621,7 +624,7 @@ See also kcmshell --list for a list of all the base names.
 Expansion of environment variables in KDE config files.
 =======================================================
 
-In KDE3.1 arbitrary entries in configuration files can contain environment
+Since KDE-3.1, arbitrary entries in configuration files can contain environment
 variables. In order to use this the entry must be marked with [$e]. 
 
 Example:
@@ -645,7 +648,7 @@ Name[$ei]=${USER}
 Shell Commands in KDE config files.
 ===================================
 
-In KDE3.1 arbitrary entries in configuration files can contain shell 
+Since KDE-3.1 arbitrary entries in configuration files can contain shell 
 commands. This way the value of a configuration entry can be determined
 dynamically at runtime. In order to use this the entry must be marked 
 with [$e]. 
@@ -654,7 +657,7 @@ Example:
 Host[$e]=$(hostname)
 
 
-KDE3 Kiosk Application API
+KDE Kiosk Application API
 ==========================
 
 Three new methods have been added to KApplication:
