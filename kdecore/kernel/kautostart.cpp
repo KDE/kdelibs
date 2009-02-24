@@ -51,9 +51,6 @@ KAutostart::KAutostart(const QString& entryName,
     : QObject(parent),
       d(new Private)
 {
-    KGlobal::dirs()->addResourceType("xdgconf-autostart", NULL, "autostart/"); // xdg ones
-    KGlobal::dirs()->addResourceType("autostart", "xdgconf-autostart", "/"); // merge them
-    KGlobal::dirs()->addResourceType("autostart", NULL, "share/autostart"); // KDE ones are higher priority
     if (entryName.isEmpty())
     {
         // XXX sure that the mainComponent is available at this point?

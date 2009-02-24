@@ -99,56 +99,58 @@ public:
  * 4) update the kde_default documentation
  * 5) update the list in kde-config.cpp
 
- data
- share/apps
- html
- share/doc/HTML
- icon
- share/icons
- config
- share/config
- pixmap
- share/pixmaps
- apps
- share/applnk
- sound
- share/sounds
- locale
- share/locale
- services
- share/kde4/services
- servicetypes
- share/kde4/servicetypes
- mime
- share/mimelnk
- cgi
- cgi-bin
- wallpaper
- share/wallpapers
- templates
- share/templates
- exe
- bin
- module
- %lib/kde4
- qtplugins
- %lib/kde4/plugins
- kcfg
- share/config.kcfg
- emoticons
- share/emoticons
- xdgdata-apps
- applications
- xdgdata-icon
- icons
- xdgdata-pixmap
- pixmaps
- xdgdata-dirs
- desktop-directories
- xdgdata-mime
- mime
- xdgconf-menu
- menus
+data
+share/apps
+html
+share/doc/HTML
+icon
+share/icons
+config
+share/config
+pixmap
+share/pixmaps
+apps
+share/applnk
+sound
+share/sounds
+locale
+share/locale
+services
+share/kde4/services
+servicetypes
+share/kde4/servicetypes
+mime
+share/mimelnk
+cgi
+cgi-bin
+wallpaper
+share/wallpapers
+templates
+share/templates
+exe
+bin
+module
+%lib/kde4
+qtplugins
+%lib/kde4/plugins
+kcfg
+share/config.kcfg
+emoticons
+share/emoticons
+xdgdata-apps
+applications
+xdgdata-icon
+icons
+xdgdata-pixmap
+pixmaps
+xdgdata-dirs
+desktop-directories
+xdgdata-mime
+mime
+xdgconf-menu
+menus
+xdgconf-autostart
+autostart
 */
 
 static const char types_string[] =
@@ -201,6 +203,8 @@ static const char types_string[] =
     "xdgdata-mime\0"
     "xdgconf-menu\0"
     "menus\0"
+    "xdgconf-autostart\0"
+    "autostart\0"
     "\0";
 
 static const int types_indices[] = {
@@ -210,7 +214,7 @@ static const int types_indices[] = {
     248,  258,  275,  285,  301,  305,  309,  316,
     326,  336,  354,  359,  377,  387,  403,  416,
     429,  442,  448,  463,  471,  484,  504,  217,
-    517,  530,   -1
+    517,  530,  536,  554,  -1
 };
 
 static int tokenize( QStringList& token, const QString& str,
@@ -977,8 +981,9 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 
         QStringList dirs;
         dirs = d->relatives.value(type);
-        QString installdir = installPath( type );
-        QString installprefix = installPath("kdedir");
+        const QString typeInstallPath = installPath(type); // could be empty
+        const QString installdir = typeInstallPath.isEmpty() ? QString() : realPath(typeInstallPath);
+        const QString installprefix = installPath("kdedir");
 
         if (!dirs.isEmpty())
         {
@@ -1663,6 +1668,9 @@ void KStandardDirs::addKDEDefaults()
     addResourceType("exe", "lib", "kde4/libexec", true );
 
     addResourceDir("home", QDir::homePath(), false);
+
+    addResourceType("autostart", "xdgconf-autostart", "/"); // merge them, start with xdg autostart
+    addResourceType("autostart", NULL, "share/autostart"); // KDE ones are higher priority
 }
 
 static QStringList lookupProfiles(const QString &mapFile)

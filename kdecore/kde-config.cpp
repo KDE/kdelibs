@@ -124,6 +124,7 @@ int main(int argc, char **argv)
         types.sort();
         const char *helptexts[] = {
             "apps", I18N_NOOP("Applications menu (.desktop files)"),
+            "autostart", I18N_NOOP("Autostart directories"),
             "cache", I18N_NOOP("Cached information (e.g. favicons, web-pages)"),
             "cgi", I18N_NOOP("CGIs to run from kdehelp"),
             "config", I18N_NOOP("Configuration files"),
@@ -151,6 +152,7 @@ int main(int argc, char **argv)
             "xdgdata-pixmap", I18N_NOOP("Legacy pixmaps"),
             "xdgdata-mime", I18N_NOOP("XDG Mime Types"),
             "xdgconf-menu", I18N_NOOP("XDG Menu layout (.menu files)"),
+            "xdgconf-autostart", I18N_NOOP("XDG autostart directory"),
             "tmp", I18N_NOOP("Temporary files (specific for both current host and current user)"),
             "socket", I18N_NOOP("UNIX Sockets (specific for both current host and current user)"),
             0, 0
