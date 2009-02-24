@@ -27,7 +27,6 @@
 #include <kglobal.h>
 #include <QtCore/QMap>
 
-class KStandardDirsPrivate;
 class KConfig;
 
 /**
@@ -68,6 +67,7 @@ class KConfig;
  * <b>Standard resources that kdelibs allocates are:</b>\n
  *
  * @li @c apps - Applications menu (.desktop files).
+ * @li @c autostart - Autostart directories (both XDG and kde-specific)
  * @li @c cache - Cached information (e.g. favicons, web-pages)
  * @li @c cgi - CGIs to run from kdehelp.
  * @li @c config - Configuration files.
@@ -463,7 +463,7 @@ public:
      *
      * @param appname The name of the executable file for which to search.
      *                if this contains a path separator, it will be resolved
-     *                according to the current working directory 
+     *                according to the current working directory
      *                (shell-like behaviour).
      * @param pathstr The path which will be searched. If this is
      *                null (default), the @c $PATH environment variable will
@@ -763,9 +763,6 @@ private:
 
     class KStandardDirsPrivate;
     KStandardDirsPrivate* const d;
-
-    void applyDataRestrictions(const QString &) const;
-    void createSpecialResource(const char*);
 
     // Like their public counter parts but with an extra priority argument
     // If priority is true, the directory is added directly after
