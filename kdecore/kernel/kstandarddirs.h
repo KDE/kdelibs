@@ -177,7 +177,18 @@ class KDECORE_EXPORT KStandardDirs
 public:
     /**
      * KStandardDirs' constructor. It just initializes the caches.
-     **/
+     * Note that you should normally not call this, but use KGlobal::dirs()
+     * instead, in order to reuse the same KStandardDirs object as much as possible.
+     *
+     * Creating other KStandardDirs instances can be useful in other threads.
+     *
+     * Thread safety note: using a shared KStandardDirs instance (such as KGlobal::dirs())
+     * in multiple threads is thread-safe if you only call the readonly "lookup" methods
+     * (findExe, resourceDirs, findDirs, findResourceDir, findAllResources, saveLocation,
+     * relativeLocation). The methods that modify the object (all those starting with "add",
+     * basically all non-const methods) are obviously not thread-safe; set things up
+     * before creating threads.
+     */
     KStandardDirs();
 
     enum SearchOption { NoSearchOptions = 0,
@@ -189,7 +200,7 @@ public:
     /**
      * KStandardDirs' destructor.
      */
-	virtual ~KStandardDirs();
+    virtual ~KStandardDirs();
 
     /**
      * Adds another search dir to front of the @p fsstnd list.

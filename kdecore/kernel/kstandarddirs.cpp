@@ -2,6 +2,7 @@
    Copyright (C) 1999 Sirtaj Singh Kang <taj@kde.org>
    Copyright (C) 1999,2007 Stephan Kulow <coolo@kde.org>
    Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
+   Copyright (C) 2009 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -59,6 +60,7 @@
 #include <shlobj.h>
 #endif
 
+#include <QMutex>
 #include <QtCore/QRegExp>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
@@ -70,6 +72,7 @@ public:
     KStandardDirsPrivate(KStandardDirs* qq)
         : m_restrictionsActive(false),
           m_checkRestrictions(true),
+          m_cacheMutex(QMutex::Recursive), // resourceDirs is recursive
           q(qq)
     { }
 
@@ -80,27 +83,27 @@ public:
     bool m_restrictionsActive : 1;
     bool m_checkRestrictions : 1;
     QMap<QByteArray, bool> m_restrictions;
+
     QStringList xdgdata_prefixes;
     QStringList xdgconf_prefixes;
-
-    QStringList prefixes;
+    QStringList m_prefixes;
 
     // Directory dictionaries
-    QMap<QByteArray, QStringList> absolutes;
-    QMap<QByteArray, QStringList> relatives;
+    QMap<QByteArray, QStringList> m_absolutes;
+    QMap<QByteArray, QStringList> m_relatives;
 
-    mutable QMap<QByteArray, QStringList> dircache;
-    mutable QMap<QByteArray, QString> savelocations;
+    // Caches (protected by mutex in const methods, cf ctor docu)
+    QMap<QByteArray, QStringList> m_dircache;
+    QMap<QByteArray, QString> m_savelocations;
+    QMutex m_cacheMutex;
 
     KStandardDirs* q;
 };
 
 /* If you add a new resource type here, make sure to
- * 1) regenerate using "generate_string_table.pl types" and the data below.
+ * 1) regenerate using "kdesdk/scripts/generate_string_table.pl types < tmpfile" with the data below in tmpfile.
  * 2) update the KStandardDirs class documentation
- * 3) update the kde_default code
- * 4) update the kde_default documentation
- * 5) update the list in kde-config.cpp
+ * 3) update the list in kde-config.cpp
 
 data
 share/apps
@@ -311,9 +314,9 @@ void KStandardDirs::addPrefix( const QString& _dir, bool priority )
     if (dir.at(dir.length() - 1) != '/')
         dir += '/';
 
-    if (!d->prefixes.contains(dir)) {
-        priorityAdd(d->prefixes, dir, priority);
-        d->dircache.clear();
+    if (!d->m_prefixes.contains(dir)) {
+        priorityAdd(d->m_prefixes, dir, priority);
+        d->m_dircache.clear();
     }
 }
 
@@ -333,7 +336,7 @@ void KStandardDirs::addXdgConfigPrefix( const QString& _dir, bool priority )
 
     if (!d->xdgconf_prefixes.contains(dir)) {
         priorityAdd(d->xdgconf_prefixes, dir, priority);
-        d->dircache.clear();
+        d->m_dircache.clear();
     }
 }
 
@@ -353,13 +356,13 @@ void KStandardDirs::addXdgDataPrefix( const QString& _dir, bool priority )
 
     if (!d->xdgdata_prefixes.contains(dir)) {
         priorityAdd(d->xdgdata_prefixes, dir, priority);
-        d->dircache.clear();
+        d->m_dircache.clear();
     }
 }
 
 QString KStandardDirs::kfsstnd_prefixes()
 {
-    return d->prefixes.join(QString(QChar(KPATH_SEPARATOR)));
+    return d->m_prefixes.join(QString(QChar(KPATH_SEPARATOR)));
 }
 
 QString KStandardDirs::kfsstnd_xdg_conf_prefixes()
@@ -394,14 +397,14 @@ bool KStandardDirs::addResourceType( const char *type,
     if (copy.at(copy.length() - 1) != '/')
         copy += '/';
 
-    QStringList& rels = d->relatives[type]; // find or insert
+    QStringList& rels = d->m_relatives[type]; // find or insert
 
     if (!rels.contains(copy)) {
         if (priority)
             rels.prepend(copy);
         else
             rels.append(copy);
-        d->dircache.remove(type); // clean the cache
+        d->m_dircache.remove(type); // clean the cache
         return true;
     }
     return false;
@@ -418,13 +421,13 @@ bool KStandardDirs::addResourceDir( const char *type,
     if (copy.at(copy.length() - 1) != '/')
         copy += '/';
 
-    QStringList &paths = d->absolutes[type];
+    QStringList &paths = d->m_absolutes[type];
     if (!paths.contains(copy)) {
         if (priority)
             paths.prepend(copy);
         else
             paths.append(copy);
-        d->dircache.remove(type); // clean the cache
+        d->m_dircache.remove(type); // clean the cache
         return true;
     }
     return false;
@@ -439,8 +442,8 @@ QString KStandardDirs::findResource( const char *type,
 
 #if 0
     kDebug(180) << "Find resource: " << type;
-    for (QStringList::ConstIterator pit = prefixes.begin();
-         pit != prefixes.end();
+    for (QStringList::ConstIterator pit = m_prefixes.begin();
+         pit != m_prefixes.end();
          ++pit)
     {
         kDebug(180) << "Prefix: " << *pit;
@@ -871,7 +874,7 @@ void KStandardDirs::KStandardDirsPrivate::createSpecialResource(const char *type
     char hostname[256];
     hostname[0] = 0;
     gethostname(hostname, 255);
-    const QString localkdedir = prefixes.first();
+    const QString localkdedir = m_prefixes.first();
     QString dir = QString("%1%2-%3").arg(localkdedir).arg(type).arg(hostname);
     char link[1024];
     link[1023] = 0;
@@ -941,15 +944,16 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 
 QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, const QString& subdirForRestrictions)
 {
+    QMutexLocker lock(&m_cacheMutex);
     const bool dataRestrictionActive = m_restrictionsActive
                                        && (strcmp(type, "data") == 0)
                                        && hasDataRestrictions(subdirForRestrictions);
 
-    QMap<QByteArray, QStringList>::const_iterator dirCacheIt = dircache.constFind(type);
+    QMap<QByteArray, QStringList>::const_iterator dirCacheIt = m_dircache.constFind(type);
 
     QStringList candidates;
 
-    if (dirCacheIt != dircache.constEnd() && !dataRestrictionActive) {
+    if (dirCacheIt != m_dircache.constEnd() && !dataRestrictionActive) {
         //qDebug() << this << "resourceDirs(" << type << "), in cache already";
         candidates = *dirCacheIt;
     }
@@ -976,7 +980,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
         }
 
         QStringList dirs;
-        dirs = relatives.value(type);
+        dirs = m_relatives.value(type);
         const QString typeInstallPath = installPath(type); // could be empty
         const QString installdir = typeInstallPath.isEmpty() ? QString() : realPath(typeInstallPath);
         const QString installprefix = installPath("kdedir");
@@ -1012,7 +1016,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
             else if (strncmp(type, "xdgconf-", 8) == 0)
                 prefixList = &(xdgconf_prefixes);
             else
-                prefixList = &prefixes;
+                prefixList = &m_prefixes;
 
             for (QStringList::ConstIterator pit = prefixList->begin();
                  pit != prefixList->end();
@@ -1057,7 +1061,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                 candidates.append(installdir);
         }
 
-        dirs = absolutes.value(type);
+        dirs = m_absolutes.value(type);
         if (!dirs.isEmpty())
             for (QStringList::ConstIterator it = dirs.constBegin();
                  it != dirs.constEnd(); ++it)
@@ -1075,7 +1079,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
         // Exception: data_subdir restrictions are per-subdir, so we can't store such results
         if (!dataRestrictionActive) {
             //kDebug() << this << "Inserting" << type << candidates << "into dircache";
-            dircache.insert(type, candidates);
+            m_dircache.insert(type, candidates);
         }
     }
 
@@ -1298,17 +1302,18 @@ QString KStandardDirs::saveLocation(const char *type,
                                     const QString& suffix,
                                     bool create) const
 {
-    QString path = d->savelocations.value(type);
+    QMutexLocker lock(&d->m_cacheMutex);
+    QString path = d->m_savelocations.value(type);
     if (path.isEmpty())
     {
-        QStringList dirs = d->relatives.value(type);
+        QStringList dirs = d->m_relatives.value(type);
         if (dirs.isEmpty() && (
                 (strcmp(type, "socket") == 0) ||
                 (strcmp(type, "tmp") == 0) ||
                 (strcmp(type, "cache") == 0) ))
         {
             (void) resourceDirs(type); // Generate socket|tmp|cache resource.
-            dirs = d->relatives.value(type); // Search again.
+            dirs = d->m_relatives.value(type); // Search again.
         }
         if (!dirs.isEmpty())
         {
@@ -1333,14 +1338,14 @@ QString KStandardDirs::saveLocation(const char *type,
                 }
         }
         else {
-            dirs = d->absolutes.value(type);
+            dirs = d->m_absolutes.value(type);
             if (dirs.isEmpty()) {
                 qFatal("KStandardDirs: The resource type %s is not registered", type);
             }
             path = realPath(dirs.last());
         }
 
-        d->savelocations.insert(type, path.endsWith('/') ? path : path + '/');
+        d->m_savelocations.insert(type, path.endsWith('/') ? path : path + '/');
     }
     QString fullPath = path + suffix;
 
@@ -1357,13 +1362,14 @@ QString KStandardDirs::saveLocation(const char *type,
         if(!makeDir(fullPath, 0700)) {
             return fullPath;
         }
-        d->dircache.remove(type);
+        d->m_dircache.remove(type);
     }
     if (!fullPath.endsWith('/'))
         fullPath += '/';
     return fullPath;
 }
 
+// KDE5: make the method const
 QString KStandardDirs::relativeLocation(const char *type, const QString &absPath)
 {
     QString fullPath = absPath;
@@ -1848,7 +1854,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
             {
                 d->m_restrictionsActive = true;
                 d->m_restrictions.insert(key.toLatin1(), true);
-                d->dircache.remove(key.toLatin1());
+                d->m_dircache.remove(key.toLatin1());
             }
         }
     }
@@ -1864,7 +1870,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 QString KStandardDirs::localkdedir() const
 {
     // Return the prefix to use for saving
-    return d->prefixes.first();
+    return d->m_prefixes.first();
 }
 
 QString KStandardDirs::localxdgdatadir() const

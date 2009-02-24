@@ -345,13 +345,15 @@ void KStandarddirsTest::testRestrictedResources()
 // To find multithreading bugs: valgrind --tool=helgrind ./kstandarddirstest testThreads
 void KStandarddirsTest::testThreads()
 {
-    QThreadPool::globalInstance()->setMaxThreadCount(5);
-    QFuture<void> f1 = QtConcurrent::run(this, &KStandarddirsTest::testLocateLocal);
-    QFuture<void> f2 = QtConcurrent::run(this, &KStandarddirsTest::testSaveLocation);
-    QFuture<void> f3 = QtConcurrent::run(this, &KStandarddirsTest::testFindResource);
-    QFuture<void> f4 = QtConcurrent::run(this, &KStandarddirsTest::testFindAllResources);
-    f1.waitForFinished();
-    f2.waitForFinished();
-    f3.waitForFinished();
-    f4.waitForFinished();
+    QThreadPool::globalInstance()->setMaxThreadCount(6);
+    QList<QFuture<void> > futures;
+    futures << QtConcurrent::run(this, &KStandarddirsTest::testLocateLocal);
+    futures << QtConcurrent::run(this, &KStandarddirsTest::testSaveLocation);
+    futures << QtConcurrent::run(this, &KStandarddirsTest::testAppData);
+    futures << QtConcurrent::run(this, &KStandarddirsTest::testFindResource);
+    futures << QtConcurrent::run(this, &KStandarddirsTest::testFindAllResources);
+    futures << QtConcurrent::run(this, &KStandarddirsTest::testLocate);
+    futures << QtConcurrent::run(this, &KStandarddirsTest::testRelativeLocation);
+    Q_FOREACH(QFuture<void> f, futures)
+        f.waitForFinished();
 }

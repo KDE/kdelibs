@@ -101,8 +101,9 @@ class KCmdLineArgsList: public QList<KCmdLineArgs*>
 public:
    KCmdLineArgsList() { }
    ~KCmdLineArgsList() {
-	   while (count())
-		delete takeFirst();
+       // Can't use qDeleteAll(*this), ~KCmdLineArgs is a friend of KCmdLineArgsList only.
+       while (count())
+           delete takeFirst();
    }
 };
 
@@ -171,7 +172,7 @@ class KCmdLineArgsStatic {
     char **argv; // The original argv
     bool parsed : 1; // Whether we have parsed the arguments since calling init
     bool ignoreUnknown : 1; // Ignore unknown options and arguments
-    QString mCwd; // Current working directory. Important for KUnqiueApp!
+    QString mCwd; // Current working directory. Important for KUniqueApp!
     KCmdLineArgs::StdCmdLineArgs mStdargs;
 
     KCmdLineOptions qt_options;
@@ -263,8 +264,10 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     mStdargs = 0;
 
     // Text codec.
-    codec = QTextCodec::codecForLocale();
     setlocale(LC_ALL, ""); // need to initialize "System" codec, i.e. iconv
+    extern Q_CORE_EXPORT bool qt_locale_initialized;
+    qt_locale_initialized = true;
+    codec = QTextCodec::codecForLocale();
 
     // Qt options
     //FIXME: Check if other options are specific to Qt/X11
@@ -579,7 +582,7 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
    QByteArray qCwd;
    ds >> qCwd;
 
-   s->mCwd = QFile::decodeName(qCwd); //FIXME: Is this proper decoding?
+   s->mCwd = QFile::decodeName(qCwd);
 
    uint count;
    ds >> count;
