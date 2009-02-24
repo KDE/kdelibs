@@ -27,6 +27,9 @@
 #include <kstandarddirs.h>
 #include <QtGui/QStyledItemDelegate>
 #include <QtGui/QPainter>
+#include <QtGui/QHeaderView>
+
+#include <QFontMetrics>
 
 //BEGIN KNotifyEventListDelegate
 
@@ -47,7 +50,7 @@ KNotifyEventList::KNotifyEventListDelegate::KNotifyEventListDelegate(QObject *pa
 void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 		 const QStyleOptionViewItem& option, const QModelIndex& index ) const
 {
-	if (index.column() != 2)
+	if (index.column() != 0)
 		return QStyledItemDelegate::paint(painter, option, index);
 
 	QVariant displayData = index.data(Qt::UserRole);
@@ -70,13 +73,14 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 		iconList << ( optionsList.contains("KTTS") ? KIcon("text-speak") : KIcon() );
 
 	int mc_x=0;
-	QSize iconsSize = option.decorationSize;
+	
+	int iconWidth = option.decorationSize.width();
+	int iconHeight = option.decorationSize.height();
 	foreach(const KIcon &icon, iconList)
 	{
-		icon.paint(painter, rect.left() + mc_x + 4, rect.top() + (rect.height() - iconsSize.height()) / 2, iconsSize.width(), iconsSize.height());
-		mc_x += iconsSize.width() + 4;
+		icon.paint(painter, rect.left() + mc_x + 4, rect.top() + (rect.height() - iconHeight) / 2, iconWidth, iconHeight);
+		mc_x += iconWidth + 4;
 	}
-
 }
 
 //END KNotifyEventListDelegate
@@ -84,15 +88,25 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 KNotifyEventList::KNotifyEventList(QWidget *parent)
  : QTreeWidget(parent)  , config(0)
 {
-  QStringList headerLabels;
-  headerLabels << i18nc( "Title of the notified event", "Title" ) << i18nc( "Description of the notified event", "Description" ) << i18nc( "State of the notified event", "State" );
-  setHeaderLabels( headerLabels );
+	QStringList headerLabels;
+	headerLabels << i18nc( "State of the notified event", "State" ) << i18nc( "Title of the notified event", "Title" ) << i18nc( "Description of the notified event", "Description" );
+	setHeaderLabels( headerLabels );
+	
+	setItemDelegate(new KNotifyEventListDelegate(this));
+	setRootIsDecorated(false);
+	setAlternatingRowColors(true);
 
-  setItemDelegate(new KNotifyEventListDelegate(this));
-  setRootIsDecorated(false);
-  setAlternatingRowColors(true);
+	//Extract icon size as the font height (as h=w on icons)
+	QStyleOptionViewItem iconOption;
+	iconOption.initFrom( this );
+	int iconWidth = iconOption.fontMetrics.height() -2 ; //1px margin top & bottom
+	setIconSize( QSize(iconWidth, iconWidth) );
+	
+	header()->setResizeMode( 0, QHeaderView::Fixed ); 
+	header()->resizeSection( 0, KNotifyConfigElement::have_kttsd() ? (iconWidth+4)*6: (iconWidth+4)*5 );
+	header()->setResizeMode( 1, QHeaderView::ResizeToContents );
 
-  connect(this, SIGNAL(currentItemChanged( QTreeWidgetItem * , QTreeWidgetItem *  )) , this , SLOT(slotSelectionChanged( QTreeWidgetItem * , QTreeWidgetItem *)));
+	connect(this, SIGNAL(currentItemChanged( QTreeWidgetItem * , QTreeWidgetItem *  )) , this , SLOT(slotSelectionChanged( QTreeWidgetItem * , QTreeWidgetItem *)));
 }
 
 
@@ -116,7 +130,7 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 
 	foreach (const QString& group , conflist )
 	{
-                KConfigGroup cg(config, group);
+		KConfigGroup cg(config, group);
 		rx.indexIn(group);
 		QString id=rx.cap(1);
 
@@ -133,6 +147,8 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 
 		m_elements << new KNotifyEventListItem(this, id, name, description, config );
 	}
+	
+	resizeColumnToContents(2);
 }
 
 void KNotifyEventList::save( )
@@ -145,6 +161,8 @@ void KNotifyEventList::save( )
 
 void KNotifyEventList::slotSelectionChanged(  QTreeWidgetItem *current , QTreeWidgetItem *previous)
 {
+	Q_UNUSED( current );
+    
 	KNotifyEventListItem *it=dynamic_cast<KNotifyEventListItem *>(currentItem());
 	if(it)
 		emit eventSelected( it->configElement() );
@@ -169,14 +187,11 @@ KNotifyEventListItem::KNotifyEventListItem( QTreeWidget * parent, const QString 
 	: QTreeWidgetItem(parent) ,
 	m_config(eventName, config )
 {
-  setText( 0, name );
-  setText( 1, description );
-  /*setSizeHint ( 2 , QSize(22,22) );
-  setSizeHint ( 3 , QSize(22,22) );
-  setSizeHint ( 4 , QSize(22,22) );
-  setSizeHint ( 5 , QSize(22,22) );
-  setSizeHint ( 6 , QSize(22,22) );*/
-  update();
+	setText( 1, name );
+	setToolTip( 1, description );
+	setText( 2, description );
+	setToolTip( 2, description );
+	update();
 }
 
 KNotifyEventListItem::~KNotifyEventListItem()
@@ -190,22 +205,7 @@ void KNotifyEventListItem::save()
 
 void KNotifyEventListItem::update()
 {
-	setData(2 , Qt::UserRole , m_config.readEntry( "Action" ));
-/*	QString prstring=m_config.readEntry( "Action" );
-	QStringList actions=prstring.split ("|");
-
-	QPixmap pexec = SmallIcon("system-run");
-	QPixmap pstderr = SmallIcon("utilities-terminal");
-	QPixmap pmessage = SmallIcon("dialog-information");
-	QPixmap plogfile = SmallIcon("utilities-log-viewer");
-	QPixmap psound = SmallIcon("media-playback-start");
-	QPixmap ptaskbar = SmallIcon("services");
-
-	setIcon(2 , actions.contains("Sound") ? QIcon(psound) : QIcon() );
-	setIcon(3 , actions.contains("Popup") ? QIcon(pmessage) : QIcon() );
-	setIcon(4 , actions.contains("Execute") ? QIcon(pexec) : QIcon() );
-	setIcon(5 , actions.contains("Taskbar") ? QIcon(ptaskbar) : QIcon() );
-	setIcon(6 , actions.contains("Logfile") ? QIcon(plogfile) : QIcon() );*/
+	setData(0 , Qt::UserRole , m_config.readEntry( "Action" ));
 }
 
 #include "knotifyeventlist.moc"
