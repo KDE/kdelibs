@@ -251,13 +251,13 @@ const int FontChange = XFontChange;
 #ifndef FIXX11H_index
 #define FIXX11H_index
 inline
-char* Xindex( const char* s, int c )
+const char* Xindex( const char* s, int c )
     {
     return index( s, c );
     }
 #undef index
 inline
-char* index( const char* s, int c )
+const char* index( const char* s, int c )
     {
     return Xindex( s, c );
     }
@@ -271,13 +271,13 @@ char* index( const char* s, int c )
 #ifndef FIXX11H_rindex
 #define FIXX11H_rindex
 inline
-char* Xrindex( const char* s, int c )
+const char* Xrindex( const char* s, int c )
     {
     return rindex( s, c );
     }
 #undef rindex
 inline
-char* rindex( const char* s, int c )
+const char* rindex( const char* s, int c )
     {
     return Xrindex( s, c );
     }
