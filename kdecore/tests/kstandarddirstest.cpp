@@ -28,6 +28,7 @@ QTEST_KDEMAIN_CORE( KStandarddirsTest )
 #include <kglobal.h>
 #include "config-prefix.h"
 #include <QtCore/QDebug>
+#include <kconfiggroup.h>
 #include <config.h>
 
 void KStandarddirsTest::initTestCase()
@@ -287,3 +288,70 @@ void KStandarddirsTest::testSetXdgDataDirs()
     QVERIFY(newDirs.contains(localApps));
 }
 
+void KStandarddirsTest::testRestrictedResources()
+{
+    // Ensure we have a local xdgdata-apps dir
+    QFile localFile(KStandardDirs::locateLocal("xdgdata-apps", "foo.desktop"));
+    localFile.open(QIODevice::WriteOnly|QIODevice::Text);
+    localFile.write("foo");
+    localFile.close();
+    const QString localAppsDir = QFileInfo(localFile).absolutePath() + '/';
+    QVERIFY(!localAppsDir.contains("foo.desktop"));
+    // Ensure we have a local share/apps/qttest dir
+    const QString localDataDir = KStandardDirs::locateLocal("data", "qttest/");
+    QVERIFY(!localDataDir.isEmpty());
+    QVERIFY(QFile::exists(localDataDir));
+    const QString localOtherDataDir = KStandardDirs::locateLocal("data", "other/");
+    QVERIFY(!localOtherDataDir.isEmpty());
+
+    // Check unrestricted results first
+    const QStringList appsDirs = KGlobal::dirs()->resourceDirs("xdgdata-apps");
+    const QString kdeDataApps = KStandardDirs::realPath(KDEDIR "/share/applications/");
+    QVERIFY(appsDirs.contains(kdeDataApps));
+    QVERIFY(appsDirs.contains(localAppsDir));
+    const QStringList dataDirs = KGlobal::dirs()->findDirs("data", "qttest");
+    QVERIFY(dataDirs.contains(localDataDir));
+    const QStringList otherDataDirs = KGlobal::dirs()->findDirs("data", "other");
+    QVERIFY(otherDataDirs.contains(localOtherDataDir));
+
+    // Initialize restrictions.
+    // Need a new componentdata to trigger restricted-resource initialization
+    // And we need to write the config _before_ creating the KComponentData.
+    KConfig foorc("foorc");
+    KConfigGroup restrictionsGroup(&foorc, "KDE Resource Restrictions");
+    restrictionsGroup.writeEntry("xdgdata-apps", false);
+    restrictionsGroup.writeEntry("data_qttest", false);
+    restrictionsGroup.sync();
+
+    // Check restrictions.
+    KComponentData cData("foo");
+    QVERIFY(cData.dirs()->isRestrictedResource("xdgdata-apps"));
+    QVERIFY(cData.dirs()->isRestrictedResource("data", "qttest"));
+
+    const QStringList newAppsDirs = cData.dirs()->resourceDirs("xdgdata-apps");
+    QVERIFY(newAppsDirs.contains(kdeDataApps));
+    QVERIFY(!newAppsDirs.contains(localAppsDir)); // restricted!
+    const QStringList newDataDirs = cData.dirs()->findDirs("data", "qttest");
+    QVERIFY(!newDataDirs.contains(localDataDir)); // restricted!
+    const QStringList newOtherDataDirs = cData.dirs()->findDirs("data", "other");
+    QVERIFY(newOtherDataDirs.contains(localOtherDataDir)); // not restricted!
+
+    restrictionsGroup.deleteGroup();
+}
+
+#include <QThreadPool>
+#include <qtconcurrentrun.h>
+
+// To find multithreading bugs: valgrind --tool=helgrind ./kstandarddirstest testThreads
+void KStandarddirsTest::testThreads()
+{
+    QThreadPool::globalInstance()->setMaxThreadCount(5);
+    QFuture<void> f1 = QtConcurrent::run(this, &KStandarddirsTest::testLocateLocal);
+    QFuture<void> f2 = QtConcurrent::run(this, &KStandarddirsTest::testSaveLocation);
+    QFuture<void> f3 = QtConcurrent::run(this, &KStandarddirsTest::testFindResource);
+    QFuture<void> f4 = QtConcurrent::run(this, &KStandarddirsTest::testFindAllResources);
+    f1.waitForFinished();
+    f2.waitForFinished();
+    f3.waitForFinished();
+    f4.waitForFinished();
+}

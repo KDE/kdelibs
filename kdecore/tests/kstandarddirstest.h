@@ -39,6 +39,8 @@ private Q_SLOTS:
     void testAddResourceType();
     void testAddResourceDir();
     void testSetXdgDataDirs();
+    void testRestrictedResources();
+    void testThreads();
 
 private:
     QString m_kdehome;
