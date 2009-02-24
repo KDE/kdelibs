@@ -201,7 +201,7 @@ void KStandarddirsTest::testFindExe()
     const QString target = m_kdehome + "/linktodir";
     home.link( target );
     QVERIFY( KGlobal::dirs()->findExe( target ).isEmpty() );
-#endif 
+#endif
 
 #ifdef Q_OS_UNIX
     // findExe for a binary not part of KDE
@@ -274,7 +274,7 @@ void KStandarddirsTest::testSetXdgDataDirs()
 {
     // By default we should have KDEDIR/share/applications in `kde4-config --path xdgdata-apps`
     const QStringList dirs = KGlobal::dirs()->resourceDirs("xdgdata-apps");
-    const QString kdeDataApps = QString(KDEDIR "/share/applications/");
+    const QString kdeDataApps = KStandardDirs::realPath(KDEDIR "/share/applications/");
     QVERIFY(dirs.contains(kdeDataApps));
 
     // When setting XDG_DATA_DIR this should still be true
