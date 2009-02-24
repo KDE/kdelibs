@@ -130,7 +130,7 @@ class KFileItemDelegate::Private
 KFileItemDelegate::Private::Private(KFileItemDelegate *parent)
      : shadowColor(Qt::transparent), shadowOffset(1, 1), shadowBlur(2), maximumSize(0, 0),
        showToolTipWhenElided(true), q(parent),
-       animationHandler(new KIO::DelegateAnimationHandler(parent))
+       animationHandler(new KIO::DelegateAnimationHandler(parent)), activeMargins(0)
 {
 }
 
@@ -174,6 +174,7 @@ void KFileItemDelegate::Private::setHorizontalMargin(MarginType type, int horizo
 
 QRect KFileItemDelegate::Private::addMargin(const QRect &rect, MarginType type) const
 {
+    Q_ASSERT(activeMargins != 0);
     const Margin &m = activeMargins[type];
     return rect.adjusted(-m.left, -m.top, m.right, m.bottom);
 }
@@ -181,6 +182,7 @@ QRect KFileItemDelegate::Private::addMargin(const QRect &rect, MarginType type) 
 
 QRect KFileItemDelegate::Private::subtractMargin(const QRect &rect, MarginType type) const
 {
+    Q_ASSERT(activeMargins != 0);
     const Margin &m = activeMargins[type];
     return rect.adjusted(m.left, m.top, -m.right, -m.bottom);
 }
@@ -188,6 +190,7 @@ QRect KFileItemDelegate::Private::subtractMargin(const QRect &rect, MarginType t
 
 QSize KFileItemDelegate::Private::addMargin(const QSize &size, MarginType type) const
 {
+    Q_ASSERT(activeMargins != 0);
     const Margin &m = activeMargins[type];
     return QSize(size.width() + m.left + m.right, size.height() + m.top + m.bottom);
 }
@@ -195,6 +198,7 @@ QSize KFileItemDelegate::Private::addMargin(const QSize &size, MarginType type) 
 
 QSize KFileItemDelegate::Private::subtractMargin(const QSize &size, MarginType type) const
 {
+    Q_ASSERT(activeMargins != 0);
     const Margin &m = activeMargins[type];
     return QSize(size.width() - m.left - m.right, size.height() - m.top - m.bottom);
 }
@@ -1315,6 +1319,7 @@ void KFileItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOption
 {
     QStyleOptionViewItemV4 opt(option);
     d->initStyleOption(&opt, index);
+    d->setActiveMargins(d->verticalLayout(opt) ? Qt::Vertical : Qt::Horizontal);
 
     QRect r = d->labelRectangle(opt);
 
@@ -1360,6 +1365,7 @@ bool KFileItemDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, co
     // show it only in the case the display information is elided
     QStyleOptionViewItemV4 opt(option);
     d->initStyleOption(&opt, index);
+    d->setActiveMargins(d->verticalLayout(opt) ? Qt::Vertical : Qt::Horizontal);
 
     QTextLayout labelLayout;
     QTextLayout infoLayout;
@@ -1378,6 +1384,7 @@ QRegion KFileItemDelegate::shape(const QStyleOptionViewItem &option, const QMode
 {
     QStyleOptionViewItemV4 opt(option);
     d->initStyleOption(&opt, index);
+    d->setActiveMargins(d->verticalLayout(opt) ? Qt::Vertical : Qt::Horizontal);
 
     QTextLayout labelLayout;
     QTextLayout infoLayout;
