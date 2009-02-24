@@ -29,7 +29,7 @@
 #include <QtGui/QStyledItemDelegate>
 #include <QtGui/QPainter>
 #include <QtGui/QHeaderView>
-#include <QtGui/FontMetrics>
+#include <QtGui/QFontMetrics>
 
 //BEGIN KNotifyEventListDelegate
 
