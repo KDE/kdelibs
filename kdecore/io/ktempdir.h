@@ -40,9 +40,10 @@
  *
  * To create a temporary directory that starts with a certain name
  * in the "tmp" resource, one should use:
- * KTempDir(locateLocal("tmp", prefix));
+ * KTempDir(KStandardDirs::locateLocal("tmp", prefix));
  *
- * KTempDir does not create any missing directories, but locateLocal() does.
+ * KTempDir does not create any missing directories, but 
+ * KStandardDirs::locateLocal() does.
  *
  * @see KStandardDirs
  * @see KTemporaryFile
@@ -62,7 +63,7 @@ public:
     * almost always in octal. The first digit selects permissions for
     * the user who owns the file: read (4), write (2), and execute
     * (1); the second selects permissions for other users in the
-    * file's group, with the same values; and the fourth for other
+    * file's group, with the same values; and the third for other
     * users not in the file's group, with the same values.
     *
     **/
