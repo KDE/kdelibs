@@ -25,6 +25,7 @@
 #include <dirent.h>
 #include <QtCore/QFile>
 #include <QtCore/QSet>
+#include <QtCore/QDirIterator>
 
 class KFolderMimeTypePrivate : public KMimeTypePrivate
 {
@@ -75,41 +76,24 @@ QString KFolderMimeTypePrivate::iconName( const KUrl& _url ) const
   QString icon;
   // using KStandardDirs as this one checks for path being
   // a file instead of a directory
-  if ( KStandardDirs::exists( u.path() ) )
+  if ( KStandardDirs::exists( u.toLocalFile() ) )
   {
-    KDesktopFile cfg( u.path() );
+    KDesktopFile cfg( u.toLocalFile() );
     KConfigGroup group = cfg.desktopGroup();
     icon = group.readEntry( "Icon" );
     QString empty_icon = group.readEntry( "EmptyIcon" );
 
     if ( !empty_icon.isEmpty() )
     {
-      bool isempty = false;
-      DIR *dp = 0L;
-      struct dirent *ep;
-      dp = opendir( QFile::encodeName(_url.path()) );
-      if ( dp )
-      {
-        QSet<QByteArray> entries;
-        // Note that readdir isn't guaranteed to return "." and ".." first (#79826)
-        ep=readdir( dp ); if ( ep ) entries.insert( ep->d_name );
-        ep=readdir( dp ); if ( ep ) entries.insert( ep->d_name );
-        if ( (ep=readdir( dp )) == 0L ) // third file is NULL entry -> empty directory
-          isempty = true;
-        else {
-          entries.insert( ep->d_name );
-          if ( readdir( dp ) == 0 ) { // only three
-            // check if we got "." ".." and ".directory"
-            isempty = entries.contains( "." ) &&
-                      entries.contains( ".." ) &&
-                      entries.contains( ".directory" );
-          }
+      bool isempty = true;
+      QDirIterator dirIt( _url.toLocalFile(), QDir::Dirs|QDir::Files|QDir::NoDotAndDotDot );
+      while ( dirIt.hasNext() ) {
+        dirIt.next();
+        if ( dirIt.fileName() != QLatin1String( ".directory" ) ) {
+          isempty = false;
+          break;
         }
-        if (!isempty && !strcmp(ep->d_name, ".directory"))
-          isempty = (readdir(dp) == 0L);
-        closedir( dp );
       }
-
       if ( isempty )
         return empty_icon;
     }
@@ -118,12 +102,12 @@ QString KFolderMimeTypePrivate::iconName( const KUrl& _url ) const
   if ( icon.isEmpty() )
     return KMimeTypePrivate::iconName( _url );
 
-  if ( icon.startsWith( "./" ) ) {
+  if ( icon.startsWith( QLatin1String( "./" ) ) ) {
     // path is relative with respect to the location
     // of the .directory file (#73463)
     KUrl v( _url );
     v.addPath( icon.mid( 2 ) );
-    icon = v.path();
+    icon = v.toLocalFile();
   }
 
   return icon;
@@ -137,7 +121,7 @@ QString KFolderMimeTypePrivate::comment( const KUrl& _url ) const
     KUrl u( _url );
     u.addPath( ".directory" );
 
-    const KDesktopFile cfg( u.path() );
+    const KDesktopFile cfg( u.toLocalFile() );
     QString comment = cfg.readComment();
     if ( comment.isEmpty() )
         return KMimeTypePrivate::comment( _url );
