@@ -20,6 +20,7 @@
 #include "pastedialog.h"
 
 #include "kio/copyjob.h"
+#include "kio/deletejob.h"
 #include "kio/global.h"
 #include "kio/netaccess.h"
 #include "kio/renamedialog.h"
@@ -52,28 +53,36 @@ static KUrl getNewFileName( const KUrl &u, const QString& text, QWidget *widget 
   KUrl myurl(u);
   myurl.addPath( file );
 
+  // Check for existing destination file. If we let CopyJob do it then we expose
+  // an ugly tempfile name as the source URL...
   if (KIO::NetAccess::exists(myurl, KIO::NetAccess::DestinationSide, widget))
   {
       kDebug(7007) << "Paste will overwrite file.  Prompting...";
       KIO::RenameDialog_Result res = KIO::R_OVERWRITE;
 
-      QString newPath;
-      // Ask confirmation about resuming previous transfer
       KIO::RenameDialog dlg( widget,
                           i18n("File Already Exists"),
                           u.pathOrUrl(),
                           myurl.pathOrUrl(),
                           (KIO::RenameDialog_Mode) (KIO::M_OVERWRITE | KIO::M_SINGLE) );
       res = static_cast<KIO::RenameDialog_Result>(dlg.exec());
-      newPath = dlg.newDestUrl().path();
 
       if ( res == KIO::R_RENAME )
       {
-          myurl = newPath;
+          myurl = dlg.newDestUrl();
       }
       else if ( res == KIO::R_CANCEL )
       {
           return KUrl();
+      } else if (res == KIO::R_OVERWRITE)
+      {
+          // Ideally we would just pass KIO::Overwrite to the job in pasteDataAsyncTo.
+          // But 1) CopyJob doesn't support that (it wouldn't really apply to multiple files)
+          // 2) we can't use file_move because CopyJob* is everywhere in the API (see TODO)
+          // As solution 1bis) we could use a PredefinedAnswerJobUiDelegate like in kiotesthelper.h...
+          // But well the simpler is really to delete the dest:
+          KIO::Job* delJob = KIO::del(myurl);
+          delJob->exec();
       }
   }
 
@@ -277,6 +286,8 @@ KIO_EXPORT void KIO::pasteData( const KUrl& u, const QByteArray& _data, QWidget*
     (void) KIO::NetAccess::upload( tempFile.fileName(), newUrl, widget );
 }
 
+// KDE5 TODO: return a KIO::Job*, not a CopyJob*, in case we want to use file_move or a macro job...
+// But then the caller needs to know the destUrl too. Return a QPair?
 KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KUrl& u, const QByteArray& _data, QWidget *widget, const QString& text )
 {
     KUrl newUrl = getNewFileName( u, text, widget );
