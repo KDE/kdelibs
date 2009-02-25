@@ -397,6 +397,7 @@
 9042        kdevelop (cmake support debug)
 9043        kdevelop (php support)
 9044        kdevelop (csharp support)
+9045        kdevelop (qthelp support)
 
 #kdevplatform
 9500        kdevplatform

@@ -762,6 +762,9 @@ void KUrlTest::testRelativeURL()
 
   baseURL = "http://www.kde.org/info/index.html";
   QCOMPARE( KUrl::relativeUrl(baseURL, KUrl("http://www.kde.org/bugs/contact.html") ), QString( "../bugs/contact.html") );
+  QCOMPARE( KUrl::relativeUrl(baseURL, KUrl("http://www.kde.org/info/myhome")), QString("./myhome") );
+
+  QCOMPARE( KUrl::relativeUrl(KUrl("file:///home/kde-devel/kdevplatform"), KUrl("file:///home/kde-devel/kdevplatform/shell")), QString("./shell") );
 }
 
 void KUrlTest::testAdjustPath()
