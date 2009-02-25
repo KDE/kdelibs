@@ -89,15 +89,15 @@ void KServiceTest::testByName()
 
 void KServiceTest::testProperty()
 {
-    KService::Ptr kdedglobalaccel = KService::serviceByDesktopPath("kded/kdedglobalaccel.desktop");
-    QVERIFY(kdedglobalaccel);
-    QCOMPARE(kdedglobalaccel->entryPath(), QString("kded/kdedglobalaccel.desktop"));
+    KService::Ptr kdedkcookiejar = KService::serviceByDesktopPath("kded/kcookiejar.desktop");
+    QVERIFY(kdedkcookiejar);
+    QCOMPARE(kdedkcookiejar->entryPath(), QString("kded/kcookiejar.desktop"));
 
-    QCOMPARE(kdedglobalaccel->property("ServiceTypes").toStringList().join(","), QString("KDEDModule"));
-    QCOMPARE(kdedglobalaccel->property("X-KDE-Kded-autoload").toBool(), false);
-    QCOMPARE(kdedglobalaccel->property("X-KDE-Kded-load-on-demand").toBool(), true);
-    QVERIFY(!kdedglobalaccel->property("Name").toString().isEmpty());
-    QVERIFY(!kdedglobalaccel->property("Name[fr]", QVariant::String).isValid());
+    QCOMPARE(kdedkcookiejar->property("ServiceTypes").toStringList().join(","), QString("KDEDModule"));
+    QCOMPARE(kdedkcookiejar->property("X-KDE-Kded-autoload").toBool(), false);
+    QCOMPARE(kdedkcookiejar->property("X-KDE-Kded-load-on-demand").toBool(), true);
+    QVERIFY(!kdedkcookiejar->property("Name").toString().isEmpty());
+    QVERIFY(!kdedkcookiejar->property("Name[fr]", QVariant::String).isValid());
 
     KService::Ptr kjavaappletviewer = KService::serviceByDesktopPath("kjavaappletviewer.desktop");
     QVERIFY(kjavaappletviewer);
