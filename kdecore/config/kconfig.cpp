@@ -215,12 +215,13 @@ QStringList KConfig::groupList() const
     Q_D(const KConfig);
     QSet<QString> groups;
 
-    for (KEntryMap::ConstIterator entryMapIt( d->entryMap.constBegin() ); entryMapIt != d->entryMap.constEnd(); ++entryMapIt)
-        if (entryMapIt.key().mKey.isNull())
-        {
-            QString groupname = QString::fromUtf8(entryMapIt.key().mGroup);
+    for (KEntryMap::ConstIterator entryMapIt( d->entryMap.constBegin() ); entryMapIt != d->entryMap.constEnd(); ++entryMapIt) {
+        const QByteArray group = entryMapIt.key().mGroup;
+        if (entryMapIt.key().mKey.isNull() && !group.isEmpty() && group != "<default>" && group != "$Version") {
+            QString groupname = QString::fromUtf8(group);
             groups << groupname.left(groupname.indexOf('\x1d'));
         }
+    }
 
     return groups.toList();
 }
@@ -231,8 +232,7 @@ QStringList KConfigPrivate::groupList(const QByteArray& group) const
     QSet<QString> groups;
 
     for (KEntryMap::ConstIterator entryMapIt( entryMap.constBegin() ); entryMapIt != entryMap.constEnd(); ++entryMapIt)
-        if (entryMapIt.key().mKey.isNull() && entryMapIt.key().mGroup.startsWith(theGroup))
-        {
+        if (entryMapIt.key().mKey.isNull() && entryMapIt.key().mGroup.startsWith(theGroup)) {
             QString groupname = QString::fromUtf8(entryMapIt.key().mGroup.mid(theGroup.length()));
             groups << groupname.left(groupname.indexOf('\x1d'));
         }
