@@ -68,21 +68,23 @@ main(int argc, char *argv[])
    // Check how KCmdLineArgs::url() works
    KUrl u = KCmdLineArgs::makeURL("/tmp");
    kDebug() << u;
-   assert(u.path() == "/tmp");
+   assert(u.toLocalFile() == "/tmp");
    u = KCmdLineArgs::makeURL("foo");
    kDebug() << u << "  expected: " << KUrl(QDir::currentPath()+"/foo");
-   assert(u.path() == QDir::currentPath()+"/foo");
+   assert(u.toLocalFile() == QDir::currentPath()+"/foo");
    u = KCmdLineArgs::makeURL("http://www.kde.org");
    kDebug() << u;
    assert(u.url() == "http://www.kde.org");
 
    QFile file("a:b");
+#ifndef Q_WS_WIN
    bool ok = file.open(QIODevice::WriteOnly);
    assert(ok);
+#endif
    u = KCmdLineArgs::makeURL("a:b");
-   qDebug() << u.path();
+   qDebug() << u.toLocalFile();
    assert(u.isLocalFile());
-   assert(u.path().endsWith("a:b"));
+   assert(u.toLocalFile().endsWith("a:b"));
 
    args->clear(); // Free up memory.
 
