@@ -22,11 +22,7 @@
 #ifndef KIO_SLAVE_H
 #define KIO_SLAVE_H
 
-#if defined(MAKE_KIO_LIB) || defined(MAKE_KLAUNCHER)
-# define KIO_SLAVE_EXPORT  KIO_EXPORT
-#else
-# define KIO_SLAVE_EXPORT  KIO_EXPORT_DEPRECATED
-#endif
+#define KIO_SLAVE_EXPORT KIO_EXPORT
 
 #include <time.h>
 #include <unistd.h>
@@ -43,6 +39,11 @@ namespace KIO {
     // Attention developers: If you change the implementation of KIO::Slave,
     // do *not* use connection() or slaveconn but the respective KIO::Slave
     // accessor methods. Otherwise classes derived from Slave might break. (LS)
+    //
+    // Do not use this class directly, outside of KIO. Only use the Slave pointer
+    // that is returned by the scheduler for passing it around.
+    //
+    // TODO: KDE5: Separate public API and private stuff for this better
     class KIO_SLAVE_EXPORT Slave : public KIO::SlaveInterface
     {
 	Q_OBJECT
