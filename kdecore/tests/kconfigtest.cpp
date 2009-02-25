@@ -162,6 +162,12 @@ void KConfigTest::initTestCase()
   KConfigGroup cg3(&cg, "SubGroup/3");
   cg3.writeEntry( "sub3string", "somevalue" );
 
+  cg = KConfigGroup(&sc, "NoEntryGroup");
+  cg1 = KConfigGroup(&cg, "NEG Child1");
+  cg1.writeEntry( "rectEntry", RECTENTRY );
+  cg2 = KConfigGroup(&cg, "NEG Child2");
+  cg2.writeEntry( "rectEntry", RECTENTRY );
+
   sc.sync();
 
   KConfig sc1("kdebugrc", KConfig::SimpleConfig);
@@ -859,6 +865,13 @@ void KConfigTest::testSubGroup()
 
     QCOMPARE(QStringList(cg.entryMap().keys()), PARENTGROUPKEYS);
     QCOMPARE(QStringList(subcg3.entryMap().keys()), SUBGROUP3KEYS);
+
+    // Make sure groupList returns groups having no entries but subgroups
+    KConfigGroup neg(&sc, "NoEntryGroup");
+    // Check the child are there
+    QCOMPARE(neg.groupList(), QStringList() << "NEG Child1" << "NEG Child2");
+    // No check if the group itself is there.
+    QVERIFY(sc.groupList().contains("NoEntryGroup"));
 
     // make sure groupList() isn't returning something it shouldn't
     foreach(const QString& group, sc.groupList()) {
