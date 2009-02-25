@@ -29,6 +29,9 @@ namespace KIO {
   class Job;
   class CopyJob;
 
+  // KDE5 TODO: move all this to libkonq? It seems only libkonq uses this.
+  // If you use this in a 3rd-party KDE app, please email me (faure at kde.org)
+
   /**
    * Pastes the content of the clipboard to the given destination URL.
    * URLs are treated separately (performing a file copy)

@@ -80,19 +80,23 @@ static KUrl getNewFileName( const KUrl &u, const QString& text, QWidget *widget 
   return myurl;
 }
 
-// The finaly step: write _data to tempfile and move it to newUrl
+// The final step: write _data to tempfile and move it to newUrl
 static KIO::CopyJob* pasteDataAsyncTo( const KUrl& newUrl, const QByteArray& _data )
 {
-     KTemporaryFile tempFile;
-     tempFile.setAutoRemove(false);
-     tempFile.open();
-     tempFile.write( _data.data(), _data.size() );
-     tempFile.flush();
+    // ### Bug: because we move from a tempfile to the destination,
+    // if the user does "Undo" then we won't ask for confirmation, and we'll
+    // move back to a tempfile, instead of just deleting.
+    // I guess we need a macro job which does copy+del?
+    // A KIO::storedPut would be better but FileUndoManager would need to support it first.
+    KTemporaryFile tempFile;
+    tempFile.setAutoRemove(false);
+    tempFile.open();
+    tempFile.write(_data.data(), _data.size());
+    tempFile.flush();
 
-     KUrl origUrl;
-     origUrl.setPath(tempFile.fileName());
+    KUrl origUrl(tempFile.fileName());
 
-     return KIO::move( origUrl, newUrl );
+    return KIO::move(origUrl, newUrl);
 }
 
 #ifndef QT_NO_MIMECLIPBOARD
@@ -285,6 +289,8 @@ KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KUrl& u, const QByteArray& _
     return job;
 }
 
+// NOTE: DolphinView::pasteInfo() has a better version of this
+// (but which requires KonqFileItemCapabilities)
 KIO_EXPORT QString KIO::pasteActionText()
 {
     const QMimeData *mimeData = QApplication::clipboard()->mimeData();
