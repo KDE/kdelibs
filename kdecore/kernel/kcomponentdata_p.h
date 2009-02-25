@@ -21,6 +21,7 @@
 #define KERNEL_KCOMPONENTDATA_P_H
 
 #include "kcomponentdata.h"
+#include <QAtomicInt>
 #include <QtDebug>
 #include <QString>
 
@@ -44,7 +45,7 @@ public:
 
     ~KComponentDataPrivate()
     {
-        refCount = -0x00FFFFFF; //prevent a reentering of the dtor
+        refCount.fetchAndStoreOrdered(-0x00FFFFFF); //prevent a reentering of the dtor
         if (KGlobal::hasLocale())
             KGlobal::locale()->removeCatalog(aboutData.catalogName());
 
@@ -54,20 +55,20 @@ public:
 
     inline void ref()
     {
-        ++refCount;
+        refCount.ref();
         //qDebug() << refCount - 1 << "->" << refCount << kBacktrace() << endl;
     }
 
     inline void deref()
     {
-        --refCount;
+        const int refc = refCount.fetchAndAddOrdered(-1) - 1;
         //qDebug() << refCount + 1 << "->" << refCount << kBacktrace() << endl;
-        if (refCount == 0) {
+        if (refc == 0) {
             delete this;
-        } else if (refCount == 1 && sharedConfig && sharedConfig->componentData().d == this) { //sharedConfig has a reference to us
+        } else if (refc == 1 && sharedConfig && sharedConfig->componentData().d == this) { //sharedConfig has a reference to us
             if (sharedConfig.count() == 1) {    //we are the only class with a reference to the config object
                 delete this;
-            } else if (sharedConfig.count() > 0) {  //there are other references to it. 
+            } else if (sharedConfig.count() > 0) {  //there are other references to it.
                 sharedConfig->ref.deref();  //we don't have a reference to the config object anymore, but it has still a reference to us
                                             //this breaks the circular dependencies
             }
@@ -84,7 +85,7 @@ public:
     bool syncing;
 
 private:
-    int refCount;
+    QAtomicInt refCount;
     KComponentDataPrivate(const KComponentDataPrivate&);
     KComponentDataPrivate &operator=(const KComponentDataPrivate&);
 };
