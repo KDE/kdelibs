@@ -30,6 +30,7 @@
 
 class KActionCollection;
 class KConfig;
+class KConfigBase;
 class KConfigGroup;
 class KGlobalAccel;
 class KShortcut;
@@ -177,7 +178,8 @@ public:
      *
      * @param config Config object
      */
-    void exportConfiguration( KConfig *config) const;
+    KDE_DEPRECATED void exportConfiguration( KConfig *config) const;
+    void exportConfiguration( KConfigBase *config) const;
 
     /**
      * Import the settings from configuration @p config.
@@ -187,7 +189,8 @@ public:
      *
      * @param config Config object
      */
-    void importConfiguration( KConfig *config);
+    KDE_DEPRECATED void importConfiguration( KConfig *config);
+    void importConfiguration( KConfigBase *config);
 
 
 Q_SIGNALS:

@@ -168,6 +168,15 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 
 void KShortcutsEditor::importConfiguration( KConfig *config)
 {
+    importConfiguration(static_cast<KConfigBase*>(config));
+}
+
+
+void KShortcutsEditor::importConfiguration( KConfigBase *config)
+{
+    Q_ASSERT(config);
+    if (!config) return;
+
     if (d->actionTypes & KShortcutsEditor::GlobalAction) {
         QString groupName = "Global Shortcuts";
         KConfigGroup group( config, groupName );
@@ -184,8 +193,18 @@ void KShortcutsEditor::importConfiguration( KConfig *config)
     }
 }
 
+
 void KShortcutsEditor::exportConfiguration( KConfig *config) const
 {
+    exportConfiguration(static_cast<KConfigBase*>(config));
+}
+
+
+void KShortcutsEditor::exportConfiguration( KConfigBase *config) const
+{
+    Q_ASSERT(config);
+    if (!config) return;
+
     if (d->actionTypes & KShortcutsEditor::GlobalAction) {
         QString groupName = "Global Shortcuts";
         KConfigGroup group( config, groupName );
@@ -201,6 +220,7 @@ void KShortcutsEditor::exportConfiguration( KConfig *config) const
         }
     }
 }
+
 
 void KShortcutsEditor::writeConfiguration( KConfigGroup *config) const
 {
