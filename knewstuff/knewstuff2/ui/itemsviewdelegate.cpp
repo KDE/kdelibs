@@ -33,6 +33,8 @@ static const int kLabel = 0;
 static const int kInstall = 1;
 static const int kCollaborate = 2;
 
+static const int kPreviewSize = 64;
+
 namespace KNS
 {
 ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent)
@@ -113,38 +115,40 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     QSize size(option.fontMetrics.height() * 7, widgets.at(kInstall)->sizeHint().height());
 
     QLabel * infoLabel = qobject_cast<QLabel*>(widgets.at(kLabel));
+	infoLabel->setWordWrap(true);
     if (infoLabel != NULL) {
         if (realmodel->hasPreviewImages()) {
-            // move the text right by 64 + margin pixels to fit the preview
-            infoLabel->move(64 + margin * 2, 0);
-            infoLabel->resize(QSize(option.rect.width() - 64 - (margin * 4) - size.width(), option.fontMetrics.height() * 5));
+            // move the text right by kPreviewSize + margin pixels to fit the preview
+            infoLabel->move(kPreviewSize + margin * 2, 0);
+            infoLabel->resize(QSize(option.rect.width() - kPreviewSize - (margin * 6) - size.width(), option.fontMetrics.height() * 7));
         } else {
             infoLabel->move(margin, 0);
-            infoLabel->resize(QSize(option.rect.width() - margin - size.width(), option.fontMetrics.height() * 5));
+            infoLabel->resize(QSize(option.rect.width() - (margin * 4) - size.width(), option.fontMetrics.height() * 7));
         }
 
-        QString text = "<b>" + index.data(ItemsModel::kNameRole).toString() + "</b><br />";
+        QString text = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+			"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">p, li { white-space: pre-wrap; margin:0 0 0 0;}\n"
+			"</style></head><body>\n<p><b>" +
+			index.data(ItemsModel::kNameRole).toString() + "</b></p>\n";
 
-        QString summary = option.fontMetrics.elidedText(index.data(ItemsModel::kSummary).toString(),
-                          Qt::ElideRight, infoLabel->width());
-        QStringList summarylines = summary.split('\n');
-        summary = summarylines[0];
-        text += summary + "<br />";
+        QString summary = "<p>" + option.fontMetrics.elidedText(index.data(ItemsModel::kSummary).toString(),
+		  Qt::ElideRight, infoLabel->width() * 3) + "</p>\n";
+        text += summary;
 
         QString authorName = index.data(ItemsModel::kAuthorName).toString();
         QString email = index.data(ItemsModel::kAuthorEmail).toString();
         if (!authorName.isEmpty()) {
             if (email.isEmpty()) {
-                text += "<i>" + authorName + "</i>";
+                text += "<p><i>" + authorName + "</i></p>\n";
             } else {
-                text += "<i>" + authorName + "</i> <a href=\"mailto:" + email + "\">" + email + "</a>";
+                text += "<p><i>" + authorName + "</i> <a href=\"mailto:" + email + "\">" + email + "</a></p>\n";
             }
-            text += "<br />";
         }
 
         unsigned int downloads = index.data(ItemsModel::kDownloads).toUInt();
-        text += downloads == 0 ? i18n("No Downloads") : i18n("Downloads: %1", downloads);
+        text += downloads == 0 ? i18n("<p>No Downloads</p>") : i18n("<p>Downloads: %1</p>\n", downloads);
 
+		text += "</body></html>";
         infoLabel->setText(text);
     }
 
@@ -229,10 +233,10 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
     if (realmodel->hasPreviewImages()) {
 
         int height = option.rect.height();
-        QPoint point(option.rect.left() + margin, option.rect.top() + ((height - 64) / 2));
+        QPoint point(option.rect.left() + margin, option.rect.top() + ((height - kPreviewSize) / 2));
 
         if (index.data(ItemsModel::kPreview).toString().isEmpty()) {
-            QRect rect(point, QSize(64, 64));
+            QRect rect(point, QSize(kPreviewSize, kPreviewSize));
             painter->drawText(rect, Qt::AlignCenter | Qt::TextWordWrap, i18n("No Preview"));
         } else {
             QImage image = index.data(ItemsModel::kPreviewPixmap).value<QImage>();
@@ -242,7 +246,7 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
                 QPoint framePoint(point.x() - 5, point.y() - 5);
                 painter->drawImage(framePoint, m_frameImage.scaled(image.width() + 10, image.height() + 10));
             } else {
-                QRect rect(point, QSize(64, 64));
+                QRect rect(point, QSize(kPreviewSize, kPreviewSize));
                 painter->drawText(rect, Qt::AlignCenter | Qt::TextWordWrap, i18n("Loading Preview"));
             }
         }
@@ -268,7 +272,7 @@ QSize ItemsViewDelegate::sizeHint(const QStyleOptionViewItem & option, const QMo
     QSize size;
 
     size.setWidth(option.fontMetrics.height() * 4);
-    size.setHeight(option.fontMetrics.height() * 5); // up to 4 lines of text, and two margins
+    size.setHeight(option.fontMetrics.height() * 7); // up to 6 lines of text, and two margins
 
     return size;
 }
