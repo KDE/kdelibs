@@ -102,10 +102,11 @@ protected:
 	Qt::AlignmentFlag textAlignment() const;
 
     virtual void setPadding();
+    KdeUiProxyStyle* getProxyStyle();
 
 //     QPoint m_mousePos;
 //     int m_state;
-    KdeUiProxyStyle *proxyStyle;
+    KdeUiProxyStyle *m_proxyStyle;
 };
 
 // -------------------------------------------------------------------------
@@ -119,7 +120,10 @@ public:
 
     virtual const char *renderName() const { return "RenderButton"; }
 
+    virtual void layout();
     virtual short baselinePosition( bool ) const;
+    virtual void setStyle(RenderStyle *style);
+    virtual bool forceTransparentText() const { return m_hasTextIndentHack; }
 
     // don't even think about making this method virtual!
     DOM::HTMLInputElementImpl* element() const
@@ -127,6 +131,9 @@ public:
 
 protected:
     virtual bool isRenderButton() const { return true; }
+    virtual bool canHaveBorder() const { return true; }
+
+    bool m_hasTextIndentHack;
 };
 
 // -------------------------------------------------------------------------
