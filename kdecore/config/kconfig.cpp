@@ -213,16 +213,16 @@ const KComponentData& KConfig::componentData() const
 QStringList KConfig::groupList() const
 {
     Q_D(const KConfig);
-    QStringList groups;
+    QSet<QString> groups;
 
-    for (KEntryMap::ConstIterator entryMapIt( d->entryMap.constBegin() ); entryMapIt != d->entryMap.constEnd(); ++entryMapIt) {
-        const QByteArray group = entryMapIt.key().mGroup;
-        if (entryMapIt.key().mKey.isNull() && !group.isEmpty() &&
-            group != "<default>" && group != "$Version" && !group.contains('\x1d'))
-            groups << QString::fromUtf8(group);
-    }
+    for (KEntryMap::ConstIterator entryMapIt( d->entryMap.constBegin() ); entryMapIt != d->entryMap.constEnd(); ++entryMapIt)
+        if (entryMapIt.key().mKey.isNull())
+        {
+            QString groupname = QString::fromUtf8(entryMapIt.key().mGroup);
+            groups << groupname.left(groupname.indexOf('\x1d'));
+        }
 
-    return groups;
+    return groups.toList();
 }
 
 QStringList KConfigPrivate::groupList(const QByteArray& group) const
@@ -524,6 +524,9 @@ void KConfigPrivate::parseConfigFiles()
         }
         if (componentData.dirs()->isRestrictedResource(resourceType, fileName))
             bFileImmutable = true;
+
+    } else {
+        kDebug() << "No backend" << mBackend << "or filename" << fileName;
     }
 }
 
