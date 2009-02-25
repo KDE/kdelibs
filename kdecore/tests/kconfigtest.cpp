@@ -162,11 +162,15 @@ void KConfigTest::initTestCase()
   KConfigGroup cg3(&cg, "SubGroup/3");
   cg3.writeEntry( "sub3string", "somevalue" );
 
+  // Create A group containing only other groups. We want to make sure it
+  // shows up in groupList of sc
   cg = KConfigGroup(&sc, "NoEntryGroup");
   cg1 = KConfigGroup(&cg, "NEG Child1");
-  cg1.writeEntry( "rectEntry", RECTENTRY );
+  cg1.writeEntry( "entry1", "somevalue" );
   cg2 = KConfigGroup(&cg, "NEG Child2");
-  cg2.writeEntry( "rectEntry", RECTENTRY );
+  cg2.writeEntry( "entry2", "somevalue" );
+  cg3 = KConfigGroup(&cg, "NEG Child3");
+  cg3 = KConfigGroup(&cg, "NEG Child3");
 
   sc.sync();
 
@@ -672,6 +676,11 @@ void KConfigTest::testDefaultGroup()
     QCOMPARE(lines.first(), QByteArray("TestKey=defaultGroup\n"));
 #endif
 
+    // Now that the group exists make sure it isn't returned from groupList()
+    foreach(const QString& group, sc.groupList()) {
+        QVERIFY(!group.isEmpty() && group != "<default>");
+    }
+
     defaultGroup.deleteGroup();
     sc.sync();
 
@@ -716,6 +725,10 @@ void KConfigTest::testEmptyGroup()
     QCOMPARE(lines.first(), QByteArray("TestKey=emptyGroup\n"));
 #endif
 
+    // Now that the group exists make sure it isn't returned from groupList()
+    foreach(const QString& group, sc.groupList()) {
+        QVERIFY(!group.isEmpty() && group != "<default>");
+    }
     emptyGroup.deleteGroup();
     sc.sync();
 
