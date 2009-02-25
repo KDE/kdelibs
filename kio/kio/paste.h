@@ -75,7 +75,7 @@ namespace KIO {
    * Save the given mimesource @p data to the given destination URL
    * after offering the user to choose a data format.
    * This is the method used when handling drops (of anything else than URLs)
-   * onto kdesktop and konqueror.
+   * onto dolphin and konqueror; it is also called when pasting data.
    *
    * @param data the QMimeData (from a QDropEvent or from the clipboard when pasting)
    * @param destURL the URL of the directory where the data will be pasted.
@@ -91,6 +91,12 @@ namespace KIO {
                                        const QString& dialogText, QWidget* widget,
                                        bool clipboard = false );
 
+  /**
+   * Returns true if pasteMimeSource finds any interesting format in @p data.
+   * You can use this method to enable/disable the paste action appropriately.
+   * @since 4.3
+   */
+  KIO_EXPORT bool canPasteMimeSource(const QMimeData* data);
 
   /**
    * Returns the text to use for the Paste action, when the application supports

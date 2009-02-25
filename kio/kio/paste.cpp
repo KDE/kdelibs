@@ -150,6 +150,24 @@ static KIO::CopyJob* chooseAndPaste( const KUrl& u, const QMimeData* mimeData,
 
 
 #ifndef QT_NO_MIMECLIPBOARD
+
+static QStringList extractFormats(const QMimeData* mimeData)
+{
+    QStringList formats;
+    const QStringList allFormats = mimeData->formats();
+    for (QStringList::const_iterator it = allFormats.constBegin(), end = allFormats.constEnd();
+         it != end; ++it) {
+        if ((*it) == QLatin1String("application/x-qiconlist")) // see QIconDrag
+            continue;
+        if ((*it) == QLatin1String("application/x-kde-cutselection")) // see KonqDrag
+            continue;
+        if (!(*it).contains(QLatin1Char('/'))) // e.g. TARGETS, MULTIPLE, TIMESTAMP
+            continue;
+        formats.append(*it);
+    }
+    return formats;
+}
+
 // The main method for dropping
 KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KUrl& destUrl,
                                     const QString& dialogText, QWidget* widget, bool clipboard )
@@ -165,19 +183,7 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KUrl& destU
   }
   else
   {
-      QStringList formats;
-      const QStringList allFormats = mimeData->formats();
-      for ( QStringList::const_iterator it = allFormats.constBegin(), end = allFormats.constEnd() ;
-            it != end ; ++it ) {
-          if ( (*it) == QLatin1String( "application/x-qiconlist" ) ) // see QIconDrag
-              continue;
-          if ( (*it) == QLatin1String( "application/x-kde-cutselection" ) ) // see KonqDrag
-              continue;
-           if ( !(*it).contains( QLatin1Char( '/' ) ) ) // e.g. TARGETS, MULTIPLE, TIMESTAMP
-              continue;
-          formats.append( (*it) );
-      }
-
+      const QStringList formats = extractFormats(mimeData);
       if ( formats.size() == 0 )
           return 0;
 
@@ -194,13 +200,19 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KUrl& destU
 
   return pasteDataAsync( destUrl, ba, widget, dialogText );
 }
+
+KIO_EXPORT bool KIO::canPasteMimeSource(const QMimeData* data)
+{
+    return data->hasText() || !extractFormats(data).isEmpty();
+}
+
 #endif
 
 // The main method for pasting
 KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, bool move )
 {
   if ( !destUrl.isValid() ) {
-    KMessageBox::error( widget, i18n( "Malformed URL\n%1" ,  destUrl.url() ) );
+    KMessageBox::error( widget, i18n( "Malformed URL\n%1", destUrl.prettyUrl() ) );
     return 0;
   }
 
@@ -288,4 +300,3 @@ KIO_EXPORT QString KIO::pasteActionText()
         return QString();
     }
 }
-
