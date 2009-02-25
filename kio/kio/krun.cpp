@@ -797,7 +797,7 @@ static bool makeServiceExecutable(const KService& service, QWidget* window)
 
     QString serviceName = service.genericName();
     if (serviceName.isEmpty()) {
-        serviceName = service.desktopEntryName();
+        serviceName = service.entryPath();
     }
     QString continueStr = i18nc("@action:button",
                                 "Make program executable and continue");
