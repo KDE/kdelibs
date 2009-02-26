@@ -41,6 +41,7 @@
 281        kdeui (KCModule)
 282        kde3support (K3DockWidget)
 283        kdeui (K*Gesture*)
+285        kdeui (Wallet)
 291        kdeui (KAboutDialog)
 292        kdeui (KComboBox)
 293        kdeui (KLineEdit)

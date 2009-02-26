@@ -160,8 +160,8 @@ Wallet::~Wallet() {
         if (!walletLauncher.isDestroyed()) {
             walletLauncher->getInterface().close(d->handle, false, appid());
         } else {
-            kDebug() << "Problem with static destruction sequence."
-                        "Destroy any static Wallet before the event-loop exits.";
+            kDebug(285) << "Problem with static destruction sequence."
+                           "Destroy any static Wallet before the event-loop exits.";
         }
         d->handle = -1;
         d->folder.clear();
@@ -178,7 +178,7 @@ QStringList Wallet::walletList() {
 
 void Wallet::changePassword(const QString& name, WId w) {
     if( w == 0 )
-        kWarning() << "Pass a valid window to KWallet::Wallet::changePassword().";
+        kDebug(285) << "Pass a valid window to KWallet::Wallet::changePassword().";
     walletLauncher->getInterface().changePassword(name, (qlonglong)w, appid());
 }
 
@@ -208,7 +208,7 @@ int Wallet::deleteWallet(const QString& name) {
 
 Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
     if( w == 0 )
-        kWarning() << "Pass a valid window to KWallet::Wallet::openWallet().";
+        kDebug(285) << "Pass a valid window to KWallet::Wallet::openWallet().";
 
     Wallet *wallet = new Wallet(-1, name);
 
@@ -314,7 +314,7 @@ bool Wallet::isOpen() const {
 
 void Wallet::requestChangePassword(WId w) {
     if( w == 0 )
-        kWarning() << "Pass a valid window to KWallet::Wallet::requestChangePassword().";
+        kDebug(285) << "Pass a valid window to KWallet::Wallet::requestChangePassword().";
     if (d->handle == -1) {
         return;
     }
@@ -768,16 +768,16 @@ org::kde::KWallet &KWalletDLauncher::getInterface()
             int ret = KToolInvocation::startServiceByDesktopPath("kwalletd.desktop", QStringList(), &error);
             if (ret > 0)
             {
-                kError() << "Couldn't start kwalletd: " << error << endl;
+                kError(285) << "Couldn't start kwalletd: " << error << endl;
             }
             
             if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kwalletd")) {
-                kDebug() << "The kwalletd service is still not registered";
+                kDebug(285) << "The kwalletd service is still not registered";
             } else {
-                kDebug() << "The kwalletd service has been registered";
+                kDebug(285) << "The kwalletd service has been registered";
             }
         } else {
-            kError() << "The kwalletd service has been disabled";
+            kError(285) << "The kwalletd service has been disabled";
         }
     }
     
