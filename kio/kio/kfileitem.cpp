@@ -216,7 +216,7 @@ void KFileItemPrivate::init()
              * This is the reason for the -1
              */
             KDE_struct_stat buf;
-            const QString path = m_url.path( KUrl::RemoveTrailingSlash );
+            const QString path = m_url.toLocalFile( KUrl::RemoveTrailingSlash );
             if ( KDE::lstat( path, &buf ) == 0 )
             {
                 mode = buf.st_mode;
@@ -294,7 +294,7 @@ KIO::filesize_t KFileItemPrivate::size() const
     // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
     if ( m_bIsLocalUrl ) {
         KDE_struct_stat buf;
-        if ( KDE::stat( m_url.path(KUrl::RemoveTrailingSlash), &buf ) == 0 )
+        if ( KDE::stat( m_url.toLocalFile(KUrl::RemoveTrailingSlash), &buf ) == 0 )
             return buf.st_size;
     }
     return 0;
@@ -333,7 +333,7 @@ KDateTime KFileItemPrivate::time( KFileItem::FileTimes mappedWhich ) const
     if ( m_bIsLocalUrl )
     {
         KDE_struct_stat buf;
-        if ( KDE::stat( m_url.path(KUrl::RemoveTrailingSlash), &buf ) == 0 )
+        if ( KDE::stat( m_url.toLocalFile(KUrl::RemoveTrailingSlash), &buf ) == 0 )
         {
             setTime(KFileItem::ModificationTime, buf.st_mtime);
             setTime(KFileItem::AccessTime, buf.st_atime);
@@ -533,7 +533,7 @@ QString KFileItem::linkDest() const
     if ( d->m_bIsLocalUrl )
     {
         char buf[1000];
-        int n = readlink( QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )), buf, sizeof(buf)-1 );
+        int n = readlink( QFile::encodeName(d->m_url.toLocalFile( KUrl::RemoveTrailingSlash )), buf, sizeof(buf)-1 );
         if ( n != -1 )
         {
             buf[ n ] = 0;
@@ -546,7 +546,7 @@ QString KFileItem::linkDest() const
 QString KFileItem::localPath() const
 {
   if ( d->m_bIsLocalUrl ) {
-    return d->m_url.path();
+    return d->m_url.toLocalFile();
   }
 
   // Extract the local path from the KIO::UDSEntry
@@ -614,12 +614,12 @@ QString KFileItemPrivate::user() const
     QString userName = m_entry.stringValue(KIO::UDSEntry::UDS_USER);
     if (userName.isEmpty() && m_bIsLocalUrl) {
 #ifdef Q_WS_WIN
-        QFileInfo a(m_url.path( KUrl::RemoveTrailingSlash ));
+        QFileInfo a(m_url.toLocalFile( KUrl::RemoveTrailingSlash ));
         userName = a.owner();
         m_entry.insert( KIO::UDSEntry::UDS_USER, userName );
 #else
         KDE_struct_stat buff;
-        if ( KDE::lstat( m_url.path( KUrl::RemoveTrailingSlash ), &buff ) == 0) // get uid/gid of the link, if it's a link
+        if ( KDE::lstat( m_url.toLocalFile( KUrl::RemoveTrailingSlash ), &buff ) == 0) // get uid/gid of the link, if it's a link
         {
             struct passwd *pwuser = getpwuid( buff.st_uid );
             if ( pwuser != 0 ) {
@@ -643,12 +643,12 @@ QString KFileItemPrivate::group() const
     if (groupName.isEmpty() && m_bIsLocalUrl )
     {
 #ifdef Q_WS_WIN
-        QFileInfo a(m_url.path( KUrl::RemoveTrailingSlash ));
+        QFileInfo a(m_url.toLocalFile( KUrl::RemoveTrailingSlash ));
         groupName = a.group();
         m_entry.insert( KIO::UDSEntry::UDS_GROUP, groupName );
 #else
         KDE_struct_stat buff;
-        if ( KDE::lstat( m_url.path( KUrl::RemoveTrailingSlash ), &buff ) == 0) // get uid/gid of the link, if it's a link
+        if ( KDE::lstat( m_url.toLocalFile( KUrl::RemoveTrailingSlash ), &buff ) == 0) // get uid/gid of the link, if it's a link
         {
             struct group *ge = getgrgid( buff.st_gid );
             if ( ge != 0 ) {
@@ -704,7 +704,7 @@ QString KFileItem::mimeComment() const
 
     KMimeType::Ptr mime = mimeTypePtr();
     if (isLocalUrl && mime->is("application/x-desktop")) {
-        KDesktopFile cfg( url.path() );
+        KDesktopFile cfg( url.toLocalFile() );
         QString comment = cfg.desktopGroup().readEntry( "Comment" );
         if (!comment.isEmpty())
             return comment;
@@ -770,7 +770,7 @@ QString KFileItem::iconName() const
 
     KMimeType::Ptr mime = mimeTypePtr();
     if (isLocalUrl && mime->is("application/x-desktop")) {
-        d->m_iconName = iconFromDesktopFile(url.path());
+        d->m_iconName = iconFromDesktopFile(url.toLocalFile());
         if (!d->m_iconName.isEmpty()) {
             d->m_useIconNameCache = d->m_bMimeTypeKnown;
             return d->m_iconName;
@@ -805,8 +805,8 @@ QStringList KFileItem::overlays() const
 #ifndef Q_OS_WIN
     if( S_ISDIR( d->m_fileMode ) && d->m_bIsLocalUrl)
     {
-        if (KSambaShare::instance()->isDirectoryShared( d->m_url.path() ) ||
-            KNFSShare::instance()->isDirectoryShared( d->m_url.path() ))
+        if (KSambaShare::instance()->isDirectoryShared( d->m_url.toLocalFile() ) ||
+            KNFSShare::instance()->isDirectoryShared( d->m_url.toLocalFile() ))
         {
             //kDebug() << d->m_url.path();
             names.append("network-workgroup");
@@ -896,7 +896,7 @@ bool KFileItem::isReadable() const
     }
 
     // Or if we can't read it [using ::access()] - not network transparent
-    if ( d->m_bIsLocalUrl && ::access( QFile::encodeName(d->m_url.path()), R_OK ) == -1 )
+    if ( d->m_bIsLocalUrl && ::access( QFile::encodeName(d->m_url.toLocalFile()), R_OK ) == -1 )
         return false;
 
     return true;
@@ -919,7 +919,7 @@ bool KFileItem::isWritable() const
     }
 
     // Or if we can't read it [using ::access()] - not network transparent
-    if ( d->m_bIsLocalUrl && ::access( QFile::encodeName(d->m_url.path()), W_OK ) == -1 )
+    if ( d->m_bIsLocalUrl && ::access( QFile::encodeName(d->m_url.toLocalFile()), W_OK ) == -1 )
         return false;
 
     return true;
@@ -968,7 +968,7 @@ bool KFileItem::acceptsDrops() const
         return true;
 
     // Executable, shell script ... ?
-    if ( QFileInfo(d->m_url.path()).isExecutable() )
+    if ( QFileInfo(d->m_url.toLocalFile()).isExecutable() )
         return true;
 
     return false;
