@@ -95,7 +95,9 @@
 
 //#define DEBUG_FLICKER
 
-#define FIX_QT_BROKEN_QWIDGET_SCROLL
+#if QT_VERSION < 0x040500
+  #define FIX_QT_BROKEN_QWIDGET_SCROLL
+#endif
 
 #include <limits.h>
 #ifdef Q_WS_X11
