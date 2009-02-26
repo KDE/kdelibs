@@ -509,7 +509,7 @@ void RenderWidget::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     QRect cr = r.intersected(paintInfo.r);
 
     if (qobject_cast<QAbstractScrollArea*>(m_widget) || (isRedirectedWidget() && 
-            style()->backgroundLayers() && style()->backgroundLayers()->hasImage()))
+            (style()->hasBackgroundImage() || (style()->hasBackground() && shouldPaintBorder()))))
     {
         paintAllBackgrounds(paintInfo.p, style()->backgroundColor(), style()->backgroundLayers(), 
             cr, r.x(), r.y(), r.width(), r.height());

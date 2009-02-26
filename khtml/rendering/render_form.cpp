@@ -110,7 +110,7 @@ using namespace DOM;
                const QStyleOptionButton *o = qstyleoption_cast<const QStyleOptionButton *>(option);
                if (o) {
                    QStyleOptionButton opt = *o;
-                   opt.rect = subElementRect(SE_PushButtonContents, &opt, widget);
+                   opt.rect = subElementRect(SE_PushButtonFocusRect, &opt, widget);
                    KdeUiProxyStyle::drawControl(CE_PushButtonLabel, &opt, painter, widget);
                }
                return;
@@ -449,6 +449,20 @@ QString RenderSubmitButton::rawText()
     return raw;
 }
 
+bool RenderSubmitButton::canHaveBorder() const
+{
+    // ### TODO would be nice to be able to 
+    // return style()->hasBackgroundImage() here,
+    // depending on a config option (e.g. 'favour usability/integration over aspect')
+    // so that only buttons with both a custom border
+    // and a background image are drawn without native styling.
+    //
+    // This would go in the same place, gui wise, as a choice of b/w default color scheme,
+    // versus native color scheme.
+
+    return true;
+}
+
 void RenderSubmitButton::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
@@ -484,8 +498,12 @@ void RenderSubmitButton::calcMinMaxWidth()
 
     // ### the crazy heuristic code overrides some changes made by the
     // KHTMLProxyStyle, so reapply them
-    if (includesPadding())
-        w += RenderWidget::paddingLeft() + RenderWidget::paddingRight();
+    w += RenderWidget::paddingLeft() + RenderWidget::paddingRight();
+
+    if (shouldPaintBorder()) {
+        // we paint the borders ourselves, so let's override our height to something saner
+        h = ts.height() + RenderWidget::paddingTop() + RenderWidget::paddingBottom();
+    }
 
     s = QSize(w,h).expandedTo(QApplication::globalStrut());
 

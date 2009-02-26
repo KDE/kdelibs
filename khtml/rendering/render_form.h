@@ -131,7 +131,6 @@ public:
 
 protected:
     virtual bool isRenderButton() const { return true; }
-    virtual bool canHaveBorder() const { return true; }
 
     bool m_hasTextIndentHack;
 };
@@ -212,6 +211,8 @@ public:
     virtual void calcMinMaxWidth();
     virtual void updateFromElement();
     virtual short baselinePosition( bool ) const;
+protected:
+    virtual bool canHaveBorder() const;
 private:
     QString rawText();
 };
