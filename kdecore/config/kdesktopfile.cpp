@@ -290,13 +290,7 @@ bool KDesktopFile::tryExec() const
 
   if (!te.isEmpty()) {
     if (!QDir::isRelativePath(te)) {
-#ifdef Q_WS_WIN /* FIXME read below (js) */
-        struct stat st;
-        if (KDE::stat(te, &st) == 0
-          && (st.st_mode & S_IXUSR))
-#else
-      if (::access(QFile::encodeName(te), X_OK))
-#endif
+      if (KDE::access(te, X_OK))
         return false;
     } else {
       // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
@@ -308,16 +302,7 @@ bool KDesktopFile::tryExec() const
       bool match = false;
       for (; it != dirs.end(); ++it) {
         QString fName = *it + KDIR_SEPARATOR + te;
-/* FIXME (js) todo: use ACL winapi because access(..,X_OK) is not available - asserts for msvc>=2k5;
-        in the meantime more costly KDE_stat is used...
-*/
-#ifdef Q_WS_WIN
-        struct stat st;
-        if (KDE::stat(fName, &st) == 0
-          && (st.st_mode & S_IXUSR))
-#else
-        if (::access(QFile::encodeName(fName).constData(), X_OK) == 0)
-#endif
+        if (KDE::access(fName, X_OK) == 0)
         {
           match = true;
           break;

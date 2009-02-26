@@ -120,6 +120,21 @@ QString mkdtemp_QString (const QString &_template)
 
 namespace KDE
 {
+  int access(const QString &path, int mode)
+  {
+    int x_mode = 0;
+    // X_OK gives an assert on msvc2005 and up - use stat() instead
+    if( ( mode & X_OK ) == X_OK ) {
+        KDE_struct_stat st;
+        if( KDE::stat( path, &st ) != 0 )
+          return 1;
+        if( ( st.st_mode & S_IXUSR ) != S_IXUSR )
+          return 1;
+    }
+    mode &= ~X_OK;
+    return _waccess( CONV(path), mode );
+  }
+
   int chmod(const QString &path, mode_t mode)
   {
     return _wchmod( CONV(path), mode );

@@ -157,6 +157,8 @@
 class QString;
 namespace KDE
 {
+  /** replacement for ::access() to handle filenames in a platform independent way */
+  KDECORE_EXPORT int access(const QString &path, int mode);
   /** replacement for ::chmod() to handle filenames in a platform independent way */
   KDECORE_EXPORT int chmod(const QString &path, mode_t mode);
   /** replacement for ::lstat()/::lstat64() to handle filenames in a platform independent way */
@@ -172,6 +174,10 @@ namespace KDE
   /** replacement for ::utime() to handle filenames in a platform independent way */
   KDECORE_EXPORT int utime(const QString &filename, struct utimbuf *buf);
 #ifndef Q_WS_WIN
+  inline int access(const QString &path, int mode)
+  {
+    return ::access( QFile::encodeName(path), mode );
+  }
   inline int chmod(const QString &path, mode_t mode)
   {
     return ::chmod( QFile::encodeName(path), mode );

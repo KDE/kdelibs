@@ -1918,8 +1918,7 @@ QString KStandardDirs::locateLocal( const char *type,
 
 bool KStandardDirs::checkAccess(const QString& pathname, int mode)
 {
-    QByteArray cPathname = QFile::encodeName(pathname);
-    int accessOK = access( cPathname, mode );
+    int accessOK = KDE::access( pathname, mode );
     if ( accessOK == 0 )
         return true;  // OK, I can really access the file
 
@@ -1930,7 +1929,7 @@ bool KStandardDirs::checkAccess(const QString& pathname, int mode)
         return false;   // Check for write access is not part of mode => bail out
 
 
-    if (!access( cPathname, F_OK)) // if it already exists
+    if (!KDE::access( pathname, F_OK)) // if it already exists
         return false;
 
     //strip the filename (everything until '/' from the end
@@ -1943,7 +1942,7 @@ bool KStandardDirs::checkAccess(const QString& pathname, int mode)
 
     dirName.truncate(pos); // strip everything starting from the last '/'
 
-    accessOK = access( QFile::encodeName(dirName), W_OK );
+    accessOK = KDE::access( dirName, W_OK );
     // -?- Can I write to the accessed diretory
     if ( accessOK == 0 )
         return true;  // Yes

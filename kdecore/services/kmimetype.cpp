@@ -196,7 +196,7 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
         // are allowed to enter the directory
         if ( is_local_file )
         {
-            if ( access( QFile::encodeName(path), R_OK ) == -1 )
+            if ( KDE::access( path, R_OK ) == -1 )
                 return KMimeType::mimeType( "inode/directory-locked" );
         }
 #endif
