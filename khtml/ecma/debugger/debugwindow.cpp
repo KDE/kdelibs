@@ -845,7 +845,7 @@ void DebugWindow::doEval(const QString& qcode)
         if (idx < 0)
         {
             m_console->reportResult(qcode,
-                i18n("Don't know where to evaluate the expression. Please pause a script or open a source file."));
+                i18n("Do not know where to evaluate the expression. Please pause a script or open a source file."));
             return;
         }
         DebugDocument* document = m_openDocuments[idx];
