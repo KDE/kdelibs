@@ -140,7 +140,7 @@
 2003        ksim
 2100	    kgpg
 2200	    kdf
-2300        kwallet
+2300        kwalletd
 
 # 2500-2999 Reserved for private use
 
