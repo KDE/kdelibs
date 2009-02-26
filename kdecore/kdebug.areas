@@ -430,6 +430,7 @@
 9527        kdevelop (bazaar)
 9528        kdevplatform (vcscommon)
 9529        kdevplatform (documentation)
+9530        kdevplatform (documentswitcher)
 
 # toys and games
 10000        amor
