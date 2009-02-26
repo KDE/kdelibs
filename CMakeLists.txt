@@ -252,7 +252,7 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake ${CMAKE_CUR
 # the following will be the correct locations once cmake has the improved FIND_PACKAGE() 
 # install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${PLUGIN_INSTALL_DIR}/cmake RENAME KDE4Config.cmake)
 
+endif(CROSS_COMPILATION_TOOLS_ONLY)
 
 macro_display_feature_log()
 
-endif(CROSS_COMPILATION_TOOLS_ONLY)
