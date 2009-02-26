@@ -811,7 +811,7 @@ static bool makeServiceExecutable(const KService& service, QWidget* window)
                                    "• You downloaded the program and know that it is safe."
                                    "<para>Click <interface>Cancel</interface> to cancel execution if:</para>"
                                    "• You did not know you were about to run a program, or<br/>"
-                                   "• You downloaded or were emailed this program and are not sure it's safe"
+                                   "• You downloaded or were emailed this program and are not sure if it is safe."
                                    , serviceName, continueStr);
 
     QString details = i18n("This program will run the following command: %1", service.exec());

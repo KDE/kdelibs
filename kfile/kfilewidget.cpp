@@ -911,7 +911,7 @@ void KFileWidget::slotOk()
                 KIO::StatJob *checkStatJob = KIO::stat(checkUrl, KIO::HideProgressInfo);
                 bool res = KIO::NetAccess::synchronousRun(checkStatJob, 0);
                 if (res && checkStatJob->statResult().isDir()) {
-                    KMessageBox::sorry(this, i18n("More than one folder has been selected and this dialog does not accept folders, so it is not possible to decide in which one enter. Please select only one folder to list it"), i18n("More than one folder provided"));
+                    KMessageBox::sorry(this, i18n("More than one folder has been selected and this dialog does not accept folders, so it is not possible to decide which one to enter. Please select only one folder to list it."), i18n("More than one folder provided"));
                     return;
                 } else if (res) {
                     filesInList = true;
