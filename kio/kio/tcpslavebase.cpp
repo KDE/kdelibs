@@ -103,12 +103,63 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(TCPSlaveBase::SslResult)
 class TCPSlaveBase::TcpSlaveBasePrivate
 {
 public:
+    TcpSlaveBasePrivate(TCPSlaveBase* qq) : q(qq) {}
+
     QList<KSslError> nonIgnorableErrors(const QList<KSslError> &/*e*/) const
     {
         QList<KSslError> ret;
         //TODO :)
         return ret;
     }
+
+    void prepareSslRelatedMetaData()
+    {
+        KSslCipher cipher = socket.sessionCipher();
+        q->setMetaData("ssl_protocol_version", socket.negotiatedSslVersionName());
+        QString sslCipher = cipher.encryptionMethod() + '\n';
+        sslCipher += cipher.authenticationMethod() + '\n';
+        sslCipher += cipher.keyExchangeMethod() + '\n';
+        sslCipher += cipher.digestMethod();
+        q->setMetaData("ssl_cipher", sslCipher);
+        q->setMetaData("ssl_cipher_used_bits", QString::number(cipher.usedBits()));
+        q->setMetaData("ssl_cipher_bits", QString::number(cipher.supportedBits()));
+        q->setMetaData("ssl_peer_ip", ip);
+
+        // try to fill in the blanks, i.e. missing certificates, and just assume that
+        // those belong to the peer (==website or similar) certificate.
+        for (int i = 0; i < sslErrors.count(); i++) {
+            if (sslErrors[i].certificate().isNull()) {
+                sslErrors[i] = KSslError(sslErrors[i].error(),
+                                        socket.peerCertificateChain()[0]);
+            }
+        }
+
+        QString errorStr;
+        // encode the two-dimensional numeric error list using '\n' and '\t' as outer and inner separators
+        foreach (const QSslCertificate &cert, socket.peerCertificateChain()) {
+            foreach (const KSslError &error, sslErrors) {
+                if (error.certificate() == cert) {
+                    errorStr += QString::number(static_cast<int>(error.error())) + '\t';
+                }
+            }
+            if (errorStr.endsWith('\t')) {
+                errorStr.chop(1);
+            }
+            errorStr += '\n';
+        }
+        errorStr.chop(1);
+        q->setMetaData("ssl_cert_errors", errorStr);
+
+        QString peerCertChain;
+        foreach (const QSslCertificate &cert, socket.peerCertificateChain()) {
+            peerCertChain.append(cert.toPem());
+            peerCertChain.append('\x01');
+        }
+        peerCertChain.chop(1);
+        q->setMetaData("ssl_peer_chain", peerCertChain);
+    }
+
+    TCPSlaveBase* q;
 
     int timeout;
     bool isBlocking;
@@ -125,6 +176,7 @@ public:
     bool autoSSL;
     bool sslNoUi; // If true, we just drop the connection silently
                   // if SSL certificate check fails in some way.
+    QList<KSslError> sslErrors;
 };
 
 
@@ -140,7 +192,7 @@ TCPSlaveBase::TCPSlaveBase(const QByteArray &protocol,
                            const QByteArray &appSocket,
                            bool autoSSL)
  : SlaveBase(protocol, poolSocket, appSocket),
-   d(new TcpSlaveBasePrivate)
+   d(new TcpSlaveBasePrivate(this))
 {
     d->timeout = KProtocolManager::connectTimeout();
     d->isBlocking = true;
@@ -441,49 +493,30 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
                  << " supportedBits:" << cipher.supportedBits()
                  << " usedBits:" << cipher.usedBits();
 
-    setMetaData("ssl_protocol_version", d->socket.negotiatedSslVersionName());
-    QString sslCipher = cipher.encryptionMethod() + '\n';
-    sslCipher += cipher.authenticationMethod() + '\n';
-    sslCipher += cipher.keyExchangeMethod() + '\n';
-    sslCipher += cipher.digestMethod();
-    setMetaData("ssl_cipher", sslCipher);
-    setMetaData("ssl_cipher_used_bits", QString::number(cipher.usedBits()));
-    setMetaData("ssl_cipher_bits", QString::number(cipher.supportedBits()));
-    setMetaData("ssl_peer_ip", d->ip);
-
-    // try to fill in the blanks, i.e. missing certificates, and just assume that
-    // those belong to the peer (==website or similar) certificate.
-    QList<KSslError> sslErrors = d->socket.sslErrors();
-    for (int i = 0; i < sslErrors.count(); i++) {
-        if (sslErrors[i].certificate().isNull()) {
-            sslErrors[i] = KSslError(sslErrors[i].error(),
-                                     d->socket.peerCertificateChain()[0]);
+    // Since we connect by IP (cf. KIO::HostInfo) the SSL code will not recognize
+    // that the site certificate belongs to the domain. We therefore do the
+    // domain<->certificate matching here.
+    d->sslErrors = d->socket.sslErrors();
+    QSslCertificate peerCert = d->socket.peerCertificateChain().first();
+    QStringList domainPatterns(peerCert.subjectInfo(QSslCertificate::CommonName));
+    domainPatterns += peerCert.alternateSubjectNames().values(QSsl::DnsEntry);
+    QRegExp domainMatcher(QString(), Qt::CaseInsensitive, QRegExp::Wildcard);
+    QMutableListIterator<KSslError> it(d->sslErrors);
+    while (it.hasNext()) {
+        // As of 4.4.0 Qt does not assign a certificate to the QSslError it emits
+        // *in the case of HostNameMismatch*. A HostNameMismatch, however, will always
+        // be an error of the peer certificate so we just don't check the error's
+        // certificate().
+        if (it.next().error() != KSslError::HostNameMismatch) {
+            continue;
         }
-    }
-
-    QString errorStr;
-    // encode the two-dimensional numeric error list using '\n' and '\t' as outer and inner separators
-    foreach (const QSslCertificate &cert, d->socket.peerCertificateChain()) {                         
-        foreach (const KSslError &error, sslErrors) {
-            if (error.certificate() == cert) {
-                errorStr += QString::number(static_cast<int>(error.error())) + '\t';
+        foreach (const QString &dp, domainPatterns) {
+            domainMatcher.setPattern(dp);
+            if (domainMatcher.exactMatch(d->host)) {
+                it.remove();
             }
         }
-        if (errorStr.endsWith('\t')) {
-            errorStr.chop(1);
-        }
-        errorStr += '\n';
     }
-    errorStr.chop(1);
-    setMetaData("ssl_cert_errors", errorStr);
-
-    QString peerCertChain;
-    foreach (const QSslCertificate &cert, d->socket.peerCertificateChain()) {
-        peerCertChain.append(cert.toPem());
-        peerCertChain.append('\x01');
-    }
-    peerCertChain.chop(1);
-    setMetaData("ssl_peer_chain", peerCertChain);
 
     // The app side needs the metadata now for the SSL error dialog (if any) but
     // the same metadata will be needed later, too. When "later" arrives the slave
@@ -493,6 +526,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
     // from here, for example. And Konqi will be the second application to connect
     // to the slave.
     // Therefore we choose to have our metadata and send it, too :)
+    d->prepareSslRelatedMetaData();
     sendAndKeepMetaData();
 
     SslResult rc = verifyServerCertificate();
@@ -528,7 +562,6 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
 
     return rc;
 }
-
 
 void TCPSlaveBase::selectClientCertificate()
 {
@@ -701,50 +734,19 @@ void TCPSlaveBase::selectClientCertificate()
 #endif
 }
 
-
 TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
 {
     d->sslNoUi = hasMetaData("ssl_no_ui") && (metaData("ssl_no_ui") != "FALSE");
 
-    QList<KSslError> se = d->socket.sslErrors();
-    if (se.isEmpty())
+    if (d->sslErrors.isEmpty())
         return ResultOk;
-
-    // Since we connect by IP (cf. KIO::HostInfo) the SSL code will not recognize
-    // that the site certificate belongs to the domain. We therefore do the
-    // domain<->certificate matching here.
-
-    QSslCertificate peerCert = d->socket.peerCertificateChain().first();
-    QStringList domainPatterns(peerCert.subjectInfo(QSslCertificate::CommonName));
-    domainPatterns += peerCert.alternateSubjectNames().values(QSsl::DnsEntry);
-    QRegExp domainMatcher(QString(), Qt::CaseInsensitive, QRegExp::Wildcard);
-    QMutableListIterator<KSslError> it(se);
-    while (it.hasNext()) {
-        // As of 4.4.0 Qt does not assign a certificate to the QSslError it emits
-        // *in the case of HostNameMismatch*. A HostNameMismatch, however, will always
-        // be an error of the peer certificate so we just don't check the error's
-        // certificate().
-        if (it.next().error() != KSslError::HostNameMismatch) {
-            continue;
-        }
-        foreach (const QString &dp, domainPatterns) {
-            domainMatcher.setPattern(dp);
-            if (domainMatcher.exactMatch(d->host)) {
-                it.remove();
-            }
-        }
-    }
-
-    if (se.isEmpty())
-        return ResultOk;
-
     if (d->sslNoUi)
         return ResultFailed;
 
     QString message = i18n("The server failed the authenticity check (%1).\n\n",
                            d->host);
 
-    foreach (const KSslError &err, se) {
+    foreach (const KSslError &err, d->sslErrors) {
         //### use our own wording that is "closer to the user"
         message.append(err.errorString());
         message.append('\n');
@@ -752,7 +754,6 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
 
     //### Consider that hostname mismatch and e.g. an expired certificate are very different.
     //    Maybe there should be no option to acceptForever a cert with bad hostname.
-
 
     /* We need a list of ignorable errors. I don't think it makes sense to ignore
        malformed certificates, for example, as other environments probably don't do
@@ -768,15 +769,15 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
     KSslCertificateRule rule = cm->rule(d->socket.peerCertificateChain().first(), d->host);
 
     //TODO put nonIgnorableErrors into the cert manager
-    QList<KSslError> fatalErrors = d->nonIgnorableErrors(se);
+    QList<KSslError> fatalErrors = d->nonIgnorableErrors(d->sslErrors);
     if (!fatalErrors.isEmpty()) {
         //TODO message "sorry, fatal error, you can't override it"
         return ResultFailed;
     }
 
     //throw out previously seen errors that are supposed to be ignored.
-    se = rule.filterErrors(se);
-    if (se.isEmpty()) {
+    QList<KSslError> remainingErrors = rule.filterErrors(d->sslErrors);
+    if (remainingErrors.isEmpty()) {
         kDebug(7029) << "Error list empty after removing errors to be ignored. Continuing.";
         return ResultOk | ResultOverridden;
     }
@@ -820,7 +821,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
     //rule = KSslCertificateRule(d->socket.peerCertificateChain().first(), whatever);
 
     rule.setExpiryDateTime(ruleExpiry);
-    rule.setIgnoredErrors(se);
+    rule.setIgnoredErrors(remainingErrors);
     cm->setRule(rule);
 
     return ResultOk | ResultOverridden;
