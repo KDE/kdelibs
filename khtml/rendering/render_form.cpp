@@ -135,6 +135,8 @@ RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
 
 RenderFormElement::~RenderFormElement()
 {
+    if (widget())
+        widget()->setStyle(0);
     delete m_proxyStyle;
 }
 
