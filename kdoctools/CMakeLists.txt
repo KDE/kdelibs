@@ -45,10 +45,106 @@ endif(NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY)
 
 set(meinproc_SRCS meinproc.cpp xslt.cpp )
 
+if ( BZIP2_FOUND AND CROSS_COMPILATION_TOOLS_ONLY )
 
-kde4_add_executable(meinproc4 NOGUI RUN_UNINSTALLED ${meinproc_SRCS})
+  set( _meinproc_extra_SRCS
+    ../kdecore/compression/kgzipfilter.cpp
+    ../kdecore/compression/kbzip2filter.cpp
+    ../kdecore/compression/kfilterbase.cpp
+    ../kdecore/compression/kfilterdev.cpp
+    ../kdecore/config/kconfig.cpp
+    ../kdecore/config/kconfigbackend.cpp
+    ../kdecore/config/kconfigbase.cpp
+    ../kdecore/config/kconfiggroup.cpp
+    ../kdecore/config/ksharedconfig.cpp
+    ../kdecore/config/kconfigini.cpp
+    ../kdecore/config/kdesktopfile.cpp
+    ../kdecore/config/kcoreconfigskeleton.cpp
+    ../kdecore/date/kcalendarsystem.cpp
+    ../kdecore/date/kcalendarsystemgregorian.cpp
+    ../kdecore/date/kcalendarsystemhijri.cpp
+    ../kdecore/date/kcalendarsystemhebrew.cpp
+    ../kdecore/date/kcalendarsystemjalali.cpp
+    ../kdecore/date/kdatetime.cpp
+    ../kdecore/date/ktimezone.cpp
+    ../kdecore/date/ksystemtimezone.cpp
+    ../kdecore/date/ktzfiletimezone.cpp
+    ../kdecore/io/kdebug.cpp
+    ../kdecore/io/kdebugdbusiface.cpp
+    ../kdecore/io/kmessage.cpp
+    ../kdecore/io/ksavefile.cpp
+    ../kdecore/io/ktemporaryfile.cpp
+    ../kdecore/io/kurl.cpp
+    ../kdecore/kernel/kauthorized.cpp
+    ../kdecore/kernel/kaboutdata.cpp
+    ../kdecore/kernel/kcmdlineargs.cpp
+    ../kdecore/kernel/kglobal.cpp
+    ../kdecore/kernel/kcomponentdata.cpp
+    ../kdecore/kernel/kstandarddirs.cpp
+    ../kdecore/kernel/ktoolinvocation.cpp
+    ../kdecore/localization/kcatalog.cpp
+    ../kdecore/localization/kcharsets.cpp
+    ../kdecore/localization/klocale.cpp
+    ../kdecore/localization/klocalizedstring.cpp
+    ../kdecore/localization/ktranslit.cpp
+    ../kdecore/localization/kuitformats.cpp
+    ../kdecore/localization/kuitsemantics.cpp
+    ../kdecore/sycoca/ksycoca.cpp
+    ../kdecore/sycoca/ksycocadict.cpp
+    ../kdecore/sycoca/ksycocaentry.cpp
+    ../kdecore/sycoca/ksycocafactory.cpp
+    ../kdecore/sycoca/kprotocolinfo.cpp
+    ../kdecore/sycoca/kprotocolinfofactory.cpp
+    ../kdecore/sycoca/kmemfile.cpp
+    ../kdecore/services/kfoldermimetype.cpp
+    ../kdecore/services/kmimetypefactory.cpp
+    ../kdecore/services/kmimemagicrule.cpp
+    ../kdecore/services/kmimetypetrader.cpp
+    ../kdecore/services/kmimetype.cpp
+    ../kdecore/services/kservice.cpp
+    ../kdecore/services/kserviceaction.cpp
+    ../kdecore/services/kservicefactory.cpp
+    ../kdecore/services/kservicegroup.cpp
+    ../kdecore/services/kservicegroupfactory.cpp
+    ../kdecore/services/kserviceoffer.cpp
+    ../kdecore/services/kservicetype.cpp
+    ../kdecore/services/kservicetypefactory.cpp
+    ../kdecore/services/kservicetypeprofile.cpp
+    ../kdecore/services/kservicetypetrader.cpp
+    ../kdecore/services/ktraderparse.cpp
+    ../kdecore/services/ktraderparsetree.cpp
+    ../kdecore/services/yacc.c
+    ../kdecore/services/lex.c
+    ../kdecore/services/kplugininfo.cpp
+    ../kdecore/text/kstringhandler.cpp
+    ../kdecore/util/klauncher_iface.cpp
+    ../kdecore/util/klibrary.cpp
+    ../kdecore/util/kmacroexpander.cpp
+    ../kdecore/util/kpluginfactory.cpp
+    ../kdecore/util/kpluginloader.cpp
+    ../kdecore/util/kshell.cpp
+    ../kdecore/util/krandom.cpp
+    ../kdecore/io/klockfile_unix.cpp
+    ../kdecore/kernel/kstandarddirs_unix.cpp
+    ../kdecore/util/kmacroexpander_unix.cpp
+    ../kdecore/util/kshell_unix.cpp
+    ../kdecore/util/kuser_unix.cpp
+    ../kdecore/kernel/ktoolinvocation_x11.cpp
+    )
 
-target_link_libraries(meinproc4 ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
+  set( _meinproc_extra_LIBS ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${BZIP2_LIBRARIES} )
+
+else ( BZIP2_FOUND AND CROSS_COMPILATION_TOOLS_ONLY )
+
+  set( _meinproc_extra_SRCS )
+
+  set( _meinproc_extra_LIBS ${KDE4_KDECORE_LIBS} )
+
+endif ( BZIP2_FOUND AND CROSS_COMPILATION_TOOLS_ONLY )
+
+kde4_add_executable(meinproc4 NOGUI RUN_UNINSTALLED ${meinproc_SRCS} ${_meinproc_extra_SRCS} )
+
+target_link_libraries(meinproc4 ${_meinproc_extra_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
 
 if(KDE4_ENABLE_FINAL)
    set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/meinproc4_final_cpp.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
@@ -61,13 +157,14 @@ install(TARGETS meinproc4 DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### next target ###############
 
+if ( NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY )
 set(genshortcutents_SRCS genshortcutents.cpp )
 
 
 kde4_add_executable(genshortcutents NOGUI ${genshortcutents_SRCS})
 
 target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS})
-
+endif( NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY )
 
 ########### install files ###############
 
