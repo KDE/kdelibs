@@ -801,14 +801,14 @@ void HTMLFormElementImpl::addId   (const QString& id)
 }
 
 
-void HTMLFormElementImpl::radioClicked( HTMLGenericFormElementImpl *caller )
+void HTMLFormElementImpl::uncheckOtherRadioButtonsInGroup( HTMLGenericFormElementImpl *caller, bool setDefaultChecked )
 {
     for (QListIterator<HTMLGenericFormElementImpl*> it(formElements); it.hasNext();) {
         HTMLGenericFormElementImpl* const current = it.next();
         if (current->id() == ID_INPUT &&
             static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::RADIO &&
             current != caller && current->form() == caller->form() && current->name() == caller->name())
-            static_cast<HTMLInputElementImpl*>(current)->setChecked(false);
+            static_cast<HTMLInputElementImpl*>(current)->setChecked(false, setDefaultChecked);
     }
 }
 
@@ -1584,6 +1584,8 @@ void HTMLInputElementImpl::attach()
 
     HTMLGenericFormElementImpl::attach();
     _style->deref();
+
+    setChecked(defaultChecked(), true);
 }
 
 DOMString HTMLInputElementImpl::altText() const
@@ -1738,12 +1740,12 @@ void HTMLInputElementImpl::reset()
     setIndeterminate(true);
 }
 
-void HTMLInputElementImpl::setChecked(bool _checked)
+void HTMLInputElementImpl::setChecked(bool _checked, bool setDefaultChecked)
 {
     if (m_type == RADIO && _checked && !name().isEmpty()) {
         // uncheck others in the group..
         if (m_form) {
-            m_form->radioClicked(this);
+            m_form->uncheckOtherRadioButtonsInGroup(this, setDefaultChecked);
         } else {
             // We're not in form, so we group with other formless radios with the same name
             HTMLCollectionImpl candidates(document()->documentElement(), HTMLCollectionImpl::FORMLESS_INPUT);
@@ -1751,14 +1753,21 @@ void HTMLInputElementImpl::setChecked(bool _checked)
             for (unsigned long c = 0; c < len; ++c) {
                 HTMLInputElementImpl* current = static_cast<HTMLInputElementImpl*>(candidates.item(c));
                 if (current != this && current->name() == name() && current->inputType() == HTMLInputElementImpl::RADIO)
-                    current->setChecked(false);
+                    current->setChecked(false, setDefaultChecked);
             }
         }
     }
 
-    if (checked() == _checked) return;
-    m_useDefaultChecked = false;
-    m_checked = _checked;
+    if (setDefaultChecked) {
+        if (defaultChecked() == _checked) return;
+        m_defaultChecked = _checked;
+        if (!m_useDefaultChecked) return;
+    }
+    else {
+        if (checked() == _checked) return;
+        m_useDefaultChecked = false;
+        m_checked = _checked;
+    }
 
 //     setIndeterminate(false);
 
