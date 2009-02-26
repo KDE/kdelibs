@@ -52,6 +52,8 @@ void KLocalizedStringTest::correctSubs ()
     // Placeholder at the end.
     QCOMPARE(i18n("...odd things happening at %1", QString("Clavius")),
              QString("...odd things happening at Clavius"));
+    QCOMPARE(i18n("Group %1", 1),
+            QString("Group 1"));
 
     // Two placeholders.
     QCOMPARE(i18n("%1 and %2", QString("Bowman"), QString("Poole")),
