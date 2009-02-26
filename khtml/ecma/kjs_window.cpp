@@ -45,6 +45,8 @@
 #include <kparts/browserinterface.h>
 #include <kwindowsystem.h>
 
+#include <QRegExpValidator>
+
 #ifndef KONQ_EMBEDDED
 #include <kbookmarkmanager.h>
 #include <kbookmarkdialog.h>
@@ -1839,14 +1841,15 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
     if ( part )
       emit part->browserExtension()->requestFocus(part);
     bool ok;
+    QRegExpValidator validator(0);
     if (args.size() >= 2)
       str2 = KInputDialog::getText(caption,
                                    Qt::convertFromPlainText(str),
-                                   args[1]->toString(exec).qstring(), &ok, widget);
+                                   args[1]->toString(exec).qstring(), &ok, widget, &validator);
     else
       str2 = KInputDialog::getText(caption,
                                    Qt::convertFromPlainText(str),
-                                   QString(), &ok, widget);
+                                   QString(), &ok, widget, &validator);
     if ( ok )
         return jsString(UString(str2));
     else
