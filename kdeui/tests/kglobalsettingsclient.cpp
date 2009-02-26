@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
     KComponentData componentData(&about); // for KConfig
-    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
+    QApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false );
 
     if (args->isSet("p")) {
         kDebug() << "emitChange(PaletteChanged)";

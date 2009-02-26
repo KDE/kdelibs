@@ -784,9 +784,11 @@ void KGlobalSettings::emitChange(ChangeType changeType, int arg)
     message.setArguments(args);
     QDBusConnection::sessionBus().send(message);
 #ifdef Q_WS_X11
-    //notify non-kde qt applications of the change
-    extern void qt_x11_apply_settings_in_all_apps();
-    qt_x11_apply_settings_in_all_apps();
+    if (qApp && qApp->type() != QApplication::Tty) {
+        //notify non-kde qt applications of the change
+        extern void qt_x11_apply_settings_in_all_apps();
+        qt_x11_apply_settings_in_all_apps();
+    }
 #endif
 }
 
