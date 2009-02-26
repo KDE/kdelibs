@@ -61,11 +61,13 @@ WmiQuery::WmiQuery()
     {
         hres =  CoInitializeSecurity( NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
                     RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL );
-                         
-        if( FAILED(hres) )
+
+        // RPC_E_TOO_LATE --> security already initialized
+        if( FAILED(hres) && hres != RPC_E_TOO_LATE )
         {
             qCritical() << "Failed to initialize security. " << "Error code = " << hres << endl;
-            CoUninitialize();
+            if ( m_bNeedUninit )
+              CoUninitialize();
             m_failed = true;
         }
     }
@@ -75,7 +77,8 @@ WmiQuery::WmiQuery()
         if (FAILED(hres))
         {
             qCritical() << "Failed to create IWbemLocator object. " << "Error code = " << hres << endl;
-            CoUninitialize();
+            if ( m_bNeedUninit )
+              CoUninitialize();
             m_failed = true;
         }
     }
@@ -86,7 +89,8 @@ WmiQuery::WmiQuery()
         {
             qCritical() << "Could not connect. Error code = " << hres << endl;
             pLoc->Release();
-            CoUninitialize();
+            if ( m_bNeedUninit )
+              CoUninitialize();
             m_failed = true;
         }
         else
@@ -102,7 +106,8 @@ WmiQuery::WmiQuery()
             qCritical() << "Could not set proxy blanket. Error code = " << hres << endl;
             pSvc->Release();
             pLoc->Release();     
-            CoUninitialize();
+            if ( m_bNeedUninit )
+              CoUninitialize();
             m_failed = true;
         }
     }
