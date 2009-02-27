@@ -84,7 +84,7 @@ void KServiceTypeProfiles::ensureParsed()
             const QString serviceId = config.readEntry( "Entry" + num + "_Service", QString() );
             Q_ASSERT(!serviceId.isEmpty());
             const int pref = config.readEntry( "Entry" + num + "_Preference", 0 );
-            //kDebug(7014) << "KServiceTypeProfile::initStatic adding service " << serviceId << " to profile for " << type << " with preference " << pref;
+            //kDebug(7014) << "adding service " << serviceId << " to profile for " << type << " with preference " << pref;
             p->addService( serviceId, pref );
         }
     }
@@ -210,8 +210,9 @@ void KServiceTypeProfile::deleteServiceTypeProfile( const QString& serviceType)
     config.deleteGroup( serviceType );
     config.sync();
 
-    if (s_serviceTypeProfiles.exists())
-        s_serviceTypeProfiles->remove( serviceType );
+    if (s_serviceTypeProfiles.exists()) {
+        delete s_serviceTypeProfiles->take( serviceType );
+    }
 }
 
 void KServiceTypeProfile::setConfigurationMode()
