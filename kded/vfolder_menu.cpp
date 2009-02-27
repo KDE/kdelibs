@@ -35,6 +35,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
+#include <QtCore/QDirIterator>
 
 static void foldNode(QDomElement &docElem, QDomElement &e, QMap<QString,QDomElement> &dupeList, QString s=QString()) //krazy:exclude=passbyvalue
 {
@@ -976,54 +977,26 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
 {
    kDebug(7021) << "Looking up applications under" << dir;
 
-   // We look for a set of files.
-   DIR *dp = opendir( QFile::encodeName(dir));
-   if (!dp)
-      return;
-
-   KDE_struct_dirent *ep;
-
-   while( ( ep = KDE_readdir( dp ) ) != 0L )
-   {
-      QString fn( QFile::decodeName(ep->d_name));
-      if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
-         continue;
-
-      bool isDir;
-      bool isReg;
-      QString pathfn = dir + fn;
-
-#ifdef HAVE_DIRENT_D_TYPE
-      isDir = ep->d_type == DT_DIR;
-      isReg = ep->d_type == DT_REG;
-
-      if (ep->d_type == DT_UNKNOWN || ep->d_type == DT_LNK)
-#endif
-      {
-        KDE_struct_stat buff;
-        if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
-           continue; // Couldn't stat (e.g. no read permissions)
-        }
-        isDir = S_ISDIR ( buff.st_mode );
-        isReg = S_ISREG ( buff.st_mode );
-      }
-      if (isDir) {
-         loadApplications(pathfn + '/', prefix + fn + '-');
-         continue;
-      }
-
-      if (isReg)
-      {
-         if (!fn.endsWith(".desktop"))
+   QDirIterator it(dir);
+   while (it.hasNext()) {
+      it.next();
+      const QFileInfo fi = it.fileInfo();
+      const QString fn = fi.fileName();
+      if (fi.isDir()) {
+         if(fn == QLatin1String(".") || fn == QLatin1String(".."))
             continue;
-
-         KService::Ptr service;
-         emit newService(pathfn, &service); // calls KBuildSycoca::slotCreateEntry
-         if (service)
-            addApplication(prefix+fn, service);
+         loadApplications(fi.filePath(), prefix + fn + '-');
+         continue;
       }
-    }
-    closedir( dp );
+      if (fi.isFile()) {
+         if (!fn.endsWith(QLatin1String(".desktop")))
+            continue;
+         KService::Ptr service;
+         emit newService(fi.absoluteFilePath(), &service); // calls KBuildSycoca::slotCreateEntry
+         if (service)
+            addApplication(prefix + fn, service);
+      }
+   }
 }
 
 void
@@ -1044,7 +1017,7 @@ VFolderMenu::processKDELegacyDirs()
    for(QStringList::ConstIterator it = relFiles.constBegin();
        it != relFiles.constEnd(); ++it)
    {
-      if (!m_forcedLegacyLoad && (*it).endsWith(".directory"))
+      if (!m_forcedLegacyLoad && (*it).endsWith(QLatin1String(".directory")))
       {
          QString name = *it;
          if (!name.endsWith("/.directory"))
@@ -1059,7 +1032,7 @@ VFolderMenu::processKDELegacyDirs()
          continue;
       }
 
-      if ((*it).endsWith(".desktop"))
+      if ((*it).endsWith(QLatin1String(".desktop")))
       {
          QString name = *it;
          KService::Ptr service;
@@ -1091,64 +1064,37 @@ VFolderMenu::processKDELegacyDirs()
 void
 VFolderMenu::processLegacyDir(const QString &dir, const QString &relDir, const QString &prefix)
 {
-    kDebug(7021).nospace() << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix << ")";
+   kDebug(7021).nospace() << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix << ")";
 
    QHash<QString,KService::Ptr> items;
-   // We look for a set of files.
-   DIR *dp = opendir( QFile::encodeName(dir));
-   if (!dp)
-      return;
-
-   KDE_struct_dirent *ep;
-
-   while( ( ep = KDE_readdir( dp ) ) != 0L )
-   {
-      QString fn( QFile::decodeName(ep->d_name));
-      if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
-         continue;
-
-      bool isDir;
-      bool isReg;
-      QString pathfn = dir + fn;
-
-#ifdef HAVE_DIRENT_D_TYPE
-      isDir = ep->d_type == DT_DIR;
-      isReg = ep->d_type == DT_REG;
-
-      if (ep->d_type == DT_UNKNOWN || ep->d_type == DT_LNK)
-#endif
-      {
-	KDE_struct_stat buff;
-        if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
-           continue; // Couldn't stat (e.g. no read permissions)
-        }
-        isDir = S_ISDIR ( buff.st_mode );
-        isReg = S_ISREG ( buff.st_mode );
-      }
-      if ( isDir ) {
+   QDirIterator it(dir);
+   while (it.hasNext()) {
+      it.next();
+      const QFileInfo fi = it.fileInfo();
+      const QString fn = fi.fileName();
+      if (fi.isDir()) {
+         if(fn == QLatin1String(".") || fn == QLatin1String(".."))
+            continue;
          SubMenu *parentMenu = m_currentMenu;
 
          m_currentMenu = new SubMenu;
          m_currentMenu->name = fn;
-         m_currentMenu->directoryFile = dir + fn + "/.directory";
+         m_currentMenu->directoryFile = fi.absoluteFilePath() + "/.directory";
 
          parentMenu->subMenus.append(m_currentMenu);
 
-         processLegacyDir(pathfn + '/', relDir+fn+'/', prefix);
+         processLegacyDir(fi.filePath(), relDir + fn + '/', prefix);
          m_currentMenu = parentMenu;
          continue;
       }
-
-      if ( isReg )
-      {
-         if (!fn.endsWith(".desktop"))
+      if (fi.isFile() /*&& !fi.isSymLink() ?? */) {
+         if (!fn.endsWith(QLatin1String(".desktop")))
             continue;
-
          KService::Ptr service;
-         emit newService(pathfn, &service);
+         emit newService(fi.absoluteFilePath(), &service);
          if (service)
          {
-            QString id = prefix+fn;
+            const QString id = prefix + fn;
 
             // TODO: Add legacy category
             addApplication(id, service);
@@ -1158,9 +1104,8 @@ VFolderMenu::processLegacyDir(const QString &dir, const QString &relDir, const Q
                m_currentMenu->items.insert(id, service);
          }
       }
-    }
-    closedir( dp );
-    markUsedApplications(items);
+   }
+   markUsedApplications(items);
 }
 
 
