@@ -32,6 +32,12 @@
 #include <sys/stat.h>
 
 #include <QtGui/QWidget>
+#include <QtGui/QLabel>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QPlainTextEdit>
+#include <QtGui/QApplication>
+#include <QtGui/QDesktopWidget>
 
 #include "kmimetypetrader.h"
 #include "kmimetype.h"
@@ -711,6 +717,59 @@ static KUrl::List resolveURLs(const KUrl::List& _urls, const KService& _service)
     return urls;
 }
 
+// Simple KDialog that resizes the given text edit after being shown to more
+// or less fit the enclosed text.
+class SecureMessageDialog : public KDialog
+{
+    public:
+    SecureMessageDialog(QWidget *parent) : KDialog(parent), m_textEdit(0)
+    {
+    }
+
+    void setTextEdit(QPlainTextEdit *textEdit)
+    {
+        m_textEdit = textEdit;
+    }
+
+    protected:
+    virtual void showEvent(QShowEvent* e)
+    {
+        // Now that we're shown, use our width to calculate a good
+        // bounding box for the text, and resize m_textEdit appropriately.
+        KDialog::showEvent(e);
+
+        if(!m_textEdit)
+            return;
+
+        QSize fudge(20, 24); // About what it sounds like :-/
+
+        // Form rect with a lot of height for bounding.  Use no more than
+        // 5 lines.
+        QRect curRect(m_textEdit->rect());
+        QFontMetrics metrics(fontMetrics());
+        curRect.setHeight(5 * metrics.lineSpacing());
+        curRect.setWidth(qMax(curRect.width(), 300)); // At least 300 pixels ok?
+
+        QString text(m_textEdit->toPlainText());
+        curRect = metrics.boundingRect(curRect, Qt::TextWordWrap | Qt::TextSingleLine, text);
+
+        // Scroll bars interfere.  If we don't think there's enough room, enable
+        // the vertical scrollbar however.
+        m_textEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        if(curRect.height() < m_textEdit->height()) { // then we've got room
+            m_textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+            m_textEdit->setMaximumHeight(curRect.height() + fudge.height());
+        }
+
+        m_textEdit->setMinimumSize(curRect.size() + fudge);
+        m_textEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+        updateGeometry();
+    }
+
+    private:
+    QPlainTextEdit *m_textEdit;
+};
+
 // Helper function to make the given .desktop file executable by ensuring
 // that a #!/usr/bin/env xdg-open line is added if necessary and the file has
 // the +x bit set for the user.  Returns false if either fails.
@@ -795,56 +854,59 @@ static bool makeServiceExecutable(const KService& service, QWidget* window)
         return false; // Don't circumvent the Kiosk
     }
 
-    QString serviceName = service.genericName();
-    if (serviceName.isEmpty()) {
-        serviceName = service.entryPath();
-    }
-    QString continueStr = i18nc("@action:button",
-                                "Make program executable and continue");
-
-    QString warningMessage = i18nc("@info",
-                                   "<para><b>Warning</b>: The program you are trying to run, \"<application>%1</application>\", is not "
-                                   "marked as an executable program.  This could be due to a mistake in the system "
-                                   "configuration, but could also be a malicious program attempting to run.</para>"
-                                   "<para>Click <interface>%2</interface> to make the program executable and run if:</para>"
-                                   "• You know this is a program (for example, if you created the shortcut), or<br/>"
-                                   "• You downloaded the program and know that it is safe."
-                                   "<para>Click <interface>Cancel</interface> to cancel execution if:</para>"
-                                   "• You did not know you were about to run a program, or<br/>"
-                                   "• You downloaded or were emailed this program and are not sure if it is safe."
-                                   , serviceName, continueStr);
-
-    QString details = i18n("This program will run the following command: %1", service.exec());
-
-    if (!service.path().isEmpty()) {
-        details += i18n("\nThe command will run in: %1", service.path());
-    }
-
     KGuiItem continueItem = KStandardGuiItem::cont();
-    continueItem.setText(continueStr);
 
-    // We want to be able to provide the details window but only "sorry" message boxes have
-    // a static method so we need to use createKMessageBox, which means we need to provide
-    // the KDialog.  We'll change the Continue to have a more descriptive button but otherwise
-    // be the standard continue button.
+    SecureMessageDialog *baseDialog = new SecureMessageDialog(window);
 
-    KDialog *baseDialog = new KDialog(window);
     baseDialog->setButtons(KDialog::Ok | KDialog::Cancel);
     baseDialog->setButtonGuiItem(KDialog::Ok, continueItem);
-    baseDialog->setDefaultButton(KDialog::Cancel);   // NoDefault doesn't work?
+    baseDialog->setDefaultButton(KDialog::Cancel);
+    baseDialog->setButtonFocus(KDialog::Cancel);
     baseDialog->setCaption(i18nc("Warning about executing unknown .desktop file", "Warning"));
 
-    // We must use NoExec because otherwise the message box will be queued and the function will
-    // instead return immediately with no result code.
-    KMessageBox::createKMessageBox(
-        baseDialog, QMessageBox::Warning, warningMessage, QStringList(),
-        QString(), 0 /* bool* */, KMessageBox::NoExec, details);
+    // Dialog will have explanatory text with a disabled lineedit with the
+    // Exec= to make it visually distinct.
+    QWidget *baseWidget = new QWidget(baseDialog);
+    QHBoxLayout *mainLayout = new QHBoxLayout(baseWidget);
 
-    baseDialog->setMinimumSize(400, 270); // Long text Qt bug still exists...
-    baseDialog->setDetailsWidgetVisible(true);
+    QLabel *iconLabel = new QLabel(baseWidget);
+    QPixmap warningIcon(KIconLoader::global()->loadIcon("dialog-warning", KIconLoader::NoGroup, KIconLoader::SizeHuge));
+    mainLayout->addWidget(iconLabel);
+    iconLabel->setPixmap(warningIcon);
+
+    QVBoxLayout *contentLayout = new QVBoxLayout;
+    QString warningMessage = i18nc("program name follows in a line edit below",
+                                   "This will start the program:");
+
+    QLabel *message = new QLabel(warningMessage, baseWidget);
+    contentLayout->addWidget(message);
+
+    // We can use KStandardDirs::findExe to resolve relative pathnames
+    // but that gets rid of the command line arguments.
+    QString program = KStandardDirs::realFilePath(service.exec());
+
+    QPlainTextEdit *textEdit = new QPlainTextEdit(baseWidget);
+    textEdit->setPlainText(program);
+    textEdit->setReadOnly(true);
+    contentLayout->addWidget(textEdit);
+
+    QLabel *footerLabel = new QLabel(i18n("If you do not trust this program, click Cancel"));
+    contentLayout->addWidget(footerLabel);
+    contentLayout->addStretch(0); // Don't allow the text edit to expand
+
+    mainLayout->addLayout(contentLayout);
+
+    baseDialog->setMainWidget(baseWidget);
+    baseDialog->setTextEdit(textEdit);
+
+    // Constrain maximum size.  Minimum size set in
+    // the dialog's show event.
+    QSize screenSize = QApplication::desktop()->screen()->size();
+    baseDialog->resize(screenSize.width() / 4, 50);
+    baseDialog->setMaximumHeight(screenSize.height() / 3);
+    baseDialog->setMaximumWidth(screenSize.width() / 10 * 8);
 
     int result = baseDialog->exec();
-    kDebug(7010) << "result:" << result;
     if (result != KDialog::Accepted) {
         return false;
     }
@@ -855,6 +917,10 @@ static bool makeServiceExecutable(const KService& service, QWidget* window)
     // and add the +x bit.
 
     if (!::makeFileExecutable(service.entryPath())) {
+        QString serviceName = service.name();
+        if(serviceName.isEmpty())
+            serviceName = service.genericName();
+
         KMessageBox::sorry(
             window,
             i18n("Unable to make the service %1 executable, aborting execution", serviceName)
