@@ -55,7 +55,7 @@ void KTraderParse_setParseTree( void *_ptr1 )
 
 void KTraderParse_error( const char* err )
 {
-  kWarning(7014) << "Parsing '" << sCode << "' gave " << err;
+  kWarning(7014) << "Parsing '" << sCode << "' gave" << err;
 }
 
 void* KTraderParse_newOR( void *_ptr1, void *_ptr2 )
@@ -153,3 +153,12 @@ void* KTraderParse_newMIN2( char *_id )
   free(_id);
   return t;
 }
+
+void KTraderParse_destroy(void *node)
+{
+    ParseTreeBase *p = reinterpret_cast<ParseTreeBase *>(node);
+    if (p != pTree->data()) {
+        delete p;
+    }
+}
+

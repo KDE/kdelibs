@@ -7,6 +7,8 @@
 #define YYENABLE_NLS 0
 void yyerror(const char *s);
 int yylex();
+int kiotraderlex_destroy();
+
 void KTraderParse_initFlex( const char *s );
 
 %}
@@ -56,6 +58,16 @@ void KTraderParse_initFlex( const char *s );
 %type <ptr> term
 %type <ptr> factor_non
 %type <ptr> factor
+
+%destructor { KTraderParse_destroy( $$ ); } bool_or
+%destructor { KTraderParse_destroy( $$ ); } bool_and
+%destructor { KTraderParse_destroy( $$ ); } bool_compare
+%destructor { KTraderParse_destroy( $$ ); } expr_in
+%destructor { KTraderParse_destroy( $$ ); } expr_twiddle
+%destructor { KTraderParse_destroy( $$ ); } expr
+%destructor { KTraderParse_destroy( $$ ); } term
+%destructor { KTraderParse_destroy( $$ ); } factor_non
+%destructor { KTraderParse_destroy( $$ ); } factor
 
 /* Grammar follows */
 

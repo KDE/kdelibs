@@ -51,15 +51,6 @@ void* KTraderParse_newCI( void *_ptr1 );
 void* KTraderParse_newFIRST();
 void* KTraderParse_newRANDOM();
 
+void KTraderParse_destroy(void *);
+
 #endif
-
-
-
-
-
-
-
-
-
-
-
