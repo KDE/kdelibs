@@ -337,6 +337,7 @@ void KStandarddirsTest::testRestrictedResources()
     QVERIFY(newOtherDataDirs.contains(localOtherDataDir)); // not restricted!
 
     restrictionsGroup.deleteGroup();
+    localFile.remove();
 }
 
 #include <QThreadPool>
