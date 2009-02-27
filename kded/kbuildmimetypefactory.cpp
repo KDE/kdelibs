@@ -128,15 +128,25 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
             userIcon = e.attribute("name");
         }
     }
-    if (comment.isEmpty()) {
-        kWarning() << "Missing <comment> field in " << fullPath;
-    }
     foreach(const QString& lang, KGlobal::locale()->languageList()) {
         const QString comm = commentsByLanguage.value(lang);
         if (!comm.isEmpty()) {
             comment = comm;
             break;
         }
+        const int pos = lang.indexOf('_');
+        if (pos != -1) {
+            // "en_US" not found? try just "en"
+            const QString shortLang = lang.left(pos);
+            const QString comm = commentsByLanguage.value(shortLang);
+            if (!comm.isEmpty()) {
+                comment = comm;
+                break;
+            }
+        }
+    }
+    if (comment.isEmpty()) {
+        kWarning() << "Missing <comment> field in " << fullPath;
     }
 
     //kDebug() << "Creating mimetype" << name << "from file" << file << "path" << fullPath;
