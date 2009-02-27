@@ -1264,7 +1264,7 @@ void KUrlCompletion::postProcessMatch( QString *pMatch ) const
 			QString copy;
 
 			if ( pMatch->startsWith( QLatin1String("file:") ) )
-				copy = KUrl(*pMatch).path();
+				copy = KUrl(*pMatch).toLocalFile();
 			else
 				copy = *pMatch;
 

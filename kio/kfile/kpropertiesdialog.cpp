@@ -796,7 +796,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       isDevice = ( properties->kurl().protocol().toLower() == "device" );
       // Extract the full name, but without file: for local files
       if ( isReallyLocal )
-        path = properties->kurl().path();
+        path = properties->kurl().toLocalFile();
       else
         path = properties->kurl().prettyUrl();
     } else {
@@ -1336,7 +1336,7 @@ void KFilePropsPlugin::applyChanges()
 
       // Update also relative path (for apps and mimetypes)
       if ( !d->m_sRelativePath.isEmpty() )
-        determineRelativePath( properties->kurl().path() );
+        determineRelativePath( properties->kurl().toLocalFile() );
 
       kDebug(250) << "New URL = " << properties->kurl().url();
       kDebug(250) << "old = " << oldurl.url();
@@ -1361,7 +1361,7 @@ void KFilePropsPlugin::applyChanges()
     properties->updateUrl(properties->kurl());
     // Update also relative path (for apps and mimetypes)
     if ( !d->m_sRelativePath.isEmpty() )
-      determineRelativePath( properties->kurl().path() );
+      determineRelativePath( properties->kurl().toLocalFile() );
   }
 
   // No job, keep going
@@ -1401,7 +1401,7 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
   if ( d->bKDesktopMode && d->bDesktopFile ) {
       // Renamed? Update Name field
       if ( d->oldFileName != properties->kurl().fileName() || d->m_bFromTemplate ) {
-          KDesktopFile config( properties->kurl().path() );
+          KDesktopFile config( properties->kurl().toLocalFile() );
           KConfigGroup cg = config.desktopGroup();
           QString nameStr = nameFromFileName(properties->kurl().fileName());
           cg.writeEntry( "Name", nameStr );
@@ -2135,7 +2135,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   // FIXME make it work with partial entries
   if ( properties->items().count() == 1 ) {
-    QByteArray path = QFile::encodeName( properties->item().url().path() );
+    QByteArray path = QFile::encodeName( properties->item().url().toLocalFile() );
     d->fileSystemSupportsACLs = fileSystemSupportsACL( path );
   }
   if ( d->fileSystemSupportsACLs  ) {

@@ -82,7 +82,7 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
 
 void KFileMetaPropsPlugin::createLayout()
 {
-    QFileInfo file_info(properties->item().url().path());
+    QFileInfo file_info(properties->item().url().toLocalFile());
 
     kDebug(250) << "KFileMetaPropsPlugin::createLayout";
 

@@ -605,7 +605,7 @@ KUrl::List KFileDialog::selectedUrls() const
 QString KFileDialog::selectedFile() const
 {
     if (d->native)
-        return selectedUrl().path();
+        return selectedUrl().toLocalFile();
     return d->w->selectedFile();
 }
 
@@ -644,7 +644,7 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
         const QString result = QFileDialog::getSaveFileName(
             parent,
             caption.isEmpty() ? i18n("Save As") : caption,
-            KFileDialogPrivate::Native::staticStartDir( startDir ).path(),
+            KFileDialogPrivate::Native::staticStartDir( startDir ).toLocalFile(),
             qtFilter(filter) );
 // TODO use extra args?     QString * selectedFilter = 0, Options options = 0
         if (!result.isEmpty()) {

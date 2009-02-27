@@ -80,7 +80,7 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
                                                      ctimeSrc, ctimeDest, mtimeSrc,
                                                      mtimeDest);
     KIO::RenameDialog_Result res = static_cast<RenameDialog_Result>(dlg.exec());
-    newDest = dlg.newDestUrl().path();
+    newDest = dlg.newDestUrl().toLocalFile();
     return res;
 }
 

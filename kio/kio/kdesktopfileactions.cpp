@@ -249,7 +249,7 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KService
     int actionData = action.data().toInt();
     if ( actionData == ST_MOUNT || actionData == ST_UNMOUNT ) {
         Q_ASSERT( urls.count() == 1 );
-        const QString path = urls.first().path();
+        const QString path = urls.first().toLocalFile();
         //kDebug(7000) << "MOUNT&UNMOUNT";
 
         KDesktopFile cfg( path );
