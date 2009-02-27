@@ -757,6 +757,11 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       if ( magicMimeType->name() != KMimeType::defaultMimeType() )
           magicMimeComment = magicMimeType->comment();
   }
+#ifdef Q_WS_WIN
+  if ( isReallyLocal ) {
+    directory = QDir::toNativeSeparators( directory.mid( 1 ) );
+  }
+#endif
 
   // Those things only apply to 'single file' mode
   QString filename;

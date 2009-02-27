@@ -326,6 +326,7 @@ kDebug(6200) << "getCaret: node " << this << " " << nodeName().string() << " off
 #endif
 //         mapDOMPosToRenderPos(this, offset, r, r_ofs, outside, outsideEnd);
 	outside = false;
+	outsideEnd = false;
 #if 0
 kDebug(6200) << "getCaret: r " << r << " " << (r?r->renderName():QString()) << " r_ofs: " << r_ofs << " outside " << outside << " outsideEnd " << outsideEnd;
 #endif

@@ -30,7 +30,7 @@
 
 
 class KAction;
-class KActionCategoryPrivate;
+struct KActionCategoryPrivate;
 
 class QAction;
 

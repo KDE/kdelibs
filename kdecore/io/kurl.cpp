@@ -200,7 +200,7 @@ KUrl::List::List(const QStringList &list)
 
 QStringList KUrl::List::toStringList() const
 {
-  QStringList lst;
+   QStringList lst;
    for( KUrl::List::ConstIterator it = begin();
         it != end();
         ++it)
@@ -1103,7 +1103,7 @@ QString KUrl::toMimeDataString() const // don't fold this into populateMimeData,
     // the hostname part. But in really it just breaks many apps,
     // so it's disabled for now.
     const QString s = url( 0, KGlobal::locale()->fileEncodingMib() );
-    if( !s.startsWith( "file://" ))
+    if( !s.startsWith( QLatin1String ( "file://" ) ))
     {
         char hostname[257];
         if ( gethostname( hostname, 255 ) == 0 )
@@ -1299,10 +1299,10 @@ QString KUrl::directory( const DirectoryOptions& options ) const
   if ( !(options & ObeyTrailingSlash) )
     result = trailingSlash( RemoveTrailingSlash, result );
 
-  if ( result.isEmpty() || result == "/" )
+  if ( result.isEmpty() || result == QLatin1String ( "/" ) )
     return result;
 
-  int i = result.lastIndexOf( "/" );
+  int i = result.lastIndexOf( '/' );
   // If ( i == -1 ) => the first character is not a '/'
   // So it's some URL like file:blah.tgz, with no path
   if ( i == -1 )
@@ -1310,8 +1310,7 @@ QString KUrl::directory( const DirectoryOptions& options ) const
 
   if ( i == 0 )
   {
-    result = "/";
-    return result;
+    return QLatin1String( "/" );
   }
 
 #ifdef Q_WS_WIN
@@ -1362,7 +1361,7 @@ bool KUrl::cd( const QString& _dir )
   }
 
   // Users home directory on the local disk ?
-  if ( ( _dir[0] == '~' ) && ( scheme() == "file" ))
+  if ( ( _dir[0] == '~' ) && ( scheme() == QLatin1String ( "file" ) ))
   {
     //m_strPath_encoded.clear();
     QString strPath = QDir::homePath();
