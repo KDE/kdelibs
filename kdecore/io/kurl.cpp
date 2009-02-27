@@ -974,18 +974,22 @@ bool KUrl::hasSubUrl() const
 
 QString KUrl::url( AdjustPathOption trailing ) const
 {
+    if (QString::compare(scheme(), "mailto", Qt::CaseInsensitive) == 0) {
+        // mailto urls should be prettified, see the url183433 testcase.
+        return prettyUrl(trailing);
+    }
   if ( trailing == AddTrailingSlash && !path().endsWith( QLatin1Char('/') ) ) {
       // -1 and 0 are provided by QUrl, but not +1, so that one is a bit tricky.
-      // To avoid reimplementing toString() all over again, I just use another QUrl
+      // To avoid reimplementing toEncoded() all over again, I just use another QUrl
       // Let's hope this is fast, or not called often...
       QUrl newUrl( *this );
       newUrl.setPath( path() + QLatin1Char('/') );
-      return QString::fromLatin1( newUrl.toEncoded() ); // ### check
+      return QString::fromLatin1(newUrl.toEncoded());
   }
   else if ( trailing == RemoveTrailingSlash && path() == "/" ) {
-      return QLatin1String( toEncoded( None ) );
+      return QLatin1String(toEncoded(None));
   }
-  return QString::fromLatin1( toEncoded( trailing == RemoveTrailingSlash ? StripTrailingSlash : None ) ); // ## check encoding
+  return QString::fromLatin1(toEncoded(trailing == RemoveTrailingSlash ? StripTrailingSlash : None));
 }
 
 static QString toPrettyPercentEncoding(const QString &input)
