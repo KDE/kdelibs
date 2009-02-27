@@ -364,6 +364,15 @@ bool KTextEdit::Private::handleShortcut(const QKeyEvent* event)
     cursor.movePosition( QTextCursor::EndOfLine );
     parent->setTextCursor( cursor );
     return true;
+  } else if (KStandardShortcut::find().contains(key)) {
+        parent->slotFind();
+        return true;
+  } else if (KStandardShortcut::findNext().contains(key)) {
+        parent->slotFindNext();
+        return true;
+  } else if (KStandardShortcut::replace().contains(key)) {
+        parent->slotReplace();
+        return true;
   } else if ( KStandardShortcut::pasteSelection().contains( key ) ) {
     QString text = QApplication::clipboard()->text( QClipboard::Selection );
     if ( !text.isEmpty() )
@@ -407,7 +416,7 @@ QMenu *KTextEdit::mousePopupMenu()
           separatorAction = actionList.at( idx );
       if ( separatorAction )
       {
-          KAction *clearAllAction = KStandardAction::clear(this, SLOT(undoableClear()), this);
+          KAction *clearAllAction = KStandardAction::clear(this, SLOT(undoableClear()), popup);
           if ( emptyDocument )
               clearAllAction->setEnabled( false );
           popup->insertAction( separatorAction, clearAllAction );
@@ -434,9 +443,9 @@ QMenu *KTextEdit::mousePopupMenu()
 
       if (d->findReplaceEnabled)
       {
-          KAction *findAction = KStandardAction::find( this, SLOT( slotFind() ), this );
-          KAction *findNextAction = KStandardAction::findNext( this, SLOT( slotFindNext() ), this );
-          KAction *replaceAction = KStandardAction::replace( this, SLOT( slotReplace() ), this );
+          KAction *findAction = KStandardAction::find(this, SLOT(slotFind()), popup);
+          KAction *findNextAction = KStandardAction::findNext(this, SLOT(slotFindNext()), popup);
+          KAction *replaceAction = KStandardAction::replace(this, SLOT(slotReplace()), popup);
           if (emptyDocument)
           {
               findAction->setEnabled(false);
@@ -909,6 +918,12 @@ bool KTextEdit::Private::overrideShortcut(const QKeyEvent* event)
     return true;
   } else if ( KStandardShortcut::pasteSelection().contains( key ) ) {
     return true;
+  } else if (KStandardShortcut::find().contains(key)) {
+      return true;
+  } else if (KStandardShortcut::findNext().contains(key)) {
+      return true;
+  } else if (KStandardShortcut::replace().contains(key)) {
+      return true;
   } else if (event->matches(QKeySequence::SelectAll)) { // currently missing in QTextEdit
       return true;
   } else if (event->modifiers() == Qt::ControlModifier &&
