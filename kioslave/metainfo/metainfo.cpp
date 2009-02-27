@@ -67,7 +67,7 @@ MetaInfoProtocol::~MetaInfoProtocol()
 void MetaInfoProtocol::get(const KUrl &url)
 {
     QString mimeType = metaData("mimeType");
-    KFileMetaInfo info(url.path(), mimeType);
+    KFileMetaInfo info(url.toLocalFile(), mimeType);
 
     QByteArray arr;
     QDataStream stream(&arr, QIODevice::WriteOnly);

@@ -613,7 +613,7 @@ bool ReadOnlyPart::closeUrl()
 
     if ( d->m_bTemp )
     {
-        unlink( QFile::encodeName(d->m_file) );
+        QFile::remove( d->m_file );
         d->m_bTemp = false;
     }
     // It always succeeds for a read-only part,
@@ -861,7 +861,7 @@ void ReadWritePartPrivate::prepareSaving()
     {
         if ( m_bTemp ) // get rid of a possible temp file first
         {              // (happens if previous url was remote)
-            unlink( QFile::encodeName(m_file) );
+            QFile::remove( m_file );
             m_bTemp = false;
         }
         m_file = m_url.path();
@@ -901,7 +901,7 @@ bool ReadWritePart::saveToUrl()
     {
         if (d->m_uploadJob)
         {
-            unlink(QFile::encodeName(d->m_uploadJob->srcUrl().path()));
+            QFile::remove(d->m_uploadJob->srcUrl().toLocalFile());
             d->m_uploadJob->kill();
             d->m_uploadJob = 0;
         }
@@ -930,7 +930,7 @@ void ReadWritePartPrivate::_k_slotUploadFinished( KJob * )
 
     if (m_uploadJob->error())
     {
-        unlink(QFile::encodeName(m_uploadJob->srcUrl().path()));
+        QFile::remove(m_uploadJob->srcUrl().toLocalFile());
         QString error = m_uploadJob->errorString();
         m_uploadJob = 0;
         if (m_duringSaveAs) {

@@ -589,7 +589,7 @@ void KWidgetJobTracker::Private::ProgressWidget::checkDestination(const KUrl &de
     bool ok = true;
 
     if (dest.isLocalFile()) {
-        QString path = dest.path( KUrl::RemoveTrailingSlash );
+        QString path = dest.toLocalFile( KUrl::RemoveTrailingSlash );
         const QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
         for (QStringList::ConstIterator it = tmpDirs.begin() ; ok && it != tmpDirs.end() ; ++it)
             if (path.contains(*it))
