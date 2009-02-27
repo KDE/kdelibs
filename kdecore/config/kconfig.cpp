@@ -524,9 +524,6 @@ void KConfigPrivate::parseConfigFiles()
         }
         if (componentData.dirs()->isRestrictedResource(resourceType, fileName))
             bFileImmutable = true;
-
-    } else {
-        kDebug() << "No backend" << mBackend << "or filename" << fileName;
     }
 }
 
@@ -702,7 +699,7 @@ void KConfigPrivate::putData( const QByteArray& group, const char* key,
                       const QByteArray& value, KConfigBase::WriteConfigFlags flags, bool expand)
 {
     KEntryMap::EntryOptions options = convertToOptions(flags);
-    
+
     if (bForceGlobal)
         options |= KEntryMap::EntryGlobal;
     if (expand)

@@ -1224,3 +1224,12 @@ void KConfigTest::testKdeGlobals()
 
     // TODO now use kconfigtest and writeEntry(,Global) -> should go into kdeglobals
 }
+
+void KConfigTest::testAnonymousConfig()
+{
+    KConfig anonConfig(QString(), KConfig::SimpleConfig);
+    KConfigGroup general(&anonConfig, "General");
+    QCOMPARE(general.readEntry("testKG"), QString()); // no kdeglobals merging
+    general.writeEntry("Foo", "Bar");
+    QCOMPARE(general.readEntry("Foo"), QString("Bar"));
+}
