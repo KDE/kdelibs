@@ -149,6 +149,10 @@ void KDialogPrivate::appendButton(KDialog::ButtonCode key, const KGuiItem &item)
   mButtonList.insert( key, button );
   mButtonSignalMapper.setMapping( button, key );
 
+  // since focus may not be on default button, disable auto-default
+  // (an auto-defaulted focused button "beats" the real default)
+  button->setAutoDefault( false );
+
     QObject::connect(button, SIGNAL(clicked()),
            &mButtonSignalMapper, SLOT( map() ) );
 }
