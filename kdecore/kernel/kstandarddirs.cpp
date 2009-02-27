@@ -467,9 +467,8 @@ QString KStandardDirs::findResource( const char *type,
 
 static quint32 updateHash(const QString &file, quint32 hash)
 {
-    QByteArray cFile = QFile::encodeName(file);
     KDE_struct_stat buff;
-    if ((access(cFile, R_OK) == 0) && (KDE_stat(cFile, &buff) == 0) && (S_ISREG(buff.st_mode))) {
+    if ((KDE::access(file, R_OK) == 0) && (KDE::stat(file, &buff) == 0) && (S_ISREG(buff.st_mode))) {
         hash = hash + static_cast<quint32>(buff.st_ctime);
     }
     return hash;

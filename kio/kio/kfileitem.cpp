@@ -896,7 +896,7 @@ bool KFileItem::isReadable() const
     }
 
     // Or if we can't read it [using ::access()] - not network transparent
-    if ( d->m_bIsLocalUrl && ::access( QFile::encodeName(d->m_url.toLocalFile()), R_OK ) == -1 )
+    if ( d->m_bIsLocalUrl && KDE::access( d->m_url.toLocalFile(), R_OK ) == -1 )
         return false;
 
     return true;
@@ -919,7 +919,7 @@ bool KFileItem::isWritable() const
     }
 
     // Or if we can't read it [using ::access()] - not network transparent
-    if ( d->m_bIsLocalUrl && ::access( QFile::encodeName(d->m_url.toLocalFile()), W_OK ) == -1 )
+    if ( d->m_bIsLocalUrl && KDE::access( d->m_url.toLocalFile(), W_OK ) == -1 )
         return false;
 
     return true;

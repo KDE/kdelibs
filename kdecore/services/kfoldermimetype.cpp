@@ -22,7 +22,6 @@
 #include <kdesktopfile.h>
 #include <kstandarddirs.h>
 #include <kconfiggroup.h>
-#include <dirent.h>
 #include <QtCore/QFile>
 #include <QtCore/QSet>
 #include <QtCore/QDirIterator>

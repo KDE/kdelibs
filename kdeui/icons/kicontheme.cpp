@@ -46,6 +46,7 @@
 #include <kconfig.h>
 #include <kcomponentdata.h>
 #include <klocale.h>
+#include <kde_file.h>
 
 #include <kconfiggroup.h>
 
@@ -684,7 +685,7 @@ QString KIconThemeDir::iconPath(const QString& name) const
         return QString();
     QString file = dir() + '/' + name;
 
-    if (access(QFile::encodeName(file), R_OK) == 0)
+    if (KDE::access(file, R_OK) == 0)
         return KGlobal::hasLocale() ? KGlobal::locale()->localizedFilePath(file) : file;
 
     return QString();
