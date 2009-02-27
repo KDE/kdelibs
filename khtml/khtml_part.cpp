@@ -90,6 +90,7 @@ using namespace DOM;
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstandardaction.h>
+#include <kstandardguiitem.h>
 #include <kactioncollection.h>
 #include <kfiledialog.h>
 #include <kmimetypetrader.h>
@@ -6603,10 +6604,14 @@ bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const KLocalizedString &me
     int response = KMessageBox::Cancel;
     if (!message.isEmpty())
     {
+            // Dangerous flag makes the Cancel button the default
             response = KMessageBox::warningContinueCancel( 0,
                                                            message.subs(Qt::escape(linkURL.prettyUrl())).toString(),
                                                            i18n( "Security Warning" ),
-                                                           KGuiItem(button));
+                                                           KGuiItem(button),
+                                                           KStandardGuiItem::cancel(),
+                                                           QString(), // no don't ask again info
+                                                           KMessageBox::Notify | KMessageBox::Dangerous );
     }
     else
     {
