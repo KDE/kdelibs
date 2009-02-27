@@ -359,6 +359,9 @@ void SolidHwTest::testPredicate()
     // Since str_pred is canonicalized, fromString().toString() should be invariant
     QCOMPARE(Solid::Predicate::fromString(str_pred).toString(), str_pred);
 
+    // Invalid predicate
+    str_pred = "[StorageVolume.ignored == false AND OpticalDisc.isBlank == true AND OpticalDisc.discType & 'CdRecordable|CdRewritable']";
+    QVERIFY(!Solid::Predicate::fromString(str_pred).isValid());
 
     QString parentUdi = "/org/kde/solid/fakehw/storage_model_solid_reader";
     Solid::DeviceInterface::Type ifaceType = Solid::DeviceInterface::Unknown;

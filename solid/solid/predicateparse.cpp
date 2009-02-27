@@ -64,6 +64,14 @@ void PredicateParse_errorDetected()
     }
 }
 
+void PredicateParse_destroy(void *pred)
+{
+    Solid::Predicate *p = (Solid::Predicate *) pred;
+    if (p!=s_result) {
+        delete p;
+    }
+}
+
 void *PredicateParse_newAtom(char *interface, char *property, void *value)
 {
     QString iface(interface);
@@ -114,7 +122,11 @@ void *PredicateParse_newAnd(void *pred1, void *pred2)
     Solid::Predicate *p1 = (Solid::Predicate *)pred1;
     Solid::Predicate *p2 = (Solid::Predicate *)pred2;
 
-    *result = *p1  & *p2;
+    if (p1==s_result || p2==s_result) {
+        s_result = 0;
+    }
+
+    *result = *p1 & *p2;
 
     delete p1;
     delete p2;
@@ -129,6 +141,10 @@ void *PredicateParse_newOr(void *pred1, void *pred2)
 
     Solid::Predicate *p1 = (Solid::Predicate *)pred1;
     Solid::Predicate *p2 = (Solid::Predicate *)pred2;
+
+    if (p1==s_result || p2==s_result) {
+        s_result = 0;
+    }
 
     *result = *p1 | *p2;
 

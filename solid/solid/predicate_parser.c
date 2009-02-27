@@ -110,6 +110,7 @@
 
 void Soliderror(const char *s);
 int Solidlex();
+int Solidlex_destroy();
 void PredicateParse_initLexer( const char *s );
 void PredicateParse_mainParse( const char *_code );
 
@@ -135,7 +136,7 @@ void PredicateParse_mainParse( const char *_code );
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 14 "predicate_parser.y"
+#line 15 "predicate_parser.y"
 {
      char valb;
      int vali;
@@ -144,7 +145,7 @@ typedef union YYSTYPE
      void *ptr;
 }
 /* Line 187 of yacc.c.  */
-#line 148 "predicate_parser.tab.c"
+#line 149 "predicate_parser.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -157,7 +158,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 161 "predicate_parser.tab.c"
+#line 162 "predicate_parser.tab.c"
 
 #ifdef short
 # undef short
@@ -445,8 +446,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    45,    45,    46,    47,    49,    50,    51,    53,    55,
-      57,    58,    59,    60,    61,    63,    65,    66,    67
+       0,    51,    51,    52,    53,    55,    56,    57,    59,    61,
+      63,    64,    65,    66,    67,    69,    71,    72,    73
 };
 #endif
 
@@ -1055,6 +1056,26 @@ yydestruct (yymsg, yytype, yyvaluep)
 
   switch (yytype)
     {
+      case 20: /* "predicate" */
+#line 44 "predicate_parser.y"
+	{ PredicateParse_destroy( (yyvaluep->ptr) ); };
+#line 1063 "predicate_parser.tab.c"
+	break;
+      case 21: /* "predicate_atom" */
+#line 45 "predicate_parser.y"
+	{ PredicateParse_destroy( (yyvaluep->ptr) ); };
+#line 1068 "predicate_parser.tab.c"
+	break;
+      case 22: /* "predicate_or" */
+#line 46 "predicate_parser.y"
+	{ PredicateParse_destroy( (yyvaluep->ptr) ); };
+#line 1073 "predicate_parser.tab.c"
+	break;
+      case 23: /* "predicate_and" */
+#line 47 "predicate_parser.y"
+	{ PredicateParse_destroy( (yyvaluep->ptr) ); };
+#line 1078 "predicate_parser.tab.c"
+	break;
 
       default:
 	break;
@@ -1362,93 +1383,93 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 45 "predicate_parser.y"
+#line 51 "predicate_parser.y"
     { PredicateParse_setResult( (yyvsp[(1) - (1)].ptr) ); (yyval.ptr) = (yyvsp[(1) - (1)].ptr); ;}
     break;
 
   case 3:
-#line 46 "predicate_parser.y"
+#line 52 "predicate_parser.y"
     { PredicateParse_setResult( (yyvsp[(2) - (3)].ptr) ); (yyval.ptr) = (yyvsp[(2) - (3)].ptr); ;}
     break;
 
   case 4:
-#line 47 "predicate_parser.y"
+#line 53 "predicate_parser.y"
     { PredicateParse_setResult( (yyvsp[(2) - (3)].ptr) ); (yyval.ptr) = (yyvsp[(2) - (3)].ptr); ;}
     break;
 
   case 5:
-#line 49 "predicate_parser.y"
+#line 55 "predicate_parser.y"
     { (yyval.ptr) = PredicateParse_newAtom( (yyvsp[(1) - (5)].name), (yyvsp[(3) - (5)].name), (yyvsp[(5) - (5)].ptr) ); ;}
     break;
 
   case 6:
-#line 50 "predicate_parser.y"
+#line 56 "predicate_parser.y"
     { (yyval.ptr) = PredicateParse_newMaskAtom( (yyvsp[(1) - (5)].name), (yyvsp[(3) - (5)].name), (yyvsp[(5) - (5)].ptr) ); ;}
     break;
 
   case 7:
-#line 51 "predicate_parser.y"
+#line 57 "predicate_parser.y"
     { (yyval.ptr) = PredicateParse_newIsAtom( (yyvsp[(2) - (2)].name) ); ;}
     break;
 
   case 8:
-#line 53 "predicate_parser.y"
+#line 59 "predicate_parser.y"
     { (yyval.ptr) = PredicateParse_newOr( (yyvsp[(1) - (3)].ptr), (yyvsp[(3) - (3)].ptr) ); ;}
     break;
 
   case 9:
-#line 55 "predicate_parser.y"
+#line 61 "predicate_parser.y"
     { (yyval.ptr) = PredicateParse_newAnd( (yyvsp[(1) - (3)].ptr), (yyvsp[(3) - (3)].ptr) ); ;}
     break;
 
   case 10:
-#line 57 "predicate_parser.y"
+#line 63 "predicate_parser.y"
     { (yyval.ptr) = PredicateParse_newStringValue( (yyvsp[(1) - (1)].name) ); ;}
     break;
 
   case 11:
-#line 58 "predicate_parser.y"
+#line 64 "predicate_parser.y"
     { (yyval.ptr) = PredicateParse_newBoolValue( (yyvsp[(1) - (1)].valb) ); ;}
     break;
 
   case 12:
-#line 59 "predicate_parser.y"
+#line 65 "predicate_parser.y"
     { (yyval.ptr) = PredicateParse_newNumValue( (yyvsp[(1) - (1)].vali) ); ;}
     break;
 
   case 13:
-#line 60 "predicate_parser.y"
+#line 66 "predicate_parser.y"
     { (yyval.ptr) = PredicateParse_newDoubleValue( (yyvsp[(1) - (1)].vald) ); ;}
     break;
 
   case 14:
-#line 61 "predicate_parser.y"
+#line 67 "predicate_parser.y"
     { (yyval.ptr) = (yyvsp[(1) - (1)].ptr); ;}
     break;
 
   case 15:
-#line 63 "predicate_parser.y"
+#line 69 "predicate_parser.y"
     { (yyval.ptr) = (yyvsp[(1) - (3)].ptr); ;}
     break;
 
   case 16:
-#line 65 "predicate_parser.y"
+#line 71 "predicate_parser.y"
     { (yyval.ptr) = PredicateParse_newEmptyStringListValue(); ;}
     break;
 
   case 17:
-#line 66 "predicate_parser.y"
+#line 72 "predicate_parser.y"
     { (yyval.ptr) = PredicateParse_newStringListValue( (yyvsp[(1) - (1)].ptr) ); ;}
     break;
 
   case 18:
-#line 67 "predicate_parser.y"
+#line 73 "predicate_parser.y"
     { (yyval.ptr) = PredicateParse_appendStringListValue( (yyvsp[(1) - (3)].name), (yyvsp[(3) - (3)].ptr) ); ;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1452 "predicate_parser.tab.c"
+#line 1473 "predicate_parser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1662,7 +1683,7 @@ yyreturn:
 }
 
 
-#line 69 "predicate_parser.y"
+#line 75 "predicate_parser.y"
 
 
 void Soliderror ( const char *s )  /* Called by Solidparse on error */
@@ -1675,6 +1696,7 @@ void PredicateParse_mainParse( const char *_code )
 {
     PredicateParse_initLexer( _code );
     Solidparse();
+    Solidlex_destroy();
 }
 
 

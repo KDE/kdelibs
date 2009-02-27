@@ -5,6 +5,7 @@
 
 void Soliderror(const char *s);
 int Solidlex();
+int Solidlex_destroy();
 void PredicateParse_initLexer( const char *s );
 void PredicateParse_mainParse( const char *_code );
 
@@ -39,6 +40,11 @@ void PredicateParse_mainParse( const char *_code );
 %type <ptr> string_list
 %type <ptr> string_list_rec
 %type <ptr> value
+
+%destructor { PredicateParse_destroy( $$ ); } predicate
+%destructor { PredicateParse_destroy( $$ ); } predicate_atom
+%destructor { PredicateParse_destroy( $$ ); } predicate_or
+%destructor { PredicateParse_destroy( $$ ); } predicate_and
 
 %%
 
@@ -78,5 +84,6 @@ void PredicateParse_mainParse( const char *_code )
 {
     PredicateParse_initLexer( _code );
     Solidparse();
+    Solidlex_destroy();
 }
 

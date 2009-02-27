@@ -68,7 +68,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 14 "predicate_parser.y"
+#line 15 "predicate_parser.y"
 {
      char valb;
      int vali;

@@ -22,6 +22,7 @@
 
 void PredicateParse_setResult(void *result);
 void PredicateParse_errorDetected();
+void PredicateParse_destroy(void *pred);
 
 void *PredicateParse_newAtom(char *interface, char *property, void *value);
 void *PredicateParse_newMaskAtom(char *interface, char *property, void *value);
