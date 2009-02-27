@@ -1562,6 +1562,10 @@ void KUrlTest::testMailto()
   QCOMPARE( umail2.path(), QString("Faure David <faure@kde.org>") );
   QVERIFY( !KUrl::isRelativeUrl("mailto:faure@kde.org") );
 #endif
+
+  KUrl url183433("mailto:test[at]gmail[dot]com");
+  QCOMPARE(url183433.prettyUrl(), QString("mailto:test[at]gmail[dot]com"));
+  QCOMPARE(url183433.url(), QString("mailto:test%5Bat%5Dgmail%5Bdot%5Dcom"));
 }
 
 void KUrlTest::testSmb()
