@@ -137,4 +137,5 @@ void KTraderParse_mainParse( const char *_code )
 {
   KTraderParse_initFlex( _code );
   yyparse();
+  kiotraderlex_destroy();
 }
