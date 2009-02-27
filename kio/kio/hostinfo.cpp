@@ -143,7 +143,7 @@ void HostInfoAgentPrivate::lookupHost(const QString& hostName,
     QObject* receiver, const char* member)
 {
 #ifdef _PATH_RESCONF
-    QFileInfo resolvConf(QFile::encodeName(_PATH_RESCONF));
+    QFileInfo resolvConf(QFile::decodeName(_PATH_RESCONF));
     time_t currentMTime = resolvConf.lastModified().toTime_t();
     if (resolvConf.exists() && currentMTime != resolvConfMTime) {
         // /etc/resolv.conf has been modified

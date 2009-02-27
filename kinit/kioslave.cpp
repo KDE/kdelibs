@@ -53,7 +53,7 @@ int main(int argc, char **argv)
         exit(1);
      }
      setlocale(LC_ALL, "");
-     QString libpath = QFile::encodeName(argv[1]);
+     QString libpath = QFile::decodeName(argv[1]);
 
      if (libpath.isEmpty())
      {
