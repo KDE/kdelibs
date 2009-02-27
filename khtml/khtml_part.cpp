@@ -416,14 +416,18 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
           // Nobody else does it...
           d->m_paIncZoomFactor->setShortcut( KShortcut("CTRL++; CTRL+=") );
           d->m_paDecZoomFactor->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_Minus) );
+          d->m_paIncZoomFactor->setShortcutContext( Qt::WidgetWithChildrenShortcut );
+          d->m_paDecZoomFactor->setShortcutContext( Qt::WidgetWithChildrenShortcut );
       }
   }
 
   d->m_paFind = actionCollection()->addAction( KStandardAction::Find, "find", this, SLOT( slotFind() ) );
+  d->m_paFind->setShortcutContext( Qt::WidgetWithChildrenShortcut ); // default context conflicts when splitting konqueror
   d->m_paFind->setWhatsThis( i18n( "Find text<br /><br />"
                                    "Shows a dialog that allows you to find text on the displayed page." ) );
 
   d->m_paFindNext = actionCollection()->addAction( KStandardAction::FindNext, "findNext", this, SLOT( slotFindNext() ) );
+  d->m_paFindNext->setShortcutContext( Qt::WidgetWithChildrenShortcut );
   d->m_paFindNext->setWhatsThis( i18n( "Find next<br /><br />"
                                        "Find the next occurrence of the text that you "
                                        "have found using the <b>Find Text</b> function" ) );
@@ -478,6 +482,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paToggleCaretMode = new KToggleAction(i18n("Toggle Caret Mode"), this );
   actionCollection()->addAction( "caretMode", d->m_paToggleCaretMode );
   d->m_paToggleCaretMode->setShortcut( QKeySequence(Qt::Key_F7) );
+  d->m_paToggleCaretMode->setShortcutContext( Qt::WidgetWithChildrenShortcut );
   connect( d->m_paToggleCaretMode, SIGNAL( triggered( bool ) ), this, SLOT(slotToggleCaretMode()) );
   d->m_paToggleCaretMode->setChecked(isCaretMode());
   if (parentPart())
