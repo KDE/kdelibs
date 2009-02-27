@@ -47,7 +47,9 @@ struct KFind::Private
 
     ~Private()
     {
-        dialog->deleteLater();
+        if (dialog)
+            dialog->deleteLater();
+        dialog = 0;
         data.clear();
         delete emptyMatch;
         emptyMatch = 0;
