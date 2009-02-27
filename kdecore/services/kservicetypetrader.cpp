@@ -72,7 +72,7 @@ void KServiceTypeTrader::applyConstraints( KService::List& lst,
                 ++it;
         }
     }
-    // TODO: catch parse errors here (to delete the partial tree)
+    // TODO: catch parse errors here (to delete the partial tree) (see 932881)
 }
 
 #if 0

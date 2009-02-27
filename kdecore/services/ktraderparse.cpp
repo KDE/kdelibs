@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-// TODO: Torben: On error free memory!
+// TODO: Torben: On error free memory!   (r932881 might serve as inspiration)
 
 extern "C"
 {
