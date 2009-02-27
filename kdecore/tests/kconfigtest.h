@@ -58,6 +58,8 @@ private Q_SLOTS:
     void testConfigCopyToSync();
     void testReparent();
     void testKdeglobals();
+    void testAnonymousConfig();
+
     void testSubGroup();
     void testAddConfigSources();
     void testWriteOnSync();
