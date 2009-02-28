@@ -280,7 +280,7 @@ public:
     //! Commit the changes.
     void commit();
 
-    virtual QVariant data(int column, int role) const;
+    virtual QVariant data(int column, int role = Qt::DisplayRole) const;
     virtual bool operator<(const QTreeWidgetItem &other) const;
 
     QKeySequence keySequence(uint column) const;
@@ -355,6 +355,12 @@ public:
 
     // Set all shortcuts to their default values (bindings).
     void allDefault();
+
+    // clear all shortcuts
+    void clearConfiguration();
+
+    // Import shortcuts from file
+    void importConfiguration(KConfigBase *config);
 
     //helper functions for conflict resolution
     bool stealShapeGesture(KShortcutsEditorItem *item, const KShapeGesture &gest);

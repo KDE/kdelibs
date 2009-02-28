@@ -46,6 +46,7 @@
 #include "kdeprintdialog.h"
 #include "kglobalaccel.h"
 #include "kmessagebox.h"
+#include "kshortcut.h"
 #include "kaboutdata.h"
 
 //---------------------------------------------------------------------
@@ -166,31 +167,21 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 }
 
 
+void KShortcutsEditor::clearConfiguration()
+{
+    d->clearConfiguration();
+}
+
+
 void KShortcutsEditor::importConfiguration( KConfig *config)
 {
-    importConfiguration(static_cast<KConfigBase*>(config));
+    d->importConfiguration(config);
 }
 
 
 void KShortcutsEditor::importConfiguration( KConfigBase *config)
 {
-    Q_ASSERT(config);
-    if (!config) return;
-
-    if (d->actionTypes & KShortcutsEditor::GlobalAction) {
-        QString groupName = "Global Shortcuts";
-        KConfigGroup group( config, groupName );
-        foreach (KActionCollection* collection, d->actionCollections) {
-            collection->importGlobalShortcuts( &group );
-        }
-    }
-    if (d->actionTypes & ~KShortcutsEditor::GlobalAction) {
-        QString groupName = "Shortcuts";
-        KConfigGroup group( config, groupName );
-        foreach (KActionCollection* collection, d->actionCollections) {
-            collection->readSettings( &group );
-        }
-    }
+    d->importConfiguration(config);
 }
 
 
@@ -507,6 +498,66 @@ void KShortcutsEditorPrivate::changeRockerGesture(KShortcutsEditorItem *item, co
     }
 
     item->setRockerGesture(capture);
+}
+
+
+void KShortcutsEditorPrivate::clearConfiguration()
+{
+    for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
+        if (!(*it)->parent())
+            continue;
+
+        KShortcutsEditorItem *item = static_cast<KShortcutsEditorItem *>(*it);
+
+        changeKeyShortcut(item, LocalPrimary,   QKeySequence());
+        changeKeyShortcut(item, LocalAlternate, QKeySequence());
+
+        changeKeyShortcut(item, GlobalPrimary,   QKeySequence());
+        changeKeyShortcut(item, GlobalAlternate, QKeySequence());
+
+        changeShapeGesture(item, KShapeGesture() );
+
+    }
+}
+
+
+void KShortcutsEditorPrivate::importConfiguration(KConfigBase *config)
+{
+    Q_ASSERT(config);
+    if (!config) return;
+
+    KConfigGroup globalShortcutsGroup(config, QLatin1String("Global Shortcuts"));
+    if ((actionTypes & KShortcutsEditor::GlobalAction) && globalShortcutsGroup.exists()) {
+
+        for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
+
+            if (!(*it)->parent())
+                continue;
+
+            KShortcutsEditorItem *item = static_cast<KShortcutsEditorItem *>(*it);
+
+            QString actionName = item->data(Name).toString();
+            KShortcut sc(globalShortcutsGroup.readEntry(actionName, QString()));
+            changeKeyShortcut(item, GlobalPrimary, sc.primary());
+        }
+    }
+
+    KConfigGroup localShortcutsGroup(config, QLatin1String("Shortcuts"));
+    if (actionTypes & ~KShortcutsEditor::GlobalAction) {
+
+        for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
+
+            if (!(*it)->parent())
+                continue;
+
+            KShortcutsEditorItem *item = static_cast<KShortcutsEditorItem *>(*it);
+
+            QString actionName = item->data(Name).toString();
+            KShortcut sc(localShortcutsGroup.readEntry(actionName, QString()));
+            changeKeyShortcut(item, LocalPrimary, sc.primary());
+            changeKeyShortcut(item, LocalAlternate, sc.alternate());
+        }
+    }
 }
 
 

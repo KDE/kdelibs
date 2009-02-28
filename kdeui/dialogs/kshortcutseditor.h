@@ -154,6 +154,12 @@ public:
      */
     void commit();
 
+
+    /**
+     * Removes all configured shortcuts.
+     */
+    void clearConfiguration();
+
     /**
      * Write the current settings to the \p config object.
      *
