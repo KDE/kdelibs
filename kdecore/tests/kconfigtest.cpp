@@ -171,6 +171,8 @@ void KConfigTest::initTestCase()
   cg2.writeEntry( "entry2", "somevalue" );
   cg3 = KConfigGroup(&cg, "NEG Child3");
   cg3 = KConfigGroup(&cg, "NEG Child3");
+  QEXPECT_FAIL("", "Currently groups without entries do not exists!", Continue);
+  QVERIFY(cg.exists());
 
   sc.sync();
 
@@ -885,6 +887,8 @@ void KConfigTest::testSubGroup()
     QCOMPARE(neg.groupList(), QStringList() << "NEG Child1" << "NEG Child2");
     // No check if the group itself is there.
     QVERIFY(sc.groupList().contains("NoEntryGroup"));
+    QEXPECT_FAIL("", "Currently groups without entries do not exists!", Continue);
+    QVERIFY(neg.exists());
 
     // make sure groupList() isn't returning something it shouldn't
     foreach(const QString& group, sc.groupList()) {
