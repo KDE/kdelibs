@@ -971,9 +971,9 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
        KService::Ptr service = KService::serviceByDesktopName(desktopName);
        if (service)
            send_service_startup_info(request, service,
-                                     request->startup_id, QStringList());
+                                     startup_id.toLocal8Bit(), QStringList());
        else // no .desktop file, no startup info
-           cancel_service_startup_info(request, request->startup_id, envs);
+           cancel_service_startup_info(request, startup_id.toLocal8Bit(), envs);
    }
    msg.setDelayedReply(true);
    request->transaction = msg;
@@ -1105,7 +1105,7 @@ KLauncher::requestSlave(const QString &protocol,
     arg_list << protocol;
     arg_list << mConnectionServer.address();
     arg_list << app_socket;
-    name = KStandardDirs::findExe("kioslave");
+    name = KStandardDirs::findExe(QLatin1String("kioslave"));
 #else
     QString arg1 = protocol;
     QString arg2 = mConnectionServer.address();
