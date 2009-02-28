@@ -749,6 +749,8 @@ static QString iconFromDesktopFile(const QString& path)
                 }
             }
         }
+    } else if ( cfg.hasApplicationType() && !KDesktopFile::isAuthorizedDesktopFile( path ) ) {
+        return QString("application-x-desktop");
     }
     return icon;
 }
