@@ -684,7 +684,18 @@ bool KConfig::isConfigWritable(bool warnUser)
 bool KConfig::hasGroupImpl(const QByteArray& aGroup) const
 {
     Q_D(const KConfig);
-    return d->entryMap.hasEntry(aGroup);
+
+    if (d->entryMap.hasEntry(aGroup)) return true;
+
+    QByteArray subGroupMarker = aGroup + '\x1d';
+    // Because this group could have only subgroups but no entries we have to
+    // search for group markers
+    for (KEntryMap::ConstIterator entryMapIt( d->entryMap.constBegin() ); entryMapIt != d->entryMap.constEnd(); ++entryMapIt) {
+        if (entryMapIt.key().mGroup.startsWith(subGroupMarker)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool KConfigPrivate::canWriteEntry(const QByteArray& group, const char* key, bool isDefault) const
