@@ -162,18 +162,6 @@ void KConfigTest::initTestCase()
   KConfigGroup cg3(&cg, "SubGroup/3");
   cg3.writeEntry( "sub3string", "somevalue" );
 
-  // Create A group containing only other groups. We want to make sure it
-  // shows up in groupList of sc
-  cg = KConfigGroup(&sc, "NoEntryGroup");
-  cg1 = KConfigGroup(&cg, "NEG Child1");
-  cg1.writeEntry( "entry1", "somevalue" );
-  cg2 = KConfigGroup(&cg, "NEG Child2");
-  cg2.writeEntry( "entry2", "somevalue" );
-  cg3 = KConfigGroup(&cg, "NEG Child3");
-  cg3 = KConfigGroup(&cg, "NEG Child3");
-  QEXPECT_FAIL("", "Currently groups without entries do not exists!", Continue);
-  QVERIFY(cg.exists());
-
   sc.sync();
 
   KConfig sc1("kdebugrc", KConfig::SimpleConfig);
@@ -881,14 +869,37 @@ void KConfigTest::testSubGroup()
     QCOMPARE(QStringList(cg.entryMap().keys()), PARENTGROUPKEYS);
     QCOMPARE(QStringList(subcg3.entryMap().keys()), SUBGROUP3KEYS);
 
-    // Make sure groupList returns groups having no entries but subgroups
+    // Create A group containing only other groups. We want to make sure it
+    // shows up in groupList of sc
     KConfigGroup neg(&sc, "NoEntryGroup");
-    // Check the child are there
-    QCOMPARE(neg.groupList(), QStringList() << "NEG Child1" << "NEG Child2");
-    // No check if the group itself is there.
-    QVERIFY(sc.groupList().contains("NoEntryGroup"));
-    QEXPECT_FAIL("", "Currently groups without entries do not exists!", Continue);
-    QVERIFY(neg.exists());
+    KConfigGroup negsub1(&neg, "NEG Child1");
+                 negsub1.writeEntry( "entry", "somevalue" );
+    KConfigGroup negsub2(&neg, "NEG Child2");
+    KConfigGroup negsub3(&neg, "NEG Child3");
+    KConfigGroup negsub31(&negsub3, "NEG Child3-1");
+    KConfigGroup negsub4(&neg, "NEG Child4");
+    KConfigGroup negsub41(&negsub4, "NEG Child4-1");
+                 negsub41.writeEntry( "entry", "somevalue" );
+
+    // A group exists if it has content
+    QVERIFY(negsub1.exists());
+
+    // But it doesn't exist if it has no content
+    QEXPECT_FAIL("", "Currently groups without content do no exist!", Continue);
+    QVERIFY(negsub2.exists());
+
+    // A subgroup does not qualify as content if it is also empty!
+    QEXPECT_FAIL("", "Currently groups without content do no exist!", Continue);
+    QVERIFY(negsub3.exists());
+
+    // A subgroup with content is ok
+    QVERIFY(negsub4.exists());
+
+    // Only subgroups with content show up in groupList()
+    QEXPECT_FAIL("", "Empty subgroups do not show up in groupList()", Continue);
+    QCOMPARE(neg.groupList(), QStringList() << "NEG Child1" << "NEG Child2" << "NEG Child3" << "NEG Child4");
+    // This is what happens
+    QCOMPARE(neg.groupList(), QStringList() << "NEG Child1" << "NEG Child4");
 
     // make sure groupList() isn't returning something it shouldn't
     foreach(const QString& group, sc.groupList()) {
