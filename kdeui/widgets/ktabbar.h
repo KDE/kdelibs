@@ -148,7 +148,9 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
     void initiateDrag( int );
     void testCanDecode( const QDragMoveEvent*, bool& );
     void receivedDropEvent( int, QDropEvent* );
+    /** @deprecated Use QTabBar::tabMoved(int,int) instead.*/
     QT_MOC_COMPAT void moveTab( int, int );
+    /** @deprecated Use QTabBar::tabCloseRequested(int) instead. */
     QT_MOC_COMPAT void closeRequest( int );
 #ifndef QT_NO_WHEELEVENT
     void wheelDelta( int );
