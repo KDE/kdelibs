@@ -2828,8 +2828,8 @@ void DocumentImpl::dispatchImageLoadEventsNow()
 
     m_imageLoadEventDispatchingList = m_imageLoadEventDispatchSoonList;
     m_imageLoadEventDispatchSoonList.clear();
-    for (QLinkedListIterator<HTMLImageElementImpl*> it(m_imageLoadEventDispatchingList); it.hasNext(); )
-        it.next()->dispatchLoadEvent();
+    while (!m_imageLoadEventDispatchingList.isEmpty())
+        m_imageLoadEventDispatchingList.takeFirst()->dispatchLoadEvent();
     m_imageLoadEventDispatchingList.clear();
 }
 
