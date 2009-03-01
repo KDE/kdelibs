@@ -2312,7 +2312,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             if (!tabOpt) return;
 
             //First, we get our content region.
-            QRect labelRect = marginAdjustedTab(tabOpt, TabBar::TabContentsMargin);
+            QRect labelRect = subElementRect(SE_TabBarTabText, option, widget);
 
             Side tabSd = tabSide(tabOpt);
 
@@ -3065,6 +3065,36 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
                     return pane.adjusted(top,right, -bot,-left);
             }
         }
+
+        case SE_TabBarTabText:
+        {
+            const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(option);
+            if (!tabOpt) return QRect();
+
+            QRect r = marginAdjustedTab(tabOpt, TabBar::TabContentsMargin);
+            QStyleOptionTabV3 tov3(*tabOpt);
+
+            switch (tov3.shape)
+            {
+            case QTabBar::RoundedNorth:
+            case QTabBar::TriangularNorth:
+            case QTabBar::RoundedSouth:
+            case QTabBar::TriangularSouth:
+                r.adjust(tov3.leftButtonSize.width(), 0, -tov3.rightButtonSize.width(), 0);
+                break;
+            case QTabBar::RoundedEast:
+            case QTabBar::TriangularEast:
+                r.adjust(0, tov3.leftButtonSize.width(), 0, -tov3.rightButtonSize.width());
+                break;
+            case QTabBar::RoundedWest:
+            case QTabBar::TriangularWest:
+                r.adjust(0, tov3.rightButtonSize.width(), 0, -tov3.leftButtonSize.width());
+                break;
+            }
+
+            return r;
+        }
+
         default:
             break;
     }
