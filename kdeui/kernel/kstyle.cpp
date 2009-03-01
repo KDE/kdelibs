@@ -460,7 +460,6 @@ QPalette KStyle::standardPalette() const
 QIcon KStyle::standardIconImplementation(StandardPixmap standardIcon, const QStyleOption *option,
                                          const QWidget *widget) const
 {
-    kDebug() << "###################" << standardIcon;
     switch (standardIcon) {
         case QStyle::SP_DesktopIcon:
             return KIcon("user-desktop");
