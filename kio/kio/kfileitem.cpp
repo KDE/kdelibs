@@ -749,7 +749,8 @@ static QString iconFromDesktopFile(const QString& path)
                 }
             }
         }
-    } else if ( cfg.hasApplicationType() && !KDesktopFile::isAuthorizedDesktopFile( path ) ) {
+    } else if ( group.hasKey( "Exec" ) && !KDesktopFile::isAuthorizedDesktopFile( path ) ) {
+        // Disable custom icons for untrusted executables
         return QString("application-x-desktop");
     }
     return icon;
