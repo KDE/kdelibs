@@ -623,10 +623,7 @@ void KCharSelect::KCharSelectPrivate::_k_updateCurrentChar(const QChar &c)
 void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 {
     QString html;
-    // Qt internally uses U+FDD0 and U+FDD1 to mark the beginning and the end of frames.
-    // They should be seen as non-printable characters, as trying to display them leads
-    //  to a crash caused by a Qt "noBlockInString" assertion.
-    if (c.isPrint() && c.unicode() != 0xFDD0 && c.unicode() != 0xFDD1) {
+    if (c.isPrint() && !s_data->isIgnorable(c)) {
     // Wrap Combining Diacritical Marks in spaces to prevent them from being combined with the text around them
     // It still doesn't look perfect, but at least better than without the spaces
     QString combiningSpace;
@@ -878,7 +875,7 @@ QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
         return QVariant();
     else if (role == Qt::ToolTipRole) {
         QString s;
-        if (c.isPrint()) {
+        if (c.isPrint() && !s_data->isIgnorable(c)) {
             s = "&#" + QString::number(c.unicode()) + ';';
             // Wrap Combining Diacritical Marks in spaces
             // It still doesn't look perfect, but at least better than without the spaces

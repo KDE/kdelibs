@@ -57,6 +57,8 @@ public:
 
     QStringList unihanInfo(const QChar& c);
 
+    bool isIgnorable(const QChar& c);
+
     QString categoryText(QChar::Category category);
 
     QList<QChar> find(const QString& s);

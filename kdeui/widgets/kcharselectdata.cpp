@@ -504,6 +504,37 @@ QStringList KCharSelectData::unihanInfo(const QChar& c)
     return QStringList();
 }
 
+bool KCharSelectData::isIgnorable(const QChar& c)
+{
+    // Qt internally uses U+FDD0 and U+FDD1 to mark the beginning and the end of frames.
+    // They should be seen as non-printable characters, as trying to display them leads
+    //  to a crash caused by a Qt "noBlockInString" assertion.
+    if(c == 0xFDD0 || c == 0xFDD1)
+        return true;
+
+    /*
+     * According to the Unicode standard, Default Ignorable Code Points
+     * should be ignored unless explicitly supported. For example, U+202E
+     * RIGHT-TO-LEFT-OVERRIDE ir printable according to Qt, but displaying
+     * it gives the undesired effect of all text being turned RTL. We do not
+     * have a way to "explicitly" support it, so we will treat it as
+     * non-printable.
+     *
+     * There is a list of these on
+     * http://unicode.org/Public/UNIDATA/DerivedCoreProperties.txt under the
+     * property Default_Ignorable_Code_Point.
+     */
+
+    //NOTE: not very nice to hardcode these here; is it worth it to modify
+    //      the binary data file to hold them?
+    return c == 0x00AD || c == 0x034F || c == 0x115F || c == 0x1160 ||
+           c == 0x17B4 || c == 0x17B5 || (c >= 0x180B && c <= 0x180D) ||
+           (c >= 0x200B && c <= 0x200F) || (c >= 0x202A && c <= 0x202E) ||
+           (c >= 0x2060 && c <= 0x206F) || c == 0x3164 ||
+           (c >= 0xFE00 && c <= 0xFE0F) || c == 0xFEFF || c == 0xFFA0 ||
+           (c >= 0xFFF0 && c <= 0xFFF8);
+}
+
 QString KCharSelectData::categoryText(QChar::Category category)
 {
     switch (category) {
