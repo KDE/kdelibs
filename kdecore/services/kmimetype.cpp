@@ -24,7 +24,6 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
-#include <kdesktopfile.h>
 #include <kde_file.h>
 #include <klocale.h>
 #include <kmessage.h>
@@ -34,8 +33,6 @@
 #include <ksycoca.h>
 #include <kurl.h>
 
-#include <QtCore/QMutableSetIterator>
-#include <QtCore/QCharRef>
 #include <QtCore/QFile>
 #include <QtDBus/QtDBus>
 #include <QBuffer>

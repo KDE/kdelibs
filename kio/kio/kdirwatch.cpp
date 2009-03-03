@@ -140,7 +140,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   timer.setObjectName( "KDirWatchPrivate::timer" );
   connect (&timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
 
-  KConfigGroup config(KGlobal::config(), QLatin1String("DirWatch"));
+  KConfigGroup config(KGlobal::config(), "DirWatch");
   m_nfsPollInterval = config.readEntry("NFSPollInterval", 5000);
   m_PollInterval = config.readEntry("PollInterval", 500);
 
