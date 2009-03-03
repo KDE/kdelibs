@@ -880,6 +880,16 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Solid COMPONENT Devel)
 
 
 install( FILES
+  Sonnet/ConfigDialog
+  Sonnet/ConfigWidget
+  Sonnet/Dialog
+  Sonnet/DictionaryComboBox
+  Sonnet/Highlighter
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Sonnet COMPONENT Devel)
+
+
+
+install( FILES
   ThreadWeaver/DependencyPolicy
   ThreadWeaver/Job
   ThreadWeaver/JobCollection
