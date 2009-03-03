@@ -208,6 +208,11 @@ QString KCharSelectData::block(const QChar& c)
     return blockName(blockIndex(c));
 }
 
+QString KCharSelectData::section(const QChar& c)
+{
+    return sectionName(sectionIndex(blockIndex(c)));
+}
+
 QString KCharSelectData::name(const QChar& c)
 {
     if(!openDataFile()) {
@@ -339,6 +344,28 @@ QString KCharSelectData::blockName(int index)
     }
 
     return i18nc("KCharselect unicode block name", data + i);
+}
+
+QString KCharSelectData::sectionName(int index)
+{
+    if(!openDataFile()) {
+        return QString();
+    }
+
+    const uchar* udata = reinterpret_cast<const uchar*>(dataFile.constData());
+    const quint32 stringBegin = qFromLittleEndian<quint32>(udata+24);
+    const quint32 stringEnd = qFromLittleEndian<quint32>(udata+28);
+
+    quint32 i = stringBegin;
+    int currIndex = 0;
+
+    const char* data = dataFile.constData();
+    while(i < stringEnd && currIndex < index) {
+        i += strlen(data + i) + 1;
+        currIndex++;
+    }
+
+    return i18nc("KCharselect unicode section name", data + i);
 }
 
 QStringList KCharSelectData::aliases(const QChar& c)
@@ -504,14 +531,19 @@ QStringList KCharSelectData::unihanInfo(const QChar& c)
     return QStringList();
 }
 
-bool KCharSelectData::isIgnorable(const QChar& c)
+bool KCharSelectData::isDisplayable(const QChar& c)
 {
     // Qt internally uses U+FDD0 and U+FDD1 to mark the beginning and the end of frames.
     // They should be seen as non-printable characters, as trying to display them leads
     //  to a crash caused by a Qt "noBlockInString" assertion.
     if(c == 0xFDD0 || c == 0xFDD1)
-        return true;
+        return false;
+    
+    return c.isPrint() && !isIgnorable(c);
+}
 
+bool KCharSelectData::isIgnorable(const QChar& c)
+{
     /*
      * According to the Unicode standard, Default Ignorable Code Points
      * should be ignored unless explicitly supported. For example, U+202E
@@ -533,6 +565,47 @@ bool KCharSelectData::isIgnorable(const QChar& c)
            (c >= 0x2060 && c <= 0x206F) || c == 0x3164 ||
            (c >= 0xFE00 && c <= 0xFE0F) || c == 0xFEFF || c == 0xFFA0 ||
            (c >= 0xFFF0 && c <= 0xFFF8);
+}
+
+bool KCharSelectData::isCombining(const QChar &c)
+{
+    return section(c) == i18nc("KCharSelect section name", "Combining Diacritical Marks");
+    //FIXME: this is an imperfect test. There are many combining characters 
+    //       that are outside of this section. See Grapheme_Extend in
+    //       http://www.unicode.org/Public/UNIDATA/DerivedCoreProperties.txt
+}
+
+QString KCharSelectData::display(const QChar &c, const QFont &font)
+{
+    if (!isDisplayable(c)) {
+        return QString("<b>") + i18n("Non-printable") + "</b>";
+    } else {
+        QString s = QString("<font size=\"+4\" face=\"") + font.family() + "\">";
+        if (isCombining(c)) {
+            s += displayCombining(c);
+        } else {
+            s += "&#" + QString::number(c.unicode()) + ";";
+        }
+        s += "</font>";
+        return s;
+    }
+}
+
+QString KCharSelectData::displayCombining(const QChar &c)
+{
+    /*
+     * The purpose of this is to make it easier to see how a combining
+     * character affects the text around it.
+     * The initial plan was to use U+25CC DOTTED CIRCLE for this purpose,
+     * as seen in pdfs from Unicode, but there seem to be a lot of alignment
+     * problems with that.
+     *
+     * Eventually, it would be nice to determine whether the character
+     * combines to the left or to the right, etc.
+     */
+    QString s = "&nbsp;&#" + QString::number(c.unicode()) + ";&nbsp;" +
+                " (ab&#" + QString::number(c.unicode()) + ";c)";
+    return s;
 }
 
 QString KCharSelectData::categoryText(QChar::Category category)

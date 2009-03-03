@@ -622,20 +622,12 @@ void KCharSelect::KCharSelectPrivate::_k_updateCurrentChar(const QChar &c)
 
 void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 {
-    QString html;
-    if (c.isPrint() && !s_data->isIgnorable(c)) {
-    // Wrap Combining Diacritical Marks in spaces to prevent them from being combined with the text around them
-    // It still doesn't look perfect, but at least better than without the spaces
-    QString combiningSpace;
-    if(s_data->block(c) == i18nc("KCharselect unicode block name", "Combining Diacritical Marks")) {
-        combiningSpace = "&nbsp;";
-    }
-        html = QString("<p>" + i18n("Character:") + " <font size=\"+4\" face=\"") + charTable->font().family() + "\">" + combiningSpace + "&#" + QString::number(c.unicode()) + ";" + combiningSpace + "</font> " + s_data->formatCode(c.unicode())  + "<br>";
-    } else {
-        html = QString("<p>" + i18n("Character:") + " <b>" + i18n("Non-printable") + "</b> ") + s_data->formatCode(c.unicode())  + "<br>";
-    }
+    QString html = "<p>" + i18n("Character:") + ' ' + s_data->display(c, charTable->font()) + ' ' +
+                   s_data->formatCode(c.unicode())  + "<br />";
+
     QString name = s_data->name(c);
     if (!name.isEmpty()) {
+        //is name ever empty? </p> should always be there...
         html += i18n("Name: ") + Qt::escape(name) + "</p>";
     }
     QStringList aliases = s_data->aliases(c);
@@ -874,18 +866,9 @@ QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
     else if (role == Qt::ToolTipRole) {
-        QString s;
-        if (c.isPrint() && !s_data->isIgnorable(c)) {
-            s = "&#" + QString::number(c.unicode()) + ';';
-            // Wrap Combining Diacritical Marks in spaces
-            // It still doesn't look perfect, but at least better than without the spaces
-            if(s_data->block(c) == i18nc("KCharselect unicode block name", "Combining Diacritical Marks")) {
-                s = "&nbsp;" + s + "&nbsp;";
-            }
-        } else {
-            s = i18n("Non-printable");
-        }
-        QString result = i18nc("Character", "<qt><font size=\"+4\" face=\"%1\">%2</font><br />%3<br />Unicode code point: %4<br />(In decimal: %5)</qt>" ,  m_font.family() ,  s , Qt::escape(s_data->name(c)), s_data->formatCode(c.unicode()) ,  c.unicode());
+        QString result = s_data->display(c, m_font) + "<br />" + Qt::escape(s_data->name(c)) + "<br />" +
+                         i18n("Unicode code point:") + ' ' + s_data->formatCode(c.unicode()) +
+                         i18nc("Character", "In decimal:") + ' ' + QString::number(c.unicode());
         return QVariant(result);
     } else if (role == Qt::TextAlignmentRole)
         return QVariant(Qt::AlignHCenter | Qt::AlignVCenter);

@@ -26,6 +26,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QFuture>
+#include <QtGui/QFont>
 
 // Internal class used by KCharSelect
 
@@ -42,12 +43,14 @@ public:
     QStringList sectionList();
 
     QString block(const QChar& c);
+    QString section(const QChar& c);
     QString name(const QChar& c);
 
     int blockIndex(const QChar& c);
     int sectionIndex(int block);
 
     QString blockName(int index);
+    QString sectionName(int index);
 
     QStringList aliases(const QChar& c);
     QStringList notes(const QChar& c);
@@ -57,7 +60,11 @@ public:
 
     QStringList unihanInfo(const QChar& c);
 
+    bool isDisplayable(const QChar& c);
     bool isIgnorable(const QChar& c);
+    bool isCombining(const QChar& c);
+    QString display(const QChar& c, const QFont& font);
+    QString displayCombining(const QChar& c);
 
     QString categoryText(QChar::Category category);
 
