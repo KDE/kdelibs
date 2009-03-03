@@ -534,7 +534,7 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
             }
 
         }
-        suggestions.setTitle(i18n("Suggestions"));
+        suggestions.setTitle(i18n("Suggestions for %1", selectedWord));
 
         QAction *ignoreAction = menu.addAction(i18n("Ignore"));
         QAction *addToDictAction = menu.addAction(i18n("Add to Dictionary"));
