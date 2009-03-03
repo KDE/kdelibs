@@ -238,7 +238,7 @@ void TableBuilder::handleTile(const string& fnName, StringList sig)
 
 void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& paramIsIm)
 {
-    int numParams = op.opParamTypes.size();
+    unsigned numParams = op.opParamTypes.size();
     if (paramIsIm.size() < numParams) {
         int paramPos = paramIsIm.size();
         bool hasIm  = (op.opParamTypes[paramPos].flags & Type_HaveImm) == Type_HaveImm;
@@ -275,7 +275,7 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
     // Have a full variant... Build a signature.
 
     string sig = op.name;
-    for (int p = 0; p < numParams; ++p) {
+    for (unsigned p = 0; p < numParams; ++p) {
         sig += "_";
         sig += paramIsIm[p] ? "I" : "R";
         sig += op.opParamTypes[p].name;
@@ -283,7 +283,7 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
 
     // We may need padding if we have an immediate align8 param..
     bool needsPad = false;
-    for (int c = 0; c < numParams; ++c)
+    for (unsigned c = 0; c < numParams; ++c)
         needsPad |= (paramIsIm[c] & op.opParamTypes[c].alignTo8());
 
     OperationVariant var;
@@ -298,7 +298,7 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
 
     int pos = 4;
     // pad8/align ones go first.
-    for (int c = 0; c < numParams; ++c) {
+    for (unsigned c = 0; c < numParams; ++c) {
         if (paramIsIm[c] & op.opParamTypes[c].alignTo8()) {
             var.paramOffsets[c] = pos;
             pos += 8;
@@ -306,7 +306,7 @@ void TableBuilder::expandOperationVariants(const Operation& op, vector<bool>& pa
     }
 
     // Then the rest..
-    for (int c = 0; c < numParams; ++c) {
+    for (unsigned c = 0; c < numParams; ++c) {
         if (!paramIsIm[c] || !op.opParamTypes[c].alignTo8()) {
             var.paramOffsets[c] = pos;
             pos += 4;
