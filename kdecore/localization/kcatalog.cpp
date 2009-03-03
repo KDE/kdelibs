@@ -30,6 +30,22 @@
 #include <locale.h>
 #include "gettext.h"
 
+
+static bool s_localeSet = false;
+
+// Initialize the locale very early during application startup
+// This is necessary for e.g. toLocal8Bit() to work, even before
+// a Q[Core]Application exists (David)
+int kInitializeLocale()
+{
+    setlocale(LC_ALL, "");
+    extern Q_CORE_EXPORT bool qt_locale_initialized; // in Qt since 4.5.0
+    qt_locale_initialized = true; // as recommended by Thiago
+    s_localeSet = true;
+    return 1;
+}
+Q_CONSTRUCTOR_FUNCTION(kInitializeLocale)
+
 // not defined on win32 :(
 #ifdef _WIN32
 # ifndef LC_MESSAGES
@@ -50,7 +66,6 @@ public:
 
   QByteArray systemLanguage;
 
-  static int localeSet;
   static QByteArray currentLanguage;
 
   void setupGettextEnv ();
@@ -62,17 +77,15 @@ QDebug operator<<(QDebug debug, const KCatalog &c)
   return debug << c.d->language << " " << c.d->name << " " << c.d->localeDir;
 }
 
-int KCatalogPrivate::localeSet = 0;
 QByteArray KCatalogPrivate::currentLanguage;
 
 KCatalog::KCatalog(const QString & name, const QString & language )
   : d( new KCatalogPrivate )
 {
-  // Set locales only once.
-  if (! KCatalogPrivate::localeSet) {
-    setlocale(LC_ALL, "");
-    KCatalogPrivate::localeSet = 1;
-  }
+    // Set locales if the static initializer didn't work
+    if (!s_localeSet) {
+        kInitializeLocale();
+    }
 
   // Find locale directory for this catalog.
   QString localeDir = catalogLocaleDir( name, language );
