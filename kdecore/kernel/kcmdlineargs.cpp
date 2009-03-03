@@ -264,7 +264,6 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
 
     // Text codec.
     codec = QTextCodec::codecForLocale();
-    setlocale(LC_ALL, ""); // need to initialize "System" codec, i.e. iconv
 
     // Qt options
     //FIXME: Check if other options are specific to Qt/X11
