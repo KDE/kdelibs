@@ -452,8 +452,12 @@ struct KDebugPrivate
         s = s.nospace();
         if (printProcessInfo) {
             programName = cache.value(0).name;
-            if (programName.isEmpty())
-                programName = "<unknown program name>";
+            if (programName.isEmpty()) {
+                if (QCoreApplication::instance())
+                    programName = QCoreApplication::instance()->applicationName().toLocal8Bit();
+                else
+                    programName = "<unknown program name>";
+            }
             s << programName.constData() << "(" << unsigned(getpid()) << ")";
         }
         if (printAreaName && (!printProcessInfo || areaName != programName)) {
