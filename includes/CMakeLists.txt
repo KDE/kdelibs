@@ -967,6 +967,7 @@ install(FILES
   Plasma/RunnerScript
   Plasma/ScriptEngine
   Plasma/ScrollBar
+  Plasma/ScrollWidget
   Plasma/Service
   Plasma/ServiceJob
   Plasma/SignalPlotter
@@ -977,6 +978,7 @@ install(FILES
   Plasma/SvgWidget
   Plasma/TabBar
   Plasma/TextEdit
+  Plasma/TextBrowser
   Plasma/ToolButton
   Plasma/ToolTipContent
   Plasma/ToolTipManager
