@@ -19,6 +19,7 @@
 */
 
 #include "ktextedit.h"
+#include <kdebug.h>
 
 #include <QApplication>
 #include <QClipboard>
@@ -481,14 +482,14 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
     QString selectedWord = wordSelectCursor.selectedText();
 
     // Clear the selection again, we re-select it below (without the apostrophes).
-    wordSelectCursor.movePosition(QTextCursor::PreviousCharacter,
-                                  QTextCursor::MoveAnchor, selectedWord.size());
+    wordSelectCursor.setPosition(wordSelectCursor.position()-selectedWord.size());
     if (selectedWord.startsWith('\'') || selectedWord.startsWith('\"')) {
         selectedWord = selectedWord.right(selectedWord.size() - 1);
         wordSelectCursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor);
     }
     if (selectedWord.endsWith('\'') || selectedWord.endsWith('\"'))
         selectedWord.chop(1);
+
     wordSelectCursor.movePosition(QTextCursor::NextCharacter,
                                   QTextCursor::KeepAnchor, selectedWord.size());
 
