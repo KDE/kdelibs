@@ -545,7 +545,7 @@ public:
     virtual bool hasChildNodes (  ) const;
 
     // Other methods (not part of DOM)
-    void removeChildren();
+    virtual void removeChildren();
     void cloneChildNodes(NodeImpl *clone);
 
     virtual void setFirstChild(NodeImpl *child);

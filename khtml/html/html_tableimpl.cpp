@@ -395,7 +395,16 @@ void HTMLTableElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode 
     handleChildRemove( oldChild );
     HTMLElementImpl::removeChild( oldChild, exceptioncode);
 }
- 
+
+void HTMLTableElementImpl::removeChildren()
+{
+    HTMLElementImpl::removeChildren();
+    tCaption.clear();
+    head.clear();
+    foot.clear();
+    firstBody.clear();
+}
+
 static inline bool isTableCellAncestor(NodeImpl* n)
 {
     return n->id() == ID_THEAD || n->id() == ID_TBODY ||

@@ -216,6 +216,10 @@ public:
         //else things are unchanged.
     }
 
+    void clear() {
+        ptr = 0;
+    }
+
     void operator =(ChildType* child) {
         ptr = child;
     }
@@ -277,6 +281,7 @@ public:
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
     virtual void      replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
     virtual void      removeChild ( NodeImpl *oldChild, int &exceptioncode );
+    virtual void      removeChildren();
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
     
     virtual void parseAttribute(AttributeImpl *attr);
