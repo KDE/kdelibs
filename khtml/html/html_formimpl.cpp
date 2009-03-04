@@ -2314,6 +2314,12 @@ void HTMLSelectElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode
         setRecalcListItems();
 }
 
+void HTMLSelectElementImpl::removeChildren()
+{
+    HTMLGenericFormElementImpl::removeChildren();
+    setRecalcListItems();
+}
+
 NodeImpl *HTMLSelectElementImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 {
     NodeImpl* const result = HTMLGenericFormElementImpl::appendChild(newChild, exceptioncode);
