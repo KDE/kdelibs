@@ -248,7 +248,7 @@ bool KKeySequenceWidgetPrivate::stealShortcuts(
     QString conflictingShortcuts;
     Q_FOREACH(const KAction *action, actions) {
         conflictingShortcuts += i18n("Shortcut(s) '%1' for action '%2'\n",
-                action->shortcut().toString(),
+                action->shortcut().toString(QKeySequence::NativeText),
                 KGlobal::locale()->removeAcceleratorMarker(action->text()));
     }
     QString message = i18n(
