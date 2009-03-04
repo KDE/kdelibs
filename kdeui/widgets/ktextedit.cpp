@@ -47,7 +47,7 @@
 #include <kmessagebox.h>
 #include <kmenu.h>
 #include <kwindowsystem.h>
-
+#include <QDebug>
 class KTextEdit::Private
 {
   public:
@@ -306,11 +306,13 @@ bool KTextEdit::Private::handleShortcut(const QKeyEvent* event)
     parent->cut();
     return true;
   } else if ( KStandardShortcut::undo().contains( key ) ) {
-    parent->document()->undo();
-    return true;
+      if(!parent->isReadOnly())
+          parent->document()->undo();
+      return true;
   } else if ( KStandardShortcut::redo().contains( key ) ) {
-    parent->document()->redo();
-    return true;
+      if(!parent->isReadOnly())
+         parent->document()->redo();
+      return true;
   } else if ( KStandardShortcut::deleteWordBack().contains( key ) ) {
     parent->deleteWordBack();
     return true;
