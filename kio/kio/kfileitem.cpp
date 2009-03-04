@@ -422,10 +422,22 @@ QString KFileItemPrivate::parsePermissions(mode_t perm) const
     // even though it's not really part of the permissions per se.
     if (m_bLink)
         buffer[0] = 'l';
-    else if (m_fileMode != KFileItem::Unknown && S_ISDIR(m_fileMode))
-        buffer[0] = 'd';
-    else
+    else if (m_fileMode != KFileItem::Unknown) {
+        if (S_ISDIR(m_fileMode))
+            buffer[0] = 'd';
+        else if (S_ISSOCK(m_fileMode))
+            buffer[0] = 's';
+        else if (S_ISCHR(m_fileMode))
+            buffer[0] = 'c';
+        else if (S_ISBLK(m_fileMode))
+            buffer[0] = 'b';
+        else if (S_ISFIFO(m_fileMode))
+            buffer[0] = 'p';
+        else
+            buffer[0] = '-';
+    } else {
         buffer[0] = '-';
+    }
 
     buffer[1] = ((( perm & S_IRUSR ) == S_IRUSR ) ? 'r' : '-' );
     buffer[2] = ((( perm & S_IWUSR ) == S_IWUSR ) ? 'w' : '-' );
