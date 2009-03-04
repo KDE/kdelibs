@@ -129,7 +129,7 @@ public:
             kWarning(7011) << "Unknown sycoca strategy:" << strategy;
     }
 #ifdef HAVE_MMAP
-    void tryMmap();
+    bool tryMmap();
 #endif
 
     KSycocaAbstractDevice* device();
@@ -166,7 +166,7 @@ private:
 Q_DECLARE_OPERATORS_FOR_FLAGS(KSycocaPrivate::BehaviorsIfNotFound)
 
 #ifdef HAVE_MMAP
-void KSycocaPrivate::tryMmap()
+bool KSycocaPrivate::tryMmap()
 {
     Q_ASSERT(!m_databasePath.isEmpty());
     m_mmapFile = new QFile(m_databasePath);
@@ -182,10 +182,12 @@ void KSycocaPrivate::tryMmap()
     if (sycoca_mmap == (const char*) MAP_FAILED || sycoca_mmap == 0) {
         kDebug(7011) << "mmap failed. (length = " << sycoca_size << ")";
         sycoca_mmap = 0;
+        return false;
     } else {
 #ifdef HAVE_MADVISE
         (void) madvise((char*)sycoca_mmap, sycoca_size, MADV_WILLNEED);
 #endif // HAVE_MADVISE
+        return true;
     }
 }
 #endif // HAVE_MMAP
@@ -248,9 +250,6 @@ bool KSycocaPrivate::openDatabase(bool openDummyIfNotFound)
     bool result = true;
     if (canRead) {
         m_databasePath = path;
-#ifdef HAVE_MMAP
-        tryMmap();
-#endif
         checkVersion();
     } else { // No database file
         kDebug(7011) << "Could not open ksycoca";
@@ -284,7 +283,7 @@ KSycocaAbstractDevice* KSycocaPrivate::device()
         device->device()->open(QIODevice::ReadOnly); // can't fail
     } else {
 #ifdef HAVE_MMAP
-        if (m_sycocaStrategy == StrategyMmap && sycoca_mmap) {
+        if (m_sycocaStrategy == StrategyMmap && tryMmap()) {
             device = new KSycocaMmapDevice(sycoca_mmap,
                                            sycoca_size);
             if (!device->device()->open(QIODevice::ReadOnly)) {
