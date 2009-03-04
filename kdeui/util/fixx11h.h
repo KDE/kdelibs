@@ -34,12 +34,12 @@ DEALINGS IN THE SOFTWARE.
 
  If you get compile errors caused by X11 includes (the line
  where first error appears contains word like None, Unsorted,
- Below, etc.), put #include <fixx11h.h> in the .cpp file 
+ Below, etc.), put #include <fixx11h.h> in the .cpp file
  (not .h file!) between the place where X11 headers are
  included and the place where the file with compile
  error is included (or the place where the compile error
  in the .cpp file occurs).
- 
+
  This file remaps X11 #defines to const variables or
  inline functions. The side effect may be that these
  symbols may now refer to different variables
@@ -244,6 +244,16 @@ const int FontChange = XFontChange;
 #endif
 // template <---
 
+// Affects: Should be without side effects.
+#ifdef NormalState
+#ifndef FIXX11H_NormalState
+#define FIXX11H_NormalState
+const XID XNormalState = NormalState;
+#undef NormalState
+const XID NormalState = XNormalState;
+#endif
+#undef NormalState
+#endif
 
 // template --->
 // Affects: Should be without side effects.
