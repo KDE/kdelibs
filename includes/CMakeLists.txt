@@ -189,7 +189,6 @@ install( FILES
   KFind
   KFindDialog
   KFloatValidator
-  KFolderType
   KFontAction
   KFontChooser
   KFontComboBox
