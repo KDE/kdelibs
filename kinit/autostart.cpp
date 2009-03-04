@@ -17,6 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#define QT_NO_CAST_FROM_ASCII
 #include "autostart.h"
 
 #include <kautostart.h>
@@ -65,10 +66,10 @@ void AutoStart::setPhaseDone()
 
 static QString extractName(QString path) // krazy:exclude=passbyvalue
 {
-  int i = path.lastIndexOf('/');
+  int i = path.lastIndexOf(QLatin1Char('/'));
   if (i >= 0)
      path = path.mid(i+1);
-  i = path.lastIndexOf('.');
+  i = path.lastIndexOf(QLatin1Char('.'));
   if (i >= 0)
      path = path.left(i);
   return path;
@@ -77,14 +78,16 @@ static QString extractName(QString path) // krazy:exclude=passbyvalue
 void
 AutoStart::loadAutoStartList()
 {
-   const QStringList files = KGlobal::dirs()->findAllResources("autostart", "*.desktop", KStandardDirs::NoDuplicates);
+   const QStringList files = KGlobal::dirs()->findAllResources("autostart",
+                                                               QString::fromLatin1("*.desktop"),
+                                                               KStandardDirs::NoDuplicates);
 
    for(QStringList::ConstIterator it = files.begin();
        it != files.end();
        ++it)
    {
        KAutostart config(*it);
-       if( !config.autostarts( "KDE", KAutostart::CheckAll))
+       if( !config.autostarts(QString::fromLatin1("KDE"), KAutostart::CheckAll))
            continue;
 
        AutoStartItem *item = new AutoStartItem;
@@ -102,7 +105,7 @@ QString
 AutoStart::startService()
 {
    if (m_startList->isEmpty())
-      return 0;
+      return QString();
 
    while(!m_started.isEmpty())
    {
@@ -158,5 +161,5 @@ AutoStart::startService()
       }
    }
 
-   return 0;
+   return QString();
 }
