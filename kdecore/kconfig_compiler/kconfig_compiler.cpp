@@ -442,8 +442,9 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
 
     } else if ( type == "Path" && !defaultValue.isEmpty() ) {
       defaultValue = literalString( defaultValue );
-
-    } else if ( (type == "StringList" || type == "PathList") && !defaultValue.isEmpty() ) {
+    } else if ( type == "Url" && !defaultValue.isEmpty() ) {
+      defaultValue = "KUrl( " + literalString(defaultValue) + ")";
+    } else if ( ( type == "UrlList" || type == "StringList" || type == "PathList") && !defaultValue.isEmpty() ) {
       QTextStream cpp( &code, QIODevice::WriteOnly | QIODevice::Append );
       if (!code.isEmpty())
          cpp << endl;
@@ -452,8 +453,15 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       const QStringList defaults = defaultValue.split( ',' );
       QStringList::ConstIterator it;
       for( it = defaults.constBegin(); it != defaults.constEnd(); ++it ) {
-        cpp << "  default" << name << ".append( QString::fromUtf8( \"" << *it << "\" ) );"
-            << endl;
+        cpp << "  default" << name << ".append( ";
+        if( type == "UrlList" ) {
+          cpp << "KUrl(";       
+        }
+        cpp << "QString::fromUtf8( \"" << *it << "\" ) ";
+        if( type == "UrlList" ) {
+          cpp << ") ";
+        }
+        cpp << ");" << endl;
       }
       defaultValue = "default" + name;
 
