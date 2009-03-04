@@ -21,8 +21,6 @@
 #include "entity_p.h"
 #include "resourcemanager.h"
 
-#include <QtCore/QHash>
-
 #include <Soprano/QueryResultIterator>
 #include <Soprano/Model>
 #include <Soprano/Vocabulary/NRL>
@@ -30,19 +28,6 @@
 #include <Soprano/Vocabulary/RDFS>
 
 #include <kicon.h>
-
-#ifndef _MSC_VER
-uint qHash( const QUrl& url )
-{
-    return qHash( url.toString() );
-}
-#endif
-
-// uint qHash( const Nepomuk::Types::Entity& c )
-// {
-//     return (uint)(ulong)c.d.data();
-// }
-
 
 Nepomuk::Types::EntityPrivate::EntityPrivate( const QUrl& uri_ )
     : uri( uri_ ),
