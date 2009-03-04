@@ -71,8 +71,6 @@ protected:
   KSycocaDict *m_baseGroupDict;
   int m_baseGroupDictOffset;
 
-private:
-  static KServiceGroupFactory *_self;
 protected:
   virtual void virtual_hook( int id, void* data );
 private:

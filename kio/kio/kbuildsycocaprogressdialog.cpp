@@ -51,7 +51,7 @@ void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
      kbuildsycoca.callWithCallback("recreate", QVariantList(), &dlg, SLOT(_k_slotFinished()));
   } else {
       // kded not running, e.g. when using keditfiletype out of a KDE session
-      QObject::connect(KSycoca::self(), SIGNAL(databaseChanged()), &dlg, SLOT(_k_slotFinished()));
+      QObject::connect(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), &dlg, SLOT(_k_slotFinished()));
       KProcess* proc = new KProcess(&dlg);
       (*proc) << KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
       proc->start();

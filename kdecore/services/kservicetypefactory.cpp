@@ -25,45 +25,44 @@
 #include <kdebug.h>
 #include <assert.h>
 
-KServiceTypeFactory::KServiceTypeFactory()
- : KSycocaFactory( KST_KServiceTypeFactory )
-{
-   _self = this;
-   if (m_str)
-   {
-      // Read Header
-      qint32 n;
-      (*m_str) >> n;
-      if (n > 1024)
-      {
-         KSycoca::flagError();
-      }
-      else
-      {
-         QString str;
-         qint32 i;
-         for(;n;--n)
-         {
-            KSycocaEntry::read(*m_str, str);
-            (*m_str) >> i;
-            m_propertyTypeDict.insert(str, i);
-         }
-      }
-   }
-}
+K_GLOBAL_STATIC(KSycocaFactorySingleton<KServiceTypeFactory>, kServiceTypeFactoryInstance)
 
+KServiceTypeFactory::KServiceTypeFactory()
+    : KSycocaFactory( KST_KServiceTypeFactory )
+{
+    kServiceTypeFactoryInstance->instanceCreated(this);
+    if (!KSycoca::self()->isBuilding()) {
+        QDataStream* str = stream();
+        Q_ASSERT(str);
+        if (str) {
+            // Read Header
+            qint32 n;
+            (*str) >> n;
+            if (n > 1024) {
+                KSycoca::flagError();
+            } else {
+                QString string;
+                qint32 i;
+                for(;n;--n) {
+                    KSycocaEntry::read(*str, string);
+                    (*str) >> i;
+                    m_propertyTypeDict.insert(string, i);
+                }
+            }
+        }
+    }
+}
 
 KServiceTypeFactory::~KServiceTypeFactory()
 {
-  _self = 0;
-  KServiceTypeProfile::clearCache();
+    KServiceTypeProfile::clearCache();
+    if (kServiceTypeFactoryInstance.exists())
+        kServiceTypeFactoryInstance->instanceDestroyed(this);
 }
 
 KServiceTypeFactory * KServiceTypeFactory::self()
 {
-  if (!_self)
-    _self = new KServiceTypeFactory();
-  return _self;
+    return kServiceTypeFactoryInstance->self();
 }
 
 KServiceType::Ptr KServiceTypeFactory::findServiceTypeByName(const QString &_name)
@@ -134,9 +133,5 @@ KServiceType * KServiceTypeFactory::createEntry(int offset) const
    return newEntry;
 }
 
-KServiceTypeFactory *KServiceTypeFactory::_self = 0;
-
 void KServiceTypeFactory::virtual_hook( int id, void* data )
 { KSycocaFactory::virtual_hook( id, data ); }
-
-// vim: ts=3 sw=3 et

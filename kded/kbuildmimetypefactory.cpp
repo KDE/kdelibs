@@ -40,6 +40,8 @@ KBuildMimeTypeFactory::KBuildMimeTypeFactory() :
     m_resourceList = new KSycocaResourceList;
     // We want all xml files under xdgdata-mime - but not packages/*.xml
     m_resourceList->add( "xdgdata-mime", "*.xml" );
+
+    m_fastPatternDict = new KSycocaDict();
 }
 
 // return all resource types for this factory

@@ -34,6 +34,8 @@ KBuildServiceGroupFactory::KBuildServiceGroupFactory() :
 {
    m_resourceList = new KSycocaResourceList;
 //   m_resourceList->add( "apps", "*.directory" );
+
+   m_baseGroupDict = new KSycocaDict();
 }
 
 // return all service types for this factory

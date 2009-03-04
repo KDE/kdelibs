@@ -18,11 +18,14 @@
 #ifndef KSERVICETEST_H
 #define KSERVICETEST_H
 
+#include <QAtomicInt>
 #include <QtCore/QObject>
 
 class KServiceTest : public QObject
 {
     Q_OBJECT
+public:
+    KServiceTest() : m_sycocaUpdateDone(0) {}
 private Q_SLOTS:
     void initTestCase();
     void testByName();
@@ -40,10 +43,15 @@ private Q_SLOTS:
     void testByStorageId();
     void testActionsAndDataStream();
     void testServiceGroups();
+    void testKSycocaUpdate();
+    void testReaderThreads();
+    void testThreads();
 
 private:
+    void createFakeService();
     QString m_firstOffer;
     bool m_hasKde4Konsole;
+    QAtomicInt m_sycocaUpdateDone;
 };
 
 #endif

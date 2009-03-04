@@ -48,8 +48,8 @@ public:
    * The instance of the KProtocolInfoFactory.
    * @return the factory instance
    */
-  static KProtocolInfoFactory* self()
-  { if ( !_self) new KProtocolInfoFactory(); return _self; }
+  static KProtocolInfoFactory* self();
+
   /** \internal */
   KProtocolInfoFactory();
   virtual ~KProtocolInfoFactory();
@@ -87,15 +87,12 @@ protected:
   virtual KProtocolInfo *createEntry(int offset) const;
 
 protected:
-  static KProtocolInfoFactory *_self;
-
-  QMap<QString,KProtocolInfo::Ptr> m_cache;
-protected:
   /** Virtual hook, used to add new "virtual" functions while maintaining
       binary compatibility. Unused in this class.
   */
   virtual void virtual_hook( int id, void* data );
 private:
+  QMap<QString,KProtocolInfo::Ptr> m_cache;
   class KProtocolInfoFactoryPrivate* d;
 };
 

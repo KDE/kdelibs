@@ -21,6 +21,7 @@
 #include "kded.h"
 #include "kdedadaptor.h"
 #include "kdedmodule.h"
+#include "kbuildsycoca.h"
 
 #include "kresourcelist.h"
 #include <kcrash.h>
@@ -468,7 +469,7 @@ void Kded::updateDirWatch()
 
 void Kded::updateResourceList()
 {
-  delete KSycoca::self();
+  KBuildSycoca::clearCaches();
 
   if (!bCheckUpdates) return;
 

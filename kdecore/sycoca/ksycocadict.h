@@ -30,6 +30,8 @@ class QDataStream;
 /**
  * @internal
  * Hash table implementation for the sycoca database file
+ *
+ * Only exported for the unit test
  */
 class KDECORE_EXPORT KSycocaDict //krazy:exclude=dpointer (not const because it gets deleted by clear())
 {
@@ -93,7 +95,7 @@ public:
     *
     * Only valid when building the database.
     */
-   uint count();
+   uint count() const;
 
    /**
     * Reset the dictionary.

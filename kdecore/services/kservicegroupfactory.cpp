@@ -29,41 +29,37 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
-KServiceGroupFactory::KServiceGroupFactory()
- : KSycocaFactory( KST_KServiceGroupFactory )
-{
-   m_baseGroupDictOffset = 0;
-   if (m_str)
-   {
-      // Read Header
-      qint32 i;
-      (*m_str) >> i;
-      m_baseGroupDictOffset = i;
+K_GLOBAL_STATIC(KSycocaFactorySingleton<KServiceGroupFactory>, kServiceGroupFactoryInstance)
 
-      const int saveOffset = m_str->device()->pos();
-      // Init index tables
-      m_baseGroupDict = new KSycocaDict(m_str, m_baseGroupDictOffset);
-      m_str->device()->seek(saveOffset);
-   }
-   else
-   {
-      // Build new database
-      m_baseGroupDict = new KSycocaDict();
-   }
-   _self = this;
+KServiceGroupFactory::KServiceGroupFactory()
+    : KSycocaFactory( KST_KServiceGroupFactory )
+{
+    kServiceGroupFactoryInstance->instanceCreated(this);
+    m_baseGroupDictOffset = 0;
+    if (!KSycoca::self()->isBuilding()) {
+        QDataStream* str = stream();
+        // Read Header
+        qint32 i;
+        (*str) >> i;
+        m_baseGroupDictOffset = i;
+
+        const int saveOffset = str->device()->pos();
+        // Init index tables
+        m_baseGroupDict = new KSycocaDict(str, m_baseGroupDictOffset);
+        str->device()->seek(saveOffset);
+    }
 }
 
 KServiceGroupFactory::~KServiceGroupFactory()
 {
-   _self = 0L;
-   delete m_baseGroupDict;
+    delete m_baseGroupDict;
+    if (kServiceGroupFactoryInstance.exists())
+        kServiceGroupFactoryInstance->instanceDestroyed(this);
 }
 
 KServiceGroupFactory * KServiceGroupFactory::self()
 {
-  if (!_self)
-    _self = new KServiceGroupFactory();
-  return _self;
+    return kServiceGroupFactoryInstance->self();
 }
 
 KServiceGroup::Ptr KServiceGroupFactory::findGroupByDesktopPath(const QString &_name, bool deep)
@@ -133,8 +129,6 @@ KServiceGroup* KServiceGroupFactory::createEntry(int offset) const
 {
    return createGroup(offset, true);
 }
-
-KServiceGroupFactory *KServiceGroupFactory::_self = 0;
 
 void KServiceGroupFactory::virtual_hook( int id, void* data )
 { KSycocaFactory::virtual_hook( id, data ); }

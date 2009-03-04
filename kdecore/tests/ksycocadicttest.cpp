@@ -21,6 +21,7 @@
 #include <QBuffer>
 #include <kmimetype.h>
 #include <ksycocadict.h>
+#include <kdebug.h>
 #include "qtest_kde.h"
 
 class KSycocaDictTest : public QObject

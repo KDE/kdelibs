@@ -23,16 +23,14 @@
 #include <assert.h>
 
 KCTimeInfo::KCTimeInfo()
- : KSycocaFactory( KST_CTimeInfo ), ctimeDict()
+    : KSycocaFactory( KST_CTimeInfo ), ctimeDict()
 {
-   if (m_str)
-   {
-      (*m_str) >> m_dictOffset;
-   }
-   else
-   {
-      m_dictOffset = 0;
-   }
+    if (!KSycoca::self()->isBuilding()) {
+        QDataStream* str = stream();
+        (*str) >> m_dictOffset;
+    } else {
+        m_dictOffset = 0;
+    }
 }
 
 KCTimeInfo::~KCTimeInfo()
@@ -83,14 +81,15 @@ KCTimeInfo::ctime(const QString &path)
 void
 KCTimeInfo::fillCTimeDict(Dict &dict)
 {
-    assert(m_str);
-    m_str->device()->seek(m_dictOffset);
+    QDataStream* str = stream();
+    assert(str);
+    str->device()->seek(m_dictOffset);
     QString path;
     quint32 ctime;
     while(true)
     {
-      KSycocaEntry::read(*m_str, path);
-      (*m_str) >> ctime;
+      KSycocaEntry::read(*str, path);
+      (*str) >> ctime;
       if (path.isEmpty()) break;
       dict.insert(path, ctime);
     }

@@ -209,7 +209,7 @@ QList<int> KSycocaDict::findMultiString(const QString &key ) const
     return offsetList;
 }
 
-uint KSycocaDict::count()
+uint KSycocaDict::count() const
 {
    if ( !d || !d->stringlist ) return 0;
 

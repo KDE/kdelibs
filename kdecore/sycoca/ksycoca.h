@@ -1,5 +1,6 @@
 /*  This file is part of the KDE libraries
  *  Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
+ *  Copyright (C) 2005-2008 David Faure <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -89,8 +90,9 @@ public:
    QDataStream *findEntry(int offset, KSycocaType &type);
    /**
     * @internal - called by factories in read-only mode
+    * Returns stream(), but positioned for reading this factory, 0 on error.
     */
-   QDataStream *findFactory( KSycocaFactoryId id);
+   QDataStream *findFactory(KSycocaFactoryId id);
    /**
     * @internal - returns kfsstnd stored inside database
     */
@@ -149,45 +151,64 @@ public:
    /**
     * @internal - disables launching of kbuildsycoca
     */
-   void disableAutoRebuild();
+   static void disableAutoRebuild();
 
    /**
     * When you receive a "databaseChanged" signal, you can query here if
     * a change has occurred in a specific resource type.
     * @see KStandardDirs for the various resource types.
+    *
+    * This method is meant to be called from the GUI thread only.
+    * @deprecated use the signal databaseChanged(QStringList) instead.
     */
-   static bool isChanged(const char *type);
+   static KDE_DEPRECATED bool isChanged(const char *type);
 
    /**
     * A read error occurs.
     */
    static void flagError();
 
-   /**
-    * Returns read error status and clears flag.
-    */
-   static bool readError();
-
-private Q_SLOTS:
-   /**
-    * internal function for receiving kded/kbuildsycoca's signal, when the sycoca file changes
-    */
-   void notifyDatabaseChanged(const QStringList &);
-
 Q_SIGNALS:
-   /**
-    * Connect to this to get notified when the database changes
-    * (Usually apps showing icons do a 'refresh' to take into account the new mimetypes)
-    */
-    void databaseChanged(); // KDE5 TODO: pass const QStringList& changedList here, remove isChanged()
+    /**
+     * Connect to this to get notified when the database changes
+     * @deprecated use the databaseChanged(QStringList) signal
+     */
+    QT_MOC_COMPAT void databaseChanged(); // KDE5 TODO: remove
+
+    /**
+     * Connect to this to get notified when the database changes
+     * Example: when mimetype definitions have changed, applications showing
+     * files as icons refresh icons to take into account the new mimetypes.
+     * Another example: after creating a .desktop file in KOpenWithDialog,
+     * it must wait until kbuildsycoca4 finishes until the KService::Ptr is available.
+     */
+    void databaseChanged(const QStringList& changedResources);
 
 protected:
+    // @internal used by kbuildsycoca
     KSycocaFactoryList* factories();
 
-    // @internal used by kbuildsycoca
-    QDataStream *m_str;
+    // @internal was for kbuildsycoca
+    QDataStream *m_str_deprecated; // KDE5: REMOVE
+    // @internal used by factories and kbuildsycoca
+    QDataStream*& stream();
+    friend class KSycocaFactory;
+    friend class KSycocaDict;
+
+private Q_SLOTS:
+    /**
+     * internal function for receiving kbuildsycoca's signal, when the sycoca file changes
+     */
+    void notifyDatabaseChanged(const QStringList &);
 
 private:
+    /**
+     * Clear all caches related to ksycoca contents.
+     * @internal only used by kded and kbuildsycoca.
+     */
+    static void clearCaches();
+    friend class KBuildSycoca;
+
     Q_DISABLE_COPY(KSycoca)
     friend class KSycocaPrivate;
     KSycocaPrivate * const d;

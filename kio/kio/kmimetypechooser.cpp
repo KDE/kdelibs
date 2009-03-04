@@ -47,7 +47,7 @@ class KMimeTypeChooserPrivate
 
     void _k_editMimeType();
     void _k_slotCurrentChanged(QTreeWidgetItem*);
-    void _k_slotSycocaDatabaseChanged();
+    void _k_slotSycocaDatabaseChanged(const QStringList&);
 
     KMimeTypeChooser *q;
     QTreeWidget *mimeTypeTree;
@@ -204,8 +204,8 @@ void KMimeTypeChooserPrivate::_k_editMimeType()
         return;
     QString mt = (item->parent())->text(0) + '/' + item->text(0);
     // thanks to libkonq/konq_operations.cc
-    q->connect( KSycoca::self(), SIGNAL(databaseChanged()),
-                q, SLOT(_k_slotSycocaDatabaseChanged()) );
+    q->connect( KSycoca::self(), SIGNAL(databaseChanged(QStringList)),
+                q, SLOT(_k_slotSycocaDatabaseChanged(QStringList)) );
     QString keditfiletype = QString::fromLatin1("keditfiletype");
     KRun::runCommand( keditfiletype
 #ifndef Q_OS_WIN
@@ -221,10 +221,10 @@ void KMimeTypeChooserPrivate::_k_slotCurrentChanged(QTreeWidgetItem* item)
     btnEditMimeType->setEnabled( item->parent() );
 }
 
-void KMimeTypeChooserPrivate::_k_slotSycocaDatabaseChanged()
+void KMimeTypeChooserPrivate::_k_slotSycocaDatabaseChanged(const QStringList& changedResources)
 {
-  if ( KSycoca::self()->isChanged("mime") )
-    loadMimeTypes();
+    if (changedResources.contains("xdgdata-mime"))
+        loadMimeTypes();
 }
 
 // recursive helper for mimeTypes()

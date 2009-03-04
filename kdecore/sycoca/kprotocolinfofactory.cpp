@@ -24,18 +24,18 @@
 #include <ksycoca.h>
 #include <ksycocadict.h>
 
-KProtocolInfoFactory* KProtocolInfoFactory::_self = 0;
+K_GLOBAL_STATIC(KSycocaFactorySingleton<KProtocolInfoFactory>, kProtocolInfoFactoryInstance)
 
 KProtocolInfoFactory::KProtocolInfoFactory() : KSycocaFactory( KST_KProtocolInfoFactory )
 {
-  _self = this;
+    kProtocolInfoFactoryInstance->instanceCreated(this);
 }
 
 KProtocolInfoFactory::~KProtocolInfoFactory()
 {
-  _self = 0;
+    if (kProtocolInfoFactoryInstance.exists())
+        kProtocolInfoFactoryInstance->instanceDestroyed(this);
 }
-
 
 KProtocolInfo*
 KProtocolInfoFactory::createEntry(int offset) const
@@ -115,3 +115,8 @@ KProtocolInfo::Ptr KProtocolInfoFactory::findProtocol(const QString &protocol)
 
 void KProtocolInfoFactory::virtual_hook( int id, void* data )
 { KSycocaFactory::virtual_hook( id, data ); }
+
+KProtocolInfoFactory* KProtocolInfoFactory::self()
+{
+    return kProtocolInfoFactoryInstance->self();
+}

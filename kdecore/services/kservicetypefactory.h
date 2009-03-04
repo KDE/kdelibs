@@ -85,9 +85,6 @@ protected:
   // protected for KBuildServiceTypeFactory
   QMap<QString,int> m_propertyTypeDict;
 
-private:
-  static KServiceTypeFactory *_self;
-
 protected:
   virtual void virtual_hook( int id, void* data );
 private:

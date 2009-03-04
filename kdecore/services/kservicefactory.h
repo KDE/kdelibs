@@ -33,7 +33,7 @@ class KSycocaDict;
 /**
  * @internal
  * A sycoca factory for services (e.g. applications)
- * It loads the services from parsing directories (e.g. applnk/)
+ * It loads the services from parsing directories (e.g. prefix/share/applications/)
  * but can also create service from data streams or single config files
  *
  * Exported for kbuildsycoca, but not installed.
@@ -117,8 +117,6 @@ protected:
     KSycocaDict *m_menuIdDict;
     int m_menuIdDictOffset;
 
-private:
-    static KServiceFactory *_self;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

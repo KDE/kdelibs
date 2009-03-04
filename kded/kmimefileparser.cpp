@@ -78,7 +78,7 @@ KMimeFileParser::AllGlobs KMimeFileParser::parseGlobFiles(const QStringList& glo
         }
         parsedFiles << fileName;
         QFile globFile(fileName);
-        kDebug(7021) << "Now parsing" << fileName;
+        //kDebug(7021) << "Now parsing" << fileName;
         const QHash<QString, GlobList> thisLevelGlobs = parseGlobFile(&globFile, format);
         if (allGlobs.isEmpty())
             allGlobs = thisLevelGlobs;

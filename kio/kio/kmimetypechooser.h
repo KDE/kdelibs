@@ -83,7 +83,7 @@ class KIO_EXPORT KMimeTypeChooser : public KVBox
 
     Q_PRIVATE_SLOT( d, void _k_editMimeType() )
     Q_PRIVATE_SLOT( d, void _k_slotCurrentChanged(QTreeWidgetItem*) )
-    Q_PRIVATE_SLOT( d, void _k_slotSycocaDatabaseChanged() )
+    Q_PRIVATE_SLOT( d, void _k_slotSycocaDatabaseChanged(QStringList) )
 };
 
 /**

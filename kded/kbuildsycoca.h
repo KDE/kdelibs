@@ -52,6 +52,9 @@ public:
 
    void setTrackId(const QString &id) { m_trackId = id; }
 
+    // Use our friendly-access-to-KSycoca to make this public
+    static void clearCaches() { KSycoca::clearCaches(); }
+
 protected Q_SLOTS:
    void slotCreateEntry(const QString &file, KService::Ptr *entry);
 
@@ -81,7 +84,7 @@ protected:
    /**
     * Save the ksycoca file
     */
-   void save();
+   void save(QDataStream* str);
 
    /**
     * Clear the factories

@@ -19,6 +19,7 @@
 
 #include "kservicetypeprofile.h"
 #include "kservicetypeprofile_p.h"
+#include <QMutex>
 #include "kservice.h"
 #include "kservicetype.h"
 #include "kservicetypefactory.h"
@@ -39,11 +40,18 @@ public:
     KServiceTypeProfiles() { m_parsed = false; ensureParsed(); }
     ~KServiceTypeProfiles() { clear(); }
     void clear() {
+        QMutexLocker lock(&m_mutex);
         qDeleteAll( *this );
         QHash<QString, KServiceTypeProfileEntry *>::clear();
         m_parsed = false;
     }
-    void ensureParsed();
+    bool hasProfile(const QString& serviceType) {
+        QMutexLocker lock(&m_mutex);
+        ensureParsed();
+        return contains(serviceType);
+    }
+    void ensureParsed(); // mutex must be locked when calling this
+    QMutex m_mutex;
 private:
     bool m_parsed;
 };
@@ -110,6 +118,7 @@ namespace KServiceTypeProfile {
 
 KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOfferList& list, const QString& serviceType )
 {
+    QMutexLocker lock(&s_serviceTypeProfiles->m_mutex);
     s_serviceTypeProfiles->ensureParsed();
     KServiceTypeProfileEntry* profile = s_serviceTypeProfiles->value(serviceType, 0);
 
@@ -160,8 +169,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
 
 bool KServiceTypeProfile::hasProfile( const QString& serviceType )
 {
-    s_serviceTypeProfiles->ensureParsed();
-    return s_serviceTypeProfiles->find( serviceType ) != s_serviceTypeProfiles->end();
+    return s_serviceTypeProfiles->hasProfile(serviceType);
 }
 
 void KServiceTypeProfile::writeServiceTypeProfile( const QString& serviceType,
@@ -210,6 +218,8 @@ void KServiceTypeProfile::deleteServiceTypeProfile( const QString& serviceType)
     config.deleteGroup( serviceType );
     config.sync();
 
+    // Not threadsafe, but well the whole idea of using this method isn't
+    // threadsafe in the first place.
     if (s_serviceTypeProfiles.exists()) {
         delete s_serviceTypeProfiles->take( serviceType );
     }

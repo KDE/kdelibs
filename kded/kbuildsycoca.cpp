@@ -345,8 +345,7 @@ void KBuildSycoca::createMenu(const QString &caption_, const QString &name_, VFo
      if (directoryFile.isEmpty())
         directoryFile = subName+".directory";
      quint32 timeStamp = g_ctimeInfo->ctime(directoryFile);
-     if (!timeStamp)
-     {
+     if (!timeStamp) {
         timeStamp = KGlobal::dirs()->calcResourceHash( g_resource, directoryFile,
                                                        KStandardDirs::Recursive );
      }
@@ -417,8 +416,8 @@ bool KBuildSycoca::recreate()
     return false;
   }
 
-  m_str = new QDataStream ( &database );
-  m_str->setVersion(QDataStream::Qt_3_1);
+  QDataStream* str = new QDataStream(&database);
+  str->setVersion(QDataStream::Qt_3_1);
 
   kDebug(7021).nospace() << "Recreating ksycoca file (" << path << ", version " << KSycoca::version() << ")";
 
@@ -432,11 +431,11 @@ bool KBuildSycoca::recreate()
 
   if( build()) // Parse dirs
   {
-    save(); // Save database
-    if (m_str->status() != QDataStream::Ok) // ######## TODO: does this detect write errors, e.g. disk full?
+    save(str); // Save database
+    if (str->status() != QDataStream::Ok) // ######## TODO: does this detect write errors, e.g. disk full?
       database.abort(); // Error
-    delete m_str;
-    m_str = 0L;
+    delete str;
+    str = 0;
     if (!database.finalize())
     {
       fprintf(stderr, "kbuildsycoca4: ERROR writing database '%s'!\n", database.fileName().toLocal8Bit().data());
@@ -450,8 +449,8 @@ bool KBuildSycoca::recreate()
   }
   else
   {
-    delete m_str;
-    m_str = 0L;
+    delete str;
+    str = 0;
     database.abort();
     if (bMenuTest)
        return true;
@@ -477,12 +476,12 @@ bool KBuildSycoca::recreate()
   return true;
 }
 
-void KBuildSycoca::save()
+void KBuildSycoca::save(QDataStream* str)
 {
    // Write header (#pass 1)
-   m_str->device()->seek(0);
+   str->device()->seek(0);
 
-   (*m_str) << (qint32) KSycoca::version();
+   (*str) << (qint32) KSycoca::version();
    KSycocaFactory * servicetypeFactory = 0;
    KBuildMimeTypeFactory * mimeTypeFactory = 0;
    KBuildServiceFactory * serviceFactory = 0;
@@ -500,38 +499,41 @@ void KBuildSycoca::save()
       else if ( aId == KST_KServiceFactory )
          serviceFactory = static_cast<KBuildServiceFactory *>( *factory );
       aOffset = (*factory)->offset();
-      (*m_str) << aId;
-      (*m_str) << aOffset;
+      (*str) << aId;
+      (*str) << aOffset;
    }
-   (*m_str) << (qint32) 0; // No more factories.
+   (*str) << (qint32) 0; // No more factories.
    // Write KDEDIRS
-   (*m_str) << KGlobal::dirs()->kfsstnd_prefixes();
-   (*m_str) << newTimestamp;
-   (*m_str) << KGlobal::locale()->language();
-   (*m_str) << KGlobal::dirs()->calcResourceHash("services", "update_ksycoca",
+   (*str) << KGlobal::dirs()->kfsstnd_prefixes();
+   (*str) << newTimestamp;
+   (*str) << KGlobal::locale()->language();
+   (*str) << KGlobal::dirs()->calcResourceHash("services", "update_ksycoca",
                                                  KStandardDirs::Recursive );
-   (*m_str) << (*g_allResourceDirs);
+   (*str) << (*g_allResourceDirs);
 
    // Calculate per-servicetype/mimetype data
    mimeTypeFactory->parseSubclasses();
    serviceFactory->postProcessServices();
+
+   // Here so that it's the last debug message
+   kDebug(7021) << "Saving";
 
    // Write factory data....
    for(KSycocaFactoryList::Iterator factory = factories()->begin();
        factory != factories()->end();
        ++factory)
    {
-      (*factory)->save(*m_str);
-      if (m_str->status() != QDataStream::Ok) // ######## TODO: does this detect write errors, e.g. disk full?
+      (*factory)->save(*str);
+      if (str->status() != QDataStream::Ok) // ######## TODO: does this detect write errors, e.g. disk full?
          return; // error
    }
 
-   int endOfData = m_str->device()->pos();
+   int endOfData = str->device()->pos();
 
    // Write header (#pass 2)
-   m_str->device()->seek(0);
+   str->device()->seek(0);
 
-   (*m_str) << (qint32) KSycoca::version();
+   (*str) << (qint32) KSycoca::version();
    for(KSycocaFactoryList::Iterator factory = factories()->begin();
        factory != factories()->end(); ++factory)
    {
@@ -539,13 +541,13 @@ void KBuildSycoca::save()
       qint32 aOffset;
       aId = (*factory)->factoryId();
       aOffset = (*factory)->offset();
-      (*m_str) << aId;
-      (*m_str) << aOffset;
+      (*str) << aId;
+      (*str) << aOffset;
    }
-   (*m_str) << (qint32) 0; // No more factories.
+   (*str) << (qint32) 0; // No more factories.
 
    // Jump to end of database
-   m_str->device()->seek(endOfData);
+   str->device()->seek(endOfData);
 }
 
 bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& stamp, bool top )
@@ -723,7 +725,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    bool incremental = !bGlobalDatabase && args->isSet("incremental") && checkfiles;
    if (incremental || !checkfiles)
    {
-     KSycoca::self()->disableAutoRebuild(); // Prevent deadlock
+     KSycoca::disableAutoRebuild(); // Prevent deadlock
      QString current_language = KGlobal::locale()->language();
      QString ksycoca_language = KSycoca::self()->language();
      quint32 current_update_sig = KGlobal::dirs()->calcResourceHash("services", "update_ksycoca",
@@ -739,7 +741,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      {
         incremental = false;
         checkfiles = true;
-        delete KSycoca::self();
+        KBuildSycoca::clearCaches();
      }
    }
 
@@ -797,7 +799,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       if (incremental)
       {
          kDebug(7021) << "Reusing existing ksycoca";
-         KSycoca *oldSycoca = KSycoca::self();
+         KSycoca::self();
          KSycocaFactoryList *factories = new KSycocaFactoryList;
          g_allEntries = new KSycocaEntryListList;
          g_ctimeDict = new QHash<QString, quint32>;
@@ -819,11 +821,10 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
          delete factories; factories = 0;
          KCTimeInfo *ctimeInfo = new KCTimeInfo;
          ctimeInfo->fillCTimeDict(*g_ctimeDict);
-         delete oldSycoca;
       }
       cSycocaPath = 0;
 
-      KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
+      KBuildSycoca *sycoca = new KBuildSycoca; // Build data base (deletes oldSycoca)
       if (args->isSet("track"))
          sycoca->setTrackId(args->getOption("track"));
       if (!sycoca->recreate()) {
@@ -851,8 +852,10 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      QDBusMessage signal = QDBusMessage::createSignal("/", "org.kde.KSycoca", "notifyDatabaseChanged" );
      signal << *g_changeList;
 
-     if (QDBusConnection::sessionBus().isConnected())
+     if (QDBusConnection::sessionBus().isConnected()) {
+        kDebug() << "Emitting notifyDatabaseChanged" << *g_changeList;
        QDBusConnection::sessionBus().send(signal);
+     }
    }
 
 #ifdef KBUILDSYCOCA_GUI

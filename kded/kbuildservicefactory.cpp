@@ -48,6 +48,10 @@ KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
     // We directly care about services desktop files.
     // All the application desktop files are parsed on demand from the vfolder menu code.
     m_resourceList->add( "services", "*.desktop" );
+
+    m_nameDict = new KSycocaDict();
+    m_relNameDict = new KSycocaDict();
+    m_menuIdDict = new KSycocaDict();
 }
 
 // return all service types for this factory

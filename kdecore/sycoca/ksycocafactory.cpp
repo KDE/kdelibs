@@ -25,7 +25,7 @@
 #include <config.h>
 #include <kdebug.h>
 
-#include <QtCore/QMutableStringListIterator>
+#include <QThread>
 #include <QtCore/QHash>
 
 class KSycocaFactory::Private
@@ -45,10 +45,9 @@ public:
 };
 
 KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
-    : m_resourceList(0), m_entryDict(0), d(new Private)
+    : m_resourceList(0), m_entryDict(0), m_str(0), d(new Private)
 {
-    if (!KSycoca::self()->isBuilding() && (m_str = KSycoca::self()->findFactory( factory_id )))
-    {
+    if (!KSycoca::self()->isBuilding() && (m_str = KSycoca::self()->findFactory(factory_id))) {
         // Read position of index tables....
         qint32 i;
         (*m_str) >> i;
@@ -58,15 +57,13 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
         (*m_str) >> i;
         d->m_endEntryOffset = i;
 
-        int saveOffset = m_str->device()->pos();
+        QDataStream* str = stream();
+        int saveOffset = str->device()->pos();
         // Init index tables
-        d->m_sycocaDict = new KSycocaDict(m_str, d->m_sycocaDictOffset);
-        saveOffset = m_str->device()->seek(saveOffset);
-    }
-    else
-    {
-        // Build new database!
-        m_str = 0;
+        d->m_sycocaDict = new KSycocaDict(str, d->m_sycocaDictOffset);
+        saveOffset = str->device()->seek(saveOffset);
+    } else {
+        // We are in kbuildsycoca4 -- build new database!
         m_entryDict = new KSycocaEntryDict;
         d->m_sycocaDict = new KSycocaDict;
         d->m_beginEntryOffset = 0;
@@ -183,16 +180,18 @@ KSycocaFactory::removeEntry(const QString& entryName)
 KSycocaEntry::List KSycocaFactory::allEntries() const
 {
     KSycocaEntry::List list;
-    if (!m_str) return list;
 
     // Assume we're NOT building a database
 
-    m_str->device()->seek(d->m_endEntryOffset);
+    QDataStream* str = stream();
+    if (!str) return list;
+    str->device()->seek(d->m_endEntryOffset);
     qint32 entryCount;
-    (*m_str) >> entryCount;
+    (*str) >> entryCount;
 
     if (entryCount > 8192)
     {
+        kDebug(7021) << QThread::currentThread() << "error detected in factory" << this;
         KSycoca::flagError();
         return list;
     }
@@ -201,7 +200,7 @@ KSycocaEntry::List KSycocaFactory::allEntries() const
     qint32 *offsetList = new qint32[entryCount];
     for(int i = 0; i < entryCount; i++)
     {
-        (*m_str) >> offsetList[i];
+        (*str) >> offsetList[i];
     }
 
     for(int i = 0; i < entryCount; i++)
@@ -236,5 +235,11 @@ bool KSycocaFactory::isEmpty() const
     return d->m_beginEntryOffset == d->m_endEntryOffset;
 }
 
+QDataStream* KSycocaFactory::stream() const
+{
+    return m_str;
+}
+
 void KSycocaFactory::virtual_hook( int /*id*/, void* /*data*/)
 { /*BASE::virtual_hook( id, data );*/ }
+

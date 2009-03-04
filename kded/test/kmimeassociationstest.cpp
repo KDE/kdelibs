@@ -389,7 +389,7 @@ private:
         // Wait for notifyDatabaseChanged DBus signal
         // (The real KCM code simply does the refresh in a slot, asynchronously)
         QEventLoop loop;
-        QObject::connect(KSycoca::self(), SIGNAL(databaseChanged()), &loop, SLOT(quit()));
+        QObject::connect(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), &loop, SLOT(quit()));
         KProcess proc;
         const QString kbuildsycoca = KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
         QVERIFY(!kbuildsycoca.isEmpty());

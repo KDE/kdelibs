@@ -964,8 +964,8 @@ VFolderMenu::processCondition(QDomElement &domElem, QHash<QString,KService::Ptr>
    }
    else if (domElem.tagName() == "Filename")
    {
-      QString filename = domElem.text();
-kDebug(7021) << "Adding file" << filename;
+      const QString filename = domElem.text();
+      //kDebug(7021) << "Adding file" << filename;
       KService::Ptr s = findApplication(filename);
       if (s)
          items.insert(filename, s);

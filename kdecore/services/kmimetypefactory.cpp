@@ -25,7 +25,7 @@
 #include <kshell.h>
 #include <kdebug.h>
 
-////
+K_GLOBAL_STATIC(KSycocaFactorySingleton<KMimeTypeFactory>, kMimeTypeFactoryInstance)
 
 KMimeTypeFactory::KMimeTypeFactory()
     : KSycocaFactory( KST_KMimeTypeFactory ),
@@ -33,55 +33,52 @@ KMimeTypeFactory::KMimeTypeFactory()
       m_lowWeightPatternsLoaded(false),
       m_magicFilesParsed(false)
 {
-    _self = this;
+    kMimeTypeFactoryInstance->instanceCreated(this);
     m_fastPatternOffset = 0;
     m_highWeightPatternOffset = 0;
     m_lowWeightPatternOffset = 0;
-    if (m_str) {
+    if (!KSycoca::self()->isBuilding()) {
+        QDataStream* str = stream();
+        Q_ASSERT(str);
         // Read Header
         qint32 i;
-        (*m_str) >> i;
+        (*str) >> i;
         m_fastPatternOffset = i;
-        (*m_str) >> i;
+        (*str) >> i;
         // that's the old m_otherPatternOffset, kept for compat but unused
 
         // alias map
         qint32 n;
-        (*m_str) >> n;
+        (*str) >> n;
         QString str1, str2;
         for(;n;n--) {
-            KSycocaEntry::read(*m_str, str1);
-            KSycocaEntry::read(*m_str, str2);
+            KSycocaEntry::read(*str, str1);
+            KSycocaEntry::read(*str, str2);
             m_aliases.insert(str1, str2);
         }
 
-        (*m_str) >> i;
+        (*str) >> i;
         m_highWeightPatternOffset = i;
-        (*m_str) >> i;
+        (*str) >> i;
         m_lowWeightPatternOffset = i;
 
-        const int saveOffset = m_str->device()->pos();
+        const int saveOffset = str->device()->pos();
         // Init index tables
-        m_fastPatternDict = new KSycocaDict(m_str, m_fastPatternOffset);
-        m_str->device()->seek(saveOffset);
-
-    } else {
-        // Build new database
-        m_fastPatternDict = new KSycocaDict();
+        m_fastPatternDict = new KSycocaDict(str, m_fastPatternOffset);
+        str->device()->seek(saveOffset);
     }
 }
 
 KMimeTypeFactory::~KMimeTypeFactory()
 {
-    _self = 0;
+    if (kMimeTypeFactoryInstance.exists())
+        kMimeTypeFactoryInstance->instanceDestroyed(this);
     delete m_fastPatternDict;
 }
 
 KMimeTypeFactory * KMimeTypeFactory::self()
 {
-    if (!_self)
-        _self = new KMimeTypeFactory();
-    return _self;
+    return kMimeTypeFactoryInstance->self();
 }
 
 KMimeType::Ptr KMimeTypeFactory::findMimeTypeByName(const QString &_name, KMimeType::FindByNameOption options)
@@ -157,7 +154,7 @@ QString KMimeTypeFactory::resolveAlias(const QString& mime) const
 QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileName( const QString &filename, QString *matchingExtension )
 {
     // Assume we're NOT building a database
-    if (!m_str) return QList<KMimeType::Ptr>();
+    if (!stream()) return QList<KMimeType::Ptr>();
 
     // "Applications MUST first try a case-sensitive match, then try again with
     // the filename converted to lower-case if that fails. This is so that
@@ -247,7 +244,7 @@ void KMimeTypeFactory::findFromOtherPatternList(QList<KMimeType::Ptr>& matchingM
     if ( !loaded ) {
         loaded = true;
         // Load it only once
-        QDataStream *str = m_str;
+        QDataStream* str = stream();
         str->device()->seek( highWeight ? m_highWeightPatternOffset : m_lowWeightPatternOffset );
 
         QString pattern;
@@ -395,8 +392,6 @@ QMap<QString, QString>& KMimeTypeFactory::aliases()
 {
     return m_aliases;
 }
-
-KMimeTypeFactory *KMimeTypeFactory::_self = 0;
 
 #include <arpa/inet.h> // for ntohs
 #include <kstandarddirs.h>

@@ -178,8 +178,6 @@ private:
     bool m_magicFilesParsed;
     QList<KMimeMagicRule> m_magicRules;
 
-    static KMimeTypeFactory *_self;
-
 private:
     // d pointer: useless since this header is not installed
     //class KMimeTypeFactoryPrivate* d;

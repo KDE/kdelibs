@@ -55,14 +55,7 @@ void KServiceTest::initTestCase()
     const bool mustCreateFakeService = !QFile::exists(fakeService);
     if (mustCreateFakeService) {
         mustUpdateKSycoca = true;
-        KDesktopFile file(fakeService);
-        KConfigGroup group = file.desktopGroup();
-        group.writeEntry("Name", "FakePlugin");
-        group.writeEntry("Type", "Service");
-        group.writeEntry("X-KDE-Library", "faketextplugin");
-        group.writeEntry("X-KDE-Protocols", "http,ftp");
-        group.writeEntry("ServiceTypes", "KTextEditor/Plugin");
-        group.writeEntry("MimeType", "text/plain;");
+        createFakeService();
     }
 
     if ( mustUpdateKSycoca ) {
@@ -416,4 +409,91 @@ void KServiceTest::testServiceGroups()
     }
 
     // No unit test here yet, but at least this can be valgrinded for errors.
+}
+
+void KServiceTest::testKSycocaUpdate()
+{
+    KService::Ptr fakeService = KService::serviceByDesktopPath("fakeservice.desktop");
+    QVERIFY(fakeService); // see initTestCase; it should be found.
+    const QString servPath = KStandardDirs::locateLocal("services", "fakeservice.desktop");
+    QVERIFY(QFile::exists(servPath));
+    QSignalSpy spy(KSycoca::self(), SIGNAL(databaseChanged(QStringList)));
+    QVERIFY(spy.isValid());
+    QFile::remove(servPath);
+    kDebug() << QThread::currentThread() << "executing kbuildsycoca";
+    QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
+    kDebug() << QThread::currentThread() << "done";
+    while (spy.isEmpty())
+        QTest::qWait(50);
+    QVERIFY(!spy.isEmpty());
+    QVERIFY(spy[0][0].toStringList().contains("services"));
+    kDebug() << QThread::currentThread() << "got signal ok";
+
+    spy.clear();
+    QVERIFY(fakeService); // the whole point of refcounting is that this KService instance is still valid.
+    QVERIFY(!QFile::exists(servPath));
+
+    // Recreate it, for future tests
+    createFakeService();
+    QVERIFY(QFile::exists(servPath));
+    kDebug() << QThread::currentThread() << "executing kbuildsycoca (2)";
+    QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
+    kDebug() << QThread::currentThread() << "done (2)";
+    while (spy.isEmpty())
+        QTest::qWait(50);
+    kDebug() << QThread::currentThread() << "got signal ok (2)";
+    QVERIFY(spy[0][0].toStringList().contains("services"));
+    if (QThread::currentThread() != QCoreApplication::instance()->thread())
+        m_sycocaUpdateDone.ref();
+}
+
+void KServiceTest::createFakeService()
+{
+    const QString fakeService = KStandardDirs::locateLocal("services", "fakeservice.desktop");
+    KDesktopFile file(fakeService);
+    KConfigGroup group = file.desktopGroup();
+    group.writeEntry("Name", "FakePlugin");
+    group.writeEntry("Type", "Service");
+    group.writeEntry("X-KDE-Library", "faketextplugin");
+    group.writeEntry("X-KDE-Protocols", "http,ftp");
+    group.writeEntry("ServiceTypes", "KTextEditor/Plugin");
+    group.writeEntry("MimeType", "text/plain;");
+}
+
+#include <QThreadPool>
+#include <qtconcurrentrun.h>
+
+// Testing for concurrent access to ksycoca from multiple threads
+// It's especially interesting to run this test as ./kservicetest testThreads
+// so that even the ksycoca initialization is happening from N threads at the same time.
+// Use valgrind --tool=helgrind to see the race conditions.
+
+void KServiceTest::testReaderThreads()
+{
+    QThreadPool::globalInstance()->setMaxThreadCount(10);
+    QList<QFuture<void> > futures;
+    futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
+    futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
+    futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
+    futures << QtConcurrent::run(this, &KServiceTest::testHasServiceType1);
+    futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
+    futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
+    Q_FOREACH(QFuture<void> f, futures)
+        f.waitForFinished();
+    QThreadPool::globalInstance()->setMaxThreadCount(1); // delete those threads
+}
+
+void KServiceTest::testThreads()
+{
+    QThreadPool::globalInstance()->setMaxThreadCount(10);
+    QList<QFuture<void> > futures;
+    futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
+    futures << QtConcurrent::run(this, &KServiceTest::testHasServiceType1);
+    futures << QtConcurrent::run(this, &KServiceTest::testKSycocaUpdate);
+    futures << QtConcurrent::run(this, &KServiceTest::testTraderConstraints);
+    while (m_sycocaUpdateDone == 0) // not using a bool, just to silence helgrind
+        QTest::qWait(100); // process dbus events!
+    kDebug() << "Joining all threads";
+    Q_FOREACH(QFuture<void> f, futures)
+        f.waitForFinished();
 }
