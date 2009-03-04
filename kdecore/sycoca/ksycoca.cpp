@@ -19,6 +19,7 @@
  **/
 
 #include "ksycoca.h"
+#include "ksycoca_p.h"
 #include "ksycocatype.h"
 #include "ksycocafactory.h"
 #include "ktoolinvocation.h"
@@ -42,6 +43,9 @@
 
 #include <stdlib.h>
 #include <fcntl.h>
+
+#include "ksycocadevices_p.h"
+#include "ksycocadevices_p.moc"
 
 /**
  * Sycoca file version number.
@@ -78,96 +82,46 @@ static bool s_autoRebuild = true;
 // of database corruption.
 
 
-#include "ksycocadevices_p.h"
-#include "ksycocadevices_p.moc"
+Q_DECLARE_OPERATORS_FOR_FLAGS(KSycocaPrivate::BehaviorsIfNotFound)
 
-class KSycocaPrivate
+KSycocaPrivate::KSycocaPrivate()
+    : databaseStatus( DatabaseNotOpen ),
+      readError( false ),
+      timeStamp( 0 ),
+      m_databasePath(),
+      updateSig( 0 ),
+      sycoca_size(0),
+      sycoca_mmap(0),
+      m_mmapFile(0),
+      m_device(0)
 {
-public:
-    KSycocaPrivate()
-        : databaseStatus( DatabaseNotOpen ),
-          readError( false ),
-          timeStamp( 0 ),
-          m_databasePath(),
-          updateSig( 0 ),
-          sycoca_size(0),
-          sycoca_mmap(0),
-          m_mmapFile(0),
-          m_device(0)
-    {
 #ifdef Q_OS_WIN
-        /*
-          on windows we use KMemFile (QSharedMemory) to avoid problems
-          with mmap (can't delete a mmap'd file)
-        */
-        m_sycocaStrategy = StrategyMemFile;
+    /*
+      on windows we use KMemFile (QSharedMemory) to avoid problems
+      with mmap (can't delete a mmap'd file)
+    */
+    m_sycocaStrategy = StrategyMemFile;
 #else
         m_sycocaStrategy = StrategyMmap;
 #endif
-        KConfigGroup config(KGlobal::config(), "KSycoca");
-        setStrategyFromString(config.readEntry("strategy"));
-    }
+    KConfigGroup config(KGlobal::config(), "KSycoca");
+    setStrategyFromString(config.readEntry("strategy"));
+}
 
-    bool checkVersion();
-    bool openDatabase(bool openDummyIfNotFound=true);
-    enum BehaviorIfNotFound {
-        IfNotFoundDoNothing = 0,
-        IfNotFoundOpenDummy = 1,
-        IfNotFoundRecreate = 2
-    };
-    Q_DECLARE_FLAGS(BehaviorsIfNotFound, BehaviorIfNotFound)
-    bool checkDatabase(BehaviorsIfNotFound ifNotFound);
-    void closeDatabase();
-    void setStrategyFromString(const QString& strategy) {
-        if (strategy == "mmap")
-            m_sycocaStrategy = StrategyMmap;
-        else if (strategy == "file")
-            m_sycocaStrategy = StrategyFile;
-        else if (strategy == "sharedmem")
-            m_sycocaStrategy = StrategyMemFile;
-        else if (!strategy.isEmpty())
-            kWarning(7011) << "Unknown sycoca strategy:" << strategy;
-    }
-#ifdef HAVE_MMAP
-    bool tryMmap();
-#endif
+void KSycocaPrivate::setStrategyFromString(const QString& strategy) {
+    if (strategy == "mmap")
+        m_sycocaStrategy = StrategyMmap;
+    else if (strategy == "file")
+        m_sycocaStrategy = StrategyFile;
+    else if (strategy == "sharedmem")
+        m_sycocaStrategy = StrategyMemFile;
+    else if (!strategy.isEmpty())
+        kWarning(7011) << "Unknown sycoca strategy:" << strategy;
+}
 
-    KSycocaAbstractDevice* device();
-    QDataStream*& stream();
-
-    enum {
-        DatabaseNotOpen, // openDatabase must be called
-        NoDatabase, // not found, so we opened a dummy one instead
-        BadVersion, // it's opened, but it's not useable
-        DatabaseOK } databaseStatus;
-    bool readError;
-
-    quint32 timeStamp;
-    enum { StrategyMmap, StrategyMemFile, StrategyFile, StrategyDummyBuffer } m_sycocaStrategy;
-    QString m_databasePath;
-    QStringList changeList;
-    QString language;
-    quint32 updateSig;
-    QStringList allResourceDirs;
-
-    void addFactory(KSycocaFactory* factory) {
-        m_factories.append(factory);
-    }
-    KSycocaFactoryList* factories() { return &m_factories; }
-
-private:
-    KSycocaFactoryList m_factories;
-    size_t sycoca_size;
-    const char *sycoca_mmap;
-    QFile* m_mmapFile;
-    KSycocaAbstractDevice* m_device;
-};
-
-Q_DECLARE_OPERATORS_FOR_FLAGS(KSycocaPrivate::BehaviorsIfNotFound)
-
-#ifdef HAVE_MMAP
 bool KSycocaPrivate::tryMmap()
 {
+#ifdef HAVE_MMAP
     Q_ASSERT(!m_databasePath.isEmpty());
     m_mmapFile = new QFile(m_databasePath);
     const bool canRead = m_mmapFile->open(QIODevice::ReadOnly);
@@ -189,8 +143,9 @@ bool KSycocaPrivate::tryMmap()
 #endif // HAVE_MADVISE
         return true;
     }
-}
 #endif // HAVE_MMAP
+    return false;
+}
 
 int KSycoca::version()
 {

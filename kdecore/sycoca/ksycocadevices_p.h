@@ -22,8 +22,6 @@
 #ifndef KSYCOCADEVICES_P_H
 #define KSYCOCADEVICES_P_H
 
-#include <QObject>
-
 class KSycocaAbstractDevice
 {
 public:

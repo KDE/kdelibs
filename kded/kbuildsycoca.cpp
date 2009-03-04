@@ -19,6 +19,7 @@
  **/
 
 #include "kbuildsycoca.h"
+#include "ksycoca_p.h"
 #include "kresourcelist.h"
 #include "vfolder_menu.h"
 
@@ -52,9 +53,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kcrash.h>
-#ifdef Q_OS_WIN
 #include <kmemfile.h>
-#endif
 
 #ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build
                         // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
@@ -470,9 +469,9 @@ bool KBuildSycoca::recreate()
     if (g_vfolder)
         str << g_vfolder->allDirectories(); // Extra resource dirs
   }
-#ifdef Q_OS_WIN
-  KMemFile::fileContentsChanged(path);
-#endif
+  if (d->m_sycocaStrategy == KSycocaPrivate::StrategyMemFile)
+     KMemFile::fileContentsChanged(path);
+
   return true;
 }
 

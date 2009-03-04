@@ -160,6 +160,8 @@ public:
         // Start clean
         const QString servPath = KStandardDirs::locateLocal("services", "fakeservice.desktop");
         if (QFile::exists(servPath))
+            QFile::remove(servPath);
+        if (KService::serviceByDesktopPath("fakeservice.desktop"))
             deleteFakeService();
         threads.resize(5);
         for (int i=0; i<threads.size(); i++) {
@@ -224,7 +226,6 @@ void KSycocaThreadTest::deleteFakeService()
     KService::Ptr fakeService = KService::serviceByDesktopPath("fakeservice.desktop");
     Q_ASSERT(fakeService);
     const QString servPath = KStandardDirs::locateLocal("services", "fakeservice.desktop");
-    Q_ASSERT(QFile::exists(servPath));
     QFile::remove(servPath);
 #ifdef WAIT_FOR_SIGNAL
     QSignalSpy spy(KSycoca::self(), SIGNAL(databaseChanged(QStringList)));
