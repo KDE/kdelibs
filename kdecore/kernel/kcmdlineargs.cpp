@@ -789,7 +789,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
       if (s->ignoreUnknown)
          return;
 #ifdef Q_WS_MACX
-		if (_opt.startsWith("psn_", Qt::CaseInsensitive))
+		if (_opt.startsWith("psn_"))
 			return;
 #endif
       KCmdLineArgs::enable_i18n();
@@ -809,7 +809,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
          if (s->ignoreUnknown)
             return;
 #ifdef Q_WS_MACX
-			if (_opt.startsWith("psn_", Qt::CaseInsensitive))
+			if (_opt.startsWith("psn_"))
 				return;
 #endif
          KCmdLineArgs::enable_i18n();
