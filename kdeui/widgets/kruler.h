@@ -85,7 +85,6 @@ class KDEUI_EXPORT KRuler : public QAbstractSlider
   Q_PROPERTY( bool lengthFixed READ lengthFixed WRITE setLengthFixed )
   Q_PROPERTY( QString endLabel READ endLabel WRITE setEndLabel )
   Q_ENUMS( MetricStyle )
-  Q_PROPERTY( MetricStyle rulerMetricStyle WRITE setRulerMetricStyle )
   Q_PROPERTY( int length READ length WRITE setLength )
   Q_PROPERTY( int offset READ offset )
   Q_PROPERTY( int endOffset READ endOffset )
