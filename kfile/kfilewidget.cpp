@@ -837,12 +837,13 @@ void KFileWidget::slotOk()
     } else if (locationEditCurrentTextList.count()) {
         // if we are on file or files mode, and we have an absolute url written by
         // the user, convert it to relative
-        KUrl _url(locationEditCurrentText);
         if (!locationEditCurrentText.isEmpty() && !(mode & KFile::Directory) &&
-            (QDir::isAbsolutePath(locationEditCurrentText) || !_url.protocol().isEmpty())) {
+            (QDir::isAbsolutePath(locationEditCurrentText) ||
+             containsProtocolSection(locationEditCurrentText))) {
+
             QString fileName;
-            KUrl url(_url);
-            KIO::StatJob *statJob = KIO::stat(_url, KIO::HideProgressInfo);
+            KUrl url(locationEditCurrentText);
+            KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
             bool res = KIO::NetAccess::synchronousRun(statJob, 0);
             if (res) {
                 if (!statJob->statResult().isDir()) {
