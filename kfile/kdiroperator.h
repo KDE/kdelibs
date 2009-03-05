@@ -66,7 +66,7 @@ class DeleteJob;
  *
  * Currently, those classes don't support Drag&Drop out of the box -- there
  * you have to use your own view-classes. You can use some DnD-aware views
- * from Bj�n Sahlstr� <bjorn@kbear.org> until they will be integrated
+ * from Björn Sahlström <bjorn@kbear.org> until they will be integrated
  * into this library. See http://devel-home.kde.org/~pfeiffer/DnD-classes.tar.gz
  *
  * This widget is the one used in the KFileDialog.
