@@ -110,10 +110,22 @@ qreal AnimationState::hoverProgress() const
 
 
 DelegateAnimationHandler::DelegateAnimationHandler(QObject *parent)
-    : QObject(parent), timerId(0)
+    : QObject(parent)
 {
 }
 
+DelegateAnimationHandler::~DelegateAnimationHandler()
+{
+    timer.stop();
+
+    QMapIterator<const QAbstractItemView*, AnimationList*> i(animationLists);
+    while (i.hasNext()) {
+        i.next();
+        qDeleteAll(*i.value());
+        delete i.value();
+    }
+    animationLists.clear();
+}
 
 AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &option,
                                                          const QModelIndex &index,
@@ -216,10 +228,8 @@ void DelegateAnimationHandler::startAnimation(AnimationState *state)
     state->time.start();
     state->animating = true;
 
-    if (!timerId)
-    {
-        timerId = startTimer(1000 / 30); // 30 fps
-    }
+    if (!timer.isActive())
+        timer.start(1000 / 30, this); // 30 fps
 }
 
 
@@ -290,11 +300,8 @@ void DelegateAnimationHandler::timerEvent(QTimerEvent *)
         activeAnimations += runAnimations(list, view);
     }
 
-    if (activeAnimations == 0 && timerId)
-    {
-        killTimer(timerId);
-        timerId = 0;
-    }
+    if (activeAnimations == 0 && timer.isActive())
+        timer.stop();
 }
 
 }
