@@ -165,8 +165,12 @@ public:
 
    /**
     * A read error occurs.
+    * @internal
     */
    static void flagError();
+
+   /// @deprecated
+   static KDE_DEPRECATED bool readError();
 
 Q_SIGNALS:
     /**

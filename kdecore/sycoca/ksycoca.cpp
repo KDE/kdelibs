@@ -564,6 +564,11 @@ void KSycoca::flagError()
     }
 }
 
+bool KSycoca::readError() // KDE5: remove
+{
+    return false;
+}
+
 bool KSycoca::isBuilding()
 {
     return false;
