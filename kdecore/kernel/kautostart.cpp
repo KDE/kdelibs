@@ -89,16 +89,16 @@ bool KAutostart::autostarts(const QString& environment,
     bool starts = d->df->desktopGroup().exists();
 
     // check the hidden field
-    starts &= !d->df->desktopGroup().readEntry("Hidden", false);
+    starts = starts && !d->df->desktopGroup().readEntry("Hidden", false);
 
     if (!environment.isEmpty())
     {
-        starts &= (allowedEnvironments().indexOf(environment) != -1);
+        starts = starts && (allowedEnvironments().indexOf(environment) != -1);
     }
 
     if (check == CheckCommand)
     {
-        starts &= d->df->tryExec();
+        starts = starts && d->df->tryExec();
     }
 
     return starts;
