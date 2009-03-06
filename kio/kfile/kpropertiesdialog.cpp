@@ -1732,7 +1732,6 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
    */
   int i, maxEntries = 1000;
   struct passwd *user;
-  struct group *ge;
 
   /* File owner: For root, offer a KLineEdit with autocompletion.
    * For a user, who can never chown() a file, offer a QLabel.
@@ -1768,37 +1767,26 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     strUser = user->pw_name;
 
 #ifdef Q_OS_UNIX
-  setgrent();
-  for (i=0; ((ge = getgrent()) != 0L) && (i < maxEntries); ++i)
-  {
-    if (IamRoot)
-      groupList += QString::fromLatin1(ge->gr_name);
-    else
-    {
-      /* pick the groups to which the user belongs */
-      char ** members = ge->gr_mem;
-      char * member;
-      while ((member = *members) != 0L) {
-        if (strUser == member) {
-          groupList += QString::fromLocal8Bit(ge->gr_name);
-          break;
+    // pick the groups to which the user belongs
+    int groupCount = 0;
+    gid_t *groups = NULL;
+    if (getgrouplist(strUser, user->pw_gid, NULL, &groupCount) < 0) {
+        groups = new gid_t[groupCount];
+        if (groups) {
+            getgrouplist(strUser, user->pw_gid, groups, &groupCount);
+        } else {
+            groupCount = 0;
         }
-        ++members;
-      }
     }
-  }
-  endgrent();
-#endif //Q_OS_UNIX
 
-  /* add the effective Group to the list .. */
-  ge = getgrgid (getegid());
-  if (ge) {
-    QString name = QString::fromLatin1(ge->gr_name);
-    if (name.isEmpty())
-      name.setNum(ge->gr_gid);
-    if (groupList.indexOf(name) == -1)
-      groupList += name;
-  }
+    for (i = 0; i < groupCount; i++) {
+        struct group *mygroup = getgrgid(groups[i]);
+        if (mygroup)
+            groupList += QString::fromLocal8Bit(mygroup->gr_name);
+    }
+
+    delete[] groups;
+#endif //Q_OS_UNIX
 
   bool isMyGroup = groupList.contains(d->strGroup);
 
