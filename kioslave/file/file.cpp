@@ -142,6 +142,16 @@ FileProtocol::~FileProtocol()
 {
 }
 
+#ifdef HAVE_POSIX_ACL
+static QString aclToText(acl_t acl) {
+    ssize_t size = 0;
+    char* txt = acl_to_text(acl, &size);
+    const QString ret = QString::fromLatin1(txt, size);
+    acl_free(txt);
+    return ret;
+}
+#endif
+
 int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
 {
     int ret = 0;
@@ -160,8 +170,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
         acl = acl_from_text( ACLString.toLatin1() );
         if ( acl_valid( acl ) == 0 ) { // let's be safe
             ret = acl_set_file( path, ACL_TYPE_ACCESS, acl );
-            ssize_t size = acl_size( acl );
-            kDebug(7101) << "Set ACL on: " << path << " to: " << acl_to_text( acl, &size );
+            kDebug(7101) << "Set ACL on: " << path << " to: " << aclToText(acl);
         }
         acl_free( acl );
         if ( ret != 0 ) return ret; // better stop trying right away
@@ -175,8 +184,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
             acl_t acl = acl_from_text( defaultACLString.toLatin1() );
             if ( acl_valid( acl ) == 0 ) { // let's be safe
                 ret += acl_set_file( path, ACL_TYPE_DEFAULT, acl );
-                ssize_t size = acl_size( acl );
-                kDebug(7101) << "Set Default ACL on: " << path << " to: " << acl_to_text( acl, &size );
+                kDebug(7101) << "Set Default ACL on: " << path << " to: " << aclToText(acl);
             }
             acl_free( acl );
         }
@@ -1274,14 +1282,12 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry, mode_t typ
     }
     if ( withACL ) {
         if ( acl ) {
-            ssize_t size = acl_size( acl );
-            const QString str = QString::fromLatin1( acl_to_text( acl, &size ) );
+            const QString str = aclToText(acl);
             entry.insert( KIO::UDSEntry::UDS_ACL_STRING, str );
             kDebug(7101) << path.data() << "ACL: " << str;
         }
         if ( defaultAcl ) {
-            ssize_t size = acl_size( defaultAcl );
-            const QString str = QString::fromLatin1( acl_to_text( defaultAcl, &size ) );
+            const QString str = aclToText(defaultAcl);
             entry.insert( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING, str );
             kDebug(7101) << path.data() << "DEFAULT ACL: " << str;
         }

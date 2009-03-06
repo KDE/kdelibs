@@ -177,8 +177,9 @@ static void permissionsToEntry( acl_entry_t entry, unsigned short v )
 #if 0
 static void printACL( acl_t acl, const QString &comment )
 {
-    ssize_t size = acl_size( acl );
-    kDebug() << comment << acl_to_text( acl, &size );
+    const char* txt = acl_to_text(acl);
+    kDebug() << comment << txt;
+    acl_free(txt);
 }
 #endif
 #endif
@@ -609,8 +610,11 @@ bool KACL::setACL( const QString &aclStr )
 QString KACL::asString() const
 {
 #ifdef HAVE_POSIX_ACL
-    ssize_t size = acl_size( d->m_acl );
-    return QString::fromLatin1( acl_to_text( d->m_acl, &size ) );
+    ssize_t size = 0;
+    char* txt = acl_to_text(d->m_acl, &size);
+    const QString ret = QString::fromLatin1(txt, size);
+    acl_free(txt);
+    return ret;
 #else
     return QString();
 #endif
