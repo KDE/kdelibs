@@ -22,6 +22,7 @@
 #ifndef DELEGATEANIMATIONHANDLER_P_H
 #define DELEGATEANIMATIONHANDLER_P_H
 
+#include <QBasicTimer>
 #include <QMap>
 #include <QLinkedList>
 #include <QPersistentModelIndex>
@@ -80,7 +81,7 @@ class DelegateAnimationHandler : public QObject
 
 public:
     DelegateAnimationHandler(QObject *parent = 0);
-    ~DelegateAnimationHandler() {}
+    ~DelegateAnimationHandler();
 
     AnimationState *animationState(const QStyleOption &option, const QModelIndex &index, const QAbstractItemView *view);
 
@@ -97,7 +98,7 @@ private:
 private:
     QMap<const QAbstractItemView*, AnimationList*> animationLists;
     QTime fadeInAddTime;
-    int timerId;
+    QBasicTimer timer;
 };
 
 }
