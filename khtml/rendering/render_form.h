@@ -281,6 +281,7 @@ public:
 public Q_SLOTS:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
+    void slotCompletionBoxActivated(const QString &string);
 protected:
 
 private:
