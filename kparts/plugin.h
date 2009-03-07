@@ -170,7 +170,19 @@ protected:
      * @internal
      * @return The plugin created from the library @p libname
      */
-    static Plugin* loadPlugin( QObject * parent, const char* libname );
+    KDE_DEPRECATED static Plugin* loadPlugin( QObject * parent, const char* libname );
+
+    /**
+     * @internal, added only for source compatibility
+     * @return The plugin created from the library @p libname
+     */
+    KDE_DEPRECATED static Plugin* loadPlugin( QObject * parent, const QByteArray &libname );
+
+    /**
+     * @internal
+     * @return The plugin created from the library @p libname
+     */
+    static Plugin* loadPlugin( QObject * parent, const QString &libname );
 
     virtual void setComponentData(const KComponentData &instance);
 

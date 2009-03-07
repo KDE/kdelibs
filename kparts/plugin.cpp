@@ -150,7 +150,7 @@ void Plugin::loadPlugins(QObject *parent, const QList<PluginInfo> &pluginInfos, 
      if ( library.isEmpty() || hasPlugin( parent, library ) )
        continue;
 
-     Plugin *plugin = loadPlugin( parent, QFile::encodeName(library) );
+     Plugin *plugin = loadPlugin( parent, library );
 
      if ( plugin )
      {
@@ -168,8 +168,24 @@ void Plugin::loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos 
    loadPlugins(parent, pluginInfos, KComponentData());
 }
 
-// static
+// static, deprecated
 Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
+{
+    Plugin* plugin = KLibLoader::createInstance<Plugin>( libname, parent );
+    if ( !plugin )
+        return 0;
+    plugin->d->m_library = libname;
+    return plugin;
+}
+
+// static, deprecated
+Plugin* Plugin::loadPlugin( QObject * parent, const QByteArray &libname )
+{
+    return loadPlugin( parent, libname.data() );
+}
+
+// static
+Plugin* Plugin::loadPlugin( QObject * parent, const QString &libname )
 {
     Plugin* plugin = KLibLoader::createInstance<Plugin>( libname, parent );
     if ( !plugin )
@@ -304,7 +320,7 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
             continue;
 
         kDebug( 1000 ) << "load plugin " << name;
-        Plugin *plugin = loadPlugin( parent, QFile::encodeName(library) );
+        Plugin *plugin = loadPlugin( parent, library );
 
         if ( plugin )
         {
