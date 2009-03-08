@@ -2065,7 +2065,12 @@ void KLocalePrivate::initEncoding()
   // Qt since 4.2 always returns 'System' as codecForLocale and KDE (for example KEncodingFileDialog)
   // expects real encoding name. So on systems that have langinfo.h use nl_langinfo instead,
   // just like Qt compiled without iconv does. Windows already has its own workaround
+
   QByteArray systemLocale = nl_langinfo(CODESET);
+#if defined(Q_OS_MAC)
+  // Mac OX X is UTF-8, always.
+  systemLocale = "UTF-8";
+#endif
 
   if (systemLocale == "ANSI_X3.4-1968") // means ascii, "C"; QTextCodec doesn't know, so avoid warning
     systemLocale = "ISO-8859-1";
