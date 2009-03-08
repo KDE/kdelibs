@@ -1808,14 +1808,17 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 #ifdef Q_OS_UNIX
     // pick the groups to which the user belongs
     int groupCount = 0;
-    gid_t *groups = NULL;
+#ifdef Q_OS_MAC
+    QVarLengthArray<int> groups;
+#else
+    QVarLengthArray<gid_t> groups;
+#endif
     if (getgrouplist(strUser, user->pw_gid, NULL, &groupCount) < 0) {
-        groups = new gid_t[groupCount];
-        if (groups) {
-            getgrouplist(strUser, user->pw_gid, groups, &groupCount);
-        } else {
+        groups.resize(groupCount);
+        if (groups.data())
+            getgrouplist(strUser, user->pw_gid, groups.data(), &groupCount);
+        else
             groupCount = 0;
-        }
     }
 
     for (i = 0; i < groupCount; i++) {
@@ -1823,8 +1826,6 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
         if (mygroup)
             groupList += QString::fromLocal8Bit(mygroup->gr_name);
     }
-
-    delete[] groups;
 #endif //Q_OS_UNIX
 
   bool isMyGroup = groupList.contains(d->strGroup);
