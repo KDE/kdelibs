@@ -113,7 +113,6 @@ KDirOperatorIconView::KDirOperatorIconView(QWidget *parent) :
     setHorizontalScrollMode(QListView::ScrollPerPixel);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     setWordWrap(true);
-    setSpacing(0);
     setIconSize(QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall));
 }
 
