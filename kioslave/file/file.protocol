@@ -1,6 +1,7 @@
 [Protocol]
 exec=kio_file
 protocol=file
+Icon=folder
 input=none
 output=filesystem
 listing=Name,Type,Size,Date,AccessDate,Access,Owner,Group,Link
