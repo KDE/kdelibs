@@ -47,6 +47,10 @@
 #include "ksycocadevices_p.h"
 #include "ksycocadevices_p.moc"
 
+// TODO: remove mmap() from kdewin32 and use QFile::mmap() when needed
+#ifdef Q_WS_WIN
+#undef HAVE_MMAP
+#endif
 /**
  * Sycoca file version number.
  * If the existing file is outdated, it will not get read
@@ -102,7 +106,7 @@ KSycocaPrivate::KSycocaPrivate()
     */
     m_sycocaStrategy = StrategyMemFile;
 #else
-        m_sycocaStrategy = StrategyMmap;
+    m_sycocaStrategy = StrategyMmap;
 #endif
     KConfigGroup config(KGlobal::config(), "KSycoca");
     setStrategyFromString(config.readEntry("strategy"));
