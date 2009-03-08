@@ -47,7 +47,8 @@ class KTabBar::Private
         mDragSwitchTab( -1 ),
         mActivateDragSwitchTabTimer( 0 ),
         mTabReorderingEnabled( false ),
-        mTabCloseActivatePrevious( false )
+        mTabCloseActivatePrevious( false ),
+        mMiddleMouseTabMoveInProgress( false)
     {
     }
 
@@ -59,6 +60,7 @@ class KTabBar::Private
 
     bool mTabReorderingEnabled : 1;
     bool mTabCloseActivatePrevious : 1;
+    bool mMiddleMouseTabMoveInProgress : 1;
 
 };
 
@@ -111,6 +113,11 @@ void KTabBar::mousePressEvent( QMouseEvent *event )
       emit emptyAreaContextMenu( mapToGlobal( event->pos() ) );
     }
     return;
+  } else if (QTabBar::isMovable() && event->button() == Qt::MidButton) {
+    // compatibilty feature for old middle mouse tab moving
+    event->accept();
+    QMouseEvent fakedMouseEvent(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
+    QCoreApplication::sendEvent(this, &fakedMouseEvent);
   }
 
   QTabBar::mousePressEvent( event );
@@ -134,7 +141,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
         return;
       }
     }
-  } else if ( event->buttons() == Qt::MidButton ) {
+  } else if ( event->buttons() == Qt::MidButton && !isMovable() ) {
     if ( d->mReorderStartTab == -1 ) {
       int delay = KGlobalSettings::dndEventDelay();
       QPoint newPos = event->pos();
@@ -162,6 +169,13 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
         }
       }
     }
+  } else if ( event->button() == Qt::NoButton && event->buttons() == Qt::MidButton && isMovable() ) {
+    // compatibilty feature for old middle mouse tab moving
+    d->mMiddleMouseTabMoveInProgress = true;
+    event->accept();
+    QMouseEvent fakedMouseEvent(event->type(), event->pos(), event->button(), Qt::LeftButton, event->modifiers());
+    QCoreApplication::sendEvent(this, &fakedMouseEvent);
+    return;
   }
 
   QTabBar::mouseMoveEvent( event );
@@ -196,6 +210,14 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *event )
     break;
 
   case Qt::MidButton:
+    if (d->mMiddleMouseTabMoveInProgress && QTabBar::isMovable()) {
+      // compatibilty feature for old middle mouse tab moving
+      d->mMiddleMouseTabMoveInProgress = false;
+      event->accept();
+      QMouseEvent fakedMouseEvent(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
+      QCoreApplication::sendEvent(this, &fakedMouseEvent);
+      return;
+    }
     if ( d->mReorderStartTab == -1 ) {
       int tab = selectTab( event->pos() );
       if ( tab != -1 ) {
