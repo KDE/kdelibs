@@ -773,7 +773,7 @@ void KFileWidget::slotOk()
             KUrl::List urlList;                            // one time is always enough.
             int start = 0;
             KUrl topMostUrl;
-            KIO::StatJob *statJob;
+            KIO::StatJob *statJob = 0;
             bool res = false;
 
             // we need to check for a valid first url, so in theory we only iterate one time over
