@@ -347,6 +347,8 @@ apidox_specials()
 {
 	line=`extract_line DOXYGEN_PROJECTNAME "$1"`
 	test -n "$line" && echo "PROJECT_NAME = \"$line\"" >> "$2"
+	line=`extract_line DOXYGEN_PROJECTVERSION "$1"`
+	test -n "$line" && echo "PROJECT_NUMBER = \"$line\"" >> "$2"
 }
 
 apidox_local()
