@@ -263,12 +263,6 @@ static void kMessageOutputFileIO(QtMsgType type, const char *msg)
     }
 }
 
-#ifndef Q_CC_MINGW
-extern "C" BOOL WINAPI AttachConsole(
-  __in  DWORD dwProcessId
-);
-#endif
-
 /** 
   try to attach to the parents console
   \return true if console has been attached, false otherwise

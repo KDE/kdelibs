@@ -122,10 +122,10 @@ int main(int argc, char **argv)
         DebugBreak();
 # else
         // gdb does not support win32 jit debug support, so implement it by ourself
-        QByteArray buf(1024,0);
-        GetModuleFileName(NULL,buf.data(),buf.size());
+        WCHAR buf[1024];
+        GetModuleFileName(NULL,buf, 1024);
         QStringList params;
-        params << buf;
+        params << QString::fromUtf16((const unsigned short*)buf);
         params << QString::number(GetCurrentProcessId());
         QProcess::startDetached("gdb",params);
         Sleep(1000);
