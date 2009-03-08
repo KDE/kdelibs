@@ -30,6 +30,7 @@
 #define KMAINWINDOW_P_H
 
 #include <kconfiggroup.h>
+#include <qpointer.h>
 
 #define K_D(Class) Class##Private * const d = k_func()
 
@@ -52,7 +53,7 @@ public:
     QRect defaultWindowSize;
     KHelpMenu *helpMenu;
     KMainWindow *q;
-    QObject* dockResizeListener;
+    QPointer<QObject> dockResizeListener;
     QString dbusName;
     bool letDirtySettings;
 

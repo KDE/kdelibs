@@ -461,7 +461,7 @@ void KMainWindow::parseGeometry(bool parsewidth)
 KMainWindow::~KMainWindow()
 {
     sMemberList->removeAll( this );
-    delete k_ptr->dockResizeListener;  //so we don't get anymore events after k_ptr is destroyed
+    delete static_cast<QObject *>(k_ptr->dockResizeListener);  //so we don't get anymore events after k_ptr is destroyed
     delete k_ptr;
     KGlobal::deref();
 }
