@@ -3226,12 +3226,6 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                 }
                 State mflags = bflags;
 
-                // mouse pressed...
-                if (tool->activeSubControls & SC_ToolButton)
-                    bflags |= State_Sunken;
-                if (tool->activeSubControls & SC_ToolButtonMenu)
-                    mflags |= State_Sunken;
-
                 QStyleOption tOpt(0);
                 tOpt.palette = pal;
 
