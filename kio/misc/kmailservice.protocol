@@ -10,6 +10,6 @@ writing=false
 makedir=false
 deleting=false
 X-DocPath=kioslave/mailto/index.html
-Icon=mail_new
+Icon=mail-message-new
 Class=:internet
 URIMode=mailto
