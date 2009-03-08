@@ -134,6 +134,20 @@ if(NOT WIN32 AND NOT APPLE)
    )
 endif(NOT WIN32 AND NOT APPLE)
 
+if(APPLE)
+   message(STATUS "-- Building Solid IOKit backend." )
+
+   set(solid_LIB_SRCS ${solid_LIB_SRCS}
+   backends/iokit/iokitmanager.cpp
+   backends/iokit/iokitdevice.cpp
+   backends/iokit/cfhelper.cpp
+   backends/iokit/iokitdeviceinterface.cpp
+   backends/iokit/iokitgenericinterface.cpp
+   backends/iokit/iokitprocessor.cpp
+   backends/iokit/iokitnetworkinterface.cpp
+   )
+endif(APPLE)
+
 # TODO: mingw
 if(MSVC)
    message(STATUS "-- Building Solid WMI backend." )
@@ -180,6 +194,10 @@ set(solid_OPTIONAL_LIBS)
 if(WIN32)
    set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN32_LIBRARY})
 endif(WIN32)
+
+if(APPLE)
+   set(solid_OPTIONAL_LIBS ${IOKIT_LIBRARY})
+endif(APPLE)
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 

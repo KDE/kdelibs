@@ -24,6 +24,7 @@
 #include "backends/fakehw/fakemanager.h"
 
 #if defined (Q_OS_MAC)
+#include "backends/iokit/iokitmanager.h"
 #elif defined (Q_OS_UNIX)
 #include "backends/hal/halmanager.h"
 #elif defined (_MSC_VER) // TODO: mingw
@@ -47,12 +48,13 @@ void Solid::ManagerBasePrivate::loadBackend()
     if (!solidFakeXml.isEmpty()) {
         m_backend = new Solid::Backends::Fake::FakeManager(0, solidFakeXml);
     } else {
-        #if defined (Q_OS_MAC)
-        #elif defined (Q_OS_UNIX)
+#        if defined (Q_OS_MAC)
+            m_backend = new Solid::Backends::IOKit::IOKitManager(0);
+#        elif defined (Q_OS_UNIX)
             m_backend = new Solid::Backends::Hal::HalManager(0);
-        #elif defined (_MSC_VER) // TODO: mingw
+#        elif defined (_MSC_VER) // TODO: mingw
             m_backend = new Solid::Backends::Wmi::WmiManager(0);
-        #endif		
+#        endif
     }
 }
 
