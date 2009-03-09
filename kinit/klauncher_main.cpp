@@ -106,7 +106,10 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    QDBusConnection::sessionBus().registerObject(QString::fromLatin1("/"), launcher);
 
 #ifndef Q_WS_WIN
-   pipe( sigpipe );
+   if (pipe(sigpipe) != 0) {
+       perror("klauncher: pipe failed.");
+       return 1;
+   }
    QSocketNotifier* signotif = new QSocketNotifier( sigpipe[ 0 ], QSocketNotifier::Read, launcher );
    QObject::connect( signotif, SIGNAL( activated( int )), launcher, SLOT( destruct()));
    KCrash::setEmergencySaveFunction(sig_handler);

@@ -854,7 +854,10 @@ static void init_kdeinit_socket()
      fprintf(stderr, "kdeinit4: Aborting. $HOME not set!");
      exit(255);
   }
-  chdir(home_dir);
+  if (chdir(home_dir) != 0) {
+     fprintf(stderr, "kdeinit4: Aborting. Couldn't enter '%s'!", home_dir.constData());
+     exit(255);
+  }
 
   {
      QByteArray path = home_dir;
@@ -1777,7 +1780,10 @@ int main(int argc, char **argv, char **envp)
 #ifdef Q_WS_MACX
       mac_fork_and_reexec_self();
 #else
-      pipe(d.initpipe);
+      if (pipe(d.initpipe) != 0) {
+          perror("kdeinit4: pipe failed");
+          return 1;
+      }
 
       // Fork here and let parent process exit.
       // Parent process may only exit after all required services have been
