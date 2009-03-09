@@ -29,19 +29,6 @@
 
 #include <kicon.h>
 
-#if !defined(_MSC_VER) && (QT_VERSION < QT_VERSION_CHECK(4, 5, 0))
-uint qHash( const QUrl& url )
-{
-    return qHash( url.toString() );
-}
-#endif
-
-// uint qHash( const Nepomuk::Types::Entity& c )
-// {
-//     return (uint)(ulong)c.d.data();
-// }
-
-
 Nepomuk::Types::EntityPrivate::EntityPrivate( const QUrl& uri_ )
     : uri( uri_ ),
       available( uri_.isValid() ? -1 : 0 ),

@@ -127,7 +127,7 @@ namespace Nepomuk {
             bool isAvailable();
 
             /**
-             * The Types classes are optimized for performance under the 
+             * The Types classes are optimized for performance under the
              * aasumption that ontologies never change during the execution
              * time of an application.
              *
@@ -165,6 +165,7 @@ namespace Nepomuk {
             QExplicitlySharedDataPointer<EntityPrivate> d;
         };
 
+        uint qHash(int);
         inline uint qHash( const Entity& c )
         {
             return qHash( c.uri().toString() );
@@ -203,7 +204,7 @@ namespace Nepomuk {
          * The URI of the resource
          */
         QUrl uri() const;
-	    
+
         QString label( const QString& language = QString() ) const;
         QString comment( const QString& language = QString() ) const;
 
