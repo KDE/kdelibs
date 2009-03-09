@@ -25,6 +25,7 @@
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kde_file.h>
+#include <kdeversion.h>
 #include <klocale.h>
 #include <kmessage.h>
 #include <kprotocolinfo.h>
@@ -714,4 +715,30 @@ QString KMimeType::userSpecifiedIconName() const
 {
     Q_D(const KMimeType);
     return d->m_iconName;
+}
+
+int KMimeType::sharedMimeInfoVersion()
+{
+    static int s_version = 0;
+    if (s_version == 0) {
+        QProcess smi;
+        const QString umd = KStandardDirs::findExe(QString::fromLatin1("update-mime-database"));
+        if (umd.isEmpty()) {
+            kWarning() << "update-mime-database not found!";
+            s_version = -1;
+        } else {
+            smi.start(umd, QStringList() << QString::fromLatin1("-v"));
+            smi.waitForStarted();
+            smi.waitForFinished();
+            const QString out = QString::fromLocal8Bit(smi.readAllStandardError());
+            QRegExp versionRe(QString::fromLatin1("update-mime-database \\(shared-mime-info\\) (\\d+)\\.(\\d+)(\\.(\\d+))?"));
+            if (versionRe.indexIn(out) > -1) {
+                s_version = KDE_MAKE_VERSION(versionRe.cap(1).toInt(), versionRe.cap(2).toInt(), versionRe.cap(4).toInt());
+            } else {
+                kWarning() << "Unexpected version scheme from update-mime-database -v: got" << out;
+                s_version = -1;
+            }
+        }
+    }
+    return s_version;
 }

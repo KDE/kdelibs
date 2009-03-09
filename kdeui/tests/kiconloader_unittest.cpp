@@ -17,6 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <kmimetype.h>
 #include <kdebug.h>
 #include <kicon.h>
 #include "qtest_kde.h"
@@ -40,20 +41,8 @@ private Q_SLOTS:
         const QString dataFile = KGlobal::dirs()->locateLocal("cache", "kpc/kde-icon-cache.data");
         QFile::remove(indexFile);
         QFile::remove(dataFile);
-
-        {
-            sharedMimeInfoVersion = 0;
-
-            QProcess smi;
-            smi.start(QString::fromLatin1("update-mime-database"), QStringList() << QString::fromLatin1("-v"));
-            smi.waitForStarted();
-            smi.waitForFinished();
-            QString out = QString::fromLocal8Bit(smi.readAllStandardError());
-            QRegExp versionRe(QString::fromLatin1("update-mime-database \\(shared-mime-info\\) (\\d+)\\.(\\d+)(\\.(\\d+))?"));
-            if (versionRe.indexIn(out) > -1) {
-                sharedMimeInfoVersion = KDE_MAKE_VERSION(versionRe.cap(1).toInt(), versionRe.cap(2).toInt(), versionRe.cap(4).toInt());
-            }
-        }
+        sharedMimeInfoVersion = KMimeType::sharedMimeInfoVersion();
+        QVERIFY(sharedMimeInfoVersion > 0);
     }
 
     void testLoadIconCanReturnNull()

@@ -346,6 +346,18 @@ public:
      */
     static QString extractKnownExtension( const QString &fileName );
 
+    /**
+     * Returns the version of the installed update-mime-database program
+     * (from freedesktop.org shared-mime-info). This is used by unit tests
+     * and by the code that writes out icon definitions.
+     * @since 4.3
+     * @return -1 on error, otherwise a version number to use like this:
+     * @code
+     * if (version >= KDE_MAKE_VERSION(0, 40, 0)) { ... }
+     * @endcode
+     */
+    static int sharedMimeInfoVersion();
+
 protected:
 
     friend class KMimeTypeFactory; // for KMimeType(QDataStream&,int)
