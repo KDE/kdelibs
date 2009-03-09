@@ -294,6 +294,7 @@ public:
 	SelectorCache *selectorCache;
 	unsigned int properties_size;
 	CSSOrderedProperty **properties;
+        CSSOrderedProperty *propertiesBuffer;
 	QVarLengthArray<CSSOrderedProperty> inlineProps;
         MediaQueryEvaluator* m_medium;
 	CSSOrderedProperty **propsToApply;
@@ -331,12 +332,12 @@ public:
      * This is the list we will collect all properties we need to apply in.
      * It will get sorted once before applying.
      */
-    class CSSOrderedPropertyList : public QList<CSSOrderedProperty*>
+    class CSSOrderedPropertyList : public QVector<CSSOrderedProperty>
     {
     public:
-	static bool compareItems(const CSSOrderedProperty* i1, const CSSOrderedProperty* i2);
-	void append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity,
-		    Source regular, Source important );
+        static bool compareItems(const CSSOrderedProperty& i1, const CSSOrderedProperty& i2);
+        void append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity,
+                    Source regular, Source important);
     };
 
     class CSSOrderedRule
@@ -359,8 +360,8 @@ public:
 	void append( DOM::CSSStyleSheetImpl *sheet,
 		     MediaQueryEvaluator *medium, CSSStyleSelector* styleSelector );
 
-	void collect( QList<DOM::CSSSelector*> *selectorList, CSSOrderedPropertyList *propList,
-		      Source regular, Source important );
+        void collect(WTF::HashMap<DOM::CSSSelector*, int>* selectorsCache, QList<DOM::CSSSelector*> *selectorList,
+                CSSOrderedPropertyList *propList, Source regular, Source important);
     };
 
 }
