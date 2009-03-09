@@ -3,7 +3,7 @@
    Copyright (C) 2004 Jarosław Staniek <staniek@kde.org>
    Copyright (C) 2007 Christian Ehrlicher <ch.ehrlicher@gmx.de>
    Copyright (C) 2007 Bernhard Loos <nhuh.put@web.de>
-   Copyright (C) 2008 Ralf Habacker <ralf.habacker@freenet.de>
+   Copyright (C) 2008-2009 Ralf Habacker <ralf.habacker@freenet.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -34,9 +34,22 @@
 #include <QtCore/QDir>
 #include <QtCore/QString>
 
+#ifdef Q_CC_MINGW
+#define _WIN32_WINNT 0x500
+#endif
 #include <windows.h>
 #include <shellapi.h>
 #include <process.h>
+
+// console related includes
+#include <stdio.h>
+#include <fcntl.h>
+#include <io.h>
+#include <iostream>
+#include <fstream>
+#ifndef _USE_OLD_IOSTREAMS
+using namespace std;
+#endif
 
 #if defined(__MINGW32__)
 # define WIN32_CAST_CHAR (const WCHAR*)
@@ -199,9 +212,9 @@ QString getWin32ShellFoldersPath ( const QString& folder )
 }
 
 /** 
-  debug message printer for win32 gui applications 
+  kde and qt debug message printer using windows debug message port
  */ 
-static void kMessageGuiOutput(QtMsgType type, const char *msg)
+static void kMessageOutputDebugString(QtMsgType type, const char *msg)
 {
     int BUFSIZE=4096;
     char *buf = new char[BUFSIZE];
@@ -230,11 +243,10 @@ static void kMessageGuiOutput(QtMsgType type, const char *msg)
 }
 
 /** 
-  debug message printer for win32 console applications 
+  kde and qt debug message printer using FILE pointer based output
  */ 
-static void kMessageConsoleOutput(QtMsgType type, const char *msg)
+static void kMessageOutputFileIO(QtMsgType type, const char *msg)
 {
-    kMessageGuiOutput(type,msg);
     switch (type) {
     case QtDebugMsg:
         fprintf(stderr, "Debug: %s\n", msg);
@@ -250,6 +262,81 @@ static void kMessageConsoleOutput(QtMsgType type, const char *msg)
         //abort();
     }
 }
+
+/** 
+  try to attach to the parents console
+  \return true if console has been attached, false otherwise
+*/
+static bool attachToConsole()
+{
+    return AttachConsole(~0U) != 0;
+}
+
+/**
+  redirect stdout, stderr and
+  cout, wcout, cin, wcin, wcerr, cerr, wclog and clog to console
+*/ 
+static void redirectToConsole()
+{
+    int hCrt;
+    FILE *hf;
+    int i;
+    
+    hCrt = _open_osfhandle((long) GetStdHandle(STD_INPUT_HANDLE),_O_TEXT);
+    hf = _fdopen( hCrt, "r" );
+    *stdin = *hf;
+    i = setvbuf( stdin, NULL, _IONBF, 0 );
+
+    hCrt = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE),_O_TEXT);
+    hf = _fdopen( hCrt, "w" );
+    *stdout = *hf;
+    i = setvbuf( stdout, NULL, _IONBF, 0 );
+    
+    hCrt = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE),_O_TEXT);
+    hf = _fdopen( hCrt, "w" );
+    *stderr = *hf;
+    i = setvbuf( stderr, NULL, _IONBF, 0 );
+
+    // make cout, wcout, cin, wcin, wcerr, cerr, wclog and clog
+    // point to console as well
+    ios::sync_with_stdio();
+}
+
+#include <streambuf>
+
+/** 
+  ios related debug message printer for win32
+*/
+class debug_streambuf: public std::streambuf
+{
+    public:
+        debug_streambuf(char *prefix)
+        {
+            strcpy(buf,prefix);
+            index = rindex = strlen(buf);
+        }
+
+    protected:
+        virtual int overflow(int c = EOF)
+        {
+            if (c != EOF)
+            {
+                char cc = traits_type::to_char_type(c);
+                // @TODO: buffer size checking
+                buf[index++] = cc;
+                if (cc == '\n')
+                {
+                    buf[index] = '\0';
+                    OutputDebugStringA((LPCSTR)buf);
+                    index = rindex;
+                }
+            }
+            return traits_type::not_eof(c);
+        }
+    private:
+        char buf[4096];
+        int index, rindex;
+};
 
 /**
   retrieve type of win32 subsystem from the executable header 
@@ -273,30 +360,81 @@ static int subSystem()
 }
     
 /**
-     setup win32 debug printer output
- 
-         gui applications     - uses OutputDebugString 
-         console applications - uses OutputDebugString and stderr 
+ win32 debug and console output handling
 
-     in both cases the message type is identified by a specific prefix string
+ source type of output 
+    1. kde/qt debug system  - kDebug(), kWarning(), kFatal(), kError(), qDebug(), qWarning(), qFatal() 
+    2. ios  - cout, wcout, wcerr, cerr, wclog and clog
+    3. FILE * - stdout,stderr
+
+ application  console    ------------------ output -----------------
+    type     available   qt/kde-debug         ios             FILE *   
+
+    cui        yes        console           console         console
+    cui        no        win32debug         win32debug      no output[1]
+
+    gui        yes       win32debug         console         console
+    gui        no        win32debug         win32debug      win32debug 
+
+[1]no redirect solution for FILE * based output yet
 
  TODO: report events to the windows event log system 
  http://msdn.microsoft.com/en-us/library/aa363680(VS.85).aspx
 */
 
+/**
+ setup up debug output 
+*/ 
 static class kMessageOutputInstaller {
     public:
-        kMessageOutputInstaller() 
+        kMessageOutputInstaller() : stdoutBuffer("stdout:"), stderrBuffer("stderr:"), oldStdoutBuffer(0), oldStderrBuffer(0)
         {
             if (subSystem() == IMAGE_SUBSYSTEM_WINDOWS_CUI) {
-                qInstallMsgHandler(kMessageConsoleOutput);
+                if (attachToConsole()) {
+                    // setup kde and qt level 
+                    qInstallMsgHandler(kMessageOutputFileIO);
+                    // redirect ios and file io to console
+                    redirectToConsole();
+                }
+                else {
+                    // setup kde and qt level 
+                    qInstallMsgHandler(kMessageOutputDebugString);
+                    // redirect ios to debug message port 
+                    oldStdoutBuffer = std::cout.rdbuf(&stdoutBuffer);
+                    oldStderrBuffer = std::cerr.rdbuf(&stderrBuffer);
+                }
             }
             else if (subSystem() == IMAGE_SUBSYSTEM_WINDOWS_GUI) {
-                qInstallMsgHandler(kMessageGuiOutput);
+                // setup kde and qt level 
+                qInstallMsgHandler(kMessageOutputDebugString);
+                // try to get a console
+                if (attachToConsole()) {
+                    redirectToConsole();
+                }
+                else {
+                    // redirect ios to debug message port
+                    oldStdoutBuffer = std::cout.rdbuf(&stdoutBuffer);
+                    oldStderrBuffer = std::cerr.rdbuf(&stderrBuffer);
+                    // TODO: redirect FILE * level to console, no idea how to do yet
+                }
             }
             else
                 qWarning("unknown subsystem %d detected, could not setup qt message handler",subSystem());
         }
+        ~kMessageOutputInstaller()
+        {
+            if (oldStdoutBuffer) 
+                std::cout.rdbuf(oldStdoutBuffer);
+            if (oldStderrBuffer) 
+                std::cerr.rdbuf(oldStderrBuffer);
+        }
+    
+    private:
+        debug_streambuf stdoutBuffer;
+        debug_streambuf stderrBuffer;
+        std::streambuf* oldStdoutBuffer;
+        std::streambuf* oldStderrBuffer;
+
 } kMessageOutputInstallerInstance;
 
 
