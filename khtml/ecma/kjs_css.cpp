@@ -222,12 +222,12 @@ void DOMCSSStyleDeclaration::put(ExecState *exec, const Identifier &propertyName
   CSSStyleDeclarationImpl &styleDecl = *m_impl;
 
   if (propertyName == "cssText") {
-    styleDecl.setCssText(value->toString(exec).domString());
+    styleDecl.setCssText(valueToStringWithNullCheck(exec, value));
   }
   else {
     bool pxSuffix;
     QString prop = cssPropertyName(propertyName, &pxSuffix);
-    QString propvalue = value->toString(exec).qstring();
+    QString propvalue = valueToStringWithNullCheck(exec, value).string();
 
     if (pxSuffix)
       propvalue += QLatin1String("px");
