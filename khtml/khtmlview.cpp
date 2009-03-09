@@ -2483,7 +2483,7 @@ bool KHTMLView::focusNextPrevNode(bool next)
     // or update rendering. Doing this also prevents the code below from going bonkers with
     // oldFocusNode not actually being focusable, etc.
     if (oldFocusNode) {
-	if (oldFocusNode->renderer() && !oldFocusNode->renderer()->parent()
+	if ((oldFocusNode->renderer() && !oldFocusNode->renderer()->parent())
 	      || !oldFocusNode->isTabFocusable()) {
 	    doc->quietResetFocus();
 	    return true;
@@ -2538,10 +2538,16 @@ bool KHTMLView::focusNextPrevNode(bool next)
 		toFocus = doc->previousFocusNode(toFocus);
 
 	    if (!toFocus && oldFocusNode)
+	    {
 		if (next)
+		{
 		    toFocus = doc->nextFocusNode(NULL);
+		}
 		else
+		{
 		    toFocus = doc->previousFocusNode(NULL);
+		}
+	    }
 	}
 
 	d->scrollBarMoved = false;
@@ -3764,13 +3770,13 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
     else if( !m_kwp->isRedirected() &&
              (   (e->orientation() == Qt::Vertical &&
                    ((d->ignoreWheelEvents && !verticalScrollBar()->isVisible())
-                     || e->delta() > 0 && contentsY() <= 0
-                     || e->delta() < 0 && contentsY() >= contentsHeight() - visibleHeight()))
+                     || (e->delta() > 0 && contentsY() <= 0)
+                     || (e->delta() < 0 && contentsY() >= contentsHeight() - visibleHeight())))
               ||
                  (e->orientation() == Qt::Horizontal &&
                     ((d->ignoreWheelEvents && !horizontalScrollBar()->isVisible())
-                     || e->delta() > 0 && contentsX() <=0
-                     || e->delta() < 0 && contentsX() >= contentsWidth() - visibleWidth())))
+                     || (e->delta() > 0 && contentsX() <=0)
+                     || (e->delta() < 0 && contentsX() >= contentsWidth() - visibleWidth()))))
             && m_part->parentPart())
     {
         if ( m_part->parentPart()->view() )
@@ -3811,8 +3817,8 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
             bool d = (static_cast<QWheelEvent*>(e)->delta() < 0);
             QScrollBar* hsb = horizontalScrollBar();
             QScrollBar* vsb = verticalScrollBar();
-            if ( h && (d && hsb->value() == hsb->maximum() || !d && hsb->value() == hsb->minimum()) ||
-                !h && (d && vsb->value() == vsb->maximum() || !d && vsb->value() == vsb->minimum()) ) {
+            if ( (h && ((d && hsb->value() == hsb->maximum()) || (!d && hsb->value() == hsb->minimum()))) ||
+                (!h && ((d && vsb->value() == vsb->maximum()) || (!d && vsb->value() == vsb->minimum()))) ) {
                 e->accept();
                 return;
             }
