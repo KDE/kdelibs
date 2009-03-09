@@ -371,7 +371,7 @@ void FileProtocol::listDir( const KUrl& url)
            as the slave runs in the background, it's hard
            to see for the user what the problem would be */
         char path_buffer[PATH_MAX];
-        getcwd(path_buffer, PATH_MAX - 1);
+        (void) getcwd(path_buffer, PATH_MAX - 1);
         if ( chdir( _path.data() ) )  {
             if (errno == EACCES)
                 error(ERR_ACCESS_DENIED, path);
@@ -394,7 +394,8 @@ void FileProtocol::listDir( const KUrl& url)
 
         //kDebug(7101) << "============= COMPLETED LIST ============";
 
-        chdir(path_buffer);
+        if (path_buffer)
+            chdir(path_buffer);
     }
     finished();
 }
