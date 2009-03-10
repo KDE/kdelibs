@@ -304,10 +304,13 @@ public:
    * the new one.
    *
    * Inserting an action under a name that is already used for another action will replace
-   * the other action in the collection.
+   * the other action in the collection (but will not delete it).
    *
    * @param name The name by which the action be retrieved again from the collection.
    * @param action The action to add.
+   * @return the same as the action given as parameter. This is just for convenience
+   * (chaining calls) and consistency with the other addAction methods, you can also
+   * simply ignore the return value.
    */
   QAction *addAction(const QString &name, QAction *action);
   KAction *addAction(const QString &name, KAction *action);
