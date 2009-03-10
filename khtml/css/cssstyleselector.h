@@ -31,6 +31,7 @@
 #include <QtCore/QList>
 #include <wtf/HashMap.h>
 #include <wtf/Vector.h>
+#include <wtf/HashSet.h>
 
 class KHTMLSettings;
 class KHTMLView;
@@ -306,6 +307,9 @@ public:
         WTF::HashMap< unsigned long, WTF::Vector<int> > classSelectors, idSelectors;
         WTF::HashMap< unsigned, WTF::Vector<int> > tagSelectors;
         WTF::Vector<int> otherSelectors;
+
+        WTF::HashSet<unsigned> tagCache;
+        WTF::HashSet<unsigned long> classCache, idCache;
 
 	RenderStyle::PseudoId dynamicPseudo;
 

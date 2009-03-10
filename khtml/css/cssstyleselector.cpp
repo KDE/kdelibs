@@ -645,6 +645,36 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
             selectorsForCheck.append(v[j]);
     }
 
+    // build caches for element so it could be used in heuristic for descendant selectors
+    // go up the tree and cache possible tags, classes and ids
+    tagCache.clear();
+    idCache.clear();
+    classCache.clear();
+    ElementImpl* current = element;
+    while (true) {
+        NodeImpl* parent = current->parentNode();
+        if (!parent || !parent->isElementNode())
+            break;
+        current = static_cast<ElementImpl*>(parent);
+
+        if (current->hasClass()) {
+            const ClassNames& classNames = current->classNames();
+            for (unsigned i = 0; i < classNames.size(); ++i)
+                classCache.add((unsigned long)classNames[i].impl());
+        }
+
+        DOMStringImpl* idValue = current->getAttributeImplById(ATTR_ID);
+        if (idValue && idValue->length()) {
+            bool caseSensitive = (current->document()->htmlMode() == DocumentImpl::XHtml) || strictParsing;
+            AtomicString currentId = caseSensitive ? idValue : idValue->lower();
+            // though currentId is local and could be deleted from AtomicStringImpl cache right away
+            // don't care about that, cause selector values are stable and only they will be checked later
+            idCache.add((unsigned long)currentId.impl());
+        }
+
+        tagCache.add(localNamePart(current->id()));
+    }
+
     // sort selectors indexes so we match them in increasing order
     qSort(selectorsForCheck.begin(), selectorsForCheck.end());
 
@@ -1176,6 +1206,19 @@ CSSStyleSelector::SelectorMatch CSSStyleSelector::checkSelector(DOM::CSSSelector
     switch(relation) {
         case CSSSelector::Descendant:
         {
+            // if ancestor of original element we may want to check prepared caches first
+            // whether given selector could possibly have a match
+            // if no we return SelectorFails result right away and avoid going up the tree
+            if (isAncestor) {
+                int id = sel->tagLocalName.id();
+                if (id != anyLocalName && !tagCache.contains(id))
+                    return SelectorFails;
+                if (sel->match == CSSSelector::Class && !classCache.contains((unsigned long)sel->value.impl()))
+                    return SelectorFails;
+                if (sel->match == CSSSelector::Id && !idCache.contains((unsigned long)sel->value.impl()))
+                    return SelectorFails;
+            }
+
             while(true)
             {
                 DOM::NodeImpl* n = e->parentNode();
