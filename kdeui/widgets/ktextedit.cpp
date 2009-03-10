@@ -452,9 +452,11 @@ QMenu *KTextEdit::mousePopupMenu()
           if (emptyDocument)
           {
               findAction->setEnabled(false);
-              findNextAction->setEnabled(d->find != 0 );
+              findNextAction->setEnabled(false );
               replaceAction->setEnabled(false);
           }
+	  else
+	      findNextAction->setEnabled(d->find != 0 );
           popup->addSeparator();
           popup->addAction(findAction);
           popup->addAction(findNextAction);
