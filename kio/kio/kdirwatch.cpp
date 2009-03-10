@@ -335,7 +335,7 @@ void KDirWatchPrivate::inotifyEventReceived()
                 kDebug(7001).nospace() << counter << "instance(s) monitoring the new"
                                        << (isDir ? "dir " : "file ") << tpath;
               } else {
-                kDebug(7001) << "ERROR: couldn't stat the new item" << tpath;
+                //kDebug(7001) << "ERROR: couldn't stat the new item" << tpath;
               }
             }
           }
@@ -1418,7 +1418,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
             msg += (isDir ? "dir " : "file ") + tpath;
             kDebug(7001) << msg;
           } else {
-            kDebug(7001) << "ERROR: couldn't stat the new item" << tpath;
+            //kDebug(7001) << "ERROR: couldn't stat the new item" << tpath;
           }
         }
       }
