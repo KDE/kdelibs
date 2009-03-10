@@ -525,11 +525,14 @@ static pid_t launch(int argc, const char *_name, const char *args,
         close( d.launcher[0] );
      }
 
-     if (cwd && *cwd)
-        chdir(cwd);
-     else {
+     // Try to chdir, either to the requested directory or to the user's document path by default.
+     // We ignore errors - if you write a desktop file with Exec=foo and Path=/doesnotexist,
+     // we still want to execute `foo` even if the chdir() failed.
+     if (cwd && *cwd) {
+         (void)chdir(cwd);
+     } else {
          const QByteArray docPath = QFile::encodeName(KGlobalSettings::documentPath());
-         chdir(docPath.constData());
+         (void)chdir(docPath.constData());
      }
 
      if( reset_env ) // KWRAPPER/SHELL
