@@ -97,7 +97,7 @@ static QDBusConnectionInterface *tryToInitDBusConnection()
     QDBusConnectionInterface* dbusService = 0;
     if (!QDBusConnection::sessionBus().isConnected() || !(dbusService = QDBusConnection::sessionBus().interface()))
     {
-        kError() << "KUniqueApplication: Cannot find the D-Bus session server" << endl;
+        kError() << "KUniqueApplication: Cannot find the D-Bus session server: " << QDBusConnection::sessionBus().lastError().message() << endl;
         ::exit(255);
     }
     return dbusService;
