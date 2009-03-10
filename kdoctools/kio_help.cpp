@@ -21,6 +21,7 @@
 
 
 #include "kio_help.h"
+#include <QDir>
 
 #include <config.h>
 
@@ -147,7 +148,7 @@ void HelpProtocol::unicodeError( const QString &t )
 {
    data(fromUnicode( QString(
         "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\"></head>\n"
-        "%2</html>" ).arg( QString( QTextCodec::codecForLocale()->name() ), t ) ) );
+        "%2</html>" ).arg( QString( QTextCodec::codecForLocale()->name() ), Qt::escape(t) ) ) );
 }
 
 HelpProtocol *slave = 0;
@@ -160,18 +161,21 @@ HelpProtocol::HelpProtocol( bool ghelp, const QByteArray &pool, const QByteArray
 
 void HelpProtocol::get( const KUrl& url )
 {
-    kDebug( 7119 ) << "get: path=" << url.path()
-              << " query=" << url.query() << endl;
+    kDebug( 7119 ) << "path=" << url.path()
+                   << "query=" << url.query();
 
     bool redirect;
-    QString doc;
-    doc = url.path();
+    QString doc = QDir::cleanPath(url.path());
+    if (doc.contains("..")) {
+        error( KIO::ERR_DOES_NOT_EXIST, url.url() );
+        return;
+    }
 
     if ( !mGhelp ) {
-        if (doc.at(0) != '/')
+        if (!doc.startsWith('/'))
             doc = doc.prepend(QLatin1Char('/'));
 
-        if (doc.at(doc.length() - 1) == '/')
+        if (doc.endsWith('/'))
             doc += "index.html";
     }
 
@@ -260,10 +264,10 @@ void HelpProtocol::get( const KUrl& url )
                 infoMessage( i18n( "Saving to cache" ) );
 #ifdef Q_WS_WIN
                 QFileInfo fi(file);
-                // make sure filenames do not contain the base path, otherwise 
-                // accessing user data from another location invalids cached files 
-                // Accessing user data under a different path is possible 
-                // when using usb sticks - this may affect unix/mac systems also 
+                // make sure filenames do not contain the base path, otherwise
+                // accessing user data from another location invalids cached files
+                // Accessing user data under a different path is possible
+                // when using usb sticks - this may affect unix/mac systems also
                 QString cache = '/' + fi.absolutePath().remove(KStandardDirs::installPath("html"),Qt::CaseInsensitive).replace('/','_') + '_' + fi.baseName() + '.';
 #else
                 QString cache = file.left( file.length() - 7 );
@@ -388,7 +392,7 @@ void HelpProtocol::get_file( const KUrl& url )
 
     while( 1 )
     {
-        qint64 n = f.read(array.data(),array.size()); 
+        qint64 n = f.read(array.data(),array.size());
         if (n == -1) {
             error( KIO::ERR_COULD_NOT_READ, url.path());
             f.close();
