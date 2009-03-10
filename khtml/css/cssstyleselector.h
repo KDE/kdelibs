@@ -31,7 +31,6 @@
 #include <QtCore/QList>
 #include <wtf/HashMap.h>
 #include <wtf/Vector.h>
-#include <wtf/HashSet.h>
 
 class KHTMLSettings;
 class KHTMLView;
@@ -286,13 +285,13 @@ public:
 
         struct SelectorCache {
             SelectorState state;
-            unsigned firstPropertyIndex;
+            unsigned int props_size;
+            int *props;
         };
 
 	unsigned int selectors_size;
 	DOM::CSSSelector **selectors;
 	SelectorCache *selectorCache;
-        unsigned *nextPropertyIndexes;
 	unsigned int properties_size;
 	CSSOrderedProperty **properties;
         CSSOrderedProperty *propertiesBuffer;
@@ -307,9 +306,6 @@ public:
         WTF::HashMap< unsigned long, WTF::Vector<int> > classSelectors, idSelectors;
         WTF::HashMap< unsigned, WTF::Vector<int> > tagSelectors;
         WTF::Vector<int> otherSelectors;
-
-        WTF::HashSet<unsigned> tagCache;
-        WTF::HashSet<unsigned long> classCache, idCache;
 
 	RenderStyle::PseudoId dynamicPseudo;
 
