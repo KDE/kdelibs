@@ -413,8 +413,8 @@ void KIntNumInput::setSliderEnabled(bool slider)
 
 void KIntNumInput::setRange(int lower, int upper, int step)
 {
-    upper = qMax(upper, lower);
-    lower = qMin(upper, lower);
+    if (upper < lower)
+        qSwap(upper, lower);
     d->intSpinBox->setMinimum(lower);
     d->intSpinBox->setMaximum(upper);
     d->intSpinBox->setSingleStep(step);
