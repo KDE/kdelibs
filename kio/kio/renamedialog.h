@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2000 Stephan Kulow <coolo@kde.org>
-                       David Faure <faure@kde.org>
+                  1999 - 2008 David Faure <faure@kde.org>
                   2001 Holger Freyther <freyther@kde.org>
 
     This library is free software; you can redistribute it and/or

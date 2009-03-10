@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2000 Stephan Kulow <coolo@kde.org>
-                       David Faure <faure@kde.org>
-                  2001,2006 Holger Freyther <freyther@kde.org>
+                  1999 - 2008 David Faure <faure@kde.org>
+                  2001, 2006 Holger Freyther <freyther@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -293,9 +293,10 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
     layout2->addWidget( d->m_pLineEdit );
     if ( d->bRename ) {
         const QString fileName = d->dest.fileName();
-    d->m_pLineEdit->setText( KIO::decodeFileName( fileName ) );
+        d->m_pLineEdit->setText( KIO::decodeFileName( fileName ) );
         connect(d->m_pLineEdit, SIGNAL(textChanged(const QString &)),
                 SLOT(enableRenameButton(const QString &)));
+        d->m_pLineEdit->setFocus();
     } else {
         d->m_pLineEdit->hide();
     }
