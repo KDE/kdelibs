@@ -1899,10 +1899,9 @@ void CSSStyleSelector::buildLists()
 	*sel = sit.next();
 
     selectorCache = new SelectorCache[selectors_size];
-    for ( unsigned int i = 0; i < selectors_size; i++ ) {
+    for (unsigned int i = 0; i < selectors_size; i++) {
         selectorCache[i].state = Unknown;
-        selectorCache[i].props_size = 0;
-        selectorCache[i].props = 0;
+        selectorCache[i].firstPropertyIndex = propertyList.size();
     }
 
     // do some pre-compution to make styleForElement faster:
@@ -1913,28 +1912,19 @@ void CSSStyleSelector::buildLists()
     for (unsigned int i = 0; i < selectors_size; ++i) {
         if (selectors[i]->match == CSSSelector::Class) {
             WTF::HashMap<unsigned long, WTF::Vector<int> >::iterator it = classSelectors.find((unsigned long)selectors[i]->value.impl());
-            if (it == classSelectors.end()) {
-                WTF::Vector<int> temp;
-                temp.append(i);
-                classSelectors.set((unsigned long)selectors[i]->value.impl(), temp);
-            } else
-                it->second.append(i);
+            if (it == classSelectors.end())
+                it = classSelectors.set((unsigned long)selectors[i]->value.impl(), WTF::Vector<int>()).first;
+            it->second.append(i);
         } else if (selectors[i]->match == CSSSelector::Id) {
             WTF::HashMap<unsigned long, WTF::Vector<int> >::iterator it = idSelectors.find((unsigned long)selectors[i]->value.impl());
-            if (it == idSelectors.end()) {
-                WTF::Vector<int> temp;
-                temp.append(i);
-                idSelectors.set((unsigned long)selectors[i]->value.impl(), temp);
-            } else
-                it->second.append(i);
+            if (it == idSelectors.end())
+                it = idSelectors.set((unsigned long)selectors[i]->value.impl(), WTF::Vector<int>()).first;
+            it->second.append(i);
         } else if (selectors[i]->tagLocalName.id() && selectors[i]->tagLocalName.id() != anyLocalName) {
             WTF::HashMap<unsigned, WTF::Vector<int> >::iterator it = tagSelectors.find(selectors[i]->tagLocalName.id());
-            if (it == tagSelectors.end()) {
-                WTF::Vector<int> temp;
-                temp.append(i);
-                tagSelectors.set(selectors[i]->tagLocalName.id(), temp);
-            } else
-                it->second.append(i);
+            if (it == tagSelectors.end())
+                it = tagSelectors.set(selectors[i]->tagLocalName.id(), WTF::Vector<int>()).first;
+            it->second.append(i);
         } else
             otherSelectors.append(i);
     }
