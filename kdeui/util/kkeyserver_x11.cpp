@@ -312,10 +312,6 @@ bool initializeMods()
     XDisplayKeycodes( QX11Info::display(), &min_keycode, &max_keycode );
     XFree( XGetKeyboardMapping( QX11Info::display(), min_keycode, 1, &keysyms_per_keycode ));
 
-    // Defaults
-    g_alt_mask = Mod1Mask;
-    g_meta_mask = Mod4Mask;
-
     for( int i = Mod1MapIndex; i < 8; i++ ) {
         uint mask = (1 << i);
         uint keySymX = NoSymbol;
