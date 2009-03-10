@@ -40,8 +40,8 @@ class KDirModelDirNode;
 
 static KUrl cleanupUrl(const KUrl& url) {
     KUrl u = url;
+    u.cleanPath(); // remove double slashes in the path, simplify "foo/." to "foo/", etc.
     u.adjustPath(KUrl::RemoveTrailingSlash); // KDirLister does this too, so we remove the slash before comparing with the root node url.
-    u.cleanPath(); // remove double slashes in the path
     u.setQuery(QString());
     u.setRef(QString());
     return u;
