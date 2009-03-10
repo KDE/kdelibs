@@ -285,13 +285,13 @@ public:
 
         struct SelectorCache {
             SelectorState state;
-            unsigned int props_size;
-            int *props;
+            unsigned firstPropertyIndex;
         };
 
 	unsigned int selectors_size;
 	DOM::CSSSelector **selectors;
 	SelectorCache *selectorCache;
+        unsigned *nextPropertyIndexes;
 	unsigned int properties_size;
 	CSSOrderedProperty **properties;
         CSSOrderedProperty *propertiesBuffer;

@@ -657,30 +657,26 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
 
 	    checkSelector( i, e );
 
-	    if ( selectorCache[i].state == Applies ) {
-		++smatch;
-
-// 		qDebug("adding property" );
-		for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
-		    for ( unsigned int j = 0; j < (unsigned int )selectorCache[i].props[p+1]; ++j ) {
-                        if (numPropsToApply >= propsToApplySize ) {
-                            propsToApplySize *= 2;
-			    propsToApply = (CSSOrderedProperty **)realloc( propsToApply, propsToApplySize*sizeof( CSSOrderedProperty * ) );
-			}
-			propsToApply[numPropsToApply++] = properties[selectorCache[i].props[p]+j];
-		    }
-	    } else if ( selectorCache[i].state == AppliesPseudo ) {
-		for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
-		    for ( unsigned int j = 0; j < (unsigned int) selectorCache[i].props[p+1]; ++j ) {
-                        if (numPseudoProps >= pseudoPropsSize ) {
-                            pseudoPropsSize *= 2;
-			    pseudoProps = (CSSOrderedProperty **)realloc( pseudoProps, pseudoPropsSize*sizeof( CSSOrderedProperty * ) );
-			}
-			pseudoProps[numPseudoProps++] = properties[selectorCache[i].props[p]+j];
-			properties[selectorCache[i].props[p]+j]->pseudoId = (RenderStyle::PseudoId) selectors[i]->pseudoId;
-		    }
-	    }
-	}
+            if (selectorCache[i].state == Applies) {
+                ++smatch;
+                for (unsigned p = selectorCache[i].firstPropertyIndex; p < properties_size; p = nextPropertyIndexes[p]) {
+                    if (numPropsToApply >= propsToApplySize ) {
+                        propsToApplySize *= 2;
+                        propsToApply = (CSSOrderedProperty **)realloc( propsToApply, propsToApplySize*sizeof( CSSOrderedProperty * ) );
+                    }
+                    propsToApply[numPropsToApply++] = properties[p];
+                }
+            } else if (selectorCache[i].state == AppliesPseudo) {
+                for (unsigned p = selectorCache[i].firstPropertyIndex; p < properties_size; p = nextPropertyIndexes[p]) {
+                    if (numPseudoProps >= pseudoPropsSize ) {
+                        pseudoPropsSize *= 2;
+                        pseudoProps = (CSSOrderedProperty **)realloc( pseudoProps, pseudoPropsSize*sizeof( CSSOrderedProperty * ) );
+                    }
+                    pseudoProps[numPseudoProps++] = properties[p];
+                    properties[p]->pseudoId = (RenderStyle::PseudoId) selectors[i]->pseudoId;
+                }
+            }
+        }
 	else
 	    selectorCache[i].state = Invalid;
 
@@ -1821,17 +1817,15 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
 
 void CSSStyleSelector::clearLists()
 {
-    delete [] selectors;
-    if ( selectorCache ) {
-        for ( unsigned int i = 0; i < selectors_size; i++ )
-            delete [] selectorCache[i].props;
-
-        delete [] selectorCache;
+    delete[] selectors;
+    if (selectorCache) {
+        delete[] selectorCache;
     }
-    if ( properties ) {
+    if (properties) {
         CSSOrderedProperty **prop = properties;
         delete[] propertiesBuffer;
         delete[] properties;
+        delete[] nextPropertyIndexes;
     }
     selectors = 0;
     properties = 0;
@@ -1955,32 +1949,16 @@ void CSSStyleSelector::buildLists()
         *prop = propertiesBuffer + i;
         **prop = propertyList[i];
     }
-    *prop = 0;
 
-    unsigned int* offsets = new unsigned int[selectors_size];
-    if(properties[0])
-	offsets[properties[0]->selector] = 0;
-    for(unsigned int p = 1; p < properties_size; ++p) {
-
-	if(!properties[p] || (properties[p]->selector != properties[p - 1]->selector)) {
-	    unsigned int sel = properties[p - 1]->selector;
-            int* newprops = new int[selectorCache[sel].props_size+2];
-            for ( unsigned int i=0; i < selectorCache[sel].props_size; i++ )
-                newprops[i] = selectorCache[sel].props[i];
-
-	    newprops[selectorCache[sel].props_size] = offsets[sel];
-	    newprops[selectorCache[sel].props_size+1] = p - offsets[sel];
-            delete [] selectorCache[sel].props;
-            selectorCache[sel].props = newprops;
-            selectorCache[sel].props_size += 2;
-
-	    if(properties[p]) {
-		sel = properties[p]->selector;
-		offsets[sel] = p;
-            }
-        }
+    // properties for one selector are not necessarily adjacent at this point
+    // prepare sublists with same selector
+    // create for every property next property index with same selector
+    nextPropertyIndexes = new unsigned[properties_size];
+    for (int i = properties_size - 1; i >= 0; --i) {
+        unsigned selector = propertiesBuffer[i].selector;
+        nextPropertyIndexes[i] = selectorCache[selector].firstPropertyIndex;
+        selectorCache[selector].firstPropertyIndex = i;
     }
-    delete [] offsets;
 }
 
 
