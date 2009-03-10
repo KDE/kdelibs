@@ -591,8 +591,12 @@ void KDirModelTest::testExpandToUrl_data()
 
     QTest::newRow("the root, nothing to do")
         << false << QString() << QStringList();
+    QTest::newRow(".")
+        << false << "." << (QStringList());
     QTest::newRow("subdir")
         << false << "subdir" << (QStringList()<<"subdir");
+    QTest::newRow("subdir/.")
+        << false << "subdir/." << (QStringList()<<"subdir");
 
     const QString subsubdir = "subdir/subsubdir";
     // Must list root, emit expand for subdir, list subdir, emit expand for subsubdir.
@@ -655,7 +659,7 @@ void KDirModelTest::testExpandToUrl()
     }
 
     // Now it should exist
-    if (!expandToPath.isEmpty()) {
+    if (!expandToPath.isEmpty() && expandToPath != ".") {
         kDebug() << "Do I know" << m_urlToExpandTo << "?";
         QVERIFY(m_dirModelForExpand->indexForUrl(m_urlToExpandTo).isValid());
     }
