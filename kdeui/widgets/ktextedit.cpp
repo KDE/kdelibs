@@ -829,6 +829,13 @@ void KTextEdit::slotFindNext()
 {
     if (!d->find)
         return;
+    if(document()->isEmpty())
+    {
+        d->find->disconnect(this);
+        d->find->deleteLater(); // we are in a slot connected to m_find, don't delete right away
+        d->find = 0;
+        return;
+    }
 
     KFind::Result res = KFind::NoMatch;
     if (d->find->needData())
