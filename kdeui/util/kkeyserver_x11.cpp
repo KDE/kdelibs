@@ -21,18 +21,9 @@
 */
 
 #include "kkeyserver_x11.h"
-#include "kshortcut.h"
 
-#include <config.h>
-
-#include <QtCore/QCOORD>
-#include <QtGui/QWidgetList>
-#include <QFlags>
-
-#include <kconfig.h>
-#include <kdebug.h>
-#include <kglobal.h>
-#include <klocale.h>
+#include "kdebug.h"
+#include "klocale.h"
 
 #include <QX11Info>
 # define XK_MISCELLANY
@@ -320,7 +311,7 @@ bool initializeMods()
 	
 	XDisplayKeycodes( QX11Info::display(), &min_keycode, &max_keycode );
 	XFree( XGetKeyboardMapping( QX11Info::display(), min_keycode, 1, &keysyms_per_keycode ));
-	
+
 	// Defaults
 	g_alt_mask = Mod1Mask;
 	g_meta_mask = Mod4Mask;
@@ -356,10 +347,6 @@ bool initializeMods()
 	g_rgX11ModInfo[2].modX = g_alt_mask;
 
 	XFreeModifiermap( xmk );
-
-	//KConfigGroup cg( KGlobal::config(), "Keyboard" );
-	// read in mod that win should be attached to
-
 	g_bInitializedMods = true;
 
 	kDebug(125) << "KKeyServer::initializeMods(): Win Mod = 0x" << QString::number(g_rgX11ModInfo[3].modX, 16);
