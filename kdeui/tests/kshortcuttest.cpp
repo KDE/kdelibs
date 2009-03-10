@@ -48,9 +48,35 @@ private Q_SLOTS:
 
     void checkQKeySequence()
     {
+        // Check that the valid keycode Qt::Key_unknown is handled gracefully
+        //
+        // Qt::Key_unknown is a valid Qt Key. But toString makes unicode gibberish
+        // from it. '???'.
+        // Reported with patch - mjansen
+        QKeySequence unknown_key(Qt::Key_unknown);
+        // The keycode falls into the unicode handling
+        QString p = QChar((Qt::Key_unknown-0x10000)/0x400+0xd800);
+                p += QChar((Qt::Key_unknown-0x10000)%400+0xdc00);
+        QCOMPARE(unknown_key.toString(), p); // What happens
+        QEXPECT_FAIL("", "Qt::Key_unknown not handled", Continue);
+        QCOMPARE(unknown_key.toString(), QString());     // What i would expect
+
+        // Check that the keycode -1 is handled gracefully.
+        //
+        // -1 happens for some keys when listening to keyPressEvent in QWidget::event()
+        // It means the key is not supported by Qt. It probably should be
+        // Qt::Key_unknown instead. Unsupported keys: (Alt+Print for example).
+        // Reported with patch - mjansen
+        QKeySequence invalid_key(-1);
+        // The keycode falls into the handling of keys lesser that Key_escape
+        QString p1 = QChar((-1) & 0xffff).toUpper();
+        QCOMPARE(invalid_key.toString(), QString("Meta+Ctrl+Alt+Shift+"+p1)); // What happens
+        QEXPECT_FAIL("", "-1 not handled", Continue);
+        QCOMPARE(invalid_key.toString(), QString());     // What i would expect
+
         // The famous "KDE4 eats my E key" bug: Win+E isn't parsed anymore.
         QKeySequence seq("Win+E");
-        QEXPECT_FAIL("", "Qt Bug 205255 - QKeySequence silently discards unknown key modifiers", Continue);
+        QEXPECT_FAIL("", "Qt Bug 205255/134941 - QKeySequence silently discards unknown key modifiers", Continue);
         QVERIFY(seq.isEmpty());
         // And what really happens
         QCOMPARE(seq.toString(), QLatin1String("E"));
@@ -58,7 +84,7 @@ private Q_SLOTS:
         // KDE3 -> KDE4 migration. KDE3 used xKeycodeToKeysym or something and
         // stored the result
         QKeySequence seq2("Meta+Alt+Period");
-        QEXPECT_FAIL("", "Qt Bug 205255 - QKeySequence silently discards unknown key modifiers", Continue);
+        QEXPECT_FAIL("", "Qt Bug 205255/134941 - QKeySequence silently discards unknown key modifiers", Continue);
         QVERIFY(seq2.isEmpty());
         // And what really happens
         QCOMPARE(seq2.toString(), QLatin1String("Meta+Alt+"));
