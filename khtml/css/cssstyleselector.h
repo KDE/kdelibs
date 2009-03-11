@@ -228,7 +228,7 @@ namespace khtml
 
         void adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e);
 
-        unsigned int addInlineDeclarations(DOM::ElementImpl* e, unsigned int numProps);
+        void addInlineDeclarations(DOM::ElementImpl* e);
 
 	static DOM::CSSStyleSheetImpl *s_defaultSheet;
 	static DOM::CSSStyleSheetImpl *s_defaultNonCSSHintsSheet;
@@ -294,7 +294,7 @@ public:
 	SelectorCache *selectorCache;
         unsigned *nextPropertyIndexes;
 	unsigned int properties_size;
-	CSSOrderedProperty **properties;
+        unsigned *nextSimilarSelector;
         CSSOrderedProperty *propertiesBuffer;
 	QVarLengthArray<CSSOrderedProperty> inlineProps;
         MediaQueryEvaluator* m_medium;
