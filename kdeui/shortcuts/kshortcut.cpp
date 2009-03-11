@@ -106,6 +106,8 @@ KShortcut::KShortcut(const QString &s)
     if (sCuts.count() >= 1) {
         QString k = sCuts.at(0);
         k.replace( "Win+", "Meta+" ); // workaround for KDE3-style shortcuts
+        k.replace("Plus", "+"); // workaround for KDE3-style "Alt+Plus"
+        k.replace("Minus", "-"); // workaround for KDE3-style "Alt+Plus"
         d->primary = QKeySequence::fromString(k);
         // Complain about a unusable shortcuts sequence only if we have got
         // something.
