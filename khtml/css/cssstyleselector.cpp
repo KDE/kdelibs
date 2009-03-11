@@ -600,21 +600,18 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
     // do aggressive selection of selectors to check
     // instead of going over whole constructed list,
     // skip selectors that won't match for sure (e.g. with different id or class)
-    WTF::Vector<int> selectorsForCheck;
-    selectorsForCheck.reserveCapacity(selectors_size);
+    QVarLengthArray<int> selectorsForCheck;
     // add unknown selectors to always be checked
-    for (unsigned int i = 0; i < otherSelectors.size(); ++i)
-        selectorsForCheck.append(otherSelectors[i]);
+    for (unsigned int i = otherSelector; i < selectors_size; i = nextSimilarSelector[i])
+        selectorsForCheck.append(i);
     // check if we got class attribute on element: add selectors with it to the list
     if (e->hasClass()) {
         const ClassNames& classNames = element->classNames();
         for (unsigned int i = 0; i < classNames.size(); ++i) {
-            WTF::HashMap<unsigned long, WTF::Vector<int> >::iterator it = classSelectors.find((unsigned long)classNames[i].impl());
-            if (it != classSelectors.end()) {
-                const Vector<int>& v = it->second;
-                for (unsigned int j = 0; j < v.size(); ++j)
-                    selectorsForCheck.append(v[j]);
-            }
+            WTF::HashMap<unsigned long, int>::iterator it = classSelector.find((unsigned long)classNames[i].impl());
+            if (it != classSelector.end())
+                for (unsigned int j = it->second; j < selectors_size; j = nextSimilarSelector[j])
+                    selectorsForCheck.append(j);
         }
     }
     // check if we got id attribute on element: add selectors with it to the list
@@ -622,20 +619,16 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
     if (idValue && idValue->length()) {
         bool caseSensitive = (e->document()->htmlMode() == DocumentImpl::XHtml) || strictParsing;
         AtomicString elementId = caseSensitive ? idValue : idValue->lower();
-        WTF::HashMap<unsigned long, WTF::Vector<int> >::iterator it = idSelectors.find((unsigned long)elementId.impl());
-        if (it != idSelectors.end()) {
-            const Vector<int>& v = it->second;
-            for (unsigned int j = 0; j < v.size(); ++j)
-                selectorsForCheck.append(v[j]);
-        }
+        WTF::HashMap<unsigned long, int>::iterator it = idSelector.find((unsigned long)elementId.impl());
+        if (it != idSelector.end())
+            for (unsigned int j = it->second; j < selectors_size; j = nextSimilarSelector[j])
+                selectorsForCheck.append(j);
     }
     // add all selectors with given local tag
-    WTF::HashMap<unsigned, WTF::Vector<int> >::iterator it = tagSelectors.find(cssTagId);
-    if (it != tagSelectors.end()) {
-        const Vector<int>& v = it->second;
-        for (unsigned int j = 0; j < v.size(); ++j)
-            selectorsForCheck.append(v[j]);
-    }
+    WTF::HashMap<unsigned, int>::iterator it = tagSelector.find(cssTagId);
+    if (it != tagSelector.end())
+        for (unsigned int j = it->second; j < selectors_size; j = nextSimilarSelector[j])
+            selectorsForCheck.append(j);
 
     // build caches for element so it could be used in heuristic for descendant selectors
     // go up the tree and cache possible tags, classes and ids
@@ -1841,21 +1834,20 @@ void CSSStyleSelector::clearLists()
     delete[] selectors;
     if (selectorCache) {
         delete[] selectorCache;
+        delete[] nextSimilarSelector;
     }
-    if (properties) {
-        CSSOrderedProperty **prop = properties;
+    if (propertiesBuffer) {
         delete[] propertiesBuffer;
-        delete[] properties;
         delete[] nextPropertyIndexes;
     }
     selectors = 0;
-    properties = 0;
+    propertiesBuffer = 0;
     selectorCache = 0;
+    nextPropertyIndexes = 0;
 
-    classSelectors.clear();
-    idSelectors.clear();
-    tagSelectors.clear();
-    otherSelectors.clear();
+    classSelector.clear();
+    idSelector.clear();
+    tagSelector.clear();
 }
 
 void CSSStyleSelector::setupDefaultRootStyle(DOM::DocumentImpl *d)
@@ -1930,24 +1922,33 @@ void CSSStyleSelector::buildLists()
     // 2. the same goes for id selectors
     // 3. put tag selectors in hash by id
     // 4. other selectors (shouldn't be much) goes to plain list
-    for (unsigned int i = 0; i < selectors_size; ++i) {
+    nextSimilarSelector = new unsigned[selectors_size];
+    otherSelector = selectors_size;
+    for (unsigned int i = 0; i < selectors_size; ++i)
+        nextSimilarSelector[i] = selectors_size;
+    for (int i = selectors_size - 1; i >= 0; --i) {
         if (selectors[i]->match == CSSSelector::Class) {
-            WTF::HashMap<unsigned long, WTF::Vector<int> >::iterator it = classSelectors.find((unsigned long)selectors[i]->value.impl());
-            if (it == classSelectors.end())
-                it = classSelectors.set((unsigned long)selectors[i]->value.impl(), WTF::Vector<int>()).first;
-            it->second.append(i);
+            pair<WTF::HashMap<unsigned long, int>::iterator, bool> it = classSelector.add((unsigned long)selectors[i]->value.impl(), i);
+            if (!it.second) {
+                nextSimilarSelector[i] = it.first->second;
+                it.first->second = i;
+            }
         } else if (selectors[i]->match == CSSSelector::Id) {
-            WTF::HashMap<unsigned long, WTF::Vector<int> >::iterator it = idSelectors.find((unsigned long)selectors[i]->value.impl());
-            if (it == idSelectors.end())
-                it = idSelectors.set((unsigned long)selectors[i]->value.impl(), WTF::Vector<int>()).first;
-            it->second.append(i);
+            pair<WTF::HashMap<unsigned long, int>::iterator, bool> it = idSelector.add((unsigned long)selectors[i]->value.impl(), i);
+            if (!it.second) {
+                nextSimilarSelector[i] = it.first->second;
+                it.first->second = i;
+            }
         } else if (selectors[i]->tagLocalName.id() && selectors[i]->tagLocalName.id() != anyLocalName) {
-            WTF::HashMap<unsigned, WTF::Vector<int> >::iterator it = tagSelectors.find(selectors[i]->tagLocalName.id());
-            if (it == tagSelectors.end())
-                it = tagSelectors.set(selectors[i]->tagLocalName.id(), WTF::Vector<int>()).first;
-            it->second.append(i);
-        } else
-            otherSelectors.append(i);
+            pair<WTF::HashMap<unsigned, int>::iterator, bool> it = tagSelector.add(selectors[i]->tagLocalName.id(), i);
+            if (!it.second) {
+                nextSimilarSelector[i] = it.first->second;
+                it.first->second = i;
+            }
+        } else {
+            nextSimilarSelector[i] = otherSelector;
+            otherSelector = i;
+        }
     }
 
     // presort properties. Should make the sort() calls in styleForElement faster.
