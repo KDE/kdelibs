@@ -75,12 +75,12 @@ static const char titleEnd [] = "</title";
 
 #ifndef NDEBUG
 static const int sTokenizerChunkSize = 2048;
-static const int sTokenizerFastYeldDelay = 220;
-static const int sTokenizerYeldDelay = 650;
+static const int sTokenizerFastYieldDelay = 220;
+static const int sTokenizerYieldDelay = 650;
 #else
 static const int sTokenizerChunkSize = 4096;
-static const int sTokenizerFastYeldDelay = 180;
-static const int sTokenizerYeldDelay = 450;
+static const int sTokenizerFastYieldDelay = 180;
+static const int sTokenizerYieldDelay = 450;
 #endif
 
 #define KHTML_ALLOC_QCHAR_VEC( N ) (QChar*) malloc( sizeof(QChar)*( N ) )
@@ -147,10 +147,11 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, KHTMLView *_view)
     parser = new KHTMLParser(_view, _doc);
     m_executingScript = 0;
     m_autoCloseTimer = 0;
-    m_tokenizerYeldDelay = sTokenizerFastYeldDelay;
-    m_yeldTimer = 0;
+    m_tokenizerYieldDelay = sTokenizerFastYieldDelay;
+    m_yieldTimer = 0;
     m_prospectiveTokenizer = 0;
     onHold = false;
+    m_documentTokenizer = true;
 
     reset();
 }
@@ -165,17 +166,18 @@ HTMLTokenizer::HTMLTokenizer(DOM::DocumentImpl *_doc, DOM::DocumentFragmentImpl 
     parser = new KHTMLParser( i, _doc );
     m_executingScript = 0;
     m_autoCloseTimer = 0;
-    m_tokenizerYeldDelay = sTokenizerFastYeldDelay;
-    m_yeldTimer = 0;
+    m_tokenizerYieldDelay = sTokenizerFastYieldDelay;
+    m_yieldTimer = 0;
     m_prospectiveTokenizer = 0;
     onHold = false;
+    m_documentTokenizer = false;
 
     reset();
 }
 
-void HTMLTokenizer::setNormalYeldDelay()
+void HTMLTokenizer::setNormalYieldDelay()
 {
-    m_tokenizerYeldDelay = sTokenizerYeldDelay;
+    m_tokenizerYieldDelay = sTokenizerYieldDelay;
 }
 
 void HTMLTokenizer::reset()
@@ -202,9 +204,9 @@ void HTMLTokenizer::reset()
         m_autoCloseTimer = 0;
     }
 
-    if (m_yeldTimer > 0) {
-        killTimer(m_yeldTimer);
-        m_yeldTimer = 0;
+    if (m_yieldTimer > 0) {
+        killTimer(m_yieldTimer);
+        m_yieldTimer = 0;
     }
     currToken.reset();
     doctypeToken.reset();
@@ -1631,12 +1633,13 @@ void HTMLTokenizer::addPending()
 inline bool HTMLTokenizer::continueProcessing(int& processedCount)
 {
     // We don't want to be checking elapsed time with every character, so we only check after we've
-    // processed a certain number of characters.
+    // processed a certain number of characters. We also do not do suspension if we're
+    // parsing something like innerHTML.
     if (!m_executingScript && processedCount > sTokenizerChunkSize && cachedScript.isEmpty()) {
         processedCount = 0;
-        if ( m_time.elapsed() > m_tokenizerYeldDelay) {
-            m_yeldTimer = startTimer(0);
-            m_tokenizerYeldDelay = sTokenizerFastYeldDelay;
+        if ( m_time.elapsed() > m_tokenizerYieldDelay && m_documentTokenizer) {
+            m_yieldTimer = startTimer(0);
+            m_tokenizerYieldDelay = sTokenizerFastYieldDelay;
             return false;
         }
     }
@@ -1684,7 +1687,7 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
         setSrc(str);
 
     // Once a timer is set, it has control of when the tokenizer continues.
-    if (m_yeldTimer > 0)
+    if (m_yieldTimer > 0)
         return;
 
     int processedCount = 0;
@@ -1898,15 +1901,15 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
         }
     }
 
-    if (noMoreData && cachedScript.isEmpty() && !m_executingScript && m_yeldTimer<=0)
+    if (noMoreData && cachedScript.isEmpty() && !m_executingScript && m_yieldTimer<=0)
         end(); // this actually causes us to be deleted
 }
 
 void HTMLTokenizer::timerEvent( QTimerEvent *e )
 {
-    if ( e->timerId() == m_yeldTimer ) {
-        killTimer(m_yeldTimer);
-        m_yeldTimer = 0;
+    if ( e->timerId() == m_yieldTimer ) {
+        killTimer(m_yieldTimer);
+        m_yieldTimer = 0;
         write( TokenizerString(), true ); 
     } else if ( e->timerId() == m_autoCloseTimer && cachedScript.isEmpty() ) {
          finish();
@@ -1988,7 +1991,7 @@ void HTMLTokenizer::finish()
     // this indicates we will not receive any more data... but if we are waiting on
     // an external script to load, we can't finish parsing until that is done
     noMoreData = true;
-    if (cachedScript.isEmpty() && !m_executingScript && !onHold && m_yeldTimer <= 0)
+    if (cachedScript.isEmpty() && !m_executingScript && !onHold && m_yieldTimer <= 0)
         end(); // this actually causes us to be deleted
 }
 
