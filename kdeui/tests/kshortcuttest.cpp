@@ -67,6 +67,12 @@ private Q_SLOTS:
         cut = KShortcut("Meta+E");
         QVERIFY(cut.primary()[0] == (Qt::META | Qt::Key_E));
 
+        //qDebug() << QKeySequence(Qt::ALT | Qt::Key_Plus).toString();
+        //qDebug() << QKeySequence(Qt::ALT | Qt::Key_Minus).toString();
+        cut = KShortcut("Alt+Plus"); // KDE3 said "Alt+Plus", while Qt4 says "Alt++", so KShortcut has to handle this
+        QVERIFY(cut.primary()[0] == (Qt::ALT | Qt::Key_Plus));
+        cut = KShortcut("Alt+Minus"); // KDE3 said "Alt+Minus", while Qt4 says "Alt+-", so KShortcut has to handle this
+        QVERIFY(cut.primary()[0] == (Qt::ALT | Qt::Key_Minus));
     }
 };
 
