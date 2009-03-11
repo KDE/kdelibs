@@ -2105,11 +2105,6 @@ void CSSStyleSelectorList::collect(WTF::HashMap<CSSSelector*, int>* selectorsCac
 
 // -------------------------------------------------------------------------
 
-bool CSSOrderedPropertyList::compareItems(const CSSOrderedProperty& i1, const CSSOrderedProperty& i2)
-{
-    return i1 < i2;
-}
-
 void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity,
                                     Source regular, Source important)
 {

@@ -337,7 +337,6 @@ public:
     class CSSOrderedPropertyList : public QVector<CSSOrderedProperty>
     {
     public:
-        static bool compareItems(const CSSOrderedProperty& i1, const CSSOrderedProperty& i2);
         void append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity,
                     Source regular, Source important);
     };
