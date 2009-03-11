@@ -1052,10 +1052,8 @@ bool KEncodingDetector::analyze(const char *data, int len)
     }
 
     if (len<20)
-    {
-        setEncoding("",DefaultEncoding);
         return false;
-    }
+
 #ifdef DECODE_DEBUG
     kDebug( 6005 ) << "KEncodingDetector: using heuristics (" << strlen(data) << ")";
 #endif
@@ -1110,10 +1108,9 @@ bool KEncodingDetector::analyze(const char *data, int len)
             // huh. somethings broken in this code ### FIXME
             //enc = 0; //Reset invalid codec we tried, so we get back to latin1 fallback.
             break;
-        }
+    }
 
-        setEncoding("",DefaultEncoding);
-        return true;
+    return true;
 }
 
 
