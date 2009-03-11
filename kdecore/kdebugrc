@@ -80,6 +80,9 @@ InfoOutput=4
 [5006]
 InfoOutput=2
 
+[5120]
+InfoOutput=2
+
 # KitchenSync (Syncing Algorithm)
 [5250]
 InfoOutput=4
