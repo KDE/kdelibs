@@ -198,7 +198,7 @@ void KDirSelectDialog::Private::_k_slotComboTextChanged( const QString& text )
 
 void KDirSelectDialog::Private::_k_slotContextMenu( const QPoint& pos )
 {
-    m_contextMenu->popup( pos );
+    m_contextMenu->popup( m_treeView->viewport()->mapToGlobal(pos) );
 }
 
 void KDirSelectDialog::Private::_k_slotExpand(const QModelIndex &index)
@@ -248,6 +248,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
 
     d->m_treeView = new KFileTreeView(page);
     d->m_treeView->setDirOnlyMode(true);
+    d->m_treeView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     for (int i = 1; i < d->m_treeView->model()->columnCount(); ++i)
         d->m_treeView->hideColumn(i);
