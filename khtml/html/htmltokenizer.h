@@ -174,7 +174,7 @@ public:
     void finish();
     void timerEvent( QTimerEvent *e );
     bool continueProcessing(int&);
-    void setNormalYeldDelay();
+    void setNormalYieldDelay();
     virtual void setOnHold(bool _onHold);
     void abort() { m_abort = true; }
     virtual void setAutoClose(bool b=true);
@@ -403,9 +403,12 @@ protected:
     // autoClose mode is used when the tokenizer was created by a script document.writing
     // on an already loaded document
     int m_autoCloseTimer;
-    int m_tokenizerYeldDelay;
-    int m_yeldTimer;
+    int m_tokenizerYieldDelay;
+    int m_yieldTimer;
     QTime m_time;
+
+    // Set true if this tokenizer is used for documents and not fragments
+    bool m_documentTokenizer; 
 
 #define CBUFLEN 1024
     char cBuffer[CBUFLEN+2];
