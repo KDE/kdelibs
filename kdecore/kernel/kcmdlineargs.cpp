@@ -16,6 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#define QT_NO_CAST_FROM_ASCII
+
 #include "kcmdlineargs.h"
 
 #include <config.h>
@@ -878,15 +880,15 @@ KCmdLineArgsStatic::parseAllArgs()
          }
          else if ((option == "version") || (option == "v"))
          {
-            s->printQ( QString("Qt: %1\n").arg(qVersion()));
-            s->printQ( QString("KDE: %1\n").arg(KDE_VERSION_STRING));
-            s->printQ( QString("%1: %2\n"). arg(s->about->programName()).arg(s->about->version()));
+             s->printQ(QString::fromLatin1("Qt: %1\n").arg(QString::fromLatin1(qVersion())));
+             s->printQ(QString::fromLatin1("KDE: %1\n").arg(QString::fromLatin1(KDE_VERSION_STRING)));
+             s->printQ(QString::fromLatin1("%1: %2\n").arg(s->about->programName()).arg(s->about->version()));
             exit(0);
          } else if (option == "license")
          {
             KCmdLineArgs::enable_i18n();
-            s->printQ( s->about->license() );
-            s->printQ( "\n" );
+            s->printQ(s->about->license());
+            s->printQ(QString::fromLatin1("\n"));
             exit(0);
          } else if (option == "author") {
              KCmdLineArgs::enable_i18n();
@@ -897,8 +899,8 @@ KCmdLineArgsStatic::parseAllArgs()
            for (QList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
              QString email;
              if ( !(*it).emailAddress().isEmpty() )
-               email = " &lt;" + (*it).emailAddress() + "&gt;";
-             authorlist += QString("    ") + (*it).name() + email + '\n';
+               email = QString::fromLatin1(" &lt;") + (*it).emailAddress() + QLatin1String("&gt;");
+             authorlist += QString::fromLatin1("    ") + (*it).name() + email + QLatin1Char('\n');
            }
            s->printQ( i18nc("the 2nd argument is a list of name+address, one on each line","%1 was written by\n%2",   QString(s->about->programName()) ,  authorlist ) );
          }
@@ -909,7 +911,7 @@ KCmdLineArgsStatic::parseAllArgs()
        {
          if (!s->about->customAuthorTextEnabled ())
          {
-           if (s->about->bugAddress().isEmpty() || s->about->bugAddress() == "submit@bugs.kde.org" )
+           if (s->about->bugAddress().isEmpty() || s->about->bugAddress() == QLatin1String("submit@bugs.kde.org") )
              s->printQ( i18n( "Please use http://bugs.kde.org to report bugs.\n" ) );
            else
              s->printQ( i18n( "Please report bugs to %1.\n" , s->about->bugAddress()) );
@@ -1067,8 +1069,8 @@ KCmdLineArgs::usage(const QByteArray &id)
    Q_ASSERT(s->argsList != 0); // It's an error to call usage(...) without
                                // having done addCmdLineOptions first!
 
-   QString optionFormatString   = "  %1 %2\n";
-   QString optionFormatStringDef  = "  %1 %2 [%3]\n";
+   QString optionFormatString = QString::fromLatin1("  %1 %2\n");
+   QString optionFormatStringDef = QString::fromLatin1("  %1 %2 [%3]\n");
    QString tmp;
    QString usage;
 
@@ -1084,7 +1086,7 @@ KCmdLineArgs::usage(const QByteArray &id)
    {
       if (!(*args)->d->name.isEmpty())
       {
-         usage = i18n("[%1-options]", (*args)->d->name.toString())+' '+usage;
+         usage = i18n("[%1-options]", (*args)->d->name.toString())+QLatin1Char(' ')+usage;
       }
       if (args == s->argsList->begin())
          break;
@@ -1099,24 +1101,25 @@ KCmdLineArgs::usage(const QByteArray &id)
      {
        QByteArray opt_name = option.d->names[i];
        if (opt_name.startsWith('+'))
-          usage = usage + (opt_name.mid(1)) + ' ';
+           usage += QString::fromLatin1(opt_name.mid(1)) + QLatin1Char(' ');
        else if ( opt_name.startsWith("!+") )
-          usage = usage + (opt_name.mid(2)) + ' ';
+          usage += QString::fromLatin1(opt_name.mid(2)) + QLatin1Char(' ');
      }
    }
 
-   s->printQ(i18n("Usage: %1 %2\n", s->argv[0], KuitSemantics::escape(usage)));
-   s->printQ('\n'+s->about->shortDescription()+'\n');
+   s->printQ(i18n("Usage: %1 %2\n", QString::fromLocal8Bit(s->argv[0]), KuitSemantics::escape(usage)));
+   s->printQ(QLatin1Char('\n')+s->about->shortDescription()+QLatin1Char('\n'));
 
    s->printQ(i18n("\nGeneric options:\n"));
-   s->printQ(optionFormatString.arg("--help", -25).arg(i18n("Show help about options")));
+   s->printQ(optionFormatString.arg(QString::fromLatin1("--help"), -25)
+             .arg(i18n("Show help about options")));
 
    args = s->argsList->begin();
    while(args != s->argsList->end())
    {
       if (!(*args)->d->name.isEmpty() && !(*args)->d->id.isEmpty())
       {
-         QString option = QString("--help-%1").arg(QString::fromLatin1((*args)->d->id));
+          QString option = QString::fromLatin1("--help-%1").arg(QString::fromLatin1((*args)->d->id));
          QString desc = i18n("Show %1 specific options", (*args)->d->name.toString());
 
          s->printQ(optionFormatString.arg(option, -25).arg(desc));
@@ -1124,11 +1127,11 @@ KCmdLineArgs::usage(const QByteArray &id)
       ++args;
    }
 
-   s->printQ(optionFormatString.arg("--help-all",-25).arg(i18n("Show all options")));
-   s->printQ(optionFormatString.arg("--author",-25).arg(i18n("Show author information")));
-   s->printQ(optionFormatString.arg("-v, --version",-25).arg(i18n("Show version information")));
-   s->printQ(optionFormatString.arg("--license",-25).arg(i18n("Show license information")));
-   s->printQ(optionFormatString.arg("--", -25).arg(i18n("End of options")));
+   s->printQ(optionFormatString.arg(QString::fromLatin1("--help-all"),-25).arg(i18n("Show all options")));
+   s->printQ(optionFormatString.arg(QString::fromLatin1("--author"),-25).arg(i18n("Show author information")));
+   s->printQ(optionFormatString.arg(QString::fromLatin1("-v, --version"),-25).arg(i18n("Show version information")));
+   s->printQ(optionFormatString.arg(QString::fromLatin1("--license"),-25).arg(i18n("Show license information")));
+   s->printQ(optionFormatString.arg(QString::fromLatin1("--"), -25).arg(i18n("End of options")));
 
    args = s->argsList->begin(); // Sets current to 1st.
 
@@ -1173,9 +1176,9 @@ KCmdLineArgs::usage(const QByteArray &id)
          {
             if (!descriptionFull.isEmpty())
             {
-               optionsHeader = '\n'+descriptionFull;
-               if (!optionsHeader.endsWith('\n'))
-                  optionsHeader.append('\n');
+               optionsHeader = QLatin1Char('\n')+descriptionFull;
+               if (!optionsHeader.endsWith(QLatin1Char('\n')))
+                  optionsHeader.append(QLatin1Char('\n'));
                hasOptions = false;
             }
             continue;
@@ -1186,9 +1189,9 @@ KCmdLineArgs::usage(const QByteArray &id)
          {
             if (!descriptionFull.isEmpty())
             {
-               tmp = '\n'+descriptionFull;
-               if (!tmp.endsWith('\n'))
-                  tmp.append('\n');
+               tmp = QLatin1Char('\n')+descriptionFull;
+               if (!tmp.endsWith(QLatin1Char('\n')))
+                  tmp.append(QLatin1Char('\n'));
                s->printQ(tmp);
             }
             continue;
@@ -1197,7 +1200,7 @@ KCmdLineArgs::usage(const QByteArray &id)
          // Options
          if (!descriptionFull.isEmpty())
          {
-            dl = descriptionFull.split( '\n', QString::KeepEmptyParts);
+            dl = descriptionFull.split(QLatin1Char('\n'), QString::KeepEmptyParts);
             description = dl.first();
             dl.erase( dl.begin() );
          }
@@ -1239,11 +1242,11 @@ KCmdLineArgs::usage(const QByteArray &id)
                opt = opt + name;
                if (option.d->defaults[i].isEmpty())
                {
-                  s->printQ(optionFormatString.arg(QString( opt ), -25).arg(description));
+                   s->printQ(optionFormatString.arg(QString::fromLatin1(opt), -25).arg(description));
                }
                else
                {
-                  s->printQ(optionFormatStringDef.arg(QString( opt ), -25)
+                   s->printQ(optionFormatStringDef.arg(QString::fromLatin1(opt), -25)
                             .arg(description, option.d->defaults[i]));
                }
                opt.clear();
@@ -1253,7 +1256,7 @@ KCmdLineArgs::usage(const QByteArray &id)
              it != dl.end();
              ++it)
          {
-            s->printQ(optionFormatString.arg("", -25).arg(*it));
+            s->printQ(optionFormatString.arg(QString(), -25).arg(*it));
          }
        }
 
@@ -1544,7 +1547,7 @@ KUrl KCmdLineArgs::makeURL(const QByteArray &_urlArg)
 
     if ( KUrl::isRelativeUrl(urlArg) || fileInfo.exists() ) {
         KUrl result;
-        result.setPath( cwd()+'/'+urlArg );
+        result.setPath(cwd()+QLatin1Char('/')+urlArg);
         result.cleanPath();
         return result;  // Relative path
     }
