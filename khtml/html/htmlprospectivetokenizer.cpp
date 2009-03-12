@@ -143,9 +143,12 @@ void ProspectiveTokenizer::write(const TokenizerString& source)
 #endif
 }
     
-static inline bool isWhitespace(QChar c)
+static inline bool isWhitespace(const QChar& c)
 {
-    return c == ' ' || c == '\n' || c == '\r' || c == '\t';
+    unsigned short u = c.unicode();
+    if (u > 0x20)
+        return false;
+    return u == ' ' || u == '\n' || u == '\r' || u == '\t';
 }
     
 inline void ProspectiveTokenizer::clearLastCharacters()
