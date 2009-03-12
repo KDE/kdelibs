@@ -1407,7 +1407,7 @@ KCmdLineArgs::getOption(const QByteArray &_opt) const
       value = d->parsedOptionList->value(opt);
    }
    if (!value.isEmpty())
-      return value;
+       return QString::fromLocal8Bit(value);
 
    // Look up the default.
    QByteArray opt_name;
