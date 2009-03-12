@@ -113,6 +113,7 @@ void JobTest::initTestCase()
     }
 #endif
 
+    qRegisterMetaType<KJob*>("KJob*");
     qRegisterMetaType<KIO::Job*>("KIO::Job*");
     qRegisterMetaType<KUrl>("KUrl");
     qRegisterMetaType<time_t>("time_t");
@@ -153,6 +154,8 @@ void JobTest::get()
     m_result = -1;
 
     KIO::StoredTransferJob* job = KIO::storedGet( u, KIO::NoReload, KIO::HideProgressInfo );
+    QSignalSpy spyPercent(job, SIGNAL(percent(KJob*, unsigned long)));
+    QVERIFY(spyPercent.isValid());
     job->setUiDelegate( 0 );
     connect( job, SIGNAL( result( KJob* ) ),
             this, SLOT( slotGetResult( KJob* ) ) );
@@ -160,6 +163,7 @@ void JobTest::get()
     QCOMPARE( m_result, 0 ); // no error
     QCOMPARE( m_data, QByteArray("Hello\0world", 11) );
     QCOMPARE( m_data.size(), 11 );
+    QVERIFY(!spyPercent.isEmpty());
 }
 
 void JobTest::slotGetResult( KJob* job )
