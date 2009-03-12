@@ -67,6 +67,7 @@ public:
         drawClickMsg = false;
         enableClickMsg = false;
         threeStars = false;
+        completionRunning = false;
         if ( !initialized )
         {
             KConfigGroup config( KGlobal::config(), "General" );
@@ -103,6 +104,15 @@ public:
             clearButton->setAnimationsEnabled(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
         }
     }
+    
+    void _k_updateUserText( const QString &txt)
+    {  
+        if ((!completionRunning) && (txt != userText))
+	{
+	    userText = txt;
+	    emit q->userTextChanged(txt);
+	}
+    }
 
     /**
      * Checks whether we should/should not consume a key used as a shortcut.
@@ -123,11 +133,13 @@ public:
     bool handleURLDrops:1;
     bool grabReturnKeyEvents:1;
     bool enableSqueezedText:1;
+    bool completionRunning:1; 
 
     int squeezedEnd;
     int squeezedStart;
     QPalette::ColorRole bgRole;
     QString squeezedText;
+    QString userText;
 
     QString clickMessage;
     bool enableClickMsg:1;
@@ -228,6 +240,9 @@ void KLineEdit::init()
     QStyle *lineEditStyle = new KLineEditStyle(this, d);
     lineEditStyle->setParent(this);
     setStyle(lineEditStyle);
+  
+    connect( this, SIGNAL(textChanged( const QString&)), this, SLOT(_k_updateUserText( const QString&)));
+
 }
 
 QString KLineEdit::clickMessage() const
@@ -639,6 +654,7 @@ void KLineEdit::resizeEvent( QResizeEvent * ev )
     QLineEdit::resizeEvent(ev);
 }
 
+
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     const int key = e->key() | e->modifiers();
@@ -650,6 +666,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     }
     else if ( KStandardShortcut::paste().contains( key ) )
     {
+      // TODO:
+      // we should restore the original text (not autocompleted), otherwise the paste
+      // will get into troubles Bug: 134691
         paste();
         return;
     }
@@ -750,7 +769,11 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 setText(old_txt);
                 setCursorPosition(cPosition);
                 if (e->key() ==Qt::Key_Right && cPosition > start )
+		{
                     setSelection(cPosition, old_txt.length());
+		    //the user explicitly accepted the autocompletion
+		    d->_k_updateUserText(text());
+		}
                 else
                     setSelection(start, old_txt.length());
 
@@ -1541,6 +1564,14 @@ void KLineEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
 
 void KLineEdit::setUserSelection(bool userSelection)
 {
+    //if !d->userSelection && userSelection we are accepting a completion, 
+    //so trigger an update 
+  
+    if (!d->userSelection && userSelection) 
+    { 
+	d->_k_updateUserText(text());
+    }
+  
     QPalette p = palette();
 
     if (userSelection)
@@ -1588,6 +1619,11 @@ QString KLineEdit::originalText() const
         return d->squeezedText;
 
     return text();
+}
+
+QString KLineEdit::userText() const
+{
+    return d->userText;
 }
 
 bool KLineEdit::autoSuggest() const
@@ -1701,10 +1737,11 @@ void KLineEdit::doCompletion(const QString& txt)
     if (emitSignals()) {
         emit completion(txt); // emit when requested...
     }
-
+    d->completionRunning = true;
     if (handleSignals()) {
         makeCompletion(txt);  // handle when requested...
     }
+    d->completionRunning = false;
 }
 
 #include "klineedit.moc"
