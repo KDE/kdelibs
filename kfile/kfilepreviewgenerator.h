@@ -1,5 +1,5 @@
 /*******************************************************************************
- *   Copyright (C) 2008 by Peter Penz <peter.penz@gmx.at>                      *
+ *   Copyright (C) 2008-2009 by Peter Penz <peter.penz@gmx.at>                 *
  *                                                                             *
  *   This library is free software; you can redistribute it and/or             *
  *   modify it under the terms of the GNU Library General Public               *
@@ -113,14 +113,15 @@ private:
     Private* const d; /// @internal
     Q_DISABLE_COPY(KFilePreviewGenerator)
 
-    Q_PRIVATE_SLOT(d, void generatePreviews(const KFileItemList&))
-    Q_PRIVATE_SLOT(d, void generatePreviews(const QModelIndex&, const QModelIndex&))
+    Q_PRIVATE_SLOT(d, void updateIcons(const KFileItemList&))
+    Q_PRIVATE_SLOT(d, void updateIcons(const QModelIndex&, const QModelIndex&))
     Q_PRIVATE_SLOT(d, void addToPreviewQueue(const KFileItem&, const QPixmap&))
     Q_PRIVATE_SLOT(d, void slotPreviewJobFinished(KJob*))
     Q_PRIVATE_SLOT(d, void updateCutItems())
-    Q_PRIVATE_SLOT(d, void dispatchPreviewQueue())
-    Q_PRIVATE_SLOT(d, void pausePreviews())
-    Q_PRIVATE_SLOT(d, void resumePreviews())
+    Q_PRIVATE_SLOT(d, void dispatchIconUpdateQueue())
+    Q_PRIVATE_SLOT(d, void pauseIconUpdates())
+    Q_PRIVATE_SLOT(d, void resumeIconUpdates())
+    Q_PRIVATE_SLOT(d, void resolveMimeType())
 };
 
 #endif
