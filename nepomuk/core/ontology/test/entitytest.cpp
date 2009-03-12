@@ -22,6 +22,7 @@
 #include "../property.h"
 
 #include <kdebug.h>
+#include <kstandarddirs.h>
 #include <qtest_kde.h>
 #include <QtDBus/QtDBus>
 
@@ -29,6 +30,30 @@
 
 using namespace Nepomuk::Types;
 
+static QByteArray origKdeHome;
+
+// Getting the real KDEHOME has to be done before main() overwrites $KDEHOME
+int kInitSocket()
+{
+    origKdeHome = getenv("KDEHOME");
+    return 1;
+}
+Q_CONSTRUCTOR_FUNCTION(kInitSocket)
+
+// Make symlink from ~/.kde-unit-test/share/apps/nepomuk/socket to the real socket for the running server
+void EntityTest::initTestCase()
+{
+    QString realSocket = !origKdeHome.isEmpty() ? QFile::encodeName(origKdeHome) : QDir::homePath() + QLatin1String("/.kde");
+    realSocket += QLatin1String("/share/apps/nepomuk/socket");
+    //kDebug() << realSocket;
+    if (QFile::exists(realSocket)) {
+        const QString socketLink = KGlobal::dirs()->locateLocal( "data", "nepomuk/socket" );
+        //kDebug() << socketLink << realSocket;
+        if (!QFile::exists(socketLink)) {
+            ::symlink(QFile::encodeName(realSocket), QFile::encodeName(socketLink));
+        }
+    }
+}
 
 void EntityTest::testClass()
 {
