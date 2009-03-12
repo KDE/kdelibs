@@ -113,8 +113,8 @@ public:
 
     virtual void insertedIntoDocument();
     virtual void removedFromDocument();
-    virtual void addId(const QString& id);
-    virtual void removeId(const QString& id);
+    virtual void addId(const DOMString& id);
+    virtual void removeId(const DOMString& id);
 
     HTMLEmbedElementImpl* relevantEmbed();
 

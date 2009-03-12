@@ -1119,18 +1119,18 @@ void ElementImpl::updateId(DOMStringImpl* oldId, DOMStringImpl* newId)
         return;
 
     if (oldId && oldId->l)
-        removeId(DOMString(oldId).string());
+        removeId(DOMString(oldId));
 
     if (newId && newId->l)
-        addId(DOMString(newId).string());
+        addId(DOMString(newId));
 }
 
-void ElementImpl::removeId(const QString& id)
+void ElementImpl::removeId(const DOMString& id)
 {
   document()->getElementByIdCache().remove(id, this);
 }
 
-void ElementImpl::addId(const QString& id)
+void ElementImpl::addId(const DOMString& id)
 {
   document()->getElementByIdCache().add(id, this);
 }
