@@ -203,6 +203,12 @@ public:
     void resumeIconUpdates();
 
     /**
+     * Starts the resolving of the MIME types from
+     * the m_pendingItems queue.
+     */
+    void startMimeTypeResolving();
+
+    /**
      * Resolves the MIME type for exactly one item of the
      * m_pendingItems queue.
      */
@@ -288,6 +294,12 @@ public:
     bool m_hasCutSelection;
 
     /**
+     * True if the updates of icons has been paused by pauseIconUpdates().
+     * The value is reset by resumeIconUpdates().
+     */
+    bool m_iconUpdatesPaused;
+
+    /**
      * If the value is 0, the slot
      * updateIcons(const QModelIndex&, const QModelIndex&) has
      * been triggered by an external data change.
@@ -336,6 +348,7 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
     m_previewShown(true),
     m_clearItemQueues(true),
     m_hasCutSelection(false),
+    m_iconUpdatesPaused(false),
     m_internalDataChange(0),
     m_pendingVisibleIconUpdates(0),
     m_viewAdapter(viewAdapter),
@@ -414,8 +427,7 @@ void KFilePreviewGenerator::Private::updateIcons(const KFileItemList& items)
     if (m_previewShown) {
         startPreviewJob(orderedItems);
     } else {
-        resolveMimeType();
-        m_iconUpdateTimer->start(200);
+        startMimeTypeResolving();
     }
 }
 
@@ -572,6 +584,7 @@ void KFilePreviewGenerator::Private::dispatchIconUpdateQueue()
 
 void KFilePreviewGenerator::Private::pauseIconUpdates()
 {
+    m_iconUpdatesPaused = true;
     foreach (KJob* job, m_previewJobs) {
         Q_ASSERT(job != 0);
         job->suspend();
@@ -581,6 +594,8 @@ void KFilePreviewGenerator::Private::pauseIconUpdates()
 
 void KFilePreviewGenerator::Private::resumeIconUpdates()
 {
+    m_iconUpdatesPaused = false;
+
     // Before creating new preview jobs the m_pendingItems queue must be
     // cleaned up by removing the already dispatched items. Implementation
     // note: The order of the m_dispatchedItems queue and the m_pendingItems
@@ -602,18 +617,30 @@ void KFilePreviewGenerator::Private::resumeIconUpdates()
     m_pendingVisibleIconUpdates = 0;
     dispatchIconUpdateQueue();
 
-    KFileItemList orderedItems = m_pendingItems;
-    orderItems(orderedItems);
 
-    // Kill all suspended preview jobs. Usually when a preview job
-    // has been finished, slotPreviewJobFinished() clears all item queues.
-    // This is not wanted in this case, as a new job is created afterwards
-    // for m_pendingItems.
-    m_clearItemQueues = false;
-    killPreviewJobs();
-    m_clearItemQueues = true;
+    if (m_previewShown) {
+        KFileItemList orderedItems = m_pendingItems;
+        orderItems(orderedItems);
 
-    startPreviewJob(orderedItems);
+        // Kill all suspended preview jobs. Usually when a preview job
+        // has been finished, slotPreviewJobFinished() clears all item queues.
+        // This is not wanted in this case, as a new job is created afterwards
+        // for m_pendingItems.
+        m_clearItemQueues = false;
+        killPreviewJobs();
+        m_clearItemQueues = true;
+
+        startPreviewJob(orderedItems);
+    } else {
+        orderItems(m_pendingItems);
+        startMimeTypeResolving();
+    }
+}
+
+void KFilePreviewGenerator::Private::startMimeTypeResolving()
+{
+    resolveMimeType();
+    m_iconUpdateTimer->start(200);
 }
 
 void KFilePreviewGenerator::Private::resolveMimeType()
@@ -649,7 +676,7 @@ void KFilePreviewGenerator::Private::resolveMimeType()
         // that the directory model gets informed about
         // this, so that an update of the icons is done.
         dispatchIconUpdateQueue();
-    } else {
+    } else if (!m_iconUpdatesPaused) {
         // assure that the MIME type of the next
         // item will be resolved asynchronously
         QMetaObject::invokeMethod(q, "resolveMimeType", Qt::QueuedConnection);
