@@ -340,9 +340,9 @@ public:
     
     void updateId(DOMStringImpl* oldId, DOMStringImpl* newId);
     //Called when mapping from id to this node in document should be removed
-    virtual void removeId(const QString& id);
+    virtual void removeId(const DOMString& id);
     //Called when mapping from id to this node in document should be added
-    virtual void addId   (const QString& id);
+    virtual void addId   (const DOMString& id);
 
 protected:
     void createAttributeMap() const;

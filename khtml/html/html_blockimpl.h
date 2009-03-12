@@ -95,8 +95,8 @@ public:
 
     virtual void removedFromDocument();
     virtual void insertedIntoDocument();
-    virtual void addId(const QString& id);
-    virtual void removeId(const QString& id);
+    virtual void addId(const DOMString& id);
+    virtual void removeId(const DOMString& id);
 private:
     DOMString m_name;
     bool fixed;

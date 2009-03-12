@@ -164,29 +164,29 @@ public:
     /**
      Add a pointer as just one of candidates, not neccesserily the proper one
     */
-    void add(const QString& id, ElementImpl* nd);
+    void add(const DOMString& id, ElementImpl* nd);
 
     /**
      Set the pointer as the definite mapping; it must have already been added
     */
-    void set(const QString& id, ElementImpl* nd);
+    void set(const DOMString& id, ElementImpl* nd);
 
     /**
      Remove the item; it must have already been added.
     */
-    void remove(const QString& id, ElementImpl* nd);
+    void remove(const DOMString& id, ElementImpl* nd);
 
     /**
      Returns true if the item exists
     */
-    bool contains(const QString& id);
+    bool contains(const DOMString& id);
 
     /**
      Returns the information for the given ID
     */
-    ItemInfo* get(const QString& id);
+    ItemInfo* get(const DOMString& id);
 private:
-    QHash<QString,ItemInfo*> m_dict;
+    QHash<DOMString,ItemInfo*> m_dict;
 };
 
 

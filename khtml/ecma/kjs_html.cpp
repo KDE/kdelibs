@@ -236,15 +236,14 @@ bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &pr
     return true;
   }
 
-  QString         propertyQString   = propertyName.qstring();
+  DOM::DOMString  propertyDOMString = propertyName.domString();
 
   //See whether to return named items under document.
-  ElementMappingCache::ItemInfo* info = docImpl->underDocNamedCache().get(propertyQString);
+  ElementMappingCache::ItemInfo* info = docImpl->underDocNamedCache().get(propertyDOMString);
   if (info) {
     //May be a false positive, but we can try to avoid doing it the hard way in
     //simpler cases. The trickiness here is that the cache is kept under both
     //name and id, but we sometimes ignore id for IE compat
-    DOM::DOMString  propertyDOMString = propertyName.domString();
 
     bool matched = false;
     if (info->nd && DOM::HTMLMappedNameCollectionImpl::matchesName(info->nd,
@@ -264,7 +263,7 @@ bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &pr
 
   // Check for frames/iframes with name==propertyName
   if ( part ) {
-    if (part->findFrame( propertyQString )) {
+    if (part->findFrame( propertyName.qstring() )) {
       slot.setCustom(this, frameNameGetter);
       return true;
     }
@@ -299,13 +298,14 @@ JSValue *HTMLDocument::nameGetter(ExecState *exec, JSObject*, const Identifier& 
   DOM::DocumentImpl* docImpl = thisObj->impl();
 
   //Return named items under document (e.g. images, applets, etc.)
-  ElementMappingCache::ItemInfo* info = docImpl->underDocNamedCache().get(propertyName.qstring());
+  DOMString name = propertyName.domString();
+  ElementMappingCache::ItemInfo* info = docImpl->underDocNamedCache().get(name);
   if (info && info->nd)
     return getDOMNode(exec, info->nd);
   else {
     //No cached mapping, do it the hard way..
     DOM::HTMLMappedNameCollectionImpl* coll = new DOM::HTMLMappedNameCollectionImpl(docImpl,
-                                        HTMLCollectionImpl::DOCUMENT_NAMED_ITEMS, propertyName.domString());
+                                        HTMLCollectionImpl::DOCUMENT_NAMED_ITEMS, name);
 
     if (info && coll->length() == 1) {
         info->nd = static_cast<DOM::ElementImpl*>(coll->firstItem());

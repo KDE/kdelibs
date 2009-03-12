@@ -769,8 +769,8 @@ void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_NAME:
         if (inDocument() && m_name != attr->value()) {
-            document()->underDocNamedCache().remove(m_name.string(),        this);
-            document()->underDocNamedCache().add   (attr->value().string(), this);
+            document()->underDocNamedCache().remove(m_name,        this);
+            document()->underDocNamedCache().add   (attr->value(), this);
         }
         m_name = attr->value();
         //Fallthrough intentional
@@ -781,23 +781,23 @@ void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLFormElementImpl::removedFromDocument()
 {
-    document()->underDocNamedCache().remove(m_name.string(), this);
+    document()->underDocNamedCache().remove(m_name, this);
     HTMLElementImpl::removedFromDocument();
 }
 
 void HTMLFormElementImpl::insertedIntoDocument()
 {
-    document()->underDocNamedCache().add(m_name.string(), this);
+    document()->underDocNamedCache().add(m_name, this);
     HTMLElementImpl::insertedIntoDocument();
 }
 
-void HTMLFormElementImpl::removeId(const QString& id)
+void HTMLFormElementImpl::removeId(const DOMString& id)
 {
     document()->underDocNamedCache().remove(id, this);
     HTMLElementImpl::removeId(id);
 }
 
-void HTMLFormElementImpl::addId   (const QString& id)
+void HTMLFormElementImpl::addId   (const DOMString& id)
 {
     document()->underDocNamedCache().add(id, this);
     HTMLElementImpl::addId(id);

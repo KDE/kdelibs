@@ -177,8 +177,8 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
 	break;
     case ATTR_NAME:
         if (inDocument() && m_name != attr->value()) {
-            document()->underDocNamedCache().remove(m_name.string(),        this);
-            document()->underDocNamedCache().add   (attr->value().string(), this);
+            document()->underDocNamedCache().remove(m_name,        this);
+            document()->underDocNamedCache().add   (attr->value(), this);
         }
         m_name = attr->value();
         //fallthrough
@@ -252,23 +252,23 @@ void HTMLImageElementImpl::attach()
 
 void HTMLImageElementImpl::removedFromDocument()
 {
-    document()->underDocNamedCache().remove(m_name.string(), this);
+    document()->underDocNamedCache().remove(m_name, this);
     HTMLElementImpl::removedFromDocument();
 }
 
 void HTMLImageElementImpl::insertedIntoDocument()
 {
-    document()->underDocNamedCache().add(m_name.string(), this);
+    document()->underDocNamedCache().add(m_name, this);
     HTMLElementImpl::insertedIntoDocument();
 }
 
-void HTMLImageElementImpl::removeId(const QString& id)
+void HTMLImageElementImpl::removeId(const DOMString& id)
 {
     document()->underDocNamedCache().remove(id, this);
     HTMLElementImpl::removeId(id);
 }
 
-void HTMLImageElementImpl::addId   (const QString& id)
+void HTMLImageElementImpl::addId   (const DOMString& id)
 {
     document()->underDocNamedCache().add(id, this);
     HTMLElementImpl::addId(id);

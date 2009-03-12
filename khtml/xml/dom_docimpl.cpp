@@ -318,7 +318,7 @@ ElementMappingCache::~ElementMappingCache()
     qDeleteAll( m_dict );
 }
 
-void ElementMappingCache::add(const QString& id, ElementImpl* nd)
+void ElementMappingCache::add(const DOMString& id, ElementImpl* nd)
 {
     if (id.isEmpty()) return;
 
@@ -337,7 +337,7 @@ void ElementMappingCache::add(const QString& id, ElementImpl* nd)
     }
 }
 
-void ElementMappingCache::set(const QString& id, ElementImpl* nd)
+void ElementMappingCache::set(const DOMString& id, ElementImpl* nd)
 {
     if (id.isEmpty()) return;
 
@@ -346,7 +346,7 @@ void ElementMappingCache::set(const QString& id, ElementImpl* nd)
     info->nd = nd;
 }
 
-void ElementMappingCache::remove(const QString& id, ElementImpl* nd)
+void ElementMappingCache::remove(const DOMString& id, ElementImpl* nd)
 {
     if (id.isEmpty()) return;
 
@@ -365,13 +365,13 @@ void ElementMappingCache::remove(const QString& id, ElementImpl* nd)
     }
 }
 
-bool ElementMappingCache::contains(const QString& id)
+bool ElementMappingCache::contains(const DOMString& id)
 {
     if (id.isEmpty()) return false;
     return m_dict.contains(id);
 }
 
-ElementMappingCache::ItemInfo* ElementMappingCache::get(const QString& id)
+ElementMappingCache::ItemInfo* ElementMappingCache::get(const DOMString& id)
 {
     if (id.isEmpty()) return 0;
     return m_dict.value(id);
@@ -807,9 +807,7 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI,
 
 ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 {
-    QString stringKey = elementId.string();
-
-    ElementMappingCache::ItemInfo* info = m_getElementByIdCache.get(stringKey);
+    ElementMappingCache::ItemInfo* info = m_getElementByIdCache.get(elementId);
 
     if (!info)
         return 0;

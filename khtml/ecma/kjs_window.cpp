@@ -608,7 +608,7 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
   // allow shortcuts like 'Image1' instead of document.images.Image1
   DOM::DocumentImpl *doc = part->xmlDocImpl();
   if (isSafeScript(exec) && doc && doc->isHTMLDocument()) {
-    DOM::ElementMappingCache::ItemInfo* info = doc ->underDocNamedCache().get(propertyName.qstring());
+    DOM::ElementMappingCache::ItemInfo* info = doc ->underDocNamedCache().get(propertyName.domString());
     if (info || doc->getElementById(propertyName.domString())) {
       slot.setCustom(this, namedItemGetter);
       return true;
@@ -658,7 +658,7 @@ JSValue *Window::namedItemGetter(ExecState *exec, JSObject*, const Identifier& p
   KHTMLPart *part = qobject_cast<KHTMLPart*>(thisObj->m_frame->m_part);
   DOM::DocumentImpl* doc = part->xmlDocImpl();
 
-  DOM::ElementMappingCache::ItemInfo* info = doc->underDocNamedCache().get(p.qstring());
+  DOM::ElementMappingCache::ItemInfo* info = doc->underDocNamedCache().get(p.domString());
   if (info) {
     if (info->nd)
       return getDOMNode(exec, info->nd);

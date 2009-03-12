@@ -51,8 +51,8 @@ public:
     virtual void attach();
     virtual void removedFromDocument();
     virtual void insertedIntoDocument();
-    virtual void addId(const QString& id);
-    virtual void removeId(const QString& id);
+    virtual void addId(const DOMString& id);
+    virtual void removeId(const DOMString& id);
 
 
     long width() const;
