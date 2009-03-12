@@ -36,6 +36,11 @@
 #include <QtGui/QX11Info>
 #include <QtGui/QPainter>
 #include <fixx11h.h>
+#include <QtGlobal>
+
+#if QT_VERSION >= 0x040500
+  #define QT_45
+#endif
 
 struct MetricsInfo {
     const char* name;
@@ -174,29 +179,49 @@ public:
     int   pixS;
     XFontStruct* xfs;
 
+    QtFontDim fallBackWidth() const {
+        QtFontDim fbw = xfs->min_bounds.width;
+        if (xfs->per_char) {
+            if (haveMetrics)
+                fbw = m_ascent; //### we really should get rid of these and regen..
+            else
+                fbw = xfs->ascent;
+        }
+        return fbw;
+    }
+
+#ifdef QT_45
+    void recalcAdvances(QGlyphLayout *glyphs, QTextEngine::ShaperFlags flags) const
+    {
+        QFontEngineXLFD::recalcAdvances(glyphs, flags);
+
+        // Go through the glyhs with glyph 0 and fix up their x advance
+        // to make sense (or at least match Qt3)
+        QtFontDim fbw = fallBackWidth();
+
+        for (int c = 0; c < glyphs->numGlyphs; ++c) {
+            if (!glyphs->glyphs[c])
+                glyphs->advances_x[c] = fbw;
+        }
+    }
+#else
     void recalcAdvances(int len, QGlyphLayout *glyphs, QTextEngine::ShaperFlags flags) const
     {
         QFontEngineXLFD::recalcAdvances(len, glyphs, flags);
 
         // Go through the glyhs with glyph 0 and fix up their x advance
         // to make sense (or at least match Qt3)
-        // ### set proper GPLv2 and Qt (c) when committed
-        QtFontDim fallBackWidth = xfs->min_bounds.width;
-        if (xfs->per_char) {
-            if (haveMetrics)
-                fallBackWidth = m_ascent; //### we really should get rid of these and regen..
-            else
-                fallBackWidth = xfs->ascent;
-        }
+        QtFontDim fbw = fallBackWidth();
 
         QGlyphLayout* g = glyphs + len;
         while (g != glyphs) {
             --g;
             if (!g->glyph) {
-                g->advance.x = fallBackWidth;
+                g->advance.x = fbw;
             }
         }
     }
+#endif
 
     Type type() const
     {
@@ -246,9 +271,17 @@ class KDE_EXPORT QX11PaintEngine: public QPaintEngine
 
 void QX11PaintEngine::drawFreetype(const QPointF &p, const QTextItemInt &si)
 {
-    if (!si.num_glyphs) return;
+#ifdef QT_45
+    int cnt = si.glyphs.numGlyphs;
+#else
+    int cnt = si.num_glyph;
+#endif
+
+
+    if (!cnt) return;
 
     QFakeFontEngine *eng = static_cast<QFakeFontEngine*>(si.fontEngine);
+
 
     int x       = int(p.x());
     int y       = int(p.y());
@@ -259,14 +292,19 @@ void QX11PaintEngine::drawFreetype(const QPointF &p, const QTextItemInt &si)
     
     if (si.flags & QTextItem::RightToLeft)
     {
-        x       = x + advance * (si.num_glyphs - 1);
+        x       = x + advance * (cnt - 1);
         advance = -advance;
     }
 
-    for (int pos = 0; pos < si.num_glyphs; ++pos)
+    for (int pos = 0; pos < cnt; ++pos)
     {
         QRect rect;
+
+#ifdef QT_45
+        switch (si.chars[pos].unicode())
+#else
         switch (si.glyphs[pos].glyph)
+#endif
         {
         case ' ':
             rect = QRect();
