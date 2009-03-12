@@ -39,6 +39,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kacceleratormanager.h>
 
 class KMenu::KMenuPrivate
 {
@@ -121,6 +122,7 @@ KMenu::KMenuPrivate::KMenuPrivate (KMenu *_parent)
     , eventSniffer(new EventSniffer)
 {
     resetKeyboardVars();
+    KAcceleratorManager::manage(parent);
 }
 
 KMenu::KMenuPrivate::~KMenuPrivate ()
