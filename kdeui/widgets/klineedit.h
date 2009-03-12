@@ -309,6 +309,14 @@ public:
     QString originalText() const;
 
     /**
+     * Returns the text as given by the user (i.e. not autocompleted)
+     * if the widget has autocompletion disabled, this function
+     * returns the same as QLineEdit::text().
+     * @since 4.2.2
+     */
+    QString userText() const;
+
+    /**
      * Set the completion-box to be used in completion mode
      * KGlobalSettings::CompletionPopup.
      * This will do nothing if a completion-box already exists.
@@ -385,6 +393,12 @@ Q_SIGNALS:
      * Emitted when the shortcut for substring completion is pressed.
      */
     void substringCompletion( const QString& );
+
+    /**
+     * Emitted when the text is changed NOT by autocompletion
+     * @since 4.2.2
+     */
+    void userTextChanged( const QString & ); 
 
     /**
      * Emitted when the text rotation key-bindings are pressed.
@@ -637,6 +651,7 @@ private:
     KLineEditPrivate *const d;
 
     Q_PRIVATE_SLOT( d, void _k_slotSettingsChanged( int category ) )
+    Q_PRIVATE_SLOT( d, void _k_updateUserText(const QString&) )
 };
 
 #endif
