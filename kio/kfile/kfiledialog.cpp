@@ -195,6 +195,7 @@ public:
             return s_startDir;
         }
         static KUrl s_startDir;
+        static bool s_allowNative;  // as fallback when we can't use natie dialog
         QString filter;
         QStringList mimeTypes;
         KUrl::List selectedUrls;
@@ -207,12 +208,15 @@ public:
         w(0),
         cfgGroup(KGlobal::config(), ConfigGroup)
     {
-        if (cfgGroup.readEntry("Native", NATIVE_FILEDIALOGS_BY_DEFAULT))
+        if (cfgGroup.readEntry("Native", NATIVE_FILEDIALOGS_BY_DEFAULT) &&
+            KFileDialogPrivate::Native::s_allowNative)
             native = new Native;
     }
 
     static bool isNative()
     {
+        if(!KFileDialogPrivate::Native::s_allowNative)
+            return false;
         KConfigGroup cfgGroup(KGlobal::config(), ConfigGroup);
         return cfgGroup.readEntry("Native", NATIVE_FILEDIALOGS_BY_DEFAULT);
     }
@@ -228,6 +232,7 @@ public:
 };
 
 KUrl KFileDialogPrivate::Native::s_startDir;
+bool KFileDialogPrivate::Native::s_allowNative = true;
 
 KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
                           QWidget *parent, QWidget* customWidget)
@@ -239,16 +244,6 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
       d( new KFileDialogPrivate )
 
 {
-    if (!d->native) {
-        setButtons( KDialog::None );
-        restoreDialogSize(d->cfgGroup); // call this before the fileQWidget is set as the main widget.
-                                        // otherwise the sizes for the components are not obeyed (ereslibre)
-    }
-
-    // Dlopen the file widget from libkfilemodule
-    QWidget* fileQWidget = fileModule()->createFileWidget(startDir, this);
-    d->w = ::qobject_cast<KAbstractFileWidget *>(fileQWidget);
-
     if (d->native) {
         KFileDialogPrivate::Native::s_startDir = startDir;
         // check if it's a mimefilter
@@ -259,6 +254,14 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
           setFilter(filter);
         return;
     }
+
+    setButtons( KDialog::None );
+    restoreDialogSize(d->cfgGroup); // call this before the fileQWidget is set as the main widget.
+                                   // otherwise the sizes for the components are not obeyed (ereslibre)
+
+    // Dlopen the file widget from libkfilemodule
+    QWidget* fileQWidget = fileModule()->createFileWidget(startDir, this);
+    d->w = ::qobject_cast<KAbstractFileWidget *>(fileQWidget);
 
     d->w->setFilter(filter);
     setMainWidget(fileQWidget);
@@ -453,6 +456,7 @@ QString KFileDialog::getOpenFileNameWId(const KUrl& startDir,
     if (KFileDialogPrivate::isNative() && (!startDir.isValid() || startDir.isLocalFile()))
         return KFileDialog::getOpenFileName(startDir, filter, 0, caption); // everything we can do...
     QWidget* parent = QWidget::find( parent_id );
+    KFileDialogPrivate::Native::s_allowNative = false;
     KFileDialog dlg(startDir, filter, parent);
     if( parent == NULL && parent_id != 0 )
         KWindowSystem::setMainWindow( &dlg, parent_id );
@@ -481,6 +485,7 @@ QStringList KFileDialog::getOpenFileNames(const KUrl& startDir,
             qtFilter( filter ) );
 // TODO use extra args?  QString * selectedFilter = 0, Options options = 0
     }
+    KFileDialogPrivate::Native::s_allowNative = false;
     KFileDialog dlg(startDir, filter, parent);
     dlg.setOperationMode( Opening );
 
@@ -500,6 +505,7 @@ KUrl KFileDialog::getOpenUrl(const KUrl& startDir, const QString& filter,
             startDir, filter, parent, caption) );
         return fileName.isEmpty() ? KUrl() : KUrl::fromPath(fileName);
     }
+    KFileDialogPrivate::Native::s_allowNative = false;
     KFileDialog dlg(startDir, filter, parent);
     dlg.setOperationMode( Opening );
 
@@ -521,6 +527,7 @@ KUrl::List KFileDialog::getOpenUrls(const KUrl& startDir,
             startDir, filter, parent, caption) );
         return KUrl::List(fileNames);
     }
+    KFileDialogPrivate::Native::s_allowNative = false;
     KFileDialog dlg(startDir, filter, parent);
     dlg.setOperationMode( Opening );
 
@@ -575,6 +582,7 @@ KUrl KFileDialog::getImageOpenUrl( const KUrl& startDir, QWidget *parent,
         return KFileDialog::getOpenUrl(startDir, mimetypes.join(" "), parent, caption);
     }
     QStringList mimetypes = KImageIO::mimeTypes( KImageIO::Reading );
+    KFileDialogPrivate::Native::s_allowNative = false;
     KFileDialog dlg(startDir,
                     mimetypes.join(" "),
                     parent);
@@ -719,6 +727,7 @@ KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
     }
     bool defaultDir = dir.isEmpty();
     bool specialDir = !defaultDir && dir.protocol() == "kfiledialog";
+    KFileDialogPrivate::Native::s_allowNative = false;
     KFileDialog dlg(specialDir ? dir : KUrl(), filter, parent);
     if ( !specialDir )
         dlg.setSelection( dir.url() ); // may also be a filename
@@ -856,8 +865,10 @@ KAbstractFileWidget* KFileDialog::fileWidget()
 #ifdef Q_WS_WIN
 int KFileDialog::exec()
 {
-    if (!d->native)
-      return KDialog::exec();
+    if (!d->native || !KFileDialogPrivate::Native::s_allowNative) {
+        KFileDialogPrivate::Native::s_allowNative = true;
+        return KDialog::exec();
+    }
 
 // not clear here to let KFileDialogPrivate::Native::startDir() return a useful value
 // d->native->selectedUrls.clear();
