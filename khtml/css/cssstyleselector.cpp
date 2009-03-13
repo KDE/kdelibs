@@ -660,31 +660,41 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
         tagCache.add(localNamePart(current->id()));
     }
 
-    // sort selectors indexes so we match them in increasing order
-    qSort(selectorsForCheck.data(), selectorsForCheck.data() + selectorsForCheck.size());
-
     propsToApply.clear();
     pseudoProps.clear();
     // now go over selectors that we prepared for check
+    // selectors yet in random order, so we store only matched selector indexes to sort after
+    unsigned amountOfMatchedSelectors = 0;
     for (int k = 0; k < selectorsForCheck.size(); ++k) {
         unsigned i = selectorsForCheck[k];
         quint16 tag = selectors[i]->tagLocalName.id();
         if (cssTagId == tag || tag == anyLocalName) {
             ++schecked;
             checkSelector(i, e);
-            if (selectorCache[i].state == Applies) {
-                ++smatch;
-                for (unsigned p = selectorCache[i].firstPropertyIndex; p < properties_size; p = nextPropertyIndexes[p])
-                    propsToApply.append(propertiesBuffer + p);
-            } else if (selectorCache[i].state == AppliesPseudo) {
-                for (unsigned p = selectorCache[i].firstPropertyIndex; p < properties_size; p = nextPropertyIndexes[p]) {
-                    pseudoProps.append(propertiesBuffer + p);
-                    propertiesBuffer[p].pseudoId = (RenderStyle::PseudoId) selectors[i]->pseudoId;
-                }
+            if (selectorCache[i].state == Applies || selectorCache[i].state == AppliesPseudo) {
+                selectorsForCheck[amountOfMatchedSelectors++] = i;
             }
         } else
             selectorCache[i].state = Invalid;
     }
+
+    // sort only matched selectors and then collect properties
+    qSort(selectorsForCheck.data(), selectorsForCheck.data() + amountOfMatchedSelectors);
+    for (unsigned k = 0; k < amountOfMatchedSelectors; ++k) {
+        unsigned i = selectorsForCheck[k];
+        if (selectorCache[i].state == Applies) {
+            ++smatch;
+            for (unsigned p = selectorCache[i].firstPropertyIndex; p < properties_size; p = nextPropertyIndexes[p])
+                propsToApply.append(propertiesBuffer + p);
+        } else if (selectorCache[i].state == AppliesPseudo) {
+            for (unsigned p = selectorCache[i].firstPropertyIndex; p < properties_size; p = nextPropertyIndexes[p]) {
+                pseudoProps.append(propertiesBuffer + p);
+                propertiesBuffer[p].pseudoId = (RenderStyle::PseudoId) selectors[i]->pseudoId;
+            }
+        }
+    }
+    // clear selectorsForCheck, it shouldn't be used after
+    selectorsForCheck.clear();
 
     // Inline style declarations, after all others.
     // Non-css hints from presentational attributes will also be collected here
