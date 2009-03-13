@@ -751,14 +751,13 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
 #endif
 
       if ( thisURL.isValid() ) {
-        // don't list the base dir of a listDir()
-        if ( !stat && thisURL.path(KUrl::AddTrailingSlash).length() == url.path(KUrl::AddTrailingSlash).length() )
-          continue;
+        QString name = thisURL.fileName();
 
-        entry.insert( KIO::UDSEntry::UDS_NAME, thisURL.fileName() );
-      } else {
-        // This is a relative URL.
-        entry.insert( KIO::UDSEntry::UDS_NAME, href.text() );
+        // base dir of a listDir(): name should be "."
+        if ( !stat && thisURL.path(KUrl::AddTrailingSlash).length() == url.path(KUrl::AddTrailingSlash).length() )
+          name = ".";
+
+        entry.insert( KIO::UDSEntry::UDS_NAME, name.isEmpty() ? href.text() : name );
       }
 
       QDomNodeList propstats = thisResponse.elementsByTagName( "propstat" );
@@ -779,8 +778,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
     }
     else
     {
-      kDebug(7113) << "Error: no URL contained in response to PROPFIND on"
-                    << url.prettyUrl();
+      kDebug(7113) << "Error: no URL contained in response to PROPFIND on" << url;
     }
   }
 
