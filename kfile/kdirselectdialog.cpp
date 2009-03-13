@@ -51,10 +51,12 @@
 #include <kurlpixmapprovider.h>
 #include <kdebug.h>
 #include <kpropertiesdialog.h>
+#include <kpushbutton.h>
 
 #include "kfileplacesview.h"
 #include "kfileplacesmodel.h"
 // ### add mutator for treeview!
+
 
 
 class KDirSelectDialog::Private
@@ -265,6 +267,8 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     setButtonGuiItem( User1, KGuiItem( i18nc("@action:button","New Folder..."), "folder-new" ) );
     showButtonSeparator(false);
     setDefaultButton(Ok);
+    button(Ok)->setFocus();
+
     QFrame *page = new QFrame(this);
     setMainWidget(page);
     QHBoxLayout *hlay = new QHBoxLayout( page);
