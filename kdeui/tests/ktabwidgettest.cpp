@@ -18,7 +18,7 @@ Test::Test( QWidget* parent )
   resize( 600,300 );
 
   mWidget = new KTabWidget( this );
-  mWidget->addTab( new QLabel( "Testlabel 1", 0 ), "One" );
+  mWidget->addTab( new QLabel( "Testlabel 1", 0 ), "&One" );
   mWidget->addTab( new QLabel( "Testlabel 2", 0 ), "Two" );
   mWidget->addTab( new QWidget(), SmallIcon( "konsole" ), "Three" );
   mWidget->addTab( new QWidget(), "Four" );
