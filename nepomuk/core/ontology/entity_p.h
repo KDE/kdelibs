@@ -83,6 +83,4 @@ public:
     QHash<QString, QString> l10nComments;
 };
 
-uint qHash( const QUrl& url );
-
 #endif

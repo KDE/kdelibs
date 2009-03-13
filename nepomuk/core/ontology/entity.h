@@ -165,7 +165,6 @@ namespace Nepomuk {
             QExplicitlySharedDataPointer<EntityPrivate> d;
         };
 
-        uint qHash(int);
         inline uint qHash( const Entity& c )
         {
             return qHash( c.uri().toString() );
@@ -217,6 +216,12 @@ namespace Nepomuk {
 
         friend class OntologyManager;
     };
+}
+
+
+inline uint qHash( const QUrl& url )
+{
+    return qHash( url.toString() );
 }
 
 #endif
