@@ -23,7 +23,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QStringList>
 #include <QtGui/QLayout>
-#include <QtGui/QMenu>
 
 #include <kactioncollection.h>
 #include <kapplication.h>
@@ -52,6 +51,7 @@
 #include <kdebug.h>
 #include <kpropertiesdialog.h>
 #include <kpushbutton.h>
+#include <kmenu.h>
 
 #include "kfileplacesview.h"
 #include "kfileplacesmodel.h"
@@ -90,7 +90,7 @@ public:
     KUrl m_rootUrl;
     KUrl m_startDir;
     KFileTreeView *m_treeView;
-    QMenu *m_contextMenu;
+    KMenu *m_contextMenu;
     KActionCollection *m_actions;
     KFilePlacesView *m_placesView;
     KHistoryComboBox *m_urlCombo;
@@ -304,7 +304,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     d->m_urlCombo->setAutoDeleteCompletionObject( true );
     d->m_urlCombo->setDuplicatesEnabled( false );
 
-    d->m_contextMenu = new QMenu( this );
+    d->m_contextMenu = new KMenu( this );
 
     KAction* newFolder = new KAction( i18nc("@action:inmenu","New Folder..."), this);
     d->m_actions->addAction( newFolder->objectName(), newFolder );
