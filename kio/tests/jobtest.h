@@ -36,8 +36,9 @@ private Q_SLOTS:
     void cleanupTestCase();
 
     // Local tests (kio_file only)
-    void get();
+    void storedGet();
     void put();
+    void storedPut();
     void copyFileToSamePartition();
     void copyDirectoryToSamePartition();
     void copyDirectoryToExistingDirectory();

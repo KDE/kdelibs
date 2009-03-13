@@ -1487,6 +1487,7 @@ void StoredTransferJob::setData( const QByteArray& arr )
     Q_ASSERT( d->m_data.isNull() ); // check that we're only called once
     Q_ASSERT( d->m_uploadOffset == 0 ); // no upload started yet
     d->m_data = arr;
+    setTotalSize( d->m_data.size() );
 }
 
 QByteArray StoredTransferJob::data() const
