@@ -396,7 +396,7 @@ void SchedulerPrivate::doJob(SimpleJob *job) {
     slaveTimer.start(0);
 #ifndef NDEBUG
     if (newJobs.count() > 150)
-	kDebug() << "WARNING - KIO::Scheduler got more than 150 jobs! This shows a misuse in your app (yes, a job is a QObject).";
+        kDebug() << "WARNING - KIO::Scheduler got more than 150 jobs! This shows a misuse in your app (yes, a job is a QObject).";
 #endif
 }
 
@@ -615,6 +615,7 @@ bool SchedulerPrivate::startJobDirect()
     if (!slave)
        return false;
 
+    protInfo->activeSlaves.append(slave);
     protInfo->idleSlaves.removeAll(slave);
 //       kDebug(7006) << "scheduler: job started " << job;
 
