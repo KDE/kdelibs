@@ -1,6 +1,7 @@
 /*
     Copyright (C) 2001,2002 Carsten Pfeiffer <pfeiffer@kde.org>
     Copyright (C) 2001 Michael Jarrett <michaelj@corel.com>
+    Copyright (C) 2009 Shaun Reich <shaun.reich@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -37,20 +38,24 @@
 #include <kicon.h>
 #include <kinputdialog.h>
 #include <kio/job.h>
+#include <kio/deletejob.h>
+#include <kio/copyjob.h>
 #include <kio/netaccess.h>
 #include <kio/renamedialog.h>
+#include <jobuidelegate.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <krecentdirs.h>
 #include <ktoggleaction.h>
 #include <kurlcompletion.h>
 #include <kurlpixmapprovider.h>
-
 #include <kdebug.h>
+#include <kpropertiesdialog.h>
 
 #include "kfileplacesview.h"
 #include "kfileplacesmodel.h"
 // ### add mutator for treeview!
+
 
 class KDirSelectDialog::Private
 {
@@ -67,12 +72,15 @@ public:
     void saveConfig(KSharedConfigPtr config, const QString& group);
     void slotMkdir();
 
-    void _k_slotCurrentChanged();
-    void _k_slotExpand(const QModelIndex&);
-    void _k_slotUrlActivated(const QString&);
-    void _k_slotComboTextChanged(const QString&);
-    void _k_slotContextMenu(const QPoint&);
-    void _k_slotUser1();
+    void slotCurrentChanged();
+    void slotExpand(const QModelIndex&);
+    void slotUrlActivated(const QString&);
+    void slotComboTextChanged(const QString&);
+    void slotContextMenuRequested(const QPoint&);
+    void slotNewFolder();
+    void slotMoveToTrash();
+    void slotDelete();
+    void slotProperties();
 
     KDirSelectDialog *m_parent;
     bool m_localOnly : 1;
@@ -86,7 +94,8 @@ public:
     KHistoryComboBox *m_urlCombo;
     QString m_recentDirClass;
     KUrl m_startURL;
-
+    KAction* moveToTrash;
+    KAction* deleteAction;
 };
 
 void KDirSelectDialog::Private::readConfig(const KSharedConfig::Ptr &config, const QString& group)
@@ -152,7 +161,7 @@ void KDirSelectDialog::Private::slotMkdir()
     }
 }
 
-void KDirSelectDialog::Private::_k_slotCurrentChanged()
+void KDirSelectDialog::Private::slotCurrentChanged()
 {
     if ( m_comboLocked )
         return;
@@ -171,7 +180,7 @@ void KDirSelectDialog::Private::_k_slotCurrentChanged()
         m_urlCombo->setEditText( QString() );
 }
 
-void KDirSelectDialog::Private::_k_slotUrlActivated( const QString& text )
+void KDirSelectDialog::Private::slotUrlActivated( const QString& text )
 {
     if ( text.isEmpty() )
         return;
@@ -189,29 +198,57 @@ void KDirSelectDialog::Private::_k_slotUrlActivated( const QString& text )
     m_parent->setCurrentUrl( oldUrl );
 }
 
-void KDirSelectDialog::Private::_k_slotComboTextChanged( const QString& text )
+void KDirSelectDialog::Private::slotComboTextChanged( const QString& text )
 {
     m_treeView->blockSignals(true);
     m_treeView->setCurrentUrl( KUrl( text ) );
     m_treeView->blockSignals(false);
 }
 
-void KDirSelectDialog::Private::_k_slotContextMenu( const QPoint& pos )
+void KDirSelectDialog::Private::slotContextMenuRequested( const QPoint& pos )
 {
     m_contextMenu->popup( m_treeView->viewport()->mapToGlobal(pos) );
 }
 
-void KDirSelectDialog::Private::_k_slotExpand(const QModelIndex &index)
+void KDirSelectDialog::Private::slotExpand(const QModelIndex &index)
 {
     m_treeView->setExpanded(index, !m_treeView->isExpanded(index));
 }
 
-void KDirSelectDialog::Private::_k_slotUser1()
+void KDirSelectDialog::Private::slotNewFolder()
 {
     slotMkdir();
 }
 
+void KDirSelectDialog::Private::slotMoveToTrash()
+{
+    const KUrl url = m_treeView->selectedUrl();
+    KIO::JobUiDelegate job;
+    if (job.askDeleteConfirmation(KUrl::List() << url, KIO::JobUiDelegate::Trash, KIO::JobUiDelegate::DefaultConfirmation)) {
+        KIO::CopyJob* copyJob = KIO::trash(url);
+        copyJob->ui()->setWindow(this->m_parent);
+        copyJob->ui()->setAutoErrorHandlingEnabled(true);
+    }
+}
 
+void KDirSelectDialog::Private::slotDelete()
+{
+    const KUrl url = m_treeView->selectedUrl();
+    KIO::JobUiDelegate job;
+    if (job.askDeleteConfirmation(KUrl::List() << url, KIO::JobUiDelegate::Delete, KIO::JobUiDelegate::DefaultConfirmation)) {
+        KIO::DeleteJob* deleteJob = KIO::del(url);
+        deleteJob->ui()->setWindow(this->m_parent);
+        deleteJob->ui()->setAutoErrorHandlingEnabled(true);
+    }
+}
+
+void KDirSelectDialog::Private::slotProperties()
+{
+    KPropertiesDialog* dialog = 0;
+    dialog = new KPropertiesDialog(m_treeView->selectedUrl(), this->m_parent);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
+}
 
 
 KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
@@ -228,7 +265,6 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     setButtonGuiItem( User1, KGuiItem( i18nc("@action:button","New Folder..."), "folder-new" ) );
     showButtonSeparator(false);
     setDefaultButton(Ok);
-
     QFrame *page = new QFrame(this);
     setMainWidget(page);
     QHBoxLayout *hlay = new QHBoxLayout( page);
@@ -265,17 +301,42 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     d->m_urlCombo->setDuplicatesEnabled( false );
 
     d->m_contextMenu = new QMenu( this );
+
     KAction* newFolder = new KAction( i18nc("@action:inmenu","New Folder..."), this);
-    d->m_actions->addAction(newFolder->objectName(), newFolder);
+    d->m_actions->addAction( newFolder->objectName(), newFolder );
     newFolder->setIcon( KIcon( "folder-new" ) );
-    connect( newFolder, SIGNAL( triggered( bool ) ), this, SLOT( _k_slotUser1() ) );
+    newFolder->setShortcut( Qt::Key_F10);
+    connect( newFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotNewFolder() ) );
     d->m_contextMenu->addAction( newFolder );
+
+    d->moveToTrash = new KAction( i18nc( "@action:inmenu","Move to trash" ), this );
+    d->m_actions->addAction( d->moveToTrash->objectName(), d->moveToTrash );
+    d->moveToTrash->setIcon( KIcon( "user-trash" ) );
+    d->moveToTrash->setShortcut(KShortcut(Qt::Key_Delete));
+    connect( d->moveToTrash, SIGNAL( triggered( bool ) ), this, SLOT( slotMoveToTrash() ) );
+    d->m_contextMenu->addAction( d->moveToTrash );
+
+    d->deleteAction = new KAction( i18nc("@action:inmenu","Delete"), this );
+    d->m_actions->addAction( d->deleteAction->objectName(), d->deleteAction );
+    d->deleteAction->setIcon( KIcon( "edit-delete" ) );
+    d->deleteAction->setShortcut( KShortcut( Qt::SHIFT + Qt::Key_Delete ) );
+    connect( d->deleteAction, SIGNAL( triggered( bool ) ), this, SLOT( slotDelete() ) );
+    d->m_contextMenu->addAction( d->deleteAction );
+
     d->m_contextMenu->addSeparator();
 
-    KToggleAction *action = new KToggleAction( i18nc("@option:check", "Show Hidden Folders" ), this );
-    d->m_actions->addAction( action->objectName(), action );
-    connect( action, SIGNAL( triggered( bool ) ), d->m_treeView, SLOT( setShowHiddenFiles( bool ) ) );
-    d->m_contextMenu->addAction( action );
+    KToggleAction *showHiddenFolders = new KToggleAction( i18nc("@option:check", "Show Hidden Folders"), this );
+    d->m_actions->addAction( showHiddenFolders->objectName(), showHiddenFolders );
+    connect( showHiddenFolders, SIGNAL( triggered( bool ) ), d->m_treeView, SLOT( setShowHiddenFiles( bool ) ) );
+    d->m_contextMenu->addAction( showHiddenFolders );
+    d->m_contextMenu->addSeparator();
+
+    KAction* propertiesAction = new KAction( i18nc("@action:inmenu","Properties"), this);
+    d->m_actions->addAction(propertiesAction->objectName(), propertiesAction);
+    propertiesAction->setIcon(KIcon("document-properties"));
+    propertiesAction->setShortcut(KShortcut(Qt::ALT + Qt::Key_Return));
+    connect( propertiesAction, SIGNAL( triggered( bool ) ), this, SLOT( slotProperties() ) );
+    d->m_contextMenu->addAction( propertiesAction );
 
     d->m_startURL = KFileDialog::getStartUrl( startDir, d->m_recentDirClass );
     if ( localOnly && !d->m_startURL.isLocalFile() )
@@ -297,20 +358,20 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     mainLayout->addWidget( d->m_urlCombo, 0 );
 
     connect( d->m_treeView, SIGNAL( currentChanged(const KUrl&)),
-             SLOT( _k_slotCurrentChanged() ));
+             SLOT( slotCurrentChanged() ));
     connect( d->m_treeView, SIGNAL( activated(const QModelIndex&)),
-             SLOT( _k_slotExpand(const QModelIndex&) ));
+             SLOT( slotExpand(const QModelIndex&) ));
     connect( d->m_treeView, SIGNAL( customContextMenuRequested( const QPoint & )),
-             SLOT( _k_slotContextMenu( const QPoint & )));
+             SLOT( slotContextMenuRequested( const QPoint & )));
 
     connect( d->m_urlCombo, SIGNAL( editTextChanged( const QString& ) ),
-             SLOT( _k_slotComboTextChanged( const QString& ) ));
+             SLOT( slotComboTextChanged( const QString& ) ));
     connect( d->m_urlCombo, SIGNAL( activated( const QString& )),
-             SLOT( _k_slotUrlActivated( const QString& )));
+             SLOT( slotUrlActivated( const QString& )));
     connect( d->m_urlCombo, SIGNAL( returnPressed( const QString& )),
-             SLOT( _k_slotUrlActivated( const QString& )));
+             SLOT( slotUrlActivated( const QString& )));
 
-    connect(this, SIGNAL(user1Clicked()), this, SLOT(_k_slotUser1()));
+    connect(this, SIGNAL(user1Clicked()), this, SLOT(slotNewFolder()));
 
     setCurrentUrl(d->m_startURL);
 }

@@ -1,6 +1,7 @@
 /*
   Copyright (C) 2001 Michael Jarrett <michaelj@corel.com>
   Copyright (C) 2001 Carsten Pfeiffer <pfeiffer@kde.org>
+  Copyright (C) 2009 Shaun Reich <shaun.reich@kdemail.net>
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -110,12 +111,15 @@ private:
     class Private;
     Private* const d;
 
-    Q_PRIVATE_SLOT( d, void _k_slotCurrentChanged() )
-    Q_PRIVATE_SLOT( d, void _k_slotExpand(const QModelIndex&) )
-    Q_PRIVATE_SLOT( d, void _k_slotUrlActivated(const QString&) )
-    Q_PRIVATE_SLOT( d, void _k_slotComboTextChanged(const QString&) )
-    Q_PRIVATE_SLOT( d, void _k_slotContextMenu(const QPoint&) )
-    Q_PRIVATE_SLOT( d, void _k_slotUser1() )
+    Q_PRIVATE_SLOT( d, void slotCurrentChanged() )
+    Q_PRIVATE_SLOT( d, void slotExpand(const QModelIndex&) )
+    Q_PRIVATE_SLOT( d, void slotUrlActivated(const QString&) )
+    Q_PRIVATE_SLOT( d, void slotComboTextChanged(const QString&) )
+    Q_PRIVATE_SLOT( d, void slotContextMenuRequested(const QPoint&) )
+    Q_PRIVATE_SLOT( d, void slotNewFolder() )
+    Q_PRIVATE_SLOT( d, void slotMoveToTrash() )
+    Q_PRIVATE_SLOT( d, void slotDelete() )
+    Q_PRIVATE_SLOT( d, void slotProperties() )
 };
 
 #endif
