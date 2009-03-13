@@ -1,7 +1,7 @@
 // -*- c++ -*-
 /* This file is part of the KDE libraries
     Copyright (C) 2000 Stephan Kulow <coolo@kde.org>
-                       David Faure <faure@kde.org>
+                  2000-2009 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -385,6 +385,14 @@ namespace KIO {
      */
     KIO_EXPORT FileCopyJob *file_move( const KUrl& src, const KUrl& dest, int permissions=-1,
                                        JobFlags flags = DefaultFlags );
+
+    /**
+     * Overload for catching code mistakes. Do NOT call this method (it is not implemented),
+     * insert a value for permissions (-1 by default) before the JobFlags.
+     * @since 4.3
+     */
+    FileCopyJob *file_move( const KUrl& src, const KUrl& dest, JobFlags flags ); // not implemented - on purpose.
+
 
     /**
      * Delete a single file.
