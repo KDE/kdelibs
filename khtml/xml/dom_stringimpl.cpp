@@ -34,7 +34,7 @@
 using namespace DOM;
 using namespace khtml;
 
-DOMStringImpl::DOMStringImpl(const char *str) : m_hash(0), m_inTable(0)
+DOMStringImpl::DOMStringImpl(const char *str) : m_hash(0), m_inTable(0), m_shallowCopy(0)
 {
     if(str && *str)
     {
@@ -53,7 +53,7 @@ DOMStringImpl::DOMStringImpl(const char *str) : m_hash(0), m_inTable(0)
     }
 }
 
-DOMStringImpl::DOMStringImpl(const char *str, uint len) : m_hash(0), m_inTable(0)
+DOMStringImpl::DOMStringImpl(const char *str, uint len) : m_hash(0), m_inTable(0), m_shallowCopy(0)
 {
     if(str && *str)
     {
@@ -72,7 +72,7 @@ DOMStringImpl::DOMStringImpl(const char *str, uint len) : m_hash(0), m_inTable(0
     }
 }
 
-DOMStringImpl::DOMStringImpl(const char* str, unsigned len/*gth*/, unsigned hash) : m_hash(hash), m_inTable(true)
+DOMStringImpl::DOMStringImpl(const char* str, unsigned len/*gth*/, unsigned hash) : m_hash(hash), m_inTable(true), m_shallowCopy(0)
 {
     if(str && *str)
     {
@@ -93,6 +93,8 @@ DOMStringImpl::DOMStringImpl(const char* str, unsigned len/*gth*/, unsigned hash
 
 DOMStringImpl::~DOMStringImpl()
 {
+    if (m_shallowCopy)
+        return;
     if (m_inTable)
         khtml::AtomicString::remove(this);
     if (s)

@@ -43,9 +43,9 @@ private:
     DOMStringImpl(const DOMStringImpl&);
     //DOMStringImpl& operator=(const DOMStringImpl&);
 protected:
-    DOMStringImpl() { s = 0, l = 0; m_hash = 0; m_inTable = 0; }
+    DOMStringImpl() { s = 0, l = 0; m_hash = 0; m_inTable = 0; m_shallowCopy = 0; }
 public:
-    DOMStringImpl(const QChar *str, unsigned int len) : m_hash(0), m_inTable(0) {
+    DOMStringImpl(const QChar *str, unsigned int len) : m_hash(0), m_inTable(0), m_shallowCopy(0) {
 	bool havestr = str && len;
 	s = QT_ALLOC_QCHAR_VEC( havestr ? len : 1 );
 	if(str && len) {
@@ -60,13 +60,13 @@ public:
 
     explicit DOMStringImpl(const char *str);
     explicit DOMStringImpl(const char *str, uint len);
-    explicit DOMStringImpl(const QChar &ch) : m_hash(0), m_inTable(0) {
+    explicit DOMStringImpl(const QChar &ch) : m_hash(0), m_inTable(0), m_shallowCopy(0) {
 	s = QT_ALLOC_QCHAR_VEC( 1 );
 	s[0] = ch;
 	l = 1;
     }
 
-    DOMStringImpl(const QChar* str, unsigned length, unsigned hash) : m_hash(hash), m_inTable(true) {
+    DOMStringImpl(const QChar* str, unsigned length, unsigned hash) : m_hash(hash), m_inTable(true), m_shallowCopy(0) {
 	bool havestr = str && length;
 	s = QT_ALLOC_QCHAR_VEC( havestr ? length : 1 );
 	if(str && length) {
@@ -80,6 +80,15 @@ public:
     }
 
     DOMStringImpl(const char* str, unsigned length, unsigned hash);
+
+    enum ShallowCopyTag { ShallowCopy };
+    // create DOMStringImpl without copying the data, it's really dangerous!
+    // think a lot, before using it
+    DOMStringImpl(ShallowCopyTag, QChar* str, unsigned length) : m_hash(0), m_inTable(0), m_shallowCopy(1) {
+        s = str;
+        l = length;
+        ref(); // guard from automatic deletion
+    }
 
     ~DOMStringImpl();
 
@@ -132,7 +141,8 @@ public:
     QChar *s;
     unsigned int l;
     mutable unsigned m_hash;
-    bool m_inTable;
+    bool m_inTable : 1;
+    bool m_shallowCopy : 1;
 };
 
 inline unsigned int qHash(const DOMString& key) {
