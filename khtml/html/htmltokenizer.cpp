@@ -384,7 +384,8 @@ void HTMLTokenizer::parseSpecial(TokenizerString &src)
         // possible end of tagname, lets check.
         if ( !scriptCodeResync && !escaped && !src.escaped() && ( ch == '>' || ch == '/' || ch <= ' ' ) && ch &&
              scriptCodeSize >= searchStopperLen &&
-             !QString::fromRawData( scriptCode+scriptCodeSize-searchStopperLen, searchStopperLen ).indexOf( searchStopper, 0, Qt::CaseInsensitive )) {
+             QString::compare(QString::fromRawData(scriptCode + scriptCodeSize - searchStopperLen, searchStopperLen),
+                 QLatin1String(searchStopper), Qt::CaseInsensitive) == 0) {
             scriptCodeResync = scriptCodeSize-searchStopperLen+1;
             tquote = NoQuote;
             continue;
