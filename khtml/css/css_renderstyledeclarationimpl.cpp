@@ -430,10 +430,16 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
             Q_ASSERT( 0 );
         }
     case CSS_PROP_BACKGROUND_ATTACHMENT:
-        if (style->backgroundAttachment())
+        switch (style->backgroundAttachment()) {
+        case khtml::BGASCROLL:
             return new CSSPrimitiveValueImpl(CSS_VAL_SCROLL);
-        else
+        case khtml::BGAFIXED:
             return new CSSPrimitiveValueImpl(CSS_VAL_FIXED);
+        case khtml::BGALOCAL:
+            return new CSSPrimitiveValueImpl(CSS_VAL_LOCAL);
+        default:
+            Q_ASSERT( 0 );
+        }                    
     case CSS_PROP_BACKGROUND_POSITION:
     {
         RETURN_NULL_ON_NULL(renderer);

@@ -585,7 +585,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
 
         // CSS2 chapter 14.2.1
 
-        if (bgLayer->backgroundAttachment()) {
+        if (bgLayer->backgroundAttachment() != BGAFIXED) {
             //scroll
             int hpab = 0, vpab = 0, left = 0, top = 0; // Init to 0 for background-origin of 'border'
             if (bgLayer->backgroundOrigin() != BGBORDER) {
@@ -672,7 +672,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                     sy -= top % scaledImageHeight;
                 }
             }
-	    if (layer())
+	    if (layer() && bgLayer->backgroundAttachment() == BGALOCAL)
 		layer()->scrollOffset(sx, sy);
         }
         else

@@ -1766,7 +1766,7 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
         else {
             switch (propId) {
                 case CSS_PROP_BACKGROUND_ATTACHMENT:
-                    if (val->id == CSS_VAL_SCROLL || val->id == CSS_VAL_FIXED) {
+                    if (val->id == CSS_VAL_SCROLL || val->id == CSS_VAL_FIXED || val->id == CSS_VAL_LOCAL) {
                         currValue = new CSSPrimitiveValueImpl(val->id);
                         valueList->next();
                     }

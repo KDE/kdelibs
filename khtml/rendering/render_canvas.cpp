@@ -318,7 +318,7 @@ QRegion RenderCanvas::staticRegion() const
            int d1, d2, d3, d4;
            const BackgroundLayer* bgLayer = ro->style()->backgroundLayers();
            while (bgLayer) {
-               CachedImage* bg = bgLayer->backgroundAttachment() ? 0 : bgLayer->backgroundImage();
+               CachedImage* bg = bgLayer->backgroundAttachment() == BGAFIXED ? bgLayer->backgroundImage() : 0;
                if (bg && bg->isComplete() && !bg->isTransparent() && !bg->isErrorImage()) {
                    int xpos, ypos;
                    absolutePosition(xpos,ypos);

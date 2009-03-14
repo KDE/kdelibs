@@ -99,6 +99,11 @@ cursive
 fantasy
 monospace
 #
+# CSS_PROP_BACKGROUND_ATTACHMENT:
+#
+scroll
+fixed
+local
 #
 # CSS_PROP_BACKGROUND_COLOR:
 #
@@ -337,7 +342,6 @@ both
 crop
 cross
 embed
-fixed
 hand
 hide
 higher
@@ -352,7 +356,6 @@ mix
 overline
 portrait
 relative
-scroll
 separate
 show
 static

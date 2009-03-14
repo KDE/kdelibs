@@ -4154,11 +4154,14 @@ void CSSStyleSelector::mapBackgroundAttachment(BackgroundLayer* layer, DOM::CSSV
     if (!value->isPrimitiveValue()) return;
     CSSPrimitiveValueImpl* primitiveValue = static_cast<CSSPrimitiveValueImpl*>(value);
     switch (primitiveValue->getIdent()) {
-        case CSS_VAL_FIXED:
-            layer->setBackgroundAttachment(false);
-            break;
         case CSS_VAL_SCROLL:
-            layer->setBackgroundAttachment(true);
+            layer->setBackgroundAttachment(BGASCROLL);
+            break;
+        case CSS_VAL_FIXED:
+            layer->setBackgroundAttachment(BGAFIXED);
+            break;
+        case CSS_VAL_LOCAL:
+            layer->setBackgroundAttachment(BGALOCAL);
             break;
         default:
             return;
