@@ -23,7 +23,6 @@
 
 #include <QtCore/QTimeLine>
 #include <QtCore/QTimer>
-#include <QtGui/QMenu>
 #include <QtGui/QPainter>
 #include <QtGui/QAbstractItemDelegate>
 #include <QtGui/QKeyEvent>
@@ -31,6 +30,7 @@
 
 #include <kdebug.h>
 
+#include <kmenu.h>
 #include <kcomponentdata.h>
 #include <kdirnotify.h>
 #include <kglobalsettings.h>
@@ -543,7 +543,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     QModelIndex index = indexAt(event->pos());
     QString label = placesModel->text(index).replace('&',"&&");
 
-    QMenu menu;
+    KMenu menu;
 
     QAction *edit = 0;
     QAction *hide = 0;
