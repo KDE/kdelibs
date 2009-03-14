@@ -75,13 +75,6 @@
 
 #include <rendering/render_replaced.h>
 
-#if QT_VERSION < 0x040500
-  #define SCROLLBAR_WIDTH_HACK
-#include <QStyle>
-#include <QLayout>
-#include <QStyleOption>
-#endif
-
 using namespace KJS;
 using namespace DOM;
 
@@ -910,14 +903,6 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       // match Gecko which does not subtract the scrollbars
       if (part->view()->horizontalScrollBar()->isVisible()) {
           ret += part->view()->horizontalScrollBar()->sizeHint().height();
-#ifdef SCROLLBAR_WIDTH_HACK
-          // ### hackish turnaround for a bug in QAbstractScrollArea triggered by Oxygen.
-          QStyleOption opt(0);
-          opt.init(part->view());
-          if (part->view()->style()->styleHint(QStyle::SH_ScrollView_FrameOnlyAroundContents, &opt, part->view())) {
-              ret += part->view()->style()->pixelMetric(QStyle::PM_DefaultFrameWidth)*2;
-          }
-#endif
       }
       return jsNumber(ret);
     }
@@ -929,14 +914,6 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       // match Gecko which does not subtract the scrollbars
       if (part->view()->verticalScrollBar()->isVisible()) {
           ret += part->view()->verticalScrollBar()->sizeHint().width();
-#ifdef SCROLLBAR_WIDTH_HACK
-          // ### hackish turnaround for a bug in QAbstractScrollArea triggered by Oxygen.
-          QStyleOption opt(0);
-          opt.init(part->view());
-          if (part->view()->style()->styleHint(QStyle::SH_ScrollView_FrameOnlyAroundContents, &opt, part->view())) {
-              ret += part->view()->style()->pixelMetric(QStyle::PM_DefaultFrameWidth)*2;
-          }
-#endif
       }
       return jsNumber(ret);
     }

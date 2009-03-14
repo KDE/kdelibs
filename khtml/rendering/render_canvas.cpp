@@ -33,12 +33,6 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <QScrollBar>
-#if QT_VERSION < 0x040500
-    #define SCROLLBAR_WIDTH_HACK
-    #include <QStyle>
-    #include <QLayout>
-    #include <QStyleOption>
-#endif
 
 using namespace khtml;
 
@@ -247,17 +241,6 @@ void RenderCanvas::updateDocumentSize()
         // calculate the extent of scrollbars
         int vsPixSize = m_view->verticalScrollBar()->sizeHint().width();
         int hsPixSize = m_view->horizontalScrollBar()->sizeHint().height();
-
-#ifdef SCROLLBAR_WIDTH_HACK 
-        // ### hackish turnaround for a bug in QAbstractScrollArea triggered by Oxygen.
-        QStyleOption opt(0);
-        opt.init(m_view);
-        if (m_view->style()->styleHint(QStyle::SH_ScrollView_FrameOnlyAroundContents, &opt, m_view)) {
-            int fudge = m_view->style()->pixelMetric(QStyle::PM_DefaultFrameWidth)*2;
-            vsPixSize += fudge;
-            hsPixSize += fudge;
-        }
-#endif
 
         // this variable holds the size the viewport will have after the inner content is resized to
         // the new document dimensions

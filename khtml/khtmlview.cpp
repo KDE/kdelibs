@@ -95,14 +95,6 @@
 
 //#define DEBUG_FLICKER
 
-#if QT_VERSION < 0x040500
-  #define FIX_QT_BROKEN_QWIDGET_SCROLL
-  #define SCROLLBAR_WIDTH_HACK
-#include <QStyle>
-#include <QLayout>
-#include <QStyleOption>
-#endif
-
 #include <limits.h>
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -247,14 +239,6 @@ public:
         smoothScrollModeIsDefault = true;
         shouldSmoothScroll = false;
         hasFrameset = false;
-#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
-        oldVScrollUpdatesEnabled = true;
-        oldHScrollUpdatesEnabled = true;
-        oldHScrollOpaquePE = false;
-        oldVScrollOpaquePE = false;
-        brokenQWidgetScroll = false;
-        shouldBeBlitting = false;
-#endif
         complete = false;
         firstLayoutPending = true;
         firstRepaintPending = true;
@@ -326,22 +310,6 @@ public:
         smoothScrolling = true;
         smoothScrollTimer.start(sSmoothScrollTick);
         shouldSmoothScroll = false;
-#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
-        if (view->horizontalScrollBar()->isVisible() && view->verticalScrollBar()->isVisible()) {
-            if (!dx) {
-                oldHScrollOpaquePE = view->horizontalScrollBar()->parentWidget()->testAttribute( Qt::WA_OpaquePaintEvent );
-                view->horizontalScrollBar()->parentWidget()->setAttribute( Qt::WA_OpaquePaintEvent );
-                oldHScrollUpdatesEnabled = view->horizontalScrollBar()->parentWidget()->updatesEnabled();
-                view->horizontalScrollBar()->parentWidget()->setUpdatesEnabled( false );            
-            }
-            if (!dy) {
-                oldVScrollOpaquePE = view->verticalScrollBar()->parentWidget()->testAttribute( Qt::WA_OpaquePaintEvent );
-                view->verticalScrollBar()->parentWidget()->setAttribute( Qt::WA_OpaquePaintEvent );
-                oldVScrollUpdatesEnabled = view->verticalScrollBar()->parentWidget()->updatesEnabled();
-                view->verticalScrollBar()->parentWidget()->setUpdatesEnabled( false );
-            }
-        }
-#endif
     }
 
     void stopScrolling()
@@ -354,16 +322,6 @@ public:
         updateContentsXY();
         smoothScrolling = false;
         shouldSmoothScroll = false;
-#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
-        if (!oldHScrollOpaquePE && view->horizontalScrollBar()->parentWidget()->testAttribute( Qt::WA_OpaquePaintEvent ))
-            view->horizontalScrollBar()->parentWidget()->setAttribute( Qt::WA_OpaquePaintEvent, false );
-        if (!oldVScrollOpaquePE && view->verticalScrollBar()->parentWidget()->testAttribute( Qt::WA_OpaquePaintEvent ))
-            view->verticalScrollBar()->parentWidget()->setAttribute( Qt::WA_OpaquePaintEvent, false );
-        if (!view->horizontalScrollBar()->parentWidget()->updatesEnabled() && oldHScrollUpdatesEnabled)
-            view->horizontalScrollBar()->parentWidget()->setUpdatesEnabled( true );
-        if (!view->verticalScrollBar()->parentWidget()->updatesEnabled() && oldVScrollUpdatesEnabled)
-            view->verticalScrollBar()->parentWidget()->setUpdatesEnabled( true );
-#endif
     }
 
     void updateContentsXY()
@@ -433,14 +391,6 @@ public:
     bool smoothScrollModeIsDefault                :1;
     bool shouldSmoothScroll                       :1;
     bool hasFrameset                              :1;
-#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
-    bool oldHScrollUpdatesEnabled                 :1;
-    bool oldVScrollUpdatesEnabled                 :1;
-    bool oldHScrollOpaquePE                       :1;
-    bool oldVScrollOpaquePE                       :1;
-    bool brokenQWidgetScroll                      :1;
-    bool shouldBeBlitting                         :1;
-#endif
     bool complete				:1;
     bool firstLayoutPending			:1;
     bool firstRepaintPending                    :1;
@@ -733,10 +683,6 @@ void KHTMLView::resizeContents(int w, int h)
     widget()->resize(w, h);
     if (!widget()->isVisible())
         updateScrollBars();
-#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
-    if (!horizontalScrollBar()->isVisible() || !verticalScrollBar()->isVisible())
-        d->brokenQWidgetScroll = false;
-#endif
 }
 
 int KHTMLView::contentsX() const
@@ -757,14 +703,6 @@ int KHTMLView::visibleWidth() const
             int ret = rw->width()-rw->paddingLeft()-rw->paddingRight()-rw->borderLeft()-rw->borderRight();
             if (verticalScrollBar()->isVisible()) {
                 ret -= verticalScrollBar()->sizeHint().width();
-#ifdef SCROLLBAR_WIDTH_HACK
-        // ### hackish turnaround for a bug in QAbstractScrollArea triggered by Oxygen.
-        QStyleOption opt(0);
-        opt.init(this);
-        if (style()->styleHint(QStyle::SH_ScrollView_FrameOnlyAroundContents, &opt, this)) {
-                    ret -= style()->pixelMetric(QStyle::PM_DefaultFrameWidth)*2;
-        }
-#endif
                 ret = qMax(0, ret);
             }
             return ret;
@@ -781,14 +719,6 @@ int KHTMLView::visibleHeight() const
             int ret = rw->height()-rw->paddingBottom()-rw->paddingTop()-rw->borderTop()-rw->borderBottom();
             if (horizontalScrollBar()->isVisible()) {
                 ret -= horizontalScrollBar()->sizeHint().height();
-#ifdef SCROLLBAR_WIDTH_HACK
-                // ### hackish turnaround for a bug in QAbstractScrollArea triggered by Oxygen.
-                QStyleOption opt(0);
-                opt.init(this);
-                if (style()->styleHint(QStyle::SH_ScrollView_FrameOnlyAroundContents, &opt, this)) {
-                    ret -= style()->pixelMetric(QStyle::PM_DefaultFrameWidth)*2;
-                }
-#endif
                 ret = qMax(0, ret);
             }
             return ret;
@@ -944,13 +874,6 @@ void KHTMLView::paintEvent( QPaintEvent *e )
     r = r.intersect(v);
 
     if (!r.isValid() || r.isEmpty()) return;
-
-#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
-    if (d->shouldBeBlitting && r.width() == v.width() && r.height() == v.height()) {
-        d->brokenQWidgetScroll = true;
-    }
-    d->shouldBeBlitting = false;
-#endif
 
     if (d->haveZoom()) {
         p.scale( d->zoomLevel/100., d->zoomLevel/100.);
@@ -3975,17 +3898,6 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
         off = viewport()->mapTo(this, off);
     }
 
-#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
-    bool hideScrollBars = false;
-    if (horizontalScrollBar()->isVisible() && verticalScrollBar()->isVisible()) {
-        if (!d->brokenQWidgetScroll) {
-            d->shouldBeBlitting = true;
-        } else {
-            hideScrollBars = true;
-        }
-    }
-#endif
-
     if ( d->staticWidget ) {
 
         // now remove from view the external widgets that must have completely
@@ -3995,20 +3907,11 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
 
         if ( d->staticWidget == KHTMLViewPrivate::SBPartial
                                 && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() ) {
-#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
-            if (hideScrollBars) {
-                horizontalScrollBar()->parentWidget()->lower();
-                verticalScrollBar()->parentWidget()->lower();
-            }
-#endif
             // static objects might be selectively repainted, like stones in flowing water
             QRegion r = static_cast<RenderCanvas*>(m_part->xmlDocImpl()->renderer())->staticRegion();
             r.translate( -contentsX(), -contentsY());
             QVector<QRect> ar = r.rects();
-#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
-            if (ar.size() == 1 && ar[0].width() >= visibleWidth() && ar[0].height() >= visibleHeight())
-                d->shouldBeBlitting = false;
-#endif
+
             for (int i = 0; i < ar.size() ; ++i) {
                 widget()->update( ar[i] );
             }
@@ -4017,29 +3920,13 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
             for (int i = 0; i < ar.size() ; ++i) {
                 w->scroll( dx, dy, ar[i].translated(off) );
             }
-#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
-           if (hideScrollBars) {
-                horizontalScrollBar()->parentWidget()->raise();
-                verticalScrollBar()->parentWidget()->raise();
-           }
-#endif
             d->scrollExternalWidgets(dx, dy);
         } else {
-#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
-            d->shouldBeBlitting = false;
-#endif
             // we can't avoid a full update
             widget()->update();
         }
         return;
     }
-
-#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
-    if (hideScrollBars) {
-        horizontalScrollBar()->parentWidget()->lower();
-        verticalScrollBar()->parentWidget()->lower();
-    }
-#endif
 
     if (m_kwp->isRedirected()) {
         const QRect rect(off.x(), off.y(), visibleWidth() * d->zoomLevel / 100, visibleHeight() * d->zoomLevel / 100);
@@ -4050,13 +3937,6 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
     }  else {
         widget()->scroll(dx, dy, widget()->rect() & viewport()->rect());
     }
-
-#ifdef FIX_QT_BROKEN_QWIDGET_SCROLL
-    if (hideScrollBars) {
-        horizontalScrollBar()->parentWidget()->raise();
-        verticalScrollBar()->parentWidget()->raise();
-    }
-#endif
 
     d->scrollExternalWidgets(dx, dy);
 }
