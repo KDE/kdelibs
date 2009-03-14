@@ -28,6 +28,7 @@
 #include "htmlprospectivetokenizer.h"
 
 #include <QTime>
+#include <QVarLengthArray>
 
 #include "html_headimpl.h"
 #include "html_documentimpl.h"
@@ -196,8 +197,8 @@ unsigned ProspectiveTokenizer::consumeEntity(TokenizerString& source, bool& notE
     };
     EntityState entityState = Initial;
     unsigned result = 0;
-    QVector<QChar> seenChars(10);
-    QVector<char> entityName(10);
+    QVarLengthArray<QChar> seenChars;
+    QVarLengthArray<char>  entityName;
     
     while (!source.isEmpty()) {
         seenChars.append(*source);
