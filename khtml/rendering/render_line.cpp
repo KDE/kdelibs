@@ -438,14 +438,13 @@ void InlineFlowBox::determineSpacingForFlowBoxes(bool lastLine, RenderObject* en
 
     RenderFlow* flow = static_cast<RenderFlow*>(object());
 
-    if (!flow->firstChild())
-        includeLeftEdge = includeRightEdge = true; // Empty inlines never split across lines.
-    else if (parent()) { // The root inline box never has borders/margins/padding.
+    // The root inline box never has borders/margins/padding.
+    if (parent()) {
         bool ltr = flow->style()->direction() == LTR;
 
         // Check to see if all initial lines are unconstructed.  If so, then
         // we know the inline began on this line.
-        if (!flow->firstLineBox()->isConstructed()) {
+        if (!flow->firstLineBox()->isConstructed() && !object()->isInlineContinuation()) {
             if (ltr && flow->firstLineBox() == this)
                 includeLeftEdge = true;
             else if (!ltr && flow->lastLineBox() == this)

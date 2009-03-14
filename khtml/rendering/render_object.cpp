@@ -2593,8 +2593,9 @@ short RenderObject::getVerticalPosition( bool firstLine, RenderObject* ref ) con
                 vpos += -b.height()/2 - lineHeight( firstLine )/2 + baselinePosition( firstLine );
             } else if ( va == TEXT_BOTTOM ) {
                 vpos += QFontMetrics(f).descent() + QFontMetrics(f).leading()/2;
-                if ( !isReplaced() )
-                    vpos -= fontMetrics(firstLine).descent();
+                if ( !isReplaced() ) {
+                    vpos -= (lineHeight(firstLine) - baselinePosition(firstLine));
+                }
             } else if ( va == BASELINE_MIDDLE )
                 vpos += - lineHeight( firstLine )/2 + baselinePosition( firstLine );
         }
