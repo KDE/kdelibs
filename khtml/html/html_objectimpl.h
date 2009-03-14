@@ -46,6 +46,9 @@ class HTMLPartContainerElementImpl : public QObject, public HTMLElementImpl
 {
     Q_OBJECT
 public:
+
+    enum DOMChildFrameEvents { DOMCFResizeEvent = 0x3030 };
+
     HTMLPartContainerElementImpl(DocumentImpl *doc);
     ~HTMLPartContainerElementImpl();
 
@@ -70,11 +73,15 @@ public:
     // if KHTMLPart should not make a kpart for it, but rather let it be handled directly.
     virtual bool mimetypeHandledInternally(const QString& mime);
 
+    virtual bool event(QEvent *e);
+
     // IMPORTANT: you should call this when requesting a URL, to make sure
     // that we don't get stale references to iframes or such.
     void clearChildWidget();
     QWidget* childWidget() const { return m_childWidget; }
 
+    void postResizeEvent();
+    static void sendPostedResizeEvents();
 public slots:
     void slotEmitLoadEvent();
 private:

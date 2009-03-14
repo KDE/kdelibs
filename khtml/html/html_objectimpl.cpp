@@ -134,6 +134,26 @@ void HTMLPartContainerElementImpl::slotEmitLoadEvent()
     dispatchHTMLEvent(EventImpl::LOAD_EVENT, false, false);
 }
 
+void HTMLPartContainerElementImpl::postResizeEvent()
+{
+   QApplication::postEvent( this, new QEvent(static_cast<QEvent::Type>(DOMCFResizeEvent)) );
+}
+
+void HTMLPartContainerElementImpl::sendPostedResizeEvents()
+{
+    QApplication::sendPostedEvents(0, DOMCFResizeEvent);
+}
+
+bool HTMLPartContainerElementImpl::event(QEvent *e)
+{
+    if (e->type() == static_cast<QEvent::Type>(DOMCFResizeEvent)) {
+        dispatchWindowEvent(EventImpl::RESIZE_EVENT, false, false);
+        e->accept();
+        return true;
+    }
+    return QObject::event(e);
+}
+
 // -------------------------------------------------------------------------
 HTMLObjectBaseElementImpl::HTMLObjectBaseElementImpl(DocumentImpl *doc)
     : HTMLPartContainerElementImpl(doc)
