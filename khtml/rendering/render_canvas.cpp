@@ -277,8 +277,6 @@ void RenderCanvas::updateDocumentSize()
 
         m_view->resizeContents((overrideW ? overrideW : hDocW), (overrideH ? overrideH : hDocH));
 
-        setWidth( m_viewportWidth = (overrideW ? m_view->visibleWidth() : viewport.width()) );
-        setHeight( m_viewportHeight = (overrideH ? m_view->visibleHeight() : viewport.height()) );
     }
     layer()->resize( qMax( m_cachedDocWidth,int( m_width ) ), qMax( m_cachedDocHeight,m_height ) );
 }
