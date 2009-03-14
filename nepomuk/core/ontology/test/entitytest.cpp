@@ -25,6 +25,7 @@
 #include <kstandarddirs.h>
 #include <qtest_kde.h>
 #include <QtDBus/QtDBus>
+#include <unistd.h>
 
 #include <Soprano/Vocabulary/RDFS>
 
