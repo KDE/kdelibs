@@ -2944,13 +2944,7 @@ try_again:
     }
 
     // Cache management
-    tIt = tokenizer.iterator("date");
-    if (tIt.hasNext()) {
-        //note QByteArray -> QString conversion will make a deep copy; we want one.
-        m_request.cacheTag.etag = QString(tIt.next());
-    }
-
-    tIt = tokenizer.iterator("date");
+    tIt = tokenizer.iterator("etag");
     if (tIt.hasNext()) {
         //note QByteArray -> QString conversion will make a deep copy; we want one.
         m_request.cacheTag.etag = QString(tIt.next());
