@@ -436,6 +436,10 @@ enum EBackgroundRepeat {
     REPEAT, REPEAT_X, REPEAT_Y, NO_REPEAT
 };
 
+enum EBackgroundAttachment {
+    BGASCROLL, BGAFIXED, BGALOCAL
+};
+
 struct LengthSize {
     Length width;
     Length height;
@@ -449,7 +453,7 @@ public:
     CachedImage* backgroundImage() const { return m_image; }
     Length backgroundXPosition() const { return m_xPosition; }
     Length backgroundYPosition() const { return m_yPosition; }
-    bool backgroundAttachment() const { return m_bgAttachment; }
+    EBackgroundAttachment backgroundAttachment() const { return KDE_CAST_BF_ENUM(EBackgroundAttachment, m_bgAttachment); }
     EBackgroundBox backgroundClip() const { return KDE_CAST_BF_ENUM(EBackgroundBox, m_bgClip); }
     EBackgroundBox backgroundOrigin() const { return KDE_CAST_BF_ENUM(EBackgroundBox, m_bgOrigin); }
     EBackgroundRepeat backgroundRepeat() const { return KDE_CAST_BF_ENUM(EBackgroundRepeat, m_bgRepeat); }
@@ -470,7 +474,7 @@ public:
     void setBackgroundImage(CachedImage* i) { m_image = i; m_imageSet = true; }
     void setBackgroundXPosition(const Length& l) { m_xPosition = l; m_xPosSet = true; }
     void setBackgroundYPosition(const Length& l) { m_yPosition = l; m_yPosSet = true; }
-    void setBackgroundAttachment(bool b) { m_bgAttachment = b; m_attachmentSet = true; }
+    void setBackgroundAttachment(EBackgroundAttachment b) { m_bgAttachment = b; m_attachmentSet = true; }
     void setBackgroundClip(EBackgroundBox b) { m_bgClip = b; m_clipSet = true; }
     void setBackgroundOrigin(EBackgroundBox b) { m_bgOrigin = b; m_originSet = true; }
     void setBackgroundRepeat(EBackgroundRepeat r) { m_bgRepeat = r; m_repeatSet = true; }
@@ -503,7 +507,7 @@ public:
         return m_next ? m_next->hasImage() : false;
     }
     bool hasFixedImage() const {
-        if (m_image && !m_bgAttachment)
+        if (m_image && m_bgAttachment == BGAFIXED)
             return true;
         return m_next ? m_next->hasFixedImage() : false;
     }
@@ -516,7 +520,7 @@ public:
     Length m_xPosition;
     Length m_yPosition;
 
-    bool m_bgAttachment : 1;
+    KDE_BF_ENUM(EBackgroundAttachment) m_bgAttachment : 2;
     KDE_BF_ENUM(EBackgroundBox) m_bgClip : 2;
     KDE_BF_ENUM(EBackgroundBox) m_bgOrigin : 2;
     KDE_BF_ENUM(EBackgroundRepeat) m_bgRepeat : 2;
@@ -1188,7 +1192,7 @@ public:
     const QColor & backgroundColor() const { return background->m_color; }
     CachedImage *backgroundImage() const { return background->m_background.m_image; }
     EBackgroundRepeat backgroundRepeat() const { return static_cast<EBackgroundRepeat>(background->m_background.m_bgRepeat); }
-    bool backgroundAttachment() const { return background->m_background.m_bgAttachment; }
+    EBackgroundAttachment backgroundAttachment() const { return KDE_CAST_BF_ENUM(EBackgroundAttachment, background->m_background.m_bgAttachment); }
     Length backgroundXPosition() const { return background->m_background.m_xPosition; }
     Length backgroundYPosition() const { return background->m_background.m_yPosition; }
     BackgroundLayer* accessBackgroundLayers() { return &(background.access()->m_background); }
@@ -1474,7 +1478,7 @@ public:
 #endif
 
     // Initial values for all the properties
-    static bool initialBackgroundAttachment() { return true; }
+    static EBackgroundAttachment initialBackgroundAttachment() { return BGASCROLL; }
     static EBackgroundBox initialBackgroundClip() { return BGBORDER; }
     static EBackgroundBox initialBackgroundOrigin() { return BGPADDING; }
     static EBackgroundRepeat initialBackgroundRepeat() { return REPEAT; }
