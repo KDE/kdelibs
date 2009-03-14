@@ -597,14 +597,12 @@ ElementImpl *DocumentImpl::createElement( const DOMString &name, int* pException
         *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
         return 0;
     }
-    DOMString prefix, localName;
-    splitPrefixLocalName(name.implementation(), prefix, localName);
-    bool htmlCompat = (htmlMode() != XHtml);
-    if (htmlCompat) {
-        localName = localName.lower();
-        prefix = prefix.lower();
-    }
-    XMLElementImpl* e = new XMLElementImpl(document(), emptyNamespaceName, LocalName::fromString(localName), PrefixName::fromString(prefix));
+
+    PrefixName prefix;
+    LocalName  localName;
+    bool htmlCompat = htmlMode() != XHtml;
+    splitPrefixLocalName(name, prefix, localName, htmlCompat);
+    XMLElementImpl* e = new XMLElementImpl(document(), emptyNamespaceName, localName, prefix);
     e->setHTMLCompat(htmlCompat); // Not a real HTML element, but inside an html-compat doc all tags are uppercase.
     return e;
 }
@@ -615,15 +613,14 @@ AttrImpl *DocumentImpl::createAttribute( const DOMString &tagName, int* pExcepti
         *pExceptioncode = DOMException::INVALID_CHARACTER_ERR;
         return 0;
     }
-    DOMString prefix, localName;
-    splitPrefixLocalName(tagName.implementation(), prefix, localName);
+
+    PrefixName prefix;
+    LocalName  localName;
     bool htmlCompat = (htmlMode() != XHtml);
-    if (htmlCompat) {
-        localName = localName.lower();
-        prefix = prefix.lower();
-    }
-    AttrImpl* attr = new AttrImpl(0, document(), NamespaceName::fromId(emptyNamespace), LocalName::fromString(localName),
-            PrefixName::fromString(prefix), DOMString("").implementation());
+    splitPrefixLocalName(tagName, prefix, localName, htmlCompat);
+
+    AttrImpl* attr = new AttrImpl(0, document(), NamespaceName::fromId(emptyNamespace),
+            localName, prefix, DOMString("").implementation());
     attr->setHTMLCompat(htmlCompat);
     return attr;
 }
@@ -797,11 +794,13 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI,
                                               false/*nameCanBeNull*/, false/*nameCanBeEmpty*/,
                                               pExceptioncode))
         return 0;
-    DOMString prefix, localName;
-    splitPrefixLocalName(_qualifiedName.implementation(), prefix, localName, colonPos);
-    AttrImpl* attr = new AttrImpl(0, document(), NamespaceName::fromString(_namespaceURI), LocalName::fromString(localName),
-            PrefixName::fromString(prefix), DOMString("").implementation());
-    attr->setHTMLCompat( _namespaceURI.isNull() && htmlMode() != XHtml );
+    PrefixName prefix;
+    LocalName  localName;
+    bool htmlCompat =  _namespaceURI.isNull() && htmlMode() != XHtml;
+    splitPrefixLocalName(_qualifiedName, prefix, localName, false, colonPos);
+    AttrImpl* attr = new AttrImpl(0, document(), NamespaceName::fromString(_namespaceURI),
+            localName, prefix, DOMString("").implementation());
+    attr->setHTMLCompat( htmlCompat );
     return attr;
 }
 

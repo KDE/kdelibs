@@ -131,9 +131,14 @@ public:
 
     // Note: this actually computes the hash, so shouldn't be used lightly
     unsigned hash() const;
+    
+    // Unlike the above, these don't even cache the hash;
+    // they return hashes for lowercase, and upper-case versions
+    unsigned lowerHash() const;
+    unsigned upperHash() const;
 
     // for WebCore API compatibility;
-    static unsigned computeHash(const QChar* str, unsigned int length) { return DOMStringImpl(str, length).hash(); }
+    static unsigned computeHash(const QChar* str, unsigned int length);
     static unsigned computeHash(const char* str) { return DOMStringImpl(str).hash(); }
 
     static DOMStringImpl* empty();

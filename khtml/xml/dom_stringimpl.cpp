@@ -548,18 +548,42 @@ DOMStringImpl *DOMStringImpl::escapeHTML()
     return toRet;
 }
 
+enum NoFoldTag    { DoNotFold };
+enum FoldLowerTag { FoldLower };
+enum FoldUpperTag { FoldUpper };
+
+static inline
+unsigned short foldChar(unsigned short c, NoFoldTag)
+{
+    return c;
+}
+
+static inline
+unsigned short foldChar(unsigned short c, FoldLowerTag)
+{
+    // ### fast path for first ones?
+    return QChar::toLower(c);
+}
+
+static inline
+unsigned short foldChar(unsigned short c, FoldUpperTag)
+{
+    // ### fast path for first ones?
+    return QChar::toUpper(c);
+}
+
+// Paul Hsieh's SuperFastHash
+// http://www.azillionmonkeys.com/qed/hash.html
+
 // Golden ratio - arbitrary start value to avoid mapping all 0's to all 0's
 // or anything like that.
 const unsigned PHI = 0x9e3779b9U;
 
-// Paul Hsieh's SuperFastHash
-// http://www.azillionmonkeys.com/qed/hash.html
-unsigned DOMStringImpl::hash() const
+
+template<typename FoldTag>
+static unsigned calcHash(const QChar* s, unsigned l, FoldTag foldMode)
 {
-    if (m_hash != 0) return m_hash;
-  // Note: this is originally from KJS>.
-  unsigned l = this->l;
-  QChar*   s = this->s;
+  // Note: this is originally from KJS
   unsigned hash = PHI;
   unsigned tmp;
 
@@ -568,8 +592,8 @@ unsigned DOMStringImpl::hash() const
 
   // Main loop
   for (; l > 0; l--) {
-    hash += s[0].unicode();
-    tmp = (s[1].unicode() << 11) ^ hash;
+    hash += foldChar(s[0].unicode(), foldMode);
+    tmp = (foldChar(s[1].unicode(), foldMode) << 11) ^ hash;
     hash = (hash << 16) ^ tmp;
     s += 2;
     hash += hash >> 11;
@@ -577,7 +601,7 @@ unsigned DOMStringImpl::hash() const
 
   // Handle end case
   if (rem) {
-    hash += s[0].unicode();
+    hash += foldChar(s[0].unicode(), foldMode);
     hash ^= hash << 11;
     hash += hash >> 17;
   }
@@ -595,7 +619,29 @@ unsigned DOMStringImpl::hash() const
   if (hash == 0)
     hash = 0x80000000;
 
-  return m_hash = hash;
+  return hash;
+}
+
+unsigned DOMStringImpl::hash() const
+{
+    if (m_hash != 0) return m_hash;
+
+    return m_hash = calcHash(s, l, DoNotFold);
+}
+
+unsigned DOMStringImpl::lowerHash() const
+{
+    return calcHash(s, l, FoldLower);
+}
+
+unsigned DOMStringImpl::upperHash() const
+{
+    return calcHash(s, l, FoldUpper);
+}
+
+unsigned DOMStringImpl::computeHash(const QChar* str, unsigned int length)
+{
+    return calcHash(str, length, DoNotFold);
 }
 
 DOMStringImpl* DOMStringImpl::empty()

@@ -83,10 +83,7 @@ namespace khtml {
                 localname = LocalName::fromId(buffer->unicode());
             }
             else if ( !attrName.isEmpty() && attrName != "/" ) {
-                DOMString prefix, local;
-                splitPrefixLocalName(DOMString(attrName.toLower()).implementation(), prefix, local);
-                localname = LocalName::fromString(local);
-                prefixname = PrefixName::fromString(prefix);
+                splitPrefixLocalName(attrName, prefixname, localname, true /* htmlCompat*/);
             }
 
             if (value && localname.id()) {
