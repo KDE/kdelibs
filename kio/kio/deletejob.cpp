@@ -234,7 +234,7 @@ void DeleteJobPrivate::statNextSrc()
             // (using a loop, instead of a huge recursion)
             while(m_currentStat != m_srcList.end() && (*m_currentStat).isLocalFile()) {
                 m_currentURL = (*m_currentStat);
-                QFileInfo fileInfo(m_currentURL.path());
+                QFileInfo fileInfo(m_currentURL.toLocalFile());
                 currentSourceStated(fileInfo.isDir(), fileInfo.isSymLink());
                 ++m_currentStat;
             }
@@ -286,8 +286,12 @@ void DeleteJobPrivate::deleteNextFile()
             }
             // Normal deletion
             // If local file, try do it directly
-            if ( (*it).isLocalFile() && unlink( QFile::encodeName((*it).path()) ) == 0 ) {
-                //kdDebug(7007) << "DeleteJob deleted" << (*it).path();
+#ifdef Q_WS_WIN
+            if ( (*it).isLocalFile() && DeleteFileW( (LPCWSTR)(*it).toLocalFile().utf16() ) == 0 ) {
+#else
+            if ( (*it).isLocalFile() && unlink( QFile::encodeName((*it).toLocalFile()) ) == 0 ) {
+#endif
+                //kdDebug(7007) << "DeleteJob deleted" << (*it).toLocalFile();
                 job = 0;
                 m_processedFiles++;
                 if ( m_processedFiles % 300 == 1 || m_totalFilesDirs < 300) { // update progress info every 300 files
@@ -325,8 +329,11 @@ void DeleteJobPrivate::deleteNextDir()
             // Take first dir to delete out of list - last ones first !
             KUrl::List::iterator it = --dirs.end();
             // If local dir, try to rmdir it directly
-            if ( (*it).isLocalFile() && ::rmdir( QFile::encodeName((*it).path()) ) == 0 ) {
-
+#ifdef Q_WS_WIN
+            if ( (*it).isLocalFile() && RemoveDirectoryW( (LPCWSTR)(*it).toLocalFile().utf16() ) != 0 ) {
+#else
+            if ( (*it).isLocalFile() && ::rmdir( QFile::encodeName((*it).toLocalFile()) ) == 0 ) {
+#endif
                 m_processedDirs++;
                 if ( m_processedDirs % 100 == 1 ) { // update progress info every 100 dirs
                     m_currentURL = *it;

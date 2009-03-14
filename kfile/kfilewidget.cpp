@@ -1614,7 +1614,7 @@ QString KFileWidget::selectedFile() const
     if ( d->inAccept ) {
         const KUrl url = d->mostLocalUrl(d->url);
         if (url.isLocalFile())
-            return url.path();
+            return url.toLocalFile();
         else {
             KMessageBox::sorry( const_cast<KFileWidget*>(this),
                                 i18n("You can only select local files."),

@@ -207,7 +207,7 @@ void ChmodJobPrivate::chmodNextFile()
         // (permissions have to set after, in case of suid and sgid)
         if ( info.url.isLocalFile() && ( m_newOwner != -1 || m_newGroup != -1 ) )
         {
-            QString path = info.url.path();
+            QString path = info.url.toLocalFile();
             if ( chown( QFile::encodeName(path), m_newOwner, m_newGroup ) != 0 )
             {
                 int answer = KMessageBox::warningContinueCancel( 0, i18n( "<qt>Could not modify the ownership of file <b>%1</b>. You have insufficient access to the file to perform the change.</qt>" , path), QString(), KGuiItem(i18n("&Skip File")) );

@@ -59,7 +59,7 @@ bool KDesktopFileActions::run( const KUrl& u, bool _is_local )
         return runFSDevice( u, cfg );
     else if ( cfg.hasApplicationType()
               || (cfg.readType() == "Service" && !cfg.desktopGroup().readEntry("Exec").isEmpty())) // for kio_settings
-        return runApplication( u, u.path() );
+        return runApplication( u, u.toLocalFile() );
     else if ( cfg.hasLinkType() )
         return runLink( u, cfg );
 
@@ -146,7 +146,7 @@ QList<KServiceAction> KDesktopFileActions::builtinServices( const KUrl& _url )
     if ( !_url.isLocalFile() )
         return result;
 
-    KDesktopFile cfg( _url.path() );
+    KDesktopFile cfg( _url.toLocalFile() );
     QString type = cfg.readType();
 
     if ( type.isEmpty() )
@@ -155,7 +155,7 @@ QList<KServiceAction> KDesktopFileActions::builtinServices( const KUrl& _url )
     if ( cfg.hasDeviceType() ) {
         const QString dev = cfg.readDevice();
         if ( dev.isEmpty() ) {
-            QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  _url.path() );
+            QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  _url.toLocalFile() );
             KMessageBoxWrapper::error(0, tmp);
         } else {
             KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByDevice( dev );

@@ -1282,7 +1282,7 @@ KIO::Job* CopyJobPrivate::linkNextFile( const KUrl& uSource, const KUrl& uDest, 
         if ( uDest.isLocalFile() ) {
             // if the source is a devices url, handle it a littlebit special
 
-            QString path = uDest.path();
+            QString path = uDest.toLocalFile();
             //kDebug(7007) << "path=" << path;
             QFile f( path );
             if ( f.open( QIODevice::ReadWrite ) )
@@ -1317,7 +1317,7 @@ KIO::Job* CopyJobPrivate::linkNextFile( const KUrl& uSource, const KUrl& uDest, 
             {
                 kDebug(7007) << "ERR_CANNOT_OPEN_FOR_WRITING";
                 q->setError( ERR_CANNOT_OPEN_FOR_WRITING );
-                q->setErrorText( uDest.path() );
+                q->setErrorText( uDest.toLocalFile() );
                 q->emitResult();
                 return 0;
             }
@@ -1622,8 +1622,8 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                err == ERR_IDENTICAL_FILES ) )
         {
             kDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls";
-            const QString _src( m_currentSrcURL.path() );
-            const QString _dest( dest.path() );
+            const QString _src( m_currentSrcURL.toLocalFile() );
+            const QString _dest( dest.toLocalFile() );
             KTemporaryFile tmpFile;
             tmpFile.setPrefix(m_currentSrcURL.directory(KUrl::ObeyTrailingSlash));
             tmpFile.setAutoRemove(false);
@@ -1693,14 +1693,14 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
 
                 KDE_struct_stat stat_buf;
                 if ( m_currentSrcURL.isLocalFile() &&
-                    KDE::stat(m_currentSrcURL.path(), &stat_buf) == 0 ) {
+                    KDE::stat(m_currentSrcURL.toLocalFile(), &stat_buf) == 0 ) {
                     sizeSrc = stat_buf.st_size;
                     ctimeSrc = stat_buf.st_ctime;
                     mtimeSrc = stat_buf.st_mtime;
                     isDir = S_ISDIR(stat_buf.st_mode);
                 }
                 if ( dest.isLocalFile() &&
-                    KDE::stat(dest.path(), &stat_buf) == 0 ) {
+                    KDE::stat(dest.toLocalFile(), &stat_buf) == 0 ) {
                     sizeDest = stat_buf.st_size;
                     ctimeDest = stat_buf.st_ctime;
                     mtimeDest = stat_buf.st_mtime;

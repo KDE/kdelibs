@@ -96,7 +96,7 @@ bool NetAccess::download(const KUrl& u, QString & target, QWidget* window)
 {
   if (u.isLocalFile()) {
     // file protocol. We do not need the network
-    target = u.path();
+    target = u.toLocalFile();
     bool accessible = KStandardDirs::checkAccess(target, R_OK);
     if(!accessible)
     {
@@ -133,7 +133,7 @@ bool NetAccess::upload(const QString& src, const KUrl& target, QWidget* window)
   // If target is local... well, just copy. This can be useful
   // when the client code uses a temp file no matter what.
   // Let's make sure it's not the exact same file though
-  if (target.isLocalFile() && target.path() == src)
+  if (target.isLocalFile() && target.toLocalFile() == src)
     return true;
 
   NetAccess kioNet;
@@ -201,7 +201,7 @@ bool NetAccess::move( const KUrl::List& srcList, const KUrl& target, QWidget* wi
 bool NetAccess::exists( const KUrl & url, bool source, QWidget* window )
 {
   if ( url.isLocalFile() )
-    return QFile::exists( url.path() );
+    return QFile::exists( url.toLocalFile() );
   NetAccess kioNet;
   return kioNet.statInternal( url, 0 /*no details*/,
                               source ? SourceSide : DestinationSide, window );
@@ -210,7 +210,7 @@ bool NetAccess::exists( const KUrl & url, bool source, QWidget* window )
 bool NetAccess::exists( const KUrl & url, StatSide side, QWidget* window )
 {
   if ( url.isLocalFile() )
-    return QFile::exists( url.path() );
+    return QFile::exists( url.toLocalFile() );
   NetAccess kioNet;
   return kioNet.statInternal( url, 0 /*no details*/, side, window );
 }

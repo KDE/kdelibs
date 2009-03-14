@@ -521,7 +521,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
             bool isManuallyMounted = false;
             bool containsManuallyMounted = false;
             if (isLocal) {
-                isManuallyMounted = manually_mounted( item->url.path(), possibleMountPoints );
+                isManuallyMounted = manually_mounted( item->url.toLocalFile(), possibleMountPoints );
                 if ( !isManuallyMounted ) {
                     // Look for a manually-mounted directory inside
                     // If there's one, we can't keep a watch either, FAM would prevent unmounting the CDROM
@@ -529,7 +529,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
                     KFileItemList::const_iterator kit = item->lstItems.constBegin();
                     KFileItemList::const_iterator kend = item->lstItems.constEnd();
                     for ( ; kit != kend && !containsManuallyMounted; ++kit )
-                        if ( (*kit).isDir() && manually_mounted((*kit).url().path(), possibleMountPoints) )
+                        if ( (*kit).isDir() && manually_mounted((*kit).url().toLocalFile(), possibleMountPoints) )
                             containsManuallyMounted = true;
                 }
             }
