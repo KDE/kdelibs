@@ -304,7 +304,7 @@ bool KPropertiesDialog::showDialog(const KUrl& _url, QWidget* parent,
 {
 #ifdef Q_WS_WIN
   if (_url.isLocalFile())
-    return showWin32FilePropertyDialog( _url.path() );
+    return showWin32FilePropertyDialog( _url.toLocalFile() );
 #endif
   KPropertiesDialog* dlg = new KPropertiesDialog(_url, parent);
   if (modal) {
@@ -1456,12 +1456,12 @@ void KFilePropsPlugin::applyIconChanges()
 
     if (S_ISDIR(properties->item().mode()))
     {
-      path = url.path(KUrl::AddTrailingSlash) + QString::fromLatin1(".directory");
+      path = url.toLocalFile(KUrl::AddTrailingSlash) + QString::fromLatin1(".directory");
       // don't call updateUrl because the other tabs (i.e. permissions)
       // apply to the directory, not the .directory file.
     }
     else
-      path = url.path();
+      path = url.toLocalFile();
 
     // Get the default image
     QString str = KMimeType::findByUrl( url,
@@ -2604,7 +2604,7 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
 
     KUrl url = KIO::NetAccess::mostLocalUrl( properties->kurl(), properties );
     if (url.isLocalFile()) {
-        QString path = url.path();
+        QString path = url.toLocalFile();
 
         QFile f( path );
         if ( !f.open( QIODevice::ReadOnly ) ) {
@@ -2825,7 +2825,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
   if (!url.isLocalFile()) {
     return;
   }
-  QString path = url.path();
+  QString path = url.toLocalFile();
 
   QFile f( path );
   if ( !f.open( QIODevice::ReadOnly ) )
@@ -2969,7 +2969,7 @@ void KDevicePropsPlugin::applyChanges()
   KUrl url = KIO::NetAccess::mostLocalUrl( properties->kurl(), properties );
   if ( !url.isLocalFile() )
     return;
-  QString path = url.path();
+  QString path = url.toLocalFile();
 
   QFile f( path );
   if ( !f.open( QIODevice::ReadWrite ) )
@@ -3064,7 +3064,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   if (!url.isLocalFile()) {
     return;
   }
-  QString path = url.path();
+  QString path = url.toLocalFile();
 
   QFile f( path );
   if ( !f.open( QIODevice::ReadOnly ) )
@@ -3223,7 +3223,7 @@ void KDesktopPropsPlugin::applyChanges()
     //FIXME: 4.2 add this: KMessageBox::sorry(0, i18n("Could not save properties. Only entries on local file systems are supported."));
     return;
   }
-  QString path = url.path();
+  QString path = url.toLocalFile();
 
   QFile f( path );
 
@@ -3306,7 +3306,7 @@ void KDesktopPropsPlugin::slotBrowseExec()
     return;
   }
 
-  QString path = f.path();
+  QString path = f.toLocalFile();
   path = KShell::quoteArg( path );
   d->w->commandEdit->setText( path );
 }

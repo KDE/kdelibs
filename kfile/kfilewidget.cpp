@@ -965,7 +965,7 @@ void KFileWidget::accept()
         // we strip the last slash (-1) because KUrlComboBox does that as well
         // when operating in file-mode. If we wouldn't , dupe-finding wouldn't
         // work.
-        QString file = url.isLocalFile() ? url.path(KUrl::RemoveTrailingSlash) : url.prettyUrl(KUrl::RemoveTrailingSlash);
+        QString file = url.isLocalFile() ? url.toLocalFile(KUrl::RemoveTrailingSlash) : url.prettyUrl(KUrl::RemoveTrailingSlash);
 
         // remove dupes
         for ( int i = 1; i < d->locationEdit->count(); i++ ) {
@@ -1637,14 +1637,14 @@ QStringList KFileWidget::selectedFiles() const
             while (it != urls.end()) {
                 KUrl url = d->mostLocalUrl(*it);
                 if (url.isLocalFile())
-                    list.append(url.path());
+                    list.append(url.toLocalFile());
                 ++it;
             }
         }
 
         else { // single-selection mode
             if ( d->url.isLocalFile() )
-                list.append( d->url.path() );
+                list.append( d->url.toLocalFile() );
         }
     }
 

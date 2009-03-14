@@ -64,7 +64,7 @@ QStringList KRecentDocument::recentDocuments()
        QString pathDesktop = d.absoluteFilePath( *it );
        KDesktopFile tmpDesktopFile( pathDesktop );
        KUrl urlDesktopFile(tmpDesktopFile.desktopGroup().readPathEntry("URL", QString()));
-       if (urlDesktopFile.isLocalFile() && !QFile(urlDesktopFile.path()).exists()) {
+       if (urlDesktopFile.isLocalFile() && !QFile(urlDesktopFile.toLocalFile()).exists()) {
            d.remove(pathDesktop);
        } else {
            fullList.append( pathDesktop );
@@ -82,7 +82,7 @@ void KRecentDocument::add(const KUrl& url)
 
 void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
 {
-    if ( url.isLocalFile() && KGlobal::dirs()->relativeLocation( "tmp", url.path() ) != url.path() )
+    if ( url.isLocalFile() && KGlobal::dirs()->relativeLocation( "tmp", url.toLocalFile() ) != url.toLocalFile() )
       return; // inside tmp resource, do not save
 
     QString openStr = url.url();

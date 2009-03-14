@@ -3515,13 +3515,13 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   {
     // TODO : use KIO::stat() and create a KFileItem out of its result,
     // to use KFileItem::statusBarText()
-    QByteArray path = QFile::encodeName( u.path() );
+    const QString path = QFile::encodeName( u.toLocalFile() );
 
     KDE_struct_stat buff;
-    bool ok = !KDE_stat( path.data(), &buff );
+    bool ok = !KDE::stat( path, &buff );
 
     KDE_struct_stat lbuff;
-    if (ok) ok = !KDE_lstat( path.data(), &lbuff );
+    if (ok) ok = !KDE::lstat( path, &lbuff );
 
     QString text = Qt::escape(u.prettyUrl());
     QString text2 = text;
@@ -3535,7 +3535,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
         tmp = i18n("%1 (Link)", com);
       char buff_two[1024];
       text += " -> ";
-      int n = readlink ( path.data(), buff_two, 1022);
+      int n = readlink ( path.toLocal8Bit().data(), buff_two, 1022);
       if (n == -1)
       {
         text2 += "  ";
@@ -5755,7 +5755,7 @@ QString KHTMLPart::lastModified() const
     // Local file: set last-modified from the file's mtime.
     // Done on demand to save time when this isn't needed - but can lead
     // to slightly wrong results if updating the file on disk w/o reloading.
-    QDateTime lastModif = QFileInfo( url().path() ).lastModified();
+    QDateTime lastModif = QFileInfo( url().toLocalFile() ).lastModified();
     d->m_lastModified = lastModif.toString( Qt::LocalDate );
   }
   //kDebug(6050) << d->m_lastModified;

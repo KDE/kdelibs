@@ -864,7 +864,7 @@ void ReadWritePartPrivate::prepareSaving()
             QFile::remove( m_file );
             m_bTemp = false;
         }
-        m_file = m_url.path();
+        m_file = m_url.toLocalFile();
     }
     else
     { // Remote file

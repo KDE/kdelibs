@@ -441,7 +441,7 @@ QString RenameDialog::suggestName(const KUrl& baseURL, const QString& oldName)
   // TODO: network transparency. However, using NetAccess from a modal dialog
   // could be a problem, no? (given that it uses a modal widget itself....)
   if ( baseURL.isLocalFile() )
-    exists = QFileInfo( baseURL.path(KUrl::AddTrailingSlash) + suggestedName ).exists();
+    exists = QFileInfo( baseURL.toLocalFile(KUrl::AddTrailingSlash) + suggestedName ).exists();
 
   if ( !exists )
     return suggestedName;

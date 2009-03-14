@@ -265,7 +265,7 @@ void Preview::showPreview( const QString &str )
 {
   Q3Url u(str);
   if ( u.isLocalFile() ){
-  QString path = u.path();
+  QString path = u.toLocalFile();
   QFileInfo fi( path );
 	if ( fi.isFile() && (int)fi.size() > 400 * 1024 ) {
 	    normalText->setText( tr( "The File\n%1\nis too large, so I don't show it!" ).arg( path ) );

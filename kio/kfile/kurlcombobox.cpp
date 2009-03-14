@@ -219,7 +219,7 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
         KUrl u = *it;
 
         // Don't restore if file doesn't exist anymore
-        if (u.isLocalFile() && !QFile::exists(u.path())) {
+        if (u.isLocalFile() && !QFile::exists(u.toLocalFile())) {
             ++it;
             continue;
         }

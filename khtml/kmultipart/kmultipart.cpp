@@ -502,8 +502,8 @@ void KMultiPart::slotPartCompleted()
         Q_ASSERT( m_part );
         // Delete temp file used by the part
         Q_ASSERT( m_part->url().isLocalFile() );
-	kDebug() << "slotPartCompleted deleting " << m_part->url().path();
-        (void) unlink( QFile::encodeName( m_part->url().path() ) );
+	kDebug() << "slotPartCompleted deleting " << m_part->url().toLocalFile();
+        (void) unlink( QFile::encodeName( m_part->url().toLocalFile() ) );
         m_partIsLoading = false;
         ++m_numberOfFrames;
         // Do not emit completed from here.

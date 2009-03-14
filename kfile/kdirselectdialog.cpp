@@ -173,7 +173,7 @@ void KDirSelectDialog::Private::slotCurrentChanged()
     if ( u.isValid() )
     {
         if ( u.isLocalFile() )
-            m_urlCombo->setEditText( u.path() );
+            m_urlCombo->setEditText( u.toLocalFile() );
 
         else // remote url
             m_urlCombo->setEditText( u.prettyUrl() );

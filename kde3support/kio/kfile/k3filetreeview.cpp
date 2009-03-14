@@ -605,7 +605,7 @@ void K3FileTreeView::slotOnItem( Q3ListViewItem *item )
     {
        const KUrl url = i->url();
        if ( url.isLocalFile() )
-	  emit onItem( url.path() );
+	  emit onItem( url.toLocalFile() );
        else
 	  emit onItem( url.prettyUrl() );
     }

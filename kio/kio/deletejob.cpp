@@ -375,7 +375,7 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
         // Add toplevel dir in list of dirs
         dirs.append( url );
         if (url.isLocalFile()) {
-            const QString parentDir = url.path(KUrl::RemoveTrailingSlash);
+            const QString parentDir = url.toLocalFile(KUrl::RemoveTrailingSlash);
             m_parentDirs.insert(parentDir);
         }
         if (!KProtocolManager::canDeleteRecursive(url)) {

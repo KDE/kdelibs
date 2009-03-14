@@ -100,7 +100,7 @@ bool KRun::isExecutableFile(const KUrl& url, const QString &mimetype)
     if (!url.isLocalFile()) {
         return false;
     }
-    QFileInfo file(url.path());
+    QFileInfo file(url.toLocalFile());
     if (file.isExecutable()) {    // Got a prospective file to run
         KMimeType::Ptr mimeType = KMimeType::mimeType(mimetype, KMimeType::ResolveAliases);
         if (mimeType && (mimeType->is(QLatin1String("application/x-executable")) ||
@@ -134,7 +134,7 @@ bool KRun::runUrl(const KUrl& u, const QString& _mimetype, QWidget* window, bool
     else if (isExecutableFile(u, _mimetype)) {
         if (u.isLocalFile() && runExecutables) {
             if (KAuthorized::authorize("shell_access")) {
-                return (KRun::runCommand(KShell::quoteArg(u.path()), QString(), QString(), window, asn)); // just execute the url as a command
+                return (KRun::runCommand(KShell::quoteArg(u.toLocalFile()), QString(), QString(), window, asn)); // just execute the url as a command
                 // ## TODO implement deleting the file if tempFile==true
             }
             else {
@@ -310,7 +310,7 @@ KRunMX2::subst(int option, const KUrl &url, QStringList &ret)
         ret << url.fileName();
         break;
     case 'v':
-        if (url.isLocalFile() && QFile::exists(url.path())) {
+        if (url.isLocalFile() && QFile::exists(url.toLocalFile())) {
             ret << KDesktopFile(url.path()).desktopGroup().readEntry("Dev");
         }
         break;

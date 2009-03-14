@@ -433,7 +433,7 @@ QString KFileDialog::getOpenFileName(const KUrl& startDir,
         return QFileDialog::getOpenFileName(
             parent,
             caption.isEmpty() ? i18n("Open") : caption,
-            KFileDialogPrivate::Native::staticStartDir( startDir ).path(),
+            KFileDialogPrivate::Native::staticStartDir( startDir ).toLocalFile(),
             qtFilter(filter) );
 // TODO use extra args?     QString * selectedFilter = 0, Options options = 0
     }
@@ -481,7 +481,7 @@ QStringList KFileDialog::getOpenFileNames(const KUrl& startDir,
         return QFileDialog::getOpenFileNames(
             parent,
             caption.isEmpty() ? i18n("Open") : caption,
-            KFileDialogPrivate::Native::staticStartDir( startDir ).path(),
+            KFileDialogPrivate::Native::staticStartDir( startDir ).toLocalFile(),
             qtFilter( filter ) );
 // TODO use extra args?  QString * selectedFilter = 0, Options options = 0
     }
@@ -552,7 +552,7 @@ KUrl KFileDialog::getExistingDirectoryUrl(const KUrl& startDir,
 {
     if (KFileDialogPrivate::isNative() && (!startDir.isValid() || startDir.isLocalFile())) {
         QString result( QFileDialog::getExistingDirectory(parent, caption,
-            KFileDialogPrivate::Native::staticStartDir( startDir ).path(),
+            KFileDialogPrivate::Native::staticStartDir( startDir ).toLocalFile(),
             QFileDialog::ShowDirsOnly) );
         return result.isEmpty() ? KUrl() : KUrl::fromPath(result);
     }
@@ -565,7 +565,7 @@ QString KFileDialog::getExistingDirectory(const KUrl& startDir,
 {
     if (KFileDialogPrivate::isNative() && (!startDir.isValid() || startDir.isLocalFile())) {
         return QFileDialog::getExistingDirectory(parent, caption,
-            KFileDialogPrivate::Native::staticStartDir( startDir ).path(),
+            KFileDialogPrivate::Native::staticStartDir( startDir ).toLocalFile(),
             QFileDialog::ShowDirsOnly);
     }
     KUrl url = fileModule()->selectDirectory(startDir, true, parent, caption);
@@ -668,7 +668,7 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
     if ( !specialDir && !defaultDir ) {
         if (!dir.isLocalFile())
             kWarning() << "KFileDialog::getSaveFileName called with non-local start dir " << dir;
-        dlg.setSelection( dir.path() ); // may also be a filename
+        dlg.setSelection( dir.toLocalFile() ); // may also be a filename
     }
 
     dlg.setOperationMode( Saving );
@@ -701,7 +701,7 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
     if ( !specialDir && !defaultDir ) {
         if (!dir.isLocalFile())
             kWarning() << "KFileDialog::getSaveFileNameWId called with non-local start dir " << dir;
-        dlg.setSelection( dir.path() ); // may also be a filename
+        dlg.setSelection( dir.toLocalFile() ); // may also be a filename
     }
 
     dlg.setOperationMode( Saving );
@@ -722,7 +722,7 @@ KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
 {
     if (KFileDialogPrivate::isNative() && (!dir.isValid() || dir.isLocalFile())) {
         const QString fileName( KFileDialog::getSaveFileName(
-            dir.path(), filter, parent, caption) );
+            dir, filter, parent, caption) );
         return fileName.isEmpty() ? KUrl() : KUrl::fromPath(fileName);
     }
     bool defaultDir = dir.isEmpty();

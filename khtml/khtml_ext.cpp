@@ -924,7 +924,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
     destURL = KFileDialog::getSaveUrl( name, filter, parent, caption );
       if( destURL.isLocalFile() )
       {
-        QFileInfo info( destURL.path() );
+        QFileInfo info( destURL.toLocalFile() );
         if( info.exists() ) {
           // TODO: use KIO::RenameDlg (shows more information)
           query = KMessageBox::warningContinueCancel( parent, i18n( "A file named \"%1\" already exists. " "Are you sure you want to overwrite it?" ,  info.fileName() ), i18n( "Overwrite File?" ), KGuiItem(i18n( "Overwrite" )) );
@@ -947,7 +947,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl 
         {
             if (destURL.isLocalFile())
             {
-                KSaveFile destFile(destURL.path());
+                KSaveFile destFile(destURL.toLocalFile());
                 if (destFile.open())
                 {
                     QDataStream stream ( &destFile );

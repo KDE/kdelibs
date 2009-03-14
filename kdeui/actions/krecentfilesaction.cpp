@@ -120,7 +120,7 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
      */
     const KUrl url( _url );
 
-    if ( url.isLocalFile() && KGlobal::dirs()->relativeLocation("tmp", url.path()) != url.path() )
+    if ( url.isLocalFile() && KGlobal::dirs()->relativeLocation("tmp", url.toLocalFile()) != url.toLocalFile() )
        return;
     const QString tmpName = name.isEmpty() ?  url.fileName() : name;
 #ifdef Q_OS_WIN
@@ -237,7 +237,7 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
         url = KUrl( value );
 
         // Don't restore if file doesn't exist anymore
-        if (url.isLocalFile() && !QFile::exists(url.path()))
+        if (url.isLocalFile() && !QFile::exists(url.toLocalFile()))
           continue;
 
         // Don't restore where the url is already known (eg. broken config)
