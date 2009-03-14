@@ -374,7 +374,7 @@ void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto)
     }
     ProtocolInfoDict::ConstIterator endIt = proto.isEmpty() ? protInfoDict.constEnd() :
                                                               it + 1;
-    while (it != endIt) {
+    for (; it != endIt; ++it) {
         foreach(Slave *slave, (*it)->allSlaves()) {
             slave->send(CMD_REPARSECONFIGURATION);
             slave->resetHost();
