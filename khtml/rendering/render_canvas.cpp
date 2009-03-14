@@ -4,7 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2003 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
- *           (C) 2007-2008 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2007-2009 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -232,41 +232,53 @@ void RenderCanvas::updateDocumentSize()
 
     if (!m_pagedMode && m_view) {
 
+        // we need to adjust the document's size to make sure we don't enter
+        // an endless cycle of scrollbars being added, then removed at the next layout.
+
         bool vss = m_view->verticalScrollBar()->isVisible();
         bool hss = m_view->horizontalScrollBar()->isVisible();
-        QSize s = m_view->maximumViewportSize();
 
-        int zoomedDocWidth = m_cachedDocWidth*zLevel/100;
-        int zoomedDocHeight = m_cachedDocHeight*zLevel/100;
-        if ( zoomedDocWidth > s.width() )
-            s.setWidth( s.width()-m_view->verticalScrollBar()->sizeHint().width() );
-        if ( zoomedDocHeight > s.height() )
-            s.setHeight( s.height()-m_view->horizontalScrollBar()->sizeHint().height() );
-   
+        // calculate the extent of scrollbars
+        int vsPixSize = m_view->verticalScrollBar()->sizeHint().width();
+        int hsPixSize = m_view->horizontalScrollBar()->sizeHint().height();
+
+        // this variable holds the size the viewport will have after the inner content is resized to
+        // the new document dimensions
+        QSize viewport = m_view->maximumViewportSize();
+
+        // of course, if the scrollbar policy isn't auto, there's no point adjusting any value..
+        int overrideH = m_view->verticalScrollBarPolicy() == Qt::ScrollBarAsNeeded ? 0 : hDocH;
+        int overrideW = m_view->verticalScrollBarPolicy() == Qt::ScrollBarAsNeeded ? 0 : hDocW;
+        
+        if ( !overrideW && hDocW > viewport.width() )
+            viewport.setHeight( viewport.height() - hsPixSize );
+        if ( !overrideH && hDocH > viewport.height() )
+            viewport.setWidth( viewport.width() - vsPixSize );
+            
         // if we are about to show a scrollbar, and the document is sized to the viewport w or h,
         // then reserve the scrollbar space so that it doesn't trigger the _other_ scrollbar
 
-        if (!vss && m_width - m_view->verticalScrollBar()->sizeHint().width() == s.width() &&
-            zoomedDocWidth <= m_width)
-            hDocW = qMin( zoomedDocWidth, s.width() );
+        if (!vss && m_width - vsPixSize == viewport.width() &&
+            hDocW <= m_width)
+            hDocW = qMin( hDocW, viewport.width() );
 
-        if (!hss && m_height - m_view->horizontalScrollBar()->sizeHint().height() == s.height() &&
-            zoomedDocHeight <= m_height)
-            hDocH = qMin( zoomedDocHeight, s.height() );
+        if (!hss && m_height - hsPixSize == viewport.height() &&
+            hDocH <= m_height)
+            hDocH = qMin( hDocH, viewport.height() );
 
         // likewise, if a scrollbar is shown, and we have a cunning plan to turn it off,
         // think again if we are falling downright in the hysteresis zone
 
-        if (vss && s.width() > zoomedDocWidth && zoomedDocWidth > m_view->visibleWidth())
-            hDocW = s.width()+1;
+        if (vss && viewport.width() > hDocW && hDocW > m_view->visibleWidth())
+            hDocW = viewport.width()+1;
 
-        if (hss && s.height() > zoomedDocHeight && zoomedDocHeight > m_view->visibleHeight())
-            hDocH = s.height()+1;
+        if (hss && viewport.height() > hDocH && hDocH > m_view->visibleHeight())
+            hDocH = viewport.height()+1;
 
-        m_view->resizeContents(hDocW, hDocH);
+        m_view->resizeContents((overrideW ? overrideW : hDocW), (overrideH ? overrideH : hDocH));
 
-        setWidth( m_viewportWidth = s.width() );
-        setHeight( m_viewportHeight = s.height() );
+        setWidth( m_viewportWidth = (overrideW ? m_view->visibleWidth() : viewport.width()) );
+        setHeight( m_viewportHeight = (overrideH ? m_view->visibleHeight() : viewport.height()) );
     }
     layer()->resize( qMax( m_cachedDocWidth,int( m_width ) ), qMax( m_cachedDocHeight,m_height ) );
 }
