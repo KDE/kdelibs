@@ -336,7 +336,7 @@ NodeImpl *HTMLFormCollectionImpl::item( unsigned long index ) const
     QList<HTMLGenericFormElementImpl*>& l = static_cast<HTMLFormElementImpl*>( m_refNode )->formElements;
     for (unsigned i = strt; i < (unsigned)l.count(); i++)
     {
-        if (l.at( i )->isEnumeratable())
+        if (l.at( i )->isEnumerable())
         {
             if (dist == 0)
             {
@@ -358,7 +358,7 @@ unsigned long HTMLFormCollectionImpl::calcLength(NodeImpl *start) const
     unsigned length = 0;
     QList<HTMLGenericFormElementImpl*> l = static_cast<HTMLFormElementImpl*>( m_refNode )->formElements;
     for ( unsigned i = 0; i < (unsigned)l.count(); i++ )
-        if ( l.at( i )->isEnumeratable() )
+        if ( l.at( i )->isEnumerable() )
             ++length;
     return length;
 }
@@ -379,7 +379,7 @@ NodeImpl *HTMLFormCollectionImpl::nextNamedItem( const DOMString &name ) const
     for ( ; currentNamePos < (unsigned)l.count(); ++currentNamePos )
     {
         HTMLGenericFormElementImpl* el = l.at(currentNamePos);
-        if (el->isEnumeratable() &&
+        if (el->isEnumerable() &&
              ((el->getAttribute(ATTR_ID)   == name) ||
               (el->getAttribute(ATTR_NAME) == name)))
         {

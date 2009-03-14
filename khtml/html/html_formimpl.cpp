@@ -127,7 +127,7 @@ long HTMLFormElementImpl::length() const
     int len = 0;
     QListIterator<HTMLGenericFormElementImpl*> it(formElements);
     while (it.hasNext())
-	if (it.next()->isEnumeratable())
+	if (it.next()->isEnumerable())
 	    ++len;
 
     return len;
