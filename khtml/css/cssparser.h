@@ -28,6 +28,7 @@
 #include <dom/dom_string.h>
 #include <misc/htmlnames.h>
 #include <wtf/Vector.h>
+#include <xml/dom_docimpl.h>
 
 namespace khtml {
     class MediaQuery;
@@ -113,11 +114,16 @@ namespace DOM {
 
 	static CSSParser *current() { return currentParser; }
 
-        unsigned int getLocalNameId(const DOMString& str) {
-            LocalName localname = LocalName::fromString(str);
-            boundLocalNames.append(localname);
-            return localname.id();
-        }
+    unsigned int getLocalNameId(const DOMString& str) {
+        LocalName localname;
+        DOM::DocumentImpl *doc = document();
+        if (doc && doc->isHTMLDocument())
+            localname = LocalName::fromString(str, khtml::IDS_NormalizeLower);
+        else
+            localname = LocalName::fromString(str);
+        boundLocalNames.append(localname);
+        return localname.id();
+    }
 
 	DOM::DocumentImpl *document() const;
 
