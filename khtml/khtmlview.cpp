@@ -904,8 +904,17 @@ void KHTMLView::resizeEvent (QResizeEvent* /*e*/)
 
     QApplication::sendPostedEvents(viewport(), QEvent::Paint);
 
-    if ( m_part && m_part->xmlDocImpl() )
-        m_part->xmlDocImpl()->dispatchWindowEvent( EventImpl::RESIZE_EVENT, false, false );
+    if ( m_part && m_part->xmlDocImpl() ) {
+        if (m_part->parentPart()) {
+            // sub-frame : queue the resize event until our toplevel is done layouting
+            khtml::ChildFrame *cf = m_part->parentPart()->frame( m_part );
+            cf->m_partContainerElement->postResizeEvent();
+        } else {
+            // toplevel : dispatch sub-frames'resize events before our own
+            HTMLPartContainerElementImpl::sendPostedResizeEvents();
+            m_part->xmlDocImpl()->dispatchWindowEvent( EventImpl::RESIZE_EVENT, false, false );
+        }
+    }
 }
 
 void KHTMLView::paintEvent( QPaintEvent *e )
