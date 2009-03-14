@@ -1689,7 +1689,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
                 addDependency(OtherStateDependency, e);
                 HTMLGenericFormElementImpl *form;
                 form = static_cast<HTMLGenericFormElementImpl*>(e);
-                return !form->disabled();
+                return !form->disabled() && !form->isHiddenInput();
             }
             break;
         }
@@ -1698,7 +1698,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
                 addDependency(OtherStateDependency, e);
                 HTMLGenericFormElementImpl *form;
                 form = static_cast<HTMLGenericFormElementImpl*>(e);
-                return form->disabled();
+                return form->disabled() && !form->isHiddenInput();
             }
             break;
         }

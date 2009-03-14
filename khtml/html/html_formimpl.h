@@ -155,7 +155,7 @@ public:
     void setDisabled(bool _disabled);
 
     virtual bool isFocusable() const;
-    virtual bool isEnumeratable() const { return false; }
+    virtual bool isEnumerable() const { return false; }
     
     virtual bool isDefault() const { return false; }
 
@@ -166,6 +166,7 @@ public:
     void setName(const DOMString& name);
 
     virtual bool isGenericFormElement() const { return true; }
+    virtual bool isHiddenInput() const { return false; }
 
     /*
      * override in derived classes to get the encoded name=value pair
@@ -203,7 +204,7 @@ public:
     };
 
     virtual Id id() const;
-    virtual bool isEnumeratable() const { return true; }
+    virtual bool isEnumerable() const { return true; }
 
     DOMString type() const;
     typeEnum buttonType() const { return KDE_CAST_BF_ENUM(typeEnum, m_type); }
@@ -267,8 +268,9 @@ public:
 
     virtual Id id() const;
 
-    virtual bool isEnumeratable() const { return inputType() != IMAGE; }
+    virtual bool isEnumerable() const { return inputType() != IMAGE; }
     virtual bool isDefault() const { return m_defaultChecked; }
+    virtual bool isHiddenInput() const { return inputType() == HIDDEN; }
 
     bool autoComplete() const { return m_autocomplete; }
 
@@ -396,7 +398,7 @@ public:
     long selectedIndex() const;
     void setSelectedIndex( long index );
 
-    virtual bool isEnumeratable() const { return true; }
+    virtual bool isEnumerable() const { return true; }
 
     long length() const;
 
@@ -472,7 +474,7 @@ public:
     void setSelectedIndex( long index );
 
     // ### this is just a rough guess
-    virtual bool isEnumeratable() const { return false; }
+    virtual bool isEnumerable() const { return false; }
 
     virtual void parseAttribute(AttributeImpl *attr);
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
@@ -555,7 +557,7 @@ public:
 
     WrapMethod wrap() const { return m_wrap; }
 
-    virtual bool isEnumeratable() const { return true; }
+    virtual bool isEnumerable() const { return true; }
 
     DOMString type() const;
 
