@@ -75,6 +75,12 @@
 
 #include <rendering/render_replaced.h>
 
+#if QT_VERSION < 0x040500
+  #define SCROLLBAR_WIDTH_HACK
+#include <QStyle>
+#include <QLayout>
+#include <QStyleOption>
+#endif
 
 using namespace KJS;
 using namespace DOM;
@@ -903,10 +909,15 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       int ret = part->view()->visibleHeight();
       // match Gecko which does not subtract the scrollbars
       if (part->view()->horizontalScrollBar()->isVisible()) {
-          ret += part->view()->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
-          int lvs = part->view()->style()->pixelMetric(QStyle::PM_LayoutVerticalSpacing);
-          if (lvs > 0)
-              ret += lvs;
+          ret += part->view()->horizontalScrollBar()->sizeHint().height();
+#ifdef SCROLLBAR_WIDTH_HACK
+          // ### hackish turnaround for a bug in QAbstractScrollArea triggered by Oxygen.
+          QStyleOption opt(0);
+          opt.init(part->view());
+          if (part->view()->style()->styleHint(QStyle::SH_ScrollView_FrameOnlyAroundContents, &opt, part->view())) {
+              ret += part->view()->style()->pixelMetric(QStyle::PM_DefaultFrameWidth)*2;
+          }
+#endif
       }
       return jsNumber(ret);
     }
@@ -917,10 +928,15 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       int ret = part->view()->visibleWidth();
       // match Gecko which does not subtract the scrollbars
       if (part->view()->verticalScrollBar()->isVisible()) {
-          ret += part->view()->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
-          int lhs = part->view()->style()->pixelMetric(QStyle::PM_LayoutHorizontalSpacing);
-          if (lhs > 0)
-              ret += lhs;
+          ret += part->view()->verticalScrollBar()->sizeHint().width();
+#ifdef SCROLLBAR_WIDTH_HACK
+          // ### hackish turnaround for a bug in QAbstractScrollArea triggered by Oxygen.
+          QStyleOption opt(0);
+          opt.init(part->view());
+          if (part->view()->style()->styleHint(QStyle::SH_ScrollView_FrameOnlyAroundContents, &opt, part->view())) {
+              ret += part->view()->style()->pixelMetric(QStyle::PM_DefaultFrameWidth)*2;
+          }
+#endif
       }
       return jsNumber(ret);
     }
