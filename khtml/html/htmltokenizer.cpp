@@ -1177,7 +1177,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     DOMString tagName(ptr);
                     DocumentImpl *doc = parser->docPtr();
                     if (Element::khtmlValidQualifiedName(tagName)) {
-                        safeLocalName = LocalName::fromString(tagName.lower());
+                        safeLocalName = LocalName::fromString(tagName, IDS_NormalizeLower);
                         tagID = safeLocalName.id();
                     }
 #ifdef TOKEN_DEBUG
@@ -1241,7 +1241,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     if(curchar <= ' ' || curchar == '=' || curchar == '>') {
                         unsigned int a;
                         cBuffer[cBufferPos] = '\0';
-                        a = LocalName::fromString(DOMString(cBuffer).lower()).id();
+                        a = LocalName::fromString(DOMString(cBuffer), IDS_NormalizeLower).id(); // ### still deep copy?
                         if (a > ATTR_LAST_ATTR)
                             a = 0;
 
@@ -1251,7 +1251,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                                 currToken.flat = true;
                                 cBuffer[cBufferPos - 1] = '\0';
                                 if (cBufferPos>1)
-                                    a = LocalName::fromString(DOMString(cBuffer).lower()).id();
+                                    a = LocalName::fromString(DOMString(cBuffer), IDS_NormalizeLower).id();
                                 if (a > ATTR_LAST_ATTR)
                                     a = 0;
                                 cBuffer[cBufferPos - 1] = '/';

@@ -1240,7 +1240,6 @@ bool NodeImpl::isPointInsideSelection(int x, int y, const Selection &sel) const
 
 NodeListImpl* NodeImpl::getElementsByTagName(const DOMString &tagName)
 {
-        //FIXME: split into prefix and localName
     LocalName localname;
     PrefixName prefixname;
     if (tagName == "*") {
@@ -2186,14 +2185,11 @@ NamedNodeMapImpl::~NamedNodeMapImpl()
 
 NodeImpl* NamedNodeMapImpl::getNamedItem( const DOMString &name )
 {
-    DOMString prefix, localName;
-    splitPrefixLocalName(name.implementation(), prefix, localName);
-    if (htmlCompat()) {
-        prefix = prefix.lower();
-        localName = localName.lower();
-    }
-    LocalName localname = LocalName::fromString(localName);
-    return getNamedItem(localname.id(), PrefixName::fromString(prefix), false);
+    PrefixName prefix;
+    LocalName  localName;
+    splitPrefixLocalName(name, prefix, localName, htmlCompat());
+
+    return getNamedItem(localName.id(), prefix, false);
 }
 
 Node NamedNodeMapImpl::setNamedItem( const Node &arg, int& exceptioncode )
@@ -2209,14 +2205,11 @@ Node NamedNodeMapImpl::setNamedItem( const Node &arg, int& exceptioncode )
 
 Node NamedNodeMapImpl::removeNamedItem( const DOMString &name, int& exceptioncode )
 {
-    DOMString prefix, localName;
-    splitPrefixLocalName(name.implementation(), prefix, localName);
-    if (htmlCompat()) {
-        prefix = prefix.lower();
-        localName = localName.lower();
-    }
-    LocalName localname = LocalName::fromString(localName);
-    Node r = removeNamedItem(localname.id(), PrefixName::fromString(prefix), false, exceptioncode);
+    PrefixName prefix;
+    LocalName  localName;
+    splitPrefixLocalName(name, prefix, localName, htmlCompat());
+    
+    Node r = removeNamedItem(localName.id(), prefix, false, exceptioncode);
     return r;
 }
 

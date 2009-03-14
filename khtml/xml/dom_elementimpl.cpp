@@ -598,11 +598,8 @@ bool ElementImpl::hasAttribute( const DOMString& name ) const
 bool ElementImpl::hasAttributeNS( const DOMString &namespaceURI,
                                   const DOMString &localName ) const
 {
-    DOMString local = localName;
-    if (m_htmlCompat)
-        local = local.lower();
     NamespaceName namespacename = NamespaceName::fromString(namespaceURI);
-    LocalName localname = LocalName::fromString(local);
+    LocalName localname = LocalName::fromString(localName, m_htmlCompat ? IDS_NormalizeLower : IDS_CaseSensitive);
     NodeImpl::Id id = makeId(namespacename.id(), localname.id());
     if (!id) return false;
     if (!namedAttrMap) return false;
@@ -696,11 +693,10 @@ DOMString ElementImpl::getAttributeNS( const DOMString &namespaceURI,
       exceptioncode = DOMException::NOT_FOUND_ERR;
       return DOMString();
     }
-    DOMString local = localName;
-    if (m_htmlCompat)
-        local = local.lower();
+
+    LocalName localname = LocalName::fromString(localName, m_htmlCompat ? IDS_NormalizeLower : IDS_CaseSensitive);
     NamespaceName namespacename = NamespaceName::fromString(namespaceURI);
-    LocalName localname = LocalName::fromString(local);
+
     NodeImpl::Id id = makeId(namespacename.id(), localname.id());
     return getAttribute(id, emptyPrefixName, true);
 }
@@ -713,11 +709,10 @@ void ElementImpl::removeAttributeNS( const DOMString &namespaceURI,
         exceptioncode = DOMException::NOT_FOUND_ERR;
         return;
     }
-    DOMString local = localName;
-    if (m_htmlCompat)
-        local = local.lower();
+
     NamespaceName namespacename = NamespaceName::fromString(namespaceURI);
-    LocalName localname = LocalName::fromString(local);
+    LocalName localname = LocalName::fromString(localName, m_htmlCompat ? IDS_NormalizeLower : IDS_CaseSensitive);
+
     NodeImpl::Id id = makeId(namespacename.id(), localname.id());
     attributes(false)->removeNamedItem(id, emptyPrefixName, true, exceptioncode);
 }
@@ -730,11 +725,10 @@ AttrImpl* ElementImpl::getAttributeNodeNS( const DOMString &namespaceURI,
       exceptioncode = DOMException::NOT_FOUND_ERR;
       return 0;
     }
-    DOMString local = localName;
-    if (m_htmlCompat)
-        local = local.lower();
+
     NamespaceName namespacename = NamespaceName::fromString(namespaceURI);
-    LocalName localname = LocalName::fromString(local);
+    LocalName localname = LocalName::fromString(localName, m_htmlCompat ? IDS_NormalizeLower : IDS_CaseSensitive);    
+    
     NodeImpl::Id id = makeId(namespacename.id(), localname.id());
     if (!attributes(true)) return 0;
     return static_cast<AttrImpl*>(attributes()->getNamedItem(id, emptyPrefixName, true));

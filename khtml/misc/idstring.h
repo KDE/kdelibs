@@ -32,6 +32,15 @@ using DOM::DOMString;
 
 namespace khtml {
 
+// When we're working with a case-insensitive language, IDString can lookup
+// IDs from strings ignoring the case itself; however it needs to be told
+// what the canonical case is, so it knows what hash code to look for.
+enum CaseNormalizeMode {
+    IDS_CaseSensitive,
+    IDS_NormalizeUpper, 
+    IDS_NormalizeLower  
+};
+
 /**
  An IDString is used to manage an identifier namespace that has some predefined constants,
  but can be extended with new ones at runtime
@@ -79,9 +88,9 @@ public:
         return nw;
     }
 
-    static IDString<TableFactory> fromString(const DOMString& string) {
+    static IDString<TableFactory> fromString(const DOMString& string, CaseNormalizeMode cnm = IDS_CaseSensitive) {
         IDString<TableFactory> nw;
-        nw.m_id = TableFactory::idTable()->grabId(string); // Refs it already.
+        nw.m_id = TableFactory::idTable()->grabId(string, cnm); // Refs it already.
         return nw;
     }
 
@@ -105,6 +114,21 @@ class IDTableBase {
         Mapping(const DOMString& _name): refCount(0), name(_name)
         {}
     };
+    
+
+public:
+    // Wraps around DOMString and lets us trigger key sensitivity for lookup;
+    // that's done via a global fiddle --- warning, warning, warning.
+    struct MappingKey
+    {
+        DOMString str;
+        bool operator==(const MappingKey& other) const;
+        
+        MappingKey() {}
+        MappingKey(const DOMString& v): str(v) {}
+        
+        static CaseNormalizeMode caseNormalizationMode;
+    };
 protected:
     void refId(unsigned id) {
         if (id == 0xFFFF)
@@ -124,7 +148,7 @@ protected:
         return m_mappings[id].name;
     }
 
-    unsigned short grabId(const DOMString& string);
+    unsigned short grabId(const DOMString& string, CaseNormalizeMode cnm);
 
 public:
     // Registers a compile-type known ID constant with the name.
@@ -139,7 +163,7 @@ private:
 
     WTF::Vector <unsigned> m_idFreeList;
     WTF::Vector <Mapping>  m_mappings;
-    QHash       <DOMString, unsigned short> m_mappingLookup;
+    QHash       <MappingKey, unsigned short> m_mappingLookup;
 };
 
 template<typename TableFactory>

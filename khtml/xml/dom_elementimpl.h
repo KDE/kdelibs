@@ -515,7 +515,7 @@ inline void splitPrefixLocalName(DOMStringImpl *qualifiedName, DOMString &prefix
         localName = prefix.split(colonPos+1);
         prefix.implementation()->truncate(colonPos);
     } else
-        localName = qualifiedName->copy();
+        localName = qualifiedName;
 }
 
 inline void splitPrefixLocalName(const DOMString& qualifiedName, PrefixName& prefix, LocalName& localName, bool htmlCompat = false, int colonPos = -2)
@@ -523,11 +523,12 @@ inline void splitPrefixLocalName(const DOMString& qualifiedName, PrefixName& pre
     DOMString localname, prefixname;
     splitPrefixLocalName(qualifiedName.implementation(), prefixname, localname, colonPos);
     if (htmlCompat) {
-        localname = localname.lower();
-        prefixname = prefixname.lower();
+        prefix = PrefixName::fromString(prefixname, khtml::IDS_NormalizeLower);
+        localName = LocalName::fromString(localname, khtml::IDS_NormalizeLower);
+    } else {
+        prefix = PrefixName::fromString(prefixname);
+        localName = LocalName::fromString(localname);
     }
-    prefix = PrefixName::fromString(prefixname);
-    localName = LocalName::fromString(localname);
 }
 
 // methods that could be very hot they are need to be inlined
