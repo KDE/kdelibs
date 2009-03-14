@@ -818,20 +818,8 @@ simple_css3_selector:
 
 element_name:
     IDENT {
-	CSSParser *p = static_cast<CSSParser *>(parser);
-	DOM::DocumentImpl *doc = p->document();
-	QString tag = qString($1);
-	if ( doc ) {
-	    if (doc->isHTMLDocument())
-		tag = tag.toLower();
-	    const DOMString dtag(tag);
-            $$ = makeId(p->defaultNamespace(), p->getLocalNameId(dtag));
-	} else {
-	    $$ = makeId(p->defaultNamespace(), p->getLocalNameId(tag.toLower()));
-	    // this case should never happen - only when loading
-	    // the default stylesheet - which must not contain unknown tags
-// 	    assert($$ != 0);
-	}
+      CSSParser *p = static_cast<CSSParser *>(parser);
+      $$ = makeId(p->defaultNamespace(), p->getLocalNameId(domString($1)));
     }
     | '*' {
 	$$ = makeId(static_cast<CSSParser*>(parser)->defaultNamespace(), anyLocalName);
@@ -897,25 +885,8 @@ class:
 
 attrib_id:
     IDENT maybe_space {
-	CSSParser *p = static_cast<CSSParser *>(parser);
-	DOM::DocumentImpl *doc = p->document();
-
-	QString attr = qString($1);
-	if ( doc ) {
-	    if (doc->isHTMLDocument())
-		attr = attr.toLower();
-	    const DOMString dattr(attr);
-#ifdef APPLE_CHANGES
-            $$ = doc->attrId(0, dattr.implementation(), false);
-#else
-	    $$ = makeId(emptyNamespace, p->getLocalNameId(dattr));
-#endif
-	} else {
-	    $$ = makeId(emptyNamespace, p->getLocalNameId(attr.toLower()));
-	    // this case should never happen - only when loading
-	    // the default stylesheet - which must not contain unknown attributes
-	    assert($$ != 0);
-	    }
+      CSSParser *p = static_cast<CSSParser *>(parser);
+      $$ = makeId(emptyNamespace, p->getLocalNameId(domString($1)));
     }
     ;
 
