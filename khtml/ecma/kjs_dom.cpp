@@ -1056,6 +1056,17 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   DOM::DocumentImpl& doc  = static_cast<DOM::DocumentImpl&>(node);
 
   KJS::UString str = args[0]->toString(exec);
+
+  // we can do it fast, without copying the data
+  if (id == DOMDocument::GetElementById) {
+#ifdef KJS_VERBOSE
+      kDebug(6070) << "DOMDocument::GetElementById looking for " << args[0]->toString(exec).qstring();
+#endif
+      // create DOMStringImpl without copying
+      DOMStringImpl shallowCopy(DOMStringImpl::ShallowCopy, (QChar*)str.data(), str.size());
+      return getDOMNode(exec, doc.getElementById(DOMString(&shallowCopy)));
+  }
+
   DOM::DOMString s = str.domString();
 
   switch(id) {
@@ -1087,11 +1098,6 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   case DOMDocument::GetElementsByTagNameNS: // DOM2
     return getDOMNodeList(exec,doc.getElementsByTagNameNS(args[0]->toString(exec).domString(),
                                                           args[1]->toString(exec).domString()));
-  case DOMDocument::GetElementById:
-#ifdef KJS_VERBOSE
-  kDebug(6070) << "DOMDocument::GetElementById looking for " << args[0]->toString(exec).qstring();
-#endif
-    return getDOMNode(exec,doc.getElementById(args[0]->toString(exec).domString()));
   case DOMDocument::CreateRange:
     return getDOMRange(exec,doc.createRange());
   case DOMDocument::CreateNodeIterator:
@@ -1549,6 +1555,10 @@ bool DOMNamedNodeMap::getOwnPropertySlot(ExecState *exec, const Identifier& prop
   //May be it's an index?
   if (getIndexSlot(this, *m_impl, propertyName, slot))
     return true;
+
+  // Could also be a name... A local name, that is.
+//  if (
+//  slot.setCustom(this, nameGetter)
 
   return DOMObject::getOwnPropertySlot(exec, propertyName, slot);
 }
