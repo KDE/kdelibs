@@ -240,7 +240,7 @@ Job* JobCollection::jobAt( int i )
     return d->elements->at( i )->payload();
 }
 
-const int JobCollection::jobListLength()
+/*const*/ int JobCollection::jobListLength()
 {
     QMutexLocker l( &d->mutex );
     return d->elements->size();
