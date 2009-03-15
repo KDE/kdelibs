@@ -82,7 +82,7 @@ namespace ThreadWeaver {
         Job* jobAt( int i );
 
         /** Return the number of jobs in the joblist. */
-        /*const*/ int jobListLength();
+        const int jobListLength(); // const qualifier is possibly BiC?
 
         /** Callback method for done jobs.
         */
