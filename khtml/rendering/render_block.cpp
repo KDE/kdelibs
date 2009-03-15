@@ -5,7 +5,7 @@
  *           (C) 1999-2003 Antti Koivisto (koivisto@kde.org)
  *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 2003-2008 Apple Computer, Inc.
- *           (C) 2004-2008 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2004-2009 Germain Garand (germain@ebooksfrance.org)
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2006 Charles Samuels (charles@kde.org)
  *
@@ -591,26 +591,32 @@ void RenderBlock::removeChild(RenderObject *oldChild)
     RenderObject* prev = oldChild->previousSibling();
     RenderObject* next = oldChild->nextSibling();
     bool mergedBlocks = false;
-    if (!documentBeingDestroyed() && !isInline() && !oldChild->isInline() && !oldChild->continuation() &&
-        prev && prev->isAnonymousBlock() && prev->childrenInline() &&
-        next && next->isAnonymousBlock() && next->childrenInline()) {
-        // Take all the children out of the |next| block and put them in
-        // the |prev| block.
-        RenderObject* o = next->firstChild();
-        while (o) {
-            RenderObject* no = o;
-            o = no->nextSibling();
-            prev->appendChildNode(next->removeChildNode(no));
-            no->setNeedsLayoutAndMinMaxRecalc();
+    bool checkContinuationMerge = false;
+    if (!documentBeingDestroyed() && !isInline() && !oldChild->isInline() && !oldChild->continuation()) {
+        if (prev && prev->isAnonymousBlock() && prev->childrenInline() &&
+            next && next->isAnonymousBlock() && next->childrenInline()) {
+            // Take all the children out of the |next| block and put them in
+            // the |prev| block.
+            RenderObject* o = next->firstChild();
+            while (o) {
+                RenderObject* no = o;
+                o = no->nextSibling();
+                prev->appendChildNode(next->removeChildNode(no));
+            }
+
+            // Detach the now-empty block.
+            static_cast<RenderBlock*>(next)->deleteLineBoxTree();
+            next->detach();
+
+            mergedBlocks = true;
         }
-        prev->setNeedsLayoutAndMinMaxRecalc();
 
-        // Nuke the now-empty block.
-        static_cast<RenderBlock*>(next)->deleteLineBoxTree();
-        next->detach();
-
-        mergedBlocks = true;
-    }
+        // Check if there are continuations we could merge
+        checkContinuationMerge = (mergedBlocks || (!prev && !next)) && continuation() && isAnonymousBlock() &&
+                                 continuation()->parent() && continuation()->parent()->isAnonymousBlock() && continuation()->isRenderInline() && 
+                                 previousSibling() && previousSibling()->isAnonymousBlock() && previousSibling()->lastChild() && previousSibling()->lastChild()->continuation() &&
+                                 previousSibling()->lastChild()->isRenderInline() && (previousSibling()->lastChild()->continuation() == this);
+    } 
 
     RenderFlow::removeChild(oldChild);
 
@@ -618,19 +624,48 @@ void RenderBlock::removeChild(RenderObject *oldChild)
         // The remerge has knocked us down to containing only a single anonymous
         // box.  We can go ahead and pull the content right back up into our
         // box.
-        RenderBlock* anonBlock = static_cast<RenderBlock*>(removeChildNode(prev));
+        RenderBlock* anonBlock = static_cast<RenderBlock*>(prev);
         m_childrenInline = true;
         RenderObject* o = anonBlock->firstChild();
         while (o) {
             RenderObject* no = o;
             o = no->nextSibling();
             appendChildNode(anonBlock->removeChildNode(no));
-            no->setNeedsLayoutAndMinMaxRecalc();
         }
 
-        // Nuke the now-empty block.
+        // Detach the now-empty block.
         anonBlock->deleteLineBoxTree();
         anonBlock->detach();
+    }
+    if (checkContinuationMerge && (!prev && !next || m_childrenInline)) {
+        // |oldChild| was a block that splitted an inline into continuations.
+        // Now that we only have inline content left, we may merge back those continuations
+        // into a single inline.
+        prev = previousSibling()->lastChild();
+        assert(prev->isRenderInline());
+        RenderObject* o = firstChild();
+        // Move our remaining children back to our antecedent in the
+        // continuation chain
+        while (o) {
+                RenderObject* no = o;
+                o = no->nextSibling();
+                prev->appendChildNode(removeChildNode(no));
+        }
+        // And move our continuation's content to the same location
+        next = continuation();
+        o = next->firstChild();
+        while (o) {
+                RenderObject* no = o;
+                o = no->nextSibling();
+                prev->appendChildNode(next->removeChildNode(no));
+        }
+
+        static_cast<RenderFlow*>(prev)->setContinuation( next->continuation() );
+        setContinuation( 0 );
+
+        next->detach();
+        deleteLineBoxTree();
+        detach();
     }
 }
 
