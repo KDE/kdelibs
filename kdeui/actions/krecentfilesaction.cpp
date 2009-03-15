@@ -77,9 +77,12 @@ void KRecentFilesActionPrivate::init()
   delete q->menu();
   q->setMenu(new KMenu());
   q->setToolBarMode(KSelectAction::MenuMode);
-  m_noEntriesAction=new QAction(i18n("No entries"),q->selectableActionGroup());
+  m_noEntriesAction = q->menu()->addAction(i18n("No entries"));
   m_noEntriesAction->setEnabled(false);
-  q->KSelectAction::addAction(m_noEntriesAction);
+  clearSeparator = q->menu()->addSeparator();
+  clearSeparator->setVisible(false);
+  clearAction = q->menu()->addAction(i18n("Clear list"), q, SLOT(clear()));
+  clearAction->setVisible(false);
   q->connect(q, SIGNAL(triggered(QAction*)), SLOT(_k_urlSelected(QAction*)));
 }
 
@@ -145,7 +148,9 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
         delete removeAction(selectableActionGroup()->actions().first());
     }
 
-    if (d->m_noEntriesAction) removeAction(d->m_noEntriesAction)->deleteLater();
+    d->m_noEntriesAction->setVisible(false);
+    d->clearSeparator->setVisible(true);
+    d->clearAction->setVisible(true);
     // add file to list
     const QString title = tmpName + " [" + file + ']';
     QAction* action = new QAction(title, selectableActionGroup());
@@ -205,10 +210,9 @@ void KRecentFilesAction::clear()
     KSelectAction::clear();
     d->m_shortNames.clear();
     d->m_urls.clear();
-    if (d->m_noEntriesAction) KSelectAction::removeAction(d->m_noEntriesAction)->deleteLater();
-    d->m_noEntriesAction=new QAction(i18n("No entries"),selectableActionGroup());
-    d->m_noEntriesAction->setEnabled(false);
-    KSelectAction::addAction(d->m_noEntriesAction);
+    d->m_noEntriesAction->setVisible(true);
+    d->clearSeparator->setVisible(false);
+    d->clearAction->setVisible(false);
 }
 
 void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
@@ -261,7 +265,9 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
     }
     if (thereAreEntries)
     {
-        if (d->m_noEntriesAction) KSelectAction::removeAction(d->m_noEntriesAction)->deleteLater();
+        d->m_noEntriesAction->setVisible(false);
+        d->clearSeparator->setVisible(true);
+        d->clearAction->setVisible(true);
     }
 }
 
@@ -279,8 +285,6 @@ void KRecentFilesAction::saveEntries( const KConfigGroup &_cg )
     cg.deleteGroup();
 
     // write file list
-    if ( (selectableActionGroup()->actions().count()>1) ||
-	( (selectableActionGroup()->actions().count()==1) && (selectableActionGroup()->actions()[0]!=d->m_noEntriesAction) ) )
     for ( int i = 1 ; i <= selectableActionGroup()->actions().count() ; i++ )
     {
         key = QString( "File%1" ).arg( i );

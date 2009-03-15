@@ -38,7 +38,9 @@ public:
   KRecentFilesActionPrivate()
   {
     m_maxItems = 10;
-    m_noEntriesAction=0;
+    m_noEntriesAction = 0;
+    clearSeparator = 0;
+    clearAction = 0;
   }
 
   virtual ~KRecentFilesActionPrivate()
@@ -52,7 +54,9 @@ public:
   int m_maxItems;
   QMap<QAction*, QString> m_shortNames;
   QMap<QAction*, KUrl> m_urls;
-  QPointer<QAction> m_noEntriesAction;
+  QAction *m_noEntriesAction;
+  QAction *clearSeparator;
+  QAction *clearAction;
 };
 
 /* vim: et sw=2 ts=2

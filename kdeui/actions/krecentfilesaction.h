@@ -102,11 +102,14 @@ public:
    */
   virtual QAction* removeAction(QAction* action);
 
+public Q_SLOTS:
   /**
-   * Reimplemented for internal reasons.
+   * Clears the recent files list.
+   * Note that there is also an action shown to the user for clearing the list.
    */
   virtual void clear();
 
+public:
   /**
    *  Returns the maximum of items in the recent files list.
    */
