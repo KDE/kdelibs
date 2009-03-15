@@ -96,6 +96,12 @@ TopLevel::TopLevel(QWidget *parent)
     conn(i7,int);
     b1->layout()->addWidget(i7);
 
+    i8 = new KIntNumInput(i7, 0, b1, 10);
+    i8->setLabel("plural test:", Qt::AlignVCenter|Qt::AlignLeft);
+    i8->setRange(0, 100, 1);
+    i8->setSuffix( ki18np( " suffix", " suffixes" ) );
+    b1->layout()->addWidget(i8);
+
     l->addWidget(b1);
 
     QGroupBox* b2 = new QGroupBox("KDoubleNumInput", this);

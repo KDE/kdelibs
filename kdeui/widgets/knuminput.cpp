@@ -35,6 +35,7 @@
 
 #include <kdebug.h>
 #include <kdialog.h>
+#include <klocalizedstring.h>
 
 static inline int calcDiffByTen(int x, int y)
 {
@@ -225,10 +226,22 @@ void KNumInput::setSteps(int minor, int major)
 class KIntSpinBox::KIntSpinBoxPrivate
 {
 public:
-    KIntSpinBoxPrivate(KIntSpinBox *q, int val_base = 10): q(q), val_base(val_base) {}
+    KIntSpinBoxPrivate(KIntSpinBox *q, int val_base = 10): q(q), val_base(val_base)
+    {
+        connect(q, SIGNAL(valueChanged(int)), q, SLOT(updateSuffix(int)));
+    }
+
+    void updateSuffix(int value)
+    {
+        if (!pluralSuffix.isEmpty()) {
+            KLocalizedString s = pluralSuffix;
+            q->setSuffix(s.subs(value).toString());
+        }
+    }
 
     KIntSpinBox *q;
     int val_base;
+    KLocalizedString pluralSuffix;
 };
 
 KIntSpinBox::KIntSpinBox(QWidget *parent)
@@ -286,6 +299,14 @@ void KIntSpinBox::setEditFocus(bool mark)
     }
 }
 
+void KIntSpinBox::setSuffix(const KLocalizedString& suffix)
+{
+    d->pluralSuffix = suffix;
+    if (suffix.isEmpty())
+        setSuffix(QString());
+    else
+        d->updateSuffix(value());
+}
 
 // ----------------------------------------------------------------------------
 
@@ -457,6 +478,12 @@ void KIntNumInput::setSuffix(const QString &suffix)
 {
     d->intSpinBox->setSuffix(suffix);
 
+    layout(true);
+}
+
+void KIntNumInput::setSuffix(const KLocalizedString& suffix)
+{
+    d->intSpinBox->setSuffix(suffix);
     layout(true);
 }
 

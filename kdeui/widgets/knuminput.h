@@ -33,6 +33,7 @@ class QValidator;
 
 class KIntSpinBox;
 class KNumInputPrivate;
+class KLocalizedString;
 
 /**
  * You need to inherit from this class if you want to implement K*NumInput
@@ -338,6 +339,14 @@ public Q_SLOTS:
      * @see QSpinBox::setSuffix(), #setPrefix()
      */
     void setSuffix(const QString &suffix);
+
+    /**
+     * Sets the suffix to @p suffix.
+     * Use this to add a plural-aware suffix, e.g. by using ki18np("singular", "plural").
+     *
+     * @since 4.3
+     */
+    void setSuffix(const KLocalizedString &suffix);
 
     /**
      * Sets the prefix to @p prefix.
@@ -704,6 +713,16 @@ public:
      */
     void setEditFocus(bool mark);
 
+    /**
+     * Sets the suffix to @p suffix.
+     * Use this to add a plural-aware suffix, e.g. by using ki18np("singular", "plural").
+     *
+     * @since 4.3
+     */
+    void setSuffix(const KLocalizedString &suffix);
+
+    using QSpinBox::setSuffix;
+
 protected:
 
     /**
@@ -724,6 +743,7 @@ private:
     KIntSpinBoxPrivate *const d;
     
     Q_DISABLE_COPY(KIntSpinBox)
+    Q_PRIVATE_SLOT(d, void updateSuffix(int))
 };
 
 #endif // K_NUMINPUT_H
