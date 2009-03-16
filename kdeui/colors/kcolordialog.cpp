@@ -1812,4 +1812,3 @@ void KColorDialog::KColorDialogPrivate::setHsvEdit(const QColor &col)
 
 #include "kcolordialog.moc"
 #include "kcolordialog_p.moc"
-//#endif
