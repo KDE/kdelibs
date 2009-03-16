@@ -33,7 +33,8 @@
 #include <kcombobox.h>
 #include <klineedit.h>
 #include <klocale.h>
-#include <kdebug.h>
+#include <kdatetime.h>
+//#include <kdebug.h>
 
 /** @internal */
 KCupsOptionsJobWidget::KCupsOptionsJobWidget( QPrintDialog *parent ) : KCupsOptionsWidget( parent )
@@ -56,14 +57,20 @@ void KCupsOptionsJobWidget::setupCupsOptions( QStringList &cupsOptions )
 {
     switch ( jobHold() )
     {
-        case NoHold       :                                                 break; //default
+        case NoHold       : break; //default
         case Indefinite   : setCupsOption( cupsOptions, "job-hold-until", "indefinite"   ); break;
         case DayTime      : setCupsOption( cupsOptions, "job-hold-until", "day-time"     ); break;
         case Night        : setCupsOption( cupsOptions, "job-hold-until", "night"        ); break;
         case SecondShift  : setCupsOption( cupsOptions, "job-hold-until", "second-shift" ); break;
         case ThirdShift   : setCupsOption( cupsOptions, "job-hold-until", "third-shift"  ); break;
         case Weekend      : setCupsOption( cupsOptions, "job-hold-until", "weekend"      ); break;
-        case SpecificTime : setCupsOption( cupsOptions, "job-hold-until", jobHoldTime().toString("HH:mm") ); break;
+        case SpecificTime : //CUPS expects the time in UTC, user has entered in local time, so get the UTS equivalent
+                            KDateTime localDateTime = KDateTime::currentLocalDateTime();
+                            //Check if time is for tomorrow in case of DST change overnight
+                            if ( jobHoldTime() < localDateTime.time() ) localDateTime.addDays(1);
+                            localDateTime.setTime( jobHoldTime() );
+                            setCupsOption( cupsOptions, "job-hold-until", localDateTime.toUtc().time().toString("HH:mm") );
+                            break;
     }
 
     if ( !jobBilling().isEmpty() ) {
