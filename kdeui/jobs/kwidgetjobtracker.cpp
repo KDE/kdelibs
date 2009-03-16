@@ -42,6 +42,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kwindowsystem.h>
+#include <kseparator.h>
 
 void KWidgetJobTracker::Private::_k_slotShowProgressWidget()
 {
@@ -210,13 +211,13 @@ bool KWidgetJobTracker::Private::ProgressWidget::keepOpen() const
 
 void KWidgetJobTracker::Private::ProgressWidget::ref()
 {
-    refCount++;
+    ++refCount;
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::deref()
 {
     if (refCount) {
-        refCount--;
+        --refCount;
     }
 
     if (!refCount) {
@@ -423,13 +424,13 @@ void KWidgetJobTracker::Private::ProgressWidget::slotClean()
 
 void KWidgetJobTracker::Private::ProgressWidget::suspended()
 {
-    pauseButton->setText(i18n("Resume"));
+    pauseButton->setText(i18n("&Resume"));
     suspendedProperty = true;
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::resumed()
 {
-    pauseButton->setText(i18n("Pause"));
+    pauseButton->setText(i18n("&Pause"));
     suspendedProperty = false;
 }
 
@@ -450,13 +451,10 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
                              KIconLoader::global()->loadIcon( "document-save", KIconLoader::NoGroup, 16 ) );
 
     QVBoxLayout *topLayout = new QVBoxLayout(this);
-    topLayout->setMargin(KDialog::marginHint());
-    topLayout->setSpacing(KDialog::spacingHint() );
-    topLayout->addStrut( 360 );   // makes dlg at least that wide
 
     QGridLayout *grid = new QGridLayout();
     topLayout->addLayout(grid);
-    grid->addItem(new QSpacerItem(KDialog::spacingHint(),0),0,1); //addColSpacing(1, KDialog::spacingHint());
+    grid->addItem(new QSpacerItem(KDialog::spacingHint(),0),0,1);
     // filenames or action name
     sourceInvite = new QLabel(i18nc("The source url of a job", "Source:"), this);
     grid->addWidget(sourceInvite, 0, 0);
@@ -482,7 +480,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     progressHBox->addWidget(progressBar);
 
     suspendedProperty = false;
-    pauseButton = new KPushButton(i18n("Pause"), this);
+    pauseButton = new KPushButton(i18n("&Pause"), this);
     QObject::connect(pauseButton, SIGNAL(clicked()),
                      this, SLOT(_k_pauseResumeClicked()));
     progressHBox->addWidget(pauseButton);
@@ -498,8 +496,6 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     hBox->addWidget(resumeLabel);
 
     progressLabel = new QLabel(this);
-/*    progressLabel->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding,
-                                            QSizePolicy::Preferred));*/
     progressLabel->setAlignment(Qt::AlignRight);
     hBox->addWidget(progressLabel);
 
@@ -509,10 +505,8 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     speedLabel = new QLabel(this);
     hBox->addWidget(speedLabel, 1);
 
-    QFrame *line = new QFrame(this);
-    line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Sunken);
-    topLayout->addWidget(line);
+    KSeparator *separator = new KSeparator(Qt::Horizontal, this);
+    topLayout->addWidget(separator);
 
     keepOpenCheck = new QCheckBox(i18n("&Keep this window open after transfer is complete"), this);
     QObject::connect(keepOpenCheck, SIGNAL(toggled(bool)),
