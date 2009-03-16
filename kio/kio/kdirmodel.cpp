@@ -689,9 +689,28 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 if (count == ChildCountUnknown && item.isReadable()) {
                     const QString path = item.localPath();
                     if (!path.isEmpty()) {
-#if 0 // slow
-                        QDir dir(path);
-                        count = dir.entryList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::System).count();
+//                        slow
+//                        QDir dir(path);
+//                        count = dir.entryList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::System).count();
+#ifdef Q_WS_WIN
+                        QString s = path + QLatin1String( "\\*.*" );
+                        s.replace('/', '\\');
+                        count = 0;
+                        WIN32_FIND_DATA findData;
+                        HANDLE hFile = FindFirstFile( (LPWSTR)s.utf16(), &findData );
+                        if( hFile != INVALID_HANDLE_VALUE ) {
+                            do {
+                                ++count;
+                                if( findData.cFileName[0] == '.' &&
+                                    findData.cFileName[1] == '\0' )
+                                    --count;
+                                if( findData.cFileName[0] == '.' &&
+                                    findData.cFileName[1] == '.' &&
+                                    findData.cFileName[2] == '\0' )
+                                    --count;
+                            } while( FindNextFile( hFile, &findData ) != 0 );
+                        }
+                        FindClose( hFile );
 #else
                         DIR* dir = ::opendir(QFile::encodeName(path));
                         if (dir) {
