@@ -59,10 +59,18 @@ void KWindowInfo::Private::updateData()
 {
     ProcessInfoRec pinfo;
     char processName[512];
+#ifdef Q_OS_MAC32
     FSSpec appSpec;
+#else
+    FSRef ref;
+#endif
     pinfo.processInfoLength = sizeof pinfo;
     pinfo.processName = (unsigned char*) processName;
+#ifdef Q_OS_MAC32
     pinfo.processAppSpec = &appSpec;
+#else
+    pinfo.processAppRef = &ref;
+#endif
     GetProcessInformation(&m_psn, &pinfo);
     name = QString::fromAscii(processName+1, processName[0]);
 
@@ -74,10 +82,14 @@ void KWindowInfo::Private::updateData()
         }
     }
 
+#ifdef Q_OS_MAC32
     iconSpec = appSpec;
 
     FSRef ref;
     FSpMakeFSRef(&appSpec, &ref);
+#else
+    iconSpec = ref;
+#endif
     // check if it is in an application bundle (foo.app/Contents/MacOS/plasma)
     HFSUniStr255 name;
     FSRef parentRef;
@@ -88,10 +100,14 @@ void KWindowInfo::Private::updateData()
         ref = parentRef;
         FSGetCatalogInfo(&ref, kFSCatInfoNone, 0, &name, 0, &parentRef);
         if (QString::fromUtf16(name.unicode, name.length) == "Contents") {
+#ifdef Q_OS_MAC32
             FSSpec spec;
             ref = parentRef;
             FSGetCatalogInfo(&ref, kFSCatInfoNone, 0, &name, &spec, &parentRef);
             iconSpec = spec;
+#else
+            iconSpec = parentRef;
+#endif
         }
     }
 

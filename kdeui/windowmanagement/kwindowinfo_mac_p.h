@@ -43,7 +43,11 @@ struct KWindowInfo::Private
     pid_t pid() const { return m_pid; }
     void setProcessSerialNumber(const ProcessSerialNumber& psn);
     QString name;
+#ifdef Q_OS_MAC32
     FSSpec iconSpec;
+#else
+    FSRef iconSpec;
+#endif
     bool loadedData;
     void updateData();
     AXUIElementRef m_axWin;
