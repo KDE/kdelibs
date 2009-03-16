@@ -438,7 +438,11 @@ void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
         flags |= O_TRUNC;
     }
 
-    int fd = KDE_open( openPath.data(), flags);
+    int fd = -1;
+    if ( flags & O_CREAT)
+       KDE_open( openPath.data(), flags, 0666);
+    else
+       KDE_open( openPath.data(), flags);
     if ( fd < 0 ) {
         error( KIO::ERR_CANNOT_OPEN_FOR_READING, openPath );
         return;
