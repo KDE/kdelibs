@@ -528,8 +528,8 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
         }
     }
     else {
-        KMenu suggestions;
-        KMenu menu;
+        QMenu suggestions; //don't use KMenu here we don't want auto managment accelerator
+        QMenu menu; //don't use KMenu here we don't want auto managment accelerator
 
         //Add the suggestions to the popup menu
         QStringList reps = highlighter()->suggestionsForWord(selectedWord);
