@@ -171,7 +171,6 @@ void KTabWidget::Private::updateTab( int index )
   }
 
   title = KStringHandler::rsqueeze( title, m_currentMaxLength ).leftJustified( m_minLength, ' ' );
-  title.replace( '&', "&&" );
 
   if ( m_parent->QTabWidget::tabText( index ) != title )
     m_parent->QTabWidget::setTabText( index, title );
