@@ -56,6 +56,54 @@ static DWORD CALLBACK CopyProgressRoutine(
     return PROGRESS_CONTINUE;
 }
 
+static UDSEntry createUDSEntryWin( const QFileInfo &fileInfo )
+{
+    UDSEntry entry;
+
+    entry.insert( KIO::UDSEntry::UDS_NAME, fileInfo.fileName() );
+    if( fileInfo.isSymLink() ) {
+        entry.insert( KIO::UDSEntry::UDS_TARGET_URL, fileInfo.symLinkTarget() );
+/* TODO - or not useful on windows?
+        if ( details > 1 ) {
+            // It is a link pointing to nowhere
+            type = S_IFMT - 1;
+            access = S_IRWXU | S_IRWXG | S_IRWXO;
+
+            entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, type );
+            entry.insert( KIO::UDSEntry::UDS_ACCESS, access );
+            entry.insert( KIO::UDSEntry::UDS_SIZE, 0LL );
+            goto notype;
+
+        }
+*/
+    }
+    int type = S_IFREG;
+    int access = 0;
+    if( fileInfo.isDir() )
+        type = S_IFDIR;
+    else if( fileInfo.isSymLink() )
+        type = S_IFLNK;
+    if( fileInfo.isReadable() )
+        access |= S_IRUSR;
+    if( fileInfo.isWritable() )
+        access |= S_IWUSR;
+    if( fileInfo.isExecutable() )
+        access |= S_IXUSR;
+
+    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, type );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS, access );
+    entry.insert( KIO::UDSEntry::UDS_SIZE, fileInfo.size() );
+    if( fileInfo.isHidden() )
+      entry.insert( KIO::UDSEntry::UDS_HIDDEN, true );
+
+    entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, fileInfo.lastModified().toTime_t() );
+    entry.insert( KIO::UDSEntry::UDS_USER, fileInfo.owner() );
+    entry.insert( KIO::UDSEntry::UDS_GROUP, fileInfo.group() );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, fileInfo.lastRead().toTime_t() );
+
+    return entry;
+}
+
 void FileProtocol::copy( const KUrl &src, const KUrl &dest,
                          int _mode, JobFlags _flags )
 {
@@ -134,6 +182,7 @@ void FileProtocol::listDir( const KUrl& url )
     }
 
     QDir dir( url.toLocalFile() );
+    dir.setFilter( QDir::AllEntries|QDir::Hidden );
 
     if ( !dir.exists() ) {
         kDebug(7101) << "========= ERR_DOES_NOT_EXIST  =========";
@@ -150,46 +199,7 @@ void FileProtocol::listDir( const KUrl& url )
     UDSEntry entry;
     while( it.hasNext() ) {
         it.next();
-        QFileInfo fileInfo = it.fileInfo();
-
-        entry.insert( KIO::UDSEntry::UDS_NAME, it.fileName() );
-        if( fileInfo.isSymLink() ) {
-            entry.insert( KIO::UDSEntry::UDS_TARGET_URL, fileInfo.symLinkTarget() );
-/* TODO - or not useful on windows?
-            if ( details > 1 ) {
-                // It is a link pointing to nowhere
-                type = S_IFMT - 1;
-                access = S_IRWXU | S_IRWXG | S_IRWXO;
-
-                entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, type );
-                entry.insert( KIO::UDSEntry::UDS_ACCESS, access );
-                entry.insert( KIO::UDSEntry::UDS_SIZE, 0LL );
-                goto notype;
-
-            }
-*/
-        }
-        int type = S_IFREG;
-        int access = 0;
-        if( fileInfo.isDir() )
-            type = S_IFDIR;
-        else if( fileInfo.isSymLink() )
-            type = S_IFLNK;
-        if( fileInfo.isReadable() )
-            access |= S_IRUSR;
-        if( fileInfo.isWritable() )
-            access |= S_IWUSR;
-        if( fileInfo.isExecutable() )
-            access |= S_IXUSR;
-
-        entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, type );
-        entry.insert( KIO::UDSEntry::UDS_ACCESS, access );
-        entry.insert( KIO::UDSEntry::UDS_SIZE, fileInfo.size() );
-
-        entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, fileInfo.lastModified().toTime_t() );
-        entry.insert( KIO::UDSEntry::UDS_USER, fileInfo.owner() );
-        entry.insert( KIO::UDSEntry::UDS_GROUP, fileInfo.group() );
-        entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, fileInfo.lastRead().toTime_t() );
+        UDSEntry entry = createUDSEntryWin( it.fileInfo() );
 
         listEntry( entry, false );
         entry.clear();
@@ -232,7 +242,7 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
            error( KIO::ERR_FILE_ALREADY_EXIST, _dest.filePath() );
            return;
         }
-        
+
         dwFlags = MOVEFILE_REPLACE_EXISTING;
     }
 
@@ -273,7 +283,7 @@ void FileProtocol::del( const KUrl& url, bool isfile )
 
     if (isfile) {
         kDebug( 7101 ) << "Deleting file " << _path;
-        
+
         if( DeleteFileW( ( LPCWSTR ) _path.utf16() ) == 0 ) {
             DWORD dwLastErr = GetLastError();
             if ( dwLastErr == ERROR_PATH_NOT_FOUND )
@@ -289,7 +299,9 @@ void FileProtocol::del( const KUrl& url, bool isfile )
             }
         }
     } else {
-        kDebug( 7101 ) << "Deleting directory " << url.url();
+        kDebug( 7101 ) << "Deleting directory " << _path;
+        if (!deleteRecursive(_path))
+            return;
         if( RemoveDirectoryW( ( LPCWSTR ) _path.utf16() ) == 0 ) {
             DWORD dwLastErr = GetLastError();
             if ( dwLastErr == ERROR_FILE_NOT_FOUND )
