@@ -93,6 +93,8 @@ static UDSEntry createUDSEntryWin( const QFileInfo &fileInfo )
     entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, type );
     entry.insert( KIO::UDSEntry::UDS_ACCESS, access );
     entry.insert( KIO::UDSEntry::UDS_SIZE, fileInfo.size() );
+    if( fileInfo.isHidden() )
+      entry.insert( KIO::UDSEntry::UDS_HIDDEN, true );
 
     entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, fileInfo.lastModified().toTime_t() );
     entry.insert( KIO::UDSEntry::UDS_USER, fileInfo.owner() );
@@ -180,6 +182,7 @@ void FileProtocol::listDir( const KUrl& url )
     }
 
     QDir dir( url.toLocalFile() );
+    dir.setFilter( QDir::AllEntries|QDir::Hidden );
 
     if ( !dir.exists() ) {
         kDebug(7101) << "========= ERR_DOES_NOT_EXIST  =========";
