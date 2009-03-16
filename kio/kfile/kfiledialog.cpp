@@ -244,6 +244,12 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
       d( new KFileDialogPrivate )
 
 {
+    // It would be nice to have this behind d->native but it doesn't work
+    // because of derived classes like KEncodingDialog...
+    // Dlopen the file widget from libkfilemodule
+    QWidget* fileQWidget = fileModule()->createFileWidget(startDir, this);
+    d->w = ::qobject_cast<KAbstractFileWidget *>(fileQWidget);
+
     if (d->native) {
         KFileDialogPrivate::Native::s_startDir = startDir;
         // check if it's a mimefilter
@@ -258,10 +264,6 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
     setButtons( KDialog::None );
     restoreDialogSize(d->cfgGroup); // call this before the fileQWidget is set as the main widget.
                                    // otherwise the sizes for the components are not obeyed (ereslibre)
-
-    // Dlopen the file widget from libkfilemodule
-    QWidget* fileQWidget = fileModule()->createFileWidget(startDir, this);
-    d->w = ::qobject_cast<KAbstractFileWidget *>(fileQWidget);
 
     d->w->setFilter(filter);
     setMainWidget(fileQWidget);
