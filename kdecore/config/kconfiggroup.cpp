@@ -157,7 +157,7 @@ QStringList KConfigGroupPrivate::deserializeList(const QString &data)
 {
     if (data.isEmpty())
         return QStringList();
-    if (data == "\\0")
+    if (data == QLatin1String("\\0"))
         return QStringList(QString());
     QStringList value;
     QString val;
@@ -167,9 +167,9 @@ QStringList KConfigGroupPrivate::deserializeList(const QString &data)
         if (quoted) {
             val += data[p];
             quoted = false;
-        } else if (data[p] == '\\') {
+        } else if (data[p].unicode() == '\\') {
             quoted = true;
-        } else if (data[p] == ',') {
+        } else if (data[p].unicode() == ',') {
             val.squeeze(); // release any unused memory
             value.append(val);
             val.clear();
