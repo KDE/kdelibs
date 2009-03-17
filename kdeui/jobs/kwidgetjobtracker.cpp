@@ -2,6 +2,7 @@
     Copyright (C) 2000 Matej Koss <koss@miesto.sk>
     Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
     Copyright (C) 2007 Rafael Fernández López <ereslibre@kde.org>
+    Copyright (C) 2009 Shaun Reich <shaun.reich@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -25,7 +26,6 @@
 #include <QProcess>
 #include <QTimer>
 #include <QLabel>
-#include <QCheckBox>
 #include <QProgressBar>
 #include <QVBoxLayout>
 #include <QGridLayout>
@@ -44,7 +44,7 @@
 #include <kwindowsystem.h>
 #include <kseparator.h>
 
-void KWidgetJobTracker::Private::_k_slotShowProgressWidget()
+void KWidgetJobTracker::Private::slotShowProgressWidget()
 {
     if (progressWidgetsToBeShown.isEmpty()) {
         return;
@@ -86,7 +86,7 @@ void KWidgetJobTracker::registerJob(KJob *job)
     d->progressWidget.insert(job, vi);
     d->progressWidgetsToBeShown.enqueue(job);
 
-    QTimer::singleShot(500, this, SLOT(_k_slotShowProgressWidget()));
+    QTimer::singleShot(500, this, SLOT(slotShowProgressWidget()));
 }
 
 void KWidgetJobTracker::unregisterJob(KJob *job)
@@ -109,7 +109,7 @@ bool KWidgetJobTracker::keepOpen(KJob *job) const
         return false;
     }
 
-    return pWidget->keepOpen();
+    return pWidget->keepOpenCheck->isChecked();
 }
 
 void KWidgetJobTracker::infoMessage(KJob *job, const QString &plain, const QString &rich)
@@ -204,11 +204,6 @@ void KWidgetJobTracker::resumed(KJob *job)
     pWidget->resumed();
 }
 
-bool KWidgetJobTracker::Private::ProgressWidget::keepOpen() const
-{
-    return keepOpenChecked;
-}
-
 void KWidgetJobTracker::Private::ProgressWidget::ref()
 {
     ++refCount;
@@ -221,7 +216,7 @@ void KWidgetJobTracker::Private::ProgressWidget::deref()
     }
 
     if (!refCount) {
-        if (!keepOpenChecked) {
+        if (!keepOpenCheck->isChecked()) {
             closeNow();
         } else {
             slotClean();
@@ -482,7 +477,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     suspendedProperty = false;
     pauseButton = new KPushButton(i18n("&Pause"), this);
     QObject::connect(pauseButton, SIGNAL(clicked()),
-                     this, SLOT(_k_pauseResumeClicked()));
+                     this, SLOT(slotPauseResumeClicked()));
     progressHBox->addWidget(pauseButton);
 
     // processed info
@@ -510,7 +505,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
 
     keepOpenCheck = new QCheckBox(i18n("&Keep this window open after transfer is complete"), this);
     QObject::connect(keepOpenCheck, SIGNAL(toggled(bool)),
-                     this, SLOT(_k_keepOpenToggled(bool)));
+                     this, SLOT(slotKeepOpenToggled(bool)));
     topLayout->addWidget(keepOpenCheck);
     keepOpenCheck->hide();
 
@@ -519,14 +514,14 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
 
     openFile = new KPushButton(i18n("Open &File"), this);
     QObject::connect(openFile, SIGNAL(clicked()),
-                     this, SLOT(_k_openFile()));
+                     this, SLOT(slotOpenFile()));
     hBox->addWidget(openFile);
     openFile->setEnabled(false);
     openFile->hide();
 
     openLocation = new KPushButton(i18n("Open &Destination"), this);
     QObject::connect(openLocation, SIGNAL(clicked()),
-                     this, SLOT(_k_openLocation()));
+                     this, SLOT(slotOpenLocation()));
     hBox->addWidget(openLocation);
     openLocation->hide();
 
@@ -534,13 +529,12 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
 
     cancelClose = new KPushButton(KStandardGuiItem::cancel(), this);
     QObject::connect(cancelClose, SIGNAL(clicked()),
-                     this, SLOT(_k_stop()));
+                     this, SLOT(slotStop()));
     hBox->addWidget(cancelClose);
 
     resize(sizeHint());
     setMaximumHeight(sizeHint().height());
 
-    keepOpenChecked = false;
     setWindowTitle(i18n("Progress Dialog")); // show something better than kuiserver
 }
 
@@ -598,30 +592,28 @@ void KWidgetJobTracker::Private::ProgressWidget::checkDestination(const KUrl &de
     }
 }
 
-void KWidgetJobTracker::Private::ProgressWidget::_k_keepOpenToggled(bool keepOpen)
+void KWidgetJobTracker::Private::ProgressWidget::slotKeepOpenToggled(bool keepOpen)
 {
     if (keepOpen) {
         KGlobal::ref();
     } else {
         KGlobal::deref();
     }
-
-    keepOpenChecked = keepOpen;
 }
 
-void KWidgetJobTracker::Private::ProgressWidget::_k_openFile()
+void KWidgetJobTracker::Private::ProgressWidget::slotOpenFile()
 {
     QProcess::startDetached("kde-open", QStringList() << location.prettyUrl());
 }
 
-void KWidgetJobTracker::Private::ProgressWidget::_k_openLocation()
+void KWidgetJobTracker::Private::ProgressWidget::slotOpenLocation()
 {
     KUrl dirLocation(location);
     dirLocation.setFileName(QString());
     QProcess::startDetached("kde-open", QStringList() << dirLocation.prettyUrl());
 }
 
-void KWidgetJobTracker::Private::ProgressWidget::_k_pauseResumeClicked()
+void KWidgetJobTracker::Private::ProgressWidget::slotPauseResumeClicked()
 {
     if (jobRegistered && !suspendedProperty) {
         tracker->slotSuspend(job);
@@ -630,7 +622,7 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_pauseResumeClicked()
     }
 }
 
-void KWidgetJobTracker::Private::ProgressWidget::_k_stop()
+void KWidgetJobTracker::Private::ProgressWidget::slotStop()
 {
     if (jobRegistered) {
         tracker->slotStop(job);

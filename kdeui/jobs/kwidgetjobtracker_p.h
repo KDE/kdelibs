@@ -1,6 +1,7 @@
 /*  This file is part of the KDE project
     Copyright (C) 2007 Rafael Fernández López <ereslibre@kde.org>
     Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2009 Shaun Reich <shaun.reich@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,13 +28,13 @@
 #include <QMap>
 #include <QTime>
 #include <QQueue>
+#include <QCheckBox>
 
 #include <kdebug.h>
 #include <kurl.h>
 #include <kglobal.h>
 
 class KPushButton;
-class QCheckBox;
 class KSqueezedTextLabel;
 class QLabel;
 class QProgressBar;
@@ -57,7 +58,7 @@ public:
     virtual void setAutoDelete(KJob *job, bool autoDelete);
     virtual bool autoDelete(KJob *job) const;
 
-    void _k_slotShowProgressWidget();
+    void slotShowProgressWidget();
 
     class ProgressWidget;
 
@@ -75,11 +76,10 @@ class KWidgetJobTracker::Private::ProgressWidget
 public:
     ProgressWidget(KJob *job, KWidgetJobTracker *object, QWidget *parent)
         : QWidget(parent), tracker(object), job(job), totalSize(0), totalFiles(0), totalDirs(0),
-          processedSize(0), processedDirs(0), processedFiles(0),
-          totalSizeKnown(false), stopOnClose(true), keepOpenChecked(false),
-          jobRegistered(false), cancelClose(0), openFile(0), openLocation(0),
-          keepOpenCheck(0), pauseButton(0), sourceEdit(0), destEdit(0),
-          progressLabel(0), destInvite(0), speedLabel(0), sizeLabel(0),
+          processedSize(0), processedDirs(0), processedFiles(0), totalSizeKnown(false), 
+          stopOnClose(true), jobRegistered(false), cancelClose(0), openFile(0),
+          openLocation(0), keepOpenCheck(0), pauseButton(0), sourceEdit(0),
+          destEdit(0), progressLabel(0), destInvite(0), speedLabel(0), sizeLabel(0),
           resumeLabel(0), progressBar(0), suspendedProperty(false), refCount(1)
     {
         init();
@@ -87,7 +87,7 @@ public:
 
     ~ProgressWidget()
     {
-        if (keepOpenChecked) {
+        if (keepOpenCheck->isChecked()) {
             KGlobal::deref();
         }
     }
@@ -104,7 +104,6 @@ public:
 
     bool totalSizeKnown;
     bool stopOnClose;
-    bool keepOpenChecked;
     bool jobRegistered;
     QString caption;
 
@@ -133,7 +132,6 @@ public:
     void showTotals();
     void setDestVisible(bool visible);
     void checkDestination(const KUrl &dest);
-    bool keepOpen() const;
     void ref();
     void deref();
     void closeNow();
@@ -159,11 +157,11 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private Q_SLOTS:
-    void _k_keepOpenToggled(bool);
-    void _k_openFile();
-    void _k_openLocation();
-    void _k_pauseResumeClicked();
-    void _k_stop();
+    void slotKeepOpenToggled(bool);
+    void slotOpenFile();
+    void slotOpenLocation();
+    void slotPauseResumeClicked();
+    void slotStop();
 };
 
 void KWidgetJobTracker::Private::setStopOnClose(KJob *job, bool stopOnClose)

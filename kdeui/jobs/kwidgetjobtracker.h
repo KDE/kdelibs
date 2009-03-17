@@ -1,6 +1,7 @@
 /*  This file is part of the KDE project
     Copyright (C) 2000 Matej Koss <koss@miesto.sk>
     Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2009 Shaun Reich <shaun.reich@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -93,7 +94,7 @@ private:
     class Private;
     Private *const d;
 
-    Q_PRIVATE_SLOT(d, void _k_slotShowProgressWidget())
+    Q_PRIVATE_SLOT(d, void slotShowProgressWidget())
 };
 
 #endif
