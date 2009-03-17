@@ -56,11 +56,10 @@
 #include <grp.h>
 #ifdef Q_WS_WIN
 #include <windows.h>
-#define _WIN32_IE 0x0500
 #include <shlobj.h>
 #endif
 
-#include <QMutex>
+#include <QtCore/QMutex>
 #include <QtCore/QRegExp>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
@@ -599,16 +598,50 @@ static void lookupDirectory(const QString& path, const QString &relPart,
     {
         if (path.isEmpty()) //for sanity
             return;
+#ifdef Q_WS_WIN
+        QString path_ = path + QLatin1String( "*.*" );
+        WIN32_FIND_DATA findData;
+        HANDLE hFile = FindFirstFile( (LPWSTR)path_.utf16(), &findData );
+        if( hFile == INVALID_HANDLE_VALUE )
+            return;
+        do {
+            const int len = wcslen( findData.cFileName );
+            if (!( findData.cFileName[0] == '.' &&
+                   findData.cFileName[1] == '\0' ) &&
+                !( findData.cFileName[0] == '.' &&
+                   findData.cFileName[1] == '.' &&
+                   findData.cFileName[2] == '\0' ) &&
+                 ( findData.cFileName[len-1] != '~' ) ) {
+                QString fn = QString::fromUtf16( (const unsigned short*)findData.cFileName );
+                if (!recursive && !regexp.exactMatch(fn))
+                    continue; // No match
+                QString pathfn = path + fn;
+                bool bIsDir = ( ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY );
+                if ( recursive ) {
+                    if ( bIsDir ) {
+                        lookupDirectory(pathfn + '/', relPart + fn + '/', regexp, list, relList, recursive, unique);
+                    }
+                    if (!regexp.exactMatch(fn))
+                        continue; // No match
+                }
+                if ( !bIsDir )
+                {
+                    if ( !unique || !relList.contains(relPart + fn) )
+                    {
+                        list.append( pathfn );
+                        relList.append( relPart + fn );
+                    }
+                }
+            }
+        } while( FindNextFile( hFile, &findData ) != 0 );
+        FindClose( hFile );
+#else
         // We look for a set of files.
         DIR *dp = opendir( QFile::encodeName(path));
         if (!dp)
             return;
 
-#ifdef Q_WS_WIN
-        assert(path.at(path.length() - 1) == '/' || path.at(path.length() - 1) == '\\');
-#else
         assert(path.at(path.length() - 1) == '/');
-#endif
 
         struct dirent *ep;
 
@@ -658,6 +691,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
             }
         }
         closedir( dp );
+#endif
     }
     else
     {
@@ -705,14 +739,35 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 
     if (prefix.isEmpty()) //for sanity
         return;
-#ifdef Q_WS_WIN
-    assert(prefix.at(prefix.length() - 1) == '/' || prefix.at(prefix.length() - 1) == '\\');
-#else
     assert(prefix.at(prefix.length() - 1) == '/');
-#endif
     if (path.contains('*') || path.contains('?')) {
 
         QRegExp pathExp(path, Qt::CaseSensitive, QRegExp::Wildcard);
+
+#ifdef Q_WS_WIN
+        QString prefix_ = prefix + QLatin1String( "*.*" );
+        WIN32_FIND_DATA findData;
+        HANDLE hFile = FindFirstFile( (LPWSTR)prefix.utf16(), &findData );
+        if( hFile == INVALID_HANDLE_VALUE )
+            return;
+        do {
+            const int len = wcslen( findData.cFileName );
+            if (!( findData.cFileName[0] == '.' &&
+                   findData.cFileName[1] == '\0' ) &&
+                !( findData.cFileName[0] == '.' &&
+                   findData.cFileName[1] == '.' &&
+                   findData.cFileName[2] == '\0' ) &&
+                 ( findData.cFileName[len-1] != '~' ) ) {
+                const QString fn = QString::fromUtf16( (const unsigned short*)findData.cFileName );
+                if ( !pathExp.exactMatch(fn) )
+                    continue; // No match
+                if ( ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY )
+                    lookupPrefix(prefix + fn + '/', rest, relPart + fn + '/',
+                                 regexp, list, relList, recursive, unique);
+            }
+        } while( FindNextFile( hFile, &findData ) != 0 );
+        FindClose( hFile );
+#else
         DIR *dp = opendir( QFile::encodeName(prefix) );
         if (!dp) {
             return;
@@ -752,6 +807,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
         }
 
         closedir( dp );
+#endif
     } else {
         // Don't stat, if the dir doesn't exist we will find out
         // when we try to open it.

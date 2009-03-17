@@ -700,17 +700,15 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                         HANDLE hFile = FindFirstFile( (LPWSTR)s.utf16(), &findData );
                         if( hFile != INVALID_HANDLE_VALUE ) {
                             do {
-                                ++count;
-                                if( findData.cFileName[0] == '.' &&
-                                    findData.cFileName[1] == '\0' )
-                                    --count;
-                                if( findData.cFileName[0] == '.' &&
-                                    findData.cFileName[1] == '.' &&
-                                    findData.cFileName[2] == '\0' )
-                                    --count;
+                                if (!( findData.cFileName[0] == '.' &&
+                                       findData.cFileName[1] == '\0' ) &&
+                                    !( findData.cFileName[0] == '.' &&
+                                       findData.cFileName[1] == '.' &&
+                                       findData.cFileName[2] == '\0' ) )
+                                    ++count;
                             } while( FindNextFile( hFile, &findData ) != 0 );
+                            FindClose( hFile );
                         }
-                        FindClose( hFile );
 #else
                         DIR* dir = ::opendir(QFile::encodeName(path));
                         if (dir) {
