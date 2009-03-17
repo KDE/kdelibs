@@ -974,7 +974,7 @@ bool KUrl::hasSubUrl() const
 
 QString KUrl::url( AdjustPathOption trailing ) const
 {
-    if (QString::compare(scheme(), "mailto", Qt::CaseInsensitive) == 0) {
+    if (QString::compare(scheme(), QLatin1String("mailto"), Qt::CaseInsensitive) == 0) {
         // mailto urls should be prettified, see the url183433 testcase.
         return prettyUrl(trailing);
     }
