@@ -28,6 +28,7 @@
 #include "kfiltertest.h"
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
+#include <config.h>
 
 QTEST_KDEMAIN_CORE(KFilterTest)
 
@@ -193,6 +194,39 @@ void KFilterTest::test_uncompressed()
     QByteArray read = flt->readAll();
     QCOMPARE( read.size(), testData.size() );
     QCOMPARE( read, testData );
+}
+
+void KFilterTest::test_findFilterByMimeType_data()
+{
+    QTest::addColumn<QString>("mimeType");
+    QTest::addColumn<bool>("valid");
+
+    // direct mimetype name
+    QTest::newRow("application/x-gzip") << QString::fromLatin1("application/x-gzip") << true;
+#ifdef HAVE_BZIP2_SUPPORT
+    QTest::newRow("application/x-bzip") << QString::fromLatin1("application/x-bzip") << true;
+    QTest::newRow("application/x-bzip2") << QString::fromLatin1("application/x-bzip2") << true;
+#else
+    QTest::newRow("application/x-bzip") << QString::fromLatin1("application/x-bzip") << false;
+    QTest::newRow("application/x-bzip2") << QString::fromLatin1("application/x-bzip2") << false;
+#endif
+    // indirect compressed mimetypes
+    QTest::newRow("application/x-gzdvi") << QString::fromLatin1("application/x-gzdvi") << true;
+
+    // non-compressed mimetypes
+    QTest::newRow("text/plain") << QString::fromLatin1("text/plain") << false;
+    QTest::newRow("application/x-tar") << QString::fromLatin1("application/x-tar") << false;
+}
+
+void KFilterTest::test_findFilterByMimeType()
+{
+    QFETCH(QString, mimeType);
+    QFETCH(bool, valid);
+
+    KFilterBase *filter = KFilterBase::findFilterByMimeType(mimeType);
+    QCOMPARE(filter != 0, valid);
+
+    delete filter;
 }
 
 #include "kfiltertest.moc"

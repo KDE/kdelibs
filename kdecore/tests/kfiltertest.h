@@ -33,6 +33,8 @@ private Q_SLOTS:
     void test_textstream();
     void test_readall();
     void test_uncompressed();
+    void test_findFilterByMimeType_data();
+    void test_findFilterByMimeType();
 
 private:
     void test_block_write( const QString & fileName );
