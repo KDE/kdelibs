@@ -58,7 +58,7 @@ public:
     virtual void setAutoDelete(KJob *job, bool autoDelete);
     virtual bool autoDelete(KJob *job) const;
 
-    void slotShowProgressWidget();
+    void _k_showProgressWidget();
 
     class ProgressWidget;
 
@@ -157,11 +157,11 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private Q_SLOTS:
-    void slotKeepOpenToggled(bool);
-    void slotOpenFile();
-    void slotOpenLocation();
-    void slotPauseResumeClicked();
-    void slotStop();
+    void _k_keepOpenToggled(bool);
+    void _k_openFile();
+    void _k_openLocation();
+    void _k_pauseResumeClicked();
+    void _k_stop();
 };
 
 void KWidgetJobTracker::Private::setStopOnClose(KJob *job, bool stopOnClose)

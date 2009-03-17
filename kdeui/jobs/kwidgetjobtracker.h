@@ -94,7 +94,7 @@ private:
     class Private;
     Private *const d;
 
-    Q_PRIVATE_SLOT(d, void slotShowProgressWidget())
+    Q_PRIVATE_SLOT(d, void _k_showProgressWidget())
 };
 
 #endif

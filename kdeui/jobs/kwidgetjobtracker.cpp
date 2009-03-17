@@ -44,7 +44,7 @@
 #include <kwindowsystem.h>
 #include <kseparator.h>
 
-void KWidgetJobTracker::Private::slotShowProgressWidget()
+void KWidgetJobTracker::Private::_k_showProgressWidget()
 {
     if (progressWidgetsToBeShown.isEmpty()) {
         return;
@@ -86,7 +86,7 @@ void KWidgetJobTracker::registerJob(KJob *job)
     d->progressWidget.insert(job, vi);
     d->progressWidgetsToBeShown.enqueue(job);
 
-    QTimer::singleShot(500, this, SLOT(slotShowProgressWidget()));
+    QTimer::singleShot(500, this, SLOT(_k_showProgressWidget()));
 }
 
 void KWidgetJobTracker::unregisterJob(KJob *job)
@@ -477,7 +477,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     suspendedProperty = false;
     pauseButton = new KPushButton(i18n("&Pause"), this);
     QObject::connect(pauseButton, SIGNAL(clicked()),
-                     this, SLOT(slotPauseResumeClicked()));
+                     this, SLOT(_k_pauseResumeClicked()));
     progressHBox->addWidget(pauseButton);
 
     // processed info
@@ -505,7 +505,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
 
     keepOpenCheck = new QCheckBox(i18n("&Keep this window open after transfer is complete"), this);
     QObject::connect(keepOpenCheck, SIGNAL(toggled(bool)),
-                     this, SLOT(slotKeepOpenToggled(bool)));
+                     this, SLOT(_k_keepOpenToggled(bool)));
     topLayout->addWidget(keepOpenCheck);
     keepOpenCheck->hide();
 
@@ -514,14 +514,14 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
 
     openFile = new KPushButton(i18n("Open &File"), this);
     QObject::connect(openFile, SIGNAL(clicked()),
-                     this, SLOT(slotOpenFile()));
+                     this, SLOT(_k_openFile()));
     hBox->addWidget(openFile);
     openFile->setEnabled(false);
     openFile->hide();
 
     openLocation = new KPushButton(i18n("Open &Destination"), this);
     QObject::connect(openLocation, SIGNAL(clicked()),
-                     this, SLOT(slotOpenLocation()));
+                     this, SLOT(_k_openLocation()));
     hBox->addWidget(openLocation);
     openLocation->hide();
 
@@ -529,7 +529,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
 
     cancelClose = new KPushButton(KStandardGuiItem::cancel(), this);
     QObject::connect(cancelClose, SIGNAL(clicked()),
-                     this, SLOT(slotStop()));
+                     this, SLOT(_k_stop()));
     hBox->addWidget(cancelClose);
 
     resize(sizeHint());
@@ -592,7 +592,7 @@ void KWidgetJobTracker::Private::ProgressWidget::checkDestination(const KUrl &de
     }
 }
 
-void KWidgetJobTracker::Private::ProgressWidget::slotKeepOpenToggled(bool keepOpen)
+void KWidgetJobTracker::Private::ProgressWidget::_k_keepOpenToggled(bool keepOpen)
 {
     if (keepOpen) {
         KGlobal::ref();
@@ -601,19 +601,19 @@ void KWidgetJobTracker::Private::ProgressWidget::slotKeepOpenToggled(bool keepOp
     }
 }
 
-void KWidgetJobTracker::Private::ProgressWidget::slotOpenFile()
+void KWidgetJobTracker::Private::ProgressWidget::_k_openFile()
 {
     QProcess::startDetached("kde-open", QStringList() << location.prettyUrl());
 }
 
-void KWidgetJobTracker::Private::ProgressWidget::slotOpenLocation()
+void KWidgetJobTracker::Private::ProgressWidget::_k_openLocation()
 {
     KUrl dirLocation(location);
     dirLocation.setFileName(QString());
     QProcess::startDetached("kde-open", QStringList() << dirLocation.prettyUrl());
 }
 
-void KWidgetJobTracker::Private::ProgressWidget::slotPauseResumeClicked()
+void KWidgetJobTracker::Private::ProgressWidget::_k_pauseResumeClicked()
 {
     if (jobRegistered && !suspendedProperty) {
         tracker->slotSuspend(job);
@@ -622,7 +622,7 @@ void KWidgetJobTracker::Private::ProgressWidget::slotPauseResumeClicked()
     }
 }
 
-void KWidgetJobTracker::Private::ProgressWidget::slotStop()
+void KWidgetJobTracker::Private::ProgressWidget::_k_stop()
 {
     if (jobRegistered) {
         tracker->slotStop(job);
