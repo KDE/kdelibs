@@ -384,7 +384,7 @@ static void addRun(BidiRun* bidiRun)
         if (text->text()) {
             for (int i = bidiRun->start; i < bidiRun->stop; i++) {
                 const QChar c = text->text()[i];
-                if (c.category() == QChar::Separator_Space || c == '\n')
+                if (c.unicode() == '\n' || c.category() == QChar::Separator_Space)
                     numSpaces++;
             }
         }
@@ -2063,7 +2063,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 bool isSoftBreakable = nextIsSoftBreakable;
                 nextIsSoftBreakable = false;
                 const QChar c = str[pos];
-                currentCharacterIsSpace = c == ' ';
+                currentCharacterIsSpace = c.unicode() == ' ';
 
                 if (preserveWS || !currentCharacterIsSpace)
                     isLineEmpty = false;
@@ -2115,7 +2115,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                     }
                 }
 
-                if ( (preserveLF && c == '\n') || (autoWrap && (isBreakable( str, pos, strlen ) || isSoftBreakable)) ) {
+                if ( (preserveLF && c.unicode() == '\n') || (autoWrap && (isBreakable( str, pos, strlen ) || isSoftBreakable)) ) {
 
                     tmpW += t->width(lastSpace, pos - lastSpace, f);
 #ifdef APPLE_CHANGES
@@ -2154,7 +2154,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                             tmpW -= t->width(pos-1, 1, f);
                     }
 
-                    if( preserveLF && *(str+pos) == '\n' ) {
+                    if( preserveLF && (str+pos)->unicode() == '\n' ) {
                         lBreak.obj = o;
                         lBreak.pos = pos;
                         lBreak.endOfInline = false;
