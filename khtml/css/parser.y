@@ -91,7 +91,7 @@ int DOM::getValueID(const char *tagStr, int len)
 #define YYLTYPE_IS_TRIVIAL 1
 %}
 
-%expect 34
+%expect 38
 
 %pure_parser
 
@@ -151,7 +151,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %no-lines
 %verbose
 
-%left UNIMPORTANT_TOK
+%left REDUCE
 
 %token S SGML_CD
 
@@ -347,7 +347,7 @@ khtml_mediaquery:
 ;
 
 maybe_space:
-    /* empty */ %prec UNIMPORTANT_TOK
+    /* empty */ %prec REDUCE
   | maybe_space S
   ;
 
@@ -413,7 +413,7 @@ import:
   ;
 
 namespace_list:
-    /* empty */ %prec UNIMPORTANT_TOK
+    /* empty */ %prec REDUCE
   | namespace_list namespace maybe_sgml
 ;
 
@@ -633,7 +633,6 @@ combinator:
     '+' maybe_space { $$ = CSSSelector::DirectAdjacent; }
   | '~' maybe_space { $$ = CSSSelector::IndirectAdjacent; }
   | '>' maybe_space { $$ = CSSSelector::Child; }
-  | /* empty */ { $$ = CSSSelector::Descendant; }
   ;
 
 unary_operator:
@@ -664,7 +663,7 @@ ruleset:
   ;
 
 selector_list:
-    selector %prec UNIMPORTANT_TOK {
+    selector %prec REDUCE {
 	if ( $1 ) {
 	    $$ = new QList<CSSSelector*>;
 #ifdef CSS_DEBUG
@@ -677,7 +676,7 @@ selector_list:
 	    $$ = 0;
 	}
     }
-    | selector_list ',' maybe_space selector %prec UNIMPORTANT_TOK {
+    | selector_list ',' maybe_space selector %prec REDUCE {
 	if ( $1 && $4 ) {
 	    $$ = $1;
 	    $$->append( $4 );
@@ -703,9 +702,27 @@ selector_list:
     }
    ;
 
+
 selector:
     simple_selector {
 	$$ = $1;
+    }
+    | selector S {
+        $$ = $1;
+    }
+    | selector S simple_selector {
+        if ( !$1 || !$3 ) {
+	    delete $1;
+	    delete $3;
+	    $$ = 0;
+        } else {
+            $$ = $3;
+            CSSSelector *end = $$;
+            while( end->tagHistory )
+                end = end->tagHistory;
+            end->relation = CSSSelector::Descendant;
+            end->tagHistory = $1;
+        }
     }
     | selector combinator simple_selector {
 	if ( !$1 || !$3 ) {
@@ -734,26 +751,26 @@ namespace_selector:
 ;
 
 simple_selector:
-    element_name maybe_space {
+    element_name {
 	$$ = new CSSSelector();
         $$->tagLocalName = LocalName::fromId(localNamePart($1));
         $$->tagNamespace = NamespaceName::fromId(namespacePart($1));
     }
-    | element_name specifier_list maybe_space {
+    | element_name specifier_list {
 	$$ = $2;
         if ( $$ ) {
             $$->tagLocalName = LocalName::fromId(localNamePart($1));
             $$->tagNamespace = NamespaceName::fromId(namespacePart($1));
         }
     }
-    | specifier_list maybe_space {
+    | specifier_list {
 	$$ = $1;
         if ( $$ ) {
             $$->tagLocalName = LocalName::fromId(anyLocalName);
             $$->tagNamespace = NamespaceName::fromId(static_cast<CSSParser*>(parser)->defaultNamespace());
         }
     }
-    | namespace_selector element_name maybe_space {
+    | namespace_selector element_name {
         $$ = new CSSSelector();
         $$->tagLocalName = LocalName::fromId(localNamePart($2));
         $$->tagNamespace = NamespaceName::fromId(namespacePart($2));
@@ -761,7 +778,7 @@ simple_selector:
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
             static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->tagNamespace, domString($1));
     }
-    | namespace_selector element_name specifier_list maybe_space {
+    | namespace_selector element_name specifier_list {
         $$ = $3;
         if ($$) {
             $$->tagLocalName = LocalName::fromId(localNamePart($2));
@@ -771,7 +788,7 @@ simple_selector:
                 static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->tagNamespace, domString($1));
         }
     }
-    | namespace_selector specifier_list maybe_space {
+    | namespace_selector specifier_list {
         $$ = $2;
         if ($$) {
             $$->tagLocalName = LocalName::fromId(anyLocalName);
@@ -784,19 +801,19 @@ simple_selector:
   ;
 
 simple_css3_selector:
-    element_name maybe_space {
+    element_name {
 	$$ = new CSSSelector();
         $$->tagLocalName = LocalName::fromId(localNamePart($1));
         $$->tagNamespace = NamespaceName::fromId(namespacePart($1));
     }
-    | specifier maybe_space {
+    | specifier {
 	$$ = $1;
         if ( $$ ) {
             $$->tagLocalName = LocalName::fromId(anyLocalName);
             $$->tagNamespace = NamespaceName::fromId(static_cast<CSSParser*>(parser)->defaultNamespace());
         }
     }
-    | namespace_selector element_name maybe_space {
+    | namespace_selector element_name {
         $$ = new CSSSelector();
         $$->tagLocalName = LocalName::fromId(localNamePart($2));
         $$->tagNamespace = NamespaceName::fromId(namespacePart($2));
@@ -804,7 +821,7 @@ simple_css3_selector:
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
             static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->tagNamespace, domString($1));
     }
-    | namespace_selector specifier maybe_space {
+    | namespace_selector specifier {
         $$ = $2;
         if ($$) {
             $$->tagLocalName = LocalName::fromId(anyLocalName);
@@ -992,7 +1009,7 @@ pseudo:
         $$->value = domString($2);
     }
     // used only by :not
-    | ':' NOTFUNCTION maybe_space simple_css3_selector ')' {
+    | ':' NOTFUNCTION maybe_space simple_css3_selector maybe_space ')' {
         $$ = new CSSSelector();
         $$->match = CSSSelector::PseudoClass;
         $$->simpleSelector = $4;
