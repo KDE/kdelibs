@@ -813,7 +813,13 @@ void KTextEdit::slotDoFind()
         // Should really assert()
         return;
     }
-
+    if( d->findDlg->pattern().isEmpty())
+    {
+        d->find->disconnect(this);
+        d->find->deleteLater(); // we are in a slot connected to m_find, don't delete right away
+        d->find = 0;
+        return;
+    }
     delete d->find;
     d->find = new KFind(d->findDlg->pattern(), d->findDlg->options(), this);
     d->findIndex = 0;
