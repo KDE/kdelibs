@@ -37,6 +37,10 @@ class KAbstractViewAdapter;
  * It determines the mimetypes of the icons in the background, but giving
  * preferrence to the visible icons.
  *
+ * @deprecated since 4.3, use KFilePreviewGenerator instead (from libkfile),
+ * which can do both delayed-mimetype-determination and delayed-preview-determination
+ * (actually, it rather does one or the other), and with better performance
+ * (it batches the updates rather than doing them one by one)
  */
 class KIO_EXPORT KMimeTypeResolver : public QObject
 {
@@ -50,19 +54,19 @@ public:
      * WARNING: if you call KDirModel::setDirLister, do it before creating the KMimeTypeResolver
      * If this is a problem, tell me and I'll add a signal...
      */
-    explicit KMimeTypeResolver(QAbstractItemView* view, KDirModel* model);
+    KDE_DEPRECATED KMimeTypeResolver(QAbstractItemView* view, KDirModel* model);
 
     /**
      * This constructor should be used when the view uses a proxy model instead of a KDirModel.
      * The source model must be a KDirModel however, and the above warning applies
      * to this constructor as well.
      */
-    explicit KMimeTypeResolver(QAbstractItemView* view, QAbstractProxyModel* model);
+    KDE_DEPRECATED KMimeTypeResolver(QAbstractItemView* view, QAbstractProxyModel* model);
 
     /**
      * @internal
      */
-    explicit KMimeTypeResolver(KAbstractViewAdapter* adapter);
+    explicit KDE_DEPRECATED KMimeTypeResolver(KAbstractViewAdapter* adapter);
 
     ~KMimeTypeResolver();
 
