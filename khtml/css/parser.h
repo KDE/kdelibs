@@ -39,7 +39,7 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     UNIMPORTANT_TOK = 258,
+     REDUCE = 258,
      S = 259,
      SGML_CD = 260,
      INCLUDES = 261,
