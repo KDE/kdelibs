@@ -746,6 +746,14 @@ void KTextEdit::slotDoReplace()
         return;
     }
 
+    if(d->repDlg->pattern().isEmpty()) {
+        d->replace->disconnect(this);
+        d->replace->deleteLater(); // we are in a slot connected to m_replace, don't delete it right away
+        d->replace = 0;
+        ensureCursorVisible();
+        return;
+    }
+
     delete d->replace;
     d->replace = new KReplace(d->repDlg->pattern(), d->repDlg->replacement(), d->repDlg->options(), this);
     d->repIndex = 0;
