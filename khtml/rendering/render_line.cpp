@@ -418,8 +418,8 @@ bool InlineFlowBox::onEndChain(RenderObject* endObject)
 
     RenderObject* curr = endObject;
     RenderObject* parent = curr->parent();
-    while (parent && (!parent->isRenderBlock() || parent == object())) {
-        if (parent->lastChild() != curr)
+    while (parent && !parent->isRenderBlock()) {
+        if (parent->lastChild() != curr || parent == object())
             return false;
 
         curr = parent;
