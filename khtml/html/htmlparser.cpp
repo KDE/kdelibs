@@ -955,7 +955,6 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         // a bit a special case, since the frame is inlined...
     case ID_IFRAME:
         n = new HTMLIFrameElementImpl(document);
-        if (!t->flat) discard_until = ID_IFRAME+ID_CLOSE_TAG;
         break;
 
 // form elements
