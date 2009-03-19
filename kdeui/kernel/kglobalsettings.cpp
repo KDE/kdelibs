@@ -44,7 +44,6 @@
 #include <QtGui/QKeySequence>
 #include <QtGui/QPixmap>
 #include <QtGui/QPixmapCache>
-//#include <q3stylesheet.h> // no equivalent in Qt4
 #include <QApplication>
 #include <QtDBus/QtDBus>
 #include <QtGui/QStyleFactory>
@@ -954,15 +953,6 @@ void KGlobalSettings::Private::kdisplaySetFont()
         QApplication::setFont( menuFont, "QMenu" );
         QApplication::setFont( menuFont, "KPopupTitle" );
         QApplication::setFont( data->font(KGlobalSettingsData::ToolbarFont), "QToolBar" );
-
-#if 0
-        // "patch" standard QStyleSheet to follow our fonts
-        Q3StyleSheet* sheet = Q3StyleSheet::defaultSheet();
-        const QFont fixedFont = data->font( KGlobalSettingsData::FixedFont );
-        sheet->item( QLatin1String("pre"))->setFontFamily(fixedFont.family() );
-        sheet->item( QLatin1String("code"))->setFontFamily(fixedFont.family() );
-        sheet->item( QLatin1String("tt"))->setFontFamily(fixedFont.family() );
-#endif
     }
     emit q->kdisplayFontChanged();
     emit q->appearanceChanged();

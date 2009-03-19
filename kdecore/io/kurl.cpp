@@ -571,7 +571,7 @@ KUrl& KUrl::operator=( const KUrl& _u )
 
 bool KUrl::operator==( const KUrl& _u ) const
 {
-  return QUrl::operator==( _u );;
+  return QUrl::operator==( _u );
 }
 
 bool KUrl::operator==( const QString& _u ) const
