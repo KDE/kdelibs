@@ -83,26 +83,31 @@ KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
 
 KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
 {
-    KMimeType::Ptr mime = KMimeType::mimeType(mimeType);
-    if ( mimeType == QLatin1String( "application/x-gzip" ) || (mime && mime->is("application/x-gzip")) )
-    {
+    if (mimeType == QLatin1String("application/x-gzip")) {
         return new KGzipFilter;
     }
 #ifdef HAVE_BZIP2_SUPPORT
-    else if ( mimeType == QLatin1String( "application/x-bzip" )
-              || mimeType == QLatin1String( "application/x-bzip2" ) // old name, kept for compatibility
-              || (mime && mime->is("application/x-bzip")) )
-    {
+    if (mimeType == QLatin1String("application/x-bzip")
+        || mimeType == QLatin1String("application/x-bzip2") // old name, kept for compatibility
+       ) {
         return new KBzip2Filter;
     }
 #endif
-    else
-    {
-        // not a warning, since this is called often with other mimetypes (see #88574)...
-        // maybe we can avoid that though?
-        kDebug(7005) << "KFilterBase::findFilterByMimeType : no filter found for " << mimeType;
+    const KMimeType::Ptr mime = KMimeType::mimeType(mimeType);
+    if (mime) {
+        if (mime->is("application/x-gzip")) {
+            return new KGzipFilter;
+        }
+#ifdef HAVE_BZIP2_SUPPORT
+        if (mime->is("application/x-bzip")) {
+            return new KBzip2Filter;
+        }
+#endif
     }
 
+    // not a warning, since this is called often with other mimetypes (see #88574)...
+    // maybe we can avoid that though?
+    kDebug(7005) << "no filter found for" << mimeType;
     return 0;
 }
 
