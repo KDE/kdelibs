@@ -781,6 +781,13 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   return result;
 }
 
+static bool isUnsigned(const QString& type)
+{
+    if ( type == "UInt" )        return true;
+    if ( type == "ULongLong" )   return true;
+    return false;
+}
+
 /**
   Return parameter declaration for given type.
 */
@@ -1075,13 +1082,15 @@ QString memberMutatorBody( CfgEntry *e )
 
   if (!e->minValue().isEmpty())
   {
-    out << "if (v < " << e->minValue() << ")" << endl;
-    out << "{" << endl;
-    out << "  kDebug() << \"" << setFunction(n);
-    out << ": value \" << v << \" is less than the minimum value of ";
-    out << e->minValue()<< "\" << endl;" << endl;
-    out << "  v = " << e->minValue() << ";" << endl;
-    out << "}" << endl;
+    if (e->minValue() != "0" || !isUnsigned(t)) { // skip writing "if uint<0" (#187579)
+      out << "if (v < " << e->minValue() << ")" << endl;
+      out << "{" << endl;
+      out << "  kDebug() << \"" << setFunction(n);
+      out << ": value \" << v << \" is less than the minimum value of ";
+      out << e->minValue()<< "\" << endl;" << endl;
+      out << "  v = " << e->minValue() << ";" << endl;
+      out << "}" << endl;
+    }
   }
 
   if (!e->maxValue().isEmpty())
