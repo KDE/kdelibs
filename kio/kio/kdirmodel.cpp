@@ -35,6 +35,10 @@
 #include <sys/types.h>
 #include <dirent.h>
 
+#ifdef Q_WS_WIN
+#include <windows.h>
+#endif
+
 class KDirModelNode;
 class KDirModelDirNode;
 
