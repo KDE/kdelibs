@@ -18,6 +18,7 @@
 */
 
 #include "kfileitemtest.h"
+#include <kfileitemlistproperties.h>
 #include <qtest_kde.h>
 #include "kfileitemtest.moc"
 #include <kfileitem.h>
@@ -273,4 +274,78 @@ void KFileItemTest::testEncodeFileName()
     QFETCH(QString, text);
     QFETCH(QString, expectedFileName);
     QCOMPARE(KIO::encodeFileName(text), expectedFileName);
+}
+
+void KFileItemTest::testListProperties_data()
+{
+    QTest::addColumn<QString>("itemDescriptions");
+    QTest::addColumn<bool>("expectedReading");
+    QTest::addColumn<bool>("expectedDeleting");
+    QTest::addColumn<bool>("expectedIsLocal");
+    QTest::addColumn<bool>("expectedIsDirectory");
+    QTest::addColumn<QString>("expectedMimeType");
+    QTest::addColumn<QString>("expectedMimeGroup");
+
+    QTest::newRow("one file") << "f" << true << true << true << false << "text/plain" << "text";
+    QTest::newRow("one dir") << "d" << true << true << true << true << "inode/directory" << "inode";
+    QTest::newRow("root dir") << "/" << true << false << true << true << "inode/directory" << "inode";
+    QTest::newRow("file+dir") << "fd" << true << true << true << false << "" << "";
+    QTest::newRow("two dirs") << "dd" << true << true << true << true << "inode/directory" << "inode";
+    QTest::newRow("dir+root dir") << "d/" << true << false << true << true << "inode/directory" << "inode";
+    QTest::newRow("two (text+html) files") << "ff" << true << true << true << false << "" << "text";
+    QTest::newRow("three (text+html+empty) files") << "fff" << true << true << true << false << "" << "";
+    QTest::newRow("http url") << "h" << true << true /*says kio_http...*/
+                              << false << false << "application/octet-stream" << "application";
+    QTest::newRow("2 http urls") << "hh" << true << true /*says kio_http...*/
+                              << false << false << "application/octet-stream" << "application";
+}
+
+void KFileItemTest::testListProperties()
+{
+    QFETCH(QString, itemDescriptions);
+    QFETCH(bool, expectedReading);
+    QFETCH(bool, expectedDeleting);
+    QFETCH(bool, expectedIsLocal);
+    QFETCH(bool, expectedIsDirectory);
+    QFETCH(QString, expectedMimeType);
+    QFETCH(QString, expectedMimeGroup);
+
+    KTempDir tempDir;
+    QDir baseDir(tempDir.name());
+    KFileItemList items;
+    for (int i = 0; i < itemDescriptions.size(); ++i) {
+        QString fileName = tempDir.name() + "file" + QString::number(i);
+        switch(itemDescriptions[i].toLatin1()) {
+        case 'f':
+        {
+            if (i==1) // 2nd file is html
+                fileName += ".html";
+            QFile file(fileName);
+            QVERIFY(file.open(QIODevice::WriteOnly));
+            if (i!=2) // 3rd file is empty
+                file.write("Hello");
+            items << KFileItem(KUrl(fileName), QString(), KFileItem::Unknown);
+        }
+            break;
+        case 'd':
+            QVERIFY(baseDir.mkdir(fileName));
+            items << KFileItem(KUrl(fileName), QString(), KFileItem::Unknown);
+            break;
+        case '/':
+            items << KFileItem(KUrl("/"), QString(), KFileItem::Unknown);
+            break;
+        case 'h':
+            items << KFileItem(KUrl("http://www.kde.org"), QString(), KFileItem::Unknown);
+            break;
+        default:
+            QVERIFY(false);
+        }
+    }
+    KFileItemListProperties props(items);
+    QCOMPARE(props.supportsReading(), expectedReading);
+    QCOMPARE(props.supportsDeleting(), expectedDeleting);
+    QCOMPARE(props.isLocal(), expectedIsLocal);
+    QCOMPARE(props.isDirectory(), expectedIsDirectory);
+    QCOMPARE(props.mimeType(), expectedMimeType);
+    QCOMPARE(props.mimeGroup(), expectedMimeGroup);
 }

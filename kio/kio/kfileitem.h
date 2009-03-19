@@ -624,6 +624,8 @@ public:
   /// @return the list of target URLs that those items represent
   /// @since 4.2
   KUrl::List targetUrlList() const;
+
+  // TODO KDE-5 add d pointer here so that we can merge KFileItemListProperties into KFileItemList
 };
 
 KIO_EXPORT QDataStream & operator<< ( QDataStream & s, const KFileItem & a );

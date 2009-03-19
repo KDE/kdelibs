@@ -79,6 +79,8 @@ set(kiocore_STAT_SRCS
   kio/kdynamicjobtracker.cpp
   kio/kemailsettings.cpp
   kio/kfileitem.cpp
+  kio/kfileitemlistproperties.cpp
+  kio/kfileitemactions.cpp
   kio/kfileitemdelegate.cpp
   kio/kfilemetainfo.cpp
   kio/kfilemetainfoitem.cpp
@@ -358,6 +360,8 @@ install( FILES
   kio/kdirwatch.h
   kio/kemailsettings.h
   kio/kfileitem.h
+  kio/kfileitemlistproperties.h
+  kio/kfileitemactions.h
   kio/kfileitemdelegate.h
   kio/kfilemetainfo.h
   kio/kfilemetainfoitem.h

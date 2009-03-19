@@ -40,6 +40,10 @@ private Q_SLOTS:
     void testDecodeFileName();
     void testEncodeFileName_data();
     void testEncodeFileName();
+
+    // KFileItemListProperties tests
+    void testListProperties_data();
+    void testListProperties();
 };
 
 
