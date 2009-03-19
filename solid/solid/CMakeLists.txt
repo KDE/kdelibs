@@ -240,6 +240,7 @@ set(parser_FILE predicate_parser)
 
 find_package(Flex)
 find_program(BISON_EXECUTABLE bison)
+mark_as_advanced(BISON_EXECUTABLE)      # don't show it in the simple view in cmake-gui/ccmake
 
 if (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
 
