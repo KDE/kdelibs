@@ -148,11 +148,16 @@ bool XMLHandler::startPrefixMapping(const QString& prefix, const QString& uri)
 
 bool XMLHandler::endPrefixMapping(const QString& prefix)
 {
-    QStack<QString>& stack = namespaceInfo[prefix];
-    stack.pop();
-    if (stack.isEmpty())
-        namespaceInfo.remove(prefix);
-    return true;
+    if (namespaceInfo.contains(prefix)) {
+        QStack<QString>& stack = namespaceInfo[prefix];
+        stack.pop();
+        if (stack.isEmpty()) {
+            namespaceInfo.remove(prefix);
+        }
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void XMLHandler::fixUpNSURI(QString& uri, const QString& qname)
