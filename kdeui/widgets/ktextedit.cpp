@@ -755,8 +755,7 @@ void KTextEdit::slotDoReplace()
     }
 
     if(d->repDlg->pattern().isEmpty()) {
-        d->replace->disconnect(this);
-        d->replace->deleteLater(); // we are in a slot connected to m_replace, don't delete it right away
+	delete d->replace; 
         d->replace = 0;
         ensureCursorVisible();
         return;
@@ -821,8 +820,7 @@ void KTextEdit::slotDoFind()
     }
     if( d->findDlg->pattern().isEmpty())
     {
-        d->find->disconnect(this);
-        d->find->deleteLater(); // we are in a slot connected to m_find, don't delete right away
+        delete d->find; 
         d->find = 0;
         return;
     }
