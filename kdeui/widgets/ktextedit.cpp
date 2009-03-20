@@ -543,10 +543,16 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
 
         QAction *ignoreAction = menu.addAction(i18n("Ignore"));
         QAction *addToDictAction = menu.addAction(i18n("Add to Dictionary"));
-        QAction *suggestionsAction = menu.addMenu(&suggestions);
-        if (reps.count() == 0)
+        if (reps.count() == 0) {
+	    QAction *suggestionsAction = menu.addAction(i18n("No suggestions for %1", selectedWord));
             suggestionsAction->setEnabled(false);
+	    suggestions.setTitle(i18n("No suggestions for %1", selectedWord));
+        }
+	else {
+	    menu.addMenu(&suggestions);
+	    suggestions.setTitle(i18n("Suggestions for %1", selectedWord));
 
+	}
         //Execute the popup inline
         const QAction *selectedAction = menu.exec(event->globalPos());
 
