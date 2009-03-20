@@ -251,6 +251,7 @@ void KBookmarkDialog::aboutToShow(BookmarkDialogMode mode)
 void KBookmarkDialog::initLayout()
 {
     QBoxLayout *vbox = new QVBoxLayout( m_main );
+    vbox->setMargin(0);
     QGridLayout * grid = new QGridLayout();
     vbox->addLayout(grid);
 
@@ -271,12 +272,16 @@ void KBookmarkDialog::initLayoutPrivate()
     connect( this, SIGNAL( user1Clicked() ), SLOT( newFolderButton() ) );
 
     m_title = new KLineEdit( m_main );
+    m_title->setMinimumWidth(300);
     m_titleLabel = new QLabel( i18nc("@label:textbox", "Name:" ), m_main );
     m_titleLabel->setBuddy( m_title );
+    m_titleLabel->setAlignment(Qt::AlignRight);
 
     m_url = new KLineEdit( m_main );
+    m_url->setMinimumWidth(300);
     m_urlLabel = new QLabel( i18nc("@label:textbox", "Location:" ), m_main );
     m_urlLabel->setBuddy( m_url );
+    m_urlLabel->setAlignment(Qt::AlignRight);
 
     m_folderTree = new QTreeWidget(m_main);
     m_folderTree->setColumnCount(1);
@@ -288,6 +293,7 @@ void KBookmarkDialog::initLayoutPrivate()
     QTreeWidgetItem *root = new KBookmarkTreeItem(m_folderTree);    
     fillGroup( root, m_mgr->root() );
 
+    showButtonSeparator(true);
 
     initLayout();
     m_layout = true;
