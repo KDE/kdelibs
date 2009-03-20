@@ -109,10 +109,10 @@ namespace khtml {
         unsigned m_lastCharacterIndex;
         
         bool m_closeTag;
-        WTF::Vector<char, 8> m_tagName;
-        WTF::Vector<char, 8> m_attributeName;
+        WTF::Vector<QChar, 8> m_tagName;
+        WTF::Vector<QChar, 8> m_attributeName;
         WTF::Vector<QChar, 32> m_attributeValue;
-        WTF::Vector<char, 8> m_lastStartTag;
+        WTF::Vector<QChar, 8> m_lastStartTag;
         uint m_lastStartTagId;
         
         DOM::DOMString m_urlToLoad;
