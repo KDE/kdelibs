@@ -55,15 +55,18 @@ enum RenameDialog_Result { R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OV
 
 
 /**
- * A dialog for the options to rename two files.
- * @short A dialog for renaming files.
+ * The dialog shown when a CopyJob realizes that a destination file already exists,
+ * and wants to offer the user with the choice to either Rename, Overwrite, Skip;
+ * this dialog is also used when a .part file exists and the user can choose to
+ * Resume a previous download.
  */
 class KIO_EXPORT RenameDialog : public QDialog
 {
   Q_OBJECT
 public:
   /**
-   * Construct a "rename" dialog.
+   * Construct a "rename" dialog to let the user know that @p src is about to overwrite @p dest.
+   *
    * @param parent parent widget (often 0)
    * @param caption the caption for the dialog box
    * @param src the url to the file/dir we're trying to copy, as it's part of the text message
