@@ -577,7 +577,7 @@ public:
         return m_getElementByIdCache;
     }
 
-    QString contentLanguage() const { return m_contentLanguage; }
+    DOMString contentLanguage() const { return m_contentLanguage; }
     void setContentLanguage(const QString& cl) { m_contentLanguage = cl; }
 
     khtml::DynamicDomRestyler& dynamicDomRestyler() { return *m_dynamicDomRestyler; }
@@ -609,7 +609,7 @@ protected:
     QString m_printSheet;
     QStringList m_availableSheets;
 
-    QString m_contentLanguage;
+    DOMString m_contentLanguage;
 
     // Track the number of currently loading top-level stylesheets.  Sheets
     // loaded using the @import directive are not included in this count.
@@ -631,33 +631,6 @@ protected:
     NodeImpl *m_cssTarget;
 
     unsigned int m_domtree_version;
-
-    struct IdNameMapping {
-        IdNameMapping(unsigned short _start)
-            : idStart(_start), count(0) {}
-        ~IdNameMapping() {
-            QHashIterator<long,DOM::DOMStringImpl*> it(names);
-            while (it.hasNext())
-                it.next().value()->deref();
-        }
-        unsigned short idStart;
-        unsigned short count;
-        QHash<long,DOM::DOMStringImpl*> names;
-        QHash<QString,void*> ids;
-
-        void addAlias(DOMStringImpl* _prefix, DOMStringImpl* _name, bool cs, NodeImpl::Id id) {
-            if(_prefix && _prefix->l) {
-                QString n(_name->s, _name->l);
-                QString px( _prefix->s, _prefix->l );
-                QString name = cs ? n : n.toUpper();
-                QString qn("aliases: " + (cs ? px : px.toUpper()) + ":" + name);
-                if (!ids.contains( qn )) {
-                    ids.insert( qn, (void*)id );
-                }
-            }
-        }
-
-    };
 
     WebCore::SVGDocumentExtensions* m_svgExtensions;
 
