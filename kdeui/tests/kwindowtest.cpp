@@ -82,11 +82,14 @@ TestWindow::TestWindow (QWidget *parent)
     KAction* fileNewAction2 = new KAction(KIcon( "document-new" ), "Create new file2 (Toggle)", this);
     actionCollection()->addAction("filenew2", fileNewAction2);
     connect(fileNewAction2, SIGNAL(toggled(bool)), this, SLOT(slotToggle(bool)));
+    fileNewAction2->setToolTip("Tooltip");
+    fileNewAction2->setStatusTip("Statustip");
+    fileNewAction2->setWhatsThis("WhatsThis");
 
-    KAction* fileOpenAction2 = new KAction(KIcon( "document-open" ), "Open (starts progres in sb)", this);
+    KAction* fileOpenAction2 = new KAction(KIcon( "document-open" ), "Open (starts progress in sb)", this);
     actionCollection()->addAction("fileopen2", fileOpenAction2);
     connect(fileOpenAction2, SIGNAL(triggered(bool)), SLOT(slotOpen()));
-
+    fileOpenAction2->setHelpText("This action starts a progressbar inside the statusbar");
 
     KAction* fileFloppyAction2 = new KAction(KIcon( "filefloppy" ), "Save file2 (autorepeat)", this);
     actionCollection()->addAction("filefloppy2", fileFloppyAction2);

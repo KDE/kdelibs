@@ -220,6 +220,23 @@ KConfigGroup tst_KActionCollection::clearConfig()
     return KConfigGroup(cfg, collection->configGroup());
 }
 
+void tst_KActionCollection::testSetShortcuts()
+{
+    KAction *action = new KAction(i18n("Next Unread &Folder"), this);
+    collection->addAction("go_next_unread_folder", action);
+    action->setShortcut(QKeySequence(Qt::ALT+Qt::Key_Plus));
+    KShortcut shortcut = KShortcut(action->shortcuts());
+    shortcut.setAlternate( QKeySequence( Qt::CTRL+Qt::Key_Plus ) );
+    action->setShortcuts( shortcut );
+    QCOMPARE(action->shortcut().toString(), QString("Alt++; Ctrl++"));
+
+    // Simpler way:
+    KShortcut shortcut2;
+    shortcut2.setPrimary( QKeySequence( Qt::ALT+Qt::Key_Plus ) );
+    shortcut2.setAlternate( QKeySequence( Qt::CTRL+Qt::Key_Plus ) );
+    QCOMPARE(shortcut2.toString(), QString("Alt++; Ctrl++"));
+}
+
 QTEST_KDEMAIN(tst_KActionCollection, GUI)
 
 #include "kactioncollectiontest.moc"

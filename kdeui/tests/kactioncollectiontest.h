@@ -22,6 +22,7 @@ private Q_SLOTS:
     void readSettings();
     void insertReplaces1();
     void insertReplaces2();
+    void testSetShortcuts();
 
 private:
     KConfigGroup clearConfig();
