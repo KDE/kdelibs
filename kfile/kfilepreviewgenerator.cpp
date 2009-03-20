@@ -19,6 +19,7 @@
 #include <config.h> // for HAVE_XRENDER
 
 #include "kfilepreviewgenerator.h"
+#include <kdebug.h>
 
 #include "../kio/kio/defaultviewadapter_p.h"
 #include "../kio/kio/imagefilter_p.h"
@@ -611,15 +612,7 @@ bool KFilePreviewGenerator::Private::isCutItem(const KFileItem& item) const
 {
     const QMimeData* mimeData = QApplication::clipboard()->mimeData();
     const KUrl::List cutUrls = KUrl::List::fromMimeData(mimeData);
-
-    const KUrl itemUrl = item.url();
-    foreach (const KUrl& url, cutUrls) {
-        if (url == itemUrl) {
-            return true;
-        }
-    }
-
-    return false;
+    return cutUrls.contains(item.url());
 }
 
 void KFilePreviewGenerator::Private::applyCutItemEffect()
@@ -630,6 +623,8 @@ void KFilePreviewGenerator::Private::applyCutItemEffect()
         return;
     }
 
+    const QSet<KUrl> cutUrls = KUrl::List::fromMimeData(mimeData).toSet();
+
     KFileItemList items;
     KDirLister* dirLister = m_dirModel->dirLister();
     const KUrl::List dirs = dirLister->directories();
@@ -639,7 +634,7 @@ void KFilePreviewGenerator::Private::applyCutItemEffect()
 
     DataChangeObtainer obt(this);
     foreach (const KFileItem& item, items) {
-        if (isCutItem(item)) {
+        if (cutUrls.contains(item.url())) {
             const QModelIndex index = m_dirModel->indexForItem(item);
             const QVariant value = m_dirModel->data(index, Qt::DecorationRole);
             if (value.type() == QVariant::Icon) {
