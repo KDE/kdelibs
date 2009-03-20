@@ -65,12 +65,12 @@ class KUrlPrivate;
  * \endcode
  *
  * If you have the URL of a local file or directory and need the absolute path,
- * you would use path().
+ * you would use toLocalFile().
  * \code
  *    KUrl url( "file:///bar/%23foo%23" );
  *    ...
  *    if ( url.isLocalFile() )
- *       QString path = url.path();       // -> "/bar/#foo#"
+ *       QString path = url.toLocalFile();       // -> "/bar/#foo#"
  * \endcode
  *
  * This must also be considered when you have separated directory and file
