@@ -271,10 +271,12 @@ bool KTextEdit::Private::handleShortcut(const QKeyEvent* event)
     parent->cut();
     return true;
   } else if ( KStandardShortcut::undo().contains( key ) ) {
-    parent->document()->undo();
+    if(!parent->isReadOnly())
+        parent->document()->undo();
     return true;
   } else if ( KStandardShortcut::redo().contains( key ) ) {
-    parent->document()->redo();
+    if(!parent->isReadOnly())
+        parent->document()->redo();
     return true;
   } else if ( KStandardShortcut::deleteWordBack().contains( key ) ) {
     parent->deleteWordBack();
@@ -405,9 +407,11 @@ QMenu *KTextEdit::mousePopupMenu()
           if (emptyDocument)
           {
               findAction->setEnabled(false);
-              findNextAction->setEnabled(d->find != 0 );
+	      findNextAction->setEnabled(false );
               replaceAction->setEnabled(false);
           }
+	  else
+	      findNextAction->setEnabled(d->find != 0 );
           popup->addSeparator();
           popup->addAction(findAction);
           popup->addAction(findNextAction);
@@ -663,6 +667,13 @@ void KTextEdit::slotFindNext()
 {
     if (!d->find)
         return;
+    if(document()->isEmpty())
+    {
+        d->find->disconnect(this);
+        d->find->deleteLater(); // we are in a slot connected to m_find, don't delete right away
+        d->find = 0;
+        return;
+    }
 
     KFind::Result res = KFind::NoMatch;
     if (d->find->needData())
