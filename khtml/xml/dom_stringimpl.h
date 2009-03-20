@@ -37,6 +37,8 @@
 
 namespace DOM {
 
+enum CaseSensitivity { CaseSensitive, CaseInsensitive };
+
 class DOMStringImpl : public khtml::Shared<DOMStringImpl>
 {
 private:
@@ -124,8 +126,8 @@ public:
     uint length() const { return l; }
     QString string() const;
 
-    bool endsWith(DOMStringImpl* str) const;
-    bool startsWith(DOMStringImpl* str) const;
+    bool endsWith(DOMStringImpl* str, CaseSensitivity cs = CaseSensitive) const;
+    bool startsWith(DOMStringImpl* str, CaseSensitivity cs = CaseSensitive) const;
 
     DOMStringImpl* substring(unsigned pos, unsigned len = UINT_MAX) const;
 

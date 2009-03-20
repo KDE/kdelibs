@@ -470,28 +470,42 @@ float DOMStringImpl::toFloat(bool* ok) const
     return QString::fromRawData(s, l).toFloat(ok);
 }
 
-bool DOMStringImpl::endsWith(DOMStringImpl* str) const
+bool DOMStringImpl::endsWith(DOMStringImpl* str, CaseSensitivity cs) const
 {
     if (l < str->l) return false;
     const QChar *a = s + l - 1; 
     const QChar *b = str->s + str->l - 1; 
     int i = str->l;
-    while (i--) {
-        if (*a != *b) return false;
-        a--, b--;
+    if (cs == CaseSensitive) {
+        while (i--) {
+            if (*a != *b) return false;
+            a--, b--;
+        }
+    } else {
+        while (i--) {
+            if (a->toLower() != b->toLower()) return false;
+            a--, b--;
+        }
     }
     return true;
 }
 
-bool DOMStringImpl::startsWith(DOMStringImpl* str) const
+bool DOMStringImpl::startsWith(DOMStringImpl* str, CaseSensitivity cs) const
 {
     if (l < str->l) return false;
     const QChar *a = s;
     const QChar *b = str->s;
     int i = str->l;
-    while (i--) {
-        if (*a != *b) return false;
-        a++, b++;
+    if (cs == CaseSensitive) {
+        while (i--) {
+            if (*a != *b) return false;
+            a++, b++;
+        }
+    } else {
+        while (i--) {
+            if (a->toLower() != b->toLower()) return false;
+            a++, b++;
+        }
     }
     return true;
 }
