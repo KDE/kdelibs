@@ -1675,12 +1675,12 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             if (!(value && value->length()))
                 return false;
 
-            DOMStringImpl* selValue = sel->value.impl();
-            if (value->length() < selValue->length())
+            DOMStringImpl* langValue = sel->string_arg.implementation();
+            if (value->length() < langValue->length())
                 return false;
-            if (!value->startsWith(selValue))
+            if (!value->startsWith(langValue))
                 return false;
-            if (value->length() != selValue->length() && (*value)[selValue->length()].unicode() != '-')
+            if (value->length() != langValue->length() && (*value)[langValue->length()].unicode() != '-')
                 return false;
             return true;
         }
