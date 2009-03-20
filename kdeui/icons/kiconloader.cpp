@@ -49,7 +49,6 @@
 #include <kcomponentdata.h>
 #include <ksvgrenderer.h>
 #include <kde_file.h>
-#include <kmimetype.h>
 
 #include <sys/types.h>
 #include <stdlib.h>     //for abs
