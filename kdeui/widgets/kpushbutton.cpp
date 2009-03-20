@@ -172,6 +172,7 @@ void KPushButton::setGuiItem( const KGuiItem& item )
     QPushButton::setText( d->item.text() );
     setIcon( d->item.icon() );
     setToolTip( d->item.toolTip() );
+    setEnabled( d->item.isEnabled() );
     setWhatsThis( d->item.whatsThis() );
 }
 
