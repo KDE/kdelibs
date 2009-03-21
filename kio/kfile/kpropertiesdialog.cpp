@@ -72,6 +72,7 @@ extern "C" {
 #include <QtGui/QStyle>
 #include <QtGui/QProgressBar>
 #include <QVector>
+#include <QFileInfo>
 
 #ifdef HAVE_POSIX_ACL
 extern "C" {
@@ -122,6 +123,7 @@ extern "C" {
 #include <kconfiggroup.h>
 #include <kshell.h>
 #include <kcapacitybar.h>
+#include <kprotocolmanager.h>
 #ifndef Q_OS_WIN
 #include "kfilesharedialog.h"
 #endif
@@ -932,9 +934,25 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     d->m_lined = new KLineEdit( d->m_frame );
     d->m_lined->setText(filename);
     d->nameArea = d->m_lined;
-    d->m_lined->setFocus();
-
-    // Enhanced rename: Don't highlight the file extension.
+    d->m_lined->setFocus();   
+    
+    //if we don't have permissions to rename, we need to make "m_lined" read only.   
+    bool isReadOnly = false;
+    
+    // For local files we can do better: check if we have write permission in parent directory
+    if (item.isLocalFile()) {
+        const QString directory = item.url().directory();
+        QFileInfo parentDirInfo;
+        parentDirInfo.setFile(directory);
+        if (!parentDirInfo.isWritable()) {
+            isReadOnly = true;
+        }
+    } else {
+        isReadOnly = !(KProtocolManager::supportsWriting(item.url()) && item.isWritable());
+    }   
+    setFileNameReadOnly(isReadOnly);
+       
+   // Enhanced rename: Don't highlight the file extension.
     QString extension = KMimeType::extractKnownExtension( filename );
     if ( !extension.isEmpty() )
       d->m_lined->setSelection( 0, filename.length() - extension.length() - 1 );
