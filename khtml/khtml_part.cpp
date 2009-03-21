@@ -1370,7 +1370,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   /*
    *  Error handling
    */
-  if (comp.complType() == KJS::Throw && !comp.value()) {
+  if (comp.complType() == KJS::Throw && comp.value()) {
     KJSErrorDlg *dlg = jsErrorExtension();
     if (dlg) {
       QString msg = KJSDebugger::DebugWindow::exceptionToString(
