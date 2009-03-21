@@ -88,7 +88,7 @@ public:
 
     virtual void parseAttribute(AttributeImpl *attr);
 
-    void radioClicked( HTMLGenericFormElementImpl *caller );
+    void uncheckOtherRadioButtonsInGroup(HTMLGenericFormElementImpl *caller, bool setDefaultChecked = false);
 
     void registerFormElement(HTMLGenericFormElementImpl *);
     void removeFormElement(HTMLGenericFormElementImpl *);
@@ -274,8 +274,9 @@ public:
 
     bool autoComplete() const { return m_autocomplete; }
 
+    bool defaultChecked() const { return m_defaultChecked; }
     bool checked() const { return m_useDefaultChecked ? m_defaultChecked : m_checked; }
-    void setChecked(bool);
+    void setChecked(bool, bool setDefaultChecked = false);
     bool indeterminate() const { return m_indeterminate; }
     void setIndeterminate(bool);
     long maxLength() const { return m_maxLen; }
