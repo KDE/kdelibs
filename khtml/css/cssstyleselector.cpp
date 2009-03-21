@@ -608,8 +608,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
     // do aggressive selection of selectors to check
     // instead of going over whole constructed list,
     // skip selectors that won't match for sure (e.g. with different id or class)
-    QVector<int> selectorsForCheck;
-    selectorsForCheck.reserve(selectors_size);
+    WTF::Vector<int> selectorsForCheck;
+    selectorsForCheck.reserveCapacity(selectors_size);
     // add unknown selectors to always be checked
     for (unsigned int i = 0; i < otherSelectors.size(); ++i)
         selectorsForCheck.append(otherSelectors[i]);
@@ -1865,12 +1865,9 @@ void CSSStyleSelector::clearLists()
         delete[] selectorCache;
     }
     if (properties) {
-	CSSOrderedProperty **prop = properties;
-	while ( *prop ) {
-	    delete (*prop);
-	    prop++;
-	}
-        delete [] properties;
+        CSSOrderedProperty **prop = properties;
+        delete[] propertiesBuffer;
+        delete[] properties;
         delete[] nextPropertyIndexes;
     }
     selectors = 0;
@@ -1916,26 +1913,27 @@ void CSSStyleSelector::buildLists()
 
     QList<CSSSelector*> selectorList;
     CSSOrderedPropertyList propertyList;
+    WTF::HashMap<CSSSelector*, int> selectorsCache;
 
     if(defaultPrintStyle && m_medium->mediaTypeMatchSpecific("print"))
-      defaultPrintStyle->collect( &selectorList, &propertyList, Default,
+      defaultPrintStyle->collect(&selectorsCache, &selectorList, &propertyList, Default,
         Default );
-    else if(defaultStyle) defaultStyle->collect( &selectorList, &propertyList,
+    else if(defaultStyle) defaultStyle->collect(&selectorsCache, &selectorList, &propertyList,
       Default, Default );
 
     if (!strictParsing && defaultQuirksStyle)
-        defaultQuirksStyle->collect( &selectorList, &propertyList, Default, Default );
+        defaultQuirksStyle->collect(&selectorsCache, &selectorList, &propertyList, Default, Default );
 
-    if(userStyle) userStyle->collect(&selectorList, &propertyList, User, UserImportant );
+    if(userStyle) userStyle->collect(&selectorsCache, &selectorList, &propertyList, User, UserImportant );
 
     if (defaultNonCSSHintsStyle)
-        defaultNonCSSHintsStyle->collect(&selectorList, &propertyList, NonCSSHint, NonCSSHint);
+        defaultNonCSSHintsStyle->collect(&selectorsCache, &selectorList, &propertyList, NonCSSHint, NonCSSHint);
 
     // Implicit styles are gathered from hidden, dynamically generated, implicit stylesheets.
     // They have the same priority as presentational attributes.
-    if (implicitStyle) implicitStyle->collect(&selectorList, &propertyList, NonCSSHint, NonCSSHint);
+    if (implicitStyle) implicitStyle->collect(&selectorsCache, &selectorList, &propertyList, NonCSSHint, NonCSSHint);
 
-    if (authorStyle) authorStyle->collect(&selectorList, &propertyList, Author, AuthorImportant );
+    if (authorStyle) authorStyle->collect(&selectorsCache, &selectorList, &propertyList, Author, AuthorImportant );
 
     selectors_size = selectorList.count();
     selectors = new CSSSelector *[selectors_size];
@@ -1978,9 +1976,12 @@ void CSSStyleSelector::buildLists()
     qSort(propertyList.begin(), propertyList.end(), CSSOrderedPropertyList::compareItems);
     properties_size = propertyList.count();
     properties = new CSSOrderedProperty *[ properties_size ];
+    propertiesBuffer = new CSSOrderedProperty[properties_size];
     CSSOrderedProperty **prop = properties;
-    for (QListIterator<CSSOrderedProperty*> pit(propertyList); pit.hasNext(); ++prop)
-        *prop = pit.next();
+    for (int i = 0; i < propertyList.size(); ++i, ++prop) {
+        *prop = propertiesBuffer + i;
+        **prop = propertyList[i];
+    }
 
     // properties for one selector are not necessarily adjacent at this point
     // prepare sublists with same selector
@@ -2109,41 +2110,36 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
     }
 }
 
-void CSSStyleSelectorList::collect( QList<CSSSelector*> *selectorList, CSSOrderedPropertyList *propList,
-				    Source regular, Source important )
+void CSSStyleSelectorList::collect(WTF::HashMap<CSSSelector*, int>* selectorsCache, QList<CSSSelector*> *selectorList,
+        CSSOrderedPropertyList *propList, Source regular, Source important)
 {
     CSSOrderedRule *r;
     QListIterator<CSSOrderedRule*> tIt(*this);
 
-    WTF::HashMap<CSSSelector*, int> cache;
-    QListIterator<CSSSelector*> it(*selectorList);
-    int pos = 0;
-    while (it.hasNext())
-        cache.set(it.next(), pos++);
-
+    propList->reserve(propList->size() + selectorList->size());
     while( tIt.hasNext() ) {
         r = tIt.next();
-        WTF::HashMap<CSSSelector*, int>::iterator cacheIterator = cache.find(r->selector);
+        WTF::HashMap<CSSSelector*, int>::iterator cacheIterator = selectorsCache->find(r->selector);
         int selectorNum;
-        if (cacheIterator == cache.end()) {
-            selectorNum = cache.size();
-            cache.set(r->selector, selectorNum);
+        if (cacheIterator == selectorsCache->end()) {
+            selectorNum = selectorsCache->size();
+            selectorsCache->set(r->selector, selectorNum);
             selectorList->append(r->selector);
         } else
             selectorNum = cacheIterator->second;
-        propList->append(r->rule->declaration(), selectorNum, r->selector->specificity(), regular, important );
+        propList->append(r->rule->declaration(), selectorNum, r->selector->specificity(), regular, important);
     }
 }
 
 // -------------------------------------------------------------------------
 
-bool CSSOrderedPropertyList::compareItems(const CSSOrderedProperty * i1, const CSSOrderedProperty *i2)
+bool CSSOrderedPropertyList::compareItems(const CSSOrderedProperty& i1, const CSSOrderedProperty& i2)
 {
-    return *i1 < *i2;
+    return i1 < i2;
 }
 
 void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity,
-				    Source regular, Source important )
+                                    Source regular, Source important)
 {
     QList<CSSProperty*> *values = decl->values();
     if(!values) return;
@@ -2176,9 +2172,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
             break;
         }
 
-	QList<CSSOrderedProperty*>::append(new CSSOrderedProperty(prop, selector,
-								 first, source, specificity,
-								 count() ));
+        QVector<CSSOrderedProperty>::append(CSSOrderedProperty(prop, selector, first, source, specificity, count()));
     }
 }
 
