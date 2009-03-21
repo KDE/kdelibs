@@ -1678,7 +1678,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             DOMStringImpl* langValue = sel->string_arg.implementation();
             if (value->length() < langValue->length())
                 return false;
-            if (!value->startsWith(langValue))
+            if (!value->startsWith(langValue, DOM::CaseInsensitive))
                 return false;
             if (value->length() != langValue->length() && (*value)[langValue->length()].unicode() != '-')
                 return false;
