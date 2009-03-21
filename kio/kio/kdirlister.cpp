@@ -827,11 +827,7 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
             continue;
         }
         if (url.isLocalFile()) {
-            // we need to refresh the item, because e.g. the permissions can have changed.
-            aboutToRefreshItem(*fileitem);
-            KFileItem oldItem = *fileitem;
-            fileitem->refresh();
-            emitRefreshItem(oldItem, *fileitem);
+            pendingUpdates.insert(*it); // delegate the work to processPendingUpdates
         } else {
             pendingRemoteUpdates.insert(fileitem);
             // For remote files, we won't be able to figure out the new information,
@@ -848,6 +844,8 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
         updateDirectory( *itdir );
     // ## TODO problems with current jobs listing/updating that dir
     // ( see kde-2.2.2's kdirlister )
+
+    processPendingUpdates();
 }
 
 void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst ) // from KDirNotify signals
@@ -905,7 +903,10 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
             fileitem->setUrl( dst );
         fileitem->refreshMimeType();
         fileitem->determineMimeType();
-        emitRefreshItem( oldItem, *fileitem );
+        QSet<KDirLister*> listers = emitRefreshItem( oldItem, *fileitem );
+        Q_FOREACH(KDirLister * kdl, listers) {
+            kdl->d->emitItems();
+        }
     }
 
 #ifdef DEBUG_CACHE
@@ -932,7 +933,7 @@ void KDirListerCache::aboutToRefreshItem( const KFileItem& fileitem )
         kdl->d->aboutToRefreshItem( fileitem );
 }
 
-void KDirListerCache::emitRefreshItem(const KFileItem& oldItem, const KFileItem& fileitem )
+QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, const KFileItem& fileitem )
 {
     // Look whether this item was shown in any view, i.e. held by any dirlister
     KUrl parentDir( oldItem.url() );
@@ -949,6 +950,7 @@ void KDirListerCache::emitRefreshItem(const KFileItem& oldItem, const KFileItem&
         if (dit != directoryData.end())
             listers += (*dit).listersCurrentlyHolding + (*dit).listersCurrentlyListing;
     }
+    QSet<KDirLister*> listersToRefresh;
     Q_FOREACH(KDirLister *kdl, listers) {
         // For a directory, look for dirlisters where it's the root item.
         if (oldItem.isDir() && kdl->d->rootFileItem == oldItem) {
@@ -957,8 +959,9 @@ void KDirListerCache::emitRefreshItem(const KFileItem& oldItem, const KFileItem&
         KUrl directoryUrl(oldItem.url());
         directoryUrl.setPath(directoryUrl.directory());
         kdl->d->addRefreshItem(directoryUrl, oldItem, fileitem);
-        kdl->d->emitItems();
+        listersToRefresh.insert(kdl);
     }
+    return listersToRefresh;
 }
 
 // private slots
@@ -1351,6 +1354,7 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
     //emitRedirections( oldUrl, url );
 
     QLinkedList<ItemInUseChange> itemsToChange;
+    QSet<KDirLister *> listers;
 
     // Look at all dirs being listed/shown
     QHash<QString, DirItem *>::iterator itu = itemsInUse.begin();
@@ -1391,10 +1395,14 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
                 kDebug(7004) << "renaming" << oldItemUrl << "to" << newItemUrl;
                 (*kit).setUrl(newItemUrl);
 
-                emitRefreshItem(oldItem, *kit);
+                listers |= emitRefreshItem(oldItem, *kit);
             }
             emitRedirections( oldDirUrl, newDirUrl );
         }
+    }
+
+    Q_FOREACH(KDirLister * kdl, listers) {
+        kdl->d->emitItems();
     }
 
     // Do the changes to itemsInUse out of the loop to avoid messing up iterators,
@@ -1763,6 +1771,7 @@ void KDirListerCache::deleteDir( const KUrl& dirUrl )
 // delayed updating of files, FAM is flooding us with events
 void KDirListerCache::processPendingUpdates()
 {
+    QSet<KDirLister *> listers;
     foreach(const QString& file, pendingUpdates) {
         kDebug(7004) << file;
         KUrl u(file);
@@ -1772,10 +1781,13 @@ void KDirListerCache::processPendingUpdates()
             aboutToRefreshItem( *item );
             KFileItem oldItem = *item;
             item->refresh();
-            emitRefreshItem( oldItem, *item );
+            listers |= emitRefreshItem( oldItem, *item );
         }
     }
     pendingUpdates.clear();
+    Q_FOREACH(KDirLister * kdl, listers) {
+        kdl->d->emitItems();
+    }
 }
 
 #ifndef NDEBUG

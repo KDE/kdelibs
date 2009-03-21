@@ -293,8 +293,10 @@ private:
 
     /**
      * Emits refreshItem() in the directories that cared for oldItem.
+     * The caller has to remember to call emitItems in the set of dirlisters returned
+     * (but this allows to buffer change notifications)
      */
-    void emitRefreshItem(const KFileItem& oldItem, const KFileItem& fileitem);
+    QSet<KDirLister *> emitRefreshItem(const KFileItem& oldItem, const KFileItem& fileitem);
 
 #ifndef NDEBUG
   void printDebug();
