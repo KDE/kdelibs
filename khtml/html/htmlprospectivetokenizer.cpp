@@ -694,29 +694,34 @@ void ProspectiveTokenizer::tokenize(const TokenizerString& source)
     
 void ProspectiveTokenizer::processAttribute()
 {
-    LocalName tagLocal = LocalName::fromString(DOMString(m_tagName.data(), m_tagName.size()).lower());
+    DOMStringImpl tagNameDS(DOMStringImpl::ShallowCopy, m_tagName.data(), m_tagName.size());
+    LocalName tagLocal = LocalName::fromString(&tagNameDS, IDS_NormalizeLower);
     uint tag = tagLocal.id();
-    LocalName attrLocal;
-    uint attribute;
 
     switch (tag) {
     case ID_SCRIPT:
     case ID_IMAGE:
     case ID_IMG:
-        attrLocal = LocalName::fromString(DOMString(m_attributeName.data(), m_attributeName.size()).lower());
-        attribute = attrLocal.id();
+    {
+        DOMStringImpl attrDS(DOMStringImpl::ShallowCopy, m_attributeName.data(), m_attributeName.size());
+        LocalName attrLocal = LocalName::fromString(&attrDS, IDS_NormalizeLower);
+        uint attribute = attrLocal.id();
         if (attribute == ATTR_SRC && m_urlToLoad.isEmpty())
             m_urlToLoad = parseURL(DOMString(m_attributeValue.data(), m_attributeValue.size()));
         break;
+    }
     case ID_LINK:
-        attrLocal = LocalName::fromString(DOMString(m_attributeName.data(), m_attributeName.size()).lower());
-        attribute = attrLocal.id();
+    {
+        DOMStringImpl attrDS(DOMStringImpl::ShallowCopy, m_attributeName.data(), m_attributeName.size());
+        LocalName attrLocal = LocalName::fromString(&attrDS, IDS_NormalizeLower);
+        uint attribute = attrLocal.id();
         if (attribute == ATTR_HREF && m_urlToLoad.isEmpty())
             m_urlToLoad = parseURL(DOMString(m_attributeValue.data(), m_attributeValue.size()));
         else if (attribute == ATTR_REL) {
             QString val = QString::fromRawData(m_attributeValue.data(), m_attributeValue.size());
             m_linkIsStyleSheet = val.contains("styleSheet") && !val.contains("alternate") && !val.contains("icon");
         }
+    }
     default:
         break;
     }
@@ -815,8 +820,9 @@ void ProspectiveTokenizer::emitTag()
         clearLastCharacters();
         return;
     }
-   
-    LocalName tagLocal = LocalName::fromString(DOMString(m_tagName.data(), m_tagName.size()));
+  
+    DOMStringImpl tagNameDS(DOMStringImpl::ShallowCopy, m_tagName.data(), m_tagName.size());
+    LocalName tagLocal = LocalName::fromString(&tagNameDS, IDS_NormalizeLower);
     uint tag = tagLocal.id();
     m_lastStartTagId = tag;
     m_lastStartTag = m_tagName;

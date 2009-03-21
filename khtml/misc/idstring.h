@@ -1,7 +1,7 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 2008 Maksim Orlovich (maksim@kde.org)
+ * Copyright (C) 2008,2009 Maksim Orlovich (maksim@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,6 +29,7 @@
 #include <QHash>
 
 using DOM::DOMString;
+using DOM::DOMStringImpl;
 
 namespace khtml {
 
@@ -89,6 +90,10 @@ public:
     }
 
     static IDString<TableFactory> fromString(const DOMString& string, CaseNormalizeMode cnm = IDS_CaseSensitive) {
+        return fromString(string.implementation(), cnm);
+    }
+    
+    static IDString<TableFactory> fromString(DOMStringImpl* string, CaseNormalizeMode cnm = IDS_CaseSensitive) {
         IDString<TableFactory> nw;
         nw.m_id = TableFactory::idTable()->grabId(string, cnm); // Refs it already.
         return nw;
@@ -105,13 +110,15 @@ public:
 
 class IDTableBase {
     struct Mapping {
-        unsigned   refCount; // # of references, 0 if not in use.
-        DOMString  name;
+        unsigned        refCount; // # of references, 0 if not in use.
+        DOMStringImpl*  name;     // same as our key, so no separate
+                                  // refcount (except for hidden mappings)
+
 
         Mapping(): refCount(0)
         {}
 
-        Mapping(const DOMString& _name): refCount(0), name(_name)
+        Mapping(DOMStringImpl* _name): refCount(0), name(_name)
         {}
     };
     
@@ -121,11 +128,11 @@ public:
     // that's done via a global fiddle --- warning, warning, warning.
     struct MappingKey
     {
-        DOMString str;
+        DOMStringImpl* str;
         bool operator==(const MappingKey& other) const;
         
         MappingKey() {}
-        MappingKey(const DOMString& v): str(v) {}
+        MappingKey(DOMStringImpl* v): str(v) {}
         
         static CaseNormalizeMode caseNormalizationMode;
     };
@@ -144,11 +151,11 @@ protected:
             releaseId(id);
     }
 
-    const DOMString& idToString(unsigned id) {
-        return m_mappings[id].name;
+    const DOMString idToString(unsigned id) {
+        return DOMString(m_mappings[id].name);
     }
 
-    unsigned short grabId(const DOMString& string, CaseNormalizeMode cnm);
+    unsigned short grabId(DOMStringImpl* string, CaseNormalizeMode cnm);
 
 public:
     // Registers a compile-type known ID constant with the name.
