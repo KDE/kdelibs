@@ -2119,14 +2119,11 @@ void CSSStyleSelectorList::collect(WTF::HashMap<CSSSelector*, int>* selectorsCac
     propList->reserve(propList->size() + selectorList->size());
     while( tIt.hasNext() ) {
         r = tIt.next();
-        WTF::HashMap<CSSSelector*, int>::iterator cacheIterator = selectorsCache->find(r->selector);
-        int selectorNum;
-        if (cacheIterator == selectorsCache->end()) {
-            selectorNum = selectorsCache->size();
-            selectorsCache->set(r->selector, selectorNum);
+        int selectorNum = selectorsCache->size();
+        pair<WTF::HashMap<CSSSelector*, int>::iterator, bool> cacheIterator = selectorsCache->add(r->selector, selectorNum);
+        if (cacheIterator.second)
             selectorList->append(r->selector);
-        } else
-            selectorNum = cacheIterator->second;
+        selectorNum = cacheIterator.first->second;
         propList->append(r->rule->declaration(), selectorNum, r->selector->specificity(), regular, important);
     }
 }
