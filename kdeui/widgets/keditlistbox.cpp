@@ -56,7 +56,7 @@ public:
     bool checkAtEntering;
     KEditListBox::Buttons buttons;
 
-    void init( bool checkAtEntering = false, KEditListBox::Buttons buttons = KEditListBox::All,
+    void init( bool check = false, KEditListBox::Buttons buttons = KEditListBox::All,
                QWidget *representationWidget = 0 );
     void setEditor( KLineEdit* lineEdit, QWidget* representationWidget = 0 );
     void updateButtonState();
@@ -67,10 +67,10 @@ private:
 };
 
 
-void KEditListBoxPrivate::init( bool checkAtEntering, KEditListBox::Buttons newButtons,
+void KEditListBoxPrivate::init( bool check, KEditListBox::Buttons newButtons,
                                 QWidget *representationWidget )
 {
-    checkAtEntering = checkAtEntering;
+    checkAtEntering = check;
 
     servNewButton = servRemoveButton = servUpButton = servDownButton = 0L;
     q->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding,
@@ -604,7 +604,7 @@ void KEditListBox::clear()
 void KEditListBox::insertStringList(const QStringList& list, int index)
 {
     QStringList content = d->model->stringList();
-    if ( index > content.count() )
+    if ( index < 0 )
       content += list;
     else
       for ( int i = 0, j = index; i < list.count(); ++i, ++j )
@@ -617,7 +617,7 @@ void KEditListBox::insertItem(const QString& text, int index)
 {
   QStringList list = d->model->stringList();
 
-  if ( index == -1 )
+  if ( index < 0 )
     list.append( text );
   else
     list.insert( index, text );
