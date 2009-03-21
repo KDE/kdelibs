@@ -645,6 +645,36 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
             selectorsForCheck.append(v[j]);
     }
 
+    // build caches for element so it could be used in heuristic for descendant selectors
+    // go up the tree and cache possible tags, classes and ids
+    tagCache.clear();
+    idCache.clear();
+    classCache.clear();
+    ElementImpl* current = element;
+    while (true) {
+        NodeImpl* parent = current->parentNode();
+        if (!parent || !parent->isElementNode())
+            break;
+        current = static_cast<ElementImpl*>(parent);
+
+        if (current->hasClass()) {
+            const ClassNames& classNames = current->classNames();
+            for (unsigned i = 0; i < classNames.size(); ++i)
+                classCache.add((unsigned long)classNames[i].impl());
+        }
+
+        DOMStringImpl* idValue = current->getAttributeImplById(ATTR_ID);
+        if (idValue && idValue->length()) {
+            bool caseSensitive = (current->document()->htmlMode() == DocumentImpl::XHtml) || strictParsing;
+            AtomicString currentId = caseSensitive ? idValue : idValue->lower();
+            // though currentId is local and could be deleted from AtomicStringImpl cache right away
+            // don't care about that, cause selector values are stable and only they will be checked later
+            idCache.add((unsigned long)currentId.impl());
+        }
+
+        tagCache.add(localNamePart(current->id()));
+    }
+
     // sort selectors indexes so we match them in increasing order
     qSort(selectorsForCheck.begin(), selectorsForCheck.end());
 
@@ -657,30 +687,26 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
 
 	    checkSelector( i, e );
 
-	    if ( selectorCache[i].state == Applies ) {
-		++smatch;
-
-// 		qDebug("adding property" );
-		for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
-		    for ( unsigned int j = 0; j < (unsigned int )selectorCache[i].props[p+1]; ++j ) {
-                        if (numPropsToApply >= propsToApplySize ) {
-                            propsToApplySize *= 2;
-			    propsToApply = (CSSOrderedProperty **)realloc( propsToApply, propsToApplySize*sizeof( CSSOrderedProperty * ) );
-			}
-			propsToApply[numPropsToApply++] = properties[selectorCache[i].props[p]+j];
-		    }
-	    } else if ( selectorCache[i].state == AppliesPseudo ) {
-		for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
-		    for ( unsigned int j = 0; j < (unsigned int) selectorCache[i].props[p+1]; ++j ) {
-                        if (numPseudoProps >= pseudoPropsSize ) {
-                            pseudoPropsSize *= 2;
-			    pseudoProps = (CSSOrderedProperty **)realloc( pseudoProps, pseudoPropsSize*sizeof( CSSOrderedProperty * ) );
-			}
-			pseudoProps[numPseudoProps++] = properties[selectorCache[i].props[p]+j];
-			properties[selectorCache[i].props[p]+j]->pseudoId = (RenderStyle::PseudoId) selectors[i]->pseudoId;
-		    }
-	    }
-	}
+            if (selectorCache[i].state == Applies) {
+                ++smatch;
+                for (unsigned p = selectorCache[i].firstPropertyIndex; p < properties_size; p = nextPropertyIndexes[p]) {
+                    if (numPropsToApply >= propsToApplySize ) {
+                        propsToApplySize *= 2;
+                        propsToApply = (CSSOrderedProperty **)realloc( propsToApply, propsToApplySize*sizeof( CSSOrderedProperty * ) );
+                    }
+                    propsToApply[numPropsToApply++] = properties[p];
+                }
+            } else if (selectorCache[i].state == AppliesPseudo) {
+                for (unsigned p = selectorCache[i].firstPropertyIndex; p < properties_size; p = nextPropertyIndexes[p]) {
+                    if (numPseudoProps >= pseudoPropsSize ) {
+                        pseudoPropsSize *= 2;
+                        pseudoProps = (CSSOrderedProperty **)realloc( pseudoProps, pseudoPropsSize*sizeof( CSSOrderedProperty * ) );
+                    }
+                    pseudoProps[numPseudoProps++] = properties[p];
+                    properties[p]->pseudoId = (RenderStyle::PseudoId) selectors[i]->pseudoId;
+                }
+            }
+        }
 	else
 	    selectorCache[i].state = Invalid;
 
@@ -1180,6 +1206,19 @@ CSSStyleSelector::SelectorMatch CSSStyleSelector::checkSelector(DOM::CSSSelector
     switch(relation) {
         case CSSSelector::Descendant:
         {
+            // if ancestor of original element we may want to check prepared caches first
+            // whether given selector could possibly have a match
+            // if no we return SelectorFails result right away and avoid going up the tree
+            if (isAncestor) {
+                int id = sel->tagLocalName.id();
+                if (id != anyLocalName && !tagCache.contains(id))
+                    return SelectorFails;
+                if (sel->match == CSSSelector::Class && !classCache.contains((unsigned long)sel->value.impl()))
+                    return SelectorFails;
+                if (sel->match == CSSSelector::Id && !idCache.contains((unsigned long)sel->value.impl()))
+                    return SelectorFails;
+            }
+
             while(true)
             {
                 DOM::NodeImpl* n = e->parentNode();
@@ -1821,20 +1860,18 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
 
 void CSSStyleSelector::clearLists()
 {
-    delete [] selectors;
-    if ( selectorCache ) {
-        for ( unsigned int i = 0; i < selectors_size; i++ )
-            delete [] selectorCache[i].props;
-
-        delete [] selectorCache;
+    delete[] selectors;
+    if (selectorCache) {
+        delete[] selectorCache;
     }
-    if ( properties ) {
+    if (properties) {
 	CSSOrderedProperty **prop = properties;
 	while ( *prop ) {
 	    delete (*prop);
 	    prop++;
 	}
         delete [] properties;
+        delete[] nextPropertyIndexes;
     }
     selectors = 0;
     properties = 0;
@@ -1907,10 +1944,9 @@ void CSSStyleSelector::buildLists()
 	*sel = sit.next();
 
     selectorCache = new SelectorCache[selectors_size];
-    for ( unsigned int i = 0; i < selectors_size; i++ ) {
+    for (unsigned int i = 0; i < selectors_size; i++) {
         selectorCache[i].state = Unknown;
-        selectorCache[i].props_size = 0;
-        selectorCache[i].props = 0;
+        selectorCache[i].firstPropertyIndex = propertyList.size();
     }
 
     // do some pre-compution to make styleForElement faster:
@@ -1921,28 +1957,19 @@ void CSSStyleSelector::buildLists()
     for (unsigned int i = 0; i < selectors_size; ++i) {
         if (selectors[i]->match == CSSSelector::Class) {
             WTF::HashMap<unsigned long, WTF::Vector<int> >::iterator it = classSelectors.find((unsigned long)selectors[i]->value.impl());
-            if (it == classSelectors.end()) {
-                WTF::Vector<int> temp;
-                temp.append(i);
-                classSelectors.set((unsigned long)selectors[i]->value.impl(), temp);
-            } else
-                it->second.append(i);
+            if (it == classSelectors.end())
+                it = classSelectors.set((unsigned long)selectors[i]->value.impl(), WTF::Vector<int>()).first;
+            it->second.append(i);
         } else if (selectors[i]->match == CSSSelector::Id) {
             WTF::HashMap<unsigned long, WTF::Vector<int> >::iterator it = idSelectors.find((unsigned long)selectors[i]->value.impl());
-            if (it == idSelectors.end()) {
-                WTF::Vector<int> temp;
-                temp.append(i);
-                idSelectors.set((unsigned long)selectors[i]->value.impl(), temp);
-            } else
-                it->second.append(i);
+            if (it == idSelectors.end())
+                it = idSelectors.set((unsigned long)selectors[i]->value.impl(), WTF::Vector<int>()).first;
+            it->second.append(i);
         } else if (selectors[i]->tagLocalName.id() && selectors[i]->tagLocalName.id() != anyLocalName) {
             WTF::HashMap<unsigned, WTF::Vector<int> >::iterator it = tagSelectors.find(selectors[i]->tagLocalName.id());
-            if (it == tagSelectors.end()) {
-                WTF::Vector<int> temp;
-                temp.append(i);
-                tagSelectors.set(selectors[i]->tagLocalName.id(), temp);
-            } else
-                it->second.append(i);
+            if (it == tagSelectors.end())
+                it = tagSelectors.set(selectors[i]->tagLocalName.id(), WTF::Vector<int>()).first;
+            it->second.append(i);
         } else
             otherSelectors.append(i);
     }
@@ -1954,32 +1981,16 @@ void CSSStyleSelector::buildLists()
     CSSOrderedProperty **prop = properties;
     for (QListIterator<CSSOrderedProperty*> pit(propertyList); pit.hasNext(); ++prop)
         *prop = pit.next();
-    *prop = 0;
 
-    unsigned int* offsets = new unsigned int[selectors_size];
-    if(properties[0])
-	offsets[properties[0]->selector] = 0;
-    for(unsigned int p = 1; p < properties_size; ++p) {
-
-	if(!properties[p] || (properties[p]->selector != properties[p - 1]->selector)) {
-	    unsigned int sel = properties[p - 1]->selector;
-            int* newprops = new int[selectorCache[sel].props_size+2];
-            for ( unsigned int i=0; i < selectorCache[sel].props_size; i++ )
-                newprops[i] = selectorCache[sel].props[i];
-
-	    newprops[selectorCache[sel].props_size] = offsets[sel];
-	    newprops[selectorCache[sel].props_size+1] = p - offsets[sel];
-            delete [] selectorCache[sel].props;
-            selectorCache[sel].props = newprops;
-            selectorCache[sel].props_size += 2;
-
-	    if(properties[p]) {
-		sel = properties[p]->selector;
-		offsets[sel] = p;
-            }
-        }
+    // properties for one selector are not necessarily adjacent at this point
+    // prepare sublists with same selector
+    // create for every property next property index with same selector
+    nextPropertyIndexes = new unsigned[properties_size];
+    for (int i = properties_size - 1; i >= 0; --i) {
+        unsigned selector = propertiesBuffer[i].selector;
+        nextPropertyIndexes[i] = selectorCache[selector].firstPropertyIndex;
+        selectorCache[selector].firstPropertyIndex = i;
     }
-    delete [] offsets;
 }
 
 
