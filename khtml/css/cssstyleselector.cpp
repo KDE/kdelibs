@@ -1976,7 +1976,7 @@ void CSSStyleSelector::buildLists()
 
     // presort properties. Should make the sort() calls in styleForElement faster.
     qSort(propertyList.begin(), propertyList.end(), CSSOrderedPropertyList::compareItems);
-    properties_size = propertyList.count() + 1;
+    properties_size = propertyList.count();
     properties = new CSSOrderedProperty *[ properties_size ];
     CSSOrderedProperty **prop = properties;
     for (QListIterator<CSSOrderedProperty*> pit(propertyList); pit.hasNext(); ++prop)
