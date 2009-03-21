@@ -179,15 +179,15 @@ public:
       QPushButton* downButton() const;
 
       /**
-       * See QListBox::count()
+       * See Q3ListBox::count()
        */
       int count() const;
       /**
-       * See QListBox::insertStringList()
+       * See Q3ListBox::insertStringList()
        */
       void insertStringList(const QStringList& list, int index=-1);
       /**
-       * See QListBox::insertStrList()
+       * See Q3ListBox::insertItem()
        */
       void insertItem(const QString& text, int index=-1);
       /**
@@ -195,15 +195,15 @@ public:
        */
       void clear();
       /**
-       * See QListBox::text()
+       * See Q3ListBox::text()
        */
       QString text(int index) const;
       /**
-       * See QListBox::currentItem()
+       * See Q3ListBox::currentItem()
        */
       int currentItem() const;
       /**
-       * See QListBox::currentText()
+       * See Q3ListBox::currentText()
        */
       QString currentText() const;
 
