@@ -247,6 +247,7 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
             "Ask before replacing each match found.") );
 
     q->connect(q, SIGNAL(okClicked()), q, SLOT(_k_slotOk()));
+    _k_textSearchChanged(find->lineEdit()->text());
 }
 
 void KFindDialog::KFindDialogPrivate::_k_textSearchChanged( const QString & text)
