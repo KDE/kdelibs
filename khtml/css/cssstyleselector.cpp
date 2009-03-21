@@ -977,16 +977,16 @@ void CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e)
 static void cleanpath(QString &path)
 {
     int pos;
-    while ( (pos = path.indexOf( "/../" )) != -1 ) {
+    while ((pos = path.indexOf(QLatin1String("/../"))) != -1) {
         int prev = 0;
-        if ( pos > 0 )
-            prev = path.lastIndexOf( "/", pos -1 );
+        if (pos > 0)
+            prev = path.lastIndexOf(QLatin1Char('/'), pos - 1);
         // don't remove the host, i.e. http://foo.org/../foo.html
-        if (prev < 0 || (prev > 3 && path.lastIndexOf("://", prev-1) == prev-2))
-            path.remove( pos, 3);
+        if (prev < 0 || (prev > 3 && path.midRef(prev - 2, 3) == QLatin1String("://")))
+            path.remove(pos, 3);
         else
             // matching directory found ?
-            path.remove( prev, pos- prev + 3 );
+            path.remove(prev, pos - prev + 3);
     }
     pos = 0;
 
@@ -995,45 +995,45 @@ static void cleanpath(QString &path)
     // We don't want to waste a function call on the search for the anchor
     // in the vast majority of cases where there is no "//" in the path.
     int refPos = -2;
-    while ( (pos = path.indexOf( "//", pos )) != -1) {
+    while ((pos = path.indexOf(QLatin1String("//"), pos)) != -1) {
         if (refPos == -2)
-            refPos = path.indexOf("#", 0);
+            refPos = path.indexOf(QLatin1Char('#'), 0);
         if (refPos > 0 && pos >= refPos)
             break;
 
-        if ( pos == 0 || path[pos-1] != ':' )
-            path.remove( pos, 1 );
+        if (pos == 0 || path[pos-1] != QLatin1Char(':'))
+            path.remove(pos, 1);
         else
             pos += 2;
     }
-    while ( (pos = path.indexOf( "/./" )) != -1)
-        path.remove( pos, 2 );
+    while ((pos = path.indexOf(QLatin1String("/./"))) != -1)
+        path.remove(pos, 2);
     //kDebug() << "checkPseudoState " << path;
 }
 
-static PseudoState checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DOM::ElementImpl *e )
+static PseudoState checkPseudoState(const CSSStyleSelector::Encodedurl& encodedurl, DOM::ElementImpl *e)
 {
-    if( e->id() != ID_A ) {
+    if (e->id() != ID_A) {
         return PseudoNone;
     }
     DOMString attr = e->getAttribute(ATTR_HREF);
-    if( attr.isNull() ) {
+    if (attr.isNull()) {
         return PseudoNone;
     }
-    QString u = QString::fromRawData(attr.unicode(), attr.length());
-    if ( !u.contains("://") ) {
-        if ( u[0] == '/' )
-            u = encodedurl.host + u;
-        else if ( u[0] == '#' )
-            u = encodedurl.file + u;
+    QString url = QString::fromRawData(attr.unicode(), attr.length());
+    if (!url.contains(QLatin1String("://"))) {
+        if (url[0] == QLatin1Char('/'))
+            url = encodedurl.host + url;
+        else if (url[0] == QLatin1Char('#'))
+            url = encodedurl.file + url;
         else
-            u = encodedurl.path + u;
-        cleanpath( u );
+            url = encodedurl.path + url;
+        cleanpath(url);
     }
     //completeURL( attr.string() );
-    bool contains = KHTMLGlobal::vLinks()->contains( u );
-    if ( !contains && u.count('/')==2 )
-      contains = KHTMLGlobal::vLinks()->contains( u+'/' );
+    bool contains = KHTMLGlobal::vLinks()->contains(url);
+    if (!contains && url.count(QLatin1Char('/')) == 2)
+        contains = KHTMLGlobal::vLinks()->contains(url + QLatin1Char('/'));
     return contains ? PseudoVisited : PseudoLink;
 }
 
