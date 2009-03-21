@@ -298,15 +298,13 @@ public:
         CSSOrderedProperty *propertiesBuffer;
 	QVarLengthArray<CSSOrderedProperty> inlineProps;
         MediaQueryEvaluator* m_medium;
-	CSSOrderedProperty **propsToApply;
-	CSSOrderedProperty **pseudoProps;
-	unsigned int propsToApplySize;
-	unsigned int pseudoPropsSize;
+        WTF::Vector<CSSOrderedProperty*> propsToApply;
+        WTF::Vector<CSSOrderedProperty*> pseudoProps;
 
         // hashes for faster styleForElement
-        WTF::HashMap< unsigned long, WTF::Vector<int> > classSelectors, idSelectors;
-        WTF::HashMap< unsigned, WTF::Vector<int> > tagSelectors;
-        WTF::Vector<int> otherSelectors;
+        WTF::HashMap<unsigned long, int> classSelector, idSelector;
+        WTF::HashMap<unsigned, int> tagSelector;
+        int otherSelector;
 
         WTF::HashSet<unsigned> tagCache;
         WTF::HashSet<unsigned long> classCache, idCache;
