@@ -1374,31 +1374,26 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         case CSSSelector::Begin:
         {
             //kDebug( 6080 ) << "checking for beginswith match";
-            QString val_str = QString::fromRawData(value->unicode(), value->length());
-            QString sel_str = QString::fromRawData(sel->value.string().unicode(), sel->value.length());
-            return val_str.startsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive) && !sel_str.isEmpty();
+            DOMStringImpl* selValue = sel->value.impl();
+            return selValue && selValue->length() && value->startsWith(selValue, caseSensitive ? DOM::CaseSensitive : DOM::CaseInsensitive);
         }
         case CSSSelector::End:
         {
             //kDebug( 6080 ) << "checking for endswith match";
-            QString val_str = QString::fromRawData(value->unicode(), value->length());
-            QString sel_str = QString::fromRawData(sel->value.string().unicode(), sel->value.length());
-            return val_str.endsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive) && !sel_str.isEmpty();
+            DOMStringImpl* selValue = sel->value.impl();
+            return selValue && selValue->length() && value->endsWith(selValue, caseSensitive ? DOM::CaseSensitive : DOM::CaseInsensitive);
         }
         case CSSSelector::Hyphen:
         {
             //kDebug( 6080 ) << "checking for hyphen match";
-            QString val_str = QString::fromRawData(value->unicode(), value->length());
-            QString sel_str = QString::fromRawData(sel->value.string().unicode(), sel->value.length());
-            const QString& str = val_str;
-            const QString& selStr = sel_str;
-            if(str.length() < selStr.length()) return false;
-            // Check if str begins with selStr:
-            if(str.indexOf(selStr, 0, (caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive)) != 0) return false;
+            DOMStringImpl* selValue = sel->value.impl();
+            if (value->length() < selValue->length())
+                return false;
+            // Check if value begins with selStr:
+            if (!value->startsWith(selValue))
+                return false;
             // It does. Check for exact match or following '-':
-            if(str.length() != selStr.length()
-                && str[selStr.length()] != '-') return false;
-            break;
+            return value->length() == selValue->length() || (*value)[selValue->length()].unicode() == '-';
         }
         case CSSSelector::PseudoClass:
         case CSSSelector::PseudoElement:
