@@ -2051,7 +2051,7 @@ void HTMLLabelElementImpl::defaultEventHandler(EventImpl *evt)
 	    NodeImpl* const formNode=getFormElement();
 	    if (formNode && evt->target() != formNode) {
 		document()->setFocusNode(formNode);
-		if (formNode->id()==ID_INPUT)
+		if (formNode->id()==ID_INPUT && !static_cast<DOM::HTMLInputElementImpl*>(formNode)->disabled())
 		    static_cast<DOM::HTMLInputElementImpl*>(formNode)->click();
 		evt->setDefaultHandled();
 	    }
