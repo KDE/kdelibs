@@ -692,26 +692,29 @@ void ProspectiveTokenizer::processAttribute()
 {
     LocalName tagLocal = LocalName::fromString(DOMString(m_tagName.data(), m_tagName.size()).lower());
     uint tag = tagLocal.id();
-    LocalName attrLocal = LocalName::fromString(DOMString(m_tagName.data(), m_tagName.size()).lower());
-    uint attribute = attrLocal.id();
+    LocalName attrLocal;
+    uint attribute;
 
-    const DOMString value = DOMString(m_attributeValue.data(), m_attributeValue.size()); // ####
     switch (tag) {
-      case ID_SCRIPT:
-      case ID_IMAGE:
-      case ID_IMG:
-          if (attribute == ATTR_SRC && m_urlToLoad.isEmpty())
-              m_urlToLoad = parseURL(value);
-          break;
-      case ID_LINK:
-          if (attribute == ATTR_HREF && m_urlToLoad.isEmpty())
-              m_urlToLoad = parseURL(value);
-          else if (attribute == ATTR_REL) {
-              QString val = value.string();
-              m_linkIsStyleSheet = val.contains("styleSheet") && !val.contains("alternate") && !val.contains("icon");
-          }
-      default:
-          break;
+    case ID_SCRIPT:
+    case ID_IMAGE:
+    case ID_IMG:
+        attrLocal = LocalName::fromString(DOMString(m_attributeName.data(), m_attributeName.size()).lower());
+        attribute = attrLocal.id();
+        if (attribute == ATTR_SRC && m_urlToLoad.isEmpty())
+            m_urlToLoad = parseURL(DOMString(m_attributeValue.data(), m_attributeValue.size()));
+        break;
+    case ID_LINK:
+        attrLocal = LocalName::fromString(DOMString(m_attributeName.data(), m_attributeName.size()).lower());
+        attribute = attrLocal.id();
+        if (attribute == ATTR_HREF && m_urlToLoad.isEmpty())
+            m_urlToLoad = parseURL(DOMString(m_attributeValue.data(), m_attributeValue.size()));
+        else if (attribute == ATTR_REL) {
+            QString val = QString::fromRawData(m_attributeValue.data(), m_attributeValue.size());
+            m_linkIsStyleSheet = val.contains("styleSheet") && !val.contains("alternate") && !val.contains("icon");
+        }
+    default:
+        break;
     }
 }
     
