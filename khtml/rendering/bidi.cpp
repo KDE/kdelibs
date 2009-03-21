@@ -2236,74 +2236,75 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
         }
 
         bool autoWrap = lastIt.current->style()->autoWrap();
-        bool checkForBreak = autoWrap;
-        if (w && w + tmpW > width && lBreak.obj && !lastIt.current->style()->preserveLF() && !autoWrap)
-            checkForBreak = true;
-        else if (it.current && lastIt.current->isText() && it.current->isText() && !it.current->isBR()) {
-            if (autoWrap || it.current->style()->autoWrap()) {
-                if (currentCharacterIsSpace)
-                    checkForBreak = true;
-                else {
-                    checkForBreak = false;
-                    RenderText* nextText = static_cast<RenderText*>(it.current);
-                    if (nextText->stringLength() != 0) {
-                        QChar c = nextText->text()[0];
-                        if (c == ' ' || c == '\t' || (c == '\n' && !it.current->style()->preserveLF())) {
-                            // If the next item on the line is text, and if we did not end with
-                            // a space, then the next text run continues our word (and so it needs to
-                            // keep adding to |tmpW|.  Just update and continue.
-                            checkForBreak = true;
-                        }
-                    }
+        bool canBreak = !lBreak.obj || !lBreak.obj->isInlineFlow() || !lBreak.obj->firstChild();
 
-                    bool canPlaceOnLine = (w + tmpW <= width+1) || !autoWrap;
-                    if (canPlaceOnLine && checkForBreak) {
-                        w += tmpW;
-                        tmpW = 0;
-                        lBreak.obj = it.current;
-                        lBreak.pos = 0;
-                        lBreak.endOfInline = it.endOfInline;
+        bool checkForBreak = autoWrap;
+        if (canBreak) {
+            if (w && w + tmpW > width && lBreak.obj && !lastIt.current->style()->preserveLF() && !autoWrap)
+                checkForBreak = true;
+            else if (it.current && lastIt.current->isText() && it.current->isText() && !it.current->isBR()) {
+                if (autoWrap || it.current->style()->autoWrap()) {
+                    if (currentCharacterIsSpace)
+                        checkForBreak = true;
+                    else {
+                        checkForBreak = false;
+                        RenderText* nextText = static_cast<RenderText*>(it.current);
+                        if (nextText->stringLength() != 0) {
+                            QChar c = nextText->text()[0];
+                            if (c == ' ' || c == '\t' || (c == '\n' && !it.current->style()->preserveLF())) {
+                                // If the next item on the line is text, and if we did not end with
+                                // a space, then the next text run continues our word (and so it needs to
+                                // keep adding to |tmpW|.  Just update and continue.
+                                checkForBreak = true;
+                            }
+                        }
+
+                        bool canPlaceOnLine = (w + tmpW <= width+1) || !autoWrap;
+                        if (canPlaceOnLine && checkForBreak) {
+                            w += tmpW;
+                            tmpW = 0;
+                            lBreak.obj = it.current;
+                            lBreak.pos = 0;
+                            lBreak.endOfInline = it.endOfInline;
+                        }
                     }
                 }
             }
-        }
 
-        if (checkForBreak && (w + tmpW > width)) {
-            //kDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width;
-            //kDebug() << "start=" << start.obj << " current=" << o;
-            // if we have floats, try to get below them.
-            if (currentCharacterIsSpace && !ignoringSpaces && !lastIt.current->style()->preserveWS())
-                trailingSpaceObject = 0;
+            if (checkForBreak && (w + tmpW > width)) {
+                // if we have floats, try to get below them.
+                if (currentCharacterIsSpace && !ignoringSpaces && !lastIt.current->style()->preserveWS())
+                    trailingSpaceObject = 0;
 
-            int fb = nearestFloatBottom(m_height);
-            int newLineWidth = lineWidth(fb);
-            // See if |tmpW| will fit on the new line.  As long as it does not,
-            // keep adjusting our float bottom until we find some room.
-            int lastFloatBottom = m_height;
-            while (lastFloatBottom < fb && tmpW > newLineWidth) {
-                lastFloatBottom = fb;
-                fb = nearestFloatBottom(fb);
-                newLineWidth = lineWidth(fb);
-            }
-            if( !w && m_height < fb && width < newLineWidth ) {
-                m_height = fb;
-                width = newLineWidth;
+                int fb = nearestFloatBottom(m_height);
+                int newLineWidth = lineWidth(fb);
+                // See if |tmpW| will fit on the new line.  As long as it does not,
+                // keep adjusting our float bottom until we find some room.
+                int lastFloatBottom = m_height;
+                while (lastFloatBottom < fb && tmpW > newLineWidth) {
+                    lastFloatBottom = fb;
+                    fb = nearestFloatBottom(fb);
+                    newLineWidth = lineWidth(fb);
+                }
+                if( !w && m_height < fb && width < newLineWidth ) {
+                    m_height = fb;
+                    width = newLineWidth;
 #ifdef DEBUG_LINEBREAKS
                 kDebug() << "RenderBlock::findNextLineBreak new position at " << m_height << " newWidth " << width;
 #endif
-            }
+                }
 
-            // |width| may have been adjusted because we got shoved down past a float (thus
-            // giving us more room), so we need to retest, and only jump to
-            // the end label if we still don't fit on the line. -dwh
-            if (w + tmpW > width) {
-                it = lastIt;
-                lastIt = savedIt;
-                o = it.current;
-                goto end;
+                // |width| may have been adjusted because we got shoved down past a float (thus
+                // giving us more room), so we need to retest, and only jump to
+                // the end label if we still don't fit on the line. -dwh
+                if (w + tmpW > width) {
+                    it = lastIt;
+                    lastIt = savedIt;
+                    o = it.current;
+                    goto end;
+                }
             }
         }
-
         if (!lastIt.current->isFloatingOrPositioned() && lastIt.current->isReplaced() && lastIt.current->style()->autoWrap()) {
             // Go ahead and add in tmpW.
             w += tmpW;
@@ -2331,9 +2332,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     }
 
  end:
-
-    if( lBreak == start && !lBreak.obj->isBR() ) {
-        // we just add as much as possible
+    if ( lBreak == start && !lBreak.obj->isBR() ) {
+        // we didn't find any suitable break point so far
+        // so we'll just add as much as possible
         if ( style()->whiteSpace() == PRE ) {
             // FIXME: Don't really understand this case.
             if(pos != 0) {
@@ -2346,12 +2347,15 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 lBreak.endOfInline = lastIt.endOfInline;
             }
         } else if( lBreak.obj ) {
-            if( lastIt.current != o ) {
+            if( lastIt.current != o) {
                 // better to break between object boundaries than in the middle of a word
                 lBreak.obj = o;
                 lBreak.pos = 0;
                 lBreak.endOfInline = it.endOfInline;
             } else {
+                // (it seems this case can only happen for an object at the beginning of the line,
+                //  that triggered a jump to the |end| label without any iteration.)
+
                 // Don't ever break in the middle of a word if we can help it.
                 // There's no room at all. We just have to be on this line,
                 // even though we'll spill out.
@@ -2365,10 +2369,8 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     if (hadPosStart)
         start = posStart;
 
-    // make sure we consume at least one char/object.
-    // and avoid returning an InlineFlow
-    // (FIXME: turn those wordbreaks into empty text objects - they shouldn't be inline flows!)
-    if( lBreak == start || (lBreak.obj && lBreak.obj->isInlineFlow() && !lBreak.obj->isWordBreak())) {
+    if( lBreak == start) {
+        // make sure we consume at least one char/object.
         lBreak.increment();
     }
 
