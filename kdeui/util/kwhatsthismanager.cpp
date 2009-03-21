@@ -100,6 +100,7 @@ bool KWhatsThisManager::eventFilter( QObject *object, QEvent *event )
             if (!sentEvent || !queryEvent.isAccepted()) {
                 // No whats-this defined by the widget (at this position): show fallback one
                 QWhatsThis::showText(he->globalPos(), text(), widget);
+                return true;
             }
         }
     } else if ( event->type() == QEvent::WhatsThisClicked ) {
