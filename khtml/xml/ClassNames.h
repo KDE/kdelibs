@@ -60,9 +60,12 @@ namespace DOM {
         OwnPtr<ClassNameVector> m_nameVector;
     };
 
-    inline static bool isClassWhitespace(QChar c)
+    inline static bool isClassWhitespace(const QChar& c)
     {
-        return c == ' ' || c == '\r' || c == '\n' || c == '\t' || c == '\f';
+        unsigned short u = c.unicode();
+        if (u > 0x20)
+            return false;
+        return u == ' ' || u == '\r' || u == '\n' || u == '\t' || u == '\f';
     }
 
 } // namespace DOM
