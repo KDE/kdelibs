@@ -624,7 +624,7 @@ QPixmap CachedImage::pixmap( ) const
         ImagePainter pi(i);
         pi.paint(0, 0, &paint);
         paint.end();
-        return QPixmap::fromImage( im, Qt::NoOpaqueDetection );
+        return QPixmap::fromImage( im );
     } else {
         QPixmap pm(w, h);
         if (i->hasAlpha())
