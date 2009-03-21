@@ -237,7 +237,8 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 
     selectors = 0;
     selectorCache = 0;
-    properties = 0;
+    propertiesBuffer = 0;
+    nextPropertyIndexes = 0;
     userStyle = 0;
     userSheet = 0;
     logicalDpiY = doc->logicalDpiY();
@@ -329,10 +330,6 @@ void CSSStyleSelector::init(const KHTMLSettings* _settings, DocumentImpl* doc)
     element = 0;
     settings = _settings;
     logicalDpiY = 0;
-    propsToApply = (CSSOrderedProperty **)malloc(128*sizeof(CSSOrderedProperty *));
-    pseudoProps = (CSSOrderedProperty **)malloc(128*sizeof(CSSOrderedProperty *));
-    propsToApplySize = 128;
-    pseudoPropsSize = 128;
     if(!s_defaultStyle) loadDefaultStyle(settings, doc);
 
     defaultStyle = s_defaultStyle;
@@ -350,8 +347,6 @@ CSSStyleSelector::~CSSStyleSelector()
     delete implicitStyle;
     delete userStyle;
     delete userSheet;
-    free(propsToApply);
-    free(pseudoProps);
     delete m_rootDefaultStyle;
     delete m_medium;
 }
@@ -597,9 +592,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
     else
 	parentStyle = style;
 
-    unsigned int numPropsToApply = 0;
-    unsigned int numPseudoProps = 0;
-
     // try to sort out most style rules as early as possible.
     quint16 cssTagId = localNamePart(element->id());
     int smatch = 0;
@@ -676,62 +668,53 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
     }
 
     // sort selectors indexes so we match them in increasing order
-    qSort(selectorsForCheck.begin(), selectorsForCheck.end());
+    qSort(selectorsForCheck.data(), selectorsForCheck.data() + selectorsForCheck.size());
 
+    propsToApply.clear();
+    pseudoProps.clear();
     // now go over selectors that we prepared for check
     for (int k = 0; k < selectorsForCheck.size(); ++k) {
         unsigned i = selectorsForCheck[k];
-	quint16 tag = selectors[i]->tagLocalName.id();
-	if ( cssTagId == tag || tag == anyLocalName ) {
-	    ++schecked;
-
-	    checkSelector( i, e );
-
+        quint16 tag = selectors[i]->tagLocalName.id();
+        if (cssTagId == tag || tag == anyLocalName) {
+            ++schecked;
+            checkSelector(i, e);
             if (selectorCache[i].state == Applies) {
                 ++smatch;
-                for (unsigned p = selectorCache[i].firstPropertyIndex; p < properties_size; p = nextPropertyIndexes[p]) {
-                    if (numPropsToApply >= propsToApplySize ) {
-                        propsToApplySize *= 2;
-                        propsToApply = (CSSOrderedProperty **)realloc( propsToApply, propsToApplySize*sizeof( CSSOrderedProperty * ) );
-                    }
-                    propsToApply[numPropsToApply++] = properties[p];
-                }
+                for (unsigned p = selectorCache[i].firstPropertyIndex; p < properties_size; p = nextPropertyIndexes[p])
+                    propsToApply.append(propertiesBuffer + p);
             } else if (selectorCache[i].state == AppliesPseudo) {
                 for (unsigned p = selectorCache[i].firstPropertyIndex; p < properties_size; p = nextPropertyIndexes[p]) {
-                    if (numPseudoProps >= pseudoPropsSize ) {
-                        pseudoPropsSize *= 2;
-                        pseudoProps = (CSSOrderedProperty **)realloc( pseudoProps, pseudoPropsSize*sizeof( CSSOrderedProperty * ) );
-                    }
-                    pseudoProps[numPseudoProps++] = properties[p];
-                    properties[p]->pseudoId = (RenderStyle::PseudoId) selectors[i]->pseudoId;
+                    pseudoProps.append(propertiesBuffer + p);
+                    propertiesBuffer[p].pseudoId = (RenderStyle::PseudoId) selectors[i]->pseudoId;
                 }
             }
-        }
-	else
-	    selectorCache[i].state = Invalid;
-
+        } else
+            selectorCache[i].state = Invalid;
     }
 
     // Inline style declarations, after all others.
     // Non-css hints from presentational attributes will also be collected here
     // receiving the proper priority so has to cascade from before author rules (cf.CSS 2.1-6.4.4).
-    numPropsToApply = addInlineDeclarations( e, numPropsToApply );
+    addInlineDeclarations(e);
 
 //     qDebug( "styleForElement( %s )", e->tagName().string().toLatin1().constData() );
 //     qDebug( "%d selectors, %d checked,  %d match,  %d properties ( of %d )",
 // 	    selectors_size, schecked, smatch, numPropsToApply, properties_size );
 
-    bubbleSort( propsToApply, propsToApply+numPropsToApply-1 );
-    bubbleSort( pseudoProps, pseudoProps+numPseudoProps-1 );
+    if (propsToApply.size())
+        bubbleSort(propsToApply.data(), propsToApply.data() + propsToApply.size() - 1);
+    if (pseudoProps.size())
+        bubbleSort(pseudoProps.data(), pseudoProps.data() + pseudoProps.size() - 1);
 
     // we can't apply style rules without a view() and a part. This
     // tends to happen on delayed destruction of widget Renderobjects
     if ( part ) {
         fontDirty = false;
 
-        if (numPropsToApply ) {
+        if (propsToApply.size()) {
             CSSStyleSelector::style = style;
-            for (unsigned int i = 0; i < numPropsToApply; ++i) {
+            for (unsigned int i = 0; i < propsToApply.size(); ++i) {
 		if ( fontDirty && propsToApply[i]->priority >= (1 << 30) ) {
 		    // we are past the font properties, time to update to the
 		    // correct font
@@ -757,10 +740,10 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
         // Clean up our style object's display and text decorations (among other fixups).
         adjustRenderStyle(style, e);
 
-        if ( numPseudoProps ) {
+        if (pseudoProps.size()) {
 	    fontDirty = false;
             //qDebug("%d applying %d pseudo props", e->cssTagId(), pseudoProps->count() );
-            for (unsigned int i = 0; i < numPseudoProps; ++i) {
+            for (unsigned int i = 0; i < pseudoProps.size(); ++i) {
 		if ( fontDirty && pseudoProps[i]->priority >= (1 << 30) ) {
 		    // we are past the font properties, time to update to the
 		    // correct font
@@ -919,18 +902,17 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
     style->adjustBackgroundLayers();
 }
 
-unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
-                                                     unsigned int numProps)
+void CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e)
 {
     CSSStyleDeclarationImpl* inlineDecls = e->inlineStyleDecls();
     CSSStyleDeclarationImpl* nonCSSDecls = e->nonCSSStyleDecls();
     if (!inlineDecls && !nonCSSDecls)
-        return numProps;
+        return;
 
     QList<CSSProperty*>* values = inlineDecls ? inlineDecls->values() : 0;
     QList<CSSProperty*>* nonCSSValues = nonCSSDecls ? nonCSSDecls->values() : 0;
     if (!values && !nonCSSValues)
-        return numProps;
+        return;
 
     int firstLen = values ? values->count() : 0;
     int secondLen = nonCSSValues ? nonCSSValues->count() : 0;
@@ -940,10 +922,7 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
 	{
         inlineProps.resize(totalLen + 1);
 	}
-    if (numProps + totalLen >= propsToApplySize ) {
-        propsToApplySize += propsToApplySize;
-        propsToApply = (CSSOrderedProperty **)realloc( propsToApply, propsToApplySize*sizeof( CSSOrderedProperty * ) );
-    }
+    propsToApply.reserveCapacity(propsToApply.size() + totalLen);
 
     bool inNonCSSDecls = false;
     CSSOrderedProperty *array = (CSSOrderedProperty *)inlineProps.data();
@@ -987,9 +966,8 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
 	array->selector = 0;
 	array->position = i;
 	array->priority = (!first << 30) | (source << 24);
-	propsToApply[numProps++] = array++;
+        propsToApply.append(array++);
     }
-    return numProps;
 }
 
 // modified version of the one in kurl.cpp
@@ -1973,15 +1951,11 @@ void CSSStyleSelector::buildLists()
     }
 
     // presort properties. Should make the sort() calls in styleForElement faster.
-    qSort(propertyList.begin(), propertyList.end(), CSSOrderedPropertyList::compareItems);
+    qSort(propertyList.begin(), propertyList.end());
     properties_size = propertyList.count();
-    properties = new CSSOrderedProperty *[ properties_size ];
     propertiesBuffer = new CSSOrderedProperty[properties_size];
-    CSSOrderedProperty **prop = properties;
-    for (int i = 0; i < propertyList.size(); ++i, ++prop) {
-        *prop = propertiesBuffer + i;
-        **prop = propertyList[i];
-    }
+    for (int i = 0; i < propertyList.size(); ++i)
+        propertiesBuffer[i] = propertyList[i];
 
     // properties for one selector are not necessarily adjacent at this point
     // prepare sublists with same selector
