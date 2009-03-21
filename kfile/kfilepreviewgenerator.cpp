@@ -95,7 +95,9 @@ private:
 class TileSet
 {
 public:
-    enum Tile { TopLeftCorner = 0, TopSide, TopRightCorner, LeftSide, Center,
+    enum { LeftMargin = 3, TopMargin = 2, RightMargin = 3, BottomMargin = 4 };
+
+    enum Tile { TopLeftCorner = 0, TopSide, TopRightCorner, LeftSide,
                 RightSide, BottomLeftCorner, BottomSide, BottomRightCorner,
                 NumTiles };
 
@@ -116,7 +118,6 @@ public:
         m_tiles[TopSide]           = pixmap.copy(8, 0, 8, 8);
         m_tiles[TopRightCorner]    = pixmap.copy(16, 0, 8, 8);
         m_tiles[LeftSide]          = pixmap.copy(0, 8, 8, 8);
-        m_tiles[Center]            = pixmap.copy(8, 8, 8, 8);
         m_tiles[RightSide]         = pixmap.copy(16, 8, 8, 8);
         m_tiles[BottomLeftCorner]  = pixmap.copy(0, 16, 8, 8);
         m_tiles[BottomSide]        = pixmap.copy(8, 16, 8, 8);
@@ -132,9 +133,6 @@ public:
         p->drawPixmap(r.right() - 8 + 1, r.y(), m_tiles[TopRightCorner]);
         if (r.height() - 16 > 0) {
             p->drawTiledPixmap(r.x(), r.y() + 8, 8, r.height() - 16,  m_tiles[LeftSide]);
-            if (r.width() - 16 > 0) {
-                p->drawTiledPixmap(r.x() + 8, r.y() + 8, r.width() - 16, r.height() - 16, m_tiles[Center]);
-            }
             p->drawTiledPixmap(r.right() - 8 + 1, r.y() + 8, 8, r.height() - 16, m_tiles[RightSide]);
         }
         p->drawPixmap(r.x(), r.bottom() - 8 + 1, m_tiles[BottomLeftCorner]);
@@ -142,6 +140,10 @@ public:
             p->drawTiledPixmap(r.x() + 8, r.bottom() - 8 + 1, r.width() - 16, 8, m_tiles[BottomSide]);
         }
         p->drawPixmap(r.right() - 8 + 1, r.bottom() - 8 + 1, m_tiles[BottomRightCorner]);
+
+        const QRect contentRect = r.adjusted(LeftMargin + 1, TopMargin + 1,
+                                             -(RightMargin + 1), -(BottomMargin + 1));
+        p->fillRect(contentRect, Qt::transparent);
     }
 
 private:
@@ -746,18 +748,17 @@ bool KFilePreviewGenerator::Private::applyImageFrame(QPixmap& icon)
         return false;
     }
 
-    const int tloffset = 2;
-    const int broffset = 4;
-    const int doubleFrame = tloffset + broffset;
-
     // resize the icon to the maximum size minus the space required for the frame
-    limitToSize(icon, QSize(maxSize.width() - doubleFrame, maxSize.height() - doubleFrame));
+    const QSize size(maxSize.width() - TileSet::LeftMargin - TileSet::RightMargin,
+                     maxSize.height() - TileSet::TopMargin - TileSet::BottomMargin);
+    limitToSize(icon, size);
 
-    if (!m_tileSet) {
-        m_tileSet = new TileSet;
+    if (m_tileSet == 0) {
+        m_tileSet = new TileSet();
     }
 
-    QPixmap framedIcon(icon.size().width() + doubleFrame, icon.size().height() + doubleFrame);
+    QPixmap framedIcon(icon.size().width() + TileSet::LeftMargin + TileSet::RightMargin,
+                       icon.size().height() + TileSet::TopMargin + TileSet::BottomMargin);
     framedIcon.fill(Qt::transparent);
 
     QPainter painter;
@@ -765,7 +766,7 @@ bool KFilePreviewGenerator::Private::applyImageFrame(QPixmap& icon)
     painter.setCompositionMode(QPainter::CompositionMode_Source);
     m_tileSet->paint(&painter, framedIcon.rect());
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-    painter.drawPixmap(tloffset, tloffset, icon);
+    painter.drawPixmap(TileSet::LeftMargin, TileSet::TopMargin, icon);
     painter.end();
 
     icon = framedIcon;
