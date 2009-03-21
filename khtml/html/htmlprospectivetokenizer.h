@@ -27,7 +27,7 @@
 #define htmlprospectivetokenizer_h
 
 #include "misc/stringit.h"
-#include <QVector>
+#include <wtf/Vector.h>
 
 namespace DOM {
     class DocumentImpl;
@@ -109,10 +109,10 @@ namespace khtml {
         unsigned m_lastCharacterIndex;
         
         bool m_closeTag;
-        QVector<char> m_tagName;
-        QVector<char> m_attributeName;
-        QVector<QChar> m_attributeValue;
-        QVector<char> m_lastStartTag;
+        WTF::Vector<char, 8> m_tagName;
+        WTF::Vector<char, 8> m_attributeName;
+        WTF::Vector<QChar, 32> m_attributeValue;
+        WTF::Vector<char, 8> m_lastStartTag;
         uint m_lastStartTagId;
         
         DOM::DOMString m_urlToLoad;
@@ -130,8 +130,8 @@ namespace khtml {
             CSSAferRuleValue
         };
         CSSState m_cssState;
-        QVector<QChar> m_cssRule;
-        QVector<QChar> m_cssRuleValue;
+        WTF::Vector<QChar> m_cssRule;
+        WTF::Vector<QChar> m_cssRuleValue;
         
         int m_timeUsed;
         
