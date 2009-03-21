@@ -1918,6 +1918,15 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 	    }
         }
 
+	// Submit form when a return is pressed in a radio/checkbox
+	// TODO: move this for text here (from RenderLineEdit)
+	if (m_type == CHECKBOX || m_type == RADIO) {
+	    if (evt->id() == EventImpl::KEYUP_EVENT && evt->isKeyRelatedEvent()) {
+		QKeyEvent* const ke = static_cast<KeyEventBaseImpl *>(evt)->qKeyEvent();
+		if (ke && m_form && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter))
+	            m_form->submitFromKeyboard();
+	    }
+	}
 
         // DOMActivate events cause the input to be "activated" - in the case of image and submit inputs, this means
         // actually submitting the form. For reset inputs, the form is reset. These events are sent when the user clicks
