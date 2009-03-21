@@ -39,10 +39,9 @@
 class KEncodingProberPrivate
 {
 public:
-    KEncodingProberPrivate(): encoding(strdup("")), prober(NULL), mStart(true) {};
+    KEncodingProberPrivate(): prober(NULL), mStart(true) {};
     ~KEncodingProberPrivate()
     {
-        delete encoding;
         delete prober;
     }
     void setProberType(KEncodingProber::ProberType pType)
@@ -130,7 +129,7 @@ public:
                         break;
             }  // switch
 
-            if (encoding && strlen(encoding))
+            if (!encoding.isEmpty())
             {
                 proberState = KEncodingProber::FoundIt;
                 currentConfidence = 0.99f;
@@ -140,7 +139,7 @@ public:
     KEncodingProber::ProberType proberType;
     KEncodingProber::ProberState proberState;
     float currentConfidence;
-    const char *encoding;
+    QString encoding;
     kencodingprober::nsCharSetProber *prober;
     bool mStart;
 };
@@ -201,12 +200,18 @@ KEncodingProber::ProberState KEncodingProber::state() const
     return d->proberState;
 }
 
+//DEPRECATED, do *not* use
 const char* KEncodingProber::encodingName() const
 {
-    if (!d->prober)
-        return strdup("UTF-8");
+    return 0;
+}
 
-    return strdup(d->prober->GetCharSetName());
+QByteArray KEncodingProber::encodingNameByteArray() const
+{
+    if (!d->prober)
+        return QByteArray("UTF-8");
+
+    return QByteArray(d->prober->GetCharSetName());
 }
 
 float KEncodingProber::confidence() const
