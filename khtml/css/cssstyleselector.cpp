@@ -1661,35 +1661,33 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             if (e == element) {
                 e->document()->dynamicDomRestyler().addDependency(ATTR_LANG, PersonalDependency);
                 e->document()->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
-            }
-            else if (isAncestor)
+            } else if (isAncestor)
                 e->document()->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
             else
                 e->document()->dynamicDomRestyler().addDependency(ATTR_LANG, PredecessorDependency);
             // ### check xml:lang attribute in XML and XHTML documents
-            DOMString value = e->getAttribute(ATTR_LANG);
+            DOMStringImpl* value = e->getAttributeImplById(ATTR_LANG);
             // The LANG attribute is inherited like a property
             NodeImpl *n = e->parent();;
-            while (n && value.isEmpty()) {
+            while (n && !(value && value->length())) {
                 if (n->isElementNode()) {
-                    value = static_cast<ElementImpl*>(n)->getAttribute(ATTR_LANG);
-                } else
-                if (n->isDocumentNode()) {
-                    value = static_cast<DocumentImpl*>(n)->contentLanguage();
+                    value = static_cast<ElementImpl*>(n)->getAttributeImplById(ATTR_LANG);
+                } else if (n->isDocumentNode()) {
+                    value = static_cast<DocumentImpl*>(n)->contentLanguage().implementation();
                 }
                 n = n->parent();
             }
-            if (value.isEmpty()) return false;
+            if (!(value && value->length()))
+                return false;
 
-            QString langAttr = value.string();
-            QString langSel = sel->string_arg.string();
-
-            if(langAttr.length() < langSel.length()) return false;
-
-            langAttr = langAttr.toLower();
-            langSel = langSel.toLower();
-//             kDebug(6080) << ":lang " << langAttr << "=" << langSel << "?";
-            return (langAttr == langSel || langAttr.startsWith(langSel+'-'));
+            DOMStringImpl* selValue = sel->value.impl();
+            if (value->length() < selValue->length())
+                return false;
+            if (!value->startsWith(selValue))
+                return false;
+            if (value->length() != selValue->length() && (*value)[selValue->length()].unicode() != '-')
+                return false;
+            return true;
         }
         case CSSSelector::PseudoNot: {
             // check the simple selector
