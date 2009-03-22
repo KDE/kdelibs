@@ -34,8 +34,6 @@
 
 #include <string.h>
 
-#define MINIMUM_THRESHOLD (float)0.2
-
 class KEncodingProberPrivate
 {
 public:
@@ -52,6 +50,9 @@ public:
         * for single-byte encodings (most western encodings), nsSBCSGroupProber is ok,
         *   because encoding state machine can detect many such encodings.
         */ 
+
+        delete prober;
+
         switch (proberType) {
             case KEncodingProber::None:
                 prober = NULL;
@@ -101,45 +102,38 @@ public:
                 case '\xEF':
                     if (('\xBB' == aBuf[1]) && ('\xBF' == aBuf[2]))
                     // EF BB BF  UTF-8 encoded BOM
-                    encoding = "UTF-8";
+                    proberState = KEncodingProber::FoundIt;
                     break;
                 case '\xFE':
                     if (('\xFF' == aBuf[1]) && ('\x00' == aBuf[2]) && ('\x00' == aBuf[3]))
                         // FE FF 00 00  UCS-4, unusual octet order BOM (3412)
-                        encoding = "ISO-10646-UCS-4";
+                        proberState = KEncodingProber::FoundIt;
                     else if ('\xFF' == aBuf[1])
                         // FE FF  UTF-16, big endian BOM
-                        encoding = "UTF-16BE";
+                        proberState = KEncodingProber::FoundIt;
                         break;
                 case '\x00':
                     if (('\x00' == aBuf[1]) && ('\xFE' == aBuf[2]) && ('\xFF' == aBuf[3]))
                         // 00 00 FE FF  UTF-32, big-endian BOM
-                        encoding = "UTF-32BE";
+                        proberState = KEncodingProber::FoundIt;
                     else if (('\x00' == aBuf[1]) && ('\xFF' == aBuf[2]) && ('\xFE' == aBuf[3]))
                         // 00 00 FF FE  UCS-4, unusual octet order BOM (2143)
-                        encoding = "ISO-10646-UCS-4";
+                        proberState = KEncodingProber::FoundIt;
                         break;
                 case '\xFF':
                     if (('\xFE' == aBuf[1]) && ('\x00' == aBuf[2]) && ('\x00' == aBuf[3]))
                         // FF FE 00 00  UTF-32, little-endian BOM
-                        encoding = "UTF-32LE";
+                        proberState = KEncodingProber::FoundIt;
                     else if ('\xFE' == aBuf[1])
                         // FF FE  UTF-16, little endian BOM
-                        encoding = "UTF-16LE";
+                        proberState = KEncodingProber::FoundIt;
                         break;
             }  // switch
 
-            if (!encoding.isEmpty())
-            {
-                proberState = KEncodingProber::FoundIt;
-                currentConfidence = 0.99f;
-            }
         }
     }
     KEncodingProber::ProberType proberType;
     KEncodingProber::ProberState proberState;
-    float currentConfidence;
-    QString encoding;
     kencodingprober::nsCharSetProber *prober;
     bool mStart;
 };

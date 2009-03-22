@@ -130,7 +130,7 @@ public:
     KDE_DEPRECATED const char* encodingName() const;
 
     /**
-     * @returns a QByteArray with the name of the encoding
+     * @returns a QByteArray with the name of the best encoding it has guessed so far
      */
     QByteArray encodingNameByteArray() const;
 
