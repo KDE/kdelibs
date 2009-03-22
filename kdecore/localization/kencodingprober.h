@@ -125,9 +125,14 @@ public:
     ProberState state() const;
 
     /**
-     * @returns the name of the best encoding it guessed so far
+     * @returns Do not use this function.  It is unsafe.  Use encodingNameByteArray instead.
      */
-    const char* encodingName() const;
+    KDE_DEPRECATED const char* encodingName() const;
+
+    /**
+     * @returns a QByteArray with the name of the best encoding it has guessed so far
+     */
+    QByteArray encodingNameByteArray() const;
 
     /**
      * @returns the confidence(sureness) of encoding it guessed so far (0.0 ~ 0.99), not very reliable for single byte encodings 
