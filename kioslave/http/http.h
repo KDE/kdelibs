@@ -286,7 +286,7 @@ protected:
     */
   void addEncoding(const QString &, QStringList &);
 
-  //void processAuthenticationRequest();
+  quint16 defaultPort() const;
 
   // The methods between here and sendQuery() are helpers for sendQuery().
 
@@ -445,7 +445,6 @@ protected:
   HTTPServerState m_server;
   HTTPRequest m_request;
   QList<HTTPRequest> m_requestQueue;
-  quint16 m_defaultPort;
 
   // Processing related
   KIO::filesize_t m_iSize; // Expected size of message
@@ -498,23 +497,8 @@ protected:
   long m_maxCacheSize; // Maximum cache size in Kb.
   QString m_strCacheDir; // Location of the cache.
 
-
-//--- Proxy related members
-
   // Operation mode
   QByteArray m_protocol;
-
-  //TODO use PrevRequest fully
-  //TODO isAuthValid/m_isUnauthorized -> auth.scheme != AUTH_None ?
-#if 0
-  struct AuthState
-  {
-    AUTH_SCHEME scheme;
-    QString realm;
-    QString authorization;
-    int authCount;
-  };
-#endif
 
   KAbstractHttpAuthentication *m_wwwAuth;
   KAbstractHttpAuthentication *m_proxyAuth;
@@ -526,7 +510,6 @@ protected:
 
   // Values that determine the remote connection timeouts.
   int m_remoteRespTimeout;
-
 
   QByteArray m_unreadBuf;
   void clearUnreadBuffer();

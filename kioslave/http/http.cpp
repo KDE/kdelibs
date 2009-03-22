@@ -248,7 +248,6 @@ static QString methodString(HTTP_METHOD m)
 HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
                             const QByteArray &app )
     : TCPSlaveBase(protocol, pool, app, isEncryptedHttpVariety(protocol))
-    , m_defaultPort(0)
     , m_iSize(NO_SIZE)
     , m_isBusy(false)
     , m_isFirstRequest(false)
@@ -281,17 +280,17 @@ void HTTPProtocol::reparseConfiguration()
     m_proxyAuth = 0;
     m_wwwAuth = 0;
     m_request.proxyUrl.clear(); //TODO revisit
-
-    if (isEncryptedHttpVariety(m_protocol))
-        m_defaultPort = DEFAULT_HTTPS_PORT;
-    else
-        m_defaultPort = DEFAULT_HTTP_PORT;
 }
 
 void HTTPProtocol::resetConnectionSettings()
 {
   m_isEOF = false;
   m_isError = false;
+}
+
+quint16 HTTPProtocol::defaultPort() const
+{
+    return isEncryptedHttpVariety(m_protocol) ? DEFAULT_HTTPS_PORT : DEFAULT_HTTP_PORT;
 }
 
 void HTTPProtocol::resetResponseParsing()
@@ -488,7 +487,7 @@ void HTTPProtocol::setHost( const QString& host, quint16 port,
         // don't send the scope-id in IPv6 addresses to the server
         m_request.encoded_hostname = '[' + host.left(pos) + ']';
   }
-  m_request.url.setPort((port <= 0) ? m_defaultPort : port);
+  m_request.url.setPort((port > 0 && port != defaultPort()) ? port : -1);
   m_request.url.setUser(user);
   m_request.url.setPass(pass);
   
@@ -503,7 +502,7 @@ bool HTTPProtocol::maybeSetRequestUrl(const KUrl &u)
   kDebug (7113) << u.url();
 
   m_request.url = u;
-  m_request.url.setPort((u.port() <= 0) ? m_defaultPort : u.port());
+  m_request.url.setPort(u.port(defaultPort()) != defaultPort() ? u.port() : -1);
 
   if (u.host().isEmpty()) {
      error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified."));
@@ -518,14 +517,7 @@ bool HTTPProtocol::maybeSetRequestUrl(const KUrl &u)
      return false;
   }
 
-  if (m_protocol != u.protocol().toLatin1()) {
-     short unsigned int oldDefaultPort = m_defaultPort;
-     m_protocol = u.protocol().toLatin1();
-     reparseConfiguration();
-     if (m_defaultPort != oldDefaultPort && m_request.url.port() == oldDefaultPort) {
-        m_request.url.setPort(m_defaultPort);
-     }
-  }
+  Q_ASSERT(m_protocol == u.protocol().toLatin1());
 
   return true;
 }
@@ -2002,7 +1994,7 @@ bool HTTPProtocol::httpOpenConnection()
   if (isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
       connectOk = connectToHost(m_request.proxyUrl.protocol(), m_request.proxyUrl.host(), m_request.proxyUrl.port());
   } else {
-      connectOk = connectToHost(m_protocol, m_request.url.host(), m_request.url.port());
+      connectOk = connectToHost(m_protocol, m_request.url.host(), m_request.url.port(defaultPort()));
   }
 
   if (!connectOk) {
@@ -2092,9 +2084,9 @@ QString HTTPProtocol::formatRequestUri() const
         u.setProtocol(protocol);
 
         u.setHost(m_request.url.host());
-        if (m_request.url.port() != m_defaultPort) {
-            u.setPort(m_request.url.port());
-        }
+        // if the URL contained the default port it should have been stripped earlier
+        Q_ASSERT(m_request.url.port() != defaultPort());
+        u.setPort(m_request.url.port());
         u.setEncodedPathAndQuery(m_request.url.encodedPathAndQuery(
                                     KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath));
         return u.url();
@@ -2230,15 +2222,15 @@ bool HTTPProtocol::sendQuery()
     
     /* support for virtual hosts and required by HTTP 1.1 */
     header += "Host: " + m_request.encoded_hostname;
-    if (m_request.url.port() != m_defaultPort) {
+    if (m_request.url.port(defaultPort()) != defaultPort()) {
       header += QString(":%1").arg(m_request.url.port());
     }
     header += "\r\n";
 
     // Support old HTTP/1.0 style keep-alive header for compatibility
     // purposes as well as performance improvements while giving end
-    // users the ability to disable this feature proxy servers that
-    // don't not support such feature, e.g. junkbuster proxy server.
+    // users the ability to disable this feature for proxy servers that
+    // don't support it, e.g. junkbuster proxy server.
     if (isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
         header += "Proxy-Connection: ";
     } else {
