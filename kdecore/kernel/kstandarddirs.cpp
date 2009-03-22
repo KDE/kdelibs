@@ -911,6 +911,16 @@ KStandardDirs::realPath(const QString &dirname)
 QString
 KStandardDirs::realFilePath(const QString &filename)
 {
+#ifdef Q_WS_WIN
+    LPCWSTR lpIn = (LPCWSTR)filename.utf16();
+    int len = GetFullPathNameW(lpIn, 0, 0, NULL);
+    LPWSTR lpOut = new WCHAR[len];
+    lpOut[0] = 0;
+    int ret = GetFullPathNameW(lpIn, len, lpOut, NULL);
+    QString strRet = QString::fromUtf16((const unsigned short*)lpOut);
+    delete[] lpOut;
+    return strRet;
+#else
     char realpath_buffer[MAXPATHLEN + 1];
     memset(realpath_buffer, 0, MAXPATHLEN + 1);
 
@@ -921,6 +931,7 @@ KStandardDirs::realFilePath(const QString &filename)
     }
 
     return filename;
+#endif
 }
 
 
