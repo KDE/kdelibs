@@ -940,13 +940,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     bool isReadOnly = false;
     
     // For local files we can do better: check if we have write permission in parent directory
-    if (item.isLocalFile()) {
-        const QString directory = item.url().directory();
-        QFileInfo parentDirInfo;
-        parentDirInfo.setFile(directory);
-        if (!parentDirInfo.isWritable()) {
-            isReadOnly = true;
-        }
+    if (item.isLocalFile()) {        
+        isReadOnly = !QFileInfo(item.url().directory()).isWritable();
     } else {
         isReadOnly = !(KProtocolManager::supportsWriting(item.url()) && item.isWritable());
     }   
