@@ -235,16 +235,29 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
   // First check for URLs.
   const KUrl::List urls = KUrl::List::fromMimeData( mimeData );
   if ( !urls.isEmpty() ) {
-    KIO::Job *res = 0;
+    KIO::Job *res = 0;   
     if ( move )
       res = KIO::move( urls, destUrl );
     else
       res = KIO::copy( urls, destUrl );
     res->ui()->setWindow(widget);
 
-    // If moving, erase the clipboard contents, the original files don't exist anymore
-    if ( move )
+    // If moving, update the clipboard contents with the new locations
+    if ( move ) {
       QApplication::clipboard()->clear();
+
+      KUrl::List newUrls;      
+      for (int i = 0; i < urls.size(); i++) {
+          KUrl dUrl = destUrl;
+          dUrl.addPath(urls.at(i).fileName());
+          newUrls.append(dUrl);
+      }
+      
+      QMimeData* mime = new QMimeData();
+      newUrls.populateMimeData(mime);      
+      QApplication::clipboard()->setMimeData(mime);
+    }  
+      
     return res;
   }
   return pasteMimeSource( mimeData, destUrl, QString(), widget, true /*clipboard*/ );
