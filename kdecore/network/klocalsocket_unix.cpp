@@ -29,6 +29,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "klocale.h"
+
 static inline int kSocket(int af, int socketype, int proto)
 {
     int ret;
@@ -173,7 +175,7 @@ void KLocalSocketPrivate::connectToPath(const QString &path, KLocalSocket::Local
         // connect to Unix socket
         KSockaddrUn addr(path, aType);
         if (!addr.ok()) {
-            emitError(QAbstractSocket::NetworkError, "Specified socket path is invalid");
+            emitError(QAbstractSocket::NetworkError, i18n("Specified socket path is invalid"));
             return;
         }
 
@@ -182,7 +184,7 @@ void KLocalSocketPrivate::connectToPath(const QString &path, KLocalSocket::Local
         if (fd == -1) {
             // failed
             emitError(QAbstractSocket::UnsupportedSocketOperationError,
-                      "The socket operation is not supported");
+                      i18n("The socket operation is not supported"));
             return;
         }
 
@@ -195,20 +197,20 @@ void KLocalSocketPrivate::connectToPath(const QString &path, KLocalSocket::Local
 
             switch (error) {
             case ECONNREFUSED:
-                emitError(QAbstractSocket::ConnectionRefusedError, "Connection refused");
+                emitError(QAbstractSocket::ConnectionRefusedError, i18n("Connection refused"));
                 return;
 
             case EACCES:
             case EPERM:
-                emitError(QAbstractSocket::SocketAccessError, "Permission denied");
+                emitError(QAbstractSocket::SocketAccessError, i18n("Permission denied"));
                 return;
 
             case ETIMEDOUT:
-                emitError(QAbstractSocket::SocketTimeoutError, "Connection timed out");
+                emitError(QAbstractSocket::SocketTimeoutError, i18n("Connection timed out"));
                 return;
 
             default:
-                emitError(QAbstractSocket::UnknownSocketError, "Unknown error");
+                emitError(QAbstractSocket::UnknownSocketError, i18n("Unknown error"));
                 return;
             }
         }
@@ -216,7 +218,7 @@ void KLocalSocketPrivate::connectToPath(const QString &path, KLocalSocket::Local
         // if we got here, we succeeded in connecting
         if (!setNonBlocking(fd)) {
             ::close(fd);
-            emitError(QAbstractSocket::UnknownSocketError, "Could not set non-blocking mode");
+            emitError(QAbstractSocket::UnknownSocketError, i18n("Could not set non-blocking mode"));
             return;
         }
 
@@ -229,7 +231,7 @@ void KLocalSocketPrivate::connectToPath(const QString &path, KLocalSocket::Local
         emit q->connected();
     } else {
         emitError(QAbstractSocket::UnsupportedSocketOperationError,
-                  "The socket operation is not supported");
+                  i18n("The socket operation is not supported"));
     }
 }
 
@@ -241,7 +243,7 @@ bool KLocalSocketServerPrivate::listen(const QString &path, KLocalSocket::LocalS
     if (aType == KLocalSocket::UnixSocket || aType == KLocalSocket::AbstractUnixSocket) {
         KSockaddrUn addr(path, aType);
         if (!addr.ok()) {
-            emitError(QAbstractSocket::NetworkError, "Specified socket path is invalid");
+            emitError(QAbstractSocket::NetworkError, i18n("Specified socket path is invalid"));
             return false;
         }
 
@@ -250,7 +252,7 @@ bool KLocalSocketServerPrivate::listen(const QString &path, KLocalSocket::LocalS
         if (descriptor == -1) {
             // failed
             emitError(QAbstractSocket::UnsupportedSocketOperationError,
-                      "The socket operation is not supported");
+                      i18n("The socket operation is not supported"));
             return false;
         }
 
@@ -263,32 +265,32 @@ bool KLocalSocketServerPrivate::listen(const QString &path, KLocalSocket::LocalS
 
             switch (error) {
             case EACCES:
-                emitError(QAbstractSocket::SocketAccessError, "Permission denied");
+                emitError(QAbstractSocket::SocketAccessError, i18n("Permission denied"));
                 return false;
 
             case EADDRINUSE:
-                emitError(QAbstractSocket::AddressInUseError, "Address is already in use");
+                emitError(QAbstractSocket::AddressInUseError, i18n("Address is already in use"));
                 return false;
 
             case ELOOP:
             case ENAMETOOLONG:
-                emitError(QAbstractSocket::NetworkError, "Path cannot be used");
+                emitError(QAbstractSocket::NetworkError, i18n("Path cannot be used"));
                 return false;
 
             case ENOENT:
-                emitError(QAbstractSocket::HostNotFoundError, "No such file or directory");
+                emitError(QAbstractSocket::HostNotFoundError, i18n("No such file or directory"));
                 return false;
 
             case ENOTDIR:
-                emitError(QAbstractSocket::HostNotFoundError, "Not a directory");
+                emitError(QAbstractSocket::HostNotFoundError, i18n("Not a directory"));
                 return false;
 
             case EROFS:
-                emitError(QAbstractSocket::SocketResourceError, "Read-only filesystem");
+                emitError(QAbstractSocket::SocketResourceError, i18n("Read-only filesystem"));
                 return false;
 
             default:
-                emitError(QAbstractSocket::UnknownSocketError, "Unknown error");
+                emitError(QAbstractSocket::UnknownSocketError, i18n("Unknown error"));
                 return false;
             }
         }
@@ -296,7 +298,7 @@ bool KLocalSocketServerPrivate::listen(const QString &path, KLocalSocket::LocalS
         // if we got here, we succeeded in connecting
         if (!setNonBlocking(descriptor)) {
             close();
-            emitError(QAbstractSocket::UnknownSocketError, "Could not set non-blocking mode");
+            emitError(QAbstractSocket::UnknownSocketError, i18n("Could not set non-blocking mode"));
             return false;
         }
 
@@ -349,7 +351,7 @@ bool KLocalSocketServerPrivate::waitForNewConnection(int msec, bool *timedOut)
             continue;
         } else if (code == -1) {
             // error
-            emitError(QAbstractSocket::UnknownSocketError, "Unknown socket error");
+            emitError(QAbstractSocket::UnknownSocketError, i18n("Unknown socket error"));
             close();
             return false;
         } else if (code == 0) {
@@ -381,7 +383,7 @@ bool KLocalSocketServerPrivate::processSocketActivity()
             return false;       // no new socket
 
         default:
-            emitError(QAbstractSocket::UnknownSocketError, "Unknown socket error");
+            emitError(QAbstractSocket::UnknownSocketError, i18n("Unknown socket error"));
             // fall through
         }
 

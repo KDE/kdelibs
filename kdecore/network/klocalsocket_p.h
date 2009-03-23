@@ -42,7 +42,7 @@ public:
     void connectToPath(const QString &path, KLocalSocket::LocalSocketType type,
                        QAbstractSocket::OpenMode openMode);
 
-    void emitError(QAbstractSocket::SocketError, const char *errorString);
+    void emitError(QAbstractSocket::SocketError, const QString &errorString);
 
     static inline KLocalSocketPrivate *d(KLocalSocket *aq)
         { return aq->d; }
@@ -70,7 +70,7 @@ public:
     bool waitForNewConnection(int msec, bool *timedOut);
     bool processSocketActivity();
     void _k_newConnectionActivity();
-    void emitError(QAbstractSocket::SocketError, const char *errorString);
+    void emitError(QAbstractSocket::SocketError, const QString &errorString);
 };
 
 #endif
