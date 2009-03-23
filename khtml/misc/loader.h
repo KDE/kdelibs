@@ -30,9 +30,6 @@
 #include <time.h>
 
 #include "loader_client.h"
-#ifdef HAVE_LIBJPEG
-#include "loader_jpeg.h"
-#endif
 
 #include <stdlib.h>
 #include <QtCore/QObject>
@@ -496,9 +493,6 @@ namespace khtml
 	QLinkedList<Request*> m_requestsPending;
 	Request* m_highPriorityRequestPending;
 	QHash<KIO::Job*,Request*> m_requestsLoading;
-#ifdef HAVE_LIBJPEG
-        // TODO KJPEGFormatType m_jpegloader;
-#endif
         QTimer m_timer;     
     };
 
