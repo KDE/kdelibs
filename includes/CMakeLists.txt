@@ -953,6 +953,7 @@ install(FILES
   Plasma/Delegate
   Plasma/Dialog
   Plasma/Extender
+  Plasma/ExtenderGroup
   Plasma/ExtenderItem
   Plasma/FlashingLabel
   Plasma/Frame
