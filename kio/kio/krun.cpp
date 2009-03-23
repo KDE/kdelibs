@@ -1322,7 +1322,7 @@ void KRun::slotStatResult(KJob * job)
 void KRun::slotScanMimeType(KIO::Job *, const QString &mimetype)
 {
     if (mimetype.isEmpty()) {
-        kWarning(7010) << "MimetypeJob didn't find a mimetype! Probably a kioslave bug.";
+        kWarning(7010) << "get() didn't emit a mimetype! Probably a kioslave bug, please check the implementation of" << url().protocol();
     }
     mimeTypeDetermined(mimetype);
     d->m_job = 0;
