@@ -510,6 +510,12 @@ void KUrlTest::testPathAndQuery()
   KUrl tobi0("http://some.host.net/path/to/file#fragmentPrecedes?theQuery");
   QCOMPARE( tobi0.ref(), QString("fragmentPrecedes") );
   QCOMPARE( tobi0.query(), QString("?theQuery") );
+#else
+  // So we treat it as part of the fragment
+  KUrl tobi0("http://some.host.net/path/to/file#foo?bar");
+  QCOMPARE( tobi0.ref(), QString("foo%3Fbar") );
+  QCOMPARE( tobi0.query(), QString() );
+  QCOMPARE( tobi0.prettyUrl(), QString("http://some.host.net/path/to/file#foo?bar") );
 #endif
 
   KUrl tobi1( "http://host.net/path?myfirstquery#andsomeReference" );
@@ -1764,6 +1770,14 @@ void KUrlTest::testIdn()
   KUrl uwp( "http://%C3%A4.de" );
   QVERIFY( uwp.isValid() );
   QCOMPARE( thiago.url(), QString("http://xn--4ca.de") ); // as above
+
+#if QT_VERSION >= 0x040500  // was broken in 4.4
+  // #183720
+  const QByteArray init = ".kde.org";
+  const QString fromAce = QUrl::fromAce(init);
+  QCOMPARE( fromAce, QString(".kde.org"));
+  QCOMPARE( QUrl::toAce(fromAce), init );
+#endif
 }
 
 void KUrlTest::testUriMode()

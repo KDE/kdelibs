@@ -993,13 +993,15 @@ QString KUrl::url( AdjustPathOption trailing ) const
   return QString::fromLatin1( toEncoded( trailing == RemoveTrailingSlash ? StripTrailingSlash : None ) ); // ## check encoding
 }
 
-static QString toPrettyPercentEncoding(const QString &input)
+static QString toPrettyPercentEncoding(const QString &input, bool forFragment)
 {
   QString result;
   for (int i = 0; i < input.length(); ++i) {
     QChar c = input.at(i);
     register ushort u = c.unicode();
-    if (u < 0x20 || u == '?' || u == '#' || u == '%'
+    if (u < 0x20
+        || (!forFragment && u == '?') // don't escape '?' in fragments, not needed and wrong (#173101)
+        || u == '#' || u == '%'
         || (u == ' ' && (i+1 == input.length() || input.at(i+1) == ' '))) {
       static const char hexdigits[] = "0123456789ABCDEF";
       result += QLatin1Char('%');
@@ -1047,7 +1049,7 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
   }
 
   tmp = path();
-  result += toPrettyPercentEncoding(tmp);
+  result += toPrettyPercentEncoding(tmp, false);
 
   // adjust the trailing slash, if necessary
   if (trailing == AddTrailingSlash && !tmp.endsWith(QLatin1Char('/')))
@@ -1062,7 +1064,7 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
 
   if (hasFragment()) {
     result += QLatin1Char('#');
-    result += toPrettyPercentEncoding(fragment());
+    result += toPrettyPercentEncoding(fragment(), true);
   }
 
   return result;
