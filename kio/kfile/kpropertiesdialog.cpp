@@ -123,7 +123,8 @@ extern "C" {
 #include <kconfiggroup.h>
 #include <kshell.h>
 #include <kcapacitybar.h>
-#include <kprotocolmanager.h>
+#include <kfileitemlistproperties.h>
+
 #ifndef Q_OS_WIN
 #include "kfilesharedialog.h"
 #endif
@@ -937,15 +938,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     d->m_lined->setFocus();   
     
     //if we don't have permissions to rename, we need to make "m_lined" read only.   
-    bool isReadOnly = false;
-    
-    // For local files we can do better: check if we have write permission in parent directory
-    if (item.isLocalFile()) {        
-        isReadOnly = !QFileInfo(item.url().directory()).isWritable();
-    } else {
-        isReadOnly = !(KProtocolManager::supportsWriting(item.url()) && item.isWritable());
-    }   
-    setFileNameReadOnly(isReadOnly);
+    KFileItemListProperties itemList(KFileItemList()<< item);
+    setFileNameReadOnly(!itemList.supportsMoving());   
        
    // Enhanced rename: Don't highlight the file extension.
     QString extension = KMimeType::extractKnownExtension( filename );
