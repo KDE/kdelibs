@@ -22,12 +22,7 @@
 
 #include <ksslconfig.h>
 
-#ifdef HAVE_OLD_SSL_API
-#define OPENSSL_malloc Malloc
-#define OPENSSL_malloc_locked Malloc_locked
-#define OPENSSL_realloc Realloc
-#define OPENSSL_free Free
-#endif
+/* Other openssl-global defines can go here, don't clean this up, IMHO. */
 
 #endif
 
