@@ -49,33 +49,47 @@ void KBookmarkDomBuilder::connectImporter(const QObject *importer) {
 void KBookmarkDomBuilder::newBookmark(
    const QString &text, const QString &url, const QString &additionalInfo
 ) {
-   KBookmark bk = m_stack.top().addBookmark(
+   if (!m_stack.isEmpty()) {
+      KBookmark bk = m_stack.top().addBookmark(
                                     text,
                                     KUrl( url ), // utf8
                                     QString());
-   // store additional info
-   bk.internalElement().setAttribute("netscapeinfo", additionalInfo);
+      // store additional info
+      bk.internalElement().setAttribute("netscapeinfo", additionalInfo);
+   }
+   else
+      kWarning() << "m_stack is empty. This should not happen when importing a valid bookmarks file!";
 }
 
 void KBookmarkDomBuilder::newFolder(
    const QString & text, bool open, const QString & additionalInfo
 ) {
-   // we use a qvaluelist so that we keep pointers to valid objects in the stack
-   KBookmarkGroup gp = m_stack.top().createNewFolder(text);
-   m_list.append(gp);
-   m_stack.push(m_list.last());
-   // store additional info
-   QDomElement element = m_list.last().internalElement();
-   element.setAttribute("netscapeinfo", additionalInfo);
-   element.setAttribute("folded", (open?"no":"yes"));
+   if (!m_stack.isEmpty()) {
+      // we use a qvaluelist so that we keep pointers to valid objects in the stack
+      KBookmarkGroup gp = m_stack.top().createNewFolder(text);
+      m_list.append(gp);
+      m_stack.push(m_list.last());
+      // store additional info
+      QDomElement element = m_list.last().internalElement();
+      element.setAttribute("netscapeinfo", additionalInfo);
+      element.setAttribute("folded", (open?"no":"yes"));
+   }
+   else
+      kWarning() << "m_stack is empty. This should not happen when importing a valid bookmarks file!";
 }
 
 void KBookmarkDomBuilder::newSeparator() {
-   m_stack.top().createNewSeparator();
+   if (!m_stack.isEmpty())
+      m_stack.top().createNewSeparator();
+   else
+      kWarning() << "m_stack is empty. This should not happen when importing a valid bookmarks file!";
 }
 
 void KBookmarkDomBuilder::endFolder() {
-   m_stack.pop();
+   if (!m_stack.isEmpty())
+      m_stack.pop();
+   else
+      kWarning() << "m_stack is empty. This should not happen when importing a valid bookmarks file!";
 }
 
 #include "kbookmarkdombuilder.moc"
