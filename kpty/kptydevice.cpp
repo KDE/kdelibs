@@ -303,7 +303,7 @@ bool KPtyDevicePrivate::_k_canRead()
         NO_INTR(readBytes, read(q->masterFd(), ptr, available));
         if (readBytes < 0) {
             readBuffer.unreserve(available);
-            q->setErrorString(I18N_NOOP("Error reading from PTY"));
+            q->setErrorString(i18n("Error reading from PTY"));
             return false;
         }
         readBuffer.unreserve(available - readBytes); // *should* be a no-op
@@ -337,7 +337,7 @@ bool KPtyDevicePrivate::_k_canWrite()
             write(q->masterFd(),
                   writeBuffer.readPointer(), writeBuffer.readSize()));
     if (wroteBytes < 0) {
-        q->setErrorString(I18N_NOOP("Error writing to PTY"));
+        q->setErrorString(i18n("Error writing to PTY"));
         return false;
     }
     writeBuffer.free(wroteBytes);
@@ -422,7 +422,7 @@ bool KPtyDevicePrivate::doWait(int msecs, bool reading)
                 break;
             return false;
         case 0:
-            q->setErrorString(I18N_NOOP("PTY operation timed out"));
+            q->setErrorString(i18n("PTY operation timed out"));
             return false;
         default:
             if (FD_ISSET(q->masterFd(), &rfds)) {
@@ -478,7 +478,7 @@ bool KPtyDevice::open(OpenMode mode)
         return true;
 
     if (!KPty::open()) {
-        setErrorString(I18N_NOOP("Error opening PTY"));
+        setErrorString(i18n("Error opening PTY"));
         return false;
     }
 
@@ -492,7 +492,7 @@ bool KPtyDevice::open(int fd, OpenMode mode)
     Q_D(KPtyDevice);
 
     if (!KPty::open(fd)) {
-        setErrorString(I18N_NOOP("Error opening PTY"));
+        setErrorString(i18n("Error opening PTY"));
         return false;
     }
 
