@@ -3519,7 +3519,7 @@ try_again:
   }
 
   if (config()->readEntry("PropagateHttpHeader", false) ||
-      (m_request.cacheTag.useCache) && m_request.cacheTag.writeToCache) {
+      ((m_request.cacheTag.useCache) && m_request.cacheTag.writeToCache)) {
       // store header lines if they will be used; note that the tokenizer removing
       // line continuation special cases is probably more good than bad.
       int nextLinePos = 0;
@@ -3528,9 +3528,8 @@ try_again:
       while (haveMore) {
           haveMore = nextLine(buffer, &nextLinePos, bufPos);
           int prevLineEnd = nextLinePos;
-          while (buffer[prevLineEnd - 1] == '\r' || buffer[prevLineEnd - 1] == '\n') {
-              prevLineEnd--;
-          }
+          for (; buffer[prevLineEnd - 1] == '\r' || buffer[prevLineEnd - 1] == '\n'; --prevLineEnd) ;
+
           m_responseHeaders.append(QString::fromLatin1(&buffer[prevLinePos],
                                                        prevLineEnd - prevLinePos));
           prevLinePos = nextLinePos;
