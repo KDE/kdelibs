@@ -26,19 +26,19 @@
 
 //#define LocalSocket (QAbstractSocket::SocketType(int(QAbstractSocket::UdpSocket) + 1))
 
-void KLocalSocketPrivate::emitError(QAbstractSocket::SocketError error, const char *errorString)
+void KLocalSocketPrivate::emitError(QAbstractSocket::SocketError error, const QString &errorString)
 {
     q->setSocketState(QAbstractSocket::UnconnectedState);
     q->setSocketError(error);
-    q->setErrorString(QLatin1String(errorString));
+    q->setErrorString(errorString);
     emit q->stateChanged(QAbstractSocket::UnconnectedState);
     emit q->error(error);
 }
 
-void KLocalSocketServerPrivate::emitError(QAbstractSocket::SocketError an_error, const char *an_errorString)
+void KLocalSocketServerPrivate::emitError(QAbstractSocket::SocketError an_error, const QString &an_errorString)
 {
     error = an_error;
-    errorString = QLatin1String(an_errorString);
+    errorString = an_errorString;
 }
 
 KLocalSocket::KLocalSocket(QObject *parent)

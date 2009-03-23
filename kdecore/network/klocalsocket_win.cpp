@@ -23,15 +23,17 @@
 
 #include "klocalsocket_p.h"
 
+#include "klocale.h"
+
 void KLocalSocketPrivate::connectToPath(const QString &path, KLocalSocket::LocalSocketType aType,
                                         QAbstractSocket::OpenMode openMode)
 {
-    emitError(QAbstractSocket::UnsupportedSocketOperationError, "Operation not supported");
+    emitError(QAbstractSocket::UnsupportedSocketOperationError, i18n("Operation not supported"));
 }
 
 bool KLocalSocketServerPrivate::listen(const QString &path, KLocalSocket::LocalSocketType aType)
 {
-    emitError(QAbstractSocket::UnsupportedSocketOperationError, "Operation not supported");
+    emitError(QAbstractSocket::UnsupportedSocketOperationError, i18n("Operation not supported"));
     return false;
 }
 

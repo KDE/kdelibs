@@ -1349,7 +1349,7 @@ int SlaveBase::waitForHostInfo(QHostInfo& info)
 
     if (result  == -1) {
         info.setError(QHostInfo::UnknownError);
-        info.setErrorString("Unknown Error.");
+        info.setErrorString(i18n("Unknown Error."));
         return result;
     }
 
