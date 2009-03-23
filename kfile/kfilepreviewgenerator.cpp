@@ -27,7 +27,6 @@
 #include <kio/previewjob.h>
 #include <kdirlister.h>
 #include <kdirmodel.h>
-#include <kdebug.h>
 
 #include <QApplication>
 #include <QAbstractItemView>
@@ -182,7 +181,7 @@ public:
      */
     void slotPreviewJobFinished(KJob* job);
 
-    /** Synchronizes the item icon with the clipboard of cut items. */
+    /** Synchronizes the icon of all items with the clipboard of cut items. */
     void updateCutItems();
 
     /**
@@ -223,8 +222,11 @@ public:
      */
     bool isCutItem(const KFileItem& item) const;
 
-    /** Applies an item effect to all cut items. */
-    void applyCutItemEffect();
+    /**
+     * Applies a cut-item effect to all given \a items, if they
+     * are marked as cut in the clipboard.
+     */
+    void applyCutItemEffect(const KFileItemList& items);
 
     /**
      * Applies a frame around the icon. False is returned if
@@ -418,7 +420,7 @@ KFilePreviewGenerator::Private::~Private()
 
 void KFilePreviewGenerator::Private::updateIcons(const KFileItemList& items)
 {
-    applyCutItemEffect();
+    applyCutItemEffect(items);
 
     KFileItemList orderedItems = items;
     orderItems(orderedItems);
@@ -542,7 +544,13 @@ void KFilePreviewGenerator::Private::updateCutItems()
     m_cutItemsCache.clear();
 
     // ... and apply an item effect to all currently cut items
-    applyCutItemEffect();
+    KFileItemList items;
+    KDirLister* dirLister = m_dirModel->dirLister();
+    const KUrl::List dirs = dirLister->directories();
+    foreach (const KUrl& url, dirs) {
+        items << dirLister->itemsForDir(url);
+    }
+    applyCutItemEffect(items);
 }
 
 void KFilePreviewGenerator::Private::dispatchIconUpdateQueue()
@@ -693,7 +701,7 @@ bool KFilePreviewGenerator::Private::isCutItem(const KFileItem& item) const
     return cutUrls.contains(item.url());
 }
 
-void KFilePreviewGenerator::Private::applyCutItemEffect()
+void KFilePreviewGenerator::Private::applyCutItemEffect(const KFileItemList& items)
 {
     const QMimeData* mimeData = QApplication::clipboard()->mimeData();
     m_hasCutSelection = decodeIsCutSelection(mimeData);
@@ -703,14 +711,8 @@ void KFilePreviewGenerator::Private::applyCutItemEffect()
 
     const QSet<KUrl> cutUrls = KUrl::List::fromMimeData(mimeData).toSet();
 
-    KFileItemList items;
-    KDirLister* dirLister = m_dirModel->dirLister();
-    const KUrl::List dirs = dirLister->directories();
-    foreach (const KUrl& url, dirs) {
-        items << dirLister->itemsForDir(url);
-    }
-
     DataChangeObtainer obt(this);
+    KIconEffect iconEffect;
     foreach (const KFileItem& item, items) {
         if (cutUrls.contains(item.url())) {
             const QModelIndex index = m_dirModel->indexForItem(item);
@@ -728,7 +730,6 @@ void KFilePreviewGenerator::Private::applyCutItemEffect()
                 m_cutItemsCache.append(cutItem);
 
                 // apply icon effect to the cut item
-                KIconEffect iconEffect;
                 pixmap = iconEffect.apply(pixmap, KIconLoader::Desktop, KIconLoader::DisabledState);
                 m_dirModel->setData(index, QIcon(pixmap), Qt::DecorationRole);
             }
