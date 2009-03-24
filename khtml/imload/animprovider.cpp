@@ -41,7 +41,7 @@ void AnimProvider::switchFrame()
     if (animationAdvice == KHTMLSettings::KAnimationDisabled)
         return;
     shouldSwitchFrame = true; 
-    image->notifyPerformUpdate();
+    image->notifyFrameChange();
 }
 
 AnimProvider::~AnimProvider()
