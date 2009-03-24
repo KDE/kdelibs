@@ -109,7 +109,6 @@ class KDECORE_EXPORT KCmdLineOptions
 
 class KCmdLineArgsList;
 class KApplication;
-class KUniqueApplication;
 class KAboutData;
 
 /**
@@ -255,7 +254,6 @@ class KAboutData;
 class KDECORE_EXPORT KCmdLineArgs
 {
   friend class KApplication;
-  friend class KUniqueApplication;
   friend class KCmdLineArgsList;
   friend class KCmdLineArgsStatic;
 public:

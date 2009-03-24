@@ -19,6 +19,7 @@
 #define QT_NO_CAST_FROM_ASCII
 
 #include "kcmdlineargs.h"
+#include <kdebug.h>
 
 #include <config.h>
 
@@ -344,7 +345,8 @@ public:
         , parsedOptionList(0)
         , parsedArgList(0)
         , isQt(id == "qt")
-    {}
+    {
+    }
     ~KCmdLineArgsPrivate()
     {
         delete parsedOptionList;
@@ -514,8 +516,9 @@ KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions &options, const KLocalize
    int i = 0;
    for(args = s->argsList->begin(); args != s->argsList->end(); ++args, i++)
    {
-      if (id == (*args)->d->id)
+       if (id == (*args)->d->id) {
          return; // Options already present.
+      }
 
       // Only check for afterId if it has been given non-empty, as the
       // unnamed option group should come after all named groups.
@@ -537,6 +540,7 @@ KCmdLineArgs::saveAppArgs( QDataStream &ds)
    // Remove Qt and KDE options.
    s->removeArgs("qt");
    s->removeArgs("kde");
+   s->removeArgs("kuniqueapp");
 
    ds << s->mCwd;
 
@@ -561,6 +565,7 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
    // Remove Qt and KDE options.
    s->removeArgs("qt");
    s->removeArgs("kde");
+   s->removeArgs("kuniqueapp");
 
    KCmdLineArgsList::Iterator args;
    if ( s->argsList ) {
@@ -586,13 +591,19 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
      QByteArray id;
      ds >> id;
      Q_ASSERT( s->argsList );
+     bool found = false;
      for(args = s->argsList->begin(); args != s->argsList->end(); ++args)
      {
        if ((*args)->d->id  == id)
        {
           (*args)->d->load(ds);
+          found = true;
           break;
        }
+     }
+     if (!found) {
+         kWarning() << "Argument definitions for" << id << "not found!";
+         // The next ds >> id will do nonsensical things...
      }
    }
    s->parsed = true;

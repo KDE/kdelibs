@@ -127,7 +127,6 @@ KUniqueApplication::start(StartFlags flags)
   else
 #endif
   Private::s_nofork = !args->isSet("fork");
-  delete args;
 #endif
 
   QString appName = KCmdLineArgs::aboutData()->appName();
