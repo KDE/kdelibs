@@ -22,6 +22,7 @@
 #include <assert.h>
 
 #include "kurlnavigator.h"
+#include "kurlnavigatormenu_p.h"
 #include "kdirsortfilterproxymodel.h"
 
 #include <kio/job.h>
@@ -40,7 +41,8 @@ KUrlNavigatorButton::KUrlNavigatorButton(int index, KUrlNavigator* parent) :
     m_index(-1),
     m_hoverArrow(false),
     m_popupDelay(0),
-    m_listJob(0)
+    m_listJob(0),
+    m_dirsMenu(0)
 {
     setAcceptDrops(true);
     setIndex(index);
@@ -193,7 +195,7 @@ void KUrlNavigatorButton::enterEvent(QEvent* event)
     // be shown as tooltip
     if (isTextClipped()) {
         setToolTip(text());
-    }
+    }   
 }
 
 void KUrlNavigatorButton::leaveEvent(QEvent* event)
@@ -204,7 +206,7 @@ void KUrlNavigatorButton::leaveEvent(QEvent* event)
     if (m_hoverArrow) {
         m_hoverArrow = false;
         update();
-    }
+    }   
 }
 
 void KUrlNavigatorButton::dropEvent(QDropEvent* event)
@@ -224,7 +226,7 @@ void KUrlNavigatorButton::dropEvent(QDropEvent* event)
 
         setDisplayHintEnabled(DraggedHint, false);
         update();
-    }
+    }   
 }
 
 void KUrlNavigatorButton::dragEnterEvent(QDragEnterEvent* event)
@@ -234,13 +236,35 @@ void KUrlNavigatorButton::dragEnterEvent(QDragEnterEvent* event)
         event->acceptProposedAction();
 
         update();
-    }
+    }    
+}
+
+void KUrlNavigatorButton::dragMoveEvent(QDragMoveEvent* event)
+{
+    QRect rect = event->answerRect();
+    if (isAboveArrow(rect.center().x())) {
+        m_hoverArrow = true;
+        update();
+        
+        if (m_dirsMenu == 0) {            
+            startPopupDelay();
+        }
+    } else {
+        if (m_popupDelay->isActive()) {
+            stopPopupDelay();
+        }
+        delete m_dirsMenu;
+        m_dirsMenu = 0;       
+        m_hoverArrow = false;
+        update();        
+    }    
 }
 
 void KUrlNavigatorButton::dragLeaveEvent(QDragLeaveEvent* event)
 {
     KUrlButton::dragLeaveEvent(event);
-
+    
+    m_hoverArrow = false; 
     setDisplayHintEnabled(DraggedHint, false);
     update();
 }
@@ -335,6 +359,14 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
     }
 }
 
+void KUrlNavigatorButton::urlsDropped(QAction* action, QDropEvent* event)
+{    
+    const int result = action->data().toInt();
+    KUrl url = urlNavigator()->url(m_index);
+    url.addPath(m_subdirs.at(result));      
+    urlsDropped(url, event);    
+}
+
 /**
  * Helper function for listJobFinished
  */
@@ -359,8 +391,11 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     setDisplayHintEnabled(PopupActiveHint, true);
     update(); // ensure the button is drawn highlighted
 
-    KMenu* dirsMenu = new KMenu(this);
-    dirsMenu->setLayoutDirection(Qt::LeftToRight);
+    m_dirsMenu = new KUrlNavigatorMenu(this);
+    connect(m_dirsMenu, SIGNAL(urlsDropped(QAction*, QDropEvent*)), 
+            this, SLOT(urlsDropped(QAction*, QDropEvent*)));
+    
+    m_dirsMenu->setLayoutDirection(Qt::LeftToRight);
     int i = 0;
     const QString selectedSubdir = urlNavigator()->url(m_index + 1).fileName();
     foreach (const QString& subdir, m_subdirs) {
@@ -373,7 +408,7 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
             action->setFont(font);
         }
         action->setData(i);
-        dirsMenu->addAction(action);
+        m_dirsMenu->addAction(action);
         ++i;
     }
 
@@ -381,7 +416,7 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     const int popupX = leftToRight ? width() - arrowWidth() - BorderWidth : 0;
     const QPoint popupPos  = urlNavigator()->mapToGlobal(geometry().bottomLeft() + QPoint(popupX, 0));
 
-    const QAction* action = dirsMenu->exec(popupPos);
+    const QAction* action = m_dirsMenu->exec(popupPos);
     if (action != 0) {
         const int result = action->data().toInt();
         KUrl url = urlNavigator()->url(m_index);
@@ -390,8 +425,8 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     }
 
     m_subdirs.clear();
-    delete dirsMenu;
-    dirsMenu = 0;
+    delete m_dirsMenu;
+    m_dirsMenu = 0;
 
     setDisplayHintEnabled(PopupActiveHint, false);
 }

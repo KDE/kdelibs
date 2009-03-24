@@ -21,6 +21,7 @@
 #define KURLNAVIGATORBUTTON_P_H
 
 #include "kurltogglebutton_p.h"
+#include "kurlnavigatormenu_p.h"
 
 #include <kio/global.h>
 #include <kio/udsentry.h>
@@ -82,6 +83,7 @@ protected:
     virtual void leaveEvent(QEvent* event);
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
+    virtual void dragMoveEvent(QDragMoveEvent* event);
     virtual void dragLeaveEvent(QDragLeaveEvent* event);
     virtual void mousePressEvent(QMouseEvent* event);
     virtual void mouseReleaseEvent(QMouseEvent* event);
@@ -94,6 +96,7 @@ private Q_SLOTS:
     void startListJob();
     void entriesList(KIO::Job* job, const KIO::UDSEntryList& entries);
     void listJobFinished(KJob* job);
+    void urlsDropped(QAction* action, QDropEvent* event);
 
 private:
     int arrowWidth() const;
@@ -107,6 +110,7 @@ private:
     QTimer* m_popupDelay;
     KIO::Job* m_listJob;
     QStringList m_subdirs;
+    KUrlNavigatorMenu* m_dirsMenu;
 };
 
 inline int KUrlNavigatorButton::index() const
