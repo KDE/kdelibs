@@ -437,5 +437,26 @@ void KUniqueApplication::setHandleAutoStarted()
     Private::s_handleAutoStarted = false;
 }
 
+////
+
+int KUniqueApplicationAdaptor::newInstance(const QByteArray &asn_id, const QByteArray &args)
+{
+    if (!asn_id.isEmpty())
+      parent()->setStartupId(asn_id);
+
+    // This hook allows the application to set up KCmdLineArgs using addCmdLineOptions
+    // before we load the app args. Normally not necessary, but needed by kontact
+    // since it switches to other sets of options when called as e.g. kmail or korganizer
+    QMetaObject::invokeMethod(parent(), "loadCommandLineOptionsForNewInstance");
+
+    QDataStream ds(args);
+    KCmdLineArgs::loadAppArgs(ds);
+
+    int ret = parent()->newInstance();
+    // Must be done out of the newInstance code, in case it is overloaded
+    parent()->d->firstInstance = false;
+    return ret;
+}
+
 #include "kuniqueapplication.moc"
 #include "kuniqueapplication_p.moc"
