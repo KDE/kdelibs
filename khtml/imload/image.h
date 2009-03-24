@@ -156,6 +156,11 @@ protected:
     */
     void notifyPerformUpdate();
 
+    /**
+     Called when animation frame changes, requesting the owner to repaint
+    */
+    void notifyFrameChange();
+
     //Loader stuff.
     QByteArray bufferPreDetect;
     ImageLoader* loader;
