@@ -40,35 +40,6 @@ static QTextStream *kjsembed_err = 0L;
 static QTextStream *kjsembed_in = 0L;
 static QTextStream *kjsembed_out = 0L;
 
-#if !defined(_WIN32) && !defined(_WIN64)
-char *itoa(int num, char *str, int /*radix*/)
-{
-   int k;
-   char c, flag, *ostr;
-
-   if (num < 0) {
-      num = -num;
-      *str++ = '-';
-   }
-   k = 10000;
-   ostr = str;
-   flag = 0;
-   while (k) {
-      c = num / k;
-      if (c || k == 1 || flag) {
-         num %= k;
-         c += '0';
-         *str++ = c;
-         flag = 1;
-      }
-      k /= 10;
-   }
-   *str = '\0';
-   return ostr;
-}
-
-#endif
-
 #if defined(_WIN32) || defined(_WIN64)
 static QFile win32_stdin;
 static QFile win32_stdout;

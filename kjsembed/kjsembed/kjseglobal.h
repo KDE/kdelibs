@@ -41,9 +41,6 @@
 
 KJSEMBED_EXPORT void RedirectIOToConsole();
 
-#ifdef HAVE_ITOA
-char *itoa(int num, char *str, int radix = 10);
-#endif
 #endif
 
 #include <QtCore/QTextStream>
