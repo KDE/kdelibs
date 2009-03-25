@@ -753,7 +753,7 @@ void KFilePlacesModel::requestEject(const QModelIndex &index)
         drive->eject();
     } else {
         QString label = data(index, Qt::DisplayRole).toString().replace('&',"&&");
-        QString message = i18n("The device '%1' is not a disc and cannot be ejected.", label);
+        QString message = i18n("The device '%1' is not a disk and cannot be ejected.", label);
         emit errorMessage(message);
     }
 }
