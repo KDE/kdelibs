@@ -126,6 +126,7 @@
 <!ENTITY CDE	"<acronym>CDE</acronym>">
 <!ENTITY CD-ROM	"<acronym>CD-ROM</acronym>">
 <!ENTITY cervisia	"<application>Cervisia</application>">
+<!ENTITY choqok	"<application>choqoK</application>">
 <!ENTITY CSS	"<acronym>CSS</acronym>">
 <!ENTITY CUPS	"<acronym>CUPS</acronym>">
 <!ENTITY DBus	"<acronym>D-Bus</acronym>">
