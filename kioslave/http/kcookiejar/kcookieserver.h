@@ -62,7 +62,7 @@ public Q_SLOTS:
   /**
    * Sets the cookie policy for the domain associated with the specified URL.
    */
-  void setDomainAdvice(const QString &url, const QString &advice);
+  bool setDomainAdvice(const QString &url, const QString &advice);
   /**
    * Returns the cookie policy in effect for the specified URL.
    */

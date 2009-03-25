@@ -485,7 +485,7 @@ KCookieServer::addDOMCookies(const QString &url, const QByteArray &cookieHeader,
 }
 
 // DBUS function
-void
+bool
 KCookieServer::setDomainAdvice(const QString &url, const QString &advice)
 {
    QString fqdn;
@@ -499,7 +499,9 @@ KCookieServer::setDomainAdvice(const QString &url, const QString &advice)
                                   KCookieJar::strToAdvice(advice));
       // Save the cookie config if it has changed
       mCookieJar->saveConfig( mConfig );
+      return true;
    }
+   return false;
 }
 
 // DBUS function
