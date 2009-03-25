@@ -70,7 +70,7 @@
 713        kutils (KCModuleContainer)
 750        kspell (kdelibs)
 760        kmdi
-780        kcmshell (kdelibs)
+780        kcmshell
 790        kimproxy (kdelibs)
 800        kabapi (kdelibs)
 900        kdesu (kdelibs)
