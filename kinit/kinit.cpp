@@ -643,7 +643,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
 
         QByteArray executable = execpath.data();
 #ifdef Q_WS_MAC
-        QString bundlepath = s_instance->dirs()->findExe( execpath.data() );
+        QString bundlepath = s_instance->dirs()->findExe(QString::fromLatin1(execpath.data()));
         if (!bundlepath.isEmpty())
            executable = QFile::encodeName(bundlepath);
 #endif
@@ -1560,6 +1560,7 @@ static void kdeinit_library_path()
 #endif
 
    display.replace(':','_');
+   display.replace('/','_');
    // WARNING, if you change the socket name, adjust kwrapper too
    const QString socketFileName = QString::fromLatin1("kdeinit4_%1").arg(QLatin1String(display));
    QByteArray socketName = QFile::encodeName(KStandardDirs::locateLocal("socket", socketFileName, *s_instance));

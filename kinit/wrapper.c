@@ -77,6 +77,8 @@ static char *getDisplay()
       *screen = '\0';
    while((i = strchr(result, ':')))
      *i = '_';
+   while((i = strchr(result, '/')))
+     *i = '_';
    return result;
 }
 
