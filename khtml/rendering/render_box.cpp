@@ -804,21 +804,21 @@ QPainterPath RenderBox::borderRadiusClipPath(const BackgroundLayer *bgLayer, int
             path.arcMoveTo(r, 0);
             path.arcTo(r, 0, 90);
         } else
-            path.moveTo(rect.topRight());
+            path.moveTo(rect.x() + rect.width(), rect.y());
 
         // Top left corner
         if (tl.hasBorderRadius()) {
             const QRect r(rect.x(), rect.y(), tl.horizontal * 2, tl.vertical * 2);
             path.arcTo(r, 90, 90);
         } else
-            path.lineTo(rect.topLeft());
+            path.lineTo(rect.x(), rect.y());
 
         // Bottom left corner
         if (bl.hasBorderRadius()) {
             const QRect r(rect.x(), rect.y() + rect.height() - bl.vertical * 2, bl.horizontal * 2, bl.vertical * 2);
             path.arcTo(r, 180, 90);
         } else
-            path.lineTo(rect.bottomLeft());
+            path.lineTo(rect.x(), rect.y() + rect.height());
 
         // Bottom right corner
         if (br.hasBorderRadius()) {
@@ -826,7 +826,7 @@ QPainterPath RenderBox::borderRadiusClipPath(const BackgroundLayer *bgLayer, int
                           br.horizontal * 2, br.vertical * 2);
             path.arcTo(r, 270, 90);
         } else
-            path.lineTo(rect.bottomRight());
+            path.lineTo(rect.x() + rect.width(), rect.y() + rect.height());
 
         path.closeSubpath();
     }
