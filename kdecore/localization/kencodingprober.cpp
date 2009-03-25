@@ -197,10 +197,10 @@ KEncodingProber::ProberState KEncodingProber::state() const
 //DEPRECATED, do *not* use
 const char* KEncodingProber::encodingName() const
 {
-    return 0;
+    return strdup(encoding().constData());
 }
 
-QByteArray KEncodingProber::encodingNameByteArray() const
+QByteArray KEncodingProber::encoding() const
 {
     if (!d->prober)
         return QByteArray("UTF-8");
