@@ -255,8 +255,9 @@ private Q_SLOTS:
         QTest::addColumn<QString>("expectedFqdn");
         QTest::addColumn<QString>("expectedPath");
         QTest::newRow("empty") << "" << false << "" << "";
-        QTest::newRow("host, no path") << "http://bugs.kde.org" << true << "bugs.kde.org" << "/";
-        QTest::newRow("host+path") << "http://bugs.kde.org/foo" << true << "bugs.kde.org" << "/foo";
+        QTest::newRow("url with no path") << "http://bugs.kde.org" << true << "bugs.kde.org" << "/";
+        QTest::newRow("url with path") << "http://bugs.kde.org/foo" << true << "bugs.kde.org" << "/foo";
+        QTest::newRow("just a host") << "bugs.kde.org" << false << "" << "";
     }
     void testParseUrl()
     {

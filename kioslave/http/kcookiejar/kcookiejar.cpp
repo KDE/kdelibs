@@ -537,7 +537,7 @@ bool KCookieJar::parseUrl(const QString &_url,
                           QString &_path)
 {
     KUrl kurl(_url);
-    if (!kurl.isValid())
+    if (!kurl.isValid() || kurl.protocol().isEmpty())
        return false;
 
     _fqdn = kurl.host().toLower();
@@ -571,6 +571,7 @@ bool KCookieJar::parseUrl(const QString &_url,
     return true;
 }
 
+// not static because it uses m_twoLevelTLD
 void KCookieJar::extractDomains(const QString &_fqdn,
                                 QStringList &_domains) const
 {
