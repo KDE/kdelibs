@@ -1888,15 +1888,17 @@ void KFileWidget::setOperationMode( OperationMode mode )
     d->operationMode = mode;
     d->keepLocation = (mode == Saving);
     d->filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
-    if ( mode == Opening )
-       // don't use KStandardGuiItem::open() here which has trailing ellipsis!
-       d->okButton->setGuiItem( KGuiItem( i18n( "&Open" ), "document-open") );
-    else if ( mode == Saving ) {
-       d->okButton->setGuiItem( KStandardGuiItem::save() );
-       d->setNonExtSelection();
+    if ( mode == Opening ) {
+        // don't use KStandardGuiItem::open() here which has trailing ellipsis!
+        d->okButton->setGuiItem( KGuiItem( i18n( "&Open" ), "document-open") );
+        // hide the new folder actions...usability team says they shouldn't be in open file dialog
+        actionCollection()->removeAction( actionCollection()->action("mkdir" ) );
+    } else if ( mode == Saving ) {
+        d->okButton->setGuiItem( KStandardGuiItem::save() );
+        d->setNonExtSelection();
+    } else {
+        d->okButton->setGuiItem( KStandardGuiItem::ok() );
     }
-    else
-       d->okButton->setGuiItem( KStandardGuiItem::ok() );
     d->updateLocationWhatsThis();
     d->updateAutoSelectExtension();
 
