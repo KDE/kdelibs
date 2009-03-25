@@ -94,7 +94,7 @@ KTitleWidget::KTitleWidget(QWidget *parent)
 
     d->textLabel = new QLabel(titleFrame);
     d->textLabel->setVisible(false);
-    d->textLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    d->textLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
 
     d->imageLabel = new QLabel(titleFrame);
     d->imageLabel->setVisible(false);
@@ -106,7 +106,7 @@ KTitleWidget::KTitleWidget(QWidget *parent)
     d->commentLabel->setVisible(false);
     d->commentLabel->setOpenExternalLinks(true);
     d->commentLabel->setWordWrap(true);
-    d->commentLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    d->commentLabel->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
     d->headerLayout->addWidget(d->commentLabel, 1, 0);
 
     // default image / text part end
