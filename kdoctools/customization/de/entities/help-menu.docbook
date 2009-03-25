@@ -43,10 +43,10 @@ können.</para></listitem>
 <varlistentry>
 <term><menuchoice>
 <guimenu>Help</guimenu>
-<guimenuitem>Anwendungssprache umschalten ...</guimenuitem>
+<guimenuitem>Sprache der Anwendung umschalten</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Öffnet einen Dialog</action> zur Einstellung
-der <guilabel>Hauptsprache</guilabel> und <guilabel>Standardsprache</guilabel>
+der <guilabel>Hauptsprache</guilabel> und <guilabel>Ausweichsprache</guilabel>
 für diese Anwendung.</para></listitem>
 </varlistentry>
 
