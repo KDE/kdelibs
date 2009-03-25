@@ -77,8 +77,10 @@ static char *getDisplay()
       *screen = '\0';
    while((i = strchr(result, ':')))
      *i = '_';
+#ifdef __APPLE__
    while((i = strchr(result, '/')))
      *i = '_';
+#endif
    return result;
 }
 

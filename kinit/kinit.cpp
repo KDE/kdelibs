@@ -1563,7 +1563,9 @@ static void kdeinit_library_path()
 #endif
 
    display.replace(':','_');
+#ifdef __APPLE__
    display.replace('/','_');
+#endif
    // WARNING, if you change the socket name, adjust kwrapper too
    const QString socketFileName = QString::fromLatin1("kdeinit4_%1").arg(QLatin1String(display));
    QByteArray socketName = QFile::encodeName(KStandardDirs::locateLocal("socket", socketFileName, *s_instance));
