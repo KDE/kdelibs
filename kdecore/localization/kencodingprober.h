@@ -41,8 +41,8 @@ class KEncodingProberPrivate;
  *
  * Always do Unicode probe regardless the ProberType
  *
- * Feed data to it several times until ProberState changed to FoundIt/NotMe,
- * or the Confidence reach a value you think acceptable.
+ * Feed data to it several times with feed() until ProberState changes to FoundIt/NotMe,
+ * or confidence() returns a value you find acceptable.
  *
  * Intended lifetime of the object: one instance per ProberType.
  *
@@ -54,11 +54,11 @@ class KEncodingProberPrivate;
  * prober.feed(data);
  * prober.feed(moredata);
  * if (prober.confidence() > 0.6)
- *    QString out = QTextCodec::codeForName(prober.encodingName())->toUnicode(data);
+ *    QString out = QTextCodec::codecForName(prober.encoding())->toUnicode(data);
  * \endcode
  *
- * at least 256 characters are needed to change the ProberState from Probing to FoundIt.
- * if you don't have so many characters to probe, 
+ * At least 256 characters are needed to change the ProberState from Probing to FoundIt.
+ * If you don't have so many characters to probe,
  * decide whether to accept the encoding it guessed so far according to the Confidence by yourself.
  *
  * @short Guess encoding of char array
@@ -113,7 +113,7 @@ public:
      *
      * feed data to the prober
      *
-     * @returns the ProberState after probe the feedded data
+     * @returns the ProberState after probing the fed data.
      */
     ProberState feed(const QByteArray &data);
     ProberState feed(const char* data, int len);
@@ -125,14 +125,17 @@ public:
     ProberState state() const;
 
     /**
-     * @returns Do not use this function.  It is unsafe.  Use encodingNameByteArray instead.
+     * @returns the name of the best encoding it has guessed so far
+     * @warning The returned string is allocated with strdup, so some memory is leaked with every call.
+     * @deprecated Use encoding() instead, which returns a QByteArray.
      */
     KDE_DEPRECATED const char* encodingName() const;
 
     /**
      * @returns a QByteArray with the name of the best encoding it has guessed so far
+     * @since 4.2.2
      */
-    QByteArray encodingNameByteArray() const;
+    QByteArray encoding() const;
 
     /**
      * @returns the confidence(sureness) of encoding it guessed so far (0.0 ~ 0.99), not very reliable for single byte encodings 
