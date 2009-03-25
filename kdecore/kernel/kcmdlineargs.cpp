@@ -535,6 +535,7 @@ KCmdLineArgs::saveAppArgs( QDataStream &ds)
    // Remove Qt and KDE options.
    s->removeArgs("qt");
    s->removeArgs("kde");
+   s->removeArgs("kuniqueapp");
 
    QByteArray qCwd = QFile::encodeName(s->mCwd);
    ds << qCwd;
@@ -560,7 +561,7 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
    // Remove Qt and KDE options.
    s->removeArgs("qt");
    s->removeArgs("kde");
-
+   s->removeArgs("kuniqueapp");
    KCmdLineArgsList::Iterator args;
    if ( s->argsList ) {
       for(args = s->argsList->begin(); args != s->argsList->end(); ++args)
