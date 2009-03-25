@@ -135,8 +135,9 @@ if(NOT WIN32 AND NOT APPLE)
 endif(NOT WIN32 AND NOT APPLE)
 
 if(APPLE)
-   message(STATUS "-- Building Solid IOKit backend." )
+   find_package(IOKit REQUIRED)
 
+   message(STATUS "-- Building Solid IOKit backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
    backends/iokit/iokitmanager.cpp
    backends/iokit/iokitdevice.cpp
