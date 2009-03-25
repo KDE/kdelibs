@@ -247,6 +247,50 @@ private Q_SLOTS:
         clearConfig();
         runRegression(fileName);
     }
+
+    void testParseUrl_data()
+    {
+        QTest::addColumn<QString>("url");
+        QTest::addColumn<bool>("expectedResult");
+        QTest::addColumn<QString>("expectedFqdn");
+        QTest::addColumn<QString>("expectedPath");
+        QTest::newRow("empty") << "" << false << "" << "";
+        QTest::newRow("host, no path") << "http://bugs.kde.org" << true << "bugs.kde.org" << "/";
+        QTest::newRow("host+path") << "http://bugs.kde.org/foo" << true << "bugs.kde.org" << "/foo";
+    }
+    void testParseUrl()
+    {
+        QFETCH(QString, url);
+        QFETCH(bool, expectedResult);
+        QFETCH(QString, expectedFqdn);
+        QFETCH(QString, expectedPath);
+        QString fqdn;
+        QString path;
+        bool result = KCookieJar::parseUrl(url, fqdn, path);
+        QCOMPARE(result, expectedResult);
+        QCOMPARE(fqdn, expectedFqdn);
+        QCOMPARE(path, expectedPath);
+    }
+
+    void testExtractDomains_data()
+    {
+        QTest::addColumn<QString>("fqdn");
+        QTest::addColumn<QStringList>("expectedDomains");
+        QTest::newRow("empty") << "" << QStringList();
+        QTest::newRow("ipv4") << "1.2.3.4" << (QStringList() << "1.2.3.4");
+        QTest::newRow("ipv6") << "[fe80::213:d3ff:fef4:8c92]" << (QStringList() << "[fe80::213:d3ff:fef4:8c92]");
+        QTest::newRow("bugs.kde.org") << "bugs.kde.org" << (QStringList() << "bugs.kde.org" << ".bugs.kde.org" << "kde.org" << ".kde.org");
+
+    }
+    void testExtractDomains()
+    {
+        QFETCH(QString, fqdn);
+        QFETCH(QStringList, expectedDomains);
+        KCookieJar jar;
+        QStringList lst;
+        jar.extractDomains(fqdn, lst);
+        QCOMPARE(lst, expectedDomains);
+    }
 };
 
 QTEST_KDEMAIN(KCookieJarTest, NoGUI)
