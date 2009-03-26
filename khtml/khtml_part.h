@@ -43,6 +43,7 @@ class KHTMLPartBrowserExtension;
 class KJSProxy;
 class KHTMLView;
 class KHTMLViewBar;
+class KHTMLFindBar;
 class KHTMLSettings;
 class KJavaAppletContext;
 class KJSErrorDlg;
@@ -1676,6 +1677,11 @@ private:
    * Returns a pointer to the bottom view bar.
    */
   KHTMLViewBar *pBottomViewBar() const;
+
+  /**
+   * @internal
+   */
+  bool pFindTextNextInThisFrame( bool reverse );
 
   /**
    * @internal

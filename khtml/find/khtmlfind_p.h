@@ -46,12 +46,13 @@ class KHTMLFind : public QObject
 {
   Q_OBJECT
 public:
-  KHTMLFind( KHTMLPart *part );
+  KHTMLFind( KHTMLPart *part, KHTMLFind *parent=0 );
   ~KHTMLFind();
   void findTextBegin();
   bool initFindNode( bool selection, bool reverse, bool fromCursor );
   void createNewKFind( const QString &str, long options, QWidget *parent, KFindDialog *findDialog );
   bool findTextNext( bool reverse = false );
+  KHTMLFindBar *findBar() const { return m_findDialog; }
 
 public slots:
   void activate();
@@ -92,6 +93,7 @@ private:
   QList<StringPortion> m_stringPortions;
 
   KFind *m_find;
+  KHTMLFind *m_parent;
   KHTMLFindBar *m_findDialog;
 
   struct findState

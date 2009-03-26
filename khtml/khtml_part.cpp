@@ -3038,6 +3038,11 @@ bool KHTMLPart::findTextNext( bool reverse )
   return d->m_find.findTextNext( reverse );
 }
 
+bool KHTMLPart::pFindTextNextInThisFrame( bool reverse )
+{
+  return d->m_find.findTextNext( reverse );
+}
+
 QString KHTMLPart::selectedTextAsHTML() const
 {
   const Selection &sel = d->editor_context.m_selection;
