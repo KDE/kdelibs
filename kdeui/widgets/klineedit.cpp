@@ -104,9 +104,9 @@ public:
             clearButton->setAnimationsEnabled(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
         }
     }
-    
+
     void _k_updateUserText( const QString &txt)
-    {  
+    {
         if ((!completionRunning) && (txt != userText))
 	{
 	    userText = txt;
@@ -133,7 +133,7 @@ public:
     bool handleURLDrops:1;
     bool grabReturnKeyEvents:1;
     bool enableSqueezedText:1;
-    bool completionRunning:1; 
+    bool completionRunning:1;
 
     int squeezedEnd;
     int squeezedStart;
@@ -240,7 +240,7 @@ void KLineEdit::init()
     QStyle *lineEditStyle = new KLineEditStyle(this, d);
     lineEditStyle->setParent(this);
     setStyle(lineEditStyle);
-  
+
     connect( this, SIGNAL(textChanged( const QString&)), this, SLOT(_k_updateUserText( const QString&)));
 
 }
@@ -1241,7 +1241,17 @@ void KLineEdit::dropEvent(QDropEvent *e)
         const KUrl::List urlList = KUrl::List::fromMimeData( e->mimeData() );
         if ( !urlList.isEmpty() )
         {
-            QString dropText = text();
+            // Let's replace the current text with the dropped URL(s), rather than appending.
+            // Makes more sense in general (#188129), e.g. konq location bar and kurlrequester
+            // can only hold one url anyway. OK this code supports multiple urls being dropped,
+            // but that's not the common case [and it breaks if they contain spaces... this is why
+            // kfiledialog uses double quotes around filenames in multiple-selection mode]...
+            //
+            // Anyway, if some apps prefer "append" then we should have a
+            // setUrlDropsSupport( {NoUrlDrops, SingleUrlDrops, MultipleUrlDrops} )
+            // where Single replaces and Multiple appends.
+            QString dropText;
+            //QString dropText = text();
             KUrl::List::ConstIterator it;
             for( it = urlList.begin() ; it != urlList.end() ; ++it )
             {
@@ -1564,14 +1574,14 @@ void KLineEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
 
 void KLineEdit::setUserSelection(bool userSelection)
 {
-    //if !d->userSelection && userSelection we are accepting a completion, 
-    //so trigger an update 
-  
-    if (!d->userSelection && userSelection) 
-    { 
+    //if !d->userSelection && userSelection we are accepting a completion,
+    //so trigger an update
+
+    if (!d->userSelection && userSelection)
+    {
 	d->_k_updateUserText(text());
     }
-  
+
     QPalette p = palette();
 
     if (userSelection)
