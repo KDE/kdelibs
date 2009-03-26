@@ -127,6 +127,59 @@ static UString sanitizePattern(const UString &p)
   }
 }
 
+// For now, the only 'extension' to standard we are willing to deal with is
+// a non-escaped closing bracket, outside of a character class. e.g. /.*]/
+static bool sanitizePatternExtensions(UString &p)
+{
+  UString newPattern;
+
+  static const int StateNominal = 0, StateOpenBracket = 1;
+  WTF::Vector<int> v;
+  bool escape = false;
+
+  int state = StateNominal;
+  for (int i = 0; i < p.size(); ++i) {
+      UChar c = p[i];
+      if (escape) {
+        escape = false;
+      } else {
+        if (c == '\\') {
+          escape = true;
+        } else if (c == ']') {
+            if (state == StateOpenBracket) {
+                state = StateNominal;
+            } else if (state == StateNominal) {
+                v.append(i);
+            }
+        } else if (c == '[') {
+            if (state == StateOpenBracket) {
+                v.append(i);
+            } else if (state == StateNominal) {
+                state = StateOpenBracket;
+            }
+        }
+    }
+  }
+  if (state == StateOpenBracket) {
+      // this is not recoverable.
+      return false;
+  }
+  if (v.size()) {
+      int pos=0;
+      Vector<int>::const_iterator end = v.end();
+      for (Vector<int>::const_iterator it = v.begin(); it != end; ++it) {
+          newPattern += p.substr(pos, *it-pos);
+          pos = *it;
+          newPattern += UString('\\');
+      }
+      newPattern += p.substr(pos);
+      p = newPattern;
+      return true;
+  } else {
+    return false;
+  }
+}
+
 RegExp::RegExp(const UString &p, char flags)
   : _pat(p), _flags(flags), _valid(true), _numSubPatterns(0), _buffer(0), _originalPos(0)
 {
@@ -161,18 +214,34 @@ RegExp::RegExp(const UString &p, char flags)
 
   const char *errorMessage;
   int errorOffset;
+  bool secondTry = false;
 
-  // Fill our buffer with an encoded version, whether utf-8, or,
-  // if PCRE is incapable, truncated.
-  prepareMatch(intern);
-  _regex = pcre_compile(_buffer, options, &errorMessage, &errorOffset, NULL);
-  doneMatch(); //Cleanup buffers
-  if (!_regex) {
+  while (1) {
+    // Fill our buffer with an encoded version, whether utf-8, or,
+    // if PCRE is incapable, truncated.
+    prepareMatch(intern);
+    _regex = pcre_compile(_buffer, options, &errorMessage, &errorOffset, NULL);
+    doneMatch(); //Cleanup buffers
+    if (!_regex) {
+#ifdef PCRE_JAVASCRIPT_COMPAT
+      // The compilation failed. It is likely the pattern contains non-standard extensions.
+      // We may try to tolerate some of those extensions.
+      bool doRecompile = !secondTry && sanitizePatternExtensions(intern);
+      if (doRecompile) {
+        secondTry = true;
 #ifndef NDEBUG
-    fprintf(stderr, "KJS: pcre_compile() failed with '%s'\n", errorMessage);
+        fprintf(stderr, "KJS: pcre_compile() failed with '%s' - non-standard extensions detected in pattern, trying second compile after correction.\n", errorMessage);
 #endif
-    _valid = false;
-    return;
+        continue;
+      }
+#endif
+#ifndef NDEBUG
+      fprintf(stderr, "KJS: pcre_compile() failed with '%s'\n", errorMessage);
+#endif
+      _valid = false;
+      return;
+    }
+    break;
   }
 
 #ifdef PCRE_INFO_CAPTURECOUNT
