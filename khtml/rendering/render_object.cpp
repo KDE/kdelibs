@@ -577,13 +577,11 @@ int RenderObject::offsetLeft() const
         return 0;
 
     RenderObject* offsetPar = offsetParent();
-    int x, dummy;
     if (!offsetPar || offsetPar->isBody()) {
-        absolutePosition(x, dummy);
-        return x;
+        return xPos();
     }
 
-    x = xPos() -offsetPar->borderLeft();
+    int x = xPos() -offsetPar->borderLeft();
     if ( isPositioned() )
         return x;
 
@@ -606,14 +604,11 @@ int RenderObject::offsetTop() const
         return 0;
 
     RenderObject* offsetPar = offsetParent();
-    int y, dummy;
- 
     if (!offsetPar || offsetPar->isBody()) {
-        absolutePosition(dummy, y);
-        return y;
+        return yPos();
     }
 
-    y = yPos() -offsetPar->borderTop();
+    int y = yPos() -offsetPar->borderTop();
     if ( isPositioned() )
         return y;
 
