@@ -446,6 +446,10 @@ void KIntNumInput::setRange(int lower, int upper, int step)
     setReferencePoint(referencePoint());
 
     layout(true);
+
+    // update slider information if it's shown
+    K_USING_KNUMINPUT_P(priv);
+    setSliderEnabled(priv->slider);
 }
 
 void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
