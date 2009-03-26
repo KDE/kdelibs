@@ -579,6 +579,8 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
     if (shouldPaintBackgroundImage) {
         int sx = 0;
         int sy = 0;
+        int rw = 0;
+        int rh = 0;
         int cw,ch;
         int cx,cy;
         int scaledImageWidth, scaledImageHeight;
@@ -602,28 +604,34 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             }
 
             int pw, ph;
+            pw = w - hpab;
+            ph = h - vpab;
             if (isRoot()) {
                 // the root's background box 'spills out' to cover the whole canvas, so we have to
                 // go back to its true edge for the purpose of computing background-size
                 // and honouring background-origin
-                pw = width() - hpab;
-                ph = height() - vpab; 
+                rw = width() - hpab;
+                rh = height() - vpab; 
                 left += marginLeft();
                 hpab += marginLeft() + marginRight();
                 vpab += marginTop() + marginBottom();
                 top += marginTop();
+                scaledImageWidth = rw;
+                scaledImageHeight = rh;
             } else {
-                pw = w - hpab;
-                ph = h - vpab;
+                scaledImageWidth = pw;
+                scaledImageHeight = ph;
             }
-            scaledImageWidth = pw;
-            scaledImageHeight = ph;
             calculateBackgroundSize(bgLayer, scaledImageWidth, scaledImageHeight);
 
             EBackgroundRepeat bgr = bgLayer->backgroundRepeat();
             if (bgr == NO_REPEAT || bgr == REPEAT_Y) {
                 cw = scaledImageWidth;
-                int xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
+                int xPosition;
+                if (isRoot())
+                    xPosition = bgLayer->backgroundXPosition().minWidth(rw-scaledImageWidth);
+                else
+                    xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
                 if ( xPosition >= 0 ) {
                     cx = _tx + xPosition;
                     cw = qMin(scaledImageWidth, pw - xPosition);
@@ -641,14 +649,22 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                 cw = w;
                 cx = _tx;
                 if (scaledImageWidth > 0) {
-                    int xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
+                    int xPosition;
+                    if (isRoot())
+                        xPosition = bgLayer->backgroundXPosition().minWidth(rw-scaledImageWidth);
+                    else
+                        xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
                     sx = scaledImageWidth - (xPosition % scaledImageWidth);
                     sx -= left % scaledImageWidth;
                 }
             }
             if (bgr == NO_REPEAT || bgr == REPEAT_X) {
                 ch = scaledImageHeight;
-                int yPosition = bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight);
+                int yPosition;
+                if (isRoot())
+                    yPosition = bgLayer->backgroundYPosition().minWidth(rh - scaledImageHeight);
+                else
+                    yPosition = bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight);
                 if ( yPosition >= 0 ) {
                     cy = _ty + yPosition;
                     ch = qMin(ch, ph - yPosition);
@@ -667,7 +683,11 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                 ch = h;
                 cy = _ty;
                 if (scaledImageHeight > 0) {
-                    int yPosition = bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight);
+                    int yPosition;
+                    if (isRoot())
+                        yPosition = bgLayer->backgroundYPosition().minWidth(rh - scaledImageHeight);
+                    else
+                        yPosition = bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight);
                     sy = scaledImageHeight - (yPosition % scaledImageHeight);
                     sy -= top % scaledImageHeight;
                 }
