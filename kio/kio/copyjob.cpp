@@ -153,7 +153,7 @@ public:
     QList<CopyInfo> dirs;
     KUrl::List dirsToRemove;
     KUrl::List m_srcList;
-    KUrl::List m_successSrcList;
+    KUrl::List m_successSrcList; // Entries in m_srcList that have successfully been moved
     KUrl::List::const_iterator m_currentStatSrc;
     bool m_bCurrentSrcIsDir;
     bool m_bCurrentOperationIsLink;
@@ -846,7 +846,6 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
     {
         //this is required for the undo feature
         emit q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, true, false );
-        m_successSrcList.append((*it).uSource);
         m_directoriesCopied.append( *it );
         dirs.erase( it );
     }
@@ -1569,11 +1568,12 @@ void CopyJobPrivate::slotTotalSize( KJob*, qulonglong size )
 void CopyJobPrivate::slotResultDeletingDirs( KJob * job )
 {
     Q_Q(CopyJob);
-    if (job->error())
-    {
+    if (job->error()) {
         // Couldn't remove directory. Well, perhaps it's not empty
         // because the user pressed Skip for a given file in it.
         // Let's not display "Could not remove dir ..." for each of those dir !
+    } else {
+        m_successSrcList.append(static_cast<KIO::SimpleJob*>(job)->url());
     }
     q->removeSubjob( job );
     assert( !q->hasSubjobs() );
