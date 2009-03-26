@@ -199,12 +199,15 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     KHttpCookieList currentList;
     currentList.append(currentCookie);
     const QString currentHost = currentCookie.host();
+    QList<int> shownCookies; shownCookies << 0;
     for (int i = 1 /*first already done*/; i < mPendingCookies->count(); ++i) {
         const KHttpCookie& cookie = (*mPendingCookies)[i];
         if (cookie.host() == currentHost) {
             currentList.append(cookie);
+            shownCookies << i;
         }
     }
+    kDebug() << shownCookies;
 
     KCookieWin *kw = new KCookieWin( 0L, currentList,
                                      mCookieJar->preferredDefaultPolicy(),
@@ -217,10 +220,17 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     // Apply the user's choice to all cookies that are currently
     // queued for this host (or just the first one, if the user asks for that).
     QMutableListIterator<KHttpCookie> cookieIterator2(*mPendingCookies);
+    int pendingCookieIndex = -1;
     while (cookieIterator2.hasNext()) {
+        ++pendingCookieIndex;
         KHttpCookie& cookie = cookieIterator2.next();
         if (cookie.host() != currentHost)
             continue;
+        if (mCookieJar->preferredDefaultPolicy() == KCookieJar::ApplyToShownCookiesOnly
+            && !shownCookies.contains(pendingCookieIndex)) {
+            // User chose "only those cookies", and this one was added while the dialog was up -> skip
+            break;
+        }
         switch(userAdvice) {
            case KCookieAccept:
                mCookieJar->addCookie(cookie);
@@ -234,9 +244,6 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
            default:
                kWarning() << "userAdvice not accept or reject, this should never happen!";
                break;
-        }
-        if (mCookieJar->preferredDefaultPolicy() == KCookieJar::ApplyToThisCookieOnly) {
-            break;
         }
     }
 

@@ -152,7 +152,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
 #endif
     m_btnGrp->setLayout(vbox);
-    if (defaultButton == KCookieJar::ApplyToThisCookieOnly )
+    if (defaultButton == KCookieJar::ApplyToShownCookiesOnly )
 	m_onlyCookies->setChecked(true);
     else if (defaultButton == KCookieJar::ApplyToCookiesFromDomain)
 	m_allCookiesDomain->setChecked(true);
@@ -181,7 +181,7 @@ KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, const KHttpCookie& cook
 
     KCookieAdvice advice = (result==KDialog::Yes) ? KCookieAccept : KCookieReject;
 
-    KCookieJar::KCookieDefaultPolicy preferredPolicy = KCookieJar::ApplyToThisCookieOnly;
+    KCookieJar::KCookieDefaultPolicy preferredPolicy = KCookieJar::ApplyToShownCookiesOnly;
     if (m_allCookiesDomain->isChecked()) {
 	preferredPolicy = KCookieJar::ApplyToCookiesFromDomain;
 	cookiejar->setDomainAdvice( cookie, advice );
