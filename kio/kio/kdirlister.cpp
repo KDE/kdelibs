@@ -859,42 +859,44 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
   printDebug();
 #endif
 
-  KUrl oldurl( src );
-  oldurl.adjustPath( KUrl::RemoveTrailingSlash );
-  KFileItem *fileitem = findByUrl( 0, oldurl );
+    KUrl oldurl(src);
+    oldurl.adjustPath( KUrl::RemoveTrailingSlash );
+    KFileItem *fileitem = findByUrl(0, oldurl);
+    if (!fileitem) {
+        kDebug(7004) << "Item not found:" << oldurl;
+        return;
+    }
+
+    // Dest already exists? Was overwritten then (testcase: #151851)
+    // We better emit it as deleted -before- doing the renaming, otherwise
+    // the "update" mechanism will emit the old one as deleted and
+    // kdirmodel will delete the new (renamed) one!
+    KFileItem* existingDestItem = findByUrl(0, dst);
+    if (existingDestItem) {
+        //kDebug() << dst << "already existed, let's delete it";
+        slotFilesRemoved(dst);
+    }
 
   // If the item had a UDS_URL as well as UDS_NAME set, the user probably wants
   // to be updating the name only (since they can't see the URL).
   // Check to see if a URL exists, and if so, if only the file part has changed,
   // only update the name and not the underlying URL.
-  bool nameOnly = fileitem && !fileitem->entry().stringValue( KIO::UDSEntry::UDS_URL ).isEmpty();
+  bool nameOnly = !fileitem->entry().stringValue( KIO::UDSEntry::UDS_URL ).isEmpty();
   nameOnly &= src.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash ) ==
               dst.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash );
 
-    if (!nameOnly && (!fileitem || fileitem->isDir())) {
+    if (!nameOnly && fileitem->isDir()) {
         renameDir( src, dst );
         // #172945 - if the fileitem was the root item of a DirItem that was just removed from the cache,
         // then it's a dangling pointer now...
         fileitem = findByUrl( 0, oldurl );
     }
 
-  // Now update the KFileItem representing that file or dir (not exclusive with the above!)
-  if ( fileitem )
-  {
+    // Now update the KFileItem representing that file or dir (not exclusive with the above!)
     if ( !fileitem->isLocalFile() && !fileitem->localPath().isEmpty() ) // it uses UDS_LOCAL_PATH? ouch, needs an update then
         slotFilesChanged( QStringList() << src.url() );
     else
     {
-        // Dest already exists? Was overwritten then (testcase: #151851)
-        // We better emit it as deleted -before- doing the renaming, otherwise
-        // the "update" mechanism will emit the old one as deleted and
-        // kdirmodel will delete the new (renamed) one!
-        KFileItem* existingDestItem = findByUrl(0, dst);
-        if (existingDestItem) {
-            //kDebug() << dst << "already existed, let's delete it";
-            slotFilesRemoved(dst);
-        }
-
         aboutToRefreshItem( *fileitem );
         const KFileItem oldItem = *fileitem;
         if( nameOnly )
@@ -905,9 +907,9 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
         fileitem->determineMimeType();
         emitRefreshItem( oldItem, *fileitem );
     }
-  }
+
 #ifdef DEBUG_CACHE
-  printDebug();
+    printDebug();
 #endif
 }
 

@@ -94,3 +94,57 @@ static void createTestDirectory( const QString& path, CreateTestDirectoryOptions
     setTimeStamp( path, s_referenceTimeStamp );
 }
 
+#include <kio/jobuidelegate.h>
+class PredefinedAnswerJobUiDelegate : public KIO::JobUiDelegate
+{
+public:
+    PredefinedAnswerJobUiDelegate()
+        : JobUiDelegate(),
+          m_askFileRenameCalled(0),
+          m_askSkipCalled(0),
+          m_renameResult(KIO::R_SKIP),
+          m_skipResult(KIO::S_SKIP)
+    {
+    }
+
+    virtual KIO::RenameDialog_Result askFileRename(KJob * job,
+                                              const QString & caption,
+                                              const QString& src,
+                                              const QString & dest,
+                                              KIO::RenameDialog_Mode mode,
+                                              QString& newDest,
+                                              KIO::filesize_t = (KIO::filesize_t) -1,
+                                              KIO::filesize_t = (KIO::filesize_t) -1,
+                                              time_t  = (time_t) -1,
+                                              time_t  = (time_t) -1,
+                                              time_t  = (time_t) -1,
+                                              time_t  = (time_t) -1) {
+        Q_UNUSED(job)
+        Q_UNUSED(caption)
+        Q_UNUSED(src)
+        Q_UNUSED(dest)
+        Q_UNUSED(mode)
+        Q_UNUSED(newDest)
+        ++m_askFileRenameCalled;
+        return m_renameResult;
+    }
+
+    virtual KIO::SkipDialog_Result askSkip(KJob * job,
+                                      bool multi,
+                                      const QString & error_text)
+    {
+        Q_UNUSED(job)
+        Q_UNUSED(multi)
+        Q_UNUSED(error_text)
+        ++m_askSkipCalled;
+        return m_skipResult;
+    }
+
+
+    // yeah, public, for get and reset.
+    int m_askFileRenameCalled;
+    int m_askSkipCalled;
+
+    KIO::RenameDialog_Result m_renameResult;
+    KIO::SkipDialog_Result m_skipResult;
+};

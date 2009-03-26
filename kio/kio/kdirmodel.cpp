@@ -374,10 +374,11 @@ void KDirModelPrivate::_k_slotNewItems(const KUrl& directoryUrl, const KFileItem
     const int newRowCount = dirNode->m_childNodes.count() + newItemsCount;
 #if 0
 #ifndef NDEBUG // debugIndex only defined in debug mode
-    kDebug(7008) << items.count() << "in" << dir
+    kDebug(7008) << items.count() << "in" << directoryUrl
              << "index=" << debugIndex(index) << "newRowCount=" << newRowCount;
 #endif
 #endif
+
     q->beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 ); // parent, first, last
 
     const KUrl::List urlsBeingFetched = m_urlsBeingFetched.value(dirNode);
@@ -392,6 +393,14 @@ void KDirModelPrivate::_k_slotNewItems(const KUrl& directoryUrl, const KFileItem
         KDirModelNode* node = isDir
                               ? new KDirModelDirNode( dirNode, *it )
                               : new KDirModelNode( dirNode, *it );
+#ifndef NDEBUG
+        // Test code for possible duplication of items in the childnodes list,
+        // not sure if/how it ever happened.
+        //if (dirNode->m_childNodes.count() &&
+        //    dirNode->m_childNodes.last()->item().name() == (*it).name())
+        //    kFatal() << "Already having" << (*it).name() << "in" << directoryUrl
+        //             << "url=" << dirNode->m_childNodes.last()->item().url();
+#endif
         dirNode->m_childNodes.append(node);
         const KUrl url = it->url();
         m_nodeHash.insert(cleanupUrl(url), node);
@@ -514,17 +523,33 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
         if (!node) // not found [can happen when renaming a dir, redirection was emitted already]
             continue;
         if (node != m_rootNode) { // we never set an item in the rootnode, we use m_dirLister->rootItem instead.
-            node->setItem(fit->second);
+            bool hasNewNode = false;
+            // A file became directory (well, it was overwritten)
+            if (fit->first.isDir() != fit->second.isDir()) {
+                //kDebug(7008) << "DIR/FILE STATUS CHANGE";
+                const int r = node->rowNumber();
+                removeFromNodeHash(node, oldUrl);
+                KDirModelDirNode* dirNode = node->parent();
+                delete dirNode->m_childNodes.takeAt(r); // i.e. "delete node"
+                node = fit->second.isDir() ? new KDirModelDirNode(dirNode, fit->second)
+                       : new KDirModelNode(dirNode, fit->second);
+                dirNode->m_childNodes.insert(r, node); // same position!
+                hasNewNode = true;
+            } else {
+                node->setItem(fit->second);
+            }
 
-            if (oldUrl != newUrl) {
+            if (oldUrl != newUrl || hasNewNode) {
                 // What if a renamed dir had children? -> kdirlister takes care of emitting for each item
                 //kDebug(7008) << "Renaming" << oldUrl << "to" << newUrl << "in node hash";
                 m_nodeHash.remove(cleanupUrl(oldUrl));
                 m_nodeHash.insert(cleanupUrl(newUrl), node);
             }
             // Mimetype changed -> forget cached icon (e.g. from "cut", #164185 comment #13)
-            if (fit->first.mimeTypePtr() != fit->second.mimeTypePtr())
+            if (fit->first.mimeTypePtr()->name() != fit->second.mimeTypePtr()->name()) {
                 node->setPreview(QIcon());
+            }
+
             const QModelIndex index = indexForNode(node);
             if (!topLeft.isValid() || index.row() < topLeft.row()) {
                 topLeft = index;
