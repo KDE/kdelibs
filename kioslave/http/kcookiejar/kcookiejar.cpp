@@ -345,17 +345,20 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
             // cookie, then send the cookie back regardless of domain policy.
             if (advice == KCookieReject &&
                 !(m_autoAcceptSessionCookies &&
-                  (m_ignoreCookieExpirationDate || cookie.expireDate() == 0)))
+                  (m_ignoreCookieExpirationDate || cookie.expireDate() == 0))) {
                 continue;
+            }
 
           if (!cookie.match(fqdn, domains, path))
              continue;
 
-          if( cookie.isSecure() && !secureRequest )
+          if( cookie.isSecure() && !secureRequest ) {
              continue;
+          }
 
-          if( cookie.isHttpOnly() && useDOMFormat )
+          if( cookie.isHttpOnly() && useDOMFormat ) {
              continue;
+          }
 
           // Do not send expired cookies.
           if ( cookie.isExpired (time(0)) )
@@ -1440,7 +1443,7 @@ void KCookieJar::saveConfig(KConfig *_config)
         return;
 
     KConfigGroup dlgGroup(_config, "Cookie Dialog");
-    dlgGroup.writeEntry("PreferredPolicy", m_preferredPolicy);
+    dlgGroup.writeEntry("PreferredPolicy", static_cast<int>(m_preferredPolicy));
     dlgGroup.writeEntry("ShowCookieDetails", m_showCookieDetails );
     KConfigGroup policyGroup(_config,"Cookie Policy");
     policyGroup.writeEntry("CookieGlobalAdvice", adviceToStr( m_globalAdvice));
@@ -1477,7 +1480,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
 
     KConfigGroup dlgGroup(_config, "Cookie Dialog");
     m_showCookieDetails = dlgGroup.readEntry( "ShowCookieDetails" , false );
-    m_preferredPolicy = dlgGroup.readEntry( "PreferredPolicy", 0 );
+    m_preferredPolicy = static_cast<KCookieDefaultPolicy>(dlgGroup.readEntry("PreferredPolicy", 0));
 
     KConfigGroup policyGroup(_config,"Cookie Policy");
     const QStringList domainSettings = policyGroup.readEntry("CookieDomainAdvice", QStringList());

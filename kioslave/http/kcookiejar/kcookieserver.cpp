@@ -194,13 +194,13 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     if (cookieList || list->isEmpty())
        return;
 
+    // Collect all pending cookies with the same host as the first pending cookie
     const KHttpCookie& currentCookie = mPendingCookies->first();
-
     KHttpCookieList currentList;
     currentList.append(currentCookie);
-    QString currentHost = currentCookie.host();
-
-    Q_FOREACH(const KHttpCookie& cookie, *mPendingCookies) {
+    const QString currentHost = currentCookie.host();
+    for (int i = 1 /*first already done*/; i < mPendingCookies->count(); ++i) {
+        const KHttpCookie& cookie = (*mPendingCookies)[i];
         if (cookie.host() == currentHost) {
             currentList.append(cookie);
         }
@@ -215,7 +215,7 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     mCookieJar->saveConfig( mConfig );
 
     // Apply the user's choice to all cookies that are currently
-    // queued for this host.
+    // queued for this host (or just the first one, if the user asks for that).
     QMutableListIterator<KHttpCookie> cookieIterator2(*mPendingCookies);
     while (cookieIterator2.hasNext()) {
         KHttpCookie& cookie = cookieIterator2.next();
@@ -234,6 +234,9 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
            default:
                kWarning() << "userAdvice not accept or reject, this should never happen!";
                break;
+        }
+        if (mCookieJar->preferredDefaultPolicy() == KCookieJar::ApplyToThisCookieOnly) {
+            break;
         }
     }
 
