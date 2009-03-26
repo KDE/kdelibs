@@ -332,7 +332,7 @@ public:
     static KCookieAdvice strToAdvice(const QString &_str);
 
     enum KCookieDefaultPolicy {
-        ApplyToThisCookieOnly = 0,
+        ApplyToShownCookiesOnly = 0,
         ApplyToCookiesFromDomain = 1,
         ApplyToAllCookies = 2
     };
