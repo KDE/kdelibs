@@ -185,6 +185,12 @@ public:
     void updateCutItems();
 
     /**
+     * Reset all icons of the items from m_cutItemsCache and clear
+     * the cache.
+     */
+    void clearCutItemsCache();
+
+    /**
      * Dispatches the preview queue  block by block within
      * time slices.
      */
@@ -321,7 +327,7 @@ public:
     KDirModel* m_dirModel;
     QAbstractProxyModel* m_proxyModel;
 
-    QList<ItemInfo> m_cutItemsCache;
+    QList<KUrl> m_cutItemsCache;
     QList<ItemInfo> m_previews;
 
     /**
@@ -488,18 +494,6 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
     }
 
     if (m_hasCutSelection && isCutItem(item)) {
-        // Remember the current icon in the cache for cut items before
-        // the disabled effect is applied. This makes it possible restoring
-        // the uncut version again when cutting other items.
-        QList<ItemInfo>::iterator begin = m_cutItemsCache.begin();
-        QList<ItemInfo>::iterator end   = m_cutItemsCache.end();
-        for (QList<ItemInfo>::iterator it = begin; it != end; ++it) {
-            if ((*it).url == item.url()) {
-                (*it).pixmap = icon;
-                break;
-            }
-        }
-
         // apply the disabled effect to the icon for marking it as "cut item"
         // and apply the icon to the item
         KIconEffect iconEffect;
@@ -532,18 +526,8 @@ void KFilePreviewGenerator::Private::slotPreviewJobFinished(KJob* job)
 void KFilePreviewGenerator::Private::updateCutItems()
 {
     DataChangeObtainer obt(this);
+    clearCutItemsCache();
 
-    // restore the icons of all previously selected items to the
-    // original state...
-    foreach (const ItemInfo& cutItem, m_cutItemsCache) {
-        const QModelIndex index = m_dirModel->indexForUrl(cutItem.url);
-        if (index.isValid()) {
-            m_dirModel->setData(index, QIcon(cutItem.pixmap), Qt::DecorationRole);
-        }
-    }
-    m_cutItemsCache.clear();
-
-    // ... and apply an item effect to all currently cut items
     KFileItemList items;
     KDirLister* dirLister = m_dirModel->dirLister();
     const KUrl::List dirs = dirLister->directories();
@@ -551,6 +535,31 @@ void KFilePreviewGenerator::Private::updateCutItems()
         items << dirLister->itemsForDir(url);
     }
     applyCutItemEffect(items);
+}
+
+void KFilePreviewGenerator::Private::clearCutItemsCache()
+{
+    DataChangeObtainer obt(this);
+    KFileItemList previews;
+    // Reset the icons of all items that are stored in the cache
+    // to use their default MIME type icon.
+    foreach (const KUrl& url, m_cutItemsCache) {
+        const QModelIndex index = m_dirModel->indexForUrl(url);
+        if (index.isValid()) {
+            m_dirModel->setData(index, QIcon(), Qt::DecorationRole);
+            if (m_previewShown) {
+                previews.append(m_dirModel->itemForIndex(index));
+            }
+        }
+    }
+    m_cutItemsCache.clear();
+
+    if (previews.size() > 0) {
+        // assure that the previews gets restored
+        Q_ASSERT(m_previewShown);
+        orderItems(previews);
+        updateIcons(previews);
+    }
 }
 
 void KFilePreviewGenerator::Private::dispatchIconUpdateQueue()
@@ -718,18 +727,11 @@ void KFilePreviewGenerator::Private::applyCutItemEffect(const KFileItemList& ite
             const QModelIndex index = m_dirModel->indexForItem(item);
             const QVariant value = m_dirModel->data(index, Qt::DecorationRole);
             if (value.type() == QVariant::Icon) {
+                m_cutItemsCache.append(item.url());
+
                 const QIcon icon(qvariant_cast<QIcon>(value));
                 const QSize actualSize = icon.actualSize(m_viewAdapter->iconSize());
                 QPixmap pixmap = icon.pixmap(actualSize);
-
-                // remember current pixmap for the item to be able
-                // to restore it when other items get cut
-                ItemInfo cutItem;
-                cutItem.url = item.url();
-                cutItem.pixmap = pixmap;
-                m_cutItemsCache.append(cutItem);
-
-                // apply icon effect to the cut item
                 pixmap = iconEffect.apply(pixmap, KIconLoader::Desktop, KIconLoader::DisabledState);
                 m_dirModel->setData(index, QIcon(pixmap), Qt::DecorationRole);
             }
@@ -963,11 +965,7 @@ void KFilePreviewGenerator::setPreviewShown(bool show)
 
     if (d->m_previewShown != show) {
         d->m_previewShown = show;
-        d->m_cutItemsCache.clear();
-        d->updateCutItems();
-        if (show) {
-            updatePreviews();
-        }
+        updateIcons();
     }
 }
 
@@ -976,14 +974,17 @@ bool KFilePreviewGenerator::isPreviewShown() const
     return d->m_previewShown;
 }
 
+// deprecated (use updateIcons() instead)
 void KFilePreviewGenerator::updatePreviews()
 {
-    if (!d->m_previewShown) {
-        return;
-    }
+    updateIcons();
+}
 
+void KFilePreviewGenerator::updateIcons()
+{
     d->killPreviewJobs();
-    d->m_cutItemsCache.clear();
+
+    d->clearCutItemsCache();
     d->m_pendingItems.clear();
     d->m_dispatchedItems.clear();
 
@@ -996,15 +997,14 @@ void KFilePreviewGenerator::updatePreviews()
     }
 
     d->updateIcons(itemList);
-    d->updateCutItems();
 }
 
 void KFilePreviewGenerator::cancelPreviews()
 {
     d->killPreviewJobs();
-    d->m_cutItemsCache.clear();
     d->m_pendingItems.clear();
     d->m_dispatchedItems.clear();
+    updateIcons();
 }
 
 void KFilePreviewGenerator::setEnabledPlugins(const QStringList& plugins)

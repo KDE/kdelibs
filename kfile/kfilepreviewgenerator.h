@@ -81,7 +81,7 @@ public:
      * necessary to invoke this method when the icon size of the abstract item view
      * has been changed by QAbstractItemView::setIconSize().
      */
-    void updatePreviews();
+    void updatePreviews(); // TODO: mark as deprecated and use updateIcons() instead
 
     /** Cancels all pending previews. */
     void cancelPreviews();
@@ -107,6 +107,17 @@ public:
      * @see setEnabledPlugins
      */
     QStringList enabledPlugins() const;
+
+private:
+    /**
+     * Updates the icons for all already available items. Usually it is only
+     * necessary to invoke this method when the icon size of the abstract item view
+     * has been changed by QAbstractItemView::setIconSize(). Note that this method
+     * should also be invoked if previews have been turned off, as the icons for
+     * cut items must be updated when the icon size has changed.
+     * @since 4.3
+     */
+    void updateIcons(); // TODO: make it public as soon as updatePreviews() has been marked as deprecated
 
 private:
     class Private;
