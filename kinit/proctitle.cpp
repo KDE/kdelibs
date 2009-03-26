@@ -71,9 +71,6 @@
 #ifdef HAVE___PROGNAME
 extern char *__progname;
 #endif /* HAVE___PROGNAME */
-#ifdef HAVE___PROGNAME_FULL
-extern char *__progname_full;
-#endif /* HAVE___PROGNAME_FULL */
 extern char **environ;
 
 static char **Argv = NULL;
@@ -131,10 +128,6 @@ void proctitle_init(int argc, char *argv[], char *envp[]) {
      */
     __progname = strdup("kdeinit4");
 # endif /* HAVE___PROGNAME */
-# ifdef HAVE____PROGNAME_FULL
-    /* __progname_full too */
-    __progname_full = strdup(argv[0]);
-# endif /* HAVE___PROGNAME_FULL */
 }
 
 void proctitle_set(const char *fmt, ...) {
