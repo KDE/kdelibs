@@ -145,7 +145,7 @@ class KHTMLPartPrivate
   KHTMLPartPrivate& operator=(const KHTMLPartPrivate&);
 public:
   KHTMLPartPrivate(KHTMLPart* part, QObject* parent) :
-    m_find( part )
+    m_find( part, (part->parentPart() ? &part->parentPart()->d->m_find : 0) )
   {
     q     = part;
     m_doc = 0L;
