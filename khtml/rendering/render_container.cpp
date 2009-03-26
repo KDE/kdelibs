@@ -249,8 +249,14 @@ void RenderContainer::setStyle(RenderStyle* _style)
     }
 }
 
+static bool inUpdatePseudoChildren = false;
+
 void RenderContainer::updatePseudoChildren()
 {
+    if (inUpdatePseudoChildren)
+        return;
+    inUpdatePseudoChildren = true;
+
     // In CSS2, before/after pseudo-content cannot nest.  Check this first.
     // Remove when CSS 3 Generated Content becomes Candidate Recommendation
     if (style()->styleType() == RenderStyle::BEFORE
@@ -260,6 +266,8 @@ void RenderContainer::updatePseudoChildren()
     updatePseudoChild(RenderStyle::BEFORE);
     updatePseudoChild(RenderStyle::AFTER);
     // updatePseudoChild(RenderStyle::MARKER, marker());
+
+    inUpdatePseudoChildren = false;
 }
 
 void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type)
