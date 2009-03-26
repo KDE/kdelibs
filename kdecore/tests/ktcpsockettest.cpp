@@ -271,14 +271,14 @@ void KTcpSocketTest::states()
         s->waitForBytesWritten(-1);
         QCOMPARE(s->state(), KTcpSocket::ConnectedState);
         s->waitForReadyRead(-1);
-        QVERIFY(s->bytesAvailable() > 1000);
+        QVERIFY(s->bytesAvailable() > 100);
         if (i % 5) {
             s->readAll();
             QVERIFY(s->bytesAvailable() == 0);
         } else {
             char dummy[4];
             s->read(dummy, 1);
-            QVERIFY(s->bytesAvailable() > 1000 - 1);
+            QVERIFY(s->bytesAvailable() > 100 - 1);
         }
         s->disconnectFromHost();
         if (s->state() != KTcpSocket::UnconnectedState)
