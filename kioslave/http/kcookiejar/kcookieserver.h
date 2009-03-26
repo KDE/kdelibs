@@ -46,12 +46,14 @@ public:
     ~KCookieServer();
 
 public Q_SLOTS:
+    // KDE5 TODO: don't overload names here, it prevents calling e.g. findCookies from the command-line using qdbus.
   QString listCookies(const QString &url);
   QString findCookies(const QString &url, qlonglong windowId);
   QStringList findDomains();
+    // KDE5: rename
   QStringList findCookies(const QList<int> &fields,const QString &domain,const QString& fqdn,const QString &path, const QString &name);
   QString findDOMCookies(const QString &url);
-  QString findDOMCookies(const QString &url, qlonglong windowId);
+  QString findDOMCookies(const QString &url, qlonglong windowId); // KDE5: merge with above, using default value (windowId = 0)
   void addCookies(const QString &url, const QByteArray &cookieHeader, qlonglong windowId);
   void deleteCookie(const QString &domain, const QString &fqdn, const QString &path, const QString &name);
   void deleteCookiesFromDomain(const QString &domain);
