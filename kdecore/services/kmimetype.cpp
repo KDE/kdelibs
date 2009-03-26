@@ -272,7 +272,7 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
                                            int* accuracy )
 {
     checkEssentialMimeTypes();
-    const QString path = _url.toLocalFile();
+    const QString path = is_local_file ? _url.toLocalFile() : _url.path();
 
     if (accuracy)
         *accuracy = 100;
