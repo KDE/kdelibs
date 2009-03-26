@@ -331,8 +331,13 @@ public:
     static QString adviceToStr(KCookieAdvice _advice);
     static KCookieAdvice strToAdvice(const QString &_str);
 
-    /** Returns the */
-    int preferredDefaultPolicy() const { return m_preferredPolicy; }
+    enum KCookieDefaultPolicy {
+        ApplyToThisCookieOnly = 0,
+        ApplyToCookiesFromDomain = 1,
+        ApplyToAllCookies = 2
+    };
+    /** Returns the user's choice in the cookie window */
+    KCookieDefaultPolicy preferredDefaultPolicy() const { return m_preferredPolicy; }
 
     /** Returns the */
     bool showCookieDetails () const { return m_showCookieDetails; }
@@ -340,7 +345,7 @@ public:
      /**
       * Sets the user's default preference cookie policy.
       */
-     void setPreferredDefaultPolicy (int value) { m_preferredPolicy = value; }
+     void setPreferredDefaultPolicy (KCookieDefaultPolicy value) { m_preferredPolicy = value; }
 
      /**
       * Sets the user's preference of level of detail displayed
@@ -365,6 +370,6 @@ protected:
     bool m_autoAcceptSessionCookies;
     bool m_ignoreCookieExpirationDate;
 
-    int m_preferredPolicy;
+    KCookieDefaultPolicy m_preferredPolicy;
 };
 #endif

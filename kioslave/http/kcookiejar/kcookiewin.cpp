@@ -152,20 +152,18 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
 #endif
     m_btnGrp->setLayout(vbox);
-    if (defaultButton == 0 )
+    if (defaultButton == KCookieJar::ApplyToThisCookieOnly )
 	m_onlyCookies->setChecked(true);
-    else if(defaultButton==1)
+    else if (defaultButton == KCookieJar::ApplyToCookiesFromDomain)
 	m_allCookiesDomain->setChecked(true);
-    else if(defaultButton==2)
+    else if (defaultButton == KCookieJar::ApplyToAllCookies)
 	m_allCookies->setChecked(true);
     else
 	m_onlyCookies->setChecked(true);
     setButtonText(KDialog::Yes, i18n("&Accept"));
     setButtonText(KDialog::No, i18n("&Reject"));
     //QShortcut( Qt::Key_Escape, btn, SLOT(animateClick()) );
-#ifndef QT_NO_WHATSTHIS
     setButtonToolTip(Details, i18n("See or modify the cookie information") );
-#endif
     setDefaultButton(Yes);
 
     setDetailsWidgetVisible(showDetails);
@@ -183,17 +181,12 @@ KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, const KHttpCookie& cook
 
     KCookieAdvice advice = (result==KDialog::Yes) ? KCookieAccept : KCookieReject;
 
-    int preferredPolicy=-1;
-    if( m_onlyCookies->isChecked())
-	preferredPolicy = 0;
-    else if( m_allCookiesDomain->isChecked())
-    {
-	preferredPolicy = 1;
+    KCookieJar::KCookieDefaultPolicy preferredPolicy = KCookieJar::ApplyToThisCookieOnly;
+    if (m_allCookiesDomain->isChecked()) {
+	preferredPolicy = KCookieJar::ApplyToCookiesFromDomain;
 	cookiejar->setDomainAdvice( cookie, advice );
-    }
-    else if( m_allCookies->isChecked())
-    {
-	preferredPolicy = 2;
+    } else if (m_allCookies->isChecked()) {
+	preferredPolicy = KCookieJar::ApplyToAllCookies;
 	cookiejar->setGlobalAdvice( advice );
     }
     cookiejar->setPreferredDefaultPolicy( preferredPolicy );
