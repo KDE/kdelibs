@@ -32,6 +32,10 @@ DynamicDomRestyler::DynamicDomRestyler()
 void DynamicDomRestyler::addDependency(ElementImpl* subject, ElementImpl* dependency, StructuralDependencyType type)
 {
     assert(type < LastStructuralDependency);
+    if (subject == dependency && type == HoverDependency) {
+        subject->setHasHoverDependency(true);
+        return;
+    }
 
     dependency_map[type].insert(dependency, subject);
     reverse_map.insert(subject,dependency);
@@ -39,12 +43,19 @@ void DynamicDomRestyler::addDependency(ElementImpl* subject, ElementImpl* depend
 
 void DynamicDomRestyler::removeDependency(ElementImpl* subject, ElementImpl* dependency, StructuralDependencyType type)
 {
+    if (subject == dependency && type == HoverDependency) {
+        subject->setHasHoverDependency(false);
+        return;
+    }
     dependency_map[type].remove(dependency, subject);
     // don't remove from reverse_map as there might be other dependencies to the same element
 }
 
 void DynamicDomRestyler::removeDependencies(ElementImpl* subject, StructuralDependencyType type)
 {
+    if (type == HoverDependency)
+        subject->setHasHoverDependency(false);
+
     QSet<ElementImpl*>* my_dependencies = reverse_map.find(subject);
 
     if (!my_dependencies) return;
@@ -63,6 +74,8 @@ void DynamicDomRestyler::removeDependencies(ElementImpl* subject, StructuralDepe
 
 void DynamicDomRestyler::resetDependencies(ElementImpl* subject)
 {
+    subject->setHasHoverDependency(false);
+
     QSet<ElementImpl*>* my_dependencies = reverse_map.find(subject);
 
     if (!my_dependencies) return;
@@ -83,6 +96,9 @@ void DynamicDomRestyler::resetDependencies(ElementImpl* subject)
 void DynamicDomRestyler::restyleDependent(ElementImpl* dependency, StructuralDependencyType type)
 {
     assert(type < LastStructuralDependency);
+    if (type == HoverDependency && dependency->hasHoverDependency())
+        dependency->setChanged(true);
+
     QSet<ElementImpl*>* dep = dependency_map[type].find(dependency);
 
     if (!dep) return;

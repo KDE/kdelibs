@@ -86,7 +86,8 @@ NodeImpl::NodeImpl(DocumentImpl *doc)
       m_implicit( false ),
       m_htmlCompat( false ),
       m_hasClass( false ),
-      m_hasCombinedStyle( false )
+      m_hasCombinedStyle( false ),
+      m_hasHoverDependency(false)
 {
 }
 

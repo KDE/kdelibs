@@ -265,6 +265,8 @@ public:
     void setHasChangedChild( bool b = true ) { m_hasChangedChild = b; }
     void setInDocument(bool b=true) { m_inDocument = b; }
     void setHTMLCompat(bool b) { m_htmlCompat = b; }
+    bool hasHoverDependency() { return m_hasHoverDependency; }
+    void setHasHoverDependency(bool b = true) { m_hasHoverDependency = b; }
     virtual void setFocus(bool b=true) { m_focused = b; }
     virtual void setActive(bool b=true) { m_active = b; }
     virtual void setHovered(bool b=true) { m_hovered = b; }
@@ -524,7 +526,7 @@ protected:
     bool m_htmlCompat : 1; // true if element was created in HTML compat mode
     bool m_hasClass : 1;   // true if element has a class property, as relevant to CSS
     bool m_hasCombinedStyle : 1; // true if element has inline styles and presentational styles
-    bool m_unused : 1; // free bit
+    bool m_hasHoverDependency : 1; // true if element has hover dependency on itself
 };
 
 // this is the full Node Implementation with parents and children.
