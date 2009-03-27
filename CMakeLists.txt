@@ -45,7 +45,9 @@ if(UNIX AND Q_WS_X11)
   endif(NOT X11_SM_FOUND)
 endif(UNIX AND Q_WS_X11)
 
-#required features
+#required features:
+# Perl is used e.g. in khtml, kjs, kjsembed and others
+find_package(Perl REQUIRED)
 find_package(ZLIB REQUIRED)
 set(STRIGI_MIN_VERSION 0.6.3)
 find_package(Strigi REQUIRED)
