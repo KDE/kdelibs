@@ -266,6 +266,11 @@ void KUrlRequester::setPath( const QString& path )
     d->setText( path );
 }
 
+void KUrlRequester::setText(const QString& text)
+{
+    d->setText(text);
+}
+
 void KUrlRequester::setStartDir(const KUrl& startDir)
 {
     d->m_startDir = startDir;
