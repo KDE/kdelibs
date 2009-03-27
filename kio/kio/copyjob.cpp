@@ -160,7 +160,7 @@ public:
     bool m_bSingleFileCopy;
     bool m_bOnlyRenames;
     KUrl m_dest;
-    KUrl m_currentDest;
+    KUrl m_currentDest; // set during listing, used by slotEntries
     //
     QStringList m_skipList;
     QStringList m_overwriteList;
@@ -204,6 +204,7 @@ public:
 
     void slotStart();
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
+    void addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& srcUrl, bool srcIsDir, const KUrl& currentDest);
     /**
      * Forward signal from subjob
      */
@@ -278,7 +279,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     // Was there an error while stating the src ?
     if (job->error() && destinationState != DEST_NOT_STATED )
     {
-        KUrl srcurl = ((SimpleJob*)job)->url();
+        const KUrl srcurl = static_cast<SimpleJob*>(job)->url();
         if ( !srcurl.isLocalFile() )
         {
             // Probably : src doesn't exist. Well, over some protocols (e.g. FTP)
@@ -346,12 +347,8 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     const QString sName = entry.stringValue( KIO::UDSEntry::UDS_NAME );
 
     // We were stating the current source URL
-    m_currentDest = m_dest; // used by slotEntries
-    // Create a dummy list with it, for slotEntries
-    UDSEntryList lst;
-    lst.append(entry);
 
-    // There 6 cases, and all end up calling slotEntries(job, lst) first :
+    // There 6 cases, and all end up calling addCopyInfoFromUDSEntry first :
     // 1 - src is a dir, destination is a directory,
     // slotEntries will append the source-dir-name to the destination
     // 2 - src is a dir, destination is a file -- will offer to overwrite, later on.
@@ -362,16 +359,16 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     // slotEntries will append the filename to the destination.
     // 5 - src is a file, destination is a file, m_dest is the exact destination name
     // 6 - src is a file, destination doesn't exist, m_dest is the exact destination name
-    // Tell slotEntries not to alter the src url
-    m_bCurrentSrcIsDir = false;
-    slotEntries(static_cast<KIO::Job*>( job ), lst);
 
     KUrl srcurl;
     if (!sLocalPath.isEmpty())
         srcurl.setPath(sLocalPath);
     else
-        srcurl = ((SimpleJob*)job)->url();
+        srcurl = static_cast<SimpleJob*>(job)->url();
+    addCopyInfoFromUDSEntry(entry, srcurl, false, m_dest);
 
+    m_currentDest = m_dest;
+    m_bCurrentSrcIsDir = false;
     q->removeSubjob( job );
     assert ( !q->hasSubjobs() ); // We should have only one job at a time ...
 
@@ -498,93 +495,96 @@ void CopyJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
     UDSEntryList::ConstIterator end = list.constEnd();
     for (; it != end; ++it) {
         const UDSEntry& entry = *it;
-        struct CopyInfo info;
-        info.permissions = entry.numberValue( KIO::UDSEntry::UDS_ACCESS, -1 );
-        info.mtime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, -1 );
-        info.ctime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_CREATION_TIME, -1 );
-        info.size = (KIO::filesize_t) entry.numberValue( KIO::UDSEntry::UDS_SIZE, -1 );
-        if ( info.size != (KIO::filesize_t) -1 )
-            m_totalSize += info.size;
+        addCopyInfoFromUDSEntry(entry, static_cast<SimpleJob *>(job)->url(), m_bCurrentSrcIsDir, m_currentDest);
+    }
+}
 
-        // recursive listing, displayName can be a/b/c/d
-        const QString displayName = entry.stringValue( KIO::UDSEntry::UDS_NAME );
-        const QString urlStr = entry.stringValue( KIO::UDSEntry::UDS_URL );
-        KUrl url;
-        if ( !urlStr.isEmpty() )
-            url = urlStr;
-        QString localPath = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
-        const bool isDir = entry.isDir();
-        info.linkDest = entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST );
+void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& srcUrl, bool srcIsDir, const KUrl& currentDest)
+{
+    struct CopyInfo info;
+    info.permissions = entry.numberValue(KIO::UDSEntry::UDS_ACCESS, -1);
+    info.mtime = (time_t) entry.numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, -1);
+    info.ctime = (time_t) entry.numberValue(KIO::UDSEntry::UDS_CREATION_TIME, -1);
+    info.size = (KIO::filesize_t) entry.numberValue(KIO::UDSEntry::UDS_SIZE, -1);
+    if (info.size != (KIO::filesize_t) -1)
+        m_totalSize += info.size;
 
-        if (displayName != ".." && displayName != ".")
+    // recursive listing, displayName can be a/b/c/d
+    const QString displayName = entry.stringValue(KIO::UDSEntry::UDS_NAME);
+    const QString urlStr = entry.stringValue(KIO::UDSEntry::UDS_URL);
+    KUrl url;
+    if (!urlStr.isEmpty())
+        url = urlStr;
+    QString localPath = entry.stringValue(KIO::UDSEntry::UDS_LOCAL_PATH);
+    const bool isDir = entry.isDir();
+    info.linkDest = entry.stringValue(KIO::UDSEntry::UDS_LINK_DEST);
+
+    if (displayName != QLatin1String("..") && displayName != QLatin1String(".")) {
+        const bool hasCustomURL = !url.isEmpty() || !localPath.isEmpty();
+        if (!hasCustomURL) {
+            // Make URL from displayName
+            url = srcUrl;
+            if (srcIsDir) { // Only if src is a directory. Otherwise uSource is fine as is
+                //kDebug(7007) << "adding path" << displayName;
+                url.addPath(displayName);
+            }
+        }
+        //kDebug(7007) << "displayName=" << displayName << "url=" << url;
+        if (!localPath.isEmpty() && kio_resolve_local_urls) {
+            url = KUrl(localPath);
+        }
+
+        info.uSource = url;
+        info.uDest = currentDest;
+        //kDebug(7007) << "uSource=" << info.uSource << "uDest(1)=" << info.uDest;
+        // Append filename or dirname to destination URL, if allowed
+        if (destinationState == DEST_IS_DIR &&
+             // "copy/move as <foo>" means 'foo' is the dest for the base srcurl
+             // (passed here during stating) but not its children (during listing)
+             (! (m_asMethod && state == STATE_STATING)))
         {
-            bool hasCustomURL = !url.isEmpty() || !localPath.isEmpty();
-            if( !hasCustomURL ) {
-                // Make URL from displayName
-                url = static_cast<SimpleJob *>(job)->url();
-                if ( m_bCurrentSrcIsDir ) { // Only if src is a directory. Otherwise uSource is fine as is
-                    //kDebug(7007) << "adding path" << displayName;
-                    url.addPath( displayName );
+            QString destFileName;
+            if (hasCustomURL &&
+                 KProtocolManager::fileNameUsedForCopying(url) == KProtocolInfo::FromUrl) {
+                //destFileName = url.fileName(); // Doesn't work for recursive listing
+                // Count the number of prefixes used by the recursive listjob
+                int numberOfSlashes = displayName.count('/'); // don't make this a find()!
+                QString path = url.path();
+                int pos = 0;
+                for (int n = 0; n < numberOfSlashes + 1; ++n) {
+                    pos = path.lastIndexOf('/', pos - 1);
+                    if (pos == -1) { // error
+                        kWarning(7007) << "kioslave bug: not enough slashes in UDS_URL" << path << "- looking for" << numberOfSlashes << "slashes";
+                        break;
+                    }
                 }
-            }
-            //kDebug(7007) << "displayName=" << displayName << "url=" << url;
-            if (!localPath.isEmpty() && kio_resolve_local_urls) {
-                url = KUrl();
-                url.setPath(localPath);
-            }
-
-            info.uSource = url;
-            info.uDest = m_currentDest;
-            //kDebug(7007) << "uSource=" << info.uSource << "uDest(1)=" << info.uDest;
-            // Append filename or dirname to destination URL, if allowed
-            if ( destinationState == DEST_IS_DIR &&
-                 // "copy/move as <foo>" means 'foo' is the dest for the base srcurl
-                 // (passed here during stating) but not its children (during listing)
-                 ( ! ( m_asMethod && state == STATE_STATING ) ) )
-            {
-                QString destFileName;
-                if ( hasCustomURL &&
-                     KProtocolManager::fileNameUsedForCopying( url ) == KProtocolInfo::FromUrl ) {
-                    //destFileName = url.fileName(); // Doesn't work for recursive listing
-                    // Count the number of prefixes used by the recursive listjob
-                    int numberOfSlashes = displayName.count( '/' ); // don't make this a find()!
-                    QString path = url.path();
-                    int pos = 0;
-                    for ( int n = 0; n < numberOfSlashes + 1; ++n ) {
-                        pos = path.lastIndexOf( '/', pos - 1 );
-                        if ( pos == -1 ) { // error
-                            kWarning(7007) << "kioslave bug: not enough slashes in UDS_URL" << path << "- looking for" << numberOfSlashes << "slashes";
-                            break;
-                        }
-                    }
-                    if ( pos >= 0 ) {
-                        destFileName = path.mid( pos + 1 );
-                    }
-
-                } else { // destination filename taken from UDS_NAME
-                    destFileName = displayName;
+                if (pos >= 0) {
+                    destFileName = path.mid(pos + 1);
                 }
 
-                // Here we _really_ have to add some filename to the dest.
-                // Otherwise, we end up with e.g. dest=..../Desktop/ itself.
-                // (This can happen when dropping a link to a webpage with no path)
-                if ( destFileName.isEmpty() )
-                    destFileName = KIO::encodeFileName( info.uSource.prettyUrl() );
+            } else { // destination filename taken from UDS_NAME
+                destFileName = displayName;
+            }
 
-                //kDebug(7007) << " adding destFileName=" << destFileName;
-                info.uDest.addPath( destFileName );
+            // Here we _really_ have to add some filename to the dest.
+            // Otherwise, we end up with e.g. dest=..../Desktop/ itself.
+            // (This can happen when dropping a link to a webpage with no path)
+            if (destFileName.isEmpty()) {
+                destFileName = KIO::encodeFileName(info.uSource.prettyUrl());
             }
-            //kDebug(7007) << " uDest(2)=" << info.uDest;
-            //kDebug(7007) << " " << info.uSource << "->" << info.uDest;
-            if ( info.linkDest.isEmpty() && isDir && m_mode != CopyJob::Link ) // Dir
-            {
-                dirs.append( info ); // Directories
-                if (m_mode == CopyJob::Move)
-                    dirsToRemove.append( info.uSource );
+
+            //kDebug(7007) << " adding destFileName=" << destFileName;
+            info.uDest.addPath(destFileName);
+        }
+        //kDebug(7007) << " uDest(2)=" << info.uDest;
+        //kDebug(7007) << " " << info.uSource << "->" << info.uDest;
+        if (info.linkDest.isEmpty() && isDir && m_mode != CopyJob::Link) { // Dir
+            dirs.append(info); // Directories
+            if (m_mode == CopyJob::Move) {
+                dirsToRemove.append(info.uSource);
             }
-            else {
-                files.append( info ); // Files and any symlinks
-            }
+        } else {
+            files.append(info); // Files and any symlinks
         }
     }
 }
