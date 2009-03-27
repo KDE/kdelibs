@@ -8,6 +8,7 @@ namespace khtml {
 IDTable<NamespaceFactory>* NamespaceFactory::s_idTable;
 IDTable<NamespaceFactory>* NamespaceFactory::initIdTable()
 {
+    if (s_idTable) return s_idTable; // Can happen if KHTMLGlobal was recreated..
     s_idTable = new IDTable<NamespaceFactory>();
     s_idTable->addStaticMapping(DOM::xhtmlNamespace, XHTML_NAMESPACE);
     s_idTable->addStaticMapping(DOM::emptyNamespace, DOMString());
@@ -19,6 +20,7 @@ IDTable<NamespaceFactory>* NamespaceFactory::initIdTable()
 IDTable<LocalNameFactory>* LocalNameFactory::s_idTable;
 IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
 {
+    if (s_idTable) return s_idTable; // Can happen if KHTMLGlobal was recreated..
     s_idTable = new IDTable<LocalNameFactory>();
     s_idTable->addStaticMapping(0, DOMString());
     s_idTable->addStaticMapping(localNamePart(ID_A), "a");
@@ -583,6 +585,7 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
 IDTable<PrefixFactory>* PrefixFactory::s_idTable;
 IDTable<PrefixFactory>* PrefixFactory::initIdTable()
 {
+    if (s_idTable) return s_idTable; // Can happen if KHTMLGlobal was recreated..
     s_idTable = new IDTable<PrefixFactory>();
     s_idTable->addStaticMapping(DOM::emptyPrefix, DOMString());
     return s_idTable;
