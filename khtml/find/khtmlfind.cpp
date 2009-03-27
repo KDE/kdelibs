@@ -285,7 +285,6 @@ bool KHTMLFind::findTextNext( bool reverse )
     if (!m_parent && (!d->m_findDialog || !d->m_findDialog->restoreLastPatternFromHistory()))
          return false;
   }
-  assert( d->m_findDialog );
 
   m_part->view()->updateFindAheadTimeout();
   long options = 0;
