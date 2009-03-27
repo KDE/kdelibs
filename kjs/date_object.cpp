@@ -972,6 +972,9 @@ static const char* skipSpacesAndComments(const char* s)
     int nesting = 0;
     char ch;
     while ((ch = *s)) {
+        // interpret - before a number as a sign rather than a comment char
+        if (ch == '-' && isASCIIDigit(*(s+1)))
+            break;
         if (!isSpaceLike(ch)) {
             if (ch == '(')
                 nesting++;
