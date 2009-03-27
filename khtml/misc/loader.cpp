@@ -617,7 +617,8 @@ QPixmap CachedImage::pixmap( ) const
     int w = i->size().width();
     int h = i->size().height();
 
-    if (i->hasAlpha() && !QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::PorterDuff)) {
+    if (i->hasAlpha() && QApplication::desktop()->paintEngine() &&
+                        !QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::PorterDuff)) {
         QImage im(w, h, QImage::Format_ARGB32_Premultiplied);
         QPainter paint(&im);
         paint.setCompositionMode(QPainter::CompositionMode_Source);

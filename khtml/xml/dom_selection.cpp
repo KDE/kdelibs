@@ -546,7 +546,7 @@ void Selection::paintCaret(QPainter *p, const QRect &rect)
     if (caretRect.intersects(rect)) {
         QPainter::CompositionMode oldop = p->compositionMode();
         QColor c = Qt::black;
-        if (p->paintEngine()->hasFeature(QPaintEngine::BlendModes)) {
+        if (p->paintEngine() && p->paintEngine()->hasFeature(QPaintEngine::BlendModes)) {
             p->setCompositionMode(QPainter::CompositionMode_Difference);
             c =  Qt::white;
         } else {

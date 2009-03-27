@@ -124,7 +124,7 @@ public:
     }
     
     void transfer( float opacity ) {
-        bool constantOpacity = m_origPainter->paintEngine()->hasFeature(QPaintEngine::ConstantOpacity);
+        bool constantOpacity = m_origPainter->paintEngine() && m_origPainter->paintEngine()->hasFeature(QPaintEngine::ConstantOpacity);
         if (!constantOpacity) {
             QColor color;
             color.setAlphaF(opacity);

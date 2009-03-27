@@ -922,7 +922,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         if(invalidisInvert)
         {
             // handle 'outline-color: invert'
-            if (p->paintEngine()->hasFeature(QPaintEngine::BlendModes)) {
+            if (p->paintEngine() && p->paintEngine()->hasFeature(QPaintEngine::BlendModes)) {
                 p->setCompositionMode(QPainter::CompositionMode_Difference);
                 c = Qt::white;
             } else {
