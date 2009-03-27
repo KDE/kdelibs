@@ -16,6 +16,7 @@ use_modulename=1
 cleanup=YES
 preprocess=0
 manpages=0
+searchengine=0
 
 while test -n "$1" ; do
 case $1 in
@@ -42,6 +43,9 @@ case $1 in
 --manpages)
         manpages=1
         ;;
+--searchengine)
+        searchengine=1
+        ;;
 --help)
 	echo "doxygen.sh usage:"
 	echo "doxygen.sh [--options] <srcdir> [<subdir>]"
@@ -52,6 +56,7 @@ case $1 in
 	echo "  --installdir=dir Use dir as target to install to"
 	echo "  --preprocess     Generate source code (KConfigXT, uic, etc.)"
         echo "  --manpages       Generate man pages in addition to html"
+        echo "  --searchengine   Enable search engine"
 	exit 2
 	;;
 --doxdatadir=*)
@@ -326,6 +331,15 @@ apidox_manpages()
         echo "MAN_LINKS              = YES" >> "$subdir/Doxyfile"
 }
 
+apidox_searchengine()
+{
+        se=`extract_line DOXYGEN_SEARCHENGINE`
+        if test -z "$se" ; then
+               se="YES"
+        fi
+	echo "SEARCHENGINE           = $se" >> "$subdir/Doxyfile"
+}
+
 ### Add HTML header, footer, CSS tags to Doxyfile.
 ### Assumes $subdir is set. Argument is a string
 ### to stick in front of the file if needed.
@@ -521,6 +535,9 @@ apidox_toplevel()
         if test "$manpages" = "1"; then
                 apidox_manpages
         fi
+        if test "$searchengine" = "1"; then
+                apidox_searchengine
+        fi
 
 	# KDevelop has a top-level Makefile.am with settings.
 	for i in "$top_srcdir/Mainpage.dox"
@@ -625,6 +642,9 @@ apidox_subdir()
 	apidox_htmlfiles ""
         if test "$manpages" = "1"; then
                 apidox_manpages
+        fi
+        if test "$searchengine" = "1"; then
+                apidox_searchengine
         fi
 
 	# Mainpage.doxs may contain overrides to our settings,
