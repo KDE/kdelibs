@@ -69,6 +69,15 @@ class QWidget;
  * KConfigDialogManager::changedMap()->insert("KColorButton", SIGNAL(changed(const QColor &)));
  * \endcode
  *
+ * If you want to use a widget's property that is not the USER property,
+ * you can define which property to use in the widget's kcfg_property:
+ * \code
+ * KUrlRequester *myWidget = new KUrlRequester;
+ * myWidget->setProperty("kcfg_property", QByteArray("text"));
+ * \endcode
+ *
+ * Alternatively you can set the kcfg_property using designer.
+ *
  * @author Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
  * @author Waldo Bastian <bastian@kde.org>
  */
@@ -198,6 +207,14 @@ protected:
    * it in the property map (the cache could be retrieved by propertyMap() ).
    */
   QByteArray getUserProperty(const QWidget *widget) const;
+
+    /**
+     * Find the property to use for a widget by querying the kcfg_property
+     * property of the widget. Like a widget can use a property other than the
+     * USER property.
+     * @since 4.3
+     */
+    QByteArray getCustomProperty(const QWidget *widget) const;
 
   /**
    * Set a property
