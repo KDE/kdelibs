@@ -656,13 +656,11 @@ void CopyJobPrivate::statCurrentSrc()
 
         // Let's see if we can skip stat'ing, for the case where a directory view has the info already
         const KFileItem cachedItem = KDirLister::cachedItemForUrl(m_currentSrcURL);
+        KIO::UDSEntry entry;
         if (!cachedItem.isNull()) {
-            KIO::UDSEntry entry = cachedItem.entry();
-            if (entry.count() > 0) {
-                //kDebug(7007) << "fast path! found info about" << m_currentSrcURL << "in KDirLister";
-                sourceStated(entry, m_currentSrcURL);
-                return;
-            }
+            entry = cachedItem.entry();
+            bool dummyIsLocal;
+            m_currentSrcURL = cachedItem.mostLocalUrl(dummyIsLocal); // #183585
         }
 
         if (m_mode == CopyJob::Move && (
@@ -702,13 +700,20 @@ void CopyJobPrivate::statCurrentSrc()
             return;
         }
 
+        m_bOnlyRenames = false;
+
+        if (entry.count() > 0) {
+            kDebug(7007) << "fast path! found info about" << m_currentSrcURL << "in KDirLister";
+            sourceStated(entry, m_currentSrcURL);
+            return;
+        }
+
         // Stat the next src url
         Job * job = KIO::stat( m_currentSrcURL, StatJob::SourceSide, 2, KIO::HideProgressInfo );
         //kDebug(7007) << "KIO::stat on" << m_currentSrcURL;
         state = STATE_STATING;
         q->addSubjob(job);
         m_currentDestURL = m_dest;
-        m_bOnlyRenames = false;
         m_bURLDirty = true;
     }
     else
