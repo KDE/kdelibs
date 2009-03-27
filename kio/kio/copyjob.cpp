@@ -20,6 +20,8 @@
 */
 
 #include "copyjob.h"
+#include "kdirlister.h"
+#include "kfileitem.h"
 #include "deletejob.h"
 
 #include <klocale.h>
@@ -191,6 +193,7 @@ public:
     void copyNextFile();
     void slotResultDeletingDirs( KJob * job );
     void deleteNextDir();
+    void sourceStated(const UDSEntry& entry, const KUrl& sourceUrl);
     void skip( const KUrl & sourceURL );
     void slotResultRenaming( KJob * job );
     void slotResultSettingDirAttributes( KJob * job );
@@ -311,12 +314,10 @@ void CopyJobPrivate::slotResultStating( KJob *job )
 
     // Keep copy of the stat result
     const UDSEntry entry = static_cast<StatJob*>(job)->statResult();
-    const QString sLocalPath = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
-    const bool isDir = entry.isDir();
 
-    if ( destinationState == DEST_NOT_STATED )
+    if ( destinationState == DEST_NOT_STATED ) {
+        const bool isDir = entry.isDir();
         // we were stating the dest
-    {
         if (job->error())
             destinationState = DEST_DOESNT_EXIST;
         else {
@@ -328,6 +329,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
         if ( isGlobalDest )
             m_globalDestinationState = destinationState;
 
+        const QString sLocalPath = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
         if ( !sLocalPath.isEmpty() && kio_resolve_local_urls ) {
             m_dest = KUrl();
             m_dest.setPath(sLocalPath);
@@ -340,13 +342,19 @@ void CopyJobPrivate::slotResultStating( KJob *job )
 
         // After knowing what the dest is, we can start stat'ing the first src.
         statCurrentSrc();
-        return;
+    } else {
+        sourceStated(entry, static_cast<SimpleJob*>(job)->url());
+        q->removeSubjob( job );
     }
+}
 
-    // Is it a file or a dir ?
-    const QString sName = entry.stringValue( KIO::UDSEntry::UDS_NAME );
+void CopyJobPrivate::sourceStated(const UDSEntry& entry, const KUrl& sourceUrl)
+{
+    const QString sLocalPath = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
+    const bool isDir = entry.isDir();
 
     // We were stating the current source URL
+    // Is it a file or a dir ?
 
     // There 6 cases, and all end up calling addCopyInfoFromUDSEntry first :
     // 1 - src is a dir, destination is a directory,
@@ -364,13 +372,11 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     if (!sLocalPath.isEmpty())
         srcurl.setPath(sLocalPath);
     else
-        srcurl = static_cast<SimpleJob*>(job)->url();
+        srcurl = sourceUrl;
     addCopyInfoFromUDSEntry(entry, srcurl, false, m_dest);
 
     m_currentDest = m_dest;
     m_bCurrentSrcIsDir = false;
-    q->removeSubjob( job );
-    assert ( !q->hasSubjobs() ); // We should have only one job at a time ...
 
     if ( isDir
          // treat symlinks as files (no recursion)
@@ -386,8 +392,8 @@ void CopyJobPrivate::slotResultStating( KJob *job )
             {
                 // Use <desturl>/<directory_copied> as destination, from now on
                 QString directory = srcurl.fileName();
-                if ( !sName.isEmpty() && KProtocolManager::fileNameUsedForCopying( srcurl ) == KProtocolInfo::Name )
-                {
+                const QString sName = entry.stringValue( KIO::UDSEntry::UDS_NAME );
+                if (!sName.isEmpty() && KProtocolManager::fileNameUsedForCopying(srcurl) == KProtocolInfo::Name) {
                     directory = sName;
                 }
                 m_currentDest.addPath( directory );
@@ -613,12 +619,10 @@ void CopyJobPrivate::statNextSrc()
 void CopyJobPrivate::statCurrentSrc()
 {
     Q_Q(CopyJob);
-    if ( m_currentStatSrc != m_srcList.constEnd() )
-    {
+    if (m_currentStatSrc != m_srcList.constEnd()) {
         m_currentSrcURL = (*m_currentStatSrc);
         m_bURLDirty = true;
-        if ( m_mode == CopyJob::Link )
-        {
+        if (m_mode == CopyJob::Link) {
             // Skip the "stating the source" stage, we don't need it for linking
             m_currentDest = m_dest;
             struct CopyInfo info;
@@ -629,36 +633,43 @@ void CopyJobPrivate::statCurrentSrc()
             info.uSource = m_currentSrcURL;
             info.uDest = m_currentDest;
             // Append filename or dirname to destination URL, if allowed
-            if ( destinationState == DEST_IS_DIR && !m_asMethod )
-            {
+            if (destinationState == DEST_IS_DIR && !m_asMethod) {
                 if (
                     (m_currentSrcURL.protocol() == info.uDest.protocol()) &&
                     (m_currentSrcURL.host() == info.uDest.host()) &&
                     (m_currentSrcURL.port() == info.uDest.port()) &&
                     (m_currentSrcURL.user() == info.uDest.user()) &&
-                    (m_currentSrcURL.pass() == info.uDest.pass()) )
-                {
+                    (m_currentSrcURL.pass() == info.uDest.pass()) ) {
                     // This is the case of creating a real symlink
                     info.uDest.addPath( m_currentSrcURL.fileName() );
-                }
-                else
-                {
+                } else {
                     // Different protocols, we'll create a .desktop file
                     // We have to change the extension anyway, so while we're at it,
                     // name the file like the URL
-                    info.uDest.addPath( KIO::encodeFileName( m_currentSrcURL.prettyUrl() )+".desktop" );
+                    info.uDest.addPath(KIO::encodeFileName(m_currentSrcURL.prettyUrl()) + ".desktop");
                 }
             }
             files.append( info ); // Files and any symlinks
             statNextSrc(); // we could use a loop instead of a recursive call :)
             return;
         }
-        else if ( m_mode == CopyJob::Move && (
+
+        // Let's see if we can skip stat'ing, for the case where a directory view has the info already
+        const KFileItem cachedItem = KDirLister::cachedItemForUrl(m_currentSrcURL);
+        if (!cachedItem.isNull()) {
+            KIO::UDSEntry entry = cachedItem.entry();
+            if (entry.count() > 0) {
+                //kDebug(7007) << "fast path! found info about" << m_currentSrcURL << "in KDirLister";
+                sourceStated(entry, m_currentSrcURL);
+                return;
+            }
+        }
+
+        if (m_mode == CopyJob::Move && (
                 // Don't go renaming right away if we need a stat() to find out the destination filename
-                KProtocolManager::fileNameUsedForCopying( m_currentSrcURL ) == KProtocolInfo::FromUrl ||
-                destinationState != DEST_IS_DIR || m_asMethod )
-            )
-        {
+                KProtocolManager::fileNameUsedForCopying(m_currentSrcURL) == KProtocolInfo::FromUrl ||
+                destinationState != DEST_IS_DIR || m_asMethod)
+            ) {
            // If moving, before going for the full stat+[list+]copy+del thing, try to rename
            // The logic is pretty similar to FileCopyJobPrivate::slotStart()
            if ( (m_currentSrcURL.protocol() == m_dest.protocol()) &&
@@ -696,7 +707,7 @@ void CopyJobPrivate::statCurrentSrc()
         //kDebug(7007) << "KIO::stat on" << m_currentSrcURL;
         state = STATE_STATING;
         q->addSubjob(job);
-        m_currentDestURL=m_dest;
+        m_currentDestURL = m_dest;
         m_bOnlyRenames = false;
         m_bURLDirty = true;
     }
