@@ -81,7 +81,6 @@ void Image::noUpdates()
 
 void Image::notifyPerformUpdate()
 {
-    kDebug() << updatesStartLine << updatesEndLine << width;
     owner->imageChange(this, QRect(0, updatesStartLine,
                                    width, updatesEndLine - updatesStartLine + 1));
     noUpdates();
