@@ -89,11 +89,16 @@ const XID None = XNone;
 #ifdef Bool
 #ifndef FIXX11H_Bool
 #define FIXX11H_Bool
-typedef Bool XBool;
-#undef Bool
-typedef XBool Bool;
+#ifdef _XTYPEDEF_BOOL /* Xdefs.h has typedef'ed Bool already */
+ #undef Bool
+#else
+ typedef Bool XBool;
+ #undef Bool
+ typedef XBool Bool;
+#endif
 #endif
 #undef Bool
+#define _XTYPEDEF_BOOL
 #endif
 // template <---
 
