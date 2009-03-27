@@ -1077,7 +1077,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
         "<li>Timeout for receiving a response: %2 seconds</li>"
         "<li>Timeout for accessing proxy servers: %3 seconds</li></ul>"
         "Please note that you can alter these timeout settings in the KDE "
-        "System Settings, by selecting Network Settings -> Connection Preferences." ,
+        "Control Center, by selecting Network -> Preferences." ,
           KProtocolManager::connectTimeout() ,
           KProtocolManager::responseTimeout() ,
           KProtocolManager::proxyConnectTimeout() );
