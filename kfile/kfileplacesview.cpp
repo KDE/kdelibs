@@ -560,7 +560,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
                 emptyTrash->setEnabled(!trashConfig.group("Status").readEntry("Empty", true));
                 menu.addSeparator();
             }
-
+            add = menu.addAction(KIcon("document-new"), i18n("Add Entry..."));
             edit = menu.addAction(KIcon("document-properties"), i18n("&Edit '%1'...", label));
         } else {
             eject = placesModel->ejectActionForIndex(index);
@@ -579,7 +579,10 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
                 menu.addSeparator();
             }
         }
-
+        if (add == 0) {
+            add = menu.addAction(KIcon("document-new"), i18n("Add Entry..."));
+        }
+        menu.addSeparator();
         hide = menu.addAction(i18n("&Hide '%1'", label));
         hide->setCheckable(true);
         hide->setChecked(placesModel->isHidden(index));
