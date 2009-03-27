@@ -106,6 +106,7 @@ class KTextEdit::Private
     bool checkSpellingEnabled : 1;
     bool findReplaceEnabled: 1;
     QString originalBuffer;
+    QString originalHtml;
     QString spellChechingConfigFileName;
     QString spellCheckingLanguage;
     Sonnet::Highlighter *highlighter;
@@ -119,7 +120,10 @@ class KTextEdit::Private
 void KTextEdit::Private::spellCheckerCanceled()
 {
     parent->selectAll();
-    parent->setPlainText(originalBuffer);
+    if(parent->acceptRichText ())
+      parent->setHtml(originalHtml);
+    else
+      parent->setPlainText(originalBuffer);
     spellCheckerFinished();
 }
 
@@ -551,6 +555,8 @@ void KTextEdit::checkSpelling()
   connect(spellDialog, SIGNAL(languageChanged(const QString &)),
           this, SIGNAL(languageChanged(const QString &)));
   d->originalBuffer = toPlainText();
+  if(acceptRichText ())
+    d->originalHtml = toHtml();
   spellDialog->setBuffer(d->originalBuffer);
   spellDialog->show();
 }
