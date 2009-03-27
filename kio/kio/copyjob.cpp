@@ -264,7 +264,7 @@ void CopyJobPrivate::slotStart()
 
     // Stat the dest
     KIO::Job * job = KIO::stat( m_dest, StatJob::DestinationSide, 2, KIO::HideProgressInfo );
-    //kDebug(7007) << "CopyJob:stating the dest " << d->m_dest;
+    //kDebug(7007) << "CopyJob:stating the dest " << m_dest;
     q->addSubjob(job);
 }
 
@@ -321,7 +321,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
         else {
             // Treat symlinks to dirs as dirs here, so no test on isLink
             destinationState = isDir ? DEST_IS_DIR : DEST_IS_FILE;
-            //kDebug(7007) << "dest is dir:" << bDir;
+            //kDebug(7007) << "dest is dir:" << isDir;
         }
         const bool isGlobalDest = m_dest == m_globalDest;
         if ( isGlobalDest )
@@ -523,7 +523,7 @@ void CopyJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
                 // Make URL from displayName
                 url = static_cast<SimpleJob *>(job)->url();
                 if ( m_bCurrentSrcIsDir ) { // Only if src is a directory. Otherwise uSource is fine as is
-                    //kDebug(7007) << "adding path " << displayName;
+                    //kDebug(7007) << "adding path" << displayName;
                     url.addPath( displayName );
                 }
             }
@@ -693,7 +693,7 @@ void CopyJobPrivate::statCurrentSrc()
 
         // Stat the next src url
         Job * job = KIO::stat( m_currentSrcURL, StatJob::SourceSide, 2, KIO::HideProgressInfo );
-        //kDebug(7007) << "KIO::stat on " << m_currentSrcURL;
+        //kDebug(7007) << "KIO::stat on" << m_currentSrcURL;
         state = STATE_STATING;
         q->addSubjob(job);
         m_currentDestURL=m_dest;
@@ -1520,7 +1520,7 @@ void CopyJob::emitResult()
         KUrl url(d->m_globalDest);
         if (d->m_globalDestinationState != DEST_IS_DIR || d->m_asMethod)
             url.setPath(url.directory());
-        //kDebug(7007) << "KDirNotify'ing FilesAdded " << url;
+        //kDebug(7007) << "KDirNotify'ing FilesAdded" << url;
         org::kde::KDirNotify::emitFilesAdded( url.url() );
 
         if (d->m_mode == CopyJob::Move && !d->m_successSrcList.isEmpty()) {
@@ -1542,24 +1542,24 @@ void CopyJobPrivate::slotProcessedSize( KJob*, qulonglong data_size )
   {
     // Example: download any attachment from bugs.kde.org
     m_totalSize = m_processedSize + m_fileProcessedSize;
-    //kDebug(7007) << "Adjusting m_totalSize to " << m_totalSize;
+    //kDebug(7007) << "Adjusting m_totalSize to" << m_totalSize;
     q->setTotalAmount(KJob::Bytes, m_totalSize); // safety
   }
-  //kDebug(7007) << "emit processedSize " << (unsigned long) (m_processedSize + m_fileProcessedSize);
+  //kDebug(7007) << "emit processedSize" << (unsigned long) (m_processedSize + m_fileProcessedSize);
   q->setProcessedAmount(KJob::Bytes, m_processedSize + m_fileProcessedSize);
 }
 
 void CopyJobPrivate::slotTotalSize( KJob*, qulonglong size )
 {
   Q_Q(CopyJob);
-  //kDebug(7007) << "slotTotalSize: " << size;
+  //kDebug(7007) << size;
   // Special case for copying a single file
   // This is because some protocols don't implement stat properly
   // (e.g. HTTP), and don't give us a size in some cases (redirection)
   // so we'd rather rely on the size given for the transfer
   if ( m_bSingleFileCopy && size > m_totalSize)
   {
-    //kDebug(7007) << "slotTotalSize: updating totalsize to " << size;
+    //kDebug(7007) << "slotTotalSize: updating totalsize to" << size;
     m_totalSize = size;
     q->setTotalAmount(KJob::Bytes, size);
   }
@@ -1798,7 +1798,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
             return;
         }
         kDebug(7007) << "Couldn't rename" << m_currentSrcURL << "to" << dest << ", reverting to normal way, starting with stat";
-        //kDebug(7007) << "KIO::stat on " << m_currentSrcURL;
+        //kDebug(7007) << "KIO::stat on" << m_currentSrcURL;
         KIO::Job* job = KIO::stat( m_currentSrcURL, StatJob::SourceSide, 2, KIO::HideProgressInfo );
         state = STATE_STATING;
         q->addSubjob(job);
