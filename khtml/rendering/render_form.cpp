@@ -927,6 +927,7 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
     RenderFormElement::setStyle( _style );
 
     widget()->setAlignment(textAlignment());
+    static_cast<LineEditWidget*>(widget())->setClearButtonShown( !shouldPaintBorder() && !_style->hasBackgroundImage() );
 }
 
 void RenderLineEdit::highLightWord( unsigned int length, unsigned int pos )
