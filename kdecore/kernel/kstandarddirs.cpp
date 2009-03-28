@@ -917,7 +917,7 @@ KStandardDirs::realFilePath(const QString &filename)
     LPWSTR lpOut = new WCHAR[len];
     lpOut[0] = 0;
     int ret = GetFullPathNameW(lpIn, len, lpOut, NULL);
-    QString strRet = QString::fromUtf16((const unsigned short*)lpOut);
+    QString strRet = QString::fromUtf16((const unsigned short*)lpOut).replace('\\','/');
     delete[] lpOut;
     return strRet;
 #else
@@ -1229,7 +1229,7 @@ QString KStandardDirs::findExe( const QString& appname,
     //kDebug(180) << "findExe(" << appname << ", pstr, " << ignoreExecBit << ") called";
 
 #ifdef Q_WS_WIN
-    QString real_appname = appname + ".exe";
+    QString real_appname = appname + QLatin1String(".exe");
 #else
     QString real_appname = appname;
 #endif
@@ -1538,7 +1538,7 @@ static QString executablePrefix()
 
 void KStandardDirs::addResourcesFrom_krcdirs()
 {
-    QString localFile = QDir::currentPath() + QDir::separator() + ".krcdirs";
+    QString localFile = QDir::currentPath() + "/.krcdirs";
     if (!QFile::exists(localFile))
         return;
 
