@@ -528,6 +528,18 @@ void KIconEffect::semiTransparent(QImage &img)
         }
     }
     else{
+        if (img.depth() == 8) {
+            QPaintEngine *pe = QApplication::desktop()->paintEngine();
+            if (pe && pe->hasFeature(QPaintEngine::Antialiasing)) {
+                // not running on 8 bit, we can safely install a new colorTable
+                QVector<QRgb> colorTable = img.colorTable();
+                for (int i = 0; i < colorTable.size(); ++i) {
+                    colorTable[i] = (colorTable[i] & 0x00ffffff) | ((colorTable[i] & 0xfe000000) >> 1);
+                }
+                img.setColorTable(colorTable);
+                return;
+            }
+        }
         // Insert transparent pixel into the clut.
         int transColor = -1;
 
