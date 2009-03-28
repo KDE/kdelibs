@@ -194,7 +194,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
     const KFileItemList items = d->m_props.items();
     const KFileItem firstItem = items.first();
     const QString protocol = firstItem.url().protocol(); // assumed to be the same for all items
-    const bool isLocal = firstItem.url().isLocalFile();
+    const bool isLocal = !firstItem.localPath().isEmpty();
     const bool isSingleLocal = items.count() == 1 && isLocal;
     const KUrl::List urlList = d->m_props.urlList();
 
@@ -203,8 +203,8 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
     // 1 - Look for builtin and user-defined services
     if (isSingleLocal && d->m_props.mimeType() == "application/x-desktop") { // .desktop file
         // get builtin services, like mount/unmount
-        s.builtin = KDesktopFileActions::builtinServices(firstItem.url());
-        const QString path = firstItem.url().path();
+        const QString path = firstItem.localPath();
+        s.builtin = KDesktopFileActions::builtinServices(path);
         KDesktopFile desktopFile(path);
         KConfigGroup cfg = desktopFile.desktopGroup();
         const QString priority = cfg.readEntry("X-KDE-Priority");
@@ -224,7 +224,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
 
     // first check the .directory if this is a directory
     if (d->m_props.isDirectory() && isSingleLocal) {
-        QString dotDirectoryFile = firstItem.url().path(KUrl::AddTrailingSlash).append(".directory");
+        QString dotDirectoryFile = KUrl::fromPath(firstItem.localPath()).path(KUrl::AddTrailingSlash).append(".directory");
         if (QFile::exists(dotDirectoryFile)) {
             const KDesktopFile desktopFile(dotDirectoryFile);
             const KConfigGroup cfg = desktopFile.desktopGroup();
