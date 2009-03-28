@@ -79,6 +79,7 @@ private:
     bool bReadDefaults:1;
     bool bFileImmutable:1;
     bool bForceGlobal:1;
+    bool bSuppressGlobal:1;
 
    QString sGlobalFileName;
    static bool mappingsRegistered;
@@ -87,6 +88,7 @@ private:
     KEntryMap entryMap;
     QString backendType;
     QStringList globalFiles;
+    QStringList localFiles;
     QStack<QString> extraFiles;
 
     QString locale;
@@ -94,7 +96,7 @@ private:
     KComponentData componentData;
     KConfigBase::AccessMode configState;
 
-    bool wantGlobals() const { return openFlags&KConfig::IncludeGlobals; }
+    bool wantGlobals() const { return openFlags&KConfig::IncludeGlobals && !bSuppressGlobal; }
     bool wantDefaults() const { return openFlags&KConfig::CascadeConfig; }
     bool isSimple() const { return openFlags == KConfig::SimpleConfig; }
     bool isReadOnly() const { return configState == KConfig::ReadOnly; }

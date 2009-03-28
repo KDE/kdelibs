@@ -85,10 +85,6 @@ wishes
 internals
 =========
 
-- the handling of opening kdeglobals explicitly seems weird, at least.
-  couldn't it simply mask out IncludeGlobals and thus handle it as any
-  other config without globals instead of spreading kdeglobals special
-  cases all over the place? 2)
 - clear up bDeleted vs. isNull in entrymap
 - make entrymap truly hierarchical
   - an entry map contains its flags, a map of keys and a map of submaps.
@@ -100,18 +96,6 @@ internals
     a kconfiggroup DOES contain its name and has a parent pointer.
   - 3)
 - 4)
-
-2)
-> > kdeglobals has to be handled specially because either you open
-> > $KDEHOME/share/config/kdeglobals twice or you ignore all
-> > system.kdeglobals files. but, I have an idea that might clean this up
-> > some, I'll see what I can do.
-> >
-> i must admit i don't understand the system.* files at all. when was this
-> introduced and for which purpose?
->
-a while ago, according to svn they were in 2.0. and I don't know what the
-purpose was.
 
 3)
 > We wouldn't have to worry about the KEntryGroup being removed out from

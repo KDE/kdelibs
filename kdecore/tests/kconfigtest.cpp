@@ -910,22 +910,6 @@ void KConfigTest::testSubGroup()
     }
 }
 
-void KConfigTest::testKdeglobals()
-{
-    const QString kdeglobals = KStandardDirs::locateLocal("config", "kdeglobals");
-    KConfig sc("kdeglobals");
-    QVERIFY(sc.forceGlobal());
-    QVERIFY(sc.name() == QLatin1String("kdeglobals"));
-
-    KConfig sc2("", KConfig::IncludeGlobals);
-    QVERIFY(sc2.forceGlobal());
-    QVERIFY(sc2.name() == QLatin1String("kdeglobals"));
-
-    KConfig sc3("kdeglobals", KConfig::SimpleConfig);
-    QVERIFY(sc3.forceGlobal());
-    QVERIFY(sc3.name() == QLatin1String("kdeglobals"));
-}
-
 void KConfigTest::testAddConfigSources()
 {
     KConfig cf("specificrc");
@@ -1259,7 +1243,7 @@ void KConfigTest::testKdeGlobals()
     {
         KConfig globReadNoGlob("kdeglobals", KConfig::NoGlobals);
         const KConfigGroup generalNoGlob(&globReadNoGlob, "General");
-        // TODO QCOMPARE(generalNoGlob.readEntry("testKG"), QString("2"));
+        QCOMPARE(generalNoGlob.readEntry("testKG"), QString("2"));
     }
 
     // TODO now use kconfigtest and writeEntry(,Global) -> should go into kdeglobals

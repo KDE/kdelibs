@@ -56,17 +56,15 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
            const char* resource)
     : openFlags(flags), resourceType(resource), mBackend(0),
       bDynamicBackend(true),  bDirty(false), bReadDefaults(false),
-      bFileImmutable(false), bForceGlobal(false), componentData(componentData_),
-      configState(KConfigBase::NoAccess)
+      bFileImmutable(false), bForceGlobal(false), bSuppressGlobal(false),
+      componentData(componentData_), configState(KConfigBase::NoAccess)
 {
-    sGlobalFileName = componentData.dirs()->saveLocation("config") +
-                          QString::fromLatin1("kdeglobals");
-    if (wantGlobals()) {
-        const KStandardDirs *const dirs = componentData.dirs();
-        foreach(const QString& dir, dirs->findAllResources("config", QLatin1String("kdeglobals")) +
-                                    dirs->findAllResources("config", QLatin1String("system.kdeglobals")))
-            globalFiles.push_front(dir);
-    }
+    sGlobalFileName = componentData.dirs()->saveLocation("config") + QLatin1String("kdeglobals");
+    const KStandardDirs *const dirs = componentData.dirs();
+    foreach (const QString& dir1, dirs->findAllResources("config", QLatin1String("kdeglobals")))
+        globalFiles.push_front(dir1);
+    foreach (const QString& dir2, dirs->findAllResources("config", QLatin1String("system.kdeglobals")))
+        globalFiles.push_front(dir2);
     const QString etc_kderc =
 #ifdef Q_WS_WIN
         QFile::decodeName( qgetenv("WINDIR") + "/kde4rc" );
@@ -104,10 +102,6 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
 bool KConfigPrivate::lockLocal()
 {
     if (mBackend) {
-        if (fileName == QLatin1String("kdeglobals")) { // we don't want to lock "kdeglobals" twice
-            if (wantGlobals()) // "kdeglobals" will be locked with the global lock
-                return true; // so pretend we locked it here
-        }
         return mBackend->lock(componentData);
     }
     // anonymous object - pretend we locked it
@@ -410,27 +404,41 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
                     resourceType = type; // only change it if it's not empty
                 file = KStandardDirs::locateLocal(resourceType, fileName, false, componentData);
             }
-        } else if (wantGlobals()) { // accessing "kdeglobals"
+        } else if (wantGlobals()) { // accessing "kdeglobals" - XXX used anywhere?
             resourceType = "config";
             fileName = QLatin1String("kdeglobals");
             file = sGlobalFileName;
-        }
+        } // else anonymous config.
+        // KDE5: remove these magic overloads
     } else if (QDir::isAbsolutePath(fileName))
         file = fileName;
     else {
         if (type && *type)
             resourceType = type; // only change it if it's not empty
         file = KStandardDirs::locateLocal(resourceType, fileName, false, componentData);
-
-        if (fileName == QLatin1String("kdeglobals"))
-            openFlags |= KConfig::IncludeGlobals;
     }
-
-    bForceGlobal = (fileName == QLatin1String("kdeglobals"));
 
     if (file.isEmpty()) {
         openFlags = KConfig::SimpleConfig;
         return;
+    }
+
+    localFiles.clear();
+    if (file == sGlobalFileName) {
+        bSuppressGlobal = true;
+        if (wantDefaults()) {
+            localFiles = globalFiles;
+        } else {
+            localFiles << file;
+        }
+    } else {
+        bSuppressGlobal = false;
+        if (wantDefaults()) {
+            foreach (const QString& f, componentData.dirs()->findAllResources(resourceType, fileName))
+                localFiles.prepend(f);
+        } else {
+            localFiles << file;
+        }
     }
 
     if (bDynamicBackend || !mBackend) // allow dynamic changing of backend
@@ -479,23 +487,15 @@ void KConfigPrivate::parseGlobalFiles()
 
 void KConfigPrivate::parseConfigFiles()
 {
-    if (fileName == QLatin1String("kdeglobals") && wantGlobals())
-        return; // already parsed in parseGlobalFiles()
-
     // can only read the file if there is a backend and a file name
     if (mBackend && !fileName.isEmpty()) {
 
         bFileImmutable = false;
+
         QList<QString> files;
-
-        if (wantDefaults())
-            foreach (const QString& f, componentData.dirs()->findAllResources(resourceType, fileName))
-                files.prepend(f);
-        else
-            files << mBackend->filePath();
-
         if (!isSimple())
-            files = extraFiles.toList() + files;
+            files = extraFiles.toList();
+        files += localFiles;
 
 //        qDebug() << "parsing local files" << files;
 
