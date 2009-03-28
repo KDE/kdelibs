@@ -71,25 +71,21 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
         etc_kderc.clear();
     }
 
-    KEntryMap tmp;
-    if (!etc_kderc.isEmpty()) {
-        if (!mappingsRegistered) {
-            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, etc_kderc, QLatin1String("INI"));
-            backend->parseConfig( "en_US", tmp, KConfigBackend::ParseDefaults);
-        }
-    } else {
-        mappingsRegistered = true;
-    }
+//    if (!mappingsRegistered) {
+//        KEntryMap tmp;
+//        if (!etc_kderc.isEmpty()) {
+//            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, etc_kderc, QLatin1String("INI"));
+//            backend->parseConfig( "en_US", tmp, KConfigBackend::ParseDefaults);
+//        }
+//        const QString kde4rc(QDir::home().filePath(".kde4rc"));
+//        if (KStandardDirs::checkAccess(kde4rc, R_OK)) {
+//            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, kde4rc, QLatin1String("INI"));
+//            backend->parseConfig( "en_US", tmp, KConfigBackend::ParseOptions());
+//        }
+//        KConfigBackend::registerMappings(tmp);
+//        mappingsRegistered = true;
+//    }
 
-    if (!mappingsRegistered) {
-        const QString kde4rc(QDir::home().filePath(".kde4rc"));
-        if (KStandardDirs::checkAccess(kde4rc, R_OK)) {
-            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, kde4rc, QLatin1String("INI"));
-            backend->parseConfig( "en_US", tmp, KConfigBackend::ParseOptions());
-        }
-        KConfigBackend::registerMappings(tmp);
-        mappingsRegistered = true;
-    }
     setLocale(KGlobal::hasLocale() ? KGlobal::locale()->language() : KLocale::defaultLanguage());
 }
 
