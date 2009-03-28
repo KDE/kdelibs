@@ -16,6 +16,7 @@ use_modulename=1
 cleanup=YES
 preprocess=0
 manpages=0
+qhppages=0
 searchengine=0
 
 while test -n "$1" ; do
@@ -43,6 +44,9 @@ case $1 in
 --manpages)
         manpages=1
         ;;
+--qhppages)
+        qhppages=1
+        ;;
 --searchengine)
         searchengine=1
         ;;
@@ -56,6 +60,7 @@ case $1 in
 	echo "  --installdir=dir Use dir as target to install to"
 	echo "  --preprocess     Generate source code (KConfigXT, uic, etc.)"
         echo "  --manpages       Generate man pages in addition to html"
+        echo "  --qhppages       Generate pages for Qt Assistant"
         echo "  --searchengine   Enable search engine"
 	exit 2
 	;;
@@ -331,6 +336,25 @@ apidox_manpages()
         echo "MAN_LINKS              = YES" >> "$subdir/Doxyfile"
 }
 
+apidox_qhppages()
+{
+        qp=`extract_line DOXYGEN_GENERATE_QHP`
+        if test -z "$qp" ; then
+               qp="YES"
+        fi
+	echo "GENERATE_QHP           = $qp" >> "$subdir/Doxyfile"
+        echo "QHP_NAMESPACE          = org.kde.www" >> "$subdir/Doxyfile"
+        if test -z "$PROJECT_NAME" ; then
+               PROJECT_NAME="KDE"
+        fi
+        if test -z "$PROJECT_VERSION" ; then
+               PROJECT_VERSION="4.3"
+        fi
+        vf="$PROJECT_NAME"-"$PROJECT_VERSION"
+        echo "QHP_VIRTUAL_FOLDER     = $vf" >> "$subdir/Doxyfile"
+        echo "QHG_LOCATION           = qhelpgenerator" >> "$subdir/Doxyfile"
+}
+
 apidox_searchengine()
 {
         se=`extract_line DOXYGEN_SEARCHENGINE`
@@ -535,6 +559,9 @@ apidox_toplevel()
         if test "$manpages" = "1"; then
                 apidox_manpages
         fi
+        if test "$qhppages" = "1"; then
+                apidox_qhppages
+        fi
         if test "$searchengine" = "1"; then
                 apidox_searchengine
         fi
@@ -642,6 +669,9 @@ apidox_subdir()
 	apidox_htmlfiles ""
         if test "$manpages" = "1"; then
                 apidox_manpages
+        fi
+        if test "$qhppages" = "1"; then
+                apidox_qhppages
         fi
         if test "$searchengine" = "1"; then
                 apidox_searchengine
