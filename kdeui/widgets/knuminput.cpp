@@ -434,13 +434,16 @@ void KIntNumInput::setSliderEnabled(bool slider)
 
 void KIntNumInput::setRange(int lower, int upper, int step)
 {
-    if (upper < lower)
-        qSwap(upper, lower);
+    if (upper < lower || step <= 0) {
+        kWarning() << "WARNING: KIntNumInput::setRange() called with bad arguments. Ignoring call...";
+        return;
+    }
+
     d->intSpinBox->setMinimum(lower);
     d->intSpinBox->setMaximum(upper);
     d->intSpinBox->setSingleStep(step);
 
-    step = d->intSpinBox->singleStep(); // maybe QRangeControl didn't like out lineStep?
+    step = d->intSpinBox->singleStep(); // maybe QRangeControl didn't like our lineStep?
 
     // check that reference point is still inside valid range:
     setReferencePoint(referencePoint());
