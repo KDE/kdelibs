@@ -720,7 +720,7 @@ void KConfigPrivate::putData( const QByteArray& group, const char* key,
         options |= KEntryMap::EntryDeleted;
 
     bool dirtied = entryMap.setEntry(group, key, value, options);
-    if( flags &  KConfigBase::Persistent && dirtied )
+    if (dirtied && (flags & KConfigBase::Persistent))
         bDirty = true;
 }
 

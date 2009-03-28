@@ -62,13 +62,14 @@ struct KEntry
   bool    bExpand:1;
 };
 
-
+// These operators are used to check whether an entry which is about
+// to be written equals the previous value. As such, this intentionally
+// omits the dirty flag from the comparison.
 inline bool operator ==(const KEntry &k1, const KEntry &k2)
 {
-    int result = qstrcmp(k1.mValue.constData(), k2.mValue.constData());
-    return (result == 0 && k1.bDirty == k2.bDirty && k1.bGlobal == k2.bGlobal
-        && k1.bImmutable == k2.bImmutable && k1.bDeleted == k2.bDeleted &&
-        k1.bExpand == k2.bExpand);
+    return k1.bGlobal == k2.bGlobal && k1.bImmutable == k2.bImmutable
+           && k1.bDeleted == k2.bDeleted && k1.bExpand == k2.bExpand
+           && !qstrcmp(k1.mValue.constData(), k2.mValue.constData());
 }
 
 inline bool operator !=(const KEntry &k1, const KEntry &k2)

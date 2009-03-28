@@ -63,6 +63,7 @@ private Q_SLOTS:
     void testSubGroup();
     void testAddConfigSources();
     void testWriteOnSync();
+    void testDirtyOnEqual();
     void testCreateDir();
     void testSharedConfig();
     void testOptionOrder();
