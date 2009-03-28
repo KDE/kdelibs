@@ -564,6 +564,12 @@ RenderStyle::RenderStyle()
 
 RenderStyle::RenderStyle(bool)
 {
+    // Let the font cache create its initial value.
+    // We need this because attach can call styleForElement
+    // for things with display:none parents, and then we need to be
+    // able to provide some sort of fallback font data to operate on.
+    Font::initDefault();
+
     setBitDefaults();
 
     box.init();

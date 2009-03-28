@@ -1152,10 +1152,10 @@ public:
     EClear clear() const { return KDE_CAST_BF_ENUM(EClear, noninherited_flags.f._clear); }
     ETableLayout tableLayout() const { return KDE_CAST_BF_ENUM(ETableLayout, noninherited_flags.f._table_layout); }
 
-    const QFont & font() const { return inherited->font.f; }
+    const QFont & font() const { return inherited->font.cfi->f; }
     // use with care. call font->update() after modifications
     const Font &htmlFont() { return inherited->font; }
-    const QFontMetrics & fontMetrics() const { return inherited->font.fm; }
+    const QFontMetrics & fontMetrics() const { return inherited->font.cfi->fm; }
 
     const QColor & color() const { return inherited->color; }
     Length textIndent() const { return inherited->indent; }

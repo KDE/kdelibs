@@ -42,13 +42,15 @@
 #include <kdebug.h>
 #include <kglobal.h>
 
+#include <QtCore/QHash>
 #include <QtGui/QPainter>
 #include <QtGui/QFontDatabase>
+#include <QtGlobal>
 
 // for SVG
 #include "dom/dom_string.h"
 
-using namespace khtml;
+namespace khtml {
 
 /** closes the current word and returns its width in pixels
  * @param fm metrics of font to be used
@@ -128,6 +130,8 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 {
     if (!str) return;
     QString qstr = QString::fromRawData(str, slen);
+
+    const QFontMetrics& fm = cfi->fm;
 
     // ### fixme for RTL
     if ( !scFont && !letterSpacing && !wordSpacing && !toAdd && from==-1 ) {
@@ -288,7 +292,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 		    x -= chw;
 
 		if ( scFont )
-		    p->setFont( lowercase ? *scFont : f );
+		    p->setFont( lowercase ? *scFont : cfi->f );
 
 		 drawDirectedText( p, d, x, y, QString((lowercase ? upper : qstr)[pos+i]) );
 #ifdef __GNUC__
@@ -310,7 +314,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    drawDecoration(p, startx, uy, y - uy, segmentWidth - 1, h, deco);
 
 	if ( scFont )
-	    p->setFont( f );
+	    p->setFont( cfi->f );
     }
 }
 
@@ -331,6 +335,9 @@ int Font::width( const QChar *chs, int, int pos, int len, bool fast,int start, i
    //
    // This issue is now mostly addressed, by first scanning strings for complex/combining unicode characters,
    // and using the much faster, non-context-aware QFontMetrics::width(QChar) when none has been found.
+   //
+   // ... Even that, however, is ultra-slow with Qt4.5, so now we cache this width information as well.
+    QFontMetrics& fm = cfi->fm;
     if ( scFont ) {
         const QString qstr = QString::fromRawData(chs+pos, len);
 	const QString upper = qstr.toUpper();
@@ -341,7 +348,7 @@ int Font::width( const QChar *chs, int, int pos, int len, bool fast,int start, i
 	        if ( (uc+i)->category() == QChar::Letter_Lowercase )
 		   w += sc_fm.width( upper[i] );
 	        else
-		    w += fm.width( qstr[i] );
+		    w += cfi->cachedCharWidth( qstr[i] );
             }
 	} else {
             for ( int i = 0; i < len; ++i ) {
@@ -354,7 +361,7 @@ int Font::width( const QChar *chs, int, int pos, int len, bool fast,int start, i
     } else {
 	if (fast) {
             for ( int i = 0; i < len; ++i ) {
-                w += fm.width( chs[i+pos] );
+                w += cfi->cachedCharWidth( chs[i+pos] );
             }
         } else {
             const QString qstr = QString::fromRawData(chs+pos, len);
@@ -404,9 +411,9 @@ int Font::charWidth( const QChar *chs, int slen, int pos, bool fast ) const
 	        w = QFontMetrics( *scFont ).charWidth( str, pos );
 	} else {
 	    if (fast)
-	        w = fm.width( chs[pos] );
+	        w = cfi->cachedCharWidth( chs[pos] );
 	    else
-	        w = fm.charWidth( QString::fromRawData( chs, slen ), pos );
+	        w = cfi->fm.charWidth( QString::fromRawData( chs, slen ), pos );
 	}
     if ( letterSpacing )
 	w += letterSpacing;
@@ -416,81 +423,147 @@ int Font::charWidth( const QChar *chs, int slen, int pos, bool fast ) const
     return w;
 }
 
-/** Querying QFontDB whether something is scalable is expensive, so we cache. */
-struct ScalKey
+/**
+ We cache information on fonts, including what sizes they are scalable too,
+ and their metrics since getting that info out of Qt is slow
+*/
+
+struct CachedFontFamilyKey // basically, FontDef minus the size (and for now SC)
 {
     QString family;
     int     weight;
-    int     italic;
+    bool    italic;
 
-    ScalKey() {}
+    CachedFontFamilyKey() {}
 
-    ScalKey(const QFont& font) :
-            family(font.family()), weight(font.weight()), italic(font.italic())
+    CachedFontFamilyKey(const QString& resolvedFamily, int weight, bool italic) :
+            family(resolvedFamily), weight(weight), italic(italic)
     {}
 
-    bool operator == (const ScalKey& other) const {
+    bool operator == (const CachedFontFamilyKey& other) const {
         return (family == other.family) &&
                (weight == other.weight) &&
                (italic == other.italic);
     }
 };
 
-struct ScalInfo {
-    bool scaleable;
-    QList<int> sizes;
-};
-
-uint qHash (const ScalKey& key) {
-    return qHash(key.family) ^ qHash(key.weight) ^ qHash(key.italic);
+static inline uint qHash (const CachedFontFamilyKey& key) {
+    return ::qHash(key.family) ^ ::qHash(key.weight) ^ ::qHash(key.italic);
 }
 
-static QCache<ScalKey, ScalInfo>* scalCache;
-
-bool Font::isFontScalable(QFontDatabase& db, const QFont& font)
+class CachedFontFamily
 {
-    if (!scalCache)
-        scalCache = new QCache<ScalKey, ScalInfo>(64);
+public:
+    CachedFontFamilyKey def;
 
-    ScalKey key(font);
+    bool scaleable;
+    QList<int> sizes; // if bitmap.
 
-    ScalInfo* s = scalCache->object(key);
-    if (!s) {
-        QString styleString = db.styleString(font);
-        s = new ScalInfo;
-        s->scaleable = db.isSmoothlyScalable(font.family(), styleString);
+    QHash<int, CachedFontInstance*> instances;
+    // Maps from pixel size.. This is a weak-reference --- the refcount
+    // on the CFI itself determines the lifetime
 
-        if (!s->scaleable) {
-            /* Cache size info */
-            s->sizes = db.smoothSizes(font.family(), styleString);
-        }
+    CachedFontInstance* queryFont(int pixelSize);
+};
 
-        scalCache->insert(key, s);
+static QHash<CachedFontFamilyKey, CachedFontFamily*>* fontCache;
+// This is a hash and not a cache since the top-level info is tiny,
+// and the actual font instances have precise lifetime
+
+CachedFontFamily* Font::queryFamily(const QString& name, int weight, bool italic)
+{
+    if (!fontCache)
+        fontCache = new QHash<CachedFontFamilyKey, CachedFontFamily*>;
+
+    CachedFontFamilyKey key(name, weight, italic);
+
+    CachedFontFamily* f = fontCache->value(key);
+    if (!f) {
+	// To query the sizes, we seem to have to make a font with right style to produce the stylestring
+	QFont font(name);
+	font.setItalic(italic);
+	font.setWeight(weight);
+
+	QFontDatabase db;
+	QString styleString = db.styleString(font);
+	f = new CachedFontFamily;
+	f->def       = key;
+	f->scaleable = db.isSmoothlyScalable(font.family(), styleString);
+
+	if (!f->scaleable) {
+	    /* Cache size info */
+	    f->sizes = db.smoothSizes(font.family(), styleString);
+	}
+
+	fontCache->insert(key, f);
     }
 
-    return s->scaleable;
+    return f;
+}
+
+
+CachedFontInstance* CachedFontFamily::queryFont(int pixelSize)
+{
+    CachedFontInstance* cfi = instances.value(pixelSize);
+    if (!cfi) {
+	cfi = new CachedFontInstance(this, pixelSize);
+	instances.insert(pixelSize, cfi);
+    }
+    return cfi;
+}
+
+CachedFontInstance::CachedFontInstance(CachedFontFamily* p, int sz):
+    f(p->def.family), fm(f), parent(p), size(sz)
+{
+    f.setItalic(p->def.italic);
+    f.setWeight(p->def.weight);
+    f.setPixelSize(sz);
+    fm = QFontMetrics(f);
+
+    // Prepare metrics caches
+    for (int c = 0; c < 256; ++c)
+	rows[c] = 0;
+
+    ascent  = fm.ascent();
+    descent = fm.descent();
+    height  = fm.height();
+    lineSpacing = fm.lineSpacing();
+}
+
+CachedFontInstance::~CachedFontInstance()
+{
+    for (int c = 0; c < 256; ++c)
+	delete rows[c];
+    parent->instances.remove(size);
+}
+
+unsigned CachedFontInstance::calcAndCacheWidth(unsigned short codePoint)
+{
+    unsigned rowNum = codePoint >> 8;
+    RowInfo* row = rows[rowNum];
+    if (!row)
+	row = rows[rowNum] = new RowInfo();
+
+    unsigned width = fm.width(QChar(codePoint));
+    return (row->widths[codePoint & 0xFF] = qMin(width, 0xFFu));
 }
 
 void Font::update(int logicalDpiY) const
 {
-    f.setFamily( fontDef.family.isEmpty() ? KHTMLGlobal::defaultHTMLSettings()->stdFontName() : fontDef.family );
-    f.setItalic( fontDef.italic );
-    f.setWeight( fontDef.weight );
-
-    QFontDatabase db;
+    QString familyName = fontDef.family.isEmpty() ? KHTMLGlobal::defaultHTMLSettings()->stdFontName() : fontDef.family;
+    CachedFontFamily* family = queryFamily(familyName, fontDef.weight, fontDef.italic);
 
     int size = fontDef.size;
     const int lDpiY = qMax(logicalDpiY, 96);
 
     // ok, now some magic to get a nice unscaled font
     // all other font properties should be set before this one!!!!
-    if( !isFontScalable(db, f) )
+    if (!family->scaleable)
     {
-        const QList<int> pointSizes = scalCache->object(ScalKey(f))->sizes;
+        const QList<int> pointSizes = family->sizes;
         // lets see if we find a nice looking font, which is not too far away
         // from the requested one.
         // kDebug(6080) << "khtml::setFontSize family = " << f.family() << " size requested=" << size;
-
 
         float diff = 1; // ### 100% deviation
         float bestSize = 0;
@@ -521,29 +594,47 @@ void Font::update(int logicalDpiY) const
 //       qDebug("setting font to %s, italic=%d, weight=%d, size=%d", fontDef.family.toLatin1().constData(), fontDef.italic,
 //    	   fontDef.weight, size );
 
-
-    f.setPixelSize( size );
-
-    fm = QFontMetrics( f );
+    // Now request the font from the family
+    cfi = family->queryFont(size);
 
     // small caps
     delete scFont;
     scFont = 0;
 
     if ( fontDef.smallCaps ) {
-	scFont = new QFont( f );
-	scFont->setPixelSize( qMax(1, f.pixelSize()*7/10) );
+	scFont = new QFont( cfi->f );
+	scFont->setPixelSize( qMax(1, cfi->f.pixelSize()*7/10) );
     }
+}
+
+CachedFontInstance* Font::defaultCFI;
+
+void Font::initDefault()
+{
+    if (defaultCFI)
+	return;
+
+    // Create one for default family. It doesn't matter what size and DPI we use
+    // since this is only used for throwaway computations
+    // ### this may cache an instance we don't need though; but font family
+    // is extremely likely to be used
+    Font f;
+    f.fontDef.size = 10;
+    f.update(96);
+
+    defaultCFI = f.cfi.get();
+    defaultCFI->ref();
 }
 
 void Font::drawDecoration(QPainter *pt, int _tx, int _ty, int baseline, int width, int height, int deco) const
 {
     Q_UNUSED(height);
+
     // thick lines on small fonts look ugly
-    const int thickness = fm.height() > 20 ? fm.lineWidth() : 1;
+    const int thickness = cfi->height > 20 ? cfi->fm.lineWidth() : 1;
     const QBrush brush = pt->pen().color();
     if (deco & UNDERLINE) {
-        int underlineOffset = ( fm.height() + baseline ) / 2;
+        int underlineOffset = ( cfi->height + baseline ) / 2;
         if (underlineOffset <= baseline) underlineOffset = baseline+1;
 
         pt->fillRect(_tx, _ty + underlineOffset, width + 1, thickness, brush );
@@ -565,3 +656,6 @@ float Font::floatWidth(QChar* str, int pos, int len, int extraCharsAvailable, in
     return width(str, 0, pos, len, false /*fast algorithm*/);
 }
 
+}
+
+// kate: indent-width 4; replace-tabs off; tab-width 8; space-indent on; hl c++;
