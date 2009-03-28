@@ -475,33 +475,48 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     progressHBox->addWidget(progressBar);
 
     suspendedProperty = false;
-    pauseButton = new KPushButton(i18n("&Pause"), this);
-    QObject::connect(pauseButton, SIGNAL(clicked()),
-                     this, SLOT(_k_pauseResumeClicked()));
-    progressHBox->addWidget(pauseButton);
 
     // processed info
     QHBoxLayout *hBox = new QHBoxLayout();
     topLayout->addLayout(hBox);
 
+    arrowButton = new KPushButton(this);
+    arrowButton->setMaximumSize(QSize(32,25));
+    arrowButton->setIcon(KIcon("arrow-down"));
+    arrowButton->setToolTip(i18n("Click this to expand the dialog, to show details"));
+    arrowState = Qt::DownArrow;
+    connect(arrowButton, SIGNAL(clicked()), this, SLOT(_k_arrowToggled()));
+    hBox->addWidget(arrowButton);
+    hBox->addStretch(1);
+
+    KSeparator *separator1 = new KSeparator(Qt::Horizontal, this);
+    topLayout->addWidget(separator1);
+
     sizeLabel = new QLabel(this);
-    hBox->addWidget(sizeLabel);
+    hBox->addWidget(sizeLabel, 0, Qt::AlignLeft);
 
     resumeLabel = new QLabel(this);
     hBox->addWidget(resumeLabel);
 
-    progressLabel = new QLabel(this);
-    progressLabel->setAlignment(Qt::AlignRight);
-    hBox->addWidget(progressLabel);
+    pauseButton = new KPushButton(i18n("&Pause"), this);
+    QObject::connect(pauseButton, SIGNAL(clicked()),
+                     this, SLOT(_k_pauseResumeClicked()));
+    hBox->addWidget(pauseButton);
 
     hBox = new QHBoxLayout();
     topLayout->addLayout(hBox);
 
     speedLabel = new QLabel(this);
     hBox->addWidget(speedLabel, 1);
+    speedLabel->hide();
 
-    KSeparator *separator = new KSeparator(Qt::Horizontal, this);
-    topLayout->addWidget(separator);
+    hBox = new QHBoxLayout();
+    topLayout->addLayout(hBox);
+
+    progressLabel = new QLabel(this);
+    progressLabel->setAlignment(Qt::AlignLeft);
+    hBox->addWidget(progressLabel);
+    progressLabel->hide();
 
     keepOpenCheck = new QCheckBox(i18n("&Keep this window open after transfer is complete"), this);
     QObject::connect(keepOpenCheck, SIGNAL(toggled(bool)),
@@ -628,6 +643,26 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_stop()
         tracker->slotStop(job);
     }
     closeNow();
+}
+
+void KWidgetJobTracker::Private::ProgressWidget::_k_arrowToggled()
+{
+    if (arrowState == Qt::DownArrow) {
+        //The arrow is in the down position, dialog is collapsed, expand it and change icon.
+        progressLabel->show();
+        speedLabel->show();
+        arrowButton->setIcon(KIcon("arrow-up"));
+        arrowButton->setToolTip(i18n("Click this to collapse the dialog, to hide details"));
+        arrowState = Qt::UpArrow;
+    } else {
+        //Collapse the dialog
+        progressLabel->hide();
+        speedLabel->hide();
+        arrowButton->setIcon(KIcon("arrow-down"));
+        arrowButton->setToolTip(i18n("Click this to expand the dialog, to show details"));
+        arrowState = Qt::DownArrow;
+    }
+
 }
 
 #include "kwidgetjobtracker.moc"

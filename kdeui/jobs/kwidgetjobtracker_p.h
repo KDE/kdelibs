@@ -76,7 +76,7 @@ class KWidgetJobTracker::Private::ProgressWidget
 public:
     ProgressWidget(KJob *job, KWidgetJobTracker *object, QWidget *parent)
         : QWidget(parent), tracker(object), job(job), totalSize(0), totalFiles(0), totalDirs(0),
-          processedSize(0), processedDirs(0), processedFiles(0), totalSizeKnown(false), 
+          processedSize(0), processedDirs(0), processedFiles(0), totalSizeKnown(false),
           stopOnClose(true), jobRegistered(false), cancelClose(0), openFile(0),
           openLocation(0), keepOpenCheck(0), pauseButton(0), sourceEdit(0),
           destEdit(0), progressLabel(0), destInvite(0), speedLabel(0), sizeLabel(0),
@@ -123,6 +123,8 @@ public:
     QLabel *sizeLabel;
     QLabel *resumeLabel;
     QProgressBar *progressBar;
+    KPushButton *arrowButton;
+    Qt::ArrowType arrowState;
 
     bool suspendedProperty;
 
@@ -162,6 +164,7 @@ private Q_SLOTS:
     void _k_openLocation();
     void _k_pauseResumeClicked();
     void _k_stop();
+    void _k_arrowToggled();
 };
 
 void KWidgetJobTracker::Private::setStopOnClose(KJob *job, bool stopOnClose)
