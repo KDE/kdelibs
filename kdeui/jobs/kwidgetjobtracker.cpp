@@ -270,7 +270,7 @@ void KWidgetJobTracker::Private::ProgressWidget::description(const QString &titl
     setWindowTitle(title);
     caption = title;
 
-    sourceInvite->setText(field1.first);
+    sourceInvite->setText(i18nc("%1 is the 'Source', so we add a ':' to it", "%1:", field1.first));
     sourceEdit->setText(field1.second);
 
     if (field2.first.isEmpty()) {
@@ -278,7 +278,7 @@ void KWidgetJobTracker::Private::ProgressWidget::description(const QString &titl
     } else {
         setDestVisible(true);
         checkDestination(KUrl(field2.second));
-        destInvite->setText(field2.first);
+        destInvite->setText(i18nc("%1 is the 'Destination', so we add a ':' to it", "%1:", field2.first));
         destEdit->setText(field2.second);
     }
 }
