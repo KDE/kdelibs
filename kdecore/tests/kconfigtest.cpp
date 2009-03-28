@@ -1078,6 +1078,31 @@ void KConfigTest::testWriteOnSync()
     QCOMPARE(newStamp, oldStamp);
 }
 
+void KConfigTest::testDirtyOnEqual()
+{
+    QDateTime oldStamp, newStamp;
+    KConfig sc("kconfigtest");
+
+    // Initialize value
+    KConfigGroup cgLocal(&sc, "random");
+    cgLocal.writeEntry("theKey", "whatever");
+    sc.sync();
+
+    // Age the timestamp of local config file a few sec, and collect it.
+    QString locFile = KStandardDirs::locateLocal("config", "kconfigtest");
+    ageTimeStamp(locFile, 2); // age 2 sec
+    oldStamp = QFileInfo(locFile).lastModified();
+
+    // Write exactly the same again
+    cgLocal.writeEntry("theKey", "whatever");
+    // This should be a no-op
+    sc.sync();
+
+    // Verify that the timestamp of local config file didn't change.
+    newStamp = QFileInfo(locFile).lastModified();
+    QCOMPARE(newStamp, oldStamp);
+}
+
 QList<QByteArray> KConfigTest::readLines()
 {
     const QString path = KStandardDirs::locateLocal("config", "kconfigtest");
