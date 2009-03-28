@@ -27,9 +27,10 @@
 
 #include <QCache>
 #include <QtGui/QFont>
-#include <QFontDatabase>
 #include <QtGui/QFontMetrics>
 #include <QtGui/QPainter>
+
+#include "misc/shared.h"
 
 namespace DOM
 {
@@ -40,6 +41,60 @@ namespace khtml
 {
 class RenderStyle;
 class CSSStyleSelector;
+
+class CachedFontFamily;
+
+class CachedFontInstance: public Shared<CachedFontInstance>
+{
+public:
+    CachedFontInstance(CachedFontFamily* parent, int size);
+
+    QFont        f;
+    QFontMetrics fm; // note:stuff below is faster when applicable.
+    // Also, do not rearrange these two fields --- one neefs f to initialize fm
+
+    // We store cached width metrics as a two-level tree ---
+    // top-level is row for the codepoint, second is column.
+    // Some rows may have no information on them.
+    // For a cell, value 255 means no known width (or a width >= 255)
+    unsigned cachedCharWidth(unsigned short codePoint) {
+        unsigned width = 0xFF;
+        if (RowInfo* row = rows[codePoint >> 8])
+            width = row->widths[codePoint & 0xFF];
+        if (width != 0xFF)
+            return width;
+        else
+            return calcAndCacheWidth(codePoint);
+    }
+
+    unsigned cachedCharWidth(const QChar& c) {
+        return cachedCharWidth(c.unicode());
+    }
+
+    // Simple cached metrics, set on creation
+    int ascent;
+    int descent;
+    int height;
+    int lineSpacing;
+
+    ~CachedFontInstance();
+private:
+    unsigned calcAndCacheWidth(unsigned short codePoint);
+
+    struct RowInfo
+    {
+        unsigned char widths[256];
+
+        RowInfo() {
+            for (int i = 0; i < 256; ++i)
+                widths[i] = 0xFF;
+        }
+    };
+
+    RowInfo* rows[256];
+    CachedFontFamily* parent;
+    int size; // the size we were created with
+};
 
 class FontDef
 {
@@ -67,13 +122,16 @@ class Font
     friend class RenderStyle;
     friend class CSSStyleSelector;
 
+    static CachedFontInstance* defaultCFI;
 public:
-    Font() : fontDef(), f(), fm( f ), scFont( 0 ), letterSpacing( 0 ), wordSpacing( 0 ) {}
+    static void initDefault();
+
+    Font() : fontDef(), cfi( defaultCFI ), scFont( 0 ), letterSpacing( 0 ), wordSpacing( 0 ) {}
     Font( const FontDef &fd )
-        :  fontDef( fd ), f(), fm( f ), scFont( 0 ), letterSpacing( 0 ), wordSpacing( 0 )
+        :  fontDef( fd ), cfi( defaultCFI ), scFont( 0 ), letterSpacing( 0 ), wordSpacing( 0 )
         {}
     Font(const Font& o)
-        : fontDef(o.fontDef), f(o.f), fm(o.fm), scFont(o.scFont), letterSpacing(o.letterSpacing), wordSpacing(o.wordSpacing) { if (o.scFont) scFont = new QFont(*o.scFont); }
+        : fontDef(o.fontDef), cfi(o.cfi), scFont(o.scFont), letterSpacing(o.letterSpacing), wordSpacing(o.wordSpacing) { if (o.scFont) scFont = new QFont(*o.scFont); }
     ~Font() { delete scFont; }
 
     bool operator == ( const Font &other ) const {
@@ -168,11 +226,11 @@ public:
     int getWordSpacing() const { return wordSpacing; }
 
     // for SVG
-    int ascent() const { return fm.ascent(); }
-    int descent() const { return fm.descent(); }
-    int height() const { return fm.height(); }
-    int lineSpacing() const { return fm.lineSpacing(); }
-    float xHeight() const { return fm.xHeight(); }
+    int ascent() const { return cfi->ascent; }
+    int descent() const { return cfi->descent; }
+    int height() const { return cfi->height; }
+    int lineSpacing() const { return cfi->lineSpacing; }
+    float xHeight() const { return cfi->fm.xHeight(); }
     //FIXME: IMPLEMENT ME
     unsigned unitsPerEm() const { return 0; }
     int spaceWidth() const { return 0; }
@@ -182,16 +240,16 @@ public:
     float floatWidth(QChar* str, int pos, int len, int extraCharsAvailable, int& charsConsumed, DOM::DOMString& glyphName) const;
 
 private:
+    static CachedFontFamily* queryFamily(const QString& name, int weight, bool italic);
+
     mutable FontDef fontDef;
-    mutable QFont f;
-    mutable QFontMetrics fm;
+    mutable WTF::SharedPtr<CachedFontInstance> cfi;
     mutable QFont *scFont;
     short letterSpacing;
     short wordSpacing;
-
-        static bool isFontScalable(QFontDatabase& db, const QFont& font);
 };
 
 } // namespace
 
 #endif
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; hl c++;
