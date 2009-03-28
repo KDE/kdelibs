@@ -764,6 +764,10 @@ bool KRun::run( const QString& _exec, const KUrl::List& _urls, QWidget* window, 
 
 bool KRun::runCommand( const QString &cmd, QWidget* window )
 {
+    if (cmd.isEmpty()) {
+        kWarning() << "Command was empty, nothing to run";
+        return false;
+    }
     const QString bin = KShell::splitArgs(cmd).first();
     return KRun::runCommand(cmd, bin, bin /*iconName*/, window, QByteArray());
 }
