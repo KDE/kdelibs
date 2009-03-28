@@ -62,6 +62,7 @@ static const struct {
     { "run(missing lib, no url)", "should show error message (remove libqca.so.2 for this, e.g. by editing LD_LIBRARY_PATH if qca is in its own prefix)", "qcatool", 0 },
     { "run(missing lib, file url)", "should show error message (remove libqca.so.2 for this, e.g. by editing LD_LIBRARY_PATH if qca is in its own prefix)", "qcatool", testFile },
     { "run(missing lib, remote url)", "should show error message (remove libqca.so.2 for this, e.g. by editing LD_LIBRARY_PATH if qca is in its own prefix)", "qcatool", "http://www.kde.org" },
+    { "runCommand(empty)", "should error", "", "" }, // #186036
     { "runCommand(full path)", "should work normally", "../../kdecore/tests/kurltest", "" }
 };
 
