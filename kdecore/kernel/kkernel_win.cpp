@@ -33,10 +33,9 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QString>
+#include <QtCore/QLibrary>
 
-#ifdef Q_CC_MINGW
 #define _WIN32_WINNT 0x500
-#endif
 #include <windows.h>
 #include <shellapi.h>
 #include <process.h>
@@ -267,9 +266,16 @@ static void kMessageOutputFileIO(QtMsgType type, const char *msg)
   try to attach to the parents console
   \return true if console has been attached, false otherwise
 */
+typedef BOOL (WINAPI*attachConsolePtr)(DWORD dwProcessId);
+static attachConsolePtr attachConsole = 0;
+static bool attachConsoleResolved = false;
 static bool attachToConsole()
 {
-    return AttachConsole(~0U) != 0;
+    if(!attachConsoleResolved) {
+      attachConsoleResolved = true;
+      attachConsole = (attachConsolePtr)QLibrary::resolve(QLatin1String("kernel32"), "AttachConsole");
+    }
+    return attachConsole ? attachConsole(~0U) != 0 : false;
 }
 
 /**
