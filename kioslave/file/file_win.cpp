@@ -104,6 +104,36 @@ static UDSEntry createUDSEntryWin( const QFileInfo &fileInfo )
     return entry;
 }
 
+static bool deleteRecursive(FileProtocol *fp, const QString& path)
+{
+    //kDebug() << path;
+    QDirIterator it(path, QDir::AllEntries | QDir::NoDotAndDotDot | QDir::System | QDir::Hidden,
+                    QDirIterator::Subdirectories);
+    QStringList dirsToDelete;
+    while ( it.hasNext() ) {
+        const QString itemPath = it.next();
+        const QFileInfo info = it.fileInfo();
+        if (info.isDir())
+            dirsToDelete.prepend(itemPath);
+        else {
+            //kDebug() << "QFile::remove" << itemPath;
+            if (!QFile::remove(itemPath)) {
+                fp->error(KIO::ERR_CANNOT_DELETE, itemPath);
+                return false;
+            }
+        }
+    }
+    QDir dir;
+    Q_FOREACH(const QString& itemPath, dirsToDelete) {
+        //kDebug() << "QDir::rmdir" << itemPath;
+        if (!dir.rmdir(itemPath)) {
+            fp->error(KIO::ERR_CANNOT_DELETE, itemPath);
+            return false;
+        }
+    }
+    return true;
+}
+
 void FileProtocol::copy( const KUrl &src, const KUrl &dest,
                          int _mode, JobFlags _flags )
 {
@@ -300,7 +330,7 @@ void FileProtocol::del( const KUrl& url, bool isfile )
         }
     } else {
         kDebug( 7101 ) << "Deleting directory " << _path;
-        if (!deleteRecursive(_path))
+        if (!deleteRecursive(this, _path))
             return;
         if( RemoveDirectoryW( ( LPCWSTR ) _path.utf16() ) == 0 ) {
             DWORD dwLastErr = GetLastError();
