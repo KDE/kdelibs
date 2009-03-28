@@ -87,12 +87,11 @@ private:
 
     KEntryMap entryMap;
     QString backendType;
-    QStringList globalFiles;
-    QStringList localFiles;
     QStack<QString> extraFiles;
 
     QString locale;
     QString fileName;
+    QString etc_kderc;
     KComponentData componentData;
     KConfigBase::AccessMode configState;
 
@@ -102,6 +101,7 @@ private:
     bool isReadOnly() const { return configState == KConfig::ReadOnly; }
 
     bool setLocale(const QString& aLocale);
+    QStringList getGlobalFiles() const;
     void parseGlobalFiles();
     void parseConfigFiles();
     void initCustomized(KConfig*);

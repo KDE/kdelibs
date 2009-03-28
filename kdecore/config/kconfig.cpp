@@ -60,29 +60,24 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
       componentData(componentData_), configState(KConfigBase::NoAccess)
 {
     sGlobalFileName = componentData.dirs()->saveLocation("config") + QLatin1String("kdeglobals");
-    const KStandardDirs *const dirs = componentData.dirs();
-    foreach (const QString& dir1, dirs->findAllResources("config", QLatin1String("kdeglobals")))
-        globalFiles.push_front(dir1);
-    foreach (const QString& dir2, dirs->findAllResources("config", QLatin1String("system.kdeglobals")))
-        globalFiles.push_front(dir2);
-    const QString etc_kderc =
+
+    etc_kderc =
 #ifdef Q_WS_WIN
         QFile::decodeName( qgetenv("WINDIR") + "/kde4rc" );
 #else
         QLatin1String("/etc/kde4rc");
 #endif
-    KEntryMap tmp;
-    // first entry is always /etc/kderc or empty if cannot read
-    if (KStandardDirs::checkAccess(etc_kderc, R_OK)) {
-        if (!globalFiles.contains(etc_kderc))
-            globalFiles.push_front(etc_kderc);
+    if (!KStandardDirs::checkAccess(etc_kderc, R_OK)) {
+        etc_kderc.clear();
+    }
 
+    KEntryMap tmp;
+    if (!etc_kderc.isEmpty()) {
         if (!mappingsRegistered) {
             KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, etc_kderc, QLatin1String("INI"));
             backend->parseConfig( "en_US", tmp, KConfigBackend::ParseDefaults);
         }
     } else {
-        globalFiles.push_front(QString());
         mappingsRegistered = true;
     }
 
@@ -423,23 +418,7 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
         return;
     }
 
-    localFiles.clear();
-    if (file == sGlobalFileName) {
-        bSuppressGlobal = true;
-        if (wantDefaults()) {
-            localFiles = globalFiles;
-        } else {
-            localFiles << file;
-        }
-    } else {
-        bSuppressGlobal = false;
-        if (wantDefaults()) {
-            foreach (const QString& f, componentData.dirs()->findAllResources(resourceType, fileName))
-                localFiles.prepend(f);
-        } else {
-            localFiles << file;
-        }
-    }
+    bSuppressGlobal = (file == sGlobalFileName);
 
     if (bDynamicBackend || !mBackend) // allow dynamic changing of backend
         mBackend = KConfigBackend::create(componentData, file);
@@ -467,8 +446,23 @@ void KConfig::reparseConfiguration()
     d->parseConfigFiles();
 }
 
+
+QStringList KConfigPrivate::getGlobalFiles() const
+{
+    const KStandardDirs *const dirs = componentData.dirs();
+    QStringList globalFiles;
+    foreach (const QString& dir1, dirs->findAllResources("config", QLatin1String("kdeglobals")))
+        globalFiles.push_front(dir1);
+    foreach (const QString& dir2, dirs->findAllResources("config", QLatin1String("system.kdeglobals")))
+        globalFiles.push_front(dir2);
+    if (!etc_kderc.isEmpty())
+        globalFiles.push_front(etc_kderc);
+    return globalFiles;
+}
+
 void KConfigPrivate::parseGlobalFiles()
 {
+    QStringList globalFiles = getGlobalFiles();
 //    qDebug() << "parsing global files" << globalFiles;
 
     // TODO: can we cache the values in etc_kderc / other global files
@@ -493,9 +487,19 @@ void KConfigPrivate::parseConfigFiles()
         bFileImmutable = false;
 
         QList<QString> files;
+        if (wantDefaults()) {
+            if (bSuppressGlobal) {
+                files = getGlobalFiles();
+            } else {
+                foreach (const QString& f, componentData.dirs()->findAllResources(
+                                                    resourceType, mBackend->filePath()))
+                    files.prepend(f);
+            }
+        } else {
+            files << mBackend->filePath();
+        }
         if (!isSimple())
-            files = extraFiles.toList();
-        files += localFiles;
+            files = extraFiles.toList() + files;
 
 //        qDebug() << "parsing local files" << files;
 
