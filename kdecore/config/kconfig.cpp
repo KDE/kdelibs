@@ -488,7 +488,7 @@ void KConfigPrivate::parseConfigFiles()
                 files = getGlobalFiles();
             } else {
                 foreach (const QString& f, componentData.dirs()->findAllResources(
-                                                    resourceType, mBackend->filePath()))
+                                                    resourceType, fileName))
                     files.prepend(f);
             }
         } else {
