@@ -331,6 +331,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
 
     KToggleAction *showHiddenFolders = new KToggleAction( i18nc("@option:check", "Show Hidden Folders"), this );
     d->m_actions->addAction( showHiddenFolders->objectName(), showHiddenFolders );
+    showHiddenFolders->setShortcut( Qt::Key_F8 );
     connect( showHiddenFolders, SIGNAL( triggered( bool ) ), d->m_treeView, SLOT( setShowHiddenFiles( bool ) ) );
     d->m_contextMenu->addAction( showHiddenFolders );
     d->m_contextMenu->addSeparator();
