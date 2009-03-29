@@ -536,8 +536,8 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
         QMenu menu; //don't use KMenu here we don't want auto managment accelerator
 
         //Add the suggestions to the popup menu
-        QStringList reps = highlighter()->suggestionsForWord(selectedWord);
-        if (reps.count() > 0) {
+        const QStringList reps = highlighter()->suggestionsForWord(selectedWord);
+        if (!reps.isEmpty()) {
             for (QStringList::const_iterator it = reps.constBegin(); it != reps.constEnd(); ++it) {
                 suggestions.addAction(*it);
             }
