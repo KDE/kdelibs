@@ -620,7 +620,7 @@ void KTextEdit::slotDoReplace()
 
 void KTextEdit::slotReplaceNext()
 {
-    if (!d->replace)
+    if (!d->replace || isReadOnly())
         return;
 
     if (!(d->replace->options() & KReplaceDialog::PromptOnReplace))
@@ -721,7 +721,7 @@ void KTextEdit::slotFind()
 
 void KTextEdit::slotReplace()
 {
-    if( document()->isEmpty() )  // saves having to track the text changes
+    if( document()->isEmpty() || isReadOnly() )  // saves having to track the text changes
         return;
 
     if ( d->repDlg ) {
