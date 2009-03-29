@@ -551,8 +551,9 @@ bool KHTMLView::event( QEvent* e )
                 }
                 region |= QRect( contentsToViewport( r.topLeft() ), r.size() );
                 if ( !s.isEmpty() ) {
-                    QToolTip::showText( viewport()->mapToGlobal(region.bottomLeft()),
-                        Qt::convertFromPlainText( s, Qt::WhiteSpaceNormal ) );
+                    QToolTip::showText( he->globalPos(),
+                        Qt::convertFromPlainText( s, Qt::WhiteSpaceNormal ),
+                        widget(), region );
                     break;
                 }
             }
