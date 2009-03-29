@@ -372,14 +372,15 @@ bool KTextEdit::Private::handleShortcut(const QKeyEvent* event)
     parent->setTextCursor( cursor );
     return true;
   } else if (KStandardShortcut::find().contains(key)) {
-        parent->slotFind();
-        return true;
+      parent->slotFind();
+      return true;
   } else if (KStandardShortcut::findNext().contains(key)) {
-        parent->slotFindNext();
-        return true;
+      parent->slotFindNext();
+      return true;
   } else if (KStandardShortcut::replace().contains(key)) {
-        parent->slotReplace();
-        return true;
+      if( !parent->isReadOnly() )
+          parent->slotReplace();
+      return true;
   } else if ( KStandardShortcut::pasteSelection().contains( key ) ) {
     QString text = QApplication::clipboard()->text( QClipboard::Selection );
     if ( !text.isEmpty() )
@@ -761,7 +762,7 @@ void KTextEdit::slotDoReplace()
     }
 
     if(d->repDlg->pattern().isEmpty()) {
-	delete d->replace; 
+	delete d->replace;
         d->replace = 0;
         ensureCursorVisible();
         return;
@@ -826,7 +827,7 @@ void KTextEdit::slotDoFind()
     }
     if( d->findDlg->pattern().isEmpty())
     {
-        delete d->find; 
+        delete d->find;
         d->find = 0;
         return;
     }
