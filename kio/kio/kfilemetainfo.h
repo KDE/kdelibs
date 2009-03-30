@@ -51,7 +51,7 @@ class KFileMetaInfoPrivate;
  *
  * When instantiating an instance of this class, the metadata related to it
  * will be retrieved and stored in the instance. The data can be inspected
- * through KFileMetaDataItem objects.
+ * through KFileMetaInfoItem objects.
  **/
 class KIO_EXPORT KFileMetaInfo {
 public:
