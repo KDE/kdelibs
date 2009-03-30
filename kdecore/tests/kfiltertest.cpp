@@ -170,6 +170,7 @@ void KFilterTest::test_readall( const QString & fileName, const QString& mimeTyp
     QByteArray read = flt->readAll();
     QCOMPARE( read.size(), testData.size() );
     QCOMPARE( read, testData );
+    delete flt;
 }
 
 void KFilterTest::test_readall()
@@ -194,6 +195,7 @@ void KFilterTest::test_uncompressed()
     QByteArray read = flt->readAll();
     QCOMPARE( read.size(), testData.size() );
     QCOMPARE( read, testData );
+    delete flt;
 }
 
 void KFilterTest::test_findFilterByMimeType_data()
