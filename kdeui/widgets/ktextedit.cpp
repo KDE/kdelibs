@@ -19,6 +19,7 @@
 */
 
 #include "ktextedit.h"
+#include <ktoolinvocation.h>
 #include <kdebug.h>
 
 #include <QApplication>
@@ -27,6 +28,9 @@
 #include <QMenu>
 #include <QScrollBar>
 #include <QTextCursor>
+#include <QDBusInterface>
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
 
 #include <configdialog.h>
 #include <dialog.h>
@@ -468,7 +472,33 @@ QMenu *KTextEdit::mousePopupMenu()
           popup->addAction(replaceAction);
       }
   }
+  popup->addSeparator();
+  QAction *speakAction = popup->addAction(i18n("Speak Text"));
+  speakAction->setIcon(KIcon("preferences-desktop-text-to-speech"));
+  speakAction->setEnabled(!emptyDocument );
+  connect( speakAction, SIGNAL(triggered(bool)), this, SLOT(slotSpeakText()) );
   return popup;
+}
+
+void KTextEdit::slotSpeakText()
+{
+    // If KTTSD not running, start it.
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kttsd"))
+    {
+        QString error;
+        if (KToolInvocation::startServiceByDesktopName("kttsd", QStringList(), &error))
+        {
+            KMessageBox::error(this, i18n( "Starting KTTSD Failed"), error );
+            return;
+        }
+    }
+    QDBusInterface ktts("org.kde.kttsd", "/KSpeech", "org.kde.KSpeech");
+    QString text;
+    if(textCursor().hasSelection())
+        text = textCursor().selectedText();
+    else
+        text = toPlainText();
+    ktts.asyncCall("say", text, 0);
 }
 
 void KTextEdit::contextMenuEvent(QContextMenuEvent *event)

@@ -263,7 +263,7 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * mistakes and for the spellcheck dialog.
      * The languageChanged() signal will be emitted when the new language is
      * different from the old one.
-     * 
+     *
      * @since 4.1
      */
     void setSpellCheckingLanguage(const QString &language);
@@ -307,7 +307,10 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
     void slotFind();
     void slotFindNext();
     void slotReplace();
-
+    /**
+     * @since 4.3
+     */
+    void slotSpeakText();
 
   protected:
     /**
