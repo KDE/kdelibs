@@ -122,9 +122,12 @@ void DirectorySizeJobPrivate::processNextItem()
             else
             {
                 m_totalSize += item.size();
+                m_totalFiles++;
                 //kDebug(7007) << "file -> " << m_totalSize;
             }
-	}
+        } else {
+            m_totalFiles++;
+        }
     }
     //kDebug(7007) << "finished";
     q->emitResult();
