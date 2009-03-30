@@ -26,6 +26,7 @@
 #include <QtCore/QTextStream>
 #include <kdebug.h>
 #include "kfiltertest.h"
+#include <krandom.h>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <config.h>
@@ -34,7 +35,7 @@ QTEST_KDEMAIN_CORE(KFilterTest)
 
 void KFilterTest::initTestCase()
 {
-    QString currentdir = QDir::currentPath();
+    const QString currentdir = QDir::currentPath();
     pathgz = currentdir + "/test.gz";
     pathbz2 = currentdir + "/test.bz2";
 
@@ -42,15 +43,15 @@ void KFilterTest::initTestCase()
     testData = "hello world\n";
 }
 
-void KFilterTest::test_block_write( const QString & fileName )
+void KFilterTest::test_block_write(const QString & fileName, const QByteArray& data)
 {
     QIODevice * dev = KFilterDev::deviceForFile( fileName );
     QVERIFY( dev != 0 );
     bool ok = dev->open( QIODevice::WriteOnly );
     QVERIFY( ok );
 
-    int ret = dev->write( testData );
-    QCOMPARE( ret, testData.size() );
+    const int ret = dev->write(data);
+    QCOMPARE(ret, data.size());
 
     dev->close();
     delete dev;
@@ -61,12 +62,35 @@ void KFilterTest::test_block_write( const QString & fileName )
 void KFilterTest::test_block_write()
 {
     kDebug() << " -- test_block_write gzip -- ";
-    test_block_write(pathgz);
+    test_block_write(pathgz, testData);
     QCOMPARE( QFileInfo( pathgz ).size(), 33LL ); // size of test.gz
 
     kDebug() << " -- test_block_write bzip2 -- ";
-    test_block_write(pathbz2);
+    test_block_write(pathbz2, testData);
     QCOMPARE( QFileInfo( pathbz2 ).size(), 52LL ); // size of test.bz2
+}
+
+void KFilterTest::test_biggerWrites()
+{
+    const QString currentdir = QDir::currentPath();
+    const QString outFile = currentdir + "/test_big.gz";
+    // Find the out-of-bounds from #157706/#188415
+    QByteArray data;
+    data.reserve(10000);
+    // Prepare test data
+    for (int i = 0; i < 8150; ++i)
+        data.append((char)(KRandom::random() % 256));
+    QCOMPARE(data.size(), 8150);
+    // 8150 random bytes compress to 8174 bytes due to the gzip header/footer.
+    // Now we can go one by one until we pass 8192.
+    int compressedSize = 0;
+    while (compressedSize < 8194+24) {
+        test_block_write(outFile, data);
+        compressedSize = QFileInfo(outFile).size();
+        kDebug() << data.size() << "compressed into" << compressedSize;
+
+        data.append((char)(KRandom::random() % 256));
+    }
 }
 
 void KFilterTest::test_block_read( const QString & fileName )
