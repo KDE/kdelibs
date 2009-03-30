@@ -29,7 +29,7 @@ class KServiceOffer;
  * Example: say that you want to the list of all KParts components that can handle HTML.
  * Our code would look like:
  * \code
- * KServiceOfferList lst = KMimeTypeTrader::self()->query("text/html",
+ * KService::List lst = KMimeTypeTrader::self()->query("text/html",
  *                                                        "KParts/ReadOnlyPart");
  * \endcode
  *
