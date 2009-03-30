@@ -57,6 +57,7 @@
 #ifdef Q_WS_WIN
 #include <windows.h>
 #include <shlobj.h>
+#include <QtCore/QVarLengthArray>
 #endif
 
 #include <QtCore/QMutex>
@@ -393,7 +394,7 @@ bool KStandardDirs::addResourceType( const char *type,
     if (basetype)
         copy = QString('%') + basetype + '/' + relativename;
 
-    if (copy.at(copy.length() - 1) != '/')
+    if (!copy.endsWith('/'))
         copy += '/';
 
     QStringList& rels = d->m_relatives[type]; // find or insert
@@ -485,7 +486,6 @@ quint32 KStandardDirs::calcResourceHash( const char *type,
         return updateHash(filename, hash);
     }
     QStringList candidates = d->resourceDirs(type, filename);
-    QString fullPath;
 
     foreach ( const QString& candidate, candidates )
     {
@@ -546,7 +546,6 @@ QString KStandardDirs::findResourceDir( const char *type,
     }
 #endif
     const QStringList candidates = d->resourceDirs(type, filename);
-    QString fullPath;
 
     for (QStringList::ConstIterator it = candidates.begin();
          it != candidates.end(); ++it) {
@@ -886,6 +885,12 @@ KStandardDirs::findAllResources( const char *type,
 QString
 KStandardDirs::realPath(const QString &dirname)
 {
+#ifdef Q_WS_WIN
+    const QString strRet = realFilePath(dirname);
+    if ( !strRet.endsWith('/') )
+        return strRet + '/';
+    return strRet;
+#else
     char realpath_buffer[MAXPATHLEN + 1];
     memset(realpath_buffer, 0, MAXPATHLEN + 1);
 
@@ -901,6 +906,7 @@ KStandardDirs::realPath(const QString &dirname)
     if ( !dirname.endsWith('/') )
         return dirname + '/';
     return dirname;
+#endif
 }
 
 // ####### KDE4: should this be removed, in favor of QDir::canonicalPath()?
@@ -913,13 +919,15 @@ KStandardDirs::realFilePath(const QString &filename)
 {
 #ifdef Q_WS_WIN
     LPCWSTR lpIn = (LPCWSTR)filename.utf16();
-    int len = GetFullPathNameW(lpIn, 0, 0, NULL);
-    LPWSTR lpOut = new WCHAR[len];
-    lpOut[0] = 0;
-    int ret = GetFullPathNameW(lpIn, len, lpOut, NULL);
-    QString strRet = QString::fromUtf16((const unsigned short*)lpOut).replace('\\','/');
-    delete[] lpOut;
-    return strRet;
+    QVarLengthArray<WCHAR, MAX_PATH> buf(MAX_PATH);
+    DWORD len = GetFullPathNameW(lpIn, buf.size(), buf.data(), NULL);
+    if (len > (DWORD)buf.size()) {
+        buf.resize(len);
+        len = GetFullPathNameW(lpIn, buf.size(), buf.data(), NULL);
+    }
+    if (len == 0)
+        return QString();
+    return QString::fromUtf16((const unsigned short*)buf.data()).replace('\\','/').toLower();
 #else
     char realpath_buffer[MAXPATHLEN + 1];
     memset(realpath_buffer, 0, MAXPATHLEN + 1);
@@ -1048,9 +1056,14 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
         QStringList dirs;
         dirs = m_relatives.value(type);
         const QString typeInstallPath = installPath(type); // could be empty
+// better #ifdef incasesensitive_filesystem
+#ifdef Q_WS_WIN
+        const QString installdir = typeInstallPath.isEmpty() ? QString() : realPath(typeInstallPath).toLower();
+        const QString installprefix = installPath("kdedir").toLower();
+#else
         const QString installdir = typeInstallPath.isEmpty() ? QString() : realPath(typeInstallPath);
         const QString installprefix = installPath("kdedir");
-
+#endif
         if (!dirs.isEmpty())
         {
             bool local = true;
@@ -1061,13 +1074,18 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                 if ( (*it).startsWith('%'))
                 {
                     // grab the "data" from "%data/apps"
-                    QString rel = (*it).mid(1, (*it).indexOf('/') - 1);
-                    QString rest = (*it).mid((*it).indexOf('/') + 1);
+                    const int pos = (*it).indexOf('/');
+                    QString rel = (*it).mid(1, pos - 1);
+                    QString rest = (*it).mid(pos + 1);
                     const QStringList basedirs = resourceDirs(rel.toUtf8().constData(), subdirForRestrictions);
                     for (QStringList::ConstIterator it2 = basedirs.begin();
                          it2 != basedirs.end(); ++it2)
                     {
-                        QString path = realPath( *it2 + rest );
+#ifdef Q_WS_WIN
+                        const QString path = realPath( *it2 + rest ).toLower();
+#else
+                        const QString path = realPath( *it2 + rest );
+#endif
                         testdir.setPath(path);
                         if ((local || testdir.exists()) && !candidates.contains(path))
                             candidates.append(path);
@@ -1095,7 +1113,11 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                     {
                         if ( (*it).startsWith('%'))
                             continue;
-                        QString path = realPath( *pit + *it );
+#ifdef Q_WS_WIN
+                        const QString path = realPath( *pit + *it ).toLower();
+#else
+                        const QString path = realPath( *pit + *it );
+#endif
                         testdir.setPath(path);
                         if (local && restrictionActive)
                             continue;
@@ -1134,7 +1156,11 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
             {
                 testdir.setPath(*it);
                 if (testdir.exists()) {
-                    QString filename = realPath( *it );
+#ifdef Q_WS_WIN
+                    const QString filename = realPath( *it ).toLower();
+#else
+                    const QString filename = realPath( *it );
+#endif
                     if (!candidates.contains(filename)) {
                         candidates.append(filename);
                     }
@@ -1388,8 +1414,9 @@ QString KStandardDirs::saveLocation(const char *type,
             if ( path.startsWith('%'))
             {
                 // grab the "data" from "%data/apps"
-                QString rel = path.mid(1, path.indexOf('/') - 1);
-                QString rest = path.mid(path.indexOf('/') + 1);
+                const int pos = path.indexOf('/');
+                QString rel = path.mid(1, pos - 1);
+                QString rest = path.mid(pos + 1);
                 QString basepath = saveLocation(rel.toUtf8().constData());
                 path = basepath + rest;
             } else
