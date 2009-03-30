@@ -238,7 +238,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
             if ( !d->src.isEmpty() )
             {
                 // rows 1 to 3 are the details (size/ctime/mtime), row 4 is empty
-
+                gridLayout->addItem( new QSpacerItem(2, fontMetrics().height() ), 4, 0, 1, 2 );
                 QLabel * lb2 = new KSqueezedTextLabel( i18n("The source file is '%1'", d->src.pathOrUrl()), this );
                 gridLayout->addWidget( lb2, 5, 0, 1, 2 ); // takes the complete first line
 
