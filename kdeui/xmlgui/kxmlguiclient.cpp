@@ -237,6 +237,7 @@ void KXMLGUIClient::setXML( const QString &document, bool merge )
     } else {
 #ifdef NDEBUG
         kError() << "Error parsing XML document:" << errorMsg << "at line" << errorLine << "column" << errorColumn;
+        setDOMDocument(QDomDocument(), merge); // otherwise empty menus from ui_standards.rc stay around
 #else
         kFatal() << "Error parsing XML document:" << errorMsg << "at line" << errorLine << "column" << errorColumn;
 #endif
