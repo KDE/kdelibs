@@ -89,6 +89,70 @@ QString getKde4Prefix()
   return kde4Prefix ? *kde4Prefix : QString::fromUtf16((ushort*) kde4prefixUtf16);
 }
 
+#include <streambuf>
+
+/** 
+  ios related debug message printer for win32
+*/
+class debug_streambuf: public std::streambuf
+{
+    public:
+        debug_streambuf(char *prefix)
+        {
+            strcpy(buf,prefix);
+            index = rindex = strlen(buf);
+        }
+
+    protected:
+        virtual int overflow(int c = EOF)
+        {
+            if (c != EOF)
+            {
+                char cc = traits_type::to_char_type(c);
+                // @TODO: buffer size checking
+                buf[index++] = cc;
+                if (cc == '\n')
+                {
+                    buf[index] = '\0';
+                    OutputDebugStringA((LPCSTR)buf);
+                    index = rindex;
+                }
+            }
+            return traits_type::not_eof(c);
+        }
+    private:
+        char buf[4096];
+        int index, rindex;
+};
+
+static class kMessageOutputInstaller {
+    public:
+        kMessageOutputInstaller() 
+            : stdoutBuffer("stdout:")
+            , stderrBuffer("stderr:")
+            , oldStdoutBuffer(0)
+            , oldStderrBuffer(0)
+        {
+        }
+
+        ~kMessageOutputInstaller()
+        {
+            if (oldStdoutBuffer) 
+                std::cout.rdbuf(oldStdoutBuffer);
+            if (oldStderrBuffer) 
+                std::cerr.rdbuf(oldStderrBuffer);
+        }
+    
+        void registerHandler(HINSTANCE hInst);
+
+    private:
+        debug_streambuf stdoutBuffer;
+        debug_streambuf stderrBuffer;
+        std::streambuf* oldStdoutBuffer;
+        std::streambuf* oldStderrBuffer;
+
+} kMessageOutputInstallerInstance;
+
 /**
  * The dll entry point - get the instance handle for GetModuleFleNameW
  * Maybe also some special initialization / cleanup can be done here
@@ -98,6 +162,7 @@ BOOL WINAPI DllMain ( HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpReserved)
 {
     switch ( fdwReason ) {
     case DLL_PROCESS_ATTACH:
+        kMessageOutputInstallerInstance.registerHandler(hinstDLL);
         kdecoreDllInstance = hinstDLL;
         initKde4prefixUtf16();
         kde4Prefix = new QString( QString::fromUtf16((ushort*) kde4prefixUtf16) );
@@ -313,53 +378,17 @@ static void redirectToConsole()
     ios::sync_with_stdio();
 }
 
-#include <streambuf>
-
-/** 
-  ios related debug message printer for win32
-*/
-class debug_streambuf: public std::streambuf
-{
-    public:
-        debug_streambuf(char *prefix)
-        {
-            strcpy(buf,prefix);
-            index = rindex = strlen(buf);
-        }
-
-    protected:
-        virtual int overflow(int c = EOF)
-        {
-            if (c != EOF)
-            {
-                char cc = traits_type::to_char_type(c);
-                // @TODO: buffer size checking
-                buf[index++] = cc;
-                if (cc == '\n')
-                {
-                    buf[index] = '\0';
-                    OutputDebugStringA((LPCSTR)buf);
-                    index = rindex;
-                }
-            }
-            return traits_type::not_eof(c);
-        }
-    private:
-        char buf[4096];
-        int index, rindex;
-};
-
 /**
   retrieve type of win32 subsystem from the executable header 
   \return type of win32 subsystem - the subsystem types are defined at http://msdn.microsoft.com/en-us/library/ms680339(VS.85).aspx 
 */
-static int subSystem()
+static int subSystem(HINSTANCE hInst)
 {
     static int subSystem = -1;
     if (subSystem > -1)
         return subSystem; 
 
-    PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)0x00400000;
+    PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)hInst;
     PIMAGE_NT_HEADERS ntHeader = (PIMAGE_NT_HEADERS) ((char *)dosHeader + dosHeader->e_lfanew);
     if (ntHeader->Signature != 0x00004550) 
     {
@@ -396,58 +425,40 @@ static int subSystem()
 /**
  setup up debug output 
 */ 
-static class kMessageOutputInstaller {
-    public:
-        kMessageOutputInstaller() : stdoutBuffer("stdout:"), stderrBuffer("stderr:"), oldStdoutBuffer(0), oldStderrBuffer(0)
-        {
-            if (subSystem() == IMAGE_SUBSYSTEM_WINDOWS_CUI) {
-                if (attachToConsole()) {
-                    // setup kde and qt level 
-                    qInstallMsgHandler(kMessageOutputFileIO);
-                    // redirect ios and file io to console
-                    redirectToConsole();
-                }
-                else {
-                    // setup kde and qt level 
-                    qInstallMsgHandler(kMessageOutputDebugString);
-                    // redirect ios to debug message port 
-                    oldStdoutBuffer = std::cout.rdbuf(&stdoutBuffer);
-                    oldStderrBuffer = std::cerr.rdbuf(&stderrBuffer);
-                }
-            }
-            else if (subSystem() == IMAGE_SUBSYSTEM_WINDOWS_GUI) {
-                // setup kde and qt level 
-                qInstallMsgHandler(kMessageOutputDebugString);
-                // try to get a console
-                if (attachToConsole()) {
-                    redirectToConsole();
-                }
-                else {
-                    // redirect ios to debug message port
-                    oldStdoutBuffer = std::cout.rdbuf(&stdoutBuffer);
-                    oldStderrBuffer = std::cerr.rdbuf(&stderrBuffer);
-                    // TODO: redirect FILE * level to console, no idea how to do yet
-                }
-            }
-            else
-                qWarning("unknown subsystem %d detected, could not setup qt message handler",subSystem());
+void kMessageOutputInstaller::registerHandler(HINSTANCE hInst)
+{
+    if (subSystem(hInst) == IMAGE_SUBSYSTEM_WINDOWS_CUI) {
+        if (attachToConsole()) {
+            // setup kde and qt level 
+            qInstallMsgHandler(kMessageOutputFileIO);
+            // redirect ios and file io to console
+            redirectToConsole();
         }
-        ~kMessageOutputInstaller()
-        {
-            if (oldStdoutBuffer) 
-                std::cout.rdbuf(oldStdoutBuffer);
-            if (oldStderrBuffer) 
-                std::cerr.rdbuf(oldStderrBuffer);
+        else {
+            // setup kde and qt level 
+            qInstallMsgHandler(kMessageOutputDebugString);
+            // redirect ios to debug message port 
+            oldStdoutBuffer = std::cout.rdbuf(&stdoutBuffer);
+            oldStderrBuffer = std::cerr.rdbuf(&stderrBuffer);
         }
-    
-    private:
-        debug_streambuf stdoutBuffer;
-        debug_streambuf stderrBuffer;
-        std::streambuf* oldStdoutBuffer;
-        std::streambuf* oldStderrBuffer;
-
-} kMessageOutputInstallerInstance;
-
+    }
+    else if (subSystem(hInst) == IMAGE_SUBSYSTEM_WINDOWS_GUI) {
+        // setup kde and qt level 
+        qInstallMsgHandler(kMessageOutputDebugString);
+        // try to get a console
+        if (attachToConsole()) {
+            redirectToConsole();
+        }
+        else {
+            // redirect ios to debug message port
+            oldStdoutBuffer = std::cout.rdbuf(&stdoutBuffer);
+            oldStderrBuffer = std::cerr.rdbuf(&stderrBuffer);
+            // TODO: redirect FILE * level to console, no idea how to do yet
+        }
+    }
+    else
+        qWarning("unknown subsystem %d detected, could not setup qt message handler",subSystem(hInst));
+}
 
 bool isExecutable(const QString &file)
 {
