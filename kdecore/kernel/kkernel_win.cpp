@@ -360,6 +360,13 @@ static int subSystem()
         return subSystem; 
 
     PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)0x00400000;
+
+    // the applications module base adresse in memory is normally 0x00400000. 
+    // When loading kdecore library from regsrv32 a different address (0x01000000) is used. 
+    // Check for this additional possible base address
+    if (IsBadReadPtr(dosHeader,sizeof(IMAGE_DOS_HEADER)))
+        dosHeader = (PIMAGE_DOS_HEADER)0x01000000;
+
     PIMAGE_NT_HEADERS ntHeader = (PIMAGE_NT_HEADERS) ((char *)dosHeader + dosHeader->e_lfanew);
     if (ntHeader->Signature != 0x00004550) 
     {
