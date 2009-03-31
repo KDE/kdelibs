@@ -333,21 +333,39 @@ bool KTextEdit::Private::handleShortcut(const QKeyEvent* event)
     return true;
   } else if ( KStandardShortcut::next().contains( key ) ) {
     QTextCursor cursor = parent->textCursor();
-    int targetY = parent->verticalScrollBar()->value() + parent->viewport()->height();
     bool moved = false;
+    qreal lastY = parent->cursorRect(cursor).bottom();
+    qreal distance = 0;
     do {
-      moved = cursor.movePosition( QTextCursor::Down );
-      parent->setTextCursor( cursor );
-    } while ( moved && parent->verticalScrollBar()->value() < targetY );
+        qreal y = parent->cursorRect(cursor).bottom();
+        distance += qAbs(y - lastY);
+        lastY = y;
+        moved = cursor.movePosition(QTextCursor::Down);
+    } while (moved && distance < parent->viewport()->height());
+
+    if (moved) {
+        cursor.movePosition(QTextCursor::Up);
+        parent->verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepAdd);
+    }
+    parent->setTextCursor(cursor);
     return true;
   } else if ( KStandardShortcut::prior().contains( key ) ) {
     QTextCursor cursor = parent->textCursor();
-    int targetY = parent->verticalScrollBar()->value() - parent->viewport()->height();
     bool moved = false;
+    qreal lastY = parent->cursorRect(cursor).bottom();
+    qreal distance = 0;
     do {
-      moved = cursor.movePosition( QTextCursor::Up );
-      parent->setTextCursor( cursor );
-    } while ( moved && parent->verticalScrollBar()->value() > targetY );
+        qreal y = parent->cursorRect(cursor).bottom();
+        distance += qAbs(y - lastY);
+        lastY = y;
+        moved = cursor.movePosition(QTextCursor::Up);
+    } while (moved && distance < parent->viewport()->height());
+
+    if (moved) {
+        cursor.movePosition(QTextCursor::Down);
+        parent->verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepSub);
+    }
+    parent->setTextCursor(cursor);
     return true;
   } else if ( KStandardShortcut::begin().contains( key ) ) {
     QTextCursor cursor = parent->textCursor();

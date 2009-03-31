@@ -689,6 +689,8 @@ void KWindowSystem::setIcons( WId win, const QPixmap& icon, const QPixmap& miniI
     if ( miniIcon.isNull() )
 	return;
     img = miniIcon.toImage().convertToFormat( QImage::Format_ARGB32 );
+    if ( img.isNull() )
+        return;
     ni.size.width = img.size().width();
     ni.size.height = img.size().height();
     ni.data = (unsigned char *) img.bits();

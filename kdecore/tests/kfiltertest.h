@@ -29,17 +29,18 @@ private Q_SLOTS:
     void initTestCase();
     void test_block_write();
     void test_block_read();
+    void test_biggerWrites();
     void test_getch();
     void test_textstream();
     void test_readall();
     void test_uncompressed();
 
 private:
-    void test_block_write( const QString & fileName );
+    void test_block_write(const QString & fileName, const QByteArray& data);
     void test_block_read( const QString & fileName );
     void test_getch( const QString & fileName );
     void test_textstream( const QString & fileName );
-    void test_readall( const QString & fileName, const QString& mimeType );
+    void test_readall(const QString & fileName, const QString& mimeType, const QByteArray& expectedData);
 
     QString pathgz;
     QString pathbz2;
