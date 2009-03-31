@@ -26,6 +26,7 @@
 #include <QtCore/QTextStream>
 #include <kdebug.h>
 #include "kfiltertest.h"
+#include <krandom.h>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 
@@ -33,7 +34,7 @@ QTEST_KDEMAIN_CORE(KFilterTest)
 
 void KFilterTest::initTestCase()
 {
-    QString currentdir = QDir::currentPath();
+    const QString currentdir = QDir::currentPath();
     pathgz = currentdir + "/test.gz";
     pathbz2 = currentdir + "/test.bz2";
 
@@ -41,15 +42,15 @@ void KFilterTest::initTestCase()
     testData = "hello world\n";
 }
 
-void KFilterTest::test_block_write( const QString & fileName )
+void KFilterTest::test_block_write(const QString & fileName, const QByteArray& data)
 {
     QIODevice * dev = KFilterDev::deviceForFile( fileName );
     QVERIFY( dev != 0 );
     bool ok = dev->open( QIODevice::WriteOnly );
     QVERIFY( ok );
 
-    int ret = dev->write( testData );
-    QCOMPARE( ret, testData.size() );
+    const int ret = dev->write(data);
+    QCOMPARE(ret, data.size());
 
     dev->close();
     delete dev;
@@ -60,12 +61,39 @@ void KFilterTest::test_block_write( const QString & fileName )
 void KFilterTest::test_block_write()
 {
     kDebug() << " -- test_block_write gzip -- ";
-    test_block_write(pathgz);
+    test_block_write(pathgz, testData);
     QCOMPARE( QFileInfo( pathgz ).size(), 33LL ); // size of test.gz
 
     kDebug() << " -- test_block_write bzip2 -- ";
-    test_block_write(pathbz2);
+    test_block_write(pathbz2, testData);
     QCOMPARE( QFileInfo( pathbz2 ).size(), 52LL ); // size of test.bz2
+}
+
+void KFilterTest::test_biggerWrites()
+{
+    const QString currentdir = QDir::currentPath();
+    const QString outFile = currentdir + "/test_big.gz";
+    // Find the out-of-bounds from #157706/#188415
+    QByteArray data;
+    data.reserve(10000);
+    // Prepare test data
+    for (int i = 0; i < 8170; ++i)
+        data.append((char)(KRandom::random() % 256));
+    QCOMPARE(data.size(), 8170);
+    // 8170 random bytes compress to 8194 bytes due to the gzip header/footer.
+    // Now we can go one by one until we pass 8192.
+    // On 32 bit systems it crashed with data.size()=8173, before the "no room for footer yet" fix.
+    int compressedSize = 0;
+    while (compressedSize < 8200) {
+        test_block_write(outFile, data);
+        compressedSize = QFileInfo(outFile).size();
+        kDebug() << data.size() << "compressed into" << compressedSize;
+        // Test data is valid
+        test_readall(outFile, QString::fromLatin1("application/x-gzip"), data);
+
+
+        data.append((char)(KRandom::random() % 256));
+    }
 }
 
 void KFilterTest::test_block_read( const QString & fileName )
@@ -160,25 +188,25 @@ void KFilterTest::test_textstream()
     test_textstream(pathbz2);
 }
 
-void KFilterTest::test_readall( const QString & fileName, const QString& mimeType )
+void KFilterTest::test_readall(const QString & fileName, const QString& mimeType, const QByteArray& expectedData)
 {
     QFile file(fileName);
     QIODevice *flt = KFilterDev::device(&file, mimeType, false);
     bool ok = flt->open( QIODevice::ReadOnly );
     QVERIFY(ok);
-    QByteArray read = flt->readAll();
-    QCOMPARE( read.size(), testData.size() );
-    QCOMPARE( read, testData );
+    const QByteArray read = flt->readAll();
+    QCOMPARE(read.size(), expectedData.size());
+    QCOMPARE(read, expectedData);
 }
 
 void KFilterTest::test_readall()
 {
     kDebug() << " -- test_readall gzip -- ";
-    test_readall(pathgz, QString::fromLatin1("application/x-gzip"));
+    test_readall(pathgz, QString::fromLatin1("application/x-gzip"), testData);
     kDebug() << " -- test_readall bzip2 -- ";
-    test_readall(pathbz2, QString::fromLatin1("application/x-bzip"));
+    test_readall(pathbz2, QString::fromLatin1("application/x-bzip"), testData);
     kDebug() << " -- test_readall gzip-derived -- ";
-    test_readall(pathgz, QString::fromLatin1("image/svg+xml-compressed"));
+    test_readall(pathgz, QString::fromLatin1("image/svg+xml-compressed"), testData);
 }
 
 void KFilterTest::test_uncompressed()

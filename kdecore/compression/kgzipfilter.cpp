@@ -43,12 +43,14 @@ public:
         zStream.zfree = (free_func)0;
         zStream.opaque = (voidpf)0;
         headerWritten = false;
+        footerWritten = false;
         compressed = false;
         mode = 0;
     }
 
     z_stream zStream;
     bool headerWritten;
+    bool footerWritten;
     bool compressed;
     int mode;
     ulong crc;
@@ -86,6 +88,7 @@ void KGzipFilter::init( int mode )
     d->mode = mode;
     d->compressed = true;
     d->headerWritten = false;
+    d->footerWritten = false;
 }
 
 int KGzipFilter::mode() const
@@ -121,13 +124,14 @@ void KGzipFilter::reset()
         if ( result != Z_OK )
             kDebug(7005) << "deflateReset returned " << result;
         d->headerWritten = false;
+        d->footerWritten = false;
     }
 }
 
 bool KGzipFilter::readHeader()
 {
 #ifdef DEBUG_GZIP
-    kDebug(7005) << "KGzipFilter::readHeader avail=" << d->zStream.avail_in;
+    kDebug(7005) << "avail=" << d->zStream.avail_in;
 #endif
     // Assume not compressed until we successfully decode the header
     d->compressed = false;
@@ -139,11 +143,11 @@ bool KGzipFilter::readHeader()
     int i = d->zStream.avail_in;
     if ((i -= 10)  < 0) return false; // Need at least 10 bytes
 #ifdef DEBUG_GZIP
-    kDebug(7005) << "KGzipFilter::readHeader first byte is " << QString::number(*p,16);
+    kDebug(7005) << "first byte is " << QString::number(*p,16);
 #endif
     if (*p++ != 0x1f) return false; // GZip magic
 #ifdef DEBUG_GZIP
-    kDebug(7005) << "KGzipFilter::readHeader second byte is " << QString::number(*p,16);
+    kDebug(7005) << "second byte is " << QString::number(*p,16);
 #endif
     if (*p++ != 0x8b) return false;
     int method = *p++;
@@ -234,15 +238,17 @@ void KGzipFilter::writeFooter()
 {
     Q_ASSERT( d->headerWritten );
     if (!d->headerWritten) kDebug() << kBacktrace();
+    Q_ASSERT(!d->footerWritten);
     Bytef *p = d->zStream.next_out;
     int i = d->zStream.avail_out;
-    //kDebug(7005) << "KGzipFilter::writeFooter writing CRC= " << QString::number( d->crc, 16 );
+    //kDebug(7005) << "avail_out=" << i << "writing CRC=" << QString::number(d->crc, 16) << "at p=" << p;
     put_long( d->crc );
-    //kDebug(7005) << "KGzipFilter::writing writing totalin= " << d->zStream.total_in;
+    //kDebug(7005) << "writing totalin=" << d->zStream.total_in << "at p=" << p;
     put_long( d->zStream.total_in );
     i -= p - d->zStream.next_out;
     d->zStream.next_out = p;
     d->zStream.avail_out = i;
+    d->footerWritten = true;
 }
 
 void KGzipFilter::setOutBuffer( char * data, uint maxlen )
@@ -253,7 +259,7 @@ void KGzipFilter::setOutBuffer( char * data, uint maxlen )
 void KGzipFilter::setInBuffer( const char * data, uint size )
 {
 #ifdef DEBUG_GZIP
-    kDebug(7005) << "KGzipFilter::setInBuffer avail_in=" << size;
+    kDebug(7005) << "avail_in=" << size;
 #endif
     d->zStream.avail_in = size;
     d->zStream.next_in = (Bytef*) data;
@@ -317,7 +323,7 @@ KGzipFilter::Result KGzipFilter::compress( bool finish )
 #ifdef DEBUG_GZIP
     kDebug(7005) << "  calling deflate with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
 #endif
-    int result = deflate(&d->zStream, finish ? Z_FINISH : Z_NO_FLUSH);
+    const int result = deflate(&d->zStream, finish ? Z_FINISH : Z_NO_FLUSH);
     if ( result != Z_OK && result != Z_STREAM_END )
         kDebug(7005) << "  deflate returned " << result;
     if ( d->headerWritten )
@@ -325,10 +331,17 @@ KGzipFilter::Result KGzipFilter::compress( bool finish )
         //kDebug(7005) << "Computing CRC for the next " << len - d->zStream.avail_in << " bytes";
         d->crc = crc32(d->crc, p, len - d->zStream.avail_in);
     }
-    if ( result == Z_STREAM_END && d->headerWritten )
-    {
-        //kDebug(7005) << "KGzipFilter::compress finished, write footer";
-        writeFooter();
+    KGzipFilter::Result callerResult = result == Z_OK ? KFilterBase::Ok : (Z_STREAM_END ? KFilterBase::End : KFilterBase::Error);
+
+    if (result == Z_STREAM_END && d->headerWritten && !d->footerWritten) {
+        if (d->zStream.avail_out >= 8 /*footer size*/) {
+            //kDebug(7005) << "finished, write footer";
+            writeFooter();
+        } else {
+            // No room to write the footer (#157706/#188415), we'll have to do it on the next pass.
+            //kDebug(7005) << "finished, but no room for footer yet";
+            callerResult = KFilterBase::Ok;
+        }
     }
-    return ( result == Z_OK ? KFilterBase::Ok : ( result == Z_STREAM_END ? KFilterBase::End : KFilterBase::Error ) );
+    return callerResult;
 }

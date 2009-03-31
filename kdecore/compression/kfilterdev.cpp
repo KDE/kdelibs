@@ -320,21 +320,21 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
             // We got that much data since the last time we went here
             uint wrote = availIn - filter->inBufferAvailable();
 
-            //kDebug(7005) << " Wrote everything for now. avail_in = " << filter->inBufferAvailable() << " result=" << d->result << " wrote=" << wrote;
+            //kDebug(7005) << " Wrote everything for now. avail_in=" << filter->inBufferAvailable() << "result=" << d->result << "wrote=" << wrote;
 
             // Move on in the input buffer
             data += wrote;
             dataWritten += wrote;
 
             availIn = len - dataWritten;
-            //kDebug(7005) << " KFilterDev::write availIn=" << availIn << " dataWritten=" << dataWritten << " ioIndex=" << pos();
-            if ( availIn > 0 ) // Not sure this will ever happen
+            //kDebug(7005) << " availIn=" << availIn << "dataWritten=" << dataWritten << "pos=" << pos();
+            if ( availIn > 0 )
                 filter->setInBuffer( data, availIn );
         }
 
-        if (filter->outBufferFull() || (d->result == KFilterBase::End))
+        if (filter->outBufferFull() || (d->result == KFilterBase::End) || finish)
         {
-            //kDebug(7005) << " KFilterDev::write writing to underlying. avail_out=" << filter->outBufferAvailable();
+            //kDebug(7005) << " writing to underlying. avail_out=" << filter->outBufferAvailable();
             int towrite = d->buffer.size() - filter->outBufferAvailable();
             if ( towrite > 0 )
             {
@@ -347,14 +347,14 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
                 //else
                     //kDebug(7005) << " KFilterDev::write wrote " << size << " bytes";
             }
-            d->buffer.resize( 8*1024 );
-            filter->setOutBuffer( d->buffer.data(), d->buffer.size() );
             if (d->result == KFilterBase::End)
             {
                 //kDebug(7005) << " KFilterDev::write END";
                 Q_ASSERT(finish); // hopefully we don't get end before finishing
                 break;
             }
+            d->buffer.resize(BUFFER_SIZE);
+            filter->setOutBuffer( d->buffer.data(), d->buffer.size() );
         }
     }
 
