@@ -42,7 +42,7 @@ private:
     void test_block_read( const QString & fileName );
     void test_getch( const QString & fileName );
     void test_textstream( const QString & fileName );
-    void test_readall( const QString & fileName, const QString& mimeType );
+    void test_readall(const QString & fileName, const QString& mimeType, const QByteArray& expectedData);
 
     QString pathgz;
     QString pathbz2;
