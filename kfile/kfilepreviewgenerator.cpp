@@ -248,10 +248,16 @@ public:
     void limitToSize(QPixmap& icon, const QSize& maxSize);
 
     /**
-     * Starts a new preview job for the items \a to m_previewJobs
+     * Creates previews by starting new preview jobs for the items
      * and triggers the preview timer.
      */
-    void startPreviewJob(const KFileItemList& items);
+    void createPreviews(const KFileItemList& items);
+
+    /**
+     * Helper method for createPreviews(): Starts a preview job for the given
+     * items. For each returned preview addToPreviewQueue() will get invoked.
+     */
+    void startPreviewJob(const KFileItemList& items, int width, int height);
 
     /** Kills all ongoing preview jobs. */
     void killPreviewJobs();
@@ -436,7 +442,7 @@ void KFilePreviewGenerator::Private::updateIcons(const KFileItemList& items)
     }
 
     if (m_previewShown) {
-        startPreviewJob(orderedItems);
+        createPreviews(orderedItems);
     } else {
         startMimeTypeResolving();
     }
@@ -467,10 +473,19 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
         // the preview has been canceled in the meantime
         return;
     }
-    const KUrl url = item.url();
+
+    const QSize size = m_viewAdapter->iconSize();
+    if ((pixmap.width() < size.width()) && (pixmap.height() < size.height())) {
+        // If the width and the height are smaller than the available size, an old
+        // preview has been received, where the available size was smaller. Note that
+        // no check for a larger icon size is done, as a downscaling will be done
+        // anyhow.
+        return;
+    }
 
     // check whether the item is part of the directory lister (it is possible
     // that a preview from an old directory lister is received)
+    const KUrl url = item.url();
     KDirLister* dirLister = m_dirModel->dirLister();
     bool isOldPreview = true;
     const KUrl::List dirs = dirLister->directories();
@@ -650,7 +665,7 @@ void KFilePreviewGenerator::Private::resumeIconUpdates()
         killPreviewJobs();
         m_clearItemQueues = true;
 
-        startPreviewJob(orderedItems);
+        createPreviews(orderedItems);
     } else {
         orderItems(m_pendingItems);
         startMimeTypeResolving();
@@ -811,7 +826,7 @@ void KFilePreviewGenerator::Private::limitToSize(QPixmap& icon, const QSize& max
     }
 }
 
-void KFilePreviewGenerator::Private::startPreviewJob(const KFileItemList& items)
+void KFilePreviewGenerator::Private::createPreviews(const KFileItemList& items)
 {
     if (items.count() == 0) {
         return;
@@ -820,22 +835,44 @@ void KFilePreviewGenerator::Private::startPreviewJob(const KFileItemList& items)
     const QMimeData* mimeData = QApplication::clipboard()->mimeData();
     m_hasCutSelection = decodeIsCutSelection(mimeData);
 
-    const QSize size = m_viewAdapter->iconSize();
-
     // PreviewJob internally caches items always with the size of
     // 128 x 128 pixels or 256 x 256 pixels. A downscaling is done
-    // by PreviewJob if a smaller size is requested. As the KFilePreviewGenerator must
-    // do a downscaling anyhow because of the frame, only the provided
+    // by PreviewJob if a smaller size is requested. For images KFilePreviewGenerator must
+    // do a downscaling anyhow because of the frame, so in this case only the provided
     // cache sizes are requested.
-    const int cacheSize = (size.width() > 128) || (size.height() > 128) ? 256 : 128;
-    KIO::PreviewJob* job = KIO::filePreview(items, cacheSize, cacheSize, 0, 70, true, true, &m_enabledPlugins);
-    connect(job, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
-            q, SLOT(addToPreviewQueue(const KFileItem&, const QPixmap&)));
-    connect(job, SIGNAL(finished(KJob*)),
-            q, SLOT(slotPreviewJobFinished(KJob*)));
+    KFileItemList imageItems;
+    KFileItemList otherItems;
+    QString mimeType;
+    QString mimeTypeGroup;
+    foreach (const KFileItem& item, items) {
+        mimeType = item.mimetype();
+        mimeTypeGroup = mimeType.left(mimeType.indexOf('/'));
+        if (mimeTypeGroup == "image") {
+            imageItems.append(item);
+        } else {
+            otherItems.append(item);
+        }
+    }
 
-    m_previewJobs.append(job);
+    const QSize size = m_viewAdapter->iconSize();
+    startPreviewJob(otherItems, size.width(), size.height());
+
+    const int cacheSize = (size.width() > 128) || (size.height() > 128) ? 256 : 128;
+    startPreviewJob(imageItems, cacheSize, cacheSize);
+
     m_iconUpdateTimer->start(200);
+}
+
+void KFilePreviewGenerator::Private::startPreviewJob(const KFileItemList& items, int width, int height)
+{
+    if (items.count() > 0) {
+        KIO::PreviewJob* job = KIO::filePreview(items, width, height, 0, 70, true, true, &m_enabledPlugins);
+        connect(job, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
+                q, SLOT(addToPreviewQueue(const KFileItem&, const QPixmap&)));
+        connect(job, SIGNAL(finished(KJob*)),
+                q, SLOT(slotPreviewJobFinished(KJob*)));
+        m_previewJobs.append(job);
+    }
 }
 
 void KFilePreviewGenerator::Private::killPreviewJobs()
