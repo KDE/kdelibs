@@ -38,7 +38,7 @@ static QList<QDomElement> extractToolBars(const QDomDocument& doc)
     QList<QDomElement> toolbars;
     QDomElement parent = doc.documentElement();
     for (QDomElement e = parent.firstChildElement(); !e.isNull(); e = e.nextSiblingElement()) {
-        if (e.tagName() == "ToolBar") {
+        if (e.tagName().compare(QLatin1String("ToolBar"), Qt::CaseInsensitive) == 0) {
             toolbars.append(e);
         }
     }

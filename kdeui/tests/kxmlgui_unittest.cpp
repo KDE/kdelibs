@@ -436,6 +436,19 @@ void KXmlGui_UnitTest::testUiStandardsMerging_data()
         << (QStringList() << "file_open" << "options_configure_toolbars" << "foo_action")
         << (QStringList() << "file" << "foo" << "settings");
 
+    QTest::newRow("Bille's testcase: menu patch + menu edit")
+        << xmlBegin + "<Menu name=\"patch\"><Action name=\"patch_generate\"/></Menu>\n"
+        + "<Menu name=\"edit\"><Action name=\"edit_foo\"/></Menu>\n"
+        + xmlEnd
+        << (QStringList() << "file_open" << "patch_generate" << "edit_foo")
+        << (QStringList() << "file" << "edit" << "patch");
+    QTest::newRow("Bille's testcase: menu patch + menu edit, lowercase tag")
+        << xmlBegin + "<Menu name=\"patch\"><Action name=\"patch_generate\"/></Menu>\n"
+        + "<menu name=\"edit\"><Action name=\"edit_foo\"/></menu>\n"
+        + xmlEnd
+        << (QStringList() << "file_open" << "patch_generate" << "edit_foo")
+        << (QStringList() << "file" << "edit" << "patch");
+
     // Tests for noMerge="1"
     QTest::newRow("noMerge empty file menu, implicit settings menu")
         << xmlBegin + "<Menu name=\"file\" noMerge=\"1\"/>\n" + xmlEnd
