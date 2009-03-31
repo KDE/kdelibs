@@ -45,7 +45,6 @@
 #include <fcntl.h>
 
 #include "ksycocadevices_p.h"
-#include "ksycocadevices_p.moc"
 
 // TODO: remove mmap() from kdewin32 and use QFile::mmap() when needed
 #ifdef Q_WS_WIN
