@@ -291,7 +291,8 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
   if (index > 0 && index < parent->actions().count())
       before = parent->actions().at(index);
 
-  if ( element.tagName().toLower() == d->tagSeparator )
+  const QString tagName = element.tagName().toLower();
+  if (tagName == d->tagSeparator)
   {
     if ( QMenu *menu = qobject_cast<QMenu*>( parent ) )
     {
@@ -332,11 +333,11 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
       return bar->insertSeparator( before );
     }
   }
-  else if ( element.tagName().toLower() == d->tagTearOffHandle )
+  else if (tagName == d->tagTearOffHandle)
   {
     static_cast<QMenu *>(parent)->setTearOffEnabled(true);
   }
-  else if ( element.tagName().toLower() == d->tagMenuTitle )
+  else if (tagName == d->tagMenuTitle)
   {
     if ( KMenu* m = qobject_cast<KMenu*>( parent ) )
     {
