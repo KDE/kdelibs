@@ -418,7 +418,7 @@ void KWindowSystem::activateWindow( WId win, long )
 void KWindowSystem::forceActiveWindow( WId win, long time )
 {
     KWindowSystem::init(INFO_WINDOWS);
-    SetActiveWindow( win );
+    BringWindowToTop( win );
     SetForegroundWindow( win );
 }
 
