@@ -509,7 +509,10 @@ bool KHTMLView::event( QEvent* e )
             }
             node = node->parentNode();
         }
-        return true;
+        // Qt makes tooltip events happen nearly immediately when a preceding one was processed in the past few seconds.
+        // We don't want that feature to apply to web tootlips however, as it clashes with dhtml menus.
+        // So we'll just pretend we did not process that event.
+        return false;
     }
 
     case QEvent::DragEnter:
