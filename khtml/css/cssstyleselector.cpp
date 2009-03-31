@@ -4113,6 +4113,12 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         break;
     }
     }
+    case CSS_PROP_WORD_WRAP: {
+        HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(wordWrap, WordWrap)
+        if (!primitiveValue) return;
+        style->setWordWrap(primitiveValue->getIdent() == CSS_VAL_NORMAL ? WWNORMAL : WWBREAKWORD);
+        break;
+    }
     default:
         applySVGRule(id, value);
         return;

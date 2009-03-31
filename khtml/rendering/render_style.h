@@ -191,6 +191,9 @@ enum EFloat {
     FNONE = 0, FLEFT = 0x01, FRIGHT = 0x02, FLEFT_ALIGN = 0x05, FRIGHT_ALIGN = 0x06
 };
 
+enum EWordWrap {
+    WWNORMAL = 0, WWBREAKWORD = 0x01
+};
 
 //------------------------------------------------
 // Border attributes. Not inherited.
@@ -734,6 +737,7 @@ class StyleCSS3InheritedData : public Shared<StyleCSS3InheritedData>
         EUserModify userModify : 2; // Flag used for editing state
         bool textSizeAdjust : 1;    // An Apple extension.  Not really CSS3 but not worth making a new struct over.
 #endif
+        KDE_BF_ENUM(EWordWrap) wordWrap : 1;
     private:
         StyleCSS3InheritedData &operator=(const StyleCSS3InheritedData &);
 };
@@ -1238,6 +1242,7 @@ public:
         return background->m_outline._offset;
     }
     ShadowData* textShadow() const { return css3InheritedData->textShadow; }
+    EWordWrap wordWrap() const { return KDE_CAST_BF_ENUM(EWordWrap, css3InheritedData->wordWrap); }
     float opacity() const { return css3NonInheritedData->opacity; }
     EUserInput userInput() const { return KDE_CAST_BF_ENUM(EUserInput, inherited_flags.f._user_input); }
 
@@ -1395,6 +1400,7 @@ public:
     // CSS3 Setters
     void setBoxSizing( EBoxSizing b ) { SET_VAR(box,box_sizing,b); }
     void setOutlineOffset(unsigned short v) {  SET_VAR(background,m_outline._offset,v) }
+    void setWordWrap(EWordWrap w) { SET_VAR(css3InheritedData, wordWrap, w); }
     void setTextShadow(ShadowData* val, bool add=false);
     void setOpacity(float f) { SET_VAR(css3NonInheritedData, opacity, f); }
     void setUserInput(EUserInput ui) { inherited_flags.f._user_input = ui; }
@@ -1491,6 +1497,7 @@ public:
     static EDisplay initialDisplay() { return INLINE; }
     static EEmptyCell initialEmptyCells() { return SHOW; }
     static EFloat initialFloating() { return FNONE; }
+    static EWordWrap initialWordWrap() { return WWNORMAL; }
     static EListStylePosition initialListStylePosition() { return OUTSIDE; }
     static EListStyleType initialListStyleType() { return LDISC; }
     static EOverflow initialOverflowX() { return OVISIBLE; }

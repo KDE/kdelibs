@@ -1144,6 +1144,12 @@ bool CSSParser::parseValue( int propId, bool important )
                                     CSS_PROP_LIST_STYLE_IMAGE };
         return parseShortHand(propId, properties, 3, important);
     }
+    case CSS_PROP_WORD_WRAP:
+        // normal | break-word
+        if ( id == CSS_VAL_NORMAL || id == CSS_VAL_BREAK_WORD )
+            valid_primitive = true;
+        break;
+
     default:
         return parseSVGValue(propId, important);
 // #ifdef CSS_DEBUG

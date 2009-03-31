@@ -184,7 +184,7 @@ findValue (register const char *str, register unsigned int len)
 {
   enum
     {
-      TOTAL_KEYWORDS = 292,
+      TOTAL_KEYWORDS = 293,
       MIN_WORD_LENGTH = 2,
       MAX_WORD_LENGTH = 28,
       MIN_HASH_VALUE = 0,
@@ -209,23 +209,23 @@ findValue (register const char *str, register unsigned int len)
       {"progress", CSS_VAL_PROGRESS},
 #line 47 "cssvalues.gperf"
       {"800", CSS_VAL_800},
-#line 293 "cssvalues.gperf"
+#line 294 "cssvalues.gperf"
       {"slow", CSS_VAL_SLOW},
 #line 210 "cssvalues.gperf"
       {"cell", CSS_VAL_CELL},
-#line 276 "cssvalues.gperf"
+#line 277 "cssvalues.gperf"
       {"show", CSS_VAL_SHOW},
-#line 261 "cssvalues.gperf"
+#line 262 "cssvalues.gperf"
       {"hand", CSS_VAL_HAND},
 #line 206 "cssvalues.gperf"
       {"help", CSS_VAL_HELP},
 #line 46 "cssvalues.gperf"
       {"700", CSS_VAL_700},
-#line 258 "cssvalues.gperf"
+#line 259 "cssvalues.gperf"
       {"crop", CSS_VAL_CROP},
 #line 45 "cssvalues.gperf"
       {"600", CSS_VAL_600},
-#line 265 "cssvalues.gperf"
+#line 266 "cssvalues.gperf"
       {"landscape", CSS_VAL_LANDSCAPE},
 #line 240 "cssvalues.gperf"
       {"collapse", CSS_VAL_COLLAPSE},
@@ -245,7 +245,7 @@ findValue (register const char *str, register unsigned int len)
       {"300", CSS_VAL_300},
 #line 37 "cssvalues.gperf"
       {"bold", CSS_VAL_BOLD},
-#line 301 "cssvalues.gperf"
+#line 302 "cssvalues.gperf"
       {"border", CSS_VAL_BORDER},
 #line 38 "cssvalues.gperf"
       {"bolder", CSS_VAL_BOLDER},
@@ -253,7 +253,7 @@ findValue (register const char *str, register unsigned int len)
       {"ridge", CSS_VAL_RIDGE},
 #line 132 "cssvalues.gperf"
       {"middle", CSS_VAL_MIDDLE},
-#line 291 "cssvalues.gperf"
+#line 292 "cssvalues.gperf"
       {"up", CSS_VAL_UP},
 #line 28 "cssvalues.gperf"
       {"icon", CSS_VAL_ICON},
@@ -261,17 +261,17 @@ findValue (register const char *str, register unsigned int len)
       {"sub", CSS_VAL_SUB},
 #line 234 "cssvalues.gperf"
       {"ltr", CSS_VAL_LTR},
-#line 270 "cssvalues.gperf"
+#line 271 "cssvalues.gperf"
       {"marquee", CSS_VAL_MARQUEE},
 #line 91 "cssvalues.gperf"
       {"purple", CSS_VAL_PURPLE},
 #line 235 "cssvalues.gperf"
       {"rtl", CSS_VAL_RTL},
-#line 259 "cssvalues.gperf"
+#line 260 "cssvalues.gperf"
       {"cross", CSS_VAL_CROSS},
 #line 193 "cssvalues.gperf"
       {"table", CSS_VAL_TABLE},
-#line 268 "cssvalues.gperf"
+#line 269 "cssvalues.gperf"
       {"loud", CSS_VAL_LOUD},
 #line 41 "cssvalues.gperf"
       {"200", CSS_VAL_200},
@@ -287,17 +287,17 @@ findValue (register const char *str, register unsigned int len)
       {"box", CSS_VAL_BOX},
 #line 35 "cssvalues.gperf"
       {"small-caps", CSS_VAL_SMALL_CAPS},
-#line 252 "cssvalues.gperf"
+#line 253 "cssvalues.gperf"
       {"always", CSS_VAL_ALWAYS},
-#line 271 "cssvalues.gperf"
+#line 272 "cssvalues.gperf"
       {"mix", CSS_VAL_MIX},
 #line 245 "cssvalues.gperf"
       {"nowrap", CSS_VAL_NOWRAP},
-#line 263 "cssvalues.gperf"
+#line 264 "cssvalues.gperf"
       {"higher", CSS_VAL_HIGHER},
 #line 94 "cssvalues.gperf"
       {"teal", CSS_VAL_TEAL},
-#line 296 "cssvalues.gperf"
+#line 297 "cssvalues.gperf"
       {"slide", CSS_VAL_SLIDE},
 #line 78 "cssvalues.gperf"
       {"aqua", CSS_VAL_AQUA},
@@ -305,11 +305,11 @@ findValue (register const char *str, register unsigned int len)
       {"pre", CSS_VAL_PRE},
 #line 152 "cssvalues.gperf"
       {"square", CSS_VAL_SQUARE},
-#line 305 "cssvalues.gperf"
+#line 306 "cssvalues.gperf"
       {"nonzero", CSS_VAL_NONZERO},
-#line 299 "cssvalues.gperf"
+#line 300 "cssvalues.gperf"
       {"clip", CSS_VAL_CLIP},
-#line 275 "cssvalues.gperf"
+#line 276 "cssvalues.gperf"
       {"separate", CSS_VAL_SEPARATE},
 #line 203 "cssvalues.gperf"
       {"auto", CSS_VAL_AUTO},
@@ -319,27 +319,27 @@ findValue (register const char *str, register unsigned int len)
       {"hidden", CSS_VAL_HIDDEN},
 #line 214 "cssvalues.gperf"
       {"alias", CSS_VAL_ALIAS},
-#line 269 "cssvalues.gperf"
+#line 270 "cssvalues.gperf"
       {"lower", CSS_VAL_LOWER},
 #line 201 "cssvalues.gperf"
       {"table-cell", CSS_VAL_TABLE_CELL},
-#line 292 "cssvalues.gperf"
+#line 293 "cssvalues.gperf"
       {"down", CSS_VAL_DOWN},
 #line 238 "cssvalues.gperf"
       {"lowercase", CSS_VAL_LOWERCASE},
 #line 76 "cssvalues.gperf"
       {"local", CSS_VAL_LOCAL},
-#line 257 "cssvalues.gperf"
+#line 258 "cssvalues.gperf"
       {"both", CSS_VAL_BOTH},
-#line 300 "cssvalues.gperf"
+#line 301 "cssvalues.gperf"
       {"ellipsis", CSS_VAL_ELLIPSIS},
-#line 283 "cssvalues.gperf"
+#line 284 "cssvalues.gperf"
       {"border-box", CSS_VAL_BORDER_BOX},
 #line 99 "cssvalues.gperf"
       {"appworkspace", CSS_VAL_APPWORKSPACE},
 #line 151 "cssvalues.gperf"
       {"circle", CSS_VAL_CIRCLE},
-#line 262 "cssvalues.gperf"
+#line 263 "cssvalues.gperf"
       {"hide", CSS_VAL_HIDE},
 #line 36 "cssvalues.gperf"
       {"normal", CSS_VAL_NORMAL},
@@ -357,11 +357,11 @@ findValue (register const char *str, register unsigned int len)
       {"text", CSS_VAL_TEXT},
 #line 134 "cssvalues.gperf"
       {"super", CSS_VAL_SUPER},
-#line 279 "cssvalues.gperf"
+#line 280 "cssvalues.gperf"
       {"thin", CSS_VAL_THIN},
 #line 177 "cssvalues.gperf"
       {"lower-alpha", CSS_VAL_LOWER_ALPHA},
-#line 273 "cssvalues.gperf"
+#line 274 "cssvalues.gperf"
       {"portrait", CSS_VAL_PORTRAIT},
 #line 237 "cssvalues.gperf"
       {"uppercase", CSS_VAL_UPPERCASE},
@@ -381,7 +381,7 @@ findValue (register const char *str, register unsigned int len)
       {"caption", CSS_VAL_CAPTION},
 #line 80 "cssvalues.gperf"
       {"blue", CSS_VAL_BLUE},
-#line 277 "cssvalues.gperf"
+#line 278 "cssvalues.gperf"
       {"static", CSS_VAL_STATIC},
 #line 69 "cssvalues.gperf"
       {"serif", CSS_VAL_SERIF},
@@ -391,11 +391,11 @@ findValue (register const char *str, register unsigned int len)
       {"solid", CSS_VAL_SOLID},
 #line 34 "cssvalues.gperf"
       {"oblique", CSS_VAL_OBLIQUE},
-#line 285 "cssvalues.gperf"
+#line 286 "cssvalues.gperf"
       {"enabled", CSS_VAL_ENABLED},
-#line 260 "cssvalues.gperf"
+#line 261 "cssvalues.gperf"
       {"embed", CSS_VAL_EMBED},
-#line 274 "cssvalues.gperf"
+#line 275 "cssvalues.gperf"
       {"relative", CSS_VAL_RELATIVE},
 #line 72 "cssvalues.gperf"
       {"fantasy", CSS_VAL_FANTASY},
@@ -403,21 +403,21 @@ findValue (register const char *str, register unsigned int len)
       {"lime", CSS_VAL_LIME},
 #line 179 "cssvalues.gperf"
       {"upper-alpha", CSS_VAL_UPPER_ALPHA},
-#line 251 "cssvalues.gperf"
+#line 252 "cssvalues.gperf"
       {"absolute", CSS_VAL_ABSOLUTE},
-#line 302 "cssvalues.gperf"
+#line 303 "cssvalues.gperf"
       {"content", CSS_VAL_CONTENT},
-#line 294 "cssvalues.gperf"
+#line 295 "cssvalues.gperf"
       {"fast", CSS_VAL_FAST},
 #line 114 "cssvalues.gperf"
       {"menutext", CSS_VAL_MENUTEXT},
-#line 287 "cssvalues.gperf"
+#line 288 "cssvalues.gperf"
       {"forwards", CSS_VAL_FORWARDS},
 #line 215 "cssvalues.gperf"
       {"copy", CSS_VAL_COPY},
 #line 124 "cssvalues.gperf"
       {"currentcolor", CSS_VAL_CURRENTCOLOR},
-#line 289 "cssvalues.gperf"
+#line 290 "cssvalues.gperf"
       {"ahead", CSS_VAL_AHEAD},
 #line 188 "cssvalues.gperf"
       {"block", CSS_VAL_BLOCK},
@@ -429,7 +429,7 @@ findValue (register const char *str, register unsigned int len)
       {"left", CSS_VAL_LEFT},
 #line 128 "cssvalues.gperf"
       {"repeat-x", CSS_VAL_REPEAT_X},
-#line 256 "cssvalues.gperf"
+#line 257 "cssvalues.gperf"
       {"blink", CSS_VAL_BLINK},
 #line 165 "cssvalues.gperf"
       {"hebrew", CSS_VAL_HEBREW},
@@ -441,7 +441,7 @@ findValue (register const char *str, register unsigned int len)
       {"crimson", CSS_VAL_CRIMSON},
 #line 22 "cssvalues.gperf"
       {"outset", CSS_VAL_OUTSET},
-#line 253 "cssvalues.gperf"
+#line 254 "cssvalues.gperf"
       {"avoid", CSS_VAL_AVOID},
 #line 163 "cssvalues.gperf"
       {"lower-roman", CSS_VAL_LOWER_ROMAN},
@@ -449,9 +449,9 @@ findValue (register const char *str, register unsigned int len)
       {"black", CSS_VAL_BLACK},
 #line 241 "cssvalues.gperf"
       {"close-quote", CSS_VAL_CLOSE_QUOTE},
-#line 250 "cssvalues.gperf"
+#line 251 "cssvalues.gperf"
       {"above", CSS_VAL_ABOVE},
-#line 254 "cssvalues.gperf"
+#line 255 "cssvalues.gperf"
       {"below", CSS_VAL_BELOW},
 #line 200 "cssvalues.gperf"
       {"table-column", CSS_VAL_TABLE_COLUMN},
@@ -473,15 +473,15 @@ findValue (register const char *str, register unsigned int len)
       {"status-bar", CSS_VAL_STATUS_BAR},
 #line 135 "cssvalues.gperf"
       {"text-top", CSS_VAL_TEXT_TOP},
-#line 272 "cssvalues.gperf"
+#line 273 "cssvalues.gperf"
       {"overline", CSS_VAL_OVERLINE},
 #line 96 "cssvalues.gperf"
       {"yellow", CSS_VAL_YELLOW},
 #line 155 "cssvalues.gperf"
       {"decimal", CSS_VAL_DECIMAL},
-#line 303 "cssvalues.gperf"
+#line 304 "cssvalues.gperf"
       {"padding", CSS_VAL_PADDING},
-#line 297 "cssvalues.gperf"
+#line 298 "cssvalues.gperf"
       {"alternate", CSS_VAL_ALTERNATE},
 #line 239 "cssvalues.gperf"
       {"visible", CSS_VAL_VISIBLE},
@@ -503,7 +503,7 @@ findValue (register const char *str, register unsigned int len)
       {"table-caption", CSS_VAL_TABLE_CAPTION},
 #line 60 "cssvalues.gperf"
       {"narrower", CSS_VAL_NARROWER},
-#line 284 "cssvalues.gperf"
+#line 285 "cssvalues.gperf"
       {"content-box", CSS_VAL_CONTENT_BOX},
 #line 66 "cssvalues.gperf"
       {"expanded", CSS_VAL_EXPANDED},
@@ -515,7 +515,7 @@ findValue (register const char *str, register unsigned int len)
       {"list-item", CSS_VAL_LIST_ITEM},
 #line 148 "cssvalues.gperf"
       {"outside", CSS_VAL_OUTSIDE},
-#line 266 "cssvalues.gperf"
+#line 267 "cssvalues.gperf"
       {"level", CSS_VAL_LEVEL},
 #line 105 "cssvalues.gperf"
       {"captiontext", CSS_VAL_CAPTIONTEXT},
@@ -525,7 +525,7 @@ findValue (register const char *str, register unsigned int len)
       {"context-menu", CSS_VAL_CONTEXT_MENU},
 #line 82 "cssvalues.gperf"
       {"fuchsia", CSS_VAL_FUCHSIA},
-#line 290 "cssvalues.gperf"
+#line 291 "cssvalues.gperf"
       {"reverse", CSS_VAL_REVERSE},
 #line 19 "cssvalues.gperf"
       {"inset", CSS_VAL_INSET},
@@ -533,7 +533,7 @@ findValue (register const char *str, register unsigned int len)
       {"move", CSS_VAL_MOVE},
 #line 49 "cssvalues.gperf"
       {"xx-small", CSS_VAL_XX_SMALL},
-#line 280 "cssvalues.gperf"
+#line 281 "cssvalues.gperf"
       {"underline", CSS_VAL_UNDERLINE},
 #line 178 "cssvalues.gperf"
       {"lower-latin", CSS_VAL_LOWER_LATIN},
@@ -543,9 +543,9 @@ findValue (register const char *str, register unsigned int len)
       {"armenian", CSS_VAL_ARMENIAN},
 #line 213 "cssvalues.gperf"
       {"vertical-text", CSS_VAL_VERTICAL_TEXT},
-#line 286 "cssvalues.gperf"
+#line 287 "cssvalues.gperf"
       {"disabled", CSS_VAL_DISABLED},
-#line 278 "cssvalues.gperf"
+#line 279 "cssvalues.gperf"
       {"thick", CSS_VAL_THICK},
 #line 198 "cssvalues.gperf"
       {"table-row", CSS_VAL_TABLE_ROW},
@@ -555,7 +555,7 @@ findValue (register const char *str, register unsigned int len)
       {"inherit", CSS_VAL_INHERIT},
 #line 97 "cssvalues.gperf"
       {"activeborder", CSS_VAL_ACTIVEBORDER},
-#line 298 "cssvalues.gperf"
+#line 299 "cssvalues.gperf"
       {"unfurl", CSS_VAL_UNFURL},
 #line 149 "cssvalues.gperf"
       {"inside", CSS_VAL_INSIDE},
@@ -567,9 +567,9 @@ findValue (register const char *str, register unsigned int len)
       {"wider", CSS_VAL_WIDER},
 #line 209 "cssvalues.gperf"
       {"wait", CSS_VAL_WAIT},
-#line 304 "cssvalues.gperf"
+#line 305 "cssvalues.gperf"
       {"evenodd", CSS_VAL_EVENODD},
-#line 281 "cssvalues.gperf"
+#line 282 "cssvalues.gperf"
       {"-khtml-normal", CSS_VAL__KHTML_NORMAL},
 #line 95 "cssvalues.gperf"
       {"white", CSS_VAL_WHITE},
@@ -619,7 +619,7 @@ findValue (register const char *str, register unsigned int len)
       {"run-in", CSS_VAL_RUN_IN},
 #line 68 "cssvalues.gperf"
       {"ultra-expanded", CSS_VAL_ULTRA_EXPANDED},
-#line 255 "cssvalues.gperf"
+#line 256 "cssvalues.gperf"
       {"bidi-override", CSS_VAL_BIDI_OVERRIDE},
 #line 126 "cssvalues.gperf"
       {"-khtml-text", CSS_VAL__KHTML_TEXT},
@@ -629,7 +629,7 @@ findValue (register const char *str, register unsigned int len)
       {"nesw-resize", CSS_VAL_NESW_RESIZE},
 #line 84 "cssvalues.gperf"
       {"green", CSS_VAL_GREEN},
-#line 288 "cssvalues.gperf"
+#line 289 "cssvalues.gperf"
       {"backwards", CSS_VAL_BACKWARDS},
 #line 144 "cssvalues.gperf"
       {"justify", CSS_VAL_JUSTIFY},
@@ -663,11 +663,11 @@ findValue (register const char *str, register unsigned int len)
       {"se-resize", CSS_VAL_SE_RESIZE},
 #line 160 "cssvalues.gperf"
       {"-khtml-urdu", CSS_VAL__KHTML_URDU},
-#line 264 "cssvalues.gperf"
+#line 265 "cssvalues.gperf"
       {"invert", CSS_VAL_INVERT},
 #line 61 "cssvalues.gperf"
       {"ultra-condensed", CSS_VAL_ULTRA_CONDENSED},
-#line 267 "cssvalues.gperf"
+#line 268 "cssvalues.gperf"
       {"line-through", CSS_VAL_LINE_THROUGH},
 #line 108 "cssvalues.gperf"
       {"highlighttext", CSS_VAL_HIGHLIGHTTEXT},
@@ -691,7 +691,7 @@ findValue (register const char *str, register unsigned int len)
       {"table-column-group", CSS_VAL_TABLE_COLUMN_GROUP},
 #line 56 "cssvalues.gperf"
       {"-khtml-xxx-large", CSS_VAL__KHTML_XXX_LARGE},
-#line 295 "cssvalues.gperf"
+#line 296 "cssvalues.gperf"
       {"infinite", CSS_VAL_INFINITE},
 #line 64 "cssvalues.gperf"
       {"semi-condensed", CSS_VAL_SEMI_CONDENSED},
@@ -729,6 +729,8 @@ findValue (register const char *str, register unsigned int len)
       {"no-close-quote", CSS_VAL_NO_CLOSE_QUOTE},
 #line 122 "cssvalues.gperf"
       {"windowframe", CSS_VAL_WINDOWFRAME},
+#line 250 "cssvalues.gperf"
+      {"break-word", CSS_VAL_BREAK_WORD},
 #line 195 "cssvalues.gperf"
       {"table-row-group", CSS_VAL_TABLE_ROW_GROUP},
 #line 123 "cssvalues.gperf"
@@ -753,7 +755,7 @@ findValue (register const char *str, register unsigned int len)
       {"-khtml-japanese-informal", CSS_VAL__KHTML_JAPANESE_INFORMAL},
 #line 111 "cssvalues.gperf"
       {"inactivecaptiontext", CSS_VAL_INACTIVECAPTIONTEXT},
-#line 282 "cssvalues.gperf"
+#line 283 "cssvalues.gperf"
       {"-khtml-around-floats", CSS_VAL__KHTML_AROUND_FLOATS},
 #line 230 "cssvalues.gperf"
       {"nwse-resize", CSS_VAL_NWSE_RESIZE},
@@ -902,55 +904,43 @@ findValue (register const char *str, register unsigned int len)
        -1, 266,  -1,  -1,  -1,  -1, 267,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 268,  -1,
+       -1,  -1,  -1, 269,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1, 268,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 270,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 269,
+       -1,  -1,  -1, 271,  -1,  -1,  -1,  -1,  -1,  -1,
+      272,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1, 270,  -1,  -1,  -1,  -1,  -1,  -1,
-      271,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1, 272,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 273,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1, 273,  -1, 274,  -1,  -1, 275,  -1,
-       -1,  -1,  -1, 276,  -1,  -1, 277,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 278,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1, 279,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-      280,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1, 281,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1, 282,  -1,  -1,
+       -1,  -1,  -1, 274,  -1, 275,  -1,  -1, 276,  -1,
+       -1,  -1,  -1, 277,  -1,  -1, 278,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 279,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1, 280,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 283,
-       -1,  -1,  -1, 284,  -1,  -1,  -1,  -1,  -1,  -1,
+      281,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1, 282,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1, 283,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 284,
        -1,  -1,  -1, 285,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 286,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 287,
+       -1,  -1,  -1, 286,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 287,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 288,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-      288,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1, 289,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1, 290,  -1,  -1,  -1,  -1,  -1,  -1,
+      289,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
@@ -959,13 +949,25 @@ findValue (register const char *str, register unsigned int len)
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1, 290,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1, 291,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 291
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 292
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -987,7 +989,7 @@ findValue (register const char *str, register unsigned int len)
     }
   return 0;
 }
-#line 306 "cssvalues.gperf"
+#line 307 "cssvalues.gperf"
 
 static const char * const valueList[] = {
 "",
@@ -1227,6 +1229,7 @@ static const char * const valueList[] = {
 "pre-wrap", 
 "pre-line", 
 "-khtml-nowrap", 
+"break-word", 
 "above", 
 "absolute", 
 "always", 

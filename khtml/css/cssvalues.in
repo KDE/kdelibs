@@ -329,6 +329,11 @@ pre-wrap
 pre-line
 -khtml-nowrap
 #
+# CSS_PROP_WORD_WRAP
+#
+#normal
+break-word
+#
 # Unordered rest
 #
 above

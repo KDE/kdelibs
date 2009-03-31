@@ -1853,8 +1853,8 @@ bool RenderBlock::inlineChildNeedsLineBox(RenderObject* inlineObj) // WC: genera
 BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi)
 {
     int width = lineWidth(m_height);
-    int w = 0;
-    int tmpW = 0;
+    int w = 0; // the width from the start of the line up to the currently chosen breaking opportunity
+    int tmpW = 0; // the accumulated width since the last chosen breaking opportunity
 #ifdef DEBUG_LINEBREAKS
     kDebug(6041) << "findNextLineBreak: line at " << m_height << " line width " << width;
     kDebug(6041) << "sol: " << start.obj << " " << start.pos;
@@ -2053,6 +2053,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             int wordSpacing = o->style()->wordSpacing();
 #endif
             bool nextIsSoftBreakable = false;
+            bool checkBreakWord = autoWrap && (o->style()->wordWrap() == WWBREAKWORD);
 
             while(len) {
                 bool previousCharacterIsSpace = currentCharacterIsSpace;
@@ -2060,6 +2061,8 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 nextIsSoftBreakable = false;
                 const QChar c = str[pos];
                 currentCharacterIsSpace = c.unicode() == ' ';
+                checkBreakWord &= !w; // only break words when no other breaking opportunity exists earlier
+                                      // on the line (even within the text object we are currently processing)
 
                 if (preserveWS || !currentCharacterIsSpace)
                     isLineEmpty = false;
@@ -2110,9 +2113,8 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         continue;
                     }
                 }
-
-                if ( (preserveLF && c.unicode() == '\n') || (autoWrap && (isBreakable( str, pos, strlen ) || isSoftBreakable)) ) {
-
+                bool isbreakablePosition = (preserveLF && c.unicode() == '\n') || (autoWrap && (isBreakable( str, pos, strlen ) || isSoftBreakable));
+                if ( isbreakablePosition || checkBreakWord) {
                     tmpW += t->width(lastSpace, pos - lastSpace, f);
 #ifdef APPLE_CHANGES
                     applyWordSpacing = (wordSpacing && currentCharacterIsSpace && !previousCharacterIsSpace &&
@@ -2143,9 +2145,14 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                     }
 
                     if (autoWrap) {
-                        if (w+tmpW > width)
+                        if (w+tmpW > width) {
+                            if (checkBreakWord && pos) {
+                                lBreak.obj = o;
+                                lBreak.pos = pos-1;
+                                lBreak.endOfInline = false;
+                            }
                             goto end;
-                        else if ( (pos > 1 && str[pos-1].unicode() == SOFT_HYPHEN) )
+                        } else if ( (pos > 1 && str[pos-1].unicode() == SOFT_HYPHEN) )
                             // Subtract the width of the soft hyphen out since we fit on a line.
                             tmpW -= t->width(pos-1, 1, f);
                     }
@@ -2161,7 +2168,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         return lBreak;
                     }
 
-                    if ( autoWrap ) {
+                    if ( autoWrap && isbreakablePosition ) {
                         w += tmpW;
                         tmpW = 0;
                         lBreak.obj = o;
@@ -2204,9 +2211,21 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 len--;
             }
 
-            // IMPORTANT: pos is > length here!
-            if (!ignoringSpaces)
+            if (!ignoringSpaces) {
+                // We didn't find any space that would be beyond the line |width|.
+                // Lets add to |tmpW| the remaining width since the last space we found.
+                // Before we test this new |tmpW| however, we will have to look ahead to check
+                // if the next object/position can serve as a line breaking opportunity.
                 tmpW += t->width(lastSpace, pos - lastSpace, f);
+                if (checkBreakWord && !w && pos && tmpW > width) {
+                    // Avoid doing the costly lookahead for break-word,
+                    // since we know we are allowed to break.
+                    lBreak.obj = o;
+                    lBreak.pos = pos-1;
+                    lBreak.endOfInline = false;
+                    goto end;
+                }
+            }
         } else
             KHTMLAssert( false );
 
@@ -2214,12 +2233,15 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
         lastIt = it;
         o = it.next();
 
-        // advance the iterator to the next non-inline-flow
+        // Advance the iterator to the next non-inline-flow
         while (o && o->isInlineFlow() && !o->isWordBreak()) {
             tmpW += getBorderPaddingMargin(o, it.endOfInline);
             if (isLineEmpty) isLineEmpty = !tmpW;
             o = it.next();
         }
+
+        // All code below, until the end of the loop, is looking ahead the |it| object we just
+        // advanced to, comparing it to the previous object |lastIt|.
 
         if (checkShouldIgnoreInitialWhitespace) {
             // Check if we should switch to ignoringSpaces state
@@ -2240,21 +2262,28 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 
         bool checkForBreak = autoWrap;
         if (canBreak) {
-            if (w && w + tmpW > width && lBreak.obj && !lastIt.current->style()->preserveLF() && !autoWrap)
+            if (!autoWrap && w && w + tmpW > width && lBreak.obj && !lastIt.current->style()->preserveLF())
+                // ### needs explanation
                 checkForBreak = true;
             else if (it.current && lastIt.current->isText() && it.current->isText() && !it.current->isBR()) {
+                // We are looking ahead the next text object to see if it continues a word started previously,
+                // or is a line-breaking opportunity.
                 if (autoWrap || it.current->style()->autoWrap()) {
                     if (currentCharacterIsSpace)
+                        // "<i>s </i>top"
+                        //      _    ^
                         checkForBreak = true;
                     else {
+                        // either "<i>c</i>ontinue" or "<i>s</i> top"
+                        //            _    ^               _    ^
                         checkForBreak = false;
                         RenderText* nextText = static_cast<RenderText*>(it.current);
                         if (nextText->stringLength() != 0) {
                             QChar c = nextText->text()[0];
+                            // If the next item is a space, then we may try to break.
+                            // Otherwise the next text run continues our word (and so it needs to
+                            // keep adding to |tmpW|).
                             if (c == ' ' || c == '\t' || (c == '\n' && !it.current->style()->preserveLF())) {
-                                // If the next item on the line is text, and if we did not end with
-                                // a space, then the next text run continues our word (and so it needs to
-                                // keep adding to |tmpW|.  Just update and continue.
                                 checkForBreak = true;
                             }
                         }
