@@ -53,6 +53,7 @@
 #include "xml/dom_nodeimpl.h"
 #include "editing/editing_p.h"
 #include "find/khtmlfind_p.h"
+#include "html/storepassbar.h"
 
 class KFind;
 class KFindDialog;
@@ -145,7 +146,7 @@ class KHTMLPartPrivate
   KHTMLPartPrivate& operator=(const KHTMLPartPrivate&);
 public:
   KHTMLPartPrivate(KHTMLPart* part, QObject* parent) :
-    m_find( part, (part->parentPart() ? &part->parentPart()->d->m_find : 0) )
+    m_find( part, (part->parentPart() ? &part->parentPart()->d->m_find : 0) ), m_storePass( part )
   {
     q     = part;
     m_doc = 0L;
@@ -293,6 +294,7 @@ public:
 
 #ifndef KHTML_NO_WALLET
   KWallet::Wallet* m_wallet;
+  QStringList m_walletForms;
 #endif
   int m_runningScripts;
   bool m_bOpenMiddleClick;
@@ -447,6 +449,7 @@ public:
   QStringList m_pluginPageQuestionAsked;
 
   KHTMLFind m_find;
+  StorePass m_storePass;
 
   KJSErrorDlg *m_jsedlg;
 

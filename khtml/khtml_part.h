@@ -245,6 +245,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLPartFunction;
   friend class KHTMLPopupGUIClient;
   friend class KHTMLFind;
+  friend class StorePass;
   friend class WebCore::SVGDocumentExtensions;
 
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE setJScriptEnabled )
@@ -1481,6 +1482,9 @@ private Q_SLOTS:
   void slotWalletClosed();
   void launchWalletManager();
   void walletMenu();
+  void delNonPasswordStorableSite();
+  void removeStoredPasswordForm(QAction* action);
+  void addWalletFormKey(const QString& walletFormKey);
 
   /**
    * @internal
@@ -1665,6 +1669,7 @@ private:
   void openWallet(DOM::HTMLFormElementImpl*);
   void saveToWallet(const QString& key, const QMap<QString,QString>& data);
   void dequeueWallet(DOM::HTMLFormElementImpl*);
+  void saveLoginInformation(const QString& host, const QString& key, const QMap<QString, QString>& walletMap);
 
   void enableFindAheadActions(bool);
 

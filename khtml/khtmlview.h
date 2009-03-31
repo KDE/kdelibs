@@ -103,6 +103,7 @@ class KHTML_EXPORT KHTMLView : public QScrollArea, public khtml::KHTMLWidget
     friend class DOM::DocumentImpl;
     friend class KHTMLPart;
     friend class KHTMLFind;
+    friend class StorePass;
     friend class khtml::RenderCanvas;
     friend class khtml::RenderObject;
     friend class khtml::RenderLineEdit;
@@ -472,6 +473,7 @@ private:
     void addFormCompletionItem(const QString &name, const QString &value);
 
     void addNonPasswordStorableSite( const QString& host );
+    void delNonPasswordStorableSite( const QString& host );
     bool nonPasswordStorableSite( const QString& host ) const;
 
     bool dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,

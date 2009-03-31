@@ -247,11 +247,16 @@ set(khtmlhtml_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/html/html_objectimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/html_tableimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/html_canvasimpl.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/html/storepassbar.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/HTMLMediaElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/HTMLAudioElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/HTMLVideoElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/HTMLSourceElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/TimeRanges.cpp
+)
+
+kde4_add_ui_files(khtmlhtml_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/khtml/html/storepassbar_base.ui
 )
 
 # khtml/ecma/Makefile.am: kjs_html
