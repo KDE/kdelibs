@@ -1271,7 +1271,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 #endif
     if (iconType == KIconLoader::Threshold && size != img->width())
     {
-        if ( abs(size-img->width())>iconThreshold )
+        const int sizeDiff = size - img->width();
+        if (sizeDiff < 0 || sizeDiff > iconThreshold)
             *img = img->scaled(size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
     if (group >= 0)
