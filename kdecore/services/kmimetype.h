@@ -123,12 +123,17 @@ public:
     /**
      * Finds a KMimeType with the given @p url.
      * This function looks at mode_t first.
-     * If that does not help it
-     * looks at the extension.  This is fine for FTP, FILE, TAR and
-     * friends, but is not for HTTP ( cgi scripts! ). You should use
-     * KRun instead, but this function returns immediately while
-     * KRun is async. If no extension matches, then
-     * the file contents will be examined if the URL is a local file, or
+     * If that does not help it looks at the extension (and the contents, for local files).
+     * This method is fine for many protocols like ftp, file, fish, zip etc.,
+     * but is not for http (e.g. cgi scripts
+     * make extension-based checking unreliable).
+     * For HTTP you should use KRun instead (to open the URL, in an app
+     * or internally), or a KIO::mimetype() job (to find the mimetype without
+     * downloading), or a KIO::get() job (to find the mimetype and then download).
+     * In fact KRun is the most complete solution, but deriving from it just
+     * for this is a bit cumbersome.
+     *
+     * If no extension matches, then the file contents will be examined if the URL is a local file, or
      * "application/octet-stream" is returned otherwise.
      *
      * @param url Is the right most URL with a filesystem protocol. It

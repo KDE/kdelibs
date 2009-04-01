@@ -230,8 +230,21 @@ namespace KIO {
 
     /**
      * Get (a.k.a. read).
+     * This is the job to use in order to "download" a file into memory.
+     * The slave emits the data through the data() signal.
      *
-     * The slave emits the data through data().
+     * Special case: if you want to determine the mimetype of the file first,
+     * and then read it with the appropriate component, you can still use
+     * a KIO::get() directly. When that job emits the mimeType signal, (which is
+     * guaranteed to happen before it emits any data), put the job on hold:
+     * <code>
+     *   job->putOnHold();
+     *   KIO::Scheduler::publishSlaveOnHold();
+     * </code>
+     * and forget about the job. The next time someone does a KIO::get() on the
+     * same URL (even in another process) this job will be resumed. This saves KIO
+     * from doing two requests to the server.
+     *
      * @param url the URL of the file
      * @param reload: Reload to reload the file, NoReload if it can be taken from the cache
      * @param flags Can be HideProgressInfo here
@@ -347,6 +360,10 @@ namespace KIO {
 
     /**
      * Find mimetype for one file or directory.
+     *
+     * If you are going to download the file right after determining its mimetype,
+     * then don't use this, prefer using a KIO::get() job instead. See the note
+     * about putting the job on hold once the mimetype is determined.
      *
      * @param url the URL of the file
      * @param flags Can be HideProgressInfo here
