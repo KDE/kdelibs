@@ -155,8 +155,8 @@ void FileJobPrivate::slotPosition( KIO::filesize_t pos )
 void FileJobPrivate::slotTotalSize( KIO::filesize_t t_size )
 {
     m_size = t_size;
-//    Q_Q(FileJob);
-//    emit q->totalSize(q, m_size);
+    Q_Q(FileJob);
+    q->setTotalAmount(KJob::Bytes, m_size);
 }
 
 void FileJobPrivate::slotOpen( )
