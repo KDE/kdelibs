@@ -405,7 +405,7 @@ void RenderRadioButton::calcMinMaxWidth()
     RenderButton::calcMinMaxWidth();
 }
 
-void RenderRadioButton::slotToggled(bool activated)
+void RenderRadioButton::slotToggled(bool /*activated*/)
 {
     if (m_ignoreToggled)
       return;
@@ -893,7 +893,7 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
 {
     LineEditWidget *edit = new LineEditWidget(element, view(), view()->widget());
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
-    connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
+    connect(edit,SIGNAL(textEdited(const QString &)),this,SLOT(slotTextEdited(const QString &)));
     connect(edit->completionBox(),SIGNAL(currentTextChanged(const QString &)),this,SLOT(slotCompletionBoxActivated(const QString &)));
 
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
@@ -927,7 +927,15 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
     RenderFormElement::setStyle( _style );
 
     widget()->setAlignment(textAlignment());
-    static_cast<LineEditWidget*>(widget())->setClearButtonShown( !shouldPaintBorder() && !_style->hasBackgroundImage() );
+    bool showClearButton = (!shouldPaintBorder() && !_style->hasBackgroundImage());
+    static_cast<LineEditWidget*>(widget())->setClearButtonShown( showClearButton );
+    if (showClearButton) {
+        kDebug() << "text:" << static_cast<LineEditWidget*>(widget())->text();
+        QList<QWidget *> wl = qFindChildren<QWidget *>(m_widget, QString());
+        foreach (QWidget* w, wl)
+            if (!w->isWindow())
+                w->setObjectName("KHTMLLineEditButton");
+    }
 }
 
 void RenderLineEdit::highLightWord( unsigned int length, unsigned int pos )
@@ -1005,28 +1013,23 @@ void RenderLineEdit::updateFromElement()
     }
 
     if (element()->value().string() != widget()->text()) {
-        bool blocked = widget()->blockSignals(true);
         int pos = widget()->cursorPosition();
         widget()->setText(element()->value().string());
-
-        widget()->setModified( false );
-
         widget()->setCursorPosition(pos);
-        widget()->blockSignals(blocked);
     }
     widget()->setReadOnly(element()->readOnly());
 
     RenderFormElement::updateFromElement();
 }
 
-void RenderLineEdit::slotTextChanged(const QString &string)
+void RenderLineEdit::slotTextEdited(const QString &string)
 {
     // don't use setValue here!
     element()->m_value = string;
     element()->m_unsubmittedFormChange = true;
 }
 
-void RenderLineEdit::slotCompletionBoxActivated(const QString &string)
+void RenderLineEdit::slotCompletionBoxActivated(const QString &/*string*/)
 {
     // TODO: See todo in KLineEdit::setCompletionBox()
     widget()->setModified( true );

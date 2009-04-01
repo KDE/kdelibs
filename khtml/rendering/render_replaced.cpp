@@ -1010,7 +1010,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             p = target->mapFrom(m_widget, p);
         }
 
-        if (m_underMouse != target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {
+        if (m_underMouse != target && ev.id() != EventImpl::KHTML_MOUSEWHEEL_EVENT) {
             if (m_underMouse) {
                 QEvent moe( QEvent::Leave );
                 QApplication::sendEvent(m_underMouse, &moe);
@@ -1028,8 +1028,8 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                     QHoverEvent he( QEvent::HoverEnter, QPoint(0,0), QPoint(-1,-1) );
                     QApplication::sendEvent(target, &he);
                 }
-                m_underMouse = target;
             }
+            m_underMouse = target;
         }
 
         if (target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {
@@ -1040,7 +1040,8 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 
         if (ev.id() == EventImpl::MOUSEDOWN_EVENT) {
             if (!target || (!::qobject_cast<QScrollBar*>(target) && 
-                            !::qobject_cast<KUrlRequester*>(m_widget)))
+                            !::qobject_cast<KUrlRequester*>(m_widget) &&
+                            !::qobject_cast<QLineEdit*>(m_widget)))
                 target = m_widget;
             view()->setMouseEventsTarget( target );
         } else {
