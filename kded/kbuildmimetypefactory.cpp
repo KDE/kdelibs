@@ -62,7 +62,7 @@ KMimeType::Ptr KBuildMimeTypeFactory::findMimeTypeByName(const QString &_name, K
 
     QString name = _name;
     if (options & KMimeType::ResolveAliases) {
-        QMap<QString, QString>::const_iterator it = aliases().constFind(_name);
+        AliasesMap::const_iterator it = aliases().constFind(_name);
         if (it != aliases().constEnd())
             name = *it;
     }
@@ -185,17 +185,19 @@ void KBuildMimeTypeFactory::saveHeader(QDataStream &str)
     // This header is read by KMimeTypeFactory's constructor
     str << (qint32) m_fastPatternOffset;
     str << (qint32) m_oldOtherPatternOffset;
-    const QMap<QString, QString>& aliasMap = aliases();
+    const AliasesMap& aliasMap = aliases();
     str << (qint32) aliasMap.count();
-    for (QMap<QString, QString>::const_iterator it = aliasMap.begin(); it != aliasMap.end(); ++it) {
+    for (AliasesMap::const_iterator it = aliasMap.begin(); it != aliasMap.end(); ++it) {
         str << it.key() << it.value();
     }
     str << (qint32) m_highWeightPatternOffset;
     str << (qint32) m_lowWeightPatternOffset;
+    str << (qint32) m_parentsMapOffset;
 }
 
 void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
 {
+    ParentsMap& parentsMap = this->parentsMap();
     QFile qfile( fileName );
     //kDebug(7021) << "Now parsing" << fileName;
     if (qfile.open(QIODevice::ReadOnly)) {
@@ -215,7 +217,8 @@ void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
             else {
                 const QString parentTypeName = line.mid(pos+1);
                 Q_ASSERT(!parentTypeName.isEmpty());
-                derivedType->setParentMimeType(parentTypeName);
+                //derivedType->setParentMimeType(parentTypeName);
+                parentsMap[derivedTypeName].append(parentTypeName);
             }
         }
     }
@@ -223,6 +226,7 @@ void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
 
 void KBuildMimeTypeFactory::parseAliasFile(const QString& fileName)
 {
+    AliasesMap& aliasMap = aliases();
     QFile qfile( fileName );
     //kDebug(7021) << "Now parsing" << fileName;
     if (qfile.open(QIODevice::ReadOnly)) {
@@ -239,7 +243,7 @@ void KBuildMimeTypeFactory::parseAliasFile(const QString& fileName)
             const QString parentTypeName = line.mid(pos+1);
             Q_ASSERT(!aliasTypeName.isEmpty());
             Q_ASSERT(!parentTypeName.isEmpty());
-            aliases().insert(aliasTypeName, parentTypeName);
+            aliasMap.insert(aliasTypeName, parentTypeName);
         }
     }
 }
@@ -280,6 +284,13 @@ void KBuildMimeTypeFactory::save(QDataStream &str)
     KSycocaFactory::save(str);
 
     savePatternLists(str);
+
+    m_parentsMapOffset = str.device()->pos();
+    ParentsMap& parentsMap = this->parentsMap();
+    str << (qint32) parentsMap.count();
+    for (ParentsMap::const_iterator it = parentsMap.begin(); it != parentsMap.end(); ++it) {
+        str << it.key() << it.value().join("|");
+    }
 
     int endOfFactoryData = str.device()->pos();
 
@@ -353,17 +364,7 @@ void KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
     }
     str << QString(""); // end of list marker (has to be a string !)
 
-    // For compat with kde-4.1 kdecore: write the old "other patterns" thing
+    // For compat with kde-4.1 kdecore: write the old "other patterns" thing, but empty
     m_oldOtherPatternOffset = str.device()->pos();
-    // TODO: remove once 4.2 is released.
-    Q_FOREACH(const OtherPattern& op, highWeightPatternOffset) {
-        str << op.pattern;
-        str << (qint32)op.offset;
-    }
-    Q_FOREACH(const OtherPattern& op, lowWeightPatternOffset) {
-        str << op.pattern;
-        str << (qint32)op.offset;
-    }
-    // END TODO
     str << QString(""); // end of list marker (has to be a string !)
 }

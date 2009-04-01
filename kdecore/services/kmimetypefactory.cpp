@@ -1,6 +1,6 @@
 /*  This file is part of the KDE libraries
  *  Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
- *  Copyright (C) 2006 David Faure <faure@kde.org>
+ *  Copyright (C) 2006-2009 David Faure <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -31,6 +31,7 @@ KMimeTypeFactory::KMimeTypeFactory()
     : KSycocaFactory( KST_KMimeTypeFactory ),
       m_highWeightPatternsLoaded(false),
       m_lowWeightPatternsLoaded(false),
+      m_parentsMapLoaded(false),
       m_magicFilesParsed(false)
 {
     kMimeTypeFactoryInstance->instanceCreated(this);
@@ -48,6 +49,8 @@ KMimeTypeFactory::KMimeTypeFactory()
         // that's the old m_otherPatternOffset, kept for compat but unused
 
         // alias map
+        // TODO: to save time in apps that don't need this, we could
+        // do like the parents hash (move it, store offset, and load it delayed).
         qint32 n;
         (*str) >> n;
         QString str1, str2;
@@ -61,11 +64,15 @@ KMimeTypeFactory::KMimeTypeFactory()
         m_highWeightPatternOffset = i;
         (*str) >> i;
         m_lowWeightPatternOffset = i;
+        (*str) >> i;
+        m_parentsMapOffset = i;
 
         const int saveOffset = str->device()->pos();
         // Init index tables
         m_fastPatternDict = new KSycocaDict(str, m_fastPatternOffset);
         str->device()->seek(saveOffset);
+    } else {
+        m_parentsMapLoaded = true;
     }
 }
 
@@ -88,7 +95,7 @@ KMimeType::Ptr KMimeTypeFactory::findMimeTypeByName(const QString &_name, KMimeT
 
     QString name = _name;
     if (options & KMimeType::ResolveAliases) {
-        QMap<QString, QString>::const_iterator it = m_aliases.constFind(_name);
+        AliasesMap::const_iterator it = m_aliases.constFind(_name);
         if (it != m_aliases.constEnd())
             name = *it;
     }
@@ -388,9 +395,24 @@ KMimeType::List KMimeTypeFactory::allMimeTypes()
     return result;
 }
 
-QMap<QString, QString>& KMimeTypeFactory::aliases()
+QStringList KMimeTypeFactory::parents(const QString& mime)
 {
-    return m_aliases;
+    if (!m_parentsMapLoaded) {
+        m_parentsMapLoaded = true;
+        Q_ASSERT(m_parents.isEmpty());
+        QDataStream* str = stream();
+        str->device()->seek(m_parentsMapOffset);
+        qint32 n;
+        (*str) >> n;
+        QString str1, str2;
+        for(;n;n--) {
+            KSycocaEntry::read(*str, str1);
+            KSycocaEntry::read(*str, str2);
+            m_parents.insert(str1, str2.split('|'));
+        }
+
+    }
+    return m_parents.value(mime);
 }
 
 #include <arpa/inet.h> // for ntohs

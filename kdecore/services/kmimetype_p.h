@@ -57,12 +57,8 @@ public:
     }
 
     bool inherits(const QString& mime) const;
-    QString fallbackParent() const;
-    QStringList parentMimeTypes() const;
-    void collectParentMimeTypes(QStringList&) const;
 
     QStringList m_lstPatterns;
-    QStringList m_parentMimeTypes; // shared-mime-info supports multiple inheritance
     QString m_iconName; // user-specified
     // For any new field here, add it to loadInternal() and save(), for persistence.
 

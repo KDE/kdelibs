@@ -534,8 +534,7 @@ void KMimeTypeTest::testMimeTypeInheritancePerformance()
     KMimeType::Ptr mime = KMimeType::mimeType("text/x-chdr");
     QVERIFY(mime);
     QTime dt; dt.start();
-    const int numIterations = 200; // 2000 for a better test
-    for (int i = 0; i < numIterations; ++i) {
+    QBENCHMARK {
         QString match;
         foreach (const QString& mt, mimeTypes) {
             if (mime->is(mt)) {
@@ -546,7 +545,13 @@ void KMimeTypeTest::testMimeTypeInheritancePerformance()
         }
         QCOMPARE(match, QString("text/plain"));
     }
-    qDebug() << "Calling is()" << mimeTypes.count() * numIterations << "times took" << dt.elapsed() << "msecs";
+    // Results on David's machine (April 2009):
+    // With the KMimeType::is() code that loaded every parent KMimeType:
+    // 3.5 msec / 7,000,000 ticks / 5,021,498 instr. loads per iteration
+    // After the QHash for parent mimetypes in ksycoca, removing the need to load full mimetypes:
+    // 0.57 msec / 1,115,000 ticks / 938,356 instr. loads per iteration
+    // After converting the QMap for aliases into a QHash too:
+    // 0.48 msec / 960,000 ticks / 791,404 instr. loads per iteration
 }
 
 // Helper method for all the trader tests

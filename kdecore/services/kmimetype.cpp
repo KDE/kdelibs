@@ -60,11 +60,8 @@ static void errorMissingMimeTypes( const QStringList& _types )
 void KMimeTypePrivate::loadInternal( QDataStream& _str )
 {
     QString oldParentMimeTypeString;
-    _str >> m_lstPatterns >> oldParentMimeTypeString >> m_parentMimeTypes >> m_iconName;
-
-    // kde-4.0 compatibility. Remove in kde5.
-    if (!oldParentMimeTypeString.isEmpty() && m_parentMimeTypes.isEmpty())
-        m_parentMimeTypes.append(oldParentMimeTypeString);
+    QStringList oldParentMimeTypesList;
+    _str >> m_lstPatterns >> oldParentMimeTypeString >> oldParentMimeTypesList >> m_iconName;
 }
 
 /**
@@ -488,9 +485,9 @@ KMimeType::KMimeType( QDataStream& _str, int offset )
 void KMimeTypePrivate::save( QDataStream& _str )
 {
     KServiceTypePrivate::save( _str );
-    // Warning adding/removing fields here involves a binary incompatible change - update version
-    // number in ksycoca.h
-    _str << m_lstPatterns << QString() << m_parentMimeTypes << m_iconName;
+    // Warning adding fields here involves a binary incompatible change - update version
+    // number in ksycoca.h. Never remove fields.
+    _str << m_lstPatterns << QString() << QStringList() << m_iconName;
 }
 
 QVariant KMimeTypePrivate::property( const QString& _name ) const
@@ -570,42 +567,54 @@ QString KMimeType::comment( const KUrl &url) const
     return d->comment(url);
 }
 
-QString KMimeType::parentMimeType() const
+static QString fallbackParent(const QString& mimeTypeName)
 {
-    Q_D(const KMimeType);
-
-    if (!d->m_parentMimeTypes.isEmpty())
-        return d->m_parentMimeTypes.first();
-    return d->fallbackParent();
-}
-
-QString KMimeTypePrivate::fallbackParent() const
-{
-    const QString myGroup = m_strName.left(m_strName.indexOf('/'));
+    const QString myGroup = mimeTypeName.left(mimeTypeName.indexOf('/'));
     // All text/* types are subclasses of text/plain.
-    if (myGroup == "text" && m_strName != "text/plain")
+    if (myGroup == "text" && mimeTypeName != "text/plain")
         return "text/plain";
     // All real-file mimetypes implicitly derive from application/octet-stream
     if (myGroup != "inode" &&
         // kde extensions
         myGroup != "all" && myGroup != "fonts" && myGroup != "print" && myGroup != "uri"
-        && m_strName != "application/octet-stream") {
+        && mimeTypeName != "application/octet-stream") {
         return "application/octet-stream";
     }
     return QString();
 }
 
+static QStringList parentMimeTypesList(const QString& mimeTypeName)
+{
+    QStringList parents = KMimeTypeFactory::self()->parents(mimeTypeName);
+    if (parents.isEmpty()) {
+        const QString myParent = fallbackParent(mimeTypeName);
+        if (!myParent.isEmpty())
+            parents.append(myParent);
+    }
+    return parents;
+}
+
+QString KMimeType::parentMimeType() const
+{
+    Q_D(const KMimeType);
+
+    const QStringList parents = parentMimeTypesList(d->m_strName);
+    if (!parents.isEmpty())
+        return parents.first();
+    return QString();
+}
+
 bool KMimeTypePrivate::inherits(const QString& mime) const
 {
-    if (m_strName == mime) {
-        return true;
-    }
-    foreach( const QString& parent, parentMimeTypes() ) {
-        KMimeType::Ptr parentMime = KMimeTypeFactory::self()->findMimeTypeByName(parent);
-        if (!parentMime) // error
-            return false;
-        if (parentMime->d_func()->inherits(mime)) // recurse
+    QStack<QString> toCheck;
+    toCheck.push(m_strName);
+    while (!toCheck.isEmpty()) {
+        const QString current = toCheck.pop();
+        if (current == mime)
             return true;
+        Q_FOREACH(const QString& parent, parentMimeTypesList(current)) {
+            toCheck.push(parent);
+        }
     }
     return false;
 }
@@ -624,23 +633,12 @@ bool KMimeType::is( const QString& mimeTypeName ) const
 QStringList KMimeType::parentMimeTypes() const
 {
     Q_D(const KMimeType);
-    return d->parentMimeTypes();
+    return parentMimeTypesList(d->m_strName);
 }
 
-QStringList KMimeTypePrivate::parentMimeTypes() const
+static void collectParentMimeTypes(const QString& mime, QStringList& allParents)
 {
-    QStringList parents = m_parentMimeTypes;
-    if (parents.isEmpty()) {
-        const QString myParent = fallbackParent();
-        if (!myParent.isEmpty())
-            parents.append(myParent);
-    }
-    return parents;
-}
-
-void KMimeTypePrivate::collectParentMimeTypes(QStringList& allParents) const
-{
-    QStringList parents = parentMimeTypes();
+    QStringList parents = parentMimeTypesList(mime);
     Q_FOREACH(const QString& parent, parents) {
         // I would use QSet, but since order matters I better not
         if (!allParents.contains(parent))
@@ -649,19 +647,18 @@ void KMimeTypePrivate::collectParentMimeTypes(QStringList& allParents) const
     // We want a breadth-first search, so that the least-specific parent (octet-stream) is last
     // This means iterating twice, unfortunately.
     Q_FOREACH(const QString& parent, parents) {
-        KMimeType::Ptr parentMime = KMimeTypeFactory::self()->findMimeTypeByName(parent);
-        if (parentMime)
-            parentMime->d_func()->collectParentMimeTypes(allParents);
+        collectParentMimeTypes(parent, allParents);
     }
 }
 
 QStringList KMimeType::allParentMimeTypes() const
 {
+    Q_D(const KMimeType);
     QStringList allParents;
     const QString canonical = KMimeTypeFactory::self()->resolveAlias(name());
     if (!canonical.isEmpty())
         allParents.append(canonical);
-    d_func()->collectParentMimeTypes(allParents);
+    collectParentMimeTypes(d->m_strName, allParents);
     return allParents;
 }
 
@@ -690,18 +687,10 @@ void KMimeType::setPatterns(const QStringList& patterns)
     d->m_lstPatterns = patterns;
 }
 
-void KMimeType::setParentMimeType(const QString& parent)
-{
-    Q_D(KMimeType);
-    // kbuildmimetypefactory calls this multiple times, for each parent mimetype
-    d->m_parentMimeTypes.append(parent);
-}
-
 void KMimeType::internalClearData()
 {
     Q_D(KMimeType);
     // Clear the data that KBuildMimeTypeFactory is going to refill - and only that data.
-    d->m_parentMimeTypes.clear();
     d->m_lstPatterns.clear();
 }
 

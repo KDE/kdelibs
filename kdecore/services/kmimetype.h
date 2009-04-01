@@ -406,8 +406,6 @@ private:
     /// @internal for kbuildsycoca
     void setPatterns(const QStringList& patterns);
     /// @internal for kbuildsycoca
-    void setParentMimeType(const QString& parent);
-    /// @internal for kbuildsycoca
     void internalClearData();
     /// @internal for kbuildsycoca
     void setUserSpecifiedIcon(const QString& icon);
