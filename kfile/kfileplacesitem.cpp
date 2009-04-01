@@ -89,7 +89,19 @@ void KFilePlacesItem::setBookmark(const KBookmark &bookmark)
 
 Solid::Device KFilePlacesItem::device() const
 {
-    return Solid::Device(bookmark().metaDataItem("UDI"));
+    if (m_device.udi().isEmpty()) {
+        m_device = Solid::Device(bookmark().metaDataItem("UDI"));
+        if (m_device.isValid()) {
+            m_access = m_device.as<Solid::StorageAccess>();
+            m_volume = m_device.as<Solid::StorageVolume>();
+            m_disc = m_device.as<Solid::OpticalDisc>();
+        } else {
+            m_access = 0;
+            m_volume = 0;
+            m_disc = 0;
+        }
+    }
+    return m_device;
 }
 
 QVariant KFilePlacesItem::data(int role) const
@@ -139,9 +151,6 @@ QVariant KFilePlacesItem::deviceData(int role) const
     Solid::Device d = device();
 
     if (d.isValid()) {
-        const Solid::StorageAccess *access = d.as<Solid::StorageAccess>();
-        const Solid::StorageVolume *volume = d.as<Solid::StorageVolume>();
-        const Solid::OpticalDisc *disc = d.as<Solid::OpticalDisc>();
         QStringList overlays;
 
         switch (role)
@@ -149,26 +158,26 @@ QVariant KFilePlacesItem::deviceData(int role) const
         case Qt::DisplayRole:
             return d.product();
         case Qt::DecorationRole:
-            if (access && access->isAccessible()) {
+            if (m_access && m_access->isAccessible()) {
                 overlays << "emblem-mounted";
             } else {
                 overlays << QString(); // We have to guarantee the placement of the next emblem
             }
-            if (volume && volume->usage()==Solid::StorageVolume::Encrypted) {
+            if (m_volume && m_volume->usage()==Solid::StorageVolume::Encrypted) {
                 overlays << "security-high";
             }
             return KIcon(d.icon(), 0, overlays);
         case KFilePlacesModel::UrlRole:
-            if (access) {
-                return QUrl(KUrl(access->filePath()));
-            } else if (disc && (disc->availableContent() & Solid::OpticalDisc::Audio)!=0) {
+            if (m_access) {
+                return QUrl(KUrl(m_access->filePath()));
+            } else if (m_disc && (m_disc->availableContent() & Solid::OpticalDisc::Audio)!=0) {
                 return QUrl("audiocd:/");
             } else {
                 return QVariant();
             }
         case KFilePlacesModel::SetupNeededRole:
-            if (access) {
-                return !access->isAccessible();
+            if (m_access) {
+                return !m_access->isAccessible();
             } else {
                 return QVariant();
             }
@@ -222,7 +231,7 @@ KBookmark KFilePlacesItem::createDeviceBookmark(KBookmarkManager *manager,
         return KBookmark();
     KBookmark bookmark = root.createNewSeparator();
     bookmark.setMetaDataItem("UDI", udi);
-    bookmark.setMetaDataItem("isSystemItem", "true");    
+    bookmark.setMetaDataItem("isSystemItem", "true");
     return bookmark;
 }
 
@@ -231,10 +240,10 @@ QString KFilePlacesItem::generateNewId()
     static int count = 0;
 
 //    return QString::number(count++);
-    
+
     return QString::number(QDateTime::currentDateTime().toTime_t())
       + '/' + QString::number(count++);
-    
+
 
 //    return QString::number(QDateTime::currentDateTime().toTime_t())
 //         + '/' + QString::number(qrand());

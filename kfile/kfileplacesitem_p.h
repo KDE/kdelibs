@@ -22,11 +22,18 @@
 
 
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 #include <QtCore/QModelIndex>
 #include <kbookmark.h>
 #include <solid/device.h>
 
 class KDirLister;
+namespace Solid
+{
+class StorageAccess;
+class StorageVolume;
+class OpticalDisc;
+}
 
 class KFilePlacesItem : public QObject
 {
@@ -76,6 +83,10 @@ private:
     KBookmark m_bookmark;
     KDirLister *m_lister;
     bool m_folderIsEmpty;
+    mutable Solid::Device m_device;
+    mutable QPointer<Solid::StorageAccess> m_access;
+    mutable QPointer<Solid::StorageVolume> m_volume;
+    mutable QPointer<Solid::OpticalDisc> m_disc;
 };
 
 #endif
