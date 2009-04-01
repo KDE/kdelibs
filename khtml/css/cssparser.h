@@ -226,7 +226,8 @@ namespace DOM {
 	int lex();
     private:
 	int yyparse();
-        void runParser(int length);
+	void runParser();
+        void setupParser(const char *prefix, const DOMString &string, const char *suffix);
 
         bool inShorthand() const { return m_inParseShorthand; }
 
