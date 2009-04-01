@@ -215,7 +215,9 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
             int row = 1;
             if ( sizeDest != (KIO::filesize_t)-1 )
             {
-                QLabel * lb = new QLabel( i18n("size %1",  KIO::convertSize(sizeDest) ), this );
+                QLabel * lb = new QLabel(this);
+                lb->setText(i18n("size %1 (%2)", KIO::convertSize(sizeDest),
+                            KGlobal::locale()->formatNumber(sizeDest, 0)));
                 gridLayout->addWidget( lb, row, 1 );
                 row++;
 
@@ -250,7 +252,9 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
 
                 if ( sizeSrc != (KIO::filesize_t)-1 )
                 {
-                    QLabel * lb = new QLabel( i18n("size %1",  KIO::convertSize(sizeSrc) ), this );
+                    QLabel * lb = new QLabel(this);
+                    lb->setText(i18n("size %1 (%2)", KIO::convertSize(sizeSrc),
+                                KGlobal::locale()->formatNumber(sizeSrc, 0)));
                     gridLayout->addWidget( lb, row, 1 );
                     row++;
                 }
