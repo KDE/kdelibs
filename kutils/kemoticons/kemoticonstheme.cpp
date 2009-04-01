@@ -25,6 +25,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
 #include <QtGui/QTextDocument>
+#include <QtCore/QtAlgorithms>
 
 #include <kio/netaccess.h>
 #include <kstandarddirs.h>
@@ -37,6 +38,7 @@ public:
     ~KEmoticonsThemeData();
     KEmoticonsProvider *provider;
 };
+
 
 KEmoticonsTheme::KEmoticonsThemeData::KEmoticonsThemeData()
 {
@@ -186,6 +188,16 @@ QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, con
     return result;
 }
 
+bool EmoticonCompareEscaped( const KEmoticonsProvider::Emoticon &s1, const KEmoticonsProvider::Emoticon &s2)
+{
+	return s1.matchTextEscaped.length()>s2.matchTextEscaped.length();
+}
+bool EmoticonCompare( const KEmoticonsProvider::Emoticon &s1, const KEmoticonsProvider::Emoticon &s2)
+{
+	return s1.matchText.length()>s2.matchText.length();
+}
+
+
 QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, ParseMode mode) const
 {
     if (!d->provider) {
@@ -261,6 +273,10 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
 
         if (d->provider->emoticonsIndex().contains(c)) {
             emoticonList = d->provider->emoticonsIndex().value(c);
+	    if (mode & SkipHTML)
+		qSort(emoticonList.begin(),emoticonList.end(),EmoticonCompareEscaped);
+	    else
+		qSort(emoticonList.begin(),emoticonList.end(),EmoticonCompare);
             bool found = false;
             for (it = emoticonList.constBegin(); it != emoticonList.constEnd(); ++it) {
                 // If this is an HTML, then search for the HTML form of the emoticon.
