@@ -353,6 +353,9 @@ input, textarea, select, button {
         font-weight: normal;
         margin: 0__qem;
 }
+input:focus, textarea:focus, select:focus, button:focus {
+        outline: none;
+}
 
 input { color: windowtext;
         font-family: sans-serif;
@@ -554,6 +557,10 @@ frameset {
 
 frame {
 	display: block;
+}
+
+iframe:focus, object:focus, frame:focus {
+        outline: none;
 }
 
 nobr {

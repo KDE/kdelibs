@@ -544,22 +544,27 @@ void RenderWidget::setStyle(RenderStyle *_style)
 
 void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
 {
-    _tx += m_x;
-    _ty += m_y;
-
-    if (shouldPaintBackgroundOrBorder() && !qobject_cast<KUrlRequester*>(m_widget) &&
-          (paintInfo.phase == PaintActionChildBackground || paintInfo.phase == PaintActionChildBackgrounds))
-        paintBoxDecorations(paintInfo, _tx, _ty);
-
-    if (!m_widget || !m_view || paintInfo.phase != PaintActionForeground)
-        return;
 
     // not visible or not even once layouted
     if (style()->visibility() != VISIBLE || m_y <= -500000)
         return;
 
-    if ( (_ty > paintInfo.r.bottom()) || (_ty + m_height <= paintInfo.r.top()) ||
-         (_tx + m_width <= paintInfo.r.left()) || (_tx > paintInfo.r.right()) )
+    _tx += m_x;
+    _ty += m_y;
+
+    int os = maximalOutlineSize(paintInfo.phase);
+    if ( (_ty - os > paintInfo.r.bottom()) || (_ty + m_height +os <= paintInfo.r.top()) ||
+         (_tx + m_width +os <= paintInfo.r.left()) || (_tx - os > paintInfo.r.right()) )
+        return;
+
+    if ((paintInfo.phase == PaintActionChildBackground || paintInfo.phase == PaintActionChildBackgrounds) &&
+         shouldPaintBackgroundOrBorder() && !qobject_cast<KUrlRequester*>(m_widget))
+       paintBoxDecorations(paintInfo, _tx, _ty);
+
+    if (paintInfo.phase == PaintActionOutline && style()->outlineWidth())
+        paintOutline(paintInfo.p, _tx, _ty, width(), height(), style());
+
+    if (!m_widget || !m_view || paintInfo.phase != PaintActionForeground)
         return;
 
     int xPos = _tx+borderLeft()+paddingLeft();
