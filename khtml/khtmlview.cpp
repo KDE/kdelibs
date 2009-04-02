@@ -3828,7 +3828,7 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
         if (e->orientation() == Qt::Horizontal)
             o = MouseEventImpl::OHorizontal;
 
-        QMouseEvent _mouse(QEvent::MouseMove, QPoint(xm,ym), Qt::NoButton, e->buttons(), e->modifiers());
+        QMouseEvent _mouse(QEvent::MouseMove, e->pos(), Qt::NoButton, e->buttons(), e->modifiers());
         bool swallow = dispatchMouseEvent(EventImpl::KHTML_MOUSEWHEEL_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),
                                                true,-e->delta()/40,&_mouse,true,DOM::NodeImpl::MouseWheel,o);
 
