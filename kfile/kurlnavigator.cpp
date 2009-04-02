@@ -961,21 +961,24 @@ void KUrlNavigator::setUrl(const KUrl& newUrl)
         return;
     }
 
-    QString urlStr = KUrlCompletion::replacedPath(newUrl.pathOrUrl(), true, true);
+    KUrl url = newUrl;
+    url.cleanPath();
+
+    QString urlStr = KUrlCompletion::replacedPath(url.pathOrUrl(), true, true);
     if ((urlStr.length() > 0) && (urlStr.at(0) == '~')) {
         // replace '~' by the home directory
         urlStr.remove(0, 1);
         urlStr.insert(0, QDir::homePath());
     }
 
-    if ((newUrl.protocol() == "tar") || (newUrl.protocol() == "zip")) {
+    if ((url.protocol() == "tar") || (url.protocol() == "zip")) {
         // The URL represents a tar- or zip-file. Check whether
         // the URL is really part of the tar- or zip-file, otherwise
         // replace it by the local path again.
-        bool insideCompressedPath = d->isCompressedPath(newUrl);
+        bool insideCompressedPath = d->isCompressedPath(url);
         if (!insideCompressedPath) {
-            KUrl prevUrl = newUrl;
-            KUrl parentUrl = newUrl.upUrl();
+            KUrl prevUrl = url;
+            KUrl parentUrl = url.upUrl();
             while (parentUrl != prevUrl) {
                 if (d->isCompressedPath(parentUrl)) {
                     insideCompressedPath = true;
@@ -988,7 +991,7 @@ void KUrlNavigator::setUrl(const KUrl& newUrl)
         if (!insideCompressedPath) {
             // drop the tar: or zip: protocol since we are not
             // inside the compressed path anymore
-            urlStr = newUrl.path();
+            urlStr = url.path();
         }
     }
 
