@@ -1425,16 +1425,27 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
 
     khtml::RenderObject* r = target ? target->renderer() : 0;
     bool setCursor = true;
-    if (r && r->isWidget()) {
+    bool forceDefault = false;
+    if (r && r->isWidget()) { 
         RenderWidget* rw = static_cast<RenderWidget*>(r);
         KHTMLWidget* kw = qobject_cast<KHTMLView*>(rw->widget())? dynamic_cast<KHTMLWidget*>(rw->widget()) : 0;
         if (kw && kw->m_kwp->isRedirected())
             setCursor = false;
+        else if (QLineEdit* le = qobject_cast<QLineEdit*>(rw->widget())) {
+            QList<QWidget*> wl = qFindChildren<QWidget *>( le, "KHTMLLineEditButton" );
+            // force arrow cursor above lineedit clear button
+            foreach (QWidget*w, wl) {
+                if (w->underMouse()) {
+                    forceDefault = true;
+                    break;
+                }
+            }
+        }
     }
     khtml::RenderStyle* style = (r && r->style()) ? r->style() : 0;
     QCursor c;
     LinkCursor linkCursor = LINK_NORMAL;
-    switch ( style ? style->cursor() : CURSOR_AUTO) {
+    switch (!forceDefault ? (style ? style->cursor() : CURSOR_AUTO) : CURSOR_DEFAULT) {
     case CURSOR_AUTO:
         if ( r && r->isText() && !r->isPointInsideSelection(xm, ym, m_part->caret()) )
             c = QCursor(Qt::IBeamCursor);
