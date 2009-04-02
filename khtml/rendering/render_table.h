@@ -148,13 +148,13 @@ public:
 
     virtual RenderObject* removeChildNode(RenderObject* child);
 
-    RenderTableSection* sectionAbove(const RenderTableSection*, bool skipEmptySections = false) const;
-    RenderTableSection* sectionBelow(const RenderTableSection*, bool skipEmptySections = false) const;
+    RenderTableSection* sectionAbove(const RenderTableSection*, bool skipEmptySections = false);
+    RenderTableSection* sectionBelow(const RenderTableSection*, bool skipEmptySections = false);
 
-    RenderTableCell* cellAbove(const RenderTableCell* cell) const;
-    RenderTableCell* cellBelow(const RenderTableCell* cell) const;
-    RenderTableCell* cellBefore(const RenderTableCell* cell) const;
-    RenderTableCell* cellAfter(const RenderTableCell* cell) const;
+    RenderTableCell* cellAbove(const RenderTableCell* cell);
+    RenderTableCell* cellBelow(const RenderTableCell* cell);
+    RenderTableCell* cellBefore(const RenderTableCell* cell);
+    RenderTableCell* cellAfter(const RenderTableCell* cell);
 
     CollapsedBorderValue* currentBorderStyle() { return m_currentBorder; }
 
