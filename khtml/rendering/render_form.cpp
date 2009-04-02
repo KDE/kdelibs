@@ -930,7 +930,6 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
     bool showClearButton = (!shouldPaintBorder() && !_style->hasBackgroundImage());
     static_cast<LineEditWidget*>(widget())->setClearButtonShown( showClearButton );
     if (showClearButton) {
-        kDebug() << "text:" << static_cast<LineEditWidget*>(widget())->text();
         QList<QWidget *> wl = qFindChildren<QWidget *>(m_widget, QString());
         foreach (QWidget* w, wl)
             if (!w->isWindow())
