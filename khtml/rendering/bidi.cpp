@@ -2333,8 +2333,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 
  end:
     if ( lBreak == start && !lBreak.obj->isBR() ) {
-        // we didn't find any suitable break point so far
-        // so we'll just add as much as possible
+        // Having an |lBreak| identical to our |start| at this point means the first suitable
+        // break point |it.current| that we found was past |width|, so we jumped to the |end| label
+        // before we could set this (overflowing) breaking opportunity. Let's set it now. 
         if ( style()->whiteSpace() == PRE ) {
             // FIXME: Don't really understand this case.
             if(pos != 0) {
@@ -2347,22 +2348,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 lBreak.endOfInline = lastIt.endOfInline;
             }
         } else if( lBreak.obj ) {
-            if( lastIt.current != o) {
-                // better to break between object boundaries than in the middle of a word
                 lBreak.obj = o;
-                lBreak.pos = 0;
+                lBreak.pos = (o && o->isText() ? pos : 0);
                 lBreak.endOfInline = it.endOfInline;
-            } else {
-                // (it seems this case can only happen for an object at the beginning of the line,
-                //  that triggered a jump to the |end| label without any iteration.)
-
-                // Don't ever break in the middle of a word if we can help it.
-                // There's no room at all. We just have to be on this line,
-                // even though we'll spill out.
-                lBreak.obj = o;
-                lBreak.pos = pos;
-                lBreak.endOfInline = it.endOfInline;
-            }
         }
     }
 
