@@ -1167,9 +1167,12 @@ void RenderText::calcMinMaxWidth()
 
         // If line-breaks survive to here they are preserved
         if ( c == '\n' ) {
-            m_hasBreak = true;
-            isNewline = true;
-            isSpace = false;
+            if (style()->preserveLF()) {
+                m_hasBreak = true;
+                isNewline = true;
+                isSpace = false;
+            } else
+                isSpace = true;
         } else
             isSpace = c == ' ';
 
@@ -1223,7 +1226,8 @@ void RenderText::calcMinMaxWidth()
             {
                 if ( firstLine ) {
                     firstLine = false;
-                    m_beginMinWidth = currMaxWidth;
+                    if (!style()->autoWrap())
+                        m_beginMinWidth = currMaxWidth;
                 }
 
                 if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
