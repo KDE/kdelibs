@@ -889,11 +889,11 @@ void LineEditWidget::mouseMoveEvent(QMouseEvent *e)
 // -----------------------------------------------------------------------------
 
 RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
-    : RenderFormElement(element)
+    : RenderFormElement(element), m_blockElementUpdates(false)
 {
     LineEditWidget *edit = new LineEditWidget(element, view(), view()->widget());
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
-    connect(edit,SIGNAL(textEdited(const QString &)),this,SLOT(slotTextEdited(const QString &)));
+    connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
     connect(edit->completionBox(),SIGNAL(currentTextChanged(const QString &)),this,SLOT(slotCompletionBoxActivated(const QString &)));
 
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
@@ -1012,17 +1012,21 @@ void RenderLineEdit::updateFromElement()
     }
 
     if (element()->value().string() != widget()->text()) {
+        m_blockElementUpdates = true;
         int pos = widget()->cursorPosition();
         widget()->setText(element()->value().string());
         widget()->setCursorPosition(pos);
+        m_blockElementUpdates = false;
     }
     widget()->setReadOnly(element()->readOnly());
 
     RenderFormElement::updateFromElement();
 }
 
-void RenderLineEdit::slotTextEdited(const QString &string)
+void RenderLineEdit::slotTextChanged(const QString &string)
 {
+    if (m_blockElementUpdates) return;
+
     // don't use setValue here!
     element()->m_value = string;
     element()->m_unsubmittedFormChange = true;
