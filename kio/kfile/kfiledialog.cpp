@@ -77,7 +77,7 @@ static QString qtFilter(const QStringList& _filters)
 {
     QString converted;
     QStringList filters = _filters;
-    qSort( filters );
+
     foreach (const QString& current, filters) {
         QString new_f; //filter part
         QString new_name; //filter name part
@@ -90,37 +90,25 @@ static QString qtFilter(const QStringList& _filters)
             new_f = current.left(p);
             new_name = current.mid(p+1);
         }
-        // remove (.....) from name
-        p = new_name.indexOf('(');
-        int p2 = new_name.lastIndexOf(')');
-        QString new_name1, new_name2;
-        if (p!=-1)
-            new_name1 = new_name.left(p);
-        if (p2!=-1)
-            new_name2 = new_name.mid(p2+1);
-        if (!new_name1.isEmpty() || !new_name2.isEmpty())
-            new_name = new_name1.trimmed() + QLatin1Char(' ') + new_name2.trimmed();
-        new_name.remove('(');
-        new_name.remove(')');
-        new_name = new_name.trimmed();
+		//Qt filters assume anything in () is the file extension list
+		new_name = new_name.replace('(', '[').replace(')',']').trimmed();
 
-        // make filters unique: remove uppercase extensions (case doesn't matter on win32, BTW)
+        //convert everything to lower case and remove dupes (doesn't matter on win32)
         QStringList allfiltersUnique;
         const QStringList origList( new_f.split(' ', QString::SkipEmptyParts) );
         foreach (const QString& origFilter, origList) {
-            if (origFilter == origFilter.toLower())
-                allfiltersUnique += origFilter;
+			if (!allfiltersUnique.contains(origFilter, Qt::CaseInsensitive))
+                allfiltersUnique += origFilter.toLower();
         }
 
         if (!converted.isEmpty())
             converted += ";;";
 
         converted += (new_name + " (" + allfiltersUnique.join(" ") + QLatin1Char(')'));
-    } // foreach
+    }
 
     // Strip escape characters from escaped '/' characters.
-    for (int pos = 0; (pos = converted.indexOf("\\/", pos)) != -1; ++pos)
-      converted.remove(pos, 1);
+    converted.replace("\\/","/");
 
     return converted;
 }
