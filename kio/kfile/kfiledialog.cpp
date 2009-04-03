@@ -1,5 +1,4 @@
-﻿// -*- c++ -*-
-/* This file is part of the KDE libraries
+﻿/* This file is part of the KDE libraries
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
