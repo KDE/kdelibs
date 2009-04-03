@@ -345,7 +345,7 @@ void RenderWidget::layout( )
     if ( m_widget ) {
         resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                       m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
-        if (!isRedirectedWidget() && !isFrame() && !m_needsMask) {
+        if (!isRedirectedWidget() && (!isFrame() || document()->part()->parentPart()) && !m_needsMask) {
             m_needsMask = true;
             RenderLayer* rl = enclosingStackingContext();
             RenderLayer* el = enclosingLayer();
