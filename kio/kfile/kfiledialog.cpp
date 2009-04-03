@@ -1,4 +1,5 @@
-﻿/* This file is part of the KDE libraries
+// -*- c++ -*-
+/* This file is part of the KDE libraries
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
@@ -89,14 +90,14 @@ static QString qtFilter(const QStringList& _filters)
             new_f = current.left(p);
             new_name = current.mid(p+1);
         }
-        //Qt filters assume anything in () is the file extension list
-        new_name = new_name.replace('(', '[').replace(')',']').trimmed();
+	//Qt filters assume anything in () is the file extension list
+	new_name = new_name.replace('(', '[').replace(')',']').trimmed();
 
         //convert everything to lower case and remove dupes (doesn't matter on win32)
         QStringList allfiltersUnique;
         const QStringList origList( new_f.split(' ', QString::SkipEmptyParts) );
         foreach (const QString& origFilter, origList) {
-            if (!allfiltersUnique.contains(origFilter, Qt::CaseInsensitive))
+	if (!allfiltersUnique.contains(origFilter, Qt::CaseInsensitive))
                 allfiltersUnique += origFilter.toLower();
         }
 
