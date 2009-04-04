@@ -642,7 +642,7 @@ void ReadOnlyPartPrivate::_k_slotJobFinished( KJob * job )
 
 void ReadOnlyPartPrivate::_k_slotGotMimeType(KIO::Job *job, const QString &mime)
 {
-    kDebug(1000) << "ReadOnlyPart::slotJobFinished:" << mime;
+    kDebug(1000) << "ReadOnlyPart::slotGotMimeType:" << mime;
     Q_ASSERT(job == m_job);
     // set the mimetype only if it was not already set (for example, by the host application)
     if (m_arguments.mimeType().isEmpty()) {
