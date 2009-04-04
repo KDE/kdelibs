@@ -2135,7 +2135,8 @@ void KHTMLPart::onFirstData()
       d->m_bFirstData = false;
 
       // ### this is still quite hacky, but should work a lot better than the old solution
-      if (d->m_decoder->visuallyOrdered())
+      // Note: decoder may be null if only write(QString) is used.
+      if (d->m_decoder && d->m_decoder->visuallyOrdered())
           d->m_doc->setVisuallyOrdered();
       d->m_doc->recalcStyle( NodeImpl::Force );
 }
@@ -2508,6 +2509,7 @@ void KHTMLPartPrivate::executeJavascriptURL(const QString &u)
     QVariant res = q->executeScript( DOM::Node(), script );
     if ( res.type() == QVariant::String ) {
       q->begin( q->url() );
+      q->setAlwaysHonourDoctype(); // Disable public API compat; it messes with doctype 
       q->write( res.toString() );
       q->end();
     }
@@ -4117,6 +4119,7 @@ bool KHTMLPart::requestFrame( DOM::HTMLPartContainerElementImpl *frame, const QS
                                        d->codeForJavaScriptURL(url) );
       if ( res.type() == QVariant::String && p->d->m_redirectURL.isEmpty() ) {
         p->begin();
+        p->setAlwaysHonourDoctype(); // Disable public API compat; it messes with doctype 
         // We recreated the document, so propagate domain again.
         d->propagateInitialDomainTo( p );
         p->write( res.toString() );
