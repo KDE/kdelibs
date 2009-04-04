@@ -88,6 +88,7 @@
 #cmakedefine   HAVE_GETMNTINFO 1
 #cmakedefine   HAVE_GETPAGESIZE 1
 #cmakedefine   HAVE_INITGROUPS 1
+#cmakedefine   HAVE_FDATASYNC 1
 #cmakedefine   HAVE_MADVISE 1
 #cmakedefine   HAVE_MMAP 1
 #cmakedefine   HAVE_MKSTEMPS 1
