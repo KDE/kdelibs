@@ -392,6 +392,8 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
 
     connect(this, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(_k_placeClicked(const QModelIndex&)));
+    connect(this, SIGNAL(activated(const QModelIndex&)),
+            this, SLOT(_k_placeClicked(const QModelIndex&)));
 
     connect(&d->adaptItemsTimeline, SIGNAL(valueChanged(qreal)),
             this, SLOT(_k_adaptItemsUpdate(qreal)));
