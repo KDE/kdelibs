@@ -45,7 +45,6 @@ public:
     QFile::FileError error;
     QString errorString;
     bool wasFinalized;
-    FILE *stream;
     KComponentData componentData;
 
     Private(const KComponentData &c)
@@ -53,7 +52,6 @@ public:
     {
         error = QFile::NoError;
         wasFinalized = false;
-        stream = 0;
     }
 };
 
@@ -182,11 +180,6 @@ QString KSaveFile::fileName() const
 
 void KSaveFile::abort()
 {
-    if ( d->stream ) {
-        fclose(d->stream);
-        d->stream = 0;
-    }
-    
     close();
     QFile::remove(d->tempFileName); //non-static QFile::remove() does not work. 
     d->wasFinalized = true;
@@ -197,10 +190,6 @@ bool KSaveFile::finalize()
     bool success = false;
 
     if ( !d->wasFinalized ) {
-        if ( d->stream ) {
-            fclose(d->stream);
-            d->stream = 0;
-        }
         close();
         
         if( error() != NoError ) {
