@@ -407,6 +407,7 @@ install( FILES
    network/k3streamsocket.h
    network/klocalsocket.h
    network/ksocketfactory.h
+   network/ktcpsocket.h
    services/kmimetype.h
    services/kmimetypetrader.h
    services/kservice.h
