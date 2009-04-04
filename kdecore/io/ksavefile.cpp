@@ -36,6 +36,9 @@
 #include <kconfiggroup.h>
 #include <kcomponentdata.h>
 
+#include <stdlib.h>
+#include <errno.h>
+
 class KSaveFile::Private
 {
 public:
@@ -185,11 +188,37 @@ void KSaveFile::abort()
     d->wasFinalized = true;
 }
 
+#ifdef HAVE_FDATASYNC
+#  define FDATASYNC fdatasync
+#else
+#  define FDATASYNC fsync
+#endif
+
 bool KSaveFile::finalize()
 {
     bool success = false;
 
     if ( !d->wasFinalized ) {
+
+#ifdef Q_OS_UNIX
+        static int extraSync = -1;
+        if (extraSync < 0)
+            extraSync = getenv("KDE_EXTRA_FSYNC") != 0 ? 1 : 0;
+        if (extraSync) {
+            if (flush()) {
+                forever {
+                    if (!FDATASYNC(handle()))
+                        break;
+                    if (errno != EINTR) {
+                        d->error = QFile::WriteError;
+                        d->errorString = i18n("Synchronization to disk failed");
+                        break;
+                    }
+                }
+            }
+        }
+#endif
+
         close();
         
         if( error() != NoError ) {
@@ -216,6 +245,8 @@ bool KSaveFile::finalize()
 
     return success;
 }
+
+#undef FDATASYNC
 
 bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir )
 {

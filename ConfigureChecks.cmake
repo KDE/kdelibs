@@ -102,6 +102,7 @@ check_function_exists(posix_fadvise    HAVE_FADVISE)                  # kioslave
 check_function_exists(backtrace        HAVE_BACKTRACE)                # kdecore, kio
 check_function_exists(getpagesize      HAVE_GETPAGESIZE)              # khtml
 check_function_exists(getpeereid       HAVE_GETPEEREID)               # kdesu
+check_function_exists(fdatasync        HAVE_FDATASYNC)                # kdecore
 check_function_exists(madvise         HAVE_MADVISE)                   # kdecore
 check_function_exists(mmap            HAVE_MMAP)                      # kdecore, khtml
 if(NOT WIN32)
