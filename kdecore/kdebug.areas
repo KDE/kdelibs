@@ -366,7 +366,7 @@
 #9009        kdevelop (astyle)
 9010        kdevelop (appwizard)
 9011        kdevelop (python support)
-9012        kdevelop (debugger)
+9012        kdevelop (gdb debugger)
 9013        kdevelop (java support)
 #9014        kdevelop (python support)
 #9015        kdevelop (script project)
@@ -433,6 +433,7 @@
 9528        kdevplatform (vcscommon)
 9529        kdevplatform (documentation)
 9530        kdevplatform (documentswitcher)
+9531        kdevplatform (debugger)
 
 # toys and games
 10000        amor
