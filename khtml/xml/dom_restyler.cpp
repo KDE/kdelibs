@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2009 Vyacheslav Tokarev (tsjoker@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,7 +22,6 @@
  */
 
 #include "dom_restyler.h"
-#include "dom_elementimpl.h"
 
 namespace khtml {
 
@@ -37,59 +37,21 @@ void DynamicDomRestyler::addDependency(ElementImpl* subject, ElementImpl* depend
         return;
     }
 
-    dependency_map[type].insert(dependency, subject);
-    reverse_map.insert(subject,dependency);
-}
-
-void DynamicDomRestyler::removeDependency(ElementImpl* subject, ElementImpl* dependency, StructuralDependencyType type)
-{
-    if (subject == dependency && type == HoverDependency) {
-        subject->setHasHoverDependency(false);
-        return;
-    }
-    dependency_map[type].remove(dependency, subject);
-    // don't remove from reverse_map as there might be other dependencies to the same element
-}
-
-void DynamicDomRestyler::removeDependencies(ElementImpl* subject, StructuralDependencyType type)
-{
-    if (type == HoverDependency)
-        subject->setHasHoverDependency(false);
-
-    QSet<ElementImpl*>* my_dependencies = reverse_map.find(subject);
-
-    if (!my_dependencies) return;
-
-    QSet<ElementImpl*>::iterator it = my_dependencies->begin();
-    while ( it != my_dependencies->end() )
-    {
-        ElementImpl* e = *it;
-        dependency_map[type].remove(e,subject);
-
-        ++it;
-    }
-
-    // don't remove from reverse_map as there might be other dependencies to the same elements
+    dependency_map[type].add(dependency, subject);
+    reverse_map.add(subject,dependency);
 }
 
 void DynamicDomRestyler::resetDependencies(ElementImpl* subject)
 {
     subject->setHasHoverDependency(false);
 
-    QSet<ElementImpl*>* my_dependencies = reverse_map.find(subject);
-
-    if (!my_dependencies) return;
-
-    QSet<ElementImpl*>::iterator it = my_dependencies->begin();
-    while ( it != my_dependencies->end() )
-    {
-        ElementImpl* e = *it;
-        for (int type = 0; type < LastStructuralDependency; type++) {
-            dependency_map[type].remove(e,subject);
-        }
-        ++it;
-    }
-
+    ElementMap::ElementsList list;
+    reverse_map.getElements(subject, list);
+    if (list.isEmpty())
+        return;
+    for (int i = 0; i < list.size(); ++i)
+        for (int type = 0; type < LastStructuralDependency; ++type)
+            dependency_map[type].remove(list[i], subject);
     reverse_map.remove(subject);
 }
 
@@ -99,20 +61,10 @@ void DynamicDomRestyler::restyleDependent(ElementImpl* dependency, StructuralDep
     if (type == HoverDependency && dependency->hasHoverDependency())
         dependency->setChanged(true);
 
-    QSet<ElementImpl*>* dep = dependency_map[type].find(dependency);
-
-    if (!dep) return;
-
-    // take copy as the restyle will change the list
-    QSet<ElementImpl*> dependent(*dep);
-
-    QSet<ElementImpl*>::iterator it = dependent.begin();
-    while ( it != dependent.end() )
-    {
-//         kDebug() << "Restyling dependent";
-        (*it)->setChanged(true);
-        ++it;
-    }
+    ElementMap::ElementsList list;
+    dependency_map[type].getElements(dependency, list);
+    for (int i = 0; i < list.size(); ++i)
+        list[i]->setChanged(true);
 }
 
 void DynamicDomRestyler::dumpStats() const

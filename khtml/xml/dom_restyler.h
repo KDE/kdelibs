@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2009 Vyacheslav Tokarev (tsjoker@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,12 +24,15 @@
 #ifndef _DOM_restyler_h_
 #define _DOM_restyler_h_
 
-#include "misc/multimap.h"
 #include <bitset>
+#include <wtf/HashMap.h>
+#include <wtf/HashSet.h>
+#include "xml/dom_elementimpl.h"
+#include <QtCore/QVarLengthArray>
 
-namespace DOM {
+/*namespace DOM {
     class ElementImpl;
-}
+}*/
 
 // Restyle dependency tracker for dynamic DOM
 
@@ -66,6 +70,125 @@ enum AttributeDependencyType {
         LastAttributeDependency
 };
 
+// MultiMap implementation by mapping: ElementImpl* -> HashSet of ElementImpl*
+// it includes an optimization which covers common mapping case: element -> element, element -> parent
+// and set is created only if it contains more than one element otherwise direct mapping is stored as is
+struct ElementMap
+{
+private:
+    typedef WTF::HashSet<ElementImpl*> HashSet;
+    struct Value {
+        union {
+            HashSet* set;
+            ElementImpl* element;
+        } m_value;
+        bool isSet : 1;
+        bool parentDependency : 1;
+        bool selfDependency : 1;
+    };
+    typedef WTF::HashMap<ElementImpl*, Value> HashMap;
+    typedef HashMap::iterator Iterator;
+    HashMap map;
+
+    void removeIfEmpty(const Iterator& it) {
+        Value& value = it->second;
+        if (value.isSet && value.m_value.set->isEmpty()) {
+            delete value.m_value.set;
+            value.isSet = false;
+            value.m_value.element = 0;
+        }
+        if (!value.isSet && !value.m_value.element && !value.parentDependency && !value.selfDependency)
+            map.remove(it);
+    }
+
+public:
+    typedef QVarLengthArray<ElementImpl*> ElementsList;
+
+    ~ElementMap() {
+        Iterator end = map.end();
+        for (Iterator it = map.begin(); it != end; ++it)
+            if (it->second.isSet)
+                delete it->second.m_value.set;
+    }
+
+    void add(ElementImpl* a, ElementImpl* b) {
+        std::pair<Iterator, bool> it = map.add(a, Value());
+        Value& value = it.first->second;
+        if (it.second) {
+            value.isSet = false;
+            value.parentDependency = false;
+            value.selfDependency = false;
+            value.m_value.element = 0;
+        }
+        if (b == a) {
+            value.selfDependency = true;
+        } else if (b == a->parentNode()) {
+            value.parentDependency = true;
+        } else if (value.isSet) {
+            value.m_value.set->add(b);
+        } else if (!value.m_value.element || value.m_value.element == b) {
+            value.m_value.element = b;
+        } else {
+            // convert into set
+            HashSet* temp = new HashSet();
+            temp->add(value.m_value.element);
+            temp->add(b);
+            value.m_value.set = temp;
+            value.isSet = true;
+        }
+    }
+
+    void remove(ElementImpl* a, ElementImpl* b) {
+        Iterator it = map.find(a);
+        if (it == map.end())
+            return;
+        Value& value = it->second;
+        if (b == a) {
+            value.selfDependency = false;
+        } else if (b == a->parentNode()) {
+            value.parentDependency = false;
+        } else if (value.isSet) {
+            // don't care if set contains 1 element after this operation
+            // it could be converted back into non-set storage but it's a minor optimization only
+            value.m_value.set->remove(b);
+        } else if (value.m_value.element == b) {
+            value.m_value.element = 0;
+        }
+        removeIfEmpty(it);
+    }
+
+    void remove(ElementImpl* a) {
+        Iterator it = map.find(a);
+        if (it != map.end()) {
+            if (it->second.isSet)
+                delete it->second.m_value.set;
+            map.remove(it);
+        }
+    }
+
+private:
+    void addFromSet(HashSet* set, ElementsList& array) {
+        HashSet::iterator end = set->end();
+        for (HashSet::iterator it = set->begin(); it != end; ++it)
+            array.append(*it);
+    }
+
+public:
+    void getElements(ElementImpl* element, ElementsList& array) {
+        Iterator it = map.find(element);
+        if (it == map.end())
+            return;
+        Value& value = it->second;
+        if (value.parentDependency)
+            array.append(static_cast<ElementImpl*>(element->parentNode()));
+        if (value.selfDependency)
+            array.append(element);
+        if (value.isSet)
+            addFromSet(value.m_value.set, array);
+        if (!value.isSet && value.m_value.element)
+            array.append(value.m_value.element);
+    }
+};
 
 /**
  * @internal
@@ -77,8 +200,6 @@ public:
     // Structural dependencies are tracked from element to subject
     void addDependency(ElementImpl* subject, ElementImpl* dependency, StructuralDependencyType type);
     void resetDependencies(ElementImpl* subject);
-    void removeDependency(ElementImpl* subject, ElementImpl* dependency, StructuralDependencyType type);
-    void removeDependencies(ElementImpl* subject, StructuralDependencyType type);
     void restyleDependent(ElementImpl* dependency, StructuralDependencyType type);
 
     // Attribute dependencies are traced on attribute alone
@@ -88,9 +209,9 @@ public:
     void dumpStats() const;
 private:
      // Map of dependencies.
-     KMultiMap<ElementImpl, ElementImpl> dependency_map[LastStructuralDependency];
+     ElementMap dependency_map[LastStructuralDependency];
      // Map of reverse dependencies. For fast reset
-     KMultiMap<ElementImpl, ElementImpl> reverse_map;
+     ElementMap reverse_map;
 
      // Map of the various attribute dependencies
      std::bitset<512> attribute_map[LastAttributeDependency];
