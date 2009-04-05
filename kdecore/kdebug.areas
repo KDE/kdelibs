@@ -208,6 +208,7 @@
 5263        akonadiserializer (calendar)
 5264        akonadiserializer (mail)
 5265        akonadiconsole
+5266        akonadiresource (pop3)
 5295        kode
 5300        libkdepim
 5310        kprefs
