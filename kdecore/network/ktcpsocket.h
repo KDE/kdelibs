@@ -323,7 +323,7 @@ Q_SIGNALS:
     void stateChanged(State);
 
     //from QSslSocket
-    // void encrypted();
+    void encrypted();
     void encryptionModeChanged(EncryptionMode);
     void sslErrors(const QList<KSslError> &errors);
 

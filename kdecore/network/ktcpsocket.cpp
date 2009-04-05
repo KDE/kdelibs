@@ -397,6 +397,7 @@ KTcpSocket::KTcpSocket(QObject *parent)
     connect(&d->sock, SIGNAL(bytesWritten(qint64)), this, SIGNAL(bytesWritten(qint64)));
     connect(&d->sock, SIGNAL(readyRead()), this, SLOT(reemitReadyRead()));
     connect(&d->sock, SIGNAL(connected()), this, SIGNAL(connected()));
+    connect(&d->sock, SIGNAL(encrypted()), this, SIGNAL(encrypted()));
     connect(&d->sock, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
     connect(&d->sock, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),
             this, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)));
