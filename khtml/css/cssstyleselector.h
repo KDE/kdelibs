@@ -25,7 +25,6 @@
 
 #include "rendering/render_style.h"
 #include "dom/dom_string.h"
-#include "xml/dom_restyler.h"
 #include "css/css_mediaquery.h"
 #include <QtCore/QVarLengthArray>
 #include <QtCore/QList>
@@ -214,7 +213,7 @@ namespace khtml
         enum SelectorMatch {SelectorMatches = 0, SelectorFailsLocal, SelectorFails};
         SelectorMatch checkSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector = false);
 
-        void addDependency(StructuralDependencyType dependencyType, DOM::ElementImpl* dependency);
+        void addDependency(int dependencyType, DOM::ElementImpl* dependency);
         void setupDefaultRootStyle(DOM::DocumentImpl *d=0);
 #ifdef APPLE_CHANGES
 	/* This function fixes up the default font size if it detects that the

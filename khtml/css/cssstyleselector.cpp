@@ -1280,9 +1280,9 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl * e)
     return;
 }
 
-void CSSStyleSelector::addDependency(StructuralDependencyType dependencyType, ElementImpl* dependency)
+void CSSStyleSelector::addDependency(int dependencyType, ElementImpl* dependency)
 {
-    element->document()->dynamicDomRestyler().addDependency(element, dependency, dependencyType);
+    element->document()->dynamicDomRestyler().addDependency(element, dependency, (StructuralDependencyType)dependencyType);
 }
 
 bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector)
