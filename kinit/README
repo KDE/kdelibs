@@ -4,7 +4,7 @@ kdeinit is a process launcher somewhat similar to the
 famous init used for booting UNIX.
 
 It launches processes by forking and then loading a
-dynamic library which should contain a 'main(...)'
+dynamic library which should contain a 'kdemain(...)'
 function. 
 
 Executive summary

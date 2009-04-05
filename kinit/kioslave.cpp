@@ -104,12 +104,8 @@ int main(int argc, char **argv)
      void* sym = lib.resolve("kdemain");
      if (!sym )
      {
-        sym = lib.resolve("main");
-        if (!sym )
-        {
-           fprintf(stderr, "Could not find main: %s\n", qPrintable(lib.errorString() ));
-           exit(1);
-        }
+        fprintf(stderr, "Could not find kdemain: %s\n", qPrintable(lib.errorString() ));
+        exit(1);
      }
 
 #ifdef Q_WS_WIN
