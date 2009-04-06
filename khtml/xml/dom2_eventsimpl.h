@@ -291,6 +291,7 @@ public:
       DOM_VK_META		     = 0x9D,
       DOM_VK_BACK_SPACE		     = 0x08,
       DOM_VK_CAPS_LOCK		     = 0x14,
+      DOM_VK_INSERT		     = 0x2D,
       DOM_VK_DELETE		     = 0x7F,
       DOM_VK_END		     = 0x23,
       DOM_VK_ENTER		     = 0x0D,
