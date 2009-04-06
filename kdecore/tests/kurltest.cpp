@@ -625,6 +625,14 @@ void KUrlTest::testSetFileName() // and addPath
   KUrl lastUrl = lst.last();
   QString dir = lastUrl.directory();
   QCOMPARE(  dir, QString("/dir1/dir2") );
+
+  // files without directories
+  KUrl singleFile( "foo.txt" );
+  QCOMPARE( singleFile.path(), QString("foo.txt") );
+  QCOMPARE( singleFile.pathOrUrl(), QString("foo.txt") );
+  singleFile.setFileName( "bar.bin" );
+  QCOMPARE( singleFile.path(), QString("bar.bin") );
+  QCOMPARE( singleFile.pathOrUrl(), QString("bar.bin") );
 }
 
 void KUrlTest::testDirectory()

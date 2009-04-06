@@ -688,7 +688,6 @@ void KUrl::setFileName( const QString& _txt )
       ++i;
   QString tmp = i ? _txt.mid( i ) : _txt;
 
-  //QString path = m_strPath_encoded.isEmpty() ? m_strPath : m_strPath_encoded;
   QString path = this->path();
   if ( path.isEmpty() )
 #ifdef Q_OS_WIN
@@ -700,28 +699,14 @@ void KUrl::setFileName( const QString& _txt )
   {
     int lastSlash = path.lastIndexOf( QLatin1Char('/') );
     if ( lastSlash == -1)
-    {
-      // The first character is not a '/' ???
-      // This looks strange ...
-      path = QLatin1Char('/');
-    }
+      path.clear(); // there's only the file name, remove it
     else if ( !path.endsWith( QLatin1Char('/') ) )
       path.truncate( lastSlash+1 ); // keep the "/"
   }
-#if 0
-  if (m_strPath_encoded.isEmpty())
-#endif
-  {
-     path += tmp;
-     setPath( path );
-  }
-#if 0
-  else
-  {
-     path += encode_string(tmp);
-     setEncodedPath( path );
-  }
-#endif
+
+  path += tmp;
+  setPath( path );
+
   cleanPath();
 }
 
