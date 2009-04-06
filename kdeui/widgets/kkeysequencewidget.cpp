@@ -351,6 +351,8 @@ void KKeySequenceWidget::setModifierlessAllowed(bool allow)
 
 bool KKeySequenceWidget::isKeySequenceAvailable(const QKeySequence &keySequence) const
 {
+    if (keySequence.isEmpty())
+        return true;
     return ! ( d->conflictWithLocalShortcuts(keySequence)
                || d->conflictWithGlobalShortcuts(keySequence)
                || d->conflictWithStandardShortcuts(keySequence));
