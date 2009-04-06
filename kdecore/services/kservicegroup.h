@@ -33,8 +33,8 @@ class KServiceGroupPrivate;
  * This class is typically used like this:
  *
  * \code
- * // Lookup screensaver group
- * KServiceGroup::Ptr group = KServiceGroup::baseGroup("screensavers");
+ * // Start from root group
+ * KServiceGroup::Ptr group = KServiceGroup::root();
  * if (!group || !group->isValid()) return;
  *
  * KServiceGroup::List list = group->entries();
@@ -56,6 +56,7 @@ class KServiceGroupPrivate;
  *    }
  * }
  * \endcode
+ *
  * @short Represents a group of services
  */
 class KDECORE_EXPORT KServiceGroup : public KSycocaEntry
@@ -243,8 +244,12 @@ public:
    * Returns the group for the given baseGroupName.
    * Can return 0L if the directory (or the .directory file) was deleted.
    * @return the base group with the given name, or 0 if not available.
+   *
+   * This mechanism was fragile and isn't used in kde4 anymore.
+   * @deprecated Use a servicetype and a proper trader query instead, for a better
+   * way of finding related services.
    */
-  static Ptr baseGroup( const QString &baseGroupName );
+  static KDE_DEPRECATED Ptr baseGroup( const QString &baseGroupName );
 
   /**
    * Returns the root service group.
