@@ -259,6 +259,7 @@ public:
   void cacheUpdate( const KUrl &url, bool nocache, time_t expireDate);
 
   void httpError(); // Generate error message based on response code
+  void setLoadingErrorPage(); // Call SlaveBase::errorPage() and remember that we've called it
 
   bool isOffline(const KUrl &url); // Check network status
 
@@ -507,6 +508,8 @@ protected:
 
   // Indicates whether there was some connection error.
   bool m_isError;
+  // Whether we are loading an error page (we should close the connection afterwards)
+  bool m_isLoadingErrorPage;
 
   // Values that determine the remote connection timeouts.
   int m_remoteRespTimeout;
