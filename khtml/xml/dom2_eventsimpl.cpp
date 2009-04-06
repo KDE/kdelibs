@@ -382,6 +382,7 @@ IDTranslator<unsigned, unsigned, unsigned>::Info virtKeyToQtKeyTable[] =
     {KeyEventBaseImpl::DOM_VK_META,         Qt::Key_Meta},
     {KeyEventBaseImpl::DOM_VK_CAPS_LOCK,    Qt::Key_CapsLock},
     {KeyEventBaseImpl::DOM_VK_DELETE,       Qt::Key_Delete},
+    {KeyEventBaseImpl::DOM_VK_INSERT,       Qt::Key_Insert},    
     {KeyEventBaseImpl::DOM_VK_END,          Qt::Key_End},
     {KeyEventBaseImpl::DOM_VK_ESCAPE,       Qt::Key_Escape},
     {KeyEventBaseImpl::DOM_VK_HOME,         Qt::Key_Home},
