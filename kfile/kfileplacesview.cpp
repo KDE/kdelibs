@@ -850,6 +850,9 @@ void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end
 QSize KFilePlacesView::sizeHint() const
 {
     KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(model());
+    if (!placesModel) {
+        return QListView::sizeHint();
+    }
     const int height = QListView::sizeHint().height();
     QFontMetrics fm = d->q->fontMetrics();
     int textWidth = 0;
