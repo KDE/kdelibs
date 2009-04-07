@@ -60,6 +60,8 @@ public:
     virtual void unregisterJob(KJob *job);
 
 protected Q_SLOTS:
+    void killJob();
+
     /**
      * The following slots are inherited from KJobTrackerInterface.
      */

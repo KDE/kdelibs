@@ -81,8 +81,8 @@ void KUiServerJobTracker::registerJob(KJob *job)
                                                            reply.value().path(),
                                                            QDBusConnection::sessionBus());
 
-        QObject::connect(jobView, SIGNAL(cancelRequested()), job,
-                         SLOT(kill()));
+        QObject::connect(jobView, SIGNAL(cancelRequested()), this,
+                         SLOT(killJob()));
         QObject::connect(jobView, SIGNAL(suspendRequested()), job,
                          SLOT(suspend()));
         QObject::connect(jobView, SIGNAL(resumeRequested()), job,
@@ -92,6 +92,18 @@ void KUiServerJobTracker::registerJob(KJob *job)
     }
 
     KJobTrackerInterface::registerJob(job);
+}
+
+void KUiServerJobTracker::killJob()
+{
+    org::kde::JobView *jobView = qobject_cast<org::kde::JobView*>(sender());
+
+    if (jobView) {
+        KJob *job = d->progressJobView.key(jobView);
+
+        if (job)
+          job->kill(KJob::EmitResult);
+    }
 }
 
 void KUiServerJobTracker::unregisterJob(KJob *job)
