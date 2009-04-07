@@ -161,11 +161,11 @@ void KACLTest::testGetMaskPermissions()
 void KACLTest::testGetAllUserPermissions()
 {
   ACLUserPermissionsList list = m_acl.allUserPermissions();
-  ACLUserPermissionsConstIterator it = list.begin();
+  ACLUserPermissionsConstIterator it = list.constBegin();
   QString name;
   unsigned short permissions = 0;
   int count = 0;
-  while ( it != list.end() ) {
+  while ( it != list.constEnd() ) {
     name = ( *it ).first;
     permissions = ( *it ).second;
     ++it;
@@ -179,11 +179,11 @@ void KACLTest::testGetAllUserPermissions()
 void KACLTest::testGetAllGroupsPermissions()
 {
   ACLGroupPermissionsList list = m_acl.allGroupPermissions();
-  ACLGroupPermissionsConstIterator it = list.begin();
+  ACLGroupPermissionsConstIterator it = list.constBegin();
   QString name;
   unsigned short permissions;
   int count = 0;
-  while ( it != list.end() ) {
+  while ( it != list.constEnd() ) {
     name = ( *it ).first;
     permissions = ( *it ).second;
     // setACL sorts them alphabetically ...

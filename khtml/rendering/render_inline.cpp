@@ -556,7 +556,7 @@ static QPoint *linkEndToBegin(QVector<QPoint> &pointArray)
     uint index = 0;
     // ### BUG: outlines with zero width aren't treated correctly
     // this is not the right fix
-    if (pointArray.size() < 3) return pointArray.begin();
+    if (pointArray.size() < 3) return pointArray.data();
 
     // if first and last points match, ignore the last one.
     bool linkup = false; QPoint linkupPnt;
@@ -566,7 +566,7 @@ static QPoint *linkEndToBegin(QVector<QPoint> &pointArray)
         linkup = true;
     }
 
-    const QPoint *it = pointArray.begin() + index;
+    const QPoint *it = pointArray.data() + index;
     QPoint pfirst = *it;
     QPoint pnext = *++it;
     QPoint plast = pointArray.back();
@@ -585,7 +585,7 @@ static QPoint *linkEndToBegin(QVector<QPoint> &pointArray)
         }
     } else if (linkup)
       pointArray.push_back(linkupPnt);
-    return pointArray.begin() + index;
+    return pointArray.data() + index;
 }
 
 // assumes clock-wise orientation
@@ -633,9 +633,9 @@ void RenderInline::paintOutlines(QPainter *p, int _tx, int _ty)
         QPoint diff = pstart - pprev;
         int direction = diff.x() + diff.y();
         RenderObject::BorderSide endingBS = borderSide(*begin, *(begin + 1));
-    
+
         // paint the outline
-        paintOutlinePath(p, _tx, _ty, begin, path.end(),
+        paintOutlinePath(p, _tx, _ty, begin, path.data() + path.size(),
                          bs, direction, endingBS);
     }
 }

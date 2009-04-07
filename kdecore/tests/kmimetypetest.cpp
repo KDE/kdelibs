@@ -821,9 +821,7 @@ void KMimeTypeTest::testParseMagicFile()
     QVERIFY(testBuffer.open(QIODevice::ReadOnly));
     QString found;
     QByteArray beginning;
-    for ( QList<KMimeMagicRule>::const_iterator it = m_rules.begin(), end = m_rules.end();
-          it != end; ++it ) {
-        const KMimeMagicRule& rule = *it;
+    Q_FOREACH(const KMimeMagicRule& rule, m_rules) {
         if (rule.match(&testBuffer, beginning)) {
             found = rule.mimetype();
             break;
