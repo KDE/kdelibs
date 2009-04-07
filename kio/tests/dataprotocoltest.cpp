@@ -58,8 +58,8 @@ public:
 
   void sendMetaData() {
     // check here if attributes_expected contains any excess keys
-    KIO::MetaData::ConstIterator it = attributes_expected.begin();
-    KIO::MetaData::ConstIterator end = attributes_expected.end();
+    KIO::MetaData::ConstIterator it = attributes_expected.constBegin();
+    KIO::MetaData::ConstIterator end = attributes_expected.constEnd();
     for (; it != end; ++it) {
       cout << endl << "Metadata[\"" << it.key().toLatin1().constData()
       		<< "\"] was expected but not defined";
@@ -109,7 +109,7 @@ private:
     if (templat == s)
       passed++;
     else {
-      cout << endl << prefix.toLatin1().constData() << "expected \"" << templat.toLatin1().constData() 
+      cout << endl << prefix.toLatin1().constData() << "expected \"" << templat.toLatin1().constData()
            << "\", found \"" << s.toLatin1().constData() << "\"";
       failure = true;
     }/*end if*/
@@ -175,8 +175,8 @@ public:
 
   void endTestrun() {
     if (failure) {
-      QMap<int,bool>::ConstIterator it = failed_testcases.begin();
-      for (; it != failed_testcases.end(); ++it) {
+      QMap<int,bool>::ConstIterator it = failed_testcases.constBegin();
+      for (; it != failed_testcases.constEnd(); ++it) {
         cout << "Testcase " << it.key() << " failed" << endl;
       }
     }

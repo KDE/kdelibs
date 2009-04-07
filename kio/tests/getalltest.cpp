@@ -15,29 +15,23 @@ int main(int argc, char *argv[])
    kDebug() << "All services";
    KService::List services = KService::allServices();
    kDebug() << "got " << services.count() << " services";
-   KService::List::const_iterator s = services.begin();
-   for ( ; s != services.end() ; ++s )
-   {
-     kDebug() << (*s)->name() << " " << (*s)->entryPath();
+   Q_FOREACH(const KService::Ptr s, services) {
+     kDebug() << s->name() << " " << s->entryPath();
    }
 //}
 
    kDebug() << "All mimeTypes";
    KMimeType::List mimeTypes = KMimeType::allMimeTypes();
    kDebug() << "got " << mimeTypes.count() << " mimeTypes";
-   KMimeType::List::const_iterator m = mimeTypes.begin();
-   for ( ; m != mimeTypes.end() ; ++m )
-   {
-     kDebug() << (*m)->name();
+   Q_FOREACH(const KMimeType::Ptr m, mimeTypes) {
+     kDebug() << m->name();
    }
 
    kDebug() << "All service types";
    KServiceType::List list = KServiceType::allServiceTypes();
    kDebug() << "got " << list.count() << " service types";
-   KServiceType::List::const_iterator st = list.begin();
-   for ( ; st != list.end() ; ++st )
-   {
-     kDebug() << (*st)->name();
+   Q_FOREACH(const KServiceType::Ptr st, list) {
+     kDebug() << st->name();
    }
 
    kDebug() << "done";
