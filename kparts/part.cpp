@@ -190,7 +190,7 @@ Part::~Part()
 {
     Q_D(Part);
 
-    //kDebug(1000) << "Part::~Part " << this;
+    //kDebug(1000) << this;
 
     if ( d->m_widget )
     {
@@ -204,7 +204,7 @@ Part::~Part()
 
     if ( d->m_widget && d->m_autoDeleteWidget )
     {
-        kDebug(1000) << "deleting widget " << d->m_widget << " " << d->m_widget->objectName();
+        kDebug(1000) << "deleting widget" << d->m_widget << d->m_widget->objectName();
         delete static_cast<QWidget*>(d->m_widget);
     }
 
@@ -350,7 +350,7 @@ void Part::slotWidgetDestroyed()
 
     d->m_widget = 0;
     if (d->m_autoDeletePart) {
-        kDebug(1000) << "KPart::slotWidgetDestroyed(), deleting part " << objectName();
+        kDebug(1000) << "deleting part" << objectName();
         delete this; // ouch, this should probably be deleteLater()
     }
 }
@@ -597,7 +597,7 @@ void ReadOnlyPart::abortLoad()
 
     if ( d->m_job )
     {
-        //kDebug(1000) << "Aborting job " << d->m_job;
+        //kDebug(1000) << "Aborting job" << d->m_job;
         d->m_job->kill();
         d->m_job = 0;
     }
@@ -626,7 +626,6 @@ void ReadOnlyPartPrivate::_k_slotJobFinished( KJob * job )
 {
     Q_Q(ReadOnlyPart);
 
-    kDebug(1000) << "ReadOnlyPart::slotJobFinished";
     assert( job == m_job );
     m_job = 0;
     if (job->error())
@@ -642,7 +641,7 @@ void ReadOnlyPartPrivate::_k_slotJobFinished( KJob * job )
 
 void ReadOnlyPartPrivate::_k_slotGotMimeType(KIO::Job *job, const QString &mime)
 {
-    kDebug(1000) << "ReadOnlyPart::slotGotMimeType:" << mime;
+    kDebug(1000) << mime;
     Q_ASSERT(job == m_job);
     // set the mimetype only if it was not already set (for example, by the host application)
     if (m_arguments.mimeType().isEmpty()) {
@@ -659,7 +658,7 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
     {
         if (!d->m_url.isEmpty())
         {
-            kDebug(1000) << "ReadOnlyPart::guiActivateEvent -> " << d->m_url.prettyUrl();
+            kDebug(1000) << d->m_url;
             emit setWindowCaption( d->m_url.prettyUrl() );
         } else emit setWindowCaption( "" );
     }
@@ -733,7 +732,7 @@ void ReadWritePart::setModified( bool modified )
 {
     Q_D(ReadWritePart);
 
-    kDebug(1000) << "ReadWritePart::setModified( " << (modified ? "true" : "false") << ")";
+    kDebug(1000) << "setModified(" << (modified ? "true" : "false") << ")";
     if ( !d->m_bReadWrite && modified )
     {
         kError(1000) << "Can't set a read-only document to 'modified' !" << endl;
