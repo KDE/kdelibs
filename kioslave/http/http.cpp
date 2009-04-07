@@ -229,16 +229,12 @@ static QString methodString(HTTP_METHOD m)
 }
 
 
-
-
-
-
-#define NO_SIZE		((KIO::filesize_t) -1)
+#define NO_SIZE ((KIO::filesize_t) -1)
 
 #ifdef HAVE_STRTOLL
-#define STRTOLL	strtoll
+#define STRTOLL strtoll
 #else
-#define STRTOLL	strtol
+#define STRTOLL strtol
 #endif
 
 
@@ -259,6 +255,7 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
     , m_proxyAuth(0)
     , m_socketProxyAuth(0)
     , m_isError(false)
+    , m_isLoadingErrorPage(false)
     , m_remoteRespTimeout(DEFAULT_RESPONSE_TIMEOUT)
 {
     reparseConfiguration();
@@ -292,6 +289,7 @@ void HTTPProtocol::resetConnectionSettings()
 {
   m_isEOF = false;
   m_isError = false;
+  m_isLoadingErrorPage = false;
 }
 
 void HTTPProtocol::resetResponseParsing()
@@ -575,8 +573,11 @@ bool HTTPProtocol::proceedUntilResponseHeader()
               m_server.initFrom(m_request);
           }
           break;
-      } else if (m_isError) {
-          // Hard error, abort everything.
+      } else if (m_isError || m_isLoadingErrorPage) {
+          // Unrecoverable error, abort everything.
+          // Also, if we've just loaded an error page there is nothing more to do.
+          // In that case we abort to avoid loops; some webservers manage to send 401 and
+          // no authentication request. Or an auth request we don't understand.
           return false;
       }
 
@@ -1728,6 +1729,15 @@ void HTTPProtocol::httpError()
   error( ERR_SLAVE_DEFINED, errorString );
 }
 
+void HTTPProtocol::setLoadingErrorPage()
+{
+    if (m_isLoadingErrorPage) {
+        kWarning(7113) << "called twice during one request, something is probably wrong.";
+    }
+    m_isLoadingErrorPage = true;
+    SlaveBase::errorPage();
+}
+
 bool HTTPProtocol::isOffline(const KUrl &url)
 {
   const int NetWorkStatusUnknown = 1;
@@ -2720,7 +2730,7 @@ try_again:
             ; // Ignore error
         } else {
             if (m_request.preferErrorPage) {
-                errorPage();
+                setLoadingErrorPage();
             } else {
                 error(ERR_INTERNAL_SERVER, m_request.url.url());
                 return false;
@@ -2743,7 +2753,7 @@ try_again:
         // Any other client errors
         // Tell that we will only get an error page here.
         if (m_request.preferErrorPage) {
-            errorPage();
+            setLoadingErrorPage();
         } else {
             error(ERR_DOES_NOT_EXIST, m_request.url.url());
             return false;
@@ -3303,14 +3313,14 @@ try_again:
         kDebug(7113) << "pointer to auth class is now" << *auth;
         if (!(*auth)) {
             if (m_request.preferErrorPage) {
-                errorPage();
+                setLoadingErrorPage();
             } else {
                 error(ERR_UNSUPPORTED_ACTION, "Unknown Authorization method!");
                 return false;
             }
         }
 
-        // auth may still be null due to errorPage().
+        // *auth may still be null due to setLoadingErrorPage().
 
         if (*auth) {
             // remove trailing space from the method string, or digest auth will fail
@@ -3357,7 +3367,7 @@ try_again:
 
             if ((*auth)->isError()) {
                 if (m_request.preferErrorPage) {
-                    errorPage();
+                    setLoadingErrorPage();
                 } else {
                     error(ERR_UNSUPPORTED_ACTION, "Authorization failed!");
                     return false;
