@@ -60,8 +60,6 @@ public:
     virtual void unregisterJob(KJob *job);
 
 protected Q_SLOTS:
-    void killJob();
-
     /**
      * The following slots are inherited from KJobTrackerInterface.
      */
@@ -76,6 +74,9 @@ protected Q_SLOTS:
     virtual void processedAmount(KJob *job, KJob::Unit unit, qulonglong amount);
     virtual void percent(KJob *job, unsigned long percent);
     virtual void speed(KJob *job, unsigned long value);
+
+private Q_SLOTS:
+    void killJob();
 
 private:
     class Private;
