@@ -166,7 +166,8 @@ public Q_SLOTS:
      * and ask uiserver to close the progress window.
      * @p verbosity is set to EmitResult for subjobs. Whether applications
      * should call with Quietly or EmitResult depends on whether they rely
-     * on result being emitted or not.
+     * on result being emitted or not. Please notice that if @p verbosity is
+     * set to Quietly, signal result will NOT be emitted.
      * @return true if the operation is supported and succeeded, false otherwise
      */
     bool kill( KillVerbosity verbosity = Quietly );
@@ -326,6 +327,9 @@ private: // don't tell moc or doxygen, but those signals are in fact private
      * This is a private signal, it can't be emitted directly by subclasses of
      * KJob, use emitResult() instead.
      *
+     * Client code is not supposed to connect to this signal, signal result should
+     * be used instead.
+     *
      * @param job the job that emitted this signal
      * @internal
      */
@@ -352,13 +356,18 @@ private: // don't tell moc or doxygen, but those signals are in fact private
     void resumed(KJob *job);
 
     /**
-     * Emitted when the job is finished, in any case (completed, canceled,
-     * failed...). Use error to know the result.
+     * Emitted when the job is finished (except when killed with KJob::Quietly).
+     *
+     * Use error to know if the job was finished with error.
      *
      * This is a private signal, it can't be emitted directly by subclasses of
      * KJob, use emitResult() instead.
      *
+     * Please connect to this signal instead of finished.
+     *
      * @param job the job that emitted this signal
+     *
+     * @see kill
      */
     void result(KJob *job);
 
