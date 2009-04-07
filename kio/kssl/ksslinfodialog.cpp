@@ -79,8 +79,8 @@ KSSLInfoDialog::KSSLInfoDialog(QWidget *parent)
 
     d->subject = new KSslCertificateBox(d->ui.certParties);
     d->issuer = new KSslCertificateBox(d->ui.certParties);
-    d->ui.certParties->addTab(d->subject, i18n("Subject"));
-    d->ui.certParties->addTab(d->issuer, i18n("Issuer"));
+    d->ui.certParties->addTab(d->subject, i18nc("The receiver of the SSL certificate", "Subject"));
+    d->ui.certParties->addTab(d->issuer, i18nc("The authority that issued the SSL certificate", "Issuer"));
 
     d->isMainPartEncrypted = true;
     d->auxPartsEncrypted = true;
@@ -210,14 +210,14 @@ void KSSLInfoDialog::displayFromChain(int i)
     
     QString trusted;
     if (!d->certificateErrors[i].isEmpty()) {
-        trusted = i18n("NO, there were errors:");
+        trusted = i18nc("The certificate is not trusted", "NO, there were errors:");
         foreach (KSslError::Error e, d->certificateErrors[i]) {
             KSslError classError(e);
             trusted.append('\n');
             trusted.append(classError.errorString());
         }
     } else {
-        trusted = i18n("Yes");
+        trusted = i18nc("The certificate is trusted", "Yes");
     }
     d->ui.trusted->setText(trusted);
 
