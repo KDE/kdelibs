@@ -676,7 +676,8 @@ void KMimeTypeTest::testPatterns_data()
     QTest::addColumn<QString>("mainExtension");
     QTest::newRow("mimetype with a single pattern") << "application/pdf" << "*.pdf" << ".pdf";
     QTest::newRow("mimetype with multiple patterns") << "application/x-kpresenter" << "*.kpr;*.kpt" << ".kpr";
-    QTest::newRow("koffice (oasis) mimetype") << "application/vnd.oasis.opendocument.presentation" << "*.odp" << ".odp";
+    QTest::newRow("oasis text mimetype") << "application/vnd.oasis.opendocument.text" << "*.odt" << ".odt";
+    QTest::newRow("oasis presentation mimetype") << "application/vnd.oasis.opendocument.presentation" << "*.odp" << ".odp";
     QTest::newRow("mimetype with multiple patterns, *.doc added by kde") << "text/plain" << "*.asc;*.txt;*.doc;*,v" << ".txt";
     QTest::newRow("mimetype with uncommon pattern") << "application/x-kcachegrind" << "callgrind.out*;cachegrind.out*" << QString();
     QTest::newRow("mimetype with no patterns") << "application/pkcs7-mime" << QString() << QString();
