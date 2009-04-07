@@ -731,3 +731,37 @@ int KMimeType::sharedMimeInfoVersion()
     }
     return s_version;
 }
+
+QString KMimeType::mainExtension() const
+{
+    Q_D(const KMimeType);
+#if 1 // HACK START
+    // The idea was: first usable pattern from m_lstPatterns.
+    // But update-mime-database makes a mess of the order of the patterns,
+    // because it uses a hash internally. And I wasn't able to fix that
+    // (glib code), so waiting for the freedesktop guys to fix it, I have
+    // to workaround that using a nasty hardcoded table to fix the most
+    // common issues.
+    static const struct { const char* mime; const char* extension; } s_hardcodedMimes[] = {
+        { "text/plain", ".txt" } };
+    if (d->m_lstPatterns.count() > 1) {
+        const QByteArray me = name().toLatin1();
+        for (uint i = 0; i < sizeof(s_hardcodedMimes)/sizeof(*s_hardcodedMimes); ++i) {
+            if (me == s_hardcodedMimes[i].mime)
+                return QString::fromLatin1(s_hardcodedMimes[i].extension);
+        }
+    }
+#endif // HACK END
+
+     Q_FOREACH(const QString& pattern, d->m_lstPatterns) {
+        // Skip if if looks like: README or *. or *.*
+        // or *.JP*G or *.JP?
+        if (pattern.startsWith("*.") &&
+            pattern.length() > 2 &&
+            pattern.indexOf('*', 2) < 0 && pattern.indexOf('?', 2) < 0) {
+            return pattern.mid(1);
+        }
+    }
+    // TODO we should also look into the parent mimetype's patterns, no?
+    return QString();
+}

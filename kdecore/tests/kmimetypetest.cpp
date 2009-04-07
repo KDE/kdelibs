@@ -673,16 +673,20 @@ void KMimeTypeTest::testPatterns_data()
 {
     QTest::addColumn<QString>("mimeType");
     QTest::addColumn<QString>("patterns");
-    QTest::newRow("mimetype with a single pattern") << "application/pdf" << "*.pdf";
-    QTest::newRow("mimetype with multiple patterns") << "application/x-kpresenter" << "*.kpr;*.kpt";
-    QTest::newRow("mimetype with multiple patterns, *.doc added by kde") << "text/plain" << "*.asc;*.txt;*.doc;*,v";
-    QTest::newRow("mimetype with no patterns") << "application/pkcs7-mime" << QString();
+    QTest::addColumn<QString>("mainExtension");
+    QTest::newRow("mimetype with a single pattern") << "application/pdf" << "*.pdf" << ".pdf";
+    QTest::newRow("mimetype with multiple patterns") << "application/x-kpresenter" << "*.kpr;*.kpt" << ".kpr";
+    QTest::newRow("koffice (oasis) mimetype") << "application/vnd.oasis.opendocument.presentation" << "*.odp" << ".odp";
+    QTest::newRow("mimetype with multiple patterns, *.doc added by kde") << "text/plain" << "*.asc;*.txt;*.doc;*,v" << ".txt";
+    QTest::newRow("mimetype with uncommon pattern") << "application/x-kcachegrind" << "callgrind.out*;cachegrind.out*" << QString();
+    QTest::newRow("mimetype with no patterns") << "application/pkcs7-mime" << QString() << QString();
 }
 
 void KMimeTypeTest::testPatterns()
 {
     QFETCH(QString, mimeType);
     QFETCH(QString, patterns);
+    QFETCH(QString, mainExtension);
     KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
     QVERIFY(mime);
     // Sort both lists; order is unreliable since shared-mime-info uses hashes internally.
@@ -695,6 +699,8 @@ void KMimeTypeTest::testPatterns()
         mimePatterns.append("*,v");
     mimePatterns.sort();
     QCOMPARE(mimePatterns.join(";"), expectedPatterns.join(";"));
+
+    QCOMPARE(mime->mainExtension(), mainExtension);
 }
 
 void KMimeTypeTest::testExtractKnownExtension_data()

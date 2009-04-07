@@ -345,6 +345,19 @@ public:
     QString userSpecifiedIconName() const;
 
     /**
+     * Return the primary extension associated with this mimetype, if any.
+     * If patterns() returns (*.jpg, *.jpeg) then mainExtension will return ".jpg".
+     * Note that the dot is included.
+     *
+     * If none of the patterns is in *.foo format (for instance
+     *   <code>*.jp? or *.* or callgrind.out* </code>)
+     * then mainExtension() returns an empty string.
+     *
+     * @since 4.3
+     */
+    QString mainExtension() const;
+
+    /**
      * Determines the extension from a filename (or full path) using the mimetype database.
      * This allows to extract "tar.bz2" for foo.tar.bz2
      * but still return "txt" for my.doc.with.dots.txt
