@@ -25,6 +25,13 @@
 #include <kdirlister.h>
 #include <QtCore/QEventLoop>
 
+class MyDirLister : public KDirLister
+{
+public:
+protected:
+    virtual void handleError(KIO::Job* job);
+};
+
 class KDirListerTest : public QObject
 {
     Q_OBJECT
@@ -42,6 +49,7 @@ private Q_SLOTS:
     void testOpenUrlTwice();
     void testOpenUrlTwiceWithKeep();
     void testOpenAndStop();
+    void testRedirection();
     void testDeleteCurrentDir(); // must be last!
 
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
@@ -61,7 +69,7 @@ private:
     int m_exitCount;
     QEventLoop m_eventLoop;
     KTempDir m_tempDir;
-    KDirLister m_dirLister;
+    MyDirLister m_dirLister;
     KFileItemList m_items;
     KFileItemList m_items2;
     QList<QPair<KFileItem, KFileItem> > m_refreshedItems;

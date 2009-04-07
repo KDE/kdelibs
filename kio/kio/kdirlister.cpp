@@ -99,8 +99,10 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   KUrl _url(_u);
   _url.cleanPath(); // kill consecutive slashes
 
-  if (!_url.host().isEmpty() && KProtocolInfo::protocolClass(_url.protocol()) == ":local") {
+  if (!_url.host().isEmpty() && KProtocolInfo::protocolClass(_url.protocol()) == ":local"
+      && _url.protocol() != "file") {
       // ":local" protocols ignore the hostname, so strip it out preventively - #160057
+      // kio_file is special cased since it does honor the hostname (by redirecting to e.g. smb)
       _url.setHost(QString());
       if (_keep == false)
           emit lister->redirection(_url);
@@ -115,7 +117,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   }
 
 #ifdef DEBUG_CACHE
-  printDebug();
+    printDebug();
 #endif
   //kDebug(7004) << lister << "url=" << _url << "keep=" << _keep << "reload=" << _reload;
 
@@ -1094,6 +1096,10 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
 
 void KDirListerCache::slotResult( KJob *j )
 {
+#ifdef DEBUG_CACHE
+  printDebug();
+#endif
+
   Q_ASSERT( j );
   KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
   runningListJobs.remove( job );
@@ -1103,9 +1109,6 @@ void KDirListerCache::slotResult( KJob *j )
   QString jobUrlStr = jobUrl.url();
 
   kDebug(7004) << "finished listing" << jobUrl;
-#ifdef DEBUG_CACHE
-  printDebug();
-#endif
 
   DirectoryDataHash::iterator dit = directoryData.find(jobUrlStr);
   Q_ASSERT(dit != directoryData.end());
@@ -1183,7 +1186,9 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
     kDebug(7004) << oldUrl << "->" << newUrl;
 
 #ifdef DEBUG_CACHE
-    printDebug();
+    // Can't do that here. KDirListerCache::joburl() will use the new url already,
+    // while our data structures haven't been updated yet -> assert fail.
+    //printDebug();
 #endif
 
     // I don't think there can be dirItems that are children of oldUrl.
@@ -1804,6 +1809,7 @@ void KDirListerCache::printDebug()
                      << QString("with %1 items.").arg(itu.value()->lstItems.count());
     }
 
+    QList<KDirLister*> listersWithoutJob;
     kDebug(7004) << "Directory data:";
     DirectoryDataHash::const_iterator dit = directoryData.constBegin();
     for ( ; dit != directoryData.constEnd(); ++dit )
@@ -1815,6 +1821,10 @@ void KDirListerCache::printDebug()
         foreach ( KDirLister* listit, (*dit).listersCurrentlyListing ) {
             if (listit->d->m_cachedItemsJob) {
                 kDebug(7004) << "  Lister" << listit << "has CachedItemsJob" << listit->d->m_cachedItemsJob;
+            } else if (KIO::ListJob* listJob = jobForUrl(dit.key())) {
+                kDebug(7004) << "  Lister" << listit << "has ListJob" << listJob;
+            } else {
+                listersWithoutJob.append(listit);
             }
         }
 
@@ -1836,6 +1846,11 @@ void KDirListerCache::printDebug()
         kDebug(7004) << "   " << cachedDir << "rootItem:"
                      << (!dirItem->rootItem.isNull() ? dirItem->rootItem.url().prettyUrl() : QString("NULL") )
                      << "with" << dirItem->lstItems.count() << "items.";
+    }
+
+    // Abort on listers without jobs -after- showing the full dump. Easier debugging.
+    Q_FOREACH(KDirLister* listit, listersWithoutJob) {
+        kFatal() << "HUH? Lister" << listit << "is supposed to be listing, but has no job!";
     }
 }
 #endif
