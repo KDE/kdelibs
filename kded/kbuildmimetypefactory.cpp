@@ -288,7 +288,7 @@ void KBuildMimeTypeFactory::save(QDataStream &str)
     m_parentsMapOffset = str.device()->pos();
     ParentsMap& parentsMap = this->parentsMap();
     str << (qint32) parentsMap.count();
-    for (ParentsMap::const_iterator it = parentsMap.begin(); it != parentsMap.end(); ++it) {
+    for (ParentsMap::const_iterator it = parentsMap.constBegin(); it != parentsMap.constEnd(); ++it) {
         str << it.key() << it.value().join("|");
     }
 

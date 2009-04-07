@@ -367,7 +367,7 @@ void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto)
     NetRC::self()->reload();
 
     ProtocolInfoDict::ConstIterator it = proto.isEmpty() ? protInfoDict.constBegin() :
-                                                           protInfoDict.find(proto);
+                                                           protInfoDict.constFind(proto);
     // not found?
     if (it == protInfoDict.constEnd()) {
         return;
