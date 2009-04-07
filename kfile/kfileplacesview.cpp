@@ -153,12 +153,12 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     Solid::Device device;
     if (placesModel->isDevice(index)) {
         device = placesModel->deviceForIndex(index);
-        if ((device.is<Solid::StorageAccess>() && device.as<Solid::StorageAccess>()->isAccessible() ||
-             device.parent().is<Solid::StorageAccess>() && device.parent().as<Solid::StorageAccess>()->isAccessible()) &&
-            (device.is<Solid::StorageDrive>() && device.as<Solid::StorageDrive>()->isRemovable() ||
-             device.parent().is<Solid::StorageDrive>() && device.parent().as<Solid::StorageDrive>()->isRemovable()) &&
-            (device.is<Solid::StorageDrive>() && device.as<Solid::StorageDrive>()->driveType() != Solid::StorageDrive::CdromDrive ||
-             device.parent().is<Solid::StorageDrive>() && device.parent().as<Solid::StorageDrive>()->driveType() != Solid::StorageDrive::CdromDrive)) {
+        if (((device.is<Solid::StorageAccess>() && device.as<Solid::StorageAccess>()->isAccessible()) ||
+             (device.parent().is<Solid::StorageAccess>() && device.parent().as<Solid::StorageAccess>()->isAccessible())) &&
+            ((device.is<Solid::StorageDrive>() && device.as<Solid::StorageDrive>()->isRemovable()) ||
+             (device.parent().is<Solid::StorageDrive>() && device.parent().as<Solid::StorageDrive>()->isRemovable())) &&
+            ((device.is<Solid::StorageDrive>() && device.as<Solid::StorageDrive>()->driveType() != Solid::StorageDrive::CdromDrive) ||
+             (device.parent().is<Solid::StorageDrive>() && device.parent().as<Solid::StorageDrive>()->driveType() != Solid::StorageDrive::CdromDrive))) {
             isRemovableDevice = true;
         }
     }

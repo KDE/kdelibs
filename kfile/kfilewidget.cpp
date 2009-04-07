@@ -774,7 +774,7 @@ void KFileWidget::slotOk()
             KUrl::List urlList;                            // one time is always enough.
             int start = 0;
             KUrl topMostUrl;
-            KIO::StatJob *statJob;
+            KIO::StatJob *statJob = 0;
             bool res = false;
 
             // we need to check for a valid first url, so in theory we only iterate one time over
@@ -787,6 +787,8 @@ void KFileWidget::slotOk()
                 res = KIO::NetAccess::synchronousRun(statJob, 0);
                 start++;
             }
+
+            Q_ASSERT(statJob);
 
             // if this is not a dir, strip the filename. after this we have an existent and valid
             // dir (if we stated correctly the file, setting a null filename won't make any bad).
