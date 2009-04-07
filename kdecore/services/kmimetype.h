@@ -422,6 +422,8 @@ private:
     void internalClearData();
     /// @internal for kbuildsycoca
     void setUserSpecifiedIcon(const QString& icon);
+    /// @internal for kbuildsycoca
+    void setParentMimeType(const QString& parent);
     void loadInternal( QDataStream& _str);
     static void buildDefaultType();
     static void checkEssentialMimeTypes();

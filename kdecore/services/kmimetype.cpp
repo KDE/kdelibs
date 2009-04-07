@@ -765,3 +765,9 @@ QString KMimeType::mainExtension() const
     // TODO we should also look into the parent mimetype's patterns, no?
     return QString();
 }
+
+void KMimeType::setParentMimeType(const QString&)
+{
+    // Nothing. Don't ever call this. The method was internal, is now unused,
+    // but is wrapped by bindings.
+}
