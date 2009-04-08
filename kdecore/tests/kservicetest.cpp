@@ -236,12 +236,11 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
     // Check ordering according to InitialPreference
     int lastPreference = -1;
     bool lastAllowedAsDefault = true;
-    KService::List::const_iterator it = offers.begin();
-    for ( ; it != offers.end() ; it++ ) {
-        const QString path = (*it)->entryPath();
-        const int preference = (*it)->initialPreference(); // ## might be wrong if we use per-servicetype preferences...
-        //qDebug( "%s has preference %d, allowAsDefault=%d", qPrintable( path ), preference, (*it)->allowAsDefault() );
-        if ( lastAllowedAsDefault && !(*it)->allowAsDefault() ) {
+    Q_FOREACH(KService::Ptr service, offers) {
+        const QString path = service->entryPath();
+        const int preference = service->initialPreference(); // ## might be wrong if we use per-servicetype preferences...
+        //qDebug( "%s has preference %d, allowAsDefault=%d", qPrintable( path ), preference, service->allowAsDefault() );
+        if ( lastAllowedAsDefault && !service->allowAsDefault() ) {
             // first "not allowed as default" offer
             lastAllowedAsDefault = false;
             lastPreference = -1; // restart

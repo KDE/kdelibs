@@ -51,11 +51,8 @@ main(int argc, char *argv[])
 
    printf("Full list of baudrates:\n");
    QStringList result = args->getOptionList("baud");
-   for(QStringList::ConstIterator it=result.begin();
-       it != result.end();
-       ++it)
-   {
-      printf("Baudrate = %s\n", (*it).toLocal8Bit().data());
+   Q_FOREACH(const QString& it, result) {
+      printf("Baudrate = %s\n", it.toLocal8Bit().data());
    }
    printf("End of list\n");
 

@@ -111,7 +111,7 @@ void KEntryMapTest::testDefault()
     const KEntryMap::ConstIterator entry2(map.findEntry(group1, key2));
 
     // default set for entry1
-    QVERIFY(defaultEntry != map.end());
+    QVERIFY(defaultEntry != map.constEnd());
     QCOMPARE(defaultEntry->mValue, entry1->mValue);
 
     // no default set for entry2
