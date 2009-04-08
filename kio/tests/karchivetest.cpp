@@ -98,10 +98,8 @@ static QStringList recursiveListEntries( const KArchiveDirectory * dir, const QS
   QStringList ret;
   QStringList l = dir->entries();
   l.sort();
-  QStringList::ConstIterator it = l.begin();
-  for( ; it != l.end(); ++it )
-  {
-    const KArchiveEntry* entry = dir->entry( (*it) );
+  Q_FOREACH(const QString& it, l) {
+    const KArchiveEntry* entry = dir->entry(it);
 
     QString descr;
     descr += QString("mode=") + QString::number( entry->permissions(), 8 ) + ' ';
@@ -110,7 +108,7 @@ static QStringList recursiveListEntries( const KArchiveDirectory * dir, const QS
         descr += QString("user=") + entry->user() + ' ';
         descr += QString("group=") + entry->group() + ' ';
     }
-    descr += QString("path=") + path+(*it) + ' ';
+    descr += QString("path=") + path+(it) + ' ';
     descr += QString("type=") + ( entry->isDirectory() ? "dir" : "file" );
     if ( entry->isFile() )
         descr += QString(" size=") + QString::number( static_cast<const KArchiveFile *>(entry)->size() );
@@ -123,7 +121,7 @@ static QStringList recursiveListEntries( const KArchiveDirectory * dir, const QS
     ret.append( descr );
 
     if (entry->isDirectory())
-      ret += recursiveListEntries( (KArchiveDirectory *)entry, path+(*it)+'/', listingFlags );
+      ret += recursiveListEntries( (KArchiveDirectory *)entry, path+it+'/', listingFlags );
   }
   return ret;
 }
