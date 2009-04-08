@@ -100,9 +100,7 @@ public:
    * The flags of this plugin.
    * @see flags()
    */
-    Q_DISABLE_COPY(ThumbCreator);
     enum Flags { None = 0, DrawFrame = 1, BlendIcon = 2 };
-    ThumbCreator();
     virtual ~ThumbCreator();
 
     /**
@@ -131,31 +129,6 @@ public:
      * @return flags for this plugin
      */
     virtual Flags flags() const { return None; } //krazy:exclude=inline
-
-    /**
-     * If this thumb-creator can create a sequence of thumbnails,
-     * it should use this to decide what sequence item to use.
-     * 
-     * If the value is zero, the standard thumbnail should be created.
-     *
-     * This can be used for example to create thumbnails for different
-     * timeframes in videos.
-     *
-     * @since KDE 4.3
-     */
-    int sequenceIndex() const;
-
-    /**
-     * Sets the sequence-index for this thumb creator.
-     * @see sequenceIndex
-     *
-     * @since KDE 4.3
-     */
-    void setSequenceIndex(int index);
-
-private:
-    class Private;
-    Private* d;
 };
 
 typedef ThumbCreator *(*newCreator)();

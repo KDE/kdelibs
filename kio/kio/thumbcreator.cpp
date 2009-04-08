@@ -19,26 +19,6 @@
 
 #include "thumbcreator.h"
 
-struct ThumbCreator::Private {
-  Private() : sequenceIndex(0) {
-  }
-  
-  int sequenceIndex;
-};
-
-int ThumbCreator::sequenceIndex() const {
-  return d->sequenceIndex;
-}
-
-void ThumbCreator::setSequenceIndex(int index) {
-  d->sequenceIndex = index;
-}
-
-ThumbCreator::ThumbCreator() : d(new Private) {
-  
-}
-
 ThumbCreator::~ThumbCreator()
 {
-  delete d;
 }
