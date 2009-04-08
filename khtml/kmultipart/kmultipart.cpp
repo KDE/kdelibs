@@ -28,7 +28,7 @@
 #include <QtCore/QFile>
 #include <ktemporaryfile.h>
 #include <kmessagebox.h>
-#include <kparts/componentfactory.h>
+#include <kmimetypetrader.h>
 #include <kparts/genericfactory.h>
 #include <khtml_part.h>
 #include <unistd.h>
@@ -112,7 +112,7 @@ KMultiPart::KMultiPart( QWidget *parentWidget,
     m_isHTMLPart = false;
     m_job = 0L;
     m_lineParser = new KLineParser;
-    m_tempFile = 0L;
+    m_tempFile = 0;
 
     m_timer = new QTimer( this );
     connect( m_timer, SIGNAL( timeout() ), this, SLOT( slotProgressInfo() ) );
@@ -206,16 +206,10 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
         m_lineParser->addChar( data[i], !m_bParsingHeader );
         if ( m_lineParser->isLineComplete() )
         {
-            QByteArray lineData = m_lineParser->currentLine();
+            QByteArray line = m_lineParser->currentLine();
 #ifdef DEBUG_PARSING
-            kDebug() << "lineData.size()=" << lineData.size();
+            kDebug() << "line.size()=" << line.size();
 #endif
-            QByteArray line( lineData.data(), lineData.size()+1 ); // deep copy
-            // 0-terminate the data, but only for the line-based tests below
-            // We want to keep the raw data in case it ends up in sendData()
-            int sz = line.size();
-            if ( sz > 0 )
-                line[sz-1] = '\0';
 #ifdef DEBUG_PARSING
             kDebug() << "[" << m_bParsingHeader << "] line='" << line << "'";
 #endif
@@ -293,12 +287,12 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                         }
                         else {
                             // otherwise, false hit, it has trailing stuff
-                            sendData( lineData );
+                            sendData(line);
                         }
                     }
                 } else {
                     // send to part
-                    sendData( lineData );
+                    sendData(line);
                 }
             }
             m_lineParser->clearLine();
@@ -314,8 +308,8 @@ void KMultiPart::setPart( const QString& mimeType )
     kDebug() << "KMultiPart::setPart " << mimeType;
     delete m_part;
     // Try to find an appropriate viewer component
-    m_part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>
-             ( m_mimeType, QString(), widget(), this );
+    m_part = KMimeTypeTrader::createPartInstanceFromQuery<KParts::ReadOnlyPart>
+             ( m_mimeType, widget(), this );
     if ( !m_part ) {
         // TODO launch external app
         KMessageBox::error( widget(), i18n("No handler found for %1.", m_mimeType) );
@@ -473,6 +467,7 @@ void KMultiPart::endOfData()
         htmlPart->end();
     } else if ( m_tempFile )
     {
+        const QString tempFileName = m_tempFile->fileName();
         m_tempFile->close();
         if ( m_partIsLoading )
         {
@@ -484,9 +479,8 @@ void KMultiPart::endOfData()
         }
         else
         {
-            kDebug() << "KMultiPart::endOfData opening " << m_tempFile->fileName();
-            KUrl url;
-            url.setPath( m_tempFile->fileName() );
+            kDebug() << "KMultiPart::endOfData opening " << tempFileName;
+            KUrl url(tempFileName);
             m_partIsLoading = true;
             (void) m_part->openUrl( url );
         }
