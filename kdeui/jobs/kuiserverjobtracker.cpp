@@ -35,13 +35,32 @@ K_GLOBAL_STATIC(KSharedUiServerProxy, serverProxy)
 class KUiServerJobTracker::Private
 {
 public:
-    Private() { }
+    Private(KUiServerJobTracker *parent)
+        : q(parent)
+    {
+    }
+
+    KUiServerJobTracker *const q;
+
+    void _k_killJob();
 
     QHash<KJob*, org::kde::JobView*> progressJobView;
 };
 
+void KUiServerJobTracker::Private::_k_killJob()
+{
+    org::kde::JobView *jobView = qobject_cast<org::kde::JobView*>(q->sender());
+
+    if (jobView) {
+        KJob *job = progressJobView.key(jobView);
+
+        if (job)
+            job->kill(KJob::EmitResult);
+    }
+}
+
 KUiServerJobTracker::KUiServerJobTracker(QObject *parent)
-    : KJobTrackerInterface(parent), d(new Private)
+    : KJobTrackerInterface(parent), d(new Private(this))
 {
 
 }
@@ -82,7 +101,7 @@ void KUiServerJobTracker::registerJob(KJob *job)
                                                            QDBusConnection::sessionBus());
 
         QObject::connect(jobView, SIGNAL(cancelRequested()), this,
-                         SLOT(killJob()));
+                         SLOT(_k_killJob()));
         QObject::connect(jobView, SIGNAL(suspendRequested()), job,
                          SLOT(suspend()));
         QObject::connect(jobView, SIGNAL(resumeRequested()), job,
@@ -92,18 +111,6 @@ void KUiServerJobTracker::registerJob(KJob *job)
     }
 
     KJobTrackerInterface::registerJob(job);
-}
-
-void KUiServerJobTracker::killJob()
-{
-    org::kde::JobView *jobView = qobject_cast<org::kde::JobView*>(sender());
-
-    if (jobView) {
-        KJob *job = d->progressJobView.key(jobView);
-
-        if (job)
-          job->kill(KJob::EmitResult);
-    }
 }
 
 void KUiServerJobTracker::unregisterJob(KJob *job)

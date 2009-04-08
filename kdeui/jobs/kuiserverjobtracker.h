@@ -75,12 +75,11 @@ protected Q_SLOTS:
     virtual void percent(KJob *job, unsigned long percent);
     virtual void speed(KJob *job, unsigned long value);
 
-private Q_SLOTS:
-    void killJob();
-
 private:
     class Private;
     Private *const d;
+
+    Q_PRIVATE_SLOT(d, void _k_killJob())
 };
 
 #endif
