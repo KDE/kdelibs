@@ -51,8 +51,7 @@ void KEmoticonTest::testEmoticonParser()
     QDir testCasesDir(basePath);
 
     QStringList inputFileNames = testCasesDir.entryList(QStringList(QLatin1String("*.input")));
-    for (QStringList::ConstIterator it = inputFileNames.begin(); it != inputFileNames.end(); ++it) {
-        QString fileName = *it;
+    Q_FOREACH (const QString& fileName, inputFileNames) {
         kDebug() << "testcase: " << fileName;
         QString outputFileName = fileName;
         outputFileName.replace("input", "output");
