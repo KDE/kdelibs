@@ -50,7 +50,7 @@ void KServiceTest::initTestCase()
 
 
     // Create fake service for some tests below.
-    bool mustUpdateKSycoca = false;
+    bool mustUpdateKSycoca = !KService::serviceByDesktopPath("fakeservice.desktop");
     const QString fakeService = KStandardDirs::locateLocal("services", "fakeservice.desktop");
     const bool mustCreateFakeService = !QFile::exists(fakeService);
     if (mustCreateFakeService) {
