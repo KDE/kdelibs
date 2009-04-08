@@ -274,7 +274,7 @@ void QX11PaintEngine::drawFreetype(const QPointF &p, const QTextItemInt &si)
 #ifdef QT_45
     int cnt = si.glyphs.numGlyphs;
 #else
-    int cnt = si.num_glyph;
+    int cnt = si.num_glyphs;
 #endif
 
 
@@ -567,3 +567,7 @@ bool KSSLSettings::warnOnLeave() const       { return false; }
 
 KParts::Plugin* KParts::Plugin::loadPlugin( QObject * /* parent */, const char* /* libname */) { return 0; }
 
+#include <klineedit.h>
+
+void KLineEdit::setClearButtonShown(bool /*show*/)
+{}
