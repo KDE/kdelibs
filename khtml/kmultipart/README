@@ -13,8 +13,13 @@ Typical real-world uses: webchats, webcams...
 
 Testcases:
   http://217.173.193.218/axis-cgi/mjpg/video.cgi?resolution=704x576,
-  r257583 mentionned expedia.ca
+  http://wtb.cc:5050
+  http://palantir.santinoli.com:14334/
+  http://moosworld.dyndns.org:4033/nphMotionJpeg?Resolution=320x240&Quality=Standard&NUMBER=1&time=1239198646918
+  http://www.airport-nuernberg.de/_/tools/webcam.html?_FRAME=64&refresh=2&datei=webcam-0-0.jpg&bildpaket=1&oldcam=oldcam&pid=12541   (bug 123614)
+  http://www.fastpath.it/products/palantir/demo.html  (bug 115286)
   http://cpansearch.perl.org/src/LDS/CGI.pm-3.43/examples/index.html [does not work anymore]
+  r257583 mentionned expedia.ca for the gzip encoding, need to add pmax for details
 
 TODO:
 * Use the new streaming API of KParts to pipe data into the part,

@@ -321,6 +321,8 @@ void KMultiPart::setPart( const QString& mimeType )
 
     connect( m_part, SIGNAL( completed() ),
              this, SLOT( slotPartCompleted() ) );
+    connect( m_part, SIGNAL(completed(bool)),
+             this, SLOT(slotPartCompleted()) );
 
     m_isHTMLPart = ( mimeType == "text/html" );
     KParts::BrowserExtension* childExtension = KParts::BrowserExtension::childObject( m_part );
