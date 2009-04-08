@@ -217,7 +217,7 @@ void Soap::slotResult(KJob *job)
 QString Soap::localname(const QDomNode& node)
 {
     QDomElement el = node.toElement();
-    QString s = el.tagName().section(":", -1);
+    QString s = el.tagName().section(':', -1);
     return s;
 }
 

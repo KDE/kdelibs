@@ -31,7 +31,7 @@
 
 static const int kLabel = 0;
 static const int kInstall = 1;
-static const int kCollaborate = 2;
+static const int kRating = 2;
 
 static const int kPreviewSize = 64;
 
@@ -88,6 +88,9 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
     connect(installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotActionTriggered(QAction *)));
     connect(installButton, SIGNAL(clicked()), this, SLOT(slotInstallClicked()));
+
+    QLabel * ratingLabel = new QLabel();
+    list << ratingLabel;
 
     return list;
 }
@@ -160,7 +163,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         //    button->setIconSize(QSize(16, 16));
             button->resize(size);
         //}
-        button->move(right - button->width() - margin, option.rect.height() / 2 - button->height() / 2);
+        button->move(right - button->width() - margin, option.rect.height() / 2 - button->height());
         button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         //button->setPopupMode(QToolButton::MenuButtonPopup);
 
@@ -202,6 +205,15 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             //action_install->setIcon(QIcon(m_statusicons[Entry::Installed]));
             button->setIcon(QIcon(m_statusicons[Entry::Installed]));
         }
+    }
+
+    QLabel * ratingLabel = qobject_cast<QLabel*>(widgets.at(kRating));
+    if (ratingLabel != NULL) {
+        ratingLabel->setText(i18n("Rating: %1", model->data(index, ItemsModel::kRating).toString()));
+
+        // put the rating label below the install button
+        ratingLabel->move(right - button->width() - margin, option.rect.height() / 2 + button->height()/2);
+        ratingLabel->resize(size);
     }
 }
 

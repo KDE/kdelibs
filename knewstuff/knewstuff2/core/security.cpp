@@ -159,11 +159,11 @@ void Security::slotReadyReadStandardOutput()
             }
             break;
         case Verify:
-            data = data.section("]", 1, -1).trimmed();
+            data = data.section(']', 1, -1).trimmed();
             if (data.startsWith("GOODSIG")) {
                 m_result &= SIGNED_BAD_CLEAR;
                 m_result |= SIGNED_OK;
-                QString id = data.section(" ", 1 , 1).right(8);
+                QString id = data.section(' ', 1 , 1).right(8);
                 if (!m_keys.contains(id)) {
                     m_result |= UNKNOWN;
                 } else {
@@ -176,7 +176,7 @@ void Security::slotReadyReadStandardOutput()
                 } else
                     if (data.startsWith("BADSIG")) {
                         m_result |= SIGNED_BAD;
-                        QString id = data.section(" ", 1 , 1).right(8);
+                        QString id = data.section(' ', 1 , 1).right(8);
                         if (!m_keys.contains(id)) {
                             m_result |= UNKNOWN;
                         } else {
