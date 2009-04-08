@@ -192,7 +192,7 @@ protected:
 
   /**
    * Returns whether the current state of the dialog is
-   * different from the current configutation.
+   * different from the current configuration.
    * Virtual function for custom additions.
    */
   virtual bool hasChanged();
