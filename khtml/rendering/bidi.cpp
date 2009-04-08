@@ -297,6 +297,7 @@ static inline RenderObject *Bidinext(RenderObject *par, RenderObject *current, B
                 && next->isInlineFlow()))
             break;
         current = next;
+        next    = 0;
     }
     return next;
 }
