@@ -117,10 +117,10 @@ bool KNotificationManager::notify( KNotification* n, const QPixmap &pix,
     WId winId=n->widget() ? n->widget()->topLevelWidget()->winId()  : 0;
 
     QByteArray pixmapData;
-
     {
-        QDataStream arg(&pixmapData, QIODevice::WriteOnly);
-        arg << pix;
+        QBuffer buffer(&pixmapData);
+        buffer.open(QIODevice::WriteOnly);
+        pix.save(&buffer, "PNG");
     }
 
     QVariantList contextList;
@@ -149,9 +149,13 @@ void KNotificationManager::update(KNotification * n, int id)
 	if(id <= 0)
 		return;
 
-	QByteArray pixmapData;
-	QDataStream arg(&pixmapData, QIODevice::WriteOnly);
-	arg << n->pixmap();
+    QByteArray pixmapData;
+    if(!n->pixmap().isNull())
+    {
+        QBuffer buffer(&pixmapData);
+        buffer.open(QIODevice::WriteOnly);
+        n->pixmap().save(&buffer, "PNG");
+    }
 
 	d->knotify->call(QDBus::NoBlock, "update", id, n->text(), pixmapData , n->actions() );
 }
