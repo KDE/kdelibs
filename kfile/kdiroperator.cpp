@@ -81,6 +81,10 @@
 
 template class QHash<QString, KFileItem>;
 
+// QDir::SortByMask is not only undocumented, it also omits QDir::Type which  is another 
+// sorting mode.
+static const int QDirSortMask = QDir::SortByMask | QDir::Type;
+
 static QStyleOptionViewItem::Position decorationPosition = QStyleOptionViewItem::Left;
 
 /**
@@ -187,7 +191,7 @@ public:
     bool openUrl(const KUrl &url, KDirLister::OpenUrlFlags flags = KDirLister::NoFlags);
     int sortColumn() const;
     Qt::SortOrder sortOrder() const;
-    void triggerSorting();
+    void updateSorting(QDir::SortFlags sort);
 
     static bool isReadable(const KUrl &url);
 
@@ -361,7 +365,6 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent) :
 
     d->mode = KFile::File;
     d->viewKind = KFile::Simple;
-    d->sorting = QDir::Name | QDir::DirsFirst;
 
     if (_url.isEmpty()) { // no dir specified -> current dir
         QString strPath = QDir::currentPath();
@@ -402,6 +405,9 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent) :
     setupActions();
     setupMenu();
 
+    d->sorting = QDir::NoSort;  //so updateSorting() doesn't think nothing has changed
+    d->updateSorting(QDir::Name | QDir::DirsFirst);
+
     setFocusPolicy(Qt::WheelFocus);
 }
 
@@ -414,9 +420,7 @@ KDirOperator::~KDirOperator()
 
 void KDirOperator::setSorting(QDir::SortFlags spec)
 {
-    d->sorting = spec;
-    d->triggerSorting();
-    updateSortActions();
+    d->updateSorting(spec);
 }
 
 QDir::SortFlags KDirOperator::sorting() const
@@ -451,37 +455,28 @@ void KDirOperator::resetCursor()
 
 void KDirOperator::sortByName()
 {
-    d->sorting = QDir::Name;
-    d->actionCollection->action("by name")->setChecked(true);
+    d->updateSorting((d->sorting & ~QDirSortMask) | QDir::Name);
 }
 
 void KDirOperator::sortBySize()
 {
-    d->sorting = (d->sorting & ~QDir::SortByMask) | QDir::Size;
-    d->actionCollection->action("by size")->setChecked(true);
+    d->updateSorting((d->sorting & ~QDirSortMask) | QDir::Size);
 }
 
 void KDirOperator::sortByDate()
 {
-    d->sorting = (d->sorting & ~QDir::SortByMask) | QDir::Time;
-    d->actionCollection->action("by date")->setChecked(true);
+    d->updateSorting((d->sorting & ~QDirSortMask) | QDir::Time);
 }
 
 void KDirOperator::sortByType()
 {
-    d->sorting = (d->sorting & ~QDir::SortByMask) | QDir::Type;
-    d->actionCollection->action("by type")->setChecked(true);
+    d->updateSorting((d->sorting & ~QDirSortMask) | QDir::Type);
 }
 
 void KDirOperator::sortReversed()
 {
-    if (d->sorting & QDir::Reversed) {
-        d->sorting = d->sorting & ~QDir::Reversed;
-        d->actionCollection->action("descending")->setChecked(false);
-    } else {
-        d->sorting = d->sorting | QDir::Reversed;
-        d->actionCollection->action("descending")->setChecked(true);
-    }
+    // toggle it, hence the inversion of current state
+    d->_k_slotSortReversed(!(d->sorting & QDir::Reversed));
 }
 
 void KDirOperator::toggleDirsFirst()
@@ -673,37 +668,30 @@ void KDirOperator::Private::_k_toggleInlinePreviews(bool show)
 void KDirOperator::Private::_k_slotSortByName()
 {
     parent->sortByName();
-    triggerSorting();
 }
 
 void KDirOperator::Private::_k_slotSortBySize()
 {
     parent->sortBySize();
-    triggerSorting();
 }
 
 void KDirOperator::Private::_k_slotSortByDate()
 {
     parent->sortByDate();
-    triggerSorting();
 }
 
 void KDirOperator::Private::_k_slotSortByType()
 {
     parent->sortByType();
-    triggerSorting();
 }
 
 void KDirOperator::Private::_k_slotSortReversed(bool doReverse)
 {
+    QDir::SortFlags s = sorting & ~QDir::Reversed;
     if (doReverse) {
-        sorting |= QDir::Reversed;
+        s |= QDir::Reversed;
     }
-    else {
-        sorting &= ~QDir::Reversed;
-    }
-
-    triggerSorting();
+    updateSorting(s);
 }
 
 void KDirOperator::Private::_k_slotToggleDirsFirst()
@@ -1151,8 +1139,15 @@ Qt::SortOrder KDirOperator::Private::sortOrder() const
                                         Qt::AscendingOrder;
 }
 
-void KDirOperator::Private::triggerSorting()
+void KDirOperator::Private::updateSorting(QDir::SortFlags sort)
 {
+    kDebug(kfile_area) << "changing sort flags from"  << sorting << "to" << sort;
+    if (sort == sorting) {
+        return;
+    }
+
+    sorting = sort;
+    parent->updateSortActions();
     proxyModel->sort(sortColumn(), sortOrder());
 
     // TODO: The headers from QTreeView don't take care about a sorting
@@ -1442,8 +1437,6 @@ QAbstractItemView* KDirOperator::createView(QWidget* parent, KFile::FileView vie
     if (KFile::isDetailView(viewKind) || KFile::isTreeView(viewKind) || KFile::isDetailTreeView(viewKind)) {
         KDirOperatorDetailView *detailView = new KDirOperatorDetailView(parent);
         detailView->setViewMode(viewKind);
-        connect(detailView->header(), SIGNAL(sortIndicatorChanged (int, Qt::SortOrder)),
-                this, SLOT(_k_synchronizeSortingState(int, Qt::SortOrder)));
         itemView = detailView;
     } else {
         itemView = new KDirOperatorIconView(parent);
@@ -1560,6 +1553,15 @@ void KDirOperator::setView(QAbstractItemView *view)
     d->itemView->setMouseTracking(true);
     //d->itemView->setDropOptions(d->dropOptions);
 
+    // first push our settings to the view, then listen for changes from the view
+    QTreeView* treeView = qobject_cast<QTreeView*>(d->itemView);
+    if (treeView) {
+        QHeaderView* headerView = treeView->header();
+        headerView->setSortIndicator(d->sortColumn(), d->sortOrder());
+        connect(headerView, SIGNAL(sortIndicatorChanged (int, Qt::SortOrder)),
+                this, SLOT(_k_synchronizeSortingState(int, Qt::SortOrder)));
+    }
+
     connect(d->itemView, SIGNAL(activated(const QModelIndex&)),
             this, SLOT(_k_slotActivated(const QModelIndex&)));
     connect(d->itemView, SIGNAL(doubleClicked(const QModelIndex&)),
@@ -1570,14 +1572,6 @@ void KDirOperator::setView(QAbstractItemView *view)
             this, SLOT(_k_openContextMenu(const QPoint&)));
     connect(d->itemView, SIGNAL(entered(const QModelIndex&)),
             this, SLOT(_k_triggerPreview(const QModelIndex&)));
-    // assure that the sorting state d->sorting matches with the current action
-    const bool descending = d->actionCollection->action("descending")->isChecked();
-    if (descending) {
-        d->sorting = d->sorting | QDir::Reversed;
-    } else {
-        d->sorting = d->sorting & ~QDir::Reversed;
-    }
-    d->triggerSorting();
 
     updateViewActions();
     d->splitter->insertWidget(0, d->itemView);
@@ -1885,7 +1879,7 @@ void KDirOperator::setupActions()
 
     KToggleAction *descendingAction = new KToggleAction(i18n("Descending"), this);
     d->actionCollection->addAction("descending", descendingAction);
-    connect(descendingAction, SIGNAL(toggled(bool)), this, SLOT(_k_slotSortReversed(bool)));
+    connect(descendingAction, SIGNAL(triggered(bool)), this, SLOT(_k_slotSortReversed(bool)));
 
     QActionGroup* sortGroup = new QActionGroup(this);
     byNameAction->setActionGroup(sortGroup);
@@ -2063,8 +2057,6 @@ void KDirOperator::updateViewActions()
 void KDirOperator::readConfig(const KConfigGroup& configGroup)
 {
     d->defaultView = 0;
-    QDir::SortFlags sorting = QDir::Name;
-
     QString viewStyle = configGroup.readEntry("View Style", "Simple");
     if (viewStyle == QLatin1String("Detail")) {
         d->defaultView |= KFile::Detail;
@@ -2075,7 +2067,6 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
     } else {
         d->defaultView |= KFile::Simple;
     }
-
     //if (configGroup.readEntry(QLatin1String("Separate Directories"),
     //                          DefaultMixDirsAndFiles)) {
     //    d->defaultView |= KFile::SeparateDirs;
@@ -2083,13 +2074,20 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
     if (configGroup.readEntry(QLatin1String("Show Preview"), false)) {
         d->defaultView |= KFile::PreviewContents;
     }
+
     d->previewWidth = configGroup.readEntry(QLatin1String("Preview Width"), 100);
 
+    if (configGroup.readEntry(QLatin1String("Show hidden files"),
+                              DefaultShowHidden)) {
+        d->actionCollection->action("show hidden")->setChecked(true);
+        d->dirLister->setShowingDotFiles(true);
+    }
+
+    QDir::SortFlags sorting = QDir::Name;
     if (configGroup.readEntry(QLatin1String("Sort directories first"),
                               DefaultDirsFirst)) {
         sorting |= QDir::DirsFirst;
     }
-
     QString name = QLatin1String("Name");
     QString sortBy = configGroup.readEntry(QLatin1String("Sort by"), name);
     if (sortBy == name) {
@@ -2101,22 +2099,11 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
     } else if (sortBy == QLatin1String("Type")) {
         sorting |= QDir::Type;
     }
-
-    d->sorting = sorting;
-
-    if (configGroup.readEntry(QLatin1String("Show hidden files"),
-                              DefaultShowHidden)) {
-        d->actionCollection->action("show hidden")->setChecked(true);
-        d->dirLister->setShowingDotFiles(true);
+    if (configGroup.readEntry(QLatin1String("Sort reversed"), DefaultSortReversed)) {
+        sorting |= QDir::Reversed;
     }
-    const bool descending = configGroup.readEntry(QLatin1String("Sort reversed"),
-                                                  DefaultSortReversed);
-    d->actionCollection->action("descending")->setChecked(descending);
-    if (descending) {
-        d->sorting = d->sorting | QDir::Reversed;
-    }
+    d->updateSorting(sorting);
 
-    setSorting(d->sorting);
     if (d->inlinePreviewState == Private::NotForced) {
         d->showPreviews = configGroup.readEntry(QLatin1String("Previews"), false);
     }
@@ -2452,16 +2439,31 @@ void KDirOperator::Private::_k_assureVisibleSelection()
 
 void KDirOperator::Private::_k_synchronizeSortingState(int logicalIndex, Qt::SortOrder order)
 {
+    QDir::SortFlags newSort = sorting & ~(QDirSortMask | QDir::Reversed);
+
     switch (logicalIndex) {
-    case KDirModel::Name: parent->sortByName(); break;
-    case KDirModel::Size: parent->sortBySize(); break;
-    case KDirModel::ModifiedTime: parent->sortByDate(); break;
-    case KDirModel::Type: parent->sortByType(); break;
+    case KDirModel::Name:
+        newSort |= QDir::Name;
+        break;
+    case KDirModel::Size:
+        newSort |= QDir::Size;
+        break;
+    case KDirModel::ModifiedTime:
+        newSort |= QDir::Time;
+        break;
+    case KDirModel::Type:
+        newSort |= QDir::Type;
+        break;
+    default:
+        Q_ASSERT(false);
     }
 
-    actionCollection->action("descending")->setChecked(order == Qt::DescendingOrder);
+    if (order == Qt::DescendingOrder) {
+        newSort |= QDir::Reversed;
+    }
 
-    proxyModel->sort(sortColumn(), sortOrder());
+    updateSorting(newSort);
+
     QMetaObject::invokeMethod(parent, "_k_assureVisibleSelection", Qt::QueuedConnection);
 }
 
