@@ -51,6 +51,9 @@
 #include "kde_file.h"
 
 #ifdef Q_WS_WIN
+#include <QtCore/QVarLengthArray>
+#include <windows.h>
+#include <shellapi.h>
 extern QString mkdtemp_QString (const QString &_template);
 #endif
 
@@ -175,6 +178,7 @@ void KTempDir::unlink()
     d->exists=false;
 }
 
+#ifndef Q_WS_WIN
 // Auxiliary recursive function for removeDirs
 static bool rmtree(const QByteArray& name)
 {
@@ -229,6 +233,7 @@ static bool rmtree(const QByteArray& name)
         return ! ::unlink( name );
     }
 }
+#endif
 
 bool KTempDir::removeDir( const QString& path )
 {
@@ -236,7 +241,24 @@ bool KTempDir::removeDir( const QString& path )
     if ( !QFile::exists( path ) )
         return true; // The goal is that there is no directory
 
+#ifdef Q_WS_WIN
+    QVarLengthArray<WCHAR, MAX_PATH> name;
+    name.resize( path.length() + 2 ); // double null terminated!
+    memcpy( name.data(), path.utf16(), path.length() * sizeof(WCHAR) );
+    name[path.length()     ] = 0;
+    name[path.length() + 1 ] = 0;
+    if(path.endsWith('/') || path.endsWith('\\'))
+      name[path.length() - 1 ] = 0;
+    SHFILEOPSTRUCTW fileOp;
+    memset(&fileOp, 0, sizeof(SHFILEOPSTRUCTW) );
+    fileOp.wFunc = FO_DELETE;
+    fileOp.pFrom = (LPCWSTR)name.constData();
+    fileOp.fFlags = FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT;
+    errno = SHFileOperationW( &fileOp );
+    return (errno == 0);
+#else
     const QByteArray cstr( QFile::encodeName( path ) );
     return rmtree( cstr );
+#endif
 }
 
