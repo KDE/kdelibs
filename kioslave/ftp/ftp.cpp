@@ -878,6 +878,7 @@ int Ftp::ftpOpenPortDataConnection()
 
   if (!m_server->isListening()) {
     delete m_server;
+    m_server = NULL;
     return ERR_COULD_NOT_LISTEN;
   }
 
@@ -909,6 +910,7 @@ int Ftp::ftpOpenPortDataConnection()
   }
 
   delete m_server;
+  m_server = NULL;
   return ERR_INTERNAL;
 }
 
