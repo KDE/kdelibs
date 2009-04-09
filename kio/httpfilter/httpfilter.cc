@@ -102,6 +102,9 @@ HTTPFilterGZip::HTTPFilterGZip(bool deflate)
       m_finished(false)
 {
     m_needGzipHeader = !deflate;
+    // We can't use KFilterDev because it assumes it can read as much data as necessary
+    // from the underlying device. It's a pull strategy, while we have to do
+    // a push strategy.
     m_gzipFilter = new KGzipFilter;
 }
 

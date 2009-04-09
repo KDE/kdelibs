@@ -399,8 +399,11 @@ void KMultiPart::startOfData()
 
     if ( m_gzip )
     {
+        // We can't use KFilterDev because it assumes it can read as much data as necessary
+        // from the underlying device. It's a pull strategy, while KMultiPart has to do
+        // a push strategy.
         m_filter = new HTTPFilterGZip;
-        connect( m_filter, SIGNAL( output( const QByteArray& ) ), this, SLOT( reallySendData( const QByteArray& ) ) );
+        connect(m_filter, SIGNAL(output(QByteArray)), this, SLOT(reallySendData(QByteArray)));
     }
 
     if ( m_mimeType != m_nextMimeType )
