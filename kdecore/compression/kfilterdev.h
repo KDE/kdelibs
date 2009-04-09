@@ -128,8 +128,7 @@ public:
      * @param inDevice input device. Won't be deleted if @p autoDeleteInDevice = false
      * @param mimetype the mime type for the filter
      * @param autoDeleteInDevice if true, @p inDevice will be deleted automatically
-     * @return a QIODevice that filters the original stream. Must be deleted after
-     *         using
+     * @return a KFilterDev that filters the original stream. Must be deleted after using
      */
     static QIODevice * device( QIODevice* inDevice, const QString & mimetype, bool autoDeleteInDevice = true );
 

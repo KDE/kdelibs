@@ -23,19 +23,36 @@
 
 /**
  * Internal class used by KFilterDev
+ *
+ * This header is not installed.
+ *
  * @internal
  */
-class KGzipFilter : public KFilterBase
+class KDECORE_EXPORT KGzipFilter : public KFilterBase
 {
 public:
     KGzipFilter();
     virtual ~KGzipFilter();
 
-    virtual void init( int mode );
+
+    virtual void init(int mode);
+
+    // The top of zlib.h explains it: there are three cases.
+    // - Raw deflate, no header (e.g. inside a ZIP file)
+    // - Thin zlib header (1) (which is normally what HTTP calls "deflate" (2))
+    // - Gzip header, implemented here by readHeader
+    //
+    // (1) as written out by compress()/compress2()
+    // (2) see http://www.zlib.net/zlib_faq.html#faq39
+    enum Flag {
+        RawDeflateOrGzip = 0, // raw deflate data, or gzip if readHeader is called
+        ZlibHeader = 1 // zlib headers (HTTP deflate)
+    };
+    void init(int mode, Flag flag); // for direct users of KGzipFilter
     virtual int mode() const;
     virtual void terminate();
     virtual void reset();
-    virtual bool readHeader();
+    virtual bool readHeader(); // this is about the GZIP header
     virtual bool writeHeader( const QByteArray & fileName );
     void writeFooter();
     virtual void setOutBuffer( char * data, uint maxlen );

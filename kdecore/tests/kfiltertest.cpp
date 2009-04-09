@@ -26,10 +26,12 @@
 #include <QtCore/QTextStream>
 #include <kdebug.h>
 #include "kfiltertest.h"
+#include <kgzipfilter.h>
 #include <krandom.h>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <config.h>
+#include <zlib.h>
 
 QTEST_KDEMAIN_CORE(KFilterTest)
 
@@ -257,6 +259,43 @@ void KFilterTest::test_findFilterByMimeType()
     QCOMPARE(filter != 0, valid);
 
     delete filter;
+}
+
+void KFilterTest::test_deflateWithZlibHeader()
+{
+    QByteArray data = "Hello world, this is a test for deflate, from bug 114830 / 117683";
+    QByteArray deflatedData;
+    deflatedData.fill(0, long(data.size()*1.1f) + 12L); // requirements of zlib::compress2
+    unsigned long out_bufferlen = deflatedData.size();
+    int ret = compress2((Bytef*)deflatedData.data(), &out_bufferlen, (const Bytef*)data.constData(), data.size(), 1);
+    QCOMPARE(ret, Z_OK);
+    deflatedData.resize(out_bufferlen);
+
+#if 0 // Can't use KFilterDev for this, we need to call KGzipFilter::init(QIODevice::ReadOnly, KGzipFilter::ZlibHeader);
+    QBuffer buffer(&deflatedData);
+    QIODevice *flt = KFilterDev::device(&buffer, "application/x-gzip", false);
+    static_cast<KFilterDev *>(flt)->setSkipHeaders();
+    bool ok = flt->open( QIODevice::ReadOnly );
+    QVERIFY(ok);
+    const QByteArray read = flt->readAll();
+#else
+    // Copied from HTTPFilter (which isn't linked into any kdelibs library)
+    KGzipFilter* mFilterDevice = new KGzipFilter;
+    mFilterDevice->init(QIODevice::ReadOnly, KGzipFilter::ZlibHeader);
+
+    mFilterDevice->setInBuffer(deflatedData.constData(), deflatedData.size());
+    char buf[8192];
+    mFilterDevice->setOutBuffer(buf, sizeof(buf));
+    KFilterBase::Result result = mFilterDevice->uncompress();
+    QCOMPARE(result, KFilterBase::End);
+    const int bytesOut = sizeof(buf) - mFilterDevice->outBufferAvailable();
+    QVERIFY(bytesOut);
+    QByteArray read(buf, bytesOut);
+    mFilterDevice->terminate();
+    delete mFilterDevice;
+#endif
+    QCOMPARE(QString::fromLatin1(read), QString::fromLatin1(data)); // more readable output than the line below
+    QCOMPARE(read, data);
 }
 
 #include "kfiltertest.moc"

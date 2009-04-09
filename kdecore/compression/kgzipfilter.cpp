@@ -67,15 +67,23 @@ KGzipFilter::~KGzipFilter()
     delete d;
 }
 
-void KGzipFilter::init( int mode )
+void KGzipFilter::init(int mode)
+{
+    init(mode, RawDeflateOrGzip);
+}
+
+void KGzipFilter::init(int mode, Flag flag)
 {
     d->zStream.next_in = Z_NULL;
     d->zStream.avail_in = 0;
     if ( mode == QIODevice::ReadOnly )
     {
-        int result = inflateInit2(&d->zStream, -MAX_WBITS); // windowBits is passed < 0 to suppress zlib header
+        const int windowBits = (flag == RawDeflateOrGzip)
+                               ? -MAX_WBITS /*no zlib header*/
+                               : MAX_WBITS /*zlib header*/;
+        const int result = inflateInit2(&d->zStream, windowBits);
         if ( result != Z_OK )
-            kDebug(7005) << "inflateInit returned " << result;
+            kDebug(7005) << "inflateInit2 returned " << result;
         // No idea what to do with result :)
     } else if ( mode == QIODevice::WriteOnly )
     {
@@ -135,10 +143,6 @@ bool KGzipFilter::readHeader()
 #endif
     // Assume not compressed until we successfully decode the header
     d->compressed = false;
-    // Assume the first block of data contains the whole header.
-    // The right way is to build this as a big state machine which
-    // is a pain in the ass.
-    // With 8K-blocks, we don't risk much anyway.
     Bytef *p = d->zStream.next_in;
     int i = d->zStream.avail_in;
     if ((i -= 10)  < 0) return false; // Need at least 10 bytes

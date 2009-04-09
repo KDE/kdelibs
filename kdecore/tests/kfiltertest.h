@@ -36,6 +36,7 @@ private Q_SLOTS:
     void test_uncompressed();
     void test_findFilterByMimeType_data();
     void test_findFilterByMimeType();
+    void test_deflateWithZlibHeader();
 
 private:
     void test_block_write(const QString & fileName, const QByteArray& data);
