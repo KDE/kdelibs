@@ -172,7 +172,7 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
 
 static bool isEncryptedHttpVariety(const QString &p)
 {
-    return p == "https" || p == "webdavs"; 
+    return p == "https" || p == "webdavs";
 }
 
 static bool isValidProxy(const KUrl &u)
@@ -488,7 +488,7 @@ void HTTPProtocol::setHost( const QString& host, quint16 port,
   m_request.url.setPort((port > 0 && port != defaultPort()) ? port : -1);
   m_request.url.setUser(user);
   m_request.url.setPass(pass);
-  
+
   //TODO need to do anything about proxying?
 
   kDebug(7113) << "Hostname is now:" << m_request.url.host()
@@ -1775,7 +1775,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
 
         m_request.method = HTTP_GET;
         m_request.isKeepAlive = true;   //readResponseHeader clears it if necessary
-        
+
         QString tmp = metaData("cache");
         if (!tmp.isEmpty())
             m_request.cacheTag.policy= parseCacheControl(tmp);
@@ -1834,7 +1834,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
         finished();
         m_requestQueue.clear();
         m_isBusy = false;
-    }  
+    }
 }
 
 ssize_t HTTPProtocol::write (const void *_buf, size_t nbytes)
@@ -2133,7 +2133,7 @@ bool HTTPProtocol::sendQuery()
 
   bool cacheHasPage = false;
   if (satisfyRequestFromCache(&cacheHasPage)) {
-    return cacheHasPage;  
+    return cacheHasPage;
   }
 
   QString header;
@@ -2144,7 +2144,7 @@ bool HTTPProtocol::sendQuery()
   {
     header = methodString(m_request.method);
     QString davHeader;
-  
+
     // Fill in some values depending on the HTTP method to guide further processing
     switch (m_request.method)
     {
@@ -2229,7 +2229,7 @@ bool HTTPProtocol::sendQuery()
     // DAV_POLL; DAV_NOTIFY
 
     header += formatRequestUri() + " HTTP/1.1\r\n"; /* start header */
-    
+
     /* support for virtual hosts and required by HTTP 1.1 */
     header += "Host: " + m_request.encoded_hostname;
     if (m_request.url.port(defaultPort()) != defaultPort()) {
@@ -2303,10 +2303,8 @@ bool HTTPProtocol::sendQuery()
       header += DEFAULT_ACCEPT_HEADER;
     header += "\r\n";
 
-#ifdef DO_GZIP
     if (m_request.allowTransferCompression)
       header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate\r\n";
-#endif
 
     if (!m_request.charsets.isEmpty())
       header += "Accept-Charset: " + m_request.charsets + "\r\n";
@@ -2513,7 +2511,7 @@ bool HTTPProtocol::readHeaderFromCache() {
 
     setMetaData("expire-date", QString::number(m_request.cacheTag.expireDate));
     setMetaData("cache-creation-date", QString::number(m_request.cacheTag.creationDate));
-    
+
     mimeType(m_mimeType);
     return true;
 }
@@ -2717,7 +2715,7 @@ try_again:
 
     if (m_request.responseCode >= 500 && m_request.responseCode <= 599) {
         // Server side errors
-        
+
         if (m_request.method == HTTP_HEAD) {
             ; // Ignore error
         } else {
@@ -2760,7 +2758,7 @@ try_again:
         // 304 Not Modified
         // The value in our cache is still valid.
         cacheValidated = true;
-    
+
     } else if (m_request.responseCode >= 301 && m_request.responseCode<= 303) {
         // 301 Moved permanently
         if (m_request.responseCode == 301) {
@@ -2794,7 +2792,7 @@ try_again:
 
     } else if (m_request.responseCode == 204) {
         // No content
-        
+
         // error(ERR_NO_CONTENT, i18n("Data have been successfully sent."));
         // Short circuit and do nothing!
 
@@ -2937,7 +2935,7 @@ try_again:
                 setMetaData("media-" + mediaAttribute, mediaValue);
             }
         }
-    }  
+    }
 
     // Date
     tIt = tokenizer.iterator("date");
@@ -2982,7 +2980,7 @@ try_again:
             hasCacheDirective = true;
         }
     }
-    
+
     // The deprecated Refresh Response
     tIt = tokenizer.iterator("refresh");
     if (tIt.hasNext()) {
@@ -3041,7 +3039,7 @@ try_again:
             setMetaData("content-language", language);
         }
     }
-    
+
     tIt = tokenizer.iterator("proxy-connection");
     if (tIt.hasNext() && isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
         QByteArray pc = tIt.next().toLower();
@@ -3051,7 +3049,7 @@ try_again:
             m_request.isKeepAlive = true;
         }
     }
-    
+
     tIt = tokenizer.iterator("link");
     if (tIt.hasNext()) {
         // We only support Link: <url>; rel="type"   so far
@@ -3068,7 +3066,7 @@ try_again:
             }
         }
     }
-    
+
     tIt = tokenizer.iterator("p3p");
     if (tIt.hasNext()) {
         // P3P privacy policy information
@@ -3143,7 +3141,7 @@ try_again:
         while (tIt.hasNext()) {
             m_davCapabilities << QString::fromLatin1(tIt.next());
         }
-        // *** Responses to the HTTP OPTIONS method finished   
+        // *** Responses to the HTTP OPTIONS method finished
     }
 
 
@@ -3328,7 +3326,7 @@ try_again:
                 bool obtained = checkCachedAuthentication(authi);
                 const bool probablyWrong = m_request.responseCode == m_request.prevResponseCode;
                 if (!obtained || probablyWrong) {
-                    QString msg = (m_request.responseCode == 401) ? 
+                    QString msg = (m_request.responseCode == 401) ?
                                     i18n("Authentication Failed.") :
                                     i18n("Proxy Authentication Failed.");
                     obtained = openPasswordDialog(authi, msg);
@@ -3351,7 +3349,7 @@ try_again:
             }
             (*auth)->generateResponse(username, password);
 
-            kDebug(7113) << "auth state: isError" << (*auth)->isError() 
+            kDebug(7113) << "auth state: isError" << (*auth)->isError()
                         << "needCredentials" << (*auth)->needCredentials()
                         << "forceKeepAlive" << (*auth)->forceKeepAlive()
                         << "forceDisconnect" << (*auth)->forceDisconnect()
@@ -3705,7 +3703,7 @@ void HTTPProtocol::addEncoding(const QString &_encoding, QStringList &encs)
 bool HTTPProtocol::sendBody()
 {
   infoMessage( i18n( "Requesting data to send" ) );
-  
+
   int readFromApp = -1;
 
   // m_POSTbuf will NOT be empty iff authentication was required before posting
@@ -4795,7 +4793,7 @@ void HTTPProtocol::fillPromptInfo(AuthInfo *inf)
 
   info.keepPassword = true; // Prompt the user for persistence as well.
   info.verifyPath = false;
-      
+
   if ( m_request.responseCode == 401 )
   {
     // TODO sort out the data flow of the password
@@ -4885,7 +4883,7 @@ void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAut
     }
     authenticator->setUser(info.username);
     authenticator->setPassword(info.password);
-    
+
     if (m_socketProxyAuth) {
         *m_socketProxyAuth = *authenticator;
     } else {
