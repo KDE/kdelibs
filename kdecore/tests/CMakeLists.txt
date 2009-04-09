@@ -59,6 +59,8 @@ KDECORE_UNIT_TESTS(
  ksycocathreadtest
 )
 
+target_link_libraries(kfiltertest ${ZLIB_LIBRARIES})
+
 if(UNIX)
  KDECORE_UNIT_TESTS(
   klocalsockettest
