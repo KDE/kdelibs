@@ -120,6 +120,7 @@ set(kiocore_STAT_SRCS
   kio/slaveinterface.cpp
   kio/tcpslavebase.cpp
   kio/thumbcreator.cpp
+  kio/thumbsequencecreator.cpp
   kio/udsentry.cpp
   kio/hostinfo.cpp
 )
@@ -330,6 +331,7 @@ install(  FILES
   kio/http_slave_defaults.h
   kio/previewjob.h
   kio/thumbcreator.h
+  kio/thumbsequencecreator.h
   kio/metainfojob.h
   kio/davjob.h
   kio/directorysizejob.h
