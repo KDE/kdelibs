@@ -39,7 +39,7 @@ public:
    * The flags of this plugin.
    * @see flags()
    */
-    Q_DISABLE_COPY(ThumbSequenceCreator);
+    Q_DISABLE_COPY(ThumbSequenceCreator)
     ThumbSequenceCreator();
     virtual ~ThumbSequenceCreator();
 
