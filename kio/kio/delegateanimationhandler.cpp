@@ -28,6 +28,10 @@
 #include <QDebug>
 
 #include <cmath>
+#include "kdirmodel.h"
+#include <kglobalsettings.h>
+#include <kdebug.h>
+#include <qabstractproxymodel.h>
 
 #include "delegateanimationhandler_p.moc"
 
@@ -47,14 +51,29 @@ public:
 
 
 
-CachedRendering::CachedRendering(QStyle::State state, const QSize &size)
-    : state(state), regular(QPixmap(size)), hover(QPixmap(size))
+CachedRendering::CachedRendering(QStyle::State state, const QSize &size, QModelIndex index)
+    : state(state), regular(QPixmap(size)), hover(QPixmap(size)), valid(true), validityIndex(index)
 {
     regular.fill(Qt::transparent);
     hover.fill(Qt::transparent);
+
+    if(index.model()) {
+      connect(index.model(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
+      connect(index.model(), SIGNAL(modelReset()), SLOT(modelReset()));
+    }
 }
 
+void CachedRendering::dataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight)
+{
+  if(validityIndex.row() >= topLeft.row() && validityIndex.column() >= topLeft.column() && 
+     validityIndex.row() <= bottomRight.row() && validityIndex.column() <= bottomRight.column())
+    valid = false;
+}
 
+void CachedRendering::modelReset()
+{
+  valid = false;
+}
 
 // ---------------------------------------------------------------------------
 
@@ -62,7 +81,7 @@ CachedRendering::CachedRendering(QStyle::State state, const QSize &size)
 
 AnimationState::AnimationState(const QModelIndex &index)
         : index(index), direction(QTimeLine::Forward),
-          animating(false), progress(0.0), renderCache(NULL)
+          animating(false), progress(0.0), m_fadeProgress(1.0), renderCache(NULL), fadeFromRenderCache(NULL)
 {
     creationTime.start();
 }
@@ -71,6 +90,7 @@ AnimationState::AnimationState(const QModelIndex &index)
 AnimationState::~AnimationState()
 {
     delete renderCache;
+    delete fadeFromRenderCache;
 }
 
 
@@ -91,6 +111,15 @@ bool AnimationState::update()
         animating = (progress > 0.0);
     }
 
+    
+    if(fadeFromRenderCache) {
+      //Icon fading goes always forwards
+      m_fadeProgress = qMin(qreal(1.0), m_fadeProgress + delta);
+      animating |= (m_fadeProgress < 1.0);
+      if(m_fadeProgress == 1)
+        setCachedRenderingFadeFrom(0);
+    }
+
     return !animating;
 }
 
@@ -103,7 +132,10 @@ qreal AnimationState::hoverProgress() const
     return qRound(255.0 * std::sin(progress * M_PI_2)) / 255.0;
 }
 
-
+qreal AnimationState::fadeProgress() const
+{
+    return qRound(255.0 * std::sin(m_fadeProgress * M_PI_2)) / 255.0;
+}
 
 // ---------------------------------------------------------------------------
 
@@ -112,6 +144,9 @@ qreal AnimationState::hoverProgress() const
 DelegateAnimationHandler::DelegateAnimationHandler(QObject *parent)
     : QObject(parent)
 {
+  iconSequenceTimer.setSingleShot(true);
+  iconSequenceTimer.setInterval(1000); ///@todo Eventually configurable interval?
+  connect(&iconSequenceTimer, SIGNAL(timeout()), SLOT(sequenceTimerTimeout()));;
 }
 
 DelegateAnimationHandler::~DelegateAnimationHandler()
@@ -125,6 +160,42 @@ DelegateAnimationHandler::~DelegateAnimationHandler()
         delete i.value();
     }
     animationLists.clear();
+}
+
+void DelegateAnimationHandler::sequenceTimerTimeout() {
+  QAbstractItemModel* model = const_cast<QAbstractItemModel*>(sequenceModelIndex.model());
+  QAbstractProxyModel* proxy = qobject_cast<QAbstractProxyModel*>(model);
+  
+  QModelIndex index = sequenceModelIndex;
+  
+  if(proxy) {
+    index = proxy->mapToSource(index);
+    model = proxy->sourceModel();
+  }
+  
+  KDirModel* dirModel = dynamic_cast<KDirModel*>(model);
+  if(dirModel) {
+    dirModel->requestSequenceIcon(index, currentSequenceIndex);
+    iconSequenceTimer.start();
+  }
+
+  ++currentSequenceIndex;
+}
+
+void DelegateAnimationHandler::setSequenceIndex(int sequenceIndex) {
+  kDebug() << sequenceIndex;
+  if(currentSequenceIndex == sequenceIndex)
+    return;
+  
+  if(sequenceIndex) {
+    currentSequenceIndex = sequenceIndex;
+    sequenceTimerTimeout();
+  }else{
+    currentSequenceIndex = 0;
+    sequenceTimerTimeout(); //Set the icon back to the standard one
+    currentSequenceIndex = 0; //currentSequenceIndex was incremented, set it back to 0
+    iconSequenceTimer.stop();
+  }
 }
 
 AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &option,
@@ -159,6 +230,13 @@ AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &opt
         }
 
         fadeInAddTime.restart();
+        
+//         if(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
+            ///Think about it.
+            //Start sequence iteration
+            sequenceModelIndex = index;
+            setSequenceIndex(1);
+//      }
     }
     else if (state)
     {
@@ -171,6 +249,10 @@ AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &opt
                 state->progress = 0.0;
 
             startAnimation(state);
+            
+            //Stop sequence iteration
+            setSequenceIndex(0);
+            sequenceModelIndex = QPersistentModelIndex();
         }
         else if (hover && state->direction == QTimeLine::Backward)
         {
@@ -222,6 +304,10 @@ void DelegateAnimationHandler::addAnimationState(AnimationState *state, const QA
     list->append(state);
 }
 
+void DelegateAnimationHandler::restartAnimation(AnimationState *state)
+{
+    startAnimation(state);
+}
 
 void DelegateAnimationHandler::startAnimation(AnimationState *state)
 {
@@ -231,7 +317,6 @@ void DelegateAnimationHandler::startAnimation(AnimationState *state)
     if (!timer.isActive())
         timer.start(1000 / 30, this); // 30 fps
 }
-
 
 int DelegateAnimationHandler::runAnimations(AnimationList *list, const QAbstractItemView *view)
 {

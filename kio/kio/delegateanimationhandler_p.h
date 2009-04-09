@@ -29,6 +29,7 @@
 #include <QStyle>
 #include <QTimeLine>
 #include <QTime>
+#include <QTimer>
 
 
 class QAbstractItemView;
@@ -36,14 +37,23 @@ class QAbstractItemView;
 namespace KIO
 {
 
-struct CachedRendering
+class CachedRendering : public QObject
 {
-    CachedRendering(QStyle::State state, const QSize &size);
-    bool checkValidity(QStyle::State current) const { return state == current; }
+    Q_OBJECT
+public:
+    
+    CachedRendering(QStyle::State state, const QSize &size, QModelIndex validityIndex);
+    bool checkValidity(QStyle::State current) const { return state == current && valid; }
 
     QStyle::State state;
     QPixmap regular;
     QPixmap hover;
+    
+    bool valid;
+    QPersistentModelIndex validityIndex;
+private Q_SLOTS:
+    void dataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight);
+    void modelReset();
 };
 
 
@@ -51,9 +61,21 @@ class AnimationState
 {
 public:
     ~AnimationState();
+    //Progress of the mouse hovering animation
     qreal hoverProgress() const;
+    //Progress of the icon fading animation
+    qreal fadeProgress() const;
     CachedRendering *cachedRendering() const { return renderCache; }
-    void setCachedRendering(CachedRendering *rendering) { renderCache = rendering; }
+    //The previous render-cache is deleted, if there was one
+    void setCachedRendering(CachedRendering *rendering) { delete renderCache; renderCache = rendering; }
+
+    //Returns current cached rendering, and removes it from this state.
+    //The caller has the ownership.
+    CachedRendering *takeCachedRendering() { CachedRendering* ret = renderCache; renderCache = 0; return ret; }
+
+    CachedRendering* cachedRenderingFadeFrom() const { return fadeFromRenderCache; }
+    //The previous render-cache is deleted, if there was one
+    void setCachedRenderingFadeFrom(CachedRendering* rendering) { delete fadeFromRenderCache; fadeFromRenderCache = rendering; if(rendering) m_fadeProgress = 0; else m_fadeProgress = 1; }
 
 private:
     AnimationState(const QModelIndex &index);
@@ -63,9 +85,11 @@ private:
     QTimeLine::Direction direction;
     bool animating;
     qreal progress;
+    qreal m_fadeProgress;
     QTime time;
     QTime creationTime;
     CachedRendering *renderCache;
+    CachedRendering *fadeFromRenderCache;
 
     friend class DelegateAnimationHandler;
 };
@@ -85,8 +109,11 @@ public:
 
     AnimationState *animationState(const QStyleOption &option, const QModelIndex &index, const QAbstractItemView *view);
 
+    void restartAnimation(AnimationState* state);
+
 private slots:
     void viewDeleted(QObject *view);
+    void sequenceTimerTimeout();
 
 private:
     AnimationState *findAnimationState(const QAbstractItemView *view, const QModelIndex &index) const;
@@ -94,11 +121,16 @@ private:
     void startAnimation(AnimationState *state);
     int runAnimations(AnimationList *list, const QAbstractItemView *view);
     void timerEvent(QTimerEvent *event);
+    void setSequenceIndex(int arg1);
 
 private:
     QMap<const QAbstractItemView*, AnimationList*> animationLists;
     QTime fadeInAddTime;
     QBasicTimer timer;
+    //Icon sequence handling:
+    QPersistentModelIndex sequenceModelIndex;
+    QTimer iconSequenceTimer;
+    int currentSequenceIndex;
 };
 
 }

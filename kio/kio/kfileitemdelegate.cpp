@@ -105,6 +105,7 @@ class KFileItemDelegate::Private
                            const QRect &textBoundingRect) const;
         KIO::AnimationState *animationState(const QStyleOptionViewItemV4 &option, const QModelIndex &index,
                                             const QAbstractItemView *view) const;
+        void restartAnimation(KIO::AnimationState* state);
         QPixmap applyHoverEffect(const QPixmap &icon) const;
         QPixmap transition(const QPixmap &from, const QPixmap &to, qreal amount) const;
         void initStyleOption(QStyleOptionViewItemV4 *option, const QModelIndex &index) const;
@@ -538,6 +539,9 @@ QPixmap KFileItemDelegate::Private::applyHoverEffect(const QPixmap &icon) const
     return icon;
 }
 
+void KFileItemDelegate::Private::restartAnimation(KIO::AnimationState* state) {
+    animationHandler->restartAnimation(state);
+}
 
 KIO::AnimationState *KFileItemDelegate::Private::animationState(const QStyleOptionViewItemV4 &option,
                                                                 const QModelIndex &index,
@@ -1156,15 +1160,29 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         {
             if (cache->checkValidity(opt.state) && cache->regular.size() == opt.rect.size())
             {
-                const QPixmap pixmap = d->transition(cache->regular, cache->hover, progress);
+                QPixmap pixmap = d->transition(cache->regular, cache->hover, progress);
+                
+                if(state->cachedRenderingFadeFrom() && state->fadeProgress() != 1.0) {
+                    //Apply icon fading animation
+                    KIO::CachedRendering* fadeFromCache = state->cachedRenderingFadeFrom();
+                    const QPixmap fadeFromPixmap = d->transition(fadeFromCache->regular, fadeFromCache->hover, progress);
+                    
+                    pixmap = d->transition(fadeFromPixmap, pixmap, state->fadeProgress());
+                }
                 painter->drawPixmap(option.rect.topLeft(), pixmap);
                 return;
             }
-
+            
+            if(!cache->checkValidity(opt.state) && (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
+                //Fade over from the old icon to the new one
+                //Only start a new fade if the previous one is ready
+                //Else we may start racing when checkValidity() always returns false
+                if(state->fadeProgress() == 1) {
+                    state->setCachedRenderingFadeFrom(state->takeCachedRendering());
+                }
+            }
             // If it wasn't valid, delete it
             state->setCachedRendering(0);
-            delete cache;
-            cache = 0;
         }
     }
 
@@ -1198,9 +1216,9 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // We don't create a new cache for a fully hovered item, since we don't
     // know yet if a hover out animation will be run.
     // ========================================================================
-    if (state && progress < 1)
+    if (state && (state->hoverProgress() < 1 || state->fadeProgress() < 1))
     {
-        cache = new KIO::CachedRendering(opt.state, option.rect.size());
+        cache = new KIO::CachedRendering(opt.state, option.rect.size(), index);
 
         QPainter p;
         p.begin(&cache->regular);
@@ -1228,7 +1246,18 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
         state->setCachedRendering(cache);
 
-        const QPixmap pixmap = d->transition(cache->regular, cache->hover, progress);
+        QPixmap pixmap = d->transition(cache->regular, cache->hover, progress);
+        
+        if(state->cachedRenderingFadeFrom() && state->fadeProgress() == 0) {
+            //Apply icon fading animation
+            KIO::CachedRendering* fadeFromCache = state->cachedRenderingFadeFrom();
+            const QPixmap fadeFromPixmap = d->transition(fadeFromCache->regular, fadeFromCache->hover, progress);
+            
+            pixmap = d->transition(fadeFromPixmap, pixmap, state->fadeProgress());
+
+            d->restartAnimation(state);
+        }
+        
         painter->drawPixmap(option.rect.topLeft(), pixmap);
         return;
     }
