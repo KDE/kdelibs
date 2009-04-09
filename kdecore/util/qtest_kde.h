@@ -21,6 +21,7 @@
 
 #include <QtTest/QtTest>
 #include <stdlib.h>
+#include <assert.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kcomponentdata.h>
@@ -66,6 +67,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(KDEMainFlags)
 int main(int argc, char *argv[]) \
 { \
     setenv("LC_ALL", "C", 1); \
+    assert( !QDir::homePath().isEmpty() ); \
     setenv("KDEHOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test") ), 1); \
     setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/local") ), 1); \
     setenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config") ), 1); \
@@ -114,6 +116,7 @@ int main(int argc, char *argv[]) \
 int main(int argc, char *argv[]) \
 { \
     setenv("LC_ALL", "C", 1); \
+    assert( !QDir::homePath().isEmpty() ); \
     setenv("KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test" ), 1); \
     setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test/xdg/local" ), 1); \
     setenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test/xdg/config" ), 1); \
