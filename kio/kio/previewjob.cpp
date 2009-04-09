@@ -100,6 +100,7 @@ public:
     // Whether we should save the thumbnail
     bool bSave;
     bool ignoreMaximumSize;
+    int sequenceIndex;
     bool succeeded;
     // If the file to create a thumb for was a temp file, this is its name
     QString tempName;
@@ -151,6 +152,7 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     d->succeeded = false;
     d->thumbRoot = QDir::homePath() + "/.thumbnails/";
     d->ignoreMaximumSize = false;
+    d->sequenceIndex = 0;
 
     // Return to event loop first, determineNextFile() might delete this;
     QTimer::singleShot(0, this, SLOT(startPreview()));
@@ -286,6 +288,10 @@ void PreviewJob::removeItem( const KUrl& url )
     }
 }
 
+void KIO::PreviewJob::setSequenceIndex(int index) {
+    d_func()->sequenceIndex = index;
+}
+
 void PreviewJob::setIgnoreMaximumSize(bool ignoreSize)
 {
     d_func()->ignoreMaximumSize = ignoreSize;
@@ -344,7 +350,7 @@ void PreviewJob::slotResult( KJob *job )
                 return;
             }
 
-            if ( !d->currentItem.plugin->property( "CacheThumbnail" ).toBool() )
+            if ( !d->currentItem.plugin->property( "CacheThumbnail" ).toBool()  || d->sequenceIndex )
             {
                 // This preview will not be cached, no need to look for a saved thumbnail
                 // Just create it, and be done
@@ -442,13 +448,16 @@ void PreviewJobPrivate::createThumbnail( const QString &pixPath )
     KIO::TransferJob *job = KIO::get(thumbURL, NoReload, HideProgressInfo);
     q->addSubjob(job);
     q->connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)), SLOT(slotThumbData(KIO::Job *, const QByteArray &)));
-    bool save = bSave && currentItem.plugin->property("CacheThumbnail").toBool();
+    bool save = bSave && currentItem.plugin->property("CacheThumbnail").toBool() && !sequenceIndex;
     job->addMetaData("mimeType", currentItem.item.mimetype());
     job->addMetaData("width", QString().setNum(save ? cacheWidth : width));
     job->addMetaData("height", QString().setNum(save ? cacheHeight : height));
     job->addMetaData("iconSize", QString().setNum(save ? 64 : iconSize));
     job->addMetaData("iconAlpha", QString().setNum(iconAlpha));
     job->addMetaData("plugin", currentItem.plugin->library());
+    if(sequenceIndex)
+        job->addMetaData("sequence-index", QString().setNum(sequenceIndex));
+
 #ifdef Q_OS_UNIX
     if (shmid == -1)
     {
@@ -480,7 +489,7 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
     bool save = bSave &&
                 currentItem.plugin->property("CacheThumbnail").toBool() &&
                 (currentItem.item.url().protocol() != "file" ||
-                 !currentItem.item.url().directory( KUrl::AppendTrailingSlash ).startsWith(thumbRoot));
+                 !currentItem.item.url().directory( KUrl::AppendTrailingSlash ).startsWith(thumbRoot)) && !sequenceIndex;
     QImage thumb;
 #ifdef Q_OS_UNIX
     if (shmaddr)
