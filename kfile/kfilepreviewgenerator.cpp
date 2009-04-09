@@ -158,6 +158,12 @@ public:
     ~Private();
 
     /**
+     * Requests a new icon for the item @p index
+     * @param sequenceIndex If this is zero, the standard icon is requested, else another one
+     */
+    void needSequenceIcon(const QModelIndex& index, int sequenceIndex);
+    
+    /**
      * Generates previews for the items \a items asynchronously.
      */
     void updateIcons(const KFileItemList& items);
@@ -335,6 +341,7 @@ public:
 
     QList<KUrl> m_cutItemsCache;
     QList<ItemInfo> m_previews;
+    QMap<KUrl, int> m_sequenceIndices;
 
     /**
      * Contains all items where a preview must be generated, but
@@ -399,6 +406,7 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
                 q, SLOT(updateIcons(const KFileItemList&)));
         connect(m_dirModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
                 q, SLOT(updateIcons(const QModelIndex&, const QModelIndex&)));
+        connect(m_dirModel, SIGNAL(needSequenceIcon(const QModelIndex&,int)), q, SLOT(needSequenceIcon(const QModelIndex&, int)));
     }
 
     QClipboard* clipboard = QApplication::clipboard();
@@ -445,6 +453,27 @@ void KFilePreviewGenerator::Private::updateIcons(const KFileItemList& items)
         createPreviews(orderedItems);
     } else {
         startMimeTypeResolving();
+    }
+}
+
+void KFilePreviewGenerator::Private::needSequenceIcon(const QModelIndex& index, int sequenceIndex) {
+  
+    KFileItem item = m_dirModel->itemForIndex(index);
+    
+    if(sequenceIndex == 0) {
+      m_sequenceIndices.remove(item.url());
+    }else{
+      m_sequenceIndices.insert(item.url(), sequenceIndex);
+    }
+    
+    if(!m_pendingItems.isEmpty() && sequenceIndex) {
+      //Ignore non-zero requests if there is something pending. This prevents is from screwing up if the previewer cannot
+      //generate its events fast enough to catch up with the sequence
+    }else{
+      ///@todo Update directly, without using m_sequenceIndices
+      KFileItemList items;
+      items << item;
+      updateIcons(items);
     }
 }
 
@@ -530,11 +559,15 @@ void KFilePreviewGenerator::Private::slotPreviewJobFinished(KJob* job)
     const int index = m_previewJobs.indexOf(job);
     m_previewJobs.removeAt(index);
 
-    if ((m_previewJobs.count() == 0) && m_clearItemQueues) {
+    if(m_previewJobs.isEmpty()) {
+    if (m_clearItemQueues) {
         m_pendingItems.clear();
         m_dispatchedItems.clear();
         m_pendingVisibleIconUpdates = 0;
         QMetaObject::invokeMethod(q, "dispatchIconUpdateQueue", Qt::QueuedConnection);
+    }
+    
+      m_sequenceIndices.clear(); //Just to be sure that we don't leak anything
     }
 }
 
@@ -853,7 +886,6 @@ void KFilePreviewGenerator::Private::createPreviews(const KFileItemList& items)
             otherItems.append(item);
         }
     }
-
     const QSize size = m_viewAdapter->iconSize();
     startPreviewJob(otherItems, size.width(), size.height());
 
@@ -867,6 +899,17 @@ void KFilePreviewGenerator::Private::startPreviewJob(const KFileItemList& items,
 {
     if (items.count() > 0) {
         KIO::PreviewJob* job = KIO::filePreview(items, width, height, 0, 70, true, true, &m_enabledPlugins);
+        
+        //Eventually give the sequence index to the target
+        //We only need to check if items.count() == 1, because requestSequenceIcon(..) creates exactly such a request
+        if(!m_sequenceIndices.isEmpty() && items.count() == 1) {
+          QMap< KUrl, int >::iterator it = m_sequenceIndices.find(items[0].url());
+          if(it != m_sequenceIndices.end()) {
+            job->setSequenceIndex(*it);
+            m_sequenceIndices.erase(it);
+          }
+        }
+        
         connect(job, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
                 q, SLOT(addToPreviewQueue(const KFileItem&, const QPixmap&)));
         connect(job, SIGNAL(finished(KJob*)),
@@ -882,6 +925,7 @@ void KFilePreviewGenerator::Private::killPreviewJobs()
         job->kill();
     }
     m_previewJobs.clear();
+    m_sequenceIndices.clear();
 }
 
 void KFilePreviewGenerator::Private::orderItems(KFileItemList& items)
