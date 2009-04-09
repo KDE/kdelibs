@@ -192,6 +192,19 @@ public:
      */
     static KUrl::List simplifiedUrlList( const KUrl::List & urls );
 
+    /**
+     * This emits the needSequenceIcon signal, requesting another sequence icon
+     * 
+     * If there is a KFilePreviewGenerator attached to this model, that generator will care
+     * about creating another preview.
+     * 
+     * @param index Index of the item that should get another icon
+     * @param sequenceIndex Index in the sequence. If it is zero, the standard icon will be assigned.
+     *                                        For higher indices, arbitrary different meaningful icons will be generated.
+     * @since 4.3
+     */
+    void requestSequenceIcon(const QModelIndex& index, int sequenceIndex);
+    
 Q_SIGNALS:
     /**
      * Emitted for each subdirectory that is a parent of a url passed to expandToUrl
@@ -200,6 +213,16 @@ Q_SIGNALS:
      * (for instance so that it can be selected).
      */
     void expand(const QModelIndex& index);
+    /**
+     * Emitted when another icon sequence index is requested
+     * @param index Index of the item that should get another icon
+     * @param sequenceIndex Index in the sequence. If it is zero, the standard icon should be assigned.
+     *                                        For higher indices, arbitrary different meaningful icons should be generated.
+     *                                        This is usually slowly counted up while the user hovers the icon.
+     *                                        If no meaningful alternative icons can be generated, this should be ignored.
+     * @since 4.3
+     */
+    void needSequenceIcon(const QModelIndex& index, int sequenceIndex);
 
 private:
     // Make those private, they shouldn't be called by applications

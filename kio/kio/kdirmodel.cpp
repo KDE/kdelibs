@@ -69,7 +69,7 @@ public:
     // linear search
     int rowNumber() const; // O(n)
     QIcon preview() const { return m_preview; }
-    void addPreview( const QPixmap& pix ) { m_preview.addPixmap(pix); }
+    void setPreview( const QPixmap& pix ) {  m_preview = QIcon(); m_preview.addPixmap(pix); }
     void setPreview( const QIcon& icn ) { m_preview = icn; }
 
 private:
@@ -777,7 +777,7 @@ bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int 
                 const QIcon icon(qvariant_cast<QIcon>(value));
                 node->setPreview(icon);
             } else if (value.type() == QVariant::Pixmap) {
-                node->addPreview(qvariant_cast<QPixmap>(value));
+                node->setPreview(qvariant_cast<QPixmap>(value));
             }
             emit dataChanged(index, index);
             return true;
@@ -823,6 +823,10 @@ QModelIndex KDirModel::parent( const QModelIndex & index ) const
 static bool lessThan(const KUrl &left, const KUrl &right)
 {
     return left.url().compare(right.url()) < 0;
+}
+
+void KDirModel::requestSequenceIcon(const QModelIndex& index, int sequenceIndex) {
+    emit needSequenceIcon(index, sequenceIndex);
 }
 
 KUrl::List KDirModel::simplifiedUrlList(const KUrl::List &urls)
