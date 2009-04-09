@@ -39,9 +39,19 @@ int main (int argc, char **argv)
     KCmdLineArgs::init( argc, argv, &aboutData );
     KApplication app;
 
-    KFileDialog keywordDlg(KUrl("kfiledialog://testKeyword"), QString("*.*|"), 0);
+    // Test for: saved location keyword.
+    //     - Should return to the starting directory last used for this test.
+    //     - Should have no entered file name.
+    KFileDialog keywordDlg(KUrl("kfiledialog:///testKeyword"), QString("*.*|"), 0);
     keywordDlg.setMode(KFile::Files);
     keywordDlg.exec();
+
+    // Test for: saved location keyword with file name.
+    //     - Should return to the starting directory last used for this test.
+    //     - Should enter the file name 'new.file'.
+    KFileDialog keywordDlg2(KUrl("kfiledialog:///testKeyword/new.file"), QString("*.*|"), 0);
+    keywordDlg2.setMode(KFile::Files);
+    keywordDlg2.exec();
 
     // bug 173137
     KFileDialog dlg(KUrl(QString()), QString("*.*|"), 0);

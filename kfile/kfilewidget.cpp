@@ -315,6 +315,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     : QWidget(parent), KAbstractFileWidget(), d(new KFileWidgetPrivate(this))
 {
     KUrl startDir(_startDir);
+    kDebug(kfile_area) << "startDir" << startDir;
     QString filename;
 
     d->okButton = new KPushButton(KStandardGuiItem::ok(), this);
@@ -334,6 +335,12 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     opsWidgetLayout->addWidget(d->toolbar);
 
     d->model = new KFilePlacesModel(this);
+
+    // Resolve this now so that a 'kfiledialog:' URL, if specified,
+    // does not get inserted into the urlNavigator history.
+    d->url = getStartUrl( startDir, d->fileClass, filename );
+    startDir = d->url;
+
     d->urlNavigator = new KUrlNavigator(d->model, startDir, d->opsWidget); //d->toolbar);
     d->urlNavigator->setPlacesSelectorVisible(false);
     opsWidgetLayout->addWidget(d->urlNavigator);
@@ -572,15 +579,15 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
         coll->action("inline preview")->setChecked(pg->isPreviewShown());
     }
 
-    d->url = getStartUrl( startDir, d->fileClass );
-    startDir = d->url;
-
-    KIO::StatJob *statJob = KIO::stat(startDir, KIO::HideProgressInfo);
-    bool res = KIO::NetAccess::synchronousRun(statJob, 0);
-    if (!res || !statJob->statResult().isDir()) {
-        startDir.adjustPath(KUrl::RemoveTrailingSlash);
-        filename = startDir.fileName();
-        startDir.setFileName(QString());
+    bool statRes = false;
+    if ( filename.isEmpty() ) {
+        KIO::StatJob *statJob = KIO::stat(startDir, KIO::HideProgressInfo);
+        statRes = KIO::NetAccess::synchronousRun(statJob, 0);
+        if (!statRes || !statJob->statResult().isDir()) {
+            filename = startDir.fileName();
+            startDir.setPath(startDir.directory());
+        }
+        kDebug(kfile_area) << "statJob found filename" << filename;
     }
 
     d->ops->setUrl(startDir, true);
@@ -589,9 +596,11 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
         d->placesView->setUrl(startDir);
     }
 
-    // we know it is not a dir, and we could stat it. Set it.
+    // We have a file name either explicitly specified, or have checked that
+    // we could stat it and it is not a directory.  Set it.
     if (!filename.isEmpty()) {
-        if (res) {
+        kDebug(kfile_area) << "selecting filename" << filename;
+        if (statRes) {
             d->setLocationText(filename);
         } else {
             d->locationEdit->lineEdit()->setText(filename);
@@ -737,7 +746,7 @@ void KFileWidget::slotOk()
     // Make sure that one of the modes was provided
     if (!((mode & KFile::File) || (mode & KFile::Directory) || (mode & KFile::Files))) {
         mode |= KFile::File;
-        kDebug() << "No mode() provided";
+        kDebug(kfile_area) << "No mode() provided";
     }
 
     // if we are on file mode, and the list of provided files/folder is greater than one, inform
@@ -1152,7 +1161,15 @@ void KFileWidgetPrivate::setLocationText(const KUrl& url)
     if (!url.isEmpty()) {
         QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( url ), KIconLoader::Small );
         if (url.hasPath()) {
-            q->setUrl(url.path(), false);
+            if (!url.directory().isEmpty())
+            {
+                KUrl u(url);
+                u.setPath(u.directory());
+                q->setUrl(u, false);
+            }
+            else {
+                q->setUrl(url.path(), false);
+            }
         }
         setDummyHistoryEntry(url.fileName() , mimeTypeIcon );
     } else {
@@ -2436,24 +2453,58 @@ void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
     static_cast<KToggleAction *>(q->actionCollection()->action("toggleBookmarks"))->setChecked( show );
 }
 
-// static
+
+// static, overloaded
 KUrl KFileWidget::getStartUrl( const KUrl& startDir,
                                QString& recentDirClass )
 {
-//     kDebug(kfile_area);
+    QString fileName;					// result discarded
+    return getStartUrl( startDir, recentDirClass, fileName );
+}
 
+
+// static, overloaded
+KUrl KFileWidget::getStartUrl( const KUrl& startDir,
+                               QString& recentDirClass,
+                               QString& fileName )
+{
     recentDirClass.clear();
+    fileName.clear();
     KUrl ret;
 
     bool useDefaultStartDir = startDir.isEmpty();
     if ( !useDefaultStartDir )
     {
-        if (startDir.protocol() == "kfiledialog")
+        if ( startDir.protocol() == "kfiledialog" )
         {
+
+//  The startDir URL with this protocol may be in the format:
+//                                                    directory()   fileName()
+//  1.  kfiledialog:///keyword                           "/"         keyword
+//  2.  kfiledialog:///keyword?global                    "/"         keyword
+//  3.  kfiledialog:///keyword/                          "/"         keyword
+//  4.  kfiledialog:///keyword/?global                   "/"         keyword
+//  5.  kfiledialog:///keyword/filename                /keyword      filename
+//  6.  kfiledialog:///keyword/filename?global         /keyword      filename
+
+            QString keyword;
+            QString urlDir = startDir.directory();
+            QString urlFile = startDir.fileName();
+            if ( urlDir == "/" )			// '1'..'4' above
+            {
+                keyword = urlFile;
+                fileName = QString();
+            }
+            else					// '5' or '6' above
+            {
+                keyword = urlDir.mid( 1 );
+                fileName = urlFile;
+            }
+
             if ( startDir.query() == "?global" )
-              recentDirClass = QString( "::%1" ).arg( startDir.path().mid( 1 ) );
+              recentDirClass = QString( "::%1" ).arg( keyword );
             else
-              recentDirClass = QString( ":%1" ).arg( startDir.path().mid( 1 ) );
+              recentDirClass = QString( ":%1" ).arg( keyword );
 
             ret = KUrl( KRecentDirs::dir(recentDirClass) );
         }
@@ -2484,6 +2535,7 @@ KUrl KFileWidget::getStartUrl( const KUrl& startDir,
         ret = *lastDirectory;
     }
 
+    kDebug(kfile_area) << "for" << startDir << "ret" << ret << "recentDirClass" << recentDirClass << "fileName" << fileName;
     return ret;
 }
 

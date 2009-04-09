@@ -44,17 +44,29 @@ public:
     /**
       * Constructs a file selector widget.
       *
-      * @param startDir This can either be
-      *         @li The URL of the directory to start in.
-      *         @li A KUrl() to start in the current working
-      *             directory, or the last directory where a file has been
-      *             selected.
-      *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
-      *             directory last used by a filedialog in the same application that specified
-      *             the same keyword.
-      *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
-      *             in the directory last used by a filedialog in any application that specified the
-      *             same keyword.
+      * @param startDir This can either be:
+      *         @li An empty URL (KUrl()) to start in the current working directory,
+      *             or the last directory where a file has been selected.
+      *         @li The path or URL of a starting directory.
+      *         @li An initial file name to select, with the starting directory being
+      *             the current working directory or the last directory where a file
+      *             has been selected.
+      *         @li The path or URL of a file, specifying both the starting directory and
+      *             an initially selected file name.
+      *         @li A URL of the form @c kfiledialog:///&lt;keyword&gt; to start in the
+      *             directory last used by a filedialog in the same application that
+      *             specified the same keyword.
+      *         @li A URL of the form @c kfiledialog:///&lt;keyword&gt;/&lt;filename&gt;
+      *             to start in the directory last used by a filedialog in the same
+      *             application that specified the same keyword, and to initially
+      *             select the specified filename.
+      *         @li A URL of the form @c kfiledialog:///&lt;keyword&gt;?global to start
+      *             in the directory last used by a filedialog in any application that
+      *             specified the same keyword.
+      *         @li A URL of the form @c kfiledialog:///&lt;keyword&gt;/&lt;filename&gt;?global
+      *             to start in the directory last used by a filedialog in any
+      *             application that specified the same keyword, and to initially
+      *             select the specified filename.
       *
       * @param parent The parent widget of this widget
       *
@@ -338,15 +350,41 @@ public:
      * This method implements the logic to determine the user's default directory
      * to be listed. E.g. the documents directory, home directory or a recently
      * used directory.
-     * @param startDir A url, to be used. May use the 'kfiledialog:///keyword' and
-     *                 'kfiledialog:///keyword?global' syntax
-     *                 as documented in the KFileDialog() constructor.
-     * @param recentDirClass If the 'kfiledialog:///' syntax is used, recentDirClass
-     *        will contain the string to be used later for KRecentDir::dir()
+     * @param startDir A URL specifying the initial directory, or using the
+     *                 @c kfiledialog:/// syntax to specify a last used
+     *                 directory.  If this URL specifies a file name, it is
+     *                 ignored.  Refer to the KFileWidget::KFileWidget()
+     *                 documentation for the @c kfiledialog:/// URL syntax.
+     * @param recentDirClass If the @c kfiledialog:/// syntax is used, this
+     *        will return the string to be passed to KRecentDirs::dir() and
+     *        KRecentDirs::add().
      * @return The URL that should be listed by default (e.g. by KFileDialog or
      *         KDirSelectDialog).
+     * @see KFileWidget::KFileWidget()
      */
     static KUrl getStartUrl( const KUrl& startDir, QString& recentDirClass );
+
+    /**
+     * Similar to getStartUrl(const KUrl& startDir,QString& recentDirClass),
+     * but allows both the recent start directory keyword and a suggested file name
+     * to be returned.
+     * @param startDir A URL specifying the initial directory and/or filename,
+     *                 or using the @c kfiledialog:/// syntax to specify a
+     *                 last used location.
+     *                 Refer to the KFileWidget::KFileWidget()
+     *                 documentation for the @c kfiledialog:/// URL syntax.
+     * @param recentDirClass If the @c kfiledialog:/// syntax is used, this
+     *        will return the string to be passed to KRecentDirs::dir() and
+     *        KRecentDirs::add().
+     * @param fileName The suggested file name, if specified as part of the
+     *        @p StartDir URL.
+     * @return The URL that should be listed by default (e.g. by KFileDialog or
+     *         KDirSelectDialog).
+     *
+     * @see KFileWidget::KFileWidget()
+     * @since 4.3
+     */
+    static KUrl getStartUrl( const KUrl& startDir, QString& recentDirClass, QString& fileName );
 
     /**
      * @internal

@@ -719,7 +719,7 @@ KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
     bool specialDir = !defaultDir && dir.protocol() == "kfiledialog";
     KFileDialogPrivate::Native::s_allowNative = false;
     KFileDialog dlg(specialDir ? dir : KUrl(), filter, parent);
-    if ( !specialDir )
+    if ( !specialDir && !defaultDir )
         dlg.setSelection( dir.url() ); // may also be a filename
 
     dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
