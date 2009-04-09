@@ -33,6 +33,9 @@
 #include "debugwindow.h"
 #include "debugdocument.h"
 
+#include <kmimetype.h>
+#include <kicon.h>
+
 using namespace KJS;
 using namespace KJSDebugger;
 
@@ -88,9 +91,11 @@ void ScriptsDock::addDocument(DebugDocument *document)
 
     QString name = document->name();
     QString domain;
+    QString favicon;
 
     if (document->url().isEmpty())
         domain = "????"; // ### KDE4.1: proper i18n'able string
+
     else
     {
         KUrl kurl(document->url());
@@ -98,6 +103,8 @@ void ScriptsDock::addDocument(DebugDocument *document)
             domain = kurl.host();
         else
             domain = "localhost";
+
+        favicon = KMimeType::favIconForUrl(kurl);
     }
 
     QTreeWidgetItem *parent = 0;
@@ -106,6 +113,11 @@ void ScriptsDock::addDocument(DebugDocument *document)
     else
     {
         parent = new QTreeWidgetItem(QStringList() << domain);
+        if (!favicon.isEmpty()) {
+            KIcon icon(favicon);
+            parent->setIcon(0, icon);
+        }
+
         m_headers[domain] = parent;
         m_widget->invisibleRootItem()->addChild(parent);        
     }
