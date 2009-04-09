@@ -5,7 +5,7 @@ be used for a long time.  You should move on to replacement classes provided
 by the framework or implement something yourself in the long run.
 
 See  the
-<a href="http://websvn.kde.org/*checkout*/trunk/KDE/kdelibs/KDE4PORTING.html">KDE4
+<a href="http://websvn.kde.org/%2Acheckout%2A/trunk/KDE/kdelibs/KDE4PORTING.html">KDE4
 porting guide</a> for more information.
 
 See also the <a href="http://doc.trolltech.com/4.3/qt3support.html">Qt3Support
