@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
 			  http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
  <kcfgfile name="kdeglobals" />
  <group name="DesktopIcons" >
@@ -406,7 +406,7 @@
    <whatsthis>Whether the shortcut icons to the left in the file dialog should be shown</whatsthis>
    <default>true</default>
   </entry>
-  
+
   <entry key="Sort reversed" type="Bool" name="Sort reversed" >
    <default>false</default>
   </entry>
@@ -459,6 +459,7 @@
   <entry key="BoostSize" type="Bool" />
   <entry key="MaximumSize" type="Bool" />
   <entry key="UseFileThumbnails" type="Bool" />
+  <entry key="Plugins" type="StringList" />
   <entry key="ar" type="Bool" />
   <entry key="audiocd" type="Bool" />
   <entry key="devices" type="Bool" />
