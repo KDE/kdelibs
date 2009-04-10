@@ -412,6 +412,8 @@ public:
      * The function will look into all specified directories
      * and return all filenames in these directories.
      *
+     * The "most local" files are returned before the "more global" files.
+     *
      * @param type The type of resource to locate directories for.
      * @param filter Only accept filenames that fit to filter. The filter
      *        may consist of an optional directory and a QRegExp
@@ -434,6 +436,8 @@ public:
      * The function will look into all specified directories
      * and return all filenames (full and relative paths) in
      * these directories.
+     *
+     * The "most local" files are returned before the "more global" files.
      *
      * @param type The type of resource to locate directories for.
      * @param filter Only accept filenames that fit to filter. The filter
