@@ -200,7 +200,8 @@ private Q_SLOTS:
         //QTest::ignoreMessage(QtDebugMsg, "findServiceByDesktopPath: idontexist.desktop not found");
         parser.parseMimeAppsList(fileName, 100);
 
-        for (ExpectedResultsMap::const_iterator it = preferredApps.begin(), end = preferredApps.end() ; it != end ; ++it) {
+        for (ExpectedResultsMap::const_iterator it = preferredApps.constBegin(),
+                                               end = preferredApps.constEnd() ; it != end ; ++it) {
             const QString mime = it.key();
             const QList<KServiceOffer> offers = offerHash.offersFor(mime);
             Q_FOREACH(const QString& service, it.value()) {
@@ -212,7 +213,8 @@ private Q_SLOTS:
             }
         }
 
-        for (ExpectedResultsMap::const_iterator it = removedApps.begin(), end = removedApps.end() ; it != end ; ++it) {
+        for (ExpectedResultsMap::const_iterator it = removedApps.constBegin(),
+                                               end = removedApps.constEnd() ; it != end ; ++it) {
             const QString mime = it.key();
             const QList<KServiceOffer> offers = offerHash.offersFor(mime);
             Q_FOREACH(const QString& service, it.value()) {
@@ -284,7 +286,7 @@ private Q_SLOTS:
 
         // Now the generic variant of the above test:
         // for each mimetype, check that the preferred apps are as specified
-        for (ExpectedResultsMap::const_iterator it = preferredApps.begin(), end = preferredApps.end() ; it != end ; ++it) {
+        for (ExpectedResultsMap::const_iterator it = preferredApps.constBegin(), end = preferredApps.constEnd() ; it != end ; ++it) {
             const QString mime = it.key();
             const KService::List offers = KMimeTypeTrader::self()->query(mime);
             for (int i = 0; i < offers.count(); ++i) {
