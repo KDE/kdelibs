@@ -1161,22 +1161,23 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             if (cache->checkValidity(opt.state) && cache->regular.size() == opt.rect.size())
             {
                 QPixmap pixmap = d->transition(cache->regular, cache->hover, progress);
-                
-                if(state->cachedRenderingFadeFrom() && state->fadeProgress() != 1.0) {
-                    //Apply icon fading animation
+
+                if (state->cachedRenderingFadeFrom() && state->fadeProgress() != 1.0)
+                {
+                    // Apply icon fading animation
                     KIO::CachedRendering* fadeFromCache = state->cachedRenderingFadeFrom();
                     const QPixmap fadeFromPixmap = d->transition(fadeFromCache->regular, fadeFromCache->hover, progress);
-                    
+
                     pixmap = d->transition(fadeFromPixmap, pixmap, state->fadeProgress());
                 }
                 painter->drawPixmap(option.rect.topLeft(), pixmap);
                 return;
             }
-            
+
             if(!cache->checkValidity(opt.state) && (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
-                //Fade over from the old icon to the new one
-                //Only start a new fade if the previous one is ready
-                //Else we may start racing when checkValidity() always returns false
+                // Fade over from the old icon to the new one
+                // Only start a new fade if the previous one is ready
+                // Else we may start racing when checkValidity() always returns false
                 if(state->fadeProgress() == 1) {
                     state->setCachedRenderingFadeFrom(state->takeCachedRendering());
                 }
@@ -1247,17 +1248,18 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         state->setCachedRendering(cache);
 
         QPixmap pixmap = d->transition(cache->regular, cache->hover, progress);
-        
-        if(state->cachedRenderingFadeFrom() && state->fadeProgress() == 0) {
-            //Apply icon fading animation
+
+        if (state->cachedRenderingFadeFrom() && state->fadeProgress() == 0)
+        {
+            // Apply icon fading animation
             KIO::CachedRendering* fadeFromCache = state->cachedRenderingFadeFrom();
             const QPixmap fadeFromPixmap = d->transition(fadeFromCache->regular, fadeFromCache->hover, progress);
-            
+
             pixmap = d->transition(fadeFromPixmap, pixmap, state->fadeProgress());
 
             d->restartAnimation(state);
         }
-        
+
         painter->drawPixmap(option.rect.topLeft(), pixmap);
         return;
     }
