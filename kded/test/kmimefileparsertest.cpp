@@ -79,8 +79,8 @@ private Q_SLOTS:
 
         QByteArray testFile = "# Test data\ntext/plain:*.kmimefileparserunittest\ntext/plain:*.kmimefileparserunittest2";
         QBuffer buf(&testFile);
-        const QHash<QString, KMimeFileParser::GlobList> mimeTypeGlobs =
-            KMimeFileParser::parseGlobFile(&buf, KMimeFileParser::OldGlobs);
+        QHash<QString, KMimeFileParser::GlobList> mimeTypeGlobs;
+        QVERIFY(KMimeFileParser::parseGlobFile(&buf, KMimeFileParser::OldGlobs, mimeTypeGlobs));
         QCOMPARE(mimeTypeGlobs.count(), 1);
         QVERIFY(mimeTypeGlobs.contains("text/plain"));
         const KMimeFileParser::GlobList textGlobs = mimeTypeGlobs.value("text/plain");
@@ -97,8 +97,8 @@ private Q_SLOTS:
 
         QByteArray testFile = "# Test data\n40:text/plain:*.kmimefileparserunittest\n20:text/plain:*.kmimefileparserunittest2";
         QBuffer buf(&testFile);
-        const QHash<QString, KMimeFileParser::GlobList> mimeTypeGlobs =
-            KMimeFileParser::parseGlobFile(&buf, KMimeFileParser::Globs2WithWeight);
+        QHash<QString, KMimeFileParser::GlobList> mimeTypeGlobs;
+        QVERIFY(KMimeFileParser::parseGlobFile(&buf, KMimeFileParser::Globs2WithWeight, mimeTypeGlobs));
         //kDebug() << mimeTypeGlobs.keys();
         QCOMPARE(mimeTypeGlobs.count(), 1);
         QVERIFY(mimeTypeGlobs.contains("text/plain"));
@@ -134,17 +134,19 @@ private Q_SLOTS:
         QVERIFY(textPlain->patterns().contains(ext2));
     }
 
-    void testDuplicateGlob()
+    void testMerging() // global+local merging
     {
         KMimeFileParser parser(fakeMimeTypeFactory());
 
         const QString ext1 = "*.ext1";
         const QString ext2 = "*.ext2";
+        const QString globalext = "*.globalext";
 
         KMimeType::Ptr textPlain = KMimeType::mimeType("text/plain");
         QVERIFY(textPlain);
         QVERIFY(!textPlain->patterns().contains(ext1));
         QVERIFY(!textPlain->patterns().contains(ext2));
+        QVERIFY(!textPlain->patterns().contains(globalext));
 
         // "local" file
         // It defines *.ext1 and *.ext2
@@ -157,13 +159,49 @@ private Q_SLOTS:
         globTempFile1.write(testFile1);
         const QString fileName1 = globTempFile1.fileName();
         globTempFile1.close();
+        // "global" file
+        // It defines *.ext1 and *.globalext
+        KTemporaryFile globTempFile2;
+        QVERIFY(globTempFile2.open());
+        const QByteArray testFile2 = "# Test data\ntext/plain:*.ext1\ntext/plain:*.globalext";
+        globTempFile2.write(testFile2);
+        const QString fileName2 = globTempFile2.fileName();
+        globTempFile2.close();
+
+        parser.parseGlobs(QStringList() << fileName1 << fileName2);
+
+        QCOMPARE(textPlain->patterns().count(ext1), 1);
+        QCOMPARE(textPlain->patterns().count(ext2), 1);
+        QCOMPARE(textPlain->patterns().count(globalext), 1);
+    }
+
+    void testOverriding() // local overrides global when using __NOGLOBS__
+    {
+        KMimeFileParser parser(fakeMimeTypeFactory());
+
+        const QString ext1 = "*.o1";
+        const QString ext2 = "*.o2";
+
+        KMimeType::Ptr textPlain = KMimeType::mimeType("text/plain");
+        QVERIFY(textPlain);
+        QVERIFY(!textPlain->patterns().contains(ext1));
+        QVERIFY(!textPlain->patterns().contains(ext2));
+
+        // "local" file
+        // It defines *.o1 and *.o2
+        KTemporaryFile globTempFile1;
+        QVERIFY(globTempFile1.open());
+        const QByteArray testFile1 = "# Test data\ntext/plain:__NOGLOBS__\ntext/plain:*.o1\ntext/plain:*.o2\ntext/plain:*.o2";
+        globTempFile1.write(testFile1);
+        const QString fileName1 = globTempFile1.fileName();
+        globTempFile1.close();
 
         // "global" file
-        // It defines *.ext1 and *.exttoberemoved - this will all be overwritten by the local file
+        // It defines *.o1 and *.exttoberemoved - this will all be overwritten by the local file
         // so it won't appear.
         KTemporaryFile globTempFile2;
         QVERIFY(globTempFile2.open());
-        const QByteArray testFile2 = "# Test data\ntext/plain:*.ext1\ntext/plain:*.exttoberemoved";
+        const QByteArray testFile2 = "# Test data\ntext/plain:*.o1\ntext/plain:*.exttoberemoved";
         globTempFile2.write(testFile2);
         const QString fileName2 = globTempFile2.fileName();
         globTempFile2.close();

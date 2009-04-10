@@ -66,7 +66,8 @@ KMimeFileParser::AllGlobs KMimeFileParser::parseGlobFiles(const QStringList& glo
     KMimeFileParser::AllGlobs allGlobs;
     QListIterator<QString> globIter(globFiles);
     globIter.toBack();
-    // At each level, we must be able to override (not just add to) the information that we read at higher levels.
+    // At each level, we must be able to override (not just add to) the information that we read at higher levels
+    // (if glob-deleteall is used).
     // This is why we don't directly call mimetype->addPattern, nor can we use the same qhash for everything.
     while (globIter.hasPrevious()) { // global first, then local
         Format format = OldGlobs;
@@ -79,23 +80,16 @@ KMimeFileParser::AllGlobs KMimeFileParser::parseGlobFiles(const QStringList& glo
         parsedFiles << fileName;
         QFile globFile(fileName);
         //kDebug(7021) << "Now parsing" << fileName;
-        const QHash<QString, GlobList> thisLevelGlobs = parseGlobFile(&globFile, format);
-        if (allGlobs.isEmpty())
-            allGlobs = thisLevelGlobs;
-        else {
-            // We insert stuff multiple times into the hash, and we only look at the last inserted later on.
-            allGlobs.unite(thisLevelGlobs);
-        }
+        parseGlobFile(&globFile, format, allGlobs);
     }
     return allGlobs;
 }
 
 // uses a QIODevice to make unit tests possible
-QHash<QString, KMimeFileParser::GlobList> KMimeFileParser::parseGlobFile(QIODevice* file, Format format)
+bool KMimeFileParser::parseGlobFile(QIODevice* file, Format format, AllGlobs& globs)
 {
-    QHash<QString, GlobList> globs;
     if (!file->open(QIODevice::ReadOnly))
-        return globs;
+        return false;
     QTextStream stream(file);
     //stream.setCodec("UTF-8"); // should be all latin1
     QString line;
@@ -118,13 +112,17 @@ QHash<QString, KMimeFileParser::GlobList> KMimeFileParser::parseGlobFile(QIODevi
         const QString pattern = line.mid(pos+1);
         Q_ASSERT(!pattern.isEmpty());
         GlobList& globList = globs[mimeTypeName]; // find or create entry
-        // Check for duplicates, like when installing kde.xml and freedesktop.org.xml
-        // in the same prefix, and they both have text/plain:*.txt
-        if (!globList.containsPattern(pattern)) {
-            //if (mimeTypeName == "text/plain")
-            //    kDebug() << "Adding pattern" << pattern << "to mimetype" << mimeTypeName << "from globs file, with weight" << weight;
-            globList.append(Glob(weight, pattern));
+        if (pattern == "__NOGLOBS__") {
+            globList.clear();
+        } else {
+            // Check for duplicates, like when installing kde.xml and freedesktop.org.xml
+            // in the same prefix, and they both have text/plain:*.txt
+            if (!globList.containsPattern(pattern)) {
+                //if (mimeTypeName == "text/plain")
+                //    kDebug() << "Adding pattern" << pattern << "to mimetype" << mimeTypeName << "from globs file, with weight" << weight;
+                globList.append(Glob(weight, pattern));
+            }
         }
     }
-    return globs;
+    return true;
 }

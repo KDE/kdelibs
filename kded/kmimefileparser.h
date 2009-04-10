@@ -60,7 +60,7 @@ public:
     typedef QHashIterator<QString, GlobList> AllGlobsIterator;
 
     static AllGlobs parseGlobFiles(const QStringList& globFiles, QStringList& parsedFiles);
-    static AllGlobs parseGlobFile(QIODevice* file, Format format);
+    static bool parseGlobFile(QIODevice* file, Format format, AllGlobs& globs);
 
     // Retrieve the result of the parsing
     const AllGlobs& mimeTypeGlobs() const { return m_mimeTypeGlobs; }
