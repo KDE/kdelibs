@@ -265,6 +265,7 @@ public:
 
 protected Q_SLOTS:
   void slotData(const QByteArray &);
+  void slotFilterError(const QString &text);
   void error(int errid, const QString &text);
   void proxyAuthenticationForSocket(const QNetworkProxy &, QAuthenticator *);
   void saveProxyAuthenticationForSocket();
@@ -298,7 +299,7 @@ protected:
   // create HTTP authentications response(s), if any
   QString authenticationHeader();
   bool sendQuery();
-  
+
   void httpClose(bool keepAlive);  // Close transfer
   bool httpOpenConnection();   // Open connection
   void httpCloseConnection();  // Close connection

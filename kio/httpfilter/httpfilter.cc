@@ -22,7 +22,6 @@
 #include <kgzipfilter.h>
 #include <kdebug.h>
 
-#include <kio/global.h>
 #include <klocale.h>
 
 #include <stdio.h>
@@ -65,8 +64,8 @@ HTTPFilterChain::addFilter(HTTPFilterBase *filter)
    last = filter;
    connect(filter, SIGNAL(output(QByteArray)),
            this, SIGNAL(output(QByteArray)));
-   connect(filter, SIGNAL(error(int,QString)),
-           this, SIGNAL(error(int,QString)));
+   connect(filter, SIGNAL(error(QString)),
+           this, SIGNAL(error(QString)));
 }
 
 void
@@ -101,7 +100,6 @@ HTTPFilterGZip::HTTPFilterGZip(bool deflate)
       m_firstData(true),
       m_finished(false)
 {
-    m_needGzipHeader = !deflate;
     // We can't use KFilterDev because it assumes it can read as much data as necessary
     // from the underlying device. It's a pull strategy, while we have to do
     // a push strategy.
@@ -130,8 +128,8 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
     if (!d.isEmpty()) {
 
         if (m_firstData) {
-            bool zlibHeader = m_deflateMode;
             if (m_deflateMode) {
+                bool zlibHeader = true;
                 // Autodetect broken webservers (thanks Microsoft) who send raw-deflate
                 // instead of zlib-headers-deflate when saying Content-Encoding: deflate.
                 const char firstChar = d[0];
@@ -146,29 +144,14 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
                 }
                 //if (!zlibHeader)
                 //    kDebug() << "Bad webserver, uses raw-deflate instead of zlib-deflate...";
+                m_gzipFilter->init(QIODevice::ReadOnly, zlibHeader ? KGzipFilter::ZlibHeader : KGzipFilter::RawDeflate);
+            } else {
+                m_gzipFilter->init(QIODevice::ReadOnly, KGzipFilter::GZipHeader);
             }
-            m_gzipFilter->init(QIODevice::ReadOnly, zlibHeader ? KGzipFilter::ZlibHeader : KGzipFilter::RawDeflateOrGzip);
             m_firstData = false;
         }
 
-        if (m_needGzipHeader && !m_unprocessedHeaderData.isEmpty()) {
-            m_unprocessedHeaderData.append(d);
-            m_gzipFilter->setInBuffer(m_unprocessedHeaderData.constData(), m_unprocessedHeaderData.size());
-        } else {
-            m_gzipFilter->setInBuffer(d.constData(), d.size());
-        }
-
-        if (m_needGzipHeader) {
-            if (m_gzipFilter->readHeader()) {
-                m_needGzipHeader = false;
-                m_unprocessedHeaderData.clear();
-            } else {
-                // not enough data yet?
-                // (testcase: http://www.zlib.net/zlib_faq.html, I get 5 or 6 bytes first)
-                m_unprocessedHeaderData = d;
-                return;
-            }
-        }
+        m_gzipFilter->setInBuffer(d.constData(), d.size());
     }
     while (!m_gzipFilter->inBufferEmpty() && !m_finished) {
         char buf[8192];
@@ -192,20 +175,11 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
         }
         case KFilterBase::Error:
             kWarning() << "Error from KGZipFilter";
-            emit error( KIO::ERR_SLAVE_DEFINED, i18n("Receiving corrupt data."));
+            emit error(i18n("Receiving corrupt data."));
             m_finished = true; // exit this while loop
             break;
         }
     }
-#if 0
-    // We can't assume that the caller has used Z_FINISH.
-    // So we have to assume that "end of input data" means "end of decompressed data".
-    // See bug 117683 and testcase in bug 188935.
-    if (d.isEmpty() && !m_finished) {
-        kDebug() << "ERROR: done but m_finished=false";
-        emit error( KIO::ERR_SLAVE_DEFINED, i18n("Unexpected end of data, some information may be lost."));
-    }
-#endif
 }
 
 HTTPFilterDeflate::HTTPFilterDeflate()

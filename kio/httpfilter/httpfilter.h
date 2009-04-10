@@ -43,7 +43,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void output(const QByteArray &d);
-    void error(int, const QString &);
+    void error(const QString &);
 
 protected:
     HTTPFilterBase *last;
@@ -93,9 +93,7 @@ public Q_SLOTS:
 private:
     bool m_deflateMode;
     bool m_firstData;
-    bool m_needGzipHeader;
     bool m_finished;
-    QByteArray m_unprocessedHeaderData;
     KGzipFilter* m_gzipFilter;
 };
 

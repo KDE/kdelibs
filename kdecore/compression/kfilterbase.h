@@ -85,6 +85,21 @@ public:
     virtual Result compress( bool finish ) = 0;
 
     /**
+     * \internal
+     * \since 4.3
+     */
+    enum FilterFlags {
+        NoHeaders = 0,
+        WithHeaders = 1
+    };
+    /**
+     * \internal
+     * \since 4.3
+     */
+    void setFilterFlags(FilterFlags flags);
+    FilterFlags filterFlags() const;
+
+    /**
      * Call this to create the appropriate filter for the file
      * named @p fileName.
      * @param fileName the name of the file to filter
@@ -100,7 +115,7 @@ public:
      */
     static KFilterBase * findFilterByMimeType( const QString & mimeType );
 
-protected:
+protected: // TODO KDE5: move to d pointer
     QIODevice * m_dev;
     bool m_bAutoDel;
 protected:

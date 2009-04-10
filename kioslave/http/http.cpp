@@ -4206,8 +4206,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   QObject::connect(&chain, SIGNAL(output(const QByteArray &)),
           this, SLOT(slotData(const QByteArray &)));
-  QObject::connect(&chain, SIGNAL(error(int, const QString &)),
-          this, SLOT(error(int, const QString &)));
+  QObject::connect(&chain, SIGNAL(error(const QString &)),
+          this, SLOT(slotFilterError(const QString &)));
 
    // decode all of the transfer encodings
   while (!m_transferEncodings.isEmpty())
@@ -4346,6 +4346,10 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   return true;
 }
 
+void HTTPProtocol::slotFilterError(const QString &text)
+{
+    error(KIO::ERR_SLAVE_DEFINED, text);
+}
 
 void HTTPProtocol::error( int _err, const QString &_text )
 {

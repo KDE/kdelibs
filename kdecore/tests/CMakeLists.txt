@@ -39,7 +39,6 @@ KDECORE_UNIT_TESTS(
  klockfiletest
  ktempdirtest
  ksharedptrtest
- kfiltertest
  kdatetimetest
  ksavefiletest
  kautosavefiletest
@@ -58,8 +57,6 @@ KDECORE_UNIT_TESTS(
  ktcpsockettest
  ksycocathreadtest
 )
-
-target_link_libraries(kfiltertest ${ZLIB_LIBRARIES})
 
 if(UNIX)
  KDECORE_UNIT_TESTS(
@@ -84,6 +81,16 @@ KDECORE_EXECUTABLE_TESTS(
 set(kmimetypetest_SRCS kmimetypetest.cpp ../services/kmimemagicrule.cpp)
 kde4_add_unit_test(kmimetypetest ${kmimetypetest_SRCS})
 target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
+
+########### kfiltertest ###############
+
+# compile httpfilter.cpp into the test since it's not part of kdelibs
+# (only par of kio_http and kmultipart)
+set(kfiltertest_SRCS kfiltertest.cpp ../../kio/httpfilter/httpfilter.cc)
+include_directories( ${CMAKE_SOURCE_DIR}/kio/httpfilter )
+kde4_add_unit_test(kfiltertest ${kfiltertest_SRCS})
+target_link_libraries(kfiltertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
+target_link_libraries(kfiltertest ${ZLIB_LIBRARIES})
 
 ########### module for klibloadertest ###############
 

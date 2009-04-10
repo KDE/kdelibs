@@ -96,7 +96,7 @@ QIODevice * KFilterDev::device( QIODevice* inDevice, const QString & mimetype, b
 
 bool KFilterDev::open( QIODevice::OpenMode mode )
 {
-    //kDebug(7005) << "KFilterDev::open " << mode;
+    //kDebug(7005) << mode;
     if ( mode == QIODevice::ReadOnly )
     {
         d->buffer.resize(0);
@@ -107,6 +107,7 @@ bool KFilterDev::open( QIODevice::OpenMode mode )
         d->filter->setOutBuffer( d->buffer.data(), d->buffer.size() );
     }
     d->bNeedHeader = !d->bSkipHeaders;
+    d->filter->setFilterFlags(d->bSkipHeaders ? KFilterBase::NoHeaders : KFilterBase::WithHeaders);
     d->filter->init( mode );
     d->bOpenedUnderlyingDevice = !d->filter->device()->isOpen();
     bool ret = d->bOpenedUnderlyingDevice ? d->filter->device()->open( mode ) : true;
@@ -124,10 +125,9 @@ void KFilterDev::close()
 {
     if ( !isOpen() )
         return;
-    //kDebug(7005) << "KFilterDev::close";
     if ( d->filter->mode() == QIODevice::WriteOnly )
         write( 0L, 0 ); // finish writing
-    //kDebug(7005) << "KFilterDev::close. Calling terminate().";
+    //kDebug(7005) << "Calling terminate().";
 
     d->filter->terminate();
     if ( d->bOpenedUnderlyingDevice )
@@ -141,7 +141,7 @@ bool KFilterDev::seek( qint64 pos )
     if ( ioIndex == pos )
         return true;
 
-    kDebug(7005) << "KFilterDev::seek(" << pos << ") called";
+    //kDebug(7005) << "seek(" << pos << ") called";
 
     Q_ASSERT ( d->filter->mode() == QIODevice::ReadOnly );
 
@@ -166,7 +166,7 @@ bool KFilterDev::seek( qint64 pos )
             return false;
     }
 
-    //kDebug(7005) << "KFilterDev::at : reading " << pos << " dummy bytes";
+    //kDebug(7005) << "reading " << pos << " dummy bytes";
     QByteArray dummy( qMin( pos, (qint64)3*BUFFER_SIZE ), 0 );
     d->bIgnoreData = true;
     bool result = ( read( dummy.data(), pos ) == pos );
@@ -185,7 +185,7 @@ bool KFilterDev::atEnd() const
 qint64 KFilterDev::readData( char *data, qint64 maxlen )
 {
     Q_ASSERT ( d->filter->mode() == QIODevice::ReadOnly );
-    //kDebug(7005) << "KFilterDev::read maxlen=" << maxlen;
+    //kDebug(7005) << "maxlen=" << maxlen;
     KFilterBase* filter = d->filter;
 
     uint dataReceived = 0;
@@ -212,7 +212,6 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
     qint64 availOut = outBufferSize;
     filter->setOutBuffer( data, outBufferSize );
 
-    bool decompressedAll = false;
     while ( dataReceived < maxlen )
     {
         if (filter->inBufferEmpty())
@@ -223,18 +222,13 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
             // Request data from underlying device
             int size = filter->device()->read( d->buffer.data(),
                                                d->buffer.size() );
-            if ( size )
+            //kDebug(7005) << "got" << size << "bytes from device";
+            if (size) {
                 filter->setInBuffer( d->buffer.data(), size );
-            else {
-                if ( decompressedAll )
-                {
-                    // We decoded everything there was to decode. So -> done.
-                    //kDebug(7005) << "Seems we're done. dataReceived=" << dataReceived;
-                    d->result = KFilterBase::End;
-                    break;
-                }
+            } else {
+                // Not enough data available in underlying device for now
+                break;
             }
-            //kDebug(7005) << "KFilterDev::read got " << size << " bytes from device";
         }
         if (d->bNeedHeader)
         {
@@ -268,12 +262,8 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
         }
         if (d->result == KFilterBase::End)
         {
-            //kDebug(7005) << "KFilterDev::read got END. dataReceived=" << dataReceived;
+            //kDebug(7005) << "got END. dataReceived=" << dataReceived;
             break; // Finished.
-        }
-        if (filter->inBufferEmpty() && filter->outBufferAvailable() != 0 )
-        {
-            decompressedAll = true;
         }
         filter->setOutBuffer( data, availOut );
     }
@@ -345,11 +335,11 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
                     return 0; // indicate an error (happens on disk full)
                 }
                 //else
-                    //kDebug(7005) << " KFilterDev::write wrote " << size << " bytes";
+                    //kDebug(7005) << " wrote " << size << " bytes";
             }
             if (d->result == KFilterBase::End)
             {
-                //kDebug(7005) << " KFilterDev::write END";
+                //kDebug(7005) << " END";
                 Q_ASSERT(finish); // hopefully we don't get end before finishing
                 break;
             }

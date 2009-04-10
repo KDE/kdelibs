@@ -7,4 +7,5 @@ Testcases:
  - http://www.zlib.net/zlib_faq.html#faq39 (Content-Encoding: gzip)
  - wikipedia (Content-Encoding: gzip)
  - cnn.com (Content-Encoding: gzip)
+ - http://arstechnica.com/ (Content-Encoding: gzip)
  - mailman admin interface on mail.kde.org (see r266769, but can't confirm these days)

@@ -69,7 +69,7 @@ KGzipFilter::~KGzipFilter()
 
 void KGzipFilter::init(int mode)
 {
-    init(mode, RawDeflateOrGzip);
+    init(mode, filterFlags() == WithHeaders ? GZipHeader : RawDeflate);
 }
 
 void KGzipFilter::init(int mode, Flag flag)
@@ -78,8 +78,10 @@ void KGzipFilter::init(int mode, Flag flag)
     d->zStream.avail_in = 0;
     if ( mode == QIODevice::ReadOnly )
     {
-        const int windowBits = (flag == RawDeflateOrGzip)
+        const int windowBits = (flag == RawDeflate)
                                ? -MAX_WBITS /*no zlib header*/
+                               : (flag == GZipHeader) ?
+                               MAX_WBITS + 32 /* auto-detect and eat gzip header */
                                : MAX_WBITS /*zlib header*/;
         const int result = inflateInit2(&d->zStream, windowBits);
         if ( result != Z_OK )
@@ -138,10 +140,13 @@ void KGzipFilter::reset()
 
 bool KGzipFilter::readHeader()
 {
+    // We now rely on zlib to read the full header (see the MAX_WBITS + 32 in init).
+    // We just use this method to check if the data is actually compressed.
+
 #ifdef DEBUG_GZIP
     kDebug(7005) << "avail=" << d->zStream.avail_in;
 #endif
-    // Assume not compressed until we successfully decode the header
+    // Assume not compressed until we see a gzip header
     d->compressed = false;
     Bytef *p = d->zStream.next_in;
     int i = d->zStream.avail_in;
@@ -154,6 +159,8 @@ bool KGzipFilter::readHeader()
     kDebug(7005) << "second byte is " << QString::number(*p,16);
 #endif
     if (*p++ != 0x8b) return false;
+
+#if 0
     int method = *p++;
     int flags = *p++;
     if ((method != Z_DEFLATED) || (flags & RESERVED) != 0) return false;
@@ -195,6 +202,8 @@ bool KGzipFilter::readHeader()
 
     d->zStream.avail_in = i;
     d->zStream.next_in = p;
+#endif
+
     d->compressed = true;
 #ifdef DEBUG_GZIP
     kDebug(7005) << "header OK";
@@ -306,8 +315,8 @@ KGzipFilter::Result KGzipFilter::uncompress()
         int result = inflate(&d->zStream, Z_SYNC_FLUSH);
 #ifdef DEBUG_GZIP
         kDebug(7005) << " -> inflate returned " << result;
-        kDebug(7005) << "Now avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
-        kDebug(7005) << "    next_in=" << d->zStream.next_in;
+        kDebug(7005) << " now avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
+        kDebug(7005) << "     next_in=" << d->zStream.next_in;
 #else
         if ( result != Z_OK && result != Z_STREAM_END )
             kDebug(7005) << "Warning: inflate() returned " << result;

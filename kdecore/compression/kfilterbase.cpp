@@ -27,8 +27,16 @@
 #include "kbzip2filter.h"
 #endif
 
+class KFilterBase::Private
+{
+public:
+    Private()
+        : m_flags(WithHeaders) {}
+    FilterFlags m_flags;
+};
+
 KFilterBase::KFilterBase()
-    : m_dev( 0L ), m_bAutoDel( false ), d(0)
+    : m_dev( 0L ), m_bAutoDel( false ), d(new Private)
 {
 }
 
@@ -36,6 +44,7 @@ KFilterBase::~KFilterBase()
 {
     if ( m_bAutoDel )
         delete m_dev;
+    delete d;
 }
 
 void KFilterBase::setDevice( QIODevice * dev, bool autodelete )
@@ -119,6 +128,15 @@ void KFilterBase::reset()
 {
 }
 
+void KFilterBase::setFilterFlags(FilterFlags flags)
+{
+    d->m_flags = flags;
+}
+
+KFilterBase::FilterFlags KFilterBase::filterFlags() const
+{
+    return d->m_flags;
+}
+
 void KFilterBase::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
-

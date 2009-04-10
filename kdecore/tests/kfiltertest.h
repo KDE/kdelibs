@@ -37,6 +37,8 @@ private Q_SLOTS:
     void test_findFilterByMimeType_data();
     void test_findFilterByMimeType();
     void test_deflateWithZlibHeader();
+    void test_pushData();
+    void test_httpFilterGzip();
 
 private:
     void test_block_write(const QString & fileName, const QByteArray& data);
@@ -45,9 +47,14 @@ private:
     void test_textstream( const QString & fileName );
     void test_readall(const QString & fileName, const QString& mimeType, const QByteArray& expectedData);
 
+protected Q_SLOTS:
+    void slotFilterOutput(const QByteArray& data);
+
+private:
     QString pathgz;
     QString pathbz2;
     QByteArray testData;
+    QByteArray m_filterOutput;
 };
 
 

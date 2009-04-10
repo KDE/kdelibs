@@ -45,8 +45,9 @@ public:
     // (1) as written out by compress()/compress2()
     // (2) see http://www.zlib.net/zlib_faq.html#faq39
     enum Flag {
-        RawDeflateOrGzip = 0, // raw deflate data, or gzip if readHeader is called
-        ZlibHeader = 1 // zlib headers (HTTP deflate)
+        RawDeflate = 0, // raw deflate data
+        ZlibHeader = 1, // zlib headers (HTTP deflate)
+        GZipHeader = 2
     };
     void init(int mode, Flag flag); // for direct users of KGzipFilter
     virtual int mode() const;
