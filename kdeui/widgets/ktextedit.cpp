@@ -424,7 +424,7 @@ void KTextEdit::deleteWordForward()
 {
   QTextCursor cursor = textCursor();
   cursor.clearSelection();
-  cursor.movePosition( QTextCursor::EndOfWord, QTextCursor::KeepAnchor );
+  cursor.movePosition( QTextCursor::WordRight, QTextCursor::KeepAnchor );
   cursor.removeSelectedText();
 }
 
