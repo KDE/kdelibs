@@ -22,11 +22,13 @@
 
 #include "../kio/kio/defaultviewadapter_p.h"
 #include "../kio/kio/imagefilter_p.h"
+#include <kconfiggroup.h>
 #include <kfileitem.h>
 #include <kiconeffect.h>
 #include <kio/previewjob.h>
 #include <kdirlister.h>
 #include <kdirmodel.h>
+#include <ksharedconfig.h>
 
 #include <QApplication>
 #include <QAbstractItemView>
@@ -892,6 +894,14 @@ void KFilePreviewGenerator::Private::createPreviews(const KFileItemList& items)
 void KFilePreviewGenerator::Private::startPreviewJob(const KFileItemList& items, int width, int height)
 {
     if (items.count() > 0) {
+        if (m_enabledPlugins.isEmpty()) {
+            const KConfigGroup globalConfig(KGlobal::config(), "PreviewSettings");
+            m_enabledPlugins = globalConfig.readEntry("Plugins", QStringList()
+                                                                 << "directorythumbnail"
+                                                                 << "imagethumbnail"
+                                                                 << "jpegthumbnail");
+        }
+
         KIO::PreviewJob* job = KIO::filePreview(items, width, height, 0, 70, true, true, &m_enabledPlugins);
 
         // Set the sequence index to the target. We only need to check if items.count() == 1,
