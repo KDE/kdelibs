@@ -128,6 +128,9 @@ private Q_SLOTS:
         const QString fileName = globTempFile.fileName();
         globTempFile.close();
 
+        KMimeFileParser::ParsedPatternMap parsedPatterns;
+        parsedPatterns.insert("text/plain", "*.txt");
+        parser.setParsedPatternMap(parsedPatterns);
         parser.parseGlobs(QStringList() << fileName);
 
         QVERIFY(textPlain->patterns().contains(ext1));
@@ -168,6 +171,9 @@ private Q_SLOTS:
         const QString fileName2 = globTempFile2.fileName();
         globTempFile2.close();
 
+        KMimeFileParser::ParsedPatternMap parsedPatterns;
+        parsedPatterns.insert("text/plain", "*.txt");
+        parser.setParsedPatternMap(parsedPatterns);
         parser.parseGlobs(QStringList() << fileName1 << fileName2);
 
         QCOMPARE(textPlain->patterns().count(ext1), 1);
@@ -206,6 +212,9 @@ private Q_SLOTS:
         const QString fileName2 = globTempFile2.fileName();
         globTempFile2.close();
 
+        KMimeFileParser::ParsedPatternMap parsedPatterns;
+        parsedPatterns.insert("text/plain", "*.txt");
+        parser.setParsedPatternMap(parsedPatterns);
         parser.parseGlobs(QStringList() << fileName1 << fileName2);
 
         QCOMPARE(textPlain->patterns().count(ext1), 1);
