@@ -687,11 +687,11 @@ void KMimeType::setPatterns(const QStringList& patterns)
     d->m_lstPatterns = patterns;
 }
 
-void KMimeType::internalClearData()
+void KMimeType::internalClearData() // KDE5: remove
 {
-    Q_D(KMimeType);
+    //Q_D(KMimeType);
     // Clear the data that KBuildMimeTypeFactory is going to refill - and only that data.
-    d->m_lstPatterns.clear();
+    //d->m_lstPatterns.clear(); // not true anymore
 }
 
 void KMimeType::setUserSpecifiedIcon(const QString& icon)
@@ -735,13 +735,11 @@ int KMimeType::sharedMimeInfoVersion()
 QString KMimeType::mainExtension() const
 {
     Q_D(const KMimeType);
-#if 1 // HACK START
+
+#if 1 // HACK START - can be removed once shared-mime-info > 0.60 is used/required.
     // The idea was: first usable pattern from m_lstPatterns.
     // But update-mime-database makes a mess of the order of the patterns,
-    // because it uses a hash internally. And I wasn't able to fix that
-    // (glib code), so waiting for the freedesktop guys to fix it, I have
-    // to workaround that using a nasty hardcoded table to fix the most
-    // common issues.
+    // because it uses a hash internally.
     static const struct { const char* mime; const char* extension; } s_hardcodedMimes[] = {
         { "text/plain", ".txt" } };
     if (d->m_lstPatterns.count() > 1) {
@@ -766,8 +764,8 @@ QString KMimeType::mainExtension() const
     return QString();
 }
 
-void KMimeType::setParentMimeType(const QString&)
+void KMimeType::setParentMimeType(const QString&) // KDE5: remove
 {
     // Nothing. Don't ever call this. The method was internal, is now unused,
-    // but is wrapped by bindings.
+    // but is wrapped by bindings (because it was protected before).
 }

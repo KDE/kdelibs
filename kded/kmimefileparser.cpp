@@ -31,6 +31,11 @@ KMimeFileParser::KMimeFileParser(KMimeTypeFactory* mimeTypeFactory)
 {
 }
 
+void KMimeFileParser::setParsedPatternMap(const ParsedPatternMap& parsedPatternMap)
+{
+    m_parsedPatternMap = parsedPatternMap;
+}
+
 void KMimeFileParser::parseGlobs()
 {
     const QStringList globFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "globs");
@@ -46,17 +51,26 @@ void KMimeFileParser::parseGlobs(const QStringList& globFiles)
 
     // This is just to fill in KMimeType::patterns. This has no real effect
     // on the actual mimetype matching.
+    // We only do it for those mimetypes were we just parsed the xml,
+    // not those mimetypes we loaded in incremental mode.
     Q_FOREACH(const QString& mimeTypeName, m_allMimeTypes) {
-        KMimeType::Ptr mimeType = m_mimeTypeFactory->findMimeTypeByName(mimeTypeName, KMimeType::DontResolveAlias);
-        if (!mimeType) {
-            kWarning(7012) << "one of glob files in" << parsedFiles << "refers to unknown mimetype" << mimeTypeName;
-            m_mimeTypeGlobs.remove(mimeTypeName);
-        } else {
-            const GlobList globs = m_mimeTypeGlobs.value(mimeTypeName);
-            QStringList patterns;
-            Q_FOREACH(const Glob& glob, globs)
-                patterns.append(glob.pattern);
-            mimeType->setPatterns(patterns);
+        if (m_parsedPatternMap.contains(mimeTypeName)) {
+            KMimeType::Ptr mimeType = m_mimeTypeFactory->findMimeTypeByName(mimeTypeName, KMimeType::DontResolveAlias);
+            if (!mimeType) {
+                kWarning(7012) << "one of glob files in" << parsedFiles << "refers to unknown mimetype" << mimeTypeName;
+                m_mimeTypeGlobs.remove(mimeTypeName);
+            } else {
+                const GlobList globs = m_mimeTypeGlobs.value(mimeTypeName);
+                const QString mainPattern = m_parsedPatternMap.value(mimeTypeName);
+                QStringList patterns;
+                Q_FOREACH(const Glob& glob, globs) {
+                    if (glob.pattern == mainPattern)
+                        patterns.prepend(glob.pattern);
+                    else
+                        patterns.append(glob.pattern);
+                }
+                mimeType->setPatterns(patterns);
+            }
         }
     }
 }

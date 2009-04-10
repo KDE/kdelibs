@@ -90,47 +90,63 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
     if (pos == -1) // huh?
         return 0;
     const QString dirName = file.left(pos);
-    //pos = dirName.lastIndexOf('/');
-    //dirName = dirName.mid(pos+1);
     if (dirName == "packages") // special subdir
         return 0;
 
-    const QString fullPath = KGlobal::dirs()->locate( resource, file );
-    if (fullPath.isEmpty()) // can't happen
-        return 0;
-    QFile qfile(fullPath);
-    if (!qfile.open(QFile::ReadOnly))
-        return 0;
-    QDomDocument doc;
-    if (!doc.setContent(&qfile)) {
-        kWarning() << "Parse error in " << fullPath;
-        return 0;
-    }
-    const QDomElement mimeTypeElement = doc.documentElement();
-    if (mimeTypeElement.tagName() != "mime-type")
-        return 0;
-    const QString name = mimeTypeElement.attribute("type");
-    if (name.isEmpty())
-        return 0;
-
+    QString name;
     QString userIcon;
     QString comment;
+    QString mainPattern;
     QMap<QString, QString> commentsByLanguage;
-    for ( QDomElement e = mimeTypeElement.firstChildElement();
-          !e.isNull();
-          e = e.nextSiblingElement() ) {
-        const QString tag = e.tagName();
-        if (tag == "comment") {
-            const QString lang = e.attribute("xml:lang");
-            if (lang.isEmpty())
-                comment = e.text();
-            else
-                commentsByLanguage.insert(lang, e.text());
-        } else if (tag == "icon") { // as written out by shared-mime-info >= 0.40
-            userIcon = e.attribute("name");
+
+    const QStringList mimeFiles = KGlobal::dirs()->findAllResources(resource, file);
+    QListIterator<QString> mimeFilesIter(mimeFiles);
+    mimeFilesIter.toBack();
+    while (mimeFilesIter.hasPrevious()) { // global first, then local.
+        const QString fullPath = mimeFilesIter.previous();
+        QFile qfile(fullPath);
+        if (!qfile.open(QFile::ReadOnly))
+            continue;
+        QDomDocument doc;
+        if (!doc.setContent(&qfile)) {
+            kWarning() << "Parse error in " << fullPath;
+            continue;
+        }
+        const QDomElement mimeTypeElement = doc.documentElement();
+        if (mimeTypeElement.tagName() != "mime-type")
+            continue;
+        name = mimeTypeElement.attribute("type");
+        if (name.isEmpty())
+            continue;
+
+        for ( QDomElement e = mimeTypeElement.firstChildElement();
+              !e.isNull();
+              e = e.nextSiblingElement() ) {
+            const QString tag = e.tagName();
+            if (tag == "comment") {
+                const QString lang = e.attribute("xml:lang");
+                if (lang.isEmpty())
+                    comment = e.text();
+                else
+                    commentsByLanguage.insert(lang, e.text());
+            } else if (tag == "icon") { // as written out by shared-mime-info >= 0.40
+                userIcon = e.attribute("name");
+            } else if (tag == "glob-deleteall") { // as written out by shared-mime-info > 0.60
+                mainPattern.clear();
+                m_parsedMimeTypes[name] = QString();
+            } else if (tag == "glob" && mainPattern.isEmpty()) { // as written out by shared-mime-info > 0.60
+                const QString pattern = e.attribute("pattern");
+                if (pattern.startsWith('*')) {
+                    mainPattern = pattern;
+                    kDebug() << name << ": mainPattern=" << mainPattern;
+                }
+            }
         }
     }
-    foreach(const QString& lang, KGlobal::locale()->languageList()) {
+    if (name.isEmpty()) {
+        return 0;
+    }
+    Q_FOREACH(const QString& lang, KGlobal::locale()->languageList()) {
         const QString comm = commentsByLanguage.value(lang);
         if (!comm.isEmpty()) {
             comment = comm;
@@ -148,7 +164,7 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
         }
     }
     if (comment.isEmpty()) {
-        kWarning() << "Missing <comment> field in " << fullPath;
+        kWarning() << "Missing <comment> field in" << file;
     }
 
     //kDebug() << "Creating mimetype" << name << "from file" << file << "path" << fullPath;
@@ -175,6 +191,9 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
     if (!userIcon.isEmpty()) {
         e->setUserSpecifiedIcon(userIcon);
     }
+    // mainPattern could be empty, but by doing this unconditionally
+    // we also remember that we parsed this mimetype.
+    m_parsedMimeTypes[name] = mainPattern;
 
     return e;
 }
@@ -254,6 +273,7 @@ void KBuildMimeTypeFactory::parseSubclasses()
     // First clear up any old data (loaded by the incremental mode) that we are going to reload anyway
     aliases().clear();
 
+#if 0
     KSycocaEntryDict::Iterator itmime = m_entryDict->begin();
     const KSycocaEntryDict::Iterator endmime = m_entryDict->end();
     for( ; itmime != endmime ; ++itmime ) {
@@ -262,7 +282,7 @@ void KBuildMimeTypeFactory::parseSubclasses()
         KMimeType::Ptr mimeType = KMimeType::Ptr::staticCast( entry );
         mimeType->internalClearData();
     }
-
+#endif
 
     const QStringList subclassFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "subclasses");
     //kDebug() << subclassFiles;
@@ -279,6 +299,7 @@ void KBuildMimeTypeFactory::parseSubclasses()
 
 void KBuildMimeTypeFactory::save(QDataStream &str)
 {
+    m_parser.setParsedPatternMap(m_parsedMimeTypes);
     m_parser.parseGlobs();
 
     KSycocaFactory::save(str);

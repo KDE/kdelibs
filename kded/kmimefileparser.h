@@ -31,6 +31,12 @@ class KMimeFileParser
 public:
     explicit KMimeFileParser( KMimeTypeFactory* mimeTypeFactory );
 
+    // Must be called before parseGlobs to indicate
+    // - which mimes were parsed (useful in case of incremental mode)
+    // - for each mime, which pattern is the main one.
+    typedef QHash<QString, QString> ParsedPatternMap;
+    void setParsedPatternMap(const ParsedPatternMap& parsedPatternMap);
+
     // Read globs (patterns) files
     void parseGlobs();
 
@@ -70,6 +76,7 @@ private:
     KMimeTypeFactory* m_mimeTypeFactory;
     AllGlobs m_mimeTypeGlobs;
     QStringList m_allMimeTypes;
+    ParsedPatternMap m_parsedPatternMap;
 };
 
 #endif /* KMIMEFILEPARSER_H */

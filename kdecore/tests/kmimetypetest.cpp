@@ -676,6 +676,9 @@ void KMimeTypeTest::testPatterns_data()
     QTest::addColumn<QString>("mainExtension");
     QTest::newRow("mimetype with a single pattern") << "application/pdf" << "*.pdf" << ".pdf";
     QTest::newRow("mimetype with multiple patterns") << "application/x-kpresenter" << "*.kpr;*.kpt" << ".kpr";
+    if (KMimeType::sharedMimeInfoVersion() > KDE_MAKE_VERSION(0, 60, 0)) {
+        QTest::newRow("mimetype with many patterns") << "application/vnd.wordperfect" << "*.wp;*.wp4;*.wp5;*.wp6;*.wpd;*.wpp" << ".wp";
+    }
     QTest::newRow("oasis text mimetype") << "application/vnd.oasis.opendocument.text" << "*.odt" << ".odt";
     QTest::newRow("oasis presentation mimetype") << "application/vnd.oasis.opendocument.presentation" << "*.odp" << ".odp";
     QTest::newRow("mimetype with multiple patterns, *.doc added by kde") << "text/plain" << "*.asc;*.txt;*.doc;*,v" << ".txt";
