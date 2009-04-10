@@ -450,7 +450,7 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
             if (dir->type() == KIconLoader::Threshold)
             {
               const int diff = dir->size() - size;
-              if ((diff < 0) && (-diff > dir->threshold()))
+              if ((diff < 0) || (diff > dir->threshold()))
                 continue;
             }
         } else
