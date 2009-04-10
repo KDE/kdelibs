@@ -447,9 +447,12 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
             if ((dir->type() == KIconLoader::Scalable) &&
                 ((size < dir->minSize()) || (size > dir->maxSize())))
               continue;
-            if ((dir->type() == KIconLoader::Threshold) &&
-                (abs(dir->size()-size) > dir->threshold()))
+            if (dir->type() == KIconLoader::Threshold)
+            {
+              const int diff = dir->size() - size;
+              if ((diff < 0) && (-diff > dir->threshold()))
                 continue;
+            }
         } else
         {
           // dw < 0 means need to scale up to get an icon of the requested size
