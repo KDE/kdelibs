@@ -285,6 +285,12 @@ public:
      */
     bool decodeIsCutSelection(const QMimeData* mimeData);
 
+    /**
+     * Helper method for KFilePreviewGenerator::updateIcons(). Adds
+     * recursively all items from the model to the list \a list.
+     */
+    void addItemsToList(const QModelIndex& index, KFileItemList& list);
+
     /** Remembers the pixmap for an item specified by an URL. */
     struct ItemInfo
     {
@@ -1022,6 +1028,21 @@ bool KFilePreviewGenerator::Private::decodeIsCutSelection(const QMimeData* mimeD
     }
 }
 
+void KFilePreviewGenerator::Private::addItemsToList(const QModelIndex& index, KFileItemList& list)
+{
+    const int rowCount = m_dirModel->rowCount(index);
+    for (int row = 0; row < rowCount; ++row) {
+        const QModelIndex subIndex = m_dirModel->index(row, 0, index);
+        KFileItem item = m_dirModel->itemForIndex(subIndex);
+        list.append(item);
+
+        if (m_dirModel->rowCount(subIndex) > 0) {
+            // the model is hierarchical (treeview)
+            addItemsToList(subIndex, list);
+        }
+    }
+}
+
 KFilePreviewGenerator::KFilePreviewGenerator(QAbstractItemView* parent) :
     QObject(parent),
     d(new Private(this, new KIO::DefaultViewAdapter(parent, this), parent->model()))
@@ -1074,12 +1095,7 @@ void KFilePreviewGenerator::updateIcons()
     d->m_dispatchedItems.clear();
 
     KFileItemList itemList;
-    const int rowCount = d->m_dirModel->rowCount();
-    for (int row = 0; row < rowCount; ++row) {
-        const QModelIndex index = d->m_dirModel->index(row, 0);
-        KFileItem item = d->m_dirModel->itemForIndex(index);
-        itemList.append(item);
-    }
+    d->addItemsToList(QModelIndex(), itemList);
 
     d->updateIcons(itemList);
 }
