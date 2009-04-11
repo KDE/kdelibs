@@ -154,6 +154,7 @@ QStringList WmiManager::findDeviceByDeviceInterface(const Solid::DeviceInterface
     case Solid::DeviceInterface::GenericInterface:
         break;
     case Solid::DeviceInterface::Processor:
+        result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::Block:
         break;
@@ -162,20 +163,12 @@ QStringList WmiManager::findDeviceByDeviceInterface(const Solid::DeviceInterface
     case Solid::DeviceInterface::StorageDrive:
         break;
     case Solid::DeviceInterface::OpticalDrive:
-        list = d->m_query.sendQuery( "select * from " + WmiDevice::getWMITable(type) );
-        foreach(WmiQuery::Item *item, list) {
-            QString property = item->getProperty("Drive").toLower();
-            result << WmiDevice::generateUDI(WmiDevice::getUDIKey(type),"drive",property);
-        }
+        result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::StorageVolume:
         break;
     case Solid::DeviceInterface::OpticalDisc:
-        list = d->m_query.sendQuery( "select * from " + WmiDevice::getWMITable(type) );
-        foreach(WmiQuery::Item *item, list) {
-            QString property = item->getProperty("Drive").toLower();
-            result << WmiDevice::generateUDI(WmiDevice::getUDIKey(type),"drive",property);
-        }
+        result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::Camera:
         break;
@@ -186,11 +179,7 @@ QStringList WmiManager::findDeviceByDeviceInterface(const Solid::DeviceInterface
     case Solid::DeviceInterface::AcAdapter:
         break;
     case Solid::DeviceInterface::Battery:
-        list = d->m_query.sendQuery( "select * from " + WmiDevice::getWMITable(type) );
-        foreach(WmiQuery::Item *item, list) {
-            QString property = item->getProperty("Name").toLower();
-            result << WmiDevice::generateUDI(WmiDevice::getUDIKey(type),"name",property);
-        }
+        result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::Button:
         break;

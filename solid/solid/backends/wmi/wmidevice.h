@@ -64,11 +64,7 @@ public:
     virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type &type) const;
     virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type);
     
-    static QString generateUDI(const QString &key, const QString &property, const QString &value);
-
-    static QString getUDIKey(const Solid::DeviceInterface::Type &type);
-    static QString getWMITable(const Solid::DeviceInterface::Type &type);
-
+    static QStringList generateUDIList(const Solid::DeviceInterface::Type &type);
     static bool exists(const QString &udi);
 
 Q_SIGNALS:
@@ -80,7 +76,6 @@ private Q_SLOTS:
     void slotCondition(const QString &condition, const QString &reason);
 
 private:
-    static bool convertUDItoWMI(const QString &udi, QString &wmiTable, QString &wmiProperty, QString &wmiValue);
     WmiDevicePrivate *d;
     friend class WmiDevicePrivate;
 };
