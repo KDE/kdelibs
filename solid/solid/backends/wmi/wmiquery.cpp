@@ -39,6 +39,16 @@
 # pragma comment(lib, "wbemuuid.lib")
 
 using namespace Solid::Backends::Wmi;
+
+QString WmiQuery::Item::getProperty(const QString &property )
+{
+    VARIANT vtProp;
+    HRESULT hr = m_p->Get((LPCWSTR)property.utf16(), 0, &vtProp, 0, 0);
+    VariantClear(&vtProp);
+    QString result((QChar*)vtProp.bstrVal, wcslen(vtProp.bstrVal));
+    m_p->Release();
+    return result;
+}
     
 WmiQuery::WmiQuery()
     : m_failed(false)
@@ -129,9 +139,9 @@ WmiQuery::~WmiQuery()
       CoUninitialize();
 }  
     
-QList<IWbemClassObject*> WmiQuery::sendQuery( const QString &wql )
+WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
 {
-    QList<IWbemClassObject*> retList;
+    ItemList retList;
     
     HRESULT hres;
     hres = pSvc->ExecQuery( bstr_t("WQL"), bstr_t( qPrintable( wql ) ),
@@ -153,33 +163,12 @@ QList<IWbemClassObject*> WmiQuery::sendQuery( const QString &wql )
             if( !uReturn )
                 break;
             
-            retList.append( pclsObj );
-            
-            //VARIANT vtProp;
-
-            // Get the value of the Name property
-            //hres = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
-            //wcout << "Process Name : " << vtProp.bstrVal << endl;
-            //VariantClear(&vtProp);
+         // TODO: any special thinks required to delete pclsObj ?
+            retList.append( new Item(pclsObj) );
         }
     } 
     return retList;
 }
-
-QStringList WmiQuery::getResult( const QList<IWbemClassObject*> &list, const QString &property )
-{
-    QStringList result;
-    foreach(IWbemClassObject* item, list) {
-        VARIANT vtProp;
-        HRESULT hr = item->Get((LPCWSTR)property.utf16(), 0, &vtProp, 0, 0);
-        VariantClear(&vtProp);
-        QString str((QChar*)vtProp.bstrVal, wcslen(vtProp.bstrVal));
-        result << str;
-        item->Release();
-    }
-    return result;
-}
-
 
 bool WmiQuery::isLegit() const
 {

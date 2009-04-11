@@ -50,10 +50,21 @@ namespace Wmi
 class WmiQuery
 {
 public:
+    class Item {
+    public:
+        Item(IWbemClassObject *p) : m_p(p) {}
+        ~Item() {} // how to delete the pointer ?
+        QString getProperty(const QString &property );
+
+    private: 
+        IWbemClassObject * m_p;     
+    };
+
+    typedef QList<Item*> ItemList;
+
     WmiQuery();
     ~WmiQuery();
-    QList<IWbemClassObject*> sendQuery( const QString &wql );
-    QStringList getResult( const QList<IWbemClassObject*> &list, const QString &property );
+    ItemList sendQuery( const QString &wql );
     bool isLegit() const;
     
 private:

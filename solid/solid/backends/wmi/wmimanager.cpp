@@ -24,6 +24,8 @@
 #include "wmideviceinterface.h"
 #include "wmiquery.h"
 
+#include "kdebug.h"
+
 #ifdef _DEBUG
 # pragma comment(lib, "comsuppwd.lib")
 #else
@@ -46,17 +48,19 @@ class Solid::Backends::Wmi::WmiManagerPrivate
 public:
     WmiManagerPrivate()
         : m_query()
-    {}
+    {
+    }
 
-    ~WmiManagerPrivate() {}
+    ~WmiManagerPrivate() 
+    {
+    }
     
-    
-    QList<IWbemClassObject*> sendQuery( const QString &wql )
+    WmiQuery::ItemList sendQuery( const QString &wql )
     {
         return m_query.sendQuery( wql );
     }
-    
-    WmiQuery m_query;
+ 
+    WmiQuery m_query; 
 };
 
 
@@ -73,34 +77,27 @@ WmiManager::~WmiManager()
 
 QStringList WmiManager::allDevices()
 {
-    // QDBusReply<QStringList> reply = d->manager.call("GetAllDevices");
+    QStringList deviceUdiList;
 
-    // if (!reply.isValid())
-    // {
-        // qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
-        // return QStringList();
-    // }
+    QStringList aList = findDeviceByDeviceInterface(Solid::DeviceInterface::OpticalDrive);
+    foreach(QString udi, aList)
+    {
+        if (!deviceUdiList.contains(udi))
+            deviceUdiList << udi;
+    }
 
-    // return reply;
-    return QStringList();
+    return deviceUdiList;
 }
 
 bool WmiManager::deviceExists(const QString &udi)
 {
-    // QDBusReply<bool> reply = d->manager.call("DeviceExists", udi);
-
-    // if (!reply.isValid())
-    // {
-        // qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
-        // return false;
-    // }
-
-    return false;
+    return WmiDevice::exists(udi);
 }
 
 QStringList WmiManager::devicesFromQuery(const QString &parentUdi,
                                          Solid::DeviceInterface::Type type)
 {
+    kDebug() << parentUdi << type;
     if (!parentUdi.isEmpty())
     {
         QStringList result = findDeviceStringMatch("info.parent", parentUdi);
@@ -139,61 +136,77 @@ QObject *WmiManager::createDevice(const QString &udi)
 
 QStringList WmiManager::findDeviceStringMatch(const QString &key, const QString &value)
 {
-    // QDBusReply<QStringList> reply = d->manager.call("FindDeviceStringMatch", key, value);
+    kDebug() << "has to be implemented" << key << value;
+    QStringList result;
 
-    // if (!reply.isValid())
-    // {
-        // qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
-        // return QStringList();
-    // }
-
-    // return reply;
-    return QStringList();
+    kDebug() << result;
+    return result;
 }
 
 QStringList WmiManager::findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type)
 {
-    // QStringList cap_list = DeviceInterface::toStringList(type);
-    // QStringList result;
+    kDebug() << type;
+    QStringList result;
+    WmiQuery::ItemList list;
 
-    // foreach (const QString &cap, cap_list)
-    // {
-        // QDBusReply<QStringList> reply = d->manager.call("FindDeviceByCapability", cap);
+    switch (type)
+    {
+    case Solid::DeviceInterface::GenericInterface:
+        break;
+    case Solid::DeviceInterface::Processor:
+        break;
+    case Solid::DeviceInterface::Block:
+        break;
+    case Solid::DeviceInterface::StorageAccess:
+        break;
+    case Solid::DeviceInterface::StorageDrive:
+        break;
+    case Solid::DeviceInterface::OpticalDrive:
+        list = d->m_query.sendQuery( "select * from " + WmiDevice::getWMITable(type) );
+        foreach(WmiQuery::Item *item, list) {
+            QString property = item->getProperty("Drive").toLower();
+            result << WmiDevice::generateUDI(WmiDevice::getUDIKey(type),"drive",property);
+        }
+        break;
+    case Solid::DeviceInterface::StorageVolume:
+        break;
+    case Solid::DeviceInterface::OpticalDisc:
+        list = d->m_query.sendQuery( "select * from " + WmiDevice::getWMITable(type) );
+        foreach(WmiQuery::Item *item, list) {
+            QString property = item->getProperty("Drive").toLower();
+            result << WmiDevice::generateUDI(WmiDevice::getUDIKey(type),"drive",property);
+        }
+        break;
+    case Solid::DeviceInterface::Camera:
+        break;
+    case Solid::DeviceInterface::PortableMediaPlayer:
+        break;
+    case Solid::DeviceInterface::NetworkInterface:
+        break;
+    case Solid::DeviceInterface::AcAdapter:
+        break;
+    case Solid::DeviceInterface::Battery:
+        list = d->m_query.sendQuery( "select * from " + WmiDevice::getWMITable(type) );
+        foreach(WmiQuery::Item *item, list) {
+            QString property = item->getProperty("Name").toLower();
+            result << WmiDevice::generateUDI(WmiDevice::getUDIKey(type),"name",property);
+        }
+        break;
+    case Solid::DeviceInterface::Button:
+        break;
+    case Solid::DeviceInterface::AudioInterface:
+        break;
+    case Solid::DeviceInterface::DvbInterface:
+        break;
+    case Solid::DeviceInterface::Video:
+        break;
+    case Solid::DeviceInterface::Unknown:
+    case Solid::DeviceInterface::Last:
+        break;
+    }
 
-        // if (!reply.isValid())
-        // {
-            // qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
-            // return QStringList();
-        // }
-        // if ( cap == QLatin1String( "video4linux" ) )
-        // {
-            // QStringList foundDevices ( reply );
-            // QStringList filtered;
-            // foreach ( const QString &udi, foundDevices )
-            // {
-                // QDBusInterface device( "org.freedesktop.Wmi", udi, "org.freedesktop.Wmi.Device", QDBusConnection::systemBus() );
-                // QDBusReply<QString> reply = device.call( "GetProperty", "video4linux.device" );
-                // if (!reply.isValid())
-                // {
-                    // qWarning() << Q_FUNC_INFO << " error getting video4linux.device: " << reply.error().name() << endl;
-                    // continue;
-                // }
-                // if ( !reply.value().contains( "video" ) )
-                // {
-                    // continue;
-                // }
-                // filtered.append( udi );
-            // }
-            // result += filtered;
-        // }
-        // else
-        // {
-            // result << reply;
-        // }
-    // }
-
-    // return result;
-    return QStringList();
+    kDebug() << result;
+    return result;
 }
 
 void WmiManager::slotDeviceAdded(const QString &udi)
