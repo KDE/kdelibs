@@ -393,8 +393,9 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
 
     connect(this, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(_k_placeClicked(const QModelIndex&)));
-    connect(this, SIGNAL(activated(const QModelIndex&)),
-            this, SLOT(_k_placeClicked(const QModelIndex&)));
+    // Note: Don't connect to the activated() signal, as the behavior when it is
+    // committed depends on the used widget style. The click behavior of
+    // KFilePlacesView should be style independent.
 
     connect(&d->adaptItemsTimeline, SIGNAL(valueChanged(qreal)),
             this, SLOT(_k_adaptItemsUpdate(qreal)));
@@ -533,6 +534,14 @@ void KFilePlacesView::setShowAll(bool showAll)
             delegate->setDisappearingItemProgress(0.0);
             d->itemDisappearTimeline.start();
         }
+    }
+}
+
+void KFilePlacesView::keyPressEvent(QKeyEvent *event)
+{
+    QListView::keyPressEvent(event);
+    if ((event->key() == Qt::Key_Return) || (event->key() == Qt::Key_Enter)) {
+        d->_k_placeClicked(currentIndex());
     }
 }
 

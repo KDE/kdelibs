@@ -66,6 +66,7 @@ public Q_SLOTS:
     virtual void setModel(QAbstractItemModel *model);
 
 protected:
+    virtual void keyPressEvent(QKeyEvent *event);
     virtual void contextMenuEvent(QContextMenuEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
     virtual void showEvent(QShowEvent *event);
