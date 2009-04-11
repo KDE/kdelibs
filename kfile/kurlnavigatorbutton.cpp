@@ -19,8 +19,6 @@
 
 #include "kurlnavigatorbutton_p.h"
 
-#include <assert.h>
-
 #include "kurlnavigator.h"
 #include "kurlnavigatormenu_p.h"
 #include "kdirsortfilterproxymodel.h"
@@ -36,13 +34,14 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QStyleOption>
 
+QPointer<KUrlNavigatorMenu> KUrlNavigatorButton::m_dirsMenu;
+
 KUrlNavigatorButton::KUrlNavigatorButton(int index, KUrlNavigator* parent) :
     KUrlButton(parent),
     m_index(-1),
     m_hoverArrow(false),
     m_popupDelay(0),
-    m_listJob(0),
-    m_dirsMenu(0)
+    m_listJob(0)
 {
     setAcceptDrops(true);
     setIndex(index);
@@ -248,6 +247,12 @@ void KUrlNavigatorButton::dragMoveEvent(QDragMoveEvent* event)
 
         if (m_dirsMenu == 0) {
             startPopupDelay();
+        } else if (m_dirsMenu->parent() != this) {
+            m_dirsMenu->close();
+            m_dirsMenu->deleteLater();
+            m_dirsMenu = 0;
+
+            startPopupDelay();
         }
     } else {
         if (m_popupDelay->isActive()) {
@@ -390,6 +395,12 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     qSort(m_subdirs.begin(), m_subdirs.end(), naturalLessThan);
     setDisplayHintEnabled(PopupActiveHint, true);
     update(); // ensure the button is drawn highlighted
+
+    if (m_dirsMenu != 0) {
+        m_dirsMenu->close();
+        m_dirsMenu->deleteLater();
+        m_dirsMenu = 0;
+    }
 
     m_dirsMenu = new KUrlNavigatorMenu(this);
     connect(m_dirsMenu, SIGNAL(urlsDropped(QAction*, QDropEvent*)),

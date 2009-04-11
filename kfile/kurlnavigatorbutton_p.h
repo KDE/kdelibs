@@ -27,6 +27,8 @@
 #include <kio/udsentry.h>
 #include <kurl.h>
 
+#include <QPointer>
+
 class KJob;
 class KUrlNavigator;
 class QDropEvent;
@@ -110,7 +112,8 @@ private:
     QTimer* m_popupDelay;
     KIO::Job* m_listJob;
     QStringList m_subdirs;
-    KUrlNavigatorMenu* m_dirsMenu;
+
+    static QPointer<KUrlNavigatorMenu> m_dirsMenu;
 };
 
 inline int KUrlNavigatorButton::index() const
