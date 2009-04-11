@@ -195,7 +195,7 @@ void KUrlNavigatorButton::enterEvent(QEvent* event)
     // be shown as tooltip
     if (isTextClipped()) {
         setToolTip(text());
-    }   
+    }
 }
 
 void KUrlNavigatorButton::leaveEvent(QEvent* event)
@@ -206,7 +206,7 @@ void KUrlNavigatorButton::leaveEvent(QEvent* event)
     if (m_hoverArrow) {
         m_hoverArrow = false;
         update();
-    }   
+    }
 }
 
 void KUrlNavigatorButton::dropEvent(QDropEvent* event)
@@ -226,7 +226,7 @@ void KUrlNavigatorButton::dropEvent(QDropEvent* event)
 
         setDisplayHintEnabled(DraggedHint, false);
         update();
-    }   
+    }
 }
 
 void KUrlNavigatorButton::dragEnterEvent(QDragEnterEvent* event)
@@ -236,7 +236,7 @@ void KUrlNavigatorButton::dragEnterEvent(QDragEnterEvent* event)
         event->acceptProposedAction();
 
         update();
-    }    
+    }
 }
 
 void KUrlNavigatorButton::dragMoveEvent(QDragMoveEvent* event)
@@ -245,8 +245,8 @@ void KUrlNavigatorButton::dragMoveEvent(QDragMoveEvent* event)
     if (isAboveArrow(rect.center().x())) {
         m_hoverArrow = true;
         update();
-        
-        if (m_dirsMenu == 0) {            
+
+        if (m_dirsMenu == 0) {
             startPopupDelay();
         }
     } else {
@@ -254,17 +254,17 @@ void KUrlNavigatorButton::dragMoveEvent(QDragMoveEvent* event)
             stopPopupDelay();
         }
         delete m_dirsMenu;
-        m_dirsMenu = 0;       
+        m_dirsMenu = 0;
         m_hoverArrow = false;
-        update();        
-    }    
+        update();
+    }
 }
 
 void KUrlNavigatorButton::dragLeaveEvent(QDragLeaveEvent* event)
 {
     KUrlButton::dragLeaveEvent(event);
-    
-    m_hoverArrow = false; 
+
+    m_hoverArrow = false;
     setDisplayHintEnabled(DraggedHint, false);
     update();
 }
@@ -360,11 +360,11 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
 }
 
 void KUrlNavigatorButton::urlsDropped(QAction* action, QDropEvent* event)
-{    
+{
     const int result = action->data().toInt();
     KUrl url = urlNavigator()->url(m_index);
-    url.addPath(m_subdirs.at(result));      
-    urlsDropped(url, event);    
+    url.addPath(m_subdirs.at(result));
+    urlsDropped(url, event);
 }
 
 /**
@@ -392,9 +392,9 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
     update(); // ensure the button is drawn highlighted
 
     m_dirsMenu = new KUrlNavigatorMenu(this);
-    connect(m_dirsMenu, SIGNAL(urlsDropped(QAction*, QDropEvent*)), 
+    connect(m_dirsMenu, SIGNAL(urlsDropped(QAction*, QDropEvent*)),
             this, SLOT(urlsDropped(QAction*, QDropEvent*)));
-    
+
     m_dirsMenu->setLayoutDirection(Qt::LeftToRight);
     int i = 0;
     const QString selectedSubdir = urlNavigator()->url(m_index + 1).fileName();
