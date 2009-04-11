@@ -269,6 +269,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   d->tipText->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
   QPalette tipPal(d->tipText->palette());
   tipPal.setColor(QPalette::Base, Qt::transparent);
+  tipPal.setColor(QPalette::Text, tipPal.color(QPalette::WindowText));
   d->tipText->setPalette(tipPal);
 
   browserLayout->addWidget( d->tipText );

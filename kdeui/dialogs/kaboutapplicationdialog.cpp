@@ -140,6 +140,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
     QPalette transparentBackgroundPalette;
     transparentBackgroundPalette.setColor(QPalette::Base, Qt::transparent);
+    transparentBackgroundPalette.setColor(QPalette::Text, transparentBackgroundPalette.color(QPalette::WindowText));
 
     const int authorCount = aboutData->authors().count();
     if (authorCount) {

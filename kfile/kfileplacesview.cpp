@@ -388,6 +388,7 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
 
     QPalette palette = viewport()->palette();
     palette.setColor(viewport()->backgroundRole(), Qt::transparent);
+    palette.setColor(viewport()->foregroundRole(), palette.color(QPalette::WindowText));
     viewport()->setPalette(palette);
 
     connect(this, SIGNAL(clicked(const QModelIndex&)),
