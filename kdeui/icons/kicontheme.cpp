@@ -481,7 +481,7 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
             // the candidate may only be done, if this does not imply
             // in an upscaling of the icon.
             if ((abs(dw) >= abs(delta)) &&
-                ((dw < 0) || (dw > 0) && (dir->size() < dirSize))) {
+                ((dw < 0) || ((dw > 0) && (dir->size() < dirSize)))) {
                 continue;
             }
         }
