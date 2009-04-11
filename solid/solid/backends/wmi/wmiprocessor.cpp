@@ -41,13 +41,12 @@ Processor::~Processor()
 
 int Processor::number() const
 {
-    return m_device->property("processor.number").toInt();
+    return m_device->property("NumberOfCores").toInt();
 }
 
 int Processor::maxSpeed() const
 {
-    // the property is not mandatory in WMI
-    return m_device->property("processor.maximum_speed").toInt();
+    return m_device->property("MaxClockSpeed").toInt();
 }
 
 bool Processor::canChangeFrequency() const
