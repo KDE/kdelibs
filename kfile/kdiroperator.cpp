@@ -81,7 +81,7 @@
 
 template class QHash<QString, KFileItem>;
 
-// QDir::SortByMask is not only undocumented, it also omits QDir::Type which  is another 
+// QDir::SortByMask is not only undocumented, it also omits QDir::Type which  is another
 // sorting mode.
 static const int QDirSortMask = QDir::SortByMask | QDir::Type;
 
@@ -110,7 +110,7 @@ KDirOperatorIconView::KDirOperatorIconView(QWidget *parent) :
     setViewMode(QListView::IconMode);
     setFlow(QListView::TopToBottom);
     setResizeMode(QListView::Adjust);
-    setSpacing(KDialog::spacingHint());
+    setSpacing(0);
     setMovement(QListView::Static);
     setDragDropMode(QListView::DragOnly);
     setVerticalScrollMode(QListView::ScrollPerPixel);
@@ -2183,7 +2183,7 @@ void KDirOperator::resizeEvent(QResizeEvent *)
 
     d->splitter->resize(size());
     sizes = d->splitter->sizes();
-    
+
     const bool restorePreviewWidth = hasPreview && (d->previewWidth != sizes[1]);
     if (restorePreviewWidth) {
         const int availableWidth = sizes[0] + sizes[1];
