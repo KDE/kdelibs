@@ -425,12 +425,20 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
 {
     K3Icon icon;
     QString path;
-    int delta = -1000, dw;
+    int delta = -1000;  // current icon size delta of 'icon'
+    int dw = 1000;      // icon size delta of current directory
+    int dirSize = 1000; // directory size of 'icon'
     KIconThemeDir *dir;
 
-    dw = 1000; // shut up, gcc
+    const int dirCount = d->mDirs.size();
 
-    for(int i=0;i<d->mDirs.size();++i) {
+    // Search the directory that contains the icon which matches best to the requested
+    // size. If there is no directory which matches exactly to the requested size, the
+    // following criterias get applied:
+    // - Take a directory having icons with a minimum difference to the requested size.
+    // - Prefer directories that allow a downscaling even if the difference to
+    //   the requested size is bigger than a directory where an upscaling is required.
+    for (int i = 0; i < dirCount; ++i) {
         dir = d->mDirs.at(i);
 
         if (match == KIconLoader::MatchExact) {
@@ -441,14 +449,13 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
                 ((size < dir->minSize()) || (size > dir->maxSize()))) {
                 continue;
             }
-            if (dir->type() == KIconLoader::Threshold) {
-                const int diff = dir->size() - size;
-                if ((diff < 0) || (diff > dir->threshold())) {
-                    continue;
-                }
+            if ((dir->type() == KIconLoader::Threshold) &&
+                (abs(dir->size() - size) > dir->threshold())) {
+                continue;
             }
         } else {
-            // dw < 0 means need to scale up to get an icon of the requested size
+            // dw < 0 means need to scale up to get an icon of the requested size.
+            // Upscaling should only be done if no larger icon is available.
             if (dir->type() == KIconLoader::Fixed) {
                 dw = dir->size() - size;
             } else if (dir->type() == KIconLoader::Scalable) {
@@ -468,11 +475,13 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
                     dw = 0;
                 }
             }
-            /* Skip this if we've found a closer one, unless
-                it's a downscale, and we only had upscales befores.
-                This is to avoid scaling up unless we have to,
-                since that looks very ugly */
-            if ((abs(dw) >= abs(delta)) || (delta > 0 && dw < 0)) {
+            // Usually if the delta (= 'dw') of the current directory is
+            // not smaller than the delta (= 'delta') of the currently best
+            // matching icon, this candidate can be skipped. But skipping
+            // the candidate may only be done, if this does not imply
+            // in an upscaling of the icon.
+            if ((abs(dw) >= abs(delta)) &&
+                ((dw < 0) || (dw > 0) && (dir->size() < dirSize))) {
                 continue;
             }
         }
@@ -499,9 +508,10 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
             return icon;
         }
         delta = dw;
-        if (delta==0) {
+        if (delta == 0) {
             return icon; // We won't find a better match anyway
         }
+        dirSize = dir->size();
     }
     return icon;
 }
