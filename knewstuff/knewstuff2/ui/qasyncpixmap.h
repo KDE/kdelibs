@@ -19,7 +19,7 @@
 #ifndef KNEWSTUFF2_UI_QASYNCPIXMAP_H
 #define KNEWSTUFF2_UI_QASYNCPIXMAP_H
 
-#include <QtGui/QPixmap>
+#include <QtGui/QImage>
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
 
@@ -41,14 +41,14 @@ class Job;
  *
  * @internal
  */
-class QAsyncPixmap : public QObject, public QPixmap
+class QAsyncImage : public QObject, public QImage
 {
     Q_OBJECT
 public:
-    QAsyncPixmap(const QString& url, QObject* parent);
+    QAsyncImage(const QString& url, QObject* parent);
 
 Q_SIGNALS:
-    void signalLoaded(const QString & url, const QPixmap& pix);
+    void signalLoaded(const QString & url, const QImage& pix);
 
 private Q_SLOTS:
     void slotDownload(KJob *job);

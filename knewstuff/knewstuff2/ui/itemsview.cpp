@@ -26,7 +26,7 @@
 #include <QtGui/QWidget>
 #include <QtCore/QTimer>
 #include <QtGui/QLayout>
-#include <QtGui/QPixmap>
+#include <QtGui/QImage>
 #include <QtGui/QFont>
 #include <QtGui/QComboBox>
 #include <QtGui/QPushButton>
@@ -193,10 +193,10 @@ void ItemsView::buildContents()
                 if (!imageurl.isEmpty()) {
                     QLabel *f = new QLabel(m_root);
                     f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-                    QAsyncPixmap *pix = new QAsyncPixmap(imageurl, m_root);
+                    QAsyncImage *pix = new QAsyncImage(imageurl, m_root);
                     f->setFixedSize(64, 64);
-                    //connect(pix, SIGNAL(signalLoaded(const QPixmap&)),
-                    //        f, SLOT(setPixmap(const QPixmap&)));
+                    //connect(pix, SIGNAL(signalLoaded(const QImage&)),
+                    //        f, SLOT(setImage(const QImage&)));
                     previewLayout->addWidget(f);
                 }
                 //previewLayout->addWidget(dxsbutton);

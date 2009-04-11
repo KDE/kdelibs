@@ -27,8 +27,8 @@
 
 #include <QtCore/QFile>
 
-QAsyncPixmap::QAsyncPixmap(const QString& url, QObject* parent)
-        : QObject(parent), QPixmap(), m_url(url)
+QAsyncImage::QAsyncImage(const QString& url, QObject* parent)
+        : QObject(parent), QImage(), m_url(url)
 {
     if (!m_url.isEmpty()) {
         KIO::TransferJob *job = KIO::get(m_url, KIO::NoReload, KIO::HideProgressInfo);
@@ -38,13 +38,13 @@ QAsyncPixmap::QAsyncPixmap(const QString& url, QObject* parent)
     }
 }
 
-void QAsyncPixmap::slotData(KIO::Job *job, const QByteArray& buf)
+void QAsyncImage::slotData(KIO::Job *job, const QByteArray& buf)
 {
     Q_UNUSED(job);
     m_buffer.append(buf);
 }
 
-void QAsyncPixmap::slotDownload(KJob *job)
+void QAsyncImage::slotDownload(KJob *job)
 {
     //kDebug(550) << "DOWNLOAD";
     if (job->error()) {

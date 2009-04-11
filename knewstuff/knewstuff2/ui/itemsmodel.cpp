@@ -123,9 +123,9 @@ void ItemsModel::addEntry(Entry * entry)
     if (!preview.isEmpty()) {
         m_hasPreviewImages = true;
         m_imageIndexes.insert(preview, index(m_entries.count() - 1, 0));
-        QAsyncPixmap *pix = new QAsyncPixmap(preview, this);
-        connect(pix, SIGNAL(signalLoaded(const QString &, const QPixmap&)),
-                this, SLOT(slotEntryPreviewLoaded(const QString &, const QPixmap&)));
+        QAsyncImage *pix = new QAsyncImage(preview, this);
+        connect(pix, SIGNAL(signalLoaded(const QString &, const QImage&)),
+                this, SLOT(slotEntryPreviewLoaded(const QString &, const QImage&)));
     }
 }
 
@@ -147,11 +147,11 @@ void ItemsModel::slotEntryChanged(Entry * entry)
     emit dataChanged(entryIndex, entryIndex);
 }
 
-void ItemsModel::slotEntryPreviewLoaded(const QString &url, const QPixmap & pix)
+void ItemsModel::slotEntryPreviewLoaded(const QString &url, const QImage & pix)
 {
     if( pix.isNull())
         return;
-    QImage image = pix.toImage();
+    QImage image = pix;
     m_largePreviewImages.insert(url, image);
     m_previewImages.insert(url, image.scaled(64, 64, Qt::KeepAspectRatio));
 

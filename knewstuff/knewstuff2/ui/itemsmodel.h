@@ -62,9 +62,9 @@ public:
         kPayload,
         /** the preview url */
         kPreview,
-        /** the preview pixmap */
+        /** the preview image */
         kPreviewPixmap,
-        /** the preview image unscaled */
+        /** the unscaled preview image */
         kLargePreviewPixmap,
         /** the rating of the entry */
         kRating,
@@ -91,7 +91,7 @@ public:
 public slots:
     void slotEntryChanged(KNS::Entry * entry);
 private slots:
-    void slotEntryPreviewLoaded(const QString &url, const QPixmap & pix);
+    void slotEntryPreviewLoaded(const QString &url, const QImage & pix);
 private:
 
     // the list of entries
