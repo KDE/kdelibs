@@ -1297,6 +1297,7 @@ QWidget *KFileItemDelegate::createEditor(QWidget *parent, const QStyleOptionView
     edit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     edit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     edit->setAlignment(opt.displayAlignment);
+    edit->setEnabled(false); //Disable the text-edit to mark it as un-initialized
     return edit;
 }
 
@@ -1317,7 +1318,15 @@ void KFileItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index)
 {
     KTextEdit *textedit = qobject_cast<KTextEdit*>(editor);
     Q_ASSERT(textedit != 0);
-
+    
+    //Do not update existing text that the user may already have edited.
+    //The models will call setEditorData(..) whenever the icon has changed,
+    //and this makes the editing work correctly despite that.
+    if(textedit->isEnabled()) {
+        return;
+    }
+    textedit->setEnabled(true); //Enable the text-edit to mark it as initialized
+    
     const QVariant value = index.data(Qt::EditRole);
     const QString text = value.toString();
     textedit->insertPlainText(text);
