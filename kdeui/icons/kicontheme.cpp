@@ -335,8 +335,6 @@ QList<int> KIconTheme::querySizes(KIconLoader::Group group) const
 
 QStringList KIconTheme::queryIcons(int size, KIconLoader::Context context) const
 {
-    int delta = 1000, dw;
-
     KIconThemeDir *dir;
 
     // Try to find exact match
@@ -362,6 +360,9 @@ QStringList KIconTheme::queryIcons(int size, KIconLoader::Context context) const
 
     return result;
 
+/*
+    int delta = 1000, dw;
+
     // Find close match
     KIconThemeDir *best = 0L;
     for(int i=0; i<d->mDirs.size(); ++i) {
@@ -380,6 +381,7 @@ QStringList KIconTheme::queryIcons(int size, KIconLoader::Context context) const
     }
 
     return best->iconList();
+    */
 }
 
 QStringList KIconTheme::queryIconsByContext(int size, KIconLoader::Context context) const
