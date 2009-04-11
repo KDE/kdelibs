@@ -65,7 +65,7 @@
 // local includes
 #include "ui_DownloadDialog.h"
 #include "kdxsbutton.h"
-#include "qasyncpixmap.h"
+#include "qasyncimage_p.h"
 
 using namespace KNS;
 

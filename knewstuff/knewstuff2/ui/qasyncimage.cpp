@@ -16,7 +16,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "qasyncpixmap.h"
+#include "qasyncimage_p.h"
 
 #include <kio/job.h>
 #include <kio/scheduler.h>
@@ -57,4 +57,4 @@ void QAsyncImage::slotDownload(KJob *job)
     emit signalLoaded(m_url, *this);
 }
 
-#include "qasyncpixmap.moc"
+#include "qasyncimage_p.moc"

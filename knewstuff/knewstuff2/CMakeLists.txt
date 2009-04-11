@@ -35,7 +35,7 @@ set(knewstuff2_ui_SRCS
   ui/downloaddialog.cpp
   ui/itemsmodel.cpp
   ui/itemsviewdelegate.cpp
-  ui/qasyncpixmap.cpp
+  ui/qasyncimage.cpp
   ui/qstarframe.cpp
   ui/qnowtooltip.cpp
   ui/qprogressindicator.cpp

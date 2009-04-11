@@ -23,7 +23,6 @@
 #include <QtGui/QImage>
 
 #include <knewstuff2/core/entry.h>
-#include <knewstuff2/ui/qasyncpixmap.h>
 
 namespace KNS
 {

@@ -19,6 +19,7 @@
 #include "itemsmodel.h"
 
 #include <kdebug.h>
+#include "qasyncimage_p.h"
 
 namespace KNS
 {
