@@ -35,6 +35,7 @@
 #include <QPainter>
 #include <QScrollBar>
 #include <QKeyEvent>
+#include <QApplication>
 #include <QStyleOption>
 #include <QPaintEngine>
 #include <QCoreApplication>
@@ -176,6 +177,11 @@ QAbstractItemView *KWidgetItemDelegate::itemView() const
 
 QPersistentModelIndex KWidgetItemDelegate::focusedIndex() const
 {
+    const QPersistentModelIndex idx = d->widgetPool->d->widgetInIndex[QApplication::focusWidget()];
+    if (idx.isValid()) {
+        return idx;
+    }
+    // Use the mouse position, if the widget refused to take keyboard focus.
     const QPoint pos = d->itemView->viewport()->mapFromGlobal(QCursor::pos());
     return d->itemView->indexAt(pos);
 }

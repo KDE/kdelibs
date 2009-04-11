@@ -77,6 +77,7 @@ public:
     void fullClear();
 
 private:
+    friend class KWidgetItemDelegate;
     friend class KWidgetItemDelegatePrivate;
     KWidgetItemDelegatePoolPrivate *const d;
 };
