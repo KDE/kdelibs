@@ -22,6 +22,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QVariant>
 #include <QtCore/QList>
+#include <QtCore/QStringList>
 
 #ifdef _DEBUG
 # pragma comment(lib, "comsuppwd.lib")
@@ -164,7 +165,22 @@ QList<IWbemClassObject*> WmiQuery::sendQuery( const QString &wql )
     } 
     return retList;
 }
-      
+
+QStringList WmiQuery::getResult( const QList<IWbemClassObject*> &list, const QString &property )
+{
+    QStringList result;
+    foreach(IWbemClassObject* item, list) {
+        VARIANT vtProp;
+        HRESULT hr = item->Get((LPCWSTR)property.utf16(), 0, &vtProp, 0, 0);
+        VariantClear(&vtProp);
+        QString str((QChar*)vtProp.bstrVal, wcslen(vtProp.bstrVal));
+        result << str;
+        item->Release();
+    }
+    return result;
+}
+
+
 bool WmiQuery::isLegit() const
 {
     return !m_failed;

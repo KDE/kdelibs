@@ -53,6 +53,7 @@ public:
     WmiQuery();
     ~WmiQuery();
     QList<IWbemClassObject*> sendQuery( const QString &wql );
+    QStringList getResult( const QList<IWbemClassObject*> &list, const QString &property );
     bool isLegit() const;
     
 private:
