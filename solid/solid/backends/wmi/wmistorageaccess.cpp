@@ -25,8 +25,6 @@
 
 #include <unistd.h>
 
-#include "wmifstabhandling.h"
-
 using namespace Solid::Backends::Wmi;
 
 StorageAccess::StorageAccess(WmiDevice *device)
@@ -117,6 +115,7 @@ void StorageAccess::slotPropertyChanged(const QMap<QString,int> &changes)
 
 void Solid::Backends::Wmi::StorageAccess::slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+/*    
     Q_UNUSED(exitStatus);
     if (m_setupInProgress) {
         m_setupInProgress = false;
@@ -140,6 +139,7 @@ void Solid::Backends::Wmi::StorageAccess::slotProcessFinished(int exitCode, QPro
     }
 
     delete m_process;
+ */
 }
 
 QString generateReturnObjectPath()
@@ -189,20 +189,26 @@ bool StorageAccess::callWmiVolumeUnmount()
 
 bool Solid::Backends::Wmi::StorageAccess::callSystemMount()
 {
+/*
     const QString device = m_device->property("block.device").toString();
     m_process = FstabHandling::callSystemCommand("mount", device,
                                                  this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
 
     return m_process!=0;
+*/
+    return 0;
 }
 
 bool Solid::Backends::Wmi::StorageAccess::callSystemUnmount()
 {
+/*
     const QString device = m_device->property("block.device").toString();
     m_process = FstabHandling::callSystemCommand("umount", device,
                                                  this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
 
     return m_process!=0;
+*/
+    return 0;
 }
 
 #include "backends/wmi/wmistorageaccess.moc"
