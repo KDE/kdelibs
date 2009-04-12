@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Eric Seidel (eric@webkit.org)
+ * Copyright (C) 2006 Eric Seidel <eric@webkit.org>
  * Copyright (C) 2008 Apple, Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

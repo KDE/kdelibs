@@ -1,14 +1,14 @@
 /*
     Copyright (C) 2005 Apple Computer, Inc.
     Copyright (C) 2004, 2005, 2007 Nikolas Zimmermann <zimmermann@kde.org>
-                  2004, 2005 Rob Buis <buis@kde.org>
+    Copyright (C) 2004, 2005 Rob Buis <buis@kde.org>
     Copyright (C) 2007 Alexey Proskuryakov <ap@webkit.org>
 
     Based on khtml css code by:
-    Copyright(C) 1999-2003 Lars Knoll(knoll@kde.org)
-             (C) 2003 Apple Computer, Inc.
-             (C) 2004 Allan Sandfeld Jensen(kde@carewolf.com)
-             (C) 2004 Germain Garand(germain@ebooksfrance.org)
+    Copyright (C) 1999-2003 Lars Knoll <knoll@kde.org>
+    Copyright (C) 2003 Apple Computer, Inc.
+    Copyright (C) 2004 Allan Sandfeld Jensen <kde@carewolf.com>
+    Copyright (C) 2004 Germain Garand <germain@ebooksfrance.org>
 
     This file is part of the KDE project
 
