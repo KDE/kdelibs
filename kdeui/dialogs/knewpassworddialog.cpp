@@ -4,6 +4,7 @@
    Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
    Copyright (C) 2004,2005 Andrew Coles <andrew_coles@yahoo.co.uk>
    Copyright (C) 2007 Michaël Larouche <larouche@kde.org>
+   Copyright (C) 2009 Christoph Feck <christoph@maxiom.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -54,6 +55,8 @@ public:
     int passwordStrengthWarningLevel;
     int reasonablePasswordLength;
 
+    int effectivePasswordLength(const QString &password);
+
     QString pass;
 
     Ui::KNewPasswordDialog ui;
@@ -87,6 +90,68 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::init()
 }
 
 
+int KNewPasswordDialog::KNewPasswordDialogPrivate::effectivePasswordLength(const QString &password)
+{
+    enum Category {
+        Digit,
+        Upper,
+        Vowel,
+        Consonant,
+        Special
+    };
+
+    QChar previousChar('e');
+    Category previousCategory = Vowel;
+    QString vowels("aeiou");
+    int count = 0;
+
+    for (int i = 0; i < password.length(); ++i) {
+        QChar currentChar = password.at(i);
+        if (currentChar != previousChar) {
+            Category currentCategory;
+            switch (currentChar.category()) {
+                case QChar::Letter_Uppercase:
+                    currentCategory = Upper;
+                    break;
+                case QChar::Letter_Lowercase:
+                    if (vowels.contains(currentChar)) {
+                        currentCategory = Vowel;
+                    } else {
+                        currentCategory = Consonant;
+                    }
+                    break;
+                case QChar::Number_DecimalDigit:
+                    currentCategory = Digit;
+                    break;
+                default:
+                    currentCategory = Special;
+                    break;
+            }
+            switch (currentCategory) {
+                case Vowel:
+                    if (previousCategory != Consonant) {
+                        ++count;
+                    }
+                    break;
+                case Consonant:
+                    if (previousCategory != Vowel) {
+                        ++count;
+                    }
+                    break;
+                default:
+                    if (previousCategory != currentCategory) {
+                        ++count;
+                    }
+                    break;
+            }
+            previousCategory = currentCategory;
+        }
+        previousChar = currentChar;
+    }
+    return count;
+}
+
+
 void KNewPasswordDialog::KNewPasswordDialogPrivate::_k_textChanged()
 {
     const bool match = ui.linePassword->text() == ui.lineVerifyPassword->text();
@@ -116,52 +181,7 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::_k_textChanged()
     }
 
     // Password strength calculator
-    // this algorithm is purely based on intuition and trial
-    QString pw = ui.linePassword->text();
-
-    // step 1: remove duplicate characters
-    for (int i = 0; i < pw.length() - 1; ++i) {
-        for (int j = i + 1; j < pw.length(); ++j) {
-            if (pw.at(i) == pw.at(j)) {
-                pw.remove(j, 1);
-            }
-        }
-    }
-
-    // step 2: categorize characters
-    int digit = 0;
-    int upper = 0;
-    int lower = 0;
-    int special = 0;
-    for (int i = 0; i < pw.length(); ++i) {
-        QChar::Category category = pw.at(i).category();
-        switch (category)
-        {
-            case QChar::Letter_Uppercase:
-                ++upper;
-                break;
-            case QChar::Letter_Lowercase:
-                ++lower;
-                break;
-            case QChar::Number_DecimalDigit:
-                ++digit;
-                break;
-            default:
-                ++special;
-                break;
-        }
-    }
-
-    // step 3: evaluation
-    int numCategories = 0;
-    if (digit > 0) ++numCategories;
-    if (lower > 0) ++numCategories;
-    if (upper > 0) ++numCategories;
-    if (special > 0) ++numCategories;
-    int pwstrength = 5 * (pw.length() - minPasswordLength + 2 * lower + 3 * upper + digit + 4 * special + numCategories * numCategories) / 2;
-    if (reasonablePasswordLength > 0) {
-        pwstrength = pwstrength * pw.length() / reasonablePasswordLength;
-    }
+    int pwstrength = (20 * ui.linePassword->text().length() + 80 * effectivePasswordLength(ui.linePassword->text())) / qMax(reasonablePasswordLength, 2);
     if (pwstrength < 0) {
         pwstrength = 0;
     } else if (pwstrength > 100) {
