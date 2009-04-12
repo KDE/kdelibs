@@ -186,6 +186,13 @@ void KJob::setCapabilities( KJob::Capabilities capabilities )
 bool KJob::exec()
 {
     Q_D(KJob);
+    // Usually this job would delete itself, via deleteLater() just after
+    // emitting result() (unless configured otherwise). Since we use an event
+    // loop below, that event loop will process the deletion event and we'll
+    // have been deleted when exec() returns. This crashes, so temporarily
+    // suspend autodeletion and manually do it afterwards.
+    const bool wasAutoDelete = isAutoDelete();
+    setAutoDelete( false );
     QEventLoop loop( this );
 
     connect( this, SIGNAL( result( KJob* ) ),
@@ -195,6 +202,9 @@ bool KJob::exec()
         loop.exec(QEventLoop::ExcludeUserInputEvents);
     }
 
+    if ( wasAutoDelete ) {
+        deleteLater();
+    }
     return ( d->error == NoError );
 }
 
