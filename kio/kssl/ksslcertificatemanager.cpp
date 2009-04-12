@@ -309,24 +309,26 @@ bool KSslCertificateManager::askIgnoreSslErrors(const SslErrorUiData &uiData, Ru
         return false;
     }
 
+    KSslCertificateManager *const cm = KSslCertificateManager::self();
+    KSslCertificateRule rule(ud->certificateChain.first(), ud->host);
+    if (storedRules & RecallRules) {
+        rule = cm->rule(ud->certificateChain.first(), ud->host);
+        // remove previously seen and acknowledged errors
+        QList<KSslError> remainingErrors = rule.filterErrors(ud->sslErrors);
+        if (remainingErrors.isEmpty()) {
+            kDebug(7029) << "Error list empty after removing errors to be ignored. Continuing.";
+            return true;
+        }
+    }
+
+    //### We don't ask to permanently reject the certificate
+
     QString message = i18n("The server failed the authenticity check (%1).\n\n", ud->host);
     foreach (const KSslError &err, ud->sslErrors) {
         message.append(err.errorString());
         message.append('\n');
     }
     message = message.trimmed();
-
-    KSslCertificateManager *const cm = KSslCertificateManager::self();
-    KSslCertificateRule rule = cm->rule(ud->certificateChain.first(), ud->host);
-
-    // remove previously seen and acknowledged errors
-    QList<KSslError> remainingErrors = rule.filterErrors(ud->sslErrors);
-    if (remainingErrors.isEmpty()) {
-        kDebug(7029) << "Error list empty after removing errors to be ignored. Continuing.";
-        return true;
-    }
-
-    //### We don't ask to permanently reject the certificate
 
     int msgResult;
     do {
@@ -361,30 +363,33 @@ bool KSslCertificateManager::askIgnoreSslErrors(const SslErrorUiData &uiData, Ru
         //fall through on KMessageBox::No
     } while (msgResult == KMessageBox::Yes);
 
-    //Save the user's choice to ignore the SSL errors.
 
-    msgResult = KMessageBox::warningYesNo(0,
-                            i18n("Would you like to accept this "
-                                 "certificate forever without "
-                                 "being prompted?"),
-                            i18n("Server Authentication"),
-                            KGuiItem(i18n("&Forever")),
-                            KGuiItem(i18n("&Current Sessions Only")));
-    QDateTime ruleExpiry = QDateTime::currentDateTime();
-    if (msgResult == KMessageBox::Yes) {
-        //accept forever ("for a very long time")
-        ruleExpiry = ruleExpiry.addYears(1000);
-    } else {
-        //accept "for a short time", half an hour.
-        ruleExpiry = ruleExpiry.addSecs(30*60);
+    if (storedRules & StoreRules) {
+        //Save the user's choice to ignore the SSL errors.
+
+        msgResult = KMessageBox::warningYesNo(0,
+                                i18n("Would you like to accept this "
+                                    "certificate forever without "
+                                    "being prompted?"),
+                                i18n("Server Authentication"),
+                                KGuiItem(i18n("&Forever")),
+                                KGuiItem(i18n("&Current Sessions Only")));
+        QDateTime ruleExpiry = QDateTime::currentDateTime();
+        if (msgResult == KMessageBox::Yes) {
+            //accept forever ("for a very long time")
+            ruleExpiry = ruleExpiry.addYears(1000);
+        } else {
+            //accept "for a short time", half an hour.
+            ruleExpiry = ruleExpiry.addSecs(30*60);
+        }
+
+        //TODO special cases for wildcard domain name in the certificate!
+        //rule = KSslCertificateRule(d->socket.peerCertificateChain().first(), whatever);
+
+        rule.setExpiryDateTime(ruleExpiry);
+        rule.setIgnoredErrors(ud->sslErrors);
+        cm->setRule(rule);
     }
-
-    //TODO special cases for wildcard domain name in the certificate!
-    //rule = KSslCertificateRule(d->socket.peerCertificateChain().first(), whatever);
-
-    rule.setExpiryDateTime(ruleExpiry);
-    rule.setIgnoredErrors(remainingErrors);
-    cm->setRule(rule);
 
     return true;
 }

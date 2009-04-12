@@ -742,13 +742,6 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
         return ResultFailed;
     }
 
-    QString message = i18n("The server failed the authenticity check (%1).\n\n", d->host);
-    foreach (const KSslError &err, d->sslErrors) {
-        message.append(err.errorString());
-        message.append('\n');
-    }
-    message = message.trimmed();
-
     KSslCertificateManager *const cm = KSslCertificateManager::self();
     KSslCertificateRule rule = cm->rule(d->socket.peerCertificateChain().first(), d->host);
 
@@ -760,6 +753,13 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
     }
 
     //### We don't ask to permanently reject the certificate
+
+    QString message = i18n("The server failed the authenticity check (%1).\n\n", d->host);
+    foreach (const KSslError &err, d->sslErrors) {
+        message.append(err.errorString());
+        message.append('\n');
+    }
+    message = message.trimmed();
 
     int msgResult;
     do {
@@ -797,7 +797,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
     //rule = KSslCertificateRule(d->socket.peerCertificateChain().first(), whatever);
 
     rule.setExpiryDateTime(ruleExpiry);
-    rule.setIgnoredErrors(remainingErrors);
+    rule.setIgnoredErrors(d->sslErrors);
     cm->setRule(rule);
 
     return ResultOk | ResultOverridden;
