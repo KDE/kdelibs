@@ -56,7 +56,6 @@ private Q_SLOTS:
 
 private:
     bool callWmiDriveEject();
-    bool callSystemEject();
 
     bool m_ejectInProgress;
     QProcess *m_process;

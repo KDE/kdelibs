@@ -163,7 +163,6 @@ if(MSVC)
    backends/wmi/wmicdrom.cpp
    backends/wmi/wmideviceinterface.cpp
    backends/wmi/wmidvbinterface.cpp
-   backends/wmi/wmifstabhandling.cpp
    backends/wmi/wmigenericinterface.cpp
    backends/wmi/wmidevice.cpp
    backends/wmi/wmimanager.cpp

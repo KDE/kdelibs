@@ -21,8 +21,6 @@
 
 #include <QtCore/QStringList>
 
-#include "wmifstabhandling.h"
-
 using namespace Solid::Backends::Wmi;
 
 Cdrom::Cdrom(WmiDevice *device)
@@ -109,11 +107,7 @@ bool Cdrom::eject()
     }
     m_ejectInProgress = true;
 
-    if (FstabHandling::isInFstab(m_device->property("block.device").toString())) {
-        return callSystemEject();
-    } else {
-        return callWmiDriveEject();
-    }
+    return callWmiDriveEject();
 }
 
 bool Cdrom::callWmiDriveEject()
@@ -152,15 +146,6 @@ bool Cdrom::callWmiDriveEject()
                               // SLOT(slotDBusReply(const QDBusMessage &)),
                               // SLOT(slotDBusError(const QDBusError &)));
     return false;
-}
-
-bool Solid::Backends::Wmi::Cdrom::callSystemEject()
-{
-    const QString device = m_device->property("block.device").toString();
-    m_process = FstabHandling::callSystemCommand("eject", device,
-                                                 this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
-
-    return m_process!=0;
 }
 
 void Solid::Backends::Wmi::Cdrom::slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
