@@ -47,6 +47,8 @@ add_subdirectory( kfile/tests )
 add_subdirectory( kio/dummyanalyzers )
 
 set(kiocore_STAT_SRCS
+  kio/accessmanager.cpp
+  kio/accessmanagerreply_p.cpp
   kio/authinfo.cpp
   kio/chmodjob.cpp
   kio/connection.cpp
@@ -305,6 +307,7 @@ DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 install( FILES kioslave.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 install(  FILES
   kio/kio_export.h
+  kio/accessmanager.h
   kio/connection.h
   kio/slaveinterface.h
   kio/slave.h

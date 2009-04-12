@@ -622,6 +622,7 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KHE COMPONENT Devel)
 
 
 install( FILES
+  KIO/AccessManager
   KIO/AuthInfo
   KIO/ChmodJob
   KIO/Connection
