@@ -548,17 +548,11 @@ void KDatePicker::selectYearClicked()
     picker->selectAll();
     popup->setMainWidget( picker );
     connect( picker, SIGNAL( closeMe( int ) ), popup, SLOT( close( int ) ) );
-    connect( popup, SIGNAL( destroyed( QObject* ) ), this, SLOT( uncheckYearSelector() ) );
-    // We have to set WA_DeleteOnClose because otherwise clicking anywhere aside the popup widget
-    // will just hide the popup and leave it living until this datepicker dies
-    popup->setAttribute(Qt::WA_DeleteOnClose);
     picker->setFocus();
 
     if( popup->exec( d->selectYear->mapToGlobal( QPoint( 0, d->selectMonth->height() ) ) ) ) {
         // We need to create a valid date in the year/month selected so we can find out how many
         // days are in the month.
-        // We also can use values from the year selector widget because deleteLater() is used
-        // to destroy widgets with WA_DeleteOnClose attribute and we are already inside the slot
         newDate = d->validDateInYearMonth( picker->year(), calendar()->month( date() ) );
 
         // If we have succeeded in creating a date in the new month, then try to create the new
@@ -570,6 +564,7 @@ void KDatePicker::selectYearClicked()
             );
         }
     }
+    delete popup;
 
     // Set the date, if it's invalid in any way then alert user and don't update
     if ( ! setDate( newDate ) ) {
@@ -577,12 +572,6 @@ void KDatePicker::selectYearClicked()
     }
 
     d->selectYear->setChecked( false );
-}
-
-void KDatePicker::uncheckYearSelector()
-{
-    d->selectYear->setChecked(false);
-    d->selectYear->update();
 }
 
 // ####### KDE4: setEnabled isn't virtual anymore, so this isn't polymorphic.

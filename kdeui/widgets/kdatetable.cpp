@@ -126,12 +126,8 @@ public:
 class KPopupFrame::KPopupFramePrivate
 {
 public:
-    KPopupFramePrivate( KPopupFrame *q ):
-            q( q ),
-            result( 0 ), // rejected
-            main( 0 )
-    {
-    }
+    KPopupFramePrivate( KPopupFrame *q );
+    ~KPopupFramePrivate();
 
     KPopupFrame *q;
 
@@ -144,7 +140,58 @@ public:
      * The only subwidget that uses the whole dialog window.
      */
     QWidget *main;
+
+    // ### KDE 5: Remove this, add a hideEvent() reimplementation instead.
+    class OutsideClickCatcher;
+    OutsideClickCatcher *outsideClickCatcher;
 };
+
+
+class KPopupFrame::KPopupFramePrivate::OutsideClickCatcher
+    : public QObject
+{
+public:
+    OutsideClickCatcher(QObject *parent = 0)
+        : QObject(parent), m_popup(0) { }
+    ~OutsideClickCatcher() { }
+
+    void setPopupFrame(KPopupFrame *popup)
+    {
+        m_popup = popup;
+        popup->installEventFilter(this);
+    }
+
+    KPopupFrame *m_popup;
+
+    bool eventFilter(QObject *object, QEvent *event)
+    {
+        Q_UNUSED(object);
+
+        // To catch outside clicks, it is sufficient to check for
+        // hide events on Qt::Popup type widgets
+        if (event->type() == QEvent::Hide && m_popup) {
+            // do not set d->result here, because the popup
+            // hides itself after leaving the event loop.
+            emit m_popup->leaveModality();
+        }
+        return false;
+    }
+};
+
+
+KPopupFrame::KPopupFramePrivate::KPopupFramePrivate( KPopupFrame *q ):
+    q( q ),
+    result( 0 ), // rejected
+    main( 0 ),
+    outsideClickCatcher(new OutsideClickCatcher)
+{
+    outsideClickCatcher->setPopupFrame(q);
+}
+
+KPopupFrame::KPopupFramePrivate::~KPopupFramePrivate()
+{
+    delete outsideClickCatcher;
+}
 
 
 class KDateValidator::KDateValidatorPrivate
@@ -909,6 +956,7 @@ int KPopupFrame::exec( const QPoint &pos )
 {
     popup( pos );
     repaint();
+    d->result = 0; // rejected
     QEventLoop eventLoop;
     connect( this, SIGNAL( leaveModality() ),
              &eventLoop, SLOT( quit() ) );
