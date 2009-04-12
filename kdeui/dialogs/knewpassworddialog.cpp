@@ -100,14 +100,13 @@ int KNewPasswordDialog::KNewPasswordDialogPrivate::effectivePasswordLength(const
         Special
     };
 
-    QChar previousChar('e');
     Category previousCategory = Vowel;
     QString vowels("aeiou");
     int count = 0;
 
     for (int i = 0; i < password.length(); ++i) {
         QChar currentChar = password.at(i);
-        if (currentChar != previousChar) {
+        if (!password.left(i).contains(currentChar)) {
             Category currentCategory;
             switch (currentChar.category()) {
                 case QChar::Letter_Uppercase:
@@ -146,7 +145,6 @@ int KNewPasswordDialog::KNewPasswordDialogPrivate::effectivePasswordLength(const
             }
             previousCategory = currentCategory;
         }
-        previousChar = currentChar;
     }
     return count;
 }
