@@ -1050,6 +1050,7 @@ SslErrorUiData::SslErrorUiData(const SslErrorUiData &other)
 SslErrorUiData &SslErrorUiData::operator=(const SslErrorUiData &other)
 {
     *d = *other.d;
+    return *this;
 }
 
 
