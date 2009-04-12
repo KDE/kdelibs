@@ -42,7 +42,7 @@
 #include "wmivideo.h"
 #include "wmiquery.h"
 
-#include "kdebug.h"
+#include <kdebug.h>
 
 #ifdef _DEBUG
 # pragma comment(lib, "comsuppwd.lib")

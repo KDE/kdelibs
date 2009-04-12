@@ -5,7 +5,8 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
 if(WIN32)
    include_directories( ${KDEWIN32_INCLUDES} )
-endif(WIN32) 
+   include_directories( ${KDE4_KIO_INCLUDES} )
+endif(WIN32)
 
 configure_file(solid_export.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h)
 
