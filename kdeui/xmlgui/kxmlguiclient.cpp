@@ -274,7 +274,7 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
 }
 
 // if (equals(a,b)) is more readable than if (a.compare(b, Qt::CaseInsensitive)==0)
-static bool equals(const QString& a, const QString& b) {
+static bool equalstr(const QString& a, const QString& b) {
     return a.compare(b, Qt::CaseInsensitive) == 0;
 }
 
@@ -315,7 +315,7 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
 
             // if there's an action tag in the global tree and the action is
             // not implemented, then we remove the element
-            if (equals(tag, tagAction)) {
+            if (equalstr(tag, tagAction)) {
                 const QString name =  e.attribute(attrName);
                 if (!actionCollection->action(name) ||
                     !KAuthorized::authorizeKAction(name))
@@ -328,7 +328,7 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
 
             // if there's a separator defined in the global tree, then add an
             // attribute, specifying that this is a "weak" separator
-            else if (equals(tag, tagSeparator)) {
+            else if (equalstr(tag, tagSeparator)) {
                 e.setAttribute( attrWeakSeparator, (uint)1 );
 
                 // okay, hack time. if the last item was a weak separator OR
@@ -336,8 +336,8 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
                 // current one
                 QDomElement prev = e.previousSibling().toElement();
                 if (prev.isNull() ||
-                    (equals(prev.tagName(), tagSeparator) && !prev.attribute(attrWeakSeparator).isNull() ) ||
-                    (equals(prev.tagName(), tagText))) {
+                    (equalstr(prev.tagName(), tagSeparator) && !prev.attribute(attrWeakSeparator).isNull() ) ||
+                    (equalstr(prev.tagName(), tagText))) {
                     // the previous element was a weak separator or didn't exist
                     base.removeChild( e );
                     continue;
@@ -347,7 +347,7 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
             // the MergeLocal tag lets us specify where non-standard elements
             // of the local tree shall be merged in.  After inserting the
             // elements we delete this element
-            else if (equals(tag, tagMergeLocal)) {
+            else if (equalstr(tag, tagMergeLocal)) {
                 QDomNode it = additive.firstChild();
                 while ( !it.isNull() )
                 {
@@ -356,7 +356,7 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
                     if (newChild.isNull() )
                         continue;
 
-                    if (equals(newChild.tagName(), tagText))
+                    if (equalstr(newChild.tagName(), tagText))
                         continue;
 
                     if ( newChild.attribute( attrAlreadyVisited ) == attrOne )
@@ -372,7 +372,7 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
                         // the global file.  if it does, then we skip it as it will
                         // be merged in, later
                         QDomElement matchingElement = findMatchingElement( newChild, base );
-                        if (matchingElement.isNull() || equals(newChild.tagName(), tagSeparator))
+                        if (matchingElement.isNull() || equalstr(newChild.tagName(), tagSeparator))
                             base.insertBefore( newChild, e );
                     }
                 }
@@ -381,10 +381,10 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
                 continue;
             }
 
-            else if (equals(tag, tagText)) {
+            else if (equalstr(tag, tagText)) {
                 continue;
             }
-            else if (equals(tag, tagMerge)) {
+            else if (equalstr(tag, tagMerge)) {
                 continue;
             }
 
@@ -453,7 +453,7 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
         // do one quick check to make sure that the last element was not
         // a weak separator
         QDomElement last = base.lastChild().toElement();
-        if (equals(last.tagName(), tagSeparator) &&
+        if (equalstr(last.tagName(), tagSeparator) &&
             (!last.attribute(attrWeakSeparator).isNull())) {
             base.removeChild( last );
         }
@@ -474,7 +474,7 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
 
         const QString tag = e.tagName();
 
-        if (equals(tag, tagAction)) {
+        if (equalstr(tag, tagAction)) {
             // if base contains an implemented action, then we must not get
             // deleted (note that the actionCollection contains both,
             // "global" and "local" actions
@@ -483,7 +483,7 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
                 break;
             }
         }
-        else if (equals(tag, tagSeparator)) {
+        else if (equalstr(tag, tagSeparator)) {
             // if we have a separator which has *not* the weak attribute
             // set, then it must be owned by the "local" tree in which case
             // we must not get deleted either
@@ -495,12 +495,12 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
             }
         }
 
-        else if (equals(tag, tagMerge)) {
+        else if (equalstr(tag, tagMerge)) {
             continue;
         }
 
         // a text tag is NOT enough to spare this container
-        else if (equals(tag, tagText)) {
+        else if (equalstr(tag, tagText)) {
             continue;
         }
 
@@ -534,13 +534,13 @@ QDomElement KXMLGUIClientPrivate::findMatchingElement( const QDomElement &base, 
 
     const QString tag = e.tagName();
     // skip all action and merge tags as we will never use them
-    if (equals(tag, tagAction)
-        || equals(tag, tagMergeLocal)) {
+    if (equalstr(tag, tagAction)
+        || equalstr(tag, tagMergeLocal)) {
       continue;
     }
 
     // now see if our tags are equivalent
-    if (equals(tag, base.tagName()) &&
+    if (equalstr(tag, base.tagName()) &&
         e.attribute(attrName) == base.attribute(attrName)) {
         return e;
     }
