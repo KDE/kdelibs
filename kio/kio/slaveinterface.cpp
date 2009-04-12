@@ -431,7 +431,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
     case KIO::SlaveBase::SSLMessageBox:
     {
         KIO::MetaData meta = m_incomingMetaData;
-        KSSLInfoDialog *kid = new KSSLInfoDialog(0);
+        KSslInfoDialog *kid = new KSslInfoDialog(0);
         //### this is boilerplate code and appears in khtml_part.cpp almost unchanged!
         QStringList sl = meta["ssl_peer_chain"].split('\x01', QString::SkipEmptyParts);
         QList<QSslCertificate> certChain;
@@ -452,7 +452,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
                             meta["ssl_cipher"],
                             meta["ssl_cipher_used_bits"].toInt(),
                             meta["ssl_cipher_bits"].toInt(),
-                            KSSLInfoDialog::errorsFromString(meta["ssl_cert_errors"]));
+                            KSslInfoDialog::errorsFromString(meta["ssl_cert_errors"]));
             kDebug(7024) << "Showing SSL Info dialog";
             kid->exec();
             kDebug(7024) << "SSL Info dialog closed";
@@ -461,7 +461,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
                                              "appears to be corrupt."),
                                      i18n("SSL"));
         }
-        // KSSLInfoDialog deletes itself (Qt::WA_DeleteOnClose).
+        // KSslInfoDialog deletes itself (Qt::WA_DeleteOnClose).
         result = 1; // whatever
         break;
     }

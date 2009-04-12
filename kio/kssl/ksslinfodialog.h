@@ -33,14 +33,14 @@
  * This class creates a dialog that can be used to display information about
  * an SSL session.
  *
- * There are NO GUARANTEES that KSSLInfoDialog will remain binary compatible/
+ * There are NO GUARANTEES that KSslInfoDialog will remain binary compatible/
  * Contact staikos@kde.org for details if needed.
  *
  * @author George Staikos <staikos@kde.org>
  * @see KSSL
  * @short KDE SSL Information Dialog
  */
-class KIO_EXPORT KSSLInfoDialog : public KDialog {
+class KIO_EXPORT KSslInfoDialog : public KDialog {
 	Q_OBJECT
 public:
 	/**
@@ -48,12 +48,12 @@ public:
 	 *
 	 *  @param parent the parent widget
 	 */
-	explicit KSSLInfoDialog(QWidget *parent = 0);
+	explicit KSslInfoDialog(QWidget *parent = 0);
 
 	/**
 	 *  Destroy this dialog
 	 */
-	virtual ~KSSLInfoDialog();
+	virtual ~KSslInfoDialog();
 
 	/**
 	 *  Tell the dialog if the connection has portions that may not be
@@ -69,7 +69,7 @@ public:
 	 *  @param certificateChain the certificate chain leading from the certificate
      *         authority to the peer.
 	 *  @param ip the ip of the remote host
-	 *  @param url the url being accessed
+	 *  @param host the remote hostname
      *  @param sslProtocol the version of SSL in use (SSLv2, SSLv3, TLSv1)
 	 *  @param cipher the cipher in use
 	 *  @param usedBits the used bits of the key
@@ -77,7 +77,7 @@ public:
 	 *  @param validationErrors errors validating the certificates, if any
 	 */
 	void setSslInfo(const QList<QSslCertificate> &certificateChain,
-			        const QString &ip, const QString &url,
+			        const QString &ip, const QString &host,
 			        const QString &sslProtocol, const QString &cipher,
                     int usedBits, int bits,
 			        const QList<QList<KSslError::Error> > &validationErrors);
@@ -90,8 +90,8 @@ public:
 private:
     void updateWhichPartsEncrypted();
 
-	class KSSLInfoDialogPrivate;
-	KSSLInfoDialogPrivate* const d;
+	class KSslInfoDialogPrivate;
+	KSslInfoDialogPrivate* const d;
 
 private Q_SLOTS:
 	void launchConfig();

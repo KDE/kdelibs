@@ -3931,7 +3931,7 @@ void KHTMLPart::slotSecurity()
 
   //### reenable with new signature
 #if 0
-  KSSLInfoDialog *kid = new KSSLInfoDialog(d->m_ssl_in_use, widget(), "kssl_info_dlg", true );
+  KSslInfoDialog *kid = new KSslInfoDialog(d->m_ssl_in_use, widget(), "kssl_info_dlg", true );
 
   const QStringList sl = d->m_ssl_peer_chain.split('\n', QString::SkipEmptyParts);
   QList<QSslCertificate> certChain;
@@ -3960,7 +3960,7 @@ void KHTMLPart::slotSecurity()
   //the dialog deletes itself on close
 #endif
 
-    KSSLInfoDialog *kid = new KSSLInfoDialog(0);
+    KSslInfoDialog *kid = new KSslInfoDialog(0);
     //### This is boilerplate code and it's copied from SlaveInterface.
     QStringList sl = d->m_ssl_peer_chain.split('\x01', QString::SkipEmptyParts);
     QList<QSslCertificate> certChain;
@@ -3976,12 +3976,12 @@ void KHTMLPart::slotSecurity()
     if (decodedOk || true /*H4X*/) {
         kid->setSslInfo(certChain,
                         d->m_ssl_peer_ip,
-                        url().url(),
+                        url().host(),
                         d->m_ssl_protocol_version,
                         d->m_ssl_cipher,
                         d->m_ssl_cipher_used_bits.toInt(),
                         d->m_ssl_cipher_bits.toInt(),
-                        KSSLInfoDialog::errorsFromString(d->m_ssl_cert_errors));
+                        KSslInfoDialog::errorsFromString(d->m_ssl_cert_errors));
         kDebug(7024) << "Showing SSL Info dialog";
         kid->exec();
         kDebug(7024) << "SSL Info dialog closed";

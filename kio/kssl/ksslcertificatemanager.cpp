@@ -21,11 +21,15 @@
 
 #include "ksslcertificatemanager.h"
 #include "ktcpsocket.h"
+#include "ktcpsocket_p.h"
 #include <ktoolinvocation.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kglobal.h>
+#include <klocale.h>
+#include <kmessagebox.h>
+#include <ksslinfodialog.h>
 
 #include <QtDBus/QtDBus>
 
@@ -265,6 +269,124 @@ void KSslCertificateManager::setRootCertificates(const QList<QSslCertificate> &r
 QList<QSslCertificate> KSslCertificateManager::rootCertificates() const
 {
     return d->iface.rootCertificates();
+}
+
+//static
+QList<KSslError> KSslCertificateManager::nonIgnorableErrors(const QList<KSslError> &/*e*/)
+{
+    QList<KSslError> ret;
+    // ### add filtering here...
+    return ret;
+}
+
+//static
+QList<KSslError::Error> KSslCertificateManager::nonIgnorableErrors(const QList<KSslError::Error> &/*e*/)
+{
+    QList<KSslError::Error> ret;
+    // ### add filtering here...
+    return ret;
+}
+
+
+//static
+bool KSslCertificateManager::askIgnoreSslErrors(const KTcpSocket *socket, RulesStorage storedRules)
+{
+    SslErrorUiData uiData(socket);
+    return askIgnoreSslErrors(uiData, storedRules);
+}
+
+//static
+bool KSslCertificateManager::askIgnoreSslErrors(const SslErrorUiData &uiData, RulesStorage storedRules)
+{
+    SslErrorUiData::Private *const ud = uiData.d;
+    if (ud->sslErrors.isEmpty()) {
+        return true;
+    }
+
+    QList<KSslError> fatalErrors = KSslCertificateManager::nonIgnorableErrors(ud->sslErrors);
+    if (!fatalErrors.isEmpty()) {
+        //TODO message "sorry, fatal error, you can't override it"
+        return false;
+    }
+
+    QString message = i18n("The server failed the authenticity check (%1).\n\n", ud->host);
+    foreach (const KSslError &err, ud->sslErrors) {
+        message.append(err.errorString());
+        message.append('\n');
+    }
+    message = message.trimmed();
+
+    KSslCertificateManager *const cm = KSslCertificateManager::self();
+    KSslCertificateRule rule = cm->rule(ud->certificateChain.first(), ud->host);
+
+    // remove previously seen and acknowledged errors
+    QList<KSslError> remainingErrors = rule.filterErrors(ud->sslErrors);
+    if (remainingErrors.isEmpty()) {
+        kDebug(7029) << "Error list empty after removing errors to be ignored. Continuing.";
+        return true;
+    }
+
+    //### We don't ask to permanently reject the certificate
+
+    int msgResult;
+    do {
+        msgResult = KMessageBox::warningYesNoCancel(0, message, i18n("Server Authentication"),
+                                                    KGuiItem(i18n("&Details")),
+                                                    KGuiItem(i18n("Co&ntinue")));
+        if (msgResult == KMessageBox::Yes) {
+            //Details was chosen - show the certificate and error details
+
+
+            QList<QList<KSslError::Error> > meh;    // parallel list to cert list :/
+
+            foreach (const QSslCertificate &cert, ud->certificateChain) {
+                QList<KSslError::Error> errors;
+                foreach(const KSslError &error, ud->sslErrors) {
+                    if (error.certificate() == cert) {
+                        // we keep only the error code enum here
+                        errors.append(error.error());
+                    }
+                }
+                meh.append(errors);
+            }
+
+
+            KSslInfoDialog *dialog = new KSslInfoDialog();
+            dialog->setSslInfo(ud->certificateChain, ud->ip, ud->host, ud->sslProtocol,
+                               ud->cipher, ud->usedBits, ud->bits, meh);
+            dialog->exec();
+        } else if (msgResult == KMessageBox::Cancel) {
+            return false;
+        }
+        //fall through on KMessageBox::No
+    } while (msgResult == KMessageBox::Yes);
+
+    //Save the user's choice to ignore the SSL errors.
+
+    msgResult = KMessageBox::warningYesNo(0,
+                            i18n("Would you like to accept this "
+                                 "certificate forever without "
+                                 "being prompted?"),
+                            i18n("Server Authentication"),
+                            KGuiItem(i18n("&Forever")),
+                            KGuiItem(i18n("&Current Sessions Only")));
+    QDateTime ruleExpiry = QDateTime::currentDateTime();
+    if (msgResult == KMessageBox::Yes) {
+        //accept forever ("for a very long time")
+        ruleExpiry = ruleExpiry.addYears(1000);
+    } else {
+        //accept "for a short time", half an hour.
+        ruleExpiry = ruleExpiry.addSecs(30*60);
+    }
+
+    //TODO special cases for wildcard domain name in the certificate!
+    //rule = KSslCertificateRule(d->socket.peerCertificateChain().first(), whatever);
+
+    rule.setExpiryDateTime(ruleExpiry);
+    rule.setIgnoredErrors(remainingErrors);
+    cm->setRule(rule);
+
+    return true;
 }
 
 

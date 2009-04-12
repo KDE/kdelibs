@@ -43,7 +43,6 @@
 #include <ksqueezedtextlabel.h>
 #include <kstandardguiitem.h>
 #include <ktoolinvocation.h>
-#include <kurllabel.h>
 
 #include "ksslcertificate.h"
 #include "ksslcertchain.h"
@@ -51,7 +50,7 @@
 #include "ktcpsocket.h"
 
 
-class KSSLInfoDialog::KSSLInfoDialogPrivate
+class KSslInfoDialog::KSslInfoDialogPrivate
 {
 public:
     QList<QSslCertificate> certificateChain;
@@ -67,9 +66,9 @@ public:
 
 
 
-KSSLInfoDialog::KSSLInfoDialog(QWidget *parent)
+KSslInfoDialog::KSslInfoDialog(QWidget *parent)
  : KDialog(parent),
-   d(new KSSLInfoDialogPrivate)
+   d(new KSslInfoDialogPrivate)
 {
     setCaption(i18n("KDE SSL Information"));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -103,34 +102,34 @@ KSSLInfoDialog::KSSLInfoDialog(QWidget *parent)
 }
 
 
-KSSLInfoDialog::~KSSLInfoDialog()
+KSslInfoDialog::~KSslInfoDialog()
 {
     delete d;
 }
 
 
 //slot
-void KSSLInfoDialog::launchConfig()
+void KSslInfoDialog::launchConfig()
 {
     QProcess::startDetached("kcmshell4", QStringList() << "crypto");
 }
 
 
-void KSSLInfoDialog::setMainPartEncrypted(bool mainEncrypted)
+void KSslInfoDialog::setMainPartEncrypted(bool mainEncrypted)
 {
     d->isMainPartEncrypted = mainEncrypted;
     updateWhichPartsEncrypted();
 }
 
 
-void KSSLInfoDialog::setAuxiliaryPartsEncrypted(bool auxEncrypted)
+void KSslInfoDialog::setAuxiliaryPartsEncrypted(bool auxEncrypted)
 {
     d->auxPartsEncrypted = auxEncrypted;
     updateWhichPartsEncrypted();
 }
 
 
-void KSSLInfoDialog::updateWhichPartsEncrypted()
+void KSslInfoDialog::updateWhichPartsEncrypted()
 {
     if (d->isMainPartEncrypted) {
         if (d->auxPartsEncrypted) {
@@ -154,15 +153,15 @@ void KSSLInfoDialog::updateWhichPartsEncrypted()
 }
 
 
-void KSSLInfoDialog::setSslInfo(const QList<QSslCertificate> &certificateChain,
-                                const QString &ip, const QString &url,
+void KSslInfoDialog::setSslInfo(const QList<QSslCertificate> &certificateChain,
+                                const QString &ip, const QString &host,
                                 const QString &sslProtocol, const QString &cipher,
                                 int usedBits, int bits,
                                 const QList<QList<KSslError::Error> > &validationErrors) {
 
     d->certificateChain = certificateChain;
     d->certificateErrors = validationErrors;
-    
+
     d->ui.certSelector->clear();
     for (int i = 0; i < certificateChain.size(); i++) {
         const QSslCertificate &cert = certificateChain[i];
@@ -186,7 +185,7 @@ void KSSLInfoDialog::setSslInfo(const QList<QSslCertificate> &certificateChain,
     displayFromChain(0);
 
     d->ui.ip->setText(ip);
-    d->ui.address->setText(url);
+    d->ui.address->setText(host);
     d->ui.sslVersion->setText(sslProtocol);
 
     const QStringList cipherInfo = cipher.split('\n', QString::SkipEmptyParts);
@@ -204,10 +203,10 @@ void KSSLInfoDialog::setSslInfo(const QList<QSslCertificate> &certificateChain,
 }
 
 
-void KSSLInfoDialog::displayFromChain(int i)
+void KSslInfoDialog::displayFromChain(int i)
 {
     const QSslCertificate &cert = d->certificateChain[i];
-    
+
     QString trusted;
     if (!d->certificateErrors[i].isEmpty()) {
         trusted = i18nc("The certificate is not trusted", "NO, there were errors:");
@@ -235,7 +234,7 @@ void KSSLInfoDialog::displayFromChain(int i)
 
 
 //static
-QList<QList<KSslError::Error> > KSSLInfoDialog::errorsFromString(const QString &es)
+QList<QList<KSslError::Error> > KSslInfoDialog::errorsFromString(const QString &es)
 {
     QStringList sl = es.split('\n', QString::KeepEmptyParts);
     QList<QList<KSslError::Error> > ret;

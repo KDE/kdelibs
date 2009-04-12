@@ -18,6 +18,7 @@
 */
 
 #include "ktcpsocket.h"
+#include "ktcpsocket_p.h"
 
 #include <kdebug.h>
 #include <kurl.h>
@@ -168,41 +169,41 @@ public:
         }
     }
 
-    static QString errorString(KSslError::Error e)                      
-    {                                                                   
-        switch (e) {                                                    
-        case KSslError::NoError:                                        
-            return "No error";                                          
-        case KSslError::InvalidCertificateAuthorityCertificate:         
+    static QString errorString(KSslError::Error e)
+    {
+        switch (e) {
+        case KSslError::NoError:
+            return "No error";
+        case KSslError::InvalidCertificateAuthorityCertificate:
             return "The certificate authority's certificate is invalid";
-        case KSslError::ExpiredCertificate:                             
-            return "The certificate has expired";                       
-        case KSslError::InvalidCertificate:                             
-            return "The certificate is invalid";                        
-        case KSslError::SelfSignedCertificate:                          
+        case KSslError::ExpiredCertificate:
+            return "The certificate has expired";
+        case KSslError::InvalidCertificate:
+            return "The certificate is invalid";
+        case KSslError::SelfSignedCertificate:
             return "The certificate is not signed by any trusted certificate authority";
-        case KSslError::RevokedCertificate:                                             
-            return "The certificate has been revoked";                                  
-        case KSslError::InvalidCertificatePurpose:                                      
-            return "The certificate is unsuitable for this purpose";                    
-        case KSslError::UntrustedCertificate:                                           
+        case KSslError::RevokedCertificate:
+            return "The certificate has been revoked";
+        case KSslError::InvalidCertificatePurpose:
+            return "The certificate is unsuitable for this purpose";
+        case KSslError::UntrustedCertificate:
             return "The root certificate authority's certificate is not trusted for this purpose";
-        case KSslError::RejectedCertificate:                                                      
+        case KSslError::RejectedCertificate:
             return "The certificate authority's certificate is marked to reject this certificate's purpose";
-        case KSslError::NoPeerCertificate:                                                                  
-            return "The peer did not present any certificate";                                              
-        case KSslError::HostNameMismatch:                                                                   
-            return "The certificate does not apply to the given host";                                      
-        case KSslError::CertificateSignatureFailed:                                                         
-            return "The certificate cannot be verified for internal reasons";                               
-        case KSslError::PathLengthExceeded:                                                                 
-            return "The certificate chain is too long";                                                     
-        case KSslError::UnknownError:                                                                       
-        default:                                                                                            
-            return "Unknown error";                                                                         
-        }                                                                                                   
-    }                                                                                                       
-             
+        case KSslError::NoPeerCertificate:
+            return "The peer did not present any certificate";
+        case KSslError::HostNameMismatch:
+            return "The certificate does not apply to the given host";
+        case KSslError::CertificateSignatureFailed:
+            return "The certificate cannot be verified for internal reasons";
+        case KSslError::PathLengthExceeded:
+            return "The certificate chain is too long";
+        case KSslError::UnknownError:
+        default:
+            return "Unknown error";
+        }
+    }
+
     KSslError::Error error;
     QSslCertificate certificate;
 };
@@ -219,7 +220,7 @@ KSslError::KSslError(Error errorCode, const QSslCertificate &certificate)
 KSslError::KSslError(const QSslError &other)
  : d(new KSslErrorPrivate())
 {
-    d->error = KSslErrorPrivate::errorFromQSslError(other.error());  
+    d->error = KSslErrorPrivate::errorFromQSslError(other.error());
     d->certificate = other.certificate();
 }
 
@@ -252,7 +253,7 @@ KSslError::Error KSslError::error() const
 
 QString KSslError::errorString() const
 {
-    return KSslErrorPrivate::errorString(d->error); 
+    return KSslErrorPrivate::errorString(d->error);
 }
 
 
@@ -1014,7 +1015,7 @@ int KSslCipher::usedBits() const
 }
 
 
-//static 
+//static
 QList<KSslCipher> KSslCipher::supportedCiphers()
 {
     QList<KSslCipher> ret;
@@ -1023,6 +1024,32 @@ QList<KSslCipher> KSslCipher::supportedCiphers()
         ret.append(KSslCipher(c));
     }
     return ret;
+}
+
+
+//#include <QtNetwork/QHostAddress>
+SslErrorUiData::SslErrorUiData(const KTcpSocket *socket)
+ : d(new Private())
+{
+    d->certificateChain = socket->peerCertificateChain();
+    d->sslErrors = socket->sslErrors();
+    d->ip = socket->peerAddress().toString();
+    d->host = socket->peerName();
+    d->sslProtocol = socket->negotiatedSslVersionName();
+    d->cipher = socket->sessionCipher().name();
+    d->usedBits = socket->sessionCipher().usedBits();
+    d->bits = socket->sessionCipher().supportedBits();
+}
+
+
+SslErrorUiData::SslErrorUiData(const SslErrorUiData &other)
+ : d(new Private(*other.d))
+{}
+
+
+SslErrorUiData &SslErrorUiData::operator=(const SslErrorUiData &other)
+{
+    *d = *other.d;
 }
 
 

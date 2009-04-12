@@ -105,13 +105,6 @@ class TCPSlaveBase::TcpSlaveBasePrivate
 public:
     TcpSlaveBasePrivate(TCPSlaveBase* qq) : q(qq) {}
 
-    QList<KSslError> nonIgnorableErrors(const QList<KSslError> &/*e*/) const
-    {
-        QList<KSslError> ret;
-        //TODO :)
-        return ret;
-    }
-
     void prepareSslRelatedMetaData()
     {
         KSslCipher cipher = socket.sessionCipher();
@@ -737,59 +730,45 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
 {
     d->sslNoUi = hasMetaData("ssl_no_ui") && (metaData("ssl_no_ui") != "FALSE");
 
-    if (d->sslErrors.isEmpty())
+    if (d->sslErrors.isEmpty()) {
         return ResultOk;
-    if (d->sslNoUi)
+    } else if (d->sslNoUi) {
         return ResultFailed;
-
-    QString message = i18n("The server failed the authenticity check (%1).\n\n",
-                           d->host);
-
-    foreach (const KSslError &err, d->sslErrors) {
-        message.append(err.errorString());
-        message.append('\n');
     }
 
-    //### Consider that hostname mismatch and e.g. an expired certificate are very different.
-
-    /* We need a list of ignorable errors. I don't think it makes sense to ignore
-       malformed certificates, for example, as other environments probably don't do
-       that either. It would be similar to a compiler trying to correct syntax errors.
-       There are also hard errors that are just impossible to override.
-      Ignorable so far, determined by watching real connection errors:
-        -UnableToGetLocalIssuerCertificate
-        -CertificateUntrusted
-        -UnableToVerifyFirstCertificate
-    */
-
-    KSslCertificateManager *const cm = KSslCertificateManager::self();
-    KSslCertificateRule rule = cm->rule(d->socket.peerCertificateChain().first(), d->host);
-
-    //TODO put nonIgnorableErrors into the cert manager
-    QList<KSslError> fatalErrors = d->nonIgnorableErrors(d->sslErrors);
+    QList<KSslError> fatalErrors = KSslCertificateManager::nonIgnorableErrors(d->sslErrors);
     if (!fatalErrors.isEmpty()) {
         //TODO message "sorry, fatal error, you can't override it"
         return ResultFailed;
     }
 
-    //throw out previously seen errors that are supposed to be ignored.
+    QString message = i18n("The server failed the authenticity check (%1).\n\n", d->host);
+    foreach (const KSslError &err, d->sslErrors) {
+        message.append(err.errorString());
+        message.append('\n');
+    }
+    message = message.trimmed();
+
+    KSslCertificateManager *const cm = KSslCertificateManager::self();
+    KSslCertificateRule rule = cm->rule(d->socket.peerCertificateChain().first(), d->host);
+
+    // remove previously seen and acknowledged errors
     QList<KSslError> remainingErrors = rule.filterErrors(d->sslErrors);
     if (remainingErrors.isEmpty()) {
         kDebug(7029) << "Error list empty after removing errors to be ignored. Continuing.";
         return ResultOk | ResultOverridden;
     }
 
-    //### We don't present the option to permanently reject the certificate even though
-    //    it would be technically possible.
+    //### We don't ask to permanently reject the certificate
 
     int msgResult;
     do {
-        msgResult = messageBox(WarningYesNoCancel, message.trimmed(),
+        msgResult = messageBox(WarningYesNoCancel, message,
                                i18n("Server Authentication"),
                                i18n("&Details"), i18n("Co&ntinue"));
         if (msgResult == KMessageBox::Yes) {
-            //Details was chosen - we pop up the details dialog and present the choices again
-            messageBox(SSLMessageBox /*==the SSL info dialog*/, d->host);
+            //Details was chosen- show the certificate and error details
+            messageBox(SSLMessageBox /*the SSL info dialog*/, d->host);
         } else if (msgResult == KMessageBox::Cancel) {
             return ResultFailed;
         }
@@ -807,10 +786,10 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
                             i18n("&Current Sessions Only"));
     QDateTime ruleExpiry = QDateTime::currentDateTime();
     if (msgResult == KMessageBox::Yes) {
-        //accept forever (we interpret this as "for a very long time")
+        //accept forever ("for a very long time")
         ruleExpiry = ruleExpiry.addYears(1000);
     } else {
-        //accept for a short time, say half an hour.
+        //accept "for a short time", half an hour.
         ruleExpiry = ruleExpiry.addSecs(30*60);
     }
 

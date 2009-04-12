@@ -345,5 +345,26 @@ private:
     KTcpSocketPrivate *const d;
 };
 
+/* required data
+setSslInfo(const QList<QSslCertificate> &certificateChain,
+                                const QString &ip, const QString &url,
+                                const QString &sslProtocol, const QString &cipher,
+                                int usedBits, int bits,
+                                const QList<QList<KSslError::Error> > &validationErrors)
+*/
+class KSslCertificateManager;
+
+class KDECORE_EXPORT SslErrorUiData
+{
+public:
+    SslErrorUiData(const KTcpSocket *socket);
+    SslErrorUiData(const SslErrorUiData &other);
+    SslErrorUiData &operator=(const SslErrorUiData &);
+private:
+    friend class KSslCertificateManager;
+    class Private;
+    Private *const d;
+};
+
 
 #endif // KTCPSOCKET_H
