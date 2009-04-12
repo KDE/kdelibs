@@ -1,2 +1,3 @@
 #regular chars are needed in khtml
 EXCLUDE doublequote_chars
+SKIP test_regression.*\|testkhtml.cpp\|testemca.cpp
