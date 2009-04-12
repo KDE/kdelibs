@@ -115,44 +115,56 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::_k_textChanged()
         }
     }
 
-      // Password strength calculator
-      // Based on code in the Master Password dialog in Firefox
-      // (pref-masterpass.js)
-      // Original code triple-licensed under the MPL, GPL, and LGPL
-      // so is license-compatible with this file
+    // Password strength calculator
+    // this algorithm is purely based on intuition and trial
+    QString pw = ui.linePassword->text();
 
-    const double lengthFactor = reasonablePasswordLength / 8.0;
-
-    int pwlength = (int) ( ui.linePassword->text().length()/ lengthFactor);
-    if (pwlength > 5) {
-        pwlength = 5;
+    // step 1: remove duplicate characters
+    for (int i = 0; i < pw.length() - 1; ++i) {
+        for (int j = i + 1; j < pw.length(); ++j) {
+            if (pw.at(i) == pw.at(j)) {
+                pw.remove(j, 1);
+            }
+        }
     }
 
-    const QRegExp numRxp("[0-9]", Qt::CaseSensitive, QRegExp::RegExp);
-    int numeric = (int) (ui.linePassword->text().count(numRxp) / lengthFactor);
-    if (numeric > 3) {
-        numeric = 3;
+    // step 2: categorize characters
+    int digit = 0;
+    int upper = 0;
+    int lower = 0;
+    int special = 0;
+    for (int i = 0; i < pw.length(); ++i) {
+        QChar::Category category = pw.at(i).category();
+        switch (category)
+        {
+            case QChar::Letter_Uppercase:
+                ++upper;
+                break;
+            case QChar::Letter_Lowercase:
+                ++lower;
+                break;
+            case QChar::Number_DecimalDigit:
+                ++digit;
+                break;
+            default:
+                ++special;
+                break;
+        }
     }
 
-    const QRegExp symbRxp("\\W", Qt::CaseInsensitive, QRegExp::RegExp);
-    int numsymbols = (int) (ui.linePassword->text().count(symbRxp) / lengthFactor);
-    if (numsymbols > 3) {
-        numsymbols = 3;
+    // step 3: evaluation
+    int numCategories = 0;
+    if (digit > 0) ++numCategories;
+    if (lower > 0) ++numCategories;
+    if (upper > 0) ++numCategories;
+    if (special > 0) ++numCategories;
+    int pwstrength = 5 * (pw.length() - minPasswordLength + 2 * lower + 3 * upper + digit + 4 * special + numCategories * numCategories) / 2;
+    if (reasonablePasswordLength > 0) {
+        pwstrength = pwstrength * pw.length() / reasonablePasswordLength;
     }
-
-    const QRegExp upperRxp("[A-Z]", Qt::CaseSensitive, QRegExp::RegExp);
-    int upper = (int) (ui.linePassword->text().count(upperRxp) / lengthFactor);
-    if (upper > 3) {
-        upper = 3;
-    }
-
-    int pwstrength=((pwlength*10)-20) + (numeric*10) + (numsymbols*15) + (upper*10);
-
-    if ( pwstrength < 0 ) {
+    if (pwstrength < 0) {
         pwstrength = 0;
-    }
-
-    if ( pwstrength > 100 ) {
+    } else if (pwstrength > 100) {
         pwstrength = 100;
     }
     ui.strengthBar->setValue(pwstrength);
