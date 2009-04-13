@@ -62,7 +62,7 @@ void KFilterProxySearchLine::Private::slotSearchLineActivate()
 
     proxy->setFilterKeyColumn( -1 );
     proxy->setFilterCaseSensitivity( Qt::CaseInsensitive );
-    proxy->setFilterRegExp( searchLine->text() );
+    proxy->setFilterFixedString( searchLine->text() );
 }
 //@endcond
 
