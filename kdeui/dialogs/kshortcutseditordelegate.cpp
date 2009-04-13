@@ -298,6 +298,8 @@ bool KShortcutsEditorDelegate::eventFilter(QObject *o, QEvent *e)
         case Qt::Key_Right:
             index = index.sibling(index.row(), index.column() + 1);
             break;
+// bug fixed in Qt 4.5.1, TT task 246699
+#if QT_VERSION < 0x040501
         case Qt::Key_Up:
         case Qt::Key_Down: {
             // unfortunately Qt's implementation "forgets" the column we were in, so
@@ -319,6 +321,7 @@ bool KShortcutsEditorDelegate::eventFilter(QObject *o, QEvent *e)
             } while (!index.isValid() && column >= 0);
 
             break; }
+#endif
         default:
             return false;
         }
