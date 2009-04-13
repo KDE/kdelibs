@@ -292,6 +292,15 @@ KTranslitSerbian::KTranslitSerbian ()
     SR_DICTC2L_ENTRY("Ч", "Č");
     SR_DICTC2L_ENTRY("Џ", "Dž");
     SR_DICTC2L_ENTRY("Ш", "Š");
+    // ...and some accented letters existing as NFC:
+    SR_DICTC2L_ENTRY("ѐ", "è");
+    SR_DICTC2L_ENTRY("ѝ", "ì");
+    SR_DICTC2L_ENTRY("ӣ", "ī");
+    SR_DICTC2L_ENTRY("ӯ", "ū");
+    SR_DICTC2L_ENTRY("Ѐ", "È");
+    SR_DICTC2L_ENTRY("Ѝ", "Ì");
+    SR_DICTC2L_ENTRY("Ӣ", "Ī");
+    SR_DICTC2L_ENTRY("Ӯ", "Ū");
 
     d->reflexMark = QString::fromUtf8("›")[0];
     #define SR_DICTI2E_ENTRY(a, b) do { \
