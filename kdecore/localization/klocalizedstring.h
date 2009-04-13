@@ -66,8 +66,40 @@ class KLocalizedStringPrivate;
  * \endcode
  * \warning You need to call i18nc(context, stringVar) later on, not just
  * i18n(stringVar).
+ *
+ * @see I18N_NOOP2_NOSTRIP
  */
 #define I18N_NOOP2(comment,x) x
+#endif
+
+#ifndef I18N_NOOP2_NOSTRIP
+/**
+ * @since 4.3
+ *
+ * Similar to I18N_NOOP2, except that neither of the two arguments is omitted.
+ * This is typically used when contexts need to differ between static entries,
+ * and only some of the entries need context:
+ * \code
+ *   struct MyTextLabels
+ *   {
+ *     int labelId;
+ *     const char *context;
+ *     const char *text;
+ *   };
+ *   const MyTextLabels labels[] = {
+ *     { 10, I18N_NOOP2_NOSTRIP("new game", "New") },
+ *     { 20, 0, I18N_NOOP("End Turn") },
+ *     { 30, I18N_NOOP2_NOSTRIP("default move", "Default") },
+ *     { 40, 0, I18N_NOOP("Quit") },
+ *     ...
+ *   };
+ *   ...
+ *   QString itemLabel = i18nc(labels[item].context, labels[item].text);
+ * \endcode
+ * Note that i18nc() will not have any problems with context being null,
+ * it will simply behave as ordinary i18n().
+ */
+#define I18N_NOOP2_NOSTRIP(ctxt, text) ctxt, text
 #endif
 
 /**
