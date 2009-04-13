@@ -233,7 +233,7 @@ bool NetRC::lookup( const KUrl& url, AutoLogin& login, bool userealnetrc,
 
     if ( userealnetrc )
     {
-      filename =  QDir::homePath() + QDir::separator() + QLatin1String(".netrc");
+      filename =  QDir::homePath() + QLatin1String("/.netrc");
       status |= parse (openf(filename));
     }
 

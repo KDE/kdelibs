@@ -751,7 +751,7 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
     bool exists = false;
     KUrl url(d->currUrl);
 
-    const QStringList dirs = directory.split(QDir::separator(), QString::SkipEmptyParts);
+    const QStringList dirs = directory.split('/', QString::SkipEmptyParts);
     QStringList::ConstIterator it = dirs.begin();
 
     for (; it != dirs.end(); ++it) {
