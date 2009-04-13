@@ -24,8 +24,6 @@
 #include "wmideviceinterface.h"
 #include "wmiquery.h"
 
-#include "kdebug.h"
-
 #ifdef _DEBUG
 # pragma comment(lib, "comsuppwd.lib")
 #else
@@ -97,7 +95,7 @@ bool WmiManager::deviceExists(const QString &udi)
 QStringList WmiManager::devicesFromQuery(const QString &parentUdi,
                                          Solid::DeviceInterface::Type type)
 {
-    kDebug() << parentUdi << type;
+    qDebug() << parentUdi << type;
     if (!parentUdi.isEmpty())
     {
         QStringList result = findDeviceStringMatch("info.parent", parentUdi);
@@ -136,16 +134,16 @@ QObject *WmiManager::createDevice(const QString &udi)
 
 QStringList WmiManager::findDeviceStringMatch(const QString &key, const QString &value)
 {
-    kDebug() << "has to be implemented" << key << value;
+    qDebug() << "has to be implemented" << key << value;
     QStringList result;
 
-    kDebug() << result;
+    qDebug() << result;
     return result;
 }
 
 QStringList WmiManager::findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type)
 {
-    kDebug() << type;
+    qDebug() << type;
     QStringList result;
     WmiQuery::ItemList list;
 
@@ -194,7 +192,7 @@ QStringList WmiManager::findDeviceByDeviceInterface(const Solid::DeviceInterface
         break;
     }
 
-    kDebug() << result;
+    qDebug() << result;
     return result;
 }
 

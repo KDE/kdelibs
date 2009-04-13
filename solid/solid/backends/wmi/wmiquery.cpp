@@ -42,11 +42,14 @@ using namespace Solid::Backends::Wmi;
 
 QString WmiQuery::Item::getProperty(const QString &property )
 {
+    qDebug() << "start property:" << property;
+    // todo check first if property is available
     VARIANT vtProp;
     HRESULT hr = m_p->Get((LPCWSTR)property.utf16(), 0, &vtProp, 0, 0);
     VariantClear(&vtProp);
     QString result((QChar*)vtProp.bstrVal, wcslen(vtProp.bstrVal));
     m_p->Release();
+    qDebug() << "end result:" << result;
     return result;
 }
     

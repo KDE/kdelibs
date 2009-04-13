@@ -42,7 +42,6 @@
 #include "wmivideo.h"
 #include "wmiquery.h"
 
-#include <kdebug.h>
 
 #ifdef _DEBUG
 # pragma comment(lib, "comsuppwd.lib")
@@ -100,7 +99,7 @@ public:
         QString _udi = udi;
         QStringList x = _udi.remove("/org/kde/solid/wmi/").split("/");
         if (x.size() != 3) {
-            kDebug() << "invalid udi detected" << _udi;
+            qDebug() << "invalid udi detected" << _udi;
             return false;
         }
         Solid::DeviceInterface::Type type = DeviceInterface::fromString(x[0]);
@@ -176,7 +175,7 @@ public:
             break;
         }
         if (interfaceList.size() == 0)
-            kWarning() << "no interface found for type" << type;
+            qWarning() << "no interface found for type" << type;
         return interfaceList;
     }
     
@@ -184,7 +183,7 @@ public:
     {
         QStringList list = DeviceInterface::toStringList(type);
         QString value = list.size() > 0 ? list[0] : QString();
-        kDebug() << value;
+        qDebug() << value;
         return value;
     }
 
@@ -479,7 +478,7 @@ bool WmiDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
         return true;
     } else if (type==Solid::DeviceInterface::StorageAccess) {
 #if 1
-        kDebug() << " has to be implemented"; 
+        qDebug() << " has to be implemented"; 
         return false;
 #else
         return property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume")
