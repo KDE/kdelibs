@@ -500,7 +500,7 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
         quint8 iFormat;
         str >> width >> height >> iFormat;
         QImage::Format format = static_cast<QImage::Format>( iFormat );
-        thumb = QImage(shmaddr, width, height, format );
+        thumb = QImage(shmaddr, width, height, format ).copy();
     }
     else
 #endif
