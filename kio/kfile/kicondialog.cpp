@@ -166,6 +166,7 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     // disable updates to not trigger paint events when adding child items
+    q->repaint();
     q->setUpdatesEnabled(false);
 
     // Cache these as we will call them frequently.
