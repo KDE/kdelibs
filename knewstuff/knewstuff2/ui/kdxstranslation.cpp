@@ -61,7 +61,6 @@ KDXSTranslation::KDXSTranslation(QWidget *parent)
     hbox->addWidget(languagebox);
 
     QGridLayout *grid = new QGridLayout();
-    grid->setSpacing(spacingHint());
     grid->addWidget(lname, 0, 0);
     grid->addWidget(oname, 0, 1);
     grid->addWidget(m_name, 0, 2);

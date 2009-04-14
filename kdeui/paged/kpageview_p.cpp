@@ -211,7 +211,6 @@ KPageTabbedView::KPageTabbedView( QWidget *parent )
 
   QVBoxLayout *layout = new QVBoxLayout( this );
   layout->setMargin( 0 );
-  layout->setSpacing( 0 );
 
   mTabWidget = new QTabWidget( this );
   connect( mTabWidget, SIGNAL( currentChanged( int ) ), this, SLOT( currentPageChanged( int ) ) );
@@ -330,8 +329,6 @@ void KPageTabbedView::layoutChanged()
         QWidget *widget = new QWidget(this);
         QVBoxLayout *layout = new QVBoxLayout(widget);
         widget->setLayout(layout);
-        layout->setMargin(KDialog::marginHint());
-        layout->setSpacing(KDialog::spacingHint());
         layout->addWidget(page);
         page->setVisible(true);
         mTabWidget->addTab( widget, icon, title );

@@ -61,7 +61,6 @@ void KDateTimeWidget::init()
 {
   QHBoxLayout *layout = new QHBoxLayout(this);
   layout->setMargin(0);
-  layout->setSpacing(KDialog::spacingHint());
 
   d->dateWidget = new KDateWidget(this);
   d->timeWidget = new QTimeEdit(this);

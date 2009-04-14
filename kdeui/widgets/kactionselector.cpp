@@ -21,7 +21,6 @@
 
 #include <klocale.h>
 #include <kicon.h>
-#include <kdialog.h> // for spacingHint()
 #include <kdebug.h>
 #include <QtGui/QApplication>
 #include <QtGui/QToolButton>
@@ -89,7 +88,6 @@ KActionSelector::KActionSelector( QWidget *parent )
   d->showUpDownButtons = true;
 
   QHBoxLayout *lo = new QHBoxLayout( this );
-  lo->setSpacing( KDialog::spacingHint() );
 
   QVBoxLayout *loAv = new QVBoxLayout();
   lo->addLayout( loAv );

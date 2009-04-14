@@ -159,12 +159,12 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
 {
     QWidget *mainWidget = new QWidget(dialog);
     QVBoxLayout *mainLayout = new QVBoxLayout(mainWidget);
-    mainLayout->setSpacing(KDialog::spacingHint() * 2);
+    mainLayout->setSpacing(KDialog::spacingHint() * 2); // provide extra spacing
     mainLayout->setMargin(0);
 
     QHBoxLayout *hLayout = new QHBoxLayout();
     hLayout->setMargin(0);
-    hLayout->setSpacing(KDialog::spacingHint());
+    hLayout->setSpacing(-1); // use default spacing
     mainLayout->addLayout(hLayout,5);
 
     QLabel *iconLabel = new QLabel(mainWidget);

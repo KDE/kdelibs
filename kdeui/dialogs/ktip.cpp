@@ -239,7 +239,6 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   setMainWidget( widget );
   QVBoxLayout *mainLayout = new QVBoxLayout( widget );
   mainLayout->setMargin( 0 );
-  mainLayout->setSpacing( spacingHint() );
 
   if ( isTipDialog ) {
     QLabel *titleLabel = new QLabel( this );
@@ -250,7 +249,6 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   }
 
   QHBoxLayout *browserLayout = new QHBoxLayout();
-  browserLayout->setMargin( marginHint() );
   mainLayout->addLayout( browserLayout );
 
   d->tipText = new KTextBrowser( this );

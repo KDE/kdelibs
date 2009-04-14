@@ -105,7 +105,6 @@ void KFileMetaPropsPlugin::createLayout()
     scrollArea->setWidgetResizable(true);
 
     QVBoxLayout *toplayout = new QVBoxLayout(d->m_frame);
-    toplayout->setSpacing(KDialog::spacingHint());
 
     foreach (const KFileMetaInfoGroup& group, groupList) {
         //kDebug(7033) << *git;

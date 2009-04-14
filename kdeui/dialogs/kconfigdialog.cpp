@@ -147,8 +147,6 @@ KPageWidgetItem* KConfigDialog::KConfigDialogPrivate::addPageInternal(QWidget *p
                                         const QString &header)
 {
   KVBox *frame = new KVBox(q);
-  frame->setSpacing( 0 );
-  frame->setMargin( 0 );
   page->setParent(frame);
 
   KPageWidgetItem *item = new KPageWidgetItem( frame, itemName );

@@ -273,7 +273,6 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     setMainWidget(page);
     QHBoxLayout *hlay = new QHBoxLayout( page);
     hlay->setMargin(0);
-    hlay->setSpacing(spacingHint());
     QVBoxLayout *mainLayout = new QVBoxLayout();
     d->m_actions=new KActionCollection(this);
     d->m_placesView = new KFilePlacesView( page );

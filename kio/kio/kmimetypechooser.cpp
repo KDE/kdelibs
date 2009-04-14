@@ -73,8 +73,6 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
   d->groups = groupsToShow;
   d->visuals = visuals;
 
-  setSpacing( KDialog::spacingHint() );
-
   if ( !text.isEmpty() )
   {
     new QLabel( text, this );

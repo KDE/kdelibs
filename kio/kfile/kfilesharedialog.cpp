@@ -136,9 +136,6 @@ void KFileSharePropsPlugin::init()
         else
         {
             // Everything ok, show the share/unshare GUI
-            vbox->setSpacing( KDialog::spacingHint() );
-            vbox->setMargin( KDialog::marginHint() );
-
             QButtonGroup *rbGroup = new QButtonGroup( d->m_widget );
             d->m_rbUnShare = new QRadioButton( i18n("Not shared"), d->m_widget );
             connect( d->m_rbUnShare, SIGNAL( toggled(bool) ), SIGNAL( changed() ) );

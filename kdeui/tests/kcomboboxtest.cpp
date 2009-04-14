@@ -33,8 +33,6 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
               :QWidget(widget)
 {
   QVBoxLayout *vbox = new QVBoxLayout (this);
-  vbox->setMargin( KDialog::marginHint() );
-  vbox->setSpacing( KDialog::spacingHint() );
 
   // Test for KCombo's KLineEdit destruction
   KTestComboBox *testCombo = new KTestComboBox( true, this ); // rw, with KLineEdit
@@ -44,7 +42,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
 
   // Qt combobox
   KHBox* hbox = new KHBox(this);
-  hbox->setSpacing (KDialog::spacingHint());
+  hbox->setSpacing (-1);
   QLabel* lbl = new QLabel("&QCombobox:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
 
@@ -57,7 +55,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
 
   // Read-only combobox
   hbox = new KHBox(this);
-  hbox->setSpacing (KDialog::spacingHint());
+  hbox->setSpacing (-1);
   lbl = new QLabel("&Read-Only Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
 
@@ -71,7 +69,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
 
   // Read-write combobox
   hbox = new KHBox(this);
-  hbox->setSpacing (KDialog::spacingHint());
+  hbox->setSpacing (-1);
   lbl = new QLabel("&Editable Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
 
@@ -89,7 +87,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
 
   // History combobox...
   hbox = new KHBox(this);
-  hbox->setSpacing (KDialog::spacingHint());
+  hbox->setSpacing (-1);
   lbl = new QLabel("&History Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
 
@@ -106,7 +104,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
 
   // Read-write combobox that is a replica of code in konqueror...
   hbox = new KHBox(this);
-  hbox->setSpacing (KDialog::spacingHint());
+  hbox->setSpacing (-1);
   lbl = new QLabel( "&Konq's Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
 

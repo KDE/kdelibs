@@ -366,7 +366,6 @@ void KIconDialog::KIconDialogPrivate::init()
     top->addWidget(bgroup);
 
     QGridLayout *grid = new QGridLayout();
-    grid->setSpacing(KDialog::spacingHint());
     bgroup->layout()->addItem(grid);
 
     mpSystemIcons = new QRadioButton(i18n("S&ystem icons:"), bgroup);
@@ -387,7 +386,6 @@ void KIconDialog::KIconDialogPrivate::init()
     //
     QHBoxLayout *searchLayout = new QHBoxLayout();
     searchLayout->setMargin(0);
-    searchLayout->setSpacing(KDialog::spacingHint());
     top->addLayout(searchLayout);
 
     QLabel *searchLabel = new QLabel(i18n("&Search:"), main);

@@ -56,7 +56,6 @@ ComponentsDialog::ComponentsDialog( QWidget * parent, const char * name )
     setMainWidget( page );
     QHBoxLayout *hbox = new QHBoxLayout( page );
     hbox->setMargin( 0 );
-    hbox->setSpacing( KDialog::spacingHint() );
 
     d->listview = new QTreeWidget( page );
     d->listview->setMinimumSize( 200, 200 );
@@ -65,7 +64,6 @@ ComponentsDialog::ComponentsDialog( QWidget * parent, const char * name )
 
     QVBoxLayout *vbox = new QVBoxLayout( d->infowidget );
     vbox->setMargin( 0 );
-    vbox->setSpacing( KDialog::spacingHint() );
 
     d->iconwidget = new QLabel( d->infowidget );
     vbox->addWidget( d->iconwidget );

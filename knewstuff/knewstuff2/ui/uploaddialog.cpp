@@ -57,7 +57,6 @@ UploadDialog::UploadDialog(/*Engine *engine,*/ QWidget *parent) :
     setMainWidget(topPage);
 
     QGridLayout *topLayout = new QGridLayout(topPage);
-    topLayout->setSpacing(spacingHint());
 
     QLabel *sectionselfLabel = new QLabel(i18n("Please give some information about yourself."), topPage);
     topLayout->addWidget(sectionselfLabel, 0, 0, 1, 2);

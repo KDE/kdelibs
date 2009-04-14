@@ -95,7 +95,6 @@ KLanguageButtonPrivate::KLanguageButtonPrivate( KLanguageButton *parent )
 {
   QHBoxLayout *layout = new QHBoxLayout( parent );
   layout->setMargin(0);
-  layout->setSpacing(0);
   layout->addWidget( button );
 
   parent->setFocusProxy( button );

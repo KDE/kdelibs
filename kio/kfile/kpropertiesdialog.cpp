@@ -781,7 +781,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   QVBoxLayout *vbl = new QVBoxLayout( d->m_frame );
   vbl->setMargin( 0 );
-  vbl->setSpacing( KDialog::spacingHint() );
   vbl->setObjectName( QLatin1String( "vbl" ) );
   QGridLayout *grid = new QGridLayout(); // unknown rows
   grid->setColumnStretch(0, 0);
@@ -970,7 +969,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
     KHBox *box = new KHBox(d->m_frame);
-    box->setSpacing(20);
+    box->setSpacing(20); // ### why 20?
     l = new QLabel(mimeComment, box );
 
 #ifdef Q_WS_X11
@@ -1035,7 +1034,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   else // Directory
   {
     QHBoxLayout * sizelay = new QHBoxLayout();
-    sizelay->setSpacing(KDialog::spacingHint());
     grid->addLayout( sizelay, curRow++, 2 );
 
     // buttons
@@ -1681,7 +1679,6 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   QBoxLayout *box = new QVBoxLayout( d->m_frame );
   box->setMargin( 0 );
-  box->setSpacing( KDialog::spacingHint() );
 
   QWidget *l;
   QLabel *lbl;
@@ -1694,8 +1691,6 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   box->addWidget (gb);
 
   gl = new QGridLayout (gb);
-  gl->setSpacing(KDialog::spacingHint());
-  gl->setMargin(KDialog::marginHint());
   gl->setColumnStretch(1, 1);
 
   l = d->explanationLabel = new QLabel( "", gb );
@@ -1763,8 +1758,6 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   box->addWidget (gb);
 
   gl = new QGridLayout (gb);
-  gl->setSpacing(KDialog::spacingHint());
-  gl->setMargin(KDialog::marginHint());
   gl->addItem(new QSpacerItem(0, 10), 0, 0);
 
   /*** Set Owner ***/
@@ -1940,8 +1933,6 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   vbox->addWidget(gb);
 
   gl = new QGridLayout (gb);
-  gl->setSpacing(KDialog::spacingHint());
-  gl->setMargin(KDialog::marginHint());
   gl->addItem(new QSpacerItem(0, 10), 0, 0);
 
   QVector<QWidget*> theNotSpecials;
@@ -2598,7 +2589,6 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
     properties->addPage(d->m_frame, i18n("U&RL"));
     QVBoxLayout *layout = new QVBoxLayout(d->m_frame);
     layout->setMargin(0);
-    layout->setSpacing(KDialog::spacingHint());
 
     QLabel *l;
     l = new QLabel( d->m_frame );
@@ -2757,7 +2747,6 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
   QGridLayout *layout = new QGridLayout( d->m_frame );
 
   layout->setMargin(0);
-  layout->setSpacing(KDialog::spacingHint());
   layout->setColumnStretch(1, 1);
 
   QLabel* label;

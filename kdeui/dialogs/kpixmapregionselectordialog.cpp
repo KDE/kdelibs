@@ -52,7 +52,7 @@ KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog( QWidget *parent )
   new QLabel(i18n("Please click and drag on the image to select the region of interest:"), vbox);
   d->pixmapSelectorWidget= new KPixmapRegionSelectorWidget(vbox);
 
-  vbox->setSpacing( KDialog::spacingHint() );
+  vbox->setSpacing( -1 );
 
   setMainWidget(vbox);
 }

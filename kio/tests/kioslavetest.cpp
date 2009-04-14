@@ -41,11 +41,8 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
 
   main_widget = new QWidget( this );
   QBoxLayout *topLayout = new QVBoxLayout( main_widget );
-  topLayout->setMargin( 10 );
-  topLayout->setSpacing( 5 );
 
   QGridLayout *grid = new QGridLayout();
-  grid->setSpacing( 10 );
   topLayout->addLayout( grid );
 
   grid->setRowStretch(0,1);

@@ -26,6 +26,9 @@
  * When using a KVBox you don't need to create a layout nor
  * to add the child widgets to it.
  *
+ * Both margin and spacing are initialized to 0. Use QVBoxLayout
+ * if you need standard layout margins.
+ *
  * @see KHBox
  */
 class KDEUI_EXPORT KVBox : public KHBox

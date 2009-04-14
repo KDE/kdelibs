@@ -23,7 +23,6 @@ KFileMetaPreview::KFileMetaPreview( QWidget *parent )
 {
     QHBoxLayout *layout = new QHBoxLayout( this );
     layout->setMargin( 0 );
-    layout->setSpacing( 0 );
     m_stack = new QStackedWidget( this );
     layout->addWidget( m_stack );
 

@@ -80,7 +80,6 @@ void KCModuleContainer::init()
 {
 	d->topLayout = new QVBoxLayout( this );
 	d->topLayout->setMargin( 0 );
-	d->topLayout->setSpacing( KDialog::spacingHint() );
 	d->topLayout->setObjectName( "topLayout" );
 	d->tabWidget = new KTabWidget(this);
 	d->tabWidget->setObjectName( "tabWidget");

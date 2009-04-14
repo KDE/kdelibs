@@ -87,7 +87,6 @@ KACLEditWidget::KACLEditWidget( QWidget *parent )
 {
     QHBoxLayout *hbox = new QHBoxLayout( this );
     hbox->setMargin( 0 );
-    hbox->setSpacing(  KDialog::spacingHint() );
     d->m_listView = new KACLListView(this);
     hbox->addWidget(d->m_listView);
     connect(d->m_listView->selectionModel(),
@@ -96,7 +95,6 @@ KACLEditWidget::KACLEditWidget( QWidget *parent )
             SLOT(_k_slotUpdateButtons()));
     QVBoxLayout *vbox = new QVBoxLayout();
     hbox->addLayout( vbox );
-    vbox->setSpacing(  KDialog::spacingHint() );
     d->m_AddBtn = new QPushButton(i18n("Add Entry..."), this);
     vbox->addWidget(d->m_AddBtn);
     d->m_AddBtn->setObjectName(QLatin1String("add_entry_button"));
@@ -439,10 +437,8 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     setMainWidget( page );
     QVBoxLayout *mainLayout = new QVBoxLayout( page );
     mainLayout->setMargin( 0 );
-    mainLayout->setSpacing( spacingHint() );
     QGroupBox *gb = new QGroupBox( i18n("Entry Type"), page );
     QVBoxLayout *gbLayout = new QVBoxLayout( gb );
-    gbLayout->setSpacing( spacingHint() );
 
     m_buttonGroup = new QButtonGroup( page );
 

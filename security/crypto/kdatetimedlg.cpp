@@ -41,8 +41,6 @@ KDateTimeDlg::KDateTimeDlg(QWidget *parent)
    setMainWidget(widget);
 
    QGridLayout *grid = new QGridLayout;
-   grid->setSpacing(spacingHint());
-   grid->setMargin(marginHint());
    setButtons(Ok|Cancel);
    widget->setLayout(grid);
    setCaption(i18nc("Select Time and Date", "Date & Time Selector"));

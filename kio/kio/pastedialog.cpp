@@ -43,7 +43,6 @@ KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
     setMainWidget( frame );
 
     QVBoxLayout *layout = new QVBoxLayout( frame );
-    layout->setSpacing( spacingHint() );
 
     m_label = new QLabel( label, frame );
     layout->addWidget( m_label );

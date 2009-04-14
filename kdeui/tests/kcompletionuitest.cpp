@@ -24,8 +24,6 @@ Form1::Form1( QWidget* parent )
     resize( 559, 465 );
     setWindowTitle( "Form1" );
     Form1Layout = new QVBoxLayout( this );
-    Form1Layout->setSpacing( 6 );
-    Form1Layout->setMargin( 11 );
 
     GroupBox1 = new QGroupBox( this );
     GroupBox1->setLayout( new QVBoxLayout() );

@@ -44,8 +44,6 @@ KCertExport::KCertExport(QWidget *parent)
     QWidget *widget = new QWidget(this);
     setMainWidget(widget);
     QGridLayout *grid = new QGridLayout;
-    grid->setMargin( marginHint() );
-    grid->setSpacing( spacingHint() );
     widget->setLayout(grid);
 
    setCaption(i18n("X509 Certificate Export"));

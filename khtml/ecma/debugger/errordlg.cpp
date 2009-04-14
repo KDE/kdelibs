@@ -51,13 +51,11 @@ KJSErrorDialog::KJSErrorDialog(QWidget *parent, const QString& errorMessage, boo
 
   QVBoxLayout *vl = new QVBoxLayout(contents);
   vl->setMargin(0);
-  vl->setSpacing(spacingHint());
   vl->addWidget(label);
   vl->addWidget(m_dontShowAgainCb);
 
   QHBoxLayout *topLayout = new QHBoxLayout(page);
   topLayout->setMargin(0);
-  topLayout->setSpacing(spacingHint());
   topLayout->addWidget(iconLabel);
   topLayout->addWidget(contents);
   topLayout->addStretch(10);

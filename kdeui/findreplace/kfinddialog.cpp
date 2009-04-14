@@ -84,12 +84,10 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
     q->setMainWidget(page);
 
     topLayout = new QVBoxLayout(page);
-    topLayout->setSpacing( KDialog::spacingHint() );
     topLayout->setMargin( 0 );
 
     findGrp = new QGroupBox(i18nc("@title:group", "Find"), page);
     findLayout = new QGridLayout(findGrp);
-    findLayout->setSpacing( KDialog::spacingHint() );
 
     QLabel *findLabel = new QLabel(i18n("&Text to find:"), findGrp);
     find = new KHistoryComboBox(findGrp);
@@ -107,7 +105,6 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
 
     replaceGrp = new QGroupBox( i18n("Replace With"), page);
     replaceLayout = new QGridLayout(replaceGrp);
-    replaceLayout->setSpacing( KDialog::spacingHint() );
 
     QLabel *replaceLabel = new QLabel(i18n("Replace&ment text:"), replaceGrp);
     replace = new KHistoryComboBox(replaceGrp);
@@ -125,7 +122,6 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
 
     QGroupBox *optionGrp = new QGroupBox(i18n("Options"), page);
     optionsLayout = new QGridLayout(optionGrp);
-    optionsLayout->setSpacing( KDialog::spacingHint() );
 
     caseSensitive = new QCheckBox(i18n("C&ase sensitive"), optionGrp);
     wholeWordsOnly = new QCheckBox(i18n("&Whole words only"), optionGrp);

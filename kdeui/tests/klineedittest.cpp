@@ -19,8 +19,6 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
               :QWidget( widget )
 {
     QVBoxLayout* layout = new QVBoxLayout( this );
-    layout->setMargin( KDialog::marginHint() );
-    layout->setSpacing( KDialog::spacingHint() );
 
     QStringList list;
     list << "Tree" << "Suuupa" << "Stroustrup" << "Stone" << "Slick"

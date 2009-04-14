@@ -63,7 +63,6 @@ void ConfigWidget::init(KConfig *config)
 
     QVBoxLayout *layout = new QVBoxLayout( this );
     layout->setMargin( 0 );
-    layout->setSpacing( 0 );
     layout->setObjectName( "SonnetConfigUILayout" );
     d->wdg = new QWidget( this );
     d->ui.setupUi( d->wdg );

@@ -90,7 +90,6 @@ void KCModuleProxyPrivate::loadModule()
 	{
 		topLayout = new QVBoxLayout( parent );
 		topLayout->setMargin( 0 );
-		topLayout->setSpacing( 0 );
 
 		QString name = modInfo.handle();
 		dbusPath = QLatin1String("/internal/KSettingsWidget/") + name;

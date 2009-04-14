@@ -42,12 +42,10 @@ KColorComboTest::KColorComboTest(QWidget* widget)
     : QWidget(widget)
 {
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setMargin(KDialog::marginHint());
-    vbox->setSpacing(KDialog::spacingHint());
 
     // Standard color list
     KHBox *hbox = new KHBox(this);
-    hbox->setSpacing(KDialog::spacingHint());
+    hbox->setSpacing(-1);
     QLabel *lbl = new QLabel("&Standard colors:", hbox);
     lbl->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
@@ -59,7 +57,7 @@ KColorComboTest::KColorComboTest(QWidget* widget)
 
     // Custom color list
     hbox = new KHBox(this);
-    hbox->setSpacing(KDialog::spacingHint());
+    hbox->setSpacing(-1);
     lbl = new QLabel("&Reds, greens, blues:", hbox);
     lbl->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 

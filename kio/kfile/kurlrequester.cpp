@@ -221,6 +221,7 @@ KUrlRequester::~KUrlRequester()
 void KUrlRequester::KUrlRequesterPrivate::init()
 {
     m_parent->setMargin(0);
+    m_parent->setSpacing(-1); // use default spacing
 
     myFileDialog = 0L;
 
@@ -238,8 +239,6 @@ void KUrlRequester::KUrlRequesterPrivate::init()
     myButton->setToolTip(i18n("Open file dialog"));
 
     m_parent->connect(myButton, SIGNAL(pressed()), SLOT(_k_slotUpdateUrl()));
-
-    m_parent->setSpacing( KDialog::spacingHint() );
 
     widget->installEventFilter( m_parent );
     m_parent->setFocusProxy( widget );

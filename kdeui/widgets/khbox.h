@@ -30,6 +30,9 @@ class QChildEvent;
  * When using a KHBox you don't need to create a layout nor
  * to add the child widgets to it.
  *
+ * Both margin and spacing are initialized to 0. Use QHBoxLayout
+ * if you need standard layout margins.
+ *
  * @see KVBox
  */
 class KDEUI_EXPORT KHBox : public QFrame
@@ -53,7 +56,9 @@ class KDEUI_EXPORT KHBox : public QFrame
     void setMargin( int margin );
 
     /**
-     * Sets the spacing between the child widgets to @p space
+     * Sets the spacing between the child widgets to @p space.
+     *
+     * To get the default layout spacing, set @p space to -1.
      */
     void setSpacing( int space );
 

@@ -29,6 +29,8 @@
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtGui/QCheckBox>
+#include <QtGui/QStyle>
+#include <QtGui/QStyleOptionButton>
 
 #include <kauthorized.h>
 #include <khistorycombobox.h>
@@ -565,9 +567,9 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
 
   QBoxLayout *topLayout = new QVBoxLayout( mainWidget );
   topLayout->setMargin(0);
-  topLayout->setSpacing( KDialog::spacingHint() );
     label = new QLabel(_text, q);
   label->setWordWrap(true);
+  label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
   topLayout->addWidget(label);
 
   if (!bReadOnly)
@@ -621,6 +623,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     view = new KApplicationView(mainWidget);
     view->setModel(new KApplicationModel(view));
     topLayout->addWidget(view);
+    topLayout->setStretchFactor(view, 1);
 
     QObject::connect(view, SIGNAL(selected(QString, QString)),
                      q, SLOT(slotSelected(QString, QString)));
@@ -636,10 +639,14 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
 
   topLayout->addWidget(terminal);
 
+  QStyleOptionButton checkBoxOption;
+  checkBoxOption.initFrom(terminal);
+  int checkBoxIndentation = terminal->style()->pixelMetric( QStyle::PM_IndicatorWidth, &checkBoxOption, terminal );
+  checkBoxIndentation += terminal->style()->pixelMetric( QStyle::PM_CheckBoxLabelSpacing, &checkBoxOption, terminal );
+
   QBoxLayout* nocloseonexitLayout = new QHBoxLayout();
   nocloseonexitLayout->setMargin( 0 );
-  nocloseonexitLayout->setSpacing( KDialog::spacingHint() );
-  QSpacerItem* spacer = new QSpacerItem( 20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum );
+  QSpacerItem* spacer = new QSpacerItem( checkBoxIndentation, 0, QSizePolicy::Fixed, QSizePolicy::Minimum );
   nocloseonexitLayout->addItem( spacer );
 
   nocloseonexit = new QCheckBox( i18n("&Do not close when command exits"), mainWidget );

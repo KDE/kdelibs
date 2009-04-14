@@ -158,7 +158,6 @@ KFontChooser::KFontChooser( QWidget *parent,
     // attribute widgets and preview on the top, and XLFD data at the bottom.
     QVBoxLayout *topLayout = new QVBoxLayout( this );
     topLayout->setMargin( 0 );
-    topLayout->setSpacing( KDialog::spacingHint() );
     int checkBoxGap = KDialog::spacingHint() / 2;
 
     // The splitter contains font attribute widgets in the top part,
@@ -178,8 +177,6 @@ KFontChooser::KFontChooser( QWidget *parent,
         page = new QGroupBox( i18n("Requested Font"), this );
         splitter->addWidget(page);
         gridLayout = new QGridLayout( page );
-        gridLayout->setMargin( KDialog::marginHint() );
-        gridLayout->setSpacing( KDialog::spacingHint() );
         row = 1;
     }
     else
@@ -188,7 +185,6 @@ KFontChooser::KFontChooser( QWidget *parent,
         splitter->addWidget(page);
         gridLayout = new QGridLayout( page );
         gridLayout->setMargin( 0 );
-        gridLayout->setSpacing( KDialog::spacingHint() );
     }
 
     //
@@ -401,7 +397,6 @@ KFontChooser::KFontChooser( QWidget *parent,
         page = new QGroupBox( i18n("Actual Font"), this );
         topLayout->addWidget(page);
         vbox = new QVBoxLayout( page );
-        vbox->setSpacing( KDialog::spacingHint() );
         vbox->addSpacing( fontMetrics().lineSpacing() );
     }
     else
@@ -410,7 +405,6 @@ KFontChooser::KFontChooser( QWidget *parent,
         topLayout->addWidget(page);
         vbox = new QVBoxLayout( page );
         vbox->setMargin( 0 );
-        vbox->setSpacing( KDialog::spacingHint() );
         QLabel *label = new QLabel( i18n("Actual Font"), page );
         vbox->addWidget( label );
     }

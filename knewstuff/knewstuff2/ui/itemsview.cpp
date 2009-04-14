@@ -149,7 +149,6 @@ void ItemsView::buildContents()
 
     m_root->setBackgroundRole(QPalette::Base);
     QVBoxLayout* _layout = new QVBoxLayout(m_root);
-    _layout->setSpacing(10);
 
     if (m_currentFeed != NULL) {
         Entry::List entries = m_currentFeed->entries();

@@ -262,8 +262,6 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   tabSSL = new QFrame(this);
   grid = new QGridLayout( tabSSL );
-  grid->setMargin( KDialog::marginHint() );
-  grid->setSpacing( KDialog::spacingHint() );
   // no need to parse kdeglobals.
   config = new KConfig("cryptodefaults", KConfig::NoGlobals);
   policies = new KConfig("ksslpolicies", KConfig::SimpleConfig);
@@ -288,7 +286,6 @@ QString whatstr;
   //
   QWidget *cwbg = new QWidget(tabSSL);
   QVBoxLayout *laygroup2 = new QVBoxLayout(cwbg);
-  laygroup2->setSpacing(KDialog::spacingHint());
   KComboBox *cwcb = new KComboBox(cwbg);
   laygroup2->addWidget( new QLabel(i18n("Cipher Wizard"),this) );
   laygroup2->addWidget( cwcb );
@@ -353,13 +350,10 @@ QString whatstr;
 #ifdef KSSL_HAVE_SSL
   tabOSSL = new QFrame(this);
   QBoxLayout *vbox = new QVBoxLayout(tabOSSL);
-  vbox->setSpacing(KDialog::spacingHint());
-  vbox->setMargin(KDialog::marginHint());
 
   oInfo = new QGroupBox(i18n("Path to OpenSSL Shared Libraries"), tabOSSL);
   QVBoxLayout *laygroup1 = new QVBoxLayout;
   oInfo->setLayout(laygroup1);
-  laygroup1->setSpacing(KDialog::spacingHint());
   vbox->addWidget(oInfo);
   oPath = new KUrlRequester(oInfo);
   laygroup1->addWidget( oPath );
@@ -414,8 +408,6 @@ QString whatstr;
   tabYourSSLCert = new QFrame(this);
 
   QVBoxLayout *yourLay= new QVBoxLayout(tabYourSSLCert);
-  yourLay->setSpacing(KDialog::spacingHint());
-  yourLay->setMargin(KDialog::marginHint());
 
 #ifdef KSSL_HAVE_SSL
   QHBoxLayout *treeLay=new QHBoxLayout();
@@ -434,7 +426,6 @@ QString whatstr;
 
   QVBoxLayout *btnsLay=new QVBoxLayout();
   treeLay->addLayout(btnsLay);
-  treeLay->setSpacing(3);
   treeLay->setMargin(0);
 
   yourSSLImport = new QPushButton(i18n("I&mport..."), tabYourSSLCert);
@@ -514,10 +505,8 @@ QString whatstr;
 
 #ifdef KSSL_HAVE_SSL
   grid = new QGridLayout(tabAuth);
-  grid->setSpacing(KDialog::spacingHint());
-  grid->setMargin(KDialog::marginHint());
 
-  grid->addWidget(new QLabel(i18n("Default Authentication Certificate"), tabAuth), 0, 0, 0, 3 );
+//  grid->addWidget(new QLabel(i18n("Default Authentication Certificate"), tabAuth), 0, 0, 0, 3 );
   QGroupBox *defCertGroupBox = new QGroupBox(i18n("Default Action"), tabAuth);
   QButtonGroup *defCertBG = new QButtonGroup(defCertGroupBox);
   QVBoxLayout *defCertBGLayout = new QVBoxLayout(defCertGroupBox);
@@ -600,8 +589,6 @@ QString whatstr;
   tabOtherSSLCert = new QFrame(this);
 
   QVBoxLayout* mainOther=new QVBoxLayout(tabOtherSSLCert);
-  mainOther->setSpacing(KDialog::spacingHint());
-  mainOther->setMargin(KDialog::marginHint());
 #ifdef KSSL_HAVE_SSL
 
   QHBoxLayout* hb=new QHBoxLayout();
@@ -740,8 +727,6 @@ QString whatstr;
 
 #ifdef KSSL_HAVE_SSL
   grid = new QGridLayout(tabSSLCA);
-  grid->setSpacing(KDialog::spacingHint());
-  grid->setMargin(KDialog::marginHint());
 
   caList = new QTreeWidget(tabSSLCA);
   caList->setAllColumnsShowFocus(true);
@@ -808,8 +793,6 @@ QString whatstr;
 
 #ifdef KSSL_HAVE_SSL
   grid = new QGridLayout(tabSSLCOpts);
-  grid->setSpacing(KDialog::spacingHint());
-  grid->setMargin(KDialog::marginHint());
   mWarnSelfSigned = new QCheckBox(i18n("Warn on &self-signed certificates or unknown CA's"), tabSSLCOpts);
   connect(mWarnSelfSigned, SIGNAL(clicked()), SLOT(configChanged()));
   mWarnExpired = new QCheckBox(i18n("Warn on &expired certificates"), tabSSLCOpts);
@@ -922,7 +905,7 @@ void KCryptoConfig::load()
     mUseEFile->setChecked(true);
     slotUseEFile();
   }
-  mEGDPath->setPath(cgEGD.readPathEntry("EGDPath", QString()));
+  mEGDPath->setUrl(KUrl(cgEGD.readPathEntry("EGDPath", QString())));
 
 
 #ifdef KSSL_HAVE_SSL

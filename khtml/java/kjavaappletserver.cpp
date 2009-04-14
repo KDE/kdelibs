@@ -792,8 +792,6 @@ QString PermissionDialog::exec( const QString & cert, const QString & perm ) {
     dialog->setWindowTitle( i18n("Security Alert") );
 
     QVBoxLayout* const dialogLayout = new QVBoxLayout( dialog );
-    dialogLayout->setMargin(11);
-    dialogLayout->setSpacing(6);
     dialogLayout->setObjectName("dialogLayout");
 
     dialogLayout->addWidget( new QLabel( i18n("Do you grant Java applet with certificate(s):"), dialog ) );
@@ -805,7 +803,6 @@ QString PermissionDialog::exec( const QString & cert, const QString & perm ) {
 
     QHBoxLayout* const buttonLayout = new QHBoxLayout();
     buttonLayout->setMargin(0);
-    buttonLayout->setSpacing(6);
     buttonLayout->setObjectName("buttonLayout");
 
     QPushButton* const no = new QPushButton( i18n("&No"), dialog );

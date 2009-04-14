@@ -171,8 +171,9 @@ void KPassivePopup::setView( QWidget *child )
 
     delete d->topLayout;
     d->topLayout = new QVBoxLayout( this );
-    d->topLayout->setMargin( d->popupStyle == Balloon ? 22 : KDialog::marginHint() );
-    d->topLayout->setSpacing( KDialog::spacingHint() );
+    if ( d->popupStyle == Balloon ) {
+        d->topLayout->setMargin( 2 * KDialog::marginHint() );
+    }
     d->topLayout->addWidget( d->msgView );
     d->topLayout->activate();
 }
@@ -191,13 +192,13 @@ KVBox * KPassivePopup::standardView( const QString& caption,
                                      QWidget *parent )
 {
     KVBox *vb = new KVBox( parent ? parent : this );
-    vb->setSpacing( KDialog::spacingHint() );
+    vb->setSpacing( -1 );
 
     KHBox *hb=0;
     if ( !icon.isNull() ) {
 	hb = new KHBox( vb );
 	hb->setMargin( 0 );
-	hb->setSpacing( KDialog::spacingHint() );
+	hb->setSpacing( -1 );
 	d->ttlIcon = new QLabel( hb );
 	d->ttlIcon->setPixmap( icon );
         d->ttlIcon->setAlignment( Qt::AlignLeft );

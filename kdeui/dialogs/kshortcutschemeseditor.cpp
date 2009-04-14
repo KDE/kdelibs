@@ -55,7 +55,6 @@ KShortcutSchemesEditor::KShortcutSchemesEditor(KShortcutsDialog *parent)
 
     QHBoxLayout *l = new QHBoxLayout(this);
     l->setMargin(0);
-    l->setSpacing(KDialog::spacingHint());
 
     QLabel *schemesLabel = new QLabel(i18n("Current scheme:"), this);
     l->addWidget(schemesLabel);

@@ -90,10 +90,8 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
 
     QWidget *wdg = new QWidget( this );
     QVBoxLayout *box = new QVBoxLayout( wdg );
-    box->setSpacing( spacingHint() );
 
     QGridLayout *layout = new QGridLayout();
-    layout->setSpacing( spacingHint() );
     box->addLayout( layout );
 
     QString whatsThisText = i18n("<qt>This is the text that will appear in the Places panel.<br /><br />"

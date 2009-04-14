@@ -83,7 +83,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     }
 #endif
     KVBox* vBox1 = new KVBox( this );
-    vBox1->setSpacing( KDialog::spacingHint() );
+    vBox1->setSpacing( -1 );
     setMainWidget(vBox1);
     // Cookie image and message to user
     KHBox* hBox = new KHBox( vBox1 );
@@ -200,8 +200,6 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
 {
     setTitle( i18n("Cookie Details") );
     QGridLayout* grid = new QGridLayout( this );
-    grid->setMargin( KDialog::marginHint() );
-    grid->setSpacing( KDialog::spacingHint() );
     grid->addItem( new QSpacerItem(0, fontMetrics().lineSpacing()), 0, 0 );
     grid->setColumnStretch( 1, 3 );
 

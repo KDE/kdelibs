@@ -970,7 +970,6 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
 
     QGridLayout *tl_layout = new QGridLayout(page);
     tl_layout->setMargin(0);
-    tl_layout->setSpacing(spacingHint());
     d->tl_layout = tl_layout;
     tl_layout->addItem(new QSpacerItem(spacingHint()*2, 0), 0, 1);
 
@@ -989,7 +988,7 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     l_left->addLayout(l_ltop);
 
     // a little space between
-    l_left->addSpacing(10);
+    l_left->addSpacing(10); // FIXME: remove hardcoded values
 
     QGridLayout *l_lbot = new QGridLayout();
     l_left->addLayout(l_lbot);

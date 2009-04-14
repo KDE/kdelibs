@@ -209,8 +209,6 @@ void KCheckAccelerators::createDialog(QWidget *actWin, bool automatic)
     drklash->setWindowTitle( i18nc("@title:window", "Dr. Klash' Accelerator Diagnosis" ));
     drklash->resize( 500, 460 );
     QVBoxLayout* layout = new QVBoxLayout( drklash );
-    layout->setMargin( 11 );
-    layout->setSpacing( 6 );
     drklash_view = new KTextBrowser( drklash );
     layout->addWidget( drklash_view);
     QCheckBox* disableAutoCheck = NULL;

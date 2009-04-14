@@ -81,8 +81,6 @@ KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent)
 	m_printheader->setChecked(true);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this);
-	l0->setMargin(KDialog::marginHint());
-	l0->setSpacing(KDialog::spacingHint());
 	l0->addWidget(m_printfriendly);
 	l0->addWidget(m_printimages);
 	l0->addWidget(m_printheader);

@@ -144,8 +144,6 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
     }
 
     QVBoxLayout* pLayout = new QVBoxLayout( this );
-    pLayout->setMargin( KDialog::marginHint() );
-    pLayout->setSpacing( KDialog::spacingHint() );
     pLayout->addStrut( 360 );	// makes dlg at least that wide
 
     // User tries to overwrite a file with itself ?
@@ -191,8 +189,6 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         if( !d->plugin ){
             // No plugin found, build default dialog
             QGridLayout * gridLayout = new QGridLayout();
-            gridLayout->setMargin( KDialog::marginHint() );
-            gridLayout->setSpacing( KDialog::spacingHint() );
             pLayout->addLayout(gridLayout);
             gridLayout->setColumnStretch(0,0);
             gridLayout->setColumnStretch(1,10);

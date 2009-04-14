@@ -49,7 +49,6 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     QWidget *frame = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(frame);
     layout->setMargin(0);
-    layout->setSpacing(spacingHint());
 
     m_label = new QLabel(label, frame);
     m_label->setWordWrap(true);
@@ -93,7 +92,6 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     QWidget *frame = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(frame);
     layout->setMargin(0);
-    layout->setSpacing(spacingHint());
 
     m_label = new QLabel(label, frame);
     m_label->setWordWrap(true);
@@ -126,7 +124,6 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
 
     QWidget *frame = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(frame);
-    layout->setSpacing(spacingHint());
 
     m_label = new QLabel(label, frame);
     m_label->setWordWrap(true);
@@ -157,7 +154,6 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
 
     QWidget *frame = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(frame);
-    layout->setSpacing(spacingHint());
 
     m_label = new QLabel(label, frame);
     m_label->setWordWrap(true);
@@ -193,7 +189,6 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
 
     QWidget *frame = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(frame);
-    layout->setSpacing(spacingHint());
 
     m_label = new QLabel(label, frame);
     m_label->setWordWrap(true);
@@ -242,7 +237,6 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
 
     QWidget *frame = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(frame);
-    layout->setSpacing(spacingHint());
 
     m_label = new QLabel(label, frame);
     m_label->setWordWrap(true); 

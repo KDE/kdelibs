@@ -99,7 +99,6 @@ KFontRequester::KFontRequester( QWidget *parent, bool onlyFixed )
 
   QHBoxLayout *layout = new QHBoxLayout( this );
   layout->setMargin( 0 );
-  layout->setSpacing( KDialog::spacingHint() );
 
   d->m_sampleLabel = new QLabel( this );
   d->m_button = new QPushButton( i18n( "Choose..." ), this );
