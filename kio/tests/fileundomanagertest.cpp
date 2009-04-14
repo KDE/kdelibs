@@ -356,6 +356,8 @@ void FileUndoManagerTest::testRenameFile()
     const KUrl newUrl( srcFile() + ".new" );
     KUrl::List lst;
     lst.append(oldUrl);
+    QSignalSpy spyUndoAvailable( FileUndoManager::self(), SIGNAL(undoAvailable(bool)) );
+    QVERIFY( spyUndoAvailable.isValid() );
     KIO::Job* job = KIO::moveAs( oldUrl, newUrl, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordJob( FileUndoManager::Rename, lst, newUrl, job );
@@ -365,6 +367,7 @@ void FileUndoManagerTest::testRenameFile()
 
     QVERIFY( !QFile::exists( srcFile() ) );
     QVERIFY( QFileInfo( newUrl.path() ).isFile() );
+    QCOMPARE(spyUndoAvailable.count(), 1);
 
     doUndo();
 
