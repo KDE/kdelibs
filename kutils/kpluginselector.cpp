@@ -675,13 +675,16 @@ QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() co
     connect(configurePushButton, SIGNAL(clicked(bool)), this, SLOT(slotConfigureClicked()));
 
     setBlockedEventTypes(enabledCheckBox, QList<QEvent::Type>() << QEvent::MouseButtonPress
-                            << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
+                            << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick
+                            << QEvent::KeyPress << QEvent::KeyRelease);
 
     setBlockedEventTypes(aboutPushButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
-                            << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
-
+                            << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick
+                            << QEvent::KeyPress << QEvent::KeyRelease);
+                            
     setBlockedEventTypes(configurePushButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
-                            << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
+                            << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick
+                            << QEvent::KeyPress << QEvent::KeyRelease);
 
     widgetList << enabledCheckBox << configurePushButton << aboutPushButton;
 
