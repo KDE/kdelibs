@@ -41,6 +41,7 @@ void KFilterTest::initTestCase()
     const QString currentdir = QDir::currentPath();
     pathgz = currentdir + "/test.gz";
     pathbz2 = currentdir + "/test.bz2";
+    pathxz = currentdir + "/test.xz";
 
     // warning, update the COMPAREs in test_block_write() if changing the test data...
     testData = "hello world\n";
@@ -71,6 +72,10 @@ void KFilterTest::test_block_write()
     kDebug() << " -- test_block_write bzip2 -- ";
     test_block_write(pathbz2, testData);
     QCOMPARE( QFileInfo( pathbz2 ).size(), 52LL ); // size of test.bz2
+
+    kDebug() << " -- test_block_write xz -- ";
+    test_block_write(pathxz, testData);
+    QCOMPARE( QFileInfo( pathxz ).size(), 64LL ); // size of test.lzma
 }
 
 void KFilterTest::test_biggerWrites()
@@ -142,6 +147,8 @@ void KFilterTest::test_block_read()
     test_block_read(pathgz);
     kDebug() << " -- test_block_read bzip2 -- ";
     test_block_read(pathbz2);
+    kDebug() << " -- test_block_read lzma -- ";
+    test_block_read(pathxz);
 }
 
 void KFilterTest::test_getch( const QString & fileName )
@@ -167,6 +174,8 @@ void KFilterTest::test_getch()
     test_getch(pathgz);
     kDebug() << " -- test_getch bzip2 -- ";
     test_getch(pathbz2);
+    kDebug() << " -- test_getch lzma -- ";
+    test_getch(pathxz);
 }
 
 void KFilterTest::test_textstream(  const QString & fileName )
@@ -190,6 +199,8 @@ void KFilterTest::test_textstream()
     test_textstream(pathgz);
     kDebug() << " -- test_textstream bzip2 -- ";
     test_textstream(pathbz2);
+    kDebug() << " -- test_textstream lzma -- ";
+    test_textstream(pathxz);
 }
 
 void KFilterTest::test_readall(const QString & fileName, const QString& mimeType, const QByteArray& expectedData)
@@ -210,6 +221,8 @@ void KFilterTest::test_readall()
     test_readall(pathgz, QString::fromLatin1("application/x-gzip"), testData);
     kDebug() << " -- test_readall bzip2 -- ";
     test_readall(pathbz2, QString::fromLatin1("application/x-bzip"), testData);
+    kDebug() << " -- test_readall lzma -- ";
+    test_readall(pathxz, QString::fromLatin1("application/x-xz"), testData);
     kDebug() << " -- test_readall gzip-derived -- ";
     test_readall(pathgz, QString::fromLatin1("image/svg+xml-compressed"), testData);
 }

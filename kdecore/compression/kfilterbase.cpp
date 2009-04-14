@@ -26,6 +26,9 @@
 #ifdef HAVE_BZIP2_SUPPORT
 #include "kbzip2filter.h"
 #endif
+#ifdef HAVE_XZ_SUPPORT
+#include "kxzfilter.h"
+#endif
 
 class KFilterBase::Private
 {
@@ -80,6 +83,16 @@ KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
         return new KBzip2Filter;
     }
 #endif
+#ifdef HAVE_XZ_SUPPORT
+    if ( fileName.endsWith( ".lzma", Qt::CaseInsensitive ) || fileName.endsWith( ".xz", Qt::CaseInsensitive ) )
+    {
+        return new KXzFilter;
+    }
+    if ( fileName.endsWith( ".xz", Qt::CaseInsensitive ) || fileName.endsWith( ".xz", Qt::CaseInsensitive ) )
+    {
+        return new KXzFilter;
+    }
+#endif
     else
     {
         // not a warning, since this is called often with other mimetypes (see #88574)...
@@ -102,6 +115,13 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
         return new KBzip2Filter;
     }
 #endif
+#ifdef HAVE_XZ_SUPPORT
+    if ( mimeType == QLatin1String( "application/x-lzma" ) // legacy name, still used
+        || mimeType == QLatin1String( "application/x-xz" ) // current naming
+       ) {
+        return new KXzFilter;
+    }
+#endif
     const KMimeType::Ptr mime = KMimeType::mimeType(mimeType);
     if (mime) {
         if (mime->is("application/x-gzip")) {
@@ -110,6 +130,15 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
 #ifdef HAVE_BZIP2_SUPPORT
         if (mime->is("application/x-bzip")) {
             return new KBzip2Filter;
+        }
+#endif
+#ifdef HAVE_XZ_SUPPORT
+        if (mime->is("application/x-lzma")) {
+            return new KXzFilter;
+        }
+
+        if (mime->is("application/x-xz")) {
+            return new KXzFilter;
         }
 #endif
     }

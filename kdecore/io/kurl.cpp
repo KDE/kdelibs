@@ -934,6 +934,14 @@ inline static bool hasSubUrl( const QUrl& url )
     if ( ref.startsWith("bzip:") || ref.startsWith("bzip2:") )
       return true;
     break;
+  case 'l':
+    if ( ref.startsWith("lzma:") )
+      return true;
+    break;
+  case 'x':
+    if ( ref.startsWith("xz:") )
+      return true;
+    break;
   case 't':
     if ( ref.startsWith("tar:") )
       return true;

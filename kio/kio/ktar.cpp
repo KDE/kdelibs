@@ -102,6 +102,14 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
         {
             d->mimetype = "application/x-bzip";
         }
+        else if ( d->mimetype == "application/x-lzma-compressed-tar" ) // that's a lzma compressed tar file, so ask for xz filter
+        {
+            d->mimetype = "application/x-lzma";
+        }
+        else if ( d->mimetype == "application/x-xz-compressed-tar" ) // that's a xz compressed tar file, so ask for xz filter
+        {
+            d->mimetype = "application/x-xz";
+        }
         else
         {
             // Something else. Check if it's not really gzip though (e.g. for old-style KOffice files)
@@ -116,6 +124,14 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
                         d->mimetype = "application/x-gzip";
                     else if ( firstByte == 'B' && secondByte == 'Z' && thirdByte == 'h' )
                         d->mimetype = "application/x-bzip";
+                    else if ( firstByte == '\xFD' && secondByte == '7' && thirdByte == 'z' )
+                    {
+                        char fourthByte, fifthByte, sixthByte;
+                        if ( file.getChar(&fourthByte) && fourthByte == 'X' &&
+			     file.getChar(&fifthByte) && fifthByte == 'Z' &&
+			     file.getChar(&sixthByte) && sixthByte == 0x00 )
+                            d->mimetype = "application/x-xz";
+                    }
                     else if ( firstByte == 'P' && secondByte == 'K' && thirdByte == 3 )
                     {
                         char fourthByte;
@@ -494,7 +510,9 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName ) {
 
     bool forced = false;
     if( "application/x-gzip" == mimetype
-        || "application/x-bzip" == mimetype)
+        || "application/x-bzip" == mimetype
+	|| "application/x-lzma" == mimetype
+	|| "application/x-xz" == mimetype)
         forced = true;
 
     // #### TODO this should use KSaveFile to avoid problems on disk full

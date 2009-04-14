@@ -53,6 +53,7 @@ protected Q_SLOTS:
 private:
     QString pathgz;
     QString pathbz2;
+    QString pathxz;
     QByteArray testData;
     QByteArray m_filterOutput;
 };

@@ -25,7 +25,7 @@
  * A class for reading / writing (optionally compressed) tar archives.
  *
  * KTar allows you to read and write tar archives, including those
- * that are compressed using gzip or bzip2.
+ * that are compressed using gzip, bzip2 or xz.
  *
  * @author Torben Weis <weis@kde.org>, David Faure <faure@kde.org>
  */
@@ -37,7 +37,8 @@ public:
      * using the compression filter associated to given mimetype.
      *
      * @param filename is a local path (e.g. "/home/weis/myfile.tgz")
-     * @param mimetype "application/x-gzip" or "application/x-bzip"
+     * @param mimetype "application/x-gzip", "application/x-bzip" or
+     * "application/x-xz"
      * Do not use application/x-compressed-tar or similar - you only need to
      * specify the compression layer !  If the mimetype is omitted, it
      * will be determined from the filename.

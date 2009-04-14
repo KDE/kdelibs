@@ -1373,7 +1373,9 @@ void KRun::foundMimeType(const QString& type)
 
       if ( type == "application/x-gzip"  ||
            type == "application/x-bzip"  ||
-           type == "application/x-bzip"  )
+           type == "application/x-bzip"  ||
+           type == "application/x-lzma"  ||
+           type == "application/x-xz" )
       {
         KUrl::List lst = KUrl::split( m_strURL );
         if ( lst.isEmpty() )
@@ -1391,6 +1393,10 @@ void KRun::foundMimeType(const QString& type)
           lst.prepend( KUrl( "bzip:/decompress" ) );
         else if ( type == "application/x-bzip" )
           lst.prepend( KUrl( "bzip2:/decompress" ) );
+        else if ( type == "application/x-lzma" )
+          lst.prepend( KUrl( "lzma:/decompress" ) );
+        else if ( type == "application/x-xz" )
+          lst.prepend( KUrl( "xz:/decompress" ) );
         else if ( type == "application/x-tar" )
           lst.prepend( KUrl( "tar:/" ) );
 

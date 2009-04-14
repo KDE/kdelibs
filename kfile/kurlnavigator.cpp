@@ -742,6 +742,8 @@ bool KUrlNavigator::Private::isCompressedPath(const KUrl& url) const
     // Note: this list of MIME types depends on the protocols implemented by kio_archive
     return  mime->is("application/x-compressed-tar") ||
             mime->is("application/x-bzip-compressed-tar") ||
+	    mime->is("application/x-lzma-compressed-tar") ||
+	    mime->is("application/x-xz-compressed-tar") ||
             mime->is("application/x-tar") ||
             mime->is("application/x-tarz") ||
             mime->is("application/x-tzo") || // (not sure KTar supports those?)

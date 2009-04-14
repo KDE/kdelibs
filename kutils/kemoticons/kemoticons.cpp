@@ -201,8 +201,12 @@ QStringList KEmoticons::installTheme(const QString &archiveName)
         archive = new KZip(archiveName);
     } else if (currentBundleMimeType == "application/x-compressed-tar" ||
                currentBundleMimeType == "application/x-bzip-compressed-tar" ||
+               currentBundleMimeType == "application/x-lzma-compressed-tar" ||
+               currentBundleMimeType == "application/x-xz-compressed-tar" ||
                currentBundleMimeType == "application/x-gzip" ||
-               currentBundleMimeType == "application/x-bzip") {
+               currentBundleMimeType == "application/x-bzip" ||
+               currentBundleMimeType == "application/x-lzma" ||
+	       currentBundleMimeType == "application/x-xz") {
         archive = new KTar(archiveName);
     } else if (archiveName.endsWith("jisp") || archiveName.endsWith("zip")) {
         archive = new KZip(archiveName);

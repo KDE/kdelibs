@@ -1428,7 +1428,9 @@ bool CoreEngine::install(const QString &payloadfile)
                 archive = new KZip(payloadfile);
             } else if (mimeType->name() == "application/tar"
                        || mimeType->name() == "application/x-gzip"
-                       || mimeType->name() == "application/x-bzip") {
+                       || mimeType->name() == "application/x-bzip"
+                       || mimeType->name() == "application/x-lzma"
+                       || mimeType->name() == "application/x-xz") {
                 archive = new KTar(payloadfile);
             } else {
                 delete archive;

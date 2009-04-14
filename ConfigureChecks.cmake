@@ -27,6 +27,8 @@ if(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
    set(NEED_BZ2_PREFIX 1)
 endif(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
 
+macro_bool_to_01(LIBLZMA_FOUND HAVE_XZ_SUPPORT)         # kdecore
+
 macro_bool_to_01(CARBON_FOUND HAVE_CARBON)              # kdecore
 
 macro_bool_to_01(LIBINTL_FOUND ENABLE_NLS)              # kdecore, khtml, kjs

@@ -22,6 +22,9 @@
 /* Define if you have libz */
 #cmakedefine   HAVE_LIBZ 1
 
+/* Define if you have xz */
+#cmakedefine   HAVE_XZ_SUPPORT 1
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #cmakedefine   HAVE_DLFCN_H 1
 
