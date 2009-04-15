@@ -165,7 +165,8 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
     q->setResizeMode(QListWidget::Fixed);
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
-    // disable updates to not trigger paint events when adding child items
+    // disable updates to not trigger paint events when adding child items,
+    // but force an initial paint so that we do not get garbage
     q->repaint();
     q->setUpdatesEnabled(false);
 
