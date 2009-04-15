@@ -299,5 +299,14 @@ bool KConfigDialog::isDefault()
     return true;
 }
 
+void KConfigDialog::updateButtons()
+{
+    d->_k_updateButtons();
+}
+
+void KConfigDialog::settingsChangedSlot()
+{
+    d->_k_settingsChangedSlot();
+}
 
 #include "kconfigdialog.moc"

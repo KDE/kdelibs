@@ -162,6 +162,7 @@ public:
    */
   static bool showDialog( const QString& name );
 
+
 protected Q_SLOTS:
   /**
    * Update the settings from the dialog.
@@ -187,6 +188,20 @@ protected Q_SLOTS:
    * Example use: User clicks Defaults button in a configure dialog.
    */
   virtual void updateWidgetsDefault();
+
+
+  /**
+   * Updates the Apply and Default buttons.
+   * Connect to this slot if you implement you own hasChanged()
+   * or isDefault() methods for widgets not managed by KConfig.
+   */
+  void updateButtons();
+
+  /**
+   * Some setting was changed. Emit the signal with the dialogs name.
+   * Connect to this slot if there are widgets not managed by KConfig.
+   */
+  void settingsChangedSlot();
 
 protected:
 
