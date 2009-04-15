@@ -1027,7 +1027,14 @@ QList<KSslCipher> KSslCipher::supportedCiphers()
 }
 
 
-//#include <QtNetwork/QHostAddress>
+SslErrorUiData::SslErrorUiData()
+ : d(new Private())
+{
+    d->usedBits = 0;
+    d->bits = 0;
+}
+
+
 SslErrorUiData::SslErrorUiData(const KTcpSocket *socket)
  : d(new Private())
 {

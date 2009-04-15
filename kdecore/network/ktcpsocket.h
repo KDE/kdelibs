@@ -357,6 +357,7 @@ class KSslCertificateManager;
 class KDECORE_EXPORT SslErrorUiData
 {
 public:
+    SslErrorUiData();
     SslErrorUiData(const KTcpSocket *socket);
     SslErrorUiData(const SslErrorUiData &other);
     SslErrorUiData &operator=(const SslErrorUiData &);
