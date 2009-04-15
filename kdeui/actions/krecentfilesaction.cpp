@@ -207,7 +207,7 @@ KUrl::List KRecentFilesAction::urls() const
 void KRecentFilesAction::clear()
 {
     clearEntries();
-    emit recentListClear();
+    emit recentListCleared();
 }
 
 void KRecentFilesAction::clearEntries()

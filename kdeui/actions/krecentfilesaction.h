@@ -174,7 +174,7 @@ Q_SIGNALS:
    *  So when user store url in specific config file it can saveEntry.
    *  @since 4.3
    */ 
-  void recentListClear();
+  void recentListCleared();
 
 private:
     //Internal
