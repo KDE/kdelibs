@@ -39,7 +39,7 @@
 #include <QtGui/QCheckBox>
 #include <QtGui/qdrawutil.h>
 #include <QtGui/QFontMetrics>
-#include <QtGui/QGridLayout>
+#include <QtGui/QFormLayout>
 #include <QtGui/QItemDelegate>
 #include <QtGui/QLabel>
 #include <QtGui/QMenu>
@@ -91,50 +91,40 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     QWidget *wdg = new QWidget( this );
     QVBoxLayout *box = new QVBoxLayout( wdg );
 
-    QGridLayout *layout = new QGridLayout();
+    QFormLayout *layout = new QFormLayout();
     box->addLayout( layout );
 
     QString whatsThisText = i18n("<qt>This is the text that will appear in the Places panel.<br /><br />"
                                  "The description should consist of one or two words "
                                  "that will help you remember what this entry refers to.</qt>");
-    QLabel *label = new QLabel( i18n("&Description:"), wdg );
-    layout->addWidget( label, 0, 0 );
-
     m_edit = new KLineEdit( wdg );
-    layout->addWidget( m_edit, 0, 1 );
+    layout->addRow( i18n("&Description:"), m_edit );
     m_edit->setText( description.isEmpty() ? url.fileName() : description );
-    label->setBuddy( m_edit );
-    label->setWhatsThis(whatsThisText );
-    m_edit->setWhatsThis(whatsThisText );
+    m_edit->setWhatsThis( whatsThisText );
+    layout->labelForField(m_edit)->setWhatsThis( whatsThisText );
 
     whatsThisText = i18n("<qt>This is the location associated with the entry. Any valid URL may be used. For example:<br /><br />"
                          "%1<br />http://www.kde.org<br />ftp://ftp.kde.org/pub/kde/stable<br /><br />"
                          "By clicking on the button next to the text edit box you can browse to an "
                          "appropriate URL.</qt>", QDir::homePath());
-    label = new QLabel( i18n("&Location:"), wdg );
-    layout->addWidget( label, 1, 0 );
     m_urlEdit = new KUrlRequester( url.prettyUrl(), wdg );
     m_urlEdit->setMode( KFile::Directory );
-    layout->addWidget( m_urlEdit, 1, 1 );
-    label->setBuddy( m_urlEdit );
-    label->setWhatsThis(whatsThisText );
-    m_urlEdit->setWhatsThis(whatsThisText );
+    layout->addRow( i18n("&Location:"), m_urlEdit );
+    m_urlEdit->setWhatsThis( whatsThisText );
+    layout->labelForField(m_urlEdit)->setWhatsThis( whatsThisText );
 
     whatsThisText = i18n("<qt>This is the icon that will appear in the Places panel.<br /><br />"
                          "Click on the button to select a different icon.</qt>");
-    label = new QLabel( i18n("Choose an &icon:"), wdg );
-    layout->addWidget( label, 2, 0 );
     m_iconButton = new KIconButton( wdg );
-    layout->addWidget( m_iconButton, 2, 1 );
+    layout->addRow( i18n("Choose an &icon:"), m_iconButton );
     m_iconButton->setObjectName( QLatin1String( "icon button" ) );
     m_iconButton->setIconSize( iconSize );
     if ( icon.isEmpty() )
         m_iconButton->setIcon( KMimeType::iconNameForUrl( url ) );
     else
         m_iconButton->setIcon( icon );
-    label->setBuddy( m_iconButton );
-    label->setWhatsThis(whatsThisText );
-    m_iconButton->setWhatsThis(whatsThisText );
+    m_iconButton->setWhatsThis( whatsThisText );
+    layout->labelForField(m_iconButton)->setWhatsThis( whatsThisText );
 
     if ( allowGlobal ) {
         QString appName;
