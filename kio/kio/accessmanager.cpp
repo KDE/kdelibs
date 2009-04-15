@@ -60,7 +60,7 @@ void AccessManager::setExternalContentAllowed(bool allowed)
     d->externalContentAllowed = allowed;
 }
 
-bool AccessManager::externalContentAllowed() const
+bool AccessManager::isExternalContentAllowed() const
 {
     return d->externalContentAllowed;
 }
