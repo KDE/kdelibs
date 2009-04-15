@@ -669,7 +669,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
       // TODO:
       // we should restore the original text (not autocompleted), otherwise the paste
       // will get into troubles Bug: 134691
-        paste();
+        if( !isReadOnly() )
+          paste();
         return;
     }
     else if ( KStandardShortcut::pasteSelection().contains( key ) )
@@ -682,17 +683,20 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
     else if ( KStandardShortcut::cut().contains( key ) )
     {
-        cut();
+        if( !isReadOnly() )
+           cut();
         return;
     }
     else if ( KStandardShortcut::undo().contains( key ) )
     {
-        undo();
+        if( !isReadOnly() )
+          undo();
         return;
     }
     else if ( KStandardShortcut::redo().contains( key ) )
     {
-        redo();
+        if( !isReadOnly() )
+           redo();
         return;
     }
     else if ( KStandardShortcut::deleteWordBack().contains( key ) )
