@@ -563,13 +563,13 @@ void KDatePicker::selectYearClicked()
                 qMin( calendar()->day( date() ), calendar()->daysInMonth( newDate ) )
             );
         }
+
+        // Set the date, if it's invalid in any way then alert user and don't update
+        if ( ! setDate( newDate ) ) {
+            KNotification::beep();
+        }
     }
     delete popup;
-
-    // Set the date, if it's invalid in any way then alert user and don't update
-    if ( ! setDate( newDate ) ) {
-        KNotification::beep();
-    }
 
     d->selectYear->setChecked( false );
 }
