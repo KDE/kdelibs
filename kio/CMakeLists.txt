@@ -342,6 +342,7 @@ install(  FILES
   kio/renamedialogplugin.h
   kio/skipdialog.h
   kio/udsentry.h
+  kssl/ksslcertificatemanager.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 if( NOT WIN32 )
