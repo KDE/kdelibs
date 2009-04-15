@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005-2008 David Jarvie <djarvie@kde.org>
+    Copyright (c) 2005-2009 David Jarvie <djarvie@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -1119,7 +1119,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * expressed in UTC.
      *
      * @return current date/time
-     * @see currentLocalDateTime(), currentDateTime()
+     * @see currentLocalDateTime(), currentDateTime(), currentLocalDate(), currentLocalTime()
      */
     static KDateTime currentUtcDateTime();
 
@@ -1132,6 +1132,24 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * @see currentUtcDateTime(), currentLocalDateTime()
      */
     static KDateTime currentDateTime(const Spec &spec);
+
+    /**
+     * Returns the current date in the local time zone, as reported by the
+     * system clock.
+     *
+     * @return current date
+     * @see currentLocalDateTime(), currentLocalTime()
+     */
+    static QDate currentLocalDate();
+
+    /**
+     * Returns the current time of day in the local time zone, as reported
+     * by the system clock.
+     *
+     * @return current date
+     * @see currentLocalDateTime(), currentLocalDate()
+     */
+    static QTime currentLocalTime();
 
     /**
      * Returns the date/time as a string. The @p format parameter determines the
@@ -1523,6 +1541,48 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      */
     void detach();
 
+#ifndef NDEBUG
+    /**
+     * Set an adjustment to be applied when fetching the current system time.
+     * This is applied by all KDateTime methods which return the system date
+     * and/or time.
+     *
+     * The supplied date/time is used as the current simulated time and the
+     * time adjustment is set to the difference between the real current time
+     * and @p newTime. If @p newTime has a time zone, that time zone is set
+     * to be the simulated local system time zone.
+     *
+     * @warning This function is provided only for testing purposes. It is
+     *          only available when compiled with debug enabled. Calls to it
+     *          must be conditionally compiled, e.g.:
+     *          \code
+     *          #ifndef NDEBUG
+     *             KDateTime::simulateSystemTime(kdt);
+     *          #endif
+     *          \endcode
+     *
+     * @param dt the current simulated time
+     *
+     * @see currentDateTime(), currentLocalDateTime(), currentUtcDateTime(),
+     *      currentLocalDate(), currentLocalTime()
+     */
+    static void setSimulatedSystemTime(const KDateTime& newTime);
+
+    /**
+     * Return the real (not simulated) system time.
+     *
+     * @warning This function is provided only for testing purposes. It is
+     *          only available when compiled with debug enabled. Calls to it
+     *          must be conditionally compiled, e.g.:
+     *          \code
+     *          #ifndef NDEBUG
+     *             dt = KDateTime::realCurrentLocalDateTime();
+     *          #endif
+     *          \endcode
+     */
+    static KDateTime realCurrentLocalDateTime();
+#endif
+
     friend QDataStream &operator<<(QDataStream &out, const KDateTime &dateTime);
     friend QDataStream &operator>>(QDataStream &in, KDateTime &dateTime);
 
@@ -1539,5 +1599,61 @@ QDataStream &operator>>(QDataStream &in, KDateTime::Spec &spec);
 QDataStream &operator<<(QDataStream &out, const KDateTime &dateTime);
 /** Read a KDateTime object into @p dateTime from @p in, in binary format. */
 QDataStream &operator>>(QDataStream &in, KDateTime &dateTime);
+
+
+#ifndef NDEBUG
+#include <ksystemtimezone.h>
+
+/**
+ * Class to simulate the local system time zone used by KDateTime in debug mode.
+ *
+ * By use of a #define, KSystemTimeZones_Simulated is aliased to KSystemTimeZones
+ * which enables KSystemTimeZones::local() to return the simulated system time
+ * zone without code alteration.
+ *
+ * @warning This class is provided only for testing purposes. It is
+ *          only available when compiled with debug enabled. Calls to it
+ *          must be conditionally compiled, e.g.:
+ *          \code
+ *          #ifndef NDEBUG
+ *             KSystemTimeZones_Simulated::setLocalZone(tz);
+ *          #endif
+ *          \endcode
+ *
+ * @author David Jarvie \<djarvie@kde.org\>.
+ */
+class KDECORE_EXPORT KSystemTimeZones_Simulated : public KSystemTimeZones
+{
+  public:
+    /**
+     * Return the real (not simulated) local system time zone.
+     */
+    static KTimeZone realLocalZone();
+
+    /**
+     * Return the simulated local system time zone.
+     * If no simulated system time zone has been set, it returns the
+     * real local system time zone.
+     */
+    static KTimeZone local();
+
+    /**
+     * Set or clear the simulated local system time zone.
+     *
+     * @param tz the time zone to simulate, or an invalid KTimeZone instance
+     *           (i.e. \code tz.isValid() == false \endcode) to cancel
+     *           simulation
+     */
+    static void setLocalZone(const KTimeZone& tz);
+
+    /**
+     * Check whether there is a simulated local system time zone.
+     */
+    static bool isSimulated();
+};
+
+/** Alias KSystemTimeZones_Simulated to KSystemTimeZones. */
+#define KSystemTimeZones KSystemTimeZones_Simulated
+#endif // NDEBUG
 
 #endif

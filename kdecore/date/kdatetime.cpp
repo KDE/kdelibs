@@ -101,6 +101,38 @@ KDECORE_EXPORT int KDateTime_zoneCacheHit = 0;
 
 /*----------------------------------------------------------------------------*/
 
+#ifndef NDEBUG
+#undef KSystemTimeZones
+
+K_GLOBAL_STATIC(KTimeZone, simulatedLocalZone);
+
+KTimeZone KSystemTimeZones_Simulated::realLocalZone()
+{
+    return KSystemTimeZones::local();
+}
+
+KTimeZone KSystemTimeZones_Simulated::local()
+{
+    return simulatedLocalZone->isValid()
+	 ? *simulatedLocalZone : KSystemTimeZones::local();
+}
+
+void KSystemTimeZones_Simulated::setLocalZone(const KTimeZone& tz)
+{
+    *simulatedLocalZone = tz;
+}
+
+bool KSystemTimeZones_Simulated::isSimulated()
+{
+    return simulatedLocalZone->isValid();
+}
+
+#define KSystemTimeZones KSystemTimeZones_Simulated
+#endif
+
+
+/*----------------------------------------------------------------------------*/
+
 class KDateTimeSpecPrivate
 {
   public:
@@ -436,6 +468,9 @@ class KDateTimePrivate : public QSharedData
 
 
     static QTime         sod;               // start of day (00:00:00)
+#ifndef NDEBUG
+    static qint64        currentDateTimeOffset;  // offset to apply to current system time
+#endif
 
     /* Because some applications create thousands of instances of KDateTime, this
      * data structure is designed to minimize memory usage. Ensure that all small
@@ -470,6 +505,9 @@ private:
 
 
 QTime KDateTimePrivate::sod(0,0,0);
+#ifndef NDEBUG
+qint64 KDateTimePrivate::currentDateTimeOffset = 0;
+#endif
 
 KDateTime::Spec KDateTimePrivate::spec() const
 {
@@ -1229,23 +1267,31 @@ int KDateTime::daysTo(const KDateTime &t2) const
 
 KDateTime KDateTime::currentLocalDateTime()
 {
+#ifndef NDEBUG
+    if (KSystemTimeZones_Simulated::isSimulated())
+        return currentUtcDateTime().toZone(KSystemTimeZones_Simulated::local());
+#endif
     return KDateTime(QDateTime::currentDateTime(), Spec(KSystemTimeZones::local()));
 }
 
 KDateTime KDateTime::currentUtcDateTime()
 {
+    KDateTime result;
 #ifdef Q_OS_WIN
     SYSTEMTIME st;
     memset(&st, 0, sizeof(SYSTEMTIME));
     GetSystemTime(&st);
-    return KDateTime(QDate(st.wYear, st.wMonth, st.wDay),
-                     QTime(st.wHour, st.wMinute, st.wSecond, st.wMilliseconds),
-                     UTC);
+    result = KDateTime(QDate(st.wYear, st.wMonth, st.wDay),
+                       QTime(st.wHour, st.wMinute, st.wSecond, st.wMilliseconds),
+                       UTC);
 #else
     time_t t;
     ::time(&t);
-    KDateTime result;
     result.setTime_t(static_cast<qint64>(t));
+#endif
+#ifndef NDEBUG
+    return result.addSecs(KDateTimePrivate::currentDateTimeOffset);
+#else
     return result;
 #endif
 }
@@ -1253,6 +1299,16 @@ KDateTime KDateTime::currentUtcDateTime()
 KDateTime KDateTime::currentDateTime(const Spec &spec)
 {
     return currentUtcDateTime().toTimeSpec(spec);
+}
+
+QDate KDateTime::currentLocalDate()
+{
+    return currentLocalDateTime().date();
+}
+
+QTime KDateTime::currentLocalTime()
+{
+    return currentLocalDateTime().time();
 }
 
 KDateTime::Comparison KDateTime::compare(const KDateTime &other) const
@@ -2294,6 +2350,19 @@ void KDateTime::setFromStringDefault(const Spec &spec)
     KDateTimePrivate::fromStringDefault() = spec;
 }
 
+#ifndef NDEBUG
+void KDateTime::setSimulatedSystemTime(const KDateTime& newTime)
+{
+    KDateTimePrivate::currentDateTimeOffset = realCurrentLocalDateTime().secsTo_long(newTime);
+    KSystemTimeZones_Simulated::setLocalZone(newTime.timeZone());
+}
+
+KDateTime KDateTime::realCurrentLocalDateTime()
+{
+    return KDateTime(QDateTime::currentDateTime(), KSystemTimeZones::realLocalZone());
+}
+#endif
+
 QDataStream & operator<<(QDataStream &s, const KDateTime &dt)
 {
     s << dt.dateTime() << dt.timeSpec() << quint8(dt.isDateOnly() ? 0x01 : 0x00);
@@ -2640,7 +2709,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
     }
 
     if (year == NO_NUMBER)
-        year = QDate::currentDate().year();
+        year = KDateTime::currentLocalDate().year();
     if (month == NO_NUMBER)
         month = 1;
     QDate d = checkDate(year, month, (day > 0 ? day : 1), status);   // convert date, and check for out-of-range
