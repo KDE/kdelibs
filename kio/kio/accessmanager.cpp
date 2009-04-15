@@ -60,6 +60,11 @@ void AccessManager::setExternalContentAllowed(bool allowed)
     d->externalContentAllowed = allowed;
 }
 
+bool AccessManager::externalContentAllowed()
+{
+    return d->externalContentAllowed;
+}
+
 QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData)
 {
     KIO::Job *kioJob = 0;
