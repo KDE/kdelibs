@@ -194,12 +194,14 @@ protected Q_SLOTS:
    * Updates the Apply and Default buttons.
    * Connect to this slot if you implement you own hasChanged()
    * or isDefault() methods for widgets not managed by KConfig.
+   * @since 4.3
    */
   void updateButtons();
 
   /**
    * Some setting was changed. Emit the signal with the dialogs name.
    * Connect to this slot if there are widgets not managed by KConfig.
+   * @since 4.3
    */
   void settingsChangedSlot();
 
