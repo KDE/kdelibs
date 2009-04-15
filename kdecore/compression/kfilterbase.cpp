@@ -88,10 +88,6 @@ KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
     {
         return new KXzFilter;
     }
-    if ( fileName.endsWith( ".xz", Qt::CaseInsensitive ) || fileName.endsWith( ".xz", Qt::CaseInsensitive ) )
-    {
-        return new KXzFilter;
-    }
 #endif
     else
     {
