@@ -30,6 +30,9 @@
 /**
  * KDE implementation of QNetworkAccessManager. Use this class instead of QNetworkAccessManager
  * for any KDE application since it uses KIO for network operations.
+ * Please note that this class is not though as replacement for KIO API! Just use if in places where
+ * it is required, such as network binding with Qt classes (one example is QtWebKit); i.e. API
+ * requires a QNetworkAccessManager.
  * @since 4.3
  */
 
