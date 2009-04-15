@@ -44,6 +44,11 @@ class KIO_EXPORT AccessManager : public QNetworkAccessManager
 public:
     AccessManager(QObject *parent);
     virtual ~AccessManager();
+    /** 
+     * Set @p allowed to false if you don't want any external content to be fetched,
+     * by default external content is allowed
+     */
+    void setExternalContentAllowed(bool allowed);
 
 protected:
     virtual QNetworkReply *createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData = 0);

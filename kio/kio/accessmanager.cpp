@@ -36,8 +36,8 @@ namespace KIO {
 class AccessManager::AccessManagerPrivate
 {
 public:
-    AccessManagerPrivate() {}
-
+    AccessManagerPrivate():externalContentAllowed(true) {}
+    bool externalContentAllowed;
     static KIO::MetaData metaDataForRequest(QNetworkRequest request);
 };
 
@@ -55,9 +55,20 @@ AccessManager::~AccessManager()
     delete d;
 }
 
+void AccessManager::setExternalContentAllowed(bool allowed)
+{
+    d->externalContentAllowed = allowed;
+}
+
 QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData)
 {
     KIO::Job *kioJob = 0;
+
+    if ( !d->externalContentAllowed ) {
+        kDebug() << "Blocked: " << req.url();
+        /* if kioJob equals zero, the AccessManagerReply will block the request */
+        return new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
+    }
 
     switch (op) {
         case HeadOperation: {
