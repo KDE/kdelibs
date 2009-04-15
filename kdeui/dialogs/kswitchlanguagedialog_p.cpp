@@ -104,6 +104,7 @@ KSwitchLanguageDialog::KSwitchLanguageDialog( QWidget *parent )
     d->page = new QWidget( this );
     setMainWidget(d->page);
     QVBoxLayout *topLayout = new QVBoxLayout( d->page );
+    topLayout->setMargin( 0 );
     QLabel *label = new QLabel( i18n("Please choose the language which should be used for this application:"), d->page );
     topLayout->addWidget( label );
 
