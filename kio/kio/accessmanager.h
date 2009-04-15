@@ -53,7 +53,7 @@ public:
     /**
      * returns if external content will be fetched, see setExternalContentAllowed().
      */
-    bool externalContentAllowed();
+    bool externalContentAllowed() const;
 
 protected:
     virtual QNetworkReply *createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData = 0);
