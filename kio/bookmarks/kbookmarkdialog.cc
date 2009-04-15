@@ -22,7 +22,7 @@
 #include "kbookmarkmanager.h"
 #include "kbookmarkmenu.h"
 #include "kbookmarkmenu_p.h"
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QLabel>
 #include <QTreeWidget>
 #include <QHeaderView>
@@ -252,14 +252,11 @@ void KBookmarkDialog::initLayout()
 {
     QBoxLayout *vbox = new QVBoxLayout( m_main );
     vbox->setMargin(0);
-    QGridLayout * grid = new QGridLayout();
-    vbox->addLayout(grid);
+    QFormLayout * form = new QFormLayout();
+    vbox->addLayout(form);
 
-    grid->addWidget( m_title, 0, 1 );
-    grid->addWidget( m_titleLabel, 0, 0 );
-
-    grid->addWidget( m_url, 1, 1 );
-    grid->addWidget( m_urlLabel, 1, 0 );
+    form->addRow( m_titleLabel, m_title );
+    form->addRow( m_urlLabel, m_url );
 
     vbox->addWidget(m_folderTree);
 }
