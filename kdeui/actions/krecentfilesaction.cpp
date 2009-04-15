@@ -206,6 +206,12 @@ KUrl::List KRecentFilesAction::urls() const
 
 void KRecentFilesAction::clear()
 {
+    clearEntries();
+    emit recentListClear();
+}
+
+void KRecentFilesAction::clearEntries()
+{
     Q_D(KRecentFilesAction);
     KSelectAction::clear();
     d->m_shortNames.clear();
@@ -218,7 +224,7 @@ void KRecentFilesAction::clear()
 void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
 {
     Q_D(KRecentFilesAction);
-    clear();
+    clearEntries();
 
     QString     key;
     QString     value;
