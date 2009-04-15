@@ -21,7 +21,7 @@
 #ifndef _INCLUDE_KSSLCERTIFICATEMANAGER_H
 #define _INCLUDE_KSSLCERTIFICATEMANAGER_H
 
-#include <kdecore/network/ktcpsocket.h>
+#include <ktcpsocket.h>
 
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslError>
