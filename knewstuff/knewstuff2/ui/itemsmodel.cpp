@@ -21,6 +21,10 @@
 #include <kdebug.h>
 #include "qasyncimage_p.h"
 
+// if you change these, also change in itemsviewdelegate.cpp
+static const int kPreviewWidth = 96;
+static const int kPreviewHeight = 72;
+
 namespace KNS
 {
 ItemsModel::ItemsModel(QObject * parent, bool hasWebService)
@@ -115,14 +119,17 @@ KNS::Entry* ItemsModel::entryForIndex(const QModelIndex & index) const
 
 void ItemsModel::addEntry(Entry * entry)
 {
+    QString preview = entry->preview().representation();
+    if (!preview.isEmpty()) {
+        m_hasPreviewImages = true;
+    }
+
     //kDebug(551) << "adding entry " << entry->name().representation() << " to the model";
     beginInsertRows(QModelIndex(), m_entries.count(), m_entries.count());
     m_entries.append(entry);
     endInsertRows();
 
-    QString preview = entry->preview().representation();
     if (!preview.isEmpty()) {
-        m_hasPreviewImages = true;
         m_imageIndexes.insert(preview, index(m_entries.count() - 1, 0));
         QAsyncImage *pix = new QAsyncImage(preview, this);
         connect(pix, SIGNAL(signalLoaded(const QString &, const QImage&)),
@@ -154,7 +161,18 @@ void ItemsModel::slotEntryPreviewLoaded(const QString &url, const QImage & pix)
         return;
     QImage image = pix;
     m_largePreviewImages.insert(url, image);
-    m_previewImages.insert(url, image.scaled(64, 64, Qt::KeepAspectRatio));
+    if (image.width() > kPreviewWidth || image.height() > kPreviewHeight) {
+        // if the preview is really big, first scale fast to a smaller size, then smooth to desired size
+        if (image.width() > 4 * kPreviewWidth || image.height() > 4 * kPreviewHeight) {
+            image = image.scaled(2 * kPreviewWidth, 2 * kPreviewHeight, Qt::KeepAspectRatio, Qt::FastTransformation);
+        }
+        m_previewImages.insert(url, image.scaled(kPreviewWidth, kPreviewHeight, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    } else if (image.width() <= kPreviewWidth / 2 && image.height() <= kPreviewHeight / 2) {
+        // upscale tiny previews to double size
+        m_previewImages.insert(url, image.scaled(2 * image.width(), 2 * image.height()));
+    } else {
+        m_previewImages.insert(url, image);
+    }
 
     QModelIndex thisIndex = m_imageIndexes[url];
 

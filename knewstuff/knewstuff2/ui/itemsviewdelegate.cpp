@@ -33,7 +33,9 @@ static const int kLabel = 0;
 static const int kInstall = 1;
 static const int kRating = 2;
 
-static const int kPreviewSize = 64;
+// if you change these, also change in itemsmodel.cpp
+static const int kPreviewWidth = 96;
+static const int kPreviewHeight = 72;
 
 namespace KNS
 {
@@ -121,9 +123,9 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
 	infoLabel->setWordWrap(true);
     if (infoLabel != NULL) {
         if (realmodel->hasPreviewImages()) {
-            // move the text right by kPreviewSize + margin pixels to fit the preview
-            infoLabel->move(kPreviewSize + margin * 2, 0);
-            infoLabel->resize(QSize(option.rect.width() - kPreviewSize - (margin * 6) - size.width(), option.fontMetrics.height() * 7));
+            // move the text right by kPreviewWidth + margin pixels to fit the preview
+            infoLabel->move(kPreviewWidth + margin * 2, 0);
+            infoLabel->resize(QSize(option.rect.width() - kPreviewWidth - (margin * 6) - size.width(), option.fontMetrics.height() * 7));
         } else {
             infoLabel->move(margin, 0);
             infoLabel->resize(QSize(option.rect.width() - (margin * 4) - size.width(), option.fontMetrics.height() * 7));
@@ -223,15 +225,10 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
 {
     int margin = option.fontMetrics.height() / 2;
 
-    painter->save();
+    QStyle *style = QApplication::style();
+    style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, 0);
 
-    if (option.state & QStyle::State_Selected) {
-        painter->fillRect(option.rect, option.palette.highlight());
-    } else {
-        painter->fillRect(option.rect, (index.row() % 2 == 0 ? option.palette.base() : option.palette.alternateBase()));
-        painter->setPen(QPen(option.palette.window().color()));
-        painter->drawRect(option.rect);
-    }
+    painter->save();
 
     if (option.state & QStyle::State_Selected) {
         painter->setPen(QPen(option.palette.highlightedText().color()));
@@ -245,10 +242,10 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
     if (realmodel->hasPreviewImages()) {
 
         int height = option.rect.height();
-        QPoint point(option.rect.left() + margin, option.rect.top() + ((height - kPreviewSize) / 2));
+        QPoint point(option.rect.left() + margin, option.rect.top() + ((height - kPreviewHeight) / 2));
 
         if (index.data(ItemsModel::kPreview).toString().isEmpty()) {
-            QRect rect(point, QSize(kPreviewSize, kPreviewSize));
+            QRect rect(point, QSize(kPreviewWidth, kPreviewHeight));
             painter->drawText(rect, Qt::AlignCenter | Qt::TextWordWrap, i18n("No Preview"));
         } else {
             QImage image = index.data(ItemsModel::kPreviewPixmap).value<QImage>();
@@ -258,7 +255,7 @@ void ItemsViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
                 QPoint framePoint(point.x() - 5, point.y() - 5);
                 painter->drawImage(framePoint, m_frameImage.scaled(image.width() + 10, image.height() + 10));
             } else {
-                QRect rect(point, QSize(kPreviewSize, kPreviewSize));
+                QRect rect(point, QSize(kPreviewWidth, kPreviewHeight));
                 painter->drawText(rect, Qt::AlignCenter | Qt::TextWordWrap, i18n("Loading Preview"));
             }
         }
@@ -284,7 +281,7 @@ QSize ItemsViewDelegate::sizeHint(const QStyleOptionViewItem & option, const QMo
     QSize size;
 
     size.setWidth(option.fontMetrics.height() * 4);
-    size.setHeight(option.fontMetrics.height() * 7); // up to 6 lines of text, and two margins
+    size.setHeight(qMax(option.fontMetrics.height() * 7, kPreviewHeight)); // up to 6 lines of text, and two margins
 
     return size;
 }
