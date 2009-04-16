@@ -104,7 +104,7 @@ KDECORE_EXPORT int KDateTime_zoneCacheHit = 0;
 #ifndef NDEBUG
 #undef KSystemTimeZones
 
-K_GLOBAL_STATIC(KTimeZone, simulatedLocalZone);
+K_GLOBAL_STATIC(KTimeZone, simulatedLocalZone)
 
 KTimeZone KSystemTimeZones_Simulated::realLocalZone()
 {
