@@ -93,9 +93,9 @@ void QProgressIndicator::addProgress(const QString & message, int percentage)
         layout->addWidget(pbcancel, 1, 0);
         layout->addWidget(pb, 1, 1);
 
-        pbcontainer->show();
-
         m_detailsvbox->addWidget(pbcontainer);
+
+        pbcontainer->show();
     } else {
         pb = m_progresswidgets[message];
     }
