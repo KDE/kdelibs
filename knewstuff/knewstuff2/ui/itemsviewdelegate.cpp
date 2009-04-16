@@ -154,7 +154,16 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         text += downloads == 0 ? i18n("<p>No Downloads</p>") : i18n("<p>Downloads: %1</p>\n", downloads);
 
 		text += "</body></html>";
-        infoLabel->setText(text);
+        text.replace("[b]", "<b>");
+        text.replace("[/b]", "</b>");
+        text.replace("[i]", "<i>");
+        text.replace("[/i]", "</i>");
+        text.replace("[u]", "<i>");
+        text.replace("[/u]", "</i>");
+        text.replace("[url]", "");
+        text.replace("[/url]", "");
+        text.replace("\\\'", "\'");
+        infoLabel->setText(text.simplified());
     }
 
     QToolButton * button = qobject_cast<QToolButton*>(widgets.at(kInstall));
