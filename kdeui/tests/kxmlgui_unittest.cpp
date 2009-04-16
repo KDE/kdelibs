@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
 
-    Copyright (c) 2007 David Faure <faure@kde.org>
+    Copyright 2007-2009 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -448,6 +448,16 @@ void KXmlGui_UnitTest::testUiStandardsMerging_data()
         + xmlEnd
         << (QStringList() << "file_open" << "patch_generate" << "edit_foo")
         << (QStringList() << "file" << "edit" << "patch");
+
+    // Check that <Menu append="..."> allows to insert menus at specific positions
+    QTest::newRow("Menu append")
+        << xmlBegin + "<Menu name=\"foo\" append=\"settings_merge\"><Action name=\"foo_action\"/></Menu>\n" + xmlEnd
+        << (QStringList() << "file_open" << "options_configure_toolbars" << "foo_action" << "help_contents")
+        << (QStringList() << "file" << "settings" << "foo" << "help");
+    QTest::newRow("Custom first menu")
+        << xmlBegin + "<Menu name=\"foo\" append=\"first_menu\"><Action name=\"foo_action\"/></Menu>\n" + xmlEnd
+        << (QStringList() << "edit_undo" << "foo_action" << "help_contents")
+        << (QStringList() << "foo" << "edit" << "help");
 
     // Tests for noMerge="1"
     QTest::newRow("noMerge empty file menu, implicit settings menu")
