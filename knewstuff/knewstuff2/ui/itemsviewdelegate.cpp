@@ -133,7 +133,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
 
         QString text = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 			"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">p, li { white-space: pre-wrap; margin:0 0 0 0;}\n"
-			"</style></head><body>\n<p><b>" +
+			"</style></head><body><p><b>" +
 			index.data(ItemsModel::kNameRole).toString() + "</b></p>\n";
 
         QString summary = "<p>" + option.fontMetrics.elidedText(index.data(ItemsModel::kSummary).toString(),
