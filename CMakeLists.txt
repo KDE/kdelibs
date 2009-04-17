@@ -62,7 +62,7 @@ macro_optional_find_package(BZip2)
 macro_log_feature(BZIP2_FOUND "BZip2" "A high-quality data compressor" "http://www.bzip.org" FALSE "" "STRONGLY RECOMMENDED: Provides the ability to read and write bzip2 compressed data files.")
 
 macro_optional_find_package(LibLZMA)
-macro_log_feature(LIBLZMA_FOUND "LZMA" "A very high compression ratio data compressor" "http://tukaani.org/lzma/" FALSE "" "STRONGLY RECOMMENDED: Provides the ability to read and write xz compressed data files.")
+macro_log_feature(LIBLZMA_FOUND "LZMA" "A very high compression ratio data compressor" "http://tukaani.org/lzma/" FALSE "" "Provides the ability to read and write xz compressed data files.")
 
 macro_optional_find_package(OpenSSL)
 macro_log_feature(OPENSSL_FOUND "OpenSSL" "A toolkit implementing the Secure Sockets Layer (SSL v2/v3) and Transport Layer Security (TLS v1) protocols" "http://openssl.org" FALSE "" "STRONGLY RECOMMENDED: KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS.")
