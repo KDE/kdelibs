@@ -100,7 +100,8 @@ namespace Solid
         /**
          * Retrieves the maximum speed of the processor.
          *
-         * @return the maximum speed in MHz
+         * @return the maximum speed in MHz, or 0 if the device can't be queried for this
+         * information.
          */
         int maxSpeed() const;
 
