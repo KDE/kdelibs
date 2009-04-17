@@ -104,7 +104,7 @@ set(solid_LIB_SRCS
    backends/fakehw/fakestorageaccess.cpp
    backends/fakehw/fakevideo.cpp
    backends/fakehw/fakevolume.cpp
-   backends/fakehw/fakesmartcardreader.cpp
+#   backends/fakehw/fakesmartcardreader.cpp
 )
 
 if(NOT WIN32 AND NOT APPLE)
