@@ -125,10 +125,16 @@ set(kiocore_STAT_SRCS
   kio/thumbsequencecreator.cpp
   kio/udsentry.cpp
   kio/hostinfo.cpp
-  kio/passwdserverloop.cpp
+  kio/kpasswdserver.cpp
+  kio/kpasswdserverloop.cpp
 )
 
 qt4_add_dbus_adaptor(kiocore_STAT_SRCS kio/org.kde.kio.FileUndoManager.xml fileundomanager_p.h KIO::FileUndoManagerPrivate fileundomanager_adaptor KIOFileUndoManagerAdaptor)
+
+set_source_files_properties(kio/org.kde.KPasswdServer.xml
+   PROPERTIES INCLUDE kio/authinfo.h
+)
+qt4_add_dbus_interface(kiocore_STAT_SRCS kio/org.kde.KPasswdServer.xml kpasswdserver_interface)
 
 if(UNIX)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}

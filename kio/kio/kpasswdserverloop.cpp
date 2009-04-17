@@ -21,12 +21,12 @@
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>
 
-#include "passwdserverloop_p.h"
+#include "kpasswdserverloop_p.h"
 
 namespace KIO
 {
 
-PasswdServerLoop::PasswdServerLoop() : m_seqNr(-1)
+KPasswdServerLoop::KPasswdServerLoop() : m_seqNr(-1)
 {
     connect(QDBusConnection::sessionBus().interface(),
             SIGNAL(serviceOwnerChanged(QString, QString, QString)),
@@ -34,11 +34,11 @@ PasswdServerLoop::PasswdServerLoop() : m_seqNr(-1)
             SLOT(slotServiceOwnerChanged(QString, QString, QString)));
 }
 
-PasswdServerLoop::~PasswdServerLoop()
+KPasswdServerLoop::~KPasswdServerLoop()
 {
 }
 
-bool PasswdServerLoop::waitForResult(qlonglong requestId)
+bool KPasswdServerLoop::waitForResult(qlonglong requestId)
 {
     m_requestId = requestId;
     m_seqNr = -1;
@@ -46,17 +46,17 @@ bool PasswdServerLoop::waitForResult(qlonglong requestId)
     return (exec() == 0);
 }
 
-qlonglong PasswdServerLoop::seqNr() const
+qlonglong KPasswdServerLoop::seqNr() const
 {
     return m_seqNr;
 }
 
-const AuthInfo &PasswdServerLoop::authInfo() const
+const AuthInfo &KPasswdServerLoop::authInfo() const
 {
     return m_authInfo;
 }
 
-void PasswdServerLoop::slotQueryResult(qlonglong requestId, qlonglong seqNr,
+void KPasswdServerLoop::slotQueryResult(qlonglong requestId, qlonglong seqNr,
                                        const KIO::AuthInfo &authInfo)
 {
     if (m_requestId == requestId) {
@@ -66,7 +66,7 @@ void PasswdServerLoop::slotQueryResult(qlonglong requestId, qlonglong seqNr,
     }
 }
 
-void PasswdServerLoop::slotServiceOwnerChanged(const QString &name, const QString &oldOwner,
+void KPasswdServerLoop::slotServiceOwnerChanged(const QString &name, const QString &oldOwner,
                                                const QString &newOwner)
 {
     Q_UNUSED(oldOwner);
@@ -75,7 +75,7 @@ void PasswdServerLoop::slotServiceOwnerChanged(const QString &name, const QStrin
         exit(-1);
     }
 }
-    
+
 }
 
-#include "passwdserverloop_p.moc"
+#include "kpasswdserverloop_p.moc"

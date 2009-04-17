@@ -18,8 +18,8 @@
  *
  **/
 
-#ifndef PASSWDSERVERLOOP_P_H
-#define PASSWDSERVERLOOP_P_H
+#ifndef KPASSWDSERVERLOOP_P_H
+#define KPASSWDSERVERLOOP_P_H
 
 #include <kio/authinfo.h>
 #include <QtCore/QByteArray>
@@ -30,13 +30,13 @@ namespace KIO {
 // Wait for the result of an asynchronous D-Bus request to KPasswdServer.
 // Objects of this class are one-way ie. as soon as they have received
 // a result you can't call waitForResult() again.
-class PasswdServerLoop : public QEventLoop
+class KPasswdServerLoop : public QEventLoop
 {
     Q_OBJECT
 
 public:
-    PasswdServerLoop();
-    virtual ~PasswdServerLoop();
+    KPasswdServerLoop();
+    virtual ~KPasswdServerLoop();
     bool waitForResult(qlonglong requestId);
 
     qlonglong seqNr() const;
