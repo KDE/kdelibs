@@ -1,3 +1,10 @@
+# The following variables are set by the script if they haven't been set before:
+#
+# CTEST_SOURCE_DIRECTORY - defaults to $HOME/Dashboards/<CTEST_PROJECT_NAME>/src dir/
+# CTEST_BINARY_DIRECTORY - defaults to $HOME/Dashboards/<CTEST_PROJECT_NAME>/build dir/
+# if CTEST_AVOID_SPACES is TRUE, the spaces in the path above will be removed.
+
+
 ###########################################################
 # generic code
 ###########################################################

@@ -11,3 +11,6 @@ set(CTEST_DROP_METHOD "http")
 set(CTEST_DROP_SITE "my.cdash.org")
 set(CTEST_DROP_LOCATION "/submit.php?project=kdelibs")
 set(CTEST_DROP_SITE_CDASH TRUE)
+
+set(CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 100)
+set(CTEST_CUSTOM_WARNING_EXCEPTION "kdecore/network/k3socket[a-z]+\.h" )
