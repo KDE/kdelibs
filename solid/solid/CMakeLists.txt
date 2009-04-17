@@ -133,7 +133,7 @@ if(NOT WIN32 AND NOT APPLE)
    backends/hal/halstorage.cpp
    backends/hal/halvideo.cpp
    backends/hal/halvolume.cpp
-   backends/hal/halsmartcardreader.cpp
+   #backends/hal/halsmartcardreader.cpp
 
    )
 endif(NOT WIN32 AND NOT APPLE)
