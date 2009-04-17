@@ -1167,17 +1167,8 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
 
 bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 {
-    AuthInfo authResult;
-    long windowId = metaData("window-id").toLong();
-    unsigned long userTimestamp = metaData("user-timestamp").toULong();
-
-    KPasswdServer srv;
-    qlonglong seqNr = srv.checkAuthInfo(info, windowId, userTimestamp);
-    if (seqNr > 0 && info.isModified()) {
-        return true;
-    }
-
-    return false;
+    return KPasswdServer().checkAuthInfo(info, metaData("window-id").toLong(),
+                                         metaData("user-timestamp").toULong());
 }
 
 void SlaveBase::dispatchOpenCommand( int command, const QByteArray &data )

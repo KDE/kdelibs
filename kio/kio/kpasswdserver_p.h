@@ -20,8 +20,6 @@
 #ifndef KPASSWDSERVER_P_H
 #define KPASSWDSERVER_P_H
 
-#include <QObject>
-
 class QString;
 class OrgKdeKPasswdServerInterface;
 
@@ -35,10 +33,8 @@ namespace KIO
  * @remarks This is currently only supposed to be used by KIO::SlaveBase
  *          but might be reused as public API in the future.
  */
-class KPasswdServer : public QObject
+class KPasswdServer
 {
-    Q_OBJECT
-
 public:
     KPasswdServer();
     ~KPasswdServer();
@@ -49,12 +45,12 @@ public:
      * @param info information to check cache for
      * @param windowId used as parent for dialogs
      * @param usertime FIXME: I'd like to know as well :)
-     * @return kpasswdserver's sequence number or -1 on error
+     * @return true if kpasswdserver provided cached information, false if not
      * @remarks info will contain the results of the check. To see if
      *          information was retrieved, check info.isModified().
      */
-    qlonglong checkAuthInfo(KIO::AuthInfo &info, qlonglong windowId,
-                            qlonglong usertime);
+    bool checkAuthInfo(KIO::AuthInfo &info, qlonglong windowId,
+                       qlonglong usertime);
 
     /**
      * Let kpasswdserver ask the user for authentication information.
@@ -91,10 +87,10 @@ private:
     /**
      * Legacy version of checkAuthInfo provided for compatibility with
      * old kpasswdserver.
-     * @remarks automatically called by checkAuthInfo if needed.
+     * @remarks automatically called by checkAuthInfo if needed
      */
-    qlonglong legacyCheckAuthInfo(KIO::AuthInfo &info, qlonglong windowId,
-                                  qlonglong usertime);
+    bool legacyCheckAuthInfo(KIO::AuthInfo &info, qlonglong windowId,
+                             qlonglong usertime);
     
     /**
      * Legacy version of queryAuthInfo provided for compatibility with
@@ -104,6 +100,13 @@ private:
     qlonglong legacyQueryAuthInfo(KIO::AuthInfo &info, const QString &errorMsg,
                                   qlonglong windowId, qlonglong seqNr,
                                   qlonglong usertime);
+
+    /**
+     * Legacy version of addAuthInfo provided for compatibility with
+     * old kpasswdserver.
+     * @remarks automatically called by removeAuthInfo if needed
+     */
+    void legacyAddAuthInfo(const KIO::AuthInfo &info, qlonglong windowId);
 
     OrgKdeKPasswdServerInterface *m_interface;
 };
