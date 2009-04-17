@@ -71,7 +71,7 @@ void PasswdServerLoop::slotServiceOwnerChanged(const QString &name, const QStrin
 {
     Q_UNUSED(oldOwner);
 
-    if (newOwner.isEmpty() && name == "org.kde.kpasswdserver") {
+    if (newOwner.isEmpty() && name == "org.kde.kded") {
         exit(-1);
     }
 }

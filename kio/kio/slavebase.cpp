@@ -72,6 +72,10 @@ typedef QMap<QString,QByteArray> AuthKeysMap;
 #define KIO_DATA QByteArray data; QDataStream stream( &data, QIODevice::WriteOnly ); stream
 #define KIO_FILESIZE_T(x) quint64(x)
 
+#define KPASSWDSERVER_SERVICE   "org.kde.kded"
+#define KPASSWDSERVER_PATH      "/modules/kpasswdserver"
+#define KPASSWDSERVER_INTERFACE "org.kde.KPasswdServer"
+
 namespace KIO {
 
 class SlaveBasePrivate {
@@ -827,9 +831,9 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
     kDebug(7019) << "window-id=" << windowId;
 
     QDBusConnection conn(QDBusConnection::sessionBus());
-    QDBusMessage pscall(QDBusMessage::createMethodCall("org.kde.kded",
-                                                       "/modules/kpasswdserver",
-                                                       "org.kde.KPasswdServer",
+    QDBusMessage pscall(QDBusMessage::createMethodCall(KPASSWDSERVER_SERVICE,
+                                                       KPASSWDSERVER_PATH,
+                                                       KPASSWDSERVER_INTERFACE,
                                                        "queryAuthInfoAsync"));
     QDBusArgument arg;
     arg << info;
@@ -846,13 +850,47 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
     // because the result signal has to be connected before. Else we might
     // actually miss a result signal.
     PasswdServerLoop loop;
-    conn.connect("", "/modules/kpasswdserver", "org.kde.KPasswdServer",
+    conn.connect(KPASSWDSERVER_SERVICE, KPASSWDSERVER_PATH, KPASSWDSERVER_INTERFACE,
                  "queryAuthInfoAsyncResult", &loop,
                  SLOT(slotQueryResult(qlonglong, qlonglong, const KIO::AuthInfo&)));
 
     QDBusReply<qlonglong> reply = conn.call(pscall, QDBus::Block);
     if (!reply.isValid())
     {
+
+       // backward compatibility for old kpasswdserver
+       // TODO: this should be removed when it's no longer needed (probably 4.5)
+       if (reply.error().type() == QDBusError::UnknownMethod) {
+          QByteArray data;
+          QDataStream stream(&data, QIODevice::WriteOnly);
+          stream << info;
+          QDBusMessage pscall2(QDBusMessage::createMethodCall(KPASSWDSERVER_SERVICE,
+                                                              KPASSWDSERVER_PATH,
+                                                              KPASSWDSERVER_INTERFACE,
+                                                              "queryAuthInfo"));
+          pscall2 << data;
+          if (metaData("no-auth-prompt").toLower() == "true") {
+             pscall2 << QString(QLatin1String("<NoAuthPrompt>"));
+          } else {
+             pscall2 << errorMsg;
+          }
+          pscall2 << qlonglong(windowId) << SlaveBasePrivate::s_seqNr << qlonglong(userTimestamp);
+          QDBusMessage reply2 = conn.call(pscall2, QDBus::Block, INT_MAX);
+
+          if (reply2.type() == QDBusMessage::ReplyMessage) {
+             AuthInfo authResult;
+             QDataStream stream2(reply2.arguments().at(0).toByteArray());
+             stream2 >> authResult;
+             SlaveBasePrivate::s_seqNr = reply2.arguments().at(1).toLongLong();
+             if (!authResult.isModified()) {
+                return false;
+             }
+
+             info = authResult;
+             return true;
+          }
+       }
+       
        kWarning(7019) << "Can't communicate with kded_kpasswdserver (for queryAuthInfo)!";
        kDebug(7019) << reply.error().name() << reply.error().message();
        return false;
@@ -1205,9 +1243,9 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     kDebug(7019) << "window =" << windowId << "url =" << info.url;
 
     QDBusConnection conn(QDBusConnection::sessionBus());
-    QDBusMessage pscall(QDBusMessage::createMethodCall("org.kde.kded",
-                                                       "/modules/kpasswdserver",
-                                                       "org.kde.KPasswdServer",
+    QDBusMessage pscall(QDBusMessage::createMethodCall(KPASSWDSERVER_SERVICE,
+                                                       KPASSWDSERVER_PATH,
+                                                       KPASSWDSERVER_INTERFACE,
                                                        "checkAuthInfoAsync"));
     QDBusArgument arg;
     arg << info;
@@ -1218,12 +1256,39 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     // because the result signal has to be connected before. Else we might
     // actually miss a result signal.
     PasswdServerLoop loop;
-    conn.connect("", "/modules/kpasswdserver", "org.kde.KPasswdServer",
+    conn.connect(KPASSWDSERVER_SERVICE, KPASSWDSERVER_PATH, KPASSWDSERVER_INTERFACE,
                  "checkAuthInfoAsyncResult", &loop,
                  SLOT(slotQueryResult(qlonglong, qlonglong, const KIO::AuthInfo&)));
 
     QDBusReply<qlonglong> reply = conn.call(pscall, QDBus::Block);
     if (!reply.isValid()) {
+        
+       // backwards compatibility for old kpasswdserver
+       // TODO: this should be removed when it's no longer needed (probably 4.5)
+       if (reply.error().type() == QDBusError::UnknownMethod) {
+          QByteArray data;
+          QDataStream stream(&data, QIODevice::WriteOnly);
+          stream << info;
+          QDBusMessage pscall2(QDBusMessage::createMethodCall(KPASSWDSERVER_SERVICE,
+                                                              KPASSWDSERVER_PATH,
+                                                              KPASSWDSERVER_INTERFACE,
+                                                              "checkAuthInfo"));
+          pscall2 << data << qlonglong(windowId) << qlonglong(userTimestamp);
+          QDBusReply<QByteArray> reply2 = conn.call(pscall2, QDBus::Block, INT_MAX);
+
+          if (reply2.isValid()) {
+             AuthInfo authResult;
+             QDataStream stream2(reply2.value());
+             stream2 >> authResult;
+             if (!authResult.isModified()) {
+                 return false;
+             }
+
+             info = authResult;
+             return true;
+          }
+       }
+       
        kWarning(7019) << "Can't communicate with kded_kpasswdserver (for checkAuthInfo)!";
        kDebug(7019) << reply.error().name() << reply.error().message();
        return false;
@@ -1282,7 +1347,7 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
     QDataStream stream(&params, QIODevice::WriteOnly);
     stream << info;
 
-    QDBusInterface( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" ).
+    QDBusInterface(KPASSWDSERVER_SERVICE, KPASSWDSERVER_PATH, KPASSWDSERVER_INTERFACE).
        call(QDBus::Block, "addAuthInfo", params, windowId);
 
     return true;
