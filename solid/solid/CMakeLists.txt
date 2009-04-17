@@ -104,7 +104,7 @@ set(solid_LIB_SRCS
    backends/fakehw/fakestorageaccess.cpp
    backends/fakehw/fakevideo.cpp
    backends/fakehw/fakevolume.cpp
-#   backends/fakehw/fakesmartcardreader.cpp
+   backends/fakehw/fakesmartcardreader.cpp
 )
 
 if(NOT WIN32 AND NOT APPLE)
@@ -133,7 +133,7 @@ if(NOT WIN32 AND NOT APPLE)
    backends/hal/halstorage.cpp
    backends/hal/halvideo.cpp
    backends/hal/halvolume.cpp
-   #backends/hal/halsmartcardreader.cpp
+   backends/hal/halsmartcardreader.cpp
 
    )
 endif(NOT WIN32 AND NOT APPLE)

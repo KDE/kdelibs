@@ -47,7 +47,8 @@ namespace Solid
          * - CardReader : A generic smart card reader
          * - CryptoToken : A smart card reader with a card built into the device
          */
-        enum ReaderType { CardReader, CryptoToken };
+        enum ReaderType { UnknownReaderType = -1,
+                          CardReader, CryptoToken };
 
     private:
         /**
