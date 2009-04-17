@@ -35,6 +35,7 @@
 #include "fakebutton.h"
 #include "fakeaudiointerface.h"
 #include "fakedvbinterface.h"
+#include "fakesmartcardreader.h"
 
 #include <QtCore/QStringList>
 #include <QtDBus/QDBusConnection>
@@ -282,6 +283,9 @@ QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
         iface = new FakeDvbInterface(this);
         break;
     case Solid::DeviceInterface::Video:
+        break;
+    case Solid::DeviceInterface::SmartCardReader:
+        iface = new FakeSmartCardReader(this);
         break;
     case Solid::DeviceInterface::Unknown:
         break;

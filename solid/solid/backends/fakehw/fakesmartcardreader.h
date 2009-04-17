@@ -22,6 +22,7 @@
 
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/smartcardreader.h>
+#include <solid/smartcardreader.h>
 
 namespace Solid
 {

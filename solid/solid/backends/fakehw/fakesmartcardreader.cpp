@@ -32,12 +32,12 @@ FakeSmartCardReader::~FakeSmartCardReader()
 
 }
 
-Solid::SmartCardReader::ReaderType SmartCardReader::readerType() const
+Solid::SmartCardReader::ReaderType FakeSmartCardReader::readerType() const
 {
     QString type = fakeDevice()->property("smartcardReaderType").toString();
 
     if (type == "reader") {
-        return Solid::SmartCardReader::Reader;
+        return Solid::SmartCardReader::CardReader;
     } else if (type == "cryptoToken") {
         return Solid::SmartCardReader::CryptoToken;
     } else {
