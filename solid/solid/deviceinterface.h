@@ -59,6 +59,7 @@ namespace Solid
          * - PortableMediaPlayer: A portable media player
          * - NetworkInterface: A network interface
          * - SerialInterface: A serial interface
+         * - SmartCardReader: A smart card reader interface
          */
         enum Type { Unknown = 0, GenericInterface = 1, Processor = 2,
                     Block = 3, StorageAccess = 4, StorageDrive = 5,
@@ -66,7 +67,7 @@ namespace Solid
                     Camera = 9, PortableMediaPlayer = 10,
                     NetworkInterface = 11, AcAdapter = 12, Battery = 13,
                     Button = 14, AudioInterface = 15, DvbInterface = 16, Video = 17,
-                    SerialInterface = 18,
+                    SerialInterface = 18, SmartCardReader = 19,
                     Last = 0xffff  };
 
         /**

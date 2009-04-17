@@ -105,6 +105,8 @@ public:
         case Solid::DeviceInterface::SerialInterface:
             list << "serial";
             break;
+        case Solid::DeviceInterface::SmartCardReader:
+            list << "smart_card_reader";
         case Solid::DeviceInterface::Unknown:
             break;
         case Solid::DeviceInterface::Last:
@@ -148,6 +150,8 @@ public:
             return Solid::DeviceInterface::Video;
         else if (capability == "serial")
             return Solid::DeviceInterface::SerialInterface;
+        else if (capability == "smart_card_reader")
+            return Solid::DeviceInterface::SmartCardReader;
         else
             return Solid::DeviceInterface::Unknown;
     }

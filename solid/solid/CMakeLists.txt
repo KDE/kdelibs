@@ -21,7 +21,7 @@ configure_file(config-processor.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-proce
 
 ########### next target ###############
 
-file(MAKE_DIRECTORY 
+file(MAKE_DIRECTORY
    ${CMAKE_CURRENT_BINARY_DIR}/backends/fakehw
    ${CMAKE_CURRENT_BINARY_DIR}/backends/hal
    ${CMAKE_CURRENT_BINARY_DIR}/backends/wmi
@@ -29,36 +29,37 @@ file(MAKE_DIRECTORY
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${KDE4_C_FLAGS}") # enable -fvisibility=hidden for C sources
 
-set(solid_LIB_SRCS 
-   solidnamespace.cpp 
-   managerbase.cpp 
-   device.cpp 
-   devicemanager.cpp 
-   deviceinterface.cpp 
-   genericinterface.cpp 
-   processor.cpp 
-   block.cpp 
-   storagedrive.cpp 
-   opticaldrive.cpp 
-   storagevolume.cpp 
-   opticaldisc.cpp 
-   storageaccess.cpp 
-   camera.cpp 
-   portablemediaplayer.cpp 
-   networkinterface.cpp 
+set(solid_LIB_SRCS
+   solidnamespace.cpp
+   managerbase.cpp
+   device.cpp
+   devicemanager.cpp
+   deviceinterface.cpp
+   genericinterface.cpp
+   processor.cpp
+   block.cpp
+   storagedrive.cpp
+   opticaldrive.cpp
+   storagevolume.cpp
+   opticaldisc.cpp
+   storageaccess.cpp
+   camera.cpp
+   portablemediaplayer.cpp
+   networkinterface.cpp
    serialinterface.cpp
-   acadapter.cpp 
-   battery.cpp 
+   acadapter.cpp
+   battery.cpp
    button.cpp
-   audiointerface.cpp 
+   audiointerface.cpp
    dvbinterface.cpp
-   predicate.cpp 
-   predicateparse.cpp 
-   predicate_lexer.c 
+   predicate.cpp
+   predicateparse.cpp
+   predicate_lexer.c
    predicate_parser.c
    powermanagement.cpp
    networking.cpp
    video.cpp
+   smartcardreader.cpp
 
    ifaces/acadapter.cpp
    ifaces/audiointerface.cpp
@@ -81,6 +82,7 @@ set(solid_LIB_SRCS
    ifaces/storagevolume.cpp
    ifaces/storageaccess.cpp
    ifaces/video.cpp
+   ifaces/smartcardreader.cpp
 
    backends/fakehw/fakeacadapter.cpp
    backends/fakehw/fakeaudiointerface.cpp
@@ -102,6 +104,7 @@ set(solid_LIB_SRCS
    backends/fakehw/fakestorageaccess.cpp
    backends/fakehw/fakevideo.cpp
    backends/fakehw/fakevolume.cpp
+#   backends/fakehw/fakesmartcardreader.cpp
 )
 
 if(NOT WIN32 AND NOT APPLE)
@@ -130,7 +133,8 @@ if(NOT WIN32 AND NOT APPLE)
    backends/hal/halstorage.cpp
    backends/hal/halvideo.cpp
    backends/hal/halvolume.cpp
-   
+   backends/hal/halsmartcardreader.cpp
+
    )
 endif(NOT WIN32 AND NOT APPLE)
 
@@ -176,8 +180,8 @@ if(MSVC)
    backends/wmi/wmivideo.cpp
    backends/wmi/wmivolume.cpp
 
-   )   
-endif(MSVC)	
+   )
+endif(MSVC)
 
 set_source_files_properties( org.freedesktop.PowerManagement.xml
                              org.freedesktop.PowerManagement.Inhibit.xml
@@ -225,11 +229,11 @@ if(WIN32)
 endif(WIN32)
 ########### install files ###############
 
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h device.h 
-               devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h 
-               storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h 
-               camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h 
-               button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h 
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h device.h
+               devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h
+               storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h
+               camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h
+               button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h
                networking.h video.h serialinterface.h
                DESTINATION ${INCLUDE_INSTALL_DIR}/solid COMPONENT Devel)
 
