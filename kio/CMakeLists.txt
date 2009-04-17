@@ -135,6 +135,7 @@ set_source_files_properties(kio/org.kde.KPasswdServer.xml
    PROPERTIES INCLUDE kio/authinfo.h
 )
 qt4_add_dbus_interface(kiocore_STAT_SRCS kio/org.kde.KPasswdServer.xml kpasswdserver_interface)
+install(FILES kio/org.kde.KPasswdServer.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 if(UNIX)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
