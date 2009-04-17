@@ -31,6 +31,8 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
+#include <QtDBus/QDBusArgument>
+#include <QtDBus/QDBusMetaType>
 #include <kde_file.h>
 
 #include <kdebug.h>
@@ -52,6 +54,7 @@ public:
 
     ExtraField() : flags(AuthInfo::ExtraFieldNoFlags) {}
 };
+Q_DECLARE_METATYPE(ExtraField)
 
 QDataStream& operator<< (QDataStream& s, const ExtraField& extraField)
 {
@@ -71,6 +74,28 @@ QDataStream& operator>> (QDataStream& s, ExtraField& extraField)
     return s;
 }
 
+QDBusArgument &operator<<(QDBusArgument &argument, const ExtraField &extraField)
+{
+    argument.beginStructure();
+    argument << extraField.customTitle << (int)extraField.flags
+             << QDBusVariant(extraField.value);
+    argument.endStructure();
+    return argument;
+}
+
+const QDBusArgument &operator>>(const QDBusArgument &argument, ExtraField &extraField)
+{
+    QDBusVariant value;
+    int flag;
+    
+    argument.beginStructure();
+    argument >> extraField.customTitle >> flag >> value;
+    argument.endStructure();
+
+    extraField.value = value.variant();
+    extraField.flags = (KIO::AuthInfo::FieldFlags)flag;
+    return argument;
+}
 
 class KIO::AuthInfoPrivate  
 {
@@ -90,6 +115,7 @@ AuthInfo::AuthInfo() : d(new AuthInfoPrivate())
     readOnly = false;
     verifyPath = false;
     keepPassword = false;
+    AuthInfo::registerMetaTypes();
 }
 
 AuthInfo::AuthInfo( const AuthInfo& info ) : d(new AuthInfoPrivate())
@@ -155,6 +181,14 @@ AuthInfo::FieldFlags AuthInfo::getExtraFieldFlags(const QString &fieldName) cons
     return d->extraFields[fieldName].flags; 
 }
 
+void AuthInfo::registerMetaTypes()
+{
+    qRegisterMetaType<ExtraField>();
+    qRegisterMetaType<KIO::AuthInfo>();
+    qDBusRegisterMetaType<ExtraField>();
+    qDBusRegisterMetaType<KIO::AuthInfo>();
+}
+
 /////
 
 QDataStream& KIO::operator<< (QDataStream& s, const AuthInfo& a)
@@ -178,6 +212,34 @@ QDataStream& KIO::operator>> (QDataStream& s, AuthInfo& a)
     return s;
 }
 
+QDBusArgument &KIO::operator<<(QDBusArgument &argument, const AuthInfo &a)
+{
+    argument.beginStructure();
+    argument << (quint8)1
+             << a.url.url() << a.username << a.password << a.prompt << a.caption
+             << a.comment << a.commentLabel << a.realmValue << a.digestInfo
+             << a.verifyPath << a.readOnly << a.keepPassword << a.modified
+             << a.d->extraFields;
+    argument.endStructure();
+    return argument;
+}
+
+const QDBusArgument &KIO::operator>>(const QDBusArgument &argument, AuthInfo &a)
+{
+    QString url;
+    quint8 version;
+    
+    argument.beginStructure();
+    argument >> version
+             >> url >> a.username >> a.password >> a.prompt >> a.caption
+             >> a.comment >> a.commentLabel >> a.realmValue >> a.digestInfo
+             >> a.verifyPath >> a.readOnly >> a.keepPassword >> a.modified
+             >> a.d->extraFields;
+    argument.endStructure();
+
+    a.url = url;
+    return argument;
+}
 
 typedef QList<NetRC::AutoLogin> LoginList;
 typedef QMap<QString, LoginList> LoginMap;

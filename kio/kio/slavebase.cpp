@@ -52,6 +52,7 @@
 #include "connection.h"
 #include "ioslave_defaults.h"
 #include "slaveinterface.h"
+#include "passwdserverloop_p.h"
 
 #ifndef NDEBUG
 #ifdef HAVE_BACKTRACE
@@ -820,45 +821,52 @@ void SlaveBase::reparseConfiguration()
 
 bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
 {
-    AuthInfo authResult;
     const long windowId = metaData("window-id").toLong();
     const unsigned long userTimestamp = metaData("user-timestamp").toULong();
 
     kDebug(7019) << "window-id=" << windowId;
 
-    QDBusInterface kps( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" );
+    QDBusConnection conn(QDBusConnection::sessionBus());
+    QDBusMessage pscall(QDBusMessage::createMethodCall("org.kde.kded",
+                                                       "/modules/kpasswdserver",
+                                                       "org.kde.KPasswdServer",
+                                                       "queryAuthInfoAsync"));
+    QDBusArgument arg;
+    arg << info;
+    pscall << QVariant::fromValue(arg);
+    if (metaData("no-auth-prompt").toLower() == "true") {
+        pscall << QString(QLatin1String("<NoAuthPrompt>"));
+    } else {
+        pscall << errorMsg;
+    }
+    pscall << qlonglong(windowId) << SlaveBasePrivate::s_seqNr
+           << qlonglong(userTimestamp);
 
-    // #### TODO rewrite this with QDBusArgument streaming operators
-    // and QDBusReply.
-    QByteArray data;
-    QDataStream stream(&data, QIODevice::WriteOnly);
-    stream << info;
-    QDBusMessage reply;
+    // create the loop to wait for a result before sending the request
+    // because the result signal has to be connected before. Else we might
+    // actually miss a result signal.
+    PasswdServerLoop loop;
+    conn.connect("", "/modules/kpasswdserver", "org.kde.KPasswdServer",
+                 "queryAuthInfoAsyncResult", &loop,
+                 SLOT(slotQueryResult(qlonglong, qlonglong, const KIO::AuthInfo&)));
 
-    if (metaData("no-auth-prompt").toLower() == "true")
-       reply = kps.call(QDBus::Block, "queryAuthInfo", data, QString(QLatin1String("<NoAuthPrompt>")),
-                         qlonglong(windowId), SlaveBasePrivate::s_seqNr, qlonglong(userTimestamp));
-    else
-       reply = kps.call(QDBus::Block, "queryAuthInfo", data, errorMsg, qlonglong(windowId),
-                        SlaveBasePrivate::s_seqNr, qlonglong(userTimestamp));
-
-    bool callOK = reply.type() == QDBusMessage::ReplyMessage;
-
-    if (!callOK)
+    QDBusReply<qlonglong> reply = conn.call(pscall, QDBus::Block);
+    if (!reply.isValid())
     {
        kWarning(7019) << "Can't communicate with kded_kpasswdserver (for queryAuthInfo)!";
-       kDebug(7019) << reply.arguments().at(0).toString();
+       kDebug(7019) << reply.error().name() << reply.error().message();
        return false;
     }
+    if (!loop.waitForResult(reply.value())) {
+        kWarning(7019) << "kded_kpasswdserver died while waiting for reply!";
+        return false;
+    }
 
-    QDataStream stream2( reply.arguments().at(0).toByteArray() );
-    stream2 >> authResult;
-    SlaveBasePrivate::s_seqNr = reply.arguments().at(1).toLongLong();
-
-    if (!authResult.isModified())
+    SlaveBasePrivate::s_seqNr = loop.seqNr();
+    if (!loop.authInfo().isModified())
        return false;
 
-    info = authResult;
+    info = loop.authInfo();
 
     kDebug(7019) << "username=" << info.username << "password=[hidden]";
 
@@ -1196,34 +1204,41 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 
     kDebug(7019) << "window =" << windowId << "url =" << info.url;
 
-    QDBusInterface kps( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" );
+    QDBusConnection conn(QDBusConnection::sessionBus());
+    QDBusMessage pscall(QDBusMessage::createMethodCall("org.kde.kded",
+                                                       "/modules/kpasswdserver",
+                                                       "org.kde.KPasswdServer",
+                                                       "checkAuthInfoAsync"));
+    QDBusArgument arg;
+    arg << info;
+    pscall << QVariant::fromValue(arg) << qlonglong(windowId)
+           << qlonglong(userTimestamp);
 
-    QByteArray data;
-    {
-       QDataStream stream(&data, QIODevice::WriteOnly);
-       stream << info;
-    }
-    QDBusReply<QByteArray> reply = kps.call(QDBus::Block, "checkAuthInfo", data, qlonglong(windowId),
-                                            qlonglong(userTimestamp));
+    // create the loop to wait for a result before sending the request
+    // because the result signal has to be connected before. Else we might
+    // actually miss a result signal.
+    PasswdServerLoop loop;
+    conn.connect("", "/modules/kpasswdserver", "org.kde.KPasswdServer",
+                 "checkAuthInfoAsyncResult", &loop,
+                 SLOT(slotQueryResult(qlonglong, qlonglong, const KIO::AuthInfo&)));
 
-    if ( !reply.isValid() )
-    {
+    QDBusReply<qlonglong> reply = conn.call(pscall, QDBus::Block);
+    if (!reply.isValid()) {
        kWarning(7019) << "Can't communicate with kded_kpasswdserver (for checkAuthInfo)!";
-       kDebug(7019) << reply.error().message();
+       kDebug(7019) << reply.error().name() << reply.error().message();
+       return false;
+    }
+    if (!loop.waitForResult(reply.value())) {
+        kWarning(7019) << "kded_kpasswdserver died while waiting for reply!";
+        return false;
+    }
+    
+    if (!loop.authInfo().isModified())
+    {
        return false;
     }
 
-    data = reply.value();
-    {
-       QDataStream stream2(&data, QIODevice::ReadOnly);
-       stream2 >> authResult;
-    }
-    if (!authResult.isModified())
-    {
-       return false;
-    }
-
-    info = authResult;
+    info = loop.authInfo();
     return true;
 }
 

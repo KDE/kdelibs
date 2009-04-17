@@ -28,6 +28,8 @@
 #include <QtCore/QStringList>
 #include <kurl.h>
 
+class QDBusArgument;
+
 namespace KIO {
 
 class AuthInfoPrivate;
@@ -56,6 +58,9 @@ class KIO_EXPORT AuthInfo
 {
     KIO_EXPORT friend QDataStream& operator<< (QDataStream& s, const AuthInfo& a);
     KIO_EXPORT friend QDataStream& operator>> (QDataStream& s, AuthInfo& a);
+
+    KIO_EXPORT friend QDBusArgument &operator<<(QDBusArgument &argument, const AuthInfo &a);
+    KIO_EXPORT friend const QDBusArgument &operator>>(const QDBusArgument &argument, AuthInfo &a);
 
 public:
     
@@ -239,7 +244,7 @@ public:
        ExtraFieldNoFlags = 0,
        ExtraFieldReadOnly = 1<<1,
        ExtraFieldMandatory = 1<<2
-   };   
+   };
    
    /**
     * Set Extra Field Value. 
@@ -270,6 +275,14 @@ public:
     * @since 4.1
     */
    AuthInfo::FieldFlags getExtraFieldFlags(const QString &fieldName) const;
+
+   /**
+    * Register the meta-types for AuthInfo. This is called from
+    * AuthInfo's constructor but needed by daemons on the DBus such
+    * as kpasswdserver.
+    * @since 4.3
+    */
+   static void registerMetaTypes();
    
 protected:
     bool modified;
@@ -280,6 +293,9 @@ private:
 
 KIO_EXPORT QDataStream& operator<< (QDataStream& s, const AuthInfo& a);
 KIO_EXPORT QDataStream& operator>> (QDataStream& s, AuthInfo& a);
+
+KIO_EXPORT QDBusArgument &operator<<(QDBusArgument &argument, const AuthInfo &a);
+KIO_EXPORT const QDBusArgument &operator>>(const QDBusArgument &argument, AuthInfo &a);
 
 /**
  * A Singleton class that provides access to passwords
@@ -367,5 +383,6 @@ private:
 };
 }
 Q_DECLARE_OPERATORS_FOR_FLAGS(KIO::NetRC::LookUpMode)
+Q_DECLARE_METATYPE(KIO::AuthInfo)
 
 #endif
