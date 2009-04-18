@@ -298,7 +298,8 @@ void KToolInvocation::invokeHelp( const QString& anchor,
             KMessage::message(KMessage::Error,
                               i18n("Could not launch the KDE Help Center:\n\n%1", error),
                               i18n("Could not Launch Help Center"));
-            return;
+            delete iface;
+	    return;
         }
 
         delete iface;
