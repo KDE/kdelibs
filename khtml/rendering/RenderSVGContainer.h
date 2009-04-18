@@ -78,7 +78,6 @@ public:
 
     virtual IntRect absoluteClippedOverflowRect();
     virtual void absoluteRects(Vector<IntRect>& rects, int tx, int ty, bool topLevel = true);
-    virtual void addFocusRingRects(GraphicsContext*, int tx, int ty);
 
     FloatRect relativeBBox(bool includeStroke = true) const;
 

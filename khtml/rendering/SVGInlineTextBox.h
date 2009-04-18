@@ -53,10 +53,10 @@ namespace WebCore {
         void paintCharacters(RenderObject::PaintInfo&, int tx, int ty, const SVGChar&, const UChar* chars, int length, SVGPaintServer*);
 
         // SVGs custom paint selection method
-        void paintSelection(int boxStartOffset, const SVGChar&, const UChar*, int length, GraphicsContext*, RenderStyle*, const Font*);
+        void paintSelection(int boxStartOffset, const SVGChar&, const UChar*, int length, RenderObject::PaintInfo&, RenderStyle*, const Font*);
 
         // SVGs custom paint decoration method
-        void paintDecoration(ETextDecoration, GraphicsContext*, int tx, int ty, int width, const SVGChar&, const SVGTextDecorationInfo&);
+        void paintDecoration(ETextDecoration, RenderObject::PaintInfo&, int tx, int ty, int width, const SVGChar&, const SVGTextDecorationInfo&);
  
         SVGRootInlineBox* svgRootInlineBox() const;
 

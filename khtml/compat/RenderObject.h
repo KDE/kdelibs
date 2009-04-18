@@ -2,7 +2,6 @@
 #define RenderObject_h
 
 #include "render_object.h"
-#include "GraphicsContext.h"
 
 // stuff for khtml rendering compatibility
 namespace WebCore

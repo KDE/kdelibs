@@ -103,7 +103,7 @@ void prepareToRenderSVGContent(RenderObject* object, RenderObject::PaintInfo& pa
         svgElement->document()->accessSVGExtensions()->addPendingResource(maskerId, styledElement);*/
 }
 
-void finishRenderSVGContent(RenderObject* object, RenderObject::PaintInfo& paintInfo, const FloatRect& boundingBox, SVGResourceFilter*& filter, GraphicsContext* savedContext)
+void finishRenderSVGContent(RenderObject* object, RenderObject::PaintInfo& paintInfo, const FloatRect& boundingBox, SVGResourceFilter*& filter, QPainter* savedContext)
 {
 /*    ASSERT(object);
 

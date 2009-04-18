@@ -450,7 +450,7 @@ void SVGInlineTextBox::paintCharacters(RenderObject::PaintInfo& paintInfo, int t
         //paintInfo.context->concatCTM(ctm.inverse());
 }
 
-void SVGInlineTextBox::paintSelection(int boxStartOffset, const SVGChar& svgChar, const UChar* chars, int length, GraphicsContext* p, RenderStyle* style, const Font* f)
+void SVGInlineTextBox::paintSelection(int boxStartOffset, const SVGChar& svgChar, const UChar* chars, int length, khtml::RenderObject::PaintInfo& p, RenderStyle* style, const Font* f)
 {
     /*if (selectionState() == RenderObject::SelectionNone)
         return;
@@ -512,7 +512,7 @@ static inline Path pathForDecoration(ETextDecoration decoration, RenderObject* o
     return Path::createRectangle(FloatRect(x + halfThickness, y, width - 2.0f * halfThickness, thickness));
 }
 
-void SVGInlineTextBox::paintDecoration(ETextDecoration decoration, GraphicsContext* context, int tx, int ty, int width, const SVGChar& svgChar, const SVGTextDecorationInfo& info)
+void SVGInlineTextBox::paintDecoration(ETextDecoration decoration, khtml::RenderObject::PaintInfo& pI, int tx, int ty, int width, const SVGChar& svgChar, const SVGTextDecorationInfo& info)
 {
     /*FIXME if (object()->style()->visibility() != VISIBLE)
         return;

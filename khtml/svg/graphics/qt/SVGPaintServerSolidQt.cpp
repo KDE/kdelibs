@@ -25,7 +25,6 @@
 #if ENABLE(SVG)
 #include "SVGPaintServerSolid.h"
 
-#include "GraphicsContext.h"
 #include "RenderPath.h"
 
 #include <QPainter>

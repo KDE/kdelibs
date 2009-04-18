@@ -28,6 +28,7 @@
 #define FloatRect_h
 
 #include "FloatPoint.h"
+#include "IntRect.h"
 
 #if PLATFORM(CG)
 typedef struct CGRect CGRect;
