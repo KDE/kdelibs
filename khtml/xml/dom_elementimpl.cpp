@@ -318,6 +318,12 @@ void AttributeImpl::setValue(DOMStringImpl *value, ElementImpl *element)
 void AttributeImpl::rewriteValue( const DOMString& newValue )
 {
     if (m_localName.id()) {
+	// We may have m_data.value == null if we were given a normalized value
+	// off a removeAttribute (which would call parseNullAttribute()). 
+	// Ignore such requests.
+	if (!m_data.value)
+	    return;
+	
 	DOMStringImpl* value = newValue.implementation();
 	if (m_data.value == value)
 	    return;
