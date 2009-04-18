@@ -173,11 +173,13 @@ class KDEUI_EXPORT KIntNumInput : public KNumInput
     Q_PROPERTY( int value READ value WRITE setValue USER true )
     Q_PROPERTY( int minimum READ minimum WRITE setMinimum )
     Q_PROPERTY( int maximum READ maximum WRITE setMaximum )
+    Q_PROPERTY( int singleStep READ singleStep WRITE setSingleStep )
     Q_PROPERTY( int referencePoint READ referencePoint WRITE setReferencePoint )
     Q_PROPERTY( double relativeValue READ relativeValue WRITE setRelativeValue )
     Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
     Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
     Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
+    Q_PROPERTY( bool sliderEnabled READ showSlider WRITE setSliderEnabled )
 
 public:
     /**
@@ -264,12 +266,12 @@ public:
      * @param max  maximum value
      * @param step step size
      */
-    void setRange(int min, int max, int step=1);
+    void setRange(int min, int max, int singleStep=1);
 
     /**
      * @deprecated Use the other setRange function and setSliderEnabled instead
      */
-    KDE_DEPRECATED void setRange(int min, int max, int step, bool slider);
+    KDE_DEPRECATED void setRange(int min, int max, int singleStep, bool slider);
 
     /**
       * @param enabled Show the slider
@@ -293,6 +295,16 @@ public:
      * @return the maximum value.
      */
     int maximum() const;
+
+    /**
+     * @return the step of the spin box
+     */
+    int singleStep() const;
+
+    /**
+     * @return the step of the spin box
+     */
+    void setSingleStep(int step);
 
     /**
      * Sets the special value text. If set, the SpinBox will display
@@ -439,12 +451,15 @@ class KDEUI_EXPORT KDoubleNumInput : public KNumInput
     Q_PROPERTY( double value READ value WRITE setValue USER true )
     Q_PROPERTY( double minimum READ minimum WRITE setMinimum )
     Q_PROPERTY( double maximum READ maximum WRITE setMaximum )
+    Q_PROPERTY( double singleStep READ singleStep WRITE setSingleStep )
     Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
     Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
     Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
     Q_PROPERTY( int decimals READ decimals WRITE setDecimals )
     Q_PROPERTY( double referencePoint READ referencePoint WRITE setReferencePoint )
     Q_PROPERTY( double relativeValue READ relativeValue  WRITE setRelativeValue )
+    Q_PROPERTY( bool sliderEnabled READ showSlider WRITE setSliderEnabled )
+    Q_PROPERTY( double exponentRatio READ exponentRatio WRITE setExponentRatio )
 
 public:
     /**
@@ -459,11 +474,11 @@ public:
      * @param lower lower boundary value
      * @param upper upper boundary value
      * @param value  initial value for the control
-     * @param step   step size to use for up/down arrow clicks
+     * @param singleStep   step size to use for up/down arrow clicks
      * @param precision number of digits after the decimal point
      * @param parent parent QWidget
      */
-    KDoubleNumInput(double lower, double upper, double value, QWidget *parent=0,double step=0.01,
+    KDoubleNumInput(double lower, double upper, double value, QWidget *parent=0,double singleStep=0.01,
 		    int precision=2);
 
     /**
@@ -487,14 +502,14 @@ public:
      * @param lower lower boundary value
      * @param upper upper boundary value
      * @param value  initial value for the control
-     * @param step   step size to use for up/down arrow clicks
+     * @param singleStep   step size to use for up/down arrow clicks
      * @param precision number of digits after the decimal point
      * @param parent parent QWidget
      *
      * \deprecated use the version without below instead
      */
     KDE_CONSTRUCTOR_DEPRECATED KDoubleNumInput(KNumInput* below,
-		    double lower, double upper, double value, QWidget *parent=0,double step=0.02,
+		    double lower, double upper, double value, QWidget *parent=0,double singleStep=0.02,
 		    int precision=2);
 
     /**
@@ -529,10 +544,17 @@ public:
      /**
      * @param min  minimum value
      * @param max  maximum value
-     * @param step step size for the QSlider
+     * @param singleStep step size for the QSlider
      * @param slider whether the slider is created or not
      */
-    void setRange(double min, double max, double step=1, bool slider=true);
+    void setRange(double min, double max, double singleStep=1, bool slider=true);
+
+    /**
+      * @param enabled Show the slider
+      * @default enabled
+      */
+    void setSliderEnabled(bool enabled);
+
     /**
      * Sets the minimum value.
      */
@@ -549,6 +571,16 @@ public:
      * @return the maximum value.
      */
     double maximum() const;
+
+    /**
+     * @return the step of the spin box
+     */
+    double singleStep() const;
+
+    /**
+     * @return the step of the spin box
+     */
+    void setSingleStep(double singleStep);
 
     /**
      * Specifies the number of digits to use.
@@ -578,6 +610,17 @@ public:
     virtual void setLabel(const QString & label, Qt::Alignment a = Qt::AlignLeft | Qt::AlignTop);
     virtual QSize minimumSizeHint() const;
 
+    /**
+     * @return the value of the exponent use to map the slider to the
+     *         spin box.
+     */
+    double exponentRatio() const;
+
+    /**
+     * @param dbl the value of the exponent use to map the slider to the
+     *         spin box (dbl need to be strictly positive).
+     */
+    void setExponentRatio(double dbl);
 public Q_SLOTS:
     /**
      * Sets the value of the control.
@@ -639,7 +682,7 @@ protected:
     friend class KDoubleLine;
 private:
     void init(double value, double lower, double upper,
-    double step, int precision);
+    double singleStep, int precision);
     double mapSliderToSpin(int) const;
     void updateLegacyMembers();
 
@@ -687,12 +730,12 @@ public:
      *
      *  @param lower  The lowest valid value.
      *  @param upper  The greatest valid value.
-     *  @param step   The step size of the scrollbar.
+     *  @param singleStep   The step size of the scrollbar.
      *  @param value  The actual value.
      *  @param base   The base of the used number system.
      *  @param parent The parent of the widget.
      */
-    KIntSpinBox(int lower, int upper, int step, int value, QWidget *parent,int base = 10);
+    KIntSpinBox(int lower, int upper, int singleStep, int value, QWidget *parent,int base = 10);
 
     /**
      *  Destructor.

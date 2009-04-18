@@ -27,6 +27,8 @@
 #include <limits.h>
 #endif
 
+#include <cmath>
+
 #include <QtGui/QApplication>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
@@ -256,11 +258,11 @@ KIntSpinBox::~KIntSpinBox()
     delete d;
 }
 
-KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, QWidget *parent, int base)
+KIntSpinBox::KIntSpinBox(int lower, int upper, int singleStep, int value, QWidget *parent, int base)
     : QSpinBox(parent), d(new KIntSpinBoxPrivate(this, base))
 {
     setRange(lower, upper);
-    setSingleStep(step);
+    setSingleStep(singleStep);
     lineEdit()->setAlignment(Qt::AlignRight);
     setValue(value);
 }
@@ -432,18 +434,18 @@ void KIntNumInput::setSliderEnabled(bool slider)
     }
 }
 
-void KIntNumInput::setRange(int lower, int upper, int step)
+void KIntNumInput::setRange(int lower, int upper, int singleStep)
 {
-    if (upper < lower || step <= 0) {
+    if (upper < lower || singleStep <= 0) {
         kWarning() << "WARNING: KIntNumInput::setRange() called with bad arguments. Ignoring call...";
         return;
     }
 
     d->intSpinBox->setMinimum(lower);
     d->intSpinBox->setMaximum(upper);
-    d->intSpinBox->setSingleStep(step);
+    d->intSpinBox->setSingleStep(singleStep);
 
-    step = d->intSpinBox->singleStep(); // maybe QRangeControl didn't like our lineStep?
+    singleStep = d->intSpinBox->singleStep(); // maybe QRangeControl didn't like our lineStep?
 
     // check that reference point is still inside valid range:
     setReferencePoint(referencePoint());
@@ -455,9 +457,9 @@ void KIntNumInput::setRange(int lower, int upper, int step)
     setSliderEnabled(priv->slider);
 }
 
-void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
+void KIntNumInput::setRange(int lower, int upper, int singleStep, bool slider)
 {
-    setRange(lower, upper, step);
+    setRange(lower, upper, singleStep);
     setSliderEnabled(slider);
 }
 
@@ -479,6 +481,16 @@ void KIntNumInput::setMaximum(int max)
 int KIntNumInput::maximum() const
 {
     return d->intSpinBox->maximum();
+}
+
+int KIntNumInput::singleStep() const
+{
+    return d->intSpinBox->singleStep();
+}
+
+void KIntNumInput::setSingleStep(int singleStep)
+{
+    d->intSpinBox->setSingleStep(singleStep);
 }
 
 void KIntNumInput::setSuffix(const QString &suffix)
@@ -657,12 +669,14 @@ public:
     KDoubleNumInputPrivate(double r)
             : spin(0),
             referencePoint(r),
-            blockRelative(0) {}
+            blockRelative(0),
+            exponentRatio(1.0) {}
     QDoubleSpinBox * spin;
     double referencePoint;
     short blockRelative;
     QSize editSize;
     QString specialValue;
+    double exponentRatio;
 };
 
 KDoubleNumInput::KDoubleNumInput(QWidget *parent)
@@ -674,20 +688,20 @@ KDoubleNumInput::KDoubleNumInput(QWidget *parent)
 }
 
 KDoubleNumInput::KDoubleNumInput(double lower, double upper, double value, QWidget *parent,
-                                 double step, int precision)
+                                 double singleStep, int precision)
     : KNumInput(parent)
     , d(new KDoubleNumInputPrivate(value))
 {
-    init(value, lower, upper, step, precision);
+    init(value, lower, upper, singleStep, precision);
 }
 
 KDoubleNumInput::KDoubleNumInput(KNumInput *below,
                                  double lower, double upper, double value, QWidget *parent,
-                                 double step, int precision)
+                                 double singleStep, int precision)
     : KNumInput(parent, below)
     , d(new KDoubleNumInputPrivate(value))
 {
-    init(value, lower, upper, step, precision);
+    init(value, lower, upper, singleStep, precision);
 }
 
 KDoubleNumInput::~KDoubleNumInput()
@@ -702,11 +716,11 @@ QString KDoubleNumInput::specialValueText() const
 
 
 void KDoubleNumInput::init(double value, double lower, double upper,
-                           double step, int precision)
+                           double singleStep, int precision)
 {
     d->spin = new QDoubleSpinBox(this);
     d->spin->setRange(lower, upper);
-    d->spin->setSingleStep(step);
+    d->spin->setSingleStep(singleStep);
     d->spin->setValue(value);
     d->spin->setDecimals(precision);
     d->spin->setAlignment(Qt::AlignRight);
@@ -738,7 +752,8 @@ double KDoubleNumInput::mapSliderToSpin(int val) const
     const double slidemin = priv->slider->minimum(); // cast int to double to avoid
     const double slidemax = priv->slider->maximum(); // overflow in rel denominator
     const double rel = (double(val) - slidemin) / (slidemax - slidemin);
-    return spinmin + rel * (spinmax - spinmin);
+    Q_ASSERT(d->exponentRatio > 0.0);
+    return spinmin + pow(rel, d->exponentRatio ) * (spinmax - spinmin);
 }
 
 void KDoubleNumInput::sliderMoved(int val)
@@ -755,7 +770,8 @@ void KDoubleNumInput::spinBoxChanged(double val)
     const double slidemin = priv->slider->minimum(); // cast int to double to avoid
     const double slidemax = priv->slider->maximum(); // overflow in rel denominator
 
-    const double rel = (val - spinmin) / (spinmax - spinmin);
+    Q_ASSERT(d->exponentRatio > 0.0);
+    const double rel = pow((val - spinmin) / (spinmax - spinmin) , 1.0 / d->exponentRatio);
 
     if (priv->slider) {
         priv->slider->blockSignals(true);
@@ -871,7 +887,7 @@ void KDoubleNumInput::setReferencePoint(double ref)
     d->referencePoint = ref;
 }
 
-void KDoubleNumInput::setRange(double lower, double upper, double step,
+void KDoubleNumInput::setRange(double lower, double upper, double singleStep,
                                bool slider)
 {
     K_USING_KNUMINPUT_P(priv);
@@ -883,9 +899,20 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
                    priv->slider, SLOT(setValue(int)));
     }
     d->spin->setRange(lower, upper);
-    d->spin->setSingleStep(step);
+    d->spin->setSingleStep(singleStep);
 
-    if (slider) {
+    setSliderEnabled(slider);
+
+    setReferencePoint(referencePoint());
+
+    layout(true);
+    updateLegacyMembers();
+}
+
+void KDoubleNumInput::setSliderEnabled(bool enabled)
+{
+    K_USING_KNUMINPUT_P(priv);
+    if (enabled) {
         // upcast to base type to get the minimum/maximum in int form:
         QDoubleSpinBox * spin = d->spin;
         double multiplicator = 1.0;
@@ -917,12 +944,8 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
         delete priv->slider;
         priv->slider = 0;
     }
-
-    setReferencePoint(referencePoint());
-
-    layout(true);
-    updateLegacyMembers();
 }
+
 
 void KDoubleNumInput::setMinimum(double min)
 {
@@ -944,6 +967,16 @@ void KDoubleNumInput::setMaximum(double max)
 double KDoubleNumInput::maximum() const
 {
     return d->spin->maximum();
+}
+
+double KDoubleNumInput::singleStep() const
+{
+  return d->spin->singleStep();
+}
+
+void KDoubleNumInput::setSingleStep(double singleStep)
+{
+  d->spin->setSingleStep(singleStep);
 }
 
 double KDoubleNumInput::value() const
@@ -1018,5 +1051,22 @@ void KDoubleNumInput::setLabel(const QString & label, Qt::Alignment a)
         priv->label->setBuddy(d->spin);
     }
 }
+
+double KDoubleNumInput::exponentRatio() const
+{
+    return d->exponentRatio;
+}
+
+void KDoubleNumInput::setExponentRatio(double dbl)
+{
+    Q_ASSERT(dbl > 0.0);
+    if(dbl > 0.0) {
+        d->exponentRatio = dbl;
+        spinBoxChanged( d->spin->value() ); // used to reset the value of the slider
+    } else {
+        kdError() << "ExponentRatio need to be strictly positive.";
+    }
+}
+
 
 #include "knuminput.moc"
