@@ -184,6 +184,12 @@ static void cleanup_fds()
  */
 static void close_fds()
 {
+   while (struct child *child = children) {
+      close(child->sock);
+      children = child->next;
+      free(child);
+   }
+
    if (d.deadpipe[0] != -1)
    {
       close(d.deadpipe[0]);
