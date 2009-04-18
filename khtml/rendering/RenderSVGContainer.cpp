@@ -402,11 +402,6 @@ IntRect RenderSVGContainer::absoluteClippedOverflowRect()
 	return IntRect();
 }
 
-void RenderSVGContainer::addFocusRingRects(GraphicsContext* graphicsContext, int tx, int ty)
-{
-    //FIXME graphicsContext->addFocusRingRect(m_absoluteBounds);
-}
-
 void RenderSVGContainer::absoluteRects(Vector<IntRect>& rects, int, int, bool)
 {
     //FIXME rects.append(absoluteClippedOverflowRect());

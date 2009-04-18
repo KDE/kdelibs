@@ -3,7 +3,6 @@
 
 #include "render_box.h"
 #include "IntRect.h"
-#include "GraphicsContext.h"
 
 namespace WebCore {
     using namespace khtml;
