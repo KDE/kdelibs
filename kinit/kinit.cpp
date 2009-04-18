@@ -448,7 +448,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
       */
      if (0 > socketpair(AF_UNIX, SOCK_STREAM, 0, d.launcher))
      {
-        perror("kdeinit4: socketpair() failed!\n");
+        perror("kdeinit4: socketpair() failed");
         exit(255);
      }
      starting_klauncher = 1;
@@ -479,7 +479,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
 
   if (0 > pipe(d.fd))
   {
-     perror("kdeinit4: pipe() failed!\n");
+     perror("kdeinit4: pipe() failed");
      d.result = 3;
      d.errorMsg = i18n("Unable to start new process.\n"
                        "The system may have reached the maximum number of open files possible or the maximum number of open files that you are allowed to use has been reached.").toUtf8();
@@ -498,7 +498,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
   d.fork = fork();
   switch(d.fork) {
   case -1:
-     perror("kdeinit4: fork() failed!\n");
+     perror("kdeinit4: fork() failed");
      d.result = 3;
      d.errorMsg = i18n("Unable to create new process.\n"
                        "The system may have reached the maximum number of processes possible or the maximum number of processes that you are allowed to use has been reached.").toUtf8();
@@ -800,20 +800,20 @@ static void init_signals()
 
   if (pipe(d.deadpipe) != 0)
   {
-     perror("kdeinit4: Aborting. Can not create pipe: ");
+     perror("kdeinit4: Aborting. Can not create pipe");
      exit(255);
   }
 
   options = fcntl(d.deadpipe[0], F_GETFL);
   if (options == -1)
   {
-     perror("kdeinit4: Aborting. Can not make pipe non-blocking: ");
+     perror("kdeinit4: Aborting. Can not make pipe non-blocking");
      exit(255);
   }
 
   if (fcntl(d.deadpipe[0], F_SETFL, options | O_NONBLOCK) == -1)
   {
-     perror("kdeinit4: Aborting. Can not make pipe non-blocking: ");
+     perror("kdeinit4: Aborting. Can not make pipe non-blocking");
      exit(255);
   }
 
@@ -909,7 +909,7 @@ static void init_kdeinit_socket()
      s = socket(PF_UNIX, SOCK_STREAM, 0);
      if (s < 0)
      {
-        perror("socket() failed: ");
+        perror("socket() failed");
         exit(255);
      }
      server.sun_family = AF_UNIX;
@@ -936,28 +936,28 @@ static void init_kdeinit_socket()
   d.wrapper = socket(PF_UNIX, SOCK_STREAM, 0);
   if (d.wrapper < 0)
   {
-     perror("kdeinit4: Aborting. socket() failed: ");
+     perror("kdeinit4: Aborting. socket() failed");
      exit(255);
   }
 
   options = fcntl(d.wrapper, F_GETFL);
   if (options == -1)
   {
-     perror("kdeinit4: Aborting. Can not make socket non-blocking: ");
+     perror("kdeinit4: Aborting. Can not make socket non-blocking");
      close(d.wrapper);
      exit(255);
   }
 
   if (fcntl(d.wrapper, F_SETFL, options | O_NONBLOCK) == -1)
   {
-     perror("kdeinit4: Aborting. Can not make socket non-blocking: ");
+     perror("kdeinit4: Aborting. Can not make socket non-blocking");
      close(d.wrapper);
      exit(255);
   }
 
   if (fcntl(d.wrapper, F_SETFD, FD_CLOEXEC) == -1)
   {
-     perror("kdeinit4: Aborting. Can not make socket close-on-execute: ");
+     perror("kdeinit4: Aborting. Can not make socket close-on-execute");
      close(d.wrapper);
      exit(255);
   }
@@ -971,7 +971,7 @@ static void init_kdeinit_socket()
       if(bind(d.wrapper, (struct sockaddr *)&sa, socklen) != 0)
       {
           if (max_tries == 0) {
-	      perror("kdeinit4: Aborting. bind() failed: ");
+	      perror("kdeinit4: Aborting. bind() failed");
 	      fprintf(stderr, "Could not bind to socket '%s'\n", sock_file);
 	      close(d.wrapper);
 	      exit(255);
@@ -984,7 +984,7 @@ static void init_kdeinit_socket()
   /** set permissions **/
   if (chmod(sock_file, 0600) != 0)
   {
-     perror("kdeinit4: Aborting. Can not set permissions on socket: ");
+     perror("kdeinit4: Aborting. Can not set permissions on socket");
      fprintf(stderr, "Wrong permissions of socket '%s'\n", sock_file);
      unlink(sock_file);
      close(d.wrapper);
@@ -993,7 +993,7 @@ static void init_kdeinit_socket()
 
   if(listen(d.wrapper, SOMAXCONN) < 0)
   {
-     perror("kdeinit4: Aborting. listen() failed: ");
+     perror("kdeinit4: Aborting. listen() failed");
      unlink(sock_file);
      close(d.wrapper);
      exit(255);
@@ -1004,14 +1004,14 @@ static void init_kdeinit_socket()
   d.wrapper_old = socket(PF_UNIX, SOCK_STREAM, 0);
   if (d.wrapper_old < 0)
   {
-     // perror("kdeinit4: Aborting. socket() failed: ");
+     // perror("kdeinit4: Aborting. socket() failed");
      return;
   }
 
   options = fcntl(d.wrapper_old, F_GETFL);
   if (options == -1)
   {
-     // perror("kdeinit4: Aborting. Can't make socket non-blocking: ");
+     // perror("kdeinit4: Aborting. Can't make socket non-blocking");
      close(d.wrapper_old);
      d.wrapper_old = -1;
      return;
@@ -1019,7 +1019,7 @@ static void init_kdeinit_socket()
 
   if (fcntl(d.wrapper_old, F_SETFL, options | O_NONBLOCK) == -1)
   {
-     // perror("kdeinit4: Aborting. Can't make socket non-blocking: ");
+     // perror("kdeinit4: Aborting. Can't make socket non-blocking");
      close(d.wrapper_old);
      d.wrapper_old = -1;
      return;
@@ -1027,7 +1027,7 @@ static void init_kdeinit_socket()
 
   if (fcntl(d.wrapper, F_SETFD, FD_CLOEXEC) == -1)
   {
-     //perror("kdeinit4: Aborting. Can't make socket close-on-execute: ");
+     //perror("kdeinit4: Aborting. Can't make socket close-on-execute");
      close(d.wrapper);
      d.wrapper_old = -1;
      return;
@@ -1043,7 +1043,7 @@ static void init_kdeinit_socket()
       if(bind(d.wrapper_old, (struct sockaddr *)&sa_old, socklen) != 0)
       {
           if (max_tries == 0) {
-	      // perror("kdeinit4: Aborting. bind() failed: ");
+	      // perror("kdeinit4: Aborting. bind() failed");
 	      fprintf(stderr, "Could not bind to socket '%s'\n", sock_file_old);
 	      close(d.wrapper_old);
 	      d.wrapper_old = -1;
@@ -1066,7 +1066,7 @@ static void init_kdeinit_socket()
 
   if(listen(d.wrapper_old, SOMAXCONN) < 0)
   {
-     // perror("kdeinit4: Aborting. listen() failed: ");
+     // perror("kdeinit4: Aborting. listen() failed");
      unlink(sock_file_old);
      close(d.wrapper_old);
      d.wrapper_old = -1;
