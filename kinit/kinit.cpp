@@ -699,16 +699,15 @@ static pid_t launch(int argc, const char *_name, const char *args,
              continue;
           }
        }
-       if (exec)
-       {
-          d.result = 0;
-          break;
-       }
        if (d.n == 0)
        {
-          fprintf(stderr,"kdeinit4: (%s %s) Pipe closed unexpectedly", name.constData(), execpath.constData());
-          perror("kdeinit4: Pipe closed unexpectedly");
-          d.result = 1; // Error
+          if (exec) {
+             d.result = 0;
+          } else {
+             fprintf(stderr,"kdeinit4: (%s %s) Pipe closed unexpectedly", name.constData(), execpath.constData());
+             perror("kdeinit4: Pipe closed unexpectedly");
+             d.result = 1; // Error
+          }
           break;
        }
        perror("kdeinit4: Error reading from pipe");
