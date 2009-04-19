@@ -101,6 +101,9 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             kDebug() << "PostOperation:" << req.url();
 
             kioJob = KIO::http_post(req.url(), outgoingData->readAll(), KIO::HideProgressInfo);
+            if (!kioJob->metaData().contains("content-type")) {
+                kioJob->addMetaData("content-type", "Content-Type: application/x-www-form-urlencoded" );
+            }
 
             break;
         }
