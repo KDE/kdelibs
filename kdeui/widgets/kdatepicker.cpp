@@ -574,6 +574,13 @@ void KDatePicker::selectYearClicked()
     d->selectYear->setChecked( false );
 }
 
+
+void KDatePicker::uncheckYearSelector()
+{
+    d->selectYear->setChecked(false);
+    d->selectYear->update();
+}
+
 // ####### KDE4: setEnabled isn't virtual anymore, so this isn't polymorphic.
 // Better reimplement changeEvent() instead.
 void KDatePicker::setEnabled( bool enable )
