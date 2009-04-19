@@ -34,7 +34,7 @@ public:
         RenderSVGInline(NodeImpl*);
         virtual const char* renderName() const { return "RenderSVGInline"; }
         virtual InlineBox* createInlineBox(bool makePlaceHolderBox, bool isRootLineBox, bool isOnlyRun = false);
-        virtual bool requiresLayer() { return false; }
+        virtual bool requiresLayer() const { return false; }
     };
 }
 
