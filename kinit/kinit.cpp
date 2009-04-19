@@ -306,15 +306,11 @@ static void setup_tty( const char* tty )
     }
     if( dup2( fd, STDOUT_FILENO ) < 0 )
     {
-        perror( "kdeinit4: could not dup2() tty" );
-        close( fd );
-        return;
+        perror( "kdeinit4: could not dup2() stdout tty" );
     }
     if( dup2( fd, STDERR_FILENO ) < 0 )
     {
-        perror( "kdeinit4: could not dup2() tty" );
-        close( fd );
-        return;
+        perror( "kdeinit4: could not dup2() stderr tty" );
     }
     close( fd );
 }
