@@ -179,12 +179,6 @@ typedef struct
  *    infinite loop by binary->kdeinit_wrapper link in $PATH
  */
 
-#define LAUNCHER_FD	42
-/*
- * File descriptor to use for communication with kdeinit.
- */
-
-
 const char* commandToString(int command);
 
 #endif

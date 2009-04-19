@@ -52,13 +52,15 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
 {
 #ifndef Q_WS_WIN
    // Started via kdeinit.
-   if (fcntl(LAUNCHER_FD, F_GETFD) == -1)
+   int launcherFd;
+   if (argc != 2 || memcmp(argv[1], "--fd=", 5) || !(launcherFd = atoi(argv[1] + 5)))
    {
       fprintf(stderr, "%s", i18n("klauncher: This program is not supposed to be started manually.\n"
                                  "klauncher: It is started automatically by kdeinit4.\n").toLocal8Bit().data());
       return 1;
    }
 #endif
+
    KComponentData componentData("klauncher");
 
    // WABA: Make sure not to enable session management.
@@ -103,7 +105,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    }
 
 #ifndef Q_WS_WIN
-   KLauncher *launcher = new KLauncher(LAUNCHER_FD);
+   KLauncher *launcher = new KLauncher(launcherFd);
 #else
    KLauncher *launcher = new KLauncher();
 #endif

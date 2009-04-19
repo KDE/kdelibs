@@ -212,10 +212,10 @@ static void close_fds()
       d.initpipe[1] = -1;
    }
 
-   if (d.launcher_pid)
+   if (d.launcher[0] != -1)
    {
       close(d.launcher[0]);
-      d.launcher_pid = 0;
+      d.launcher[0] = -1;
    }
    if (d.wrapper != -1)
    {
@@ -423,22 +423,9 @@ static pid_t launch(int argc, const char *_name, const char *args,
                     const char *tty=0, bool avoid_loops = false,
                     const char* startup_id_str = "0" )
 {
-  int starting_klauncher = 0;
   QString lib;
   QByteArray name;
   QByteArray exec;
-
-  if (strcmp(_name, "klauncher") == 0) {
-     /* klauncher is launched in a special way:
-      * It has a communication socket on LAUNCHER_FD
-      */
-     if (0 > socketpair(AF_UNIX, SOCK_STREAM, 0, d.launcher))
-     {
-        perror("kdeinit4: socketpair() failed");
-        exit(255);
-     }
-     starting_klauncher = 1;
-  }
 
     QString libpath;
     QByteArray execpath;
@@ -497,19 +484,6 @@ static pid_t launch(int argc, const char *_name, const char *args,
      /** Child **/
      close(d.fd[0]);
      close_fds();
-     if (starting_klauncher)
-     {
-        if (d.fd[1] == LAUNCHER_FD)
-        {
-          d.fd[1] = dup(d.fd[1]); // Evacuate from LAUNCHER_FD
-        }
-        if (d.launcher[1] != LAUNCHER_FD)
-        {
-          dup2( d.launcher[1], LAUNCHER_FD); // Make sure the socket has fd LAUNCHER_FD
-          close( d.launcher[1] );
-        }
-        close( d.launcher[0] );
-     }
 
      // Try to chdir, either to the requested directory or to the user's document path by default.
      // We ignore errors - if you write a desktop file with Exec=foo and Path=/doesnotexist,
@@ -685,11 +659,6 @@ static pid_t launch(int argc, const char *_name, const char *args,
   default:
      /** Parent **/
      close(d.fd[1]);
-     if (starting_klauncher)
-     {
-        close(d.launcher[1]);
-        d.launcher_pid = d.fork;
-     }
      bool exec = false;
      for(;;)
      {
@@ -747,11 +716,6 @@ static pid_t launch(int argc, const char *_name, const char *args,
        break;
      }
      close(d.fd[0]);
-     if (starting_klauncher && (d.result == 0))
-     {
-        // klauncher launched successfully
-        d.launcher_pid = d.fork;
-     }
   }
 #ifdef Q_WS_X11
   if( !startup_id.none())
@@ -1005,6 +969,23 @@ static int read_socket(int sock, char *buffer, int len)
   return 0;
 }
 
+static void start_klauncher()
+{
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, d.launcher) < 0) {
+        perror("kdeinit4: socketpair() failed");
+        exit(255);
+    }
+    char args[32];
+    strcpy(args, "--fd=");
+    sprintf(args + 5, "%d", d.launcher[1]);
+    d.launcher_pid = launch( 2, "klauncher", args );
+    close(d.launcher[1]);
+#ifndef NDEBUG
+    fprintf(stderr, "kdeinit4: Launched KLauncher, pid = %ld, result = %d\n",
+                    (long) d.launcher_pid, d.result);
+#endif
+}
+
 static void launcher_died()
 {
    if (!d.launcher_ok)
@@ -1031,10 +1012,7 @@ static void launcher_died()
    close(d.launcher[0]);
    d.launcher[0] = -1;
 
-   pid_t pid = launch( 1, "klauncher", 0 );
-#ifndef NDEBUG
-   fprintf(stderr, "kdeinit4: Relaunching KLauncher, pid = %ld result = %d\n", (long) pid, d.result);
-#endif
+   start_klauncher();
 }
 
 static void handle_launcher_request(int sock = -1)
@@ -1706,11 +1684,8 @@ int main(int argc, char **argv, char **envp)
 #endif
    if (launch_klauncher)
    {
-      pid = launch( 1, "klauncher", 0 );
-#ifndef NDEBUG
-      fprintf(stderr, "kdeinit4: Launched KLauncher, pid = %ld result = %d\n", (long) pid, d.result);
-#endif
-      handle_requests(pid); // Wait for klauncher to be ready
+      start_klauncher();
+      handle_requests(d.launcher_pid); // Wait for klauncher to be ready
    }
 
 #ifdef Q_WS_X11
