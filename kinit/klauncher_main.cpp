@@ -102,7 +102,11 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
       // Try again...
    }
 
+#ifndef Q_WS_WIN
    KLauncher *launcher = new KLauncher(LAUNCHER_FD);
+#else
+   KLauncher *launcher = new KLauncher();
+#endif
    QDBusConnection::sessionBus().registerObject(QString::fromLatin1("/"), launcher);
 
 #ifndef Q_WS_WIN

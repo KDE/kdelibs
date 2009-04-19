@@ -171,9 +171,14 @@ IdleSlave::age(time_t now)
 
 static KLauncher* g_klauncher_self;
 
+#ifndef Q_WS_WIN
 KLauncher::KLauncher(int _kdeinitSocket)
   : QObject(0),
     kdeinitSocket(_kdeinitSocket)
+#else
+KLauncher::KLauncher()
+  : QObject(0)
+#endif
 {
 #ifdef Q_WS_X11
    mCached_dpy = NULL;

@@ -121,7 +121,11 @@ class KLauncher : public QObject
    Q_OBJECT
 
 public:
+#ifndef Q_WS_WIN
    KLauncher(int kdeinitSocket);
+#else
+   KLauncher();
+#endif
 
    ~KLauncher();
 
@@ -261,8 +265,8 @@ protected:
    QList<KLaunchRequest*> requestQueue; // Requests waiting to being handled
    KLaunchRequest *lastRequest;
    QList<SlaveWaitRequest*> mSlaveWaitRequest;
-   int kdeinitSocket;
 #ifndef Q_WS_WIN
+   int kdeinitSocket;
    QSocketNotifier *kdeinitNotifier;
 #endif
    KIO::ConnectionServer mConnectionServer;
