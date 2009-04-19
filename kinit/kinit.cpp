@@ -952,13 +952,6 @@ static void init_kdeinit_socket()
      exit(255);
   }
 
-  if (fcntl(d.wrapper, F_SETFD, FD_CLOEXEC) == -1)
-  {
-     perror("kdeinit4: Aborting. Can not make socket close-on-execute");
-     close(d.wrapper);
-     exit(255);
-  }
-
   while (1) {
       /** bind it **/
       socklen = sizeof(sa);
@@ -1774,11 +1767,6 @@ int main(int argc, char **argv, char **envp)
       d.initpipe[0] = -1;
 #endif
    }
-
-   /** We start a few processes (including klauncher and kded) before
-    * we close our pipe, so make sure it doesn't leak */
-   if (d.initpipe[1] != -1)
-      fcntl(d.initpipe[1], F_SETFD, FD_CLOEXEC);
 
    d.my_pid = getpid();
 
