@@ -1291,13 +1291,6 @@ static void handle_launcher_request(int sock = -1)
          child->sock = dup(sock);
          child->next = children;
          children = child;
-
-         /* check child hasn't terminated already */
-         if (kill(pid, 0))
-         {
-            children = child->next;
-            free(child);
-         }
       }
       else
       {
