@@ -254,10 +254,9 @@ static void close_fds()
 /* Notify wrapper program that the child it started has finished. */
 static void child_died(pid_t exit_pid, int exit_status)
 {
-   struct child *child = children;
-   struct child *prev = NULL;
+   struct child *child, **childptr = &children;
 
-   while (child)
+   while ((child = *childptr))
    {
       if (child->pid == exit_pid)
       {
@@ -272,20 +271,12 @@ static void child_died(pid_t exit_pid, int exit_status)
          write(child->sock, request_data, request_header.arg_length);
          close(child->sock);
 
-         if (prev)
-         {
-            prev->next = child->next;
-         }
-         else
-         {
-            child = NULL;
-         }
+         *childptr = child->next;
          free(child);
          return;
       }
 
-      prev = child;
-      child = child->next;
+      childptr = &child->next;
    }
 }
 
