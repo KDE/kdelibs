@@ -595,7 +595,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      }
 
 
-     if ( !qgetenv("KDE_IS_PRELINKED").isEmpty() && !execpath.isEmpty() && !starting_klauncher)
+     if ( !qgetenv("KDE_IS_PRELINKED").isEmpty() && !execpath.isEmpty())
          libpath.truncate(0);
 
      QLibrary l(libpath);
