@@ -127,7 +127,7 @@ namespace Nepomuk {
             bool isAvailable();
 
             /**
-             * The Types classes are optimized for performance under the 
+             * The Types classes are optimized for performance under the
              * aasumption that ontologies never change during the execution
              * time of an application.
              *
@@ -203,7 +203,7 @@ namespace Nepomuk {
          * The URI of the resource
          */
         QUrl uri() const;
-	    
+
         QString label( const QString& language = QString() ) const;
         QString comment( const QString& language = QString() ) const;
 
@@ -216,6 +216,11 @@ namespace Nepomuk {
 
         friend class OntologyManager;
     };
+}
+
+inline uint qHash( const QUrl& url )
+{
+    return qHash( url.toString() );
 }
 
 #endif

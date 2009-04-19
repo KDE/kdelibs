@@ -38,7 +38,7 @@ namespace Nepomuk {
             virtual ~EntityPrivate() {}
 
             QMutex mutex;
-            
+
             QUrl uri;
             QString label;
             QString comment;
@@ -85,7 +85,5 @@ public:
     QHash<QString, QString> l10nLabels;
     QHash<QString, QString> l10nComments;
 };
-
-uint qHash( const QUrl& url );
 
 #endif
