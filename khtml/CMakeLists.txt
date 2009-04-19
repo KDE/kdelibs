@@ -399,6 +399,7 @@ set(decoders_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/imload/decoders/jpegloader.cpp
   ${CMAKE_SOURCE_DIR}/khtml/imload/decoders/pngloader.cpp
   ${CMAKE_SOURCE_DIR}/khtml/imload/decoders/gifloader.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/imload/decoders/qimageioloader.cpp
 )
 
 add_subdirectory( css )
@@ -502,7 +503,7 @@ kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ktexteditor kjs ${KDE4_PHONON_LIBS} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES})
 target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts kjs kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} )
 
-set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
+set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
                      )
 
@@ -714,7 +715,7 @@ if (KHTML_BUILD_TESTREGRESSION)
 endif (KHTML_BUILD_TESTREGRESSION)
 
 ########### install files ###############
-install( FILES khtml_export.h khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h  
+install( FILES khtml_export.h khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h
          DESTINATION  ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 install( FILES dom/dom_exception.h dom/html_base.h dom/html_inline.h dom/css_rule.h dom/dom_html.h
                dom/html_block.h dom/html_list.h dom/css_stylesheet.h dom/dom_misc.h dom/html_document.h

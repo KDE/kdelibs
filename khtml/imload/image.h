@@ -122,6 +122,12 @@ private:
     void notifyScanline(unsigned char version, unsigned char* data);
     
     /**
+     Called from the loader to feed a new image, through
+     various progressive versions
+     */
+    void notifyQImage(unsigned char version, const QImage* image);
+
+    /**
      Called from loader to request the current contents of the line in the basic plane
      */
     void requestScanline(unsigned int lineNum, unsigned char* lineBuf);

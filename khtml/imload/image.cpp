@@ -283,6 +283,26 @@ static inline unsigned char premulComponent(unsigned original, unsigned alpha)
     return (unsigned char)((product + product/256 + 128)/256);
 }
 
+void Image::notifyQImage(uchar version, const QImage *image)
+{
+    RawImagePlane* plane = static_cast<RawImagePlane*>(loaderPlane->parent);
+
+    plane->image = *image;
+
+    //Set the versions.
+    for(int i=0; i<plane->height;i++) {
+        plane->versions[i] = version;
+    }
+
+    updatesStartLine = 0;
+    updatesEndLine   = plane->height;
+    if (!updatesPending)
+    {
+        updatesPending = true;
+        ImageManager::updater()->haveUpdates(this);
+    }
+}
+
 void Image::notifyScanline(uchar version, uchar* data)
 {
     RawImagePlane* plane = static_cast<RawImagePlane*>(loaderPlane->parent);

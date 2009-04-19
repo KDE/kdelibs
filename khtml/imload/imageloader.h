@@ -82,6 +82,11 @@ protected:
         image->notifyScanline(version, line);
     }
 
+    void notifyQImage(unsigned char version, const QImage* qimage)
+    {
+        image->notifyQImage(version, qimage);
+    }
+
     /**
      Call this to exract the current state of a scanline to the provided bufer
     */

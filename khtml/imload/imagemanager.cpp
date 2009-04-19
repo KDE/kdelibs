@@ -27,6 +27,7 @@
 #include "decoders/jpegloader.h"
 #include "decoders/pngloader.h"
 #include "decoders/gifloader.h"
+#include "decoders/qimageioloader.h"
 
 namespace khtmlImLoad {
 
@@ -58,6 +59,7 @@ void ImageManager::initLoaders()
     loaderDB->registerLoaderProvider(new JPEGLoaderProvider);
     loaderDB->registerLoaderProvider(new PNGLoaderProvider);
     loaderDB->registerLoaderProvider(new GIFLoaderProvider);
+    loaderDB->registerLoaderProvider(new QImageIOLoaderProvider);
 }
 
 bool ImageManager::isAcceptableSize(unsigned width, unsigned height)
@@ -67,7 +69,7 @@ bool ImageManager::isAcceptableSize(unsigned width, unsigned height)
         return false;
 
     unsigned pixels = width * height; //Cannot overflow due to the above -- 16K by 16K is 256K...
-    
+
     if (pixels > 6000 * 4000)
         return false;
 
@@ -78,8 +80,8 @@ bool ImageManager::isAcceptableScaleSize(unsigned width, unsigned height)
 {
     if (width > 32768 || height > 32768)
         return false;
-        
-    // At this point, we have at most 512x512 tiles, each 3 pointers bigs, 
+
+    // At this point, we have at most 512x512 tiles, each 3 pointers bigs,
     // which is 3.1 meg on 32-bit, 6.2 meg on 64-bit.
     // The scaling tables are at most 256KiB each. So this is all reasonable,
     // even too reasonable.

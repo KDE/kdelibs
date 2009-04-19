@@ -26,6 +26,7 @@
 #define LOADER_DATABASE_H
 
 #include "imageloaderprovider.h"
+#include "qimageioloader.h"
 #include <QStringList>
 #include <QVector>
 
@@ -37,20 +38,21 @@ class LoaderDatabase
 {
 public:
     LoaderDatabase() {}
-    
+
     unsigned int numLoaders()
     {
         return efficientProviders.size() + foreignProviders.size();
     }
 
     QStringList supportedMimeTypes() {
-        //### FIXME/TODO: this should be dynamic
+        //### FIXME/TODO: this should be more dynamic
         QStringList ret;
         ret << QLatin1String("image/jpg") << QLatin1String("image/jpeg")
-            << QLatin1String("image/png") << QLatin1String("image/gif");
+            << QLatin1String("image/png") << QLatin1String("image/gif")
+            << QImageIOLoaderProvider::mimeTypes();
         return ret;
     }
-    
+
     void registerLoaderProvider(ImageLoaderProvider* provider)
     {
         if (provider->type() == ImageLoaderProvider::Efficient)
@@ -58,7 +60,7 @@ public:
         else
             foreignProviders.append(provider);
     }
-    
+
     ImageLoader* loaderFor(const QByteArray& prefix)
     {
         ImageLoader* toRet;
@@ -68,22 +70,22 @@ public:
             if (toRet)
                 return toRet;
         }
-        
+
         for (int c = 0; c < foreignProviders.size(); c++)
         {
             toRet = foreignProviders[c]->loaderFor(prefix);
             if (toRet)
                 return toRet;
         }
-        
+
         return 0;
     }
-    
+
     ~LoaderDatabase()
     {
         for (int c = 0; c < efficientProviders.size(); c++)
             delete efficientProviders[c];
-            
+
         for (int c = 0; c < foreignProviders.size(); c++)
             delete foreignProviders[c];
     }
