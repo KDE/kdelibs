@@ -1064,7 +1064,7 @@ void KDoubleNumInput::setExponentRatio(double dbl)
         d->exponentRatio = dbl;
         spinBoxChanged( d->spin->value() ); // used to reset the value of the slider
     } else {
-        kdError() << "ExponentRatio need to be strictly positive.";
+        kError() << "ExponentRatio need to be strictly positive.";
     }
 }
 
