@@ -1022,10 +1022,6 @@ static void handle_launcher_request(int sock = -1)
        sock = d.launcher[0];
        launcher = true;
    }
-   else
-   {
-       d.accepted_fd = sock;
-   }
 
    klauncher_header request_header;
    char *request_data = 0L;
@@ -1291,9 +1287,6 @@ static void handle_requests(pid_t waitForPid)
       }
       while( exit_pid > 0);
 
-      /* Set up the next loop */
-      d.accepted_fd = -1;
-
       FD_ZERO(&rd_set);
       FD_ZERO(&wr_set);
       FD_ZERO(&e_set);
@@ -1318,8 +1311,10 @@ static void handle_requests(pid_t waitForPid)
          int sock = accept(d.wrapper, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
+            d.accepted_fd = sock;
             handle_launcher_request(sock);
             close(sock);
+            d.accepted_fd = -1;
          }
       }
 
