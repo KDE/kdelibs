@@ -80,13 +80,13 @@ public:
         if (!size.isValid())
             notifyImageInfo(image.width(), image.height());
 
-	ImageFormat format;
+        ImageFormat format;
         if (!imageFormat(image, format)) {
             return Error;
         }
         notifyAppendFrame(image.width(), image.height(), format);
 
-	notifyQImage(1, &image);
+        notifyQImage(1, &image);
 
         return Done;
     }
@@ -107,6 +107,10 @@ public:
             break;
         case QImage::Format_Mono:
         case QImage::Format_MonoLSB:
+            image = image.convertToFormat(QImage::Format_Indexed8);
+            format.type  = ImageFormat::Image_Palette_8;
+            format.palette = image.colorTable();
+            break;
         case QImage::Format_Invalid:
         default:
             // unsupported formats
@@ -117,7 +121,7 @@ public:
 };
 
 static const char* positiveList[] = {
-    "BMP", "PPM", "TIFF", "JP2", "PNM", "EXR", 0
+    "BMP", "TIFF", "JP2", "PNM", "EXR", "XBM", "XPM", "ICO", 0
 };
 
 static QStringList s_formats;
@@ -151,7 +155,7 @@ const QStringList& QImageIOLoaderProvider::mimeTypes()
         if (!positive) continue;
         if (!mimetype.isEmpty()) {
             s_formats.append(mimetype);
-            kDebug() << "QImageIO - Format supported: " << mimetype << endl;
+            kDebug(399) << "QImageIO - Format supported: " << mimetype << endl;
         }
     }
     return s_formats;
@@ -167,7 +171,7 @@ ImageLoader* QImageIOLoaderProvider::loaderFor(const QByteArray& prefix)
     if (format.isEmpty())
         return 0;
     else
-	kDebug() << "QImageIO - Format guessed: " << format << endl;
+        kDebug(399) << "QImageIO - Format guessed: " << format << endl;
 
     return new QImageIOLoader;
 }
