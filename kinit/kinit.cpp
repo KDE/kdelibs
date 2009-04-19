@@ -776,6 +776,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
   return d.fork;
 }
 
+extern "C" {
+
 static void sig_child_handler(int)
 {
    /*
@@ -788,6 +790,8 @@ static void sig_child_handler(int)
     */
    char c = 0;
    write(d.deadpipe[1], &c, 1);
+}
+
 }
 
 static void init_signals()
@@ -1677,9 +1681,13 @@ static int initXconnection()
 }
 #endif
 
+extern "C" {
+
 static void secondary_child_handler(int)
 {
    waitpid(-1, 0, WNOHANG);
+}
+
 }
 
 int main(int argc, char **argv, char **envp)
