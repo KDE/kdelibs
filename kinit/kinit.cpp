@@ -1014,23 +1014,16 @@ static void launcher_died()
    start_klauncher();
 }
 
-static void handle_launcher_request(int sock = -1)
+static bool handle_launcher_request(int sock, const char *who)
 {
-   bool launcher = false;
-   if (sock < 0)
-   {
-       sock = d.launcher[0];
-       launcher = true;
-   }
+   (void)who; // for NDEBUG
 
    klauncher_header request_header;
    char *request_data = 0L;
    int result = read_socket(sock, (char *) &request_header, sizeof(request_header));
    if (result != 0)
    {
-      if (launcher)
-         launcher_died();
-      return;
+      return false;
    }
 
    if ( request_header.arg_length != 0 )
@@ -1040,10 +1033,8 @@ static void handle_launcher_request(int sock = -1)
        result = read_socket(sock, request_data, request_header.arg_length);
        if (result != 0)
        {
-           if (launcher)
-               launcher_died();
            free(request_data);
-           return;
+           return false;
        }
    }
 
@@ -1077,7 +1068,7 @@ static void handle_launcher_request(int sock = -1)
 #ifndef NDEBUG
      fprintf(stderr, "kdeinit4: Got %s '%s' from %s.\n",
              commandToString(request_header.cmd),
-             name, launcher ? "launcher" : "socket");
+             name, who);
 #endif
 
       const char *arg_n = args;
@@ -1138,7 +1129,7 @@ static void handle_launcher_request(int sock = -1)
 #endif
        free(request_data);
        d.debug_wait = false;
-       return;
+       return true; // sure?
      }
 
       // support for the old a bit broken way of setting DISPLAY for multihead
@@ -1195,10 +1186,7 @@ static void handle_launcher_request(int sock = -1)
       env_value = env_name + strlen(env_name) + 1;
 
 #ifndef NDEBUG
-      if (launcher)
-         fprintf(stderr, "kdeinit4: Got SETENV '%s=%s' from klauncher.\n", env_name, env_value);
-      else
-         fprintf(stderr, "kdeinit4: Got SETENV '%s=%s' from socket.\n", env_name, env_value);
+      fprintf(stderr, "kdeinit4: Got SETENV '%s=%s' from %s.\n", env_name, env_value, who);
 #endif
 
       if ( request_header.arg_length !=
@@ -1208,7 +1196,7 @@ static void handle_launcher_request(int sock = -1)
          fprintf(stderr, "kdeinit4: SETENV request has invalid format.\n");
 #endif
          free(request_data);
-         return;
+         return true; // sure?
       }
       setenv( env_name, env_value, 1);
    }
@@ -1240,6 +1228,7 @@ static void handle_launcher_request(int sock = -1)
    }
    if (request_data)
        free(request_data);
+   return true;
 }
 
 static void handle_requests(pid_t waitForPid)
@@ -1312,7 +1301,7 @@ static void handle_requests(pid_t waitForPid)
          if (sock >= 0)
          {
             d.accepted_fd = sock;
-            handle_launcher_request(sock);
+            handle_launcher_request(sock, "wrapper");
             close(sock);
             d.accepted_fd = -1;
          }
@@ -1321,7 +1310,8 @@ static void handle_requests(pid_t waitForPid)
       /* Handle launcher request */
       if ((result > 0) && (d.launcher_pid) && (FD_ISSET(d.launcher[0], &rd_set)))
       {
-         handle_launcher_request();
+         if (!handle_launcher_request(d.launcher[0], "launcher"))
+             launcher_died();
          if (waitForPid == d.launcher_pid)
             return;
       }
