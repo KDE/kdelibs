@@ -233,6 +233,10 @@ AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &opt
         
 //         if(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
             ///Think about it.
+
+            if(sequenceModelIndex.isValid())
+                setSequenceIndex(0); //Stop old iteration, and reset the icon for the old iteration
+
             //Start sequence iteration
             sequenceModelIndex = index;
             setSequenceIndex(1);
@@ -251,8 +255,10 @@ AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &opt
             startAnimation(state);
             
             //Stop sequence iteration
-            setSequenceIndex(0);
-            sequenceModelIndex = QPersistentModelIndex();
+            if(index == sequenceModelIndex) {
+                setSequenceIndex(0);
+                sequenceModelIndex = QPersistentModelIndex();
+            }
         }
         else if (hover && state->direction == QTimeLine::Backward)
         {
