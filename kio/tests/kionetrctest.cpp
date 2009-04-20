@@ -26,8 +26,8 @@ void output( const KUrl& u )
               << "Login: " << l.login << endl
               << "Password: " << l.password << endl;
 
-    QMap<QString,QStringList>::ConstIterator it = l.macdef.begin();
-    for ( ; it != l.macdef.end(); ++it )
+    QMap<QString,QStringList>::ConstIterator it = l.macdef.constBegin();
+    for ( ; it != l.macdef.constEnd(); ++it )
     {
         kDebug() << "Macro: " << it.key() << "= "
                   << it.value().join("   ") << endl;
