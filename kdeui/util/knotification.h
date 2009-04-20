@@ -52,6 +52,14 @@ class QDBusError;
  * when the user has read the message (when the message window has received the focus) using the close() slot
  * Persistent notifications must have the Persistent flag.
  *
+ * By default a notification will use the application name as title, but you
+ * can also provide a brief text in the title and a more precise description in
+ * the body text.  This is especially useful for notifications coming from
+ * applications which should be considered "part of the system", like a battery
+ * monitor or a network connection manager.
+ * For example a battery indicator could use "Low Battery" as a title and "Only
+ * 12 minutes left." as a body text.
+ *
  * In order to perform a notification, you need to create a description file, which contains
  * default parameters of the notification, and use KNotification::event at the place in the
  * application code where the notification occurs.
@@ -285,7 +293,23 @@ public:
 	 * @return the name of the event
 	 */
 	QString eventId() const;
-	
+
+    /**
+     * @return the notification title
+     * @see setTitle
+     * @since 4.3
+     */
+    QString title() const;
+
+    /**
+     * Set the title of the notification popup.
+     * If no title is set, the application name will be used.
+     *
+     * @param title the title
+     * @since 4.3
+     */
+    void setTitle(const QString &title);
+
 	/**
 	 * @return the notification text
 	 * @see setText

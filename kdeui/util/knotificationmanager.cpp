@@ -135,7 +135,7 @@ bool KNotificationManager::notify( KNotification* n, const QPixmap &pix,
     QList<QVariant>  args;
     args << n->eventId() << (appname.isEmpty() ? KGlobal::mainComponent().componentName() : appname);
     args.append(QVariant(contextList)); 
-    args << n->text() <<  pixmapData << QVariant(actions) << qlonglong(winId) ;
+    args << n->title() << n->text() <<  pixmapData << QVariant(actions) << qlonglong(winId) ;
     return d->knotify->callWithCallback( "event", args, n, SLOT(slotReceivedId(int)), SLOT(slotReceivedIdError(QDBusError)));
 }
 
@@ -157,7 +157,7 @@ void KNotificationManager::update(KNotification * n, int id)
         n->pixmap().save(&buffer, "PNG");
     }
 
-	d->knotify->call(QDBus::NoBlock, "update", id, n->text(), pixmapData , n->actions() );
+	d->knotify->call(QDBus::NoBlock, "update", id, n->title(), n->text(), pixmapData , n->actions() );
 }
 
 void KNotificationManager::reemit(KNotification * n, int id)

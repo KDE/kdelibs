@@ -59,6 +59,7 @@ struct KNotification::Private
     int ref;
 
     QWidget *widget;
+    QString title;
     QString text;
     QStringList actions;
     QPixmap pixmap;
@@ -101,6 +102,11 @@ QString KNotification::eventId() const
 	return d->eventId;
 }
 
+QString KNotification::title() const
+{
+    return d->title;
+}
+
 QString KNotification::text() const
 {
 	return d->text;
@@ -118,6 +124,13 @@ void KNotification::setWidget(QWidget *wid)
     if ( wid && d->flags &  CloseWhenWidgetActivated ) {
         wid->installEventFilter(this);
     }
+}
+
+void KNotification::setTitle(const QString &title)
+{
+    d->title = title;
+    if(d->id > 0)
+        d->updateTimer.start();
 }
 
 void KNotification::setText(const QString &text)
