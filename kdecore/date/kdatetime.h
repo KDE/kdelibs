@@ -1541,7 +1541,6 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      */
     void detach();
 
-#ifndef NDEBUG
     /**
      * Set an adjustment to be applied when fetching the current system time.
      * This is applied by all KDateTime methods which return the system date
@@ -1581,7 +1580,6 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      *          \endcode
      */
     static KDateTime realCurrentLocalDateTime();
-#endif
 
     friend QDataStream &operator<<(QDataStream &out, const KDateTime &dateTime);
     friend QDataStream &operator>>(QDataStream &in, KDateTime &dateTime);
@@ -1601,7 +1599,6 @@ QDataStream &operator<<(QDataStream &out, const KDateTime &dateTime);
 QDataStream &operator>>(QDataStream &in, KDateTime &dateTime);
 
 
-#ifndef NDEBUG
 #include <ksystemtimezone.h>
 
 /**
@@ -1652,6 +1649,7 @@ class KDECORE_EXPORT KSystemTimeZones_Simulated : public KSystemTimeZones
     static bool isSimulated();
 };
 
+#ifndef NDEBUG
 /** Alias KSystemTimeZones_Simulated to KSystemTimeZones. */
 #define KSystemTimeZones KSystemTimeZones_Simulated
 #endif // NDEBUG

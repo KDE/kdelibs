@@ -103,6 +103,7 @@ KDECORE_EXPORT int KDateTime_zoneCacheHit = 0;
 
 #ifndef NDEBUG
 #undef KSystemTimeZones
+#endif
 
 K_GLOBAL_STATIC(KTimeZone, simulatedLocalZone)
 
@@ -113,20 +114,31 @@ KTimeZone KSystemTimeZones_Simulated::realLocalZone()
 
 KTimeZone KSystemTimeZones_Simulated::local()
 {
+#ifndef NDEBUG
     return simulatedLocalZone->isValid()
 	 ? *simulatedLocalZone : KSystemTimeZones::local();
+#else
+    return KSystemTimeZones::local();
+#endif
 }
 
 void KSystemTimeZones_Simulated::setLocalZone(const KTimeZone& tz)
 {
+#ifndef NDEBUG
     *simulatedLocalZone = tz;
+#endif
 }
 
 bool KSystemTimeZones_Simulated::isSimulated()
 {
+#ifndef NDEBUG
     return simulatedLocalZone->isValid();
+#else
+    return false;
+#endif
 }
 
+#ifndef NDEBUG
 #define KSystemTimeZones KSystemTimeZones_Simulated
 #endif
 
@@ -2350,18 +2362,22 @@ void KDateTime::setFromStringDefault(const Spec &spec)
     KDateTimePrivate::fromStringDefault() = spec;
 }
 
-#ifndef NDEBUG
 void KDateTime::setSimulatedSystemTime(const KDateTime& newTime)
 {
+#ifndef NDEBUG
     KDateTimePrivate::currentDateTimeOffset = realCurrentLocalDateTime().secsTo_long(newTime);
     KSystemTimeZones_Simulated::setLocalZone(newTime.timeZone());
+#endif
 }
 
 KDateTime KDateTime::realCurrentLocalDateTime()
 {
+#ifndef NDEBUG
     return KDateTime(QDateTime::currentDateTime(), KSystemTimeZones::realLocalZone());
-}
+#else
+    return KDateTime(QDateTime::currentDateTime(), Spec(KSystemTimeZones::local()));
 #endif
+}
 
 QDataStream & operator<<(QDataStream &s, const KDateTime &dt)
 {
