@@ -176,15 +176,16 @@ void DelegateAnimationHandler::sequenceTimerTimeout() {
   KDirModel* dirModel = dynamic_cast<KDirModel*>(model);
   if(dirModel) {
     dirModel->requestSequenceIcon(index, currentSequenceIndex);
+    iconSequenceTimer.start(); //Some upper-bound interval is needed, in case items are not generated
   }
-
-  ++currentSequenceIndex;
-  iconSequenceTimer.start(3*switchIconInterval); //Some upper-bound interval is needed, in case items are not generated
 }
 
 void DelegateAnimationHandler::gotNewIcon(const QModelIndex& index) {
   kDebug();
-  iconSequenceTimer.start(switchIconInterval);
+  if(sequenceModelIndex.isValid() && currentSequenceIndex)
+    iconSequenceTimer.start();
+  if(index ==sequenceModelIndex)
+    ++currentSequenceIndex;
 }
 
 void DelegateAnimationHandler::setSequenceIndex(int sequenceIndex) {
