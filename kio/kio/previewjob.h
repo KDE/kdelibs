@@ -82,6 +82,13 @@ namespace KIO {
          * @since KDE 4.3
          **/
         void setSequenceIndex(int index);
+
+        /**
+         * Returns the currently set sequence index
+         *
+         * @since KDE 4.3
+         **/
+        int sequenceIndex() const;
         
         /**
          * Returns a list of all available preview plugins. The list

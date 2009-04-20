@@ -292,6 +292,10 @@ void KIO::PreviewJob::setSequenceIndex(int index) {
     d_func()->sequenceIndex = index;
 }
 
+int KIO::PreviewJob::sequenceIndex() const {
+    return d_func()->sequenceIndex;
+}
+
 void PreviewJob::setIgnoreMaximumSize(bool ignoreSize)
 {
     d_func()->ignoreMaximumSize = ignoreSize;
