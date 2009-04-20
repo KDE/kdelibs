@@ -39,6 +39,7 @@ public:
     ~KEmoticonsPrivate();
     void loadServiceList();
     KEmoticonsProvider *loadProvider(const KService::Ptr &service);
+    KEmoticonsTheme loadTheme(const QString &name);
 
     QList<KService::Ptr> m_loaded;
     QHash<QString, KEmoticonsTheme> m_themes;
@@ -88,8 +89,29 @@ void KEmoticonsPrivate::themeChanged(const QString &path)
     QString name = info.dir().dirName();
 
     if (m_themes.contains(name)) {
-        q->theme(name);
+        loadTheme(name);
     }
+}
+
+KEmoticonsTheme KEmoticonsPrivate::loadTheme(const QString &name)
+{
+    for (int i = 0; i < m_loaded.size(); ++i) {
+        QString fName = m_loaded.at(i)->property("X-KDE-EmoticonsFileName").toString();
+        QString path = KGlobal::dirs()->findResource("emoticons", name + '/' + fName);
+
+        if (QFile::exists(path)) {
+            KEmoticonsProvider *provider = loadProvider(m_loaded.at(i));
+            KEmoticonsTheme theme(provider);
+            theme.loadTheme(path);
+            m_themes.insert(name, theme);
+
+            if (!m_dirwatch->contains(path)) {
+                m_dirwatch->addFile(path);
+            }
+            return theme;
+        }
+    }
+    return KEmoticonsTheme();
 }
 
 KEmoticons::KEmoticons()
@@ -116,23 +138,7 @@ KEmoticonsTheme KEmoticons::theme(const QString &name)
         return d->m_themes.value(name);
     }
 
-    for (int i = 0; i < d->m_loaded.size(); ++i) {
-        QString fName = d->m_loaded.at(i)->property("X-KDE-EmoticonsFileName").toString();
-        QString path = KGlobal::dirs()->findResource("emoticons", name + '/' + fName);
-
-        if (QFile::exists(path)) {
-            KEmoticonsProvider *provider = d->loadProvider(d->m_loaded.at(i));
-            KEmoticonsTheme theme(provider);
-            theme.loadTheme(path);
-            d->m_themes.insert(name, theme);
-
-            if (!d->m_dirwatch->contains(path)) {
-                d->m_dirwatch->addFile(path);
-            }
-            return theme;
-        }
-    }
-    return KEmoticonsTheme();
+    return d->loadTheme(name);
 }
 
 QString KEmoticons::currentThemeName()
