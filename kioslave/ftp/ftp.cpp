@@ -57,6 +57,7 @@
 #include <time.h>
 #endif
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QTcpSocket>
@@ -142,6 +143,7 @@ using namespace KIO;
 
 extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
 {
+  QCoreApplication app(argc, argv);
   KComponentData componentData( "kio_ftp", "kdelibs4" );
   ( void ) KGlobal::locale();
 
