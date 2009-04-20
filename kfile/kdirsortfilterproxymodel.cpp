@@ -32,8 +32,16 @@
 // TODO KDE 4.1: bring Nepomuk stuff from Dolphin to kdelibs/nepomuk
 // in the form of a separate subclass
 
+class KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate
+{
+public:
+    KDirSortFilterProxyModelPrivate() : m_sortFoldersFirst(true) {}
+
+    bool m_sortFoldersFirst;
+};
+
 KDirSortFilterProxyModel::KDirSortFilterProxyModel(QObject* parent)
-    : KCategorizedSortFilterProxyModel(parent), d(0)
+    : KCategorizedSortFilterProxyModel(parent), d(new KDirSortFilterProxyModelPrivate)
 {
     setDynamicSortFilter(true);
 
@@ -46,6 +54,7 @@ KDirSortFilterProxyModel::KDirSortFilterProxyModel(QObject* parent)
 
 KDirSortFilterProxyModel::~KDirSortFilterProxyModel()
 {
+    delete d;
 }
 
 bool KDirSortFilterProxyModel::hasChildren(const QModelIndex& parent) const
@@ -81,6 +90,16 @@ int KDirSortFilterProxyModel::pointsForPermissions(const QFileInfo &info)
     return points;
 }
 
+void KDirSortFilterProxyModel::setSortFoldersFirst(bool foldersFirst)
+{
+    d->m_sortFoldersFirst = foldersFirst;
+}
+
+bool KDirSortFilterProxyModel::sortFoldersFirst() const
+{
+    return d->m_sortFoldersFirst;
+}
+
 bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
                                                const QModelIndex& right) const
 {
@@ -89,19 +108,19 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
     const KFileItem leftFileItem  = dirModel->itemForIndex(left);
     const KFileItem rightFileItem = dirModel->itemForIndex(right);
 
-    // Directories and hidden files should always be on the top, independent
-    // from the sort order.
     const bool isLessThan = (sortOrder() == Qt::AscendingOrder);
 
-    // On our priority, folders go above regular files.
-    if (leftFileItem.isDir() && !rightFileItem.isDir()) {
-        return isLessThan;
-    } else if (!leftFileItem.isDir() && rightFileItem.isDir()) {
-        return !isLessThan;
+    // Folders go before files if the corresponding setting is set.
+    if (d->m_sortFoldersFirst) {
+        if (leftFileItem.isDir() && !rightFileItem.isDir()) {
+            return isLessThan;
+        } else if (!leftFileItem.isDir() && rightFileItem.isDir()) {
+            return !isLessThan;
+        }
     }
 
-    // Hidden elements go before visible ones, if they both are
-    // folders or files.
+
+    // Hidden elements go before visible ones.
     if (leftFileItem.isHidden() && !rightFileItem.isHidden()) {
         return isLessThan;
     } else if (!leftFileItem.isHidden() && rightFileItem.isHidden()) {

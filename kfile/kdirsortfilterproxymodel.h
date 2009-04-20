@@ -43,7 +43,6 @@
  * - item_2.png
  * - item_10.png
  *
- * It is assured that directories are always sorted before files.
  * Don't use it with non-KDirModel derivatives.
  *
  * @author Dominic Battre, Martin Pool and Peter Penz
@@ -69,6 +68,18 @@ public:
      * permissions.
      */
     static int pointsForPermissions(const QFileInfo &info);
+
+    /**
+     * Choose if files and folders are sorted separately (with folders first) or not.
+     * @since 4.3
+     */
+    void setSortFoldersFirst(bool foldersFirst);
+
+    /**
+     * Returns if files and folders are sorted separately (with folders first) or not.
+     * @since 4.3
+     */
+    bool sortFoldersFirst() const;
 
 protected:
     /**
