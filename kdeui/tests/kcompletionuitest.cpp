@@ -145,8 +145,8 @@ void Form1::slotAdd()
     edit->completionObject()->addItem( LineEdit1->text() );
 
     QStringList matches = edit->completionObject()->allMatches("S");
-    QStringList::ConstIterator it = matches.begin();
-    for ( ; it != matches.end(); ++it )
+    QStringList::ConstIterator it = matches.constBegin();
+    for ( ; it != matches.constEnd(); ++it )
         qDebug("-- %s", (*it).toLatin1().constData());
 }
 

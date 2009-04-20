@@ -19,8 +19,8 @@ int main( int argc, char **argv )
     KApplication a;
 
     QStringList collections = KColorCollection::installedCollections();
-    for(QStringList::ConstIterator it = collections.begin();
-        it != collections.end(); ++it)
+    for(QStringList::ConstIterator it = collections.constBegin();
+        it != collections.constEnd(); ++it)
     {
        printf("Palette = %s\n", (*it).toAscii().constData());
 
