@@ -502,6 +502,18 @@ void KFilePreviewGenerator::Private::updateIcons(const QModelIndex& topLeft,
 
 void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, const QPixmap& pixmap)
 {
+    KIO::PreviewJob* senderJob = qobject_cast<KIO::PreviewJob*>(q->sender());
+    Q_ASSERT(senderJob);
+    if(senderJob) {
+        QMap<KUrl, int>::iterator it = m_sequenceIndices.find(item.url());
+        if(senderJob->sequenceIndex() && (it == m_sequenceIndices.end() || *it != senderJob->sequenceIndex()))
+            return; //The sequence index does not match the one we want
+        if(!senderJob->sequenceIndex() && it != m_sequenceIndices.end())
+            return; //The sequence index does not match the one we want
+        
+        m_sequenceIndices.erase(it);
+    }
+
     if (!m_previewShown) {
         // the preview has been canceled in the meantime
         return;
@@ -570,7 +582,8 @@ void KFilePreviewGenerator::Private::slotPreviewJobFinished(KJob* job)
         QMetaObject::invokeMethod(q, "dispatchIconUpdateQueue", Qt::QueuedConnection);
     }
 
-    m_sequenceIndices.clear(); // just to be sure that we don't leak anything
+    if(m_previewJobs.isEmpty())
+        m_sequenceIndices.clear(); // just to be sure that we don't leak anything
 }
 
 void KFilePreviewGenerator::Private::updateCutItems()
@@ -916,7 +929,6 @@ void KFilePreviewGenerator::Private::startPreviewJob(const KFileItemList& items,
             QMap<KUrl, int>::iterator it = m_sequenceIndices.find(items[0].url());
             if (it != m_sequenceIndices.end()) {
                 job->setSequenceIndex(*it);
-                m_sequenceIndices.erase(it);
             }
         }
 
