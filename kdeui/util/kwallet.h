@@ -129,7 +129,9 @@ class KDEUI_EXPORT Wallet : public QObject
 		 *               the walletOpened() signal to a slot so that
 		 *               you will know when it is opened, or when it
 		 *               fails.
-		 *  @param w The window id to associate any dialogs with.
+		 *  @param w The window id to associate any dialogs with. You can pass
+		 *           0 if you don't have a window the password dialog should
+		 *           associate with.
 		 *  @return Returns a pointer to the wallet if successful,
 		 *          or a null pointer on error or if rejected.
 		 */
@@ -173,7 +175,9 @@ class KDEUI_EXPORT Wallet : public QObject
 		 *  Request to the wallet service to change the password of
 		 *  the wallet @p name.
 		 *  @param name The the wallet to change the password of.
-		 *  @param w The window id to associate any dialogs with.
+		 *  @param w The window id to associate any dialogs with. You can pass
+		 *           0 if you don't have a window the password dialog should
+		 *           associate with.
 		 */
 		static void changePassword(const QString& name, WId w);
 
@@ -207,7 +211,9 @@ class KDEUI_EXPORT Wallet : public QObject
 		/**
 		 *  Request to the wallet service to change the password of
 		 *  the current wallet.
-		 *  @param w The window id to associate any dialogs with.
+		 *  @param w The window id to associate any dialogs with. You can pass
+		 *           0 if you don't have a window the password dialog should
+		 *           associate with.
 		 */
 		virtual void requestChangePassword(WId w);
 
