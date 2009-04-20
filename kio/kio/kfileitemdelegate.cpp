@@ -111,6 +111,8 @@ class KFileItemDelegate::Private
         void initStyleOption(QStyleOptionViewItemV4 *option, const QModelIndex &index) const;
         void drawFocusRect(QPainter *painter, const QStyleOptionViewItemV4 &option, const QRect &rect) const;
 
+        void gotNewIcon(const QModelIndex& index);
+
     public:
         KFileItemDelegate::InformationList informationList;
         QColor shadowColor;
@@ -537,6 +539,10 @@ QPixmap KFileItemDelegate::Private::applyHoverEffect(const QPixmap &icon) const
         return effect->apply(icon, KIconLoader::Desktop, KIconLoader::ActiveState);
 
     return icon;
+}
+
+void KFileItemDelegate::Private::gotNewIcon(const QModelIndex& index) {
+    animationHandler->gotNewIcon(index);
 }
 
 void KFileItemDelegate::Private::restartAnimation(KIO::AnimationState* state) {
@@ -1174,13 +1180,15 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                 return;
             }
 
-            if(!cache->checkValidity(opt.state) && (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
-                // Fade over from the old icon to the new one
-                // Only start a new fade if the previous one is ready
-                // Else we may start racing when checkValidity() always returns false
-                if(state->fadeProgress() == 1) {
-                    state->setCachedRenderingFadeFrom(state->takeCachedRendering());
+            if(!cache->checkValidity(opt.state)) {
+                if((KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
+                    // Fade over from the old icon to the new one
+                    // Only start a new fade if the previous one is ready
+                    // Else we may start racing when checkValidity() always returns false
+                    if(state->fadeProgress() == 1)
+                        state->setCachedRenderingFadeFrom(state->takeCachedRendering());
                 }
+                d->gotNewIcon(index);
             }
             // If it wasn't valid, delete it
             state->setCachedRendering(0);

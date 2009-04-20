@@ -139,13 +139,13 @@ qreal AnimationState::fadeProgress() const
 
 // ---------------------------------------------------------------------------
 
-
+static const int switchIconInterval = 1000; ///@todo Eventually configurable interval?
 
 DelegateAnimationHandler::DelegateAnimationHandler(QObject *parent)
     : QObject(parent)
 {
   iconSequenceTimer.setSingleShot(true);
-  iconSequenceTimer.setInterval(1000); ///@todo Eventually configurable interval?
+  iconSequenceTimer.setInterval(switchIconInterval);
   connect(&iconSequenceTimer, SIGNAL(timeout()), SLOT(sequenceTimerTimeout()));;
 }
 
@@ -165,7 +165,7 @@ DelegateAnimationHandler::~DelegateAnimationHandler()
 void DelegateAnimationHandler::sequenceTimerTimeout() {
   QAbstractItemModel* model = const_cast<QAbstractItemModel*>(sequenceModelIndex.model());
   QAbstractProxyModel* proxy = qobject_cast<QAbstractProxyModel*>(model);
-  
+  kDebug();
   QModelIndex index = sequenceModelIndex;
   
   if(proxy) {
@@ -176,16 +176,19 @@ void DelegateAnimationHandler::sequenceTimerTimeout() {
   KDirModel* dirModel = dynamic_cast<KDirModel*>(model);
   if(dirModel) {
     dirModel->requestSequenceIcon(index, currentSequenceIndex);
-    iconSequenceTimer.start();
   }
 
   ++currentSequenceIndex;
+  iconSequenceTimer.start(3*switchIconInterval); //Some upper-bound interval is needed, in case items are not generated
+}
+
+void DelegateAnimationHandler::gotNewIcon(const QModelIndex& index) {
+  kDebug();
+  iconSequenceTimer.start(switchIconInterval);
 }
 
 void DelegateAnimationHandler::setSequenceIndex(int sequenceIndex) {
   kDebug() << sequenceIndex;
-  if(currentSequenceIndex == sequenceIndex)
-    return;
   
   if(sequenceIndex) {
     currentSequenceIndex = sequenceIndex;

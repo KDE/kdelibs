@@ -111,6 +111,8 @@ public:
 
     void restartAnimation(AnimationState* state);
 
+    void gotNewIcon(const QModelIndex& index);
+
 private slots:
     void viewDeleted(QObject *view);
     void sequenceTimerTimeout();
