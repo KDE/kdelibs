@@ -21,11 +21,15 @@
 */
 
 #include "kkeyserver_x11.h"
+#include "kkeyserver_x11_p.h"
 
 #include "kdebug.h"
 #include "klocale.h"
 
-#include <QX11Info>
+
+#include <QtGui/QX11Info>
+
+
 # define XK_MISCELLANY
 # define XK_XKB_KEYS
 # include <X11/X.h>
@@ -292,15 +296,46 @@ inline void checkDisplay()
 # define checkDisplay()
 #endif
 
+static bool g_bInitializedMods;
+
+EventFilter::~EventFilter()
+    {}
+
+
+bool EventFilter::eventFilter(QObject *object, QEvent *event)
+    {
+    Q_UNUSED(object);
+
+    switch (event->type())
+        {
+        case QEvent::KeyboardLayoutChange:
+                {
+                // Qt calls XRefreshKeyboardMapping so there is no need to
+                // do it twice. Warning: This event is catched once for
+                // each top level widget. If there is a possibility to
+                // have no top level widget it is probably never called.
+                g_bInitializedMods = false;
+                }
+            // NEVER true. There could be others interested in the event
+            return false;
+
+        default:
+            ;;
+        }
+    return false;
+    }
+
+
 //---------------------------------------------------------------------
 // Initialization
 //---------------------------------------------------------------------
 
-static bool g_bInitializedMods;
 static uint g_modXNumLock, g_modXScrollLock, g_modXModeSwitch, g_alt_mask, g_meta_mask;
 
 bool initializeMods()
 {
+    static EventFilter widget;
+
     checkDisplay();
     XModifierKeymap* xmk = XGetModifierMapping( QX11Info::display() );
 
@@ -582,3 +617,6 @@ bool xEventToQt( XEvent* e, int* keyQt )
 
 
 } // end of namespace KKeyServer block
+
+#include "moc_kkeyserver_x11_p.cpp"
+
