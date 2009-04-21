@@ -861,21 +861,21 @@ QStringList KDirModel::mimeTypes( ) const
 QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
 {
     KUrl::List urls, mostLocalUrls;
+    bool canUseMostLocalUrls = true;
     foreach (const QModelIndex &index, indexes) {
         const KFileItem& item = d->nodeForIndex(index)->item();
         urls << item.url();
-        bool dummy;
-        mostLocalUrls << item.mostLocalUrl(dummy);
+        bool isLocal;
+        mostLocalUrls << item.mostLocalUrl(isLocal);
+        if (!isLocal)
+            canUseMostLocalUrls = false;
+    }
+    if (canUseMostLocalUrls) { // prefer those. Useful when dropping into another user's window for instance (#184403)
+        urls = mostLocalUrls;
     }
     QMimeData *data = new QMimeData();
-    const bool different = mostLocalUrls != urls;
     urls = simplifiedUrlList(urls);
-    if (different) {
-        mostLocalUrls = simplifiedUrlList(mostLocalUrls);
-        urls.populateMimeData(mostLocalUrls, data);
-    } else {
-        urls.populateMimeData(data);
-    }
+    urls.populateMimeData(data);
 
     // for compatibility reasons (when dropping or pasting into kde3 applications)
     QString application_x_qiconlist;
