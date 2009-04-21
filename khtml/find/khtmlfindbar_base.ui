@@ -152,7 +152,6 @@
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="0" margin="0" />
  <customwidgets>
   <customwidget>
    <class>KHistoryComboBox</class>

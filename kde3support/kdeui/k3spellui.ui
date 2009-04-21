@@ -1,7 +1,4 @@
 <ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>K3SpellUI</class>
  <widget class="QWidget" name="K3SpellUI" >
   <property name="geometry" >
@@ -255,8 +252,6 @@ Click here if you consider that the unknown word is not misspelled and you want 
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
- <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
   <customwidget>
    <class>Q3ListView</class>

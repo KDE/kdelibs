@@ -1,7 +1,5 @@
 <ui version="4.0" >
  <author>Olivier Goffart</author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>KNotifyTestView</class>
  <widget class="QWidget" name="KNotifyTestView" >
   <property name="geometry" >
@@ -177,7 +175,6 @@
    </item>
   </layout>
  </widget>
- <pixmapfunction></pixmapfunction>
  <resources/>
  <connections/>
 </ui>

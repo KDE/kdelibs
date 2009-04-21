@@ -1,7 +1,5 @@
 <ui version="4.0" >
  <author>George Staikos &lt;staikos@kde.org></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>KJSErrorDlgBase</class>
  <widget class="QDialog" name="KJSErrorDlgBase" >
   <property name="geometry" >
@@ -88,8 +86,6 @@
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
- <layoutfunction spacing="KDialog::spacingHint" margin="KDialog::marginHint" />
  <tabstops>
   <tabstop>_errorText</tabstop>
   <tabstop>_close</tabstop>

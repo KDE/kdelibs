@@ -1,7 +1,4 @@
 <ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>SonnetUi</class>
  <widget class="QWidget" name="SonnetUi" >
   <property name="geometry" >
@@ -284,7 +281,6 @@ Click here if you consider that the unknown word is not misspelled and you want 
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
  <tabstops>
   <tabstop>m_addBtn</tabstop>
   <tabstop>m_replacement</tabstop>

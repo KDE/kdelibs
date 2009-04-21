@@ -1,7 +1,4 @@
 <ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>KJSConsole</class>
  <widget class="QMainWindow" name="KJSConsole" >
   <property name="geometry" >
@@ -234,7 +231,6 @@
    </property>
   </action>
  </widget>
- <pixmapfunction></pixmapfunction>
  <customwidgets>
   <customwidget>
    <class>NumberedTextView</class>

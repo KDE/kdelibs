@@ -1,7 +1,4 @@
 <ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>JobsBase</class>
  <widget class="QWidget" name="JobsBase" >
   <property name="geometry" >
@@ -224,7 +221,6 @@
    </item>
   </layout>
  </widget>
- <pixmapfunction></pixmapfunction>
  <customwidgets>
   <customwidget>
    <class>ThreadWeaver::WeaverThreadGrid</class>

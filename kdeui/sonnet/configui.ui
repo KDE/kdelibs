@@ -1,7 +1,6 @@
 <ui version="4.0" >
  <author>Zack Rusin &lt;zack@kde.org></author>
  <comment>Licensed under GNU LGPL</comment>
- <exportmacro></exportmacro>
  <class>SonnetConfigUI</class>
  <widget class="QWidget" name="SonnetConfigUI" >
   <property name="geometry" >
@@ -73,7 +72,6 @@
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
  <customwidgets>
   <customwidget>
    <class>Sonnet::DictionaryComboBox</class>
