@@ -138,7 +138,6 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
                 const QString pattern = e.attribute("pattern");
                 if (pattern.startsWith('*')) {
                     mainPattern = pattern;
-                    kDebug() << name << ": mainPattern=" << mainPattern;
                 }
             }
         }
