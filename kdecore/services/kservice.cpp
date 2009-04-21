@@ -487,7 +487,7 @@ QVariant KServicePrivate::property( const QString& _name, QVariant::Type t ) con
         return QVariant( m_bAllowAsDefault );
     else if ( _name == "InitialPreference" )
         return QVariant( m_initialPreference );
-    else if ( _name == "Library" )
+    else if ( _name == "Library" || _name == "X-KDE-Library" )
         return makeStringVariant( m_strLibrary );
     else if ( _name == "DesktopEntryPath" ) // can't be null
         return QVariant( path );
