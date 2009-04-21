@@ -67,7 +67,7 @@ namespace Kuit {
     namespace Att { // tag attribute names
         typedef enum {
             None,
-            Ctx, Url, Address, Section, Label
+            Ctx, Url, Address, Section, Label, Strong
         } Var;
     }
 
@@ -190,7 +190,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_TAG(Bcode, "bcode", None, None);
     SETUP_TAG(Shortcut, "shortcut", None, None);
     SETUP_TAG(Interface, "interface", None, None);
-    SETUP_TAG(Emphasis, "emphasis", None, None);
+    SETUP_TAG(Emphasis, "emphasis", Strong, None);
     SETUP_TAG(Placeholder, "placeholder", None, None);
     SETUP_TAG(Email, "email", Address, None);
     SETUP_TAG(Envar, "envar", None, None);
@@ -211,6 +211,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_ATT(Address, "address");
     SETUP_ATT(Section, "section");
     SETUP_ATT(Label, "label");
+    SETUP_ATT(Strong, "strong");
 
     // Setup known format names.
     #undef SETUP_FMT
@@ -754,6 +755,14 @@ void KuitSemanticsPrivate::setFormattingPatterns ()
                 I18N_NOOP2("@emphasis/rich",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
                            "<i>%1</i>"));
+    SET_PATTERN(Tag::Emphasis, Att::Strong, Fmt::Plain,
+                I18N_NOOP2("@emphasis-strong/plain",
+    // i18n: KUIT pattern, see the comment to the first of these entries above.
+                           "**%1**"));
+    SET_PATTERN(Tag::Emphasis, Att::Strong, Fmt::Rich,
+                I18N_NOOP2("@emphasis-strong/rich",
+    // i18n: KUIT pattern, see the comment to the first of these entries above.
+                           "<b>%1</b>"));
 
     // -------> Placeholder
     SET_PATTERN(Tag::Placeholder, Att::None, Fmt::Plain,
