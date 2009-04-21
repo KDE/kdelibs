@@ -72,11 +72,11 @@ class QSocketNotifier;
  * the maximum number of object handles is MAXIMUM_WAIT_OBJECTS (64) per thread.
  *
  * From http://msdn.microsoft.com/en-us/library/ms687025(VS.85).aspx
- * "To wait on more than MAXIMUM_WAIT_OBJECTS handles, create a thread to wait 
- *  on MAXIMUM_WAIT_OBJECTS handles, then wait on that thread plus the other handles. 
+ * "To wait on more than MAXIMUM_WAIT_OBJECTS handles, create a thread to wait
+ *  on MAXIMUM_WAIT_OBJECTS handles, then wait on that thread plus the other handles.
  *  Use this technique to break the handles into groups of MAXIMUM_WAIT_OBJECTS."
  *
- * QFileSystemWatcher is implemented as thread, so KFileSystemWatcher 
+ * QFileSystemWatcher is implemented as thread, so KFileSystemWatcher
  * allocates more QFileSystemWatcher instances on demand (and deallocates them later).
  */
 class KFileSystemWatcher : public QObject
@@ -161,6 +161,12 @@ public:
 
 #ifdef HAVE_SYS_INOTIFY_H
     int wd;
+    // Creation and Deletion of files happens infrequently, so
+    // can safely be reported as they occur.  File changes i.e. those that emity "dirty()" can
+    // happen many times per second, though, so maintain a list of files in this directory
+    // that can be emitted and flushed at the next slotRescan(...).
+    // This will be unused if the Entry is not a directory.
+    QList<QString> m_pendingFileChanges;
 #endif
   };
 

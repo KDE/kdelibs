@@ -339,6 +339,53 @@ void KDirWatchPrivate::inotifyEventReceived()
               }
             }
           }
+          if (event->mask & (IN_DELETE|IN_MOVED_FROM)) {
+            if ((e->isDir) && (!e->m_clients.empty())) {
+              Client* client = 0;
+              // A file in this directory has been removed.  It wasn't an explicitly
+              // watched file as it would have its own watch descriptor, so
+              // no addEntry/ removeEntry bookkeeping should be required.  Emit
+              // the event immediately if any clients are interested.
+              KDE_struct_stat stat_buf;
+              QByteArray tpath = QFile::encodeName(e->path + QLatin1Char('/') + path);
+              // Unlike clientsForFileOrDir, the stat can fail here (item deleted),
+              // so in that case we'll just take both kinds of clients and emit Deleted.
+              KDirWatch::WatchModes flag = KDirWatch::WatchSubDirs | KDirWatch::WatchFiles;
+              if (KDE_stat(tpath, &stat_buf) == 0) {
+                bool isDir = S_ISDIR(stat_buf.st_mode);
+                flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
+              }
+              int counter = 0;
+              Q_FOREACH(client, e->m_clients) {
+                  if (client->m_watchModes & flag) {
+                        counter++;
+                  }
+              }
+              if (counter != 0) {
+                  emitEvent (e, Deleted, e->path+'/'+path);
+              }
+            }
+          }
+          if (event->mask & (IN_MODIFY|IN_ATTRIB)) {
+            if ((e->isDir) && (!e->m_clients.empty())) {
+              // A file in this directory has been changed.  No
+              // addEntry/ removeEntry bookkeeping should be required.
+              // Add the path to the list of pending file changes if
+              // there are any interested clients.
+              //KDE_struct_stat stat_buf;
+              //QByteArray tpath = QFile::encodeName(e->path+'/'+path);
+              //KDE_stat(tpath, &stat_buf);
+              //bool isDir = S_ISDIR(stat_buf.st_mode);
+
+              // The API doc is somewhat vague as to whether we should emit
+              // dirty() for implicitly watched files when WatchFiles has
+              // not been specified - we'll assume they are always interested,
+              // regardless.
+              // Don't worry about duplicates for the time
+              // being; this is handled in slotRescan.
+              e->m_pendingFileChanges.append(e->path+'/'+path);
+            }
+          }
 
           if (!rescan_timer.isActive())
             rescan_timer.start(m_PollInterval); // singleshot
@@ -533,16 +580,8 @@ bool KDirWatchPrivate::useINotify( Entry* e )
     return true;
   }
 
-  int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF|IN_DONT_FOLLOW;
-  if(!e->isDir)
-    mask |= IN_MODIFY|IN_ATTRIB;
-  else
-    mask |= IN_ONLYDIR;
-
-  // if dependant is a file watch, we check for MODIFY & ATTRIB too
-  foreach(Entry *dep, e->m_entries) {
-    if (!dep->isDir) { mask |= IN_MODIFY|IN_ATTRIB; break; }
-  }
+  // May as well register for almost everything - it's free!
+  int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF|IN_DONT_FOLLOW|IN_MOVED_FROM|IN_MODIFY|IN_ATTRIB;
 
   if ( ( e->wd = inotify_add_watch( m_inotify_fd,
                                     QFile::encodeName( e->path ), mask) ) > 0)
@@ -1235,6 +1274,20 @@ void KDirWatchPrivate::slotRescan()
       if (! useINotify( &(*it) )) {
         useStat( &(*it) );
       }
+    }
+
+    if ((*it).isDir)
+    {
+      // Report and clear the the list of files that have changed in this directory.
+      // Remove duplicates by changing to set and back again:
+      // we don't really care about preserving the order of the
+      // original changes.
+      QList<QString> pendingFileChanges = (*it).m_pendingFileChanges.toSet().toList();
+      Q_FOREACH(QString changedFilename, pendingFileChanges )
+      {
+        emitEvent(&(*it), Changed, changedFilename);
+      }
+      (*it).m_pendingFileChanges.clear();
     }
 #endif
 
