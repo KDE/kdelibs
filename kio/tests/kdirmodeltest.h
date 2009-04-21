@@ -43,6 +43,7 @@ private Q_SLOTS:
     void testRenameFile();
     void testMoveDirectory();
     void testRenameDirectory();
+    void testRenameDirectoryInCache();
     void testChmodDirectory();
     void testExpandToUrl_data();
     void testExpandToUrl();
@@ -82,7 +83,7 @@ private:
 private:
     QEventLoop m_eventLoop;
     KTempDir* m_tempDir;
-    KDirModel m_dirModel;
+    KDirModel* m_dirModel;
     QModelIndex m_fileIndex;
     QModelIndex m_specialFileIndex;
     QModelIndex m_secondFileIndex;

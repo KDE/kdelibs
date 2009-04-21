@@ -320,6 +320,7 @@ void KDirListerTest::testRenameItem()
 
     // Let's see what KDirLister has in cache now
     KFileItem cachedItem = m_dirLister.findByUrl(KUrl(newPath));
+    QVERIFY(!cachedItem.isNull());
     QCOMPARE(cachedItem.url().path(), newPath);
     KFileItem oldCachedItem = m_dirLister.findByUrl(KUrl(path));
     QVERIFY(oldCachedItem.isNull());
