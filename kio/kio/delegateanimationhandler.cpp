@@ -203,10 +203,10 @@ void DelegateAnimationHandler::setSequenceIndex(int sequenceIndex)
 {
     kDebug() << sequenceIndex;
 
-    if (sequenceIndex)
+    if (sequenceIndex > 0)
     {
         currentSequenceIndex = sequenceIndex;
-        sequenceTimerTimeout();
+        iconSequenceTimer.start();
     }
     else
     {
