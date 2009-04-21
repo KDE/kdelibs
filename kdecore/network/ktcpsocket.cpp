@@ -1027,7 +1027,7 @@ QList<KSslCipher> KSslCipher::supportedCiphers()
 }
 
 
-SslErrorUiData::SslErrorUiData()
+KSslErrorUiData::KSslErrorUiData()
  : d(new Private())
 {
     d->usedBits = 0;
@@ -1035,7 +1035,7 @@ SslErrorUiData::SslErrorUiData()
 }
 
 
-SslErrorUiData::SslErrorUiData(const KTcpSocket *socket)
+KSslErrorUiData::KSslErrorUiData(const KTcpSocket *socket)
  : d(new Private())
 {
     d->certificateChain = socket->peerCertificateChain();
@@ -1049,12 +1049,12 @@ SslErrorUiData::SslErrorUiData(const KTcpSocket *socket)
 }
 
 
-SslErrorUiData::SslErrorUiData(const SslErrorUiData &other)
+KSslErrorUiData::KSslErrorUiData(const KSslErrorUiData &other)
  : d(new Private(*other.d))
 {}
 
 
-SslErrorUiData &SslErrorUiData::operator=(const SslErrorUiData &other)
+KSslErrorUiData &KSslErrorUiData::operator=(const KSslErrorUiData &other)
 {
     *d = *other.d;
     return *this;

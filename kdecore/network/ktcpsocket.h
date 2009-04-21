@@ -345,22 +345,30 @@ private:
     KTcpSocketPrivate *const d;
 };
 
-/* required data
-setSslInfo(const QList<QSslCertificate> &certificateChain,
-                                const QString &ip, const QString &url,
-                                const QString &sslProtocol, const QString &cipher,
-                                int usedBits, int bits,
-                                const QList<QList<KSslError::Error> > &validationErrors)
-*/
+
 class KSslCertificateManager;
 
-class KDECORE_EXPORT SslErrorUiData
+
+/**
+ * This class can hold all the necessary data from a KTcpSocket to ask the user
+ * to continue connecting in the face of SSL errors.
+ * It can be used to carry the data for the UI over time or over thread boundaries.
+ *
+ * @see: KSslCertificateManager::askIgnoreSslErrors()
+ */
+class KDECORE_EXPORT KSslErrorUiData
 {
 public:
-    SslErrorUiData();
-    SslErrorUiData(const KTcpSocket *socket);
-    SslErrorUiData(const SslErrorUiData &other);
-    SslErrorUiData &operator=(const SslErrorUiData &);
+    /**
+     * Default construct an instance with no useful data.
+     */
+    KSslErrorUiData();
+    /**
+     * Create an instance and initialize it with SSL error data from @p socket.
+     */
+    KSslErrorUiData(const KTcpSocket *socket);
+    KSslErrorUiData(const KSslErrorUiData &other);
+    KSslErrorUiData &operator=(const KSslErrorUiData &);
 private:
     friend class KSslCertificateManager;
     class Private;

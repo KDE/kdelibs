@@ -84,7 +84,7 @@ public:
 
     static bool askIgnoreSslErrors(const KTcpSocket *socket,
                                    RulesStorage storedRules = RecallAndStoreRules);
-    static bool askIgnoreSslErrors(const SslErrorUiData &uiData,
+    static bool askIgnoreSslErrors(const KSslErrorUiData &uiData,
                                    RulesStorage storedRules = RecallAndStoreRules);
 private:
     friend class KSslCertificateManagerContainer;

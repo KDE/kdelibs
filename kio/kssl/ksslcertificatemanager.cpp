@@ -291,14 +291,14 @@ QList<KSslError::Error> KSslCertificateManager::nonIgnorableErrors(const QList<K
 //static
 bool KSslCertificateManager::askIgnoreSslErrors(const KTcpSocket *socket, RulesStorage storedRules)
 {
-    SslErrorUiData uiData(socket);
+    KSslErrorUiData uiData(socket);
     return askIgnoreSslErrors(uiData, storedRules);
 }
 
 //static
-bool KSslCertificateManager::askIgnoreSslErrors(const SslErrorUiData &uiData, RulesStorage storedRules)
+bool KSslCertificateManager::askIgnoreSslErrors(const KSslErrorUiData &uiData, RulesStorage storedRules)
 {
-    SslErrorUiData::Private *const ud = uiData.d;
+    KSslErrorUiData::Private *const ud = uiData.d;
     if (ud->sslErrors.isEmpty()) {
         return true;
     }

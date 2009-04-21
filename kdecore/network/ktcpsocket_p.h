@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-class SslErrorUiData::Private
+class KSslErrorUiData::Private
 {
 public:
     QList<QSslCertificate> certificateChain;
