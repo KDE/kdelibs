@@ -867,6 +867,8 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
         return;
     }
 
+    const KFileItem oldItem = *fileitem;
+
     // Dest already exists? Was overwritten then (testcase: #151851)
     // We better emit it as deleted -before- doing the renaming, otherwise
     // the "update" mechanism will emit the old one as deleted and
@@ -877,28 +879,28 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
         slotFilesRemoved(dst);
     }
 
-  // If the item had a UDS_URL as well as UDS_NAME set, the user probably wants
-  // to be updating the name only (since they can't see the URL).
-  // Check to see if a URL exists, and if so, if only the file part has changed,
-  // only update the name and not the underlying URL.
-  bool nameOnly = !fileitem->entry().stringValue( KIO::UDSEntry::UDS_URL ).isEmpty();
-  nameOnly &= src.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash ) ==
-              dst.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash );
+    // If the item had a UDS_URL as well as UDS_NAME set, the user probably wants
+    // to be updating the name only (since they can't see the URL).
+    // Check to see if a URL exists, and if so, if only the file part has changed,
+    // only update the name and not the underlying URL.
+    bool nameOnly = !fileitem->entry().stringValue( KIO::UDSEntry::UDS_URL ).isEmpty();
+    nameOnly &= src.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash ) ==
+                dst.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash );
 
     if (!nameOnly && fileitem->isDir()) {
         renameDir( src, dst );
         // #172945 - if the fileitem was the root item of a DirItem that was just removed from the cache,
         // then it's a dangling pointer now...
-        fileitem = findByUrl( 0, oldurl );
+        fileitem = findByUrl(0, oldurl);
+        if (!fileitem) //deleted from cache altogether, #188807
+            return;
     }
 
     // Now update the KFileItem representing that file or dir (not exclusive with the above!)
-    if ( !fileitem->isLocalFile() && !fileitem->localPath().isEmpty() ) // it uses UDS_LOCAL_PATH? ouch, needs an update then
+    if (!oldItem.isLocalFile() && !oldItem.localPath().isEmpty()) { // it uses UDS_LOCAL_PATH? ouch, needs an update then
         slotFilesChanged( QStringList() << src.url() );
-    else
-    {
-        aboutToRefreshItem( *fileitem );
-        const KFileItem oldItem = *fileitem;
+    } else {
+        aboutToRefreshItem( oldItem );
         if( nameOnly )
             fileitem->setName( dst.fileName() );
         else

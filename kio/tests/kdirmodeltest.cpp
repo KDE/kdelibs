@@ -55,6 +55,7 @@ void KDirModelTest::initTestCase()
     qRegisterMetaType<KFileItemList>("KFileItemList");
 
     m_dirModelForExpand = 0;
+    m_dirModel = 0;
     s_referenceTimeStamp = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
     m_tempDir = 0;
     m_topLevelFileNames << "toplevelfile_1"
@@ -102,12 +103,16 @@ void KDirModelTest::cleanupTestCase()
 {
     delete m_tempDir;
     m_tempDir = 0;
+    delete m_dirModel;
+    m_dirModel = 0;
 }
 
 void KDirModelTest::fillModel(bool reload, bool expectAllIndexes)
 {
+    if (!m_dirModel)
+        m_dirModel = new KDirModel;
     const QString path = m_tempDir->name();
-    KDirLister* dirLister = m_dirModel.dirLister();
+    KDirLister* dirLister = m_dirModel->dirLister();
     dirLister->openUrl(KUrl(path), reload ? KDirLister::Reload : KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
@@ -120,11 +125,13 @@ void KDirModelTest::fillModel(bool reload, bool expectAllIndexes)
 // Called after test function
 void KDirModelTest::cleanup()
 {
-    disconnect(&m_dirModel, 0, &m_eventLoop, 0);
-    disconnect(m_dirModel.dirLister(), 0, this, 0);
-    m_dirModel.dirLister()->setNameFilter(QString());
-    m_dirModel.dirLister()->setMimeFilter(QStringList());
-    m_dirModel.dirLister()->emitChanges();
+    if (m_dirModel) {
+        disconnect(m_dirModel, 0, &m_eventLoop, 0);
+        disconnect(m_dirModel->dirLister(), 0, this, 0);
+        m_dirModel->dirLister()->setNameFilter(QString());
+        m_dirModel->dirLister()->setMimeFilter(QStringList());
+        m_dirModel->dirLister()->emitChanges();
+    }
 }
 
 void KDirModelTest::collectKnownIndexes()
@@ -135,9 +142,9 @@ void KDirModelTest::collectKnownIndexes()
     // Create the indexes once and for all
     // The trouble is that the order of listing is undefined, one can get 1/2/3/subdir or subdir/3/2/1 for instance.
     for (int row = 0; row < m_topLevelFileNames.count() + 1 /*subdir*/; ++row) {
-        QModelIndex idx = m_dirModel.index(row, 0, QModelIndex());
+        QModelIndex idx = m_dirModel->index(row, 0, QModelIndex());
         QVERIFY(idx.isValid());
-        KFileItem item = m_dirModel.itemForIndex(idx);
+        KFileItem item = m_dirModel->itemForIndex(idx);
         kDebug() << item.url() << "isDir=" << item.isDir();
         if (item.isDir())
             m_dirIndex = idx;
@@ -154,28 +161,28 @@ void KDirModelTest::collectKnownIndexes()
     QVERIFY(m_specialFileIndex.isValid());
 
     // Now list subdir/
-    QVERIFY(m_dirModel.canFetchMore(m_dirIndex));
-    m_dirModel.fetchMore(m_dirIndex);
+    QVERIFY(m_dirModel->canFetchMore(m_dirIndex));
+    m_dirModel->fetchMore(m_dirIndex);
     enterLoop();
 
     // Index of a file inside a directory (subdir/testfile)
     QModelIndex subdirIndex;
     m_fileInDirIndex = QModelIndex();
     for (int row = 0; row < 3; ++row) {
-        QModelIndex idx = m_dirModel.index(row, 0, m_dirIndex);
-        if (m_dirModel.itemForIndex(idx).isDir())
+        QModelIndex idx = m_dirModel->index(row, 0, m_dirIndex);
+        if (m_dirModel->itemForIndex(idx).isDir())
             subdirIndex = idx;
-        else if (m_dirModel.itemForIndex(idx).name() == "testfile")
+        else if (m_dirModel->itemForIndex(idx).name() == "testfile")
             m_fileInDirIndex = idx;
     }
 
     // List subdir/subsubdir
-    QVERIFY(m_dirModel.canFetchMore(subdirIndex));
-    m_dirModel.fetchMore(subdirIndex);
+    QVERIFY(m_dirModel->canFetchMore(subdirIndex));
+    m_dirModel->fetchMore(subdirIndex);
     enterLoop();
 
     // Index of ... well, subdir/subsubdir/testfile
-    m_fileInSubdirIndex = m_dirModel.index(0, 0, subdirIndex);
+    m_fileInSubdirIndex = m_dirModel->index(0, 0, subdirIndex);
 }
 
 void KDirModelTest::enterLoop()
@@ -191,97 +198,97 @@ void KDirModelTest::slotListingCompleted()
 
 void KDirModelTest::testRowCount()
 {
-    const int topLevelRowCount = m_dirModel.rowCount();
+    const int topLevelRowCount = m_dirModel->rowCount();
     QCOMPARE(topLevelRowCount, m_topLevelFileNames.count() + 1 /*subdir*/);
-    const int subdirRowCount = m_dirModel.rowCount(m_dirIndex);
+    const int subdirRowCount = m_dirModel->rowCount(m_dirIndex);
     QCOMPARE(subdirRowCount, 3);
 
     QVERIFY(m_fileIndex.isValid());
-    const int fileRowCount = m_dirModel.rowCount(m_fileIndex); // #176555
+    const int fileRowCount = m_dirModel->rowCount(m_fileIndex); // #176555
     QCOMPARE(fileRowCount, 0);
 }
 
 void KDirModelTest::testIndex()
 {
-    QVERIFY(m_dirModel.hasChildren());
+    QVERIFY(m_dirModel->hasChildren());
 
     // Index of the first file
     QVERIFY(m_fileIndex.isValid());
-    QCOMPARE(m_fileIndex.model(), &m_dirModel);
+    QCOMPARE(m_fileIndex.model(), m_dirModel);
     //QCOMPARE(m_fileIndex.row(), 0);
     QCOMPARE(m_fileIndex.column(), 0);
     QVERIFY(!m_fileIndex.parent().isValid());
-    QVERIFY(!m_dirModel.hasChildren(m_fileIndex));
+    QVERIFY(!m_dirModel->hasChildren(m_fileIndex));
 
     // Index of a directory
     QVERIFY(m_dirIndex.isValid());
-    QCOMPARE(m_dirIndex.model(), &m_dirModel);
+    QCOMPARE(m_dirIndex.model(), m_dirModel);
     //QCOMPARE(m_dirIndex.row(), 3);
     QCOMPARE(m_dirIndex.column(), 0);
     QVERIFY(!m_dirIndex.parent().isValid());
-    QVERIFY(m_dirModel.hasChildren(m_dirIndex));
+    QVERIFY(m_dirModel->hasChildren(m_dirIndex));
 
     // Index of a file inside a directory (subdir/testfile)
     QVERIFY(m_fileInDirIndex.isValid());
-    QCOMPARE(m_fileInDirIndex.model(), &m_dirModel);
+    QCOMPARE(m_fileInDirIndex.model(), m_dirModel);
     //QCOMPARE(m_fileInDirIndex.row(), 0);
     QCOMPARE(m_fileInDirIndex.column(), 0);
     QVERIFY(m_fileInDirIndex.parent() == m_dirIndex);
-    QVERIFY(!m_dirModel.hasChildren(m_fileInDirIndex));
+    QVERIFY(!m_dirModel->hasChildren(m_fileInDirIndex));
 
     // Index of subdir/subsubdir/testfile
     QVERIFY(m_fileInSubdirIndex.isValid());
-    QCOMPARE(m_fileInSubdirIndex.model(), &m_dirModel);
+    QCOMPARE(m_fileInSubdirIndex.model(), m_dirModel);
     //QCOMPARE(m_fileInSubdirIndex.row(), 0);
     QCOMPARE(m_fileInSubdirIndex.column(), 0);
     QVERIFY(m_fileInSubdirIndex.parent().parent() == m_dirIndex);
-    QVERIFY(!m_dirModel.hasChildren(m_fileInSubdirIndex));
+    QVERIFY(!m_dirModel->hasChildren(m_fileInSubdirIndex));
 }
 
 void KDirModelTest::testNames()
 {
-    QString fileName = m_dirModel.data(m_fileIndex, Qt::DisplayRole).toString();
+    QString fileName = m_dirModel->data(m_fileIndex, Qt::DisplayRole).toString();
     QCOMPARE(fileName, QString("toplevelfile_1"));
 
-    QString specialFileName = m_dirModel.data(m_specialFileIndex, Qt::DisplayRole).toString();
+    QString specialFileName = m_dirModel->data(m_specialFileIndex, Qt::DisplayRole).toString();
     QCOMPARE(specialFileName, QString(SPECIALCHARS));
 
-    QString dirName = m_dirModel.data(m_dirIndex, Qt::DisplayRole).toString();
+    QString dirName = m_dirModel->data(m_dirIndex, Qt::DisplayRole).toString();
     QCOMPARE(dirName, QString("subdir"));
 
-    QString fileInDirName = m_dirModel.data(m_fileInDirIndex, Qt::DisplayRole).toString();
+    QString fileInDirName = m_dirModel->data(m_fileInDirIndex, Qt::DisplayRole).toString();
     QCOMPARE(fileInDirName, QString("testfile"));
 
-    QString fileInSubdirName = m_dirModel.data(m_fileInSubdirIndex, Qt::DisplayRole).toString();
+    QString fileInSubdirName = m_dirModel->data(m_fileInSubdirIndex, Qt::DisplayRole).toString();
     QCOMPARE(fileInSubdirName, QString("testfile"));
 }
 
 void KDirModelTest::testItemForIndex()
 {
     // root item
-    KFileItem rootItem = m_dirModel.itemForIndex(QModelIndex());
+    KFileItem rootItem = m_dirModel->itemForIndex(QModelIndex());
     QVERIFY(!rootItem.isNull());
     QCOMPARE(rootItem.name(), QString("."));
 
-    KFileItem fileItem = m_dirModel.itemForIndex(m_fileIndex);
+    KFileItem fileItem = m_dirModel->itemForIndex(m_fileIndex);
     QVERIFY(!fileItem.isNull());
     QCOMPARE(fileItem.name(), QString("toplevelfile_1"));
     QVERIFY(!fileItem.isDir());
     QCOMPARE(fileItem.url().path(), m_tempDir->name() + "toplevelfile_1");
 
-    KFileItem dirItem = m_dirModel.itemForIndex(m_dirIndex);
+    KFileItem dirItem = m_dirModel->itemForIndex(m_dirIndex);
     QVERIFY(!dirItem.isNull());
     QCOMPARE(dirItem.name(), QString("subdir"));
     QVERIFY(dirItem.isDir());
     QCOMPARE(dirItem.url().path(), m_tempDir->name() + "subdir");
 
-    KFileItem fileInDirItem = m_dirModel.itemForIndex(m_fileInDirIndex);
+    KFileItem fileInDirItem = m_dirModel->itemForIndex(m_fileInDirIndex);
     QVERIFY(!fileInDirItem.isNull());
     QCOMPARE(fileInDirItem.name(), QString("testfile"));
     QVERIFY(!fileInDirItem.isDir());
     QCOMPARE(fileInDirItem.url().path(), m_tempDir->name() + "subdir/testfile");
 
-    KFileItem fileInSubdirItem = m_dirModel.itemForIndex(m_fileInSubdirIndex);
+    KFileItem fileInSubdirItem = m_dirModel->itemForIndex(m_fileInSubdirIndex);
     QVERIFY(!fileInSubdirItem.isNull());
     QCOMPARE(fileInSubdirItem.name(), QString("testfile"));
     QVERIFY(!fileInSubdirItem.isDir());
@@ -290,52 +297,52 @@ void KDirModelTest::testItemForIndex()
 
 void KDirModelTest::testIndexForItem()
 {
-    KFileItem rootItem = m_dirModel.itemForIndex(QModelIndex());
-    QModelIndex rootIndex = m_dirModel.indexForItem(rootItem);
+    KFileItem rootItem = m_dirModel->itemForIndex(QModelIndex());
+    QModelIndex rootIndex = m_dirModel->indexForItem(rootItem);
     QVERIFY(!rootIndex.isValid());
 
-    KFileItem fileItem = m_dirModel.itemForIndex(m_fileIndex);
-    QModelIndex fileIndex = m_dirModel.indexForItem(fileItem);
+    KFileItem fileItem = m_dirModel->itemForIndex(m_fileIndex);
+    QModelIndex fileIndex = m_dirModel->indexForItem(fileItem);
     QCOMPARE(fileIndex, m_fileIndex);
 
-    KFileItem dirItem = m_dirModel.itemForIndex(m_dirIndex);
-    QModelIndex dirIndex = m_dirModel.indexForItem(dirItem);
+    KFileItem dirItem = m_dirModel->itemForIndex(m_dirIndex);
+    QModelIndex dirIndex = m_dirModel->indexForItem(dirItem);
     QCOMPARE(dirIndex, m_dirIndex);
 
-    KFileItem fileInDirItem = m_dirModel.itemForIndex(m_fileInDirIndex);
-    QModelIndex fileInDirIndex = m_dirModel.indexForItem(fileInDirItem);
+    KFileItem fileInDirItem = m_dirModel->itemForIndex(m_fileInDirIndex);
+    QModelIndex fileInDirIndex = m_dirModel->indexForItem(fileInDirItem);
     QCOMPARE(fileInDirIndex, m_fileInDirIndex);
 
-    KFileItem fileInSubdirItem = m_dirModel.itemForIndex(m_fileInSubdirIndex);
-    QModelIndex fileInSubdirIndex = m_dirModel.indexForItem(fileInSubdirItem);
+    KFileItem fileInSubdirItem = m_dirModel->itemForIndex(m_fileInSubdirIndex);
+    QModelIndex fileInSubdirIndex = m_dirModel->indexForItem(fileInSubdirItem);
     QCOMPARE(fileInSubdirIndex, m_fileInSubdirIndex);
 }
 
 void KDirModelTest::testData()
 {
     // First file
-    QModelIndex idx1col1 = m_dirModel.index(m_fileIndex.row(), 1, QModelIndex());
-    int size1 = m_dirModel.data(idx1col1, Qt::DisplayRole).toInt();
+    QModelIndex idx1col1 = m_dirModel->index(m_fileIndex.row(), 1, QModelIndex());
+    int size1 = m_dirModel->data(idx1col1, Qt::DisplayRole).toInt();
     QCOMPARE(size1, 11);
 
-    KFileItem item = m_dirModel.data(m_fileIndex, KDirModel::FileItemRole).value<KFileItem>();
-    KFileItem fileItem = m_dirModel.itemForIndex(m_fileIndex);
+    KFileItem item = m_dirModel->data(m_fileIndex, KDirModel::FileItemRole).value<KFileItem>();
+    KFileItem fileItem = m_dirModel->itemForIndex(m_fileIndex);
     QCOMPARE(item, fileItem);
 
-    QCOMPARE(m_dirModel.data(m_fileIndex, KDirModel::ChildCountRole).toInt(), (int)KDirModel::ChildCountUnknown);
+    QCOMPARE(m_dirModel->data(m_fileIndex, KDirModel::ChildCountRole).toInt(), (int)KDirModel::ChildCountUnknown);
 
 
 
     // Second file
-    QModelIndex idx2col0 = m_dirModel.index(m_secondFileIndex.row(), 0, QModelIndex());
-    QString display2 = m_dirModel.data(idx2col0, Qt::DisplayRole).toString();
+    QModelIndex idx2col0 = m_dirModel->index(m_secondFileIndex.row(), 0, QModelIndex());
+    QString display2 = m_dirModel->data(idx2col0, Qt::DisplayRole).toString();
     QCOMPARE(display2, QString("toplevelfile_2"));
 
     // Subdir: check child count
-    QCOMPARE(m_dirModel.data(m_dirIndex, KDirModel::ChildCountRole).toInt(), 3);
+    QCOMPARE(m_dirModel->data(m_dirIndex, KDirModel::ChildCountRole).toInt(), 3);
 
     // Subsubdir: check child count
-    QCOMPARE(m_dirModel.data(m_fileInSubdirIndex.parent(), KDirModel::ChildCountRole).toInt(), 1);
+    QCOMPARE(m_dirModel->data(m_fileInSubdirIndex.parent(), KDirModel::ChildCountRole).toInt(), 1);
 }
 
 void KDirModelTest::testReload()
@@ -359,8 +366,8 @@ void KDirModelTest::testModifyFile()
     const QString file = m_tempDir->name() + "toplevelfile_2";
     const KUrl url(file);
 
-    QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
-    connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    connect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(quit()) );
 
     // "Touch" the file
@@ -381,7 +388,7 @@ void KDirModelTest::testModifyFile()
     receivedIndex = spyDataChanged[0][1].value<QModelIndex>();
     QCOMPARE(receivedIndex.row(), m_secondFileIndex.row()); // only compare row; column is count-1
 
-    disconnect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+    disconnect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                 &m_eventLoop, SLOT(quit()) );
 }
 
@@ -390,8 +397,8 @@ void KDirModelTest::testRenameFile()
     const KUrl url(m_tempDir->name() + "toplevelfile_2");
     const KUrl newUrl(m_tempDir->name() + "toplevelfile_2_renamed");
 
-    QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
-    connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    connect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(quit()) );
 
     KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
@@ -408,7 +415,7 @@ void KDirModelTest::testRenameFile()
     QCOMPARE(receivedIndex.row(), m_secondFileIndex.row()); // only compare row; column is count-1
 
     // check renaming happened
-    QCOMPARE( m_dirModel.itemForIndex( m_secondFileIndex ).url().url(), newUrl.url() );
+    QCOMPARE( m_dirModel->itemForIndex( m_secondFileIndex ).url().url(), newUrl.url() );
 
     // Put things back to normal
     job = KIO::rename(newUrl, url, KIO::HideProgressInfo);
@@ -416,9 +423,9 @@ void KDirModelTest::testRenameFile()
     QVERIFY(ok);
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers dataChanged
     enterLoop();
-    QCOMPARE( m_dirModel.itemForIndex( m_secondFileIndex ).url().url(), url.url() );
+    QCOMPARE( m_dirModel->itemForIndex( m_secondFileIndex ).url().url(), url.url() );
 
-    disconnect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+    disconnect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                 &m_eventLoop, SLOT(quit()) );
 }
 
@@ -436,7 +443,7 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
     const QString dest = destDir.name();
     QVERIFY(QDir(dest).exists());
 
-    connect(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+    connect(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
             &m_eventLoop, SLOT(quit()));
 
     // Move
@@ -448,13 +455,13 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
     // wait for kdirnotify
     enterLoop();
 
-    disconnect(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+    disconnect(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                &m_eventLoop, SLOT(quit()));
 
-    QVERIFY(!m_dirModel.indexForUrl(path + "subdir").isValid());
-    QVERIFY(!m_dirModel.indexForUrl(path + "subdir_renamed").isValid());
+    QVERIFY(!m_dirModel->indexForUrl(path + "subdir").isValid());
+    QVERIFY(!m_dirModel->indexForUrl(path + "subdir_renamed").isValid());
 
-    connect(&m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
+    connect(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
             &m_eventLoop, SLOT(quit()));
 
     // Move back
@@ -466,7 +473,7 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
     enterLoop();
 
     QVERIFY(QDir(srcdir).exists());
-    disconnect(&m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
+    disconnect(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
             &m_eventLoop, SLOT(quit()));
 
     // m_dirIndex is invalid after the above...
@@ -489,8 +496,8 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
     enterLoop();
 
     // Now do the renaming
-    QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
-    connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    connect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(quit()) );
     KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
     bool ok = job->exec();
@@ -506,12 +513,12 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
     //QCOMPARE(receivedIndex.row(), m_dirIndex.row()); // only compare row; column is count-1
 
     // check renaming happened
-    QCOMPARE(m_dirModel.itemForIndex(m_dirIndex).url().url(), newUrl.url());
-    QCOMPARE(m_dirModel.indexForUrl(newUrl), m_dirIndex);
-    QVERIFY(m_dirModel.indexForUrl(path + "subdir_renamed").isValid());
-    QVERIFY(m_dirModel.indexForUrl(path + "subdir_renamed/testfile").isValid());
-    QVERIFY(m_dirModel.indexForUrl(path + "subdir_renamed/subsubdir").isValid());
-    QVERIFY(m_dirModel.indexForUrl(path + "subdir_renamed/subsubdir/testfile").isValid());
+    QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().url(), newUrl.url());
+    QCOMPARE(m_dirModel->indexForUrl(newUrl), m_dirIndex);
+    QVERIFY(m_dirModel->indexForUrl(path + "subdir_renamed").isValid());
+    QVERIFY(m_dirModel->indexForUrl(path + "subdir_renamed/testfile").isValid());
+    QVERIFY(m_dirModel->indexForUrl(path + "subdir_renamed/subsubdir").isValid());
+    QVERIFY(m_dirModel->indexForUrl(path + "subdir_renamed/subsubdir/testfile").isValid());
 
     // Check the other kdirmodel got redirected
     QCOMPARE(dirListerForExpand->url().path(), path+"subdir_renamed");
@@ -528,21 +535,21 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
     QVERIFY(ok);
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers dataChanged
     enterLoop();
-    QCOMPARE(m_dirModel.itemForIndex(m_dirIndex).url().url(), url.url());
+    QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().url(), url.url());
 
-    disconnect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+    disconnect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                 &m_eventLoop, SLOT(quit()) );
 
-    QCOMPARE(m_dirModel.itemForIndex(m_dirIndex).url().url(), url.url());
-    QCOMPARE(m_dirModel.indexForUrl(url), m_dirIndex);
-    QVERIFY(m_dirModel.indexForUrl(path + "subdir").isValid());
-    QVERIFY(m_dirModel.indexForUrl(path + "subdir/testfile").isValid());
-    QVERIFY(m_dirModel.indexForUrl(path + "subdir/subsubdir").isValid());
-    QVERIFY(m_dirModel.indexForUrl(path + "subdir/subsubdir/testfile").isValid());
-    QVERIFY(!m_dirModel.indexForUrl(path + "subdir_renamed").isValid());
-    QVERIFY(!m_dirModel.indexForUrl(path + "subdir_renamed/testfile").isValid());
-    QVERIFY(!m_dirModel.indexForUrl(path + "subdir_renamed/subsubdir").isValid());
-    QVERIFY(!m_dirModel.indexForUrl(path + "subdir_renamed/subsubdir/testfile").isValid());
+    QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().url(), url.url());
+    QCOMPARE(m_dirModel->indexForUrl(url), m_dirIndex);
+    QVERIFY(m_dirModel->indexForUrl(path + "subdir").isValid());
+    QVERIFY(m_dirModel->indexForUrl(path + "subdir/testfile").isValid());
+    QVERIFY(m_dirModel->indexForUrl(path + "subdir/subsubdir").isValid());
+    QVERIFY(m_dirModel->indexForUrl(path + "subdir/subsubdir/testfile").isValid());
+    QVERIFY(!m_dirModel->indexForUrl(path + "subdir_renamed").isValid());
+    QVERIFY(!m_dirModel->indexForUrl(path + "subdir_renamed/testfile").isValid());
+    QVERIFY(!m_dirModel->indexForUrl(path + "subdir_renamed/subsubdir").isValid());
+    QVERIFY(!m_dirModel->indexForUrl(path + "subdir_renamed/subsubdir/testfile").isValid());
 
     // TODO INVESTIGATE
     // QCOMPARE(dirListerForExpand->url().path(), path+"subdir");
@@ -551,13 +558,38 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
     m_dirModelForExpand = 0;
 }
 
+void KDirModelTest::testRenameDirectoryInCache() // #188807
+{
+    // No more dirmodel nor dirlister.
+    delete m_dirModel;
+    m_dirModel = 0;
+
+    // Now let's rename a directory that is in KDirListerCache
+    const QString path = m_tempDir->name();
+    const KUrl url(path);
+    KUrl newUrl(path);
+    newUrl.adjustPath(KUrl::RemoveTrailingSlash);
+    newUrl.setPath(newUrl.path() + "_renamed");
+    kDebug() << newUrl;
+    KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
+    bool ok = job->exec();
+    QVERIFY(ok);
+
+    // Put things back to normal
+    job = KIO::rename(newUrl, url, KIO::HideProgressInfo);
+    ok = job->exec();
+    QVERIFY(ok);
+
+    fillModel(true);
+}
+
 void KDirModelTest::testChmodDirectory() // #53397
 {
-    QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
-    connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    connect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(quit()) );
     const QString path = m_tempDir->name();
-    KFileItem rootItem = m_dirModel.itemForIndex(QModelIndex());
+    KFileItem rootItem = m_dirModel->itemForIndex(QModelIndex());
     const mode_t origPerm = rootItem.permissions();
     mode_t newPerm = origPerm ^ S_IWGRP;
     QVERIFY(newPerm != origPerm);
@@ -577,9 +609,9 @@ void KDirModelTest::testChmodDirectory() // #53397
     QModelIndex receivedIndex = spyDataChanged[0][0].value<QModelIndex>();
     QVERIFY(!receivedIndex.isValid());
 
-    QCOMPARE(m_dirModel.itemForIndex(QModelIndex()).permissions(), newPerm);
+    QCOMPARE(m_dirModel->itemForIndex(QModelIndex()).permissions(), newPerm);
 
-    disconnect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+    disconnect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                 &m_eventLoop, SLOT(quit()) );
 }
 
@@ -697,18 +729,18 @@ void KDirModelTest::slotRowsInserted(const QModelIndex&, int, int)
 void KDirModelTest::testFilter()
 {
     QVERIFY(m_dirIndex.isValid());
-    const int oldTopLevelRowCount = m_dirModel.rowCount();
-    const int oldSubdirRowCount = m_dirModel.rowCount(m_dirIndex);
-    QSignalSpy spyItemsFilteredByMime(m_dirModel.dirLister(), SIGNAL(itemsFilteredByMime(KFileItemList)));
-    QSignalSpy spyItemsDeleted(m_dirModel.dirLister(), SIGNAL(itemsDeleted(KFileItemList)));
-    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
-    m_dirModel.dirLister()->setNameFilter("toplevel*");
-    QCOMPARE(m_dirModel.rowCount(), oldTopLevelRowCount); // no change yet
-    QCOMPARE(m_dirModel.rowCount(m_dirIndex), oldSubdirRowCount); // no change yet
-    m_dirModel.dirLister()->emitChanges();
+    const int oldTopLevelRowCount = m_dirModel->rowCount();
+    const int oldSubdirRowCount = m_dirModel->rowCount(m_dirIndex);
+    QSignalSpy spyItemsFilteredByMime(m_dirModel->dirLister(), SIGNAL(itemsFilteredByMime(KFileItemList)));
+    QSignalSpy spyItemsDeleted(m_dirModel->dirLister(), SIGNAL(itemsDeleted(KFileItemList)));
+    QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    m_dirModel->dirLister()->setNameFilter("toplevel*");
+    QCOMPARE(m_dirModel->rowCount(), oldTopLevelRowCount); // no change yet
+    QCOMPARE(m_dirModel->rowCount(m_dirIndex), oldSubdirRowCount); // no change yet
+    m_dirModel->dirLister()->emitChanges();
 
-    QCOMPARE(m_dirModel.rowCount(), 4); // 3 toplevel* files, one subdir
-    QCOMPARE(m_dirModel.rowCount(m_dirIndex), 1); // the files get filtered out, the subdir remains
+    QCOMPARE(m_dirModel->rowCount(), 4); // 3 toplevel* files, one subdir
+    QCOMPARE(m_dirModel->rowCount(m_dirIndex), 1); // the files get filtered out, the subdir remains
 
     QCOMPARE(spyRowsRemoved.count(), 3); // once for every dir
     QCOMPARE(spyItemsDeleted.count(), 3); // once for every dir
@@ -721,11 +753,11 @@ void KDirModelTest::testFilter()
 
     // Reset the filter
     kDebug() << "reset to no filter";
-    m_dirModel.dirLister()->setNameFilter(QString());
-    m_dirModel.dirLister()->emitChanges();
+    m_dirModel->dirLister()->setNameFilter(QString());
+    m_dirModel->dirLister()->emitChanges();
 
-    QCOMPARE(m_dirModel.rowCount(), oldTopLevelRowCount);
-    QCOMPARE(m_dirModel.rowCount(m_dirIndex), oldSubdirRowCount);
+    QCOMPARE(m_dirModel->rowCount(), oldTopLevelRowCount);
+    QCOMPARE(m_dirModel->rowCount(m_dirIndex), oldSubdirRowCount);
     QCOMPARE(spyItemsDeleted.count(), 0);
     QCOMPARE(spyItemsFilteredByMime.count(), 0);
 
@@ -737,17 +769,17 @@ void KDirModelTest::testFilter()
 void KDirModelTest::testMimeFilter()
 {
     QVERIFY(m_dirIndex.isValid());
-    const int oldTopLevelRowCount = m_dirModel.rowCount();
-    const int oldSubdirRowCount = m_dirModel.rowCount(m_dirIndex);
-    QSignalSpy spyItemsFilteredByMime(m_dirModel.dirLister(), SIGNAL(itemsFilteredByMime(KFileItemList)));
-    QSignalSpy spyItemsDeleted(m_dirModel.dirLister(), SIGNAL(itemsDeleted(KFileItemList)));
-    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
-    m_dirModel.dirLister()->setMimeFilter(QStringList() << "application/pdf");
-    QCOMPARE(m_dirModel.rowCount(), oldTopLevelRowCount); // no change yet
-    QCOMPARE(m_dirModel.rowCount(m_dirIndex), oldSubdirRowCount); // no change yet
-    m_dirModel.dirLister()->emitChanges();
+    const int oldTopLevelRowCount = m_dirModel->rowCount();
+    const int oldSubdirRowCount = m_dirModel->rowCount(m_dirIndex);
+    QSignalSpy spyItemsFilteredByMime(m_dirModel->dirLister(), SIGNAL(itemsFilteredByMime(KFileItemList)));
+    QSignalSpy spyItemsDeleted(m_dirModel->dirLister(), SIGNAL(itemsDeleted(KFileItemList)));
+    QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    m_dirModel->dirLister()->setMimeFilter(QStringList() << "application/pdf");
+    QCOMPARE(m_dirModel->rowCount(), oldTopLevelRowCount); // no change yet
+    QCOMPARE(m_dirModel->rowCount(m_dirIndex), oldSubdirRowCount); // no change yet
+    m_dirModel->dirLister()->emitChanges();
 
-    QCOMPARE(m_dirModel.rowCount(), 1); // 1 pdf files, no subdir anymore
+    QCOMPARE(m_dirModel->rowCount(), 1); // 1 pdf files, no subdir anymore
 
     QVERIFY(spyRowsRemoved.count() >= 1); // depends on contiguity...
     QVERIFY(spyItemsDeleted.count() >= 1); // once for every dir
@@ -762,10 +794,10 @@ void KDirModelTest::testMimeFilter()
 
     // Reset the filter
     kDebug() << "reset to no filter";
-    m_dirModel.dirLister()->setMimeFilter(QStringList());
-    m_dirModel.dirLister()->emitChanges();
+    m_dirModel->dirLister()->setMimeFilter(QStringList());
+    m_dirModel->dirLister()->emitChanges();
 
-    QCOMPARE(m_dirModel.rowCount(), oldTopLevelRowCount);
+    QCOMPARE(m_dirModel->rowCount(), oldTopLevelRowCount);
     QCOMPARE(spyItemsDeleted.count(), 0);
     QCOMPARE(spyItemsFilteredByMime.count(), 0);
 
@@ -776,11 +808,11 @@ void KDirModelTest::testMimeFilter()
 
 void KDirModelTest::testShowHiddenFiles() // #174788
 {
-    KDirLister* dirLister = m_dirModel.dirLister();
+    KDirLister* dirLister = m_dirModel->dirLister();
 
-    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex, int, int)));
+    QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex, int, int)));
     QSignalSpy spyNewItems(dirLister, SIGNAL(newItems(KFileItemList)));
-    QSignalSpy spyRowsInserted(&m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)));
+    QSignalSpy spyRowsInserted(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)));
     dirLister->setShowingDotFiles(true);
     dirLister->emitChanges();
     const int numberOfDotFiles = 2;
@@ -802,20 +834,20 @@ void KDirModelTest::testMultipleSlashes()
 {
     const QString path = m_tempDir->name();
 
-    QModelIndex index = m_dirModel.indexForUrl(KUrl(path+"subdir//testfile"));
+    QModelIndex index = m_dirModel->indexForUrl(KUrl(path+"subdir//testfile"));
     QVERIFY(index.isValid());
 
-    index = m_dirModel.indexForUrl(path+"subdir//subsubdir//");
+    index = m_dirModel->indexForUrl(path+"subdir//subsubdir//");
     QVERIFY(index.isValid());
 
-    index = m_dirModel.indexForUrl(path+"subdir///subsubdir////testfile");
+    index = m_dirModel->indexForUrl(path+"subdir///subsubdir////testfile");
     QVERIFY(index.isValid());
 }
 
 void KDirModelTest::testUrlWithRef() // #171117
 {
     const QString path = m_tempDir->name();
-    KDirLister* dirLister = m_dirModel.dirLister();
+    KDirLister* dirLister = m_dirModel->dirLister();
     KUrl url(path);
     url.setRef("ref");
     QVERIFY(url.url().endsWith("#ref"));
@@ -834,7 +866,7 @@ void KDirModelTest::testFontUrlWithHost() // #160057
         QSKIP("kio_fonts not installed", SkipAll);
     }
     KUrl url("fonts://foo/System");
-    KDirLister* dirLister = m_dirModel.dirLister();
+    KDirLister* dirLister = m_dirModel->dirLister();
     dirLister->openUrl(url, KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
@@ -848,7 +880,7 @@ void KDirModelTest::testRemoteUrlWithHost() // #178416
         QSKIP("kio_remote not installed", SkipAll);
     }
     KUrl url("remote://foo");
-    KDirLister* dirLister = m_dirModel.dirLister();
+    KDirLister* dirLister = m_dirModel->dirLister();
     dirLister->openUrl(url, KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
@@ -859,7 +891,7 @@ void KDirModelTest::testRemoteUrlWithHost() // #178416
 void KDirModelTest::testZipFile() // # 171721
 {
     const QString path = KDESRCDIR;
-    KDirLister* dirLister = m_dirModel.dirLister();
+    KDirLister* dirLister = m_dirModel->dirLister();
     dirLister->openUrl(KUrl(path), KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
@@ -869,10 +901,10 @@ void KDirModelTest::testZipFile() // # 171721
     zipUrl.addPath("wronglocalsizes.zip"); // just a zip file lying here for other reasons
     QVERIFY(QFile::exists(zipUrl.path()));
     zipUrl.setProtocol("zip");
-    QModelIndex index = m_dirModel.indexForUrl(zipUrl);
+    QModelIndex index = m_dirModel->indexForUrl(zipUrl);
     QVERIFY(!index.isValid()); // protocol mismatch, can't find it!
     zipUrl.setProtocol("file");
-    index = m_dirModel.indexForUrl(zipUrl);
+    index = m_dirModel->indexForUrl(zipUrl);
     QVERIFY(index.isValid());
 }
 
@@ -886,15 +918,15 @@ void KDirModelTest::testSmb()
     if (!KProtocolInfo::isKnownProtocol("smb")) {
         QSKIP("kio_smb not installed", SkipAll);
     }
-    KDirLister* dirLister = m_dirModel.dirLister();
+    KDirLister* dirLister = m_dirModel->dirLister();
     dirLister->openUrl(smbUrl, KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop(); // wait for completed signal
 
-    QModelIndex index = m_dirModel.index(0, 0);
+    QModelIndex index = m_dirModel->index(0, 0);
     if (index.isValid()) {
-        QVERIFY(m_dirModel.canFetchMore(index));
-        m_dirModel.fetchMore(index);
+        QVERIFY(m_dirModel->canFetchMore(index));
+        m_dirModel->fetchMore(index);
         enterLoop(); // wait for completed signal
         disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     }
@@ -905,13 +937,13 @@ void KDirModelTest::testDeleteFile()
     fillModel(false);
 
     QVERIFY(m_fileIndex.isValid());
-    const int oldTopLevelRowCount = m_dirModel.rowCount();
+    const int oldTopLevelRowCount = m_dirModel->rowCount();
     const QString path = m_tempDir->name();
     const QString file = path + "toplevelfile_1";
     const KUrl url(file);
 
-    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
-    connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+    QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
              &m_eventLoop, SLOT(quit()) );
 
     KIO::DeleteJob* job = KIO::del(url, KIO::HideProgressInfo);
@@ -922,15 +954,15 @@ void KDirModelTest::testDeleteFile()
     enterLoop();
 
     // If we come here, then rowsRemoved() was emitted - all good.
-    const int topLevelRowCount = m_dirModel.rowCount();
+    const int topLevelRowCount = m_dirModel->rowCount();
     QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 1); // one less than before
     QCOMPARE(spyRowsRemoved.count(), 1);
     QCOMPARE(spyRowsRemoved[0][1].toInt(), m_fileIndex.row());
     QCOMPARE(spyRowsRemoved[0][2].toInt(), m_fileIndex.row());
-    disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+    disconnect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(quit()) );
 
-    QModelIndex fileIndex = m_dirModel.indexForUrl(path + "toplevelfile_1");
+    QModelIndex fileIndex = m_dirModel->indexForUrl(path + "toplevelfile_1");
     QVERIFY(!fileIndex.isValid());
 
     // Recreate the file, for consistency in the next tests
@@ -952,10 +984,10 @@ void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
     const QString path = m_tempDir->name();
     const QString dir = path + "subdir";
     const QString file = path + "toplevelfile_1";
-    const int oldTopLevelRowCount = m_dirModel.rowCount();
+    const int oldTopLevelRowCount = m_dirModel->rowCount();
 
-    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
-    connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+    QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
              &m_eventLoop, SLOT(quit()) );
 
     KIO::Job* job = KIO::move(dir, file, KIO::Overwrite | KIO::HideProgressInfo);
@@ -970,13 +1002,13 @@ void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
     enterLoop();
 
     // If we come here, then rowsRemoved() was emitted - all good.
-    const int topLevelRowCount = m_dirModel.rowCount();
+    const int topLevelRowCount = m_dirModel->rowCount();
     QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 1); // one less than before
 
-    QVERIFY(!m_dirModel.indexForUrl(dir).isValid());
-    QModelIndex newIndex = m_dirModel.indexForUrl(path + "toplevelfile_1");
+    QVERIFY(!m_dirModel->indexForUrl(dir).isValid());
+    QModelIndex newIndex = m_dirModel->indexForUrl(path + "toplevelfile_1");
     QVERIFY(newIndex.isValid());
-    KFileItem newItem = m_dirModel.itemForIndex(newIndex);
+    KFileItem newItem = m_dirModel->itemForIndex(newIndex);
     QVERIFY(newItem.isDir()); // yes, the file is a dir now ;-)
 
     recreateTestData();
@@ -985,12 +1017,12 @@ void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
 
 void KDirModelTest::testDeleteFiles()
 {
-    const int oldTopLevelRowCount = m_dirModel.rowCount();
+    const int oldTopLevelRowCount = m_dirModel->rowCount();
     const QString file = m_tempDir->name() + "toplevelfile_";
     KUrl::List urls;
     urls << KUrl(file + '1') << KUrl(file + '2') << KUrl(file + '3');
 
-    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
 
     KIO::DeleteJob* job = KIO::del(urls, KIO::HideProgressInfo);
     bool ok = job->exec();
@@ -1007,7 +1039,7 @@ void KDirModelTest::testDeleteFiles()
         kDebug() << "numRowsRemoved=" << numRowsRemoved;
     }
 
-    const int topLevelRowCount = m_dirModel.rowCount();
+    const int topLevelRowCount = m_dirModel->rowCount();
     QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 3); // three less than before
 
     recreateTestData();
@@ -1020,10 +1052,10 @@ void KDirModelTest::testRenameFileToHidden() // #174721
     const KUrl url(m_tempDir->name() + "toplevelfile_2");
     const KUrl newUrl(m_tempDir->name() + ".toplevelfile_2");
 
-    QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
-    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
-    QSignalSpy spyRowsInserted(&m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)));
-    connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    QSignalSpy spyRowsInserted(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)));
+    connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
              &m_eventLoop, SLOT(quit()) );
 
     KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
@@ -1041,12 +1073,12 @@ void KDirModelTest::testRenameFileToHidden() // #174721
     const int row = spyRowsRemoved[0][1].toInt();
     QCOMPARE(row, m_secondFileIndex.row()); // only compare row
 
-    disconnect(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+    disconnect(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                &m_eventLoop, SLOT(quit()));
     spyRowsRemoved.clear();
 
     // Put things back to normal, should make the file reappear
-    connect(&m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
+    connect(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
             &m_eventLoop, SLOT(quit()));
     job = KIO::rename(newUrl, url, KIO::HideProgressInfo);
     ok = job->exec();
@@ -1057,9 +1089,9 @@ void KDirModelTest::testRenameFileToHidden() // #174721
     QCOMPARE(spyRowsRemoved.count(), 0);
     QCOMPARE(spyRowsInserted.count(), 1);
     int newRow = spyRowsInserted[0][1].toInt();
-    m_secondFileIndex = m_dirModel.index(newRow, 0);
+    m_secondFileIndex = m_dirModel->index(newRow, 0);
     QVERIFY(m_secondFileIndex.isValid());
-    QCOMPARE(m_dirModel.itemForIndex( m_secondFileIndex ).url().url(), url.url());
+    QCOMPARE(m_dirModel->itemForIndex( m_secondFileIndex ).url().url(), url.url());
 }
 
 void KDirModelTest::testDeleteDirectory()
@@ -1067,8 +1099,8 @@ void KDirModelTest::testDeleteDirectory()
     const QString path = m_tempDir->name();
     const KUrl url(path + "subdir/subsubdir");
 
-    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
-    connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+    QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
              &m_eventLoop, SLOT(quit()) );
 
     QSignalSpy spyDirWatchDeleted(KDirWatch::self(), SIGNAL(deleted(QString)));
@@ -1082,12 +1114,12 @@ void KDirModelTest::testDeleteDirectory()
 
     // If we come here, then rowsRemoved() was emitted - all good.
     QCOMPARE(spyRowsRemoved.count(), 1);
-    disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+    disconnect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(quit()) );
 
-    QModelIndex deletedDirIndex = m_dirModel.indexForUrl(path + "subdir/subsubdir");
+    QModelIndex deletedDirIndex = m_dirModel->indexForUrl(path + "subdir/subsubdir");
     QVERIFY(!deletedDirIndex.isValid());
-    QModelIndex dirIndex = m_dirModel.indexForUrl(path + "subdir");
+    QModelIndex dirIndex = m_dirModel->indexForUrl(path + "subdir");
     QVERIFY(dirIndex.isValid());
 
     // TODO!!! Bug in KDirWatch?
@@ -1096,12 +1128,12 @@ void KDirModelTest::testDeleteDirectory()
 
 void KDirModelTest::testDeleteCurrentDirectory()
 {
-    const int oldTopLevelRowCount = m_dirModel.rowCount();
+    const int oldTopLevelRowCount = m_dirModel->rowCount();
     const QString path = m_tempDir->name();
     const KUrl url(path);
 
-    QSignalSpy spyRowsRemoved(&m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
-    connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+    QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
              &m_eventLoop, SLOT(quit()) );
 
     KIO::DeleteJob* job = KIO::del(url, KIO::HideProgressInfo);
@@ -1112,15 +1144,15 @@ void KDirModelTest::testDeleteCurrentDirectory()
     enterLoop();
 
     // If we come here, then rowsRemoved() was emitted - all good.
-    const int topLevelRowCount = m_dirModel.rowCount();
+    const int topLevelRowCount = m_dirModel->rowCount();
     QCOMPARE(topLevelRowCount, 0); // empty
     QCOMPARE(spyRowsRemoved.count(), 1);
     QCOMPARE(spyRowsRemoved[0][1].toInt(), 0);
     QCOMPARE(spyRowsRemoved[0][2].toInt(), oldTopLevelRowCount - 1);
-    disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+    disconnect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(quit()) );
 
-    QModelIndex fileIndex = m_dirModel.indexForUrl(path + "toplevelfile_1");
+    QModelIndex fileIndex = m_dirModel->indexForUrl(path + "toplevelfile_1");
     QVERIFY(!fileIndex.isValid());
 }
 
