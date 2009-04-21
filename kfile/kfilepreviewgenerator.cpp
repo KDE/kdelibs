@@ -504,14 +504,16 @@ void KFilePreviewGenerator::Private::updateIcons(const QModelIndex& topLeft,
 void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, const QPixmap& pixmap)
 {
     KIO::PreviewJob* senderJob = qobject_cast<KIO::PreviewJob*>(q->sender());
-    Q_ASSERT(senderJob);
-    if(senderJob) {
+    Q_ASSERT(senderJob != 0);
+    if (senderJob != 0) {
         QMap<KUrl, int>::iterator it = m_sequenceIndices.find(item.url());
-        if(senderJob->sequenceIndex() && (it == m_sequenceIndices.end() || *it != senderJob->sequenceIndex()))
-            return; //The sequence index does not match the one we want
-        if(!senderJob->sequenceIndex() && it != m_sequenceIndices.end())
-            return; //The sequence index does not match the one we want
-        
+        if (senderJob->sequenceIndex() && (it == m_sequenceIndices.end() || *it != senderJob->sequenceIndex())) {
+            return; // the sequence index does not match the one we want
+        }
+        if (!senderJob->sequenceIndex() && it != m_sequenceIndices.end()) {
+            return; // the sequence index does not match the one we want
+        }
+
         m_sequenceIndices.erase(it);
     }
 
@@ -576,15 +578,15 @@ void KFilePreviewGenerator::Private::slotPreviewJobFinished(KJob* job)
     const int index = m_previewJobs.indexOf(job);
     m_previewJobs.removeAt(index);
 
-    if (m_previewJobs.isEmpty() && m_clearItemQueues) {
-        m_pendingItems.clear();
-        m_dispatchedItems.clear();
-        m_pendingVisibleIconUpdates = 0;
-        QMetaObject::invokeMethod(q, "dispatchIconUpdateQueue", Qt::QueuedConnection);
-    }
-
-    if(m_previewJobs.isEmpty())
+    if (m_previewJobs.isEmpty()) {
+        if (m_clearItemQueues) {
+            m_pendingItems.clear();
+            m_dispatchedItems.clear();
+            m_pendingVisibleIconUpdates = 0;
+            QMetaObject::invokeMethod(q, "dispatchIconUpdateQueue", Qt::QueuedConnection);
+        }
         m_sequenceIndices.clear(); // just to be sure that we don't leak anything
+    }
 }
 
 void KFilePreviewGenerator::Private::updateCutItems()
