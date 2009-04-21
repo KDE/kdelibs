@@ -425,7 +425,7 @@ QString KDialog::makeStandardCaption( const QString &userCaption,
            !userCaption.endsWith(caption)  ) {
            // TODO: check to see if this is a transient/secondary window before trying to add the app name
            //       on platforms that need this
-          captionString += QString::fromUtf8(" - ") + caption;
+          captionString += i18nc("Document/application separator in titlebar", " – ") + caption;
       }
   }
 
