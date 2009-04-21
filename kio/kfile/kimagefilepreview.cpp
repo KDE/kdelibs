@@ -220,7 +220,10 @@ void KImageFilePreview::KImageFilePreviewPrivate::_k_slotStepAnimation( int fram
 
     QPainter p(&pm);
     p.setOpacity(m_pmCurrentOpacity);
-    p.drawPixmap(QPoint(((float) pm.size().width() - m_pmCurrent.size().width()) / 2.0,
+
+    //If we have a current pixmap
+    if (!m_pmCurrent.isNull())
+        p.drawPixmap(QPoint(((float) pm.size().width() - m_pmCurrent.size().width()) / 2.0,
                         ((float) pm.size().height() - m_pmCurrent.size().height()) / 2.0), m_pmCurrent);
     if (!m_pmTransition.isNull()) {
         p.setOpacity(m_pmTransitionOpacity);
