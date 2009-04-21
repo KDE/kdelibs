@@ -57,22 +57,24 @@ CachedRendering::CachedRendering(QStyle::State state, const QSize &size, QModelI
     regular.fill(Qt::transparent);
     hover.fill(Qt::transparent);
 
-    if(index.model()) {
-      connect(index.model(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
+    if (index.model())
+    {
+      connect(index.model(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
+              SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
       connect(index.model(), SIGNAL(modelReset()), SLOT(modelReset()));
     }
 }
 
 void CachedRendering::dataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight)
 {
-  if(validityIndex.row() >= topLeft.row() && validityIndex.column() >= topLeft.column() && 
-     validityIndex.row() <= bottomRight.row() && validityIndex.column() <= bottomRight.column())
-    valid = false;
+    if (validityIndex.row() >= topLeft.row() && validityIndex.column() >= topLeft.column() &&
+        validityIndex.row() <= bottomRight.row() && validityIndex.column() <= bottomRight.column())
+        valid = false;
 }
 
 void CachedRendering::modelReset()
 {
-  valid = false;
+    valid = false;
 }
 
 // ---------------------------------------------------------------------------
@@ -111,13 +113,14 @@ bool AnimationState::update()
         animating = (progress > 0.0);
     }
 
-    
-    if(fadeFromRenderCache) {
-      //Icon fading goes always forwards
-      m_fadeProgress = qMin(qreal(1.0), m_fadeProgress + delta);
-      animating |= (m_fadeProgress < 1.0);
-      if(m_fadeProgress == 1)
-        setCachedRenderingFadeFrom(0);
+
+    if (fadeFromRenderCache)
+    {
+        //Icon fading goes always forwards
+        m_fadeProgress = qMin(qreal(1.0), m_fadeProgress + delta);
+        animating |= (m_fadeProgress < 1.0);
+        if (m_fadeProgress == 1)
+            setCachedRenderingFadeFrom(0);
     }
 
     return !animating;
@@ -144,9 +147,9 @@ static const int switchIconInterval = 1000; ///@todo Eventually configurable int
 DelegateAnimationHandler::DelegateAnimationHandler(QObject *parent)
     : QObject(parent)
 {
-  iconSequenceTimer.setSingleShot(true);
-  iconSequenceTimer.setInterval(switchIconInterval);
-  connect(&iconSequenceTimer, SIGNAL(timeout()), SLOT(sequenceTimerTimeout()));;
+    iconSequenceTimer.setSingleShot(true);
+    iconSequenceTimer.setInterval(switchIconInterval);
+    connect(&iconSequenceTimer, SIGNAL(timeout()), SLOT(sequenceTimerTimeout()));;
 }
 
 DelegateAnimationHandler::~DelegateAnimationHandler()
@@ -154,7 +157,8 @@ DelegateAnimationHandler::~DelegateAnimationHandler()
     timer.stop();
 
     QMapIterator<const QAbstractItemView*, AnimationList*> i(animationLists);
-    while (i.hasNext()) {
+    while (i.hasNext())
+    {
         i.next();
         qDeleteAll(*i.value());
         delete i.value();
@@ -162,52 +166,62 @@ DelegateAnimationHandler::~DelegateAnimationHandler()
     animationLists.clear();
 }
 
-void DelegateAnimationHandler::sequenceTimerTimeout() {
-  QAbstractItemModel* model = const_cast<QAbstractItemModel*>(sequenceModelIndex.model());
-  QAbstractProxyModel* proxy = qobject_cast<QAbstractProxyModel*>(model);
-  kDebug();
-  QModelIndex index = sequenceModelIndex;
-  
-  if(proxy) {
-    index = proxy->mapToSource(index);
-    model = proxy->sourceModel();
-  }
-  
-  KDirModel* dirModel = dynamic_cast<KDirModel*>(model);
-  if(dirModel) {
-    kDebug() << "requesting" << currentSequenceIndex;
-    dirModel->requestSequenceIcon(index, currentSequenceIndex);
-    iconSequenceTimer.start(); //Some upper-bound interval is needed, in case items are not generated
-  }
+void DelegateAnimationHandler::sequenceTimerTimeout()
+{
+    QAbstractItemModel* model = const_cast<QAbstractItemModel*>(sequenceModelIndex.model());
+    QAbstractProxyModel* proxy = qobject_cast<QAbstractProxyModel*>(model);
+    kDebug();
+    QModelIndex index = sequenceModelIndex;
+
+    if (proxy)
+    {
+        index = proxy->mapToSource(index);
+        model = proxy->sourceModel();
+    }
+
+    KDirModel* dirModel = dynamic_cast<KDirModel*>(model);
+    if (dirModel)
+    {
+        kDebug() << "requesting" << currentSequenceIndex;
+        dirModel->requestSequenceIcon(index, currentSequenceIndex);
+        iconSequenceTimer.start(); // Some upper-bound interval is needed, in case items are not generated
+    }
 }
 
-void DelegateAnimationHandler::gotNewIcon(const QModelIndex& index) {
-  kDebug() << currentSequenceIndex;
-  if(sequenceModelIndex.isValid() && currentSequenceIndex)
-    iconSequenceTimer.start();
+void DelegateAnimationHandler::gotNewIcon(const QModelIndex& index)
+{
+    Q_UNUSED(index);
+
+    kDebug() << currentSequenceIndex;
+    if (sequenceModelIndex.isValid() && currentSequenceIndex)
+        iconSequenceTimer.start();
 //   if(index ==sequenceModelIndex) //Leads to problems
-  ++currentSequenceIndex;
+    ++currentSequenceIndex;
 }
 
-void DelegateAnimationHandler::setSequenceIndex(int sequenceIndex) {
-  kDebug() << sequenceIndex;
-  
-  if(sequenceIndex) {
-    currentSequenceIndex = sequenceIndex;
-    sequenceTimerTimeout();
-  }else{
-    currentSequenceIndex = 0;
-    sequenceTimerTimeout(); //Set the icon back to the standard one
-    currentSequenceIndex = 0; //currentSequenceIndex was incremented, set it back to 0
-    iconSequenceTimer.stop();
-  }
+void DelegateAnimationHandler::setSequenceIndex(int sequenceIndex)
+{
+    kDebug() << sequenceIndex;
+
+    if (sequenceIndex)
+    {
+        currentSequenceIndex = sequenceIndex;
+        sequenceTimerTimeout();
+    }
+    else
+    {
+        currentSequenceIndex = 0;
+        sequenceTimerTimeout(); //Set the icon back to the standard one
+        currentSequenceIndex = 0; //currentSequenceIndex was incremented, set it back to 0
+        iconSequenceTimer.stop();
+    }
 }
 
 AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &option,
                                                          const QModelIndex &index,
                                                          const QAbstractItemView *view)
 {
-   // We can't do animations reliably when an item is being dragged, since that
+    // We can't do animations reliably when an item is being dragged, since that
     // item will be drawn in two locations at the same time and hovered in one and
     // not the other. We can't tell them apart because they both have the same index.
     if (!view || static_cast<const ProtectedAccessor*>(view)->draggingState())
@@ -235,14 +249,14 @@ AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &opt
         }
 
         fadeInAddTime.restart();
-        
-//         if(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
+
+//      if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
             ///Think about it.
 
-            if(sequenceModelIndex.isValid())
-                setSequenceIndex(0); //Stop old iteration, and reset the icon for the old iteration
+            if (sequenceModelIndex.isValid())
+                setSequenceIndex(0); // Stop old iteration, and reset the icon for the old iteration
 
-            //Start sequence iteration
+            // Start sequence iteration
             sequenceModelIndex = index;
             setSequenceIndex(1);
 //      }
@@ -258,9 +272,10 @@ AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &opt
                 state->progress = 0.0;
 
             startAnimation(state);
-            
-            //Stop sequence iteration
-            if(index == sequenceModelIndex) {
+
+            // Stop sequence iteration
+            if (index == sequenceModelIndex)
+            {
                 setSequenceIndex(0);
                 sequenceModelIndex = QPersistentModelIndex();
             }
