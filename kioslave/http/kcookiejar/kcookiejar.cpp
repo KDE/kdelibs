@@ -1485,6 +1485,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
 
     KConfigGroup policyGroup(_config,"Cookie Policy");
     const QStringList domainSettings = policyGroup.readEntry("CookieDomainAdvice", QStringList());
+    // Warning: those default values are duplicated in the kcm (kio/kcookiespolicies.cpp)
     m_rejectCrossDomainCookies = policyGroup.readEntry("RejectCrossDomainCookies", true);
     m_autoAcceptSessionCookies = policyGroup.readEntry("AcceptSessionCookies", true);
     m_ignoreCookieExpirationDate = policyGroup.readEntry("IgnoreExpirationDate", false);
