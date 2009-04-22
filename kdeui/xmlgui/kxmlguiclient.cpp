@@ -300,7 +300,7 @@ bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, QDomElement &additive, K
     if ( additive.attribute(attrNoMerge) == attrOne ) // ### use toInt() instead? (Simon)
     {
         base.parentNode().replaceChild(additive, base);
-        base = additive;
+        return true;
     } else {
         // iterate over all elements in the container (of the global DOM tree)
         QDomNode n = base.firstChild();

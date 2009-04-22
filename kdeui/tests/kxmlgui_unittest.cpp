@@ -463,15 +463,29 @@ void KXmlGui_UnitTest::testUiStandardsMerging_data()
     QTest::newRow("noMerge empty file menu, implicit settings menu")
         << xmlBegin + "<Menu name=\"file\" noMerge=\"1\"/>\n" + xmlEnd
         << (QStringList() << "file_open" << "options_configure_toolbars")
-        << (QStringList() << "settings");
+        << (QStringList() << "file" << "settings"); // we keep empty menus, see #186382
     QTest::newRow("noMerge empty file menu, file_open moved elsewhere")
         << xmlBegin + "<Menu name=\"file\" noMerge=\"1\"/>\n<Menu name=\"foo\"><Action name=\"file_open\"/></Menu>" + xmlEnd
         << (QStringList() << "file_open")
-        << (QStringList() << "foo");
+        << (QStringList() << "file" << "foo");
     QTest::newRow("noMerge file menu with open before new")
         << xmlBegin + "<Menu name=\"file\" noMerge=\"1\"><Action name=\"file_open\"/><Action name=\"file_new\"/></Menu>" + xmlEnd
         << (QStringList() << "file_open" << "file_new")
         << (QStringList() << "file"); // TODO check the order of the actions in the menu? how?
+
+    // Tests for deleted="true"
+    QTest::newRow("deleted file menu, implicit settings menu")
+        << xmlBegin + "<Menu name=\"file\" deleted=\"true\"/>\n" + xmlEnd
+        << (QStringList() << "file_open" << "options_configure_toolbars")
+        << (QStringList() << "settings");
+    QTest::newRow("deleted file menu, file_open moved elsewhere")
+        << xmlBegin + "<Menu name=\"file\" deleted=\"true\"/>\n<Menu name=\"foo\"><Action name=\"file_open\"/></Menu>" + xmlEnd
+        << (QStringList() << "file_open")
+        << (QStringList() << "foo");
+    QTest::newRow("deleted file menu with actions (contradiction)")
+        << xmlBegin + "<Menu name=\"file\" deleted=\"true\"><Action name=\"file_open\"/><Action name=\"file_new\"/></Menu>" + xmlEnd
+        << (QStringList() << "file_open" << "file_new")
+        << (QStringList());
 
 }
 
