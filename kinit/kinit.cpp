@@ -129,7 +129,6 @@ static struct {
   pid_t fork;
   pid_t launcher_pid;
   pid_t kded_pid;
-  pid_t my_pid;
   int n;
   char **argv;
   int (*func)(int, char *[]);
@@ -1212,12 +1211,24 @@ static bool handle_launcher_request(int sock, const char *who)
    else if (request_header.cmd == LAUNCHER_TERMINATE_KDEINIT)
    {
 #ifndef NDEBUG
-       fprintf(stderr,"kdeinit4: Killing kdeinit/klauncher.\n");
+      fprintf(stderr,"kdeinit4: Got termination request (PID %ld).\n", (long) getpid());
 #endif
-       if (d.launcher_pid)
-          kill(d.launcher_pid, SIGTERM);
-       if (d.my_pid)
-          kill(d.my_pid, SIGTERM);
+      if (d.launcher_pid) {
+         kill(d.launcher_pid, SIGTERM);
+         d.launcher_pid = 0;
+         close(d.launcher[0]);
+         d.launcher[0] = -1;
+      }
+      unlink(sock_file);
+      if (children) {
+         close(d.wrapper);
+         d.wrapper = -1;
+#ifndef NDEBUG
+         fprintf(stderr,"kdeinit4: Closed sockets, but not exiting until all children terminate.\n");
+#endif
+      } else {
+         raise(SIGTERM);
+      }
    }
    else if (request_header.cmd == LAUNCHER_DEBUG_WAIT)
    {
@@ -1233,8 +1244,10 @@ static bool handle_launcher_request(int sock, const char *who)
 
 static void handle_requests(pid_t waitForPid)
 {
-   int max_sock = d.wrapper;
-   if (d.launcher_pid && (d.launcher[0] > max_sock))
+   int max_sock = d.deadpipe[0];
+   if (d.wrapper > max_sock)
+      max_sock = d.wrapper;
+   if (d.launcher[0] > max_sock)
       max_sock = d.launcher[0];
 #ifdef Q_WS_X11
    if (X11fd > max_sock)
@@ -1272,6 +1285,14 @@ static void handle_requests(pid_t waitForPid)
            else if( WIFSIGNALED( exit_status ))
                exit_status = 128 + WTERMSIG( exit_status );
            child_died(exit_pid, exit_status);
+
+           if (d.wrapper < 0 && !children) {
+#ifndef NDEBUG
+               fprintf(stderr, "kdeinit4: Last child terminated, exiting (PID %ld).\n",
+                               (long) getpid());
+#endif
+               raise(SIGTERM);
+           }
         }
       }
       while( exit_pid > 0);
@@ -1280,11 +1301,10 @@ static void handle_requests(pid_t waitForPid)
       FD_ZERO(&wr_set);
       FD_ZERO(&e_set);
 
-      if (d.launcher_pid)
-      {
+      if (d.launcher[0] >= 0)
          FD_SET(d.launcher[0], &rd_set);
-      }
-      FD_SET(d.wrapper, &rd_set);
+      if (d.wrapper >= 0)
+         FD_SET(d.wrapper, &rd_set);
       FD_SET(d.deadpipe[0], &rd_set);
 #ifdef Q_WS_X11
       if(X11fd >= 0) FD_SET(X11fd, &rd_set);
@@ -1295,11 +1315,11 @@ static void handle_requests(pid_t waitForPid)
           if (errno == EINTR || errno == EAGAIN)
               continue;
           perror("kdeinit4: Aborting. select() failed");
-          return 1;
+          return;
       }
 
       /* Handle wrapper request */
-      if (FD_ISSET(d.wrapper, &rd_set))
+      if (d.wrapper >= 0 && FD_ISSET(d.wrapper, &rd_set))
       {
          struct sockaddr_un client;
          kde_socklen_t sClient = sizeof(client);
@@ -1609,8 +1629,6 @@ int main(int argc, char **argv, char **envp)
       d.initpipe[0] = -1;
 #endif
    }
-
-   d.my_pid = getpid();
 
    /** Make process group leader (for shutting down children later) **/
    if(keep_running)
