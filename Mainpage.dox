@@ -156,6 +156,11 @@ provides a full web browser component.
     <dd>Run processes remotely or with elevated privileges.<br>
         [ <a href="kdesu/html/index.html">Documentation</a> |
           <a href="kdesu/html/classes.html">Classes</a> ]</dd>
+
+    <dt>KPty</dt>
+    <dd>A library for interfacing with pseudo terminals.<br>
+        [ <a href="kpty/html/index.html">Documentation</a> |
+          <a href="kpty/html/classes.html">Classes</a> ]</dd>
 </dl>
 
 */

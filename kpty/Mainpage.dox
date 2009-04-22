@@ -1,0 +1,26 @@
+/** @mainpage The KDE Pseudo Terminal Library
+
+This library provides primitives to interface with pseudo terminal devices
+as well as a KProcess derived class for running child processes and
+communicating with them using a pty.
+
+@see KPty, KPtyProcess
+
+@authors
+Zack Weinberg \<zack@rabi.phys.columbia.edu\><br>
+Lars Doelle \<lars.doelle@on-line.de\><br>
+Waldo Bastian \<bastian@kde.org\><br>
+Oswald Buddenhagen \<ossi@kde.org\><br>
+
+@maintainers
+Oswald Buddenhagen \<ossi@kde.org\><br>
+
+@licenses
+@lgpl
+
+*/
+
+// DOXYGEN_REFERENCES = kdecore
+// DOXYGEN_SET_INTERNAL_DOCS = YES
+// DOXYGEN_SET_PROJECT_NAME = DNSSD
+// vim:ts=4:sw=4:expandtab:filetype=doxygen
