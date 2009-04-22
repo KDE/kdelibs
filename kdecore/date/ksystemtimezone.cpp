@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2008 David Jarvie <djarvie@kde.org>
+   Copyright (c) 2005-2009 David Jarvie <djarvie@kde.org>
    Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
@@ -158,6 +158,11 @@ KTzfileTimeZoneSource *KSystemTimeZonesPrivate::tzfileSource()
 }
 
 
+#ifndef NDEBUG
+K_GLOBAL_STATIC(KTimeZone, simulatedLocalZone)
+#endif
+
+
 KSystemTimeZones::KSystemTimeZones()
   : d(0)
 {
@@ -174,8 +179,34 @@ KSystemTimeZones::~KSystemTimeZones()
 
 KTimeZone KSystemTimeZones::local()
 {
+#ifndef NDEBUG
+    if (simulatedLocalZone->isValid())
+	return *simulatedLocalZone;
+#endif
     KSystemTimeZonesPrivate::instance();
     return KSystemTimeZonesPrivate::m_localZone;
+}
+
+KTimeZone KSystemTimeZones::realLocalZone()
+{
+    KSystemTimeZonesPrivate::instance();
+    return KSystemTimeZonesPrivate::m_localZone;
+}
+
+void KSystemTimeZones::setLocalZone(const KTimeZone& tz)
+{
+#ifndef NDEBUG
+    *simulatedLocalZone = tz;
+#endif
+}
+
+bool KSystemTimeZones::isSimulated()
+{
+#ifndef NDEBUG
+    return simulatedLocalZone->isValid();
+#else
+    return false;
+#endif
 }
 
 QString KSystemTimeZones::zoneinfoDir()

@@ -101,50 +101,6 @@ KDECORE_EXPORT int KDateTime_zoneCacheHit = 0;
 
 /*----------------------------------------------------------------------------*/
 
-#ifndef NDEBUG
-#undef KSystemTimeZones
-#endif
-
-K_GLOBAL_STATIC(KTimeZone, simulatedLocalZone)
-
-KTimeZone KSystemTimeZones_Simulated::realLocalZone()
-{
-    return KSystemTimeZones::local();
-}
-
-KTimeZone KSystemTimeZones_Simulated::local()
-{
-#ifndef NDEBUG
-    return simulatedLocalZone->isValid()
-	 ? *simulatedLocalZone : KSystemTimeZones::local();
-#else
-    return KSystemTimeZones::local();
-#endif
-}
-
-void KSystemTimeZones_Simulated::setLocalZone(const KTimeZone& tz)
-{
-#ifndef NDEBUG
-    *simulatedLocalZone = tz;
-#endif
-}
-
-bool KSystemTimeZones_Simulated::isSimulated()
-{
-#ifndef NDEBUG
-    return simulatedLocalZone->isValid();
-#else
-    return false;
-#endif
-}
-
-#ifndef NDEBUG
-#define KSystemTimeZones KSystemTimeZones_Simulated
-#endif
-
-
-/*----------------------------------------------------------------------------*/
-
 class KDateTimeSpecPrivate
 {
   public:
@@ -1280,8 +1236,8 @@ int KDateTime::daysTo(const KDateTime &t2) const
 KDateTime KDateTime::currentLocalDateTime()
 {
 #ifndef NDEBUG
-    if (KSystemTimeZones_Simulated::isSimulated())
-        return currentUtcDateTime().toZone(KSystemTimeZones_Simulated::local());
+    if (KSystemTimeZones::isSimulated())
+        return currentUtcDateTime().toZone(KSystemTimeZones::local());
 #endif
     return KDateTime(QDateTime::currentDateTime(), Spec(KSystemTimeZones::local()));
 }
@@ -2365,8 +2321,16 @@ void KDateTime::setFromStringDefault(const Spec &spec)
 void KDateTime::setSimulatedSystemTime(const KDateTime& newTime)
 {
 #ifndef NDEBUG
-    KDateTimePrivate::currentDateTimeOffset = realCurrentLocalDateTime().secsTo_long(newTime);
-    KSystemTimeZones_Simulated::setLocalZone(newTime.timeZone());
+    if (newTime.isValid())
+    {
+        KDateTimePrivate::currentDateTimeOffset = realCurrentLocalDateTime().secsTo_long(newTime);
+        KSystemTimeZones::setLocalZone(newTime.timeZone());
+    }
+    else
+    {
+        KDateTimePrivate::currentDateTimeOffset = 0;
+        KSystemTimeZones::setLocalZone(KTimeZone());
+    }
 #endif
 }
 
