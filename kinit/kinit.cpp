@@ -1291,9 +1291,15 @@ static void handle_requests(pid_t waitForPid)
 #endif
 
       result = select(max_sock, &rd_set, &wr_set, &e_set, 0);
+      if (result < 0) {
+          if (errno == EINTR || errno == EAGAIN)
+              continue;
+          perror("kdeinit4: Aborting. select() failed");
+          return 1;
+      }
 
       /* Handle wrapper request */
-      if ((result > 0) && (FD_ISSET(d.wrapper, &rd_set)))
+      if (FD_ISSET(d.wrapper, &rd_set))
       {
          struct sockaddr_un client;
          kde_socklen_t sClient = sizeof(client);
@@ -1308,7 +1314,7 @@ static void handle_requests(pid_t waitForPid)
       }
 
       /* Handle launcher request */
-      if ((result > 0) && (d.launcher_pid) && (FD_ISSET(d.launcher[0], &rd_set)))
+      if (d.launcher[0] >= 0 && FD_ISSET(d.launcher[0], &rd_set))
       {
          if (!handle_launcher_request(d.launcher[0], "launcher"))
              launcher_died();
@@ -1318,16 +1324,12 @@ static void handle_requests(pid_t waitForPid)
 
 #ifdef Q_WS_X11
       /* Look for incoming X11 events */
-      if((result > 0) && (X11fd >= 0))
-      {
-        if(FD_ISSET(X11fd,&rd_set))
-        {
+      if(X11fd >= 0 && FD_ISSET(X11fd,&rd_set)) {
           if (X11display != 0) {
 	    XEvent event_return;
 	    while (XPending(X11display))
 	      XNextEvent(X11display, &event_return);
 	  }
-        }
       }
 #endif
    }
