@@ -263,9 +263,12 @@ void KImageFilePreview::clearPreview()
 
     if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
         d->m_pmTransition = QPixmap();
-        d->m_timeLine->setCurrentTime(0);
-        d->m_timeLine->setDirection(QTimeLine::Backward);
-        d->m_timeLine->start();
+        //If we add a previous preview then we run the animation
+        if (!d->m_pmCurrent.isNull()) {
+            d->m_timeLine->setCurrentTime(0);
+            d->m_timeLine->setDirection(QTimeLine::Backward);
+            d->m_timeLine->start();
+        }
         d->currentURL = KUrl();
         d->clear = true;
     }
