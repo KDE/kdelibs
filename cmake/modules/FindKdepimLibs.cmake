@@ -30,7 +30,7 @@ if( KDEPIMLIBS_INCLUDE_DIR )
   set(KDEPIMLIBS_FOUND TRUE)
 
   # this file contains all dependencies of all libraries of kdepimlibs, Alex
-  include(KDEPimLibsDependencies)
+#  include(KDEPimLibsDependencies)
   
   find_library(KDE4_AKONADI_LIBRARY NAMES akonadi-kde PATHS ${KDE4_LIB_DIR} NO_DEFAULT_PATH )
   set(KDE4_AKONADI_LIBS ${akonadi_LIB_DEPENDS} ${KDE4_AKONADI_LIBRARY} )
