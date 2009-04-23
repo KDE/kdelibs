@@ -463,12 +463,13 @@ TCPSlaveBase::SslResult TCPSlaveBase::startTLSInternal(uint v_)
     KSslCipher cipher = d->socket.sessionCipher();
 
     if (!encryptionStarted || d->socket.encryptionMode() != KTcpSocket::SslClientMode
-        || cipher.isNull() || cipher.usedBits() == 0) {
+        || cipher.isNull() || cipher.usedBits() == 0 || d->socket.peerCertificateChain().isEmpty()) {
         d->usingSSL = false;
         setMetaData("ssl_in_use", "FALSE");
         kDebug(7029) << "Initial SSL handshake failed. encryptionStarted is"
                      << encryptionStarted << ", cipher.isNull() is" << cipher.isNull()
                      << ", cipher.usedBits() is" << cipher.usedBits()
+                     << ", length of certificate chain is" << d->socket.peerCertificateChain().count()
                      << ", the socket says:" << d->socket.errorString()
                      << "and the list of SSL errors contains"
                      << d->socket.sslErrors().count() << "items.";

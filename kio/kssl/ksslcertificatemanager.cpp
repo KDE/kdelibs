@@ -308,6 +308,12 @@ bool KSslCertificateManager::askIgnoreSslErrors(const KSslErrorUiData &uiData, R
         //TODO message "sorry, fatal error, you can't override it"
         return false;
     }
+    if (ud->certificateChain.isEmpty()) {
+        // SSL without certificates is quite useless and should never happen
+        KMessageBox::sorry(0, i18n("The remote host did not send any SSL certificates.\n"
+                                   "Aborting because the identity of the host cannot be established."));
+        return false;
+    }
 
     KSslCertificateManager *const cm = KSslCertificateManager::self();
     KSslCertificateRule rule(ud->certificateChain.first(), ud->host);
