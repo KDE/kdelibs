@@ -208,9 +208,14 @@ FileUndoManager *FileUndoManager::self()
     return &globalFileUndoManager->self;
 }
 
+
+// m_nextCommandIndex is initialized to a high number so that konqueror can
+// assign low numbers to closed items loaded "on-demand" from a config file
+// in KonqClosedWindowsManager::readConfig and thus maintaining the real
+// order of the undo items.
 FileUndoManagerPrivate::FileUndoManagerPrivate(FileUndoManager* qq)
     : m_uiInterface(new FileUndoManager::UiInterface()),
-      m_undoJob(0), m_nextCommandIndex(0), q(qq)
+      m_undoJob(0), m_nextCommandIndex(1000), q(qq)
 {
     m_syncronized = initializeFromKDesky();
     (void) new KIOFileUndoManagerAdaptor(this);
