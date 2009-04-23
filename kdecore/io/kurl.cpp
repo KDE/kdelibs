@@ -294,15 +294,21 @@ QStringList KUrl::List::mimeDataTypes()
     return QStringList() << s_kdeUriListMime << "text/uri-list";
 }
 
-KUrl::List KUrl::List::fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMap* metaData )
+
+KUrl::List KUrl::List::fromMimeData(const QMimeData *mimeData,
+                                    DecodeOptions decodeOptions,
+                                    KUrl::MetaDataMap* metaData)
 {
+
     KUrl::List uris;
-    // x-kde-urilist is the same format as text/uri-list, but contains
-    // KDE-aware urls, like desktop:/ and applications:/, whereas text/uri-list is resolved to
-    // local files. So we look at it first for decoding.
-    QByteArray payload = mimeData->data(s_kdeUriListMime);
-    if ( payload.isEmpty() )
-        payload = mimeData->data("text/uri-list");
+    const char* firstMimeType = s_kdeUriListMime;
+    const char* secondMimeType = "text/uri-list";
+    if (decodeOptions == PreferLocalUrls) {
+        qSwap(firstMimeType, secondMimeType);
+    }
+    QByteArray payload = mimeData->data(firstMimeType);
+    if (payload.isEmpty())
+        payload = mimeData->data(secondMimeType);
     if ( !payload.isEmpty() ) {
         int c = 0;
         const char* d = payload.data();
@@ -345,6 +351,11 @@ KUrl::List KUrl::List::fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMa
     }
 
     return uris;
+}
+
+KUrl::List KUrl::List::fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMap* metaData )
+{
+    return fromMimeData(mimeData, PreferKdeUrls, metaData);
 }
 
 KUrl::List::operator QVariant() const
@@ -1834,4 +1845,3 @@ uint qHash(const KUrl& kurl)
 
   return qHash(kurl.protocol()) ^ qHash(kurl.path()) ^ qHash(kurl.fragment()) ^ qHash(kurl.query());
 }
-

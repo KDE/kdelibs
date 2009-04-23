@@ -872,12 +872,15 @@ QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
         if (!isLocal)
             canUseMostLocalUrls = false;
     }
-    if (canUseMostLocalUrls) { // prefer those. Useful when dropping into another user's window for instance (#184403)
-        urls = mostLocalUrls;
-    }
     QMimeData *data = new QMimeData();
+    const bool different = canUseMostLocalUrls && (mostLocalUrls != urls);
     urls = simplifiedUrlList(urls);
-    urls.populateMimeData(data);
+    if (different) {
+        mostLocalUrls = simplifiedUrlList(mostLocalUrls);
+        urls.populateMimeData(mostLocalUrls, data);
+    } else {
+        urls.populateMimeData(data);
+    }
 
     // for compatibility reasons (when dropping or pasting into kde3 applications)
     QString application_x_qiconlist;

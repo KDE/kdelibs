@@ -233,7 +233,7 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
   const QMimeData *mimeData = QApplication::clipboard()->mimeData();
 
   // First check for URLs.
-  const KUrl::List urls = KUrl::List::fromMimeData( mimeData );
+  const KUrl::List urls = KUrl::List::fromMimeData(mimeData, KUrl::List::PreferLocalUrls);
   if ( !urls.isEmpty() ) {
     KIO::Job *res = 0;   
     if ( move )
@@ -246,15 +246,15 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
     if ( move ) {
       QApplication::clipboard()->clear();
 
-      KUrl::List newUrls;      
+      KUrl::List newUrls;
       for (int i = 0; i < urls.size(); i++) {
           KUrl dUrl = destUrl;
           dUrl.addPath(urls.at(i).fileName());
           newUrls.append(dUrl);
       }
-      
+
       QMimeData* mime = new QMimeData();
-      newUrls.populateMimeData(mime);      
+      newUrls.populateMimeData(mime);
       QApplication::clipboard()->setMimeData(mime);
     }  
       

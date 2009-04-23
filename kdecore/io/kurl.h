@@ -238,6 +238,41 @@ public:
        */
       static KUrl::List fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMap* metaData = 0 );
 
+      /**
+       * Flags to be used in fromMimeData.
+       * @since 4.2.3
+       */
+      enum DecodeOptions {
+        /**
+         * When the mimedata contains both KDE-style URLs (eg: desktop:/foo) and
+         * the "most local" version of the URLs (eg: file:///home/dfaure/Desktop/foo),
+         * decode it as local urls. Useful in paste/drop operations that end up calling KIO,
+         * so that urls from other users work as well.
+         */
+        PreferLocalUrls,
+        /**
+         * When the mimedata contains both KDE-style URLs (eg: desktop:/foo) and
+         * the "most local" version of the URLs (eg: file:///home/dfaure/Desktop/foo),
+         * decode it as the KDE-style URL. Useful in DnD code e.g. when moving icons,
+         * and the kde-style url is used as identifier for the icons.
+         */
+        PreferKdeUrls
+      };
+
+      /**
+       * Extract a list of KUrls from the contents of @p mimeData.
+       * Decoding will fail if @p mimeData does not contain any URLs, or if at
+       * least one extracted URL is not valid.
+       * @param mimeData the mime data to extract from; cannot be 0
+       * @param decodeOptions options for decoding
+       * @param metaData optional pointer to a map holding the metadata
+       * @return the list of urls
+       * @since 4.2.3
+       */
+      static KUrl::List fromMimeData( const QMimeData *mimeData,
+                                      DecodeOptions decodeOptions, // TODO KDE5: = PreferKdeUrls, and merge with above
+                                      KUrl::MetaDataMap* metaData = 0 );
+
   };
   /**
    * Constructs an empty URL.
