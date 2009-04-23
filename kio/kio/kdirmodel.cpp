@@ -25,6 +25,7 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <kio/copyjob.h>
+#include <kio/fileundomanager.h>
 #include <kio/jobuidelegate.h>
 #include <kurl.h>
 #include <kdebug.h>
@@ -762,7 +763,8 @@ bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int 
             newurl.setPath(newurl.directory(KUrl::AppendTrailingSlash) + newName);
             KIO::Job * job = KIO::moveAs(item.url(), newurl, newurl.isLocalFile() ? KIO::HideProgressInfo : KIO::DefaultFlags);
             job->ui()->setAutoErrorHandlingEnabled(true);
-            // TODO undo handling
+            // undo handling
+            KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Rename, item.url(), newurl, job );
             return true;
         }
         break;
