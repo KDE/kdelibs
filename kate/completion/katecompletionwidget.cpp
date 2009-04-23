@@ -164,6 +164,11 @@ void KateCompletionWidget::modelContentChanged() {
     m_needShow = false;
     updateAndShow();
   }
+  
+  if(!view()->hasFocus()) {
+    kDebug( 13035 ) << "view does not have focus";
+    return;
+  }
 
   if(m_presentationModel->rowCount(QModelIndex()) == 0 && m_argumentHintModel->rowCount(QModelIndex()) == 0) {
     kDebug( 13035 ) << "hiding because no content";
@@ -325,6 +330,11 @@ void KateCompletionWidget::startCompletion(const KTextEditor::Range& word, KText
 
 void KateCompletionWidget::updateAndShow()
 {
+  if(!view()->hasFocus()) {
+    kDebug( 13035 ) << "view does not have focus";
+    return;
+  }
+  
   setUpdatesEnabled(false);
 
   modelReset();
