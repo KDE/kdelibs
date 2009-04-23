@@ -8,6 +8,15 @@
  * Do not edit! All changes made to it will be lost.
  */
 
+/*
+ KDE5:
+ This is a manual copy of an automatically generated file, and the output from dbusxml2cpp
+ can change between dbusxml2cpp versions. This is currently no binary compatible
+ with what dbusxml2cpp generates these days, so if something else autogenerates the interface,
+ there will be crashes on systems with no symbol visibility (happened in ksmserver).
+ Either dbusxml2cpp should be fixed or this should be removed from kdelibs.
+*/
+
 #ifndef KLAUNCHER_IFACE_H_84591156096727
 #define KLAUNCHER_IFACE_H_84591156096727
 
