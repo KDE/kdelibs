@@ -132,6 +132,7 @@
 <!ENTITY DBus	"<acronym>D-Bus</acronym>">
 <!ENTITY digikam	"<application>digiKam</application>">
 <!ENTITY dolphin "<application>Dolphin</application>">
+<!ENTITY dragon "<application>Dragon Player</application>">
 <!ENTITY drkonqi	"<application>DrKonqi</application>">
 <!ENTITY DCOP	"<acronym>DCOP</acronym>">
 <!ENTITY DVI	"<acronym>DVI</acronym>">
