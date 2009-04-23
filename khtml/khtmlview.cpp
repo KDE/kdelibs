@@ -3699,7 +3699,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
         }
         me->deref();
 
-        if (eventId == EventImpl::MOUSEDOWN_EVENT) {
+        if (eventId == EventImpl::MOUSEDOWN_EVENT && !me->defaultPrevented()) {
             // Focus should be shifted on mouse down, not on a click.  -dwh
             // Blur current focus node when a link/button is clicked; this
             // is expected by some sites that rely on onChange handlers running
