@@ -145,3 +145,6 @@ that we would like to make for the next binary incompatible release.
 
 - Additional (automatic) shortcuts for KMessageBox (Jaroslaw Staniek)
   See http://lists.kde.org/?l=kde-usability&m=109688936328920&w=2
+
+- Add KUndoRedoAction which can display a popup with action lists, and use it in
+  KUndoStack::createRedoAction() and KUndoStack::createUndoAction(). (Jaroslaw Staniek)
