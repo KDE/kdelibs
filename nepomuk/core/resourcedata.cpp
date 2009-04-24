@@ -281,7 +281,7 @@ bool Nepomuk::ResourceData::store()
 
         // save the kickoff identifier (other identifiers are stored via setProperty)
         if ( !m_kickoffIdentifier.isEmpty() ) {
-            statements.append( Statement( m_uri, QUrl(Resource::identifierUri()), LiteralValue(m_kickoffIdentifier) ) );
+            statements.append( Statement( m_uri, Soprano::Vocabulary::NAO::identifier(), LiteralValue(m_kickoffIdentifier) ) );
         }
 
         // HACK: make sure that files have proper fileUrl properties so long as we do not have a File class for
@@ -520,8 +520,6 @@ bool Nepomuk::ResourceData::determineUri()
         return m_proxyData->determineUri();
 
     else if( m_uri.isEmpty() && !m_kickoffUriOrId.isEmpty() ) {
-        Q_ASSERT( !m_kickoffUriOrId.isEmpty() );
-
         m_modificationMutex.lock();
 
         Soprano::Model* model = MAINMODEL;
@@ -611,6 +609,7 @@ bool Nepomuk::ResourceData::determineUri()
                 }
                 else {
                     m_kickoffIdentifier = kickoffUriOrId();
+                    m_cache.insert( Soprano::Vocabulary::NAO::identifier(), m_kickoffIdentifier );
                     m_uri = m_rm->m_manager->generateUniqueUri( m_kickoffIdentifier );
                 }
 
