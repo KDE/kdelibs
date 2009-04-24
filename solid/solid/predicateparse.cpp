@@ -57,17 +57,13 @@ void PredicateParse_setResult(void *result)
 
 void PredicateParse_errorDetected()
 {
-    if (s_result != 0)
-    {
-        delete s_result;
-        s_result = 0;
-    }
+    s_result = 0;
 }
 
 void PredicateParse_destroy(void *pred)
 {
     Solid::Predicate *p = (Solid::Predicate *) pred;
-    if (p!=s_result) {
+    if (p != s_result) {
         delete p;
     }
 }
