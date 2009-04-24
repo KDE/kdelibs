@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="standard_containers" version="15">
+<kpartgui name="standard_containers" version="16">
 <MenuBar>
   <MergeLocal name="first_menu"/>
   <Menu name="file"><text>&amp;File</text>
@@ -172,6 +172,7 @@
     <Action name="options_configure"/>
   </Menu>
   <MergeLocal name="settings_merge"/>
+  <Separator/>
   <Menu name="help"><text>&amp;Help</text>
     <Action name="help_contents"/>
     <Action name="help_whats_this"/>
