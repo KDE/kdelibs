@@ -1084,10 +1084,14 @@ or list, and general (i.e. occurring in many/all applications) bugs to
 </ul>
 
 <h4>KCommand</h4>
-<p>Deprecated and renamed to K3Command, header is k3command.h.</p>
+<p>Deprecated and renamed to K3Command, header is k3command.h.
+Use QUndoCommand instead.
+</p>
 
 <h4>KCommandHistory</h4>
-<p>Deprecated and renamed to K3CommandHistory, header is k3command.h.</p>
+<p>Deprecated and renamed to K3CommandHistory, header is k3command.h.
+Use KUndoStack instead.
+</p>
 
 <h4>KCompletion</h4>
 <ul>
@@ -1420,7 +1424,9 @@ You should port from K3ListView to QTreeWidget and then use
 KTreeWidgetSearchLine instead.</p>
 
 <h4>KMacroCommand</h4>
-<p>Deprecated and renamed to to K3MacroCommand, header is k3command.h.</p>
+<p>Deprecated and renamed to to K3MacroCommand, header is k3command.h.
+Use QUndoCommand instead which can group child commands.
+</p>
 
 <h4>KMainWindow</h4>
 <ul>
@@ -1456,7 +1462,9 @@ warningContinueCancelList(), warningContinueCancelListWId(), warningYesNoCancel(
 </ul>
 
 <h4>KNamedCommand</h4>
-<p>Deprecated and renamed to K3NamedCommand, header is k3command.h.</p>
+<p>Deprecated and renamed to K3NamedCommand, header is k3command.h.
+Use QUndoCommand instead where name can be also stored using setText(const QString&).
+</p>
 
 <h4>KPalette</h4>
 <ul>
@@ -1738,7 +1746,8 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt></li>
 <p>Removed. Use QAction::setSeparator().</p>
 
 <h4>KUndoRedoAction</h4>
-<p>Deprecated and renamed to K3UndoRedoAction, header is k3command.h.</p>
+<p>Deprecated and renamed to K3UndoRedoAction, header is k3command.h. 
+KUndoStack::createRedoAction() and KUndoStack::createUndoAction() can be used instead but they currently lack popups with action lists.</p>
 
 <h4>KURLLabel</h4>
 <ul>
