@@ -66,6 +66,8 @@ public:
     bool characters(const QString& ch);
     bool comment(const QString & ch);
     bool processingInstruction(const QString &target, const QString &data);
+    bool startDTD(const QString& name, const QString& publicId, const QString& systemId);
+    bool endDTD();
     
     // namespace handling, to workaround problem in QXML where some attributes
     // do not get the namespace resolved properly
