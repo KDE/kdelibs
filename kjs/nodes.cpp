@@ -206,8 +206,9 @@ class VarDeclVisitor: public NodeVisitor {
     virtual Node* visit(Node* node) {
       node->processVarDecl(m_exec);
 
-      //Do not recurse inside function bodies...
-      if (node->introducesNewStaticScope())
+      //Do not recurse inside function bodies, or things that 
+      // syntactically can't contain declarations
+      if (!node->scanForDeclarations())
         return 0;
 
       return NodeVisitor::visit(node);
@@ -224,7 +225,7 @@ class FuncDeclVisitor: public NodeVisitor {
     virtual Node* visit(Node* node) {
       node->processFuncDecl(m_exec);
 
-      if (node->introducesNewStaticScope())
+      if (!node->scanForDeclarations())
         return 0;
 
       return NodeVisitor::visit(node);
