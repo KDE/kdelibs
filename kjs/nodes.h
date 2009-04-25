@@ -111,7 +111,7 @@ namespace KJS {
     bool isGroupNode() const { return type() == GroupNodeType; }
     bool isTryNode() const { return type() == TryNodeType; }
     bool isLabelNode() const { return type() == LabelNodeType; }
-    virtual bool introducesNewStaticScope () const { return false; }
+    virtual bool scanForDeclarations () const { return true; }
     virtual bool isIterationStatement()      const { return false; }
 
     virtual void breakCycle() { }
@@ -355,6 +355,7 @@ namespace KJS {
     virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual bool scanForDeclarations() const { return false; }
   private:
     RefPtr<ElementNode> element;
     int elision;
@@ -409,6 +410,7 @@ namespace KJS {
     virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual bool scanForDeclarations() const { return false; }
   private:
     RefPtr<PropertyListNode> list;
   };
@@ -1114,7 +1116,7 @@ namespace KJS {
     virtual OpValue generateEvalCode(CompileState* comp);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    virtual bool introducesNewStaticScope() const { return true; }
+    virtual bool scanForDeclarations() const { return false; }
   private:
     void addParams();
     // Used for streamTo
@@ -1134,7 +1136,7 @@ namespace KJS {
     virtual void generateExecCode(CompileState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
-    virtual bool introducesNewStaticScope() const { return true; }
+    virtual bool scanForDeclarations() const { return false; }
 
     virtual void processFuncDecl(ExecState*);
     FunctionImp* makeFunctionObject(ExecState*);
