@@ -117,6 +117,45 @@ using namespace DOM;
             }
             KdeUiProxyStyle::drawControl(element,option,painter,widget);
         }
+
+
+        QRect subControlRect(ComplexControl cc, const QStyleOptionComplex* opt,
+                                SubControl sc, const QWidget* widget) const
+        {
+            // Make sure we give combo popup's enough room to display contents;
+            // Qt doesn't do this by default
+            
+            if (cc == QStyle::CC_ComboBox && sc == SC_ComboBoxListBoxPopup) {
+                const QComboBox* cb = qobject_cast<const QComboBox*>(widget);
+                const QStyleOptionComboBox* cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt);
+                
+                QFontMetrics fm = cb->fontMetrics();
+                
+                if (cb && cbOpt) {
+                    // Compute content width; Qt uses the usual +4 magic number for icon/text margin
+                    int maxW = 0;
+                    for (int c = 0; c < cb->count(); ++c) {
+                        int iw = fm.width(cb->itemText(c));
+                        if (!cb->itemIcon(c).isNull())
+                            iw += 4 + cb->iconSize().width();
+                        maxW = qMax(maxW, iw);
+                    }
+                    
+                    // Now let sizeFromContent add in extra stuff.
+                    maxW = KdeUiProxyStyle::sizeFromContents(QStyle::CT_ComboBox, opt, QSize(maxW, 1), widget).width();
+                    
+                    // How much more room do we need for the text?
+                    int extraW = maxW > cbOpt->rect.width() ? maxW - cbOpt->rect.width() : 0;
+                    
+                    QRect r = KdeUiProxyStyle::subControlRect(cc, opt, sc, widget);
+                    r.setWidth(r.width() + extraW);
+                    return r;
+                }
+            }
+            
+            return KdeUiProxyStyle::subControlRect(cc, opt, sc, widget);
+        }
+
         int left, right, top, bottom;
         bool noBorder;
     };
@@ -1524,8 +1563,10 @@ RenderSelect::RenderSelect(HTMLSelectElementImpl *element)
 
     if(m_useListBox)
         setQWidget(createListBox());
-    else
+    else {
         setQWidget(createComboBox());
+        getProxyStyle(); // We always need it to make sure popups are big enough
+    }
 }
 
 void RenderSelect::updateFromElement()
@@ -1799,7 +1840,7 @@ void RenderSelect::slotSelected(int index) // emitted by the combobox only
             // shouldn't emit onChange. Hence this bool, the if above doesn't do it.
             if ( changed )
             {
-		ref();
+                ref();
                 element()->onChange();
                 deref();
             }
@@ -2203,3 +2244,4 @@ void RenderTextArea::setSelectionRange(long start, long end) {
 // ---------------------------------------------------------------------------
 
 #include "render_form.moc"
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
