@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE catalog PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN" "http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd">
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
-  <public publicId="-//KDE//ENTITIES Polish Documentation V1.0//PL"
+  <public publicId="-//KDE//ENTITIES English Documentation V1.0//PL"
           uri="lang.entities"/>
 
   <public publicId="-//KDE//DOCUMENT GNU Free Documentation Notice//PL"
@@ -19,6 +19,8 @@
           uri="common/fdl-translated"/>
   <public publicId="-//KDE//DOCUMENT GPL Licence Declaration//PL"
           uri="entities/underGPL.docbook"/> 
+  <public publicId="-//KDE//DOCUMENT LGPL Licence Declaration//PL"
+          uri="entities/underLGPL.docbook"/> 
   <public publicId="-//KDE//DOCUMENT FDL Licence Declaration//PL"
           uri="entities/underFDL.docbook"/>
   <public publicId="-//KDE//DOCUMENT BSD Licence Declaration//PL"
