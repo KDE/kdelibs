@@ -177,7 +177,7 @@ QAbstractItemView *KWidgetItemDelegate::itemView() const
 
 QPersistentModelIndex KWidgetItemDelegate::focusedIndex() const
 {
-    const QPersistentModelIndex idx = d->widgetPool->d->widgetInIndex[QApplication::focusWidget()];
+    const QPersistentModelIndex idx = d->widgetPool->d->widgetInIndex.value(QApplication::focusWidget());
     if (idx.isValid()) {
         return idx;
     }
