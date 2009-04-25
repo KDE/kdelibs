@@ -1206,8 +1206,7 @@ KFileMetaInfo KFileItem::metaInfo(bool autoget, int) const
     {
         bool isLocalUrl;
         KUrl url(mostLocalUrl(isLocalUrl));
-        if (KGlobalSettings::showFilePreview(url))
-            d->m_metaInfo = KFileMetaInfo(url);//, mimetype() );
+        d->m_metaInfo = KFileMetaInfo(url);//, mimetype() );
     }
     return d->m_metaInfo;
 }
