@@ -486,27 +486,10 @@ DOMString HTMLElementImpl::innerText() const
 
 DocumentFragment HTMLElementImpl::createContextualFragment( const DOMString &html )
 {
-    // the following is in accordance with the definition as used by IE
-    if( endTagRequirement(id()) == FORBIDDEN )
-        return DocumentFragment();
-    // IE disallows innerHTML on inline elements.
-    // I don't see why we should have this restriction, as our
-    // dhtml engine can cope with it. Lars
-    //if ( isInline() ) return false;
-    switch( id() ) {
-        case ID_COL:
-        case ID_COLGROUP:
-        case ID_FRAMESET:
-        case ID_HEAD:
-        case ID_TABLE:
-        case ID_TBODY:
-        case ID_TFOOT:
-        case ID_THEAD:
-        case ID_TITLE:
-            return DocumentFragment();
-        default:
-            break;
-    }
+    // IE originally restricted innerHTML to a small subset of elements; 
+    // and we largely matched that. Mozilla's embrace of innerHTML, however, extended 
+    // it to pretty much everything, and so the web (and HTML5) requires it now.
+    // For now, we accept everything, but do not do context-based recovery in the parser.
     if ( !document()->isHTMLDocument() )
         return DocumentFragment();
 
