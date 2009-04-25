@@ -1029,6 +1029,12 @@ bool KEncodingDetector::analyze(const char *data, int len)
                 // skip whitespace before encoding itself
                 while (pos < (int)str.length() && str[pos] <= ' ')
                     ++pos;
+                
+                // there may also be an opening quote, if this is a charset= and not 
+                // a http-equiv.
+                if (pos < (int)str.length() && str[pos] == '"')
+                    ++pos;
+
                 if ( pos == (int)str.length())
                     continue;
 
