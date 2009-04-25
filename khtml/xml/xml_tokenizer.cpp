@@ -408,6 +408,24 @@ bool XMLHandler::unparsedEntityDecl(const QString &/*name*/, const QString &/*pu
     return true;
 }
 
+bool XMLHandler::startDTD(const QString& name, const QString& publicId, const QString& systemId)
+{
+    int exceptionCode = 0;
+    SharedPtr<DocumentTypeImpl> docType = m_doc->implementation()->createDocumentType(name, publicId, systemId, exceptionCode);
+    
+    if (exceptionCode == 0) {
+        docType->setDocument(m_doc);
+        m_doc->appendChild(docType.get(), exceptionCode);
+    }
+
+    return (exceptionCode == 0);
+}
+
+bool XMLHandler::endDTD()
+{
+    return true;
+}
+
 
 //------------------------------------------------------------------------------
 
