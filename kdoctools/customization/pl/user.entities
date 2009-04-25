@@ -157,6 +157,11 @@
 <!ENTITY kwalletmanager-dopelniacz    '<application>Menedżera portfeli &kde;</application>'>
 <!ENTITY kwalletmanager    '&kwalletmanager-mianownik;'>
 
+<!ENTITY marble-mianownik    '<application>Marble</application>'>
+<!ENTITY marble-dopelniacz    '<application>Marble</application>'>
+<!ENTITY marble-biernik    '<application>Marble</application>'>
+<!ENTITY marble    '&marble-mianownik;'>
+
 <!ENTITY Linux-mianownik    'Linux'>
 <!ENTITY Linux-dopelniacz    'Linuksa'>
 <!ENTITY Linux-celownik    'Linuksowi'>
