@@ -272,13 +272,11 @@ void KBookmarkDialog::initLayoutPrivate()
     m_title->setMinimumWidth(300);
     m_titleLabel = new QLabel( i18nc("@label:textbox", "Name:" ), m_main );
     m_titleLabel->setBuddy( m_title );
-    m_titleLabel->setAlignment(Qt::AlignRight);
 
     m_url = new KLineEdit( m_main );
     m_url->setMinimumWidth(300);
     m_urlLabel = new QLabel( i18nc("@label:textbox", "Location:" ), m_main );
     m_urlLabel->setBuddy( m_url );
-    m_urlLabel->setAlignment(Qt::AlignRight);
 
     m_folderTree = new QTreeWidget(m_main);
     m_folderTree->setColumnCount(1);
