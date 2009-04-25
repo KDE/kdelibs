@@ -72,6 +72,7 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
   d->defaultgroup = defaultGroup;
   d->groups = groupsToShow;
   d->visuals = visuals;
+  setSpacing(-1);
 
   if ( !text.isEmpty() )
   {

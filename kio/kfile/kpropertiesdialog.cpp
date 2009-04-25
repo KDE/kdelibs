@@ -3027,9 +3027,9 @@ public:
 KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   : KPropertiesDialogPlugin( _props ), d( new KDesktopPropsPluginPrivate )
 {
-  properties->addPage(d->m_frame, i18n("&Application"));
-
   d->w->setupUi(d->m_frame);
+
+  properties->addPage(d->m_frame, i18n("&Application"));
 
   bool bKDesktopMode = (qApp->objectName() == "kdesktop");
 
