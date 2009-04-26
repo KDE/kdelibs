@@ -45,7 +45,8 @@ namespace KJS {
 
     enum { ToString, ToLocaleString, Concat, Join, Pop, Push,
           Reverse, Shift, Slice, Sort, Splice, UnShift,
-          Every, ForEach, Some, IndexOf, Filter, Map, LastIndexOf };
+          Every, ForEach, Some, IndexOf, Filter, Map, LastIndexOf,
+          Reduce, ReduceRight };
   private:
     int id;
   };

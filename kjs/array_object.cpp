@@ -5,6 +5,7 @@
  *  Copyright (C) 2003, 2007 Apple Inc. All rights reserved.
  *  Copyright (C) 2003 Peter Kelly (pmk@post.com)
  *  Copyright (C) 2006 Alexey Proskuryakov (ap@nypop.com)
+ *  Copyright (C) 2008 Janusz Lewandowski (lew21st@gmail.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -67,6 +68,8 @@ const ClassInfo ArrayPrototype::info = {"Array", &ArrayInstance::info, &arrayTab
   lastIndexOf    ArrayProtoFunc::LastIndexOf    DontEnum|Function 1
   filter         ArrayProtoFunc::Filter         DontEnum|Function 1
   map            ArrayProtoFunc::Map            DontEnum|Function 1
+  reduce         ArrayProtoFunc::Reduce         DontEnum|Function 1
+  reduceRight    ArrayProtoFunc::ReduceRight    DontEnum|Function 1
 @end
 */
 
@@ -563,6 +566,7 @@ JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, cons
 
     return jsNumber(-1);
   }
+
   case LastIndexOf: {
        // JavaScript 1.6 Extension by Mozilla
       // Documentation: http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:lastIndexOf
@@ -588,7 +592,63 @@ JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, cons
     }
 
     return jsNumber(-1);
-}
+  }
+
+  case Reduce:
+  case ReduceRight: {
+       // JavaScript 1.8 Extensions by Mozilla
+      // Documentation:
+      // https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Objects/Array/reduce
+      // https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Objects/Array/reduceRight
+
+    JSObject *callback = args[0]->toObject(exec);
+
+    if (!callback->implementsCall())
+      return throwError(exec, TypeError);
+
+    JSObject *applyThis = args[2]->isUndefinedOrNull() ? exec->dynamicInterpreter()->globalObject() :  args[2]->toObject(exec);
+
+    if (!length && args.size() < 2)
+      return throwError(exec, TypeError);
+
+    unsigned k = 0;
+    unsigned last = length - 1;
+
+    if (args.size() >= 2)
+      result = args[1];
+    else {
+      for (; k < length && !exec->hadException(); ++k) {
+        PropertySlot slot;
+
+        if (!thisObj->getPropertySlot(exec, (id == Reduce) ? k : (last - k), slot))
+           continue;
+
+        result = slot.getValue(exec, thisObj, (id == Reduce) ? k++ : (last - k++));
+        break;
+      }
+    }
+
+    for (; k < length && !exec->hadException(); ++k) {
+      PropertySlot slot;
+
+      if (!thisObj->getPropertySlot(exec, (id == Reduce) ? k : (last - k), slot))
+         continue;
+
+      JSValue* v = slot.getValue(exec, thisObj, (id == Reduce) ? k : (last - k));
+
+      List eachArguments;
+
+      eachArguments.append(result);
+      eachArguments.append(v);
+      eachArguments.append(jsNumber((id == Reduce) ? k : (last - k)));
+      eachArguments.append(thisObj);
+
+      result = callback->call(exec, applyThis, eachArguments);
+    }
+
+    break;
+  }
+
   default:
     assert(0);
     result = 0;
