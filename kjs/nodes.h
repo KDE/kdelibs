@@ -253,7 +253,8 @@ namespace KJS {
 
   class StringNode : public Node {
   public:
-    StringNode(const UString *v) : val(*v) { }
+    StringNode(const UString *v) : val(*v), interned(0) { }
+    ~StringNode(); // in nodes2bytecode.cpp
     UString value() const { return val; }
     void setValue(const UString& v) { val = v; }
 
@@ -262,6 +263,7 @@ namespace KJS {
     virtual void streamTo(SourceStream&) const;
   private:
     UString val;
+    StringImp* interned;
   };
 
   class RegExpNode : public Node {

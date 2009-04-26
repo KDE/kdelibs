@@ -4,6 +4,7 @@
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2008, 2009 Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -225,6 +226,8 @@ Interpreter::Interpreter()
 void Interpreter::init()
 {
     JSLock lock;
+
+    initInternedStringsTable();
 
     m_refCount = 0;
     m_timeoutTime = 0;
@@ -753,6 +756,8 @@ void Interpreter::mark(bool)
     // tendenacy to pin blocks, increasing their number and hence spreading out
     // the objects somewhat
     m_numCachedActivations = 0;
+    
+    markInternedStringsTable();
 }
 
 #ifdef KJS_DEBUG_MEM
@@ -930,7 +935,47 @@ bool Interpreter::handleTimeout()
     return retval;
 }
 
+Interpreter::InternedStringsTable* Interpreter::s_internedStrings;
 
+void Interpreter::initInternedStringsTable()
+{
+    if (!s_internedStrings)
+        s_internedStrings = new InternedStringsTable();
+}
+
+StringImp* Interpreter::internString(const UString& literal)
+{
+    std::pair<InternedStringsTable::iterator, bool> p = 
+        s_internedStrings->add(literal.rep(), std::make_pair((StringImp*)(0), 1));
+        
+    if (p.second) // actually added..
+        p.first.values()->first = static_cast<StringImp*>(jsOwnedString(literal));
+    else
+        ++p.first.values()->second; // just bump the ref count
+
+    return p.first.values()->first;
+}
+
+void Interpreter::releaseInternedString(const UString& literal)
+{
+    InternedStringsTable::iterator i = s_internedStrings->find(literal.rep());
+
+    --i.values()->second;
+    if (i.values()->second == 0)
+        s_internedStrings->remove(i);
+}
+    
+void Interpreter::markInternedStringsTable()
+{
+    for (InternedStringsTable::iterator i = s_internedStrings->begin();
+        i != s_internedStrings->end(); ++i) {
+        // Note: the StringImp* may be null here if we got called in the middle 
+        // of internString.
+        if (i.values()->first && !i.values()->first->marked())
+            i.values()->first->mark();
+    }
+}
+    
 SavedBuiltins::SavedBuiltins() :
   _internal(0)
 {
