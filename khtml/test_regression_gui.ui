@@ -147,7 +147,7 @@
                <string>You may select a file where the log content is stored, before the regression testing started.</string>
               </property>
               <property name="text" >
-               <string>Output to file...</string>
+               <string>Output to File...</string>
               </property>
              </widget>
             </item>
@@ -159,7 +159,7 @@
           <item>
            <widget class="QLabel" name="statusLabel" >
             <property name="text" >
-             <string>Regression testing status</string>
+             <string>Regression Testing Status</string>
             </property>
            </widget>
           </item>
@@ -235,7 +235,7 @@
     <bool>true</bool>
    </property>
    <property name="text" >
-    <string>Only run JS tests</string>
+    <string>Only Run JS Tests</string>
    </property>
   </action>
   <action name="actionOnly_run_HTML_tests" >
@@ -243,7 +243,7 @@
     <bool>true</bool>
    </property>
    <property name="text" >
-    <string>Only run HTML tests</string>
+    <string>Only Run HTML Tests</string>
    </property>
   </action>
   <action name="actionDo_not_suppress_debug_output" >
@@ -251,7 +251,7 @@
     <bool>true</bool>
    </property>
    <property name="text" >
-    <string>Do not suppress debug output</string>
+    <string>Do Not Suppress Debug Output</string>
    </property>
   </action>
   <action name="actionDo_not_use_Xvfb" >
@@ -264,27 +264,27 @@
   </action>
   <action name="actionRun_tests" >
    <property name="text" >
-    <string>Run tests...</string>
+    <string>Run Tests...</string>
    </property>
   </action>
   <action name="actionRun_single_test" >
    <property name="text" >
-    <string>Run single test...</string>
+    <string>Run Single Test...</string>
    </property>
   </action>
   <action name="actionSpecify_tests_directory" >
    <property name="text" >
-    <string>Specify tests directory...</string>
+    <string>Specify tests Directory...</string>
    </property>
   </action>
   <action name="actionSpecify_khtml_directory" >
    <property name="text" >
-    <string>Specify khtml directory...</string>
+    <string>Specify khtml Directory...</string>
    </property>
   </action>
   <action name="actionSpecify_output_directory" >
    <property name="text" >
-    <string>Specify output directory...</string>
+    <string>Specify Output Directory...</string>
    </property>
   </action>
  </widget>

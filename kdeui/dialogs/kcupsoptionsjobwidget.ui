@@ -22,7 +22,7 @@
       <item row="0" column="0" >
        <widget class="QLabel" name="jobHoldLabel" >
         <property name="text" >
-         <string>Scheduled Printing:</string>
+         <string>Scheduled printing:</string>
         </property>
        </widget>
       </item>
@@ -35,7 +35,7 @@
       <item row="1" column="0" >
        <widget class="QLabel" name="jobBillingLabel" >
         <property name="text" >
-         <string>Billing Information:</string>
+         <string>Billing information:</string>
         </property>
        </widget>
       </item>
@@ -45,7 +45,7 @@
       <item row="2" column="0" >
        <widget class="QLabel" name="jobPriorityLabel" >
         <property name="text" >
-         <string>Job Priority:</string>
+         <string>Job priority:</string>
         </property>
        </widget>
       </item>

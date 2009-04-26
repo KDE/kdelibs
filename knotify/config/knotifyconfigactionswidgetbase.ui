@@ -120,17 +120,17 @@
      </property>
      <item>
       <property name="text" >
-       <string>Speak event message</string>
+       <string>Speak Event Message</string>
       </property>
      </item>
      <item>
       <property name="text" >
-       <string>Speak event name</string>
+       <string>Speak Event Name</string>
       </property>
      </item>
      <item>
       <property name="text" >
-       <string>Speak custom text</string>
+       <string>Speak Custom Text</string>
       </property>
      </item>
     </widget>

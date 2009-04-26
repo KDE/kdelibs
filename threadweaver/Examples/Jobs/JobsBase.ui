@@ -36,7 +36,7 @@
         <string>Check to see logging information about thread activity. Watch the console output to see the log information.</string>
        </property>
        <property name="text" >
-        <string>Log Thread Activity</string>
+        <string>Log thread activity</string>
        </property>
       </widget>
      </item>

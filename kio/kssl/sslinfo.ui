@@ -44,7 +44,7 @@
    <item row="2" column="0" >
     <widget class="QLabel" name="ipTag" >
      <property name="text" >
-      <string>IP Address:</string>
+      <string>IP address:</string>
      </property>
      <property name="alignment" >
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -95,7 +95,7 @@
    <item row="5" column="0" >
     <widget class="QLabel" name="sslVersionTag" >
      <property name="text" >
-      <string>SSL Version:</string>
+      <string>SSL version:</string>
      </property>
      <property name="alignment" >
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -112,7 +112,7 @@
    <item row="6" column="0" >
     <widget class="QLabel" name="certSelectorTag" >
      <property name="text" >
-      <string>Certificate Chain</string>
+      <string>Certificate chain:</string>
      </property>
      <property name="alignment" >
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -175,7 +175,7 @@
    <item row="10" column="0" >
     <widget class="QLabel" name="serialTag" >
      <property name="text" >
-      <string>Serial Number:</string>
+      <string>Serial number:</string>
      </property>
      <property name="alignment" >
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -192,7 +192,7 @@
    <item row="11" column="0" >
     <widget class="QLabel" name="digestTag" >
      <property name="text" >
-      <string>MD5 Digest:</string>
+      <string>MD5 digest:</string>
      </property>
      <property name="alignment" >
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
