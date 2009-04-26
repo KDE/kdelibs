@@ -7,12 +7,21 @@
  -->
 
 <!ENTITY Alt        		"<keycap>Alt</keycap>">
+<!ENTITY Backspace     		"<keycap>Backspace</keycap>">
+
 <!ENTITY Ctrl        		"<keycap>Ctrl</keycap>">				  <!-- English: &Ctrl; -->
 <!ENTITY Enter        		"<keycap>Enter</keycap>">				  <!-- English: &Enter; -->
 <!ENTITY Esc        		"<keycap>Esc</keycap>">
 <!ENTITY etc        		"itp.">
 <!ENTITY Shift        		"<keycap>Shift</keycap>">				  <!-- English: &Shift; -->
 <!ENTITY Tab        		"<keycap>Tab</keycap>">
+
+<!ENTITY dpi        		"dpi">
+<!ENTITY etc        		"itp.">
+<!ENTITY eg        		"np.">
+<!ENTITY FAQ        		"FAQ">
+<!ENTITY ie        		"tzn.">
+
 
 <!ENTITY kicon                  "
 <guiicon>
@@ -65,6 +74,7 @@
 <!ENTITY kdm-dopelniacz    '<application>KDM</application>'>
 <!ENTITY kdm-celownik    '<application>KDM</application>'>
 <!ENTITY kdm-biernik    '<application>KDM</application>'>
+<!ENTITY kdm-narzednik    '<application>KDM</application>'>
 <!ENTITY kdm-miejscownik    '<application>KDM</application>'>
 <!ENTITY kdm    '&kdm-mianownik;'>
 
@@ -177,3 +187,11 @@
 <!ENTITY Sendmail-narzednik    '<application>Sendmail-em</application>'>
 <!ENTITY Sendmail-miejscownik    '<application>Sendmail-u/application>'>
 <!ENTITY Sendmail    '&Sendmail-mianownik;'>
+
+<!ENTITY UNIX-mianownik    'Unix'>
+<!ENTITY UNIX-dopelniacz    'Uniksa'>
+<!ENTITY UNIX-celownik    'Uniksowi'>
+<!ENTITY UNIX-biernik    'Uniksa'>
+<!ENTITY UNIX-narzednik    'Uniksem'>
+<!ENTITY UNIX-miejscownik    'Uniksie'>
+<!ENTITY UNIX    '&UNIX-mianownik;'>
