@@ -232,6 +232,7 @@ public:
     void _k_synchronizeSortingState(int, Qt::SortOrder);
     void _k_slotChangeDecorationPosition();
     void _k_slotExpandToUrl(const QModelIndex&);
+    void _k_slotItemsChanged();
 
     void updateListViewGrid();
     int iconSizeForViewType(QAbstractItemView *itemView) const;
@@ -1662,6 +1663,10 @@ void KDirOperator::setDirLister(KDirLister *lister)
     connect(d->dirLister, SIGNAL(canceled()), SLOT(_k_slotCanceled()));
     connect(d->dirLister, SIGNAL(redirection(const KUrl&)),
             SLOT(_k_slotRedirected(const KUrl&)));
+    connect(d->dirLister, SIGNAL(newItems(const KFileItemList&)), SLOT(_k_slotItemsChanged()));
+    connect(d->dirLister, SIGNAL(itemsDeleted(const KFileItemList&)), SLOT(_k_slotItemsChanged()));
+    connect(d->dirLister, SIGNAL(itemsFilteredByMime(const KFileItemList&)), SLOT(_k_slotItemsChanged()));
+    connect(d->dirLister, SIGNAL(clear()), SLOT(_k_slotItemsChanged()));
 }
 
 void KDirOperator::selectDir(const KFileItem &item)
@@ -2527,6 +2532,11 @@ void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
     } else if (!itemsToBeSetAsCurrent.contains(item.url())) {
         itemsToBeSetAsCurrent << item.url();
     }
+}
+
+void KDirOperator::Private::_k_slotItemsChanged()
+{
+    completeListDirty = true;
 }
 
 void KDirOperator::Private::updateListViewGrid()
