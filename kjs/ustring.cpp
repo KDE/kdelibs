@@ -1317,6 +1317,24 @@ bool operator<(const UString& s1, const UString& s2)
   return (l1 < l2);
 }
 
+bool UString::equal(const UString::Rep *r, const UString::Rep *b)
+{
+    if (r == b)
+        return true;
+
+    int length = r->len;
+    if (length != b->len)
+        return false;
+
+    const UChar *d = r->data();
+    const UChar *s = b->data();
+    for (int i = 0; i != length; ++i)
+        if (d[i].uc != s[i].uc)
+            return false;
+    return true;
+}
+
+
 int compare(const UString& s1, const UString& s2)
 {
   const int l1 = s1.size();
