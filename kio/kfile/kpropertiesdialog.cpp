@@ -3092,9 +3092,6 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   else
     d->m_startupBool = config.readEntry( "X-KDE-StartupNotify", true );
   d->m_dbusStartupType = config.readEntry("X-DBUS-StartupType").toLower();
-  //Compatibility
-  if( d->m_dbusStartupType.isEmpty() && config.hasKey("X-DCOP-ServiceType"))
-         d->m_dbusStartupType = config.readEntry("X-DCOP-ServiceType").toLower();
   // ### should there be a GUI for this setting?
   // At least we're copying it over to the local file, to avoid side effects (#157853)
   d->m_dbusServiceName = config.readEntry("X-DBUS-ServiceName");
