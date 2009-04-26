@@ -27,23 +27,6 @@
 #include <string.h> // for strlen
 #include <new> // for placement new
 
-namespace WTF {
-
-    template<typename T> struct DefaultHash;
-    template<typename T> struct StrHash;
-
-    template<> struct StrHash<KJS::UString::Rep *> {
-        static unsigned hash(const KJS::UString::Rep *key) { return key->hash(); }
-        static bool equal(const KJS::UString::Rep *a, const KJS::UString::Rep *b) { return KJS::Identifier::equal(a, b); }
-        static const bool safeToCompareToEmptyOrDeleted = false;
-    };
-
-    template<> struct DefaultHash<KJS::UString::Rep *> {
-        typedef StrHash<KJS::UString::Rep *> Hash;
-    };
-
-}
-
 namespace KJS {
 
 typedef HashSet<UString::Rep *> IdentifierTable;
@@ -55,7 +38,6 @@ static inline IdentifierTable& identifierTable()
         table = new IdentifierTable;
     return *table;
 }
-
 
 bool Identifier::equal(const UString::Rep *r, const char *s)
 {
@@ -72,19 +54,6 @@ bool Identifier::equal(const UString::Rep *r, const UChar *s, int length)
     if (r->len != length)
         return false;
     const UChar *d = r->data();
-    for (int i = 0; i != length; ++i)
-        if (d[i].uc != s[i].uc)
-            return false;
-    return true;
-}
-
-bool Identifier::equal(const UString::Rep *r, const UString::Rep *b)
-{
-    int length = r->len;
-    if (length != b->len)
-        return false;
-    const UChar *d = r->data();
-    const UChar *s = b->data();
     for (int i = 0; i != length; ++i)
         if (d[i].uc != s[i].uc)
             return false;

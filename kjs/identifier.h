@@ -98,10 +98,8 @@ namespace KJS {
         friend bool operator==(const Identifier&, const char*);
 
         static void remove(UString::Rep*);
-
         static bool equal(const UString::Rep*, const char*);
         static bool equal(const UString::Rep*, const UChar*, int length);
-        static bool equal(const UString::Rep*, const UString::Rep*);
 
     private:
         UString _ustring;

@@ -107,15 +107,31 @@ OpValue NumberNode::generateEvalCode(CompileState*)
 
 OpValue StringNode::generateEvalCode(CompileState* comp)
 {
-    // For now, just generate a register value pointer.
+    // For now, just generate a JSValue
     // We may want to permit string pointers as well, to help overload resolution,
     // but it's not clear whether that's useful, since we can't MM them. Perhaps
     // a special StringInstance type may be of use eventually.
-    OpValue inStr = OpValue::immString(&val);
+    
+    if (interned) // we're re-compiling.. just reuse it
+        return OpValue::immValue(interned);
+        
+    // Intern shorter strings
+    if (val.size() < 16) {
+        interned = Interpreter::internString(val);
+        return OpValue::immValue(interned);
+    } else {
+        OpValue inStr = OpValue::immString(&val);
 
-    OpValue out;
-    CodeGen::emitOp(comp, Op_OwnedString, &out, &inStr);
-    return out;
+        OpValue out;
+        CodeGen::emitOp(comp, Op_OwnedString, &out, &inStr);
+        return out;
+    }
+}
+
+StringNode::~StringNode()
+{
+    if (interned)
+        Interpreter::releaseInternedString(val);
 }
 
 OpValue RegExpNode::generateEvalCode(CompileState* comp)

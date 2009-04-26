@@ -264,6 +264,9 @@ namespace KJS {
      * Constructs a string from a double.
      */
     static UString from(double d);
+    
+    
+    static bool equal(const UString::Rep* a, const UString::Rep* b);
 
     struct Range {
     public:
@@ -506,5 +509,22 @@ inline size_t UString::cost() const
 }
 
 } // namespace
+
+namespace WTF {
+
+    template<typename T> struct DefaultHash;
+    template<typename T> struct StrHash;
+
+    template<> struct StrHash<KJS::UString::Rep *> {
+        static unsigned hash(const KJS::UString::Rep *key) { return key->hash(); }
+        static bool equal(const KJS::UString::Rep *a, const KJS::UString::Rep *b) { return KJS::UString::equal(a, b); }
+        static const bool safeToCompareToEmptyOrDeleted = false;
+    };
+
+    template<> struct DefaultHash<KJS::UString::Rep *> {
+        typedef StrHash<KJS::UString::Rep *> Hash;
+    };
+} // namespace WTF
+
 
 #endif

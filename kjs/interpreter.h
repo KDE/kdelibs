@@ -28,6 +28,7 @@
 #include "protect.h"
 #include "value.h"
 #include "types.h"
+#include <wtf/HashMap.h>
 
 namespace KJS {
   class Debugger;
@@ -36,6 +37,7 @@ namespace KJS {
   class Package;
   class ActivationImp;
   class JSGlobalObject;
+  class StringImp;
 
 #if USE(BINDINGS)
   namespace Bindings {
@@ -376,6 +378,22 @@ namespace KJS {
     }
 
     void recycleActivation(ActivationImp* act);
+    
+    // Global string table management. This is used from StringNode
+    // to cache StringImp's for string literals. We keep refcounts
+    // to permit multiple ones to use the same value.
+    static StringImp* internString(const UString& literal);
+    static void releaseInternedString(const UString& literal);
+
+    typedef WTF::HashMap<UString::Rep*, std::pair<KJS::StringImp*, int> > InternedStringsTable;
+private:    
+    static void markInternedStringsTable();
+    
+    // This creates a table if needed
+    static void initInternedStringsTable();
+    
+    static InternedStringsTable* s_internedStrings;
+
 protected:
     virtual ~Interpreter(); // only deref should delete us
     virtual bool shouldInterruptScript() const { return true; }
