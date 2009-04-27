@@ -183,11 +183,12 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
 
     QLabel *messageLabel = new QLabel(text, mainWidget);
     QRect desktop = KGlobalSettings::desktopGeometry(dialog);
-    bool usingSqueezedTextLabel=false;
-    if (desktop.width() / 2 < messageLabel->sizeHint().width()) {
-        // do only enable automatic wrapping of messages which are longer than one third of the current screen
+    bool usingSqueezedTextLabel = false;
+    if (messageLabel->sizeHint().width() > desktop.width() * 0.5) {
+        // enable automatic wrapping of messages which are longer than 50% of screen width
         messageLabel->setWordWrap(true);
-        usingSqueezedTextLabel=desktop.width() / 2 < messageLabel->sizeHint().width();
+        // display a text widget with scrollbar if still too wide
+        usingSqueezedTextLabel = messageLabel->sizeHint().width() > desktop.width() * 0.85;
         if (usingSqueezedTextLabel)
         {
             delete messageLabel;
@@ -237,8 +238,8 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
         }
         const int borderWidth = listWidget->width() - listWidget->viewport()->width() + listWidget->verticalScrollBar()->height();
         w += borderWidth;
-        if (qRound(desktop.width() / 2) < w) { // do not allow the listWidget to be bigger than half width of the current screen
-            w = qRound(desktop.width() / 2);
+        if (w > desktop.width() * 0.85) { // limit listWidget size to 85% of screen width
+            w = qRound(desktop.width() * 0.85);
         }
         listWidget->setMinimumWidth(w);
 
