@@ -72,7 +72,7 @@
      <item>
       <widget class="QToolButton" name="m_neverForThisSite" >
        <property name="text" >
-        <string>Ne&amp;ver for This Site</string>
+        <string>Ne&amp;ver store for this site</string>
        </property>
        <property name="toolButtonStyle" >
         <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -82,7 +82,7 @@
      <item>
       <widget class="QToolButton" name="m_doNotStore" >
        <property name="text" >
-        <string>Do &amp;Not Store</string>
+        <string>Do &amp;not store this time</string>
        </property>
        <property name="toolButtonStyle" >
         <enum>Qt::ToolButtonTextBesideIcon</enum>

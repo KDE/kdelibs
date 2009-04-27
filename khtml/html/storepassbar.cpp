@@ -31,7 +31,7 @@ StorePassBar::StorePassBar( QWidget *parent ) :
 {
   setupUi( centralWidget() );
 
-  m_store->setIcon( KIcon( "dialog-ok" ) );
+  m_store->setIcon( KIcon( "document-save" ) );
   // Same as KStandardGuiItem::no()
   m_neverForThisSite->setIcon( KIcon( "process-stop" ) ); 
   m_doNotStore->setIcon( KIcon( "dialog-cancel" ) );

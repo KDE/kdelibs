@@ -233,7 +233,7 @@ KGuiItem print()
 
 KGuiItem cont()
 {
-  return KGuiItem( i18n( "C&ontinue" ), QString(),
+  return KGuiItem( i18n( "C&ontinue" ), "arrow-right",
                    i18n( "Continue operation" ) );
 }
 

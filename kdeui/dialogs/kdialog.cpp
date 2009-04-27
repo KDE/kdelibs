@@ -239,7 +239,7 @@ void KDialog::setButtons( ButtonCodes buttonMask )
   if ( buttonMask & No )
     d->appendButton( No, KStandardGuiItem::no() );
   if ( buttonMask & Details ) {
-    d->appendButton( Details, KGuiItem(QString()) );
+    d->appendButton( Details, KGuiItem(QString(), "help-about") );
     setDetailsWidgetVisible( false );
   }
 

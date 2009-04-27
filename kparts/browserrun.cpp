@@ -333,14 +333,16 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr o
 
     QString question = makeQuestion( url, mimeType, suggestedFileName );
 
-    // Text used for the open button
-    QString openText = (offer && !offer->name().isEmpty())
-                       ? i18n("&Open with '%1'", offer->name())
-                       : i18n("&Open With...");
+    // text and icon used for the open button
+    KGuiItem openItem;
+    if (offer && !offer->name().isEmpty())
+        openItem = KGuiItem(i18n("&Open with '%1'", offer->name()), offer->icon());
+    else
+        openItem = KGuiItem(i18n("&Open with..."));
 
     int choice = KMessageBox::questionYesNoCancel(
         0, question, url.host(),
-        KStandardGuiItem::saveAs(), KGuiItem(openText), KStandardGuiItem::cancel(),
+        KStandardGuiItem::saveAs(), openItem, KStandardGuiItem::cancel(),
         QLatin1String("askSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC!!!
 
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );

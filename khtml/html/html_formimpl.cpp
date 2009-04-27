@@ -390,7 +390,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                                                                   " because they could not be found.\n"
                                                                   "Do you want to continue?"),
                                                              fileNotUploads,
-                                                             i18n("Submit Confirmation"),KGuiItem(i18n("&Submit Anyway")));
+                                                             i18n("Submit Confirmation"),KGuiItem(i18n("&Submit Anyway"), "dialog-ok"));
 
 
         if (result == KMessageBox::Cancel) {
@@ -405,7 +405,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                                                                   "your local computer to the Internet.\n"
                                                                   "Do you really want to continue?"),
                                                              fileUploads,
-                                                             i18n("Send Confirmation"),KGuiItem(i18n("&Send Files")));
+                                                             i18n("Send Confirmation"),KGuiItem(i18n("&Send Files"), "document-export"));
 
 
         if (result == KMessageBox::Cancel) {
