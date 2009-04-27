@@ -53,7 +53,7 @@
 bool KConfigPrivate::mappingsRegistered=false;
 
 KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::OpenFlags flags,
-           const char* resource)
+                               const char* resource)
     : openFlags(flags), resourceType(resource), mBackend(0),
       bDynamicBackend(true),  bDirty(false), bReadDefaults(false),
       bFileImmutable(false), bForceGlobal(false), bSuppressGlobal(false),
@@ -61,14 +61,20 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
 {
     sGlobalFileName = componentData.dirs()->saveLocation("config") + QLatin1String("kdeglobals");
 
-    etc_kderc =
+    static int use_etc_kderc = -1;
+    if (use_etc_kderc < 0)
+        use_etc_kderc = getenv("KDE_SKIP_KDERC") != 0 ? 0 : 1; // for unit tests
+    if (use_etc_kderc) {
+
+        etc_kderc =
 #ifdef Q_WS_WIN
-        QFile::decodeName( qgetenv("WINDIR") + "/kde4rc" );
+            QFile::decodeName( qgetenv("WINDIR") + "/kde4rc" );
 #else
         QLatin1String("/etc/kde4rc");
 #endif
-    if (!KStandardDirs::checkAccess(etc_kderc, R_OK)) {
-        etc_kderc.clear();
+        if (!KStandardDirs::checkAccess(etc_kderc, R_OK)) {
+            etc_kderc.clear();
+        }
     }
 
 //    if (!mappingsRegistered) {
