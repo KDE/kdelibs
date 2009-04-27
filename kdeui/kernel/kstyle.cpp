@@ -197,6 +197,7 @@ KStyle::KStyle() : clickedLabel(0), d(new KStylePrivate)
     setWidgetLayoutProp(WT_MenuItem, MenuItem::ActiveTextColor, ColorMode(QPalette::HighlightedText));
     setWidgetLayoutProp(WT_MenuItem, MenuItem::DisabledTextColor,       ColorMode(QPalette::Text));
     setWidgetLayoutProp(WT_MenuItem, MenuItem::ActiveDisabledTextColor, ColorMode(QPalette::Text));
+    setWidgetLayoutProp(WT_MenuItem, MenuItem::AccelSpace, 16);
 
     //KDE default is single top button, double bottom one
     setWidgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleTopButton, 0);
@@ -4199,7 +4200,7 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                     if (tabPos == -1)
                     {
                         //No accel..
-                        textW = fm.width(miOpt->text);
+                        textW = contentsSize.width();
                     }
                     else
                     {
@@ -4207,16 +4208,9 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                         // Qt will add that on separately after obtaining the
                         // sizeFromContents() for each menu item in the menu to be shown
                         // ( see QMenuPrivate::calcActionRects() )
-                        QString text = miOpt->text.left(tabPos);
-                        textW = fm.width(text) +
+                        textW = contentsSize.width() +
                                 widgetLayoutProp(WT_MenuItem,MenuItem::AccelSpace,option,widget);
                     }
-
-                    #ifdef __GNUC__
-                    #warning Extra M-width needed to avoid menu items being stuck together with their shortcuts, \
-                             possibly due to wrongly reported text metrics
-                    #endif
-                    textW += fm.width('M');
 
                     int h = qMax(contentsSize.height(), widgetLayoutProp(WT_MenuItem, MenuItem::MinHeight, option, widget));
                     insideSize = QSize(leftColW + textW + rightColW, h);
