@@ -129,8 +129,13 @@ QStringList KTimeZoneWidget::selection() const
     QStringList selection;
 
     // Loop through all entries.
-    foreach ( QTreeWidgetItem* listItem, selectedItems() )
-        selection.append( listItem->data( Private::CityColumn, Private::ZoneRole ).toString() );
+    // Do not use selectedItems() because it skips hidden items, making it
+    // impossible to use a KTreeWidgetSearchLine.
+    // There is no QTreeWidgetItemConstIterator, hence the const_cast :/
+    QTreeWidgetItemIterator it(const_cast<KTimeZoneWidget*>(this), QTreeWidgetItemIterator::Selected);
+    for (; *it; ++it) {
+        selection.append( (*it)->data( Private::CityColumn, Private::ZoneRole ).toString() );
+    }
 
     return selection;
 }
