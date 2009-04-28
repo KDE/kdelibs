@@ -203,11 +203,7 @@ typedef unsigned Long ULong;
 #endif
 
 #ifdef MALLOC
-#ifdef KR_headers
-extern char *MALLOC();
-#else
 extern void *MALLOC(size_t);
-#endif
 #else
 #define MALLOC malloc
 #endif
@@ -277,11 +273,7 @@ extern "C" {
 #endif
 
 #ifndef CONST
-#ifdef KR_headers
-#define CONST /* blank */
-#else
 #define CONST const
-#endif
 #endif
 
 #if defined(IEEE_8087) + defined(IEEE_MC68k) + defined(VAX) + defined(IBM) != 1
@@ -290,37 +282,19 @@ Exactly one of IEEE_8087, IEEE_MC68k, VAX, or IBM should be defined.
 
 typedef union { double d; ULong L[2]; } U;
 
-#ifdef YES_ALIAS
-#define dval(x) x
+#define dval(x) (x).d
 #ifdef IEEE_8087
-#define word0(x) ((ULong *)&x)[1]
-#define word1(x) ((ULong *)&x)[0]
+#define word0(x) (x).L[1]
+#define word1(x) (x).L[0]
 #else
-#define word0(x) ((ULong *)&x)[0]
-#define word1(x) ((ULong *)&x)[1]
-#endif
-#else
-#ifdef IEEE_8087
-#define word0(x) ((U*)&x)->L[1]
-#define word1(x) ((U*)&x)->L[0]
-#else
-#define word0(x) ((U*)&x)->L[0]
-#define word1(x) ((U*)&x)->L[1]
-#endif
-#define dval(x) ((U*)&x)->d
+#define word0(x) (x).L[0]
+#define word1(x) (x).L[1]
 #endif
 
 /* The following definition of Storeinc is appropriate for MIPS processors.
  * An alternative that might be better on some machines is
- * #define Storeinc(a,b,c) (*a++ = b << 16 | c & 0xffff)
  */
-#if defined(IEEE_8087) + defined(VAX)
-#define Storeinc(a,b,c) (((unsigned short *)a)[1] = (unsigned short)b, \
-((unsigned short *)a)[0] = (unsigned short)c, a++)
-#else
-#define Storeinc(a,b,c) (((unsigned short *)a)[0] = (unsigned short)b, \
-((unsigned short *)a)[1] = (unsigned short)c, a++)
-#endif
+#define Storeinc(a,b,c) (*a++ = b << 16 | c & 0xffff)
 
 /* #define P DBL_MANT_DIG */
 /* Ten_pmax = floor(P*log(2)/log(5)) */
@@ -444,11 +418,7 @@ typedef union { double d; ULong L[2]; } U;
 #ifdef RND_PRODQUOT
 #define rounded_product(a,b) a = rnd_prod(a, b)
 #define rounded_quotient(a,b) a = rnd_quot(a, b)
-#ifdef KR_headers
-extern double rnd_prod(), rnd_quot();
-#else
 extern double rnd_prod(double, double), rnd_quot(double, double);
-#endif
 #else
 #define rounded_product(a,b) a *= b
 #define rounded_quotient(a,b) a /= b
@@ -461,11 +431,7 @@ extern double rnd_prod(double, double), rnd_quot(double, double);
 #define Pack_32
 #endif
 
-#ifdef KR_headers
-#define FFFFFFFF ((((unsigned long)0xffff)<<16)|(unsigned long)0xffff)
-#else
 #define FFFFFFFF 0xffffffffUL
-#endif
 
 #ifdef NO_LONG_LONG
 #undef ULLong
@@ -506,11 +472,7 @@ Bigint {
 
  static Bigint *
 Balloc
-#ifdef KR_headers
-	(k) int k;
-#else
 	(int k)
-#endif
 {
 	int x;
 	Bigint *rv;
@@ -546,11 +508,7 @@ Balloc
 
  static void
 Bfree
-#ifdef KR_headers
-	(v) Bigint *v;
-#else
 	(Bigint *v)
-#endif
 {
 	if (v) {
 		ACQUIRE_DTOA_LOCK(0);
@@ -565,11 +523,7 @@ y->wds*sizeof(Long) + 2*sizeof(int))
 
  static Bigint *
 multadd
-#ifdef KR_headers
-	(b, m, a) Bigint *b; int m, a;
-#else
 	(Bigint *b, int m, int a)	/* multiply by m and add a */
-#endif
 {
 	int i, wds;
 #ifdef ULLong
@@ -622,11 +576,7 @@ multadd
 
  static Bigint *
 s2b
-#ifdef KR_headers
-	(s, nd0, nd, y9) CONST char *s; int nd0, nd; ULong y9;
-#else
 	(CONST char *s, int nd0, int nd, ULong y9)
-#endif
 {
 	Bigint *b;
 	int i, k;
@@ -660,11 +610,7 @@ s2b
 
  static int
 hi0bits
-#ifdef KR_headers
-	(x) register ULong x;
-#else
 	(register ULong x)
-#endif
 {
 	register int k = 0;
 
@@ -694,11 +640,7 @@ hi0bits
 
  static int
 lo0bits
-#ifdef KR_headers
-	(y) ULong *y;
-#else
 	(ULong *y)
-#endif
 {
 	register int k;
 	register ULong x = *y;
@@ -742,11 +684,7 @@ lo0bits
 
  static Bigint *
 i2b
-#ifdef KR_headers
-	(i) int i;
-#else
 	(int i)
-#endif
 {
 	Bigint *b;
 
@@ -758,11 +696,7 @@ i2b
 
  static Bigint *
 mult
-#ifdef KR_headers
-	(a, b) Bigint *a, *b;
-#else
 	(Bigint *a, Bigint *b)
-#endif
 {
 	Bigint *c;
 	int k, wa, wb, wc;
@@ -870,11 +804,7 @@ mult
 
  static Bigint *
 pow5mult
-#ifdef KR_headers
-	(b, k) Bigint *b; int k;
-#else
 	(Bigint *b, int k)
-#endif
 {
 	Bigint *b1, *p5, *p51;
 	int i;
@@ -927,11 +857,7 @@ pow5mult
 
  static Bigint *
 lshift
-#ifdef KR_headers
-	(b, k) Bigint *b; int k;
-#else
 	(Bigint *b, int k)
-#endif
 {
 	int i, k1, n, n1;
 	Bigint *b1;
@@ -987,11 +913,7 @@ lshift
 
  static int
 cmp
-#ifdef KR_headers
-	(a, b) Bigint *a, *b;
-#else
 	(Bigint *a, Bigint *b)
-#endif
 {
 	ULong *xa, *xa0, *xb, *xb0;
 	int i, j;
@@ -1021,11 +943,7 @@ cmp
 
  static Bigint *
 diff
-#ifdef KR_headers
-	(a, b) Bigint *a, *b;
-#else
 	(Bigint *a, Bigint *b)
-#endif
 {
 	Bigint *c;
 	int i, wa, wb;
@@ -1115,15 +1033,12 @@ diff
 
  static double
 ulp
-#ifdef KR_headers
-	(x) double x;
-#else
-	(double x)
-#endif
+	(double dx)
 {
 	register Long L;
-	double a;
+	U x, a;
 
+	dval(x) = dx;
 	L = (word0(x) & Exp_mask) - (P-1)*Exp_msk1;
 #ifndef Avoid_Underflow
 #ifndef Sudden_Underflow
@@ -1157,15 +1072,11 @@ ulp
 
  static double
 b2d
-#ifdef KR_headers
-	(a, e) Bigint *a; int *e;
-#else
 	(Bigint *a, int *e)
-#endif
 {
 	ULong *xa, *xa0, w, y, z;
 	int k;
-	double d;
+	U d;
 #ifdef VAX
 	ULong d0, d1;
 #else
@@ -1227,12 +1138,9 @@ b2d
 
  static Bigint *
 d2b
-#ifdef KR_headers
-	(d, e, bits) double d; int *e, *bits;
-#else
-	(double d, int *e, int *bits)
-#endif
+	(double dd, int *e, int *bits)
 {
+	U d;
 	Bigint *b;
 	int de, k;
 	ULong *x, y, z;
@@ -1241,6 +1149,9 @@ d2b
 #endif
 #ifdef VAX
 	ULong d0, d1;
+#endif
+	dval(d) = dd;
+#ifdef VAX
 	d0 = word0(d) >> 16 | word0(d) << 16;
 	d1 = word1(d) >> 16 | word1(d) << 16;
 #else
@@ -1365,13 +1276,9 @@ d2b
 
  static double
 ratio
-#ifdef KR_headers
-	(a, b) Bigint *a, *b;
-#else
 	(Bigint *a, Bigint *b)
-#endif
 {
-	double da, db;
+	U da, db;
 	int k, ka, kb;
 
 	dval(da) = b2d(a, &ka);
@@ -1457,11 +1364,7 @@ static CONST double tinytens[] = { 1e-16, 1e-32 };
 
  static int
 match
-#ifdef KR_headers
-	(sp, t) char **sp, *t;
-#else
 	(CONST char **sp, CONST char *t)
-#endif
 {
 	int c, d;
 	CONST char *s = *sp;
@@ -1479,11 +1382,7 @@ match
 #ifndef No_Hex_NaN
  static void
 hexnan
-#ifdef KR_headers
-	(rvp, sp) double *rvp; CONST char **sp;
-#else
-	(double *rvp, CONST char **sp)
-#endif
+	(U *rvp, CONST char **sp)
 {
 	ULong c, x[2];
 	CONST char *s;
@@ -1533,11 +1432,7 @@ hexnan
 
  double
 strtod
-#ifdef KR_headers
-	(s00, se) CONST char *s00; char **se;
-#else
 	(CONST char *s00, char **se)
-#endif
 {
 #ifdef Avoid_Underflow
 	int scale;
@@ -1545,7 +1440,8 @@ strtod
 	int bb2, bb5, bbe, bd2, bd5, bbbits, bs2, c, dsign,
 		 e, e1, esign, i, j, k, nd, nd0, nf, nz, nz0, sign;
 	CONST char *s, *s0, *s1;
-	double aadj, aadj1, adj, rv, rv0;
+	double aadj, aadj1, adj;
+	U aadj2, rv, rv0;
 	Long L;
 	ULong y, z;
 	Bigint *bb = NULL, *bb1 = NULL, *bd = NULL, *bd0 = NULL, *bs = NULL, *delta = NULL;
@@ -2306,7 +2202,9 @@ strtod
 					aadj = z;
 					aadj1 = dsign ? aadj : -aadj;
 					}
-				word0(aadj1) += (2*P+1)*Exp_msk1 - y;
+				dval(aadj2) = aadj1;
+				word0(aadj2) += (2*P+1)*Exp_msk1 - y;
+				aadj1 = dval(aadj2);
 				}
 			adj = aadj1 * ulp(dval(rv));
 			dval(rv) += adj;
@@ -2423,11 +2321,7 @@ strtod
 
  static int
 quorem
-#ifdef KR_headers
-	(b, S) Bigint *b, *S;
-#else
 	(Bigint *b, Bigint *S)
-#endif
 {
 	int n;
 	ULong *bx, *bxe, q, *sx, *sxe;
@@ -2544,11 +2438,7 @@ quorem
 #endif
 
  static char *
-#ifdef KR_headers
-rv_alloc(i) int i;
-#else
 rv_alloc(int i)
-#endif
 {
 	int j, k, *r;
 
@@ -2567,11 +2457,7 @@ rv_alloc(int i)
 	}
 
  static char *
-#ifdef KR_headers
-nrv_alloc(s, rve, n) char *s, **rve; int n;
-#else
 nrv_alloc(CONST char *s, char **rve, int n)
-#endif
 {
 	char *rv, *t;
 
@@ -2589,11 +2475,7 @@ nrv_alloc(CONST char *s, char **rve, int n)
  */
 
  void
-#ifdef KR_headers
-freedtoa(s) char *s;
-#else
 freedtoa(char *s)
-#endif
 {
 	Bigint *b = (Bigint *)((int *)s - 1);
 	b->maxwds = 1 << (b->k = *(int*)b);
@@ -2640,12 +2522,7 @@ freedtoa(char *s)
 
  char *
 dtoa
-#ifdef KR_headers
-	(d, mode, ndigits, decpt, sign, rve)
-	double d; int mode, ndigits, *decpt, *sign; char **rve;
-#else
-	(double d, int mode, int ndigits, int *decpt, int *sign, char **rve)
-#endif
+	(double dd, int mode, int ndigits, int *decpt, int *sign, char **rve)
 {
  /*	Arguments ndigits, decpt, sign are similar to those
 	of ecvt and fcvt; trailing zeros are suppressed from
@@ -2690,7 +2567,8 @@ dtoa
 	ULong x;
 #endif
 	Bigint *b, *b1, *delta, *mlo = NULL, *mhi, *S;
-	double d2, ds, eps;
+	U d, d2, eps;
+	double ds;
 	char *s, *s0;
 #ifdef Honor_FLT_ROUNDS
 	int rounding;
@@ -2706,6 +2584,7 @@ dtoa
 		}
 #endif
 
+	dval(d) = dd;
 	if (word0(d) & Sign_bit) {
 		/* set sign for everything, including 0's and NaNs */
 		*sign = 1;
