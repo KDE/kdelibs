@@ -1311,7 +1311,7 @@ bool KDirOperator::eventFilter(QObject *watched, QEvent *event)
     // set. In that case, we show the preview of that item.
     switch(event->type()) {
         case QEvent::MouseMove: {
-                if (d->preview) {
+                if (d->preview && !d->preview->isHidden()) {
                     const QModelIndex hoveredIndex = d->itemView->indexAt(d->itemView->viewport()->mapFromGlobal(QCursor::pos()));
 
                     if (d->lastHoveredIndex == hoveredIndex)
@@ -1335,7 +1335,7 @@ bool KDirOperator::eventFilter(QObject *watched, QEvent *event)
             }
             break;
         case QEvent::MouseButtonRelease: {
-                if (d->preview != 0) {
+                if (d->preview != 0 && !d->preview->isHidden()) {
                     const QModelIndex hoveredIndex = d->itemView->indexAt(d->itemView->viewport()->mapFromGlobal(QCursor::pos()));
                     const QModelIndex focusedIndex = d->itemView->selectionModel() ? d->itemView->selectionModel()->currentIndex()
                                                                                 : QModelIndex();
@@ -1683,7 +1683,7 @@ void KDirOperator::selectFile(const KFileItem &item)
 
 void KDirOperator::highlightFile(const KFileItem &item)
 {
-    if ((d->preview != 0) && !item.isNull()) {
+    if ((d->preview != 0 && !d->preview->isHidden()) && !item.isNull()) {
         d->preview->showPreview(item.url());
     }
 
@@ -2388,7 +2388,7 @@ void KDirOperator::Private::_k_openContextMenu(const QPoint& pos)
 
 void KDirOperator::Private::_k_triggerPreview(const QModelIndex& index)
 {
-    if ((preview != 0) && index.isValid() && (index.column() == KDirModel::Name)) {
+    if ((preview != 0 && !preview->isHidden()) && index.isValid() && (index.column() == KDirModel::Name)) {
         const QModelIndex dirIndex = proxyModel->mapToSource(index);
         const KFileItem item = dirModel->itemForIndex(dirIndex);
 
