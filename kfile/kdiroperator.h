@@ -23,6 +23,7 @@
 
 #include <QtGui/QWidget>
 #include <QtCore/QStack>
+#include <QtGui/QStyleOptionViewItem>
 
 #include <ktoggleaction.h>
 #include <kcompletion.h>
@@ -547,6 +548,20 @@ public:
      * @since 4.2
      */
     void setInlinePreviewShown(bool show);
+
+    /**
+     * Returns the position where icons are shown relative to the labels
+     * of file items in the icon view.
+     * @since 4.2.3
+     */
+    QStyleOptionViewItem::Position decorationPosition() const;
+
+    /**
+     * Sets the position where icons shall be shown relative to the labels
+     * of file items in the icon view.
+     * @since 4.2.3
+     */
+    void setDecorationPosition(QStyleOptionViewItem::Position position);
 
     /**
      * Returns whether the inline previews are shown or not.

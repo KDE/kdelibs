@@ -85,8 +85,6 @@ template class QHash<QString, KFileItem>;
 // sorting mode.
 static const int QDirSortMask = QDir::SortByMask | QDir::Type;
 
-static QStyleOptionViewItem::Position decorationPosition = QStyleOptionViewItem::Left;
-
 /**
  * Default icon view for KDirOperator using
  * custom view options.
@@ -94,7 +92,7 @@ static QStyleOptionViewItem::Position decorationPosition = QStyleOptionViewItem:
 class KDirOperatorIconView : public QListView
 {
 public:
-    KDirOperatorIconView(QWidget *parent = 0);
+    KDirOperatorIconView(KDirOperator *dirOperator, QWidget *parent = 0);
     virtual ~KDirOperatorIconView();
 
 protected:
@@ -102,10 +100,14 @@ protected:
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void wheelEvent(QWheelEvent *event);
+
+private:
+    KDirOperator *ops;
 };
 
-KDirOperatorIconView::KDirOperatorIconView(QWidget *parent) :
-    QListView(parent)
+KDirOperatorIconView::KDirOperatorIconView(KDirOperator *dirOperator, QWidget *parent) :
+    QListView(parent),
+    ops(dirOperator)
 {
     setViewMode(QListView::IconMode);
     setFlow(QListView::TopToBottom);
@@ -128,8 +130,8 @@ QStyleOptionViewItem KDirOperatorIconView::viewOptions() const
 {
     QStyleOptionViewItem viewOptions = QListView::viewOptions();
     viewOptions.showDecorationSelected = true;
-    viewOptions.decorationPosition = decorationPosition;
-    if (decorationPosition == QStyleOptionViewItem::Left) {
+    viewOptions.decorationPosition = ops->decorationPosition();
+    if (viewOptions.decorationPosition == QStyleOptionViewItem::Left) {
         viewOptions.displayAlignment = Qt::AlignLeft | Qt::AlignVCenter;
     } else {
         viewOptions.displayAlignment = Qt::AlignCenter;
@@ -250,6 +252,7 @@ public:
     KCompletion dirCompletion;
     bool completeListDirty;
     QDir::SortFlags sorting;
+    QStyleOptionViewItem::Position decorationPosition;
 
     QSplitter *splitter;
 
@@ -299,6 +302,7 @@ public:
 KDirOperator::Private::Private(KDirOperator *_parent) :
     parent(_parent),
     dirLister(0),
+    decorationPosition(QStyleOptionViewItem::Left),
     splitter(0),
     itemView(0),
     dirModel(0),
@@ -1322,7 +1326,7 @@ bool KDirOperator::eventFilter(QObject *watched, QEvent *event)
                     const QModelIndex hoveredIndex = d->itemView->indexAt(d->itemView->viewport()->mapFromGlobal(QCursor::pos()));
 
                     if (d->lastHoveredIndex == hoveredIndex)
-                        return false;
+                        return QWidget::eventFilter(watched, event);
 
                     d->lastHoveredIndex = hoveredIndex;
 
@@ -1371,7 +1375,7 @@ bool KDirOperator::eventFilter(QObject *watched, QEvent *event)
             break;
     }
 
-    return false;
+    return QWidget::eventFilter(watched, event);
 }
 
 bool KDirOperator::Private::checkPreviewInternal() const
@@ -1440,7 +1444,7 @@ QAbstractItemView* KDirOperator::createView(QWidget* parent, KFile::FileView vie
         detailView->setViewMode(viewKind);
         itemView = detailView;
     } else {
-        itemView = new KDirOperatorIconView(parent);
+        itemView = new KDirOperatorIconView(this, parent);
     }
 
     return itemView;
@@ -1511,6 +1515,7 @@ void KDirOperator::setMode(KFile::Modes mode)
     d->dirLister->setDirOnlyMode(dirOnlyMode());
 
     // reset the view with the different mode
+    if (d->itemView != 0)
     setView(static_cast<KFile::FileView>(d->viewKind));
 }
 
@@ -2112,11 +2117,8 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
     if (d->inlinePreviewState == Private::NotForced) {
         d->showPreviews = configGroup.readEntry(QLatin1String("Previews"), false);
     }
-
-    decorationPosition = (QStyleOptionViewItem::Position) configGroup.readEntry(QLatin1String("Decoration position"), (int) QStyleOptionViewItem::Left);
-    const bool decorationAtLeft = decorationPosition == QStyleOptionViewItem::Left;
-    d->actionCollection->action("decorationAtLeft")->setChecked(decorationAtLeft);
-    d->actionCollection->action("decorationAtTop")->setChecked(!decorationAtLeft);
+    QStyleOptionViewItem::Position pos = (QStyleOptionViewItem::Position) configGroup.readEntry(QLatin1String("Decoration position"), (int) QStyleOptionViewItem::Left);
+    setDecorationPosition(pos);
 }
 
 void KDirOperator::writeConfig(KConfigGroup& configGroup)
@@ -2176,7 +2178,7 @@ void KDirOperator::writeConfig(KConfigGroup& configGroup)
         configGroup.writeEntry(QLatin1String("Previews"), d->showPreviews);
     }
 
-    configGroup.writeEntry(QLatin1String("Decoration position"), (int) decorationPosition);
+    configGroup.writeEntry(QLatin1String("Decoration position"), (int) d->decorationPosition);
 }
 
 void KDirOperator::resizeEvent(QResizeEvent *)
@@ -2610,6 +2612,19 @@ void KDirOperator::setShowHiddenFiles(bool s)
 bool KDirOperator::showHiddenFiles() const
 {
     return d->actionCollection->action("show hidden")->isChecked();
+}
+
+QStyleOptionViewItem::Position KDirOperator::decorationPosition() const 
+{
+    return d->decorationPosition;
+}
+
+void KDirOperator::setDecorationPosition(QStyleOptionViewItem::Position position)
+{
+    d->decorationPosition = position;
+    const bool decorationAtLeft = d->decorationPosition == QStyleOptionViewItem::Left;
+    d->actionCollection->action("decorationAtLeft")->setChecked(decorationAtLeft);
+    d->actionCollection->action("decorationAtTop")->setChecked(!decorationAtLeft);
 }
 
 // ### temporary code
