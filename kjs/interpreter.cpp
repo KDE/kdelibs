@@ -756,7 +756,10 @@ void Interpreter::mark(bool)
     // tendenacy to pin blocks, increasing their number and hence spreading out
     // the objects somewhat
     m_numCachedActivations = 0;
-    
+}
+
+void Interpreter::markSourceCachedObjects()
+{
     markInternedStringsTable();
 }
 

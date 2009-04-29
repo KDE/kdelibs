@@ -299,6 +299,13 @@ namespace KJS {
      * implementing custom mark methods must make sure to chain to this one.
      */
     virtual void mark(bool currentThreadIsMainThread);
+    
+    /**
+     * This marks all GC heap resources stored as optimizations;
+     * and which have their lifetime managed by the appropriate AST.
+     * It's static since code can survive the interpreter by a bit.
+     */
+    static void markSourceCachedObjects();
 
     /**
      * Provides a way to distinguish derived classes.
