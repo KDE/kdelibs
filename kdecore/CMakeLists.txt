@@ -43,8 +43,7 @@ endif(BZIP2_FOUND)
 
 # compile lzma support if available
 if(LIBLZMA_FOUND)
-   include_directories(${LIBLZMA_INCLUDEDIR})
-   link_directories(${LIBLZMA_LIBRARY_DIRS})
+   include_directories(${LIBLZMA_INCLUDE_DIRS})
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} compression/kxzfilter.cpp )
    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${LIBLZMA_LIBRARIES})
 endif(LIBLZMA_FOUND)
