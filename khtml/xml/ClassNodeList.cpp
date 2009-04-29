@@ -53,16 +53,10 @@ bool ClassNodeList::nodeMatches(NodeImpl *testNode, bool& doRecurse) const
     if (!m_classNames.size())
         return false;
 
-    ClassNames classes;
-    ElementImpl* el = static_cast<ElementImpl*>(testNode);
-    const DOMString cn = el->getAttribute(ATTR_CLASS);
-    bool const compat = el->document()->inCompatMode();
-    classes.parseClassAttribute(cn, compat);
-    for (size_t i = 0; i < m_classNames.size(); ++i) {
+    const ClassNames& classes = static_cast<ElementImpl*>(testNode)->classNames();
+    for (size_t i = 0; i < m_classNames.size(); ++i)
         if (!classes.contains(m_classNames[i]))
             return false;
-    }
-
     return true;
 }
 
