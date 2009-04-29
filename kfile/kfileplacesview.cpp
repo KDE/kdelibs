@@ -560,9 +560,10 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     QAction *edit = 0;
     QAction *hide = 0;
     QAction *emptyTrash = 0;
-    QAction* eject = 0;
-    QAction* teardown = 0;
-    QAction* add = 0;
+    QAction *eject = 0;
+    QAction *teardown = 0;
+    QAction *add = 0;
+    QAction *mainSeparator = 0;
 
     if (index.isValid()) {
         if (!placesModel->isDevice(index)) {
@@ -573,6 +574,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
                 menu.addSeparator();
             }
             add = menu.addAction(KIcon("document-new"), i18n("Add Entry..."));
+            mainSeparator = menu.addSeparator();
             edit = menu.addAction(KIcon("document-properties"), i18n("&Edit '%1'...", label));
         } else {
             eject = placesModel->ejectActionForIndex(index);
@@ -588,13 +590,13 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
             }
 
             if (teardown!=0 || eject!=0) {
-                menu.addSeparator();
+                mainSeparator = menu.addSeparator();
             }
         }
         if (add == 0) {
             add = menu.addAction(KIcon("document-new"), i18n("Add Entry..."));
         }
-        menu.addSeparator();
+
         hide = menu.addAction(i18n("&Hide '%1'", label));
         hide->setCheckable(true);
         hide->setChecked(placesModel->isHidden(index));
@@ -604,20 +606,23 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
 
     QAction *showAll = 0;
     if (placesModel->hiddenCount()>0) {
-        showAll = menu.addAction(i18n("&Show All Entries"));
+        showAll = new QAction(i18n("&Show All Entries"), &menu);
         showAll->setCheckable(true);
         showAll->setChecked(d->showAll);
+        if (mainSeparator == 0) {
+            mainSeparator = menu.addSeparator();
+        }
+        menu.insertAction(mainSeparator, showAll);
     }
 
     QAction* remove = 0;
-    if (index.isValid()) {
-        if (!placesModel->isDevice(index)) {
-            menu.addSeparator();
-            remove = menu.addAction( KIcon("edit-delete"), i18n("&Remove '%1'", label));
-        }
+    if (index.isValid() && !placesModel->isDevice(index)) {
+        remove = menu.addAction( KIcon("edit-delete"), i18n("&Remove '%1'", label));
     }
 
-    if (menu.isEmpty()) return;
+    if (menu.isEmpty()) {
+        return;
+    }
 
     QAction *result = menu.exec(event->globalPos());
 
