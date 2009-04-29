@@ -668,6 +668,8 @@ bool Collector::collect()
     bool currentThreadIsMainThread = true;
 #endif
 
+  Interpreter::markSourceCachedObjects();
+
   if (Interpreter::s_hook) {
     Interpreter* scr = Interpreter::s_hook;
     do {
