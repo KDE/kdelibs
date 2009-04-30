@@ -339,6 +339,7 @@ button {
         color: buttontext;
         padding: 2px 2px 2px 2px;
         cursor: default;
+        box-sizing: border-box;
 }
 
 button:enabled:active {
@@ -373,6 +374,7 @@ input[type="radio"], input[type="checkbox"] {
         background-color: window;
         color: windowtext;
         -khtml-background-clip: padding;
+        box-sizing: border-box;
 }
 
 input[type="text"], input[type="password"] {
@@ -386,11 +388,13 @@ input[type="submit"], input[type="reset"], input[type="button"] {
         background-color: buttonface;
         -khtml-background-clip: padding;
         color: buttontext;
+        box-sizing: border-box;
 }
 
 input[type="file"] {
         background-color: window;
         color: windowtext;
+        box-sizing: border-box;
 }
 
 input[type="image"] {
@@ -413,6 +417,7 @@ select {
         color: buttontext;
         background-color: buttonface;
         -khtml-background-clip: padding;
+        box-sizing: border-box;
 }
 
 select[multiple],
