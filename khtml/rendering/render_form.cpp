@@ -60,6 +60,7 @@
 #include <QtGui/QStyle>
 #include <QStyleOptionButton>
 #include <QtGui/QLabel>
+#include <QtGui/QStyleOptionFrameV3>
 
 #include <misc/helper.h>
 #include <xml/dom2_eventsimpl.h>
@@ -88,20 +89,19 @@ using namespace DOM;
         KHTMLProxyStyle(QWidget *parent)
             : KdeUiProxyStyle(parent)
         { noBorder = false; left = right = top = bottom = 0;}
-        QSize sizeFromContents(
-                ContentsType type, const QStyleOption * option, const QSize &contentsSize,
-                const QWidget * widget
-            ) const
-        {
-            QSize s = KdeUiProxyStyle::sizeFromContents(type, option, contentsSize, widget);
-            return s + QSize(left+right, top+bottom);
-        }
         QRect subElementRect(
                 SubElement element, const QStyleOption *option, const QWidget *widget
             ) const
         {
             QRect r = KdeUiProxyStyle::subElementRect(element, option, widget);
-            r.adjust(left, top, -right, -bottom);
+            switch (element) {
+              case QStyle::SE_PushButtonContents:
+              case QStyle::SE_LineEditContents:
+              case QStyle::SE_FrameContents:
+                r.adjust(left, top, -right, -bottom);
+              default:
+                break;
+            }
             return r;
         }
         void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
@@ -166,6 +166,7 @@ RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
     : RenderWidget(element)
 //     , m_state(0)
     , m_proxyStyle(0)
+    , m_exposeInternalPadding(false)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline
@@ -185,26 +186,38 @@ void RenderFormElement::setStyle(RenderStyle *style)
     setPadding();
 }
 
+void RenderFormElement::calcMinMaxWidth()
+{
+    // Some form widgets apply the padding internally (i.e. as if they were
+    // some kind of inline-block). Thus we only want to expose that padding
+    // while layouting (so that width/height calculations are correct), and 
+    // then pretend it does not exist, as it is beyond the replaced edge and
+    // thus should not affect other calculations.
+    m_exposeInternalPadding = true;
+    RenderWidget::calcMinMaxWidth();
+    m_exposeInternalPadding = false;
+}
+
 int RenderFormElement::paddingTop() const
 {
-    return !includesPadding() ? RenderWidget::paddingTop() : 0;
+    return (!includesPadding() || m_exposeInternalPadding) ? RenderWidget::paddingTop() : 0;
 }
 int RenderFormElement::paddingBottom() const
 {
-    return !includesPadding() ? RenderWidget::paddingBottom() : 0;
+    return (!includesPadding() || m_exposeInternalPadding) ? RenderWidget::paddingBottom() : 0;
 }
 int RenderFormElement::paddingLeft() const
 {
-    return !includesPadding() ? RenderWidget::paddingLeft() : 0;
+    return (!includesPadding() || m_exposeInternalPadding) ? RenderWidget::paddingLeft() : 0;
 }
 int RenderFormElement::paddingRight() const
 {
-    return !includesPadding() ? RenderWidget::paddingRight() : 0;
+    return (!includesPadding() || m_exposeInternalPadding) ? RenderWidget::paddingRight() : 0;
 }
 
 bool RenderFormElement::includesPadding() const
 {
-    return style()->boxSizing() == BORDER_BOX;
+    return true;
 }
 
 void RenderFormElement::setPadding()
@@ -265,9 +278,10 @@ void RenderFormElement::layout()
 
     // minimum height
     m_height = 0;
-
+    m_exposeInternalPadding = true;
     calcWidth();
     calcHeight();
+    m_exposeInternalPadding = false;
 
     if ( m_widget )
         resizeWidget(m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
@@ -534,16 +548,21 @@ void RenderSubmitButton::calcMinMaxWidth()
         int dbw = pb->style()->pixelMetric( QStyle::PM_ButtonDefaultIndicator ) * 2;
         w += dbw;
     }
-    // add 30% margins to the width (heuristics to make it look similar to IE)
-    w = w*13/10;
 
-    // ### the crazy heuristic code overrides some changes made by the
-    // KHTMLProxyStyle, so reapply them
-    w += RenderWidget::paddingLeft() + RenderWidget::paddingRight();
+    assert(includesPadding());
+    int padding = RenderWidget::paddingLeft() + RenderWidget::paddingRight();
+
+    // add 30% margins to the width (heuristics to make it look similar to IE)
+    // ### FIXME BASELINE: we could drop this emulation and adopt Mozilla style buttons
+    // (+/- padding: 0px 8px 0px 8px) - IE is most often in a separate css
+    // code path nowadays, so we have wider buttons than other engines.
+    int toAdd = (w*13/10)-w-padding;
+    toAdd = qMax(0,toAdd);
+    w += toAdd;
 
     if (shouldPaintBorder()) {
         // we paint the borders ourselves, so let's override our height to something saner
-        h = ts.height() + RenderWidget::paddingTop() + RenderWidget::paddingBottom();
+        h = ts.height();
     }
 
     s = QSize(w,h).expandedTo(QApplication::globalStrut());
@@ -566,8 +585,8 @@ void RenderSubmitButton::updateFromElement()
 
 short RenderSubmitButton::baselinePosition( bool f ) const
 {
-    int ret = (height()-paddingTop()-paddingBottom()+1)/2;
-    ret += marginTop() + paddingTop();
+    int ret = (height()-RenderWidget::paddingTop()-RenderWidget::paddingBottom()+1)/2;
+    ret += marginTop() + RenderWidget::paddingTop();
     ret += ((fontMetrics( f ).ascent())/2)-2;
     return ret;
 }
@@ -955,8 +974,8 @@ short RenderLineEdit::baselinePosition( bool f ) const
     bool hasFrame = static_cast<LineEditWidget*>(widget())->hasFrame();
     int bTop = hasFrame ? 0 : borderTop();
     int bBottom = hasFrame ? 0 : borderBottom();
-    int ret = (height()-paddingTop()-paddingBottom()-bTop-bBottom+1)/2;
-    ret += marginTop() + paddingTop() + bTop;
+    int ret = (height()-RenderWidget::paddingTop()-RenderWidget::paddingBottom()-bTop-bBottom+1)/2;
+    ret += marginTop() + RenderWidget::paddingTop() + bTop;
     ret += ((fontMetrics( f ).ascent())/2)-2;
     return ret;
 }
@@ -1018,7 +1037,6 @@ void RenderLineEdit::calcMinMaxWidth()
 
     const QFontMetrics &fm = style()->fontMetrics();
     QSize s;
-
 
     int size = element()->size();
 
@@ -1679,7 +1697,6 @@ void RenderSelect::updateFromElement()
         updateSelection();
     }
 
-
     m_ignoreSelectEvents = false;
 
     RenderFormElement::updateFromElement();
@@ -1693,8 +1710,8 @@ short RenderSelect::baselinePosition( bool f ) const
     bool hasFrame = static_cast<KComboBox*>(widget())->hasFrame();
     int bTop = hasFrame ? 0 : borderTop();
     int bBottom = hasFrame ? 0 : borderBottom();
-    int ret = (height()-paddingTop()-paddingBottom()-bTop-bBottom+1)/2;
-    ret += marginTop() + paddingTop() + bTop;
+    int ret = (height()-RenderWidget::paddingTop()-RenderWidget::paddingBottom()-bTop-bBottom+1)/2;
+    ret += marginTop() + RenderWidget::paddingTop() + bTop;
     ret += ((fontMetrics( f ).ascent())/2)-2;
     return ret;
 }
@@ -1703,6 +1720,7 @@ void RenderSelect::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
 
+    m_exposeInternalPadding = true;
     if (m_optionsChanged)
         updateFromElement();
 
@@ -1713,6 +1731,7 @@ void RenderSelect::calcMinMaxWidth()
     // ### end FIXME
 
     RenderFormElement::calcMinMaxWidth();
+    m_exposeInternalPadding = false;
 }
 
 void RenderSelect::layout( )
@@ -1755,13 +1774,28 @@ void RenderSelect::layout( )
         // the average of that is IMHO qMin(number of elements, 10)
         // so I did that ;-)
         if(size < 1)
-            size = qMin(static_cast<KListWidget*>(m_widget)->count(), 10);
+            size = qMin(w->count(), 10);
 
-        width += 2*w->frameWidth() + w->verticalScrollBar()->sizeHint().width();
+        QStyleOptionFrameV3 opt;
+        opt.initFrom(w);
+        opt.lineWidth = w->lineWidth();
+        opt.midLineWidth = w->midLineWidth();
+        opt.frameShape = w->frameShape();
+        QRect r = w->style()->subElementRect(QStyle::SE_ShapedFrameContents, &opt, w);
+        QRect o = opt.rect;
+        int hfw = (r.left()-o.left()) + (o.right()-r.right());
+        int vfw = (r.top()-o.top()) + (o.bottom()-r.bottom());
+
+        width += hfw + w->verticalScrollBar()->sizeHint().width();
+        // FIXME BASELINE: the 3 lines below could be removed.
         int lhs = m_widget->style()->pixelMetric(QStyle::PM_LayoutHorizontalSpacing);
         if (lhs>0)
-            width += lhs;
-        height = size*height + 2*w->frameWidth();
+           width += lhs;        
+        height = size*height + vfw;
+
+        assert( includesPadding() );
+        width -= RenderWidget::paddingLeft() + RenderWidget::paddingRight();
+        height -= RenderWidget::paddingTop() + RenderWidget::paddingBottom();
 
         setIntrinsicWidth( width );
         setIntrinsicHeight( height );
@@ -2057,12 +2091,28 @@ void RenderTextArea::calcMinMaxWidth()
     int lrm = qMax(0, w->style()->pixelMetric(QStyle::PM_LayoutRightMargin));
     int lbm = qMax(0, w->style()->pixelMetric(QStyle::PM_LayoutBottomMargin));
     int ltm = qMax(0, w->style()->pixelMetric(QStyle::PM_LayoutTopMargin));
-    QSize size( qMax(element()->cols(), 1L)*m.width('x') + w->frameWidth()*2 + llm+lrm +
+
+    QStyleOptionFrameV3 opt;
+    opt.initFrom(w);
+    opt.lineWidth = w->lineWidth();
+    opt.midLineWidth = w->midLineWidth();
+    opt.frameShape = w->frameShape();
+    QRect r = w->style()->subElementRect(QStyle::SE_ShapedFrameContents, &opt, w);
+    QRect o = opt.rect;
+    int hfw = (r.left()-o.left()) + (o.right()-r.right());
+    int vfw = (r.top()-o.top()) + (o.bottom()-r.bottom());
+
+    QSize size( qMax(element()->cols(), 1L)*m.width('x') + hfw + llm+lrm +
                 w->verticalScrollBar()->sizeHint().width()+lhs,
-                qMax(element()->rows(), 1L)*m.lineSpacing() + w->frameWidth()*4 + lbm+ltm +
+                qMax(element()->rows(), 1L)*m.lineSpacing() + 2*vfw + lbm+ltm +
                 (w->lineWrapMode() == QTextEdit::NoWrap ?
                  w->horizontalScrollBar()->sizeHint().height()+lvs : 0)
         );
+
+    assert( includesPadding() );
+    size.rwidth() -= RenderWidget::paddingLeft() + RenderWidget::paddingRight();
+    // ### FIXME BASELINE: would like to remove that 2* (and the 2* in '2*vfw' above).
+    size.rheight() -= 2*(RenderWidget::paddingTop() + RenderWidget::paddingBottom());
 
     setIntrinsicWidth( size.width() );
     setIntrinsicHeight( size.height() );

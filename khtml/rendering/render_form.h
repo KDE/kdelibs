@@ -88,6 +88,7 @@ public:
     virtual void updateFromElement();
 
     virtual void layout();
+    virtual void calcMinMaxWidth();
     virtual short baselinePosition( bool ) const;
 
     DOM::HTMLGenericFormElementImpl *element() const
@@ -107,6 +108,7 @@ protected:
 //     QPoint m_mousePos;
 //     int m_state;
     KdeUiProxyStyle *m_proxyStyle;
+    bool m_exposeInternalPadding;
 };
 
 // -------------------------------------------------------------------------
@@ -156,7 +158,8 @@ public:
     virtual bool handleEvent(const DOM::EventImpl&);
 
     QCheckBox *widget() const { return static_cast<QCheckBox*>(m_widget); }
-
+protected:
+    virtual bool includesPadding() const { return false; }
 public Q_SLOTS:
     virtual void slotStateChanged(int state);
 private:
@@ -185,7 +188,8 @@ public:
     virtual bool handleEvent(const DOM::EventImpl&);
 
     QRadioButton *widget() const { return static_cast<QRadioButton*>(m_widget); }
-
+protected:
+    virtual bool includesPadding() const { return false; }
 public Q_SLOTS:
     virtual void slotToggled(bool);
 private:
