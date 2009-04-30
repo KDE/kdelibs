@@ -26,7 +26,6 @@
 #include <kio/job.h>
 #include <kio/jobclasses.h>
 #include <kglobalsettings.h>
-#include <kmenu.h>
 #include <kstringhandler.h>
 
 #include <QtCore/QTimer>
@@ -421,6 +420,17 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
         action->setData(i);
         m_dirsMenu->addAction(action);
         ++i;
+
+        if (i > 100) {
+            // Opening a menu with several 100 items makes no sense from
+            // a usability view. Also there are implementation issues in
+            // QMenu if the number of menu items don't fit into the available
+            // screen -> skip remaining items
+            QAction* limitReached = new QAction("...", this);
+            limitReached->setEnabled(false);
+            m_dirsMenu->addAction(limitReached);
+            break;
+        }
     }
 
     const bool leftToRight = (layoutDirection() == Qt::LeftToRight);
