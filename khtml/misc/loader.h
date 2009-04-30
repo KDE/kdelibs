@@ -231,6 +231,7 @@ namespace khtml
         virtual bool schedule() const { return true; }
         void setCharsetHint( const QString& charset ) { m_charsetHint = charset; }
         void setCharset( const QString& charset ) { m_charset = charset; }
+        QString checkCharset(const QByteArray& buffer ) const;
 
 
     protected:
