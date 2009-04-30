@@ -367,17 +367,13 @@ charset:
      kDebug( 6080 ) << "charset rule: " << qString($3);
 #endif
      CSSParser* p = static_cast<CSSParser*>(parser);
-     if ($$ && p->styleElement && p->styleElement->isCSSStyleSheet()) {
-         $$ = new CSSCharsetRuleImpl(p->styleElement, domString($3));
-         p->styleElement->append($$);
-     } else
-         $$ = 0;
+     if (p->styleElement && p->styleElement->isCSSStyleSheet()) {
+         p->styleElement->append( new CSSCharsetRuleImpl(p->styleElement, domString($3)) );
+     }
  }
   | CHARSET_SYM error invalid_block {
-      $$ = 0;
  }
   | CHARSET_SYM error ';' {
-      $$ = 0;
  }
  ;
 
