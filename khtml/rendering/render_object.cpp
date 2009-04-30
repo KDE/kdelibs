@@ -2767,12 +2767,10 @@ bool RenderObject::flowAroundFloats() const
 
 bool RenderObject::usesLineWidth() const
 {
-    // 1. All auto-width objects that avoid floats should always use lineWidth
-    // 2. For objects with a specified width, we match WinIE's behavior:
-    // (a) tables use contentWidth
-    // (b) <hr>s use lineWidth
-    // (c) all other objects use lineWidth in quirks mode and contentWidth in strict mode.
-    return (flowAroundFloats() && (style()->width().isVariable() || isHR() || (style()->htmlHacks() && !isTable())));
+    // All auto-width objects that avoid floats should always use lineWidth
+    // unless they are floating or inline. We only care about objects that grow
+    // to fill the available space.
+    return (!isInline()||isHTMLMarquee()) && flowAroundFloats() && style()->width().isVariable() && !isFloating();
 }
 
 long RenderObject::caretMinOffset() const
