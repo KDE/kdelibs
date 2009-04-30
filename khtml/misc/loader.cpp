@@ -325,14 +325,14 @@ QString CachedCSSStyleSheet::checkCharset(const QByteArray& buffer ) const
     // @charset has to be first or directly after BOM.
     // CSS 2.1 says @charset should win over BOM, but since more browsers support BOM
     // than @charset, we default to that.
-    const char* d = (const char*) buffer.data();
+    const char* d = buffer.data();
     if (strncmp(d, "@charset \"",10) == 0)
     {
         // the string until "; is the charset name
-        char *p = strchr(d+10, '"');
+        const char *p = strchr(d+10, '"');
         if (p == 0) return m_charset;
         QString charset = QString::fromAscii(d+10, p-(d+10));
-	return charset;
+        return charset;
     }
     return m_charset;
 }
