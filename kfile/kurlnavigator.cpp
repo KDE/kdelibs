@@ -209,13 +209,6 @@ public:
 
     void removeTrailingSlash(QString& url) const;
 
-    /**
-     * Returns a KUrl for the typed text \a typedUrl.
-     * '\' is replaced by '/', whitespaces at the begin
-     * and end of the typed text get removed.
-     */
-    KUrl adjustedUrl(const QString& typedUrl) const;
-
     bool m_editable : 1;
     bool m_active : 1;
     bool m_showPlacesSelector : 1;
@@ -759,15 +752,6 @@ void KUrlNavigator::Private::removeTrailingSlash(QString& url) const
     }
 }
 
-KUrl KUrlNavigator::Private::adjustedUrl(const QString& typedUrl) const
-{
-    KUrl url(typedUrl.trimmed());
-    if (url.hasPass()) {
-        url.setPass(QString());
-    }
-    return url;
-}
-
 ////
 
 KUrlNavigator::KUrlNavigator(KFilePlacesModel* placesModel,
@@ -805,7 +789,7 @@ const KUrl& KUrlNavigator::url() const
 KUrl KUrlNavigator::uncommittedUrl() const
 {
     if (isUrlEditable()) {
-        return d->adjustedUrl(d->m_pathBox->currentText());
+        return KUrl(d->m_pathBox->currentText().trimmed());
     } else {
         return KUrl(d->m_protocols->currentProtocol() + "://" + d->m_host->text());
     }
@@ -966,7 +950,7 @@ void KUrlNavigator::setUrl(const KUrl& newUrl)
     KUrl url = newUrl;
     url.cleanPath();
 
-    QString urlStr = KUrlCompletion::replacedPath(url.pathOrUrl(), true, true);
+    QString urlStr = KUrlCompletion::replacedPath(url.url(), true, true);
     if ((urlStr.length() > 0) && (urlStr.at(0) == '~')) {
         // replace '~' by the home directory
         urlStr.remove(0, 1);
