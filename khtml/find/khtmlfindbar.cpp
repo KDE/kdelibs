@@ -100,7 +100,7 @@ long KHTMLFindBar::options() const
 
 QString KHTMLFindBar::pattern() const
 {
-    return d->m_find->currentText();
+    return m_find->currentText();
 }
 
 void KHTMLFindBar::slotSearchChanged()
