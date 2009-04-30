@@ -27,9 +27,10 @@
 #include <kfind.h>
 
 #include <QStringList>
+#include <QPointer>
+#include "khtmlfindbar.h"
 
 class KHTMLPart;
-class KHTMLFindBar;
 class QString;
 class QWidget;
 class KFindDialog;
@@ -52,7 +53,7 @@ public:
   bool initFindNode( bool selection, bool reverse, bool fromCursor );
   void createNewKFind( const QString &str, long options, QWidget *parent, KFindDialog *findDialog );
   bool findTextNext( bool reverse = false );
-  KHTMLFindBar *findBar() const { return m_findDialog; }
+  KHTMLFindBar *findBar() const { return m_parent ? m_parent->findBar() : m_findDialog.data(); }
 
 public slots:
   void activate();
@@ -68,6 +69,9 @@ private slots:
 
 signals:
   void foundMatch( const DOM::Selection &selection, int length );
+
+protected:
+  KFind *find() const { return m_find; }
 
 private:
   KHTMLPart *m_part;
@@ -94,7 +98,7 @@ private:
 
   KFind *m_find;
   KHTMLFind *m_parent;
-  KHTMLFindBar *m_findDialog;
+  QPointer<KHTMLFindBar> m_findDialog;
 
   struct findState
   {

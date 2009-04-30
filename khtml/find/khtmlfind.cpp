@@ -144,8 +144,11 @@ void KHTMLFind::deactivate()
   kDebug(6050);
   d->m_lastFindState.options = d->m_findDialog->options();
   d->m_lastFindState.history = d->m_findDialog->findHistory();
-  if (!m_parent)
+  if (!m_parent) {
+      d->m_findDialog->hide();
+      d->m_findDialog->disconnect();
       d->m_findDialog->deleteLater();
+  }
   d->m_findDialog = 0L;
 
   // if the selection is limited to a single link, that link gets focus
@@ -227,8 +230,23 @@ void KHTMLFind::activate()
 #ifndef QT_NO_CLIPBOARD
     connect( qApp->clipboard(), SIGNAL(selectionChanged()), m_part, SLOT(slotClearSelection()) );
 #endif
+  if (m_findDialog) {
+    createNewKFind( m_findDialog->pattern() , 0 /*options*/, m_findDialog, 0 );
+  } else if (m_parent && m_parent->find()) {
+    createNewKFind( m_parent->find()->pattern(), m_parent->find()->options(), static_cast<QWidget*>(m_parent->find()->parent()), 0 );
+  }
+}
 
-  createNewKFind( d->m_findDialog->pattern(), 0 /*options*/, d->m_findDialog, 0 );
+// ### this crawling through the render tree sucks. There should be another way to
+//     do that.
+static inline KHTMLPart* innerPart( khtml::RenderObject *ro ) {
+    if (!ro || !ro->isWidget() || ro->isFormElement())
+        return 0;
+    KHTMLView* v = qobject_cast<KHTMLView*>( static_cast<khtml::RenderWidget*>(ro)->widget() );
+    return v ? v->part() : 0;
+}
+static inline KHTMLPart* innerPartFromNode( DOM::NodeImpl *node ) {
+    return (node && node->renderer() ? innerPart( node->renderer() ) : 0);
 }
 
 void KHTMLFind::createNewKFind( const QString &str, long options, QWidget *parent, KFindDialog *findDialog )
@@ -236,6 +254,13 @@ void KHTMLFind::createNewKFind( const QString &str, long options, QWidget *paren
   // First do some init to make sure we can search in this frame
   if ( m_part->document().isNull() )
     return;
+
+  if (m_findNode) {
+    if (KHTMLPart* p = innerPartFromNode(m_findNode)) {
+      p->clearSelection();
+      p->findTextBegin();
+    }
+  }
 
   // Create the KFind object
   delete d->m_find;
@@ -255,18 +280,6 @@ void KHTMLFind::createNewKFind( const QString &str, long options, QWidget *paren
                   options & KFind::FindBackwards,
                   options & KFind::FromCursor );
   }
-}
-
-// ### this crawling through the render tree sucks. There should be another way to
-//     do that.
-static inline KHTMLPart* innerPart( khtml::RenderObject *ro ) {
-    if (!ro || !ro->isWidget() || ro->isFormElement())
-        return 0;
-    KHTMLView* v = qobject_cast<KHTMLView*>( static_cast<khtml::RenderWidget*>(ro)->widget() );
-    return v ? v->part() : 0;
-}
-static inline KHTMLPart* innerPartFromNode( DOM::NodeImpl *node ) {
-    return (node && node->renderer() ? innerPart( node->renderer() ) : 0);
 }
 
 bool KHTMLFind::findTextNext( bool reverse )
@@ -630,12 +643,6 @@ void KHTMLFind::slotSelectionChanged()
 
 void KHTMLFind::slotSearchChanged()
 {
-    if (m_findNode) {
-        if (KHTMLPart* p = innerPartFromNode(m_findNode)) {
-            p->clearSelection();
-            p->findTextBegin();
-        }
-    }
     createNewKFind( m_findDialog->pattern(), m_findDialog->options(), m_findDialog, 0 );
     findTextNext();
 }
