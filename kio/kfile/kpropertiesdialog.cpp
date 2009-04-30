@@ -1484,18 +1484,17 @@ void KFilePropsPlugin::applyIconChanges()
     // If default icon and no .directory file -> don't create one
     if ( !sIcon.isEmpty() || f.exists() )
     {
-        if ( !f.open( QIODevice::ReadWrite ) ) {
-          KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not "
-				      "have sufficient access to write to <b>%1</b>.</qt>", path));
-          return;
-        }
-        f.close();
-
         KDesktopFile cfg(path);
         kDebug(250) << "sIcon = " << (sIcon);
         kDebug(250) << "str = " << (str);
         cfg.desktopGroup().writeEntry( "Icon", sIcon );
         cfg.sync();
+        
+        cfg.reparseConfiguration();
+        if ( cfg.desktopGroup().readEntry("Icon") != sIcon ) {
+          KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not "
+				      "have sufficient access to write to <b>%1</b>.</qt>", path));
+        }
     }
   }
 }
