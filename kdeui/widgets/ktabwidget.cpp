@@ -109,6 +109,13 @@ bool KTabWidget::Private::isEmptyTabbarSpace( const QPoint &point ) const
 void KTabWidget::Private::removeTab( int index )
 {
   m_previousTabList.removeOne( m_parent->widget( index ) );
+
+  // Need to do this here, rather than in tabRemoved().  Calling
+  // QTabWidget::removeTab() below may cause a relayout of the tab bar, which
+  // will call resizeTabs() immediately.  If m_automaticResizeTabs is true,
+  // that will use the m_tabNames[] list before it has been updated to reflect
+  // the new tab arrangement.  See bug 190528.
+  m_tabNames.removeAt( index );
   
   // We need to get the widget for "activate previous" before calling to 
   // QTabWidget::removeTab() because that call changes currentIndex which calls
@@ -620,7 +627,7 @@ void KTabWidget::tabInserted( int idx )
 
 void KTabWidget::tabRemoved( int idx )
 {
-   d->m_tabNames.removeAt( idx );
+// d->m_tabNames is now updated in KTabWidget::Private::removeTab()
 }
 
 void KTabWidget::currentChanged( int idx )
