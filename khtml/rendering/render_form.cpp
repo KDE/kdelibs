@@ -60,7 +60,11 @@
 #include <QtGui/QStyle>
 #include <QStyleOptionButton>
 #include <QtGui/QLabel>
-#include <QtGui/QStyleOptionFrameV3>
+#if QT_VERSION < 0x040500
+  #include <QtGui/QStyleOptionFrameV2>
+#else
+  #include <QtGui/QStyleOptionFrameV3>
+#endif
 
 #include <misc/helper.h>
 #include <xml/dom2_eventsimpl.h>
@@ -1776,12 +1780,20 @@ void RenderSelect::layout( )
         if(size < 1)
             size = qMin(w->count(), 10);
 
+#if QT_VERSION < 0x040500
+        QStyleOptionFrameV2 opt;
+        opt.initFrom(w);
+        opt.lineWidth = w->lineWidth();
+        opt.midLineWidth = w->midLineWidth();
+        QRect r = w->style()->subElementRect(QStyle::SE_FrameContents, &opt, w);
+#else
         QStyleOptionFrameV3 opt;
         opt.initFrom(w);
         opt.lineWidth = w->lineWidth();
         opt.midLineWidth = w->midLineWidth();
         opt.frameShape = w->frameShape();
         QRect r = w->style()->subElementRect(QStyle::SE_ShapedFrameContents, &opt, w);
+#endif
         QRect o = opt.rect;
         int hfw = (r.left()-o.left()) + (o.right()-r.right());
         int vfw = (r.top()-o.top()) + (o.bottom()-r.bottom());
@@ -2091,13 +2103,20 @@ void RenderTextArea::calcMinMaxWidth()
     int lrm = qMax(0, w->style()->pixelMetric(QStyle::PM_LayoutRightMargin));
     int lbm = qMax(0, w->style()->pixelMetric(QStyle::PM_LayoutBottomMargin));
     int ltm = qMax(0, w->style()->pixelMetric(QStyle::PM_LayoutTopMargin));
-
+#if QT_VERSION < 0x040500
+    QStyleOptionFrameV2 opt;
+    opt.initFrom(w);
+    opt.lineWidth = w->lineWidth();
+    opt.midLineWidth = w->midLineWidth();
+    QRect r = w->style()->subElementRect(QStyle::SE_FrameContents, &opt, w);
+#else
     QStyleOptionFrameV3 opt;
     opt.initFrom(w);
     opt.lineWidth = w->lineWidth();
     opt.midLineWidth = w->midLineWidth();
     opt.frameShape = w->frameShape();
     QRect r = w->style()->subElementRect(QStyle::SE_ShapedFrameContents, &opt, w);
+#endif
     QRect o = opt.rect;
     int hfw = (r.left()-o.left()) + (o.right()-r.right());
     int vfw = (r.top()-o.top()) + (o.bottom()-r.bottom());
