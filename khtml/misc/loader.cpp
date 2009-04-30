@@ -277,7 +277,7 @@ void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
     buffer.close();
     setSize(buffer.buffer().size());
 
-//     QString charset = checkCharset( buffer.buffer() );
+    m_charset = checkCharset( buffer.buffer() );
     QTextCodec* c = 0;
     if (!m_charset.isEmpty()) {
         c = KGlobal::charsets()->codecForName(m_charset);
@@ -317,7 +317,6 @@ void CachedCSSStyleSheet::error( int err, const char* text )
         it.next().value()->error( m_err, m_errText );
 }
 
-#if 0
 QString CachedCSSStyleSheet::checkCharset(const QByteArray& buffer ) const
 {
     int s = buffer.size();
@@ -337,7 +336,6 @@ QString CachedCSSStyleSheet::checkCharset(const QByteArray& buffer ) const
     }
     return m_charset;
 }
-#endif
 
 // -------------------------------------------------------------------------------------------
 
