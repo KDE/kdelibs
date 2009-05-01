@@ -63,7 +63,7 @@ namespace WebCore {
     bool pointsListFromSVGData(SVGPointList* pointsList, const String& points);
     bool pathFromSVGData(Path& path, const String& d);
     bool pathSegListFromSVGData(SVGPathSegList* pathSegList, const String& d, bool process = false);
-    Vector<String> parseDelimitedString(const String& input, const char seperator);
+    Vector<String> parseDelimitedString(const String& input, const char separator);
 
 } // namespace WebCore
 

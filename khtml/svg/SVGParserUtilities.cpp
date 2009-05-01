@@ -841,7 +841,7 @@ bool pathSegListFromSVGData(SVGPathSegList* path , const String& d, bool process
     return builder.build(path, d, process);
 }
 
-Vector<String> parseDelimitedString(const String& input, const char seperator)
+Vector<String> parseDelimitedString(const String& input, const char separator)
 {
     Vector<String> values;
 
@@ -852,7 +852,7 @@ Vector<String> parseDelimitedString(const String& input, const char seperator)
     while (ptr < end) {
         // Leading and trailing white space, and white space before and after semicolon separators, will be ignored.
         const UChar* inputStart = ptr;
-        while (ptr < end && *ptr != seperator) // careful not to ignore whitespace inside inputs
+        while (ptr < end && *ptr != separator) // careful not to ignore whitespace inside inputs
             ptr++;
 
         if (ptr == inputStart)
@@ -864,7 +864,7 @@ Vector<String> parseDelimitedString(const String& input, const char seperator)
             inputEnd--;
 
         values.append(String(inputStart, inputEnd - inputStart + 1));
-        skipOptionalSpacesOrDelimiter(ptr, end, seperator);
+        skipOptionalSpacesOrDelimiter(ptr, end, separator);
     }
 
     return values;
