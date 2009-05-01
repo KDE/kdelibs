@@ -147,12 +147,12 @@ void KApplication_getProcessesIdForName( const QString& processName, QList<int>&
     perfCounter = FirstCounter( perfObject );
     perfInstance = FirstInstance( perfObject );
     // retrieve the instances
-    qDebug() << "INSTANCES: " << perfObject->NumInstances;
+    // qDebug() << "INSTANCES: " << perfObject->NumInstances;
     for( int instance = 0; instance < perfObject->NumInstances; instance++ ) {
       curCounter = perfCounter;
       const QString foundProcessName( 
         fromWChar( (wchar_t *)( (PBYTE)perfInstance + perfInstance->NameOffset ) ) );
-      qDebug() << "foundProcessName: " << foundProcessName;
+      //qDebug() << "foundProcessName: " << foundProcessName;
       if ( foundProcessName == processName ) {
         // retrieve the counters
         for( uint counter = 0; counter < perfObject->NumCounters; counter++ ) {
@@ -160,7 +160,7 @@ void KApplication_getProcessesIdForName( const QString& processName, QList<int>&
             counterPtr = CounterBlock(perfInstance);
             DWORD *value = (DWORD*)((LPBYTE) counterPtr + curCounter->CounterOffset);
             pids.append( int( *value ) );
-            qDebug() << "found PID: " << int( *value );
+            //qDebug() << "found PID: " << int( *value );
             break;
           }
           curCounter = NextCounter( curCounter );
