@@ -1905,7 +1905,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
         return start;
     }
 
-    // This variable says we have encountered an object after which initial whitespace should be ignored (e.g. InlineFlows at the begining of a line).
+    // This variable says we have encountered an object after which initial whitespace should be ignored (e.g. InlineFlows at the beginning of a line).
     // Either we have nothing to do, if there is no whitespace after the object... or we have to enter the ignoringSpaces state.
     // This dilemma will be resolved when we have a peek at the next object.
     bool checkShouldIgnoreInitialWhitespace = false;
