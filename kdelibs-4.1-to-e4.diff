@@ -1,0 +1,2732 @@
+Index: cmake/modules/FindEigen2.cmake
+===================================================================
+--- cmake/modules/FindEigen2.cmake	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ cmake/modules/FindEigen2.cmake	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -18,7 +18,6 @@
+ find_path(EIGEN2_INCLUDE_DIR NAMES Eigen/Core
+      PATHS
+      ${INCLUDE_INSTALL_DIR}/eigen2
+-     ${KDE4_INCLUDE_DIR}/eigen2
+    )
+ 
+ include(FindPackageHandleStandardArgs)
+Index: cmake/modules/MacroWriteBasicCMakeVersionFile.cmake
+===================================================================
+--- cmake/modules/MacroWriteBasicCMakeVersionFile.cmake	(.../KDE/4.1/kdelibs)	(revision 0)
++++ cmake/modules/MacroWriteBasicCMakeVersionFile.cmake	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -0,0 +1,22 @@
++#  MACRO_WRITE_BASIC_CMAKE_VERSION_FILE( _filename _major _minor _patch)
++#    Writes a file for use as <package>ConfigVersion.cmake file to <_filename>.
++#    See the documentation of FIND_PACKAGE() for details on this.
++#    _filename is the output filename, it should be in the build tree.
++#    _major is the major version number of the project to be installed
++#    _minor is the minor version number of the project to be installed
++#    _patch is the patch version number of the project to be installed
++#
++
++# Copyright (c) 2008, Alexander Neundorf, <neundorf@kde.org>
++#
++# Redistribution and use is allowed according to the terms of the BSD license.
++# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
++
++get_filename_component(_currentListFileDir ${CMAKE_CURRENT_LIST_FILE} PATH)
++
++function(MACRO_WRITE_BASIC_CMAKE_VERSION_FILE _filename _major _minor _patch)
++   set(PROJECT_VERSION_MAJOR ${_major})
++   set(PROJECT_VERSION_MINOR ${_minor})
++   set(PROJECT_VERSION_PATCH ${_patch})
++   configure_file(${_currentListFileDir}/BasicFindPackageVersion.cmake.in "${_filename}" @ONLY)
++endfunction(MACRO_WRITE_BASIC_CMAKE_VERSION_FILE _major _minor _patch)
+
+Property changes on: cmake/modules/MacroWriteBasicCMakeVersionFile.cmake
+___________________________________________________________________
+Added: svn:mergeinfo
+Added: svn:eol-style
+   + native
+
+Index: cmake/modules/check_installed_exports_file.cmake
+===================================================================
+--- cmake/modules/check_installed_exports_file.cmake	(.../KDE/4.1/kdelibs)	(revision 0)
++++ cmake/modules/check_installed_exports_file.cmake	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -0,0 +1,44 @@
++# INSTALL_DIR - set it to the install destination
++# INSTALL_PREFIX - set it to CMAKE_INSTALL_PREFIX
++# CURRENT_BINARY_DIR - set it to CMAKE_CURRENT_BINARY_DIR
++# FILENAME  - the filename of the exports file
++
++# get the absolute install directory, consider absolute and relative paths and also DESTDIR
++if(IS_ABSOLUTE "${INSTALL_DIR}")
++   set(installDir "$ENV{DESTDIR}${INSTALL_DIR}")
++else(IS_ABSOLUTE "${INSTALL_DIR}")
++   set(installDir "$ENV{DESTDIR}${INSTALL_PREFIX}/${INSTALL_DIR}")
++endif(IS_ABSOLUTE "${INSTALL_DIR}")
++
++set(installedExportsFile "${installDir}/${FILENAME}")
++
++
++# if the file already exists at the install location, and if we can
++# find the exports file in the build dir, read both, and if their contents differ,
++# remove all configuration-specific exports files from the install dir, since
++# they may create conflicts if the new targets have been added/targets have been 
++# removed/ targets have been renamed/ the namespace for the exported targets has changed
++if(EXISTS "${installedExportsFile}")
++   if (${INSTALL_DIR} MATCHES "^(/)(.+)$")
++      set(binaryDirExportFileDir "_${CMAKE_MATCH_2}")
++      set(binaryDirExportsFile "${CURRENT_BINARY_DIR}/CMakeFiles/Export/${binaryDirExportFileDir}/${FILENAME}")
++
++      if(EXISTS "${binaryDirExportsFile}") 
++         file(READ "${installedExportsFile}" installedExportsFileContents)
++         file(READ "${binaryDirExportsFile}" binaryDirExportsFileContents)
++
++         if(NOT "${installedExportsFileContents}" STREQUAL "${binaryDirExportsFileContents}")
++
++            if("${FILENAME}" MATCHES "^(.+)(\\.cmake)$")
++               message(STATUS "Installed and new ${FILENAME} differ, removing installed ${CMAKE_MATCH_1}-*.cmake files")
++               file(GLOB files "${installDir}/${CMAKE_MATCH_1}-*.cmake")
++               file(REMOVE ${files})
++            endif("${FILENAME}" MATCHES "^(.+)(\\.cmake)$")
++#        else(NOT "${installedExportsFileContents}" STREQUAL "${binaryDirExportsFileContents}")
++#           message(STATUS "FILES are the same")
++         endif(NOT "${installedExportsFileContents}" STREQUAL "${binaryDirExportsFileContents}")
++
++      endif(EXISTS "${binaryDirExportsFile}") 
++   endif (${INSTALL_DIR} MATCHES "^(/)(.+)$")
++
++endif(EXISTS "${installedExportsFile}")
+
+Property changes on: cmake/modules/check_installed_exports_file.cmake
+___________________________________________________________________
+Added: svn:mergeinfo
+Added: svn:eol-style
+   + native
+
+Index: cmake/modules/MacroEnsureOutOfSourceBuild.cmake
+===================================================================
+--- cmake/modules/MacroEnsureOutOfSourceBuild.cmake	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ cmake/modules/MacroEnsureOutOfSourceBuild.cmake	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -1,5 +1,9 @@
+ # - MACRO_ENSURE_OUT_OF_SOURCE_BUILD(<errorMessage>)
+ # MACRO_ENSURE_OUT_OF_SOURCE_BUILD(<errorMessage>)
++#    Call this macro in your project if you want to enforce out-of-source builds.
++#    If an in-source build is detected, it will abort with the given error message.
++#    This macro works in any of the CMakeLists.txt of your project, but the recommended
++#    location to call this is close to the beginning of the top level CMakeLists.txt
+ 
+ # Copyright (c) 2006, Alexander Neundorf, <neundorf@kde.org>
+ #
+
+Property changes on: cmake/modules/MacroEnsureOutOfSourceBuild.cmake
+___________________________________________________________________
+Added: svn:mergeinfo
+
+Index: cmake/modules/BasicFindPackageVersion.cmake.in
+===================================================================
+--- cmake/modules/BasicFindPackageVersion.cmake.in	(.../KDE/4.1/kdelibs)	(revision 0)
++++ cmake/modules/BasicFindPackageVersion.cmake.in	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -0,0 +1,30 @@
++# This is a very basic file for the new style find_package() search mode,
++# i.e. Config-mode. It is used by MACRO_WRITE_BASIC_CMAKE_VERSION_FILE() from 
++# MacroWriteBasicCMakeVersionFile.cmake.
++# In this mode find_package() searches for a <package>Config.cmake 
++# file and an associated <package>Version.cmake file, which it loads to check 
++# the version number.
++# This file can be used with configure_file() to generate such a file for a project
++# with very basic logic.
++# It sets PACKAGE_VERSION_EXACT if the current version string and the requested
++# version string are exactly the same and it sets PACKAGE_VERSION_COMPATIBLE
++# if the current version is >= requested version.
++# If this is not good enough for your project, you need to write your own
++# improved <package>Version.cmake file.
++# This file requires the following three variables to be set:
++#   PROJECT_VERSION_MAJOR
++#   PROJECT_VERSION_MINOR
++#   PROJECT_VERSION_PATCH
++
++
++set(PACKAGE_VERSION @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@)
++
++if("${PACKAGE_VERSION}" VERSION_LESS "${PACKAGE_FIND_VERSION}" )
++   set(PACKAGE_VERSION_COMPATIBLE FALSE)
++else("${PACKAGE_VERSION}" VERSION_LESS "${PACKAGE_FIND_VERSION}" )
++   set(PACKAGE_VERSION_COMPATIBLE TRUE)
++   if( "${PACKAGE_FIND_VERSION}" STREQUAL "${PACKAGE_VERSION}")
++      set(PACKAGE_VERSION_EXACT TRUE)
++   endif( "${PACKAGE_FIND_VERSION}" STREQUAL "${PACKAGE_VERSION}")
++endif("${PACKAGE_VERSION}" VERSION_LESS "${PACKAGE_FIND_VERSION}" )
++
+
+Property changes on: cmake/modules/BasicFindPackageVersion.cmake.in
+___________________________________________________________________
+Added: svn:mergeinfo
+Added: svn:eol-style
+   + native
+
+Index: cmake/modules/MacroOptionalAddSubdirectory.cmake
+===================================================================
+--- cmake/modules/MacroOptionalAddSubdirectory.cmake	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ cmake/modules/MacroOptionalAddSubdirectory.cmake	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -19,7 +19,11 @@
+ MACRO (MACRO_OPTIONAL_ADD_SUBDIRECTORY _dir )
+    GET_FILENAME_COMPONENT(_fullPath ${_dir} ABSOLUTE)
+    IF(EXISTS ${_fullPath})
+-      OPTION(BUILD_${_dir} "Build directory ${_dir}" TRUE)
++      SET(_DEFAULT_OPTION_VALUE TRUE)
++      IF(DISABLE_ALL_OPTIONAL_SUBDIRS  AND NOT DEFINED  BUILD_${_dir})
++         SET(_DEFAULT_OPTION_VALUE FALSE)
++      ENDIF(DISABLE_ALL_OPTIONAL_SUBDIRS  AND NOT DEFINED  BUILD_${_dir})
++      OPTION(BUILD_${_dir} "Build directory ${_dir}" ${_DEFAULT_OPTION_VALUE})
+       IF(BUILD_${_dir})
+          ADD_SUBDIRECTORY(${_dir})
+       ENDIF(BUILD_${_dir})
+
+Property changes on: cmake/modules/MacroOptionalAddSubdirectory.cmake
+___________________________________________________________________
+Added: svn:mergeinfo
+
+Index: cmake/modules/CMakeLists.txt
+===================================================================
+--- cmake/modules/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ cmake/modules/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -4,7 +4,7 @@
+ 
+ set(module_install_dir ${DATA_INSTALL_DIR}/cmake/modules )
+ 
+-install( FILES cmake-modules-styleguide.txt kde4init_dummy.cpp.in kde4init_win32lib_dummy.cpp.in kde4_cmake_uninstall.cmake.in kde4automoc.files.in ${cmakeFiles} 
++install( FILES cmake-modules-styleguide.txt kde4init_dummy.cpp.in kde4init_win32lib_dummy.cpp.in kde4_cmake_uninstall.cmake.in kde4automoc.files.in BasicFindPackageVersion.cmake.in ${cmakeFiles} 
+          DESTINATION ${module_install_dir}  )
+ 
+ # the files listed here will be removed by remove_obsoleted_cmake_files.cmake, Alex
+Index: cmake/modules/FindKDE4Workspace.cmake
+===================================================================
+--- cmake/modules/FindKDE4Workspace.cmake	(.../KDE/4.1/kdelibs)	(revision 0)
++++ cmake/modules/FindKDE4Workspace.cmake	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -0,0 +1,71 @@
++# Find if we installed kdebase/workspaces.
++# Once done this will define
++#
++#  KDE4WORKSPACE_FOUND - system has KDE workspace installed
++#  KDE4WORKSPACE_INCLUDE_DIR - the KDE workspace include directory
++#
++# It also sets variables for the following libraries:
++#   KDE4WORKSPACE_TASKMANAGER_LIBRARY, KDE4WORKSPACE_TASKMANAGER_LIBS
++#   KDE4WORKSPACE_KWORKSPACE_LIBRARY, KDE4WORKSPACE_KWORKSPACE_LIBS
++#   KDE4WORKSPACE_SOLIDCONTROLIFACES_LIBRARY, KDE4WORKSPACE_SOLIDCONTROLIFACES_LIBS
++#   KDE4WORKSPACE_SOLIDCONTROL_LIBRARY, KDE4WORKSPACE_SOLIDCONTROL_LIBS
++#   KDE4WORKSPACE_PROCESSUI_LIBRARY, KDE4WORKSPACE_PROCESSUI_LIBS
++#   KDE4WORKSPACE_LSOFUI_LIBRARY, KDE4WORKSPACE_LSOFUI_LIBS
++#   KDE4WORKSPACE_PLASMACLOCK_LIBRARY, KDE4WORKSPACE_PLASMACLOCK_LIBS
++#   KDE4WORKSPACE_NEPOMUKQUERYCLIENT_LIBRARY, KDE4WORKSPACE_NEPOMUKQUERYCLIENT_LIBS
++#   KDE4WORKSPACE_NEPOMUKQUERY_LIBRARY, KDE4WORKSPACE_NEPOMUKQUERY_LIBS
++#   KDE4WORKSPACE_KSCREENSAVER_LIBRARY, KDE4WORKSPACE_KSCREENSAVER_LIBS
++#   KDE4WORKSPACE_WEATHERION_LIBRARY, KDE4WORKSPACE_WEATHERION_LIBS
++#   KDE4WORKSPACE_KWINEFFECTS_LIBRARY, KDE4WORKSPACE_KWINEFFECTS_LIBS
++#   KDE4WORKSPACE_KDECORATIONS_LIBRARY, KDE4WORKSPACE_KDECORATIONS_LIBS
++#   KDE4WORKSPACE_KSGRD_LIBRARY, KDE4WORKSPACE_KSGRD_LIBS
++#   KDE4WORKSPACE_KEPHAL_LIBRARY, KDE4WORKSPACE_KEPHAL_LIBS
++#
++# And the following locations:
++#   KDE4WORKSPACE_LIB_DIR
++#   KDE4WORKSPACE_LIBEXEC_DIR
++#   KDE4WORKSPACE_INCLUDE_DIR
++#   KDE4WORKSPACE_BIN_DIR
++#   KDE4WORKSPACE_SBIN_DIR
++#   KDE4WORKSPACE_DATA_DIR
++#   KDE4WORKSPACE_HTML_DIR
++#   KDE4WORKSPACE_CONFIG_DIR
++#   KDE4WORKSPACE_ICON_DIR
++#   KDE4WORKSPACE_KCFG_DIR
++#   KDE4WORKSPACE_LOCALE_DIR
++#   KDE4WORKSPACE_MIME_DIR
++#   KDE4WORKSPACE_SOUND_DIR
++#   KDE4WORKSPACE_TEMPLATES_DIR
++#   KDE4WORKSPACE_WALLPAPER_DIR
++#   KDE4WORKSPACE_KCONF_UPDATE_DIR
++#   KDE4WORKSPACE_AUTOSTART_DIR
++#   KDE4WORKSPACE_XDG_APPS_DIR
++#   KDE4WORKSPACE_XDG_DIRECTORY_DIR
++#   KDE4WORKSPACE_SYSCONF_DIR
++#   KDE4WORKSPACE_MAN_DIR
++#   KDE4WORKSPACE_INFO_DIR
++#   KDE4WORKSPACE_DBUS_INTERFACES_DIR
++#   KDE4WORKSPACE_DBUS_SERVICES_DIR
++#   KDE4WORKSPACE_SERVICES_DIR
++#   KDE4WORKSPACE_SERVICETYPES_DIR
++
++# Copyright (c) 2008, Alexander Neundorf, <neundorf@kde.org>
++#
++# Redistribution and use is allowed according to the terms of the BSD license.
++# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
++
++# The find_package() call below loads the file KDE4WorkspaceConfig.cmake file.
++# This file is created and installed by kdebase/workspace/CMakeLists.txt
++# It contains settings for all install location of kdebase/workspace, as e.g.
++# KDE4WORKSPACE_INCLUDE_DIR, and also variables for all libraries.
++# See kdebase/workspace/CMakeLists.txt and kdebase/workspace/KDE4WorkspaceConfig.cmake.in 
++# for details. Alex
++
++
++set(_KDE4Workspace_FIND_QUIETLY  ${KDE4Workspace_FIND_QUIETLY})
++find_package(KDE4Workspace QUIET NO_MODULE PATHS ${KDE4_LIB_DIR}/KDE4Workspace/cmake )
++set(KDE4Workspace_FIND_QUIETLY ${_KDE4Workspace_FIND_QUIETLY})
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(KDE4Workspace DEFAULT_MSG KDE4Workspace_CONFIG )
++
+
+Property changes on: cmake/modules/FindKDE4Workspace.cmake
+___________________________________________________________________
+Added: svn:mergeinfo
+Added: svn:eol-style
+   + native
+
+Index: cmake/modules/MacroLogFeature.cmake
+===================================================================
+--- cmake/modules/MacroLogFeature.cmake	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ cmake/modules/MacroLogFeature.cmake	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -70,7 +70,7 @@
+ 
+    IF (NOT ${_var})
+       IF (${_minvers} MATCHES ".*")
+-        SET(_logtext "${_logtext}, ${_minvers}")
++        SET(_logtext "${_logtext}, ${_minvers} or higher")
+       ENDIF (${_minvers} MATCHES ".*")
+       SET(_logtext "${_logtext}: ${_description} <${_url}>")
+       IF (${_comments} MATCHES ".*")
+
+Property changes on: cmake/modules/MacroLogFeature.cmake
+___________________________________________________________________
+Added: svn:mergeinfo
+
+Index: cmake/modules/FindKdepimLibs.cmake
+===================================================================
+--- cmake/modules/FindKdepimLibs.cmake	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ cmake/modules/FindKdepimLibs.cmake	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -22,7 +22,7 @@
+   endif (KDEPIMLIBS_DIR)
+ endif (WIN32)
+ 
+-find_path( KDEPIMLIBS_INCLUDE_DIR kcal/kcal_export.h
++find_path( KDEPIMLIBS_INCLUDE_DIR kmime/kmime_export.h
+   ${KDE4_INCLUDE_DIR}
+ )
+ 
+@@ -30,7 +30,7 @@
+   set(KDEPIMLIBS_FOUND TRUE)
+ 
+   # this file contains all dependencies of all libraries of kdepimlibs, Alex
+-  include(KDEPimLibsDependencies)
++#  include(KDEPimLibsDependencies)
+   
+   find_library(KDE4_AKONADI_LIBRARY NAMES akonadi-kde PATHS ${KDE4_LIB_DIR} NO_DEFAULT_PATH )
+   set(KDE4_AKONADI_LIBS ${akonadi_LIB_DEPENDS} ${KDE4_AKONADI_LIBRARY} )
+Index: cmake/modules/FindKDE4Internal.cmake
+===================================================================
+--- cmake/modules/FindKDE4Internal.cmake	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ cmake/modules/FindKDE4Internal.cmake	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -52,7 +52,10 @@
+ #  KDE4_KDEUI_LIBS            - the kdeui library and all depending libraries
+ #  KDE4_KIO_LIBS              - the kio library and all depending libraries
+ #  KDE4_KPARTS_LIBS           - the kparts library and all depending libraries
+-#  KDE4_KUTILS_LIBS           - the kutils library and all depending libraries
++#  KDE4_KCMUTILS_LIBS         - the kcmutils library and all depending libraries
++#  KDE4_KPRINTUTILS_LIBS      - the kprintutils library and all depending libraries
++#  KDE4_KEMOTICONS_LIBS       - the kemoticons library and all depending libraries
++#  KDE4_KUTILS_LIBS           - the kutils library and all depending libraries (deprecated)
+ #  KDE4_KDE3SUPPORT_LIBS      - the kde3support library and all depending libraries
+ #  KDE4_KFILE_LIBS            - the kfile library and all depending libraries
+ #  KDE4_KHTML_LIBS            - the khtml library and all depending libraries
+@@ -316,7 +319,10 @@
+    if (UNIX)
+       set(KDE4_KPTY_LIBS ${KDE4_KDECORE_LIBS} kpty)
+    endif (UNIX)
+-   set(KDE4_KUTILS_LIBS ${KDE4_KIO_LIBS} kutils)
++   set(KDE4_KCMUTILS_LIBS ${KDE4_KDEUI_LIBS} kcmutils)
++   set(KDE4_KEMOTICONS_LIBS ${KDE4_KDEUI_LIBS} kemoticons)
++   set(KDE4_KPRINTUTILS_LIBS ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS} kprintutils)
++   set(KDE4_KUTILS_LIBS ${KDE4_KCMUTILS_LIBS} ${KDE4_KPRINTUTILS_LIBS} ${KDE4_KEMOTICONS_LIBS} kutils)
+    set(KDE4_KDE3SUPPORT_LIBS ${KDE4_KIO_LIBS} kde3support)
+    set(KDE4_SOLID_LIBS ${KDE4_KDECORE_LIBS} solid)
+    set(KDE4_KFILE_LIBS ${KDE4_KDE3SUPPORT_LIBS} kfile)
+@@ -407,6 +413,15 @@
+    find_library(KDE4_KPARTS_LIBRARY NAMES kparts PATHS ${KDE4_LIB_INSTALL_DIR} NO_DEFAULT_PATH )
+    set(KDE4_KPARTS_LIBS ${kparts_LIB_DEPENDS} ${KDE4_KPARTS_LIBRARY} )
+ 
++   find_library(KDE4_KCMUTILS_LIBRARY NAMES kcmutils PATHS ${KDE4_LIB_INSTALL_DIR} NO_DEFAULT_PATH )
++   set(KDE4_KCMUTILS_LIBS ${kcmutils_LIB_DEPENDS} ${KDE4_KCMUTILS_LIBRARY} )
++
++   find_library(KDE4_KPRINTUTILS_LIBRARY NAMES kprintutils PATHS ${KDE4_LIB_INSTALL_DIR} NO_DEFAULT_PATH )
++   set(KDE4_KPRINTUTILS_LIBS ${kprintutils_LIB_DEPENDS} ${KDE4_KPRINTUTILS_LIBRARY} )
++
++   find_library(KDE4_KEMOTICONS_LIBRARY NAMES kemoticons PATHS ${KDE4_LIB_INSTALL_DIR} NO_DEFAULT_PATH )
++   set(KDE4_KEMOTICONS_LIBS ${kemoticons_LIB_DEPENDS} ${KDE4_KEMOTICONS_LIBRARY} )
++
+    find_library(KDE4_KUTILS_LIBRARY NAMES kutils PATHS ${KDE4_LIB_INSTALL_DIR} NO_DEFAULT_PATH )
+    set(KDE4_KUTILS_LIBS ${kutils_LIB_DEPENDS} ${KDE4_KUTILS_LIBRARY} )
+ 
+@@ -1151,10 +1166,12 @@
+    message(FATAL_ERROR "ERROR: could NOT find everything required for compiling KDE 4 programs")
+ endif (KDE4Internal_FIND_REQUIRED AND NOT KDE4_FOUND)
+ 
++if (NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY)
+ find_package(Phonon REQUIRED)
+ set(KDE4_PHONON_LIBRARY ${PHONON_LIBRARY})
+ set(KDE4_PHONON_LIBS ${PHONON_LIBS})
+ set(KDE4_PHONON_INCLUDES ${PHONON_INCLUDES})
++endif (NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY)
+ 
+ if (NOT KDE4Internal_FIND_QUIETLY)
+    kde4_print_results()
+Index: cmake/modules/MacroLibrary.cmake
+===================================================================
+--- cmake/modules/MacroLibrary.cmake	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ cmake/modules/MacroLibrary.cmake	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -16,3 +16,4 @@
+ INCLUDE(MacroBoolTo01)
+ INCLUDE(MacroPushRequiredVars)
+ INCLUDE(MacroLogFeature)
++INCLUDE(MacroWriteBasicCMakeVersionFile)
+
+Property changes on: cmake/modules/MacroLibrary.cmake
+___________________________________________________________________
+Added: svn:mergeinfo
+
+Index: cmake/modules/KDE4Macros.cmake
+===================================================================
+--- cmake/modules/KDE4Macros.cmake	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ cmake/modules/KDE4Macros.cmake	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -46,13 +46,21 @@
+        set(_src_FILE    ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.cpp)
+        set(_header_FILE ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.h)
+        set(_moc_FILE    ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.moc)
++       set(_kcfg_PATH   ${_abs_PATH}/${_kcfg_FILE})
++       # Maybe the .kcfg is a generated file?
++       if(NOT EXISTS "${_kcfg_PATH}")
++           set(_kcfg_PATH   ${CMAKE_CURRENT_BINARY_DIR}/${_kcfg_FILE})
++       endif(NOT EXISTS "${_kcfg_PATH}")
++       if(NOT EXISTS "${_kcfg_PATH}")
++           message(ERROR "${_kcfg_FILE} not found; tried in ${_abs_PATH} and ${CMAKE_CURRENT_BINARY_DIR}")
++       endif(NOT EXISTS "${_kcfg_PATH}")
+ 
+        # the command for creating the source file from the kcfg file
+        add_custom_command(OUTPUT ${_header_FILE} ${_src_FILE}
+           COMMAND ${KDE4_KCFGC_EXECUTABLE}
+-          ARGS ${_abs_PATH}/${_kcfg_FILE} ${_tmp_FILE} -d ${CMAKE_CURRENT_BINARY_DIR}
++          ARGS ${_kcfg_PATH} ${_tmp_FILE} -d ${CMAKE_CURRENT_BINARY_DIR}
+           MAIN_DEPENDENCY ${_tmp_FILE}
+-          DEPENDS ${_abs_PATH}/${_kcfg_FILE} ${_KDE4_KCONFIG_COMPILER_DEP} )
++          DEPENDS ${_kcfg_PATH} ${_KDE4_KCONFIG_COMPILER_DEP} )
+ 
+        if(_kcfg_generatemoc)
+          qt4_generate_moc(${_header_FILE} ${_moc_FILE} )
+@@ -947,7 +955,7 @@
+     message(STATUS "KDE4_ADD_WIN32_APP_ICON() is deprecated, use KDE4_ADD_APP_ICON() instead")
+     if (WIN32)
+         find_program(PNG2ICO_EXECUTABLE NAMES png2ico)
+-        find_program(WINDRES_EXECUTABLE NAMES windres)
++        find_program(WINDRES_EXECUTABLE NAMES windres i586-mingw32msvc-windres)
+         if(MSVC)
+             set(WINDRES_EXECUTABLE TRUE)
+         endif(MSVC)
+@@ -987,7 +995,7 @@
+     string(REPLACE _SRCS "" target ${appsources})
+     if (WIN32)
+         find_program(PNG2ICO_EXECUTABLE NAMES png2ico)
+-        find_program(WINDRES_EXECUTABLE NAMES windres)
++        find_program(WINDRES_EXECUTABLE NAMES windres i586-mingw32msvc-windres)
+         if(MSVC)
+             set(WINDRES_EXECUTABLE TRUE)
+         endif(MSVC)
+Index: cmake/CMakeLists.txt
+===================================================================
+--- cmake/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ cmake/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -4,5 +4,7 @@
+ #   add_subdirectory(automoc)
+ #endif(NOT AUTOMOC4_EXECUTABLE)
+ 
++if(NOT CROSS_COMPILATION_TOOLS_ONLY)
+ add_subdirectory(modules)
++endif(NOT CROSS_COMPILATION_TOOLS_ONLY)
+ 
+Index: kate/CMakeLists.txt
+===================================================================
+--- kate/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kate/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -146,7 +146,7 @@
+ kde4_add_plugin(katepart ${katepart_PART_SRCS})
+ 
+ # linking
+-target_link_libraries(katepart ${KDE4_KDECORE_LIBS} kparts kutils ktexteditor kde3support ${QT_QTSCRIPT_LIBRARY})
++target_link_libraries(katepart ${KDE4_KDECORE_LIBS} kparts ${KDE4_KUTILS_LIBS} ktexteditor kde3support ${QT_QTSCRIPT_LIBRARY})
+ 
+ if(KDE4_ENABLE_FINAL)
+    macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/katepart_final_cpp.cpp )
+@@ -173,7 +173,7 @@
+ 
+ kde4_add_executable(testkateregression NOGUI RUN_UNINSTALLED ${testkateregression_SRCS})
+ 
+-target_link_libraries(testkateregression ${KDE4_KDECORE_LIBS} ${QT_QTSCRIPT_LIBRARY} kutils ktexteditor kde3support )
++target_link_libraries(testkateregression ${KDE4_KDECORE_LIBS} ${QT_QTSCRIPT_LIBRARY} ${KDE4_KUTILS_LIBS} ktexteditor kde3support )
+ 
+ #add_dependencies(check testkateregression)
+ 
+Index: kdoctools/CMakeLists.txt
+===================================================================
+--- kdoctools/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdoctools/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -11,7 +11,7 @@
+ configure_file(config-kdoctools.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdoctools.h )
+ #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
+ 
+-
++if(NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY)
+ ########### next target ###############
+ 
+ set(kio_help_PART_SRCS
+@@ -39,16 +39,113 @@
+ 
+ install(TARGETS kio_ghelp  DESTINATION ${PLUGIN_INSTALL_DIR} )
+ 
++endif(NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY)
+ 
+ ########### next target ###############
+ 
+ set(meinproc_SRCS meinproc.cpp xslt.cpp )
+ 
++if ( BZIP2_FOUND AND CROSS_COMPILATION_TOOLS_ONLY )
+ 
+-kde4_add_executable(meinproc4 NOGUI RUN_UNINSTALLED ${meinproc_SRCS})
++  set( _meinproc_extra_SRCS
++    ../kdecore/compression/kgzipfilter.cpp
++    ../kdecore/compression/kbzip2filter.cpp
++    ../kdecore/compression/kfilterbase.cpp
++    ../kdecore/compression/kfilterdev.cpp
++    ../kdecore/config/kconfig.cpp
++    ../kdecore/config/kconfigbackend.cpp
++    ../kdecore/config/kconfigbase.cpp
++    ../kdecore/config/kconfiggroup.cpp
++    ../kdecore/config/ksharedconfig.cpp
++    ../kdecore/config/kconfigini.cpp
++    ../kdecore/config/kdesktopfile.cpp
++    ../kdecore/config/kcoreconfigskeleton.cpp
++    ../kdecore/date/kcalendarsystem.cpp
++    ../kdecore/date/kcalendarsystemgregorian.cpp
++    ../kdecore/date/kcalendarsystemhijri.cpp
++    ../kdecore/date/kcalendarsystemhebrew.cpp
++    ../kdecore/date/kcalendarsystemjalali.cpp
++    ../kdecore/date/kdatetime.cpp
++    ../kdecore/date/ktimezone.cpp
++    ../kdecore/date/ksystemtimezone.cpp
++    ../kdecore/date/ktzfiletimezone.cpp
++    ../kdecore/io/kdebug.cpp
++    ../kdecore/io/kdebugdbusiface.cpp
++    ../kdecore/io/kmessage.cpp
++    ../kdecore/io/ksavefile.cpp
++    ../kdecore/io/ktemporaryfile.cpp
++    ../kdecore/io/kurl.cpp
++    ../kdecore/kernel/kauthorized.cpp
++    ../kdecore/kernel/kaboutdata.cpp
++    ../kdecore/kernel/kcmdlineargs.cpp
++    ../kdecore/kernel/kglobal.cpp
++    ../kdecore/kernel/kcomponentdata.cpp
++    ../kdecore/kernel/kstandarddirs.cpp
++    ../kdecore/kernel/ktoolinvocation.cpp
++    ../kdecore/localization/kcatalog.cpp
++    ../kdecore/localization/kcharsets.cpp
++    ../kdecore/localization/klocale.cpp
++    ../kdecore/localization/klocalizedstring.cpp
++    ../kdecore/localization/ktranslit.cpp
++    ../kdecore/localization/kuitformats.cpp
++    ../kdecore/localization/kuitsemantics.cpp
++    ../kdecore/sycoca/ksycoca.cpp
++    ../kdecore/sycoca/ksycocadict.cpp
++    ../kdecore/sycoca/ksycocaentry.cpp
++    ../kdecore/sycoca/ksycocafactory.cpp
++    ../kdecore/sycoca/kprotocolinfo.cpp
++    ../kdecore/sycoca/kprotocolinfofactory.cpp
++    ../kdecore/sycoca/kmemfile.cpp
++    ../kdecore/services/kfoldermimetype.cpp
++    ../kdecore/services/kmimetypefactory.cpp
++    ../kdecore/services/kmimemagicrule.cpp
++    ../kdecore/services/kmimetypetrader.cpp
++    ../kdecore/services/kmimetype.cpp
++    ../kdecore/services/kservice.cpp
++    ../kdecore/services/kserviceaction.cpp
++    ../kdecore/services/kservicefactory.cpp
++    ../kdecore/services/kservicegroup.cpp
++    ../kdecore/services/kservicegroupfactory.cpp
++    ../kdecore/services/kserviceoffer.cpp
++    ../kdecore/services/kservicetype.cpp
++    ../kdecore/services/kservicetypefactory.cpp
++    ../kdecore/services/kservicetypeprofile.cpp
++    ../kdecore/services/kservicetypetrader.cpp
++    ../kdecore/services/ktraderparse.cpp
++    ../kdecore/services/ktraderparsetree.cpp
++    ../kdecore/services/yacc.c
++    ../kdecore/services/lex.c
++    ../kdecore/services/kplugininfo.cpp
++    ../kdecore/text/kstringhandler.cpp
++    ../kdecore/util/klauncher_iface.cpp
++    ../kdecore/util/klibrary.cpp
++    ../kdecore/util/kmacroexpander.cpp
++    ../kdecore/util/kpluginfactory.cpp
++    ../kdecore/util/kpluginloader.cpp
++    ../kdecore/util/kshell.cpp
++    ../kdecore/util/krandom.cpp
++    ../kdecore/io/klockfile_unix.cpp
++    ../kdecore/kernel/kstandarddirs_unix.cpp
++    ../kdecore/util/kmacroexpander_unix.cpp
++    ../kdecore/util/kshell_unix.cpp
++    ../kdecore/util/kuser_unix.cpp
++    ../kdecore/kernel/ktoolinvocation_x11.cpp
++    )
+ 
+-target_link_libraries(meinproc4 kio ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
++  set( _meinproc_extra_LIBS ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${BZIP2_LIBRARIES} )
+ 
++else ( BZIP2_FOUND AND CROSS_COMPILATION_TOOLS_ONLY )
++
++  set( _meinproc_extra_SRCS )
++
++  set( _meinproc_extra_LIBS ${KDE4_KDECORE_LIBS} )
++
++endif ( BZIP2_FOUND AND CROSS_COMPILATION_TOOLS_ONLY )
++
++kde4_add_executable(meinproc4 NOGUI RUN_UNINSTALLED ${meinproc_SRCS} ${_meinproc_extra_SRCS} )
++
++target_link_libraries(meinproc4 ${_meinproc_extra_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
++
+ if(KDE4_ENABLE_FINAL)
+    set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/meinproc4_final_cpp.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
+ else(KDE4_ENABLE_FINAL)
+@@ -60,25 +157,28 @@
+ 
+ ########### next target ###############
+ 
++if ( NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY )
+ set(genshortcutents_SRCS genshortcutents.cpp )
+ 
+ 
+ kde4_add_executable(genshortcutents NOGUI ${genshortcutents_SRCS})
+ 
+ target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS})
++endif( NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY )
+ 
+-
+ ########### install files ###############
+ 
++install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/checkXML DESTINATION ${BIN_INSTALL_DIR} )
++
++if(NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY)
+ install( FILES help.protocol ghelp.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
+ install( FILES kio_help.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
+ 
+-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/checkXML DESTINATION ${BIN_INSTALL_DIR} )
+-
+ if(NOT WIN32)
+   install( FILES kio_help.upd  DESTINATION  ${KCONF_UPDATE_INSTALL_DIR} )
+   install( PROGRAMS move_kio_help_cache.sh  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
+ endif(NOT WIN32)
++endif(NOT ONLY_KLEO AND NOT CROSS_COMPILATION_TOOLS_ONLY)
+ 
+ macro(INSTALL_CUSTOMIZE_DIR _expr _directory)
+     FILE(GLOB _file_CUST "${_expr}" )
+Index: kded/CMakeLists.txt
+===================================================================
+--- kded/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kded/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -1,31 +1,32 @@
+ project(kded)
+ 
++if(NOT ONLY_KLEO)
+ add_subdirectory( test )
++endif(NOT ONLY_KLEO)
+ 
+ include_directories( ${KDE4_KIO_INCLUDES} )
+ 
+ ########### next target ###############
+ 
+-set(kded_KDEINIT_SRCS kded.cpp kdedadaptor.cpp
+-    ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded.xml # just so that it gets generated
+-)
++if(NOT ONLY_KLEO)
++set(kded_KDEINIT_SRCS kded.cpp kdedadaptor.cpp)
+ 
++qt4_generate_dbus_interface( ${CMAKE_SOURCE_DIR}/kded/kdedadaptor.h org.kde.kded.xml )
++qt4_add_dbus_interfaces( kded_KDEINIT_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded.xml )
+ 
+ kde4_add_kdeinit_executable(kded4  ${kded_KDEINIT_SRCS})
+ 
+ target_link_libraries(kdeinit_kded4  ${KDE4_KIO_LIBS} ${X11_LIBRARIES})
+-
+ install(TARGETS kdeinit_kded4 ${INSTALL_TARGETS_DEFAULT_ARGS})
+ 
++
+ target_link_libraries( kded4 kdeinit_kded4 )
+ install(TARGETS kded4 DESTINATION ${BIN_INSTALL_DIR} )
+ 
+-
+-qt4_generate_dbus_interface( kdedadaptor.h org.kde.kded.xml )
+ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+ 
++endif(NOT ONLY_KLEO)
+ 
+-
+ ########### next target ###############
+ 
+ set(kbuildsycoca_KDEINIT_SRCS
+@@ -47,7 +48,7 @@
+ kde4_add_kdeinit_executable( kbuildsycoca4 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
+ 
+ # needs kio for KServiceGroup
+-target_link_libraries(kdeinit_kbuildsycoca4  ${KDE4_KIO_LIBS} )
++target_link_libraries(kdeinit_kbuildsycoca4  ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY})
+ 
+ install(TARGETS kdeinit_kbuildsycoca4 ${INSTALL_TARGETS_DEFAULT_ARGS})
+ 
+@@ -55,7 +56,7 @@
+ install(TARGETS kbuildsycoca4 DESTINATION ${BIN_INSTALL_DIR} )
+ 
+ ########### next target ###############
+-
++if(NOT ONLY_KLEO)
+ set(kdontchangethehostname_SRCS khostname.cpp )
+ 
+ 
+@@ -67,8 +68,11 @@
+ 
+ ########### install files ###############
+ 
+-install( FILES applications.menu  DESTINATION  ${SYSCONF_INSTALL_DIR}/xdg/menus )
+ install( FILES kdedmodule.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
+ install( FILES kded.upd           DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
+ 
++endif(NOT ONLY_KLEO)
+ 
++install( FILES applications.menu  DESTINATION  ${SYSCONF_INSTALL_DIR}/xdg/menus )
++
++
+Index: mimetypes/CMakeLists.txt
+===================================================================
+--- mimetypes/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ mimetypes/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -1,7 +1,13 @@
+ # for KDE 4.1 we require at least version 0.20
+-set(SHARED_MIME_INFO_MINIMUM_VERSION "0.20")
++set(SHARED_MIME_INFO_MINIMUM_VERSION "0.19")
+ find_package(SharedMimeInfo REQUIRED)
+ 
+ ########### install files ###############
+ install(FILES kde.xml DESTINATION ${XDG_MIME_INSTALL_DIR})
+-update_xdg_mimetypes(${XDG_MIME_INSTALL_DIR})
++# without this workaround, update_xdg_mimetypes tries to install to share/mime, which
++# results in unreadable messageboxes when installing kde.xml
++if(WIN32)
++  update_xdg_mimetypes(${CMAKE_INSTALL_PREFIX}/${XDG_MIME_INSTALL_DIR})
++else(WIN32)
++  update_xdg_mimetypes(${XDG_MIME_INSTALL_DIR})
++endif(WIN32)
+Index: CMakeLists.txt
+===================================================================
+--- CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -10,7 +10,7 @@
+ set (KDE_VERSION_MINOR 1)
+ set (KDE_VERSION_RELEASE 4)
+ set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
+-set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.1.4)")
++set (KDE_VERSION_STRING "${KDE_VERSION}")
+ 
+ set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
+ set (KDE_DEFAULT_HOME ".kde" CACHE STRING "The default KDE home directory" )
+@@ -26,6 +26,10 @@
+ 
+ ################# now find all used packages #################
+ 
++if(ONLY_KLEO)
++add_definitions( -DONLY_KLEO )
++endif(ONLY_KLEO)
++
+ find_package(KDE4Internal REQUIRED)
+ include(KDE4Defaults)
+ include (MacroLibrary)
+@@ -43,8 +47,11 @@
+ 
+ #required features
+ find_package(ZLIB REQUIRED)
+-find_package(Strigi REQUIRED)
+-
++if (ONLY_KLEO OR CROSS_COMPILATION_TOOLS_ONLY)
++  find_package(Strigi)
++else (ONLY_KLEO OR CROSS_COMPILATION_TOOLS_ONLY)
++  find_package(Strigi REQUIRED)
++endif (ONLY_KLEO OR CROSS_COMPILATION_TOOLS_ONLY)
+ #optional features
+ macro_optional_find_package(BZip2)
+ macro_log_feature(BZIP2_FOUND "BZip2" "A high-quality data compressor" "http://www.bzip.org" FALSE "" "STRONGLY RECOMMENDED: Provides the ability to read and write bzip2 compressed data files.")
+@@ -179,9 +186,21 @@
+ 
+ ################# list the subdirectories #################
+ 
++if(CROSS_COMPILATION_TOOLS_ONLY)
++  add_subdirectory( cmake )
++  add_subdirectory( kdecore )
++  add_subdirectory( kdoctools )
++else(CROSS_COMPILATION_TOOLS_ONLY)
++
+ add_subdirectory( cmake )
+ add_subdirectory( kdecore )
+ add_subdirectory( kdeui )
++add_subdirectory( kutils )
++add_subdirectory( kded       )
++add_subdirectory( includes )
++add_subdirectory( mimetypes  )
++
++if (NOT ONLY_KLEO)
+ if (UNIX)
+    add_subdirectory( kpty )
+    add_subdirectory( kdesu )
+@@ -191,17 +210,16 @@
+ add_subdirectory( kwallet )
+ add_subdirectory( kio )
+ add_subdirectory( solid )
+-add_subdirectory( kded       )
+ add_subdirectory( kde3support  )
+ add_subdirectory( kfile )
+ add_subdirectory( kconf_update )
++endif(NOT ONLY_KLEO)
+ add_subdirectory( kdoctools  )
++if(NOT ONLY_KLEO)
+ add_subdirectory( kioslave   )
+ add_subdirectory( knewstuff  )
+ add_subdirectory( kparts     )
+-add_subdirectory( kutils     )
+ add_subdirectory( licenses   )
+-add_subdirectory( mimetypes  )
+ add_subdirectory( kinit  )
+ add_subdirectory( threadweaver )
+ add_subdirectory( sonnet  )
+@@ -214,7 +232,6 @@
+ add_subdirectory( dnssd )
+ add_subdirectory( kross )
+ add_subdirectory( security )
+-add_subdirectory( includes )
+ 
+ if(Soprano_FOUND)
+   add_subdirectory(nepomuk)
+@@ -222,6 +239,8 @@
+ 
+ macro_optional_add_subdirectory( doc  )
+ 
++endif(NOT ONLY_KLEO)
++
+ ################# write dependency file which will be installed #################
+ 
+ include(CreateKDELibsDependenciesFile.cmake)
+@@ -233,5 +252,7 @@
+ # the following will be the correct locations once cmake has the improved FIND_PACKAGE() 
+ # install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${PLUGIN_INSTALL_DIR}/cmake RENAME KDE4Config.cmake)
+ 
++endif(CROSS_COMPILATION_TOOLS_ONLY)
+ 
+ macro_display_feature_log()
++
+Index: nepomuk/core/resourcefiltermodel.cpp
+===================================================================
+--- nepomuk/core/resourcefiltermodel.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ nepomuk/core/resourcefiltermodel.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -47,11 +47,13 @@
+     return qHash( node.toString() );
+ }
+ 
++#ifndef Q_OS_WIN
+ // @deprecated: just for keeping binary compatibility
+ uint qHash( const Soprano::Node& node )
+ {
+     return Soprano::qHash( node );
+ }
++#endif
+ 
+ class Nepomuk::ResourceFilterModel::Private
+ {
+Index: nepomuk/core/ontology/entity_p.h
+===================================================================
+--- nepomuk/core/ontology/entity_p.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ nepomuk/core/ontology/entity_p.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -83,6 +83,4 @@
+     QHash<QString, QString> l10nComments;
+ };
+ 
+-uint qHash( const QUrl& url );
+-
+ #endif
+Index: nepomuk/core/ontology/entity.h
+===================================================================
+--- nepomuk/core/ontology/entity.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ nepomuk/core/ontology/entity.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -127,7 +127,7 @@
+             bool isAvailable();
+ 
+             /**
+-             * The Types classes are optimized for performance under the 
++             * The Types classes are optimized for performance under the
+              * aasumption that ontologies never change during the execution
+              * time of an application.
+              *
+@@ -203,7 +203,7 @@
+          * The URI of the resource
+          */
+         QUrl uri() const;
+-	    
++
+         QString label( const QString& language = QString() ) const;
+         QString comment( const QString& language = QString() ) const;
+ 
+@@ -218,4 +218,10 @@
+     };
+ }
+ 
++
++inline uint qHash( const QUrl& url )
++{
++    return qHash( url.toString() );
++}
++
+ #endif
+Index: nepomuk/core/ontology/entity.cpp
+===================================================================
+--- nepomuk/core/ontology/entity.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ nepomuk/core/ontology/entity.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -21,8 +21,6 @@
+ #include "entity_p.h"
+ #include "resourcemanager.h"
+ 
+-#include <QtCore/QHash>
+-
+ #include <Soprano/QueryResultIterator>
+ #include <Soprano/Model>
+ #include <Soprano/Vocabulary/NRL>
+@@ -31,19 +29,6 @@
+ 
+ #include <kicon.h>
+ 
+-#ifndef _MSC_VER
+-uint qHash( const QUrl& url )
+-{
+-    return qHash( url.toString() );
+-}
+-#endif
+-
+-// uint qHash( const Nepomuk::Types::Entity& c )
+-// {
+-//     return (uint)(ulong)c.d.data();
+-// }
+-
+-
+ Nepomuk::Types::EntityPrivate::EntityPrivate( const QUrl& uri_ )
+     : uri( uri_ ),
+       available( uri_.isValid() ? -1 : 0 ),
+Index: nepomuk/core/ontology/entitymanager.h
+===================================================================
+--- nepomuk/core/ontology/entitymanager.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ nepomuk/core/ontology/entitymanager.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -24,9 +24,6 @@
+ #include <QtCore/QUrl>
+ #include <QtCore/QSharedData>
+ 
+-inline uint qHash( const QUrl& url ) {
+-    return qHash( url.toString() );
+-}
+ 
+ namespace Soprano {
+     class Statement;
+Index: kio/kio/kdirlister_p.h
+===================================================================
+--- kio/kio/kdirlister_p.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kio/kio/kdirlister_p.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -205,8 +205,9 @@
+ 
+     // Called by CachedItemsJob:
+     // Emits those items, for this lister and this url
+-    void emitItemsFromCache(KDirLister* lister, const KFileItemList& lst, const KFileItem& rootItem,
+-                            const KUrl& _url, bool _reload, bool _emitCompleted);
++    void emitItemsFromCache( KDirLister* lister, const KFileItemList& lst, const KFileItem& rootItem,
++                             const KUrl& _url, bool _reload, bool _emitCompleted );
++    bool hasCachedItemJob( KDirLister* lister ) const;
+ 
+ public Q_SLOTS:
+   /**
+Index: kio/kio/slave.h
+===================================================================
+--- kio/kio/slave.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kio/kio/slave.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -22,11 +22,7 @@
+ #ifndef KIO_SLAVE_H
+ #define KIO_SLAVE_H
+ 
+-#if defined(MAKE_KIO_LIB) || defined(MAKE_KLAUNCHER)
+-# define KIO_SLAVE_EXPORT  KIO_EXPORT
+-#else
+-# define KIO_SLAVE_EXPORT  KIO_EXPORT_DEPRECATED
+-#endif
++#define KIO_SLAVE_EXPORT KIO_EXPORT
+ 
+ #include <time.h>
+ #include <unistd.h>
+@@ -43,6 +39,11 @@
+     // Attention developers: If you change the implementation of KIO::Slave,
+     // do *not* use connection() or slaveconn but the respective KIO::Slave
+     // accessor methods. Otherwise classes derived from Slave might break. (LS)
++    //
++    // Do not use this class directly, outside of KIO. Only use the Slave pointer
++    // that is returned by the scheduler for passing it around.
++    //
++    // TODO: KDE5: Separate public API and private stuff for this better
+     class KIO_SLAVE_EXPORT Slave : public KIO::SlaveInterface
+     {
+ 	Q_OBJECT
+Index: kio/kio/krun.cpp
+===================================================================
+--- kio/kio/krun.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kio/kio/krun.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -70,6 +70,10 @@
+ #include <kwindowsystem.h>
+ #endif
+ 
++#ifdef Q_WS_MACX
++#include <QDesktopServices>
++#endif
++
+ KRun::KRunPrivate::KRunPrivate(KRun *parent)
+   : q(parent),
+     m_showingDialog(false)
+@@ -156,6 +160,10 @@
+     return false;
+   }
+ 
++#ifdef Q_WS_MACX
++  return QDesktopServices::openUrl(u);
++#endif
++
+   KUrl::List lst;
+   lst.append( u );
+ 
+Index: kio/kfile/kfiledialog.h
+===================================================================
+--- kio/kfile/kfiledialog.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kio/kfile/kfiledialog.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -691,7 +691,7 @@
+      */
+     static void setStartDir( const KUrl& directory );
+ 
+-#ifdef Q_WS_WIN
++#if defined (Q_WS_WIN) || defined(Q_OS_MAC)
+ public Q_SLOTS:
+     int exec();
+ #endif
+Index: kio/kfile/kfiledialog.cpp
+===================================================================
+--- kio/kfile/kfiledialog.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kio/kfile/kfiledialog.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -44,7 +44,7 @@
+ #include "krecentdirs.h"
+ 
+ /** File dialogs are native by default on Windows. */
+-#ifdef Q_WS_WIN
++#if defined (Q_WS_WIN) || defined (Q_OS_MAC)
+ const bool NATIVE_FILEDIALOGS_BY_DEFAULT = true;
+ #else
+ const bool NATIVE_FILEDIALOGS_BY_DEFAULT = false;
+@@ -203,7 +203,7 @@
+ 
+ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
+                           QWidget *parent, QWidget* customWidget)
+-#ifdef Q_WS_WIN
++#if defined (Q_WS_WIN) || defined (Q_OS_MAC)
+     : KDialog( parent , Qt::WindowMinMaxButtonsHint),
+ #else
+     : KDialog( parent ),
+@@ -814,7 +814,7 @@
+     return d->w;
+ }
+ 
+-#ifdef Q_WS_WIN
++#if defined (Q_WS_WIN) || defined (Q_OS_MAC)
+ int KFileDialog::exec()
+ {
+     if (!d->native)
+@@ -876,7 +876,7 @@
+     }
+     return QDialog::Rejected;
+ }
+-#endif // Q_WS_WIN
++#endif // Q_WS_WIN || Q_OS_MAC
+ 
+ #ifdef Q_WS_WIN
+ #define KF_EXTERN extern __declspec(dllimport)
+Index: kdeui/windowmanagement/kwindowsystem_win.cpp
+===================================================================
+--- kdeui/windowmanagement/kwindowsystem_win.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdeui/windowmanagement/kwindowsystem_win.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -77,11 +77,11 @@
+     friend class KWindowSystem;
+     public:
+         KWindowSystemPrivate ( int what );
+-        ~KWindowSystemPrivate();  
+-        
++        ~KWindowSystemPrivate();
++
+         static bool CALLBACK EnumWindProc (WId hwnd, LPARAM lparam);
+         static void readWindowInfo  (WId wid  , InternalWindowInfo *winfo);
+-        
++
+         void windowAdded        (WId wid);
+         void windowRemoved      (WId wid);
+         void windowActivated    (WId wid);
+@@ -90,11 +90,11 @@
+         void windowStateChanged (WId wid);
+         void reloadStackList    ( );
+         void activate           ( );
+-        
+-        
++
++
+     protected:
+         bool winEvent ( MSG * message, long * result );
+-        
++
+     private:
+         int what;
+         WId fakeHwnd;
+@@ -148,6 +148,9 @@
+     QPixmap pix  = QPixmap::fromWinHBITMAP( ii.hbmColor );
+     pix.setMask( QPixmap::fromWinHBITMAP( ii.hbmMask ) );
+ 
++    DeleteObject( ii.hbmMask );
++    DeleteObject( ii.hbmColor );
++
+     return pix;
+ }
+ 
+@@ -165,30 +168,30 @@
+     if(!pRegisterShellHookWindow) pRegisterShellHookWindow = (PtrRegisterShellHookWindow)QLibrary::resolve("user32","RegisterShellHookWindow");
+     if(!pDeregisterShellHookWindow) pDeregisterShellHookWindow = (PtrDeregisterShellHookWindow)QLibrary::resolve("user32","DeregisterShellHookWindow");
+     if(!pRegisterShellHook) pRegisterShellHook = (PtrRegisterShellHook)QLibrary::resolve("shell32",(LPCSTR)0xb5);
+-    
++
+     //get the id for the shellhook message
+     if(WM_SHELLHOOK==-1) WM_SHELLHOOK  = RegisterWindowMessage(TEXT("SHELLHOOK"));
+-    
++
+     bool shellHookRegistered = false;
+-    if(pRegisterShellHook)
++    if(pRegisterShellHook) {
+         kDebug()<<"use RegisterShellHook";
+         shellHookRegistered = pRegisterShellHook(winId(),RSH_REGISTER);
+         if(!shellHookRegistered)
+             shellHookRegistered = pRegisterShellHook(winId(),RSH_TASKMGR);
+-    else{     
++    } else {
+         kDebug()<<"use RegisterShellHookWindow";
+         //i'm not sure if i have to do this, and what happens if some other process uses KWindowSystem
+         //if(pSetTaskmanWindow)
+         //    pSetTaskmanWindow(winId());
+-        
++
+         if(pRegisterShellHookWindow)
+             shellHookRegistered = pRegisterShellHookWindow(winId());
+     }
+-    
++
+     if(!shellHookRegistered)
+         //use a timer and poll the windows ?
+          kDebug()<<"Could not create shellhook to receive WindowManager Events";
+-            
++
+     //fetch window infos
+     reloadStackList();
+ }
+@@ -206,13 +209,13 @@
+ /**
+  *the callback procedure for the invisible ShellHook window
+  */
+-bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )  
++bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )
+ {
+     if (message->message == WM_SHELLHOOK) {
+         switch(message->wParam) {
+           case HSHELL_WINDOWCREATED:
+             KWindowSystem::s_d_func()->windowAdded(reinterpret_cast<WId>(message->lParam));
+-            break;          
++            break;
+           case HSHELL_WINDOWDESTROYED:
+             KWindowSystem::s_d_func()->windowRemoved(reinterpret_cast<WId>(message->lParam));
+             break;
+@@ -220,7 +223,7 @@
+           case HSHELL_RUDEAPPACTIVATED:
+             KWindowSystem::s_d_func()->windowActivated(reinterpret_cast<WId>(message->lParam));
+             break;
+-          case HSHELL_REDRAW: //the caption has changed 
++          case HSHELL_REDRAW: //the caption has changed
+             KWindowSystem::s_d_func()->windowRedraw(reinterpret_cast<WId>(message->lParam));
+             break;
+           case HSHELL_FLASH:
+@@ -240,20 +243,20 @@
+     GetWindowTextA(hWnd, windowText.data(), windowText.size());
+ 	DWORD ex_style = GetWindowExStyle(hWnd);
+     KWindowSystemPrivate *p = KWindowSystem::s_d_func();
+-    
++
+     QString add;
+-    if( !QString(windowText).trimmed().isEmpty() && IsWindowVisible( hWnd ) && !(ex_style&WS_EX_TOOLWINDOW) 
++    if( !QString(windowText).trimmed().isEmpty() && IsWindowVisible( hWnd ) && !(ex_style&WS_EX_TOOLWINDOW)
+        && !GetParent(hWnd) && !GetWindow(hWnd,GW_OWNER) && !p->winInfos.contains(hWnd) ) {
+-       
++
+ //        kDebug()<<"Adding window to windowList " << add + QString(windowText).trimmed();
+-        
++
+         InternalWindowInfo winfo;
+         KWindowSystemPrivate::readWindowInfo(hWnd,&winfo);
+-        
++
+         p->stackingOrder.append(hWnd);
+-        p->winInfos.insert(hWnd,winfo);  
++        p->winInfos.insert(hWnd,winfo);
+     }
+-    return true; 
++    return true;
+ }
+ 
+ void KWindowSystemPrivate::readWindowInfo ( WId hWnd , InternalWindowInfo *winfo)
+@@ -269,7 +272,7 @@
+     if(!hSmallIcon) hSmallIcon = (HICON)GetClassLong(hWnd, GCL_HICON);
+     if(!hSmallIcon) hSmallIcon = (HICON)SendMessage(hWnd, WM_QUERYDRAGICON, 0, 0);
+     if(hSmallIcon)  smallIcon  = HIcon2QPixmap(hSmallIcon);
+-    
++
+     QPixmap bigIcon;
+     HICON hBigIcon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_BIG, 0);
+     //if(!hBigIcon) hBigIcon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_SMALL2, 0);
+@@ -278,10 +281,10 @@
+     if(!hBigIcon) hBigIcon = (HICON)GetClassLong(hWnd, GCL_HICONSM);
+     if(!hBigIcon) hBigIcon = (HICON)SendMessage(hWnd, WM_QUERYDRAGICON, 0, 0);
+     if(hBigIcon)  bigIcon  = HIcon2QPixmap(hBigIcon);
+-       
++
+     winfo->bigIcon    = bigIcon;
+     winfo->smallIcon  = smallIcon;
+-    winfo->windowName = QString(windowText).trimmed();   
++    winfo->windowName = QString(windowText).trimmed();
+ }
+ 
+ 
+@@ -414,7 +417,6 @@
+ 
+ void KWindowSystem::forceActiveWindow( WId win, long time )
+ {
+-    KWindowSystem::init(INFO_WINDOWS);
+     SetActiveWindow( win );
+     SetForegroundWindow( win );
+ }
+@@ -436,7 +438,7 @@
+ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale )
+ {
+     KWindowSystem::init(INFO_WINDOWS);
+-    
++
+     QPixmap pm;
+     if(KWindowSystem::s_d_func()->winInfos.contains(win)){
+         if( width < 24 || height < 24 )
+@@ -451,7 +453,7 @@
+             size = ICON_SMALL;
+         HICON hIcon = (HICON)SendMessage( win, WM_GETICON, size, 0);
+         pm = HIcon2QPixmap( hIcon );
+-    } 
++    }
+     if( scale )
+         pm = pm.scaled( width, height );
+     return pm;
+@@ -466,19 +468,19 @@
+ {
+     KWindowSystem::init(INFO_WINDOWS);
+     KWindowSystemPrivate* s_d = s_d_func();
+-    
++
+     if(s_d->winInfos.contains(win)){
+         // is this safe enough or do i have to refresh() the window infos
+         s_d->winInfos[win].smallIcon = miniIcon;
+         s_d->winInfos[win].bigIcon   = icon;
+     }
+-    
++
+     HICON hIconBig = QPixmap2HIcon(icon);
+     HICON hIconSmall = QPixmap2HIcon(miniIcon);
+ 
+     hIconBig = (HICON)SendMessage( win, WM_SETICON, ICON_BIG,   (LPARAM)hIconBig );
+     hIconSmall = (HICON)SendMessage( win, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall );
+-    
++
+ }
+ 
+ void KWindowSystem::setState( WId win, unsigned long state )
+@@ -512,14 +514,14 @@
+ void KWindowSystem::minimizeWindow( WId win, bool animation)
+ {
+     Q_UNUSED( animation );
+-    KWindowSystem::init(INFO_WINDOWS);    
++    KWindowSystem::init(INFO_WINDOWS);
+     ShowWindow( win, SW_MINIMIZE );
+ }
+ 
+ void KWindowSystem::unminimizeWindow( WId win, bool animation )
+ {
+     Q_UNUSED( animation );
+-    KWindowSystem::init(INFO_WINDOWS);    
++    KWindowSystem::init(INFO_WINDOWS);
+     ShowWindow( win, SW_RESTORE );
+ }
+ 
+@@ -550,7 +552,7 @@
+ {
+     //TODO
+     kDebug() << "QRect KWindowSystem::workArea( const QList<WId>& exclude, int desktop ) isn't yet implemented!";
+-    KWindowSystem::init(INFO_WINDOWS);    
++    KWindowSystem::init(INFO_WINDOWS);
+     return QRect();
+ }
+ 
+@@ -561,7 +563,7 @@
+ 
+ void KWindowSystem::setDesktopName( int desktop, const QString& name )
+ {
+-     kDebug() << "KWindowSystem::setDesktopName( int desktop, const QString& name ) isn't yet implemented!";  
++     kDebug() << "KWindowSystem::setDesktopName( int desktop, const QString& name ) isn't yet implemented!";
+     //TODO
+ }
+ 
+@@ -628,20 +630,20 @@
+ 
+ QList<WId> KWindowSystem::stackingOrder()
+ {
+-  KWindowSystem::init(INFO_WINDOWS);  
++  KWindowSystem::init(INFO_WINDOWS);
+   return KWindowSystem::s_d_func()->stackingOrder;
+ }
+ 
+ const QList<WId>& KWindowSystem::windows()
+ {
+-  KWindowSystem::init(INFO_WINDOWS);  
++  KWindowSystem::init(INFO_WINDOWS);
+   return KWindowSystem::s_d_func()->stackingOrder;
+ }
+ 
+ void KWindowSystem::setType( WId win, NET::WindowType windowType )
+ {
+  //TODO
+- KWindowSystem::init(INFO_WINDOWS); 
++ KWindowSystem::init(INFO_WINDOWS);
+  kDebug() << "setType( WId win, NET::WindowType windowType ) isn't yet implemented!";
+ }
+ 
+Index: kdeui/widgets/ktextedit.cpp
+===================================================================
+--- kdeui/widgets/ktextedit.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdeui/widgets/ktextedit.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -106,6 +106,7 @@
+     bool checkSpellingEnabled : 1;
+     bool findReplaceEnabled: 1;
+     QString originalBuffer;
++    QString originalHtml;
+     QString spellChechingConfigFileName;
+     QString spellCheckingLanguage;
+     Sonnet::Highlighter *highlighter;
+@@ -119,7 +120,10 @@
+ void KTextEdit::Private::spellCheckerCanceled()
+ {
+     parent->selectAll();
+-    parent->setPlainText(originalBuffer);
++    if(parent->acceptRichText ())
++      parent->setHtml(originalHtml);
++    else
++      parent->setPlainText(originalBuffer);
+     spellCheckerFinished();
+ }
+ 
+@@ -271,10 +275,12 @@
+     parent->cut();
+     return true;
+   } else if ( KStandardShortcut::undo().contains( key ) ) {
+-    parent->document()->undo();
++    if(!parent->isReadOnly())
++        parent->document()->undo();
+     return true;
+   } else if ( KStandardShortcut::redo().contains( key ) ) {
+-    parent->document()->redo();
++    if(!parent->isReadOnly())
++        parent->document()->redo();
+     return true;
+   } else if ( KStandardShortcut::deleteWordBack().contains( key ) ) {
+     parent->deleteWordBack();
+@@ -405,9 +411,11 @@
+           if (emptyDocument)
+           {
+               findAction->setEnabled(false);
+-              findNextAction->setEnabled(d->find != 0 );
++	      findNextAction->setEnabled(false );
+               replaceAction->setEnabled(false);
+           }
++	  else
++	      findNextAction->setEnabled(d->find != 0 );
+           popup->addSeparator();
+           popup->addAction(findAction);
+           popup->addAction(findNextAction);
+@@ -547,6 +555,8 @@
+   connect(spellDialog, SIGNAL(languageChanged(const QString &)),
+           this, SIGNAL(languageChanged(const QString &)));
+   d->originalBuffer = toPlainText();
++  if(acceptRichText ())
++    d->originalHtml = toHtml();
+   spellDialog->setBuffer(d->originalBuffer);
+   spellDialog->show();
+ }
+@@ -581,7 +591,13 @@
+         // Should really assert()
+         return;
+     }
+-
++    if(d->repDlg->pattern().isEmpty()) {
++        d->replace->disconnect(this);
++        d->replace->deleteLater(); // we are in a slot connected to m_replace, don't delete it right away
++        d->replace = 0;
++        ensureCursorVisible();
++        return;
++    }
+     delete d->replace;
+     d->replace = new KReplace(d->repDlg->pattern(), d->repDlg->replacement(), d->repDlg->options(), this);
+     d->repIndex = 0;
+@@ -604,7 +620,7 @@
+ 
+ void KTextEdit::slotReplaceNext()
+ {
+-    if (!d->replace)
++    if (!d->replace || isReadOnly())
+         return;
+ 
+     if (!(d->replace->options() & KReplaceDialog::PromptOnReplace))
+@@ -663,6 +679,13 @@
+ {
+     if (!d->find)
+         return;
++    if(document()->isEmpty())
++    {
++        d->find->disconnect(this);
++        d->find->deleteLater(); // we are in a slot connected to m_find, don't delete right away
++        d->find = 0;
++        return;
++    }
+ 
+     KFind::Result res = KFind::NoMatch;
+     if (d->find->needData())
+@@ -698,7 +721,7 @@
+ 
+ void KTextEdit::slotReplace()
+ {
+-    if( document()->isEmpty() )  // saves having to track the text changes
++    if( document()->isEmpty() || isReadOnly() )  // saves having to track the text changes
+         return;
+ 
+     if ( d->repDlg ) {
+Index: kdeui/widgets/klineedit.cpp
+===================================================================
+--- kdeui/widgets/klineedit.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdeui/widgets/klineedit.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -656,7 +656,8 @@
+     }
+     else if ( KStandardShortcut::paste().contains( key ) )
+     {
+-        paste();
++	if( !isReadOnly() )
++           paste();
+         return;
+     }
+     else if ( KStandardShortcut::pasteSelection().contains( key ) )
+@@ -669,17 +670,20 @@
+ 
+     else if ( KStandardShortcut::cut().contains( key ) )
+     {
+-        cut();
++	if( !isReadOnly() )
++           cut();
+         return;
+     }
+     else if ( KStandardShortcut::undo().contains( key ) )
+     {
+-        undo();
++	if( !isReadOnly() )
++          undo();
+         return;
+     }
+     else if ( KStandardShortcut::redo().contains( key ) )
+     {
+-        redo();
++	if( !isReadOnly() )
++          redo();
+         return;
+     }
+     else if ( KStandardShortcut::deleteWordBack().contains( key ) )
+Index: kdeui/widgets/kpushbutton.cpp
+===================================================================
+--- kdeui/widgets/kpushbutton.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdeui/widgets/kpushbutton.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -172,6 +172,7 @@
+     QPushButton::setText( d->item.text() );
+     setIcon( d->item.icon() );
+     setToolTip( d->item.toolTip() );
++    setEnabled( d->item.isEnabled() );
+     setWhatsThis( d->item.whatsThis() );
+ }
+ 
+Index: kdeui/icons/kiconloader.h
+===================================================================
+--- kdeui/icons/kiconloader.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdeui/icons/kiconloader.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -413,6 +413,20 @@
+     static QPixmap unknown();
+ 
+     /**
++     * Determines whether KIconLoader logs icon use internally. If
++     * enabled, KIconLoader logs names and sizes of all icons
++     * requested, through all KIconLoader instances. The log can be
++     * retrieved in formatted form using the iconUsageLog() function below.
++     */
++    static void setLogIconUse( bool on );
++
++    /**
++     * @return the formatted icon usage log, one icon name per line.
++     * @sa setLogIconUse
++     */
++    static QString iconUsageLog();
++
++    /**
+      * Checks whether the user wants to blend the icons with the background
+      *  using the alpha channel information for a given group.
+      * @param group the group to check
+Index: kdeui/icons/kiconloader.cpp
+===================================================================
+--- kdeui/icons/kiconloader.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdeui/icons/kiconloader.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -29,6 +29,8 @@
+ 
+ #include <QtCore/QCharRef>
+ #include <QtCore/QMutableStringListIterator>
++#include <QtCore/QMap>
++#include <QtCore/QSet>
+ #include <QtGui/QPixmap>
+ #include <QtGui/QPixmapCache>
+ #include <QtGui/QImage>
+@@ -889,6 +891,53 @@
+     return loadIcon( iconName, group, size, state, overlays, path_store, false );
+ }
+ 
++static bool kil_log_icon_use = false;
++typedef QMap<QString,QSet<int> > KilIconLog;
++Q_GLOBAL_STATIC( KilIconLog, kil_icon_log );
++
++static QSet<int> kil_default_sizes() {
++    QSet<int> result;
++    result.insert( 8 );
++    result.insert( 16 );
++    result.insert( 22 );
++    result.insert( 32 );
++    result.insert( 48 );
++    result.insert( 64 );
++    result.insert( 128 );
++    return result;
++}
++
++static QString format_kil_log_entry( const QString & name, const QSet<int> & sizes ) {
++    static const QSet<int> default_sizes = kil_default_sizes();
++    return QString().sprintf( "%40s: %3s %3s %3s %3s %3s %3s %3s%s",
++                              name.left(40).toUtf8().constData(),
++                              sizes.contains( 8 )   ?   "8" : "",
++                              sizes.contains( 16 )  ?  "16" : "",
++                              sizes.contains( 22 )  ?  "22" : "",
++                              sizes.contains( 32 )  ?  "32" : "",
++                              sizes.contains( 48 )  ?  "48" : "",
++                              sizes.contains( 64 )  ?  "64" : "",
++                              sizes.contains( 128 ) ? "128" : "",
++                              ( sizes - default_sizes ).empty() ? "" : " ..." );
++}
++
++// static
++QString KIconLoader::iconUsageLog()
++{
++    QStringList result;
++    const KilIconLog & kil = *kil_icon_log();
++    for ( KilIconLog::const_iterator it = kil.begin(), end = kil.end() ; it != end ; ++it )
++        result.push_back( format_kil_log_entry( it.key(), it.value() ) );
++    if ( result.empty() )
++        result.push_back( QLatin1String( "<no icons logged>" ) );
++    return result.join("\n"); //krazy:exclude=doublequote_chars
++}
++
++void KIconLoader::setLogIconUse( bool on )
++{
++    kil_log_icon_use = on;
++}
++
+ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, int size,
+                               int state, const QStringList& overlays,
+                               QString *path_store, bool canReturnNull) const
+@@ -903,6 +952,9 @@
+     if (size < 0)
+         return pix;
+ 
++    if ( kil_log_icon_use )
++        (*kil_icon_log())[name].insert( size );
++
+     // Special case for absolute path icons.
+     if (name.startsWith("favicons/"))
+     {
+@@ -1035,6 +1087,8 @@
+         if (!pix.isNull() || canReturnNull) {
+             return pix;
+         } else {
++            if ( key == str_unknown )
++               return pix; // don't recurse endlessly
+             return loadIcon(str_unknown, group, size, state,
+                             overlays, path_store, canReturnNull);
+         }
+Index: kdeui/findreplace/kfinddialog.cpp
+===================================================================
+--- kdeui/findreplace/kfinddialog.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdeui/findreplace/kfinddialog.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -247,6 +247,7 @@
+             "Ask before replacing each match found.") );
+ 
+     q->connect(q, SIGNAL(okClicked()), q, SLOT(_k_slotOk()));
++    _k_textSearchChanged(find->lineEdit()->text());
+ }
+ 
+ void KFindDialog::KFindDialogPrivate::_k_textSearchChanged( const QString & text)
+Index: kdeui/CMakeLists.txt
+===================================================================
+--- kdeui/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdeui/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -256,7 +256,8 @@
+                                          windowmanagement/kwindowinfo_mac.cpp)
+ endif (Q_WS_MAC)
+ if (Q_WS_WIN)
+-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_win.cpp)
++    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_win.cpp
++                                         windowmanagement/kwindowinfo_win.cpp)
+ endif (Q_WS_WIN)
+ if (Q_WS_QWS)
+     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_qws.cpp)
+Index: kdeui/util/ksystemtrayicon.cpp
+===================================================================
+--- kdeui/util/ksystemtrayicon.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdeui/util/ksystemtrayicon.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -58,17 +58,18 @@
+         onAllDesktops = false;
+         window = parent;
+ #ifdef Q_WS_WIN
+-        // FIXME the below makes korgac ( the reminder daemon in kdepim) crash
+-        // on startup
+-        // window->installEventFilter( this );
++        if ( window ) {
++            window->installEventFilter( this );
++        }
+ #endif
+     }
+ 
+     ~KSystemTrayIconPrivate()
+     {
+ #ifdef Q_WS_WIN
+-     // FIXME makes korgac crash, see above
+-     //   window->removeEventFilter( this );
++    if ( window ) {
++        window->removeEventFilter( this );
++    }
+ #endif
+         delete actionCollection;
+         delete menu;
+Index: kutils/kprintutils_export.h
+===================================================================
+--- kutils/kprintutils_export.h	(.../KDE/4.1/kdelibs)	(revision 0)
++++ kutils/kprintutils_export.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -0,0 +1,36 @@
++/*  This file is part of the KDE project
++    Copyright (C) 2007 David Faure <faure@kde.org>
++
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Library General Public
++    License as published by the Free Software Foundation; either
++    version 2 of the License, or (at your option) any later version.
++
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Library General Public License for more details.
++
++    You should have received a copy of the GNU Library General Public License
++    along with this library; see the file COPYING.LIB.  If not, write to
++    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++    Boston, MA 02110-1301, USA.
++*/
++
++#ifndef KPRINTUTILS_EXPORT_H
++#define KPRINTUTILS_EXPORT_H
++
++/* needed for KDE_EXPORT and KDE_IMPORT macros */
++#include <kdemacros.h>
++
++#ifndef KPRINTUTILS_EXPORT
++# if defined(MAKE_KPRINTUTILS_LIB)
++   /* We are building this library */ 
++#  define KPRINTUTILS_EXPORT KDE_EXPORT
++# else
++   /* We are using this library */ 
++#  define KPRINTUTILS_EXPORT KDE_IMPORT
++# endif
++#endif
++
++#endif
+Index: kutils/kcmoduleloader.h
+===================================================================
+--- kutils/kcmoduleloader.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kcmoduleloader.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -72,7 +72,7 @@
+      *
+      * @return a pointer to the loaded @ref KCModule
+      */
+-    KUTILS_EXPORT KCModule *loadModule(const KCModuleInfo &module, ErrorReporting
++    KCMUTILS_EXPORT KCModule *loadModule(const KCModuleInfo &module, ErrorReporting
+         report, QWidget * parent = 0, const QStringList& args = QStringList() );
+ 
+     /**
+@@ -83,14 +83,14 @@
+      *
+      * @return a pointer to the loaded @ref KCModule
+      */
+-    KUTILS_EXPORT KCModule *loadModule( const QString &module, ErrorReporting report,
++    KCMUTILS_EXPORT KCModule *loadModule( const QString &module, ErrorReporting report,
+         QWidget *parent = 0, const QStringList& args = QStringList() );
+ 
+     /**
+      * Unloads the module's library
+      * @param mod What module to unload for
+      */
+-    KUTILS_EXPORT void unloadModule(const KCModuleInfo &mod);
++    KCMUTILS_EXPORT void unloadModule(const KCModuleInfo &mod);
+ 
+     /**
+      * Display a message box explaining an error occurred and possible
+@@ -99,7 +99,7 @@
+      * @deprecated Use a constructor with ErrorReporting set to Dialog to show a
+      * message box like this function did.
+      */
+-    KUTILS_EXPORT KDE_DEPRECATED void showLastLoaderError(QWidget *parent);
++    KCMUTILS_EXPORT KDE_DEPRECATED void showLastLoaderError(QWidget *parent);
+ 
+     /**
+      * Returns a KCModule containing the messages @p report and @p text.
+@@ -110,7 +110,7 @@
+      *
+      * @internal
+      */
+-    KUTILS_EXPORT KCModule* reportError( ErrorReporting report, const QString & text,
++    KCMUTILS_EXPORT KCModule* reportError( ErrorReporting report, const QString & text,
+         const QString &details, QWidget * parent );
+ 
+ }
+Index: kutils/kcmutils_export.h
+===================================================================
+--- kutils/kcmutils_export.h	(.../KDE/4.1/kdelibs)	(revision 0)
++++ kutils/kcmutils_export.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -0,0 +1,36 @@
++/*  This file is part of the KDE project
++    Copyright (C) 2007 David Faure <faure@kde.org>
++
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Library General Public
++    License as published by the Free Software Foundation; either
++    version 2 of the License, or (at your option) any later version.
++
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Library General Public License for more details.
++
++    You should have received a copy of the GNU Library General Public License
++    along with this library; see the file COPYING.LIB.  If not, write to
++    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++    Boston, MA 02110-1301, USA.
++*/
++
++#ifndef KCMUTILS_EXPORT_H
++#define KCMUTILS_EXPORT_H
++
++/* needed for KDE_EXPORT and KDE_IMPORT macros */
++#include <kdemacros.h>
++
++#ifndef KCMUTILS_EXPORT
++# if defined(MAKE_KCMUTILS_LIB)
++   /* We are building this library */ 
++#  define KCMUTILS_EXPORT KDE_EXPORT
++# else
++   /* We are using this library */ 
++#  define KCMUTILS_EXPORT KDE_IMPORT
++# endif
++#endif
++
++#endif
+Index: kutils/kcmoduleproxy.h
+===================================================================
+--- kutils/kcmoduleproxy.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kcmoduleproxy.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -18,15 +18,15 @@
+ 
+ */
+ 
+-#ifndef KUTILS_KCMODULEPROXY_H
+-#define KUTILS_KCMODULEPROXY_H
++#ifndef KCMUTILS_KCMODULEPROXY_H
++#define KCMUTILS_KCMODULEPROXY_H
+ 
+ #include <QtGui/QImage>
+ #include <QtCore/QStringList>
+ 
+ #include <kcmodule.h>
+ #include <kservice.h>
+-#include <kutils_export.h>
++#include <kcmutils_export.h>
+ 
+ class KAboutData;
+ class KCModuleInfo;
+@@ -64,7 +64,7 @@
+  * @author Matthias Kretz <kretz@kde.org>
+  *
+  */
+-class KUTILS_EXPORT KCModuleProxy : public QWidget
++class KCMUTILS_EXPORT KCModuleProxy : public QWidget
+ {
+ Q_DECLARE_PRIVATE(KCModuleProxy)
+ Q_OBJECT
+@@ -256,5 +256,5 @@
+     Q_PRIVATE_SLOT(d_func(), void _k_ownerChanged(const QString &service, const QString &oldOwner, const QString &newOwner))
+ };
+ 
+-#endif // KUTILS_KCMODULEPROXY_H
++#endif // KCMUTILS_KCMODULEPROXY_H
+ // vim: ts=4
+Index: kutils/kcmodulecontainer.h
+===================================================================
+--- kutils/kcmodulecontainer.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kcmodulecontainer.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -46,7 +46,7 @@
+  *
+  * @author Frans Englich <frans.englich@telia.com>
+  */
+-class KUTILS_EXPORT KCModuleContainer : public KCModule
++class KCMUTILS_EXPORT KCModuleContainer : public KCModule
+ {
+ 	Q_OBJECT
+ 	public:
+Index: kutils/kprintpreview.h
+===================================================================
+--- kutils/kprintpreview.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kprintpreview.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -20,7 +20,7 @@
+ #ifndef KPRINTPREVIEW_H
+ #define KPRINTPREVIEW_H
+ 
+-#include <kutils_export.h>
++#include <kprintutils_export.h>
+ 
+ #include <kdialog.h>
+ 
+@@ -38,7 +38,7 @@
+  * preview.exec();
+  * @endcode
+  */
+-class KUTILS_EXPORT KPrintPreview : public KDialog
++class KPRINTUTILS_EXPORT KPrintPreview : public KDialog
+ {
+     Q_OBJECT
+ 
+Index: kutils/kpluginselector.h
+===================================================================
+--- kutils/kpluginselector.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kpluginselector.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -25,7 +25,7 @@
+ 
+ #include <QtCore/QList>
+ 
+-#include <kutils_export.h>
++#include <kcmutils_export.h>
+ #include <ksharedconfig.h>
+ 
+ class KComponentData;
+@@ -55,7 +55,7 @@
+   * @author Matthias Kretz <kretz@kde.org>
+   * @author Rafael Fernández López <ereslibre@kde.org>
+   */
+-class KUTILS_EXPORT KPluginSelector
++class KCMUTILS_EXPORT KPluginSelector
+     : public QWidget
+ {
+     Q_OBJECT
+Index: kutils/kemoticons_export.h
+===================================================================
+--- kutils/kemoticons_export.h	(.../KDE/4.1/kdelibs)	(revision 0)
++++ kutils/kemoticons_export.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -0,0 +1,36 @@
++/*  This file is part of the KDE project
++    Copyright (C) 2007 David Faure <faure@kde.org>
++
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Library General Public
++    License as published by the Free Software Foundation; either
++    version 2 of the License, or (at your option) any later version.
++
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Library General Public License for more details.
++
++    You should have received a copy of the GNU Library General Public License
++    along with this library; see the file COPYING.LIB.  If not, write to
++    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++    Boston, MA 02110-1301, USA.
++*/
++
++#ifndef KEMOTICONS_EXPORT_H
++#define KEMOTICONS_EXPORT_H
++
++/* needed for KDE_EXPORT and KDE_IMPORT macros */
++#include <kdemacros.h>
++
++#ifndef KEMOTICONS_EXPORT
++# if defined(MAKE_KEMOTICONS_LIB)
++   /* We are building this library */ 
++#  define KEMOTICONS_EXPORT KDE_EXPORT
++# else
++   /* We are using this library */ 
++#  define KEMOTICONS_EXPORT KDE_IMPORT
++# endif
++#endif
++
++#endif
+Index: kutils/kutils_export.h
+===================================================================
+--- kutils/kutils_export.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kutils_export.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -17,19 +17,19 @@
+     Boston, MA 02110-1301, USA.
+ */
+ 
+-#ifndef KUTILS_EXPORT_H
+-#define KUTILS_EXPORT_H
++#ifndef KCMUTILS_EXPORT_H
++#define KCMUTILS_EXPORT_H
+ 
+ /* needed for KDE_EXPORT and KDE_IMPORT macros */
+ #include <kdemacros.h>
+ 
+-#ifndef KUTILS_EXPORT
+-# if defined(MAKE_KUTILS_LIB)
++#ifndef KCMUTILS_EXPORT
++# if defined(MAKE_KCMUTILS_LIB)
+    /* We are building this library */ 
+-#  define KUTILS_EXPORT KDE_EXPORT
++#  define KCMUTILS_EXPORT KDE_EXPORT
+ # else
+    /* We are using this library */ 
+-#  define KUTILS_EXPORT KDE_IMPORT
++#  define KCMUTILS_EXPORT KDE_IMPORT
+ # endif
+ #endif
+ 
+Index: kutils/kcmoduleinfo.h
+===================================================================
+--- kutils/kcmoduleinfo.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kcmoduleinfo.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -24,7 +24,7 @@
+ #ifndef KCMODULEINFO_H
+ #define KCMODULEINFO_H
+ 
+-#include <kutils_export.h>
++#include <kcmutils_export.h>
+ #include <kservice.h>
+ 
+ class QString;
+@@ -44,7 +44,7 @@
+  * @author Daniel Molkentin <molkentin@kde.org>
+  *
+  */
+-class KUTILS_EXPORT KCModuleInfo // krazy:exclude=dpointer (implicitly shared)
++class KCMUTILS_EXPORT KCModuleInfo // krazy:exclude=dpointer (implicitly shared)
+ {
+ 
+ public:
+Index: kutils/kemoticons/kemoticons.h
+===================================================================
+--- kutils/kemoticons/kemoticons.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kemoticons/kemoticons.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -19,7 +19,7 @@
+ #ifndef KEMOTICONS_H
+ #define KEMOTICONS_H
+ 
+-#include "kutils_export.h"
++#include "kemoticons_export.h"
+ #include "kemoticonstheme.h"
+ 
+ #include <QtCore/QObject>
+@@ -41,7 +41,7 @@
+  * @author Carlo Segato (brandon.ml@gmail.com)
+  */
+ 
+-class KUTILS_EXPORT KEmoticons : public QObject
++class KEMOTICONS_EXPORT KEmoticons : public QObject
+ {
+     Q_OBJECT
+ public:
+Index: kutils/kemoticons/tests/CMakeLists.txt
+===================================================================
+--- kutils/kemoticons/tests/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kemoticons/tests/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -4,7 +4,7 @@
+ 
+ kde4_add_executable(kemoticonstest main.cpp)
+ 
+-target_link_libraries(kemoticonstest ${KDE4_KDEUI_LIBS} kutils)
++target_link_libraries(kemoticonstest ${KDE4_KDEUI_LIBS} kutils kemoticons)
+ 
+ add_definitions( -DSRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\"" )
+ 
+@@ -12,4 +12,4 @@
+ 
+ kde4_add_unit_test(kemoticontest2 ${kemoticontest2_SRCS})
+ 
+-target_link_libraries(kemoticontest2  ${QT_QTTEST_LIBRARY} ${KDE4_KIO_LIBS} kutils)
+\ No newline at end of file
++target_link_libraries(kemoticontest2  ${QT_QTTEST_LIBRARY} ${KDE4_KIO_LIBS} kutils kemoticons)
+Index: kutils/kemoticons/kemoticonstheme.h
+===================================================================
+--- kutils/kemoticons/kemoticonstheme.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kemoticons/kemoticonstheme.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -1,3 +1,4 @@
++
+ /**********************************************************************************
+  *   Copyright (C) 2008 by Carlo Segato <brandon.ml@gmail.com>                    *
+  *   Copyright (c) 2002-2003 by Stefan Gehn            <metz@gehn.net>            *
+@@ -31,7 +32,7 @@
+ /**
+  * This class contains the emoticons theme
+  */
+-class KUTILS_EXPORT KEmoticonsTheme
++class KEMOTICONS_EXPORT KEmoticonsTheme
+ {
+ public:
+ 
+Index: kutils/kemoticons/kemoticonsprovider.h
+===================================================================
+--- kutils/kemoticons/kemoticonsprovider.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kemoticons/kemoticonsprovider.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -19,7 +19,7 @@
+ #ifndef KEMOTICONS_PROVIDER_H
+ #define KEMOTICONS_PROVIDER_H
+ 
+-#include "kutils_export.h"
++#include "kemoticons_export.h"
+ #include <QtCore/QObject>
+ #include <QtCore/QVariant>
+ #include <QtCore/QStringList>
+@@ -32,7 +32,7 @@
+ /**
+  * This is the base class for the emoticons provider plugins
+  */
+-class KUTILS_EXPORT KEmoticonsProvider : public QObject
++class KEMOTICONS_EXPORT KEmoticonsProvider : public QObject
+ {
+     Q_OBJECT
+ public:
+Index: kutils/kemoticons/providers/adium/CMakeLists.txt
+===================================================================
+--- kutils/kemoticons/providers/adium/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kemoticons/providers/adium/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -5,7 +5,7 @@
+ 
+ kde4_add_plugin(emoticonstheme_adium ${adiumemoticons_SRCS})
+ 
+-target_link_libraries(emoticonstheme_adium kutils ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY})
++target_link_libraries(emoticonstheme_adium kutils kemoticons ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY})
+ 
+ ########### install files ###############
+ 
+Index: kutils/kemoticons/providers/kde/CMakeLists.txt
+===================================================================
+--- kutils/kemoticons/providers/kde/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kemoticons/providers/kde/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -5,7 +5,7 @@
+ 
+ kde4_add_plugin(emoticonstheme_kde ${kdeemoticons_SRCS})
+ 
+-target_link_libraries(emoticonstheme_kde kutils ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY})
++target_link_libraries(emoticonstheme_kde kutils ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY} kemoticons)
+ 
+ ########### install files ###############
+ 
+Index: kutils/kemoticons/providers/xmpp/CMakeLists.txt
+===================================================================
+--- kutils/kemoticons/providers/xmpp/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kemoticons/providers/xmpp/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -5,7 +5,7 @@
+ 
+ kde4_add_plugin(emoticonstheme_xmpp ${xmppemoticons_SRCS})
+ 
+-target_link_libraries(emoticonstheme_xmpp kutils ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY})
++target_link_libraries(emoticonstheme_xmpp kutils kemoticons ${KDE4_KDEUI_LIBS} ${QT_QTXML_LIBRARY})
+ 
+ ########### install files ###############
+ 
+Index: kutils/kemoticons/providers/pidgin/CMakeLists.txt
+===================================================================
+--- kutils/kemoticons/providers/pidgin/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kemoticons/providers/pidgin/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -5,7 +5,7 @@
+ 
+ kde4_add_plugin(emoticonstheme_pidgin ${pidginemoticons_SRCS})
+ 
+-target_link_libraries(emoticonstheme_pidgin kutils ${KDE4_KDEUI_LIBS})
++target_link_libraries(emoticonstheme_pidgin kutils kemoticons ${KDE4_KDEUI_LIBS})
+ 
+ ########### install files ###############
+ 
+Index: kutils/ksettings/pluginpage.h
+===================================================================
+--- kutils/ksettings/pluginpage.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/ksettings/pluginpage.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -21,7 +21,7 @@
+ #define KSETTINGS_PLUGINPAGE_H
+ 
+ #include <kcmodule.h>
+-#include <kutils_export.h>
++#include <kcmutils_export.h>
+ 
+ class KPluginSelector;
+ 
+@@ -67,7 +67,7 @@
+  *
+  * @author Matthias Kretz <kretz@kde.org>
+  */
+-class KUTILS_EXPORT PluginPage : public KCModule
++class KCMUTILS_EXPORT PluginPage : public KCModule
+ {
+     Q_OBJECT
+     Q_DECLARE_PRIVATE(PluginPage)
+Index: kutils/ksettings/dialog.h
+===================================================================
+--- kutils/ksettings/dialog.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/ksettings/dialog.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -20,7 +20,7 @@
+ #ifndef KSETTINGS_DIALOG_H
+ #define KSETTINGS_DIALOG_H
+ 
+-#include "../kutils_export.h"
++#include "../kcmutils_export.h"
+ #include "../kcmultidialog.h"
+ 
+ #include <kservice.h>
+@@ -70,7 +70,7 @@
+  *
+  * @author Matthias Kretz <kretz@kde.org>
+  */
+-class KUTILS_EXPORT Dialog : public KCMultiDialog
++class KCMUTILS_EXPORT Dialog : public KCMultiDialog
+ {
+     friend class PageNode;
+     Q_DECLARE_PRIVATE(Dialog)
+Index: kutils/ksettings/componentsdialog_p.h
+===================================================================
+--- kutils/ksettings/componentsdialog_p.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/ksettings/componentsdialog_p.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -20,7 +20,7 @@
+ #ifndef COMPONENTSDIALOG_P_H
+ #define COMPONENTSDIALOG_P_H
+ 
+-#include <kutils_export.h>
++#include <kcmutils_export.h>
+ #include <kdialog.h>
+ 
+ #include <QtCore/QList>
+@@ -39,7 +39,7 @@
+   to the okClicked() and applyClicked() signals to be notified about
+   configuration changes.
+ */
+-class KUTILS_EXPORT ComponentsDialog : public KDialog
++class KCMUTILS_EXPORT ComponentsDialog : public KDialog
+ {
+     Q_OBJECT
+     public:
+Index: kutils/ksettings/dispatcher.h
+===================================================================
+--- kutils/ksettings/dispatcher.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/ksettings/dispatcher.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -22,7 +22,7 @@
+ 
+ #include <QtCore/QObject>
+ #include <QtCore/QMap>
+-#include <kutils_export.h>
++#include <kcmutils_export.h>
+ #include <kcomponentdata.h>
+ 
+ namespace KSettings
+@@ -53,18 +53,18 @@
+      * @param recv         The object that should receive the signal
+      * @param slot         The slot to be called: "slotName"
+      */
+-    KUTILS_EXPORT void registerComponent(const KComponentData &componentData, QObject *recv, const char *slot);
++    KCMUTILS_EXPORT void registerComponent(const KComponentData &componentData, QObject *recv, const char *slot);
+ 
+     /**
+      * @return the KConfig object that belongs to the componentName
+      */
+-    KUTILS_EXPORT KSharedConfig::Ptr configForComponentName(const QString &componentName);
++    KCMUTILS_EXPORT KSharedConfig::Ptr configForComponentName(const QString &componentName);
+ 
+     /**
+      * @return a list of all the componentData names that are currently
+      * registered
+      */
+-    KUTILS_EXPORT QList<QString> componentNames();
++    KCMUTILS_EXPORT QList<QString> componentNames();
+ 
+     /**
+      * Call this function when the configuration belonging to the associated
+@@ -72,7 +72,7 @@
+      *
+      * @param componentName The value of X-KDE-ParentComponents.
+      */
+-    KUTILS_EXPORT void reparseConfiguration(const QString &componentName);
++    KCMUTILS_EXPORT void reparseConfiguration(const QString &componentName);
+ 
+     /**
+      * When this function is called the KConfig objects of all the registered
+@@ -80,7 +80,7 @@
+      * objects will read/write from/to the same config file, so that you
+      * can first write out the current state of the KConfig objects.
+      */
+-    KUTILS_EXPORT void syncConfiguration();
++    KCMUTILS_EXPORT void syncConfiguration();
+ } // namespace Dispatcher
+ 
+ }
+Index: kutils/dummy.cpp
+===================================================================
+--- kutils/dummy.cpp	(.../KDE/4.1/kdelibs)	(revision 0)
++++ kutils/dummy.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -0,0 +1,7 @@
++#include <kcmoduleproxy.h>
++#include <kprintpreview.h>
++#include <kemoticons/kemoticons.h>
++
++Q_GLOBAL_STATIC_WITH_ARGS( KCModuleProxy, foo, ( 0 ) )
++Q_GLOBAL_STATIC_WITH_ARGS( KPrintPreview, bar, ( 0, 0 ) )
++Q_GLOBAL_STATIC( KEmoticons, foobar )
+Index: kutils/CMakeLists.txt
+===================================================================
+--- kutils/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -1,4 +1,5 @@
+-project(kutils)
++
++project(kcmkutils)
+ include_directories( ${KDE4_KDEUI_INCLUDES} ${KDE4_KPARTS_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR})
+ 
+ set(ksettings_STAT_SRCS
+@@ -14,6 +15,7 @@
+ DESTINATION  ${INCLUDE_INSTALL_DIR}/ksettings )
+ 
+ ########### kemoticons ################
++if(NOT ONLY_KLEO)
+ add_subdirectory(kemoticons)
+ 
+ set(kemoticons_LIB_SRCS
+@@ -22,50 +24,86 @@
+     kemoticons/kemoticonsprovider.cpp
+ )
+ 
++  kde4_add_library(kemoticons SHARED ${kemoticons_LIB_SRCS})
++  
++  target_link_libraries(kemoticons  ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS} )
++  
++  set_target_properties(kemoticons PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
++
+ install(FILES kemoticons/kemoticonsTheme.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
+ 
+ install(FILES 
++    kemoticons_export.h
+     kemoticons/kemoticons.h 
+     kemoticons/kemoticonstheme.h 
+     kemoticons/kemoticonsprovider.h 
+     DESTINATION ${INCLUDE_INSTALL_DIR}
+ )
+ 
++install( TARGETS kemoticons DESTINATION ${LIB_INSTALL_DIR} )
++
++endif(NOT ONLY_KLEO)
++  ########### next target ###############
++  
++set( kcmutils_LIB_SRCS
++  kcmoduleinfo.cpp
++  kcmoduleloader.cpp
++  kcmultidialog.cpp
++  kcmoduleproxy.cpp
++  kcmodulecontainer.cpp
++  ksettingswidgetadaptor.cpp
++  kpluginselector.cpp
++  ${ksettings_STAT_SRCS}
++  )
++  
++kde4_add_library( kcmutils SHARED ${kcmutils_LIB_SRCS})
++  
++target_link_libraries( kcmutils ${KDE4_KDEUI_LIBS} )
++set_target_properties( kcmutils PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
++  
+ ########### next target ###############
++if(NOT ONLY_KLEO)
+ 
+-set(kutils_LIB_SRCS
+-kcmoduleinfo.cpp
+-kcmoduleloader.cpp
+-kcmultidialog.cpp
+-kcmoduleproxy.cpp
+-kpluginselector.cpp
+-kcmodulecontainer.cpp
+-ksettingswidgetadaptor.cpp
+-kprintpreview.cpp
+-${ksettings_STAT_SRCS}
+-${kemoticons_LIB_SRCS}
+-)
++  project(kprintutils)
++  
++  set(kprintutils_LIB_SRCS
++  kprintpreview.cpp
++  )
++  
++  
++  kde4_add_library(kprintutils SHARED ${kprintutils_LIB_SRCS})
++  
++  target_link_libraries(kprintutils  ${KDE4_KDEUI_LIBS} ${KDE4_KPARTS_LIBS} )
++  
++  set_target_properties(kprintutils PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
++endif(NOT ONLY_KLEO)
++  
++########### next target ###############
++if(NOT ONLY_KLEO)
++  # this is only for backwards compatibility, don't use in new projects
++  project(kutils)
++  kde4_add_library( kutils SHARED dummy.cpp )
++  target_link_libraries( kutils kprintutils kcmutils kemoticons)
++endif(NOT ONLY_KLEO)
++ ########### install files ###############
+ 
++install( TARGETS kcmutils DESTINATION ${LIB_INSTALL_DIR} )
+ 
+-kde4_add_library(kutils SHARED ${kutils_LIB_SRCS})
++ install( FILES
++ kcmutils_export.h
++  kcmoduleinfo.h
++  kcmoduleloader.h
++  kcmultidialog.h
++  kcmoduleproxy.h
++  kpluginselector.h
++  kcmodulecontainer.h
++  DESTINATION ${INCLUDE_INSTALL_DIR})
+ 
+-target_link_libraries(kutils  ${KDE4_KDEUI_LIBS} ${KDE4_KPARTS_LIBS} )
++if (NOT ONLY_KLEO)
++  install( TARGETS kprintutils kutils DESTINATION ${LIB_INSTALL_DIR} )
+ 
+-set_target_properties(kutils PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+-install(TARGETS kutils ${INSTALL_TARGETS_DEFAULT_ARGS})
+-
+-########### install files ###############
+-
+-install( FILES
+- kutils_export.h
+- kcmoduleinfo.h
+- kcmoduleloader.h
+- kcmultidialog.h
+- kcmoduleproxy.h
+- kpluginselector.h
+- kcmodulecontainer.h
+- kprintpreview.h
+- DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+-
+-
+-
++  install( FILES
++   kprintutils_export.h
++   kprintpreview.h
++  DESTINATION ${INCLUDE_INSTALL_DIR})
++endif(NOT ONLY_KLEO)
+Index: kutils/kcmultidialog.h
+===================================================================
+--- kutils/kcmultidialog.h	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kutils/kcmultidialog.h	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -34,7 +34,7 @@
+  *
+  * @author Matthias Elter <elter@kde.org>, Daniel Molkentin <molkentin@kde.org>
+  */
+-class KUTILS_EXPORT KCMultiDialog : public KPageDialog
++class KCMUTILS_EXPORT KCMultiDialog : public KPageDialog
+ {
+   Q_OBJECT
+     Q_DECLARE_PRIVATE(KCMultiDialog)
+Index: kdecore/kernel/kcmdlineargs.cpp
+===================================================================
+--- kdecore/kernel/kcmdlineargs.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdecore/kernel/kcmdlineargs.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -535,6 +535,7 @@
+    // Remove Qt and KDE options.
+    s->removeArgs("qt");
+    s->removeArgs("kde");
++   s->removeArgs("kuniqueapp");
+ 
+    QByteArray qCwd = QFile::encodeName(s->mCwd);
+    ds << qCwd;
+@@ -560,7 +561,7 @@
+    // Remove Qt and KDE options.
+    s->removeArgs("qt");
+    s->removeArgs("kde");
+-
++   s->removeArgs("kuniqueapp");
+    KCmdLineArgsList::Iterator args;
+    if ( s->argsList ) {
+       for(args = s->argsList->begin(); args != s->argsList->end(); ++args)
+Index: kdecore/kernel/kkernel_win.cpp
+===================================================================
+--- kdecore/kernel/kkernel_win.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdecore/kernel/kkernel_win.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -37,6 +37,8 @@
+ #include <shellapi.h>
+ #include <process.h>
+ 
++#include <cassert>
++
+ #if defined(__MINGW32__)
+ # define WIN32_CAST_CHAR (const WCHAR*)
+ #else
+@@ -58,23 +60,27 @@
+ 
+ void initKde4prefixUtf16()
+ {
+-    //the path is C:\some\path\kde4\bin\kdecore.dll
+-    GetModuleFileNameW(kdecoreDllInstance, kde4prefixUtf16, MAX_PATH + 1);
+-    int bs1 = 0, bs2 = 0;
+-
+-    //we convert \ to / and remove \bin\kdecore.dll from the string
+-    int pos;
+-    for (pos = 0; pos < MAX_PATH + 1 && kde4prefixUtf16[pos] != 0; ++pos) {
+-        if (kde4prefixUtf16[pos] == '\\') {
+-            bs1 = bs2;
+-            bs2 = pos;
+-            kde4prefixUtf16[pos] = '/';
++    //the path is C:\some\path\kde4\bin\kdecore.dll, or C:\some\InstallationDirectory\kdecore.dll
++    //for non-standard distributions (e.g., Gpg4win)
++    //To find the prefix, we cut kdecore.dll and also \bin\ if present 
++    const DWORD pathLength = GetModuleFileNameW(kdecoreDllInstance, kde4prefixUtf16, MAX_PATH + 1);
++    const DWORD lastError = GetLastError();
++    if ( pathLength == 0 || lastError != 0 )
++        qFatal("Could not determine kde installation prefix (Error code=%d)", lastError);
++    assert(pathLength <= MAX_PATH + 1);
++    int lastSlash = -1;
++    for (int i = 0; i < pathLength; ++i)
++        if (kde4prefixUtf16[i] == '\\') {
++            kde4prefixUtf16[i] = '/';            
++            lastSlash = i;
+         }
+-    }
+-    Q_ASSERT(bs1);
+-    Q_ASSERT(pos < MAX_PATH + 1);
+-    kde4prefixUtf16[bs1] = '/';
+-    kde4prefixUtf16[bs1+1] = 0;
++    if (lastSlash == -1)
++        qFatal("Could not determine kde installation prefix from \"%s\"", kde4prefixUtf16);
++    //cut off "kdecore.dll"
++    kde4prefixUtf16[lastSlash+1] = 0;
++    //cut possible "/bin"
++    if (lastSlash > 3 && wcsncmp(kde4prefixUtf16 + lastSlash - 4, L"/bin", 4) == 0) 
++        kde4prefixUtf16[lastSlash-3] = 0; 
+ }
+ 
+ // can't use QCoreApplication::applicationDirPath() because sometimes we
+Index: kdecore/kernel/ktoolinvocation.cpp
+===================================================================
+--- kdecore/kernel/ktoolinvocation.cpp	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdecore/kernel/ktoolinvocation.cpp	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -36,7 +36,49 @@
+ 
+ #include <errno.h>
+ 
++#ifdef ONLY_KLEO
+ 
++//from kdelibs/kdoctools/kio_help.cpp
++QString langLookup(const QString &fname)
++{
++    QStringList search;
++
++    // assemble the local search paths
++    const QStringList localDoc = KGlobal::dirs()->resourceDirs("html");
++
++    QStringList langs = KGlobal::locale()->languageList();
++    langs.append( "en" );
++    langs.removeAll( "C" );
++
++    // this is kind of compat hack as we install our docs in en/ but the
++    // default language is en_US
++    for (QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
++        if ( *it == "en_US" )
++            *it = "en";
++
++    // look up the different languages
++    int ldCount = localDoc.count();
++    for (int id=0; id < ldCount; id++)
++    {
++        QStringList::ConstIterator lang;
++        for (lang = langs.begin(); lang != langs.end(); ++lang)
++            search.append(QString("%1%2/%3").arg(localDoc[id], *lang, fname));
++    }
++
++    // try to locate the file
++    for (QStringList::Iterator it = search.begin(); it != search.end(); ++it)
++    {
++        kDebug( 7119 ) << "Looking for help in: " << *it;
++
++        QFileInfo info(*it);
++        if (info.exists() && info.isFile() && info.isReadable())
++            return *it;
++    }
++    return QString();
++}
++
++#endif
++
+ KToolInvocation *KToolInvocation::self()
+ {
+     K_GLOBAL_STATIC(KToolInvocation, s_self)
+@@ -242,6 +284,12 @@
+                                   const QString& _appname,
+                                   const QByteArray& startup_id )
+ {
++#ifdef ONLY_KLEO
++    const QString appname = !_appname.isEmpty() ? _appname : QCoreApplication::applicationName();
++    KUrl url = KUrl::fromPath( langLookup( appname + "/index.html" ) );
++    url.setFragment( anchor );
++    invokeBrowser( url.url(), startup_id );
++#else // ONLY_KLEO
+     if (!isMainThreadActive())
+         return;
+ 
+@@ -286,6 +334,7 @@
+ 
+     iface->call("openUrl", url, startup_id );
+     delete iface;
++#endif // ONLY_KLEO
+ }
+ 
+ void KToolInvocation::invokeMailer(const QString &address, const QString &subject, const QByteArray& startup_id)
+Index: kdecore/CMakeLists.txt
+===================================================================
+--- kdecore/CMakeLists.txt	(.../KDE/4.1/kdelibs)	(revision 961552)
++++ kdecore/CMakeLists.txt	(.../kdepim/enterprise4/kdelibs-4.1-branch)	(revision 961552)
+@@ -96,13 +97,15 @@
+ 
+ 
+ add_subdirectory( kconfig_compiler )
++
++if (NOT CROSS_COMPILATION_TOOLS_ONLY)
+ add_subdirectory( tests )
+ add_subdirectory( sonnet/tests )
++endif (NOT CROSS_COMPILATION_TOOLS_ONLY)
+ 
+ ########### next target ###############
+ 
+-if (UNIX)
+-
++if (UNIX AND NOT CROSS_COMPILATION_TOOLS_ONLY)
+    kde4_add_library(kdefakes SHARED fakes.c)
+    set_target_properties(kdefakes PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
+    if (NOT HAVE_TRUNC)
+@@ -110,7 +113,7 @@
+    endif (NOT HAVE_TRUNC)
+    install(TARGETS kdefakes ${INSTALL_TARGETS_DEFAULT_ARGS} )
+ 
+-endif (UNIX)
++endif (UNIX AND NOT CROSS_COMPILATION_TOOLS_ONLY)
+ 
+ 
+ 
+@@ -135,6 +138,7 @@
+    date/kcalendarsystemjalali.cpp
+    date/kdatetime.cpp
+    date/ktimezone.cpp
++
+    date/ksystemtimezone.cpp
+    date/ktzfiletimezone.cpp
+    io/kautosavefile.cpp
+@@ -243,6 +247,8 @@
+    add_definitions(-DNO_DISPLAY)
+ endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
+ 
++if (NOT CROSS_COMPILATION_TOOLS_ONLY)
++
+ kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
+ 
+ target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
+@@ -261,8 +267,12 @@
+ 
+ install(TARGETS kdecore ${INSTALL_TARGETS_DEFAULT_ARGS})
+ 
++endif (NOT CROSS_COMPILATION_TOOLS_ONLY)
++
+ ########### next target ###############
+ 
++if (NOT CROSS_COMPILATION_TOOLS_ONLY)
++
+ configure_file(all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)  
+ 
+ kde4_add_executable(kde4-config NOGUI kde-config.cpp )
+@@ -271,7 +281,97 @@
+ 
+ install(TARGETS kde4-config DESTINATION ${BIN_INSTALL_DIR} )
+ 
++else (NOT CROSS_COMPILATION_TOOLS_ONLY)
+ 
++kde4_add_executable(kde4-config NOGUI kde-config.cpp
++   config/kconfig.cpp
++   config/kconfigbackend.cpp
++   config/kconfigbase.cpp
++   config/kconfiggroup.cpp
++   config/ksharedconfig.cpp
++   config/kconfigini.cpp
++   config/kdesktopfile.cpp
++   config/kcoreconfigskeleton.cpp
++   date/kcalendarsystem.cpp
++   date/kcalendarsystemgregorian.cpp
++   date/kcalendarsystemhijri.cpp
++   date/kcalendarsystemhebrew.cpp
++   date/kcalendarsystemjalali.cpp
++   date/kdatetime.cpp
++   date/ktimezone.cpp
++   date/ksystemtimezone.cpp
++   date/ktzfiletimezone.cpp
++   io/kdebug.cpp
++   io/kdebugdbusiface.cpp
++   io/kmessage.cpp
++   io/ksavefile.cpp
++   io/ktemporaryfile.cpp
++   io/kurl.cpp
++   kernel/kauthorized.cpp
++   kernel/kaboutdata.cpp
++   kernel/kcmdlineargs.cpp
++   kernel/kglobal.cpp
++   kernel/kcomponentdata.cpp
++   kernel/kstandarddirs.cpp
++   kernel/ktoolinvocation.cpp
++   localization/kcatalog.cpp
++   localization/kcharsets.cpp
++   localization/klocale.cpp
++   localization/klocalizedstring.cpp
++   localization/ktranslit.cpp
++   localization/kuitformats.cpp
++   localization/kuitsemantics.cpp
++   sycoca/ksycoca.cpp
++   sycoca/ksycocadict.cpp
++   sycoca/ksycocaentry.cpp
++   sycoca/ksycocafactory.cpp
++   sycoca/kprotocolinfo.cpp
++   sycoca/kprotocolinfofactory.cpp
++   sycoca/kmemfile.cpp
++   services/kfoldermimetype.cpp
++   services/kmimetypefactory.cpp
++   services/kmimemagicrule.cpp
++   services/kmimetypetrader.cpp
++   services/kmimetype.cpp
++   services/kservice.cpp
++   services/kserviceaction.cpp
++   services/kservicefactory.cpp
++   services/kservicegroup.cpp
++   services/kservicegroupfactory.cpp
++   services/kserviceoffer.cpp
++   services/kservicetype.cpp
++   services/kservicetypefactory.cpp
++   services/kservicetypeprofile.cpp
++   services/kservicetypetrader.cpp
++   services/ktraderparse.cpp
++   services/ktraderparsetree.cpp
++   services/yacc.c
++   services/lex.c
++   services/kplugininfo.cpp
++   text/kstringhandler.cpp
++   util/klauncher_iface.cpp
++   util/klibrary.cpp
++   util/kmacroexpander.cpp
++   util/kpluginfactory.cpp
++   util/kpluginloader.cpp
++   util/kshell.cpp
++   util/krandom.cpp
++   io/klockfile_unix.cpp
++   kernel/kstandarddirs_unix.cpp
++   util/kmacroexpander_unix.cpp
++   util/kshell_unix.cpp
++   util/kuser_unix.cpp
++   kernel/ktoolinvocation_x11.cpp
++)
++
++target_link_libraries(kde4-config ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} )
++
++install(TARGETS kde4-config DESTINATION ${BIN_INSTALL_DIR} )
++
++endif (NOT CROSS_COMPILATION_TOOLS_ONLY)
++
++if (NOT CROSS_COMPILATION_TOOLS_ONLY)
++
+ ########### next target ###############
+ 
+ if (WIN32)
+@@ -295,6 +395,7 @@
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
+ )
+ 
++if (NOT ONLY_KLEO)
+ # the transcript plugin
+ set( ktranscript_LIB_SRCS
+    localization/ktranscript.cpp
+@@ -313,6 +414,8 @@
+ 
+ install( TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR} )
+ 
++endif (NOT ONLY_KLEO)
++
+ ########### install files ###############
+ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
+ install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
+@@ -426,3 +529,4 @@
+    sonnet/sonnetspeller.desktop
+    DESTINATION  ${SERVICETYPES_INSTALL_DIR}
+ )
++endif (NOT CROSS_COMPILATION_TOOLS_ONLY)
+
+Property changes on: .
+___________________________________________________________________
+Modified: svnmerge-integrated
+   - /branches/kdepim/enterprise4/kdelibs-4.1-branch:1-849447
+   + //branches/KDE/4.1/kdelibs:1-860422,860424-911664,912178,912456-912457,912462,912694,914597,915489,928065,929052
+Added: svnmerge-blocked
+   + //branches/KDE/4.1/kdelibs:860423
+
