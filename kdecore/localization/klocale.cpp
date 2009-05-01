@@ -41,6 +41,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QRegExp>
 #include <QtCore/QLocale>
+#include <QtCore/QMutexLocker>
 
 #include "kcatalog_p.h"
 #include "kglobal.h"
@@ -700,6 +701,8 @@ KLocale::~KLocale()
   delete d;
 }
 
+K_GLOBAL_STATIC(QMutex, s_translateLock)
+
 void KLocalePrivate::translate_priv(const char *msgctxt,
                                     const char *msgid,
                                     const char *msgid_plural,
@@ -707,6 +710,11 @@ void KLocalePrivate::translate_priv(const char *msgctxt,
                                     QString *language,
                                     QString *translation) const
 {
+  // KCatalog used below is not thread safe.
+  // (Entry points from KLocalizedString are already locked there,
+  // but another entry point is from KLocale::translateQt.)
+  QMutexLocker lock(s_translateLock);
+
   if ( !msgid || !msgid[0] ) {
     kDebug(173) << "KLocale: trying to look up \"\" in catalog. "
                 << "Fix the program" << endl;
