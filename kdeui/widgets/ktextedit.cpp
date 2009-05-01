@@ -116,7 +116,7 @@ class KTextEdit::Private
     bool findReplaceEnabled: 1;
     QString originalBuffer;
     QString originalHtml;
-    QString spellChechingConfigFileName;
+    QString spellCheckingConfigFileName;
     QString spellCheckingLanguage;
     Sonnet::Highlighter *highlighter;
     KFindDialog *findDlg;
@@ -251,7 +251,7 @@ KTextEdit::~KTextEdit()
 
 void KTextEdit::setSpellCheckingConfigFileName(const QString &_fileName)
 {
-    d->spellChechingConfigFileName = _fileName;
+    d->spellCheckingConfigFileName = _fileName;
 }
 
 const QString& KTextEdit::spellCheckingLanguage() const
@@ -642,7 +642,7 @@ void KTextEdit::wheelEvent( QWheelEvent *event )
 
 void KTextEdit::createHighlighter()
 {
-    setHighlighter(new Sonnet::Highlighter(this, d->spellChechingConfigFileName));
+    setHighlighter(new Sonnet::Highlighter(this, d->spellCheckingConfigFileName));
 }
 
 Sonnet::Highlighter* KTextEdit::highlighter() const
