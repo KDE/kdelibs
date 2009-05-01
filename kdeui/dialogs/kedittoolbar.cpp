@@ -309,6 +309,8 @@ public:
     void slotUpButton();
     void slotDownButton();
 
+    void selectActiveItem(QString);
+    
     void slotChangeIcon();
 
     void slotProcessExited();
@@ -1188,14 +1190,31 @@ void KEditToolBarWidgetPrivate::slotActiveSelectionChanged()
 
 void KEditToolBarWidgetPrivate::slotInsertButton()
 {
+  QString internalName = static_cast<ToolBarItem *>(m_inactiveList->currentItem())->internalName();
+  
   insertActive(m_inactiveList->currentItem(), m_activeList->currentItem(), false);
-
   // we're modified, so let this change
   emit m_widget->enableOk(true);
 
   // TODO: #### this causes #97572.
   // It would be better to just "delete item; loadActions( ... , ActiveListOnly );" or something.
   slotToolBarSelected( m_toolbarCombo->currentIndex() );
+  
+  selectActiveItem( internalName );
+}
+
+void KEditToolBarWidgetPrivate::selectActiveItem(QString internalName) 
+{
+  int activeItemCount = m_activeList->count();
+  for(int i = 0; i < activeItemCount; i++)
+  {
+    ToolBarItem * item = static_cast<ToolBarItem *>(m_activeList->item(i));
+    if (item->internalName()==internalName)
+    {
+      m_activeList->setCurrentItem(item);
+      break;
+    }
+  }
 }
 
 void KEditToolBarWidgetPrivate::slotRemoveButton()
