@@ -68,6 +68,7 @@ if (WIN32)
       util/kshell_win.cpp
       util/kmacroexpander_win.cpp
       util/kuser_win.cpp
+      date/ktimezone_win.cpp
    )
    if(NOT MSVC)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
