@@ -26,7 +26,7 @@
 // Dump SVGElementInstance object tree - useful to debug instanceRoot problems
 // #define DUMP_INSTANCE_TREE
 
-// Dump the deep-expanded shadow tree (where the renderes are built from)
+// Dump the deep-expanded shadow tree (where the renderers are built from)
 // #define DUMP_SHADOW_TREE
 
 #if ENABLE(SVG)
