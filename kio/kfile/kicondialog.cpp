@@ -610,6 +610,7 @@ void KIconDialog::setCustomLocation( const QString& location )
 QString KIconDialog::openDialog()
 {
     d->showIcons();
+    d->searchLine->setFocus();
 
     if ( exec() == Accepted )
     {
@@ -629,6 +630,7 @@ void KIconDialog::showDialog()
 {
     setModal(false);
     d->showIcons();
+    d->searchLine->setFocus();
     show();
 }
 
