@@ -1128,6 +1128,20 @@ void KConfigTest::testDirtyOnEqual()
     QCOMPARE(newStamp, oldStamp);
 }
 
+void KConfigTest::testDirtyOnEqualOverdo()
+{
+    QByteArray val1("\0""one", 4);
+    QByteArray val2("\0""two", 4);
+    QByteArray defvalr;
+
+    KConfig sc("kconfigtest");
+    KConfigGroup cgLocal(&sc, "random");
+    cgLocal.writeEntry("someKey", val1);
+    QCOMPARE(cgLocal.readEntry("someKey", defvalr), val1);
+    cgLocal.writeEntry("someKey", val2);
+    QCOMPARE(cgLocal.readEntry("someKey", defvalr), val2);
+}
+
 QList<QByteArray> KConfigTest::readLines(const char* fileName)
 {
     const QString path = KStandardDirs::locateLocal("config", fileName);

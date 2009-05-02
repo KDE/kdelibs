@@ -69,7 +69,7 @@ inline bool operator ==(const KEntry &k1, const KEntry &k2)
 {
     return k1.bGlobal == k2.bGlobal && k1.bImmutable == k2.bImmutable
            && k1.bDeleted == k2.bDeleted && k1.bExpand == k2.bExpand
-           && !qstrcmp(k1.mValue.constData(), k2.mValue.constData());
+           && k1.mValue == k2.mValue;
 }
 
 inline bool operator !=(const KEntry &k1, const KEntry &k2)
