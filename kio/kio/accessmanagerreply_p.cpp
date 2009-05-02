@@ -216,6 +216,11 @@ void AccessManagerReply::AccessManagerReplyPrivate::_k_redirection(KIO::Job* job
 {
     job->kill();
     m_kioJob = 0;
+    
+    // unfortunately we don't get HTTP response code for redirection, so for
+    // temporary one assume code 302 which is most often used
+    if (q->attribute(QNetworkRequest::HttpStatusCodeAttribute).isNull())
+        q->setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 302);
     q->setAttribute(QNetworkRequest::RedirectionTargetAttribute, QUrl(url));
     emit q->finished();
 }
@@ -229,6 +234,8 @@ void AccessManagerReply::AccessManagerReplyPrivate::_k_percent(KJob *job, unsign
 void AccessManagerReply::AccessManagerReplyPrivate::_k_permanentRedirection(KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl)
 {
     Q_UNUSED(fromUrl);
+    if (q->attribute(QNetworkRequest::HttpStatusCodeAttribute).isNull())
+        q->setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 301);
     _k_redirection(job, toUrl);
 }
 
