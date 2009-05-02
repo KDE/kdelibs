@@ -837,7 +837,7 @@ public:
     bool dispatchEvent(const Event &evt);
 
     /**
-     * Introduced in DOM Level 2
+     * Introduced in DOM Level 3
      *
      * This attribute returns the text content of this node and its
      * descendants. When it is defined to be null, setting it has no
@@ -854,7 +854,7 @@ public:
      * textual content.
      */
     DOMString textContent() const;
-    
+        
     /**
      * see textContent()
      * 
@@ -862,6 +862,40 @@ public:
      * NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
      */
     void setTextContent(const DOMString& text);
+    
+    /**
+     * Introduced in DOM Level 3.
+     * 
+     * These constants represent bitflags returned by the compareDocumentPosition
+     * method.
+     *
+     * @since 4.2.4
+     */
+    enum DocumentPosition {
+	DOCUMENT_POSITION_DISCONNECTED = 0x01,
+	DOCUMENT_POSITION_PRECEDING    = 0x02,
+	DOCUMENT_POSITION_FOLLOWING    = 0x04,
+	DOCUMENT_POSITION_CONTAINS     = 0x08,
+	DOCUMENT_POSITION_CONTAINED_BY = 0x10,
+	DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20
+    };
+    
+    /**
+     * Introduced in DOM Level 3.
+     * 
+     * This method compares the current node's position with that of 'other'
+     * and returns it as a combination of DocumentPosition bitfields.
+     * Here DOCUMENT_POSITION_FOLLOWING means that the 'other' is 
+     * after the current.
+     *
+     * The notion of order here is a logical one; for example attributes
+     * are viewed as if they were children of an element inserted
+     * right before the real children. The method will also assign
+     * some total order even if the nodes are not connected. 
+     *
+     * @since 4.2.4
+     */
+    unsigned compareDocumentPosition(const DOM::Node& other);
 
     /**
      * @internal

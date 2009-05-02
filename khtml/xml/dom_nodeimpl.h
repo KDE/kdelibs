@@ -111,6 +111,9 @@ public:
 
     // HTML 5
     NodeListImpl* getElementsByClassName(const DOMString &name);
+    
+    // DOM3. See the wrapper (DOM::Node for the constants used in the return value
+    unsigned compareDocumentPosition(const DOM::NodeImpl* other);
 
     // insertBefore, replaceChild and appendChild also close newChild
     // unlike the speed optimized addChild (which is used by the parser)
