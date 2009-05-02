@@ -382,7 +382,7 @@ K_GLOBAL_STATIC(ChangedDocuments, s_changedDocuments)
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
-    : NodeBaseImpl( 0 ), m_svgExtensions(0), m_domtree_version(0), m_counterDict(),
+    : NodeBaseImpl( 0 ), m_svgExtensions(0), m_counterDict(),
       m_imageLoadEventTimer(0)
 {
     m_document.resetSkippingRef(this); //Make document return us..
@@ -443,6 +443,9 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_jsEditor = 0;
     m_dynamicDomRestyler = new khtml::DynamicDomRestyler();
     m_stateRestorePos = 0;
+    
+    for (int c = 0; c < NumTreeVersions; ++c)
+        m_domTreeVersions[c] = 0;
 }
 
 void DocumentImpl::removedLastRef()

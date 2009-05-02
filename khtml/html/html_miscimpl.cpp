@@ -56,7 +56,7 @@ struct CollectionCache: public NodeListImpl::Cache
 
     QHash<QString,QList<NodeImpl*>* > nameCache;
 
-    CollectionCache(): nameCache(){}
+    CollectionCache(): Cache(DocumentImpl::TV_IDNameHref) {}
 
     virtual void clear(DocumentImpl* doc)
     {

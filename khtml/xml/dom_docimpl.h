@@ -28,6 +28,7 @@
 #define _DOM_DocumentImpl_h_
 
 #include "xml/dom_elementimpl.h"
+#include "xml/dom_nodelistimpl.h"
 #include "xml/dom_textimpl.h"
 #include "xml/dom2_traversalimpl.h"
 #include "misc/shared.h"
@@ -554,9 +555,27 @@ public:
     bool queryCommandState(const DOMString &command);
     bool queryCommandSupported(const DOMString &command);
     DOMString queryCommandValue(const DOMString &command);
+    
+    
+    // We version the tree to help determine which collection caches are 
+    // valid. All collections depend on the structural changes; and may depend 
+    // on some set of attributes.
+    enum TreeVersion {
+        TV_Structural,
+        TV_IDNameHref,
+        TV_Class,
+        NumTreeVersions
+    };
+    
+    void incDOMTreeVersion(unsigned ver) { ++m_domTreeVersions[ver]; }
+    unsigned int domTreeVersion(unsigned ver) const { return m_domTreeVersions[ver]; }
 
-    void incDOMTreeVersion() { ++m_domtree_version; }
-    unsigned int domTreeVersion() const { return m_domtree_version; }
+    // Since applications often re-creat nodelists all over the place, we cache 
+    // their caches in the documents. For now, we only do it for things that can be 
+    // parametrices by type + base node.
+    NodeListImpl::Cache* acquireCachedNodeListInfo(NodeListImpl::CacheFactory* fact,
+                                                   NodeImpl* base, int type);
+    void                 releaseCachedNodeListInfo(NodeListImpl::Cache* cache);
 
     JSEditor *jsEditor();
 
@@ -564,15 +583,10 @@ public:
     void setCounters(const khtml::RenderObject* o, QHash<QString,khtml::CounterNode*> *dict) { m_counterDict.insert(o, dict);}
     void removeCounters(const khtml::RenderObject* o) { delete m_counterDict.take(o); }
 
-
     ElementMappingCache& underDocNamedCache() {
         return m_underDocNamedCache;
     }
-
-    NodeListImpl::Cache* acquireCachedNodeListInfo(NodeListImpl::CacheFactory* fact,
-                                                   NodeImpl* base, int type);
-    void                 releaseCachedNodeListInfo(NodeListImpl::Cache* cache);
-
+    
     ElementMappingCache& getElementByIdCache() const {
         return m_getElementByIdCache;
     }
@@ -630,7 +644,7 @@ protected:
     NodeImpl *m_activeNode;
     NodeImpl *m_cssTarget;
 
-    unsigned int m_domtree_version;
+    unsigned int m_domTreeVersions[NumTreeVersions];
 
     WebCore::SVGDocumentExtensions* m_svgExtensions;
 
@@ -775,3 +789,4 @@ public:
 
 } //namespace
 #endif
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
