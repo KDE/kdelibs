@@ -24,6 +24,7 @@
 #define HTML_MISCIMPL_H
 
 #include "html_elementimpl.h"
+#include "xml/dom_nodelistimpl.h"
 #include "misc/shared.h"
 
 namespace DOM {

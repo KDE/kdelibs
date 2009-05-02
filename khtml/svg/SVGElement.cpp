@@ -154,7 +154,7 @@ void SVGElement::parseMappedAttribute(MappedAttribute* attr)
     else*/
     if (attr->id() == ATTR_ID) {
         setHasID();
-        document()->incDOMTreeVersion();
+        document()->incDOMTreeVersion(DocumentImpl::TV_IDNameHref);
     } else
         StyledElement::parseAttribute(attr);
 }

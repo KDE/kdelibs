@@ -176,7 +176,7 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
     {
         bool hadAnchor = m_hasAnchor;
         m_hasAnchor = attr->val() != 0;
-        document()->incDOMTreeVersion();
+        document()->incDOMTreeVersion(DocumentImpl::TV_IDNameHref);
         if (hadAnchor != m_hasAnchor)
             setChanged();
         if (m_hasAnchor && document()->part() && document()->part()->dnsPrefetch()) {

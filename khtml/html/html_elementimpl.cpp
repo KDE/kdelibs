@@ -161,7 +161,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ID:
         // unique id
         setHasID();
-        document()->incDOMTreeVersion();
+        document()->incDOMTreeVersion(DocumentImpl::TV_IDNameHref);
         break;
     case ATTR_CLASS:
         if (attr->val()) {
@@ -175,9 +175,10 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         } else {
             setHasClass(false);
         }
+        document()->incDOMTreeVersion(DocumentImpl::TV_Class);
         break;
     case ATTR_NAME:
-        document()->incDOMTreeVersion();
+        document()->incDOMTreeVersion(DocumentImpl::TV_IDNameHref);
         break;
     case ATTR_CONTENTEDITABLE:
         setContentEditable(attr);

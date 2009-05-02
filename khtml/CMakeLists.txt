@@ -360,6 +360,7 @@ set(khtmlcss_STAT_SRCS
 set(khtmlxml_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_docimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_nodeimpl.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/xml/dom_nodelistimpl.cpp  
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_textimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_elementimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_stringimpl.cpp
@@ -371,7 +372,6 @@ set(khtmlxml_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom2_viewsimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_restyler.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/ClassNames.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/xml/ClassNodeList.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_position.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_positioniterator.cpp
   ${CMAKE_SOURCE_DIR}/khtml/xml/dom_selection.cpp
