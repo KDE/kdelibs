@@ -1285,6 +1285,105 @@ DocumentImpl* NodeImpl::ownerDocument() const
         return doc;
 }
 
+// Helper for compareDocumentPosition --- this extends the notion of a parent node
+// beyond structural to also include elements containing attributes, etc.
+static const NodeImpl* logicalParentNode(const DOM::NodeImpl* node)
+{
+    NodeImpl* parent = node->parentNode();
+    if (parent)
+        return parent;
+        
+    switch (node->nodeType()) {
+        case Node::ATTRIBUTE_NODE:
+            return static_cast<const AttrImpl*>(node)->ownerElement();
+        
+        case Node::ENTITY_NODE:
+        case Node::NOTATION_NODE:
+            return node->ownerDocument()->doctype();
+            
+        default:
+            return 0;
+    }
+}
+
+unsigned NodeImpl::compareDocumentPosition(const DOM::NodeImpl* other)
+{
+    if (other == this)
+        return 0; 
+        
+    // First, collect paths of the parents of this and other to the root of their subtrees.
+    // Root goes first, hence the use of QList, with its fast prepends
+    QList<const NodeImpl*> thisPath;
+    for (const NodeImpl* cur = this; cur; cur = logicalParentNode(cur))
+        thisPath.prepend(cur);
+        
+    QList<const NodeImpl*> otherPath;
+    for (const NodeImpl* cur = other; cur; cur = logicalParentNode(cur))
+        otherPath.prepend(cur);
+        
+    // if the roots aren't the same, we're disconnected. We're also supposed to 
+    // return IMPLEMENTATION_SPECIFIC here, and, reading tea leaves, make some 
+    // sort of a stable decision to get a total order.
+    if (thisPath[0] != otherPath[0]) {
+        return Node::DOCUMENT_POSITION_DISCONNECTED | Node::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC |
+               (this > other ? Node::DOCUMENT_POSITION_PRECEDING : Node::DOCUMENT_POSITION_FOLLOWING);
+    }
+        
+    // Now find our common container.
+    const NodeImpl* common = 0;
+    int   diffPos = -1;
+    for (int pos = 0; pos < thisPath.size() && pos < otherPath.size(); ++pos) {
+        if (thisPath[pos] == otherPath[pos]) {
+            common = thisPath[pos];
+        } else {
+            diffPos = pos;
+            break;
+        }
+    }
+    
+    // Do we have direct containment? 
+    if (common == this)
+        return Node::DOCUMENT_POSITION_CONTAINED_BY | Node::DOCUMENT_POSITION_FOLLOWING;
+    else if (common == other)
+        return Node::DOCUMENT_POSITION_CONTAINS | Node::DOCUMENT_POSITION_PRECEDING;
+        
+    // OK, so now we are not nested, so there are ancestors of both nodes
+    // below common that are different. Since some of those may be logically and not 
+    // physically contained in common, we have to treat the logical containment case specially.
+    const NodeImpl* thisAnc  = thisPath [diffPos];
+    const NodeImpl* otherAnc = otherPath[diffPos];
+    
+    bool thisAncLogical  = thisAnc->parentNode() == 0;
+    bool otherAncLogical = otherAnc->parentNode() == 0;
+    kDebug() << thisAncLogical << otherAncLogical;
+    
+    if (thisAncLogical && otherAncLogical) {
+        // First, try to order by nodeType.
+        if (thisAnc->nodeType() != otherAnc->nodeType())
+            return (thisAnc->nodeType() < otherAnc->nodeType()) ? 
+                Node::DOCUMENT_POSITION_FOLLOWING : Node::DOCUMENT_POSITION_PRECEDING;
+                
+        // If not, another implementation-specific order.
+        return Node::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC |
+               (this > other ? Node::DOCUMENT_POSITION_PRECEDING : Node::DOCUMENT_POSITION_FOLLOWING);
+    }
+    
+    if (thisAncLogical)
+        return Node::DOCUMENT_POSITION_FOLLOWING;
+        
+    if (otherAncLogical)
+        return Node::DOCUMENT_POSITION_PRECEDING;
+        
+    // Uff. And now the normal case -- just order thisAnc and otherAnc based on their tree order
+    // see if otherAnc follows thisAnc)
+    for (const NodeImpl* cur = thisAnc; cur; cur = cur->nextSibling()) {
+        if (cur == otherAnc)
+            return Node::DOCUMENT_POSITION_FOLLOWING;
+    }
+    
+    return Node::DOCUMENT_POSITION_PRECEDING;
+}
+
 void NodeImpl::setDocument(DocumentImpl* doc)
 {
     if (m_document == doc)
@@ -2192,3 +2291,4 @@ RegisteredListenerList::~RegisteredListenerList() {
     delete listeners; listeners = 0;
 }
 
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on; 

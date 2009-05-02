@@ -65,7 +65,7 @@ namespace KJS {
            OnResize, OnScroll, OnSelect, OnSubmit, OnUnload,
            OffsetLeft, OffsetTop, OffsetWidth, OffsetHeight, OffsetParent,
            ClientLeft, ClientTop, ClientWidth, ClientHeight, ScrollLeft, ScrollTop,
-           ScrollWidth, ScrollHeight, SourceIndex, TextContent };
+           ScrollWidth, ScrollHeight, SourceIndex, TextContent, CompareDocumentPosition };
 
     //### toNode? virtual
     DOM::NodeImpl* impl() const { return m_impl.get(); }

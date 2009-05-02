@@ -72,6 +72,12 @@ using namespace DOM;
   DOCUMENT_TYPE_NODE    DOM::Node::DOCUMENT_TYPE_NODE   DontDelete|ReadOnly
   DOCUMENT_FRAGMENT_NODE DOM::Node::DOCUMENT_FRAGMENT_NODE  DontDelete|ReadOnly
   NOTATION_NODE     DOM::Node::NOTATION_NODE        DontDelete|ReadOnly
+  DOCUMENT_POSITION_DISCONNECTED                DOM::Node::DOCUMENT_POSITION_DISCONNECTED  DontDelete|ReadOnly
+  DOCUMENT_POSITION_PRECEDING                   DOM::Node::DOCUMENT_POSITION_PRECEDING  DontDelete|ReadOnly
+  DOCUMENT_POSITION_FOLLOWING                   DOM::Node::DOCUMENT_POSITION_FOLLOWING   DontDelete|ReadOnly
+  DOCUMENT_POSITION_CONTAINS                    DOM::Node::DOCUMENT_POSITION_CONTAINS  DontDelete|ReadOnly
+  DOCUMENT_POSITION_CONTAINED_BY                DOM::Node::DOCUMENT_POSITION_CONTAINED_BY  DontDelete|ReadOnly
+  DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC     DOM::Node::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC  DontDelete|ReadOnly
 @end
 */
 IMPLEMENT_CONSTANT_TABLE(DOMNodeConstants,"DOMNodeConstants")
@@ -89,6 +95,8 @@ IMPLEMENT_CONSTANT_TABLE(DOMNodeConstants,"DOMNodeConstants")
 # DOM2
   normalize	DOMNode::Normalize	DontDelete|Function 0
   isSupported   DOMNode::IsSupported	DontDelete|Function 2
+# DOM3
+  compareDocumentPosition 	DOMNode::CompareDocumentPosition	DontDelete|Function 1
 # from the EventTarget interface
   addEventListener	DOMNode::AddEventListener	DontDelete|Function 3
   removeEventListener	DOMNode::RemoveEventListener	DontDelete|Function 3
@@ -683,6 +691,13 @@ JSValue* DOMNodeProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, co
     case DOMNode::Item: {
       SharedPtr<NodeListImpl> childNodes = node.childNodes();
       return getDOMNode(exec, childNodes->item(static_cast<unsigned long>(args[0]->toNumber(exec))));
+    }
+    case DOMNode::CompareDocumentPosition: {
+       DOM::NodeImpl* other = toNode(args[0]);
+       if (!other)
+          setDOMException(exec, DOMException::TYPE_MISMATCH_ERR);
+       else
+          return jsNumber(node.compareDocumentPosition(other));
     }
   }
 

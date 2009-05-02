@@ -390,6 +390,13 @@ void Node::setTextContent(const DOMString& content)
         throw DOMException(exceptioncode);
 }
 
+unsigned Node::compareDocumentPosition(const Node& other)
+{
+    if (!impl || !other.impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+    return impl->compareDocumentPosition(other.impl);
+}
+
 unsigned int Node::elementId() const
 {
     if (!impl) return 0;
