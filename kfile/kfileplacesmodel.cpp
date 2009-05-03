@@ -99,19 +99,24 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
     KBookmarkGroup root = d->bookmarkManager->root();
     if (root.first().isNull() || !QFile::exists(file)) {
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
-                                        i18nc("Home Directory", "Home"), KUrl(KUser().homeDir()), "user-home");
+                                              "Home", i18nc("Home Directory", "Home"),
+                                              KUrl(KUser().homeDir()), "user-home");
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
-                                        i18n("Network"), KUrl("remote:/"), "network-workgroup");
+                                              "Network", i18n("Network"),
+                                              KUrl("remote:/"), "network-workgroup");
 #ifdef Q_OS_WIN
-	//C:/ as root for windows...forward slashes are valid too and are used in much/most of the KDE code on Windows
+        //C:/ as root for windows...forward slashes are valid too and are used in much/most of the KDE code on Windows
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
-                                        i18n("Root"), KUrl("C:/"), "folder-red");
+                                              "Root", i18n("Root"),
+                                              KUrl("C:/"), "folder-red");
 #else
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
-                                        i18n("Root"), KUrl("/"), "folder-red");
+                                              "Root", i18n("Root"),
+                                              KUrl("/"), "folder-red");
 #endif
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
-                                        i18n("Trash"), KUrl("trash:/"), "user-trash");
+                                              "Trash", i18n("Trash"),
+                                              KUrl("trash:/"), "user-trash");
 
         // Force bookmarks to be saved. If on open/save dialog and the bookmarks are not saved, QFile::exists
         // will always return false, which opening/closing all the time the open/save dialog would case the

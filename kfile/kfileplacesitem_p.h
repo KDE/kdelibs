@@ -57,9 +57,10 @@ public:
                                     const KUrl &url,
                                     const QString &iconName);
     static KBookmark createSystemBookmark(KBookmarkManager *manager,
-                                    const QString &label,
-                                    const KUrl &url,
-                                    const QString &iconName);
+                                          const QString &untranslatedLabel,
+                                          const QString &translatedLabel,
+                                          const KUrl &url,
+                                          const QString &iconName);
     static KBookmark createDeviceBookmark(KBookmarkManager *manager,
                                           const QString &udi);
 
@@ -83,6 +84,7 @@ private:
     KBookmark m_bookmark;
     KDirLister *m_lister;
     bool m_folderIsEmpty;
+    QString m_text;
     mutable Solid::Device m_device;
     mutable QPointer<Solid::StorageAccess> m_access;
     mutable QPointer<Solid::StorageVolume> m_volume;

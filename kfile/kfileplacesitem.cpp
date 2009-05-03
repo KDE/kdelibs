@@ -25,6 +25,7 @@
 #include <kbookmarkmanager.h>
 #include <kiconloader.h>
 #include <kdirlister.h>
+#include <klocale.h>
 #include <solid/opticaldisc.h>
 #include <solid/storageaccess.h>
 #include <solid/storagevolume.h>
@@ -33,7 +34,7 @@
 KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
                                  const QString &address,
                                  const QString &udi)
-    : m_manager(manager), m_lister(0), m_folderIsEmpty(true)
+    : m_manager(manager), m_lister(0), m_folderIsEmpty(true), m_text()
 {
     m_bookmark = m_manager->findByAddress(address);
 
@@ -85,6 +86,12 @@ KBookmark KFilePlacesItem::bookmark() const
 void KFilePlacesItem::setBookmark(const KBookmark &bookmark)
 {
     m_bookmark = bookmark;
+
+    if (bookmark.metaDataItem("isSystemItem") == "true") {
+        m_text = i18n(bookmark.text().toUtf8().data());
+    } else {
+        m_text = bookmark.text();
+    }
 }
 
 Solid::Device KFilePlacesItem::device() const
@@ -126,7 +133,7 @@ QVariant KFilePlacesItem::bookmarkData(int role) const
     switch (role)
     {
     case Qt::DisplayRole:
-        return b.text();
+        return m_text;
     case Qt::DecorationRole:
         return KIcon(iconNameForBookmark(b));
     case Qt::BackgroundRole:
@@ -212,11 +219,12 @@ KBookmark KFilePlacesItem::createBookmark(KBookmarkManager *manager,
 }
 
 KBookmark KFilePlacesItem::createSystemBookmark(KBookmarkManager *manager,
-                                          const QString &label,
-                                          const KUrl &url,
-                                          const QString &iconName)
+                                                const QString &untranslatedLabel,
+                                                const QString &translatedLabel,
+                                                const KUrl &url,
+                                                const QString &iconName)
 {
-    KBookmark bookmark = createBookmark(manager, label, url, iconName);
+    KBookmark bookmark = createBookmark(manager, untranslatedLabel, url, iconName);
     if (!bookmark.isNull())
         bookmark.setMetaDataItem("isSystemItem", "true");
     return bookmark;
