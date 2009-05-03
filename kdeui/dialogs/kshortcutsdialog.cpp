@@ -7,6 +7,7 @@
     Copyright (C) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
     Copyright (C) 2008 Michael Jansen <kde@michael-jansen.biz>
     Copyright (C) 2008 Alexander Dymo <adymo@kdevelop.org>
+    Copyright (C) 2009 Chani Armitage <chani@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -94,6 +95,17 @@ public:
         QApplication::restoreOverrideCursor();
      }
 
+    void undoChanges()
+    {
+        m_keyChooser->undoChanges();
+    }
+
+    void save()
+    {
+        m_keyChooser->save();
+        emit q->saved();
+    }
+
     KShortcutsDialog *q;
     KShortcutsEditor* m_keyChooser; // ### move
     KShortcutSchemesEditor* m_schemeEditor;
@@ -119,6 +131,7 @@ KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortc
 
     connect( this, SIGNAL(resetClicked()), d->m_keyChooser, SLOT(allDefault()) );
     connect( this, SIGNAL(user1Clicked()), d->m_keyChooser, SLOT(printShortcuts()) );
+    connect(this, SIGNAL(cancelClicked()), SLOT(undoChanges()));
 
     KConfigGroup group( KGlobal::config(), "KShortcutsDialog Settings" );
     resize( group.readEntry( "Dialog Size", sizeHint() ) );
@@ -145,15 +158,20 @@ QList<KActionCollection*> KShortcutsDialog::actionCollections() const
     return d->m_collections;
 }
 
+//FIXME should there be a setSaveSettings method?
 bool KShortcutsDialog::configure(bool saveSettings)
 {
-    int retcode = exec();
-    if (retcode != Accepted)
-        d->m_keyChooser->undoChanges();
-    else if (saveSettings)
-        d->m_keyChooser->save();
-
-    return retcode;
+    disconnect(this, SIGNAL(okClicked()), this, SLOT(save()));
+    if (saveSettings) {
+        connect(this, SIGNAL(okClicked()), this, SLOT(save()));
+    }
+    if (isModal()) {
+        int retcode = exec();
+        return retcode;
+    } else {
+        show();
+        return false;
+    }
 }
 
 QSize KShortcutsDialog::sizeHint() const

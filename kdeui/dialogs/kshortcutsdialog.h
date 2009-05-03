@@ -44,6 +44,22 @@
  * KShortcutsDialog::configure( actionCollection() );
  * \endcode
  *
+ * @since 4.3
+ * By default this dialog is modal. If you don't want that, setModal(false) and then the non-static
+ * configure() will show the dialog. If you want to do anything extra when the dialog is done,
+ * connect to okClicked() and/or cancelClicked(). However, if your extra stuff depends on the
+ * changed settings already being saved, connect to saved() instead to be safe; if you connect to
+ * okClicked() your function might be called before the save happens.
+ *
+ * example:
+ * \code
+ * KShortcutsDialog dlg;
+ * dlg.addCollection(myActions);
+ * dlg.setModal(false);
+ * connect(&dlg, SIGNAL(saved()), this, SLOT(doExtraStuff()));
+ * dlg.configure();
+ * \endcode
+ *
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
  * @author Hamish Rodda <rodda@kde.org> (KDE 4 porting)
  * @author Michael Jansen <kde@michael-jansen.biz>
@@ -106,8 +122,16 @@ public:
 	static int configure( KActionCollection *collection, KShortcutsEditor::LetterShortcuts allowLetterShortcuts =
                           KShortcutsEditor::LetterShortcutsAllowed, QWidget* parent = 0, bool bSaveSettings = true);
 
+Q_SIGNALS:
+        /**
+         * emitted after ok is clicked and settings are saved
+         */
+        void saved();
+
 private:
 	Q_PRIVATE_SLOT(d, void changeShortcutScheme(const QString &))
+	Q_PRIVATE_SLOT(d, void save())
+	Q_PRIVATE_SLOT(d, void undoChanges())
 
 	class KShortcutsDialogPrivate;
 	friend class KShortcutsDialogPrivate;
