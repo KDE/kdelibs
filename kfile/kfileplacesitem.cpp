@@ -224,8 +224,8 @@ KBookmark KFilePlacesItem::createSystemBookmark(KBookmarkManager *manager,
                                                 const KUrl &url,
                                                 const QString &iconName)
 {
-    Q_UNUSED(untranslatedLabel); // parameter is only necessary to force the caller
-                                 // providing a translated string for the label
+    Q_UNUSED(translatedLabel); // parameter is only necessary to force the caller
+                               // providing a translated string for the label
 
     KBookmark bookmark = createBookmark(manager, untranslatedLabel, url, iconName);
     if (!bookmark.isNull())
