@@ -28,6 +28,8 @@
 #include "html/html_elementimpl.h"
 #include "html/html_imageimpl.h"
 #include "dom/html_element.h"
+#include <wtf/HashSet.h>
+#include <wtf/Vector.h>
 
 class QTextCodec;
 
@@ -107,6 +109,10 @@ public:
     friend class HTMLFormCollectionImpl;
 
 private:
+    // Collects nodes that are inside the toGather set in tree order
+    WTF::Vector<HTMLGenericFormElementImpl*> gatherInTreeOrder(NodeImpl* root,
+                                               const WTF::HashSet<NodeImpl*>& toGather);
+
     void gatherWalletData();
     QList<HTMLGenericFormElementImpl*> formElements;
     QList<HTMLImageElementImpl*> imgElements;

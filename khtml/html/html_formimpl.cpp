@@ -71,6 +71,7 @@
 
 using namespace DOM;
 using namespace khtml;
+using namespace WTF;
 
 HTMLFormElementImpl::HTMLFormElementImpl(DocumentImpl *doc, bool implicit)
     : HTMLElementImpl(doc)
@@ -245,6 +246,19 @@ inline static QByteArray fixUpfromUnicode(const QTextCodec* codec, const QString
     return str;
 }
 
+Vector<HTMLGenericFormElementImpl*> HTMLFormElementImpl::gatherInTreeOrder(NodeImpl* root,
+                                                               const HashSet<NodeImpl*>& toGather)
+{
+    Vector<HTMLGenericFormElementImpl*> out;
+    out.reserveCapacity(toGather.size());
+    
+    for (NodeImpl* cur = root; cur; cur = cur->traverseNextNode(root)) {
+        if (toGather.contains(cur))
+            out.append(static_cast<HTMLGenericFormElementImpl*>(cur));
+    }
+    return out;
+}
+
 QByteArray HTMLFormElementImpl::formData(bool& ok)
 {
 #ifdef FORMS_DEBUG
@@ -296,9 +310,27 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
         m_encCharset[i] = m_encCharset[i].toLatin1() == ' ' ? QChar('-') : m_encCharset[i].toLower();
 
     QStringList fileUploads, fileNotUploads;
+    
+    /**
+     Frameworks such as mootools Sortables expect form element values to be submitted in 
+     tree order (and HTML5 specifies this behavior); however formElements need not be 
+     ordered thus. Hence we walk through the tree and the formElements as we go --- 
+     first in our kids, then if needed in the parent
+    */
+    HashSet<NodeImpl*> formElementsSet;
+    foreach (HTMLGenericFormElementImpl* fe, formElements)
+        formElementsSet.add(fe);
+        
+    Vector<HTMLGenericFormElementImpl*> ordered = gatherInTreeOrder(this, formElementsSet);
+    
+    if (ordered.size() < (unsigned)formElements.size()) {
+        // Some of our elements not contained within us due to parsing hijinks -- scan 
+        // the entire document.
+        ordered = gatherInTreeOrder(document()->documentElement(), formElementsSet);
+    }
 
-    for (QListIterator<HTMLGenericFormElementImpl*> it(formElements); it.hasNext();) {
-        HTMLGenericFormElementImpl* const current = it.next();
+    for (unsigned i = 0; i < ordered.size(); ++i) {
+        HTMLGenericFormElementImpl* const current = ordered[i];
         khtml::encodingList lst;
 
         if (!current->disabled() && current->encoding(codec, lst, m_multipart))
