@@ -158,6 +158,8 @@ set(kdeui_LIB_SRCS
  util/kguiitem.cpp
  util/kkeyserver.cpp
  util/kmanagerselection.cpp
+ util/kmodifierkeyinfo.cpp
+ util/kmodifierkeyinfoprovider.cpp
  util/knotification.cpp
  util/knotificationmanager.cpp
  util/knotificationrestrictions.cpp
@@ -270,6 +272,16 @@ endif (Q_WS_WIN)
 if (Q_WS_QWS)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_qws.cpp)
 endif (Q_WS_QWS)
+
+if (Q_WS_X11 AND X11_Xkb_FOUND)
+    include_directories (
+        ${X11_Xkb_INCLUDE_PATH}
+        ${X11_Xlib_INCLUDE_PATH}
+    )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kmodifierkeyinfoprovider_x11.cpp)
+else (Q_WS_X11 AND X11_Xkb_FOUND)
+    set (kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kmodifierkeyinfoprovider_dummy.cpp)
+endif (Q_WS_X11)
 
 if(MINGW)
 add_definitions(-D_WIN32_WINNT=0x0500 -DWINVER=0x0500)
@@ -472,6 +484,7 @@ install( FILES
  util/kguiitem.h
  util/kkeyserver.h
  util/kmanagerselection.h
+ util/kmodifierkeyinfo.h
  util/knotification.h
  util/knotificationrestrictions.h
  util/knumvalidator.h

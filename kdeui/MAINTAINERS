@@ -54,6 +54,7 @@ kmainwindowiface.cpp
 kmenu.cpp		Holger Freyther <freyther@kde.org>
 kmenubar.cpp
 kmessagebox.cpp		
+kmodifierkeyinfo.cpp    Michael Leupold <lemma@confuego.org>
 knotification.cpp       Olivier Goffert <ogoffart@kde.org>
 knuminput.cpp           Dirk Mueller <mueller@kde.org>
 knumvalidator.cpp

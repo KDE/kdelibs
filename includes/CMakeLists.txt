@@ -258,6 +258,7 @@ install( FILES
   KMimeTypeTrader
   KMimeTypeValidator
   KMozillaBookmarkImporterImpl
+  KModifierKeyInfo
   KMultiTabBar
   KMultiTabBarButton
   KMultiTabBarTab
