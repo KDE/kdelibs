@@ -96,18 +96,11 @@ namespace Kuit {
         } Var;
     }
 
-    namespace Numfmt { // number formats
-        typedef enum {
-            System, Posix, US, Euro, Euro2, Euro2ct, EArab
-        } Var;
-    }
-
     typedef Tag::Var TagVar;
     typedef Att::Var AttVar;
     typedef Rol::Var RolVar;
     typedef Cue::Var CueVar;
     typedef Fmt::Var FmtVar;
-    typedef Numfmt::Var NumfmtVar;
 }
 
 // -----------------------------------------------------------------------------
@@ -121,7 +114,6 @@ class KuitSemanticsStaticData
     QHash<QString, Kuit::AttVar> knownAtts;
     QHash<QString, Kuit::FmtVar> knownFmts;
     QHash<QString, Kuit::RolVar> knownRols;
-    QHash<QString, Kuit::NumfmtVar> knownNumfmts;
     QHash<QString, Kuit::CueVar> knownCues;
 
     QHash<Kuit::TagVar, QSet<Kuit::TagVar> > tagSubs;
@@ -140,9 +132,6 @@ class KuitSemanticsStaticData
     QHash<QString, QString> xmlEntitiesInverse;
 
     KuitSemanticsStaticData ();
-
-    int numfmtInt;
-    int numfmtReal;
 };
 
 KuitSemanticsStaticData::KuitSemanticsStaticData ()
@@ -312,19 +301,6 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_TAG_NL(Bcode, 1);
     SETUP_TAG_NL(Item, 1);
 
-    // Setup names of number formats.
-    #undef SETUP_NUMFMT
-    #define SETUP_NUMFMT(numfmt, name) do { \
-        knownNumfmts[name] = Kuit::Numfmt::numfmt; \
-    } while (0)
-    SETUP_NUMFMT(System, "system");
-    SETUP_NUMFMT(Posix, "posix");
-    SETUP_NUMFMT(US, "us");
-    SETUP_NUMFMT(Euro, "euro");
-    SETUP_NUMFMT(Euro2, "euro2");
-    SETUP_NUMFMT(Euro2ct, "euro2ct");
-    SETUP_NUMFMT(EArab, "earab");
-
     // Known XML entities, direct/inverse mapping.
     xmlEntities["lt"] = '<';
     xmlEntities["gt"] = '>';
@@ -336,10 +312,6 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     xmlEntitiesInverse[QString('&')] = "amp";
     xmlEntitiesInverse[QString('\'')] = "apos";
     xmlEntitiesInverse[QString('"')] = "quot";
-
-    // Global setting for number formatting (<0 means no global setting).
-    numfmtInt = -1;
-    numfmtReal = -1;
 }
 
 K_GLOBAL_STATIC(KuitSemanticsStaticData, semanticsStaticData)
@@ -434,9 +406,6 @@ class KuitSemanticsPrivate
     QHash<Kuit::TagVar,
           QHash<int, // attribute set key
                 QHash<Kuit::FmtVar, QString> > > m_patterns;
-
-    Kuit::NumfmtVar m_numfmtInt;
-    Kuit::NumfmtVar m_numfmtReal;
 
     QHash<Kuit::FmtVar, QString> m_comboKeyDelim;
     QHash<Kuit::FmtVar, QString> m_guiPathDelim;
@@ -825,86 +794,11 @@ void KuitSemanticsPrivate::setFormattingPatterns ()
                            "%1<br/>"));
 }
 
-static Kuit::NumfmtVar parseNumberFormat (const QString &fmtstr)
-{
-    KuitSemanticsStaticData *s = semanticsStaticData;
-
-    KConfigGroup cg(KGlobal::config().data(), "Locale");
-    QString currctry = cg.readEntry("Country").toLower();
-    Kuit::NumfmtVar currfmt = Kuit::Numfmt::Posix;
-    foreach (const QString &ctryfmt, fmtstr.toLower().split(',')) {
-        QStringList lst = ctryfmt.split(':');
-        QString ctry, fmtname;
-        if (lst.size() == 2) {
-            ctry = lst[0];
-            fmtname = lst[1];
-        } else if (lst.size() == 1) {
-            fmtname = lst[0];
-        } else {
-            kDebug(173) << QString("Malformed number format specification "
-                                   "'%1' set in kdelibs4.po; "
-                                   "using POSIX format.").arg(ctryfmt);
-            return currfmt;
-        }
-        if (!s->knownNumfmts.contains(fmtname)) {
-            kDebug(173) << QString("Unknown number format '%1' set "
-                                   "in kdelibs4.po; "
-                                   "using POSIX format.").arg(fmtname);
-            return currfmt;
-        }
-        if (ctry == currctry) {
-            // Countries explicitly matched,
-            // use this format without futher lookup.
-            return s->knownNumfmts[fmtname];
-        } else if (ctry.isEmpty()) {
-            // Empty country states default format,
-            // unless an explicit country match is encountered later.
-            currfmt = s->knownNumfmts[fmtname];
-        }
-    }
-    return currfmt;
-}
-
 void KuitSemanticsPrivate::setTextTransformData ()
 {
-    KuitSemanticsStaticData *s = semanticsStaticData;
-
     // Mask metaTr with I18N_NOOP2 to have stuff extracted.
     #undef I18N_NOOP2
     #define I18N_NOOP2(ctxt, msg) metaTr(ctxt, msg)
-
-    // i18n: Decide how integer-valued amounts will be formatted in this
-    // language. Currently available number formats are:
-    //   posix   - decimal point
-    //   us      - thousands separation by comma, decimal point
-    //   euro    - thousands separation by point, decimal comma
-    //   euro2   - thousands separation by space, decimal comma
-    //   euro2ct - as euro2, except thousand not separated when <10000
-    //   earab   - Eastern Arabic digits, th. sep. by point, dec. comma
-    //   system  - by locale settings (i.e. override language ortography)
-    // If none of the existing formats is appropriate for your language,
-    // write to kde-i18n-doc@kde.org to arrange for a new format.
-    // If different formats are used in different countries in which
-    // this language is spoken, format may be set per country like this:
-    //   "fmt,ctry1:fmt1,ctry2:fmt2,..."
-    // where fmt is the default, ctry1 uses fmt1, ctry2 uses fmt2, etc.
-    // (countries are given by their ISO 3166-1 alpha-2 code,
-    // see http://en.wikipedia.org/wiki/ISO_3166-1 for list of codes).
-    QString fmtstrInt = I18N_NOOP2("number-format:integer", "us");
-    m_numfmtInt = parseNumberFormat(fmtstrInt);
-
-    // i18n: Decide how real-valued amounts will be formatted in this
-    // language. See the comment to previous entry.
-    QString fmtstrReal = I18N_NOOP2("number-format:real", "us");
-    m_numfmtReal = parseNumberFormat(fmtstrReal);
-
-    // If adherence to locale settings requested, set it globally.
-    if (m_numfmtInt == Kuit::Numfmt::System) {
-        s->numfmtInt = Kuit::Numfmt::System;
-    }
-    if (m_numfmtReal == Kuit::Numfmt::System) {
-        s->numfmtReal = Kuit::Numfmt::System;
-    }
 
     // i18n: Decide which string is used to delimit keys in a keyboard
     // shortcut (e.g. + in Ctrl+Alt+Tab) in plain text.
@@ -1517,34 +1411,11 @@ QString KuitSemanticsPrivate::modifyTagText (Kuit::TagVar tag,
                                              int numctx,
                                              Kuit::FmtVar fmt) const
 {
-    KuitSemanticsStaticData *s = semanticsStaticData;
-
     // numctx < 1 means that the number is not in numeric-id context.
     if (   (tag == Kuit::Tag::NumIntg || tag == Kuit::Tag::NumReal) \
         && numctx < 1)
     {
-        int numfmt;
-        if (tag == Kuit::Tag::NumIntg) {
-            numfmt = s->numfmtInt >= 0 ? s->numfmtInt : m_numfmtInt;
-        } else {
-            numfmt = s->numfmtReal >= 0 ? s->numfmtReal : m_numfmtReal;
-        }
-        switch (numfmt) {
-        case Kuit::Numfmt::System:
-            return KuitFormats::toNumberSystem(text);
-        case Kuit::Numfmt::US:
-            return KuitFormats::toNumberUS(text);
-        case Kuit::Numfmt::Euro:
-            return KuitFormats::toNumberEuro(text);
-        case Kuit::Numfmt::Euro2:
-            return KuitFormats::toNumberEuro2(text);
-        case Kuit::Numfmt::Euro2ct:
-            return KuitFormats::toNumberEuro2ct(text);
-        case Kuit::Numfmt::EArab:
-            return KuitFormats::toNumberEArab(text);
-        default:
-            return text;
-        }
+        return KGlobal::locale()->formatNumber(text, false);
     }
     else if (tag == Kuit::Tag::Filename) {
         return QDir::toNativeSeparators(text);
@@ -1646,7 +1517,6 @@ QString KuitSemanticsPrivate::salvageMarkup (const QString &text_,
         if (s->knownTags.contains(tagname)) {
             // Select formatting pattern.
             // TODO: Do not ignore attributes (in capts[3]).
-            // TODO: Locale-format numbers (in num* tags).
             QString pattern = visualPattern(s->knownTags[tagname], 0, fmt);
             ntext += pattern.arg(content);
         } else {
