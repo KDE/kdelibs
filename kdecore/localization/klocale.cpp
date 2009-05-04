@@ -188,11 +188,13 @@ public:
   QString monetaryThousandsSeparator;
   QString positiveSign;
   QString negativeSign;
+  KLocale::DigitSet digitSet;
   int fracDigits;
   KLocale::SignPosition positiveMonetarySignPosition;
   KLocale::SignPosition negativeMonetarySignPosition;
   bool positivePrefixCurrencySymbol : 1;
   bool negativePrefixCurrencySymbol : 1;
+  KLocale::DigitSet monetaryDigitSet;
 
   // Date and time
   QString timeFormat;
@@ -412,6 +414,9 @@ void KLocalePrivate::initFormat(KConfig *config)
   readConfigEntry("PositiveSign", "", positiveSign);
   readConfigEntry("NegativeSign", "-", negativeSign);
 
+  readConfigNumEntry("DigitSet", KLocale::ArabicDigits,
+                     digitSet, KLocale::DigitSet);
+
   // Monetary
   readConfigEntry("CurrencySymbol", "$", currencySymbol);
   readConfigEntry("MonetaryDecimalSymbol", ".", monetaryDecimalSymbol);
@@ -428,6 +433,9 @@ void KLocalePrivate::initFormat(KConfig *config)
 		     positiveMonetarySignPosition, KLocale::SignPosition);
   readConfigNumEntry("NegativeMonetarySignPosition", KLocale::ParensAround,
 		     negativeMonetarySignPosition, KLocale::SignPosition);
+
+  readConfigNumEntry("MonetaryDigitSet", KLocale::ArabicDigits,
+                     monetaryDigitSet, KLocale::DigitSet);
 
   // Date and time
   readConfigEntry("TimeFormat", "%H:%M:%S", timeFormat);
@@ -869,6 +877,88 @@ QString KLocale::translateQt(const char *context, const char *sourceText,
   return QString();
 }
 
+QList<KLocale::DigitSet> KLocale::allDigitSetsList () const
+{
+    QList<DigitSet> digitSets;
+    digitSets.append(ArabicDigits);
+    digitSets.append(ArabicIndicDigits);
+    digitSets.append(EasternArabicIndicDigits);
+    digitSets.append(DevenagariDigits);
+    return digitSets;
+}
+
+static QString digitSetString (KLocale::DigitSet digitSet)
+{
+    switch (digitSet) {
+    case KLocale::ArabicIndicDigits:
+        return QString::fromUtf8("٠١٢٣٤٥٦٧٨٩");
+    case KLocale::EasternArabicIndicDigits:
+        return QString::fromUtf8("۰۱۲۳۴۵۶۷۸۹");
+    case KLocale::DevenagariDigits:
+        return QString::fromUtf8("०१२३४५६७८९");
+    default:
+        return QString::fromUtf8("0123456789");
+    }
+}
+
+QString KLocale::digitSetToName (DigitSet digitSet, bool withDigits) const
+{
+    QString name;
+    switch (digitSet) {
+    case KLocale::ArabicIndicDigits:
+        name = i18nc("digit set", "Arabic-Indic");
+        break;
+    case KLocale::EasternArabicIndicDigits:
+        name = i18nc("digit set", "Eastern Arabic-Indic");
+        break;
+    case KLocale::DevenagariDigits:
+        name = i18nc("digit set", "Devenagari");
+        break;
+    default:
+        name = i18nc("digit set", "Arabic");
+    }
+    if (withDigits) {
+        QString digits = digitSetString(digitSet);
+        QString nameWithDigits = i18nc("name of digit set with digit string, "
+                                       "e.g. 'Arabic (0123456789)'",
+                                       "%1 (%2)", name, digits);
+        return nameWithDigits;
+    } else {
+        return name;
+    }
+}
+
+static QString toLocaleDigits (const QString &str, KLocale::DigitSet digitSet)
+{
+    // Shortcut if Western Arabic digits.
+    if (digitSet == KLocale::ArabicDigits) {
+        return str;
+    }
+    QString nstr;
+    QString digitDraw = digitSetString(digitSet);
+    foreach (const QChar &c, str) {
+        if (c.isDigit()) {
+            nstr += digitDraw[c.digitValue()];
+        } else {
+            nstr += c;
+        }
+    }
+    return nstr;
+}
+
+static QString toArabicDigits(const QString &str)
+{
+    QString nstr;
+    foreach (const QChar &c, str) {
+        if (c.isDigit()) {
+            nstr += QChar('0' + c.digitValue());
+        } else {
+            nstr += c;
+        }
+    }
+    return nstr;
+}
+
 bool KLocale::nounDeclension() const
 {
   return d->nounDeclension;
@@ -1041,6 +1131,9 @@ QString KLocale::formatMoney(double num,
       res.append (currency);
     }
 
+  // Convert to target digit set.
+  res = toLocaleDigits(res, d->monetaryDigitSet);
+
   return res;
 }
 
@@ -1192,6 +1285,10 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
 
   // How can we know where we should put the sign?
   mantString.prepend(neg?negativeSign():positiveSign());
+
+  // Convert to target digit set.
+  mantString = toLocaleDigits(mantString, d->digitSet);
+  expString = toLocaleDigits(expString, d->digitSet);
 
   return mantString + expString;
 }
@@ -1474,6 +1571,8 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
 
   tot += major + '.' + minor + exponentialPart;
 
+  tot = toArabicDigits(tot);
+
   return tot.toDouble(ok);
 }
 
@@ -1570,6 +1669,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
   QString tot;
   if (neg) tot = '-';
   tot += major + '.' + minior;
+  tot = toArabicDigits(tot);
   return tot.toDouble(ok);
 }
 
@@ -2451,4 +2551,24 @@ QString KLocale::localizedFilePath(const QString &filePath) const
 QString KLocale::removeAcceleratorMarker(const QString &label) const
 {
     return ::removeAcceleratorMarker(label);
+}
+
+void KLocale::setDigitSet (DigitSet digitSet)
+{
+    d->digitSet = digitSet;
+}
+
+KLocale::DigitSet KLocale::digitSet () const
+{
+    return d->digitSet;
+}
+
+void KLocale::setMonetaryDigitSet (DigitSet digitSet)
+{
+    d->monetaryDigitSet = digitSet;
+}
+
+KLocale::DigitSet KLocale::monetaryDigitSet () const
+{
+    return d->monetaryDigitSet;
 }

@@ -27,6 +27,7 @@
 #include <ksharedconfig.h>
 
 #include <QtCore/QString>
+#include <QtCore/QList>
 
 class QStringList;
 class QTextCodec;
@@ -244,6 +245,44 @@ public:
   };
 
   /**
+   * @since 4.3
+   *
+   * The set of digit characters used to display and enter numbers.
+   */
+  enum DigitSet {
+    ArabicDigits,             /**< 0123456789 (European and some Asian
+                                   languages and western Arabic dialects) */
+    ArabicIndicDigits,        /**< ٠١٢٣٤٥٦٧٨٩ (eastern Arabic dialects) */
+    EasternArabicIndicDigits, /**< ۰۱۲۳۴۵۶۷۸۹ (Persian and Urdu) */
+    DevenagariDigits          /**< ०१२३४५६७८९ (Hindi) */
+  };
+
+  /**
+   * @since 4.3
+   *
+   * Convert a digit set identifier to a human readable, localized name.
+   *
+   * @param digitSet the digit set identifier
+   * @param withDigits whether to add the digits themselves to the name
+   *
+   * @return the human readable and localized name of the digit set
+   *
+   * @see DigitSet
+   */
+  QString digitSetToName(DigitSet digitSet, bool withDigits = false) const;
+
+  /**
+   * @since 4.3
+   *
+   * Provides list of all known digit set identifiers.
+   *
+   * @return list of all digit set identifiers
+   * @see DigitSet
+   * @see digitSetToName
+   */
+  QList<DigitSet> allDigitSetsList () const;
+
+  /**
    * Returns what a decimal point should look like ("." or "," etc.)
    * according to the current locale or user settings.
    *
@@ -259,6 +298,17 @@ public:
    * @return The thousands separator used by locale.
    */
   QString thousandsSeparator() const;
+
+  /**
+   * @since 4.3
+   *
+   * Returns the identifier of the digit set used to display numbers.
+   *
+   * @return the digit set identifier
+   * @see DigitSet
+   * @see digitSetToName
+   */
+  DigitSet digitSet() const;
 
   /**
    * Returns what the symbol denoting currency in the current locale
@@ -343,6 +393,17 @@ public:
    * @see SignPosition
    */
   SignPosition negativeMonetarySignPosition() const;
+
+  /**
+   * @since 4.3
+   *
+   * Retuns the digit set used to display monetary values.
+   *
+   * @return the digit set identifier
+   * @see DigitSet
+   * @see digitSetToName
+   */
+  DigitSet monetaryDigitSet() const;
 
   /**
    * Given a double, converts that to a numeric string containing
@@ -932,6 +993,15 @@ public:
    */
   void setNegativeSign(const QString & sign);
   /**
+   * @since 4.3
+   *
+   * Changes the set of digit characters used to display numbers.
+   *
+   * @param digitSet the digit set identifier
+   * @see DigitSet
+   */
+  void setDigitSet(DigitSet digitSet);
+  /**
    * Changes the sign position used for positive monetary values.
    *
    * @param signpos The new sign position
@@ -984,6 +1054,15 @@ public:
    * @param symbol The new currency symbol
    */
   void setCurrencySymbol(const QString & symbol);
+  /**
+   * @since 4.3
+   *
+   * Set digit characters used to display monetary values.
+   *
+   * @param digitSet the digit set identifier
+   * @see DigitSet
+   */
+  void setMonetaryDigitSet(DigitSet digitSet);
 
   /**
    * Returns the preferred page size for printing.
