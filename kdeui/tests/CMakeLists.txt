@@ -47,71 +47,72 @@ KDEUI_UNIT_TESTS(
 )
 
 KDEUI_EXECUTABLE_TESTS(
-  kpassivepopuptest
-  kdialogbuttonboxtest
+  fixx11h_test
+  fixx11h_test2
+  kaccelgentest
+  kactionselectortest
+  kanimatedbuttontest
   kcharselecttest
+  kapptest
+  kassistantdialogtest
+  kbugreporttest
+  kcodecactiontest
+  kcolorcollectiontest
   kcolordlgtest
   kcolorcombotest
   kcomboboxtest
   kcompletionuitest
   kdatepicktest
+  kdatetabletest
+  kdatetimewidgettest
   kdatewidgettest
+  kdebugtest_gui
+  kdialogbuttonboxtest
+  kdialogtest
   keditlistboxtest
   kfontdialogtest
+  kglobalsettingsclient # helper program for kglobalsettingstest
+  khboxtest
+  kiconeffecttest
+  kiconloadertest
+  kinputdialogtest
+  kjobtrackerstest
   kledtest
   klineedittest
+  kmainwindowtest
+  kmainwindowrestoretest
   kmessageboxtest
+  kmessagetest
+  kmodifierkeyinfotest
+  knewpassworddialogtest
+  knotificationrestrictionstest
   knuminputtest
-  kcolorcollectiontest
+  kpagedialogtest
+  kpagewidgettest
+  kpassivepopuptest
+  kpassworddialogtest
+  kpixmapregionselectordialogtest
   kpopuptest
   kprogressdialogtest
   krulertest
+  kselectactiontest
   kseparatortest
   kstatusbartest
-  kwindowtest
-  kselectactiontest
-  kxmlguitest
-  kaccelgentest
+  ksqueezedtextlabeltest
   ksystemtraytest
-  ktreewidgetsearchlinetest
+  ktabwidgettest
   ktextedittest
   ktextbrowsertest
-  kmainwindowtest
-  kmainwindowrestoretest
-  kcodecactiontest
-  ktoolbartest
-  kdatetimewidgettest
-  kdatetabletest
-  kinputdialogtest
-  ktabwidgettest
-  ksqueezedtextlabeltest
-  kpixmapregionselectordialogtest
-  ktoolbarlabelactiontest
-  khboxtest
-  kbugreporttest
-  kdialogtest
-  knotificationrestrictionstest
-  kmessagetest
-  kpagedialogtest
-  kpagewidgettest
-  kassistantdialogtest
-  kactionselectortest
-  kapptest
-  testqtargs
-  kiconloadertest
-  kglobalsettingsclient # helper program for kglobalsettingstest
-  knewpassworddialogtest
-  kpassworddialogtest
-  kjobtrackerstest
-  kdebugtest_gui
   ktitlewidgettest
-  kiconeffecttest
+  ktoolbartest
+  ktoolbarlabelactiontest
+  ktreewidgetsearchlinetest
   kwallettest
   kwidgetitemdelegatetest
-  kanimatedbuttontest
+  kwindowtest
+  kxmlguitest
   kxmlguiwindowtest
-  fixx11h_test
-  fixx11h_test2
+  testqtargs
 )
 
 if (Q_WS_X11)
