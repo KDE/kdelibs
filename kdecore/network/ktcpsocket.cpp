@@ -24,6 +24,7 @@
 #include <kurl.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
+#include <klocale.h>
 
 #include <QtCore/QMutex>
 #include <QtCore/QStringList>
@@ -173,34 +174,34 @@ public:
     {
         switch (e) {
         case KSslError::NoError:
-            return "No error";
+            return i18nc("SSL error","No error");
         case KSslError::InvalidCertificateAuthorityCertificate:
-            return "The certificate authority's certificate is invalid";
+            return i18nc("SSL error","The certificate authority's certificate is invalid");
         case KSslError::ExpiredCertificate:
-            return "The certificate has expired";
+            return i18nc("SSL error","The certificate has expired");
         case KSslError::InvalidCertificate:
-            return "The certificate is invalid";
+            return i18nc("SSL error","The certificate is invalid");
         case KSslError::SelfSignedCertificate:
-            return "The certificate is not signed by any trusted certificate authority";
+            return i18nc("SSL error","The certificate is not signed by any trusted certificate authority");
         case KSslError::RevokedCertificate:
-            return "The certificate has been revoked";
+            return i18nc("SSL error","The certificate has been revoked");
         case KSslError::InvalidCertificatePurpose:
-            return "The certificate is unsuitable for this purpose";
+            return i18nc("SSL error","The certificate is unsuitable for this purpose");
         case KSslError::UntrustedCertificate:
-            return "The root certificate authority's certificate is not trusted for this purpose";
+            return i18nc("SSL error","The root certificate authority's certificate is not trusted for this purpose");
         case KSslError::RejectedCertificate:
-            return "The certificate authority's certificate is marked to reject this certificate's purpose";
+            return i18nc("SSL error","The certificate authority's certificate is marked to reject this certificate's purpose");
         case KSslError::NoPeerCertificate:
-            return "The peer did not present any certificate";
+            return i18nc("SSL error","The peer did not present any certificate");
         case KSslError::HostNameMismatch:
-            return "The certificate does not apply to the given host";
+            return i18nc("SSL error","The certificate does not apply to the given host");
         case KSslError::CertificateSignatureFailed:
-            return "The certificate cannot be verified for internal reasons";
+            return i18nc("SSL error","The certificate cannot be verified for internal reasons");
         case KSslError::PathLengthExceeded:
-            return "The certificate chain is too long";
+            return i18nc("SSL error","The certificate chain is too long");
         case KSslError::UnknownError:
         default:
-            return "Unknown error";
+            return i18nc("SSL error","Unknown error");
         }
     }
 
