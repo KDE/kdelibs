@@ -746,7 +746,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 #ifdef Q_WS_WIN
         QString prefix_ = prefix + QLatin1String( "*.*" );
         WIN32_FIND_DATA findData;
-        HANDLE hFile = FindFirstFile( (LPWSTR)prefix.utf16(), &findData );
+        HANDLE hFile = FindFirstFile( (LPWSTR)prefix_.utf16(), &findData );
         if( hFile == INVALID_HANDLE_VALUE )
             return;
         do {
