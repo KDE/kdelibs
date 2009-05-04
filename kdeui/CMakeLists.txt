@@ -281,7 +281,7 @@ if (Q_WS_X11 AND X11_Xkb_FOUND)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kmodifierkeyinfoprovider_x11.cpp)
 else (Q_WS_X11 AND X11_Xkb_FOUND)
     set (kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kmodifierkeyinfoprovider_dummy.cpp)
-endif (Q_WS_X11)
+endif (Q_WS_X11 AND X11_Xkb_FOUND)
 
 if(MINGW)
 add_definitions(-D_WIN32_WINNT=0x0500 -DWINVER=0x0500)
