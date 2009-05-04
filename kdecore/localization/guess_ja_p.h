@@ -42,6 +42,9 @@
 #ifdef Q_WS_WIN
 #undef UNICODE
 #endif 
+#ifdef SOLARIS
+#undef UNICODE
+#endif 
 namespace khtml {
     class guess_arc {
     public:
