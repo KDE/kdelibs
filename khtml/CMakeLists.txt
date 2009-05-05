@@ -353,6 +353,7 @@ set(khtmlcss_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/css/css_mediaquery.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/SVGCSSParser.cpp
   ${CMAKE_SOURCE_DIR}/khtml/css/SVGCSSStyleSelector.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/css/css_webfont.cpp
 )
 
 # khtml/xml/Makefile.am: khtmlxml
