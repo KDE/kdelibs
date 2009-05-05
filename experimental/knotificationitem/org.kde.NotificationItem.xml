@@ -1,0 +1,86 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.kde.NotificationItem">
+
+    <property name="Category" type="s" access="read"/>
+    <property name="Title" type="s" access="read"/>
+    <property name="Status" type="s" access="read"/>
+    <property name="WindowId" type="i" access="read"/>
+
+
+    <!-- main icon -->
+    <!-- names are preferred over pixmaps -->
+    <property name="Icon" type="s" access="read"/>
+
+    <!--struct containing width, height and image data-->
+    <property name="Image" type="(iiay)" access="read">
+      <annotation name="com.trolltech.QtDBus.QtTypeName" value="ExperimentalKDbusImageVector"/>
+    </property>
+
+    <property name="OverlayIcon" type="s" access="read"/>
+
+    <property name="OverlayImage" type="(iiay)" access="read">
+      <annotation name="com.trolltech.QtDBus.QtTypeName" value="ExperimentalKDbusImageVector"/>
+    </property>
+
+
+    <!-- Requesting attention icon -->
+    <property name="AttentionIcon" type="s" access="read"/>
+
+    <!--same definition as image-->
+    <property name="AttentionImage" type="(iiay)" access="read">
+      <annotation name="com.trolltech.QtDBus.QtTypeName" value="ExperimentalKDbusImageVector"/>
+    </property>
+
+    <property name="AttentionMovie" type="a(iiay)" access="read">
+      <annotation name="com.trolltech.QtDBus.QtTypeName" value="ExperimentalKDbusImageVector"/>
+    </property>
+
+
+
+    <!-- tooltip data -->
+
+    <!--(iiay) is an image-->
+    <property name="ToolTip" type="(s(iiay)ss)" access="read">
+      <annotation name="com.trolltech.QtDBus.QtTypeName" value="ExperimentalKDbusToolTipStruct"/>
+    </property>
+
+
+    <!-- interaction: the systemtray wants the application to do something -->
+    <method name="ContextMenu">
+        <!-- we're passing the coordinates of the icon, so the app knows where to put the popup window -->
+        <arg name="x" type="i" direction="in"/>
+        <arg name="y" type="i" direction="in"/>
+    </method>
+
+    <method name="Activate">
+        <arg name="x" type="i" direction="in"/>
+        <arg name="y" type="i" direction="in"/>
+    </method>
+
+    <method name="SecondaryActivate">
+        <arg name="x" type="i" direction="in"/>
+        <arg name="y" type="i" direction="in"/>
+    </method>
+
+    <method name="Scroll">
+      <arg name="delta" type="i" direction="in"/>
+      <arg name="orientation" type="s" direction="in"/>
+    </method>
+
+    <!-- Signals: the client wants to change something in the status-->
+    <signal name="NewIcon">
+    </signal>
+
+    <signal name="NewAttentionIcon">
+    </signal>
+
+    <signal name="NewToolTip">
+    </signal>
+
+    <signal name="NewStatus">
+      <arg name="status" type="s"/>
+    </signal>
+
+  </interface>
+</node>
