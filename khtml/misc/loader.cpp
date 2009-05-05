@@ -329,7 +329,7 @@ QString CachedCSSStyleSheet::checkCharset(const QByteArray& buffer ) const
     if (strncmp(d, "@charset \"",10) == 0)
     {
         // the string until "; is the charset name
-        char *p = strchr(d+10, '"');
+        const char *p = strchr(d+10, '"');
         if (p == 0) return m_charset;
         QString charset = QString::fromAscii(d+10, p-(d+10));
 	return charset;
