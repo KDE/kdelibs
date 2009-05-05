@@ -406,20 +406,26 @@ bool TGAHandler::canRead(QIODevice *device)
     }
 
     qint64 oldPos = device->pos();
-    QByteArray head = device->readLine(64);
+    QByteArray head = device->read(TgaHeader::SIZE);
     int readBytes = head.size();
 
     if (device->isSequential()) {
-        while (readBytes > 0)
-            device->ungetChar(head[readBytes-- - 1]);
+        for (int pos = readBytes - 1; pos >= 0; --pos) {
+            device->ungetChar(head[pos]);
+        }
     } else {
         device->seek(oldPos);
     }
 
-    const QRegExp regexp("^.\x01[\x01-\x03\x09-\x0b]\x01{3}.[\x01\x18]");
-    QString data(head);
+    if (readBytes < TgaHeader::SIZE) {
+        return false;
+    }
 
-    return data.contains(regexp);
+    QDataStream stream(head);
+    stream.setByteOrder(QDataStream::LittleEndian);
+    TgaHeader tga;
+    stream >> tga;
+    return IsSupported(tga);
 }
 
 
