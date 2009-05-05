@@ -1415,7 +1415,9 @@ QString KuitSemanticsPrivate::modifyTagText (Kuit::TagVar tag,
     if (   (tag == Kuit::Tag::NumIntg || tag == Kuit::Tag::NumReal) \
         && numctx < 1)
     {
-        return KGlobal::locale()->formatNumber(text, false);
+        // FIXME: Temporary until full language-sensitivity implemented.
+        QString text2 = text + '\x04' + m_lang;
+        return KGlobal::locale()->formatNumber(text2, false);
     }
     else if (tag == Kuit::Tag::Filename) {
         return QDir::toNativeSeparators(text);

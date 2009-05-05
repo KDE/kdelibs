@@ -42,6 +42,7 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QLocale>
 #include <QtCore/QMutexLocker>
+#include <QtCore/QHash>
 
 #include "kcatalog_p.h"
 #include "kglobal.h"
@@ -68,10 +69,22 @@ class KLocaleStaticData
     KLocaleStaticData ();
 
     QString maincatalog;
+
+    // FIXME: Temporary until full language-sensitivity implemented.
+    QHash<KLocale::DigitSet, QStringList> languagesUsingDigitSet;
 };
 
 KLocaleStaticData::KLocaleStaticData ()
 {
+    // Languages using non-Western Arabic digit sets.
+    // FIXME: Temporary until full language-sensitivity implemented.
+    #define SET_LANGS_FOR_DS(ds, langs) do { \
+        languagesUsingDigitSet[KLocale::ds] = QStringList(); \
+        languagesUsingDigitSet[KLocale::ds] << langs; \
+    } while (0)
+    SET_LANGS_FOR_DS(ArabicIndicDigits, "ar" << "ps");
+    SET_LANGS_FOR_DS(EasternArabicIndicDigits, "fa" << "ur");
+    SET_LANGS_FOR_DS(DevenagariDigits, "hi" << "ne");
 }
 
 K_GLOBAL_STATIC(KLocaleStaticData, staticData)
@@ -194,6 +207,13 @@ public:
    */
   static QString formatSingleDuration( DurationType durationType, int n );
 
+  /**
+   * @internal Select digit set according to current language
+   * FIXME: Temporary until full language-sensitivity implemented.
+   */
+  KLocale::DigitSet selectDigitSet (const QString &lang) const;
+  KLocale::DigitSet selectMonetaryDigitSet (const QString &lang) const;
+
   // Numbers and money
   QString decimalSymbol;
   QString thousandsSeparator;
@@ -209,6 +229,10 @@ public:
   bool positivePrefixCurrencySymbol : 1;
   bool negativePrefixCurrencySymbol : 1;
   KLocale::DigitSet monetaryDigitSet;
+
+  // FIXME: Temporary until full language-sensitivity implemented.
+  bool languageSensitiveDigits;
+  bool monetaryLanguageSensitiveDigits;
 
   // Date and time
   QString timeFormat;
@@ -432,6 +456,9 @@ void KLocalePrivate::initFormat(KConfig *config)
 
   readConfigNumEntry("DigitSet", KLocale::ArabicDigits,
                      digitSet, KLocale::DigitSet);
+  // FIXME: Temporary until full language-sensitivity implemented.
+  readConfigEntry("LanguageSensitiveDigits", true,
+                  languageSensitiveDigits);
 
   // Monetary
   readConfigEntry("CurrencySymbol", "$", currencySymbol);
@@ -452,6 +479,9 @@ void KLocalePrivate::initFormat(KConfig *config)
 
   readConfigNumEntry("MonetaryDigitSet", KLocale::ArabicDigits,
                      monetaryDigitSet, KLocale::DigitSet);
+  // FIXME: Temporary until full language-sensitivity implemented.
+  readConfigEntry("MonetaryLanguageSensitiveDigits", true,
+                  monetaryLanguageSensitiveDigits);
 
   // Date and time
   readConfigEntry("TimeFormat", "%H:%M:%S", timeFormat);
@@ -977,6 +1007,28 @@ static QString toArabicDigits(const QString &str)
     return nstr;
 }
 
+KLocale::DigitSet KLocalePrivate::selectDigitSet (const QString &lang) const
+{
+    KLocaleStaticData *s = staticData;
+    if (   languageSensitiveDigits
+        && !s->languagesUsingDigitSet[digitSet].contains(lang))
+    {
+        return KLocale::ArabicDigits;
+    }
+    return digitSet;
+}
+
+KLocale::DigitSet KLocalePrivate::selectMonetaryDigitSet (const QString &lang) const
+{
+    KLocaleStaticData *s = staticData;
+    if (   monetaryLanguageSensitiveDigits
+        && !s->languagesUsingDigitSet[monetaryDigitSet].contains(lang))
+    {
+        return KLocale::ArabicDigits;
+    }
+    return monetaryDigitSet;
+}
+
 bool KLocale::nounDeclension() const
 {
   return d->nounDeclension;
@@ -1150,7 +1202,7 @@ QString KLocale::formatMoney(double num,
     }
 
   // Convert to target digit set.
-  res = toLocaleDigits(res, d->monetaryDigitSet);
+  res = toLocaleDigits(res, d->selectMonetaryDigitSet(d->language));
 
   return res;
 }
@@ -1271,6 +1323,14 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
   if (round && precision < 0)
     return numStr;
 
+  // FIXME: Temporary until full language-sensitivity implemented.
+  QString numLang = d->language;
+  int p = tmpString.indexOf('\x04');
+  if (p >= 0) {
+    numLang = tmpString.mid(p + 1);
+    tmpString = tmpString.left(p);
+  }
+
   // Skip the sign (for now)
   const bool neg = (tmpString[0] == '-');
   if (neg || tmpString[0] == '+') tmpString.remove(0, 1);
@@ -1305,8 +1365,8 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
   mantString.prepend(neg?negativeSign():positiveSign());
 
   // Convert to target digit set.
-  mantString = toLocaleDigits(mantString, d->digitSet);
-  expString = toLocaleDigits(expString, d->digitSet);
+  mantString = toLocaleDigits(mantString, d->selectDigitSet(numLang));
+  expString = toLocaleDigits(expString, d->selectDigitSet(numLang));
 
   return mantString + expString;
 }
