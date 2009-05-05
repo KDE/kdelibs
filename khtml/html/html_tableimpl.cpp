@@ -210,7 +210,7 @@ static inline HTMLTableSectionElementImpl* processSection(HTMLTableSectionElemen
     lastSection = section;
     if ( index < 0 ) //append/last mode
         return 0;
-    
+
     long rows   = section->numRows();
     if ( index >= rows ) {
         section =  0;
@@ -428,7 +428,7 @@ static bool setTableCellsChanged(NodeImpl* n)
 
     return cellChanged;
 }
- 
+
 void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
 {
     // ### to CSS!!
@@ -910,14 +910,14 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
         // limit this to something not causing an overflow with short int
         if(rSpan < 0 || rSpan > 1024) rSpan = 1;
         if (renderer())
-            renderer()->updateFromElement();                    
+            renderer()->updateFromElement();
         break;
     case ATTR_COLSPAN:
         cSpan = attr->val() ? attr->val()->toInt() : 1;
         // limit this to something not causing an overflow with short int
         if(cSpan < 0 || cSpan > 1024) cSpan = 1;
         if (renderer())
-            renderer()->updateFromElement();        
+            renderer()->updateFromElement();
         break;
     case ATTR_NOWRAP:
         if (attr->val() != 0)

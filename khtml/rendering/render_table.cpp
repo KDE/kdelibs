@@ -9,6 +9,7 @@
  *           (C) 2003 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2008 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2009 Carlos Licea (carlos.licea@kdemail.net)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -182,7 +183,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
                     head = static_cast<RenderTableSection *>(child);
                 } else {
                     resetSectionPointerIfNotBefore(firstBody, beforeChild);
-                    if (!firstBody) 
+                    if (!firstBody)
                         firstBody = static_cast<RenderTableSection*>(child);
                 }
             }
@@ -761,10 +762,10 @@ void RenderTable::recalcSections()
                 maxCols = sectionCols;
         }
     }
-    
+
     columns.resize(maxCols);
     columnPos.resize(maxCols+1);
-    
+
     needSectionRecalc = false;
     setNeedsLayout(true);
 }
@@ -1028,6 +1029,7 @@ FindSelectionResult RenderTable::checkSelectionPoint( int _x, int _y, int _tx, i
 
 RenderTableSection::RenderTableSection(DOM::NodeImpl* node)
     : RenderBox(node)
+    , containsSpansZero(false)
 {
     // init RenderObject attributes
     setInline(false);   // our object is not Inline
@@ -1156,7 +1158,7 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
     // <TR><TD colspan="2">5
     // </TABLE>
 	while ( cCol < nCols && cellAt( cRow, cCol ) )
-	    cCol++;
+	    ++cCol;
 
 //       qDebug("adding cell at %d/%d span=(%d/%d)",  cRow, cCol, rSpan, cSpan );
 
@@ -1190,43 +1192,159 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
 	}
     }
 
+    //What:Postion the cell
+    //How: we take care of special case when colspan or rowspan equals 0
+    //setting an initial "guess" of a colspan and rowspan, look at
+    //http://www.w3.org/TR/html401/struct/tables.html for details on cells with span = 0
+    //after that position the cell normally, we do it to tell the cell where it is
+    //and tell other cells where they can't be located (marking the cells as -1),
+    //later taking the span into account (and in other function) the cell is
+    //then painted (that's why we need to set the colspan and rowspan properly
+    //when any of them is zero, so that the cell is properly painted)
+
     // make sure we have enough rows
-    ensureRows( cRow + rSpan );
+    ensureRows( cRow + (rSpan? rSpan : 1 ) );
 
     grid[cRow].rowRenderer = row;
 
     int col = cCol;
     // tell the cell where it is
     RenderTableCell *set = cell;
-    while ( cSpan ) {
-	int currentSpan;
-	if ( cCol >= nCols ) {
-	    table()->appendColumn( cSpan );
-	    currentSpan = cSpan;
-	} else {
-	    if ( cSpan < columns[cCol].span )
-		table()->splitColumn( cCol, cSpan );
-	    currentSpan = columns[cCol].span;
-	}
-	int r = 0;
-	while ( r < rSpan ) {
-	    if ( !cellAt( cRow + r, cCol ) ) {
-// 		qDebug("    adding cell at %d, %d",  cRow + r, cCol );
-		cellAt( cRow + r, cCol ) = set;
-	    }
-	    r++;
-	}
-	cCol++;
-	cSpan -= currentSpan;
-	set = (RenderTableCell *)-1;
+//     kDebug()<<"row"<<cRow<<"col"<<cCol;
+//     kDebug()<<"cSpan"<<cSpan<<"rSpan"<<rSpan;
+
+    //check wether we need to update any of the cells with span = 0
+    QList< int > columnsToAvoid;
+    if( containsSpansZero ) {
+        //Update any column which its last span update was in a previous column
+        int lowestCol = cellsWithColSpanZero.lowerBound( 0 ).key();
+        if( lowestCol < cCol ) {
+            //add the columns for this cell
+            if ( cCol >= nCols ) {
+                table()->appendColumn( cSpan );
+                nCols = columns.size();
+            }
+            //check and update all the cells that are updated to a previous column
+            while( lowestCol < nCols ) {
+                while( RenderTableCell* cell = cellsWithColSpanZero.take( lowestCol ) ) {
+                    const int cellRow = cell->row();
+                    const int cellRowSpan = cell->rowSpan();
+                    int finalSpan = cell->colSpan();
+                    for( int i = lowestCol; i < nCols; ++i ) {
+                        if( !cellAt( cellRow, i ) ) {
+                            cellAt( cellRow, i ) = (RenderTableCell *)-1;
+                        }
+                        ++finalSpan;
+                    }
+                    cell->setColSpan( finalSpan );
+                    cellsWithColSpanZero.insertMulti( nCols, cell );
+                }
+                lowestCol = cellsWithColSpanZero.lowerBound( 0 ).key();
+            }
+        }
+        if( cellsWithRowSpanZero.contains( cRow ) ) {
+            //No need to check if we have enough columns, we already found the first cell 
+            //when rowspan="0", and as such, we've already inserted it
+            while( RenderTableCell* cell = cellsWithRowSpanZero.take( cRow ) ) {
+                const int cellCol = cell->col();
+                const int finalCol = cellCol + cell->colSpan() - 1;
+                RenderTableCell* set = cell;
+                for( int i = cellCol; i <= finalCol; ++i ) {
+                    if( !cellAt( cRow, i ) ) {
+                        cellAt( cRow, i ) = set;
+                    }
+                    set = (RenderTableCell *)-1;
+                    columnsToAvoid << i;
+                }
+                cell->setRowSpan( cell->rowSpan() + 1 );
+                //mark it to be inserted in next row
+                cellsWithRowSpanZero.insertMulti( cRow + 1, cell );
+            }
+        }
     }
+
+    //Save the column if the its span is 0
+    if( !cSpan ) {
+        //Check if we only span in the current colgroup
+        if( RenderTableCol* colgroup = table()->colElement( cCol ) ) {
+            //Calculate the correct span and then handle the cell normally
+
+            int firstColumnOfColgroup = cCol;
+            while( --firstColumnOfColgroup >= 0 && colgroup == table()->colElement(firstColumnOfColgroup) ) ;
+            ++firstColumnOfColgroup;
+
+            int alreadyUsedSpan = 0;
+            RenderTableCell* colgroupCell = cellAt( cRow, firstColumnOfColgroup + alreadyUsedSpan );
+            while( firstColumnOfColgroup + alreadyUsedSpan < cCol ) {
+                alreadyUsedSpan += colgroupCell->colSpan();
+                colgroupCell = cellAt( cRow, firstColumnOfColgroup + alreadyUsedSpan );
+            }
+
+            const int finalSpan = colgroup->span() - alreadyUsedSpan;
+            cell->setColSpan( finalSpan );
+            
+            //We know exactly the cSpan so we can handle the cell as a normal cell
+            //unless, of course, the rowspan is also 0
+            cSpan = finalSpan;
+        }
+        //or if we span in the whole table and mark it as inserted till
+        //this column and updated whenever another column is inserted
+        else {
+            //We define the proper span and let the other code handle it
+            const int finalSpan = nCols - cCol;
+            cSpan = finalSpan;
+
+            cell->setColSpan( finalSpan );
+
+            cellsWithColSpanZero.insertMulti( cCol + finalSpan - 1, cell );
+            containsSpansZero = true;
+        }
+    }
+
+    if( !rSpan ) {
+        //For now we span 1
+        rSpan = 1;
+        cell->setRowSpan( 1 );
+
+        //mark it to be inserted in next row
+        cellsWithRowSpanZero.insertMulti( cRow + 1, cell );
+        containsSpansZero = true;
+    }
+
+    while ( cSpan ) {
+        int currentSpan;
+        if ( cCol >= nCols ) {
+            table()->appendColumn( cSpan );
+            currentSpan = cSpan;
+        } else {
+            if ( cSpan < columns[cCol].span ) {
+                table()->splitColumn( cCol, cSpan );
+            }
+            currentSpan = columns[cCol].span;
+        }
+
+        while( columnsToAvoid.contains(cCol) ) 
+            ++cCol;
+
+        int r = 0;
+        while ( r < rSpan ) {
+            if ( !cellAt( cRow + r, cCol ) ) {
+//     qDebug("    adding cell at %d, %d",  cRow + r, cCol );
+                cellAt( cRow + r, cCol ) = set;
+            }
+            ++r;
+        }
+        ++cCol;
+        cSpan -= currentSpan;
+        set = (RenderTableCell *)-1;
+    }
+
+
     if ( cell ) {
-	cell->setRow( cRow );
-	cell->setCol( table()->effColToCol( col ) );
+        cell->setRow( cRow );
+        cell->setCol( table()->effColToCol( col ) );
     }
 }
-
-
 
 void RenderTableSection::setCellWidths()
 {
@@ -1781,7 +1899,7 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
 		if ( !cell || cell == (RenderTableCell *)-1 || nextrow && (*nextrow)[c] == cell )
 		    continue;
                 RenderObject* rowr = cell->parent();
-                int rtx = tx+rowr->xPos(); 
+                int rtx = tx+rowr->xPos();
                 int rty = ty+rowr->yPos();
 #ifdef TABLE_PRINT
 		kDebug( 6040 ) << "painting cell " << r << "/" << c;
@@ -1826,23 +1944,25 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
 int RenderTableSection::numColumns() const
 {
     int result = 0;
-    
+
     for (int r = 0; r < numRows(); ++r) {
         for (int c = result; c < table()->numEffCols(); ++c) {
             if (cellAt(r, c))
                 result = c;
         }
     }
-    
+
     return result + 1;
 }
- 
+
 void RenderTableSection::recalcCells()
 {
     cCol = 0;
     cRow = -1;
     clearGrid();
     grid.resize( 0 );
+    cellsWithColSpanZero.clear();
+    cellsWithRowSpanZero.clear();
 
     for (RenderObject *row = firstChild(); row; row = row->nextSibling()) {
         if (row->isTableRow())  {
@@ -1854,6 +1974,7 @@ void RenderTableSection::recalcCells()
             for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
                 if (cell->isTableCell())
                     addCell( static_cast<RenderTableCell *>(cell), static_cast<RenderTableRow *>(row) );
+
 	}
     }
     needCellRecalc = false;
@@ -2563,7 +2684,7 @@ CollapsedBorderValue RenderTableCell::collapsedLeftBorder(bool rtl) const
     RenderTableCol* colElt = table()->colElement(col() + (rtl ? colSpan() - 1 : 0), &startColEdge, &endColEdge);
     if (colElt && (!rtl ? startColEdge : endColEdge)) {
         result = compareBorders(result, CollapsedBorderValue(&colElt->style()->borderLeft(), BCOL));
-        if (!result.exists()) 
+        if (!result.exists())
             return result;
         if (colElt->parent()->isTableCol() && (!rtl ? !colElt->previousSibling() : !colElt->nextSibling())) {
             result = compareBorders(result, CollapsedBorderValue(&colElt->parent()->style()->borderLeft(), BCOLGROUP));

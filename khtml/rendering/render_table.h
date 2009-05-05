@@ -7,6 +7,7 @@
  *           (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2009 Carlos Licea (carlos.licea@kdemail.net)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -272,6 +273,13 @@ public:
     QVector<int> rowPos;
 
     int numColumns() const;
+
+    //QMap< lastInsertedColumn, cell >
+    QMap< int, RenderTableCell* > cellsWithColSpanZero;
+    //QMap< nextRowToInsert, cell >
+    QMap< int, RenderTableCell* > cellsWithRowSpanZero;
+    //True if any of the cells has a span of 0
+    bool containsSpansZero;
 
     signed short cRow;
     ushort cCol;
