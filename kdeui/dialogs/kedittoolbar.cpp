@@ -309,7 +309,7 @@ public:
     void slotUpButton();
     void slotDownButton();
 
-    void selectActiveItem(QString);
+    void selectActiveItem(const QString&);
     
     void slotChangeIcon();
 
@@ -1203,7 +1203,7 @@ void KEditToolBarWidgetPrivate::slotInsertButton()
   selectActiveItem( internalName );
 }
 
-void KEditToolBarWidgetPrivate::selectActiveItem(QString internalName) 
+void KEditToolBarWidgetPrivate::selectActiveItem(const QString& internalName) 
 {
   int activeItemCount = m_activeList->count();
   for(int i = 0; i < activeItemCount; i++)
