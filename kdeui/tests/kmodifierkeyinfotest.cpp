@@ -18,14 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <KAboutData>
-#include <KCmdLineArgs>
-#include <KApplication>
-#include <KLed>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
+#include <kapplication.h>
+#include <kled.h>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <KDebug>
+#include <kdebug.h>
 #include <QMap>
 #include <QWidget>
 #include <QPushButton>
