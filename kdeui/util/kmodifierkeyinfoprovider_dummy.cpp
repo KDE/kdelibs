@@ -29,3 +29,13 @@ KModifierKeyInfoProvider::KModifierKeyInfoProvider()
 KModifierKeyInfoProvider::~KModifierKeyInfoProvider()
 {
 }
+
+bool KModifierKeyInfoProvider::setKeyLatched(Qt::Key key, bool latched)
+{
+    return false;
+}
+
+bool KModifierKeyInfoProvider::setKeyLocked(Qt::Key key, bool locked)
+{
+    return false;
+}
