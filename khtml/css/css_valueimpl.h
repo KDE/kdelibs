@@ -431,6 +431,52 @@ class CounterActImpl : public CSSValueImpl {
 };
 
 
+class CSSFontFaceSrcValueImpl : public CSSValueImpl {
+public:
+    CSSFontFaceSrcValueImpl(const DOMString& resource, bool local)
+        : m_resource(resource)
+        , m_isLocal(local)
+#if 0
+    //ENABLE(SVG_FONTS)
+        , m_svgFontFaceElement(0)
+#endif
+    {
+    }
+    virtual ~CSSFontFaceSrcValueImpl() { }
+
+    virtual unsigned short cssValueType() const { return CSSValue::CSS_CUSTOM; }
+
+    const DOMString& resource() const { return m_resource; }
+    const DOMString& format() const { return m_format; }
+    bool isLocal() const { return m_isLocal; }
+
+    void setFormat(const DOMString& format) { m_format = format; }
+
+    bool isSupportedFormat() const;
+
+#if 0
+    //ENABLE(SVG_FONTS)
+    bool isSVGFontFaceSrc() const;
+
+    SVGFontFaceElement* svgFontFaceElement() const { return m_svgFontFaceElement; }
+    void setSVGFontFaceElement(SVGFontFaceElement* element) { m_svgFontFaceElement = element; }
+#endif
+
+    virtual DOMString cssText() const;
+
+private:
+
+    DOMString m_resource;
+    DOMString m_format;
+    bool m_isLocal;
+
+#if 0
+    //ENABLE(SVG_FONTS)
+    SVGFontFaceElement* m_svgFontFaceElement;
+#endif
+};
+
+
 // ------------------------------------------------------------------------------
 
 // another helper class

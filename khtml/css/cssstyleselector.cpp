@@ -30,6 +30,7 @@
 #include "css/css_ruleimpl.h"
 #include "css/css_valueimpl.h"
 #include "css/csshelper.h"
+#include "css/css_webfont.h"
 #include "rendering/render_object.h"
 #include "html/html_documentimpl.h"
 #include "html/html_elementimpl.h"
@@ -231,6 +232,8 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     KHTMLView* view = doc->view();
     KHTMLPart* part = doc->part();
 
+    m_fontSelector = new CSSFontSelector( doc );
+
     init(part ? part->settings() : 0, doc);
 
     strictParsing = _strictParsing;
@@ -305,6 +308,8 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 
 CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
 {
+    m_fontSelector = new CSSFontSelector( sheet->doc() );
+
     init(0L, 0L);
 
     KHTMLView *view = sheet->doc()->view();
@@ -349,6 +354,7 @@ CSSStyleSelector::~CSSStyleSelector()
     delete userSheet;
     delete m_rootDefaultStyle;
     delete m_medium;
+    delete m_fontSelector;
 }
 
 void CSSStyleSelector::addSheet( CSSStyleSheetImpl *sheet )
@@ -2071,6 +2077,10 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
                 	    QList<CSSOrderedRule*>::append( orderedRule );
                         }
                     }
+                    else if ( childItem->isFontFaceRule() && styleSelector ) {
+                        const CSSFontFaceRuleImpl* fontFaceRule = static_cast<CSSFontFaceRuleImpl*>(childItem);
+                        styleSelector->fontSelector()->addFontFaceRule(fontFaceRule);
+                    }
                     else
                     {
                         //kDebug( 6080 ) << "Ignoring child rule of "
@@ -2083,6 +2093,11 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
                 //kDebug( 6080 ) << "CSSMediaRule not rendered: "
                 //                << "rule empty or wrong medium!" << endl;
             }
+        }
+        else if ( item->isFontFaceRule() && styleSelector )
+        {
+            const CSSFontFaceRuleImpl* fontFaceRule = static_cast<CSSFontFaceRuleImpl*>(item);
+            styleSelector->fontSelector()->addFontFaceRule(fontFaceRule);
         }
         // ### include other rules
     }

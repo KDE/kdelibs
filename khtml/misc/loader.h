@@ -82,7 +82,8 @@ namespace khtml
 	    Image,
 	    CSSStyleSheet,
 	    Script,
-	    Sound
+	    Sound,
+	    Font
 	};
 
 	enum Status {
@@ -388,6 +389,28 @@ namespace khtml
 	QByteArray m_sound;
     };
 
+    /**
+     * a cached font
+     */
+    class CachedFont : public CachedObject
+    {
+    public:
+	CachedFont(DocLoader* dl, const DOM::DOMString &url, KIO::CacheControl cachePolicy, const char* accept );
+
+	QByteArray font() const { return m_font; }
+
+	virtual void ref(CachedObjectClient *consumer);
+	virtual void data( QBuffer &buffer, bool eof );
+	virtual void error( int err, const char *text );
+        virtual bool schedule() const { return false; }
+
+	void checkNotify();
+
+        bool isLoaded() const { return !m_loading; }
+
+    protected:
+	QByteArray m_font;
+    };
 
     /**
      * @internal
@@ -405,6 +428,7 @@ namespace khtml
 						const char *accept = "text/css", bool userSheet = false );
         CachedScript *requestScript( const DOM::DOMString &url, const QString& charset);
         CachedSound *requestSound( const DOM::DOMString &url );
+        CachedFont *requestFont( const DOM::DOMString &url );
 
 	bool autoloadImages() const { return m_bautoloadImages; }
         KIO::CacheControl cachePolicy() const { return m_cachePolicy; }

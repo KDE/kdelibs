@@ -44,6 +44,7 @@ namespace DOM {
     class CSSValueListImpl;
     class CSSPrimitiveValueImpl;
     class CSSStyleDeclarationImpl;
+    class CSSFontFaceRuleImpl;
     class CSSProperty;
     class MediaListImpl;
     
@@ -132,6 +133,7 @@ namespace DOM {
 	void addProperty( int propId, CSSValueImpl *value, bool important );
 	bool hasProperties() const { return numParsedProperties > 0; }
 	CSSStyleDeclarationImpl *createStyleDeclaration( CSSStyleRuleImpl *rule );
+	CSSStyleDeclarationImpl *createFontFaceStyleDeclaration( CSSFontFaceRuleImpl *rule );
 	void clearProperties();
 
 	bool parseValue( int propId, bool important );
@@ -163,6 +165,7 @@ namespace DOM {
 
 	bool parseShape( int propId, bool important );
 	bool parseFont(bool important);
+	bool parseFontFaceSrc();
         bool parseCounter(int propId, bool increment, bool important);
 
         bool parseColorParameters(Value*, int* colorValues, bool parseAlpha);

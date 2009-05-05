@@ -89,10 +89,11 @@ public:
 
     virtual ~CSSFontFaceRuleImpl();
 
-    CSSStyleDeclarationImpl *style() const { return m_style; }
-
     virtual bool isFontFaceRule() const { return true; }
 
+    CSSStyleDeclarationImpl *style() const { return m_style; }
+    void setDeclaration( CSSStyleDeclarationImpl* decl);
+    virtual DOMString cssText() const;
 protected:
     CSSStyleDeclarationImpl *m_style;
 };

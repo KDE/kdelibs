@@ -49,6 +49,7 @@ namespace DOM {
     class CSSProperty;
     class StyleSheetListImpl;
     class CSSValueImpl;
+    class CSSFontSelector;
 }
 
 namespace khtml
@@ -202,7 +203,7 @@ namespace khtml
 	static void precomputeAttributeDependencies(DOM::DocumentImpl* doc, DOM::CSSSelector* sel);
         void addViewportDependentMediaQueryResult(const MediaQueryExp*, bool result);
         bool affectedByViewportChange() const;
-	
+	DOM::CSSFontSelector* fontSelector() const { return m_fontSelector; }
     protected:
 	/* checks if the complete selector (which can be build up from a few CSSSelector's
 	    with given relationships matches the given Element */
@@ -323,6 +324,7 @@ public:
 	QVector<int>     m_fixedFontSizes;
 
 	bool fontDirty;
+	DOM::CSSFontSelector* m_fontSelector;
         QList<MediaQueryResult*> m_viewportDependentMediaQueryResults;
 
 	void applyRule(int id, DOM::CSSValueImpl *value);

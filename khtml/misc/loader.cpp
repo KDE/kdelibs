@@ -997,6 +997,48 @@ void CachedSound::error( int /*err*/, const char* /*text*/ )
     checkNotify();
 }
 
+// -------------------------------------------------------------------------------------------
+
+CachedFont::CachedFont(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy, const char*)
+    : CachedObject(url, Font, _cachePolicy, 0)
+{
+    setAccept( QLatin1String("*/*") ); // should be whatever phonon would accept...
+    Cache::loader()->load(dl, this, false);
+    m_loading = true;
+}
+
+void CachedFont::ref(CachedObjectClient *c)
+{
+    CachedObject::ref(c);
+
+    if(!m_loading) c->notifyFinished(this);
+}
+
+void CachedFont::data( QBuffer &buffer, bool eof )
+{
+    if(!eof) return;
+    buffer.close();
+    setSize(buffer.buffer().size());
+
+    m_font = buffer.buffer();
+    m_loading = false;
+    checkNotify();
+}
+
+void CachedFont::checkNotify()
+{
+    if(m_loading) return;
+
+    for (QHashIterator<CachedObjectClient*,CachedObjectClient*> it( m_clients ); it.hasNext();)
+        it.next().value()->notifyFinished(this);
+}
+
+void CachedFont::error( int /*err*/, const char* /*text*/ )
+{
+    m_loading = false;
+    checkNotify();
+}
+
 // ------------------------------------------------------------------------------------------
 
 Request::Request(DocLoader* dl, CachedObject *_object, bool _incremental)
@@ -1206,8 +1248,15 @@ CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString
 
 CachedSound *DocLoader::requestSound( const DOM::DOMString &url )
 {
+      DOCLOADER_SECCHECK(true);
+      CachedSound* s = Cache::requestObject<CachedSound, CachedObject::Sound>( this, fullURL, 0 );
+      return s;
+}
+            
+CachedFont *DocLoader::requestFont( const DOM::DOMString &url )
+{
     DOCLOADER_SECCHECK(true);
-    CachedSound* s = Cache::requestObject<CachedSound, CachedObject::Sound>( this, fullURL, 0 );
+    CachedFont* s = Cache::requestObject<CachedFont, CachedObject::Font>( this, fullURL, 0 );
     return s;
 }
 
@@ -1370,7 +1419,6 @@ void Loader::servePendingRequests()
 
 void Loader::slotMimetype( KIO::Job *j, const QString& s )
 {
-    KIO::TransferJob* job = static_cast<KIO::TransferJob*>(j);
     Request *r = m_requestsLoading.value( j );
     if (!r)
         return;
@@ -1728,6 +1776,7 @@ void Cache::statistics()
     int scripts = 0;
     int stylesheets = 0;
     int sound = 0;
+    int fonts = 0;
     foreach (CachedObject* o, *cache)
     {
         switch(o->type()) {
@@ -1751,6 +1800,9 @@ void Cache::statistics()
         case CachedObject::Sound:
             sound++;
             break;
+        case CachedObject::Font:
+            fonts++;
+            break;
         }
         size += o->size();
     }
@@ -1763,6 +1815,7 @@ void Cache::statistics()
     kDebug( 6060 ) << "Number of cached scripts: " << scripts;
     kDebug( 6060 ) << "Number of cached stylesheets: " << stylesheets;
     kDebug( 6060 ) << "Number of cached sounds: " << sound;
+    kDebug( 6060 ) << "Number of cached fonts: " << fonts;
     kDebug( 6060 ) << "pixmaps:   allocated space approx. " << size << " kB";
     kDebug( 6060 ) << "movies :   allocated space approx. " << msize/1024 << " kB";
     kDebug( 6060 ) << "--------------------------------------------------------------------";

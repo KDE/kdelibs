@@ -155,8 +155,8 @@ void CSSParser::runParser()
 
 void CSSParser::setupParser(const char *prefix, const DOMString &string, const char *suffix)
 {
-    int preflen = strlen(prefix);
-    int sufflen = strlen(suffix); 
+    unsigned preflen = strlen(prefix);
+    unsigned sufflen = strlen(suffix); 
     int length = string.length() + preflen + sufflen + 8;
 
     free(data);
@@ -334,6 +334,26 @@ CSSStyleDeclarationImpl *CSSParser::createStyleDeclaration( CSSStyleRuleImpl *ru
     for ( int i = 0; i < numParsedProperties; i++ )
         propList->append( parsedProperties[i] );
 
+    numParsedProperties = 0;
+    return new CSSStyleDeclarationImpl(rule, propList);
+}
+
+CSSStyleDeclarationImpl *CSSParser::createFontFaceStyleDeclaration( CSSFontFaceRuleImpl *rule )
+{
+    QList<CSSProperty*> *propList = new QList<CSSProperty*>;
+    for ( int i = 0; i < numParsedProperties; i++ ) {
+        CSSProperty* property = parsedProperties[i];
+        int id = property->id();
+        if ((id == CSS_PROP_FONT_WEIGHT || id == CSS_PROP_FONT_STYLE || id == CSS_PROP_FONT_VARIANT) && property->value()->isPrimitiveValue()) {
+            // change those to a list of values containing a single value, so that we may always cast to a list in the CSSFontSelector.
+            CSSValueImpl* value = property->value();
+            value->ref();
+            property->setValue( new CSSValueListImpl ); // ### createCommaSeparated();
+            static_cast<CSSValueListImpl*>(property->value())->append(value);
+            value->deref();
+        }
+        propList->append( parsedProperties[i] );
+    }
     numParsedProperties = 0;
     return new CSSStyleDeclarationImpl(rule, propList);
 }
@@ -965,6 +985,13 @@ bool CSSParser::parseValue( int propId, bool important )
             valid_primitive = true;
         break;
 
+    case CSS_PROP_SRC:  // Only used within @font-face, so cannot use inherit | initial or be !important.  This is a list of urls or local references.
+        return parseFontFaceSrc();
+            
+    case CSS_PROP_UNICODE_RANGE:
+        // return parseFontFaceUnicodeRange();
+        break;
+                        
     case CSS_PROP__KHTML_FLOW_MODE:
         if ( id == CSS_VAL__KHTML_NORMAL || id == CSS_VAL__KHTML_AROUND_FLOATS )
             valid_primitive = true;
@@ -2164,7 +2191,70 @@ CSSValueListImpl *CSSParser::parseFontFamily()
     return list;
 }
 
- 
+bool CSSParser::parseFontFaceSrc()
+{
+    CSSValueListImpl* values = new CSSValueListImpl; // ### CSSValueList::createCommaSeparated()
+    Value* val;
+    bool expectComma = false;
+    bool allowFormat = false;
+    bool failed = false;
+    CSSFontFaceSrcValueImpl* uriValue = 0;
+    while ((val = valueList->current())) {
+        CSSFontFaceSrcValueImpl* parsedValue = 0;
+        if (val->unit == CSSPrimitiveValue::CSS_URI && !expectComma && styleElement) {
+            DOMString uri = khtml::parseURL( domString( val->string ) );
+            parsedValue = new CSSFontFaceSrcValueImpl(
+                              DOMString(KUrl( styleElement->baseURL(), uri.string()).url()), false /*local*/);
+            uriValue = parsedValue;
+            allowFormat = true;
+            expectComma = true;
+        } else if (val->unit == Value::Function) {
+            // There are two allowed functions: local() and format().
+            ValueList *args = val->function->args;
+            if (args && args->size() == 1) {
+                if (!strcasecmp(domString(val->function->name), "local(") && !expectComma) {
+                    expectComma = true;
+                    allowFormat = false;
+                    Value* a = args->current();
+                    uriValue = 0;
+                    parsedValue = new CSSFontFaceSrcValueImpl( domString( a->string ), true /*local src*/ );
+                } else if (!strcasecmp(domString(val->function->name), "format(") && allowFormat && uriValue) {
+                    expectComma = true;
+                    allowFormat = false;
+                    uriValue->setFormat( domString( args->current()->string ) );
+                    uriValue = 0;
+                    valueList->next();
+                    continue;
+                }
+            }
+        } else if (val->unit == Value::Operator && val->iValue == ',' && expectComma) {
+            expectComma = false;
+            allowFormat = false;
+            uriValue = 0;
+            valueList->next();
+            continue;
+        }
+    
+        if (parsedValue)
+            values->append(parsedValue);
+        else {
+            failed = true;
+            break;
+        }
+        valueList->next();
+    }
+    
+    if (values->length() && !failed) {
+        addProperty(CSS_PROP_SRC, values, important);
+        valueList->next();
+        return true;
+    } else {
+        delete values;
+    }
+
+    return false;
+}
+
 bool CSSParser::parseColorParameters(Value* value, int* colorArray, bool parseAlpha)
 {
     ValueList* args = value->function->args;

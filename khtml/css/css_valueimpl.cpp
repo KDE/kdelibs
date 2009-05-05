@@ -2,8 +2,9 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- *           (C) 2004-2007 Apple Computer, Inc.
+ *           (C) 2004-2008 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2009 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1360,12 +1361,14 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
     static const QRegExp braceReg(" \\[.*\\]$");
 
     parsedFontName = string;
+
     // a language tag is often added in braces at the end. Remove it.
     parsedFontName.replace(parenReg, QString());
+
     // remove [Xft] qualifiers
     parsedFontName.replace(braceReg, QString());
 
-#ifndef APPLE_CHANGES
+#if 0
     const QString &available = KHTMLSettings::availableFamilies();
 
     parsedFontName = parsedFontName.toLower();
@@ -1389,8 +1392,7 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
        assert( p != -1 ); // available is supposed to start and end with ,
        parsedFontName = available.mid( pos, p - pos);
        // kDebug(0) << "going for '" << parsedFontName << "'";
-    } else
-        parsedFontName.clear();
+    }
 
 #endif // !APPLE_CHANGES
 }
@@ -1546,3 +1548,50 @@ DOMString CSSProperty::cssText() const
 {
     return getPropertyName(m_id) + DOMString(": ") + m_value->cssText() + (m_important ? DOMString(" !important") : DOMString()) + DOMString("; ");
 }
+
+// -------------------------------------------------------------------------
+
+#if 0
+    // ENABLE(SVG_FONTS)
+bool CSSFontFaceSrcValueImpl::isSVGFontFaceSrc() const
+{
+    return !strcasecmp(m_format, "svg");
+}
+#endif
+
+bool CSSFontFaceSrcValueImpl::isSupportedFormat() const
+{
+    // Normally we would just check the format, but in order to avoid conflicts with the old WinIE style of font-face,
+    // we will also check to see if the URL ends with .eot.  If so, we'll go ahead and assume that we shouldn't load it.
+    if (m_format.isEmpty()) {
+        // Check for .eot.
+        if (m_resource.endsWith(".eot") || m_resource.endsWith(".EOT"))
+            return false;
+        return true;
+    }
+
+    return !strcasecmp(m_format, "truetype") || !strcasecmp(m_format, "opentype")
+#if 0
+    //ENABLE(SVG_FONTS)
+           || isSVGFontFaceSrc()
+#endif
+           ;
+}
+
+DOMString CSSFontFaceSrcValueImpl::cssText() const
+{
+    DOMString result;
+    if (isLocal())
+        result += "local(";
+    else
+        result += "url(";
+    result += m_resource;
+    result += ")";
+    if (!m_format.isEmpty()) {
+        result += " format(";
+        result += m_format;
+        result += ")";
+    }
+    return result;
+}
+

@@ -74,7 +74,25 @@ CSSFontFaceRuleImpl::CSSFontFaceRuleImpl(StyleBaseImpl *parent)
 
 CSSFontFaceRuleImpl::~CSSFontFaceRuleImpl()
 {
-    if(m_style) m_style->deref();
+;    if(m_style) m_style->deref();
+}
+
+void CSSFontFaceRuleImpl::setDeclaration( CSSStyleDeclarationImpl* decl)
+{
+    assert(!m_style);
+    if (m_style = decl)
+        m_style->ref();
+}
+
+DOMString CSSFontFaceRuleImpl::cssText() const
+{
+    DOMString result("@font-face");
+
+    result += " { ";
+    result += m_style->cssText();
+    result += "}";
+
+    return result;
 }
 
 // --------------------------------------------------------------------------
