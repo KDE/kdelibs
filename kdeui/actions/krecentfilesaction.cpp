@@ -77,11 +77,11 @@ void KRecentFilesActionPrivate::init()
   delete q->menu();
   q->setMenu(new KMenu());
   q->setToolBarMode(KSelectAction::MenuMode);
-  m_noEntriesAction = q->menu()->addAction(i18n("No entries"));
+  m_noEntriesAction = q->menu()->addAction(i18n("No Entries"));
   m_noEntriesAction->setEnabled(false);
   clearSeparator = q->menu()->addSeparator();
   clearSeparator->setVisible(false);
-  clearAction = q->menu()->addAction(i18n("Clear list"), q, SLOT(clear()));
+  clearAction = q->menu()->addAction(i18n("Clear List"), q, SLOT(clear()));
   clearAction->setVisible(false);
   q->connect(q, SIGNAL(triggered(QAction*)), SLOT(_k_urlSelected(QAction*)));
 }
