@@ -52,6 +52,8 @@
 class TestWidget
     : public QWidget
 {
+    Q_OBJECT
+
 public:
     TestWidget(QWidget *parent = 0)
         : QWidget(parent)
