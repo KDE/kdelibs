@@ -61,7 +61,21 @@
 #include <windows.h>
 #endif
 
-static const char *maincatalog = 0;
+class KLocaleStaticData
+{
+    public:
+
+    KLocaleStaticData ();
+
+    QString maincatalog;
+};
+
+KLocaleStaticData::KLocaleStaticData ()
+{
+}
+
+K_GLOBAL_STATIC(KLocaleStaticData, staticData)
+
 
 QDebug operator<<(QDebug debug, const KCatalogName &cn)
 {
@@ -270,10 +284,12 @@ KLocale::KLocale(const QString& catalog, const QString &language, const QString 
 
 void KLocalePrivate::initMainCatalogs(const QString & catalog)
 {
-  // Use the first non-null string.
+  KLocaleStaticData *s = staticData;
+
   QString mainCatalog = catalog;
-  if (maincatalog)
-    mainCatalog = QString::fromLatin1(maincatalog);
+  if (!s->maincatalog.isEmpty()) {
+    mainCatalog = s->maincatalog;
+  }
 
   if (mainCatalog.isEmpty()) {
     kDebug(173) << "KLocale instance created called without valid "
@@ -558,6 +574,8 @@ bool KLocale::isApplicationTranslatedInto( const QString & lang)
 
 bool KLocalePrivate::isApplicationTranslatedInto( const QString & lang)
 {
+  KLocaleStaticData *s = staticData;
+
   if ( lang.isEmpty() ) {
     return false;
   }
@@ -567,8 +585,8 @@ bool KLocalePrivate::isApplicationTranslatedInto( const QString & lang)
     return true;
   }
 
-  if (maincatalog) {
-    appName = QString::fromLatin1(maincatalog);
+  if (!s->maincatalog.isEmpty()) {
+    appName = s->maincatalog;
   }
 
   // Check for this language and possible transliteration fallbacks.
@@ -1506,7 +1524,8 @@ QString KLocalePrivate::fancyDate(const KLocale *locale, const QDate &date, int 
 
 void KLocale::setMainCatalog(const char *catalog)
 {
-  maincatalog = catalog;
+  KLocaleStaticData *s = staticData;
+  s->maincatalog = QString::fromUtf8(catalog);
 }
 
 double KLocale::readNumber(const QString &_str, bool * ok) const
