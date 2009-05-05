@@ -23,7 +23,7 @@
 
 #include <kdemacros.h>
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class KModifierKeyInfoProvider;
 
@@ -182,6 +182,7 @@ Q_SIGNALS:
     void keyRemoved(Qt::Key key);
 
 private:
+    Q_DISABLE_COPY(KModifierKeyInfo)
     KModifierKeyInfoProvider *p;
 };
 
