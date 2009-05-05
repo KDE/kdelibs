@@ -1,5 +1,5 @@
-# for KDE 4.2 we require at least version 0.23
-set(SHARED_MIME_INFO_MINIMUM_VERSION "0.23")
+# for KDE 4.3 we require at least version 0.30
+set(SHARED_MIME_INFO_MINIMUM_VERSION "0.30")
 find_package(SharedMimeInfo REQUIRED)
 
 ########### install files ###############

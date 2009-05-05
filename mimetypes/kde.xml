@@ -7,7 +7,7 @@ COPYING.
 -->
 <!--
 Notes:
-- the mime types in this file are valid with the version 0.23 of the
+- the mime types in this file are valid with the version 0.30 of the
   shared-mime-info package.
 - the "fdo #xxxxx" are the wish in the freedesktop.org bug database to include
   the mime type there.
@@ -129,13 +129,6 @@ Notes:
   <mime-type type="audio/x-pn-realaudio-plugin">
     <comment>RealAudio plugin file</comment>
   </mime-type>
-  <mime-type type="image/x-exr"> <!-- fdo #6488, FIXED 0.30 -->
-    <comment>EXR image</comment>
-    <magic priority="50">
-      <match type="little32" value="20000630" offset="0"/>
-    </magic>
-    <glob pattern="*.exr"/>
-  </mime-type>
   <mime-type type="application/vnd.kde.kphotoalbum-import"> <!-- fdo #12732 -->
     <comment>KPhotoAlbum import</comment>
     <glob pattern="*.kim"/>
@@ -195,22 +188,6 @@ Notes:
       <match type="string" value="&lt;FictionBook" offset="0:256"/>
     </magic>
     <root-XML namespaceURI="http://www.gribuser.ru/xml/fictionbook/2.0" localName="FictionBook"/>
-  </mime-type>
-  <mime-type type="application/epub+zip"> <!-- fdo #12625, FIXED 0.30 -->
-    <comment>Electronic book document</comment>
-    <magic priority="50">
-      <match type="string" value="PK\003\004" offset="0">
-        <match type="string" value="mimetype" offset="30">
-          <match type="string" value="application/epub+zip" offset="38"/>
-        </match>
-      </match>
-    </magic>
-    <glob pattern="*.epub"/>
-  </mime-type>
-  <mime-type type="text/x-cmake"> <!-- fdo #15561, FIXED 0.30 -->
-    <comment>CMake source code</comment>
-    <glob pattern="*.cmake"/>
-    <glob pattern="CMakeLists.txt"/>
   </mime-type>
 
   <!-- all/ fake mime types -->
