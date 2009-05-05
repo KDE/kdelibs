@@ -23,8 +23,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#define _WIN32_WINNT 0x0500
-
 #include "file.h"
 
 #include <windows.h>
