@@ -1079,18 +1079,6 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
             SLOT(setBMode()));
 
     //
-    // the entry fields should be wide enough to hold 8888888
-    //
-    int w = d->hedit->fontMetrics().width("8888888");
-    d->hedit->setFixedWidth(w);
-    d->sedit->setFixedWidth(w);
-    d->vedit->setFixedWidth(w);
-
-    d->redit->setFixedWidth(w);
-    d->gedit->setFixedWidth(w);
-    d->bedit->setFixedWidth(w);
-
-    //
     // add a layout for the right side
     //
     d->l_right = new QVBoxLayout;
@@ -1166,7 +1154,7 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     d->htmlName = new KLineEdit(page);
     d->htmlName->setMaxLength(13);   // Qt's QColor allows 12 hexa-digits
     d->htmlName->setText("#FFFFFF"); // But HTML uses only 6, so do not worry about the size
-    w = d->htmlName->fontMetrics().width(QLatin1String("#DDDDDDD"));
+    int w = d->htmlName->fontMetrics().width(QLatin1String("#DDDDDDD"));
     d->htmlName->setFixedWidth(w);
     l_grid->addWidget(d->htmlName, 1, 2, Qt::AlignLeft);
 
@@ -1178,6 +1166,15 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     l_grid->addWidget(d->patch, 0, 0, 2, 1, Qt::AlignHCenter | Qt::AlignVCenter);
     connect(d->patch, SIGNAL(colorChanged(const QColor&)),
             SLOT(setColor(const QColor&)));
+
+    //
+    // chain fields together
+    //
+    setTabOrder(d->hedit, d->sedit);
+    setTabOrder(d->sedit, d->vedit);
+    setTabOrder(d->vedit, d->redit);
+    setTabOrder(d->redit, d->gedit);
+    setTabOrder(d->gedit, d->bedit);
 
     tl_layout->activate();
     page->setMinimumSize(page->sizeHint());
