@@ -79,6 +79,8 @@ KNotificationItem::KNotificationItem(QObject *parent)
 
 KNotificationItem::~KNotificationItem()
 {
+    delete d->notificationItemWatcher;
+    delete d->visualNotifications;
     delete d->systemTrayIcon;
     delete d->menu;
     delete d;
