@@ -2,7 +2,7 @@
  *  Copyright (C) 1998 Thomas Tanghus (tanghus@earthling.net)
  *  Additions 1999-2000 by Espen Sand (espen@kde.org)
  *                      by Holger Freyther <freyther@kde.org>
- *            2005-2006 by Olivier Goffart (ogoffart at kde.org)
+ *            2005-2009 by Olivier Goffart (ogoffart at kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -166,6 +166,11 @@ void KDialogPrivate::init(KDialog *q)
     q->connect(&mButtonSignalMapper, SIGNAL(mapped(int)), q, SLOT(slotButtonClicked(int)));
 
     q->setPlainCaption(KGlobal::caption()); // set appropriate initial window title for case it gets not set later
+}
+
+void KDialogPrivate::helpLinkClicked()
+{
+    q_ptr->slotButtonClicked(KDialog::Help);
 }
 
 KDialog::KDialog( QWidget *parent, Qt::WFlags flags )
@@ -894,27 +899,26 @@ void KDialog::slotButtonClicked( int button )
 void KDialog::enableLinkedHelp( bool state )
 {
     Q_D(KDialog);
-  if ( ( d->mUrlHelp != 0 ) == state )
-    return;
-  if ( state ) {
-    if ( d->mUrlHelp )
-      return;
+    if ( ( d->mUrlHelp != 0 ) == state )
+        return;
+    if ( state ) {
+        if ( d->mUrlHelp )
+            return;
 
-    d->mUrlHelp = new KUrlLabel( this );
-    d->mUrlHelp->setText( helpLinkText() );
-    d->mUrlHelp->setFloatEnabled( true );
-    d->mUrlHelp->setUnderline( true );
-    d->mUrlHelp->setMinimumHeight( fontMetrics().height() + marginHint() );
-    connect( d->mUrlHelp, SIGNAL( leftClickedUrl( const QString& ) ),
-             SLOT( helpClickedSlot( const QString& ) ) );
+        d->mUrlHelp = new KUrlLabel( this );
+        d->mUrlHelp->setText( helpLinkText() );
+        d->mUrlHelp->setFloatEnabled( true );
+        d->mUrlHelp->setUnderline( true );
+        d->mUrlHelp->setMinimumHeight( fontMetrics().height() + marginHint() );
+        connect( d->mUrlHelp, SIGNAL(leftClickedUrl()), SLOT(helpLinkClicked()) );
 
-    d->mUrlHelp->show();
-  } else {
-    delete d->mUrlHelp;
-    d->mUrlHelp = 0;
-  }
+        d->mUrlHelp->show();
+    } else {
+        delete d->mUrlHelp;
+        d->mUrlHelp = 0;
+    }
 
-  d->setupLayout();
+    d->setupLayout();
 }
 
 

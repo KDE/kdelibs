@@ -2,7 +2,7 @@
  *  Copyright (C) 1998 Thomas Tanghus (tanghus@earthling.net)
  *  Additions 1999-2000 by Espen Sand (espen@kde.org)
  *                      and Holger Freyther <freyther@kde.org>
- *            2005-2006   Olivier Goffart <ogoffart @ kde.org>
+ *            2005-2009 Olivier Goffart <ogoffart @ kde.org>
  *            2006      Tobias Koenig <tokoe@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
@@ -847,6 +847,7 @@ class KDEUI_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
     private:
         Q_DISABLE_COPY(KDialog)
         Q_PRIVATE_SLOT(d_ptr, void queuedLayoutUpdate())
+        Q_PRIVATE_SLOT(d_ptr, void helpLinkClicked())
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDialog::ButtonCodes)

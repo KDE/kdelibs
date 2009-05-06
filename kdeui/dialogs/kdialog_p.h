@@ -78,6 +78,7 @@ class KDialogPrivate
 
     protected Q_SLOTS:
         void queuedLayoutUpdate();
+        void helpLinkClicked();
 
     private:
         void init(KDialog *);
