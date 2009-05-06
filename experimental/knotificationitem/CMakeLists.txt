@@ -2,10 +2,6 @@
 # Project needs a name of course
 project(notification)
 
-# Find the required Libaries
-find_package(KDE4 REQUIRED)
-include(KDE4Defaults)
-
 add_subdirectory(cmake)
 
 add_definitions (${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
