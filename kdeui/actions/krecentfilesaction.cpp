@@ -83,6 +83,7 @@ void KRecentFilesActionPrivate::init()
   clearSeparator->setVisible(false);
   clearAction = q->menu()->addAction(i18n("Clear List"), q, SLOT(clear()));
   clearAction->setVisible(false);
+  q->setEnabled(false);
   q->connect(q, SIGNAL(triggered(QAction*)), SLOT(_k_urlSelected(QAction*)));
 }
 
@@ -151,6 +152,7 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
     d->m_noEntriesAction->setVisible(false);
     d->clearSeparator->setVisible(true);
     d->clearAction->setVisible(true);
+    setEnabled(true);
     // add file to list
     const QString title = tmpName + " [" + file + ']';
     QAction* action = new QAction(title, selectableActionGroup());
@@ -219,6 +221,7 @@ void KRecentFilesAction::clearEntries()
     d->m_noEntriesAction->setVisible(true);
     d->clearSeparator->setVisible(false);
     d->clearAction->setVisible(false);
+    setEnabled(false);
 }
 
 void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
@@ -274,6 +277,7 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
         d->m_noEntriesAction->setVisible(false);
         d->clearSeparator->setVisible(true);
         d->clearAction->setVisible(true);
+        setEnabled(true);
     }
 }
 
