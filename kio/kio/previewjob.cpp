@@ -39,6 +39,8 @@
 #include <QtGui/QImage>
 #include <QtCore/QTimer>
 #include <QtCore/QRegExp>
+#include <QtCore/QAbstractFileEngine>
+#include <QtCore/QFSFileEngine>
 
 #include <kfileitem.h>
 #include <kapplication.h>
@@ -515,6 +517,8 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
         s >> thumb;
     }
 
+    QString tempFileName;
+    bool savedCorrectly = false;
     if (save)
     {
         thumb.setText("Thumb::URI", origName);
@@ -528,9 +532,14 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
         temp.setAutoRemove(false);
         if (temp.open()) //Only try to write out the thumbnail if we
         {                //actually created the temp file.
-            thumb.save(temp.fileName(), "PNG");
-            KDE::rename(temp.fileName(), thumbPath + thumbName);
+            tempFileName = temp.fileName();
+            savedCorrectly = thumb.save(tempFileName, "PNG");
         }
+    }
+    if(savedCorrectly)
+    {
+        Q_ASSERT(!tempFileName.isEmpty());
+        KDE::rename(tempFileName, thumbPath + thumbName);
     }
     emitPreview( thumb );
     succeeded = true;
