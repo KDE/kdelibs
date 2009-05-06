@@ -106,6 +106,7 @@ void KSelectActionPrivate::init(KSelectAction *q)
   QObject::connect(q_ptr->selectableActionGroup(), SIGNAL(triggered(QAction*)), q_ptr, SLOT(actionTriggered(QAction*)));
   QObject::connect(q_ptr, SIGNAL(toggled(bool)), q_ptr, SLOT(slotToggled(bool)));
   q_ptr->setMenu(new KMenu());
+  q_ptr->setEnabled( false );
 }
 
 QActionGroup * KSelectAction::selectableActionGroup( ) const
@@ -240,13 +241,20 @@ void KSelectAction::addAction(QAction* action)
   //kDebug (129) << "KSelectAction::addAction(" << action << ")";
 
   action->setActionGroup(selectableActionGroup());
+  
+  // Re-Enable when an action is added
+  setEnabled(true);
 
   // Keep in sync with createToolBarWidget()
-  foreach (QToolButton* button, d->m_buttons)
+  foreach (QToolButton* button, d->m_buttons) {
+    button->setEnabled(true);
     button->addAction(action);
+  }
 
-  foreach (KComboBox* comboBox, d->m_comboBoxes)
+  foreach (KComboBox* comboBox, d->m_comboBoxes) {
+    comboBox->setEnabled(true);
     comboBox->addAction(action);
+  }
 
   menu()->addAction(action);
 }
@@ -285,14 +293,24 @@ QAction* KSelectAction::removeAction(QAction* action)
   // Removes the action from the group and sets its parent to null.
   d->m_actionGroup->removeAction(action);
 
-  foreach (QToolButton* button, d->m_buttons)
+  // Disable when no action is in the group
+  bool hasActions = selectableActionGroup()->actions().isEmpty();
+  setEnabled( !hasActions );
+
+  foreach (QToolButton* button, d->m_buttons) {
+    button->setEnabled( !hasActions );
     button->removeAction(action);
+  }
 
   foreach (KComboBox* comboBox, d->m_comboBoxes)
+  {
+    comboBox->setEnabled( !hasActions );
     comboBox->removeAction(action);
+  }
 
   menu()->removeAction(action);
 
+  
   return action;
 }
 
