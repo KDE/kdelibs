@@ -89,7 +89,7 @@ Notes:
   </mime-type>
   <mime-type type="application/x-plasma">
     <comment>plasmoid</comment>
-    <glob pattern="*.plasma"/>
+    <glob pattern="*.plasmoid"/>
   </mime-type>
   <mime-type type="application/x-superkaramba">
     <sub-class-of type="application/zip"/>
