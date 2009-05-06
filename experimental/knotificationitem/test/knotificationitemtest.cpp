@@ -1,15 +1,16 @@
 #include "knotificationitemtest.h"
 
 #include "../knotificationitem.h"
-#include <kapplication.h>
+#include <QDateTime>
 #include <QtGui/QLabel>
 #include <QMovie>
+
+#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kaboutdata.h>
-#include <KMenu>
-#include <KIcon>
-#include <QDateTime>
+#include <kmenu.h>
+#include <kicon.h>
 
 using namespace Experimental;
 

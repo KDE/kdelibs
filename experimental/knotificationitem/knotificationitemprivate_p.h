@@ -27,7 +27,7 @@
 #include <QPixmap>
 #include <QWheelEvent>
 
-#include <KSystemTrayIcon>
+#include <ksystemtrayicon.h>
 
 #include "knotificationitem.h"
 #include "knotificationitemdbus_p.h"
