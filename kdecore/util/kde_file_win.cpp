@@ -160,7 +160,7 @@ namespace KDE
     // better than :waccess/_wunlink/_wrename
     bool ok = ( MoveFileExW( CONV(in), CONV(out),
                              MOVEFILE_REPLACE_EXISTING|MOVEFILE_COPY_ALLOWED ) != 0 );
-	return ok ? 0 : 1;
+	return ok ? 0 : -1;
   }
 
   int stat(const QString &path, KDE_struct_stat *buf)
