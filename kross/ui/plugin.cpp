@@ -210,7 +210,9 @@ void ScriptingPlugin::save()
     bool collectionEmpty = !collection||(collection->actions().empty()&&collection->collections().empty());
 
     if( !collectionEmpty ) {
-        if( collection->writeXml(&f) ) {
+        QStringList searchPath=KGlobal::dirs()->findDirs("appdata", "scripts/"+d->referenceActionsDir);
+        searchPath.append(QFileInfo(d->userActionsFile).absolutePath());
+        if( collection->writeXml(&f, 2, searchPath) ) {
             kDebug() << "Successfully saved file: " << d->userActionsFile;
         }
     }
