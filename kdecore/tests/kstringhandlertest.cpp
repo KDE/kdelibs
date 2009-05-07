@@ -92,5 +92,14 @@ void KStringHandlerTest::naturalCompare()
     QCOMPARE(KStringHandler::naturalCompare("cmake_2.4.10", "cmake_2.4.11", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("cmake_2.4.6", "cmake_2.5.6", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("cmake_2.4.6", "cmake_3.4.6", Qt::CaseSensitive), -1);
+
+    // bug 191865
+    QCOMPARE(KStringHandler::naturalCompare("E & G", "E & J", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("E & J", "E & S", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("E & S", "Em & M", Qt::CaseSensitive), -1);
+
+    // bug 181211
+    QCOMPARE(KStringHandler::naturalCompare("queen__radio_ga_ga.mp3", "queen__somebody_to_love_live.mp3", Qt::CaseSensitive), -1);
+    QCOMPARE(KStringHandler::naturalCompare("queen__somebody_to_love_live.mp3", "queens_of_the_stone_age__no_one_knows.mp3", Qt::CaseSensitive), -1);
 }
 
