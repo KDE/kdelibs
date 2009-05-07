@@ -39,8 +39,6 @@
 #include <QtGui/QImage>
 #include <QtCore/QTimer>
 #include <QtCore/QRegExp>
-#include <QtCore/QAbstractFileEngine>
-#include <QtCore/QFSFileEngine>
 
 #include <kfileitem.h>
 #include <kapplication.h>
