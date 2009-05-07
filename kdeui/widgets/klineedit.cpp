@@ -1656,10 +1656,9 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
         setText(oldText);
         setModified(isModifiedState);
         blockSignals(false);
-        return;
+    } else {
+        QLineEdit::paintEvent( ev );
     }
-
-    QLineEdit::paintEvent( ev );
 
     if (d->enableClickMsg && d->drawClickMsg && !hasFocus() && text().isEmpty()) {
         QPainter p(this);
@@ -1667,7 +1666,9 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
         f.setItalic(d->italicizePlaceholder);
         p.setFont(f);
 
-        p.setPen(palette().color(QPalette::Disabled, QPalette::Text));
+        QColor color(palette().color(foregroundRole()));
+        color.setAlphaF(0.5);
+        p.setPen(color);
 
         //FIXME: fugly alert!
         // qlineedit uses an internal qstyleoption set to figure this out
@@ -1706,7 +1707,7 @@ void KLineEdit::focusOutEvent( QFocusEvent *ev )
 
 void KLineEdit::setClickMessage( const QString &msg )
 {
-    d->enableClickMsg = true;
+    d->enableClickMsg = !msg.isEmpty();
     d->clickMessage = msg;
     d->drawClickMsg = text().isEmpty();
     update();
