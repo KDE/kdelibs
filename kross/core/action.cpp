@@ -212,7 +212,7 @@ void Action::fromDomElement(const QDomElement& element, const QStringList& searc
 
 QDomElement Action::toDomElement() const
 {
-    toDomElement(QStringList());
+    return toDomElement(QStringList());
 }
 
 QDomElement Action::toDomElement(const QStringList& searchPath) const
