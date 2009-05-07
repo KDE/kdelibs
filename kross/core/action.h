@@ -108,21 +108,9 @@ namespace Kross {
              * \param name The unique name this Action has. It's used
              * e.g. at the \a Manager to identify the Action. The
              * name is accessible via \a QObject::objectName .
+             * \deprecated since 4.3: pass search path to fromDomElement() and toDomElement()
              */
             Action(QObject* parent, const QString& name, const QDir& packagepath = QDir()); //BIC may be removed in favour of the next c'tor
-
-
-           /**
-             * Constructor.
-             *
-             * \param parent The parent QObject this \a Action is a child of.
-             * \param name The unique name this Action has. It's used
-             * e.g. at the \a Manager to identify the Action. The
-             * name is accessible via \a QObject::objectName .
-             * \param searchPath List of directories where to search the script if it's path is relative
-             * First item is given the highest priority.
-             */
-            Action(QObject* parent, const QString& name, const QStringList& searchPath/* = QStringList()*/);
 
             /**
              * Constructor.
@@ -146,8 +134,19 @@ namespace Kross {
              * Method to read settings from the QDomElement \p element that
              * contains details about e.g. the displayed text, the file to
              * execute or the used interpreter.
+             * \todo BIC merge
              */
             void fromDomElement(const QDomElement& element);
+
+            /**
+             * Method to read settings from the QDomElement \p element that
+             * contains details about e.g. the displayed text, the file to
+             * execute or the used interpreter.
+             * 
+             * \param searchPath List of directories where to search the script if it's path is relative
+             * First item is given the highest priority.
+             */
+            void fromDomElement(const QDomElement& element, const QStringList& searchPath/* = QStringList()*/);
 
             /**
              * \return a QDomElement that contains the settings like e.g. the
@@ -155,6 +154,15 @@ namespace Kross {
              * of this \a Action instance.
              */
             QDomElement toDomElement() const;
+
+            /**
+             * \return a QDomElement that contains the settings like e.g. the
+             * displayed text, the file to execute or the used interpreter
+             * of this \a Action instance.
+             * \param searchPath if given, find the closest directory containing the scriptfile
+             *  and write relative filepath
+             */
+            QDomElement toDomElement(const QStringList& searchPath/* = QStringList()*/) const;
 
             /**
              * Initialize the \a Script instance.

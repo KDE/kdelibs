@@ -86,6 +86,8 @@ namespace Kross {
 
             /**
             * The path list where the \a Script may be located.
+            * \todo after BIC break: don't keep it all the time,
+            * as it is now passed to [to|from]DomElement
             */
             QStringList searchpath;
 
@@ -96,14 +98,6 @@ namespace Kross {
             QMap< QString, QVariant > options;
 
             Private() : script(0), version(0) {}
-            
-            QString activesearchpath(){return searchpath.isEmpty()?QString():searchpath.first();}
-            void setactivesearchpath(const QString& p)
-            {
-                searchpath.removeAll(p);
-                searchpath.prepend(p);
-            }
-
     };
 
 }
@@ -127,20 +121,8 @@ Action::Action(QObject* parent, const QString& name, const QDir& packagepath)
     , d( new Private() )
 {
     init(this,name);
-    d->setactivesearchpath(packagepath.absolutePath());
+    d->searchpath=QStringList(packagepath.absolutePath());
 }
-
-Action::Action(QObject* parent, const QString& name, const QStringList& searchPath)
-    : QAction(parent)
-    , QScriptable()
-    , ChildrenInterface()
-    , ErrorInterface()
-    , d( new Private() )
-{
-    init(this,name);
-    d->searchpath=searchPath;
-}
-
 
 Action::Action(QObject* parent, const QUrl& url)
     : QAction(parent)
@@ -168,7 +150,13 @@ Action::~Action()
     delete d;
 }
 
+
 void Action::fromDomElement(const QDomElement& element)
+{
+    fromDomElement(element, d->searchpath);
+}
+
+void Action::fromDomElement(const QDomElement& element, const QStringList& searchPath)
 {
     if( element.isNull() )
         return;
@@ -179,11 +167,10 @@ void Action::fromDomElement(const QDomElement& element)
             setFile(file);
         }
         else {
-            foreach (const QString& packagepath, d->searchpath) {
+            foreach (const QString& packagepath, searchPath) {
                 QFileInfo fi(QDir(packagepath), file);
                 if( fi.exists() ) {
                     setFile( fi.absoluteFilePath() );
-                    d->setactivesearchpath(packagepath);
                     break;
                 }
             }
@@ -225,6 +212,11 @@ void Action::fromDomElement(const QDomElement& element)
 
 QDomElement Action::toDomElement() const
 {
+    toDomElement(QStringList());
+}
+
+QDomElement Action::toDomElement(const QStringList& searchPath) const
+{
     QDomDocument doc;
     QDomElement e = doc.createElement("script");
     e.setAttribute("name", objectName());
@@ -241,8 +233,19 @@ QDomElement Action::toDomElement() const
     if( ! interpreter().isNull() )
         e.setAttribute("interpreter", interpreter());
 
-    if( ! file().isNull() ) {
-        e.setAttribute("file", QDir(d->activesearchpath()).relativeFilePath(file()));
+
+    QString fileName=file();
+    if (!searchPath.isEmpty()) {
+        //fileName=QDir(searchPath.first()).relativeFilePath(fileName); //prefer absname if it is short?
+        foreach(const QString& packagepath, searchPath) {
+            QString nfn=QDir(packagepath).relativeFilePath(file());
+            if (nfn.length()<fileName.length())
+                fileName=nfn;
+        }
+    }
+
+    if( ! fileName.isNull() ) {
+        e.setAttribute("file", fileName);
     }
     
     QList<QByteArray> props=dynamicPropertyNames();

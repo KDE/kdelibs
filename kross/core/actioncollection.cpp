@@ -320,12 +320,12 @@ bool ActionCollection::readXml(const QDomElement& element, const QStringList& se
                     krossdebug( QString("  ActionCollection::readXml Creating Action \"%1\"").arg(name) );
                 #endif
 
-                a = new Action(this, name, searchPath);
+                a = new Action(this, name);
                 addAction(name, a);
                 connect(a, SIGNAL( started(Kross::Action*) ), &Manager::self(), SIGNAL( started(Kross::Action*)) );
                 connect(a, SIGNAL( finished(Kross::Action*) ), &Manager::self(), SIGNAL( finished(Kross::Action*) ));
             }
-            a->fromDomElement(elem);
+            a->fromDomElement(elem, searchPath);
         }
         //else if( ! fromXml(elem) ) ok = false;
     }
@@ -385,6 +385,11 @@ bool ActionCollection::readXmlFile(const QString& file)
 
 QDomElement ActionCollection::writeXml()
 {
+    return writeXml(QStringList());
+}
+
+QDomElement ActionCollection::writeXml(const QStringList& searchPath)
+{
     #ifdef KROSS_ACTIONCOLLECTION_DEBUG
         krossdebug( QString("ActionCollection::writeXml collection.objectName=\"%1\"").arg(objectName()) );
     #endif
@@ -407,7 +412,7 @@ QDomElement ActionCollection::writeXml()
         #ifdef KROSS_ACTIONCOLLECTION_DEBUG
             krossdebug( QString("  ActionCollection::writeXml action.objectName=\"%1\" action.file=\"%2\"").arg(a->objectName()).arg(a->file()) );
         #endif
-        QDomElement e = a->toDomElement();
+        QDomElement e = a->toDomElement(searchPath);
         if( ! e.isNull() )
             element.appendChild(e);
     }
@@ -415,7 +420,7 @@ QDomElement ActionCollection::writeXml()
     foreach(const QString &name, d->collectionnames) {
         ActionCollection* c = d->collections[name];
         if( ! c ) continue;
-        QDomElement e = c->writeXml();
+        QDomElement e = c->writeXml(searchPath);
         if( ! e.isNull() )
             element.appendChild(e);
     }
@@ -425,11 +430,16 @@ QDomElement ActionCollection::writeXml()
 
 bool ActionCollection::writeXml(QIODevice* device, int indent)
 {
+    return writeXml(device, indent, QStringList());
+}
+
+bool ActionCollection::writeXml(QIODevice* device, int indent, const QStringList& searchPath)
+{
     QDomDocument document;
     QDomElement root = document.createElement("KrossScripting");
 
     foreach(Action* a, actions()) {
-        QDomElement e = a->toDomElement();
+        QDomElement e = a->toDomElement(searchPath);
         if( ! e.isNull() )
             root.appendChild(e);
     }
@@ -437,7 +447,7 @@ bool ActionCollection::writeXml(QIODevice* device, int indent)
     foreach(const QString &name, d->collectionnames) {
         ActionCollection* c = d->collections[name];
         if( ! c ) continue;
-        QDomElement e = c->writeXml();
+        QDomElement e = c->writeXml(searchPath);
         if( ! e.isNull() )
             root.appendChild(e);
     }

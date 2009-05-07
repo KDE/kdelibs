@@ -185,12 +185,16 @@ namespace Kross {
              * and \a ActionCollection instances this collection has.
              */
             QDomElement writeXml();
+            QDomElement writeXml(const QStringList& searchPath/* = QStringList()*/);
+
 
             /**
              * Write XML to the QIODevice \p device and use a space-idention
              * of \p indent for the XML.
              */
             bool writeXml(QIODevice* device, int indent = 2);
+            bool writeXml(QIODevice* device, int indent/* = 2*/, const QStringList& searchPath/* = QStringList()*/);
+
 
         Q_SIGNALS:
 
