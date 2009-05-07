@@ -63,15 +63,16 @@ int main(int argc, char **argv)
 
 
     tray->setTitle("DBus System tray test");
-    //tray->setIcon("konqueror");
-    tray->setImage(KIcon("konqueror"));
+    tray->setIcon("konqueror");
+    //tray->setImage(KIcon("konqueror"));
     tray->setAttentionIcon("kmail");
+    tray->setOverlayIcon("emblem-important");
     //tray->setAttentionMovie(KIconLoader::global()->loadMovie( QLatin1String( "newmessage" ), KIconLoader::Panel ));
 
     tray->setToolTipIcon("konqueror");
     tray->setToolTipTitle("DBus System tray test");
     tray->setToolTipSubTitle("This is a test of the new systemtray specification");
-    
+
     //tray->setToolTip("konqueror", "DBus System tray test", "This is a test of the new systemtray specification");
 
     tray->showMessage("message test", "Test of the new systemtray notifications wrapper", "konqueror", 3000);
