@@ -17,13 +17,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 
-#ifndef KNotificationItem_H
-#define KNotificationItem_H
+#ifndef KNOTIFICATIONITEN_H
+#define KNOTIFICATIONITEN_H
 
-#include <QObject>
-#include <QString>
-#include <QDBusArgument>
-#include <QPoint>
+#include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtDBus/QDBusArgument>
+#include <QtCore/QPoint>
 
 #include "knotificationitem_export.h"
 
@@ -395,4 +395,5 @@ private:
 };
 
 } // namespace Experimental
+
 #endif
