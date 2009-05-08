@@ -258,7 +258,7 @@ public:
 	 * The pointer is automatically deleted when the event is closed.
 	 *
 	 * Make sure you use one of the NotificationFlags CloseOnTimeOut or 
-     * CloseWhenWidgetActivated, if not,
+	 * CloseWhenWidgetActivated, if not,
 	 * you have to close the notification yourself.
 	 *
 	 * @param eventId is the name of the event
