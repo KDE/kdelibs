@@ -29,6 +29,8 @@ ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" )
 include("${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake")
 include("${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake" OPTIONAL)
 
+kde_ctest_write_initial_cache("${CTEST_BINARY_DIRECTORY}" ${INITIAL_CACHE_VARS} )
+
 ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}" )
 ctest_build(BUILD "${CTEST_BINARY_DIRECTORY}" )
 ctest_test(BUILD "${CTEST_BINARY_DIRECTORY}" )
