@@ -137,9 +137,9 @@ WmiQuery::~WmiQuery()
       pSvc->Release();
     if( pLoc )
       pLoc->Release();
-*/
     if( m_bNeedUninit )
       CoUninitialize();
+*/
 }  
     
 WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
