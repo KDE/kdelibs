@@ -4,16 +4,17 @@ project( KDELIBS_EXPERIMENTAL )
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH} )
 
 if(CMAKE_SOURCE_DIR STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
-  set(BUILDING_EXPERIMENTAL_SEPARATELY true)
+  set(BUILDING_EXPERIMENTAL_SEPARATELY TRUE)
 endif(CMAKE_SOURCE_DIR STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
 
 if(BUILDING_EXPERIMENTAL_SEPARATELY)
+   # should a required version number be specified here ? Alex
    find_package(KDE4 REQUIRED)
    include(MacroLibrary)
    include(KDE4Defaults)
 else(BUILDING_EXPERIMENTAL_SEPARATELY)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-                    ${KDE4_KDEUI_INCLUDES})
+   include_directories(${CMAKE_CURRENT_SOURCE_DIR}
+                       ${KDE4_KDEUI_INCLUDES})
 endif(BUILDING_EXPERIMENTAL_SEPARATELY)
 
 add_subdirectory(knotificationitem)
