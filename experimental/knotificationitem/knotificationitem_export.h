@@ -24,7 +24,7 @@
 #include <kdemacros.h>
 
 #ifndef KNOTIFICATIONITEM_EXPORT
-# if defined(MAKE_KDEU_EXPERIMENTAL_LIB)
+# if defined(MAKE_KNOTIFICATIONITEM_1_LIB)
    /* We are building this library */
 #  define KNOTIFICATIONITEM_EXPORT KDE_EXPORT
 # else
