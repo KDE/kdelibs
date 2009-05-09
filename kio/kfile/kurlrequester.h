@@ -201,7 +201,7 @@ public Q_SLOTS:
     
     /**
      * Sets the start dir @p startDir.
-     * The start dir is only used when the URL isn't setted.
+     * The start dir is only used when the URL isn't set.
      * @since 4.3
      */
     void setStartDir( const KUrl& startDir );
