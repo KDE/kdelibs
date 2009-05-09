@@ -201,9 +201,9 @@ bool CSSParser::parseSVGValue(int propId, bool important)
         {
             if (id == CSS_VAL_NONE)
                 parsedValue = new SVGPaint(SVGPaint::SVG_PAINTTYPE_NONE);
-            else /*if (id == CSSValueCurrentcolor)
+            else if (id == CSS_VAL_CURRENTCOLOR)
                 parsedValue = new SVGPaint(SVGPaint::SVG_PAINTTYPE_CURRENTCOLOR);
-            else */if (value->unit == CSSPrimitiveValue::CSS_URI) {
+            else if (value->unit == CSSPrimitiveValue::CSS_URI) {
                 CSSPrimitiveValueImpl* val;
                 // khtml FIXME memory leak here
                 if (valueList->next() && (val = parseColorFromValue(valueList->current()/*, c, true*/))) {
@@ -235,9 +235,9 @@ bool CSSParser::parseSVGValue(int propId, bool important)
         if ((id >= CSS_VAL_AQUA && id <= CSS_VAL_WINDOWTEXT)/* ||
            (id >= CSSValueAliceblue && id <= CSSValueYellowgreen)*/)
             parsedValue = new SVGColor(domString(value->string));
-        else /*if (id == CSSValueCurrentcolor)
+        else if (id == CSS_VAL_CURRENTCOLOR)
             parsedValue = new SVGColor(SVGColor::SVG_COLORTYPE_CURRENTCOLOR);
-        else*/ // TODO : svgcolor (iccColor)
+        else // TODO : svgcolor (iccColor)
             parsedValue = parseSVGColor();
 
         if (parsedValue)

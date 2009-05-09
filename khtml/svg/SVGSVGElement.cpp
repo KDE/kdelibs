@@ -52,6 +52,7 @@
 /*#include "SVGZoomEvent.h"
 #include "SelectionController.h"
 #include "SMILTimeContainer.h"*/
+#include "khtml_part.h"
 
 namespace WebCore {
 
@@ -73,8 +74,6 @@ SVGSVGElement::SVGSVGElement(const QualifiedName& tagName, Document* doc)
     , m_useCurrentView(false)
     /*, m_timeContainer(SMILTimeContainer::create(this))
     , m_viewSpec(0)*/
-    , m_containerSize(300, 150)
-    /*, m_hasSetContainerSize(false)*/
 {
     setWidthBaseValue(SVGLength(this, LengthModeWidth, "100%"));
     setHeightBaseValue(SVGLength(this, LengthModeHeight, "100%"));
@@ -122,6 +121,22 @@ void SVGSVGElement::setContentStyleType(const AtomicString& type)
     setAttribute(SVGNames::contentStyleTypeAttr, type);
 }
 
+bool SVGSVGElement::hasSetContainerSize() const
+{
+    // For now, we interpret % dimensions only if we're a top-level SVG element nested inside
+    // an another part. ### might even want to check if we're the documentElement; this
+    // will also need changes with <img> handling
+    return isOutermostSVG() && document()->part()->parentPart();
+}
+
+IntSize SVGSVGElement::containerSize() const
+{
+    if (KHTMLView* v = document()->view())
+        return IntSize(v->visibleWidth(), v->visibleHeight());
+    else
+        return IntSize(300, 150);
+}
+
 FloatRect SVGSVGElement::viewport() const
 {
     double _x = 0.0;
@@ -146,7 +161,7 @@ int SVGSVGElement::relativeWidthValue() const
     if (w.unitType() != LengthTypePercentage)
         return 0;
 
-    return static_cast<int>(w.valueAsPercentage() * m_containerSize.width());
+    return static_cast<int>(w.valueAsPercentage() * containerSize().width());
 }
 
 int SVGSVGElement::relativeHeightValue() const
@@ -155,7 +170,7 @@ int SVGSVGElement::relativeHeightValue() const
     if (h.unitType() != LengthTypePercentage)
         return 0;
 
-    return static_cast<int>(h.valueAsPercentage() * m_containerSize.height());
+    return static_cast<int>(h.valueAsPercentage() * containerSize().height());
 }
 
 float SVGSVGElement::pixelUnitToMillimeterX() const

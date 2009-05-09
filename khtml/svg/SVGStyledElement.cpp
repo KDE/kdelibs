@@ -88,7 +88,8 @@ int SVGStyledElement::cssPropertyIdForSVGAttributeName(const QualifiedName& attr
 {
     if (!attrName.namespaceURI().isEmpty()/*khtml fix, was isNull()*/)
         return 0;
-    
+
+    // ### I think this is better redone as a switch.
     static HashMap<DOMStringImpl*, int>* propertyNameToIdMap = 0;
     if (!propertyNameToIdMap) {
         propertyNameToIdMap = new HashMap<DOMStringImpl*, int>;
@@ -98,8 +99,8 @@ int SVGStyledElement::cssPropertyIdForSVGAttributeName(const QualifiedName& attr
         mapAttributeToCSSProperty(propertyNameToIdMap, clipAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, clip_pathAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, clip_ruleAttr);
-        /*mapAttributeToCSSProperty(propertyNameToIdMap, colorAttr);
-        mapAttributeToCSSProperty(propertyNameToIdMap, color_interpolationAttr);
+        mapAttributeToCSSProperty(propertyNameToIdMap, colorAttr);
+        /*mapAttributeToCSSProperty(propertyNameToIdMap, color_interpolationAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, color_interpolation_filtersAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, color_profileAttr);
         mapAttributeToCSSProperty(propertyNameToIdMap, color_renderingAttr); 
