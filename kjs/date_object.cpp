@@ -615,7 +615,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
 
   if (id == SetTime) {
     double milli = roundValue(exec, args[0]);
-    result = jsNumber(milli);
+    result = jsNumber(timeClip(milli));
     thisDateObj->setInternalValue(result);
     return result;
   }
@@ -711,7 +711,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
   if (id == SetYear || id == SetMilliSeconds || id == SetSeconds ||
       id == SetMinutes || id == SetHours || id == SetDate ||
       id == SetMonth || id == SetFullYear ) {
-    result = jsNumber(isnan(ms) ? ms : makeTime(&t, ms, utc));
+    result = jsNumber(isnan(ms) ? ms : timeClip(makeTime(&t, ms, utc)));
     thisDateObj->setInternalValue(result);
   }
 
