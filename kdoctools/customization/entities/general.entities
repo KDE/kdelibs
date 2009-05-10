@@ -121,6 +121,7 @@
 <!ENTITY atlantik	"<application>Atlantik</application>">
 <!ENTITY blinken	"<application>Blinken</application>">
 <!ENTITY bovo	"<application>Bovo</application>">
+<!ENTITY BSD "<trademark>BSD</trademark>">
 <!ENTITY catalogmanager	"<application>Catalog Manager</application>">
 <!ENTITY CD	"<acronym>CD</acronym>">
 <!ENTITY CDE	"<acronym>CDE</acronym>">
