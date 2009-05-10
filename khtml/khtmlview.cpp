@@ -128,6 +128,9 @@ static const int sSmoothScrollTime = 140;
 static const int sSmoothScrollTick = 14;
 static const int sSmoothScrollMinStaticPixels = 320*200;
 
+static const int sMaxMissedDeadlines = 12;
+static const int sWayTooMany = -1;
+
 class KHTMLViewPrivate {
     friend class KHTMLView;
 public:
@@ -156,6 +159,7 @@ public:
         postponed_autorepeat = NULL;
         scrollingFromWheelTimerId = 0;
         smoothScrollMode = KHTMLView::SSMWhenEfficient;
+
         reset();
         vpolicy = Qt::ScrollBarAsNeeded;
  	hpolicy = Qt::ScrollBarAsNeeded;
@@ -238,6 +242,7 @@ public:
         smoothScrolling = false;
         smoothScrollModeIsDefault = true;
         shouldSmoothScroll = false;
+        smoothScrollMissedDeadlines = 0;
         hasFrameset = false;
         complete = false;
         firstLayoutPending = true;
@@ -400,6 +405,7 @@ public:
     bool possibleTripleClick			:1;
     bool dirtyLayout                           :1;
     bool m_dialogsAllowed			:1;
+    short smoothScrollMissedDeadlines;
     int layoutCounter;
     int layoutAttemptCounter;
     int scheduledLayoutCounter;
@@ -3868,7 +3874,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
     }
 
     if ( d->shouldSmoothScroll && d->smoothScrollMode != SSMDisabled && m_part->xmlDocImpl() &&
-          m_part->xmlDocImpl()->renderer()) {
+          m_part->xmlDocImpl()->renderer() && (d->smoothScrollMode != SSMWhenEfficient || d->smoothScrollMissedDeadlines != sWayTooMany)) {
 
         bool doSmoothScroll = (!d->staticWidget || d->smoothScrollMode == SSMEnabled);
 
@@ -4061,6 +4067,17 @@ void KHTMLView::scrollTick() {
 
         d->ddx -= dddx;
         d->ddy -= dddy;
+        d->smoothScrollMissedDeadlines = 0;
+    } else {
+        if (d->smoothScrollMissedDeadlines != sWayTooMany && 
+                (!m_part->xmlDocImpl() || !m_part->xmlDocImpl()->parsing())) {
+            d->smoothScrollMissedDeadlines++;
+            if (d->smoothScrollMissedDeadlines >= sMaxMissedDeadlines) {
+                // we missed many deadlines in a row!
+                // time to signal we had enough..
+                d->smoothScrollMissedDeadlines = sWayTooMany;
+            }
+        }
     }
     d->smoothScrollStopwatch.start();
 }
