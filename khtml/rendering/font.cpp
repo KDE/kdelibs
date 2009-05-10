@@ -506,7 +506,7 @@ CachedFontFamily* Font::queryFamily(const QString& name, int weight, bool italic
     CachedFontFamily* f = fontCache->value(key);
     if (!f) {
 	// To query the sizes, we seem to have to make a font with right style to produce the stylestring
-	QFont font(QFont::substitute(name));
+	QFont font(name);
 	font.setItalic(italic);
 	font.setWeight(weight);
 
@@ -557,7 +557,7 @@ void CachedFontFamily::markAllInstancesAsValid()
 }
 
 CachedFontInstance::CachedFontInstance(CachedFontFamily* p, int sz):
-    f(QFont::substitute(p->def.family)), fm(f), invalidated(false), parent(p), size(sz)
+    f(p->def.family), fm(f), invalidated(false), parent(p), size(sz)
 {
     f.setItalic(p->def.italic);
     f.setWeight(p->def.weight);
@@ -576,7 +576,7 @@ CachedFontInstance::CachedFontInstance(CachedFontFamily* p, int sz):
 
 void CachedFontInstance::invalidate()
 {
-    QFont nf( QFont::substitute(f.family()) );
+    QFont nf( f.family() );
     nf.setWeight( f.weight() );
     nf.setItalic( f.italic() );
     nf.setPixelSize( f.pixelSize() );

@@ -92,14 +92,13 @@ void CSSFontFaceSource::notifyFinished(khtml::CachedObject */*finishedObj*/)
         return;
     }
     QString nativeName = QFontDatabase::applicationFontFamilies( m_id )[0];
-    khtml::Font::invalidateCachedFontFamily( nativeName );
     WTF::Vector<DOMString> names = m_face->familyNames();
     unsigned size = names.size();
     for (unsigned i = 0; i < size; i++) {
         if (names[i].string() != nativeName) {
             QFont::insertSubstitution( names[i].string(), nativeName );
-            khtml::Font::invalidateCachedFontFamily( names[i].string() );
         }
+        khtml::Font::invalidateCachedFontFamily( names[i].string() );
     }
     if (m_face && m_refed) {
         m_face->fontLoaded(this);
