@@ -320,7 +320,7 @@ void KBugReport::setMessageBody(const QString &messageBody)
 
 void KBugReportPrivate::_k_updateUrl()
 {
-    url = KUrl( "http://bugs.kde.org/wizard.cgi" );
+    url = KUrl( "https://bugs.kde.org/wizard.cgi" );
     url.addQueryItem( "os", os );
     url.addQueryItem( "compiler", KDE_COMPILER_VERSION );
     url.addQueryItem( "kdeVersion", kde_version );
