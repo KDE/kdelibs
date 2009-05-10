@@ -897,7 +897,7 @@ bool KateViNormalMode::commandYankToEOL()
 }
 
 // insert the text in the given register at the cursor position
-// the cursor should end up at the end of what was pasted
+// the cursor should end up at the beginning of what was pasted
 bool KateViNormalMode::commandPaste()
 {
   KTextEditor::Cursor c( m_view->cursorPosition() );
@@ -913,18 +913,19 @@ bool KateViNormalMode::commandPaste()
     }
   }
 
-  if ( textToInsert.indexOf('\n') != -1 ) { // lines
+  if ( textToInsert.endsWith('\n') ) { // line(s)
     textToInsert.chop( 1 ); // remove the last \n
     c.setColumn( getLine().length() ); // paste after the current line and ...
     textToInsert.prepend( QChar( '\n' ) ); // ... prepend a \n, so the text starts on a new line
 
     cAfter.setLine( cAfter.line()+1 );
-  } else { // one line
+    cAfter.setColumn( 0 );
+  } else {
     if ( getLine( c.line() ).length() > 0 ) {
       c.setColumn( c.column()+1 );
     }
 
-    cAfter.setColumn( cAfter.column() + textToInsert.length() );
+    cAfter = c;
   }
 
   m_doc->insertText( c, textToInsert );
@@ -935,7 +936,7 @@ bool KateViNormalMode::commandPaste()
 }
 
 // insert the text in the given register before the cursor position
-// the cursor should end up at the end of what was pasted
+// the cursor should end up at the beginning of what was pasted
 bool KateViNormalMode::commandPasteBefore()
 {
   KTextEditor::Cursor c( m_view->cursorPosition() );
@@ -951,10 +952,9 @@ bool KateViNormalMode::commandPasteBefore()
     }
   }
 
-  if ( textToInsert.indexOf('\n') != -1 ) { // lines
+  if ( textToInsert.endsWith('\n') ) { // lines
     c.setColumn( 0 );
-  } else {
-    cAfter.setColumn( cAfter.column()+textToInsert.length()-1 );
+    cAfter.setColumn( 0 );
   }
 
   m_doc->insertText( c, textToInsert );
