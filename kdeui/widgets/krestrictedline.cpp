@@ -49,7 +49,9 @@ void KRestrictedLine::keyPressEvent( QKeyEvent *e )
 {
   // let KLineEdit process "special" keys and return/enter
   // so that we still can use the default key binding
-  if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return || e->key() == Qt::Key_Delete || e->text().length() < 32)
+  if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return || e->key() == Qt::Key_Delete 
+      || e->key() == Qt::Key_Backspace || (e->modifiers() & (Qt::ControlModifier | Qt::AltModifier 
+      | Qt::MetaModifier | Qt::GroupSwitchModifier)))
     {
       KLineEdit::keyPressEvent(e);
       return;
