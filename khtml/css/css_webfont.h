@@ -40,6 +40,8 @@
 #include <wtf/RefCounted.h>
 #include <wtf/Vector.h>
 
+#include <QHash>
+
 namespace DOM {
 
 class CSSFontFace;
@@ -114,7 +116,7 @@ private:
 
 class CSSFontFaceSource : public khtml::CachedObjectClient {
 public:
-    CSSFontFaceSource(const DOMString&, khtml::CachedFont* = 0);
+    CSSFontFaceSource(const DOMString&, bool distant = false);
     virtual ~CSSFontFaceSource();
 
     bool isLoaded() const;
@@ -142,6 +144,7 @@ private:
     CSSFontFace* m_face; // Our owning font face.
     int m_id; // Qt identifier for the Application font.
     bool m_refed;
+    bool m_distant;
 //    HashMap<unsigned, SimpleFontData*> m_fontDataTable; // The hash key is composed of size synthetic styles.
 
 #if 0
@@ -154,7 +157,7 @@ private:
 class CSSFontFace : public khtml::Shared<CSSFontFace> {
 public:
     CSSFontFace(FontTraitsMask traitsMask, CSSFontSelector* fs)
-        : m_traitsMask(traitsMask), m_fontSelector(fs)
+        : m_traitsMask(traitsMask), m_fontSelector(fs), m_refed(false)
     {
     }
     ~CSSFontFace();
@@ -178,7 +181,8 @@ public:
     void fontLoaded(CSSFontFaceSource*);
     void addFamilyName(const DOMString& name) { m_names.append( name ); }
     WTF::Vector<DOMString> familyNames() const { return m_names; }
-    void refLoaders();
+    CSSFontSelector* fontSelector() const { return m_fontSelector; }
+    void refLoaders(); // start loading all sources
 
 //    SimpleFontData* getFontData(const FontDef&, bool syntheticBold, bool syntheticItalic);
 
@@ -206,6 +210,7 @@ private:
     WTF::Vector<DOMString> m_names;
     WTF::Vector<CSSFontFaceSource*> m_sources;
     CSSFontSelector* m_fontSelector;
+    bool m_refed;
 };
 
 class CSSFontSelector : public khtml::Shared<CSSFontSelector> {
@@ -214,6 +219,7 @@ public:
     virtual ~CSSFontSelector();
 
 //    virtual FontData* getFontData(const FontDef& fontDescription, const DOMString& familyName);
+    bool requestFamilyName( const DOMString& familyName );
     void clearDocument() { m_document = 0; }
     void addFontFaceRule(const CSSFontFaceRuleImpl*);
     void fontLoaded();
@@ -226,7 +232,7 @@ private:
     DocumentImpl* m_document;
 //    HashMap<DOMString, Vector<RefPtr<CSSFontFace> >*, CaseFoldingHash> m_fontFaces;
 //    WTF::HashMap<DOMString, WTF::Vector<WTF::RefPtr<CSSFontFace> >*, CaseFoldingHash> m_locallyInstalledFontFaces;
-      WTF::Vector< CSSFontFace* > m_locallyInstalledFontFaces;
+      QHash<DOMString, CSSFontFace*> m_locallyInstalledFontFaces;
 //    HashMap<DOMString, HashMap<unsigned, RefPtr<CSSSegmentedFontFace> >*, CaseFoldingHash> m_fonts;
 };
 

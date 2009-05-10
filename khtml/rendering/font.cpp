@@ -464,11 +464,37 @@ public:
     // on the CFI itself determines the lifetime
 
     CachedFontInstance* queryFont(int pixelSize);
+    void invalidateAllInstances();
+    void markAllInstancesAsValid();
 };
 
 static QHash<CachedFontFamilyKey, CachedFontFamily*>* fontCache;
 // This is a hash and not a cache since the top-level info is tiny,
 // and the actual font instances have precise lifetime
+
+void Font::invalidateCachedFontFamily( const QString& familyName ) // static
+{
+    if (!fontCache)
+        return;
+    QHash<CachedFontFamilyKey, CachedFontFamily*>::const_iterator i;
+    QHash<CachedFontFamilyKey, CachedFontFamily*>::const_iterator end = fontCache->end();
+    for (i = fontCache->begin(); i != end; ++i) {
+        if (i.key().family.contains( familyName, Qt::CaseInsensitive )) {
+            i.value()->invalidateAllInstances();
+        }
+    }
+}
+
+void Font::markAllCachedFontsAsValid() // static
+{
+    if (!fontCache)
+        return;
+    QHash<CachedFontFamilyKey, CachedFontFamily*>::const_iterator i;
+    QHash<CachedFontFamilyKey, CachedFontFamily*>::const_iterator end = fontCache->end();
+    for (i = fontCache->begin(); i != end; ++i) {
+            i.value()->markAllInstancesAsValid();
+    }
+}
 
 CachedFontFamily* Font::queryFamily(const QString& name, int weight, bool italic)
 {
@@ -480,7 +506,7 @@ CachedFontFamily* Font::queryFamily(const QString& name, int weight, bool italic
     CachedFontFamily* f = fontCache->value(key);
     if (!f) {
 	// To query the sizes, we seem to have to make a font with right style to produce the stylestring
-	QFont font(name);
+	QFont font(QFont::substitute(name));
 	font.setItalic(italic);
 	font.setWeight(weight);
 
@@ -512,8 +538,26 @@ CachedFontInstance* CachedFontFamily::queryFont(int pixelSize)
     return cfi;
 }
 
+void CachedFontFamily::invalidateAllInstances()
+{
+    QHash<int, CachedFontInstance*>::const_iterator i;
+    QHash<int, CachedFontInstance*>::const_iterator end = instances.end();
+    for (i = instances.begin(); i != end; ++i) {
+        i.value()->invalidate();
+    }
+}
+
+void CachedFontFamily::markAllInstancesAsValid()
+{
+    QHash<int, CachedFontInstance*>::const_iterator i;
+    QHash<int, CachedFontInstance*>::const_iterator end = instances.end();
+    for (i = instances.begin(); i != end; ++i) {
+        i.value()->invalidated = false;
+    }
+}
+
 CachedFontInstance::CachedFontInstance(CachedFontFamily* p, int sz):
-    f(p->def.family), fm(f), parent(p), size(sz)
+    f(QFont::substitute(p->def.family)), fm(f), invalidated(false), parent(p), size(sz)
 {
     f.setItalic(p->def.italic);
     f.setWeight(p->def.weight);
@@ -523,6 +567,28 @@ CachedFontInstance::CachedFontInstance(CachedFontFamily* p, int sz):
     // Prepare metrics caches
     for (int c = 0; c < 256; ++c)
 	rows[c] = 0;
+
+    ascent  = fm.ascent();
+    descent = fm.descent();
+    height  = fm.height();
+    lineSpacing = fm.lineSpacing();
+}
+
+void CachedFontInstance::invalidate()
+{
+    QFont nf( QFont::substitute(f.family()) );
+    nf.setWeight( f.weight() );
+    nf.setItalic( f.italic() );
+    nf.setPixelSize( f.pixelSize() );
+    f = nf;
+    invalidated = true;
+    fm = QFontMetrics(f);
+
+    // Cleanup metrics caches
+    for (int c = 0; c < 256; ++c) {
+        delete rows[c];
+        rows[c] = 0;
+    }
 
     ascent  = fm.ascent();
     descent = fm.descent();
@@ -648,7 +714,7 @@ void Font::drawDecoration(QPainter *pt, int _tx, int _ty, int baseline, int widt
 }
 
 // WebCore SVG
-float Font::floatWidth(QChar* str, int pos, int len, int extraCharsAvailable, int& charsConsumed, DOM::DOMString& glyphName) const
+float Font::floatWidth(QChar* str, int pos, int len, int /*extraCharsAvailable*/, int& charsConsumed, DOM::DOMString& glyphName) const
 {
     charsConsumed = len;
     glyphName = "";

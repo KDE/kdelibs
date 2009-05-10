@@ -876,3 +876,13 @@ RenderPage* RenderCanvas::page() {
     if (!m_page) m_page = new RenderPage(this);
     return m_page;
 }
+
+void RenderCanvas::updateInvalidatedFonts()
+{
+    for ( RenderObject* o = firstChild(); o ; o = o->nextRenderer() ) {
+        if (o->style()->htmlFont().isInvalidated()) {
+            o->setNeedsLayoutAndMinMaxRecalc();
+//          kDebug(6040) << "updating object using invalid font" << o->style()->htmlFont().getFontDef().family << o->information();
+        }
+    }
+}

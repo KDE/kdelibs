@@ -31,17 +31,19 @@
 #include "xml/dom_docimpl.h"
 #include "rendering/font.h"
 #include "rendering/render_object.h"
+#include "rendering/render_canvas.h"
 #include <kdebug.h>
 #include <QFontDatabase>
 #include <QFont>
 
 namespace DOM {
 
-CSSFontFaceSource::CSSFontFaceSource(const DOMString& str, khtml::CachedFont* font)
+CSSFontFaceSource::CSSFontFaceSource(const DOMString& str, bool distant)
     : m_string(str)
-    , m_font(font)
+    , m_font(0)
     , m_face(0)
     , m_refed(false)
+    , m_distant(distant)
 #if 0
     //ENABLE(SVG_FONTS)
     , m_svgFontFaceElement(0)
@@ -60,6 +62,7 @@ CSSFontFaceSource::~CSSFontFaceSource()
             unsigned size = names.size();
             for (unsigned i = 0; i < size; i++) {
                 QFont::removeSubstitution( names[i].string() );
+                khtml::Font::invalidateCachedFontFamily( names[i].string() );
             }
             QFontDatabase::removeApplicationFont( m_id );
         }
@@ -68,8 +71,8 @@ CSSFontFaceSource::~CSSFontFaceSource()
 
 bool CSSFontFaceSource::isLoaded() const
 {
-    if (m_font)
-        return m_font->isLoaded();
+    if (m_distant)
+        return m_font? m_font->isLoaded() : false;
     return true;
 }
 
@@ -88,19 +91,29 @@ void CSSFontFaceSource::notifyFinished(khtml::CachedObject */*finishedObj*/)
         // ### Qt couldn't load the font.
         return;
     }
+    QString nativeName = QFontDatabase::applicationFontFamilies( m_id )[0];
+    khtml::Font::invalidateCachedFontFamily( nativeName );
     WTF::Vector<DOMString> names = m_face->familyNames();
     unsigned size = names.size();
     for (unsigned i = 0; i < size; i++) {
-        QString nativeName = QFontDatabase::applicationFontFamilies( m_id )[0];
-        if (names[i].string() != nativeName)
+        if (names[i].string() != nativeName) {
             QFont::insertSubstitution( names[i].string(), nativeName );
+            khtml::Font::invalidateCachedFontFamily( names[i].string() );
+        }
     }
-    if (m_face && m_refed)
+    if (m_face && m_refed) {
         m_face->fontLoaded(this);
+    }
 }
 
 void CSSFontFaceSource::refLoader()
-{ 
+{
+    if (!m_distant)
+        return;
+    if (!m_font) {
+        assert(m_face);
+        m_font = m_face->fontSelector()->docLoader()->requestFont(m_string);
+    }
     if (m_font) {
         m_font->ref( this );
         m_refed = true;
@@ -235,12 +248,15 @@ bool CSSFontFace::isValid() const
 
 void CSSFontFace::refLoaders()
 {
+    if (m_refed)
+        return;
     unsigned size = m_sources.size();
     if (!size)
         return;
     for (unsigned i = 0; i < size; i++) {
          m_sources[i]->refLoader();
     }
+    m_refed = true;
 }
 
 void CSSFontFace::addedToSegmentedFontFace(CSSSegmentedFontFace* segmentedFontFace)
@@ -310,8 +326,12 @@ CSSFontSelector::~CSSFontSelector()
 {
 //    fontCache()->removeClient(this);
 //    deleteAllValues(m_fontFaces);
-      deleteAllValues(m_locallyInstalledFontFaces);
+//    deleteAllValues(m_locallyInstalledFontFaces);
 //    deleteAllValues(m_fonts);
+      QHash<DOMString, CSSFontFace*>::const_iterator cur = m_locallyInstalledFontFaces.constBegin();
+      QHash<DOMString, CSSFontFace*>::const_iterator end = m_locallyInstalledFontFaces.constEnd();
+      for (;cur != end; cur++)
+           cur.value()->deref();
 }
 
 bool CSSFontSelector::isEmpty() const
@@ -492,15 +512,12 @@ void CSSFontSelector::addFontFaceRule(const CSSFontFaceRuleImpl* fontFaceRule)
 
         if (!item->isLocal()) {
             if (item->isSupportedFormat() && m_document) {
-                khtml::CachedFont* cachedFont = m_document->docLoader()->requestFont(item->resource());
-                if (cachedFont) {
+                source = new CSSFontFaceSource(item->resource(), true /*distant*/);
 #if 0
     // ENABLE(SVG_FONTS)
-                    if (foundSVGFont)
-                        cachedFont->setSVGFont(true);
+                if (foundSVGFont)
+                    cachedFont->setSVGFont(true);
 #endif
-                    source = new CSSFontFaceSource(item->resource(), cachedFont);
-                }
             }
         } else {
             source = new CSSFontFaceSource(item->resource());
@@ -525,7 +542,7 @@ void CSSFontSelector::addFontFaceRule(const CSSFontFaceRuleImpl* fontFaceRule)
         delete fontFace;
         return;
     }
-    m_locallyInstalledFontFaces.append( fontFace );
+
 /*
     if (rangeList) {
         unsigned numRanges = rangeList->length();
@@ -572,6 +589,9 @@ void CSSFontSelector::addFontFaceRule(const CSSFontFaceRuleImpl* fontFaceRule)
             continue;
 
         fontFace->addFamilyName( familyName );
+        m_locallyInstalledFontFaces.insertMulti( familyName.lower(), fontFace );
+        fontFace->ref();
+
 #if 0
     // ENABLE(SVG_FONTS)
         // SVG allows several <font> elements with the same font-family, differing only
@@ -608,18 +628,24 @@ void CSSFontSelector::addFontFaceRule(const CSSFontFaceRuleImpl* fontFaceRule)
         familyFontFaces->append(fontFace);
 */
     }
-    if (fontFace) {
-        fontFace->ref();
-        fontFace->refLoaders();
+}
+
+bool CSSFontSelector::requestFamilyName( const DOMString& familyName )
+{
+    QHash<DOMString, CSSFontFace*>::const_iterator it = m_locallyInstalledFontFaces.find( familyName.lower() );
+    if (it != m_locallyInstalledFontFaces.end()) {
+        it.value()->refLoaders();
+        return true;
     }
+    return false;
 }
 
 void CSSFontSelector::fontLoaded()
 {
     if (!m_document || !m_document->renderer())
         return;
-    m_document->recalcStyle(NodeImpl::Force);
-    m_document->renderer()->setNeedsLayoutAndMinMaxRecalc();
+    static_cast<khtml::RenderCanvas*>(m_document->renderer())->updateInvalidatedFonts();
+    khtml::Font::markAllCachedFontsAsValid();
 }
 
 void CSSFontSelector::fontCacheInvalidated()

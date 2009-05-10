@@ -1002,7 +1002,7 @@ void CachedSound::error( int /*err*/, const char* /*text*/ )
 CachedFont::CachedFont(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy, const char*)
     : CachedObject(url, Font, _cachePolicy, 0)
 {
-    setAccept( QLatin1String("*/*") ); // should be whatever phonon would accept...
+    setAccept( QLatin1String("*/*") );
     Cache::loader()->load(dl, this, false);
     m_loading = true;
 }

@@ -111,6 +111,7 @@ public:
     void setPageNumber(int number) { m_pageNr = number; }
     int pageNumber() const { return m_pageNr; }
 
+    void updateInvalidatedFonts();
 public:
     virtual void setWidth( int width ) { m_rootWidth = m_width = width; }
     virtual void setHeight( int height ) { m_rootHeight = m_height = height; }

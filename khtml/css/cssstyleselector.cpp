@@ -3644,14 +3644,16 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	FontDef fontDef = style->htmlFont().fontDef;
         CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
         int len = list->length();
+        bool hasFamilyName = false;
         for(int i = 0; i < len; i++) {
             CSSValueImpl *item = list->item(i);
             if(!item->isPrimitiveValue()) continue;
             CSSPrimitiveValueImpl *val = static_cast<CSSPrimitiveValueImpl *>(item);
 	    QString face;
-            if( val->primitiveType() == CSSPrimitiveValue::CSS_STRING )
+            if( val->primitiveType() == CSSPrimitiveValue::CSS_STRING ) {
 		face = static_cast<FontFamilyValueImpl *>(val)->fontName();
-	    else if ( val->primitiveType() == CSSPrimitiveValue::CSS_IDENT ) {
+		m_fontSelector->requestFamilyName( DOMString(face) );
+	    } else if ( val->primitiveType() == CSSPrimitiveValue::CSS_IDENT ) {
 		switch( val->getIdent() ) {
 		case CSS_VAL_SERIF:
 		    face = settings->serifFontName();
@@ -3675,9 +3677,14 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 		return;
 	    }
 	    if ( !face.isEmpty() ) {
-		fontDef.family = face;
+	        if (!hasFamilyName) {
+	            fontDef.family = face;
+	            hasFamilyName = true;
+                } else {
+	            fontDef.family += ",";
+		    fontDef.family += face;
+                }
 		fontDirty |= style->setFontDef( fontDef );
-                return;
 	    }
 	}
         break;

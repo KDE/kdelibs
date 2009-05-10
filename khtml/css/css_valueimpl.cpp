@@ -1358,17 +1358,21 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
 : CSSPrimitiveValueImpl( DOMString(string), CSSPrimitiveValue::CSS_STRING)
 {
     static const QRegExp parenReg(" \\(.*\\)$");
-    static const QRegExp braceReg(" \\[.*\\]$");
+//  static const QRegExp braceReg(" \\[.*\\]$");
 
     parsedFontName = string;
 
     // a language tag is often added in braces at the end. Remove it.
     parsedFontName.replace(parenReg, QString());
 
+#if 0
+    // cannot use such early checks against the font database anymore,
+    // as the font subsystem might not contain the requested font yet
+    // (case of downloadable font faces)
+
     // remove [Xft] qualifiers
     parsedFontName.replace(braceReg, QString());
 
-#if 0
     const QString &available = KHTMLSettings::availableFamilies();
 
     parsedFontName = parsedFontName.toLower();

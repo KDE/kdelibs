@@ -71,11 +71,15 @@ public:
         return cachedCharWidth(c.unicode());
     }
 
+    // query again all metrics
+    void invalidate();
+
     // Simple cached metrics, set on creation
     int ascent;
     int descent;
     int height;
     int lineSpacing;
+    mutable bool invalidated;
 
     ~CachedFontInstance();
 private:
@@ -143,6 +147,9 @@ public:
     const FontDef& getFontDef() const { return fontDef; }
 
     void update( int logicalDpiY ) const;
+
+    static void invalidateCachedFontFamily( const QString& familyName );
+    static void markAllCachedFontsAsValid();
 
     /**
      * Draws a piece from the given piece of text.
@@ -235,6 +242,9 @@ public:
     unsigned unitsPerEm() const { return 0; }
     int spaceWidth() const { return 0; }
     int tabWidth() const { return 8 * spaceWidth(); }
+    
+    bool isInvalidated() const { return cfi->invalidated; }
+    void validate() const { cfi->invalidated = false; }
 
     // SVG helper function
     float floatWidth(QChar* str, int pos, int len, int extraCharsAvailable, int& charsConsumed, DOM::DOMString& glyphName) const;
