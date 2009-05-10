@@ -33,10 +33,6 @@ static const int kLabel = 0;
 static const int kInstall = 1;
 static const int kRating = 2;
 
-// if you change these, also change in itemsmodel.cpp
-static const int kPreviewWidth = 96;
-static const int kPreviewHeight = 72;
-
 namespace KNS
 {
 ItemsViewDelegate::ItemsViewDelegate(QAbstractItemView *itemView, QObject * parent)

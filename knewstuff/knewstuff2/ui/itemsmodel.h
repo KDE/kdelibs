@@ -26,6 +26,9 @@
 
 namespace KNS
 {
+static const int kPreviewWidth = 96;
+static const int kPreviewHeight = 72;
+
 
 class ItemsModel: public QAbstractListModel
 {

@@ -21,10 +21,6 @@
 #include <kdebug.h>
 #include "qasyncimage_p.h"
 
-// if you change these, also change in itemsviewdelegate.cpp
-static const int kPreviewWidth = 96;
-static const int kPreviewHeight = 72;
-
 namespace KNS
 {
 ItemsModel::ItemsModel(QObject * parent, bool hasWebService)
