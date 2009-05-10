@@ -631,8 +631,8 @@ void CSSFontSelector::addFontFaceRule(const CSSFontFaceRuleImpl* fontFaceRule)
 
 bool CSSFontSelector::requestFamilyName( const DOMString& familyName )
 {
-    QHash<DOMString, CSSFontFace*>::const_iterator it = m_locallyInstalledFontFaces.find( familyName.lower() );
-    if (it != m_locallyInstalledFontFaces.end()) {
+    QHash<DOMString, CSSFontFace*>::const_iterator it = m_locallyInstalledFontFaces.constFind( familyName.lower() );
+    if (it != m_locallyInstalledFontFaces.constEnd()) {
         it.value()->refLoaders();
         return true;
     }

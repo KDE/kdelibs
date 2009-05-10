@@ -477,8 +477,8 @@ void Font::invalidateCachedFontFamily( const QString& familyName ) // static
     if (!fontCache)
         return;
     QHash<CachedFontFamilyKey, CachedFontFamily*>::const_iterator i;
-    QHash<CachedFontFamilyKey, CachedFontFamily*>::const_iterator end = fontCache->end();
-    for (i = fontCache->begin(); i != end; ++i) {
+    QHash<CachedFontFamilyKey, CachedFontFamily*>::const_iterator end = fontCache->constEnd();
+    for (i = fontCache->constBegin(); i != end; ++i) {
         if (i.key().family.contains( familyName, Qt::CaseInsensitive )) {
             i.value()->invalidateAllInstances();
         }
@@ -490,8 +490,8 @@ void Font::markAllCachedFontsAsValid() // static
     if (!fontCache)
         return;
     QHash<CachedFontFamilyKey, CachedFontFamily*>::const_iterator i;
-    QHash<CachedFontFamilyKey, CachedFontFamily*>::const_iterator end = fontCache->end();
-    for (i = fontCache->begin(); i != end; ++i) {
+    QHash<CachedFontFamilyKey, CachedFontFamily*>::const_iterator end = fontCache->constEnd();
+    for (i = fontCache->constBegin(); i != end; ++i) {
             i.value()->markAllInstancesAsValid();
     }
 }
@@ -541,8 +541,8 @@ CachedFontInstance* CachedFontFamily::queryFont(int pixelSize)
 void CachedFontFamily::invalidateAllInstances()
 {
     QHash<int, CachedFontInstance*>::const_iterator i;
-    QHash<int, CachedFontInstance*>::const_iterator end = instances.end();
-    for (i = instances.begin(); i != end; ++i) {
+    QHash<int, CachedFontInstance*>::const_iterator end = instances.constEnd();
+    for (i = instances.constBegin(); i != end; ++i) {
         i.value()->invalidate();
     }
 }
@@ -550,8 +550,8 @@ void CachedFontFamily::invalidateAllInstances()
 void CachedFontFamily::markAllInstancesAsValid()
 {
     QHash<int, CachedFontInstance*>::const_iterator i;
-    QHash<int, CachedFontInstance*>::const_iterator end = instances.end();
-    for (i = instances.begin(); i != end; ++i) {
+    QHash<int, CachedFontInstance*>::const_iterator end = instances.constEnd();
+    for (i = instances.constBegin(); i != end; ++i) {
         i.value()->invalidated = false;
     }
 }
