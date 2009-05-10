@@ -35,6 +35,7 @@ void removeForbidden(int tagId, ushort *forbiddenTags);
 
 enum tagStatus { OPTIONAL, REQUIRED, FORBIDDEN };
 
+bool checkIsScopeBoundary(ushort tagID);
 bool checkChild(ushort tagID, ushort childID, bool strict = false);
 
 extern const unsigned short tagPriorityArray[];

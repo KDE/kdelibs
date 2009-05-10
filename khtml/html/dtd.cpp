@@ -413,6 +413,21 @@ static const ushort tag_list_head[] = {
     0
 };
 
+// cf. HTML5 8.2.3.2
+static const ushort scope_boundary[] = {
+    ID_APPLET,
+    ID_CAPTION,
+    ID_HTML,
+    ID_TABLE,
+    ID_TD,
+    ID_TH,
+    ID_BUTTON,
+    ID_MARQUEE,
+    ID_OBJECT,
+//    ID_FOREIGNOBJECT, - only in SVG namespace
+    0
+};
+
 static bool check_array(ushort child, const ushort *tagList)
 {
     int i = 0;
@@ -440,6 +455,11 @@ static bool check_inline(ushort childID, bool strict)
 static bool check_flow(ushort childID, bool strict)
 {
     return check_block(childID, strict) || check_inline(childID, strict);
+}
+
+bool DOM::checkIsScopeBoundary(ushort tagID)
+{
+    return check_array(tagID, scope_boundary);
 }
 
 bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
