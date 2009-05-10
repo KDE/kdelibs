@@ -74,7 +74,7 @@ namespace khtml {
             if(attrs) attrs->deref();
             if(text) text->deref();
         }
-        void addAttribute(DocumentImpl* doc, QChar* buffer, const QString& attrName, const DOMString& v)
+        void addAttribute(DocumentImpl* /*doc*/, QChar* buffer, const QString& attrName, const DOMString& v)
         {
             DOMStringImpl *value = v.implementation();
             LocalName localname = LocalName::fromId(0);

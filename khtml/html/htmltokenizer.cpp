@@ -1176,7 +1176,6 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 uint tagID = 0;
                 if (!tagID) {
                     DOMString tagName(ptr);
-                    DocumentImpl *doc = parser->docPtr();
                     if (Element::khtmlValidQualifiedName(tagName)) {
                         safeLocalName = LocalName::fromString(tagName, IDS_NormalizeLower);
                         tagID = safeLocalName.id();

@@ -146,7 +146,7 @@ protected:
     int availableWidthUsing(const Length& w) const;
     int calcImplicitContentHeight() const;
     bool hasImplicitHeight() const {
-        return isPositioned() && !style()->top().isVariable() && !style()->bottom().isVariable();
+        return isPositioned() && !style()->top().isAuto() && !style()->bottom().isAuto();
     }
 
 protected:

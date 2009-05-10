@@ -72,7 +72,7 @@ RenderBlock::MarginInfo::MarginInfo(RenderBlock* block, int top, int bottom)
     // effects when the children overflow out of the parent block and yet still collapse
     // with it.  We also don't collapse if we have any bottom border/padding.
     m_canCollapseBottomWithChildren = m_canCollapseWithChildren && (bottom == 0) &&
-        (block->style()->height().isVariable() && block->style()->height().value() == 0) /*&& block->style()->marginBottomCollapse() != MSEPARATE*/;
+        (block->style()->height().isAuto() && block->style()->height().isZero()) /*&& block->style()->marginBottomCollapse() != MSEPARATE*/;
 
     m_quirkContainer = block->isTableCell() || block->isBody() /*|| block->style()->marginTopCollapse() == MDISCARD ||
         block->style()->marginBottomCollapse() == MDISCARD*/;
@@ -696,10 +696,10 @@ bool RenderBlock::isSelfCollapsingBlock() const
     // (d) have a min-height
     if (m_height > 0 ||
         isTable() || (borderBottom() + paddingBottom() + borderTop() + paddingTop()) != 0 ||
-        style()->minHeight().value() > 0)
+        style()->minHeight().isPositive())
         return false;
 
-    bool hasAutoHeight = style()->height().isVariable();
+    bool hasAutoHeight = style()->height().isAuto();
     if (style()->height().isPercent() && !style()->htmlHacks()) {
         hasAutoHeight = true;
         for (RenderBlock* cb = containingBlock(); !cb->isCanvas(); cb = cb->containingBlock()) {
@@ -710,7 +710,7 @@ bool RenderBlock::isSelfCollapsingBlock() const
 
     // If the height is 0 or auto, then whether or not we are a self-collapsing block depends
     // on whether we have content that is all self-collapsing or not.
-    if (hasAutoHeight || ((style()->height().isFixed() || style()->height().isPercent()) && style()->height().value() == 0)) {
+    if (hasAutoHeight || ((style()->height().isFixed() || style()->height().isPercent()) && style()->height().isZero())) {
         // If the block has inline children, see if we generated any line boxes.  If we have any
         // line boxes, then we can't be self-collapsing, since we have content.
         if (childrenInline())
@@ -836,7 +836,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
 
     // Expand our intrinsic height to encompass floats.
     int toAdd = borderBottom() + paddingBottom();
-    if (m_layer && scrollsOverflowX() && style()->height().isVariable())
+    if (m_layer && scrollsOverflowX() && style()->height().isAuto())
         toAdd += m_layer->horizontalScrollbarHeight();
 
     if ( hasOverhangingFloats() ) {
@@ -878,7 +878,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
             m_height = m_overflowHeight + borderBottom() + paddingBottom();
     }
 
-    if( hasOverhangingFloats() && ((isFloating() && style()->height().isVariable()) || isTableCell())) {
+    if( hasOverhangingFloats() && ((isFloating() && style()->height().isAuto()) || isTableCell())) {
         m_height = floatBottom();
         m_height += borderBottom() + paddingBottom();
     }
@@ -1397,7 +1397,7 @@ void RenderBlock::determineHorizontalPosition(RenderObject* child)
         // to shift over as necessary to dodge any floats that might get in the way.
         if (child->flowAroundFloats()) {
             int leftOff = leftOffset(m_height);
-            if (style()->textAlign() != KHTML_CENTER && !child->style()->marginLeft().isVariable()) {
+            if (style()->textAlign() != KHTML_CENTER && !child->style()->marginLeft().isAuto()) {
                 if (child->marginLeft() < 0)
                     leftOff += child->marginLeft();
                 chPos = qMax(chPos, leftOff); // Let the float sit in the child's margin if it can fit.
@@ -1421,7 +1421,7 @@ void RenderBlock::determineHorizontalPosition(RenderObject* child)
         int chPos = xPos - (child->width() + child->marginRight());
         if (child->flowAroundFloats()) {
             int rightOff = rightOffset(m_height);
-            if (style()->textAlign() != KHTML_CENTER && !child->style()->marginRight().isVariable()) {
+            if (style()->textAlign() != KHTML_CENTER && !child->style()->marginRight().isAuto()) {
                 if (child->marginRight() < 0)
                     rightOff -= child->marginRight();
                 chPos = qMin(chPos, rightOff - child->width()); // Let the float sit in the child's margin if it can fit.
@@ -1492,7 +1492,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
     int top = borderTop() + paddingTop();
     int bottom = borderBottom() + paddingBottom();
-    if (m_layer && scrollsOverflowX() && style()->height().isVariable())
+    if (m_layer && scrollsOverflowX() && style()->height().isAuto())
         bottom += m_layer->horizontalScrollbarHeight();
 
     m_height = m_overflowHeight = top;
@@ -2007,7 +2007,7 @@ void RenderBlock::positionNewFloats()
                                //kDebug( 6040 ) << " Object width: " << fwidth << " available width: " << ro - lo;
 
         // in quirk mode, floated auto-width tables try to fit within remaining linewidth
-        bool ftQuirk = o->isTable() && style()->htmlHacks() && o->style()->width().isVariable();
+        bool ftQuirk = o->isTable() && style()->htmlHacks() && o->style()->width().isAuto();
         if (ftQuirk)
             fwidth = qMin( o->minWidth()+o->marginLeft()+o->marginRight(), fwidth );
 
@@ -2657,7 +2657,7 @@ int RenderBlock::getClearDelta(RenderObject *child)
     // FIXME: Note that the remaining space checks aren't quite accurate, since you should be able to clear only some floats (the minimum # needed
     // to fit) and not all (we should be using nearestFloatBottom and looping).
     int result = clearSet ? qMax(0, bottom - child->yPos()) : 0;
-    if (!result && child->flowAroundFloats() && !style()->width().isVariable()) {
+    if (!result && child->flowAroundFloats() && !style()->width().isAuto()) {
         bool canClearLine;
         int lw = lineWidth(child->yPos(), &canClearLine);
         if (((child->style()->width().isPercent() && child->width() > lw) ||
@@ -2838,7 +2838,7 @@ void RenderBlock::calcMinMaxWidth()
 #ifdef DEBUG_LAYOUT
     kDebug( 6040 ) << renderName() << "(RenderBlock)::calcMinMaxWidth() this=" << this;
 #endif
-    if (!isTableCell() && style()->width().isFixed() && style()->width().value() > 0)
+    if (!isTableCell() && style()->width().isFixed() && style()->width().isPositive())
         m_minWidth = m_maxWidth = calcContentWidth(style()->width().value());
     else {
         m_minWidth = 0;
@@ -2863,17 +2863,17 @@ void RenderBlock::calcMinMaxWidth()
 
         if (isTableCell()) {
             Length w = static_cast<RenderTableCell*>(this)->styleOrColWidth();
-            if (w.isFixed() && w.value() > 0)
+            if (w.isFixed() && w.isPositive())
                 m_maxWidth = qMax((int)m_minWidth, calcContentWidth(w.value()));
         }
     }
 
-    if (style()->minWidth().isFixed() && style()->minWidth().value() > 0) {
+    if (style()->minWidth().isFixed() && style()->minWidth().isPositive()) {
         m_maxWidth = qMax(m_maxWidth, (int)calcContentWidth(style()->minWidth().value()));
         m_minWidth = qMax(m_minWidth, (short)calcContentWidth(style()->minWidth().value()));
     }
 
-    if (style()->maxWidth().isFixed() && style()->maxWidth().value() != UNDEFINED) {
+    if (style()->maxWidth().isFixed() && !style()->maxWidth().isUndefined()) {
         m_maxWidth = qMin(m_maxWidth, (int)calcContentWidth(style()->maxWidth().value()));
         m_minWidth = qMin(m_minWidth, (short)calcContentWidth(style()->maxWidth().value()));
     }
@@ -2897,7 +2897,7 @@ void RenderBlock::calcMinMaxWidth()
 
 static int getBPMWidth(int childValue, Length cssUnit)
 {
-    if (!cssUnit.isVariable())
+    if (!cssUnit.isAuto())
         return (cssUnit.isFixed() ? cssUnit.value() : childValue);
     return 0;
 }
@@ -2945,7 +2945,7 @@ void RenderBlock::calcInlineMinMaxWidth()
     // Also strip spaces if we previously had text that ended in a trailing space.
     bool stripFrontSpaces = true;
 
-    bool isTcQuirk = isTableCell() && style()->htmlHacks() && style()->width().isVariable();
+    bool isTcQuirk = isTableCell() && style()->htmlHacks() && style()->width().isAuto();
 
     RenderObject* trailingSpaceChild = 0;
 

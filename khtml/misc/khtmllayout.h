@@ -2,6 +2,7 @@
     This file is part of the KDE libraries
 
     Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+    Copyright (C) 2006, 2008 Apple Inc. All rights reserved.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,6 +25,9 @@
 #define HTML_LAYOUT_H
 
 #include <QVector>
+#include <math.h>
+#include <assert.h>
+
 /*
  * this namespace contains definitions for various types needed for
  * layouting.
@@ -32,6 +36,7 @@ namespace khtml
 {
 
     const int UNDEFINED = -1;
+    const int PERCENT_SCALE_FACTOR = 128;
 
     // alignment
     enum VAlign { VNone=0, Bottom, VCenter, Top, Baseline };
@@ -40,71 +45,126 @@ namespace khtml
     /*
      * %multiLength and %Length
      */
-    enum LengthType { Variable = 0, Relative, Percent, Fixed, Static };
+    enum LengthType { Auto = 0, Relative, Percent, Fixed, Static };
     struct Length
     {
-	Length() : _length(0) {}
-        Length(LengthType t) { _length = 0; l.type = t; }
+	Length() : m_value(0) {}
+
+        Length(LengthType t): m_value(t) {}
+
         Length(int v, LengthType t, bool q=false)
-        {  _length= 0; l.value = v; l.type = t; l.quirk = q; }
-        bool operator==(const Length& o) const
-        { return _length == o._length; }
-        bool operator!=(const Length& o) const
-        { return _length != o._length; }
-        void setValue(LengthType t, int v) {
-            _length = 0; l.value = v; l.type = t; l.quirk = false;
+            : m_value((v * 16) | (q << 3) | t) { assert(t != Percent); }
+
+        Length(double v, LengthType t, bool q = false)
+            : m_value(static_cast<int>(v * PERCENT_SCALE_FACTOR) * 16 | (q << 3) | t) { assert(t == Percent); }
+
+        bool operator==(const Length& o) const { return m_value == o.m_value; }
+        bool operator!=(const Length& o) const { return m_value != o.m_value; }
+
+        int value() const {
+            assert(type() != Percent);
+            return rawValue();
         }
+
+        int rawValue() const { return (m_value & ~0xF) / 16; }
+
+        double percent() const
+        {
+            assert(type() == Percent);
+            return static_cast<double>(rawValue()) / PERCENT_SCALE_FACTOR;
+        }
+
+        LengthType type() const { return static_cast<LengthType>(m_value & 7); }
+
+        void setValue(LengthType t, int value)
+        {
+            assert(t != Percent);
+            setRawValue(t, value);
+        }
+
+        void setRawValue(LengthType t, int value) { m_value = value * 16 | (m_value & 0x8) | t; }
+
+        void setValue(int value)
+        {
+            assert(!value || type() != Percent);
+            setRawValue(value);
+        }
+
+        void setRawValue(int value) { m_value = value * 16 | (m_value & 0xF); }
+
+        void setValue(LengthType t, double value)
+        {
+            assert(t == Percent);
+            m_value = static_cast<int>(value * PERCENT_SCALE_FACTOR) * 16 | (m_value & 0x8) | t;
+        }
+
+        void setValue(double value)
+        {
+            assert(type() == Percent);
+            m_value = static_cast<int>(value * PERCENT_SCALE_FACTOR) * 16 | (m_value & 0xF);
+        }
+
 	/*
-	 * works only for Fixed and Percent, returns -1 otherwise
+	 * works only for certain types, returns UNDEFINED otherwise
 	 */
-	int width(int maxWidth) const
+	int width(int maxValue) const
 	    {
-		switch(l.type)
+		switch(type())
 		{
 		case Fixed:
-		    return l.value;
+		    return value();
 		case Percent:
-		    return maxWidth*l.value/100;
-		case Variable:
-		    return maxWidth;
+                    return maxValue * rawValue() / (100 * PERCENT_SCALE_FACTOR);
+		case Auto:
+		    return maxValue;
 		default:
-		    return -1;
+		    return UNDEFINED;
 		}
 	    }
 	/*
 	 * returns the minimum width value which could work...
 	 */
-	int minWidth(int maxWidth) const
+	int minWidth(int maxValue) const
 	    {
-		switch(l.type)
+		switch(type())
 		{
 		case Fixed:
-		    return l.value;
+		    return value();
 		case Percent:
-		    return maxWidth*l.value/100;
-		case Variable:
+		    return maxValue * rawValue() / (100 * PERCENT_SCALE_FACTOR);
+		case Auto:
 		default:
 		    return 0;
 		}
 	    }
-        bool isVariable() const { return ((LengthType) l.type == Variable); }
-        bool isRelative() const { return ((LengthType) l.type == Relative); }
-        bool isPercent() const { return ((LengthType ) l.type == Percent); }
-        bool isFixed() const { return ((LengthType) l.type == Fixed); }
-        bool isStatic() const { return ((LengthType) l.type == Static); }
-        bool isQuirk() const { return l.quirk; }
 
-        int value() const { return l.value; }
-        LengthType type() const { return (LengthType) l.type; }
+	int minWidthRounded(int maxValue) const
+	    {
+		switch(type())
+		{
+		case Fixed:
+		    return value();
+		case Percent:
+		    return static_cast<int>(round(maxValue * percent() / 100.0));
+		case Auto:
+		default:
+		    return 0;
+		}
+	    }
 
-        union {
-            struct {
-                signed int value : 28;
-                unsigned type : 3;
-                unsigned quirk : 1;
-            } l;
-            quint32 _length;
-        };
+        bool isUndefined() const { return rawValue() == UNDEFINED; }
+        bool isZero() const { return !(m_value & ~0xF); }
+        bool isPositive() const { return rawValue() > 0; }
+        bool isNegative() const { return rawValue() < 0; }
+
+        bool isAuto() const { return type() == Auto; }
+        bool isRelative() const { return type() == Relative; }
+        bool isPercent() const { return type() == Percent; }
+        bool isFixed() const { return type() == Fixed; }
+        bool isQuirk() const { return (m_value >> 3) & 1; }
+
+private:
+        int m_value;
     };
 
 }

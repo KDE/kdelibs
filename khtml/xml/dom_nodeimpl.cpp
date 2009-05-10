@@ -316,11 +316,11 @@ NodeImpl *NodeImpl::addChild(NodeImpl *)
   return 0;
 }
 
-void NodeImpl::getCaret(int offset, bool override, int &_x, int &_y, int &width, int &height)
+void NodeImpl::getCaret(int /*offset*/, bool override, int &_x, int &_y, int &width, int &height)
 {
     if (m_render) {
         RenderObject *r = 0;
-	long r_ofs;
+	long r_ofs = 0;
 	bool outside, outsideEnd;
 #if 0
 kDebug(6200) << "getCaret: node " << this << " " << nodeName().string() << " offset: " << offset;

@@ -305,7 +305,7 @@ static Length parseLength(const QChar *s, unsigned int l)
             const QChar* next = s+i;
 
             if (*next == '%')
-                return Length(r, Percent);
+                return Length(static_cast<double>(r), Percent);
 
             if (*next == '*') 
                 return Length(r, Relative);

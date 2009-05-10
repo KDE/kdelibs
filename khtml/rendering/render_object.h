@@ -197,8 +197,8 @@ public:
 
     // Whether or not a positioned element requires normal flow x/y to be computed
     // to determine its position.
-    bool hasStaticX() const { return style()->left().isVariable() && style()->right().isVariable(); }
-    bool hasStaticY() const { return style()->top().isVariable() && style()->bottom().isVariable(); }
+    bool hasStaticX() const { return style()->left().isAuto() && style()->right().isAuto(); }
+    bool hasStaticY() const { return style()->top().isAuto() && style()->bottom().isAuto(); }
     bool isPosWithStaticDim()   const { return isPositioned() && (hasStaticX() || hasStaticY()); }
 
     // Linear tree traversal

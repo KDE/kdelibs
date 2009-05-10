@@ -178,7 +178,7 @@ struct LengthBox
     }
 
 
-    bool nonZero() const { return left.value() || right.value() || top.value() || bottom.value(); }
+    bool nonZero() const { return !(left.isZero() && right.isZero() && top.isZero() && bottom.isZero()); }
 };
 
 
@@ -1370,7 +1370,7 @@ public:
     void setMarginLeft(Length v)    {  SET_VAR(surround,margin.left,v) }
     void setMarginRight(Length v)   {  SET_VAR(surround,margin.right,v) }
 
-    void resetPadding() { SET_VAR(surround, padding, LengthBox(Variable)) }
+    void resetPadding() { SET_VAR(surround, padding, LengthBox(Auto)) }
     void setPaddingTop(Length v)    {  SET_VAR(surround,padding.top,v) }
     void setPaddingBottom(Length v) {  SET_VAR(surround,padding.bottom,v) }
     void setPaddingLeft(Length v)   {  SET_VAR(surround,padding.left,v) }
@@ -1527,12 +1527,12 @@ public:
     static Length initialMaxSize() { return Length(UNDEFINED, Fixed); }
     static Length initialOffset() { return Length(); }
     static Length initialMargin() { return Length(Fixed); }
-    static Length initialPadding() { return Length(Variable); }
+    static Length initialPadding() { return Length(Auto); }
     static Length initialTextIndent() { return Length(Fixed); }
     static EVerticalAlign initialVerticalAlign() { return BASELINE; }
     static int initialWidows() { return 2; }
     static int initialOrphans() { return 2; }
-    static Length initialLineHeight() { return Length(-100, Percent); }
+    static Length initialLineHeight() { return Length(-100.0, Percent); }
     static ETextAlign initialTextAlign() { return TAAUTO; }
     static ETextDecoration initialTextDecoration() { return TDNONE; }
     static bool initialFlowAroundFloats() { return false; }

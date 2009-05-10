@@ -2175,9 +2175,9 @@ static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyl
 	if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
 	    l = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed);
 	else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-	    l = Length(int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE)), Percent);
+	    l = Length(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
 	else if(type == CSSPrimitiveValue::CSS_NUMBER)
-	    l = Length(int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
+	    l = Length(primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER)*100.0, Percent);
 	else if (type == CSSPrimitiveValue::CSS_HTML_RELATIVE)
 	    l = Length(int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_HTML_RELATIVE)), Relative);
 	else if ( ok )
@@ -3167,7 +3167,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 l = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed,
                            primitiveValue->isQuirkValue());
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-                l = Length((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+                l = Length(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
 	    else if (type == CSSPrimitiveValue::CSS_HTML_RELATIVE)
 		l = Length(int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_HTML_RELATIVE)), Relative);
             else
@@ -3244,7 +3244,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
                 l = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-                l = Length((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+                l = Length(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
             else
                 return;
             apply = true;
@@ -3302,7 +3302,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	  if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
 	    l = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed );
 	  else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-	    l = Length( int( primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE) ), Percent );
+	    l = Length( primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent );
 
 	  style->setVerticalAlign( LENGTH );
 	  style->setVerticalAlignLength( l );
@@ -3438,7 +3438,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         Length lineHeight;
         int type = primitiveValue->primitiveType();
         if (primitiveValue->getIdent() == CSS_VAL_NORMAL)
-            lineHeight = Length( -100, Percent );
+            lineHeight = Length( -100.0, Percent );
         else if (type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG) {
             // Scale for the font zoom factor only for types other than "em" and "ex", since those are
             // already based on the font size.
@@ -3451,7 +3451,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         } else if (type == CSSPrimitiveValue::CSS_PERCENTAGE)
             lineHeight = Length( ( style->font().pixelSize() * int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE)) ) / 100, Fixed );
         else if (type == CSSPrimitiveValue::CSS_NUMBER)
-            lineHeight = Length(int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
+            lineHeight = Length(primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER)*100.0, Percent);
         else
             return;
         style->setLineHeight(lineHeight);
@@ -3488,17 +3488,17 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             RectImpl *rect = primitiveValue->getRectValue();
             if (rect) {
                 hasClip = true;
-                // As a convention, we pass in auto as Length(Variable). See RenderBox::clipRect
-                top    = rect->top()->getIdent()    == CSS_VAL_AUTO ? Length(Variable)
+                // As a convention, we pass in auto as Length(Auto). See RenderBox::clipRect
+                top    = rect->top()->getIdent()    == CSS_VAL_AUTO ? Length(Auto)
                             : convertToLength( rect->top(), style, logicalDpiY );
 
-                right  = rect->right()->getIdent()  == CSS_VAL_AUTO ? Length(Variable)
+                right  = rect->right()->getIdent()  == CSS_VAL_AUTO ? Length(Auto)
                             : convertToLength( rect->right(), style, logicalDpiY );
 
-                bottom = rect->bottom()->getIdent() == CSS_VAL_AUTO ? Length(Variable)
+                bottom = rect->bottom()->getIdent() == CSS_VAL_AUTO ? Length(Auto)
                             : convertToLength( rect->bottom(), style, logicalDpiY );
 
-                left   = rect->left()->getIdent()   == CSS_VAL_AUTO ? Length(Variable)
+                left   = rect->left()->getIdent()   == CSS_VAL_AUTO ? Length(Auto)
                             : convertToLength( rect->left(), style, logicalDpiY );
             }
         }
@@ -4283,20 +4283,20 @@ void CSSStyleSelector::mapBackgroundSize(BackgroundLayer* layer, CSSValueImpl* v
     int secondType = second->primitiveType();
 
     if (firstType == CSSPrimitiveValue::CSS_UNKNOWN)
-        firstLength = Length(Variable);
+        firstLength = Length(Auto);
     else if (firstType > CSSPrimitiveValue::CSS_PERCENTAGE && firstType < CSSPrimitiveValue::CSS_DEG)
         firstLength = Length(first->computeLength(style, logicalDpiY), Fixed);
     else if (firstType == CSSPrimitiveValue::CSS_PERCENTAGE)
-        firstLength = Length((int)first->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+        firstLength = Length(first->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
     else
         return;
 
     if (secondType == CSSPrimitiveValue::CSS_UNKNOWN)
-        secondLength = Length(Variable);
+        secondLength = Length(Auto);
     else if (secondType > CSSPrimitiveValue::CSS_PERCENTAGE && secondType < CSSPrimitiveValue::CSS_DEG)
         secondLength = Length(second->computeLength(style, logicalDpiY), Fixed);
     else if (secondType == CSSPrimitiveValue::CSS_PERCENTAGE)
-        secondLength = Length((int)second->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+        secondLength = Length(second->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
     else
         return;
 
@@ -4319,7 +4319,7 @@ void CSSStyleSelector::mapBackgroundXPosition(BackgroundLayer* layer, DOM::CSSVa
     if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
         l = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed);
     else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-        l = Length((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+        l = Length(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
     else
         return;
     layer->setBackgroundXPosition(l);
@@ -4339,7 +4339,7 @@ void CSSStyleSelector::mapBackgroundYPosition(BackgroundLayer* layer, DOM::CSSVa
     if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
         l = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed);
     else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-        l = Length((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+        l = Length(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
     else
         return;
     layer->setBackgroundYPosition(l);

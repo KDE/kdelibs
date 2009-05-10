@@ -51,7 +51,7 @@ unsigned long RenderBR::caretMaxRenderedOffset() const
     return 1;
 }
 
-Position RenderBR::positionForCoordinates(int _x, int _y)
+Position RenderBR::positionForCoordinates(int /*_x*/, int /*_y*/)
 {
     return Position(element(), 0);
 }
@@ -100,7 +100,7 @@ FindSelectionResult RenderBR::checkSelectionPoint(int _x, int _y, int _tx, int _
   return prev->RenderText::checkSelectionPoint(_x, _y, _tx, _ty, node, offset, state);
 }
 
-InlineBox *RenderBR::inlineBox(long offset)
+InlineBox *RenderBR::inlineBox(long /*offset*/)
 {
     return firstTextBox();
 }

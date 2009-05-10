@@ -105,7 +105,7 @@ static void appendRun( BidiState &bidi );
 
 static int getBPMWidth(int childValue, Length cssUnit)
 {
-    if (!cssUnit.isVariable())
+    if (!cssUnit.isAuto())
         return (cssUnit.isFixed() ? cssUnit.value() : childValue);
     return 0;
 }
@@ -1367,7 +1367,7 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren, int breakBeforeLin
 
     m_height = borderTop() + paddingTop();
     int toAdd = borderBottom() + paddingBottom();
-    if (m_layer && scrollsOverflowX() && style()->height().isVariable())
+    if (m_layer && scrollsOverflowX() && style()->height().isAuto())
         toAdd += m_layer->horizontalScrollbarHeight();
 
     // Figure out if we should clear our line boxes.

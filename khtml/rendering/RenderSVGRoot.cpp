@@ -68,7 +68,7 @@ void RenderSVGRoot::calcMinMaxWidth()
 //    KHTMLAssert( !minMaxKnown() );
 
     int width = calcReplacedWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight();
-    if (style()->width().isPercent() || (style()->width().isVariable() && style()->height().isPercent())) {
+    if (style()->width().isPercent() || (style()->width().isAuto() && style()->height().isPercent())) {
         m_minWidth = 0;
         m_maxWidth = width;
     } else

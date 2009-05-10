@@ -490,11 +490,11 @@ static void calculateBackgroundSize(const BackgroundLayer* bgLayer, int& scaledW
         
         // If one of the values is auto we have to use the appropriate
         // scale to maintain our aspect ratio.
-        if (bgWidth.isVariable() && !bgHeight.isVariable())
+        if (bgWidth.isAuto() && !bgHeight.isAuto())
             w = bg->pixmap_size().width() * h / bg->pixmap_size().height();        
-        else if (!bgWidth.isVariable() && bgHeight.isVariable())
+        else if (!bgWidth.isAuto() && bgHeight.isAuto())
             h = bg->pixmap_size().height() * w / bg->pixmap_size().width();
-        else if (bgWidth.isVariable() && bgHeight.isVariable()) {
+        else if (bgWidth.isAuto() && bgHeight.isAuto()) {
             // If both width and height are auto, we just want to use the image's
             // intrinsic size.
             w = bg->pixmap_size().width();
@@ -629,9 +629,9 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                 cw = scaledImageWidth;
                 int xPosition;
                 if (isRoot())
-                    xPosition = bgLayer->backgroundXPosition().minWidth(rw-scaledImageWidth);
+                    xPosition = bgLayer->backgroundXPosition().minWidthRounded(rw-scaledImageWidth);
                 else
-                    xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
+                    xPosition = bgLayer->backgroundXPosition().minWidthRounded(pw-scaledImageWidth);
                 if ( xPosition >= 0 ) {
                     cx = _tx + xPosition;
                     cw = qMin(scaledImageWidth, pw - xPosition);
@@ -651,9 +651,9 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                 if (scaledImageWidth > 0) {
                     int xPosition;
                     if (isRoot())
-                        xPosition = bgLayer->backgroundXPosition().minWidth(rw-scaledImageWidth);
+                        xPosition = bgLayer->backgroundXPosition().minWidthRounded(rw-scaledImageWidth);
                     else
-                        xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
+                        xPosition = bgLayer->backgroundXPosition().minWidthRounded(pw-scaledImageWidth);
                     sx = scaledImageWidth - (xPosition % scaledImageWidth);
                     sx -= left % scaledImageWidth;
                 }
@@ -662,9 +662,9 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                 ch = scaledImageHeight;
                 int yPosition;
                 if (isRoot())
-                    yPosition = bgLayer->backgroundYPosition().minWidth(rh - scaledImageHeight);
+                    yPosition = bgLayer->backgroundYPosition().minWidthRounded(rh - scaledImageHeight);
                 else
-                    yPosition = bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight);
+                    yPosition = bgLayer->backgroundYPosition().minWidthRounded(ph - scaledImageHeight);
                 if ( yPosition >= 0 ) {
                     cy = _ty + yPosition;
                     ch = qMin(ch, ph - yPosition);
@@ -685,9 +685,9 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                 if (scaledImageHeight > 0) {
                     int yPosition;
                     if (isRoot())
-                        yPosition = bgLayer->backgroundYPosition().minWidth(rh - scaledImageHeight);
+                        yPosition = bgLayer->backgroundYPosition().minWidthRounded(rh - scaledImageHeight);
                     else
-                        yPosition = bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight);
+                        yPosition = bgLayer->backgroundYPosition().minWidthRounded(ph - scaledImageHeight);
                     sy = scaledImageHeight - (yPosition % scaledImageHeight);
                     sy -= top % scaledImageHeight;
                 }
@@ -752,7 +752,7 @@ QRect RenderBox::getFixedBackgroundImageRect( const BackgroundLayer* bgLayer, in
     calculateBackgroundSize(bgLayer, scaledImageWidth, scaledImageHeight);
     EBackgroundRepeat bgr = bgLayer->backgroundRepeat();
 
-    int xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
+    int xPosition = bgLayer->backgroundXPosition().minWidthRounded(pw-scaledImageWidth);
     if (bgr == NO_REPEAT || bgr == REPEAT_Y) {
         cw = qMin(scaledImageWidth, pw - xPosition);
         cx = vr.x() + xPosition;
@@ -763,7 +763,7 @@ QRect RenderBox::getFixedBackgroundImageRect( const BackgroundLayer* bgLayer, in
             sx = scaledImageWidth - xPosition % scaledImageWidth;
     }
 
-    int yPosition = bgLayer->backgroundYPosition().minWidth(ph-scaledImageHeight);
+    int yPosition = bgLayer->backgroundYPosition().minWidthRounded(ph-scaledImageHeight);
     if (bgr == NO_REPEAT || bgr == REPEAT_X) {
         ch = qMin(scaledImageHeight, ph - yPosition);
         cy = vr.y() + yPosition;
@@ -889,14 +889,14 @@ QRect RenderBox::clipRect(int tx, int ty)
 
     if ( style()->hasClip() && style()->position() == PABSOLUTE ) {
 	// the only case we use the clip property according to CSS 2.1
-	if (!style()->clipLeft().isVariable()) {
+	if (!style()->clipLeft().isAuto()) {
 	    int c = style()->clipLeft().width(clipw);
 	    if ( rtl )
 		clipleft = clipw - c;
 	    else
 		clipleft = c;
 	}
-	if (!style()->clipRight().isVariable()) {
+	if (!style()->clipRight().isAuto()) {
 	    int w = style()->clipRight().width(clipw);
 	    if ( rtl ) {
 		clipright = clipw - w;
@@ -904,9 +904,9 @@ QRect RenderBox::clipRect(int tx, int ty)
 		clipright = w;
 	    }
 	}
-	if (!style()->clipTop().isVariable())
+	if (!style()->clipTop().isAuto())
 	    cliptop = style()->clipTop().width(cliph);
-	if (!style()->clipBottom().isVariable())
+	if (!style()->clipBottom().isAuto())
 	    clipbottom = style()->clipBottom().width(cliph);
     }
     int clipx = tx + clipleft;
@@ -1072,20 +1072,20 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, Priority p, bool f)
 
 void RenderBox::relativePositionOffset(int &tx, int &ty) const
 {
-    if (!style()->left().isVariable()) {
-        if (!style()->right().isVariable() && containingBlock()->style()->direction() == RTL)
+    if (!style()->left().isAuto()) {
+        if (!style()->right().isAuto() && containingBlock()->style()->direction() == RTL)
             tx -= style()->right().width(containingBlockWidth());
         else
             tx +=  style()->left().width(containingBlockWidth());
-    } else if (!style()->right().isVariable())
+    } else if (!style()->right().isAuto())
         tx -= style()->right().width(containingBlockWidth());
-    if(!style()->top().isVariable())
+    if(!style()->top().isAuto())
     {
         if (!style()->top().isPercent()
                 || containingBlock()->style()->height().isFixed())
             ty += style()->top().width(containingBlockHeight());
     }
-    else if(!style()->bottom().isVariable())
+    else if(!style()->bottom().isAuto())
     {
         if (!style()->bottom().isPercent()
                 || containingBlock()->style()->height().isFixed())
@@ -1142,7 +1142,7 @@ void RenderBox::calcWidth()
             } else {
                 m_width = calcWidthUsing(Width, cw, widthType);
                 int minW = calcWidthUsing(MinWidth, cw, minWidthType);
-                int maxW = style()->maxWidth().value() == UNDEFINED ?
+                int maxW = style()->maxWidth().isUndefined() ?
                              m_width : calcWidthUsing(MaxWidth, cw, maxWidthType);
 
                 if (m_width > maxW) {
@@ -1162,7 +1162,7 @@ void RenderBox::calcWidth()
                 }
             }
 
-            if (widthType == Variable) {
+            if (widthType == Auto) {
     //          kDebug( 6040 ) << "variable";
                 m_marginLeft = ml.minWidth(cw);
                 m_marginRight = mr.minWidth(cw);
@@ -1202,7 +1202,7 @@ int RenderBox::calcWidthUsing(WidthType widthType, int cw, LengthType& lengthTyp
 
     lengthType = w.type();
 
-    if (lengthType == Variable) {
+    if (lengthType == Auto) {
         int marginLeft = style()->marginLeft().minWidth(cw);
         int marginRight = style()->marginRight().minWidth(cw);
         if (cw) width = cw - marginLeft - marginRight;
@@ -1230,23 +1230,23 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
     }
     else
     {
-        if ( (ml.isVariable() && mr.isVariable() && m_width<cw) ||
-             (!ml.isVariable() && !mr.isVariable() &&
+        if ( (ml.isAuto() && mr.isAuto() && m_width<cw) ||
+             (!ml.isAuto() && !mr.isAuto() &&
                 containingBlock()->style()->textAlign() == KHTML_CENTER) )
         {
             m_marginLeft = (cw - m_width)/2;
             if (m_marginLeft<0) m_marginLeft=0;
             m_marginRight = cw - m_width - m_marginLeft;
         }
-        else if ( (mr.isVariable() && m_width<cw) ||
-                 (!ml.isVariable() && containingBlock()->style()->direction() == RTL &&
+        else if ( (mr.isAuto() && m_width<cw) ||
+                 (!ml.isAuto() && containingBlock()->style()->direction() == RTL &&
                   containingBlock()->style()->textAlign() == KHTML_LEFT))
         {
             m_marginLeft = ml.width(cw);
             m_marginRight = cw - m_width - m_marginLeft;
         }
-        else if ( (ml.isVariable() && m_width<cw) ||
-                 (!mr.isVariable() && containingBlock()->style()->direction() == LTR &&
+        else if ( (ml.isAuto() && m_width<cw) ||
+                 (!mr.isAuto() && containingBlock()->style()->direction() == LTR &&
                   containingBlock()->style()->textAlign() == KHTML_RIGHT))
         {
             m_marginRight = mr.width(cw);
@@ -1299,7 +1299,7 @@ void RenderBox::calcHeight()
             if (height == -1)
                 height = m_height;
             int minH = calcHeightUsing(style()->minHeight()); // Leave as -1 if unset.
-            int maxH = style()->maxHeight().value() == UNDEFINED ? height : calcHeightUsing(style()->maxHeight());
+            int maxH = style()->maxHeight().isUndefined() ? height : calcHeightUsing(style()->maxHeight());
             if (maxH == -1)
                 maxH = height;
             height = qMin(maxH, height);
@@ -1326,7 +1326,7 @@ void RenderBox::calcHeight()
 int RenderBox::calcHeightUsing(const Length& h)
 {
     int height = -1;
-    if (!h.isVariable()) {
+    if (!h.isAuto()) {
         if (h.isFixed())
             height = h.value();
         else if (h.isPercent())
@@ -1379,7 +1379,7 @@ int RenderBox::calcPercentageHeight(const Length& height) const
         result -= cb->paddingTop() + cb->paddingBottom();
     }
     else if (cb->isBody() && style()->htmlHacks() &&
-                             cb->style()->height().isVariable() && !cb->isFloatingOrPositioned()) {
+                             cb->style()->height().isAuto() && !cb->isFloatingOrPositioned()) {
         int margins = cb->collapsedMarginTop() + cb->collapsedMarginBottom();
         int visHeight = canvas()->viewportHeight();
         RenderObject* p = cb->parent();
@@ -1387,7 +1387,7 @@ int RenderBox::calcPercentageHeight(const Length& height) const
                               p->borderTop() + p->borderBottom() +
                               p->paddingTop() + p->paddingBottom());
     }
-    else if (cb->isRoot() && style()->htmlHacks() && cb->style()->height().isVariable()) {
+    else if (cb->isRoot() && style()->htmlHacks() && cb->style()->height().isAuto()) {
         int visHeight = canvas()->viewportHeight();
         result = visHeight - (marginTop() + marginBottom() +
                               borderTop() + borderBottom() +
@@ -1405,7 +1405,7 @@ int RenderBox::calcPercentageHeight(const Length& height) const
     }
     else if (cb->isAnonymousBlock() || style()->htmlHacks()) {
         // IE quirk.
-        assert( cb->style()->height().isVariable() );
+        assert( cb->style()->height().isAuto() );
         result = cb->calcPercentageHeight(cb->style()->height());
         if (result != -1)
             result = cb->calcContentHeight(result);
@@ -1425,7 +1425,7 @@ short RenderBox::calcReplacedWidth() const
 {
     int width = calcReplacedWidthUsing(Width);
     int minW = calcReplacedWidthUsing(MinWidth);
-    int maxW = style()->maxWidth().value() == UNDEFINED ? width : calcReplacedWidthUsing(MaxWidth);
+    int maxW = style()->maxWidth().isUndefined() ? width : calcReplacedWidthUsing(MaxWidth);
 
     if (width > maxW)
         width = maxW;
@@ -1467,7 +1467,7 @@ int RenderBox::calcReplacedHeight() const
 {
     int height = calcReplacedHeightUsing(Height);
     int minH = calcReplacedHeightUsing(MinHeight);
-    int maxH = style()->maxHeight().value() == UNDEFINED ? height : calcReplacedHeightUsing(MaxHeight);
+    int maxH = style()->maxHeight().isUndefined() ? height : calcReplacedHeightUsing(MaxHeight);
 
     if (height > maxH)
         height = maxH;
@@ -1521,7 +1521,7 @@ int RenderBox::availableHeightUsing(const Length& h) const
     // We need to stop here, since we don't want to increase the height of the table
     // artificially.  We're going to rely on this cell getting expanded to some new
     // height, and then when we lay out again we'll use the calculation below.
-    if (isTableCell() && (h.isVariable() || h.isPercent())) {
+    if (isTableCell() && (h.isAuto() || h.isPercent())) {
         const RenderTableCell* tableCell = static_cast<const RenderTableCell*>(this);
         return tableCell->cellPercentageHeight() -
 	    (borderTop()+borderBottom()+paddingTop()+paddingBottom());
@@ -1656,7 +1656,7 @@ void RenderBox::calcAbsoluteHorizontal()
     \*---------------------------------------------------------------------------*/
 
     // Calculate the static distance if needed.
-    if (left.isVariable() && right.isVariable()) {
+    if (left.isAuto() && right.isAuto()) {
         if (containerDirection == LTR) {
             // 'm_staticX' should already have been set through layout of the parent.
             int staticPosition = m_staticX - containerBlock->borderLeft();
@@ -1679,7 +1679,7 @@ void RenderBox::calcAbsoluteHorizontal()
                                  left, right, marginLeft, marginRight,
                                  m_width, m_marginLeft, m_marginRight, m_x);
     // Calculate constraint equation values for 'max-width' case.calcContentWidth(width.width(containerWidth));
-    if (style()->maxWidth().value() != UNDEFINED) {
+    if (!style()->maxWidth().isUndefined()) {
         short maxWidth;
         short maxMarginLeft;
         short maxMarginRight;
@@ -1699,7 +1699,7 @@ void RenderBox::calcAbsoluteHorizontal()
     }
 
     // Calculate constraint equation values for 'min-width' case.
-    if (style()->minWidth().value()) {
+    if (!style()->minWidth().isZero()) {
         short minWidth;
         short minMarginLeft;
         short minMarginRight;
@@ -1738,13 +1738,13 @@ void RenderBox::calcAbsoluteHorizontalValues(Length width, const RenderObject* c
 {
     // 'left' and 'right' cannot both be 'auto' because one would of been
     // converted to the static postion already
-    assert(!(left.isVariable() && right.isVariable()));
+    assert(!(left.isAuto() && right.isAuto()));
 
     int leftValue = 0;
 
-    bool widthIsAuto = width.isVariable();
-    bool leftIsAuto = left.isVariable();
-    bool rightIsAuto = right.isVariable();
+    bool widthIsAuto = width.isAuto();
+    bool leftIsAuto = left.isAuto();
+    bool rightIsAuto = right.isAuto();
 
     if (!leftIsAuto && !widthIsAuto && !rightIsAuto) {
         /*-----------------------------------------------------------------------*\
@@ -1768,7 +1768,7 @@ void RenderBox::calcAbsoluteHorizontalValues(Length width, const RenderObject* c
         const int availableSpace = containerWidth - (leftValue + widthValue + right.width(containerWidth) + bordersPlusPadding);
 
         // Margins are now the only unknown
-        if (marginLeft.isVariable() && marginRight.isVariable()) {
+        if (marginLeft.isAuto() && marginRight.isAuto()) {
             // Both margins auto, solve for equality
             if (availableSpace >= 0) {
                 marginLeftValue = availableSpace / 2; // split the diference
@@ -1783,11 +1783,11 @@ void RenderBox::calcAbsoluteHorizontalValues(Length width, const RenderObject* c
                     marginRightValue = 0;
                 }
             }
-        } else if (marginLeft.isVariable()) {
+        } else if (marginLeft.isAuto()) {
             // Solve for left margin
             marginRightValue = marginRight.width(containerWidth);
             marginLeftValue = availableSpace - marginRightValue;
-        } else if (marginRight.isVariable()) {
+        } else if (marginRight.isAuto()) {
             // Solve for right margin
             marginLeftValue = marginLeft.width(containerWidth);
             marginRightValue = availableSpace - marginLeftValue;
@@ -1869,7 +1869,7 @@ void RenderBox::calcAbsoluteHorizontalValues(Length width, const RenderObject* c
             int preferredMinWidth = m_minWidth - bordersPlusPadding;
             int availableWidth = availableSpace - leftValue;
             widthValue = qMin(qMax(preferredMinWidth, availableWidth), preferredWidth);
-        } else if (leftIsAuto && !width.isVariable() && !rightIsAuto) {
+        } else if (leftIsAuto && !width.isAuto() && !rightIsAuto) {
             // RULE 4: (solve for left)
             widthValue = calcContentWidth(width.width(containerWidth));
             leftValue = availableSpace - (widthValue + right.width(containerWidth));
@@ -1930,7 +1930,7 @@ void RenderBox::calcAbsoluteVertical()
     \*---------------------------------------------------------------------------*/
 
     // Calculate the static distance if needed.
-    if (top.isVariable() && bottom.isVariable()) {
+    if (top.isAuto() && bottom.isAuto()) {
         // m_staticY should already have been set through layout of the parent()
         int staticTop = m_staticY - containerBlock->borderTop();
         for (RenderObject* po = parent(); po && po != containerBlock; po = po->parent()) {
@@ -1951,7 +1951,7 @@ void RenderBox::calcAbsoluteVertical()
     // see FIXME 2
 
     // Calculate constraint equation values for 'max-height' case.
-    if (style()->maxHeight().value() != UNDEFINED) {
+    if (!style()->maxHeight().isUndefined()) {
         int maxHeight;
         short maxMarginTop;
         short maxMarginBottom;
@@ -1970,7 +1970,7 @@ void RenderBox::calcAbsoluteVertical()
     }
 
     // Calculate constraint equation values for 'min-height' case.
-    if (style()->minHeight().value()) {
+    if (!style()->minHeight().isZero()) {
         int minHeight;
         short minMarginTop;
         short minMarginBottom;
@@ -2001,15 +2001,15 @@ void RenderBox::calcAbsoluteVerticalValues(Length height, const RenderObject* co
 {
     // 'top' and 'bottom' cannot both be 'auto' because 'top would of been
     // converted to the static position in calcAbsoluteVertical()
-    assert(!(top.isVariable() && bottom.isVariable()));
+    assert(!(top.isAuto() && bottom.isAuto()));
 
     int contentHeight = m_height - bordersPlusPadding;
 
     int topValue = 0;
 
-    bool heightIsAuto = height.isVariable();
-    bool topIsAuto = top.isVariable();
-    bool bottomIsAuto = bottom.isVariable();
+    bool heightIsAuto = height.isAuto();
+    bool topIsAuto = top.isAuto();
+    bool bottomIsAuto = bottom.isAuto();
 
     if (isTable() && heightIsAuto) {
          // Height is never unsolved for tables. "auto" means shrink to fit.
@@ -2044,16 +2044,16 @@ void RenderBox::calcAbsoluteVerticalValues(Length height, const RenderObject* co
         const int availableSpace = containerHeight - (topValue + heightValue + bottom.width(containerHeight) + bordersPlusPadding);
 
         // Margins are now the only unknown
-        if (marginTop.isVariable() && marginBottom.isVariable()) {
+        if (marginTop.isAuto() && marginBottom.isAuto()) {
             // Both margins auto, solve for equality
             // NOTE: This may result in negative values.
             marginTopValue = availableSpace / 2; // split the diference
             marginBottomValue = availableSpace - marginTopValue; // account for odd valued differences
-        } else if (marginTop.isVariable()) {
+        } else if (marginTop.isAuto()) {
             // Solve for top margin
             marginBottomValue = marginBottom.width(containerHeight);
             marginTopValue = availableSpace - marginBottomValue;
-        } else if (marginBottom.isVariable()) {
+        } else if (marginBottom.isAuto()) {
             // Solve for bottom margin
             marginTopValue = marginTop.width(containerHeight);
             marginBottomValue = availableSpace - marginTopValue;
@@ -2163,7 +2163,7 @@ void RenderBox::calcAbsoluteHorizontalReplaced()
      *    of the containing block is 'ltr', set 'left' to the static position;
      *    else if 'direction' is 'rtl', set 'right' to the static position.
     \*-----------------------------------------------------------------------*/
-    if (left.isVariable() && right.isVariable()) {
+    if (left.isAuto() && right.isAuto()) {
         // see FIXME 1
         if (containerDirection == LTR) {
             // 'm_staticX' should already have been set through layout of the parent.
@@ -2185,10 +2185,10 @@ void RenderBox::calcAbsoluteHorizontalReplaced()
      * 3. If 'left' or 'right' are 'auto', replace any 'auto' on 'margin-left'
      *    or 'margin-right' with '0'.
     \*-----------------------------------------------------------------------*/
-    if (left.isVariable() || right.isVariable()) {
-        if (marginLeft.isVariable())
+    if (left.isAuto() || right.isAuto()) {
+        if (marginLeft.isAuto())
             marginLeft.setValue(Fixed, 0);
-        if (marginRight.isVariable())
+        if (marginRight.isAuto())
             marginRight.setValue(Fixed, 0);
     }
 
@@ -2203,9 +2203,9 @@ void RenderBox::calcAbsoluteHorizontalReplaced()
     int leftValue = 0;
     int rightValue = 0;
 
-    if (marginLeft.isVariable() && marginRight.isVariable()) {
+    if (marginLeft.isAuto() && marginRight.isAuto()) {
         // 'left' and 'right' cannot be 'auto' due to step 3
-        assert(!(left.isVariable() && right.isVariable()));
+        assert(!(left.isAuto() && right.isAuto()));
 
         leftValue = left.width(containerWidth);
         rightValue = right.width(containerWidth);
@@ -2229,28 +2229,28 @@ void RenderBox::calcAbsoluteHorizontalReplaced()
      * 5. If at this point there is an 'auto' left, solve the equation for
      *    that value.
     \*-----------------------------------------------------------------------*/
-    } else if (left.isVariable()) {
+    } else if (left.isAuto()) {
         m_marginLeft = marginLeft.width(containerWidth);
         m_marginRight = marginRight.width(containerWidth);
         rightValue = right.width(containerWidth);
 
         // Solve for 'left'
         leftValue = availableSpace - (rightValue + m_marginLeft + m_marginRight);
-    } else if (right.isVariable()) {
+    } else if (right.isAuto()) {
         m_marginLeft = marginLeft.width(containerWidth);
         m_marginRight = marginRight.width(containerWidth);
         leftValue = left.width(containerWidth);
 
         // Solve for 'right'
         rightValue = availableSpace - (leftValue + m_marginLeft + m_marginRight);
-    } else if (marginLeft.isVariable()) {
+    } else if (marginLeft.isAuto()) {
         m_marginRight = marginRight.width(containerWidth);
         leftValue = left.width(containerWidth);
         rightValue = right.width(containerWidth);
 
         // Solve for 'margin-left'
         m_marginLeft = availableSpace - (leftValue + rightValue + m_marginRight);
-    } else if (marginRight.isVariable()) {
+    } else if (marginRight.isAuto()) {
         m_marginLeft = marginLeft.width(containerWidth);
         leftValue = left.width(containerWidth);
         rightValue = right.width(containerWidth);
@@ -2319,7 +2319,7 @@ void RenderBox::calcAbsoluteVerticalReplaced()
      * 2. If both 'top' and 'bottom' have the value 'auto', replace 'top'
      *    with the element's static position.
     \*-----------------------------------------------------------------------*/
-    if (top.isVariable() && bottom.isVariable()) {
+    if (top.isAuto() && bottom.isAuto()) {
         // m_staticY should already have been set through layout of the parent().
         int staticTop = m_staticY - containerBlock->borderTop();
         for (RenderObject* po = parent(); po && po != containerBlock; po = po->parent()) {
@@ -2334,10 +2334,10 @@ void RenderBox::calcAbsoluteVerticalReplaced()
     \*-----------------------------------------------------------------------*/
     // FIXME: The spec. says that this step should only be taken when bottom is
     // auto, but if only top is auto, this makes step 4 impossible.
-    if (top.isVariable() || bottom.isVariable()) {
-        if (marginTop.isVariable())
+    if (top.isAuto() || bottom.isAuto()) {
+        if (marginTop.isAuto())
             marginTop.setValue(Fixed, 0);
-        if (marginBottom.isVariable())
+        if (marginBottom.isAuto())
             marginBottom.setValue(Fixed, 0);
     }
 
@@ -2349,9 +2349,9 @@ void RenderBox::calcAbsoluteVerticalReplaced()
     int topValue = 0;
     int bottomValue = 0;
 
-    if (marginTop.isVariable() && marginBottom.isVariable()) {
+    if (marginTop.isAuto() && marginBottom.isAuto()) {
         // 'top' and 'bottom' cannot be 'auto' due to step 2 and 3 combinded.
-        assert(!(top.isVariable() || bottom.isVariable()));
+        assert(!(top.isAuto() || bottom.isAuto()));
 
         topValue = top.width(containerHeight);
         bottomValue = bottom.width(containerHeight);
@@ -2365,14 +2365,14 @@ void RenderBox::calcAbsoluteVerticalReplaced()
      * 5. If at this point there is only one 'auto' left, solve the equation
      *    for that value.
     \*-----------------------------------------------------------------------*/
-    } else if (top.isVariable()) {
+    } else if (top.isAuto()) {
         m_marginTop = marginTop.width(containerHeight);
         m_marginBottom = marginBottom.width(containerHeight);
         bottomValue = bottom.width(containerHeight);
 
         // Solve for 'top'
         topValue = availableSpace - (bottomValue + m_marginTop + m_marginBottom);
-    } else if (bottom.isVariable()) {
+    } else if (bottom.isAuto()) {
         m_marginTop = marginTop.width(containerHeight);
         m_marginBottom = marginBottom.width(containerHeight);
         topValue = top.width(containerHeight);
@@ -2380,14 +2380,14 @@ void RenderBox::calcAbsoluteVerticalReplaced()
         // Solve for 'bottom'
         // NOTE: It is not necessary to solve for 'bottom' because we don't ever
         // use the value.
-    } else if (marginTop.isVariable()) {
+    } else if (marginTop.isAuto()) {
         m_marginBottom = marginBottom.width(containerHeight);
         topValue = top.width(containerHeight);
         bottomValue = bottom.width(containerHeight);
 
         // Solve for 'margin-top'
         m_marginTop = availableSpace - (topValue + bottomValue + m_marginBottom);
-    } else if (marginBottom.isVariable()) {
+    } else if (marginBottom.isAuto()) {
         m_marginTop = marginTop.width(containerHeight);
         topValue = top.width(containerHeight);
         bottomValue = bottom.width(containerHeight);

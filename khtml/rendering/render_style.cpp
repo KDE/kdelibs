@@ -39,7 +39,7 @@ using namespace DOM;
  * this is works fine for table paddings aswell
  */
 StyleSurroundData::StyleSurroundData()
-    : margin( Fixed ), padding( Variable )
+    : margin( Fixed ), padding( Auto )
 {
 }
 
@@ -869,8 +869,8 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
         assert( other->position() != PSTATIC );                      // this style is positioned or relatively positioned
         if ( surround->hasSamePBMData(*other->surround.get()) &&    // padding/border/margin are identical
              (other->position() == PRELATIVE ||
-               !(other->left().isVariable() && other->right().isVariable()) &&  // X isn't static
-               !(other->top().isVariable() && other->bottom().isVariable()) ))   // neither is Y
+               !(other->left().isAuto() && other->right().isAuto()) &&  // X isn't static
+               !(other->top().isAuto() && other->bottom().isAuto()) ))   // neither is Y
            // therefore only the offset is different
            return Position;
         return Layout;

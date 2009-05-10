@@ -2178,7 +2178,7 @@ void RenderObject::dirtyFormattingContext( bool checkContainer )
     m_markedForRepaint = true;
     if (layer() && (style()->position() == PFIXED || style()->position() == PABSOLUTE))
         return;
-    if (m_parent && (checkContainer || style()->width().isVariable() || style()->height().isVariable() ||
+    if (m_parent && (checkContainer || style()->width().isAuto() || style()->height().isAuto() ||
                     !(isFloating() || flowAroundFloats() || isTableCell())))
         m_parent->dirtyFormattingContext(false);
 }
@@ -2245,7 +2245,7 @@ int RenderObject::paddingTop() const
     if (padding.isPercent())
         w = containingBlock()->contentWidth();
     w = padding.minWidth(w);
-    if ( isTableCell() && padding.isVariable() )
+    if ( isTableCell() && padding.isAuto() )
         w = static_cast<const RenderTableCell *>(this)->table()->cellPadding();
     return w;
 }
@@ -2257,7 +2257,7 @@ int RenderObject::paddingBottom() const
     if (padding.isPercent())
         w = containingBlock()->contentWidth();
     w = padding.minWidth(w);
-    if ( isTableCell() && padding.isVariable() )
+    if ( isTableCell() && padding.isAuto() )
         w = static_cast<const RenderTableCell *>(this)->table()->cellPadding();
     return w;
 }
@@ -2269,7 +2269,7 @@ int RenderObject::paddingLeft() const
     if (padding.isPercent())
         w = containingBlock()->contentWidth();
     w = padding.minWidth(w);
-    if ( isTableCell() && padding.isVariable() )
+    if ( isTableCell() && padding.isAuto() )
         w = static_cast<const RenderTableCell *>(this)->table()->cellPadding();
     return w;
 }
@@ -2281,7 +2281,7 @@ int RenderObject::paddingRight() const
     if (padding.isPercent())
         w = containingBlock()->contentWidth();
     w = padding.minWidth(w);
-    if ( isTableCell() && padding.isVariable() )
+    if ( isTableCell() && padding.isAuto() )
         w = static_cast<const RenderTableCell *>(this)->table()->cellPadding();
     return w;
 }
@@ -2630,7 +2630,7 @@ short RenderObject::lineHeight( bool firstLine ) const
         lh = style()->lineHeight();
 
     // its "unset", choose nice default
-    if ( lh.value() < 0 )
+    if ( lh.isNegative() )
         return style()->htmlFont().lineSpacing();
 
     if ( lh.isPercent() )
@@ -2770,7 +2770,7 @@ bool RenderObject::usesLineWidth() const
     // All auto-width objects that avoid floats should always use lineWidth
     // unless they are floating or inline. We only care about objects that grow
     // to fill the available space.
-    return (!isInline()||isHTMLMarquee()) && flowAroundFloats() && style()->width().isVariable() && !isFloating();
+    return (!isInline()||isHTMLMarquee()) && flowAroundFloats() && style()->width().isAuto() && !isFloating();
 }
 
 long RenderObject::caretMinOffset() const

@@ -78,12 +78,6 @@ public:
 protected:
     void fullRecalc();
     void recalcColumn( int effCol );
-    int totalPercent() const {
-	if ( percentagesDirty )
-	    calcPercentages();
-	return total_percent;
-    }
-    void calcPercentages() const;
     int calcEffectiveWidth();
     void insertSpanCell( RenderTableCell *cell );
 
@@ -104,9 +98,7 @@ protected:
     QVector<Layout> layoutStruct;
     QVector<RenderTableCell *>spanCells;
     bool hasPercent : 1;
-    mutable bool percentagesDirty : 1;
     mutable bool effWidthDirty : 1;
-    mutable unsigned short total_percent;
 };
 
 }

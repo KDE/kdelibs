@@ -329,7 +329,7 @@ void RenderButton::layout()
 {
     RenderFormElement::layout();
     bool needsTextIndentHack = false;
-    if (!style()->width().isVariable()) {
+    if (!style()->width().isAuto()) {
         // check if we need to simulate the effect of a popular
         // button text hiding 'trick' that makes use of negative text-indent,
         // which we do not support on form widgets.

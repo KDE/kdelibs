@@ -103,7 +103,7 @@ void RenderTable::setStyle(RenderStyle *_style)
 
         // According to the CSS2 spec, you only use fixed table layout if an
         // explicit width is specified on the table.  Auto width implies auto table layout.
-	if (style()->tableLayout() == TFIXED && !style()->width().isVariable()) {
+	if (style()->tableLayout() == TFIXED && !style()->width().isAuto()) {
 	    tableLayout = new FixedTableLayout(this);
 #ifdef DEBUG_LAYOUT
 	    kDebug( 6040 ) << "using fixed table layout";
@@ -268,16 +268,16 @@ void RenderTable::calcWidth()
     int availableWidth = cb->lineWidth( m_y );
 
     LengthType widthType = style()->width().type();
-    if(widthType > Relative && style()->width().value() > 0) {
+    if(widthType > Relative && style()->width().isPositive()) {
         // Percent or fixed table
         // Percent is calculated from contentWidth, not available width
         m_width = calcBoxWidth(style()->width().minWidth( cb->contentWidth() ));
     } else {
         // Subtract out any fixed margins from our available width for auto width tables.
         int marginTotal = 0;
-        if (!style()->marginLeft().isVariable())
+        if (!style()->marginLeft().isAuto())
             marginTotal += style()->marginLeft().width(availableWidth);
-        if (!style()->marginRight().isVariable())
+        if (!style()->marginRight().isAuto())
             marginTotal += style()->marginRight().width(availableWidth);
 
         // Subtract out our margins to get the available content width.
@@ -1165,12 +1165,12 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
     if ( rSpan == 1 ) {
 	// we ignore height settings on rowspan cells
 	Length height = cell->style()->height();
-	if ( height.value() > 0 || (height.isRelative() && height.value() >= 0) ) {
+	if ( height.isPositive() || (height.isRelative() && (height.isPositive() || height.isZero()) )) {
 	    Length cRowHeight = grid[cRow].height;
 	    switch( height.type() ) {
 	    case Percent:
 		if ( !cRowHeight.isPercent() ||
-		     (cRowHeight.isPercent() && cRowHeight.value() < height.value() ) )
+		     (cRowHeight.isPercent() && cRowHeight.rawValue() < height.rawValue() ) )
 		    grid[cRow].height = height;
 		     break;
 	    case Fixed:
@@ -1181,8 +1181,8 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
 	    case Relative:
 #if 0
 		// we treat this as variable. This is correct according to HTML4, as it only specifies length for the height.
-		if ( cRowHeight.type == Variable ||
-		     ( cRowHeight.type == Relative && cRowHeight.value < height.value ) )
+		if ( cRowHeight.type() == Auto ||
+		     ( cRowHeight.type() == Relative && cRowHeight.value() < height.value() ) )
 		     grid[cRow].height = height;
 		     break;
 #endif
@@ -1438,7 +1438,7 @@ void RenderTableSection::calcRowHeight()
             if ( cell->height() > ch)
                 ch = cell->height();
 
-            if (!cell->style()->height().isVariable())
+            if (!cell->style()->height().isAuto())
                 grid[r].needFlex = true;
 
 	    pos = rowPos[indx] + ch + (grid[r].rowRenderer ? vspacing : 0);
@@ -1502,29 +1502,29 @@ int RenderTableSection::layoutRows( int toAdd )
 
         int dh = toAdd;
 	int totalPercent = 0;
-	int numVariable = 0;
+	int numAuto = 0;
 	for ( int r = 0; r < totalRows; r++ ) {
-            if ( grid[r].height.isVariable() && !emptyRow(r))
-		numVariable++;
+            if ( grid[r].height.isAuto() && !emptyRow(r))
+		numAuto++;
 	    else if ( grid[r].height.isPercent() )
-		totalPercent += grid[r].height.value();
+		totalPercent += grid[r].height.rawValue();
 	}
 	if ( totalPercent ) {
 //	    qDebug("distributing %d over percent rows totalPercent=%d", dh,  totalPercent );
 	    // try to satisfy percent
 	    int add = 0;
-	    if ( totalPercent > 100 )
-		totalPercent = 100;
+	    if ( totalPercent > 100 * PERCENT_SCALE_FACTOR )
+		totalPercent = 100 * PERCENT_SCALE_FACTOR;
 	    int rh = rowPos[1]-rowPos[0];
 	    for ( int r = 0; r < totalRows; r++ ) {
 		if ( totalPercent > 0 && grid[r].height.isPercent() ) {
-		    int toAdd = qMin( dh, (totalHeight * grid[r].height.value() / 100)-rh );
+		    int toAdd = qMin( dh, (totalHeight * grid[r].height.rawValue() / (100 * PERCENT_SCALE_FACTOR))-rh );
 		    // If toAdd is negative, then we don't want to shrink the row (this bug
                     // affected Outlook Web Access).
                     toAdd = qMax(0, toAdd);
 		    add += toAdd;
 		    dh -= toAdd;
-		    totalPercent -= grid[r].height.value();
+		    totalPercent -= grid[r].height.rawValue();
 //		    qDebug( "adding %d to row %d", toAdd, r );
 		}
 		if ( r < totalRows-1 )
@@ -1532,13 +1532,13 @@ int RenderTableSection::layoutRows( int toAdd )
                 rowPos[r+1] += add;
 	    }
 	}
-	if ( numVariable ) {
+	if ( numAuto ) {
 	    // distribute over non-empty variable rows
-//	    qDebug("distributing %d over variable rows numVariable=%d", dh,  numVariable );
+//	    qDebug("distributing %d over variable rows numAuto=%d", dh,  numAuto );
 	    int add = 0;
-            int toAdd = dh/numVariable;
+            int toAdd = dh/numAuto;
             for ( int r = 0; r < totalRows; r++ ) {
-                if ( grid[r].height.isVariable() && !emptyRow(r)) {
+                if ( grid[r].height.isAuto() && !emptyRow(r)) {
 		    add += toAdd;
 		}
                 rowPos[r+1] += add;
@@ -1616,7 +1616,7 @@ int RenderTableSection::layoutRows( int toAdd )
             // invalidating all percent height objects in a render subtree.
             // For now, we just handle immediate children. -dwh
 
-            bool flexAllChildren = grid[r].needFlex || (!table()->style()->height().isVariable() && rHeight != cell->height());
+            bool flexAllChildren = grid[r].needFlex || (!table()->style()->height().isAuto() && rHeight != cell->height());
             cell->setHasFlexedAnonymous(false);
             if ( flexAllChildren && flexCellChildren(cell) ) {
                 cell->setCellPercentageHeight(qMax(0,
@@ -2468,7 +2468,7 @@ void RenderTableCell::updateFromElement()
 Length RenderTableCell::styleOrColWidth()
 {
     Length w = style()->width();
-    if (colSpan() > 1 || !w.isVariable())
+    if (colSpan() > 1 || !w.isAuto())
         return w;
     RenderTableCol* col = table()->colElement(_col);
     if (col) {
@@ -2476,7 +2476,7 @@ Length RenderTableCell::styleOrColWidth()
 
         // Column widths specified on <col> apply to the border box of the cell.
         // Percentages don't need to be handled since they're always treated this way (even when specified on the cells).
-        if (w.isFixed() && w.value() > 0)
+        if (w.isFixed() && w.isPositive())
             w = Length(qMax(0, w.value() - borderLeft() - borderRight() - paddingLeft() - paddingRight()), Fixed);
     }
     return w;

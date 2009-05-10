@@ -349,7 +349,7 @@ int InlineFlowBox::marginLeft() const
 
     RenderStyle* cstyle = object()->style();
     Length margin = cstyle->marginLeft();
-    if (!margin.isVariable())
+    if (!margin.isAuto())
         return (margin.isFixed() ? margin.value() : object()->marginLeft());
     return 0;
 }
@@ -361,7 +361,7 @@ int InlineFlowBox::marginRight() const
 
     RenderStyle* cstyle = object()->style();
     Length margin = cstyle->marginRight();
-    if (!margin.isVariable())
+    if (!margin.isAuto())
         return (margin.isFixed() ? margin.value() : object()->marginRight());
     return 0;
 }
