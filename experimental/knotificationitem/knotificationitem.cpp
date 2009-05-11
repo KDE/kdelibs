@@ -431,6 +431,7 @@ void KNotificationItem::activate(const QPoint &pos)
     }
 
     if (!d->associatedWidget) {
+        emit activateRequested(true, pos);
         return;
     }
 
