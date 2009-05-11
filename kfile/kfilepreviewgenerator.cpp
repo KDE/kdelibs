@@ -448,6 +448,22 @@ KFilePreviewGenerator::Private::~Private()
     delete m_tileSet;
 }
 
+void KFilePreviewGenerator::Private::requestSequenceIcon(const QModelIndex& index,
+                                                         int sequenceIndex)
+{
+    if (m_pendingItems.isEmpty() || (sequenceIndex == 0)) {
+        KFileItem item = m_dirModel->itemForIndex(index);
+        if (sequenceIndex == 0) {
+           m_sequenceIndices.remove(item.url());
+        } else {
+           m_sequenceIndices.insert(item.url(), sequenceIndex);
+        }
+
+        ///@todo Update directly, without using m_sequenceIndices
+        updateIcons(KFileItemList() << item);
+    }
+}
+
 void KFilePreviewGenerator::Private::updateIcons(const KFileItemList& items)
 {
     applyCutItemEffect(items);
@@ -463,22 +479,6 @@ void KFilePreviewGenerator::Private::updateIcons(const KFileItemList& items)
         createPreviews(orderedItems);
     } else {
         startMimeTypeResolving();
-    }
-}
-
-void KFilePreviewGenerator::Private::requestSequenceIcon(const QModelIndex& index, int sequenceIndex)
-{
-    if (m_pendingItems.isEmpty() || (sequenceIndex == 0)) {
-
-      KFileItem item = m_dirModel->itemForIndex(index);
-      if (sequenceIndex == 0) {
-          m_sequenceIndices.remove(item.url());
-      } else {
-          m_sequenceIndices.insert(item.url(), sequenceIndex);
-      }
-
-        ///@todo Update directly, without using m_sequenceIndices
-        updateIcons(KFileItemList() << item);
     }
 }
 
