@@ -96,11 +96,6 @@
      <layout class="QGridLayout" name="gridLayout_2" >
       <item row="0" column="0" >
        <widget class="QTableWidget" name="jobOptionsTable" >
-        <property name="font" >
-         <font>
-          <pointsize>6</pointsize>
-         </font>
-        </property>
         <property name="rowCount" >
          <number>10</number>
         </property>

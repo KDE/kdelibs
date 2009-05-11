@@ -40,6 +40,7 @@
 KCupsOptionsJobWidget::KCupsOptionsJobWidget( QPrintDialog *parent ) : KCupsOptionsWidget( parent )
 {
     ui.setupUi( this );
+    ui.jobOptionsTable->setFont(KGlobalSettings::smallestReadableFont());
 
     //set all the default values
     //TODO restore last used values
