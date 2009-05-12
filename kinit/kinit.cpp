@@ -432,19 +432,32 @@ static pid_t launch(int argc, const char *_name, const char *args,
         name = _name;
         lib = QFile::decodeName(name);
         exec = name;
-        libpath = KLibLoader::findLibrary(lib, *s_instance);
+        libpath = KLibLoader::findLibrary( QLatin1String("libkdeinit4_") + lib, *s_instance);
+        if( libpath.isEmpty())
+            libpath = KLibLoader::findLibrary(lib, *s_instance);
         execpath = execpath_avoid_loops(exec, envc, envs, avoid_loops);
     } else {
         name = _name;
         lib = QFile::decodeName(name);
         name = name.mid(name.lastIndexOf('/') + 1);
         exec = _name;
-        if (lib.endsWith(QLatin1String(".la")))
+        if (lib.endsWith(QLatin1String(".so")))
             libpath = lib;
-        else
+        else {
+            // try to match an absolute path to an executable binary (either in bin/ or in libexec/)
+            // to a kdeinit module in the same prefix
+            if( lib.contains( QLatin1String( "/lib" KDELIBSUFF "/kde4/libexec" ))) {
+                libpath = QString( lib ).replace( QLatin1String( "/lib" KDELIBSUFF "/kde4/libexec" ),
+                    QLatin1String("/lib" KDELIBSUFF "/libkdeinit4_")) + QLatin1String(".so");
+            } else if( lib.contains( QLatin1String( "/bin/" ))) {
+                libpath = QString( lib ).replace( QLatin1String( "/bin/" ),
+                    QLatin1String("/lib" KDELIBSUFF "/libkdeinit4_")) + QLatin1String(".so");
+            }
             execpath = exec;
+        }
     }
-    fprintf(stderr,"kdeinit4: preparing to launch %s\n", execpath.constData());
+    fprintf(stderr,"kdeinit4: preparing to launch %s\n", libpath.isEmpty()
+        ? execpath.constData() : libpath.toUtf8().constData());
     if (!args) {
         argc = 1;
     }

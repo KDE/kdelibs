@@ -83,8 +83,9 @@ QString findLibraryInternal(const QString &name, const KComponentData &cData)
 
     QFileInfo fileinfo(name);
     bool hasPrefix = fileinfo.fileName().startsWith("lib");
+    bool kdeinit = fileinfo.fileName().startsWith("libkdeinit4_");
 
-    if (hasPrefix)
+    if (hasPrefix && !kdeinit)
         kDebug(150) << "plugins should not have a 'lib' prefix:" << libname;
 
     QString libfile;
@@ -98,7 +99,7 @@ QString findLibraryInternal(const QString &name, const KComponentData &cData)
                 libname = fileinfo.path() + QLatin1String("/lib") + fileinfo.fileName();
 #endif
             libfile = cData.dirs()->findResource("lib", libname);
-            if (!libfile.isEmpty())
+            if (!libfile.isEmpty() && !kdeinit)
                 kDebug(150) << "library" << libname << "not found under 'module' but under 'lib'";
         }
     }
