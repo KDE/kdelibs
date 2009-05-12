@@ -47,8 +47,7 @@ class KServicePrivate;
  * where the 'ServiceTypes=' field is used.
  *
  * For a tutorial on how to build a plugin-loading mechanism and how to write plugins
- * in general, see http://developer.kde.org/documentation/tutorials/developing-a-plugin-structure/index.html#developing_plugins
- * (todo: port to kde4, create techbase article)
+ * in general, see http://techbase.kde.org/Development/Tutorials#Services:_Applications_and_Plugins
  *
  * @see KServiceType
  * @see KServiceGroup
