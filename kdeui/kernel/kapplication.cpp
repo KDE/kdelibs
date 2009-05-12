@@ -724,7 +724,7 @@ static void checkRestartVersion( QSessionManager& sm )
     unsigned char* data;
     if( XGetWindowProperty( dpy, RootWindow( dpy, 0 ), XInternAtom( dpy, "KDE_SESSION_VERSION", False ),
         0, 1, False, AnyPropertyType, &type, &format, &nitems, &after, &data ) == Success ) {
-        if( type == XA_INTEGER && format == 32 ) {
+        if( type == XA_CARDINAL && format == 32 ) {
             int version = *( long* ) data;
             if( version == KDE_VERSION_MAJOR ) { // we run in our native session
                 XFree( data );
