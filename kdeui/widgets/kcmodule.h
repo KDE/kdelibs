@@ -49,17 +49,17 @@ class KComponentData;
  * the module author.
  *
  * To write a config module, you have to create a library
- * that contains at one factory function like this:
+ * that contains a factory function like the following:
  *
  * \code
- * #include <kgenericfactory.h>
+ * #include <KPluginFactory>
  *
- * typedef KGenericFactory<YourKCModule, QWidget> YourKCModuleFactory;
- * K_EXPORT_COMPONENT_FACTORY( yourLibName, YourKCModuleFactory("name_of_the_po_file") );
+ * K_PLUGIN_FACTORY(MyKCModuleFactory, registerPlugin<MyKCModule>() )
+ * K_EXPORT_PLUGIN(MyKCModuleFactory("yourLibName","name_of_the_po_file") )
  * \endcode
  *
- * The parameter "name_of_the_po_file" has to correspond with the messages target
- * that you created in your Makefile.am. Instead of using the library name for
+ * The optional parameter "name_of_the_po_file" has to correspond with the messages target
+ * that containst the strings to be translated. Instead of using the library name for
  * \p yourLibName you can also use another name which you specify in the desktop
  * file with \p X-KDE-FactoryName. This is useful to have more than one factory
  * in one lib.
@@ -311,7 +311,7 @@ protected:
    * Help: shows a "Help" button.
    *
    * Default: shows a "Use Defaults" button.
-   * 
+   *
    * Apply: in kcontrol this will show an "Apply" and "Reset" button,
    *        in kcmshell this will show an "Ok", "Apply" and "Cancel" button.
    *
