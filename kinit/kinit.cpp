@@ -1689,11 +1689,11 @@ int main(int argc, char **argv, char **envp)
 #ifdef Q_WS_X11
    if (!d.suicide && qgetenv("KDE_IS_PRELINKED").isEmpty())
    {
-       QString konq = KStandardDirs::locate("lib", QLatin1String("libkonq.so.5"), *s_instance);
+       QString extra = KStandardDirs::locate("lib", QLatin1String("libplasma.so.3"), *s_instance);
        // can't use KLibLoader here as it would unload the library
        // again
-       if (!konq.isEmpty()) {
-           QLibrary l(konq);
+       if (!extra.isEmpty()) {
+           QLibrary l(extra);
            l.setLoadHints(QLibrary::ExportExternalSymbolsHint);
            l.load();
        }
