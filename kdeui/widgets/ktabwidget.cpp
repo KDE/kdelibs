@@ -50,14 +50,14 @@ class KTabWidget::Private
       KConfigGroup cg(KGlobal::config(), "General");
       m_maxLength = cg.readEntry("MaximumTabLength", 30);
       m_minLength = cg.readEntry("MinimumTabLength", 3);
-      m_currentMaxLength = m_minLength;
+      m_currentTabLength = m_minLength;
     }
 
     KTabWidget *m_parent;
     bool m_automaticResizeTabs;
     int m_maxLength;
     int m_minLength;
-    int m_currentMaxLength;
+    int m_currentTabLength;
 
     //holds the full names of the tab, otherwise all we
     //know about is the shortened name
@@ -134,35 +134,40 @@ void KTabWidget::Private::removeTab( int index )
 
 void KTabWidget::Private::resizeTabs( int changeTabIndex )
 {
-  int newMaxLength;
+  int newTabLength = m_maxLength;
+
   if ( m_automaticResizeTabs ) {
     // Calculate new max length
-    newMaxLength = m_maxLength;
     int lcw = 0, rcw = 0;
 
-    int tabBarHeight = m_parent->tabBar()->sizeHint().height();
-    if ( m_parent->cornerWidget( Qt::TopLeftCorner ) && m_parent->cornerWidget( Qt::TopLeftCorner )->isVisible() )
-      lcw = qMax( m_parent->cornerWidget( Qt::TopLeftCorner )->width(), tabBarHeight );
-
-    if ( m_parent->cornerWidget( Qt::TopRightCorner ) && m_parent->cornerWidget( Qt::TopRightCorner )->isVisible() )
-      rcw = qMax( m_parent->cornerWidget( Qt::TopRightCorner )->width(), tabBarHeight );
+    const int tabBarHeight = m_parent->tabBar()->sizeHint().height();
+    if (m_parent->cornerWidget(Qt::TopLeftCorner) &&
+        m_parent->cornerWidget( Qt::TopLeftCorner )->isVisible()) {
+      lcw = qMax(m_parent->cornerWidget(Qt::TopLeftCorner)->width(), tabBarHeight);
+    }
+    if (m_parent->cornerWidget(Qt::TopRightCorner) &&
+        m_parent->cornerWidget(Qt::TopRightCorner)->isVisible()) {
+      rcw = qMax( m_parent->cornerWidget(Qt::TopRightCorner)->width(), tabBarHeight);
+    }
 
     int maxTabBarWidth = m_parent->width() - lcw - rcw;
 
-    for ( ; newMaxLength > m_minLength; newMaxLength-- ) {
-      if ( m_parent->tabBarWidthForMaxChars( newMaxLength ) < maxTabBarWidth )
+    for ( ; newTabLength > m_minLength; newTabLength--) {
+      if (m_parent->tabBarWidthForMaxChars(newTabLength) < maxTabBarWidth) {
         break;
+      }
     }
-  } else
-    newMaxLength = 4711;
+  }
 
   // Update hinted or all tabs
-  if ( m_currentMaxLength != newMaxLength ) {
-    m_currentMaxLength = newMaxLength;
-    for ( int i = 0; i < m_parent->count(); ++i )
-      updateTab( i );
-  } else if ( changeTabIndex != -1 )
-    updateTab( changeTabIndex );
+  if (m_currentTabLength != newTabLength) {
+    m_currentTabLength = newTabLength;
+    for (int i = 0; i < m_parent->count(); i++) {
+      updateTab(i);
+    }
+  } else if (changeTabIndex != -1) {
+    updateTab(changeTabIndex);
+  }
 }
 
 void KTabWidget::Private::updateTab( int index )
@@ -170,14 +175,14 @@ void KTabWidget::Private::updateTab( int index )
   QString title = m_automaticResizeTabs ? m_tabNames[ index ] : m_parent->QTabWidget::tabText( index );
   m_parent->setTabToolTip( index, QString() );
 
-  if ( title.length() > m_currentMaxLength ) {
+  if ( title.length() > m_currentTabLength ) {
     if ( Qt::mightBeRichText( title ) )
       m_parent->setTabToolTip( index, Qt::escape( title ) );
     else
       m_parent->setTabToolTip( index, title );
   }
 
-  title = KStringHandler::rsqueeze( title, m_currentMaxLength ).leftJustified( m_minLength, ' ' );
+  title = KStringHandler::rsqueeze( title, m_currentTabLength ).leftJustified( m_minLength, ' ' );
 
   if ( m_parent->QTabWidget::tabText( index ) != title )
     m_parent->QTabWidget::setTabText( index, title );
