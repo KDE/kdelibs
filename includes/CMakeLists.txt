@@ -174,7 +174,9 @@ install( FILES
   KFileDialog
   KFileFilterCombo
   KFileItem
+  KFileItemActions
   KFileItemList
+  KFileItemListProperties
   KFileItemDelegate
   KFileMetaInfo
   KFileMetaInfoGroup
