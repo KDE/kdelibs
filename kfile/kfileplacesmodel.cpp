@@ -98,24 +98,33 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
     // file exists, and if it doesn't, we also add the default places. (ereslibre)
     KBookmarkGroup root = d->bookmarkManager->root();
     if (root.first().isNull() || !QFile::exists(file)) {
+
+        // NOTE: The context for these I18N_NOOP2 calls has to be "KFile System Bookmarks".
+        // The real i18nc call is made later, with this context, so the two must match.
+        //
+        // createSystemBookmark actually does nothing with its third argument,
+        // but we have to give it something so the I18N_NOOP2 calls stay here for now.
+        //
+        // (coles, 13th May 2009)
+
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
-                                              "Home", i18nc("Home Directory", "Home"),
+                                              "Home", I18N_NOOP2("KFile System Bookmarks", "Home"),
                                               KUrl(KUser().homeDir()), "user-home");
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
-                                              "Network", i18n("Network"),
+                                              "Network", I18N_NOOP2("KFile System Bookmarks", "Network"),
                                               KUrl("remote:/"), "network-workgroup");
 #ifdef Q_OS_WIN
         //C:/ as root for windows...forward slashes are valid too and are used in much/most of the KDE code on Windows
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
-                                              "Root", i18n("Root"),
+                                              "Root", I18N_NOOP2("KFile System Bookmarks", "Root"),
                                               KUrl("C:/"), "folder-red");
 #else
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
-                                              "Root", i18n("Root"),
+                                              "Root", I18N_NOOP2("KFile System Bookmarks", "Root"),
                                               KUrl("/"), "folder-red");
 #endif
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
-                                              "Trash", i18n("Trash"),
+                                              "Trash", I18N_NOOP2("KFile System Bookmarks", "Trash"),
                                               KUrl("trash:/"), "user-trash");
 
         // Force bookmarks to be saved. If on open/save dialog and the bookmarks are not saved, QFile::exists

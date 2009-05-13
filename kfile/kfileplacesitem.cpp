@@ -88,7 +88,12 @@ void KFilePlacesItem::setBookmark(const KBookmark &bookmark)
     m_bookmark = bookmark;
 
     if (bookmark.metaDataItem("isSystemItem") == "true") {
-        m_text = i18n(bookmark.text().toUtf8().data());
+        // This context must stay as it is - the translated system bookmark names
+        // are created with 'KFile System Bookmarks' as their context, so this
+        // ensures the right string is picked from the catalogue.
+        // (coles, 13th May 2009)
+
+        m_text = i18nc("KFile System Bookmarks", bookmark.text().toUtf8().data());
     } else {
         m_text = bookmark.text();
     }
