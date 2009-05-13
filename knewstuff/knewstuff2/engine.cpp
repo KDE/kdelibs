@@ -191,12 +191,19 @@ void Engine::downloadDialog()
 
     if (d->m_command != EnginePrivate::command_none) {
         kError() << "Engine: asynchronous workflow already going on" << endl;
+        return;
     }
 
     d->m_command = EnginePrivate::command_download;
     d->m_modal = false;
 
     d->workflow();
+}
+
+void Engine::downloadDialog(QObject * reciever, const char * slot)
+{
+    QObject::connect(d, SIGNAL(signalDownloadDialogDone(KNS::Entry::List)), reciever, slot);
+    downloadDialog();
 }
 
 KNS::Entry *EnginePrivate::upload(const QString& file)
@@ -256,6 +263,7 @@ void Engine::uploadDialog(const QString& file)
 
     if (d->m_command != EnginePrivate::command_none) {
         kError() << "Engine: asynchronous workflow already going on" << endl;
+        return;
     }
 
     d->m_command = EnginePrivate::command_upload;
@@ -357,6 +365,7 @@ void EnginePrivate::slotDownloadDialogClosed()
     m_downloaddialog = NULL;
 
     stopLoop();
+    emit signalDownloadDialogDone(QList<KNS::Entry*>::fromSet(m_changedEntries));
 }
 
 #include "engine.moc"

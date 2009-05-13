@@ -265,6 +265,7 @@ Q_SIGNALS:
 
     void signalProgress(const QString & message, int percentage);
 
+    void signalDownloadDialogDone(KNS::Entry::List);
 protected:
     void mergeEntries(Entry::List entries, Feed *feed, const Provider *provider);
 private Q_SLOTS:

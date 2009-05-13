@@ -120,11 +120,21 @@ public:
      *
      * This method should be used whenever a blocking application with a
      * non-blocking GUI during GHNS operations is not suitable.
-     * Affected entries will be reported by signals.
      *
      * @see downloadDialogModal()
      */
     void downloadDialog();
+
+    /**
+     * @brief Asynchronous way of starting the download workflow and getting feedback to a slot when the dialog closes.
+     *
+     * This method should be used whenever a blocking application with a
+     * non-blocking GUI during GHNS operations is not suitable.
+     * the slot passed in should have the signature (KNS::Entry::List) as it's parameter
+     *
+     * @see downloadDialogModal()
+     */
+    void downloadDialog(QObject * reciever, const char * slot);
 
     /**
      * @brief Asynchronous way of starting the upload workflow.
