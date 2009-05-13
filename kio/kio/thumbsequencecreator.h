@@ -35,10 +35,6 @@
 class KIO_EXPORT ThumbSequenceCreator : public ThumbCreator
 {
 public:
-  /**
-   * The flags of this plugin.
-   * @see flags()
-   */
     Q_DISABLE_COPY(ThumbSequenceCreator)
     ThumbSequenceCreator();
     virtual ~ThumbSequenceCreator();
