@@ -394,13 +394,15 @@ bool KTextEdit::Private::handleShortcut(const QKeyEvent* event)
     parent->setTextCursor( cursor );
     return true;
   } else if (KStandardShortcut::find().contains(key)) {
-      parent->slotFind();
+      if (findReplaceEnabled)
+          parent->slotFind();
       return true;
   } else if (KStandardShortcut::findNext().contains(key)) {
-      parent->slotFindNext();
+      if (findReplaceEnabled)
+          parent->slotFindNext();
       return true;
   } else if (KStandardShortcut::replace().contains(key)) {
-      if( !parent->isReadOnly() )
+      if (!parent->isReadOnly() && findReplaceEnabled)
           parent->slotReplace();
       return true;
   } else if ( KStandardShortcut::pasteSelection().contains( key ) ) {
