@@ -8,8 +8,7 @@ if(CMAKE_SOURCE_DIR STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
 endif(CMAKE_SOURCE_DIR STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
 
 if(BUILDING_EXPERIMENTAL_SEPARATELY)
-   # should a required version number be specified here ? Alex
-   find_package(KDE4 REQUIRED)
+   find_package(KDE4 4.2.85 REQUIRED)
    include(MacroLibrary)
    include(KDE4Defaults)
 else(BUILDING_EXPERIMENTAL_SEPARATELY)
