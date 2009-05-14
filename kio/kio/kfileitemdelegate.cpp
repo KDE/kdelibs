@@ -1152,12 +1152,10 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     KIO::CachedRendering *cache = 0;
     qreal progress = ((opt.state & QStyle::State_MouseOver) &&
                 index.column() == KDirModel::Name) ? 1.0 : 0.0;
-
     if (state)
     {
         cache    = state->cachedRendering();
         progress = state->hoverProgress();
-
         // Clear the mouse over bit temporarily
         opt.state &= ~QStyle::State_MouseOver;
 
@@ -1192,6 +1190,9 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             }
             // If it wasn't valid, delete it
             state->setCachedRendering(0);
+        }else{
+            //The cache may have been discarded, but the animation handler still needs to know about new icons
+            d->gotNewIcon(index);
         }
     }
 
