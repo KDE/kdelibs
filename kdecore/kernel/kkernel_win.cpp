@@ -359,7 +359,7 @@ static int subSystem()
     if (subSystem > -1)
         return subSystem; 
 
-    PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)0x00400000;
+    PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)GetModuleHandle(NULL);    
     PIMAGE_NT_HEADERS ntHeader = (PIMAGE_NT_HEADERS) ((char *)dosHeader + dosHeader->e_lfanew);
     if (ntHeader->Signature != 0x00004550) 
     {
