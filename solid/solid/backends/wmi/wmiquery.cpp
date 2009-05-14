@@ -64,7 +64,7 @@ WmiQuery::WmiQuery()
 
     HRESULT hres;
 
-    hres =  CoInitializeEx( 0, COINIT_MULTITHREADED ); 
+    hres =  CoInitialize(0); 
     if( FAILED(hres) && hres != S_FALSE && hres != RPC_E_CHANGED_MODE )
     {
         qCritical() << "Failed to initialize COM library.  Error code = 0x" << hex << quint32(hres) << endl;
