@@ -262,7 +262,7 @@ public:
      * \code
      *   i18n( "Could not read\n%1" , errorText() );
      * \endcode
-     * Do not call it if error() is not 0.
+     * Only call if error is not 0.
      *
      * @return the error message and if there is no error, a message
      *         telling the user that the app is broken, so check with
