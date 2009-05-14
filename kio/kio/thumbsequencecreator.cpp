@@ -24,7 +24,6 @@ struct ThumbSequenceCreator::Private {
     }
   
     float sequenceIndex;
-    bool randomSequence;
 };
 
 float ThumbSequenceCreator::sequenceIndex() const {
