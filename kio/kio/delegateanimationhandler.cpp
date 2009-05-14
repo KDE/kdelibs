@@ -217,6 +217,19 @@ void DelegateAnimationHandler::setSequenceIndex(int sequenceIndex)
     }
 }
 
+void DelegateAnimationHandler::eventuallyStartIteration(QModelIndex index)
+{
+//      if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
+    ///Think about it.
+
+    if (sequenceModelIndex.isValid())
+        setSequenceIndex(0); // Stop old iteration, and reset the icon for the old iteration
+
+    // Start sequence iteration
+    sequenceModelIndex = index;
+    setSequenceIndex(1);
+//      }
+}
 AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &option,
                                                          const QModelIndex &index,
                                                          const QAbstractItemView *view)
@@ -250,16 +263,7 @@ AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &opt
 
         fadeInAddTime.restart();
 
-//      if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
-            ///Think about it.
-
-            if (sequenceModelIndex.isValid())
-                setSequenceIndex(0); // Stop old iteration, and reset the icon for the old iteration
-
-            // Start sequence iteration
-            sequenceModelIndex = index;
-            setSequenceIndex(1);
-//      }
+        eventuallyStartIteration(index);
     }
     else if (state)
     {
@@ -290,9 +294,10 @@ AnimationState *DelegateAnimationHandler::animationState(const QStyleOption &opt
 
             if (!state->animating)
                 startAnimation(state);
+
+            eventuallyStartIteration(index);
         }
     }
-
     return state;
 }
 

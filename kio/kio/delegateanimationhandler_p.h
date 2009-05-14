@@ -118,6 +118,7 @@ private slots:
     void sequenceTimerTimeout();
 
 private:
+    void eventuallyStartIteration(QModelIndex index);
     AnimationState *findAnimationState(const QAbstractItemView *view, const QModelIndex &index) const;
     void addAnimationState(AnimationState *state, const QAbstractItemView *view);
     void startAnimation(AnimationState *state);
