@@ -371,7 +371,7 @@ void KWindowSystem::demandAttention( WId win, bool set )
 
 bool KWindowSystem::compositingActive()
 {
-    return false;
+    return true;
 }
 
 int KWindowSystem::currentDesktop()
