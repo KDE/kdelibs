@@ -792,8 +792,8 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
       if (s->ignoreUnknown)
          return;
 #ifdef Q_WS_MACX
-		if (_opt.startsWith("psn_", Qt::CaseInsensitive))
-			return;
+      if (_opt.startsWith("psn_"))
+         return;
 #endif
       KCmdLineArgs::enable_i18n();
       KCmdLineArgs::usageError( i18n("Unknown option '%1'.", QString::fromLocal8Bit(_opt)));
@@ -812,8 +812,8 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
          if (s->ignoreUnknown)
             return;
 #ifdef Q_WS_MACX
-			if (_opt.startsWith("psn_", Qt::CaseInsensitive))
-				return;
+         if (_opt.startsWith("psn_"))
+		    return;
 #endif
          KCmdLineArgs::enable_i18n();
          KCmdLineArgs::usageError( i18n("Unknown option '%1'.", QString::fromLocal8Bit(_opt)));
