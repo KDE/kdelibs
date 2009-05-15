@@ -1178,20 +1178,24 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                 return;
             }
 
-            if(!cache->checkValidity(opt.state)) {
-                if((KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
+            if (!cache->checkValidity(opt.state))
+            {
+                if ((KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects))
+                {
                     // Fade over from the old icon to the new one
                     // Only start a new fade if the previous one is ready
                     // Else we may start racing when checkValidity() always returns false
-                    if(state->fadeProgress() == 1)
+                    if (state->fadeProgress() == 1)
                         state->setCachedRenderingFadeFrom(state->takeCachedRendering());
                 }
                 d->gotNewIcon(index);
             }
             // If it wasn't valid, delete it
             state->setCachedRendering(0);
-        }else{
-            //The cache may have been discarded, but the animation handler still needs to know about new icons
+        }
+        else
+        {
+            // The cache may have been discarded, but the animation handler still needs to know about new icons
             d->gotNewIcon(index);
         }
     }
