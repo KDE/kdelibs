@@ -42,9 +42,16 @@
 class KTabWidget::Private
 {
   public:
+    enum {
+        ResizeEnabled = 0,
+        ResizeDisabled,
+        ResizeLater
+    } m_resizeSuspend;
+
     Private( KTabWidget *parent )
       : m_parent( parent ),
-        m_automaticResizeTabs( false )
+        m_automaticResizeTabs( false ),
+        m_resizeSuspend(ResizeEnabled)
     {
 
       KConfigGroup cg(KGlobal::config(), "General");
@@ -62,7 +69,7 @@ class KTabWidget::Private
     //holds the full names of the tab, otherwise all we
     //know about is the shortened name
     QStringList m_tabNames;
-    
+
     // Used when tabCloseActivatePrevious is enabled
     QList<QWidget*> m_previousTabList;
 
@@ -108,6 +115,9 @@ bool KTabWidget::Private::isEmptyTabbarSpace( const QPoint &point ) const
 
 void KTabWidget::Private::removeTab( int index )
 {
+  // prevent cascading resize slowness, not to mention crashes due to tab count()
+  // and m_tabNames.count() being out of sync!
+  m_resizeSuspend = ResizeDisabled;
   m_previousTabList.removeOne( m_parent->widget( index ) );
 
   // Need to do this here, rather than in tabRemoved().  Calling
@@ -116,8 +126,8 @@ void KTabWidget::Private::removeTab( int index )
   // that will use the m_tabNames[] list before it has been updated to reflect
   // the new tab arrangement.  See bug 190528.
   m_tabNames.removeAt( index );
-  
-  // We need to get the widget for "activate previous" before calling to 
+
+  // We need to get the widget for "activate previous" before calling to
   // QTabWidget::removeTab() because that call changes currentIndex which calls
   // to currentChanged() and thus modifies m_previousTabList.first(). And we
   // store the widget and not the index of it because the index might be changed
@@ -125,15 +135,26 @@ void KTabWidget::Private::removeTab( int index )
   QWidget *widget = 0;
   if( !m_previousTabList.isEmpty() && m_parent->tabCloseActivatePrevious() )
     widget = m_previousTabList.first();
-  
+
   m_parent->QTabWidget::removeTab( index );
-  
+
+  const bool doResize = (m_resizeSuspend == ResizeLater) || m_automaticResizeTabs;
+  m_resizeSuspend = ResizeEnabled;
+  if (doResize) {
+    resizeTabs();
+  }
+
   if( widget )
     m_parent->setCurrentIndex( m_parent->indexOf( widget ) );
 }
 
 void KTabWidget::Private::resizeTabs( int changeTabIndex )
 {
+  if (m_resizeSuspend != ResizeEnabled) {
+    m_resizeSuspend = ResizeLater;
+    return;
+  }
+
   int newTabLength = m_maxLength;
 
   if ( m_automaticResizeTabs ) {
@@ -524,31 +545,23 @@ void KTabWidget::moveTab( int from, int to )
 
 void KTabWidget::removePage( QWidget *widget )
 {
+  // not just calling removeTab() because that one is also virtual.
+  const int index = indexOf(widget);
   if ( d->m_automaticResizeTabs ) {
-
     setUpdatesEnabled(false);
-
-    d->removeTab( indexOf( widget ) );
-    d->resizeTabs();
-
+    d->removeTab(index);
     setUpdatesEnabled(true);
-
   } else {
-    d->removeTab( indexOf( widget ) );
+    d->removeTab(index);
   }
 }
 
 void KTabWidget::removeTab( int index )
 {
   if ( d->m_automaticResizeTabs ) {
-
     setUpdatesEnabled(false);
-
     d->removeTab( index );
-    d->resizeTabs();
-
     setUpdatesEnabled(true);
-
   } else {
     d->removeTab( index );
   }
@@ -639,7 +652,7 @@ void KTabWidget::currentChanged( int idx )
 {
    // The tab should appear only once
    d->m_previousTabList.removeOne( widget(idx) );
-   
+
    d->m_previousTabList.push_front( widget(idx) );
 }
 
