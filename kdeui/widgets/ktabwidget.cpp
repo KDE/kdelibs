@@ -178,18 +178,18 @@ void KTabWidget::Private::resizeTabs( int changeTabIndex )
         // required to make this behave in the face of rounding.
         int newTabLengthHi = m_maxLength + 1;
         int newTabLengthLo = m_minLength;
+        int prevTabLengthMid = -1;
         while (true) {
             int newTabLengthMid = (newTabLengthHi + newTabLengthLo) / 2;
+            if (prevTabLengthMid == newTabLengthMid) {
+                // no change, we're stuck due to rounding.
+                break;
+            }
+            prevTabLengthMid = newTabLengthMid;
+
             if (m_parent->tabBarWidthForMaxChars(newTabLengthMid) > maxTabBarWidth) {
-                // are we stuck due to rounding?
-                if (newTabLengthHi == newTabLengthMid) {
-                    break;
-                }
                 newTabLengthHi = newTabLengthMid;
             } else {
-                if (newTabLengthLo == newTabLengthMid) {
-                    break;
-                }
                 newTabLengthLo = newTabLengthMid;
             }
         }
