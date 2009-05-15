@@ -57,6 +57,7 @@ class KTabWidget::Private
       KConfigGroup cg(KGlobal::config(), "General");
       m_maxLength = cg.readEntry("MaximumTabLength", 30);
       m_minLength = cg.readEntry("MinimumTabLength", 3);
+      Q_ASSERT(m_maxLength >= m_minLength);
       m_currentTabLength = m_minLength;
     }
 
@@ -150,45 +151,60 @@ void KTabWidget::Private::removeTab( int index )
 
 void KTabWidget::Private::resizeTabs( int changeTabIndex )
 {
-  if (m_resizeSuspend != ResizeEnabled) {
-    m_resizeSuspend = ResizeLater;
-    return;
-  }
-
-  int newTabLength = m_maxLength;
-
-  if ( m_automaticResizeTabs ) {
-    // Calculate new max length
-    int lcw = 0, rcw = 0;
-
-    const int tabBarHeight = m_parent->tabBar()->sizeHint().height();
-    if (m_parent->cornerWidget(Qt::TopLeftCorner) &&
-        m_parent->cornerWidget( Qt::TopLeftCorner )->isVisible()) {
-      lcw = qMax(m_parent->cornerWidget(Qt::TopLeftCorner)->width(), tabBarHeight);
-    }
-    if (m_parent->cornerWidget(Qt::TopRightCorner) &&
-        m_parent->cornerWidget(Qt::TopRightCorner)->isVisible()) {
-      rcw = qMax( m_parent->cornerWidget(Qt::TopRightCorner)->width(), tabBarHeight);
+    if (m_resizeSuspend != ResizeEnabled) {
+        m_resizeSuspend = ResizeLater;
+        return;
     }
 
-    int maxTabBarWidth = m_parent->width() - lcw - rcw;
+    int newTabLength = m_maxLength;
 
-    for ( ; newTabLength > m_minLength; newTabLength--) {
-      if (m_parent->tabBarWidthForMaxChars(newTabLength) < maxTabBarWidth) {
-        break;
-      }
-    }
-  }
+    if (m_automaticResizeTabs) {
+        // Calculate new max length
+        int lcw = 0, rcw = 0;
 
-  // Update hinted or all tabs
-  if (m_currentTabLength != newTabLength) {
-    m_currentTabLength = newTabLength;
-    for (int i = 0; i < m_parent->count(); i++) {
-      updateTab(i);
+        const int tabBarHeight = m_parent->tabBar()->sizeHint().height();
+        if (m_parent->cornerWidget(Qt::TopLeftCorner) &&
+            m_parent->cornerWidget( Qt::TopLeftCorner )->isVisible()) {
+            lcw = qMax(m_parent->cornerWidget(Qt::TopLeftCorner)->width(), tabBarHeight);
+        }
+        if (m_parent->cornerWidget(Qt::TopRightCorner) &&
+            m_parent->cornerWidget(Qt::TopRightCorner)->isVisible()) {
+            rcw = qMax( m_parent->cornerWidget(Qt::TopRightCorner)->width(), tabBarHeight);
+        }
+
+        const int maxTabBarWidth = m_parent->width() - lcw - rcw;
+
+        // binary search for the best fitting tab title length; some wiggling was
+        // required to make this behave in the face of rounding.
+        int newTabLengthHi = m_maxLength + 1;
+        int newTabLengthLo = m_minLength;
+        while (true) {
+            int newTabLengthMid = (newTabLengthHi + newTabLengthLo) / 2;
+            if (m_parent->tabBarWidthForMaxChars(newTabLengthMid) > maxTabBarWidth) {
+                // are we stuck due to rounding?
+                if (newTabLengthHi == newTabLengthMid) {
+                    break;
+                }
+                newTabLengthHi = newTabLengthMid;
+            } else {
+                if (newTabLengthLo == newTabLengthMid) {
+                    break;
+                }
+                newTabLengthLo = newTabLengthMid;
+            }
+        }
+        newTabLength = qMin(newTabLengthLo, m_maxLength);
     }
-  } else if (changeTabIndex != -1) {
-    updateTab(changeTabIndex);
-  }
+
+    // Update hinted or all tabs
+    if (m_currentTabLength != newTabLength) {
+        m_currentTabLength = newTabLength;
+        for (int i = 0; i < m_parent->count(); i++) {
+            updateTab(i);
+        }
+    } else if (changeTabIndex != -1) {
+        updateTab(changeTabIndex);
+    }
 }
 
 void KTabWidget::Private::updateTab( int index )
