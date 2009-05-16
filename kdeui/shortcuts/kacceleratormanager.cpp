@@ -338,6 +338,11 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       qobject_cast<QAbstractSpinBox*>(w) || w->inherits( "KMultiTabBar" ) )
       return;
 
+  if ( w->inherits("KUrlRequester") ) {
+    traverseChildren(w, item);
+    return;
+  }
+
   // now treat 'ordinary' widgets
   QLabel *label =  qobject_cast<QLabel*>(w);
   if ( label  ) {
