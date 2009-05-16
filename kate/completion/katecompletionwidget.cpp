@@ -272,6 +272,7 @@ void KateCompletionWidget::startCompletion(const KTextEditor::Range& word, KText
   m_presentationModel->clearCompletionModels();
   
   if(invocationType == KTextEditor::CodeCompletionModel::UserInvocation) {
+    QMutexLocker lock(view()->doc()->smartMutex());
     qDeleteAll(m_completionRanges);
     m_completionRanges.clear();
   }
@@ -285,6 +286,7 @@ void KateCompletionWidget::startCompletion(const KTextEditor::Range& word, KText
     }
     if(!range.isValid()) {
       if(m_completionRanges.contains(model)) {
+        QMutexLocker lock(view()->doc()->smartMutex());
         KTextEditor::SmartRange *oldRange = m_completionRanges[model];
         m_completionRanges.remove(model);
         delete oldRange;
@@ -297,12 +299,15 @@ void KateCompletionWidget::startCompletion(const KTextEditor::Range& word, KText
         continue; //Leave it running as it is
       }
       else { // delete the range that was used previously
+        QMutexLocker lock(view()->doc()->smartMutex());
         KTextEditor::SmartRange *oldRange = m_completionRanges[model];
         m_completionRanges.remove(model);
         delete oldRange;
       }
     }
     model->completionInvoked(view(), range, invocationType);
+
+    QMutexLocker lock(view()->doc()->smartMutex());
     m_completionRanges[model] = view()->doc()->smartManager()->newSmartRange(range);
     m_completionRanges[model]->setInsertBehavior(KTextEditor::SmartRange::ExpandRight | KTextEditor::SmartRange::ExpandLeft);
     if(!m_completionRanges[model]->isValid()) {
@@ -310,6 +315,9 @@ void KateCompletionWidget::startCompletion(const KTextEditor::Range& word, KText
       abortCompletion();
       return;
     }
+    
+    lock.unlock();
+    
     connect(m_completionRanges[model]->smartStart().notifier(), SIGNAL(characterDeleted(KTextEditor::SmartCursor*, bool)),
               SLOT(startCharacterDeleted(KTextEditor::SmartCursor*, bool)));
   }
@@ -555,6 +563,9 @@ void KateCompletionWidget::cursorPositionChanged( )
   KTextEditor::Cursor cursor = view()->cursorPosition();
 
   QList<KTextEditor::CodeCompletionModel*> checkCompletionRanges = m_completionRanges.keys();
+  
+  QMutexLocker lock(view()->doc()->smartMutex());
+  lock.unlock();
 
   //Check the models and eventuall abort some
   for(QList<KTextEditor::CodeCompletionModel*>::iterator it = checkCompletionRanges.begin();
@@ -565,9 +576,11 @@ void KateCompletionWidget::cursorPositionChanged( )
       KTextEditor::CodeCompletionModel *model = *it;
       KateSmartRange* range = m_completionRanges[*it];
 
+      lock.relock();
       modelController(model)->updateCompletionRange(view(), *range);
       QString currentCompletion = modelController(model)->filterString(view(), *range, view()->cursorPosition());
       bool abort = modelController(model)->shouldAbortCompletion(view(), *range, currentCompletion);
+      lock.unlock();
 
       if(!m_completionRanges.contains(*it))
         continue;
@@ -578,8 +591,12 @@ void KateCompletionWidget::cursorPositionChanged( )
           abortCompletion();
           return;
         } else {
-          delete m_completionRanges[*it];
-          m_completionRanges.remove(*it);
+          {
+            lock.relock();
+            delete m_completionRanges[*it];
+            m_completionRanges.remove(*it);
+            lock.unlock();
+          }
 
           modelController(model)->aborted(view());
           m_presentationModel->removeCompletionModel(model);
@@ -621,7 +638,8 @@ void KateCompletionWidget::clear() {
   
   foreach(KTextEditor::CodeCompletionModel* model, m_completionRanges.keys())
     modelController(model)->aborted(view());
-  
+
+  QMutexLocker lock(view()->doc()->smartMutex());
   qDeleteAll(m_completionRanges);
   m_completionRanges.clear();
 }
