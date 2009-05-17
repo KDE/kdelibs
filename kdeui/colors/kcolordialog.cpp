@@ -1369,8 +1369,16 @@ KColorDialog::readSettings()
     KConfigGroup group(KGlobal::config(), "Colors");
 
     QString collectionName = group.readEntry("CurrentPalette");
-    if (collectionName.isEmpty())
+    if (collectionName.isEmpty()) {
         collectionName = i18nc("palette name", colorCollectionName[fortyColorIndex].m_displayName);
+    } else {
+        for (int i = 0; colorCollectionName[i].m_fileName; ++i) {
+            if (collectionName == colorCollectionName[i].m_displayName) {
+                collectionName = i18nc("palette name", colorCollectionName[i].m_displayName);
+                break;
+            }
+        }
+    }
 
     d->table->setColors(collectionName);
 }
