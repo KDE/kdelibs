@@ -34,6 +34,9 @@
 # include <X11/keysymdef.h>
 # define X11_ONLY(arg) arg, //allows to omit an argument
 
+// #define KKEYSERVER_DEBUG 1
+
+
 
 namespace KKeyServer
 {
@@ -313,8 +316,6 @@ bool initializeMods()
     checkDisplay();
     XModifierKeymap* xmk = XGetModifierMapping( QX11Info::display() );
 
-    g_rgX11ModInfo[3].modX = g_modXNumLock = g_modXScrollLock = g_modXModeSwitch = 0;
-
     int min_keycode, max_keycode;
     int keysyms_per_keycode = 0;
 
@@ -329,42 +330,73 @@ bool initializeMods()
         // and X.org R6.7 , where for some reason only ( ... , 1 ) works. I have absolutely no
         // idea what the problem is, but searching all possibilities until something valid is
         // found fixes the problem.
-        for( int j = 0; j < xmk->max_keypermod && keySymX == NoSymbol; ++j )
-            for( int k = 0; k < keysyms_per_keycode && keySymX == NoSymbol; ++k )
+        for( int j = 0; j < xmk->max_keypermod; ++j ) {
+
+            for( int k = 0; k < keysyms_per_keycode; ++k ) {
+
                 keySymX = XKeycodeToKeysym( QX11Info::display(), xmk->modifiermap[xmk->max_keypermod * i + j], k );
 
-        switch( keySymX ) {
-            case XK_Alt_L:
-            case XK_Alt_R:     g_alt_mask = mask; break; // Alt key, Normally Mod1Mask
+                switch( keySymX ) {
+                    case XK_Alt_L:
+                    case XK_Alt_R:     g_alt_mask = mask; break;
 
-            case XK_Super_L:
-            case XK_Super_R:     g_super_mask = mask; break; // Win key, Normally Mod4Mask
+                    case XK_Super_L:
+                    case XK_Super_R:     g_super_mask = mask; break;
 
-            case XK_Hyper_L:
-            case XK_Hyper_R:     g_hyper_mask = mask; break;
+                    case XK_Hyper_L:
+                    case XK_Hyper_R:     g_hyper_mask = mask; break;
 
-            case XK_Meta_L:
-            case XK_Meta_R:     g_meta_mask = mask; break; // Win alternate
+                    case XK_Meta_L:
+                    case XK_Meta_R:     g_meta_mask = mask; break;
 
-            case XK_Num_Lock:    g_modXNumLock = mask; break;     // Normally Mod2Mask
-            case XK_Scroll_Lock: g_modXScrollLock = mask; break;  // Normally Mod5Mask
-            case XK_Mode_switch: g_modXModeSwitch = mask; break;
+                    case XK_Num_Lock:    g_modXNumLock = mask; break;
+                    case XK_Scroll_Lock: g_modXScrollLock = mask; break;
+                    case XK_Mode_switch: g_modXModeSwitch = mask; break;
+                }
+            }
         }
     }
 
+#ifdef KKEYSERVER_DEBUG
+    kDebug() << "Alt:" << g_alt_mask;
+    kDebug() << "Meta:" << g_meta_mask;
+    kDebug() << "Super:" << g_super_mask;
+    kDebug() << "Hyper:" << g_hyper_mask;
+    kDebug() << "NumLock:" << g_modXNumLock;
+    kDebug() << "ScrollLock:" << g_modXScrollLock;
+    kDebug() << "ModeSwitch:" << g_modXModeSwitch;
+#endif
+
     // Sanitize our findings
-    if (g_hyper_mask == g_super_mask || g_hyper_mask == g_meta_mask)
+    if (g_hyper_mask && (g_hyper_mask == g_super_mask || g_hyper_mask == g_meta_mask)) {
+#ifdef KKEYSERVER_DEBUG
+        kDebug() << "Hyper is same as super or meta";
+#endif
         g_hyper_mask = 0;
+    }
 
-    if (g_super_mask == g_meta_mask)
+    if (g_super_mask == g_meta_mask) {
+#ifdef KKEYSERVER_DEBUG
+        kDebug() << "Super is same as meta";
+#endif
         g_super_mask = 0;
+    }
 
-    if (g_meta_mask == g_alt_mask) {
+    if (!g_meta_mask || g_meta_mask == g_alt_mask) {
+#ifdef KKEYSERVER_DEBUG
+        kDebug() << "Meta is not set or hidden behind alt";
+#endif
         // meta is hidden behind alt.
         if (g_super_mask) {
+#ifdef KKEYSERVER_DEBUG
+            kDebug() << "Using super for meta";
+#endif
             // Use Super
             g_meta_mask = g_super_mask;
         } else if (g_hyper_mask) {
+#ifdef KKEYSERVER_DEBUG
+            kDebug() << "Using hyper for meta";
+#endif
             // User Hyper
             g_meta_mask = g_hyper_mask;
         } else {
@@ -377,8 +409,8 @@ bool initializeMods()
         kWarning() << "Your keyboard setup doesn't provide a key to use for meta. See 'xmodmap -pm' or 'xkbcomp $DISPLAY'";
     }
 
-    g_rgX11ModInfo[3].modX = g_meta_mask;
     g_rgX11ModInfo[2].modX = g_alt_mask;
+    g_rgX11ModInfo[3].modX = g_meta_mask;
 
     XFreeModifiermap( xmk );
     g_bInitializedMods = true;
