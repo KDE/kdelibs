@@ -526,9 +526,14 @@ bool keyQtToModX( int modQt, uint* modX )
 
     *modX = 0;
     for( int i = 0; i < 4; i++ ) {
+
         if( modQt & g_rgX11ModInfo[i].modQt ) {
-            *modX |= g_rgX11ModInfo[i].modX;
-            continue;
+            if( g_rgX11ModInfo[i].modX ) {
+                *modX |= g_rgX11ModInfo[i].modX;
+            } else {
+                // The qt modifier has no x equivalent. Return false
+                return false;
+            }
         }
     }
     return true;
