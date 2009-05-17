@@ -297,10 +297,19 @@ inline void checkDisplay()
 //---------------------------------------------------------------------
 
 static bool g_bInitializedMods;
-static uint g_modXNumLock, g_modXScrollLock, g_modXModeSwitch, g_alt_mask, g_meta_mask;
+static uint g_modXNumLock, g_modXScrollLock, g_modXModeSwitch, g_alt_mask, g_meta_mask, g_super_mask, g_hyper_mask;
 
 bool initializeMods()
 {
+    // Reinitialize the masks
+    g_modXNumLock = 0;
+    g_modXScrollLock = 0;
+    g_modXModeSwitch = 0;
+    g_alt_mask = 0;
+    g_meta_mask = 0;
+    g_super_mask = 0;
+    g_hyper_mask = 0;
+
     checkDisplay();
     XModifierKeymap* xmk = XGetModifierMapping( QX11Info::display() );
 
@@ -329,15 +338,43 @@ bool initializeMods()
             case XK_Alt_R:     g_alt_mask = mask; break; // Alt key, Normally Mod1Mask
 
             case XK_Super_L:
-            case XK_Super_R:     g_meta_mask = mask; break; // Win key, Normally Mod4Mask
+            case XK_Super_R:     g_super_mask = mask; break; // Win key, Normally Mod4Mask
+
+            case XK_Hyper_L:
+            case XK_Hyper_R:     g_hyper_mask = mask; break;
 
             case XK_Meta_L:
-            case XK_Meta_R:      if( !g_meta_mask ) g_meta_mask = mask; break; // Win alternate
+            case XK_Meta_R:     g_meta_mask = mask; break; // Win alternate
 
             case XK_Num_Lock:    g_modXNumLock = mask; break;     // Normally Mod2Mask
             case XK_Scroll_Lock: g_modXScrollLock = mask; break;  // Normally Mod5Mask
             case XK_Mode_switch: g_modXModeSwitch = mask; break;
         }
+    }
+
+    // Sanitize our findings
+    if (g_hyper_mask == g_super_mask || g_hyper_mask == g_meta_mask)
+        g_hyper_mask = 0;
+
+    if (g_super_mask == g_meta_mask)
+        g_super_mask = 0;
+
+    if (g_meta_mask == g_alt_mask) {
+        // meta is hidden behind alt.
+        if (g_super_mask) {
+            // Use Super
+            g_meta_mask = g_super_mask;
+        } else if (g_hyper_mask) {
+            // User Hyper
+            g_meta_mask = g_hyper_mask;
+        } else {
+            // ???? Nothing left
+            g_meta_mask = 0;
+        }
+    }
+
+    if (!g_meta_mask) {
+        kWarning() << "Your keyboard setup doesn't provide a key to use for meta. See 'xmodmap -pm' or 'xkbcomp $DISPLAY'";
     }
 
     g_rgX11ModInfo[3].modX = g_meta_mask;
@@ -346,7 +383,6 @@ bool initializeMods()
     XFreeModifiermap( xmk );
     g_bInitializedMods = true;
 
-    kDebug(125) << "KKeyServer::initializeMods(): Win Mod = 0x" << QString::number(g_rgX11ModInfo[3].modX, 16);
     return true;
 }
 
