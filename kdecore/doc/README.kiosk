@@ -98,12 +98,12 @@ someOtherKey=11
 have write-access to the user's version of a configuration file, the file
 will be automatically considered immutable. 
 
-To make the configration file of kicker (the panel) immutable one could for
+To make the configuration file of Dolphin immutable one could for
 example use the commands below.
 
 Example:
-chown root.root /home/user/.kde/share/config/kickerrc
-chmod 644 /home/user/.kde/share/config/kickerrc
+chown root.root /home/user/.kde/share/config/dolphinrc
+chmod 644 /home/user/.kde/share/config/dolphinrc
 
 If you do this, the user will be warned that the configuration file is not
 writable. Since you will normally not want that, you can add the following
@@ -111,11 +111,11 @@ two lines to the application's configuration file (or to kdeglobals to
 disable the warning for all applications):
 
 [KDE Action Restrictions]
-warn_unwritable_config=false
+warn_unwritable_config=true
 
-Note that the avove example is not fool-proof, the user can potentially still 
-rename either the root-owned kickerrc file or any of the directories in 
-the path to another name and create a new kickerrc _with_ write-access.
+Note that the above example is not fool-proof, the user can potentially still 
+rename either the root-owned dolphinrc file or any of the directories in 
+the path to another name and create a new dolphinrc _with_ write-access.
 
 KDE Action Restrictions
 =======================
