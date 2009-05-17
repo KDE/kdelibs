@@ -338,20 +338,20 @@ bool initializeMods()
 
                 switch( keySymX ) {
                     case XK_Alt_L:
-                    case XK_Alt_R:     g_alt_mask = mask; break;
+                    case XK_Alt_R:       g_alt_mask |= mask; break;
 
                     case XK_Super_L:
-                    case XK_Super_R:     g_super_mask = mask; break;
+                    case XK_Super_R:     g_super_mask |= mask; break;
 
                     case XK_Hyper_L:
-                    case XK_Hyper_R:     g_hyper_mask = mask; break;
+                    case XK_Hyper_R:     g_hyper_mask |= mask; break;
 
                     case XK_Meta_L:
-                    case XK_Meta_R:     g_meta_mask = mask; break;
+                    case XK_Meta_R:      g_meta_mask |= mask; break;
 
-                    case XK_Num_Lock:    g_modXNumLock = mask; break;
-                    case XK_Scroll_Lock: g_modXScrollLock = mask; break;
-                    case XK_Mode_switch: g_modXModeSwitch = mask; break;
+                    case XK_Num_Lock:    g_modXNumLock |= mask; break;
+                    case XK_Scroll_Lock: g_modXScrollLock |= mask; break;
+                    case XK_Mode_switch: g_modXModeSwitch |= mask; break;
                 }
             }
         }
@@ -367,26 +367,38 @@ bool initializeMods()
     kDebug() << "ModeSwitch:" << g_modXModeSwitch;
 #endif
 
-    // Sanitize our findings
-    if (g_hyper_mask && (g_hyper_mask == g_super_mask || g_hyper_mask == g_meta_mask)) {
+    // Check if hyper overlaps with super or meta or alt
+    if (g_hyper_mask&(g_super_mask|g_meta_mask|g_alt_mask)) {
 #ifdef KKEYSERVER_DEBUG
-        kDebug() << "Hyper is same as super or meta";
+        kDebug() << "Hyper conflicts with super, meta or alt.";
 #endif
-        g_hyper_mask = 0;
+        // Remove the conflicting masks
+        g_hyper_mask &= ~(g_super_mask|g_meta_mask|g_alt_mask);
     }
 
-    if (g_super_mask == g_meta_mask) {
+    // Check if super overlaps with meta or alt
+    if (g_super_mask&(g_meta_mask|g_alt_mask)) {
 #ifdef KKEYSERVER_DEBUG
-        kDebug() << "Super is same as meta";
+        kDebug() << "Super conflicts with meta or alt.";
 #endif
-        g_super_mask = 0;
+        // Remove the conflicting masks
+        g_super_mask &= ~(g_meta_mask|g_alt_mask);
     }
 
-    if (!g_meta_mask || g_meta_mask == g_alt_mask) {
+
+    // Check if meta overlaps with alt
+    if (g_meta_mask|g_alt_mask) {
 #ifdef KKEYSERVER_DEBUG
-        kDebug() << "Meta is not set or hidden behind alt";
+        kDebug() << "Meta conflicts with alt.";
 #endif
-        // meta is hidden behind alt.
+        // Remove the conflicting masks
+        g_meta_mask &= ~(g_alt_mask);
+    }
+
+    if (!g_meta_mask) {
+#ifdef KKEYSERVER_DEBUG
+        kDebug() << "Meta is not set or conflicted with alt.";
+#endif
         if (g_super_mask) {
 #ifdef KKEYSERVER_DEBUG
             kDebug() << "Using super for meta";
@@ -404,6 +416,16 @@ bool initializeMods()
             g_meta_mask = 0;
         }
     }
+
+#ifdef KKEYSERVER_DEBUG
+    kDebug() << "Alt:" << g_alt_mask;
+    kDebug() << "Meta:" << g_meta_mask;
+    kDebug() << "Super:" << g_super_mask;
+    kDebug() << "Hyper:" << g_hyper_mask;
+    kDebug() << "NumLock:" << g_modXNumLock;
+    kDebug() << "ScrollLock:" << g_modXScrollLock;
+    kDebug() << "ModeSwitch:" << g_modXModeSwitch;
+#endif
 
     if (!g_meta_mask) {
         kWarning() << "Your keyboard setup doesn't provide a key to use for meta. See 'xmodmap -pm' or 'xkbcomp $DISPLAY'";
