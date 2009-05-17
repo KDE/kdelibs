@@ -506,19 +506,7 @@ bool keyQtToCodeX( int keyQt, int* keyCode )
         return false;
     }
 
-    // XKeysymToKeycode returns the wrong keycode for XK_Print and XK_Break.
-    // Specifically, it returns the code for SysReq instead of Print
-    // Only do this for the default Xorg layout, other keycode mappings
-    // (e.g. evdev) don't need or want it.
-    if( sym == XK_Print && !(mod & Mod1Mask) &&
-            XKeycodeToKeysym( QX11Info::display(), 111, 0 ) == XK_Print )
-        *keyCode = 111; // code for Print
-    else if( sym == XK_Break || ((sym == XK_Pause && (mod & ControlMask)) &&
-            XKeycodeToKeysym( QX11Info::display(), 114, 0 ) == XK_Pause) )
-        *keyCode = 114;
-    else
-        *keyCode = XKeysymToKeycode( QX11Info::display(), sym );
-
+    *keyCode = XKeysymToKeycode( QX11Info::display(), sym );
     return true;
 }
 
