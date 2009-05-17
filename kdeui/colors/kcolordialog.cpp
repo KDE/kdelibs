@@ -1384,7 +1384,14 @@ KColorDialog::KColorDialogPrivate::slotWriteSettings()
     if (!group.hasDefault("CurrentPalette") && table->name() == originalPalette) {
         group.revertToDefault("CurrentPalette");
     } else {
-        group.writeEntry("CurrentPalette", table->name()); //Shouldn't here the unstranslated name be saved ??
+        QString collectionName(table->name());
+        for (int i = 0; colorCollectionName[i].m_fileName; ++i) {
+            if (collectionName == i18nc("palette name", colorCollectionName[i].m_displayName)) {
+                collectionName = colorCollectionName[i].m_displayName;
+                break;
+            }
+        }
+        group.writeEntry("CurrentPalette", collectionName); //Make sure the untranslated name is saved, assuming there is one
     }
 }
 
