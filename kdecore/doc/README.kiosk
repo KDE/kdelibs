@@ -329,14 +329,9 @@ Notes:
 
 Applications may use additional actions that they defined themselves.
 You can get a list of the actions used by a certain applications by using the
-following dcop command:
+following qdbus command:
 
-dcop <dcopid> qt objects | grep KActionCollection/ | cut -d '/' -f 3
-
-or with
-
-dcop <dcopid> <maindwindowid> actions
-
+qdbus org.kde.myapp-id | grep actions | cut -d '/' -f 4,5
 
 Actions that refer to applications that need to be run as a different user
 are prefixed by user/ and identified by the username. For example:
