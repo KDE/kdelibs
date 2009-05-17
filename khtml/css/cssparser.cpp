@@ -2873,6 +2873,12 @@ unsigned short *DOM::CSSParser::text(int *length)
     return start;
 }
 
+// When we reach the end of the input we switch over
+// the lexer to this alternative buffer and keep it stuck here.
+// (and as it contains nulls, flex will keep on reporting 
+//  end of buffer, and we will keep reseting the input
+//  pointer to the beginning of this).
+static unsigned short postEofBuf[2];
 
 #define YY_DECL int DOM::CSSParser::lex()
 #define yyconst const
@@ -2892,7 +2898,12 @@ typedef unsigned int YY_CHAR;
 #define INITIAL 0
 #define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)
 #define YY_START ((yy_start - 1) / 2)
-#define yyterminate() yyTok = END; return yyTok
+#define yyterminate()\
+    do { \
+        if (yy_act == YY_END_OF_BUFFER) \
+            yy_c_buf_p = postEofBuf; \
+        yyTok = END; return yyTok; \
+     } while (0)
 #define YY_FATAL_ERROR(a) qFatal(a)
 #define BEGIN yy_start = 1 + 2 *
 #define COMMENT 1
