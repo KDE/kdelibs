@@ -312,6 +312,7 @@ void KateCompletionWidget::startCompletion(const KTextEditor::Range& word, KText
     m_completionRanges[model]->setInsertBehavior(KTextEditor::SmartRange::ExpandRight | KTextEditor::SmartRange::ExpandLeft);
     if(!m_completionRanges[model]->isValid()) {
       kWarning(13035) << "Could not construct valid smart-range from" << range << "instead got" << *m_completionRanges[model];
+      lock.unlock();
       abortCompletion();
       return;
     }
@@ -576,11 +577,9 @@ void KateCompletionWidget::cursorPositionChanged( )
       KTextEditor::CodeCompletionModel *model = *it;
       KateSmartRange* range = m_completionRanges[*it];
 
-      lock.relock();
       modelController(model)->updateCompletionRange(view(), *range);
       QString currentCompletion = modelController(model)->filterString(view(), *range, view()->cursorPosition());
       bool abort = modelController(model)->shouldAbortCompletion(view(), *range, currentCompletion);
-      lock.unlock();
 
       if(!m_completionRanges.contains(*it))
         continue;
