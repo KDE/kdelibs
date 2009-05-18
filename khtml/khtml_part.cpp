@@ -536,6 +536,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( this, SIGNAL( started( KIO::Job * ) ),
            this, SLOT( updateActions() ) );
 
+  // #### FIXME: the process wide loader is going to signal every part about every loaded object.
+  //      That's quite inefficient. Should be per-document-tree somehow. Even signaling to
+  //      child parts that a request from an ancestor has loaded is inefficent..
   connect( khtml::Cache::loader(), SIGNAL( requestStarted( khtml::DocLoader*, khtml::CachedObject* ) ),
            this, SLOT( slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* ) ) );
   connect( khtml::Cache::loader(), SIGNAL( requestDone( khtml::DocLoader*, khtml::CachedObject *) ),
@@ -840,7 +843,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
      metaData.insert("referrer", d->m_pageReferrer);
      d->m_cachePolicy = KIO::CC_Cache;
   }
-  else if (args.reload())
+  else if (args.reload() && !browserArgs.softReload)
      d->m_cachePolicy = KIO::CC_Reload;
   else
      d->m_cachePolicy = KProtocolManager::cacheControl();
@@ -1698,10 +1701,15 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     begin( d->m_workingURL, arguments().xOffset(), arguments().yOffset() );
     d->m_job->resume();
 
-    if (d->m_cachePolicy == KIO::CC_Refresh)
-      d->m_doc->docLoader()->setCachePolicy(KIO::CC_Verify);
+    // CC_Refresh means : always send the server an If-Modified-Since conditional request.
+    //                    This is the default cache setting and correspond to the KCM's "Keep cache in sync".
+    // CC_Verify means :  only send a conditional request if the cache expiry date is passed.
+    //                    It doesn't have a KCM setter.
+    // We override the first to the second, except when doing a soft-reload.
+    if (d->m_cachePolicy == KIO::CC_Refresh && !d->m_extension->browserArguments().softReload)
+        d->m_doc->docLoader()->setCachePolicy(KIO::CC_Verify);
     else
-      d->m_doc->docLoader()->setCachePolicy(d->m_cachePolicy);
+        d->m_doc->docLoader()->setCachePolicy(d->m_cachePolicy);
 
     d->m_workingURL = KUrl();
 
@@ -2231,6 +2239,16 @@ void KHTMLPart::slotLoaderRequestStarted( khtml::DocLoader* dl, khtml::CachedObj
   }
 }
 
+static bool isAncestorOrSamePart(KHTMLPart* p1, KHTMLPart* p2)
+{
+    KHTMLPart* p = p2;
+    {
+        if (p == p1)
+            return true;
+    } while (p = p->parentPart());
+    return false;
+}
+
 void KHTMLPart::slotLoaderRequestDone( khtml::DocLoader* dl, khtml::CachedObject *obj )
 {
   if ( obj && obj->type() == khtml::CachedObject::Image && d->m_doc && d->m_doc->docLoader() == dl ) {
@@ -2246,7 +2264,10 @@ void KHTMLPart::slotLoaderRequestDone( khtml::DocLoader* dl, khtml::CachedObject
       }
     }
   }
-
+  /// if we have no document, or the object is not a request of one of our children,
+  //  then our loading state can't possibly be affected : don't waste time checking for completion.
+  if (!d->m_doc || !isAncestorOrSamePart(this, dl->doc()->part()))
+      return;
   checkCompleted();
 }
 
@@ -2324,7 +2345,7 @@ void KHTMLPart::slotUserSheetStatDone( KJob *_job )
 
 void KHTMLPart::checkCompleted()
 {
-//   kDebug( 6050 ) << this << name();
+//   kDebug( 6050 ) << this;
 //   kDebug( 6050 ) << "   parsing: " << (d->m_doc && d->m_doc->parsing());
 //   kDebug( 6050 ) << "   complete: " << d->m_bComplete;
 
@@ -2361,6 +2382,7 @@ void KHTMLPart::checkCompleted()
       if ( !(*oi)->m_bCompleted )
         return;
   }
+
   // Are we still parsing - or have we done the completed stuff already ?
   if ( d->m_bComplete || (d->m_doc && d->m_doc->parsing()) )
     return;
@@ -4191,7 +4213,11 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
 
   child->m_browserArgs = browserArgs;
   child->m_args = args;
-  child->m_args.setReload(d->m_cachePolicy == KIO::CC_Reload);
+
+  // reload/soft-reload arguments are always inherited from parent
+  child->m_args.setReload( arguments().reload() );
+  child->m_browserArgs.softReload = d->m_extension->browserArguments().softReload;
+
   child->m_serviceName.clear();
   if (!d->m_referrer.isEmpty() && !child->m_args.metaData().contains( "referrer" ))
     child->m_args.metaData()["referrer"] = d->m_referrer;
@@ -4414,7 +4440,9 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     return true;
   }
 
-  child->m_args.setReload(d->m_cachePolicy == KIO::CC_Reload);
+  // reload/soft-reload arguments are always inherited from parent
+  child->m_args.setReload( arguments().reload() );
+  child->m_browserArgs.softReload = d->m_extension->browserArguments().softReload;
 
   // make sure the part has a way to find out about the mimetype.
   // we actually set it in child->m_args in requestObject already,
