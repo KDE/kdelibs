@@ -1,15 +1,15 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -19,7 +19,7 @@
 
 // IF YOU ARE USING THIS CLASS, YOU ARE MAKING A MISTAKE.
 
-#ifndef __KOPENSSLPROXY_H 
+#ifndef __KOPENSSLPROXY_H
 #define __KOPENSSLPROXY_H
 
 #define KOSSL KOpenSSLProxy
@@ -54,7 +54,7 @@ class KOpenSSLProxyPrivate;
  * @short KDE OpenSSL Wrapper
  * @internal
  */
-class KIO_EXPORT KOpenSSLProxy {
+class KOpenSSLProxy {
 public:
 
    /**
@@ -187,19 +187,19 @@ public:
 
 
    /*
-    *   RAND_file_name 
+    *   RAND_file_name
     */
    const char *RAND_file_name(char *buf, size_t num);
 
 
    /*
-    *   RAND_load_file 
+    *   RAND_load_file
     */
    int RAND_load_file(const char *filename, long max_bytes);
 
 
    /*
-    *   RAND_write_file 
+    *   RAND_write_file
     */
    int RAND_write_file(const char *filename);
 
@@ -306,7 +306,7 @@ public:
    void X509_STORE_CTX_set_chain(X509_STORE_CTX *v, STACK_OF(X509)* x);
 
    /*
-    *   X509_STORE_CTX_set_purpose - set the purpose of the certificate 
+    *   X509_STORE_CTX_set_purpose - set the purpose of the certificate
     */
    void X509_STORE_CTX_set_purpose(X509_STORE_CTX *v, int purpose);
 
@@ -481,56 +481,56 @@ public:
    void PKCS12_free(PKCS12 *a);
 
 
-   /* 
-    *   Parse the PKCS#12 
+   /*
+    *   Parse the PKCS#12
     */
    int PKCS12_parse(PKCS12 *p12, const char *pass, EVP_PKEY **pkey,
                     X509 **cert, STACK_OF(X509) **ca);
 
 
-   /* 
+   /*
     *   Free the Private Key
     */
    void EVP_PKEY_free(EVP_PKEY *x);
 
 
-   /* 
+   /*
     *   Pop off the stack
     */
    char *sk_pop(STACK *s);
 
 
-   /* 
+   /*
     *   Free the stack
     */
    void sk_free(STACK *s);
 
 
-   /* 
+   /*
     *  Number of elements in the stack
     */
    int sk_num(STACK *s);
 
 
-   /* 
+   /*
     *  Value of element n in the stack
     */
    char *sk_value(STACK *s, int n);
 
 
-   /* 
+   /*
     *  Create a new stack
     */
    STACK *sk_new(int (*cmp)());
 
 
-   /* 
+   /*
     *  Add an element to the stack
     */
    int sk_push(STACK *s, char *d);
 
 
-   /* 
+   /*
     *  Duplicate the stack
     */
    STACK *sk_dup(STACK *s);
@@ -557,7 +557,7 @@ public:
    /*
     *  Convert the public key to a decimal form
     */
-   int i2d_PublicKey(EVP_PKEY *a, unsigned char **pp); 
+   int i2d_PublicKey(EVP_PKEY *a, unsigned char **pp);
 
 
    /*
@@ -596,12 +596,12 @@ public:
    unsigned char *ASN1_STRING_data(ASN1_STRING *x);
 
    /*
-    *  
+    *
     */
    int OBJ_obj2nid(ASN1_OBJECT *o);
 
    /*
-    *  
+    *
     */
    const char * OBJ_nid2ln(int n);
 
@@ -611,7 +611,7 @@ public:
    int X509_get_ext_count(X509 *x);
 
    /*
-    * 
+    *
     */
    int X509_get_ext_by_NID(X509 *x, int nid, int lastpos);
 
@@ -681,7 +681,7 @@ public:
    int i2d_PKCS7_fp(FILE *fp,PKCS7 *p7);
 
    /*
-    * 
+    *
     */
    PKCS7 *d2i_PKCS7_fp(FILE *fp,PKCS7 **p7);
 

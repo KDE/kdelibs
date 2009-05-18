@@ -43,7 +43,7 @@ class QDateTime;
  *  @return the date formatted in a QString
  *  @see ASN1_UTCTIME_QDateTime
  */
-KIO_EXPORT QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm);
+QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm);
 
 /**
  *  Convert an ASN1 UTCTIME value to a QDateTime.  Uses KLocale settings.
@@ -53,7 +53,7 @@ KIO_EXPORT QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm);
  *
  *  @return the date formatted in a QDateTime
  */
-KIO_EXPORT QDateTime ASN1_UTCTIME_QDateTime(ASN1_UTCTIME *tm, int *isGmt);
+QDateTime ASN1_UTCTIME_QDateTime(ASN1_UTCTIME *tm, int *isGmt);
 
 
 /**
@@ -63,7 +63,7 @@ KIO_EXPORT QDateTime ASN1_UTCTIME_QDateTime(ASN1_UTCTIME *tm, int *isGmt);
  *
  *  @return the number formatted in a QString
  */
-KIO_EXPORT QString ASN1_INTEGER_QString(ASN1_INTEGER *aint);
+QString ASN1_INTEGER_QString(ASN1_INTEGER *aint);
 #endif
 
 
