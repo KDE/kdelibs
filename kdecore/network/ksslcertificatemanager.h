@@ -29,13 +29,11 @@
 #include <QtCore/QStringList>
 #include <QtCore/QDate>
 
-#include <kio/kio_export.h>
-
 class QSslCertificate;
 class KSslCertificateRulePrivate;
 class KSslCertificateManagerPrivate;
 
-class KIO_EXPORT KSslCertificateRule
+class KSslCertificateRule
 {
 public:
     KSslCertificateRule(const QSslCertificate &cert = QSslCertificate(),
@@ -61,7 +59,7 @@ private:
 };
 
 
-class KIO_EXPORT KSslCertificateManager
+class KSslCertificateManager
 {
 public:
     static KSslCertificateManager *self();
