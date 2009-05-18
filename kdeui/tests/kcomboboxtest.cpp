@@ -160,7 +160,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   s_pCompletion->setCompletionMode( KGlobalSettings::completionMode() );
   m_konqc->setCompletionObject( s_pCompletion );
 
-  QPixmap pix = SmallIcon("www");
+  QPixmap pix = SmallIcon("kde");
   m_konqc->addItem( pix, "http://www.kde.org" );
   m_konqc->setCurrentIndex( m_konqc->count()-1 );
 
