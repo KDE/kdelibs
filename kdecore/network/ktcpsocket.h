@@ -369,7 +369,9 @@ public:
     KSslErrorUiData(const KTcpSocket *socket);
     KSslErrorUiData(const KSslErrorUiData &other);
     KSslErrorUiData &operator=(const KSslErrorUiData &);
-private:
+//private:
+//H4X
+public:
     friend class KSslCertificateManager;
     class Private;
     Private *const d;

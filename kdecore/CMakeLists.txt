@@ -87,7 +87,7 @@ endif (WIN32)
 
 if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-      kernel/ktoolinvocation_x11.cpp 
+      kernel/ktoolinvocation_x11.cpp
       kernel/kstandarddirs_unix.cpp
       network/k3httpproxysocketdevice.cpp
       network/k3socks.cpp
@@ -211,6 +211,7 @@ set(kdecore_LIB_SRCS
    network/k3socketbuffer.cpp
    network/klocalsocket.cpp
    network/ksocketfactory.cpp
+   network/ksslcertificatemanager.cpp
    network/ktcpsocket.cpp
    localization/kcatalog.cpp
    localization/kcharsets.cpp
@@ -297,8 +298,8 @@ endif(WIN32)
 
 target_link_libraries(kdecore LINK_INTERFACE_LIBRARIES ${kdecore_LINK_INTERFACE_LIBRARIES} )
 
-set_target_properties(kdecore PROPERTIES 
-                              VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
+set_target_properties(kdecore PROPERTIES
+                              VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                               SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
                      )
 
@@ -307,7 +308,7 @@ install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_A
 
 ########### next target ###############
 
-configure_file(all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)  
+configure_file(all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)
 
 kde4_add_executable(kde4-config NOGUI kde-config.cpp )
 

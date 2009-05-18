@@ -23,6 +23,7 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include <kglobal.h>
+#include <ksslcertificatemanager.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
 
@@ -32,31 +33,6 @@
 #include <QtNetwork/QSslCipher>
 #include <QtNetwork/QNetworkProxy>
 
-K_GLOBAL_STATIC(QMutex, ksslsocketInitMutex)
-static QList<QSslCertificate> *kdeCaCertificateList;
-
-static void initKSslSocket()
-{
-    static bool initialized = false;
-    QMutexLocker locker(ksslsocketInitMutex);
-    if (!initialized) {
-        if (!kdeCaCertificateList) {
-            kdeCaCertificateList = new QList<QSslCertificate>;
-            QSslSocket::setDefaultCaCertificates(*kdeCaCertificateList); // set Qt's set to empty
-        }
-
-        if (!KGlobal::hasMainComponent())
-            return;                 // we need KGlobal::dirs() available
-        initialized = true;
-
-        // set default CAs from KDE's own bundle
-        QStringList bundles = KGlobal::dirs()->findAllResources("data", "kssl/ca-bundle.crt");
-        foreach (const QString &bundle, bundles) {
-            *kdeCaCertificateList += QSslCertificate::fromPath(bundle);
-        }
-        //kDebug(7029) << "Loading" << kdeCaCertificateList->count() << "CA certificates from" << bundles;
-    }
-}
 
 static KTcpSocket::SslVersion kSslVersionFromQ(QSsl::SslProtocol protocol)
 {
@@ -269,12 +245,11 @@ class KTcpSocketPrivate
 public:
     KTcpSocketPrivate(KTcpSocket *qq)
      : q(qq),
+       certificatesLoaded(false),
        emittedReadyRead(false)
     {
-        initKSslSocket();
-
-        Q_ASSERT(kdeCaCertificateList);
-        sock.setCaCertificates(*kdeCaCertificateList);
+        // create the instance, which sets Qt's static internal cert set to empty.
+        KSslCertificateManager::self();
     }
 
     KTcpSocket::State state(QAbstractSocket::SocketState s)
@@ -380,7 +355,16 @@ public:
         }
     }
 
+    void maybeLoadCertificates()
+    {
+        if (!certificatesLoaded) {
+            sock.setCaCertificates(KSslCertificateManager::self()->rootCertificates());
+            certificatesLoaded = true;
+        }
+    }
+
     KTcpSocket *const q;
+    bool certificatesLoaded;
     bool emittedReadyRead;
     QSslSocket sock;
     QList<KSslCipher> ciphers;
@@ -665,6 +649,7 @@ void KTcpSocket::addCaCertificates(const QList<QSslCertificate> &certificates)
 
 QList<QSslCertificate> KTcpSocket::caCertificates() const
 {
+    d->maybeLoadCertificates();
     return d->sock.caCertificates();
 }
 
@@ -677,6 +662,7 @@ QList<KSslCipher> KTcpSocket::ciphers() const
 
 void KTcpSocket::connectToHostEncrypted(const QString &hostName, quint16 port, OpenMode openMode)
 {
+    d->maybeLoadCertificates();
     d->sock.setProtocol(qSslProtocolFromK(d->advertisedSslVersion));
     d->sock.connectToHostEncrypted(hostName, port, openMode);
     setOpenMode(d->sock.openMode() | QIODevice::Unbuffered);
@@ -710,6 +696,7 @@ KSslCipher KTcpSocket::sessionCipher() const
 void KTcpSocket::setCaCertificates(const QList<QSslCertificate> &certificates)
 {
     d->sock.setCaCertificates(certificates);
+    d->certificatesLoaded = true;
 }
 
 
@@ -770,6 +757,7 @@ void KTcpSocket::ignoreSslErrors()
 //slot
 void KTcpSocket::startClientEncryption()
 {
+    d->maybeLoadCertificates();
     d->sock.setProtocol(qSslProtocolFromK(d->advertisedSslVersion));
     d->sock.startClientEncryption();
 }

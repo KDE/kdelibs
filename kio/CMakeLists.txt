@@ -204,30 +204,19 @@ qt4_add_resources(kfile_STAT_SRCS kfile/kacleditwidget.qrc)
 # kio/kssl/Makefile.am: kssl
 
 set(kssl_STAT_SRCS
-  kssl/kssl.cpp
-  kssl/ksslcertificatehome.cpp
-  kssl/ksslsettings.cpp
-  kssl/ksslcertificate.cpp
-  kssl/ksslconnectioninfo.cpp
-  kssl/ksslcertificatefactory.cpp
-  kssl/ksslcertificatemanager.cpp
-  kssl/ksslpeerinfo.cpp
-  kssl/ksslinfodialog.cpp
+  kssl/sslui.cpp
   kssl/ksslcertificatebox.cpp
-  kssl/ksslcertdialog.cpp
-  kssl/ksslutils.cpp
+  kssl/ksslinfodialog.cpp
+# below is what's left of KDE2/3 SSL code, still required for certificate chain validation
+# by hand and for key generation. Network code has been removed.
   kssl/kopenssl.cpp
-  kssl/ksslpkcs12.cpp
+  kssl/kssl.cpp
   kssl/ksslcertchain.cpp
+  kssl/ksslcertificate.cpp
   kssl/ksslkeygen.cpp
+  kssl/ksslsettings.cpp
+  kssl/ksslutils.cpp
   kssl/ksslx509v3.cpp
-  kssl/ksslsigners.cpp
-  kssl/ksslpkcs7.cpp
-  kssl/ksslpemcallback.cpp
-  kssl/ksslx509map.cpp
-  kssl/ksslsession.cpp
-  kssl/ksmimecrypto.cpp
-  kssl/ksslcsessioncache.cpp
 )
 
 
@@ -258,7 +247,7 @@ kde4_add_ui_files(kio_LIB_SRCS
    kssl/certificateparty.ui
 )
 
-install(FILES kssl/ksslcertificatemanager.upd 
+install(FILES kssl/ksslcertificatemanager.upd
               kssl/ksslcertificatemanager.upd.sh
         DESTINATION  ${DATA_INSTALL_DIR}/kconf_update)
 
@@ -287,8 +276,8 @@ if(X11_Xrender_FOUND)
    target_link_libraries(kio ${X11_Xrender_LIB})
 endif(X11_Xrender_FOUND)
 
-set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} 
-                                     SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} 
+set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
+                                     SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
                      )
 
 
@@ -350,7 +339,7 @@ install(  FILES
   kio/renamedialogplugin.h
   kio/skipdialog.h
   kio/udsentry.h
-  kssl/ksslcertificatemanager.h
+  kssl/sslui.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 if( NOT WIN32 )

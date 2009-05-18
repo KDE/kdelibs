@@ -61,8 +61,6 @@ extern "C" {
 #include "kprotocolmanager.h"
 #include "filejob.h"
 
-#include "kssl/ksslcsessioncache.h"
-
 #include <kdirnotify.h>
 #include <ktemporaryfile.h>
 
@@ -419,12 +417,6 @@ void SimpleJobPrivate::start(Slave *slave)
         m_outgoingMetaData.insert("user-timestamp", QString::number(ui()->userTimestamp()));
     }
 
-    QString sslSession = KSSLCSessionCache::getSessionForUrl(m_url);
-    if ( !sslSession.isNull() )
-    {
-        m_outgoingMetaData.insert("ssl_session_id", sslSession);
-    }
-
     if (ui() == 0)              // not interactive
     {
         m_outgoingMetaData.insert("no-auth-prompt", "true");
@@ -542,13 +534,7 @@ void SimpleJob::slotMetaData( const KIO::MetaData &_metaData )
 
 void SimpleJob::storeSSLSessionFromJob(const KUrl &redirectionURL)
 {
-    Q_D(SimpleJob);
-    QString sslSession = queryMetaData("ssl_session_id");
-
-    if ( !sslSession.isNull() ) {
-	    const KUrl &queryURL = redirectionURL.isEmpty() ? d->m_url : redirectionURL;
-	    KSSLCSessionCache::putSessionForUrl(queryURL, sslSession);
-    }
+    Q_UNUSED(redirectionURL);
 }
 
 //////////

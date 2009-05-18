@@ -107,6 +107,7 @@ using namespace DOM;
 #include <kselectaction.h>
 
 #include <ksslinfodialog.h>
+#include <ksslsettings.h>
 
 #include <kfileitem.h>
 #include <kurifilter.h>
@@ -689,7 +690,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
   // are not an iframe (because we store walletforms only on the topmost part).
   if(!parentPart())
     d->m_walletForms.clear();
-  
+
   d->m_redirectionTimer.stop();
 
   // check to see if this is an "error://" URL. This is caused when an error
@@ -2535,7 +2536,7 @@ void KHTMLPartPrivate::executeJavascriptURL(const QString &u)
     QVariant res = q->executeScript( DOM::Node(), script );
     if ( res.type() == QVariant::String ) {
       q->begin( q->url() );
-      q->setAlwaysHonourDoctype(); // Disable public API compat; it messes with doctype 
+      q->setAlwaysHonourDoctype(); // Disable public API compat; it messes with doctype
       q->write( res.toString() );
       q->end();
     }
@@ -4145,7 +4146,7 @@ bool KHTMLPart::requestFrame( DOM::HTMLPartContainerElementImpl *frame, const QS
                                        d->codeForJavaScriptURL(url) );
       if ( res.type() == QVariant::String && p->d->m_redirectURL.isEmpty() ) {
         p->begin();
-        p->setAlwaysHonourDoctype(); // Disable public API compat; it messes with doctype 
+        p->setAlwaysHonourDoctype(); // Disable public API compat; it messes with doctype
         // We recreated the document, so propagate domain again.
         d->propagateInitialDomainTo( p );
         p->write( res.toString() );
@@ -7068,13 +7069,13 @@ void KHTMLPart::walletMenu()
   KMenu *menu = new KMenu(0L);
   QActionGroup *menuActionGroup = new QActionGroup(menu);
   connect( menuActionGroup, SIGNAL(triggered(QAction*)), this, SLOT(removeStoredPasswordForm(QAction*)) );
-  
+
   menu->addAction(i18n("&Close Wallet"), this, SLOT(slotWalletClosed()));
-  
+
   if (d->m_view && d->m_view->nonPasswordStorableSite(toplevelURL().host())) {
     menu->addAction(i18n("&Allow storing passwords for this site"), this, SLOT(delNonPasswordStorableSite()));
   }
-  
+
   // List currently removable form passwords
   for ( QStringList::ConstIterator it = d->m_walletForms.constBegin(); it != d->m_walletForms.constEnd(); ++it ) {
       QAction* action = menu->addAction( i18n("Remove password for form %1", *it) );
@@ -7082,7 +7083,7 @@ void KHTMLPart::walletMenu()
       QVariant var(*it);
       action->setData(var);
   }
-  
+
   KAcceleratorManager::manage(menu);
   menu->popup(QCursor::pos());
 #endif // KHTML_NO_WALLET
@@ -7094,20 +7095,20 @@ void KHTMLPart::removeStoredPasswordForm(QAction* action)
   assert(action);
   assert(d->m_wallet);
   QVariant var(action->data());
-  
+
   if(var.isNull() || !var.isValid() || var.type() != QVariant::String)
     return;
-  
+
   QString key = var.toString();
   if (KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(),
                                       KWallet::Wallet::FormDataFolder(),
                                       key))
     return; // failed
-  
-  
+
+
   if (!d->m_wallet->hasFolder(KWallet::Wallet::FormDataFolder()))
     return; // failed
-  
+
   d->m_wallet->setFolder(KWallet::Wallet::FormDataFolder());
   if (d->m_wallet->removeEntry(key))
     return; // failed
@@ -7119,12 +7120,12 @@ void KHTMLPart::removeStoredPasswordForm(QAction* action)
 void KHTMLPart::addWalletFormKey(const QString& walletFormKey)
 {
 #ifndef KHTML_NO_WALLET
-  
+
   if (parentPart()) {
     parentPart()->addWalletFormKey(walletFormKey);
     return;
   }
-  
+
   if(!d->m_walletForms.contains(walletFormKey))
     d->m_walletForms.append(walletFormKey);
 #endif // KHTML_NO_WALLET

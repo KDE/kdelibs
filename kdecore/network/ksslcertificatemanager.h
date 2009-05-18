@@ -71,21 +71,11 @@ public:
     KSslCertificateRule rule(const QSslCertificate &cert, const QString &hostName) const;
 
     void setRootCertificates(const QList<QSslCertificate> &rootCertificates);
-    QList<QSslCertificate> rootCertificates() const;
-
-    enum RulesStorage {
-        RecallRules = 1,
-        StoreRules = 2,
-        RecallAndStoreRules = 3 ///< convenience
-    };
+    QList<QSslCertificate> rootCertificates() const;    // TODO on monday: rename to caCertificates()
 
     static QList<KSslError> nonIgnorableErrors(const QList<KSslError> &);
     static QList<KSslError::Error> nonIgnorableErrors(const QList<KSslError::Error> &);
 
-    static bool askIgnoreSslErrors(const KTcpSocket *socket,
-                                   RulesStorage storedRules = RecallAndStoreRules);
-    static bool askIgnoreSslErrors(const KSslErrorUiData &uiData,
-                                   RulesStorage storedRules = RecallAndStoreRules);
 private:
     friend class KSslCertificateManagerContainer;
     KSslCertificateManager();

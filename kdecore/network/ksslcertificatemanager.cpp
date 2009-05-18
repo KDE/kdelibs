@@ -22,18 +22,18 @@
 #include "ksslcertificatemanager.h"
 #include "ktcpsocket.h"
 #include "ktcpsocket_p.h"
-#include <ktoolinvocation.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kmessagebox.h>
-#include <ksslinfodialog.h>
+#include <kstandarddirs.h>
+#include <ktoolinvocation.h>
 
 #include <QtDBus/QtDBus>
 
-#include "kssld_interface.h"
+#include "../../kio/kssl/kssld_interface.h"
+
 
 /*
   Config file format:
@@ -202,14 +202,47 @@ class KSslCertificateManagerPrivate
 public:
     KSslCertificateManagerPrivate()
      : config("ksslcertificatemanager", KConfig::SimpleConfig), //TODO really good conf filename
-       iface("org.kde.kded", "/modules/kssld", QDBusConnection::sessionBus())
+       iface("org.kde.kded", "/modules/kssld", QDBusConnection::sessionBus()),
+       isCertListLoaded(false)
     {
+        // set Qt's set to empty; this is protected by the lock in K_GLOBAL_STATIC.
+        QSslSocket::setDefaultCaCertificates(QList<QSslCertificate>());
+    }
+
+    void loadDefaultCaCertificates()
+    {
+        if (isCertListLoaded) {
+            // we've had a race between two threads trying to load the certs; don't actually
+            // load them twice.
+            return;
+        }
+        defaultCaCertificates.clear();
+
+        if (!KGlobal::hasMainComponent()) {
+            Q_ASSERT(false);
+            return;                 // we need KGlobal::dirs() available
+        }
+
+        // set default CAs from KDE's own bundle
+        QStringList bundles = KGlobal::dirs()->findAllResources("data", "kssl/ca-bundle.crt");
+        foreach (const QString &bundle, bundles) {
+            defaultCaCertificates += QSslCertificate::fromPath(bundle);
+        }
+        // We don't need to lock the mutex when retrieving the list without loading it first
+        // because when the following flag is true the list is complete.
+        isCertListLoaded = true;
+
+        kDebug(7029) << "Loading" << defaultCaCertificates.count() << "CA certificates from" << bundles;
     }
 
     KConfig config;
     org::kde::KSSLDInterface iface;
     QHash<QString, KSslError::Error> stringToSslError;
     QHash<KSslError::Error, QString> sslErrorToString;
+
+    QList<QSslCertificate> defaultCaCertificates;
+    QMutex certListMutex;
+    bool isCertListLoaded;
 };
 
 
@@ -262,13 +295,26 @@ KSslCertificateRule KSslCertificateManager::rule(const QSslCertificate &cert, co
 
 void KSslCertificateManager::setRootCertificates(const QList<QSslCertificate> &rootCertificates)
 {
-    d->iface.setRootCertificates(rootCertificates);
+    // d->iface.setRootCertificates(rootCertificates);
+    // TODO remove above stuff from the interface
+
+    QMutexLocker certLocker(&d->certListMutex);
+    d->defaultCaCertificates = rootCertificates;
+    // don't do delayed initialization: the list *is* now initialized
+    d->isCertListLoaded = true;
 }
 
 
 QList<QSslCertificate> KSslCertificateManager::rootCertificates() const
 {
-    return d->iface.rootCertificates();
+    // return d->iface.rootCertificates();
+    // TODO remove from interface, see setRootCertificates()
+
+    QMutexLocker certLocker(&d->certListMutex);
+    if (!d->isCertListLoaded) {
+        d->loadDefaultCaCertificates();
+    }
+    return d->defaultCaCertificates;
 }
 
 //static
@@ -288,117 +334,4 @@ QList<KSslError::Error> KSslCertificateManager::nonIgnorableErrors(const QList<K
 }
 
 
-//static
-bool KSslCertificateManager::askIgnoreSslErrors(const KTcpSocket *socket, RulesStorage storedRules)
-{
-    KSslErrorUiData uiData(socket);
-    return askIgnoreSslErrors(uiData, storedRules);
-}
-
-//static
-bool KSslCertificateManager::askIgnoreSslErrors(const KSslErrorUiData &uiData, RulesStorage storedRules)
-{
-    KSslErrorUiData::Private *const ud = uiData.d;
-    if (ud->sslErrors.isEmpty()) {
-        return true;
-    }
-
-    QList<KSslError> fatalErrors = KSslCertificateManager::nonIgnorableErrors(ud->sslErrors);
-    if (!fatalErrors.isEmpty()) {
-        //TODO message "sorry, fatal error, you can't override it"
-        return false;
-    }
-    if (ud->certificateChain.isEmpty()) {
-        // SSL without certificates is quite useless and should never happen
-        KMessageBox::sorry(0, i18n("The remote host did not send any SSL certificates.\n"
-                                   "Aborting because the identity of the host cannot be established."));
-        return false;
-    }
-
-    KSslCertificateManager *const cm = KSslCertificateManager::self();
-    KSslCertificateRule rule(ud->certificateChain.first(), ud->host);
-    if (storedRules & RecallRules) {
-        rule = cm->rule(ud->certificateChain.first(), ud->host);
-        // remove previously seen and acknowledged errors
-        QList<KSslError> remainingErrors = rule.filterErrors(ud->sslErrors);
-        if (remainingErrors.isEmpty()) {
-            kDebug(7029) << "Error list empty after removing errors to be ignored. Continuing.";
-            return true;
-        }
-    }
-
-    //### We don't ask to permanently reject the certificate
-
-    QString message = i18n("The server failed the authenticity check (%1).\n\n", ud->host);
-    foreach (const KSslError &err, ud->sslErrors) {
-        message.append(err.errorString());
-        message.append('\n');
-    }
-    message = message.trimmed();
-
-    int msgResult;
-    do {
-        msgResult = KMessageBox::warningYesNoCancel(0, message, i18n("Server Authentication"),
-                                                    KGuiItem(i18n("&Details")),
-                                                    KGuiItem(i18n("Co&ntinue")));
-        if (msgResult == KMessageBox::Yes) {
-            //Details was chosen - show the certificate and error details
-
-
-            QList<QList<KSslError::Error> > meh;    // parallel list to cert list :/
-
-            foreach (const QSslCertificate &cert, ud->certificateChain) {
-                QList<KSslError::Error> errors;
-                foreach(const KSslError &error, ud->sslErrors) {
-                    if (error.certificate() == cert) {
-                        // we keep only the error code enum here
-                        errors.append(error.error());
-                    }
-                }
-                meh.append(errors);
-            }
-
-
-            KSslInfoDialog *dialog = new KSslInfoDialog();
-            dialog->setSslInfo(ud->certificateChain, ud->ip, ud->host, ud->sslProtocol,
-                               ud->cipher, ud->usedBits, ud->bits, meh);
-            dialog->exec();
-        } else if (msgResult == KMessageBox::Cancel) {
-            return false;
-        }
-        //fall through on KMessageBox::No
-    } while (msgResult == KMessageBox::Yes);
-
-
-    if (storedRules & StoreRules) {
-        //Save the user's choice to ignore the SSL errors.
-
-        msgResult = KMessageBox::warningYesNo(0,
-                                i18n("Would you like to accept this "
-                                    "certificate forever without "
-                                    "being prompted?"),
-                                i18n("Server Authentication"),
-                                KGuiItem(i18n("&Forever")),
-                                KGuiItem(i18n("&Current Sessions Only")));
-        QDateTime ruleExpiry = QDateTime::currentDateTime();
-        if (msgResult == KMessageBox::Yes) {
-            //accept forever ("for a very long time")
-            ruleExpiry = ruleExpiry.addYears(1000);
-        } else {
-            //accept "for a short time", half an hour.
-            ruleExpiry = ruleExpiry.addSecs(30*60);
-        }
-
-        //TODO special cases for wildcard domain name in the certificate!
-        //rule = KSslCertificateRule(d->socket.peerCertificateChain().first(), whatever);
-
-        rule.setExpiryDateTime(ruleExpiry);
-        rule.setIgnoredErrors(ud->sslErrors);
-        cm->setRule(rule);
-    }
-
-    return true;
-}
-
-
-#include "kssld_interface.moc"
+#include "../../kio/kssl/kssld_interface.moc"

@@ -115,69 +115,10 @@ KSSLSettings::~KSSLSettings() {
 }
 
 
-// FIXME: we should make a default list available if this fails
-//        since OpenSSL seems to just choose any old thing if it's given an
-//        empty list.  This behavior is not confirmed though.
 QString KSSLSettings::getCipherList() {
-	QString clist;
-#ifdef KSSL_HAVE_SSL
-	QString tcipher;
-	bool firstcipher = true;
-	SSL_METHOD *meth = 0L;
-        QList<CipherNode> cipherList;
-
-	if (!d->kossl)
-		d->kossl = KOSSL::self();
-
-	meth = d->kossl->TLSv1_client_method();
-
-        SSL_CTX *ctx = d->kossl->SSL_CTX_new(meth);
-        SSL* ssl = d->kossl->SSL_new(ctx);
-        STACK_OF(SSL_CIPHER)* sk = d->kossl->SSL_get_ciphers(ssl);
-        int cnt = sk_SSL_CIPHER_num(sk);
-        for (int i=0; i< cnt; i++) {
-                SSL_CIPHER *sc = sk_SSL_CIPHER_value(sk,i);
-                if (!sc)
-                        break;
-
-                KConfigGroup cg(m_cfg, QString());
-
-                if(!strcmp("SSLv2", d->kossl->SSL_CIPHER_get_version(sc)))
-                        cg.changeGroup("SSLv2");
-                else
-                        cg.changeGroup("SSLv3");
-
-                tcipher.sprintf("cipher_%s", sc->name);
-                int bits = d->kossl->SSL_CIPHER_get_bits(sc, NULL);
-                if (cg.readEntry(tcipher, bits >= 56)) {
-                        cipherList.prepend(CipherNode(sc->name, bits));
-                }
-        }
-        d->kossl->SSL_free(ssl);
-        d->kossl->SSL_CTX_free(ctx);
-
-	// Remove any ADH ciphers as per RFC2246
-	for (int i = 0; i < cipherList.size(); i++) {
-                while (cipherList.at(i).name.contains("ADH-")
-                       || cipherList.at(i).name.contains("FZA-")
-                       || cipherList.at(i).name.contains("NULL-")
-                       || cipherList.at(i).name.contains("DES-CBC3-SHA"))
-                    cipherList.removeAt(i);
-	}
-
-	// now assemble the list  cipher1:cipher2:cipher3:...:ciphern
-	while (!cipherList.isEmpty()) {
-		if (firstcipher)
-			firstcipher = false;
-		else clist.append(":");
-		clist.append(cipherList.last().name);
-		cipherList.removeLast();
-	} // while
-
-	kDebug(7029) << "Cipher list is: " << clist;
-
-#endif
-	return clist;
+    QString clist;
+    // TODO fill in list here (or just remove this method!)
+    return clist;
 }
 
 // FIXME - sync these up so that we can use them with the control module!!
