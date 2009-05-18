@@ -1629,6 +1629,10 @@ JSValue *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStri
     KHTMLView *widget = p->view();
     KParts::WindowArgs winargs;
 
+    // Split on commas and syntactic whitespace
+    // Testcase: 'height=600, width=950 left = 30,top = 50,statusbar=0'
+    static const QRegExp m(",|\\b\\s+(?!=)");
+
     // scan feature argument
     if (!features.isEmpty()) {
       // specifying window params means false defaults
@@ -1636,7 +1640,7 @@ JSValue *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStri
       winargs.setToolBarsVisible(false);
       winargs.setStatusBarVisible(false);
       winargs.setScrollBarsVisible(false);
-      const QStringList flist = features.split(',');
+      const QStringList flist = features.trimmed().split(m);
       QStringList::ConstIterator it = flist.begin();
       while (it != flist.end()) {
         QString s = *it++;
