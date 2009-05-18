@@ -35,6 +35,7 @@
 #include <QAbstractProxyModel>
 #include <QClipboard>
 #include <QColor>
+#include <QHash>
 #include <QList>
 #include <QListView>
 #include <QPainter>
@@ -291,6 +292,12 @@ public:
      */
     void addItemsToList(const QModelIndex& index, KFileItemList& list);
 
+    /**
+     * Updates the icons of files that are constantly changed due to a copy
+     * operation. See m_changedItems and m_changedItemsTimer for details.
+     */
+    void delayedIconUpdate();
+
     /** Remembers the pixmap for an item specified by an URL. */
     struct ItemInfo
     {
@@ -353,6 +360,15 @@ public:
     QMap<KUrl, int> m_sequenceIndices;
 
     /**
+     * When huge items are copied, it must be prevented that a preview gets generated
+     * for each item size change. m_changedItems keeps track of the changed items and it
+     * is assured that a final preview is only done if an item does not change within
+     * at least 5 seconds.
+     */
+    QHash<KUrl, bool> m_changedItems;
+    QTimer* m_changedItemsTimer;
+
+    /**
      * Contains all items where a preview must be generated, but
      * where the preview job has not dispatched the items yet.
      */
@@ -393,6 +409,9 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
     m_proxyModel(0),
     m_cutItemsCache(),
     m_previews(),
+    m_sequenceIndices(),
+    m_changedItems(),
+    m_changedItemsTimer(0),
     m_pendingItems(),
     m_dispatchedItems(),
     m_resolvedMimeTypes(),
@@ -438,6 +457,12 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
             q, SLOT(resumeIconUpdates()));
     m_viewAdapter->connect(KAbstractViewAdapter::ScrollBarValueChanged,
                            q, SLOT(pauseIconUpdates()));
+
+    m_changedItemsTimer = new QTimer(q);
+    m_changedItemsTimer->setSingleShot(true);
+    m_changedItemsTimer->setInterval(5000);
+    connect(m_changedItemsTimer, SIGNAL(timeout()),
+            q, SLOT(delayedIconUpdate()));
 }
 
 KFilePreviewGenerator::Private::~Private()
@@ -466,6 +491,10 @@ void KFilePreviewGenerator::Private::requestSequenceIcon(const QModelIndex& inde
 
 void KFilePreviewGenerator::Private::updateIcons(const KFileItemList& items)
 {
+    if (items.count() <= 0) {
+        return;
+    }
+
     applyCutItemEffect(items);
 
     KFileItemList orderedItems = items;
@@ -496,9 +525,24 @@ void KFilePreviewGenerator::Private::updateIcons(const QModelIndex& topLeft,
     for (int row = topLeft.row(); row <= bottomRight.row(); ++row) {
         const QModelIndex index = m_dirModel->index(row, 0);
         const KFileItem item = m_dirModel->itemForIndex(index);
-        itemList.append(item);
+
+        if (m_previewShown) {
+            const KUrl url = item.url();
+            const bool hasChanged = m_changedItems.contains(url); // O(1)
+            m_changedItems.insert(url, hasChanged);
+            if (!hasChanged) {
+                // only update the icon if it has not been already updated within
+                // the last 5 seconds (the other icons will be updated later with
+                // the help of m_changedItemsTimer)
+                itemList.append(item);
+            }
+        } else {
+            itemList.append(item);
+        }
     }
+
     updateIcons(itemList);
+    m_changedItemsTimer->start();
 }
 
 void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, const QPixmap& pixmap)
@@ -1056,6 +1100,29 @@ void KFilePreviewGenerator::Private::addItemsToList(const QModelIndex& index, KF
             addItemsToList(subIndex, list);
         }
     }
+}
+
+void KFilePreviewGenerator::Private::delayedIconUpdate()
+{
+    // Precondition: No items have been changed within the last
+    // 5 seconds. This means that items that have been changed constantly
+    // due to a copy operation should be updated now.
+
+    KFileItemList itemList;
+
+    QHash<KUrl, bool>::const_iterator it = m_changedItems.constBegin();
+    while (it != m_changedItems.constEnd()) {
+        const bool hasChanged = it.value();
+        if (hasChanged) {
+            const QModelIndex index = m_dirModel->indexForUrl(it.key());
+            const KFileItem item = m_dirModel->itemForIndex(index);
+            itemList.append(item);
+        }
+        ++it;
+    }    
+    m_changedItems.clear();
+
+    updateIcons(itemList);
 }
 
 KFilePreviewGenerator::KFilePreviewGenerator(QAbstractItemView* parent) :

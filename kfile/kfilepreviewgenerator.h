@@ -131,6 +131,7 @@ private:
     Q_PRIVATE_SLOT(d, void resumeIconUpdates())
     Q_PRIVATE_SLOT(d, void resolveMimeType())
     Q_PRIVATE_SLOT(d, void requestSequenceIcon(const QModelIndex&, int))
+    Q_PRIVATE_SLOT(d, void delayedIconUpdate())
 };
 
 #endif
