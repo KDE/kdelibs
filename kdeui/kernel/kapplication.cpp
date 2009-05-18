@@ -461,6 +461,12 @@ public:
   {
     return KGlobal::locale()->translateQt(context, sourceText, message);
   }
+
+    virtual bool isEmpty() const
+    {
+        return false;
+    }
+
 };
 
 void KApplicationPrivate::init(bool GUIenabled)
@@ -594,19 +600,7 @@ void KApplicationPrivate::init(bool GUIenabled)
   }
 #endif
 
-
-  // save and restore the RTL setting, as installTranslator calls qt_detectRTLLanguage,
-  // which makes it impossible to use the -reverse cmdline switch with KDE apps
-  // FIXME is this still needed? it looks like QApplication takes care of this
-  bool rtl = q->isRightToLeft();
   q->installTranslator(new KDETranslator(q));
-  q->setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
-  if (i18nc( "Dear Translator! Translate this string to the string 'LTR' in "
-	 "left-to-right languages (as English) or to 'RTL' in right-to-left "
-	 "languages (such as Hebrew and Arabic) to get proper widget layout.",
-         "LTR" ) == QLatin1String("RTL"))
-      rtl = !rtl;
-  q->setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
 
   qRegisterMetaType<KUrl>();
   qRegisterMetaType<KUrl::List>();
