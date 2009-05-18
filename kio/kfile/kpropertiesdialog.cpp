@@ -1769,9 +1769,17 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 #ifdef Q_OS_UNIX
     // pick the groups to which the user belongs
     int groupCount = 0;
+#ifdef Q_OS_MAC
+    int *groups = NULL;
+#else
     gid_t *groups = NULL;
+#endif
     if (getgrouplist(strUser, user->pw_gid, NULL, &groupCount) < 0) {
+#ifdef Q_OS_MAC
+        groups = new int[groupCount];
+#else
         groups = new gid_t[groupCount];
+#endif
         if (groups) {
             getgrouplist(strUser, user->pw_gid, groups, &groupCount);
         } else {
