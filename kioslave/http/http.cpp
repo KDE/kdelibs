@@ -4934,7 +4934,6 @@ void HTTPProtocol::configAuth( char *p, bool b )
       kWarning(7113) << "Proxy URL: " << m_proxyURL;
     else
       kWarning(7113) << "URL: " << m_request.url;
-    kWarning(7113) << "Request Authorization: " << p;
   }
 
   /*
