@@ -21,7 +21,7 @@ KIconEffectTestWidget::KIconEffectTestWidget(QWidget *parent)
     QGridLayout *layout = new QGridLayout(frame);
     layout->setColumnStretch(1, 1);
 
-    img = QImage(KIconLoader::global()->iconPath("cdtrack", -128));
+    img = QImage(KIconLoader::global()->iconPath("application-x-cd-image", -128));
     QImage tmp;
     QSlider *slider;
 
