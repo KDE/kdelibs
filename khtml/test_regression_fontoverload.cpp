@@ -37,6 +37,7 @@
 #include <QtGui/QPainter>
 #include <fixx11h.h>
 #include <QtGlobal>
+#include <kdebug.h>
 
 #if QT_VERSION >= 0x040500
   #define QT_45
@@ -397,16 +398,25 @@ static QString helv_pickxlfd( int pixelsize, bool italic, bool bold )
 static QFontEngine* loadFont(const QFontDef& request)
 {
     QString xlfd;
-    QString family = request.family.toLower();
-    if ( family == "adobe courier" || family == "courier" || family == "fixed" ) {
-        xlfd = courier_pickxlfd( request.pixelSize, request.style == QFont::StyleItalic, request.weight > 50 );
+    QStringList flist = request.family.toLower().split(",");
+    foreach (QString family, flist) {
+        if (!KHTMLSettings::availableFamilies().contains( ","+ family + ",", Qt::CaseInsensitive ))
+            continue;
+
+        if ( family == "adobe courier" || family == "courier" || family == "fixed" ) {
+            xlfd = courier_pickxlfd( request.pixelSize, request.style == QFont::StyleItalic, request.weight > 50 );
+        } else if ( family == "times new roman" || family == "times" ) {
+            xlfd = "-adobe-times-medium-r-normal--8-80-75-75-p-44-iso10646-1";
+        } else if ( family == "ahem" ) {
+            xlfd = ahem_pickxlfd( request.pixelSize );
+        } else {
+            xlfd = helv_pickxlfd( request.pixelSize,  request.style == QFont::StyleItalic, request.weight > 50 );
+        }
+        break;
     }
-    else if ( family == "times new roman" || family == "times" )
-        xlfd = "-adobe-times-medium-r-normal--8-80-75-75-p-44-iso10646-1";
-    else if ( family == "ahem" )
-        xlfd = ahem_pickxlfd( request.pixelSize );
-    else
+    if (xlfd.isEmpty()) {
         xlfd = helv_pickxlfd( request.pixelSize,  request.style == QFont::StyleItalic, request.weight > 50 );
+    }
 
     QFontEngine *fe = 0;
 
