@@ -31,4 +31,31 @@ namespace KGlobal
     void newComponentData(const KComponentData &c);
 }
 
+#include "kglobal.h"
+#include "klocale.h"
+#undef QT_NO_TRANSLATION
+#include <QtCore/QTranslator>
+#define QT_NO_TRANSLATION
+
+class KDETranslator : public QTranslator
+{
+public:
+    KDETranslator(QObject *parent) : QTranslator(parent)
+    {
+        setObjectName(QLatin1String("kdetranslator"));
+    }
+
+    virtual QString translate(const char* context,
+                              const char *sourceText,
+                              const char* message) const
+    {
+        return KGlobal::locale()->translateQt(context, sourceText, message);
+    }
+
+    virtual bool isEmpty() const
+    {
+        return false;
+    }
+};
+
 #endif // KGLOBAL_P_H

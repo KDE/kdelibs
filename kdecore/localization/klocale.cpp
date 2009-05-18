@@ -41,7 +41,6 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QRegExp>
 #include <QtCore/QLocale>
-#include <QtCore/QMutexLocker>
 #include <QtCore/QHash>
 
 #include "kcatalog_p.h"
@@ -101,11 +100,8 @@ public:
     KLocalePrivate(const QString& catalog, KConfig *config, const QString &language_ = QString(), const QString &country_ = QString());
   /**
    * @internal Initializes the catalogs appname, kdelibs and kio for all chosen languages.
-   *
-   * @param config The configuration object used for init
-   * @param useEnv True if we should use environment variables
    */
-  void initMainCatalogs(const QString & catalog);
+  void initMainCatalogs();
 
   /**
    * @internal Initializes the list of valid languages from the user's point of view. This is the list of
@@ -265,7 +261,7 @@ public:
 
   QString calendarType;
   KCalendarSystem * calendar;
-  QString appName;
+  QString catalogName; // catalogName ("app name") used by this KLocale object
   bool nounDeclension:1;
   bool dateMonthNamePossessive:1;
   bool utf8FileEncoding:1;
@@ -278,7 +274,7 @@ KLocalePrivate::KLocalePrivate(const QString& catalog, KConfig *config, const QS
     : language(language_),
       country(country_),
       useTranscript(false), codecForEncoding(0),
-      languages(0), calendar(0), appName(catalog)
+      languages(0), calendar(0), catalogName(catalog)
 {
     initEncoding();
     initFileNameEncoding();
@@ -291,7 +287,7 @@ KLocalePrivate::KLocalePrivate(const QString& catalog, KConfig *config, const QS
         initLanguageList(config, true);
     }
 
-    initMainCatalogs(catalog);
+    initMainCatalogs();
 
     initFormat(config);
 }
@@ -306,23 +302,23 @@ KLocale::KLocale(const QString& catalog, const QString &language, const QString 
 {
 }
 
-void KLocalePrivate::initMainCatalogs(const QString & catalog)
+void KLocalePrivate::initMainCatalogs()
 {
   KLocaleStaticData *s = staticData;
 
-  QString mainCatalog = catalog;
   if (!s->maincatalog.isEmpty()) {
-    mainCatalog = s->maincatalog;
+      // If setMainCatalog was called, then we use that (e.g. korgac calls setMainCatalog("korganizer") to use korganizer.po)
+      catalogName = s->maincatalog;
   }
 
-  if (mainCatalog.isEmpty()) {
+  if (catalogName.isEmpty()) {
     kDebug(173) << "KLocale instance created called without valid "
                  << "catalog! Give an argument or call setMainCatalog "
                  << "before init" << endl;
   }
   else {
     // do not use insertCatalog here, that would already trigger updateCatalogs
-    catalogNames.append(KCatalogName(mainCatalog));   // application catalog
+    catalogNames.append(KCatalogName(catalogName));   // application catalog
 
     // catalogs from which each application can draw translations
     numberOfSysCatalogs = 4;
@@ -539,9 +535,7 @@ bool KLocale::setLanguage(const QString & language, KConfig *config)
 
 bool KLocalePrivate::setLanguage(const QString & _language, KConfig *config)
 {
-  if ( languageList.contains( _language ) ) {
- 	 languageList.removeAll( _language );
-  }
+    languageList.removeAll( _language );
   languageList.prepend( _language ); // let us consider this language to be the most important one
 
   language = _language; // remember main language for shortcut evaluation
@@ -604,8 +598,6 @@ bool KLocale::isApplicationTranslatedInto( const QString & lang)
 
 bool KLocalePrivate::isApplicationTranslatedInto( const QString & lang)
 {
-  KLocaleStaticData *s = staticData;
-
   if ( lang.isEmpty() ) {
     return false;
   }
@@ -615,8 +607,9 @@ bool KLocalePrivate::isApplicationTranslatedInto( const QString & lang)
     return true;
   }
 
-  if (!s->maincatalog.isEmpty()) {
-    appName = s->maincatalog;
+  if (catalogName.isEmpty()) {
+      kDebug() << "no appName!";
+      return false;
   }
 
   // Check for this language and possible transliteration fallbacks.
@@ -624,7 +617,7 @@ bool KLocalePrivate::isApplicationTranslatedInto( const QString & lang)
   possibles += lang;
   possibles += KTranslit::fallbackList(lang);
   foreach (const QString &lang, possibles) {
-    if ( ! KCatalog::catalogLocaleDir( appName, lang ).isEmpty() ) {
+    if ( ! KCatalog::catalogLocaleDir( catalogName, lang ).isEmpty() ) {
         return true;
     }
   }
@@ -716,14 +709,16 @@ void KLocalePrivate::updateCatalogs( )
   // the sequence must be e.g. nds/appname nds/kdelibs nds/kio de/appname de/kdelibs de/kio etc.
   // and not nds/appname de/appname nds/kdelibs de/kdelibs etc. Otherwise we would be in trouble with a language
   // sequende nds,en_US, de. In this case en_US must hide everything below in the language list.
-  foreach ( const QString &lang, languageListFB )
-    foreach ( const KCatalogName &name, catalogNames )
+  foreach ( const QString &lang, languageListFB ) {
+    foreach ( const KCatalogName &name, catalogNames ) {
       // create and add catalog for this name and language if it exists
       if ( ! KCatalog::catalogLocaleDir( name.name, lang ).isEmpty() )
       {
         catalogs.append( KCatalog( name.name, lang ) );
         //kDebug(173) << "Catalog: " << name << ":" << lang;
       }
+    }
+  }
 
   // notify KLocalizedString of catalog update.
   KLocalizedString::notifyCatalogsUpdated(languageListFB, catalogNames);
@@ -747,7 +742,7 @@ void KLocale::setActiveCatalog(const QString &catalog)
     if (pos == -1)
         return;
     d->catalogNames.move(pos, 0);
-	d->updateCatalogs();  // walk through the KCatalog instances and adapt to the new order
+    d->updateCatalogs();  // walk through the KCatalog instances and adapt to the new order
 }
 
 KLocale::~KLocale()
@@ -757,8 +752,6 @@ KLocale::~KLocale()
   delete d;
 }
 
-K_GLOBAL_STATIC(QMutex, s_translateLock)
-
 void KLocalePrivate::translate_priv(const char *msgctxt,
                                     const char *msgid,
                                     const char *msgid_plural,
@@ -766,11 +759,6 @@ void KLocalePrivate::translate_priv(const char *msgctxt,
                                     QString *language,
                                     QString *translation) const
 {
-  // KCatalog used below is not thread safe.
-  // (Entry points from KLocalizedString are already locked there,
-  // but another entry point is from KLocale::translateQt.)
-  QMutexLocker lock(s_translateLock);
-
   if ( !msgid || !msgid[0] ) {
     kDebug(173) << "KLocale: trying to look up \"\" in catalog. "
                 << "Fix the program" << endl;

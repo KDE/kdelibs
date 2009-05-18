@@ -18,15 +18,10 @@
     Boston, MA 02110-1301, USA.
         */
 
-#undef QT_NO_TRANSLATION
 #include "kapplication.h"
-#define QT_NO_TRANSLATION
 
 #include <config.h>
 
-#undef QT_NO_TRANSLATION
-#include <QtCore/QTranslator>
-#define QT_NO_TRANSLATION
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtGui/QSessionManager>
@@ -447,28 +442,6 @@ void KApplication::iceIOErrorHandler( _IceConn *conn )
     exit( 1 );
 }
 
-class KDETranslator : public QTranslator
-{
-public:
-  KDETranslator(QObject *parent) : QTranslator(parent)
-  {
-    setObjectName(QLatin1String("kdetranslator"));
-  }
-
-  virtual QString translate(const char* context,
-					 const char *sourceText,
-					 const char* message) const
-  {
-    return KGlobal::locale()->translateQt(context, sourceText, message);
-  }
-
-    virtual bool isEmpty() const
-    {
-        return false;
-    }
-
-};
-
 void KApplicationPrivate::init(bool GUIenabled)
 {
   if ((getuid() != geteuid()) ||
@@ -599,8 +572,6 @@ void KApplicationPrivate::init(bool GUIenabled)
       }
   }
 #endif
-
-  q->installTranslator(new KDETranslator(q));
 
   qRegisterMetaType<KUrl>();
   qRegisterMetaType<KUrl::List>();

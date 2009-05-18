@@ -20,9 +20,11 @@
 #include "config.h"
 
 #include "klocalizedstringtest.h"
+#include <kdebug.h>
 #include "qtest_kde.h"
 
 #include "kglobal.h"
+#include <kstandarddirs.h>
 #include "klocale.h"
 #include "klocalizedstring.h"
 #include "kconfiggroup.h"
@@ -33,8 +35,23 @@
 
 void KLocalizedStringTest::initTestCase ()
 {
-    KGlobal::setLocale(new KLocale(QString(), QLatin1String("en_US"), QLatin1String("C")));
+    m_hasFrench = !KStandardDirs::locateLocal("locale", "fr/LC_MESSAGES/kdelibs4.mo").isEmpty();
+    if (m_hasFrench) {
+        setlocale(LC_ALL, "fr_FR.utf8");
+        if (setlocale(LC_ALL, NULL) != QByteArray("fr_FR.utf8")) {
+            kDebug() << "Setting locale to fr_FR.utf8 failed";
+            m_hasFrench = false;
+        }
+    }
+
+    if (m_hasFrench)
+        KGlobal::locale()->setLanguage(QStringList() << "fr" << "en_US");
     KGlobal::locale()->setThousandsSeparator(QString(","));
+    QCOMPARE(KGlobal::locale()->isApplicationTranslatedInto("en_US"), true);
+
+    if (m_hasFrench) {
+        QCOMPARE(KGlobal::locale()->isApplicationTranslatedInto("fr"), true);
+    }
 }
 
 void KLocalizedStringTest::correctSubs ()
@@ -183,19 +200,47 @@ void KLocalizedStringTest::miscMethods ()
     QVERIFY(k.isEmpty());
 }
 
+void KLocalizedStringTest::translateToFrench()
+{
+    if (!m_hasFrench) {
+        QSKIP("l10n/fr not installed", SkipAll);
+    }
+    QCOMPARE(i18n("Loadable modules"), QString::fromUtf8("Modules chargeables"));
+    QCOMPARE(i18n("Job"), QString::fromUtf8("Tâche"));
+}
+
+void KLocalizedStringTest::translateQt()
+{
+    QString result = KGlobal::locale()->translateQt("QPrintPreviewDialog", "Landscape", 0);
+    // When we use the default language, translateQt returns an empty string.
+    QString expected = m_hasFrench ? QString("Paysage") : QString();
+    QCOMPARE(result, expected);
+    result = QCoreApplication::translate("QPrintPreviewDialog", "Landscape");
+    QString expected2 = m_hasFrench ? QString("Paysage") : QString("Landscape");
+    QCOMPARE(result, expected2);
+
+    // So let's use translateRaw instead for the threaded test
+    QString lang;
+    KGlobal::locale()->translateRaw("Landscape", &lang, &result);
+    QCOMPARE(lang, QString("en_US"));
+    QCOMPARE(result, QString("Landscape"));
+}
+
 #include <QThreadPool>
 #include <qtconcurrentrun.h>
 
 void KLocalizedStringTest::testThreads()
 {
-    QThreadPool::globalInstance()->setMaxThreadCount(5);
-    QFuture<void> f1 = QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
-    QFuture<void> f2 = QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
-    QFuture<void> f3 = QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
-    f1.waitForFinished();
-    f2.waitForFinished();
-    f3.waitForFinished();
+    QThreadPool::globalInstance()->setMaxThreadCount(10);
+    QList<QFuture<void> > futures;
+    futures << QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
+    futures << QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
+    futures << QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
+    futures << QtConcurrent::run(this, &KLocalizedStringTest::translateQt);
+    futures << QtConcurrent::run(this, &KLocalizedStringTest::translateQt);
+    Q_FOREACH(QFuture<void> f, futures)
+        f.waitForFinished();
+    QThreadPool::globalInstance()->setMaxThreadCount(1); // delete those threads
 }
 
-QTEST_KDEMAIN_CORE(KLocalizedStringTest)
-
+QTEST_KDEMAIN_CORE_WITH_COMPONENTNAME(KLocalizedStringTest, "kdelibs4" /*so that the .po exists*/)

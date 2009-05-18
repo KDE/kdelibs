@@ -30,8 +30,13 @@ private Q_SLOTS:
     void correctButIllFormed();
     void wrongSubs ();
     void miscMethods ();
+    void translateToFrench ();
+    void translateQt ();
 
     void testThreads();
+
+private:
+    bool m_hasFrench;
 };
 
 #endif // KLOCALIZEDSTRINGTEST_H

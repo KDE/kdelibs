@@ -44,7 +44,9 @@
 #include <kcharsets.h>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
+#undef QT_NO_TRANSLATION
 #include <QtCore/QCoreApplication>
+#define QT_NO_TRANSLATION
 #include <QtCore/QTextCodec>
 #include "kcmdlineargs.h"
 #include <unistd.h> // umask
@@ -96,7 +98,7 @@ class KGlobalPrivate
         KCharsets *charsets;
 
         /**
-         * This component may be used in applications that doesn't have a 
+         * This component may be used in applications that doesn't have a
          * main component (such as pure Qt applications).
          */
         static KComponentData initFakeComponent()
@@ -154,6 +156,7 @@ KLocale *KGlobal::locale()
         d->locale = new KLocale(d->mainComponent.catalogName());
         QTextCodec::setCodecForLocale(d->locale->codecForEncoding());
         d->mainComponent.aboutData()->translateInternalProgramName();
+        QCoreApplication::installTranslator(new KDETranslator(QCoreApplication::instance()));
     }
     return d->locale;
 }

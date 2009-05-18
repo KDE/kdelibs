@@ -34,7 +34,6 @@
 void
 KLocaleTest::initTestCase()
 {
-    KGlobal::setLocale(new KLocale(QString(), QLatin1String("en_US"), QLatin1String("C")));
     KGlobal::locale()->setThousandsSeparator(QLatin1String(","));
 }
 
