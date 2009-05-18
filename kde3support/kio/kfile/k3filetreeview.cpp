@@ -259,7 +259,7 @@ Q3DragObject * K3FileTreeView::dragObject()
    QPoint hotspot;
    QPixmap pixmap;
    if( urls.count() > 1 ){
-      pixmap = DesktopIcon( "kmultiple", 16 );
+      pixmap = DesktopIcon( "document-multiple", 16 );
    }
    if( pixmap.isNull() )
       pixmap = currentKFileTreeViewItem()->fileItem().pixmap( 16 );
