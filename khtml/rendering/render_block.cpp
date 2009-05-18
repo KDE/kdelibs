@@ -1826,6 +1826,31 @@ void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintO
 #endif
 }
 
+QRegion RenderBlock::visibleFloatingRegion(int x, int y) const
+{
+    if (!m_floatingObjects)
+        return QRegion();
+    FloatingObject* fo;
+    QRegion r;
+    QListIterator<FloatingObject*> it(*m_floatingObjects);
+    while ( it.hasNext() ) {
+        fo = it.next();
+        if (!fo->noPaint && !fo->node->layer() && fo->node->style()->visibility() == VISIBLE) {
+            const RenderStyle *s = fo->node->style();
+            int ow = s->outlineSize();
+            if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || fo->node->isReplaced() || ow ) {
+                r += QRect(x -ow +fo->left+fo->node->marginLeft(),
+                           y -ow +fo->startY+fo->node->marginTop(),
+                           fo->width +ow*2 -fo->node->marginLeft() -fo->node->marginRight(),
+                           fo->endY-fo->startY +ow*2 -fo->node->marginTop() -fo->node->marginBottom());
+            } else {
+                r += fo->node->visibleFlowRegion(x+fo->left+fo->node->marginLeft(), y+fo->startY+fo->node->marginTop());
+            }
+        }
+    }
+    return r;
+}
+                                 
 void RenderBlock::paintFloats(PaintInfo& pI, int _tx, int _ty, bool paintSelection)
 {
     if (!m_floatingObjects)

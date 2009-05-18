@@ -3045,20 +3045,22 @@ QRegion RenderObject::visibleFlowRegion(int x, int y) const
     bool returnSelf = false;
     for (RenderObject* ro=firstChild();ro;ro=ro->nextSibling()) {
         if( !ro->layer() && !ro->isFloating() && ro->style()->visibility() == VISIBLE) {
-            // ### fix horizontal float extent
             const RenderStyle *s = ro->style();
             int ow = s->outlineSize();
             if (ro->isInlineFlow() || ro->isText()) {
                 returnSelf = true;
                 break;
             }
-            if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || ro->isReplaced() ) {
+            if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || ro->isReplaced() || ow ) {
                 r += QRect(x -ow +ro->effectiveXPos(),y -ow + ro->effectiveYPos(), 
                                   ro->effectiveWidth()+ow*2, ro->effectiveHeight()+ow*2);
             } else {
                 r += ro->visibleFlowRegion(x+ro->xPos(), y+ro->yPos());
             }
         }
+    }
+    if (hasFloats()) {
+        r += static_cast<const RenderBlock*>(this)->visibleFloatingRegion(x, y);
     }
     if (returnSelf) {
         int ow = style()->outlineSize();
