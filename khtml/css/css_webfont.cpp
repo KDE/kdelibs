@@ -86,14 +86,16 @@ bool CSSFontFaceSource::isValid() const
 
 void CSSFontFaceSource::notifyFinished(khtml::CachedObject */*finishedObj*/)
 {
+    WTF::Vector<DOMString> names = m_face->familyNames();
+    unsigned size = names.size();
+
     m_id = QFontDatabase::addApplicationFontFromData( m_font->font() );
+
     if (m_id == -1) {
-        // ### Qt couldn't load the font.
+        kDebug(6080) << "WARNING: downloaded web font" << (size?names[0].string():QString()) << "was rejected by the font subsystem.";
         return;
     }
     QString nativeName = QFontDatabase::applicationFontFamilies( m_id )[0];
-    WTF::Vector<DOMString> names = m_face->familyNames();
-    unsigned size = names.size();
     for (unsigned i = 0; i < size; i++) {
         if (names[i].string() != nativeName) {
             QFont::insertSubstitution( names[i].string(), nativeName );

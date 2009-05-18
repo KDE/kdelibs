@@ -46,6 +46,7 @@
 #include "seed.h"
 #include <imload/image.h>
 #include <imload/imagepainter.h>
+#include <kfilterdev.h>
 
 #include <assert.h>
 
@@ -1003,7 +1004,7 @@ CachedFont::CachedFont(DocLoader* dl, const DOMString &url, KIO::CacheControl _c
     : CachedObject(url, Font, _cachePolicy, 0)
 {
     setAccept( QLatin1String("*/*") );
-    Cache::loader()->load(dl, this, false);
+    Cache::loader()->load(dl, this, true /*highPriority*/);
     m_loading = true;
 }
 
@@ -1018,9 +1019,17 @@ void CachedFont::data( QBuffer &buffer, bool eof )
 {
     if(!eof) return;
     buffer.close();
-    setSize(buffer.buffer().size());
-
     m_font = buffer.buffer();
+
+    // some fonts are compressed.
+    QIODevice* dev = KFilterDev::device(&buffer, mimetype(), false /*autoDeleteInDevice*/);
+    if (dev && dev->open( QIODevice::ReadOnly )) {
+        m_font = dev->readAll();
+        delete dev;
+    }
+
+    setSize(m_font.size());
+
     m_loading = false;
     checkNotify();
 }
