@@ -33,7 +33,7 @@ class QSslCertificate;
 class KSslCertificateRulePrivate;
 class KSslCertificateManagerPrivate;
 
-class KSslCertificateRule
+class KDECORE_EXPORT KSslCertificateRule
 {
 public:
     KSslCertificateRule(const QSslCertificate &cert = QSslCertificate(),
@@ -59,7 +59,7 @@ private:
 };
 
 
-class KSslCertificateManager
+class KDECORE_EXPORT KSslCertificateManager
 {
 public:
     static KSslCertificateManager *self();
