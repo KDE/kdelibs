@@ -22,8 +22,6 @@
 #define _KSSL_H
 
 #include <ksslsettings.h>
-#include <ksslpeerinfo.h>
-#include <ksslconnectioninfo.h>
 
 class QIODevice;
 class KSSLPrivate;
@@ -158,132 +156,13 @@ public:
 	 */
 	KSSLSettings * settings();
 
-	/**
-	 *  Use this to set the certificate to send to the server.
-	 *  Do NOT delete the KSSLPKCS12 object until you are done with the
-	 *  session. It is not defined when KSSL will be done with this.
-	 *
-	 *  @param pkcs the valid PKCS#12 object to send.
-	 *
-	 *  @return true if the certificate was properly set to the session.
-	 */
-	bool setClientCertificate(KSSLPKCS12 *pkcs);
-
-	/**
-	 *  Set the peer hostname to be used for certificate verification.
-	 *
-	 *  @param realHost the remote hostname as the user believes to be
-	 *         connecting to
-	 */
-	void setPeerHost(const QString& realHost = QString());
-
-	/**
-	 *  Connect the SSL session to the remote host using the provided
-	 *  socket descriptor.
-	 *
-	 *  @param sock the socket descriptor to connect with.  This must be
-	 *         an already connected socket.
-	 *  @return 1 on success, 0 on error setting the file descriptor,
-	 *          -1 on other error.
-	 */
-	int connect(int sock);
-        int connect(QIODevice* sock);
-
-	/**
-	 *  Connect the SSL session to the remote host using the provided
-	 *  socket descriptor.  This is for use with an SSL server application.
-	 *
-	 *  @param sock the socket descriptor to connect with.  This must be
-	 *         an already connected socket.
-	 *  @return 1 on success, 0 on error setting the file descriptor,
-	 *          -1 on other error.
-	 */
-	int accept(int sock);
-        int accept(QIODevice* sock);
-
-	/**
-	 *  Read data from the remote host via SSL.
-	 *
-	 *  @param buf the buffer to read the data into.
-	 *  @param len the maximum length of data to read.
-	 *  @return the number of bytes read, 0 on an exception, or -1 on error.
-	 */
-	int read(char *buf, int len);
-
-	/**
-	 *  Peek at available data from the remote host via SSL.
-	 *
-	 *  @param buf the buffer to read the data into.
-	 *  @param len the maximum length of data to read.
-	 *  @return the number of bytes read, 0 on an exception, or -1 on error.
-	 */
-	int peek(char *buf, int len);
-
-	/**
-	 *  Write data to the remote host via SSL.
-	 *
-	 *  @param buf the buffer to read the data from.
-	 *  @param len the length of data to send from the buffer.
-	 *  @return the number of bytes written, 0 on an exception,
-	 *          or -1 on error.
-	 */
-	int write(const char *buf, int len);
-
-	/**
-	 *  Determine if data is waiting to be read.
-	 *
-	 *  @return -1 on error, 0 if no data is waiting, > 0 if data is waiting.
-	 */
-	int pending();
-
-	/**
-	 *  Obtain a reference to the connection information.
-	 *
-	 *  @return a reference to the connection information,
-	 *          valid after connected
-	 *  @see KSSLConnectionInfo
-	 */
-	KSSLConnectionInfo& connectionInfo();
-
-	/**
-	 *  Obtain a reference to the information about the peer.
-	 *
-	 *  @return a reference to the peer information,
-	 *          valid after connected
-	 *  @see KSSLPeerInfo
-	 */
-	KSSLPeerInfo& peerInfo();
-
-	/**
-	 *  Obtain a pointer to the session information.
-	 *
-	 *  @return a pointer to the session information.
-	 *          This is valid after connected, while connected.
-	 *          It is deleted by the KSSL object which returns it.
-	 *          May return 0L if no valid session exists.
-	 *  @see KSSLSession
-	 */
-	const KSSLSession* session() const;
-
-	/**
-	 *  Determine if we are currently reusing an SSL session ID.
-	 *
-	 *  @return true if we are reusing a session ID.
-	 */
-	bool reusingSession() const;
-
 private:
 	static bool m_bSSLWorks;
 	bool m_bInit;
 	bool m_bAutoReconfig;
 	KSSLSettings *m_cfg;
-	KSSLConnectionInfo m_ci;
-	KSSLPeerInfo m_pi;
 
 	KSSLPrivate *d;
-
-	void setConnectionInfo();
-	void setPeerInfo();
 };
 
 
