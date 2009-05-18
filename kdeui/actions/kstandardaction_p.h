@@ -134,7 +134,7 @@ static inline QStringList internal_stdNames()
 
   for ( uint i = 0; g_rgActionInfo[i].id != ActionNone; i++ )
     if (g_rgActionInfo[i].psLabel) {
-      if (QString(g_rgActionInfo[i].psLabel).indexOf("%1") >= 0)
+      if (QByteArray(g_rgActionInfo[i].psLabel).contains("%1"))
         // Prevents i18n from complaining about unsubstituted placeholder.
         result.append(i18n(g_rgActionInfo[i].psLabel, QString()));
       else

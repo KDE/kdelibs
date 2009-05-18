@@ -51,7 +51,7 @@ int main()
     check( "QStringList value generation", expected, output );
 
     QMap<QString,QString> map;
-    for (QStringList::ConstIterator it = input.begin(); it != input.end(); ++it) {
+    for (QStringList::ConstIterator it = input.constBegin(); it != input.constEnd(); ++it) {
         map.insert(*it, *it);
     }
     input.sort();
