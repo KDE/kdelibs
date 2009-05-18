@@ -112,8 +112,9 @@ int main(int argc, char *argv[]) \
  *
  * \see KDEMainFlag
  * \see QTestLib
+ * \since 4.3
  */
-#define QTEST_KDEMAIN_CORE(TestObject) \
+#define QTEST_KDEMAIN_CORE_WITH_COMPONENTNAME(TestObject, componentName) \
 int main(int argc, char *argv[]) \
 { \
     setenv("LC_ALL", "C", 1); \
@@ -124,7 +125,7 @@ int main(int argc, char *argv[]) \
     setenv("KDE_SKIP_KDERC", "1", 1); \
     unsetenv("KDE_COLOR_DEBUG"); \
     QFile::remove(QDir::homePath() + "/.kde-unit-test/share/config/qttestrc");  \
-    KAboutData aboutData( QByteArray("qttest"), QByteArray(), ki18n("KDE Test Program"), QByteArray("version") );  \
+    KAboutData aboutData( QByteArray(componentName), QByteArray(), ki18n("KDE Test Program"), QByteArray("version") );  \
     KComponentData cData(&aboutData); \
     QCoreApplication app( argc, argv ); \
     app.setApplicationName( "qttest" ); \
@@ -135,5 +136,18 @@ int main(int argc, char *argv[]) \
     return QTest::qExec( &tc, argc, argv ); \
 }
 
-#endif /* QTEST_KDE_H */
+/**
+ * \short KDE Replacement for QTEST_MAIN from QTestLib, for non-gui code.
+ *
+ * This macro should be used for classes that need a KComponentData.
+ * So instead of writing QTEST_MAIN( TestClass ) you write
+ * QTEST_KDEMAIN_CORE( TestClass ).
+ *
+ * \param TestObject The class you use for testing.
+ *
+ * \see KDEMainFlag
+ * \see QTestLib
+ */
+#define QTEST_KDEMAIN_CORE(TestObject) QTEST_KDEMAIN_CORE_WITH_COMPONENTNAME(TestObject, "qttest")
 
+#endif /* QTEST_KDE_H */
