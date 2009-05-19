@@ -36,7 +36,7 @@ KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
                                  const QString &udi)
     : m_manager(manager), m_lister(0), m_folderIsEmpty(true), m_text()
 {
-    m_bookmark = m_manager->findByAddress(address);
+    setBookmark(m_manager->findByAddress(address));
 
     if (udi.isEmpty() && m_bookmark.metaDataItem("ID").isEmpty()) {
         m_bookmark.setMetaDataItem("ID", generateNewId());
