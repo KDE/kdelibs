@@ -374,6 +374,16 @@ public:
      */
     KActionCollection *actionCollection() const;
 
+    /**
+     * Sets whether to show the standard items in the menu, such as Quit
+     */
+    void setStandardActionsEnabled(bool enabled);
+
+    /**
+     * Sets whether to show the standard items in the menu, such as Quit
+     */
+    bool standardActionsEnabled() const;
+
     void showMessage(const QString &title, const QString &message, const QString &icon, int timeout = 10000);
 
 

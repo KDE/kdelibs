@@ -375,6 +375,13 @@ void KNotificationItem::setAssociatedWidget(QWidget *associatedWidget)
         d->onAllDesktops = false;
 #endif
     } else {
+        if (d->menu && d->hasQuit) {
+            QAction *action = d->actionCollection->action("minimizeRestore");
+            if (action) {
+                d->menu->removeAction(action);
+            }
+        }
+
         d->onAllDesktops = false;
     }
 }
@@ -387,6 +394,40 @@ QWidget *KNotificationItem::associatedWidget() const
 KActionCollection *KNotificationItem::actionCollection() const
 {
     return d->actionCollection;
+}
+
+void KNotificationItem::setStandardActionsEnabled(bool enabled)
+{
+    if (d->standardActionsEnabled == enabled) {
+        return;
+    }
+
+    d->standardActionsEnabled = enabled;
+
+    if (d->menu && !enabled && d->hasQuit) {
+        QAction *action = d->actionCollection->action("minimizeRestore");
+        if (action) {
+            d->menu->removeAction(action);
+        }
+
+        action = d->actionCollection->action(KStandardAction::name(KStandardAction::Quit));
+        if (action) {
+            d->menu->removeAction(action);
+        }
+
+        // the separator
+        QList<QAction *> remainingActions = d->menu->actions();
+        if (!remainingActions.isEmpty()) {
+            d->menu->removeAction(remainingActions.last());
+        }
+
+        d->hasQuit = false;
+    }
+}
+
+bool KNotificationItem::standardActionsEnabled() const
+{
+    return d->standardActionsEnabled;
 }
 
 void KNotificationItem::showMessage(const QString & title, const QString & message, const QString &icon, int timeout)
@@ -526,13 +567,14 @@ KNotificationItemPrivate::KNotificationItemPrivate(KNotificationItem *item)
       status(KNotificationItem::Passive),
       movie(0),
       menu(0),
-      hasQuit(false),
-      onAllDesktops(false),
       titleAction(0),
       notificationItemWatcher(0),
       visualNotifications(0),
       notificationId(0),
-      systemTrayIcon(0)
+      systemTrayIcon(0),
+      hasQuit(false),
+      onAllDesktops(false),
+      standardActionsEnabled(true)
 {
 }
 
@@ -702,7 +744,7 @@ void KNotificationItemPrivate::syncLegacySystemTrayIcon()
 
 void KNotificationItemPrivate::contextMenuAboutToShow()
 {
-    if (!hasQuit) {
+    if (!hasQuit && standardActionsEnabled) {
         // we need to add the actions to the menu afterwards so that these items
         // appear at the _END_ of the menu
         menu->addSeparator();

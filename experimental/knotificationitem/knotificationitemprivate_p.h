@@ -126,8 +126,6 @@ public:
 
     KMenu *menu;
     KActionCollection* actionCollection;
-    bool hasQuit;
-    bool onAllDesktops;
     QWidget *associatedWidget;
     QAction* titleAction;
     org::kde::NotificationItemWatcher *notificationItemWatcher;
@@ -136,6 +134,10 @@ public:
 
     KSystemTrayIcon *systemTrayIcon;
     KNotificationItemDBus *notificationItemDbus;
+
+    bool hasQuit : 1;
+    bool onAllDesktops : 1;
+    bool standardActionsEnabled : 1;
 };
 
 } // namespace Experimental
