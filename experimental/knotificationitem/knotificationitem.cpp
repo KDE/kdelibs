@@ -51,31 +51,15 @@ KNotificationItem::KNotificationItem(QObject *parent)
       : QObject(parent),
         d(new KNotificationItemPrivate(this))
 {
-    // Ensure that closing the last KMainWindow doesn't exit the application
-    // if a system tray icon is still present.
-    KGlobal::ref();
-    KGlobal::locale()->insertCatalog("knotificationitem-1");
-    qDBusRegisterMetaType<ExperimentalKDbusImageStruct>();
-    qDBusRegisterMetaType<ExperimentalKDbusImageVector>();
-    qDBusRegisterMetaType<ExperimentalKDbusToolTipStruct>();
+    d->init(QString());
+}
 
-    d->actionCollection = new KActionCollection(this);
-    d->notificationItemDbus = new KNotificationItemDBus(this);
-    setAssociatedWidget(qobject_cast<QWidget*>(parent));
-    d->registerToDaemon();
 
-    connect(d->dbus.interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
-           this, SLOT(serviceChange(QString,QString,QString)));
-
-    //create a default menu, just like in KSystemtrayIcon
-    d->menu = new KMenu(d->associatedWidget);
-    d->titleAction = d->menu->addTitle(qApp->windowIcon(), KGlobal::caption());
-    d->menu->setTitle(KGlobal::mainComponent().aboutData()->programName());
-    setContextMenu(d->menu);
-
-    KStandardAction::quit(this, SLOT(maybeQuit()), d->actionCollection);
-
-    setTitle(KGlobal::mainComponent().aboutData()->programName());
+KNotificationItem::KNotificationItem(const QString &id, QObject *parent)
+      : QObject(parent),
+        d(new KNotificationItemPrivate(this))
+{
+    d->init(id);
 }
 
 KNotificationItem::~KNotificationItem()
@@ -88,6 +72,11 @@ KNotificationItem::~KNotificationItem()
     KGlobal::deref();
 }
 
+QString KNotificationItem::id() const
+{
+    kDebug() << "id requested" << d->id;
+    return d->id;
+}
 
 void KNotificationItem::setCategory(const ItemCategory category)
 {
@@ -529,6 +518,57 @@ bool KNotificationItem::eventFilter(QObject *watched, QEvent *event)
 //KNotificationItemPrivate
 
 const int KNotificationItemPrivate::s_protocolVersion = 0;
+
+KNotificationItemPrivate::KNotificationItemPrivate(KNotificationItem *item)
+    : q(item),
+      dbus(QDBusConnection::sessionBus()),
+      category(KNotificationItem::ApplicationStatus),
+      status(KNotificationItem::Passive),
+      movie(0),
+      menu(0),
+      hasQuit(false),
+      onAllDesktops(false),
+      titleAction(0),
+      notificationItemWatcher(0),
+      visualNotifications(0),
+      notificationId(0),
+      systemTrayIcon(0)
+{
+}
+
+void KNotificationItemPrivate::init(const QString &extraId)
+{
+    // Ensure that closing the last KMainWindow doesn't exit the application
+    // if a system tray icon is still present.
+    KGlobal::ref();
+    KGlobal::locale()->insertCatalog("knotificationitem-1");
+    qDBusRegisterMetaType<ExperimentalKDbusImageStruct>();
+    qDBusRegisterMetaType<ExperimentalKDbusImageVector>();
+    qDBusRegisterMetaType<ExperimentalKDbusToolTipStruct>();
+
+    actionCollection = new KActionCollection(q);
+    notificationItemDbus = new KNotificationItemDBus(q);
+    q->setAssociatedWidget(qobject_cast<QWidget*>(q->parent()));
+
+    QObject::connect(dbus.interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
+                     q, SLOT(serviceChange(QString,QString,QString)));
+
+    //create a default menu, just like in KSystemtrayIcon
+    menu = new KMenu(associatedWidget);
+    titleAction = menu->addTitle(qApp->windowIcon(), KGlobal::caption());
+    menu->setTitle(KGlobal::mainComponent().aboutData()->programName());
+    q->setContextMenu(menu);
+
+    KStandardAction::quit(q, SLOT(maybeQuit()), actionCollection);
+
+    id = title = KGlobal::mainComponent().aboutData()->programName();
+
+    if (!extraId.isEmpty()) {
+        id.append('_').append(extraId);
+    }
+
+    registerToDaemon();
+}
 
 void KNotificationItemPrivate::registerToDaemon()
 {

@@ -182,6 +182,11 @@ QString KNotificationItemDBus::Title() const
     return m_notificationItem->title();
 }
 
+QString KNotificationItemDBus::Id() const
+{
+    return m_notificationItem->id();
+}
+
 QString KNotificationItemDBus::Status() const
  {
     return m_notificationItem->metaObject()->enumerator(m_notificationItem->metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(m_notificationItem->status());

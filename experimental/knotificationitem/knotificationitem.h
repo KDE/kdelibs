@@ -89,13 +89,38 @@ public:
     /**
      * Construct a new notification icon
      *
-     * If the object passed in as a parent is also a QWidget, it will
-     * be used as the main application window represented by this icon
-     * and will be shown/hidden when an activation is requested.
+     * @arg parent the parent object for this object. If the object passed in as
+     * a parent is also a QWidget, it will  be used as the main application window
+     * represented by this icon and will be shown/hidden when an activation is requested.
+     * @see associatedWidget
      * @see associatedWidget
      **/
     explicit KNotificationItem(QObject *parent = 0);
+
+    /**
+     * Construct a new notification icon with a unique identifier.
+     * If your application has more than one notification item and the user
+     * should be able to manipulate them separately (e.g. mark them for hiding
+     * in a user interface), the id can be used to differentiate between them.
+     *
+     * The id should remain consistent even between application restarts.
+     * Notification items without ids default to the application's name for the id.
+     *
+     * @arg id the unique id for this icon
+     * @arg parent the parent object for this object. If the object passed in as
+     * a parent is also a QWidget, it will  be used as the main application window
+     * represented by this icon and will be shown/hidden when an activation is requested.
+     * @see associatedWidget
+     **/
+    explicit KNotificationItem(const QString &id, QObject *parent = 0);
+
     ~KNotificationItem();
+
+    /**
+     * The id, which is guaranteed to be consistent between application starts and
+     * untranslated, therefore useful for storing configuration related to this item.
+     */
+    QString id() const;
 
     /**
      * Sets the category for this icon, usually it's needed to call this function only once
@@ -114,7 +139,6 @@ public:
      */
     void setTitle(const QString &title);
 
-    //FIXME:Immutable or a newTitle signal needed?
     /**
      * @return the title of this icon
      */

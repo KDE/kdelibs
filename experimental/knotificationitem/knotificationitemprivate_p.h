@@ -76,28 +76,11 @@ signals:
 class KNotificationItemPrivate
 {
 public:
-    KNotificationItemPrivate(KNotificationItem *item)
-         : q(item),
-           dbus(QDBusConnection::sessionBus()),
-           category(KNotificationItem::ApplicationStatus),
-           status(KNotificationItem::Passive),
-           movie(0),
-           menu(0),
-           hasQuit(false),
-           onAllDesktops(false),
-           titleAction(0),
-           notificationItemWatcher(0),
-           visualNotifications(0),
-           notificationId(0),
-           systemTrayIcon(0)
-    {}
+    KNotificationItemPrivate(KNotificationItem *item);
 
+    void init(const QString &extraId);
     void registerToDaemon();
-
-    void serviceChange(const QString& name,
-                       const QString& oldOwner,
-                       const QString& newOwner);
-
+    void serviceChange(const QString& name, const QString& oldOwner, const QString& newOwner);
     void setLegacySystemTrayEnabled(bool enabled);
     void syncLegacySystemTrayIcon();
     void contextMenuAboutToShow();
@@ -111,10 +94,13 @@ public:
     ExperimentalKDbusImageStruct imageToStruct(const QImage &image);
     ExperimentalKDbusImageVector iconToVector(const QIcon &icon);
 
+    static const int s_protocolVersion;
+
     KNotificationItem *q;
 
     QDBusConnection dbus;
     KNotificationItem::ItemCategory category;
+    QString id;
     QString title;
     KNotificationItem::ItemStatus status;
 
@@ -150,8 +136,6 @@ public:
 
     KSystemTrayIcon *systemTrayIcon;
     KNotificationItemDBus *notificationItemDbus;
-
-    static const int s_protocolVersion;
 };
 
 } // namespace Experimental

@@ -3,6 +3,7 @@
   <interface name="org.kde.NotificationItem">
 
     <property name="Category" type="s" access="read"/>
+    <property name="Id" type="s" access="read"/>
     <property name="Title" type="s" access="read"/>
     <property name="Status" type="s" access="read"/>
     <property name="WindowId" type="i" access="read"/>
@@ -69,6 +70,9 @@
     </method>
 
     <!-- Signals: the client wants to change something in the status-->
+    <signal name="NewTitle">
+    </signal>
+
     <signal name="NewIcon">
     </signal>
 

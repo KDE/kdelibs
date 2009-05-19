@@ -55,6 +55,7 @@ class KNotificationItemDBus : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QString Category READ Category)
+    Q_PROPERTY(QString Id READ Id)
     Q_PROPERTY(QString Title READ Title)
     Q_PROPERTY(QString Status READ Status)
     Q_PROPERTY(int WindowId READ WindowId)
@@ -78,25 +79,29 @@ public:
     QString service() const;
 
     /**
-     * @return the category of the application associated to this icon
+     * @return the category of the application associated to this item
      * @see Category
      */
     QString Category() const;
 
-    //FIXME:Immutable or a newTitle signal needed?
     /**
-     * @return the title of this icon
+     * @return the id of this item
+     */
+    QString Id() const;
+
+    /**
+     * @return the title of this item
      */
     QString Title() const;
 
     /**
-     * @return The status of this icon
+     * @return The status of this item
      * @see Status
      */
     QString Status() const;
 
     /**
-     * @return The id of the main window of the application that controls the icon
+     * @return The id of the main window of the application that controls the item
      */
     int WindowId() const;
 
@@ -148,7 +153,7 @@ public:
 public Q_SLOTS:
     //interaction
     /**
-     * Shows the context menu associated to this icon
+     * Shows the context menu associated to this item
      * at the desidered screen position
      */
     void ContextMenu(int x, int y);
@@ -164,9 +169,8 @@ public Q_SLOTS:
      */
     void SecondaryActivate(int x, int y);
 
-    //FIXME: should relly be killed this one?
     /**
-     * Inform this icon that the mouse wheel was used on its representation
+     * Inform this item that the mouse wheel was used on its representation
      */
     void Scroll(int delta, const QString &orientation);
 
