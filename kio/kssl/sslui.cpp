@@ -37,7 +37,7 @@ bool KIO::SslUi::askIgnoreSslErrors(const KTcpSocket *socket, RulesStorage store
 
 bool KIO::SslUi::askIgnoreSslErrors(const KSslErrorUiData &uiData, RulesStorage storedRules)
 {
-    KSslErrorUiData::Private *const ud = uiData.d;
+    const KSslErrorUiData::Private *ud = KSslErrorUiData::Private::get(&uiData);
     if (ud->sslErrors.isEmpty()) {
         return true;
     }

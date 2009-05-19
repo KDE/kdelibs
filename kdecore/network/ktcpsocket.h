@@ -346,9 +346,6 @@ private:
 };
 
 
-class KSslCertificateManager;
-
-
 /**
  * This class can hold all the necessary data from a KTcpSocket to ask the user
  * to continue connecting in the face of SSL errors.
@@ -369,11 +366,9 @@ public:
     KSslErrorUiData(const KTcpSocket *socket);
     KSslErrorUiData(const KSslErrorUiData &other);
     KSslErrorUiData &operator=(const KSslErrorUiData &);
-//private:
-//H4X
-public:
-    friend class KSslCertificateManager;
     class Private;
+private:
+    friend class Private;
     Private *const d;
 };
 

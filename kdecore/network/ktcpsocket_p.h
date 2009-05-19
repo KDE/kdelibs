@@ -20,6 +20,9 @@
 class KSslErrorUiData::Private
 {
 public:
+    static const KSslErrorUiData::Private *get(const KSslErrorUiData *uiData)
+    { return uiData->d; }
+
     QList<QSslCertificate> certificateChain;
     QList<KSslError> sslErrors;   // parallel list to certificateChain
     QString ip;
