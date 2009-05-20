@@ -859,15 +859,30 @@ void KFileWidget::slotOk()
 
             QString fileName;
             KUrl url(locationEditCurrentText);
-            KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
-            bool res = KIO::NetAccess::synchronousRun(statJob, 0);
-            if (res) {
-                if (!statJob->statResult().isDir()) {
-                    url.adjustPath(KUrl::RemoveTrailingSlash);
-                    fileName = url.fileName();
-                    url.setFileName(QString());
-                } else {
-                    url.adjustPath(KUrl::AddTrailingSlash);
+            if (d->operationMode == Opening) {
+                KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
+                bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+                if (res) {
+                    if (!statJob->statResult().isDir()) {
+                        url.adjustPath(KUrl::RemoveTrailingSlash);
+                        fileName = url.fileName();
+                        url.setFileName(QString());
+                    } else {
+                        url.adjustPath(KUrl::AddTrailingSlash);
+                    }
+                }
+            } else {
+                KUrl directory = url;
+                directory.setFileName(QString());
+                //Check if the folder exists
+                KIO::StatJob * statJob = KIO::stat(directory, KIO::HideProgressInfo);
+                bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+                if (res) { 
+                    if (statJob->statResult().isDir()) {
+                        url.adjustPath(KUrl::RemoveTrailingSlash);
+                        fileName = url.fileName();
+                        url.setFileName(QString());
+                    }
                 }
             }
             d->ops->setUrl(url, true);
