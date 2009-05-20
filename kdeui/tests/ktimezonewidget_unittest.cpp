@@ -41,7 +41,7 @@ private Q_SLOTS:
         QCOMPARE(tzw.selection(), QStringList() << "Europe/Paris");
         tzw.setSelected("America/New_York", true);
         QCOMPARE(tzw.selectedItems().count(), 2);
-        QCOMPARE(tzw.selection(), QStringList() << "Europe/Paris" << "America/New_York");
+        QCOMPARE(tzw.selection(), QStringList() << "America/New_York" << "Europe/Paris");
     }
 
 };
