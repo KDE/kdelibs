@@ -993,7 +993,9 @@ if (CMAKE_COMPILER_IS_GNUCXX)
       # (even for debug builds). So we need to define QT_NO_DEBUG
       # or else QPluginLoader rejects plugins because it thinks
       # they're built against the wrong QT.
-      add_definitions(-DQT_NO_DEBUG)
+
+      ###Enterprise4: do not define. we build our own and we want debug messages.
+      ###add_definitions(-DQT_NO_DEBUG)
    endif (MINGW)
 
    check_cxx_compiler_flag(-fPIE HAVE_FPIE_SUPPORT)
