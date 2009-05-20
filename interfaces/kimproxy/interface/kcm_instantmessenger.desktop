@@ -1,9 +1,12 @@
 # ctxt: standard desktop component
 Name=Instant Messenger
+Name[cs]=Komunikátor
 Name[es]=Mensajería instantánea
 Name[et]=Kiirsuhtlus
 Name[gl]=Mensaxería instantánea
 Name[gu]=ઇન્સ્ટન્ટ મેસેન્જર
+Name[is]=Spjallforrit
+Name[km]=កម្មវិធី​វិធី​ផ្ញើសារ​បន្ទាន់
 Name[lv]=Tūlītējais ziņotājs
 Name[nds]=Kortnarichten-Maker
 Name[pt]=Mensageiro Instantâneo
