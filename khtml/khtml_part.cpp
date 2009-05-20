@@ -733,8 +733,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
     if (userAgent != KProtocolManager::userAgentForHost(QString())) {
       if (!d->m_statusBarUALabel) {
         d->m_statusBarUALabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
-        d->m_statusBarUALabel->setFixedHeight(KHTMLGlobal::iconLoader()->currentSize(KIconLoader::Small));
-        d->m_statusBarUALabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+        d->m_statusBarUALabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum));
         d->m_statusBarUALabel->setUseCursor(false);
         d->m_statusBarExtension->addStatusBarItem(d->m_statusBarUALabel, 0, false);
         d->m_statusBarUALabel->setPixmap(SmallIcon("preferences-web-browser-identification"));
@@ -1246,8 +1245,7 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
 
   if (!d->m_statusBarJSErrorLabel) {
     d->m_statusBarJSErrorLabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
-    d->m_statusBarJSErrorLabel->setFixedHeight(KIconLoader::global()->currentSize(KIconLoader::Small));
-    d->m_statusBarJSErrorLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+    d->m_statusBarJSErrorLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum));
     d->m_statusBarJSErrorLabel->setUseCursor(false);
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarJSErrorLabel, 0, false);
     d->m_statusBarJSErrorLabel->setToolTip(i18n("This web page contains coding errors."));
@@ -7002,8 +7000,7 @@ void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
   d->m_walletForms.clear();
   if (!d->m_statusBarWalletLabel) {
     d->m_statusBarWalletLabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
-    d->m_statusBarWalletLabel->setFixedHeight(KHTMLGlobal::iconLoader()->currentSize(KIconLoader::Small));
-    d->m_statusBarWalletLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+    d->m_statusBarWalletLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum));
     d->m_statusBarWalletLabel->setUseCursor(false);
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarWalletLabel, 0, false);
     d->m_statusBarWalletLabel->setPixmap(SmallIcon("wallet-open"));
@@ -7210,8 +7207,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
 
     if ( enable && !d->m_statusBarPopupLabel ) {
         d->m_statusBarPopupLabel = new KUrlLabel( d->m_statusBarExtension->statusBar() );
-        d->m_statusBarPopupLabel->setFixedHeight( KHTMLGlobal::iconLoader()->currentSize( KIconLoader::Small) );
-        d->m_statusBarPopupLabel->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ));
+        d->m_statusBarPopupLabel->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Minimum ));
         d->m_statusBarPopupLabel->setUseCursor( false );
         d->m_statusBarExtension->addStatusBarItem( d->m_statusBarPopupLabel, 0, false );
         d->m_statusBarPopupLabel->setPixmap( SmallIcon( "window-suppressed") );
