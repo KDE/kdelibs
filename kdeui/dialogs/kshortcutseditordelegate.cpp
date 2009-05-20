@@ -151,8 +151,8 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
     if (!isExtended(index)) {
         //we only want maximum ONE extender open at any time.
         if (m_editingIndex.isValid()) {
-            QModelIndex idx = index.sibling(m_editingIndex.row(), Name);
-            KShortcutsEditorItem *oldItem = KShortcutsEditorPrivate::itemFromIndex(view, idx);
+            KShortcutsEditorItem *oldItem = KShortcutsEditorPrivate::itemFromIndex(view, 
+                                                                                    m_editingIndex);
             Q_ASSERT(oldItem); //here we really expect nothing but a real KShortcutsEditorItem
 
             oldItem->setNameBold(false);
