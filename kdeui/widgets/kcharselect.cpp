@@ -867,7 +867,7 @@ QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
         return QVariant();
     else if (role == Qt::ToolTipRole) {
         QString result = s_data->display(c, m_font) + "<br />" + Qt::escape(s_data->name(c)) + "<br />" +
-                         i18n("Unicode code point:") + ' ' + s_data->formatCode(c.unicode()) +
+                         i18n("Unicode code point:") + ' ' + s_data->formatCode(c.unicode()) + "<br />" +
                          i18nc("Character", "In decimal:") + ' ' + QString::number(c.unicode());
         return QVariant(result);
     } else if (role == Qt::TextAlignmentRole)
