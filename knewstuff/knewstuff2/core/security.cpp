@@ -23,6 +23,7 @@
 //qt includes
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
+#include <QtCore/QPointer>
 #include <QtCore/QStringList>
 #include <QtCore/QTextIStream>
 #include <QtCore/QTimer>
@@ -195,7 +196,7 @@ void Security::slotReadyReadStandardOutput()
                 QPointer<KPasswordDialog> dlg = new KPasswordDialog(NULL);
                 dlg->setPrompt(i18n("<qt>Enter passphrase for key <b>0x%1</b>, belonging to<br /><i>%2&lt;%3&gt;</i><br />:</qt>", m_secretKey, key.name, key.mail));
                 if (dlg->exec()) {
-                    m_process->write(dlg.password().toLocal8Bit() + '\n');
+                    m_process->write(dlg->password().toLocal8Bit() + '\n');
                 } else {
                     m_result |= BAD_PASSPHRASE;
                     m_process->kill();

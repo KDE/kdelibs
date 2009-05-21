@@ -301,7 +301,7 @@ void EnginePrivate::slotProvidersFinished()
     //fakeprovider->setUploadUrl(KUrl("http://localhost/dav/"));
     //fakeprovider->setUploadUrl(KUrl("webdav://localhost/uploads/"));
 
-    QPointer>ProviderDialog> provdialog = new ProviderDialog(NULL);
+    QPointer<ProviderDialog> provdialog = new ProviderDialog(NULL);
     for (Provider::List::Iterator it = m_providers.begin(); it != m_providers.end(); ++it) {
         Provider *provider = (*it);
         provdialog->addProvider(provider);
@@ -313,7 +313,7 @@ void EnginePrivate::slotProvidersFinished()
         return;
     }
 
-    KNS::Provider *provider = provdialog.provider();
+    KNS::Provider *provider = provdialog->provider();
 
     QPointer<UploadDialog> uploaddialog = new UploadDialog(NULL);
     uploaddialog->setPayloadFile(KUrl(m_uploadfile));
@@ -323,7 +323,7 @@ void EnginePrivate::slotProvidersFinished()
         return;
     }
 
-    Entry *entry = uploaddialog.entry();
+    Entry *entry = uploaddialog->entry();
     entry->setPayload(m_uploadfile);
     if (!entry) {
         stopLoop();
