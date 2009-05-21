@@ -81,7 +81,7 @@ public:
     QModelIndex indexForFadeAnimation(QTimeLine *timeLine) const;
     QTimeLine *fadeAnimationForIndex(const QModelIndex &index) const;
 
-    float contentsOpacity(const QModelIndex &index) const;
+    qreal contentsOpacity(const QModelIndex &index) const;
 
 private:
     KFilePlacesView *m_view;
@@ -176,7 +176,7 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     }
 
     QRect rectText;
-    if (isRemovableDevice) {
+    if (isRemovableDevice && contentsOpacity(index) > 0) {
         painter->save();
         painter->setOpacity(painter->opacity() * contentsOpacity(index));
 
@@ -203,7 +203,7 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
                            : 0, option.rect.top(), option.rect.width() - m_iconSize - LATERAL_MARGIN * 2, option.rect.height());
     painter->drawText(rectText, Qt::AlignLeft | Qt::AlignVCenter, option.fontMetrics.elidedText(index.model()->data(index).toString(), Qt::ElideRight, rectText.width()));
 
-    if (isRemovableDevice) {
+    if (isRemovableDevice && contentsOpacity(index) > 0) {
         painter->restore();
     }
 
@@ -298,7 +298,7 @@ QTimeLine *KFilePlacesViewDelegate::fadeAnimationForIndex(const QModelIndex &ind
     return m_timeLineMap.value(index, 0);
 }
 
-float KFilePlacesViewDelegate::contentsOpacity(const QModelIndex &index) const
+qreal KFilePlacesViewDelegate::contentsOpacity(const QModelIndex &index) const
 {
     QTimeLine *timeLine = fadeAnimationForIndex(index);
     if (timeLine) {
