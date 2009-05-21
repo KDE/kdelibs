@@ -34,6 +34,7 @@
 #include <ksharedconfig.h>
 #include <kiconloader.h>
 #include <kstringhandler.h>
+#include <kdebug.h>
 
 #include <ktabbar.h>
 
@@ -236,6 +237,7 @@ KTabWidget::KTabWidget( QWidget *parent, Qt::WFlags flags )
 
   connect(tabBar(), SIGNAL(contextMenu( int, const QPoint & )), SLOT(contextMenu( int, const QPoint & )));
   connect(tabBar(), SIGNAL(tabDoubleClicked( int )), SLOT(mouseDoubleClick( int )));
+  connect(tabBar(), SIGNAL(newTabRequest()), this, SIGNAL(mouseDoubleClick())); // #185487
   connect(tabBar(), SIGNAL(mouseMiddleClick( int )), SLOT(mouseMiddleClick( int )));
   connect(tabBar(), SIGNAL(initiateDrag( int )), SLOT(initiateDrag( int )));
   connect(tabBar(), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )));
