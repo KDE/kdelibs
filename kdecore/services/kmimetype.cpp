@@ -168,7 +168,7 @@ bool KMimeType::isBufferBinaryData(const QByteArray& data)
     const char* p = data.data();
     const int end = qMin(32, data.size());
     for (int i = 0; i < end; ++i) {
-        if (p[i] < 32 && p[i] != 9 && p[i] != 10 && p[i] != 13) // ASCII control character
+        if ((unsigned char)(p[i]) < 32 && p[i] != 9 && p[i] != 10 && p[i] != 13) // ASCII control character
             return true;
     }
     return false;
