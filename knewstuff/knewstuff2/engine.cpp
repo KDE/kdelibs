@@ -200,9 +200,9 @@ void Engine::downloadDialog()
     d->workflow();
 }
 
-void Engine::downloadDialog(QObject * reciever, const char * slot)
+void Engine::downloadDialog(QObject * receiver, const char * slot)
 {
-    QObject::connect(d, SIGNAL(signalDownloadDialogDone(KNS::Entry::List)), reciever, slot);
+    QObject::connect(d, SIGNAL(signalDownloadDialogDone(KNS::Entry::List)), receiver, slot);
     downloadDialog();
 }
 
@@ -301,13 +301,13 @@ void EnginePrivate::slotProvidersFinished()
     //fakeprovider->setUploadUrl(KUrl("http://localhost/dav/"));
     //fakeprovider->setUploadUrl(KUrl("webdav://localhost/uploads/"));
 
-    ProviderDialog provdialog(0);
+    QPointer>ProviderDialog> provdialog = new ProviderDialog(NULL);
     for (Provider::List::Iterator it = m_providers.begin(); it != m_providers.end(); ++it) {
         Provider *provider = (*it);
-        provdialog.addProvider(provider);
+        provdialog->addProvider(provider);
     }
     //provdialog.addProvider(fakeprovider);
-    ret = provdialog.exec();
+    ret = provdialog->exec();
     if (ret == QDialog::Rejected) {
         stopLoop();
         return;
@@ -315,9 +315,9 @@ void EnginePrivate::slotProvidersFinished()
 
     KNS::Provider *provider = provdialog.provider();
 
-    UploadDialog uploaddialog(0);
-    uploaddialog.setPayloadFile(KUrl(m_uploadfile));
-    ret = uploaddialog.exec();
+    QPointer<UploadDialog> uploaddialog = new UploadDialog(NULL);
+    uploaddialog->setPayloadFile(KUrl(m_uploadfile));
+    ret = uploaddialog->exec();
     if (ret == QDialog::Rejected) {
         stopLoop();
         return;

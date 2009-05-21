@@ -156,8 +156,8 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         text.replace("[/i]", "</i>");
         text.replace("[u]", "<i>");
         text.replace("[/u]", "</i>");
-        text.replace("[url]", "");
-        text.replace("[/url]", "");
+        text.replace("[url]", '');
+        text.replace("[/url]", '');
         text.replace("\\\'", "\'");
         infoLabel->setText(text.simplified());
     }

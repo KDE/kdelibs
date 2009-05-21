@@ -192,9 +192,9 @@ void Security::slotReadyReadStandardOutput()
         case Sign:
             if (data.contains("passphrase.enter")) {
                 KeyStruct key = m_keys[m_secretKey];
-                KPasswordDialog dlg;
-                dlg.setPrompt(i18n("<qt>Enter passphrase for key <b>0x%1</b>, belonging to<br /><i>%2&lt;%3&gt;</i><br />:</qt>", m_secretKey, key.name, key.mail));
-                if (dlg.exec()) {
+                QPointer<KPasswordDialog> dlg = new KPasswordDialog(NULL);
+                dlg->setPrompt(i18n("<qt>Enter passphrase for key <b>0x%1</b>, belonging to<br /><i>%2&lt;%3&gt;</i><br />:</qt>", m_secretKey, key.name, key.mail));
+                if (dlg->exec()) {
                     m_process->write(dlg.password().toLocal8Bit() + '\n');
                 } else {
                     m_result |= BAD_PASSPHRASE;

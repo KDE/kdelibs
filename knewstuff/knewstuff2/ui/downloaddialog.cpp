@@ -219,7 +219,7 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
         break;
     case kCollabComment: {
         // open comment dialog
-        KDXSComment * commentDialog = new KDXSComment(this);
+        QPointer<KDXSComment> commentDialog = new KDXSComment(this);
         int ret = commentDialog->exec();
         if (ret == QDialog::Accepted) {
             QString s = commentDialog->comment();
@@ -231,7 +231,7 @@ void DownloadDialog::slotPerformAction(DownloadDialog::EntryAction action, KNS::
     break;
     case kCollabRate: {
         // prompt for rating, and send to provider
-        KDXSRating * ratingDialog = new KDXSRating(this);
+        QPointer<KDXSRating> ratingDialog = new KDXSRating(this);
         int ret = ratingDialog->exec();
         if (ret == QDialog::Accepted) {
             int rating = ratingDialog->rating();
@@ -511,14 +511,14 @@ void DownloadDialog::slotInfo(QString provider, QString server, QString version)
 
 void DownloadDialog::slotComments(QStringList comments)
 {
-    KDXSComments commentsdlg(this);
+    QPointer<KDXSComments> commentsdlg = new KDXSComments(this);
 
     for (QStringList::const_iterator it = comments.constBegin(); it != comments.constEnd(); ++it) {
         //kDebug() << "Comment: " << (*it);
-        commentsdlg.addComment("foo", (*it));
+        commentsdlg->addComment("foo", (*it));
     }
 
-    commentsdlg.exec();
+    commentsdlg->exec();
 }
 
 ///////////////// DXS ////////////////////

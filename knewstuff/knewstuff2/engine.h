@@ -134,7 +134,7 @@ public:
      *
      * @see downloadDialogModal()
      */
-    void downloadDialog(QObject * reciever, const char * slot);
+    void downloadDialog(QObject * receiver, const char * slot);
 
     /**
      * @brief Asynchronous way of starting the upload workflow.
