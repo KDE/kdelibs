@@ -134,6 +134,7 @@ KRichTextEdit::~KRichTextEdit()
 //@cond PRIVATE
 void KRichTextEditPrivate::init()
 {
+    q->setAcceptRichText(false);
     KCursor::setAutoHideCursor(q, true, true);
 }
 //@endcond
