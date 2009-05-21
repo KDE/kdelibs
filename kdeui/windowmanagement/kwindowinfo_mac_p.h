@@ -33,8 +33,8 @@
 struct KWindowInfo::Private
 {
     Private();
-	~Private();
-	int ref;
+    ~Private();
+    int ref;
     WId win;
     bool isLocal;
     AXUIElementRef axElement() const { return m_axWin; }

@@ -34,7 +34,7 @@
 #include <QtDBus/QtDBus>
 
 KWindowInfo::Private::Private()
-    : win(0), isLocal(false), m_axWin(0), m_pid(-1), loadedData(false), parent()
+    : ref(0), win(0), isLocal(false), loadedData(false), m_axWin(0), parent(), m_pid(-1)
 {
 }
 
