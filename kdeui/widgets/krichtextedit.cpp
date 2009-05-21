@@ -394,15 +394,15 @@ QString KRichTextEdit::currentLinkUrl() const
 
 void KRichTextEdit::updateLink(const QString &linkUrl, const QString &linkText)
 {
+    selectLinkText();
+
     QTextCursor cursor = textCursor();
     cursor.beginEditBlock();
-    QTextCharFormat format = cursor.charFormat();
-
-    selectLinkText();
     if (!cursor.hasSelection()) {
         cursor.select(QTextCursor::WordUnderCursor);
     }
 
+    QTextCharFormat format = cursor.charFormat();
     if (!linkUrl.isEmpty()) {
         format.setAnchor(true);
         format.setAnchorHref(linkUrl);
