@@ -71,11 +71,16 @@ K_GLOBAL_STATIC(KCatalogStaticData, catalogStaticData)
 class KCatalogPrivate
 {
 public:
+    KCatalogPrivate()
+        : bindDone(false)
+    {}
+
   QByteArray language;
   QByteArray name;
   QByteArray localeDir;
 
   QByteArray systemLanguage;
+  bool bindDone;
 
   static QByteArray currentLanguage;
 
@@ -131,13 +136,6 @@ KCatalog & KCatalog::operator=(const KCatalog & rhs)
 {
   *d = *rhs.d;
 
-  // Update Gettext environment.
-  // (Sometimes Gettext picks up wrong locale directory if bindings are not
-  // updated here. No idea why that happens.)
-  QMutexLocker locker(&catalogStaticData->mutex);
-  d->setupGettextEnv();
-  d->resetSystemLanguage();
-
   return *this;
 }
 
@@ -181,10 +179,12 @@ void KCatalogPrivate::setupGettextEnv ()
 
   // Rebind text domain if language actually changed from the last time,
   // as locale directories may differ for different languages of same catalog.
-  if (language != currentLanguage) {
+  if (language != currentLanguage || !bindDone) {
 
     currentLanguage = language;
+    bindDone = true;
 
+    //kDebug() << "bindtextdomain" << name << localeDir;
     bindtextdomain(name, localeDir);
 
     // // Magic to make sure Gettext doesn't use stale cached translation
