@@ -2241,7 +2241,7 @@ void KHTMLPart::slotLoaderRequestStarted( khtml::DocLoader* dl, khtml::CachedObj
 static bool isAncestorOrSamePart(KHTMLPart* p1, KHTMLPart* p2)
 {
     KHTMLPart* p = p2;
-    {
+    do {
         if (p == p1)
             return true;
     } while (p = p->parentPart());
@@ -2265,7 +2265,7 @@ void KHTMLPart::slotLoaderRequestDone( khtml::DocLoader* dl, khtml::CachedObject
   }
   /// if we have no document, or the object is not a request of one of our children,
   //  then our loading state can't possibly be affected : don't waste time checking for completion.
-  if (!d->m_doc || !isAncestorOrSamePart(this, dl->doc()->part()))
+  if (!d->m_doc || !dl->doc()->part() || !isAncestorOrSamePart(this, dl->doc()->part()))
       return;
   checkCompleted();
 }
