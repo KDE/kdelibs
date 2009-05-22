@@ -88,6 +88,10 @@ static inline void drawDirectedText(QPainter *p, Qt::LayoutDirection d,
     
     Qt::LayoutDirection saveDir = p->layoutDirection();
     p->setLayoutDirection(d);
+    // Qt 4 avoids rendering soft-hyphens by default.
+    // Append normal hyphen instead.
+    if (qs.endsWith(QChar(0xad)))
+        qs.append(QChar('-'));
     p->drawText(x, y, qs);
     p->setLayoutDirection(saveDir);
 }

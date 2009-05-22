@@ -2081,8 +2081,10 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 
                         // For wrapping text only, include the hyphen.  We need to ensure it will fit
                         // on the line if it shows when we break.
-                        if (o->style()->autoWrap())
-                            tmpW += t->width(pos, 1, f);
+                        if (o->style()->autoWrap()) {
+                            const QChar softHyphen(0x00ad);
+                            tmpW += f->charWidth(&softHyphen, 1, 0, true);
+                        }
 
                         BidiIterator startMid(0, o, pos+1);
                         addMidpoint(startMid);
