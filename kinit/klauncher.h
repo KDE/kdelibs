@@ -245,6 +245,7 @@ public: // remote methods, called by KLauncherAdaptor
     pid_t requestSlave(const QString &protocol, const QString &host,
                        const QString &app_socket, QString &error);
     void waitForSlave(int pid, const QDBusMessage &msg);
+    void terminate_kdeinit();
 
 public Q_SLOTS:
    void slotAutoStart();

@@ -152,4 +152,10 @@ void KLauncherAdaptor::waitForSlave(int pid, const QDBusMessage &msg)
     static_cast<KLauncher *>(parent())->waitForSlave(pid, msg);
 }
 
+void KLauncherAdaptor::terminate_kdeinit()
+{
+    KLauncher *p = static_cast<KLauncher *>(parent());
+    p->terminate_kdeinit();
+}
+
 #include "klauncher_adaptor.moc"

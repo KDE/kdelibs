@@ -754,6 +754,9 @@ KLauncher::start_service_by_desktop_path(const QString &serviceName, const QStri
    else
    {
       service = KService::serviceByDesktopPath(serviceName);
+      // TODO?
+      //if (!service)
+      //    service = KService::serviceByStorageId(serviceName); // This method should be named start_service_by_storage_id ideally...
    }
    if (!service)
    {
@@ -1298,5 +1301,14 @@ KLauncher::slotFinished(int exitCode, QProcess::ExitStatus exitStatus )
     delete p;
 }
 #endif
+
+void KLauncher::terminate_kdeinit()
+{
+    kDebug(7016);
+    klauncher_header request_header;
+    request_header.cmd = LAUNCHER_TERMINATE_KDEINIT;
+    request_header.arg_length = 0;
+    write(kdeinitSocket, &request_header, sizeof(request_header));
+}
 
 #include "klauncher.moc"
