@@ -821,7 +821,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
     //rule = KSslCertificateRule(d->socket.peerCertificateChain().first(), whatever);
 
     rule.setExpiryDateTime(ruleExpiry);
-    rule.setIgnoredErrors(remainingErrors);
+    rule.setIgnoredErrors(d->sslErrors);
     cm->setRule(rule);
 
     return ResultOk | ResultOverridden;
