@@ -2259,18 +2259,20 @@ bool CSSParser::parseColorParameters(Value* value, int* colorArray, bool parseAl
 {
     ValueList* args = value->function->args;
     Value* v = args->current();
+
     // Get the first value
     if (!validUnit(v, FInteger | FPercent, true))
         return false;
-    colorArray[0] = static_cast<int>(v->fValue * (v->unit == CSSPrimitiveValue::CSS_PERCENTAGE ? 256.0 / 100.0 : 1.0));
+    bool isPercent = (v->unit == CSSPrimitiveValue::CSS_PERCENTAGE);
+    colorArray[0] = static_cast<int>(v->fValue * (isPercent ? 256.0 / 100.0 : 1.0));
     for (int i = 1; i < 3; i++) {
         v = args->next();
         if (v->unit != Value::Operator && v->iValue != ',')
             return false;
         v = args->next();
-        if (!validUnit(v, FInteger | FPercent, true))
+        if (!validUnit(v, (isPercent ? FPercent : FInteger), true))
             return false;
-        colorArray[i] = static_cast<int>(v->fValue * (v->unit == CSSPrimitiveValue::CSS_PERCENTAGE ? 256.0 / 100.0 : 1.0));
+        colorArray[i] = static_cast<int>(v->fValue * (isPercent ? 256.0 / 100.0 : 1.0));
     }
     if (parseAlpha) {
         v = args->next();
