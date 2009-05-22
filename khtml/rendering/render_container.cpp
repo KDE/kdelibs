@@ -195,6 +195,37 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
         if (oldChild->isPosWithStaticDim() && childrenInline())
             dirtyLinesFromChangedChild(oldChild);
 
+        // We are about to take out node from the rendering tree and therefore
+        // it's possible that we're modifying the line box tree too.
+        // In order to properly recalculate it later we need
+        // to delete all the boxes from the current flow of the removed child. (vtokarev)
+        // In particular that's relevant when we're merging splitted inline flow. (continuations)
+        // We're taking the render objects from one block and insert into another
+        // so we have to force line box tree recalculation
+        if (oldChild->isInline()) {
+            if (oldChild->isText()) {
+                InlineTextBox* box = static_cast<RenderText*>(oldChild)->firstTextBox();
+                InlineTextBox* nextTextBox;
+                assert(!box || box->parent());
+                // delete all the text boxes
+                for (; box; box = nextTextBox) {
+                    nextTextBox = box->nextTextBox();
+                    box->remove();
+                    box->deleteLine(renderArena());
+                }
+            } else if (oldChild->isInlineFlow()) {
+                InlineFlowBox* box = static_cast<RenderFlow*>(oldChild)->firstLineBox();
+                InlineFlowBox* nextFlowBox;
+                assert(!box || box->parent());
+                // delete all the flow
+                for (; box; box = nextFlowBox) {
+                    nextFlowBox = box->nextFlowBox();
+                    box->remove();
+                    box->deleteLine(renderArena());
+                }
+            }
+        }
+
         // if oldChild is the start or end of the selection, then clear
         // the selection to avoid problems of invalid pointers
 
