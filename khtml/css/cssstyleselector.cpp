@@ -905,6 +905,15 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
             style->setOverflowX(OVISIBLE);
         if (style->overflowY() != OVISIBLE && style->overflowY() != OHIDDEN)
             style->setOverflowY(OVISIBLE);
+
+        // do comparable resets as Mozilla's nsStyleContext::ApplyStyleFixups
+        // except they decided to do it only for center and right, for whatever strange reason. cf.#193093
+        if (style->display() == TABLE && (style->textAlign() == KHTML_LEFT ||
+                                          style->textAlign() == KHTML_RIGHT ||
+                                          style->textAlign() == KHTML_CENTER)) {
+            style->setTextAlign( TAAUTO );
+        }
+
     }
 
     // Cull out any useless layers and also repeat patterns into additional layers.
