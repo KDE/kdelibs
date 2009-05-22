@@ -47,6 +47,7 @@
 #include "kdatetbl.h"
 #include "kpopupmenu.h"
 #include <qdatetime.h>
+#include <qguardedptr.h>
 #include <qstring.h>
 #include <qpen.h>
 #include <qpainter.h>
@@ -310,7 +311,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
            painter->setPen(colorGroup().highlight());
            painter->setBrush(colorGroup().highlight());
 	   }
-	   else 
+	   else
 	   {
 	   painter->setPen(colorGroup().text());
            painter->setBrush(colorGroup().text());
@@ -366,7 +367,7 @@ void KDateTable::beginningOfWeek()
 void KDateTable::endOfWeek()
 {
   setDate(date.addDays(7 - date.dayOfWeek()));
-}    
+}
 
 void
 KDateTable::keyPressEvent( QKeyEvent *e )
@@ -482,14 +483,14 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
   // old selected date:
   temp = posFromDate( date );
   // new position and date
-  pos = (7 * (row - 1)) + col; 
+  pos = (7 * (row - 1)) + col;
   QDate clickedDate = dateFromPos( pos );
 
   // set the new date. If it is in the previous or next month, the month will
   // automatically be changed, no need to do that manually...
   setDate( clickedDate );
 
-  // call updateCell on the old and new selection. If setDate switched to a different 
+  // call updateCell on the old and new selection. If setDate switched to a different
   // month, these cells will be painted twice, but that's no problem.
   updateCell( temp/7+1, temp%7 );
   updateCell( row, col );
@@ -1007,7 +1008,10 @@ KPopupFrame::exec(QPoint pos)
   popup(pos);
   repaint();
   d->exec = true;
+  const QGuardedPtr<QObject> that = this;
   qApp->enter_loop();
+  if ( !that )
+    return QDialog::Rejected;
   hide();
   return result;
 }
