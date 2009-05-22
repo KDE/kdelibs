@@ -124,7 +124,8 @@ public:
     }
     
     void transfer( float opacity ) {
-        bool constantOpacity = m_origPainter->paintEngine() && m_origPainter->paintEngine()->hasFeature(QPaintEngine::ConstantOpacity);
+        // ### when using DestinationIn with an alpha above 0.99, the resulting buffer ends up black in Qt 4.5.1
+        bool constantOpacity = (opacity > 0.99) || m_origPainter->paintEngine() && m_origPainter->paintEngine()->hasFeature(QPaintEngine::ConstantOpacity);
         if (!constantOpacity) {
             QColor color;
             color.setAlphaF(opacity);
