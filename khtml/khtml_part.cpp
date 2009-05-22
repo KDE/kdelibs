@@ -2244,7 +2244,7 @@ static bool isAncestorOrSamePart(KHTMLPart* p1, KHTMLPart* p2)
     do {
         if (p == p1)
             return true;
-    } while (p = p->parentPart());
+    } while ((p = p->parentPart()));
     return false;
 }
 
