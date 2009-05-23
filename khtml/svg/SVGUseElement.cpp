@@ -176,6 +176,7 @@ void SVGUseElement::recalcStyle(StyleChange change)
     // as the shadow tree root element has no (direct) parent node. Yes, shadow trees are tricky.
     if (change >= Inherit || m_shadowTreeRootElement->changed()) {
         RenderStyle* newStyle = document()->styleSelector()->styleForElement(m_shadowTreeRootElement.get());
+        newStyle->ref();
         StyleChange ch = m_shadowTreeRootElement->diff((m_shadowTreeRootElement->renderer() ? m_shadowTreeRootElement->renderer()->style() : 0)/*renderStyle()*/, newStyle);
         if (ch == Detach) {
             ASSERT(m_shadowTreeRootElement->attached());
@@ -183,13 +184,13 @@ void SVGUseElement::recalcStyle(StyleChange change)
             attachShadowTree();
 
             // attach recalulates the style for all children. No need to do it twice.
-            m_shadowTreeRootElement->setChanged(/*NoStyleChange*/);
+            m_shadowTreeRootElement->setChanged(false);
             m_shadowTreeRootElement->setHasChangedChild(false);
-            /*newStyle->deref(document()->renderArena());*/
+            newStyle->deref();
             return;
         }
 
-        /*newStyle->deref(document()->renderArena());*/
+        newStyle->deref();
     }
 
     // Only change==Detach needs special treatment, for anything else recalcStyle() works.
@@ -385,10 +386,10 @@ void SVGUseElement::attach()
 
 void SVGUseElement::detach()
 {
-    SVGStyledTransformableElement::detach();
-
     if (m_shadowTreeRootElement)
         m_shadowTreeRootElement->detach();
+    
+    SVGStyledTransformableElement::detach();
 }
 
 static bool isDirectReference(Node* n)
@@ -713,6 +714,7 @@ void SVGUseElement::attachShadowTree()
     // Inspired by RenderTextControl::createSubtreeIfNeeded(). 
     if (renderer()->childAllowed()/*canHaveChildren()*/ && childShouldCreateRenderer(m_shadowTreeRootElement.get())) {
         RenderStyle* style = m_shadowTreeRootElement->styleForRenderer(renderer());
+        style->ref();
 
         if (m_shadowTreeRootElement->rendererIsNeeded(style)) {
             m_shadowTreeRootElement->setRenderer(m_shadowTreeRootElement->createRenderer(document()->renderArena(), style));
@@ -723,7 +725,7 @@ void SVGUseElement::attachShadowTree()
             }
         }
 
-        /*style->deref(document()->renderArena());*/
+        style->deref();
 
         // This will take care of attaching all shadow tree child nodes.
         for (Node* child = m_shadowTreeRootElement->firstChild(); child; child = child->nextSibling())
