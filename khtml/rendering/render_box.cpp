@@ -1351,7 +1351,7 @@ int RenderBox::calcImplicitContentHeight() const {
     return ch - top - bottom - borderTop() - borderBottom() - paddingTop() - paddingBottom();;
 }
 
-int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) const
+int RenderBox::calcPercentageHeight(const Length& height) const
 {
     int result = -1;
     RenderBlock* cb = containingBlock();
@@ -1366,7 +1366,7 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
         result = cb->calcContentHeight(cb->style()->height().value());
     else if (cb->style()->height().isPercent()) {
         // We need to recur and compute the percentage height for our containing block.
-        result = cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced);
+        result = cb->calcPercentageHeight(cb->style()->height());
         if (result != -1)
             result = cb->calcContentHeight(result);
     }
@@ -1400,14 +1400,15 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
         // take the used height - at the padding edge since we are positioned (10.1)
         result = cb->height() - cb->borderTop() - cb->borderBottom();
     }
-    else if (cb->isAnonymousBlock() || treatAsReplaced && style()->htmlHacks()) {
-        // IE quirk.
-        result = cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced);
-        if (result != -1)
-            result = cb->calcContentHeight(result);
-    }
     else if (cb->hasImplicitHeight()) {
         result = cb->calcImplicitContentHeight();
+    }
+    else if (cb->isAnonymousBlock() || style()->htmlHacks()) {
+        // IE quirk.
+        assert( cb->style()->height().isVariable() );
+        result = cb->calcPercentageHeight(cb->style()->height());
+        if (result != -1)
+            result = cb->calcContentHeight(result);
     }
 
     if (result != -1) {
@@ -1491,7 +1492,7 @@ int RenderBox::calcReplacedHeightUsing(HeightType heightType) const
         return calcContentHeight(h.value());
     case Percent:
       {
-        int th = calcPercentageHeight(h, true);
+        int th = calcPercentageHeight(h);
         if (th != -1)
             return calcContentHeight(th);
         // fall through

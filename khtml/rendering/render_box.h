@@ -141,7 +141,7 @@ protected:
     int calcHeightUsing(const Length& height);
     int calcReplacedWidthUsing(WidthType widthType) const;
     int calcReplacedHeightUsing(HeightType heightType) const;
-    int calcPercentageHeight(const Length& height, bool treatAsReplaced = false) const;
+    int calcPercentageHeight(const Length& height) const;
     int availableHeightUsing(const Length& h) const;
     int availableWidthUsing(const Length& w) const;
     int calcImplicitContentHeight() const;
