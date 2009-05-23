@@ -158,7 +158,7 @@ void ChmodJobPrivate::_k_slotEntries( KIO::Job*, const KIO::UDSEntryList & list 
     KIO::UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it) {
         const KIO::UDSEntry& entry = *it;
-        const bool isLink = !entry.stringValue( KIO::UDSEntry::UDS_STRING ).isEmpty();
+        const bool isLink = !entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST ).isEmpty();
         const QString relativePath = entry.stringValue( KIO::UDSEntry::UDS_NAME );
         if ( !isLink && relativePath != ".." )
         {
