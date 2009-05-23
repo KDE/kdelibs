@@ -126,9 +126,6 @@ DOMString AttrImpl::namespaceURI() const
 
 DOMString AttrImpl::localName() const
 {
-    // WebCore and IceWeasel return localName even for html elements
-    //if (m_htmlCompat)
-    //   return DOMString();
     return m_localName.toString();
 }
 
@@ -551,10 +548,7 @@ void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
 WTF::PassRefPtr<NodeImpl> ElementImpl::cloneNode(bool deep)
 {
     WTF::RefPtr<ElementImpl> clone; // Make sure to guard...
-    if ( !localName().isNull() )
-        clone = document()->createElementNS( namespaceURI(), nodeName() );
-    else
-        clone = document()->createElement( nodeName() );
+    clone = document()->createElementNS( namespaceURI(), nodeName() /* includes prefix*/ );
     if (!clone) return 0;
     finishCloneNode( clone.get(), deep );
     return clone;
@@ -584,6 +578,9 @@ void ElementImpl::finishCloneNode( ElementImpl* clone, bool deep )
 
     if (deep)
         cloneChildNodes(clone);
+
+    // copy over our compatibility mode.
+    clone->setHTMLCompat(htmlCompat());
 }
 
 bool ElementImpl::hasAttributes() const
@@ -1349,10 +1346,11 @@ XMLElementImpl::~XMLElementImpl()
 
 DOMString XMLElementImpl::localName() const
 {
-    // return localName even for html elements
-    //if ( m_htmlCompat )
-    //   return DOMString(); // was created with non-namespace-aware createElement()
-    return m_localName.toString();
+    DOMString tn = m_localName.toString();
+    if (m_htmlCompat)
+        tn = tn.upper();
+
+    return tn;
 }
 
 DOMString XMLElementImpl::tagName() const

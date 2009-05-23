@@ -117,15 +117,12 @@ DOMString HTMLElementImpl::namespaceURI() const
 
 DOMString HTMLElementImpl::localName() const
 {
-    // We only have a localName if we were created by createElementNS(), in which
-    // case we are an XHTML element. This also means we have a lowercase name.
-    if (!m_htmlCompat) // XHTML == not HTMLCompat
-    {
-        return LocalName::fromId(id()).toString();
-    }
-    // createElement() always returns elements with a null localName.
-    else
-	return DOMString();
+    DOMString tn = LocalName::fromId(id()).toString();
+
+    if ( m_htmlCompat )
+        tn = tn.upper();
+
+    return tn;
 }
 
 DOMString HTMLElementImpl::tagName() const

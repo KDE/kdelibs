@@ -675,32 +675,19 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 	NamedAttrMapImpl *otherMap = static_cast<ElementImpl *>(importedNode)->attributes(true);
 
 	ElementImpl *tempElementImpl;
-	if (!importedNode->localName().isNull())
-	    tempElementImpl = createElementNS(otherElem->namespaceURI(),otherElem->nodeName());
-	else
-	    tempElementImpl = createElement(otherElem->nodeName());
+	tempElementImpl = createElementNS(otherElem->namespaceURI(),otherElem->nodeName());
+	tempElementImpl->setHTMLCompat(htmlMode() != XHtml && otherElem->htmlCompat());
 	result = tempElementImpl;
-
 
 	if(otherMap) {
 	    for(unsigned i = 0; i < otherMap->length(); i++)
 	    {
 		AttrImpl *otherAttr = otherMap->attributeAt(i).createAttr(otherElem,otherElem->docPtr());
 
-		if (!otherAttr->localName().isNull()) {
-		    // attr was created via createElementNS()
-		    tempElementImpl->setAttributeNS(otherAttr->namespaceURI(),
+		tempElementImpl->setAttributeNS(otherAttr->namespaceURI(),
 						    otherAttr->name(),
 						    otherAttr->nodeValue(),
-						  exceptioncode);
-		}
-		else {
-		    // attr was created via createElement()
-		    tempElementImpl->setAttribute(otherAttr->id(),
-                    emptyPrefixName, true /*nsAware*/,
-                                                  otherAttr->nodeValue(),
-						  exceptioncode);
-		}
+						    exceptioncode);
 
 		if(exceptioncode != 0)
 		    break; // ### properly cleanup here
