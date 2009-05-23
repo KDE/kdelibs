@@ -1171,7 +1171,12 @@ void JobTest::deleteDirectory()
 #ifndef Q_WS_WIN
     // A broken symlink:
     createTestSymlink(dest+"/broken_symlink");
+    // A symlink to a dir:
+    bool symlink_ok = symlink( KDESRCDIR, QFile::encodeName( dest + "/symlink_to_dir" ) ) == 0;
+    if ( !symlink_ok )
+        kFatal() << "couldn't create symlink: " << strerror( errno ) ;
 #endif
+
     KIO::Job* job = KIO::del(KUrl(dest), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);

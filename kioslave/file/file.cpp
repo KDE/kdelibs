@@ -1309,8 +1309,9 @@ bool FileProtocol::deleteRecursive(const QString& path)
     QStringList dirsToDelete;
     while ( it.hasNext() ) {
         const QString itemPath = it.next();
+        //kDebug() << "itemPath=" << itemPath;
         const QFileInfo info = it.fileInfo();
-        if (info.isDir())
+        if (info.isDir() && !info.isSymLink())
             dirsToDelete.prepend(itemPath);
         else {
             //kDebug() << "QFile::remove" << itemPath;

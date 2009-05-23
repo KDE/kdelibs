@@ -66,6 +66,7 @@ void KFileItemTest::testPermissionsString()
     QVERIFY(QFile::remove(symlink));
     QVERIFY(QFile(tempDir.name()).link(symlink));
     KFileItem symlinkToDirItem(symlinkUrl, QString(), KFileItem::Unknown);
+    QCOMPARE((uint)symlinkToDirItem.permissions(), (uint)0700);
     QCOMPARE(symlinkToDirItem.permissionsString(), QString("lrwx------"));
 }
 
