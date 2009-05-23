@@ -526,7 +526,7 @@ QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t mode )
     // if we don't find an icon, maybe we can use the one for the protocol
     if ( i == unknown || i.isEmpty() || mt == defaultMimeTypePtr()
         // and for the root of the protocol (e.g. trash:/) the protocol icon has priority over the mimetype icon
-        || _url.toLocalFile().length() <= 1 )
+        || _url.path().length() <= 1 )
     {
         i = favIconForUrl( _url ); // maybe there is a favicon?
 
@@ -534,7 +534,7 @@ QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t mode )
             i = KProtocolInfo::icon( _url.protocol() );
 
         // root of protocol: if we found nothing, revert to mimeTypeIcon (which is usually "folder")
-        if ( _url.toLocalFile().length() <= 1 && ( i == unknown || i.isEmpty() ) )
+        if ( _url.path().length() <= 1 && ( i == unknown || i.isEmpty() ) )
             i = mimeTypeIcon;
     }
     return !i.isEmpty() ? i : unknown;
