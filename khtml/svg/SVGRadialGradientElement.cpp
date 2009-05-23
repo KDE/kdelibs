@@ -189,11 +189,6 @@ quint32 SVGRadialGradientElement::id() const
     return SVGNames::radialGradientTag.id();
 }
 
-DOMString SVGRadialGradientElement::tagName() const
-{
-    return SVGNames::radialGradientTag.tagName();
-}
-
 }
 
 #endif // ENABLE(SVG)

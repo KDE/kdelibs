@@ -61,9 +61,6 @@ namespace WebCore {
 
         //khtml compatibility methods
         virtual quint32 id() const;
-        virtual String tagName() const;
-
-        
     protected:
         bool m_createdByParser;
         StyleSheet* m_sheet;

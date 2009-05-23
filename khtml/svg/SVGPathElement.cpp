@@ -247,11 +247,6 @@ quint32 SVGPathElement::id() const
     return SVGNames::pathTag.id();
 }
 
-DOMString SVGPathElement::tagName() const
-{
-    return SVGNames::pathTag.tagName();
-}
-
 }
 
 #endif // ENABLE(SVG)

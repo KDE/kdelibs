@@ -136,11 +136,6 @@ quint32 SVGRectElement::id() const
     return SVGNames::rectTag.id();
 }
 
-DOMString SVGRectElement::tagName() const
-{
-    return SVGNames::rectTag.tagName();
-}
-
 }
 
 #endif // ENABLE(SVG)

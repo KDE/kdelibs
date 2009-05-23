@@ -148,11 +148,6 @@ quint32 SVGStyleElement::id() const
     return SVGNames::styleTag.id();
 }
 
-String SVGStyleElement::tagName() const
-{
-    return SVGNames::styleTag.tagName();
-}
-
 }
 
 // vim:ts=4

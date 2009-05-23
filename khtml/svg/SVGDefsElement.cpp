@@ -58,11 +58,6 @@ quint32 SVGDefsElement::id() const
     return SVGNames::defsTag.id();
 }
 
-DOMString SVGDefsElement::tagName() const
-{
-    return SVGNames::defsTag.tagName();
-}
-
 }
 
 #endif // ENABLE(SVG)

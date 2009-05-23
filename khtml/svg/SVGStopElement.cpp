@@ -71,11 +71,6 @@ quint32 SVGStopElement::id() const
     return SVGNames::stopTag.id();
 }
 
-DOMString SVGStopElement::tagName() const
-{
-    return SVGNames::stopTag.tagName();
-}
-
 }
 
 #endif // ENABLE(SVG)

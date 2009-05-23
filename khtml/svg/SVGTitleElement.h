@@ -43,7 +43,6 @@ namespace WebCore
 
         // KHTML ElementImpl pure virtual method
         virtual quint32 id() const { return SVGNames::titleTag.id(); }
-        virtual DOMString tagName() const { return SVGNames::titleTag.tagName(); }
     };
 
 } // namespace WebCore

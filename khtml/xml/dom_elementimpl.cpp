@@ -474,6 +474,31 @@ unsigned short ElementImpl::nodeType() const
     return Node::ELEMENT_NODE;
 }
 
+
+DOMString ElementImpl::localName() const
+{
+    DOMString tn = LocalName::fromId(id()).toString();
+
+    if ( m_htmlCompat )
+        tn = tn.upper();
+
+    return tn;
+}
+
+DOMString ElementImpl::tagName() const
+{
+    DOMString tn = LocalName::fromId(id()).toString();
+
+    if ( m_htmlCompat )
+        tn = tn.upper();
+
+    DOMString prefix = m_prefix.toString();
+    if (!prefix.isEmpty())
+        return prefix + ":" + tn;
+
+    return tn;
+}
+
 /*DOMStringImpl* ElementImpl::getAttributeImpl(NodeImpl::Id id, PrefixName prefix, bool nsAware) const
 {
     return namedAttrMap ? namedAttrMap->getValue(id, prefix, nsAware) : 0;
@@ -1342,27 +1367,6 @@ XMLElementImpl::XMLElementImpl(DocumentImpl *doc, NamespaceName namespacename, L
 
 XMLElementImpl::~XMLElementImpl()
 {
-}
-
-DOMString XMLElementImpl::localName() const
-{
-    DOMString tn = m_localName.toString();
-    if (m_htmlCompat)
-        tn = tn.upper();
-
-    return tn;
-}
-
-DOMString XMLElementImpl::tagName() const
-{
-    DOMString tn = m_localName.toString();
-    if (m_htmlCompat)
-        tn = tn.upper();
-
-    if (m_prefix.id())
-        return m_prefix.toString() + ":" + tn;
-
-    return tn;
 }
 
 WTF::PassRefPtr<NodeImpl> XMLElementImpl::cloneNode ( bool deep )

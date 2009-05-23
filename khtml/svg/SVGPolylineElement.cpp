@@ -62,11 +62,6 @@ quint32 SVGPolylineElement::id() const
     return SVGNames::polylineTag.id();
 }
 
-DOMString SVGPolylineElement::tagName() const
-{
-    return SVGNames::polylineTag.tagName();
-}
-
 
 }
 

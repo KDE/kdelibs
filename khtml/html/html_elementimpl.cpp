@@ -114,31 +114,6 @@ DOMString HTMLElementImpl::namespaceURI() const
         DOMString(XHTML_NAMESPACE) : DOMString();
 }
 
-
-DOMString HTMLElementImpl::localName() const
-{
-    DOMString tn = LocalName::fromId(id()).toString();
-
-    if ( m_htmlCompat )
-        tn = tn.upper();
-
-    return tn;
-}
-
-DOMString HTMLElementImpl::tagName() const
-{
-    DOMString tn = LocalName::fromId(id()).toString();
-
-    if ( m_htmlCompat )
-        tn = tn.upper();
-
-    DOMString prefix = m_prefix.toString();
-    if (!prefix.isEmpty())
-        return prefix + ":" + tn;
-
-    return tn;
-}
-
 void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
 {
     DOMString indexstring;

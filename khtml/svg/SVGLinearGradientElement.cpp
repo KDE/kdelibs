@@ -169,11 +169,6 @@ quint32 SVGLinearGradientElement::id() const
     return SVGNames::linearGradientTag.id();
 }
 
-DOMString SVGLinearGradientElement::tagName() const
-{
-    return SVGNames::linearGradientTag.tagName();
-}
-
 }
 
 #endif // ENABLE(SVG)

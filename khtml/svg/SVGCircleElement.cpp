@@ -104,12 +104,6 @@ quint32 SVGCircleElement::id() const
     return SVGNames::circleTag.id();
 }
 
-DOMString SVGCircleElement::tagName() const
-{
-    return SVGNames::circleTag.tagName();
-}
-
-
 }
 
 #endif // ENABLE(SVG)

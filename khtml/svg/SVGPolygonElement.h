@@ -37,7 +37,6 @@ namespace WebCore {
 
         // KHTML ElementImpl pure virtual method
         virtual quint32 id() const;
-        virtual DOMString tagName() const;
     };
 
 } // namespace WebCore

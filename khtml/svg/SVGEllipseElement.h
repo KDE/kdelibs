@@ -48,8 +48,6 @@ namespace WebCore {
 
         // khtml
         virtual quint32 id() const;
-        virtual DOMString tagName() const;
-
     protected:
         virtual const SVGElement* contextElement() const { return this; }
         virtual bool hasRelativeValues() const;

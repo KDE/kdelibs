@@ -113,12 +113,6 @@ quint32 SVGEllipseElement::id() const
     return SVGNames::ellipseTag.id();
 }
 
-DOMString SVGEllipseElement::tagName() const
-{
-    return SVGNames::ellipseTag.tagName();
-}
-
-
 }
 
 #endif // ENABLE(SVG)

@@ -42,8 +42,6 @@ public:
     virtual bool isInline() const;
 
     virtual Id id() const = 0;
-    virtual DOMString tagName() const;
-    virtual DOMString localName() const;
     virtual DOMString namespaceURI() const;
 
     virtual void parseAttribute(AttributeImpl *token);

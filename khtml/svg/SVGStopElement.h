@@ -41,8 +41,6 @@ namespace WebCore {
 
         // KHTML ElementImpl pure virtual method
         virtual quint32 id() const;
-        virtual DOMString tagName() const;
-
     private:
         ANIMATED_PROPERTY_DECLARATIONS(SVGStopElement, float, float, Offset, offset)
     };

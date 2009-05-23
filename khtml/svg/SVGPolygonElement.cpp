@@ -63,10 +63,6 @@ quint32 SVGPolygonElement::id() const
     return SVGNames::polygonTag.id();
 }
 
-DOMString SVGPolygonElement::tagName() const
-{
-    return SVGNames::polygonTag.tagName();
-}
 
 }
 

@@ -235,7 +235,8 @@ public:
     inline const PrefixName& prefixName() const { return m_prefix; }
 
     // DOM methods overridden from  parent classes
-    virtual DOMString tagName() const = 0;
+    virtual DOMString tagName() const;
+    virtual DOMString localName() const;    
     virtual unsigned short nodeType() const;
     virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
     virtual DOMString nodeName() const;
@@ -377,9 +378,6 @@ public:
     XMLElementImpl(DocumentImpl *doc, NamespaceName namespacename, LocalName localName, PrefixName prefix);
     ~XMLElementImpl();
 
-    // DOM methods overridden from  parent classes
-    virtual DOMString tagName() const;
-    virtual DOMString localName() const;
     virtual WTF::PassRefPtr<NodeImpl> cloneNode ( bool deep );
 
     // Other methods (not part of DOM)

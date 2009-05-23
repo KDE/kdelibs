@@ -54,6 +54,7 @@ SVGElement::SVGElement(const QualifiedName& tagName, Document* doc)
 //    : StyledElement(tagName, doc)
 //    , m_shadowParent(0)
 {
+    m_prefix = tagName.prefixId();
 }
 
 SVGElement::~SVGElement()
