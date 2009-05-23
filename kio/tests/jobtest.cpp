@@ -20,6 +20,7 @@
 #include "qtest_kde.h"
 
 #include "jobtest.h"
+#include <kprotocolmanager.h>
 
 #include <config.h>
 
@@ -116,6 +117,9 @@ void JobTest::initTestCase()
     qRegisterMetaType<KIO::Job*>("KIO::Job*");
     qRegisterMetaType<KUrl>("KUrl");
     qRegisterMetaType<time_t>("time_t");
+
+    // Wrong ksycoca, if this is true in this branch...
+    QVERIFY(!KProtocolManager::canDeleteRecursive(KUrl("file:/")));
 }
 
 static void delDir(const QString& pathOrUrl) {
@@ -1121,7 +1125,20 @@ void JobTest::deleteFile()
 void JobTest::deleteDirectory()
 {
     const QString dest = otherTmpDir() + "dirFromHome_copied";
-    QVERIFY(QFile::exists(dest));
+    if (!QFile::exists(dest))
+        createTestDirectory(dest);
+    // Let's put a few things in there to see if the recursive deletion works correctly
+    // A hidden file:
+    createTestFile(dest + "/.hidden");
+#ifndef Q_WS_WIN
+    // A broken symlink:
+    createTestSymlink(dest+"/broken_symlink");
+    // A symlink to a dir:
+    bool symlink_ok = symlink( KDESRCDIR, QFile::encodeName( dest + "/symlink_to_dir" ) ) == 0;
+    if ( !symlink_ok )
+        kFatal() << "couldn't create symlink: " << strerror( errno ) ;
+#endif
+
     KIO::Job* job = KIO::del(KUrl(dest), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
