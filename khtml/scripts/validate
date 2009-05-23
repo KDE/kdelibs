@@ -26,6 +26,7 @@ my $svn;
 my $gen = "-g";
 my %files;
 my $numch = 0;
+my %output = 0;
 
 use Getopt::Std;
 getopts('drpsvVie:E:x', \%o) or die;
@@ -85,7 +86,9 @@ while (my $l=<F>) {
    my $tn = $1;
    next if ($tn =~ /^tests\//);   #####
    $l =~ /<\/a>\s*\[(.*?)\]/;
-   my $tc = $1;
+   my $tc = $1;   
+
+   $output { $tn } = $l if exists $o{'x'};
 
    next if $tc =~ /^\s*$/;
 
@@ -105,8 +108,8 @@ while (my $l=<F>) {
 
    # store in a hash
    $files { $tn  } = $tc;
-   
-   print $l if $o{'x'};
+      
+   delete $output { $tn } if exists $o{'x'};
 }
 
 $numch = +(keys %files);
@@ -118,7 +121,12 @@ if (exists $o{'v'}) {
     exit();
 }
 
-exit() if $o{'x'};
+if (exists $o{'x'}) {
+    for $f(sort keys %output) {
+        print $output{ $f };
+    }
+    exit();                  
+}
 
 die "no ./baseline directory in pwd" if exists $o{'V'} and !-d "baseline";
 
