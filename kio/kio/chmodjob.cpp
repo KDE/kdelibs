@@ -123,12 +123,13 @@ void ChmodJobPrivate::_k_processList()
             ChmodInfo info;
             info.url = item.url();
             // This is a toplevel file, we apply changes directly (no +X emulation here)
-            info.permissions = ( m_permissions & m_mask ) | ( item.permissions() & ~m_mask );
-            /*kDebug(7007) << "\n current permissions=" << QString::number(item->permissions(),8)
+            const mode_t permissions = item.permissions() & 0777; // get rid of "set gid" and other special flags
+            info.permissions = ( m_permissions & m_mask ) | ( permissions & ~m_mask );
+            /*kDebug(7007) << "toplevel url:" << info.url << "\n current permissions=" << QString::number(permissions,8)
                           << "\n wanted permission=" << QString::number(m_permissions,8)
                           << "\n with mask=" << QString::number(m_mask,8)
                           << "\n with ~mask (mask bits we keep) =" << QString::number((uint)~m_mask,8)
-                          << "\n bits we keep =" << QString::number(item->permissions() & ~m_mask,8)
+                          << "\n bits we keep =" << QString::number(permissions & ~m_mask,8)
                           << "\n new permissions = " << QString::number(info.permissions,8);*/
             m_infos.prepend( info );
             //kDebug(7007) << "processList : Adding info for " << info.url;
@@ -158,11 +159,12 @@ void ChmodJobPrivate::_k_slotEntries( KIO::Job*, const KIO::UDSEntryList & list 
     KIO::UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it) {
         const KIO::UDSEntry& entry = *it;
-        const bool isLink = !entry.stringValue( KIO::UDSEntry::UDS_STRING ).isEmpty();
+        const bool isLink = !entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST ).isEmpty();
         const QString relativePath = entry.stringValue( KIO::UDSEntry::UDS_NAME );
         if ( !isLink && relativePath != ".." )
         {
-            const mode_t permissions = entry.numberValue( KIO::UDSEntry::UDS_ACCESS );
+            const mode_t permissions = entry.numberValue( KIO::UDSEntry::UDS_ACCESS )
+                                       & 0777; // get rid of "set gid" and other special flags
 
             ChmodInfo info;
             info.url = m_lstItems.first().url(); // base directory
@@ -184,7 +186,7 @@ void ChmodJobPrivate::_k_slotEntries( KIO::Job*, const KIO::UDSEntryList & list 
                 }
             }
             info.permissions = ( m_permissions & mask ) | ( permissions & ~mask );
-            /*kDebug(7007) << "\n current permissions=" << QString::number(permissions,8)
+            /*kDebug(7007) << info.url << "\n current permissions=" << QString::number(permissions,8)
                           << "\n wanted permission=" << QString::number(m_permissions,8)
                           << "\n with mask=" << QString::number(mask,8)
                           << "\n with ~mask (mask bits we keep) =" << QString::number((uint)~mask,8)
