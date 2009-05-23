@@ -52,8 +52,8 @@
 #include "ecma/kjs_proxy.h"
 #include "xml/dom_nodeimpl.h"
 #include "editing/editing_p.h"
-#include "find/khtmlfind_p.h"
-#include "html/storepassbar.h"
+#include "ui/findbar/khtmlfind_p.h"
+#include "ui/passwordbar/storepassbar.h"
 
 class KFind;
 class KFindDialog;

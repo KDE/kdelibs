@@ -219,12 +219,20 @@ set(khtmlediting_STAT_SRCS
 )
 
 set(khtmlfind_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/khtml/find/khtmlfind.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/find/khtmlfindbar.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ui/findbar/khtmlfind.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ui/findbar/khtmlfindbar.cpp
 )
 
 kde4_add_ui_files(khtmlfind_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/khtml/find/khtmlfindbar_base.ui
+  ${CMAKE_SOURCE_DIR}/khtml/ui/findbar/khtmlfindbar_base.ui
+)
+
+set(passwordbar_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/khtml/ui/passwordbar/storepassbar.cpp
+)
+
+kde4_add_ui_files(passwordbar_STAT_SRCS
+  ${CMAKE_SOURCE_DIR}/khtml/ui/passwordbar/storepassbar_base.ui
 )
 
 # khtml/html/Makefile.am: khtmlhtml
@@ -247,16 +255,11 @@ set(khtmlhtml_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/html/html_objectimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/html_tableimpl.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/html_canvasimpl.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/html/storepassbar.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/HTMLMediaElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/HTMLAudioElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/HTMLVideoElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/HTMLSourceElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/TimeRanges.cpp
-)
-
-kde4_add_ui_files(khtmlhtml_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/khtml/html/storepassbar_base.ui
 )
 
 # khtml/ecma/Makefile.am: kjs_html
@@ -474,6 +477,7 @@ set(khtml_LIB_SRCS
    khtmlimage.cpp
    kjserrordlg.cpp
    ${khtmlfind_STAT_SRCS}
+   ${passwordbar_STAT_SRCS}
    ${khtmlxml_STAT_SRCS}
    ${khtmlhtml_STAT_SRCS}
    ${khtmlrender_STAT_SRCS}
