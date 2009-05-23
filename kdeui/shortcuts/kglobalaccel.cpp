@@ -59,7 +59,15 @@ static org::kde::kglobalaccel::Component *getComponent(const QString &componentU
     // componentUnique is probably not a valid dbus object path
     QDBusReply<QDBusObjectPath> reply = kglobalaccel.getComponent(componentUnique);
     if (!reply.isValid()) {
+
+        if (reply.error().name() == "org.kde.kglobalaccel.NoSuchComponent") {
+            // No problem. The component doesn't exists. That's normal
+            return NULL;
+        }
+
+        // An unknown error.
         kDebug() << "Failed to get dbus path for component " << componentUnique << reply.error();
+        return NULL;
     }
 
     // Now get the component
