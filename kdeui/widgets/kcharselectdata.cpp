@@ -584,7 +584,7 @@ QString KCharSelectData::display(const QChar &c, const QFont &font)
         if (isCombining(c)) {
             s += displayCombining(c);
         } else {
-            s += "&#" + QString::number(c.unicode()) + ";";
+            s += "&#" + QString::number(c.unicode()) + ';';
         }
         s += "</font>";
         return s;

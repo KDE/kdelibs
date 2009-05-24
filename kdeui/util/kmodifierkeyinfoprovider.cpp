@@ -18,9 +18,9 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <kglobal.h>
-
 #include "kmodifierkeyinfoprovider_p.h"
+
+#include <kglobal.h>
 
 bool KModifierKeyInfoProvider::isKeyPressed(Qt::Key key) const
 {
