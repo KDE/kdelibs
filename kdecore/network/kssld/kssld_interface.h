@@ -29,7 +29,7 @@
 #include <QtCore/QVariant>
 #include <QtDBus/QtDBus>
 
-#include "../misc/kssld/kssld_dbusmetatypes.h"
+#include "kssld_dbusmetatypes.h"
 
 
 /*

@@ -7,7 +7,6 @@ if(NOT WIN32)
   # arpa/nameser.h
   add_subdirectory( kpac )
 endif(NOT WIN32)
-add_subdirectory( kssld )
 add_subdirectory( kntlm )
 
 ########### next target ###############

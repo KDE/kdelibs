@@ -106,6 +106,7 @@ endif (UNIX)
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
 add_subdirectory( sonnet/tests )
+add_subdirectory( network/kssld )
 
 ########### next target ###############
 
