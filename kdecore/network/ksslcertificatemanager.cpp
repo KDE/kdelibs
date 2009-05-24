@@ -32,7 +32,7 @@
 
 #include <QtDBus/QtDBus>
 
-#include "../../kio/kssl/kssld_interface.h"
+#include "kssld/kssld_interface.h"
 
 
 /*
@@ -334,4 +334,4 @@ QList<KSslError::Error> KSslCertificateManager::nonIgnorableErrors(const QList<K
 }
 
 
-#include "../../kio/kssl/kssld_interface.moc"
+#include "kssld/kssld_interface.moc"
