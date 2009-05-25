@@ -155,8 +155,10 @@ void KFileTreeView::setDirOnlyMode(bool enabled)
 
 void KFileTreeView::setShowHiddenFiles(bool enabled)
 {
+    KUrl url = currentUrl();
     d->mSourceModel->dirLister()->setShowingDotFiles(enabled);
     d->mSourceModel->dirLister()->openUrl(d->mSourceModel->dirLister()->url());
+    setCurrentUrl(url);
 }
 
 void KFileTreeView::setCurrentUrl(const KUrl &url)
