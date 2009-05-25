@@ -239,7 +239,7 @@ struct KDebugPrivate
         cache.clear();
 
         Area &areaData = cache[0];
-        areaData.clear(QtOutput);
+        areaData.clear();
 
         //AB: this is necessary here, otherwise all output with area 0 won't be
         //prefixed with anything, unless something with area != 0 is called before
@@ -363,12 +363,14 @@ struct KDebugPrivate
             loadAreaNames();
         }
 
-        if (!cache.contains(num))
+        if (!cache.contains(num)) {
             // unknown area
             return cache.find(0);
+        }
 
         int l = level(type);
         Cache::Iterator it = cache.find(num);
+        //qDebug() << "in cache for" << num << ":" << it->mode[l];
         if (it->mode[l] == Unknown)
             it->mode[l] = areaOutputMode(type, num);
         if (it->mode[l] == FileOutput && it->logFileName[l].isEmpty())
