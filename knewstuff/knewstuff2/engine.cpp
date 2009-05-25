@@ -101,15 +101,15 @@ void EnginePrivate::workflow()
         connect(this,
                 SIGNAL(signalProviderLoaded(KNS::Provider*)),
                 SLOT(slotProviderLoaded(KNS::Provider*)));
-        connect(this,
-                SIGNAL(signalProvidersFailed()),
-                SLOT(slotDownloadDialogClosed()));
     }
 
     if (m_command == command_upload) {
         connect(this,
                 SIGNAL(signalProvidersFinished()),
                 SLOT(slotProvidersFinished()));
+        connect(this,
+                SIGNAL(signalProvidersFailed()),
+                SLOT(stopLoop()));
 
         m_uploadedEntry = NULL;
     }
@@ -122,6 +122,9 @@ void EnginePrivate::workflow()
         connect(this,
                 SIGNAL(signalEntryChanged(KNS::Entry *)),
                 SLOT(slotEntryChanged(KNS::Entry *)));
+        connect(this,
+                SIGNAL(signalProvidersFailed()),
+                SLOT(slotDownloadDialogClosed()));
 
         m_downloaddialog->show();
 
