@@ -92,7 +92,8 @@ public:
         ApplicationStatus = 1, /**An icon for a normal application, can be seen as its taskbar entry*/
         Communications = 2 /**This is a communication oriented application this icon will be used for things such as the notification of a new message*/,
         SystemServices = 3 /**This is a system service, it can show itself in the system tray if it requires interaction from the user or wants to inform him about something*/,
-        Hardware = 4 /**This application shows hardware status or a mean to control it*/
+        Hardware = 4 /**This application shows hardware status or a mean to control it*/,
+	Reserved = 129
     };
 
     /**
