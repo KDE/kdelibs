@@ -114,6 +114,9 @@ public:
      *
      * The id should remain consistent even between application restarts.
      * Notification items without ids default to the application's name for the id.
+     * This id may be used, for instance, by hosts displaying notification items to 
+     * associate configuration information with this item in a way that can persist
+     * between sessions or application restarts.
      *
      * @arg id the unique id for this icon
      * @arg parent the parent object for this object. If the object passed in as
@@ -126,8 +129,10 @@ public:
     ~KNotificationItem();
 
     /**
-     * The id, which is guaranteed to be consistent between application starts and
-     * untranslated, therefore useful for storing configuration related to this item.
+     * The id which was specified in the constructor. This should be
+     * guaranteed to be consistent between application starts and
+     * untranslated, as host applications displaying items may use it for
+     * storing configuration related to this item.
      */
     QString id() const;
 
