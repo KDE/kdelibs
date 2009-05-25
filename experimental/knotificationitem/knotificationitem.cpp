@@ -467,6 +467,7 @@ void KNotificationItem::activate(const QPoint &pos)
     }
 
 #ifdef Q_WS_WIN
+#if 0
     // the problem is that we lose focus when the systray icon is activated
     // and we don't know the former active window
     // therefore we watch for activation event and use our stopwatch :)
@@ -478,6 +479,7 @@ void KNotificationItem::activate(const QPoint &pos)
         d->minimizeRestore(true);
         emit activateRequested(true, pos);
     }
+#endif
 #elif defined(Q_WS_X11)
     KWindowInfo info1 = KWindowSystem::windowInfo(d->associatedWidget->winId(), NET::XAWMState | NET::WMState | NET::WMDesktop);
     // mapped = visible (but possibly obscured)
