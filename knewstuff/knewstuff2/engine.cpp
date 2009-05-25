@@ -103,7 +103,7 @@ void EnginePrivate::workflow()
                 SLOT(slotProviderLoaded(KNS::Provider*)));
         connect(this,
                 SIGNAL(signalProvidersFailed()),
-                SLOT(stopLoop()));
+                SLOT(slotDownloadDialogClosed()));
     }
 
     if (m_command == command_upload) {
