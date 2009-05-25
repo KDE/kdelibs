@@ -56,6 +56,7 @@ KDECORE_UNIT_TESTS(
  kconfigafterkglobaltest1
  kconfigafterkglobaltest2
  ktcpsockettest
+ kdebug_unittest
 )
 
 if(UNIX)
