@@ -61,6 +61,15 @@ class KNOTIFICATIONITEM_EXPORT KNotificationItem : public QObject
 
     Q_ENUMS(ItemStatus)
     Q_ENUMS(ItemCategory)
+    Q_PROPERTY( ItemCategory category READ category WRITE setCategory )
+    Q_PROPERTY( QString title READ title WRITE setTitle )
+    Q_PROPERTY( ItemStatus status READ status WRITE setStatus )
+    Q_PROPERTY( QString icon READ icon WRITE setIcon )
+    Q_PROPERTY( QString overlayIcon READ overlayIcon WRITE setOverlayIcon )
+    Q_PROPERTY( QString attentionIcon READ attentionIcon WRITE setAttentionIcon )
+    Q_PROPERTY( QString toolTipIcon READ toolTipIcon WRITE setToolTipIcon )
+    Q_PROPERTY( QString toolTipTitle READ toolTipTitle WRITE setToolTipTitle )
+    Q_PROPERTY( QString toolTipSubTitle READ toolTipSubTitle WRITE setToolTipSubTitle )
 
     friend class KNotificationItemDBus;
     friend class KNotificationItemPrivate;
