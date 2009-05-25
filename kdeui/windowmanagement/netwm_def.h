@@ -415,7 +415,7 @@ public:
          KWindowSystem::setState( winId(), NET::SkipTaskbar | NET::SkipPager );
        \endcode
 
-       for example to not show the window on the taskbar and pager (alt-tab dialog).
+       for example to not show the window on the taskbar and desktop pager.
        winId() is a function of QWidget()
 
        Note that KeepAbove (StaysOnTop) and KeepBelow are meant as user preference and
