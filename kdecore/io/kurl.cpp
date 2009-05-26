@@ -373,7 +373,6 @@ KUrl::KUrl( const QString &str )
 {
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
-    kDebug(126) << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
     QString pathToSet( removeSlashOrFilePrefix( QDir::fromNativeSeparators(str) ) );
     if ( !pathToSet.isEmpty() ) {
       // we have a prefix indicating this is a local URL
@@ -542,16 +541,13 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
           strPath = QLatin1Char('/');
     }
     setPath( strPath );
-    //kDebug(126) << "url()=" << url() << " rUrl=" << rUrl;
     KUrl tmp( url() + rUrl);
-    //kDebug(126) << "assigning tmp=" << tmp.url();
     *this = tmp;
     cleanPath(KeepDirSeparators);
   }
   else
   {
     KUrl tmp( rUrl );
-    //kDebug(126) << "not relative; assigning tmp=" << tmp.url();
     *this = tmp;
     // Preserve userinfo if applicable.
     if (!_u.userInfo().isEmpty() && userInfo().isEmpty()
@@ -1300,7 +1296,6 @@ void KUrl::addPath( const QString& _txt )
   }
 
   setPath( strPath + _txt.mid( i ) );
-  //kDebug(126)<<"addPath: resultpath="<<path();
 }
 
 QString KUrl::directory( const DirectoryOptions& options ) const
@@ -1701,9 +1696,6 @@ QString KUrl::relativeUrl(const KUrl &base_url, const KUrl &url)
 
 void KUrl::setPath( const QString& _path )
 {
-#ifdef Q_WS_WIN
-    kDebug(126) << "KUrl::setPath " << " " << _path.toAscii().data();
-#endif
     if ( scheme().isEmpty() )
         setScheme( QLatin1String( "file" ) );
     QString path = KShell::tildeExpand( _path );
