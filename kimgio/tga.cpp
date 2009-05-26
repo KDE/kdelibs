@@ -88,6 +88,9 @@ namespace {	// Private.
 		s >> head.height;
 		s >> head.pixel_size;
 		s >> head.flags;
+		/*qDebug() << "id_length: " << head.id_length << " - colormap_type: " << head.colormap_type << " - image_type: " << head.image_type;
+		qDebug() << "colormap_index: " << head.colormap_index << " - colormap_length: " << head.colormap_length << " - colormap_size: " << head.colormap_size;
+		qDebug() << "x_origin: " << head.x_origin << " - y_origin: " << head.y_origin << " - width:" << head.width << " - height:" << head.height << " - pixelsize: " << head.pixel_size << " - flags: " << head.flags;*/
 		return s;
 	}
 
@@ -105,7 +108,17 @@ namespace {	// Private.
 		if( head.image_type == TGA_TYPE_INDEXED ||
 			head.image_type == TGA_TYPE_RLE_INDEXED )
 		{
-			if( head.colormap_length > 256 || head.colormap_size != 24 )
+			if( head.colormap_length > 256 || head.colormap_size != 24 || head.colormap_type != 1 )
+			{
+				return false;
+			}
+		}
+		if( head.image_type == TGA_TYPE_RGB ||
+			head.image_type == TGA_TYPE_GREY ||
+			head.image_type == TGA_TYPE_RLE_RGB ||
+			head.image_type == TGA_TYPE_RLE_GREY )
+		{
+			if( head.colormap_type != 0 )
 			{
 				return false;
 			}
@@ -133,18 +146,14 @@ namespace {	// Private.
 		bool pal;
 		bool rgb;
 		bool grey;
-		bool supported;
 
-		TgaHeaderInfo( const TgaHeader & tga ) : rle(false), pal(false), rgb(false), grey(false), supported(true)
+		TgaHeaderInfo( const TgaHeader & tga ) : rle(false), pal(false), rgb(false), grey(false)
 		{
 			switch( tga.image_type ) {
 				case TGA_TYPE_RLE_INDEXED:
 					rle = true;
 					// no break is intended!
 				case TGA_TYPE_INDEXED:
-					if( tga.colormap_type!=1 || tga.colormap_size!=24 || tga.colormap_length>256 ) {
-						supported = false;
-					}
 					pal = true;
 					break;
 
@@ -164,7 +173,7 @@ namespace {	// Private.
 
 				default:
 					// Error, unknown image type.
-					supported = false;
+					break;
 			}
 		}
 	};
@@ -177,11 +186,6 @@ namespace {	// Private.
 		img = QImage( tga.width, tga.height, QImage::Format_RGB32 );
 
 		TgaHeaderInfo info(tga);
-		if( !info.supported ) {
-			// File not supported.
-  			kDebug(399) << "This TGA file is not supported.";
-			return false;
-		}
 
                 // Bits 0-3 are the numbers of alpha bits (can be zero!)
                 const int numAlphaBits = tga.flags & 0xf;
@@ -259,7 +263,7 @@ namespace {	// Private.
 		}
 
 		uchar * src = image;
-               
+
 		for( int y = y_start; y != y_end; y += y_step ) {
 			QRgb * scanline = (QRgb *) img.scanLine( y );
 
