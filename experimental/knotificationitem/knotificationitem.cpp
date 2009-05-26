@@ -491,8 +491,8 @@ void KNotificationItem::activate(const QPoint &pos)
 //        - not obscured -> hide
     //info1.mappingState() != NET::Visible -> window on another desktop?
     if (!mapped) {
-        emit activateRequested(true, pos);
         d->minimizeRestore(true);
+        emit activateRequested(true, pos);
     } else {
         QListIterator< WId > it (KWindowSystem::stackingOrder());
         it.toBack();
@@ -525,16 +525,16 @@ void KNotificationItem::activate(const QPoint &pos)
                 continue; // obscured by dock or topmenu -> ignore
             }
 
-            emit activateRequested(true, pos);
             KWindowSystem::raiseWindow(d->associatedWidget->winId());
             KWindowSystem::activateWindow(d->associatedWidget->winId());
+            emit activateRequested(true, pos);
             return;
         }
 
         //not on current desktop?
         if (!info1.isOnCurrentDesktop()) {
-            emit activateRequested(true, pos);
             KWindowSystem::activateWindow(d->associatedWidget->winId());
+            emit activateRequested(true, pos);
             return;
         }
 
@@ -817,6 +817,7 @@ void KNotificationItemPrivate::minimizeRestore(bool show)
         associatedWidget->move(info.geometry().topLeft()); // avoid placement policies
         associatedWidget->show();
         associatedWidget->raise();
+        KWindowSystem::raiseWindow(associatedWidget->winId());
         KWindowSystem::activateWindow(associatedWidget->winId());
     } else {
         onAllDesktops = info.onAllDesktops();
