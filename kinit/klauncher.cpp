@@ -1305,10 +1305,12 @@ KLauncher::slotFinished(int exitCode, QProcess::ExitStatus exitStatus )
 void KLauncher::terminate_kdeinit()
 {
     kDebug(7016);
+#ifndef Q_WS_WIN
     klauncher_header request_header;
     request_header.cmd = LAUNCHER_TERMINATE_KDEINIT;
     request_header.arg_length = 0;
     write(kdeinitSocket, &request_header, sizeof(request_header));
+#endif
 }
 
 #include "klauncher.moc"
