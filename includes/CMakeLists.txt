@@ -156,8 +156,12 @@ install( FILES
   KDirLister
   KDirModel
   KDirOperator
+  KDirSortFilterProxyModel
   KDirSelectDialog
   KDirWatch
+  KFilePreviewGenerator
+  KFilePlacesView
+  KFileWidget
   KDiskFreeSpace
   KDiskFreeSpaceInfo
   KDoubleNumInput
