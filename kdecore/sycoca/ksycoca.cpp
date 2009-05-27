@@ -273,8 +273,9 @@ KSycocaAbstractDevice* KSycocaPrivate::device()
 QDataStream*& KSycocaPrivate::stream()
 {
     if (!m_device) {
-        if (databaseStatus == DatabaseNotOpen)
+        if (databaseStatus == DatabaseNotOpen) {
             checkDatabase(KSycocaPrivate::IfNotFoundRecreate | KSycocaPrivate::IfNotFoundOpenDummy);
+        }
 
         device(); // create m_device
     }
@@ -425,18 +426,15 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
         // but otherwise we simply need to run kbuildsycoca to recreate the sycoca file.
         if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.klauncher")) {
             kDebug(7011) << "We have no database.... launching kdeinit";
-            KToolInvocation::klauncher(); // this calls startKdeinit
+            KToolInvocation::klauncher(); // this calls startKdeinit, and blocks until it returns
+            // and since kdeinit4 only returns after kbuildsycoca4 is done, we can proceed.
         } else {
             kDebug(7011) << QThread::currentThread() << "We have no database.... launching" << KBUILDSYCOCA_EXENAME;
             if (QProcess::execute(KStandardDirs::findExe(KBUILDSYCOCA_EXENAME)) != 0)
                 qWarning("ERROR: Running KSycoca failed.");
         }
 
-        // Wait until the DBUS signal from kbuildsycoca
-        QEventLoop eventLoop;
-        QObject::connect(KSycoca::self(), SIGNAL(databaseChanged(QStringList)),
-                         &eventLoop, SLOT(quit()));
-        eventLoop.exec( QEventLoop::ExcludeUserInputEvents );
+        closeDatabase(); // close the dummy one
 
         // Ok, the new database should be here now, open it.
         if (!openDatabase(ifNotFound & IfNotFoundOpenDummy)) {
