@@ -22,6 +22,7 @@
 #include <kdesktopfile.h>
 #include <kstandarddirs.h>
 #include <kconfiggroup.h>
+#include <kde_file.h>
 #include <QtCore/QFile>
 #include <QtCore/QSet>
 #include <QtCore/QDirIterator>
@@ -68,6 +69,19 @@ QString KFolderMimeTypePrivate::iconName( const KUrl& _url ) const
 {
   if ( _url.isEmpty() || !_url.isLocalFile() )
     return KMimeTypePrivate::iconName( _url );
+
+  // Stating .directory files can cause long freezes when e.g. /home
+  // uses autofs for every user's home directory, i.e. opening /home
+  // in a file dialog will mount every single home directory.
+  // These non-mounted directories can be identified by having 0 size.
+  // There are also other directories with 0 size, such as /proc, that may
+  // be mounted, but those are unlikely to contain .directory (and checking
+  // this would require KMountPoint from kio).
+  KDE_struct_stat buff;
+  if (KDE_stat( QFile::encodeName( _url.toLocalFile()), &buff ) == 0
+      && S_ISDIR( buff.st_mode ) && buff.st_size == 0 ) {
+    return KMimeTypePrivate::iconName( _url );
+  }
 
   KUrl u( _url );
   u.addPath( ".directory" );
