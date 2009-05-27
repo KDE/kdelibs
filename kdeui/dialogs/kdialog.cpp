@@ -22,6 +22,7 @@
 
 #include "kdialog.h"
 #include "kdialog_p.h"
+#include <kdebug.h>
 #include "kdialogqueue_p.h"
 
 #include <config.h>
@@ -67,6 +68,11 @@ void KDialogPrivate::queuedLayoutUpdate()
   dirty = false;
 
   Q_Q(KDialog);
+
+  if (q->layout() && q->layout() != mTopLayout) {
+      kWarning(240) << q->metaObject()->className() << "created with a layout; don't do that, KDialog takes care of it, use mainWidget or setMainWidget instead";
+      delete q->layout();
+  }
 
   delete mTopLayout;
 
