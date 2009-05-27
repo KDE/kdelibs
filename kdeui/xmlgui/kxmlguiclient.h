@@ -69,6 +69,12 @@ public:
 
   /**
    * Destructs the KXMLGUIClient.
+   *
+   * If the client was in a factory, the factory is NOT informed about the client
+   * being removed. This is a feature, it makes window destruction fast (the xmlgui
+   * is not updated for every client being deleted), but if you want to simply remove
+   * one client and to keep using the window, make sure to call factory->removeClient(client)
+   * before deleting the client.
    */
   virtual ~KXMLGUIClient();
 
