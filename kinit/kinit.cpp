@@ -171,7 +171,11 @@ extern "C" KIO::AuthInfo* _kioslave_init_kio() { return new KIO::AuthInfo(); }
  */
 static void cleanup_fds()
 {
-    for (int fd = 3; fd < FD_SETSIZE; ++fd)
+    int maxfd = FD_SETSIZE;
+    struct rlimit rl;
+    if (getrlimit(RLIMIT_NOFILE, &rl) == 0)
+        maxfd = rl.rlim_max;
+    for (int fd = 3; fd < maxfd; ++fd)
        close(fd);
 }
 
