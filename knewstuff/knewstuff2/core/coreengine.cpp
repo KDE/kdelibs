@@ -183,6 +183,15 @@ bool CoreEngine::init(const QString &configfile)
     return true;
 }
 
+QString CoreEngine::componentName() const
+{
+    if (!m_initialized) {
+        return QString();
+    }
+
+    return m_componentname;
+}
+
 void CoreEngine::start()
 {
     //kDebug() << "starting engine";

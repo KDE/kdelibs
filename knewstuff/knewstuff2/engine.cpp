@@ -25,8 +25,9 @@
 #include "knewstuff2/core/entryhandler.h" // tmp
 
 #include <kcomponentdata.h>
-#include <kglobal.h>
 #include <kdebug.h>
+#include <kglobal.h>
+#include <kwindowsystem.h>
 
 #include <qeventloop.h>
 
@@ -57,6 +58,8 @@ public:
     void workflow();
     KNS::Entry* upload(const QString& file);
 
+    static QHash<QString, KDialog *> s_dialogs;
+
     Command m_command;
     UploadDialog *m_uploaddialog;
     DownloadDialog *m_downloaddialog;
@@ -84,6 +87,8 @@ private Q_SLOTS:
     void slotDownloadDialogClosed();
 };
 
+
+QHash<QString, KDialog *> KNS::EnginePrivate::s_dialogs;
 
 Engine::Engine(QWidget* parent)
         : d(new EnginePrivate(parent))
@@ -116,6 +121,7 @@ void EnginePrivate::workflow()
 
     if (m_command == command_download) {
         m_downloaddialog = new DownloadDialog(this, m_parent);
+        s_dialogs.insert(componentName(), m_downloaddialog);
 
         connect(this, SIGNAL(signalEntriesFinished()),
                 SLOT(slotEntriesFinished()));
@@ -179,6 +185,13 @@ KNS::Entry::List Engine::download()
 KNS::Entry::List Engine::downloadDialogModal(QWidget*)
 {
     //kDebug() << "Engine: downloadDialogModal";
+    KDialog *existingDialog = EnginePrivate::s_dialogs.value(d->componentName());
+    if (existingDialog) {
+        existingDialog->show();
+        KWindowSystem::setOnDesktop(KWindowSystem::currentDesktop(), existingDialog->winId());
+        KWindowSystem::activateWindow(existingDialog->winId());
+        return QList<KNS::Entry*>();
+    }
 
     d->m_command = EnginePrivate::command_download;
     d->m_modal = true;
@@ -191,6 +204,14 @@ KNS::Entry::List Engine::downloadDialogModal(QWidget*)
 void Engine::downloadDialog()
 {
     //kDebug() << "Engine: downloadDialog";
+    KDialog *existingDialog = EnginePrivate::s_dialogs.value(d->componentName());
+    if (existingDialog) {
+        existingDialog->show();
+        KWindowSystem::setOnDesktop(KWindowSystem::currentDesktop(), existingDialog->winId());
+        KWindowSystem::activateWindow(existingDialog->winId());
+        return;
+    }
+
 
     if (d->m_command != EnginePrivate::command_none) {
         kError() << "Engine: asynchronous workflow already going on" << endl;
@@ -364,6 +385,17 @@ void EnginePrivate::slotEntriesFinished()
 
 void EnginePrivate::slotDownloadDialogClosed()
 {
+    QHash<QString, KDialog *>::iterator it = s_dialogs.begin();
+    while (it != s_dialogs.end()) {
+        if (it.value() == m_downloaddialog) {
+            it = s_dialogs.erase(it);
+        }
+
+        if (it != s_dialogs.end()) {
+            ++it;
+        }
+    }
+
     m_downloaddialog->deleteLater();
     m_downloaddialog = NULL;
 

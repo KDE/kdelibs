@@ -232,6 +232,12 @@ public:
      */
     bool uninstall(KNS::Entry *entry);
 
+    /**
+     * @return the component name the engine is using, or an empty string if not
+     * initialized yet
+     */
+    QString componentName() const;
+
 Q_SIGNALS:
     /**
      * Indicates that the list of providers has been successfully loaded.
