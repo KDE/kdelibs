@@ -357,7 +357,7 @@ void KXMLGUIFactoryPrivate::saveDefaultActionProperties(KXMLGUIClient *client)
             // correct the mistake
             if ((!activeShortcut.isEmpty()) && defaultShortcut.isEmpty())
             {
-                kError() << "Shortcut for KAction " << kaction->objectName() << kaction->text() << "set with QShortcut::setShortcut()! See KAction documentation.";
+                kError(240) << "Shortcut for KAction " << kaction->objectName() << kaction->text() << "set with QShortcut::setShortcut()! See KAction documentation.";
                 kaction->setProperty("_k_DefaultShortcut", activeShortcut);
             }
             else
@@ -368,7 +368,7 @@ void KXMLGUIFactoryPrivate::saveDefaultActionProperties(KXMLGUIClient *client)
         else
         {
             // A QAction used with KXMLGUI? Set our property and ignore it.
-            kError() << "Attempt to use QAction" << action->objectName() << "with KXMLGUIFactory!";
+            kError(240) << "Attempt to use QAction" << action->objectName() << "with KXMLGUIFactory!";
             action->setProperty("_k_DefaultShortcut", KShortcut());
         }
 
