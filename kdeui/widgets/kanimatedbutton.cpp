@@ -161,10 +161,10 @@ void KAnimatedButtonPrivate::_k_movieFinished()
 void KAnimatedButton::updateIcons()
 {
     const int icon_size = iconDimensions();
+    d->pixmap = QPixmap();
     QMovie *movie = KIconLoader::global()->loadMovie(d->icon_name, KIconLoader::NoGroup, -icon_size);
     if (movie) {
         d->frames = 0;
-        d->pixmap = QPixmap();
         movie->setCacheMode(QMovie::CacheAll);
         connect(movie, SIGNAL(frameChanged(int)), this, SLOT(_k_movieFrameChanged(int)));
         connect(movie, SIGNAL(finished()), this, SLOT(_k_movieFinished()));
@@ -183,6 +183,7 @@ void KAnimatedButton::updateIcons()
 
     d->current_frame = 0;
     qDeleteAll(d->framesCache);
+    d->framesCache.fill(0);
     d->framesCache.resize(d->frames);
     delete d->movie;
     d->movie = movie;
