@@ -1280,7 +1280,8 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
 void KHTMLParser::processCloseTag(Token *t)
 {
-    // support for really broken html. Can't believe I'm supporting such crap (lars)
+    // FIXME: the below only behaves according to "in body" insertion mode (HTML5 8.2.5.10)
+    //    - might need fixing when we have other insertion modes.
     switch(t->tid)
     {
     case ID_HTML+ID_CLOSE_TAG:
@@ -1288,8 +1289,12 @@ void KHTMLParser::processCloseTag(Token *t)
         // we never trust those close tags, since stupid webpages close
         // them prematurely
         return;
-    case ID_FORM+ID_CLOSE_TAG:
+    case ID_FORM+ID_CLOSE_TAG: // needs additional error checking. See spec.
         form = 0;
+        if (!isElementInScope(ID_FORM)) {
+            // Parse error. Ignore.
+            return;
+        }
         // this one is to get the right style on the body element
         break;
     case ID_MAP+ID_CLOSE_TAG:
@@ -1303,7 +1308,84 @@ void KHTMLParser::processCloseTag(Token *t)
         if ( current->firstChild() )
             haveTitle = true;
         break;
+    case ID_P+ID_CLOSE_TAG:
+        if (!isElementInScope(ID_P)) {
+            // Parse error. Handle as if <p> had been seen.
+            t->tid = ID_P;
+            parseToken(t);
+            popBlock(ID_P);
+            return;
+        }
+        break;
+    case ID_ADDRESS+ID_CLOSE_TAG:
+//    case ID_ARTICLE+ID_CLOSE_TAG:
+    case ID_BLOCKQUOTE+ID_CLOSE_TAG:
+    case ID_CENTER+ID_CLOSE_TAG:
+//    case ID_DATAGRID+ID_CLOSE_TAG:
+//    case ID_DETAILS+ID_CLOSE_TAG:
+//    case ID_DIALOG+ID_CLOSE_TAG:
+    case ID_DIR+ID_CLOSE_TAG:
+    case ID_DIV+ID_CLOSE_TAG:
+    case ID_DL+ID_CLOSE_TAG:
+    case ID_FIELDSET+ID_CLOSE_TAG:
+//    case ID_FIGURE+ID_CLOSE_TAG:
+//    case ID_FOOTER+ID_CLOSE_TAG:
+//    case ID_HEADER+ID_CLOSE_TAG:
+    case ID_LISTING+ID_CLOSE_TAG:
+    case ID_MENU+ID_CLOSE_TAG:
+//    case ID_NAV+ID_CLOSE_TAG:
+    case ID_OL+ID_CLOSE_TAG:
+    case ID_PRE+ID_CLOSE_TAG:
+//    case ID_SECTION+ID_CLOSE_TAG:
+    case ID_UL+ID_CLOSE_TAG:
+
+    case ID_DD+ID_CLOSE_TAG:
+    case ID_DT+ID_CLOSE_TAG:
+    case ID_LI+ID_CLOSE_TAG:
+
+    case ID_APPLET+ID_CLOSE_TAG: // those four should also "Clear the list of active formatting elements
+    case ID_BUTTON+ID_CLOSE_TAG: // up to the last marker." whenever we implement adoption agency.
+    case ID_MARQUEE+ID_CLOSE_TAG:
+    case ID_OBJECT+ID_CLOSE_TAG:  
+
+    case ID_HEAD+ID_CLOSE_TAG: // ### according to HTML5, should be treated as 'Any other end tag'
+                               //     We'll do that when proper 'Any other end tag' handling is implemented.
+                               //     In the meantime, test scoping at least (#170694)
+
+        if (!isElementInScope(t->tid-ID_CLOSE_TAG)) {
+            // Parse error. Ignore token.
+            return;
+        }
+        break;
+    case ID_H1:
+    case ID_H2:
+    case ID_H3:
+    case ID_H4:
+    case ID_H5:
+    case ID_H6:
+        if (!isHeadingInScope()) {
+            // Parse error. Ignore token.
+            return;
+        }
+        break;
+    case ID_A: // Formatting elements - will need special handling - cf. HTML5 "adoption agency algorithm"
+    case ID_B: //                       meant to replace the "residual style" handling we have now.
+    case ID_BIG:
+    case ID_CODE:
+    case ID_EM:
+    case ID_FONT:
+    case ID_I:
+    case ID_NOBR:
+    case ID_S:
+    case ID_SMALL:
+    case ID_STRIKE:
+    case ID_STRONG:
+    case ID_TT:
+    case ID_U:
+        break;
+
     default:
+//      otherTag = true; // FIXME: implement 'Any other end tag' handling
         break;
     }
 
@@ -1316,8 +1398,10 @@ void KHTMLParser::processCloseTag(Token *t)
         child = child->nextSibling();
     }
 #endif
+
     generateImpliedEndTags( t->tid - ID_CLOSE_TAG );
     popBlock( t->tid - ID_CLOSE_TAG );
+
 #ifdef PARSER_DEBUG
     kDebug( 6035 ) << "closeTag --> current = " << current->nodeName().string();
 #endif
@@ -1650,6 +1734,29 @@ void KHTMLParser::popOptionalBlock( int _id )
         generateImpliedEndTags(_id);
         popBlock(_id);
     }
+}
+
+bool KHTMLParser::isElementInScope( int _id )
+{
+    // HTML5 8.2.3.2
+    HTMLStackElem *Elem = blockStack;
+    while( Elem && Elem->id != _id ) {
+        if (DOM::checkIsScopeBoundary(Elem->id))
+            return false;
+        Elem = Elem->next;
+    }
+    return Elem;
+}
+
+bool KHTMLParser::isHeadingInScope()
+{
+    HTMLStackElem *Elem = blockStack;
+    while( Elem && (Elem->id < ID_H1 || Elem->id > ID_H6) ) {
+        if (DOM::checkIsScopeBoundary(Elem->id))
+            return false;
+        Elem = Elem->next;
+    }
+    return Elem;
 }
 
 void KHTMLParser::popBlock( int _id )

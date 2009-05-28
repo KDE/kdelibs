@@ -130,6 +130,8 @@ private:
     void popBlock( int _id );
     void popOneBlock(bool delBlock = true);
     void popInlineBlocks();
+    bool isElementInScope( int _id );
+    bool isHeadingInScope();
 
     void freeBlock( void);
 
