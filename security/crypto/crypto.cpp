@@ -1454,11 +1454,15 @@ void KCryptoConfig::slotOtherCertSelect() {
                               : KGlobal::locale()->formatDateTime(QDateTime::currentDateTime()));
          untilDate->setEnabled(x && !x->isPermanent());
          pHash->setText(cert->getMD5DigestText());
+         oSubject->setCertificate(QSslCertificate(cert->toPem()), KSslCertificateBox::Subject);
+         oIssuer->setCertificate(QSslCertificate(cert->toPem()), KSslCertificateBox::Issuer);
          delete cert;
       } else {
          validFrom->setText(QString());
          validUntil->setText(QString());
          pHash->clear();
+         oSubject->clear();
+         oIssuer->clear();
       }
 
 //###       switch(x->getPolicy()) {
@@ -1496,6 +1500,8 @@ void KCryptoConfig::slotOtherCertSelect() {
       untilDate->setText(QString());
       untilDate->setEnabled(false);
       pHash->clear();
+      oSubject->clear();
+      oIssuer->clear();
    }
 
 
@@ -1745,13 +1751,19 @@ QString iss;
          yValidFrom->setText(cert->getNotBefore());
          yValidUntil->setText(cert->getNotAfter());
          yHash->setText(cert->getMD5DigestText());
+         ySubject->setCertificate(QSslCertificate(cert->toPem()), KSslCertificateBox::Subject);
+         yIssuer->setCertificate(QSslCertificate(cert->toPem()), KSslCertificateBox::Issuer);
          delete pkcs;
       } else {
          yourSSLUnlock->setEnabled(x != NULL);
          yHash->clear();
+         ySubject->clear();
+         yIssuer->clear();
       }
    } else {
       yHash->clear();
+      ySubject->clear();
+      yIssuer->clear();
    }
 
    //### ySubject->setValues(x ? x->getName() : QString());
