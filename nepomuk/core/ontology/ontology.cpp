@@ -52,14 +52,15 @@ void Nepomuk::Types::OntologyPrivate::initEntities()
 bool Nepomuk::Types::OntologyPrivate::loadEntities()
 {
     // load classes
+    // We use a FILTER(STR(?ns)...) to support both Soprano 2.3 (with plain literals) and earlier (with only typed ones)
     Soprano::QueryResultIterator it
         = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?c where { "
                                                                           "graph ?g { ?c a <%1> . } . "
-                                                                          "?g <%2> \"%3\"^^<%4> . }" )
+                                                                          "?g <%2> ?ns . "
+                                                                          "FILTER(STR(?ns) = \"%3\") . }" )
                                                                   .arg( Soprano::Vocabulary::RDFS::Class().toString() )
                                                                   .arg( Soprano::Vocabulary::NAO::hasDefaultNamespace().toString() )
-                                                                  .arg( QString::fromAscii( uri.toEncoded() ) )
-                                                                  .arg( Soprano::Vocabulary::XMLSchema::string().toString() ),
+                                                                  .arg( QString::fromAscii( uri.toEncoded() ) ),
                                                                   Soprano::Query::QueryLanguageSparql );
     bool success = false;
     while ( it.next() ) {
@@ -71,11 +72,11 @@ bool Nepomuk::Types::OntologyPrivate::loadEntities()
     // load properties
     it = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?p where { "
                                                                          "graph ?g { ?p a <%1> . } . "
-                                                                         "?g <%2> \"%3\"^^<%4> . }" )
+                                                                         "?g <%2> ?ns . "
+                                                                         "FILTER(STR(?ns) = \"%3\") . }" )
                                                                  .arg( Soprano::Vocabulary::RDF::Property().toString() )
                                                                  .arg( Soprano::Vocabulary::NAO::hasDefaultNamespace().toString() )
-                                                                 .arg( QString::fromAscii( uri.toEncoded() ) )
-                                                                 .arg( Soprano::Vocabulary::XMLSchema::string().toString() ),
+                                                                 .arg( QString::fromAscii( uri.toEncoded() ) ),
                                                                  Soprano::Query::QueryLanguageSparql );
     while ( it.next() ) {
         success = true;
