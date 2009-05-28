@@ -79,7 +79,6 @@ class KIO_EXPORT KSSLCertificate
     friend class KSSLCertificateCache;
     friend class KSSLCertChain;
     friend class KSSLPeerInfo;
-    friend class KSSLPKCS12;
     friend class KSSLD;
     friend class KSMIMECryptoPrivate;
 

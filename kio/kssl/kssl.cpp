@@ -43,7 +43,7 @@
 
 #include <kopenssl.h>
 #include <ksslx509v3.h>
-#include <ksslpkcs12.h>
+#include <ksslcertificate.h>
 #include <klocale.h>
 
 #include <QtNetwork/QAbstractSocket>

@@ -25,7 +25,6 @@
 
 class QIODevice;
 class KSSLPrivate;
-class KSSLPKCS12;
 class KSSLSession;
 
 /**
