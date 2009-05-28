@@ -82,7 +82,8 @@ namespace Nepomuk {
              * Retrieve the label of the entity (rdfs:label)
              *
              * \param language The code of the language to use. Defaults to the session
-             *                 language configured in KDE.
+             *                 language configured in KDE. As of KDE 4.3 only the currently
+             *                 configured language is loaded to save memory.
              *
              * \return The label translated into \p language or the default fallback label
              * if no translation is available or the name() if no label could be found
@@ -94,7 +95,8 @@ namespace Nepomuk {
              * Retrieve the comment of the entity (rdfs:comment)
              *
              * \param language The code of the language to use. Defaults to the session
-             *                 language configured in KDE.
+             *                 language configured in KDE. As of KDE 4.3 only the currently
+             *                 configured language is loaded to save memory.
              *
              * \return The comment translated into \p language or the default fallback comment
              * if no translation is available or an empty string if no comment could be found
@@ -127,7 +129,7 @@ namespace Nepomuk {
             bool isAvailable();
 
             /**
-             * The Types classes are optimized for performance under the 
+             * The Types classes are optimized for performance under the
              * aasumption that ontologies never change during the execution
              * time of an application.
              *
@@ -203,7 +205,7 @@ namespace Nepomuk {
          * The URI of the resource
          */
         QUrl uri() const;
-	    
+
         QString label( const QString& language = QString() ) const;
         QString comment( const QString& language = QString() ) const;
 

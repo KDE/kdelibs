@@ -1,5 +1,5 @@
 /* This file is part of the Nepomuk-KDE libraries
-    Copyright (c) 2007 Sebastian Trueg <trueg@kde.org>
+    Copyright (c) 2007-2009 Sebastian Trueg <trueg@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -38,12 +38,12 @@ namespace Nepomuk {
             virtual ~EntityPrivate() {}
 
             QMutex mutex;
-            
+
             QUrl uri;
             QString label;
             QString comment;
-            QHash<QString, QString> l10nLabels;
-            QHash<QString, QString> l10nComments;
+            QString l10nLabel;
+            QString l10nComment;
 
             QIcon icon;
 
@@ -85,7 +85,5 @@ public:
     QHash<QString, QString> l10nLabels;
     QHash<QString, QString> l10nComments;
 };
-
-uint qHash( const QUrl& url );
 
 #endif

@@ -1,5 +1,5 @@
 /* This file is part of the Nepomuk-KDE libraries
-    Copyright (c) 2007 Sebastian Trueg <trueg@kde.org>
+    Copyright (c) 2007-2009 Sebastian Trueg <trueg@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -81,8 +81,8 @@ bool Nepomuk::Types::EntityPrivate::load()
             if ( value.language().isEmpty() ) {
                 label = value.toString();
             }
-            else {
-                l10nLabels[value.language()] = value.toString();
+            else if( value.language() == KGlobal::locale()->language() ) {
+                l10nLabel = value.toString();
             }
         }
 
@@ -90,8 +90,8 @@ bool Nepomuk::Types::EntityPrivate::load()
             if ( value.language().isEmpty() ) {
                 comment = value.toString();
             }
-            else {
-                l10nComments[value.language()] = value.toString();
+            else if( value.language() == KGlobal::locale()->language() ) {
+                l10nComment = value.toString();
             }
         }
 
@@ -133,10 +133,10 @@ void Nepomuk::Types::EntityPrivate::reset( bool )
 {
     QMutexLocker lock( &mutex );
 
-    QString label;
-    QString comment;
-    l10nLabels.clear();
-    l10nComments.clear();;
+    label.truncate(0);
+    comment.truncate(0);
+    l10nLabel.truncate(0);
+    l10nComment.truncate(0);;
 
     icon = QIcon();
 
@@ -176,7 +176,7 @@ QUrl Nepomuk::Types::Entity::uri() const
 
 QString Nepomuk::Types::Entity::name() const
 {
-    return d ? d->uri.fragment() : QString();
+    return d ? (d->uri.fragment().isEmpty() ? d->uri.toString().section('/',-1) : d->uri.fragment() ) : QString();
 }
 
 
@@ -185,9 +185,9 @@ QString Nepomuk::Types::Entity::label( const QString& language )
     if ( d ) {
         d->init();
 
-        QHash<QString, QString>::const_iterator it = d->l10nLabels.constFind( language );
-        if ( it != d->l10nLabels.constEnd() ) {
-            return it.value();
+        if ( language == KGlobal::locale()->language() &&
+             !d->l10nLabel.isEmpty() ) {
+            return d->l10nLabel;
         }
         else if( !d->label.isEmpty() ) {
             return d->label;
@@ -207,9 +207,9 @@ QString Nepomuk::Types::Entity::comment( const QString& language )
     if ( d ) {
         d->init();
 
-        QHash<QString, QString>::const_iterator it = d->l10nComments.constFind( language );
-        if ( it != d->l10nComments.constEnd() ) {
-            return it.value();
+        if ( language == KGlobal::locale()->language() &&
+             !d->l10nComment.isEmpty() ) {
+            return d->l10nComment;
         }
         else {
             return d->comment;

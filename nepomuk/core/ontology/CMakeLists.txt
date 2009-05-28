@@ -15,4 +15,4 @@ install(FILES
   DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk COMPONENT Devel
 )
 
-add_subdirectory(test)
+#add_subdirectory(test)
