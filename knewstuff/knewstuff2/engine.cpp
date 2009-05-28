@@ -188,7 +188,7 @@ KNS::Entry::List Engine::downloadDialogModal(QWidget*)
     KDialog *existingDialog = EnginePrivate::s_dialogs.value(d->componentName());
     if (existingDialog) {
         existingDialog->show();
-        KWindowSystem::setOnDesktop(KWindowSystem::currentDesktop(), existingDialog->winId());
+        KWindowSystem::setOnDesktop(existingDialog->winId(), KWindowSystem::currentDesktop());
         KWindowSystem::activateWindow(existingDialog->winId());
         return QList<KNS::Entry*>();
     }
@@ -207,7 +207,7 @@ void Engine::downloadDialog()
     KDialog *existingDialog = EnginePrivate::s_dialogs.value(d->componentName());
     if (existingDialog) {
         existingDialog->show();
-        KWindowSystem::setOnDesktop(KWindowSystem::currentDesktop(), existingDialog->winId());
+        KWindowSystem::setOnDesktop(existingDialog->winId(), KWindowSystem::currentDesktop());
         KWindowSystem::activateWindow(existingDialog->winId());
         return;
     }
