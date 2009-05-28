@@ -360,9 +360,9 @@ int KStringHandler::naturalCompare(const QString &_a, const QString &_b, Qt::Cas
         }
 
         // compare these sequences
-        QString subA(begSeqA, currA - begSeqA);
-        QString subB(begSeqB, currB - begSeqB);
-        const int cmp = QString::localeAwareCompare(subA, subB);
+        const QStringRef& subA(a.midRef(begSeqA - a.unicode(), currA - begSeqA));
+        const QStringRef& subB(b.midRef(begSeqB - b.unicode(), currB - begSeqB));
+        const int cmp = QStringRef::localeAwareCompare(subA, subB);
         if (cmp != 0) {
             return cmp < 0 ? -1 : 1;
         }
