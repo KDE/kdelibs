@@ -1669,6 +1669,12 @@ void KUrlTest::testUtf8()
   KUrl wkai(QString::fromUtf8("/tmp/魔"));
   QCOMPARE(wkai.url(), QString("file:///tmp/%E9%AD%94"));
   QCOMPARE(wkai.prettyUrl(), QString::fromUtf8("file:///tmp/魔"));
+
+  // Show that the character "fraction slash" (U+2044) cannot appear in url(),
+  // so it's ok to use that to encode urls as filenames (e.g. in kio_http cache)
+  KUrl fractionSlash(QString("http://kde.org/a")+QChar(0x2044)+"b");
+  QCOMPARE(fractionSlash.url(), QString("http://kde.org/a%E2%81%84b"));
+  QCOMPARE(fractionSlash.prettyUrl(), QString("http://kde.org/a")+QChar(0x2044)+"b");
 }
 
 void KUrlTest::testOtherEncodings()
