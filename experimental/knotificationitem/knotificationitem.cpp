@@ -112,7 +112,7 @@ void KNotificationItem::setStatus(const ItemStatus status)
 
 //normal icon
 
-void KNotificationItem::setIcon(const QString &name)
+void KNotificationItem::setIconByName(const QString &name)
 {
     d->iconName = name;
     emit d->notificationItemDbus->NewIcon();
@@ -121,12 +121,12 @@ void KNotificationItem::setIcon(const QString &name)
     }
 }
 
-QString KNotificationItem::icon() const
+QString KNotificationItem::iconName() const
 {
     return d->iconName;
 }
 
-void KNotificationItem::setImage(const QIcon &icon)
+void KNotificationItem::setIconByPixmap(const QIcon &icon)
 {
     d->serializedIcon = d->iconToVector(icon);
     emit d->notificationItemDbus->NewIcon();
@@ -137,12 +137,12 @@ void KNotificationItem::setImage(const QIcon &icon)
     }
 }
 
-QIcon KNotificationItem::image() const
+QIcon KNotificationItem::iconPixmap() const
 {
     return d->icon;
 }
 
-void KNotificationItem::setOverlayIcon(const QString &name)
+void KNotificationItem::setOverlayIconByName(const QString &name)
 {
     d->overlayIconName = name;
     emit d->notificationItemDbus->NewOverlayIcon();
@@ -158,12 +158,12 @@ void KNotificationItem::setOverlayIcon(const QString &name)
     }
 }
 
-QString KNotificationItem::overlayIcon() const
+QString KNotificationItem::overlayIconName() const
 {
     return d->overlayIconName;
 }
 
-void KNotificationItem::setOverlayImage(const QIcon &icon)
+void KNotificationItem::setOverlayIconByPixmap(const QIcon &icon)
 {
     d->serializedOverlayIcon = d->iconToVector(icon);
     emit d->notificationItemDbus->NewOverlayIcon();
@@ -180,32 +180,32 @@ void KNotificationItem::setOverlayImage(const QIcon &icon)
     }
 }
 
-QIcon KNotificationItem::overlayImage() const
+QIcon KNotificationItem::overlayIconPixmap() const
 {
     return d->overlayIcon;
 }
 
 //Icons and movie for requesting attention state
 
-void KNotificationItem::setAttentionIcon(const QString &name)
+void KNotificationItem::setAttentionIconByName(const QString &name)
 {
     d->attentionIconName = name;
     emit d->notificationItemDbus->NewAttentionIcon();
 }
 
-QString KNotificationItem::attentionIcon() const
+QString KNotificationItem::attentionIconName() const
 {
     return d->attentionIconName;
 }
 
-void KNotificationItem::setAttentionImage(const QIcon &icon)
+void KNotificationItem::setAttentionIconByPixmap(const QIcon &icon)
 {
     d->serializedAttentionIcon = d->iconToVector(icon);
     d->attentionIcon = icon;
     emit d->notificationItemDbus->NewAttentionIcon();
 }
 
-QIcon KNotificationItem::attentionImage() const
+QIcon KNotificationItem::attentionIconPixmap() const
 {
     return d->attentionIcon;
 }
@@ -263,7 +263,7 @@ QMovie *KNotificationItem::attentionMovie() const
 
 void KNotificationItem::setToolTip(const QString &iconName, const QString &title, const QString &subTitle)
 {
-    setToolTipIcon(iconName);
+    setToolTipIconByName(iconName);
     setToolTipTitle(title);
     setToolTipSubTitle(subTitle);
     emit d->notificationItemDbus->NewToolTip();
@@ -271,31 +271,31 @@ void KNotificationItem::setToolTip(const QString &iconName, const QString &title
 
 void KNotificationItem::setToolTip(const QIcon &icon, const QString &title, const QString &subTitle)
 {
-    setToolTipImage(icon);
+    setToolTipIconByPixmap(icon);
     setToolTipTitle(title);
     setToolTipSubTitle(subTitle);
     emit d->notificationItemDbus->NewToolTip();
 }
 
-void KNotificationItem::setToolTipIcon(const QString &name)
+void KNotificationItem::setToolTipIconByName(const QString &name)
 {
     d->toolTipIconName = name;
     emit d->notificationItemDbus->NewToolTip();
 }
 
-QString KNotificationItem::toolTipIcon() const
+QString KNotificationItem::toolTipIconName() const
 {
     return d->toolTipIconName;
 }
 
-void KNotificationItem::setToolTipImage(const QIcon &icon)
+void KNotificationItem::setToolTipIconByPixmap(const QIcon &icon)
 {
     d->serializedToolTipIcon = d->iconToVector(icon);
     d->toolTipIcon = icon;
     emit d->notificationItemDbus->NewToolTip();
 }
 
-QIcon KNotificationItem::toolTipImage() const
+QIcon KNotificationItem::toolTipIconPixmap() const
 {
     return d->toolTipIcon;
 }

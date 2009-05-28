@@ -59,12 +59,12 @@ class KNotificationItemDBus : public QObject
     Q_PROPERTY(QString Title READ Title)
     Q_PROPERTY(QString Status READ Status)
     Q_PROPERTY(int WindowId READ WindowId)
-    Q_PROPERTY(QString Icon READ Icon)
-    Q_PROPERTY(ExperimentalKDbusImageVector Image READ Image)
-    Q_PROPERTY(QString OverlayIcon READ OverlayIcon)
-    Q_PROPERTY(ExperimentalKDbusImageVector OverlayImage READ OverlayImage)
-    Q_PROPERTY(QString AttentionIcon READ AttentionIcon)
-    Q_PROPERTY(ExperimentalKDbusImageVector AttentionImage READ AttentionImage)
+    Q_PROPERTY(QString IconName READ IconName)
+    Q_PROPERTY(ExperimentalKDbusImageVector IconPixmap READ IconPixmap)
+    Q_PROPERTY(QString OverlayIconName READ OverlayIconName)
+    Q_PROPERTY(ExperimentalKDbusImageVector OverlayIconPixmap READ OverlayIconPixmap)
+    Q_PROPERTY(QString AttentionIconName READ AttentionIconName)
+    Q_PROPERTY(ExperimentalKDbusImageVector AttentionIconPixmap READ AttentionIconPixmap)
     Q_PROPERTY(ExperimentalKDbusImageVector AttentionMovie READ AttentionMovie)
     Q_PROPERTY(ExperimentalKDbusToolTipStruct ToolTip READ ToolTip)
 
@@ -109,35 +109,35 @@ public:
      * @return the name of the main icon to be displayed
      * if image() is not empty this will always return an empty string
      */
-    QString Icon() const;
+    QString IconName() const;
 
     /**
      * @return a serialization of the icon data
      */
-    ExperimentalKDbusImageVector Image() const;
+    ExperimentalKDbusImageVector IconPixmap() const;
 
     /**
      * @return the name of the overlay of the main icon to be displayed
      * if image() is not empty this will always return an empty string
      */
-    QString OverlayIcon() const;
+    QString OverlayIconName() const;
 
     /**
      * @return a serialization of the icon data
      */
-    ExperimentalKDbusImageVector OverlayImage() const;
+    ExperimentalKDbusImageVector OverlayIconPixmap() const;
 
     /**
      * @return the name of the icon to be displayed when the application
      * is requesting the user's attention
      * if attentionImage() is not empty this will always return an empty string
      */
-    QString AttentionIcon() const;
+    QString AttentionIconName() const;
 
     /**
      * @return a serialization of the requesting attention icon data
      */
-    ExperimentalKDbusImageVector AttentionImage() const;
+    ExperimentalKDbusImageVector AttentionIconPixmap() const;
 
     /**
      * @return a serialization of the requesting attention movie data

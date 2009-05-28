@@ -11,25 +11,25 @@
 
     <!-- main icon -->
     <!-- names are preferred over pixmaps -->
-    <property name="Icon" type="s" access="read"/>
+    <property name="IconName" type="s" access="read"/>
 
     <!--struct containing width, height and image data-->
-    <property name="Image" type="(iiay)" access="read">
+    <property name="IconPixmap" type="(iiay)" access="read">
       <annotation name="com.trolltech.QtDBus.QtTypeName" value="ExperimentalKDbusImageVector"/>
     </property>
 
-    <property name="OverlayIcon" type="s" access="read"/>
+    <property name="OverlayIconName" type="s" access="read"/>
 
-    <property name="OverlayImage" type="(iiay)" access="read">
+    <property name="OverlayIconPixmap" type="(iiay)" access="read">
       <annotation name="com.trolltech.QtDBus.QtTypeName" value="ExperimentalKDbusImageVector"/>
     </property>
 
 
     <!-- Requesting attention icon -->
-    <property name="AttentionIcon" type="s" access="read"/>
+    <property name="AttentionIconName" type="s" access="read"/>
 
     <!--same definition as image-->
-    <property name="AttentionImage" type="(iiay)" access="read">
+    <property name="AttentionIconPixmap" type="(iiay)" access="read">
       <annotation name="com.trolltech.QtDBus.QtTypeName" value="ExperimentalKDbusImageVector"/>
     </property>
 

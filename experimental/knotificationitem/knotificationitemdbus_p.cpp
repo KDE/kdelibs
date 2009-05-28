@@ -204,34 +204,34 @@ int KNotificationItemDBus::WindowId() const
 
 //Icon
 
-QString KNotificationItemDBus::Icon() const
+QString KNotificationItemDBus::IconName() const
 {
-    return m_notificationItem->icon();
+    return m_notificationItem->iconName();
 }
 
-ExperimentalKDbusImageVector KNotificationItemDBus::Image() const
+ExperimentalKDbusImageVector KNotificationItemDBus::IconPixmap() const
 {
     return m_notificationItem->d->serializedIcon;
 }
 
-QString KNotificationItemDBus::OverlayIcon() const
+QString KNotificationItemDBus::OverlayIconName() const
 {
-    return m_notificationItem->overlayIcon();
+    return m_notificationItem->overlayIconName();
 }
 
-ExperimentalKDbusImageVector KNotificationItemDBus::OverlayImage() const
+ExperimentalKDbusImageVector KNotificationItemDBus::OverlayIconPixmap() const
 {
     return m_notificationItem->d->serializedOverlayIcon;
 }
 
 //Requesting attention icon and movie
 
-QString KNotificationItemDBus::AttentionIcon() const
+QString KNotificationItemDBus::AttentionIconName() const
 {
-    return m_notificationItem->attentionIcon();
+    return m_notificationItem->attentionIconName();
 }
 
-ExperimentalKDbusImageVector KNotificationItemDBus::AttentionImage() const
+ExperimentalKDbusImageVector KNotificationItemDBus::AttentionIconPixmap() const
 {
     return m_notificationItem->d->serializedAttentionIcon;
 }
@@ -247,7 +247,7 @@ ExperimentalKDbusImageVector KNotificationItemDBus::AttentionMovie() const
 ExperimentalKDbusToolTipStruct KNotificationItemDBus::ToolTip() const
 {
     ExperimentalKDbusToolTipStruct toolTip;
-    toolTip.icon = m_notificationItem->toolTipIcon();
+    toolTip.icon = m_notificationItem->toolTipIconName();
     toolTip.image = m_notificationItem->d->serializedToolTipIcon;
     toolTip.title = m_notificationItem->toolTipTitle();
     toolTip.subTitle = m_notificationItem->toolTipSubTitle();

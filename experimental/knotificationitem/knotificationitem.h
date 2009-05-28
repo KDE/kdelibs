@@ -64,10 +64,10 @@ class KNOTIFICATIONITEM_EXPORT KNotificationItem : public QObject
     Q_PROPERTY( ItemCategory category READ category WRITE setCategory )
     Q_PROPERTY( QString title READ title WRITE setTitle )
     Q_PROPERTY( ItemStatus status READ status WRITE setStatus )
-    Q_PROPERTY( QString icon READ icon WRITE setIcon )
-    Q_PROPERTY( QString overlayIcon READ overlayIcon WRITE setOverlayIcon )
-    Q_PROPERTY( QString attentionIcon READ attentionIcon WRITE setAttentionIcon )
-    Q_PROPERTY( QString toolTipIcon READ toolTipIcon WRITE setToolTipIcon )
+    Q_PROPERTY( QString iconName READ iconName WRITE setIconByName )
+    Q_PROPERTY( QString overlayIconName READ overlayIconName WRITE setOverlayIconByName )
+    Q_PROPERTY( QString attentionIconName READ attentionIconName WRITE setAttentionIconByName )
+    Q_PROPERTY( QString toolTipIconName READ toolTipIconName WRITE setToolTipIconByName )
     Q_PROPERTY( QString toolTipTitle READ toolTipTitle WRITE setToolTipTitle )
     Q_PROPERTY( QString toolTipSubTitle READ toolTipSubTitle WRITE setToolTipSubTitle )
 
@@ -178,48 +178,48 @@ public:
      * @arg name it must be a KIconLoader compatible name, this is
      * the preferred way to set an icon
      */
-    void setIcon(const QString &name);
+    void setIconByName(const QString &name);
 
     /**
      * @return the name of the main icon to be displayed
      * if image() is not empty this will always return an empty string
      */
-    QString icon() const;
+    QString iconName() const;
 
     /**
      * Sets a new main icon for the system tray
      *
      * @arg pixmap a QPixmap representing the icon, use setIcon(const QString) when possible
      */
-    void setImage(const QIcon &icon);
+    void setIconByPixmap(const QIcon &icon);
 
     /**
      * @return a pixmap of the icon
      */
-    QIcon image() const;
+    QIcon iconPixmap() const;
 
     /**
      * Sets an icon to be used as overlay for the main one
      * @arg icon name
      */
-    void setOverlayIcon(const QString &name);
+    void setOverlayIconByName(const QString &name);
 
     /**
      * @return the name of the icon to be used as overlay fr the main one
      */
-    QString overlayIcon() const;
+    QString overlayIconName() const;
 
     /**
      * Sets an icon to be used as overlay for the main one
      *
      * @arg pixmap a QPixmap representing the icon, use setOverlayIcon(const QString) when possible
      */
-    void setOverlayImage(const QIcon &icon);
+    void setOverlayIconByPixmap(const QIcon &icon);
 
     /**
      * @return a pixmap of the icon
      */
-    QIcon overlayImage() const;
+    QIcon overlayIconPixmap() const;
 
     //Requesting attention icon
 
@@ -230,25 +230,25 @@ public:
      *
      * @arg pixmap a QPixmap representing the icon, use setIcon(const QString) when possible
      */
-    void setAttentionIcon(const QString &name);
+    void setAttentionIconByName(const QString &name);
 
     /**
      * @return the name of the icon to be displayed when the application
      * is requesting the user's attention
      * if attentionImage() is not empty this will always return an empty string
      */
-    QString attentionIcon() const;
+    QString attentionIconName() const;
 
     /**
      * Sets the pixmap of the requesting attention icon.
      * Use setAttentionIcon(const QString) instead when possible.
      */
-    void setAttentionImage(const QIcon &icon);
+    void setAttentionIconByPixmap(const QIcon &icon);
 
     /**
      * @return a pixmap of the requesting attention icon
      */
-    QIcon attentionImage() const;
+    QIcon attentionIconPixmap() const;
 
     /**
      * Sets a movie as the requesting attention icon.
@@ -312,13 +312,13 @@ public:
      *
      * @arg name the name for the icon
      */
-    void setToolTipIcon(const QString &name);
+    void setToolTipIconByName(const QString &name);
 
     /**
      * @return the name of the toolTip icon
      * if toolTipImage() is not empty this will always return an empty string
      */
-    QString toolTipIcon() const;
+    QString toolTipIconName() const;
 
     /**
      * Set a new icon for the toolTip.
@@ -328,12 +328,12 @@ public:
      * Use setToolTipIcon(QPixmap) if possible.
      * @arg pixmap representing the icon
      */
-    void setToolTipImage(const QIcon &icon);
+    void setToolTipIconByPixmap(const QIcon &icon);
 
     /**
      * @return a serialization of the toolTip icon data
      */
-    QIcon toolTipImage() const;
+    QIcon toolTipIconPixmap() const;
 
     /**
      * Sets a new title for the toolTip

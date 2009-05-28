@@ -83,13 +83,13 @@ int main(int argc, char **argv)
 
 
     tray->setTitle("DBus System tray test");
-    tray->setIcon("konqueror");
+    tray->setIconByName("konqueror");
     //tray->setImage(KIcon("konqueror"));
-    tray->setAttentionIcon("kmail");
-    tray->setOverlayIcon("emblem-important");
+    tray->setAttentionIconByName("kmail");
+    tray->setOverlayIconByName("emblem-important");
     //tray->setAttentionMovie(KIconLoader::global()->loadMovie( QLatin1String( "newmessage" ), KIconLoader::Panel ));
 
-    tray->setToolTipIcon("konqueror");
+    tray->setToolTipIconByName("konqueror");
     tray->setToolTipTitle("DBus System tray test");
     tray->setToolTipSubTitle("This is a test of the new systemtray specification");
 
