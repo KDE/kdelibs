@@ -289,15 +289,11 @@ public:
     // Holds info about mmapped file
     struct MmapInfo
     {
-        MmapInfo()  { file = 0; memory = 0; }
+        MmapInfo()  { file = 0; indexHeader = 0; }
         QFile* file;  // If this is not null, then the file is mmapped
 
-        // Convenience aliases.  This probably breaks some C++ aliasing rule or something. :-/
-        union {
-            char* memory;
-            KPixmapCacheIndexHeader *indexHeader;
-            KPixmapCacheDataHeader *dataHeader;
-        };
+        // This points to the mmap'ed file area.
+        KPixmapCacheIndexHeader *indexHeader;
 
         quint32 size;  // Number of currently used bytes
         quint32 available;  // Number of available bytes (including those reserved for mmap)
@@ -474,9 +470,9 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
         info->file = 0;
         return false;
     }
-    info->memory = reinterpret_cast<char*>(indexMem);
+    info->indexHeader = reinterpret_cast<KPixmapCacheIndexHeader *>(indexMem);
 #ifdef HAVE_MADVISE
-    madvise(info->memory, info->size, MADV_WILLNEED);
+    madvise(indexMem, info->size, MADV_WILLNEED);
 #endif
 
     info->file->close();
@@ -496,8 +492,8 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
 void KPixmapCache::Private::unmmapFile(MmapInfo* info)
 {
     if (info->file) {
-        info->file->unmap(reinterpret_cast<uchar*>(info->memory));
-        info->memory = 0;
+        info->file->unmap(reinterpret_cast<uchar*>(info->indexHeader));
+        info->indexHeader = 0;
         info->available = 0;
         info->size = 0;
 
@@ -523,7 +519,9 @@ QIODevice* KPixmapCache::Private::indexDevice()
         fi.refresh();
         if(fi.exists() && fi.size() == mIndexMmapInfo.available) {
             // Create the device
-            device = new KPCMemoryDevice(mIndexMmapInfo.memory, &mIndexMmapInfo.size, mIndexMmapInfo.available);
+            device = new KPCMemoryDevice(
+                             reinterpret_cast<char*>(mIndexMmapInfo.indexHeader),
+                             &mIndexMmapInfo.size, mIndexMmapInfo.available);
         }
 
         // Is it possible to have a valid cache with no file?  If not it would be easier
@@ -592,7 +590,9 @@ QIODevice* KPixmapCache::Private::dataDevice()
         fi.refresh();
         if (fi.exists() && fi.size() == mDataMmapInfo.available) {
             // Create the device
-            return new KPCMemoryDevice(mDataMmapInfo.memory, &mDataMmapInfo.size, mDataMmapInfo.available);
+            return new KPCMemoryDevice(
+                           reinterpret_cast<char*>(mDataMmapInfo.indexHeader),
+                           &mDataMmapInfo.size, mDataMmapInfo.available);
         }
         else
             return 0;
