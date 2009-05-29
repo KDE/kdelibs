@@ -761,9 +761,6 @@ static QString iconFromDesktopFile(const QString& path)
                 }
             }
         }
-    } else if ( group.hasKey( "Exec" ) && !KDesktopFile::isAuthorizedDesktopFile( path ) ) {
-        // Disable custom icons for untrusted executables
-        return QString("application-x-desktop");
     }
     return icon;
 }
@@ -811,6 +808,17 @@ QStringList KFileItem::overlays() const
     if ( !S_ISDIR( d->m_fileMode ) // Locked dirs have a special icon, use the overlay for files only
          && !isReadable()) {
         names.append("object-locked");
+    }
+
+    if ( isDesktopFile() ) {
+        KDesktopFile cfg( localPath() );
+        const KConfigGroup group = cfg.desktopGroup();
+
+        // Add a warning emblem if this is an executable desktop file
+        // which is untrusted.
+        if ( group.hasKey( "Exec" ) && !KDesktopFile::isAuthorizedDesktopFile( localPath() ) ) {
+            names.append( "emblem-important" );
+        }
     }
 
     if ( isHidden() ) {
