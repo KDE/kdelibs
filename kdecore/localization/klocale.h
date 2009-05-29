@@ -602,6 +602,17 @@ public:
                      bool isDuration = false) const;
 
   /**
+   * @since 4.3
+   *
+   * Returns the identifier of the digit set used to display dates and time.
+   *
+   * @return the digit set identifier
+   * @see DigitSet
+   * @see digitSetToName
+   */
+  DigitSet dateTimeDigitSet() const;
+
+  /**
    * Use this to determine if the user wants a 12 hour clock.
    *
    * @return If the user wants 12h clock
@@ -913,6 +924,15 @@ public:
    */
   void setTimeFormat(const QString & format);
 
+  /**
+   * @since 4.3
+   *
+   * Set digit characters used to display dates and time.
+   *
+   * @param digitSet the digit set identifier
+   * @see DigitSet
+   */
+  void setDateTimeDigitSet(DigitSet digitSet);
 
   /**
    * Changes how KLocale defines the first day in week.

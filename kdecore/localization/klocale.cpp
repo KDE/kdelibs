@@ -209,6 +209,7 @@ public:
    */
   KLocale::DigitSet selectDigitSet (const QString &lang) const;
   KLocale::DigitSet selectMonetaryDigitSet (const QString &lang) const;
+  KLocale::DigitSet selectDateTimeDigitSet (const QString &lang) const;
 
   // Numbers and money
   QString decimalSymbol;
@@ -226,10 +227,6 @@ public:
   bool negativePrefixCurrencySymbol : 1;
   KLocale::DigitSet monetaryDigitSet;
 
-  // FIXME: Temporary until full language-sensitivity implemented.
-  bool languageSensitiveDigits;
-  bool monetaryLanguageSensitiveDigits;
-
   // Date and time
   QString timeFormat;
   QString dateFormat;
@@ -238,6 +235,12 @@ public:
   int workingWeekStartDay;
   int workingWeekEndDay;
   int weekDayOfPray;
+  KLocale::DigitSet dateTimeDigitSet;
+
+  // FIXME: Temporary until full language-sensitivity implemented.
+  bool languageSensitiveDigits;
+  bool monetaryLanguageSensitiveDigits;
+  bool dateTimeLanguageSensitiveDigits;
 
   // Locale
   QString language;
@@ -487,6 +490,11 @@ void KLocalePrivate::initFormat(KConfig *config)
   readConfigNumEntry("WorkingWeekStartDay", 1, workingWeekStartDay, int);  //default to Monday
   readConfigNumEntry("WorkingWeekEndDay", 5, workingWeekEndDay, int);      //default to Friday
   readConfigNumEntry("WeekDayOfPray", 7, weekDayOfPray, int);              //default to Sunday
+  readConfigNumEntry("DateTimeDigitSet", KLocale::ArabicDigits,
+                     dateTimeDigitSet, KLocale::DigitSet);
+  // FIXME: Temporary until full language-sensitivity implemented.
+  readConfigEntry("DateTimeLanguageSensitiveDigits", true,
+                  dateTimeLanguageSensitiveDigits);
 
   // other
   readConfigNumEntry("PageSize", QPrinter::A4, pageSize,
@@ -1015,6 +1023,17 @@ KLocale::DigitSet KLocalePrivate::selectMonetaryDigitSet (const QString &lang) c
         return KLocale::ArabicDigits;
     }
     return monetaryDigitSet;
+}
+
+KLocale::DigitSet KLocalePrivate::selectDateTimeDigitSet (const QString &lang) const
+{
+    KLocaleStaticData *s = staticData;
+    if (   dateTimeLanguageSensitiveDigits
+        && !s->languagesUsingDigitSet[dateTimeDigitSet].contains(lang))
+    {
+        return KLocale::ArabicDigits;
+    }
+    return dateTimeDigitSet;
 }
 
 bool KLocale::nounDeclension() const
@@ -1554,6 +1573,7 @@ QString KLocale::formatDate(const QDate &pDate, DateFormat format) const
 	  escape = false;
 	}
     }
+  buffer = toLocaleDigits(buffer, d->selectDateTimeDigitSet(d->language));
   return buffer;
 }
 
@@ -2103,6 +2123,7 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuratio
     }
   QString ret( buffer, index );
   delete [] buffer;
+  ret = toLocaleDigits(ret, d->selectDateTimeDigitSet(d->language));
   if ( isDuration ) // eliminate trailing-space due to " %p"
     return ret.trimmed();
   else
@@ -2638,4 +2659,14 @@ void KLocale::setMonetaryDigitSet (DigitSet digitSet)
 KLocale::DigitSet KLocale::monetaryDigitSet () const
 {
     return d->monetaryDigitSet;
+}
+
+void KLocale::setDateTimeDigitSet (DigitSet digitSet)
+{
+    d->dateTimeDigitSet = digitSet;
+}
+
+KLocale::DigitSet KLocale::dateTimeDigitSet () const
+{
+    return d->dateTimeDigitSet;
 }
