@@ -148,18 +148,30 @@ void KTimeZoneWidget::setSelected( const QString &zone, bool selected )
     // previously, but the underlying model only has 3 columns, the "hidden" column
     // wasn't available in there.
 
+    // Check for SingleSelection mode.
+    const bool singleSelection = (selectionMode() == SingleSelection);
+
     // Loop through all entries.
     const int rowCount = model()->rowCount(QModelIndex());
     for (int row = 0; row < rowCount; ++row) {
         const QModelIndex index = model()->index(row, Private::CityColumn );
         const QString tzName = index.data(Private::ZoneRole).toString();
         if (tzName == zone) {
+            
+            if (singleSelection && selected) {
+                clearSelection();
+            }
+
             selectionModel()->select(index, selected ? (QItemSelectionModel::Select | QItemSelectionModel::Rows) : (QItemSelectionModel::Deselect | QItemSelectionModel::Rows));
 
             // Ensure the selected item is visible as appropriate.
             scrollTo( index );
 
             found = true;
+
+            if (singleSelection && selected) {
+                break;
+            }
         }
     }
 
