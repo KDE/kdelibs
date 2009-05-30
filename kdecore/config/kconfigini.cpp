@@ -590,13 +590,16 @@ QByteArray KConfigIniBackend::stringToPrintable(const QByteArray& aString, Strin
     const int l = aString.length();
 
     QByteArray result; // Guesstimated that it's good to avoid data() initialization for a length of l*4
-    result.reserve(l * 4); // Maximum 4x as long as source string due to \x<ab> escape sequences
+    result.resize(l * 4); // Maximum 4x as long as source string due to \x<ab> escape sequences
     register const char *s = aString.constData();
     int i = 0;
+    char *data = result.data();
+    char *start = data;
 
     // Protect leading space
     if (s[0] == ' ' && type != GroupString) {
-        result.append("\\s");
+        *data++ = '\\';
+        *data++ = 's';
         i++;
     }
 
@@ -606,23 +609,27 @@ QByteArray KConfigIniBackend::stringToPrintable(const QByteArray& aString, Strin
             // The \n, \t, \r cases (all < 32) are handled below; we can ignore them here
                 if (((unsigned char)s[i]) < 32)
                     goto doEscape;
-                result.append(s[i]);
+                *data++ = s[i];
                 break;
             case '\n':
-                result.append("\\n");
+                *data++ = '\\';
+                *data++ = 'n';
                 break;
             case '\t':
-                result.append("\\t");
+                *data++ = '\\';
+                *data++ = 't';
                 break;
             case '\r':
-                result.append("\\r");
+                *data++ = '\\';
+                *data++ = 'r';
                 break;
             case '\\':
-                result.append("\\\\");
+                *data++ = '\\';
+                *data++ = '\\';
                 break;
             case '=':
                 if (type != KeyString) {
-                    result.append(s[i]);
+                    *data++ = s[i];
                     break;
                 }
                 goto doEscape;
@@ -630,16 +637,19 @@ QByteArray KConfigIniBackend::stringToPrintable(const QByteArray& aString, Strin
             case ']':
             // Above chars are OK to put in *value* strings as plaintext
                 if (type == ValueString) {
-                    result.append(s[i]);
+                    *data++ = s[i];
                     break;
                 }
         doEscape:
-                result.append("\\x")
-                    .append(nibbleLookup[((unsigned char)s[i]) >> 4])
-                    .append(nibbleLookup[((unsigned char)s[i]) & 0x0f]);
+                *data++ = '\\';
+                *data++ = 'x';
+                *data++ = nibbleLookup[((unsigned char)s[i]) >> 4];
+                *data++ = nibbleLookup[((unsigned char)s[i]) & 0x0f];
                 break;
         }
     }
+    *data = 0;
+    result.resize(data - start);
 
     // Protect trailing space
     if (result.endsWith(' ') && type != GroupString) {
