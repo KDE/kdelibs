@@ -2329,7 +2329,7 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
     // Not recursive, or top-level of recursive listing : return now (send . and .. as well)
     // exclusion of hidden files also requires the full sweep, but the case for full-listing
     // a single dir is probably common enough to justify the shortcut
-    if (prefix.isNull() && includeHidden) {
+    if (!recursive || (prefix.isNull() && includeHidden)) {
         emit q->entries(q, list);
     } else {
         // cull the unwanted hidden dirs and/or parent dir references from the listing, then emit that
