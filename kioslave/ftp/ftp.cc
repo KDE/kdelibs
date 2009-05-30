@@ -876,7 +876,7 @@ int Ftp::ftpOpenPASVDataConnection()
   // The usual answer is '227 Entering Passive Mode. (160,39,200,55,6,245)'
   // but anonftpd gives '227 =160,39,200,55,6,245'
   int i[6];
-  char *start = strchr(ftpResponse(3), '(');
+  const char *start = strchr(ftpResponse(3), '(');
   if ( !start )
     start = strchr(ftpResponse(3), '=');
   if ( !start ||
@@ -931,7 +931,7 @@ int Ftp::ftpOpenEPSVDataConnection()
     return ERR_INTERNAL;
   }
 
-  char *start = strchr(ftpResponse(3), '|');
+  const char *start = strchr(ftpResponse(3), '|');
   if ( !start || sscanf(start, "|||%d|", &portnum) != 1)
     return ERR_INTERNAL;
 
