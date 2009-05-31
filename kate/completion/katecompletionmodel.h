@@ -300,10 +300,7 @@ class KateCompletionModel : public ExpandingWidgetModel
     };
 
 
-    void changeCompletions(Group* g, changeTypes changeType);
-
-    void deleteRows(Group* g, QMutableListIterator<Item>& filtered, int countBackwards, int startRow, bool notify);
-    void addRows(Group* g, QMutableListIterator<Item>& filtered, int startRow, const QList<Item>& newItems, bool notify);
+    bool changeCompletions(Group* g, changeTypes changeType);
 
     bool hasCompletionModel() const;
 
@@ -313,7 +310,6 @@ class KateCompletionModel : public ExpandingWidgetModel
 
     void resort();
     void refilter();
-    void rematch();
 
     bool m_hasGroups;
 
