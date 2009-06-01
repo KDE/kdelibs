@@ -44,6 +44,9 @@ class PopupAppletPrivate;
  *
  * If you use this class as a base class for your extender using applet, the extender will
  * automatically be used for the popup; reimplementing graphicsWidget() is unnecessary in this case.
+ *
+ * If you need a popup that does not steal window focus when openend or used, set window flag
+ * Qt::X11BypassWindowManagerHint the widget returned by widget() or graphicsWidget().
  */
 
 class PLASMA_EXPORT PopupApplet : public Plasma::Applet

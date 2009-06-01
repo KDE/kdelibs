@@ -275,11 +275,7 @@ void PopupAppletPrivate::popupConstraintsEvent(Plasma::Constraints constraints)
                 //stuff out of your Dialog (extenders). Monitor WindowDeactivate events so we can
                 //emulate the same kind of behavior as Qt::Popup (close when you click somewhere
                 //else.
-                dialog->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-                updateDialogFlags();
-                KWindowSystem::setState(dialog->winId(), NET::SkipTaskbar | NET::SkipPager);
-                dialog->installEventFilter(q);
-
+		
                 q->setMinimumSize(QSize(0, 0));
                 if (gWidget) {
                     Corona *corona = qobject_cast<Corona *>(gWidget->scene());
@@ -289,13 +285,24 @@ void PopupAppletPrivate::popupConstraintsEvent(Plasma::Constraints constraints)
                         corona->addOffscreenWidget(gWidget);
                         dialog->setGraphicsWidget(gWidget);
                     }
+
+		    dialog->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | (gWidget->windowFlags() & Qt::X11BypassWindowManagerHint));
                 } else if (qWidget) {
                     QVBoxLayout *l_layout = new QVBoxLayout(dialog);
                     l_layout->setSpacing(0);
                     l_layout->setMargin(0);
                     l_layout->addWidget(qWidget);
                     dialog->adjustSize();
+
+		    dialog->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | (qWidget->windowFlags() & Qt::X11BypassWindowManagerHint));
                 }
+		else {
+                    dialog->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+		}
+                updateDialogFlags();
+                KWindowSystem::setState(dialog->winId(), NET::SkipTaskbar | NET::SkipPager);
+                dialog->installEventFilter(q);
+
 
                 QObject::connect(dialog, SIGNAL(dialogResized()), q, SLOT(dialogSizeChanged()));
                 QObject::connect(dialog, SIGNAL(dialogVisible(bool)), q, SLOT(dialogStatusChanged(bool)));
