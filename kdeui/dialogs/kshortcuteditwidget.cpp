@@ -37,19 +37,11 @@ void TabConnectedWidget::paintEvent(QPaintEvent *e)
 {
     QWidget::paintEvent(e);
     QPainter p(this);
-    QStyleOption option;
-    option.initFrom(this);
-    QStyleHintReturnMask hintReturn;
-    style()->styleHint(QStyle::SH_Menu_Mask, &option, this, &hintReturn);
-    if (hintReturn.region.isEmpty()) {
-        p.fillRect(rect(), palette().window());
-    } else {
-        p.save();
-        p.setClipRegion(hintReturn.region);
-        p.fillRect(rect(), palette().window());
-        p.restore();
-    }
-    style()->drawPrimitive(QStyle::PE_FrameMenu, &option, &p, this);
+    QPen pen(QPalette().highlight().color());
+    pen.setWidth(6);
+    p.setPen(pen);
+    p.drawLine(0, 0, width(), 0);
+    p.drawLine(0, 0, 0, height());
 }
 
 ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq,
@@ -59,11 +51,6 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
    m_isUpdating(false)
 {
     QGridLayout *layout = new QGridLayout(this);
-    QStyleOption option;
-    option.initFrom(this);
-    int panelWidth = style()->pixelMetric(QStyle::PM_MenuPanelWidth, &option, this);
-    int panelMargin = panelWidth + style()->pixelMetric(QStyle::PM_DefaultChildMargin, &option, this);
-    layout->setMargin(panelMargin);
 
     m_defaultRadio = new QRadioButton(i18n("Default:"), this);
     m_defaultLabel = new QLabel(i18nc("No shortcut defined", "None"), this);
@@ -71,7 +58,6 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
     if (defaultText.isEmpty()) 
         defaultText = i18nc("No shortcut defined", "None");
     m_defaultLabel->setText(defaultText);
-    m_defaultLabel->setBackgroundRole(QPalette::Window);
 
     m_customRadio = new QRadioButton(i18n("Custom:"), this);
     m_customEditor = new KKeySequenceWidget(this);
