@@ -1403,16 +1403,16 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                 y += widgetLayoutProp(WT_PushButton, PushButton::PressedShiftVertical, option, widget);
             }
 
-            //Layout the stuff. Do we need space for indicator?
-            //we do this separately, and push it to the end, removing its space from layout.
+            //Layout the stuff.
             if (bOpt->features & QStyleOptionButton::HasMenu)
             {
                 int indicatorWidth = widgetLayoutProp(WT_PushButton, PushButton::MenuIndicatorSize, option, widget);
-                w -= indicatorWidth;
+                int indicatorSpacing = widgetLayoutProp(WT_PushButton, PushButton::TextToIconSpace, option, widget);
+                w -= indicatorWidth + indicatorSpacing;
 
                 //Draw the arrow...
                 drawKStylePrimitive(WT_PushButton, Generic::ArrowDown, option,
-                                    handleRTL(bOpt, QRect(x + w, y, indicatorWidth, h)),
+                                    handleRTL(bOpt, QRect(x + w + indicatorSpacing, y, indicatorWidth, h)),
                                     pal, flags, p, widget);
             }
 
@@ -4056,6 +4056,10 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
 
             //### TODO: Handle minimum size limits, extra spacing as in current styles ??
             size = expandDim(size, WT_PushButton, PushButton::ContentsMargin, option, widget);
+
+            if (bOpt->features & QStyleOptionButton::HasMenu) {
+                size.setWidth(size.width() + widgetLayoutProp(WT_PushButton, PushButton::TextToIconSpace, option, widget));
+            }
 
             if (!bOpt->text.isEmpty() && !bOpt->icon.isNull()) {
                 // Incorporate the spacing between the icon and text. Qt sticks 4 there,
