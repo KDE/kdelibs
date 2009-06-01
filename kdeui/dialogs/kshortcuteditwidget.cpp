@@ -71,6 +71,7 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
     if (defaultText.isEmpty()) 
         defaultText = i18nc("No shortcut defined", "None");
     m_defaultLabel->setText(defaultText);
+    m_defaultLabel->setBackgroundRole(QPalette::Window);
 
     m_customRadio = new QRadioButton(i18n("Custom:"), this);
     m_customEditor = new KKeySequenceWidget(this);
