@@ -93,7 +93,7 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
     bool useRecent = config.readEntry(QLatin1String("UseRecent"), true);
     int maxEntries = config.readEntry(QLatin1String("MaxEntries"), 10);
 
-    if(!useRecent)
+    if(!useRecent || maxEntries <= 0)
         return;
 
     QString path = recentDocumentDirectory();
