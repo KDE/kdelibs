@@ -308,8 +308,12 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
       if (infoNeeded & NeedMountOptions)
       {
          struct fstab *ft = getfsfile(mounted[i].f_mntonname);
-         QString options = QFile::decodeName(ft->fs_mntops);
-         mp->d->mountOptions = options.split( ',' );
+         if (ft != 0) {
+             QString options = QFile::decodeName(ft->fs_mntops);
+             mp->d->mountOptions = options.split( ',' );
+         } else {
+             // TODO: get mount options if not mounted via fstab, see mounted[i].f_flags
+         }
       }
 
       mp->d->finalizeCurrentMountPoint(infoNeeded);
