@@ -239,8 +239,6 @@ void KjsScript::finalize()
         QObject* obj = (*it).second;
         if( ! obj )
             continue;
-        KJS::JSObject* kjsobj = (*it).first;
-        krossdebug(QString("KjsScript::finalize published object=%1").arg( kjsobj->className().ascii() ));
         /*
         KJSEmbed::QObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, kjsobj);
         Q_ASSERT(imp);
@@ -255,7 +253,12 @@ void KjsScript::finalize()
         foreach( QObject* child, obj->children() )
             if( KJSEmbed::SlotProxy* proxy = dynamic_cast< KJSEmbed::SlotProxy* >(child) )
                 delete proxy;
-        //delete kjsobj; //don't delete since that will be done by kjs, right?
+
+        /* the kjsobj-instance will be or got already deleted by KJS and we don't need to care
+        KJS::JSObject* kjsobj = (*it).first;
+        krossdebug(QString("KjsScript::finalize published object=%1").arg( kjsobj->className().ascii() ));
+        delete kjsobj;
+        */
     }
     d->m_publishedObjects.clear();
 
