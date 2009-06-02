@@ -94,9 +94,18 @@ Highlighter::Highlighter(QTextEdit *textEdit,
     textEdit->viewport()->installEventFilter( this );
 
     d->loader = Loader::openLoader();
-    KConfig conf(configFile);
-    d->loader->settings()->restore(&conf);
-    d->filter->setSettings(d->loader->settings());
+    
+    //Do not load an empty settings file as it will cause the spellchecker to fail
+    //if the KGlobal::locale()->language() (default value) spellchecker is not installed,
+    //and we have a global sonnetrc file with a spellcheck lang installed which could be used.
+    if (!configFile.isEmpty()) {
+        KConfig conf(configFile);
+        if (conf.hasGroup("Spelling")) {
+            d->loader->settings()->restore(&conf);
+            d->filter->setSettings(d->loader->settings());
+        }
+    }
+    
     d->dict   = new Sonnet::Speller();
     if(!d->dict->isValid()) {
 	d->spellCheckerFound = false;
