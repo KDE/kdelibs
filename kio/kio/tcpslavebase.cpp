@@ -784,7 +784,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
                                  "being prompted?"),
                             i18n("Server Authentication"),
                             i18n("&Forever"),
-                            i18n("&Current Sessions Only"));
+                            i18n("&Current Session only"));
     QDateTime ruleExpiry = QDateTime::currentDateTime();
     if (msgResult == KMessageBox::Yes) {
         //accept forever ("for a very long time")

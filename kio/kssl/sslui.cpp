@@ -118,7 +118,7 @@ bool KIO::SslUi::askIgnoreSslErrors(const KSslErrorUiData &uiData, RulesStorage 
                                     "being prompted?"),
                                 i18n("Server Authentication"),
                                 KGuiItem(i18n("&Forever")),
-                                KGuiItem(i18n("&Current Sessions Only")));
+                                KGuiItem(i18n("&Current Session only")));
         QDateTime ruleExpiry = QDateTime::currentDateTime();
         if (msgResult == KMessageBox::Yes) {
             //accept forever ("for a very long time")
