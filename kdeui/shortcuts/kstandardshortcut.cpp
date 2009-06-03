@@ -128,7 +128,7 @@ static KStandardShortcutInfo g_infoStandardShortcut[] =
     { AddBookmark    , "AddBookmark"          , I18N_NOOP2("@action"                      , "Add Bookmark")         , CTRL(B)         , 0                 , KShortcut(), false },
     { ZoomIn         , "ZoomIn"               , I18N_NOOP2("@action"                      , "Zoom In")              , CTRL(Plus)      , CTRL(Equal)       , KShortcut(), false },
     { ZoomOut        , "ZoomOut"              , I18N_NOOP2("@action"                      , "Zoom Out")             , CTRL(Minus)     , 0                 , KShortcut(), false },
-    { FullScreen     , "FullScreen"           , I18N_NOOP2("@action"                      , "Full Screen Mode")     , CTRLSHIFT(F)    , Qt::Key_F1        , KShortcut(), false },
+    { FullScreen     , "FullScreen"           , I18N_NOOP2("@action"                      , "Full Screen Mode")     , CTRLSHIFT(F)    , Qt::Key_F11        , KShortcut(), false },
 
     { ShowMenubar    , "ShowMenubar"          , I18N_NOOP2("@action"                      , "Show Menu Bar")        , CTRL(M)         , 0                 , KShortcut(), false },
     { TabNext        , "Activate Next Tab"    , I18N_NOOP2("@action"                      , "Activate Next Tab")    , CTRL(Period)    , CTRL(BracketRight), KShortcut(), false },
