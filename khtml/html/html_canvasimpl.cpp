@@ -476,7 +476,7 @@ static const IDTranslator<QString, QPainter::CompositionMode, const char*>::Info
     {"destination-in",   QPainter::CompositionMode_DestinationIn},
     {"destination-out",  QPainter::CompositionMode_DestinationOut},
     {"destination-over", QPainter::CompositionMode_DestinationOver},
-    {"lighter", QPainter::CompositionMode_Lighten},
+    {"lighter", QPainter::CompositionMode_Plus},
     {"copy",    QPainter::CompositionMode_Source},
     {"xor",     QPainter::CompositionMode_Xor},
     {0, (QPainter::CompositionMode)0}
