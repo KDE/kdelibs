@@ -838,15 +838,8 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     int toAdd = borderBottom() + paddingBottom();
     if (m_layer && scrollsOverflowX() && style()->height().isAuto())
         toAdd += m_layer->horizontalScrollbarHeight();
-
-    if ( hasOverhangingFloats() ) {
-          if (isFloatingOrPositioned() || flowAroundFloats()) {
-              if (floatBottom() + toAdd > m_height)
-                  m_overflowHeight = m_height = floatBottom() + toAdd;
-          else if (floatBottom() + toAdd > m_overflowHeight)
-              m_overflowHeight = qMax( m_overflowHeight, floatBottom() + toAdd );
-          }
-    }
+    if ( hasOverhangingFloats() && (isFloatingOrPositioned() || flowAroundFloats()) )
+        m_overflowHeight = m_height = floatBottom() + toAdd;
 
     int oldHeight = m_height;
     calcHeight();
