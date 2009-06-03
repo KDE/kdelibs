@@ -131,7 +131,182 @@ InfoOutput=4
 [11001]
 InfoOutput=4
 
-# KOStore debug info off
+# generic koffice debug off 
+[31000]
+InfoOutput=4
+
+# koml debug info off (KOffice)
+[30001]
+InfoOutput=4
+
+# kostore debug info off (KOffice)
 [30002]
 InfoOutput=4
 
+# komain debug info off (KOffice)
+[30003]
+InfoOutput=4
+
+# koguitutils debug info off (KOffice)
+[30004]
+InfoOutput=4
+
+# kopainter debug info off (KOffice)
+[30005]
+InfoOutput=4
+
+# flake debug info off (KOffice)
+[30006]
+InfoOutput=4
+
+# pigment debug info off (KOffice)
+[30008]
+InfoOutput=4
+
+# resources debug info off (KOffice)
+[30009]
+InfoOutput=4
+
+# kopageapp debug info off (KOffice)
+[30010]
+InfoOutput=4
+
+# koffice filter manager debug info off (KOffice)
+[30500]
+InfoOutput=4
+
+# kword debug info off
+[32001]
+InfoOutput=4
+
+# kword formatting debug info off
+[32002]
+InfoOutput=4
+
+# kword ui debug info off
+[32003]
+InfoOutput=4
+
+# kword tables debug info off
+[32004]
+InfoOutput=4
+
+# kword kross scripting debug info off
+[32010]
+InfoOutput=4
+
+# kpresenter debug info off
+[33001]
+InfoOutput=4
+
+# kpresenter page transitions debug off
+[33002]
+InfoOutput=4
+
+# kpresenter shape animations debug off
+[33003]
+InfoOutput=4
+
+# kchart debug info off
+[35001]
+InfoOutput=4
+
+# kchart debug info off
+[36000]
+InfoOutput=4
+
+# kspread  debug info off
+[36001]
+InfoOutput=4
+
+# kspread formula debug info off
+[36002]
+InfoOutput=4
+
+# kspread opendocument debug info off
+[36003]
+InfoOutput=4
+
+# kspread painting debug info off
+[36004]
+InfoOutput=4
+
+# kspread ui debug info off
+[36005]
+InfoOutput=4
+
+# kspread style debug info off
+[36006]
+InfoOutput=4
+
+# kspread damage debug info off
+[36007]
+InfoOutput=4
+
+# kspread debug info off
+[37000]
+InfoOutput=4
+
+# kformula debug info off
+[39001]
+InfoOutput=4
+
+# kformula debug info off
+[40000]
+InfoOutput=4
+
+# krita debug info off
+[41000]
+InfoOutput=4
+
+# krita debug info off (core)
+[41001]
+InfoOutput=4
+
+# krita debug info off (registry)
+[41002]
+InfoOutput=4
+
+# krita debug info off (tools)
+[41003]
+InfoOutput=4
+
+# krita debug info off (tiles)
+[41004]
+InfoOutput=4
+
+# krita debug info off (filters)
+[41005]
+InfoOutput=4
+
+# krita debug info off (plugins)
+[41006]
+InfoOutput=4
+
+# krita debug info off (user interface)
+[41007]
+InfoOutput=4
+
+# krita debug info off (file handling)
+[41008]
+InfoOutput=4
+
+# krita debug info off (math)
+[41009]
+InfoOutput=4
+
+# krita debug info off (render)
+[41010]
+InfoOutput=4
+
+# krita debug info off (scripting)
+[41011]
+InfoOutput=4
+
+# kplato debug info off
+[42000]
+InfoOutput=4
+
+# kivio debug info off
+[43000]
+InfoOutput=4
