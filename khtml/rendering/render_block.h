@@ -147,7 +147,7 @@ public:
     // called from lineWidth, to position the floats added in the last line.
     void positionNewFloats();
     void clearFloats();
-    int getClearDelta(RenderObject *child);
+    int getClearDelta(RenderObject *child, int yPos);
     virtual void markAllDescendantsWithFloatsForLayout(RenderObject* floatToRemove = 0);
 
     // FIXME: containsFloats() should not return true if the floating objects list
@@ -355,8 +355,8 @@ protected:
     RenderObject* handlePositionedChild(RenderObject* child, const MarginInfo& marginInfo, bool& handled);
     RenderObject* handleCompactChild(RenderObject* child, CompactInfo& compactInfo, const MarginInfo& marginInfo, bool& handled);
     RenderObject* handleRunInChild(RenderObject* child, bool& handled);
-    void collapseMargins(RenderObject* child, MarginInfo& marginInfo, int yPosEstimate);
-    void clearFloatsIfNeeded(RenderObject* child, MarginInfo& marginInfo, int oldTopPosMargin, int oldTopNegMargin);
+    int collapseMargins(RenderObject* child, MarginInfo& marginInfo, int yPos);
+    int clearFloatsIfNeeded(RenderObject* child, MarginInfo& marginInfo, int oldTopPosMargin, int oldTopNegMargin, int yPos);
     void adjustSizeForCompactIfNeeded(RenderObject* child, CompactInfo& compactInfo);
     void insertCompactIfNeeded(RenderObject* child, CompactInfo& compactInfo);
     int estimateVerticalPosition(RenderObject* child, const MarginInfo& info);
