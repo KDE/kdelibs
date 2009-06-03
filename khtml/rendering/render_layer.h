@@ -159,10 +159,10 @@ public:
     int xPos() const { return m_x; }
     int yPos() const { return m_y; }
 
-    short width() const;
+    int width() const;
     int height() const;
 
-    short scrollWidth() const { return m_scrollWidth; }
+    int scrollWidth() const { return m_scrollWidth; }
     int scrollHeight() const { return m_scrollHeight; }
 
     void resize( int w, int h ) {
@@ -178,14 +178,15 @@ public:
     void scrollOffset(int& x, int& y);
     void subtractScrollOffset(int& x, int& y);
     void checkInlineRelOffset(const RenderObject* o, int& x, int& y);
-    short scrollXOffset() { return m_scrollX; }
+    int scrollXOffset() { return m_scrollX + m_scrollXOrigin; }
     int scrollYOffset() { return m_scrollY; }
     void scrollToOffset(int x, int y, bool updateScrollbars = true, bool repaint = true);
     void scrollToXOffset(int x) { scrollToOffset(x, m_scrollY); }
-    void scrollToYOffset(int y) { scrollToOffset(m_scrollX, y); }
+    void scrollToYOffset(int y) { scrollToOffset(m_scrollX + m_scrollXOrigin, y); }
     void showScrollbar(Qt::Orientation, bool);
     ScrollBarWidget* horizontalScrollbar() { return m_hBar; }
     ScrollBarWidget* verticalScrollbar() { return m_vBar; }
+    bool hasReversedScrollbar() const;
     int verticalScrollbarWidth();
     int horizontalScrollbarHeight();
     void positionScrollbars(const QRect &damageRect);
@@ -301,15 +302,18 @@ protected:
     RenderLayer* m_last;
 
     // Our (x,y) coordinates are in our parent layer's coordinate space.
-    short m_x;
+    int m_x;
     int m_y;
 
     // Our scroll offsets if the view is scrolled.
-    short m_scrollX;
+    int m_scrollX;
     int m_scrollY;
 
+    // the reference for our x offset (will vary depending on layout direction)
+    int m_scrollXOrigin;
+
     // The width/height of our scrolled area.
-    short m_scrollWidth;
+    int m_scrollWidth;
     int m_scrollHeight;
 
     // For layers with overflow, we have a pair of scrollbars.

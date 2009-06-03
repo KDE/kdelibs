@@ -89,6 +89,7 @@ m_x( 0 ),
 m_y( 0 ),
 m_scrollX( 0 ),
 m_scrollY( 0 ),
+m_scrollXOrigin( 0 ),
 m_scrollWidth( 0 ),
 m_scrollHeight( 0 ),
 m_hBar( 0 ),
@@ -428,7 +429,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
         child->updateWidgetMasks(rootLayer);
 }
 
-short RenderLayer::width() const
+int RenderLayer::width() const
 {
     int w = m_object->width();
     if (!m_object->hasOverflowClip())
@@ -711,7 +712,7 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repai
     // complicated (since it will involve testing whether our layer
     // is either occluded by another layer or clipped by an enclosing
     // layer or contains fixed backgrounds, etc.).
-    m_scrollX = x;
+    m_scrollX = x - m_scrollXOrigin;
     m_scrollY = y;
 
     // Update the positions of our child layers.
@@ -725,7 +726,7 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repai
 
     if (updateScrollbars) {
         if (m_hBar)
-            m_hBar->setValue(m_scrollX);
+            m_hBar->setValue(scrollXOffset());
         if (m_vBar)
             m_vBar->setValue(m_scrollY);
     }
@@ -741,7 +742,8 @@ void RenderLayer::updateScrollPositionFromScrollbars()
     int newY = m_scrollY;
 
     if (m_hBar) {
-        newX = m_hBar->value();
+        bool rtl = (m_hBar->layoutDirection() == Qt::RightToLeft);
+        newX = rtl ? m_hBar->maximum()-m_hBar->value() : m_hBar->value();
         if (newX != m_scrollX)
            needUpdate = true;
     }
@@ -780,6 +782,13 @@ RenderLayer::showScrollbar(Qt::Orientation o, bool show)
 	m_hBar = sb;
     else
 	m_vBar = sb;
+}
+
+bool RenderLayer::hasReversedScrollbar() const
+{
+    if (!m_vBar)
+        return false;
+    return (m_vBar->layoutDirection() == Qt::RightToLeft);
 }
 
 int RenderLayer::verticalScrollbarWidth()
@@ -882,6 +891,8 @@ void RenderLayer::checkScrollbarsAfterLayout()
     if (bottomPos - m_object->borderTop() > m_scrollHeight)
         m_scrollHeight = bottomPos - m_object->borderTop();
 
+    m_scrollXOrigin = 0; // ### (m_object->style()->direction() == RTL) ? m_scrollWidth - clientWidth : 0;
+
     bool needHorizontalBar = rightPos > width();
     bool needVerticalBar = bottomPos > height();
 
@@ -929,6 +940,8 @@ void RenderLayer::checkScrollbarsAfterLayout()
         m_hBar->setKnobProportion(clientWidth, m_scrollWidth);
 #else
         m_hBar->setRange(0, needHorizontalBar ? m_scrollWidth-clientWidth : 0);
+        if (hasReversedScrollbar())
+            m_hBar->setValue( m_hBar->maximum() - m_scrollX );
 #endif
     }
     if (m_vBar) {

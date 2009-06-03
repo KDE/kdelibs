@@ -1370,6 +1370,9 @@ void RenderBlock::determineHorizontalPosition(RenderObject* child)
     if (style()->direction() == LTR) {
         int xPos = borderLeft() + paddingLeft();
 
+        if (m_layer && scrollsOverflowY() && m_layer->hasReversedScrollbar())
+            xPos += m_layer->verticalScrollbarWidth();
+
         // Add in our left margin.
         int chPos = xPos + child->marginLeft();
 
@@ -1396,7 +1399,7 @@ void RenderBlock::determineHorizontalPosition(RenderObject* child)
         child->setPos(chPos, child->yPos());
     } else {
         int xPos = m_width - borderRight() - paddingRight();
-        if (m_layer && scrollsOverflowY())
+        if (m_layer && scrollsOverflowY() && !m_layer->hasReversedScrollbar())
             xPos -= m_layer->verticalScrollbarWidth();
         int chPos = xPos - (child->width() + child->marginRight());
         if (child->flowAroundFloats()) {
@@ -2148,7 +2151,10 @@ void RenderBlock::newLine()
 int
 RenderBlock::leftOffset() const
 {
-    return borderLeft()+paddingLeft();
+    int left = borderLeft()+paddingLeft();
+    if (m_layer && scrollsOverflowY() && m_layer->hasReversedScrollbar())
+        left += m_layer->verticalScrollbarWidth();
+    return left;
 }
 
 int
@@ -2190,7 +2196,7 @@ int
 RenderBlock::rightOffset() const
 {
     int right = m_width - borderRight() - paddingRight();
-    if (m_layer && scrollsOverflowY())
+    if (m_layer && scrollsOverflowY() && !m_layer->hasReversedScrollbar())
         right -= m_layer->verticalScrollbarWidth();
     return right;
 }

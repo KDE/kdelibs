@@ -866,6 +866,8 @@ QRect RenderBox::overflowClipRect(int tx, int ty)
 
     // Substract out scrollbars if we have them.
     if (m_layer) {
+        if (m_layer->hasReversedScrollbar())
+            clipx += m_layer->verticalScrollbarWidth();
         clipw -= m_layer->verticalScrollbarWidth();
         cliph -= m_layer->horizontalScrollbarHeight();
     }
