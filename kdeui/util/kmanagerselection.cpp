@@ -308,6 +308,7 @@ void KSelectionOwner::filter_selection_request( XSelectionRequestEvent& ev_P )
         handled = handle_selection( ev_P.target, ev_P.property, ev_P.requestor );
         }
     XEvent ev;
+    ev.xselection.selection = ev_P.selection;
     ev.xselection.type = SelectionNotify;
     ev.xselection.display = QX11Info::display();
     ev.xselection.requestor = ev_P.requestor;
