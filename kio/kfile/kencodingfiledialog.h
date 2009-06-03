@@ -103,6 +103,7 @@ public:
      * Note that with
      * this method the user must select an existing filename.
      *
+     * @param encoding The encoding shown in the encoding combo.
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
      *         @li QString() to start in the current working
@@ -114,7 +115,6 @@ public:
      *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
-     * @param encoding The encoding shown in the encoding combo.
      * @param filter A shell glob or a mime-type-filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
@@ -135,6 +135,7 @@ public:
      * Note that with
      * this method the user must select an existing filename.
      *
+     * @param encoding The encoding shown in the encoding combo.
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
      *         @li QString() to start in the current working
@@ -146,7 +147,6 @@ public:
      *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
-     * @param encoding The encoding shown in the encoding combo.
      * @param filter A shell glob or a mime-type-filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
@@ -167,6 +167,7 @@ public:
      * Note that with
      * this method the user must select an existing URL.
      *
+     * @param encoding The encoding shown in the encoding combo.
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
      *         @li QString() to start in the current working
@@ -178,7 +179,6 @@ public:
      *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
-     * @param encoding The encoding shown in the encoding combo.
      * @param filter A shell glob or a mime-type-filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
@@ -202,6 +202,7 @@ public:
      * Note that with
      * this method the user must select an existing filename.
      *
+     * @param encoding The encoding shown in the encoding combo.
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
      *         @li QString() to start in the current working
@@ -213,7 +214,6 @@ public:
      *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
-     * @param encoding The encoding shown in the encoding combo.
      * @param filter A shell glob or a mime-type-filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
@@ -236,6 +236,7 @@ public:
      * Note that with this
      * method the user need not select an existing filename.
      *
+     * @param encoding The encoding shown in the encoding combo.
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
      *         @li a relative path or a filename determining the
@@ -249,7 +250,6 @@ public:
      *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
-     * @param encoding The encoding shown in the encoding combo.
      * @param filter A shell glob or a mime-type-filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
@@ -271,6 +271,7 @@ public:
      * Note that with this
      * method the user need not select an existing filename.
      *
+     * @param encoding The encoding shown in the encoding combo.
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
      *         @li a relative path or a filename determining the
@@ -284,7 +285,6 @@ public:
      *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
-     * @param encoding The encoding shown in the encoding combo.
      * @param filter A shell glob or a mime-type-filter that specifies which files to display.
      *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
      *    Otherwise you can set the text to be displayed for the each glob, and
