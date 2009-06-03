@@ -1081,15 +1081,11 @@ void RenderBox::relativePositionOffset(int &tx, int &ty) const
         tx -= style()->right().width(containingBlockWidth());
     if(!style()->top().isAuto())
     {
-        if (!style()->top().isPercent()
-                || containingBlock()->style()->height().isFixed())
-            ty += style()->top().width(containingBlockHeight());
+        ty += style()->top().width(containingBlockHeight());
     }
     else if(!style()->bottom().isAuto())
     {
-        if (!style()->bottom().isPercent()
-                || containingBlock()->style()->height().isFixed())
-            ty -= style()->bottom().width(containingBlockHeight());
+        ty -= style()->bottom().width(containingBlockHeight());
     }
 }
 
