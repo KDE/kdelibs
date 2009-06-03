@@ -2400,6 +2400,10 @@ void HTMLSelectElementImpl::attach()
 
 bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoded_values, bool)
 {
+    // submitting with no name would lead to empty lhs ?=foo&=bar
+    if (name().isEmpty())
+        return false;
+
     bool successful = false;
     const QByteArray enc_name = fixUpfromUnicode(codec, name().string());
     const QVector<HTMLGenericFormElementImpl*> items = listItems();
@@ -2409,7 +2413,7 @@ bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
     for (i = 0; i < itemsSize; ++i) {
         if (items[i]->id() == ID_OPTION) {
             HTMLOptionElementImpl* const option = static_cast<HTMLOptionElementImpl*>(items[i]);
-            if (option->selectedBit()) {
+            if (option->selectedBit() && !option->disabled()) {
                 encoded_values += enc_name;
                 encoded_values += fixUpfromUnicode(codec, option->value().string());
                 successful = true;
@@ -2421,7 +2425,7 @@ bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
     // in any case. otherwise we have no consistency with the DOM interface. FIXME!
     // we return the first one if it was a combobox select
     if (!successful && !m_multiple && m_size <= 1 && itemsSize &&
-        (items[0]->id() == ID_OPTION) ) {
+        (items[0]->id() == ID_OPTION && !items[0]->disabled()) ) {
         HTMLOptionElementImpl* const option = static_cast<HTMLOptionElementImpl*>(items[0]);
         encoded_values += enc_name;
         if (option->value().isNull())
