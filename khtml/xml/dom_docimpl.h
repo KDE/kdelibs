@@ -240,6 +240,7 @@ public:
     // Other methods (not part of DOM)
     virtual bool isDocumentNode() const { return true; }
     virtual bool isHTMLDocument() const { return false; }
+    virtual bool isSVGDocument() const;
 
     virtual ElementImpl *createHTMLElement ( const DOMString &tagName );
     // SVG

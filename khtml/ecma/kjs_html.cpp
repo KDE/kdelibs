@@ -997,7 +997,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   x     	KJS::HTMLElement::ImageX		DontDelete|ReadOnly
   y     	KJS::HTMLElement::ImageY		DontDelete|ReadOnly
 @end
-@begin HTMLObjectElementTable 20
+@begin HTMLObjectElementTable 23
   form		  KJS::HTMLElement::ObjectForm		  DontDelete|ReadOnly
   code		  KJS::HTMLElement::ObjectCode		  DontDelete
   align		  KJS::HTMLElement::ObjectAlign		  DontDelete
@@ -1017,6 +1017,11 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   useMap	  KJS::HTMLElement::ObjectUseMap	  DontDelete
   vspace	  KJS::HTMLElement::ObjectVspace	  DontDelete
   width		  KJS::HTMLElement::ObjectWidth		  DontDelete
+@end
+@begin HTMLObjectElementProtoTable 1
+# half deprecated - cf. http://lists.w3.org/Archives/Public/www-svg/2008Feb/0031.html
+# only implemented in ecma, because of acid3 dependency
+  getSVGDocument  KJS::HTMLElement::ObjectGetSVGDocument  DontDelete|Function 0
 @end
 @begin HTMLParamElementTable 4
   name		KJS::HTMLElement::ParamName		DontDelete
@@ -1175,7 +1180,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   width		  KJS::HTMLElement::FrameWidth			DontDelete|ReadOnly
   height	  KJS::HTMLElement::FrameHeight			DontDelete|ReadOnly
 @end
-@begin HTMLIFrameElementTable 12
+@begin HTMLIFrameElementTable 13
   align		  KJS::HTMLElement::IFrameAlign			DontDelete
   contentDocument KJS::HTMLElement::IFrameContentDocument       DontDelete|ReadOnly
   contentWindow KJS::HTMLElement::IFrameContentWindow        DontDelete|ReadOnly
@@ -1188,6 +1193,11 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   scrolling	  KJS::HTMLElement::IFrameScrolling		DontDelete
   src		  KJS::HTMLElement::IFrameSrc			DontDelete
   width		  KJS::HTMLElement::IFrameWidth			DontDelete
+@end
+@begin HTMLIFrameElementProtoTable 1
+# half deprecated - cf. http://lists.w3.org/Archives/Public/www-svg/2008Feb/0031.html
+# only implemented in ecma, because of acid3 dependency
+  getSVGDocument  KJS::HTMLElement::IFrameGetSVGDocument        DontDelete|Function 0
 @end
 
 @begin HTMLMarqueeElementProtoTable 2
@@ -2271,6 +2281,22 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
       }
       break;
     }
+  case ID_IFRAME: {
+      DOM::HTMLIFrameElementImpl& iFrame = static_cast<DOM::HTMLIFrameElementImpl&>(element);
+      if (id == KJS::HTMLElement::IFrameGetSVGDocument) {
+          if (!checkNodeSecurity(exec,iFrame.contentDocument()) || !iFrame.contentDocument() || !iFrame.contentDocument()->isSVGDocument())
+              return jsUndefined();
+          return getDOMNode(exec, iFrame.contentDocument());
+      }
+    }
+  case ID_OBJECT: {
+      DOM::HTMLObjectElementImpl& object = static_cast<DOM::HTMLObjectElementImpl&>(element);
+      if (id == KJS::HTMLElement::ObjectGetSVGDocument) {
+          if (!checkNodeSecurity(exec,object.contentDocument()) || !object.contentDocument() || !object.contentDocument()->isSVGDocument())
+              return jsUndefined();
+          return getDOMNode(exec, object.contentDocument());
+      }
+    }
   }
 
   if (id == HTMLElement::ElementScrollIntoView) {
@@ -2700,7 +2726,8 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLAnchorElementPseudoCtor, "HTMLAnchorElement", H
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLImageElement", HTMLImageElementProto, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLImageElementPseudoCtor, "HTMLImageElement", HTMLImageElementProto)
 
-KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLObjectElement", HTMLObjectElementProto, HTMLElementProto)
+KJS_DEFINE_PROTOTYPE(HTMLObjectElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLObjectElement", HTMLObjectElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLObjectElementPseudoCtor, "HTMLObjectElement", HTMLObjectElementProto)
 
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLParamElement", HTMLParamElementProto, HTMLElementProto)
@@ -2748,7 +2775,8 @@ IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLLayerElementPseudoCtor, "HTMLLayerElement", HTM
 KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLFrameElement", HTMLFrameElementProto, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLFrameElementPseudoCtor, "HTMLFrameElement", HTMLFrameElementProto)
 
-KJS_EMPTY_PROTOTYPE_WITH_PROTOTYPE("HTMLIFrameElement", HTMLIFrameElementProto, HTMLElementProto)
+KJS_DEFINE_PROTOTYPE(HTMLIFrameElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLIFrameElement", HTMLIFrameElementProto, HTMLElementFunction, HTMLElementProto)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLIFrameElementPseudoCtor, "HTMLIFrameElement", HTMLIFrameElementProto)
 
 KJS_DEFINE_PROTOTYPE(HTMLMarqueeElementProto)

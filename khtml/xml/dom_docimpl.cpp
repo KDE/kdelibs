@@ -2941,6 +2941,11 @@ void DOM::DocumentImpl::releaseCachedNodeListInfo(NodeListImpl::Cache* entry)
     entry->deref();
 }
 
+bool DOM::DocumentImpl::isSVGDocument() const
+{
+    return (documentElement()->id() == WebCore::SVGNames::svgTag.id()); 
+}
+
 const WebCore::SVGDocumentExtensions* DOM::DocumentImpl::svgExtensions()
 {
     return m_svgExtensions;
