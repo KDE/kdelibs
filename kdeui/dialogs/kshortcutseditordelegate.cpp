@@ -58,10 +58,13 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QTreeWidget *parent, bool all
 
     bool isRtl = QApplication::isRightToLeft();
     QApplication::style()->drawPrimitive( isRtl ? QStyle::PE_IndicatorArrowLeft : QStyle::PE_IndicatorArrowRight, &option, &p );
+    p.end();
     setExtendPixmap( pixmap );
 
     pixmap.fill( QColor( Qt::transparent ) );
+    p.begin( &pixmap );
     QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowDown, &option, &p );
+    p.end();
     setContractPixmap( pixmap );
 
     parent->installEventFilter(this);
