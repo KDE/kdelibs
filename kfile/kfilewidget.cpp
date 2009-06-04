@@ -897,14 +897,6 @@ void KFileWidget::slotOk()
     // restore it
     d->differentHierarchyLevelItemsEntered = false;
 
-    // if we are on local mode, make sure we haven't got a remote base url
-    if ((mode & KFile::LocalOnly) && !d->mostLocalUrl(d->url).isLocalFile()) {
-        KMessageBox::sorry(this,
-                           i18n("You can only select local files"),
-                           i18n("Remote files not accepted"));
-        return;
-    }
-
     // locationEditCurrentTextList contains absolute paths
     // this is the general loop for the File and Files mode. Obviously we know
     // that the File mode will iterate only one time here
@@ -929,6 +921,14 @@ void KFileWidget::slotOk()
             return;
         }
 
+        // if we are on local mode, make sure we haven't got a remote base url
+        if ((mode & KFile::LocalOnly) && !d->mostLocalUrl(d->url).isLocalFile()) {
+            KMessageBox::sorry(this,
+                            i18n("You can only select local files"),
+                            i18n("Remote files not accepted"));
+            return;
+        }
+        
         if ((d->operationMode == Saving) && d->confirmOverwrite && !d->toOverwrite(url)) {
             return;
         }
