@@ -127,9 +127,9 @@ KGuiItem no()
 
 KGuiItem discard()
 {
-  return KGuiItem( i18n( "&Discard" ), "", i18n( "Discard changes" ),
+  return KGuiItem( i18n( "&Discard" ), "edit-clear", i18n( "Discard changes" ),
                    i18n( "Pressing this button will discard all recent "
-                         "changes made in this dialog" ) );
+                         "changes made in this dialog." ) );
 }
 
 KGuiItem save()
