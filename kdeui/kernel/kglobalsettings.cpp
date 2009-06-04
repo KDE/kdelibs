@@ -889,11 +889,6 @@ QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &confi
 {
     QPalette palette;
 
-    /*
-     * TODO win32: Don't know how to make KColorSchemePrivate use the default
-     *             colors from application instead the pre-defined ones.
-     */
-#ifndef Q_WS_WIN
     QPalette::ColorGroup states[3] = { QPalette::Active, QPalette::Inactive,
                                        QPalette::Disabled };
 
@@ -928,7 +923,6 @@ QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &confi
         palette.setBrush( state, QPalette::Link, schemeView.foreground( KColorScheme::LinkText ) );
         palette.setBrush( state, QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
     }
-#endif
 
     return palette;
 }
