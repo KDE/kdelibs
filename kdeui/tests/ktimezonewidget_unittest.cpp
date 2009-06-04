@@ -36,6 +36,20 @@ private Q_SLOTS:
         KTimeZoneWidget tzw;
         QVERIFY(tzw.topLevelItemCount() > 0);
         QVERIFY(tzw.selectedItems().isEmpty());
+
+        // Single selection mode (default)
+        QVERIFY(tzw.selectionMode() == KTimeZoneWidget::SingleSelection);
+        tzw.setSelected("Europe/Zurich", true);
+        QCOMPARE(tzw.selectedItems().count(), 1);
+        QCOMPARE(tzw.selection(), QStringList() << "Europe/Zurich");
+        tzw.setSelected("Africa/Cairo", true);
+        QCOMPARE(tzw.selectedItems().count(), 1);
+        QCOMPARE(tzw.selection(), QStringList() << "Africa/Cairo");
+
+        // Multiple selections explicitly allowed
+        tzw.setSelectionMode(KTimeZoneWidget::MultiSelection);
+        tzw.clearSelection();
+        QVERIFY(tzw.selectedItems().isEmpty());
         tzw.setSelected("Europe/Paris", true);
         QCOMPARE(tzw.selectedItems().count(), 1);
         QCOMPARE(tzw.selection(), QStringList() << "Europe/Paris");
