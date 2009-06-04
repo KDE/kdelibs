@@ -105,7 +105,4 @@ private:
     Q_DISABLE_COPY(KAnimatedButton)
 };
 
-// ### PRIVATE temporary definition to help KonqAnimatedLogo, remove before release
-#define KANIMATEDBUTTON_HAS_FIXED_UPDATE_ICONS
-
 #endif //  KANIMATEDBUTTON_H
