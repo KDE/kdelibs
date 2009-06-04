@@ -16,12 +16,12 @@
  *   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,      *
  *   Boston, MA 02110-1301, USA.                                               *
  *******************************************************************************/
-#include <config.h> // for HAVE_XRENDER
 
 #include "kfilepreviewgenerator.h"
 
 #include "../kio/kio/defaultviewadapter_p.h"
 #include "../kio/kio/imagefilter_p.h"
+#include <config.h> // for HAVE_XRENDER
 #include <kconfiggroup.h>
 #include <kfileitem.h>
 #include <kiconeffect.h>
