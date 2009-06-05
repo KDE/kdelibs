@@ -24,6 +24,7 @@ set(visualnotifications_xml org.kde.VisualNotifications.xml)
 QT4_ADD_DBUS_INTERFACE(knotificationitem_SRCS ${visualnotifications_xml} visualnotifications_interface)
 
 kde4_add_library(knotificationitem-1 SHARED ${knotificationitem_SRCS})
+set_target_properties(knotificationitem-1 PROPERTIES VERSION 1.0.0 SOVERSION 1)
 target_link_libraries(knotificationitem-1 ${KDE4_KDEUI_LIBS})
 
 kde4_add_executable(knotificationitemtest ${knotificationitemtest_SRC})
