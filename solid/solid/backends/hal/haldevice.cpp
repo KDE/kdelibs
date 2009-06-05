@@ -432,6 +432,9 @@ QObject *HalDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
     case Solid::DeviceInterface::SerialInterface:
         iface = new SerialInterface(this);
         break;
+    case Solid::DeviceInterface::SmartCardReader:
+        iface = new SmartCardReader(this);
+        break;
     case Solid::DeviceInterface::Unknown:
     case Solid::DeviceInterface::Last:
         break;

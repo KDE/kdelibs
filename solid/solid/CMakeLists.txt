@@ -234,7 +234,7 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h devic
                storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h
                camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h
                button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h
-               networking.h video.h serialinterface.h
+               networking.h video.h serialinterface.h smartcardreader.h
                DESTINATION ${INCLUDE_INSTALL_DIR}/solid COMPONENT Devel)
 
 ########### parser build ###############
