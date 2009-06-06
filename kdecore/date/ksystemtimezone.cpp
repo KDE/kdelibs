@@ -96,7 +96,7 @@ int gmtoff(time_t t)
     if (lwday != uwday)
     {
       // Adjust for different day
-      if (lwday == uwday + 1  ||  lwday == 0 && uwday == 6)
+      if (lwday == uwday + 1  ||  (lwday == 0 && uwday == 6))
         lt += 24*3600;
       else
         lt -= 24*3600;
