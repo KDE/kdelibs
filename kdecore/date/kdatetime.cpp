@@ -257,9 +257,6 @@ QDataStream & operator<<(QDataStream &s, const KDateTime::Spec &spec)
             s << static_cast<quint8>('o') << spec.utcOffset();
             break;
         case KDateTime::TimeZone:
-#ifdef __GNUC__
-#warning TODO: write full time zone data?
-#endif
             s << static_cast<quint8>('z') << (spec.timeZone().isValid() ? spec.timeZone().name() : QString());
             break;
         case KDateTime::ClockTime:
@@ -296,9 +293,6 @@ QDataStream & operator>>(QDataStream &s, KDateTime::Spec &spec)
             QString zone;
             s >> zone;
             KTimeZone tz = KSystemTimeZones::zone(zone);
-#ifdef __GNUC__
-#warning TODO: read full time zone data?
-#endif
             spec.setType(tz);
             break;
         }
