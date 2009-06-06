@@ -540,6 +540,13 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
     wordSelectCursor.select(QTextCursor::WordUnderCursor);
     QString selectedWord = wordSelectCursor.selectedText();
 
+    bool isMouseCursorInsideWord = true;
+    if ((mousePos < wordSelectCursor.selectionStart() ||
+            mousePos >= wordSelectCursor.selectionEnd())
+                                        && (selectedWord.length() > 1)) {
+         isMouseCursorInsideWord = false;
+    }
+
     // Clear the selection again, we re-select it below (without the apostrophes).
     wordSelectCursor.setPosition(wordSelectCursor.position()-selectedWord.size());
     if (selectedWord.startsWith('\'') || selectedWord.startsWith('\"')) {
@@ -552,7 +559,8 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
     wordSelectCursor.movePosition(QTextCursor::NextCharacter,
                                   QTextCursor::KeepAnchor, selectedWord.size());
 
-    const bool wordIsMisspelled = checkSpellingEnabled() &&
+    const bool wordIsMisspelled = isMouseCursorInsideWord &&
+                            checkSpellingEnabled() &&
                             !selectedWord.isEmpty() &&
                             highlighter() &&
                             highlighter()->isWordMisspelled(selectedWord);
