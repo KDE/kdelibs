@@ -217,11 +217,9 @@ KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, int pos, 
     int sl, rsl, rpos;
     if (str[pos + 1] == QLatin1Char('{')) {
         rpos = pos + 2;
-        sl = str.indexOf(QLatin1Char('}'), rpos);
-        if (sl == -1)
+        if ((sl = str.indexOf(QLatin1Char('}'), rpos)) < 0)
             return 0;
-        else
-          sl -= rpos;
+        sl -= rpos;
         rsl = sl + 3;
     } else {
         rpos = pos + 1;
@@ -287,9 +285,9 @@ KWordMacroExpander::expandEscapedMacro( const QString &str, int pos, QStringList
     int sl, rsl, rpos;
     if (str[pos + 1] == QLatin1Char('{')) {
         rpos = pos + 2;
-        for (sl = 0; str[rpos + sl] != QLatin1Char('}'); sl++)
-            if (rpos + sl >= str.length())
-                return 0;
+        if ((sl = str.indexOf(QLatin1Char('}'), rpos)) < 0)
+            return 0;
+        sl -= rpos;
         rsl = sl + 3;
     } else {
         rpos = pos + 1;
