@@ -1441,7 +1441,8 @@ bool KFileWidgetPrivate::toOverwrite(const KUrl &url)
     if (res) {
         int ret = KMessageBox::warningContinueCancel( q,
             i18n( "The file \"%1\" already exists. Do you wish to overwrite it?" ,
-            url.fileName() ), i18n( "Overwrite File?" ), KStandardGuiItem::overwrite());
+            url.fileName() ), i18n( "Overwrite File?" ), KStandardGuiItem::overwrite(),
+            KStandardGuiItem::cancel(), QString(), KMessageBox::Notify | KMessageBox::Dangerous);
 
         if (ret != KMessageBox::Continue) {
             return false;
