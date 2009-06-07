@@ -409,6 +409,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_docChanged = false;
     m_elemSheet = 0;
     m_tokenizer = 0;
+    m_decoder = 0;
     m_doctype = 0;
     m_implementation = _implementation;
     m_implementation->ref();

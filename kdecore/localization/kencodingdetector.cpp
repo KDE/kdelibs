@@ -696,6 +696,19 @@ QTextDecoder* KEncodingDetector::decoder()
     return d->m_decoder;
 }
 
+void KEncodingDetector::resetDecoder()
+{
+    assert(d->m_defaultCodec);
+    d->m_bufferForDefferedEncDetection.clear();
+    d->m_writtingHappened = false;
+    d->m_analyzeCalled = false;
+    d->m_multiByte = 0;
+    delete d->m_decoder;
+    if (!d->m_codec)
+        d->m_codec = d->m_defaultCodec;
+    d->m_decoder = d->m_codec->makeDecoder();
+}
+
 bool KEncodingDetector::setEncoding(const char *_encoding, EncodingChoiceSource type)
 {
     QTextCodec *codec;
@@ -838,6 +851,11 @@ QString KEncodingDetector::decodeWithBuffering(const char *data, int len)
     }
 
     return QString();
+}
+
+bool KEncodingDetector::decodedInvalidCharacters() const
+{
+    return d->m_decoder ? d->m_decoder->hasFailure() : false;
 }
 
 QString KEncodingDetector::flush()

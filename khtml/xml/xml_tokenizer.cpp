@@ -37,6 +37,7 @@
 #include <QtCore/QVariant>
 #include <kdebug.h>
 #include <klocale.h>
+#include <kencodingdetector.h>
 
 // SVG includes
 #include "svg/SVGScriptElement.h"
@@ -96,7 +97,7 @@ void XMLIncrementalSource::setFinished( bool finished )
 }
 
 XMLHandler::XMLHandler(DocumentImpl *_doc, KHTMLView *_view)
-    : errorLine(0)
+    : errorLine(-1)
 {
     m_doc = _doc;
     m_view = _view;
@@ -464,6 +465,7 @@ void XMLTokenizer::write( const TokenizerString &str, bool appendData )
 {
     if ( !m_noErrors && appendData )
         return;
+ 
     // check if we try to re-enter inside write()
     // if so buffer the data
     if (m_insideWrite) {
@@ -479,6 +481,14 @@ void XMLTokenizer::write( const TokenizerString &str, bool appendData )
         m_source.setData( str.toString() );
     }
     m_noErrors = m_reader.parseContinue();
+
+    if (m_doc->decoder() && m_doc->decoder()->decodedInvalidCharacters()) {
+        // any invalid character spotted by the decoder is fatal, per XML 1.0 spec. Tested by Acid 3 - 70
+        m_handler.fatalError( QXmlParseException( m_handler.errorString() ) );  // ### FIXME: make that more informative after string freeze : i18n("input stream contains invalid characters")
+        m_noErrors = false;
+        finish();
+        return;
+    }
 
     // check if while parsing we tried to re-enter write() method so now we have some buffered data we need to write to document
     while (m_noErrors && !m_bufferedData.isEmpty()) {
@@ -520,7 +530,7 @@ void XMLTokenizer::finish()
             static_cast<NodeImpl*>(m_doc)->removeChild(m_doc->firstChild(),exceptioncode);
 
         QString line, errorLocPtr;
-        if ( m_handler.errorLine ) {
+        if ( m_handler.errorLine != -1 ) {
             QString xmlCode = m_source.data();
             QTextStream stream(&xmlCode, QIODevice::ReadOnly);
             for (unsigned long lineno = 0; lineno < m_handler.errorLine-1; lineno++)

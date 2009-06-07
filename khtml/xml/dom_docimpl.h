@@ -50,6 +50,7 @@ class QPaintDevice;
 class QTextCodec;
 class KHTMLView;
 class QEventLoop;
+class KEncodingDetector;
 
 namespace khtml {
     class Tokenizer;
@@ -370,6 +371,8 @@ public:
     CSSStyleSheetImpl* elementSheet();
     virtual khtml::Tokenizer *createTokenizer();
     khtml::Tokenizer *tokenizer() { return m_tokenizer; }
+    KEncodingDetector* decoder() { return m_decoder; }
+    void setDecoder(KEncodingDetector* enc) { m_decoder = enc; }
 
     void setPaintDevice(QPaintDevice *dev){m_paintDevice = dev;}
     QPaintDevice *paintDevice() const {return m_paintDevice;}
@@ -613,6 +616,7 @@ protected:
 
     khtml::DocLoader *m_docLoader;
     khtml::Tokenizer *m_tokenizer;
+    KEncodingDetector *m_decoder;
     KUrl m_url;
     KUrl m_baseURL;
     QString m_baseTarget;

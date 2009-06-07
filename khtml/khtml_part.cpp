@@ -6840,10 +6840,9 @@ KEncodingDetector *KHTMLPart::createDecoder()
             ? QByteArray( parentPart()->d->m_decoder->encoding() ) : settings()->encoding().toLatin1();
         dec->setEncoding(defaultEncoding.constData(), KEncodingDetector::DefaultEncoding);
     }
-#ifdef APPLE_CHANGES
+
     if (d->m_doc)
-        d->m_doc->setDecoder(d->m_decoder);
-#endif
+        d->m_doc->setDecoder(dec);
     dec->setAutoDetectLanguage( d->m_autoDetectLanguage );
     return dec;
 }

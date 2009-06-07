@@ -93,8 +93,8 @@ public:
 
     bool fatalError( const QXmlParseException& exception );
 
-    unsigned long errorLine;
-    unsigned long errorCol;
+    int errorLine;
+    int errorCol;
 
 private:
     void pushNode( DOM::NodeImpl *node );

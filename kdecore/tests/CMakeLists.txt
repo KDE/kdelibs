@@ -57,6 +57,7 @@ KDECORE_UNIT_TESTS(
  ktcpsockettest
  ksycocathreadtest
  kdebug_unittest
+ kencodingdetectortest
 )
 
 if(UNIX)

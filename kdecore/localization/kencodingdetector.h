@@ -148,6 +148,31 @@ public:
     QString decodeWithBuffering(const char *data, int len);
 
     /**
+     * This method checks whether invalid characters were found
+     * during a decoding operation.
+     *
+     * Note that this bit is never reset once invalid characters have been found.
+     * To force a reset, either change the encoding using setEncoding() or call
+     * resetDecoder()
+     * 
+     * @returns a boolean reflecting said state.
+     * @since 4.3
+     * @see resetDecoder() setEncoding()
+     */    
+    bool decodedInvalidCharacters() const;
+
+    /**
+     * Resets the decoder. Any stateful decoding information (such as resulting from previous calls
+     * to decodeWithBuffering()) will be lost.
+     * Will Reset the state of decodedInvalidCharacters() as a side effect.
+     *
+     * @since 4.3
+     * @see decodeWithBuffering() decodedInvalidCharacters()
+     *
+     */ 
+    void resetDecoder();
+
+    /**
     * Convenience method to be used with decodeForHtml. Flushes buffer.
     * @see decodeForHtml()
     */
