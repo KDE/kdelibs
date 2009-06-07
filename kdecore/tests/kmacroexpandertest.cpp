@@ -78,9 +78,9 @@ KMacroExpanderTest::expandMacros()
     list << QString("element1") << QString("'element2'");
     map.insert('l', list);
 
-    s = "text %l %n text";
+    s = "%% text %l text %n";
     QCOMPARE(KMacroExpander::expandMacros(s, map),
-        QLatin1String("text element1 'element2' Restaurant \"Chew It\" text"));
+        QLatin1String("% text element1 'element2' text Restaurant \"Chew It\""));
     s = "text \"%l %n\" text";
     QCOMPARE(KMacroExpander::expandMacros(s, map),
         QLatin1String("text \"element1 'element2' Restaurant \"Chew It\"\" text"));
@@ -103,10 +103,16 @@ KMacroExpanderTest::expandMacros()
     s = "Title: %foo - %file - %url - %name - %";
     QCOMPARE(KMacroExpander::expandMacros(s, smap),
         QLatin1String("Title: %n - filename.txt - http://www.kde.org/index.html - Restaurant \"Chew It\" - %"));
+    s = "%foo - %file - %url - %name";
+    QCOMPARE(KMacroExpander::expandMacros(s, smap),
+        QLatin1String("%n - filename.txt - http://www.kde.org/index.html - Restaurant \"Chew It\""));
 
     s = "Title: %{foo} - %{file} - %{url} - %{name} - %";
     QCOMPARE(KMacroExpander::expandMacros(s, smap),
         QLatin1String("Title: %n - filename.txt - http://www.kde.org/index.html - Restaurant \"Chew It\" - %"));
+    s = "%{foo} - %{file} - %{url} - %{name}";
+    QCOMPARE(KMacroExpander::expandMacros(s, smap),
+        QLatin1String("%n - filename.txt - http://www.kde.org/index.html - Restaurant \"Chew It\""));
 
     s = "Title: %foo-%file-%url-%name-%";
     QCOMPARE(KMacroExpander::expandMacros(s, smap),

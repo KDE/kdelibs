@@ -104,10 +104,10 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
             if (cc == '\'')
                 state = sstack.pop();
         } else if (cc == '$') {
-            cc = str[++pos].unicode();
+            cc = str.unicode()[++pos].unicode();
             if (cc == '(') {
                 sstack.push( state );
-                if (str[pos + 1].unicode() == '(') {
+                if (str.unicode()[pos + 1].unicode() == '(') {
                     Save sav = { str, pos + 2 };
                     ostack.push( sav );
                     state.current = math;
@@ -143,7 +143,7 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
                 if (cc == '`')
                     break;
                 if (cc == '\\') {
-                    cc = str[++pos2].unicode();
+                    cc = str.unicode()[++pos2].unicode();
                     if (cc == '$' || cc == '`' || cc == '\\' ||
                         (cc == '"' && state.dquote))
                     {
@@ -177,7 +177,7 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
                 state = sstack.pop();
         } else if (cc == ')') {
             if (state.current == math) {
-                if (str[pos + 1].unicode() == ')') {
+                if (str.unicode()[pos + 1].unicode() == ')') {
                     state = sstack.pop();
                     pos += 2;
                 } else {

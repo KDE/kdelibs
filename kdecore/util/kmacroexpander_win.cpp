@@ -71,9 +71,9 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
             }
             pos2 = 0;
             while (pos2 < rsts.length() &&
-                   ((uc = rsts[pos2].unicode()) == '\\' || uc == '^'))
+                   ((uc = rsts.unicode()[pos2].unicode()) == '\\' || uc == '^'))
                 pos2++;
-            if (pos2 < rsts.length() && rsts[pos2].unicode() == '"') {
+            if (pos2 < rsts.length() && rsts.unicode()[pos2].unicode() == '"') {
                 QString bsl;
                 bsl.reserve( bslashes );
                 for (; bslashes; bslashes--)
