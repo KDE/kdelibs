@@ -49,7 +49,7 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
 {
     int len;
     int pos2;
-    QChar ec( d->escapechar );
+    ushort ec = d->escapechar.unicode();
     State state = { noquote, false };
     QStack<State> sstack;
     QStack<Save> ostack;
@@ -57,8 +57,8 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
     QString rsts;
 
     while (pos < str.length()) {
-        QChar cc( str.unicode()[pos] );
-        if (ec != QLatin1Char(0)) {
+        ushort cc = str.unicode()[pos].unicode();
+        if (ec != 0) {
             if (cc != ec)
                 goto nohit;
             if (!(len = expandEscapedMacro( str, pos, rst )))
@@ -94,20 +94,20 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
             continue;
       nohit:
         if (state.current == singlequote) {
-            if (cc == QLatin1Char('\''))
+            if (cc == '\'')
                 state = sstack.pop();
-        } else if (cc == QLatin1Char('\\')) {
+        } else if (cc == '\\') {
             // always swallow the char -> prevent anomalies due to expansion
             pos += 2;
             continue;
         } else if (state.current == dollarquote) {
-            if (cc == QLatin1Char('\''))
+            if (cc == '\'')
                 state = sstack.pop();
-        } else if (cc == QLatin1Char('$')) {
-            cc = str[++pos];
-            if (cc == QLatin1Char('(')) {
+        } else if (cc == '$') {
+            cc = str[++pos].unicode();
+            if (cc == '(') {
                 sstack.push( state );
-                if (str[pos + 1] == QLatin1Char('(')) {
+                if (str[pos + 1].unicode() == '(') {
                     Save sav = { str, pos + 2 };
                     ostack.push( sav );
                     state.current = math;
@@ -117,21 +117,21 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
                     state.current = paren;
                     state.dquote = false;
                 }
-            } else if (cc == QLatin1Char('{')) {
+            } else if (cc == '{') {
                 sstack.push( state );
                 state.current = subst;
             } else if (!state.dquote) {
-                if (cc == QLatin1Char('\'')) {
+                if (cc == '\'') {
                     sstack.push( state );
                     state.current = dollarquote;
-                } else if (cc == QLatin1Char('"')) {
+                } else if (cc == '"') {
                     sstack.push( state );
                     state.current = doublequote;
                     state.dquote = true;
                 }
             }
             // always swallow the char -> prevent anomalies due to expansion
-        } else if (cc == QLatin1Char('`')) {
+        } else if (cc == '`') {
             str.replace( pos, 1, QLatin1String("$( " )); // add space -> avoid creating $((
             pos2 = pos += 3;
             for (;;) {
@@ -139,13 +139,13 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
                     pos = pos2;
                     return false;
                 }
-                cc = str.unicode()[pos2];
-                if (cc == QLatin1Char('`'))
+                cc = str.unicode()[pos2].unicode();
+                if (cc == '`')
                     break;
-                if (cc == QLatin1Char('\\')) {
-                    cc = str[++pos2];
-                    if (cc == QLatin1Char('$') || cc == QLatin1Char('`') || cc == QLatin1Char('\\') ||
-                        (cc == QLatin1Char('"') && state.dquote))
+                if (cc == '\\') {
+                    cc = str[++pos2].unicode();
+                    if (cc == '$' || cc == '`' || cc == '\\' ||
+                        (cc == '"' && state.dquote))
                     {
                         str.remove( pos2 - 1, 1 );
                         continue;
@@ -159,25 +159,25 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
             state.dquote = false;
             continue;
         } else if (state.current == doublequote) {
-            if (cc == QLatin1Char('"'))
+            if (cc == '"')
                 state = sstack.pop();
-        } else if (cc == QLatin1Char('\'')) {
+        } else if (cc == '\'') {
             if (!state.dquote) {
                 sstack.push( state );
                 state.current = singlequote;
             }
-        } else if (cc == QLatin1Char('"')) {
+        } else if (cc == '"') {
             if (!state.dquote) {
                 sstack.push( state );
                 state.current = doublequote;
                 state.dquote = true;
             }
         } else if (state.current == subst) {
-            if (cc == QLatin1Char('}'))
+            if (cc == '}')
                 state = sstack.pop();
-        } else if (cc == QLatin1Char(')')) {
+        } else if (cc == ')') {
             if (state.current == math) {
-                if (str[pos + 1] == QLatin1Char(')')) {
+                if (str[pos + 1].unicode() == ')') {
                     state = sstack.pop();
                     pos += 2;
                 } else {
@@ -195,15 +195,15 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
                 state = sstack.pop();
             else
                 break;
-        } else if (cc == QLatin1Char('}')) {
+        } else if (cc == '}') {
             if (state.current == KMacroExpander::group)
                 state = sstack.pop();
             else
                 break;
-        } else if (cc == QLatin1Char('(')) {
+        } else if (cc == '(') {
             sstack.push( state );
             state.current = paren;
-        } else if (cc == QLatin1Char('{')) {
+        } else if (cc == '{') {
             sstack.push( state );
             state.current = KMacroExpander::group;
         }

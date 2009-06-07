@@ -32,7 +32,7 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
     int len;
     int pos2;
     ushort uc;
-    QChar ec( d->escapechar );
+    ushort ec = d->escapechar.unicode();
     bool shellQuote = false; // shell is in quoted state
     bool crtQuote = false; // c runtime is in quoted state
     bool escaped = false; // previous char was a circumflex
@@ -42,10 +42,10 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
     QString rsts;
 
     while (pos < str.length()) {
-        QChar cc( str.unicode()[pos] );
+        ushort cc = str.unicode()[pos].unicode();
         if (escaped) // prevent anomalies due to expansion
             goto notcf;
-        if (ec != QLatin1Char(0)) {
+        if (ec != 0) {
             if (cc != ec)
                 goto nohit;
             if (!(len = expandEscapedMacro( str, pos, rst )))
@@ -86,22 +86,22 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
             pos += rsts.length();
             continue;
       nohit:
-        if (!escaped && !shellQuote && cc == QLatin1Char('^')) {
+        if (!escaped && !shellQuote && cc == '^') {
             escaped = true;
         } else {
           notcf:
-            if (cc == QLatin1Char('\\')) {
+            if (cc == '\\') {
                 bslashes++;
             } else {
-                if (cc == QLatin1Char('"')) {
+                if (cc == '"') {
                     if (!escaped)
                         shellQuote = !shellQuote;
                     if (!(bslashes & 1))
                         crtQuote = !crtQuote;
                 } else if (!shellQuote) {
-                    if (cc == QLatin1Char('('))
+                    if (cc == '(')
                         parens++;
-                    else if (cc == QLatin1Char(')'))
+                    else if (cc == ')')
                         if (--parens < 0)
                             break;
                 }
