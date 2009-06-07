@@ -1920,6 +1920,10 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     // a run.
     bool currentCharacterIsSpace = false;
 
+    // This variable tracks whether there is space still available on the line for floating objects.
+    // Once a floating object does not fit, we wait till next linebreak before positioning more floats.
+    bool floatsFitOnLine = true;
+
     RenderObject* trailingSpaceObject = 0;
 
     BidiIterator lBreak = start;
@@ -1967,10 +1971,11 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 // check if it fits in the current line.
                 // If it does, position it now, otherwise, position
                 // it after moving to next line (in newLine() func)
-                if (o->width()+o->marginLeft()+o->marginRight()+w+tmpW <= width) {
+                if (floatsFitOnLine && o->width()+o->marginLeft()+o->marginRight()+w+tmpW <= width) {
                     positionNewFloats();
                     width = lineWidth(m_height);
-                }
+                } else
+                    floatsFitOnLine = false;
             }
             else if (o->isPositioned() && o->isPosWithStaticDim()) {
                 bool needToSetStaticX;
