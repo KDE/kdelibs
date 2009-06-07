@@ -1674,7 +1674,6 @@ void DocumentImpl::write( const QString &text )
         if (m_view)
             m_view->part()->resetFromScript();
         m_tokenizer->setAutoClose();
-        write(QLatin1String("<html>"));
     }
     m_tokenizer->write(text, false);
 }
@@ -1689,6 +1688,11 @@ void DocumentImpl::finishParsing (  )
 {
     if(m_tokenizer)
         m_tokenizer->finish();
+}
+
+QString DocumentImpl::completeURL(const QString& url) const
+{
+    return KUrl(baseURL(),url /*,m_decoderMibEnum*/).url();
 }
 
 void DocumentImpl::setUserStyleSheet( const QString& sheet )

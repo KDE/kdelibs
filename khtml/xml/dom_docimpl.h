@@ -359,7 +359,7 @@ public:
     QString baseTarget() const { return m_baseTarget; }
     void setBaseTarget(const QString& baseTarget) { m_baseTarget = baseTarget; }
 
-    QString completeURL(const QString& url) const { return KUrl(baseURL(),url /*,m_decoderMibEnum*/).url(); }
+    QString completeURL(const QString& url) const;
     DOMString canonURL(const DOMString& url) const { return url.isEmpty() ? url : completeURL(url.string()); }
 
     void setUserStyleSheet(const QString& sheet);
