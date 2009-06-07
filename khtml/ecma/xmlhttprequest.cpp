@@ -274,7 +274,6 @@ static bool canSetRequestHeader(const QString& name)
 	static const char* hdrs[] = {
 	    "accept-charset",
 	    "accept-encoding",
-	    "authorization",
 	    "content-length",
 	    "connect",
 	    "copy",
