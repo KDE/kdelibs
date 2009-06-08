@@ -281,7 +281,8 @@ PartMonitor::~PartMonitor()
 {
    if (this == sm_highestMonitor)
 	sm_highestMonitor = 0;
-   qDeleteAll(m_eventLoopStack);
+   while (!m_eventLoopStack.isEmpty())
+       exitLoop();
 }
 
 
@@ -300,7 +301,6 @@ void PartMonitor::waitForCompletion()
         //m_timeout_timer->stop();
 	//m_timeout_timer->start( visual ? 100 : 2, true );
     }
-
     QTimer::singleShot( 0, this, SLOT( finishTimers() ) );
     enterLoop();
 }
@@ -327,9 +327,10 @@ void PartMonitor::timeout()
 
 void PartMonitor::finishTimers()
 {
+
     KJS::Window *w = KJS::Window::retrieveWindow( m_part );
     --m_timer_waits;
-    if ( m_timer_waits && (w && w->winq->hasTimers()) || m_part->inProgress()) {
+    if ( m_timer_waits && (w && w->winq->hasTimers() || m_part->inProgress())) {
         // wait a bit
         QTimer::singleShot( 10, this, SLOT(finishTimers() ) );
         return;
@@ -349,8 +350,11 @@ void PartMonitor::partCompleted()
 
 static void signal_handler( int )
 {
-    printf( "timeout\n" );
-    abort();
+    printf( "timeout - this should *NOT* happen, it is likely the part's completed() signal was not emitted - FIXME!!\n" );
+    if (PartMonitor::sm_highestMonitor)
+        PartMonitor::sm_highestMonitor->exitLoop();
+    else
+        abort();
 }
 // -------------------------------------------------------------------------
 
@@ -981,7 +985,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, QStringList failu
     }
     else if (info.isFile()) {
 
-        alarm( 400 );
+        alarm( 12 );
 
         khtml::Cache::init();
 
@@ -1015,8 +1019,10 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, QStringList failu
                 testStaticFile(relPath);
 	}
 	else if (filename.endsWith(".js")) {
-            if ( m_runJS )
+            if ( m_runJS ) {
+                alarm( 120 );
                 testJSFile(relPath);
+            }
 	}
 	else if (mustExist) {
 	    fprintf(stderr,"%s: Not a valid test file (must be .htm(l) or .js)\n",qPrintable(relPath));
