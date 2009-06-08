@@ -50,7 +50,8 @@ namespace {
 
 Nepomuk::GraphWrapper::GraphWrapper( QObject* parent )
     : QObject( parent ),
-      m_currentGraphStored( true )
+      m_currentGraphStored( true ),
+      m_model( 0 )
 {
     connect( &m_timer, SIGNAL(timeout()),
              this, SLOT(slotTimeout()) );
