@@ -704,7 +704,7 @@ void KLocalePrivate::updateCatalogs( )
   // Maybe the language precedence has changed.
   // Maybe we have learned or forgotten some catalog names.
 
-  catalogs.clear();
+  QList<KCatalog> newCatalogs;
 
   // Insert possible transliteration fallbacks after each set language.
   QStringList languageListFB;
@@ -722,13 +722,14 @@ void KLocalePrivate::updateCatalogs( )
       // create and add catalog for this name and language if it exists
       if ( ! KCatalog::catalogLocaleDir( name.name, lang ).isEmpty() )
       {
-        catalogs.append( KCatalog( name.name, lang ) );
+        newCatalogs.append( KCatalog( name.name, lang ) );
         //kDebug(173) << "Catalog: " << name << ":" << lang;
       }
     }
   }
 
   // notify KLocalizedString of catalog update.
+  catalogs = newCatalogs;
   KLocalizedString::notifyCatalogsUpdated(languageListFB, catalogNames);
 }
 
@@ -802,8 +803,9 @@ void KLocalePrivate::translate_priv(const char *msgctxt,
   if ( useDefaultLanguage() )
     return;
 
-  for ( QList<KCatalog>::ConstIterator it = catalogs.begin();
-        it != catalogs.end();
+  QList<KCatalog> catalogList = catalogs;
+  for ( QList<KCatalog>::ConstIterator it = catalogList.constBegin();
+        it != catalogList.constEnd();
         ++it )
   {
     // shortcut evaluation: once we have arrived at en_US (default language) we cannot consult
