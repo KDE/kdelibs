@@ -200,8 +200,8 @@ public:
      * @param data the data to examine
      * @param accuracy If not a null pointer, *accuracy is set to the
      *          accuracy of the match (which is in the range 0..100)
-     * @return a pointer to the KMimeType. @c 0 if the
-     *         type can not be found this way.
+     * @return a pointer to the KMimeType. "application/octet-stream" is
+     *          returned if the type can not be found this way.
      */
     static Ptr findByContent( const QByteArray &data, int *accuracy=0 );
 

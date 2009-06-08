@@ -383,6 +383,7 @@ void KMimeTypeTest::testFindByContent_data()
     QTest::newRow("html: <script>") << QByteArray("<script>foo</script>") << "text/html";
 #endif
     QTest::newRow("pdf") << QByteArray("%PDF-") << "application/pdf";
+    QTest::newRow("no mimetype known") << QByteArray("\261\032\341\265") << "application/octet-stream";
 
     QByteArray mswordData = "\320\317\021\340\241\261\032\341";
     // same as \xD0\xCF\x11\xE0 \xA1\xB1\x1A\xE1
