@@ -99,15 +99,15 @@ check_symbol_exists(strrchr         "string.h"                 HAVE_STRRCHR)    
 check_symbol_exists(strtoll         "stdlib.h"                 HAVE_STRTOLL)     # kioslave
 check_symbol_exists(S_ISSOCK        "sys/stat.h"               HAVE_S_ISSOCK)    # config.h
 check_symbol_exists(vsnprintf       "stdio.h"                  HAVE_VSNPRINTF)   # config.h
-
+check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)     # kdecore, kdeui
 
 check_function_exists(posix_fadvise    HAVE_FADVISE)                  # kioslave
 check_function_exists(backtrace        HAVE_BACKTRACE)                # kdecore, kio
 check_function_exists(getpagesize      HAVE_GETPAGESIZE)              # khtml
 check_function_exists(getpeereid       HAVE_GETPEEREID)               # kdesu
 check_function_exists(fdatasync        HAVE_FDATASYNC)                # kdecore
-check_function_exists(madvise         HAVE_MADVISE)                   # kdecore
-check_function_exists(mmap            HAVE_MMAP)                      # kdecore, khtml
+check_function_exists(mmap             HAVE_MMAP)                     # kdecore, khtml
+
 if(NOT WIN32)
   # we don't have it on windows but need to export it to be backward compatible
   # can be removed when 4.1 is out

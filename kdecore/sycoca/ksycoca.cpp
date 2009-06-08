@@ -62,12 +62,8 @@
  */
 #define KSYCOCA_FILENAME "ksycoca4"
 
-#ifdef HAVE_SYS_MMAN_H
-#include <sys/mman.h>
-#endif
-
-#ifdef Q_OS_SOLARIS
-extern "C" int madvise(caddr_t, size_t, int);
+#if HAVE_MADVISE
+#include <sys/mman.h> // This #include was checked when looking for posix_madvise
 #endif
 
 #ifndef MAP_FAILED
@@ -142,7 +138,7 @@ bool KSycocaPrivate::tryMmap()
         return false;
     } else {
 #ifdef HAVE_MADVISE
-        (void) madvise((char*)sycoca_mmap, sycoca_size, MADV_WILLNEED);
+        (void) posix_madvise((void*)sycoca_mmap, sycoca_size, MADV_WILLNEED);
 #endif // HAVE_MADVISE
         return true;
     }

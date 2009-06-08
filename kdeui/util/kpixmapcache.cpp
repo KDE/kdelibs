@@ -50,7 +50,7 @@
 #include <sys/types.h>
 #include <string.h>
 
-#if defined(HAVE_SYS_MMAN_H) && defined(HAVE_MADVISE)
+#if defined(HAVE_MADVISE)
 #include <sys/mman.h>
 #endif
 
@@ -472,7 +472,7 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
     }
     info->indexHeader = reinterpret_cast<KPixmapCacheIndexHeader *>(indexMem);
 #ifdef HAVE_MADVISE
-    madvise(indexMem, info->size, MADV_WILLNEED);
+    posix_madvise(indexMem, info->size, MADV_WILLNEED);
 #endif
 
     info->file->close();
