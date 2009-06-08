@@ -78,6 +78,7 @@ public:
     virtual ~KUrlNavigator();
 
     /** Returns the current URL. */
+    // KDE5: return 'KUrl' instead of 'const KUrl&'
     const KUrl& url() const;
 
     /**
@@ -211,11 +212,19 @@ public:
      * stays on 0.
      */
     int historyIndex() const;
+    
+    /**
+     * @return URL for the history element with the index \a historyIndex.
+     *         The history index 0 represents the most recent URL.
+     * @since 4.3
+     */
+    KUrl historyUrl(int historyIndex) const;
 
     /**
      * Returns the saved root URL for the current URL
      * (see KUrlNavigator::saveRootUrl()).
-     */
+     */    
+    // KDE5: return 'KUrl' instead of 'const KUrl&'    
     const KUrl& savedRootUrl() const;
 
     /**

@@ -1087,6 +1087,13 @@ int KUrlNavigator::historyIndex() const
     return d->m_historyIndex;
 }
 
+KUrl KUrlNavigator::historyUrl(int historyIndex) const
+{
+    Q_ASSERT(historyIndex >= 0);
+    Q_ASSERT(historyIndex < historySize());
+    return d->m_history[historyIndex].url();
+}
+
 const KUrl& KUrlNavigator::savedRootUrl() const
 {
     const HistoryElem& histElem = d->m_history[d->m_historyIndex];
