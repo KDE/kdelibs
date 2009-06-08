@@ -134,7 +134,7 @@ class RegressionTest : public QObject
   Q_OBJECT
 public:
 
-    RegressionTest(KHTMLPart *part, const QString &baseDir, const QString &outputDir,
+    RegressionTest(KHTMLPart *part, const QString &baseDir, const QString &outputDir, const QString &baselineDir,
 		   bool _genOutput, bool runJS, bool runHTML);
     ~RegressionTest();
 
@@ -162,6 +162,7 @@ public:
     KHTMLPart *m_part;
     QString m_baseDir;
     QString m_outputDir;
+    QString m_baselineDir;
     bool m_genOutput;
     QString m_currentBase;
 
