@@ -342,6 +342,7 @@ protected:
     bool m_hasVisibleContent : 1;
     bool m_visibleDescendantStatusDirty : 1;
     bool m_hasVisibleDescendant : 1;
+    bool m_inScrollbarRelayout : 1;
 
     QRect m_visibleRect;
 

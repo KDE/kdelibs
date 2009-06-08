@@ -107,6 +107,7 @@ m_visibleContentStatusDirty( true ),
 m_hasVisibleContent( false ),
 m_visibleDescendantStatusDirty( false ),
 m_hasVisibleDescendant( false ),
+m_inScrollbarRelayout( false ),
 m_marquee( 0 )
 {
     if (!object->firstChild() && object->style()) {
@@ -910,7 +911,7 @@ void RenderLayer::checkScrollbarsAfterLayout()
     // overflow:auto may need to lay out again if scrollbars got added/removed.
     bool scrollbarsChanged = (hasOvf && m_object->style()->overflowX() == OAUTO && haveHorizontalBar != needHorizontalBar)
                           || (hasOvf && m_object->style()->overflowY() == OAUTO && haveVerticalBar != needVerticalBar);
-    if (scrollbarsChanged) {
+    if (scrollbarsChanged && !m_inScrollbarRelayout) {
         if (m_object->style()->overflowX() == OAUTO) {
             showScrollbar(Qt::Horizontal, needHorizontalBar);
             if (m_hBar) 
@@ -923,12 +924,16 @@ void RenderLayer::checkScrollbarsAfterLayout()
         }
 
         m_object->setNeedsLayout(true);
+        m_inScrollbarRelayout = true;
 	if (m_object->isRenderBlock())
             static_cast<RenderBlock*>(m_object)->layoutBlock(true);
         else
             m_object->layout();
+        m_inScrollbarRelayout = false;
 	return;
     }
+
+    m_inScrollbarRelayout = false;
 
     // Set up the range (and page step/line step).
     if (m_hBar) {
