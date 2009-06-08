@@ -628,11 +628,12 @@ void KArchiveTest::testZipWithNonLatinFileNames()
 
 void KArchiveTest::cleanupTestCase()
 {
-    QFile::remove("karchivetest-maxlength.tar.gz");
-    QFile::remove("karchivetest-maxlength.zip");
-    QFile::remove("karchivetest.tar.gz");
-    QFile::remove("karchivetest.zip");
+    QFile::remove(s_tarGzMaxLengthFileName);
+    QFile::remove(s_zipMaxLengthFileName);
+    QFile::remove(s_tarGzFileName);
+    QFile::remove(s_zipFileName);
     QFile::remove(s_zipLocaleFileName);
+    QFile::remove(s_tarFileName);
 #ifndef Q_OS_WIN
     QFile::remove("test3_symlink");
 #endif
