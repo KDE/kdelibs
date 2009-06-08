@@ -42,6 +42,7 @@ private Q_SLOTS:
     void testZipFileData();
     void testZipCopyTo();
     void testZipMaxLength();
+    void testZipWithNonLatinFileNames();
 
     void cleanupTestCase();
 };

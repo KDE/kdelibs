@@ -248,6 +248,7 @@ static const char* s_tarGzFileName = "karchivetest.tar.gz";
 static const char* s_tarGzMaxLengthFileName = "karchivetest-maxlength.tar.gz";
 static const char* s_zipFileName = "karchivetest.zip";
 static const char* s_zipMaxLengthFileName = "karchivetest-maxlength.zip";
+static const char* s_zipLocaleFileName = "karchivetest-locale.zip";
 
 void KArchiveTest::testCreateTar()
 {
@@ -595,12 +596,43 @@ void KArchiveTest::testZipMaxLength()
     QVERIFY( ok );
 }
 
+void KArchiveTest::testZipWithNonLatinFileNames()
+{
+    KZip zip( s_zipLocaleFileName );
+
+    bool ok = zip.open( QIODevice::WriteOnly );
+    QVERIFY( ok );
+
+    const QByteArray fileData("Test of data with a russian file name");
+    const QString fileName = QString::fromUtf8( "Архитектура.okular" );
+    const QString recodedFileName = QFile::decodeName( QFile::encodeName( fileName ) );
+    ok = zip.writeFile( fileName, "pino", "users", fileData.constData(), fileData.size() );
+    QVERIFY( ok );
+
+    ok = zip.close();
+    QVERIFY( ok );
+
+    ok = zip.open( QIODevice::ReadOnly );
+    QVERIFY( ok );
+
+    const KArchiveDirectory* dir = zip.directory();
+    QVERIFY( dir != 0 );
+    const QStringList listing = recursiveListEntries( dir, "", WithUserGroup );
+
+    QCOMPARE( listing.count(), 1 );
+    QCOMPARE( listing[0], QString::fromUtf8("mode=100644 user=pino group=users path=%1 type=file size=%2").arg(recodedFileName).arg(fileData.size()) );
+
+    const KArchiveFile* fileEntry = static_cast< const KArchiveFile* >( dir->entry( dir->entries()[0] ) );
+    QCOMPARE( fileEntry->data(), fileData );
+}
+
 void KArchiveTest::cleanupTestCase()
 {
     QFile::remove("karchivetest-maxlength.tar.gz");
     QFile::remove("karchivetest-maxlength.zip");
     QFile::remove("karchivetest.tar.gz");
     QFile::remove("karchivetest.zip");
+    QFile::remove(s_zipLocaleFileName);
 #ifndef Q_OS_WIN
     QFile::remove("test3_symlink");
 #endif

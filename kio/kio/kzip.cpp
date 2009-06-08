@@ -906,8 +906,8 @@ bool KZip::closeArchive()
         buffer[ 26 ] = char(mysize >> 16);
         buffer[ 27 ] = char(mysize >> 24);
 
-        buffer[ 28 ] = char(it.value()->path().length()); // fileName length
-        buffer[ 29 ] = char(it.value()->path().length() >> 8);
+        buffer[ 28 ] = char(path.length()); // fileName length
+        buffer[ 29 ] = char(path.length() >> 8);
 
 	buffer[ 30 ] = char(extra_field_len);
 	buffer[ 31 ] = char(extra_field_len >> 8);
@@ -1189,9 +1189,10 @@ bool KZip::doFinishWriting( qint64 size )
     if ( d->m_extraField == ModificationTime )
         extra_field_len = 17;	// value also used in finishWriting()
 
+    const QByteArray encodedName = QFile::encodeName(d->m_currentFile->path());
     int csize = device()->pos() -
         d->m_currentFile->headerStart() - 30 -
-		d->m_currentFile->path().length() - extra_field_len;
+		encodedName.length() - extra_field_len;
     d->m_currentFile->setCompressedSize(csize);
     //kDebug(7040) << "usize: " << d->m_currentFile->size();
     //kDebug(7040) << "csize: " << d->m_currentFile->compressedSize();
