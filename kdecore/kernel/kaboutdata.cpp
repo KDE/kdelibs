@@ -469,12 +469,26 @@ KAboutData::~KAboutData()
 KAboutData::KAboutData(const KAboutData& other): d(new Private)
 {
     *d = *other.d;
+    QList<KAboutLicense>::iterator it = d->_licenseList.begin(), itEnd = d->_licenseList.end();
+    for ( ; it != itEnd; ++it) {
+        KAboutLicense& al = *it;
+        al.d.detach();
+        al.d->_aboutData = this;
+    }
 }
 
 KAboutData&
 KAboutData::operator=(const KAboutData& other)
 {
-    *d = *other.d;
+    if (this != &other) {
+        *d = *other.d;
+        QList<KAboutLicense>::iterator it = d->_licenseList.begin(), itEnd = d->_licenseList.end();
+        for ( ; it != itEnd; ++it) {
+            KAboutLicense& al = *it;
+            al.d.detach();
+            al.d->_aboutData = this;
+        }
+    }
     return *this;
 }
 

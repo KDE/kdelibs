@@ -228,4 +228,25 @@ void KAboutDataTest::testSetProgramIconName()
     QCOMPARE( aboutData.programIconName(), programIconName );
 }
 
+void KAboutDataTest::testCopying()
+{
+    KAboutData aboutData(AppName, CatalogName, ki18n(ProgramName), Version,
+                         ki18n(ShortDescription), KAboutData::License_GPL_V2);
+
+    {
+    KAboutData aboutData2(AppName, CatalogName, ki18n(ProgramName), Version,
+                ki18n(ShortDescription), KAboutData::License_GPL_V3);
+    aboutData2.addLicense(KAboutData::License_GPL_V2);
+    aboutData = aboutData2;
+    }
+    QList<KAboutLicense> licenses = aboutData.licenses();
+    QCOMPARE(licenses.count(), 2);
+    QCOMPARE(licenses.at(0).key(), KAboutData::License_GPL_V3);
+    // check it doesn't crash
+    QVERIFY(!licenses.at(0).text().isEmpty());
+    QCOMPARE(licenses.at(1).key(), KAboutData::License_GPL_V2);
+    // check it doesn't crash
+    QVERIFY(!licenses.at(1).text().isEmpty());
+}
+
 QTEST_KDEMAIN_CORE( KAboutDataTest )
