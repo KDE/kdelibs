@@ -62,7 +62,11 @@ bool KLimitedIODevice::seek( qint64 pos )
 {
     Q_ASSERT( pos <= m_length );
     pos = qMin( pos, m_length ); // Apply upper limit
-    return m_dev->seek( m_start + pos );
+    bool ret = m_dev->seek( m_start + pos );
+    if ( ret ) {
+        QIODevice::seek( pos );
+    }
+    return ret;
 }
 
 qint64 KLimitedIODevice::bytesAvailable() const
