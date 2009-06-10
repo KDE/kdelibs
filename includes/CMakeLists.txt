@@ -455,6 +455,7 @@ install( FILES
   KEmoticonsProvider
   KEmoticonsTheme
   KFilterProxySearchLine
+  KWidgetItemDelegate
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
 
 if (UNIX)
