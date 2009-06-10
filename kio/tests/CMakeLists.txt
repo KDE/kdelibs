@@ -58,3 +58,6 @@ KIO_EXECUTABLE_TESTS(
   ksslkeygentest
   kdbusservicestartertest
 )
+
+kde4_add_unit_test(klimitediodevicetest klimitediodevicetest.cpp ../kio/klimitediodevice.cpp)
+target_link_libraries(klimitediodevicetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
