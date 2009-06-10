@@ -617,10 +617,10 @@ void KArchiveTest::testZipWithNonLatinFileNames()
 
     const KArchiveDirectory* dir = zip.directory();
     QVERIFY( dir != 0 );
-    const QStringList listing = recursiveListEntries( dir, "", WithUserGroup );
+    const QStringList listing = recursiveListEntries( dir, "", 0 );
 
     QCOMPARE( listing.count(), 1 );
-    QCOMPARE( listing[0], QString::fromUtf8("mode=100644 user=pino group=users path=%1 type=file size=%2").arg(recodedFileName).arg(fileData.size()) );
+    QCOMPARE( listing[0], QString::fromUtf8("mode=100644 path=%1 type=file size=%2").arg(recodedFileName).arg(fileData.size()) );
 
     const KArchiveFile* fileEntry = static_cast< const KArchiveFile* >( dir->entry( dir->entries()[0] ) );
     QCOMPARE( fileEntry->data(), fileData );
