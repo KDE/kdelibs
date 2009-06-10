@@ -1210,7 +1210,7 @@ void KFileItem::setMetaInfo( const KFileMetaInfo & info ) const
 
 KFileMetaInfo KFileItem::metaInfo(bool autoget, int) const
 {
-    if (autoget && !d->m_metaInfo.isValid())
+    if ((isRegularFile() || isDir()) && autoget && !d->m_metaInfo.isValid())
     {
         bool isLocalUrl;
         KUrl url(mostLocalUrl(isLocalUrl));
@@ -1447,3 +1447,7 @@ bool KFileItem::isDesktopFile() const
     return determineMimeType()->is("application/x-desktop");
 }
 
+bool KFileItem::isRegularFile() const
+{
+    return S_ISREG(d->m_fileMode);
+}

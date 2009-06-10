@@ -447,6 +447,13 @@ public:
     void unmark();
 
     /**
+     * Return true if this item is a regular file, 
+     * false otherwise (directory, link, character/block device, fifo, socket)
+     * @since 4.3
+     */
+    bool isRegularFile() const;
+    
+    /**
      * Somewhat like a comparison operator, but more explicit,
      * and it can detect that two kfileitems are equal even when they do
      * not share the same internal pointer - e.g. when KDirLister compares
