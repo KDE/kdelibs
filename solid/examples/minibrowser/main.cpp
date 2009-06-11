@@ -22,6 +22,7 @@
 #include <kcmdlineargs.h>
 #include <kmainwindow.h>
 #include <kmenubar.h>
+#include <kicon.h>
 
 #include <solid/devicenotifier.h>
 #include <solid/device.h>
@@ -38,6 +39,9 @@ public:
         : QTreeWidgetItem(SolidType)
     {
         setText(0, device.udi());
+        QString icon = device.icon();
+        if (!icon.isEmpty())
+            setIcon(0, KIcon(icon));
     }
 };
 
@@ -59,7 +63,39 @@ public:
 
         details = new QTextBrowser;
 
-        layout->addWidget(new QLabel("Devices:"));
+        filterCombo = new QComboBox;
+        QStringList filters = QStringList()
+            << "No filter"
+            << "Unknown"
+            << "GenericInterface"
+            << "Processor"
+            << "Block"
+            << "StorageAccess"
+            << "StorageDrive"
+            << "OpticalDrive"
+            << "StorageVolume"
+            << "OpticalDisc"
+            << "Camera"
+            << "PortableMediaPlayer"
+            << "NetworkInterface"
+            << "AcAdapter"
+            << "Battery"
+            << "Button"
+            << "AudioInterface"
+            << "DvbInterface"
+            << "Video"
+            << "SerialInterface"
+            << "SmartCardReader";
+        filterCombo->addItems(filters);
+        connect(filterCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(populate()));
+
+        QHBoxLayout *devicesLayout = new QHBoxLayout;
+        devicesLayout->addWidget(new QLabel("Devices:"));
+        devicesLayout->addStretch();
+        devicesLayout->addWidget(new QLabel("Filter:"));
+        devicesLayout->addWidget(filterCombo);
+
+        layout->addLayout(devicesLayout);
         layout->addWidget(view);
         layout->addWidget(new QLabel("Details:"));
         layout->addWidget(details);
@@ -80,6 +116,7 @@ private slots:
 private:
     QTreeWidget *view;
     QTextBrowser *details;
+    QComboBox *filterCombo;
 };
 
 void SolidBrowser::currentItemChanged(QTreeWidgetItem *current)
@@ -125,6 +162,29 @@ void SolidBrowser::currentItemChanged(QTreeWidgetItem *current)
     }
 }
 
+static SolidItem *addParentItems(const Solid::Device &device, QHash<QString, SolidItem *> &deviceHash,
+        QTreeWidget *view)
+{
+    const QString parentUdi = device.parentUdi();
+
+    if (deviceHash.contains(parentUdi))
+        return deviceHash.value(parentUdi);
+
+    Solid::Device parentDevice = device.parent();
+    SolidItem *parentItem = new SolidItem(parentDevice);
+    deviceHash[parentUdi] = parentItem;
+
+    const QString grandParentUdi = parentDevice.parentUdi();
+    if (grandParentUdi.isEmpty()) {
+        view->invisibleRootItem()->addChild(parentItem);
+    } else {
+        // add the grandparents recursively.
+        SolidItem *grandParentItem = addParentItems(parentDevice, deviceHash, view);
+        grandParentItem->addChild(parentItem);
+    }
+    return parentItem;
+}
+
 void SolidBrowser::populate()
 {
     // wipe out all data
@@ -132,8 +192,18 @@ void SolidBrowser::populate()
 
     QHash<QString, SolidItem *> deviceHash;
 
+    // get a list of devices to show
+    QList<Solid::Device> allDevices;
+    if (filterCombo->currentIndex() <= 0) {
+        // show all devices
+        allDevices = Solid::Device::allDevices();
+    } else {
+        // populate with all devices of the given type
+        allDevices = Solid::Device::listFromType(
+            Solid::DeviceInterface::stringToType(filterCombo->currentText()));
+    }
+
     // create on QTreeWidgetItem per device
-    const QList<Solid::Device> allDevices = Solid::Device::allDevices();
     foreach (const Solid::Device &device, allDevices) {
         deviceHash[device.udi()] = new SolidItem(device);
     }
@@ -146,10 +216,13 @@ void SolidBrowser::populate()
             view->invisibleRootItem()->addChild(item);
         } else {
             SolidItem *parentItem = deviceHash.value(parentUdi);
-            Q_ASSERT(parentItem);
+            if (!parentItem)
+                parentItem = addParentItems(device, deviceHash, view);
             parentItem->addChild(item);
         }
     }
+
+    view->expandAll();
 }
 
 int main (int argc, char *argv[])
