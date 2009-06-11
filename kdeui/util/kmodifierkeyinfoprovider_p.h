@@ -27,6 +27,7 @@
 #if defined Q_WS_X11
     #include <X11/Xlib.h>
     #include <X11/XKBlib.h>
+    #include <fixx11h.h>
 #endif
 
 /**
