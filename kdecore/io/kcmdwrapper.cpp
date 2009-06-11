@@ -53,7 +53,7 @@ void printUsage(void)
     wprintf(L"A Wrapper for cmd.exe\n\n");
     wprintf(L"calls shell /S /C argument with proper quoting\n");
     wprintf(L"Usage: kcmdwrapper shell argument");
-    ExitProcess(-1);
+    ExitProcess(~0U);
 }
 
 void printError(const char * p) {}
