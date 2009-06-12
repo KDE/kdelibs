@@ -359,9 +359,18 @@ QDate KCalendarSystemHijri::addYears( const QDate &date, int nyears ) const
     QDate result = date;
 
     int y = year( date ) + nyears;
-    setYMD( result, y, month( date ), day( date ) );
+    int m = month( date );
+
+    //Quick hack to support destination month with fewer days than current month
+    if ( setYMD( result, y, m, 1 ) ) {
+        setYMD( result, y, m, qMin( day( date ), daysInMonth( result ) ) );
+    }
 
     return result;
+
+/*  Use this once new jd formulas are verified
+    return KCalendarSystem::addYears( date, nyears );
+*/
 }
 
 QDate KCalendarSystemHijri::addMonths( const QDate &date, int nmonths ) const
@@ -381,9 +390,16 @@ QDate KCalendarSystemHijri::addMonths( const QDate &date, int nmonths ) const
     m %= 12;
     ++m;
 
-    setYMD( result, y, m, day( date ) );
+    //Quick hack to support destination month with fewer days than current month
+    if ( setYMD( result, y, m, 1 ) ) {
+        setYMD( result, y, m, qMin( day( date ), daysInMonth( result ) ) );
+    }
 
     return result;
+
+/*  Use this once new jd formulas are verified
+    return KCalendarSystem::addMonths( date, nmonths );
+*/
 }
 
 QDate KCalendarSystemHijri::addDays( const QDate &date, int ndays ) const

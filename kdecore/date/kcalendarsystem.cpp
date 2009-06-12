@@ -101,6 +101,8 @@ public:
 
     bool setAnyDate( QDate &date, int year, int month, int day ) const;
 
+    QDate invalidDate() const;
+
     int stringToInteger( const QString &sNum, int &iLength );
 
     const KLocale *locale;
@@ -113,6 +115,12 @@ bool KCalendarSystemPrivate::setAnyDate( QDate &date, int year, int month, int d
     q->dateToJulianDay( year, month, day, jd );
     date = QDate::fromJulianDay( jd );
     return true;
+}
+
+QDate KCalendarSystemPrivate::invalidDate() const
+{
+    //Is QDate's way of saying is invalid
+    return QDate::fromJulianDay( 0 );
 }
 
 int KCalendarSystemPrivate::stringToInteger( const QString &sNum, int &iLength )
@@ -276,8 +284,7 @@ QDate KCalendarSystem::addYears( const QDate &date, int numYears ) const
 
     }
 
-    //Is QDate's way of saying is invalid
-    return QDate::fromJulianDay( 0 );
+    return d->invalidDate();
 }
 
 QDate KCalendarSystem::addMonths( const QDate &date, int numMonths ) const
@@ -317,8 +324,7 @@ QDate KCalendarSystem::addMonths( const QDate &date, int numMonths ) const
 
     }
 
-    //Is QDate's way of saying is invalid
-    return QDate::fromJulianDay( 0 );
+    return d->invalidDate();
 }
 
 QDate KCalendarSystem::addDays( const QDate &date, int numDays ) const
@@ -332,8 +338,7 @@ QDate KCalendarSystem::addDays( const QDate &date, int numDays ) const
         }
     }
 
-    //Is QDate's way of saying is invalid
-    return QDate::fromJulianDay( 0 );
+    return d->invalidDate();
 }
 
 int KCalendarSystem::monthsInYear( const QDate &date ) const
