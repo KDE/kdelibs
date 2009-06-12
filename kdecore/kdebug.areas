@@ -623,6 +623,7 @@
 32004        kword (tables)
 32010        kword/kross (scripting)
 32500        kotext
+32600        textshape
 33001        kpresenter
 33002        kpresenter (page transitions)
 33003        kpresenter (shape animations)
