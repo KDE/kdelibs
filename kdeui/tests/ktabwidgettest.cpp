@@ -279,7 +279,7 @@ void Test::contextMenu(QWidget *w, const QPoint &p)
 
 void Test::contextMenuActivated(QAction *action)
 {
-  switch (mTabbarContextPopup->actions().indexOf(action)) {
+  switch (mContextPopup->actions().indexOf(action)) {
   case 0:
       mWidget->setCurrentIndex( mContextWidgetIndex );
       break;
