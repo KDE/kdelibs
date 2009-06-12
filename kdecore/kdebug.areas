@@ -145,6 +145,14 @@
 2200	    kdf
 2300        kwalletd
 
+# kdeaccessibility
+2400        kttsd (daemon)
+2401        kttsmgr (systray app)
+2402        kttsjobmgr (job mgr kcm)
+2403        kspeak (scripted app)
+2404        kcmkttsmgr (kcm)
+2405        libkttsd (library)
+
 # 2500-2999 Reserved for private use
 
 # kdeadmin
