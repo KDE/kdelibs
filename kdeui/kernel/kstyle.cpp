@@ -3081,7 +3081,10 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
             case QTabBar::TriangularNorth:
             case QTabBar::RoundedSouth:
             case QTabBar::TriangularSouth:
-                r.adjust(tov3.leftButtonSize.width(), 0, -tov3.rightButtonSize.width(), 0);
+                if (tov3.direction == Qt::LeftToRight)
+                    r.adjust(tov3.leftButtonSize.width(), 0, -tov3.rightButtonSize.width(), 0);
+                else
+                    r.adjust(tov3.rightButtonSize.width(), 0, -tov3.leftButtonSize.width(), 0);
                 break;
             case QTabBar::RoundedEast:
             case QTabBar::TriangularEast:
