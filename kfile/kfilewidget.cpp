@@ -1712,6 +1712,7 @@ void KFileWidget::showEvent(QShowEvent* event)
     if ( !d->hasView ) { // delayed view-creation
         Q_ASSERT( d );
         Q_ASSERT( d->ops );
+        d->ops->setView( d->ops->viewKind() );
         d->ops->view()->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum ) );
         d->hasView = true;
 

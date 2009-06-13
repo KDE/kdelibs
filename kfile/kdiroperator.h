@@ -852,6 +852,13 @@ Q_SIGNALS:
      */
     void currentIconSizeChanged(int size);
 
+public:
+    /**
+     * @returns the currently used view kind
+     * @see setView
+     */
+    KFile::FileView viewKind() const;
+
 private:
     class Private;
     Private* const d;
