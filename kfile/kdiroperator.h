@@ -856,6 +856,7 @@ public:
     /**
      * @returns the currently used view kind
      * @see setView
+     * @since 4.3
      */
     KFile::FileView viewKind() const;
 
