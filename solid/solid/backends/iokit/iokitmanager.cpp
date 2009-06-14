@@ -78,6 +78,8 @@ const char *IOKitManagerPrivate::typeToName(Solid::DeviceInterface::Type type)
         return kIOEthernetInterfaceClass;
     case Solid::DeviceInterface::Processor:
         return "AppleACPICPU";
+    case Solid::DeviceInterface::SerialInterface:
+        return "IOSerialBSDClient";
 
     //Solid::DeviceInterface::GenericInterface:
     //Solid::DeviceInterface::Block:
@@ -95,7 +97,6 @@ const char *IOKitManagerPrivate::typeToName(Solid::DeviceInterface::Type type)
     //Solid::DeviceInterface::AudioInterface:
     //Solid::DeviceInterface::DvbInterface:
     //Solid::DeviceInterface::Video:
-    //Solid::DeviceInterface::SerialInterface:
     }
 
     return 0;
