@@ -1540,6 +1540,7 @@ Name[zh_TW]=嘉泰羅尼亞語
 [ca@valencia]
 Name=Valencian (southern Catalan)
 Name[be@latin]=Valenskaja (paŭdniova-katalonskaja)
+Name[bg]=Валенсиански (южен каталонски)
 Name[ca]=Valencià (català meridional)
 Name[ca@valencia]=Valencià (català meridional)
 Name[cs]=Valnecijský (jižní Katalánie)
@@ -4293,6 +4294,7 @@ Name[zh_HK]=北印度語
 Name[zh_TW]=北印度語
 [hne]
 Name=Chhattisgarhi
+Name[bg]=Чхатисгархи
 Name[ca]=Chattisgarbi
 Name[ca@valencia]=Chattisgarbi
 Name[el]=Χατισγκαρχί
@@ -9960,6 +9962,7 @@ Name[zh_TW]=Sango語
 [si]
 Name=Sinhala
 Name[be@latin]=Sinhaleskaja
+Name[bg]=Сингалски
 Name[ca]=Singalès
 Name[ca@valencia]=Singalès
 Name[cs]=Sinhalský
