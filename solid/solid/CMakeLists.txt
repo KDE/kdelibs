@@ -150,6 +150,7 @@ if(APPLE)
    backends/iokit/iokitgenericinterface.cpp
    backends/iokit/iokitprocessor.cpp
    backends/iokit/iokitnetworkinterface.cpp
+   backends/iokit/iokitserialinterface.cpp
    )
 endif(APPLE)
 
