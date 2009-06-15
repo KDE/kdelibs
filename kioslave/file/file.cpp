@@ -1065,7 +1065,7 @@ void FileProtocol::unmount( const QString& _point )
 			<< _point.toLocal8Bit();
 
 		if( (mnttab = KDE_fopen( MNTTAB, "r" )) == NULL ) {
-			err = "could not open mnttab";
+			err = QLatin1String("could not open mnttab");
 			kDebug(7101) << "VOLMGT: " << err;
 			error( KIO::ERR_COULD_NOT_UNMOUNT, err );
 			return;
@@ -1088,7 +1088,7 @@ void FileProtocol::unmount( const QString& _point )
 		fclose( mnttab );
 
 		if( devname == NULL ) {
-			err = "not in mnttab";
+			err = QLatin1String("not in mnttab");
 			kDebug(7101) << "VOLMGT: "
 				<< QFile::encodeName(_point).data()
 				<< ": " << err;
@@ -1114,9 +1114,10 @@ void FileProtocol::unmount( const QString& _point )
 		if( WEXITSTATUS( system( buffer.constData() )) == 4 ) {
 			/*
 			 *  this is not an error, so skip "testLogFile()"
-			 *  to avoid wrong/confusing error popup
+			 *  to avoid wrong/confusing error popup. The 
+			 *  temporary file is removed by KTemporaryFile's
+			 *  destructor, so don't do that manually.
 			 */
-			QFile::remove( tmpFileName );
 			finished();
 			return;
 		}
