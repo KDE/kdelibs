@@ -692,8 +692,12 @@ KColorTable::KColorTablePrivate::slotShowNamedColorReadError(void)
                            "file location(s) were examined:\n");
 
         const char * const *path = namedColorFilePath();
-        for (int i = 0; path[i]; ++i) {
-            msg += path[i];
+        for (int i = 0; path[i]; i += 2) {
+            if (path[i + 1]) {
+                msg += QLatin1String(path[i + 1]) + ", " + QString::fromLatin1(path[i]);
+            } else {
+                msg += QLatin1String(path[i]);
+            }
             msg += '\n';
         }
         KMessageBox::sorry(q, msg);
