@@ -1046,7 +1046,12 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
     result += QLatin1Char('@');
   }
 
-  result += host();
+  // Check if host is an ipv6 address
+  tmp = host();
+  if (tmp.contains(':'))
+    result += QLatin1Char('[') + tmp + QLatin1Char(']');
+  else
+    result += tmp;
 
   if (port() != -1) {
     result += QLatin1Char(':');

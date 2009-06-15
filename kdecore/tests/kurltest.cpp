@@ -722,6 +722,10 @@ void KUrlTest::testPrettyURL()
   QCOMPARE(openWithUrl.prettyUrl(), QString::fromLatin1("kate --use %25U"));
   QCOMPARE(openWithUrl.path(), QString::fromLatin1("kate --use %U"));
   QCOMPARE(openWithUrl.pathOrUrl(), QString::fromLatin1("kate --use %25U")); // caused #153894; better not use KUrl for this.
+
+  KUrl ipv6Address( "http://[::ffff:129.144.52.38]:81/index.html" );
+  QCOMPARE( ipv6Address.prettyUrl(), QString::fromLatin1( "http://[::ffff:129.144.52.38]:81/index.html" ) );
+
 }
 
 void KUrlTest::testIsRelative()
