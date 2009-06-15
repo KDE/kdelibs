@@ -29,10 +29,14 @@
 namespace Nepomuk {
     namespace Types {
         /**
+         * \class Literal literal.h Nepomuk/Types/Literal
+         *
          * \brief Defines a literal type based on XML Schema.
          *
          * Each valid Literal represents the literal type
          * as XML Schema URI and as QVariant type.
+         *
+         * \author Sebastian Trueg <trueg@kde.org>
          */
         class NEPOMUK_EXPORT Literal
 	{
