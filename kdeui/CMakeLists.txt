@@ -582,3 +582,8 @@ install( FILES
   jobs/org.kde.JobViewServer.xml
   jobs/org.kde.JobView.xml
   DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+
+if (NOT Q_WS_X11)
+    # install our copy of the rgb.txt named colors list on systems without X11
+    install(FILES colors/rgb.txt DESTINATION ${DATA_INSTALL_DIR}/kdeui)
+endif (NOT Q_WS_X11)

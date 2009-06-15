@@ -588,12 +588,16 @@ static const char * const *namedColorFilePath(void)
     //   * example: "kdeui/rgb.txt", "data",
     //
     static const char * const path[] = {
+#ifdef Q_WS_X11
 #ifdef X11_RGBFILE
         X11_RGBFILE, 0,
 #endif
         "/usr/share/X11/rgb.txt", 0,
         "/usr/X11R6/lib/X11/rgb.txt", 0,
         "/usr/openwin/lib/X11/rgb.txt", 0, // for Solaris.
+#else /* systems without X11 */
+        "kdeui/rgb.txt", "data",
+#endif
         0, 0
     };
     return path;
