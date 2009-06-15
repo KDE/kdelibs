@@ -114,6 +114,7 @@ void KNotificationItem::setStatus(const ItemStatus status)
 
 void KNotificationItem::setIconByName(const QString &name)
 {
+    d->serializedIcon = ExperimentalKDbusImageVector();
     d->iconName = name;
     emit d->notificationItemDbus->NewIcon();
     if (d->systemTrayIcon) {
@@ -128,6 +129,7 @@ QString KNotificationItem::iconName() const
 
 void KNotificationItem::setIconByPixmap(const QIcon &icon)
 {
+    d->iconName = QString();
     d->serializedIcon = d->iconToVector(icon);
     emit d->notificationItemDbus->NewIcon();
 
@@ -189,6 +191,7 @@ QIcon KNotificationItem::overlayIconPixmap() const
 
 void KNotificationItem::setAttentionIconByName(const QString &name)
 {
+    d->serializedAttentionIcon = ExperimentalKDbusImageVector();
     d->attentionIconName = name;
     emit d->notificationItemDbus->NewAttentionIcon();
 }
@@ -200,6 +203,7 @@ QString KNotificationItem::attentionIconName() const
 
 void KNotificationItem::setAttentionIconByPixmap(const QIcon &icon)
 {
+    d->attentionIconName = QString();
     d->serializedAttentionIcon = d->iconToVector(icon);
     d->attentionIcon = icon;
     emit d->notificationItemDbus->NewAttentionIcon();
@@ -279,6 +283,7 @@ void KNotificationItem::setToolTip(const QIcon &icon, const QString &title, cons
 
 void KNotificationItem::setToolTipIconByName(const QString &name)
 {
+    d->serializedToolTipIcon = ExperimentalKDbusImageVector();
     d->toolTipIconName = name;
     emit d->notificationItemDbus->NewToolTip();
 }
@@ -290,6 +295,7 @@ QString KNotificationItem::toolTipIconName() const
 
 void KNotificationItem::setToolTipIconByPixmap(const QIcon &icon)
 {
+    d->toolTipIconName = QString();
     d->serializedToolTipIcon = d->iconToVector(icon);
     d->toolTipIcon = icon;
     emit d->notificationItemDbus->NewToolTip();
