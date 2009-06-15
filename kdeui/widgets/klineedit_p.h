@@ -40,7 +40,7 @@ public:
         m_timeline = new QTimeLine(200, this);
         m_timeline->setFrameRange(0, 255);
         m_timeline->setCurveShape(QTimeLine::EaseInOutCurve);
-        m_timeline->setDirection(QTimeLine::Forward);
+        m_timeline->setDirection(QTimeLine::Backward);
         connect(m_timeline, SIGNAL(finished()), this, SLOT(animationFinished()));
         connect(m_timeline, SIGNAL(frameChanged(int)), this, SLOT(update()));
     }
