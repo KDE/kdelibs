@@ -264,7 +264,7 @@ void KNotificationItemDBus::ContextMenu(int x, int y)
         m_notificationItem->d->menu->setWindowFlags(Qt::Window|Qt::FramelessWindowHint);
         m_notificationItem->d->menu->popup(QPoint(x,y));
         KWindowSystem::setState(m_notificationItem->d->menu->winId(), NET::SkipTaskbar|NET::SkipPager|NET::KeepAbove);
-        KWindowSystem::setType(m_notificationItem->d->menu->winId(), NET::Menu);
+        KWindowSystem::setType(m_notificationItem->d->menu->winId(), NET::PopupMenu);
         KWindowSystem::forceActiveWindow(m_notificationItem->d->menu->winId());
     }
 }
