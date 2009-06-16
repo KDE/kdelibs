@@ -196,7 +196,7 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 if(Soprano_FOUND)
   set(HAVE_NEPOMUK true)
-  macro_optional_add_subdirectory(nepomuk)
+  add_subdirectory(nepomuk)
 endif(Soprano_FOUND)
 
 ################# list the subdirectories #################
