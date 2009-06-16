@@ -215,10 +215,13 @@ install(TARGETS ${KJSLIBNAME} EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEF
 
 set(kjs_SRCS kjs.cpp)
 
+#required by win32 see  kdelibs/cmake/modules/kde4Macros.cmake kde4_add_manifest
+set (kjs_bin_OUTPUT_NAME kjs)
+
 # 'kjs_bin' because cmake doesn't like having a lib and app with the same name
 kde4_add_executable(kjs_bin NOGUI ${kjs_SRCS})
 
-set_target_properties(kjs_bin PROPERTIES OUTPUT_NAME kjs)
+set_target_properties(kjs_bin PROPERTIES OUTPUT_NAME ${kjs_bin_OUTPUT_NAME})
 
 target_link_libraries(kjs_bin ${KJSLIBNAME})
 
