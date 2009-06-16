@@ -453,11 +453,6 @@ QString KNotificationItem::title() const
 
 
 
-
-
-
-
-
 void KNotificationItem::activate(const QPoint &pos)
 {
     //if the user activated the icon the NeedsAttention state is no longer necessary
@@ -465,6 +460,10 @@ void KNotificationItem::activate(const QPoint &pos)
     if (d->status == NeedsAttention) {
         d->status = Active;
         emit d->notificationItemDbus->NewStatus(metaObject()->enumerator(metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(d->status));
+    }
+
+    if (d->menu->isVisible()) {
+        d->menu->hide();
     }
 
     if (!d->associatedWidget) {
