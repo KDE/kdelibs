@@ -77,7 +77,7 @@ macro_log_feature(OPENGL_FOUND "OpenGL" "API for developing portable, interactiv
 
 set(SOPRANO_MIN_VERSION "2.1.68")
 macro_optional_find_package(Soprano)
-macro_log_feature(Soprano_FOUND "Soprano" "Soprano Libraries" "kdesupport" FALSE "${SOPRANO_MIN_VERSION}" "Provide metadata support (for semantic desktop).")
+macro_log_feature(Soprano_FOUND "Soprano" "Soprano Libraries" "http://soprano.sourceforge.net" FALSE "${SOPRANO_MIN_VERSION}" "Provide metadata support (for semantic desktop).")
 
 
 ################# Disallow in-source build #################
