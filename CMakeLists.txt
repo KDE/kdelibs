@@ -178,6 +178,7 @@ set(KDE4_KHTML_INCLUDES ${CMAKE_SOURCE_DIR}/khtml)
 # ACL stuff (used in kio/ and kioslaves/)
 macro_optional_find_package(ACL)
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
+macro_log_feature(ACL_FOUND "LibACL" "Access control list (ACL) support library" "ftp://oss.sgi.com/projects/xfs/cmd_tars" FALSE "" "STRONGLY RECOMMENDED: For manipulating access control lists.")
 configure_file(config-acl.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-acl.h )
 
 include(ConfigureChecks.cmake)
