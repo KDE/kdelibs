@@ -4,7 +4,7 @@ add_subdirectory( backends )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
 if(WIN32)
-   include_directories( ${KDEWIN32_INCLUDES} )
+   include_directories( ${KDEWIN_INCLUDES} )
 endif(WIN32)
 
 configure_file(solid_export.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h)
@@ -197,7 +197,7 @@ qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
 set(solid_OPTIONAL_LIBS)
 
 if(WIN32)
-   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN32_LIBRARY})
+   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN_LIBRARY})
 endif(WIN32)
 
 if(APPLE)

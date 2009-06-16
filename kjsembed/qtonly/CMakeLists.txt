@@ -123,9 +123,9 @@ macro(KDE4_NO_ENABLE_FINAL _project_name)
 endmacro(KDE4_NO_ENABLE_FINAL _project_name)
 
 if (NOT QTONLY_WEBKIT)
-   include_directories( ${CMAKE_SOURCE_DIR}/../.. ${CMAKE_SOURCE_DIR}/../../wtf ${CMAKE_SOURCE_DIR}/../../kjsembed ${KDE4_KJS_INCLUDES} ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
+   include_directories( ${CMAKE_SOURCE_DIR}/../.. ${CMAKE_SOURCE_DIR}/../../wtf ${CMAKE_SOURCE_DIR}/../../kjsembed ${KDE4_KJS_INCLUDES} ${QT_INCLUDES} ${KDEWIN_INCLUDES} )
 else (NOT QTONLY_WEBKIT)
-   include_directories(  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/kjs/  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/ ${CMAKE_SOURCE_DIR}/../../kjsembed ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
+   include_directories(  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/kjs/  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/ ${CMAKE_SOURCE_DIR}/../../kjsembed ${QT_INCLUDES} ${KDEWIN_INCLUDES} )
 endif (NOT QTONLY_WEBKIT)
 
 # list the subdirectories

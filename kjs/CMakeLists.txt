@@ -38,7 +38,7 @@ option(KJS_FORCE_DISABLE_PCRE "Force building of KJS without PCRE. Doing this wi
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
-include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_SOURCE_DIR}/wtf ${KDEWIN32_INCLUDES} )
+include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_SOURCE_DIR}/wtf ${KDEWIN_INCLUDES} )
 
 macro_log_feature(PCRE_FOUND "PCRE" "Perl Compatible Regular Expression" "www.pcre.org" FALSE "" "Lack of PCRE will result in extremely poor regular expression support in KJS. ")
 
@@ -193,7 +193,7 @@ endif (NOT DEFINED QT_ONLY)
 kde4_add_library(${KJSLIBNAME} SHARED ${kjs_LIB_SRCS})
 
 if(WIN32)
-   target_link_libraries(${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
+   target_link_libraries(${KJSLIBNAME} ${KDEWIN_LIBRARIES})
 endif(WIN32)
 
 if(CMAKE_THREAD_LIBS_INIT)

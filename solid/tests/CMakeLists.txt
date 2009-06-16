@@ -27,7 +27,7 @@ if(WIN32)
   set_target_properties(halbasictest PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
 endif(WIN32)
 
-target_link_libraries(halbasictest solid_static ${KDEWIN32_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} )
+target_link_libraries(halbasictest solid_static ${KDEWIN_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} )
 endif(NOT WIN32 AND NOT APPLE)
 
 ########### solidhwtest ###############
@@ -43,7 +43,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw )
 
 if(WIN32)
   set_target_properties(solidhwtest PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
-  set (LIBS ${KDEWIN32_LIBRARIES})
+  set (LIBS ${KDEWIN_LIBRARIES})
 endif(WIN32)
 
 target_link_libraries(solidhwtest ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${LIBS} solid_static)
@@ -61,7 +61,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw )
 
 if(WIN32)
   set_target_properties(solidmttest PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
-  set (LIBS ${KDEWIN32_LIBRARIES})
+  set (LIBS ${KDEWIN_LIBRARIES})
 endif(WIN32)
 
 target_link_libraries(solidmttest ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${LIBS} solid_static)
