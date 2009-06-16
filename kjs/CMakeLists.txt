@@ -40,7 +40,7 @@ configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
 include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_SOURCE_DIR}/wtf ${KDEWIN_INCLUDES} )
 
-macro_log_feature(PCRE_FOUND "PCRE" "Perl Compatible Regular Expression" "www.pcre.org" FALSE "" "Lack of PCRE will result in extremely poor regular expression support in KJS. ")
+macro_log_feature(PCRE_FOUND "PCRE" "Perl Compatible Regular Expression" "http://www.pcre.org" FALSE "" "Lack of PCRE will result in extremely poor regular expression support in KJS. ")
 
 # the check for pcre is in kdelibs/CMakeLists.txt
 if(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
