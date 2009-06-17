@@ -216,7 +216,6 @@ void KHTMLParser::reset()
 
     form = 0;
     map = 0;
-    head = 0;
     end = false;
     isindex = 0;
 
@@ -678,8 +677,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             case ID_BASE:
                 if(!head) {
                     head = new HTMLHeadElementImpl(document);
-                    e = head;
-                    insertNode(e);
+                    insertNode(head.get());
                     handled = true;
                 }
                 break;
@@ -894,7 +892,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_HEAD:
         if(!head && (current->id() == ID_HTML || current->isDocumentNode())) {
             head = new HTMLHeadElementImpl(document);
-            n = head;
+            n = head.get();
         }
         break;
     case ID_BODY:
@@ -1907,19 +1905,19 @@ void KHTMLParser::createHead()
     head = new HTMLHeadElementImpl(document);
     HTMLElementImpl *body = doc()->body();
     int exceptioncode = 0;
-    doc()->documentElement()->insertBefore(head, body, exceptioncode);
+    doc()->documentElement()->insertBefore(head.get(), body, exceptioncode);
     if ( exceptioncode ) {
 #ifdef PARSER_DEBUG
         kDebug( 6035 ) << "creation of head failed!!!!:" << exceptioncode;
 #endif
-        delete head;
+        delete head.get();
         head = 0;
     }
         
     // If the body does not exist yet, then the <head> should be pushed as the current block.
     if (head && !body) {
         pushBlock(head->id(), tagPriority(head->id()));
-        setCurrent(head);
+        setCurrent(head.get());
     }
 }
 
