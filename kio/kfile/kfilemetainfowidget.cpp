@@ -108,7 +108,7 @@ void KFileMetaInfoWidgetPrivate::init(KFileMetaInfoItem item, KFileMetaInfoWidge
                 static_cast<QLabel*>(m_widget)->setPixmap(m_value.value<QPixmap>());
                 break;
             default:
-                m_widget = new QLabel(item.name(), q);
+                m_widget = new QLabel(m_value.toString(), q);
                 m_widget->setObjectName(QLatin1String("info label"));
         }
 
