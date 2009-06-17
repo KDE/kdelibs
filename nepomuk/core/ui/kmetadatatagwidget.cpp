@@ -177,7 +177,7 @@ void Nepomuk::TagWidget::slotTagUpdateDone()
     setEnabled( true );
 }
 
-void Nepomuk::TagWidget::slotTagClicked( const QString& text) 
+void Nepomuk::TagWidget::slotTagClicked( const QString& text)
 {
     Nepomuk::Tag tag( text );
     emit tagClicked( tag );
@@ -185,19 +185,13 @@ void Nepomuk::TagWidget::slotTagClicked( const QString& text)
 
 static bool tagLabelLessThan( const Nepomuk::Tag& t1, const Nepomuk::Tag& t2 )
 {
-    return t1.label() < t2.label();
+    return t1.genericLabel() < t2.genericLabel();
 }
 
 
 void Nepomuk::TagWidget::fillTagMenu()
 {
     QList<Tag> allTags = Tag::allTags();
-    // Prepare allTags list
-    foreach( Tag tag, allTags ) {
-        if ( tag.label().isEmpty() ) {
-            tag.setLabel( tag.genericLabel() );
-        }
-    }
     qSort( allTags.begin(), allTags.end(), tagLabelLessThan );
 
     QList<Tag> assignedTags = d->intersectTags();
@@ -205,7 +199,7 @@ void Nepomuk::TagWidget::fillTagMenu()
     d->tagMenu->clear();
     d->tagFromAction.clear();
     foreach( const Tag &tag,  allTags ) {
-        QAction* a = d->tagMenu->addAction( tag.label(), this, SLOT( updateAssignedTagsFromMenu() ) );
+        QAction* a = d->tagMenu->addAction( tag.genericLabel(), this, SLOT( updateAssignedTagsFromMenu() ) );
         d->tagFromAction.insert( a, tag );
         a->setCheckable( true );
         a->setChecked( assignedTags.contains( tag ) );
@@ -224,7 +218,7 @@ void Nepomuk::TagWidget::createTag()
         QListIterator<Tag> tagIt( l );
         while( tagIt.hasNext() ) {
             const Nepomuk::Tag& tag = tagIt.next();
-            if( tag.label() == s ||
+            if( tag.genericLabel() == s ||
                 tag.identifiers().contains( s ) ) {
                 KMessageBox::sorry( this, i18n("The tag %1 already exists", s), i18n("Tag Exists") );
                 return;
