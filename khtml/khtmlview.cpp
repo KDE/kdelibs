@@ -2338,6 +2338,7 @@ bool KHTMLView::widgetEvent(QEvent* e)
                 }
             }
         }
+        break;
       }
       case QEvent::Move: {
           if (static_cast<QMoveEvent*>(e)->pos() != QPoint(0,0)) {
@@ -2345,6 +2346,7 @@ bool KHTMLView::widgetEvent(QEvent* e)
               updateScrollBars();
               return true;
           }
+          break;
       }
       default:
         break;
