@@ -515,6 +515,7 @@ void KFontChooser::enableColumn( int column, bool state )
     if( column & SizeList )
     {
         d->sizeListBox->setEnabled(state);
+        d->sizeOfFont->setEnabled(state);
     }
 }
 
