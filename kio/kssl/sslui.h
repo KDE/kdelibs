@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef _KSSL_H
-#define _KSSL_H
+#ifndef _KSSLUI_H
+#define _KSSLUI_H
 
 #include <kio/kio_export.h>
 #include <ktcpsocket.h>
