@@ -17,6 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
+#ifndef KTCPSOCKET_P_H
+#define KTCPSOCKET_P_H
+
 class KSslErrorUiData::Private
 {
 public:
@@ -32,3 +35,6 @@ public:
     int usedBits;
     int bits;
 };
+
+
+#endif // KTCPSOCKET_P_H
