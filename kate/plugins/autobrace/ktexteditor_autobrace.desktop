@@ -26,6 +26,7 @@ Name[x-test]=xxAutoBracexx
 Comment=Insert closing braces on pressing Enter
 Comment[ca]=Insereix les abraçadores de tancament en prémer la tecla de retorn
 Comment[el]=Αυτόματο κλείσιμο αγκύλων με πίεση του Enter
+Comment[es]=Insertar los paréntesis de cierre al pulsar Intro
 Comment[et]=Lõpetavate sulgude lisamine Enteri vajutamisel
 Comment[fr]=Insérer des accolades fermantes en pressant &Enter;
 Comment[gl]=Insire as chaves de peche ao premer Intro
