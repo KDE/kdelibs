@@ -997,11 +997,6 @@ if (CMAKE_COMPILER_IS_GNUCXX)
       ###Enterprise4: do not define. we build our own and we want debug messages.
       ###add_definitions(-DQT_NO_DEBUG)
 
-      # to make our mingw builds runtime compatible with the way most third
-      # party libs (including gtk, gpgme, etc.) are built, add msvc-style
-      # memory layout flags
-      set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -mms-bitfields")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mms-bitfields")
    endif (MINGW)
 
    check_cxx_compiler_flag(-fPIE HAVE_FPIE_SUPPORT)
