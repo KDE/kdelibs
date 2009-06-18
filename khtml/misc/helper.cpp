@@ -49,29 +49,29 @@ void findWordBoundary(QChar *chars, int len, int position, int *start, int *end)
 {
     if (chars[position].isSpace()) {
         int pos = position;
-        while (chars[pos].isSpace() && pos >= 0)
+        while (pos >= 0 && chars[pos].isSpace())
             pos--;
         *start = pos+1;
         pos = position;
-        while (chars[pos].isSpace() && pos < (int)len)
+        while (pos < (int)len && chars[pos].isSpace())
             pos++;
         *end = pos;
     } else if (chars[position].isPunct()) {
         int pos = position;
-        while (chars[pos].isPunct() && pos >= 0)
+        while (pos >= 0 && chars[pos].isPunct())
             pos--;
         *start = pos+1;
         pos = position;
-        while (chars[pos].isPunct() && pos < (int)len)
+        while (pos < (int)len && chars[pos].isPunct())
             pos++;
         *end = pos;
     } else {
         int pos = position;
-        while (!chars[pos].isSpace() && !chars[pos].isPunct() && pos >= 0)
+        while (pos >= 0 && !chars[pos].isSpace() && !chars[pos].isPunct())
             pos--;
         *start = pos+1;
         pos = position;
-        while (!chars[pos].isSpace() && !chars[pos].isPunct() && pos < (int)len)
+        while (pos < (int)len && !chars[pos].isSpace() && !chars[pos].isPunct())
             pos++;
         *end = pos;
     }
