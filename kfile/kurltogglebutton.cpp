@@ -34,7 +34,7 @@ KUrlToggleButton::KUrlToggleButton(KUrlNavigator* parent) :
     setCheckable(true);
     connect(this, SIGNAL(toggled(bool)),
             this, SLOT(updateToolTip()));
-    m_pixmap = KIcon("edit-undo").pixmap(16, 16);
+    m_pixmap = KIcon("dialog-ok").pixmap(16, 16);
     updateToolTip();
 }
 
@@ -47,6 +47,18 @@ QSize KUrlToggleButton::sizeHint() const
     QSize size = KUrlButton::sizeHint();
     size.setWidth(m_pixmap.width() + 4);
     return size;
+}
+
+void KUrlToggleButton::enterEvent(QEvent* event)
+{
+    KUrlButton::enterEvent(event);
+    emit showEditHint(!isChecked());
+}
+
+void KUrlToggleButton::leaveEvent(QEvent* event)
+{
+    KUrlButton::leaveEvent(event);
+    emit showEditHint(false);
 }
 
 void KUrlToggleButton::paintEvent(QPaintEvent* event)
@@ -63,10 +75,13 @@ void KUrlToggleButton::paintEvent(QPaintEvent* event)
     } else if (isDisplayHintEnabled(EnteredHint)) {
         QColor fgColor = palette().color(foregroundRole());
 
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(fgColor);
-        painter.drawRect((layoutDirection() == Qt::LeftToRight) ? 0
-                                                                : width() - 2, 2, 2, buttonHeight - 6);
+        painter.setPen(fgColor);
+        const int x = (layoutDirection() == Qt::LeftToRight) ? 2 : width() - 3;
+        const int yTop = 6;
+        const int yBottom = buttonHeight - 7;
+        painter.drawLine(x, yTop, x, yBottom);
+        painter.drawLine(x - 2, yTop, x + 2, yTop);
+        painter.drawLine(x - 2, yBottom, x + 2, yBottom);
     }
 }
 
@@ -77,6 +92,7 @@ void KUrlToggleButton::updateToolTip()
     } else {
         setToolTip(i18n("Click to Edit Location"));
     }
+    emit showEditHint(!isChecked());
 }
 
 #include "kurltogglebutton_p.moc"

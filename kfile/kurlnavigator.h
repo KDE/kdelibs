@@ -355,6 +355,8 @@ protected:
     
     virtual bool eventFilter(QObject* watched, QEvent* event);
 
+    virtual void paintEvent(QPaintEvent* event);
+
 private:
     Q_PRIVATE_SLOT(d, void slotReturnPressed())
     Q_PRIVATE_SLOT(d, void slotRemoteHostActivated())
@@ -364,6 +366,8 @@ private:
     Q_PRIVATE_SLOT(d, void openPathSelectorMenu())
     Q_PRIVATE_SLOT(d, void updateButtonVisibility())
     Q_PRIVATE_SLOT(d, void switchToBreadcrumbMode())
+    Q_PRIVATE_SLOT(d, void setShowEditHint(bool))
+    Q_PRIVATE_SLOT(d, void paintEditHint())
     Q_PRIVATE_SLOT(d, void updateContent())
 
 private:

@@ -42,11 +42,13 @@
 #include <QtCore/QLinkedList>
 #include <QtCore/QTimer>
 #include <QtGui/QApplication>
+#include <QtGui/QBoxLayout>
 #include <QtGui/QClipboard>
 #include <QtGui/QDropEvent>
 #include <QtGui/QKeyEvent>
-#include <QtGui/QBoxLayout>
 #include <QtGui/QLabel>
+#include <QtGui/QPainter>
+#include <QtGui/QStyleOption>
 
 #include <fixx11h.h>
 
@@ -165,6 +167,21 @@ public:
     /** Emits the signal urlsDropped(). */
     void dropUrls(const KUrl& destination, QDropEvent* event);
 
+    /**
+     * Is \a show is true, a sunken frame is drawn in the breadcrumb mode
+     * to indicate that the URL can be edited by clicking on the empty area
+     * of the breadcrumb.
+     */
+    void setShowEditHint(bool show);
+
+    /**
+     * Synchronizes m_paintEditHint with m_showEditHint and triggers a repainting
+     * of the widget. paintEditHint() is invoked by setShowEditHint() in
+     * a delayed manner to prevent a flickering when the user shortly hovers
+     * the widget.
+     */
+    void paintEditHint();
+
     void updateContent();
 
     /**
@@ -213,6 +230,8 @@ public:
     bool m_active : 1;
     bool m_showPlacesSelector : 1;
     bool m_showFullPath : 1;
+    bool m_showEditHint : 1;
+    bool m_paintEditHint : 1;
     int m_historyIndex;
 
     QHBoxLayout* m_layout;
@@ -236,6 +255,8 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     m_active(true),
     m_showPlacesSelector(placesModel != 0),
     m_showFullPath(false),
+    m_showEditHint(false),
+    m_paintEditHint(false),
     m_historyIndex(0),
     m_layout(new QHBoxLayout),
     m_placesSelector(0),
@@ -298,10 +319,14 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     connect(m_pathBox, SIGNAL(urlActivated(KUrl)),
             q, SLOT(setUrl(KUrl)));
 
+    // create toggle button which allows to switch between
+    // the breadcrumb and traditional view
     m_toggleEditableMode = new KUrlToggleButton(q);
     m_toggleEditableMode->setMinimumWidth(20);
     connect(m_toggleEditableMode, SIGNAL(clicked()),
             q, SLOT(switchView()));
+    connect(m_toggleEditableMode, SIGNAL(showEditHint(bool)),
+            q, SLOT(setShowEditHint(bool)));
 
     if (m_placesSelector != 0) {
         m_layout->addWidget(m_placesSelector);
@@ -469,6 +494,28 @@ void KUrlNavigator::Private::dropUrls(const KUrl& destination, QDropEvent* event
         // KDE5: remove, as the signal has been replaced by
         // urlsDropped(const KUrl& destination, QDropEvent* event)
         emit q->urlsDropped(urls, destination);
+    }
+}
+
+void KUrlNavigator::Private::setShowEditHint(bool show)
+{
+    if (show != m_showEditHint) {
+        m_showEditHint = show;
+        if (show) {
+            // do a delayed painting to prevent a flickering when the user
+            // quickly hovers the URL navigator
+            QTimer::singleShot(300, q, SLOT(paintEditHint()));
+        } else {
+            paintEditHint();
+        }
+    }
+}
+
+void KUrlNavigator::Private::paintEditHint()
+{
+    if (m_showEditHint != m_paintEditHint) {
+        m_paintEditHint = m_showEditHint;
+        q->update();
     }
 }
 
@@ -1075,6 +1122,23 @@ bool KUrlNavigator::eventFilter(QObject* watched, QEvent* event)
     }
 
     return QWidget::eventFilter(watched, event);
+}
+
+void KUrlNavigator::paintEvent(QPaintEvent* event)
+{
+    QWidget::paintEvent(event);
+
+    if (d->m_paintEditHint) {
+        QPainter painter(this);
+        QStyleOption option;
+        option.initFrom(this);
+        option.state = QStyle::State_None;
+        if ((d->m_placesSelector != 0) && (d->m_placesSelector->isVisible())) {
+            const int frameWidth = style()->pixelMetric(QStyle::PM_FocusFrameHMargin);
+            option.rect.setLeft(d->m_placesSelector->width() - frameWidth);
+        }
+        style()->drawPrimitive(QStyle::PE_FrameLineEdit, &option, &painter, this);
+    }
 }
 
 int KUrlNavigator::historySize() const
