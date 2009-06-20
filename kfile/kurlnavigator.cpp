@@ -172,11 +172,11 @@ public:
      * to indicate that the URL can be edited by clicking on the empty area
      * of the breadcrumb.
      */
-    void setShowEditHint(bool show);
+    void setEditHintShown(bool show);
 
     /**
      * Synchronizes m_paintEditHint with m_showEditHint and triggers a repainting
-     * of the widget. paintEditHint() is invoked by setShowEditHint() in
+     * of the widget. paintEditHint() is invoked by setEditHintShown() in
      * a delayed manner to prevent a flickering when the user shortly hovers
      * the widget.
      */
@@ -326,7 +326,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     connect(m_toggleEditableMode, SIGNAL(clicked()),
             q, SLOT(switchView()));
     connect(m_toggleEditableMode, SIGNAL(showEditHint(bool)),
-            q, SLOT(setShowEditHint(bool)));
+            q, SLOT(setEditHintShown(bool)));
 
     if (m_placesSelector != 0) {
         m_layout->addWidget(m_placesSelector);
@@ -497,7 +497,7 @@ void KUrlNavigator::Private::dropUrls(const KUrl& destination, QDropEvent* event
     }
 }
 
-void KUrlNavigator::Private::setShowEditHint(bool show)
+void KUrlNavigator::Private::setEditHintShown(bool show)
 {
     if (show != m_showEditHint) {
         m_showEditHint = show;
