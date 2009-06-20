@@ -4270,6 +4270,11 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
       return true;
   }
 
+  // we also want to ignore any spurious requests due to closing when parser is being cleared. These should be
+  // ignored entirely  --- the tail end of ::clear will clean things up.
+  if (d->m_bClearing)
+      return false;
+
   if (child->m_bNotify)
   {
       child->m_bNotify = false;
