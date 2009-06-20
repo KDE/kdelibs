@@ -1567,6 +1567,11 @@ bool DOMNamedNodeMap::getOwnPropertySlot(ExecState *exec, const Identifier& prop
     return true;
   }
 
+  // See if it's an item name get
+  DOM::NodeImpl* attr = impl()->getNamedItem(propertyName.ustring().domString());
+  if (attr)
+    return getImmediateValueSlot(this, getDOMNode(exec, attr), slot);
+
   //May be it's an index?
   if (getIndexSlot(this, *m_impl, propertyName, slot))
     return true;
