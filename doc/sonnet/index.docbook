@@ -63,6 +63,7 @@ misspelled word with the selected word.</para>
 
 <para>To stop the spellchecking -- keeping the changes you've already made -- click
 on <guibutton>Stop</guibutton>.</para>
+<!-- The button is actually called "&Finished" -->
 
 <para>To stop the spellchecking and cancel the changes you've already made, click on
 <guibutton>Cancel</guibutton>.</para>
