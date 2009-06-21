@@ -86,6 +86,27 @@ blockquote {
         margin: 1__qem 40px 1em 40px;
 }
 
+/* default behaviour:
+:lang(en)  > q { quotes: '"' '"' "'" "'" }
+*/
+
+:lang(ar) > q, :lang(fa) > q { quotes: "\00AB" "\00BB"; }
+:lang(ca) > q, :lang(es) > q { quotes: "\00AB" "\00BB" "\0022" "\0022"; }
+:lang(el) > q, :lang(pt) > q, :lang(tr) > q, :lang(vi) > q { quotes: "\00AB" "\00BB" "\2039" "\203A"; }
+:lang(hy) > q { quotes: "\00AB" "\00BB" "\201C" "\201D"; }
+:lang(ru) > q, :lang(uk) > q { quotes: "\00AB" "\00BB" "\201E" "\201C; }
+:lang(eo) > q { quotes: "\201C" "\201D"; }
+:lang(id) > q, :lang(it) > q, :lang(zh-cn) > q, :lang(ko) > q, :lang(nb) > q, :lang(no) > q { quotes: "\201C"  "\201D"  "\2018" "\2019"; }
+:lang(bg) > q { quotes: "\201E" "\201C"; }
+:lang(cs) > q, :lang(de) > q, :lang(lt) > q, :lang(sk) > q, :lang(sl) > q { quotes: "\201E" "\201C" "\201A" "\2018"; }
+:lang(da) > q { quotes: "\201E" "\201C" "\2019" "\2019"; }
+:lang(pl) > q, :lang(ro) > q { quotes: "\201E" "\201D" "\00AB" "\00BB"; }
+:lang(hu) > q { quotes: "\201E" "\201D" "\00BB"  "\00AB"; }
+:lang(fi) > q, :lang(nl) > q, :lang(sv) > q { quotes: "\201D" "\201D"  "\2019" "\2019"; }
+:lang(fr) > q { quotes: "\00AB\00A0" "\00A0\00BB" "\2039\00A0" "\00A0\203A"; }
+:lang(hr) > q { quotes: "\00BB" "\00AB" "\203A" "\2039"; }
+:lang(ja) > q, :lang(zh-hk) > q, :lang(zh-tw) > q { quotes: "\300C" "\300D" "\300E" "\300F"; }
+
 q        {
          display: inline;
 }

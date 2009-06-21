@@ -957,6 +957,8 @@ QString RenderStyle::openQuote(int level) const
 {
     if (inherited->quotes)
         return inherited->quotes->openQuote(level);
+    else if (level>1)
+        return "'";
     else
         return "\""; // 0 is default quotes
 }
@@ -965,6 +967,8 @@ QString RenderStyle::closeQuote(int level) const
 {
     if (inherited->quotes)
         return inherited->quotes->closeQuote(level);
+    else if (level)
+        return "'";
     else
         return "\""; // 0 is default quotes
 }
