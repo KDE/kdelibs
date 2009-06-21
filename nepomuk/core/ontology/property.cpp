@@ -388,6 +388,7 @@ bool Nepomuk::Types::Property::isSubPropertyOf( const Property& other )
 
 
 
+#ifndef DISABLE_NEPOMUK_LEGACY
 
 // Start of code for deprecated Property
 // -------------------------------------
@@ -490,3 +491,5 @@ const Nepomuk::Property* Nepomuk::Property::load( const QUrl& uri )
         return 0;
     }
 }
+
+#endif // DISABLE_NEPOMUK_LEGACY

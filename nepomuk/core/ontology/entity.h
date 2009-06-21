@@ -174,6 +174,7 @@ namespace Nepomuk {
     }
 }
 
+#ifndef DISABLE_NEPOMUK_LEGACY
 
 namespace Nepomuk {
 
@@ -220,4 +221,6 @@ namespace Nepomuk {
     };
 }
 
-#endif
+#endif // DISABLE_NEPOMUK_LEGACY
+
+#endif // _NEPOMUK_ENTITY_H_

@@ -273,6 +273,7 @@ bool Nepomuk::Types::Entity::operator!=( const Entity& other ) const
 
 
 
+#ifndef DISABLE_NEPOMUK_LEGACY
 
 // Code for old deprecated Entity class
 // -------------------------------------------
@@ -339,3 +340,6 @@ QString Nepomuk::Entity::comment( const QString& language ) const
         return d->comment;
     }
 }
+
+#endif // DISABLE_NEPOMUK_LEGACY
+
