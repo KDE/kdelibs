@@ -3,6 +3,8 @@ project(nepomukcore)
 # Some problems with conflicting qHash implementations
 KDE4_NO_ENABLE_FINAL(nepomukcore)
 
+add_definitions(-DKDE_DEFAULT_DEBUG_AREA=300000)
+
 include_directories(
   ${nepomuk_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}/nepomuk/

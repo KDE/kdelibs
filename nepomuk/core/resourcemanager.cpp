@@ -88,7 +88,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QUrl& uri, c
     // The uriOrId has no local representation yet -> create one
     //
     if( it == m_initializedData.end() ) {
-//        kDebug(300004) << "No existing ResourceData instance found for uri " << uri;
+//        kDebug() << "No existing ResourceData instance found for uri " << uri;
         //
         // The actual URI is already known here
         //
@@ -158,7 +158,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceManagerPrivate::data( const QString& uri
     // The uriOrId has no local representation yet -> create one
     //
     if( !resFound ) {
-//        kDebug(300004) << "No existing ResourceData instance found for uriOrId " << uriOrId;
+//        kDebug() << "No existing ResourceData instance found for uriOrId " << uriOrId;
         //
         // Every new ResourceData object ends up in the kickoffdata since its actual URI is not known yet
         //
@@ -320,7 +320,7 @@ void Nepomuk::ResourceManager::removeResource( const QString& uri )
 
 void Nepomuk::ResourceManager::notifyError( const QString& uri, int errorCode )
 {
-    kDebug(300004) << "(Nepomuk::ResourceManager) error: " << uri << " " << errorCode;
+    kDebug() << "(Nepomuk::ResourceManager) error: " << uri << " " << errorCode;
     emit error( uri, errorCode );
 }
 
@@ -343,7 +343,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUr
             l.append( Resource( *rdIt ) );
         }
 
-//        kDebug(300004) << " added local resources: " << l.count();
+//        kDebug() << " added local resources: " << l.count();
 
         Soprano::Model* model = mainModel();
         Soprano::StatementIterator it = model->listStatements( Soprano::Statement( Soprano::Node(), Soprano::Vocabulary::RDF::type(), type ) );
@@ -355,7 +355,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QUr
                 l.append( res );
         }
 
-//        kDebug(300004) << " added remote resources: " << l.count();
+//        kDebug() << " added remote resources: " << l.count();
     }
 
     return l;
@@ -373,7 +373,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
     QList<Resource> l;
 
     if( v.isList() ) {
-        kDebug(300004) << "(ResourceManager::allResourcesWithProperty) list values not supported.";
+        kDebug() << "(ResourceManager::allResourcesWithProperty) list values not supported.";
     }
     else {
         // check local data

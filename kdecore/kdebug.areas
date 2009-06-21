@@ -745,8 +745,13 @@
 
 # Nepomuk-KDE (aka. Semantic KDE)
 
-300000       knep
-300001       knep (backbone)
-300002       knep (coreservices)
-300003       knep (service-registry)
-300004       knep (kmetadata)
+300000       nepomuk (library)
+300001       nepomuk (server)
+300100       nepomuk (services)
+300101       nepomuk (filewatch service)
+300102       nepomuk (migration service)
+300103       nepomuk (ontologyloader service)
+300104       nepomuk (query service)
+300105       nepomuk (storage service)
+300106       nepomuk (strigi service)
+300200       nepomuk (ioslave)

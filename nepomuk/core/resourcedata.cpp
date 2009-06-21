@@ -531,7 +531,7 @@ bool Nepomuk::ResourceData::determineUri()
             // The kickoffUriOrId is actually a URI
             //
             m_uri = kickoffUriOrId();
-//            kDebug(300004) << " kickoff identifier " << kickoffUriOrId() << " exists as a URI " << uri();
+//            kDebug() << " kickoff identifier " << kickoffUriOrId() << " exists as a URI " << uri();
         }
         else {
             //
@@ -585,7 +585,7 @@ bool Nepomuk::ResourceData::determineUri()
                 }
                 else {
                     m_uri = it.current().subject().uri();
-//                    kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already exists with URI " << uri();
+//                    kDebug() << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already exists with URI " << uri();
                 }
             }
 
@@ -613,7 +613,7 @@ bool Nepomuk::ResourceData::determineUri()
                     m_uri = m_rm->m_manager->generateUniqueUri( m_kickoffIdentifier );
                 }
 
-//                kDebug(300004) << " kickoff identifier " << kickoffUriOrId() << " seems fresh. Generated new URI " << m_uri;
+//                kDebug() << " kickoff identifier " << kickoffUriOrId() << " seems fresh. Generated new URI " << m_uri;
             }
         }
 
