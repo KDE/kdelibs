@@ -1,6 +1,10 @@
 project(kdoctools)
-find_package(LibXml2 REQUIRED)
-find_package(LibXslt REQUIRED)
+
+find_package(LibXslt)
+macro_log_feature(LIBXSLT_FOUND "LibXSLT" "A library to transform XML files into other XML files" "http://xmlsoft.org/XSLT" TRUE "" "Required for building the KDE help system")
+
+find_package(LibXml2)
+macro_log_feature(LIBXML2_FOUND "LibXML2" "Libraries used to develop XML applications" "http://xmlsoft.org" TRUE "" "Needed for building the KDE help system.")
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 #include_directories( ${CMAKE_SOURCE_DIR}/kioslave ${CMAKE_SOURCE_DIR}/kioslave/bzip2 )
