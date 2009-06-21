@@ -14,11 +14,9 @@ find_package(JPEG)
 macro_log_feature(JPEG_FOUND "libjpeg" "A library for reading and writing JPEG image files" "http://www.ijg.org" TRUE "" "Required by khtml.")
 
 find_package(GIF)
-set(GIF_FOUND false)
 macro_log_feature(GIF_FOUND "giflib" "A library for manipulating GIF format image files" "http://sourceforge.net/projects/giflib" TRUE "" "Required by khtml.")
 
 find_package(PNG)
-set(PNG_FOUND false)
 macro_log_feature(PNG_FOUND "libpng" "A library for manipulating PNG (Portable Network Graphics) image format files." "http://www.libpng.org/pub/png" TRUE "" "Required by khtml.")
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
