@@ -17,95 +17,141 @@
 
 #include <QtCore/QString>
 #include <QtCore/QList>
-#include <QtCore/QTextStream>
 
-class ResourceClass;
+#include "property.h"
 
-class Property
-{
- public:
-    Property();
-    Property( const QString& uri,
-	      const QString& type );
-
-    /**
-     * The uri of the property
-     */
-    QString uri;
-
-    /**
-     * The scope of the property
-     */
-    QString type;
-
-    QString comment;
-
-    bool list;
-
-    ResourceClass* domain;
-
-    Property* inverse;
-
-    QString name() const;
-    QString typeConversionMethod() const;
-    QString typeString( bool simple = false, bool withNamespace = false ) const;
-    QString setterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
-    QString getterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
-    QString adderDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
-    QString reversePropertyGetterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
-
-    QString setterDefinition( const ResourceClass* rc ) const;
-    QString getterDefinition( const ResourceClass* rc ) const;
-    QString adderDefinition( const ResourceClass* rc ) const;
-    QString reversePropertyGetterDefinition( const ResourceClass* rc ) const;
-
-    bool hasSimpleType() const;
-};
-
-
+/**
+ * @short Represents a resource.
+ *
+ * This class keeps all the information of a resource
+ * that has been collected by the ontology parser.
+ */
 class ResourceClass
 {
- public:
-    ResourceClass();
-    ResourceClass( const QString& uri );
-    ~ResourceClass();
+    public:
+        ResourceClass();
+        ResourceClass( const QString& uri );
+        ~ResourceClass();
 
-    ResourceClass* parent;
+        /**
+         * Sets the uri of the resource.
+         */
+        void setUri( const QString &uri );
 
-    QList<ResourceClass*> allParents;
+        /**
+         * Returns the uri of the resource.
+         */
+        QString uri() const;
 
-    bool generate;
+        /**
+         * Sets the comment of the resource.
+         */
+        void setComment( const QString &comment );
 
-    /**
-     * \return true if this class should be generated.
-     * normally this always returns true except for the base class
-     * Resource.
-     */
-    bool generateClass() const;
+        /**
+         * Returns the comment of the resource.
+         */
+        QString comment() const;
 
-    QString name( bool withNamespace = false ) const;
-    QString uri;
-    QString comment;
+        /**
+         * Sets the parent resource of the resource.
+         */
+        void setParentResource( ResourceClass* parent );
 
-    QList<const Property*> properties;
-    QList<const Property*> reverseProperties;
+        /**
+         * Returns the parent resource of the resource.
+         */
+        ResourceClass* parentResource() const;
 
-    QString headerName() const;
-    QString sourceName() const;
+        /**
+         * Adds a parent resource to the resource.
+         */
+        void addParentResource( ResourceClass* parent );
 
-    bool writeHeader( QTextStream& ) const;
-    bool writeSource( QTextStream& ) const;
+        /**
+         * Returns all parent resource of the resource.
+         */
+        QList<ResourceClass*> allParentResources() const;
 
-    QString allResourcesDeclaration( bool withNamespace = false ) const;
-    QString allResourcesDefinition() const;
+        /**
+         * Adds a new property to the resource.
+         */
+        void addProperty( Property* property );
 
-    QString pseudoInheritanceDeclaration( ResourceClass* rc, bool withNamespace ) const;
-    QString pseudoInheritanceDefinition( ResourceClass* rc ) const;
+        /**
+         * Returns the list of all properties of the resource.
+         */
+        Property::ConstPtrList allProperties() const;
 
-    bool write( const QString& folder ) const;
+        /**
+         * Adds a reverse property to the resource.
+         */
+        void addReverseProperty( Property* property );
 
-    QString headerTemplateFilePath;
-    QString sourceTemplateFilePath;
+        /**
+         * Returns the list of all reverse properties of the resource.
+         */
+        Property::ConstPtrList allReverseProperties() const;
+
+        /**
+         * Sets whether code for this class shall be generated.
+         */
+        void setGenerateClass( bool generate );
+
+        /**
+         * Returns @c true if this class should be generated.
+         * Normally this always returns true except for the base class
+         * Resource.
+         */
+        bool generateClass() const;
+
+        /**
+         * Sets the path of the header template file.
+         */
+        void setHeaderTemplateFilePath( const QString &path );
+
+        /**
+         * Returns the path of the header template file.
+         */
+        QString headerTemplateFilePath() const;
+
+        /**
+         * Sets the path of the source template file.
+         */
+        void setSourceTemplateFilePath( const QString &path );
+
+        /**
+         * Returns the path of the source template file.
+         */
+        QString sourceTemplateFilePath() const;
+
+        /**
+         * Returns the name of the resource.
+         *
+         * @param nameSpace The namespace that shall be included.
+         */
+        QString name( const QString &nameSpace = QString() ) const;
+
+        /**
+         * Returns the name of the header file for this resource.
+         */
+        QString headerName() const;
+
+        /**
+         * Returns the name of the source file for this resource.
+         */
+        QString sourceName() const;
+
+    private:
+        QString m_uri;
+        QString m_comment;
+        ResourceClass* m_parentResource;
+        QList<ResourceClass*> m_allParentResources;
+        Property::ConstPtrList m_properties;
+        Property::ConstPtrList m_reverseProperties;
+        bool m_generateClass;
+        QString m_headerTemplateFilePath;
+        QString m_sourceTemplateFilePath;
 };
 
 #endif

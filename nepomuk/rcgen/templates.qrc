@@ -1,0 +1,12 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+  <qresource>
+    <file alias="gpl.tpl">templates/gpl.tpl</file>
+    <file alias="header_safe.tpl">templates/header_safe.tpl</file>
+    <file alias="source_safe.tpl">templates/source_safe.tpl</file>
+    <file alias="header_fast.tpl">templates/header_fast.tpl</file>
+    <file alias="source_fast.tpl">templates/source_fast.tpl</file>
+    <file alias="dummyresource_header_fast.tpl">templates/dummyresource_header_fast.tpl</file>
+    <file alias="dummyresource_source_fast.tpl">templates/dummyresource_source_fast.tpl</file>
+  </qresource>
+</RCC>

@@ -13,8 +13,10 @@
  */
 
 #include "ontologyparser.h"
+
+#include "codegenerator.h"
+#include "property.h"
 #include "resourceclass.h"
-#include "resourcetemplate.h"
 
 #include <soprano/soprano.h>
 
@@ -56,16 +58,16 @@ public:
 
     ResourceClass& getResource( const QString& uri ) {
         ResourceClass& r = resources[ensureNS(uri)];
-        r.uri = ensureNS(uri);
-        if ( !r.parent ) {
-            r.parent = &resources["http://www.w3.org/2000/01/rdf-schema#Resource"];
+        r.setUri( ensureNS(uri) );
+        if ( !r.parentResource() ) {
+            r.setParentResource( &resources["http://www.w3.org/2000/01/rdf-schema#Resource"] );
         }
         return r;
     }
 
     Property& getProperty( const QString& uri ) {
         Property& p = properties[ensureNS(uri)];
-        p.uri = ensureNS(uri);
+        p.setUri( ensureNS(uri) );
         return p;
     }
 };
@@ -95,12 +97,12 @@ bool OntologyParser::assignTemplates( const QStringList& templates )
             if( filename.startsWith( it.value().headerName() ) ) {
                 if ( !quiet )
                     qDebug() << "Using header template file " << tf << " for class " << it.value().name();
-                it.value().headerTemplateFilePath = tf;
+                it.value().setHeaderTemplateFilePath( tf );
             }
             else if( filename.startsWith( it.value().sourceName() ) ) {
                 if ( !quiet )
                     qDebug() << "Using source template file " << tf << " for class " << it.value().name();
-                it.value().sourceTemplateFilePath = tf;
+                it.value().setSourceTemplateFilePath( tf );
             }
         }
     }
@@ -150,35 +152,35 @@ bool OntologyParser::parse( const QString& filename )
 
         if( s.predicate().uri().toString().endsWith( "#subClassOf" ) ) {
             ResourceClass& rc = d->getResource( s.subject().uri().toString() );
-            rc.parent = &d->getResource( s.object().uri().toString() );
-            rc.allParents.append( &d->getResource( s.object().uri().toString() ) );
-            rc.generate = true;
+            rc.setParentResource( &d->getResource( s.object().uri().toString() ) );
+            rc.addParentResource( &d->getResource( s.object().uri().toString() ) );
+            rc.setGenerateClass( true );
         }
         else if( s.predicate().uri().toString().endsWith( "#type" ) ) {
             if( s.object().uri().toString().endsWith( "#Class" ) )
-                d->getResource( s.subject().uri().toString() ).generate = true;
+                d->getResource( s.subject().uri().toString() ).setGenerateClass( true );
         }
         else if( s.predicate().uri().toString().endsWith( "#domain" ) ) {
             ResourceClass& rc = d->getResource( s.object().uri().toString() );
             Property& p = d->getProperty( s.subject().uri().toString() );
-            p.domain = &rc;
-            if ( !rc.properties.contains( &p ) )
-                rc.properties.append( &p );
-            rc.generate = true;
+            p.setDomain( &rc );
+            if ( !rc.allProperties().contains( &p ) )
+                rc.addProperty( &p );
+            rc.setGenerateClass( true );
         }
         else if( s.predicate().uri().toString().endsWith( "#range" ) ) {
-            d->getProperty(s.subject().uri().toString()).type = d->ensureNS(s.object().uri().toString());
+            d->getProperty(s.subject().uri().toString()).setType( d->ensureNS(s.object().uri().toString()) );
         }
         else if( s.predicate().uri().toString().endsWith( "#maxCardinality" ) ||
                  s.predicate().uri().toString().endsWith( "#cardinality" ) ) {
-            d->getProperty(s.subject().uri().toString()).list = ( s.object().literal().toInt() > 1 );
+            d->getProperty(s.subject().uri().toString()).setIsList( s.object().literal().toInt() > 1 );
         }
         else if( s.predicate().uri().toString().endsWith( "#comment" ) ) {
             d->comments[d->ensureNS(s.subject().uri().toString())] = s.object().literal().toString();
         }
         else if ( s.predicate().uri().toString().endsWith("inverseProperty") ) {
-            d->getProperty(s.subject().uri().toString()).inverse = &d->getProperty(s.object().uri().toString());
-            d->getProperty(s.object().uri().toString()).inverse = &d->getProperty(s.subject().uri().toString());
+            d->getProperty(s.subject().uri().toString()).setInverseProperty( &d->getProperty(s.object().uri().toString()) );
+            d->getProperty(s.object().uri().toString()).setInverseProperty( &d->getProperty(s.subject().uri().toString()) );
         }
     }
 
@@ -186,14 +188,14 @@ bool OntologyParser::parse( const QString& filename )
     for( QMap<QString, Property>::iterator propIt = d->properties.begin();
          propIt != d->properties.end(); ++propIt ) {
         Property& p = propIt.value();
-        if( d->resources.contains( p.type ) ) {
+        if( d->resources.contains( p.type() ) ) {
             if ( !quiet )
-                qDebug() << "Setting reverse property " << p.uri << " on type " << p.type << endl;
-            if ( !d->resources[p.type].reverseProperties.contains( &p ) )
-                d->resources[p.type].reverseProperties.append( &p );
+                qDebug() << "Setting reverse property " << p.uri() << " on type " << p.type() << endl;
+            if ( !d->resources[p.type()].allReverseProperties().contains( &p ) )
+                d->resources[p.type()].addReverseProperty( &p );
         }
-        if ( !p.domain ) {
-            p.domain = &d->resources["http://www.w3.org/2000/01/rdf-schema#Resource"];
+        if ( !p.domain() ) {
+            p.setDomain( &d->resources["http://www.w3.org/2000/01/rdf-schema#Resource"] );
         }
 
         Q_ASSERT( d->properties.count( propIt.key() ) == 1 );
@@ -204,31 +206,31 @@ bool OntologyParser::parse( const QString& filename )
     while( commentsIt.hasNext() ) {
         commentsIt.next();
         if( d->resources.contains( commentsIt.key() ) )
-            d->resources[commentsIt.key()].comment = commentsIt.value();
+            d->resources[commentsIt.key()].setComment( commentsIt.value() );
         else if( d->properties.contains( commentsIt.key() ) )
-            d->properties[commentsIt.key()].comment = commentsIt.value();
+            d->properties[commentsIt.key()].setComment( commentsIt.value() );
     }
 
     // testing stuff
     for( QMap<QString, ResourceClass>::iterator it = d->resources.begin();
          it != d->resources.end(); ++it ) {
-        if( !it->parent ) {
-            it->parent = &d->resources["http://www.w3.org/2000/01/rdf-schema#Resource"];
+        if( !it->parentResource() ) {
+            it->setParentResource( &d->resources["http://www.w3.org/2000/01/rdf-schema#Resource"] );
         }
         if ( !quiet )
             qDebug() << "Resource: " << (*it).name()
-                     << "[" << (*it).uri << "]"
-                     << " (->" << (*it).parent->name() << ")"
+                     << "[" << (*it).uri() << "]"
+                     << " (->" << (*it).parentResource()->name() << ")"
                      << ( (*it).generateClass() ? " (will be generated)" : " (will not be generated)" )
                      << endl;
 
         Q_ASSERT( d->resources.count( it.key() ) == 1 );
 
-        QListIterator<const Property*> propIt( (*it).properties );
+        QListIterator<const Property*> propIt( (*it).allProperties() );
         while( propIt.hasNext() ) {
             const Property* p = propIt.next();
             if ( !quiet )
-                qDebug() << "          " << p->uri << " (->" << p->type << ")" << ( p->list ? QString("+") : QString("1") ) << endl;
+                qDebug() << "          " << p->uri() << " (->" << p->type() << ")" << ( p->isList() ? QString("+") : QString("1") ) << endl;
         }
     }
 
@@ -236,15 +238,19 @@ bool OntologyParser::parse( const QString& filename )
 }
 
 
-bool OntologyParser::writeSources( const QString& dir, bool externalRefs )
+bool OntologyParser::writeSources( const QString& dir, bool externalRefs, bool fastMode )
 {
+    CodeGenerator generator( fastMode ? CodeGenerator::FastMode : CodeGenerator::SafeMode );
+
     bool success = true;
 
     for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
          it != d->resources.constEnd(); ++it ) {
         if( (*it).generateClass() )
-            success &= (*it).write( dir + QDir::separator() );
+            success &= generator.write( &(*it), dir + QDir::separator() );
     }
+
+    generator.writeDummyClasses( dir + QDir::separator() );
 
     return success;
 }

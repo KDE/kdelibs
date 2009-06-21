@@ -7,10 +7,15 @@ include_directories(
   ${SOPRANO_INCLUDE_DIR} )
 
 set(nepomuk_rcgen_SRCS
+  codegenerator.cpp
+  fastcode.cpp
+  property.cpp
   rcgen.cpp
   resourceclass.cpp
+  safecode.cpp
   ontologyparser.cpp)
 
+qt4_add_resources(nepomuk_rcgen_SRCS templates.qrc)
 kde4_add_executable(nepomuk-rcgen ${nepomuk_rcgen_SRCS})
 target_link_libraries(nepomuk-rcgen
   ${SOPRANO_LIBRARIES}
