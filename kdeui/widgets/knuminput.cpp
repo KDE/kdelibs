@@ -426,7 +426,7 @@ void KIntNumInput::setSliderEnabled(bool slider)
         const int major = calcDiffByTen(d->intSpinBox->maximum(), d->intSpinBox->minimum());
 
         priv->slider->setSingleStep(d->intSpinBox->singleStep());
-        priv->slider->setPageStep(major);
+        priv->slider->setPageStep(qMax(1, major));
         priv->slider->setTickInterval(major);
     } else {
         delete priv->slider;
