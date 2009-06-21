@@ -27,6 +27,7 @@
 
 class KDEUI_EXPORT KdeUiProxyStyle : public QStyle
 {
+    Q_OBJECT
 public:
     KdeUiProxyStyle(QWidget *parent);
     ~KdeUiProxyStyle();
