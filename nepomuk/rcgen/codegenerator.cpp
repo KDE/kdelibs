@@ -262,10 +262,13 @@ bool CodeGenerator::writeHeader( const ResourceClass *resourceClass, QTextStream
         foreach( ResourceClass* rc, resourceClass->allParentResources() ) {
             // ignore the one we derived from
             if( rc != resourceClass->parentResource() ) {
+                const QString decl = m_code->resourcePseudoInheritanceDeclaration( resourceClass, rc, false );
+                if ( decl.isEmpty() )
+                    continue;
                 ms << writeComment( QString("Nepomuk does not support multiple inheritance. Thus, to access "
                                             "properties from all parent classes helper methods like this are "
                                             "introduced. The object returned represents the exact same resource."), 3*4 ) << endl
-                   << "            " << m_code->resourcePseudoInheritanceDeclaration( resourceClass, rc, false ) << ";" << endl << endl;
+                   << "            " << decl << ";" << endl << endl;
 
                 includes.insert( rc->name() );
             }
