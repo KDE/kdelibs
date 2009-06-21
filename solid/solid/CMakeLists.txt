@@ -244,7 +244,10 @@ set(lexer_FILE predicate_lexer)
 set(parser_FILE predicate_parser)
 
 find_package(Flex)
+macro_log_feature(FLEX_FOUND "Flex" "Fast lexical analyser generator" "http://flex.sourceforge.net" FALSE "" "Needed to build the Solid predicate parser.")
+
 find_program(BISON_EXECUTABLE bison)
+macro_log_feature(BISON_EXECUTABLE "Bison" "Project parser generator (yacc replacement)" "http://www.gnu.org/software/bison" FALSE "" "Needed to build the Solid predicate parser.")
 mark_as_advanced(BISON_EXECUTABLE)      # don't show it in the simple view in cmake-gui/ccmake
 
 if (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
