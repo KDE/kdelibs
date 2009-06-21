@@ -916,11 +916,15 @@ void RenderLayer::checkScrollbarsAfterLayout()
             showScrollbar(Qt::Horizontal, needHorizontalBar);
             if (m_hBar) 
                 m_hBar->setEnabled(true);
+            else
+                scrollToXOffset(0);
         }
         if (m_object->style()->overflowY() == OAUTO) {
             showScrollbar(Qt::Vertical, needVerticalBar);
             if (m_vBar)
                 m_vBar->setEnabled(true);
+            else
+                scrollToYOffset(0);
         }
 
         m_object->setNeedsLayout(true);
