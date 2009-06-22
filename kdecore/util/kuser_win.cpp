@@ -21,10 +21,12 @@
 #include "kuser.h"
 
 #include <QtCore/QMutableStringListIterator>
+#include <QtCore/QDebug>
 #include <QtCore/QDir>
 
 #include <windows.h>
 #include <lm.h>
+#include <Sddl.h>
 #include <userenv.h>
 
 class KUser::Private : public KShared
@@ -37,7 +39,7 @@ class KUser::Private : public KShared
 
         Private(PUSER_INFO_11 userInfo_, PSID sid_ = 0) : userInfo(userInfo_) {}
 
-        Private(const QString &name, PSID sid_ = 0) : userInfo(0), sid(0)
+        Private(const QString &name, PSID sid_ = 0) : userInfo(0), sid(NULL)
         {
             if (NetUserGetInfo(NULL, (LPCWSTR) name.utf16(), 11, (LPBYTE *) &userInfo) != NERR_Success)
                 goto error;
@@ -46,12 +48,28 @@ class KUser::Private : public KShared
                 DWORD size = 0;
                 SID_NAME_USE nameuse;
                 DWORD cchReferencedDomainName = 0;
+                WCHAR* referencedDomainName = NULL;
+                
+                // the following line definitely fails:
+                // both the sizes for sid and for referencedDomainName are Null
+                // the needed sizes are set in size and cchReferencedDomainName
+                LookupAccountNameW(NULL, (LPCWSTR) name.utf16(), sid, &size, referencedDomainName, &cchReferencedDomainName, &nameuse);
+                sid = (PSID) new SID[size + 1];
+                referencedDomainName = new WCHAR[cchReferencedDomainName + 1];
+                if (!LookupAccountNameW(NULL, (LPCWSTR) name.utf16(), sid, &size, referencedDomainName, &cchReferencedDomainName, &nameuse)) {
+                    delete[] referencedDomainName;
+                    goto error;
+                }
 
-                if (!LookupAccountNameW(NULL, (LPCWSTR) name.utf16(), NULL, &size, NULL, &cchReferencedDomainName, &nameuse))
-                    goto error;
-                sid = (PSID) new BYTE[size];
-                if (!LookupAccountNameW(NULL, (LPCWSTR) name.utf16(), sid, &size, NULL, &cchReferencedDomainName, &nameuse))
-                    goto error;
+                // if you want to see both the DomainName and the sid of the user
+                // uncomment the following lines
+/*                LPWSTR sidstring;
+                ConvertSidToStringSidW(sid, &sidstring);
+                qDebug() << QString("\\\\") + QString::fromUtf16(reinterpret_cast<ushort*>(referencedDomainName)) + \
+                            "\\" + name + "(" + QString::fromUtf16(reinterpret_cast<ushort*>(sidstring)) + ")";
+
+                LocalFree(sidstring);*/
+                delete[] referencedDomainName;
             }
             else {
                 if (!IsValidSid(sid_))
