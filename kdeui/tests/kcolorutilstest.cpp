@@ -91,12 +91,42 @@ void tst_KColorUtils::testHCY()
 
 void tst_KColorUtils::testContrast()
 {
-    QCOMPARE(qreal(21.0), KColorUtils::contrastRatio(Qt::black, Qt::white));
-    QCOMPARE(qreal(21.0), KColorUtils::contrastRatio(Qt::white, Qt::black));
-    QCOMPARE(qreal(1.0), KColorUtils::contrastRatio(Qt::black, Qt::black));
-    QCOMPARE(qreal(1.0), KColorUtils::contrastRatio(Qt::white, Qt::white));
+    QCOMPARE( KColorUtils::contrastRatio(Qt::black, Qt::white), qreal(21.0) );
+    QCOMPARE( KColorUtils::contrastRatio(Qt::white, Qt::black), qreal(21.0) );
+    QCOMPARE( KColorUtils::contrastRatio(Qt::black, Qt::black), qreal(1.0) );
+    QCOMPARE( KColorUtils::contrastRatio(Qt::white, Qt::white), qreal(1.0) );
 
     // TODO better tests :-)
+}
+
+void checkIsGray(const QColor &color, int line)
+{
+    KColorSpaces::KHCY hcy( color );
+    if ( hcy.c != qreal(0.0) )
+        fprintf( stderr, "%08x has chroma %g, expected gray!\n", color.rgb(), hcy.c );
+    QTest::qCompare( hcy.c, qreal(0.0), "hcy.c", "0.0", __FILE__, line );
+}
+
+void tst_KColorUtils::testShading()
+{
+    const QColor testGray( 128, 128, 128 ); // Qt::gray isn't pure gray!
+
+    // Test that KHCY gets chroma correct for white/black, grays
+    checkIsGray( Qt::white, __LINE__ );
+    checkIsGray( testGray,  __LINE__ );
+    checkIsGray( Qt::black, __LINE__ );
+
+    // Test that lighten/darken/shade don't change chroma for grays
+    checkIsGray( KColorUtils::shade( Qt::white, -0.1 ), __LINE__ );
+    checkIsGray( KColorUtils::shade( Qt::black,  0.1 ), __LINE__ );
+    checkIsGray( KColorUtils::darken( Qt::white,  0.1 ), __LINE__ );
+    checkIsGray( KColorUtils::darken( testGray,   0.1 ), __LINE__ );
+    checkIsGray( KColorUtils::darken( testGray,  -0.1 ), __LINE__ );
+    checkIsGray( KColorUtils::darken( Qt::black, -0.1 ), __LINE__ );
+    checkIsGray( KColorUtils::lighten( Qt::black,  0.1 ), __LINE__ );
+    checkIsGray( KColorUtils::lighten( testGray,   0.1 ), __LINE__ );
+    checkIsGray( KColorUtils::lighten( testGray,  -0.1 ), __LINE__ );
+    checkIsGray( KColorUtils::lighten( Qt::white, -0.1 ), __LINE__ );
 }
 
 QTEST_MAIN(tst_KColorUtils)

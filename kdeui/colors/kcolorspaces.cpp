@@ -106,7 +106,7 @@ KHCY::KHCY(const QColor& color)
         h = ((r - g) / d) + (2.0 / 3.0);
 
     // chroma component
-    if (0.0 == y || 1.0 == y)
+    if (r == g && g == b)
         c = 0.0;
     else
         c = qMax( (y - n) / y, (p - y) / (1 - y) );

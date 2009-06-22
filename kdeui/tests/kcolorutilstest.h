@@ -11,6 +11,7 @@ private slots:
     void testMix();
     void testHCY();
     void testContrast();
+    void testShading();
 };
 
 #endif // KCOLORUTILSTEST_H
