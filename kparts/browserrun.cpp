@@ -338,7 +338,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr o
     if (offer && !offer->name().isEmpty())
         openItem = KGuiItem(i18n("&Open with '%1'", offer->name()), offer->icon());
     else
-        openItem = KGuiItem(i18n("&Open with..."));
+        openItem = KGuiItem(i18n("&Open with..."), "system-run");
 
     int choice = KMessageBox::questionYesNoCancel(
         0, question, url.host(),
