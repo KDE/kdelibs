@@ -56,29 +56,38 @@ class KDEUI_EXPORT KToolBar : public QToolBar
 
   public:
     /**
-     * Normal constructor.
-     * This constructor is used by the XML-GUI. If you use it, you need
-     * to call QMainWindow::addToolBar to specify the position of the toolbar.
-     * So it's simpler to use the other constructor.
+     * Constructor.
+     *
+     * This constructor takes care of adding the toolbar to the mainwindow,
+     * if @p parent is a QMainWindow.
+     *
+     * Normally KDE applications do not call this directly, they either
+     * call KMainWindow::toolBar(name), or they use XML-GUI and specify
+     * toolbars using XML.
      *
      * The toolbar will read in various global config settings for
      * things like icon size and text position, etc.  However, some of
      * the settings will be honored only if @p honorStyle is set to
-     * true.  All other toolbars will be IconOnly and use Medium icons.
+     * true, which is usually the case for secondary toolbars.
+     * The main toolbar (honorStyle==false) uses TextBesideIcon.
+     * TODO: make it configurable as well.
      *
      * @param parent      The standard toolbar parent (usually a KMainWindow)
-     * @param honorStyle  If true, then global settings for IconSize and IconText will be honored
+     * @param honorStyle  If true, then global setting for IconText will be honored
      * @param readConfig  whether to apply the configuration (global and application-specific)
      */
-    explicit KToolBar( QWidget *parent, bool honorStyle = false, bool readConfig = true );
+    explicit KToolBar(QWidget *parent, bool honorStyle = false, bool readConfig = true);
 
     /**
-     * Constructor for non-XML-GUI applications.
+     * Alternate constructor with additional arguments, e.g. to choose in which area
+     * the toolbar should be auto-added. This is rarely used in KDE.
      *
      * The toolbar will read in various global config settings for
      * things like icon size and text position, etc.  However, some of
      * the settings will be honored only if @p honorStyle is set to
-     * true.  All other toolbars will be IconOnly and use Medium icons.
+     * true, which is usually the case for secondary toolbars.
+     * The main toolbar (honorStyle==false) uses TextBesideIcon.
+     * TODO: make it configurable as well.
      *
      * @param objectName  The QObject name of this toolbar, required so that QMainWindow can save and load the toolbar position
      * @param parentWindow The window that should be the parent of this toolbar
@@ -88,7 +97,7 @@ class KDEUI_EXPORT KToolBar : public QToolBar
      * @param readConfig  whether to apply the configuration (global and application-specific)
      */
     KToolBar( const QString& objectName, QMainWindow* parentWindow, Qt::ToolBarArea area, bool newLine = false,
-              bool honorStyle = false, bool readConfig = true );
+              bool honorStyle = false, bool readConfig = true ); // KDE5: consider removing, I don't think anyone is using this.
 
     /**
      * Destroys the toolbar.
