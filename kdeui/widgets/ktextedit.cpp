@@ -414,20 +414,21 @@ bool KTextEdit::Private::handleShortcut(const QKeyEvent* event)
   return false;
 }
 
+static void deleteWord(QTextCursor cursor, QTextCursor::MoveOperation op)
+{
+  cursor.clearSelection();
+  cursor.movePosition( op, QTextCursor::KeepAnchor );
+  cursor.removeSelectedText();
+}
+
 void KTextEdit::deleteWordBack()
 {
-  QTextCursor cursor = textCursor();
-  cursor.clearSelection();
-  cursor.movePosition( QTextCursor::PreviousWord, QTextCursor::KeepAnchor );
-  cursor.removeSelectedText();
+  deleteWord(textCursor(), QTextCursor::PreviousWord);
 }
 
 void KTextEdit::deleteWordForward()
 {
-  QTextCursor cursor = textCursor();
-  cursor.clearSelection();
-  cursor.movePosition( QTextCursor::WordRight, QTextCursor::KeepAnchor );
-  cursor.removeSelectedText();
+  deleteWord(textCursor(), QTextCursor::WordRight);
 }
 
 QMenu *KTextEdit::mousePopupMenu()
