@@ -305,10 +305,21 @@ QChar Filter::skipToLetter( int &fromPosition ) const
 bool Filter::shouldBeSkipped( bool wordWasUppercase, bool wordWasRunTogether,
                              const QString& foundWord ) const
 {
-    return trySkipLinks()
-           || ( wordWasUppercase && !/*checkUpper=*/(!d->settings || d->settings->checkUppercase()) )
-           || ( wordWasRunTogether && /*skipRunTogether*/(!d->settings || d->settings->skipRunTogether()) )
-           || ignore( foundWord );
+    bool checkUpper = ( d->settings ) ?
+                      d->settings->checkUppercase () : true;
+    bool skipRunTogether = ( d->settings ) ?
+                           d->settings->skipRunTogether() : true;
+
+    if ( trySkipLinks() )
+        return true;
+
+    if ( wordWasUppercase && !checkUpper )
+        return true;
+
+    if ( wordWasRunTogether && skipRunTogether )
+        return true;
+
+    return ignore( foundWord );
 }
 
 }
