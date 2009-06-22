@@ -1001,14 +1001,6 @@ void KFilePreviewGenerator::Private::orderItems(KFileItemList& items)
 {
     // Order the items in a way that the preview for the visible items
     // is generated first, as this improves the feeled performance a lot.
-    //
-    // Implementation note: 2 different algorithms are used for the sorting.
-    // Algorithm 1 is faster when having a lot of items in comparison
-    // to the number of rows in the model. Algorithm 2 is faster
-    // when having quite less items in comparison to the number of rows in
-    // the model. Choosing the right algorithm is important when having directories
-    // with several hundreds or thousands of items.
-
     const bool hasProxy = (m_proxyModel != 0);
     const int itemCount = items.count();
     const int rowCount = hasProxy ? m_proxyModel->rowCount() : m_dirModel->rowCount();
@@ -1017,62 +1009,23 @@ void KFilePreviewGenerator::Private::orderItems(KFileItemList& items)
     QModelIndex dirIndex;
     QRect itemRect;
     int insertPos = 0;
-    if (itemCount * 10 > rowCount) {
-        // Algorithm 1: The number of items is > 10 % of the row count. Parse all rows
-        // and check whether the received row is part of the item list.
-        for (int row = 0; row < rowCount; ++row) {
-            if (hasProxy) {
-                const QModelIndex proxyIndex = m_proxyModel->index(row, 0);
-                itemRect = m_viewAdapter->visualRect(proxyIndex);
-                dirIndex = m_proxyModel->mapToSource(proxyIndex);
-            } else {
-                dirIndex = m_dirModel->index(row, 0);
-                itemRect = m_viewAdapter->visualRect(dirIndex);
-            }
-
-            KFileItem item = m_dirModel->itemForIndex(dirIndex);  // O(1)
-            const KUrl url = item.url();
-
-            // check whether the item is part of the item list 'items'
-            int index = -1;
-            for (int i = 0; i < itemCount; ++i) {
-                if (items.at(i).url() == url) {
-                    index = i;
-                    break;
-                }
-            }
-
-            if ((index > 0) && itemRect.intersects(visibleArea)) {
-                // The current item is (at least partly) visible. Move it
-                // to the front of the list, so that the preview is
-                // generated earlier.
-                items.removeAt(index);
-                items.insert(insertPos, item);
-                ++insertPos;
-                ++m_pendingVisibleIconUpdates;
-            }
+    for (int i = 0; i < itemCount; ++i) {
+        dirIndex = m_dirModel->indexForItem(items.at(i)); // O(n) (n = number of rows)
+        if (hasProxy) {
+            const QModelIndex proxyIndex = m_proxyModel->mapFromSource(dirIndex);
+            itemRect = m_viewAdapter->visualRect(proxyIndex);
+        } else {
+            itemRect = m_viewAdapter->visualRect(dirIndex);
         }
-    } else {
-        // Algorithm 2: The number of items is <= 10 % of the row count. In this case iterate
-        // all items and receive the corresponding row from the item.
-        for (int i = 0; i < itemCount; ++i) {
-            dirIndex = m_dirModel->indexForItem(items.at(i)); // O(n) (n = number of rows)
-            if (hasProxy) {
-                const QModelIndex proxyIndex = m_proxyModel->mapFromSource(dirIndex);
-                itemRect = m_viewAdapter->visualRect(proxyIndex);
-            } else {
-                itemRect = m_viewAdapter->visualRect(dirIndex);
-            }
 
-            if (itemRect.intersects(visibleArea)) {
-                // The current item is (at least partly) visible. Move it
-                // to the front of the list, so that the preview is
-                // generated earlier.
-                items.insert(insertPos, items.at(i));
-                items.removeAt(i + 1);
-                ++insertPos;
-                ++m_pendingVisibleIconUpdates;
-            }
+        if (itemRect.intersects(visibleArea)) {
+            // The current item is (at least partly) visible. Move it
+            // to the front of the list, so that the preview is
+            // generated earlier.
+            items.insert(insertPos, items.at(i));
+            items.removeAt(i + 1);
+            ++insertPos;
+            ++m_pendingVisibleIconUpdates;
         }
     }
 }
