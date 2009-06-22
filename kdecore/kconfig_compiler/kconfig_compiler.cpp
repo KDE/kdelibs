@@ -1873,10 +1873,17 @@ int main( int argc, char **argv )
      cpp << "  , mParam" << (*it).name << "(" << (*it).name << ")" << endl;
   }
 
+  if ( hasSignals && !dpointer )
+    cpp << "  , " << varName("settingsChanged") << "(0)" << endl;
+
   cpp << "{" << endl;
 
   if (dpointer)
+  {
     cpp << "  d = new " + className + "Private;" << endl;
+    if (hasSignals)
+      cpp << "  " << varPath("settingsChanged") << " = 0;" << endl;
+  }
   // Needed in case the singleton class is used as baseclass for
   // another singleton.
   if (singleton) {
