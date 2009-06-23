@@ -166,6 +166,8 @@ namespace Nepomuk {
 }
 
 
+#ifndef DISABLE_NEPOMUK_LEGACY
+
 namespace Nepomuk {
 
     class Ontology;
@@ -274,4 +276,5 @@ namespace Nepomuk {
     };
 }
 
+#endif
 #endif

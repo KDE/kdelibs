@@ -113,13 +113,14 @@ namespace Nepomuk {
              * \param language The language in which the label was specified. If empty the default rdfs:label
              * is returned.
              * \return the Property object identified by label or an invalid one if the property could not be found.
-             */ 
+             */
             Property findPropertyByLabel( const QString& label, const QString& language = QString() );
         };
     }
 }
 
 
+#ifndef DISABLE_NEPOMUK_LEGACY
 
 namespace Nepomuk {
 
@@ -231,5 +232,7 @@ namespace Nepomuk {
 	friend class OntologyManager;
     };
 }
+
+#endif // DISABLE_NEPOMUK_LEGACY
 
 #endif

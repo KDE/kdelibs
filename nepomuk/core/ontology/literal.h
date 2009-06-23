@@ -77,6 +77,8 @@ namespace Nepomuk {
 }
 
 
+#ifndef DISABLE_NEPOMUK_LEGACY
+
 namespace Nepomuk {
     /**
      * \brief Defines a literal type based on XML Schema.
@@ -117,5 +119,7 @@ namespace Nepomuk {
         QSharedDataPointer<Private> d;
     };
 }
+
+#endif // DISABLE_NEPOMUK_LEGACY
 
 #endif
