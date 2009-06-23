@@ -69,8 +69,8 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 {
     KIO::Job *kioJob = 0;
 
-    if ( !d->externalContentAllowed ) {
-        kDebug() << "Blocked: " << req.url();
+    if ( !d->externalContentAllowed && req.url().scheme() != "file" && !req.url().scheme().isEmpty() ) {
+        kDebug() << "Blocked: " << req.url().scheme() <<  req.url();
         /* if kioJob equals zero, the AccessManagerReply will block the request */
         return new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
     }
