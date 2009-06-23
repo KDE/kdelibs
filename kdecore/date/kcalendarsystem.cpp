@@ -567,6 +567,7 @@ QString KCalendarSystem::yearString( const QDate &date, StringFormat format ) co
         if ( format == ShortFormat && result.length() == 4 ) {
             result = result.right( 2 );
         }
+        result = locale()->convertDigits( result, locale()->dateTimeDigitSet() );
 
         return result;
     }
@@ -583,6 +584,7 @@ QString KCalendarSystem::monthString( const QDate &date, StringFormat format ) c
         if ( format == LongFormat && result.length() == 1 ) {
             result.prepend( QLatin1Char( '0' ) );
         }
+        result = locale()->convertDigits( result, locale()->dateTimeDigitSet() );
 
         return result;
     }
@@ -599,6 +601,7 @@ QString KCalendarSystem::dayString( const QDate &date, StringFormat format ) con
         if ( format == LongFormat && result.length() == 1 ) {
             result.prepend( QLatin1Char( '0' ) );
         }
+        result = locale()->convertDigits( result, locale()->dateTimeDigitSet() );
 
         return result;
     }
