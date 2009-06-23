@@ -239,7 +239,12 @@ static void refdec_nwi(NETWinInfoPrivate *p) {
 
 
 static int wcmp(const void *a, const void *b) {
-    return *((Window *) a) - *((Window *) b);
+    if (*((Window *) a) < *((Window *) b))
+        return -1;
+    else if (*((Window *) a) > *((Window *) b))
+        return 1;
+    else
+        return 0;
 }
 
 
