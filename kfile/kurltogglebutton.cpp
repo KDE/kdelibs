@@ -34,6 +34,8 @@ KUrlToggleButton::KUrlToggleButton(KUrlNavigator* parent) :
     setCheckable(true);
     connect(this, SIGNAL(toggled(bool)),
             this, SLOT(updateToolTip()));
+    connect(this, SIGNAL(clicked(bool)),
+            this, SLOT(updateCursor()));
     m_pixmap = KIcon("dialog-ok").pixmap(16, 16);
     updateToolTip();
 }
@@ -52,13 +54,13 @@ QSize KUrlToggleButton::sizeHint() const
 void KUrlToggleButton::enterEvent(QEvent* event)
 {
     KUrlButton::enterEvent(event);
-    emit showEditHint(!isChecked());
+    updateCursor();
 }
 
 void KUrlToggleButton::leaveEvent(QEvent* event)
 {
     KUrlButton::leaveEvent(event);
-    emit showEditHint(false);
+    setCursor(Qt::ArrowCursor);
 }
 
 void KUrlToggleButton::paintEvent(QPaintEvent* event)
@@ -73,15 +75,13 @@ void KUrlToggleButton::paintEvent(QPaintEvent* event)
         const int y = (buttonHeight - m_pixmap.height()) / 2;
         painter.drawPixmap(QRect(x, y, m_pixmap.width(), m_pixmap.height()), m_pixmap);
     } else if (isDisplayHintEnabled(EnteredHint)) {
-        QColor fgColor = palette().color(foregroundRole());
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(palette().color(foregroundRole()));
 
-        painter.setPen(fgColor);
-        const int x = (layoutDirection() == Qt::LeftToRight) ? 2 : width() - 3;
-        const int yTop = 6;
-        const int yBottom = buttonHeight - 7;
-        painter.drawLine(x, yTop, x, yBottom);
-        painter.drawLine(x - 2, yTop, x + 2, yTop);
-        painter.drawLine(x - 2, yBottom, x + 2, yBottom);
+        const int verticalGap = 4;
+        const int caretWidth = 2;
+        const int x = (layoutDirection() == Qt::LeftToRight) ? 0 : width() - caretWidth;
+        painter.drawRect(x, verticalGap, caretWidth, buttonHeight - 2 * verticalGap);
     }
 }
 
@@ -92,7 +92,11 @@ void KUrlToggleButton::updateToolTip()
     } else {
         setToolTip(i18n("Click to Edit Location"));
     }
-    emit showEditHint(!isChecked());
+}
+
+void KUrlToggleButton::updateCursor()
+{
+    setCursor(isChecked() ? Qt::ArrowCursor : Qt::IBeamCursor);
 }
 
 #include "kurltogglebutton_p.moc"

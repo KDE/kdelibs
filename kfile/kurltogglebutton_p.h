@@ -42,13 +42,6 @@ public:
     /** @see QWidget::sizeHint() */
     virtual QSize sizeHint() const;
 
-Q_SIGNALS:
-    /**
-     * Is emitted if the toggle button is hovered and indicates
-     * whether a edit hint should be shown by the parent widget.
-     */
-    void showEditHint(bool show);
-
 protected:
     virtual void enterEvent(QEvent* event);
     virtual void leaveEvent(QEvent* event);
@@ -56,6 +49,7 @@ protected:
 
 private slots:
     void updateToolTip();
+    void updateCursor();
 
 private:
     QPixmap m_pixmap;
