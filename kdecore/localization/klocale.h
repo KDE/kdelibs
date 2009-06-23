@@ -1372,6 +1372,27 @@ public:
    */
   QString removeAcceleratorMarker(const QString &label) const;
 
+  /**
+   * @since 4.3
+   *
+   * Convert all digits in the string to the given digit set.
+   *
+   * Conversion is normally not performed if the given digit set
+   * is not appropriate in the current locale and language context.
+   * Unconditional conversion may be requested by setting
+   * @p ignoreContext to @c true.
+   *
+   * @param str the string to convert
+   * @param digitSet the digit set identifier
+   * @param ignoreContext unconditional conversion if @c true
+   *
+   * @return string with converted digits
+   *
+   * @see DigitSet
+   */
+  QString convertDigits(const QString &str, DigitSet digitSet,
+                        bool ignoreContext = false) const;
+
 private:
   KLocalePrivate * const d;
 };
