@@ -481,13 +481,14 @@ void Nepomuk::ResourceData::remove( bool recursive )
 
         // the url is invalid now
         m_rm->m_initializedData.remove( m_uri.toString() );
-        m_uri = QUrl();
-        m_cache.clear();
-        m_cacheDirty = false;
-        m_initialTypeSaved = false;
-        m_types.clear();
-        m_mainType = Soprano::Vocabulary::RDFS::Resource();
     }
+
+    m_uri = QUrl();
+    m_cache.clear();
+    m_cacheDirty = false;
+    m_initialTypeSaved = false;
+    m_types.clear();
+    m_mainType = Soprano::Vocabulary::RDFS::Resource();
 }
 
 
