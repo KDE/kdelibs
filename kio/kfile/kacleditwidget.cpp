@@ -492,10 +492,10 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     mainLayout->addWidget( m_widgetStack );
 
     KHBox *usersBox = new KHBox( m_widgetStack );
-    m_widgetStack->insertWidget( KACLListView::NamedUser,usersBox );
+    m_widgetStack->addWidget( usersBox );
 
     KHBox *groupsBox = new KHBox( m_widgetStack );
-    m_widgetStack->insertWidget( KACLListView::NamedGroup,groupsBox );
+    m_widgetStack->addWidget( groupsBox );
 
     QLabel *usersLabel = new QLabel( i18n( "User: " ), usersBox );
     m_usersCombo = new KComboBox( usersBox );
@@ -604,11 +604,11 @@ void EditACLEntryDialog::slotSelectionChanged( QAbstractButton *button )
             break;
         case KACLListView::NamedUser:
             m_widgetStack->setEnabled( true );
-            m_widgetStack->setCurrentIndex( KACLListView::NamedUser );
+            m_widgetStack->setCurrentIndex( 0 /* User */ );
             break;
         case KACLListView::NamedGroup:
             m_widgetStack->setEnabled( true );
-            m_widgetStack->setCurrentIndex( KACLListView::NamedGroup );
+            m_widgetStack->setCurrentIndex( 1 /* Group */ );
             break;
         default:
             break;
@@ -682,7 +682,7 @@ QStringList KACLListView::allowedUsers( bool defaults, KACLListViewItem *allowed
     while ( *it ) {
         const KACLListViewItem *item = static_cast<const KACLListViewItem*>( *it );
         ++it;
-        if ( !item->type == NamedUser || item->isDefault != defaults ) continue;
+        if ( item->type != NamedUser || item->isDefault != defaults ) continue;
         if ( allowedItem && item == allowedItem && allowedItem->isDefault == defaults ) continue;
         allowedUsers.removeAll( item->qualifier );
     }
@@ -696,7 +696,7 @@ QStringList KACLListView::allowedGroups( bool defaults, KACLListViewItem *allowe
     while ( *it ) {
         const KACLListViewItem *item = static_cast<const KACLListViewItem*>( *it );
         ++it;
-        if ( !item->type == NamedGroup || item->isDefault != defaults ) continue;
+        if ( item->type != NamedGroup || item->isDefault != defaults ) continue;
         if ( allowedItem && item == allowedItem && allowedItem->isDefault == defaults ) continue;
         allowedGroups.removeAll( item->qualifier );
     }
