@@ -3978,7 +3978,7 @@ Name[zh_HK]=瓜拉尼語
 Name[zh_TW]=瓜拉尼語
 [gu]
 Name=Gujarati
-Name[ar]=غوجاراتي
+Name[ar]=كوجراتي
 Name[as]=গুজ্ৰাটি
 Name[be]=Гуяраці
 Name[bg]=Гуджарати
@@ -4295,6 +4295,7 @@ Name[zh_HK]=北印度語
 Name[zh_TW]=北印度語
 [hne]
 Name=Chhattisgarhi
+Name[ar]=تشهتسجريا
 Name[bg]=Чхатисгархи
 Name[ca]=Chattisgarbi
 Name[ca@valencia]=Chattisgarbi
@@ -5693,7 +5694,7 @@ Name[zh_HK]=Kalaallisut語
 Name[zh_TW]=Kalaallisut語
 [km]
 Name=Khmer
-Name[ar]=خميرية
+Name[ar]=خمرية
 Name[as]=খ্‌মেৰ
 Name[be]=Хмерская
 Name[be@latin]=Chmerskaja
@@ -9963,6 +9964,7 @@ Name[zh_HK]=Sango語
 Name[zh_TW]=Sango語
 [si]
 Name=Sinhala
+Name[ar]=صنهالية
 Name[be@latin]=Sinhaleskaja
 Name[bg]=Сингалски
 Name[ca]=Singalès
@@ -10933,7 +10935,7 @@ Name[zh_HK]=瑞典語
 Name[zh_TW]=瑞典語
 [sw]
 Name=Swahili
-Name[ar]=سواحلية
+Name[ar]=سواحيلية
 Name[as]=ছ্বাহিলি
 Name[be]=Суахілі
 Name[be@latin]=Suahili
