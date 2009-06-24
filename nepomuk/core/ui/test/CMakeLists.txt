@@ -14,5 +14,4 @@ target_link_libraries(ratingpaintertestapp
   ${KDE4_KDEUI_LIBS}
   ${KDE4_KIO_LIBS}
   nepomuk
-  ${SOPRANO_LIBRARIES}
   )

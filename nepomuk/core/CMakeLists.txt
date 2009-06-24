@@ -70,7 +70,8 @@ target_link_libraries(nepomuk
 )
 # FIXME: Do we need to include soprano libs in the link interface?
 #        And if so, which one(s)?
-target_link_libraries(nepomuk  LINK_INTERFACE_LIBRARIES  ${KDE4_KDEUI_LIBS} )
+# DF: added at least libsoprano.so for Soprano::Node
+target_link_libraries(nepomuk  LINK_INTERFACE_LIBRARIES  ${KDE4_KDEUI_LIBS} ${SOPRANO_LIBRARIES})
 
 
 set_target_properties(nepomuk PROPERTIES
