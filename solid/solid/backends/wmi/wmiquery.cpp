@@ -40,6 +40,15 @@
 
 using namespace Solid::Backends::Wmi;
 
+/**
+ When a WmiQuery instance is created as a static global 
+ object a deadlock problem occurs in pLoc->ConnectServer. 
+ Please DO NOT USE the following or similar statement in 
+ the global space or a class.
+ 
+ static WmiQuery instance; 
+*/
+
 QString WmiQuery::Item::getProperty(const QString &property )
 {
     qDebug() << "start property:" << property;
@@ -146,6 +155,12 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
 {
     ItemList retList;
     
+    if (!pSvc) 
+    {
+        m_failed = true;
+        return retList;
+    }
+
     HRESULT hres;
     hres = pSvc->ExecQuery( bstr_t("WQL"), bstr_t( qPrintable( wql ) ),
                 WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &pEnumerator);
