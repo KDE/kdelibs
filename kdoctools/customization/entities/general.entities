@@ -106,7 +106,7 @@
 <!ENTITY AIX	"<trademark class='registered'>AIX</trademark>">
 <!ENTITY akregator        "<application>Akregator</application>">
 <!ENTITY aktion	"<application>aKtion</application>">
-<!ENTITY amarok	"<application>amaroK</application>">
+<!ENTITY amarok	"<application>Amarok</application>">
 <!ENTITY amor	"<application>AMOR</application>">
 <!ENTITY ark	"<application>Ark</application>">
 <!ENTITY arts	"<application>aRts</application>">
@@ -121,16 +121,19 @@
 <!ENTITY atlantik	"<application>Atlantik</application>">
 <!ENTITY blinken	"<application>Blinken</application>">
 <!ENTITY bovo	"<application>Bovo</application>">
+<!ENTITY BSD "<trademark>BSD</trademark>">
 <!ENTITY catalogmanager	"<application>Catalog Manager</application>">
 <!ENTITY CD	"<acronym>CD</acronym>">
 <!ENTITY CDE	"<acronym>CDE</acronym>">
 <!ENTITY CD-ROM	"<acronym>CD-ROM</acronym>">
 <!ENTITY cervisia	"<application>Cervisia</application>">
+<!ENTITY choqok	"<application>Choqok</application>">
 <!ENTITY CSS	"<acronym>CSS</acronym>">
 <!ENTITY CUPS	"<acronym>CUPS</acronym>">
 <!ENTITY DBus	"<acronym>D-Bus</acronym>">
 <!ENTITY digikam	"<application>digiKam</application>">
 <!ENTITY dolphin "<application>Dolphin</application>">
+<!ENTITY dragon "<application>Dragon Player</application>">
 <!ENTITY drkonqi	"<application>DrKonqi</application>">
 <!ENTITY DCOP	"<acronym>DCOP</acronym>">
 <!ENTITY DVI	"<acronym>DVI</acronym>">
@@ -409,6 +412,7 @@
 <!ENTITY Sendmail	'<application><trademark class="registered">sendmail</trademark></application>'>
 <!ENTITY SMTP	"<acronym>SMTP</acronym>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
+<!ENTITY snake	"<application>SnaKe</application>">
 <!ENTITY Solaris	"<trademark>Solaris</trademark>">
 <!ENTITY step "<application>Step</application>">
 <!ENTITY superkaramba	"<application>SuperKaramba</application>">

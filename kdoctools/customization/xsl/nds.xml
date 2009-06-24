@@ -1,0 +1,11 @@
+<localization language="nds">
+<!-- Notes for translators:
+     Do not translate `&...;' (unless you know the mechanism).
+ -->
+<gentext key="Documentation.by" text="Dokmentatschoon vun"/>
+<gentext key="English" text="Low Saxon"/>
+<gentext key="LastUpdated" text="Tolest opfrischt"/>
+<gentext key="Version" text="Verschoon"/>
+<gentext key="home-url" text="http://www.kde.org/"/>
+<gentext key="logo-alt" text="Dat Logo vun de K-Schriefdisch&#252;mgeven"/>
+</localization>

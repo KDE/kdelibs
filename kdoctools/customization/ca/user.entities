@@ -42,8 +42,11 @@
 <!ENTITY revisor.Antoni.Bella		'<othercredit role="reviewer"><firstname>Antoni</firstname><surname>Bella</surname><affiliation><address><email>bella5@teleline.es</email></address></affiliation><contrib>Revisor</contrib></othercredit>'>
 <!ENTITY traductor.Pep.Roca		'<othercredit role="translator"><firstname>Pep</firstname><surname>Roca</surname><affiliation><address><email>pep.roca@gmail.com</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
 <!ENTITY revisor.Pep.Roca		'<othercredit role="reviewer"><firstname>Pep</firstname><surname>Roca</surname><affiliation><address><email>pep.roca@gmail.com</email></address></affiliation><contrib>Revisor</contrib></othercredit>'>
+<!ENTITY traductor.Rafael.Carreras	'<othercredit role="translator"><firstname>Rafael</firstname><surname>Carreras</surname><affiliation><address><email>rcarreras@caliu.cat</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
+<!ENTITY revisor.Rafael.Carreras	'<othercredit role="reviewer"><firstname>Rafael</firstname><surname>Carreras</surname><affiliation><address><email>rcarreras@caliu.cat</email></address></affiliation><contrib>Revisor</contrib></othercredit>'>
 
 <!-- CREDITS FOR TRANSLATORS -->
 <!-- Seguir el següent format '<para>Traductor/Revisor de la documentació: &credits.Nom.Cognom;</para>' -->
 <!ENTITY credits.Antoni.Bella		'Antoni Bella <email>bella5@teleline.es</email>'>
 <!ENTITY credits.Pep.Roca		'Pep Roca <email>pep.roca@gmail.com</email>'>
+<!ENTITY credits.Rafael.Carreras	'Rafael Carreras <email>rcarreras@caliu.cat</email>'>

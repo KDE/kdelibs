@@ -210,7 +210,7 @@
 <!ENTITY David.Johnson '<personname><firstname>David</firstname><surname>Johnson</surname></personname>'>
 <!ENTITY David.Johnson.mail '<email>david@usermode.org</email>'>
 <!ENTITY Richard.Johnson '<personname><firstname>Richard</firstname><surname>Johnson</surname></personname>'>
-<!ENTITY Richard.Johnson.mail '<email>nixternal@ubuntu.com</email>'>
+<!ENTITY Richard.Johnson.mail '<email>rjohnson@kde.org</email>'>
 <!ENTITY Matt.Johnston '<personname><firstname>Matt</firstname><surname>Johnston</surname></personname>'>
 <!ENTITY Matt.Johnston.mail '<email>mattj@flashmail.com</email>'>
 <!ENTITY Martin.R.Jones '<personname><firstname>Martin</firstname><othername>R.</othername><surname>Jones</surname></personname>'>
@@ -385,6 +385,8 @@
 <!ENTITY Cornelius.Schumacher.mail '<email>schumacher@kde.org</email>'>
 <!ENTITY Guenter.Schwann '<personname><firstname>Günter</firstname><surname>Schwann</surname></personname>'>
 <!ENTITY Guenter.Schwann.mail '<email>vogel@sbox.tugraz.at</email>'>
+<!ENTITY Frederik.Schwarzer '<personname><firstname>Frederik</firstname><surname>Schwarzer</surname></personname>'>
+<!ENTITY Frederik.Schwarzer.mail '<email>schwarzerf@gmail.com</email>'>
 <!ENTITY Aaron.J.Seigo '<personname><firstname>Aaron</firstname><othername>J.</othername><surname>Seigo</surname></personname>'>
 <!ENTITY Aaron.J.Seigo.mail '<email>aseigo@kde.org</email>'>
 <!ENTITY Jonathan.Singer '<personname><firstname>Jonathan</firstname><surname>Singer</surname></personname>'>
@@ -433,6 +435,8 @@
 
 <!ENTITY Jan-Pascal.vanBest '<personname><firstname>Jan-Pascal</firstname><surname>van Best</surname></personname>'>
 <!ENTITY Jan-Pascal.vanBest.mail '<email>janpascal@vanbest.org</email>'>
+<!ENTITY Stas.Verberkt '<personname><firstname>Stas</firstname><surname>Verberkt</surname></personname>'>
+<!ENTITY Stas.Verberkt.mail '<email>legolas@legolasweb.nl</email>'>
 <!ENTITY Stanislav.Visnovsky '<personname><firstname>Stanislav</firstname><surname>Visnovsky</surname></personname>'>
 <!ENTITY Stanislav.Visnovsky.mail '<email>visnovsky@nenya.ms.mff.cuni.cz</email>'>
 <!ENTITY Sean.Vyain '<personname><firstname>Sean</firstname><surname>Vyain</surname></personname>'>

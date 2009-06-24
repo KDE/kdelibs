@@ -1,4 +1,4 @@
-<localization language="en">
+<localization language="nn">
 <!-- Notes for translators:
  1. Do not translate `&...;' (unless you know the mechanism).
  2. In the strings ("..."), you can use the following notations, apart from Unicode,
@@ -7,11 +7,11 @@
     where X is an upper case hexadecimal, and XXXX is the Unicode
     value for the character (e.g. \U-00F3).
  -->
-<gentext key="Default" text="Default"/>
-<gentext key="Documentation.by" text="Documentation by"/>
+<gentext key="Default" text="Standard"/>
+<gentext key="Documentation.by" text="Dokumentert av"/>
 <gentext key="English" text="English"/>
-<gentext key="LastUpdated" text="Last updated"/>
-<gentext key="Version" text="Version"/>
+<gentext key="LastUpdated" text="Sist oppdatert"/>
+<gentext key="Version" text="Versjon"/>
 <gentext key="home-url" text="http://www.kde.org/"/>
-<gentext key="logo-alt" text="The K Desktop Environment Logo"/>
+<gentext key="logo-alt" text="K Desktop Environment"/>
 </localization>
