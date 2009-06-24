@@ -69,24 +69,10 @@ public:
         , m_wmiProperty()
         , m_wmiValue()
     {    
-        /*
-            To avoid multiple connects to wmi in a single application
-            one WmiQuery object is used. 
-            When WmiQuery is created as static global object 
-            a dead lock problem occurs (see wmiquery.cpp for details).
-            Because solid is only qt based and Q_GLOBAL_STATIC is 
-            marked as internal we make our own reference counting.
-       */
-        m_instanceCount++;
-        if (!m_query && m_instanceCount == 1)
-            m_query = new WmiQuery;
     }
 
     ~WmiDevicePrivate()
     {
-        m_instanceCount--;
-        if (m_instanceCount == 0)
-            delete m_query;
     }
     
     void discoverType()
@@ -104,7 +90,7 @@ public:
     WmiQuery::ItemList sendQuery() 
     {
         QString query("SELECT * FROM " + m_wmiTable + " WHERE " + m_wmiProperty + "='" + m_wmiValue + "'");
-        WmiQuery::ItemList list = m_query->sendQuery(query);
+		WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
         return list;
     }
     
@@ -133,7 +119,7 @@ public:
             return false;
 
         QString query("SELECT * FROM " + wmiTable + " WHERE " + wmiProperty + "='" + wmiValue + "'");
-        WmiQuery::ItemList list = m_query->sendQuery(query);
+		WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
         return list.size() > 0;
     }
 
@@ -270,7 +256,7 @@ public:
     {
         QStringList result;
         
-        WmiQuery::ItemList list = m_query->sendQuery( "select * from " + getWMITable(type) );
+		WmiQuery::ItemList list = WmiQuery::instance().sendQuery( "select * from " + getWMITable(type) );
         foreach(WmiQuery::Item *item, list) {
             QString propertyName = getPropertyNameForUDI(type);
             QString property = item->getProperty(propertyName);
@@ -281,7 +267,6 @@ public:
     }
     
     WmiDevice *parent;
-    static WmiQuery *m_query;
     static int m_instanceCount;
     QString m_udi;
     QString m_wmiTable;
@@ -289,9 +274,6 @@ public:
     QString m_wmiValue;
     QStringList interfaceList;
 };
-
-WmiQuery *WmiDevicePrivate::m_query = 0;
-int WmiDevicePrivate::m_instanceCount = 0;
 
 Q_DECLARE_METATYPE(ChangeDescription)
 Q_DECLARE_METATYPE(QList<ChangeDescription>)

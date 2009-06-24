@@ -45,7 +45,6 @@ class Solid::Backends::Wmi::WmiManagerPrivate
 {
 public:
     WmiManagerPrivate()
-        : m_query()
     {
     }
 
@@ -55,10 +54,8 @@ public:
     
     WmiQuery::ItemList sendQuery( const QString &wql )
     {
-        return m_query.sendQuery( wql );
+		return WmiQuery::instance().sendQuery( wql );
     }
- 
-    WmiQuery m_query; 
 };
 
 

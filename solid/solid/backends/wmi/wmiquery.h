@@ -66,6 +66,7 @@ public:
     ~WmiQuery();
     ItemList sendQuery( const QString &wql );
     bool isLegit() const;
+	static WmiQuery &instance();
     
 private:
     bool m_failed;
