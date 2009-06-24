@@ -214,10 +214,15 @@ void KTabWidget::Private::updateTab( int index )
   m_parent->setTabToolTip( index, QString() );
 
   if ( title.length() > m_currentTabLength ) {
-    if ( Qt::mightBeRichText( title ) )
-      m_parent->setTabToolTip( index, Qt::escape( title ) );
+    QString toolTipText = title;
+    // Remove '&'s, which are indicators for keyboard shortcuts in tab titles. "&&" is replaced by '&'.
+    for ( int i = toolTipText.indexOf( '&' ); i >= 0 && i < toolTipText.length(); i = toolTipText.indexOf( '&', i + 1 ) )
+      toolTipText.remove( i, 1 );
+
+    if ( Qt::mightBeRichText( toolTipText ) )
+      m_parent->setTabToolTip( index, Qt::escape( toolTipText ) );
     else
-      m_parent->setTabToolTip( index, title );
+      m_parent->setTabToolTip( index, toolTipText );
   }
 
   title = KStringHandler::rsqueeze( title, m_currentTabLength ).leftJustified( m_minLength, ' ' );
