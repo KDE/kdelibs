@@ -1253,7 +1253,7 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
                 QPainter p(&image);
                 p.setRenderHint(QPainter::Antialiasing);
                 p.translate(.5, .5);
-                p.setPen(QPen(color, 1));
+                p.setPen(color);
                 p.setBrush(gradient);
                 p.drawPath(path1);
                 p.strokePath(path2, QPen(QColor(255, 255, 255, 64), 1));
