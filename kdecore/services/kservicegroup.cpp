@@ -56,9 +56,9 @@ void KServiceGroupPrivate::load(const QString &cfg)
 
   const KConfigGroup config = desktopFile.desktopGroup();
 
-  m_strCaption = desktopFile.readName();
-  m_strIcon = desktopFile.readIcon();
-  m_strComment = desktopFile.readComment();
+  m_strCaption = config.readEntry( "Name" );
+  m_strIcon = config.readEntry( "Icon" );
+  m_strComment = config.readEntry( "Comment" );
   deleted = config.readEntry("Hidden", false );
   m_bNoDisplay = desktopFile.noDisplay();
   m_strBaseGroupName = config.readEntry( "X-KDE-BaseGroup" );

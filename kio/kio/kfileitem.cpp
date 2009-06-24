@@ -717,7 +717,7 @@ QString KFileItem::mimeComment() const
     KMimeType::Ptr mime = mimeTypePtr();
     if (isLocalUrl && mime->is("application/x-desktop")) {
         KDesktopFile cfg( url.toLocalFile() );
-        QString comment = cfg.readComment();
+        QString comment = cfg.desktopGroup().readEntry( "Comment" );
         if (!comment.isEmpty())
             return comment;
     }
