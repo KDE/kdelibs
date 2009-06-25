@@ -192,3 +192,11 @@ bool WmiQuery::isLegit() const
 {
     return !m_failed;
 }
+
+WmiQuery &WmiQuery::instance()
+{
+	static WmiQuery *query = 0;
+	if (!query)
+		query = new WmiQuery;
+	return *query;
+}
