@@ -25,6 +25,7 @@
 #include <ktoolbar.h>
 #include <kmainwindow.h>
 #include <kconfiggroup.h>
+#include <kiconloader.h>
 #include <QDomElement>
 #include "testxmlguiwindow.h"
 
