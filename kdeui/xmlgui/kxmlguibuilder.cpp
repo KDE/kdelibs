@@ -204,15 +204,12 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   }
 
   if ( tagName == d->tagToolBar ) {
-    bool honor = (element.attribute( d->attrName ) == "mainToolBar");
-
     QByteArray name = element.attribute( d->attrName ).toUtf8();
 
     KToolBar *bar = static_cast<KToolBar*>(d->m_widget->findChild<KToolBar*>( name ));
     if( !bar )
     {
-       bar = new KToolBar( d->m_widget, honor, false );
-       bar->setObjectName(name);
+       bar = new KToolBar(name, d->m_widget, false);
     }
 
     if ( qobject_cast<KMainWindow*>( d->m_widget ) )

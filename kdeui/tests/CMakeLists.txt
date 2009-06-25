@@ -44,6 +44,7 @@ KDEUI_UNIT_TESTS(
   ktimezonewidget_unittest
   kiconloader_unittest
   ktabwidget_unittest
+  ktoolbar_unittest
 )
 
 KDEUI_EXECUTABLE_TESTS(

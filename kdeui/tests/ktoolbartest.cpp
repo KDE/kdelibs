@@ -6,6 +6,9 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 
+// This is a test for "Automatically hide extra toolbar separators"
+// If several separators are next to each other, only one should show up.
+
 int main( int argc, char **argv )
 {
     KAboutData aboutData( "kactiontest", 0, ki18n("kactiontest"), "1.0" );

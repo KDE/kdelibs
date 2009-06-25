@@ -1707,6 +1707,7 @@ void KIconLoader::newIconLoader()
     }
 
     reconfigure( objectName(), d->mpDirs );
+    emit iconLoaderSettingsChanged();
 }
 
 #include "kiconloader.moc"

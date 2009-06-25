@@ -1167,13 +1167,8 @@ KToolBar *KMainWindow::toolBar( const QString& name )
     KToolBar *tb = findChild<KToolBar*>(childName);
     if ( tb )
         return tb;
-    bool honor_mode = name != "mainToolBar";
 
-    KToolBar* toolbar = new KToolBar(this, honor_mode ); // non-XMLGUI
-
-    toolbar->setObjectName(childName);
-    addToolBar(toolbar);
-
+    KToolBar* toolbar = new KToolBar(childName, this); // non-XMLGUI toolbar
     return toolbar;
 }
 

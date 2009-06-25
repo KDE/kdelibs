@@ -23,14 +23,10 @@
 #include <QShowEvent>
 #include <kedittoolbar.h>
 #include <kaction.h>
-#include <kactioncollection.h>
 #include <kpushbutton.h>
-#include <QMenu>
 #include <kxmlguibuilder.h>
 #include <kxmlguiclient.h>
-#include <ktoolbar.h>
-#include <kxmlguiwindow.h>
-#include <ktemporaryfile.h>
+#include "testxmlguiwindow.h"
 #include "kxmlgui_unittest.moc"
 #include <kxmlguiversionhandler_p.h>
 #include <kxmlguiversionhandler.cpp> // it's not exported, so we need to include the code here
@@ -274,14 +270,14 @@ public:
 
         setXML(QString::fromLatin1(xml), true);
     }
-};
-
-static void createActions(KActionCollection* collection, const QStringList& actionNames)
-{
-    Q_FOREACH(const QString& actionName, actionNames) {
-        collection->addAction(actionName)->setText("Action");
+    void createActions(const QStringList& actionNames)
+    {
+        KActionCollection* coll = actionCollection();
+        Q_FOREACH(const QString& actionName, actionNames) {
+            coll->addAction(actionName)->setText("Action");
+        }
     }
-}
+};
 
 static QStringList collectMenuNames(KXMLGUIFactory& factory)
 {
@@ -333,9 +329,8 @@ void KXmlGui_UnitTest::testMergingSeparators()
 
 
     TestGuiClient hostClient;
-    createActions(hostClient.actionCollection(),
-                  QStringList() << "go_up" << "go_back" << "go_forward" << "go_home"
-                  << "go_history" << "go_most_often");
+    hostClient.createActions(QStringList() << "go_up" << "go_back" << "go_forward" << "go_home"
+                             << "go_history" << "go_most_often");
     hostClient.createGUI(hostXml, true /*ui_standards.rc*/);
     QMainWindow mainWindow;
     KXMLGUIBuilder builder(&mainWindow);
@@ -380,8 +375,7 @@ void KXmlGui_UnitTest::testMergingSeparators()
         "</kpartgui>\n";
 
     TestGuiClient partClient(partXml);
-    createActions(partClient.actionCollection(),
-                  QStringList() << "go_previous" << "go_next" << "first_page" << "last_page");
+    partClient.createActions(QStringList() << "go_previous" << "go_next" << "first_page" << "last_page");
     factory.addClient(&partClient);
 
     //debugActions(goMenu->actions());
@@ -496,7 +490,7 @@ void KXmlGui_UnitTest::testUiStandardsMerging()
     QFETCH(QStringList, expectedMenus);
 
     TestGuiClient client;
-    createActions(client.actionCollection(), actions);
+    client.createActions(actions);
     client.createGUI(xml, true /*ui_standards.rc*/);
     QMainWindow mainWindow;
     KXMLGUIBuilder builder(&mainWindow);
@@ -524,8 +518,7 @@ void KXmlGui_UnitTest::testActionListAndSeparator()
         "</gui>";
 
     TestGuiClient client(xml);
-    createActions(client.actionCollection(),
-                  QStringList() << "view_add_to_new_group" << "action1");
+    client.createActions(QStringList() << "view_add_to_new_group" << "action1");
     QMainWindow mainWindow;
     KXMLGUIBuilder builder(&mainWindow);
     KXMLGUIFactory factory(&builder);
@@ -575,34 +568,6 @@ void KXmlGui_UnitTest::testActionListAndSeparator()
                  << "view_add_to_new_group");
 }
 
-class TestXmlGuiWindow : public KXmlGuiWindow
-{
-public:
-    TestXmlGuiWindow(const QByteArray& xml) : KXmlGuiWindow() {
-        QVERIFY(m_userFile.open());
-        m_userFile.write(xml);
-        m_fileName = m_userFile.fileName(); // remember filename
-        Q_ASSERT(!m_fileName.isEmpty());
-        m_userFile.close(); // write to disk
-    }
-    void createGUI() {
-        KXmlGuiWindow::createGUI(m_fileName);
-    }
-
-    // Same as in KMainWindow_UnitTest
-    void reallyResize(int width, int height) {
-        const QSize oldSize = size();
-        resize(width, height);
-        // Send the pending resize event (resize() only sets Qt::WA_PendingResizeEvent)
-        QResizeEvent e(size(), oldSize);
-        QApplication::sendEvent(this, &e);
-    }
-
-private:
-    KTemporaryFile m_userFile;
-    QString m_fileName;
-};
-
 void KXmlGui_UnitTest::testHiddenToolBar()
 {
     const QByteArray xml =
@@ -624,17 +589,13 @@ void KXmlGui_UnitTest::testHiddenToolBar()
     KConfigGroup cg(KGlobal::config(), "testHiddenToolBar");
     TestXmlGuiWindow mainWindow(xml);
     mainWindow.setAutoSaveSettings(cg);
-    createActions(mainWindow.actionCollection(), QStringList() << "go_up");
+    mainWindow.createActions(QStringList() << "go_up");
     mainWindow.createGUI();
-    KXMLGUIFactory* factory = mainWindow.guiFactory();
 
-    //qDebug() << "containers:" << factory->containers("ToolBar");
-    QWidget* mainToolBarW = factory->container("mainToolBar", &mainWindow);
-    QVERIFY(mainToolBarW);
-    KToolBar* mainToolBar = qobject_cast<KToolBar *>(mainToolBarW);
-    QVERIFY(mainToolBar);
+    KToolBar* mainToolBar = mainWindow.toolBarByName("mainToolBar");
     QVERIFY(mainToolBar->isHidden());
 
+    KXMLGUIFactory* factory = mainWindow.guiFactory();
     QVERIFY(!factory->container("visibleToolBar", &mainWindow)->isHidden());
     KToolBar* hiddenToolBar = qobject_cast<KToolBar *>(factory->container("hiddenToolBar", &mainWindow));
     kDebug() << hiddenToolBar;
@@ -676,22 +637,15 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
         // Test resizing first (like show() does).
         mw.reallyResize(400, 400);
 
-        createActions(mw.actionCollection(), QStringList() << "go_up");
+        mw.createActions(QStringList() << "go_up");
         mw.createGUI();
-        KXMLGUIFactory* factory = mw.guiFactory();
 
         // Resize again, should be saved
         mw.reallyResize(800, 600);
 
-        QWidget* mainToolBarW = factory->container("mainToolBar", &mw);
-        QVERIFY(mainToolBarW);
-        QToolBar* mainToolBar = qobject_cast<QToolBar *>(mainToolBarW);
-        QVERIFY(mainToolBar);
+        KToolBar* mainToolBar = mw.toolBarByName("mainToolBar");
         QCOMPARE(mw.toolBarArea(mainToolBar), Qt::TopToolBarArea);
-        QWidget* secondToolBarW = factory->container("secondToolBar", &mw);
-        QVERIFY(secondToolBarW);
-        QToolBar* secondToolBar = qobject_cast<QToolBar *>(secondToolBarW);
-        QVERIFY(secondToolBar);
+        KToolBar* secondToolBar = mw.toolBarByName("secondToolBar");
         QCOMPARE(mw.toolBarArea(secondToolBar), Qt::TopToolBarArea); // REFERENCE #1 (see below)
 
         // Move second toolbar to bottom
@@ -714,23 +668,16 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
         // Check window size was restored
         QCOMPARE(mw2.size(), QSize(800, 600));
 
-        createActions(mw2.actionCollection(), QStringList() << "go_up");
+        mw2.createActions(QStringList() << "go_up");
         mw2.createGUI();
 
         // Force window layout to happen
         mw2.reallyResize(800, 600);
 
         // Check toolbar positions were restored
-        KXMLGUIFactory* factory = mw2.guiFactory();
-        QWidget* mainToolBarW = factory->container("mainToolBar", &mw2);
-        QVERIFY(mainToolBarW);
-        QToolBar* mainToolBar = qobject_cast<QToolBar *>(mainToolBarW);
-        QVERIFY(mainToolBar);
+        KToolBar* mainToolBar = mw2.toolBarByName("mainToolBar");
         QCOMPARE(mw2.toolBarArea(mainToolBar), Qt::TopToolBarArea);
-        QWidget* secondToolBarW = factory->container("secondToolBar", &mw2);
-        QVERIFY(secondToolBarW);
-        QToolBar* secondToolBar = qobject_cast<QToolBar *>(secondToolBarW);
-        QVERIFY(secondToolBar);
+        KToolBar* secondToolBar = mw2.toolBarByName("secondToolBar");
         QCOMPARE(mw2.toolBarArea(secondToolBar), Qt::BottomToolBarArea);
         mw2.applyMainWindowSettings(mw2.autoSaveConfigGroup());
         QCOMPARE(mw2.toolBarArea(secondToolBar), Qt::BottomToolBarArea);
@@ -759,7 +706,7 @@ void KXmlGui_UnitTest::testDeletedContainers()
     KConfigGroup cg(KGlobal::config(), "testDeletedToolBar");
     TestXmlGuiWindow mainWindow(xml);
     mainWindow.setAutoSaveSettings(cg);
-    createActions(mainWindow.actionCollection(), QStringList() << "go_up" << "file_new" << "game_new");
+    mainWindow.createActions(QStringList() << "go_up" << "file_new" << "game_new");
     mainWindow.createGUI();
     KXMLGUIFactory* factory = mainWindow.guiFactory();
 
