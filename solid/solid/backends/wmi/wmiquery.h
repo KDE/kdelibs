@@ -28,12 +28,9 @@
 
 
 #ifdef INSIDE_WMIQUERY
-// w2k server 2003
-#if _WIN32_WINNT == 0x0502 
-#include <rpcsal.h>
-#else
+#include <windows.h>
+#include <rpc.h>
 #include <comdef.h>
-#endif
 #include <Wbemidl.h>
 #else
 typedef void *IWbemClassObject;
