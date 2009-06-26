@@ -109,7 +109,16 @@ void KDirListerTest::testOpenUrl()
     QVERIFY(m_dirLister.isFinished());
     disconnect(&m_dirLister, 0, this, 0);
 
-    QVERIFY(!m_dirLister.findByName("toplevelfile_3").isNull());
+    const KUrl itemUrl = path+"toplevelfile_3";
+    KFileItem byName = m_dirLister.findByName("toplevelfile_3");
+    QVERIFY(!byName.isNull());
+    QCOMPARE(byName.url().url(), itemUrl.url());
+    KFileItem byUrl = m_dirLister.findByUrl(itemUrl);
+    QVERIFY(!byUrl.isNull());
+    QCOMPARE(byUrl.url().url(), itemUrl.url());
+    KFileItem itemForUrl = KDirLister::cachedItemForUrl(itemUrl);
+    QVERIFY(!itemForUrl.isNull());
+    QCOMPARE(itemForUrl.url().url(), itemUrl.url());
 }
 
 // This test assumes testOpenUrl was run before. So m_dirLister is holding the items already.
