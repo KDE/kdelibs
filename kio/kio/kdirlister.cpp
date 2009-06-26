@@ -981,9 +981,24 @@ void KDirListerCache::slotFileDirty( const QString& path )
         return; // error
     const bool isDir = S_ISDIR(buff.st_mode);
     KUrl url(path);
+    url.adjustPath(KUrl::RemoveTrailingSlash);
 
     if (isDir) {
         // A dir: launch an update job if anyone cares about it
+
+        // This also means we can forget about pending updates to individual files in that dir
+        const QString dirPath = url.toLocalFile(KUrl::AddTrailingSlash);
+        QMutableSetIterator<QString> pendingIt(pendingUpdates);
+        while (pendingIt.hasNext()) {
+            const QString updPath = pendingIt.next();
+            //kDebug(7004) << "had pending update" << updPath;
+            if (updPath.startsWith(dirPath) &&
+                updPath.indexOf('/', dirPath.length()) == -1) { // direct child item
+                kDebug(7004) << "forgetting about individual update to" << updPath;
+                pendingIt.remove();
+            }
+        }
+
         updateDirectory(url);
     } else {
         // A file: do we know about it already?
@@ -994,12 +1009,12 @@ void KDirListerCache::slotFileDirty( const QString& path )
             updateDirectory(url);
         } else {
             // A known file: delay updating it, FAM is flooding us with events
-            const QString urlStr = url.url(KUrl::RemoveTrailingSlash);
-            if (!pendingUpdates.contains(urlStr)) {
+            const QString filePath = url.toLocalFile();
+            if (!pendingUpdates.contains(filePath)) {
                 KUrl dir(url);
                 dir.setPath(dir.directory());
                 if (checkUpdate(dir.url())) {
-                    pendingUpdates.insert(urlStr);
+                    pendingUpdates.insert(filePath);
                     if (!pendingUpdateTimer.isActive())
                         pendingUpdateTimer.start( 500 );
                 }
@@ -1682,7 +1697,7 @@ void KDirListerCache::deleteUnmarkedItems( const QList<KDirLister *>& listers, K
     while (kit.hasNext()) {
         const KFileItem& item = kit.next();
         if (!item.isMarked()) {
-            //kDebug() << "deleted:" << item.name() << &item;
+            //kDebug(7004) << "deleted:" << item.name() << &item;
             deletedItems.append(item);
             kit.remove();
         }
@@ -1779,7 +1794,7 @@ void KDirListerCache::deleteDir( const KUrl& dirUrl )
 void KDirListerCache::processPendingUpdates()
 {
     QSet<KDirLister *> listers;
-    foreach(const QString& file, pendingUpdates) {
+    foreach(const QString& file, pendingUpdates) { // always a local path
         kDebug(7004) << file;
         KUrl u(file);
         KFileItem *item = findByUrl( 0, u ); // search all items

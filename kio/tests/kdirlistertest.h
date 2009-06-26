@@ -40,6 +40,7 @@ private Q_SLOTS:
     void testOpenUrl();
     void testOpenUrlFromCache();
     void testNewItems();
+    void testNewItemByCopy();
     void testRefreshItems();
     void testDeleteItem();
     void testRenameItem();

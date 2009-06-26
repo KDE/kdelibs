@@ -29,6 +29,7 @@ QTEST_KDEMAIN( KDirListerTest, NoGUI )
 #include <kio/deletejob.h>
 #include <kdirwatch.h>
 #include <kio/job.h>
+#include <kio/copyjob.h>
 
 Q_DECLARE_METATYPE(KFileItemList)
 
@@ -109,16 +110,20 @@ void KDirListerTest::testOpenUrl()
     QVERIFY(m_dirLister.isFinished());
     disconnect(&m_dirLister, 0, this, 0);
 
-    const KUrl itemUrl = path+"toplevelfile_3";
-    KFileItem byName = m_dirLister.findByName("toplevelfile_3");
+    const QString fileName = "toplevelfile_3";
+    const KUrl itemUrl = path + fileName;
+    KFileItem byName = m_dirLister.findByName(fileName);
     QVERIFY(!byName.isNull());
     QCOMPARE(byName.url().url(), itemUrl.url());
+    QCOMPARE(byName.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
     KFileItem byUrl = m_dirLister.findByUrl(itemUrl);
     QVERIFY(!byUrl.isNull());
     QCOMPARE(byUrl.url().url(), itemUrl.url());
+    QCOMPARE(byUrl.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
     KFileItem itemForUrl = KDirLister::cachedItemForUrl(itemUrl);
     QVERIFY(!itemForUrl.isNull());
     QCOMPARE(itemForUrl.url().url(), itemUrl.url());
+    QCOMPARE(itemForUrl.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
 }
 
 // This test assumes testOpenUrl was run before. So m_dirLister is holding the items already.
@@ -186,7 +191,8 @@ void KDirListerTest::testNewItems()
     QTest::qWait(1000); // We need a 1s timestamp difference on the dir, otherwise FAM won't notice anything.
 
     kDebug() << "Creating new file";
-    QFile file(path+"toplevelfile_new");
+    const QString fileName = "toplevelfile_new";
+    QFile file(path + fileName);
     QVERIFY(file.open(QIODevice::WriteOnly));
     file.write(QByteArray("foo"));
     file.close();
@@ -208,6 +214,62 @@ void KDirListerTest::testNewItems()
     QCOMPARE(spyClear.count(), 0);
     QCOMPARE(spyClearKUrl.count(), 0);
     disconnect(&m_dirLister, 0, this, 0);
+
+    const KUrl itemUrl = path + fileName;
+    KFileItem itemForUrl = KDirLister::cachedItemForUrl(itemUrl);
+    QVERIFY(!itemForUrl.isNull());
+    QCOMPARE(itemForUrl.url().url(), itemUrl.url());
+    QCOMPARE(itemForUrl.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
+}
+
+void KDirListerTest::testNewItemByCopy()
+{
+    // This test creates a file using KIO::copyAs, like knewmenu.cpp does.
+    // Useful for testing #192185, i.e. whether we catch the kdirwatch event and avoid
+    // a KFileItem::refresh().
+    const int origItemCount = m_items.count();
+    const QString path = m_tempDir.name();
+    QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
+    QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
+    QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
+    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
+    QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
+    QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
+    QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
+    connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+
+    QTest::qWait(1000); // We need a 1s timestamp difference on the dir, otherwise FAM won't notice anything.
+
+    const QString fileName = "toplevelfile_copy";
+    const KUrl itemUrl(path + fileName);
+    KIO::CopyJob* job = KIO::copyAs(path+"toplevelfile_3", itemUrl, KIO::HideProgressInfo);
+    job->exec();
+
+    int numTries = 0;
+    // Give time for KDirWatch/KDirNotify to notify us
+    while (m_items.count() == origItemCount) {
+        QVERIFY(++numTries < 10);
+        QTest::qWait(200);
+    }
+    //kDebug() << "numTries=" << numTries;
+    QCOMPARE(m_items.count(), origItemCount+1);
+
+    QCOMPARE(spyStarted.count(), 1); // Updates call started
+    QCOMPARE(spyCompleted.count(), 1); // and completed
+    QCOMPARE(spyCompletedKUrl.count(), 1);
+    QCOMPARE(spyCanceled.count(), 0);
+    QCOMPARE(spyCanceledKUrl.count(), 0);
+    QCOMPARE(spyClear.count(), 0);
+    QCOMPARE(spyClearKUrl.count(), 0);
+    disconnect(&m_dirLister, 0, this, 0);
+
+    // Give some time to KDirWatch
+    QTest::qWait(1000);
+
+    KFileItem itemForUrl = KDirLister::cachedItemForUrl(itemUrl);
+    QVERIFY(!itemForUrl.isNull());
+    QCOMPARE(itemForUrl.url().url(), itemUrl.url());
+    QCOMPARE(itemForUrl.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
 }
 
 // This test assumes testOpenUrl was run before. So m_dirLister is holding the items already.
