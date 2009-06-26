@@ -44,12 +44,6 @@
 #include "CSSPrimitiveValueMappings.h"
 #include "CSSPropertyNames.h"
 #include "CSSValueList.h"
-#include "SVGColor.h"
-#include "SVGNames.h"
-#include "SVGPaint.h"
-#include "SVGRenderStyle.h"
-#include "SVGRenderStyleDefs.h"
-#include "SVGStyledElement.h"
 #include <stdlib.h>*/
 #include <wtf/MathExtras.h>
 

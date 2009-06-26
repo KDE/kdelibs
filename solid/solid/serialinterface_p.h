@@ -55,7 +55,6 @@ namespace Solid
 #ifndef SOLID_SERIALINTERFACE_P_H
 #define SOLID_SERIALINTERFACE_P_H
 
-#include "deviceinterface_p.h"
 
 namespace Solid
 {

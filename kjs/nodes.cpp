@@ -47,7 +47,6 @@
 #include <wtf/HashCountedSet.h>
 #include <wtf/MathExtras.h>
 
-#include "CompileState.h"
 #include "bytecode/machine.h"
 
 namespace KJS {

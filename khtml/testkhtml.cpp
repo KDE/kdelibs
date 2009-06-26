@@ -12,7 +12,6 @@
 // just for memory debugging
 #define protected public
 #include "khtml_part.h"
-#include "khtmlview.h"
 #undef protected
 #include "misc/loader.h"
 #include <QtGui/QCursor>

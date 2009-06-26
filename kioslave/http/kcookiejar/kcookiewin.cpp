@@ -51,7 +51,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <klineedit.h>
 #include <kiconloader.h>
 #include <kapplication.h>
-#include <kwindowsystem.h>
 #include <kvbox.h>
 
 KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
