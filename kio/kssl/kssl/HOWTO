@@ -1,6 +1,6 @@
 
 NOTE: If you want to add a root file, please contact kde-core-devel and the
-maintainer (currently staikos@kde.org) with full details.
+maintainer (currently bradh@kde.org) with full details.
 
 
 1) Build cert_extract
@@ -18,7 +18,7 @@ maintainer (currently staikos@kde.org) with full details.
    cd ..
    ./mergelocal
 10) *Do your diffs*!  Make *sure* you commit what you think you are committing.
-11) cvs commit
+11) svn commit
 
 
 
