@@ -181,14 +181,20 @@ class KPageTabbedView : public QAbstractItemView
 
 class KPageListViewDelegate : public QAbstractItemDelegate
 {
+  Q_OBJECT
+
   public:
     KPageListViewDelegate( QObject *parent = 0 );
 
     virtual void paint( QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index ) const;
     virtual QSize sizeHint( const QStyleOptionViewItem &option, const QModelIndex &index ) const;
 
+  private Q_SLOTS:
+    void iconSettingsChanged( int group );
+
   private:
     void drawFocus( QPainter*, const QStyleOptionViewItem&, const QRect& ) const;
+    int mIconSize;
 };
 
 /**

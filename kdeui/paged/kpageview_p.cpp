@@ -360,6 +360,20 @@ void KPageTabbedView::dataChanged( const QModelIndex &index, const QModelIndex& 
 KPageListViewDelegate::KPageListViewDelegate( QObject *parent )
  : QAbstractItemDelegate( parent )
 {
+    mIconSize = KIconLoader::global()->currentSize( KIconLoader::Dialog );
+
+    connect(KGlobalSettings::self(), SIGNAL( iconChanged( int ) ), this, SLOT( iconSettingsChanged( int ) ) );
+}
+
+void KPageListViewDelegate::iconSettingsChanged( int group )
+{
+    if ( group == KIconLoader::Dialog ) {
+        const int iconSize = KIconLoader::global()->currentSize( KIconLoader::Dialog );
+        if ( mIconSize != iconSize ) {
+            mIconSize = iconSize;
+            emit sizeHintChanged( QModelIndex() );
+        }
+    }
 }
 
 void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index ) const
@@ -369,8 +383,7 @@ void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem
 
   const QString text = index.model()->data( index, Qt::DisplayRole ).toString();
   const QIcon icon = index.model()->data( index, Qt::DecorationRole ).value<QIcon>();
-  int dim = KIconLoader::global()->currentSize( KIconLoader::Dialog );
-  const QPixmap pixmap = icon.pixmap( dim, dim );
+  const QPixmap pixmap = icon.pixmap( mIconSize, mIconSize );
 
   QFontMetrics fm = painter->fontMetrics();
   int ht = fm.boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text ).height();
@@ -414,8 +427,7 @@ QSize KPageListViewDelegate::sizeHint( const QStyleOptionViewItem &option, const
 
   const QString text = index.model()->data( index, Qt::DisplayRole ).toString();
   const QIcon icon = index.model()->data( index, Qt::DecorationRole ).value<QIcon>();
-  int dim = KIconLoader::global()->currentSize( KIconLoader::Dialog );
-  const QPixmap pixmap = icon.pixmap( dim, dim );
+  const QPixmap pixmap = icon.pixmap( mIconSize, mIconSize );
 
   QFontMetrics fm = option.fontMetrics;
   int ht = fm.boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text ).height();
@@ -427,7 +439,7 @@ QSize KPageListViewDelegate::sizeHint( const QStyleOptionViewItem &option, const
     /**
      * No pixmap loaded yet, we'll use the default icon size in this case.
      */
-    hp = dim;
+    hp = mIconSize;
   }
 
   int width, height;
