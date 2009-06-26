@@ -69,6 +69,7 @@ private Q_SLOTS:
     void testOptionOrder();
     void testLocaleConfig();
     void testKdeGlobals();
+    void testSpecialChars();
 
     // unrelated
     void testKAboutDataOrganizationDomain();
