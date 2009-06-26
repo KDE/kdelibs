@@ -702,7 +702,9 @@ void CopyJobPrivate::statCurrentSrc()
 
         m_bOnlyRenames = false;
 
-        if (entry.count() > 0) {
+        // Testing for entry.count()>0 here is not good enough; KFileItem inserts
+        // entries for UDS_USER and UDS_GROUP even on initially empty UDSEntries (#192185)
+        if (entry.contains(KIO::UDSEntry::UDS_NAME)) {
             kDebug(7007) << "fast path! found info about" << m_currentSrcURL << "in KDirLister";
             sourceStated(entry, m_currentSrcURL);
             return;
