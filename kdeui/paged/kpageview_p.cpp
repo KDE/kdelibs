@@ -29,6 +29,7 @@
 
 #include <kdialog.h>
 #include <kiconloader.h>
+#include <kglobalsettings.h>
 
 #include "kpagemodel.h"
 
