@@ -17,10 +17,9 @@
 
 */
 
-#include <QtCore/QDebug>
-
 #include <solid/genericinterface.h>
 
+#include "wmiquery.h"
 #include "wmidevice.h"
 #include "wmideviceinterface.h"
 #include "wmigenericinterface.h"
@@ -40,22 +39,8 @@
 #include "wmiaudiointerface.h"
 #include "wmidvbinterface.h"
 #include "wmivideo.h"
-#include "wmiquery.h"
 
-
-#ifdef _DEBUG
-# pragma comment(lib, "comsuppwd.lib")
-#else
-# pragma comment(lib, "comsuppw.lib")
-#endif
-# pragma comment(lib, "wbemuuid.lib")
-
-#define _WIN32_DCOM
-#include <iostream>
-#include <comdef.h>
-#include <Wbemidl.h>
-
-# pragma comment(lib, "wbemuuid.lib")
+#include <QtCore/QDebug>
 
 using namespace Solid::Backends::Wmi;
 

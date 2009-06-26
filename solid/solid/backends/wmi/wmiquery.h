@@ -26,19 +26,18 @@
 
 #include <solid/solid_export.h>
 
-#ifdef _DEBUG
-# pragma comment(lib, "comsuppwd.lib")
-#else
-# pragma comment(lib, "comsuppw.lib")
-#endif
-# pragma comment(lib, "wbemuuid.lib")
 
-#define _WIN32_DCOM
-#include <iostream>
+#ifdef INSIDE_WMIQUERY
+#include <windows.h>
+#include <rpc.h>
 #include <comdef.h>
 #include <Wbemidl.h>
-
-# pragma comment(lib, "wbemuuid.lib")
+#else
+typedef void *IWbemClassObject;
+typedef void *IWbemLocator;
+typedef void *IWbemServices;
+typedef void *IEnumWbemClassObject;
+#endif
 
 namespace Solid
 {

@@ -24,21 +24,6 @@
 #include "wmideviceinterface.h"
 #include "wmiquery.h"
 
-#ifdef _DEBUG
-# pragma comment(lib, "comsuppwd.lib")
-#else
-# pragma comment(lib, "comsuppw.lib")
-#endif
-# pragma comment(lib, "wbemuuid.lib")
-
-#define _WIN32_DCOM
-#include <iostream>
-#include <comdef.h>
-#include <Wbemidl.h>
-
-# pragma comment(lib, "wbemuuid.lib")
-
-
 using namespace Solid::Backends::Wmi;
 
 class Solid::Backends::Wmi::WmiManagerPrivate
