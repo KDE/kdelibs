@@ -26,19 +26,21 @@
 
 #include <solid/solid_export.h>
 
-#ifdef _DEBUG
-# pragma comment(lib, "comsuppwd.lib")
+
+#ifdef INSIDE_WMIQUERY
+// w2k server 2003
+#if _WIN32_WINNT == 0x0502 
+#include <rpcsal.h>
 #else
-# pragma comment(lib, "comsuppw.lib")
-#endif
-# pragma comment(lib, "wbemuuid.lib")
-
-#define _WIN32_DCOM
-#include <iostream>
 #include <comdef.h>
+#endif
 #include <Wbemidl.h>
-
-# pragma comment(lib, "wbemuuid.lib")
+#else
+typedef void *IWbemClassObject;
+typedef void *IWbemLocator;
+typedef void *IWbemServices;
+typedef void *IEnumWbemClassObject;
+#endif
 
 namespace Solid
 {

@@ -17,12 +17,11 @@
 
 */
 
-#include "wmiquery.h"
+//#define _WIN32_DCOM
+//#include <comdef.h>
 
-#include <QtCore/QDebug>
-#include <QtCore/QVariant>
-#include <QtCore/QList>
-#include <QtCore/QStringList>
+#define INSIDE_WMIQUERY
+#include "wmiquery.h"
 
 #ifdef _DEBUG
 # pragma comment(lib, "comsuppwd.lib")
@@ -31,12 +30,16 @@
 #endif
 # pragma comment(lib, "wbemuuid.lib")
 
-#define _WIN32_DCOM
 #include <iostream>
-#include <comdef.h>
 #include <Wbemidl.h>
 
 # pragma comment(lib, "wbemuuid.lib")
+
+#include <QtCore/QDebug>
+#include <QtCore/QVariant>
+#include <QtCore/QList>
+#include <QtCore/QStringList>
+
 
 using namespace Solid::Backends::Wmi;
 
