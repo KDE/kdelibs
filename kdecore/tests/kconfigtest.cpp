@@ -27,6 +27,7 @@
 #include <kdebug.h>
 #include <kconfiggroup.h>
 #include <kstandarddirs.h>
+#include <kstringhandler.h>
 
 #include <QtNetwork/QHostInfo>
 
@@ -1179,4 +1180,13 @@ void KConfigTest::testLocaleConfig()
     QCOMPARE(cg.readEntry("foostring", "ugly"), QString("nice"));
     QCOMPARE(cg.readEntry("foobool"), QString("true"));
     QCOMPARE(cg.readEntry("foobool", false), true);
+}
+
+void KConfigTest::testSpecialChars()
+{
+  QString test = "!TEST!";
+  KConfig config( "kconfigtest" );
+  KConfigGroup group = config.group( "specialchartest" );
+  group.writeEntry( "bar", KStringHandler::obscure( test ) );
+  QCOMPARE( KStringHandler::obscure( group.readEntry( "bar" ) ), test );
 }

@@ -66,6 +66,7 @@ private Q_SLOTS:
     void testSharedConfig();
     void testOptionOrder();
     void testLocaleConfig();
+    void testSpecialChars();
 
     // unrelated
     void testKAboutDataOrganizationDomain();
