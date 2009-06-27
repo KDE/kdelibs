@@ -33,6 +33,7 @@
 #include <QMimeData>
 
 #include <kstandarddirs.h>
+#include <klistwidgetsearchline.h>
 #include <klocale.h>
 #include <kicon.h>
 #include <kiconloader.h>
@@ -852,6 +853,9 @@ void KEditToolBarWidgetPrivate::setupLayout()
   QObject::connect(m_inactiveList, SIGNAL(dropped(ToolBarListWidget*, int, ToolBarItem*, bool)),
                    m_widget,       SLOT(slotDropped(ToolBarListWidget*, int, ToolBarItem*, bool)));
 
+  KListWidgetSearchLine *inactiveListSearchLine = new KListWidgetSearchLine(m_widget, m_inactiveList);
+  inactiveListSearchLine->setClickMessage(i18n("Filter"));
+
   // our list of active actions
   QLabel *active_label = new QLabel(i18n("Curr&ent actions:"), m_widget);
   m_activeList = new ToolBarListWidget(m_widget);
@@ -868,8 +872,12 @@ void KEditToolBarWidgetPrivate::setupLayout()
   QObject::connect(m_activeList, SIGNAL(dropped(ToolBarListWidget*, int, ToolBarItem*, bool)),
                    m_widget,     SLOT(slotDropped(ToolBarListWidget*, int, ToolBarItem*, bool)));
 
+  KListWidgetSearchLine *activeListSearchLine = new KListWidgetSearchLine(m_widget, m_activeList);
+  activeListSearchLine->setClickMessage(i18n("Filter"));
+
   // "change icon" button
   m_changeIcon = new KPushButton(i18n( "Change &Icon..." ), m_widget);
+  m_changeIcon->setIcon(KIcon("preferences-desktop-icons"));
   QString kdialogExe = KStandardDirs::findExe(QLatin1String("kdialog"));
   m_hasKDialog = !kdialogExe.isEmpty();
   m_changeIcon->setEnabled(m_hasKDialog && m_activeList->currentItem());
@@ -931,9 +939,11 @@ void KEditToolBarWidgetPrivate::setupLayout()
   button_layout->setRowStretch( 4, 10 );
 
   inactive_layout->addWidget(inactive_label);
+  inactive_layout->addWidget(inactiveListSearchLine);
   inactive_layout->addWidget(m_inactiveList, 1);
 
   active_layout->addWidget(active_label);
+  active_layout->addWidget(activeListSearchLine);
   active_layout->addWidget(m_activeList, 1);
   active_layout->addLayout(changeIcon_layout);
 
