@@ -462,10 +462,9 @@ public:
      */
     RangeImpl *handle() const;
     bool isNull() const;
-
+    Range(RangeImpl *i);
 protected:
     RangeImpl *impl;
-    Range(RangeImpl *i);
 private:
     void throwException(int exceptioncode) const;
 };

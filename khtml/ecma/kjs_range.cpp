@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2009 Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -21,10 +22,15 @@
 
 #include "kjs_range.h"
 #include "kjs_range.lut.h"
+#include "khtml_part.h"
+#include "dom/dom_exception.h"
+#include "dom/dom2_range.h" 
 #include <kdebug.h>
 
-using namespace KJS;
 
+using DOM::DOMException;
+
+namespace KJS {
 // -------------------------------------------------------------------------
 
 const ClassInfo DOMRange::info = { "Range", 0, &DOMRangeTable, 0 };
@@ -66,6 +72,7 @@ KJS_IMPLEMENT_PROTOTYPE("DOMRange",DOMRangeProto,DOMRangeProtoFunc,ObjectPrototy
 DOMRange::DOMRange(ExecState *exec, DOM::RangeImpl* r)
  : m_impl(r)
 {
+  assert(r);
   setPrototype(DOMRangeProto::self(exec));
 }
 
@@ -178,7 +185,7 @@ JSValue *DOMRangeProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, c
   return result;
 }
 
-JSValue *KJS::getDOMRange(ExecState *exec, DOM::RangeImpl* r)
+JSValue* getDOMRange(ExecState *exec, DOM::RangeImpl* r)
 {
   return cacheDOMObject<DOM::RangeImpl, KJS::DOMRange>(exec, r);
 }
@@ -210,13 +217,13 @@ JSValue *RangeConstructor::getValueProperty(ExecState *, int token) const
   return jsNumber(token);
 }
 
-JSValue *KJS::getRangeConstructor(ExecState *exec)
+JSValue* getRangeConstructor(ExecState *exec)
 {
   return cacheGlobalObject<RangeConstructor>(exec, "[[range.constructor]]");
 }
 
 
-DOM::RangeImpl* KJS::toRange(JSValue *val)
+DOM::RangeImpl* toRange(JSValue *val)
 {
   JSObject *obj = val->getObject();
   if (!obj || !obj->inherits(&DOMRange::info))
@@ -245,3 +252,218 @@ RangeException::RangeException(ExecState* exec)
 }
 
 const ClassInfo RangeException::info = { "RangeException", 0, 0, 0 };
+
+// -------------------------------------------------------------------------
+
+const ClassInfo DOMSelection::info = { "Selection", 0, &DOMSelectionTable, 0 };
+/*
+@begin DOMSelectionTable 7
+  anchorNode            DOMSelection::AnchorNode        DontDelete|ReadOnly
+  anchorOffset          DOMSelection::AnchorOffset      DontDelete|ReadOnly
+  focusNode             DOMSelection::FocusNode         DontDelete|ReadOnly
+  focusOffset           DOMSelection::FocusOffset       DontDelete|ReadOnly
+  isCollapsed           DOMSelection::IsCollapsed       DontDelete|ReadOnly
+  rangeCount            DOMSelection::RangeCount        DontDelete|ReadOnly
+@end
+@begin DOMSelectionProtoTable 13
+ collapsed          DOMSelection::Collapsed               DontDelete|Function 2
+ collapseToStart    DOMSelection::CollapseToStart         DontDelete|Function 0
+ collapseToEnd      DOMSelection::CollapseToEnd           DontDelete|Function 0
+ selectAllChildren  DOMSelection::SelectAllChildren       DontDelete|Function 1
+ deleteFromDocument DOMSelection::DeleteFromDocument      DontDelete|Function 0
+ getRangeAt         DOMSelection::GetRangeAt              DontDelete|Function 1
+ addRange           DOMSelection::AddRange                DontDelete|Function 1
+ removeRange        DOMSelection::RemoveRange             DontDelete|Function 1
+ removeAllRanges    DOMSelection::RemoveAllRanges         DontDelete|Function 0
+@end
+*/
+KJS_DEFINE_PROTOTYPE(DOMSelectionProto)
+KJS_IMPLEMENT_PROTOFUNC(DOMSelectionProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("Selection",DOMSelectionProto,DOMSelectionProtoFunc,ObjectPrototype)
+
+DOMSelection::DOMSelection(ExecState* exec, DOM::DocumentImpl* parentDocument):
+        JSObject(DOMSelectionProto::self(exec)), m_document(parentDocument)
+{}
+
+bool DOMSelection::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
+{
+    kDebug(6070) << propertyName.ustring().qstring();
+    return getStaticValueSlot<DOMSelection, JSObject>(exec, &DOMSelectionTable, this, propertyName, slot);
+}
+
+JSValue* DOMSelection::getValueProperty(ExecState* exec, int token) const
+{
+    kDebug(6070) << token;
+    DOMExceptionTranslator exception(exec);
+    DOM::Selection sel = currentSelection();
+    // ### TODO: below doesn't really distinguish anchor and focus properly.
+    switch (token) {
+        case DOMSelection::AnchorNode:
+            return sel.notEmpty() ? getDOMNode(exec, sel.base().node()) : jsNull();
+        case DOMSelection::AnchorOffset:
+            return jsNumber(sel.notEmpty() ? sel.base().offset() : 0L);
+        case DOMSelection::FocusNode:
+            return sel.notEmpty() ? getDOMNode(exec, sel.extent().node()) : jsNull();
+        case DOMSelection::FocusOffset:
+            return jsNumber(sel.notEmpty() ? sel.extent().offset() : 0L);
+        case DOMSelection::IsCollapsed:
+            return jsBoolean(sel.isCollapsed() || sel.isEmpty());
+        case DOMSelection::RangeCount:
+            return sel.notEmpty() ? jsNumber(1) : jsNumber(0);
+    }
+
+    assert (false);
+    return jsUndefined();
+}
+
+JSValue* DOMSelectionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
+{
+    kDebug(6070) << id;
+
+    KJS_CHECK_THIS(KJS::DOMSelection, thisObj);
+
+    DOMSelection* self = static_cast<DOMSelection*>(thisObj);
+    if (!self->attached())
+        return jsUndefined();
+    
+    DOM::Selection sel = self->currentSelection();
+
+    DOMExceptionTranslator exception(exec);
+    switch (id) {
+        case DOMSelection::Collapsed: {
+            DOM::NodeImpl* node   = toNode(args[0]);
+            int            offset = args[1]->toInt32(exec);
+            if (node->document() == self->m_document)
+                self->m_document->part()->setCaret(DOM::Selection(DOM::Position(node, offset)));
+            else
+                setDOMException(exec, DOMException::WRONG_DOCUMENT_ERR);
+            break;
+        }
+
+        case DOMSelection::CollapseToStart:
+            if (sel.notEmpty()) {
+                sel.moveTo(sel.start());
+                self->m_document->part()->setCaret(sel);
+            } else {
+                setDOMException(exec, DOMException::INVALID_STATE_ERR);
+            }
+            break;
+
+        case DOMSelection::CollapseToEnd:
+            if (sel.notEmpty()) {
+                sel.moveTo(sel.end());
+                self->m_document->part()->setCaret(sel);
+            } else {
+                setDOMException(exec, DOMException::INVALID_STATE_ERR);
+            }
+            break;
+
+        case DOMSelection::SelectAllChildren: {
+            DOM::NodeImpl* node = toNode(args[0]);
+            if (node->document() == self->m_document) {
+                DOM::RangeImpl* range = new DOM::RangeImpl(self->m_document);
+                range->selectNodeContents(node, exception);
+                self->m_document->part()->setCaret(DOM::Selection(DOM::Range(range)));
+            } else {
+                setDOMException(exec, DOMException::WRONG_DOCUMENT_ERR);
+            }
+            break;
+        }
+
+        case DOMSelection::DeleteFromDocument:
+            self->m_document->part()->setCaret(DOM::Selection());
+            sel.toRange().deleteContents();
+            break;
+        
+            
+        case DOMSelection::GetRangeAt: {
+            int i = args[0]->toInt32(exec);
+            if (sel.isEmpty() || i != 0) {
+                setDOMException(exec, DOMException::INDEX_SIZE_ERR);
+            } else {
+                DOM::Range r = sel.toRange();
+                return getDOMRange(exec, r.handle());
+            }
+            break;
+        }
+
+        case DOMSelection::AddRange: {
+            // We only support a single range, so we merge the two.
+            // This does violate HTML5, though, as it's actually supposed to report the
+            // overlap twice. Perhaps this shouldn't be live?
+            DOM::RangeImpl* range = toRange(args[0]);
+
+            if (!range)
+                return jsUndefined();
+            if (range->ownerDocument() != self->m_document) {
+                setDOMException(exec, DOMException::WRONG_DOCUMENT_ERR);
+                return jsUndefined();
+            }
+
+            if (sel.isEmpty()) {
+                self->m_document->part()->setCaret(DOM::Selection(range));
+                return jsUndefined();
+            }
+            
+            DOM::Range      ourRange = sel.toRange();
+            DOM::RangeImpl* ourRangeImpl = ourRange.handle();
+
+            bool startExisting = ourRangeImpl->compareBoundaryPoints(DOM::Range::START_TO_START, range, exception) == -1;
+            bool endExisting   = ourRangeImpl->compareBoundaryPoints(DOM::Range::END_TO_END, range, exception) == -1;
+
+            DOM::RangeImpl* rangeForStart = startExisting ? ourRangeImpl : range;
+            DOM::RangeImpl* rangeForEnd   = endExisting ? ourRangeImpl : range;
+            DOM::Position start = DOM::Position(rangeForStart->startContainer(exception), rangeForStart->startOffset(exception));
+            DOM::Position end   = DOM::Position(rangeForEnd->endContainer(exception), rangeForEnd->endOffset(exception));
+
+            self->m_document->part()->setCaret(DOM::Selection(start, end));
+            break;
+        }
+
+        case DOMSelection::RemoveRange: {
+            // This actually take a /Range/. How brittle.
+            if (sel.isEmpty())
+                return jsUndefined();
+
+            DOM::RangeImpl* range    = toRange(args[0]);
+            DOM::Range      ourRange = sel.toRange();
+            DOM::RangeImpl* ourRangeImpl = ourRange.handle();
+            if (range && range->startContainer(exception) == ourRangeImpl->startContainer(exception)
+                      && range->startOffset(exception)    == ourRangeImpl->startOffset   (exception)
+                      && range->endContainer(exception)   == ourRangeImpl->endContainer  (exception)
+                      && range->endOffset(exception)      == ourRangeImpl->endOffset     (exception)) {
+                self->m_document->part()->setCaret(DOM::Selection());
+            }
+            break;
+        }
+
+        case DOMSelection::RemoveAllRanges:
+            self->m_document->part()->setCaret(DOM::Selection());
+            break;
+    }
+    return jsUndefined();
+}
+
+UString DOMSelection::toString(ExecState* /*exec*/) const
+{
+    DOM::Selection sel = currentSelection();
+    if (sel.isEmpty() || sel.isCollapsed())
+        return UString(UString::empty);
+    else
+        return UString(sel.toRange().toString());
+}
+
+DOM::Selection DOMSelection::currentSelection() const
+{
+    if (m_document && m_document->part())
+        return m_document->part()->caret();
+    else
+        return DOM::Selection();
+}
+
+bool DOMSelection::attached() const
+{
+    return m_document && m_document->part();
+}
+
+}

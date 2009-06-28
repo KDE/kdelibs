@@ -260,6 +260,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   print		Window::Print		DontDelete|Function 0
   addEventListener	Window::AddEventListener	DontDelete|Function 3
   removeEventListener	Window::RemoveEventListener	DontDelete|Function 3
+  getSelection  Window::GetSelection            DontDelete|Function 0
 # Normally found in prototype. Add to window object itself to make them
 # accessible in closed and cross-site windows
   valueOf       Window::ValueOf		DontEnum|DontDelete|Function 0
@@ -384,6 +385,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   HTMLCollection Window::HTMLCollectionCtor DontEnum|DontDelete
   HTMLCanvasElement Window::HTMLCanvasElementCtor DontEnum|DontDelete
   CSSStyleDeclaration Window::CSSStyleDeclarationCtor DontEnum|DontDelete
+  StyleSheet   Window::StyleSheetCtor DontEnum|DontDelete
   CanvasRenderingContext2D Window::Context2DCtor DontEnum|DontDelete
 @end
 */
@@ -870,6 +872,8 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       return HTMLDocumentPseudoCtor::self(exec);
     case CSSStyleDeclarationCtor:
         return CSSStyleDeclarationPseudoCtor::self(exec);
+    case StyleSheetCtor:
+        return DOMStyleSheetPseudoCtor::self(exec);
     case EventCtor:
       return EventConstructor::self(exec);
     case MutationEventCtor:
@@ -1064,7 +1068,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, JSValue *value
     JSObject::put( exec, propertyName, value, attr );
     return;
   }
-  
+
 
   // If we already have a variable, that's writeable w/o a getter/setter mess, just write to it.
   bool safe = isSafeScript(exec);
@@ -1577,7 +1581,7 @@ JSValue *Window::openWindow(ExecState *exec, const List& args)
   // Always permit opening in an exist frame (including _self, etc.)
   if ( targetIsExistingWindow( part, frameName ) )
     policy = KHTMLSettings::KJSWindowOpenAllow;
-    
+
   if ( policy == KHTMLSettings::KJSWindowOpenAsk ) {
     emit part->browserExtension()->requestFocus(part);
     QString caption;
@@ -1925,6 +1929,9 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
     }
     return jsUndefined();
   }
+  case Window::GetSelection:
+    return new KJS::DOMSelection(exec, part->xmlDocImpl());
+
   case Window::Navigate:
     window->goURL(exec, args[0]->toString(exec).qstring(), false /*don't lock history*/);
     return jsUndefined();

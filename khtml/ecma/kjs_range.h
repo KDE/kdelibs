@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2009 Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -21,9 +22,12 @@
 #ifndef _KJS_RANGE_H_
 #define _KJS_RANGE_H_
 
+#include <QPointer>
+
 #include "ecma/kjs_dom.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom2_rangeimpl.h"
+#include "xml/dom_selection.h"
 
 namespace KJS {
 
@@ -46,6 +50,27 @@ namespace KJS {
     DOM::RangeImpl *impl() const { return m_impl.get(); }
   protected:
     SharedPtr<DOM::RangeImpl> m_impl;
+  };
+
+  class DOMSelection: public JSObject {
+  public:
+    DOMSelection(ExecState* exec, DOM::DocumentImpl* parentDocument);
+
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    JSValue* getValueProperty(ExecState *exec, int token) const;
+    // no put - all read-only
+
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+
+    UString toString(ExecState *exec) const;  // Selections stringify...
+    enum { AnchorNode, AnchorOffset, FocusNode, FocusOffset, IsCollapsed,
+           Collapsed, CollapseToStart, CollapseToEnd, SelectAllChildren,
+           DeleteFromDocument, RangeCount, GetRangeAt, AddRange, RemoveRange, RemoveAllRanges };
+
+    DOM::Selection currentSelection() const;
+    bool           attached() const; // if document & part are still alive..
+    QPointer<DOM::DocumentImpl> m_document;  
   };
 
   // Constructor object Range
@@ -80,3 +105,4 @@ namespace KJS {
 } // namespace
 
 #endif
+// kate: indent-width 2; replace-tabs on; tab-width 4; space-indent on;

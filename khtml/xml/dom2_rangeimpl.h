@@ -102,6 +102,8 @@ public:
 
     bool readOnly() { return false; }
 
+    DocumentImpl *ownerDocument() { return m_ownerDocument; }
+
 protected:
     DocumentImpl *m_ownerDocument;
     NodeImpl *m_startContainer;

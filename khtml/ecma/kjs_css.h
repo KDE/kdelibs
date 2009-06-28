@@ -74,6 +74,7 @@ namespace KJS {
   protected:
     SharedPtr<DOM::StyleSheetImpl> m_impl;
   };
+  DEFINE_PSEUDO_CONSTRUCTOR(DOMStyleSheetPseudoCtor)  
 
   JSValue* getDOMStyleSheet(ExecState *exec, DOM::StyleSheetImpl* ss);
 
