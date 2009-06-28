@@ -543,11 +543,12 @@ protected:
 
 
     /**
-     * Utility function to emit the result signal, and suicide this job.
+     * Utility function to emit the result signal, and delete the job.
      * It first notifies the observers to hide the progress for this job using
      * the finished() signal.
      *
-     * @note: Deletes this job using deleteLater().
+     * @note: Deletes this job using deleteLater(), this function will NOT return from
+     *        your worker method.
      *
      * @see result()
      * @see finished()
