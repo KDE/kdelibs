@@ -2417,7 +2417,8 @@ void KLocale::setMeasureSystem(MeasureSystem value)
 
 QString KLocale::defaultLanguage()
 {
-  return QString::fromLatin1("en_US");
+  static const QString en_US=QString::fromLatin1("en_US");
+  return en_US;
 }
 
 QString KLocale::defaultCountry()
