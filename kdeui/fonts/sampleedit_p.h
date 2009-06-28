@@ -52,11 +52,6 @@ class SampleEdit : public KTextEdit
     private:
 
     bool m_signalsAllowed;
-    bool m_resetMargins;
-
-    int m_maxViewportHeight;
-    int m_tbMargin;
-    int m_lrMargin;
 
     void showEvent (QShowEvent *);
     void resizeEvent (QResizeEvent *);
@@ -68,8 +63,7 @@ class SampleEdit : public KTextEdit
 
 SampleEdit::SampleEdit (QWidget *parent_) :
     KTextEdit(parent_),
-    m_signalsAllowed(true),
-    m_resetMargins(true)
+    m_signalsAllowed(true)
 {
     connect(this, SIGNAL(textChanged()),
             this, SLOT(m_setMargins()));
@@ -85,26 +79,28 @@ void SampleEdit::m_setMargins ()
     // Repeat setting margins until they no longer change between iterations.
     int maxIterations=6;
     while (maxIterations--) {
-        if (m_resetMargins) {
-            // Reset viewport margins to determine max viewport height.
-            m_tbMargin = 0;
-            m_lrMargin = 0;
-            setViewportMargins(0, 0, 0, 0);
-            m_maxViewportHeight = viewport()->height();
-            m_resetMargins = false;
+        if (document()->isEmpty()) {
+            QTextCursor cursor(document());
         }
-        else {
-            // Collect max viewport height from current plus margin.
-            m_maxViewportHeight = viewport()->height() + 2 * m_tbMargin;
+        QTextFrame *root = document()->rootFrame();
+        QTextFrameFormat format = root->frameFormat();
+        int documentHeight = document()->size().height() - format.topMargin() - format.bottomMargin();
+        if (documentHeight == 0) {
+            documentHeight = fontMetrics().height();
         }
         int lrMargin = viewport()->width() / 100;
-        int tbMargin = (m_maxViewportHeight - document()->size().height()) / 2;
+        int tbMargin = (viewport()->height() - documentHeight) / 2;
         tbMargin = tbMargin > lrMargin ? tbMargin : lrMargin;
-        if (tbMargin != m_tbMargin || lrMargin != m_lrMargin) {
+        if (tbMargin != format.topMargin() || lrMargin != format.leftMargin()) {
             // Set new margins.
-            m_tbMargin = tbMargin;
-            m_lrMargin = lrMargin;
-            setViewportMargins(m_lrMargin, m_tbMargin, m_lrMargin, m_tbMargin);
+            format.setLeftMargin(lrMargin);
+            format.setRightMargin(lrMargin);
+            format.setTopMargin(tbMargin);
+            format.setBottomMargin(tbMargin);
+            // Setting the new margins triggers textChanged(), avoid recursion
+            disconnect(this, SIGNAL(textChanged()), this, SLOT(m_setMargins()));
+            root->setFrameFormat(format);
+            connect(this, SIGNAL(textChanged()), this, SLOT(m_setMargins()));
 
             // To remind vertical scrollbar to disappear if not needed.
             setLineWrapMode(KTextEdit::WidgetWidth);
