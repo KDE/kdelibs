@@ -70,42 +70,42 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     KIO::Job *kioJob = 0;
 
     if ( !d->externalContentAllowed && req.url().scheme() != "file" && !req.url().scheme().isEmpty() ) {
-        kDebug() << "Blocked: " << req.url().scheme() <<  req.url();
+        kDebug( 7044 ) << "Blocked: " << req.url().scheme() <<  req.url();
         /* if kioJob equals zero, the AccessManagerReply will block the request */
         return new KDEPrivate::AccessManagerReply(op, req, kioJob, this);
     }
 
     switch (op) {
         case HeadOperation: {
-            kDebug() << "HeadOperation:" << req.url();
+            kDebug( 7044 ) << "HeadOperation:" << req.url();
 
             kioJob = KIO::mimetype(req.url(), KIO::HideProgressInfo);
 
             break;
         }
         case GetOperation: {
-            kDebug() << "GetOperation:" << req.url();
+            kDebug( 7044 ) << "GetOperation:" << req.url();
 
             kioJob = KIO::get(req.url(), KIO::NoReload, KIO::HideProgressInfo);
 
             break;
         }
         case PutOperation: {
-            kDebug() << "PutOperation:" << req.url();
+            kDebug( 7044 ) << "PutOperation:" << req.url();
 
             kioJob = KIO::put(req.url(), -1, KIO::HideProgressInfo);
 
             break;
         }
         case PostOperation: {
-            kDebug() << "PostOperation:" << req.url();
+            kDebug( 7044 ) << "PostOperation:" << req.url();
 
             kioJob = KIO::http_post(req.url(), outgoingData->readAll(), KIO::HideProgressInfo);
 
             break;
         }
         default:
-            kDebug() << "Unknown operation";
+            kDebug( 7044 ) << "Unknown operation";
             return 0;
     }
 

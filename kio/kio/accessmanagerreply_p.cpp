@@ -65,7 +65,7 @@ AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &o
 
     if (!request.sslConfiguration().isNull()) {
         setSslConfiguration(request.sslConfiguration());
-        kDebug() << "QSslConfiguration not supported (currently).";
+        kDebug( 7044 ) << "QSslConfiguration not supported (currently).";
     }
 
     if (!kioJob) { // a blocked request
@@ -155,58 +155,58 @@ void AccessManagerReply::jobDone(KJob *kJob)
     {
         case 0:
             setError(QNetworkReply::NoError, errorString());
-            kDebug() << "0 -> QNetworkReply::NoError";
+            kDebug( 7044 ) << "0 -> QNetworkReply::NoError";
             break;
         case KIO::ERR_COULD_NOT_CONNECT:
             setError(QNetworkReply::ConnectionRefusedError, errorString());
-            kDebug() << "KIO::ERR_COULD_NOT_CONNECT -> KIO::ERR_COULD_NOT_CONNECT";
+            kDebug( 7044 ) << "KIO::ERR_COULD_NOT_CONNECT -> KIO::ERR_COULD_NOT_CONNECT";
             break;
         case KIO::ERR_UNKNOWN_HOST:
             setError(QNetworkReply::HostNotFoundError, errorString());
-            kDebug() << "KIO::ERR_UNKNOWN_HOST -> QNetworkReply::HostNotFoundError";
+            kDebug( 7044 ) << "KIO::ERR_UNKNOWN_HOST -> QNetworkReply::HostNotFoundError";
             break;
         case KIO::ERR_SERVER_TIMEOUT:
             setError(QNetworkReply::TimeoutError, errorString());
-            kDebug() << "KIO::ERR_SERVER_TIMEOUT -> QNetworkReply::TimeoutError";
+            kDebug( 7044 ) << "KIO::ERR_SERVER_TIMEOUT -> QNetworkReply::TimeoutError";
             break;
         case KIO::ERR_USER_CANCELED:
         case KIO::ERR_ABORTED:
             setError(QNetworkReply::OperationCanceledError, errorString());
-            kDebug() << "KIO::ERR_ABORTED -> QNetworkReply::OperationCanceledError";
+            kDebug( 7044 ) << "KIO::ERR_ABORTED -> QNetworkReply::OperationCanceledError";
             break;
         case KIO::ERR_UNKNOWN_PROXY_HOST:
             setError(QNetworkReply::ProxyNotFoundError, errorString());
-            kDebug() << "KIO::UNKNOWN_PROXY_HOST -> QNetworkReply::ProxyNotFoundError";
+            kDebug( 7044 ) << "KIO::UNKNOWN_PROXY_HOST -> QNetworkReply::ProxyNotFoundError";
             break;
         case KIO::ERR_ACCESS_DENIED:
             setError(QNetworkReply::ContentAccessDenied, errorString());
-            kDebug() << "KIO::ERR_ACCESS_DENIED -> QNetworkReply::ContentAccessDenied";
+            kDebug( 7044 ) << "KIO::ERR_ACCESS_DENIED -> QNetworkReply::ContentAccessDenied";
             break;
         case KIO::ERR_WRITE_ACCESS_DENIED:
             setError(QNetworkReply::ContentOperationNotPermittedError, errorString());
-            kDebug() << "KIO::ERR_WRITE_ACCESS_DENIED -> QNetworkReply::ContentOperationNotPermittedError";
+            kDebug( 7044 ) << "KIO::ERR_WRITE_ACCESS_DENIED -> QNetworkReply::ContentOperationNotPermittedError";
             break;
         case KIO::ERR_NO_CONTENT:
         case KIO::ERR_DOES_NOT_EXIST:
             setError(QNetworkReply::ContentNotFoundError, errorString());
-            kDebug() << "KIO::ERR_DOES_NOT_EXIST -> QNetworkReply::ContentNotFoundError";
+            kDebug( 7044 ) << "KIO::ERR_DOES_NOT_EXIST -> QNetworkReply::ContentNotFoundError";
             break;
         case KIO::ERR_COULD_NOT_AUTHENTICATE:
             setError(QNetworkReply::AuthenticationRequiredError, errorString());
-            kDebug() << kJob->error();
+            kDebug( 7044 ) << kJob->error();
             break;
         case KIO::ERR_UNSUPPORTED_PROTOCOL:
         case KIO::ERR_NO_SOURCE_PROTOCOL:
             setError(QNetworkReply::ProtocolUnknownError, errorString());
-            kDebug() << kJob->error();
+            kDebug( 7044 ) << kJob->error();
             break;
         case KIO::ERR_UNSUPPORTED_ACTION:
             setError(QNetworkReply::ProtocolInvalidOperationError, errorString());
-            kDebug() << kJob->error();
+            kDebug( 7044 ) << kJob->error();
             break;
         default:
             setError(QNetworkReply::UnknownNetworkError, errorString());
-            kDebug() << kJob->error();
+            kDebug( 7044 ) << kJob->error();
     }
 
     emit finished();

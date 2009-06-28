@@ -318,6 +318,7 @@
 7041        KTar
 7042        KAr
 7043        kio (bookmarks)
+7044        kio (AccessManager)
 
 # 71xx      are for kioslaves
 7101        kio_file
