@@ -2597,7 +2597,7 @@ bool RenderTableCell::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _
   int ty = _ty + m_y;
 
   // also include the top and bottom extra space
-  inside |= style()->visibility() != HIDDEN
+  inside |= hitTestAction != HitTestChildrenOnly && style()->visibility() != HIDDEN
       && (_y >= ty) && (_y < ty + height() + _topExtra + _bottomExtra)
       && (_x >= tx) && (_x < tx + width());
 
