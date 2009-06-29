@@ -683,9 +683,11 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
     // Evaluate interpolation.
     QString msgctxt = QString::fromUtf8(ctxt);
     QString msgid = QString::fromUtf8(msg);
+    QString ctry = KGlobal::locale()->country();
     QString scriptError;
     bool fallbackLocal;
-    result = s->ktrs->eval(iargs, lang, lscr, msgctxt, dynctxt, msgid,
+    result = s->ktrs->eval(iargs, lang, lscr, ctry,
+                           msgctxt, dynctxt, msgid,
                            args, vals, final, s->scriptModulesToLoad,
                            scriptError, fallbackLocal);
     // s->scriptModulesToLoad will be cleared during the call.
@@ -753,9 +755,11 @@ QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
     iargs.append(pcall);
     QString msgctxt = QString::fromUtf8(ctxt);
     QString msgid = QString::fromUtf8(msg);
+    QString ctry = KGlobal::locale()->country();
     QString scriptError;
     bool fallback;
-    QString dummy = s->ktrs->eval(iargs, lang, lscr, msgctxt, dynctxt, msgid,
+    QString dummy = s->ktrs->eval(iargs, lang, lscr, ctry,
+                                  msgctxt, dynctxt, msgid,
                                   args, vals, final, s->scriptModulesToLoad,
                                   scriptError, fallback);
     // s->scriptModulesToLoad will be cleared during the call.

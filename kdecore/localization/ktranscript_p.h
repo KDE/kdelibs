@@ -44,7 +44,8 @@ class KTranscript
      *
      * @param argv list of interpolation tokens
      * @param lang language of the translation
-     * @param lscr script of the translation
+     * @param modf locale modifier
+     * @param ctry locale country
      * @param msgctxt message context
      * @param dynctxt dynamic context
      * @param msgid original message
@@ -61,7 +62,8 @@ class KTranscript
      */
     virtual QString eval (const QList<QVariant> &argv,
                           const QString &lang,
-                          const QString &lscr,
+                          const QString &modf,
+                          const QString &ctry,
                           const QString &msgctxt,
                           const QHash<QString, QString> &dynctxt,
                           const QString &msgid,

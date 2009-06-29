@@ -62,7 +62,8 @@ class KTranscriptImp : public KTranscript
 
     QString eval (const QList<QVariant> &argv,
                   const QString &lang,
-                  const QString &lscr,
+                  const QString &modf,
+                  const QString &ctry,
                   const QString &msgctxt,
                   const QHash<QString, QString> &dynctxt,
                   const QString &msgid,
@@ -113,7 +114,8 @@ class Scriptface : public JSObject
     JSValue *msgkeyf (ExecState *exec);
     JSValue *msgstrff (ExecState *exec);
     JSValue *dbgputsf (ExecState *exec, JSValue *str);
-    JSValue *lscrf (ExecState *exec);
+    JSValue *localeModifierf (ExecState *exec);
+    JSValue *localeCountryf (ExecState *exec);
     JSValue *normKeyf (ExecState *exec, JSValue *phrase);
     JSValue *loadPropsf (ExecState *exec, const List &fnames);
     JSValue *getPropf (ExecState *exec, JSValue *phrase, JSValue *prop);
@@ -140,7 +142,8 @@ class Scriptface : public JSObject
         Msgkey,
         Msgstrf,
         Dbgputs,
-        Lscr,
+        LocaleModifier,
+        LocaleCountry,
         NormKey,
         LoadProps,
         GetProp,
@@ -176,7 +179,8 @@ class Scriptface : public JSObject
     const QStringList *subs;
     const QList<QVariant> *vals;
     const QString *final;
-    const QString *lscr;
+    const QString *modf;
+    const QString *ctry;
 
     // Fallback request handle.
     bool *fallback;
@@ -453,7 +457,8 @@ KTranscriptImp::~KTranscriptImp ()
 
 QString KTranscriptImp::eval (const QList<QVariant> &argv,
                               const QString &lang,
-                              const QString &lscr,
+                              const QString &modf,
+                              const QString &ctry,
                               const QString &msgctxt,
                               const QHash<QString, QString> &dynctxt,
                               const QString &msgid,
@@ -513,7 +518,8 @@ QString KTranscriptImp::eval (const QList<QVariant> &argv,
     sface->vals = &vals;
     sface->final = &final;
     sface->fallback = &fallback;
-    sface->lscr = &lscr;
+    sface->modf = &modf;
+    sface->ctry = &ctry;
 
     // Find corresponding JS function.
     int argc = argv.size();
@@ -692,7 +698,8 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
     msgkey          Scriptface::Msgkey          DontDelete|ReadOnly|Function 0
     msgstrf         Scriptface::Msgstrf         DontDelete|ReadOnly|Function 0
     dbgputs         Scriptface::Dbgputs         DontDelete|ReadOnly|Function 1
-    lscr            Scriptface::Lscr            DontDelete|ReadOnly|Function 0
+    localeModifier  Scriptface::LocaleModifier  DontDelete|ReadOnly|Function 0
+    localeCountry   Scriptface::LocaleCountry   DontDelete|ReadOnly|Function 0
     normKey         Scriptface::NormKey         DontDelete|ReadOnly|Function 1
     loadProps       Scriptface::LoadProps       DontDelete|ReadOnly|Function 0
     getProp         Scriptface::GetProp         DontDelete|ReadOnly|Function 2
@@ -787,8 +794,10 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
             return obj->msgstrff(exec);
         case Scriptface::Dbgputs:
             return obj->dbgputsf(exec, CALLARG(0));
-        case Scriptface::Lscr:
-            return obj->lscrf(exec);
+        case Scriptface::LocaleModifier:
+            return obj->localeModifierf(exec);
+        case Scriptface::LocaleCountry:
+            return obj->localeCountryf(exec);
         case Scriptface::NormKey:
             return obj->normKeyf(exec, CALLARG(0));
         case Scriptface::LoadProps:
@@ -1072,10 +1081,16 @@ JSValue *Scriptface::dbgputsf (ExecState *exec, JSValue *str)
     return jsUndefined();
 }
 
-JSValue *Scriptface::lscrf (ExecState *exec)
+JSValue *Scriptface::localeModifierf (ExecState *exec)
 {
     Q_UNUSED(exec);
-    return jsString(*lscr);
+    return jsString(*modf);
+}
+
+JSValue *Scriptface::localeCountryf (ExecState *exec)
+{
+    Q_UNUSED(exec);
+    return jsString(*ctry);
 }
 
 JSValue *Scriptface::normKeyf (ExecState *exec, JSValue *phrase)
