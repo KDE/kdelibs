@@ -42,7 +42,7 @@ static const KStandardActionInfo g_rgActionInfo[] =
 {
   { New,           KStandardShortcut::New, "file_new", I18N_NOOP("&New"), 0, "document-new" },
   { Open,          KStandardShortcut::Open, "file_open", I18N_NOOP("&Open..."), 0, "document-open" },
-  { OpenRecent,    KStandardShortcut::AccelNone, "file_open_recent", I18N_NOOP("Open &Recent"), 0, "document-open" },
+  { OpenRecent,    KStandardShortcut::AccelNone, "file_open_recent", I18N_NOOP("Open &Recent"), 0, "document-open-recent" },
   { Save,          KStandardShortcut::Save, "file_save", I18N_NOOP("&Save"), 0, "document-save" },
   { SaveAs,        KStandardShortcut::SaveAs, "file_save_as", I18N_NOOP("Save &As..."), 0, "document-save-as" },
   { Revert,        KStandardShortcut::Revert, "file_revert", I18N_NOOP("Re&vert"), 0, "document-revert" },
