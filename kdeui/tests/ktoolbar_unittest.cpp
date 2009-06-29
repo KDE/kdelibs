@@ -48,6 +48,7 @@ private slots:
     void testIconSizeXmlGui();
     void testToolButtonStyleNoXmlGui_data();
     void testToolButtonStyleNoXmlGui();
+    void testToolBarPosition();
 
 private:
     void changeGlobalIconSizeSetting(int, int);
@@ -72,7 +73,7 @@ void tst_KToolBar::initTestCase()
         "<ToolBar name=\"mainToolBar\">\n"
         "  <Action name=\"go_up\"/>\n"
         "</ToolBar>\n"
-        "<ToolBar name=\"otherToolBar\">\n"
+        "<ToolBar name=\"otherToolBar\" position=\"bottom\">\n"
         "  <Action name=\"go_up\"/>\n"
         "</ToolBar>\n"
         "<ToolBar name=\"cleanToolBar\">\n"
@@ -377,6 +378,17 @@ void tst_KToolBar::deleteGlobalToolButtonStyleSetting()
     group.deleteEntry("ToolButtonStyleOtherToolbars");
     KGlobal::config()->sync();
     QMetaObject::invokeMethod(KGlobalSettings::self(), "_k_slotNotifyChange", Q_ARG(int, KGlobalSettings::ToolbarStyleChanged), Q_ARG(int, 0));
+}
+
+void tst_KToolBar::testToolBarPosition()
+{
+    TestXmlGuiWindow kmw(m_xml);
+    kmw.createActions(QStringList() << "go_up");
+    kmw.createGUI();
+    KToolBar* mainToolBar = kmw.toolBarByName("mainToolBar");
+    KToolBar* otherToolBar = kmw.toolBarByName("otherToolBar");
+    QCOMPARE(kmw.toolBarArea(mainToolBar), Qt::TopToolBarArea);
+    QCOMPARE(kmw.toolBarArea(otherToolBar), Qt::BottomToolBarArea);
 }
 
 #include "ktoolbar_unittest.moc"
