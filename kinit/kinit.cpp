@@ -458,6 +458,10 @@ static pid_t launch(int argc, const char *_name, const char *args,
                 libpath = QString( lib ).replace( QLatin1String( "/bin/" ),
                     QLatin1String("/lib" KDELIBSUFF "/libkdeinit4_")) + QLatin1String(".so");
             }
+            // Don't confuse the user with "Could not load libkdeinit4_foo.so" if it doesn't exist
+            if (!QFile::exists(libpath)) {
+                libpath = QString();
+            }
             execpath = exec;
         }
     }
