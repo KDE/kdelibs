@@ -192,4 +192,9 @@ void KFileTreeView::contextMenuEvent(QContextMenuEvent *event)
     menu.exec(event->globalPos());
 }
 
+bool KFileTreeView::showHiddenFiles() const
+{
+    return d->mSourceModel->dirLister()->showingDotFiles();
+}
+
 #include "kfiletreeview.moc"

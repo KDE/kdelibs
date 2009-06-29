@@ -98,6 +98,7 @@ public:
     KUrl m_startURL;
     KAction* moveToTrash;
     KAction* deleteAction;
+    KAction* showHiddenFoldersAction;
 };
 
 void KDirSelectDialog::Private::readConfig(const KSharedConfig::Ptr &config, const QString& group)
@@ -328,11 +329,11 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
 
     d->m_contextMenu->addSeparator();
 
-    KToggleAction *showHiddenFolders = new KToggleAction( i18nc("@option:check", "Show Hidden Folders"), this );
-    d->m_actions->addAction( showHiddenFolders->objectName(), showHiddenFolders );
-    showHiddenFolders->setShortcut( Qt::Key_F8 );
-    connect( showHiddenFolders, SIGNAL( triggered( bool ) ), d->m_treeView, SLOT( setShowHiddenFiles( bool ) ) );
-    d->m_contextMenu->addAction( showHiddenFolders );
+    d->showHiddenFoldersAction = new KToggleAction( i18nc("@option:check", "Show Hidden Folders"), this );
+    d->m_actions->addAction( d->showHiddenFoldersAction->objectName(), d->showHiddenFoldersAction );
+    d->showHiddenFoldersAction->setShortcut( Qt::Key_F8 );
+    connect( d->showHiddenFoldersAction, SIGNAL( triggered( bool ) ), d->m_treeView, SLOT( setShowHiddenFiles( bool ) ) );
+    d->m_contextMenu->addAction( d->showHiddenFoldersAction );
     d->m_contextMenu->addSeparator();
 
     KAction* propertiesAction = new KAction( i18nc("@action:inmenu","Properties"), this);
@@ -429,6 +430,15 @@ void KDirSelectDialog::setCurrentUrl( const KUrl& url )
         d->m_rootUrl = u;
     }
 
+    //Check if url represents a hidden folder and enable showing them
+    QString fileName = url.fileName();
+    bool isHidden = fileName.length() > 1 && fileName[0] == '.';
+    bool showHiddenFiles = isHidden && !d->m_treeView->showHiddenFiles();
+    if (showHiddenFiles) {
+        d->showHiddenFoldersAction->setChecked(true);
+        d->m_treeView->setShowHiddenFiles(true);
+    }
+        
     d->m_treeView->setCurrentUrl( url );
 }
 
