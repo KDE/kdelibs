@@ -48,6 +48,8 @@ private slots:
     void testIconSizeXmlGui();
     void testToolButtonStyleNoXmlGui_data();
     void testToolButtonStyleNoXmlGui();
+    void testToolButtonStyleXmlGui_data();
+    void testToolButtonStyleXmlGui();
     void testToolBarPosition();
 
 private:
@@ -73,7 +75,7 @@ void tst_KToolBar::initTestCase()
         "<ToolBar name=\"mainToolBar\">\n"
         "  <Action name=\"go_up\"/>\n"
         "</ToolBar>\n"
-        "<ToolBar name=\"otherToolBar\" position=\"bottom\">\n"
+        "<ToolBar name=\"otherToolBar\" position=\"bottom\" iconText=\"TextUnderIcon\">\n"
         "  <Action name=\"go_up\"/>\n"
         "</ToolBar>\n"
         "<ToolBar name=\"cleanToolBar\">\n"
@@ -357,6 +359,61 @@ void tst_KToolBar::testToolButtonStyleNoXmlGui()
             QCOMPARE((int)otherToolBar->toolButtonStyle(), (int)Qt::ToolButtonTextOnly);
         else
             QCOMPARE((int)otherToolBar->toolButtonStyle(), (int)toolButtonStyle);
+    }
+}
+
+void tst_KToolBar::testToolButtonStyleXmlGui_data()
+{
+    QTest::addColumn<Qt::ToolButtonStyle>("toolButtonStyle");
+    // Expected style after KDE-global is changed to IconOnly/TextOnly
+    QTest::addColumn<Qt::ToolButtonStyle>("expectedStyleMainToolbar");
+    QTest::addColumn<Qt::ToolButtonStyle>("expectedStyleOtherToolbar"); // xml says text-under-icons, user-selected should always win
+    QTest::addColumn<Qt::ToolButtonStyle>("expectedStyleCleanToolbar"); // should always follow kde-global -> always textonly.
+
+    QTest::newRow("Qt::ToolButtonTextUnderIcon") << Qt::ToolButtonTextUnderIcon <<
+        Qt::ToolButtonIconOnly /* was default -> using kde global */ << Qt::ToolButtonTextUnderIcon << Qt::ToolButtonTextOnly;
+    QTest::newRow("Qt::ToolButtonTextBesideIcon") << Qt::ToolButtonTextBesideIcon <<
+        Qt::ToolButtonTextBesideIcon << Qt::ToolButtonTextBesideIcon << Qt::ToolButtonTextOnly;
+    QTest::newRow("Qt::ToolButtonIconOnly") << Qt::ToolButtonIconOnly <<
+        Qt::ToolButtonIconOnly << Qt::ToolButtonIconOnly << Qt::ToolButtonTextOnly;
+    QTest::newRow("Qt::ToolButtonTextOnly") << Qt::ToolButtonTextOnly <<
+        Qt::ToolButtonTextOnly << Qt::ToolButtonTextOnly << Qt::ToolButtonTextOnly;
+}
+
+void tst_KToolBar::testToolButtonStyleXmlGui()
+{
+    QFETCH(Qt::ToolButtonStyle, toolButtonStyle);
+    QFETCH(Qt::ToolButtonStyle, expectedStyleMainToolbar);
+    QFETCH(Qt::ToolButtonStyle, expectedStyleOtherToolbar);
+    QFETCH(Qt::ToolButtonStyle, expectedStyleCleanToolbar);
+    KConfig config("tst_KToolBar");
+    KConfigGroup group(&config, "group");
+    {
+        TestXmlGuiWindow kmw(m_xml);
+        kmw.createActions(QStringList() << "go_up");
+        kmw.createGUI();
+        KToolBar* mainToolBar = kmw.toolBarByName("mainToolBar");
+        KToolBar* otherToolBar = kmw.toolBarByName("otherToolBar");
+        KToolBar* cleanToolBar = kmw.toolBarByName("cleanToolBar");
+
+        QCOMPARE((int)mainToolBar->toolButtonStyle(), (int)Qt::ToolButtonTextUnderIcon);
+        QCOMPARE((int)otherToolBar->toolButtonStyle(), (int)Qt::ToolButtonTextUnderIcon); // from xml
+        QCOMPARE((int)cleanToolBar->toolButtonStyle(), (int)Qt::ToolButtonTextBesideIcon);
+
+        // Changing settings for a given toolbar, as user
+        mainToolBar->setToolButtonStyle(toolButtonStyle);
+        otherToolBar->setToolButtonStyle(toolButtonStyle);
+
+        // Save settings
+        kmw.saveMainWindowSettings(group);
+
+        // Now change KDE-global setting
+        changeGlobalToolButtonStyleSetting("IconOnly", "TextOnly");
+
+        QCOMPARE((int)mainToolBar->toolButtonStyle(), (int)expectedStyleMainToolbar);
+        QCOMPARE((int)otherToolBar->toolButtonStyle(), (int)expectedStyleOtherToolbar);
+        QCOMPARE((int)cleanToolBar->toolButtonStyle(), (int)expectedStyleCleanToolbar);
+
     }
 }
 

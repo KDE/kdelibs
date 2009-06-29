@@ -475,7 +475,6 @@ void KToolBar::Private::loadKDESettings()
 {
     iconSizeSettings[Level_KDEDefault] = q->iconSizeDefault();
 
-    KConfigGroup group(KGlobal::config(), "Toolbar style");
     if (isMainToolBar) {
         toolButtonStyleSettings[Level_KDEDefault] = q->toolButtonStyleSetting();
     } else {
@@ -495,6 +494,7 @@ void KToolBar::Private::loadKDESettings()
         }
         **/
 
+        KConfigGroup group(KGlobal::config(), "Toolbar style");
         const QString value = group.readEntry("ToolButtonStyleOtherToolbars", fallBack);
         toolButtonStyleSettings[Level_KDEDefault] = KToolBar::Private::toolButtonStyleFromString(value);
     }
@@ -505,6 +505,7 @@ void KToolBar::Private::applyCurrentSettings()
 {
     //kDebug() << q->objectName() << "iconSizeSettings:" << iconSizeSettings.toString() << "->" << iconSizeSettings.currentValue();
     q->setIconDimensions(iconSizeSettings.currentValue());
+    //kDebug() << q->objectName() << "toolButtonStyleSettings:" << toolButtonStyleSettings.toString() << "->" << toolButtonStyleSettings.currentValue();
     q->setToolButtonStyle(static_cast<Qt::ToolButtonStyle>(toolButtonStyleSettings.currentValue()));
 
     // And remember to save the new look later
@@ -844,11 +845,15 @@ void KToolBar::loadState(const QDomElement &element)
         d->toolButtonStyleSettings[Level_TempXML] = d->toolButtonStyleFromString(element.attribute("toolButtonStyleDefault"));
     }
 
-    bool ok;
-    const int newIconSize = element.attribute("iconSize").trimmed().toInt(&ok);
-    if (ok)
-        d->iconSizeSettings[Level_AppXML] = newIconSize;
-    d->toolButtonStyleSettings[Level_AppXML] = d->toolButtonStyleFromString(element.attribute("iconText"));
+    if (element.hasAttribute("iconSize")) {
+        bool ok;
+        const int newIconSize = element.attribute("iconSize").trimmed().toInt(&ok);
+        if (ok)
+            d->iconSizeSettings[Level_AppXML] = newIconSize;
+    }
+    if (element.hasAttribute("iconText")) {
+        d->toolButtonStyleSettings[Level_AppXML] = d->toolButtonStyleFromString(element.attribute("iconText"));
+    }
 
     if (loadingAppDefaults) {
         bool newLine = false;
