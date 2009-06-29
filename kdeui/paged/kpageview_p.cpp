@@ -387,10 +387,11 @@ void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem
   const QPixmap pixmap = icon.pixmap( mIconSize, mIconSize );
 
   QFontMetrics fm = painter->fontMetrics();
-  int ht = fm.boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text ).height();
-  int wt = fm.boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text ).width();
   int wp = pixmap.width();
   int hp = pixmap.height();
+  QRect textBoundingRect = fm.boundingRect( 0, 0, qMax(3 * wp, 7 * fm.height() ), 0, Qt::TextWordWrap, text );
+  int ht = textBoundingRect.height();
+  int wt = textBoundingRect.width();
 
   QPen pen = painter->pen();
   QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
@@ -413,7 +414,7 @@ void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem
 
   painter->drawPixmap( option.rect.x() + (option.rect.width()/2)-(wp/2), option.rect.y() + 5, pixmap );
   if ( !text.isEmpty() )
-    painter->drawText( option.rect.x() + (option.rect.width()/2)-(wt/2), option.rect.y() + hp+7, wt, ht, Qt::AlignCenter, text );
+    painter->drawText( option.rect.x() + (option.rect.width()/2)-(wt/2), option.rect.y() + hp+7, wt, ht, Qt::AlignHCenter | Qt::TextWordWrap, text );
 
   painter->setFont( font );
   painter->setPen( pen );
@@ -431,9 +432,8 @@ QSize KPageListViewDelegate::sizeHint( const QStyleOptionViewItem &option, const
   const QPixmap pixmap = icon.pixmap( mIconSize, mIconSize );
 
   QFontMetrics fm = option.fontMetrics;
-  int ht = fm.boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text ).height();
-  int wt = fm.boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text ).width() + 10;
-  int wp = pixmap.width() + 10;
+  int gap = fm.height();
+  int wp = pixmap.width();
   int hp = pixmap.height();
 
   if ( hp == 0 ) {
@@ -441,7 +441,12 @@ QSize KPageListViewDelegate::sizeHint( const QStyleOptionViewItem &option, const
      * No pixmap loaded yet, we'll use the default icon size in this case.
      */
     hp = mIconSize;
+    wp = mIconSize;
   }
+
+  QRect textBoundingRect = fm.boundingRect( 0, 0, qMax(3 * wp, 7 * fm.height() ), 0, Qt::TextWordWrap, text );
+  int ht = textBoundingRect.height();
+  int wt = textBoundingRect.width();
 
   int width, height;
   if ( text.isEmpty() )
@@ -449,7 +454,7 @@ QSize KPageListViewDelegate::sizeHint( const QStyleOptionViewItem &option, const
   else
     height = hp + ht + 10;
 
-  width = qMax( wt, wp );
+  width = qMax( wt, wp ) + gap;
 
   return QSize( width, height );
 }
