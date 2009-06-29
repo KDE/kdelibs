@@ -439,6 +439,12 @@ public:
     */
     void newIconLoader();
 
+Q_SIGNALS:
+    /**
+     * Emitted by newIconLoader once the new settings have been loaded
+     */
+    void iconLoaderSettingsChanged();
+
  private:
     // @internal the data object
     KIconLoaderPrivate *d;
