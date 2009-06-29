@@ -66,6 +66,12 @@ class KFILE_EXPORT KFileTreeView : public QTreeView
          */
         KUrl rootUrl() const;
 
+        /**
+         * Returns true if the view is currently showing hidden files
+         * @since 4.3
+         */
+        bool showHiddenFiles() const;
+        
     public Q_SLOTS:
         /**
          * Sets whether the dir-only mode is @p enabled.
