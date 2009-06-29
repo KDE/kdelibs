@@ -27,6 +27,7 @@
 #include <kxmlguibuilder.h>
 #include <kxmlguiclient.h>
 #include "testxmlguiwindow.h"
+#include "testguiclient.h"
 #include "kxmlgui_unittest.moc"
 #include <kxmlguiversionhandler_p.h>
 #include <kxmlguiversionhandler.cpp> // it's not exported, so we need to include the code here
@@ -249,35 +250,6 @@ void KXmlGui_UnitTest::testVersionHandlerNewVersionUserChanges()
     // Check that the toolbars modified by the user were kept
     QVERIFY(finalDoc.contains("<Action name=\"home\""));
 }
-
-// because setDOMDocument and setXML are protected
-class TestGuiClient : public KXMLGUIClient
-{
-public:
-    TestGuiClient(const QByteArray& xml = QByteArray())
-        : KXMLGUIClient()
-    {
-        if (!xml.isNull())
-            setXML(QString::fromLatin1(xml));
-    }
-    void createGUI(const QByteArray& xml, bool withUiStandards = false)
-    {
-        if (withUiStandards) {
-            QString uis = KStandardDirs::locate("config", "ui/ui_standards.rc", componentData());
-            QVERIFY(!uis.isEmpty());
-            setXMLFile(uis);
-        }
-
-        setXML(QString::fromLatin1(xml), true);
-    }
-    void createActions(const QStringList& actionNames)
-    {
-        KActionCollection* coll = actionCollection();
-        Q_FOREACH(const QString& actionName, actionNames) {
-            coll->addAction(actionName)->setText("Action");
-        }
-    }
-};
 
 static QStringList collectMenuNames(KXMLGUIFactory& factory)
 {

@@ -61,7 +61,7 @@
  =====================================================
 
  We have the following stack of settings (in order of priority) :
-   - user-specified settings in KConfig
+   - user-specified settings (loaded/saved in KConfig)
    - developer-specified settings in the XMLGUI file (if using xmlgui) (cannot change at runtime)
    - KDE-global default (user-configurable; can change at runtime)
  and when switching between kparts, they are saved as xml in memory,
@@ -70,19 +70,19 @@
  priority over it.
 
  So, in summary, without XML:
-   Global config / <appnamerc> user settings
+   Global config / User settings (loaded/saved in kconfig)
  and with XML:
-   Global config / App-XML attributes / <appnamerc> user settings / in-memory XML attributes
+   Global config / App-XML attributes / User settings (loaded/saved in kconfig)
 
  And all those settings (except the KDE-global defaults) have to be stored in memory
  since we cannot retrieve them at random points in time, not knowing the xml document
  nor config file that holds these settings. Hence the iconSizeSettings and toolButtonStyleSettings arrays.
 
  For instance, if you change the KDE-global default, whether this makes a change
- on a given toolbar depends on whether there are settings at Level_AppXML or Level_KConfig or Level_TempXML.
+ on a given toolbar depends on whether there are settings at Level_AppXML or Level_UserSettings.
  Only if there are no settings at those levels, should the change of KDEDefault make a difference.
 */
-enum SettingLevel { Level_KDEDefault, Level_AppXML, Level_KConfig, Level_TempXML,
+enum SettingLevel { Level_KDEDefault, Level_AppXML, Level_UserSettings,
                     NSettingLevels };
 enum { Unset = -1 };
 
@@ -93,11 +93,9 @@ class KToolBar::Private
       : q(qq),
         isMainToolBar(false),
         enableContext(true),
-        modified(false),
         unlockedMovable(true),
         xmlguiClient(0),
         contextLockAction(0),
-        PositionDefault("Top"),
         dropIndicatorAction(0),
         context(0),
         dragAction(0)
@@ -133,7 +131,6 @@ class KToolBar::Private
     KToolBar *q;
     bool isMainToolBar : 1;
     bool enableContext : 1;
-    bool modified : 1;
     bool unlockedMovable : 1;
     static bool s_editable;
     static bool s_locked;
@@ -175,7 +172,7 @@ class KToolBar::Private
         // If currentValue()==defaultValue() then nothing to write into kconfig.
         int defaultValue() const {
             int val = Unset;
-            for (int level = 0; level < Level_KConfig; ++level) {
+            for (int level = 0; level < Level_UserSettings; ++level) {
                 if (values[level] != Unset)
                     val = values[level];
             }
@@ -194,8 +191,6 @@ class KToolBar::Private
     };
     IntSetting iconSizeSettings;
     IntSetting toolButtonStyleSettings; // either Qt::ToolButtonStyle or -1, hence "int".
-
-    QString PositionDefault;
 
     QList<QAction*> actionsBeingDragged;
     QAction* dropIndicatorAction;
@@ -468,7 +463,6 @@ void KToolBar::Private::slotAppearanceChanged()
 {
     loadKDESettings();
     applyCurrentSettings();
-
 }
 
 void KToolBar::Private::loadKDESettings()
@@ -504,12 +498,13 @@ void KToolBar::Private::loadKDESettings()
 void KToolBar::Private::applyCurrentSettings()
 {
     //kDebug() << q->objectName() << "iconSizeSettings:" << iconSizeSettings.toString() << "->" << iconSizeSettings.currentValue();
-    q->setIconDimensions(iconSizeSettings.currentValue());
+    const int currentIconSize = iconSizeSettings.currentValue();
+    q->setIconSize(QSize(currentIconSize, currentIconSize));
     //kDebug() << q->objectName() << "toolButtonStyleSettings:" << toolButtonStyleSettings.toString() << "->" << toolButtonStyleSettings.currentValue();
     q->setToolButtonStyle(static_cast<Qt::ToolButtonStyle>(toolButtonStyleSettings.currentValue()));
 
     // And remember to save the new look later
-    KMainWindow *kmw = qobject_cast<KMainWindow *>(q->mainWindow());
+    KMainWindow *kmw = q->mainWindow();
     if (kmw)
         kmw->setSettingsDirty();
 }
@@ -633,30 +628,35 @@ void KToolBar::Private::slotContextBottom()
 
 void KToolBar::Private::slotContextIcons()
 {
-  q->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    q->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    toolButtonStyleSettings[Level_UserSettings] = q->toolButtonStyle();
 }
 
 void KToolBar::Private::slotContextText()
 {
-  q->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    q->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    toolButtonStyleSettings[Level_UserSettings] = q->toolButtonStyle();
 }
 
 void KToolBar::Private::slotContextTextUnder()
 {
-  q->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    q->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    toolButtonStyleSettings[Level_UserSettings] = q->toolButtonStyle();
 }
 
 void KToolBar::Private::slotContextTextRight()
 {
-  q->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    q->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    toolButtonStyleSettings[Level_UserSettings] = q->toolButtonStyle();
 }
 
 void KToolBar::Private::slotContextIconSize()
 {
-  QAction* action = qobject_cast<QAction*>(q->sender());
-  if (action && contextIconSizes.contains(action)) {
-    q->setIconDimensions(contextIconSizes.value(action));
-  }
+    QAction* action = qobject_cast<QAction*>(q->sender());
+    if (action && contextIconSizes.contains(action)) {
+        const int iconSize = contextIconSizes.value(action);
+        q->setIconDimensions(iconSize);
+    }
 }
 
 void KToolBar::Private::slotLockToolBars(bool lock)
@@ -728,35 +728,25 @@ void KToolBar::saveSettings(KConfigGroup &cg)
 {
     Q_ASSERT(!cg.name().isEmpty());
 
-    const QString position = d->getPositionAsString();
-    // TODO: remove all the position stuff? It is already done by the all-in-one QMainWindow::saveState;
-    // but we should first test switching between kparts though, to make sure saveState is called then.
-    if (!cg.hasDefault("Position") && position == d->PositionDefault)
-        cg.revertToDefault("Position");
-    else
-        cg.writeEntry("Position", position);
-
-    if (!cg.hasDefault("Hidden") && isHidden() == false /* TODO a 4-layer setting for hidden too? Can come from XML and from user-settings etc. It's part of saveState though, and has no kde-global default.*/)
-        cg.revertToDefault("Hidden");
-    else
-        cg.writeEntry("Hidden", isHidden());
+    cg.deleteEntry("Hidden"); // remove old key to avoid bugs from the compat code in applySettings. KDE5: remove.
 
     const int currentIconSize = iconSize().width();
+    //kDebug() << objectName() << currentIconSize << d->iconSizeSettings.toString() << "defaultValue=" << d->iconSizeSettings.defaultValue();
     if (!cg.hasDefault("IconSize") && currentIconSize == d->iconSizeSettings.defaultValue()) {
         cg.revertToDefault("IconSize");
-        d->iconSizeSettings[Level_KConfig] = Unset;
+        d->iconSizeSettings[Level_UserSettings] = Unset;
     } else {
         cg.writeEntry("IconSize", currentIconSize);
-        d->iconSizeSettings[Level_KConfig] = currentIconSize;
+        d->iconSizeSettings[Level_UserSettings] = currentIconSize;
     }
 
     const Qt::ToolButtonStyle currentToolButtonStyle = toolButtonStyle();
     if (!cg.hasDefault("ToolButtonStyle") && currentToolButtonStyle == d->toolButtonStyleSettings.defaultValue()) {
         cg.revertToDefault("ToolButtonStyle");
-        d->toolButtonStyleSettings[Level_KConfig] = Unset;
+        d->toolButtonStyleSettings[Level_UserSettings] = Unset;
     } else {
         cg.writeEntry("ToolButtonStyle", d->toolButtonStyleToString(currentToolButtonStyle));
-        d->toolButtonStyleSettings[Level_KConfig] = currentToolButtonStyle;
+        d->toolButtonStyleSettings[Level_UserSettings] = currentToolButtonStyle;
     }
 
 }
@@ -789,73 +779,61 @@ Qt::ToolButtonStyle KToolBar::toolButtonStyleSetting()
 
 void KToolBar::loadState(const QDomElement &element)
 {
-  QMainWindow *mw = mainWindow();
-  if (!mw)
-    return;
+    QMainWindow *mw = mainWindow();
+    if (!mw)
+        return;
 
-  {
-    QDomNode textNode = element.namedItem("text");
-    QByteArray text;
-    QByteArray context;
-    if (textNode.isElement())
     {
-      QDomElement textElement = textNode.toElement();
-      text = textElement.text().toUtf8();
-      context = textElement.attribute("context").toUtf8();
+        QDomNode textNode = element.namedItem("text");
+        QByteArray text;
+        QByteArray context;
+        if (textNode.isElement())
+        {
+            QDomElement textElement = textNode.toElement();
+            text = textElement.text().toUtf8();
+            context = textElement.attribute("context").toUtf8();
+        }
+        else
+        {
+            textNode = element.namedItem("Text");
+            if (textNode.isElement())
+            {
+                QDomElement textElement = textNode.toElement();
+                text = textElement.text().toUtf8();
+                context = textElement.attribute("context").toUtf8();
+            }
+        }
+
+        QString i18nText;
+        if (!text.isEmpty() && !context.isEmpty())
+            i18nText = i18nc(context, text);
+        else if (!text.isEmpty())
+            i18nText = i18n(text);
+
+        if (!i18nText.isEmpty())
+            setWindowTitle(i18nText);
     }
-    else
-    {
-      textNode = element.namedItem("Text");
-      if (textNode.isElement())
-      {
-        QDomElement textElement = textNode.toElement();
-        text = textElement.text().toUtf8();
-        context = textElement.attribute("context").toUtf8();
-      }
-    }
 
-    QString i18nText;
-    if (!text.isEmpty() && !context.isEmpty())
-      i18nText = i18nc(context, text);
-    else if (!text.isEmpty())
-      i18nText = i18n(text);
-
-    if (!i18nText.isEmpty())
-      setWindowTitle(i18nText);
-  }
-
-  /*
-    This method is called in order to load toolbar settings from XML.
-    However this can be used in two rather different cases:
-    - for the initial loading of the app's XML. In that case the settings
+    /*
+      This method is called in order to load toolbar settings from XML.
+      However this can be used in two rather different cases:
+      - for the initial loading of the app's XML. In that case the settings
       are only the defaults (Level_AppXML), the user's KConfig settings will override them
 
-    - for later re-loading when switching between parts in KXMLGUIFactory.
-      In that case the XML contains the final settings (Level_TempXML), not the defaults.
+      - for later re-loading when switching between parts in KXMLGUIFactory.
+      In that case the XML contains the final settings, not the defaults.
       We do need the defaults, and the toolbar might have been completely
       deleted and recreated meanwhile. So we store the app-default settings
       into the XML.
-   */
+    */
     bool loadingAppDefaults = true;
-    if (element.hasAttribute("iconSizeDefault")) {
+    if (element.hasAttribute("tempXml")) {
         // this isn't the first time, so the app-xml defaults have been saved into the (in-memory) XML
         loadingAppDefaults = false;
-        d->PositionDefault = element.attribute("positionDefault");
-        d->iconSizeSettings[Level_TempXML] = element.attribute("iconSizeDefault").toInt();
-        d->toolButtonStyleSettings[Level_TempXML] = d->toolButtonStyleFromString(element.attribute("toolButtonStyleDefault"));
-    }
-
-    if (element.hasAttribute("iconSize")) {
-        bool ok;
-        const int newIconSize = element.attribute("iconSize").trimmed().toInt(&ok);
-        if (ok)
-            d->iconSizeSettings[Level_AppXML] = newIconSize;
-    }
-    if (element.hasAttribute("iconText")) {
-        d->toolButtonStyleSettings[Level_AppXML] = d->toolButtonStyleFromString(element.attribute("iconText"));
-    }
-
-    if (loadingAppDefaults) {
+        d->iconSizeSettings[Level_AppXML] = element.attribute("iconSizeDefault").toInt();
+        d->toolButtonStyleSettings[Level_AppXML] = d->toolButtonStyleFromString(element.attribute("toolButtonStyleDefault"));
+    } else {
+        // loading app defaults
         bool newLine = false;
         QString attrNewLine = element.attribute("newline").toLower();
         if (!attrNewLine.isEmpty())
@@ -864,61 +842,76 @@ void KToolBar::loadState(const QDomElement &element)
             mw->insertToolBarBreak(this);
     }
 
-  bool hidden = false;
-  {
-    QString attrHidden = element.attribute("hidden").toLower();
-    if (!attrHidden.isEmpty())
-      hidden = attrHidden  == "true";
-  }
-
-  Qt::ToolBarArea pos = Qt::NoToolBarArea;
-  {
-    QString attrPosition = element.attribute("position").toLower();
-    if (!attrPosition.isEmpty())
-      pos = KToolBar::Private::positionFromString(attrPosition);
-  }
-  if (pos != Qt::NoToolBarArea)
-    mw->addToolBar(pos, this);
-
-  if (hidden)
-    hide();
-  else
-    show();
-
-    if (loadingAppDefaults) {
-        d->PositionDefault = d->getPositionAsString(); // TODO remove?
+    int newIconSize = -1;
+    if (element.hasAttribute("iconSize")) {
+        bool ok;
+        newIconSize = element.attribute("iconSize").trimmed().toInt(&ok);
+        if (!ok)
+            newIconSize = -1;
     }
+    if (newIconSize != -1)
+        d->iconSizeSettings[loadingAppDefaults ? Level_AppXML : Level_UserSettings] = newIconSize;
+
+    const QString newToolButtonStyle = element.attribute("iconText");
+    if (!newToolButtonStyle.isEmpty())
+        d->toolButtonStyleSettings[loadingAppDefaults ? Level_AppXML : Level_UserSettings] = d->toolButtonStyleFromString(newToolButtonStyle);
+
+    bool hidden = false;
+    {
+        QString attrHidden = element.attribute("hidden").toLower();
+        if (!attrHidden.isEmpty())
+            hidden = attrHidden  == "true";
+    }
+
+    Qt::ToolBarArea pos = Qt::NoToolBarArea;
+    {
+        QString attrPosition = element.attribute("position").toLower();
+        if (!attrPosition.isEmpty())
+            pos = KToolBar::Private::positionFromString(attrPosition);
+    }
+    if (pos != Qt::NoToolBarArea)
+        mw->addToolBar(pos, this);
+
+    if (hidden)
+        hide();
+    else
+        show();
 
     d->applyCurrentSettings();
 }
 
+// Called when switching between xmlgui clients, in order to find any unsaved settings
+// again when switching back to the current xmlgui client.
 void KToolBar::saveState(QDomElement &current) const
 {
     Q_ASSERT(!current.isNull());
 
+    current.setAttribute("tempXml", "true");
+
     current.setAttribute("noMerge", "1");
-
     current.setAttribute("position", d->getPositionAsString().toLower());
-    if (isHidden())
-        current.setAttribute("hidden", "true");
+    current.setAttribute("hidden", isHidden() ? "true" : "false");
 
-    if (iconSize().width() != d->iconSizeSettings.currentValue())
+    const int currentIconSize = iconSize().width();
+    if (currentIconSize == d->iconSizeSettings.defaultValue())
+        current.removeAttribute("iconSize");
+    else
         current.setAttribute("iconSize", iconSize().width());
-    if (toolButtonStyle() != d->toolButtonStyleSettings.currentValue()) // unsaved setting; e.g. the app doesn't use autosave
-        current.setAttribute("toolButtonStyle", d->toolButtonStyleToString(toolButtonStyle()));
 
-    d->modified = true;
+    if (toolButtonStyle() == d->toolButtonStyleSettings.defaultValue())
+        current.removeAttribute("iconText");
+    else
+        current.setAttribute("iconText", d->toolButtonStyleToString(toolButtonStyle()));
 
     // Note: if this method is used by more than KXMLGUIBuilder, e.g. to save XML settings to *disk*,
     // then the stuff below shouldn't always be done. This is not the case currently though.
-    if (d->iconSizeSettings[Level_AppXML] != Unset)
+    if (d->iconSizeSettings[Level_AppXML] != Unset) {
         current.setAttribute("iconSizeDefault", d->iconSizeSettings[Level_AppXML]);
+    }
     if (d->toolButtonStyleSettings[Level_AppXML] != Unset) {
         const Qt::ToolButtonStyle bs = static_cast<Qt::ToolButtonStyle>(d->toolButtonStyleSettings[Level_AppXML]);
         current.setAttribute("toolButtonStyleDefault", d->toolButtonStyleToString(bs));
     }
-
-    current.setAttribute("positionDefault", d->PositionDefault);
 }
 
 // called by KMainWindow::applyMainWindowSettings to read from the user settings
@@ -938,10 +931,10 @@ void KToolBar::applySettings(const KConfigGroup &cg, bool forceGlobal)
     }
 
     if (cg.hasKey("IconSize")) {
-        d->iconSizeSettings[Level_KConfig] = cg.readEntry("IconSize", 0);
+        d->iconSizeSettings[Level_UserSettings] = cg.readEntry("IconSize", 0);
     }
     if (cg.hasKey("ToolButtonStyle")) {
-        d->toolButtonStyleSettings[Level_KConfig] = d->toolButtonStyleFromString(cg.readEntry("ToolButtonStyle", QString()));
+        d->toolButtonStyleSettings[Level_UserSettings] = d->toolButtonStyleFromString(cg.readEntry("ToolButtonStyle", QString()));
     }
 
     d->applyCurrentSettings();
@@ -954,7 +947,8 @@ KMainWindow * KToolBar::mainWindow() const
 
 void KToolBar::setIconDimensions(int size)
 {
-  QToolBar::setIconSize(QSize(size, size));
+    QToolBar::setIconSize(QSize(size, size));
+    d->iconSizeSettings[Level_UserSettings] = size;
 }
 
 int KToolBar::iconSizeDefault() const

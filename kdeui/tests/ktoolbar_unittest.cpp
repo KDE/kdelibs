@@ -28,6 +28,7 @@
 #include <kiconloader.h>
 #include <QDomElement>
 #include "testxmlguiwindow.h"
+#include "testguiclient.h"
 
 class tst_KToolBar : public QObject
 {
@@ -51,6 +52,7 @@ private slots:
     void testToolButtonStyleXmlGui_data();
     void testToolButtonStyleXmlGui();
     void testToolBarPosition();
+    void testXmlGuiSwitching();
 
 private:
     void changeGlobalIconSizeSetting(int, int);
@@ -79,6 +81,9 @@ void tst_KToolBar::initTestCase()
         "  <Action name=\"go_up\"/>\n"
         "</ToolBar>\n"
         "<ToolBar name=\"cleanToolBar\">\n"
+        "  <Action name=\"go_up\"/>\n"
+        "</ToolBar>\n"
+        "<ToolBar name=\"hiddenToolBar\" hidden=\"true\">\n"
         "  <Action name=\"go_up\"/>\n"
         "</ToolBar>\n"
         "<ToolBar iconSize=\"32\" name=\"bigToolBar\">\n"
@@ -251,7 +256,7 @@ void tst_KToolBar::testIconSizeXmlGui()
 
         // Save settings
         kmw.saveMainWindowSettings(group);
-        QCOMPARE(group.groupList().count(), 5); // one subgroup for each toolbar
+        QVERIFY(group.groupList().count() >= 6); // one subgroup for each toolbar
         // was it the default size? (for the main toolbar, we only check that one)
         const bool usingDefaultSize = iconSize == KIconLoader::global()->currentSize(KIconLoader::MainToolbar);
         if (usingDefaultSize)
@@ -446,6 +451,97 @@ void tst_KToolBar::testToolBarPosition()
     KToolBar* otherToolBar = kmw.toolBarByName("otherToolBar");
     QCOMPARE(kmw.toolBarArea(mainToolBar), Qt::TopToolBarArea);
     QCOMPARE(kmw.toolBarArea(otherToolBar), Qt::BottomToolBarArea);
+}
+
+void tst_KToolBar::testXmlGuiSwitching()
+{
+    const QByteArray windowXml =
+        "<?xml version = '1.0'?>\n"
+        "<!DOCTYPE gui SYSTEM \"kpartgui.dtd\">\n"
+        "<gui version=\"1\" name=\"foo\" >\n"
+        "<MenuBar>\n"
+        "</MenuBar>\n"
+        "</gui>\n";
+    TestXmlGuiWindow kmw(windowXml);
+    kmw.createActions(QStringList() << "go_up");
+    kmw.createGUI();
+    TestGuiClient firstClient(m_xml);
+    kmw.guiFactory()->addClient(&firstClient);
+
+    {
+        //kDebug() << "Added gui client";
+        KToolBar* mainToolBar = firstClient.toolBarByName("mainToolBar");
+        KToolBar* otherToolBar = firstClient.toolBarByName("otherToolBar");
+        KToolBar* bigToolBar = firstClient.toolBarByName("bigToolBar");
+        KToolBar* hiddenToolBar = firstClient.toolBarByName("hiddenToolBar");
+        QCOMPARE(hiddenToolBar->isHidden(), true);
+        // Make (unsaved) changes as user
+        QMetaObject::invokeMethod(mainToolBar, "slotContextTextRight"); // mainToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        QMetaObject::invokeMethod(mainToolBar, "slotContextRight"); // kmw.addToolBar(Qt::RightToolBarArea, mainToolBar);
+        otherToolBar->setIconDimensions(35);
+        bigToolBar->setIconDimensions(35);
+        bigToolBar->hide();
+        hiddenToolBar->show();
+    }
+    kmw.guiFactory()->removeClient(&firstClient);
+    //kDebug() << "Removed gui client";
+    QVERIFY(!kmw.guiFactory()->container("mainToolBar", &kmw));
+    QVERIFY(!kmw.guiFactory()->container("otherToolBar", &kmw));
+    QVERIFY(!kmw.guiFactory()->container("bigToolBar", &kmw));
+    QVERIFY(!kmw.guiFactory()->container("mainToolBar", &firstClient));
+    QVERIFY(!kmw.guiFactory()->container("otherToolBar", &firstClient));
+    QVERIFY(!kmw.guiFactory()->container("bigToolBar", &firstClient));
+
+    kmw.guiFactory()->addClient(&firstClient);
+    //kDebug() << "Re-added gui client";
+    KToolBar* mainToolBar = firstClient.toolBarByName("mainToolBar");
+    KToolBar* otherToolBar = firstClient.toolBarByName("otherToolBar");
+    KToolBar* bigToolBar = firstClient.toolBarByName("bigToolBar");
+    KToolBar* hiddenToolBar = firstClient.toolBarByName("hiddenToolBar");
+    QCOMPARE((int)mainToolBar->toolButtonStyle(), (int)Qt::ToolButtonTextBesideIcon);
+    QCOMPARE(mainToolBar->isHidden(), false);
+    QCOMPARE(kmw.toolBarArea(mainToolBar), Qt::RightToolBarArea);
+    QCOMPARE(otherToolBar->iconSize().width(), 35);
+    QCOMPARE(bigToolBar->iconSize().width(), 35);
+    QCOMPARE(bigToolBar->isHidden(), true);
+    QCOMPARE(hiddenToolBar->isHidden(), false);
+
+    // Now change KDE-global setting, what happens to unsaved changes?
+    changeGlobalIconSizeSetting(32, 33);
+    QCOMPARE(bigToolBar->iconSize().width(), 35); // fine now, saved or unsaved makes no difference
+    QCOMPARE(otherToolBar->iconSize().width(), 35);
+
+    // Now save, and check what we saved
+    KConfig config("tst_KToolBar");
+    KConfigGroup group(&config, "group");
+    kmw.saveMainWindowSettings(group);
+    QCOMPARE(group.group("Toolbar bigToolBar").readEntry("IconSize", 0), 35);
+    QCOMPARE(group.group("Toolbar otherToolBar").readEntry("IconSize", 0), 35);
+    QVERIFY(!group.group("Toolbar cleanToolBar").hasKey("IconSize"));
+    //QCOMPARE(group.group("Toolbar bigToolBar").readEntry("Hidden", false), true);
+    //QVERIFY(!group.group("Toolbar cleanToolBar").hasKey("Hidden"));
+    //QVERIFY(!group.group("Toolbar hiddenToolBar").hasKey("Hidden"));
+
+    // Recreate window and apply config; is hidden toolbar shown as expected?
+    {
+        TestXmlGuiWindow kmw2(windowXml);
+        kmw2.createActions(QStringList() << "go_up");
+        kmw2.createGUI();
+        TestGuiClient firstClient(m_xml);
+        kmw2.guiFactory()->addClient(&firstClient);
+        kmw2.applyMainWindowSettings(group);
+
+        KToolBar* mainToolBar = firstClient.toolBarByName("mainToolBar");
+        KToolBar* otherToolBar = firstClient.toolBarByName("otherToolBar");
+        KToolBar* bigToolBar = firstClient.toolBarByName("bigToolBar");
+        KToolBar* hiddenToolBar = firstClient.toolBarByName("hiddenToolBar");
+        QCOMPARE(mainToolBar->isHidden(), false);
+        QCOMPARE(kmw2.toolBarArea(mainToolBar), Qt::RightToolBarArea);
+        QCOMPARE(otherToolBar->iconSize().width(), 35);
+        QCOMPARE(bigToolBar->iconSize().width(), 35);
+        QCOMPARE(bigToolBar->isHidden(), true);
+        QCOMPARE(hiddenToolBar->isHidden(), false);
+    }
 }
 
 #include "ktoolbar_unittest.moc"
