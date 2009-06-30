@@ -84,7 +84,7 @@ public:
     bool isValid() const { return mbValid; }
     QString iconPath(const QString& name) const;
     QStringList iconList() const;
-    QString dir() const { return mBaseDir + mThemeDir; }
+    QString dir() const { return mBaseDirThemeDir; }
 
     KIconLoader::Context context() const { return mContext; }
     KIconLoader::Type type() const { return mType; }
@@ -100,8 +100,7 @@ private:
     int mSize, mMinSize, mMaxSize;
     int mThreshold;
 
-    QString mBaseDir;
-    QString mThemeDir;
+    QString mBaseDirThemeDir;
 };
 
 
@@ -632,8 +631,8 @@ void KIconTheme::assignIconsToContextMenu( ContextMenus type,
 KIconThemeDir::KIconThemeDir(const QString& basedir, const QString &themedir, const KConfigGroup &config)
 {
     mbValid = false;
-    mBaseDir = basedir;
-    mThemeDir = themedir;
+    mBaseDirThemeDir = basedir + themedir;
+    
     mSize = config.readEntry("Size", 0);
     mMinSize = 1;    // just set the variables to something
     mMaxSize = 50;   // meaningful in case someone calls minSize or maxSize
