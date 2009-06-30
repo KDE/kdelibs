@@ -141,6 +141,10 @@ public:
      * Starts the job asynchronously. When the job is finished,
      * result() is emitted.
      *
+     * Warning: Never implement any synchronous worload in this method. This method
+     * should just trigger the job startup, not do any work itself. It is expected to
+     * be non-blocking.
+     *
      * This is the method all subclasses need to implement.
      * It should setup and trigger the workload of the job. It should not do any
      * work itself. This includes all signals and terminating the job, e.g. by
@@ -543,12 +547,11 @@ protected:
 
 
     /**
-     * Utility function to emit the result signal, and delete the job.
+     * Utility function to emit the result signal, and suicide this job.
      * It first notifies the observers to hide the progress for this job using
      * the finished() signal.
      *
-     * @note: Deletes this job using deleteLater(), this function will NOT return from
-     *        your worker method.
+     * @note: Deletes this job using deleteLater().
      *
      * @see result()
      * @see finished()
