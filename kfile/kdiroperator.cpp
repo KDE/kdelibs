@@ -2627,11 +2627,6 @@ void KDirOperator::setDecorationPosition(QStyleOptionViewItem::Position position
     d->actionCollection->action("decorationAtTop")->setChecked(!decorationAtLeft);
 }
 
-KFile::FileView KDirOperator::viewKind() const
-{
-    return static_cast<KFile::FileView>(d->viewKind);
-}
-
 // ### temporary code
 #include <dirent.h>
 bool KDirOperator::Private::isReadable(const KUrl& url)
