@@ -47,7 +47,7 @@ void MainWindow::on_actionOpen_triggered()
 
     if(!file.open(QIODevice::ReadOnly))
     {
-        Action readAction = "it.gigabytes.auth.read";
+        Action readAction = "org.kde.auth.example.read";
         ActionReply reply;
         if(readAction.authorize())
         {

@@ -58,16 +58,10 @@ bool DBusHelperProxy::initHelper(const QString &name)
     new DBusHelperProxyAdaptor(this);
     
     if (!QDBusConnection::systemBus().registerService(name))
-    {
-        qDebug() << "Sono qui " << name;
         return false;
-    }
     
     if (!QDBusConnection::systemBus().registerObject("/", this))
-    {
-        qDebug() << "Sono qui " << name;
         return false;
-    }
     
     return true;
 }

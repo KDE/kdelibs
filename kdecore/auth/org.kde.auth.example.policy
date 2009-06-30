@@ -3,7 +3,7 @@
  "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
  "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
 <policyconfig>
-    <action id="it.gigabytes.auth.read">
+    <action id="org.kde.auth.example.read">
     <description>Read</description>
     <message>Authorization for reading files</message>
     <defaults>

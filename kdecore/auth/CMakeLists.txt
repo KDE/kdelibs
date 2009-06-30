@@ -76,3 +76,7 @@ target_link_libraries(kauth_helper kauth ${QT_LIBRARIES} ${POLKIT_QT_LIBRARIES})
 install(TARGETS kauth_helper DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # Auxiliary files
+
+dbus_add_activation_system_service(org.kde.auth.service.in)
+install(FILES org.kde.auth.conf DESTINATION /etc/dbus-1/system.d)
+install(FILES org.kde.auth.example.policy DESTINATION ${POLICY_FILES_INSTALL_DIR})
