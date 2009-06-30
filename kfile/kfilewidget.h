@@ -481,6 +481,13 @@ public:
      */
     KDirOperator* dirOperator();
 
+    /**
+     * reads the configuration for this widget from the given config group
+     * @param group the KConfiGroup to read from
+     * @since 4.4
+     */
+    void readConfig( KConfigGroup& group );
+
 private:
     friend class KFileWidgetPrivate;
     KFileWidgetPrivate* const d;

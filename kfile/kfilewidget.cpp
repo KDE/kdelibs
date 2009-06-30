@@ -2645,6 +2645,11 @@ KDirOperator* KFileWidget::dirOperator()
     return d->ops;
 }
 
+void KFileWidget::readConfig( KConfigGroup& group )
+{
+    d->readConfig(group);
+}
+
 QString KFileWidgetPrivate::locationEditCurrentText() const
 {
     return QDir::fromNativeSeparators(locationEdit->currentText().trimmed());
@@ -2677,5 +2682,6 @@ void KFileWidgetPrivate::setInlinePreviewShown(bool show)
 {
     ops->setInlinePreviewShown(show);
 }
+
 
 #include "kfilewidget.moc"
