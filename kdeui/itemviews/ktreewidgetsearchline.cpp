@@ -190,9 +190,9 @@ void KTreeWidgetSearchLine::Private::checkItemParentsNotVisible(QTreeWidget *tre
 
 #include <kvbox.h>
 
-/** Check whether \p item, its siblings and their descendents should be shown. Show or hide the items as necessary.
+/** Check whether \p item, its siblings and their descendants should be shown. Show or hide the items as necessary.
  *
- *  \p item  The list view item to start showing / hiding items at. Typically, this is the first child of another item, or the
+ *  \p item  The list view item to start showing / hiding items at. Typically, this is the first child of another item, or
  *              the first child of the list view.
  *  \return \c true if an item which should be visible is found, \c false if all items found should be hidden. If this function
  *             returns true and \p highestHiddenParent was not 0, highestHiddenParent will have been shown.
@@ -395,7 +395,7 @@ bool KTreeWidgetSearchLine::itemMatches( const QTreeWidgetItem *item, const QStr
     return true;
 
   // If the search column list is populated, search just the columns
-  // specifified.  If it is empty default to searching all of the columns.
+  // specified.  If it is empty default to searching all of the columns.
 
   if ( !d->searchColumns.isEmpty() ) {
     QList<int>::ConstIterator it = d->searchColumns.constBegin();
