@@ -12,6 +12,7 @@ private Q_SLOTS:
     void tagURLs();
     void perlSplit();
     void naturalCompare();
+    void obscure();
 
 private:
     static QString test;
