@@ -124,11 +124,12 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
               e = e.nextSiblingElement() ) {
             const QString tag = e.tagName();
             if (tag == "comment") {
-                const QString lang = e.attribute("xml:lang");
-                if (lang.isEmpty())
+                QString lang = e.attribute("xml:lang");
+                if (lang.isEmpty()) {
                     comment = e.text();
-                else
-                    commentsByLanguage.insert(lang, e.text());
+                    lang = "en";
+                }
+                commentsByLanguage.insert(lang, e.text());
             } else if (tag == "icon") { // as written out by shared-mime-info >= 0.40
                 userIcon = e.attribute("name");
             } else if (tag == "glob-deleteall") { // as written out by shared-mime-info > 0.60
