@@ -2190,8 +2190,8 @@ QString KLocale::langLookup(const QString &fname, const char *rtype)
   for (int id=localDoc.count()-1; id >= 0; --id)
     {
       QStringList langs = KGlobal::locale()->languageList();
-      langs.append( "en" );
-      langs.removeAll( defaultLanguage() );
+      langs.replaceInStrings("en_US", "en");
+      langs.append("en");
       Q_FOREACH(const QString &lang, langs)
         search.append(QString("%1%2/%3").arg(localDoc[id]).arg(lang).arg(fname));
     }
