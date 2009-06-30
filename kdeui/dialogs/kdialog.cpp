@@ -460,12 +460,13 @@ void KDialog::setCaption( const QString &caption, bool modified )
 
 void KDialog::setPlainCaption( const QString &caption )
 {
-  QDialog::setWindowTitle( caption );
-
+    if (QWidget *win = window()) {
+        win->setWindowTitle( caption );
 #ifdef Q_WS_X11
-  NETWinInfo info( QX11Info::display(), winId(), QX11Info::appRootWindow(), 0 );
-  info.setName( caption.toUtf8().constData() );
+        NETWinInfo info( QX11Info::display(), win->winId(), QX11Info::appRootWindow(), 0 );
+        info.setName( caption.toUtf8().constData() );
 #endif
+    }
 }
 
 void KDialog::resizeLayout( QWidget *widget, int margin, int spacing ) //static
