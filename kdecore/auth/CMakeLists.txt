@@ -62,7 +62,7 @@ set(kauth_example_headers
 qt4_wrap_cpp(kauth_example_mocs ${kauth_example_headers})
 qt4_wrap_ui(kauth_example_uis mainwindow.ui)
 
-add_executable(kauth_example ${kauth_example_sources} ${kauth_example_mocs})
+add_executable(kauth_example ${kauth_example_sources} ${kauth_example_mocs} ${kauth_example_uis})
 target_link_libraries(kauth_example kauth ${QT_LIBRARIES} ${POLKIT_QT_LIBRARIES})
 
 install(TARGETS kauth_example DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
