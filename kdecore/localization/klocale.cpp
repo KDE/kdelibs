@@ -1392,19 +1392,19 @@ QString KLocale::formatByteSize( double size ) const
 QString KLocale::formatDuration( unsigned long mSec) const
 {
    if( mSec >= 24*3600000) {
-      return i18n( "%1 days", formatNumber( mSec/(24*3600000), 3));
+      return i18np( "%1 day", "%1 days", formatNumber( mSec/(24*3600000), 3));
    } else if(mSec >= 3600000)
    {
-      return i18n( "%1 hours", formatNumber( mSec/3600000.0, 2));
+      return i18np( "%1 hour", "%1 hours", formatNumber( mSec/3600000.0, 2));
    } else if(mSec >= 60000)
    {
-      return i18n( "%1 minutes", formatNumber( mSec/60000.0, 2));
+      return i18np( "%1 minute", "%1 minutes", formatNumber( mSec/60000.0, 2));
    } else if(mSec >= 1000)
    {
-      return i18n( "%1 seconds", formatNumber( mSec/1000.0, 2));
+      return i18np( "%1 second", "%1 seconds", formatNumber( mSec/1000.0, 2));
    }
 
-   return i18n( "%1 milliseconds", formatNumber(mSec, 0));
+   return i18np( "%1 millisecond", "%1 milliseconds", formatNumber(mSec, 0));
 }
 
 QString KLocalePrivate::formatSingleDuration( DurationType durationType, int n )
