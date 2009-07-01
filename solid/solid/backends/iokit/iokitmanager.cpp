@@ -80,6 +80,8 @@ const char *IOKitManagerPrivate::typeToName(Solid::DeviceInterface::Type type)
         return "AppleACPICPU";
     case Solid::DeviceInterface::SerialInterface:
         return "IOSerialBSDClient";
+    case Solid::DeviceInterface::Battery:
+        return "AppleSmartBattery";
 
     //Solid::DeviceInterface::GenericInterface:
     //Solid::DeviceInterface::Block:
@@ -92,7 +94,6 @@ const char *IOKitManagerPrivate::typeToName(Solid::DeviceInterface::Type type)
     //Solid::DeviceInterface::PortableMediaPlayer:
     //Solid::DeviceInterface::NetworkInterface:
     //Solid::DeviceInterface::AcAdapter:
-    //Solid::DeviceInterface::Battery:
     //Solid::DeviceInterface::Button:
     //Solid::DeviceInterface::AudioInterface:
     //Solid::DeviceInterface::DvbInterface:

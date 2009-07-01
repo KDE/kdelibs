@@ -151,6 +151,7 @@ if(APPLE)
    backends/iokit/iokitprocessor.cpp
    backends/iokit/iokitnetworkinterface.cpp
    backends/iokit/iokitserialinterface.cpp
+   backends/iokit/iokitbattery.cpp
    )
 endif(APPLE)
 
