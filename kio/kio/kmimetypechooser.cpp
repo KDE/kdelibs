@@ -162,7 +162,7 @@ void KMimeTypeChooserPrivate::loadMimeTypes( const QStringList &_selectedMimeTyp
 
     const QString min = mimetype.mid(index+1);
     QTreeWidgetItem *item = new QTreeWidgetItem( groupItem, QStringList(min) );
-    item->setIcon( 0, SmallIcon( mt->iconName() ) );
+    item->setIcon( 0, KIcon( mt->iconName() ) );
 
     int cl = 1;
 
