@@ -64,14 +64,6 @@ InfoOutput=4
 [750]
 InfoOutput=4
 
-# KPart's mainwindow info off
-[1001]
-InfoOutput=4
-
-# KPart's factory info off
-[1002]
-InfoOutput=4
-
 # KHotKeys
 [1217]
 InfoOutput=4
