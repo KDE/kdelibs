@@ -368,12 +368,13 @@ void KIconDialog::KIconDialogPrivate::init()
     top->addWidget(bgroup);
 
     QGridLayout *grid = new QGridLayout();
-    bgroup->layout()->addItem(grid);
+    vbox->addLayout(grid);
 
     mpSystemIcons = new QRadioButton(i18n("S&ystem icons:"), bgroup);
     connect(mpSystemIcons, SIGNAL(clicked()), q, SLOT(_k_slotSystemIconClicked()));
     grid->addWidget(mpSystemIcons, 1, 0);
     mpCombo = new KComboBox(bgroup);
+    mpCombo->setMaxVisibleItems(12);
     connect(mpCombo, SIGNAL(activated(int)), q, SLOT(_k_slotContext(int)));
     grid->addWidget(mpCombo, 1, 1);
     mpOtherIcons = new QRadioButton(i18n("O&ther icons:"), bgroup);
