@@ -1292,14 +1292,6 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
   if (round && precision < 0)
     return numStr;
 
-  // FIXME: Temporary until full language-sensitivity implemented.
-  QString numLang = d->language;
-  int p = tmpString.indexOf('\x04');
-  if (p >= 0) {
-    numLang = tmpString.mid(p + 1);
-    tmpString = tmpString.left(p);
-  }
-
   // Skip the sign (for now)
   const bool neg = (tmpString[0] == '-');
   if (neg || tmpString[0] == '+') tmpString.remove(0, 1);
@@ -1334,8 +1326,10 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
   mantString.prepend(neg?negativeSign():positiveSign());
 
   // Convert to target digit set.
-  mantString = convertDigits(mantString, d->digitSet);
-  expString = convertDigits(expString, d->digitSet);
+  if (d->digitSet != KLocale::ArabicDigits) {
+      mantString = convertDigits(mantString, d->digitSet);
+      expString = convertDigits(expString, d->digitSet);
+  }
 
   return mantString + expString;
 }
