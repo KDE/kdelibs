@@ -1796,7 +1796,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     if (user != 0L)
         strUser = user->pw_name;
 
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) && !defined(Q_OS_CYGWIN)
     // pick the groups to which the user belongs
     int groupCount = 0;
 #ifdef Q_OS_MAC
