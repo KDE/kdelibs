@@ -22,27 +22,49 @@
 
 #include <QString>
 #include <QVariant>
-#include <QHash>
+#include <QMap>
+#include <QDataStream>
 
-class ActionReply : public QHash<QString, QVariant>
-{    
+class ActionReply
+{
 public:
-    enum Response
+    enum Type
     {
-        OK,
-        Failed,
-        UserCancelled
+        KAuthError,
+        HelperError,
+        Success
     };
     
-private:
-    Response m_response;
+    /*
+    * FIXME: Is this needed? What should we return as an error code?
+    */
+    enum Error
+    {
+        NoError = 0,
+        Error2
+    };
     
-public:
-    Response response() { return m_response; }
-    void setResponse(Response response) { m_response = response; }
-        
-    bool operator==(Response response) { return response == m_response; }
-    bool operator!=(Response response) { return response != m_response; }
+    ActionReply();
+    ActionReply(Type type);
+    ActionReply(int errorCode);
+    
+    QMap<QString, QVariant> &data();
+    QMap<QString, QVariant> data() const;
+    Type type() const;
+    
+    bool succeded();
+    bool failed();
+    
+    int errorCode() const;
+    void setErrorCode(int errorCode);
+    
+    friend QDataStream &operator<<(QDataStream &, const ActionReply &);
+    friend QDataStream &operator>>(QDataStream &, ActionReply &);
+    
+private:
+    QMap<QString, QVariant> m_data; // User-defined data for success and helper error replies, empty for kauth errors
+    int m_errorCode;
+    Type m_type;
 };
 
 #endif

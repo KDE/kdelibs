@@ -1,3 +1,4 @@
 [D-BUS Service]
 Name=org.kde.auth
-Exec=@CMAKE_INSTALL_PREFIX@/bin/auth_helper
+Exec=@CMAKE_INSTALL_PREFIX@/bin/kauth_helper
+User=root

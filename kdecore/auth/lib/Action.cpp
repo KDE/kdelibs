@@ -44,6 +44,5 @@ Action::AuthStatus Action::status()
 
 ActionReply Action::execute()
 {
-    if(authorize())
-        BackendsManager::helperProxy()->executeAction(m_name, QMap<QString, QVariant>());
+    return BackendsManager::helperProxy()->executeAction(m_name, QMap<QString, QVariant>());
 }

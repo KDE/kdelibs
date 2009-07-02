@@ -22,7 +22,7 @@
 
 #include <QObject>
 
-class Class : public QObject
+class MyHelper : public QObject
 {
     Q_OBJECT
     

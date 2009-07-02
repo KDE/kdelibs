@@ -58,10 +58,10 @@ void MainWindow::on_actionOpen_triggered()
             // return;
         }
 
-        if(reply != ActionReply::OK)
+        if(reply.failed())
             QMessageBox::information(this, "Errore", file.errorString());
         else
-            ui->plainTextEdit->setPlainText(reply.value("text").toString());
+            ui->plainTextEdit->setPlainText(reply.data().value("text").toString());
 
         return;
     }

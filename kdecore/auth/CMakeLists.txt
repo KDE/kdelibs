@@ -18,7 +18,7 @@ qt4_wrap_cpp(kauth_backend_mocs ${kauth_backend_headers})
 
 add_library(kauth_backend STATIC ${kauth_backend_sources} ${kauth_backend_mocs})
 
-set_target_properties(kauth_backend PROPERTIES COMPILE_FLAGS "-DQT_STATICPLUGIN -fPIC")
+set_target_properties(kauth_backend PROPERTIES COMPILE_FLAGS "-DQT_STATICPLUGIN -fPIC -ggdb")
 
 set(kauth_backend_ldflags ${POLKITQT_LIBRARIES})
 
@@ -34,7 +34,7 @@ qt4_wrap_cpp(helper_proxy_mocs ${helper_proxy_headers})
 
 add_library(helper_proxy STATIC ${helper_proxy_sources} ${helper_proxy_mocs})
 
-set_target_properties(helper_proxy PROPERTIES COMPILE_FLAGS "-DQT_STATICPLUGIN -fPIC")
+set_target_properties(helper_proxy PROPERTIES COMPILE_FLAGS "-DQT_STATICPLUGIN -fPIC -ggdb")
 
 # libkauth shared library
 
@@ -49,6 +49,8 @@ add_library(kauth SHARED ${kauth_sources} ${kauth_mocs})
 target_link_libraries(kauth kauth_backend helper_proxy ${QT_LIBRARIES} ${kauth_backend_ldflags} ${helper_proxt_ldflags})
 
 install(TARGETS kauth DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
+set_target_properties(kauth PROPERTIES COMPILE_FLAGS "-ggdb")
 
 # Auth example application
 
@@ -65,6 +67,8 @@ qt4_wrap_ui(kauth_example_uis mainwindow.ui)
 add_executable(kauth_example ${kauth_example_sources} ${kauth_example_mocs} ${kauth_example_uis})
 target_link_libraries(kauth_example kauth ${QT_LIBRARIES} ${POLKIT_QT_LIBRARIES})
 
+set_target_properties(kauth_example PROPERTIES COMPILE_FLAGS "-ggdb")
+
 install(TARGETS kauth_example DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # Auth example helper
@@ -72,6 +76,8 @@ install(TARGETS kauth_example DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 qt4_wrap_cpp(kauth_helper_mocs helper/helper.h)
 add_executable(kauth_helper helper/helper.cpp ${kauth_helper_mocs})
 target_link_libraries(kauth_helper kauth ${QT_LIBRARIES} ${POLKIT_QT_LIBRARIES})
+
+set_target_properties(kauth_helper PROPERTIES COMPILE_FLAGS "-ggdb")
 
 install(TARGETS kauth_helper DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 

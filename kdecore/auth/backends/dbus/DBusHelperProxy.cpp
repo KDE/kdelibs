@@ -21,6 +21,8 @@
 #include <QtDBus>
 #include <QDebug>
 
+#include <syslog.h>
+
 #include "BackendsManager.h"
 #include "DBusHelperProxy.h"
 #include "DBusHelperProxyAdaptor.h"
@@ -33,9 +35,9 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QMap<QSt
     stream << arguments;
         
     QDBusMessage message;
-    message = QDBusMessage::createMethodCall("it.gigabytes.auth",
+    message = QDBusMessage::createMethodCall("org.kde.auth",
                                               "/",
-                                              "it.gigabytes.auth",
+                                              "org.kde.auth",
                                               QLatin1String("performAction"));
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(action) << BackendsManager::authBackend()->callerID() << qVariantFromValue(argsBytes);
@@ -80,7 +82,6 @@ bool DBusHelperProxy::performAction(const QString &action, QByteArray callerID, 
     QDataStream s(&arguments, QIODevice::ReadOnly);
     s >> args;
     
-    // TODO: Check authorization (using callerID)
     if(BackendsManager::authBackend()->isCallerAuthorized(action, callerID))
         QMetaObject::invokeMethod(responder, "action", Q_ARG(ArgumentsMap, args));
 }

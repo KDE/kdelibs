@@ -18,35 +18,40 @@
 */
 
 #include <cstdio>
+#include <syslog.h>
+#include <unistd.h>
 
 #include <QCoreApplication>
+#include <QTimer>
 
 #include "HelperProxy.h"
 #include "BackendsManager.h"
 
 #include "helper.h"
 
-void Class::action()
+void MyHelper::action()
 {
-    FILE *file = fopen("~/org.kde.auth.example.helper.action.debug.txt", "rw");
-    
-    fprintf(file, "Hello");
-    
-    fclose(file);
+    syslog(LOG_DEBUG, "Action executed by the helper. PID: %d, UID: %d", getpid(), getuid());
 }
 
 int main(int argc, char **argv)
 {
-    Class object;
+    openlog("kauth_helper", 0, LOG_USER);
+    MyHelper object;
     
     if(!BackendsManager::helperProxy()->initHelper("org.kde.auth"))
     {
-        printf("initHelper failed\n");
+        syslog(LOG_DEBUG, "initHelper() failed\n");
+        return -1;
     }
+    
     BackendsManager::helperProxy()->setHelperResponder(&object);
     
     QCoreApplication app(argc, argv);
+    QTimer::singleShot(10000, &app, SLOT(quit()));
     app.exec();
+    
+    closelog();
     
     return 0;
 }
