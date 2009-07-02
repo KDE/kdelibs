@@ -54,12 +54,16 @@ private slots:
     void testToolBarPosition();
     void testXmlGuiSwitching();
 
+protected:
+    bool eventFilter(QObject * watched, QEvent * event);
+
 private:
     void changeGlobalIconSizeSetting(int, int);
     void deleteGlobalIconSizeSetting();
     void changeGlobalToolButtonStyleSetting(const QString&, const QString&);
     void deleteGlobalToolButtonStyleSetting();
     QByteArray m_xml;
+    bool m_showWasCalled;
 };
 
 QTEST_KDEMAIN(tst_KToolBar, GUI)
@@ -84,6 +88,9 @@ void tst_KToolBar::initTestCase()
         "  <Action name=\"go_up\"/>\n"
         "</ToolBar>\n"
         "<ToolBar name=\"hiddenToolBar\" hidden=\"true\">\n"
+        "  <Action name=\"go_up\"/>\n"
+        "</ToolBar>\n"
+        "<ToolBar name=\"secondHiddenToolBar\" hidden=\"true\">\n"
         "  <Action name=\"go_up\"/>\n"
         "</ToolBar>\n"
         "<ToolBar iconSize=\"32\" name=\"bigToolBar\">\n"
@@ -474,7 +481,9 @@ void tst_KToolBar::testXmlGuiSwitching()
         KToolBar* otherToolBar = firstClient.toolBarByName("otherToolBar");
         KToolBar* bigToolBar = firstClient.toolBarByName("bigToolBar");
         KToolBar* hiddenToolBar = firstClient.toolBarByName("hiddenToolBar");
+        KToolBar* secondHiddenToolBar = firstClient.toolBarByName("secondHiddenToolBar");
         QCOMPARE(hiddenToolBar->isHidden(), true);
+        QCOMPARE(secondHiddenToolBar->isHidden(), true);
         // Make (unsaved) changes as user
         QMetaObject::invokeMethod(mainToolBar, "slotContextTextRight"); // mainToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         QMetaObject::invokeMethod(mainToolBar, "slotContextRight"); // kmw.addToolBar(Qt::RightToolBarArea, mainToolBar);
@@ -498,6 +507,7 @@ void tst_KToolBar::testXmlGuiSwitching()
     KToolBar* otherToolBar = firstClient.toolBarByName("otherToolBar");
     KToolBar* bigToolBar = firstClient.toolBarByName("bigToolBar");
     KToolBar* hiddenToolBar = firstClient.toolBarByName("hiddenToolBar");
+    KToolBar* secondHiddenToolBar = firstClient.toolBarByName("secondHiddenToolBar");
     QCOMPARE((int)mainToolBar->toolButtonStyle(), (int)Qt::ToolButtonTextBesideIcon);
     QCOMPARE(mainToolBar->isHidden(), false);
     QCOMPARE(kmw.toolBarArea(mainToolBar), Qt::RightToolBarArea);
@@ -505,6 +515,7 @@ void tst_KToolBar::testXmlGuiSwitching()
     QCOMPARE(bigToolBar->iconSize().width(), 35);
     QCOMPARE(bigToolBar->isHidden(), true);
     QCOMPARE(hiddenToolBar->isHidden(), false);
+    QCOMPARE(secondHiddenToolBar->isHidden(), true);
 
     // Now change KDE-global setting, what happens to unsaved changes?
     changeGlobalIconSizeSetting(32, 33);
@@ -529,19 +540,41 @@ void tst_KToolBar::testXmlGuiSwitching()
         kmw2.createGUI();
         TestGuiClient firstClient(m_xml);
         kmw2.guiFactory()->addClient(&firstClient);
-        kmw2.applyMainWindowSettings(group);
 
         KToolBar* mainToolBar = firstClient.toolBarByName("mainToolBar");
         KToolBar* otherToolBar = firstClient.toolBarByName("otherToolBar");
         KToolBar* bigToolBar = firstClient.toolBarByName("bigToolBar");
         KToolBar* hiddenToolBar = firstClient.toolBarByName("hiddenToolBar");
+        KToolBar* secondHiddenToolBar = firstClient.toolBarByName("secondHiddenToolBar");
+        QCOMPARE(bigToolBar->isHidden(), false);
+        QCOMPARE(hiddenToolBar->isHidden(), true);
+        QCOMPARE(secondHiddenToolBar->isHidden(), true);
+
+        kmw2.show();
+
+        // Check that secondHiddenToolBar is not shown+hidden immediately?
+        m_showWasCalled = false;
+        secondHiddenToolBar->installEventFilter(this);
+        kmw2.applyMainWindowSettings(group);
+
         QCOMPARE(mainToolBar->isHidden(), false);
         QCOMPARE(kmw2.toolBarArea(mainToolBar), Qt::RightToolBarArea);
         QCOMPARE(otherToolBar->iconSize().width(), 35);
         QCOMPARE(bigToolBar->iconSize().width(), 35);
         QCOMPARE(bigToolBar->isHidden(), true);
         QCOMPARE(hiddenToolBar->isHidden(), false);
+        QCOMPARE(secondHiddenToolBar->isHidden(), true);
+        QVERIFY(!m_showWasCalled);
     }
+}
+
+bool tst_KToolBar::eventFilter(QObject * watched, QEvent * event)
+{
+    if (event->type() == QEvent::Show) {
+        m_showWasCalled = true;
+        return true;
+    }
+    return false;
 }
 
 #include "ktoolbar_unittest.moc"
