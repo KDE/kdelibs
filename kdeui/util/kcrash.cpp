@@ -440,8 +440,6 @@ void KCrash::startDirectly( const char* argv[], int )
 
 // From now on this code is copy&pasted from kinit/wrapper.c :
 
-extern char **environ;
-
 static char *getDisplay()
 {
    const char *display;
