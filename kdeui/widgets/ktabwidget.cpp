@@ -345,7 +345,7 @@ int KTabWidget::tabBarWidthForMaxChars( int maxLength )
   const QFontMetrics fm = tabBar()->fontMetrics();
   int x = 0;
   for ( int i = 0; i < count(); ++i ) {
-    QString newTitle = d->m_tabNames[ i ];
+    QString newTitle = d->m_tabNames.value( i );
     newTitle = KStringHandler::rsqueeze( newTitle, maxLength ).leftJustified( d->m_minLength, ' ' );
 
     int lw = fm.width( newTitle );
