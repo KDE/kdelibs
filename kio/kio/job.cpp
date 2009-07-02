@@ -1341,12 +1341,16 @@ static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, const QByteArray& p
         6000, // x11
         6667, // irc
         0};
-    for (int cnt=0; bad_ports[cnt]; ++cnt)
-        if (url.port() == bad_ports[cnt])
-        {
-            _error = KIO::ERR_POST_DENIED;
-            break;
-        }
+    if (url.port() != 80)
+    {
+        const int port = url.port();
+        for (int cnt=0; bad_ports[cnt] && bad_ports[cnt] <= port; ++cnt)
+            if (port == bad_ports[cnt])
+            {
+                _error = KIO::ERR_POST_DENIED;
+                break;
+            }
+    }
 
     if ( _error )
     {
