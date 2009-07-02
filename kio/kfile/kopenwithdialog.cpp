@@ -569,7 +569,6 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
   topLayout->setMargin(0);
     label = new QLabel(_text, q);
   label->setWordWrap(true);
-  label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
   topLayout->addWidget(label);
 
   if (!bReadOnly)
@@ -673,6 +672,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
   else
     remember = 0L;
 
+  q->setMinimumSize(q->minimumSizeHint());
   //edit->setText( _value );
   // This is what caused "can't click on items before clicking on Name header".
   // Probably due to the resizeEvent handler using width().
