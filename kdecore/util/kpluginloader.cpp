@@ -54,7 +54,7 @@ protected:
 
 inline QString makeLibName( const QString &libname )
 {
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || defined(Q_OS_CYGWIN)
     if (!libname.endsWith(".dll"))
         return libname + ".dll";
     return libname;

@@ -53,7 +53,7 @@ void KLibLoaderTest::testFindLibrary()
     const QString library = KLibLoader::findLibrary( s_kgenericFactoryModule );
     QVERIFY( !library.isEmpty() );
     const QString libraryPath = QFileInfo( library ).canonicalFilePath();
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || defined(Q_OS_CYGWIN)
     const QString expectedPath = QFileInfo( QDir::currentPath() + "/../../lib/" + s_kgenericFactoryModule + ".dll" ).canonicalFilePath();
 #else
     const QString expectedPath = QFileInfo( QDir::currentPath() + "/../../lib/" + s_kgenericFactoryModule + ".so" ).canonicalFilePath();
