@@ -363,6 +363,15 @@ static QString setFunction(const QString &n, const QString &className = QString(
   return result;
 }
 
+static QString getDefaultFunction(const QString &n, const QString &className = QString())
+{
+  QString result = "default"+n+"Value";
+  result[7] = result[7].toUpper();
+
+  if ( !className.isEmpty() )
+    result = className + "::" + result;
+  return result;
+}
 
 static QString getFunction(const QString &n, const QString &className = QString())
 {
@@ -1144,6 +1153,19 @@ QString memberMutatorBody( CfgEntry *e )
   return result;
 }
 
+// returns the member get default implementation
+// which should go in the h file if inline
+// or the cpp file if not inline
+QString memberGetDefaultBody( CfgEntry *e )
+{
+  QString result = e->code();
+  QTextStream out(&result, QIODevice::WriteOnly);
+
+  out << "  return " << e->defaultValue() << ";" << endl;
+
+  return result;
+}
+
 // returns the item accesor implementation
 // which should go in the h file if inline
 // or the cpp file if not inline
@@ -1580,6 +1602,34 @@ int main( int argc, char **argv )
     else
     {
       h << ";" << endl;
+    }
+
+    // Default value Accessor
+    if (!(*itEntry)->defaultValue().isEmpty()) {
+      h << endl;
+      h << "    /**" << endl;
+      h << "      Get " << (*itEntry)->label() << " default value" << endl;
+      h << "    */" << endl;
+      if (staticAccessors)
+        h << "    static" << endl;
+      h << "    ";
+      if (useEnumTypes && t == "Enum")
+        h << enumType(*itEntry);
+      else
+        h << cppType(t);
+      h << " " << getDefaultFunction(n) << "()" << Const;
+      // function body inline only if not using dpointer
+      // for BC mode
+      if ( !dpointer )
+      {
+        h << endl << "    {" << endl;
+        h << indent(memberGetDefaultBody(*itEntry), 4 );
+        h << "    }" << endl;
+      }
+      else
+      {
+        h << ";" << endl;
+      }
     }
 
     // Item accessor
@@ -2044,6 +2094,18 @@ int main( int argc, char **argv )
       cpp << "{" << endl;
       cpp << indent(memberAccessorBody( *itEntry ), 2);
       cpp << "}" << endl << endl;
+
+      // Default value Accessor
+      if (!(*itEntry)->defaultValue().isEmpty()) {
+        if (useEnumTypes && t == "Enum")
+          cpp << enumType(*itEntry);
+        else
+          cpp << cppType(t);
+        cpp << " " << getDefaultFunction(n, className) << "()" << Const;
+        cpp << endl << "{" << endl;
+        cpp << memberGetDefaultBody(*itEntry);
+        cpp << "}" << endl << endl;
+      }
 
       // Item accessor
       if ( itemAccessors )
