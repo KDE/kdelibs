@@ -918,16 +918,18 @@ void KToolBar::saveState(QDomElement &current) const
 void KToolBar::applySettings(const KConfigGroup &cg, bool forceGlobal)
 {
     Q_ASSERT(!cg.name().isEmpty());
+    Q_UNUSED(forceGlobal); // KDE5: remove
 
     // a small leftover from kde3: separate bool for hidden/shown. But it's also part of saveMainWindowSettings,
     // it is not really useful anymore, except in the unlikely case where someone would call this by hand.
-    // KDE5: remove the block below - and the bool forceGlobal too, since it simply leads to show()
-    if (cg.exists() || forceGlobal) {
+    // KDE5: remove the block below
+    if (cg.hasKey("Hidden")) {
         const bool hidden = cg.readEntry("Hidden", false);
         if (hidden)
             hide();
-        else
+        else {
             show();
+        }
     }
 
     if (cg.hasKey("IconSize")) {
