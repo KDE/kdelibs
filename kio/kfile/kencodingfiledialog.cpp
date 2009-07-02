@@ -174,14 +174,10 @@ KEncodingFileDialog::Result KEncodingFileDialog::getSaveFileNameAndEncoding(cons
                                      QWidget *parent,
                                      const QString& caption)
 {
-    bool specialDir = dir.at(0) == ':';
-    KEncodingFileDialog dlg(specialDir?dir:QString(), encoding, filter,
+    KEncodingFileDialog dlg(dir, encoding, filter,
                             caption.isNull() ? i18n("Save As") : caption,
                             Saving, parent);
     dlg.setMode(KFile::File);
-
-    if ( !specialDir )
-        dlg.setSelection( dir ); // may also be a filename
     dlg.exec();
 
     QString filename = dlg.selectedFile();
@@ -199,13 +195,10 @@ KEncodingFileDialog::Result  KEncodingFileDialog::getSaveUrlAndEncoding(const QS
 			     const QString& dir, const  QString& filter,
                              QWidget *parent, const QString& caption)
 {
-    bool specialDir = !dir.isEmpty() && dir.at(0) == ':';
-    KEncodingFileDialog dlg(specialDir?dir:QString(), encoding, filter,
+    KEncodingFileDialog dlg(dir, encoding, filter,
                             caption.isNull() ? i18n("Save As") : caption,
                             Saving, parent);
     dlg.setMode(KFile::File);
-    if ( !specialDir )
-    dlg.setSelection( dir ); // may also be a filename
 
     Result res;
     if (dlg.exec() == QDialog::Accepted) {

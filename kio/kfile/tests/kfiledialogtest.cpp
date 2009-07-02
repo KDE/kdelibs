@@ -44,6 +44,7 @@ int main (int argc, char **argv)
     //     - Should have no entered file name.
     KFileDialog keywordDlg(KUrl("kfiledialog:///testKeyword"), QString("*.*|"), 0);
     keywordDlg.setMode(KFile::Files);
+    keywordDlg.setCaption(QString("Test for keyword with no file name"));
     keywordDlg.exec();
 
     // Test for: saved location keyword with file name.
@@ -51,11 +52,13 @@ int main (int argc, char **argv)
     //     - Should enter the file name 'new.file'.
     KFileDialog keywordDlg2(KUrl("kfiledialog:///testKeyword/new.file"), QString("*.*|"), 0);
     keywordDlg2.setMode(KFile::Files);
+    keywordDlg2.setCaption(QString("Test for keyword and file name"));
     keywordDlg2.exec();
 
     // bug 173137
     KFileDialog dlg(KUrl(QString()), QString("*.*|"), 0);
     dlg.setMode(KFile::Files | KFile::Directory);
+    dlg.setCaption(QString("Test for bug 173137"));
     dlg.exec();
     KUrl::List selectedUrls = dlg.selectedUrls();
     if (selectedUrls.count()) {
@@ -78,7 +81,9 @@ int main (int argc, char **argv)
     //     - Should NOT return a non existing filename. If a non existing filename was given to it,
     //       it should inform the user about it, so we always get an empty string or an existing
     //       filename.
-    QString getOpenFileName = KFileDialog::getOpenFileName();
+    QString getOpenFileName = KFileDialog::getOpenFileName(QString(),QString(),0,
+                                                           QString("Test getOpenFileName"));
+
     if (!getOpenFileName.isEmpty()) {
         KMessageBox::information(0, QString("\"%1\" file was opened").arg(getOpenFileName), "Dialog for 'getOpenFileName' accepted");
     } else {
@@ -91,7 +96,8 @@ int main (int argc, char **argv)
     //     - Should NOT return a non existing filename in the list. If a non existing filename was
     //       given to it, it should inform the user about it, so we always get an empty string or an
     //       existing list of filenames.
-    QStringList getOpenFileNames = KFileDialog::getOpenFileNames();
+    QStringList getOpenFileNames = KFileDialog::getOpenFileNames(QString(),QString(),0,
+                                                                 QString("Test getOpenFileNames"));
     if (getOpenFileNames.count()) {
         QString str("The listed files below were asked to be opened:\n");
         foreach (const QString &filename, getOpenFileNames) {
@@ -107,7 +113,8 @@ int main (int argc, char **argv)
     //       QString object.
     //     - From the previous point it is expectable that its behavior should be the same as
     //       getOpenFileName.
-    KUrl getOpenUrl = KFileDialog::getOpenUrl();
+    KUrl getOpenUrl = KFileDialog::getOpenUrl(QString(),QString(),0,
+                                              QString("Test getOpenUrl"));
     if (getOpenUrl.isValid()) {
         KMessageBox::information(0, QString("\"%1\" file was opened").arg(getOpenUrl.url()), "Dialog for 'getOpenUrl' accepted");
     } else {
@@ -119,7 +126,8 @@ int main (int argc, char **argv)
     //       of a QStringList object.
     //     - From the previous point it is expectable that its behavior should be the same as
     //       getOpenFileNames.
-    KUrl::List getOpenUrls = KFileDialog::getOpenUrls();
+    KUrl::List getOpenUrls = KFileDialog::getOpenUrls(QString(),QString(),0,
+                                                      QString("Test getOpenUrls"));
     if (getOpenUrls.count()) {
         QString str("The listed files below were asked to be opened:\n");
         foreach (const KUrl &filename, getOpenUrls) {
@@ -134,7 +142,28 @@ int main (int argc, char **argv)
     //     - Should return the selected file (if any).
     //     - Should return an empty string if 'Cancel' was pressed.
     //     - Don't care about existing or non existing filenames.
-    QString getSaveFileName = KFileDialog::getSaveFileName();
+    QString getSaveFileName = KFileDialog::getSaveFileName(QString(),QString(),0,
+                                                           QString("Test getSaveFileName"));
+    if (!getSaveFileName.isEmpty()) {
+        KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getSaveFileName), "Dialog for 'getSaveFileName' accepted");
+    } else {
+        KMessageBox::information(0, QString("Dialog for 'getSaveFileName' cancelled"));
+    }
+
+    // Tests for bug 194900
+    //     - Should enter the specified directory with the file preselected.
+    getSaveFileName = KFileDialog::getSaveFileName(KUrl("/usr/share/X11/rgb.txt"),
+                                                   QString(),0,
+                                                   QString("Test bug 194900 getSaveFileName with file preselected"));
+    if (!getSaveFileName.isEmpty()) {
+        KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getSaveFileName), "Dialog for 'getSaveFileName' accepted");
+    } else {
+        KMessageBox::information(0, QString("Dialog for 'getSaveFileName' cancelled"));
+    }
+    //     - Should enter the specified directory with no file preselected.
+    getSaveFileName = KFileDialog::getSaveFileName(KUrl("/usr/share/X11"),
+                                                   QString(),0,
+                                                   QString("Test bug 194900 getSaveFileName with no file preselected"));
     if (!getSaveFileName.isEmpty()) {
         KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getSaveFileName), "Dialog for 'getSaveFileName' accepted");
     } else {
@@ -146,7 +175,28 @@ int main (int argc, char **argv)
     //       QString object.
     //     - From the previous point it is expectable that its behavior should be the same as
     //       getSaveFileName.
-    KUrl getSaveUrl = KFileDialog::getSaveUrl();
+    KUrl getSaveUrl = KFileDialog::getSaveUrl(QString(),QString(),0,
+                                              QString("Test getSaveUrl"));
+    if (getSaveUrl.isValid()) {
+        KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getSaveUrl.url()), "Dialog for 'getSaveUrl' accepted");
+    } else {
+        KMessageBox::information(0, QString("Dialog for 'getSaveUrl' cancelled"));
+    }
+
+    // Tests for bug 194900
+    //     - Should enter the specified directory with the file preselected.
+    getSaveUrl = KFileDialog::getSaveUrl(KUrl("/usr/share/X11/rgb.txt"),
+                                         QString(),0,
+                                         QString("Test bug 194900 getSaveUrl with file preselected"));
+    if (getSaveUrl.isValid()) {
+        KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getSaveUrl.url()), "Dialog for 'getSaveUrl' accepted");
+    } else {
+        KMessageBox::information(0, QString("Dialog for 'getSaveUrl' cancelled"));
+    }
+    //     - Should enter the specified directory with no file preselected.
+    getSaveUrl = KFileDialog::getSaveUrl(KUrl("/usr/share/X11/"),
+                                         QString(),0,
+                                         QString("Test bug 194900 getSaveUrl with no file preselected"));
     if (getSaveUrl.isValid()) {
         KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getSaveUrl.url()), "Dialog for 'getSaveUrl' accepted");
     } else {
@@ -155,7 +205,8 @@ int main (int argc, char **argv)
 
     // Test for: getImageOpenUrl.
     //     - Is the same as getOpenUrl but showing inline previews.
-    KUrl getImageOpenUrl = KFileDialog::getImageOpenUrl();
+    KUrl getImageOpenUrl = KFileDialog::getImageOpenUrl(QString(),0,
+                                                        QString("Test getImageOpenUrl"));
     if (getImageOpenUrl.isValid()) {
         KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getImageOpenUrl.url()), "Dialog for 'getImageOpenUrl' accepted");
     } else {

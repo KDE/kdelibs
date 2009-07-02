@@ -428,12 +428,11 @@ QString KFileDialog::getOpenFileName(const KUrl& startDir,
 // TODO use extra args?     QString * selectedFilter = 0, Options options = 0
     }
     KFileDialog dlg(startDir, filter, parent);
-    dlg.setOperationMode( Opening );
 
+    dlg.setOperationMode( KFileDialog::Opening );
     dlg.setMode( KFile::File | KFile::LocalOnly | KFile::ExistingOnly );
     dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
 
-    //dlg.d->ops->clearHistory();
     dlg.exec();
 
     return dlg.selectedFile();
@@ -452,11 +451,9 @@ QString KFileDialog::getOpenFileNameWId(const KUrl& startDir,
         KWindowSystem::setMainWindow( &dlg, parent_id );
 
     dlg.setOperationMode( KFileDialog::Opening );
-
     dlg.setMode( KFile::File | KFile::LocalOnly | KFile::ExistingOnly );
     dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
 
-    //dlg.d->ops->clearHistory();
     dlg.exec();
 
     return dlg.selectedFile();
@@ -477,11 +474,11 @@ QStringList KFileDialog::getOpenFileNames(const KUrl& startDir,
     }
     KFileDialogPrivate::Native::s_allowNative = false;
     KFileDialog dlg(startDir, filter, parent);
-    dlg.setOperationMode( Opening );
 
-    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
+    dlg.setOperationMode( KFileDialog::Opening );
     dlg.setMode(KFile::Files | KFile::LocalOnly | KFile::ExistingOnly);
-    //dlg.d->ops->clearHistory();
+    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
+
     dlg.exec();
 
     return dlg.selectedFiles();
@@ -497,11 +494,11 @@ KUrl KFileDialog::getOpenUrl(const KUrl& startDir, const QString& filter,
     }
     KFileDialogPrivate::Native::s_allowNative = false;
     KFileDialog dlg(startDir, filter, parent);
-    dlg.setOperationMode( Opening );
 
-    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
+    dlg.setOperationMode( KFileDialog::Opening );
     dlg.setMode( KFile::File | KFile::ExistingOnly );
-    //dlg.d->ops->clearHistory();
+    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
+
     dlg.exec();
 
     return dlg.selectedUrl();
@@ -518,12 +515,13 @@ KUrl::List KFileDialog::getOpenUrls(const KUrl& startDir,
         return KUrl::List(fileNames);
     }
     KFileDialogPrivate::Native::s_allowNative = false;
-    KFileDialog dlg(startDir, filter, parent);
-    dlg.setOperationMode( Opening );
 
+    KFileDialog dlg(startDir, filter, parent);
+
+    dlg.setOperationMode( KFileDialog::Opening );
+    dlg.setMode( KFile::Files | KFile::ExistingOnly );
     dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
-    dlg.setMode(KFile::Files | KFile::ExistingOnly);
-    //dlg.d->ops->clearHistory();
+
     dlg.exec();
 
     return dlg.selectedUrls();
@@ -573,12 +571,11 @@ KUrl KFileDialog::getImageOpenUrl( const KUrl& startDir, QWidget *parent,
     }
     QStringList mimetypes = KImageIO::mimeTypes( KImageIO::Reading );
     KFileDialogPrivate::Native::s_allowNative = false;
-    KFileDialog dlg(startDir,
-                    mimetypes.join(" "),
-                    parent);
-    dlg.setOperationMode( Opening );
+    KFileDialog dlg(startDir, mimetypes.join(" "), parent);
+
+    dlg.setOperationMode( KFileDialog::Opening );
+    dlg.setMode( KFile::File | KFile::ExistingOnly );
     dlg.setCaption( caption.isEmpty() ? i18n("Open") : caption );
-    dlg.setMode( KFile::File );
     dlg.setInlinePreviewShown( true );
 
     dlg.exec();
@@ -652,17 +649,11 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
         }
         return result;
     }
-    bool defaultDir = dir.isEmpty();
-    bool specialDir = !defaultDir && dir.protocol() == "kfiledialog";
-    KFileDialog dlg( specialDir ? dir : KUrl(), filter, parent);
-    if ( !specialDir && !defaultDir ) {
-        if (!dir.isLocalFile())
-            kWarning() << "KFileDialog::getSaveFileName called with non-local start dir " << dir;
-        dlg.setSelection( dir.toLocalFile() ); // may also be a filename
-    }
 
-    dlg.setOperationMode( Saving );
-    dlg.setMode( KFile::File );
+    KFileDialog dlg(dir, filter, parent);
+
+    dlg.setOperationMode( KFileDialog::Saving );
+    dlg.setMode( KFile::File | KFile::LocalOnly );
     dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
 
     dlg.exec();
@@ -681,21 +672,14 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
     if (KFileDialogPrivate::isNative()) {
         return KFileDialog::getSaveFileName(dir, filter, 0, caption); // everything we can do...
     }
-    bool defaultDir = dir.isEmpty();
-    bool specialDir = !defaultDir && dir.protocol() == "kfiledialog";
+
     QWidget* parent = QWidget::find( parent_id );
-    KFileDialog dlg( specialDir ? dir : KUrl(), filter, parent);
+    KFileDialog dlg(dir, filter, parent);
     if( parent == NULL && parent_id != 0 )
         KWindowSystem::setMainWindow( &dlg, parent_id);
 
-    if ( !specialDir && !defaultDir ) {
-        if (!dir.isLocalFile())
-            kWarning() << "KFileDialog::getSaveFileNameWId called with non-local start dir " << dir;
-        dlg.setSelection( dir.toLocalFile() ); // may also be a filename
-    }
-
-    dlg.setOperationMode( Saving );
-    dlg.setMode( KFile::File );
+    dlg.setOperationMode( KFileDialog::Saving );
+    dlg.setMode( KFile::File | KFile::LocalOnly );
     dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
 
     dlg.exec();
@@ -715,16 +699,14 @@ KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
             dir, filter, parent, caption) );
         return fileName.isEmpty() ? KUrl() : KUrl::fromPath(fileName);
     }
-    bool defaultDir = dir.isEmpty();
-    bool specialDir = !defaultDir && dir.protocol() == "kfiledialog";
-    KFileDialogPrivate::Native::s_allowNative = false;
-    KFileDialog dlg(specialDir ? dir : KUrl(), filter, parent);
-    if ( !specialDir && !defaultDir )
-        dlg.setSelection( dir.url() ); // may also be a filename
 
-    dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
-    dlg.setOperationMode( Saving );
+    KFileDialogPrivate::Native::s_allowNative = false;
+
+    KFileDialog dlg(dir, filter, parent);
+
+    dlg.setOperationMode( KFileDialog::Saving );
     dlg.setMode( KFile::File );
+    dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
 
     dlg.exec();
 
