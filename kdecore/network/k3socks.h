@@ -34,9 +34,6 @@
 class KConfigGroup;
 struct sockaddr;
 
-#ifdef __CYGWIN__
-typedef unsigned ksocklen_t;
-#endif
 
 /**
  * This class provides you with an interface to a 

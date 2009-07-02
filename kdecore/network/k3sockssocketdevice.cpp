@@ -30,10 +30,6 @@
 #include <unistd.h>
 #endif
 
-#ifdef __CYGWIN__
-#undef kde_socklen_t
-#define kde_socklen_t ksocklen_t
-#endif
 
 #include <QCoreApplication>
 #ifndef KDE_USE_FINAL
