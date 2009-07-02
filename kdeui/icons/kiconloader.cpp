@@ -702,9 +702,11 @@ bool KIconLoader::extraDesktopThemesAdded() const
 
 QString KIconLoaderPrivate::removeIconExtension(const QString &name) const
 {
-    if (name.endsWith(".png") || name.endsWith(".xpm") || name.endsWith(".svg")) {
+    if (name.endsWith(QLatin1String(".png"))
+        || name.endsWith(QLatin1String(".xpm"))
+        || name.endsWith(QLatin1String(".svg"))) {
         return name.left(name.length() - 4);
-    } else if (name.endsWith(".svgz")) {
+    } else if (name.endsWith(QLatin1String(".svgz"))) {
         return name.left(name.length() - 5);
     }
 
@@ -834,12 +836,13 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
     const char * const ext[4] = { ".png", ".svgz", ".svg", ".xpm" };
 #endif
 
+    const bool genericFallback = name.endsWith(QLatin1String("-x-generic"));
+
     foreach(KIconThemeNode *themeNode, links)
     {
-        QStringList nameParts = name.split('-');
         QString currentName = name;
 
-        while (!nameParts.isEmpty())
+        while (!currentName.isEmpty())
         {
 
             //kDebug(264) << "Looking up" << currentName;
@@ -873,9 +876,18 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
                     return icon;
             }
 #endif
+            if (genericFallback)
+                // we already tested the base name
+                break;
 
-            nameParts.removeLast();
-            currentName = nameParts.join("-");
+            int rindex = currentName.lastIndexOf('-');
+            if (rindex < 0)
+                break;
+
+            currentName.truncate(rindex);
+
+            if (currentName.endsWith(QLatin1String("-x")))
+                currentName.chop(2);
         }
     }
     return icon;
@@ -906,12 +918,9 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 
     if (_name.isEmpty()
 #ifdef Q_OS_WIN
-        || (_name.length() > 1 &&
-            (_name[0].isLetter() && _name[1] == QLatin1Char(':') ||
-             _name[0] == '/'     && _name[1] == '/' ||
-             _name[0] == '\\'    && _name[1] == '\\')))
+        || !QDir::isRelativePath(_name))
 #else
-        || _name[0] == '/')
+        || _name.at(0) == '/')
 #endif
     {
         // we have either an absolute path or nothing to work with
@@ -1012,10 +1021,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     }
 
     if (!name.isEmpty()
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
         && !QDir::isRelativePath(name))
 #else
-        && name[0] == '/')
+        && name.at(0) == '/')
 #endif
     {
         absolutePath = true;
@@ -1028,7 +1037,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     {
         QString key;
         key.reserve(200);
-        key.append("$kicou_");
+        key.append(QLatin1String("$kicou_"));
         key.append(name).append('_').append(QString::number(size));
         key.append(overlays.join("_")); // krazy:exclude=doublequote_chars
 
@@ -1121,7 +1130,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 
     QString key;
     key.reserve(100);
-    key.append("$kico_");
+    key.append(QLatin1String("$kico_"));
     key.append(name).append('_').append(QString::number(size));
 
     QString overlayKey = overlays.join("_"); // krazy:exclude=doublequote_chars
