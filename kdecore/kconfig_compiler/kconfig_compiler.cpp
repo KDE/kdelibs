@@ -1161,7 +1161,11 @@ QString memberGetDefaultBody( CfgEntry *e )
   QString result = e->code();
   QTextStream out(&result, QIODevice::WriteOnly);
 
-  out << "  return " << e->defaultValue() << ";" << endl;
+  if (!e->param().isEmpty()) {
+    out << "  return " << e->defaultValue().replace("[$("+e->param()+")]", "[i]") << ";";
+  } else {
+    out << "  return " << e->defaultValue() << ";";
+  }
 
   return result;
 }
@@ -1617,7 +1621,10 @@ int main( int argc, char **argv )
         h << enumType(*itEntry);
       else
         h << cppType(t);
-      h << " " << getDefaultFunction(n) << "()" << Const;
+      h << " " << getDefaultFunction(n) << "(";
+      if ( !(*itEntry)->param().isEmpty() )
+          h << " " << cppType( (*itEntry)->paramType() ) <<" i ";
+      h << ")" << Const;
       // function body inline only if not using dpointer
       // for BC mode
       if ( !dpointer )
@@ -2101,7 +2108,10 @@ int main( int argc, char **argv )
           cpp << enumType(*itEntry);
         else
           cpp << cppType(t);
-        cpp << " " << getDefaultFunction(n, className) << "()" << Const;
+        cpp << " " << getDefaultFunction(n, className) << "(";
+        if ( !(*itEntry)->param().isEmpty() )
+          cpp << " " << cppType( (*itEntry)->paramType() ) <<" i ";
+        cpp << ")" << Const << endl;
         cpp << endl << "{" << endl;
         cpp << memberGetDefaultBody(*itEntry);
         cpp << "}" << endl << endl;
