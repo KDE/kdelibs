@@ -315,19 +315,14 @@ KOpenSSLProxy::KOpenSSLProxy()
    }
 #elif defined(__CYGWIN__)
    libpaths << "/usr/bin/"
-   		<< "/usr/local/bin"
-   		<< "/usr/local/openssl/bin"
-   		<< "/opt/openssl/bin"
-   		<< "/opt/kde3/bin"
    		<< "";
 
-   libnamess << "cygssl-0.9.7.dll"
-		 << "cygssl.dll"
-		 << "libssl.dll"
+   libnamess << "cygssl-0.9.8.dll"
+		 << "cygssl-0.9.7.dll"
 		 << "";
 
-   libnamesc << "cygcrypto.dll"
-		 << "libcrypto.dll"
+   libnamesc << "cygcrypto-0.9.8.dll"
+		 << "cygcrypto-0.9.7.dll"
 		 << "";
 #else
    libpaths
