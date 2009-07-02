@@ -238,7 +238,10 @@ void KColorButton::KColorButtonPrivate::_k_chooseColor()
   if ( m_bdefaultColor )
   {
       if( KColorDialog::getColor( c, m_defaultColor, q ) != QDialog::Rejected ) {
-          q->setColor( c );
+          if ( c.isValid() )
+              q->setColor( c );
+          else
+              q->setColor( m_defaultColor );
       }
   }
   else
