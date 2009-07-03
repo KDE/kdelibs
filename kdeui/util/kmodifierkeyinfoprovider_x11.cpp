@@ -54,9 +54,11 @@ unsigned int xkbVirtualModifier(XkbDescPtr xkb, const char *name)
     for (int i = 0; i < XkbNumVirtualMods; ++i) {
         char *modStr = XGetAtomName(xkb->dpy, xkb->names->vmods[i]);
         if (modStr != 0 && strcmp(name, modStr) == 0) {
+	    XFree(modStr);
             XkbVirtualModsToReal(xkb, 1 << i, &mask);
             break;
         }
+	XFree(modStr);
     }
     return mask;
 }
