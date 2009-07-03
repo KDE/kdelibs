@@ -58,7 +58,7 @@ public:
     void workflow();
     KNS::Entry* upload(const QString& file);
 
-    static QHash<QString, KDialog *> s_dialogs;
+    static QHash<QString, QPointer<KDialog> > s_dialogs;
 
     Command m_command;
     UploadDialog *m_uploaddialog;
@@ -70,6 +70,9 @@ public:
     QWidget * m_parent;
     QSet<KNS::Entry*> m_changedEntries;
     QEventLoop* m_loop;
+
+public Q_SLOTS:
+    void slotDownloadDialogDestroyed();
 
 private Q_SLOTS:
     /** stop the event loop */
@@ -88,7 +91,7 @@ private Q_SLOTS:
 };
 
 
-QHash<QString, KDialog *> KNS::EnginePrivate::s_dialogs;
+QHash<QString, QPointer<KDialog> > KNS::EnginePrivate::s_dialogs;
 
 Engine::Engine(QWidget* parent)
         : d(new EnginePrivate(parent))
@@ -97,11 +100,17 @@ Engine::Engine(QWidget* parent)
 
 Engine::~Engine()
 {
+    //kDebug() << d->m_downloaddialog;
+    if (d->m_downloaddialog) {
+        d->slotDownloadDialogDestroyed();
+    }
+
     delete d;
 }
 
 void EnginePrivate::workflow()
 {
+    disconnect(this, 0, this, 0);
     if ((m_command == command_upload) || (m_command == command_download)) {
         connect(this,
                 SIGNAL(signalProviderLoaded(KNS::Provider*)),
@@ -121,6 +130,7 @@ void EnginePrivate::workflow()
 
     if (m_command == command_download) {
         m_downloaddialog = new DownloadDialog(this, m_parent);
+        //kDebug() << "adding!";
         s_dialogs.insert(componentName(), m_downloaddialog);
 
         connect(this, SIGNAL(signalEntriesFinished()),
@@ -131,10 +141,13 @@ void EnginePrivate::workflow()
         connect(this,
                 SIGNAL(signalProvidersFailed()),
                 SLOT(slotDownloadDialogClosed()));
+        connect(m_downloaddialog,
+                SIGNAL(destroyed(QObject*)),
+                SLOT(slotDownloadDialogDestroyed()));
+        connect(m_downloaddialog, SIGNAL(finished()), SLOT(slotDownloadDialogClosed()));
+        //kDebug() << "done adding!";
 
         m_downloaddialog->show();
-
-        connect(m_downloaddialog, SIGNAL(finished()), SLOT(slotDownloadDialogClosed()));
     }
 
     start();
@@ -153,6 +166,10 @@ void EnginePrivate::stopLoop()
     if (m_loop) {
         m_loop->exit();
         m_loop = 0;
+
+        if (m_downloaddialog) {
+            slotDownloadDialogDestroyed();
+        }
     }
 }
 
@@ -206,12 +223,12 @@ void Engine::downloadDialog()
     //kDebug() << "Engine: downloadDialog";
     KDialog *existingDialog = EnginePrivate::s_dialogs.value(d->componentName());
     if (existingDialog) {
+        //kDebug() << "got an existing dialog";
         existingDialog->show();
         KWindowSystem::setOnDesktop(existingDialog->winId(), KWindowSystem::currentDesktop());
         KWindowSystem::activateWindow(existingDialog->winId());
         return;
     }
-
 
     if (d->m_command != EnginePrivate::command_none) {
         kError() << "Engine: asynchronous workflow already going on" << endl;
@@ -226,6 +243,7 @@ void Engine::downloadDialog()
 
 void Engine::downloadDialog(QObject * receiver, const char * slot)
 {
+    QObject::disconnect(d, SIGNAL(signalDownloadDialogDone(KNS::Entry::List)), receiver, slot);
     QObject::connect(d, SIGNAL(signalDownloadDialogDone(KNS::Entry::List)), receiver, slot);
     downloadDialog();
 }
@@ -361,12 +379,10 @@ void EnginePrivate::slotProvidersFinished()
     txt << xml;
     //kDebug() << "Upload: " << QString(ar);
 
-    connect(this,
-            SIGNAL(signalEntryUploaded()),
-            SLOT(stopLoop()));
-    connect(this,
-            SIGNAL(signalEntryFailed()),
-            SLOT(stopLoop()));
+    disconnect(this, SIGNAL(signalEntryUploaded()), this, SLOT(stopLoop()));
+    disconnect(this, SIGNAL(signalEntryFailed()), this, SLOT(stopLoop()));
+    connect(this, SIGNAL(signalEntryUploaded()), SLOT(stopLoop()));
+    connect(this, SIGNAL(signalEntryFailed()), SLOT(stopLoop()));
 
     uploadEntry(provider, entry);
 }
@@ -383,11 +399,13 @@ void EnginePrivate::slotEntriesFinished()
     //m_downloaddialog->refresh();
 }
 
-void EnginePrivate::slotDownloadDialogClosed()
+void EnginePrivate::slotDownloadDialogDestroyed()
 {
-    QHash<QString, KDialog *>::iterator it = s_dialogs.begin();
+    //kDebug() << m_downloaddialog << "is destroyed!" << s_dialogs.count() << s_dialogs.keys();
+    QHash<QString, QPointer<KDialog> >::iterator it = s_dialogs.begin();
     while (it != s_dialogs.end()) {
         if (it.value() == m_downloaddialog) {
+            //kDebug() << "found it!";
             it = s_dialogs.erase(it);
         }
 
@@ -396,9 +414,17 @@ void EnginePrivate::slotDownloadDialogClosed()
         }
     }
 
+    //kDebug() << s_dialogs.count() << s_dialogs.keys();
+}
+
+void EnginePrivate::slotDownloadDialogClosed()
+{
+    //kDebug() << sender() << m_downloaddialog;
+    disconnect(m_downloaddialog, SIGNAL(destroyed(QObject*)),
+               this, SLOT(slotDownloadDialogDestroyed()));
+    slotDownloadDialogDestroyed();
     m_downloaddialog->deleteLater();
     m_downloaddialog = NULL;
-
     stopLoop();
     emit signalDownloadDialogDone(QList<KNS::Entry*>::fromSet(m_changedEntries));
 }
