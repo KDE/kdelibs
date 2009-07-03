@@ -33,6 +33,7 @@
 #include <QtCore/QFileInfo>
 #include <QtGui/QProgressBar>
 #include <QtGui/QPainter>
+#include <QtGui/QScrollBar>
 
 
 /**
@@ -405,9 +406,19 @@ void KIconDialog::KIconDialogPrivate::init()
 
     mpCanvas = new KIconCanvas(main);
     connect(mpCanvas, SIGNAL(itemActivated(QListWidgetItem *)), q, SLOT(_k_slotAcceptIcons()));
-    mpCanvas->setMinimumSize(425, 125);
     top->addWidget(mpCanvas);
     searchLine->setListWidget(mpCanvas);
+
+    // Compute width of canvas with 4 icons displayed in a row
+    QStyleOption opt;
+    opt.initFrom(mpCanvas);
+    int width = 4 * mpCanvas->gridSize().width() + 1;
+    width += mpCanvas->verticalScrollBar()->sizeHint().width();
+    width += 2 * mpCanvas->frameWidth();
+    if (mpCanvas->style()->styleHint(QStyle::SH_ScrollView_FrameOnlyAroundContents, &opt, mpCanvas)) {
+        width += mpCanvas->style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing, &opt, mpCanvas);
+    }
+    mpCanvas->setMinimumSize(width, 125);
 
     mpProgress = new QProgressBar(main);
     top->addWidget(mpProgress);
