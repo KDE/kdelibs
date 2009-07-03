@@ -113,6 +113,7 @@ set(kdeui_LIB_SRCS
  itemviews/kcategorydrawer.cpp
  itemviews/kwidgetitemdelegate.cpp
  itemviews/kwidgetitemdelegatepool.cpp
+ itemviews/ksortfilterproxymodel.cpp
  jobs/kdialogjobuidelegate.cpp
  jobs/kabstractwidgetjobtracker.cpp
  jobs/kwidgetjobtracker.cpp
@@ -450,6 +451,7 @@ install( FILES
  itemviews/kcategorizedview.h
  itemviews/kcategorydrawer.h
  itemviews/kwidgetitemdelegate.h
+ itemviews/ksortfilterproxymodel.h
  jobs/kdialogjobuidelegate.h
  jobs/kabstractwidgetjobtracker.h
  jobs/kwidgetjobtracker.h
