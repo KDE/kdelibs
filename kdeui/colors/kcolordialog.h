@@ -102,7 +102,7 @@ private:
  * @short A color displayer.
  *
  * The KColorPatch widget is a (usually small) widget showing
- * a selected color e. g. in the KColorDialog. It
+ * a selected color e.g. in the KColorDialog. It
  * automatically handles drag and drop from and on the widget.
  *
  */
@@ -153,6 +153,23 @@ private:
  *         if ( result == KColorDialog::Accepted )
  *            ...
  * \endcode
+ *
+ * To react to the color selection as it is being selected, the colorSelected() signal
+ * can be used.  This can be used still in a modal way, for example:
+ *
+ * \code
+ *  KColorDialog dialog(this);
+ *  connect(&dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(temporarilyChangeColor(const QColor &)));
+ *  QColor myColor;
+ *  dialog.setColor(myColor);
+ *  int result = dialog.exec();
+ *
+ *  if ( result == KColorDialog::Accepted )
+ *    changeColor( dialog.color() );
+ *  else
+ *    temporarilyChangeColor(myColor); //change back to original color
+ * \endcode
+ *
  *
  * @image html kcolordialog.png "KDE Color Dialog"
  *
