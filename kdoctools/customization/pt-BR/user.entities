@@ -36,5 +36,7 @@
 <!ENTITY OS "<acronym>Sistema Operacional</acronym>">
 <!ENTITY RMB    "botão <mousebutton>direito</mousebutton> do mouse">
 <!ENTITY Shift   "<keycap>Shift</keycap>">
+<!ENTITY systemsettings	"<application>Configurações do Sistema</application>">
 <!ENTITY systemtray "<application>bandeja do sistema</application>">
 <!ENTITY Tab	"<keycap>Tab</keycap>">
+<!ENTITY BSD	"<acronym>BSD</acronym>">
