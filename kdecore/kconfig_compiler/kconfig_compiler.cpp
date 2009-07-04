@@ -1624,19 +1624,7 @@ int main( int argc, char **argv )
       h << " " << getDefaultFunction(n) << "(";
       if ( !(*itEntry)->param().isEmpty() )
           h << " " << cppType( (*itEntry)->paramType() ) <<" i ";
-      h << ")" << Const;
-      // function body inline only if not using dpointer
-      // for BC mode
-      if ( !dpointer )
-      {
-        h << endl << "    {" << endl;
-        h << indent(memberGetDefaultBody(*itEntry), 4 );
-        h << "    }" << endl;
-      }
-      else
-      {
-        h << ";" << endl;
-      }
+      h << ")" << Const << ";" << endl;
     }
 
     // Item accessor
@@ -2102,20 +2090,7 @@ int main( int argc, char **argv )
       cpp << indent(memberAccessorBody( *itEntry ), 2);
       cpp << "}" << endl << endl;
 
-      // Default value Accessor
-      if (!(*itEntry)->defaultValue().isEmpty()) {
-        if (useEnumTypes && t == "Enum")
-          cpp << enumType(*itEntry);
-        else
-          cpp << cppType(t);
-        cpp << " " << getDefaultFunction(n, className) << "(";
-        if ( !(*itEntry)->param().isEmpty() )
-          cpp << " " << cppType( (*itEntry)->paramType() ) <<" i ";
-        cpp << ")" << Const << endl;
-        cpp << endl << "{" << endl;
-        cpp << memberGetDefaultBody(*itEntry);
-        cpp << "}" << endl << endl;
-      }
+      // Default value Accessor -- written by the loop below
 
       // Item accessor
       if ( itemAccessors )
@@ -2133,6 +2108,27 @@ int main( int argc, char **argv )
       }
 
       cpp << endl;
+    }
+  }
+
+  // default value getters always go in Cpp
+  for( itEntry = entries.constBegin(); itEntry != entries.constEnd(); ++itEntry ) {
+    QString n = (*itEntry)->name();
+    QString t = (*itEntry)->type();
+
+    // Default value Accessor
+    if (!(*itEntry)->defaultValue().isEmpty()) {
+      if (useEnumTypes && t == "Enum")
+        cpp << enumType(*itEntry);
+      else
+        cpp << cppType(t);
+      cpp << " " << getDefaultFunction(n, className) << "(";
+      if ( !(*itEntry)->param().isEmpty() )
+        cpp << " " << cppType( (*itEntry)->paramType() ) <<" i ";
+      cpp << ")" << Const << endl;
+      cpp << "{" << endl;
+      cpp << memberGetDefaultBody(*itEntry) << endl;
+      cpp << "}" << endl << endl;
     }
   }
 
