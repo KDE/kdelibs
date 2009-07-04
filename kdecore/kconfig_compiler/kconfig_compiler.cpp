@@ -2119,7 +2119,7 @@ int main( int argc, char **argv )
     // Default value Accessor
     if (!(*itEntry)->defaultValue().isEmpty()) {
       if (useEnumTypes && t == "Enum")
-        cpp << enumType(*itEntry);
+        cpp << className << "::" << enumType(*itEntry);
       else
         cpp << cppType(t);
       cpp << " " << getDefaultFunction(n, className) << "(";
