@@ -287,7 +287,7 @@ int countLines (const QString &s, int p)
 
 // ----------------------------------------------------------------------
 // Normalize string key for hash lookups,
-QByteArray normKeystr (const QString &raw)
+QByteArray normKeystr (const QString &raw, bool mayHaveAcc = true)
 {
     // NOTE: Regexes should not be used here for performance reasons.
     // This function may potentially be called thousands of times
@@ -307,7 +307,9 @@ QByteArray normKeystr (const QString &raw)
     key = nkey;
 
     // Strip accelerator marker.
-    key = removeAcceleratorMarker(key);
+    if (mayHaveAcc) {
+        key = removeAcceleratorMarker(key);
+    }
 
     // Convert to lower case.
     key = key.toLower();
@@ -1466,14 +1468,14 @@ QString Scriptface::loadProps_text (const QString &fpath)
             if (s[i] == key_sep) {
                 // This is a property key,
                 // record for when the value gets parsed.
-                pkey = normKeystr(s.mid(ip, i - ip));
+                pkey = normKeystr(s.mid(ip, i - ip), false);
 
                 i += 1;
                 state = s_nextValue;
             }
             else { // if (s[i] == prop_sep) {
                 // This is an entry key, or end of entry.
-                QByteArray ekey = normKeystr(s.mid(ip, i - ip));
+                QByteArray ekey = normKeystr(s.mid(ip, i - ip), false);
                 if (!ekey.isEmpty()) {
                     // An entry key.
                     ekeys.append(ekey);
