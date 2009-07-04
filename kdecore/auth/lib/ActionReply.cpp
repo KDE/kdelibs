@@ -23,12 +23,19 @@ ActionReply::ActionReply() : m_errorCode(0), m_type(Success) {}
 ActionReply::ActionReply(ActionReply::Type type) : m_errorCode(0), m_type(type) {}
 ActionReply::ActionReply(int error) : m_errorCode(error), m_type(KAuthError) {}
 
-QMap<QString, QVariant> &ActionReply::data()
+ActionReply::ActionReply(QByteArray data)
+{
+    QDataStream s(&data, QIODevice::ReadOnly);
+    
+    s >> *this;
+}
+
+ArgumentsMap &ActionReply::data()
 {
     return m_data;
 }
 
-QMap<QString, QVariant> ActionReply::data() const
+ArgumentsMap ActionReply::data() const
 {
     return m_data;
 }
@@ -70,6 +77,26 @@ void ActionReply::setErrorCode(int errorCode)
     m_type = KAuthError;
 }
 
+QString ActionReply::errorDescription()
+{
+    return m_errorDescription;
+}
+
+void ActionReply::setErrorDescription(const QString &error)
+{
+    m_errorDescription = error;
+}
+
+QByteArray ActionReply::serialized()
+{
+    QByteArray data;
+    QDataStream s(&data, QIODevice::WriteOnly);
+    
+    s << *this;
+    
+    return data;
+}
+
 QDataStream &operator<<(QDataStream &d, const ActionReply &reply)
 {
     return d << reply.m_data << reply.m_errorCode << (quint32)reply.m_type;
@@ -78,7 +105,7 @@ QDataStream &operator<<(QDataStream &d, const ActionReply &reply)
 QDataStream &operator>>(QDataStream &d, ActionReply &reply)
 {
     quint32 i;
-    d >> i >> reply.m_errorCode >> reply.m_data;
+    d >> reply.m_data >> reply.m_errorCode >> i;
     reply.m_type = (ActionReply::Type) i;
     
     return d;

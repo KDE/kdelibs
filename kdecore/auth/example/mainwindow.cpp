@@ -21,6 +21,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QDebug>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -47,19 +48,28 @@ void MainWindow::on_actionOpen_triggered()
 
     if(!file.open(QIODevice::ReadOnly))
     {
+        Action::setHelperID("org.kde.auth.example");
+        
         Action readAction = "org.kde.auth.example.read";
         ActionReply reply;
         if(readAction.authorize())
         {
             readAction.arguments()["path"] = filename;
             reply = readAction.execute();
+            
+            QMap<QString, QVariant>::const_iterator i = reply.data().constBegin();
+            while (i != reply.data().constEnd()) {
+                qDebug() << "Argument key:" << i.key() << "- value:" << i.value().toString();
+                ++i;
+            }
+            
             // Asynchronous alternative:
             // readAction.execute(SLOT(readActionFinished(ActionReply)));
             // return;
         }
 
         if(reply.failed())
-            QMessageBox::information(this, "Errore", file.errorString());
+            QMessageBox::information(this, "Errore", QString("KAuth returned an error code: ") + reply.errorCode());
         else
             ui->plainTextEdit->setPlainText(reply.data().value("text").toString());
 

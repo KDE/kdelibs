@@ -17,6 +17,7 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
+#include <QObject>
 #include <QMap>
 #include <QtDBus>
 #include <QDebug>
@@ -27,7 +28,7 @@
 #include "DBusHelperProxy.h"
 #include "DBusHelperProxyAdaptor.h"
 
-ActionReply DBusHelperProxy::executeAction(const QString &action, const QMap<QString, QVariant> &arguments)
+ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const ArgumentsMap &arguments)
 {
     QByteArray argsBytes;
     QDataStream stream(&argsBytes, QIODevice::WriteOnly);
@@ -35,24 +36,30 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QMap<QSt
     stream << arguments;
         
     QDBusMessage message;
-    message = QDBusMessage::createMethodCall("org.kde.auth",
+    message = QDBusMessage::createMethodCall(helperID, // We use the helper ID as the service name
                                               "/",
                                               "org.kde.auth",
                                               QLatin1String("performAction"));
+                                              
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(action) << BackendsManager::authBackend()->callerID() << qVariantFromValue(argsBytes);
     message.setArguments(argumentList);
     
+    // TODO: Check for dbus errors
     QDBusMessage reply = QDBusConnection::systemBus().call(message);
-//     if (reply.type() == QDBusMessage::ReplyMessage
-//         && reply.arguments().size() == 1) {
-//         // the reply can be anything, here we receive a string
-//         qDebug() << reply.arguments().first().toString();
-//     } else if (reply.type() == QDBusMessage::MethodCallMessage) {
-//         qWarning() << "Message did not receive a reply (timeout by message bus)";
-//     }
-
-    return ActionReply();
+    
+    if(reply.type() == QDBusMessage::ErrorMessage)
+    {
+        ActionReply r = ActionReply(ActionReply::DBusError);
+        r.setErrorDescription(reply.errorMessage());
+        
+        return r;
+    }
+    
+    if(reply.arguments().size() != 1)
+        return ActionReply(ActionReply::WrongReplyData);
+    
+    return ActionReply(reply.arguments().first().toByteArray());
 }
 
 bool DBusHelperProxy::initHelper(const QString &name)
@@ -65,6 +72,8 @@ bool DBusHelperProxy::initHelper(const QString &name)
     if (!QDBusConnection::systemBus().registerObject("/", this))
         return false;
     
+    m_name = name;
+    
     return true;
 }
 
@@ -73,17 +82,39 @@ void DBusHelperProxy::setHelperResponder(QObject *o)
     responder = o;
 }
 
-bool DBusHelperProxy::performAction(const QString &action, QByteArray callerID, QByteArray arguments)
+void DBusHelperProxy::performActionAsync(const QString &action, QByteArray callerID, QByteArray arguments)
+{
+    emit actionPerformed(performAction(action, callerID, arguments));
+}
+
+QByteArray DBusHelperProxy::performAction(const QString &action, QByteArray callerID, QByteArray arguments)
 {
     if(!responder)
-        return false;
+        return ActionReply(ActionReply::NoResponderError).serialized();
     
-    QMap<QString, QVariant> args;
+    ArgumentsMap args;
     QDataStream s(&arguments, QIODevice::ReadOnly);
     s >> args;
     
     if(BackendsManager::authBackend()->isCallerAuthorized(action, callerID))
-        QMetaObject::invokeMethod(responder, "action", Q_ARG(ArgumentsMap, args));
+    {
+        // TODO: Check if the action's slot exists and is valid, call it and return the reply
+        QString slotname = action;
+        if(slotname.startsWith(m_name + "."))
+            slotname = slotname.right(slotname.length() - m_name.length() - 1);
+        
+        slotname.replace(".", "_");
+        
+        ActionReply retVal;
+        bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection, Q_RETURN_ARG(ActionReply, retVal), Q_ARG(ArgumentsMap, args));
+        
+        if(success)
+            return retVal.serialized();
+        else
+            return ActionReply(ActionReply::NoSuchAction).serialized();
+        
+    }else
+        return ActionReply(ActionReply::AuthorizationDenied).serialized();
 }
 
 Q_EXPORT_PLUGIN2(helper_proxy, DBusHelperProxy);

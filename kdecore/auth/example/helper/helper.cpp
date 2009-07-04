@@ -17,41 +17,54 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#ifndef DBUS_HELPER_BACKEND_H
-#define DBUS_HELPER_BACKEND_H
+#include <cstdio>
+#include <syslog.h>
+#include <unistd.h>
+
+#include <QCoreApplication>
+#include <QTimer>
 
 #include "HelperProxy.h"
-#include "ActionReply.h"
+#include "BackendsManager.h"
 
-class DBusHelperProxy : public QObject, public HelperProxy
+#include "helper.h"
+
+ActionReply MyHelper::read(ArgumentsMap args)
 {
-    Q_OBJECT
-    Q_INTERFACES(HelperProxy)
+    syslog(LOG_DEBUG, "Action executed by the helper. PID: %d, UID: %d", getpid(), getuid());
     
-    QObject *responder;
-    QString m_name;
+    ArgumentsMap::const_iterator i = args.constBegin();
+    while (i != args.constEnd()) {
+        syslog(LOG_DEBUG, "Argument key: \"%s\" - value: \"%s\"", i.key().toAscii().data(), i.value().toString().toAscii().data());
+        ++i;
+    }
     
-    public:
-        DBusHelperProxy() : responder(NULL) {}
-        
-        QString name() { return m_name; }
-        void setName(QString name) { m_name = name; }
-        
-        virtual ActionReply executeAction(const QString &action, const QString &helperID, const ArgumentsMap &arguments);
-        
-        virtual bool initHelper(const QString &name);
-        
-        virtual void setHelperResponder(QObject *o);
-        
-    public slots:
-        void performActionAsync(const QString &action, QByteArray callerID, QByteArray arguments);
-        QByteArray performAction(const QString &action, QByteArray callerID, QByteArray arguments); // this is private
-        
-    signals:
-        void actionPerformed(QByteArray reply);
-        
-    private:
-        void returnReply(ActionReply reply);
-};
+    ActionReply reply;
+    
+    reply.data()["result"] = "OK";
+    
+    return reply;
+}
 
-#endif
+int main(int argc, char **argv)
+{
+    openlog("kauth_helper", 0, LOG_USER);
+    syslog(LOG_DEBUG, "Helper started");
+    MyHelper object;
+    
+    if(!BackendsManager::helperProxy()->initHelper("org.kde.auth.example"))
+    {
+        syslog(LOG_DEBUG, "initHelper() failed\n");
+        return -1;
+    }
+    
+    BackendsManager::helperProxy()->setHelperResponder(&object);
+    
+    QCoreApplication app(argc, argv);
+    QTimer::singleShot(10000, &app, SLOT(quit()));
+    app.exec();
+    
+    closelog();
+    
+    return 0;
+}

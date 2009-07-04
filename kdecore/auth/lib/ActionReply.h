@@ -25,6 +25,8 @@
 #include <QMap>
 #include <QDataStream>
 
+typedef QMap<QString, QVariant> ArgumentsMap;
+
 class ActionReply
 {
 public:
@@ -41,15 +43,20 @@ public:
     enum Error
     {
         NoError = 0,
-        Error2
+        NoResponderError,
+        NoSuchAction,
+        AuthorizationDenied,
+        DBusError,
+        WrongReplyData
     };
     
     ActionReply();
     ActionReply(Type type);
     ActionReply(int errorCode);
+    ActionReply(QByteArray data);
     
-    QMap<QString, QVariant> &data();
-    QMap<QString, QVariant> data() const;
+    ArgumentsMap &data();
+    ArgumentsMap data() const;
     Type type() const;
     
     bool succeded();
@@ -57,13 +64,18 @@ public:
     
     int errorCode() const;
     void setErrorCode(int errorCode);
+    QString errorDescription();
+    void setErrorDescription(const QString &error);
+    
+    QByteArray serialized();
     
     friend QDataStream &operator<<(QDataStream &, const ActionReply &);
     friend QDataStream &operator>>(QDataStream &, ActionReply &);
     
 private:
-    QMap<QString, QVariant> m_data; // User-defined data for success and helper error replies, empty for kauth errors
+    ArgumentsMap m_data; // User-defined data for success and helper error replies, empty for kauth errors
     int m_errorCode;
+    QString m_errorDescription;
     Type m_type;
 };
 

@@ -24,6 +24,7 @@
 #include "BackendsManager.h"
 
 static AuthBackend *backend = NULL;
+static QString s_helperID;
 
 void Action::init()
 {
@@ -44,5 +45,23 @@ Action::AuthStatus Action::status()
 
 ActionReply Action::execute()
 {
-    return BackendsManager::helperProxy()->executeAction(m_name, QMap<QString, QVariant>());
+    return execute(helperID());
 }
+
+// TODO: Check for helper id's syntax
+ActionReply Action::execute(const QString &helperID)
+{
+    return BackendsManager::helperProxy()->executeAction(m_name, helperID, m_args);
+}
+
+QString Action::helperID()
+{    
+    return s_helperID;
+}
+
+// TODO: Check for helper id's syntax
+void Action::setHelperID(const QString &id)
+{
+    s_helperID = id;
+}
+

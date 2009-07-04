@@ -17,41 +17,19 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .      
 */
 
-#include <cstdio>
-#include <syslog.h>
-#include <unistd.h>
+#ifndef HELPER_CLASS_H
+#define HELPER_CLASS_H
 
-#include <QCoreApplication>
-#include <QTimer>
+#include <QObject>
 
-#include "HelperProxy.h"
-#include "BackendsManager.h"
+#include "ActionReply.h"
 
-#include "helper.h"
-
-void MyHelper::action()
+class MyHelper : public QObject
 {
-    syslog(LOG_DEBUG, "Action executed by the helper. PID: %d, UID: %d", getpid(), getuid());
-}
+    Q_OBJECT
+    
+    public slots:
+        ActionReply read(ArgumentsMap args);
+};
 
-int main(int argc, char **argv)
-{
-    openlog("kauth_helper", 0, LOG_USER);
-    MyHelper object;
-    
-    if(!BackendsManager::helperProxy()->initHelper("org.kde.auth"))
-    {
-        syslog(LOG_DEBUG, "initHelper() failed\n");
-        return -1;
-    }
-    
-    BackendsManager::helperProxy()->setHelperResponder(&object);
-    
-    QCoreApplication app(argc, argv);
-    QTimer::singleShot(10000, &app, SLOT(quit()));
-    app.exec();
-    
-    closelog();
-    
-    return 0;
-}
+#endif

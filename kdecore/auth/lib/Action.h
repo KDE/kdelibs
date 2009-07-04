@@ -27,7 +27,7 @@
 #include "ActionReply.h"
 
 class Action
-{
+{    
     QString m_name;
     QMap<QString, QVariant> m_args;
     
@@ -50,6 +50,10 @@ class Action
         bool authorize();
         AuthStatus status();
         ActionReply execute();
+        ActionReply execute(const QString &helperID);
+        
+        static QString helperID();
+        static void setHelperID(const QString &id);
         
     private:
         void init();

@@ -32,6 +32,9 @@ class DBusHelperProxyAdaptor: public QDBusAbstractAdaptor
 "      <arg direction=\"in\" type=\"ay\" name=\"callerID\" />\n"
 "      <arg direction=\"in\" type=\"ay\" name=\"arguments\" />\n"
 "    </method>\n"
+"    <signal name=\"actionPerformed\" >\n"
+"      <arg direction=\"out\" type=\"ay\" name=\"reply\" />\n"
+"    </signal>\n"
 "  </interface>\n"
         "")
 public:
@@ -39,8 +42,11 @@ public:
     virtual ~DBusHelperProxyAdaptor();
 
 public slots:
-    void performAction(const QString &action, const QByteArray &callerID, const QByteArray &arguments);
-
+    Q_NOREPLY void performActionAsync(const QString &action, const QByteArray &callerID, const QByteArray &arguments);
+    QByteArray performAction(const QString &action, const QByteArray &callerID, const QByteArray &arguments);
+    
+signals:
+    void actionPerformed(QByteArray reply);
 };
 
 #endif
